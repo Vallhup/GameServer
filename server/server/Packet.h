@@ -29,8 +29,6 @@ public:
 	MovePacket() = delete;
 	MovePacket(Pos currentPos, Pos targetPos, bool isAvatar);
 
-
-
 private:
 	// 1. Current Pos
 	// 2. Target Pos
@@ -39,4 +37,4 @@ private:
 	Pos _targetPos;
 	bool _isAvatar;
 
-}
+};
