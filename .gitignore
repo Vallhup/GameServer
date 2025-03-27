@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+Client/StartOfDX12FrameWork/.vs/
+Client/StartOfDX12FrameWork/DX12FrameWork/x64/
+Client/StartOfDX12FrameWork/Engine/x64/
+Client/StartOfDX12FrameWork/x64/
+Client/StartOfDX12FrameWork/Output/
