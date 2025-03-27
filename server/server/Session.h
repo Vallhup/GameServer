@@ -24,6 +24,6 @@ private:
 	char			_recvBuffer[1024];
 	WSABUF			_recvWsabuf[1];
 
-	int _test2;
+	int _test3;
 
 };
