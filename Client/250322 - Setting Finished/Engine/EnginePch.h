@@ -33,6 +33,7 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "d3dcompiler")
 
 // °¢Á¾ typedef
+using int16 = __int16;
 using int32 = __int32;
 using int64 = __int64;
 using uint32 = unsigned __int32;
