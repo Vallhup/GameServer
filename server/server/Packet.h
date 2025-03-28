@@ -45,6 +45,7 @@ protected:
 class MovePacket : public Packet
 {
 public:
+
 	MovePacket() = default;
 	MovePacket(int sessionId, Pos currentPos, Pos targetPos, bool isAvatar);
 
