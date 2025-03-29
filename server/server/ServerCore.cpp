@@ -1,6 +1,8 @@
+#include <iostream>
+
 #include "ServerCore.h"
 
-ServerCore* gServerCore = nullptr;
+ServerCore* gServerCore = new ServerCore;
 
 bool ServerCore::Init(short serverPort)
 {
@@ -39,6 +41,8 @@ void ServerCore::MainLoop()
 	while (true) {
 		ClientAccept();
 	}
+
+	WSACleanup();
 }
 
 void ServerCore::ClientAccept()
@@ -70,7 +74,22 @@ void ServerCore::ClientAccept()
 
 	_sessions[session->GetSessionId()] = std::move(session);
 
-	RecvCall(sessionPtr);
+	ConnectRecvCall(sessionPtr->GetSocket());
+}
+
+void ServerCore::ConnectRecvCall(SOCKET clientSocket)
+{
+	ExpOver* recvOver = new ExpOver(nullptr);
+	DWORD recvFlag = 0;
+
+	auto ret = WSARecv(clientSocket, recvOver->GetWsabuf(), 1, NULL, &recvFlag, recvOver->GetOverPtr(), ConnectRecvCallback);
+	if (SOCKET_ERROR == ret) {
+		auto error = WSAGetLastError();
+		if (WSA_IO_PENDING != error) {
+			errorDisplay("WSARecv : ", error);
+			delete recvOver;
+		}
+	}
 }
 
 void ServerCore::RecvCall(Session* session) const
@@ -96,9 +115,37 @@ void ServerCore::SendCall(Session* session, const Packet& packet) const
 	WSASend(session->GetSocket(), sendOver->GetWsabuf(), 1, &sentBytes, 0, sendOver->GetOverPtr(), SendCallback);
 }
 
+void ServerCore::ConnectRecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag)
+{
+	ExpOver* recvOver = reinterpret_cast<ExpOver*>(pOver);
+	Packet* recvPacket = reinterpret_cast<Packet*>(recvOver->GetBuffer());
+
+	// 최초 받은 Packet이 Connect Packet이면 (정상적인 접속이면)
+	if (PACKET_CONNECT == recvPacket->GetType()) {
+		ConnectPacket* connectPacket = 
+			new ConnectPacket(recvOver->GetSession()->GetSessionId(), recvOver->GetSession()->GetPos());
+
+		// 최초 Position정보 Send 후
+		gServerCore->SendCall(recvOver->GetSession(), *connectPacket);
+
+		// 정상적인 Recv진행
+		gServerCore->RecvCall(recvOver->GetSession());
+	}
+
+	// 정상적인 접속이 아니면
+	else {
+		// 해당 Session의 Socket 및 recvOver 삭제
+		closesocket(recvOver->GetSession()->GetSocket());
+		delete recvOver;
+		std::cout << "Connect Error" << std::endl;
+		return;
+	}
+}
+
 void ServerCore::RecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag)
 {
 	ExpOver* recvOver = reinterpret_cast<ExpOver*>(pOver);
+	Packet* recvPacket = reinterpret_cast<Packet*>(recvOver->GetBuffer());
 
 	if (0 != error or 0 == numBytes) {
 		closesocket(recvOver->GetSession()->GetSocket());
@@ -106,7 +153,8 @@ void ServerCore::RecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver
 		return;
 	}
 
-	// TODO : 받은 패킷의 종류에 따라 로직 수행 후 결과 Send
+	// 받은 패킷의 종류에 따라 로직 수행 후 결과 Send (Connect 제외)
+	recvOver->GetSession()->PacketProcessing(recvOver->GetSession(), *recvPacket);
 
 	gServerCore->RecvCall(recvOver->GetSession());
 }

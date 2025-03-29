@@ -2,7 +2,15 @@
 
 #include <WS2tcpip.h>
 
+class Packet;
+
 #pragma comment (lib, "WS2_32.LIB")
+
+struct Pos
+{
+	int _xPos;
+	int _yPos;
+};
 
 // Client의 정보 (고유 id, 연결 socket 등)
 // 컨텐츠와 관련된 작업들
@@ -10,27 +18,29 @@ class Session
 {
 public:
 	Session() = delete;
-	Session(int sessionId, SOCKET s) : _sessionId(sessionId), _socket(s), _xPos(0), _yPos(0)
+	Session(int sessionId, SOCKET s) : _sessionId(sessionId), _socket(s)
 	{
+		_pos._xPos = 1;
+		_pos._yPos = 1;
 	}
 
 	~Session() { closesocket(_socket); }
 
 public:
+	void PacketProcessing(Session* session, Packet& packet);
+
+public:
 	// Getter
 	SOCKET GetSocket() const { return _socket; }
 	int    GetSessionId() const { return _sessionId; }
+	Pos	   GetPos() const { return _pos; }
 
 public:
 	// Setter
-	void SetPosition(int xPos, int yPos)
-	{
-		_xPos = xPos;
-		_yPos = yPos;
-	}
+	void SetPosition(int moveDirection);
 
 private:
 	SOCKET	_socket;
 	int		_sessionId;
-	int		_xPos, _yPos;
+	Pos		_pos;
 };

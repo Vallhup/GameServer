@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include <array>
+#include "Session.h"
 
 enum PacketType : int {
 	// 矫胶袍 包府 (0 ~ 9) (Connect, Disconnect 殿)
@@ -33,23 +33,51 @@ public:
 	int		GetType() const { return _packetType; }
 	int		GetSessionId() const { return _sessionId; }
 	size_t	GetSize() const { return _size; }
-	//const std::array<char, 1024>& GetData() const { return _data; }
 
 protected:
 	int _packetType;
 	int _sessionId;
 	size_t _size;
-	//std::array<char, 1024> _data;
 };
 
+class ConnectPacket : public Packet
+{
+public:
+	// Client 积己磊
+	ConnectPacket();
+
+	// Server 积己磊
+	ConnectPacket(int sessionId, Pos startPos);
+
+private:
+	Pos _startPos;
+
+};
+
+class DisconnectPacket : public Packet
+{
+public:
+	DisconnectPacket();
+
+};
 
 class MovePacket : public Packet
 {
 public:
 	MovePacket() = default;
-	MovePacket(int sessionId, int direction, bool isAvatar);
+
+	// Client 积己磊
+	MovePacket(int sessionId, int direction);
+
+	// Server 积己磊
+	MovePacket(int sessionId, Pos pos, bool isAvatar);
+
+
+public:
+	int GetDirection() const { return _direction; }
 
 private:
 	int  _direction;
+	Pos  _pos;
 	bool _isAvatar;
 };

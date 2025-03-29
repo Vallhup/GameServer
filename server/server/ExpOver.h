@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
 #include <WS2tcpip.h>
-#include "Packet.h"
-#include "Session.h"
+
+class Session;
+class Packet;
 
 #pragma comment (lib, "WS2_32.LIB")
 
@@ -15,31 +15,15 @@ public:
 	ExpOver() = delete;
 
 	// Recv 생성자
-	ExpOver(Session* session) : _session(session)
-	{
-		memset(&_over, 0, sizeof(_over));
-
-		_wsaBuf[0].buf = _buffer;
-		_wsaBuf[0].len = sizeof(_buffer);
-	}
-
+	ExpOver(Session* session);
+	
 	// Send 생성자
-	ExpOver(Session* session, const Packet& packet) : _session(session)
-	{
-		memset(&_over, 0, sizeof(_over));
-		
-		// 왜 packet의 GetSize()를 안쓰고?
-		// packet이 저장하는 size는 하위 클래스에 들어 있는 packet body size이기 때문
-		// 지금은 packet 전체를 복사해야 됨
-		std::memcpy(_buffer, &packet, sizeof(packet));
-
-		_wsaBuf[0].buf = _buffer;
-		_wsaBuf[0].len = static_cast<ULONG>(packet.GetSize());
-	}
+	ExpOver(Session* session, const Packet& packet);
 
 public:
 	LPWSAOVERLAPPED	GetOverPtr() { return &_over; }
 	LPWSABUF		GetWsabuf() { return _wsaBuf; }
+	char*			GetBuffer() { return _buffer; }
 	Session*		GetSession() const { return _session; }
 
 private:

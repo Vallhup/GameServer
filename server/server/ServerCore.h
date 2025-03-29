@@ -3,8 +3,10 @@
 #include <WinSock2.h>
 #include <unordered_map>
 #include <memory>
+
 #include "Session.h"
 #include "ExpOver.h"
+#include "Packet.h"
 
 class ServerCore
 {
@@ -17,8 +19,12 @@ public:
 	void MainLoop();
 	void ClientAccept();
 
+	void ConnectRecvCall(SOCKET clientSocket);
+
 	void RecvCall(Session* session) const;
 	void SendCall(Session* session, const Packet& packet) const;
+
+	static void CALLBACK ConnectRecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag);
 
 	static void CALLBACK RecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag);
 	static void CALLBACK SendCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag);

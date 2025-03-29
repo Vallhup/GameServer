@@ -1,21 +1,16 @@
-#include <iostream>
-#include <string>
-#include <WS2tcpip.h>
-
-#include "Object.h"
+#include "ServerCore.h"
 
 #pragma comment (lib, "WS2_32.LIB")
 
-
-Piece chessPiece;
+// 1. Connect Packet, DisConnect Packet
+// 2. Packet贸府 备泅 
+// 3. Object Class 沥府
+// 4. client, server main loop 沥府
 
 int main()
 {
-	
+	gServerCore->MainLoop();
 
-	
-
-	
 	//while (true)
 	//{
 	//	WPARAM tempParam;
@@ -57,5 +52,5 @@ int main()
 	//closesocket(clientSocket);
 	//closesocket(serverSocket);
 
-	WSACleanup();
+	//WSACleanup();
 }
