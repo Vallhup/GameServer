@@ -13,20 +13,25 @@ class ExpOver
 {
 public:
 	ExpOver() = delete;
-	ExpOver(const Packet& packet)
+
+	// Recv 생성자
+	ExpOver(Session* session) : _session(session)
 	{
 		memset(&_over, 0, sizeof(_over));
 
-		auto packetSize = 2 + packet.GetData().size();
-		if (packetSize > 1024) {
-			std::cout << "Packet Size Over";
-			exit(-1);
-		}
+		_wsaBuf[0].buf = _buffer;
+		_wsaBuf[0].len = sizeof(_buffer);
+	}
 
-		_buffer[0] = static_cast<unsigned char>(packet.GetSize());
-		_buffer[1] = static_cast<unsigned char>(packet.GetSessionId());
-
-		std::copy(packet.GetData().begin(), packet.GetData().end(), _buffer + 2);
+	// Send 생성자
+	ExpOver(Session* session, const Packet& packet) : _session(session)
+	{
+		memset(&_over, 0, sizeof(_over));
+		
+		// 왜 packet의 Getter를 안쓰고?
+		// packet이 저장하는 size는 하위 클래스에 들어 있는 packet body size이기 때문
+		// 지금은 packet 전체를 복사해야 됨
+		std::memcpy(_buffer, &packet, sizeof(packet));
 
 		_wsaBuf[0].buf = _buffer;
 		_wsaBuf[0].len = static_cast<ULONG>(packet.GetSize());

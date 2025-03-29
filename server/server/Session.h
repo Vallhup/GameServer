@@ -1,7 +1,6 @@
 #pragma once
 
 #include <WS2tcpip.h>
-#include "ExpOver.h"
 
 #pragma comment (lib, "WS2_32.LIB")
 
@@ -11,27 +10,27 @@ class Session
 {
 public:
 	Session() = delete;
-	Session(int id, SOCKET s) : _id(id), _socket(s)
+	Session(int sessionId, SOCKET s) : _sessionId(sessionId), _socket(s), _xPos(0), _yPos(0)
 	{
 	}
 
 	~Session() { closesocket(_socket); }
 
-	void recvCallback(DWORD err, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag)
-	{
+public:
+	// Getter
+	SOCKET GetSocket() const { return _socket; }
+	int    GetSessionId() const { return _sessionId; }
 
+public:
+	// Setter
+	void SetPosition(int xPos, int yPos)
+	{
+		_xPos = xPos;
+		_yPos = yPos;
 	}
 
 private:
-
-
-private:
 	SOCKET	_socket;
-	int		_id;
+	int		_sessionId;
+	int		_xPos, _yPos;
 };
-
-
-// 1. 새로운 Client 접속 -> Client에서 PACKET_CONNECT Server로 Send -> Server는 PACKET 검사해서 Connect 여부 Client로 Send -> Client는 받아서 초기화 후 Rendering
-// 2. Client 이동 -> PACKET_MOVE Server로 Send -> Server는 받아서 
-//
-//

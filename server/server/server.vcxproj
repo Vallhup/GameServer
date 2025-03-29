@@ -130,12 +130,14 @@
     <ClCompile Include="ExpOver.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="server.cpp" />
+    <ClCompile Include="ServerCore.cpp" />
     <ClCompile Include="Session.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExpOver.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Packet.h" />
+    <ClInclude Include="ServerCore.h" />
     <ClInclude Include="Session.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
