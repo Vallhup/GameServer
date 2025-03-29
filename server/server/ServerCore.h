@@ -6,7 +6,6 @@
 #include "Session.h"
 #include "ExpOver.h"
 
-
 class ServerCore
 {
 public:
@@ -24,6 +23,8 @@ public:
 	static void CALLBACK RecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag);
 	static void CALLBACK SendCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag);
 
+	static void errorDisplay(const char* msg, int err_no);
+
 private:
 	SOCKET _listenSocket;
 	std::unordered_map<int, std::unique_ptr<Session>> _sessions;
@@ -31,3 +32,4 @@ private:
 
 };
 
+extern ServerCore* gServerCore;
