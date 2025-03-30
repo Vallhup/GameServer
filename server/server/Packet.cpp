@@ -23,14 +23,14 @@ DisconnectPacket::DisconnectPacket() : Packet(PACKET_DISCONNECT, 0, 0)
 }
 
 MovePacket::MovePacket(int sessionId, int direction)
-	: Packet(PACKET_MOVE, sessionId, sizeof(MovePacket) - sizeof(Packet)), _direction(direction)
+	: Packet(PACKET_MOVE, sessionId, sizeof(MovePacket) - sizeof(Packet)), _direction(direction), _isAvatar(false)
 {
 	_pos._xPos = 0;
 	_pos._yPos = 0;
 }
 
 MovePacket::MovePacket(int sessionId, Pos pos, bool isAvatar)
-	: Packet(PACKET_MOVE, sessionId, sizeof(MovePacket) - sizeof(Packet)), _direction(0)
+	: Packet(PACKET_MOVE, sessionId, sizeof(MovePacket) - sizeof(Packet)), _direction(0), _isAvatar(isAvatar)
 {
 	_pos = pos;
 }

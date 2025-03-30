@@ -12,7 +12,7 @@ class Packet;
 class ExpOver
 {
 public:
-	ExpOver() = delete;
+	ExpOver();
 
 	// Recv »ý¼ºÀÚ
 	ExpOver(Session* session);

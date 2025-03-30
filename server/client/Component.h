@@ -28,16 +28,3 @@ private:
 	Gdiplus::Image* _image{ nullptr };
 	Gdiplus::Graphics* _graphics{ nullptr };
 };
-
-void sendKeyEvent(SOCKET sock, WPARAM wParam)
-{
-	WSABUF wsabuf[1];
-	DWORD sizeSent;
-
-	WPARAM networkParam = htonl(wParam);
-
-	wsabuf[0].buf = reinterpret_cast<CHAR*>(&networkParam);
-	wsabuf[0].len = sizeof(networkParam);
-
-	WSASend(sock, wsabuf, 1, &sizeSent, 0, NULL, NULL);
-}

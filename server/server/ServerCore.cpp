@@ -4,11 +4,26 @@
 
 ServerCore* gServerCore = new ServerCore;
 
+LPFN_ACCEPTEX ServerCore::AcceptEx{ nullptr };
+
+bool ServerCore::BindAcceptEx(SOCKET socket, GUID guid, LPVOID* fn)
+{
+	DWORD bytes = 0;
+	return SOCKET_ERROR != WSAIoctl(socket, SIO_GET_EXTENSION_FUNCTION_POINTER,
+		&guid, sizeof(guid), fn, sizeof(*fn), OUT & bytes, NULL, NULL);
+}
+
 bool ServerCore::Init(short serverPort)
 {
 	WSADATA WSAData;
-	if (not WSAStartup(MAKEWORD(2, 2), &WSAData)) {
-		std::cout << "WSAStartup Error";
+	if (WSAStartup(MAKEWORD(2, 2), &WSAData)) {
+		std::cout << "WSAStartup Error : " << WSAGetLastError();
+		return false;
+	}
+
+	SOCKET dummySocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+	if (not BindAcceptEx(dummySocket, WSAID_ACCEPTEX, reinterpret_cast<LPVOID*>(&AcceptEx))) {
+		errorDisplay("BindAcceptEx Error : ", WSAGetLastError());
 		return false;
 	}
 
@@ -17,6 +32,23 @@ bool ServerCore::Init(short serverPort)
 		std::cout << "WSASocket Error";
 		return false;
 	}
+
+	int optval = 1;
+
+	if (SOCKET_ERROR == setsockopt(_listenSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&optval, sizeof(optval))) {
+		std::cout << "reuse error";
+		return false;
+	}
+
+	linger lingerOption;
+	lingerOption.l_linger = 0;
+	lingerOption.l_onoff = 0;
+
+	if (SOCKET_ERROR == setsockopt(_listenSocket, SOL_SOCKET, SO_LINGER, (char*)&lingerOption, sizeof(lingerOption))) {
+		std::cout << "linger error";
+		return false;
+	}
+
 
 	SOCKADDR_IN clientAddr;
 	clientAddr.sin_family = AF_INET;
@@ -38,6 +70,8 @@ bool ServerCore::Init(short serverPort)
 
 void ServerCore::MainLoop()
 {
+	//Init(SERVER_PORT);
+
 	while (true) {
 		ClientAccept();
 	}
@@ -50,31 +84,36 @@ void ServerCore::ClientAccept()
 	SOCKADDR_IN clientAddr;
 	INT addrSize = sizeof(SOCKADDR_IN);
 
-	SOCKET clientSocket = WSAAccept(_listenSocket, reinterpret_cast<sockaddr*>(&clientAddr), &addrSize, NULL, NULL);
+	SOCKET clientSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 	if (INVALID_SOCKET == clientSocket) {
-		std::cout << "WSAAccept Error";
 		return;
 	}
 
-	std::unique_ptr<Session> session = std::make_unique<Session>(_sessionId++, clientSocket);
+	char buffer[1024] = {};
+	ExpOver acceptOver;
+	DWORD recvBytes = 0;
 
-	// 굳이 unique_ptr로 만들어 놓고 왜 일반포인터?
-	// 
-	// 1. sessions의 session과 ExpOver의 session을 독립적으로 동작하게하기 위해
-	//    (ExpOver의 session은 아직 비동기 IO 작업을 수행중인데 sessions에서는 session을 지워버릴 수 있음)
-	// 
-	// 2. session 삭제 시 안전성 관리 
-	//    (sessions에서 session을 삭제할 때 session을 참조하는 ExpOver를 먼저 정리해줄 수 있음)
-	// 
-	// 3. 쓰기 편함
+	if (not AcceptEx(_listenSocket, clientSocket, acceptOver.GetBuffer(), 0,
+		sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16,
+		OUT & recvBytes, acceptOver.GetOverPtr()))
+	{
+		int error = WSAGetLastError();
+		if (WSA_IO_PENDING != error) {
+			errorDisplay("WSAAccept : ", error);
+			return;
+		}
+	}
 
-	// 위의 복합적 이유로 비동기 IO작업에는 일반포인터를 사용하는 것이 좋다!
-	// Smart Pointer는 객체의 소유권 및 생명주기 관리 용도로만 사용하는 게 좋다
-	Session* sessionPtr = session.get();
+	DWORD flags = 0;
 
-	_sessions[session->GetSessionId()] = std::move(session);
+	if (SOCKET_ERROR == WSAGetOverlappedResult(_listenSocket, acceptOver.GetOverPtr(), &recvBytes, TRUE, &flags)) {
+		std::cerr << "WSAGetOverlappedResult failed" << std::endl;
+		closesocket(_listenSocket);
+		WSACleanup();
+		return;
+	}
 
-	ConnectRecvCall(sessionPtr->GetSocket());
+	AcceptCallback(clientSocket);
 }
 
 void ServerCore::ConnectRecvCall(SOCKET clientSocket)
@@ -168,6 +207,29 @@ void ServerCore::SendCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver
 		delete sendOver;
 		return;
 	}
+}
+
+void ServerCore::AcceptCallback(SOCKET clientSocket)
+{
+	std::unique_ptr<Session> session = std::make_unique<Session>(gServerCore->_sessionId++, clientSocket);
+
+	// 굳이 unique_ptr로 만들어 놓고 왜 일반포인터?
+	// 
+	// 1. sessions의 session과 ExpOver의 session을 독립적으로 동작하게하기 위해
+	//    (ExpOver의 session은 아직 비동기 IO 작업을 수행중인데 sessions에서는 session을 지워버릴 수 있음)
+	// 
+	// 2. session 삭제 시 안전성 관리 
+	//    (sessions에서 session을 삭제할 때 session을 참조하는 ExpOver를 먼저 정리해줄 수 있음)
+	// 
+	// 3. 쓰기 편함
+
+	// 위의 복합적 이유로 비동기 IO작업에는 일반포인터를 사용하는 것이 좋다!
+	// Smart Pointer는 객체의 소유권 및 생명주기 관리 용도로만 사용하는 게 좋다
+	Session* sessionPtr = session.get();
+
+	gServerCore->_sessions[session->GetSessionId()] = std::move(session);
+
+	gServerCore->ConnectRecvCall(sessionPtr->GetSocket());
 }
 
 void ServerCore::errorDisplay(const char* msg, int err_no)

@@ -6,7 +6,7 @@
 
 #pragma comment (lib, "WS2_32.LIB")
 
-constexpr short SERVER_PORT = 3000;
+constexpr short SERVER_PORT = 7777;
 char SERVER_ADDR[32] = {};
 
 #define ID_EDIT 101
@@ -82,7 +82,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     ShutdownGdiPlus();
 
-    return Message.wParam;
+    return static_cast<int>(Message.wParam);
 }
 
 RECT WinSize;
@@ -144,10 +144,10 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                 DestroyWindow(hButton);
 
                 // Socket Setting(Connect)
-                if (WSAStartup(MAKEWORD(2, 0), &WSAData) != 0)
+                if (WSAStartup(MAKEWORD(2, 2), &WSAData))
                     return 0;
 
-                clientSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, 0);
+                clientSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 
                 serverAddr.sin_family = AF_INET;
                 serverAddr.sin_port = htons(SERVER_PORT);
@@ -200,18 +200,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         break;
 
     case WM_KEYDOWN:
-        sendKeyEvent(clientSocket, wp);
-
-        //Recv
-        recvWsabuf[0].buf = reinterpret_cast<CHAR*>(tempPos);
-        recvWsabuf[0].len = static_cast<ULONG>(recvTotalBytes);
-
-        WSARecv(clientSocket, recvWsabuf, 1, &recvBytes, &recvFlag, NULL, NULL);
-        if (recvBytes == recvTotalBytes)
-        {
-            pieceXpos = ntohl(tempPos[0]);
-            pieceYpos = ntohl(tempPos[1]);
-        }
+        
 
         InvalidateRect(hwnd, NULL, FALSE);
         UpdateWindow(hwnd);

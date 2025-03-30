@@ -2,13 +2,9 @@
 
 #pragma comment (lib, "WS2_32.LIB")
 
-// 1. Connect Packet, DisConnect Packet
-// 2. Packet贸府 备泅 
-// 3. Object Class 沥府
-// 4. client, server main loop 沥府
-
 int main()
 {
+	gServerCore->Init(SERVER_PORT);
 	gServerCore->MainLoop();
 
 	//while (true)

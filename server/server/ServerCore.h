@@ -1,6 +1,7 @@
 #pragma once
 
 #include <WinSock2.h>
+#include <mswsock.h>
 #include <unordered_map>
 #include <memory>
 
@@ -8,8 +9,16 @@
 #include "ExpOver.h"
 #include "Packet.h"
 
+constexpr short SERVER_PORT = 7777;
+
 class ServerCore
 {
+public:
+	static LPFN_ACCEPTEX AcceptEx;
+
+public:
+	bool BindAcceptEx(SOCKET socket, GUID guid, LPVOID* fn);
+
 public:
 	ServerCore() : _listenSocket(INVALID_SOCKET), _sessionId(0)
 	{
@@ -28,6 +37,8 @@ public:
 
 	static void CALLBACK RecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag);
 	static void CALLBACK SendCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag);
+
+	static void CALLBACK AcceptCallback(SOCKET clientSocket);
 
 	static void errorDisplay(const char* msg, int err_no);
 
