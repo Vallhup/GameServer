@@ -52,4 +52,7 @@ struct WindowInfo
 	bool	windowed;		// 전체화면(false) & 창모드(true)
 };
 
+#define DEVICE GEngine->GetDevice()->GetDevice()
+#define CMD_LIST GEngine->GetCmdQueue()->GetCmdList()
+
 extern unique_ptr<class Engine> GEngine;

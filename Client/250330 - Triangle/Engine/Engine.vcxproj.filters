@@ -30,6 +30,9 @@
     <ClCompile Include="SwapChain.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="RootSignature.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -51,6 +54,9 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="SwapChain.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="RootSignature.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>

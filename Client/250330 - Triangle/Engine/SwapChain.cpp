@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "SwapChain.h"
-#include "Device.h"
+#include "Engine.h"
 
 void SwapChain::Init(const WindowInfo& info, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
 {
@@ -68,7 +68,7 @@ void SwapChain::CreateRenderTargetView(ComPtr<ID3D12Device> device)
 		.NodeMask = 0
 	};
 
-	device->CreateDescriptorHeap(&rtvDesc, IID_PPV_ARGS(&_rtvHeap));
+	DEVICE->CreateDescriptorHeap(&rtvDesc, IID_PPV_ARGS(&_rtvHeap));
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapBegin = _rtvHeap->GetCPUDescriptorHandleForHeapStart();
 
