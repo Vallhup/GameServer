@@ -1,7 +1,24 @@
 #include "pch.h"
 #include "SwapChain.h"
+#include "Device.h"
 
-void SwapChain::Init(const WindowInfo& info, ComPtr<IDXGIFactory> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
+void SwapChain::Init(const WindowInfo& info, ComPtr<ID3D12Device> device, ComPtr<IDXGIFactory> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
+{
+	CreateSwapChain(info, dxgi, cmdQueue);
+	CreateRenderTargetView(device);
+}
+
+void SwapChain::Present()
+{
+	_swapChain->Present(0, 0);	// 첫 인자 - 수직 동기화 끄기(0), 켜기(1)
+}
+
+void SwapChain::SwapIndex()
+{
+	_backbufferIndex = (_backbufferIndex + 1) % SWAP_CHAIN_BUFFER_COUNT;
+}
+
+void SwapChain::CreateSwapChain(const WindowInfo& info, ComPtr<IDXGIFactory> dxgi, ComPtr<ID3D12CommandQueue> cmdQueue)
 {
 	_swapChain.Reset();
 
@@ -36,15 +53,28 @@ void SwapChain::Init(const WindowInfo& info, ComPtr<IDXGIFactory> dxgi, ComPtr<I
 	dxgi->CreateSwapChain(cmdQueue.Get(), &swapDesc, &_swapChain);
 
 	for (int32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
-		_swapChain->GetBuffer(i, IID_PPV_ARGS(&_renderTargets[i]));
+		_swapChain->GetBuffer(i, IID_PPV_ARGS(&_rtvBuffer[i]));
 }
 
-void SwapChain::Present()
+void SwapChain::CreateRenderTargetView(ComPtr<ID3D12Device> device)
 {
-	_swapChain->Present(0, 0);	// 첫 인자 - 수직 동기화 끄기(0), 켜기(1)
-}
+	int32 rtvHeapSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-void SwapChain::SwapIndex()
-{
-	_backbufferIndex = (_backbufferIndex + 1) % SWAP_CHAIN_BUFFER_COUNT;
+	D3D12_DESCRIPTOR_HEAP_DESC rtvDesc =
+	{
+		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+		.NumDescriptors = SWAP_CHAIN_BUFFER_COUNT,
+		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+		.NodeMask = 0
+	};
+
+	device->CreateDescriptorHeap(&rtvDesc, IID_PPV_ARGS(&_rtvHeap));
+
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapBegin = _rtvHeap->GetCPUDescriptorHandleForHeapStart();
+
+	for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
+	{
+		_rtvHandle[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeapBegin, i * rtvHeapSize);
+		device->CreateRenderTargetView(_rtvBuffer[i].Get(), nullptr, _rtvHandle[i]);
+	}
 }
