@@ -33,11 +33,13 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "d3dcompiler")
 
 // 각종 typedef
-using int16 = __int16;
-using int32 = __int32;
-using int64 = __int64;
-using uint32 = unsigned __int32;
-using uint64 = unsigned __int64;
+using int16		= __int16;
+using int32		= __int32;
+using int64		= __int64;
+using uint8		= unsigned __int8;
+using uint16	= unsigned __int16;
+using uint32	= unsigned __int32;
+using uint64	= unsigned __int64;
 
 enum
 {
@@ -52,7 +54,13 @@ struct WindowInfo
 	bool	windowed;		// 전체화면(false) & 창모드(true)
 };
 
-#define DEVICE GEngine->GetDevice()->GetDevice()
-#define CMD_LIST GEngine->GetCmdQueue()->GetCmdList()
+struct Vertex {
+	XMFLOAT3 pos;
+	XMFLOAT4 color;
+};
+
+#define DEVICE			GEngine->GetDevice()->GetDevice()
+#define CMD_LIST		GEngine->GetCmdQueue()->GetCmdList()
+#define ROOT_SIGNATURE	GEngine->GetRootSignature()->GetSignature()
 
 extern unique_ptr<class Engine> GEngine;

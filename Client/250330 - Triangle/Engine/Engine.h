@@ -4,6 +4,8 @@
 #include "CommandQueue.h"
 #include "SwapChain.h"
 #include "RootSignature.h"
+#include "Mesh.h"
+#include "Shader.h"
 
 class Engine
 {
@@ -30,4 +32,6 @@ private:
 	shared_ptr<CommandQueue>		_cmdQueue;
 	shared_ptr<SwapChain>			_swapChain;
 	shared_ptr<RootSignature>		_rootSignature;
+	shared_ptr<Mesh>				_mesh;
+	shared_ptr<Shader>				_shader;
 };

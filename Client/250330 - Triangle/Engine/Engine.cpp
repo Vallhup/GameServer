@@ -13,11 +13,21 @@ void Engine::Init(const WindowInfo& info)
 	_cmdQueue = make_shared<CommandQueue>();
 	_swapChain = make_shared<SwapChain>();
 	_rootSignature = make_shared<RootSignature>();
+	_mesh = make_shared<Mesh>();
+	_shader = make_shared<Shader>();
 
 	_device->Init();
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
 	_swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
 	_rootSignature->Init(_device->GetDevice());
+	
+	vector<Vertex> vec;
+	_mesh->MakeTriangles(vec);
+	_mesh->Init(vec);
+
+	_shader->Init(L"..\\Resources\\Shader\\default.hlsli");
+
+	_cmdQueue->WaitSync();
 }
 
 void Engine::Render()
@@ -25,6 +35,8 @@ void Engine::Render()
 	RenderBegin();
 
 	// TODO
+	_shader->Update();
+	_mesh->Render();
 
 	RenderEnd();
 }
