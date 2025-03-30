@@ -13,6 +13,7 @@ public:
 	void WaitSync();
 
 	ComPtr<ID3D12CommandQueue> GetCmdQueue() { return _cmdQueue; }
+	ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return _cmdList; }
 
 private:
 	ComPtr<ID3D12GraphicsCommandList>	_cmdList;

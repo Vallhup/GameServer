@@ -11,6 +11,10 @@ public:
 
 	void ResizeWindow(int32 width, int32 height);
 
+	shared_ptr<class Device> GetDevice() { return _device; }
+	shared_ptr<class CommandQueue> GetCmdQueue() { return _cmdQueue; }
+	shared_ptr<class SwapChain>	GetSwapChain() { return	_swapChain; }
+
 private:
 	WindowInfo		_window;
 	D3D12_VIEWPORT	_viewPort = {};
