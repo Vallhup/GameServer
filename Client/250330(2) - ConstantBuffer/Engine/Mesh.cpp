@@ -2,8 +2,11 @@
 #include "Mesh.h"
 #include "Engine.h"
 
-void Mesh::Init(vector<Vertex>& vec)
+void Mesh::Init()
 {
+	MakeTriangle();
+	vector<Vertex> vec = triangle;
+
 	_vertexCount = static_cast<uint32>(vec.size());
 	uint32 bufferSize = _vertexCount * sizeof(Vertex);
 
@@ -33,45 +36,58 @@ void Mesh::Render()
 {
 	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);		// 정점들 연결 상태
 	CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView);						// Slot: (0 ~ 15)
+
+	// TODO
+	// 1) Buffer에 데이터 세팅
+	// 2) Buffer의 주소를 register에 전송
+	GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
+	GEngine->GetConstantBuffer()->PushData(1, &_transform, sizeof(_transform));
+
 	CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
 }
 
-void Mesh::MakeTriangles(vector<Vertex>& v)
+void Mesh::MakeTriangle()
 {
 	Vertex data;
-	data.pos = XMFLOAT3(0.0f, -0.75f, 0.5f);
+
+	data.pos = XMFLOAT3(0.2f, -0.15f, 0.5f);
 	data.color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	v.push_back(data);
+	triangle.push_back(data);
 
-	data.pos = XMFLOAT3(-0.8f, -0.75f, 0.5f);
+	data.pos = XMFLOAT3(-0.2f, -0.15f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	v.push_back(data);
+	triangle.push_back(data);
 
-	data.pos = XMFLOAT3(-0.4f, 0.0f, 0.5f);
+	data.pos = XMFLOAT3(0.0f, 0.2f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	v.push_back(data);
+	triangle.push_back(data);
+}
 
-	data.pos = XMFLOAT3(0.8f, -0.75f, 0.5f);
+void Mesh::MakeRectangle()
+{
+	Vertex data;
+
+	data.pos = XMFLOAT3(0.2f, -0.2f, 0.5f);
 	data.color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	v.push_back(data);
+	rectangle.push_back(data);
 
-	data.pos = XMFLOAT3(0.0f, -0.75f, 0.5f);
+	data.pos = XMFLOAT3(-0.2f, -0.2f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	v.push_back(data);
+	rectangle.push_back(data);
 
-	data.pos = XMFLOAT3(0.4f, 0.0f, 0.5f);
+	data.pos = XMFLOAT3(-0.2f, 0.2f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	v.push_back(data);
+	rectangle.push_back(data);
 
-	data.pos = XMFLOAT3(0.4f, 0.0f, 0.5f);
+	data.pos = XMFLOAT3(0.2f, -0.2f, 0.5f);
 	data.color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	v.push_back(data);
+	rectangle.push_back(data);
 
-	data.pos = XMFLOAT3(-0.4f, 0.0f, 0.5f);
-	data.color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	v.push_back(data);
-
-	data.pos = XMFLOAT3(0.0f, 0.75f, 0.5f);
+	data.pos = XMFLOAT3(-0.2f, 0.2f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	v.push_back(data);
+	rectangle.push_back(data);
+
+	data.pos = XMFLOAT3(0.2f, 0.2f, 0.5f);
+	data.color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+	rectangle.push_back(data);
 }

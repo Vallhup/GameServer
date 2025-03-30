@@ -3,8 +3,12 @@
 
 void RootSignature::Init(ComPtr<ID3D12Device> device)
 {
-	D3D12_ROOT_SIGNATURE_DESC sigDesc = CD3DX12_ROOT_SIGNATURE_DESC(D3D12_DEFAULT);		// D3D12_DEFAULT 인자는 아무것도 안하고 공간만 할당받음
-	sigDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;		// 입력 조립기 단계
+	CD3DX12_ROOT_PARAMETER param[2];
+	param[0].InitAsConstantBufferView(0); // 0번 -> b0 -> CBV;
+	param[1].InitAsConstantBufferView(1); // 1번 -> b1 -> CBV;
+
+	D3D12_ROOT_SIGNATURE_DESC sigDesc = CD3DX12_ROOT_SIGNATURE_DESC(2, param);		// 2개짜리 배열 param 넘기기
+	sigDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;	// 입력 조립기 단계
 
 	ComPtr<ID3DBlob> blobSignature;
 	ComPtr<ID3DBlob> blobError;

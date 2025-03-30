@@ -15,17 +15,18 @@ void Engine::Init(const WindowInfo& info)
 	_rootSignature = make_shared<RootSignature>();
 	_mesh = make_shared<Mesh>();
 	_shader = make_shared<Shader>();
+	_constantBuffer = make_shared<ConstantBuffer>();
 
 	_device->Init();
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
 	_swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
 	_rootSignature->Init(_device->GetDevice());
 	
-	vector<Vertex> vec;
-	_mesh->MakeTriangles(vec);
-	_mesh->Init(vec);
+	_mesh->Init();
 
 	_shader->Init(L"..\\Resources\\Shader\\default.hlsli");
+
+	_constantBuffer->Init(sizeof(Transform), 256);
 
 	_cmdQueue->WaitSync();
 }
@@ -36,7 +37,50 @@ void Engine::Render()
 
 	// TODO
 	_shader->Update();
-	_mesh->Render();
+
+	/*{
+		Transform t;
+		t.offset = XMFLOAT3(-0.7f, 0.0f, 0.0f);
+		_mesh->SetTransform(t);
+
+		_mesh->Render();
+	}
+
+	{
+		Transform t;
+		t.offset = XMFLOAT3(0.7f, 0.0f, 0.0f);
+		_mesh->SetTransform(t);
+
+		_mesh->Render();
+	}
+
+	{
+		Transform t;
+		t.offset = XMFLOAT3(0.0f, 0.7f, 0.0f);
+		_mesh->SetTransform(t);
+
+		_mesh->Render();
+	}
+
+	{
+		Transform t;
+		t.offset = XMFLOAT3(0.0f, -0.7f, 0.0f);
+		_mesh->SetTransform(t);
+
+		_mesh->Render();
+	}*/
+
+	for (int i = 0; i < 9; ++i)
+	{
+		for (int j = 0; j < 9; ++j)
+		{
+			Transform t;
+			t.offset = XMFLOAT3(-0.8f + (0.2f * i), -0.8f + (0.2f * j), 0.0f);
+			_mesh->SetTransform(t);
+
+			_mesh->Render();
+		}
+	}
 
 	RenderEnd();
 }

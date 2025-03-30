@@ -59,6 +59,10 @@ struct Vertex {
 	XMFLOAT4 color;
 };
 
+struct Transform {
+	XMFLOAT3 offset;
+};
+
 #define DEVICE			GEngine->GetDevice()->GetDevice()
 #define CMD_LIST		GEngine->GetCmdQueue()->GetCmdList()
 #define ROOT_SIGNATURE	GEngine->GetRootSignature()->GetSignature()
