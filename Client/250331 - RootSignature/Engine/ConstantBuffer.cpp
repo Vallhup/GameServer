@@ -23,6 +23,7 @@ void ConstantBuffer::Init(uint32 size, uint32 count)
 	_elementCount = count;
 
 	CreateBuffer();
+	CreateView();
 }
 
 void ConstantBuffer::Clear()
@@ -48,6 +49,11 @@ D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetGpuVirtualAddress(uint32 index)
 	return objCBAddress;
 }
 
+D3D12_CPU_DESCRIPTOR_HANDLE ConstantBuffer::GetCpuHandle(uint32 index)
+{
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE(_cpuHandleBegin, index * _handleIncrementSize);
+}
+
 void ConstantBuffer::CreateBuffer()
 {
 	uint32 bufferSize = _elementSize * _elementCount;
@@ -63,4 +69,30 @@ void ConstantBuffer::CreateBuffer()
 		IID_PPV_ARGS(&_cbvBuffer));
 
 	_cbvBuffer->Map(0, nullptr, reinterpret_cast<void**>(&_mappedBuffer));
+}
+
+void ConstantBuffer::CreateView()
+{
+	D3D12_DESCRIPTOR_HEAP_DESC cbvDesc = {						// 어떤식으로 CBV Heap을 만들건지 정의
+		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		.NumDescriptors = _elementCount,
+		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+	};
+	DEVICE->CreateDescriptorHeap(&cbvDesc, IID_PPV_ARGS(&_cbvHeap));
+
+	_cpuHandleBegin = _cbvHeap->GetCPUDescriptorHandleForHeapStart();
+	_handleIncrementSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	// GetDescriptorHandleIncrementSize -> 각 GPU사양마다 조금씩 달라지기 때문에 반드시 이렇게 꺼내와야함
+
+	for (uint32 i = 0; i < _elementCount; ++i)
+	{
+		D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle = GetCpuHandle(i);
+
+		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {
+			.BufferLocation = _cbvBuffer->GetGPUVirtualAddress() + static_cast<uint64>(_elementSize) * i,
+			.SizeInBytes = _elementSize
+		};
+
+		DEVICE->CreateConstantBufferView(&cbvDesc, cbvHandle);
+	}
 }
