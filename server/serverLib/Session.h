@@ -16,16 +16,14 @@ class Session
 {
 public:
 	Session() = delete;
-	Session(int sessionId, SOCKET s) : _sessionId(sessionId), _socket(s)
+	Session(int sessionId, SOCKET s) : _sessionId(sessionId), _socket(s), _pos{1, 1}
 	{
-		_pos._xPos = 1;
-		_pos._yPos = 1;
 	}
 
 	~Session() { closesocket(_socket); }
 
 public:
-	void PacketProcessing(Session* session, Packet& packet);
+	void PacketProcessing(Session* session, Packet* packet);
 
 public:
 	// Getter

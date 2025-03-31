@@ -18,14 +18,13 @@ enum MoveDirection : int {
 	RIGHT = 3
 };
 
+#pragma pack(push, 1)
 // 실제 전송되는 Data Format
 class Packet
 {
 public:
-	Packet() = default;
-	Packet(int packetType, int sessionId, size_t dataSize);
-
-	virtual ~Packet() = default;
+	Packet();
+	Packet(int packetType, int sessionId, int dataSize);
 
 public:
 	// Getter
@@ -50,6 +49,8 @@ public:
 
 public:
 	Pos GetPos() const { return _startPos; }
+
+	
 
 private:
 	Pos _startPos;
@@ -84,3 +85,4 @@ private:
 	Pos  _pos;
 	bool _isAvatar;
 };
+#pragma pack(pop)

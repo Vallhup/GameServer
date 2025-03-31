@@ -10,13 +10,14 @@ class Packet;
 class ExpOver
 {
 public:
+	// Connect Recv 持失切
 	ExpOver();
 
 	// Recv 持失切
 	ExpOver(Session* session);
 	
 	// Send 持失切
-	ExpOver(Session* session, const Packet& packet);
+	ExpOver(Session* session, Packet* packet);
 
 public:
 	LPWSAOVERLAPPED	GetOverPtr() { return &_over; }

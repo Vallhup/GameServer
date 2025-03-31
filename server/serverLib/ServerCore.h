@@ -13,7 +13,7 @@ public:
 	bool BindAcceptEx(SOCKET socket, GUID guid, LPVOID* fn);
 
 public:
-	ServerCore() : _listenSocket(INVALID_SOCKET), _sessionId(0)
+	ServerCore() : _listenSocket(INVALID_SOCKET), _sessionId(0), _totalReceived(0), _packetSize(0)
 	{
 	}
 	
@@ -21,12 +21,8 @@ public:
 	void MainLoop();
 	void ClientAccept();
 
-	void ConnectRecvCall(SOCKET clientSocket);
-
 	void RecvCall(Session* session) const;
-	void SendCall(Session* session, const Packet& packet) const;
-
-	static void CALLBACK ConnectRecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag);
+	void SendCall(Session* session, Packet* packet) const;
 
 	static void CALLBACK RecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag);
 	static void CALLBACK SendCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag);
@@ -38,6 +34,9 @@ public:
 private:
 	SOCKET _listenSocket;
 	std::unordered_map<int, std::unique_ptr<Session>> _sessions;
+	std::vector<Packet> _recvBuffer = {};
+	size_t _totalReceived;
+	size_t _packetSize;
 	int _sessionId;
 
 };

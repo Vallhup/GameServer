@@ -82,8 +82,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     //return static_cast<int>(Message.wParam);
     }
     
+    AllocConsole();
+
+    FILE* fpOut = nullptr;
+    FILE* fpIn = nullptr;
+
+    // 표준 출력 연결
+    freopen_s(&fpOut, "CONOUT$", "w", stdout);
+
+    // 표준 입력 연결
+    freopen_s(&fpIn, "CONIN$", "r", stdin);
+
+    char serverAddr[32];
+
+    std::cout << "Input Server Address : ";
+    std::cin.getline(serverAddr, sizeof(serverAddr));
+    
     gClientCore->Init(hInstance, nCmdShow);
+    gClientCore->ServerConnect(serverAddr, 7777);
     gClientCore->MainLoop();
+
+    FreeConsole();
+
     gClientCore->Shutdown();
 
     return static_cast<int>(gClientCore->GetClientMessage().wParam);
