@@ -16,17 +16,16 @@ void Engine::Init(const WindowInfo& info)
 	_mesh = make_shared<Mesh>();
 	_shader = make_shared<Shader>();
 	_constantBuffer = make_shared<ConstantBuffer>();
+	_tableDescHeap = make_shared<TableDescriptorHeap>();
 
 	_device->Init();
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
 	_swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
 	_rootSignature->Init(_device->GetDevice());
-
 	_mesh->Init();
-
 	_shader->Init(L"..\\Resources\\Shader\\default.hlsli");
-
 	_constantBuffer->Init(sizeof(Transform), 256);
+	_tableDescHeap->Init(256);
 
 	_cmdQueue->WaitSync();
 }

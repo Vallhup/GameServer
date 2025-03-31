@@ -7,6 +7,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "ConstantBuffer.h"
+#include "TableDescriptorHeap.h"
 
 class Engine
 {
@@ -19,11 +20,12 @@ public:
 
 	void ResizeWindow(int32 width, int32 height);
 
-	shared_ptr<Device>			GetDevice() { return _device; }
-	shared_ptr<CommandQueue>	GetCmdQueue() { return _cmdQueue; }
-	shared_ptr<SwapChain>		GetSwapChain() { return	_swapChain; }
-	shared_ptr<RootSignature>	GetRootSignature() { return _rootSignature; }
-	shared_ptr<ConstantBuffer>	GetConstantBuffer() { return _constantBuffer; }
+	shared_ptr<Device>				GetDevice() { return _device; }
+	shared_ptr<CommandQueue>		GetCmdQueue() { return _cmdQueue; }
+	shared_ptr<SwapChain>			GetSwapChain() { return	_swapChain; }
+	shared_ptr<RootSignature>		GetRootSignature() { return _rootSignature; }
+	shared_ptr<ConstantBuffer>		GetConstantBuffer() { return _constantBuffer; }
+	shared_ptr<TableDescriptorHeap> GetTableDescHeap() { return _tableDescHeap; }
 
 private:
 	WindowInfo		_window;
@@ -37,4 +39,5 @@ private:
 	shared_ptr<Mesh>				_mesh;
 	shared_ptr<Shader>				_shader;
 	shared_ptr<ConstantBuffer>		_constantBuffer;
+	shared_ptr<TableDescriptorHeap>	_tableDescHeap;
 };
