@@ -1,7 +1,6 @@
 #pragma once
 
-#include <algorithm>
-#include "Session.h"
+#include "pch.h"
 
 enum PacketType : int {
 	// 시스템 관리 (0 ~ 9) (Connect, Disconnect 등)
@@ -49,6 +48,9 @@ public:
 	// Server 생성자
 	ConnectPacket(int sessionId, Pos startPos);
 
+public:
+	Pos GetPos() const { return _startPos; }
+
 private:
 	Pos _startPos;
 
@@ -75,6 +77,7 @@ public:
 
 public:
 	int GetDirection() const { return _direction; }
+	Pos GetPos() const { return _pos; }
 
 private:
 	int  _direction;

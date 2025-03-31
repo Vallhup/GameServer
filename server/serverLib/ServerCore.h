@@ -1,15 +1,8 @@
 #pragma once
 
-#include <WinSock2.h>
-#include <mswsock.h>
-#include <unordered_map>
-#include <memory>
+#include "pch.h"
 
-#include "Session.h"
-#include "ExpOver.h"
-#include "Packet.h"
-
-constexpr short SERVER_PORT = 7777;
+extern const short SERVER_PORT;
 
 class ServerCore
 {

@@ -1,11 +1,6 @@
 #pragma once
 
-#include <windows.h>
-#include <gdiplus.h>
-#include <tchar.h>
-#include <algorithm>
-
-#include "Macro.h"
+#include "pch.h"
 
 class RenderComponent
 {

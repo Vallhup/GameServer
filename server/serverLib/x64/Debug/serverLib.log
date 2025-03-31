@@ -1,0 +1,10 @@
+﻿  pch.cpp
+  ExpOver.cpp
+  Packet.cpp
+  ServerCore.cpp
+C:\Users\Hadenpel\Desktop\GameServer\server\serverLib\ServerCore.cpp(82,14): warning C4101: 'clientAddr' :참조되지 않은 지역 변수입니다.
+  (소스 파일 '/ServerCore.cpp'을(를) 컴파일하는 중)
+  
+  Session.cpp
+  코드를 생성하고 있습니다...
+  serverLib.vcxproj -> C:\Users\Hadenpel\Desktop\GameServer\server\x64\Debug\serverLib.lib

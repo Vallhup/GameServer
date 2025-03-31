@@ -1,11 +1,9 @@
 #pragma once
 
-#include <WS2tcpip.h>
+#include "pch.h"
 
 class Session;
 class Packet;
-
-#pragma comment (lib, "WS2_32.LIB")
 
 // OVERLAPPED Struct 확장버전
 // 어떤 session과 packet을 연결해주는 역할

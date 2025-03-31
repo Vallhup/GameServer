@@ -1,10 +1,8 @@
 #pragma once
 
-#include <WS2tcpip.h>
+#include "pch.h"
 
 class Packet;
-
-#pragma comment (lib, "WS2_32.LIB")
 
 struct Pos
 {

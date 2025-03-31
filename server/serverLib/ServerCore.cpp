@@ -1,8 +1,7 @@
-#include <iostream>
-
-#include "ServerCore.h"
+#include "pch.h"
 
 ServerCore* gServerCore = new ServerCore;
+const short SERVER_PORT = 7777;
 
 LPFN_ACCEPTEX ServerCore::AcceptEx{ nullptr };
 
@@ -48,7 +47,6 @@ bool ServerCore::Init(short serverPort)
 		std::cout << "linger error";
 		return false;
 	}
-
 
 	SOCKADDR_IN clientAddr;
 	clientAddr.sin_family = AF_INET;
@@ -196,15 +194,17 @@ void ServerCore::RecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver
 	recvOver->GetSession()->PacketProcessing(recvOver->GetSession(), *recvPacket);
 
 	gServerCore->RecvCall(recvOver->GetSession());
+
+	delete recvOver;
 }
 
 void ServerCore::SendCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag)
 {
 	ExpOver* sendOver = reinterpret_cast<ExpOver*>(pOver);
+	delete sendOver;
 
 	if (0 != error) {
 		closesocket(sendOver->GetSession()->GetSocket());
-		delete sendOver;
 		return;
 	}
 }

@@ -1,4 +1,4 @@
-#include "Packet.h"
+#include "pch.h"
 
 Packet::Packet(int packetType, int sessionId, size_t dataSize)
 	: _size(dataSize), _packetType(packetType), _sessionId(sessionId)
