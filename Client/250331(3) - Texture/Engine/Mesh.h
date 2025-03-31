@@ -1,5 +1,7 @@
 #pragma once
 
+class Texture;
+
 class Mesh
 {
 public:
@@ -11,6 +13,7 @@ public:
 	void SetRectangleIdx();
 
 	void SetTransform(const Transform& t) { _transform = t; }
+	void SetTexture(shared_ptr<Texture> tex) { _tex = tex; }
 
 private:
 	void CreateVertexBuffer();
@@ -31,4 +34,5 @@ private:
 	vector<uint32> rectIdx;
 
 	Transform _transform = {};
+	shared_ptr<Texture> _tex = {};
 };

@@ -10,15 +10,22 @@ public:
 	void RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect);
 	void RenderEnd();
 
+	void FlushResourceCommandQueue();
+
 	void WaitSync();
 
 	ComPtr<ID3D12CommandQueue> GetCmdQueue() { return _cmdQueue; }
 	ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return _cmdList; }
+	ComPtr<ID3D12GraphicsCommandList> GetResourceCmdList() { return _resourceCmdList; }
 
 private:
 	ComPtr<ID3D12GraphicsCommandList>	_cmdList;
 	ComPtr<ID3D12CommandAllocator>		_cmdAlloc;
 	ComPtr<ID3D12CommandQueue>			_cmdQueue;
+
+	// Reousrce ฐüทร
+	ComPtr<ID3D12CommandAllocator>		_resourceCmdAlloc;
+	ComPtr<ID3D12GraphicsCommandList>	_resourceCmdList;
 
 	ComPtr<ID3D12Fence>		_fence;
 	uint64					_fenceValue = 0;

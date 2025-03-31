@@ -4,6 +4,7 @@
 #include "CommandQueue.h"
 #include "SwapChain.h"
 #include "RootSignature.h"
+#include "Texture.h"
 #include "Mesh.h"
 #include "Shader.h"
 #include "ConstantBuffer.h"
@@ -36,8 +37,11 @@ private:
 	shared_ptr<CommandQueue>		_cmdQueue;
 	shared_ptr<SwapChain>			_swapChain;
 	shared_ptr<RootSignature>		_rootSignature;
-	shared_ptr<Mesh>				_mesh;
-	shared_ptr<Shader>				_shader;
 	shared_ptr<ConstantBuffer>		_constantBuffer;
 	shared_ptr<TableDescriptorHeap>	_tableDescHeap;
+
+	// 아래 세개는 내가 실험하기 위해 추가한 것
+	shared_ptr<Mesh>				_mesh;
+	shared_ptr<Shader>				_shader;
+	shared_ptr<Texture>				_texture;
 };

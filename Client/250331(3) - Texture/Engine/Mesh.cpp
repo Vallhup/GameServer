@@ -22,16 +22,11 @@ void Mesh::Render()
 	GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b0);
 	handle = GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
 	GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b1);
-	handle = GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
-	GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b2);
-	handle = GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
-	GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b3);
-	handle = GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
-	GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b4);			// 실제로 지금 b0 ~ b1까지 사용하고 있음
+
+	GEngine->GetTableDescHeap()->SetSRV(_tex->GetCpuHandle(), SRV_REGISTER::t0);
 
 	GEngine->GetTableDescHeap()->CommitTable();
 
-	// CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);			// Vertex data로 그리기
 	CMD_LIST->DrawIndexedInstanced(_indexCount, 1, 0, 0, 0);	// Vertex + Index data로 그리기
 }
 
@@ -41,14 +36,17 @@ void Mesh::MakeTriangle()
 
 	data.pos = XMFLOAT3(0.2f, -0.15f, 0.5f);
 	data.color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	data.uv = XMFLOAT2(1.0f, 1.0f);
 	triangle.push_back(data);
 
 	data.pos = XMFLOAT3(-0.2f, -0.15f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	data.uv = XMFLOAT2(0.0f, 1.0f);
 	triangle.push_back(data);
 
 	data.pos = XMFLOAT3(0.0f, 0.2f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	data.uv = XMFLOAT2(0.5f, 0.0f);
 	triangle.push_back(data);
 }
 
@@ -58,18 +56,22 @@ void Mesh::MakeRectangle()
 
 	data.pos = XMFLOAT3(0.5f, -0.5f, 0.5f);
 	data.color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	data.uv = XMFLOAT2(1.0f, 1.0f);
 	rectangle.push_back(data);
 
 	data.pos = XMFLOAT3(-0.5f, -0.5f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	data.uv = XMFLOAT2(0.0f, 1.0f);
 	rectangle.push_back(data);
 
 	data.pos = XMFLOAT3(-0.5f, 0.5f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	data.uv = XMFLOAT2(0.0f, 0.0f);
 	rectangle.push_back(data);
 
 	data.pos = XMFLOAT3(0.5f, 0.5f, 0.5f);
 	data.color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+	data.uv = XMFLOAT2(1.0f, 0.0f);
 	rectangle.push_back(data);
 }
 

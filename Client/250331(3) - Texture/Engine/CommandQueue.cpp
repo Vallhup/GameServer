@@ -19,10 +19,11 @@ void CommandQueue::Init(ComPtr<ID3D12Device> device, shared_ptr<class SwapChain>
 	device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&_cmdQueue));
 
 	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_cmdAlloc));
-
 	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _cmdAlloc.Get(), nullptr, IID_PPV_ARGS(&_cmdList));
-
 	_cmdList->Close();
+
+	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_resourceCmdAlloc));
+	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _resourceCmdAlloc.Get(), nullptr, IID_PPV_ARGS(&_resourceCmdList));
 
 	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence));
 	_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -76,6 +77,19 @@ void CommandQueue::RenderEnd()
 	WaitSync();					// GPU가 명령 다 처리 할때까지 CPU 대기
 
 	_swapChain->SwapIndex();	// 후면 버퍼 인덱스 바꿔치기
+}
+
+void CommandQueue::FlushResourceCommandQueue()
+{
+	_resourceCmdList->Close();
+
+	ID3D12CommandList* cmdListArr[] = { _resourceCmdList.Get() };
+	_cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
+
+	WaitSync();
+
+	_resourceCmdAlloc->Reset();
+	_resourceCmdList->Reset(_resourceCmdAlloc.Get(), nullptr);
 }
 
 void CommandQueue::WaitSync()

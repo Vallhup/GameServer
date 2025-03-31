@@ -17,15 +17,17 @@ void Engine::Init(const WindowInfo& info)
 	_shader = make_shared<Shader>();
 	_constantBuffer = make_shared<ConstantBuffer>();
 	_tableDescHeap = make_shared<TableDescriptorHeap>();
+	_texture = make_shared<Texture>();
 
 	_device->Init();
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
 	_swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
-	_rootSignature->Init(_device->GetDevice());
+	_rootSignature->Init();
 	_mesh->Init();
 	_shader->Init(L"..\\Resources\\Shader\\default.hlsli");
 	_constantBuffer->Init(sizeof(Transform), 256);
 	_tableDescHeap->Init(256);
+	_texture->Init(L"..\\Resources\\Texture\\FennecFox.jpg");
 
 	_cmdQueue->WaitSync();
 }
@@ -74,6 +76,8 @@ void Engine::Render()
 	Transform t;
 	t.offset = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	_mesh->SetTransform(t);
+
+	_mesh->SetTexture(_texture);
 
 	_mesh->Render();
 	
