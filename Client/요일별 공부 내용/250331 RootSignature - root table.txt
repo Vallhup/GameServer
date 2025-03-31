@@ -17,3 +17,7 @@ Command라인에 제출용으로 활용할거면 D3D12_DESCRIPTOR_HEAP_FLAG_SHAD
 그럼 코드에서 constantbuffer init에서 256개가 아닌 최소 512개 할당 받아야함
 
 레지스터 더 쓸거면 쉐이더에서 정의해주는게 맞음.
+
+Root argument -> Root Signature로 서명한 부분을 실제로 GPU에 데이터를 밀어 넣는 부분을 의미
+
+IndexBuffer 적용하는건, 코드보셈 별로 안어려움 직접짰음
