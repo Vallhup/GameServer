@@ -73,7 +73,7 @@ struct Vertex {
 };
 
 struct Transform {
-	XMFLOAT3 offset;
+	XMFLOAT4 offset;
 };
 
 #define DEVICE			GEngine->GetDevice()->GetDevice()

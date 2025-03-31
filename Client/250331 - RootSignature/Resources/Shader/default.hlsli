@@ -9,6 +9,21 @@ cbuffer TEST_B1 : register(b1)
     float4 offset1;
 }
 
+cbuffer TEST_B2 : register(b2)
+{
+    float4 offset2;
+}
+
+cbuffer TEST_B3 : register(b3)
+{
+    float4 offset3;
+}
+
+cbuffer TEST_B4 : register(b4)
+{
+    float4 offset4;
+}
+
 struct VS_IN
 {
     float3 pos : POSITION;

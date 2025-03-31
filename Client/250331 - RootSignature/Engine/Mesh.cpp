@@ -39,9 +39,20 @@ void Mesh::Render()
 
 	// TODO
 	// 1) Buffer에 데이터 세팅
-	// 2) Buffer의 주소를 register에 전송
-	GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
-	GEngine->GetConstantBuffer()->PushData(1, &_transform, sizeof(_transform));
+	// 2) TableDescHeap에다가 CBV 전달
+	// 3) 모두 세팅이 끝났으면 TableDescHeap 커밋
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
+	GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b0);
+	handle = GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
+	GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b1);
+	handle = GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
+	GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b2);
+	handle = GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
+	GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b3);
+	handle = GEngine->GetConstantBuffer()->PushData(0, &_transform, sizeof(_transform));
+	GEngine->GetTableDescHeap()->SetCBV(handle, CBV_REGISTER::b4);			// 실제로 지금 b0 ~ b1까지 사용하고 있음
+
+	GEngine->GetTableDescHeap()->CommitTable();
 
 	CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
 }

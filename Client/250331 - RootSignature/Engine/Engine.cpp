@@ -24,7 +24,7 @@ void Engine::Init(const WindowInfo& info)
 	_rootSignature->Init(_device->GetDevice());
 	_mesh->Init();
 	_shader->Init(L"..\\Resources\\Shader\\default.hlsli");
-	_constantBuffer->Init(sizeof(Transform), 256);
+	_constantBuffer->Init(sizeof(Transform), 512);
 	_tableDescHeap->Init(256);
 
 	_cmdQueue->WaitSync();
@@ -69,12 +69,13 @@ void Engine::Render()
 		_mesh->Render();
 	}*/
 
+	// 아래처럼 81개 그릴거면, 81 * 5개의 CBV를 만들어야함 (총 405개) -> _constantBuffer->Init(sizeof(Transform), 512);로 수정
 	for (int i = 0; i < 9; ++i)
 	{
 		for (int j = 0; j < 9; ++j)
 		{
 			Transform t;
-			t.offset = XMFLOAT3(-0.8f + (0.2f * i), -0.8f + (0.2f * j), 0.0f);
+			t.offset = XMFLOAT4(-0.8f + (0.2f * i), -0.8f + (0.2f * j), 0.0f, 0.0f);
 			_mesh->SetTransform(t);
 
 			_mesh->Render();

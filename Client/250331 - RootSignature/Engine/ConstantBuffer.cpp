@@ -31,15 +31,17 @@ void ConstantBuffer::Clear()
 	_currentIndex = 0;
 }
 
-void ConstantBuffer::PushData(int32 rootParamIndex, void* buffer, uint32 size)
+D3D12_CPU_DESCRIPTOR_HANDLE ConstantBuffer::PushData(int32 rootParamIndex, void* buffer, uint32 size)
 {
 	assert(_currentIndex < _elementSize);	// 우리가 너무 많이 사용해서 만들어준 버퍼의 크기를 벗어나는지 체크
 
 	::memcpy(&_mappedBuffer[_currentIndex * _elementSize], buffer, size);
 
-	D3D12_GPU_VIRTUAL_ADDRESS address = GetGpuVirtualAddress(_currentIndex);
-	CMD_LIST->SetGraphicsRootConstantBufferView(rootParamIndex, address);	// 레지스터에 buffer주소를 참고해서 일감을 등록
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetCpuHandle(_currentIndex);
+
 	_currentIndex++;
+
+	return cpuHandle;
 }
 
 D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetGpuVirtualAddress(uint32 index)
