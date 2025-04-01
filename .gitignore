@@ -37,3 +37,9 @@ server/client/x64/
 server/server/x64/
 server/x64/
 Client/
+
+
+*.log
+*.tlog
+*.obj
+*.recipe
