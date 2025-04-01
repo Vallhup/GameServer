@@ -55,7 +55,12 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 
 	D3D12_CPU_DESCRIPTOR_HANDLE backBufferView = _swapChain->GetBackRTV();		// 백 버퍼 꺼내 와서
 	_cmdList->ClearRenderTargetView(backBufferView, Colors::SkyBlue, 0, nullptr);		// GPU한테 백 버퍼 알려주고
-	_cmdList->OMSetRenderTargets(1, &backBufferView, FALSE, nullptr);					// 일감을 그려달라고 요청
+
+	D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = GEngine->GetDepthStencilBuffer()->GetDSVCpuHandle();
+	_cmdList->OMSetRenderTargets(1, &backBufferView, FALSE, &depthStencilView);					// 일감을 그려달라고 요청
+
+	_cmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	// Stencil도 사용하는 경우, 두번째 인자 D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL 사용
 }
 
 void CommandQueue::RenderEnd()

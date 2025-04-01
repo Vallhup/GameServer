@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "ConstantBuffer.h"
 #include "TableDescriptorHeap.h"
+#include "DepthStencilBuffer.h"
 
 class Engine
 {
@@ -27,6 +28,7 @@ public:
 	shared_ptr<RootSignature>		GetRootSignature() { return _rootSignature; }
 	shared_ptr<ConstantBuffer>		GetConstantBuffer() { return _constantBuffer; }
 	shared_ptr<TableDescriptorHeap> GetTableDescHeap() { return _tableDescHeap; }
+	shared_ptr<DepthStencilBuffer>	GetDepthStencilBuffer() { return _depthStencilBuffer; }
 
 private:
 	WindowInfo		_window;
@@ -39,6 +41,7 @@ private:
 	shared_ptr<RootSignature>		_rootSignature;
 	shared_ptr<ConstantBuffer>		_constantBuffer;
 	shared_ptr<TableDescriptorHeap>	_tableDescHeap;
+	shared_ptr<DepthStencilBuffer>	_depthStencilBuffer;
 
 	// 아래 세개는 내가 실험하기 위해 추가한 것
 	shared_ptr<Mesh>				_mesh;

@@ -54,22 +54,22 @@ void Mesh::MakeRectangle()
 {
 	Vertex data;
 
-	data.pos = XMFLOAT3(0.3f, -0.3f, 0.5f);
+	data.pos = XMFLOAT3(0.2f, -0.2f, 0.5f);
 	data.color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	data.uv = XMFLOAT2(1.0f, 1.0f);
 	rectangle.push_back(data);
 
-	data.pos = XMFLOAT3(-0.3f, -0.3f, 0.5f);
+	data.pos = XMFLOAT3(-0.2f, -0.2f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	data.uv = XMFLOAT2(0.0f, 1.0f);
 	rectangle.push_back(data);
 
-	data.pos = XMFLOAT3(-0.3f, 0.3f, 0.5f);
+	data.pos = XMFLOAT3(-0.2f, 0.2f, 0.5f);
 	data.color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	data.uv = XMFLOAT2(0.0f, 0.0f);
 	rectangle.push_back(data);
 
-	data.pos = XMFLOAT3(0.3f, 0.3f, 0.5f);
+	data.pos = XMFLOAT3(0.2f, 0.2f, 0.5f);
 	data.color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
 	data.uv = XMFLOAT2(1.0f, 0.0f);
 	rectangle.push_back(data);
