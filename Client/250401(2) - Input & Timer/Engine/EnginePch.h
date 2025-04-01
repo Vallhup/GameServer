@@ -107,5 +107,6 @@ struct Transform {
 #define RESOURCE_CMD_LIST	GEngine->GetCmdQueue()->GetResourceCmdList()
 
 #define INPUT				GEngine->GetInput()
+#define DELTA_TIME			GEngine->GetTimer()->GetDeltaTime()
 
 extern unique_ptr<class Engine> GEngine;

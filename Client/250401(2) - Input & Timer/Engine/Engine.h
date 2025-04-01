@@ -12,6 +12,7 @@
 #include "DepthStencilBuffer.h"
 
 #include "Input.h"
+#include "Timer.h"
 
 class Engine
 {
@@ -35,6 +36,10 @@ public:
 	shared_ptr<DepthStencilBuffer>	GetDepthStencilBuffer() { return _depthStencilBuffer; }
 
 	shared_ptr<Input>				GetInput() { return _input; }
+	shared_ptr<Timer>				GetTimer() { return _timer; }
+
+private:
+	void ShowFps();
 
 private:
 	WindowInfo		_window;
@@ -52,6 +57,7 @@ private:
 
 	// 아래 네개는 내가 실험하기 위해 추가한 것
 	shared_ptr<Input>				_input = make_shared<Input>();
+	shared_ptr<Timer>				_timer = make_shared<Timer>();
 
 	shared_ptr<Mesh>				_mesh = make_shared<Mesh>();
 	shared_ptr<Shader>				_shader = make_shared<Shader>();

@@ -23,6 +23,7 @@ void Engine::Init(const WindowInfo& info)
 	_cmdQueue->WaitSync();
 
 	_input->Init(info.hwnd);
+	_timer->Init();
 
 	ResizeWindow(info.width, info.height);
 }
@@ -39,22 +40,19 @@ void Engine::Render()
 	static Transform t;
 
 	if (INPUT->GetButton(KEY_TYPE::W))
-		t.offset.y += 0.002f;
+		t.offset.y += 1.0f * DELTA_TIME;
 	if (INPUT->GetButton(KEY_TYPE::S))
-		t.offset.y -= 0.002f;
+		t.offset.y -= 1.0f * DELTA_TIME;
 	if (INPUT->GetButton(KEY_TYPE::A))
-		t.offset.x -= 0.002f;
+		t.offset.x -= 1.0f * DELTA_TIME;
 	if (INPUT->GetButton(KEY_TYPE::D))
-		t.offset.x += 0.002f;
+		t.offset.x += 1.0f * DELTA_TIME;
 
 	_mesh->SetTransform(t);
 
 	_mesh->SetTexture(_texture);
 
 	_mesh->Render();
-		
-	
-
 
 	RenderEnd();
 }
@@ -62,6 +60,9 @@ void Engine::Render()
 void Engine::Update()
 {
 	_input->Update();
+	_timer->Update();
+
+	ShowFps();
 }
 
 void Engine::RenderBegin()
@@ -84,4 +85,14 @@ void Engine::ResizeWindow(int32 width, int32 height)
 	SetWindowPos(_window.hwnd, 0, 100, 100, width, height, 0);
 
 	_depthStencilBuffer->Init(_window);
+}
+
+void Engine::ShowFps()
+{
+	uint32 fps = _timer->GetFps();
+
+	WCHAR text[100] = L"";
+	wsprintf(text, L"FPS: %d", fps);
+
+	SetWindowText(_window.hwnd, text);
 }
