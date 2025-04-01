@@ -10,12 +10,12 @@ Packet::Packet(int packetType, int sessionId, int dataSize)
 {
 }
 
-ConnectPacket::ConnectPacket() : Packet(PACKET_CONNECT, 0, sizeof(ConnectPacket)), _startPos{0, 0}
+ConnectPacket::ConnectPacket() : Packet(PACKET_CONNECT, 0, sizeof(ConnectPacket)), _isAvatar(true), _startPos{0, 0}
 {
 }
 
-ConnectPacket::ConnectPacket(int sessionId, Pos startPos)
-	:Packet(PACKET_CONNECT, sessionId, sizeof(ConnectPacket)), _startPos{startPos._xPos, startPos._yPos}
+ConnectPacket::ConnectPacket(int sessionId, Pos startPos, bool isAvatar)
+	:Packet(PACKET_CONNECT, sessionId, sizeof(ConnectPacket)), _isAvatar(isAvatar), _startPos{ startPos._xPos, startPos._yPos }
 {
 }
 

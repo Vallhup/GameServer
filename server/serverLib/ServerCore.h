@@ -13,7 +13,7 @@ public:
 	bool BindAcceptEx(SOCKET socket, GUID guid, LPVOID* fn);
 
 public:
-	ServerCore() : _listenSocket(INVALID_SOCKET), _sessionId(0), _totalReceived(0), _packetSize(0)
+	ServerCore() : _listenSocket(INVALID_SOCKET), _sessionId(0)
 	{
 	}
 	
@@ -31,14 +31,14 @@ public:
 
 	static void errorDisplay(const char* msg, int err_no);
 
+public:
+	const std::unordered_map<int, std::unique_ptr<Session>>& GetSessions() const { return _sessions; }
+
 private:
 	SOCKET _listenSocket;
 	std::unordered_map<int, std::unique_ptr<Session>> _sessions;
-	std::vector<Packet> _recvBuffer = {};
-	size_t _totalReceived;
-	size_t _packetSize;
 	int _sessionId;
-
+	const int MAX_CLIENT = 10;
 };
 
 extern ServerCore* gServerCore;

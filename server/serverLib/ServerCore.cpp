@@ -71,11 +71,14 @@ bool ServerCore::Init(short serverPort)
 void ServerCore::MainLoop()
 {
 	while (true) {
-		std::cout << "Before ClientAccept" << std::endl;
-		ClientAccept();
-		std::cout << "Before SleepEx" << std::endl;
+		//std::cout << "Before ClientAccept" << std::endl;
+		if (_sessions.size() < MAX_CLIENT) {
+			ClientAccept();
+		}
+
+		//std::cout << "Before SleepEx" << std::endl;
 		SleepEx(0, TRUE);
-		std::cout << "After SleepEx" << std::endl;
+		//std::cout << "After SleepEx" << std::endl;
 	}
 	
 	WSACleanup();
@@ -92,14 +95,14 @@ void ServerCore::ClientAccept()
 		return;
 	}
 
-	std::cout << "Client accepted, setting up session" << std::endl;
+	//std::cout << "Client accepted, setting up session" << std::endl;
 	
 	AcceptCallback(clientSocket);
 }
 
 void ServerCore::RecvCall(Session* session) const
 {
-	std::cout << "Recv" << std::endl;
+	//std::cout << "Recv" << std::endl;
 
 	ExpOver* recvOver = new ExpOver(session);
 	DWORD recvFlag = 0;
@@ -114,7 +117,7 @@ void ServerCore::RecvCall(Session* session) const
 				delete recvOver;
 			}
 			else {
-				std::cout << "WSARecv started successfully." << std::endl;
+				//std::cout << "WSARecv started successfully." << std::endl;
 			}
 		}
 	}
@@ -123,7 +126,7 @@ void ServerCore::RecvCall(Session* session) const
 
 void ServerCore::SendCall(Session* session, Packet* packet) const
 {
-	std::cout << "Send" << std::endl;
+	//std::cout << "Send" << std::endl;
 	ExpOver* sendOver = new ExpOver(session, packet);
 	DWORD sentBytes = 0;
 
@@ -136,12 +139,12 @@ void ServerCore::SendCall(Session* session, Packet* packet) const
 		}
 	}
 
-	std::cout << sentBytes << std::endl;
+	//std::cout << sentBytes << std::endl;
 }
 
 void ServerCore::RecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag)
 {
-	std::cout << "RecvCallback" << std::endl;
+	//std::cout << "RecvCallback" << std::endl;
 
 	if (error != 0) {
 		std::cout << "WSARecv Error: " << error << std::endl;
@@ -172,7 +175,7 @@ void ServerCore::RecvCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver
 
 void ServerCore::SendCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag)
 {
-	std::cout << "SendCallback" << std::endl;
+	//std::cout << "SendCallback" << std::endl;
 	ExpOver* sendOver = reinterpret_cast<ExpOver*>(pOver);
 	
 	if (0 != error) {
@@ -184,12 +187,12 @@ void ServerCore::SendCallback(DWORD error, DWORD numBytes, LPWSAOVERLAPPED pOver
 
 void ServerCore::AcceptCallback(SOCKET clientSocket)
 {
-	std::cout << "Accept" << std::endl;
+	//std::cout << "Accept" << std::endl;
 
 	std::unique_ptr<Session> session = std::make_unique<Session>(gServerCore->_sessionId++, clientSocket);
-
-	Session* sessionPtr = session.get();
 	
+	Session* sessionPtr = session.get();
+
 	gServerCore->RecvCall(sessionPtr);
 
 	gServerCore->_sessions[session->GetSessionId()] = std::move(session);

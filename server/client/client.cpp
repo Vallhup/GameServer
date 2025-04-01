@@ -114,7 +114,7 @@ RECT WinSize;
 SOCKET clientSocket;
 SOCKADDR_IN serverAddr;
 
-std::unordered_map<RenderComponent*, const WCHAR*> renderComponents;
+//std::map<RenderComponent*, const WCHAR*> renderComponents;
 
 HWND hEdit, hButton;
 

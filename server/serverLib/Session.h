@@ -24,7 +24,6 @@ public:
 
 public:
 	void PacketProcessing(Session* session, Packet* packet);
-
 public:
 	// Getter
 	SOCKET GetSocket() const { return _socket; }

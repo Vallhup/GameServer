@@ -6,6 +6,7 @@ enum PacketType : int {
 	// 시스템 관리 (0 ~ 9) (Connect, Disconnect 등)
 	PACKET_CONNECT = 1,
 	PACKET_DISCONNECT = 2,
+	PACKET_CLIENTLIST = 3,
 
 	// 게임 로직 관리 (10 ~ )
 	PACKET_MOVE = 10
@@ -45,16 +46,15 @@ public:
 	ConnectPacket();
 
 	// Server 생성자
-	ConnectPacket(int sessionId, Pos startPos);
+	ConnectPacket(int sessionId, Pos startPos, bool isAvatar);
 
 public:
 	Pos GetPos() const { return _startPos; }
-
-	
+	bool GetIsAvatar() const{ return _isAvatar; }
 
 private:
 	Pos _startPos;
-
+	bool _isAvatar;
 };
 
 class DisconnectPacket : public Packet
@@ -79,6 +79,7 @@ public:
 public:
 	int GetDirection() const { return _direction; }
 	Pos GetPos() const { return _pos; }
+	bool GetIsAvatar() const { return _isAvatar; }
 
 private:
 	int  _direction;

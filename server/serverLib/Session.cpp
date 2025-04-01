@@ -2,15 +2,24 @@
 
 void Session::PacketProcessing(Session* session, Packet* packet)
 {
-	std::cout << "PacketProcessing" << std::endl;
+	//std::cout << "PacketProcessing" << std::endl;
 
 	switch (packet->GetType()) {
 	case PACKET_CONNECT:
 	{
-		Packet* sendPacket = new ConnectPacket(_sessionId, _pos);
-		std::cout << "sendPacket session : " << sendPacket->GetSessionId();
-		// 최초 Position정보 Send 후
-		gServerCore->SendCall(session, sendPacket);
+		Packet* sendPacket = nullptr;
+		for (auto& client : gServerCore->GetSessions()) {
+			if (client.first == _sessionId) {
+				sendPacket = new ConnectPacket(client.first, _pos, true);
+			}
+			else {
+				sendPacket = new ConnectPacket(client.first, _pos, false);
+			}
+			ExpOver* sendOver = new ExpOver(client.second.get(), sendPacket);
+
+			gServerCore->SendCall(client.second.get(), sendPacket);
+		}
+
 		break;
 	}
 		
@@ -21,11 +30,22 @@ void Session::PacketProcessing(Session* session, Packet* packet)
 		SetPosition(movePacket->GetDirection());
 
 		// 결과 Send
-		Packet* sendPacket = new MovePacket(_sessionId, _pos, true);
-		ExpOver* sendOver = new ExpOver(session, sendPacket);
-		DWORD sentBytes = 0;
+		// 접속해있는 모든 Client에게 Broadcast
+		// but MovePacket을 보낸 Client에게는 true
+		// 나머지 Client에게는 false
+		Packet* sendPacket = nullptr;
+		for (auto& client : gServerCore->GetSessions()) {
+			if (client.first == _sessionId) {
+				sendPacket = new MovePacket(client.first, _pos, true);
+			}
+			else {
+				sendPacket = new MovePacket(client.first, _pos, false);
+			}
+			ExpOver* sendOver = new ExpOver(client.second.get(), sendPacket);
+			
+			gServerCore->SendCall(client.second.get(), sendPacket);
+		}
 
-		gServerCore->SendCall(session, sendPacket);
 		break;
 	}
 		
