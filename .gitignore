@@ -42,3 +42,6 @@ server/x64/
 *.tlog
 *.obj
 *.recipe
+Client/250331(3) - Texture/DX12FrameWork/x64/
+Client/250331(3) - Texture/Engine/x64/
+Client/250331(3) - Texture/Output/
