@@ -70,9 +70,9 @@ void Engine::Render()
 	}*/
 
 	// 아래처럼 81개 그릴거면, 81 * 5개의 CBV를 만들어야함 (총 405개) -> _constantBuffer->Init(sizeof(Transform), 512);로 수정
-	for (int i = 0; i < 9; ++i)
+	for (int i = 0; i < 7; ++i)
 	{
-		for (int j = 0; j < 9; ++j)
+		for (int j = 0; j < 7; ++j)
 		{
 			Transform t;
 			t.offset = XMFLOAT4(-0.8f + (0.2f * i), -0.8f + (0.2f * j), 0.0f, 0.0f);
