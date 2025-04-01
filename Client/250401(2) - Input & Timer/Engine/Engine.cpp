@@ -6,20 +6,8 @@ void Engine::Init(const WindowInfo& info)
 	_window = info;
 
 	_viewPort = { 0, 0, static_cast<FLOAT>(info.width), static_cast<FLOAT>(info.height), 0.0f, 1.0f };
-	_scissorRect = CD3DX12_RECT(0, 0, info.width, info.height);
-
-	_device = make_shared<Device>();
-	_cmdQueue = make_shared<CommandQueue>();
-	_swapChain = make_shared<SwapChain>();
-	_rootSignature = make_shared<RootSignature>();
-	_constantBuffer = make_shared<ConstantBuffer>();
-	_tableDescHeap = make_shared<TableDescriptorHeap>();
-	_depthStencilBuffer = make_shared<DepthStencilBuffer>();
-
-	_mesh = make_shared<Mesh>();
-	_shader = make_shared<Shader>();
-	_texture = make_shared<Texture>();
-
+	_scissorRect = CD3DX12_RECT(0, 0, info.width, info.height);		
+	
 	_device->Init();
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
 	_swapChain->Init(info, _device->GetDevice(), _device->GetDXGI(), _cmdQueue->GetCmdQueue());
@@ -34,32 +22,46 @@ void Engine::Init(const WindowInfo& info)
 
 	_cmdQueue->WaitSync();
 
+	_input->Init(info.hwnd);
+
 	ResizeWindow(info.width, info.height);
 }
 
 void Engine::Render()
 {
+	Update();
+
 	RenderBegin();
 
 	// TODO
 	_shader->Update();
 
-	for(int i = 0; i < 7; ++i)
-	{
-		for (int j = 0; j < 7; ++j)
-		{
-			Transform t;
-			t.offset = XMFLOAT4(-0.75f + (i * 0.25), -0.75f + (j * 0.25), 0.01 * i, 0.0f);
-			_mesh->SetTransform(t);
+	static Transform t;
 
-			_mesh->SetTexture(_texture);
+	if (INPUT->GetButton(KEY_TYPE::W))
+		t.offset.y += 0.002f;
+	if (INPUT->GetButton(KEY_TYPE::S))
+		t.offset.y -= 0.002f;
+	if (INPUT->GetButton(KEY_TYPE::A))
+		t.offset.x -= 0.002f;
+	if (INPUT->GetButton(KEY_TYPE::D))
+		t.offset.x += 0.002f;
 
-			_mesh->Render();
-		}
-	}
+	_mesh->SetTransform(t);
+
+	_mesh->SetTexture(_texture);
+
+	_mesh->Render();
+		
+	
 
 
 	RenderEnd();
+}
+
+void Engine::Update()
+{
+	_input->Update();
 }
 
 void Engine::RenderBegin()
