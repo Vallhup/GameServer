@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.h"
-
 enum PacketType : int {
 	// 시스템 관리 (0 ~ 9) (Connect, Disconnect 등)
 	PACKET_CONNECT = 1,

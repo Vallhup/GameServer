@@ -1,0 +1,43 @@
+iocp Core
+ - iocp Handle
+
+
+
+Listener
+ - 비동기 Accpet 전담
+ - ListenSocket
+
+
+
+
+Session
+ - Socket
+ - RecvOver
+ - SendOver
+ - 추후 컨텐츠와 연계될 정보들
+
+
+
+
+Overlapped Struct
+
+ - RecvOver
+   - Overlapped
+   - RecvBuffer
+     - 링 버퍼 구조의 고정크기 배열로 구현
+   - WSABUF
+
+
+ - SendOver
+   - Overlapped
+   - SendBuffer
+     - 가변 크기 배열로 구현
+   - WSABUF
+
+ - AcceptOver
+   - Overlapped
+   - clientSocket
+   - buffer (client의 ip주소 얻을 용도)
+
+
+

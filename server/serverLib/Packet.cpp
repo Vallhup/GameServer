@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Packet.h"
 
 Packet::Packet()
 	: _size(0), _packetType(0), _sessionId(0)

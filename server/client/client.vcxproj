@@ -152,22 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\client\client.cpp" />
-    <ClCompile Include="ClientCore.cpp" />
-    <ClCompile Include="ClientExpOver.cpp" />
-    <ClCompile Include="ClientSession.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="pch.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\client\Macro.h" />
-    <ClInclude Include="ClientCore.h" />
-    <ClInclude Include="ClientExpOver.h" />
-    <ClInclude Include="ClientSession.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="..\client\chessboard.jpg" />
     <Image Include="..\client\chesspiece.png" />
   </ItemGroup>

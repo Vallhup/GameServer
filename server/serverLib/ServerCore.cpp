@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "ServerCore.h"
 
 ServerCore* gServerCore = new ServerCore;
 const short SERVER_PORT = 7777;

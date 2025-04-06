@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.h"
-
 extern const short SERVER_PORT;
 
 class ServerCore
