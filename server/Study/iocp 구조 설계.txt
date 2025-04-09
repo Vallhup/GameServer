@@ -11,7 +11,7 @@ Listener
 
 
 Session
- - Socket
+ - clientSocket
  - RecvOver
  - SendOver
  - 추후 컨텐츠와 연계될 정보들

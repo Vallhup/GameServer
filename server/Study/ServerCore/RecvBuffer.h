@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.h"
-
 // 1. Ring Buffer
 // 2. char* 사용
 
@@ -12,7 +10,6 @@ constexpr short BUFFER_SIZE = 4096;
 class RecvBuffer
 {
 public:
-	RecvBuffer() = default;
 	RecvBuffer(int bufferSize = BUFFER_SIZE);
 
 	~RecvBuffer() { delete[] _buffer; }
@@ -20,6 +17,7 @@ public:
 public:
 	// Getter
 	char* GetBuffer()   const { return _buffer; }
+	int   GetWritePos() const { return _writePos; }
 	
 	// 빈 공간이 있는지 어떻게 확인해야 하는가
 	// -> 전체 Size (_capacity)에서 현재 사용중인 Size를 빼면 됨
@@ -46,9 +44,6 @@ public:
 private:
 	// 실제 Buffer
 	char*	_buffer;
-
-	// 현재 Buffer에 들어가있는 Data의 Size
-	int		_size{ 0 };
 
 	// Buffer가 할당한 메모리 Size
 	int		_capacity{ 0 };

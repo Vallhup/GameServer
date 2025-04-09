@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "RecvBuffer.h"
 
-RecvBuffer::RecvBuffer(int bufferSize) : _size(0), _readPos(0), _writePos(0), _capacity(bufferSize)
+RecvBuffer::RecvBuffer(int bufferSize) : _readPos(0), _writePos(0), _capacity(bufferSize)
 {
 	_buffer = new char[bufferSize];
 }
@@ -26,7 +26,7 @@ bool RecvBuffer::Write(const char* data, int dataSize)
 	// 남은 Data를 _buffer의 첫 부분에 복사해야 함
 
 	int	sizeToEnd = _capacity - _writePos;
-	int firstCopySize = std::min(dataSize, sizeToEnd);
+	int firstCopySize = std::min<int>(dataSize, sizeToEnd);
 	int secondCopySize = dataSize - firstCopySize;
 
 	std::memcpy(_buffer + _writePos, data, firstCopySize);
@@ -57,7 +57,7 @@ bool RecvBuffer::Read(char* readBuffer, int readSize)
 	// 남은 Size만큼 _buffer의 첫 부분에서 복사해야 됨
 	
 	int sizeToEnd = _capacity - _readPos;
-	int firstCopySize = std::min(readSize, sizeToEnd);
+	int firstCopySize = std::min<int>(readSize, sizeToEnd);
 	int secondCopySize = readSize - firstCopySize;
 
 	std::memcpy(readBuffer, _buffer + _readPos, firstCopySize);
