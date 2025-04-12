@@ -4,8 +4,9 @@
 const int MAX_CLIENT = 10;
 
 ServerCore gServerCore;
+std::unordered_map<int, std::shared_ptr<Session>> ServerCore::_sessions;
 
-bool ServerCore::Init(short serverPort)
+bool ServerCore::Start(short serverPort)
 {
 	std::wcout.imbue(std::locale("korean"));
 
@@ -83,7 +84,10 @@ void ServerCore::ClientAccept()
 		return;
 	}
 
-	_sessions.try_emplace(_sessionId, _sessionId, clientSocket);
+	std::shared_ptr<Session> session = std::make_shared<Session>(_sessionId, clientSocket);
+	_sessions.try_emplace(_sessionId, session);
+	_sessions[_sessionId]->doRecv();
+
 	_sessionId++;
 }
 
@@ -109,7 +113,14 @@ void gRecvCallback(DWORD err, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag)
 	RecvOver* recvOver = reinterpret_cast<RecvOver*>(pOver);
 	int myId = recvOver->_owner->GetSessionId();
 
-	gServerCore._sessions[myId].RecvCallback(numBytes);
+	if (numBytes == 0) {
+		if (ServerCore::_sessions.count(myId) != 0) {
+			ServerCore::_sessions.erase(myId);
+			return;
+		}
+	}
+
+	gServerCore._sessions[myId]->RecvCallback(numBytes);
 }
 
 void gSendCallback(DWORD err, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag)
@@ -118,5 +129,12 @@ void gSendCallback(DWORD err, DWORD numBytes, LPWSAOVERLAPPED pOver, DWORD flag)
 	SendOver* sendOver = reinterpret_cast<SendOver*>(pOver);
 	int myId = sendOver->_owner->GetSessionId();
 
-	gServerCore._sessions[myId].SendCallback();
+	if (numBytes == 0) {
+		if (ServerCore::_sessions.count(myId) != 0) {
+			ServerCore::_sessions.erase(myId);
+			return;
+		}
+	}
+
+	gServerCore._sessions[myId]->SendCallback();
 }

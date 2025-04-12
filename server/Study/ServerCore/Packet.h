@@ -4,7 +4,8 @@ enum PacketType : char
 {
 	// 시스템 관리 (Connect, Disconnect 등)
 	PACKET_CONNECT,
-	PACKET_DISCONNECT,
+	PACKET_ENTER,
+	PACKET_LEAVE,
 
 	// 게임 로직 관리
 	PACKET_MOVE
@@ -32,15 +33,16 @@ public:
 class RequestConnectPacket : public PacketHeader
 {
 public:
-	RequestConnectPacket(char id) 
-		: PacketHeader(sizeof(RequestConnectPacket), PACKET_CONNECT, id) {}
+	RequestConnectPacket() 
+		: PacketHeader(sizeof(RequestConnectPacket), PACKET_CONNECT, 0) {}
 };
 
 class ResponseConnectPacket : public PacketHeader
 {
 public:
 	ResponseConnectPacket(char id) 
-		: PacketHeader(sizeof(ResponseConnectPacket), PACKET_CONNECT, id), _firstPos(1, 1) {}
+		: PacketHeader(sizeof(ResponseConnectPacket), PACKET_CONNECT, id), _firstPos{ 4, 4 } {
+	}
 
 public:
 	Pos _firstPos;
@@ -49,8 +51,8 @@ public:
 class RequestMovePacket : public PacketHeader
 {
 public:
-	RequestMovePacket(char id, char direction) 
-		: PacketHeader(sizeof(RequestMovePacket), PACKET_MOVE, id), _direction(direction) {}
+	RequestMovePacket(char direction) 
+		: PacketHeader(sizeof(RequestMovePacket), PACKET_MOVE, 0), _direction(direction) {}
 
 public:
 	char _direction;
@@ -66,12 +68,21 @@ public:
 	Pos _pos;
 };
 
-char* Serialization(PacketHeader* packet)
+class ResponseEnterPacket : public PacketHeader
 {
-	char* temp = new char[packet->_size];
+public:
+	ResponseEnterPacket(char id, Pos pos)
+		: PacketHeader(sizeof(ResponseEnterPacket), PACKET_ENTER, id), _pos(pos) {}
 
-	std::memcpy(temp, packet, packet->_size);
+public:
+	Pos _pos;
+};
 
-	return temp;
-}
+class ResponseLeavePacket : public PacketHeader
+{
+public:
+	ResponseLeavePacket(char id)
+		: PacketHeader(sizeof(ResponseLeavePacket), PACKET_LEAVE, id) {}
+};
+
 #pragma pack(pop)

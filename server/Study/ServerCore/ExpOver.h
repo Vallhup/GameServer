@@ -1,5 +1,9 @@
 #pragma once
 
+#include <WinSock2.h>
+#include <Windows.h>
+#include "RecvBuffer.h"
+
 enum OperationType
 {
 	Accept,
@@ -48,9 +52,13 @@ public:
 class SendOver : public ExpOver
 {
 public:
-	SendOver() : ExpOver(Send) {}
+	SendOver() : ExpOver(Send) 
+	{
+		_wsaBuf[0].buf = _buffer;
+		_wsaBuf[0].len = sizeof(_buffer);
+	}
 
 public:
-	char*		_buffer;
+	char		_buffer[2048];
 	WSABUF		_wsaBuf[1];
 };

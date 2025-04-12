@@ -8,18 +8,18 @@ struct Pos
 	short _yPos;
 };
 
+
 // Client의 정보 (고유 id, 연결 socket 등)
 // 컨텐츠와 관련된 작업들
 class Session : public std::enable_shared_from_this<Session>
 {
-public:
-	Session() : _id(0), _socket(INVALID_SOCKET), _pos(0, 0) {}
-	Session(int id, SOCKET s) : _id(id), _socket(s), _pos(0, 0)
-	{
-		doRecv();
-	}
+	friend class ServerCore;
 
-	~Session() { closesocket(_socket); }
+public:
+	Session() : _id(0), _socket(INVALID_SOCKET), _pos{ 4, 4 } {}
+	Session(int id, SOCKET s) : _id(id), _socket(s), _pos{ 4, 4 } {}
+
+	~Session();
 
 public:
 	bool ProcessPacket(char* packet);

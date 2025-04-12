@@ -17,7 +17,7 @@ public:
 	void ClientAccept();
 
 public:
-	std::unordered_map<int, Session> _sessions;
+	static std::unordered_map<int, std::shared_ptr<Session>> _sessions;
 
 private:
 	SOCKET _listenSocket;

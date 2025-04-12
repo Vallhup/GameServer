@@ -24,13 +24,15 @@ bool RecvBuffer::Write(const char* data, int dataSize)
 	// dataSize가 _capacity - _writePos 보다 클 때
 	// _capacity - _writePos만큼만 복사하고
 	// 남은 Data를 _buffer의 첫 부분에 복사해야 함
+	
+	if (data != nullptr) {
+		int	sizeToEnd = _capacity - _writePos;
+		int firstCopySize = std::min<int>(dataSize, sizeToEnd);
+		int secondCopySize = dataSize - firstCopySize;
 
-	int	sizeToEnd = _capacity - _writePos;
-	int firstCopySize = std::min<int>(dataSize, sizeToEnd);
-	int secondCopySize = dataSize - firstCopySize;
-
-	std::memcpy(_buffer + _writePos, data, firstCopySize);
-	std::memcpy(_buffer, data + firstCopySize, secondCopySize);
+		std::memcpy(_buffer + _writePos, data, firstCopySize);
+		std::memcpy(_buffer, data + firstCopySize, secondCopySize);
+	}
 
 	_writePos = (_writePos + dataSize) % _capacity;
 

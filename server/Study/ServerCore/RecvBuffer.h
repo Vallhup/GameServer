@@ -17,7 +17,7 @@ public:
 public:
 	// Getter
 	char* GetBuffer()   const { return _buffer; }
-	int   GetWritePos() const { return _writePos; }
+	char* GetWritePos() const { return &_buffer[_writePos]; }
 	
 	// 빈 공간이 있는지 어떻게 확인해야 하는가
 	// -> 전체 Size (_capacity)에서 현재 사용중인 Size를 빼면 됨
