@@ -9,5 +9,20 @@ public:
 
 class IocpCore
 {
+public:
+	IocpCore();
+	~IocpCore();
+
+public:
+	HANDLE GetHandle() { return _iocpHandle; };
+
+public:
+	bool Register(std::shared_ptr<IocpObject> iocpObject);
+	bool Dispatch(unsigned int timeoutMs = INFINITE);
+
+private:
+	HANDLE _iocpHandle;
+
+	static int clientId;
 };
 

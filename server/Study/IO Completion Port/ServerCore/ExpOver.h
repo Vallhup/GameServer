@@ -32,8 +32,8 @@ public:
 	AcceptOver() : ExpOver(Accept) {}
 
 public:
-	SOCKET	_clientSocket;
-	char*	_buffer;
+	char	_buffer[64]{ };	
+	std::shared_ptr<Session> _session;
 };
 
 class RecvOver : public ExpOver

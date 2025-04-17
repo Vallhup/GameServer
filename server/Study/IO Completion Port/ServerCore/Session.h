@@ -14,7 +14,9 @@ struct Pos
 // 牧刨明客 包访等 累诀甸
 class Session : public IocpObject
 {
-	friend class ServerCore;
+	friend class Listener;
+	friend class IocpCore;
+	friend class Service;
 
 public:
 	Session() : _id(0), _socket(INVALID_SOCKET), _pos{ 4, 4 } {}
@@ -31,6 +33,9 @@ public:
 	int    GetSessionId() const { return _id; }
 	Pos	   GetPos() const { return _pos; }
 
+	// Setter
+	void SetService(std::shared_ptr<Service> service) { _service = service; }
+
 public:
 	void doRecv();
 	void doSend(void* packet);
@@ -44,12 +49,12 @@ private:
 	virtual void Dispatch(ExpOver* expOver, int numOfBytes = 0) override;
 
 private:
+	std::weak_ptr<Service> _service;
 	SOCKET	_socket;
 	int		_id;
 	Pos		_pos;
 
 private:
-	AcceptOver	_acceptOver;
 	RecvOver	_recvOver;
 	SendOver	_sendOver;
 };
