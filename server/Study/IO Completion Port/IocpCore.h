@@ -5,6 +5,11 @@ class IocpObject : public std::enable_shared_from_this<IocpObject>
 public:
 	virtual HANDLE GetHandle() abstract;
 	virtual void Dispatch(class ExpOver* expOver, int nuOfBytes = 0) abstract;
+	
+	void SetId(int id) { _id = id; };
+
+protected:
+	int _id;
 };
 
 class IocpCore
@@ -18,7 +23,7 @@ public:
 
 public:
 	bool Register(std::shared_ptr<IocpObject> iocpObject);
-	bool Dispatch(unsigned int timeoutMs = INFINITE);
+	bool Dispatch(unsigned int timeoutMs = 0);
 
 private:
 	HANDLE _iocpHandle;

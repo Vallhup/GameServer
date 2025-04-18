@@ -7,9 +7,11 @@ Session::~Session()
 
 	ResponseLeavePacket responPacket(_id);
 
-	/*for (auto& user : ServerCore::_sessions) {
-		user.second->doSend(&responPacket);
-	}*/
+	if(auto locked = _service.lock()) {
+		for (auto& user : locked->_sessions) {
+			user.second->doSend(&responPacket);
+		}
+	}
 
 	if (_recvOver._owner != nullptr) {
 		_recvOver._owner = nullptr;
@@ -34,17 +36,21 @@ bool Session::ProcessPacket(char* packet)
 
 		ResponseEnterPacket responseEnterPacket(_id, _pos);
 
-		/*for (auto& user : ServerCore::_sessions) {
-			if (user.first != _id)
-				user.second->doSend(&responseEnterPacket);
+		if (auto locked = _service.lock()) {
+			for (auto& user : locked->_sessions) {
+				if (user.first != _id)
+					user.second->doSend(&responseEnterPacket);
+			}
 		}
 
-		for (auto& user : ServerCore::_sessions) {
-			if (user.first != _id) {
-				ResponseEnterPacket responseEnterPacket(user.first, user.second->GetPos());
-				doSend(&responseEnterPacket);
+		if (auto locked = _service.lock()) {
+			for (auto& user : locked->_sessions) {
+				if (user.first != _id) {
+					ResponseEnterPacket responseEnterPacket(user.first, user.second->GetPos());
+					doSend(&responseEnterPacket);
+				}
 			}
-		}*/
+		}
 
 		break;
 	}
@@ -60,9 +66,11 @@ bool Session::ProcessPacket(char* packet)
 
 		ResponseMovePacket responsePacket(_id, _pos);
 
-		/*for (auto& user : ServerCore::_sessions) {
-			user.second->doSend(&responsePacket);
-		}*/
+		if (auto locked = _service.lock()) {
+			for (auto& user : locked->_sessions) {
+				user.second->doSend(&responsePacket);
+			}
+		}
 
 		break;
 	}
@@ -87,13 +95,14 @@ void Session::doRecv()
 	_recvOver._wsaBuf[0].buf = _recvOver._buffer.GetWritePos();
 	_recvOver._wsaBuf[0].len = _recvOver._buffer.GetFreeSize();
 
-	//int result = WSARecv(_socket, _recvOver._wsaBuf, 1, NULL, &recvFlag, reinterpret_cast<LPWSAOVERLAPPED>(&_recvOver), gRecvCallback);
-	//if (SOCKET_ERROR == result) {
-	//	int error = WSAGetLastError();
-	//	if (WSA_IO_PENDING != error) {
-	//		//errorDisplay("Recv : ", error);
-	//	}
-	//}
+	int result = WSARecv(_socket, _recvOver._wsaBuf, 1, NULL, &recvFlag, reinterpret_cast<LPWSAOVERLAPPED>(&_recvOver), NULL);
+	if (SOCKET_ERROR == result) {
+		int error = WSAGetLastError();
+		if (WSA_IO_PENDING != error) {
+			//errorDisplay("Recv : ", error);
+			std::cout << "Recv Error\n";
+		}
+	}
 }
 
 void Session::doSend(void* packet)
@@ -111,12 +120,11 @@ void Session::doSend(void* packet)
 	_sendOver._wsaBuf[0].buf = _sendOver._buffer;
 	_sendOver._wsaBuf[0].len = packetSize;
 
-	//WSASend(_socket, _sendOver._wsaBuf, 1, &sizeSent, 0, reinterpret_cast<LPWSAOVERLAPPED>(&_sendOver), gSendCallback);
+	WSASend(_socket, _sendOver._wsaBuf, 1, &sizeSent, 0, reinterpret_cast<LPWSAOVERLAPPED>(&_sendOver), NULL);
 }
 
 void Session::RecvCallback(DWORD numBytes)
 {
-	//_recvOver._owner = nullptr;
 	_recvOver._buffer.Write(nullptr, numBytes);
 
 	std::vector<char> readBuffer(numBytes);
@@ -129,7 +137,7 @@ void Session::RecvCallback(DWORD numBytes)
 
 void Session::SendCallback()
 {
-	//_sendOver._owner = nullptr;
+	std::cout << "SendCallback\n";
 }
 
 HANDLE Session::GetHandle()
@@ -140,4 +148,16 @@ HANDLE Session::GetHandle()
 void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 {
 	std::cout << "Session Dispatch" << std::endl;
+	switch (expOver->_operationType) {
+	case OperationType::Recv:
+		RecvCallback(numOfBytes);
+		break;
+
+	case OperationType::Send:
+		SendCallback();
+		break;
+
+	default:
+		break;
+	}
 }

@@ -1,7 +1,11 @@
 #pragma once
 
+#include "Listener.h"
+
 class Service : public std::enable_shared_from_this<Service>
 {
+	friend class Session;
+
 public:
 	Service(std::shared_ptr<IocpCore> core, int maxSessionCount = 10);
 	virtual ~Service();
@@ -33,6 +37,8 @@ class ServerService : public Service
 public:
 	ServerService(std::shared_ptr<IocpCore> core, int maxSessionCount = 10);
 	virtual ~ServerService() {}
+
+	static std::shared_ptr<ServerService> Create(std::shared_ptr<IocpCore> core, int maxSessionCount = 10);
 
 public:
 	virtual bool Start() override;

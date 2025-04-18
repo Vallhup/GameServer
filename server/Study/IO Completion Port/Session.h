@@ -19,8 +19,10 @@ class Session : public IocpObject
 	friend class Service;
 
 public:
-	Session() : _id(0), _socket(INVALID_SOCKET), _pos{ 4, 4 } {}
-	Session(int id, SOCKET s) : _id(id), _socket(s), _pos{ 4, 4 } {}
+	Session() : _pos{ 4, 4 } 
+	{
+		_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, NULL, WSA_FLAG_OVERLAPPED);
+	}
 
 	~Session();
 
@@ -35,6 +37,7 @@ public:
 
 	// Setter
 	void SetService(std::shared_ptr<Service> service) { _service = service; }
+	void SetId(int id) { _id = id; };
 
 public:
 	void doRecv();
@@ -51,7 +54,6 @@ private:
 private:
 	std::weak_ptr<Service> _service;
 	SOCKET	_socket;
-	int		_id;
 	Pos		_pos;
 
 private:

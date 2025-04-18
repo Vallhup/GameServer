@@ -32,7 +32,7 @@ public:
 	AcceptOver() : ExpOver(Accept) {}
 
 public:
-	char	_buffer[64]{ };	
+	char	_buffer[128]{ };	
 	std::shared_ptr<Session> _session;
 };
 
@@ -60,6 +60,6 @@ public:
 	}
 
 public:
-	char		_buffer[2048];
+	char		_buffer[2048]{ };
 	WSABUF		_wsaBuf[1];
 };
