@@ -9,7 +9,7 @@ Session::~Session()
 
 	if(auto locked = _service.lock()) {
 		for (auto& user : locked->_sessions) {
-			user.second->doSend(&responPacket);
+			//user.second->doSend(&responPacket);
 		}
 	}
 
@@ -24,6 +24,15 @@ Session::~Session()
 	closesocket(_socket);
 }
 
+void Session::Send(const std::vector<char>& data)
+{
+	_sendQueue.Push(data);
+
+	if (not _isSending.exchange(true)) {
+		doSend();
+	}
+}
+
 bool Session::ProcessPacket(char* packet)
 {
 	char packetType = packet[1];
@@ -32,14 +41,15 @@ bool Session::ProcessPacket(char* packet)
 	{
 	case PACKET_CONNECT: {
 		ResponseConnectPacket responsePacket(_id);
-		doSend(&responsePacket);
+		//doSend(&responsePacket);
 
 		ResponseEnterPacket responseEnterPacket(_id, _pos);
 
 		if (auto locked = _service.lock()) {
 			for (auto& user : locked->_sessions) {
 				if (user.first != _id)
-					user.second->doSend(&responseEnterPacket);
+					123;
+					//user.second->doSend(&responseEnterPacket);
 			}
 		}
 
@@ -47,7 +57,7 @@ bool Session::ProcessPacket(char* packet)
 			for (auto& user : locked->_sessions) {
 				if (user.first != _id) {
 					ResponseEnterPacket responseEnterPacket(user.first, user.second->GetPos());
-					doSend(&responseEnterPacket);
+					//doSend(&responseEnterPacket);
 				}
 			}
 		}
@@ -68,7 +78,7 @@ bool Session::ProcessPacket(char* packet)
 
 		if (auto locked = _service.lock()) {
 			for (auto& user : locked->_sessions) {
-				user.second->doSend(&responsePacket);
+				//user.second->Send(&responsePacket);
 			}
 		}
 
@@ -105,22 +115,30 @@ void Session::doRecv()
 	}
 }
 
-void Session::doSend(void* packet)
+void Session::doSend()
 {
-	DWORD sizeSent;
+	std::shared_ptr<std::vector<char>> sendData;
+	
+	if (not _sendQueue.tryPop(sendData)) {
+		_isSending.store(false);
+		return;
+	}
 
 	_sendOver.Init();
 
-	if(_sendOver._owner == nullptr)
+	if (_sendOver._owner == nullptr)
 		_sendOver._owner = shared_from_this();
 
-	const unsigned char packetSize = reinterpret_cast<unsigned char*>(packet)[0];
-	std::memcpy(_sendOver._buffer, packet, packetSize);
+	_sendOver.SetBuffer(sendData);
 
-	_sendOver._wsaBuf[0].buf = _sendOver._buffer;
-	_sendOver._wsaBuf[0].len = packetSize;
-
-	WSASend(_socket, _sendOver._wsaBuf, 1, &sizeSent, 0, reinterpret_cast<LPWSAOVERLAPPED>(&_sendOver), NULL);
+	DWORD bytesSent{ 0 };
+	if (SOCKET_ERROR == WSASend(_socket, &_sendOver._wsaBuf[0], 1, &bytesSent, 0, reinterpret_cast<LPWSAOVERLAPPED>(&_sendOver), NULL)) {
+		int error = WSAGetLastError();
+		if (error != WSA_IO_PENDING) {
+			std::cout << "Session Send Error\n";
+			_isSending.store(false);
+		}
+	}
 }
 
 void Session::RecvCallback(DWORD numBytes)

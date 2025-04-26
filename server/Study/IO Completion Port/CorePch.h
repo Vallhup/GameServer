@@ -9,8 +9,12 @@
 #include <vector>
 #include <array>
 #include <unordered_map>
+#include <thread>
+#include <atomic>
+#include <memory>
 
 #include "RecvBuffer.h"
+#include "AtomicQueue.h"
 #include "Session.h"
 #include "Packet.h"
 #include "ExpOver.h"

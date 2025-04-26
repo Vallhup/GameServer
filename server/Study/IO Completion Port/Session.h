@@ -27,6 +27,7 @@ public:
 	~Session();
 
 public:
+	void Send(const std::vector<char>& data);
 	bool ProcessPacket(char* packet);
 
 public:
@@ -41,7 +42,7 @@ public:
 
 public:
 	void doRecv();
-	void doSend(void* packet);
+	void doSend();
 
 	void RecvCallback(DWORD numBytes);
 	void SendCallback();
@@ -55,6 +56,10 @@ private:
 	std::weak_ptr<Service> _service;
 	SOCKET	_socket;
 	Pos		_pos;
+
+private:
+	AtomicQueue<std::vector<char>> _sendQueue;
+	std::atomic<bool> _isSending{ false };
 
 private:
 	RecvOver	_recvOver;
