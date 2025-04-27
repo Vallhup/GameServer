@@ -33,23 +33,22 @@ void Session::Send(const std::vector<char>& data)
 	}
 }
 
-bool Session::ProcessPacket(char* packet)
+bool Session::ProcessPacket(const std::vector<char>& packet)
 {
 	char packetType = packet[1];
 
 	switch (packetType)
 	{
-	case PACKET_CONNECT: {
+	case RESPONSE_CONNECT: {
 		ResponseConnectPacket responsePacket(_id);
-		//doSend(&responsePacket);
+		Send(responsePacket.Serialize());
 
 		ResponseEnterPacket responseEnterPacket(_id, _pos);
 
 		if (auto locked = _service.lock()) {
 			for (auto& user : locked->_sessions) {
 				if (user.first != _id)
-					123;
-					//user.second->doSend(&responseEnterPacket);
+					user.second->Send(responseEnterPacket.Serialize());
 			}
 		}
 
@@ -57,7 +56,7 @@ bool Session::ProcessPacket(char* packet)
 			for (auto& user : locked->_sessions) {
 				if (user.first != _id) {
 					ResponseEnterPacket responseEnterPacket(user.first, user.second->GetPos());
-					//doSend(&responseEnterPacket);
+					Send(responseEnterPacket.Serialize());
 				}
 			}
 		}
@@ -65,9 +64,9 @@ bool Session::ProcessPacket(char* packet)
 		break;
 	}
 
-	case PACKET_MOVE: {
-		RequestMovePacket* requestPacket = reinterpret_cast<RequestMovePacket*>(packet);
-		switch (requestPacket->_direction) {
+	case RESPONSE_MOVE: {
+		char packetDirection = packet[6];
+		switch (packetDirection) {
 		case MOVE_UP:    _pos._yPos = std::max<short>(_pos._yPos - 1, 0); break;
 		case MOVE_DOWN:  _pos._yPos = std::min<short>(_pos._yPos + 1, 7); break;
 		case MOVE_LEFT:  _pos._xPos = std::max<short>(_pos._xPos - 1, 0); break;
@@ -78,7 +77,7 @@ bool Session::ProcessPacket(char* packet)
 
 		if (auto locked = _service.lock()) {
 			for (auto& user : locked->_sessions) {
-				//user.second->Send(&responsePacket);
+				user.second->Send(responsePacket.Serialize());
 			}
 		}
 
@@ -148,7 +147,7 @@ void Session::RecvCallback(DWORD numBytes)
 	std::vector<char> readBuffer(numBytes);
 	_recvOver._buffer.Read(readBuffer.data(), numBytes);
 
-	ProcessPacket(readBuffer.data());
+	ProcessPacket(readBuffer);
 	
 	doRecv();
 }

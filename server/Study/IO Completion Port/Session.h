@@ -28,7 +28,7 @@ public:
 
 public:
 	void Send(const std::vector<char>& data);
-	bool ProcessPacket(char* packet);
+	bool ProcessPacket(const std::vector<char>& packet);
 
 public:
 	// Getter

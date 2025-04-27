@@ -7,7 +7,8 @@ class AtomicQueue
 
 	struct Node {
 		Node() = default;
-		Node(const T& data) : _data(data) {}
+		Node(const T& data) : _data(std::make_shared<T>(data)) {}
+		Node(T&& data) : _data(std::make_shared<T>(std::move(data))) {}
 
 		std::shared_ptr<T> _data;
 		std::atomic<Node*> _next{ nullptr };
