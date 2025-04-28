@@ -29,7 +29,7 @@ bool IocpCore::Register(std::shared_ptr<IocpObject> iocpObject)
 
 bool IocpCore::Dispatch(unsigned int timeoutMs)
 {
-	//std::cout << "Dispatch IocpCore\n";
+	std::cout << "Dispatch IocpCore\n";
 
 	DWORD ioSize{ 0 };
 	ULONG_PTR key{ 0 };

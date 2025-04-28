@@ -88,7 +88,7 @@ void Listener::doAccept(AcceptOver* acceptOver)
 {
 	std::cout << "Start doAccept Listener\n";
 
-	std::shared_ptr<Session> session = std::make_shared<Session>();
+	std::shared_ptr<GameSession> session = std::make_shared<GameSession>();
 
 	acceptOver->Init();
 	acceptOver->_session = session;
@@ -119,7 +119,7 @@ void Listener::AcceptCallback(AcceptOver* acceptOver)
 	std::cout << "Start AcceptCallback Listener\n";
 
 	// 어떤 Session이 Accept했는지 확인
-	std::shared_ptr<Session> session = acceptOver->_session;
+	std::shared_ptr<GameSession> session = static_pointer_cast<GameSession>(acceptOver->_session);
 
 	setsockopt(session->GetSocket(), SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, (char*)&_socket, sizeof(_socket));
 

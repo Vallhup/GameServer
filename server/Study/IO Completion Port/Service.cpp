@@ -17,7 +17,7 @@ void Service::CloseService()
 
 std::shared_ptr<Session> Service::CreateSession()
 {
-	std::shared_ptr<Session> session = std::make_shared<Session>();
+	std::shared_ptr<GameSession> session = std::make_shared<GameSession>();
 	session->SetService(shared_from_this());
 	if (_iocpCore->Register(session) == false)
 		return nullptr;

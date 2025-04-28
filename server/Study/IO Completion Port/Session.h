@@ -19,22 +19,21 @@ class Session : public IocpObject
 	friend class Service;
 
 public:
-	Session() : _pos{ 4, 4 } 
+	Session()
 	{
 		_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, NULL, WSA_FLAG_OVERLAPPED);
 	}
 
-	~Session();
+	virtual ~Session();
 
 public:
 	void Send(const std::vector<char>& data);
-	bool ProcessPacket(const std::vector<char>& packet);
+	virtual bool ProcessPacket(const std::vector<char>& packet) abstract;
 
 public:
 	// Getter
 	SOCKET GetSocket() const { return _socket; }
 	int    GetSessionId() const { return _id; }
-	Pos	   GetPos() const { return _pos; }
 
 	// Setter
 	void SetService(std::shared_ptr<Service> service) { _service = service; }
@@ -52,16 +51,31 @@ private:
 	virtual HANDLE GetHandle() override;
 	virtual void Dispatch(ExpOver* expOver, int numOfBytes = 0) override;
 
-private:
+protected:
 	std::weak_ptr<Service> _service;
 	SOCKET	_socket;
-	Pos		_pos;
 
-private:
+protected:
 	AtomicQueue<std::vector<char>> _sendQueue;
 	std::atomic<bool> _isSending{ false };
 
-private:
+protected:
 	RecvOver	_recvOver;
 	SendOver	_sendOver;
+};
+
+class GameSession : public Session {
+	friend class Service;
+
+public:
+	virtual ~GameSession() override;
+
+public:
+	virtual bool ProcessPacket(const std::vector<char>& packet) override;
+
+public:
+	Pos	   GetPos() const { return _pos; }
+
+private:
+	Pos		_pos{ 4, 4 };
 };

@@ -33,65 +33,6 @@ void Session::Send(const std::vector<char>& data)
 	}
 }
 
-bool Session::ProcessPacket(const std::vector<char>& packet)
-{
-	char packetType = packet[1];
-
-	switch (packetType)
-	{
-	case RESPONSE_CONNECT: {
-		ResponseConnectPacket responsePacket(_id);
-		Send(responsePacket.Serialize());
-
-		ResponseEnterPacket responseEnterPacket(_id, _pos);
-
-		if (auto locked = _service.lock()) {
-			for (auto& user : locked->_sessions) {
-				if (user.first != _id)
-					user.second->Send(responseEnterPacket.Serialize());
-			}
-		}
-
-		if (auto locked = _service.lock()) {
-			for (auto& user : locked->_sessions) {
-				if (user.first != _id) {
-					ResponseEnterPacket responseEnterPacket(user.first, user.second->GetPos());
-					Send(responseEnterPacket.Serialize());
-				}
-			}
-		}
-
-		break;
-	}
-
-	case RESPONSE_MOVE: {
-		char packetDirection = packet[6];
-		switch (packetDirection) {
-		case MOVE_UP:    _pos._yPos = std::max<short>(_pos._yPos - 1, 0); break;
-		case MOVE_DOWN:  _pos._yPos = std::min<short>(_pos._yPos + 1, 7); break;
-		case MOVE_LEFT:  _pos._xPos = std::max<short>(_pos._xPos - 1, 0); break;
-		case MOVE_RIGHT: _pos._xPos = std::min<short>(_pos._xPos + 1, 7); break;
-		}
-
-		ResponseMovePacket responsePacket(_id, _pos);
-
-		if (auto locked = _service.lock()) {
-			for (auto& user : locked->_sessions) {
-				user.second->Send(responsePacket.Serialize());
-			}
-		}
-
-		break;
-	}
-
-	default:
-		std::cout << "Error Invalid Packet Type\n";
-		return false;
-	}
-
-	return true;
-}
-
 void Session::doRecv()
 {
 	DWORD recvFlag = 0;
@@ -177,4 +118,70 @@ void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 	default:
 		break;
 	}
+}
+
+GameSession::~GameSession()
+{
+	std::cout << "GameSession Delete\n";
+
+	// TODO : 추후 자원 해제가 필요하게 되면 추가
+}
+
+bool GameSession::ProcessPacket(const std::vector<char>& packet)
+{
+	char packetType = packet[1];
+
+	switch (packetType)
+	{
+	case RESPONSE_CONNECT: {
+		ResponseConnectPacket responsePacket(_id);
+		Send(responsePacket.Serialize());
+
+		ResponseEnterPacket responseEnterPacket(_id, _pos);
+
+		if (auto locked = _service.lock()) {
+			for (auto& user : locked->_sessions) {
+				if (user.first != _id)
+					user.second->Send(responseEnterPacket.Serialize());
+			}
+		}
+
+		if (auto locked = _service.lock()) {
+			for (auto& user : locked->_sessions) {
+				if (user.first != _id) {
+					ResponseEnterPacket responseEnterPacket(user.first, static_pointer_cast<GameSession>(user.second)->GetPos());
+					Send(responseEnterPacket.Serialize());
+				}
+			}
+		}
+
+		break;
+	}
+
+	case RESPONSE_MOVE: {
+		char packetDirection = packet[6];
+		switch (packetDirection) {
+		case MOVE_UP:    _pos._yPos = std::max<short>(_pos._yPos - 1, 0); break;
+		case MOVE_DOWN:  _pos._yPos = std::min<short>(_pos._yPos + 1, 7); break;
+		case MOVE_LEFT:  _pos._xPos = std::max<short>(_pos._xPos - 1, 0); break;
+		case MOVE_RIGHT: _pos._xPos = std::min<short>(_pos._xPos + 1, 7); break;
+		}
+
+		ResponseMovePacket responsePacket(_id, _pos);
+
+		if (auto locked = _service.lock()) {
+			for (auto& user : locked->_sessions) {
+				user.second->Send(responsePacket.Serialize());
+			}
+		}
+
+		break;
+	}
+
+	default:
+		std::cout << "Error Invalid Packet Type\n";
+		return false;
+	}
+
+	return true;
 }
