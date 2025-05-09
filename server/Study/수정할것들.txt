@@ -1,0 +1,3 @@
+0. Multi-Thread 동기화 구현
+1. Factory Pattern, Object Pool 등 Memory 관리 개선
+2. Error Handling System 추가

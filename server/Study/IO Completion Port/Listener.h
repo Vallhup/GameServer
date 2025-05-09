@@ -10,7 +10,7 @@ public:
 	~Listener();
 
 public:
-	bool StartAccept(std::shared_ptr<ServerService> service);
+	bool StartAccept(std::shared_ptr<Service> service);
 	void CloseSocket();
 
 public:
@@ -24,6 +24,6 @@ private:
 private:
 	SOCKET _socket{ INVALID_SOCKET };
 	std::vector<AcceptOver*> _acceptOvers;
-	std::shared_ptr<ServerService> _service;
+	std::shared_ptr<Service> _service;
 };
 

@@ -10,7 +10,7 @@ Listener::~Listener()
 	}
 }
 
-bool Listener::StartAccept(std::shared_ptr<ServerService> service)
+bool Listener::StartAccept(std::shared_ptr<Service> service)
 {
 	std::cout << "StartAccept Listener\n";
 
@@ -51,7 +51,6 @@ bool Listener::StartAccept(std::shared_ptr<ServerService> service)
 		return false;
 	}
 
-	// temp : 서버의 최대 동접을 정해줄 예정 (Service에서)
 	const int acceptCount = service->getMaxSessionCount();
 	for (int i = 0; i < acceptCount; ++i) {
 		AcceptOver* acceptOver = new AcceptOver;

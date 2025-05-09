@@ -8,8 +8,10 @@ Session::~Session()
 	ResponseLeavePacket responPacket(_id);
 
 	if(auto locked = _service.lock()) {
-		for (auto& user : locked->_sessions) {
-			//user.second->doSend(&responPacket);
+		for (auto& [id, session] : locked->_sessions) {
+			sharedSession p = session.load();
+			if(nullptr != p)
+				p->Send(responPacket.Serialize());
 		}
 	}
 
@@ -69,6 +71,7 @@ void Session::doSend()
 	if (_sendOver._owner == nullptr)
 		_sendOver._owner = shared_from_this();
 
+	// scatter-gather Àû¿ë X
 	_sendOver.SetBuffer(sendData);
 
 	DWORD bytesSent{ 0 };
@@ -96,6 +99,7 @@ void Session::RecvCallback(DWORD numBytes)
 void Session::SendCallback()
 {
 	std::cout << "SendCallback\n";
+	doSend();
 }
 
 HANDLE Session::GetHandle()
@@ -140,16 +144,18 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 		ResponseEnterPacket responseEnterPacket(_id, _pos);
 
 		if (auto locked = _service.lock()) {
-			for (auto& user : locked->_sessions) {
-				if (user.first != _id)
-					user.second->Send(responseEnterPacket.Serialize());
+			for (auto& [id, session] : locked->_sessions) {
+				sharedSession p = session.load();
+				if ((nullptr != p) and (id != _id))
+					p->Send(responseEnterPacket.Serialize());
 			}
 		}
 
 		if (auto locked = _service.lock()) {
-			for (auto& user : locked->_sessions) {
-				if (user.first != _id) {
-					ResponseEnterPacket responseEnterPacket(user.first, static_pointer_cast<GameSession>(user.second)->GetPos());
+			for (auto& [id, session] : locked->_sessions) {
+				sharedSession p = session.load();
+				if ((nullptr != p) and (id != _id)) {
+					ResponseEnterPacket responseEnterPacket(id, static_pointer_cast<GameSession>(p)->GetPos());
 					Send(responseEnterPacket.Serialize());
 				}
 			}
@@ -160,6 +166,7 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 
 	case RESPONSE_MOVE: {
 		char packetDirection = packet[6];
+
 		switch (packetDirection) {
 		case MOVE_UP:    _pos._yPos = std::max<short>(_pos._yPos - 1, 0); break;
 		case MOVE_DOWN:  _pos._yPos = std::min<short>(_pos._yPos + 1, 7); break;
@@ -170,8 +177,10 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 		ResponseMovePacket responsePacket(_id, _pos);
 
 		if (auto locked = _service.lock()) {
-			for (auto& user : locked->_sessions) {
-				user.second->Send(responsePacket.Serialize());
+			for (auto& [id, session] : locked->_sessions) {
+				sharedSession p = session.load();
+				if(nullptr != p)
+					p->Send(responsePacket.Serialize());
 			}
 		}
 

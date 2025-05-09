@@ -57,8 +57,9 @@ public:
 
 	void SetBuffer(const std::shared_ptr<std::vector<char>>& data)
 	{
-		_sendData.reset();
+		_sendData->clear();
 		_sendData = data;
+
 		_wsaBuf[0].buf = const_cast<char*>(data->data());
 		_wsaBuf[0].len = static_cast<ULONG>(data->size());
 	}
