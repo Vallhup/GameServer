@@ -12,7 +12,7 @@ std::vector<APos> ReconstructPath(NodePtr node)
 	std::vector<APos> path;
 	while (nullptr != node) {
 		path.push_back(node->pos);
-		node = node->parent.lock();
+		node = node->parent;
 	}
 
 	std::reverse(path.begin(), path.end());
@@ -29,20 +29,31 @@ std::vector<APos> AStar(bool map[MAP_SIZE][MAP_SIZE], APos start, APos goal)
 	std::unordered_set<APos> closed;
 
 	// gCost를 저장해놓는 container
-	std::unordered_map<APos, int> gScore;
+	//std::unordered_map<APos, int> gScore;
+	std::array<std::array<int, MAP_SIZE>, MAP_SIZE> gScore;
+	for (auto& row : gScore) {
+		row.fill(INT_MAX);
+	}
 
+	// 시작 노드 설정
 	auto startNode = std::make_shared<Node>();
 	startNode->pos = start;
 	startNode->gCost = 0;
 	startNode->hCost = Heuristic(start, goal);
 	openList.push(startNode);
-	gScore.try_emplace(start, 0);
+	gScore[start.y][start.x] = 0;
+
 
 	const std::vector<APos> directions = { {0, -1}, {0, 1}, {-1, 0}, {1, 0} };
 
 	while (not openList.empty()) {
 		NodePtr current = openList.top();
 		openList.pop();
+
+		// 이미 처리된 노드는 건너뛰기
+		if (closed.count(current->pos)) {
+			continue;
+		}
 
 		// goal에 도착했으면
 		if (current->pos == goal) {
@@ -51,7 +62,7 @@ std::vector<APos> AStar(bool map[MAP_SIZE][MAP_SIZE], APos start, APos goal)
 		}
 
 		// 현재 노드를 true로 설정
-		closed.emplace(current->pos);
+		closed.insert(current->pos);
 
 		// 상하좌우 모두 검사
 		for (const APos& dir : directions) {
@@ -64,21 +75,24 @@ std::vector<APos> AStar(bool map[MAP_SIZE][MAP_SIZE], APos start, APos goal)
 				continue;
 			}
 
+			// 이미 더 나은 경로가 기록되어 있으면 건너뛰기
 			int tentativeG = current->gCost + 1;
-			if (gScore.count(next) && tentativeG >= gScore[next]) {
+			if (tentativeG >= gScore[next.y][next.x]) {
 				continue;
 			}
 
+			// 새로운 경로 발견 시 노드 업데이트
 			auto neighbor = std::make_shared<Node>();
 			neighbor->pos = next;
 			neighbor->gCost = current->gCost + 1;
 			neighbor->hCost = Heuristic(next, goal);
 			neighbor->parent = current;
 
-			gScore.try_emplace(next, tentativeG);
+			gScore[next.y][next.x] = tentativeG;
 			openList.push(neighbor);
 		}
 	}
 
+	// 경로가 없으면 빈 벡터 반환
 	return {};
 }

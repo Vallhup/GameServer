@@ -20,7 +20,7 @@ int Heuristic(const APos& a, const APos& b);
 
 struct Node {
 	APos pos;
-	std::weak_ptr<Node> parent;
+	std::shared_ptr<Node> parent;
 
 	// 지금까지 실제로 이동한 거리
 	int gCost{ 0 };
