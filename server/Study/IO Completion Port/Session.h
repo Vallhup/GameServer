@@ -47,9 +47,15 @@ public:
 	void SendCallback();
 
 private:
+	void Close();
+
+private:
 	// Interface ±¸Çö
 	virtual HANDLE GetHandle() override;
 	virtual void Dispatch(ExpOver* expOver, int numOfBytes = 0) override;
+
+protected:
+	std::atomic<bool> _isClosed{ false };
 
 protected:
 	std::weak_ptr<Service> _service;

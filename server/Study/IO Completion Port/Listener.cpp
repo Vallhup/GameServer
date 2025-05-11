@@ -15,25 +15,25 @@ Listener::~Listener()
 
 bool Listener::StartAccept(std::shared_ptr<Service> service)
 {
-	std::cout << "StartAccept Listener\n";
+	LOG_DBG("StartAccept Listener");
 
 	_service = service;
 	if (nullptr == _service.lock()) {
-		std::cout << "_service Error Listener\n";
+		LOG_ERR("Service is nullptr in StartAccept");
 		return false;
 	}
 		
 
 	_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 	if (INVALID_SOCKET == _socket) {
-		std::cout << "_socket Error Listener\n";
+		LOG_ERR("WSASocket failed: %d", WSAGetLastError());
 		return false;
 	}
 		
 
 	// IocpCore에 ListenSocket 등록
 	if (false == service->getIocpCore()->Register(shared_from_this())) {
-		std::cout << "Register Error Listener\n";
+		LOG_ERR("IocpCore::Register failed");
 		return false;
 	}
 
@@ -44,13 +44,13 @@ bool Listener::StartAccept(std::shared_ptr<Service> service)
 
 	// Socket Bind
 	if (SOCKET_ERROR == bind(_socket, reinterpret_cast<sockaddr*>(&addr), sizeof(SOCKADDR_IN))) {
-		std::cout << "bind Error\n";
+		LOG_ERR("bind failed: %d", WSAGetLastError());
 		return false;
 	}
 
 	// Socket Listen
 	if(listen(_socket, SOMAXCONN)) {
-		std::cout << "listen Error\n";
+		LOG_ERR("listen failed: %d", WSAGetLastError());
 		return false;
 	}
 
@@ -66,7 +66,7 @@ bool Listener::StartAccept(std::shared_ptr<Service> service)
 		doAccept(acceptOver);
 	}
 
-	
+	LOG_INF("Posted initial %d AcceptEx calls", acceptCount);
 	return true;
 }
 
@@ -91,7 +91,7 @@ HANDLE Listener::GetHandle()
 
 void Listener::Dispatch(ExpOver* expOver, int numOfBytes)
 {
-	std::cout << "Dispatch Listener\n";
+	LOG_DBG("Dispatch Listener");
 
 	if (expOver->_operationType == OperationType::Accept) {
 		AcceptOver* acceptOver = static_cast<AcceptOver*>(expOver);
@@ -101,7 +101,7 @@ void Listener::Dispatch(ExpOver* expOver, int numOfBytes)
 
 void Listener::doAccept(AcceptOver* acceptOver)
 {
-	std::cout << "Start doAccept Listener\n";
+	LOG_DBG("Start doAccept Listener");
 
 	if (not _accepting.load()) {
 		return;
@@ -120,22 +120,18 @@ void Listener::doAccept(AcceptOver* acceptOver)
 	if (result == FALSE) {
 		int error = WSAGetLastError();
 		if (error != ERROR_IO_PENDING) {
-			std::cout << "AcceptEx Error : " << error << std::endl;
-		}
-
-		else {
-			std::cout << "AcceptEx pending\n";
+			LOG_ERR("AcceptEx Error : %d", error);
 		}
 	}
 
 	else {
-		std::cout << "AcceptEx Success\n";
+		LOG_INF("AcceptEx Success");
 	}
 }
 
 void Listener::AcceptCallback(AcceptOver* acceptOver)
 {
-	std::cout << "Start AcceptCallback Listener\n";
+	LOG_INF("Start AcceptCallback Listener");
 
 	if (not _accepting.load()) {
 		return;
@@ -143,6 +139,7 @@ void Listener::AcceptCallback(AcceptOver* acceptOver)
 
 	ServicePtr service = _service.lock();
 	if (not service) {
+		LOG_WRN("Service expired in AcceptCallback");
 		return;
 	}
 
@@ -160,5 +157,6 @@ void Listener::AcceptCallback(AcceptOver* acceptOver)
 	// session Recv 시작
 	session->doRecv();
 
+	LOG_INF("Accepted new connection, Session started");
 	doAccept(acceptOver);
 }

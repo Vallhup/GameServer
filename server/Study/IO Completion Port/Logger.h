@@ -100,9 +100,10 @@ private:
 	}
 
 private:
-	static inline std::string _basePath;
-	static inline std::atomic<LogLevel> _level{ LogLevel::Info };
-	static inline std::unique_ptr<std::ofstream> _ofs;
-	static inline SpinLock _spin;
+	static inline SpinLock							_spin;
+	static inline std::string						_basePath;
+	static inline std::atomic<LogLevel>				_level{ LogLevel::Info };
+	static inline std::unique_ptr<std::ofstream>	_ofs;
+	
 };
 

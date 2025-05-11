@@ -3,27 +3,7 @@
 
 Session::~Session()
 { 
-	std::cout << "Session" << std::endl;
-
-	ResponseLeavePacket responPacket(_id);
-
-	if(auto locked = _service.lock()) {
-		for (auto& [id, session] : locked->_sessions) {
-			SessionPtr p = session.load();
-			if(nullptr != p)
-				p->Send(responPacket.Serialize());
-		}
-	}
-
-	if (_recvOver._owner != nullptr) {
-		_recvOver._owner = nullptr;
-	}
-
-	if (_sendOver._owner != nullptr) {
-		_sendOver._owner = nullptr;
-	}
-
-	closesocket(_socket);
+	Close();
 }
 
 void Session::Send(const std::vector<char>& data)
@@ -51,8 +31,7 @@ void Session::doRecv()
 	if (SOCKET_ERROR == result) {
 		int error = WSAGetLastError();
 		if (WSA_IO_PENDING != error) {
-			//errorDisplay("Recv : ", error);
-			std::cout << "Recv Error\n";
+			LOG_ERR("WSARecv failed: %d", error);
 		}
 	}
 }
@@ -78,7 +57,7 @@ void Session::doSend()
 	if (SOCKET_ERROR == WSASend(_socket, &_sendOver._wsaBuf[0], 1, &bytesSent, 0, reinterpret_cast<LPWSAOVERLAPPED>(&_sendOver), NULL)) {
 		int error = WSAGetLastError();
 		if (error != WSA_IO_PENDING) {
-			std::cout << "Session Send Error\n";
+			LOG_ERR("WSASend failed: %d", error);
 			_isSending.store(false);
 		}
 	}
@@ -86,7 +65,11 @@ void Session::doSend()
 
 void Session::RecvCallback(DWORD numBytes)
 {
-	_recvOver._buffer.Write(nullptr, numBytes);
+	if (not _recvOver._buffer.Write(nullptr, numBytes)) {
+		LOG_ERR("RecvBuffer overflow in session %d", _id);
+		Close();
+		return;
+	}
 
 	std::vector<char> readBuffer(numBytes);
 	_recvOver._buffer.Read(readBuffer.data(), numBytes);
@@ -98,8 +81,37 @@ void Session::RecvCallback(DWORD numBytes)
 
 void Session::SendCallback()
 {
-	std::cout << "SendCallback\n";
+	LOG_INF("SendCallback()");
 	doSend();
+}
+
+void Session::Close()
+{
+	if (_isClosed.exchange(true)) {
+		return;
+	}
+
+	ResponseLeavePacket responPacket(_id);
+
+	if (auto service = _service.lock()) {
+		for (auto& [id, session] : service->_sessions) {
+			SessionPtr p = session.load();
+			if (nullptr != p)
+				p->Send(responPacket.Serialize());
+		}
+
+		SessionPtr self = std::static_pointer_cast<Session>(shared_from_this());
+		service->ReleaseSession(self);
+	}
+
+	shutdown(_socket, SD_BOTH);
+
+	CancelIoEx(reinterpret_cast<HANDLE>(_socket), nullptr);
+
+	_recvOver._owner.reset();
+	_sendOver._owner.reset();
+
+	closesocket(_socket);
 }
 
 HANDLE Session::GetHandle()
@@ -109,7 +121,8 @@ HANDLE Session::GetHandle()
 
 void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 {
-	std::cout << "Session Dispatch" << std::endl;
+	LOG_INF("Session Dispatch");
+
 	switch (expOver->_operationType) {
 	case OperationType::Recv:
 		RecvCallback(numOfBytes);
@@ -120,13 +133,14 @@ void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 		break;
 
 	default:
+		LOG_WRN("Unknown operation in Dispatch: op=%d", expOver->_operationType);
 		break;
 	}
 }
 
 GameSession::~GameSession()
 {
-	std::cout << "GameSession Delete\n";
+	LOG_DBG("GameSession Delete");
 
 	// TODO : 추후 자원 해제가 필요하게 되면 추가
 }
@@ -188,7 +202,7 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 	}
 
 	default:
-		std::cout << "Error Invalid Packet Type\n";
+		LOG_WRN("Error Invalid Packet Type: %c", packetType);
 		return false;
 	}
 

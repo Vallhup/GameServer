@@ -59,7 +59,7 @@ void Service::CloseService()
 	// 1) Accept 종료
 	_listener->StopAccept();
 
-	// 2) worker thread join
+	// 2) Worker thread join
 	for (size_t i = 0; i < _workers.size(); ++i) {
 		PostQueuedCompletionStatus(_iocpCore->GetHandle(), 0, 0, nullptr);
 	}
@@ -72,6 +72,12 @@ void Service::CloseService()
 	_workers.clear();
 
 	// 3) Session 정리
+	for (auto& [id, session] : _sessions) {
+		SessionPtr p = session.load();
+		if (nullptr != p) {
+			CancelIoEx(p->GetHandle(), nullptr);
+		}
+	}
 	_sessions.clear();
 
 	// 4) Listener 해제

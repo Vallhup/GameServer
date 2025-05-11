@@ -15,12 +15,12 @@ IocpCore::~IocpCore()
 
 bool IocpCore::Register(std::shared_ptr<IocpObject> iocpObject)
 {
-	std::cout << "Start Register IocpCore\n";
+	LOG_DBG("Enter Register IocpCore");
 
 	iocpObject->SetId(clientId);
 	HANDLE result = CreateIoCompletionPort(iocpObject->GetHandle(), _iocpHandle, clientId++, 0);
 	if (result == NULL) {
-		std::cout << "IOCP failed\n";
+		LOG_INF("Register failed");
 		return false;
 	}
 
@@ -29,7 +29,7 @@ bool IocpCore::Register(std::shared_ptr<IocpObject> iocpObject)
 
 bool IocpCore::Dispatch(unsigned int timeoutMs)
 {
-	std::cout << "Dispatch IocpCore\n";
+	LOG_DBG("Enter Dispatch IocpCore");
 
 	DWORD ioSize{ 0 };
 	ULONG_PTR key{ 0 };
@@ -37,16 +37,18 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
 
 	BOOL result = GetQueuedCompletionStatus(_iocpHandle, &ioSize, &key, reinterpret_cast<LPOVERLAPPED*>(&expOver), timeoutMs);
 	if ((not result) and (WAIT_TIMEOUT == WSAGetLastError())) {
+		LOG_DBG("Dispatch timeout");
 		return true;
 	}
 
 	if (nullptr == expOver) {
+		LOG_INF("Dispatch received shutdown signal");
 		SetLastError(ERROR_OPERATION_ABORTED);
 		return false;
 	}
 
-
 	std::shared_ptr<IocpObject> iocpObject = expOver->_owner;
+	LOG_DBG("Dispatch success: key=%11u", (unsigned long long)key);
 	iocpObject->Dispatch(expOver, ioSize);
 
 	return true;
