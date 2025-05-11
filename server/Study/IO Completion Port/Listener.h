@@ -11,6 +11,7 @@ public:
 
 public:
 	bool StartAccept(std::shared_ptr<Service> service);
+	void StopAccept();
 	void CloseSocket();
 
 public:
@@ -24,6 +25,9 @@ private:
 private:
 	SOCKET _socket{ INVALID_SOCKET };
 	std::vector<AcceptOver*> _acceptOvers;
-	std::shared_ptr<Service> _service;
+	std::weak_ptr<Service> _service;
+
+private:
+	std::atomic<bool> _accepting{ false };
 };
 

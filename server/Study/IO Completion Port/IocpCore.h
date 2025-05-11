@@ -23,7 +23,7 @@ public:
 
 public:
 	bool Register(std::shared_ptr<IocpObject> iocpObject);
-	bool Dispatch(unsigned int timeoutMs = 0);
+	bool Dispatch(unsigned int timeoutMs = INFINITE);
 
 private:
 	HANDLE _iocpHandle;

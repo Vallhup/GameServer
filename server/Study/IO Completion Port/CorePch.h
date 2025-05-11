@@ -8,11 +8,15 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <queue>
 #include <unordered_map>
+#include <unordered_set>
 #include <concurrent_unordered_map.h>
 #include <thread>
 #include <atomic>
+#include <mutex>
 #include <memory>
+#include <algorithm>
 
 #include "RecvBuffer.h"
 #include "AtomicQueue.h"
@@ -22,6 +26,9 @@
 #include "Listener.h"
 #include "IocpCore.h"
 #include "Service.h"
+#include "AStar.h"
+#include "Logger.h"
+#include "Macro.h"
 
 
 #pragma comment(lib, "ws2_32.lib")
@@ -29,7 +36,7 @@
 
 constexpr short SERVER_PORT = 3000;
 
-using sharedService = std::shared_ptr<Service>;
-using sharedIocpCore = std::shared_ptr<IocpCore>;
-using sharedSession = std::shared_ptr<Session>;
-using sharedListener = std::shared_ptr<Listener>;
+using ServicePtr = std::shared_ptr<Service>;
+using IocpCorePtr = std::shared_ptr<IocpCore>;
+using SessionPtr= std::shared_ptr<Session>;
+using ListenerPtr = std::shared_ptr<Listener>;

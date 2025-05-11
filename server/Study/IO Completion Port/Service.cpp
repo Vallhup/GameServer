@@ -7,32 +7,81 @@ Service::Service(std::shared_ptr<IocpCore> core, int maxSessionCount)
 {
 }
 
-Service::~Service()
-{
-	CloseService();
-}
-
 bool Service::Start()
 {
-	std::cout << "Start Service\n";
+	LOG_INF("Start Service");
+
+	_running.store(true);
 
 	WSADATA WSAData;
 	WSAStartup(MAKEWORD(2, 2), &WSAData);
 
 	_listener = std::make_shared<Listener>();
-	if (_listener == nullptr)
+	if (_listener == nullptr) {
+		LOG_ERR("Listener allocation failed");
 		return false;
+	}
 
 	std::shared_ptr<Service> service = static_pointer_cast<Service>(shared_from_this());
-	if (_listener->StartAccept(service) == false)
+	if (_listener->StartAccept(service) == false) {
+		LOG_ERR("Listener StartAccept filed");
 		return false;
+	}
+
+	unsigned int threadCount = std::thread::hardware_concurrency();
+	_workers.reserve(threadCount);
+	for (unsigned int i = 0; i < threadCount; ++i) {
+		_workers.emplace_back([this]()
+			{
+				while (_running.load()) {
+					if (not _iocpCore->Dispatch()) {
+						int error = WSAGetLastError();
+
+						if (_running.load() and (error != ERROR_OPERATION_ABORTED)) {
+							LOG_ERR("Dispatch error: &d", error);
+						}
+
+						break;
+					}
+				}
+			});
+	}
+
 
 	return true;
 }
 
 void Service::CloseService()
 {
-	// TODO : Service 종료 시 리소스 정리
+	// 0) _running Flag 설정
+	_running.store(false);
+
+	// 1) Accept 종료
+	_listener->StopAccept();
+
+	// 2) worker thread join
+	for (size_t i = 0; i < _workers.size(); ++i) {
+		PostQueuedCompletionStatus(_iocpCore->GetHandle(), 0, 0, nullptr);
+	}
+
+	for (std::thread& worker : _workers) {
+		if (worker.joinable()) {
+			worker.join();
+		}
+	}
+	_workers.clear();
+
+	// 3) Session 정리
+	_sessions.clear();
+
+	// 4) Listener 해제
+	_listener.reset();
+
+	// 5) IOCP Handle 해제
+	_iocpCore.reset();
+
+	// 6) WinSock 정리
+	WSACleanup();
 }
 
 std::shared_ptr<Session> Service::CreateSession()

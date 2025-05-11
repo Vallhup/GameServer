@@ -35,27 +35,19 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
 	ULONG_PTR key{ 0 };
 	ExpOver* expOver{ nullptr };
 
-	if (GetQueuedCompletionStatus(_iocpHandle, &ioSize, &key,
-		reinterpret_cast<LPOVERLAPPED*>(&expOver), timeoutMs))
-	{
-		std::shared_ptr<IocpObject> iocpObject = expOver->_owner;
-		std::cout << typeid(*iocpObject).name() << std::endl;
-		iocpObject->Dispatch(expOver, ioSize);
+	BOOL result = GetQueuedCompletionStatus(_iocpHandle, &ioSize, &key, reinterpret_cast<LPOVERLAPPED*>(&expOver), timeoutMs);
+	if ((not result) and (WAIT_TIMEOUT == WSAGetLastError())) {
+		return true;
 	}
 
-	else {
-		int error = WSAGetLastError();
-		switch (error) {
-		case WAIT_TIMEOUT:
-			return false;
-
-		default:
-			std::shared_ptr<IocpObject> iocpObject = expOver->_owner;
-			std::cout << typeid(*iocpObject).name() << std::endl;
-			iocpObject->Dispatch(expOver, ioSize);
-			break;
-		}
+	if (nullptr == expOver) {
+		SetLastError(ERROR_OPERATION_ABORTED);
+		return false;
 	}
+
+
+	std::shared_ptr<IocpObject> iocpObject = expOver->_owner;
+	iocpObject->Dispatch(expOver, ioSize);
 
 	return true;
 }

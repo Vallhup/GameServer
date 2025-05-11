@@ -9,7 +9,6 @@ class Service : public std::enable_shared_from_this<Service>
 
 public:
 	Service(std::shared_ptr<IocpCore> core, int maxSessionCount = 10);
-	virtual ~Service();
 
 public:
 	bool Start();
@@ -26,13 +25,22 @@ public:
 
 	static std::shared_ptr<Service> Create(std::shared_ptr<IocpCore> core, int maxSessionCount = 10);
 
-protected:
+private:
 	std::shared_ptr<IocpCore> _iocpCore;
 	std::shared_ptr<Listener> _listener{ nullptr };
 
+private:
+	// session °ü¸®
 	concurrency::concurrent_unordered_map<int, std::atomic<std::shared_ptr<Session>>> _sessions;
 
 	std::atomic<int> _sessionCount{ 0 };
 	int _maxSessionCount{ 0 };
+
+private:
+	std::vector<std::thread> _workers;
+
+public:
+	std::atomic<bool> _running{ false };
+
 };
 

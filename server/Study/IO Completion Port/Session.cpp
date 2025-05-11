@@ -9,7 +9,7 @@ Session::~Session()
 
 	if(auto locked = _service.lock()) {
 		for (auto& [id, session] : locked->_sessions) {
-			sharedSession p = session.load();
+			SessionPtr p = session.load();
 			if(nullptr != p)
 				p->Send(responPacket.Serialize());
 		}
@@ -145,7 +145,7 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 
 		if (auto locked = _service.lock()) {
 			for (auto& [id, session] : locked->_sessions) {
-				sharedSession p = session.load();
+				SessionPtr p = session.load();
 				if ((nullptr != p) and (id != _id))
 					p->Send(responseEnterPacket.Serialize());
 			}
@@ -153,7 +153,7 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 
 		if (auto locked = _service.lock()) {
 			for (auto& [id, session] : locked->_sessions) {
-				sharedSession p = session.load();
+				SessionPtr p = session.load();
 				if ((nullptr != p) and (id != _id)) {
 					ResponseEnterPacket responseEnterPacket(id, static_pointer_cast<GameSession>(p)->GetPos());
 					Send(responseEnterPacket.Serialize());
@@ -178,7 +178,7 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 
 		if (auto locked = _service.lock()) {
 			for (auto& [id, session] : locked->_sessions) {
-				sharedSession p = session.load();
+				SessionPtr p = session.load();
 				if(nullptr != p)
 					p->Send(responsePacket.Serialize());
 			}

@@ -3,11 +3,14 @@
 
 Listener::~Listener()
 {
-	CloseSocket();
+	StopAccept();
 
 	for (AcceptOver* acceptOver : _acceptOvers) {
 		delete acceptOver;
 	}
+	_acceptOvers.clear();
+
+	CloseSocket();
 }
 
 bool Listener::StartAccept(std::shared_ptr<Service> service)
@@ -15,7 +18,7 @@ bool Listener::StartAccept(std::shared_ptr<Service> service)
 	std::cout << "StartAccept Listener\n";
 
 	_service = service;
-	if (nullptr == _service) {
+	if (nullptr == _service.lock()) {
 		std::cout << "_service Error Listener\n";
 		return false;
 	}
@@ -51,7 +54,10 @@ bool Listener::StartAccept(std::shared_ptr<Service> service)
 		return false;
 	}
 
+	_accepting.store(true);
+
 	const int acceptCount = service->getMaxSessionCount();
+	_acceptOvers.reserve(acceptCount);
 	for (int i = 0; i < acceptCount; ++i) {
 		AcceptOver* acceptOver = new AcceptOver;
 		acceptOver->_owner = shared_from_this();
@@ -60,7 +66,17 @@ bool Listener::StartAccept(std::shared_ptr<Service> service)
 		doAccept(acceptOver);
 	}
 
+	
 	return true;
+}
+
+void Listener::StopAccept()
+{
+	_accepting = false;
+
+	for (AcceptOver* acceptOver : _acceptOvers) {
+		CancelIoEx(reinterpret_cast<HANDLE>(_socket), reinterpret_cast<LPOVERLAPPED>(acceptOver));
+	}
 }
 
 void Listener::CloseSocket()
@@ -86,6 +102,10 @@ void Listener::Dispatch(ExpOver* expOver, int numOfBytes)
 void Listener::doAccept(AcceptOver* acceptOver)
 {
 	std::cout << "Start doAccept Listener\n";
+
+	if (not _accepting.load()) {
+		return;
+	}
 
 	std::shared_ptr<GameSession> session = std::make_shared<GameSession>();
 
@@ -117,16 +137,25 @@ void Listener::AcceptCallback(AcceptOver* acceptOver)
 {
 	std::cout << "Start AcceptCallback Listener\n";
 
+	if (not _accepting.load()) {
+		return;
+	}
+
+	ServicePtr service = _service.lock();
+	if (not service) {
+		return;
+	}
+
 	// 어떤 Session이 Accept했는지 확인
 	std::shared_ptr<GameSession> session = static_pointer_cast<GameSession>(acceptOver->_session);
 
 	setsockopt(session->GetSocket(), SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, (char*)&_socket, sizeof(_socket));
 
 	// session의 socket을 IocpCore에 등록
-	_service->getIocpCore()->Register(session);
+	service->getIocpCore()->Register(session);
 
 	// session을 User를 관리하는 container에 push
-	_service->AddSession(session);
+	service->AddSession(session);
 
 	// session Recv 시작
 	session->doRecv();
