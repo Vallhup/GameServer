@@ -22,7 +22,7 @@ bool Service::Start()
 		return false;
 	}
 
-	std::shared_ptr<Service> service = static_pointer_cast<Service>(shared_from_this());
+	std::shared_ptr<Service> service = shared_from_this();
 	if (_listener->StartAccept(service) == false) {
 		LOG_ERR("Listener StartAccept filed");
 		return false;
@@ -90,7 +90,7 @@ void Service::CloseService()
 	WSACleanup();
 }
 
-std::shared_ptr<Session> Service::CreateSession()
+SessionPtr Service::CreateSession()
 {
 	std::shared_ptr<GameSession> session = std::make_shared<GameSession>();
 	session->SetService(shared_from_this());
@@ -100,14 +100,15 @@ std::shared_ptr<Session> Service::CreateSession()
 	return session;
 }
 
-void Service::AddSession(std::shared_ptr<Session> session)
+void Service::AddSession(const std::shared_ptr<GameSession> session)
 {
 	int sessionId = _sessionCount++;
+	session->SetId(sessionId);
 	_sessions.insert(std::make_pair(sessionId, session));
 	session->SetService(shared_from_this());
 }
 
-void Service::ReleaseSession(std::shared_ptr<Session> session)
+void Service::ReleaseSession(const std::shared_ptr<GameSession> session)
 {
 	short sessionId = session->_id;
 

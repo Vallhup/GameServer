@@ -73,6 +73,12 @@ void Session::doSend()
 
 void Session::RecvCallback(DWORD numBytes)
 {
+	if (numBytes == 0) {
+		LOG_INF("Client %d disconnected", _id);
+		Close();
+		return;
+	}
+
 	if (not _recvOver._buffer.Write(nullptr, numBytes)) {
 		LOG_ERR("RecvBuffer overflow in session %d", _id);
 		Close();
@@ -110,7 +116,7 @@ void Session::Close()
 	closesocket(_socket);
 
 	if (auto service = _service.lock()) {
-		service->ReleaseSession(static_pointer_cast<Session>(shared_from_this()));
+		service->ReleaseSession(static_pointer_cast<GameSession>(shared_from_this()));
 	}
 
 	LOG_INF("Closing Session %d", _id);
@@ -123,6 +129,10 @@ HANDLE Session::GetHandle()
 
 void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 {
+	if (ST_FREE == _state.load()) {
+		return;
+	}
+
 	LOG_INF("Session Dispatch");
 
 	switch (expOver->_operationType) {
@@ -178,28 +188,16 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 		requestPacket.name[NAME_SIZE - 1] = '\0';
 		_name = requestPacket.name;
 
-		// 3. Session Container에 자기자신 등록
-		service->AddSession(static_pointer_cast<Session>(shared_from_this()));
 
-		// 4. 내 client에게 LOGIN_INFO Send
-		auto self = static_pointer_cast<GameSession>(shared_from_this());
+		GameSessionPtr self = static_pointer_cast<GameSession>(shared_from_this());
+
+		// 3. Session Container에 자기자신 등록
+		service->AddSession(self);
 		sendLoginPacket(self);
 
-		// 5. 다른 client들에게 ADD_PLAYER Send
-		for (auto& [id, session] : service->_sessions) {
-			auto target = static_pointer_cast<GameSession>(session.load());
-			if (nullptr != target) {
-				// 자기 자신을 제외하고 Broadcast
-				if (target != self) {
-					target->sendAddPlayerPacket(self);
-				}
-
-				// 6. 내 client에게 기존 접속자 Send
-				else {
-					self->sendAddPlayerPacket(target);
-				}
-			}
-		}
+		auto newViewList = collectViewList();
+		auto oldViewList = updateViewList(newViewList);
+		syncViewList(oldViewList, newViewList);
 
 		break;
 	}
@@ -221,15 +219,9 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 		case RIGHT: if (_pos._xPos < W_WIDTH - 1) _pos._xPos++; break;
 		}
 
-		// 3. 업데이트 된 Pos Broadcast
-		auto self = static_pointer_cast<GameSession>(shared_from_this());
-
-		for (auto& [id, session] : service->_sessions) {
-			auto target = static_pointer_cast<GameSession>(session.load());
-			if (nullptr != target) {
-				target->sendMovePacket(self);
-			}
-		}
+		auto newViewList = collectViewList();
+		auto oldViewList = updateViewList(newViewList);
+		syncViewList(oldViewList, newViewList);
 
 		break;
 	}
@@ -288,4 +280,100 @@ void GameSession::sendLoginPacket(const std::shared_ptr<GameSession>& target)
 	login.y = target->_pos._yPos;
 
 	Send(Serialize(login));
+}
+
+bool GameSession::can_see(const std::shared_ptr<GameSession>& target)
+{
+	if (abs(_pos._xPos - target->_pos._xPos) > VIEW_RANGE) return false;
+	return abs(_pos._yPos - target->_pos._yPos) <= VIEW_RANGE;
+}
+
+std::unordered_set<int> GameSession::collectViewList()
+{
+	auto service = _service.lock();
+	if (nullptr == service) {
+		return{};
+	}
+
+	std::unordered_set<int> result;
+
+	for (auto& [id, session] : service->_sessions) {
+		if (id == _id) continue;
+		GameSessionPtr target = session.load();
+		if ((nullptr != target) and (ST_INGAME == target->_state) and can_see(target)) {
+			result.insert(id);
+		}
+	}
+
+	return result;
+}
+
+std::unordered_set<int> GameSession::updateViewList(const std::unordered_set<int>& newList)
+{
+	std::unordered_set<int> oldViewList;
+	{
+		std::lock_guard<std::mutex> vl{ _viewLock };
+		oldViewList = _viewList;
+		_viewList = newList;
+	}
+
+	return oldViewList;
+}
+
+void GameSession::syncViewList(const std::unordered_set<int>& oldList, const std::unordered_set<int>& newList)
+{
+	auto service = _service.lock();
+	if (nullptr == service) {
+		return;
+	}
+
+	std::vector<int> sortedNewList(newList.begin(), newList.end());
+	std::sort(sortedNewList.begin(), sortedNewList.end());
+
+	GameSessionPtr self = static_pointer_cast<GameSession>(shared_from_this());
+	if (nullptr == self) {
+		return;
+	}
+
+	sendMovePacket(self);
+
+	for (int id : sortedNewList) {
+		GameSessionPtr target = service->_sessions.at(id);
+		if (nullptr == target) continue;
+
+		if (_id < target->_id) {
+			std::scoped_lock vl{ _viewLock, target->_viewLock };
+
+			if (oldList.count(id) == 0) {
+				target->sendAddPlayerPacket(self);
+				sendAddPlayerPacket(target);
+			}
+
+			else {
+				target->sendMovePacket(self);
+			}
+		}
+
+		else {
+			std::scoped_lock vl{ target->_viewLock, _viewLock };
+
+			if (oldList.count(id) == 0) {
+				target->sendAddPlayerPacket(self);
+				sendAddPlayerPacket(target);
+			}
+
+			else {
+				target->sendMovePacket(self);
+			}
+		}
+	}
+
+	for (int id : oldList) {
+		if (newList.count(id)) continue;
+		GameSessionPtr target = service->_sessions.at(id);
+		if (nullptr == target) continue;
+
+		sendRemovePacket(target);
+		target->sendRemovePacket(self);
+	}
 }

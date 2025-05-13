@@ -22,7 +22,6 @@
 #include "RecvBuffer.h"
 #include "AtomicQueue.h"
 #include "Session.h"
-#include "Packet.h"
 #include "ExpOver.h"
 #include "Listener.h"
 #include "IocpCore.h"
@@ -36,9 +35,10 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment (lib, "MSWSock.LIB")
 
-constexpr short SERVER_PORT = 3000;
+constexpr short SERVER_PORT = 4000;
 
 using ServicePtr = std::shared_ptr<Service>;
 using IocpCorePtr = std::shared_ptr<IocpCore>;
-using SessionPtr= std::shared_ptr<Session>;
+using SessionPtr = std::shared_ptr<Session>;
+using GameSessionPtr = std::shared_ptr<GameSession>;
 using ListenerPtr = std::shared_ptr<Listener>;

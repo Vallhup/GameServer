@@ -15,6 +15,7 @@ enum State : char {
 	ST_FREE
 };
 
+constexpr int VIEW_RANGE = 7;
 
 // Client의 정보 (고유 id, 연결 socket 등)
 // 컨텐츠와 관련된 작업들
@@ -87,7 +88,6 @@ public:
 
 public:
 	// Send 관련
-
 	// target의 Add, Move, Remove, Login을 자신의 client에게 Send하는 함수
 	void sendAddPlayerPacket(const std::shared_ptr<GameSession>& target);
 	void sendMovePacket(const std::shared_ptr<GameSession>& target);
@@ -95,10 +95,23 @@ public:
 	void sendLoginPacket(const std::shared_ptr<GameSession>& target);
 
 public:
+	// view 관련
+	// 나에게 target이 보이는지 여부를 return하는 함수
+	bool can_see(const std::shared_ptr<GameSession>& target);
+
+	std::unordered_set<int> collectViewList();
+	std::unordered_set<int> updateViewList(const std::unordered_set<int>& newList);
+	void syncViewList(const std::unordered_set<int>& oldList, const std::unordered_set<int>& newList);
+
+public:
 	// Getter
 	Pos	   GetPos() const { return _pos; }
 
 private:
-	Pos		_pos{ 4, 4 };
+	Pos		_pos{ rand() % 400, rand() % 400 };
 	std::string _name;
+
+private:
+	std::unordered_set<int> _viewList;
+	std::mutex				_viewLock;
 };

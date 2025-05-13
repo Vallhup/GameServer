@@ -15,8 +15,8 @@ public:
 	void CloseService();
 
 	std::shared_ptr<Session> CreateSession();
-	void AddSession(std::shared_ptr<Session> session);
-	void ReleaseSession(std::shared_ptr<Session> session);
+	void AddSession(const std::shared_ptr<GameSession> session);
+	void ReleaseSession(const std::shared_ptr<GameSession> session);
 
 public:
 	int getCurrentSessionCount() const { return _sessionCount; }
@@ -31,7 +31,7 @@ private:
 
 private:
 	// session °ü¸®
-	concurrency::concurrent_unordered_map<int, std::atomic<std::shared_ptr<Session>>> _sessions;
+	concurrency::concurrent_unordered_map<int, std::atomic<std::shared_ptr<GameSession>>> _sessions;
 
 	std::atomic<int> _sessionCount{ 0 };
 	int _maxSessionCount{ 0 };
