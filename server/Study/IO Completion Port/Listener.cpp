@@ -22,14 +22,14 @@ bool Listener::StartAccept(std::shared_ptr<Service> service)
 		LOG_ERR("Service is nullptr in StartAccept");
 		return false;
 	}
-		
+
 
 	_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 	if (INVALID_SOCKET == _socket) {
 		LOG_ERR("WSASocket failed: %d", WSAGetLastError());
 		return false;
 	}
-		
+
 
 	// IocpCore¿¡ ListenSocket µî·Ï
 	if (false == service->getIocpCore()->Register(shared_from_this())) {
@@ -49,7 +49,7 @@ bool Listener::StartAccept(std::shared_ptr<Service> service)
 	}
 
 	// Socket Listen
-	if(listen(_socket, SOMAXCONN)) {
+	if (listen(_socket, SOMAXCONN)) {
 		LOG_ERR("listen failed: %d", WSAGetLastError());
 		return false;
 	}

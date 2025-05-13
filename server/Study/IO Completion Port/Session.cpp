@@ -8,6 +8,10 @@ Session::~Session()
 
 void Session::Send(const std::vector<char>& data)
 {
+	if (_state.load() == ST_FREE) {
+		return;
+	}
+
 	_sendQueue.Push(data);
 
 	if (not _isSending.exchange(true)) {
@@ -38,13 +42,15 @@ void Session::doRecv()
 
 void Session::doSend()
 {
-	constexpr size_t MAX_PACKET = 16;
+	if ((ST_FREE == _state.load()) or (_socket == INVALID_SOCKET)) {
+		return;
+	}
 
+	constexpr size_t MAX_PACKET = 16;
 	std::vector<std::shared_ptr<std::vector<char>>> packets;
 	packets.reserve(MAX_PACKET);
 
 	std::shared_ptr<std::vector<char>> sendData;
-
 	while ((packets.size() < MAX_PACKET) and (_sendQueue.tryPop(sendData))) {
 		packets.push_back(sendData);
 	}
@@ -64,10 +70,17 @@ void Session::doSend()
 	DWORD bytesSent{ 0 };
 	if (SOCKET_ERROR == WSASend(_socket, _sendOver._wsaBufs.data(), _sendOver._wsaBufs.size(), &bytesSent, 0, reinterpret_cast<LPWSAOVERLAPPED>(&_sendOver), NULL)) {
 		int error = WSAGetLastError();
-		if (error != WSA_IO_PENDING) {
-			LOG_ERR("WSASend failed: %d", error);
-			_isSending.store(false);
+		if ((error == WSAECONNRESET) or (error == WSAENOTCONN) or (error == WSAESHUTDOWN)) {
+			LOG_INF("Client %d disconnected", _id);
 		}
+
+		else if (error != WSA_IO_PENDING) {
+			LOG_ERR("WSASend failed: %d", error);
+		}
+
+		_isSending.store(false);
+		Close();
+		return;
 	}
 }
 
@@ -159,7 +172,7 @@ GameSession::~GameSession()
 
 bool GameSession::ProcessPacket(const std::vector<char>& packet)
 {
-	if (_state.load() == ST_FREE) {
+	if (ST_FREE == _state.load()) {
 		LOG_WRN("Session state is Free");
 		return false;
 	}

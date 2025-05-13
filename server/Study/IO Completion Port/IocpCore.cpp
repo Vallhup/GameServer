@@ -48,6 +48,11 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
 	}
 
 	std::shared_ptr<IocpObject> iocpObject = expOver->_owner;
+	if (nullptr == iocpObject) {
+		return true;
+	}
+
+
 	LOG_DBG("Dispatch success: key=%11u", (unsigned long long)key);
 	iocpObject->Dispatch(expOver, ioSize);
 

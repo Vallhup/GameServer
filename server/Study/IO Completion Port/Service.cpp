@@ -47,7 +47,6 @@ bool Service::Start()
 			});
 	}
 
-
 	return true;
 }
 
@@ -125,7 +124,7 @@ void Service::ReleaseSession(const std::shared_ptr<GameSession> session)
 		}
 	}
 
-	_sessions.unsafe_erase(sessionId);
+	//_sessions.unsafe_erase(sessionId);
 	--_sessionCount;
 
 	LOG_INF("Session %d released", sessionId);
