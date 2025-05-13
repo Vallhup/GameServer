@@ -9,6 +9,12 @@ struct Pos
 	short _yPos;
 };
 
+enum State : char {
+	ST_ALLOC,
+	ST_INGAME,
+	ST_FREE
+};
+
 
 // Client의 정보 (고유 id, 연결 socket 등)
 // 컨텐츠와 관련된 작업들
@@ -55,7 +61,7 @@ private:
 	virtual void Dispatch(ExpOver* expOver, int numOfBytes = 0) override;
 
 protected:
-	std::atomic<bool> _isClosed{ false };
+	std::atomic<State> _state{ ST_ALLOC };
 
 protected:
 	std::weak_ptr<Service> _service;
@@ -80,8 +86,19 @@ public:
 	virtual bool ProcessPacket(const std::vector<char>& packet) override;
 
 public:
+	// Send 관련
+
+	// target의 Add, Move, Remove, Login을 자신의 client에게 Send하는 함수
+	void sendAddPlayerPacket(const std::shared_ptr<GameSession>& target);
+	void sendMovePacket(const std::shared_ptr<GameSession>& target);
+	void sendRemovePacket(const std::shared_ptr<GameSession>& target);
+	void sendLoginPacket(const std::shared_ptr<GameSession>& target);
+
+public:
+	// Getter
 	Pos	   GetPos() const { return _pos; }
 
 private:
 	Pos		_pos{ 4, 4 };
+	std::string _name;
 };

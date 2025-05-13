@@ -17,6 +17,7 @@
 #include <mutex>
 #include <memory>
 #include <algorithm>
+#include <type_traits>
 
 #include "RecvBuffer.h"
 #include "AtomicQueue.h"
@@ -29,6 +30,7 @@
 #include "AStar.h"
 #include "Logger.h"
 #include "Macro.h"
+#include "protocol.h"
 
 
 #pragma comment(lib, "ws2_32.lib")

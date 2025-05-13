@@ -55,15 +55,21 @@ class SendOver : public ExpOver
 public:
 	SendOver() : ExpOver(Send) {}
 
-	void SetBuffer(const std::shared_ptr<std::vector<char>>& data)
+	void SetBuffers(const std::vector<std::shared_ptr<std::vector<char>>>&& buffers)
 	{
-		_sendData = data;
+		_wsaBufs.clear();
+		_sendDataList.clear();
 
-		_wsaBuf[0].buf = const_cast<char*>(data->data());
-		_wsaBuf[0].len = static_cast<ULONG>(data->size());
+		_sendDataList = buffers;
+		_wsaBufs.resize(buffers.size());
+		
+		for (size_t i = 0; i < buffers.size(); ++i) {
+			_wsaBufs[i].buf = const_cast<char*>(_sendDataList[i]->data());
+			_wsaBufs[i].len = static_cast<ULONG>(_sendDataList[i]->size());
+		}
 	}
 
 public:
-	WSABUF		_wsaBuf[1];
-	std::shared_ptr<std::vector<char>> _sendData;
+	std::vector<WSABUF>		_wsaBufs;
+	std::vector<std::shared_ptr<std::vector<char>>> _sendDataList;
 };

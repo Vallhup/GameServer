@@ -151,9 +151,6 @@ void Listener::AcceptCallback(AcceptOver* acceptOver)
 	// session의 socket을 IocpCore에 등록
 	service->getIocpCore()->Register(session);
 
-	// session을 User를 관리하는 container에 push
-	service->AddSession(session);
-
 	// session Recv 시작
 	session->doRecv();
 

@@ -109,8 +109,25 @@ void Service::AddSession(std::shared_ptr<Session> session)
 
 void Service::ReleaseSession(std::shared_ptr<Session> session)
 {
-	_sessions.unsafe_erase(session->GetSessionId());
+	short sessionId = session->_id;
+
+	SC_REMOVE_PLAYER_PACKET remove;
+	remove.id = sessionId;
+	remove.size = sizeof(remove);
+	remove.type = SC_REMOVE_PLAYER;
+
+	for (auto& [id, atomicSession] : _sessions) {
+		if (auto p = atomicSession.load()) {
+			if (p->GetSessionId() != sessionId) {
+				p->Send(Serialize(remove));
+			}
+		}
+	}
+
+	_sessions.unsafe_erase(sessionId);
 	--_sessionCount;
+
+	LOG_INF("Session %d released", sessionId);
 }
 
 std::shared_ptr<Service> Service::Create(std::shared_ptr<IocpCore> core, int maxSessionCount)
