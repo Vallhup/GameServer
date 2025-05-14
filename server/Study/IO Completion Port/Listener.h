@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IocpCore.h"
-#include "Service.h"
+class Service;
+class ExpOver;
 
 class Listener : public IocpObject
 {
@@ -16,7 +16,7 @@ public:
 
 public:
 	virtual HANDLE GetHandle() override;
-	virtual void Dispatch(class ExpOver* expOver, int numOfBytes = 0) override;
+	virtual void Dispatch(ExpOver* expOver, int numOfBytes = 0) override;
 
 private:
 	void doAccept(AcceptOver* acceptOver);

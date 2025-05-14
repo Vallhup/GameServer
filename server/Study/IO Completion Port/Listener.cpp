@@ -56,7 +56,7 @@ bool Listener::StartAccept(std::shared_ptr<Service> service)
 
 	_accepting.store(true);
 
-	const int acceptCount = service->getMaxSessionCount();
+	const unsigned int acceptCount = std::thread::hardware_concurrency();
 	_acceptOvers.reserve(acceptCount);
 	for (int i = 0; i < acceptCount; ++i) {
 		AcceptOver* acceptOver = new AcceptOver;
@@ -74,9 +74,7 @@ void Listener::StopAccept()
 {
 	_accepting = false;
 
-	for (AcceptOver* acceptOver : _acceptOvers) {
-		CancelIoEx(reinterpret_cast<HANDLE>(_socket), reinterpret_cast<LPOVERLAPPED>(acceptOver));
-	}
+	CancelIoEx(GetHandle(), nullptr);
 }
 
 void Listener::CloseSocket()

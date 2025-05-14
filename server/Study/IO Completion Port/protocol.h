@@ -10,10 +10,13 @@ constexpr int W_HEIGHT = 400;
 enum PacketID : char {
 	CS_LOGIN,
 	CS_MOVE,
+	CS_CHAT,
+
 	SC_LOGIN_INFO,
 	SC_ADD_PLAYER,
 	SC_REMOVE_PLAYER,
-	SC_MOVE_PLAYER
+	SC_MOVE_PLAYER,
+	SC_CHAT_BROADCAST
 };
 
 enum MoveDirection : char {
@@ -35,6 +38,12 @@ struct CS_MOVE_PACKET {
 	char	type;
 	char	direction;
 	unsigned int move_time;
+};
+
+struct CS_CHAT_PACKET {
+	unsigned char size;
+	char type;
+	char message[BUF_SIZE];
 };
 
 struct SC_LOGIN_INFO_PACKET {
@@ -65,6 +74,14 @@ struct SC_MOVE_PLAYER_PACKET {
 	short	x, y;
 	unsigned int move_time;
 };
+
+struct SC_CHAT_BROADCAST_PACKET {
+	unsigned char size;
+	char type;
+	short id;
+	char message[BUF_SIZE];
+};
+
 #pragma pack (pop)
 
 

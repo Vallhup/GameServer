@@ -128,10 +128,6 @@ void Session::Close()
 
 	closesocket(_socket);
 
-	if (auto service = _service.lock()) {
-		service->ReleaseSession(static_pointer_cast<GameSession>(shared_from_this()));
-	}
-
 	LOG_INF("Closing Session %d", _id);
 }
 
@@ -165,9 +161,22 @@ void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 
 GameSession::~GameSession()
 {
-	LOG_DBG("GameSession Delete");
+	std::unordered_set<int> viewList;
+	{
+		std::shared_lock vl{ _viewLock };
+		viewList = _viewList;
+	}
+	std::unordered_set<int> emptyList;
+	syncViewList(viewList, emptyList);
 
-	// TODO : 추후 자원 해제가 필요하게 되면 추가
+	if (auto service = _service.lock()) {
+		auto self = static_pointer_cast<GameSession>(shared_from_this());
+
+		service->ReleaseSession(self);
+		service->leaveSector(self);
+	}
+
+	LOG_DBG("GameSession Delete");
 }
 
 bool GameSession::ProcessPacket(const std::vector<char>& packet)
@@ -183,6 +192,7 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 		return false;
 	}
 
+	GameSessionPtr self = static_pointer_cast<GameSession>(shared_from_this());
 	char packetType = packet[1];
 
 	switch (packetType) {
@@ -201,13 +211,14 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 		requestPacket.name[NAME_SIZE - 1] = '\0';
 		_name = requestPacket.name;
 
-
-		GameSessionPtr self = static_pointer_cast<GameSession>(shared_from_this());
-
 		// 3. Session Container에 자기자신 등록
 		service->AddSession(self);
 		sendLoginPacket(self);
 
+		// 4. Sector에 자기자신 등록
+		service->enterSector(self);
+
+		// 5. viewList 동기화
 		auto newViewList = collectViewList();
 		auto oldViewList = updateViewList(newViewList);
 		syncViewList(oldViewList, newViewList);
@@ -232,9 +243,22 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 		case RIGHT: if (_pos._xPos < W_WIDTH - 1) _pos._xPos++; break;
 		}
 
+		// 3. Sector 동기화
+		service->leaveSector(self);
+		service->enterSector(self);
+
+		// 4. viewList 동기화
 		auto newViewList = collectViewList();
 		auto oldViewList = updateViewList(newViewList);
 		syncViewList(oldViewList, newViewList);
+
+		break;
+	}
+	case CS_CHAT: {
+		auto requestPacket = Deserialize<CS_CHAT_PACKET>(packet);
+		requestPacket.message[BUF_SIZE - 1] = '\0';
+
+		service->OnChatRequest(_id, requestPacket.message);
 
 		break;
 	}
@@ -308,11 +332,12 @@ std::unordered_set<int> GameSession::collectViewList()
 		return{};
 	}
 
+	std::unordered_set<int> newViewList = service->collectVisibleClients(static_pointer_cast<GameSession>(shared_from_this()));
 	std::unordered_set<int> result;
 
-	for (auto& [id, session] : service->_sessions) {
+	for (int id : newViewList) {
 		if (id == _id) continue;
-		GameSessionPtr target = session.load();
+		GameSessionPtr target = service->_sessions.at(id).load();
 		if ((nullptr != target) and (ST_INGAME == target->_state) and can_see(target)) {
 			result.insert(id);
 		}
@@ -325,7 +350,7 @@ std::unordered_set<int> GameSession::updateViewList(const std::unordered_set<int
 {
 	std::unordered_set<int> oldViewList;
 	{
-		std::lock_guard<std::mutex> vl{ _viewLock };
+		std::unique_lock vl{ _viewLock };
 		oldViewList = _viewList;
 		_viewList = newList;
 	}

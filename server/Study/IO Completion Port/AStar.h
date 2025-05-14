@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr short MAP_SIZE{ 10 };
+constexpr int A_MAP_SIZE{ 10 };
 
 struct APos {
 	short x, y;
@@ -44,4 +44,4 @@ struct Compare {
 // node의 parent를 따라가면서 전체 경로를 path에 넣고 return
 std::vector<APos> ReconstructPath(NodePtr node);
 
-std::vector<APos> AStar(bool map[MAP_SIZE][MAP_SIZE], APos start, APos goal);
+std::vector<APos> AStar(bool map[A_MAP_SIZE][A_MAP_SIZE], APos start, APos goal);

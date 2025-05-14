@@ -3,7 +3,7 @@
 #include "Listener.h"
 
 Service::Service(std::shared_ptr<IocpCore> core, int maxSessionCount)
-	: _iocpCore(core), _maxSessionCount(maxSessionCount)
+	: _iocpCore(core), _maxSessionCount(maxSessionCount), _chatManager(*this)
 {
 }
 
@@ -124,10 +124,50 @@ void Service::ReleaseSession(const std::shared_ptr<GameSession> session)
 		}
 	}
 
-	//_sessions.unsafe_erase(sessionId);
+	_sessions.at(sessionId) = nullptr;
 	--_sessionCount;
 
 	LOG_INF("Session %d released", sessionId);
+}
+
+void Service::enterSector(const std::shared_ptr<GameSession>& session)
+{
+	auto [sx, sy] = Sector::getSector(session->_pos._xPos, session->_pos._yPos);
+	_sectors[sx][sy].addClient(session->_id);
+}
+
+void Service::leaveSector(const std::shared_ptr<GameSession>& session)
+{
+	auto [sx, sy] = Sector::getSector(session->_pos._xPos, session->_pos._yPos);
+	_sectors[sx][sy].removeClient(session->_id);
+}
+
+std::unordered_set<int> Service::collectVisibleClients(const std::shared_ptr<GameSession>& session) const
+{
+	auto [xRange, yRange] = Sector::getSectorRange(session->_pos._xPos, session->_pos._yPos);
+	std::unordered_set<int> result;
+
+	for (int sx = xRange.first; sx <= xRange.second; ++sx) {
+		for (int sy = yRange.first; sy <= yRange.second; ++sy) {
+			_sectors[sx][sy].collectClient(result);
+		}
+	}
+
+	return result;
+}
+
+void Service::OnChatRequest(short senderId, const char* msg)
+{
+	_chatManager.HandleMessage(senderId, msg);
+}
+
+void Service::Broadcast(const std::vector<char>& buf)
+{
+	for (auto& [id, session] : _sessions) {
+		if (GameSessionPtr p = session.load()) {
+			p->Send(buf);
+		}
+	}
 }
 
 std::shared_ptr<Service> Service::Create(std::shared_ptr<IocpCore> core, int maxSessionCount)

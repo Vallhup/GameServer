@@ -20,7 +20,7 @@ std::vector<APos> ReconstructPath(NodePtr node)
 	return path;
 }
 
-std::vector<APos> AStar(bool map[MAP_SIZE][MAP_SIZE], APos start, APos goal)
+std::vector<APos> AStar(bool map[A_MAP_SIZE][A_MAP_SIZE], APos start, APos goal)
 {
 	// priority_queue는 우선순위 큐 (우선순위가 높은 원소부터 pop)
 	std::priority_queue<NodePtr, std::vector<NodePtr>, Compare> openList;

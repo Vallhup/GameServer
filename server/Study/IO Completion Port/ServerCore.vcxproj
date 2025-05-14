@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AStar.h" />
+    <ClInclude Include="ChatManager.h" />
     <ClInclude Include="CorePch.h" />
     <ClInclude Include="ExpOver.h" />
     <ClInclude Include="IocpCore.h" />
@@ -166,11 +167,13 @@
     <ClInclude Include="protocol.h" />
     <ClInclude Include="RecvBuffer.h" />
     <ClInclude Include="AtomicQueue.h" />
+    <ClInclude Include="Sector.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="Session.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AStar.cpp" />
+    <ClCompile Include="ChatManager.cpp" />
     <ClCompile Include="CorePch.cpp" />
     <ClCompile Include="ExpOver.cpp" />
     <ClCompile Include="IocpCore.cpp" />
@@ -183,6 +186,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="RecvBuffer.cpp" />
+    <ClCompile Include="Sector.cpp" />
     <ClCompile Include="Service.cpp" />
     <ClCompile Include="Session.cpp" />
   </ItemGroup>

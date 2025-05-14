@@ -112,6 +112,6 @@ private:
 	std::string _name;
 
 private:
-	std::unordered_set<int> _viewList;
-	std::mutex				_viewLock;
+	std::unordered_set<int>		_viewList;
+	mutable std::shared_mutex	_viewLock;
 };
