@@ -3,7 +3,7 @@
 class Service;
 class ExpOver;
 
-class Listener : public IocpObject
+class Listener : public IocpObject, public std::enable_shared_from_this<Listener>
 {
 public:
 	Listener() = default;

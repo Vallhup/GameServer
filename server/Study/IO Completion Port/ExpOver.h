@@ -2,17 +2,18 @@
 
 #include <WinSock2.h>
 #include <Windows.h>
-#include "RecvBuffer.h"
-#include "IocpCore.h"
 
 enum OperationType
 {
 	Accept,
 	Recv,
-	Send
+	Send,
+	NpcMove
 };
 
-class Session;
+class GameSession;
+class RecvBuffer;
+class IocpObject;
 
 class ExpOver : public OVERLAPPED
 {
@@ -23,7 +24,7 @@ public:
 
 public:
 	OperationType				_operationType;
-	std::shared_ptr<IocpObject>	_owner;
+	std::shared_ptr<IocpObject>	_owner{ nullptr };
 };
 
 class AcceptOver : public ExpOver
@@ -33,7 +34,7 @@ public:
 
 public:
 	char	_buffer[128]{ };	
-	std::shared_ptr<Session> _session;
+	std::shared_ptr<GameSession> _session;
 };
 
 class RecvOver : public ExpOver
@@ -72,4 +73,13 @@ public:
 public:
 	std::vector<WSABUF>		_wsaBufs;
 	std::vector<std::shared_ptr<std::vector<char>>> _sendDataList;
+};
+
+class NpcOver : public ExpOver
+{
+public:
+	NpcOver(int npcId) : ExpOver(NpcMove), _npcId(npcId) {}
+
+public:
+	int _npcId{ -1 };
 };

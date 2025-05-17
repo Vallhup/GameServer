@@ -56,9 +56,9 @@ bool Listener::StartAccept(std::shared_ptr<Service> service)
 
 	_accepting.store(true);
 
-	const unsigned int acceptCount = std::thread::hardware_concurrency();
+	const unsigned int acceptCount = std::thread::hardware_concurrency() * 2;
 	_acceptOvers.reserve(acceptCount);
-	for (int i = 0; i < acceptCount; ++i) {
+	for (unsigned int i = 0; i < acceptCount; ++i) {
 		AcceptOver* acceptOver = new AcceptOver;
 		acceptOver->_owner = shared_from_this();
 		_acceptOvers.push_back(acceptOver);
@@ -142,13 +142,14 @@ void Listener::AcceptCallback(AcceptOver* acceptOver)
 	}
 
 	// 어떤 Session이 Accept했는지 확인
-	std::shared_ptr<GameSession> session = static_pointer_cast<GameSession>(acceptOver->_session);
+	std::shared_ptr<GameSession> session = acceptOver->_session;
 
 	setsockopt(session->GetSocket(), SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, (char*)&_socket, sizeof(_socket));
 
 	// session의 socket을 IocpCore에 등록
 	service->getIocpCore()->Register(session);
 
+	// session의 Service 등록
 	session->SetService(service);
 
 	// session Recv 시작

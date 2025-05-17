@@ -1,30 +1,28 @@
 #pragma once
 
-constexpr int MAP_SIZE = 400;
-constexpr int SECTOR_SIZE = 25;
+constexpr int MAP_SIZE = 2000;
+constexpr int SECTOR_SIZE = 20;
 constexpr int SECTOR_COUNT = MAP_SIZE / SECTOR_SIZE;
 
 class Sector
 {
 public:
 	// 해당 Sector에 Client add/remove
-	void addClient(int id)
+	void addObject(int id)
 	{
-		std::unique_lock lock{ _mutex };
-		_clients.insert(id);
+		_objects.insert(id);
 	}
 
-	void removeClient(int id)
+	void removeObject(int id)
 	{
 		std::unique_lock lock{ _mutex };
-		_clients.erase(id);
+		_objects.unsafe_erase(id);
 	}
 
 	// 섹터 내 모든 client ID를 out에 복사
-	void collectClient(std::unordered_set<int>& out) const
+	void collectObject(std::unordered_set<int>& out) const
 	{
-		std::shared_lock lock(_mutex);
-		out.insert(_clients.begin(), _clients.end());
+		out.insert(_objects.begin(), _objects.end());
 	}
 
 public:
@@ -32,7 +30,7 @@ public:
 	static std::pair<std::pair<int, int>, std::pair<int, int>> getSectorRange(int x, int y);
 
 private:
-	std::unordered_set<int> _clients;
+	concurrency::concurrent_unordered_set<int> _objects;
 	mutable std::shared_mutex _mutex;
 };
 

@@ -1,22 +1,30 @@
 constexpr int PORT_NUM = 4000;
 constexpr int BUF_SIZE = 200;
 constexpr int NAME_SIZE = 20;
+constexpr int CHAT_SIZE = 100;
 
-constexpr int MAX_USER = 5000;
+constexpr int MAX_USER = 10000;
+constexpr int MAX_NPC = 200000;
 
-constexpr int W_WIDTH = 400;
-constexpr int W_HEIGHT = 400;
+constexpr int W_WIDTH = 2000;
+constexpr int W_HEIGHT = 2000;
 
 enum PacketID : char {
 	CS_LOGIN,
 	CS_MOVE,
 	CS_CHAT,
+	CS_ATTAK,
+	CS_TELEPORT,
+	CS_LOGOUT,
 
 	SC_LOGIN_INFO,
-	SC_ADD_PLAYER,
-	SC_REMOVE_PLAYER,
-	SC_MOVE_PLAYER,
-	SC_CHAT_BROADCAST
+	SC_ADD_OBJECT,
+	SC_REMOVE_OBJECT,
+	SC_MOVE_OBJECT,
+	SC_CHAT,
+	SC_LOGIN_OK,
+	SC_LOGIN_FAIL,
+	SC_STAT_CHANGE
 };
 
 enum MoveDirection : char {
@@ -43,63 +51,76 @@ struct CS_MOVE_PACKET {
 struct CS_CHAT_PACKET {
 	unsigned char size;
 	char type;
-	char message[BUF_SIZE];
+	char message[CHAT_SIZE];
+};
+
+struct CS_TELEPORT_PACKET {
+	unsigned char size;
+	char	type;
+};
+
+struct CS_LOGOUT_PACKET {
+	unsigned char size;
+	char	type;
 };
 
 struct SC_LOGIN_INFO_PACKET {
 	unsigned char size;
 	char	type;
-	short	id;
+	int		id;
+	int		hp;
+	int		max_hp;
+	int		exp;
+	int		level;
 	short	x, y;
 };
 
-struct SC_ADD_PLAYER_PACKET {
+struct SC_ADD_OBJECT_PACKET {
 	unsigned char size;
 	char	type;
-	short	id;
+	int		id;
 	short	x, y;
 	char	name[NAME_SIZE];
 };
 
-struct SC_REMOVE_PLAYER_PACKET {
+struct SC_REMOVE_OBJECT_PACKET {
 	unsigned char size;
 	char	type;
-	short	id;
+	int		id;
 };
 
-struct SC_MOVE_PLAYER_PACKET {
+struct SC_MOVE_OBJECT_PACKET {
 	unsigned char size;
 	char	type;
-	short	id;
+	int		id;
 	short	x, y;
 	unsigned int move_time;
 };
 
-struct SC_CHAT_BROADCAST_PACKET {
+struct SC_CHAT_PACKET {
 	unsigned char size;
 	char type;
 	short id;
-	char message[BUF_SIZE];
+	char message[CHAT_SIZE];
+};
+
+struct SC_LOGIN_OK_PACKET {
+	unsigned char size;
+	char	type;
+};
+
+struct SC_LOGIN_FAIL_PACKET {
+	unsigned char size;
+	char	type;
+};
+
+struct SC_STAT_CHANGEL_PACKET {
+	unsigned char size;
+	char	type;
+	int		hp;
+	int		max_hp;
+	int		exp;
+	int		level;
 };
 
 #pragma pack (pop)
-
-
-template<typename Packet>
-std::vector<char> Serialize(Packet& packet)
-{
-	std::vector<char> out(sizeof(Packet));
-	std::memcpy(out.data(), &packet, sizeof(Packet));
-
-	return out;
-}
-
-template<typename Packet>
-Packet Deserialize(const std::vector<char>& buf)
-{
-	Packet packet{};
-	size_t copySize = std::min<size_t>(buf.size(), sizeof(Packet));
-	std::memcpy(&packet, buf.data(), copySize);
-
-	return packet;
-}

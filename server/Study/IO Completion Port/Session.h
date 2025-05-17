@@ -2,12 +2,7 @@
 
 #include "ExpOver.h"
 #include "IocpCore.h"
-
-struct Pos
-{
-	short _xPos;
-	short _yPos;
-};
+#include "GameObject.h"
 
 enum State : char {
 	ST_ALLOC,
@@ -17,8 +12,10 @@ enum State : char {
 
 constexpr int VIEW_RANGE = 7;
 
-// Client의 정보 (고유 id, 연결 socket 등)
-// 컨텐츠와 관련된 작업들
+class RecvOver;
+class SendOver;
+class Service;
+
 class Session : public IocpObject
 {
 	friend class Listener;
@@ -40,11 +37,9 @@ public:
 public:
 	// Getter
 	SOCKET GetSocket() const { return _socket; }
-	int    GetSessionId() const { return _id; }
 
 	// Setter
 	void SetService(std::shared_ptr<Service> service) { _service = service; }
-	void SetId(int id) { _id = id; };
 
 public:
 	void doRecv();
@@ -53,7 +48,7 @@ public:
 	void RecvCallback(DWORD numBytes);
 	void SendCallback();
 
-private:
+protected:
 	void Close();
 
 private:
@@ -63,10 +58,12 @@ private:
 
 protected:
 	std::atomic<State> _state{ ST_ALLOC };
-
-protected:
 	std::weak_ptr<Service> _service;
 	SOCKET	_socket;
+
+protected:
+	std::atomic<int> _pendingIoCount{ 0 };
+	std::atomic<bool> _shouldRelease{ false };
 
 protected:
 	AtomicQueue<std::vector<char>> _sendQueue;
@@ -77,41 +74,27 @@ protected:
 	SendOver	_sendOver;
 };
 
-class GameSession : public Session {
+class GameSession : 
+	public Session, 
+	public GameObject,
+	public std::enable_shared_from_this<GameSession> {
+
 	friend class Service;
 
 public:
+	GameSession();
 	virtual ~GameSession() override;
 
 public:
 	virtual bool ProcessPacket(const std::vector<char>& packet) override;
+	virtual bool IsVisible() const override { return _state == ST_INGAME; }
 
 public:
-	// Send 관련
-	// target의 Add, Move, Remove, Login을 자신의 client에게 Send하는 함수
-	void sendAddPlayerPacket(const std::shared_ptr<GameSession>& target);
-	void sendMovePacket(const std::shared_ptr<GameSession>& target);
-	void sendRemovePacket(const std::shared_ptr<GameSession>& target);
-	void sendLoginPacket(const std::shared_ptr<GameSession>& target);
+	bool HandleLogin(const std::vector<char>& packet, std::shared_ptr<Service> service);
+	bool HandleMove(const std::vector<char>& packet, std::shared_ptr<Service> service);
+	bool HandleChat(const std::vector<char>& packet, std::shared_ptr<Service> service);
 
-public:
-	// view 관련
-	// 나에게 target이 보이는지 여부를 return하는 함수
-	bool can_see(const std::shared_ptr<GameSession>& target);
-
-	std::unordered_set<int> collectViewList();
-	std::unordered_set<int> updateViewList(const std::unordered_set<int>& newList);
-	void syncViewList(const std::unordered_set<int>& oldList, const std::unordered_set<int>& newList);
-
-public:
-	// Getter
-	Pos	   GetPos() const { return _pos; }
-
-private:
-	Pos		_pos{ rand() % 400, rand() % 400 };
-	std::string _name;
-
-private:
+protected:
 	std::unordered_set<int>		_viewList;
 	mutable std::shared_mutex	_viewLock;
 };

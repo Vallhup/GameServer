@@ -11,11 +11,11 @@ void ChatManager::HandleMessage(short senderId, const char* msg)
 	}
 
 	// 2. Packet Broadcast
-	SC_CHAT_BROADCAST_PACKET chat;
+	SC_CHAT_PACKET chat;
 	chat.id = senderId;
 	chat.size = sizeof(chat);
-	chat.type = SC_CHAT_BROADCAST;
+	chat.type = SC_CHAT;
 	strcpy_s(chat.message, BUF_SIZE - 1, text.c_str());
 
-	_service.Broadcast(Serialize(chat));
+	_service.Broadcast(PacketFactory::Serialize(chat));
 }

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ExpOver.h"
 
-ExpOver::ExpOver(OperationType operationType) : _operationType(operationType), _owner(nullptr)
+ExpOver::ExpOver(OperationType operationType) : _operationType(operationType)
 {
 	Init();
 }

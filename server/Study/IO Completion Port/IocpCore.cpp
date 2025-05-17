@@ -49,9 +49,29 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
 
 	std::shared_ptr<IocpObject> iocpObject = expOver->_owner;
 	if (nullptr == iocpObject) {
-		return true;
-	}
+		if (expOver->_operationType == OperationType::NpcMove) {
+			NpcOver* npcOver = static_cast<NpcOver*>(expOver);
+			if (auto service = _service.lock()) {
+				auto npc = static_pointer_cast<NPC>(service->FindObject(npcOver->_npcId));
+				if (nullptr != npc) {
+					npc->_timerPending.store(false);
 
+					if (not npc->_isActive.load()) {
+						delete expOver;
+						return true;
+					}
+
+					npc->OnTimer();
+
+					delete expOver;
+				}
+			}
+
+			return true;
+		}
+
+		return false;
+	}
 
 	LOG_DBG("Dispatch success: key=%11u", (unsigned long long)key);
 	iocpObject->Dispatch(expOver, ioSize);
