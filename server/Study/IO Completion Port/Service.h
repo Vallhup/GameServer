@@ -28,7 +28,7 @@ class Service : public std::enable_shared_from_this<Service>
 {
 	friend class Session;
 	friend class GameSession;
-	friend class GameObejct;
+	friend class GameObject;
 
 public:
 	Service(std::shared_ptr<IocpCore> core, int maxSessionCount);
@@ -40,9 +40,11 @@ public:
 public:
 	// 객체 탐색, 추가, 삭제
 	std::shared_ptr<GameObject> FindObject(int id);
-	void AddObject(const std::shared_ptr<GameObject> object);
+	int AddObject(const std::shared_ptr<GameObject> object);
 	void ReleaseObject(const std::shared_ptr<GameObject> object);
 	void FinalizeRelease(const std::shared_ptr<GameSession>& session);
+
+	int AllocateObjectId(const std::shared_ptr<GameObject>& object);
 
 public:
 	// NPC 관련
@@ -72,7 +74,6 @@ public:
 
 public:
 	// Getter
-	int getCurrentSessionCount() const { return _sessionCount; }
 	int getMaxSessionCount() const { return _maxSessionCount; }
 	std::shared_ptr<IocpCore>& getIocpCore() { return _iocpCore; }
 
@@ -98,11 +99,15 @@ private:
 public:
 	// object 관리
 	concurrency::concurrent_unordered_map<int, std::atomic<std::shared_ptr<GameObject>>> _objects;
+	std::mutex _idMutex;
 
-	std::atomic<int> _sessionCount{ 0 };
+	std::atomic<int> _nextNpcId;
+	concurrency::concurrent_queue<int> _freeNpcIds;
+
+	std::atomic<int> _nextPlayerId;
+	concurrency::concurrent_queue<int> _freePlayerIds;
+
 	int _maxSessionCount{ 0 };
-
-	std::atomic<int> _npcCount{ 0 };
 
 private:
 	std::array<std::array<Sector, SECTOR_COUNT>, SECTOR_COUNT> _sectors;
@@ -116,8 +121,5 @@ public:
 
 public:
 	std::atomic<bool> _running{ false };
-
-public:
-	
 };
 

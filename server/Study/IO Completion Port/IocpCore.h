@@ -7,7 +7,7 @@ public:
 	virtual void Dispatch(class ExpOver* expOver, int nuOfBytes = 0) abstract;
 
 public:
-	void SetId(int sessionId) { _sessionId = sessionId; }
+	void SetSessionId(int sessionId) { _sessionId = sessionId; }
 
 protected:
 	int _sessionId{ 0 };

@@ -66,7 +66,8 @@ protected:
 	std::atomic<bool> _shouldRelease{ false };
 
 protected:
-	AtomicQueue<std::vector<char>> _sendQueue;
+	//AtomicQueue<std::vector<char>> _sendQueue;
+	concurrency::concurrent_queue<std::shared_ptr<std::vector<char>>> _sendQueue;
 	std::atomic<bool> _isSending{ false };
 
 protected:

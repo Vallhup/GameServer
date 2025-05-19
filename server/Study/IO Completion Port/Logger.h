@@ -13,18 +13,18 @@ enum LogLevel : char
 	Error
 };
 
-class SpinLock {
-public:
-	void lock() {
-		while (_flag.test_and_set(std::memory_order_acquire)) { /* spin */ }
-	}
-	void unlock() {
-		_flag.clear(std::memory_order_release);
-	}
-
-private:
-	std::atomic_flag _flag = ATOMIC_FLAG_INIT;
-};
+//class SpinLock {
+//public:
+//	void lock() {
+//		while (_flag.test_and_set(std::memory_order_acquire)) { /* spin */ }
+//	}
+//	void unlock() {
+//		_flag.clear(std::memory_order_release);
+//	}
+//
+//private:
+//	std::atomic_flag _flag = ATOMIC_FLAG_INIT;
+//};
 
 
 class Logger
@@ -33,11 +33,14 @@ public:
 	static void Init(const std::string& filename = "", const std::string& basePath = "",
 		LogLevel level = LogLevel::Info)
 	{
+		_level.store(level, std::memory_order_relaxed);
 		if (not filename.empty()) {
 			_ofs = std::make_unique<std::ofstream>(filename, std::ios::app);
 		}
 		_basePath = NormalizePath(basePath);
-		_level.store(level, std::memory_order_relaxed);
+		_exitFlag.store(false);
+		_worker = std::thread(&Logger::WorkerThread);
+		
 	}
 
 	static void SetLevel(LogLevel level) { _level.store(level, std::memory_order_relaxed); }
@@ -66,27 +69,34 @@ public:
 
 		std::string path = NormalizePath(file);
 
-		if (!_basePath.empty() && path.rfind(_basePath, 0) == 0) {
+		if (not _basePath.empty() && path.rfind(_basePath, 0) == 0) {
 			path.erase(0, _basePath.size());
 		}
+		
+		ts << "[" << ts.str() << "][" << levelString << "][" << path << ":" << line << "] ";
 
-		// 별도로 Log를 출력할 파일이 정해져있으면 해당 파일로, 없으면 콘솔에 출력
-		std::ostream& os = _ofs ? *_ofs : std::cout;
-		{
-			_spin.lock();
+		va_list ap;
+		va_start(ap, fmt);
 
-			os << "[" << ts.str() << "][" << levelString << "][" << path << ":" << line << "] ";
+		char msg[512];
+		std::vsnprintf(msg, sizeof(msg), fmt, ap);
+		va_end(ap);
 
-			va_list ap;
-			va_start(ap, fmt);
-			char msg[512];
-			std::vsnprintf(msg, sizeof(msg), fmt, ap);
-			va_end(ap);
+		ts << msg << "\n";
 
-			os << msg << "\n";
-			os.flush();
+		auto buf = new std::string{ ts.str() };
+		_queue.push(buf);
+	}
 
-			_spin.unlock();
+	void static Shutdown()
+	{
+		_exitFlag.store(true);
+		if (_worker.joinable()) {
+			_worker.join();
+		}
+
+		if (_ofs) {
+			_ofs->flush();
 		}
 	}
 
@@ -99,11 +109,44 @@ private:
 		return s;
 	}
 
+	static void WorkerThread()
+	{
+		auto out = _ofs ? static_cast<std::ostream*>(_ofs.get()) : &std::cout;
+		std::vector<std::string*> batch;
+		batch.reserve(256);
+
+		while (not _exitFlag.load() or not _queue.empty()) {
+			std::string* msg;
+			while (_queue.try_pop(msg)) {
+				batch.push_back(msg);
+				if (batch.size() >= 256) {
+					break;
+				}
+			}
+
+			for (auto s : batch) {
+				(*out) << *s;
+				delete s;
+			}
+
+			if (not batch.empty()) {
+				out->flush();
+				batch.clear();
+			}
+
+			if (_queue.empty()) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			} 
+		}
+	}
+
 private:
-	static inline SpinLock							_spin;
-	static inline std::string						_basePath;
-	static inline std::atomic<LogLevel>				_level{ LogLevel::Info };
-	static inline std::unique_ptr<std::ofstream>	_ofs;
+	static inline std::string									_basePath;
+	static inline std::atomic<LogLevel>							_level{ LogLevel::Info };
+	static inline std::unique_ptr<std::ofstream>				_ofs;
+	static inline concurrency::concurrent_queue<std::string*>	_queue;
+	static inline std::thread									_worker;
+	static inline std::atomic<bool>								_exitFlag{ false };
 	
 };
 

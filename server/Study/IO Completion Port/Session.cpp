@@ -12,9 +12,11 @@ void Session::Send(const std::vector<char>& data)
 		return;
 	}
 
-	_sendQueue.Push(data);
+	auto buf = std::make_shared<std::vector<char>>(data);
+	_sendQueue.push(buf);
 
-	if (not _isSending.exchange(true)) {
+	bool expected{ false };
+	if (_isSending.compare_exchange_strong(expected, true)) {
 		doSend();
 	}
 }
@@ -31,12 +33,10 @@ void Session::doRecv()
 
 	_recvOver.Init();
 	_recvOver._owner = sp->shared_from_this();
-
-	_recvOver._wsaBuf[0].buf = _recvOver._buffer.GetWritePos();
-	_recvOver._wsaBuf[0].len = _recvOver._buffer.GetFreeSize();
+	int wsaBufCount = _recvOver.PrepareWSABufs();
 
 	_pendingIoCount.fetch_add(1);
-	int result = WSARecv(_socket, _recvOver._wsaBuf, 1, NULL, &recvFlag, reinterpret_cast<LPWSAOVERLAPPED>(&_recvOver), NULL);
+	int result = WSARecv(_socket, _recvOver._wsaBuf, wsaBufCount, NULL, &recvFlag, reinterpret_cast<LPWSAOVERLAPPED>(&_recvOver), NULL);
 	if (SOCKET_ERROR == result) {
 		int error = WSAGetLastError();
 		if (WSA_IO_PENDING != error) {
@@ -61,8 +61,8 @@ void Session::doSend()
 	packets.reserve(MAX_PACKET);
 
 	std::shared_ptr<std::vector<char>> sendData;
-	while ((packets.size() < MAX_PACKET) and (_sendQueue.tryPop(sendData))) {
-		packets.push_back(sendData);
+	while ((packets.size() < MAX_PACKET) and (_sendQueue.try_pop(sendData))) {
+		packets.push_back(std::move(sendData));
 	}
 
 	if (packets.empty()) {
@@ -71,15 +71,15 @@ void Session::doSend()
 	}
 
 	auto sp = static_cast<GameSession*>(this);
+	auto ov = new SendOver();
 
-	_sendOver.Init();
-	_sendOver._owner = sp->shared_from_this();
-
-	_sendOver.SetBuffers(std::move(packets));
+	ov->Init();
+	ov->_owner = sp->shared_from_this();
+	ov->SetBuffers(std::move(packets));
 
 	DWORD bytesSent{ 0 };
 	_pendingIoCount.fetch_add(1);
-	if (SOCKET_ERROR == WSASend(_socket, _sendOver._wsaBufs.data(), _sendOver._wsaBufs.size(), &bytesSent, 0, reinterpret_cast<LPWSAOVERLAPPED>(&_sendOver), NULL)) {
+	if (SOCKET_ERROR == WSASend(_socket, ov->_wsaBufs.data(), static_cast<DWORD>(ov->_wsaBufs.size()), &bytesSent, 0, reinterpret_cast<LPWSAOVERLAPPED>(ov), NULL)) {
 		int error = WSAGetLastError();
 		if ((error == WSAECONNRESET) or (error == WSAENOTCONN) or (error == WSAESHUTDOWN)) {
 			LOG_INF("Client %d disconnected", _sessionId);
@@ -141,8 +141,6 @@ void Session::SendCallback()
 		}
 	}
 
-	_sendOver._owner.reset();
-
 	doSend();
 }
 
@@ -189,6 +187,8 @@ void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 
 	case OperationType::Send:
 		SendCallback();
+		expOver->_owner.reset();
+		delete static_cast<SendOver*>(expOver);
 		break;
 
 	default:

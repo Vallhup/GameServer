@@ -129,7 +129,7 @@ void NPC::RandomMove()
 		}
 	}
 
-	for (int removePlayer : diffViewList.addViewList) {
+	for (int removePlayer : diffViewList.removeViewList) {
 		if (removePlayer >= MAX_USER) continue;
 		auto target = static_pointer_cast<GameSession>(service->FindObject(removePlayer));
 		if (nullptr != target) {

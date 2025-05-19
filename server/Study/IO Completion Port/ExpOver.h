@@ -40,15 +40,31 @@ public:
 class RecvOver : public ExpOver
 {
 public:
-	RecvOver() : ExpOver(Recv) 
+	RecvOver() : ExpOver(Recv) {}
+
+	int PrepareWSABufs()
 	{
-		_wsaBuf[0].buf = _buffer.GetBuffer();
-		_wsaBuf[0].len = _buffer.GetFreeSize();
+		int totalFree = _buffer.GetFreeSize();
+		int contiguousFree = _buffer.GetContiguousFreeSize();
+		int firstRecvSize = std::min<int>(contiguousFree, totalFree);
+
+		_wsaBuf[0].buf = _buffer.GetWritePos();
+		_wsaBuf[0].len = static_cast<ULONG>(firstRecvSize);
+
+		int secondRecvSize = totalFree - firstRecvSize;
+		if (secondRecvSize > 0) {
+			_wsaBuf[1].buf = _buffer.GetBuffer();
+			_wsaBuf[1].len = static_cast<ULONG>(secondRecvSize);
+
+			return 2;
+		}
+
+		return 1;
 	}
 
 public:
 	RecvBuffer	_buffer;
-	WSABUF		_wsaBuf[1];
+	WSABUF		_wsaBuf[2];
 };
 
 class SendOver : public ExpOver

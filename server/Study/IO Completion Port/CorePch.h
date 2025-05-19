@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <concurrent_unordered_map.h>
+#include <concurrent_queue.h>
 #include <concurrent_priority_queue.h>
 #include <concurrent_unordered_set.h>
 #include <thread>

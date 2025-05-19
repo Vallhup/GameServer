@@ -17,7 +17,7 @@ bool IocpCore::Register(std::shared_ptr<IocpObject> iocpObject)
 {
 	LOG_DBG("Enter Register IocpCore");
 
-	iocpObject->SetId(clientId);
+	iocpObject->SetSessionId(clientId);
 	HANDLE result = CreateIoCompletionPort(iocpObject->GetHandle(), _iocpHandle, clientId++, 0);
 	if (result == NULL) {
 		LOG_INF("Register failed");

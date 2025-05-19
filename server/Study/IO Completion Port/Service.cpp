@@ -5,8 +5,8 @@
 Service::Service(std::shared_ptr<IocpCore> core, int maxSessionCount)
 	: _iocpCore(core), _maxSessionCount(maxSessionCount), _chatManager(*this)
 {
-	_sessionCount = 0;
-	_npcCount = maxSessionCount;
+	_nextPlayerId = 0;
+	_nextNpcId = MAX_USER;
 }
 
 bool Service::Start()
@@ -114,6 +114,42 @@ void Service::CloseService()
 	WSACleanup();
 }
 
+int Service::AllocateObjectId(const std::shared_ptr<GameObject>& object)
+{
+	int id;
+
+	switch (object->GetType()) {
+	case ObjectType::Player: {
+		if (not _freePlayerIds.empty()) {
+			if (_freePlayerIds.try_pop(id)) {
+				return id;
+			}
+		}
+
+		if (_nextPlayerId < MAX_USER) {
+			return _nextPlayerId++;
+		}
+
+		break;
+	}
+	case ObjectType::Npc: {
+		if (not _freeNpcIds.empty()) {
+			if (_freeNpcIds.try_pop(id)) {
+				return id;
+			}
+		}
+
+		if (_nextNpcId < MAX_USER + MAX_NPC) {
+			return _nextNpcId++;
+		}
+
+		break;
+	}
+	}
+
+	return -1;
+}
+
 std::shared_ptr<GameObject> Service::FindObject(int id)
 {
 	auto it = _objects.find(id);
@@ -125,14 +161,21 @@ std::shared_ptr<GameObject> Service::FindObject(int id)
 	return object;
 }
 
-void Service::AddObject(const std::shared_ptr<GameObject> object)
+int Service::AddObject(const std::shared_ptr<GameObject> object)
 {
-	switch (object->GetType()) {
-	case ObjectType::Player: object->SetId(_sessionCount++); break;
-	case ObjectType::Npc:	 object->SetId(_npcCount++); break;
+	int id = AllocateObjectId(object);
+	if (id == -1) {
+		LOG_WRN("Too Many IDs");
+		return -1;
 	}
 
-	_objects.insert(std::make_pair(object->GetId(), object));
+	object->SetId(id);
+	{
+		std::lock_guard<std::mutex> lock{ _idMutex };
+		_objects.insert(std::make_pair(id, object));
+	}
+
+	return id;
 }
 
 void Service::ReleaseObject(const std::shared_ptr<GameObject> object)
@@ -148,18 +191,22 @@ void Service::ReleaseObject(const std::shared_ptr<GameObject> object)
 	}
 	case ObjectType::Npc: {
 		auto npc = static_pointer_cast<NPC>(object);
+		int id = npc->GetId();
 
 		// 1. Sector에서 npc 제거
 		leaveSector(npc);
 
 		// 2. Container에서 제거 / npcCount - 1
-		auto it = _objects.find(npc->GetId());
+		auto it = _objects.find(id);
 		if (it == _objects.end()) {
 			return;
 		}
 
-		it->second = nullptr;
-		--_npcCount;
+		{
+			std::lock_guard<std::mutex> lock{ _idMutex };
+			_objects.unsafe_erase(id);
+			_freeNpcIds.push(id);
+		}
 		
 		break;
 	}
@@ -202,9 +249,12 @@ void Service::FinalizeRelease(const std::shared_ptr<GameSession>& session)
 	// 2. Sector에서 session 제거
 	leaveSector(session);
 
-	// 3. Container에서 제거 / sessionCount - 1
-	it->second = nullptr;
-	--_sessionCount;
+	// 3. Container에서 제거
+	{
+		std::lock_guard<std::mutex> lock{ _idMutex };
+		_objects.unsafe_erase(id);
+		_freePlayerIds.push(id);
+	}
 
 	LOG_INF("Session %d finalized and erased", id);
 }
@@ -213,7 +263,7 @@ void Service::InitNpcs(int npcCount)
 {
 	for (int i = 0; i < npcCount; ++i) {
 		std::string name = "NPC" + std::to_string(i);
-		auto npc = std::make_shared<NPC>(MAX_USER + i, rand() % W_WIDTH, rand() % W_HEIGHT, name);
+		auto npc = std::make_shared<NPC>(-1, rand() % W_WIDTH, rand() % W_HEIGHT, name);
 		npc->SetService(shared_from_this());
 		AddObject(npc);
 		enterSector(npc);

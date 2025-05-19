@@ -35,6 +35,16 @@ public:
 	int   GetUsedSize() const { return (_writePos >= _readPos) ? (_writePos - _readPos) : (_capacity - _readPos + _writePos); }
 	// -1을 하는 이유? _writePos와 _readPos가 같은 값이 되면 빈 버퍼와 구분할 수 없기 때문
 	int   GetFreeSize() const { return _capacity - GetUsedSize() - 1; }
+	int	  GetContiguousFreeSize() const
+	{
+		if (_writePos >= _readPos) {
+			return _capacity - _writePos;
+		}
+
+		else {
+			return _readPos - _writePos - 1;
+		}
+	}
 
 public:
 	// 외부에서 사용
