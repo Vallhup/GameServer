@@ -2,17 +2,35 @@
 
 #include "Macro.h"
 
+class GameObject;
+class Party;
+
+
 class PacketFactory
 {
 public:
+	// Login, Move
 	static std::vector<char> BuildLoginPacket(const GameObject& target);
 	static std::vector<char> BuildAddPacket(const GameObject& target);
 	static std::vector<char> BuildMovePacket(const GameObject& target);
 	static std::vector<char> BuildRemovePacket(const GameObject& target);
+	static std::vector<char> BuildStatChangePacket(const GameObject& target);
+
+public:
+	// Party
+	static std::vector<char> BuildPartyRequestPacket(int fromId);
+	static std::vector<char> BuildPartyResultPacket(int targetId, bool accept);
+	static std::vector<char> BuildPartyUpdatePacket(const Party& party);
+	static std::vector<char> BuildPartyDisbandPacket(const Party& party);
+
+public:
+	// Item
+	static std::vector<char> BuildAddItemPacket(char itemId, int count);
+	static std::vector<char> BuildUseItemOkPacket(char itemId);
 
 public:
 	template<typename Packet>
-	static std::vector<char> Serialize(Packet& packet)
+	static std::vector<char> Serialize(const Packet& packet)
 	{
 		static_assert(std::is_trivially_copyable_v<Packet>);
 
@@ -38,4 +56,3 @@ public:
 		return packet;
 	}
 };
-

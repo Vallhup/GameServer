@@ -6,11 +6,13 @@
 class IocpCore;
 class Listener;
 class GameObject;
+class Party;
 
 enum EventType : char {
 	EV_MOVE,
 	EV_HEAL,
-	EV_ATTACK
+	EV_ATTACK,
+	EV_PLAYER_HEAL
 };
 
 struct Event {
@@ -29,6 +31,7 @@ class Service : public std::enable_shared_from_this<Service>
 	friend class Session;
 	friend class GameSession;
 	friend class GameObject;
+	friend class NPC;
 
 public:
 	Service(std::shared_ptr<IocpCore> core, int maxSessionCount);
@@ -73,6 +76,23 @@ public:
 	void Broadcast(const std::vector<char>& buf);
 
 public:
+	// Packet Handler
+	bool OnPacket(const std::shared_ptr<GameSession>& session, const std::vector<char>& packet);
+
+	bool OnLogin(const std::shared_ptr<GameSession>& session, const std::vector<char>& packet);
+	bool OnLogout(const std::shared_ptr<GameSession>& session, const std::vector<char>& packet);
+	bool OnMove(const std::shared_ptr<GameSession>& session, const std::vector<char>& packet);
+	bool OnAttack(const std::shared_ptr<GameSession>& session, const std::vector<char>& packet);
+	bool OnChat(const std::shared_ptr<GameSession>& session, const std::vector<char>& packet);
+
+	bool OnPartyRequest(const std::shared_ptr<GameSession>& session, const std::vector<char>& packet);
+	bool OnPartyResponse(const std::shared_ptr<GameSession>& session, const std::vector<char>& packet);
+	bool OnPartyLeave(const std::shared_ptr<GameSession>& session);
+	void OnPartyDisband(int partyId);
+
+	bool OnUseItem(const std::shared_ptr<GameSession>& session, const std::vector<char>& packet);
+
+public:
 	// Getter
 	int getMaxSessionCount() const { return _maxSessionCount; }
 	std::shared_ptr<IocpCore>& getIocpCore() { return _iocpCore; }
@@ -109,8 +129,17 @@ public:
 
 	int _maxSessionCount{ 0 };
 
+public:
+	// Party °ü¸®
+	std::atomic<int> _nextPartyId;
+	std::unordered_map<int, std::atomic<std::shared_ptr<Party>>> _parties;
+	mutable std::shared_mutex _partyMutex;
+
 private:
 	std::array<std::array<Sector, SECTOR_COUNT>, SECTOR_COUNT> _sectors;
+
+public:
+	std::array<std::array<bool, 2000>, 2000> _navigationMap;
 
 private:
 	std::vector<std::thread> _workers;

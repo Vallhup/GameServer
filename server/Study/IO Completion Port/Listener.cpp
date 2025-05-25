@@ -149,8 +149,9 @@ void Listener::AcceptCallback(AcceptOver* acceptOver)
 	// session의 socket을 IocpCore에 등록
 	service->getIocpCore()->Register(session);
 
-	// session의 Service 등록
+	// session의 Service, Inventory 등록
 	session->SetService(service);
+	session->SetInventory(std::make_shared<Inventory>(session));
 
 	// session Recv 시작
 	session->doRecv();

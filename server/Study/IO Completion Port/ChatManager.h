@@ -5,11 +5,13 @@ class Service;
 class ChatManager
 {
 public:
-	ChatManager(Service& service) : _service(service) {}
+	ChatManager() = default;
+
+	void SetService(std::shared_ptr<Service> service) { _service = service; }
 
 	void HandleMessage(short senderId, const char* msg);
 
 private:
-	Service& _service;
+	std::weak_ptr<Service> _service;
 };
 

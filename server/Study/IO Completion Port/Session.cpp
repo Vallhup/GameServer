@@ -9,6 +9,7 @@ Session::~Session()
 void Session::Send(const std::vector<char>& data)
 {
 	if (_state.load() == ST_FREE) {
+		Close();
 		return;
 	}
 
@@ -24,6 +25,7 @@ void Session::Send(const std::vector<char>& data)
 void Session::doRecv()
 {
 	if ((ST_FREE == _state.load()) or (_socket == INVALID_SOCKET)) {
+		Close();
 		return;
 	}
 
@@ -53,6 +55,7 @@ void Session::doRecv()
 void Session::doSend()
 {
 	if ((ST_FREE == _state.load()) or (_socket == INVALID_SOCKET)) {
+		Close();
 		return;
 	}
 
@@ -157,11 +160,9 @@ void Session::Close()
 
 	_shouldRelease = true;
 
-	if (_pendingIoCount.load() == 0) {
-		if (auto service = _service.lock()) {
-			auto sp = static_cast<GameSession*>(this);
-			service->FinalizeRelease(sp->shared_from_this());
-		}
+	if (auto service = _service.lock()) {
+		auto sp = static_cast<GameSession*>(this);
+		service->FinalizeRelease(sp->shared_from_this());
 	}
 
 	LOG_INF("Closing Session %d", _sessionId);
@@ -172,9 +173,10 @@ HANDLE Session::GetHandle()
 	return reinterpret_cast<HANDLE>(_socket);
 }
 
-void Session::Dispatch(ExpOver* expOver, int numOfBytes)
+void GameSession::Dispatch(ExpOver* expOver, int numOfBytes)
 {
 	if (ST_FREE == _state.load()) {
+		Close();
 		return;
 	}
 
@@ -191,6 +193,10 @@ void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 		delete static_cast<SendOver*>(expOver);
 		break;
 
+	case OperationType::Heal:
+		OnHeal();
+
+
 	default:
 		LOG_WRN("Unknown operation in Dispatch: op=%d", expOver->_operationType);
 		break;
@@ -200,6 +206,8 @@ void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 GameSession::GameSession() : Session(), GameObject()
 {
 	_type = ObjectType::Player;
+	_viewList.store(std::make_shared<std::unordered_set<int>>());
+	_inventory = nullptr;
 }
 
 GameSession::~GameSession()
@@ -224,9 +232,18 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 	bool handled = false;
 
 	switch (packetType) {
-	case CS_LOGIN:	handled = HandleLogin(packet, service); break;
-	case CS_MOVE :	handled = HandleMove(packet, service); break;
-	case CS_CHAT :	handled = HandleChat(packet, service); break;
+	case CS_LOGIN:
+	case CS_LOGOUT:
+	case CS_MOVE :
+	case CS_ATTACK:
+	case CS_CHAT :
+	case CS_PARTY_REQUEST:
+	case CS_PARTY_RESPONSE:
+	case CS_PARTY_LEAVE:
+	case CS_USE_ITEM:
+		handled = service->OnPacket(shared_from_this(), packet);
+		break;
+
 	default:
 		LOG_WRN("Packet Type Error");
 		return false;
@@ -235,167 +252,41 @@ bool GameSession::ProcessPacket(const std::vector<char>& packet)
 	return handled;
 }
 
-bool GameSession::HandleLogin(const std::vector<char>& packet, std::shared_ptr<Service> service)
+void GameSession::OnHeal()
 {
-	// 0. ALLOC 상태를 INGAME으로 변경
-	State expect = ST_ALLOC;
-	if (not _state.compare_exchange_strong(expect, ST_INGAME)) {
-		LOG_WRN("Session state is not Alloc");
-		return false;
+	if ((not _isAlive) or (ST_INGAME != _state.load())) {
+		return;
 	}
 
-	// 1. packet 파싱
-	auto requestPacket = PacketFactory::Deserialize<CS_LOGIN_PACKET>(packet);
-	requestPacket.name[NAME_SIZE - 1] = '\0';
-
-	// 2. Session name 설정
-	_name = requestPacket.name;
-
-	// 3. Session Container에 자기자신 등록
-	service->AddObject(shared_from_this());
-
-	auto loginPacket = PacketFactory::BuildLoginPacket(*shared_from_this());
-	Send(loginPacket);
-
-	// 4. Sector에 자기자신 등록
-	service->enterSector(shared_from_this());
-
-	// 5. OnPlayerMove 호출
-	service->OnPlayerLogin(shared_from_this());
-
-	// 6. viewList 동기화
-	auto newViewList = ViewListHelper::collectViewList(shared_from_this(), service);
-	auto oldViewList = ViewListHelper::updateViewList(_viewList, newViewList);
-
-	ViewListDiff diffViewList = ViewListHelper::calcViewListDiff(oldViewList, newViewList);
-
-	for (int addPlayer : diffViewList.addViewList) {
-		auto object = service->FindObject(addPlayer);
-		if (nullptr == object) {
-			continue;
-		}
-
-		auto packetForSelf = PacketFactory::BuildAddPacket(*object);
-		Send(packetForSelf);
-
-		if (object->GetType() == ObjectType::Player) {
-			auto target = static_pointer_cast<GameSession>(object);
-			auto packetForTarget = PacketFactory::BuildAddPacket(*shared_from_this());
-			target->Send(packetForTarget);
-		}
+	auto service = _service.lock();
+	if (nullptr == service) {
+		return;
 	}
 
-	LOG_DBG("Process Login Packet Success");
-	return true;
-}
-
-bool GameSession::HandleMove(const std::vector<char>& packet, std::shared_ptr<Service> service)
-{
-	// 0. INGAME이 아니면 실행 X
-	if (_state.load() != ST_INGAME) {
-		LOG_WRN("Session state is not Ingame");
-		return false;
+	// 1. 이미 maxHp면 다음 Event Push하고 끝
+	if (_hp == _maxHp) {
+		service->_timerQueue.push(Event{ _id,
+			std::chrono::high_resolution_clock::now() + std::chrono::seconds(5),
+			EV_PLAYER_HEAL, 0 });
+		return;
 	}
 
-	// 1. packet 파싱
-	auto requestPacket = PacketFactory::Deserialize<CS_MOVE_PACKET>(packet);
-	_lastMoveTime = requestPacket.move_time;
+	// 2. maxHp의 10만큼 회복
+	_hp = std::min<short>(_hp + (_maxHp / 10), _maxHp);
 
-	auto oldSector = Sector::getSector(_x, _y);
-
-	// 2. 자신의 Pos 업데이트
-	switch (requestPacket.direction) {
-	case UP:	if (_y > 0)				_y--; break;
-	case DOWN:	if (_y < W_HEIGHT - 1)	_y++; break;
-	case LEFT:	if (_x > 0)				_x--; break;
-	case RIGHT: if (_x < W_WIDTH - 1)	_x++; break;
-	}
-
-	auto newSector = Sector::getSector(_x, _y);
-
-	// 3. Sector 동기화
-	if (oldSector != newSector) {
-		service->leaveSector(shared_from_this(), oldSector.first, oldSector.second);
-		service->enterSector(shared_from_this(), newSector.first, newSector.second);
-	}
-
-	// 4. viewList 동기화
-	auto newViewList = ViewListHelper::collectViewList(shared_from_this(), service);
-	auto oldViewList = ViewListHelper::updateViewList(_viewList, newViewList);
-
-	ViewListDiff diffViewList = ViewListHelper::calcViewListDiff(oldViewList, newViewList);
+	// 3. Stat Update
+	Send(PacketFactory::BuildStatChangePacket(*this));
 	
-	// 5. OnPlayerMove 호출
-	service->OnPlayerMove(shared_from_this());
-
-	// 6. 각 Player에게 Packet Send
-	auto myPacket = PacketFactory::BuildMovePacket(*this);
-	Send(myPacket);
-
-	for (int addPlayer : diffViewList.addViewList) {
-		auto object = service->FindObject(addPlayer);
-		if (nullptr == object) {
-			continue;
-		}
-
-		auto packetForSelf = PacketFactory::BuildAddPacket(*object);
-		Send(packetForSelf);
-
-		if (object->GetType() == ObjectType::Player) {
-			auto target = static_pointer_cast<GameSession>(object);
-			auto packetForTarget = PacketFactory::BuildAddPacket(*shared_from_this());
-			target->Send(packetForTarget);
-		}
-	}
-
-	for (int movePlayer : diffViewList.moveViewList) {
-		auto object = service->FindObject(movePlayer);
-		if (nullptr == object) {
-			continue;
-		}
-
-		auto packetForSelf = PacketFactory::BuildMovePacket(*object);
-		Send(packetForSelf);
-
-		if (object->GetType() == ObjectType::Player) {
-			auto target = static_pointer_cast<GameSession>(object);
-			auto packetForTarget = PacketFactory::BuildMovePacket(*shared_from_this());
-			target->Send(packetForTarget);
-		}
-	}
-
-	for (int removePlayer : diffViewList.removeViewList) {
-		auto object = service->FindObject(removePlayer);
-		if (nullptr == object) {
-			continue;
-		}
-
-		auto packetForSelf = PacketFactory::BuildRemovePacket(*object);
-		Send(packetForSelf);
-
-		if (object->GetType() == ObjectType::Player) {
-			auto target = static_pointer_cast<GameSession>(object);
-			auto packetForTarget = PacketFactory::BuildRemovePacket(*shared_from_this());
-			target->Send(packetForTarget);
-		}
-	}
-
-	LOG_DBG("Process Move Packet Success");
-	return true;
+	// 4, 다음 Event Push
+	service->_timerQueue.push(Event{ _id,
+		std::chrono::high_resolution_clock::now() + std::chrono::seconds(5),
+		EV_PLAYER_HEAL, 0 });
 }
 
-bool GameSession::HandleChat(const std::vector<char>& packet, std::shared_ptr<Service> service)
+std::shared_ptr<GameSession> GameSession::ConsumePendingPartyRequester()
 {
-	if (_state.load() != ST_INGAME) {
-		LOG_WRN("Session state is not Ingame");
-		return false;
-	}
+	auto temp = _pendingPartyRequester.load();
+	_pendingPartyRequester.store(std::weak_ptr<GameSession>{});
 
-	auto requestPacket = PacketFactory::Deserialize<CS_CHAT_PACKET>(packet);
-	requestPacket.message[CHAT_SIZE - 1] = '\0';
-
-	service->OnChatRequest(_id, requestPacket.message);
-
-	LOG_DBG("Process Chat Packet Success");
-	return true;
+	return temp.lock();
 }

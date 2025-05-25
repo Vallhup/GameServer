@@ -3,12 +3,15 @@
 #include <WinSock2.h>
 #include <Windows.h>
 
-enum OperationType
+enum OperationType : char
 {
 	Accept,
 	Recv,
 	Send,
-	NpcMove
+	Heal,
+	NpcMove,
+	NpcHeal,
+	NpcAttack
 };
 
 class GameSession;
@@ -91,11 +94,11 @@ public:
 	std::vector<std::shared_ptr<std::vector<char>>> _sendDataList;
 };
 
-class NpcOver : public ExpOver
+class EventOver : public ExpOver
 {
 public:
-	NpcOver(int npcId) : ExpOver(NpcMove), _npcId(npcId) {}
+	EventOver(OperationType op, int id) : ExpOver(op), _id(id) {}
 
 public:
-	int _npcId{ -1 };
+	int _id{ -1 };
 };

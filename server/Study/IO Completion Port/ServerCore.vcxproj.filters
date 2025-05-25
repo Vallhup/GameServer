@@ -65,6 +65,12 @@
     <ClInclude Include="PacketFactory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Party.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Inventory.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -110,6 +116,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="PacketFactory.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Party.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventory.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

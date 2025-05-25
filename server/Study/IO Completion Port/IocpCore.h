@@ -34,6 +34,6 @@ private:
 	HANDLE _iocpHandle;
 	std::weak_ptr<Service> _service;
 
-	static int clientId;
+	static int objectId;
 };
 

@@ -15,6 +15,9 @@ constexpr int VIEW_RANGE = 7;
 class RecvOver;
 class SendOver;
 class Service;
+class Party;
+class NPC;
+class Inventory;
 
 class Session : public IocpObject
 {
@@ -54,7 +57,7 @@ protected:
 private:
 	// Interface ±¸Çö
 	virtual HANDLE GetHandle() override;
-	virtual void Dispatch(ExpOver* expOver, int numOfBytes = 0) override;
+	virtual void Dispatch(ExpOver* expOver, int numOfBytes = 0) abstract;
 
 protected:
 	std::atomic<State> _state{ ST_ALLOC };
@@ -66,7 +69,6 @@ protected:
 	std::atomic<bool> _shouldRelease{ false };
 
 protected:
-	//AtomicQueue<std::vector<char>> _sendQueue;
 	concurrency::concurrent_queue<std::shared_ptr<std::vector<char>>> _sendQueue;
 	std::atomic<bool> _isSending{ false };
 
@@ -81,21 +83,38 @@ class GameSession :
 	public std::enable_shared_from_this<GameSession> {
 
 	friend class Service;
+	friend class NPC;
 
 public:
 	GameSession();
 	virtual ~GameSession() override;
 
 public:
+	virtual void Dispatch(ExpOver* expOver, int numOfBytes = 0) override;
+
+public:
 	virtual bool ProcessPacket(const std::vector<char>& packet) override;
 	virtual bool IsVisible() const override { return _state == ST_INGAME; }
 
-public:
-	bool HandleLogin(const std::vector<char>& packet, std::shared_ptr<Service> service);
-	bool HandleMove(const std::vector<char>& packet, std::shared_ptr<Service> service);
-	bool HandleChat(const std::vector<char>& packet, std::shared_ptr<Service> service);
+private:
+	void OnHeal();
 
-protected:
-	std::unordered_set<int>		_viewList;
-	mutable std::shared_mutex	_viewLock;
+public:
+	std::shared_ptr<GameSession> ConsumePendingPartyRequester();
+
+public:
+	std::shared_ptr<Inventory>& GetInventory() { return _inventory; }
+
+	void SetParty(std::shared_ptr<Party> party) { _party = party; }
+	void SetInventory(std::shared_ptr<Inventory> inventory) { _inventory = inventory; }
+
+private:
+	std::atomic<std::shared_ptr<std::unordered_set<int>>> _viewList;
+
+private:
+	std::weak_ptr<Party> _party;
+	std::atomic<std::weak_ptr<GameSession>> _pendingPartyRequester;
+
+private:
+	std::shared_ptr<Inventory> _inventory;
 };

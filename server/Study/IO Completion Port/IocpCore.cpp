@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "IocpCore.h"
 
-int IocpCore::clientId{ 0 };
+int IocpCore::objectId{ 0 };
 
 IocpCore::IocpCore()
 {
@@ -17,8 +17,8 @@ bool IocpCore::Register(std::shared_ptr<IocpObject> iocpObject)
 {
 	LOG_DBG("Enter Register IocpCore");
 
-	iocpObject->SetSessionId(clientId);
-	HANDLE result = CreateIoCompletionPort(iocpObject->GetHandle(), _iocpHandle, clientId++, 0);
+	iocpObject->SetSessionId(objectId);
+	HANDLE result = CreateIoCompletionPort(iocpObject->GetHandle(), _iocpHandle, objectId++, 0);
 	if (result == NULL) {
 		LOG_INF("Register failed");
 		return false;
@@ -49,7 +49,7 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
 
 	std::shared_ptr<IocpObject> iocpObject = expOver->_owner;
 	if (nullptr == iocpObject) {
-		if (expOver->_operationType == OperationType::NpcMove) {
+		/*if (expOver->_operationType == OperationType::NpcMove) {
 			NpcOver* npcOver = static_cast<NpcOver*>(expOver);
 			if (auto service = _service.lock()) {
 				auto npc = static_pointer_cast<NPC>(service->FindObject(npcOver->_npcId));
@@ -68,8 +68,9 @@ bool IocpCore::Dispatch(unsigned int timeoutMs)
 			}
 
 			return true;
-		}
+		}*/
 
+		LOG_ERR("ExpOver has no owner!");
 		return false;
 	}
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#define NOMINMAX
+
 #include <winsock2.h>
 #include <mswsock.h>
 #include <WS2tcpip.h>
@@ -43,6 +45,9 @@
 #include "ChatManager.h"
 #include "ViewListHelper.h"
 #include "PacketFactory.h"
+
+#include "Party.h"
+#include "Inventory.h"
 
 #include "Logger.h"
 #include "Macro.h"

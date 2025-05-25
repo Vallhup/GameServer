@@ -42,6 +42,6 @@ struct Compare {
 };
 
 // node의 parent를 따라가면서 전체 경로를 path에 넣고 return
-std::vector<APos> ReconstructPath(NodePtr node);
+std::deque<APos> ReconstructPath(NodePtr node);
 
-std::vector<APos> AStar(bool map[A_MAP_SIZE][A_MAP_SIZE], APos start, APos goal);
+std::deque<APos> AStar(std::array<std::array<bool, 2000>, 2000>& map, APos start, APos goal);

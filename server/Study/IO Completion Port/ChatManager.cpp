@@ -3,11 +3,16 @@
 
 void ChatManager::HandleMessage(short senderId, const char* msg)
 {
+	auto service = _service.lock();
+	if (nullptr == service) {
+		return;
+	}
+
 	std::string text(msg);
 
-	// 1. 보내려는 message의 길이 검사 / 제한 (BUF_SIZE)
-	if (text.size() >= sizeof(BUF_SIZE)) {
-		text.resize(BUF_SIZE - 1);
+	// 1. 보내려는 message의 길이 검사 / 제한 (CHAT_SIZE)
+	if (text.size() >= sizeof(CHAT_SIZE)) {
+		text.resize(CHAT_SIZE - 1);
 	}
 
 	// 2. Packet Broadcast
@@ -15,7 +20,7 @@ void ChatManager::HandleMessage(short senderId, const char* msg)
 	chat.id = senderId;
 	chat.size = sizeof(chat);
 	chat.type = SC_CHAT;
-	strcpy_s(chat.message, BUF_SIZE - 1, text.c_str());
+	strcpy_s(chat.message, CHAT_SIZE - 1, text.c_str());
 
-	_service.Broadcast(PacketFactory::Serialize(chat));
+	service->Broadcast(PacketFactory::Serialize(chat));
 }

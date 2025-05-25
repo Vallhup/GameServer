@@ -29,6 +29,7 @@ std::unordered_set<int> ViewListHelper::collectViewList(const std::shared_ptr<Ga
 		GameObjectPtr target = it->second.load();
 		if (nullptr == target) continue;
 		if (not target->IsVisible()) continue;
+		if (not target->IsAlive()) continue;
 		if (can_see(self, target)) {
 			result.insert(id);
 		}
@@ -37,10 +38,10 @@ std::unordered_set<int> ViewListHelper::collectViewList(const std::shared_ptr<Ga
 	return result;
 }
 
-std::unordered_set<int> ViewListHelper::updateViewList(std::unordered_set<int>& oldList, const std::unordered_set<int>& newList)
+std::unordered_set<int> ViewListHelper::updateViewList(std::atomic<std::shared_ptr<std::unordered_set<int>>>& oldList, const std::unordered_set<int>& newList)
 {
-	std::unordered_set<int> prevList = std::move(oldList);
-	oldList = newList;
+	std::unordered_set<int> prevList = *(oldList.load());
+	oldList.store(std::make_shared<std::unordered_set<int>>(newList));
 	return prevList;
 }
 
