@@ -24,10 +24,24 @@ int wmain(int argc, wchar_t* argv[])
         return -1;
     }
 
+    Exporter exporter;
+
     // 바이너리 형식 추출
-    if (!ExportToBinary(outputBin, vertices, indices))
+    /*if (!exporter.ExportToBinary(outputBin, vertices, indices))
     {
         std::wcout << L"BIN 저장 실패: " << outputBin << std::endl;
+        return -1;
+    }*/
+
+    // 분리 추출
+    std::wstring baseName = outputBin.substr(0, outputBin.find_last_of(L'.'));
+
+    if (!exporter.ExportPosition(baseName + L"_pos.bin", vertices) ||
+        !exporter.ExportNormal(baseName + L"_norm.bin", vertices) ||
+        !exporter.ExportUV(baseName + L"_uv.bin", vertices) ||
+        !exporter.ExportIndices(baseName + L"_idx.bin", indices))
+    {
+        std::wcout << L"분리 파일 저장 실패" << std::endl;
         return -1;
     }
 

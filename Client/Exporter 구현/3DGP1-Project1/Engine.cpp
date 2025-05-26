@@ -53,7 +53,15 @@ void Engine::Initialize(HWND hwnd)
     vector<UINT> indices;
 
     Importer loader;
-    if (loader.Load(L"../AssetsBin/Dragon.bin", vertices, indices))
+    // 파일 읽기 (미분리)
+    /*if (loader.Load(L"../AssetsBin/Dragon.bin", vertices, indices))
+    {
+        mesh = make_unique<VertexIndexBuffer>();
+        mesh->Initialize(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), vertices, indices);
+    }*/
+
+    // 파일 읽기 (분리)
+    if (loader.LoadSeparated(L"../AssetsBin/Dragon", vertices, indices))
     {
         mesh = make_unique<VertexIndexBuffer>();
         mesh->Initialize(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), vertices, indices);
