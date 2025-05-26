@@ -16,6 +16,7 @@
 #include "Indexes.h"
 #include "DX12Graphics.h"
 #include "Input.h"
+#include "Importer.h"
 
 Engine& Engine::Get()
 {
@@ -33,30 +34,30 @@ void Engine::Initialize(HWND hwnd)
     GET(DX12Graphics).Initialize(mHwnd);
 
     // 임시 확인용
-    vector<Vertex> vertices =
-    {
-        { XMFLOAT3(0.0f, 0.5f, 0.0f), XMFLOAT3(0,0,-1), XMFLOAT2(0,0) },
-        { XMFLOAT3(0.5f, -0.5f, 0.0f), XMFLOAT3(0,0,-1), XMFLOAT2(1,1) },
-        { XMFLOAT3(-0.5f, -0.5f, 0.0f), XMFLOAT3(0,0,-1), XMFLOAT2(0,1) }
-    };
-    vector<UINT> indices = { 0, 1, 2 };
+    //vector<Vertex> vertices =
+    //{
+    //    { XMFLOAT3(0.0f, 0.5f, 0.0f), XMFLOAT3(0,0,-1), XMFLOAT2(0,0) },
+    //    { XMFLOAT3(0.5f, -0.5f, 0.0f), XMFLOAT3(0,0,-1), XMFLOAT2(1,1) },
+    //    { XMFLOAT3(-0.5f, -0.5f, 0.0f), XMFLOAT3(0,0,-1), XMFLOAT2(0,1) }
+    //};
+    //vector<UINT> indices = { 0, 1, 2 };
 
-    //vector<Vertex> vertices;
-    //vector<UINT> indices;
+    //// 2. 커맨드리스트 받아옴
+    //ID3D12GraphicsCommandList* cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
 
-    /*FBXLoader loader;
-    if (loader.Load(L"../Assets/Dragon.fbx", vertices, indices))
+    //// 3. 메시 초기화
+    //mesh = make_unique<VertexIndexBuffer>();
+    //mesh->Initialize(GET(DX12Graphics).GetDevice()->GetDevice().Get(), cmdList, vertices, indices);
+
+    vector<Vertex> vertices;
+    vector<UINT> indices;
+
+    Importer loader;
+    if (loader.Load(L"../AssetsBin/Dragon.bin", vertices, indices))
     {
         mesh = make_unique<VertexIndexBuffer>();
         mesh->Initialize(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), vertices, indices);
-    }*/
-
-    // 2. 커맨드리스트 받아옴
-    ID3D12GraphicsCommandList* cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
-
-    // 3. 메시 초기화
-    mesh = make_unique<VertexIndexBuffer>();
-    mesh->Initialize(GET(DX12Graphics).GetDevice()->GetDevice().Get(), cmdList, vertices, indices);
+    }
 
     GET(DX12Graphics).FlushCommandQueue();
 }
@@ -68,7 +69,6 @@ void Engine::Update(const float deltaTime)
 
     Input& input = GET(Input);
 
-    // 카메라 회전 (방향키 → Pitch/Yaw)
     if (input.GetKey(VK_LEFT))
         mCameraRot.y -= rotSpeed;
     if (input.GetKey(VK_RIGHT))
@@ -78,14 +78,9 @@ void Engine::Update(const float deltaTime)
     if (input.GetKey(VK_DOWN))
         mCameraRot.x += rotSpeed;
 
-    // 회전 행렬 계산
     XMMATRIX rot = XMMatrixRotationRollPitchYaw(mCameraRot.x, mCameraRot.y, mCameraRot.z);
-
-    // 로컬 기준 방향 추출
-    XMVECTOR forward = XMVector3TransformNormal(XMVectorSet(0, 0, 1, 0), rot);  // Z+ 방향
-    XMVECTOR right = XMVector3TransformNormal(XMVectorSet(1, 0, 0, 0), rot);  // X+ 방향
-
-    // 이동 벡터 누적
+    XMVECTOR forward = XMVector3TransformNormal(XMVectorSet(0, 0, 1, 0), rot);
+    XMVECTOR right = XMVector3TransformNormal(XMVectorSet(1, 0, 0, 0), rot);  
     XMVECTOR move = XMVectorZero();
 
     if (input.GetKey('W'))
@@ -112,7 +107,6 @@ void Engine::Render(const float deltaTime)
     cmdList->SetGraphicsRootSignature(GET(DX12Graphics).GetRootSig()->Get());
     cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
 
-    // 상수 버퍼 (뷰/프로젝션 행렬) 설정
     XMMATRIX rot = XMMatrixRotationRollPitchYaw(mCameraRot.x, mCameraRot.y, mCameraRot.z);
     XMVECTOR pos = XMLoadFloat3(&mCameraPos);
     XMVECTOR look = XMVector3TransformCoord(XMVectorSet(0, 0, 1, 0), rot);
@@ -127,7 +121,6 @@ void Engine::Render(const float deltaTime)
 
     cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
 
-    // 메시 바인딩 & 그리기
     mesh->Bind(cmdList);
     mesh->Draw(cmdList);
 

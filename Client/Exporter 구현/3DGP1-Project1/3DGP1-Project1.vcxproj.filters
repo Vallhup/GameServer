@@ -61,6 +61,9 @@
     <ClCompile Include="DX12Graphics.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
+    <ClCompile Include="Importer.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -101,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="DX12Graphics.h">
       <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

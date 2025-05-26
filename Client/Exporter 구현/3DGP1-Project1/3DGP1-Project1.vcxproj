@@ -153,6 +153,7 @@ x64\Debug\Exporter.exe "Assets\Dragon.fbx" "AssetsBin\Dragon.bin"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CommandQueue.cpp" />
+    <ClCompile Include="Importer.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
     <ClCompile Include="DepthStencilView.cpp" />
     <ClCompile Include="Device.cpp" />
@@ -174,6 +175,7 @@ x64\Debug\Exporter.exe "Assets\Dragon.fbx" "AssetsBin\Dragon.bin"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandQueue.h" />
+    <ClInclude Include="Importer.h" />
     <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="DepthStencilView.h" />
     <ClInclude Include="Device.h" />
