@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3DGP1-Project1", "3DGP1-Project1\3DGP1-Project1.vcxproj", "{4CA23474-8E2F-47E0-9930-4190662CBE5B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{31728EBA-DF21-42B1-9E9B-ABBD7532B6AE} = {31728EBA-DF21-42B1-9E9B-ABBD7532B6AE}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Exporter", "Exporter\Exporter.vcxproj", "{31728EBA-DF21-42B1-9E9B-ABBD7532B6AE}"
 EndProject
