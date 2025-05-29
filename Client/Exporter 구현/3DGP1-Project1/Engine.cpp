@@ -61,7 +61,7 @@ void Engine::Initialize(HWND hwnd)
     }*/
 
     // 파일 읽기 (분리)
-    if (loader.LoadSeparated(L"../AssetsBin/Strut Walking", vertices, indices))
+    if (loader.LoadSeparated(L"../AssetsBin/Girl", vertices, indices))
     {
         mesh = make_unique<VertexIndexBuffer>();
         mesh->Initialize(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), vertices, indices);

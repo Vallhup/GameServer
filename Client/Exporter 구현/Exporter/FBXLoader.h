@@ -26,6 +26,11 @@ private:
     void InitializeSdk();
     void DestroySdk();
     void ParseMesh(FbxMesh* mesh, std::vector<Vertex>& outVertices, std::vector<UINT>& outIndices);
+    void ProcessSafeVertex(FbxMesh* mesh, int polyIndex, int vertexIndex,
+        bool hasUV, FbxStringList& uvSetNames,
+        FbxVector4* ctrlPoints, int controlPointCount,
+        std::vector<Vertex>& outVertices, std::vector<UINT>& outIndices);
+    void ProcessNode(FbxNode* node, std::vector<Vertex>& outVertices, std::vector<UINT>& outIndices);
 
 private:
     FbxManager* _manager = nullptr;

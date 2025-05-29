@@ -4,6 +4,12 @@
 
 struct Vertex;
 
+struct MeshBinHeader
+{
+	uint32_t vertexCount;
+	uint32_t indexCount;
+};
+
 class Exporter
 {
 public:

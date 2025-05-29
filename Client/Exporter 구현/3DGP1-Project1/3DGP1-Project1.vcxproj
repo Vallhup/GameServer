@@ -124,7 +124,10 @@
     <PreBuildEvent>
       <Command>cd "$(SolutionDir)"
 x64\Debug\Exporter.exe "Assets\Dragon.fbx" "AssetsBin\Dragon.bin"
-x64\Debug\Exporter.exe "Assets\Strut Walking.fbx" "AssetsBin\Strut Walking.bin"</Command>
+x64\Debug\Exporter.exe "Assets\StrutWalking.fbx" "AssetsBin\StrutWalking.bin"
+x64\Debug\Exporter.exe "Assets\Taunt.fbx" "AssetsBin\Taunt.bin"
+x64\Debug\Exporter.exe "Assets\Girl.fbx" "AssetsBin\Girl.bin"
+x64\Debug\Exporter.exe "Assets\Ch14_nonPBR.fbx" "AssetsBin\Ch14_nonPBR.bin"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
