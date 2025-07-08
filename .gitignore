@@ -24,7 +24,6 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe
@@ -72,3 +71,8 @@ Client/Exporter 구현/Assets/StrutWalking.fbm/
 Client/Exporter 구현/Assets/Taunt.fbm/
 Client/Exporter 구현/AssetsBin/
 Client/Exporter 구현/Assets/Ch14.fbm/
+PEW & PEW/Output/
+Client/Exporter 구현/Library/Lib/
+Client/250401 - Depth Stencil View/Library/Lib/
+Client/250401(2) - Input & Timer/Library/Lib/
+Client/250331(3) - Texture/Library/Lib/
