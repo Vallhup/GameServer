@@ -32,7 +32,7 @@ void NetworkManager::Init(const char* IP, u_short port)
 
 	sockaddr_in serverAddr;
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(port);	// 동환이가 주는 포트번호 넣어야함
+	serverAddr.sin_port = htons(port);
 	inet_pton(AF_INET, IP, &serverAddr.sin_addr);
 
 	if (connect(clientSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
