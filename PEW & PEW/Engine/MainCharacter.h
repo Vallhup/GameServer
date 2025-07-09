@@ -4,6 +4,7 @@
 class Bullet;
 class Camera;
 class ShadowMapping;
+class BoundingBox;
 
 class MainCharacter
 {
@@ -22,7 +23,7 @@ public:
 	void SetTop_on(bool in);
 	void SetBottom_on(bool in);
 	void Shift_on(bool in);
-	//void hitboxOnOff(bool in);
+	void hitboxOnOff(bool in);
 
 	void Walk();
 	void Run();
@@ -30,7 +31,7 @@ public:
 	//void stop();
 
 	bool Shift_value() const { return _Shift; }
-	//bool hitbox_ison() const { return hitbox_on; }
+	bool hitbox_ison() const { return hitbox_on; }
 
 	//void changehitColor();
 
@@ -93,6 +94,8 @@ private:
 
 	Camera* camera = { nullptr };
 	vector<Bullet*> bullets;
+
+	BoundingBox* hitbox;
 
 	vector<BoneInfo>* player_BoneInfo;
 	AnimatedModel* animModel;

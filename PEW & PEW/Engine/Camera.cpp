@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "Camera.h"
+#include "CrossHair.h"
+#include "WindowInfo.h"
 
 Camera::Camera()
 {
@@ -13,6 +15,22 @@ Camera::Camera()
     start_pos = { 30.0f };
     finish_pos = { 0.0f };
 
+    fpscrosshair = new CrossHair(1, 7.0f, GET_SINGLE(WindowInfo)->GetWindow());
+    tpscrosshair = new CrossHair(3, 10.0f, GET_SINGLE(WindowInfo)->GetWindow());
+}
+
+Camera::~Camera()
+{
+    delete tpscrosshair;
+    delete fpscrosshair;
+}
+
+void Camera::Render()
+{
+    if (FirstPersonView)
+        fpscrosshair->RenderCrosshair();
+    else
+        tpscrosshair->RenderCrosshair();
 }
 
 void Camera::Update()

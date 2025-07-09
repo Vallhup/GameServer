@@ -18,10 +18,14 @@
 
 // vector<long long*> s = 
 
+class CrossHair;
+
 class Camera final {
 public:
     Camera();
+    ~Camera();
 
+    void Render();
     void Update();
     void HandleAltKey(bool pressed);
     void HandleMouseMovement(double cur_x, double cur_y);
@@ -77,4 +81,7 @@ private:
     float light_angle = { 0.0f };
 
     bool start{ false };
+
+    CrossHair* fpscrosshair;
+    CrossHair* tpscrosshair;
 };

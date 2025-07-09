@@ -159,6 +159,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="CrossHair.h" />
     <ClInclude Include="Enemy.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -184,6 +186,8 @@
     <ClInclude Include="WindowInfo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="CrossHair.cpp" />
     <ClCompile Include="Enemy.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

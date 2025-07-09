@@ -58,10 +58,10 @@ void NetworkManager::Release()
 	{
 		closesocket(clientSocket);
 		isConnected = false;
+
+		cout << "Socket closed!" << endl;
 	}
 	WSACleanup();
-
-	cout << "Socket closed!" << endl;
 }
 
 bool NetworkManager::IsConnected() const

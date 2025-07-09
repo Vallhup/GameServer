@@ -78,6 +78,8 @@ void GraphicsManager::Render(GLFWwindow* window)
 		}
 	}*/
 
+	camera->Render();
+
 	glFinish();
 }
 

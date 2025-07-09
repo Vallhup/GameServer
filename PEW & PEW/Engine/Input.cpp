@@ -93,18 +93,18 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 				}
 			}
 			break;
-		//case GLFW_KEY_H:
-		//	if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
-		//	{
-		//		if (action == GLFW_PRESS)
-		//		{
-		//			if (mainCat->hitbox_ison())
-		//				mainCat->hitboxOnOff(false);
-		//			else
-		//				mainCat->hitboxOnOff(true);
-		//		}
-		//	}
-		//	break;
+		case GLFW_KEY_H:
+			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+			{
+				if (action == GLFW_PRESS)
+				{
+					if (input->mainCat->hitbox_ison())
+						input->mainCat->hitboxOnOff(false);
+					else
+						input->mainCat->hitboxOnOff(true);
+				}
+			}
+			break;
 		case GLFW_KEY_V:
 			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
 			{

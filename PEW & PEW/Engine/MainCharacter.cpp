@@ -3,6 +3,7 @@
 #include "ShadowMapping.h"
 #include "Bullet.h"
 #include "Camera.h"
+#include "BoundingBox.h"
 
 MainCharacter::MainCharacter()
 {
@@ -10,6 +11,7 @@ MainCharacter::MainCharacter()
 	animModel = new AnimatedModel();
     player_CurrentAnim = new AnimInfo();
     animLibrary = new AnimatedModel::AnimationLibrary();
+    hitbox = new BoundingBox();
 
     SaveAnimations();
 
@@ -21,6 +23,7 @@ MainCharacter::MainCharacter()
 MainCharacter::~MainCharacter()
 {
 	// RELEASE(player_CurrentAnim);
+    delete hitbox;
     delete player_CurrentAnim;
     delete player_BoneInfo;
 	delete animModel;
@@ -51,6 +54,9 @@ void MainCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos
 {
     //if (!dead)
     //{
+    if (hitbox_ison())
+        hitbox->RenderHitbox(angle, characterPos, view, projection);
+
         animModel->UpdateAnimation(0, *player_BoneInfo, deltaTime, *player_CurrentAnim);
         glUseProgram(shaderprogram);
         animModel->SetupBoneTransforms(*player_BoneInfo, shaderprogram);
@@ -179,10 +185,10 @@ void MainCharacter::Shift_on(bool in)
     _Shift = in;
 }
 
-//void MainCharacter::hitboxOnOff(bool in)
-//{
-//    hitbox_on = in;
-//}
+void MainCharacter::hitboxOnOff(bool in)
+{
+    hitbox_on = in;
+}
 
 void MainCharacter::Walk() {
     if (!camera->GetViewType()) {
