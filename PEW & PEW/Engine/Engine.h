@@ -1,12 +1,8 @@
 #pragma once
 
-class Camera;
-class MainCharacter;
-class Input;
-class StaticObject;
-class ShadowMapping;
-class Enemy;
+class NetworkManager;
 class GraphicsManager;
+class Input;
 
 class Engine
 {
@@ -19,6 +15,7 @@ private:
 	void ShowFps();
 
 private:
-	Input* input = { nullptr };
+	NetworkManager* network;
 	GraphicsManager* graphics;
+	Input* input = { nullptr };
 };

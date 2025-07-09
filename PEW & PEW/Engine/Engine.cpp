@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Engine.h"
+#include "NetworkManager.h"
 #include "WindowInfo.h"
 #include "Timer.h"
 #include "Input.h"
@@ -7,6 +8,9 @@
 
 void Engine::Init()
 {
+	network = new NetworkManager();
+	network->Init("127.0.0.1", 9000);
+
 	GET_SINGLE(WindowInfo)->Init();
 	GET_SINGLE(Timer)->Init();
 
@@ -47,6 +51,9 @@ void Engine::Release()
 	graphics->Release();
 	delete input;
 	delete graphics;
+
+	network->Release();
+	delete network;
 }
 
 void Engine::ShowFps()

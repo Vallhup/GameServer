@@ -3,6 +3,8 @@
 // 각종 include
 #define _CRT_SECURE_NO_WARNINGS
 
+#include <winsock2.h>    // Windows 소켓 API - 이 헤더가 windows.h보다 앞에 존재해야함
+#include <ws2tcpip.h>	 // TCP / IP
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
@@ -27,6 +29,7 @@ using namespace std;
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glew32.lib")
 #pragma comment(lib, "glfw3.lib")
+#pragma comment(lib, "ws2_32.lib")
 #pragma warning(disable: 4711 4710 4100)
 
 // 각종 typedef
