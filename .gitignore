@@ -37,6 +37,14 @@
 *.out
 *.app
 
+*.pdb
+*.iobj
+*.ipdb
+*.obj
+*.ilk
+*.tlog
+*.log
+
 
 .vs
 server/client/x64/
