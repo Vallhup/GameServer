@@ -88,6 +88,7 @@ void Service::AcceptSession()
 
 	int sessionId = GenerateSessionId();
 	if (sessionId == -1) {
+		LOG_ERR("Error : Session[-1]");
 		closesocket(clientSocket);
 		return;
 	}
@@ -111,7 +112,7 @@ void Service::CloseSession(int id)
 
 Service::Service()
 {
-	_reusableSessionIds.reserve(64);
+	_reusableSessionIds.resize(64);
 	std::iota(_reusableSessionIds.begin(), _reusableSessionIds.end(), 0);
 }
 

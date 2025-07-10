@@ -33,6 +33,8 @@ void Engine::Update()
 	GLFWwindow* window = GET_SINGLE(WindowInfo)->GetWindow();
 
 	while (!glfwWindowShouldClose(window)) {
+		network->Update();
+
 		GET_SINGLE(Timer)->Update();
 
 		graphics->Update();

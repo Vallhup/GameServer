@@ -90,6 +90,9 @@
     <ClInclude Include="CrossHair.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="RecvBuffer.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -150,6 +153,9 @@
       <Filter>Object</Filter>
     </ClCompile>
     <ClCompile Include="CrossHair.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="RecvBuffer.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>

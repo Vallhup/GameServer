@@ -49,6 +49,8 @@ bool Session::Recv()
 
 bool Session::Send(const std::vector<char>& data)
 {
+	LOG_DBG("Session[%d] Send", _id);
+
 	if (data.empty() or _socket == INVALID_SOCKET) {
 		return false;
 	}
@@ -77,12 +79,17 @@ bool Session::Send(const std::vector<char>& data)
 
 void Session::OnConnect()
 {
-	LOG_INF("Client Connectd : %d", _id);
+	LOG_INF("Client Connected : %d", _id);
 
 	// TODO : Login, Init µî...
-	std::string string{ "Connect!" };
-	std::vector<char> data(string.begin(), string.end());
-	Send(data);
+	std::string msg{ "Connect!" };
+	unsigned char packetSize = static_cast<unsigned char>(msg.size() + sizeof(unsigned char));
+
+	std::vector<char> packet(packetSize);
+	memcpy(packet.data(), &packetSize, sizeof(unsigned char));
+	memcpy(packet.data() + sizeof(unsigned char), msg.data(), msg.size());
+
+	Send(packet);
 }
 
 void Session::DisConnect()

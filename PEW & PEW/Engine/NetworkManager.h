@@ -1,5 +1,7 @@
 #pragma once
 
+#include "RecvBuffer.h"
+
 class NetworkManager
 {
 public:
@@ -18,6 +20,6 @@ private:
 	SOCKET clientSocket;
 	bool isConnected;
 
-	char recvBuffer[1024];
+	RecvBuffer recvBuffer;
 };
 

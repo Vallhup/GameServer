@@ -66,27 +66,42 @@ void NetworkManager::Update()
 
 	// 3. Recv 가능한지 판별, 가능하면 Recv 진행
 	if (FD_ISSET(clientSocket, &readSet)) {
-		int recvLen = recv(clientSocket, recvBuffer, sizeof(recvBuffer), 0);
+		char tempBuffer[1024];
+		int recvLen = recv(clientSocket, tempBuffer, sizeof(tempBuffer), 0);
 		if (recvLen <= 0) {
 			Release();
 			return;
 		}
 
-		// Packet 분리 작업
-		int offset{ 0 };
-		while (offset < recvLen) {
-			if (offset + sizeof(int) > recvLen) break;
-			int size = *(reinterpret_cast<int*>(recvBuffer + offset));
-			if (size <= 0 or offset + size > recvLen) break;
+		if (not recvBuffer.Write(tempBuffer, recvLen)) {
+			std::cerr << "[RecvBuffer] Write failed or Overflow\n";
+			return;
+		}
 
-			std::vector<char> packet(recvBuffer + offset, recvBuffer + offset + size);
-			
-			std::cout << packet.data() << std::endl;
-			// TODO : Packet 처리
-			// 간단하게 만들면 NetworkManager에서 구현할 수도 있음 (근데 마음에 안듦)
-			// 제대로 할거면 따로 ObjecetManager, GameManager 같은 곳에서 Packet 처리를 구현해서 추가해야됨
+		while (true) {
+			if (recvBuffer.GetUsedSize() < sizeof(unsigned char)) {
+				break;
+			}
 
-			offset += size;
+			unsigned char packetSize{ 0 };
+			if (not recvBuffer.Peek(reinterpret_cast<char*>(&packetSize), sizeof(unsigned char))) {
+				break;
+			}
+
+			if (packetSize <= 0 or packetSize > BUFFER_SIZE) {
+				std::cerr << "Invalid Packet Size : " << packetSize << std::endl;
+				break;
+			}
+
+			std::vector<char> packet(packetSize);
+			if (not recvBuffer.Read(packet.data(), packetSize)) {
+				std::cerr << "RecvBuffer Read Failed\n";
+				break;
+			}
+
+			std::cout << "[RECV] ";
+			std::cout.write(packet.data() + sizeof(unsigned char), packetSize - sizeof(unsigned char));
+			std::cout << std::endl;
 		}
 	}
 }
