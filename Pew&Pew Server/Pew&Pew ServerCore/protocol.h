@@ -7,6 +7,8 @@ enum PacketType : char {
 	CS_ATTACK,
 
 	SC_MOVE_OBJECT,
+	SC_ADD,
+	SC_REMOVE,
 	SC_STAT_UPDATE
 };
 
@@ -41,6 +43,20 @@ struct SC_MOVE_PACKET {
 	int id;	
 	float x;
 	float y;
+};
+
+struct SC_ADD_PACKET {
+	unsigned char size;
+	char type;
+	int id;
+	float x;
+	float y;
+};
+
+struct SC_REMOVE_PACKET {
+	unsigned char size;
+	char type;
+	int id;
 };
 
 struct SC_ATTACK_PACKET {

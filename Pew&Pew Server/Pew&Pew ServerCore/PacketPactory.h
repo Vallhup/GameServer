@@ -10,6 +10,8 @@ public:
 public:
 	// Server -> Client
 	static std::vector<char> SCMovePacket();
+	static std::vector<char> SCAddPacket();
+	static std::vector<char> SCRemovePacket();
 	static std::vector<char> SCStatUpdatePacket();
 
 public:
