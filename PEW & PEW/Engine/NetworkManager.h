@@ -10,10 +10,14 @@ public:
 	void Update();
 	void Release();
 
+	void Send(const std::vector<char>& packet);
+
 	bool IsConnected() const;
 
 private:
 	SOCKET clientSocket;
 	bool isConnected;
+
+	char recvBuffer[1024];
 };
 

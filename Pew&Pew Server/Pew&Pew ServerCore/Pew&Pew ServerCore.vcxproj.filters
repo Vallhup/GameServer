@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{98e1d374-4a92-4226-b47e-b6c3b2b7d802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{c6fd0e60-37e1-485e-bb08-2e4a5336dbe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Pch">
+      <UniqueIdentifier>{e9ac1ffd-e39b-4060-ad2e-ded55aa098c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{87fd82fb-ad1d-4ee2-9e9a-99196d1bbcf6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="protocol.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Core\Pch</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketPactory.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="CorePch.h">
+      <Filter>Core\Pch</Filter>
+    </ClInclude>
+    <ClInclude Include="Macro.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Listener.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Service.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RecvBuffer.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Core\Pch</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketPactory.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="CorePch.cpp">
+      <Filter>Core\Pch</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Listener.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Service.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="RecvBuffer.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
