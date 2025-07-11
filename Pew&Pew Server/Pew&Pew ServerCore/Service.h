@@ -17,16 +17,20 @@ public:
 	void Run();
 	void Stop();
 
+	void BroadCast(const std::vector<char>& packet, int exceptId = -1);
+
+private:
+	int GenerateSessionId();
+
 	void AcceptSession();
 	void CloseSession(int id);
 
 private:
 	std::shared_ptr<Listener> _listener;
+
 	std::unordered_map<int, std::shared_ptr<Session>> _sessions;
-	int _nextSessionId{ 1 };
+
 	std::vector<int> _reusableSessionIds;
 	bool _running{ false };
-
-	int GenerateSessionId();
 };
 

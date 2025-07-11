@@ -76,6 +76,14 @@ void Service::Stop()
 	_sessions.clear();
 }
 
+void Service::BroadCast(const std::vector<char>& packet, int exceptId)
+{
+	for (auto& [id, session] : _sessions) {
+		if (id == exceptId) continue;
+		session->Send(packet);
+	}
+}
+
 void Service::AcceptSession()
 {
 	SOCKET clientSocket = _listener->Accept();

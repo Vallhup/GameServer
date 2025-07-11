@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "PacketPactory.h"
 
-std::vector<char> PacketFactory::CSMovePacket(MoveDirection direction, bool run)
+std::vector<char> PacketFactory::CSMovePacket(char direction, bool run)
 {
 	CS_MOVE_PACKET move;
 	move.size = sizeof(move);
@@ -12,7 +12,7 @@ std::vector<char> PacketFactory::CSMovePacket(MoveDirection direction, bool run)
 	return Serialize(move);
 }
 
-std::vector<char> PacketFactory::CSAttackPacket(MoveDirection direction, bool run)
+std::vector<char> PacketFactory::CSAttackPacket(char direction, bool run)
 {
 	CS_ATTACK_PACKET attack;
 	attack.size = sizeof(attack);
