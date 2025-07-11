@@ -48,7 +48,7 @@
     <ClInclude Include="RecvBuffer.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h">
+    <ClInclude Include="Character.h">
       <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
@@ -77,7 +77,7 @@
     <ClCompile Include="RecvBuffer.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
+    <ClCompile Include="Character.cpp">
       <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>

@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Character.h" />
     <ClInclude Include="CorePch.h" />
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Macro.h" />
@@ -32,8 +32,8 @@
     <ClInclude Include="Session.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Character.cpp" />
     <ClCompile Include="CorePch.cpp" />
-    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="PacketPactory.cpp" />

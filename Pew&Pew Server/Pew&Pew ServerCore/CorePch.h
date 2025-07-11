@@ -31,6 +31,8 @@
 #include "Listener.h"
 #include "Session.h"
 
+#include "Character.h"
+
 #include "RecvBuffer.h"
 
 #include "Macro.h"
