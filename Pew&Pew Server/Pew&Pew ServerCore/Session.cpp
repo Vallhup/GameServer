@@ -12,6 +12,10 @@ Session::~Session()
 
 bool Session::Recv()
 {
+	if (INVALID_SOCKET == _socket or not _isConnected) {
+		return false;
+	}
+
 	DWORD flags{ 0 };
 	DWORD bytesReceived{ 0 };
 
@@ -29,7 +33,14 @@ bool Session::Recv()
 			return true;
 		}
 
-		LOG_ERR("Session[%d] WSARecv failed : %d", _id, error);
+		else if (error == WSAECONNRESET) {
+			LOG_INF("Session[%d] remote closed (10054)", _id);
+		}
+
+		else {
+			LOG_ERR("Session[%d] WSARecv failed : %d", _id, error);
+		}
+
 		return false;
 	}
 
@@ -51,7 +62,7 @@ bool Session::Send(const std::vector<char>& data)
 {
 	LOG_DBG("Session[%d] Send", _id);
 
-	if (data.empty() or _socket == INVALID_SOCKET) {
+	if (data.empty() or _socket == INVALID_SOCKET or not _isConnected) {
 		return false;
 	}
 
@@ -81,6 +92,8 @@ void Session::OnConnect()
 {
 	LOG_INF("Client Connected : %d", _id);
 
+	_isConnected = true;
+
 	// TODO : Login, Init 등...
 	std::string msg{ "Connect!" };
 	unsigned char packetSize = static_cast<unsigned char>(msg.size() + sizeof(unsigned char));
@@ -98,6 +111,7 @@ void Session::DisConnect()
 		shutdown(_socket, SD_BOTH);
 		closesocket(_socket);
 		_socket = INVALID_SOCKET;
+		_isConnected = false;
 	}
 }
 
@@ -153,9 +167,16 @@ void Session::HandlePacket(const std::vector<char>& packet)
 
 void Session::HandleMovePacket(const std::vector<char>& packet)
 {
+	// 1. Packet 파싱
+	auto move = PacketFactory::Deserialize<CS_MOVE_PACKET>(packet);
 
+	// TODO : 유효성 검사, GameObject에서 실제 로직 실행, 전체 Client에 BroadCast
 }
 
 void Session::HandleAttackPacket(const std::vector<char>& packet)
 {
+	// 1. Packet 파싱
+	auto attack = PacketFactory::Deserialize<CS_ATTACK_PACKET>(packet);
+
+	// TODO : 유효성 검사, GameObject에서 실제 로직 실행, 전체 Client에 BroadCast
 }

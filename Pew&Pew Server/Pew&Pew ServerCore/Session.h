@@ -29,5 +29,7 @@ private:
 	SOCKET _socket;
 
 	RecvBuffer _recvBuffer;
+
+	bool _isConnected{ false };
 };
 

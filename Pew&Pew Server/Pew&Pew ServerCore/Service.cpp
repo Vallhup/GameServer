@@ -3,14 +3,12 @@
 
 bool Service::Init()
 {
-	// 1. WinSock 초기화
 	WSADATA WSAData;
 	if (WSAStartup(MAKEWORD(2, 2), &WSAData) != 0) {
 		LOG_ERR("WSAStartup Error");
 		return false;
 	}
 
-	// 2. Listener 초기화
 	if (nullptr == _listener) {
 		_listener = std::make_shared<Listener>(shared_from_this());
 	}
@@ -25,7 +23,6 @@ bool Service::Init()
 
 void Service::Run()
 {
-	// 0. Running Flag Setting
 	_running = true;
 
 	while (_running) {

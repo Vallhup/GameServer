@@ -36,6 +36,7 @@
 #include "Macro.h"
 #include "Logger.h"
 
+#include "PacketPactory.h"
 #include "protocol.h"
 
 #pragma comment(lib, "ws2_32.lib")

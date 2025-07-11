@@ -99,6 +99,7 @@ void NetworkManager::Update()
 				break;
 			}
 
+			// Temp : Packet 처리 추가 필요
 			std::cout << "[RECV] ";
 			std::cout.write(packet.data() + sizeof(unsigned char), packetSize - sizeof(unsigned char));
 			std::cout << std::endl;
