@@ -5,9 +5,33 @@ struct vec3 {
 	float y;
 	float z;
 
+	vec3 operator+(const vec3& other) const
+	{
+		return vec3{ x + other.x, y + other.y, z + other.z };
+	}
+
 	vec3 operator-(const vec3& other) const
 	{
 		return vec3{ x - other.x, y - other.y, z - other.z };
+	}
+
+	vec3 operator*(float other) const
+	{
+		return vec3{ x * other, y * other, z * other };
+	}
+
+	vec3 operator/(float other) const
+	{
+		return vec3{ x / other, y / other, z / other };
+	}
+
+	vec3& operator+=(const vec3& other)
+	{
+		x += other.x;
+		y += other.y;
+		z += other.z;
+
+		return *this;
 	}
 };
 

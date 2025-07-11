@@ -17,10 +17,7 @@ Projectile::Projectile(int ownerId, vec3 pos, float dir, float speed, int dmg)
 
 void Projectile::Update(float deltaTime)
 {
-	_pos.x += _moveVector.x * deltaTime;
-	_pos.y += _moveVector.y * deltaTime;
-	_pos.z += _moveVector.z * deltaTime;
-
+	_pos += _moveVector * deltaTime;
 	_lifeTime += deltaTime;
 	if (_lifeTime > _maxLifeTime) {
 		_isActive = false;
