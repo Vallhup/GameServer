@@ -32,6 +32,7 @@
 #include "Session.h"
 
 #include "Character.h"
+#include "Projectile.h"
 
 #include "RecvBuffer.h"
 

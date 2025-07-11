@@ -26,6 +26,7 @@
     <ClInclude Include="Macro.h" />
     <ClInclude Include="PacketPactory.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="RecvBuffer.h" />
     <ClInclude Include="Service.h" />
@@ -43,6 +44,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="RecvBuffer.cpp" />
     <ClCompile Include="Service.cpp" />
     <ClCompile Include="Session.cpp" />

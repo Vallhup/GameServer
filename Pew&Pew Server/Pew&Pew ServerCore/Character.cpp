@@ -3,7 +3,7 @@
 
 Character::Character(int id, const std::string& name) : _id(id), _name(name)
 {
-	_x = _y = _z = 0.0f;
+	_pos = { 0.0f, 0.0f, 0.0f };
 	_rotation = 0.0f;
 
 	_hp = 100;
@@ -14,12 +14,9 @@ Character::Character(int id, const std::string& name) : _id(id), _name(name)
 	_attackCooldown = 1.0f;
 }
 
-void Character::Move(float newX, float newY, float newZ, float newRotation)
+void Character::Move(vec3 newPos, float newRotation)
 {
-	_x = newX;
-	_y = newY;
-	_z = newZ;
-
+	_pos = newPos;
 	_rotation = newRotation;
 }
 
