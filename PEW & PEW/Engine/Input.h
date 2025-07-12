@@ -1,8 +1,9 @@
 #pragma once
 
 class Camera;
-class MainCharacter;
+class Character;
 class NetworkManager;
+class GraphicsManager;
 
 class Input
 {
@@ -12,11 +13,13 @@ public:
 	static void MouseFunc(GLFWwindow* window, int button, int action, int mods);
 
 	void SetCamera(Camera* cam) { camera = cam; }
-	void SetMainCharacter(MainCharacter* cat) { mainCat = cat; }
+	void SetMainCharacter(Character* cat) { mainCat = cat; }
 	void SetNetworkManager(NetworkManager* net) { network = net; }
+	void SetGraphicsManager(GraphicsManager* gfx) { graphics = gfx; }
 
 private:
 	Camera* camera = { nullptr };
-	MainCharacter* mainCat = { nullptr };
+	Character* mainCat = { nullptr };
 	NetworkManager* network = { nullptr };
+	GraphicsManager* graphics = { nullptr };
 };

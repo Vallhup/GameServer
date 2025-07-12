@@ -112,10 +112,19 @@ void Service::AcceptSession()
 
 	session->OnConnect(this);
 
-	// 3. 나에게 남
+	// 1. 새로운 플레이어에게 자기 자신의 정보 먼저 보내기
+	session->Send(PacketFactory::SCAddPacket(*character));  
+
+	// 2. 새로운 플레이어에게 기존 플레이어들의 정보 보내기
 	for (auto& [id, sess] : _sessions) {
 		if (session->GetId() == id) continue;
 		session->Send(PacketFactory::SCAddPacket(*sess->GetCharacter()));
+	}
+
+	// 3. 기존 플레이어들에게 새로운 플레이어 정보 보내기
+	for (auto& [id, sess] : _sessions) {
+		if (session->GetId() == id) continue;
+		sess->Send(PacketFactory::SCAddPacket(*character));
 	}
 }
 

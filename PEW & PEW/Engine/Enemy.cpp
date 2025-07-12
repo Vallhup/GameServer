@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Enemy.h"
-#include "MainCharacter.h"
 #include "Bullet.h"
 #include "ShadowMapping.h"
+#include "Character.h"
 
 Enemy::Enemy(int num, int POINT)
 {
@@ -138,7 +138,7 @@ void Enemy::SetupShaders()
     SetupShader("Shaders/EnemyLineVert.glsl", "Shaders/EnemyLineFrag.glsl", shaderprogram2);
 }
 
-void Enemy::Update(float deltaTime, const glm::vec3& cPos, Enemy* enemy, MainCharacter* mainCat)
+void Enemy::Update(float deltaTime, const glm::vec3& cPos, Enemy* enemy, Character* mainCat)
 {
     if (!dead)
     {
@@ -266,7 +266,7 @@ void Enemy::DrawAttackingLine(const glm::mat4& view, const glm::mat4& projection
     glBindVertexArray(0);
 }
 
-void Enemy::MoveToward(MainCharacter* mainCat)
+void Enemy::MoveToward(Character* mainCat)
 {
     if (!dead && !mainCat->GetDying())
     {
@@ -515,7 +515,7 @@ void Enemy::MakeBullets(const glm::vec3& cPos)
 //    return check;
 //}
 
-void Enemy::UpdateStateAndBehavior(MainCharacter* mainCat)
+void Enemy::UpdateStateAndBehavior(Character* mainCat)
 {
     glm::vec3 pos = mainCat->GetPosition();
     glm::vec3 direction = glm::normalize(pos - enemypos);

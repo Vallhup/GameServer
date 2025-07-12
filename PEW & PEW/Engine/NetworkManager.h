@@ -1,7 +1,7 @@
 #pragma once
 #include "RecvBuffer.h"
 
-class RemotePlayer;
+class GraphicsManager;
 
 class NetworkManager
 {
@@ -18,13 +18,13 @@ public:
 
 	bool IsConnected() const;
 
-	const std::map<int, RemotePlayer*>& GetRemotePlayers() const { return remotePlayers; }
+	void SetGraphicsManager(GraphicsManager* gfx) { graphics = gfx; }
 
 private:
 	SOCKET clientSocket;
 	bool isConnected;
 
 	RecvBuffer recvBuffer;
-	std::map<int, RemotePlayer*> remotePlayers;
+	GraphicsManager* graphics = nullptr;
 };
 

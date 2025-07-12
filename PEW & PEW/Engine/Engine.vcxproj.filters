@@ -60,9 +60,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Object</Filter>
     </ClInclude>
-    <ClInclude Include="MainCharacter.h">
-      <Filter>Character</Filter>
-    </ClInclude>
     <ClInclude Include="AnimatedModel.h">
       <Filter>Animation</Filter>
     </ClInclude>
@@ -102,7 +99,7 @@
     <ClInclude Include="protocol.h">
       <Filter>Protocol</Filter>
     </ClInclude>
-    <ClInclude Include="RemotePlayer.h">
+    <ClInclude Include="Character.h">
       <Filter>Character</Filter>
     </ClInclude>
   </ItemGroup>
@@ -133,9 +130,6 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="MainCharacter.cpp">
-      <Filter>Character</Filter>
     </ClCompile>
     <ClCompile Include="AnimatedModel.cpp">
       <Filter>Animation</Filter>
@@ -173,7 +167,7 @@
     <ClCompile Include="PacketFactory.cpp">
       <Filter>Protocol</Filter>
     </ClCompile>
-    <ClCompile Include="RemotePlayer.cpp">
+    <ClCompile Include="Character.cpp">
       <Filter>Character</Filter>
     </ClCompile>
   </ItemGroup>

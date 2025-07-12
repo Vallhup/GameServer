@@ -2,7 +2,7 @@
 #include "AnimatedModel.h"
 
 class Bullet;
-class MainCharacter;
+class Character;
 class ShadowMapping;
 
 class Enemy
@@ -15,7 +15,7 @@ public:
     void SetSpawnPosition();
     void SetSpawnAngle();
     void SetupShaders();
-    void Update(float deltaTime, const glm::vec3& cPos, Enemy* enemy, MainCharacter* mainCat);
+    void Update(float deltaTime, const glm::vec3& cPos, Enemy* enemy, Character* mainCat);
 
     void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint depthMap);
 
@@ -24,7 +24,7 @@ public:
 
     void DrawAttackingLine(const glm::mat4& view, const glm::mat4& projection);
 
-    void MoveToward(MainCharacter* mainCat);
+    void MoveToward(Character* mainCat);
     void RotateEnemy(const glm::vec3& cPos, Enemy* enemy);
     void LookUpdate(const glm::vec3& cPos);
     void MakeBullets(const glm::vec3& cPos);
@@ -34,7 +34,7 @@ public:
     bool wallcollapsed_d();
     bool wallcollapsed_a();
 
-    void UpdateStateAndBehavior(MainCharacter* mainCat);
+    void UpdateStateAndBehavior(Character* mainCat);
 
     void SetLife();
 

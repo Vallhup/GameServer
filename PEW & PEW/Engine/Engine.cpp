@@ -18,10 +18,12 @@ void Engine::Init()
 	graphics->Init();
 	graphics->SetNetworkManager(network);
 
+	network->SetGraphicsManager(graphics);
+
 	input = new Input();
 	input->SetCamera(graphics->GetCamera());
-	input->SetMainCharacter(graphics->GetMainCat());
 	input->SetNetworkManager(network);
+	input->SetGraphicsManager(graphics);
 
 	GLFWwindow* window = GET_SINGLE(WindowInfo)->GetWindow();
 	glfwSetWindowUserPointer(window, input);

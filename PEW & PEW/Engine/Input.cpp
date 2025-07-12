@@ -1,13 +1,24 @@
 #include "pch.h"
 #include "Input.h"
 #include "Camera.h"
-#include "MainCharacter.h"
 #include "NetworkManager.h"
 #include "PacketFactory.h"
+#include "GraphicsManager.h"
+#include "Character.h"
 
 void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	Input* input = static_cast<Input*>(glfwGetWindowUserPointer(window));
+
+	// mainCat이 없으면 graphics에서 동적으로 가져오기
+	if (!input->mainCat && input->graphics) {
+		input->mainCat = input->graphics->GetLocalCharacter();
+	}
+
+	// 로컬 캐릭터가 아직 생성되지 않았으면 아무것도 하지 않음
+	if (!input->mainCat) {
+		return;
+	}
 
 	bool wasMoving = input->mainCat->IsMoving();
 	bool wasRunning = input->mainCat->Shift_value();
@@ -280,6 +291,16 @@ void Input::Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 void Input::MouseFunc(GLFWwindow* window, int button, int action, int mods)
 {
 	Input* input = static_cast<Input*>(glfwGetWindowUserPointer(window));
+
+	// mainCat이 없으면 graphics에서 동적으로 가져오기
+	if (!input->mainCat && input->graphics) {
+		input->mainCat = input->graphics->GetLocalCharacter();
+	}
+
+	// 로컬 캐릭터가 아직 생성되지 않았으면 아무것도 하지 않음
+	if (!input->mainCat) {
+		return;
+	}
 
 	switch (button)
 	{

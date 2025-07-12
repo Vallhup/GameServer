@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Bullet.h"
 #include "stb_image.h"
-#include "MainCharacter.h"
+#include "Character.h"
 #include "Camera.h"
 #include "Enemy.h"
 
@@ -146,11 +146,11 @@ GLuint Bullet::LoadBulletTexture(const char* path)
 	return textureID;
 }
 
-void Bullet::BulletSetting(MainCharacter* mainCharacter, Camera* camera, glm::vec3 mousePick)
+void Bullet::BulletSetting(Character* character, Camera* camera, glm::vec3 mousePick)
 {
 	if (b_type == 1)
 	{
-		position = mainCharacter->GetPosition();
+		position = character->GetPosition();
 		position.y = 0.45f;
 
 		angle = atan2(mouseDir.x, mouseDir.z);
@@ -294,7 +294,7 @@ bool Bullet::IsCollapsed(Enemy* enemy[3][9])
 	return check;
 }
 
-bool Bullet::IsCollapsed(MainCharacter* mainCat)
+bool Bullet::IsCollapsed(Character* character)
 {
 	bool check{ false };
 
@@ -309,9 +309,9 @@ bool Bullet::IsCollapsed(MainCharacter* mainCat)
 
 	if (b_type == 2)
 	{
-		glm::vec3 pos = mainCat->GetPosition();
+		glm::vec3 pos = character->GetPosition();
 
-		if (!mainCat->GetDying())
+		if (!character->GetDying())
 		{
 			if (position.y >= 0.0f && position.y <= 0.95f)
 			{
@@ -319,7 +319,7 @@ bool Bullet::IsCollapsed(MainCharacter* mainCat)
 					(position.z >= pos.z - 0.2f && position.z <= pos.z + 0.2f))
 				{
 					// 주인공 캐릭터 타격
-					mainCat->Setlife();
+					character->Setlife();
 					return true;
 				}
 			}

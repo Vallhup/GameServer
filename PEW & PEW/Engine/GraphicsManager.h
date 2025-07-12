@@ -1,10 +1,10 @@
 #pragma once
 
 class Camera;
-class MainCharacter;
 class ShadowMapping;
 class Enemy;
 class NetworkManager;
+class Character;
 
 class GraphicsManager
 {
@@ -15,14 +15,21 @@ public:
 	void RenderShadow();
 	void Release();
 
+	void SetMyPlayerID(int id);
+	void AddCharacter(int id, bool isLocal = false);
+	void RemoveCharacter(int id);
+	Character* GetCharacter(int id);
+	Character* GetLocalCharacter();
+
 	Camera* GetCamera() const;
-	MainCharacter* GetMainCat() const;
+	Character* GetMainCat();
 	void SetNetworkManager(NetworkManager* net);
 
 private:
 	Camera* camera = { nullptr };
-	MainCharacter* mainCat = { nullptr };
 	ShadowMapping* shadowMap = { nullptr };
 	Enemy* enemy[3][9] = { nullptr };
 	NetworkManager* network = { nullptr };
+	std::map<int, Character*> characters;  // 모든 캐릭터 (ID 기반)
+	int myPlayerID = -1;
 };

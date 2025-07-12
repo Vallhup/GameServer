@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "NetworkManager.h"
 #include "PacketFactory.h"
-#include "RemotePlayer.h"
+#include "GraphicsManager.h"
+#include "Character.h"
 
 NetworkManager::NetworkManager()
 {
@@ -15,7 +16,7 @@ NetworkManager::~NetworkManager()
 		Release();
 }
 
-void NetworkManager::Init(const char* IP, u_short port) 
+void NetworkManager::Init(const char* IP, u_short port)
 {
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
@@ -53,7 +54,7 @@ void NetworkManager::Init(const char* IP, u_short port)
 	cout << "Connected to Server!" << endl;
 }
 
-void NetworkManager::Update() 
+void NetworkManager::Update()
 {
 	// 1. read set 초기화, socket Setting
 	fd_set readSet;
@@ -125,7 +126,6 @@ void NetworkManager::Send(const std::vector<char>& packet)
 		if (WSAEWOULDBLOCK == error) {
 			// 송신 버퍼 OverFlow -> 별도 처리 X (패킷 누락)
 		}
-
 		else {
 			Release();
 		}
@@ -139,28 +139,39 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 	char packetType = packet[1];
 
 	switch (packetType) {
-	case SC_MOVE_OBJECT:
-	{
-		SC_MOVE_PACKET movePacket = PacketFactory::Deserialize<SC_MOVE_PACKET>(packet);
-
-		auto it = remotePlayers.find(movePacket.id);
-		if (it != remotePlayers.end()) {
-			it->second->UpdateFromPacket(movePacket.x, movePacket.y, movePacket.z);
-		}
-		break;
-	}
 	case SC_ADD:
 	{
 		SC_ADD_PACKET addPacket = PacketFactory::Deserialize<SC_ADD_PACKET>(packet);
 
-		if (remotePlayers.find(addPacket.id) == remotePlayers.end()) {
-			RemotePlayer* newPlayer = new RemotePlayer(addPacket.id);
-			newPlayer->Init();
-			newPlayer->SetTargetPosition(addPacket.x, addPacket.y, addPacket.z);
-			remotePlayers[addPacket.id] = newPlayer;
+		if (graphics) {
+			// 첫 번째 받은 캐릭터를 내 캐릭터로 설정
+			static bool firstCharacter = true;
+			bool isLocal = firstCharacter;
+			firstCharacter = false;
+
+			graphics->AddCharacter(addPacket.id, isLocal);
+
+			Character* character = graphics->GetCharacter(addPacket.id);
+			if (character) {
+				character->SetTargetPosition(addPacket.x, addPacket.y, addPacket.z);
+			}
 
 			std::cout << "[ADD PLAYER] ID: " << addPacket.id << " at ("
-				<< addPacket.x << ", " << addPacket.y << ", " << addPacket.z << ")" << std::endl;
+				<< addPacket.x << ", " << addPacket.y << ", " << addPacket.z << ")"
+				<< (isLocal ? " (LOCAL)" : " (REMOTE)") << std::endl;
+		}
+		break;
+	}
+	case SC_MOVE_OBJECT:
+	{
+		SC_MOVE_PACKET movePacket = PacketFactory::Deserialize<SC_MOVE_PACKET>(packet);
+
+		if (graphics) {
+			Character* character = graphics->GetCharacter(movePacket.id);
+			if (character && !character->IsLocalPlayer()) {
+				// 원격 플레이어만 네트워크로 위치 업데이트
+				character->UpdateFromPacket(movePacket.x, movePacket.y, movePacket.z);
+			}
 		}
 		break;
 	}
@@ -168,23 +179,23 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 	{
 		SC_REMOVE_PACKET removePacket = PacketFactory::Deserialize<SC_REMOVE_PACKET>(packet);
 
-		auto it = remotePlayers.find(removePacket.id);
-		if (it != remotePlayers.end()) {
-			delete it->second;
-			remotePlayers.erase(it);
-
-			std::cout << "[REMOVE PLAYER] ID: " << removePacket.id << std::endl;
+		if (graphics) {
+			graphics->RemoveCharacter(removePacket.id);
 		}
+
+		std::cout << "[REMOVE PLAYER] ID: " << removePacket.id << std::endl;
 		break;
 	}
 	case SC_ATTACK:
 	{
 		SC_ATTACK_PACKET attackPacket = PacketFactory::Deserialize<SC_ATTACK_PACKET>(packet);
 
-		auto it = remotePlayers.find(attackPacket.id);
-		if (it != remotePlayers.end()) {
-			// 공격 애니메이션 처리
-			std::cout << "[ATTACK] Player ID: " << attackPacket.id << std::endl;
+		if (graphics) {
+			Character* character = graphics->GetCharacter(attackPacket.id);
+			if (character) {
+				// 공격 애니메이션 처리 (나중에 구현)
+				std::cout << "[ATTACK] Player ID: " << attackPacket.id << std::endl;
+			}
 		}
 		break;
 	}
