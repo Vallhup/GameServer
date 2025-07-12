@@ -88,21 +88,23 @@ bool Session::Send(const std::vector<char>& data)
 	return true;
 }
 
-void Session::OnConnect()
+void Session::OnConnect(Service* service)
 {
 	LOG_INF("Client Connected : %d", _id);
 
 	_isConnected = true;
 
 	// TODO : Login, Init µî...
-	std::string msg{ "Connect!" };
+	/*std::string msg{ "Connect!" };
 	unsigned char packetSize = static_cast<unsigned char>(msg.size() + sizeof(unsigned char));
 
 	std::vector<char> packet(packetSize);
 	memcpy(packet.data(), &packetSize, sizeof(unsigned char));
 	memcpy(packet.data() + sizeof(unsigned char), msg.data(), msg.size());
 
-	Send(packet);
+	Send(packet);*/
+
+	service->BroadCast(PacketFactory::SCAddPacket(*_character));
 }
 
 void Session::DisConnect()

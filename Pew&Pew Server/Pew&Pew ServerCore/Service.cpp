@@ -101,9 +101,16 @@ void Service::AcceptSession()
 	u_long mode{ 1 };
 	ioctlsocket(clientSocket, FIONBIO, &mode);
 
+	std::string name = "Player" + std::to_string(sessionId);
+
 	auto session = std::make_shared<Session>(sessionId, clientSocket);
+	auto character = std::make_shared<Character>(sessionId, name);
+	session->SetCharacter(character);
+
 	_sessions.insert(std::make_pair(sessionId, session));
-	_sessions.find(sessionId)->second->OnConnect();
+	_characters.insert(std::make_pair(sessionId, character));
+
+	session->OnConnect(this);
 }
 
 void Service::CloseSession(int id)

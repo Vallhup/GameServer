@@ -27,15 +27,11 @@
 //  - 아직 Dummy Packet 전송만 하는 중
 //  - Packet 처리하는 로직 따로 구성해야 됨
 // 
-// 2. Session 관리 고도화
-//  - Client DisConnect 할 때 마다 Send 오류 발생
-//  - 큰 문제 있는 상태는 아니지만 그냥 불편함
-// 
-// 3. Game Logic 추가
+// 2. Game Logic 추가
 //  - 이건 일단 나중에...
 //  - PvP를 하면 매칭은 어떻게 할지, 이동 및 충돌처리에 대한 검증 등등...
 // 
-// 4. GameObject(Character) & Map Data 처리 관련
+// 3. GameObject(Character) & Map Data 처리 관련
 //  - 말 그대로
 //
 

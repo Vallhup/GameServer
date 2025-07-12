@@ -2,6 +2,7 @@
 
 class Listener;
 class Session;
+class Character;
 
 class Service : public std::enable_shared_from_this<Service>
 {
@@ -29,6 +30,7 @@ private:
 	std::shared_ptr<Listener> _listener;
 
 	std::unordered_map<int, std::shared_ptr<Session>> _sessions;
+	std::unordered_map<int, std::shared_ptr<Character>> _characters;
 
 	std::vector<int> _reusableSessionIds;
 	bool _running{ false };
