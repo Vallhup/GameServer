@@ -97,16 +97,6 @@ void Session::OnConnect(Service* service)
 
 	_isConnected = true;
 
-	// TODO : Login, Init µî...
-	/*std::string msg{ "Connect!" };
-	unsigned char packetSize = static_cast<unsigned char>(msg.size() + sizeof(unsigned char));
-
-	std::vector<char> packet(packetSize);
-	memcpy(packet.data(), &packetSize, sizeof(unsigned char));
-	memcpy(packet.data() + sizeof(unsigned char), msg.data(), msg.size());
-
-	Send(packet);*/
-
 	service->BroadCast(PacketFactory::SCAddPacket(*_character));
 }
 
