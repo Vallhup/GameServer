@@ -13,7 +13,7 @@ public:
 	bool Recv();
 	bool Send(const std::vector<char>& data);
 	
-	void OnConnect(Service* service);
+	void OnConnect();
 	void DisConnect();
 
 	void ProcessPacket();
@@ -25,6 +25,7 @@ public:
 	std::shared_ptr<Character> GetCharacter() const { return _character; }
 	
 	void SetCharacter(const std::shared_ptr<Character>& character) { _character = character; }
+	void SetService(Service* service) { _service = service; }
 
 private:
 	void HandleMovePacket(const std::vector<char>& packet);
@@ -33,10 +34,11 @@ private:
 private:
 	int _id;
 
-	std::shared_ptr<Character> _character;
-
 	SOCKET _socket;
 	RecvBuffer _recvBuffer;
+
+	std::shared_ptr<Character> _character{ nullptr };
+	Service* _service{ nullptr };
 
 	bool _isConnected{ false };
 };

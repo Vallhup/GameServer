@@ -105,26 +105,21 @@ void Service::AcceptSession()
 
 	auto session = std::make_shared<Session>(sessionId, clientSocket);
 	auto character = std::make_shared<Character>(sessionId, name);
+
 	session->SetCharacter(character);
+	session->SetService(this);
 
 	_sessions.insert(std::make_pair(sessionId, session));
 	_characters.insert(std::make_pair(sessionId, character));
 
-	session->OnConnect(this);
+	session->OnConnect();
 
-	// 1. 새로운 플레이어에게 자기 자신의 정보 먼저 보내기
-	session->Send(PacketFactory::SCAddPacket(*character));  
+	BroadCast(PacketFactory::SCAddPacket(*character));
 
-	// 2. 새로운 플레이어에게 기존 플레이어들의 정보 보내기
+	// 새로운 플레이어에게 기존 플레이어들의 정보 보내기
 	for (auto& [id, sess] : _sessions) {
 		if (session->GetId() == id) continue;
 		session->Send(PacketFactory::SCAddPacket(*sess->GetCharacter()));
-	}
-
-	// 3. 기존 플레이어들에게 새로운 플레이어 정보 보내기
-	for (auto& [id, sess] : _sessions) {
-		if (session->GetId() == id) continue;
-		sess->Send(PacketFactory::SCAddPacket(*character));
 	}
 }
 

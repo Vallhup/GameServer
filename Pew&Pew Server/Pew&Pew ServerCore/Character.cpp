@@ -20,6 +20,39 @@ void Character::Move(vec3 newPos, float newRotation)
 	_rotation = newRotation;
 }
 
+void Character::Move(char direction, float rotation)
+{
+	// Temp : 이동 패킷 처리 자체는 되는데 이동 동기화가 제대로 안됨
+	//        이동 로직 현재 Client 코드와 맞춰야 함
+
+	static constexpr float moveDistance{ 0.005f };
+	static constexpr vec3 dirTable[8] = {
+		{ 0.0f, 0.0f, -1.0f },
+		{ 0.0f, 0.0f,  1.0f },
+		{ -1.0f, 0.0f, 0.0f },
+		{  1.0f, 0.0f, 0.0f },
+		{ -1.0f, 0.0f,  -1.0f },
+		{ 1.0f, 0.0f,  -1.0f },
+		{ -1.0f, 0.0f,  1.0f },
+		{ 1.0f, 0.0f,  1.0f }
+	};
+	
+	if (direction < 0 or direction >= 8) {
+		return;
+	}
+
+	vec3 moveVec = dirTable[direction];
+
+	if (direction >= MoveDirection::UPLEFT) {
+		float normal = sqrt(moveVec.x * moveVec.x + moveVec.z * moveVec.z);
+		if (normal > 0.0f) {
+			moveVec = moveVec / normal;
+		}
+	}
+
+	_pos += moveVec * moveDistance;
+}
+
 void Character::Attack(float nowTime)
 {
 	if (not _isAlive) {

@@ -91,13 +91,13 @@ bool Session::Send(const std::vector<char>& data)
 	return true;
 }
 
-void Session::OnConnect(Service* service)
+void Session::OnConnect()
 {
 	LOG_INF("Client Connected : %d", _id);
-
+		
 	_isConnected = true;
 
-	service->BroadCast(PacketFactory::SCAddPacket(*_character), _id);
+	//_service->BroadCast(PacketFactory::SCAddPacket(*_character));
 }
 
 void Session::DisConnect()
@@ -165,8 +165,14 @@ void Session::HandleMovePacket(const std::vector<char>& packet)
 	// 1. Packet 파싱
 	auto move = PacketFactory::Deserialize<CS_MOVE_PACKET>(packet);
 
-	// TODO : 유효성 검사, GameObject에서 실제 로직 실행, 전체 Client에 BroadCast
-	LOG_DBG("Session[%d] move", _id);
+	if (_character) {
+		LOG_DBG("Session[%d] move : %c", _id, move.direction);
+		_character->Move(move.direction, 0.0f);
+	}
+
+	if (_service) {
+		_service->BroadCast(PacketFactory::SCMovePacket(*_character));
+	}
 }
 
 void Session::HandleAttackPacket(const std::vector<char>& packet)

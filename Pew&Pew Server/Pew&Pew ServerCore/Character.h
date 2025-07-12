@@ -42,6 +42,7 @@ public:
 
 public:
 	void Move(vec3 newPos, float newRotation);
+	void Move(char direction, float rotation);
 	void Attack(float nowTime);
 	void TakeDamage(int damage);
 
