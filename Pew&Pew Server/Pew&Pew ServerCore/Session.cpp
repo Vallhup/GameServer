@@ -13,6 +13,7 @@ Session::~Session()
 bool Session::Recv()
 {
 	if (INVALID_SOCKET == _socket or not _isConnected) {
+		LOG_DBG("Session[%d] Recv Error", _id);
 		return false;
 	}
 
@@ -56,6 +57,8 @@ bool Session::Recv()
 
 	// Packet 처리
 	ProcessPacket();
+
+	return true;
 }
 
 bool Session::Send(const std::vector<char>& data)
@@ -173,6 +176,7 @@ void Session::HandleMovePacket(const std::vector<char>& packet)
 	auto move = PacketFactory::Deserialize<CS_MOVE_PACKET>(packet);
 
 	// TODO : 유효성 검사, GameObject에서 실제 로직 실행, 전체 Client에 BroadCast
+	LOG_DBG("Session[%d] move", _id);
 }
 
 void Session::HandleAttackPacket(const std::vector<char>& packet)
@@ -181,4 +185,5 @@ void Session::HandleAttackPacket(const std::vector<char>& packet)
 	auto attack = PacketFactory::Deserialize<CS_ATTACK_PACKET>(packet);
 
 	// TODO : 유효성 검사, GameObject에서 실제 로직 실행, 전체 Client에 BroadCast
+	LOG_DBG("Session[%d] attack", _id);
 }
