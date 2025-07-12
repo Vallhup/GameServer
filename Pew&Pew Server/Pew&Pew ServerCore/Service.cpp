@@ -111,6 +111,14 @@ void Service::AcceptSession()
 	_characters.insert(std::make_pair(sessionId, character));
 
 	session->OnConnect(this);
+
+	// 3. 나에게 남
+	for (auto& [id, sess] : _sessions) {
+		if (session->GetId() == id) continue;
+
+		LOG_DBG("Session[%d] Id : %d", sess->GetId());
+		session->Send(PacketFactory::SCAddPacket(*sess->GetCharacter()));
+	}
 }
 
 void Service::CloseSession(int id)
