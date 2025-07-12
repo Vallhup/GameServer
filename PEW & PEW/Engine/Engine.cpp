@@ -21,6 +21,7 @@ void Engine::Init()
 	input = new Input();
 	input->SetCamera(graphics->GetCamera());
 	input->SetMainCharacter(graphics->GetMainCat());
+	input->SetNetworkManager(network);
 
 	GLFWwindow* window = GET_SINGLE(WindowInfo)->GetWindow();
 	glfwSetWindowUserPointer(window, input);

@@ -18,6 +18,11 @@ public:
 	void DrawMainCatShadow(float angle, GLuint depthShaderProgram, const glm::mat4& lightSpaceMatrix);
 	void DrawCatBulletShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
 
+	bool GetRight() const;
+	bool GetLeft() const;
+	bool GetTop() const;
+	bool GetBottom() const;
+
 	void SetRight_on(bool in);
 	void SetLeft_on(bool in);
 	void SetTop_on(bool in);

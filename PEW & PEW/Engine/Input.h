@@ -2,6 +2,7 @@
 
 class Camera;
 class MainCharacter;
+class NetworkManager;
 
 class Input
 {
@@ -12,8 +13,10 @@ public:
 
 	void SetCamera(Camera* cam) { camera = cam; }
 	void SetMainCharacter(MainCharacter* cat) { mainCat = cat; }
+	void SetNetworkManager(NetworkManager* net) { network = net; }
 
 private:
 	Camera* camera = { nullptr };
 	MainCharacter* mainCat = { nullptr };
+	NetworkManager* network = { nullptr };
 };

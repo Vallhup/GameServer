@@ -160,6 +160,26 @@ void MainCharacter::DrawCatBulletShadow(const glm::mat4& lightSpaceMatrix, GLuin
     }
 }
 
+bool MainCharacter::GetRight() const
+{
+    return _Right;
+}
+
+bool MainCharacter::GetLeft() const
+{
+    return _Left;
+}
+
+bool MainCharacter::GetTop() const
+{
+    return _Top;
+}
+
+bool MainCharacter::GetBottom() const
+{
+    return _Bottom;
+}
+
 void MainCharacter::SetRight_on(bool in)
 {
     _Right = in;
