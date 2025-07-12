@@ -9,6 +9,7 @@ enum PacketType : char {
 	SC_MOVE_OBJECT,
 	SC_ADD,
 	SC_REMOVE,
+	SC_ATTACK,
 	SC_STAT_UPDATE
 };
 

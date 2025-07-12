@@ -102,6 +102,9 @@
     <ClInclude Include="protocol.h">
       <Filter>Protocol</Filter>
     </ClInclude>
+    <ClInclude Include="RemotePlayer.h">
+      <Filter>Character</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -169,6 +172,9 @@
     </ClCompile>
     <ClCompile Include="PacketFactory.cpp">
       <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="RemotePlayer.cpp">
+      <Filter>Character</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -180,6 +180,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="RecvBuffer.h" />
+    <ClInclude Include="RemotePlayer.h" />
     <ClInclude Include="ShadowMapping.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="StaticObject.h" />
@@ -214,6 +215,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="RecvBuffer.cpp" />
+    <ClCompile Include="RemotePlayer.cpp" />
     <ClCompile Include="ShadowMapping.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="StaticObject.cpp" />

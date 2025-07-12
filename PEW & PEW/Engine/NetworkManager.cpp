@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "NetworkManager.h"
+#include "PacketFactory.h"
+#include "RemotePlayer.h"
 
 NetworkManager::NetworkManager()
 {
@@ -99,10 +101,7 @@ void NetworkManager::Update()
 				break;
 			}
 
-			// Temp : Packet 처리 추가 필요
-			std::cout << "[RECV] ";
-			std::cout.write(packet.data() + sizeof(unsigned char), packetSize - sizeof(unsigned char));
-			std::cout << std::endl;
+			ProcessPacket(packet);
 		}
 	}
 }
@@ -130,6 +129,68 @@ void NetworkManager::Send(const std::vector<char>& packet)
 		else {
 			Release();
 		}
+	}
+}
+
+void NetworkManager::ProcessPacket(const std::vector<char>& packet)
+{
+	if (packet.size() < 2) return;
+
+	char packetType = packet[1];
+
+	switch (packetType) {
+	case SC_MOVE_OBJECT:
+	{
+		SC_MOVE_PACKET movePacket = PacketFactory::Deserialize<SC_MOVE_PACKET>(packet);
+
+		auto it = remotePlayers.find(movePacket.id);
+		if (it != remotePlayers.end()) {
+			it->second->UpdateFromPacket(movePacket.x, movePacket.y, movePacket.z);
+		}
+		break;
+	}
+	case SC_ADD:
+	{
+		SC_ADD_PACKET addPacket = PacketFactory::Deserialize<SC_ADD_PACKET>(packet);
+
+		if (remotePlayers.find(addPacket.id) == remotePlayers.end()) {
+			RemotePlayer* newPlayer = new RemotePlayer(addPacket.id);
+			newPlayer->Init();
+			newPlayer->SetTargetPosition(addPacket.x, addPacket.y, addPacket.z);
+			remotePlayers[addPacket.id] = newPlayer;
+
+			std::cout << "[ADD PLAYER] ID: " << addPacket.id << " at ("
+				<< addPacket.x << ", " << addPacket.y << ", " << addPacket.z << ")" << std::endl;
+		}
+		break;
+	}
+	case SC_REMOVE:
+	{
+		SC_REMOVE_PACKET removePacket = PacketFactory::Deserialize<SC_REMOVE_PACKET>(packet);
+
+		auto it = remotePlayers.find(removePacket.id);
+		if (it != remotePlayers.end()) {
+			delete it->second;
+			remotePlayers.erase(it);
+
+			std::cout << "[REMOVE PLAYER] ID: " << removePacket.id << std::endl;
+		}
+		break;
+	}
+	case SC_ATTACK:
+	{
+		SC_ATTACK_PACKET attackPacket = PacketFactory::Deserialize<SC_ATTACK_PACKET>(packet);
+
+		auto it = remotePlayers.find(attackPacket.id);
+		if (it != remotePlayers.end()) {
+			// 공격 애니메이션 처리
+			std::cout << "[ATTACK] Player ID: " << attackPacket.id << std::endl;
+		}
+		break;
+	}
+	default:
+		std::cout << "[UNKNOWN PACKET] Type: " << (int)packetType << std::endl;
+		break;
 	}
 }
 
