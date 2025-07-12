@@ -28,6 +28,9 @@
     <Filter Include="Shadow">
       <UniqueIdentifier>{266bf901-df9a-485b-a70a-1bbba37b3767}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{40740a1c-6e42-4a15-9362-4a8376c77b34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -93,6 +96,12 @@
     <ClInclude Include="RecvBuffer.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="PacketFactory.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -157,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="RecvBuffer.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketFactory.cpp">
+      <Filter>Protocol</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

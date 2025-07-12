@@ -12,6 +12,7 @@
 #include <string>
 #include <map>
 #include <memory>
+#include "protocol.h"
 using namespace std;
 
 #include <GL/glew.h>
