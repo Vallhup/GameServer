@@ -45,6 +45,8 @@ public:
 	void Attack(float nowTime);
 	void TakeDamage(int damage);
 
+	int GetId() const { return _id; }
+	int GetHp() const { return _hp; }
 	vec3 GetPosition() const { return _pos; }
 
 private:

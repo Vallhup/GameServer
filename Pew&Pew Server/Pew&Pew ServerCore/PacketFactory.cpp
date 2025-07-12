@@ -21,54 +21,54 @@ std::vector<char> PacketFactory::CSAttackPacket(char direction, bool run)
 	return Serialize(attack);
 }
 
-std::vector<char> PacketFactory::SCMovePacket()
+std::vector<char> PacketFactory::SCMovePacket(const Character& character)
 {
 	SC_MOVE_PACKET move;
 	move.size = sizeof(move);
 	move.type = SC_MOVE_OBJECT;
+	move.id = character.GetId();
 
-	// Temp : Object Status
-	move.id = 1;
-	move.x = 1;
-	move.y = 1;
+	vec3 charPos = character.GetPosition();
+
+	move.x = charPos.x;
+	move.y = charPos.y;
+	move.z = charPos.z;
 
 	return Serialize(move);
 }
 
-std::vector<char> PacketFactory::SCAddPacket()
+std::vector<char> PacketFactory::SCAddPacket(const Character& character)
 {
 	SC_ADD_PACKET add;
 	add.size = sizeof(add);
 	add.type = SC_ADD;
-	
-	// Temp : Object Status
-	add.id = 1;
-	add.x = 1;
-	add.y = 1;
+	add.id = character.GetId();
+
+	vec3 charPos = character.GetPosition();
+
+	add.x = charPos.x;
+	add.y = charPos.y;
+	add.z = charPos.z;
 
 	return Serialize(add);
 }
 
-std::vector<char> PacketFactory::SCRemovePacket()
+std::vector<char> PacketFactory::SCRemovePacket(const Character& character)
 {
 	SC_REMOVE_PACKET remove;
 	remove.size = sizeof(remove);
 	remove.type = SC_REMOVE;
-
-	// Temp : Object Status
-	remove.id = 1;
+	remove.id = character.GetId();
 
 	return Serialize(remove);
 }
 
-std::vector<char> PacketFactory::SCStatUpdatePacket()
+std::vector<char> PacketFactory::SCStatUpdatePacket(const Character& character)
 {
 	SC_STAT_UPDATE_PACKET stat;
 	stat.size = sizeof(stat);
 	stat.type = SC_STAT_UPDATE;
-
-	// TODO : Object Status
-	stat.hp = 1;
+	stat.hp = character.GetHp();
 
 	return Serialize(stat);
 }

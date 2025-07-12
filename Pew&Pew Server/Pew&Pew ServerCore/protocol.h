@@ -43,6 +43,7 @@ struct SC_MOVE_PACKET {
 	int id;	
 	float x;
 	float y;
+	float z;
 };
 
 struct SC_ADD_PACKET {
@@ -51,6 +52,7 @@ struct SC_ADD_PACKET {
 	int id;
 	float x;
 	float y;
+	float z;
 };
 
 struct SC_REMOVE_PACKET {

@@ -9,10 +9,10 @@ public:
 
 public:
 	// Server -> Client
-	static std::vector<char> SCMovePacket();
-	static std::vector<char> SCAddPacket();
-	static std::vector<char> SCRemovePacket();
-	static std::vector<char> SCStatUpdatePacket();
+	static std::vector<char> SCMovePacket(const Character& character);
+	static std::vector<char> SCAddPacket(const Character& character);
+	static std::vector<char> SCRemovePacket(const Character& character);
+	static std::vector<char> SCStatUpdatePacket(const Character& character);
 
 public:
 	template<typename Packet>
