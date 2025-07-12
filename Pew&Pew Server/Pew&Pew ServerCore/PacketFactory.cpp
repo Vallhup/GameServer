@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "PacketPactory.h"
+#include "PacketFactory.h"
 
 std::vector<char> PacketFactory::CSMovePacket(char direction, bool run)
 {
