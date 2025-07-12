@@ -12,15 +12,12 @@ Character::Character(int id, bool isLocal) : playerID(id), isLocalPlayer(isLocal
     player_CurrentAnim = new AnimInfo();
     animLibrary = new AnimatedModel::AnimationLibrary();
 
-    if (isLocalPlayer) {
+    if (isLocalPlayer) 
         hitbox = new BoundingBox();
-        characterPos = glm::vec3(-37.3051f, 0.0f, 42.5001f);
-    }
-    else {
+    else 
         hitbox = nullptr;
-        characterPos = glm::vec3(0.0f, 0.0f, 0.0f);
-    }
 
+    characterPos = glm::vec3(-37.3051f, 0.0f, 42.5001f);
     targetPos = characterPos;
 }
 
