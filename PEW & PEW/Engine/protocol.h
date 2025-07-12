@@ -40,7 +40,7 @@ struct CS_ATTACK_PACKET {
 struct SC_MOVE_PACKET {
 	unsigned char size;
 	char type;
-	int id;	
+	int id;
 	float x;
 	float y;
 	float z;

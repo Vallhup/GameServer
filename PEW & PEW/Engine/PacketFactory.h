@@ -8,13 +8,6 @@ public:
 	static std::vector<char> CSAttackPacket(char direction, bool run = false);
 
 public:
-	// Server -> Client
-	static std::vector<char> SCMovePacket();
-	static std::vector<char> SCAddPacket();
-	static std::vector<char> SCRemovePacket();
-	static std::vector<char> SCStatUpdatePacket();
-
-public:
 	template<typename Packet>
 	static std::vector<char> Serialize(const Packet& packet)
 	{
