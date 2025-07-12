@@ -115,8 +115,6 @@ void Service::AcceptSession()
 	// 3. 나에게 남
 	for (auto& [id, sess] : _sessions) {
 		if (session->GetId() == id) continue;
-
-		LOG_DBG("Session[%d] Id : %d", sess->GetId());
 		session->Send(PacketFactory::SCAddPacket(*sess->GetCharacter()));
 	}
 }

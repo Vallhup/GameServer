@@ -97,7 +97,7 @@ void Session::OnConnect(Service* service)
 
 	_isConnected = true;
 
-	service->BroadCast(PacketFactory::SCAddPacket(*_character));
+	service->BroadCast(PacketFactory::SCAddPacket(*_character), _id);
 }
 
 void Session::DisConnect()
