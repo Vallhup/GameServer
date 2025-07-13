@@ -12,6 +12,9 @@ public:
 	static void Scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	static void MouseFunc(GLFWwindow* window, int button, int action, int mods);
 
+	char GetCurrentDirection();
+	void SendMovePacket();
+
 	void SetCamera(Camera* cam) { camera = cam; }
 	void SetMainCharacter(Character* cat) { mainCat = cat; }
 	void SetNetworkManager(NetworkManager* net) { network = net; }

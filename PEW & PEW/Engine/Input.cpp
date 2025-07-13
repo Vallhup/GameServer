@@ -41,34 +41,12 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 				if (action == GLFW_PRESS)
 				{
 					input->mainCat->Shift_on(true);
-
-					if (input->network) {
-						char currentDir{ -1 };
-						if (input->mainCat->GetTop()) currentDir = UP;
-						else if (input->mainCat->GetBottom()) currentDir = DOWN;
-						else if (input->mainCat->GetLeft()) currentDir = LEFT;
-						else if (input->mainCat->GetRight()) currentDir = RIGHT;
-						
-						std::vector<char> packet = PacketFactory::CSMovePacket(currentDir, true);
-						input->network->Send(packet);
-						std::cout << "[SEND] Shift key pressed" << std::endl;
-					}
+					input->SendMovePacket();
 				}
 				else if (action == GLFW_RELEASE)
 				{
 					input->mainCat->Shift_on(false);
-
-					if (input->network) {
-						char currentDir{ -1 };
-						if (input->mainCat->GetTop()) currentDir = UP;
-						else if (input->mainCat->GetBottom()) currentDir = DOWN;
-						else if (input->mainCat->GetLeft()) currentDir = LEFT;
-						else if (input->mainCat->GetRight()) currentDir = RIGHT;
-
-						std::vector<char> packet = PacketFactory::CSMovePacket(currentDir, false);
-						input->network->Send(packet);
-						std::cout << "[SEND] Shift key released" << std::endl;
-					}
+					input->SendMovePacket();
 				}
 			}
 			break;
@@ -84,28 +62,12 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 				if (action == GLFW_PRESS)
 				{
 					input->mainCat->SetRight_on(true);
-					// D키 눌림 전송
-					if (input->network) {
-						std::vector<char> packet = PacketFactory::CSMovePacket(RIGHT, input->mainCat->Shift_value());
-						input->network->Send(packet);
-						std::cout << "[SEND] D key pressed" << std::endl;
-					}
+					input->SendMovePacket();
 				}
 				else if (action == GLFW_RELEASE)
 				{
 					input->mainCat->SetRight_on(false);
-					// D키 뗌 전송
-					if (input->network) {
-						char currentDir = -1; // 정지 상태로 설정
-						// 다른 키가 눌려있는지 확인
-						if (input->mainCat->GetTop()) currentDir = UP;
-						else if (input->mainCat->GetBottom()) currentDir = DOWN;
-						else if (input->mainCat->GetLeft()) currentDir = LEFT;
-
-						std::vector<char> packet = PacketFactory::CSMovePacket(currentDir, input->mainCat->Shift_value());
-						input->network->Send(packet);
-						std::cout << "[SEND] D key released" << std::endl;
-					}
+					input->SendMovePacket();
 				}
 			}
 			break;
@@ -115,28 +77,12 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 				if (action == GLFW_PRESS)
 				{
 					input->mainCat->SetLeft_on(true);
-					// A키 눌림 전송
-					if (input->network) {
-						std::vector<char> packet = PacketFactory::CSMovePacket(LEFT, input->mainCat->Shift_value());
-						input->network->Send(packet);
-						std::cout << "[SEND] A key pressed" << std::endl;
-					}
+					input->SendMovePacket();
 				}
 				else if (action == GLFW_RELEASE)
 				{
 					input->mainCat->SetLeft_on(false);
-					// A키 뗌 전송
-					if (input->network) {
-						char currentDir = -1; // 정지 상태로 설정
-						// 다른 키가 눌려있는지 확인
-						if (input->mainCat->GetRight()) currentDir = RIGHT;
-						else if (input->mainCat->GetTop()) currentDir = UP;
-						else if (input->mainCat->GetBottom()) currentDir = DOWN;
-
-						std::vector<char> packet = PacketFactory::CSMovePacket(currentDir, input->mainCat->Shift_value());
-						input->network->Send(packet);
-						std::cout << "[SEND] A key released" << std::endl;
-					}
+					input->SendMovePacket();
 				}
 			}
 			break;
@@ -146,28 +92,12 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 				if (action == GLFW_PRESS)
 				{
 					input->mainCat->SetTop_on(true);
-					// W키 눌림 전송
-					if (input->network) {
-						std::vector<char> packet = PacketFactory::CSMovePacket(UP, input->mainCat->Shift_value());
-						input->network->Send(packet);
-						std::cout << "[SEND] W key pressed" << std::endl;
-					}
+					input->SendMovePacket();
 				}
 				else if (action == GLFW_RELEASE)
 				{
 					input->mainCat->SetTop_on(false);
-					// W키 뗌 전송
-					if (input->network) {
-						char currentDir = -1; // 정지 상태로 설정
-						// 다른 키가 눌려있는지 확인
-						if (input->mainCat->GetRight()) currentDir = RIGHT;
-						else if (input->mainCat->GetBottom()) currentDir = DOWN;
-						else if (input->mainCat->GetLeft()) currentDir = LEFT;
-
-						std::vector<char> packet = PacketFactory::CSMovePacket(currentDir, input->mainCat->Shift_value());
-						input->network->Send(packet);
-						std::cout << "[SEND] W key released" << std::endl;
-					}
+					input->SendMovePacket();
 				}
 			}
 			break;
@@ -177,28 +107,12 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 				if (action == GLFW_PRESS)
 				{
 					input->mainCat->SetBottom_on(true);
-					// S키 눌림 전송
-					if (input->network) {
-						std::vector<char> packet = PacketFactory::CSMovePacket(DOWN, input->mainCat->Shift_value());
-						input->network->Send(packet);
-						std::cout << "[SEND] S key pressed" << std::endl;
-					}
+					input->SendMovePacket();
 				}
 				else if (action == GLFW_RELEASE)
 				{
 					input->mainCat->SetBottom_on(false);
-					// S키 뗌 전송
-					if (input->network) {
-						char currentDir = -1; // 정지 상태로 설정
-						// 다른 키가 눌려있는지 확인
-						if (input->mainCat->GetRight()) currentDir = RIGHT;
-						else if (input->mainCat->GetTop()) currentDir = UP;
-						else if (input->mainCat->GetLeft()) currentDir = LEFT;
-
-						std::vector<char> packet = PacketFactory::CSMovePacket(currentDir, input->mainCat->Shift_value());
-						input->network->Send(packet);
-						std::cout << "[SEND] S key released" << std::endl;
-					}
+					input->SendMovePacket();
 				}
 			}
 			break;
@@ -350,4 +264,37 @@ void Input::MouseFunc(GLFWwindow* window, int button, int action, int mods)
 		input->mainCat->GetAnimLibrary()->ChangeAnimation("FireWalk", *input->mainCat->GetCurrentAnim());
 	else if (input->mainCat->GetFiring() && input->mainCat->GetAnimLibrary()->GetCurrentAnimation() == "Idle")
 		input->mainCat->GetAnimLibrary()->ChangeAnimation("Fire", *input->mainCat->GetCurrentAnim());
+}
+
+char Input::GetCurrentDirection()
+{
+	if (!mainCat) return -1;
+
+	bool up = mainCat->GetTop();
+	bool down = mainCat->GetBottom();
+	bool right = mainCat->GetRight();
+	bool left = mainCat->GetLeft();
+
+	if (up && right) return UPRIGHT;
+	if (up && left) return UPLEFT;
+	if (down && right) return DOWNRIGHT;
+	if (down && left) return DOWNLEFT;
+
+	if (up) return UP;
+	if (down) return DOWN;
+	if (right) return RIGHT;
+	if (left) return LEFT;
+
+	return -1;
+}
+
+void Input::SendMovePacket()
+{
+	if (!network) return;
+
+	char direction = GetCurrentDirection();
+	bool isRunning = mainCat->Shift_value();
+
+	vector<char> packet = PacketFactory::CSMovePacket(direction, isRunning);
+	network->Send(packet);
 }

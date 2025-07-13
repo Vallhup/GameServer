@@ -63,10 +63,10 @@ public:								\
 // 공용 변수들
 #define MAX_NUM_BONES_PER_VERTEX 4
 
-const unsigned int WIN_W = 2560;		// 2560
-const unsigned int WIN_H = 1440;		// 1440
-const unsigned int WIN_X = 0;
-const unsigned int WIN_Y = 0;
+extern unsigned int WIN_W;		// 2560
+extern unsigned int WIN_H;		// 1440
+extern unsigned int WIN_X;
+extern unsigned int WIN_Y;
 
 constexpr float PI = 3.141592f;
 

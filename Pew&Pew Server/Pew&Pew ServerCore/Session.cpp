@@ -164,9 +164,10 @@ void Session::HandleMovePacket(const std::vector<char>& packet)
 {
 	auto move = PacketFactory::Deserialize<CS_MOVE_PACKET>(packet);
 
-	if (_character) {
-		LOG_DBG("Session[%d] move : %c / %d", _id, move.direction, move.isRun);
-		//_character->Move(move.direction, move.isRun);
+	if (_character) { 
+		// 원래 move : %c 였는데, 대각선에서 DOWNRIGHT가 7이라서 %c로 출력하니까 경고음이 났었음 그래서 %d로 변경
+		LOG_DBG("Session[%d] move : %d / %d", _id, move.direction, move.isRun);	
+		//_character->Move(move.direction, move.isRun);							
 		_character->SetInput(move.direction, move.isRun);
 	}
 
