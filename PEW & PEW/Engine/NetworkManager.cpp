@@ -168,8 +168,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 
 		if (graphics) {
 			Character* character = graphics->GetCharacter(movePacket.id);
-			if (character && !character->IsLocalPlayer()) {
-				// 원격 플레이어만 네트워크로 위치 업데이트
+			if (character) {
 				character->UpdateFromPacket(movePacket.x, movePacket.y, movePacket.z);
 			}
 		}

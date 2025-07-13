@@ -24,6 +24,7 @@ public:
 	Camera* GetCamera() const;
 	Character* GetMainCat();
 	void SetNetworkManager(NetworkManager* net);
+	void DebugAllCharacterPositions();
 
 private:
 	Camera* camera = { nullptr };

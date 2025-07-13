@@ -235,3 +235,40 @@ void GraphicsManager::SetNetworkManager(NetworkManager* net)
 {
 	network = net;
 }
+
+void GraphicsManager::DebugAllCharacterPositions()
+{
+	std::cout << "\n=== 모든 캐릭터 위치 디버깅 ===" << std::endl;
+	std::cout << "현재 접속 캐릭터 수: " << characters.size() << std::endl;
+	std::cout << "내 플레이어 ID: " << myPlayerID << std::endl;
+	std::cout << "=============================" << std::endl;
+
+	for (auto& pair : characters) {
+		int id = pair.first;
+		Character* character = pair.second;
+
+		if (character) {
+			glm::vec3 pos = character->GetPosition();
+			bool isLocal = character->IsLocalPlayer();
+
+			std::cout << "[ID: " << id << "] "
+				<< (isLocal ? "(로컬)" : "(원격)")
+				<< " 위치: ("
+				<< pos.x << ", "
+				<< pos.y << ", "
+				<< pos.z << ")" << std::endl;
+
+			// 원격 플레이어라면 추가 정보
+			if (!isLocal) {
+				std::cout << "    - 이동 상태: "
+					<< (character->IsMoving() ? "이동중" : "정지") << std::endl;
+				std::cout << "    - 달리기: "
+					<< (character->Shift_value() ? "ON" : "OFF") << std::endl;
+			}
+		}
+		else {
+			std::cout << "[ID: " << id << "] 캐릭터 객체가 nullptr!" << std::endl;
+		}
+	}
+	std::cout << "=============================\n" << std::endl;
+}

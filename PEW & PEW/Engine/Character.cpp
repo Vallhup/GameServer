@@ -53,12 +53,12 @@ void Character::Init()
 
 void Character::Update(float deltaTime)
 {
-    if (isLocalPlayer) {
+    /*if (isLocalPlayer) {
         HandleLocalPlayerUpdate(deltaTime);
     }
-    else {
+    else {*/
         HandleRemotePlayerUpdate(deltaTime);
-    }
+    /*}*/
 
     UpdateAnimation();
 }
@@ -565,8 +565,6 @@ void Character::SetAnimationType(const std::string& animName)
 
 void Character::UpdateFromPacket(float x, float y, float z, char direction, bool run)
 {
-    if (isLocalPlayer) return;  // 원격 플레이어만
-
     SetTargetPosition(x, y, z);
     currentDirection = direction;
     isRunning = run;
@@ -574,7 +572,5 @@ void Character::UpdateFromPacket(float x, float y, float z, char direction, bool
 
 void Character::SetTargetPosition(float x, float y, float z)
 {
-    if (!isLocalPlayer) {  // 원격 플레이어만
-        targetPos = glm::vec3(x, y, z);
-    }
+    targetPos = glm::vec3(x, y, z);
 }
