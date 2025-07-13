@@ -54,6 +54,9 @@
     <ClInclude Include="Projectile.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="TimerManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -85,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="Projectile.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="TimerManager.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

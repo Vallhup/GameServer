@@ -3,6 +3,7 @@
 class Listener;
 class Session;
 class Character;
+class TimerManager;
 
 class Service : public std::enable_shared_from_this<Service>
 {
@@ -18,6 +19,8 @@ public:
 	void Run();
 	void Stop();
 
+	void Tick(float deltaTime);
+
 	void BroadCast(const std::vector<char>& packet, int exceptId = -1);
 
 private:
@@ -28,9 +31,12 @@ private:
 
 private:
 	std::shared_ptr<Listener> _listener;
+	std::shared_ptr<TimerManager> _timerManager;
 
 	std::unordered_map<int, std::shared_ptr<Session>> _sessions;
 	std::unordered_map<int, std::shared_ptr<Character>> _characters;
+
+	std::mutex _sessionMutex;
 
 	std::vector<int> _reusableSessionIds;
 	bool _running{ false };

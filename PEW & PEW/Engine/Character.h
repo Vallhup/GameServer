@@ -112,7 +112,9 @@ private:
     void SaveAnimations();
     void UpdateAnimation();
     void Walk();
+    void Walk(float deltaTime);
     void Run();
+    void Run(float deltaTime);
     void HandleLocalPlayerUpdate(float deltaTime);
     void HandleRemotePlayerUpdate(float deltaTime);
 };

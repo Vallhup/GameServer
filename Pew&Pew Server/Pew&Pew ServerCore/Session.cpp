@@ -162,17 +162,17 @@ void Session::HandlePacket(const std::vector<char>& packet)
 
 void Session::HandleMovePacket(const std::vector<char>& packet)
 {
-	// 1. Packet ÆÄ½Ì
 	auto move = PacketFactory::Deserialize<CS_MOVE_PACKET>(packet);
 
 	if (_character) {
-		LOG_DBG("Session[%d] move : %c", _id, move.direction);
-		_character->Move(move.direction, 0.0f);
+		LOG_DBG("Session[%d] move : %c / %d", _id, move.direction, move.isRun);
+		//_character->Move(move.direction, move.isRun);
+		_character->SetInput(move.direction, move.isRun);
 	}
 
-	if (_service) {
+	/*if (_service) {
 		_service->BroadCast(PacketFactory::SCMovePacket(*_character));
-	}
+	}*/
 }
 
 void Session::HandleAttackPacket(const std::vector<char>& packet)

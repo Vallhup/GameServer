@@ -42,7 +42,10 @@ public:
 
 public:
 	void Move(vec3 newPos, float newRotation);
-	void Move(char direction, float rotation);
+	void Move(char direction, bool isRun);
+
+	bool TickMove(float deltaTime);
+
 	void Attack(float nowTime);
 	void TakeDamage(int damage);
 
@@ -50,9 +53,14 @@ public:
 	int GetHp() const { return _hp; }
 	vec3 GetPosition() const { return _pos; }
 
+	void SetInput(char direction, bool isRun) { _direction = direction; _isRun = isRun; }
+
 private:
 	int _id;
 	std::string _name;
+
+	char _direction{ -1 };
+	bool _isRun{ false };
 
 	vec3 _pos;
 	float _rotation;

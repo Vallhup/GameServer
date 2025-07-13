@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <concurrent_queue.h>
+#include <concurrent_vector.h>
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -30,6 +31,7 @@
 #include "Service.h"
 #include "Listener.h"
 #include "Session.h"
+#include "TimerManager.h"
 
 #include "Character.h"
 #include "Projectile.h"

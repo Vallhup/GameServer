@@ -20,12 +20,20 @@ void Character::Move(vec3 newPos, float newRotation)
 	_rotation = newRotation;
 }
 
-void Character::Move(char direction, float rotation)
+void Character::Move(char direction, bool isRun)
 {
 	// Temp : 이동 패킷 처리 자체는 되는데 이동 동기화가 제대로 안됨
 	//        이동 로직 현재 Client 코드와 맞춰야 함
 
-	static constexpr float moveDistance{ 0.005f };
+	float moveDistance;
+	if (isRun) {
+		moveDistance = 0.01f;
+	}
+
+	else {
+		moveDistance = 0.005f;
+	}
+
 	static constexpr vec3 dirTable[8] = {
 		{ 0.0f, 0.0f, -1.0f },
 		{ 0.0f, 0.0f,  1.0f },
@@ -51,6 +59,40 @@ void Character::Move(char direction, float rotation)
 	}
 
 	_pos += moveVec * moveDistance;
+}
+
+bool Character::TickMove(float deltaTime)
+{
+	if (_direction < 0 or _direction >= 8) {
+		return false;
+	}
+
+	float baseMove = (_isRun ? 3.0f : 1.5f);
+	float moveDistance = baseMove * deltaTime;
+
+	static constexpr vec3 dirTable[8] = {
+		{ 0.0f, 0.0f, -1.0f },
+		{ 0.0f, 0.0f,  1.0f },
+		{ -1.0f, 0.0f, 0.0f },
+		{  1.0f, 0.0f, 0.0f },
+		{ -1.0f, 0.0f,  -1.0f },
+		{ 1.0f, 0.0f,  -1.0f },
+		{ -1.0f, 0.0f,  1.0f },
+		{ 1.0f, 0.0f,  1.0f }
+	};
+
+	vec3 moveVec = dirTable[_direction];
+
+	if (_direction >= MoveDirection::UPLEFT) {
+		float normal = sqrt(moveVec.x * moveVec.x + moveVec.z * moveVec.z);
+		if (normal > 0.0f) {
+			moveVec = moveVec / normal;
+		}
+	}
+
+	_pos += moveVec * moveDistance;
+
+	return true;
 }
 
 void Character::Attack(float nowTime)

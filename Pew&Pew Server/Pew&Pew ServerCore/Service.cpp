@@ -18,6 +18,11 @@ bool Service::Init()
 		return false;
 	}
 
+	if (nullptr == _timerManager) {
+		_timerManager = std::make_shared<TimerManager>();
+	}
+	_timerManager->Register([this](float delta) { this->Tick(delta); });
+
 	return true;
 }
 
@@ -25,6 +30,7 @@ void Service::Run()
 {
 	_running = true;
 
+	_timerManager->Start();
 	while (_running) {
 		fd_set readSet;
 		FD_ZERO(&readSet);
@@ -72,8 +78,19 @@ void Service::Stop()
 	for (auto& [id, session] : _sessions) {
 		session->DisConnect();
 	}
-
 	_sessions.clear();
+	_characters.clear();
+
+	_timerManager->Stop();
+}
+
+void Service::Tick(float deltaTime)
+{
+	for (auto& [id, character] : _characters) {
+		if (character->TickMove(deltaTime)) {
+			BroadCast(PacketFactory::SCMovePacket(*character));
+		}
+	}
 }
 
 void Service::BroadCast(const std::vector<char>& packet, int exceptId)

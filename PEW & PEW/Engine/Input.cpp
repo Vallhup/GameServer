@@ -41,10 +41,34 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 				if (action == GLFW_PRESS)
 				{
 					input->mainCat->Shift_on(true);
+
+					if (input->network) {
+						char currentDir{ -1 };
+						if (input->mainCat->GetTop()) currentDir = UP;
+						else if (input->mainCat->GetBottom()) currentDir = DOWN;
+						else if (input->mainCat->GetLeft()) currentDir = LEFT;
+						else if (input->mainCat->GetRight()) currentDir = RIGHT;
+						
+						std::vector<char> packet = PacketFactory::CSMovePacket(currentDir, true);
+						input->network->Send(packet);
+						std::cout << "[SEND] Shift key pressed" << std::endl;
+					}
 				}
 				else if (action == GLFW_RELEASE)
 				{
 					input->mainCat->Shift_on(false);
+
+					if (input->network) {
+						char currentDir{ -1 };
+						if (input->mainCat->GetTop()) currentDir = UP;
+						else if (input->mainCat->GetBottom()) currentDir = DOWN;
+						else if (input->mainCat->GetLeft()) currentDir = LEFT;
+						else if (input->mainCat->GetRight()) currentDir = RIGHT;
+
+						std::vector<char> packet = PacketFactory::CSMovePacket(currentDir, false);
+						input->network->Send(packet);
+						std::cout << "[SEND] Shift key released" << std::endl;
+					}
 				}
 			}
 			break;

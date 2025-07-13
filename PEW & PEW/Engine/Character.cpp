@@ -137,9 +137,9 @@ void Character::HandleLocalPlayerUpdate(float deltaTime)
     // MainCharacter의 기존 Update 로직
     if (IsMoving()) {
         if (Shift_value())
-            Run();
+            Run(deltaTime);
         else
-            Walk();
+            Walk(deltaTime);
     }
 }
 
@@ -190,6 +190,43 @@ void Character::Walk()
     }
 }
 
+void Character::Walk(float deltaTime)
+{
+    if (!isLocalPlayer) return;  // 로컬 플레이어만
+
+    constexpr float WALK_SPEED{ 1.5f };
+
+    if (!camera->GetViewType()) {
+        if (_Right)
+            characterPos.x += WALK_SPEED * deltaTime;
+        if (_Left)
+            characterPos.x -= WALK_SPEED * deltaTime;
+        if (_Top)
+            characterPos.z -= WALK_SPEED * deltaTime;
+        if (_Bottom)
+            characterPos.z += WALK_SPEED * deltaTime;
+    }
+    else {
+        glm::vec3 forward(
+            sin(camera->GetHorizontalAngle()),
+            0,
+            cos(camera->GetHorizontalAngle())
+        );
+        glm::vec3 right = glm::cross(forward, glm::vec3(0, 1, 0));
+
+        glm::vec3 moveDir(0.0f);
+        if (_Top) moveDir += forward;
+        if (_Bottom) moveDir -= forward;
+        if (_Right) moveDir += right;
+        if (_Left) moveDir -= right;
+
+        if (glm::length(moveDir) > 0) {
+            moveDir = glm::normalize(moveDir);
+            characterPos += moveDir * (WALK_SPEED * deltaTime);
+        }
+    }
+}
+
 void Character::Run()
 {
     if (!isLocalPlayer) return;  // 로컬 플레이어만
@@ -222,6 +259,43 @@ void Character::Run()
             moveDir = glm::normalize(moveDir);
             glm::vec3 nextPos = characterPos + moveDir * 0.01f;
             characterPos = nextPos;
+        }
+    }
+}
+
+void Character::Run(float deltaTime)
+{
+    if (!isLocalPlayer) return;  // 로컬 플레이어만
+
+    constexpr float RUN_SPEED{ 3.0f };
+
+    if (!camera->GetViewType()) {
+        if (_Right)
+            characterPos.x += RUN_SPEED * deltaTime;
+        if (_Left)
+            characterPos.x -= RUN_SPEED * deltaTime;
+        if (_Top)
+            characterPos.z -= RUN_SPEED * deltaTime;
+        if (_Bottom)
+            characterPos.z += RUN_SPEED * deltaTime;
+    }
+    else {
+        glm::vec3 forward(
+            sin(camera->GetHorizontalAngle()),
+            0,
+            cos(camera->GetHorizontalAngle())
+        );
+        glm::vec3 right = glm::cross(forward, glm::vec3(0, 1, 0));
+
+        glm::vec3 moveDir(0.0f);
+        if (_Top) moveDir += forward;
+        if (_Bottom) moveDir -= forward;
+        if (_Right) moveDir += right;
+        if (_Left) moveDir -= right;
+
+        if (glm::length(moveDir) > 0) {
+            moveDir = glm::normalize(moveDir);
+            characterPos += moveDir * (RUN_SPEED * deltaTime);
         }
     }
 }
