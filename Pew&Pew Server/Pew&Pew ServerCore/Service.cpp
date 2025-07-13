@@ -142,9 +142,14 @@ void Service::AcceptSession()
 
 void Service::CloseSession(int id)
 {
-	if (_sessions.contains(id)) {
-		_sessions[id]->DisConnect();
+	auto it = _sessions.find(id);
+
+	BroadCast(PacketFactory::SCRemovePacket(*it->second->GetCharacter()));
+
+	if (it != _sessions.end()) {
+		it->second->DisConnect();
 		_sessions.erase(id);
+		_characters.erase(id);
 		_reusableSessionIds.push_back(id);
 	}
 }
