@@ -57,7 +57,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		case GLFW_KEY_D:
 			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying()))
 			{
-				if (action == GLFW_PRESS)
+				if (action == GLFW_PRESS || action == GLFW_REPEAT)
 				{
 					input->mainCat->SetRight_on(true);
 					// D키 눌림 전송
@@ -88,7 +88,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		case GLFW_KEY_A:
 			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
 			{
-				if (action == GLFW_PRESS)
+				if (action == GLFW_PRESS || action == GLFW_REPEAT)
 				{
 					input->mainCat->SetLeft_on(true);
 					// A키 눌림 전송
@@ -119,7 +119,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		case GLFW_KEY_W:
 			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
 			{
-				if (action == GLFW_PRESS)
+				if (action == GLFW_PRESS || action == GLFW_REPEAT)
 				{
 					input->mainCat->SetTop_on(true);
 					// W키 눌림 전송
@@ -150,7 +150,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		case GLFW_KEY_S:
 			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
 			{
-				if (action == GLFW_PRESS)
+				if (action == GLFW_PRESS || action == GLFW_REPEAT)
 				{
 					input->mainCat->SetBottom_on(true);
 					// S키 눌림 전송
