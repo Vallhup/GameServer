@@ -96,8 +96,10 @@ void Service::Tick(float deltaTime)
 	}
 
 	for (auto& character : characters) {
-		if (character->Move(deltaTime)) {
+		bool moved = character->Move(deltaTime);
+		if (moved or character->GetAngleChange()) {
 			BroadCast(PacketFactory::SCMovePacket(*character));
+			character->ResetAngleChange();
 		}
 	}
 }

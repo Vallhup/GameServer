@@ -49,9 +49,11 @@ public:
 	int GetHp() const { return _hp; }
 	bool GetRun() const { return _isRun; }
 	float GetAngle() const { return _angle; }
+	bool GetAngleChange() const { return _angleChange; }
 	vec3 GetPosition() const { return _pos; }
 	
-	void SetInput(float angle, char direction, bool isRun) { _angle = angle; _direction = direction; _isRun = isRun; }
+	void SetInput(float angle, char direction, bool isRun);
+	void ResetAngleChange() { _angleChange = false; }
 
 private:
 	int _id;
@@ -62,6 +64,7 @@ private:
 
 	vec3 _pos;
 	float _angle;
+	bool _angleChange;
 
 	int _hp;
 	bool _isAlive;

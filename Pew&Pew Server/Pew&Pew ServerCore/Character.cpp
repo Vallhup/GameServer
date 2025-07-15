@@ -74,3 +74,14 @@ void Character::TakeDamage(int damage)
 		_isAlive = false;
 	}
 }
+
+void Character::SetInput(float angle, char direction, bool isRun)
+{
+	if (_angle != angle) {
+		_angle = angle;
+		_angleChange = true;
+	}
+	
+	_direction = direction; 
+	_isRun = isRun;
+}
