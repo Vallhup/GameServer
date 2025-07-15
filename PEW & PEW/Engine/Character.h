@@ -13,8 +13,8 @@ public:
 
     void Init();
     void Update(float deltaTime);
-    void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, float angle = 0.0f);
-    void DrawShadow(float angle, GLuint depthShaderProgram, const glm::mat4& lightSpaceMatrix);
+    void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime);
+    void DrawShadow(GLuint depthShaderProgram, const glm::mat4& lightSpaceMatrix);
     void DrawBulletShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
 
     // 입력 처리 (로컬 플레이어만)
@@ -26,9 +26,10 @@ public:
     void hitboxOnOff(bool in) { if (isLocalPlayer) hitbox_on = in; }
     void SetFiring(bool in) { if (isLocalPlayer) firing = in; }
     void SetCamera(Camera* cam) { if (isLocalPlayer) camera = cam; }
+    void SetAngle(float ang) { angle = ang; }
 
     // 네트워크 업데이트 (원격 플레이어만)
-    void UpdateFromPacket(float x, float y, float z, char direction = -1, bool run = false);
+    void UpdateFromPacket(float ang, float x, float y, float z, char direction = -1, bool run = false);
     void SetTargetPosition(float x, float y, float z);
 
     // Getter
@@ -46,6 +47,7 @@ public:
     bool GetTop() const { return _Top; }
     bool GetBottom() const { return _Bottom; }
     bool hitbox_ison() const { return hitbox_on; }
+    float GetAngle() const { return angle; }
 
     // MainCharacter 기존 함수들 (로컬 플레이어만)
     void ChangeCatAnimation(const glm::mat4& view, const glm::mat4& projection);
@@ -92,6 +94,7 @@ private:
     int life = 6;
     float revive_timer = 1200.0f;
     int hit_cnt = 200;
+    float angle;
     float lastangle;
 
     // 전투 관련 (로컬 플레이어만)

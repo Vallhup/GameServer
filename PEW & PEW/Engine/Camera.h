@@ -45,19 +45,20 @@ public:
 
     //void addfinishpos();
     void SetInitialDirection(const glm::vec3& direction);
-    
-    void ChangeViewType() { FirstPersonView = !FirstPersonView; }
-	glm::vec3 SetMouseWorldDirection(float cur_x, float cur_y, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& targetPos);
 
-	bool GetViewType() const { return FirstPersonView; }
+    void ChangeViewType() { FirstPersonView = !FirstPersonView; }
+    glm::vec3 SetMouseWorldDirection(float cur_x, float cur_y, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& targetPos);
+
+    bool GetViewType() const { return FirstPersonView; }
 
     glm::vec3 GetPosition(const glm::vec3& targetPos);
-	glm::mat4 GetViewMatrix(const glm::vec3& targetPos);
+    glm::mat4 GetViewMatrix(const glm::vec3& targetPos);
 
-	float GetAngle() const { return angle; }
+    float GetAngle() const { return angle; }
 
     void SetAngle();
-	void SetStart(bool in) { start = in; }
+    void SetAngle(float ang);
+    void SetStart(bool in) { start = in; }
 
 private:
     // Camera camera;
@@ -77,7 +78,7 @@ private:
 
     bool FirstPersonView = { false };
 
-	float angle = { 0.0f };
+    float angle = { 0.0f };
     float light_angle = { 0.0f };
 
     bool start{ false };

@@ -24,123 +24,123 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 	bool wasRunning = input->mainCat->Shift_value();
 
 	switch (key) {
-		case GLFW_KEY_P:
+	case GLFW_KEY_P:
+		if (action == GLFW_PRESS)
+			input->camera->SetStart(true);
+		break;
+	case GLFW_KEY_Q:
+		if ((!(input->camera->Get_start_pos() == 0) && !input->mainCat->GetDying())/* || finish*/)
+		{
 			if (action == GLFW_PRESS)
-				input->camera->SetStart(true);
-			break;
-		case GLFW_KEY_Q:
-			if ((!(input->camera->Get_start_pos() == 0) && !input->mainCat->GetDying())/* || finish*/)
-			{
-				if (action == GLFW_PRESS)
-					glfwSetWindowShouldClose(window, GL_TRUE);
-			}
-			break;
-		case GLFW_KEY_LEFT_SHIFT:
-			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
-			{
-				if (action == GLFW_PRESS)
-				{
-					input->mainCat->Shift_on(true);
-					input->SendMovePacket();
-				}
-				else if (action == GLFW_RELEASE)
-				{
-					input->mainCat->Shift_on(false);
-					input->SendMovePacket();
-				}
-			}
-			break;
-		case GLFW_KEY_C:
+				glfwSetWindowShouldClose(window, GL_TRUE);
+		}
+		break;
+	case GLFW_KEY_LEFT_SHIFT:
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		{
 			if (action == GLFW_PRESS)
 			{
-				input->graphics->DebugAllCharacterPositions();
+				input->mainCat->Shift_on(true);
+				input->SendMovePacket();
 			}
-			break;
-		case GLFW_KEY_D:
-			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying()))
+			else if (action == GLFW_RELEASE)
 			{
-				if (action == GLFW_PRESS)
-				{
-					input->mainCat->SetRight_on(true);
-					input->SendMovePacket();
-				}
-				else if (action == GLFW_RELEASE)
-				{
-					input->mainCat->SetRight_on(false);
-					input->SendMovePacket();
-				}
+				input->mainCat->Shift_on(false);
+				input->SendMovePacket();
 			}
-			break;
-		case GLFW_KEY_A:
-			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		}
+		break;
+	case GLFW_KEY_C:
+		if (action == GLFW_PRESS)
+		{
+			input->graphics->DebugAllCharacterPositions();
+		}
+		break;
+	case GLFW_KEY_D:
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying()))
+		{
+			if (action == GLFW_PRESS)
 			{
-				if (action == GLFW_PRESS)
-				{
-					input->mainCat->SetLeft_on(true);
-					input->SendMovePacket();
-				}
-				else if (action == GLFW_RELEASE)
-				{
-					input->mainCat->SetLeft_on(false);
-					input->SendMovePacket();
-				}
+				input->mainCat->SetRight_on(true);
+				input->SendMovePacket();
 			}
-			break;
-		case GLFW_KEY_W:
-			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+			else if (action == GLFW_RELEASE)
 			{
-				if (action == GLFW_PRESS)
-				{
-					input->mainCat->SetTop_on(true);
-					input->SendMovePacket();
-				}
-				else if (action == GLFW_RELEASE)
-				{
-					input->mainCat->SetTop_on(false);
-					input->SendMovePacket();
-				}
+				input->mainCat->SetRight_on(false);
+				input->SendMovePacket();
 			}
-			break;
-		case GLFW_KEY_S:
-			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		}
+		break;
+	case GLFW_KEY_A:
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		{
+			if (action == GLFW_PRESS)
 			{
-				if (action == GLFW_PRESS)
-				{
-					input->mainCat->SetBottom_on(true);
-					input->SendMovePacket();
-				}
-				else if (action == GLFW_RELEASE)
-				{
-					input->mainCat->SetBottom_on(false);
-					input->SendMovePacket();
-				}
+				input->mainCat->SetLeft_on(true);
+				input->SendMovePacket();
 			}
-			break;
-		case GLFW_KEY_H:
-			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+			else if (action == GLFW_RELEASE)
 			{
-				if (action == GLFW_PRESS)
-				{
-					if (input->mainCat->hitbox_ison())
-						input->mainCat->hitboxOnOff(false);
-					else
-						input->mainCat->hitboxOnOff(true);
-				}
+				input->mainCat->SetLeft_on(false);
+				input->SendMovePacket();
 			}
-			break;
-		case GLFW_KEY_V:
-			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		}
+		break;
+	case GLFW_KEY_W:
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		{
+			if (action == GLFW_PRESS)
 			{
-				if (action == GLFW_PRESS)
-				{
-					input->camera->ChangeViewType();
-		
-					if (input->camera->GetViewType()) {
-						input->camera->SetInitialDirection(mouseDir);
-					}
+				input->mainCat->SetTop_on(true);
+				input->SendMovePacket();
+			}
+			else if (action == GLFW_RELEASE)
+			{
+				input->mainCat->SetTop_on(false);
+				input->SendMovePacket();
+			}
+		}
+		break;
+	case GLFW_KEY_S:
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		{
+			if (action == GLFW_PRESS)
+			{
+				input->mainCat->SetBottom_on(true);
+				input->SendMovePacket();
+			}
+			else if (action == GLFW_RELEASE)
+			{
+				input->mainCat->SetBottom_on(false);
+				input->SendMovePacket();
+			}
+		}
+		break;
+	case GLFW_KEY_H:
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		{
+			if (action == GLFW_PRESS)
+			{
+				if (input->mainCat->hitbox_ison())
+					input->mainCat->hitboxOnOff(false);
+				else
+					input->mainCat->hitboxOnOff(true);
+			}
+		}
+		break;
+	case GLFW_KEY_V:
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		{
+			if (action == GLFW_PRESS)
+			{
+				input->camera->ChangeViewType();
+
+				if (input->camera->GetViewType()) {
+					input->camera->SetInitialDirection(mouseDir);
 				}
 			}
-			break;
+		}
+		break;
 		//case GLFW_KEY_0:
 		//	if (camera.Get_start_pos() == 0 && !mainCat->getdying() && !finish)
 		//	{
@@ -160,15 +160,15 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		//		}
 		//	}
 		//	break;
-		case GLFW_KEY_LEFT_ALT:
-			if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
-			{
-				if (action == GLFW_PRESS)
-					input->camera->HandleAltKey(true);
-				else if (action == GLFW_RELEASE)
-					input->camera->HandleAltKey(false);
-			}
-			break;
+	case GLFW_KEY_LEFT_ALT:
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		{
+			if (action == GLFW_PRESS)
+				input->camera->HandleAltKey(true);
+			else if (action == GLFW_RELEASE)
+				input->camera->HandleAltKey(false);
+		}
+		break;
 		//case GLFW_KEY_EQUAL:
 		//	if (action == GLFW_PRESS)
 		//	{
@@ -196,7 +196,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 
 	bool isMovingNow = input->mainCat->IsMoving();
 	bool isRunningNow = input->mainCat->Shift_value();
-	
+
 	if (wasMoving != isMovingNow || (isMovingNow && wasRunning != isRunningNow)) {
 		if (!input->mainCat->GetFiringInduration())
 		{
@@ -266,6 +266,39 @@ void Input::MouseFunc(GLFWwindow* window, int button, int action, int mods)
 		input->mainCat->GetAnimLibrary()->ChangeAnimation("Fire", *input->mainCat->GetCurrentAnim());
 }
 
+void Input::MouseMoveFunc(GLFWwindow* window, double xpos, double ypos)
+{
+	Input* input = static_cast<Input*>(glfwGetWindowUserPointer(window));
+
+	if (!input->mainCat) return;
+
+	if (input->camera->Get_start_pos() != 0 || input->mainCat->GetDying()) {
+		return;
+	}
+
+	cur_x = xpos;
+	cur_y = ypos;
+
+	// Camera 클래스의 기존 시스템 활용
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIN_W / (float)WIN_H, 0.1f, 1000.0f);
+	glm::mat4 view = input->camera->GetViewMatrix(input->mainCat->GetPosition());
+
+	// Camera의 SetMouseWorldDirection 사용
+	if (!input->camera->IsAltPressed())
+		mouseDir = input->camera->SetMouseWorldDirection(xpos, ypos, projection, view, input->mainCat->GetPosition());
+
+	// 3D 방향벡터를 2D 각도로 변환
+	float angleRad = (float)PI + atan2(mouseDir.x, mouseDir.z);
+
+	// 이전 각도와 비교해서 1도 이상 차이나면 갱신하고 패킷 전송
+	if (abs(angleRad - input->mainCat->GetAngle()) >= 0.1f) {
+		input->mainCat->SetAngle(angleRad);
+		input->lastMouseAngle = angleRad;
+		input->SendMovePacket();
+		cout << "회전 중!!" << '\n';
+	}
+}
+
 char Input::GetCurrentDirection()
 {
 	if (!mainCat) return -1;
@@ -295,6 +328,6 @@ void Input::SendMovePacket()
 	char direction = GetCurrentDirection();
 	bool isRunning = mainCat->Shift_value();
 
-	vector<char> packet = PacketFactory::CSMovePacket(direction, isRunning);
+	vector<char> packet = PacketFactory::CSMovePacket(lastMouseAngle, direction, isRunning);
 	network->Send(packet);
 }

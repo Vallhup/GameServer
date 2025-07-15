@@ -4,7 +4,7 @@ class PacketFactory
 {
 public:
 	// Client -> Server
-	static std::vector<char> CSMovePacket(char direction, bool run = false);
+	static std::vector<char> CSMovePacket(float angle, char direction, bool run = false);
 	static std::vector<char> CSAttackPacket(char direction, bool run = false);
 
 public:

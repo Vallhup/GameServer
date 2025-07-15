@@ -12,9 +12,9 @@ Character::Character(int id, bool isLocal) : playerID(id), isLocalPlayer(isLocal
     player_CurrentAnim = new AnimInfo();
     animLibrary = new AnimatedModel::AnimationLibrary();
 
-    if (isLocalPlayer) 
+    if (isLocalPlayer)
         hitbox = new BoundingBox();
-    else 
+    else
         hitbox = nullptr;
 
     characterPos = glm::vec3(-37.3051f, 0.0f, 42.5001f);
@@ -57,13 +57,13 @@ void Character::Update(float deltaTime)
         HandleLocalPlayerUpdate(deltaTime);
     }
     else {*/
-        HandleRemotePlayerUpdate(deltaTime);
+    HandleRemotePlayerUpdate(deltaTime);
     /*}*/
 
     UpdateAnimation();
 }
 
-void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, float angle)
+void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime)
 {
     // 로컬 플레이어만 히트박스 렌더링
     if (isLocalPlayer && hitbox_ison())
@@ -106,7 +106,7 @@ void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, fl
     glBindVertexArray(0);
 }
 
-void Character::DrawShadow(float angle, GLuint depthShaderProgram, const glm::mat4& lightSpaceMatrix)
+void Character::DrawShadow(GLuint depthShaderProgram, const glm::mat4& lightSpaceMatrix)
 {
     model = glm::mat4(1.0f);
     model = glm::translate(model, characterPos);
@@ -556,8 +556,10 @@ void Character::SetAnimationType(const std::string& animName)
     }
 }
 
-void Character::UpdateFromPacket(float x, float y, float z, char direction, bool run)
+void Character::UpdateFromPacket(float ang, float x, float y, float z, char direction, bool run)
 {
+    if (!isLocalPlayer)     
+        angle = ang;
     SetTargetPosition(x, y, z);
     currentDirection = direction;
     isRunning = run;

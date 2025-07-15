@@ -51,7 +51,6 @@ void GraphicsManager::Update()
 void GraphicsManager::Render(GLFWwindow* window)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glfwGetCursorPos(window, &cur_x, &cur_y);
 	float deltatime = GET_SINGLE(Timer)->GetDeltaTime();
 
 	Character* localChar = GetLocalCharacter();
@@ -59,11 +58,8 @@ void GraphicsManager::Render(GLFWwindow* window)
 
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIN_W / (float)WIN_H, 0.1f, 1000.0f);
 	glm::mat4 view = camera->GetViewMatrix(localChar->GetPosition());
-	if (!camera->IsAltPressed())
-		mouseDir = camera->SetMouseWorldDirection(cur_x, cur_y, projection, view, localChar->GetPosition());
 	glm::vec3 viewPos = camera->GetPosition(localChar->GetPosition());
 	glm::mat4 lightSpaceMatrix = shadowMap->GetLightSpaceMatrix();
-	float angle = camera->GetAngle();
 
 	localChar->ChangeCatAnimation(view, projection);
 
@@ -76,8 +72,7 @@ void GraphicsManager::Render(GLFWwindow* window)
 
 	// 모든 캐릭터 렌더링
 	for (auto& [id, character] : characters) {
-		float charAngle = character->IsLocalPlayer() ? angle : 0.0f;
-		character->Draw(view, projection, viewPos, deltatime, charAngle);
+		character->Draw(view, projection, viewPos, deltatime);
 
 		if (character->IsLocalPlayer()) {
 			character->ThrowBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
@@ -116,8 +111,7 @@ void GraphicsManager::RenderShadow()
 
 	// 모든 캐릭터 그림자 렌더링
 	for (auto& [id, character] : characters) {
-		float charAngle = character->IsLocalPlayer() ? angle : 0.0f;
-		character->DrawShadow(charAngle, shadowMap->GetDepthShaderProgram(), shadowMap->GetLightSpaceMatrix());
+		character->DrawShadow(shadowMap->GetDepthShaderProgram(), shadowMap->GetLightSpaceMatrix());
 	}
 
 	/*for (int i = 0; i < 3; ++i) {

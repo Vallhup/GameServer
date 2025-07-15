@@ -30,6 +30,7 @@ void Engine::Init()
 	glfwSetKeyCallback(window, Input::KeyBoardInput);
 	glfwSetScrollCallback(window, Input::Scroll_callback);
 	glfwSetMouseButtonCallback(window, Input::MouseFunc);
+	glfwSetCursorPosCallback(window, Input::MouseMoveFunc);
 }
 
 void Engine::Update()
@@ -42,7 +43,7 @@ void Engine::Update()
 		graphics->Update();
 		graphics->Render(window);
 		ShowFps();
-		
+
 		// TODO
 
 		glfwSwapBuffers(window);

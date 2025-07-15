@@ -1,11 +1,12 @@
 #include "pch.h"
 #include "PacketFactory.h"
 
-std::vector<char> PacketFactory::CSMovePacket(char direction, bool run)
+std::vector<char> PacketFactory::CSMovePacket(float angle, char direction, bool run)
 {
 	CS_MOVE_PACKET move;
 	move.size = sizeof(move);
 	move.type = CS_MOVE;
+	move.angle = angle;
 	move.direction = direction;
 	move.isRun = run;
 

@@ -39,7 +39,7 @@ void Camera::Update()
     {
         Starting();
     }
-    
+
     HandleMouseMovement(cur_x, cur_y);
     SetAngle();
 }
@@ -101,18 +101,18 @@ void Camera::HandleMouseMovement(double cur_x, double cur_y) {
     }
 }
 
-void Camera::HandleScroll(double yoffset) 
+void Camera::HandleScroll(double yoffset)
 {
     if (!FirstPersonView /*&& !finish*/)
     {
-        if (yoffset == -1) 
+        if (yoffset == -1)
         {
             if (Rm < 1.0f)
             {
                 Rm += 0.05f;
             }
         }
-        else if (yoffset == 1) 
+        else if (yoffset == 1)
         {
             if (Rm > 0.5f)
             {
@@ -179,11 +179,11 @@ glm::mat4 Camera::Get3rdPersonViewMatrix(const glm::vec3& targetPos) {
     else {
         //if (!finish)
         //{
-            return glm::lookAt(
-                glm::vec3(targetPos.x + ((targetPos.x * 0.6f) * (start_pos / 30.0f)), 10.0f * Rm + (5.5f * (start_pos / 30.0f)), targetPos.z + 5.0f * Rm + ((targetPos.z * 0.35f) * (start_pos / 30.0f))),
-                glm::vec3(targetPos.x - (targetPos.x * (start_pos / 30.0f)), 0.0f + (3.5f * (start_pos / 30.0f)), targetPos.z - (targetPos.z * (start_pos / 30.0f))),
-                glm::vec3(0.0f, 1.0f, 0.0f)
-            );
+        return glm::lookAt(
+            glm::vec3(targetPos.x + ((targetPos.x * 0.6f) * (start_pos / 30.0f)), 10.0f * Rm + (5.5f * (start_pos / 30.0f)), targetPos.z + 5.0f * Rm + ((targetPos.z * 0.35f) * (start_pos / 30.0f))),
+            glm::vec3(targetPos.x - (targetPos.x * (start_pos / 30.0f)), 0.0f + (3.5f * (start_pos / 30.0f)), targetPos.z - (targetPos.z * (start_pos / 30.0f))),
+            glm::vec3(0.0f, 1.0f, 0.0f)
+        );
         //}
         //else
             //return glm::lookAt(
@@ -300,19 +300,29 @@ glm::mat4 Camera::GetViewMatrix(const glm::vec3& targetPos)
     if (FirstPersonView)
     {
         view = Get1stPersonViewMatrix(targetPos);
-	}
-	else
-	{
-		view = Get3rdPersonViewMatrix(targetPos);
-	}
+    }
+    else
+    {
+        view = Get3rdPersonViewMatrix(targetPos);
+    }
 
-	return view;
+    return view;
 }
 
 void Camera::SetAngle()
 {
     if (!FirstPersonView) {
         angle = (float)PI + atan2(mouseDir.x, mouseDir.z);
+    }
+    else {
+        angle = GetHorizontalAngle();
+    }
+}
+
+void Camera::SetAngle(float ang)
+{
+    if (!FirstPersonView) {
+        angle = ang;
     }
     else {
         angle = GetHorizontalAngle();
