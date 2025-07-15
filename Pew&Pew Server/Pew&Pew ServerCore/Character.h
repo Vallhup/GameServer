@@ -48,6 +48,7 @@ public:
 	int GetId() const { return _id; }
 	int GetHp() const { return _hp; }
 	vec3 GetPosition() const { return _pos; }
+	bool GetRun() const { return _isRun; }
 
 	void SetInput(char direction, bool isRun) { _direction = direction; _isRun = isRun; }
 

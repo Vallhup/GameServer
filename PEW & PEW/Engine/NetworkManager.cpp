@@ -169,7 +169,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		if (graphics) {
 			Character* character = graphics->GetCharacter(movePacket.id);
 			if (character) {
-				character->UpdateFromPacket(movePacket.x, movePacket.y, movePacket.z);
+				character->UpdateFromPacket(movePacket.x, movePacket.y, movePacket.z, -1, movePacket.isRun);
 			}
 		}
 		break;

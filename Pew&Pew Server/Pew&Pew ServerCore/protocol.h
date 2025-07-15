@@ -45,6 +45,7 @@ struct SC_MOVE_PACKET {
 	float x;
 	float y;
 	float z;
+	bool isRun;
 };
 
 struct SC_ADD_PACKET {

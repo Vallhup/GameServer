@@ -320,31 +320,24 @@ void Character::SaveAnimations()
 
 void Character::UpdateAnimation()
 {
-    if (isLocalPlayer) {
-        // 로컬 플레이어는 자동 애니메이션 변경 안함 (ChangeCatAnimation에서 처리)
-        return;
-    }
-    else {
-        // 원격 플레이어: 속도 기반 애니메이션 변경
-        glm::vec3 velocity = targetPos - characterPos;
-        float speed = glm::length(velocity);
+    glm::vec3 velocity = targetPos - characterPos;
+    float speed = glm::length(velocity);
 
-        if (speed > 0.001f) {
-            if (isRunning) {
-                if (animLibrary->GetCurrentAnimation() != "Run") {
-                    animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
-                }
-            }
-            else {
-                if (animLibrary->GetCurrentAnimation() != "Walk") {
-                    animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
-                }
+    if (speed > 0.001f) {
+        if (isRunning) {
+            if (animLibrary->GetCurrentAnimation() != "Run") {
+                animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
             }
         }
         else {
-            if (animLibrary->GetCurrentAnimation() != "Idle") {
-                animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+            if (animLibrary->GetCurrentAnimation() != "Walk") {
+                animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
             }
+        }
+    }
+    else {
+        if (animLibrary->GetCurrentAnimation() != "Idle") {
+            animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
         }
     }
 }
