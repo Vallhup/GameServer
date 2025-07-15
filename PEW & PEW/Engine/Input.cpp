@@ -295,7 +295,6 @@ void Input::MouseMoveFunc(GLFWwindow* window, double xpos, double ypos)
 		input->mainCat->SetAngle(angleRad);
 		input->lastMouseAngle = angleRad;
 		input->SendMovePacket();
-		cout << "È¸Àü Áß!!" << '\n';
 	}
 }
 
