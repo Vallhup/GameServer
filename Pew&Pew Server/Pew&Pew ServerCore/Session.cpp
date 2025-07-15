@@ -69,23 +69,92 @@ bool Session::Send(const std::vector<char>& data)
 		return false;
 	}
 
-	WSABUF wsaBuf;
-	wsaBuf.buf = const_cast<char*>(data.data());
-	wsaBuf.len = static_cast<ULONG>(data.size());
+	_sendQueue.push(data);
 
-	DWORD bytesSent{ 0 };
-	if (SOCKET_ERROR == WSASend(_socket, &wsaBuf, 1, &bytesSent, 0, nullptr, nullptr)) {
-		int error = WSAGetLastError();
-		if (error == WSA_IO_PENDING or error == WSAEWOULDBLOCK) {
-			return true;
+	bool expected{ false };
+	if (_isSending.compare_exchange_strong(expected, true)) {
+		return InternalSend();
+	}
+
+	return false;
+}
+
+bool Session::InternalSend()
+{
+	constexpr size_t MAX_PACKET{ 32 };
+	std::vector<std::vector<char>> packets;
+	packets.reserve(MAX_PACKET);
+
+	std::vector<char> sendData;
+	while (packets.size() < MAX_PACKET and _sendQueue.try_pop(sendData)) {
+		packets.push_back(sendData);
+	}
+
+	if (packets.empty()) {
+		_isSending.store(false);
+
+		if (not _sendQueue.empty() and _isSending.exchange(true) == false) {
+			return InternalSend();
 		}
 
-		LOG_ERR("Session[%d] WSASend failed : %d", _id, error);
+		return true;
+	}
+
+	std::vector<WSABUF> wsaBufs;
+	wsaBufs.reserve(packets.size());
+		
+	for (const auto& packet : packets) {
+		wsaBufs.emplace_back(static_cast<ULONG>(packet.size()), const_cast<char*>(packet.data()));
+	}
+
+	DWORD bytesSent{ 0 };
+	if (SOCKET_ERROR == WSASend(_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), &bytesSent, 0, 0, 0)) {
+		int error = WSAGetLastError();
+		if (error == WSAECONNRESET or error == WSAENOTCONN or error == WSAESHUTDOWN) {
+			LOG_INF("Session[%d] DisConencted", _id);
+		}
+
+		else if (error != WSA_IO_PENDING) {
+			LOG_ERR("Session[%d] WSASend failed : %d", _id, error);
+		}
+
+		_isSending.store(false);
+		DisConnect();
 		return false;
 	}
 
-	if (bytesSent != data.size()) {
-		LOG_WRN("Session[%d] Partial send : %d / %d bytes", _id, bytesSent, static_cast<int>(data.size()));
+	// TODO : Partial Send
+	size_t remaining = bytesSent;
+
+	// 1. packets에서 짤린 packet의 iterator 찾기
+	auto it = std::find_if(packets.begin(), packets.end(),
+		[&remaining](const std::vector<char>& packet)
+		{
+			if (remaining >= packet.size()) {
+				remaining -= packet.size();
+				return false;
+			}
+			return true;
+		});
+
+	// 2. Send되지 못한 packet들 다시 SendQueue에 push
+	if (it != packets.end() and remaining > 0) {
+		std::vector<char> partialPacket(it->begin() + remaining, it->end());
+		_sendQueue.push(partialPacket);
+		++it;
+	}
+
+	for (; it != packets.end(); ++it) {
+		_sendQueue.push(*it);
+	}
+
+	if (not _sendQueue.empty()) {
+		return InternalSend();
+	}
+
+	_isSending.store(false);
+	if (not _sendQueue.empty() and _isSending.exchange(true) == false) {
+		return InternalSend();
 	}
 
 	return true;
@@ -96,8 +165,6 @@ void Session::OnConnect()
 	LOG_INF("Client Connected : %d", _id);
 		
 	_isConnected = true;
-
-	//_service->BroadCast(PacketFactory::SCAddPacket(*_character));
 }
 
 void Session::DisConnect()

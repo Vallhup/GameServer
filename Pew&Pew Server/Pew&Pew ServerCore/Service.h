@@ -36,7 +36,8 @@ private:
 	std::unordered_map<int, std::shared_ptr<Session>> _sessions;
 	std::unordered_map<int, std::shared_ptr<Character>> _characters;
 
-	std::mutex _sessionMutex;
+	std::shared_mutex _sessionMutex;
+	std::shared_mutex _characterMutex;
 
 	std::vector<int> _reusableSessionIds;
 	bool _running{ false };

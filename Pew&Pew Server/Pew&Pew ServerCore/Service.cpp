@@ -86,8 +86,17 @@ void Service::Stop()
 
 void Service::Tick(float deltaTime)
 {
-	for (auto& [id, character] : _characters) {
-		if (character->TickMove(deltaTime)) {
+	std::vector<std::shared_ptr<Character>> characters;
+	characters.reserve(64 - _reusableSessionIds.size());
+	{
+		std::shared_lock lock{ _characterMutex };
+		for (auto& [id, character] : _characters) {
+			characters.push_back(character);
+		}
+	}
+
+	for (auto& character : characters) {
+		if (character->Move(deltaTime)) {
 			BroadCast(PacketFactory::SCMovePacket(*character));
 		}
 	}
@@ -95,8 +104,17 @@ void Service::Tick(float deltaTime)
 
 void Service::BroadCast(const std::vector<char>& packet, int exceptId)
 {
-	for (auto& [id, session] : _sessions) {
-		if (id == exceptId) continue;
+	std::vector<std::shared_ptr<Session>> sessions;
+	{
+		std::shared_lock lock{ _sessionMutex };
+		for (auto& [id, session] : _sessions) {
+			if (id != exceptId) {
+				sessions.push_back(session);
+			}
+		}
+	}
+
+	for (auto& session : sessions) {
 		session->Send(packet);
 	}
 }
@@ -126,30 +144,58 @@ void Service::AcceptSession()
 	session->SetCharacter(character);
 	session->SetService(this);
 
-	_sessions.insert(std::make_pair(sessionId, session));
-	_characters.insert(std::make_pair(sessionId, character));
+	{
+		std::unique_lock lock{ _sessionMutex };
+		_sessions.insert(std::make_pair(sessionId, session));
+	}
+
+	{
+		std::unique_lock lock{ _characterMutex };
+		_characters.insert(std::make_pair(sessionId, character));
+	}
 
 	session->OnConnect();
 
 	BroadCast(PacketFactory::SCAddPacket(*character));
 
-	// 새로운 플레이어에게 기존 플레이어들의 정보 보내기
-	for (auto& [id, sess] : _sessions) {
-		if (session->GetId() == id) continue;
-		session->Send(PacketFactory::SCAddPacket(*sess->GetCharacter()));
+	{
+		std::shared_lock lock{ _sessionMutex };
+
+		// 새로운 플레이어에게 기존 플레이어들의 정보 보내기
+		for (auto& [id, sess] : _sessions) {
+			if (session->GetId() == id) continue;
+			session->Send(PacketFactory::SCAddPacket(*sess->GetCharacter()));
+		}
 	}
 }
 
 void Service::CloseSession(int id)
 {
-	auto it = _sessions.find(id);
+	std::shared_ptr<Session> session;
+	std::shared_ptr<Character> character;
 
-	BroadCast(PacketFactory::SCRemovePacket(*it->second->GetCharacter()));
+	{
+		std::unique_lock lock{ _sessionMutex };
+		auto it = _sessions.find(id);
+		if (it != _sessions.end()) {
+			session = it->second;
+			_sessions.erase(it);
+		}
+	}
 
-	if (it != _sessions.end()) {
-		it->second->DisConnect();
-		_sessions.erase(id);
-		_characters.erase(id);
+	{
+		std::unique_lock lock{ _characterMutex };
+		auto it = _characters.find(id);
+		if (it != _characters.end()) {
+			character = it->second;
+			_characters.erase(it);
+		}
+	}
+
+	if (session and character) {
+		BroadCast(PacketFactory::SCRemovePacket(*character));
+
+		session->DisConnect();
 		_reusableSessionIds.push_back(id);
 	}
 }

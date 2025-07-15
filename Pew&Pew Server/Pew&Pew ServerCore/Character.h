@@ -41,11 +41,7 @@ public:
 	Character(int id, const std::string& name);
 
 public:
-	void Move(vec3 newPos, float newRotation);
-	void Move(char direction, bool isRun);
-
-	bool TickMove(float deltaTime);
-
+	bool Move(float deltaTime);
 	void Attack(float nowTime);
 	void TakeDamage(int damage);
 
