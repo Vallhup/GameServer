@@ -29,6 +29,7 @@ enum MoveDirection : char {
 struct CS_MOVE_PACKET {
 	unsigned char size;
 	char type;
+	float angle;
 	char direction;
 	bool isRun;
 };
@@ -42,6 +43,7 @@ struct SC_MOVE_PACKET {
 	unsigned char size;
 	char type;
 	int id;	
+	float angle;
 	float x;
 	float y;
 	float z;

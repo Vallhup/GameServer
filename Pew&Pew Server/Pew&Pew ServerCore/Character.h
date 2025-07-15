@@ -47,10 +47,11 @@ public:
 
 	int GetId() const { return _id; }
 	int GetHp() const { return _hp; }
-	vec3 GetPosition() const { return _pos; }
 	bool GetRun() const { return _isRun; }
-
-	void SetInput(char direction, bool isRun) { _direction = direction; _isRun = isRun; }
+	float GetAngle() const { return _angle; }
+	vec3 GetPosition() const { return _pos; }
+	
+	void SetInput(float angle, char direction, bool isRun) { _angle = angle; _direction = direction; _isRun = isRun; }
 
 private:
 	int _id;
@@ -60,7 +61,7 @@ private:
 	bool _isRun{ false };
 
 	vec3 _pos;
-	float _rotation;
+	float _angle;
 
 	int _hp;
 	bool _isAlive;

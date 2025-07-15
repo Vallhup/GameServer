@@ -27,6 +27,7 @@ std::vector<char> PacketFactory::SCMovePacket(const Character& character)
 	move.size = sizeof(move);
 	move.type = SC_MOVE_OBJECT;
 	move.id = character.GetId();
+	move.angle = character.GetAngle();
 
 	vec3 charPos = character.GetPosition();
 

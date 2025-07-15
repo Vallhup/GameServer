@@ -4,7 +4,7 @@
 Character::Character(int id, const std::string& name) : _id(id), _name(name)
 {
 	_pos = { -37.3051f, 0.0f, 42.5001f };
-	_rotation = 0.0f;
+	_angle = 0.0f;
 
 	_hp = 100;
 	_isAlive = true;

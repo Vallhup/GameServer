@@ -41,7 +41,6 @@ private:
 	concurrency::concurrent_queue<std::vector<char>> _sendQueue;
 	std::atomic<bool> _isSending{ false };
 
-
 	std::shared_ptr<Character> _character{ nullptr };
 	Service* _service{ nullptr };
 
