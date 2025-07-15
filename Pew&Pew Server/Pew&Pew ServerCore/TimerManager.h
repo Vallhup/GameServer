@@ -3,7 +3,7 @@
 class TimerManager
 {
 public:
-	TimerManager(int intervalMs = 33);
+	TimerManager(int intervalMs = 4);
 	~TimerManager();
 
 	void Register(const std::function<void(float)>& tickFunc);
@@ -20,4 +20,3 @@ private:
 	std::vector<std::function<void(float)>> _tickFuncs;
 	std::thread _thread;
 };
-
