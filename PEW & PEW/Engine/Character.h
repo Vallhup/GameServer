@@ -128,6 +128,7 @@ private:
 
     // 공통 함수들
     void SaveAnimations();
+    void CancelCatsFiring();
     void UpdateAnimation();
     void Walk();
     void Walk(float deltaTime);

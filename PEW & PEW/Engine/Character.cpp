@@ -386,8 +386,21 @@ void Character::SaveAnimations()
     animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
 }
 
+void Character::CancelCatsFiring()
+{
+    if (firing && !IsLocalPlayer())
+    {
+        AnimInfo* currentAnimInfo = GetCurrentAnim();
+
+        if (currentAnimInfo->CurrentTime + 15.0f >= currentAnimInfo->Duration)
+            firing = false;
+    }
+}
+
 void Character::UpdateAnimation()
 {
+    CancelCatsFiring();
+
     glm::vec3 velocity = targetPos - characterPos;
     float speed = glm::length(velocity);
 

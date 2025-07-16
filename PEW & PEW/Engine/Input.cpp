@@ -21,9 +21,6 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		return;
 	}
 
-	bool wasMoving = input->mainCat->IsMoving();
-	bool wasRunning = input->mainCat->Shift_value();
-
 	switch (key) {
 	case GLFW_KEY_P:
 		if (action == GLFW_PRESS)
@@ -194,29 +191,6 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		//	}
 		//	break;
 	}
-
-	bool isMovingNow = input->mainCat->IsMoving();
-	bool isRunningNow = input->mainCat->Shift_value();
-
-	if (wasMoving != isMovingNow || (isMovingNow && wasRunning != isRunningNow)) {
-		if (!input->mainCat->GetFiringInduration())
-		{
-			if (isMovingNow) {
-				if (isRunningNow)
-				{
-					input->mainCat->GetAnimLibrary()->ChangeAnimation("Run", *input->mainCat->GetCurrentAnim());
-				}
-				else
-				{
-					input->mainCat->GetAnimLibrary()->ChangeAnimation("Walk", *input->mainCat->GetCurrentAnim());
-				}
-			}
-			else
-			{
-				input->mainCat->GetAnimLibrary()->ChangeAnimation("Idle", *input->mainCat->GetCurrentAnim());
-			}
-		}
-	}
 }
 
 void Input::Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
@@ -354,11 +328,11 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 		{
 			std::string currentAnim = mainCat->GetAnimLibrary()->GetCurrentAnimation();
 			bool isFireAnim = (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun");
-		
+
+			AnimInfo* currentAnimInfo = mainCat->GetCurrentAnim();
+
 			if (isFireAnim)
 			{
-				AnimInfo* currentAnimInfo = mainCat->GetCurrentAnim();
-
 				if (currentAnimInfo->CurrentTime + 10.0f >= currentAnimInfo->Duration)
 				{
 					mainCat->SetFiring(false);
@@ -367,6 +341,11 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 					wasFireAnimation = false;
 				}
 			}
+			else
+			{
+				isAttacking = false;
+			}
+
 		}
 	}
 }
