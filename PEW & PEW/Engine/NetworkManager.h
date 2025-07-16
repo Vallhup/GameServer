@@ -24,7 +24,7 @@ private:
 	SOCKET clientSocket;
 	bool isConnected;
 
-	RecvBuffer recvBuffer;
+	std::vector<char> recvBuffer;
 	GraphicsManager* graphics = nullptr;
 };
 

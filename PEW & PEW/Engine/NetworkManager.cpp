@@ -56,55 +56,124 @@ void NetworkManager::Init(const char* IP, u_short port)
 
 void NetworkManager::Update()
 {
-	// 1. read set 초기화, socket Setting
-	fd_set readSet;
-	FD_ZERO(&readSet);
-	FD_SET(clientSocket, &readSet);
+	//// 1. read set 초기화, socket Setting
+	//fd_set readSet;
+	//FD_ZERO(&readSet);
+	//FD_SET(clientSocket, &readSet);
 
-	// 2. timeout 설정, Select
-	timeval timeout{ 0, 0 }; // Non-Blocking Select를 위해 timeout 0으로 설정
-	if (select(0, &readSet, nullptr, nullptr, &timeout) <= 0) {
+	//// 2. timeout 설정, Select
+	//timeval timeout{ 0, 0 }; // Non-Blocking Select를 위해 timeout 0으로 설정
+	//if (select(0, &readSet, nullptr, nullptr, &timeout) <= 0) {
+	//	return;
+	//}
+
+	//// 3. Recv 가능한지 판별, 가능하면 Recv 진행
+	//if (FD_ISSET(clientSocket, &readSet)) {
+	//	char tempBuffer[1024];
+	//	int recvLen = recv(clientSocket, tempBuffer, sizeof(tempBuffer), 0);
+	//	if (recvLen <= 0) {
+	//		Release();
+	//		return;
+	//	}
+
+	//	if (not recvBuffer.Write(tempBuffer, recvLen)) {
+	//		std::cerr << "[RecvBuffer] Write failed or Overflow\n";
+	//		return;
+	//	}
+
+	//	while (true) {
+	//		if (recvBuffer.GetUsedSize() < sizeof(unsigned char)) {
+	//			break;
+	//		}
+
+	//		unsigned char packetSize{ 0 };
+	//		if (not recvBuffer.Peek(reinterpret_cast<char*>(&packetSize), sizeof(unsigned char))) {
+	//			break;
+	//		}
+
+	//		if (packetSize <= 0 or packetSize > BUFFER_SIZE) {
+	//			std::cerr << "Invalid Packet Size : " << packetSize << std::endl;
+	//			break;
+	//		}
+
+	//		std::vector<char> packet(packetSize);
+	//		if (not recvBuffer.Read(packet.data(), packetSize)) {
+	//			std::cerr << "RecvBuffer Read Failed\n";
+	//			break;
+	//		}
+
+	//		ProcessPacket(packet);
+	//	}
+	//}
+
+	if (not isConnected) {
 		return;
 	}
 
-	// 3. Recv 가능한지 판별, 가능하면 Recv 진행
-	if (FD_ISSET(clientSocket, &readSet)) {
-		char tempBuffer[1024];
-		int recvLen = recv(clientSocket, tempBuffer, sizeof(tempBuffer), 0);
-		if (recvLen <= 0) {
+	char tempBuffer[1024];
+	int recvLen = recv(clientSocket, tempBuffer, sizeof(tempBuffer), 0);
+	if (SOCKET_ERROR == recvLen) {
+		int error = WSAGetLastError();
+		if (WSAEWOULDBLOCK == error) {
+			// 읽을 데이터 없음
+			return;
+		}
+
+		else {
+			// 단순 에러 상황
+			std::cerr << "recv() error : " << error << std::endl;
 			Release();
 			return;
 		}
+	}
 
-		if (not recvBuffer.Write(tempBuffer, recvLen)) {
-			std::cerr << "[RecvBuffer] Write failed or Overflow\n";
-			return;
-		}
+	else if (0 >= recvLen) {
+		// 연결 종료
+		std::cout << "Server DisConneted\n";
+		Release();
+		return;
+	}
 
+	else {
+		// 정상 상황 / 패킷 재조립
+
+		// 1. 받은 데이터 RecvBuffer에 추가
+		recvBuffer.insert(recvBuffer.end(), tempBuffer, tempBuffer + recvLen);
+
+		// 2. 패킷 재조립
 		while (true) {
-			if (recvBuffer.GetUsedSize() < sizeof(unsigned char)) {
+			// 2-1. 최소 패킷 크기 확인
+			//      현재 패킷의 size를 unsigned char로 받고 있음
+			if (recvBuffer.size() < sizeof(unsigned char)) {
 				break;
 			}
 
-			unsigned char packetSize{ 0 };
-			if (not recvBuffer.Peek(reinterpret_cast<char*>(&packetSize), sizeof(unsigned char))) {
+			// 2-2. 패킷 size 추출
+			unsigned char packetSize = static_cast<unsigned char>(recvBuffer[0]);
+
+			// 2-3. 정상 패킷인지 확인
+			//      패킷 사이즈 확인 (현재 Protocol의 최대 사이즈는 23인데 일단 넉넉하게 잡음)
+			if (packetSize <= 0 or packetSize > 32) {
+				std::cerr << "Invalid Packet Size : " << (int)packetSize << std::endl;
+				recvBuffer.clear();
 				break;
 			}
 
-			if (packetSize <= 0 or packetSize > BUFFER_SIZE) {
-				std::cerr << "Invalid Packet Size : " << packetSize << std::endl;
+			// 아직 전체 패킷이 오지 않았을 때
+			if (recvBuffer.size() < packetSize) {
 				break;
 			}
 
-			std::vector<char> packet(packetSize);
-			if (not recvBuffer.Read(packet.data(), packetSize)) {
-				std::cerr << "RecvBuffer Read Failed\n";
-				break;
-			}
+			// 2-4. 정상적인 패킷이 모두 왔을 때
+			//      패킷 추출해서 처리
+			std::vector<char> packet(recvBuffer.begin(), recvBuffer.begin() + packetSize);
+			recvBuffer.erase(recvBuffer.begin(), recvBuffer.begin() + packetSize);
 
 			ProcessPacket(packet);
 		}
+
 	}
+
 }
 
 void NetworkManager::Release()
