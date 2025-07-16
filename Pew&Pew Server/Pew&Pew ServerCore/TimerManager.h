@@ -20,3 +20,5 @@ private:
 	std::vector<std::function<void(float)>> _tickFuncs;
 	std::thread _thread;
 };
+
+float GetNowTime();

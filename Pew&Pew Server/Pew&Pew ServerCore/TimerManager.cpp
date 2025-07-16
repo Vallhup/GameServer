@@ -46,3 +46,11 @@ void TimerManager::Run()
 		std::this_thread::sleep_for(milliseconds(_intervalMs));
 	}
 }
+
+float GetNowTime()
+{
+	using namespace std::chrono;
+	static const auto start = high_resolution_clock::now();
+	auto now = high_resolution_clock::now();
+	return duration<float>(now - start).count();
+}

@@ -114,7 +114,7 @@ void Service::Tick(float deltaTime)
 	}
 
 	for (auto& projectile : projectiles) {
-		projectile->Update(deltaTime);
+		projectile->Update(deltaTime, this);
 		BroadCast(PacketFactory::SCMovePacket(*projectile));
 	}
 }

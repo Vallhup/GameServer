@@ -242,6 +242,9 @@ void Session::HandleAttackPacket(const std::vector<char>& packet)
 	// 1. Packet 파싱
 	auto attack = PacketFactory::Deserialize<CS_ATTACK_PACKET>(packet);
 
-	// TODO : 유효성 검사, GameObject에서 실제 로직 실행, 전체 Client에 BroadCast
-	LOG_DBG("Session[%d] attack", _id);
+	if (_character) {
+		LOG_DBG("Session[%d] attack", _id);
+		_character->SetAttackSequence(GetNowTime(), vec3{ attack.x, attack.y, attack.z });
+		_service->BroadCast(PacketFactory::SCAttackPacket(*this));
+	}
 }

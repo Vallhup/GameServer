@@ -121,3 +121,13 @@ std::vector<char> PacketFactory::SCStatUpdatePacket(const Character& character)
 	return Serialize(stat);
 }
 
+std::vector<char> PacketFactory::SCAttackPacket(const Session& session)
+{
+	SC_ATTACK_PACKET attack;
+	attack.size = sizeof(attack);
+	attack.type = SC_ATTACK;
+	attack.id = session.GetId();
+
+	return Serialize(attack);
+}
+
