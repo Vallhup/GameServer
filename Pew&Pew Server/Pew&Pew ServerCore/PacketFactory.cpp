@@ -65,6 +65,7 @@ std::vector<char> PacketFactory::SCAddPacket(const Character& character)
 	add.size = sizeof(add);
 	add.type = SC_ADD;
 	add.id = character.GetId();
+	add.ownerId = 0;
 
 	vec3 charPos = character.GetPosition();
 
@@ -81,6 +82,7 @@ std::vector<char> PacketFactory::SCAddPacket(const Projectile& projectile)
 	add.size = sizeof(add);
 	add.type = SC_ADD;
 	add.id = projectile.GetId();
+	add.ownerId = projectile.GetOwnerId();
 
 	vec3 projPos = projectile.GetPosition();
 

@@ -15,6 +15,7 @@ public:
 	bool CheckCollision(const Character& character) const;
 
 	int GetId() const { return _id; }
+	int GetOwnerId() const { return _ownerId; }
 	vec3 GetPosition() const { return _pos; }
 
 private:
