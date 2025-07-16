@@ -80,6 +80,7 @@ void Service::Stop()
 	}
 	_sessions.clear();
 	_characters.clear();
+	_projectiles.clear();
 
 	_timerManager->Stop();
 }
@@ -126,13 +127,20 @@ void Service::AddProjectile(int sessionId, vec3 direction)
 		character = _characters.find(sessionId)->second;
 	}
 
-	std::shared_ptr<Projectile> projectile = std::make_shared<Projectile>(sessionId, character->GetPosition(), direction, 10);
+	int projId = _nextProjectileId++;
+	std::shared_ptr<Projectile> projectile = std::make_shared<Projectile>(projId, sessionId, character->GetPosition(), direction, 10);
 	{
 		std::unique_lock lock{ _projectileMutex };
-		_projectiles.insert(std::make_pair(sessionId + 64, projectile));
+		_projectiles.insert(std::make_pair(projId, projectile));
 	}
 
 	BroadCast(PacketFactory::SCAddPacket(*projectile));
+}
+
+void Service::RemoveProjectile(int projId)
+{
+	std::unique_lock lock{ _projectileMutex };
+	_projectiles.erase(projId);
 }
 
 void Service::BroadCast(const std::vector<char>& packet, int exceptId)
@@ -235,6 +243,7 @@ void Service::CloseSession(int id)
 
 Service::Service()
 {
+	_nextProjectileId.store(64);
 	_reusableSessionIds.resize(64);
 	std::iota(_reusableSessionIds.begin(), _reusableSessionIds.end(), 0);
 }

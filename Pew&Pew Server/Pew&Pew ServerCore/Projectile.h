@@ -8,16 +8,17 @@ class Projectile
 	const float PROJECTILE_SPEED{ 0.5f };
 
 public:
-	Projectile(int ownerId, vec3 pos, vec3 dir, int dmg);
+	Projectile(int id, int ownerId, vec3 pos, vec3 dir, int dmg);
 
 public:
 	void Update(float deltaTime, Service* service);
 	bool CheckCollision(const Character& character) const;
 
-	int GetId() const { return _ownerId + 64; }
+	int GetId() const { return _id; }
 	vec3 GetPosition() const { return _pos; }
 
 private:
+	int _id;
 	int _ownerId;
 
 	vec3 _pos;

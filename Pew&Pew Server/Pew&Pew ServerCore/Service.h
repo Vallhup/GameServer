@@ -25,6 +25,7 @@ public:
 	void Tick(float deltaTime);
 
 	void AddProjectile(int sessionId, vec3 direction);
+	void RemoveProjectile(int projId);
 
 	void BroadCast(const std::vector<char>& packet, int exceptId = -1);
 
@@ -45,6 +46,8 @@ private:
 	std::shared_mutex _sessionMutex;
 	std::shared_mutex _characterMutex;
 	std::shared_mutex _projectileMutex;
+
+	std::atomic<int> _nextProjectileId;
 
 	std::vector<int> _reusableSessionIds;
 	bool _running{ false };

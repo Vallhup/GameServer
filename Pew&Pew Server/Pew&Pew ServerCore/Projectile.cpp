@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Projectile.h"
 
-Projectile::Projectile(int ownerId, vec3 pos, vec3 dir, int dmg)
-	: _ownerId(ownerId), _pos(pos), _damage(dmg)
+Projectile::Projectile(int id, int ownerId, vec3 pos, vec3 dir, int dmg)
+	: _id(id), _ownerId(ownerId), _pos(pos), _damage(dmg)
 {
 	_speed = PROJECTILE_SPEED;
 
@@ -23,6 +23,7 @@ void Projectile::Update(float deltaTime, Service* service)
 	_lifeTime += deltaTime;
 	if (_lifeTime > _maxLifeTime) {
 		_isActive = false;
+		service->RemoveProjectile(_id);
 		service->BroadCast(PacketFactory::SCRemovePacket(*this));
 	}
 }
