@@ -39,7 +39,7 @@ void Engine::Update()
 	while (!glfwWindowShouldClose(window)) {
 		network->Update();
 		GET_SINGLE(Timer)->Update();
-		input->Update();
+		input->Update(window);
 		graphics->Update();
 		graphics->Render(window);
 		ShowFps();

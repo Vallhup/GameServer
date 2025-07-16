@@ -299,17 +299,15 @@ void Input::MouseMoveFunc(GLFWwindow* window, double xpos, double ypos)
 	}
 }
 
-void Input::Update()
+void Input::Update(GLFWwindow* window)
 {
-	CheckContinuousAttack();
+	CheckContinuousAttack(window);
 }
 
-void Input::CheckContinuousAttack()
+void Input::CheckContinuousAttack(GLFWwindow* window)
 {
 	if (!mainCat) return;
 
-	// 직접 마우스 상태 체크
-	GLFWwindow* window = GET_SINGLE(WindowInfo)->GetWindow();
 	bool isMousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
 	if (isMousePressed && camera->Get_start_pos() == 0 && !mainCat->GetDying())
@@ -321,6 +319,7 @@ void Input::CheckContinuousAttack()
 			isAttacking = true;
 			SendAttackPacket();
 			firstAttackSent = true;
+			cout << "first attack packet has send" << '\n';
 		}
 		else
 		{
@@ -338,6 +337,7 @@ void Input::CheckContinuousAttack()
 					{
 						SendAttackPacket();
 						wasFireAnimation = true;
+						cout << "second attack packet has send" << '\n';
 					}
 				}
 				else
@@ -352,10 +352,21 @@ void Input::CheckContinuousAttack()
 		// 마우스를 떼었을 때
 		if (isAttacking)
 		{
-			mainCat->SetFiring(false);
-			isAttacking = false;
-			firstAttackSent = false;
-			wasFireAnimation = false;
+			std::string currentAnim = mainCat->GetAnimLibrary()->GetCurrentAnimation();
+			bool isFireAnim = (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun");
+		
+			if (isFireAnim)
+			{
+				AnimInfo* currentAnimInfo = mainCat->GetCurrentAnim();
+
+				if (currentAnimInfo->CurrentTime + 10.0f >= currentAnimInfo->Duration)
+				{
+					mainCat->SetFiring(false);
+					isAttacking = false;
+					firstAttackSent = false;
+					wasFireAnimation = false;
+				}
+			}
 		}
 	}
 }

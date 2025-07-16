@@ -388,44 +388,65 @@ void Character::SaveAnimations()
 
 void Character::UpdateAnimation()
 {
-    if (IsLocalPlayer()) return;
-
     glm::vec3 velocity = targetPos - characterPos;
     float speed = glm::length(velocity);
 
+    std::string currentAnim = GetAnimLibrary()->GetCurrentAnimation();
+    bool isFireAnim = (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun");
+
     if (speed > 0.001f) {
         if (isRunning) {
-            if (animLibrary->GetCurrentAnimation() != "Run") {
-                animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
+            if (firing)
+            {
+                if (!isFireAnim) {
+                    animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
+                }
+            }
+            else
+            {
+                if (animLibrary->GetCurrentAnimation() != "Run") {
+                    animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
+                }
             }
         }
         else {
-            if (animLibrary->GetCurrentAnimation() != "Walk") {
-                animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
+            if (firing)
+            {
+                if (!isFireAnim) {
+                    animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
+                }
+            }
+            else
+            {
+                if (animLibrary->GetCurrentAnimation() != "Walk") {
+                    animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
+                }
             }
         }
     }
     else {
-        if (animLibrary->GetCurrentAnimation() != "Idle") {
-            animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+        if (firing)
+        {
+            if (!isFireAnim) {
+                animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
+            }
+        }
+        else
+        {
+            if (animLibrary->GetCurrentAnimation() != "Idle") {
+                animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+            }
         }
     }
 }
 
 void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& projection)
 {
-    if (!isLocalPlayer) return;  // 로컬 플레이어만
-
-    extern double cur_x, cur_y;  // GraphicsManager에서 가져와야 함
-    float firetimer;
-    glm::vec3 mousePick;
-
     if (!GetDying())
     {
         if (animLibrary->GetCurrentAnimation() == "FireRun")
         {
             firing_induration = true;
-            firetimer = player_CurrentAnim->Duration * 0.56f;
 
             if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
             {
@@ -462,7 +483,6 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
         else if (animLibrary->GetCurrentAnimation() == "FireWalk")
         {
             firing_induration = true;
-            firetimer = player_CurrentAnim->Duration * 0.56f;
 
             if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
             {
@@ -499,7 +519,6 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
         else if (animLibrary->GetCurrentAnimation() == "Fire")
         {
             firing_induration = true;
-            firetimer = player_CurrentAnim->Duration * 0.56f;
 
             if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
             {

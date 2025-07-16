@@ -101,7 +101,6 @@ private:
     float angle;
     float lastangle;
 
-    // 전투 관련 (로컬 플레이어만)
     bool firing = false;
     bool firing_induration = false;
     bool Bullet_cnt[3] = { false, false, false };

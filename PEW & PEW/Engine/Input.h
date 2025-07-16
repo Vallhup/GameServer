@@ -13,9 +13,9 @@ public:
 	static void MouseFunc(GLFWwindow* window, int button, int action, int mods);
 	static void MouseMoveFunc(GLFWwindow* window, double xpos, double ypos);
 
-	void Update();
+	void Update(GLFWwindow* window);
 
-	void CheckContinuousAttack();
+	void CheckContinuousAttack(GLFWwindow* window);
 	char GetCurrentDirection();
 	void SendMovePacket();
 	void SendAttackPacket();
