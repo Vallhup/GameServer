@@ -102,6 +102,37 @@ void Service::Tick(float deltaTime)
 			character->ResetAngleChange();
 		}
 	}
+
+	std::vector<std::shared_ptr<Projectile>> projectiles;
+	projectiles.reserve(characters.size() * 3);
+	{
+		std::shared_lock lock{ _projectileMutex };
+		for (auto& [id, projectile] : _projectiles) {
+			projectiles.push_back(projectile);
+		}
+	}
+
+	for (auto& projectile : projectiles) {
+		projectile->Update(deltaTime);
+		BroadCast(PacketFactory::SCMovePacket(*projectile));
+	}
+}
+
+void Service::AddProjectile(int sessionId, vec3 direction)
+{
+	std::shared_ptr<Character> character;
+	{
+		std::shared_lock lock{ _characterMutex };
+		character = _characters.find(sessionId)->second;
+	}
+
+	std::shared_ptr<Projectile> projectile = std::make_shared<Projectile>(sessionId, character->GetPosition(), direction, 10);
+	{
+		std::unique_lock lock{ _projectileMutex };
+		_projectiles.insert(std::make_pair(sessionId + 64, projectile));
+	}
+
+	BroadCast(PacketFactory::SCAddPacket(*projectile));
 }
 
 void Service::BroadCast(const std::vector<char>& packet, int exceptId)

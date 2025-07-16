@@ -5,6 +5,7 @@ Character::Character(int id, const std::string& name) : _id(id), _name(name)
 {
 	_pos = { -37.3051f, 0.0f, 42.5001f };
 	_angle = 0.0f;
+	_angleChange = false;
 
 	_hp = 100;
 	_isAlive = true;
@@ -44,7 +45,7 @@ bool Character::Move(float deltaTime)
 	return true;
 }
 
-void Character::Attack(float nowTime)
+void Character::Attack(float nowTime, Service* service)
 {
 	if (not _attackSeq.has_value() or not _isAlive) {
 		return;
@@ -53,15 +54,13 @@ void Character::Attack(float nowTime)
 	auto& seq = _attackSeq.value();
 
 	while (nowTime >= seq.attackTimes.front()) {
-		// TODO : Service¿¡ Projectile °´Ã¼ Ãß°¡
-
+		service->AddProjectile(_id, seq.direction);
 		seq.attackTimes.erase(seq.attackTimes.begin());
 	}
 
 	if (seq.attackTimes.empty()) {
 		_attackSeq.reset();
 	}
-
 }
 
 void Character::TakeDamage(int damage)
@@ -90,7 +89,6 @@ void Character::SetInput(float angle, char direction, bool isRun)
 
 void Character::SetAttackSequence(float nowTime, const vec3& dir)
 {
-
 	if (_attackSeq.has_value()) {
 		return;
 	}

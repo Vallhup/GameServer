@@ -5,12 +5,17 @@ class Character;
 
 class Projectile
 {
-public:
-	Projectile(int ownerId, vec3 pos, float dir, float speed, int dmg);
+	const float PROJECTILE_SPEED{ 0.5f };
 
 public:
-	void Update(float deltaTime);
+	Projectile(int ownerId, vec3 pos, vec3 dir, int dmg);
+
+public:
+	void Update(float deltaTime, Service* service);
 	bool CheckCollision(const Character& character) const;
+
+	int GetId() const { return _ownerId + 64; }
+	vec3 GetPosition() const { return _pos; }
 
 private:
 	int _ownerId;

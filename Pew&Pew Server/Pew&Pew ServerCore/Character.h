@@ -50,7 +50,7 @@ public:
 
 public:
 	bool Move(float deltaTime);
-	void Attack(float nowTime);
+	void Attack(float nowTime, Service* service);
 	void TakeDamage(int damage);
 
 	int GetId() const { return _id; }

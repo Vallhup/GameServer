@@ -1,8 +1,11 @@
 #pragma once
 
+struct vec3;
+
 class Listener;
 class Session;
 class Character;
+class Projectile;
 class TimerManager;
 
 class Service : public std::enable_shared_from_this<Service>
@@ -21,6 +24,8 @@ public:
 
 	void Tick(float deltaTime);
 
+	void AddProjectile(int sessionId, vec3 direction);
+
 	void BroadCast(const std::vector<char>& packet, int exceptId = -1);
 
 private:
@@ -35,9 +40,11 @@ private:
 
 	std::unordered_map<int, std::shared_ptr<Session>> _sessions;
 	std::unordered_map<int, std::shared_ptr<Character>> _characters;
+	std::unordered_map<int, std::shared_ptr<Projectile>> _projectiles;
 
 	std::shared_mutex _sessionMutex;
 	std::shared_mutex _characterMutex;
+	std::shared_mutex _projectileMutex;
 
 	std::vector<int> _reusableSessionIds;
 	bool _running{ false };
