@@ -61,7 +61,9 @@ void GraphicsManager::Render(GLFWwindow* window)
 	glm::vec3 viewPos = camera->GetPosition(localChar->GetPosition());
 	glm::mat4 lightSpaceMatrix = shadowMap->GetLightSpaceMatrix();
 
-	localChar->ChangeCatAnimation(view, projection);
+	for (auto& [id, character] : characters) {
+		character->ChangeCatAnimation(view, projection);
+	}
 
 	RenderShadow();
 

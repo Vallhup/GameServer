@@ -29,7 +29,7 @@ public:
     void SetBottom_on(bool in) { if (isLocalPlayer) _Bottom = in; }
     void Shift_on(bool in) { if (isLocalPlayer) _Shift = in; }
     void hitboxOnOff(bool in) { if (isLocalPlayer) hitbox_on = in; }
-    void SetFiring(bool in) { if (isLocalPlayer) firing = in; }
+    void SetFiring(bool in) { firing = in; }
     void SetCamera(Camera* cam) { if (isLocalPlayer) camera = cam; }
     void SetAngle(float ang) { angle = ang; }
 

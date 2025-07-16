@@ -256,6 +256,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 				if (character) {
 					character->UpdateFromPacket(movePacket.angle, movePacket.x, movePacket.y, movePacket.z, -1, movePacket.isRun);
 				}
+				cout << movePacket.id << " : Move packet" << '\n';
 			}
 			else {
 				// 총알 이동 처리 - 모든 캐릭터에서 해당 총알 찾기
