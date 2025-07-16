@@ -8,10 +8,6 @@ Character::Character(int id, const std::string& name) : _id(id), _name(name)
 
 	_hp = 100;
 	_isAlive = true;
-
-	_attackDamage = 10;
-	_lastAttackTime = 0.0f;
-	_attackCooldown = 1.0f;
 }
 
 bool Character::Move(float deltaTime)
@@ -50,16 +46,22 @@ bool Character::Move(float deltaTime)
 
 void Character::Attack(float nowTime)
 {
-	if (not _isAlive) {
+	if (not _attackSeq.has_value() or not _isAlive) {
 		return;
 	}
 
-	if ((nowTime - _lastAttackTime) >= _attackCooldown) {
-		_lastAttackTime = nowTime;
+	auto& seq = _attackSeq.value();
 
-		// 표창 생성, Service에 표창 등록 
-		// (어떻게 할 지 고민중 계속 동적 생성할 지 or Object Pool 만들어서 관리할 지)
+	while (nowTime >= seq.attackTimes.front()) {
+		// TODO : Service에 Projectile 객체 추가
+
+		seq.attackTimes.erase(seq.attackTimes.begin());
 	}
+
+	if (seq.attackTimes.empty()) {
+		_attackSeq.reset();
+	}
+
 }
 
 void Character::TakeDamage(int damage)
@@ -84,4 +86,23 @@ void Character::SetInput(float angle, char direction, bool isRun)
 	
 	_direction = direction; 
 	_isRun = isRun;
+}
+
+void Character::SetAttackSequence(float nowTime, const vec3& dir)
+{
+
+	if (_attackSeq.has_value()) {
+		return;
+	}
+
+	std::vector<float> attackTimes;
+	attackTimes.reserve(NUMBER_OF_ATTACK);
+
+	std::generate_n(attackTimes.begin(), NUMBER_OF_ATTACK,
+		[n = 0, &nowTime, this]() mutable
+		{
+			return nowTime + (n++) * INTERVAL_OF_ATTACK;
+		});
+
+	_attackSeq = AttackSequence{ dir, attackTimes };
 }

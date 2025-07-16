@@ -37,6 +37,14 @@ struct vec3 {
 
 class Character
 {
+	struct AttackSequence {
+		vec3 direction;
+		std::vector<float> attackTimes;
+	};
+
+	const int NUMBER_OF_ATTACK{ 3 };
+	const float INTERVAL_OF_ATTACK{ 0.15f };
+
 public:
 	Character(int id, const std::string& name);
 
@@ -53,6 +61,7 @@ public:
 	vec3 GetPosition() const { return _pos; }
 	
 	void SetInput(float angle, char direction, bool isRun);
+	void SetAttackSequence(float nowTime, const vec3& dir);
 	void ResetAngleChange() { _angleChange = false; }
 
 private:
@@ -69,8 +78,6 @@ private:
 	int _hp;
 	bool _isAlive;
 
-	int _attackDamage;
-	float _lastAttackTime;
-	float _attackCooldown;
+	std::optional<AttackSequence> _attackSeq;
 };
 
