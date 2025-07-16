@@ -27,6 +27,7 @@ public:
 	void BulletUpdate();
 
 	glm::vec3 GettPos() { return tPos; }
+	void SetPosition(glm::vec3 startPos) { position = startPos; }
 	void SetDirection(glm::vec3 startPos, glm::vec3 endPos) { direction = glm::normalize(endPos - startPos); }
 
 private:

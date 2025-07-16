@@ -1,7 +1,7 @@
 #pragma once
 #include "AnimatedModel.h"
+#include "Bullet.h"
 
-class Bullet;
 class Camera;
 class BoundingBox;
 
@@ -15,6 +15,10 @@ public:
     void Update(float deltaTime);
     void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap);
     void DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShaderProgram);
+
+    int CreateBulletFromServer(int bulletID, glm::vec3 startPos);
+    bool UpdateBulletFromServer(int bulletID, glm::vec3 newPos);
+    void RemoveBulletFromServer(int bulletID);
     void RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap);
     void RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
 
@@ -101,7 +105,19 @@ private:
     bool firing = false;
     bool firing_induration = false;
     bool Bullet_cnt[3] = { false, false, false };
-    vector<Bullet*> bullets;
+
+    static const int MAX_BULLETS = 10;  // 캐릭터당 최대 총알 수
+
+    struct BulletSlot {
+        std::unique_ptr<Bullet> bullet;
+        int bulletID;           // 네트워크 동기화용 ID
+        bool isActive;
+
+        BulletSlot() : bulletID(-1), isActive(false) {}
+    };
+
+    array<BulletSlot, MAX_BULLETS> bullets;
+    int nextLocalBulletIndex = 0;
 
     // 로컬 플레이어 전용
     Camera* camera = nullptr;

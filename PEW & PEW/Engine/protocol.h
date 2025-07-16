@@ -57,6 +57,7 @@ struct SC_ADD_PACKET {
 	unsigned char size;
 	char type;
 	int id;
+	int ownerId;
 	float x;
 	float y;
 	float z;

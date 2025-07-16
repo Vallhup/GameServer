@@ -5,6 +5,7 @@
 #include "PacketFactory.h"
 #include "GraphicsManager.h"
 #include "Character.h"
+#include "WindowInfo.h"
 
 void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -298,6 +299,67 @@ void Input::MouseMoveFunc(GLFWwindow* window, double xpos, double ypos)
 	}
 }
 
+void Input::Update()
+{
+	CheckContinuousAttack();
+}
+
+void Input::CheckContinuousAttack()
+{
+	if (!mainCat) return;
+
+	// 직접 마우스 상태 체크
+	GLFWwindow* window = GET_SINGLE(WindowInfo)->GetWindow();
+	bool isMousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+
+	if (isMousePressed && camera->Get_start_pos() == 0 && !mainCat->GetDying())
+	{
+		if (!isAttacking)
+		{
+			// 첫 공격 시작
+			mainCat->SetFiring(true);
+			isAttacking = true;
+			SendAttackPacket();
+			firstAttackSent = true;
+		}
+		else
+		{
+			// 연속 공격 체크 로직
+			std::string currentAnim = mainCat->GetAnimLibrary()->GetCurrentAnimation();
+			bool isFireAnim = (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun");
+
+			if (isFireAnim)
+			{
+				AnimInfo* currentAnimInfo = mainCat->GetCurrentAnim();
+
+				if (currentAnimInfo->CurrentTime + 10.0f >= currentAnimInfo->Duration)
+				{
+					if (!wasFireAnimation)
+					{
+						SendAttackPacket();
+						wasFireAnimation = true;
+					}
+				}
+				else
+				{
+					wasFireAnimation = false;
+				}
+			}
+		}
+	}
+	else
+	{
+		// 마우스를 떼었을 때
+		if (isAttacking)
+		{
+			mainCat->SetFiring(false);
+			isAttacking = false;
+			firstAttackSent = false;
+			wasFireAnimation = false;
+		}
+	}
+}
+
 char Input::GetCurrentDirection()
 {
 	if (!mainCat) return -1;
@@ -328,5 +390,31 @@ void Input::SendMovePacket()
 	bool isRunning = mainCat->Shift_value();
 
 	vector<char> packet = PacketFactory::CSMovePacket(lastMouseAngle, direction, isRunning);
+	network->Send(packet);
+}
+
+void Input::SendAttackPacket()
+{
+	if (!network) return;
+
+	glm::vec3 position = mainCat->GetPosition();
+	position.y = 0.45f;
+
+	float angle = atan2(mouseDir.x, mouseDir.z);
+
+	position.x += cos(angle) * 0.2f;
+	position.z -= sin(angle) * 0.2f;
+
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIN_W / (float)WIN_H, 0.1f, 1000.0f);
+	glm::mat4 view = camera->GetViewMatrix(mainCat->GetPosition());
+
+	glm::vec3 mousePick = camera->GetMousePicking(cur_x, cur_y, projection, view);
+
+	glm::vec3 targetPos = mousePick;
+	targetPos.y = 0.45f;
+
+	glm::vec3 direction = glm::normalize(targetPos - position);
+
+	vector<char> packet = PacketFactory::CSAttackPacket(direction);
 	network->Send(packet);
 }

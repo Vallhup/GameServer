@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 #include <utility>
+#include <array>
 #include "protocol.h"
 using namespace std;
 

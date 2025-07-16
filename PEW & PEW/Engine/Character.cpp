@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Character.h"
 #include "ShadowMapping.h"
-#include "Bullet.h"
 #include "Camera.h"
 #include "BoundingBox.h"
 
@@ -61,11 +60,6 @@ void Character::Update(float deltaTime)
     /*}*/
 
     UpdateAnimation();
-
-    for (auto& bullet : bullets)
-    {
-        bullet->BulletUpdate();
-    }
 }
 
 void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
@@ -139,23 +133,70 @@ void Character::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader
     glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+int Character::CreateBulletFromServer(int bulletID, glm::vec3 startPos)
+{
+    // 빈 슬롯 찾기
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        if (!bullets[i].isActive) {
+            bullets[i].bullet = std::make_unique<Bullet>(1, playerID, bulletID);
+            bullets[i].bulletID = bulletID;
+            bullets[i].isActive = true;
+
+            // 서버에서 받은 위치와 방향으로 설정
+            bullets[i].bullet->SetPosition(startPos);
+
+            std::cout << "[CREATE BULLET FROM SERVER] Player: " << playerID
+                << ", Bullet ID: " << bulletID << ", Slot: " << i << std::endl;
+            return i;
+        }
+    }
+}
+
+void Character::RemoveBulletFromServer(int bulletID)
+{
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        if (bullets[i].isActive && bullets[i].bulletID == bulletID) {
+            bullets[i].bullet.reset();
+            bullets[i].bulletID = -1;
+            bullets[i].isActive = false;
+
+            std::cout << "[REMOVE BULLET FROM SERVER] Player: " << playerID
+                << ", Bullet ID: " << bulletID << ", Slot: " << i << std::endl;
+            return;
+        }
+    }
+}
+
+bool Character::UpdateBulletFromServer(int bulletID, glm::vec3 newPos)
+{
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        if (bullets[i].isActive && bullets[i].bulletID == bulletID) {
+            bullets[i].bullet->SetPosition(newPos);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 void Character::RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap)
 {
-    if (!isLocalPlayer) return;  // 로컬 플레이어만
-
-    for (auto& bullet : bullets)
-    {
-        bullet->Render(orgview, orgproj, viewPos, lightSpaceMatrix, shadowMap);
+    // 모든 캐릭터의 총알 렌더링 (로컬/원격 구분 없이)
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        if (bullets[i].isActive && bullets[i].bullet) {
+            bullets[i].bullet->Render(orgview, orgproj, viewPos, lightSpaceMatrix, shadowMap);
+        }
     }
 }
 
 void Character::RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
 {
-    if (!isLocalPlayer) return;  // 로컬 플레이어만
-
-    for (auto& bullet : bullets)
-    {
-        bullet->RenderShadow(lightSpaceMatrix, depthShader);
+    // 모든 캐릭터의 총알 그림자 렌더링 (로컬/원격 구분 없이)
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        if (bullets[i].isActive && bullets[i].bullet) {
+            bullets[i].bullet->RenderShadow(lightSpaceMatrix, depthShader);
+        }
     }
 }
 
@@ -386,18 +427,6 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
             firing_induration = true;
             firetimer = player_CurrentAnim->Duration * 0.56f;
 
-            for (int i = 0; i < 3; ++i)
-            {
-                if (player_CurrentAnim->CurrentTime >= firetimer + (150.0f * i) && !Bullet_cnt[i])
-                {
-                    mousePick = camera->GetMousePicking(cur_x, cur_y, projection, view);
-                    Bullet* newBullet = new Bullet(1, 0, 0);
-                    newBullet->BulletSetting(this, camera, mousePick);
-                    bullets.push_back(newBullet);
-                    Bullet_cnt[i] = true;
-                }
-            }
-
             if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
             {
                 if (!firing)
@@ -435,18 +464,6 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
             firing_induration = true;
             firetimer = player_CurrentAnim->Duration * 0.56f;
 
-            for (int i = 0; i < 3; ++i)
-            {
-                if (player_CurrentAnim->CurrentTime >= firetimer + (150.0f * i) && !Bullet_cnt[i])
-                {
-                    mousePick = camera->GetMousePicking(cur_x, cur_y, projection, view);
-                    Bullet* newBullet = new Bullet(1, 0, 0);
-                    newBullet->BulletSetting(this, camera, mousePick);
-                    bullets.push_back(newBullet);
-                    Bullet_cnt[i] = true;
-                }
-            }
-
             if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
             {
                 if (!firing)
@@ -483,18 +500,6 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
         {
             firing_induration = true;
             firetimer = player_CurrentAnim->Duration * 0.56f;
-
-            for (int i = 0; i < 3; ++i)
-            {
-                if (player_CurrentAnim->CurrentTime >= firetimer + (150.0f * i) && !Bullet_cnt[i])
-                {
-                    mousePick = camera->GetMousePicking(cur_x, cur_y, projection, view);
-                    Bullet* newBullet = new Bullet(1, 0, 0);
-                    newBullet->BulletSetting(this, camera, mousePick);
-                    bullets.push_back(newBullet);
-                    Bullet_cnt[i] = true;
-                }
-            }
 
             if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
             {

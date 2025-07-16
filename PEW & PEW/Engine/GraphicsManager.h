@@ -26,6 +26,8 @@ public:
 	void SetNetworkManager(NetworkManager* net);
 	void DebugAllCharacterPositions();
 
+	const std::map<int, Character*>& GetAllCharacters() const { return characters; }
+
 private:
 	Camera* camera = { nullptr };
 	ShadowMapping* shadowMap = { nullptr };

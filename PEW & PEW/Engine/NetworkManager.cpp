@@ -213,21 +213,35 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		SC_ADD_PACKET addPacket = PacketFactory::Deserialize<SC_ADD_PACKET>(packet);
 
 		if (graphics) {
-			// 첫 번째 받은 캐릭터를 내 캐릭터로 설정
-			static bool firstCharacter = true;
-			bool isLocal = firstCharacter;
-			firstCharacter = false;
+			if (addPacket.id < 64) {
+				// 첫 번째 받은 캐릭터를 내 캐릭터로 설정
+				static bool firstCharacter = true;
+				bool isLocal = firstCharacter;
+				firstCharacter = false;
 
-			graphics->AddCharacter(addPacket.id, isLocal);
+				graphics->AddCharacter(addPacket.id, isLocal);
 
-			Character* character = graphics->GetCharacter(addPacket.id);
-			if (character) {
-				character->SetTargetPosition(addPacket.x, addPacket.y, addPacket.z);
+				Character* character = graphics->GetCharacter(addPacket.id);
+				if (character) {
+					character->SetTargetPosition(addPacket.x, addPacket.y, addPacket.z);
+				}
+
+				std::cout << "[ADD PLAYER] ID: " << addPacket.id << " at ("
+					<< addPacket.x << ", " << addPacket.y << ", " << addPacket.z << ")"
+					<< (isLocal ? " (LOCAL)" : " (REMOTE)") << std::endl;
 			}
+			else
+			{
+				int ownerID = addPacket.ownerId;
+				Character* character = graphics->GetCharacter(ownerID);
+				if (character) {
+					glm::vec3 startPos(addPacket.x, addPacket.y, addPacket.z);
+					character->CreateBulletFromServer(addPacket.id, startPos);
 
-			std::cout << "[ADD PLAYER] ID: " << addPacket.id << " at ("
-				<< addPacket.x << ", " << addPacket.y << ", " << addPacket.z << ")"
-				<< (isLocal ? " (LOCAL)" : " (REMOTE)") << std::endl;
+					std::cout << "[ADD BULLET] ID: " << addPacket.id << " Owner: " << ownerID
+						<< " at (" << addPacket.x << ", " << addPacket.y << ", " << addPacket.z << ")" << std::endl;
+				}
+			}
 		}
 		break;
 	}
@@ -236,9 +250,30 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		SC_MOVE_PACKET movePacket = PacketFactory::Deserialize<SC_MOVE_PACKET>(packet);
 
 		if (graphics) {
-			Character* character = graphics->GetCharacter(movePacket.id);
-			if (character) {
-				character->UpdateFromPacket(movePacket.angle, movePacket.x, movePacket.y, movePacket.z, -1, movePacket.isRun);
+			if (movePacket.id < 64) {
+				// 캐릭터 이동 처리 (기존 코드)
+				Character* character = graphics->GetCharacter(movePacket.id);
+				if (character) {
+					character->UpdateFromPacket(movePacket.angle, movePacket.x, movePacket.y, movePacket.z, -1, movePacket.isRun);
+				}
+			}
+			else {
+				// 총알 이동 처리 - 모든 캐릭터에서 해당 총알 찾기
+				glm::vec3 newPos(movePacket.x, movePacket.y, movePacket.z);
+				bool bulletFound = false;
+
+				// 모든 캐릭터를 순회하면서 해당 총알 ID 찾기
+				for (auto& [id, character] : graphics->GetAllCharacters()) {
+					if (character->UpdateBulletFromServer(movePacket.id, newPos)) {
+						bulletFound = true;
+						break;
+					}
+				}
+
+				if (bulletFound) {
+					std::cout << "[MOVE BULLET] ID: " << movePacket.id
+						<< " to (" << movePacket.x << ", " << movePacket.y << ", " << movePacket.z << ")" << std::endl;
+				}
 			}
 		}
 		break;

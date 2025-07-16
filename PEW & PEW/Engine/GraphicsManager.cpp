@@ -73,10 +73,11 @@ void GraphicsManager::Render(GLFWwindow* window)
 	// 모든 캐릭터 렌더링
 	for (auto& [id, character] : characters) {
 		character->Draw(view, projection, viewPos, deltatime, lightSpaceMatrix, shadowMap->GetDepthMap());
+	}
 
-		if (character->IsLocalPlayer()) {
-			character->RenderBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
-		}
+	// 모든 캐릭터의 총알 렌더링 (로컬/원격 구분 없이)
+	for (auto& [id, character] : characters) {
+		character->RenderBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
 	}
 
 	/*for (int i = 0; i < 3; ++i)
@@ -118,8 +119,9 @@ void GraphicsManager::RenderShadow()
 
 	GET_SINGLE(StaticObjectManager)->DrawShadow(lightSpaceMatrix, shadowMap->GetStaticDepthShaderProgram());
 
-	if (localChar) {
-		localChar->RenderBulletsShadow(shadowMap->GetLightSpaceMatrix(), shadowMap->GetStaticDepthShaderProgram());
+	// 모든 캐릭터의 총알 그림자 렌더링 (로컬/원격 구분 없이)
+	for (auto& [id, character] : characters) {
+		character->RenderBulletsShadow(shadowMap->GetLightSpaceMatrix(), shadowMap->GetStaticDepthShaderProgram());
 	}
 
 	/*for (int i = 0; i < 3; ++i) {
