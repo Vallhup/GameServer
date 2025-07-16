@@ -153,7 +153,7 @@ void Bullet::BulletSetting(Character* character, Camera* camera, glm::vec3 mouse
 		position = character->GetPosition();
 		position.y = 0.45f;
 
-		angle = atan2(mouseDir.x, mouseDir.z);
+		float angle = atan2(mouseDir.x, mouseDir.z);
 
 		if (!camera->GetViewType()) {
 
@@ -163,22 +163,20 @@ void Bullet::BulletSetting(Character* character, Camera* camera, glm::vec3 mouse
 			glm::vec3 targetPos = mousePick;
 			targetPos.y = 0.45f;
 			direction = glm::normalize(targetPos - position);
-			angle = atan2(direction.x, direction.z);
 		}
 		else {
-			angle = camera->GetHorizontalAngle();
+			float horizontalAngle = camera->GetHorizontalAngle();
 			float verticalAngle = camera->GetVerticalAngle();
 
 			direction = glm::vec3(
-				sin(angle) * cos(verticalAngle),
+				sin(horizontalAngle) * cos(verticalAngle),
 				-sin(verticalAngle),
-				cos(angle) * cos(verticalAngle)
+				cos(horizontalAngle) * cos(verticalAngle)
 			);
 		}
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, position);
-		model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 }
 
@@ -188,12 +186,11 @@ void Bullet::BulletSetting(Enemy* enemy, const glm::vec3 pos)
 	{
 		position = enemy->GetPosition();
 		position.y = 0.45f;
-	
+
 		tPos = pos;
 		tPos.y = 0.45f;
 		direction = glm::normalize(tPos - position);
 		position += 0.5f * direction;
-		angle = atan2(direction.x, direction.z);
 	}
 }
 
@@ -206,7 +203,6 @@ void Bullet::BulletSettingAgain(Enemy* enemy, glm::vec3 Pos)
 	tPos.y = 0.45f;
 	direction = glm::normalize(tPos - position);
 	position += 0.5f * direction;
-	angle = atan2(direction.x, direction.z);
 }
 
 void Bullet::Render(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos,
@@ -335,7 +331,7 @@ void Bullet::BulletUpdate()
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
-	model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+
 	if (b_type == 1)
 		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
 	else if (b_type == 2)
