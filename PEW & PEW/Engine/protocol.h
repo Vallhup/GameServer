@@ -37,6 +37,9 @@ struct CS_MOVE_PACKET {
 struct CS_ATTACK_PACKET {
 	unsigned char size;
 	char type;
+	float x;
+	float y;
+	float z;
 };
 
 struct SC_MOVE_PACKET {
