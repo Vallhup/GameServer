@@ -61,9 +61,14 @@ void Character::Update(float deltaTime)
     /*}*/
 
     UpdateAnimation();
+
+    for (auto& bullet : bullets)
+    {
+        bullet->BulletUpdate();
+    }
 }
 
-void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime)
+void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
 {
     // 로컬 플레이어만 히트박스 렌더링
     if (isLocalPlayer && hitbox_ison())
@@ -83,6 +88,14 @@ void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, fl
     glUniformMatrix4fv(ProjLoc, 1, GL_FALSE, &projection[0][0]);
     ModelLoc = glGetUniformLocation(shaderprogram, "model");
     glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, &model[0][0]);
+
+    GLuint lightSpaceMatrixLoc = glGetUniformLocation(shaderprogram, "lightSpaceMatrix");
+    glUniformMatrix4fv(lightSpaceMatrixLoc, 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    GLuint shadowMapLoc = glGetUniformLocation(shaderprogram, "shadowMap");
+    glUniform1i(shadowMapLoc, 1);
 
     GLuint lightPosLoc = glGetUniformLocation(shaderprogram, "lightPos");
     GLuint viewPosLoc = glGetUniformLocation(shaderprogram, "viewPos");
@@ -106,7 +119,7 @@ void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, fl
     glBindVertexArray(0);
 }
 
-void Character::DrawShadow(GLuint depthShaderProgram, const glm::mat4& lightSpaceMatrix)
+void Character::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShaderProgram)
 {
     model = glm::mat4(1.0f);
     model = glm::translate(model, characterPos);
@@ -115,6 +128,10 @@ void Character::DrawShadow(GLuint depthShaderProgram, const glm::mat4& lightSpac
     else
         model = glm::rotate(model, lastangle, glm::vec3(0.0f, 1.0f, 0.0f));
 
+    glUseProgram(depthShaderProgram);			// Depth map 렌더링
+    GLuint lightSpaceMatrixLoc = glGetUniformLocation(depthShaderProgram, "lightSpaceMatrix");
+    glUniformMatrix4fv(lightSpaceMatrixLoc, 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+
     ModelLoc = glGetUniformLocation(depthShaderProgram, "model");
     glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, glm::value_ptr(model));
     animModel->SetupBoneTransforms(*player_BoneInfo, depthShaderProgram);
@@ -122,7 +139,17 @@ void Character::DrawShadow(GLuint depthShaderProgram, const glm::mat4& lightSpac
     glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void Character::DrawBulletShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
+void Character::RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap)
+{
+    if (!isLocalPlayer) return;  // 로컬 플레이어만
+
+    for (auto& bullet : bullets)
+    {
+        bullet->Render(orgview, orgproj, viewPos, lightSpaceMatrix, shadowMap);
+    }
+}
+
+void Character::RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
 {
     if (!isLocalPlayer) return;  // 로컬 플레이어만
 
@@ -320,6 +347,8 @@ void Character::SaveAnimations()
 
 void Character::UpdateAnimation()
 {
+    if (IsLocalPlayer()) return;
+
     glm::vec3 velocity = targetPos - characterPos;
     float speed = glm::length(velocity);
 
@@ -511,17 +540,6 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
             if (player_CurrentAnim->CurrentTime + 10 >= player_CurrentAnim->Duration)
                 SetDead(true);
         }
-    }
-}
-
-void Character::ThrowBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap)
-{
-    if (!isLocalPlayer) return;  // 로컬 플레이어만
-
-    for (auto& bullet : bullets)
-    {
-        bullet->BulletUpdate();
-        bullet->Render(orgview, orgproj, viewPos, lightSpaceMatrix, shadowMap);
     }
 }
 

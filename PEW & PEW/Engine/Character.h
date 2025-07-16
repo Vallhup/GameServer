@@ -13,9 +13,10 @@ public:
 
     void Init();
     void Update(float deltaTime);
-    void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime);
-    void DrawShadow(GLuint depthShaderProgram, const glm::mat4& lightSpaceMatrix);
-    void DrawBulletShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
+    void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap);
+    void DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShaderProgram);
+    void RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap);
+    void RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
 
     // 입력 처리 (로컬 플레이어만)
     void SetRight_on(bool in) { if (isLocalPlayer) _Right = in; }
@@ -51,7 +52,6 @@ public:
 
     // MainCharacter 기존 함수들 (로컬 플레이어만)
     void ChangeCatAnimation(const glm::mat4& view, const glm::mat4& projection);
-    void ThrowBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap);
     void SetAnimationType(const std::string& animName);
     AnimInfo* GetCurrentAnim() { return player_CurrentAnim; }
     AnimatedModel::AnimationLibrary* GetAnimLibrary() { return animLibrary; }
