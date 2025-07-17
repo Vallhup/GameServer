@@ -297,7 +297,6 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		if (graphics) {
 			Character* character = graphics->GetCharacter(attackPacket.id);
 			if (character) {
-				// 공격 애니메이션 처리 (나중에 구현)
 				std::cout << "[ATTACK] Player ID: " << attackPacket.id << std::endl;
 				character->SetFiring(true);
 			}
