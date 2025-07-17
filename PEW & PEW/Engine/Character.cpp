@@ -399,52 +399,63 @@ void Character::CancelCatsFiring()
 
 void Character::UpdateAnimation()
 {
-    CancelCatsFiring();
-
     glm::vec3 velocity = targetPos - characterPos;
     float speed = glm::length(velocity);
 
-    if (speed > 0.001f) {
-        if (isRunning) {
-            if (firing)
+    std::string currentAnim = GetAnimLibrary()->GetCurrentAnimation();
+    bool isFireAnim = (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun");
+
+    if (firing)
+    {
+        if (speed > 0.001f)
+        {
+            if (isRunning)
             {
-                if (animLibrary->GetCurrentAnimation() != "FireRun") {
+                if (!isFireAnim) {
                     animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
                 }
             }
             else
             {
-                if (animLibrary->GetCurrentAnimation() != "Run") {
-                    animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
-                }
-            }
-        }
-        else {
-            if (firing)
-            {
-                if (animLibrary->GetCurrentAnimation() != "FireWalk") {
+                if (!isFireAnim) {
                     animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
                 }
-            }
-            else
-            {
-                if (animLibrary->GetCurrentAnimation() != "Walk") {
-                    animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
-                }
-            }
-        }
-    }
-    else {
-        if (firing)
-        {
-            if (animLibrary->GetCurrentAnimation() != "Fire") {
-                animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
             }
         }
         else
         {
-            if (animLibrary->GetCurrentAnimation() != "Idle") {
-                animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+            if (firing)
+            {
+                if (!isFireAnim) {
+                    animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
+                }
+            }
+        }
+    }
+    else
+    {
+        if (!isFireAnim)
+        {
+            if (speed > 0.001f)
+            {
+                if (isRunning)
+                {
+                    if (animLibrary->GetCurrentAnimation() != "Run") {
+                        animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
+                    }
+                }
+                else
+                {
+                    if (animLibrary->GetCurrentAnimation() != "Walk") {
+                        animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
+                    }
+                }
+            }
+            else
+            {
+                if (animLibrary->GetCurrentAnimation() != "Idle") {
+                    animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+                }
             }
         }
     }
