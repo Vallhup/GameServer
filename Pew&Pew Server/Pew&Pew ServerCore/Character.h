@@ -34,7 +34,11 @@ struct vec3 {
 		return *this;
 	}
 
-	
+	float DistanceSq(const vec3& other) const
+	{
+		vec3 deltaVec = *this - other;
+		return pow(deltaVec.x, 2) + pow(deltaVec.y, 2) + pow(deltaVec.z, 2);
+	}
 };
 
 class Character
@@ -68,7 +72,7 @@ public:
 	bool IsAlive() const { return _isAlive; }
 	bool IsMove() const { return _direction >= 0 and _direction < 8; }
 
-	std::pair<vec3, vec3> GetCollisionRange() const;
+	std::pair<vec3, vec3> GetCollisionBox() const;
 	
 	void SetInput(float angle, char direction, bool isRun);
 	void SetAttackSequence(float nowTime, const vec3& dir);

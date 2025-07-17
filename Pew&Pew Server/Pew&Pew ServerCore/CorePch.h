@@ -35,6 +35,7 @@
 
 #include "Character.h"
 #include "Projectile.h"
+#include "CollisionManager.h"
 
 #include "RecvBuffer.h"
 

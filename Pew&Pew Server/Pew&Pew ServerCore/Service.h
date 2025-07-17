@@ -7,6 +7,7 @@ class Session;
 class Character;
 class Projectile;
 class TimerManager;
+class CollisionManager;
 
 class Service : public std::enable_shared_from_this<Service>
 {
@@ -38,6 +39,7 @@ private:
 private:
 	std::shared_ptr<Listener> _listener;
 	std::shared_ptr<TimerManager> _timerManager;
+	std::shared_ptr<CollisionManager> _collisionManager;
 
 	std::unordered_map<int, std::shared_ptr<Session>> _sessions;
 	std::unordered_map<int, std::shared_ptr<Character>> _characters;

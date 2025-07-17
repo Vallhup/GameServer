@@ -9,11 +9,10 @@ bool CollisionManager::SphereAABBCollision(const vec3& sphereCenter, float spher
 		std::max(minAABB.z, std::min(sphereCenter.z, maxAABB.z))
 	};
 
-	vec3 deltaPos = sphereCenter - closestPt;
-
+	return sphereCenter.DistanceSq(closestPt) <= pow(sphereRadius, 2);
 }
 
-void CollisionManager::Update(const std::vector<std::shared_ptr<Projectile>>& projectiles, const std::vector<std::shared_ptr<Character>>& characters)
+void CollisionManager::Update(const std::vector<std::shared_ptr<Projectile>>& projectiles, const std::vector<std::shared_ptr<Character>>& characters, Service* service)
 {
 	for (auto& projectile : projectiles) {
 		for (auto& character : characters) {
@@ -22,8 +21,8 @@ void CollisionManager::Update(const std::vector<std::shared_ptr<Projectile>>& pr
 
 			if (projectile->CheckCollision(*character)) {
 				character->TakeDamage(projectile->GetDamage());
-				
-				// projectile »èÁ¦
+				projectile->SetIntactive(service);
+				break;
 			}
 		}
 	}

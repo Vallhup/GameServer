@@ -14,6 +14,8 @@ public:
 	void Update(float deltaTime, Service* service);
 	bool CheckCollision(const Character& character) const;
 
+	void SetIntactive(Service* service);
+
 	int GetId() const { return _id; }
 	int GetOwnerId() const { return _ownerId; }
 	vec3 GetPosition() const { return _pos; }

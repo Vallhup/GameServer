@@ -76,9 +76,12 @@ void Character::TakeDamage(int damage)
 	}
 }
 
-std::pair<vec3, vec3> Character::GetCollisionRange() const
+std::pair<vec3, vec3> Character::GetCollisionBox() const
 {
-	return std::pair<vec3, vec3>();
+	const vec3 offsetMin{ SIZE_X / 2, 0, SIZE_Z / 2 };
+	const vec3 offsetMax{ SIZE_X / 2, SIZE_Y, SIZE_Z / 2 };
+
+	return { _pos - offsetMin, _pos + offsetMax };
 }
 
 void Character::SetInput(float angle, char direction, bool isRun)

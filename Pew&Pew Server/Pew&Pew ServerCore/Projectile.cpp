@@ -22,15 +22,19 @@ void Projectile::Update(float deltaTime, Service* service)
 	_pos += _moveVector * deltaTime;
 	_lifeTime += deltaTime;
 	if (_lifeTime > _maxLifeTime) {
-		_isActive = false;
-		service->RemoveProjectile(_id);
-		service->BroadCast(PacketFactory::SCRemovePacket(*this));
+		SetIntactive(service);
 	}
 }
 
 bool Projectile::CheckCollision(const Character& character) const
 {
-	auto [charMin, charMax] = character.GetCollisionRange();
+	auto [charMin, charMax] = character.GetCollisionBox();
+	return CollisionManager::SphereAABBCollision(_pos, _radius, charMin, charMax);
+}
 
-	
+void Projectile::SetIntactive(Service* service)
+{
+	_isActive = false;
+	service->RemoveProjectile(_id);
+	service->BroadCast(PacketFactory::SCRemovePacket(*this));
 }

@@ -21,6 +21,11 @@ bool Service::Init()
 	if (nullptr == _timerManager) {
 		_timerManager = std::make_shared<TimerManager>();
 	}
+
+	if (nullptr == _collisionManager) {
+		_collisionManager = std::make_shared<CollisionManager>();
+	}
+
 	_timerManager->Register([this](float delta) { this->Tick(delta); });
 
 	return true;
@@ -117,6 +122,8 @@ void Service::Tick(float deltaTime)
 		projectile->Update(deltaTime, this);
 		BroadCast(PacketFactory::SCMovePacket(*projectile));
 	}
+
+	_collisionManager->Update(projectiles, characters, this);
 }
 
 void Service::AddProjectile(int sessionId, vec3 direction)
