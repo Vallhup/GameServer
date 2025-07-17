@@ -112,7 +112,7 @@ void Character::SetAttackSequence(float nowTime, const vec3& dir)
 	std::generate_n(attackTimes.begin(), NUMBER_OF_ATTACK,
 		[n = 0, &nowTime, this]() mutable
 		{
-			return nowTime + 0.5f + (n++) * INTERVAL_OF_ATTACK;
+			return nowTime + 0.56f + (n++) * INTERVAL_OF_ATTACK;
 		});
 
 	_attackSeq = AttackSequence{ dir, attackTimes };
