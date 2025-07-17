@@ -407,7 +407,7 @@ void Character::UpdateAnimation()
 
     if (firing)
     {
-        if (speed > 0.001f)
+        if (isMoving)
         {
             if (isRunning)
             {
@@ -424,11 +424,8 @@ void Character::UpdateAnimation()
         }
         else
         {
-            if (firing)
-            {
-                if (!isFireAnim) {
-                    animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
-                }
+            if (!isFireAnim) {
+                animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
             }
         }
     }
@@ -436,7 +433,7 @@ void Character::UpdateAnimation()
     {
         if (!isFireAnim)
         {
-            if (speed > 0.001f)
+            if (isMoving)
             {
                 if (isRunning)
                 {
@@ -473,9 +470,9 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
             {
                 if (!firing)
                 {
-                    if (IsMoving())
+                    if (isMoving)
                     {
-                        if (Shift_value())
+                        if (isRunning)
                             animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
                         else
                             animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
@@ -486,9 +483,9 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
                 }
                 else
                 {
-                    if (IsMoving())
+                    if (isMoving)
                     {
-                        if (!Shift_value())
+                        if (!isRunning)
                             animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
                         else
                             animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
@@ -509,9 +506,9 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
             {
                 if (!firing)
                 {
-                    if (IsMoving())
+                    if (isMoving)
                     {
-                        if (Shift_value())
+                        if (isRunning)
                             animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
                         else
                             animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
@@ -522,9 +519,9 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
                 }
                 else
                 {
-                    if (IsMoving())
+                    if (isMoving)
                     {
-                        if (Shift_value())
+                        if (isRunning)
                             animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
                         else
                             animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
@@ -545,9 +542,9 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
             {
                 if (!firing)
                 {
-                    if (IsMoving())
+                    if (isMoving)
                     {
-                        if (Shift_value())
+                        if (isRunning)
                             animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
                         else
                             animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
@@ -558,9 +555,9 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
                 }
                 else
                 {
-                    if (IsMoving())
+                    if (isMoving)
                     {
-                        if (Shift_value())
+                        if (isRunning)
                             animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
                         else
                             animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
@@ -619,12 +616,13 @@ void Character::SetAnimationType(const std::string& animName)
     }
 }
 
-void Character::UpdateFromPacket(float ang, float x, float y, float z, char direction, bool run)
+void Character::UpdateFromPacket(float ang, float x, float y, float z, char direction, bool move, bool run)
 {
     if (!isLocalPlayer)
         angle = ang;
     SetTargetPosition(x, y, z);
     currentDirection = direction;
+    isMoving = move;
     isRunning = run;
 }
 

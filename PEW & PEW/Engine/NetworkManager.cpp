@@ -254,9 +254,9 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 				// 캐릭터 이동 처리 (기존 코드)
 				Character* character = graphics->GetCharacter(movePacket.id);
 				if (character) {
-					character->UpdateFromPacket(movePacket.angle, movePacket.x, movePacket.y, movePacket.z, -1, movePacket.isRun);
+					character->UpdateFromPacket(movePacket.angle, movePacket.x, movePacket.y, movePacket.z, -1, movePacket.isMove, movePacket.isRun);
 				}
-				cout << movePacket.id << " : Move packet" << '\n';
+				cout << movePacket.id << " : Move packet" << " Move packet : " << movePacket.isMove << '\n';
 			}
 			else {
 				// 총알 이동 처리 - 모든 캐릭터에서 해당 총알 찾기

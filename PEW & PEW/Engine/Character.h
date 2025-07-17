@@ -34,7 +34,7 @@ public:
     void SetAngle(float ang) { angle = ang; }
 
     // 네트워크 업데이트 (원격 플레이어만)
-    void UpdateFromPacket(float ang, float x, float y, float z, char direction = -1, bool run = false);
+    void UpdateFromPacket(float ang, float x, float y, float z, char direction = -1, bool move = false, bool run = false);
     void SetTargetPosition(float x, float y, float z);
 
     // Getter
@@ -124,6 +124,7 @@ private:
 
     // 원격 플레이어 전용
     char currentDirection = -1;
+    bool isMoving = false;
     bool isRunning = false;
 
     // 공통 함수들
