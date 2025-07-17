@@ -289,7 +289,7 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 		if (!isAttacking)
 		{
 			// 첫 공격 시작
-			mainCat->SetFiring(true);
+			//mainCat->SetFiring(true);
 			isAttacking = true;
 			SendAttackPacket();
 			firstAttackSent = true;
@@ -335,7 +335,7 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 			{
 				if (currentAnimInfo->CurrentTime + 10.0f >= currentAnimInfo->Duration)
 				{
-					mainCat->SetFiring(false);
+					//mainCat->SetFiring(false);
 					isAttacking = false;
 					firstAttackSent = false;
 					wasFireAnimation = false;

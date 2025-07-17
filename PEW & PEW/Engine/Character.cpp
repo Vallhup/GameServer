@@ -404,14 +404,11 @@ void Character::UpdateAnimation()
     glm::vec3 velocity = targetPos - characterPos;
     float speed = glm::length(velocity);
 
-    std::string currentAnim = GetAnimLibrary()->GetCurrentAnimation();
-    bool isFireAnim = (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun");
-
     if (speed > 0.001f) {
         if (isRunning) {
             if (firing)
             {
-                if (!isFireAnim) {
+                if (animLibrary->GetCurrentAnimation() != "FireRun") {
                     animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
                 }
             }
@@ -425,7 +422,7 @@ void Character::UpdateAnimation()
         else {
             if (firing)
             {
-                if (!isFireAnim) {
+                if (animLibrary->GetCurrentAnimation() != "FireWalk") {
                     animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
                 }
             }
@@ -440,7 +437,7 @@ void Character::UpdateAnimation()
     else {
         if (firing)
         {
-            if (!isFireAnim) {
+            if (animLibrary->GetCurrentAnimation() != "Fire") {
                 animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
             }
         }
@@ -613,7 +610,7 @@ void Character::SetAnimationType(const std::string& animName)
 
 void Character::UpdateFromPacket(float ang, float x, float y, float z, char direction, bool run)
 {
-    if (!isLocalPlayer)     
+    if (!isLocalPlayer)
         angle = ang;
     SetTargetPosition(x, y, z);
     currentDirection = direction;
