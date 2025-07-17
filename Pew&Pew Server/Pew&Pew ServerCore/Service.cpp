@@ -107,6 +107,8 @@ void Service::Tick(float deltaTime)
 			BroadCast(PacketFactory::SCMovePacket(*character));
 			character->ResetAngleChange();
 		}
+
+		character->Attack(GetNowTime(), this);
 	}
 
 	std::vector<std::shared_ptr<Projectile>> projectiles;

@@ -23,6 +23,8 @@ void CollisionManager::Update(const std::vector<std::shared_ptr<Projectile>>& pr
 				character->TakeDamage(projectile->GetDamage());
 				projectile->SetIntactive(service);
 				break;
+				
+				// projectile ªË¡¶
 			}
 		}
 	}
