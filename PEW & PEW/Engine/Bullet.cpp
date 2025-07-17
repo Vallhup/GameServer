@@ -337,3 +337,13 @@ void Bullet::BulletUpdate()
 	else if (b_type == 2)
 		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
 }
+
+void Bullet::SetPosition(glm::vec3 startPos)
+{
+	position = startPos;
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, position);
+
+	model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+}

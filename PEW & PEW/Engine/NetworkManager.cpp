@@ -232,7 +232,6 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 			}
 			else
 			{
-				cout << "[ADD PACKET RECEIVED]" << '\n';
 				int ownerID = addPacket.ownerId;
 				Character* character = graphics->GetCharacter(ownerID);
 				if (character) {
@@ -272,10 +271,10 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 					}
 				}
 
-				if (bulletFound) {
+				/*if (bulletFound) {
 					std::cout << "[MOVE BULLET] ID: " << movePacket.id
 						<< " to (" << movePacket.x << ", " << movePacket.y << ", " << movePacket.z << ")" << std::endl;
-				}
+				}*/
 			}
 		}
 		break;

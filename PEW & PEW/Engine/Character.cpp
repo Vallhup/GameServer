@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Character.h"
+#include "Bullet.h"
 #include "ShadowMapping.h"
 #include "Camera.h"
 #include "BoundingBox.h"
@@ -138,7 +139,7 @@ int Character::CreateBulletFromServer(int bulletID, glm::vec3 startPos)
     // ºó ½½·Ô Ã£±â
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (!bullets[i].isActive) {
-            bullets[i].bullet = std::make_unique<Bullet>(1, playerID, bulletID);
+            bullets[i].bullet = new Bullet(1, 0, 0);
             bullets[i].bulletID = bulletID;
             bullets[i].isActive = true;
 
@@ -156,7 +157,7 @@ void Character::RemoveBulletFromServer(int bulletID)
 {
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].isActive && bullets[i].bulletID == bulletID) {
-            bullets[i].bullet.reset();
+            delete bullets[i].bullet;
             bullets[i].bulletID = -1;
             bullets[i].isActive = false;
 

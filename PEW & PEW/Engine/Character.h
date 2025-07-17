@@ -1,7 +1,7 @@
 #pragma once
 #include "AnimatedModel.h"
-#include "Bullet.h"
 
+class Bullet;
 class Camera;
 class BoundingBox;
 
@@ -108,7 +108,7 @@ private:
     static const int MAX_BULLETS = 10;  // 캐릭터당 최대 총알 수
 
     struct BulletSlot {
-        std::unique_ptr<Bullet> bullet;
+        Bullet* bullet;
         int bulletID;           // 네트워크 동기화용 ID
         bool isActive;
 
