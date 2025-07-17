@@ -60,6 +60,7 @@ void Character::Attack(float nowTime, Service* service)
 
 	if (seq.attackTimes.empty()) {
 		_attackSeq.reset();
+		service->BroadCast(PacketFactory::SCAttackEndPacket(*this));
 	}
 }
 
