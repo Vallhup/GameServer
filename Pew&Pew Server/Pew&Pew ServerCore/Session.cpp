@@ -258,7 +258,6 @@ void Session::HandleAttackEndPacket(const std::vector<char>& packet)
 
 	if (_character and end.type == CS_ATTACK_END) {
 		LOG_DBG("Session[%d] attack end", _id);
-		_character->ResetAttackSequence();
 		_service->BroadCast(PacketFactory::SCAttackEndPacket(*this));
 	}
 }
