@@ -63,7 +63,7 @@ bool Session::Recv()
 
 bool Session::Send(const std::vector<char>& data)
 {
-	LOG_DBG("Session[%d] Send", _id);
+	LOG_DBG("Session[%d] Send : %d", _id, data[1]);
 
 	if (data.empty() or _socket == INVALID_SOCKET or not _isConnected) {
 		return false;
