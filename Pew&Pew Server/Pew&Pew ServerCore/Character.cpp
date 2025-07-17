@@ -47,13 +47,15 @@ bool Character::Move(float deltaTime)
 
 void Character::Attack(float nowTime, Service* service)
 {
+	std::unique_lock lock{ _attackSeqMutex };
+
 	if (not _attackSeq.has_value() or not _isAlive) {
 		return;
 	}
 
 	auto& seq = _attackSeq.value();
 
-	while (nowTime >= seq.attackTimes.front()) {
+	while (not seq.attackTimes.empty() and nowTime >= seq.attackTimes.front()) {
 		service->AddProjectile(_id, seq.direction);
 		seq.attackTimes.erase(seq.attackTimes.begin());
 	}
@@ -97,6 +99,8 @@ void Character::SetInput(float angle, char direction, bool isRun)
 
 void Character::SetAttackSequence(float nowTime, const vec3& dir)
 {
+	std::unique_lock lock{ _attackSeqMutex };
+
 	if (_attackSeq.has_value()) {
 		return;
 	}

@@ -94,5 +94,6 @@ private:
 	bool _isAlive;
 
 	std::optional<AttackSequence> _attackSeq;
+	std::shared_mutex _attackSeqMutex;
 };
 
