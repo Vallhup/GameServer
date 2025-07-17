@@ -93,8 +93,6 @@ private:
 	int _hp;
 	bool _isAlive;
 
-	std::atomic<bool> _setSeq{ false };
-
 	std::optional<AttackSequence> _attackSeq;
 	std::shared_mutex _attackSeqMutex;
 };

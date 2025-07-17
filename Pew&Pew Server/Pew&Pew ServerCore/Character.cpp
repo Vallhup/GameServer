@@ -116,5 +116,4 @@ void Character::SetAttackSequence(float nowTime, const vec3& dir)
 		});
 
 	_attackSeq = AttackSequence{ dir, attackTimes };
-	_setSeq.store(true);
 }

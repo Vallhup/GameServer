@@ -5,7 +5,7 @@ class Character;
 
 class Projectile
 {
-	const float PROJECTILE_SPEED{ 0.5f };
+	const float PROJECTILE_SPEED{ 0.2f };
 
 public:
 	Projectile(int id, int ownerId, vec3 pos, vec3 dir, int dmg);
