@@ -239,7 +239,7 @@ void Session::HandleMovePacket(const std::vector<char>& packet)
 		LOG_DBG("Session[%d] move : %d / %d", _id, move.direction, move.isRun);					
 		_character->SetInput(move.angle, move.direction, move.isRun);
 
-		if (not _character->IsMove()) {
+		if (move.direction < 0 or move.direction >= 8) {
 			_service->BroadCast(PacketFactory::SCMovePacket(*_character));
 		}
 	}
