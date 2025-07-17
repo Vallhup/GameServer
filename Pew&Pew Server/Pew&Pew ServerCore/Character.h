@@ -62,6 +62,7 @@ public:
 	
 	void SetInput(float angle, char direction, bool isRun);
 	void SetAttackSequence(float nowTime, const vec3& dir);
+	void ResetAttackSequence() { _attackSeq.reset(); }
 	void ResetAngleChange() { _angleChange = false; }
 
 private:
