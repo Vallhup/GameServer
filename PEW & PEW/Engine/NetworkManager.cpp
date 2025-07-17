@@ -232,6 +232,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 			}
 			else
 			{
+				cout << "[ADD PACKET RECEIVED]" << '\n';
 				int ownerID = addPacket.ownerId;
 				Character* character = graphics->GetCharacter(ownerID);
 				if (character) {
