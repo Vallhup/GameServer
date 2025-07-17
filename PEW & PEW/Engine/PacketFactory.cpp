@@ -24,3 +24,12 @@ std::vector<char> PacketFactory::CSAttackPacket(glm::vec3 direction)
 
 	return Serialize(attack);
 }
+
+std::vector<char> PacketFactory::CSAttackEndPacket()
+{
+	CS_ATTACK_END_PACKET attackEnd;
+	attackEnd.size = sizeof(attackEnd);
+	attackEnd.type = CS_ATTACK_END;
+
+	return Serialize(attackEnd);
+}

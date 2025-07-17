@@ -222,23 +222,23 @@ void Input::MouseFunc(GLFWwindow* window, int button, int action, int mods)
 		{
 			if (action == GLFW_PRESS)
 			{
-				input->mainCat->SetFiring(true);
+				input->SendAttackPacket();
 			}
 			else if (action == GLFW_RELEASE)
 			{
-				input->mainCat->SetFiring(false);
+				input->SendAttackEndPacket();
 			}
 		}
 		break;
 	}
 
 	// 수정필요
-	if (input->mainCat->GetFiring() && input->mainCat->GetAnimLibrary()->GetCurrentAnimation() == "Run")
+	/*if (input->mainCat->GetFiring() && input->mainCat->GetAnimLibrary()->GetCurrentAnimation() == "Run")
 		input->mainCat->GetAnimLibrary()->ChangeAnimation("FireRun", *input->mainCat->GetCurrentAnim());
 	else if (input->mainCat->GetFiring() && input->mainCat->GetAnimLibrary()->GetCurrentAnimation() == "Walk")
 		input->mainCat->GetAnimLibrary()->ChangeAnimation("FireWalk", *input->mainCat->GetCurrentAnim());
 	else if (input->mainCat->GetFiring() && input->mainCat->GetAnimLibrary()->GetCurrentAnimation() == "Idle")
-		input->mainCat->GetAnimLibrary()->ChangeAnimation("Fire", *input->mainCat->GetCurrentAnim());
+		input->mainCat->GetAnimLibrary()->ChangeAnimation("Fire", *input->mainCat->GetCurrentAnim());*/
 }
 
 void Input::MouseMoveFunc(GLFWwindow* window, double xpos, double ypos)
@@ -406,5 +406,13 @@ void Input::SendAttackPacket()
 	glm::vec3 direction = glm::normalize(targetPos - position);
 
 	vector<char> packet = PacketFactory::CSAttackPacket(direction);
+	network->Send(packet);
+}
+
+void Input::SendAttackEndPacket()
+{
+	if (!network) return;
+
+	vector<char> packet = PacketFactory::CSAttackEndPacket();
 	network->Send(packet);
 }

@@ -19,6 +19,7 @@ public:
 	char GetCurrentDirection();
 	void SendMovePacket();
 	void SendAttackPacket();
+	void SendAttackEndPacket();
 
 	void SetCamera(Camera* cam) { camera = cam; }
 	void SetMainCharacter(Character* cat) { mainCat = cat; }

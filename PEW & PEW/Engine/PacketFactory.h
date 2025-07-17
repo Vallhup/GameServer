@@ -6,6 +6,7 @@ public:
 	// Client -> Server
 	static std::vector<char> CSMovePacket(float angle, char direction, bool run = false);
 	static std::vector<char> CSAttackPacket(glm::vec3 direction);
+	static std::vector<char> CSAttackEndPacket();
 
 public:
 	template<typename Packet>

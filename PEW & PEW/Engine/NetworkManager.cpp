@@ -304,6 +304,19 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		}
 		break;
 	}
+	case SC_ATTACK_END:
+	{
+		SC_ATTACK_END_PACKET attackEndPacket = PacketFactory::Deserialize<SC_ATTACK_END_PACKET>(packet);
+
+		if (graphics) {
+			Character* character = graphics->GetCharacter(attackEndPacket.id);
+			if (character) {
+				std::cout << "[ATTACKEND] Player ID: " << attackEndPacket.id << std::endl;
+				character->SetFiring(false);
+			}
+		}
+		break;
+	}
 	default:
 		std::cout << "[UNKNOWN PACKET] Type: " << (int)packetType << std::endl;
 		break;
