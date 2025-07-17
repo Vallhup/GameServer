@@ -76,7 +76,7 @@ public:
 	
 	void SetInput(float angle, char direction, bool isRun);
 	void SetAttackSequence(float nowTime, const vec3& dir);
-	void ResetAttackSequence() { _attackSeq.reset(); }
+	void ResetAttackSequence() { std::unique_lock lock{ _attackSeqMutex }; _attackSeq.reset(); }
 	void ResetAngleChange() { _angleChange = false; }
 
 private:
@@ -92,6 +92,8 @@ private:
 
 	int _hp;
 	bool _isAlive;
+
+	std::atomic<bool> _setSeq{ false };
 
 	std::optional<AttackSequence> _attackSeq;
 	std::shared_mutex _attackSeqMutex;

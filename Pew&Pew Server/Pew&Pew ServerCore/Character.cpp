@@ -58,6 +58,7 @@ void Character::Attack(float nowTime, Service* service)
 	while (not seq.attackTimes.empty() and nowTime >= seq.attackTimes.front()) {
 		service->AddProjectile(_id, seq.direction);
 		seq.attackTimes.erase(seq.attackTimes.begin());
+		break;
 	}
 
 	if (seq.attackTimes.empty()) {
@@ -88,7 +89,7 @@ std::pair<vec3, vec3> Character::GetCollisionBox() const
 
 void Character::SetInput(float angle, char direction, bool isRun)
 {
-	if (_angle != angle) {
+	if (_angle != angle) {	
 		_angle = angle;
 		_angleChange = true;
 	}
@@ -106,7 +107,7 @@ void Character::SetAttackSequence(float nowTime, const vec3& dir)
 	}
 
 	std::vector<float> attackTimes;
-	attackTimes.reserve(NUMBER_OF_ATTACK);
+	attackTimes.resize(NUMBER_OF_ATTACK);
 
 	std::generate_n(attackTimes.begin(), NUMBER_OF_ATTACK,
 		[n = 0, &nowTime, this]() mutable
@@ -115,4 +116,5 @@ void Character::SetAttackSequence(float nowTime, const vec3& dir)
 		});
 
 	_attackSeq = AttackSequence{ dir, attackTimes };
+	_setSeq.store(true);
 }
