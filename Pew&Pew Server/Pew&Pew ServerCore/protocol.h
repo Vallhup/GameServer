@@ -5,6 +5,7 @@ constexpr short PORT_NUM{ 9000 };
 enum PacketType : char {
 	CS_MOVE,
 	CS_ATTACK,
+	CS_ATTACK_END,
 
 	SC_MOVE_OBJECT,
 	SC_ADD,
@@ -41,6 +42,11 @@ struct CS_ATTACK_PACKET {
 	float x;
 	float y;
 	float z;
+};
+
+struct CS_ATTACK_END_PACKET {
+	unsigned char size;
+	char type;
 };
 
 struct SC_MOVE_PACKET {

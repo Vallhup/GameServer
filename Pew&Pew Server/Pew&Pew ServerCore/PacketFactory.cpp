@@ -133,12 +133,12 @@ std::vector<char> PacketFactory::SCAttackPacket(const Session& session)
 	return Serialize(attack);
 }
 
-std::vector<char> PacketFactory::SCAttackEndPacket(const Character& character)
+std::vector<char> PacketFactory::SCAttackEndPacket(const Session& session)
 {
 	SC_ATTACK_END_PACKET end;
 	end.size = sizeof(end);
 	end.type = SC_ATTACK;
-	end.id = character.GetId();
+	end.id = session.GetId();
 
 	return Serialize(end);
 }

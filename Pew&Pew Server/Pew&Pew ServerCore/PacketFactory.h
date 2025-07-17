@@ -17,7 +17,7 @@ public:
 	static std::vector<char> SCRemovePacket(const Projectile& projectile);
 	static std::vector<char> SCStatUpdatePacket(const Character& character);
 	static std::vector<char> SCAttackPacket(const Session& session);
-	static std::vector<char> SCAttackEndPacket(const Character& character);
+	static std::vector<char> SCAttackEndPacket(const Session& session);
 
 public:
 	template<typename Packet>

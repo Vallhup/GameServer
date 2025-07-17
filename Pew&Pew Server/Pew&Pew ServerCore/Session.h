@@ -31,6 +31,7 @@ public:
 private:
 	void HandleMovePacket(const std::vector<char>& packet);
 	void HandleAttackPacket(const std::vector<char>& packet);
+	void HandleAttackEndPacket(const std::vector<char>& packet);
 
 private:
 	int _id;

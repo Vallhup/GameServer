@@ -221,6 +221,10 @@ void Session::HandlePacket(const std::vector<char>& packet)
 		HandleAttackPacket(packet);
 		break;
 
+	case CS_ATTACK_END:
+		HandleAttackEndPacket(packet);
+		break;
+
 	default:
 		LOG_WRN("Unknown Packet Type : %d", packetType);
 		break;
@@ -239,12 +243,21 @@ void Session::HandleMovePacket(const std::vector<char>& packet)
 
 void Session::HandleAttackPacket(const std::vector<char>& packet)
 {
-	// 1. Packet ÆÄ½Ì
 	auto attack = PacketFactory::Deserialize<CS_ATTACK_PACKET>(packet);
 
 	if (_character) {
 		LOG_DBG("Session[%d] attack", _id);
 		_character->SetAttackSequence(GetNowTime(), vec3{ attack.x, attack.y, attack.z });
 		_service->BroadCast(PacketFactory::SCAttackPacket(*this));
+	}
+}
+
+void Session::HandleAttackEndPacket(const std::vector<char>& packet)
+{
+	auto end = PacketFactory::Deserialize<CS_ATTACK_END_PACKET>(packet);
+
+	if (_character) {
+		LOG_DBG("Session[%d] attack", _id);
+		_service->BroadCast(PacketFactory::SCAttackEndPacket(*this));
 	}
 }
