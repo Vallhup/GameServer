@@ -76,6 +76,11 @@ void Character::TakeDamage(int damage)
 	}
 }
 
+std::pair<vec3, vec3> Character::GetCollisionRange() const
+{
+	return std::pair<vec3, vec3>();
+}
+
 void Character::SetInput(float angle, char direction, bool isRun)
 {
 	if (_angle != angle) {

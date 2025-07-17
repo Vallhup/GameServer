@@ -35,6 +35,7 @@ std::vector<char> PacketFactory::SCMovePacket(const Character& character)
 	move.y = charPos.y;
 	move.z = charPos.z;
 
+	move.isMove = character.IsMove();
 	move.isRun = character.GetRun();
 
 	return Serialize(move);

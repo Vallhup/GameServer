@@ -30,9 +30,7 @@ void Projectile::Update(float deltaTime, Service* service)
 
 bool Projectile::CheckCollision(const Character& character) const
 {
-	vec3 charPos = character.GetPosition();
-	vec3 deltaPos = _pos - charPos;
+	auto [charMin, charMax] = character.GetCollisionRange();
 
-	// 오랜만에 수학할라니까 머리 깨지겠다...
-	// 대충 충돌체크 한다는 코드...
+	
 }

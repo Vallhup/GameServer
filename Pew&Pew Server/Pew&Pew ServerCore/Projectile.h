@@ -17,6 +17,7 @@ public:
 	int GetId() const { return _id; }
 	int GetOwnerId() const { return _ownerId; }
 	vec3 GetPosition() const { return _pos; }
+	int GetDamage() const { return _damage; }
 
 private:
 	int _id;
