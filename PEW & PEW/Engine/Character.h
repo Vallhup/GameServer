@@ -16,9 +16,9 @@ public:
     void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap);
     void DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShaderProgram);
 
-    int CreateBulletFromServer(int bulletID, glm::vec3 startPos);
+    void CreateBulletFromServer(int bulletID, glm::vec3 startPos);
     bool UpdateBulletFromServer(int bulletID, glm::vec3 newPos);
-    void RemoveBulletFromServer(int bulletID);
+    bool RemoveBulletFromServer(int bulletID);
     void RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap);
     void RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
 
@@ -105,7 +105,7 @@ private:
     bool firing_induration = false;
     bool Bullet_cnt[3] = { false, false, false };
 
-    static const int MAX_BULLETS = 10;  // 캐릭터당 최대 총알 수
+    static const int MAX_BULLETS = 15;  // 캐릭터당 최대 총알 수
 
     struct BulletSlot {
         Bullet* bullet;

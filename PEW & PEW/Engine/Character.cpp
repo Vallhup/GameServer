@@ -134,7 +134,7 @@ void Character::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader
     glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-int Character::CreateBulletFromServer(int bulletID, glm::vec3 startPos)
+void Character::CreateBulletFromServer(int bulletID, glm::vec3 startPos)
 {
     // ºó ½½·Ô Ã£±â
     for (int i = 0; i < MAX_BULLETS; ++i) {
@@ -148,24 +148,27 @@ int Character::CreateBulletFromServer(int bulletID, glm::vec3 startPos)
 
             std::cout << "[CREATE BULLET FROM SERVER] Player: " << playerID
                 << ", Bullet ID: " << bulletID << ", Slot: " << i << std::endl;
-            return i;
+            return;
         }
     }
 }
 
-void Character::RemoveBulletFromServer(int bulletID)
+bool Character::RemoveBulletFromServer(int bulletID)
 {
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].isActive && bullets[i].bulletID == bulletID) {
             delete bullets[i].bullet;
+            bullets[i].bullet = nullptr;
             bullets[i].bulletID = -1;
             bullets[i].isActive = false;
 
             std::cout << "[REMOVE BULLET FROM SERVER] Player: " << playerID
                 << ", Bullet ID: " << bulletID << ", Slot: " << i << std::endl;
-            return;
+            return true;
         }
     }
+
+    return false;
 }
 
 bool Character::UpdateBulletFromServer(int bulletID, glm::vec3 newPos)

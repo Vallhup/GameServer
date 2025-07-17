@@ -284,7 +284,21 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		SC_REMOVE_PACKET removePacket = PacketFactory::Deserialize<SC_REMOVE_PACKET>(packet);
 
 		if (graphics) {
-			graphics->RemoveCharacter(removePacket.id);
+			if (removePacket.id < 64) {
+				graphics->RemoveCharacter(removePacket.id);
+			}
+			else
+			{
+				bool bulletFound = false;
+
+				// 모든 캐릭터를 순회하면서 해당 총알 ID 찾기
+				for (auto& [id, character] : graphics->GetAllCharacters()) {
+					if (character->RemoveBulletFromServer(removePacket.id)) {
+						bulletFound = true;
+						break;
+					}
+				}
+			}
 		}
 
 		std::cout << "[REMOVE PLAYER] ID: " << removePacket.id << std::endl;
