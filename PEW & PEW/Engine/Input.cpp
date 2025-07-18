@@ -286,22 +286,24 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 
 	bool isMousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
+	std::string currentAnim = mainCat->GetAnimLibrary()->GetCurrentAnimation();
+	bool isFireAnim = (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun");
+
 	if (isMousePressed && camera->Get_start_pos() == 0 && !mainCat->GetDying())
 	{
 		if (!isAttacking)
 		{
-			// 첫 공격 시작
-			isAttacking = true;
-			SendAttackPacket();
-			firstAttackSent = true;
-			cout << "first attack packet has send" << '\n';
+			if (!isFireAnim)
+			{
+				// 첫 공격 시작
+				isAttacking = true;
+				SendAttackPacket();
+				firstAttackSent = true;
+				cout << "first attack packet has send" << '\n';
+			}
 		}
 		else
 		{
-			// 연속 공격 체크 로직
-			std::string currentAnim = mainCat->GetAnimLibrary()->GetCurrentAnimation();
-			bool isFireAnim = (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun");
-
 			if (isFireAnim)
 			{
 				AnimInfo* currentAnimInfo = mainCat->GetCurrentAnim();
