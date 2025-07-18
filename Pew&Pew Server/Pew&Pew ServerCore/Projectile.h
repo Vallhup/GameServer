@@ -5,10 +5,12 @@ class Character;
 
 class Projectile
 {
+	const float FORWARD_OFFSET{ 0.4f };
+	const float RIGHT_OFFSET{ 0.1f };
 	const float PROJECTILE_SPEED{ 15.0f };
 
 public:
-	Projectile(int id, int ownerId, vec3 pos, vec3 dir, int dmg);
+	Projectile(int id, int ownerId, vec3 charPos, vec3 dir, int dmg);
 
 public:
 	void Update(float deltaTime, Service* service);

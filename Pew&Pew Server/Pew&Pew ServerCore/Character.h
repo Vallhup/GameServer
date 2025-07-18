@@ -37,7 +37,23 @@ struct vec3 {
 	float DistanceSq(const vec3& other) const
 	{
 		vec3 deltaVec = *this - other;
-		return pow(deltaVec.x, 2) + pow(deltaVec.y, 2) + pow(deltaVec.z, 2);
+		return powf(deltaVec.x, 2) + powf(deltaVec.y, 2) + powf(deltaVec.z, 2);
+	}
+
+	vec3 Cross(const vec3& other) const
+	{
+		return {
+			y * other.z - z * other.y,
+			z * other.x - x * other.z,
+			x * other.y - y * other.x
+		};
+	}
+
+	vec3 Normalize() const
+	{
+		float len = sqrtf(powf(x, 2) + powf(y, 2) + powf(z, 2));
+		if (len == 0) return { 0, 0, 0 };
+		return *this / len;
 	}
 };
 
@@ -76,7 +92,7 @@ public:
 	
 	void SetInput(float angle, char direction, bool isRun);
 	void SetAttackSequence(float nowTime, const vec3& dir);
-	void ResetAttackSequence() { std::unique_lock lock{ _attackSeqMutex }; _attackSeq.reset(); }
+	void ResetAttackSequence() { std::lock_guard lock{ _attackSeqMutex }; _attackSeq.reset(); }
 	void ResetAngleChange() { _angleChange = false; }
 
 private:
@@ -94,6 +110,6 @@ private:
 	bool _isAlive;
 
 	std::optional<AttackSequence> _attackSeq;
-	std::shared_mutex _attackSeqMutex;
+	std::mutex _attackSeqMutex;
 };
 

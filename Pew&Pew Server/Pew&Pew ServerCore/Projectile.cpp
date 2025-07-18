@@ -1,9 +1,14 @@
 #include "pch.h"
 #include "Projectile.h"
 
-Projectile::Projectile(int id, int ownerId, vec3 pos, vec3 dir, int dmg)
-	: _id(id), _ownerId(ownerId), _pos(pos), _damage(dmg)
+Projectile::Projectile(int id, int ownerId, vec3 charPos, vec3 dir, int dmg)
+	: _id(id), _ownerId(ownerId), _damage(dmg)
 {
+	//const vec3 WORLD_UP_VECTOR{ 0, 1, 0 };
+
+	_pos = charPos + (dir * FORWARD_OFFSET);
+	_pos.y = 0.45f;
+
 	_speed = PROJECTILE_SPEED;
 
 	_lifeTime = 0.0f;

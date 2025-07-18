@@ -22,10 +22,7 @@ void CollisionManager::Update(const std::vector<std::shared_ptr<Projectile>>& pr
 			if (projectile->CheckCollision(*character)) {
 				character->TakeDamage(projectile->GetDamage());
 				projectile->SetIntactive(service);
-				std::cout << "Collapsed!!" << '\n';
 				break;
-				
-				// projectile »èÁ¦
 			}
 		}
 	}

@@ -137,10 +137,7 @@ void Service::AddProjectile(int sessionId, vec3 direction)
 	}
 
 	int projId = _nextProjectileId++;
-	vec3 charPos = character->GetPosition();
-	charPos.y = 0.45f;
-
-	std::shared_ptr<Projectile> projectile = std::make_shared<Projectile>(projId, sessionId, charPos, direction, 10);
+	std::shared_ptr<Projectile> projectile = std::make_shared<Projectile>(projId, sessionId, character->GetPosition(), direction, 10);
 	{
 		std::unique_lock lock{ _projectileMutex };
 		_projectiles.insert(std::make_pair(projId, projectile));

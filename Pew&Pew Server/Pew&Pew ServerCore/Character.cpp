@@ -47,7 +47,7 @@ bool Character::Move(float deltaTime)
 
 void Character::Attack(float nowTime, Service* service)
 {
-	std::unique_lock lock{ _attackSeqMutex };
+	std::lock_guard lock{ _attackSeqMutex };
 
 	if (not _attackSeq.has_value() or not _isAlive) {
 		return;
@@ -58,7 +58,6 @@ void Character::Attack(float nowTime, Service* service)
 	while (not seq.attackTimes.empty() and nowTime >= seq.attackTimes.front()) {
 		service->AddProjectile(_id, seq.direction);
 		seq.attackTimes.erase(seq.attackTimes.begin());
-		break;
 	}
 
 	if (seq.attackTimes.empty()) {
@@ -100,7 +99,21 @@ void Character::SetInput(float angle, char direction, bool isRun)
 
 void Character::SetAttackSequence(float nowTime, const vec3& dir)
 {
-	std::unique_lock lock{ _attackSeqMutex };
+	float attackOffset =
+		_isRun	 ? 0.43f :
+		IsMove() ? 0.56f :
+				   0.45f;
+
+	// 대충 이런식으로 Branch Less로 설계할 수도 있다네요
+	// 지금은 굳이?
+	//int isRun = static_cast<int>(_isRun);
+	//int isMove = static_cast<int>(IsMove());
+
+	//float attackOffset = 0.43f * isRun
+	//	+ 0.56f * (!isRun && isMove)
+	//	+ 0.45f * (!isRun && !isMove);
+
+	std::lock_guard lock{ _attackSeqMutex };	
 
 	if (_attackSeq.has_value()) {
 		return;
@@ -110,9 +123,9 @@ void Character::SetAttackSequence(float nowTime, const vec3& dir)
 	attackTimes.resize(NUMBER_OF_ATTACK);
 
 	std::generate_n(attackTimes.begin(), NUMBER_OF_ATTACK,
-		[n = 0, &nowTime, this]() mutable
+		[n = 0, &nowTime, &attackOffset, this]() mutable
 		{
-			return nowTime + 0.56f + (n++) * INTERVAL_OF_ATTACK;
+			return nowTime + attackOffset + (n++) * INTERVAL_OF_ATTACK;
 		});
 
 	_attackSeq = AttackSequence{ dir, attackTimes };
