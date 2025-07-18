@@ -301,6 +301,19 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 				firstAttackSent = true;
 				cout << "first attack packet has send" << '\n';
 			}
+			else
+			{
+				AnimInfo* currentAnimInfo = mainCat->GetCurrentAnim();
+
+				if (currentAnimInfo->CurrentTime + 50.0f >= currentAnimInfo->Duration)
+				{
+					// 첫 공격 시작
+					isAttacking = true;
+					SendAttackPacket();
+					firstAttackSent = true;
+					cout << "first attack packet has send" << '\n';
+				}
+			}
 		}
 		else
 		{
