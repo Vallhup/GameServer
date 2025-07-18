@@ -306,7 +306,7 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 			{
 				AnimInfo* currentAnimInfo = mainCat->GetCurrentAnim();
 
-				if (currentAnimInfo->CurrentTime + 10.0f >= currentAnimInfo->Duration)
+				if (currentAnimInfo->CurrentTime + 50.0f >= currentAnimInfo->Duration)
 				{
 					if (!wasFireAnimation)
 					{
