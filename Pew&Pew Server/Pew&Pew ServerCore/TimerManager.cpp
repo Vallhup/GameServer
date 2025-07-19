@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "TimerManager.h"
 
-TimerManager::TimerManager(int intervalMs) : _intervalMs(intervalMs), _running(false)
+TimerManager::TimerManager() : _running(false)
 {
 }
 
@@ -10,9 +10,9 @@ TimerManager::~TimerManager()
 	Stop();
 }
 
-void TimerManager::Register(const std::function<void(float)>& tickFunc)
+void TimerManager::Register(const std::function<void(float)>& func, float intervalMs)
 {
-	_tickFuncs.push_back(tickFunc);
+	_tasks.emplace_back(func, intervalMs, 0);
 }
 
 void TimerManager::Start()
@@ -39,11 +39,13 @@ void TimerManager::Run()
 		float delta = duration<float>(now - prev).count();
 		prev = now;
 
-		for (auto& func : _tickFuncs) {
-			func(delta);
+		for (auto& task : _tasks) {
+			task.elapsed += delta * 1000.0f;
+			if (task.elapsed >= task.intervalMs) {
+				task.func(task.elapsed / 1000.0f);
+				task.elapsed = 0;
+			}
 		}
-
-		std::this_thread::sleep_for(milliseconds(_intervalMs));
 	}
 }
 

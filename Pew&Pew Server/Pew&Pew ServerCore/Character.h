@@ -85,12 +85,14 @@ public:
 	float GetAngle() const { return _angle; }
 	bool GetAngleChange() const { return _angleChange; }
 	vec3 GetPosition() const { return _pos; }
+	bool GetDirtyFlag() const { return _dirtyFlag; }
 	bool IsAlive() const { return _isAlive; }
 	bool IsMove() const { return _direction >= 0 and _direction < 8; }
 
 	std::pair<vec3, vec3> GetCollisionBox() const;
 	
 	void SetInput(float angle, char direction, bool isRun);
+	void SetDirtyFlag(bool flag) { _dirtyFlag = flag; }
 	void SetAttackSequence(float nowTime, const vec3& dir);
 	void ResetAttackSequence() { std::lock_guard lock{ _attackSeqMutex }; _attackSeq.reset(); }
 	void ResetAngleChange() { _angleChange = false; }
@@ -106,10 +108,11 @@ private:
 	float _angle;
 	bool _angleChange;
 
+	bool _dirtyFlag;
+
 	int _hp;
 	bool _isAlive;
 
 	std::optional<AttackSequence> _attackSeq;
 	std::mutex _attackSeqMutex;
 };
-

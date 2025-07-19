@@ -23,8 +23,6 @@ public:
 	void Run();
 	void Stop();
 
-	void Tick(float deltaTime);
-
 	void AddProjectile(int sessionId, vec3 direction);
 	void RemoveProjectile(int projId);
 
@@ -35,6 +33,13 @@ private:
 
 	void AcceptSession();
 	void CloseSession(int id);
+
+	void LogicTick(float deltaTime);
+	void NetworkTick(float deltaTime);
+
+	void UpdateCharacters(float deltaTime);
+	void UpdateProjectiles(float deltaTime);
+	void CheckCollisions();
 
 private:
 	std::shared_ptr<Listener> _listener;

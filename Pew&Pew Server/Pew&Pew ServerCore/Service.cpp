@@ -26,7 +26,8 @@ bool Service::Init()
 		_collisionManager = std::make_shared<CollisionManager>();
 	}
 
-	_timerManager->Register([this](float delta) { this->Tick(delta); });
+	_timerManager->Register([this](float delta) { this->LogicTick(delta); }, 4.16f);
+	_timerManager->Register([this](float delta) { this->NetworkTick(delta); }, 16.66f);
 
 	return true;
 }
@@ -90,7 +91,14 @@ void Service::Stop()
 	_timerManager->Stop();
 }
 
-void Service::Tick(float deltaTime)
+void Service::LogicTick(float deltaTime)
+{
+	UpdateCharacters(deltaTime);
+	UpdateProjectiles(deltaTime);
+	CheckCollisions();
+}
+
+void Service::NetworkTick(float deltaTime)
 {
 	std::vector<std::shared_ptr<Character>> characters;
 	characters.reserve(64 - _reusableSessionIds.size());
@@ -102,17 +110,14 @@ void Service::Tick(float deltaTime)
 	}
 
 	for (auto& character : characters) {
-		bool moved = character->Move(deltaTime);
-		if (moved or character->GetAngleChange()) {
+		if (character->GetDirtyFlag()) {
 			BroadCast(PacketFactory::SCMovePacket(*character));
-			character->ResetAngleChange();
+			character->SetDirtyFlag(false);
 		}
-
-		character->Attack(GetNowTime(), this);
 	}
 
 	std::vector<std::shared_ptr<Projectile>> projectiles;
-	projectiles.reserve(characters.size() * 3);
+	projectiles.reserve(_characters.size() * 3);
 	{
 		std::shared_lock lock{ _projectileMutex };
 		for (auto& [id, projectile] : _projectiles) {
@@ -121,8 +126,70 @@ void Service::Tick(float deltaTime)
 	}
 
 	for (auto& projectile : projectiles) {
-		projectile->Update(deltaTime, this);
-		BroadCast(PacketFactory::SCMovePacket(*projectile));
+		if (projectile->GetDirtyFlag()) {
+			BroadCast(PacketFactory::SCMovePacket(*projectile));
+			projectile->SetDirtyFlag(false);
+		}
+	}
+}
+
+void Service::UpdateCharacters(float deltaTime)
+{
+	std::vector<std::shared_ptr<Character>> characters;
+	characters.reserve(64 - _reusableSessionIds.size());
+	{
+		std::shared_lock lock{ _characterMutex };
+		for (auto& [id, character] : _characters) {
+			characters.push_back(character);
+		}
+	}
+
+	for (auto& character : characters) {
+		if (character->Move(deltaTime) or character->GetAngleChange()) {
+			character->SetDirtyFlag(true);
+			character->ResetAngleChange();
+		}
+
+		character->Attack(GetNowTime(), this);
+	}
+}
+
+void Service::UpdateProjectiles(float deltaTime)
+{
+	std::vector<std::shared_ptr<Projectile>> projectiles;
+	projectiles.reserve(_characters.size() * 3);
+	{
+		std::shared_lock lock{ _projectileMutex };
+		for (auto& [id, projectile] : _projectiles) {
+			projectiles.push_back(projectile);
+		}
+	}
+
+	for (auto& projectile : projectiles) {
+		if (projectile->Update(deltaTime, this)) {
+			projectile->SetDirtyFlag(true);
+		}
+	}
+}
+
+void Service::CheckCollisions()
+{
+	std::vector<std::shared_ptr<Character>> characters;
+	characters.reserve(64 - _reusableSessionIds.size());
+	{
+		std::shared_lock lock{ _characterMutex };
+		for (auto& [id, character] : _characters) {
+			characters.push_back(character);
+		}
+	}
+
+	std::vector<std::shared_ptr<Projectile>> projectiles;
+	projectiles.reserve(_characters.size() * 3);
+	{
+		std::shared_lock lock{ _projectileMutex };
+		for (auto& [id, projectile] : _projectiles) {
+			projectiles.push_back(projectile);
+		}
 	}
 
 	_collisionManager->Update(projectiles, characters, this);

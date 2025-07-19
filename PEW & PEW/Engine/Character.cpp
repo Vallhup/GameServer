@@ -146,8 +146,8 @@ void Character::CreateBulletFromServer(int bulletID, glm::vec3 startPos)
             // 서버에서 받은 위치와 방향으로 설정
             bullets[i].bullet->SetPosition(startPos);
 
-            std::cout << "[CREATE BULLET FROM SERVER] Player: " << playerID
-                << ", Bullet ID: " << bulletID << ", Slot: " << i << std::endl;
+            /*std::cout << "[CREATE BULLET FROM SERVER] Player: " << playerID
+                << ", Bullet ID: " << bulletID << ", Slot: " << i << std::endl;*/
             return;
         }
     }
@@ -162,8 +162,8 @@ bool Character::RemoveBulletFromServer(int bulletID)
             bullets[i].bulletID = -1;
             bullets[i].isActive = false;
 
-            std::cout << "[REMOVE BULLET FROM SERVER] Player: " << playerID
-                << ", Bullet ID: " << bulletID << ", Slot: " << i << std::endl;
+            /*std::cout << "[REMOVE BULLET FROM SERVER] Player: " << playerID
+                << ", Bullet ID: " << bulletID << ", Slot: " << i << std::endl;*/
             return true;
         }
     }

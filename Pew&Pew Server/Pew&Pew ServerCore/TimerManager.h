@@ -2,11 +2,17 @@
 
 class TimerManager
 {
+	struct TimerTask {
+		std::function<void(float)> func;
+		float intervalMs;
+		float elapsed;
+	};
+
 public:
-	TimerManager(int intervalMs = 4);
+	TimerManager();
 	~TimerManager();
 
-	void Register(const std::function<void(float)>& tickFunc);
+	void Register(const std::function<void(float)>& func, float intervalMs = 4.0f);
 	void Start();
 	void Stop();
 
@@ -14,10 +20,9 @@ private:
 	void Run();
 
 private:
-	int _intervalMs;
 	std::atomic<bool> _running;
 	//concurrency::concurrent_vector<std::function<void(float)>> _tickFuncs;
-	std::vector<std::function<void(float)>> _tickFuncs;
+	std::vector<TimerTask> _tasks;
 	std::thread _thread;
 };
 

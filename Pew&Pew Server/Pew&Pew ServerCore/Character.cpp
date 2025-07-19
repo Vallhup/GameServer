@@ -7,6 +7,8 @@ Character::Character(int id, const std::string& name) : _id(id), _name(name)
 	_angle = 0.0f;
 	_angleChange = false;
 
+	_dirtyFlag = false;
+
 	_hp = 100;
 	_isAlive = true;
 }
@@ -25,7 +27,7 @@ bool Character::Move(float deltaTime)
 		{ 0.0f, 0.0f,  1.0f },
 		{ -1.0f, 0.0f, 0.0f },
 		{  1.0f, 0.0f, 0.0f },
-		{ -1.0f, 0.0f,  -1.0f },
+		{ -1.0f, 0.0f, -1.0f },
 		{ 1.0f, 0.0f,  -1.0f },
 		{ -1.0f, 0.0f,  1.0f },
 		{ 1.0f, 0.0f,  1.0f }

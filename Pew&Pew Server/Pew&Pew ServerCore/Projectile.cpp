@@ -22,13 +22,17 @@ Projectile::Projectile(int id, int ownerId, vec3 charPos, vec3 dir, int dmg)
 	_isActive = true;
 }
 
-void Projectile::Update(float deltaTime, Service* service)
+bool Projectile::Update(float deltaTime, Service* service)
 {
 	_pos += _moveVector * deltaTime;
 	_lifeTime += deltaTime;
+
 	if (_lifeTime > _maxLifeTime) {
 		SetIntactive(service);
+		return false;
 	}
+
+	return true;
 }
 
 bool Projectile::CheckCollision(const Character& character) const
