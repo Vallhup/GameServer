@@ -71,6 +71,9 @@ class Character
 	const float SIZE_Y{ 0.95f };
 	const float SIZE_Z{ 0.4f };
 
+	const int MAX_HP{ 100 };
+	const vec3 DEFAULT_POS{ -37.3051f, 0.0f, 42.5001f };
+
 public:
 	Character(int id, const std::string& name);
 
@@ -96,6 +99,10 @@ public:
 	void SetAttackSequence(float nowTime, const vec3& dir);
 	void ResetAttackSequence() { std::lock_guard lock{ _attackSeqMutex }; _attackSeq.reset(); }
 	void ResetAngleChange() { _angleChange = false; }
+
+private:
+	void Death();
+	void Revive();
 
 private:
 	int _id;

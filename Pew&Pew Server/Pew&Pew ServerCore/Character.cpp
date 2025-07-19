@@ -3,13 +3,13 @@
 
 Character::Character(int id, const std::string& name) : _id(id), _name(name)
 {
-	_pos = { -37.3051f, 0.0f, 42.5001f };
+	_pos = DEFAULT_POS;
 	_angle = 0.0f;
 	_angleChange = false;
 
 	_dirtyFlag = false;
 
-	_hp = 100;
+	_hp = MAX_HP;
 	_isAlive = true;
 }
 
@@ -75,8 +75,7 @@ void Character::TakeDamage(int damage)
 
 	_hp -= damage;
 	if (_hp < 0) {
-		_hp = 0;
-		_isAlive = false;
+		Death();
 	}
 }
 
@@ -132,3 +131,27 @@ void Character::SetAttackSequence(float nowTime, const vec3& dir)
 
 	_attackSeq = AttackSequence{ dir, attackTimes };
 }
+
+void Character::Death()
+{
+	_hp = 0;
+	_isAlive = false;
+
+	// TODO : Death Timer Register, Death Packet Send...
+}
+
+void Character::Revive()
+{
+	_pos = DEFAULT_POS;
+	_angle = 0.0f;
+	_angleChange = false;
+
+	_dirtyFlag = false;
+
+	_hp = MAX_HP;
+	_isAlive = true;
+
+	// TODO : Revive Packet Send
+}
+
+
