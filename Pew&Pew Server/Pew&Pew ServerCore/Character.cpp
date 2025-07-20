@@ -137,18 +137,15 @@ void Character::Death()
 	_hp = 0;
 	_isAlive = false;
 
+	_direction = -1;
+	_isRun = false;
+
 	if (auto service = _service.lock()) {
 		auto weakSelf = weak_from_this();
 		service->GetTimerManager()->RegisterOnce([weakSelf, service]()
 			{
-				LOG_INF("Timer lambda fired");
 				if (auto self = weakSelf.lock()) {
-					LOG_INF("Revive called!");
 					self->Revive();
-				}
-
-				else {
-					LOG_INF("Character already destroyed!");
 				}
 			});
 
@@ -167,6 +164,9 @@ void Character::Revive()
 
 	_hp = MAX_HP;
 	_isAlive = true;
+
+	_direction = -1;
+	_isRun = false;
 
 	if (auto service = _service.lock()) {
 		service->BroadCast(PacketFactory::SCRevivePacket(*this));
