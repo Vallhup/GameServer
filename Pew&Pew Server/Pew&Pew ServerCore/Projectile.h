@@ -7,7 +7,7 @@ class Projectile
 {
 	const float FORWARD_OFFSET{ 0.4f };
 	const float RIGHT_OFFSET{ 0.1f };
-	const float PROJECTILE_SPEED{ 15.0f };
+	const float PROJECTILE_SPEED{ 20.0f };
 
 public:
 	Projectile(int id, int ownerId, vec3 charPos, vec3 dir, int dmg);

@@ -45,7 +45,6 @@ public:
     bool IsMoving() const { return _Right || _Left || _Top || _Bottom; }
     bool Shift_value() const { return _Shift; }
     bool GetFiring() const { return firing; }
-    bool GetFiringInduration() const { return firing_induration; }
     bool GetDying() const { return dying; }
     bool GetRight() const { return _Right; }
     bool GetLeft() const { return _Left; }
@@ -55,13 +54,13 @@ public:
     float GetAngle() const { return angle; }
 
     // MainCharacter 기존 함수들 (로컬 플레이어만)
-    void ChangeCatAnimation(const glm::mat4& view, const glm::mat4& projection);
+    void ChangeCatAnimation();
     void SetAnimationType(const std::string& animName);
     AnimInfo* GetCurrentAnim() { return player_CurrentAnim; }
     AnimatedModel::AnimationLibrary* GetAnimLibrary() { return animLibrary; }
     void Setlife();
     void SetPosition() { if (isLocalPlayer) characterPos = glm::vec3{ -44.0f, 0.0f, -48.0f }; }
-    void SetDead(bool in) { if (isLocalPlayer) dead = in; }
+    void SetDead(bool in) { dead = in; }
     void SetFinishPos() { if (isLocalPlayer) characterPos = glm::vec3{ -5.0f, 0.0f, 5.0f }; }
 
 private:
@@ -102,7 +101,6 @@ private:
     float lastangle;
 
     bool firing = false;
-    bool firing_induration = false;
     bool Bullet_cnt[3] = { false, false, false };
 
     static const int MAX_BULLETS = 15;  // 캐릭터당 최대 총알 수

@@ -61,10 +61,6 @@ void GraphicsManager::Render(GLFWwindow* window)
 	glm::vec3 viewPos = camera->GetPosition(localChar->GetPosition());
 	glm::mat4 lightSpaceMatrix = shadowMap->GetLightSpaceMatrix();
 
-	for (auto& [id, character] : characters) {
-		character->ChangeCatAnimation(view, projection);
-	}
-
 	RenderShadow();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Normal Pass Ω√¿€

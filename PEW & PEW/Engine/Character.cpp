@@ -61,6 +61,7 @@ void Character::Update(float deltaTime)
     /*}*/
 
     UpdateAnimation();
+    ChangeCatAnimation();
 }
 
 void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
@@ -462,14 +463,12 @@ void Character::UpdateAnimation()
     }
 }
 
-void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& projection)
+void Character::ChangeCatAnimation()
 {
     if (!GetDying())
     {
         if (animLibrary->GetCurrentAnimation() == "FireRun")
         {
-            firing_induration = true;
-
             if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
             {
                 if (!firing)
@@ -483,7 +482,6 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
                     }
                     else
                         animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
-                    firing_induration = false;
                 }
                 else
                 {
@@ -497,15 +495,10 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
                     else
                         animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
                 }
-
-                for (bool& bullet_nums : Bullet_cnt)
-                    bullet_nums = false;
             }
         }
         else if (animLibrary->GetCurrentAnimation() == "FireWalk")
         {
-            firing_induration = true;
-
             if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
             {
                 if (!firing)
@@ -519,7 +512,6 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
                     }
                     else
                         animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
-                    firing_induration = false;
                 }
                 else
                 {
@@ -533,15 +525,10 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
                     else
                         animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
                 }
-
-                for (bool& bullet_nums : Bullet_cnt)
-                    bullet_nums = false;
             }
         }
         else if (animLibrary->GetCurrentAnimation() == "Fire")
         {
-            firing_induration = true;
-
             if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
             {
                 if (!firing)
@@ -555,7 +542,6 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
                     }
                     else
                         animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
-                    firing_induration = false;
                 }
                 else
                 {
@@ -569,9 +555,6 @@ void Character::ChangeCatAnimation(const glm::mat4& view, const glm::mat4& proje
                     else
                         animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
                 }
-
-                for (auto& bullet_nums : Bullet_cnt)
-                    bullet_nums = false;
             }
         }
         else if (animLibrary->GetCurrentAnimation() == "Die")

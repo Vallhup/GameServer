@@ -330,6 +330,18 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		}
 		break;
 	}
+	case SC_DEAD:
+	{
+		SC_DEAD_PACKET deadPacket = PacketFactory::Deserialize<SC_DEAD_PACKET>(packet);
+
+		if (graphics) {
+			Character* character = graphics->GetCharacter(deadPacket.id);
+			if (character) {
+				character->SetDead(true);
+			}
+		}
+		break;
+	}
 	default:
 		std::cout << "[UNKNOWN PACKET] Type: " << (int)packetType << std::endl;
 		break;

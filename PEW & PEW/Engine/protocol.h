@@ -12,6 +12,7 @@ enum PacketType : char {
 	SC_REMOVE,
 	SC_ATTACK,
 	SC_ATTACK_END,
+	SC_DEAD,
 	SC_STAT_UPDATE
 };
 
@@ -84,6 +85,12 @@ struct SC_ATTACK_PACKET {
 };
 
 struct SC_ATTACK_END_PACKET {
+	unsigned char size;
+	char type;
+	int id;
+};
+
+struct SC_DEAD_PACKET {
 	unsigned char size;
 	char type;
 	int id;
