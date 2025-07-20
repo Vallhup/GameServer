@@ -119,7 +119,7 @@ void Character::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader
 {
     model = glm::mat4(1.0f);
     model = glm::translate(model, characterPos);
-    if (!dying)
+    if (!dead)
         model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
     else
         model = glm::rotate(model, lastangle, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -404,6 +404,9 @@ void Character::CancelCatsFiring()
 
 void Character::UpdateAnimation()
 {
+    if (dead)
+        return;
+
     glm::vec3 velocity = targetPos - characterPos;
     float speed = glm::length(velocity);
 
@@ -465,7 +468,7 @@ void Character::UpdateAnimation()
 
 void Character::ChangeCatAnimation()
 {
-    if (!GetDying())
+    if (!dead)
     {
         if (animLibrary->GetCurrentAnimation() == "FireRun")
         {
@@ -564,11 +567,11 @@ void Character::ChangeCatAnimation()
     {
         if (animLibrary->GetCurrentAnimation() != "Die")
             animLibrary->ChangeAnimation("Die", *player_CurrentAnim);
-        else
+        /*else
         {
             if (player_CurrentAnim->CurrentTime + 10 >= player_CurrentAnim->Duration)
                 SetDead(true);
-        }
+        }*/
     }
 }
 
@@ -611,6 +614,11 @@ void Character::UpdateFromPacket(float ang, float x, float y, float z, char dire
     currentDirection = direction;
     isMoving = move;
     isRunning = run;
+}
+
+void Character::ReviveFromPacket(float x, float y, float z)
+{
+    characterPos = { x, y, z };
 }
 
 void Character::SetTargetPosition(float x, float y, float z)

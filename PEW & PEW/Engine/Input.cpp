@@ -27,14 +27,14 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			input->camera->SetStart(true);
 		break;
 	case GLFW_KEY_Q:
-		if ((!(input->camera->Get_start_pos() == 0) && !input->mainCat->GetDying())/* || finish*/)
+		if ((!(input->camera->Get_start_pos() == 0) && !input->mainCat->GetDead())/* || finish*/)
 		{
 			if (action == GLFW_PRESS)
 				glfwSetWindowShouldClose(window, GL_TRUE);
 		}
 		break;
 	case GLFW_KEY_LEFT_SHIFT:
-		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
 		{
 			if (action == GLFW_PRESS)
 			{
@@ -55,7 +55,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		}
 		break;
 	case GLFW_KEY_D:
-		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying()))
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead()))
 		{
 			if (action == GLFW_PRESS)
 			{
@@ -70,7 +70,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		}
 		break;
 	case GLFW_KEY_A:
-		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
 		{
 			if (action == GLFW_PRESS)
 			{
@@ -85,7 +85,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		}
 		break;
 	case GLFW_KEY_W:
-		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
 		{
 			if (action == GLFW_PRESS)
 			{
@@ -100,7 +100,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		}
 		break;
 	case GLFW_KEY_S:
-		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
 		{
 			if (action == GLFW_PRESS)
 			{
@@ -115,7 +115,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		}
 		break;
 	case GLFW_KEY_H:
-		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
 		{
 			if (action == GLFW_PRESS)
 			{
@@ -127,7 +127,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		}
 		break;
 	case GLFW_KEY_V:
-		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
 		{
 			if (action == GLFW_PRESS)
 			{
@@ -159,7 +159,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		//	}
 		//	break;
 	case GLFW_KEY_LEFT_ALT:
-		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying())/* || finish*/)
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
 		{
 			if (action == GLFW_PRESS)
 				input->camera->HandleAltKey(true);
@@ -218,7 +218,7 @@ void Input::MouseFunc(GLFWwindow* window, int button, int action, int mods)
 	switch (button)
 	{
 	case GLFW_MOUSE_BUTTON_LEFT:
-		if (input->camera->Get_start_pos() == 0 && !input->mainCat->GetDying() /*&& !finish*/)
+		if (input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead() /*&& !finish*/)
 		{
 			if (action == GLFW_PRESS)
 			{
@@ -249,7 +249,7 @@ void Input::MouseMoveFunc(GLFWwindow* window, double xpos, double ypos)
 
 	if (!input->mainCat) return;
 
-	if (input->camera->Get_start_pos() != 0 || input->mainCat->GetDying()) {
+	if (input->camera->Get_start_pos() != 0 || input->mainCat->GetDead()) {
 		return;
 	}
 
@@ -282,14 +282,14 @@ void Input::Update(GLFWwindow* window)
 
 void Input::CheckContinuousAttack(GLFWwindow* window)
 {
-	if (!mainCat) return;
+	if (!mainCat || mainCat->GetDead()) return;
 
 	bool isMousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
 	std::string currentAnim = mainCat->GetAnimLibrary()->GetCurrentAnimation();
 	bool isFireAnim = (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun");
 
-	if (isMousePressed && camera->Get_start_pos() == 0 && !mainCat->GetDying())
+	if (isMousePressed && camera->Get_start_pos() == 0)
 	{
 		if (!isAttacking)
 		{

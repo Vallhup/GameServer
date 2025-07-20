@@ -342,6 +342,19 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		}
 		break;
 	}
+	case SC_REVIVE:
+	{
+		SC_REVIVE_PACKET revivePacket = PacketFactory::Deserialize<SC_REVIVE_PACKET>(packet);
+
+		if (graphics) {
+			Character* character = graphics->GetCharacter(revivePacket.id);
+			if (character) {
+				character->SetDead(false);
+				character->ReviveFromPacket(revivePacket.x, revivePacket.y, revivePacket.z);
+			}
+		}
+		break;
+	}
 	default:
 		std::cout << "[UNKNOWN PACKET] Type: " << (int)packetType << std::endl;
 		break;

@@ -35,6 +35,7 @@ public:
 
     // 네트워크 업데이트 (원격 플레이어만)
     void UpdateFromPacket(float ang, float x, float y, float z, char direction = -1, bool move = false, bool run = false);
+    void ReviveFromPacket(float x, float y, float z);
     void SetTargetPosition(float x, float y, float z);
 
     // Getter
@@ -46,6 +47,7 @@ public:
     bool Shift_value() const { return _Shift; }
     bool GetFiring() const { return firing; }
     bool GetDying() const { return dying; }
+    bool GetDead() const { return dead; }
     bool GetRight() const { return _Right; }
     bool GetLeft() const { return _Left; }
     bool GetTop() const { return _Top; }
