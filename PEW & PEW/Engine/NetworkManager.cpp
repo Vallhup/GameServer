@@ -338,6 +338,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 			Character* character = graphics->GetCharacter(deadPacket.id);
 			if (character) {
 				character->SetDead(true);
+				cout << deadPacket.id << ": Dead!!" << '\n';
 			}
 		}
 		break;
@@ -351,6 +352,19 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 			if (character) {
 				character->SetDead(false);
 				character->ReviveFromPacket(revivePacket.x, revivePacket.y, revivePacket.z);
+				cout << revivePacket.id << ": Revived!!" << '\n';
+			}
+		}
+		break;
+	}
+	case SC_STAT_UPDATE:
+	{
+		SC_STAT_UPDATE_PACKET statPacket = PacketFactory::Deserialize<SC_STAT_UPDATE_PACKET>(packet);
+
+		if (graphics) {
+			Character* character = graphics->GetCharacter(statPacket.id);
+			if (character) {
+				character->DamagedFromPacket();
 			}
 		}
 		break;

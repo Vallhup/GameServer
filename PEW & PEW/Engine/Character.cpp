@@ -62,6 +62,7 @@ void Character::Update(float deltaTime)
 
     UpdateAnimation();
     ChangeCatAnimation();
+    UpdateHitDecision();
 }
 
 void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
@@ -224,6 +225,17 @@ void Character::HandleRemotePlayerUpdate(float deltaTime)
 
     if (distance > 0.001f) {
         characterPos = glm::mix(characterPos, targetPos, lerpSpeed * deltaTime);
+    }
+}
+
+void Character::UpdateHitDecision()
+{
+    if (hit_cnt > 0)
+        hit_cnt--;
+    else
+    {
+        if (hitcolor != glm::vec4(1.0f, 1.0f, 1.0f, 1.0f))
+            hitcolor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     }
 }
 
@@ -619,6 +631,12 @@ void Character::UpdateFromPacket(float ang, float x, float y, float z, char dire
 void Character::ReviveFromPacket(float x, float y, float z)
 {
     characterPos = { x, y, z };
+}
+
+void Character::DamagedFromPacket()
+{
+    hit_cnt = 200;
+    hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
 }
 
 void Character::SetTargetPosition(float x, float y, float z)

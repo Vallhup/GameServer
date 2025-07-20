@@ -36,6 +36,7 @@ public:
     // 네트워크 업데이트 (원격 플레이어만)
     void UpdateFromPacket(float ang, float x, float y, float z, char direction = -1, bool move = false, bool run = false);
     void ReviveFromPacket(float x, float y, float z);
+    void DamagedFromPacket();
     void SetTargetPosition(float x, float y, float z);
 
     // Getter
@@ -98,7 +99,7 @@ private:
     bool dead = false, dying = false;
     int life = 6;
     float revive_timer = 1200.0f;
-    int hit_cnt = 200;
+    int hit_cnt = 0;
     float angle;
     float lastangle;
 
@@ -137,4 +138,5 @@ private:
     void Run(float deltaTime);
     void HandleLocalPlayerUpdate(float deltaTime);
     void HandleRemotePlayerUpdate(float deltaTime);
+    void UpdateHitDecision();
 };
