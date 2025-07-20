@@ -268,7 +268,7 @@ void Enemy::DrawAttackingLine(const glm::mat4& view, const glm::mat4& projection
 
 void Enemy::MoveToward(Character* mainCat)
 {
-    if (!dead && !mainCat->GetDying())
+    if (!dead && !mainCat->GetDead())
     {
         glm::vec3 pos = mainCat->GetPosition();
         glm::vec3 direction = glm::normalize(pos - enemypos);
@@ -523,7 +523,7 @@ void Enemy::UpdateStateAndBehavior(Character* mainCat)
 
     if (state == 1)
     {
-        if (mainCat->GetDying())
+        if (mainCat->GetDead())
             state = 0;
     }
     else if (state == 2)
@@ -540,7 +540,7 @@ void Enemy::UpdateStateAndBehavior(Character* mainCat)
         }
         else if (enemy_CurrentAnim->CurrentTime + 10 >= (enemy_CurrentAnim->Duration))
         {
-            if (mainCat->GetDying())
+            if (mainCat->GetDead())
                 state = 0;
             {
                 if (distance > 4.0f && distance < 13.0f)
@@ -576,7 +576,7 @@ void Enemy::UpdateStateAndBehavior(Character* mainCat)
     {
         if (enemy_CurrentAnim->CurrentTime + 10 >= (enemy_CurrentAnim->Duration))
         {
-            if (mainCat->GetDying())
+            if (mainCat->GetDead())
                 state = 0;
             else
             {

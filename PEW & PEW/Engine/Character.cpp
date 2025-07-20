@@ -67,6 +67,9 @@ void Character::Update(float deltaTime)
 
 void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
 {
+    if (dead)
+        return;
+
     // 로컬 플레이어만 히트박스 렌더링
     if (isLocalPlayer && hitbox_ison())
         hitbox->RenderHitbox(angle, characterPos, view, projection);
@@ -118,12 +121,12 @@ void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, fl
 
 void Character::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShaderProgram)
 {
+    if (dead)
+        return;
+
     model = glm::mat4(1.0f);
     model = glm::translate(model, characterPos);
-    if (!dead)
-        model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-    else
-        model = glm::rotate(model, lastangle, glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 
     glUseProgram(depthShaderProgram);			// Depth map 렌더링
     GLuint lightSpaceMatrixLoc = glGetUniformLocation(depthShaderProgram, "lightSpaceMatrix");
@@ -416,7 +419,7 @@ void Character::CancelCatsFiring()
 
 void Character::UpdateAnimation()
 {
-    if (dead)
+    if (dying)
         return;
 
     glm::vec3 velocity = targetPos - characterPos;
@@ -480,7 +483,7 @@ void Character::UpdateAnimation()
 
 void Character::ChangeCatAnimation()
 {
-    if (!dead)
+    if (!dying)
     {
         if (animLibrary->GetCurrentAnimation() == "FireRun")
         {
@@ -579,11 +582,11 @@ void Character::ChangeCatAnimation()
     {
         if (animLibrary->GetCurrentAnimation() != "Die")
             animLibrary->ChangeAnimation("Die", *player_CurrentAnim);
-        /*else
+        else
         {
             if (player_CurrentAnim->CurrentTime + 10 >= player_CurrentAnim->Duration)
                 SetDead(true);
-        }*/
+        }
     }
 }
 
@@ -601,7 +604,7 @@ void Character::Setlife()
         life -= 1;
         hit_cnt = 200;
         hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
-        dying = true;
+        dead = true;
         _Right = { false };
         _Left = { false };
         _Top = { false };
@@ -630,7 +633,9 @@ void Character::UpdateFromPacket(float ang, float x, float y, float z, char dire
 
 void Character::ReviveFromPacket(float x, float y, float z)
 {
-    characterPos = { x, y, z };
+    characterPos = glm::vec3(x, y, z);
+    targetPos = glm::vec3(x, y, z);
+    dead = false;
 }
 
 void Character::DamagedFromPacket()

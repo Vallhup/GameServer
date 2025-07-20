@@ -307,7 +307,7 @@ bool Bullet::IsCollapsed(Character* character)
 	{
 		glm::vec3 pos = character->GetPosition();
 
-		if (!character->GetDying())
+		if (!character->GetDead())
 		{
 			if (position.y >= 0.0f && position.y <= 0.95f)
 			{

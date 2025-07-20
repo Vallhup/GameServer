@@ -337,7 +337,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		if (graphics) {
 			Character* character = graphics->GetCharacter(deadPacket.id);
 			if (character) {
-				character->SetDead(true);
+				character->SetDying(true);
 				cout << deadPacket.id << ": Dead!!" << '\n';
 			}
 		}
@@ -350,7 +350,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		if (graphics) {
 			Character* character = graphics->GetCharacter(revivePacket.id);
 			if (character) {
-				character->SetDead(false);
+				character->SetDying(false);
 				character->ReviveFromPacket(revivePacket.x, revivePacket.y, revivePacket.z);
 				cout << revivePacket.id << ": Revived!!" << '\n';
 			}

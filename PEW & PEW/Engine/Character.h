@@ -47,8 +47,8 @@ public:
     bool IsMoving() const { return _Right || _Left || _Top || _Bottom; }
     bool Shift_value() const { return _Shift; }
     bool GetFiring() const { return firing; }
-    bool GetDying() const { return dying; }
     bool GetDead() const { return dead; }
+    bool GetDying() const { return dying; }
     bool GetRight() const { return _Right; }
     bool GetLeft() const { return _Left; }
     bool GetTop() const { return _Top; }
@@ -63,6 +63,7 @@ public:
     AnimatedModel::AnimationLibrary* GetAnimLibrary() { return animLibrary; }
     void Setlife();
     void SetPosition() { if (isLocalPlayer) characterPos = glm::vec3{ -44.0f, 0.0f, -48.0f }; }
+    void SetDying(bool in) { dying = in; }
     void SetDead(bool in) { dead = in; }
     void SetFinishPos() { if (isLocalPlayer) characterPos = glm::vec3{ -5.0f, 0.0f, 5.0f }; }
 
@@ -96,7 +97,7 @@ private:
     bool hitbox_on = false;
 
     // 게임 상태 (로컬 플레이어만 사용)
-    bool dead = false, dying = false;
+    bool dying = false, dead = false;
     int life = 6;
     float revive_timer = 1200.0f;
     int hit_cnt = 0;
