@@ -57,7 +57,7 @@ struct vec3 {
 	}
 };
 
-class Character : std::enable_shared_from_this<Character>
+class Character : public std::enable_shared_from_this<Character>
 {
 	struct AttackSequence {
 		vec3 direction;
@@ -80,7 +80,7 @@ public:
 public:
 	bool Move(float deltaTime);
 	void Attack(float nowTime, Service* service);
-	void TakeDamage(int damage, Service* service);
+	void TakeDamage(int damage);
 
 	int GetId() const { return _id; }
 	int GetHp() const { return _hp; }
@@ -99,10 +99,11 @@ public:
 	void SetAttackSequence(float nowTime, const vec3& dir);
 	void ResetAttackSequence() { std::lock_guard lock{ _attackSeqMutex }; _attackSeq.reset(); }
 	void ResetAngleChange() { _angleChange = false; }
+	void SetService(const std::shared_ptr<Service>& service) { _service = service; }
 
-private:
-	void Death(Service* service);
-	void Revive(Service* service);
+public:
+	void Death();
+	void Revive();
 
 private:
 	int _id;
@@ -122,4 +123,6 @@ private:
 
 	std::optional<AttackSequence> _attackSeq;
 	std::mutex _attackSeqMutex;
+
+	std::weak_ptr<Service> _service;
 };

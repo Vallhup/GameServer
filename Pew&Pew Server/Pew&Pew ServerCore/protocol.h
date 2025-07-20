@@ -109,7 +109,7 @@ struct SC_REVIVE_PACKET {
 struct SC_STAT_UPDATE_PACKET {
 	unsigned char size;
 	char type;
-	int hp;
+	int id;
 };
 
 #pragma pack(pop)

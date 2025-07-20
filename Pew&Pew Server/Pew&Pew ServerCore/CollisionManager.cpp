@@ -20,7 +20,7 @@ void CollisionManager::Update(const std::vector<std::shared_ptr<Projectile>>& pr
 			if (projectile->GetOwnerId() == character->GetId()) continue;
 
 			if (projectile->CheckCollision(*character)) {
-				character->TakeDamage(projectile->GetDamage(), service);
+				character->TakeDamage(projectile->GetDamage());
 				projectile->SetIntactive(service);
 				service->BroadCast(PacketFactory::SCStatUpdatePacket(*character));
 				break;

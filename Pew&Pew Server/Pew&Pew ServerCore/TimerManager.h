@@ -13,7 +13,7 @@ public:
 	~TimerManager();
 
 	void Register(const std::function<void(float)>& func, float intervalMs = 4.0f);
-	void RegisterOnce(const std::function<void()>& func, float delayMs = 5.0f);
+	void RegisterOnce(const std::function<void()>& func, float delayMs = 5000.0f);
 	void Start();
 	void Stop();
 
@@ -23,7 +23,8 @@ private:
 private:
 	std::atomic<bool> _running;
 	concurrency::concurrent_vector<TimerTask> _tasks;
-	//std::vector<TimerTask> _tasks;
+	/*std::vector<TimerTask> _tasks;
+	std::mutex _taskMutex;*/
 	std::thread _thread;
 };
 

@@ -5,7 +5,7 @@ int main()
 	setlocale(LC_ALL, "korean");
 
 	Logger::Init("", "C:/Users/Hadenpel/Desktop/GameServer/Pew&Pew Server/Pew&Pew ServerCore/");
-	Logger::SetLevel(LogLevel::Debug);
+	Logger::SetLevel(LogLevel::Info);
 
 	auto service = std::make_shared<Service>();
 

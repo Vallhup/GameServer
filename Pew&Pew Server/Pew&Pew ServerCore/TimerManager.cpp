@@ -17,8 +17,10 @@ void TimerManager::Register(const std::function<void(float)>& func, float interv
 
 void TimerManager::RegisterOnce(const std::function<void()>& func, float delayMs)
 {
+	LOG_INF("[TIMER] RegisterOnce called! delayMs = %f", delayMs);
 	_tasks.push_back(TimerTask{ [func, called = false](float) mutable
 		{
+			LOG_INF("[TIMER] One-shot lambda fired!");
 			if (not called) {
 				func();
 				called = true;
@@ -57,6 +59,8 @@ void TimerManager::Run()
 				task.elapsed = 0;
 			}
 		}
+
+		std::this_thread::sleep_for(milliseconds(1));
 	}
 }
 

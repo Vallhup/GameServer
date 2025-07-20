@@ -261,6 +261,8 @@ void Service::AcceptSession()
 	session->SetCharacter(character);
 	session->SetService(this);
 
+	character->SetService(shared_from_this());
+
 	{
 		std::unique_lock lock{ _sessionMutex };
 		_sessions.insert(std::make_pair(sessionId, session));

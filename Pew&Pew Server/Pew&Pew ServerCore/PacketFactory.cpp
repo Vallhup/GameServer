@@ -119,7 +119,7 @@ std::vector<char> PacketFactory::SCStatUpdatePacket(const Character& character)
 	SC_STAT_UPDATE_PACKET stat;
 	stat.size = sizeof(stat);
 	stat.type = SC_STAT_UPDATE;
-	stat.hp = character.GetHp();
+	stat.id = character.GetId();
 
 	return Serialize(stat);
 }

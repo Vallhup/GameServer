@@ -67,15 +67,15 @@ void Character::Attack(float nowTime, Service* service)
 	}
 }
 
-void Character::TakeDamage(int damage, Service* service)
+void Character::TakeDamage(int damage)
 {
 	if (not _isAlive) {
-		return;
+		return;	
 	}
 
 	_hp -= damage;
 	if (_hp < 0) {
-		Death(service);
+		Death();
 	}
 }
 
@@ -132,23 +132,32 @@ void Character::SetAttackSequence(float nowTime, const vec3& dir)
 	_attackSeq = AttackSequence{ dir, attackTimes };
 }
 
-void Character::Death(Service* service)
+void Character::Death()
 {
 	_hp = 0;
 	_isAlive = false;
 
-	auto weakSelf = weak_from_this();
-	service->GetTimerManager()->RegisterOnce([weakSelf, service]()
-		{
-			if (auto self = weakSelf.lock()) {
-				self->Revive(service);
-			}
-		});
+	if (auto service = _service.lock()) {
+		auto weakSelf = weak_from_this();
+		service->GetTimerManager()->RegisterOnce([weakSelf, service]()
+			{
+				LOG_INF("Timer lambda fired");
+				if (auto self = weakSelf.lock()) {
+					LOG_INF("Revive called!");
+					self->Revive();
+				}
 
-	service->BroadCast(PacketFactory::SCDeadPacket(*this));
+				else {
+					LOG_INF("Character already destroyed!");
+				}
+			});
+
+		service->BroadCast(PacketFactory::SCDeadPacket(*this));
+		
+	}
 }
 
-void Character::Revive(Service* service)
+void Character::Revive()
 {
 	_pos = DEFAULT_POS;
 	_angle = 0.0f;
@@ -159,6 +168,7 @@ void Character::Revive(Service* service)
 	_hp = MAX_HP;
 	_isAlive = true;
 
-	service->BroadCast(PacketFactory::SCRevivePacket(*this));
-	LOG_DBG("Character[%d] Send Revive", _id);
+	if (auto service = _service.lock()) {
+		service->BroadCast(PacketFactory::SCRevivePacket(*this));
+	}
 }
