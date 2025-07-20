@@ -47,3 +47,5 @@
 
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "MSWSock.LIB")
+
+constexpr float PI = 3.141592f;

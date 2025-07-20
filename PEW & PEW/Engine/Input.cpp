@@ -394,19 +394,20 @@ void Input::SendAttackPacket()
 	glm::vec3 position = mainCat->GetPosition();
 	position.y = 0.45f;
 
-	float angle = atan2(mouseDir.x, mouseDir.z);
-
-	position.x += cos(angle) * 0.2f;
-	position.z -= sin(angle) * 0.2f;
-
+	// 과거 방식처럼 mousePick 사용
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIN_W / (float)WIN_H, 0.1f, 1000.0f);
 	glm::mat4 view = camera->GetViewMatrix(mainCat->GetPosition());
 
 	glm::vec3 mousePick = camera->GetMousePicking(cur_x, cur_y, projection, view);
-
 	glm::vec3 targetPos = mousePick;
 	targetPos.y = 0.45f;
 
+	// 시작 위치 조정 (과거 방식과 동일)
+	float tempAngle = atan2(mouseDir.x, mouseDir.z);
+	position.x += cos(tempAngle) * 0.2f;
+	position.z -= sin(tempAngle) * 0.2f;
+
+	// 실제 목표점으로 방향 계산
 	glm::vec3 direction = glm::normalize(targetPos - position);
 
 	vector<char> packet = PacketFactory::CSAttackPacket(direction);
