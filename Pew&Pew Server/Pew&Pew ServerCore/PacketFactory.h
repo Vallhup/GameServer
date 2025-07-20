@@ -18,6 +18,9 @@ public:
 	static std::vector<char> SCStatUpdatePacket(const Character& character);
 	static std::vector<char> SCAttackPacket(const Session& session);
 	static std::vector<char> SCAttackEndPacket(const Session& session);
+	static std::vector<char> SCDeadPacket(const Character& character);
+	static std::vector<char> SCRevivePacket(const Character& character);
+
 
 public:
 	template<typename Packet>

@@ -57,7 +57,7 @@ struct vec3 {
 	}
 };
 
-class Character
+class Character : std::enable_shared_from_this<Character>
 {
 	struct AttackSequence {
 		vec3 direction;
@@ -80,7 +80,7 @@ public:
 public:
 	bool Move(float deltaTime);
 	void Attack(float nowTime, Service* service);
-	void TakeDamage(int damage);
+	void TakeDamage(int damage, Service* service);
 
 	int GetId() const { return _id; }
 	int GetHp() const { return _hp; }
@@ -101,8 +101,8 @@ public:
 	void ResetAngleChange() { _angleChange = false; }
 
 private:
-	void Death();
-	void Revive();
+	void Death(Service* service);
+	void Revive(Service* service);
 
 private:
 	int _id;

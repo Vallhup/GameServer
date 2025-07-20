@@ -28,6 +28,8 @@ public:
 
 	void BroadCast(const std::vector<char>& packet, int exceptId = -1);
 
+	TimerManager* GetTimerManager() const { return _timerManager.get(); }
+
 private:
 	int GenerateSessionId();
 

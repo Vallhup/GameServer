@@ -12,7 +12,18 @@ TimerManager::~TimerManager()
 
 void TimerManager::Register(const std::function<void(float)>& func, float intervalMs)
 {
-	_tasks.emplace_back(func, intervalMs, 0);
+	_tasks.push_back(TimerTask{ func, intervalMs, 0 });
+}
+
+void TimerManager::RegisterOnce(const std::function<void()>& func, float delayMs)
+{
+	_tasks.push_back(TimerTask{ [func, called = false](float) mutable
+		{
+			if (not called) {
+				func();
+				called = true;
+			}
+		}, delayMs, 0 });
 }
 
 void TimerManager::Start()

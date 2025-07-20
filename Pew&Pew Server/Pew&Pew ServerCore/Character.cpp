@@ -67,7 +67,7 @@ void Character::Attack(float nowTime, Service* service)
 	}
 }
 
-void Character::TakeDamage(int damage)
+void Character::TakeDamage(int damage, Service* service)
 {
 	if (not _isAlive) {
 		return;
@@ -75,7 +75,7 @@ void Character::TakeDamage(int damage)
 
 	_hp -= damage;
 	if (_hp < 0) {
-		Death();
+		Death(service);
 	}
 }
 
@@ -132,15 +132,23 @@ void Character::SetAttackSequence(float nowTime, const vec3& dir)
 	_attackSeq = AttackSequence{ dir, attackTimes };
 }
 
-void Character::Death()
+void Character::Death(Service* service)
 {
 	_hp = 0;
 	_isAlive = false;
 
-	// TODO : Death Timer Register, Death Packet Send...
+	auto weakSelf = weak_from_this();
+	service->GetTimerManager()->RegisterOnce([weakSelf, service]()
+		{
+			if (auto self = weakSelf.lock()) {
+				self->Revive(service);
+			}
+		});
+
+	service->BroadCast(PacketFactory::SCDeadPacket(*this));
 }
 
-void Character::Revive()
+void Character::Revive(Service* service)
 {
 	_pos = DEFAULT_POS;
 	_angle = 0.0f;
@@ -151,7 +159,6 @@ void Character::Revive()
 	_hp = MAX_HP;
 	_isAlive = true;
 
-	// TODO : Revive Packet Send
+	service->BroadCast(PacketFactory::SCRevivePacket(*this));
+	LOG_DBG("Character[%d] Send Revive", _id);
 }
-
-

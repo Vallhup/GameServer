@@ -144,3 +144,29 @@ std::vector<char> PacketFactory::SCAttackEndPacket(const Session& session)
 	return Serialize(end);
 }
 
+std::vector<char> PacketFactory::SCDeadPacket(const Character& character)
+{
+	SC_DEAD_PACKET dead;
+	dead.size = sizeof(dead);
+	dead.type = SC_DEAD;
+	dead.id = character.GetId();
+
+	return Serialize(dead);
+}
+
+std::vector<char> PacketFactory::SCRevivePacket(const Character& character)
+{
+	SC_REVIVE_PACKET revive;
+	revive.size = sizeof(revive);
+	revive.type = SC_REVIVE;
+	revive.id = character.GetId();
+
+	vec3 charPos = character.GetPosition();
+
+	revive.x = charPos.x;
+	revive.y = charPos.y;
+	revive.z = charPos.z;
+
+	return Serialize(revive);
+}
+

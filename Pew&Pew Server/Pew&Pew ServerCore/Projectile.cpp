@@ -4,7 +4,6 @@
 Projectile::Projectile(int id, int ownerId, vec3 charPos, vec3 dir, int dmg)
 	: _id(id), _ownerId(ownerId), _damage(dmg)
 {
-	// 클라이언트와 동일한 오프셋 계산
 	float angle = atan2(dir.x, dir.z) + PI;
 	_pos = charPos;
 	_pos.x += cos(angle) * 0.2f;  
