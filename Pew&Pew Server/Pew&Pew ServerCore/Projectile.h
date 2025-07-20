@@ -5,8 +5,6 @@ class Character;
 
 class Projectile
 {
-	const float FORWARD_OFFSET{ 0.4f };
-	const float RIGHT_OFFSET{ 0.1f };
 	const float PROJECTILE_SPEED{ 20.0f };
 
 public:
