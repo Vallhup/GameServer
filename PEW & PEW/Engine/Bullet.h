@@ -1,6 +1,6 @@
 #pragma once
 
-class Character;
+class MainCharacter;
 class Enemy;
 class Camera;
 
@@ -13,7 +13,7 @@ public:
 	void LoadBulletGLB(const std::string& filename);
 	GLuint LoadBulletTexture(const char* path);
 
-	void BulletSetting(Character* character, Camera* camera, glm::vec3 mousePick);		// 나중에 1인칭 쓸거면 필요한 함수
+	void BulletSetting(MainCharacter* character, Camera* camera, glm::vec3 mousePick);		// 나중에 1인칭 쓸거면 필요한 함수
 	void Render(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap);
 	void RenderShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
 	void BulletUpdate(float deltaTime);

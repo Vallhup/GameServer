@@ -3,7 +3,8 @@
 class Camera;
 class ShadowMapping;
 class NetworkManager;
-class Character;
+class MainCharacter;
+class AlienCharacter;
 
 class GraphicsManager
 {
@@ -16,20 +17,21 @@ public:
 
 	void AddCharacter(int id, bool isLocal = false);
 	void RemoveCharacter(int id);
-	Character* GetCharacter(int id);
-	Character* GetLocalCharacter();
+	MainCharacter* GetCharacter(int id);
+	MainCharacter* GetLocalCharacter();
 
 	Camera* GetCamera() const;
-	Character* GetMainCat();
+	MainCharacter* GetMainCat();
 	void SetNetworkManager(NetworkManager* net);
 	void DebugAllCharacterPositions();
 
-	const std::map<int, Character*>& GetAllCharacters() const { return characters; }
+	const std::map<int, MainCharacter*>& GetAllCharacters() const { return catCharacters; }
 
 private:
 	Camera* camera = { nullptr };
 	ShadowMapping* shadowMap = { nullptr };
 	NetworkManager* network = { nullptr };
-	std::map<int, Character*> characters;  // 모든 캐릭터 (ID 기반)
+	std::map<int, MainCharacter*> catCharacters;  // 모든 캐릭터 (ID 기반)
 	int myPlayerID = -1;
+	std::array<std::array<AlienCharacter*, 9>, 3> alienCharacters;
 };

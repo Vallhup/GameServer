@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Bullet.h"
 #include "stb_image.h"
-#include "Character.h"
+#include "MainCharacter.h"
 #include "Camera.h"
 #include "Timer.h"
 
@@ -129,7 +129,7 @@ GLuint Bullet::LoadBulletTexture(const char* path)
 	return textureID;
 }
 
-void Bullet::BulletSetting(Character* character, Camera* camera, glm::vec3 mousePick)
+void Bullet::BulletSetting(MainCharacter* character, Camera* camera, glm::vec3 mousePick)
 {
 	position = character->GetPosition();
 	position.y = 0.45f;

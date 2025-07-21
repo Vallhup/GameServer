@@ -4,7 +4,7 @@
 #include "NetworkManager.h"
 #include "PacketFactory.h"
 #include "GraphicsManager.h"
-#include "Character.h"
+#include "MainCharacter.h"
 #include "WindowInfo.h"
 
 void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods)

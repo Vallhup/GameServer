@@ -1,11 +1,11 @@
 #include "pch.h"
-#include "Character.h"
+#include "MainCharacter.h"
 #include "Bullet.h"
 #include "ShadowMapping.h"
 #include "Camera.h"
 #include "BoundingBox.h"
 
-Character::Character(int id, bool isLocal) : playerID(id), isLocalPlayer(isLocal)
+MainCharacter::MainCharacter(int id, bool isLocal) : playerID(id), isLocalPlayer(isLocal)
 {
     player_BoneInfo = new vector<BoneInfo>();
     animModel = new AnimatedModel();
@@ -22,7 +22,7 @@ Character::Character(int id, bool isLocal) : playerID(id), isLocalPlayer(isLocal
         bullets[i].bullet = new Bullet();
 }
 
-Character::~Character()
+MainCharacter::~MainCharacter()
 {
     if (isLocalPlayer) {
         delete hitbox;
@@ -49,7 +49,7 @@ Character::~Character()
     }
 }
 
-void Character::Init()
+void MainCharacter::Init()
 {
     SaveAnimations();
 
@@ -58,7 +58,7 @@ void Character::Init()
     SetupShader("Shaders/CatVert.glsl", "Shaders/CatFrag.glsl", shaderprogram);
 }
 
-void Character::Update(float deltaTime)
+void MainCharacter::Update(float deltaTime)
 {
     UpdateAllPlayersMovement(deltaTime);
 
@@ -67,7 +67,7 @@ void Character::Update(float deltaTime)
     UpdateBullets(deltaTime);
 }
 
-void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
+void MainCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
 {
     if (dead)
         return;
@@ -121,7 +121,7 @@ void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, fl
     glBindVertexArray(0);
 }
 
-void Character::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShaderProgram)
+void MainCharacter::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShaderProgram)
 {
     if (dead)
         return;
@@ -141,7 +141,7 @@ void Character::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader
     glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void Character::RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap)
+void MainCharacter::RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap)
 {
     // 모든 캐릭터의 총알 렌더링 (로컬/원격 구분 없이)
     for (int i = 0; i < MAX_BULLETS; ++i) {
@@ -151,7 +151,7 @@ void Character::RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj
     }
 }
 
-void Character::RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
+void MainCharacter::RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
 {
     // 모든 캐릭터의 총알 그림자 렌더링 (로컬/원격 구분 없이)
     for (int i = 0; i < MAX_BULLETS; ++i) {
@@ -161,7 +161,7 @@ void Character::RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint de
     }
 }
 
-void Character::CreateBulletFromServer(int bulletID, glm::vec3 startPos)
+void MainCharacter::CreateBulletFromServer(int bulletID, glm::vec3 startPos)
 {
     // 빈 슬롯 찾기
     for (int i = 0; i < MAX_BULLETS; ++i) {
@@ -179,7 +179,7 @@ void Character::CreateBulletFromServer(int bulletID, glm::vec3 startPos)
     }
 }
 
-bool Character::RemoveBulletFromServer(int bulletID)
+bool MainCharacter::RemoveBulletFromServer(int bulletID)
 {
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].isActive && bullets[i].bulletID == bulletID) {
@@ -195,7 +195,7 @@ bool Character::RemoveBulletFromServer(int bulletID)
     return false;
 }
 
-void Character::UpdateBullets(float deltaTime)
+void MainCharacter::UpdateBullets(float deltaTime)
 {
     for (int i = 0; i < MAX_BULLETS; ++i)
     {
@@ -205,7 +205,7 @@ void Character::UpdateBullets(float deltaTime)
     }
 }
 
-bool Character::UpdateBulletFromServer(int bulletID, glm::vec3 newPos)
+bool MainCharacter::UpdateBulletFromServer(int bulletID, glm::vec3 newPos)
 {
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].isActive && bullets[i].bulletID == bulletID) {
@@ -217,7 +217,7 @@ bool Character::UpdateBulletFromServer(int bulletID, glm::vec3 newPos)
     return false;
 }
 
-void Character::UpdateAllPlayersMovement(float deltaTime)
+void MainCharacter::UpdateAllPlayersMovement(float deltaTime)
 {
     glm::vec3 direction = targetPos - characterPos;
     float distance = glm::length(direction);
@@ -227,7 +227,7 @@ void Character::UpdateAllPlayersMovement(float deltaTime)
     }
 }
 
-void Character::UpdateHitDecision()
+void MainCharacter::UpdateHitDecision()
 {
     if (hit_cnt > 0)
         hit_cnt--;
@@ -238,7 +238,7 @@ void Character::UpdateHitDecision()
     }
 }
 
-void Character::SaveAnimations()
+void MainCharacter::SaveAnimations()
 {
     animLibrary->LoadAnimation("Idle", "Animations/cat_animation_idle.glb", animationImporters, animModel);
     animLibrary->LoadAnimation("Die", "Animations/cat_animation_die.glb", animationImporters, animModel);
@@ -256,7 +256,7 @@ void Character::SaveAnimations()
     animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
 }
 
-void Character::UpdateAnimation()
+void MainCharacter::UpdateAnimation()
 {
     if (dying)
     {
@@ -423,7 +423,7 @@ void Character::UpdateAnimation()
         animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
 }
 
-void Character::UpdateFromPacket(float ang, float x, float y, float z, char direction, bool move, bool run)
+void MainCharacter::UpdateFromPacket(float ang, float x, float y, float z, char direction, bool move, bool run)
 {
     if (!isLocalPlayer)
         angle = ang;
@@ -433,20 +433,20 @@ void Character::UpdateFromPacket(float ang, float x, float y, float z, char dire
     isRunning = run;
 }
 
-void Character::ReviveFromPacket(float x, float y, float z)
+void MainCharacter::ReviveFromPacket(float x, float y, float z)
 {
     characterPos = glm::vec3(x, y, z);
     SetTargetPosition(x, y, z);
     dead = false;
 }
 
-void Character::DamagedFromPacket()
+void MainCharacter::DamagedFromPacket()
 {
     hit_cnt = 200;
     hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
 }
 
-void Character::SetTargetPosition(float x, float y, float z)
+void MainCharacter::SetTargetPosition(float x, float y, float z)
 {
     targetPos = glm::vec3(x, y, z);
 }

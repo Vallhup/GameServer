@@ -96,7 +96,10 @@
     <ClInclude Include="protocol.h">
       <Filter>Protocol</Filter>
     </ClInclude>
-    <ClInclude Include="Character.h">
+    <ClInclude Include="MainCharacter.h">
+      <Filter>Character</Filter>
+    </ClInclude>
+    <ClInclude Include="AlienCharacter.h">
       <Filter>Character</Filter>
     </ClInclude>
   </ItemGroup>
@@ -161,7 +164,10 @@
     <ClCompile Include="PacketFactory.cpp">
       <Filter>Protocol</Filter>
     </ClCompile>
-    <ClCompile Include="Character.cpp">
+    <ClCompile Include="MainCharacter.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
+    <ClCompile Include="AlienCharacter.cpp">
       <Filter>Character</Filter>
     </ClCompile>
   </ItemGroup>

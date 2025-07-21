@@ -2,7 +2,7 @@
 #include "NetworkManager.h"
 #include "PacketFactory.h"
 #include "GraphicsManager.h"
-#include "Character.h"
+#include "MainCharacter.h"
 
 NetworkManager::NetworkManager()
 {
@@ -221,7 +221,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 
 				graphics->AddCharacter(addPacket.id, isLocal);
 
-				Character* character = graphics->GetCharacter(addPacket.id);
+				MainCharacter* character = graphics->GetCharacter(addPacket.id);
 				if (character) {
 					character->SetTargetPosition(addPacket.x, addPacket.y, addPacket.z);
 				}
@@ -233,7 +233,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 			else
 			{
 				int ownerID = addPacket.ownerId;
-				Character* character = graphics->GetCharacter(ownerID);
+				MainCharacter* character = graphics->GetCharacter(ownerID);
 				if (character) {
 					glm::vec3 startPos(addPacket.x, addPacket.y, addPacket.z);
 					character->CreateBulletFromServer(addPacket.id, startPos);
@@ -252,7 +252,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		if (graphics) {
 			if (movePacket.id < 64) {
 				// 캐릭터 이동 처리 (기존 코드)
-				Character* character = graphics->GetCharacter(movePacket.id);
+				MainCharacter* character = graphics->GetCharacter(movePacket.id);
 				if (character) {
 					character->UpdateFromPacket(movePacket.angle, movePacket.x, movePacket.y, movePacket.z, -1, movePacket.isMove, movePacket.isRun);
 				}
@@ -309,7 +309,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		SC_ATTACK_PACKET attackPacket = PacketFactory::Deserialize<SC_ATTACK_PACKET>(packet);
 
 		if (graphics) {
-			Character* character = graphics->GetCharacter(attackPacket.id);
+			MainCharacter* character = graphics->GetCharacter(attackPacket.id);
 			if (character) {
 				//std::cout << "[ATTACK] Player ID: " << attackPacket.id << std::endl;
 				character->SetFiring(true);
@@ -322,7 +322,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		SC_ATTACK_END_PACKET attackEndPacket = PacketFactory::Deserialize<SC_ATTACK_END_PACKET>(packet);
 
 		if (graphics) {
-			Character* character = graphics->GetCharacter(attackEndPacket.id);
+			MainCharacter* character = graphics->GetCharacter(attackEndPacket.id);
 			if (character) {
 				//std::cout << "[ATTACKEND] Player ID: " << attackEndPacket.id << std::endl;
 				character->SetFiring(false);
@@ -335,7 +335,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		SC_DEAD_PACKET deadPacket = PacketFactory::Deserialize<SC_DEAD_PACKET>(packet);
 
 		if (graphics) {
-			Character* character = graphics->GetCharacter(deadPacket.id);
+			MainCharacter* character = graphics->GetCharacter(deadPacket.id);
 			if (character) {
 				character->SetDying(true);
 				cout << deadPacket.id << ": Dead!!" << '\n';
@@ -348,7 +348,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		SC_REVIVE_PACKET revivePacket = PacketFactory::Deserialize<SC_REVIVE_PACKET>(packet);
 
 		if (graphics) {
-			Character* character = graphics->GetCharacter(revivePacket.id);
+			MainCharacter* character = graphics->GetCharacter(revivePacket.id);
 			if (character) {
 				character->SetDying(false);
 				character->ReviveFromPacket(revivePacket.x, revivePacket.y, revivePacket.z);
@@ -362,7 +362,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		SC_STAT_UPDATE_PACKET statPacket = PacketFactory::Deserialize<SC_STAT_UPDATE_PACKET>(packet);
 
 		if (graphics) {
-			Character* character = graphics->GetCharacter(statPacket.id);
+			MainCharacter* character = graphics->GetCharacter(statPacket.id);
 			if (character) {
 				character->DamagedFromPacket();
 			}

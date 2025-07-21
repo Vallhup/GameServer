@@ -13,11 +13,11 @@ struct BulletSlot {
     BulletSlot() : bulletID(-1), isActive(false) {}
 };
 
-class Character
+class MainCharacter
 {
 public:
-    Character(int id, bool isLocal = false);
-    ~Character();
+    MainCharacter(int id, bool isLocal = false);
+    ~MainCharacter();
 
     void Init();
     void Update(float deltaTime);

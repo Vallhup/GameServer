@@ -1,7 +1,7 @@
 #pragma once
 
 class Camera;
-class Character;
+class MainCharacter;
 class NetworkManager;
 class GraphicsManager;
 
@@ -21,13 +21,13 @@ public:
 	void SendAttackEndPacket();
 
 	void SetCamera(Camera* cam) { camera = cam; }
-	void SetMainCharacter(Character* cat) { mainCat = cat; }
+	void SetMainCharacter(MainCharacter* cat) { mainCat = cat; }
 	void SetNetworkManager(NetworkManager* net) { network = net; }
 	void SetGraphicsManager(GraphicsManager* gfx) { graphics = gfx; }
 
 private:
 	Camera* camera = { nullptr };
-	Character* mainCat = { nullptr };
+	MainCharacter* mainCat = { nullptr };
 	NetworkManager* network = { nullptr };
 	GraphicsManager* graphics = { nullptr };
 
