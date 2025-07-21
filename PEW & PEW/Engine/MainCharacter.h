@@ -6,7 +6,7 @@ class Camera;
 class BoundingBox;
 
 struct BulletSlot {
-    Bullet* bullet;
+    Bullet* bullet = nullptr;
     int bulletID;           // 네트워크 동기화용 ID
     bool isActive;
 
@@ -51,7 +51,7 @@ public:
 
     // 애니메이션
     void SaveAnimations();
-    void UpdateAnimation();
+    void UpdateAnimation(float deltaTime);
 
     // 공통 함수
     void UpdateAllPlayersMovement(float deltaTime);

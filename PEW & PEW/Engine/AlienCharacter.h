@@ -7,12 +7,18 @@ public:
 	AlienCharacter(int type, int location);
 	~AlienCharacter();
 
+	void Update();
+
 	void SaveAnimations();
 	void LoadModel();
 	void SetSpawnPosition();
+	void SetSpawnAngle();
+	void SetupShaders();
 
 private:
+	// 적 정보
 	glm::vec3 alienPos;
+	float viewingAngle;
 
 	// 적 종류와 위치
 	int alienType;
@@ -25,7 +31,11 @@ private:
 	AnimatedModel::AnimationLibrary* animLibrary = { nullptr };
 	std::vector<std::unique_ptr<Assimp::Importer>> animationImporters;
 
-	GLuint VAO, VBO, VBO2, EBO, Texture, shaderprogram;
-	std::vector<unsigned int> indices;
+	// 캐릭터 OPENGL
+	GLuint aVAO, aVBO, aVBO2, aEBO, aTexture, aShaderprogram;
+	std::vector<unsigned int> aIndices;
+
+	// 공격선 OPENGL
+	GLuint lVAO, lVBO, lShaderprogram;
 };
 

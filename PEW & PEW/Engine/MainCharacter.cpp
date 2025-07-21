@@ -62,7 +62,7 @@ void MainCharacter::Update(float deltaTime)
 {
     UpdateAllPlayersMovement(deltaTime);
 
-    UpdateAnimation();
+    UpdateAnimation(deltaTime);
     UpdateHitDecision();
     UpdateBullets(deltaTime);
 }
@@ -76,7 +76,6 @@ void MainCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos
     if (isLocalPlayer && GetHitBox())
         hitbox->RenderHitbox(angle, characterPos, view, projection);
 
-    animModel->UpdateAnimation(0, *player_BoneInfo, deltaTime, *player_CurrentAnim);
     glUseProgram(shaderprogram);
     animModel->SetupBoneTransforms(*player_BoneInfo, shaderprogram);
 
@@ -256,7 +255,7 @@ void MainCharacter::SaveAnimations()
     animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
 }
 
-void MainCharacter::UpdateAnimation()
+void MainCharacter::UpdateAnimation(float deltaTime)
 {
     if (dying)
     {
@@ -421,6 +420,8 @@ void MainCharacter::UpdateAnimation()
     }
     else if (animLibrary->GetCurrentAnimation() == "Die")
         animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+
+    animModel->UpdateAnimation(0, *player_BoneInfo, deltaTime, *player_CurrentAnim);
 }
 
 void MainCharacter::UpdateFromPacket(float ang, float x, float y, float z, char direction, bool move, bool run)
