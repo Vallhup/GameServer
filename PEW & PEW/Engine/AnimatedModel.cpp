@@ -8,7 +8,6 @@ AnimatedModel::AnimatedModel()
 
 void AnimatedModel::LoadGLBFile(int j, vector<BoneInfo>& BoneInfoName, const std::string& filename, GLuint& VAO, GLuint& VBO, GLuint& VBO2, GLuint& EBO, vector<unsigned int>& Indices)
 {
-	
 	const aiScene* scene = characterImporter.ReadFile(filename,
 		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices |
 		aiProcess_CalcTangentSpace);
@@ -171,6 +170,8 @@ void AnimatedModel::LoadGLBFile(int j, vector<BoneInfo>& BoneInfoName, const std
 	glEnableVertexAttribArray(4);
 
 	glBindVertexArray(0);
+
+	std::cout << "File loaded: " << filename << std::endl;
 }
 
 void AnimatedModel::NormalizeBoneWeights()
@@ -499,4 +500,51 @@ glm::vec3 AnimatedModel::InterpolatePosition(float AnimationTime, const aiNodeAn
 	}
 
 	return currentPos;
+}
+
+void AnimatedModel::AnimationLibrary::LoadAnimation(const std::string& name, const std::string& filename, vector<unique_ptr<Assimp::Importer>>& importers, AnimatedModel* model)
+{
+	importers.push_back(make_unique<Assimp::Importer>());
+	const aiScene* scene = importers.back()->ReadFile(filename,
+		aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (scene->mAnimations[0]->mNumChannels > 0) {
+		aiNodeAnim* channel = scene->mAnimations[0]->mChannels[0];
+	}
+
+	if (scene && scene->HasAnimations()) {
+		AnimInfo animInfo;
+		animInfo.animation = scene->mAnimations[0];
+		animInfo.Duration = scene->mAnimations[0]->mDuration;
+		animInfo.TicksPerSecond = (scene->mAnimations[0]->mTicksPerSecond != 0) ?
+			scene->mAnimations[0]->mTicksPerSecond : 24.0f;
+		animInfo.rootNode = scene->mRootNode;
+
+		for (unsigned int i = 0; i < scene->mAnimations[0]->mNumChannels; i++) {
+			std::string animBoneName = scene->mAnimations[0]->mChannels[i]->mNodeName.data;
+			if (model->m_BoneNameToIndexMap.find(animBoneName) == model->m_BoneNameToIndexMap.end()) {
+			}
+		}
+
+		animations[name] = animInfo;
+	}
+	else
+		cout << "Unloaded animation: " << name << endl;
+	cout << "File loaded: " << filename << '\n';
+}
+
+void AnimatedModel::AnimationLibrary::ChangeAnimation(const std::string& name, AnimInfo& currentAnim)
+{
+	auto it = animations.find(name);
+	if (it != animations.end()) {
+		currentAnim = it->second;
+		currentAnim.CurrentTime = 0.0f;
+		currentAnim.isPlaying = true;
+		currentAnimationName = name;
+	}
+}
+
+const std::string& AnimatedModel::AnimationLibrary::GetCurrentAnimation() const
+{
+	return currentAnimationName;
 }

@@ -72,9 +72,6 @@
     <ClInclude Include="ShadowMapping.h">
       <Filter>Shadow</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>Character</Filter>
-    </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>Object</Filter>
     </ClInclude>
@@ -142,9 +139,6 @@
     </ClCompile>
     <ClCompile Include="ShadowMapping.cpp">
       <Filter>Shadow</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Character</Filter>
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Object</Filter>

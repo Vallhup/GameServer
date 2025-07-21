@@ -4,7 +4,6 @@
 #include "StaticObjectManager.h"
 #include "ShadowMapping.h"
 #include "Camera.h"
-#include "Enemy.h"
 #include "Timer.h"
 #include "NetworkManager.h"
 #include "Character.h"
@@ -159,7 +158,7 @@ void GraphicsManager::SetMyPlayerID(int id)
 
 	// 내 캐릭터가 이미 있으면 로컬 플레이어로 설정
 	Character* myChar = GetCharacter(id);
-	if (myChar && myChar->IsLocalPlayer()) {
+	if (myChar && myChar->CheckLocal()) {
 		myChar->SetCamera(camera);
 	}
 }
@@ -238,7 +237,7 @@ void GraphicsManager::DebugAllCharacterPositions()
 
 		if (character) {
 			glm::vec3 pos = character->GetPosition();
-			bool isLocal = character->IsLocalPlayer();
+			bool isLocal = character->CheckLocal();
 
 			std::cout << "[ID: " << id << "] "
 				<< (isLocal ? "(로컬)" : "(원격)")
@@ -252,7 +251,7 @@ void GraphicsManager::DebugAllCharacterPositions()
 				std::cout << "    - 이동 상태: "
 					<< (character->IsMoving() ? "이동중" : "정지") << std::endl;
 				std::cout << "    - 달리기: "
-					<< (character->Shift_value() ? "ON" : "OFF") << std::endl;
+					<< (character->GetShift() ? "ON" : "OFF") << std::endl;
 			}
 		}
 		else {

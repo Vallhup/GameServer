@@ -10,7 +10,6 @@ class Input
 public:
 	static void KeyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void Scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-	static void MouseFunc(GLFWwindow* window, int button, int action, int mods);
 	static void MouseMoveFunc(GLFWwindow* window, double xpos, double ypos);
 
 	void Update(GLFWwindow* window);

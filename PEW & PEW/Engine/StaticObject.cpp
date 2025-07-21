@@ -87,6 +87,8 @@ void StaticObject::LoadStaticObjectGLB(const std::string& filename) {
 	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
+
+	cout << "File loaded: " << filename << '\n';
 }
 
 void StaticObject::drawStaticobject(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos,

@@ -3,7 +3,6 @@
 #include "stb_image.h"
 #include "Character.h"
 #include "Camera.h"
-#include "Enemy.h"
 
 Bullet::Bullet(int type, int i, int j)
 {
@@ -109,6 +108,8 @@ void Bullet::LoadBulletGLB(const std::string& filename) {
 	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
+
+	cout << "File loaded: " << filename << '\n';
 }
 
 GLuint Bullet::LoadBulletTexture(const char* path)
@@ -180,31 +181,6 @@ void Bullet::BulletSetting(Character* character, Camera* camera, glm::vec3 mouse
 	}
 }
 
-void Bullet::BulletSetting(Enemy* enemy, const glm::vec3 pos)
-{
-	if (b_type == 2)
-	{
-		position = enemy->GetPosition();
-		position.y = 0.45f;
-
-		tPos = pos;
-		tPos.y = 0.45f;
-		direction = glm::normalize(tPos - position);
-		position += 0.5f * direction;
-	}
-}
-
-void Bullet::BulletSettingAgain(Enemy* enemy, glm::vec3 Pos)
-{
-	position = enemy->GetPosition();
-	position.y = 0.45f;
-
-	tPos = Pos;
-	tPos.y = 0.45f;
-	direction = glm::normalize(tPos - position);
-	position += 0.5f * direction;
-}
-
 void Bullet::Render(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos,
 	glm::mat4 lightSpaceMatrix, GLuint shadowMap)
 {
@@ -248,81 +224,6 @@ void Bullet::RenderShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
 		1, GL_FALSE, glm::value_ptr(model));
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
-}
-
-bool Bullet::IsCollapsed(Enemy* enemy[3][9])
-{
-	bool check{ false };
-
-	/*for (int i = 0; i < 70; ++i)
-	{
-		if (min_Z[i] <= position.z && max_Z[i] >= position.z)
-		{
-			if (position.x <= max_X[i] && position.x > min_X[i])
-				check = true;
-		}
-	}*/
-
-	if (b_type == 1)
-	{
-		for (int i = 0; i < 3; ++i)
-		{
-			for (int j = 0; j < 9; ++j)
-			{
-				glm::vec3 pos = enemy[i][j]->GetPosition();
-
-				if (!(enemy[i][j]->GetState() == 4))
-				{
-					if (position.y >= 0.0f && position.y <= 0.95f)
-					{
-						if ((position.x >= pos.x - 0.25f && position.x <= pos.x + 0.25f) &&
-							(position.z >= pos.z - 0.2f && position.z <= pos.z + 0.2f))
-						{
-							enemy[i][j]->SetLife();
-							return true;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return check;
-}
-
-bool Bullet::IsCollapsed(Character* character)
-{
-	bool check{ false };
-
-	/*for (int i = 0; i < 70; ++i)
-	{
-		if (min_Z[i] <= position.z && max_Z[i] >= position.z)
-		{
-			if (position.x <= max_X[i] && position.x > min_X[i])
-				check = true;
-		}
-	}*/
-
-	if (b_type == 2)
-	{
-		glm::vec3 pos = character->GetPosition();
-
-		if (!character->GetDead())
-		{
-			if (position.y >= 0.0f && position.y <= 0.95f)
-			{
-				if ((position.x >= pos.x - 0.25f && position.x <= pos.x + 0.25f) &&
-					(position.z >= pos.z - 0.2f && position.z <= pos.z + 0.2f))
-				{
-					// 주인공 캐릭터 타격
-					character->Setlife();
-					return true;
-				}
-			}
-		}
-	}
-
-	return check;
 }
 
 void Bullet::BulletUpdate()

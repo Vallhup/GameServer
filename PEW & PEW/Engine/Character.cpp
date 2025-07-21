@@ -14,16 +14,17 @@ Character::Character(int id, bool isLocal) : playerID(id), isLocalPlayer(isLocal
 
     if (isLocalPlayer)
         hitbox = new BoundingBox();
-    else
-        hitbox = nullptr;
 
     characterPos = glm::vec3(-37.3051f, 0.0f, 42.5001f);
     targetPos = characterPos;
+
+    for (int i = 0; i < MAX_BULLETS; ++i)
+        bullets[i].bullet = new Bullet(1, 0, 0);
 }
 
 Character::~Character()
 {
-    if (isLocalPlayer && hitbox) {
+    if (isLocalPlayer) {
         delete hitbox;
     }
     delete player_CurrentAnim;
@@ -40,6 +41,12 @@ Character::~Character()
     glDeleteBuffers(1, &EBO);
     glDeleteTextures(1, &Texture);
     glDeleteProgram(shaderprogram);
+
+    for (int i = 0; i < MAX_BULLETS; ++i)
+    {
+        delete bullets[i].bullet;
+        bullets[i].bullet = nullptr;
+    }
 }
 
 void Character::Init()
@@ -53,15 +60,9 @@ void Character::Init()
 
 void Character::Update(float deltaTime)
 {
-    /*if (isLocalPlayer) {
-        HandleLocalPlayerUpdate(deltaTime);
-    }
-    else {*/
-    HandleRemotePlayerUpdate(deltaTime);
-    /*}*/
+    UpdateAllPlayersMovement(deltaTime);
 
     UpdateAnimation();
-    ChangeCatAnimation();
     UpdateHitDecision();
 }
 
@@ -71,7 +72,7 @@ void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, fl
         return;
 
     // 로컬 플레이어만 히트박스 렌더링
-    if (isLocalPlayer && hitbox_ison())
+    if (isLocalPlayer && GetHitBox())
         hitbox->RenderHitbox(angle, characterPos, view, projection);
 
     animModel->UpdateAnimation(0, *player_BoneInfo, deltaTime, *player_CurrentAnim);
@@ -139,12 +140,31 @@ void Character::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader
     glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+void Character::RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap)
+{
+    // 모든 캐릭터의 총알 렌더링 (로컬/원격 구분 없이)
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        if (bullets[i].isActive && bullets[i].bullet) {
+            bullets[i].bullet->Render(orgview, orgproj, viewPos, lightSpaceMatrix, shadowMap);
+        }
+    }
+}
+
+void Character::RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
+{
+    // 모든 캐릭터의 총알 그림자 렌더링 (로컬/원격 구분 없이)
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        if (bullets[i].isActive && bullets[i].bullet) {
+            bullets[i].bullet->RenderShadow(lightSpaceMatrix, depthShader);
+        }
+    }
+}
+
 void Character::CreateBulletFromServer(int bulletID, glm::vec3 startPos)
 {
     // 빈 슬롯 찾기
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (!bullets[i].isActive) {
-            bullets[i].bullet = new Bullet(1, 0, 0);
             bullets[i].bulletID = bulletID;
             bullets[i].isActive = true;
 
@@ -162,8 +182,6 @@ bool Character::RemoveBulletFromServer(int bulletID)
 {
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].isActive && bullets[i].bulletID == bulletID) {
-            delete bullets[i].bullet;
-            bullets[i].bullet = nullptr;
             bullets[i].bulletID = -1;
             bullets[i].isActive = false;
 
@@ -188,41 +206,8 @@ bool Character::UpdateBulletFromServer(int bulletID, glm::vec3 newPos)
     return false;
 }
 
-
-void Character::RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap)
+void Character::UpdateAllPlayersMovement(float deltaTime)
 {
-    // 모든 캐릭터의 총알 렌더링 (로컬/원격 구분 없이)
-    for (int i = 0; i < MAX_BULLETS; ++i) {
-        if (bullets[i].isActive && bullets[i].bullet) {
-            bullets[i].bullet->Render(orgview, orgproj, viewPos, lightSpaceMatrix, shadowMap);
-        }
-    }
-}
-
-void Character::RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
-{
-    // 모든 캐릭터의 총알 그림자 렌더링 (로컬/원격 구분 없이)
-    for (int i = 0; i < MAX_BULLETS; ++i) {
-        if (bullets[i].isActive && bullets[i].bullet) {
-            bullets[i].bullet->RenderShadow(lightSpaceMatrix, depthShader);
-        }
-    }
-}
-
-void Character::HandleLocalPlayerUpdate(float deltaTime)
-{
-    // MainCharacter의 기존 Update 로직
-    if (IsMoving()) {
-        if (Shift_value())
-            Run(deltaTime);
-        else
-            Walk(deltaTime);
-    }
-}
-
-void Character::HandleRemotePlayerUpdate(float deltaTime)
-{
-    // RemotePlayer의 기존 Update 로직 (부드러운 보간)
     glm::vec3 direction = targetPos - characterPos;
     float distance = glm::length(direction);
 
@@ -239,152 +224,6 @@ void Character::UpdateHitDecision()
     {
         if (hitcolor != glm::vec4(1.0f, 1.0f, 1.0f, 1.0f))
             hitcolor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    }
-}
-
-void Character::Walk()
-{
-    if (!isLocalPlayer) return;  // 로컬 플레이어만
-
-    if (!camera->GetViewType()) {
-        if (_Right)
-            characterPos.x += 0.005f;
-        if (_Left)
-            characterPos.x -= 0.005f;
-        if (_Top)
-            characterPos.z -= 0.005f;
-        if (_Bottom)
-            characterPos.z += 0.005f;
-    }
-    else {
-        glm::vec3 forward(
-            sin(camera->GetHorizontalAngle()),
-            0,
-            cos(camera->GetHorizontalAngle())
-        );
-        glm::vec3 right = glm::cross(forward, glm::vec3(0, 1, 0));
-
-        glm::vec3 moveDir(0.0f);
-        if (_Top) moveDir += forward;
-        if (_Bottom) moveDir -= forward;
-        if (_Right) moveDir += right;
-        if (_Left) moveDir -= right;
-
-        if (glm::length(moveDir) > 0) {
-            moveDir = glm::normalize(moveDir);
-            glm::vec3 nextPos = characterPos + moveDir * 0.005f;
-            characterPos = nextPos;
-        }
-    }
-}
-
-void Character::Walk(float deltaTime)
-{
-    if (!isLocalPlayer) return;  // 로컬 플레이어만
-
-    constexpr float WALK_SPEED{ 1.5f };
-
-    if (!camera->GetViewType()) {
-        if (_Right)
-            characterPos.x += WALK_SPEED * deltaTime;
-        if (_Left)
-            characterPos.x -= WALK_SPEED * deltaTime;
-        if (_Top)
-            characterPos.z -= WALK_SPEED * deltaTime;
-        if (_Bottom)
-            characterPos.z += WALK_SPEED * deltaTime;
-    }
-    else {
-        glm::vec3 forward(
-            sin(camera->GetHorizontalAngle()),
-            0,
-            cos(camera->GetHorizontalAngle())
-        );
-        glm::vec3 right = glm::cross(forward, glm::vec3(0, 1, 0));
-
-        glm::vec3 moveDir(0.0f);
-        if (_Top) moveDir += forward;
-        if (_Bottom) moveDir -= forward;
-        if (_Right) moveDir += right;
-        if (_Left) moveDir -= right;
-
-        if (glm::length(moveDir) > 0) {
-            moveDir = glm::normalize(moveDir);
-            characterPos += moveDir * (WALK_SPEED * deltaTime);
-        }
-    }
-}
-
-void Character::Run()
-{
-    if (!isLocalPlayer) return;  // 로컬 플레이어만
-
-    if (!camera->GetViewType()) {
-        if (_Right)
-            characterPos.x += 0.012f;
-        if (_Left)
-            characterPos.x -= 0.012f;
-        if (_Top)
-            characterPos.z -= 0.012f;
-        if (_Bottom)
-            characterPos.z += 0.012f;
-    }
-    else {
-        glm::vec3 forward(
-            sin(camera->GetHorizontalAngle()),
-            0,
-            cos(camera->GetHorizontalAngle())
-        );
-        glm::vec3 right = glm::cross(forward, glm::vec3(0, 1, 0));
-
-        glm::vec3 moveDir(0.0f);
-        if (_Top) moveDir += forward;
-        if (_Bottom) moveDir -= forward;
-        if (_Right) moveDir += right;
-        if (_Left) moveDir -= right;
-
-        if (glm::length(moveDir) > 0) {
-            moveDir = glm::normalize(moveDir);
-            glm::vec3 nextPos = characterPos + moveDir * 0.01f;
-            characterPos = nextPos;
-        }
-    }
-}
-
-void Character::Run(float deltaTime)
-{
-    if (!isLocalPlayer) return;  // 로컬 플레이어만
-
-    constexpr float RUN_SPEED{ 3.0f };
-
-    if (!camera->GetViewType()) {
-        if (_Right)
-            characterPos.x += RUN_SPEED * deltaTime;
-        if (_Left)
-            characterPos.x -= RUN_SPEED * deltaTime;
-        if (_Top)
-            characterPos.z -= RUN_SPEED * deltaTime;
-        if (_Bottom)
-            characterPos.z += RUN_SPEED * deltaTime;
-    }
-    else {
-        glm::vec3 forward(
-            sin(camera->GetHorizontalAngle()),
-            0,
-            cos(camera->GetHorizontalAngle())
-        );
-        glm::vec3 right = glm::cross(forward, glm::vec3(0, 1, 0));
-
-        glm::vec3 moveDir(0.0f);
-        if (_Top) moveDir += forward;
-        if (_Bottom) moveDir -= forward;
-        if (_Right) moveDir += right;
-        if (_Left) moveDir -= right;
-
-        if (glm::length(moveDir) > 0) {
-            moveDir = glm::normalize(moveDir);
-            characterPos += moveDir * (RUN_SPEED * deltaTime);
-        }
     }
 }
 
@@ -406,21 +245,20 @@ void Character::SaveAnimations()
     animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
 }
 
-void Character::CancelCatsFiring()
-{
-    if (firing && !IsLocalPlayer())
-    {
-        AnimInfo* currentAnimInfo = GetCurrentAnim();
-
-        if (currentAnimInfo->CurrentTime + 15.0f >= currentAnimInfo->Duration)
-            firing = false;
-    }
-}
-
 void Character::UpdateAnimation()
 {
     if (dying)
+    {
+        if (animLibrary->GetCurrentAnimation() != "Die")
+            animLibrary->ChangeAnimation("Die", *player_CurrentAnim);
+        else
+        {
+            if (player_CurrentAnim->CurrentTime + 10 >= player_CurrentAnim->Duration)
+                SetDead(true);
+        }
+
         return;
+    }
 
     glm::vec3 velocity = targetPos - characterPos;
     float speed = glm::length(velocity);
@@ -479,146 +317,99 @@ void Character::UpdateAnimation()
             }
         }
     }
-}
 
-void Character::ChangeCatAnimation()
-{
-    if (!dying)
+    if (animLibrary->GetCurrentAnimation() == "FireRun")
     {
-        if (animLibrary->GetCurrentAnimation() == "FireRun")
+        if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
         {
-            if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
+            if (!firing)
             {
-                if (!firing)
+                if (isMoving)
                 {
-                    if (isMoving)
-                    {
-                        if (isRunning)
-                            animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
-                        else
-                            animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
-                    }
+                    if (isRunning)
+                        animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
                     else
-                        animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+                        animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
                 }
                 else
-                {
-                    if (isMoving)
-                    {
-                        if (!isRunning)
-                            animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
-                        else
-                            animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
-                    }
-                    else
-                        animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
-                }
+                    animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
             }
-        }
-        else if (animLibrary->GetCurrentAnimation() == "FireWalk")
-        {
-            if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
+            else
             {
-                if (!firing)
+                if (isMoving)
                 {
-                    if (isMoving)
-                    {
-                        if (isRunning)
-                            animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
-                        else
-                            animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
-                    }
+                    if (!isRunning)
+                        animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
                     else
-                        animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+                        animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
                 }
                 else
-                {
-                    if (isMoving)
-                    {
-                        if (isRunning)
-                            animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
-                        else
-                            animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
-                    }
-                    else
-                        animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
-                }
+                    animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
             }
         }
-        else if (animLibrary->GetCurrentAnimation() == "Fire")
+    }
+    else if (animLibrary->GetCurrentAnimation() == "FireWalk")
+    {
+        if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
         {
-            if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
+            if (!firing)
             {
-                if (!firing)
+                if (isMoving)
                 {
-                    if (isMoving)
-                    {
-                        if (isRunning)
-                            animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
-                        else
-                            animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
-                    }
+                    if (isRunning)
+                        animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
                     else
-                        animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+                        animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
                 }
                 else
+                    animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+            }
+            else
+            {
+                if (isMoving)
                 {
-                    if (isMoving)
-                    {
-                        if (isRunning)
-                            animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
-                        else
-                            animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
-                    }
+                    if (isRunning)
+                        animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
                     else
-                        animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
+                        animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
                 }
+                else
+                    animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
             }
         }
-        else if (animLibrary->GetCurrentAnimation() == "Die")
-            animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
     }
-    else
+    else if (animLibrary->GetCurrentAnimation() == "Fire")
     {
-        if (animLibrary->GetCurrentAnimation() != "Die")
-            animLibrary->ChangeAnimation("Die", *player_CurrentAnim);
-        else
+        if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
         {
-            if (player_CurrentAnim->CurrentTime + 10 >= player_CurrentAnim->Duration)
-                SetDead(true);
+            if (!firing)
+            {
+                if (isMoving)
+                {
+                    if (isRunning)
+                        animLibrary->ChangeAnimation("Run", *player_CurrentAnim);
+                    else
+                        animLibrary->ChangeAnimation("Walk", *player_CurrentAnim);
+                }
+                else
+                    animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
+            }
+            else
+            {
+                if (isMoving)
+                {
+                    if (isRunning)
+                        animLibrary->ChangeAnimation("FireRun", *player_CurrentAnim);
+                    else
+                        animLibrary->ChangeAnimation("FireWalk", *player_CurrentAnim);
+                }
+                else
+                    animLibrary->ChangeAnimation("Fire", *player_CurrentAnim);
+            }
         }
     }
-}
-
-void Character::Setlife()
-{
-    if (!isLocalPlayer) return;  // 로컬 플레이어만
-
-    if (life > 1)
-    {
-        life -= 1;
-        hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
-    }
-    else if (life > 0)
-    {
-        life -= 1;
-        hit_cnt = 200;
-        hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
-        dead = true;
-        _Right = { false };
-        _Left = { false };
-        _Top = { false };
-        _Bottom = { false };
-        _Shift = { false };
-        hitbox_on = { false };
-    }
-}
-
-void Character::SetAnimationType(const std::string& animName)
-{
-    if (animLibrary && player_CurrentAnim) {
-        animLibrary->ChangeAnimation(animName, *player_CurrentAnim);
-    }
+    else if (animLibrary->GetCurrentAnimation() == "Die")
+        animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
 }
 
 void Character::UpdateFromPacket(float ang, float x, float y, float z, char direction, bool move, bool run)
@@ -634,7 +425,7 @@ void Character::UpdateFromPacket(float ang, float x, float y, float z, char dire
 void Character::ReviveFromPacket(float x, float y, float z)
 {
     characterPos = glm::vec3(x, y, z);
-    targetPos = glm::vec3(x, y, z);
+    SetTargetPosition(x, y, z);
     dead = false;
 }
 

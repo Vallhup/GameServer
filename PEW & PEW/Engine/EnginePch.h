@@ -27,6 +27,7 @@ using namespace std;
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <assimp/DefaultLogger.hpp>
 
 // 각종 lib
 #pragma comment(lib, "opengl32.lib")
@@ -34,6 +35,12 @@ using namespace std;
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "ws2_32.lib")
 #pragma warning(disable: 4711 4710 4100)
+
+#ifdef _DEBUG
+#pragma comment(lib, "assimp-vc143-mtd.lib")
+#else
+#pragma comment(lib, "assimp-vc143-mt.lib")
+#endif
 
 // 각종 typedef
 using int8 = __int8;

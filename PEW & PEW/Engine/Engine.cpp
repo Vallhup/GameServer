@@ -29,7 +29,6 @@ void Engine::Init()
 	glfwSetWindowUserPointer(window, input);
 	glfwSetKeyCallback(window, Input::KeyBoardInput);
 	glfwSetScrollCallback(window, Input::Scroll_callback);
-	//glfwSetMouseButtonCallback(window, Input::MouseFunc);
 	glfwSetCursorPosCallback(window, Input::MouseMoveFunc);
 }
 

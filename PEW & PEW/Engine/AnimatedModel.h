@@ -127,52 +127,12 @@ class AnimatedModel
 	// public protected private
 public:
 	struct AnimationLibrary {
+		void LoadAnimation(const std::string& name, const std::string& filename, vector<unique_ptr<Assimp::Importer>>& importers, AnimatedModel* model);
+		void ChangeAnimation(const std::string& name, AnimInfo& currentAnim);
+		const std::string& GetCurrentAnimation() const;
+
 		unordered_map<std::string, AnimInfo> animations;
 		std::string currentAnimationName;
-
-		void LoadAnimation(const std::string& name, const std::string& filename,
-			vector<unique_ptr<Assimp::Importer>>& importers, AnimatedModel* model) {
-			importers.push_back(make_unique<Assimp::Importer>());
-			const aiScene* scene = importers.back()->ReadFile(filename,
-				aiProcess_Triangulate | aiProcess_FlipUVs);
-
-			if (scene->mAnimations[0]->mNumChannels > 0) {
-				aiNodeAnim* channel = scene->mAnimations[0]->mChannels[0];
-			}
-
-			if (scene && scene->HasAnimations()) {
-				AnimInfo animInfo;
-				animInfo.animation = scene->mAnimations[0];
-				animInfo.Duration = scene->mAnimations[0]->mDuration;
-				animInfo.TicksPerSecond = (scene->mAnimations[0]->mTicksPerSecond != 0) ?
-					scene->mAnimations[0]->mTicksPerSecond : 24.0f;
-				animInfo.rootNode = scene->mRootNode;
-
-				for (unsigned int i = 0; i < scene->mAnimations[0]->mNumChannels; i++) {
-					std::string animBoneName = scene->mAnimations[0]->mChannels[i]->mNodeName.data;
-					if (model->m_BoneNameToIndexMap.find(animBoneName) == model->m_BoneNameToIndexMap.end()) {
-					}
-				}
-
-				animations[name] = animInfo;
-			}
-			else
-				cout << "Unloaded animation: " << name << endl;
-		}
-
-		void ChangeAnimation(const std::string& name, AnimInfo& currentAnim) {
-			auto it = animations.find(name);
-			if (it != animations.end()) {
-				currentAnim = it->second;
-				currentAnim.CurrentTime = 0.0f;
-				currentAnim.isPlaying = true;
-				currentAnimationName = name;
-			}
-		}
-
-		const std::string& GetCurrentAnimation() const {
-			return currentAnimationName;
-		}
 	};
 
 public:
