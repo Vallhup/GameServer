@@ -23,7 +23,6 @@ public:
     void Update(float deltaTime);
     void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap);
     void DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShaderProgram);
-
     void RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap);
     void RenderBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
 
@@ -31,6 +30,7 @@ public:
     void CreateBulletFromServer(int bulletID, glm::vec3 startPos);
     bool UpdateBulletFromServer(int bulletID, glm::vec3 newPos);
     bool RemoveBulletFromServer(int bulletID);
+    void UpdateBullets(float deltaTime);
 
     // 입력 처리 (로컬 플레이어만)
     void SetRight(bool in) { if (isLocalPlayer) _Right = in; }

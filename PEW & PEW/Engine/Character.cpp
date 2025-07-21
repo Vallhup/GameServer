@@ -64,6 +64,7 @@ void Character::Update(float deltaTime)
 
     UpdateAnimation();
     UpdateHitDecision();
+    UpdateBullets(deltaTime);
 }
 
 void Character::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
@@ -192,6 +193,16 @@ bool Character::RemoveBulletFromServer(int bulletID)
     }
 
     return false;
+}
+
+void Character::UpdateBullets(float deltaTime)
+{
+    for (int i = 0; i < MAX_BULLETS; ++i)
+    {
+        if (bullets[i].isActive && bullets[i].bullet) {
+            bullets[i].bullet->BulletUpdate(deltaTime);
+        }
+    }
 }
 
 bool Character::UpdateBulletFromServer(int bulletID, glm::vec3 newPos)

@@ -3,6 +3,7 @@
 #include "stb_image.h"
 #include "Character.h"
 #include "Camera.h"
+#include "Timer.h"
 
 Bullet::Bullet(int type, int i, int j)
 {
@@ -24,7 +25,7 @@ void Bullet::SelectBulletType(int type, int i, int j)
 		LoadBulletGLB("StaticGlb/dagger.glb");
 		Texture = LoadBulletTexture("Texture/dagger.png");
 		b_type = type;
-		bulletSpeed = 0.2f;
+		bulletSpeed = 20.0f;
 	}
 	else if (type == 2)
 	{
@@ -226,9 +227,16 @@ void Bullet::RenderShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
 	glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void Bullet::BulletUpdate()
+void Bullet::BulletUpdate(float deltaTime)
 {
-	position += direction * bulletSpeed;
+	glm::vec3 dir = targetPos - position;
+	float dist = glm::length(dir);
+
+	if (dist > 0.001f) {
+		float moveDist = bulletSpeed * deltaTime;
+		float alpha = glm::clamp(moveDist / dist, 0.0f, 1.0f);
+		position = glm::mix(position, targetPos, alpha);
+	}
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
@@ -241,7 +249,10 @@ void Bullet::BulletUpdate()
 
 void Bullet::SetPosition(glm::vec3 startPos)
 {
-	position = startPos;
+	targetPos = startPos;
+
+	if (glm::length(position - targetPos) > 2.0f)
+		position = targetPos;
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, position);

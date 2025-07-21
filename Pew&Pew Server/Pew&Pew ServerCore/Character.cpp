@@ -74,7 +74,7 @@ void Character::TakeDamage(int damage)
 	}
 
 	_hp -= damage;
-	if (_hp < 0) {
+	if (_hp <= 0) {
 		Death();
 	}
 }

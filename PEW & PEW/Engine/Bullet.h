@@ -16,14 +16,11 @@ public:
 	GLuint LoadBulletTexture(const char* path);
 
 	void BulletSetting(Character* character, Camera* camera, glm::vec3 mousePick);
-	void BulletSetting(Enemy* enemy, const glm::vec3 pos);
-	void BulletSettingAgain(Enemy* enemy, glm::vec3 Pos);
 	void Render(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos,
 		glm::mat4 lightSpaceMatrix, GLuint shadowMap);
 	void RenderShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
 
-	bool IsCollapsed(Enemy* enemy[3][9]);
-	void BulletUpdate();
+	void BulletUpdate(float deltaTime);
 
 	glm::vec3 GettPos() { return tPos; }
 	void SetPosition(glm::vec3 startPos);
@@ -31,6 +28,8 @@ public:
 
 private:
 	glm::vec3 position;
+	glm::vec3 targetPos;
+	float lerpSpeed = 1.0f;
 	GLuint VAO, VBO, EBO, shaderprogram, Texture;
 	std::vector<unsigned int> Indices;
 	GLuint ViewLoc, ProjLoc, ModelLoc;
@@ -38,7 +37,7 @@ private:
 	Assimp::Importer objectImporter;
 	bool shoot{ false };
 	glm::vec3 direction{ 1.0f };
-	float bulletSpeed{ 0.2f };
+	float bulletSpeed{ 20.0f };
 	int b_type{ 0 };
 	glm::vec3 tPos;
 	int enemy_i{}, enemy_j{};
