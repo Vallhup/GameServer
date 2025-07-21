@@ -15,17 +15,6 @@ void GraphicsManager::Init()
 
 	camera = new Camera();
 	shadowMap = new ShadowMapping();
-
-	// 임시 테스트용 로컬 캐릭터 생성
-	//AddCharacter(0, true);  // ID=0, 로컬 플레이어
-
-	/*for (int i = 0; i < 3; ++i)
-	{
-		for (int j = 0; j < 9; ++j)
-		{
-			enemy[i][j] = new Enemy(i + 1, j);
-		}
-	}*/
 }
 
 void GraphicsManager::Update()
@@ -37,14 +26,6 @@ void GraphicsManager::Update()
 	for (auto& [id, character] : characters) {
 		character->Update(deltatime);
 	}
-
-	/*for (int i = 0; i < 3; ++i)
-	{
-		for (int j = 0; j < 9; ++j)
-		{
-			enemy[i][j]->Update(deltatime, mainCat->GetPosition(), enemy[i][j], mainCat);
-		}
-	}*/
 }
 
 void GraphicsManager::Render(GLFWwindow* window)
@@ -77,15 +58,6 @@ void GraphicsManager::Render(GLFWwindow* window)
 		character->RenderBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
 	}
 
-	/*for (int i = 0; i < 3; ++i)
-	{
-		for (int j = 0; j < 9; ++j)
-		{
-			enemy[i][j]->Draw(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
-			enemy[i][j]->ThrowBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
-		}
-	}*/
-
 	camera->Render();
 
 	glFinish();
@@ -102,30 +74,15 @@ void GraphicsManager::RenderShadow()
 
 	glm::mat4 lightSpaceMatrix = shadowMap->GetLightSpaceMatrix();
 
-	// 모든 캐릭터 그림자 렌더링
 	for (auto& [id, character] : characters) {
 		character->DrawShadow(lightSpaceMatrix, shadowMap->GetDepthShaderProgram());
 	}
 
-	/*for (int i = 0; i < 3; ++i) {
-		for (int j = 0; j < 9; ++j)
-		{
-			enemy[i][j]->DrawEnemyShadow(shadowMap);
-		}
-	}*/
-
 	GET_SINGLE(StaticObjectManager)->DrawShadow(lightSpaceMatrix, shadowMap->GetStaticDepthShaderProgram());
 
-	// 모든 캐릭터의 총알 그림자 렌더링 (로컬/원격 구분 없이)
 	for (auto& [id, character] : characters) {
 		character->RenderBulletsShadow(shadowMap->GetLightSpaceMatrix(), shadowMap->GetStaticDepthShaderProgram());
 	}
-
-	/*for (int i = 0; i < 3; ++i) {
-		for (int j = 0; j < 9; ++j) {
-			enemy[i][j]->DrawEnemyBulletShadow(lightSpaceMatrix, shadowMap->GetStaticDepthShaderProgram());
-		}
-	}*/
 
 	shadowMap->UnbindFramebuffer();
 	glViewport(0, 0, WIN_W, WIN_H);			// Shadow Pass 종료
@@ -144,23 +101,6 @@ void GraphicsManager::Release()
 
 	delete shadowMap;
 	delete camera;
-
-	for (int i = 0; i < 3; ++i)
-	{
-		for (int j = 0; j < 9; ++j)
-			delete enemy[i][j];
-	}
-}
-
-void GraphicsManager::SetMyPlayerID(int id)
-{
-	myPlayerID = id;
-
-	// 내 캐릭터가 이미 있으면 로컬 플레이어로 설정
-	Character* myChar = GetCharacter(id);
-	if (myChar && myChar->CheckLocal()) {
-		myChar->SetCamera(camera);
-	}
 }
 
 void GraphicsManager::AddCharacter(int id, bool isLocal)

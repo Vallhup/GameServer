@@ -5,10 +5,11 @@
 #include "Camera.h"
 #include "Timer.h"
 
-Bullet::Bullet(int type, int i, int j)
+Bullet::Bullet()
 {
 	SetupShader("Shaders/StaticObjectVert.glsl", "Shaders/StaticObjectFrag.glsl", shaderprogram);
-	SelectBulletType(type, i, j);
+	LoadBulletGLB("StaticGlb/dagger.glb");
+	Texture = LoadBulletTexture("Texture/dagger.png");
 }
 
 Bullet::~Bullet()
@@ -16,26 +17,6 @@ Bullet::~Bullet()
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteProgram(shaderprogram);
-}
-
-void Bullet::SelectBulletType(int type, int i, int j)
-{
-	if (type == 1)
-	{
-		LoadBulletGLB("StaticGlb/dagger.glb");
-		Texture = LoadBulletTexture("Texture/dagger.png");
-		b_type = type;
-		bulletSpeed = 20.0f;
-	}
-	else if (type == 2)
-	{
-		LoadBulletGLB("StaticGlb/star.glb");
-		Texture = LoadBulletTexture("Texture/star.png");
-		b_type = type;
-		enemy_i = i;
-		enemy_j = j;
-		bulletSpeed = 0.3f;
-	}
 }
 
 
@@ -150,36 +131,34 @@ GLuint Bullet::LoadBulletTexture(const char* path)
 
 void Bullet::BulletSetting(Character* character, Camera* camera, glm::vec3 mousePick)
 {
-	if (b_type == 1)
-	{
-		position = character->GetPosition();
-		position.y = 0.45f;
+	position = character->GetPosition();
+	position.y = 0.45f;
 
-		float angle = atan2(mouseDir.x, mouseDir.z);
+	float angle = atan2(mouseDir.x, mouseDir.z);
 
-		if (!camera->GetViewType()) {
+	if (!camera->GetViewType()) {
 
-			position.x += cos(angle) * 0.2f;
-			position.z -= sin(angle) * 0.2f;
+		position.x += cos(angle) * 0.2f;
+		position.z -= sin(angle) * 0.2f;
 
-			glm::vec3 targetPos = mousePick;
-			targetPos.y = 0.45f;
-			direction = glm::normalize(targetPos - position);
-		}
-		else {
-			float horizontalAngle = camera->GetHorizontalAngle();
-			float verticalAngle = camera->GetVerticalAngle();
-
-			direction = glm::vec3(
-				sin(horizontalAngle) * cos(verticalAngle),
-				-sin(verticalAngle),
-				cos(horizontalAngle) * cos(verticalAngle)
-			);
-		}
-
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, position);
+		glm::vec3 targetPos = mousePick;
+		targetPos.y = 0.45f;
+		direction = glm::normalize(targetPos - position);
 	}
+	else {
+		float horizontalAngle = camera->GetHorizontalAngle();
+		float verticalAngle = camera->GetVerticalAngle();
+
+		direction = glm::vec3(
+			sin(horizontalAngle) * cos(verticalAngle),
+			-sin(verticalAngle),
+			cos(horizontalAngle) * cos(verticalAngle)
+		);
+	}
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, position);
+	
 }
 
 void Bullet::Render(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos,
@@ -240,11 +219,7 @@ void Bullet::BulletUpdate(float deltaTime)
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
-
-	if (b_type == 1)
-		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
-	else if (b_type == 2)
-		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+	model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
 }
 
 void Bullet::SetPosition(glm::vec3 startPos)
@@ -253,9 +228,4 @@ void Bullet::SetPosition(glm::vec3 startPos)
 
 	if (glm::length(position - targetPos) > 2.0f)
 		position = targetPos;
-
-	model = glm::mat4(1.0f);
-	model = glm::translate(model, position);
-
-	model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
 }
