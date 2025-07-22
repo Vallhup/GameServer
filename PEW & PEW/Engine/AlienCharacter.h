@@ -20,7 +20,7 @@ public:
 
 	void Update(float deltaTime, MainCharacter* Cat);
 
-	void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint depthMap);
+	void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap);
 	void DrawShadow(ShadowMapping* shadowMap);
 	void DrawBullets(const glm::mat4& view, const glm::mat4& projection, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap);
 	void DrawBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);

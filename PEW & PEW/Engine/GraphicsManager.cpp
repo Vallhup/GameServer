@@ -66,7 +66,7 @@ void GraphicsManager::Render(GLFWwindow* window)
 	for (int type = 0; type < 3; ++type) {
 		for (int location = 0; location < 9; ++location) {
 			if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
-				alienCharacters[type][location]->Draw(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
+				alienCharacters[type][location]->Draw(view, projection, viewPos, deltatime, lightSpaceMatrix, shadowMap->GetDepthMap());
 				alienCharacters[type][location]->DrawBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
 			}
 		}

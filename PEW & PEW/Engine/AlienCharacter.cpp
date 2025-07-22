@@ -50,8 +50,9 @@ void AlienCharacter::Update(float deltaTime, MainCharacter* Cat)
 	UpdateBullets(Cat);
 }
 
-void AlienCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint depthMap)
+void AlienCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
 {
+	animModel->UpdateAnimation(alienType, *alien_BoneInfo, deltaTime, *alien_CurrentAnim);
 	glUseProgram(aShaderprogram);
 	animModel->SetupBoneTransforms(*alien_BoneInfo, aShaderprogram);
 
@@ -305,8 +306,6 @@ void AlienCharacter::ChangeAnimation(float deltaTime)
 		if (animLibrary->GetCurrentAnimation() != "Dance")
 			animLibrary->ChangeAnimation("Dance", *alien_CurrentAnim);
 	}
-
-	animModel->UpdateAnimation(alienType, *alien_BoneInfo, deltaTime, *alien_CurrentAnim);
 }
 
 void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
