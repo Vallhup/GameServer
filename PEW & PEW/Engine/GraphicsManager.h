@@ -32,6 +32,6 @@ private:
 	ShadowMapping* shadowMap = { nullptr };
 	NetworkManager* network = { nullptr };
 	std::map<int, MainCharacter*> catCharacters;  // 모든 캐릭터 (ID 기반)
-	int myPlayerID = -1;
+	int myPlayerID = { -1 };
 	std::array<std::array<AlienCharacter*, 9>, 3> alienCharacters;
 };

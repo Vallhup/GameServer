@@ -32,7 +32,7 @@ private:
 	GraphicsManager* graphics = { nullptr };
 
 	double lastMouseAngle = { 0.0f };
-	bool isAttacking = false;           // 현재 공격 중인지
-	bool wasFireAnimation = false;      // 이전 프레임이 공격 애니메이션이었는지
-	bool firstAttackSent = false;       // 첫 공격 패킷이 전송되었는지
+	bool isAttacking = { false };           // 현재 공격 중인지
+	bool wasFireAnimation = { false };      // 이전 프레임이 공격 애니메이션이었는지
+	bool firstAttackSent = { false };       // 첫 공격 패킷이 전송되었는지
 };

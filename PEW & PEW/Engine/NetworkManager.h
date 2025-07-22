@@ -25,6 +25,6 @@ private:
 	bool isConnected;
 
 	std::vector<char> recvBuffer;
-	GraphicsManager* graphics = nullptr;
+	GraphicsManager* graphics = { nullptr };
 };
 

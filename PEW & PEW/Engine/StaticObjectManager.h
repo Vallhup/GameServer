@@ -18,6 +18,5 @@ public:
 
 private:
 	vector<StaticObject*> StaticObjects;
-
 };
 

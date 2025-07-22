@@ -9,6 +9,6 @@ public:
 	GLFWwindow* GetWindow() { return window; }
 
 private:
-	GLFWwindow* window = nullptr;
-	const char* basename = "PEW & PEW";
+	GLFWwindow* window = { nullptr };
+	const char* basename = { "PEW & PEW" };
 };

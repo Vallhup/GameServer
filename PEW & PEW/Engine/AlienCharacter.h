@@ -19,6 +19,7 @@ private:
 	// 적 정보
 	glm::vec3 alienPos;
 	float viewingAngle;
+	int state = { 0 };     // 0: Idle, 1: Run, 2:Attack, 3: Hit, 4: Die, 5: Dance
 
 	// 적 종류와 위치
 	int alienType;

@@ -76,14 +76,14 @@ extern unsigned int WIN_H;		// 1440
 extern unsigned int WIN_X;
 extern unsigned int WIN_Y;
 
-constexpr float PI = 3.141592f;
+constexpr float PI = { 3.141592f };
 
 extern double cur_x;
 extern double cur_y;
 
 extern glm::vec3 mouseDir;
 
-constexpr unsigned int MAX_BONES = 100;
+constexpr unsigned int MAX_BONES = { 100 };
 
 extern float light_angle;
 

@@ -81,7 +81,7 @@ private:
     float angle = { 0.0f };
     float light_angle = { 0.0f };
 
-    bool start{ false };
+    bool start = { false };
 
     CrossHair* fpscrosshair;
     CrossHair* tpscrosshair;

@@ -14,6 +14,6 @@ private:
 
 private:
 	GLuint VBO, VAO, Hitboxsh;
-	glm::mat4 model{ 1.0f };
+	glm::mat4 model = glm::mat4(1.0f);
 };
 

@@ -22,12 +22,12 @@ public:
 private:
 	glm::vec3 position;
 	glm::vec3 targetPos;
-	glm::vec3 direction{ 1.0f };
-	float bulletSpeed{ 20.0f };
+	glm::vec3 direction;
+	float bulletSpeed = { 20.0f };
 
 	GLuint VAO, VBO, EBO, shaderprogram, Texture;
 	std::vector<unsigned int> Indices;
 	GLuint ViewLoc, ProjLoc, ModelLoc;
-	glm::mat4 model{ 1.0f };
+	glm::mat4 model = glm::mat4(1.0f);;
 	Assimp::Importer objectImporter;
 };

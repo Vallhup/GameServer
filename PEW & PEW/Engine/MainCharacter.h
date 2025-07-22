@@ -71,7 +71,7 @@ public:
     float GetAngle() const { return angle; }
     AnimInfo* GetCurrentAnim() { return player_CurrentAnim; }
     AnimatedModel::AnimationLibrary* GetAnimLibrary() { return animLibrary; }
-    
+
     // Setter
     void SetDying(bool in) { dying = in; }
     void SetDead(bool in) { dead = in; }
@@ -82,31 +82,31 @@ private:
     bool isLocalPlayer;
     glm::vec3 characterPos;
     glm::vec3 targetPos;          // 원격 플레이어용 보간 목표
-    float lerpSpeed = 15.0f;      // 원격 플레이어용 보간 속도
+    float lerpSpeed = { 15.0f };      // 원격 플레이어용 보간 속도
 
     // 캐릭터 상태
-    bool dying = false, dead = false;
-    int hit_cnt = 0;
-    bool firing = false;
+    bool dying = { false }, dead = { false };
+    int hit_cnt = { 0 };
+    bool firing = { false };
 
     // 입력
-    bool _Right = false, _Left = false, _Top = false, _Bottom = false;
-    bool _Shift = false;
-    bool hitbox_on = false;
+    bool _Right = { false }, _Left = { false }, _Top = { false }, _Bottom = { false };
+    bool _Shift = { false };
+    bool hitbox_on = { false };
 
     // 움직임
     float angle;
-    char currentDirection = -1;
-    bool isMoving = false;
-    bool isRunning = false;
+    char currentDirection = { -1 };
+    bool isMoving = { false };
+    bool isRunning = { false };
 
     // 총알
-    static const int MAX_BULLETS = 15;  // 캐릭터당 최대 총알 수
+    static const int MAX_BULLETS = { 15 };  // 캐릭터당 최대 총알 수
     array<BulletSlot, MAX_BULLETS> bullets;
 
     // 로컬 플레이어 전용
-    Camera* camera = nullptr;
-    BoundingBox* hitbox = nullptr;
+    Camera* camera = { nullptr };
+    BoundingBox* hitbox = { nullptr };
 
     // 모델 + 애니메이션
     vector<BoneInfo>* player_BoneInfo;

@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr short BUFFER_SIZE = 4096;
+constexpr short BUFFER_SIZE = { 4096 };
 
 class RecvBuffer
 {
@@ -23,6 +23,6 @@ public:
 
 private:
 	std::vector<char> _buffer;
-	int		_readPos{ 0 };
-	int		_writePos{ 0 };
+	int		_readPos = { 0 };
+	int		_writePos = { 0 };
 };
