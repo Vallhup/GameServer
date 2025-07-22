@@ -22,6 +22,8 @@ public:
 
 	void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint depthMap);
 	void DrawShadow(ShadowMapping* shadowMap);
+	void DrawBullets(const glm::mat4& view, const glm::mat4& projection, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap);
+	void DrawBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
 	void DrawAttackingLine(const glm::mat4& view, const glm::mat4& projection);
 
 	void SaveAnimations();
@@ -37,6 +39,7 @@ public:
 
 	void ActivateBullets();
 	void DeactivateBullets();
+	void UpdateBullets();
 
 	void ChangeHitColor();
 
@@ -50,6 +53,7 @@ private:
 	float viewingAngle;
 	int state = { 0 };     // 0: Idle, 1: Run, 2:Attack, 3: Hit, 4: Die
 	bool dead = { false };
+	bool shotFired[10] = { false };
 
 	glm::vec4 hitcolor = { 1.0f, 1.0f, 1.0f, 1.0f };
 	int hit_cnt = { 200 };
@@ -58,7 +62,7 @@ private:
 	int alienType;
 	int alienLocationSetter;
 
-	static const int MAX_BULLETS = { 5 };  // 적 하나당 최대 총알 수
+	static const int MAX_BULLETS = { 10 };  // 적 하나당 최대 총알 수
 	array<AlienBulletSlot, MAX_BULLETS> bullets;
 
 	// 애니메이션

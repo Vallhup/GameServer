@@ -47,6 +47,7 @@ void AlienCharacter::Update(float deltaTime, MainCharacter* Cat)
 	RotateAliens(Cat);
 	ChangeAnimation(deltaTime);
 	UpdateStateAndBehavior(Cat);
+	UpdateBullets();
 }
 
 void AlienCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint depthMap)
@@ -96,7 +97,6 @@ void AlienCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPo
 	}
 
 	ChangeHitColor();
-	
 }
 
 void AlienCharacter::DrawShadow(ShadowMapping* shadowMap)
@@ -106,6 +106,24 @@ void AlienCharacter::DrawShadow(ShadowMapping* shadowMap)
 	animModel->SetupBoneTransforms(*alien_BoneInfo, shadowMap->GetDepthShaderProgram());
 	glBindVertexArray(aVAO);
 	glDrawElements(GL_TRIANGLES, aIndices.size(), GL_UNSIGNED_INT, 0);
+}
+
+void AlienCharacter::DrawBullets(const glm::mat4& view, const glm::mat4& projection, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap)
+{
+	for (int i = 0; i < MAX_BULLETS; ++i)
+	{
+		if (bullets[i].isActive)
+			bullets[i].bullet->Render(view, projection, viewPos, lightSpaceMatrix, shadowMap);
+	}
+}
+
+void AlienCharacter::DrawBulletsShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
+{
+	for (int i = 0; i < MAX_BULLETS; ++i)
+	{
+		if (bullets[i].isActive)
+			bullets[i].bullet->RenderShadow(lightSpaceMatrix, depthShader);
+	}
 }
 
 void AlienCharacter::DrawAttackingLine(const glm::mat4& view, const glm::mat4& projection)
@@ -316,12 +334,27 @@ void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
 	}
 	else if (state == 2)
 	{
-		if (alien_CurrentAnim->CurrentTime >= 800)
+		float currentTime = alien_CurrentAnim->CurrentTime;
+
+		if (currentTime >= 800 && currentTime < 1550)
 		{
-			ActivateBullets();
+			// 구간 인덱스 계산 (0~4)
+			int interval = (int)((currentTime - 800.0f) / 75.0f);
+
+			// 유효한 구간이고 아직 발사하지 않았다면
+			if (interval >= 0 && interval < 10 && !shotFired[interval])
+			{
+				ActivateBullets();
+				shotFired[interval] = true;  // 해당 구간 발사 완료 표시
+			}
 		}
 		else if (alien_CurrentAnim->CurrentTime + 10 >= alien_CurrentAnim->Duration)
 		{
+			for (int i = 0; i < 10; ++i)
+			{
+				shotFired[i] = false;
+			}
+
 			if (distance > 4.0f && distance < 13.0f)
 			{
 				state = 1;
@@ -391,6 +424,7 @@ void AlienCharacter::ActivateBullets()
 		if (!bullets[i].isActive)
 		{
 			bullets[i].isActive = true;
+			bullets[i].bullet->BulletSetting(alienPos, targetPos);
 			return;
 		}
 	}
@@ -401,6 +435,15 @@ void AlienCharacter::DeactivateBullets()
 	for (int i = 0; i < MAX_BULLETS; ++i)
 	{
 		bullets[i].isActive = false;
+	}
+}
+
+void AlienCharacter::UpdateBullets()
+{
+	for (int i = 0; i < MAX_BULLETS; ++i)
+	{
+		if (bullets[i].isActive)
+			bullets[i].bullet->BulletUpdate();
 	}
 }
 

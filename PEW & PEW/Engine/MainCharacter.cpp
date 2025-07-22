@@ -199,7 +199,7 @@ void MainCharacter::UpdateBullets(float deltaTime)
     for (int i = 0; i < MAX_BULLETS; ++i)
     {
         if (bullets[i].isActive && bullets[i].bullet) {
-            bullets[i].bullet->BulletUpdate(deltaTime);
+            bullets[i].bullet->CatBulletUpdateFromServer(deltaTime);
         }
     }
 }

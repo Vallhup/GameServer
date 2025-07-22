@@ -17,7 +17,9 @@ public:
 	void BulletSetting(MainCharacter* character, Camera* camera, glm::vec3 mousePick);		// 나중에 1인칭 쓸거면 필요한 함수
 	void Render(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap);
 	void RenderShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
-	void BulletUpdate(float deltaTime);		// 캐릭터용
+	void CatBulletUpdateFromServer(float deltaTime);		// 캐릭터용
+	void BulletUpdate();
+	void BulletSetting(const glm::vec3 alienPos, const glm::vec3 catPos);
 	void SetPosition(glm::vec3 startPos);
 
 private:

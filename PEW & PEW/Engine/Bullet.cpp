@@ -31,7 +31,7 @@ void Bullet::SelectBulletType()
 	{
 		LoadBulletGLB("StaticGlb/star.glb");
 		Texture = LoadBulletTexture("Texture/star.png");
-		bulletSpeed = 25.0f;
+		bulletSpeed = 0.02f;
 	}
 }
 
@@ -221,7 +221,7 @@ void Bullet::RenderShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
 	glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void Bullet::BulletUpdate(float deltaTime)
+void Bullet::CatBulletUpdateFromServer(float deltaTime)
 {
 	glm::vec3 dir = targetPos - position;
 	float dist = glm::length(dir);
@@ -235,6 +235,30 @@ void Bullet::BulletUpdate(float deltaTime)
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
 	model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+}
+
+void Bullet::BulletUpdate()
+{
+	position += direction * bulletSpeed;
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, position);
+
+	if (bulletType == 1)
+		model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
+	else if (bulletType == 2)
+		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+}
+
+void Bullet::BulletSetting(const glm::vec3 alienPos, const glm::vec3 catPos)
+{
+	position = alienPos;
+	position.y = 0.45f;
+
+	targetPos = catPos;
+	targetPos.y = 0.45f;
+	direction = glm::normalize(targetPos - position);
+	position += 0.8f * direction;
 }
 
 void Bullet::SetPosition(glm::vec3 startPos)
