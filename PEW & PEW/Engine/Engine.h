@@ -1,8 +1,6 @@
 #pragma once
 
-class NetworkManager;
-class GraphicsManager;
-class Input;
+class SceneManager;
 
 class Engine
 {
@@ -15,7 +13,5 @@ private:
 	void ShowFps();
 
 private:
-	NetworkManager* network;
-	GraphicsManager* graphics;
-	Input* input = { nullptr };
+	SceneManager* sceneManager;
 };

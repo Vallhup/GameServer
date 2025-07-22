@@ -48,6 +48,7 @@ void AlienCharacter::Update(float deltaTime, MainCharacter* Cat)
 	ChangeAnimation(deltaTime);
 	UpdateStateAndBehavior(Cat);
 	UpdateBullets(Cat);
+	UpdateHitDecision();
 }
 
 void AlienCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
@@ -96,8 +97,6 @@ void AlienCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPo
 	{
 		DrawAttackingLine(view, projection);
 	}
-
-	ChangeHitColor();
 }
 
 void AlienCharacter::DrawShadow(ShadowMapping* shadowMap)
@@ -256,6 +255,9 @@ void AlienCharacter::SetupShaders()
 
 void AlienCharacter::RotateAliens(MainCharacter* Cat)
 {
+	if (Cat->GetDead())
+		return;
+
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, GetPosition());
 	glm::vec3 pos = Cat->GetPosition();
@@ -314,13 +316,7 @@ void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
 	glm::vec3 direction = glm::normalize(pos - alienPos);
 	float distance = glm::length(glm::vec2(pos.x - alienPos.x, pos.z - alienPos.z));
 
-	if (Cat->GetDead())
-	{
-		state = 0;
-		return;
-	}
-
-	if (state == 0)
+	if (state == 0 && !Cat->GetDead())
 	{
 		if (distance > 4.0f && distance < 13.0f)
 		{
@@ -364,6 +360,11 @@ void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
 			}
 
 			DeactivateBullets();
+
+			if (Cat->GetDead())
+			{
+				state = 0;
+			}
 		}
 	}
 	else if (state == 3)
@@ -391,6 +392,15 @@ void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
 
 void AlienCharacter::MoveToward(MainCharacter* Cat)
 {
+	if (Cat->GetDead())
+	{
+		state = 0;
+		return;
+	}
+
+	if (state == 4)
+		return;
+
 	glm::vec3 pos = Cat->GetPosition();
 	glm::vec3 direction = glm::normalize(pos - alienPos);
 	float distance = glm::length(glm::vec2(pos.x - alienPos.x, pos.z - alienPos.z));
@@ -412,7 +422,6 @@ void AlienCharacter::MoveToward(MainCharacter* Cat)
 	else if (distance >= 13.0f)
 	{
 		state = 0;
-		viewingAngle += 0.785f;
 	}
 }
 
@@ -454,16 +463,26 @@ void AlienCharacter::UpdateBullets(MainCharacter* Cat)
 	}
 }
 
-void AlienCharacter::ChangeHitColor()
+void AlienCharacter::UpdateHitDecision()
 {
-	if (hitcolor == glm::vec4(1.0f, 0.6f, 0.6f, 1.0f))
+	if (hit_cnt > 0)
+		hit_cnt--;
+	else
 	{
-		hit_cnt -= 1;
+		if (hitcolor != glm::vec4(1.0f, 1.0f, 1.0f, 1.0f))
+			hitcolor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-	if (hit_cnt == 0)
+	if (life == 0)
 	{
-		hitcolor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-		hit_cnt = 200;
+		state = 4;
+		dying = true;
 	}
+}
+
+void AlienCharacter::SetHit()
+{
+	life -= 1;
+	hit_cnt = 200;
+	hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
 }

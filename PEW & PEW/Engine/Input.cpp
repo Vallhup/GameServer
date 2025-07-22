@@ -39,12 +39,14 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			if (action == GLFW_PRESS)
 			{
 				input->mainCat->SetShift(true);
-				input->SendMovePacket();
+				if (input->sceneType == SceneType::Scene2)
+					input->SendMovePacket();
 			}
 			else if (action == GLFW_RELEASE)
 			{
 				input->mainCat->SetShift(false);
-				input->SendMovePacket();
+				if (input->sceneType == SceneType::Scene2)
+					input->SendMovePacket();
 			}
 		}
 		break;
@@ -60,12 +62,14 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			if (action == GLFW_PRESS)
 			{
 				input->mainCat->SetRight(true);
-				input->SendMovePacket();
+				if (input->sceneType == SceneType::Scene2)
+					input->SendMovePacket();
 			}
 			else if (action == GLFW_RELEASE)
 			{
 				input->mainCat->SetRight(false);
-				input->SendMovePacket();
+				if (input->sceneType == SceneType::Scene2)
+					input->SendMovePacket();
 			}
 		}
 		break;
@@ -75,12 +79,14 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			if (action == GLFW_PRESS)
 			{
 				input->mainCat->SetLeft(true);
-				input->SendMovePacket();
+				if (input->sceneType == SceneType::Scene2)
+					input->SendMovePacket();
 			}
 			else if (action == GLFW_RELEASE)
 			{
 				input->mainCat->SetLeft(false);
-				input->SendMovePacket();
+				if (input->sceneType == SceneType::Scene2)
+					input->SendMovePacket();
 			}
 		}
 		break;
@@ -90,12 +96,14 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			if (action == GLFW_PRESS)
 			{
 				input->mainCat->SetTop(true);
-				input->SendMovePacket();
+				if (input->sceneType == SceneType::Scene2)
+					input->SendMovePacket();
 			}
 			else if (action == GLFW_RELEASE)
 			{
 				input->mainCat->SetTop(false);
-				input->SendMovePacket();
+				if (input->sceneType == SceneType::Scene2)
+					input->SendMovePacket();
 			}
 		}
 		break;
@@ -105,12 +113,14 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			if (action == GLFW_PRESS)
 			{
 				input->mainCat->SetBottom(true);
-				input->SendMovePacket();
+				if (input->sceneType == SceneType::Scene2)
+					input->SendMovePacket();
 			}
 			else if (action == GLFW_RELEASE)
 			{
 				input->mainCat->SetBottom(false);
-				input->SendMovePacket();
+				if (input->sceneType == SceneType::Scene2)
+					input->SendMovePacket();
 			}
 		}
 		break;
@@ -139,16 +149,16 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			}
 		}
 		break;
-		//case GLFW_KEY_0:
-		//	if (camera.Get_start_pos() == 0 && !mainCat->getdying() && !finish)
-		//	{
-		//		if (action == GLFW_PRESS)
-		//		{
-		//			cout << "x: " << mainCat->getPosition().x << endl;
-		//			cout << "z: " << mainCat->getPosition().z << endl;
-		//		}
-		//	}
-		//	break;
+		case GLFW_KEY_0:
+			if (input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead()/* && !finish*/)
+			{
+				if (action == GLFW_PRESS)
+				{
+					cout << "x: " << input->mainCat->GetPosition().x << endl;
+					cout << "z: " << input->mainCat->GetPosition().z << endl;
+				}
+			}
+			break;
 		//case GLFW_KEY_1:
 		//	if (camera.Get_start_pos() == 0 && !mainCat->getdying() && !finish)
 		//	{
@@ -228,8 +238,11 @@ void Input::MouseMoveFunc(GLFWwindow* window, double xpos, double ypos)
 	// 이전 각도와 비교해서 1도 이상 차이나면 갱신하고 패킷 전송
 	if (abs(angleRad - input->mainCat->GetAngle()) >= 0.1f) {
 		input->mainCat->SetAngle(angleRad);
-		input->lastMouseAngle = angleRad;
-		input->SendMovePacket();
+		if (input->sceneType == SceneType::Scene2)
+		{
+			input->lastMouseAngle = angleRad;
+			input->SendMovePacket();
+		}
 	}
 }
 
@@ -255,8 +268,10 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 			{
 				// 첫 공격 시작
 				isAttacking = true;
-				SendAttackPacket();
-				firstAttackSent = true;
+				if (sceneType == SceneType::Scene2)
+					SendAttackPacket();
+				else
+					mainCat->SetFiring(true);
 				//cout << "first attack packet has send" << '\n';
 			}
 			else
@@ -267,8 +282,10 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 				{
 					// 첫 공격 시작
 					isAttacking = true;
-					SendAttackPacket();
-					firstAttackSent = true;
+					if (sceneType == SceneType::Scene2)
+						SendAttackPacket();
+					else
+						mainCat->SetFiring(true);
 					//cout << "first attack packet has send" << '\n';
 				}
 			}
@@ -283,7 +300,10 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 				{
 					if (!wasFireAnimation)
 					{
-						SendAttackPacket();
+						if (sceneType == SceneType::Scene2)
+							SendAttackPacket();
+						else
+							mainCat->SetFiring(true);
 						wasFireAnimation = true;
 						//cout << "continuous attack packet has send" << '\n';
 					}
@@ -301,12 +321,14 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 		if (isAttacking)
 		{
 			// attack end 패킷 전송
-			SendAttackEndPacket();
+			if (sceneType == SceneType::Scene2)
+				SendAttackEndPacket();
+			else
+				mainCat->SetFiring(false);
 			//cout << "attack end packet has send" << '\n';
 
 			// 상태 초기화
 			isAttacking = false;
-			firstAttackSent = false;
 			wasFireAnimation = false;
 		}
 	}

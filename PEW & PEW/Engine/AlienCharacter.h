@@ -41,9 +41,12 @@ public:
 	void DeactivateBullets();
 	void UpdateBullets(MainCharacter* Cat);
 
-	void ChangeHitColor();
+	void UpdateHitDecision();
+	void SetHit();
+	void SetDying() { dying = true; }
 
 	const glm::vec3& GetPosition() const { return alienPos; }
+	bool GetDying() const { return dying; }
 	bool GetDead() const { return dead; }
 
 private:
@@ -52,7 +55,8 @@ private:
 	glm::vec3 targetPos;
 	float viewingAngle;
 	int state = { 0 };     // 0: Idle, 1: Run, 2:Attack, 3: Hit, 4: Die
-	bool dead = { false };
+	int life = { 3 };
+	bool dead = { false }, dying = { false };
 	bool shotFired[10] = { false };
 
 	glm::vec4 hitcolor = { 1.0f, 1.0f, 1.0f, 1.0f };

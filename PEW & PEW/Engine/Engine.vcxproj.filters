@@ -102,6 +102,9 @@
     <ClInclude Include="AlienCharacter.h">
       <Filter>Character</Filter>
     </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -169,6 +172,9 @@
     </ClCompile>
     <ClCompile Include="AlienCharacter.cpp">
       <Filter>Character</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -4,6 +4,8 @@
 #include "ShadowMapping.h"
 #include "Camera.h"
 #include "BoundingBox.h"
+#include "AlienCharacter.h"
+#include "SceneManager.h"
 
 MainCharacter::MainCharacter(int id, bool isLocal) : playerID(id), isLocalPlayer(isLocal)
 {
@@ -61,10 +63,22 @@ void MainCharacter::Init()
 void MainCharacter::Update(float deltaTime)
 {
     UpdateAllPlayersMovement(deltaTime);
-
     UpdateAnimation(deltaTime);
     UpdateHitDecision();
-    UpdateBullets(deltaTime);
+    UpdateBulletsFromServer(deltaTime);
+}
+
+void MainCharacter::Update(float deltaTime, array<array<AlienCharacter*, 9>, 3>& aliens)
+{
+   
+    UpdateLocalPlayerState();
+    UpdateLocalPlayerMovement(deltaTime);
+    CheckFireAnimationTiming();
+    UpdateLocalBullets(aliens);
+    UpdateAnimation(deltaTime);
+    UpdateHitDecision();
+    UpdateLocalPlayerRevive();
+    CheckLocalEnd(aliens);
 }
 
 void MainCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
@@ -195,7 +209,7 @@ bool MainCharacter::RemoveBulletFromServer(int bulletID)
     return false;
 }
 
-void MainCharacter::UpdateBullets(float deltaTime)
+void MainCharacter::UpdateBulletsFromServer(float deltaTime)
 {
     for (int i = 0; i < MAX_BULLETS; ++i)
     {
@@ -205,7 +219,7 @@ void MainCharacter::UpdateBullets(float deltaTime)
     }
 }
 
-bool MainCharacter::UpdateBulletFromServer(int bulletID, glm::vec3 newPos)
+bool MainCharacter::SetBulletNextPosFromServer(int bulletID, glm::vec3 newPos)
 {
     for (int i = 0; i < MAX_BULLETS; ++i) {
         if (bullets[i].isActive && bullets[i].bulletID == bulletID) {
@@ -215,6 +229,161 @@ bool MainCharacter::UpdateBulletFromServer(int bulletID, glm::vec3 newPos)
     }
 
     return false;
+}
+
+void MainCharacter::UpdateLocalPlayerMovement(float deltaTime)
+{
+    if (IsMoving()) {
+        LocalMove(deltaTime);
+    }
+}
+
+void MainCharacter::UpdateLocalPlayerState()
+{
+    isMoving = IsMoving();
+    isRunning = GetShift();
+}
+
+void MainCharacter::LocalMove(float deltaTime)
+{
+    float Move_SPEED = GetShift() ? 3.0f : 1.5f;
+
+    if (!camera->GetViewType()) {
+        if (_Right)
+            characterPos.x += Move_SPEED * deltaTime;
+        if (_Left)
+            characterPos.x -= Move_SPEED * deltaTime;
+        if (_Top)
+            characterPos.z -= Move_SPEED * deltaTime;
+        if (_Bottom)
+            characterPos.z += Move_SPEED * deltaTime;
+    }
+    else {
+        glm::vec3 forward(
+            sin(camera->GetHorizontalAngle()),
+            0,
+            cos(camera->GetHorizontalAngle())
+        );
+        glm::vec3 right = glm::cross(forward, glm::vec3(0, 1, 0));
+
+        glm::vec3 moveDir(0.0f);
+        if (_Top) moveDir += forward;
+        if (_Bottom) moveDir -= forward;
+        if (_Right) moveDir += right;
+        if (_Left) moveDir -= right;
+
+        if (glm::length(moveDir) > 0) {
+            moveDir = glm::normalize(moveDir);
+            characterPos += moveDir * (Move_SPEED * deltaTime);
+        }
+    }
+}
+
+void MainCharacter::UpdateLocalBullets(array<array<AlienCharacter*, 9>, 3>& aliens)
+{
+    for (int i = 0; i < MAX_BULLETS; ++i)
+    {
+        if (bullets[i].isActive && bullets[i].bullet) {
+            bullets[i].bullet->BulletUpdate();
+            CheckBulletAlienHit(i, aliens);
+        }
+    }
+}
+
+void MainCharacter::CreateLocalBullet() 
+{
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WIN_W / (float)WIN_H, 0.1f, 1000.0f);
+    glm::mat4 view = camera->GetViewMatrix(characterPos);
+
+    for (int i = 0; i < MAX_BULLETS; ++i) {
+        if (!bullets[i].isActive) {
+            bullets[i].isActive = true;
+            bullets[i].bulletID = -1;  // 로컬 총알은 서버 ID 불필요
+
+            glm::vec3 mousePick = camera->GetMousePicking(cur_x, cur_y, projection, view);
+            bullets[i].bullet->BulletSetting(this, camera, mousePick);
+            return;
+        }
+    }
+}
+
+void MainCharacter::CheckFireAnimationTiming() 
+{
+    std::string currentAnim = animLibrary->GetCurrentAnimation();
+
+    if (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun") {
+        float firetimer = player_CurrentAnim->Duration * 0.56f;
+
+        if (player_CurrentAnim->CurrentTime >= firetimer && !localBulletFired[0]) {
+            CreateLocalBullet();
+            localBulletFired[0] = true;
+        }
+        else if (player_CurrentAnim->CurrentTime >= firetimer + 150.0f && !localBulletFired[1]) {
+            CreateLocalBullet();
+            localBulletFired[1] = true;
+        }
+        else if (player_CurrentAnim->CurrentTime >= firetimer + 300.0f && !localBulletFired[2]) {
+            CreateLocalBullet();
+            localBulletFired[2] = true;
+        }
+
+        if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration) {
+            localBulletFired[0] = localBulletFired[1] = localBulletFired[2] = false;
+        }
+    }
+}
+
+void MainCharacter::CheckBulletAlienHit(int bulletIndex, array<array<AlienCharacter*, 9>, 3>& aliens) 
+{
+    for (int type = 0; type < 3; ++type) {
+        for (int location = 0; location < 9; ++location) {
+            if (aliens[type][location] && !aliens[type][location]->GetDying()) {
+                if (bullets[bulletIndex].bullet->IsCollapsed(aliens[type][location])) {
+                    bullets[bulletIndex].isActive = false;
+                    aliens[type][location]->SetHit();
+                    return;  // 충돌 발생
+                }
+            }
+        }
+    }
+}
+
+void MainCharacter::UpdateLocalPlayerRevive()
+{
+    if (dead)
+    {
+        reviveCount -= 1;
+        cout << reviveCount << '\n';
+    }
+
+    if (reviveCount <= 0)
+    {
+        life = 5;
+        dying = false;
+        dead = false;
+        characterPos = glm::vec3(-37.3051f, 0.0f, 42.5001f);
+        targetPos = characterPos;
+        reviveCount = 300;      // 부활 시간 3초
+    }
+}
+
+void MainCharacter::CheckLocalEnd(array<array<AlienCharacter*, 9>, 3>& aliens)
+{
+    if (characterPos.x < -42.0f && characterPos.z < -49.0f)
+    {
+        // Ending
+        for (int type = 0; type < 3; ++type) {
+            for (int location = 0; location < 9; ++location) {
+                if (!aliens[type][location]->GetDying())
+                    aliens[type][location]->SetDying();
+            }
+        }
+
+        if (sceneManager)
+        {
+            sceneManager->ChangeScene(SceneType::Scene2);
+        }
+    }
 }
 
 void MainCharacter::UpdateAllPlayersMovement(float deltaTime)
@@ -235,6 +404,14 @@ void MainCharacter::UpdateHitDecision()
     {
         if (hitcolor != glm::vec4(1.0f, 1.0f, 1.0f, 1.0f))
             hitcolor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+
+    if (life == 0)
+    {
+        dying = true;
+        _Right = _Left = _Top = _Bottom = false;
+        firing = false;
+        isRunning = false;
     }
 }
 

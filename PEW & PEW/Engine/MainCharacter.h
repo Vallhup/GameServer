@@ -4,6 +4,8 @@
 class Bullet;
 class Camera;
 class BoundingBox;
+class AlienCharacter;
+class SceneManager;
 
 struct CatBulletSlot {
     Bullet* bullet = nullptr;
@@ -21,6 +23,7 @@ public:
 
     void Init();
     void Update(float deltaTime);
+    void Update(float deltaTime, array<array<AlienCharacter*, 9>, 3>& aliens);
     void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap);
     void DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShaderProgram);
     void RenderBullets(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint shadowMap);
@@ -28,9 +31,9 @@ public:
 
     // 서버 함수
     void CreateBulletFromServer(int bulletID, glm::vec3 startPos);
-    bool UpdateBulletFromServer(int bulletID, glm::vec3 newPos);
+    bool SetBulletNextPosFromServer(int bulletID, glm::vec3 newPos);
     bool RemoveBulletFromServer(int bulletID);
-    void UpdateBullets(float deltaTime);
+    void UpdateBulletsFromServer(float deltaTime);
 
     // 입력 처리 (로컬 플레이어만)
     void SetRight(bool in) { if (isLocalPlayer) _Right = in; }
@@ -53,9 +56,21 @@ public:
     void SaveAnimations();
     void UpdateAnimation(float deltaTime);
 
+    // 로컬 (Scene1) 전용
+    void UpdateLocalPlayerMovement(float deltaTime);
+    void UpdateLocalPlayerState();
+    void LocalMove(float deltaTime);
+    void UpdateLocalBullets(array<array<AlienCharacter*, 9>, 3>& aliens);
+    void CreateLocalBullet();
+    void CheckFireAnimationTiming();
+    void CheckBulletAlienHit(int bulletIndex, array<array<AlienCharacter*, 9>, 3>& aliens);
+    void UpdateLocalPlayerRevive();
+    void CheckLocalEnd(array<array<AlienCharacter*, 9>, 3>& aliens);
+
     // 공통 함수
     void UpdateAllPlayersMovement(float deltaTime);
     void UpdateHitDecision();
+    void SetSceneManager(SceneManager* sm) { sceneManager = sm; }
 
     // Getter
     bool CheckLocal() const { return isLocalPlayer; }
@@ -91,6 +106,7 @@ private:
     int hit_cnt = { 0 };
     bool firing = { false };
     int life = { 5 };       // local life
+    int reviveCount = { 300 };
 
     // 입력
     bool _Right = { false }, _Left = { false }, _Top = { false }, _Bottom = { false };
@@ -106,6 +122,10 @@ private:
     // 총알
     static const int MAX_BULLETS = { 15 };  // 캐릭터당 최대 총알 수
     array<CatBulletSlot, MAX_BULLETS> bullets;
+    bool localBulletFired[3] = { false, false, false };
+
+    // 씬 전환
+    SceneManager* sceneManager = nullptr;
 
     // 로컬 플레이어 전용
     Camera* camera = { nullptr };

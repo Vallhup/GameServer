@@ -8,6 +8,7 @@
 #include "NetworkManager.h"
 #include "MainCharacter.h"
 #include "AlienCharacter.h"
+#include "SceneManager.h"
 
 void GraphicsManager::Init()
 {
@@ -17,23 +18,34 @@ void GraphicsManager::Init()
 	camera = new Camera();
 	shadowMap = new ShadowMapping();
 
+	AddCharacter(0, true);
+
 	InitAlienCharacters();
 }
 
-void GraphicsManager::Update()
+void GraphicsManager::Update(SceneType type)
 {
 	float deltaTime = GET_SINGLE(Timer)->GetDeltaTime();
 
 	camera->Update();
 
-	for (auto& [id, character] : catCharacters) {
-		character->Update(deltaTime);
-	}
+	int scenetype = static_cast<int>(type);
 
-	UpdateAlienCharacters(deltaTime);
+	if (type == SceneType::Scene1)
+	{
+		MainCharacter* cat = GetLocalCharacter();
+		cat->Update(deltaTime, alienCharacters);
+		UpdateAlienCharacters(deltaTime);
+	}
+	else
+	{
+		for (auto& [id, character] : catCharacters) {
+			character->Update(deltaTime);
+		}
+	}
 }
 
-void GraphicsManager::Render(GLFWwindow* window)
+void GraphicsManager::Render(GLFWwindow* window, SceneType type)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	float deltatime = GET_SINGLE(Timer)->GetDeltaTime();
@@ -46,29 +58,32 @@ void GraphicsManager::Render(GLFWwindow* window)
 	glm::vec3 viewPos = camera->GetPosition(localChar->GetPosition());
 	glm::mat4 lightSpaceMatrix = shadowMap->GetLightSpaceMatrix();
 
-	RenderShadow();
+	RenderShadow(type);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Normal Pass 시작
 	GET_SINGLE(Skybox)->Draw(view, projection);
 
 	GET_SINGLE(StaticObjectManager)->Draw(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
 
-	// 모든 캐릭터 렌더링
-	for (auto& [id, character] : catCharacters) {
-		character->Draw(view, projection, viewPos, deltatime, lightSpaceMatrix, shadowMap->GetDepthMap());
-	}
+	if (type == SceneType::Scene1)
+	{
+		localChar->Draw(view, projection, viewPos, deltatime, lightSpaceMatrix, shadowMap->GetDepthMap());
+		localChar->RenderBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
 
-	// 모든 캐릭터의 총알 렌더링 (로컬/원격 구분 없이)
-	for (auto& [id, character] : catCharacters) {
-		character->RenderBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
-	}
-
-	for (int type = 0; type < 3; ++type) {
-		for (int location = 0; location < 9; ++location) {
-			if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
-				alienCharacters[type][location]->Draw(view, projection, viewPos, deltatime, lightSpaceMatrix, shadowMap->GetDepthMap());
-				alienCharacters[type][location]->DrawBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
+		for (int type = 0; type < 3; ++type) {
+			for (int location = 0; location < 9; ++location) {
+				if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
+					alienCharacters[type][location]->Draw(view, projection, viewPos, deltatime, lightSpaceMatrix, shadowMap->GetDepthMap());
+					alienCharacters[type][location]->DrawBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
+				}
 			}
+		}
+	}
+	else
+	{
+		for (auto& [id, character] : catCharacters) {
+			character->Draw(view, projection, viewPos, deltatime, lightSpaceMatrix, shadowMap->GetDepthMap());
+			character->RenderBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
 		}
 	}
 
@@ -77,7 +92,7 @@ void GraphicsManager::Render(GLFWwindow* window)
 	glFinish();
 }
 
-void GraphicsManager::RenderShadow()
+void GraphicsManager::RenderShadow(SceneType type)
 {
 	MainCharacter* localChar = GetLocalCharacter();
 	if (!localChar) return;
@@ -88,29 +103,43 @@ void GraphicsManager::RenderShadow()
 
 	glm::mat4 lightSpaceMatrix = shadowMap->GetLightSpaceMatrix();
 
-	for (auto& [id, character] : catCharacters) {
-		character->DrawShadow(lightSpaceMatrix, shadowMap->GetDepthShaderProgram());
-	}
+	if (type == SceneType::Scene1)
+	{
+		localChar->DrawShadow(lightSpaceMatrix, shadowMap->GetDepthShaderProgram());
 
-	for (int type = 0; type < 3; ++type) {
-		for (int location = 0; location < 9; ++location) {
-			if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
-				alienCharacters[type][location]->DrawShadow(shadowMap);
+		for (int type = 0; type < 3; ++type) {
+			for (int location = 0; location < 9; ++location) {
+				if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
+					alienCharacters[type][location]->DrawShadow(shadowMap);
+				}
 			}
+		}
+	}
+	else
+	{
+		for (auto& [id, character] : catCharacters) {
+			character->DrawShadow(lightSpaceMatrix, shadowMap->GetDepthShaderProgram());
 		}
 	}
 
 	GET_SINGLE(StaticObjectManager)->DrawShadow(lightSpaceMatrix, shadowMap->GetStaticDepthShaderProgram());
 
-	for (auto& [id, character] : catCharacters) {
-		character->RenderBulletsShadow(shadowMap->GetLightSpaceMatrix(), shadowMap->GetStaticDepthShaderProgram());
-	}
+	if (type == SceneType::Scene1)
+	{
+		localChar->RenderBulletsShadow(shadowMap->GetLightSpaceMatrix(), shadowMap->GetStaticDepthShaderProgram());
 
-	for (int type = 0; type < 3; ++type) {
-		for (int location = 0; location < 9; ++location) {
-			if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
-				alienCharacters[type][location]->DrawBulletsShadow(shadowMap->GetLightSpaceMatrix(), shadowMap->GetStaticDepthShaderProgram());
+		for (int type = 0; type < 3; ++type) {
+			for (int location = 0; location < 9; ++location) {
+				if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
+					alienCharacters[type][location]->DrawBulletsShadow(shadowMap->GetLightSpaceMatrix(), shadowMap->GetStaticDepthShaderProgram());
+				}
 			}
+		}
+	}
+	else
+	{
+		for (auto& [id, character] : catCharacters) {
+			character->RenderBulletsShadow(shadowMap->GetLightSpaceMatrix(), shadowMap->GetStaticDepthShaderProgram());
 		}
 	}
 
@@ -222,11 +251,6 @@ MainCharacter* GraphicsManager::GetMainCat()
 	return GetLocalCharacter();
 }
 
-void GraphicsManager::SetNetworkManager(NetworkManager* net)
-{
-	network = net;
-}
-
 void GraphicsManager::DebugAllCharacterPositions()
 {
 	std::cout << "\n=== 모든 캐릭터 위치 디버깅 ===" << std::endl;
@@ -262,4 +286,12 @@ void GraphicsManager::DebugAllCharacterPositions()
 		}
 	}
 	std::cout << "=============================\n" << std::endl;
+}
+
+void GraphicsManager::SetSceneManager(SceneManager* sm) 
+{
+	MainCharacter* localChar = GetLocalCharacter();
+	if (localChar) {
+		localChar->SetSceneManager(sm);
+	}
 }

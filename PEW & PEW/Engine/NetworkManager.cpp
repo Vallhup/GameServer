@@ -265,7 +265,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 
 				// 모든 캐릭터를 순회하면서 해당 총알 ID 찾기
 				for (auto& [id, character] : graphics->GetAllCharacters()) {
-					if (character->UpdateBulletFromServer(movePacket.id, newPos)) {
+					if (character->SetBulletNextPosFromServer(movePacket.id, newPos)) {
 						bulletFound = true;
 						break;
 					}

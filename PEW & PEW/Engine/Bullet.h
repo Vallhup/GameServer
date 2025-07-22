@@ -3,6 +3,7 @@
 class MainCharacter;
 class Enemy;
 class Camera;
+class AlienCharacter;
 
 class Bullet
 {
@@ -22,6 +23,7 @@ public:
 	void BulletSetting(const glm::vec3 alienPos, const glm::vec3 catPos);
 	void SetPosition(glm::vec3 startPos);
 
+	bool IsCollapsed(AlienCharacter* alien);
 	bool IsCollapsed(MainCharacter* Cat);
 
 private:
