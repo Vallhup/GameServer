@@ -76,6 +76,7 @@ public:
     // Setter
     void SetDying(bool in) { dying = in; }
     void SetDead(bool in) { dead = in; }
+    void SetHit();
 
 private:
     // 기본 정보
@@ -89,6 +90,7 @@ private:
     bool dying = { false }, dead = { false };
     int hit_cnt = { 0 };
     bool firing = { false };
+    int life = { 5 };       // local life
 
     // 입력
     bool _Right = { false }, _Left = { false }, _Top = { false }, _Bottom = { false };

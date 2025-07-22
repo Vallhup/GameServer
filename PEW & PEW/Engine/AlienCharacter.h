@@ -39,7 +39,7 @@ public:
 
 	void ActivateBullets();
 	void DeactivateBullets();
-	void UpdateBullets();
+	void UpdateBullets(MainCharacter* Cat);
 
 	void ChangeHitColor();
 

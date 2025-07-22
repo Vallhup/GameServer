@@ -268,3 +268,34 @@ void Bullet::SetPosition(glm::vec3 startPos)
 	if (glm::length(position - targetPos) > 2.0f)
 		position = targetPos;
 }
+
+bool Bullet::IsCollapsed(MainCharacter* Cat)
+{
+	bool check{ false };
+
+	/*for (int i = 0; i < 70; ++i)
+	{
+		if (min_Z[i] <= position.z && max_Z[i] >= position.z)
+		{
+			if (position.x <= max_X[i] && position.x > min_X[i])
+				check = true;
+		}
+	}*/
+
+	glm::vec3 pos = Cat->GetPosition();
+
+	if (!Cat->GetDead())
+	{
+		if (position.y >= 0.0f && position.y <= 0.95f)
+		{
+			if ((position.x >= pos.x - 0.25f && position.x <= pos.x + 0.25f) &&
+				(position.z >= pos.z - 0.2f && position.z <= pos.z + 0.2f))
+			{
+				return true;
+			}
+		}
+	}
+	
+
+	return check;
+}

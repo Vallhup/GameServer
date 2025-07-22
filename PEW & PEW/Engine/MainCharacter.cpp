@@ -237,6 +237,13 @@ void MainCharacter::UpdateHitDecision()
     }
 }
 
+void MainCharacter::SetHit()
+{
+    life -= 1;
+    hit_cnt = 200;
+    hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
+}
+
 void MainCharacter::SaveAnimations()
 {
     animLibrary->LoadAnimation("Idle", "Animations/cat_animation_idle.glb", animationImporters, animModel);

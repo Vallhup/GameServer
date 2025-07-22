@@ -22,6 +22,8 @@ public:
 	void BulletSetting(const glm::vec3 alienPos, const glm::vec3 catPos);
 	void SetPosition(glm::vec3 startPos);
 
+	bool IsCollapsed(MainCharacter* Cat);
+
 private:
 	glm::vec3 position;
 	glm::vec3 targetPos;

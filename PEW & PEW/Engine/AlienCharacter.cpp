@@ -47,7 +47,7 @@ void AlienCharacter::Update(float deltaTime, MainCharacter* Cat)
 	RotateAliens(Cat);
 	ChangeAnimation(deltaTime);
 	UpdateStateAndBehavior(Cat);
-	UpdateBullets();
+	UpdateBullets(Cat);
 }
 
 void AlienCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint depthMap)
@@ -438,12 +438,20 @@ void AlienCharacter::DeactivateBullets()
 	}
 }
 
-void AlienCharacter::UpdateBullets()
+void AlienCharacter::UpdateBullets(MainCharacter* Cat)
 {
 	for (int i = 0; i < MAX_BULLETS; ++i)
 	{
 		if (bullets[i].isActive)
+		{
 			bullets[i].bullet->BulletUpdate();
+
+			if (bullets[i].bullet->IsCollapsed(Cat))
+			{
+				bullets[i].isActive = false;
+				Cat->SetHit();
+			}
+		}
 	}
 }
 
