@@ -21,7 +21,7 @@ AlienCharacter::AlienCharacter(int type, int location)
 	SetupShaders();
 
 	for (int i = 0; i < MAX_BULLETS; ++i)
-		bullets[i].bullet = new Bullet(2);
+		bullets[i].bullet = new Bullet(2, 0.02f);
 
 	glGenVertexArrays(1, &lVAO);
 	glGenBuffers(1, &lVBO);

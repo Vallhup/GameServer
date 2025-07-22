@@ -20,7 +20,7 @@ public:
 	void InitAlienCharacters();
 	void UpdateAlienCharacters(float deltatime);
 
-	void AddCharacter(int id, bool isLocal = false);
+	void AddCharacter(int id, bool isLocal = false, float speed = 0.1f);
 	void RemoveCharacter(int id);
 	MainCharacter* GetCharacter(int id);
 	MainCharacter* GetLocalCharacter();

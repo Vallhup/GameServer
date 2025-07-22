@@ -18,7 +18,7 @@ void GraphicsManager::Init()
 	camera = new Camera();
 	shadowMap = new ShadowMapping();
 
-	AddCharacter(0, true);
+	AddCharacter(0, true, 0.1f);
 
 	InitAlienCharacters();
 }
@@ -195,10 +195,10 @@ void GraphicsManager::UpdateAlienCharacters(float deltatime)
 	}
 }
 
-void GraphicsManager::AddCharacter(int id, bool isLocal)
+void GraphicsManager::AddCharacter(int id, bool isLocal, float speed)
 {
 	if (catCharacters.find(id) == catCharacters.end()) {
-		MainCharacter* newChar = new MainCharacter(id, isLocal);
+		MainCharacter* newChar = new MainCharacter(id, isLocal, speed);
 		newChar->Init();
 		catCharacters[id] = newChar;
 

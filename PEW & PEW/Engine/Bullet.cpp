@@ -6,11 +6,11 @@
 #include "Timer.h"
 #include "AlienCharacter.h"
 
-Bullet::Bullet(int type)
+Bullet::Bullet(int type, float speed)
 {
 	SetupShader("Shaders/StaticObjectVert.glsl", "Shaders/StaticObjectFrag.glsl", shaderprogram);
 	bulletType = type;
-	SelectBulletType();
+	SelectBulletType(speed);
 }
 
 Bullet::~Bullet()
@@ -20,19 +20,19 @@ Bullet::~Bullet()
 	glDeleteProgram(shaderprogram);
 }
 
-void Bullet::SelectBulletType()
+void Bullet::SelectBulletType(float speed)
 {
 	if (bulletType == 1)
 	{
 		LoadBulletGLB("StaticGlb/dagger.glb");
 		Texture = LoadBulletTexture("Texture/dagger.png");
-		bulletSpeed = 0.1f;
+		bulletSpeed = speed;
 	}
 	else if (bulletType == 2)
 	{
 		LoadBulletGLB("StaticGlb/star.glb");
 		Texture = LoadBulletTexture("Texture/star.png");
-		bulletSpeed = 0.02f;
+		bulletSpeed = speed;
 	}
 }
 

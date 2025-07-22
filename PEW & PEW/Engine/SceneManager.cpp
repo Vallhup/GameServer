@@ -27,7 +27,7 @@ void SceneManager::Render(GLFWwindow* window)
 
 void SceneManager::Release()
 {
-	//ReleaseScene2();
+	ReleaseScene2();
 }
 
 void SceneManager::ChangeScene(SceneType newScene)
@@ -37,6 +37,7 @@ void SceneManager::ChangeScene(SceneType newScene)
 
 	if (currentScene == SceneType::Scene1 && newScene == SceneType::Scene2)
 	{
+		input->SetMainCharacter(nullptr);
 		currentScene = newScene;
 		graphics->RemoveCharacter(0);
 		InitScene2();

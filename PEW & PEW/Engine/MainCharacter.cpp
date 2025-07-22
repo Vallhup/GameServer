@@ -7,7 +7,7 @@
 #include "AlienCharacter.h"
 #include "SceneManager.h"
 
-MainCharacter::MainCharacter(int id, bool isLocal) : playerID(id), isLocalPlayer(isLocal)
+MainCharacter::MainCharacter(int id, bool isLocal, float speed) : playerID(id), isLocalPlayer(isLocal)
 {
     player_BoneInfo = new vector<BoneInfo>();
     animModel = new AnimatedModel();
@@ -21,7 +21,7 @@ MainCharacter::MainCharacter(int id, bool isLocal) : playerID(id), isLocalPlayer
     targetPos = characterPos;
 
     for (int i = 0; i < MAX_BULLETS; ++i)
-        bullets[i].bullet = new Bullet(1);
+        bullets[i].bullet = new Bullet(1, speed);
 }
 
 MainCharacter::~MainCharacter()
@@ -384,6 +384,15 @@ void MainCharacter::CheckLocalEnd(array<array<AlienCharacter*, 9>, 3>& aliens)
             sceneManager->ChangeScene(SceneType::Scene2);
         }
     }
+}
+
+void MainCharacter::ResetAllStates()
+{
+    _Right = _Left = _Top = _Bottom = _Shift = false;
+    firing = false;
+    isRunning = false;
+    dying = false;
+    dead = false;
 }
 
 void MainCharacter::UpdateAllPlayersMovement(float deltaTime)

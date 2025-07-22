@@ -8,10 +8,10 @@ class AlienCharacter;
 class Bullet
 {
 public:
-	Bullet(int type);
+	Bullet(int type, float speed);
 	~Bullet();
 
-	void SelectBulletType();
+	void SelectBulletType(float speed);
 	void LoadBulletGLB(const std::string& filename);
 	GLuint LoadBulletTexture(const char* path);
 
