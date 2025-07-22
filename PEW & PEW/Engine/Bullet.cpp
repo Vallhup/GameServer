@@ -5,11 +5,11 @@
 #include "Camera.h"
 #include "Timer.h"
 
-Bullet::Bullet()
+Bullet::Bullet(int type)
 {
 	SetupShader("Shaders/StaticObjectVert.glsl", "Shaders/StaticObjectFrag.glsl", shaderprogram);
-	LoadBulletGLB("StaticGlb/dagger.glb");
-	Texture = LoadBulletTexture("Texture/dagger.png");
+	bulletType = type;
+	SelectBulletType();
 }
 
 Bullet::~Bullet()
@@ -19,6 +19,21 @@ Bullet::~Bullet()
 	glDeleteProgram(shaderprogram);
 }
 
+void Bullet::SelectBulletType()
+{
+	if (bulletType == 1)
+	{
+		LoadBulletGLB("StaticGlb/dagger.glb");
+		Texture = LoadBulletTexture("Texture/dagger.png");
+		bulletSpeed = 20.0f;
+	}
+	else if (bulletType == 2)
+	{
+		LoadBulletGLB("StaticGlb/star.glb");
+		Texture = LoadBulletTexture("Texture/star.png");
+		bulletSpeed = 25.0f;
+	}
+}
 
 void Bullet::LoadBulletGLB(const std::string& filename) {
 	const aiScene* scene = objectImporter.ReadFile(filename,

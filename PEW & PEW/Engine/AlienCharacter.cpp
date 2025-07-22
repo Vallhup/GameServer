@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "AlienCharacter.h"
+#include "MainCharacter.h"
+#include "Bullet.h"
+#include "ShadowMapping.h"
 
 AlienCharacter::AlienCharacter(int type, int location)
 {
@@ -16,6 +19,12 @@ AlienCharacter::AlienCharacter(int type, int location)
 	SetSpawnPosition();
 	SetSpawnAngle();
 	SetupShaders();
+
+	for (int i = 0; i < MAX_BULLETS; ++i)
+		bullets[i].bullet = new Bullet(2);
+
+	glGenVertexArrays(1, &lVAO);
+	glGenBuffers(1, &lVBO);
 }
 
 AlienCharacter::~AlienCharacter()
@@ -33,9 +42,111 @@ AlienCharacter::~AlienCharacter()
 	glDeleteProgram(aShaderprogram);
 }
 
-void AlienCharacter::Update()
+void AlienCharacter::Update(float deltaTime, MainCharacter* Cat)
 {
+	RotateAliens(Cat);
+	ChangeAnimation(deltaTime);
+	UpdateStateAndBehavior(Cat);
+}
 
+void AlienCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, glm::mat4 lightSpaceMatrix, GLuint depthMap)
+{
+	glUseProgram(aShaderprogram);
+	animModel->SetupBoneTransforms(*alien_BoneInfo, aShaderprogram);
+
+	ViewLoc = glGetUniformLocation(aShaderprogram, "view");
+	glUniformMatrix4fv(ViewLoc, 1, GL_FALSE, &view[0][0]);
+	ProjLoc = glGetUniformLocation(aShaderprogram, "projection");
+	glUniformMatrix4fv(ProjLoc, 1, GL_FALSE, &projection[0][0]);
+	ModelLoc = glGetUniformLocation(aShaderprogram, "model");
+	glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, &model[0][0]);
+
+	GLuint lightSpaceMatrixLoc = glGetUniformLocation(aShaderprogram, "lightSpaceMatrix");
+	glUniformMatrix4fv(lightSpaceMatrixLoc, 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	GLuint shadowMapLoc = glGetUniformLocation(aShaderprogram, "shadowMap");
+	glUniform1i(shadowMapLoc, 1);
+
+	GLuint lightPosLoc = glGetUniformLocation(aShaderprogram, "lightPos");
+	GLuint viewPosLoc = glGetUniformLocation(aShaderprogram, "viewPos");
+	glm::vec3 lightPos{ -37.3051f - (1000.0f * cos(light_angle)), 0.0f + 1000.0f, 42.5001f + (1000.0f * sin(light_angle)) };
+	glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
+	glUniform3fv(viewPosLoc, 1, glm::value_ptr(viewPos));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, aTexture);
+	TextureLoc = glGetUniformLocation(aShaderprogram, "catTexture");
+	glUniform1i(TextureLoc, 0);
+
+	colorHitLoc = glGetUniformLocation(aShaderprogram, "colorHit");
+	glUniform4fv(colorHitLoc, 1, glm::value_ptr(hitcolor));
+
+	UseTextureLoc = glGetUniformLocation(aShaderprogram, "useTexture");
+	glUniform1i(UseTextureLoc, 1);
+
+	glBindVertexArray(aVAO);
+	glDrawElements(GL_TRIANGLES, aIndices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	if (state == 2 && alien_CurrentAnim->CurrentTime < 750)
+	{
+		DrawAttackingLine(view, projection);
+	}
+
+	ChangeHitColor();
+	
+}
+
+void AlienCharacter::DrawShadow(ShadowMapping* shadowMap)
+{
+	ModelLoc = glGetUniformLocation(shadowMap->GetDepthShaderProgram(), "model");
+	glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	animModel->SetupBoneTransforms(*alien_BoneInfo, shadowMap->GetDepthShaderProgram());
+	glBindVertexArray(aVAO);
+	glDrawElements(GL_TRIANGLES, aIndices.size(), GL_UNSIGNED_INT, 0);
+}
+
+void AlienCharacter::DrawAttackingLine(const glm::mat4& view, const glm::mat4& projection)
+{
+	glUseProgram(lShaderprogram);
+
+	const int segments = 30;
+	std::vector<glm::vec3> linePositions;
+
+	glm::vec3 startPos = { alienPos.x, 0.45f, alienPos.z };
+	glm::vec3 endPos = { targetPos.x - (alienPos.x - targetPos.x), 0.45f,
+						targetPos.z - (alienPos.z - targetPos.z) };
+
+	glm::vec3 direction = endPos - startPos;
+	float totalLength = glm::length(direction);
+	float segmentLength = totalLength / (segments * 2);
+
+	direction = glm::normalize(direction);
+
+	for (int i = 0; i < segments; i++) {
+		float start = i * segmentLength * 2;
+		linePositions.push_back(startPos + direction * start);
+		linePositions.push_back(startPos + direction * (start + segmentLength));
+	}
+
+	glBindVertexArray(lVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, lVBO);
+	glBufferData(GL_ARRAY_BUFFER, linePositions.size() * sizeof(glm::vec3),
+		linePositions.data(), GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glUniformMatrix4fv(glGetUniformLocation(lShaderprogram, "view"), 1,
+		GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(glGetUniformLocation(lShaderprogram, "projection"), 1,
+		GL_FALSE, glm::value_ptr(projection));
+	glUniform3f(glGetUniformLocation(lShaderprogram, "lineColor"), 1.0f, 0.2f, 0.2f);
+
+	glLineWidth(2.0f);
+	glDrawArrays(GL_LINES, 0, linePositions.size());
+	glBindVertexArray(0);
 }
 
 void AlienCharacter::SaveAnimations()
@@ -122,4 +233,187 @@ void AlienCharacter::SetupShaders()
 {
 	SetupShader("Shaders/EnemyVert.glsl", "Shaders/EnemyFrag.glsl", aShaderprogram);
 	SetupShader("Shaders/EnemyLineVert.glsl", "Shaders/EnemyLineFrag.glsl", lShaderprogram);
+}
+
+void AlienCharacter::RotateAliens(MainCharacter* Cat)
+{
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, GetPosition());
+	glm::vec3 pos = Cat->GetPosition();
+	targetPos = pos;
+
+	float distance = glm::length(glm::vec2(pos.x - alienPos.x, pos.z - alienPos.z));
+	float angle = atan2(pos.x - alienPos.x, pos.z - alienPos.z);
+
+	if (distance < 13.0f)
+	{
+		if (!(state == 4))
+		{
+			viewingAngle = angle;
+		}
+	}
+	model = glm::rotate(model, viewingAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+}
+
+void AlienCharacter::ChangeAnimation(float deltaTime)
+{
+	if (state == 0)
+	{
+		if (animLibrary->GetCurrentAnimation() != "Idle")
+			animLibrary->ChangeAnimation("Idle", *alien_CurrentAnim);
+	}
+	else if (state == 1)
+	{
+		if (animLibrary->GetCurrentAnimation() != "Run")
+			animLibrary->ChangeAnimation("Run", *alien_CurrentAnim);
+	}
+	else if (state == 2)
+	{
+		if (animLibrary->GetCurrentAnimation() != "Attack")
+			animLibrary->ChangeAnimation("Attack", *alien_CurrentAnim);
+	}
+	else if (state == 3)
+	{
+		if (animLibrary->GetCurrentAnimation() == "Idle")
+			animLibrary->ChangeAnimation("Hit", *alien_CurrentAnim);
+	}
+	else if (state == 4)
+	{
+		if (animLibrary->GetCurrentAnimation() != "Death")
+			animLibrary->ChangeAnimation("Death", *alien_CurrentAnim);
+	}
+	else if (state == 5)
+	{
+		if (animLibrary->GetCurrentAnimation() != "Dance")
+			animLibrary->ChangeAnimation("Dance", *alien_CurrentAnim);
+	}
+
+	animModel->UpdateAnimation(alienType, *alien_BoneInfo, deltaTime, *alien_CurrentAnim);
+}
+
+void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
+{
+	glm::vec3 pos = Cat->GetPosition();
+	glm::vec3 direction = glm::normalize(pos - alienPos);
+	float distance = glm::length(glm::vec2(pos.x - alienPos.x, pos.z - alienPos.z));
+
+	if (Cat->GetDead())
+	{
+		state = 0;
+		return;
+	}
+
+	if (state == 0)
+	{
+		if (distance > 4.0f && distance < 13.0f)
+		{
+			state = 1;
+		}
+	}
+	else if (state == 1)
+	{
+		MoveToward(Cat);
+	}
+	else if (state == 2)
+	{
+		if (alien_CurrentAnim->CurrentTime >= 800)
+		{
+			ActivateBullets();
+		}
+		else if (alien_CurrentAnim->CurrentTime + 10 >= alien_CurrentAnim->Duration)
+		{
+			if (distance > 4.0f && distance < 13.0f)
+			{
+				state = 1;
+			}
+			else if (distance >= 13.0f)
+			{
+				state = 0;
+			}
+
+			DeactivateBullets();
+		}
+	}
+	else if (state == 3)
+	{
+		if (alien_CurrentAnim->CurrentTime + 10 >= alien_CurrentAnim->Duration)
+		{
+			if (distance > 4.0f && distance < 13.0f)
+			{
+				state = 1;
+			}
+			else if (distance >= 13.0f)
+			{
+				state = 0;
+			}
+		}
+	}
+	else if (state == 4)
+	{
+		if (alien_CurrentAnim->CurrentTime + 10 >= alien_CurrentAnim->Duration)
+		{
+			dead = true;
+		}
+	}
+}
+
+void AlienCharacter::MoveToward(MainCharacter* Cat)
+{
+	glm::vec3 pos = Cat->GetPosition();
+	glm::vec3 direction = glm::normalize(pos - alienPos);
+	float distance = glm::length(glm::vec2(pos.x - alienPos.x, pos.z - alienPos.z));
+
+	
+	if (/*!wallcollapsed_s() &&*/ pos.z > alienPos.z)
+		alienPos.z += 0.01f;
+	if (/*!wallcollapsed_w() &&*/ pos.z < alienPos.z)
+		alienPos.z -= 0.01f;
+	if (/*!wallcollapsed_d() &&*/ pos.x > alienPos.x)
+		alienPos.x += 0.01f;
+	if (/*!wallcollapsed_a() &&*/ pos.x < alienPos.x)
+		alienPos.x -= 0.01f;
+	
+	if (distance <= 4.0f)
+	{
+		state = 2;
+	}
+	else if (distance >= 13.0f)
+	{
+		state = 0;
+		viewingAngle += 0.785f;
+	}
+}
+
+void AlienCharacter::ActivateBullets()
+{
+	for (int i = 0; i < MAX_BULLETS; ++i)
+	{
+		if (!bullets[i].isActive)
+		{
+			bullets[i].isActive = true;
+			return;
+		}
+	}
+}
+
+void AlienCharacter::DeactivateBullets()
+{
+	for (int i = 0; i < MAX_BULLETS; ++i)
+	{
+		bullets[i].isActive = false;
+	}
+}
+
+void AlienCharacter::ChangeHitColor()
+{
+	if (hitcolor == glm::vec4(1.0f, 0.6f, 0.6f, 1.0f))
+	{
+		hit_cnt -= 1;
+	}
+
+	if (hit_cnt == 0)
+	{
+		hitcolor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		hit_cnt = 200;
+	}
 }

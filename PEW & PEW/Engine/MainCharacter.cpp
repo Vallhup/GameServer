@@ -19,7 +19,7 @@ MainCharacter::MainCharacter(int id, bool isLocal) : playerID(id), isLocalPlayer
     targetPos = characterPos;
 
     for (int i = 0; i < MAX_BULLETS; ++i)
-        bullets[i].bullet = new Bullet();
+        bullets[i].bullet = new Bullet(1);
 }
 
 MainCharacter::~MainCharacter()

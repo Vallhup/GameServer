@@ -15,6 +15,9 @@ public:
 	void RenderShadow();
 	void Release();
 
+	void InitAlienCharacters();
+	void UpdateAlienCharacters(float deltatime);
+
 	void AddCharacter(int id, bool isLocal = false);
 	void RemoveCharacter(int id);
 	MainCharacter* GetCharacter(int id);

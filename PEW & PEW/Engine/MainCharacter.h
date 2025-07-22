@@ -5,12 +5,12 @@ class Bullet;
 class Camera;
 class BoundingBox;
 
-struct BulletSlot {
+struct CatBulletSlot {
     Bullet* bullet = nullptr;
     int bulletID;           // 네트워크 동기화용 ID
     bool isActive;
 
-    BulletSlot() : bulletID(-1), isActive(false) {}
+    CatBulletSlot() : bulletID(-1), isActive(false) {}
 };
 
 class MainCharacter
@@ -63,6 +63,7 @@ public:
     bool IsMoving() const { return _Right || _Left || _Top || _Bottom; }
     bool GetShift() const { return _Shift; }
     bool GetDying() const { return dying; }
+    bool GetDead() const { return dying || dead; }  // Alien들과 상호작용을 위한 함수
     bool GetRight() const { return _Right; }
     bool GetLeft() const { return _Left; }
     bool GetTop() const { return _Top; }
@@ -102,7 +103,7 @@ private:
 
     // 총알
     static const int MAX_BULLETS = { 15 };  // 캐릭터당 최대 총알 수
-    array<BulletSlot, MAX_BULLETS> bullets;
+    array<CatBulletSlot, MAX_BULLETS> bullets;
 
     // 로컬 플레이어 전용
     Camera* camera = { nullptr };

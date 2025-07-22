@@ -16,17 +16,21 @@ void GraphicsManager::Init()
 
 	camera = new Camera();
 	shadowMap = new ShadowMapping();
+
+	InitAlienCharacters();
 }
 
 void GraphicsManager::Update()
 {
-	float deltatime = GET_SINGLE(Timer)->GetDeltaTime();
+	float deltaTime = GET_SINGLE(Timer)->GetDeltaTime();
 
 	camera->Update();
 
 	for (auto& [id, character] : catCharacters) {
-		character->Update(deltatime);
+		character->Update(deltaTime);
 	}
+
+	UpdateAlienCharacters(deltaTime);
 }
 
 void GraphicsManager::Render(GLFWwindow* window)
@@ -59,6 +63,14 @@ void GraphicsManager::Render(GLFWwindow* window)
 		character->RenderBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
 	}
 
+	for (int type = 0; type < 3; ++type) {
+		for (int location = 0; location < 9; ++location) {
+			if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
+				alienCharacters[type][location]->Draw(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
+			}
+		}
+	}
+
 	camera->Render();
 
 	glFinish();
@@ -77,6 +89,14 @@ void GraphicsManager::RenderShadow()
 
 	for (auto& [id, character] : catCharacters) {
 		character->DrawShadow(lightSpaceMatrix, shadowMap->GetDepthShaderProgram());
+	}
+
+	for (int type = 0; type < 3; ++type) {
+		for (int location = 0; location < 9; ++location) {
+			if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
+				alienCharacters[type][location]->DrawShadow(shadowMap);
+			}
+		}
 	}
 
 	GET_SINGLE(StaticObjectManager)->DrawShadow(lightSpaceMatrix, shadowMap->GetStaticDepthShaderProgram());
@@ -100,8 +120,41 @@ void GraphicsManager::Release()
 	}
 	catCharacters.clear();
 
+	for (int type = 0; type < 3; ++type) {
+		for (int location = 0; location < 9; ++location) {
+			if (alienCharacters[type][location]) {
+				delete alienCharacters[type][location];
+				alienCharacters[type][location] = nullptr;
+			}
+		}
+	}
+
 	delete shadowMap;
 	delete camera;
+}
+
+void GraphicsManager::InitAlienCharacters()
+{
+	// 3가지 타입 × 9개 위치 = 27마리 적 생성
+	for (int type = 0; type < 3; ++type) {
+		for (int location = 0; location < 9; ++location) {
+			alienCharacters[type][location] = new AlienCharacter(type, location);
+		}
+	}
+}
+
+void GraphicsManager::UpdateAlienCharacters(float deltatime)
+{
+	MainCharacter* localChar = GetLocalCharacter();
+	if (!localChar) return;  // 로컬 플레이어가 없으면 업데이트 안함
+
+	for (int type = 0; type < 3; ++type) {
+		for (int location = 0; location < 9; ++location) {
+			if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
+				alienCharacters[type][location]->Update(deltatime, localChar);
+			}
+		}
+	}
 }
 
 void GraphicsManager::AddCharacter(int id, bool isLocal)
