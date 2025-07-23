@@ -21,6 +21,8 @@ public:
 	void CatBulletUpdateFromServer(float deltaTime);		// 캐릭터용
 	void BulletUpdate();
 	void BulletSetting(const glm::vec3 alienPos, const glm::vec3 catPos);
+
+	glm::vec3 GetPosition() const { return position; }
 	void SetPosition(glm::vec3 startPos);
 
 	bool IsCollapsed(AlienCharacter* alien);

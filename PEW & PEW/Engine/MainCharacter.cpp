@@ -304,6 +304,7 @@ void MainCharacter::UpdateLocalBullets(array<array<AlienCharacter*, 9>, 3>& alie
         if (bullets[i].isActive && bullets[i].bullet) {
             bullets[i].bullet->BulletUpdate();
             CheckBulletAlienHit(i, aliens);
+            CheckBulletWallHit(i);
         }
     }
 }
@@ -320,6 +321,7 @@ void MainCharacter::CreateLocalBullet()
 
             glm::vec3 mousePick = camera->GetMousePicking(cur_x, cur_y, projection, view);
             bullets[i].bullet->BulletSetting(this, camera, mousePick);
+            cout << i << "번째 총알 생성!!" << '\n';
             return;
         }
     }
@@ -363,6 +365,17 @@ void MainCharacter::CheckBulletAlienHit(int bulletIndex, array<array<AlienCharac
                 }
             }
         }
+    }
+}
+
+void MainCharacter::CheckBulletWallHit(int bulletIndex)
+{
+    glm::vec3 bulletPos = bullets[bulletIndex].bullet->GetPosition();
+
+    if (GET_SINGLE(CollisionManager)->IsInsideCollisionBox(bulletPos.x, bulletPos.z))
+    {
+        bullets[bulletIndex].isActive = false;
+        cout << bulletIndex << "번째 총알 삭제!!" << '\n';
     }
 }
 

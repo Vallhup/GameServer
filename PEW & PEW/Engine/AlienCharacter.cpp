@@ -3,6 +3,7 @@
 #include "MainCharacter.h"
 #include "Bullet.h"
 #include "ShadowMapping.h"
+#include "CollisionManager.h"
 
 AlienCharacter::AlienCharacter(int type, int location)
 {
@@ -402,19 +403,34 @@ void AlienCharacter::MoveToward(MainCharacter* Cat)
 		return;
 
 	glm::vec3 pos = Cat->GetPosition();
-	glm::vec3 direction = glm::normalize(pos - alienPos);
 	float distance = glm::length(glm::vec2(pos.x - alienPos.x, pos.z - alienPos.z));
+	glm::vec3 movement = glm::vec3(0, 0, 0);
+	float Move_SPEED = 0.01f;
 
+	if (pos.z > alienPos.z)
+		movement.z += Move_SPEED;
+	if (pos.z < alienPos.z)
+		movement.z -= Move_SPEED;
+	if (pos.x > alienPos.x)
+		movement.x += Move_SPEED;
+	if (pos.x < alienPos.x)
+		movement.x -= Move_SPEED;
 	
-	if (/*!wallcollapsed_s() &&*/ pos.z > alienPos.z)
-		alienPos.z += 0.01f;
-	if (/*!wallcollapsed_w() &&*/ pos.z < alienPos.z)
-		alienPos.z -= 0.01f;
-	if (/*!wallcollapsed_d() &&*/ pos.x > alienPos.x)
-		alienPos.x += 0.01f;
-	if (/*!wallcollapsed_a() &&*/ pos.x < alienPos.x)
-		alienPos.x -= 0.01f;
-	
+	glm::vec3 newPos = alienPos + movement;
+
+	if (!GET_SINGLE(CollisionManager)->IsInsideCollisionBox(newPos.x, newPos.z))
+		alienPos = newPos;
+	else
+	{
+		auto* collisionManager = GET_SINGLE(CollisionManager);
+
+		if (movement.x != 0 && !collisionManager->IsInsideCollisionBox(alienPos.x + movement.x, alienPos.z))
+			alienPos.x += movement.x;
+
+		if (movement.z != 0 && !collisionManager->IsInsideCollisionBox(alienPos.x, alienPos.z + movement.z))
+			alienPos.z += movement.z;
+	}
+
 	if (distance <= 4.0f)
 	{
 		state = 2;
@@ -459,7 +475,20 @@ void AlienCharacter::UpdateBullets(MainCharacter* Cat)
 				bullets[i].isActive = false;
 				Cat->SetHit();
 			}
+
+			CheckBulletWallHit(i);
 		}
+	}
+}
+
+void AlienCharacter::CheckBulletWallHit(int bulletIndex)
+{
+	glm::vec3 bulletPos = bullets[bulletIndex].bullet->GetPosition();
+
+	if (GET_SINGLE(CollisionManager)->IsInsideCollisionBox(bulletPos.x, bulletPos.z))
+	{
+		bullets[bulletIndex].isActive = false;
+		cout << bulletIndex << "번째 총알 삭제!!" << '\n';
 	}
 }
 

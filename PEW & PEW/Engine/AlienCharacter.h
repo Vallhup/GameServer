@@ -40,6 +40,7 @@ public:
 	void ActivateBullets();
 	void DeactivateBullets();
 	void UpdateBullets(MainCharacter* Cat);
+	void CheckBulletWallHit(int bulletIndex);
 
 	void UpdateHitDecision();
 	void SetHit();

@@ -64,6 +64,7 @@ public:
     void CreateLocalBullet();
     void CheckFireAnimationTiming();
     void CheckBulletAlienHit(int bulletIndex, array<array<AlienCharacter*, 9>, 3>& aliens);
+    void CheckBulletWallHit(int bulletIndex);
     void UpdateLocalPlayerRevive();
     void CheckLocalEnd(array<array<AlienCharacter*, 9>, 3>& aliens);
     void ResetAllStates();
