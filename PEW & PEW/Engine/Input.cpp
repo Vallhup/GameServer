@@ -54,7 +54,8 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		if (action == GLFW_PRESS)
 		{
 			input->graphics->DebugAllCharacterPositions();
-			input->mainCat->GoToEndPosition();
+			if (input->sceneType == SceneType::Scene1)
+				input->mainCat->GoToEndPosition();
 		}
 		break;
 	case GLFW_KEY_D:
