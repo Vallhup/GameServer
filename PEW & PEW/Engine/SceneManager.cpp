@@ -4,6 +4,7 @@
 #include "GraphicsManager.h"
 #include "Input.h"
 #include "WindowInfo.h"
+#include "CollisionManager.h"
 
 void SceneManager::Init()
 {
@@ -49,6 +50,8 @@ void SceneManager::InitScene1()
 	graphics = new GraphicsManager();
 	graphics->Init();
 	graphics->SetSceneManager(this);
+
+	GET_SINGLE(CollisionManager)->Init();
 
 	input = new Input();
 	input->SetCamera(graphics->GetCamera());

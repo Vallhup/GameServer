@@ -6,6 +6,7 @@
 #include "BoundingBox.h"
 #include "AlienCharacter.h"
 #include "SceneManager.h"
+#include "CollisionManager.h"
 
 MainCharacter::MainCharacter(int id, bool isLocal, float speed) : playerID(id), isLocalPlayer(isLocal)
 {
@@ -249,13 +250,13 @@ void MainCharacter::LocalMove(float deltaTime)
     float Move_SPEED = GetShift() ? 3.0f : 1.5f;
 
     if (!camera->GetViewType()) {
-        if (_Right)
+        if (_Right && !GET_SINGLE(CollisionManager)->IsInsideCollisionBox(characterPos.x + (Move_SPEED * deltaTime), characterPos.z))
             characterPos.x += Move_SPEED * deltaTime;
-        if (_Left)
+        if (_Left && !GET_SINGLE(CollisionManager)->IsInsideCollisionBox(characterPos.x - (Move_SPEED * deltaTime), characterPos.z))
             characterPos.x -= Move_SPEED * deltaTime;
-        if (_Top)
+        if (_Top && !GET_SINGLE(CollisionManager)->IsInsideCollisionBox(characterPos.x, characterPos.z - (Move_SPEED * deltaTime)))
             characterPos.z -= Move_SPEED * deltaTime;
-        if (_Bottom)
+        if (_Bottom && !GET_SINGLE(CollisionManager)->IsInsideCollisionBox(characterPos.x, characterPos.z + (Move_SPEED * deltaTime)))
             characterPos.z += Move_SPEED * deltaTime;
     }
     else {

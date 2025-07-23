@@ -2,9 +2,9 @@
 
 class WindowInfo
 {
-public:
 	DECLARE_SINGLE(WindowInfo);
 
+public:
 	void Init();
 	GLFWwindow* GetWindow() { return window; }
 
