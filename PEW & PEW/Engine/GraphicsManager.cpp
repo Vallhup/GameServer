@@ -184,6 +184,9 @@ void GraphicsManager::Release()
 
 	delete shadowMap;
 	delete camera;
+
+	fade->Release();
+	delete fade;
 }
 
 void GraphicsManager::InitAlienCharacters()

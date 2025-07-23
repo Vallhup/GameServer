@@ -231,6 +231,8 @@ void Input::MouseMoveFunc(GLFWwindow* window, double xpos, double ypos)
 		input->mainCat = input->graphics->GetLocalCharacter();
 	}
 
+	if (!input->mainCat) return;
+
 	if (input->camera->Get_start_pos() != 0 || input->mainCat->GetDead()) {
 		return;
 	}
@@ -274,6 +276,8 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 	if (!mainCat && graphics) {
 		mainCat = graphics->GetLocalCharacter();
 	}
+
+	if (!mainCat || mainCat->GetDead()) return;
 
 	bool isMousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
