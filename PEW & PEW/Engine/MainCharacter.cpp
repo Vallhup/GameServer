@@ -248,16 +248,33 @@ void MainCharacter::UpdateLocalPlayerState()
 void MainCharacter::LocalMove(float deltaTime)
 {
     float Move_SPEED = GetShift() ? 3.0f : 1.5f;
+    glm::vec3 movement = glm::vec3(0, 0, 0);
+    float moveDistance = Move_SPEED * deltaTime;
 
     if (!camera->GetViewType()) {
-        if (_Right && !GET_SINGLE(CollisionManager)->IsInsideCollisionBox(characterPos.x + (Move_SPEED * deltaTime), characterPos.z))
-            characterPos.x += Move_SPEED * deltaTime;
-        if (_Left && !GET_SINGLE(CollisionManager)->IsInsideCollisionBox(characterPos.x - (Move_SPEED * deltaTime), characterPos.z))
-            characterPos.x -= Move_SPEED * deltaTime;
-        if (_Top && !GET_SINGLE(CollisionManager)->IsInsideCollisionBox(characterPos.x, characterPos.z - (Move_SPEED * deltaTime)))
-            characterPos.z -= Move_SPEED * deltaTime;
-        if (_Bottom && !GET_SINGLE(CollisionManager)->IsInsideCollisionBox(characterPos.x, characterPos.z + (Move_SPEED * deltaTime)))
-            characterPos.z += Move_SPEED * deltaTime;
+        if (_Right)
+            movement.x += moveDistance;
+        if (_Left)
+            movement.x -= moveDistance;
+        if (_Top)
+            movement.z -= moveDistance;
+        if (_Bottom)
+            movement.z += moveDistance;
+
+        glm::vec3 newPos = characterPos + movement;
+
+        if (!GET_SINGLE(CollisionManager)->IsInsideCollisionBox(newPos.x, newPos.z))
+            characterPos = newPos;
+        else
+        {
+            auto* collisionManager = GET_SINGLE(CollisionManager);
+
+            if (movement.x != 0 && !collisionManager->IsInsideCollisionBox(characterPos.x + movement.x, characterPos.z))
+                characterPos.x += movement.x;
+
+            if (movement.z != 0 && !collisionManager->IsInsideCollisionBox(characterPos.x, characterPos.z + movement.z))
+                characterPos.z += movement.z;
+        }
     }
     else {
         glm::vec3 forward(

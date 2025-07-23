@@ -67,7 +67,7 @@ public:
     void UpdateLocalPlayerRevive();
     void CheckLocalEnd(array<array<AlienCharacter*, 9>, 3>& aliens);
     void ResetAllStates();
-    void GoToEndPosition() { characterPos = glm::vec3(-40.0f, 0.0f, -40.0f); }  // 잠시 사용하기 위해 만든 함수
+    void GoToEndPosition() { characterPos = glm::vec3(-45.0f, 0.0f, -40.0f); }  // 잠시 사용하기 위해 만든 함수
 
     // 공통 함수
     void UpdateAllPlayersMovement(float deltaTime);
