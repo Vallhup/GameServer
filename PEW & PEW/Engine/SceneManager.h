@@ -14,9 +14,10 @@ class SceneManager
 public:
     void Init();
     void Update(GLFWwindow* window);
-    void Render(GLFWwindow* window);
+    void Render();
     void Release();
 
+    void TransitionUpdate();
     void ChangeScene(SceneType newScene);
 
 private:
@@ -35,5 +36,7 @@ private:
     Input* input = { nullptr };
 
     SceneType currentScene;
+
+    bool isTransitioning = { false };
 };
 

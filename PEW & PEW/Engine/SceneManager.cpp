@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "WindowInfo.h"
 #include "CollisionManager.h"
+#include "Fade.h"
 
 void SceneManager::Init()
 {
@@ -14,6 +15,8 @@ void SceneManager::Init()
 
 void SceneManager::Update(GLFWwindow* window)
 {
+	TransitionUpdate();
+
 	if (currentScene == SceneType::Scene2)
 		UpdateScene2();
 
@@ -21,9 +24,9 @@ void SceneManager::Update(GLFWwindow* window)
 	graphics->Update(currentScene);
 }
 
-void SceneManager::Render(GLFWwindow* window)
+void SceneManager::Render()
 {
-	graphics->Render(window, currentScene);
+	graphics->Render(currentScene);
 }
 
 void SceneManager::Release()
@@ -31,18 +34,44 @@ void SceneManager::Release()
 	ReleaseScene2();
 }
 
+void SceneManager::TransitionUpdate()
+{
+	if (isTransitioning) {
+		Fade* fade = graphics->GetFade();
+		fade->AddFadeAlpha();
+
+		if (fade->GetFadeAlpha() >= 1.0f) {
+			input->SetMainCharacter(nullptr);
+			currentScene = SceneType::Scene2;
+			graphics->RemoveCharacter(0);
+			InitScene2();
+			isTransitioning = false;
+		}
+
+		if (!input->GetInputBlock())
+			input->SetInputBlock(true);
+	}
+	else
+	{
+		Fade* fade = graphics->GetFade();
+
+		if (fade->GetFadeAlpha() > 0.0f)
+			fade->SubtractFadeAlpha();
+
+		if (fade->GetFadeAlpha() <= 0.0f)
+		{
+			if (input->GetInputBlock())
+				input->SetInputBlock(false);
+		}
+	}
+}
+
 void SceneManager::ChangeScene(SceneType newScene)
 {
 	if (currentScene == newScene)
 		return;
 
-	if (currentScene == SceneType::Scene1 && newScene == SceneType::Scene2)
-	{
-		input->SetMainCharacter(nullptr);
-		currentScene = newScene;
-		graphics->RemoveCharacter(0);
-		InitScene2();
-	}
+	isTransitioning = true;
 }
 
 void SceneManager::InitScene1()

@@ -27,6 +27,9 @@ public:
 	void SetGraphicsManager(GraphicsManager* gfx) { graphics = gfx; }
 	void SetSceneType(SceneType type) { sceneType = type; }
 
+	bool GetInputBlock() const { return blockInput; }
+	void SetInputBlock(bool in) { blockInput = in; }
+
 private:
 	Camera* camera = { nullptr };
 	MainCharacter* mainCat = { nullptr };
@@ -37,4 +40,5 @@ private:
 	bool isAttacking = { false };           // 현재 공격 중인지
 	bool wasFireAnimation = { false };      // 이전 프레임이 공격 애니메이션이었는지
 	SceneType sceneType;
+	bool blockInput = { false };
 };

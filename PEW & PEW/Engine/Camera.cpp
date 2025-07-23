@@ -241,6 +241,30 @@ glm::vec3 Camera::GetMousePicking(float mouseX, float mouseY,
     return planeIntersection;
 }
 
+glm::vec3 Camera::GetFrontVector(const glm::vec3& targetPos)
+{
+    if (FirstPersonView) {
+        // 1인칭: 이미 있는 look_direction 로직 사용
+        return glm::vec3(
+            sin(camera_horizontal_angle) * cos(camera_vertical_angle),
+            -sin(camera_vertical_angle),
+            cos(camera_horizontal_angle) * cos(camera_vertical_angle)
+        );
+    }
+    else {
+        if (LeftAlt_on) {
+            // Alt 모드: 카메라에서 타겟으로의 방향
+            glm::vec3 cameraPos = GetPosition(targetPos);
+            return glm::normalize(targetPos - cameraPos);
+        }
+        else {
+            // 일반 3인칭: 간단하게 카메라에서 캐릭터로의 방향
+            glm::vec3 cameraPos = GetPosition(targetPos);
+            return glm::normalize(targetPos - cameraPos);
+        }
+    }
+}
+
 //void Camera::addfinishpos()
 //{
 //    if (finish_pos < 30.0f)

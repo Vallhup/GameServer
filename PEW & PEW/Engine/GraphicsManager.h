@@ -7,13 +7,15 @@ class NetworkManager;
 class MainCharacter;
 class AlienCharacter;
 class SceneManager;
+class Fade;
 
 class GraphicsManager
 {
 public:
 	void Init();
 	void Update(SceneType type);
-	void Render(GLFWwindow* window, SceneType type);
+	void Render(SceneType type);
+	void RenderFade(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& viewPos);
 	void RenderShadow(SceneType type);
 	void Release();
 
@@ -27,6 +29,7 @@ public:
 
 	Camera* GetCamera() const;
 	MainCharacter* GetMainCat();
+	Fade* GetFade();
 	void DebugAllCharacterPositions();
 
 	const std::map<int, MainCharacter*>& GetAllCharacters() const { return catCharacters; }
@@ -34,9 +37,10 @@ public:
 	void SetSceneManager(SceneManager* sm);
 
 private:
+	int myPlayerID = { -1 };
 	Camera* camera = { nullptr };
 	ShadowMapping* shadowMap = { nullptr };
-	std::map<int, MainCharacter*> catCharacters;  // 모든 캐릭터 (ID 기반)
-	int myPlayerID = { -1 };
+	Fade* fade = { nullptr };
+	std::map<int, MainCharacter*> catCharacters;
 	std::array<std::array<AlienCharacter*, 9>, 3> alienCharacters;
 };

@@ -412,6 +412,7 @@ void MainCharacter::CheckLocalEnd(array<array<AlienCharacter*, 9>, 3>& aliens)
 
         if (sceneManager)
         {
+            ResetAllStates();
             sceneManager->ChangeScene(SceneType::Scene2);
         }
     }

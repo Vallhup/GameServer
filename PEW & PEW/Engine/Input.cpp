@@ -11,6 +11,9 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 {
 	Input* input = static_cast<Input*>(glfwGetWindowUserPointer(window));
 
+	if (input->blockInput)
+		return;
+
 	// mainCat이 없으면 graphics에서 동적으로 가져오기
 	if (!input->mainCat && input->graphics) {
 		input->mainCat = input->graphics->GetLocalCharacter();
@@ -209,6 +212,9 @@ void Input::Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	Input* input = static_cast<Input*>(glfwGetWindowUserPointer(window));
 
+	if (input->blockInput)
+		return;
+
 	if (input->camera->Get_start_pos() == 0)
 		input->camera->HandleScroll(yoffset);
 }
@@ -217,7 +223,13 @@ void Input::MouseMoveFunc(GLFWwindow* window, double xpos, double ypos)
 {
 	Input* input = static_cast<Input*>(glfwGetWindowUserPointer(window));
 
-	if (!input->mainCat) return;
+	if (input->blockInput)
+		return;
+
+	// mainCat이 없으면 graphics에서 동적으로 가져오기
+	if (!input->mainCat && input->graphics) {
+		input->mainCat = input->graphics->GetLocalCharacter();
+	}
 
 	if (input->camera->Get_start_pos() != 0 || input->mainCat->GetDead()) {
 		return;
@@ -255,7 +267,13 @@ void Input::Update(GLFWwindow* window)
 
 void Input::CheckContinuousAttack(GLFWwindow* window)
 {
-	if (!mainCat || mainCat->GetDead()) return;
+	if (blockInput)
+		return;
+
+	// mainCat이 없으면 graphics에서 동적으로 가져오기
+	if (!mainCat && graphics) {
+		mainCat = graphics->GetLocalCharacter();
+	}
 
 	bool isMousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 

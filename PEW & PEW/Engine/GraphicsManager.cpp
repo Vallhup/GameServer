@@ -9,6 +9,7 @@
 #include "MainCharacter.h"
 #include "AlienCharacter.h"
 #include "SceneManager.h"
+#include "Fade.h"
 
 void GraphicsManager::Init()
 {
@@ -17,9 +18,10 @@ void GraphicsManager::Init()
 
 	camera = new Camera();
 	shadowMap = new ShadowMapping();
+	fade = new Fade();
+	fade->Init();
 
 	AddCharacter(0, true, 0.1f);
-
 	InitAlienCharacters();
 }
 
@@ -45,7 +47,7 @@ void GraphicsManager::Update(SceneType type)
 	}
 }
 
-void GraphicsManager::Render(GLFWwindow* window, SceneType type)
+void GraphicsManager::Render(SceneType type)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	float deltatime = GET_SINGLE(Timer)->GetDeltaTime();
@@ -89,7 +91,20 @@ void GraphicsManager::Render(GLFWwindow* window, SceneType type)
 
 	camera->Render();
 
+	RenderFade(projection, view, viewPos);
+
 	glFinish();
+}
+
+void GraphicsManager::RenderFade(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& viewPos)
+{
+	MainCharacter* localChar = GetLocalCharacter();
+
+	if (localChar) {
+		glm::vec3 frontDir = camera->GetFrontVector(localChar->GetPosition());
+		fade->Render(projection, view, viewPos, frontDir);
+	}
+	
 }
 
 void GraphicsManager::RenderShadow(SceneType type)
@@ -249,6 +264,11 @@ Camera* GraphicsManager::GetCamera() const
 MainCharacter* GraphicsManager::GetMainCat()
 {
 	return GetLocalCharacter();
+}
+
+Fade* GraphicsManager::GetFade()
+{
+	return fade;
 }
 
 void GraphicsManager::DebugAllCharacterPositions()

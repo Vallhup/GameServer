@@ -162,6 +162,7 @@
     <ClInclude Include="AlienCharacter.h" />
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="Fade.h" />
     <ClInclude Include="MainCharacter.h" />
     <ClInclude Include="CrossHair.h" />
     <ClInclude Include="AnimatedModel.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="AlienCharacter.cpp" />
     <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="Fade.cpp" />
     <ClCompile Include="MainCharacter.cpp" />
     <ClCompile Include="CrossHair.cpp" />
     <ClCompile Include="AnimatedModel.cpp" />

@@ -23,7 +23,7 @@ void Engine::Update()
 	while (!glfwWindowShouldClose(window)) {
 		GET_SINGLE(Timer)->Update();
 		sceneManager->Update(window);
-		sceneManager->Render(window);
+		sceneManager->Render();
 
 		ShowFps();
 
