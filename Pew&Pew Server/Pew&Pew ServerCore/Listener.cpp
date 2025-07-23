@@ -1,10 +1,6 @@
 #include "pch.h"
 #include "Listener.h"
 
-Listener::Listener(const std::shared_ptr<Service>& service) : _service(service)
-{
-}
-
 Listener::~Listener()
 {
 	closesocket(_socket);
@@ -12,12 +8,6 @@ Listener::~Listener()
 
 bool Listener::Init()
 {
-	auto service = _service.lock();
-	if (nullptr == service) {
-		LOG_ERR("StartAccept failed: service is nullptr");
-		return false;
-	}
-
 	_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, NULL);
 	if (INVALID_SOCKET == _socket) {
 		LOG_ERR("WSASocket failed: %d", WSAGetLastError());

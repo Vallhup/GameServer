@@ -7,10 +7,16 @@ Character::Character(int id, const std::string& name) : _id(id), _name(name)
 	_angle = 0.0f;
 	_angleChange = false;
 
-	_dirtyFlag = false;
-
 	_hp = MAX_HP;
 	_isAlive = true;
+
+	_version = 0;
+	_lastSentVersion = 0;
+}
+
+void Character::Update(float deltaTime)
+{
+	Move(deltaTime);
 }
 
 bool Character::Move(float deltaTime)
@@ -43,28 +49,9 @@ bool Character::Move(float deltaTime)
 	}
 
 	_pos += moveVec * moveDistance;
+	_version++;
 
 	return true;
-}
-
-void Character::Attack(float nowTime, Service* service)
-{
-	std::lock_guard lock{ _attackSeqMutex };
-
-	if (not _attackSeq.has_value() or not _isAlive) {
-		return;
-	}
-
-	auto& seq = _attackSeq.value();
-
-	while (not seq.attackTimes.empty() and nowTime >= seq.attackTimes.front()) {
-		service->AddProjectile(_id, seq.direction);
-		seq.attackTimes.erase(seq.attackTimes.begin());
-	}
-
-	if (seq.attackTimes.empty()) {
-		_attackSeq.reset();
-	}
 }
 
 void Character::TakeDamage(int damage)
@@ -77,6 +64,33 @@ void Character::TakeDamage(int damage)
 	if (_hp <= 0) {
 		Death();
 	}
+}
+
+std::optional<vec3> Character::GetNextProjectile(float nowTime)
+{
+	std::lock_guard lock{ _attackSeqMutex };
+
+	if (not _attackSeq.has_value()) {
+		return std::nullopt;
+	}
+
+	auto& seq = _attackSeq.value();
+	if (seq.attackTimes.empty()) {
+		_attackSeq.reset();
+		return std::nullopt;
+	}
+
+	if (nowTime >= seq.attackTimes.front()) {
+		seq.attackTimes.erase(seq.attackTimes.begin());
+
+		if (seq.attackTimes.empty()) {
+			_attackSeq.reset();
+		}
+
+		return seq.direction;
+	}
+
+	return std::nullopt;
 }
 
 std::pair<vec3, vec3> Character::GetCollisionBox() const
@@ -105,24 +119,13 @@ void Character::SetAttackSequence(float nowTime, const vec3& dir)
 		IsMove() ? 0.56f :
 				   0.45f;
 
-	// 대충 이런식으로 Branch Less로 설계할 수도 있다네요
-	// 지금은 굳이?
-	//int isRun = static_cast<int>(_isRun);
-	//int isMove = static_cast<int>(IsMove());
-
-	//float attackOffset = 0.43f * isRun
-	//	+ 0.56f * (!isRun && isMove)
-	//	+ 0.45f * (!isRun && !isMove);
-
 	std::lock_guard lock{ _attackSeqMutex };	
 
 	if (_attackSeq.has_value()) {
 		return;
 	}
 
-	std::vector<float> attackTimes;
-	attackTimes.resize(NUMBER_OF_ATTACK);
-
+	std::vector<float> attackTimes(NUMBER_OF_ATTACK);
 	std::generate_n(attackTimes.begin(), NUMBER_OF_ATTACK,
 		[n = 0, &nowTime, &attackOffset, this]() mutable
 		{
@@ -132,6 +135,16 @@ void Character::SetAttackSequence(float nowTime, const vec3& dir)
 	_attackSeq = AttackSequence{ dir, attackTimes };
 }
 
+bool Character::VersionCheckAndChange()
+{
+	if (_version != _lastSentVersion) {
+		_lastSentVersion = _version;
+		return true;
+	}
+
+	return false;
+}
+
 void Character::Death()
 {
 	_hp = 0;
@@ -139,19 +152,7 @@ void Character::Death()
 
 	_direction = -1;
 	_isRun = false;
-
-	if (auto service = _service.lock()) {
-		auto weakSelf = weak_from_this();
-		service->GetTimerManager()->RegisterOnce([weakSelf, service]()
-			{
-				if (auto self = weakSelf.lock()) {
-					self->Revive();
-				}
-			});
-
-		service->BroadCast(PacketFactory::SCDeadPacket(*this));
-		
-	}
+	_angleChange = false;
 }
 
 void Character::Revive()
@@ -160,15 +161,9 @@ void Character::Revive()
 	_angle = 0.0f;
 	_angleChange = false;
 
-	_dirtyFlag = false;
-
 	_hp = MAX_HP;
 	_isAlive = true;
 
 	_direction = -1;
 	_isRun = false;
-
-	if (auto service = _service.lock()) {
-		service->BroadCast(PacketFactory::SCRevivePacket(*this));
-	}
 }

@@ -4,21 +4,21 @@
 
 class Service;
 
-class Session
-{
+class Session {
+	using PacketHandler = std::function<void(int, const std::vector<char>&)>;
+
 public:
 	Session(int sessionId, SOCKET socket);
 	~Session();
 
 	bool Recv();
 	bool Send(const std::vector<char>& data);
-	bool InternalSend();
 	
 	void OnConnect();
 	void DisConnect();
 
 	void ProcessPacket();
-	void HandlePacket(const std::vector<char>& packet);
+	//void HandlePacket(const std::vector<char>& packet);
 
 public:
 	int GetId() const { return _id; }
@@ -26,12 +26,10 @@ public:
 	std::shared_ptr<Character> GetCharacter() const { return _character; }
 	
 	void SetCharacter(const std::shared_ptr<Character>& character) { _character = character; }
-	void SetService(Service* service) { _service = service; }
+	void SetPacketHandler(PacketHandler handler) { _packetHandler = handler; }
 
 private:
-	void HandleMovePacket(const std::vector<char>& packet);
-	void HandleAttackPacket(const std::vector<char>& packet);
-	void HandleAttackEndPacket(const std::vector<char>& packet);
+	bool InternalSend();
 
 private:
 	int _id;
@@ -43,7 +41,8 @@ private:
 	std::atomic<bool> _isSending{ false };
 
 	std::shared_ptr<Character> _character{ nullptr };
-	Service* _service{ nullptr };
+
+	PacketHandler _packetHandler;
 
 	bool _isConnected{ false };
 };

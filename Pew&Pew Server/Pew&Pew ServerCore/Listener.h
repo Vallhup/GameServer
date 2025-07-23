@@ -1,11 +1,8 @@
 #pragma once
 
-class Service;
-
-class Listener : public std::enable_shared_from_this<Listener>
-{
+class Listener {
 public:
-	Listener(const std::shared_ptr<Service>& service);
+	Listener() = default;
 	~Listener();
 
 public:
@@ -17,6 +14,5 @@ public:
 
 private:
 	SOCKET _socket{ INVALID_SOCKET };
-	std::weak_ptr<Service> _service;
 };
 

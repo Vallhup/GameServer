@@ -55,7 +55,7 @@ bool Session::Recv()
 		return false;
 	}
 
-	// Packet Ã³¸®
+
 	ProcessPacket();
 
 	return true;
@@ -110,11 +110,16 @@ bool Session::InternalSend()
 	DWORD bytesSent{ 0 };
 	if (SOCKET_ERROR == WSASend(_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), &bytesSent, 0, 0, 0)) {
 		int error = WSAGetLastError();
+		if (error == WSAEWOULDBLOCK or error == WSA_IO_PENDING) {
+			_isSending.store(false);
+			return false;
+		}
+
 		if (error == WSAECONNRESET or error == WSAENOTCONN or error == WSAESHUTDOWN) {
 			LOG_INF("Session[%d] DisConencted", _id);
 		}
 
-		else if (error != WSA_IO_PENDING) {
+		else {
 			LOG_ERR("Session[%d] WSASend failed : %d", _id, error);
 		}
 
@@ -199,69 +204,8 @@ void Session::ProcessPacket()
 			break;
 		}
 
-		HandlePacket(packetBuf);
-	}
-}
-
-void Session::HandlePacket(const std::vector<char>& packet)
-{
-	const unsigned char packetSize = packet[0];
-	if (packet.size() < packetSize) {
-		return;
-	}
-
-	const char packetType = packet[1];
-
-	switch (packetType) {
-	case CS_MOVE:
-		HandleMovePacket(packet);
-		break;
-
-	case CS_ATTACK:
-		HandleAttackPacket(packet);
-		break;
-
-	case CS_ATTACK_END:
-		HandleAttackEndPacket(packet);
-		break;
-
-	default:
-		LOG_WRN("Unknown Packet Type : %d", packetType);
-		break;
-	}
-}
-
-void Session::HandleMovePacket(const std::vector<char>& packet)
-{
-	auto move = PacketFactory::Deserialize<CS_MOVE_PACKET>(packet);
-
-	if (_character) { 
-		LOG_DBG("Session[%d] move : %d / %d", _id, move.direction, move.isRun);					
-		_character->SetInput(move.angle, move.direction, move.isRun);
-
-		if (move.direction < 0 or move.direction >= 8) {
-			_service->BroadCast(PacketFactory::SCMovePacket(*_character));
+		if (_packetHandler) {
+			_packetHandler(_id, packetBuf);
 		}
-	}
-}
-
-void Session::HandleAttackPacket(const std::vector<char>& packet)
-{
-	auto attack = PacketFactory::Deserialize<CS_ATTACK_PACKET>(packet);
-
-	if (_character) {
-		LOG_DBG("Session[%d] attack", _id);
-		_character->SetAttackSequence(GetNowTime(), vec3{ attack.x, attack.y, attack.z });
-		_service->BroadCast(PacketFactory::SCAttackPacket(*this));
-	}
-}
-
-void Session::HandleAttackEndPacket(const std::vector<char>& packet)
-{
-	auto end = PacketFactory::Deserialize<CS_ATTACK_END_PACKET>(packet);
-
-	if (_character and end.type == CS_ATTACK_END) {
-		LOG_DBG("Session[%d] attack end", _id);
-		_service->BroadCast(PacketFactory::SCAttackEndPacket(*this));
 	}
 }

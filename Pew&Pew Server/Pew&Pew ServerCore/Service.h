@@ -9,56 +9,68 @@ class Projectile;
 class TimerManager;
 class CollisionManager;
 
-class Service : public std::enable_shared_from_this<Service>
-{
+class ICharacterManager;
+class IProjectileManager;
+class ICollisionManager;
+class ISessionManager;
+class ITimerManager;
+class IGameLogic;
+
+class IGameContext {
+public:
+	virtual ~IGameContext() = default;
+
+public:
+	// 1. Network BroadCast
+	virtual void BroadCast(const std::vector<char>& packet, int exceptId = -1) = 0;
+
+	// 2. 각종 Manager 접근
+	virtual ICharacterManager& GetCharacterManager() = 0;
+	virtual IProjectileManager& GetProjectileManager() = 0;
+	virtual ICollisionManager& GetCollisionManager() = 0;
+	virtual ISessionManager& GetSessionManager() = 0;
+	virtual ITimerManager& GetTimerManager() = 0;
+	virtual IGameLogic& GetGameLogic() = 0;
+
+	// 3. 시간 정보
+	virtual float GetNowTime() = 0;
+};
+
+class Service 
+	: public std::enable_shared_from_this<Service>, public IGameContext {
 public:
 	Service();
-	~Service();
+	virtual ~Service();
 
 	Service(const Service&) = delete;
 	Service& operator=(const Service&) = delete;
 
 public:
 	bool Init();
-	void Run();
+	void Start();
 	void Stop();
 
-	void AddProjectile(int sessionId, vec3 direction);
-	void RemoveProjectile(int projId);
+	virtual void BroadCast(const std::vector<char>& packet, int exceptId = -1) override;
 
-	void BroadCast(const std::vector<char>& packet, int exceptId = -1);
+	virtual ICharacterManager& GetCharacterManager() override { return *_charMng; }
+	virtual IProjectileManager& GetProjectileManager() override { return *_projMng; }
+	virtual ICollisionManager& GetCollisionManager() override { return *_collMng; }
+	virtual ISessionManager& GetSessionManager() override { return *_sessMng; }
+	virtual ITimerManager& GetTimerManager() override { return *_timerMng; }
+	virtual IGameLogic& GetGameLogic() override { return *_gameLogic; }
 
-	TimerManager* GetTimerManager() const { return _timerManager.get(); }
-
-private:
-	int GenerateSessionId();
-
-	void AcceptSession();
-	void CloseSession(int id);
-
-	void LogicTick(float deltaTime);
-	void NetworkTick(float deltaTime);
-
-	void UpdateCharacters(float deltaTime);
-	void UpdateProjectiles(float deltaTime);
-	void CheckCollisions();
+	virtual float GetNowTime() override;
 
 private:
-	std::shared_ptr<Listener> _listener;
-	std::shared_ptr<TimerManager> _timerManager;
-	std::shared_ptr<CollisionManager> _collisionManager;
-
-	std::unordered_map<int, std::shared_ptr<Session>> _sessions;
-	std::unordered_map<int, std::shared_ptr<Character>> _characters;
-	std::unordered_map<int, std::shared_ptr<Projectile>> _projectiles;
-
-	std::shared_mutex _sessionMutex;
-	std::shared_mutex _characterMutex;
-	std::shared_mutex _projectileMutex;
-
-	std::atomic<int> _nextProjectileId;
-
-	std::vector<int> _reusableSessionIds;
 	bool _running{ false };
+
+	std::unique_ptr<Listener> _listener;
+
+	std::unique_ptr<ICharacterManager> _charMng;
+	std::unique_ptr<IProjectileManager> _projMng;
+	std::unique_ptr<ICollisionManager> _collMng;
+	std::unique_ptr<ISessionManager> _sessMng;
+	std::unique_ptr<ITimerManager> _timerMng;
+	std::unique_ptr<IGameLogic> _gameLogic;
 };
 

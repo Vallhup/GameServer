@@ -15,6 +15,7 @@
 #include <unordered_set>
 #include <concurrent_queue.h>
 #include <concurrent_vector.h>
+#include <concurrent_priority_queue.h>
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -31,11 +32,17 @@
 #include "Service.h"
 #include "Listener.h"
 #include "Session.h"
-#include "TimerManager.h"
+
 
 #include "Character.h"
 #include "Projectile.h"
+
+#include "CharacterManager.h"
+#include "ProjectileManager.h"
 #include "CollisionManager.h"
+#include "SessionManager.h"
+#include "TimerManager.h"
+#include "GameLogic.h"
 
 #include "RecvBuffer.h"
 

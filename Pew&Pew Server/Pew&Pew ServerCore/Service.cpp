@@ -1,5 +1,24 @@
 #include "pch.h"
 #include "Service.h"
+#include "SessionManager.h"
+
+Service::Service()
+{
+	_listener = std::make_unique<Listener>();
+
+	_charMng = std::make_unique<CharacterManager>();
+	_projMng = std::make_unique<ProjectileManager>();
+	_collMng = std::make_unique<CollisionManager>();
+	_timerMng = std::make_unique<TimerManager>();
+
+	_sessMng = std::make_unique<SessionManager>(*this);
+	_gameLogic = std::make_unique<GameLogic>(*this);
+}
+
+Service::~Service()
+{
+	Stop();
+}
 
 bool Service::Init()
 {
@@ -9,34 +28,23 @@ bool Service::Init()
 		return false;
 	}
 
-	if (nullptr == _listener) {
-		_listener = std::make_shared<Listener>(shared_from_this());
-	}
-
 	if (_listener->Init() == false) {
 		LOG_ERR("Listener StartAccept filed");
 		return false;
 	}
 
-	if (nullptr == _timerManager) {
-		_timerManager = std::make_shared<TimerManager>();
-	}
-
-	if (nullptr == _collisionManager) {
-		_collisionManager = std::make_shared<CollisionManager>();
-	}
-
-	_timerManager->Register([this](float delta) { this->LogicTick(delta); }, 4.16f);
-	_timerManager->Register([this](float delta) { this->NetworkTick(delta); }, 16.66f);
+	_timerMng->AddRepeatedTask([this](float deltaTime) { _gameLogic->LogicUpdate(deltaTime); }, 4.16f);
+	_timerMng->AddRepeatedTask([this](float) { _gameLogic->NetworkUpdate(); }, 16.66f);
 
 	return true;
 }
 
-void Service::Run()
+
+void Service::Start()
 {
 	_running = true;
 
-	_timerManager->Start();
+	_timerMng->Start();
 	while (_running) {
 		fd_set readSet;
 		FD_ZERO(&readSet);
@@ -44,7 +52,7 @@ void Service::Run()
 		FD_SET(_listener->GetSocket(), &readSet);
 		SOCKET maxSocket = _listener->GetSocket();
 
-		for (auto& [id, session] : _sessions) {
+		for (auto& session : _sessMng->GetSessionList()) {
 			SOCKET socket = session->GetSocket();
 			FD_SET(socket, &readSet);
 
@@ -59,20 +67,21 @@ void Service::Run()
 		}
 
 		if (FD_ISSET(_listener->GetSocket(), &readSet)) {
-			AcceptSession();
+			SOCKET clientSocket = _listener->Accept();
+			_sessMng->AcceptSession(clientSocket);
 		}
 
 		std::vector<int> closed;
-		for (auto& [id, session] : _sessions) {
+		for (auto& session : _sessMng->GetSessionList()) {
 			if (FD_ISSET(session->GetSocket(), &readSet)) {
 				if (not session->Recv()) {
-					closed.push_back(id);
+					closed.push_back(session->GetId());
 				}
 			}
 		}
 
 		for (int id : closed) {
-			CloseSession(id);
+			_sessMng->CloseSession(id);
 		}
 	}
 }
@@ -81,263 +90,25 @@ void Service::Stop()
 {
 	_running = false;
 
-	for (auto& [id, session] : _sessions) {
+	for (auto& session : _sessMng->GetSessionList()) {
 		session->DisConnect();
 	}
-	_sessions.clear();
-	_characters.clear();
-	_projectiles.clear();
 
-	_timerManager->Stop();
-}
-
-void Service::LogicTick(float deltaTime)
-{
-	UpdateCharacters(deltaTime);
-	UpdateProjectiles(deltaTime);
-	CheckCollisions();
-}
-
-void Service::NetworkTick(float deltaTime)
-{
-	std::vector<std::shared_ptr<Character>> characters;
-	characters.reserve(64 - _reusableSessionIds.size());
-	{
-		std::shared_lock lock{ _characterMutex };
-		for (auto& [id, character] : _characters) {
-			characters.push_back(character);
-		}
-	}
-
-	for (auto& character : characters) {
-		if (character->GetDirtyFlag()) {
-			BroadCast(PacketFactory::SCMovePacket(*character));
-			character->SetDirtyFlag(false);
-		}
-	}
-
-	std::vector<std::shared_ptr<Projectile>> projectiles;
-	projectiles.reserve(_characters.size() * 3);
-	{
-		std::shared_lock lock{ _projectileMutex };
-		for (auto& [id, projectile] : _projectiles) {
-			projectiles.push_back(projectile);
-		}
-	}
-
-	for (auto& projectile : projectiles) {
-		if (projectile->GetDirtyFlag()) {
-			BroadCast(PacketFactory::SCMovePacket(*projectile));
-			projectile->SetDirtyFlag(false);
-		}
-	}
-}
-
-void Service::UpdateCharacters(float deltaTime)
-{
-	std::vector<std::shared_ptr<Character>> characters;
-	characters.reserve(64 - _reusableSessionIds.size());
-	{
-		std::shared_lock lock{ _characterMutex };
-		for (auto& [id, character] : _characters) {
-			characters.push_back(character);
-		}
-	}
-
-	for (auto& character : characters) {
-		if (character->Move(deltaTime) or character->GetAngleChange()) {
-			character->SetDirtyFlag(true);
-			character->ResetAngleChange();
-		}
-
-		character->Attack(GetNowTime(), this);
-	}
-}
-
-void Service::UpdateProjectiles(float deltaTime)
-{
-	std::vector<std::shared_ptr<Projectile>> projectiles;
-	projectiles.reserve(_characters.size() * 3);
-	{
-		std::shared_lock lock{ _projectileMutex };
-		for (auto& [id, projectile] : _projectiles) {
-			projectiles.push_back(projectile);
-		}
-	}
-
-	for (auto& projectile : projectiles) {
-		if (projectile->Update(deltaTime, this)) {
-			projectile->SetDirtyFlag(true);
-		}
-	}
-}
-
-void Service::CheckCollisions()
-{
-	std::vector<std::shared_ptr<Character>> characters;
-	characters.reserve(64 - _reusableSessionIds.size());
-	{
-		std::shared_lock lock{ _characterMutex };
-		for (auto& [id, character] : _characters) {
-			characters.push_back(character);
-		}
-	}
-
-	std::vector<std::shared_ptr<Projectile>> projectiles;
-	projectiles.reserve(_characters.size() * 3);
-	{
-		std::shared_lock lock{ _projectileMutex };
-		for (auto& [id, projectile] : _projectiles) {
-			projectiles.push_back(projectile);
-		}
-	}
-
-	_collisionManager->Update(projectiles, characters, this);
-}
-
-void Service::AddProjectile(int sessionId, vec3 direction)
-{
-	std::shared_ptr<Character> character;
-	{
-		std::shared_lock lock{ _characterMutex };
-		character = _characters.find(sessionId)->second;
-	}
-
-	int projId = _nextProjectileId++;
-	std::shared_ptr<Projectile> projectile = std::make_shared<Projectile>(projId, sessionId, character->GetPosition(), direction, 10);
-	{
-		std::unique_lock lock{ _projectileMutex };
-		_projectiles.insert(std::make_pair(projId, projectile));
-	}
-
-	BroadCast(PacketFactory::SCAddPacket(*projectile));
-}
-
-void Service::RemoveProjectile(int projId)
-{
-	std::unique_lock lock{ _projectileMutex };
-	_projectiles.erase(projId);
+	_timerMng->Stop();
 }
 
 void Service::BroadCast(const std::vector<char>& packet, int exceptId)
 {
-	std::vector<std::shared_ptr<Session>> sessions;
-	{
-		std::shared_lock lock{ _sessionMutex };
-		for (auto& [id, session] : _sessions) {
-			if (id != exceptId) {
-				sessions.push_back(session);
-			}
-		}
-	}
-
-	for (auto& session : sessions) {
+	for (auto& session : _sessMng->GetSessionList()) {
+		if (session->GetId() == exceptId) continue;
 		session->Send(packet);
 	}
 }
 
-void Service::AcceptSession()
+float Service::GetNowTime()
 {
-	SOCKET clientSocket = _listener->Accept();
-	if (INVALID_SOCKET == clientSocket) {
-		return;
-	}
-
-	int sessionId = GenerateSessionId();
-	if (sessionId == -1) {
-		LOG_ERR("Error : Session[-1]");
-		closesocket(clientSocket);
-		return;
-	}
-
-	u_long mode{ 1 };
-	ioctlsocket(clientSocket, FIONBIO, &mode);
-
-	std::string name = "Player" + std::to_string(sessionId);
-
-	auto session = std::make_shared<Session>(sessionId, clientSocket);
-	auto character = std::make_shared<Character>(sessionId, name);
-
-	session->SetCharacter(character);
-	session->SetService(this);
-
-	character->SetService(shared_from_this());
-
-	{
-		std::unique_lock lock{ _sessionMutex };
-		_sessions.insert(std::make_pair(sessionId, session));
-	}
-
-	{
-		std::unique_lock lock{ _characterMutex };
-		_characters.insert(std::make_pair(sessionId, character));
-	}
-
-	session->OnConnect();
-
-	BroadCast(PacketFactory::SCAddPacket(*character));
-
-	{
-		std::shared_lock lock{ _sessionMutex };
-
-		// 새로운 플레이어에게 기존 플레이어들의 정보 보내기
-		for (auto& [id, sess] : _sessions) {
-			if (session->GetId() == id) continue;
-			session->Send(PacketFactory::SCAddPacket(*sess->GetCharacter()));
-		}
-	}
-}
-
-void Service::CloseSession(int id)
-{
-	std::shared_ptr<Session> session;
-	std::shared_ptr<Character> character;
-
-	{
-		std::unique_lock lock{ _sessionMutex };
-		auto it = _sessions.find(id);
-		if (it != _sessions.end()) {
-			session = it->second;
-			_sessions.erase(it);
-		}
-	}
-
-	{
-		std::unique_lock lock{ _characterMutex };
-		auto it = _characters.find(id);
-		if (it != _characters.end()) {
-			character = it->second;
-			_characters.erase(it);
-		}
-	}
-
-	if (session and character) {
-		BroadCast(PacketFactory::SCRemovePacket(*character));
-
-		session->DisConnect();
-		_reusableSessionIds.push_back(id);
-	}
-}
-
-Service::Service()
-{
-	_nextProjectileId.store(64);
-	_reusableSessionIds.resize(64);
-	std::iota(_reusableSessionIds.begin(), _reusableSessionIds.end(), 0);
-}
-
-Service::~Service()
-{
-	Stop();
-}
-
-int Service::GenerateSessionId()
-{
-	if (_reusableSessionIds.empty()) {
-		return -1;
-	}
-
-	int id = _reusableSessionIds.back();
-	_reusableSessionIds.pop_back();
-	return id;
+	using namespace std::chrono;
+	static const auto start = high_resolution_clock::now();
+	auto now = high_resolution_clock::now();
+	return duration<float>(now - start).count();
 }

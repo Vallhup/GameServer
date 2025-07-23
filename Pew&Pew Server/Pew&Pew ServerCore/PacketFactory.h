@@ -40,7 +40,7 @@ public:
 		static_assert(std::is_trivially_copyable_v<Packet>);
 
 		if (buf.size() < sizeof(Packet)) {
-			LOG_ERR("Deserialize Packet Size Error");
+			LOG_ERR("Deserialize Packet Size Error : %d / %d", buf.size(), sizeof(Packet));
 			return Packet{};
 		}
 

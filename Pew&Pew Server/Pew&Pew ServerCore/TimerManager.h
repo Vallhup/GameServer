@@ -1,31 +1,58 @@
 #pragma once
 
-class TimerManager
-{
-	struct TimerTask {
+class ITimerManager {
+public:
+	virtual ~ITimerManager() = default;
+
+public:
+	virtual void Start() = 0;
+	virtual void Stop() = 0;
+
+	virtual void AddRepeatedTask(const std::function<void(float)>& func, float intervalMs) = 0;
+	virtual void AddOneTimeTask(const std::function<void()>& func, float delayMs) = 0;
+};
+
+class TimerManager : public ITimerManager {
+	struct RepeatedTask {
 		std::function<void(float)> func;
-		float intervalMs;
-		float elapsed;
+		std::chrono::milliseconds interval;
+		std::chrono::high_resolution_clock::time_point nextExecTime;
+
+		RepeatedTask(std::function<void(float)> f, std::chrono::milliseconds i)
+			: func(f), interval(i), nextExecTime(std::chrono::high_resolution_clock::now() + interval) {}
+	};
+
+	struct OneTimeTask {
+		std::function<void()> func;
+		std::chrono::high_resolution_clock::time_point targetTime;
+
+		bool operator<(const OneTimeTask& other) const
+		{
+			return targetTime > other.targetTime;
+		}
 	};
 
 public:
 	TimerManager();
-	~TimerManager();
+	virtual ~TimerManager();
 
-	void Register(const std::function<void(float)>& func, float intervalMs = 4.0f);
-	void RegisterOnce(const std::function<void()>& func, float delayMs = 5000.0f);
-	void Start();
-	void Stop();
+	virtual void Start() override;
+	virtual void Stop() override;
+
+	virtual void AddRepeatedTask(const std::function<void(float)>& func, float intervalMs) override;
+	virtual void AddOneTimeTask(const std::function<void()>& func, float delayMs) override;
 
 private:
-	void Run();
+	void RepeatedTaskThreadLoop();
+	void OneTimeTaskThreadLoop();
 
 private:
 	std::atomic<bool> _running;
-	concurrency::concurrent_vector<TimerTask> _tasks;
-	/*std::vector<TimerTask> _tasks;
-	std::mutex _taskMutex;*/
-	std::thread _thread;
+
+	std::vector<RepeatedTask> _repeatedTasks;
+	concurrency::concurrent_priority_queue<OneTimeTask> _oneTimeTaskQueue;
+
+	std::thread _repeatedTaskThread;
+	std::thread _oneTimeTaskThread;
 };
 
-float GetNowTime();

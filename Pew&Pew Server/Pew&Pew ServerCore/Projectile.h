@@ -11,17 +11,19 @@ public:
 	Projectile(int id, int ownerId, vec3 charPos, vec3 dir, int dmg);
 
 public:
-	bool Update(float deltaTime, Service* service);
+	void Update(float deltaTime);
 	bool CheckCollision(const Character& character) const;
 
-	void SetIntactive(Service* service);
-	void SetDirtyFlag(bool flag) { _dirtyFlag = flag; }
+	void SetInactive();
 
 	int GetId() const { return _id; }
 	int GetOwnerId() const { return _ownerId; }
 	vec3 GetPosition() const { return _pos; }
 	int GetDamage() const { return _damage; }
-	bool GetDirtyFlag() const { return _dirtyFlag; }
+
+	bool IsActive() const { return _isActive; }
+
+	bool VersionCheckAndChange();
 
 private:
 	int _id;
@@ -39,6 +41,8 @@ private:
 	float _radius;
 	
 	bool _isActive;
-	bool _dirtyFlag;
+
+	long long _version;
+	long long _lastSentVersion;
 };
 

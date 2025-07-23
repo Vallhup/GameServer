@@ -16,6 +16,12 @@
     <Filter Include="Game">
       <UniqueIdentifier>{162fe144-0acf-4e17-8e27-50285f8371e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Manager">
+      <UniqueIdentifier>{ad8eabd3-0a11-4af1-965f-2f277df72de1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Manager">
+      <UniqueIdentifier>{39f8bc78-e516-4b8b-a36b-7e0f1342fafe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="protocol.h">
@@ -54,11 +60,26 @@
     <ClInclude Include="Projectile.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="TimerManager.h">
-      <Filter>Core</Filter>
+    <ClInclude Include="Enemy.h">
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="CollisionManager.h">
-      <Filter>Game</Filter>
+      <Filter>Game\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterManager.h">
+      <Filter>Game\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameLogic.h">
+      <Filter>Game\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileManager.h">
+      <Filter>Game\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionManager.h">
+      <Filter>Core\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerManager.h">
+      <Filter>Core\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -92,11 +113,26 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="TimerManager.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="CollisionManager.cpp">
-      <Filter>Game</Filter>
+      <Filter>Game\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterManager.cpp">
+      <Filter>Game\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="GameLogic.cpp">
+      <Filter>Game\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileManager.cpp">
+      <Filter>Game\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionManager.cpp">
+      <Filter>Core\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="TimerManager.cpp">
+      <Filter>Core\Manager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

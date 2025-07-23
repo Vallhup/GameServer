@@ -18,19 +18,20 @@ Projectile::Projectile(int id, int ownerId, vec3 charPos, vec3 dir, int dmg)
 	_moveVector.y = 0.0f;
 	_radius = 0.3f;
 	_isActive = true;
+
+	_version = 0;
+	_lastSentVersion = 0;
 }
 
-bool Projectile::Update(float deltaTime, Service* service)
+void Projectile::Update(float deltaTime)
 {
 	_pos += _moveVector * deltaTime;
 	_lifeTime += deltaTime;
+	_version++;
 
 	if (_lifeTime > _maxLifeTime) {
-		SetIntactive(service);
-		return false;
+		SetInactive();
 	}
-
-	return true;
 }
 
 bool Projectile::CheckCollision(const Character& character) const
@@ -39,9 +40,17 @@ bool Projectile::CheckCollision(const Character& character) const
 	return CollisionManager::SphereAABBCollision(_pos, _radius, charMin, charMax);
 }
 
-void Projectile::SetIntactive(Service* service)
+void Projectile::SetInactive()
 {
 	_isActive = false;
-	service->RemoveProjectile(_id);
-	service->BroadCast(PacketFactory::SCRemovePacket(*this));
+}
+
+bool Projectile::VersionCheckAndChange()
+{
+	if (_version != _lastSentVersion) {
+		_lastSentVersion = _version;
+		return true;
+	}
+
+	return false;
 }

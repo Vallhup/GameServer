@@ -14,7 +14,7 @@ int main()
 		return -1;
 	}
 
-	service->Run();
+	service->Start();
 	service->Stop();
 
 	return 0;

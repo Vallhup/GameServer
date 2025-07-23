@@ -10,64 +10,72 @@ TimerManager::~TimerManager()
 	Stop();
 }
 
-void TimerManager::Register(const std::function<void(float)>& func, float intervalMs)
-{
-	_tasks.push_back(TimerTask{ func, intervalMs, 0 });
-}
-
-void TimerManager::RegisterOnce(const std::function<void()>& func, float delayMs)
-{
-	LOG_INF("[TIMER] RegisterOnce called! delayMs = %f", delayMs);
-	_tasks.push_back(TimerTask{ [func, called = false](float) mutable
-		{
-			LOG_INF("[TIMER] One-shot lambda fired!");
-			if (not called) {
-				func();
-				called = true;
-			}
-		}, delayMs, 0 });
-}
-
 void TimerManager::Start()
 {
-	_running.store(true);
-	_thread = std::thread([this]() { this->Run(); });
+	bool expected{ false };
+	if (_running.compare_exchange_strong(expected, true)) {
+		_repeatedTaskThread = std::thread([this]() { this->RepeatedTaskThreadLoop(); });
+		_oneTimeTaskThread = std::thread([this]() { this->OneTimeTaskThreadLoop(); });
+	}
 }
 
 void TimerManager::Stop()
 {
-	_running.store(false);
-	if (_thread.joinable()) {
-		_thread.join();
-	}
-}
-
-void TimerManager::Run()
-{
-	using namespace std::chrono;
-
-	auto prev = high_resolution_clock::now();
-	while (_running) {
-		auto now = high_resolution_clock::now();
-		float delta = duration<float>(now - prev).count();
-		prev = now;
-
-		for (auto& task : _tasks) {
-			task.elapsed += delta * 1000.0f;
-			if (task.elapsed >= task.intervalMs) {
-				task.func(task.elapsed / 1000.0f);
-				task.elapsed = 0;
-			}
+	bool expected{ true };
+	if(_running.compare_exchange_strong(expected, false)) {
+		if (_repeatedTaskThread.joinable()) {
+			_repeatedTaskThread.join();
 		}
 
-		std::this_thread::sleep_for(milliseconds(1));
+		if (_oneTimeTaskThread.joinable()) {
+			_oneTimeTaskThread.join();
+		}
 	}
 }
 
-float GetNowTime()
+void TimerManager::AddRepeatedTask(const std::function<void(float)>& func, float intervalMs)
+{
+	_repeatedTasks.emplace_back(func, std::chrono::milliseconds(static_cast<int>(intervalMs)));
+}
+
+void TimerManager::AddOneTimeTask(const std::function<void()>& func, float delayMs)
 {
 	using namespace std::chrono;
-	static const auto start = high_resolution_clock::now();
-	auto now = high_resolution_clock::now();
-	return duration<float>(now - start).count();
+
+	OneTimeTask task{ func, high_resolution_clock::now() + milliseconds(static_cast<int>(delayMs)) };
+	_oneTimeTaskQueue.push(task);
+}
+
+void TimerManager::RepeatedTaskThreadLoop()
+{
+	using namespace std::chrono;
+
+	while (_running) {
+		auto now = high_resolution_clock::now();
+
+		for (auto& task : _repeatedTasks) {
+			while (now >= task.nextExecTime) {
+				float deltaTime = duration<float>(task.interval).count();
+				task.func(deltaTime);
+				task.nextExecTime += task.interval;
+			}
+		}
+	}
+}
+
+void TimerManager::OneTimeTaskThreadLoop()
+{
+	using namespace std::chrono;
+
+	while (_running) {
+		OneTimeTask task;
+		while (_oneTimeTaskQueue.try_pop(task)) {
+			if (task.targetTime > high_resolution_clock::now()) {
+				_oneTimeTaskQueue.push(task);
+				break;
+			}
+
+			task.func();
+		}
+	}
 }
