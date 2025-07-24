@@ -219,7 +219,8 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 				bool isLocal = firstCharacter;
 				firstCharacter = false;
 
-				graphics->AddCharacter(addPacket.id, isLocal, 20.0f);
+				glm::vec3 addCharacterPos = glm::vec3(addPacket.x, addPacket.y, addPacket.z);
+				graphics->AddCharacter(addPacket.id, addCharacterPos, isLocal, 20.0f);
 
 				MainCharacter* character = graphics->GetCharacter(addPacket.id);
 				if (character) {

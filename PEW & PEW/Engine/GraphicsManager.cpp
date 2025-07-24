@@ -21,7 +21,8 @@ void GraphicsManager::Init()
 	fade = new Fade();
 	fade->Init();
 
-	AddCharacter(0, true, 0.1f);
+	glm::vec3 localPos = glm::vec3(-37.3051f, 0.0f, 42.5001f);
+	AddCharacter(0, localPos, true, 0.1f);
 	InitAlienCharacters();
 }
 
@@ -223,10 +224,10 @@ void GraphicsManager::UpdateAlienCharacters(float deltatime)
 	}
 }
 
-void GraphicsManager::AddCharacter(int id, bool isLocal, float speed)
+void GraphicsManager::AddCharacter(int id, glm::vec3 cPos, bool isLocal, float speed)
 {
 	if (catCharacters.find(id) == catCharacters.end()) {
-		MainCharacter* newChar = new MainCharacter(id, isLocal, speed);
+		MainCharacter* newChar = new MainCharacter(id, cPos, isLocal, speed);
 		newChar->Init();
 		catCharacters[id] = newChar;
 

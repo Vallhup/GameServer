@@ -50,3 +50,12 @@ bool CollisionManager::IsInsideCollisionBox(float x, float z)
 
 	return false;
 }
+
+bool CollisionManager::IsInsidePVPBox(float x, float z)
+{
+	if (x >= pvpBox.minX && x <= pvpBox.maxX &&
+		z >= pvpBox.minZ && z <= pvpBox.maxZ)
+		return true;
+
+	return false;
+}

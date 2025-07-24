@@ -18,7 +18,7 @@ struct CatBulletSlot {
 class MainCharacter
 {
 public:
-    MainCharacter(int id, bool isLocal = false, float speed = 0.1f);
+    MainCharacter(int id, glm::vec3 cPos, bool isLocal = false, float speed = 0.1f);
     ~MainCharacter();
 
     void Init();

@@ -8,7 +8,7 @@
 #include "SceneManager.h"
 #include "CollisionManager.h"
 
-MainCharacter::MainCharacter(int id, bool isLocal, float speed) : playerID(id), isLocalPlayer(isLocal)
+MainCharacter::MainCharacter(int id, glm::vec3 cPos, bool isLocal, float speed) : playerID(id), isLocalPlayer(isLocal)
 {
     player_BoneInfo = new vector<BoneInfo>();
     animModel = new AnimatedModel();
@@ -18,7 +18,7 @@ MainCharacter::MainCharacter(int id, bool isLocal, float speed) : playerID(id), 
     if (isLocalPlayer)
         hitbox = new BoundingBox();
 
-    characterPos = glm::vec3(-37.3051f, 0.0f, 42.5001f);
+    characterPos = cPos;
     targetPos = characterPos;
 
     for (int i = 0; i < MAX_BULLETS; ++i)
