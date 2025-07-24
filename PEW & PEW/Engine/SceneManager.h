@@ -22,13 +22,15 @@ public:
 
 private:
     void InitScene1();
-    void InitScene2();
+    void InitScene2(int characterType);
 
     void UpdateScene1();
     void UpdateScene2();
 
     void ReleaseScene1();
     void ReleaseScene2();
+
+    void SendLoginPacket(int characterType);
 
 private:
     NetworkManager* network;

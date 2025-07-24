@@ -170,6 +170,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			if (action == GLFW_PRESS)
 			{
 				input->mainCat->SetCharacterType(0);
+				input->graphics->SetCharacterType(0);
 			}
 		}
 		break;
@@ -179,6 +180,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			if (action == GLFW_PRESS)
 			{
 				input->mainCat->SetCharacterType(1);
+				input->graphics->SetCharacterType(1);
 			}
 		}
 		break;
@@ -188,6 +190,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			if (action == GLFW_PRESS)
 			{
 				input->mainCat->SetCharacterType(2);
+				input->graphics->SetCharacterType(2);
 			}
 		}
 		break;

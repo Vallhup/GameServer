@@ -7,6 +7,7 @@
 #include "CollisionManager.h"
 #include "Fade.h"
 #include "Skybox.h"
+#include "PacketFactory.h"
 
 void SceneManager::Init()
 {
@@ -44,9 +45,10 @@ void SceneManager::TransitionUpdate()
 		if (fade->GetFadeAlpha() >= 1.0f) {
 			input->SetMainCharacter(nullptr);
 			currentScene = SceneType::Scene2;
+			int localCharType = graphics->GetCharacterType();
 			graphics->RemoveCharacter(0);
 			ReleaseScene1();
-			InitScene2();
+			InitScene2(localCharType);
 			isTransitioning = false;
 		}
 
@@ -96,13 +98,14 @@ void SceneManager::InitScene1()
 	glfwSetCursorPosCallback(window, Input::MouseMoveFunc);
 }
 
-void SceneManager::InitScene2()
+void SceneManager::InitScene2(int characterType)
 {
 	GET_SINGLE(Skybox)->ChangeCubeMapTexture();
 	graphics->InitPVPMap();
 
 	network = new NetworkManager();
 	network->Init("127.0.0.1", 9000);		// 동환이가 주는 IP & 포트번호 넣어야함
+	SendLoginPacket(characterType);
 	network->SetGraphicsManager(graphics);
 
 	input->SetNetworkManager(network);
@@ -132,4 +135,12 @@ void SceneManager::ReleaseScene2()
 
 	network->Release();
 	delete network;
+}
+
+void SceneManager::SendLoginPacket(int characterType)
+{
+	if (!network) return;
+
+	vector<char> packet = PacketFactory::CSLoginPacket(characterType);
+	network->Send(packet);
 }

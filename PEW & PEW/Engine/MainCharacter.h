@@ -21,7 +21,7 @@ public:
     MainCharacter(int id, glm::vec3 cPos, bool isLocal = false, float speed = 0.1f);
     ~MainCharacter();
 
-    void Init();
+    void Init(int type);
     void Update(float deltaTime);
     void Update(float deltaTime, array<array<AlienCharacter*, 9>, 3>& aliens);
     void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap);

@@ -84,6 +84,7 @@ struct SC_ADD_PACKET {
 	float x;
 	float y;
 	float z;
+	int textureId;
 };
 
 struct SC_REMOVE_PACKET {

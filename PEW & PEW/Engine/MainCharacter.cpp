@@ -52,7 +52,7 @@ MainCharacter::~MainCharacter()
     }
 }
 
-void MainCharacter::Init()
+void MainCharacter::Init(int type)
 {
     SaveAnimations();
 
@@ -60,7 +60,7 @@ void MainCharacter::Init()
     texture[0] = LoadTexture("Texture/CatTexture.png");
     texture[1] = LoadTexture("Texture/CatTexture2.png");
     texture[2] = LoadTexture("Texture/CatTexture3.png");
-    Texture = texture[0];
+    Texture = texture[type];
     SetupShader("Shaders/CatVert.glsl", "Shaders/CatFrag.glsl", shaderprogram);
 }
 

@@ -24,7 +24,7 @@ public:
 	void InitAlienCharacters();
 	void UpdateAlienCharacters(float deltatime);
 
-	void AddCharacter(int id, glm::vec3 cPos, bool isLocal = false, float speed = 0.1f);
+	void AddCharacter(int id, glm::vec3 cPos, int characterType, bool isLocal = false, float speed = 0.1f);
 	void RemoveCharacter(int id);
 	MainCharacter* GetCharacter(int id);
 	MainCharacter* GetLocalCharacter();
@@ -32,11 +32,13 @@ public:
 	Camera* GetCamera() const;
 	MainCharacter* GetMainCat();
 	Fade* GetFade();
+	int GetCharacterType() const { return characterType; }
 	void DebugAllCharacterPositions();
 
 	const std::map<int, MainCharacter*>& GetAllCharacters() const { return catCharacters; }
 
 	void SetSceneManager(SceneManager* sm);
+	void SetCharacterType(int in) { characterType = in; }
 
 private:
 	int myPlayerID = { -1 };
@@ -44,5 +46,6 @@ private:
 	ShadowMapping* shadowMap = { nullptr };
 	Fade* fade = { nullptr };
 	std::map<int, MainCharacter*> catCharacters;
+	int characterType = { 0 };
 	std::array<std::array<AlienCharacter*, 9>, 3> alienCharacters;
 };
