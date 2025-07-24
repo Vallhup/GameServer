@@ -82,7 +82,7 @@ class Character : public std::enable_shared_from_this<Character>
 
 public:
 	Character() = delete;
-	Character(int id, const std::string& name);
+	Character(int id, int texture);
 	~Character() = default;
 
 	Character(const Character&) = delete;
@@ -107,6 +107,7 @@ public:
 	float GetAngle() const { return _angle; }
 	bool GetAngleChange() const { return _angleChange; }
 	vec3 GetPosition() const { return _pos; }
+	int GetTexture() const { return _texture; }
 	long long GetVersion() const { return _version; }	
 
 	std::optional<vec3> GetNextProjectile(float nowTime);
@@ -142,6 +143,8 @@ private:
 
 	long long _version;
 	long long _lastSentVersion;
+
+	int _texture;
 
 	std::optional<AttackSequence> _attackSeq;
 	std::mutex _attackSeqMutex;

@@ -9,6 +9,7 @@ public:
 
 public:
 	// Server -> Client
+	static std::vector<char> SCLoginPacket();
 	static std::vector<char> SCMovePacket(const Character& character);
 	static std::vector<char> SCMovePacket(const Projectile& projectile);
 	static std::vector<char> SCAddPacket(const Character& character);

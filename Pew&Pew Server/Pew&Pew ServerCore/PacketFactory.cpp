@@ -21,6 +21,15 @@ std::vector<char> PacketFactory::CSAttackPacket(char direction, bool run)
 	return Serialize(attack);
 }
 
+std::vector<char> PacketFactory::SCLoginPacket()
+{
+	SC_LOGIN_PACKET login;
+	login.size = sizeof(login);
+	login.type = SC_LOGIN;
+
+	return Serialize(login);
+}
+
 std::vector<char> PacketFactory::SCMovePacket(const Character& character)
 {
 	SC_MOVE_PACKET move;
@@ -73,6 +82,8 @@ std::vector<char> PacketFactory::SCAddPacket(const Character& character)
 	add.x = charPos.x;
 	add.y = charPos.y;
 	add.z = charPos.z;
+
+	add.textureId = character.GetTexture();
 
 	return Serialize(add);
 }

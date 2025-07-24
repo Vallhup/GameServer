@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Character.h"
 
-Character::Character(int id, const std::string& name) : _id(id), _name(name)
+Character::Character(int id, int texture) : _id(id), _name("name"), _texture(texture)
 {
 	_pos = DEFAULT_POS[id % 4];
 	_angle = 0.0f;

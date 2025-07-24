@@ -40,6 +40,7 @@ private:
 
 	void RegisterHandlers();
 
+	void OnPlayerLogin(int sessionId, const std::vector<char>& packet);
 	void OnPlayerMove(int sessionId, const std::vector<char>& packet);
 	void OnPlayerAttack(int sessionId, const std::vector<char>& packet);
 	void OnPlayerAttackEnd(int sessionId, const std::vector<char>& packet);

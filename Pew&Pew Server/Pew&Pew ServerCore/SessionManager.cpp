@@ -22,27 +22,14 @@ void SessionManager::AcceptSession(SOCKET clientSocket)
 	u_long mode{ 1 };
 	ioctlsocket(clientSocket, FIONBIO, &mode);
 
-	std::string name = "Player" + std::to_string(sessionId);
-
 	auto session = std::make_shared<Session>(sessionId, clientSocket);
-	auto character = std::make_shared<Character>(sessionId, name);
 
 	session->SetPacketHandler([this](int sessionId, const std::vector<char>& packet)
 		{
 			OnSessionPacket(sessionId, packet);
 		});
-	session->SetCharacter(character);
 	session->OnConnect();
-
 	AddSession(session);
-
-	_gameCtx.GetCharacterManager().AddCharacter(character);
-	_gameCtx.BroadCast(PacketFactory::SCAddPacket(*character));
-
-	for (const auto& otherChar : _gameCtx.GetCharacterManager().GetCharacterList()) {
-		if (otherChar->GetId() == character->GetId()) continue;
-		session->Send(PacketFactory::SCAddPacket(*otherChar));
-	}
 }
 
 void SessionManager::CloseSession(int sessionId)

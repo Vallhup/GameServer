@@ -107,6 +107,12 @@ void GameLogic::CheckCollisions()
 
 void GameLogic::RegisterHandlers()
 {
+	_packetHandlers[CS_LOGIN] =
+		[this](int sessionId, const std::vector<char>& packet)
+		{
+			OnPlayerLogin(sessionId, packet);
+		};
+
 	_packetHandlers[CS_MOVE] =
 		[this](int sessionId, const std::vector<char>& packet)
 		{
@@ -124,6 +130,24 @@ void GameLogic::RegisterHandlers()
 		{
 			OnPlayerAttackEnd(sessionId, packet);
 		};
+}
+
+void GameLogic::OnPlayerLogin(int sessionId, const std::vector<char>& packet)
+{
+	auto login = PacketFactory::Deserialize<CS_LOGIN_PACKET>(packet);
+	auto session = _gameCtx.GetSessionManager().GetSession(sessionId);
+	auto character = std::make_shared<Character>(sessionId, login.textureId);
+
+	session->SetCharacter(character);
+	session->Send(PacketFactory::SCLoginPacket());
+
+	_gameCtx.GetCharacterManager().AddCharacter(character);
+	_gameCtx.BroadCast(PacketFactory::SCAddPacket(*character));
+
+	for (const auto& otherChar : _gameCtx.GetCharacterManager().GetCharacterList()) {
+		if (otherChar->GetId() == character->GetId()) continue;
+		session->Send(PacketFactory::SCAddPacket(*otherChar));
+	}
 }
 
 void GameLogic::OnPlayerMove(int sessionId, const std::vector<char>& packet)
