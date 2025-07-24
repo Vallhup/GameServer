@@ -9,6 +9,7 @@ Character::Character(int id, const std::string& name) : _id(id), _name(name)
 
 	_hp = MAX_HP;
 	_isAlive = true;
+	_isDeadProcessed = false;
 
 	_version = 0;
 	_lastSentVersion = 0;
@@ -163,6 +164,7 @@ void Character::Revive()
 
 	_hp = MAX_HP;
 	_isAlive = true;
+	_isDeadProcessed = false;
 
 	_direction = -1;
 	_isRun = false;
