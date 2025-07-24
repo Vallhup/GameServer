@@ -29,6 +29,10 @@ void Projectile::Update(float deltaTime)
 	_lifeTime += deltaTime;
 	_version++;
 
+	if (_pos.x < -15.0727f or _pos.x > 15.1275f or _pos.z < -14.9065f or _pos.z > 14.9373f) {
+		SetInactive();
+	}
+
 	if (_lifeTime > _maxLifeTime) {
 		SetInactive();
 	}

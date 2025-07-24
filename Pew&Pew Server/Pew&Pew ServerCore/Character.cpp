@@ -50,8 +50,8 @@ bool Character::Move(float deltaTime)
 	}
 
 	_pos += moveVec * moveDistance;
-	_pos.x = std::clamp(_pos.x, -20.2914f, 20.2322f);
-	_pos.z = std::clamp(_pos.z, -19.9385f, 20.0144f);
+	_pos.x = std::clamp(_pos.x, -15.0727f, 15.1275f);
+	_pos.z = std::clamp(_pos.z, -14.9065f, 14.9373f);
 
 	_version++;
 
