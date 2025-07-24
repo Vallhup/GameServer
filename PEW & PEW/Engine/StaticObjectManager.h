@@ -8,6 +8,7 @@ class StaticObjectManager
 
 public:
 	void Init();
+	void InitPVPMap();
 	void Release();
 	void Update();
 	void Draw(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos,

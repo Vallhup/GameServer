@@ -25,6 +25,11 @@ void GraphicsManager::Init()
 	InitAlienCharacters();
 }
 
+void GraphicsManager::InitPVPMap()
+{
+	GET_SINGLE(StaticObjectManager)->InitPVPMap();
+}
+
 void GraphicsManager::Update(SceneType type)
 {
 	float deltaTime = GET_SINGLE(Timer)->GetDeltaTime();
@@ -187,6 +192,11 @@ void GraphicsManager::Release()
 
 	fade->Release();
 	delete fade;
+}
+
+void GraphicsManager::ReleaseScene1()
+{
+	GET_SINGLE(StaticObjectManager)->Release();
 }
 
 void GraphicsManager::InitAlienCharacters()

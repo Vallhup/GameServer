@@ -57,7 +57,10 @@ void MainCharacter::Init()
     SaveAnimations();
 
     animModel->LoadGLBFile(0, *player_BoneInfo, "Glb/cat_Tpose.glb", VAO, VBO, VBO2, EBO, Indices);
-    Texture = LoadTexture("Texture/CatTexture.png");
+    texture[0] = LoadTexture("Texture/CatTexture.png");
+    texture[1] = LoadTexture("Texture/CatTexture2.png");
+    texture[2] = LoadTexture("Texture/CatTexture3.png");
+    Texture = texture[0];
     SetupShader("Shaders/CatVert.glsl", "Shaders/CatFrag.glsl", shaderprogram);
 }
 

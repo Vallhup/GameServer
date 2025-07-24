@@ -13,11 +13,13 @@ class GraphicsManager
 {
 public:
 	void Init();
+	void InitPVPMap();
 	void Update(SceneType type);
 	void Render(SceneType type);
 	void RenderFade(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& viewPos);
 	void RenderShadow(SceneType type);
 	void Release();
+	void ReleaseScene1();
 
 	void InitAlienCharacters();
 	void UpdateAlienCharacters(float deltatime);

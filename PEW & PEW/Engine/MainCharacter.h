@@ -45,6 +45,7 @@ public:
     void SetFiring(bool in) { firing = in; }
     void SetCamera(Camera* cam) { if (isLocalPlayer) camera = cam; }
     void SetAngle(float ang) { angle = ang; }
+    void SetCharacterType(int type) { Texture = texture[type]; }
 
     // 네트워크 업데이트 (원격 플레이어만)
     void UpdateFromPacket(float ang, float x, float y, float z, char direction = -1, bool move = false, bool run = false);
@@ -142,7 +143,7 @@ private:
     std::vector<std::unique_ptr<Assimp::Importer>> animationImporters;
 
     // OpenGL
-    GLuint VAO, VBO, VBO2, EBO, shaderprogram, Texture;
+    GLuint VAO, VBO, VBO2, EBO, shaderprogram, Texture, texture[3];
     GLuint ViewLoc, ProjLoc, ModelLoc, TextureLoc, UseTextureLoc, colorHitLoc;
     std::vector<unsigned int> Indices;
     glm::mat4 model;

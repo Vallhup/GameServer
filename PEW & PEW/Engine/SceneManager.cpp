@@ -44,6 +44,7 @@ void SceneManager::TransitionUpdate()
 			input->SetMainCharacter(nullptr);
 			currentScene = SceneType::Scene2;
 			graphics->RemoveCharacter(0);
+			ReleaseScene1();
 			InitScene2();
 			isTransitioning = false;
 		}
@@ -96,6 +97,8 @@ void SceneManager::InitScene1()
 
 void SceneManager::InitScene2()
 {
+	graphics->InitPVPMap();
+
 	network = new NetworkManager();
 	network->Init("127.0.0.1", 9000);		// 동환이가 주는 IP & 포트번호 넣어야함
 	network->SetGraphicsManager(graphics);
@@ -106,7 +109,7 @@ void SceneManager::InitScene2()
 
 void SceneManager::UpdateScene1()
 {
-
+	
 }
 
 void SceneManager::UpdateScene2()
@@ -116,7 +119,7 @@ void SceneManager::UpdateScene2()
 
 void SceneManager::ReleaseScene1()
 {
-
+	graphics->ReleaseScene1();
 }
 
 void SceneManager::ReleaseScene2()

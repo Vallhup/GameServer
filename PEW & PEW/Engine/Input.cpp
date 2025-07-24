@@ -154,25 +154,43 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			}
 		}
 		break;
-		case GLFW_KEY_0:
-			if (input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead()/* && !finish*/)
+	case GLFW_KEY_0:
+		if (input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead()/* && !finish*/)
+		{
+			if (action == GLFW_PRESS)
 			{
-				if (action == GLFW_PRESS)
-				{
-					cout << "x: " << input->mainCat->GetPosition().x << endl;
-					cout << "z: " << input->mainCat->GetPosition().z << endl;
-				}
+				cout << "x: " << input->mainCat->GetPosition().x << endl;
+				cout << "z: " << input->mainCat->GetPosition().z << endl;
 			}
-			break;
-		//case GLFW_KEY_1:
-		//	if (camera.Get_start_pos() == 0 && !mainCat->getdying() && !finish)
-		//	{
-		//		if (action == GLFW_PRESS)
-		//		{
-		//			playeranimLib.changeAnimation("Dance", player_CurrentAnim);
-		//		}
-		//	}
-		//	break;
+		}
+		break;
+	case GLFW_KEY_1:
+		if (input->camera->Get_start_pos() == 30.0f)
+		{
+			if (action == GLFW_PRESS)
+			{
+				input->mainCat->SetCharacterType(0);
+			}
+		}
+		break;
+	case GLFW_KEY_2:
+		if (input->camera->Get_start_pos() == 30.0f)
+		{
+			if (action == GLFW_PRESS)
+			{
+				input->mainCat->SetCharacterType(1);
+			}
+		}
+		break;
+	case GLFW_KEY_3:
+		if (input->camera->Get_start_pos() == 30.0f)
+		{
+			if (action == GLFW_PRESS)
+			{
+				input->mainCat->SetCharacterType(2);
+			}
+		}
+		break;
 	case GLFW_KEY_LEFT_ALT:
 		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
 		{
