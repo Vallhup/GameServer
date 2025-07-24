@@ -3,7 +3,7 @@
 
 Character::Character(int id, const std::string& name) : _id(id), _name(name)
 {
-	_pos = DEFAULT_POS;
+	_pos = DEFAULT_POS[id % 4];
 	_angle = 0.0f;
 	_angleChange = false;
 
@@ -50,6 +50,9 @@ bool Character::Move(float deltaTime)
 	}
 
 	_pos += moveVec * moveDistance;
+	_pos.x = std::clamp(_pos.x, -20.2914f, 20.2322f);
+	_pos.z = std::clamp(_pos.z, -19.9385f, 20.0144f);
+
 	_version++;
 
 	return true;
@@ -158,7 +161,7 @@ void Character::Death()
 
 void Character::Revive()
 {
-	_pos = DEFAULT_POS;
+	_pos = DEFAULT_POS[_id % 4];
 	_angle = 0.0f;
 	_angleChange = false;
 

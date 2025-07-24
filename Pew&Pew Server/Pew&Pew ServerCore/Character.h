@@ -72,7 +72,13 @@ class Character : public std::enable_shared_from_this<Character>
 	static constexpr float SIZE_Z{ 0.4f };
 
 	static constexpr int MAX_HP{ 100 };
-	static constexpr vec3 DEFAULT_POS{ 0.0f, 0.0f, 0.0f };
+
+	static constexpr vec3 DEFAULT_POS[4] = {
+		{ -19.2914f, 0.0f, -18.9385f },
+		{  19.2322f, 0.0f, -18.9385f },
+		{  19.2322f, 0.0f,  19.0144f },
+		{  -19.2914f, 0.0f, 19.0144f }
+	};
 
 public:
 	Character() = delete;
