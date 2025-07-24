@@ -64,18 +64,26 @@ class Character : public std::enable_shared_from_this<Character>
 		std::vector<float> attackTimes;
 	};
 
-	const int NUMBER_OF_ATTACK{ 3 };
-	const float INTERVAL_OF_ATTACK{ 0.15f };
+	static constexpr int NUMBER_OF_ATTACK{ 3 };
+	static constexpr float INTERVAL_OF_ATTACK{ 0.15f };
 
-	const float SIZE_X{ 0.5f };
-	const float SIZE_Y{ 0.95f };
-	const float SIZE_Z{ 0.4f };
+	static constexpr float SIZE_X{ 0.5f };
+	static constexpr float SIZE_Y{ 0.95f };
+	static constexpr float SIZE_Z{ 0.4f };
 
-	const int MAX_HP{ 100 };
-	const vec3 DEFAULT_POS{ -37.3051f, 0.0f, 42.5001f };
+	static constexpr int MAX_HP{ 100 };
+	static constexpr vec3 DEFAULT_POS{ -37.3051f, 0.0f, 42.5001f };
 
 public:
+	Character() = delete;
 	Character(int id, const std::string& name);
+	~Character() = default;
+
+	Character(const Character&) = delete;
+	Character& operator=(const Character&) = delete;
+
+	Character(Character&&) = delete;
+	Character& operator=(Character&&) = delete;
 
 public:
 	void Update(float deltaTime);

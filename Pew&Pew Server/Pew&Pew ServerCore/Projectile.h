@@ -5,10 +5,20 @@ class Character;
 
 class Projectile
 {
-	const float PROJECTILE_SPEED{ 20.0f };
+	static constexpr float PROJECTILE_SPEED{ 20.0f };
+	static constexpr float MAX_LIFE_TIME{ 3.0f };
+	static constexpr float PROJECTILE_RADIUS{ 0.3f };
 
 public:
+	Projectile() = delete;
 	Projectile(int id, int ownerId, vec3 charPos, vec3 dir, int dmg);
+	~Projectile() = default;
+
+	Projectile(const Projectile&) = delete;
+	Projectile& operator=(const Projectile&) = delete;
+
+	Projectile(Projectile&&) = delete;
+	Projectile& operator=(Projectile&&) = delete;
 
 public:
 	void Update(float deltaTime);

@@ -3,10 +3,10 @@
 
 Listener::~Listener()
 {
-	closesocket(_socket);
+	Stop();
 }
 
-bool Listener::Init()
+bool Listener::Init(short portNum)
 {
 	_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, NULL);
 	if (INVALID_SOCKET == _socket) {
@@ -16,18 +16,18 @@ bool Listener::Init()
 
 	SOCKADDR_IN addr;
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(PORT_NUM);
+	addr.sin_port = htons(portNum);
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	if (SOCKET_ERROR == bind(_socket, reinterpret_cast<sockaddr*>(&addr), sizeof(SOCKADDR_IN))) {
 		LOG_ERR("bind failed: %d", WSAGetLastError());
-		closesocket(_socket);
+		Stop();
 		return false;
 	}
 
 	if (SOCKET_ERROR == listen(_socket, SOMAXCONN)) {
 		LOG_ERR("listen failed: %d", WSAGetLastError());
-		closesocket(_socket);
+		Stop();
 		return false;
 	}
 
@@ -35,6 +35,14 @@ bool Listener::Init()
 	ioctlsocket(_socket, FIONBIO, &mode);
 
 	return true;
+}
+
+void Listener::Stop()
+{
+	if (INVALID_SOCKET != _socket) {
+		closesocket(_socket);
+		_socket = INVALID_SOCKET;
+	}
 }
 
 SOCKET Listener::GetSocket() const

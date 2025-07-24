@@ -12,6 +12,14 @@ bool ICollisionManager::SphereAABBCollision(const vec3& sphereCenter, float sphe
 	return sphereCenter.DistanceSq(closestPt) <= pow(sphereRadius, 2);
 }
 
+bool ICollisionManager::AABBCollision(const vec3& minA, const vec3& maxA, const vec3& minB, const vec3& maxB)
+{
+	return 
+		(minA.x < maxB.x and maxA.x > minB.x) and
+		(minA.y < maxB.y and maxA.y > minB.y) and
+		(minA.z < maxB.z and maxA.z > minB.z);
+}
+
 std::vector<std::pair<std::shared_ptr<Projectile>, std::shared_ptr<Character>>> CollisionManager::GetCollisionList(const std::vector<std::shared_ptr<Projectile>>& projectiles, const std::vector<std::shared_ptr<Character>>& characters)
 {
 	std::vector<std::pair<std::shared_ptr<Projectile>, std::shared_ptr<Character>>> collisionList;
@@ -23,6 +31,7 @@ std::vector<std::pair<std::shared_ptr<Projectile>, std::shared_ptr<Character>>> 
 
 			if (projectile->CheckCollision(*character)) {
 				collisionList.emplace_back(projectile, character);
+				break;
 			}
 		}
 	}

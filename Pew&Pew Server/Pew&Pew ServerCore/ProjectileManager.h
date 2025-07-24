@@ -20,6 +20,12 @@ public:
 	ProjectileManager() = default;
 	virtual ~ProjectileManager() = default;
 
+	ProjectileManager(const ProjectileManager&) = delete;
+	ProjectileManager& operator=(const ProjectileManager&) = delete;
+
+	ProjectileManager(ProjectileManager&&) = delete;
+	ProjectileManager& operator=(ProjectileManager&&) = delete;
+
 public:
 	virtual void AddProjectile(const std::shared_ptr<Projectile>& projectile) override;
 	virtual void RemoveProjectile(int projectileId) override;

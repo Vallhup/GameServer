@@ -3,14 +3,23 @@
 #include "RecvBuffer.h"
 
 class Service;
+class Character;
 
 class Session {
 	using PacketHandler = std::function<void(int, const std::vector<char>&)>;
 
 public:
+	Session() = delete;
 	Session(int sessionId, SOCKET socket);
 	~Session();
 
+	Session(const Session&) = delete;
+	Session& operator=(const Session&) = delete;
+
+	Session(Session&&) = delete;
+	Session& operator=(Session&&) = delete;
+
+public:
 	bool Recv();
 	bool Send(const std::vector<char>& data);
 	
@@ -18,8 +27,7 @@ public:
 	void DisConnect();
 
 	void ProcessPacket();
-	//void HandlePacket(const std::vector<char>& packet);
-
+	
 public:
 	int GetId() const { return _id; }
 	SOCKET GetSocket() const { return _socket; }

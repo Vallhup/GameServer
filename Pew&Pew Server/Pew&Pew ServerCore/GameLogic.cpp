@@ -45,7 +45,7 @@ void GameLogic::OnPlayerAction(int sessionId, const std::vector<char>& packet)
 
 void GameLogic::UpdateCharacters(float deltaTime)
 {
-	static int projectileId{ 64 };
+	static std::atomic<int> projectileId{ 64 };
 
 	// 1. Character Update (ÀÌµ¿)
 	_gameCtx.GetCharacterManager().Update(deltaTime);
@@ -100,7 +100,7 @@ void GameLogic::CheckCollisions()
 						deathCharacter->Revive();
 						_gameCtx.BroadCast(PacketFactory::SCRevivePacket(*deathCharacter));
 					}
-				}, 5000.0f);
+				}, REVIVE_TIME);
 		}
 	}
 }

@@ -29,6 +29,12 @@ public:
 	CharacterManager() = default;
 	virtual ~CharacterManager() = default;
 
+	CharacterManager(const CharacterManager&) = delete;
+	CharacterManager& operator=(const CharacterManager&) = delete;
+	
+	CharacterManager(CharacterManager&&) = delete;
+	CharacterManager& operator=(CharacterManager&&) = delete;
+
 public:
 	virtual void AddCharacter(const std::shared_ptr<Character>& character) override;
 	virtual void RemoveCharacter(int characterId) override;

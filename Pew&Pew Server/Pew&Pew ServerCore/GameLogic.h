@@ -15,10 +15,18 @@ public:
 class GameLogic : public IGameLogic {
 	using PacketHandler = std::function<void(int, const std::vector<char>&)>;
 
+	static constexpr float REVIVE_TIME{ 5000.0f };
+
 public:
 	GameLogic() = delete;
 	GameLogic(IGameContext& gameCtx);
 	virtual ~GameLogic() override = default;
+
+	GameLogic(const GameLogic&) = delete;
+	GameLogic& operator=(const GameLogic&) = delete;
+
+	GameLogic(GameLogic&&) = delete;
+	GameLogic& operator=(GameLogic&&) = delete;
 
 public:
 	virtual void LogicUpdate(float deltaTime) override;
