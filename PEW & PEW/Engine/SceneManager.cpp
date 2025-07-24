@@ -6,6 +6,7 @@
 #include "WindowInfo.h"
 #include "CollisionManager.h"
 #include "Fade.h"
+#include "Skybox.h"
 
 void SceneManager::Init()
 {
@@ -97,6 +98,7 @@ void SceneManager::InitScene1()
 
 void SceneManager::InitScene2()
 {
+	GET_SINGLE(Skybox)->ChangeCubeMapTexture();
 	graphics->InitPVPMap();
 
 	network = new NetworkManager();
