@@ -102,7 +102,7 @@ void SceneManager::InitScene2()
 	graphics->InitPVPMap();
 
 	network = new NetworkManager();
-	network->Init("25.16.229.170", 9000);		// 동환이가 주는 IP & 포트번호 넣어야함
+	network->Init("127.0.0.1", 9000);		// 동환이가 주는 IP & 포트번호 넣어야함
 	network->SetGraphicsManager(graphics);
 
 	input->SetNetworkManager(network);

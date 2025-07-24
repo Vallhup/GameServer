@@ -19,7 +19,7 @@ public:
 
 private:
 	std::vector<CollisionBox> collisionBoxes;
-	CollisionBox pvpBox = { -20.2914f, 20.2322f, -19.9385f, 20.0144f };
+	CollisionBox pvpBox = { -15.0727f, 15.1275f, -14.9065f, 14.9373f };
 	bool initialized = { false };
 
 	//x- ¿ÞÂÊ
