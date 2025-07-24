@@ -45,7 +45,7 @@ void GameLogic::OnPlayerAction(int sessionId, const std::vector<char>& packet)
 
 void GameLogic::UpdateCharacters(float deltaTime)
 {
-	static int projectileId{ 64 };
+	static std::atomic<int> projectileId{ 64 };
 
 	// 1. Character Update (이동)
 	_gameCtx.GetCharacterManager().Update(deltaTime);
@@ -88,19 +88,21 @@ void GameLogic::CheckCollisions()
 		_gameCtx.BroadCast(PacketFactory::SCStatUpdatePacket(*character));
 	}
 
-	// TODO : 여기에 넣으니까 죽어있는 동안 계속 돌아감 죽었을 때 1번만 실행하도록 만들어야 됨
-	/*auto deathList = _gameCtx.GetCharacterManager().GetDeathCharacterList();
+	auto deathList = _gameCtx.GetCharacterManager().GetDeathCharacterList();
 	for (auto& deathCharacter : deathList) {
-		_gameCtx.BroadCast(PacketFactory::SCDeadPacket(*deathCharacter));
-		_gameCtx.GetTimerManager().AddOneTimeTask(
-			[deathCharacter, this]()
-			{
-				if (deathCharacter) {
-					deathCharacter->Revive();
-					_gameCtx.BroadCast(PacketFactory::SCRevivePacket(*deathCharacter));
-				}
-			}, 5000.0f);
-	}*/
+		if (not deathCharacter->IsDeadProcessed()) {
+			deathCharacter->SetDeadProcessed(true);
+			_gameCtx.BroadCast(PacketFactory::SCDeadPacket(*deathCharacter));
+			_gameCtx.GetTimerManager().AddOneTimeTask(
+				[deathCharacter, this]()
+				{
+					if (deathCharacter) {
+						deathCharacter->Revive();
+						_gameCtx.BroadCast(PacketFactory::SCRevivePacket(*deathCharacter));
+					}
+				}, REVIVE_TIME);
+		}
+	}
 }
 
 void GameLogic::RegisterHandlers()

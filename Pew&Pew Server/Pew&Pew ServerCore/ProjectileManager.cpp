@@ -4,7 +4,6 @@
 void ProjectileManager::AddProjectile(const std::shared_ptr<Projectile>& projectile)
 {
 	std::unique_lock lock{ _mutex };
-	static int projectileId{ 64 };
 	_projectiles.insert(std::make_pair(projectile->GetId(), projectile));
 }
 

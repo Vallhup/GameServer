@@ -2,7 +2,7 @@
 
 class ISessionManager {
 public:
-	~ISessionManager() = default;
+	virtual ~ISessionManager() = default;
 
 public:
 	virtual void AcceptSession(SOCKET clientSocket) = 0;
@@ -16,10 +16,18 @@ public:
 };
 
 class SessionManager : public ISessionManager {
+	static constexpr short MAX_SESSION{ 64 };
+
 public:
 	SessionManager() = delete;
 	SessionManager(IGameContext& gameCtx);
 	virtual ~SessionManager() = default;
+
+	SessionManager(const SessionManager&) = delete;
+	SessionManager& operator=(const SessionManager&) = delete;
+
+	SessionManager(SessionManager&&) = delete;
+	SessionManager& operator=(SessionManager&&) = delete;
 
 public:
 	virtual void AcceptSession(SOCKET clientSocket) override;

@@ -64,18 +64,26 @@ class Character : public std::enable_shared_from_this<Character>
 		std::vector<float> attackTimes;
 	};
 
-	const int NUMBER_OF_ATTACK{ 3 };
-	const float INTERVAL_OF_ATTACK{ 0.15f };
+	static constexpr int NUMBER_OF_ATTACK{ 3 };
+	static constexpr float INTERVAL_OF_ATTACK{ 0.15f };
 
-	const float SIZE_X{ 0.5f };
-	const float SIZE_Y{ 0.95f };
-	const float SIZE_Z{ 0.4f };
+	static constexpr float SIZE_X{ 0.5f };
+	static constexpr float SIZE_Y{ 0.95f };
+	static constexpr float SIZE_Z{ 0.4f };
 
-	const int MAX_HP{ 100 };
-	const vec3 DEFAULT_POS{ -37.3051f, 0.0f, 42.5001f };
+	static constexpr int MAX_HP{ 100 };
+	static constexpr vec3 DEFAULT_POS{ -37.3051f, 0.0f, 42.5001f };
 
 public:
+	Character() = delete;
 	Character(int id, const std::string& name);
+	~Character() = default;
+
+	Character(const Character&) = delete;
+	Character& operator=(const Character&) = delete;
+
+	Character(Character&&) = delete;
+	Character& operator=(Character&&) = delete;
 
 public:
 	void Update(float deltaTime);
@@ -93,17 +101,19 @@ public:
 	float GetAngle() const { return _angle; }
 	bool GetAngleChange() const { return _angleChange; }
 	vec3 GetPosition() const { return _pos; }
-	long long GetVersion() const { return _version; }
+	long long GetVersion() const { return _version; }	
 
 	std::optional<vec3> GetNextProjectile(float nowTime);
 
 	bool IsAlive() const { return _isAlive; }
+	bool IsDeadProcessed() const { return _isDeadProcessed; }
 	bool IsMove() const { return _direction >= 0 and _direction < 8; }
 	
 	std::pair<vec3, vec3> GetCollisionBox() const;
 	
 	void SetInput(float angle, char direction, bool isRun);
 	void SetAttackSequence(float nowTime, const vec3& dir);
+	void SetDeadProcessed(bool flag) { _isDeadProcessed = flag; }
 	void ResetAttackSequence() { std::lock_guard lock{ _attackSeqMutex }; _attackSeq.reset(); }
 	void ResetAngleChange() { _angleChange = false; }
 
@@ -122,6 +132,7 @@ private:
 
 	int _hp;
 	bool _isAlive;
+	bool _isDeadProcessed;
 
 	long long _version;
 	long long _lastSentVersion;

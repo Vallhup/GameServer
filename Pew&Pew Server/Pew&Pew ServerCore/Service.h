@@ -1,13 +1,6 @@
 #pragma once
 
-struct vec3;
-
 class Listener;
-class Session;
-class Character;
-class Projectile;
-class TimerManager;
-class CollisionManager;
 
 class ICharacterManager;
 class IProjectileManager;
@@ -44,6 +37,9 @@ public:
 
 	Service(const Service&) = delete;
 	Service& operator=(const Service&) = delete;
+
+	Service(Service&&) = delete;
+	Service& operator=(Service&&) = delete;
 
 public:
 	bool Init();

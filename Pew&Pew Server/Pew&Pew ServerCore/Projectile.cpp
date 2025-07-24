@@ -12,11 +12,11 @@ Projectile::Projectile(int id, int ownerId, vec3 charPos, vec3 dir, int dmg)
 	
 	_speed = PROJECTILE_SPEED;
 	_lifeTime = 0.0f;
-	_maxLifeTime = 3.0f;
+	_maxLifeTime = MAX_LIFE_TIME;
 	_moveVector.x = dir.x * _speed;
 	_moveVector.z = dir.z * _speed;
 	_moveVector.y = 0.0f;
-	_radius = 0.3f;
+	_radius = PROJECTILE_RADIUS;
 	_isActive = true;
 
 	_version = 0;

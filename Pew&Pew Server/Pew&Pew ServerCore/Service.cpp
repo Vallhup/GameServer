@@ -28,8 +28,8 @@ bool Service::Init()
 		return false;
 	}
 
-	if (_listener->Init() == false) {
-		LOG_ERR("Listener StartAccept filed");
+	if (not _listener->Init()) {
+		LOG_ERR("Listener StartAccept failed");
 		return false;
 	}
 

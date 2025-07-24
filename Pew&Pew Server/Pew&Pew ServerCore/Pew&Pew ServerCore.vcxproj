@@ -23,7 +23,6 @@
     <ClInclude Include="CharacterManager.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="CorePch.h" />
-    <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="Logger.h" />
@@ -44,7 +43,6 @@
     <ClCompile Include="CharacterManager.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="CorePch.cpp" />
-    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="Logger.cpp" />

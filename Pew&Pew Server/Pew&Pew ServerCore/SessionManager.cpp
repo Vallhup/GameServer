@@ -3,7 +3,7 @@
 
 SessionManager::SessionManager(IGameContext& gameCtx) : _gameCtx(gameCtx)
 {
-	_sessionIds.resize(64);
+	_sessionIds.resize(MAX_SESSION);
 	std::iota(_sessionIds.begin(), _sessionIds.end(), 0);
 }
 
