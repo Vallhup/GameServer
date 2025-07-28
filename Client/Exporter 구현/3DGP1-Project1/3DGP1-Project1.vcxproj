@@ -128,7 +128,7 @@ x64\Debug\Exporter.exe "Assets\StrutWalking.fbx" "AssetsBin\StrutWalking.bin"
 x64\Debug\Exporter.exe "Assets\Taunt.fbx" "AssetsBin\Taunt.bin"
 x64\Debug\Exporter.exe "Assets\Girl.fbx" "AssetsBin\Girl.bin"
 x64\Debug\Exporter.exe "Assets\Ch14.fbx" "AssetsBin\Ch14.bin"
-x64\Debug\Exporter.exe "Assets\Knight_Walking.fbx" "AssetsBin\Knight_Walking.bin"</Command>
+x64\Debug\Exporter.exe "Assets\knight_Tpose.fbx" "AssetsBin\knight_Tpose.bin"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
