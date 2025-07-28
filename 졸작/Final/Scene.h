@@ -1,8 +1,6 @@
 #pragma once
 #include "VertexIndexBuffer.h"
 #include "GameObject.h"
-#include "Camera.h"
-#include "Graphics.h"
 
 class Scene
 {
@@ -28,8 +26,5 @@ protected:
 
 	XMFLOAT4X4 mView = {};
 	XMFLOAT4X4 mProjection = {};
-	Viewport mViewPort = { 0, 0, WinSize.x, WinSize.y };
-
-	Camera mCamera = {};
 };
 

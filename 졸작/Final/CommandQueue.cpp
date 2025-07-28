@@ -37,7 +37,7 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect,
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsv = dsvHandle;
 
-	cmdlist->ClearRenderTargetView(rtv, backgroundcolor, 0, nullptr);
+	cmdlist->ClearRenderTargetView(rtv, Colors::White, 0, nullptr);
 	cmdlist->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	cmdlist->OMSetRenderTargets(1, &rtv, FALSE, &dsv);

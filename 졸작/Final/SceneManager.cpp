@@ -19,9 +19,7 @@ void SceneManager::Initialize(HWND hwnd)
 {
 	mHwnd = hwnd;
 
-    //RegisterScene<TankGame>(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), SceneType::Scene2);
 
-    ChangeScene(SceneType::Scene2);
 }
 
 void SceneManager::Update(const float deltaTime)
