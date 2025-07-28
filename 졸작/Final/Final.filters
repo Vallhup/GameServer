@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{482915c4-bc21-4025-8327-2b6e70a070cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{046daa58-ca09-41c2-a8d6-fe7dd8bfbc0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{a21ae6a6-4e42-44ce-8925-04998ac26fb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{f57636af-e8f9-4214-b2cf-a820456fca74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\TankGame">
+      <UniqueIdentifier>{48399d4a-fff4-447e-a6ec-363d5f958004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{5fa6ae0f-adbd-4ea4-9b26-af3b778d9cf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX12">
+      <UniqueIdentifier>{9db4873f-235d-4f30-9fe3-59d421d84ef1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{39c77529-ae0f-4540-94d7-d09ca094be80}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TGScene.cpp">
+      <Filter>Scene\TankGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Indexes.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Scene\TankGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Scene\TankGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Device.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChain.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandQueue.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="RootSignature.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexIndexBuffer.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="UploadBuffer.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthStencilView.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DX12Graphics.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorHeap.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="TGScene.h">
+      <Filter>Scene\TankGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Indexes.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Scene\TankGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Scene\TankGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Device.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChain.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandQueue.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="RootSignature.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexIndexBuffer.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="UploadBuffer.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencilView.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DX12Graphics.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorHeap.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BasicVS.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="BasicPS.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
