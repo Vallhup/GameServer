@@ -37,6 +37,7 @@ void StaticObjectManager::Init()
 void StaticObjectManager::InitPVPMap()
 {
 	AddStaticObject("StaticGlb/ground2.glb", "Texture/map2.png");
+	AddStaticObject("StaticGlb/fence3.glb", "Texture/fence.png");
 }
 
 void StaticObjectManager::Release()

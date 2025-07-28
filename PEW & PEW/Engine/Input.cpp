@@ -29,13 +29,13 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		if (action == GLFW_PRESS)
 			input->camera->SetStart(true);
 		break;
-	case GLFW_KEY_Q:
-		if ((!(input->camera->Get_start_pos() == 0) && !input->mainCat->GetDead())/* || finish*/)
-		{
-			if (action == GLFW_PRESS)
-				glfwSetWindowShouldClose(window, GL_TRUE);
-		}
-		break;
+	//case GLFW_KEY_Q:
+	//	if ((!(input->camera->Get_start_pos() == 0) && !input->mainCat->GetDead())/* || finish*/)
+	//	{
+	//		if (action == GLFW_PRESS)
+	//			glfwSetWindowShouldClose(window, GL_TRUE);
+	//	}
+	//	break;
 	case GLFW_KEY_LEFT_SHIFT:
 		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
 		{
@@ -54,11 +54,14 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		}
 		break;
 	case GLFW_KEY_C:
-		if (action == GLFW_PRESS)
+		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead()))
 		{
-			input->graphics->DebugAllCharacterPositions();
-			if (input->sceneType == SceneType::Scene1)
-				input->mainCat->GoToEndPosition();
+			if (action == GLFW_PRESS)
+			{
+				input->graphics->DebugAllCharacterPositions();
+				if (input->sceneType == SceneType::Scene1)
+					input->mainCat->GoToEndPosition();
+			}
 		}
 		break;
 	case GLFW_KEY_D:
