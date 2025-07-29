@@ -32,7 +32,7 @@ void DX12Graphics::Initialize(HWND hwnd)
 	groundtexture = make_unique<Texture>();
 
 	device->Initialize(hwnd);
-	cmdQueue->Initialize(device->GetDevice().Get(), swapchain);
+	cmdQueue->Initialize(device->GetDevice().Get());
 	swapchain->Initialize(hwnd, device->GetDXGI().Get(), device->GetDevice().Get(), cmdQueue->GetCmdQueue().Get());
 	rootSig->Initialize(device->GetDevice().Get());
 	shader->Initialize(device->GetDevice().Get(), rootSig->Get(), L"BasicVS.hlsli", L"BasicPS.hlsli");

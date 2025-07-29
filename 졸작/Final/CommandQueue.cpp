@@ -7,7 +7,7 @@ CommandQueue::~CommandQueue()
 	CloseHandle(fenceevent);
 }
 
-void CommandQueue::Initialize(ID3D12Device* device, shared_ptr<SwapChain> swapChain)
+void CommandQueue::Initialize(ID3D12Device* device)
 {
 	CreateCommandQueue(device);
 	CreateCommandAlloc(device);

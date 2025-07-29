@@ -7,7 +7,7 @@ class CommandQueue
 public:
 	~CommandQueue();
 
-	void Initialize(ID3D12Device* device, shared_ptr<SwapChain> swapChain);
+	void Initialize(ID3D12Device* device);
 
 	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect, shared_ptr<SwapChain> swapchain, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle);
 	void RenderEnd(shared_ptr<SwapChain> swapchain);

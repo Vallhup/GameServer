@@ -5,28 +5,28 @@ void RootSignature::Initialize(ID3D12Device* device)
 {
 	CD3DX12_ROOT_PARAMETER rootParams[4];
 
-	rootParams[0].InitAsConstantBufferView(0);	
-	rootParams[1].InitAsConstantBufferView(1);	
+	rootParams[0].InitAsConstantBufferView(0);	// register(b0)
+	rootParams[1].InitAsConstantBufferView(1);	// register(b1)
 
 	CD3DX12_DESCRIPTOR_RANGE heightRange;
-	heightRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-	rootParams[2].InitAsDescriptorTable(1, &heightRange, D3D12_SHADER_VISIBILITY_VERTEX);
+	heightRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);		// register(t0)
+	rootParams[2].InitAsDescriptorTable(1, &heightRange, D3D12_SHADER_VISIBILITY_VERTEX);		// VertexShader에서만 사용
 
 	CD3DX12_DESCRIPTOR_RANGE terrainRange;
-	terrainRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
-	rootParams[3].InitAsDescriptorTable(1, &terrainRange, D3D12_SHADER_VISIBILITY_PIXEL);
+	terrainRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);		// register(t1)
+	rootParams[3].InitAsDescriptorTable(1, &terrainRange, D3D12_SHADER_VISIBILITY_PIXEL);		// PixelShader에서만 사용
 
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc[2];
 	
 	samplerDesc[0].Init(
-		0,
+		0,		// register(s0)
 		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
 		D3D12_TEXTURE_ADDRESS_MODE_CLAMP
 	);
 
 	samplerDesc[1].Init(
-		1,
+		1,		// register(s1)
 		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP
