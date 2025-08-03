@@ -20,7 +20,9 @@ bool Exporter::ExportAll(FBXLoader& loader, const wstring& basePath, const wstri
 
     // 3. 애니메이션 저장
     for (auto& animClip : loader.GetAnimClip()) {
-        wstring animPath = basePath + L"_" + animClip->name + L".anim";
+        wstring animName = animClip->name;
+        replace(animName.begin(), animName.end(), L'|', L'_');
+        wstring animPath = basePath + L"_" + animName + L".anim";
         if (!ExportAnimation(*animClip, animPath)) return false;
     }
 
