@@ -5,7 +5,7 @@ public:
 	virtual ~ITimerManager() = default;
 
 public:
-	virtual void Start() = 0;
+	virtual bool Start() = 0;
 	virtual void Stop() = 0;
 
 	virtual void AddRepeatedTask(const std::function<void(float)>& func, float intervalMs) = 0;
@@ -19,7 +19,8 @@ class TimerManager : public ITimerManager {
 		std::chrono::high_resolution_clock::time_point nextExecTime;
 
 		RepeatedTask(std::function<void(float)> f, std::chrono::milliseconds i)
-			: func(f), interval(i), nextExecTime(std::chrono::high_resolution_clock::now() + interval) {}
+			: func(f), interval(i), nextExecTime(std::chrono::high_resolution_clock::now() + interval) {
+		}
 	};
 
 	struct OneTimeTask {
@@ -43,13 +44,14 @@ public:
 	TimerManager& operator=(TimerManager&&) = delete;
 
 public:
-	virtual void Start() override;
+	virtual bool Start() override;
 	virtual void Stop() override;
 
 	virtual void AddRepeatedTask(const std::function<void(float)>& func, float intervalMs) override;
 	virtual void AddOneTimeTask(const std::function<void()>& func, float delayMs) override;
 
 private:
+	// TODO : 2개 모두 Busy Wait 해결 필요
 	void RepeatedTaskThreadLoop();
 	void OneTimeTaskThreadLoop();
 

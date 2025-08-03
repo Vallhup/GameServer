@@ -23,8 +23,7 @@ public:
 	virtual std::vector<std::shared_ptr<Character>> GetDeathCharacterList() const = 0;
 };
 
-class CharacterManager : public ICharacterManager
-{
+class CharacterManager : public ICharacterManager {
 public:
 	CharacterManager() = default;
 	virtual ~CharacterManager() = default;
