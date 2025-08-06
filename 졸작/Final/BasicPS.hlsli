@@ -22,5 +22,8 @@ float4 PSMain(PS_IN input) : SV_Target
     if (useTexture)
         return tex.Sample(sampler1, input.uv);
     else
-        return input.color;
+    {
+        float4 color = float4(0.0f, 0.0f, 0.0f, 0.1f);
+        return color;
+    }
 }

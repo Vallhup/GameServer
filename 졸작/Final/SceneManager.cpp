@@ -9,6 +9,8 @@
 #include "RootSignature.h"
 #include "Input.h"
 #include "Timer.h"
+#include "DescriptorHeap.h"
+#include "Texture.h"
 
 SceneManager& SceneManager::Get()
 {
@@ -144,17 +146,26 @@ void SceneManager::Render()
             XMMatrixTranslation(0.0f, 0.0f, -1.0f);   // 위치
 
         // 상수 버퍼 업데이트 (기존 구조 활용)
-        ObjectConstants objConstants;
+        ObjectConstants objConstants = {};
         objConstants.world = XMMatrixTranspose(worldMatrix);
+        objConstants.useTexture = 0;
+        objConstants.heightScale = 1.0f;
         GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);
 
         // 파이프라인 설정
-        GET(DX12Graphics).GetCmdQueue()->GetCmdList()->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
+        GET(DX12Graphics).GetCmdQueue()->GetCmdList()->SetPipelineState(GET(DX12Graphics).GetShader()->GetTransparentPSO());
         GET(DX12Graphics).GetCmdQueue()->GetCmdList()->SetGraphicsRootSignature(GET(DX12Graphics).GetRootSig()->Get());
+
+        // === 디스크립터 힙 설정 (중요!) ===
+        ID3D12DescriptorHeap* descriptorHeaps[] = { GET(DX12Graphics).GetDescHeap()->GetSRVHeap() };
+        GET(DX12Graphics).GetCmdQueue()->GetCmdList()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
 
         // 상수 버퍼 바인딩
         GET(DX12Graphics).GetCmdQueue()->GetCmdList()->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
         GET(DX12Graphics).GetCmdQueue()->GetCmdList()->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress());
+        GET(DX12Graphics).GetCmdQueue()->GetCmdList()->SetGraphicsRootDescriptorTable(2, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
+        GET(DX12Graphics).GetCmdQueue()->GetCmdList()->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetGroundTexture()->GetSRV());
 
         // 메쉬 렌더링
         fbxMesh->Bind(GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get());
