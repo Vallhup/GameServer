@@ -18,18 +18,14 @@ bool Importer::LoadModel(const wstring& basePath)
     }
 
     wstring skeletonPath = basePath + L".skel";
-    if (meshData.hasAnimation) {
-        if (!LoadSkeleton(skeletonPath)) {
-            OutputDebugStringA("Warning: Failed to load skeleton file\n");
-        }
+    if (!LoadSkeleton(skeletonPath)) {
+        OutputDebugStringA("Warning: Failed to load skeleton file\n");
     }
-
-    if (meshData.hasAnimation) {
-        if (!LoadAnimations(basePath)) {
-            OutputDebugStringA("Warning: Failed to load animation files\n");
-        }
+    
+    if (!LoadAnimations(basePath)) {
+        OutputDebugStringA("Warning: Failed to load animation files\n");
     }
-
+    
     return true;
 }
 

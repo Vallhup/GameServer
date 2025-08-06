@@ -20,6 +20,7 @@ public:
     void Render(const float deltaTime);
     void Shutdown();  
     void ShowFps();
+    void TestFBXImport();
 
     HWND GetHWND() const { return mHwnd; }
 
