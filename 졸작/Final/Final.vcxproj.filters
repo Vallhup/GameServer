@@ -61,6 +61,9 @@
     <ClCompile Include="Component.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="Importer.cpp">
+      <Filter>Importer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -120,6 +123,9 @@
     <ClInclude Include="Component.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="Importer.h">
+      <Filter>Importer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicPS.hlsli">
@@ -156,6 +162,9 @@
     </Filter>
     <Filter Include="Component">
       <UniqueIdentifier>{078e8281-9eda-40e1-84d2-46029c169ce8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Importer">
+      <UniqueIdentifier>{fb3b4387-ca26-490a-bbd0-8ccce2eaa6f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

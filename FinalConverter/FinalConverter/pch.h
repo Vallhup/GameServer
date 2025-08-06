@@ -65,6 +65,7 @@ struct Vertex
 	Vec3 tangent;
 	Vec4 weights;
 	Vec4 indices;
+	Vec4 color;
 };
 
 wstring s2ws(const string& s);

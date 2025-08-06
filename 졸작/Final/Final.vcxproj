@@ -149,6 +149,7 @@
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
+    <ClCompile Include="Importer.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
     <ClCompile Include="DepthStencilView.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DescriptorHeap.h" />
+    <ClInclude Include="Importer.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="DepthStencilView.h" />

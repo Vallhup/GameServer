@@ -74,6 +74,17 @@ constexpr int SWAP_CHAIN_BUFFER_COUNT = 2;
 constexpr float HEIGHTMAP_SCALE = 3.0f;
 constexpr float HEIGHT_OFFSET = 0.12f;
 
+struct Vertex
+{
+	XMFLOAT3 pos;
+	XMFLOAT2 uv;
+	XMFLOAT3 normal;
+	XMFLOAT3 tangent;
+	XMFLOAT4 weights;
+	XMFLOAT4 indices;
+	XMFLOAT4 color;
+};
+
 inline static float GetAngleBetweenNormals(const XMVECTOR& v0, const XMVECTOR& v1)
 {
 	return XMConvertToDegrees(XMVectorGetX(XMVector3AngleBetweenNormals(v0, v1)));
