@@ -17,7 +17,7 @@ public:
 
     void Initialize(HWND hwnd);
     void Update(const float deltaTime);  
-    void Render(const float deltaTime);
+    void Render();
     void Shutdown();  
     void ShowFps();
     void TestFBXImport();

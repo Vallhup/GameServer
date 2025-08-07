@@ -27,6 +27,7 @@ public:
     Scene* GetCurrentScene() const;
 
 public:
+    void SceneStart();
     void ChangeScene(SceneType type);
 
 private:
@@ -41,5 +42,5 @@ inline void SceneManager::RegisterScene(ID3D12Device* device, ID3D12GraphicsComm
     static_assert(std::is_base_of<Scene, T>::value, "T must derive from Scene");
     size_t index = static_cast<size_t>(type);
     mScenes[index] = std::make_unique<T>();
-    mScenes[index]->Initialize(mHwnd, device, cmdList);
+    mScenes[index]->Initialize(device, cmdList);
 }

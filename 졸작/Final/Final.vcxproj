@@ -146,10 +146,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="StartScene.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
     <ClCompile Include="DepthStencilView.cpp" />
@@ -174,10 +176,12 @@
     <ClCompile Include="VertexIndexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="StartScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="DepthStencilView.h" />

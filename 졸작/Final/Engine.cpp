@@ -42,7 +42,7 @@ void Engine::Update(const float deltaTime)
     GET(SceneManager).Update(deltaTime);
 }
 
-void Engine::Render(const float deltaTime)
+void Engine::Render()
 {
     GET(DX12Graphics).RenderBegin(viewport, scissorRect);
     

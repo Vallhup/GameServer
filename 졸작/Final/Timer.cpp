@@ -20,7 +20,7 @@ void Timer::Update()
 
 	_deltaTime = (currentCount - _prevCount) / static_cast<float>(_frequency);
 	
-	constexpr float targetFrameTime = 1.0f / 60.0f;
+	constexpr float targetFrameTime = 1.0f / 240.0f;
 	constexpr float epsilon = 0.0001f;
 
 	while (_deltaTime < targetFrameTime - epsilon)
