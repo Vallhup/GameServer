@@ -178,21 +178,82 @@ void FBXLoader::LoadMaterial(FbxSurfaceMaterial* surfaceMaterial)
     material.ambient = GetMaterialData(surfaceMaterial, FbxSurfaceMaterial::sAmbient, FbxSurfaceMaterial::sAmbientFactor);
     material.specular = GetMaterialData(surfaceMaterial, FbxSurfaceMaterial::sSpecular, FbxSurfaceMaterial::sSpecularFactor);
 
-    // 모든 텍스처 타입 추출
-    material.baseColorTexName = GetTextureRelativeName(surfaceMaterial, FbxSurfaceMaterial::sDiffuse);
-    material.diffuseTexName = material.baseColorTexName;  // 호환성을 위해
-    
-    material.normalTexName = GetTextureRelativeName(surfaceMaterial, FbxSurfaceMaterial::sNormalMap);
-    material.roughnessTexName = GetTextureRelativeName(surfaceMaterial, "Roughness");
-    material.specularTexName = material.roughnessTexName;  // 호환성을 위해
-    
-    material.metallicTexName = GetTextureRelativeName(surfaceMaterial, "Metallic");
-    material.heightTexName = GetTextureRelativeName(surfaceMaterial, "Height");
-    material.alphaTexName = GetTextureRelativeName(surfaceMaterial, "Opacity");
-    material.emissionTexName = GetTextureRelativeName(surfaceMaterial, "Emission");
-    material.aoTexName = GetTextureRelativeName(surfaceMaterial, "AmbientOcclusion");
+    //// 모든 텍스처 타입 추출
+    //material.baseColorTexName = GetTextureRelativeName(surfaceMaterial, FbxSurfaceMaterial::sDiffuse);
+    //material.diffuseTexName = material.baseColorTexName;  // 호환성을 위해
+    //
+    //material.normalTexName = GetTextureRelativeName(surfaceMaterial, FbxSurfaceMaterial::sNormalMap);
+    //material.roughnessTexName = GetTextureRelativeName(surfaceMaterial, "Roughness");
+    //material.specularTexName = material.roughnessTexName;  // 호환성을 위해
+    //
+    //material.metallicTexName = GetTextureRelativeName(surfaceMaterial, "Metallic");
+    //material.heightTexName = GetTextureRelativeName(surfaceMaterial, "Height");
+    //material.alphaTexName = GetTextureRelativeName(surfaceMaterial, "Opacity");
+    //material.emissionTexName = GetTextureRelativeName(surfaceMaterial, "Emission");
+    //material.aoTexName = GetTextureRelativeName(surfaceMaterial, "AmbientOcclusion");
+
+	LoadAllTextures(surfaceMaterial, material);
 
     _meshes.back().materials.push_back(material);
+}
+
+void FBXLoader::LoadAllTextures(FbxSurfaceMaterial* surfaceMaterial, FbxMaterialInfo& material)
+{
+	FbxProperty prop = surfaceMaterial->GetFirstProperty();
+
+	while (prop.IsValid())
+	{
+		if (prop.GetSrcObjectCount<FbxFileTexture>() > 0)
+		{
+			FbxFileTexture* texture = prop.GetSrcObject<FbxFileTexture>(0);
+			if (texture)
+			{
+				string propName = prop.GetName().Buffer();
+				wstring textureName = s2ws(texture->GetRelativeFileName());
+
+				if (ContainsKeyword(propName, { "diffuse", "basecolor", "albedo" })) {
+					material.baseColorTexName = textureName;
+				}
+				else if (ContainsKeyword(propName, { "normal", "bump" })) {
+					material.normalTexName = textureName;
+				}
+				else if (ContainsKeyword(propName, { "roughness", "rough", "specular", "shininess" })) {
+					material.roughnessTexName = textureName;
+				}
+				else if (ContainsKeyword(propName, { "metallic", "metal" })) {
+					material.metallicTexName = textureName;
+				}
+				else if (ContainsKeyword(propName, { "height", "displacement" })) {
+					material.heightTexName = textureName;
+				}
+				else if (ContainsKeyword(propName, { "transparency", "alpha", "opacity" })) {
+					material.alphaTexName = textureName;
+				}
+				else if (ContainsKeyword(propName, { "emission", "emissive" })) {
+					material.emissionTexName = textureName;
+				}
+				else if (ContainsKeyword(propName, { "ao", "ambient", "occlusion" })) {
+					material.aoTexName = textureName;
+				}
+
+				wcout << L"Found texture: " << s2ws(propName) << L" -> " << textureName << endl;
+			}
+		}
+		prop = surfaceMaterial->GetNextProperty(prop);
+	}
+}
+
+bool FBXLoader::ContainsKeyword(const string& propName, const vector<string>& keywords)
+{
+	string lowerProp = propName;
+	transform(lowerProp.begin(), lowerProp.end(), lowerProp.begin(), ::tolower);
+
+	for (const auto& keyword : keywords) {
+		if (lowerProp.find(keyword) != string::npos) {
+			return true;
+		}
+	}
+	return false;
 }
 
 void FBXLoader::GetNormal(FbxMesh* mesh, FbxMeshInfo* container, int32 idx, int32 vertexCounter)

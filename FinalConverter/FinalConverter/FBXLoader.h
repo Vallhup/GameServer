@@ -103,6 +103,8 @@ private:
 	void ParseNode(FbxNode* root);
 	void LoadMesh(FbxMesh* mesh);
 	void LoadMaterial(FbxSurfaceMaterial* surfaceMaterial);
+	void LoadAllTextures(FbxSurfaceMaterial* surfaceMaterial, FbxMaterialInfo& material);
+	bool ContainsKeyword(const string& propName, const vector<string>& keywords);
 
 	void		GetNormal(FbxMesh* mesh, FbxMeshInfo* container, int32 idx, int32 vertexCounter);
 	void		GetTangent(FbxMesh* mesh, FbxMeshInfo* container, int32 idx, int32 vertexCounter);
