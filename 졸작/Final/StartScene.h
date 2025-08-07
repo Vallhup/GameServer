@@ -1,13 +1,15 @@
 #pragma once
 #include "Scene.h"
 
+class GameObject;
+
 class StartScene final : public Scene
 {
 public:
 	StartScene() = default;
 	StartScene(const StartScene&) = delete;
 	StartScene& operator=(const StartScene&) = delete;
-	~StartScene() = default;
+	~StartScene();
 
 	void Release() override;
 	void Reset() override;
@@ -17,7 +19,9 @@ protected:
 	void InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) override;
 	void UpdateLogic(const float deltaTime) override;
 	void RenderScene() override;
-	const GameObject* GetWorld() const override;
 	int GetSceneWidth() const override;
+
+private:
+	shared_ptr<GameObject> knight;
 };
 

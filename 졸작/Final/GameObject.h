@@ -11,7 +11,7 @@ public:
 	template<typename T>
 	shared_ptr<T> GetComponent();
 
-	void Update();
+	void Update(float deltaTime);
 
 private:
 	vector<shared_ptr<Component>> components;

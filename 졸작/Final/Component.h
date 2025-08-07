@@ -7,7 +7,7 @@ class Component
 public:
 	virtual ~Component() = default;
 	virtual void Init() {}
-	virtual void Update() {}
+	virtual void Update(float deltaTime) {}
 
 	shared_ptr<GameObject> GetGameObject();
 

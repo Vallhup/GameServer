@@ -70,6 +70,12 @@
     <ClCompile Include="StartScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="MeshRenderer.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -137,6 +143,12 @@
     </ClInclude>
     <ClInclude Include="StartScene.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRenderer.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

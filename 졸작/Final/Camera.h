@@ -8,7 +8,7 @@ public:
 	void Initialize();
 	void Update(float deltaTime);
 	void UpdateInputtoCamLogic(float deltaTime);
-	void ApplyToCB();
+	void UpdateCameraMatrices();
 
 	void UpdateForwardAndRight();
 	void ChangePosByInput(float deltaTime);

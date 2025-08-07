@@ -14,10 +14,10 @@ void Camera::Initialize()
 {
 	position = { 0.0f, 2.0f, -5.0f };
 
-	yaw = { 0.0f };
-	pitch = { 0.0f };
-	moveSpeed = { 5.0f };
-	rotateSpeed = { 90.0f };
+	yaw = 0.0f;
+	pitch = 0.0f;
+	moveSpeed = 5.0f;
+	rotateSpeed = 90.0f;
 
     UpdateForwardAndRight();
 
@@ -27,7 +27,7 @@ void Camera::Initialize()
 void Camera::Update(float deltaTime)
 {
     UpdateInputtoCamLogic(deltaTime);
-    ApplyToCB();
+    UpdateCameraMatrices();
 }
 
 void Camera::UpdateInputtoCamLogic(float deltaTime)
@@ -37,7 +37,7 @@ void Camera::UpdateInputtoCamLogic(float deltaTime)
     ChangePosByInput(deltaTime);
 }
 
-void Camera::ApplyToCB()
+void Camera::UpdateCameraMatrices()
 {
     XMVECTOR eyePos = XMLoadFloat3(&position);
     XMVECTOR lookAt = XMVectorAdd(eyePos, XMLoadFloat3(&camForward));
@@ -61,7 +61,11 @@ void Camera::UpdateForwardAndRight()
         cos(XMConvertToRadians(pitch)) * cos(XMConvertToRadians(yaw))
     };
 
-    right = { camForward.z, 0.0f, -camForward.x };
+    XMVECTOR forward = XMLoadFloat3(&camForward);
+    XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    XMVECTOR rightVec = XMVector3Cross(up, forward);    // up & forward 인자 순서 반대하면 leftVec
+    rightVec = XMVector3Normalize(rightVec);
+    XMStoreFloat3(&right, rightVec);
 }
 
 void Camera::ChangePosByInput(float deltaTime)
@@ -104,5 +108,6 @@ void Camera::ChangeAngleByInput(float deltaTime)
     if (GET(Input).GetKey(VK_UP))    pitch += rotateSpeed * deltaTime;
     if (GET(Input).GetKey(VK_DOWN))  pitch -= rotateSpeed * deltaTime;
 
-    pitch = max(-89.0f, min(89.0f, pitch));
+    constexpr float MAX_PITCH_DEGREE = 89.0f;   // 90도 찍히면 짐벌락걸려요~
+    pitch = max(-MAX_PITCH_DEGREE, min(MAX_PITCH_DEGREE, pitch));
 }

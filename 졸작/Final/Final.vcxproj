@@ -151,8 +151,10 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="StartScene.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Transform.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
     <ClCompile Include="DepthStencilView.cpp" />
     <ClCompile Include="Device.cpp" />
@@ -181,8 +183,10 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="StartScene.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="DepthStencilView.h" />
     <ClInclude Include="Device.h" />
