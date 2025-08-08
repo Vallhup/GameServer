@@ -19,15 +19,23 @@ SamplerState heightmapSampler : register(s0);
 struct VS_IN
 {
     float3 pos : POSITION;
-    float4 color : COLOR;
     float2 uv : TEXCOORD;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float4 weights : WEIGHT;
+    float4 indices : INDICES;
+    float4 color : COLOR;
 };
 
 struct VS_OUT
 {
     float4 pos : SV_POSITION;
-    float4 color : COLOR;
     float2 uv : TEXCOORD;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float4 weights : WEIGHT;
+    float4 indices : INDICES;
+    float4 color : COLOR;
 };
 
 VS_OUT VSMain(VS_IN input)
@@ -48,6 +56,10 @@ VS_OUT VSMain(VS_IN input)
     
     output.color = input.color;
     output.uv = input.uv;
+    output.normal = input.normal; // ← 추가!
+    output.tangent = input.tangent; // ← 추가!
+    output.weights = input.weights; // ← 추가!
+    output.indices = input.indices; // ← 추가!
     
     return output;
 }

@@ -211,7 +211,7 @@ void FBXLoader::LoadAllTextures(FbxSurfaceMaterial* surfaceMaterial, FbxMaterial
 				string propName = prop.GetName().Buffer();
 				wstring textureName = s2ws(texture->GetRelativeFileName());
 
-				if (ContainsKeyword(propName, { "diffuse", "basecolor", "albedo" })) {
+				if (ContainsKeyword(propName, { "diffusecolor", "basecolor", "albedo" })) {
 					material.baseColorTexName = textureName;
 				}
 				else if (ContainsKeyword(propName, { "normal", "bump" })) {
@@ -232,7 +232,7 @@ void FBXLoader::LoadAllTextures(FbxSurfaceMaterial* surfaceMaterial, FbxMaterial
 				else if (ContainsKeyword(propName, { "emission", "emissive" })) {
 					material.emissionTexName = textureName;
 				}
-				else if (ContainsKeyword(propName, { "ao", "ambient", "occlusion" })) {
+				else if (ContainsKeyword(propName, { "diffusefactor", "ao", "ambient", "occlusion" })) {
 					material.aoTexName = textureName;
 				}
 

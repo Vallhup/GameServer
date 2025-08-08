@@ -3,7 +3,7 @@
 
 void Transform::Update(float deltaTime)
 {
-	//rotation.y += XM_PI * deltaTime;
+	rotation.y += XM_PI * deltaTime;
 }
 
 void Transform::SetPosition(float x, float y, float z)

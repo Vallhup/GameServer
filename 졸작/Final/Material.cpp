@@ -47,8 +47,8 @@ void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandL
 void Material::BindToShader(ID3D12GraphicsCommandList* cmdList, UINT startSlot)
 {
     if (!textures.empty()) {
-        // 첫 번째 텍스처의 DescriptorHeap 인덱스로 연속 범위 바인딩
-        UINT firstIndex = descriptorIndices[0];  // 2
+        UINT firstIndex = descriptorIndices[0];
+        OutputDebugStringA(("Binding texture at descriptor index: " + to_string(firstIndex) + "\n").c_str());
         D3D12_GPU_DESCRIPTOR_HANDLE handle = GET(DX12Graphics).GetDescHeap()->GetGPUHandle(firstIndex);
         cmdList->SetGraphicsRootDescriptorTable(4, handle);
     }
