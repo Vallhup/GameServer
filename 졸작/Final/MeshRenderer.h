@@ -2,6 +2,7 @@
 #include "Component.h"
 
 class VertexIndexBuffer;
+class Material;
 
 class MeshRenderer : public Component
 {
@@ -14,7 +15,7 @@ public:
 	void SetMesh(const wstring& path);
 private:
 	unique_ptr<VertexIndexBuffer> vertexIndexBuffer;  
-	//MaterialProperties material;
+	shared_ptr<Material> material;
 	bool visible = true;
 };
 

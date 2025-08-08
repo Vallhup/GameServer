@@ -12,6 +12,7 @@
 #include "Texture.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "Material.h"
 
 MeshRenderer::MeshRenderer() = default;
 MeshRenderer::~MeshRenderer() = default;
@@ -30,12 +31,12 @@ void MeshRenderer::Render()
 
     ObjectConstants objConstants = {};
     objConstants.world = XMMatrixTranspose(world);
-    objConstants.useTexture = 0;
+    objConstants.useTexture = (material != nullptr) ? 1 : 0;
     objConstants.heightScale = 1.0f;
     GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);
 
     auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
-    cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetTransparentPSO());
+    cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
     cmdList->SetGraphicsRootSignature(GET(DX12Graphics).GetRootSig()->Get());
 
     ID3D12DescriptorHeap* descriptorHeaps[] = { GET(DX12Graphics).GetDescHeap()->GetSRVHeap() };
@@ -44,6 +45,11 @@ void MeshRenderer::Render()
     cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress());
     cmdList->SetGraphicsRootDescriptorTable(2, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
     cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetGroundTexture()->GetSRV());
+
+    if (material)
+    {
+        material->BindToShader(cmdList, 4);
+    }
 
     vertexIndexBuffer->Bind(cmdList); 
     vertexIndexBuffer->Draw(cmdList); 
@@ -63,6 +69,18 @@ void MeshRenderer::SetMesh(const wstring& path)
 			mesh.vertices,
 			mesh.indices
 		);
+
+        const auto& materials = importer.GetMaterials();
+        if (!materials.empty())
+        {
+            material = make_shared<Material>();
+            material->LoadFromMaterialData(
+                GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+                GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(),
+                materials[0],
+                GET(DX12Graphics).GetDescHeap()
+            );
+        }
 
 		OutputDebugStringA("FBX Mesh created for rendering!\n");
 	}

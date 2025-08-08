@@ -76,6 +76,9 @@
     <ClCompile Include="Transform.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -149,6 +152,9 @@
     </ClInclude>
     <ClInclude Include="Transform.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

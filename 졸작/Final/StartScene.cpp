@@ -27,11 +27,11 @@ void StartScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList
 	knight = make_shared<GameObject>();
 
 	auto meshRenderer = knight->AddComponent<MeshRenderer>();
-	meshRenderer->SetMesh(L"../FBXOutput/knight_Tpose");
+	meshRenderer->SetMesh(L"../FBXOutput/Strut Walking");
 
 	auto transform = knight->AddComponent<Transform>();
 	transform->SetPosition(0.f, 0.f, 0.5f);
-	transform->SetRotation(0.f, 1.57f, 0.f);
+	transform->SetRotation(-1.57f, 0.f, 0.f);
 	transform->SetScale(0.01f, 0.01f, 0.01f);
 }
 

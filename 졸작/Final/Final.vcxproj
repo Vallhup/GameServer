@@ -151,6 +151,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="StartScene.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="StartScene.h" />
     <ClInclude Include="Texture.h" />
