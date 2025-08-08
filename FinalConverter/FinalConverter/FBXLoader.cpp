@@ -220,7 +220,7 @@ void FBXLoader::LoadAllTextures(FbxSurfaceMaterial* surfaceMaterial, FbxMaterial
 				else if (ContainsKeyword(propName, { "roughness", "rough", "specular", "shininess" })) {
 					material.roughnessTexName = textureName;
 				}
-				else if (ContainsKeyword(propName, { "metallic", "metal" })) {
+				else if (ContainsKeyword(propName, { "reflection", "metallic", "metal" })) {
 					material.metallicTexName = textureName;
 				}
 				else if (ContainsKeyword(propName, { "height", "displacement" })) {
