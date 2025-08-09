@@ -14,7 +14,13 @@
 #include "Transform.h"
 #include "Material.h"
 
-MeshRenderer::MeshRenderer() = default;
+int MeshRenderer::nextInstanceId = 0;
+
+MeshRenderer::MeshRenderer()
+{
+    instanceId = nextInstanceId++;
+}
+
 MeshRenderer::~MeshRenderer() = default;
 
 void MeshRenderer::Update(float deltaTime)
@@ -33,7 +39,12 @@ void MeshRenderer::Render()
     objConstants.world = XMMatrixTranspose(world);
     objConstants.useTexture = (material != nullptr) ? 1 : 0;
     objConstants.heightScale = 1.0f;
-    GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);
+
+    size_t alignedOffset = instanceId * 256;  // 각 인스턴스마다 고유 offset
+    GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), alignedOffset);
+    //GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);  // 하나 일때
+
+
 
     auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
     cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
@@ -42,7 +53,13 @@ void MeshRenderer::Render()
     ID3D12DescriptorHeap* descriptorHeaps[] = { GET(DX12Graphics).GetDescHeap()->GetSRVHeap() };
     cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
     cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
-    cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress());
+    
+    D3D12_GPU_VIRTUAL_ADDRESS cbAddress = GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + alignedOffset;
+    cmdList->SetGraphicsRootConstantBufferView(1, cbAddress);
+
+    // 하나 일 때
+    //cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress());
+    
     cmdList->SetGraphicsRootDescriptorTable(2, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
     cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetGroundTexture()->GetSRV());
 

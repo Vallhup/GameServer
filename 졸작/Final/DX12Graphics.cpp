@@ -37,7 +37,7 @@ void DX12Graphics::Initialize(HWND hwnd)
 	rootSig->Initialize(device->GetDevice().Get());
 	shader->Initialize(device->GetDevice().Get(), rootSig->Get(), L"BasicVS.hlsli", L"BasicPS.hlsli");
 	frameCB->Initialize(device->GetDevice().Get(), sizeof(XMMATRIX) * 2);
-	sceneCB->Initialize(device->GetDevice().Get(), 256);
+	sceneCB->Initialize(device->GetDevice().Get(), 256 * 100);
 	depthstencilbuffer->Initialize(device->GetDevice().Get());
 	descriptorheap->Initialize(device->GetDevice().Get());
 	heighttexture->InitializeFromRAW(device->GetDevice().Get(), cmdQueue->GetCmdList().Get(), L"..\\Assets\\HeightMap\\HeightMap.raw", 256, 256);

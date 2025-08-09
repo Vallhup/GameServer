@@ -4,6 +4,8 @@
 #include "DescriptorHeap.h"
 #include "Texture.h"
 
+int Material::nextStartIndex = 2;
+
 void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const MaterialData& matData, DescriptorHeap* descHeap)
 {
     OutputDebugStringA(("BaseColor path: " + matData.baseColorTexPath + "\n").c_str());
@@ -29,7 +31,7 @@ void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandL
         matData.aoTexPath
     };
 
-    UINT currentIndex = 2;  // 0,1은 heightmap, ground용
+    UINT currentIndex = nextStartIndex;  // 0,1은 heightmap, ground용
 
     for (const auto& path : texPaths) {
         if (!path.empty()) {
@@ -42,13 +44,15 @@ void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandL
             descriptorIndices.push_back(currentIndex++);
         }
     }
+
+    nextStartIndex = currentIndex;
 }
 
 void Material::BindToShader(ID3D12GraphicsCommandList* cmdList, UINT startSlot)
 {
     if (!textures.empty()) {
         UINT firstIndex = descriptorIndices[0];
-        OutputDebugStringA(("Binding texture at descriptor index: " + to_string(firstIndex) + "\n").c_str());
+        //OutputDebugStringA(("Binding texture at descriptor index: " + to_string(firstIndex) + "\n").c_str());
         D3D12_GPU_DESCRIPTOR_HANDLE handle = GET(DX12Graphics).GetDescHeap()->GetGPUHandle(firstIndex);
         cmdList->SetGraphicsRootDescriptorTable(4, handle);
     }

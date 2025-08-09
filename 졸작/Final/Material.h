@@ -18,4 +18,5 @@ private:
     MaterialData materialData;
     vector<unique_ptr<Texture>> textures;
     vector<UINT> descriptorIndices;  // DescriptorHeap에서의 인덱스들
+    static int nextStartIndex;
 };

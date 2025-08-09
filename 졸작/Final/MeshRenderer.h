@@ -17,5 +17,8 @@ private:
 	unique_ptr<VertexIndexBuffer> vertexIndexBuffer;  
 	shared_ptr<Material> material;
 	bool visible = true;
+
+	static int nextInstanceId;
+	int instanceId;
 };
 

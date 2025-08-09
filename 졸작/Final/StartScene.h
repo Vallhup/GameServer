@@ -22,6 +22,7 @@ protected:
 	int GetSceneWidth() const override;
 
 private:
+	array<shared_ptr<GameObject>, 100> knights;
 	shared_ptr<GameObject> knight;
 };
 
