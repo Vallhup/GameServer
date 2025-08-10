@@ -14,7 +14,7 @@ public:
 
 protected:
 	virtual void InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) = 0;
-	virtual void UpdateLogic(const float deltaTime) = 0;
+	virtual void UpdateScene(const float deltaTime) = 0;
 	virtual void RenderScene() = 0;
 	virtual int GetSceneWidth() const = 0;
 

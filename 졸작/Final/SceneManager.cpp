@@ -13,6 +13,9 @@
 #include "Texture.h"
 #include "Camera.h"
 #include "StartScene.h"
+#include "LoginScene.h"
+#include "ServerSquareScene.h"
+#include "GameScene.h"
 
 SceneManager& SceneManager::Get()
 {
@@ -30,7 +33,10 @@ void SceneManager::Initialize(HWND hwnd)
 	mHwnd = hwnd;
 
     RegisterScene<StartScene>(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), SceneType::Start);
-
+    RegisterScene<LoginScene>(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), SceneType::Login);
+    RegisterScene<ServerSquareScene>(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), SceneType::ServerSquare);
+    RegisterScene<GameScene>(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), SceneType::MainGame);
+ 
     SceneStart();
 }
 

@@ -4,6 +4,8 @@
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
+#include "Input.h"
+#include "SceneManager.h"
 
 StartScene::~StartScene() = default;
 
@@ -51,7 +53,7 @@ void StartScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList
 	transform->SetScale(0.01f, 0.01f, 0.01f);*/
 }
 
-void StartScene::UpdateLogic(const float deltaTime)
+void StartScene::UpdateScene(const float deltaTime)
 {
 	GET(Camera).Update(deltaTime);
 
@@ -60,6 +62,9 @@ void StartScene::UpdateLogic(const float deltaTime)
 		for (int j = 0; j < 10; ++j)
 			knights[j + (i * 10)]->Update(deltaTime);
 	}
+
+	if (GET(Input).GetKeyDown(VK_TAB))
+		GET(SceneManager).ChangeScene(SceneType::Login);
 }
 
 void StartScene::RenderScene()

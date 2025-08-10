@@ -20,6 +20,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
     while (true)
     {
+        GET(Input).Renew();
         GET(Timer).Update();
         const float deltatime = GET(Timer).GetDeltaTime();
 

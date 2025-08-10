@@ -10,7 +10,7 @@ void Scene::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
 
 void Scene::Update(const float deltaTime)
 {
-    UpdateLogic(deltaTime);
+    UpdateScene(deltaTime);
 }
 
 void Scene::Render()

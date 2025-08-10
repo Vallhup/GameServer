@@ -3,13 +3,13 @@
 
 class GameObject;
 
-class StartScene final : public Scene
+class GameScene final : public Scene
 {
 public:
-	StartScene() = default;
-	StartScene(const StartScene&) = delete;
-	StartScene& operator=(const StartScene&) = delete;
-	~StartScene();
+	GameScene() = default;
+	GameScene(const GameScene&) = delete;
+	GameScene& operator=(const GameScene&) = delete;
+	~GameScene();
 
 	void Release() override;
 	void Reset() override;
@@ -22,7 +22,6 @@ protected:
 	int GetSceneWidth() const override;
 
 private:
-	array<shared_ptr<GameObject>, 100> knights;
-	shared_ptr<GameObject> knight;
+	shared_ptr<GameObject> Dragon;
 };
 

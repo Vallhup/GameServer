@@ -1,8 +1,25 @@
 #pragma once
 #include "Scene.h"
 
-class ServerSquareScene : public Scene
+class ServerSquareScene final : public Scene
 {
+public:
+	ServerSquareScene() = default;
+	ServerSquareScene(const ServerSquareScene&) = delete;
+	ServerSquareScene& operator=(const ServerSquareScene&) = delete;
+	~ServerSquareScene();
+
+	void Release() override;
+	void Reset() override;
+
+protected:
+	const float* GetBackgroundColor() override;
+	void InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) override;
+	void UpdateScene(const float deltaTime) override;
+	void RenderScene() override;
+	int GetSceneWidth() const override;
+
+private:
 
 };
 

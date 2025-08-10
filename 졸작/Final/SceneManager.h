@@ -5,6 +5,7 @@ enum class SceneType {
     Start,
     Login,
     ServerSquare,
+    MainGame,
     Scene1,
     Scene2,
     END
