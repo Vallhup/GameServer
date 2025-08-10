@@ -3,7 +3,8 @@
 
 enum class SceneType {
     Start,
-    Menu,
+    Login,
+    ServerSquare,
     Scene1,
     Scene2,
     END

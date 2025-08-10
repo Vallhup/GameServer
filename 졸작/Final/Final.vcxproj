@@ -151,8 +151,10 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="LoginScene.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="ServerSquareScene.cpp" />
     <ClCompile Include="StartScene.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -184,8 +186,10 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="LoginScene.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="ServerSquareScene.h" />
     <ClInclude Include="StartScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
