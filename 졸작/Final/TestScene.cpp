@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "StartScene.h"
+#include "TestScene.h"
 #include "Camera.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
@@ -7,22 +7,22 @@
 #include "Input.h"
 #include "SceneManager.h"
 
-StartScene::~StartScene() = default;
+TestScene::~TestScene() = default;
 
-void StartScene::Release()
+void TestScene::Release()
 {
 }
 
-void StartScene::Reset()
+void TestScene::Reset()
 {
 }
 
-const float* StartScene::GetBackgroundColor()
+const float* TestScene::GetBackgroundColor()
 {
 	return Colors::LightBlue;
 }
 
-void StartScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
+void TestScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
 {
     GET(Camera).Initialize();
 
@@ -53,7 +53,7 @@ void StartScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList
 	transform->SetScale(0.01f, 0.01f, 0.01f);*/
 }
 
-void StartScene::UpdateScene(const float deltaTime)
+void TestScene::UpdateScene(const float deltaTime)
 {
 	GET(Camera).Update(deltaTime);
 
@@ -67,7 +67,7 @@ void StartScene::UpdateScene(const float deltaTime)
 		GET(SceneManager).ChangeScene(SceneType::Login);
 }
 
-void StartScene::RenderScene()
+void TestScene::RenderScene()
 {
 	for (int i = 0; i < 10; ++i) {
 		for (int j = 0; j < 10; ++j)
@@ -82,7 +82,7 @@ void StartScene::RenderScene()
 	}
 }
 
-int StartScene::GetSceneWidth() const
+int TestScene::GetSceneWidth() const
 {
 	return 0;
 }

@@ -156,7 +156,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ServerSquareScene.cpp" />
-    <ClCompile Include="StartScene.cpp" />
+    <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
@@ -192,7 +192,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ServerSquareScene.h" />
-    <ClInclude Include="StartScene.h" />
+    <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="UploadBuffer.h" />

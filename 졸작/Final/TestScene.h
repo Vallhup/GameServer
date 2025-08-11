@@ -3,13 +3,13 @@
 
 class GameObject;
 
-class StartScene final : public Scene
+class TestScene final : public Scene
 {
 public:
-	StartScene() = default;
-	StartScene(const StartScene&) = delete;
-	StartScene& operator=(const StartScene&) = delete;
-	~StartScene();
+	TestScene() = default;
+	TestScene(const TestScene&) = delete;
+	TestScene& operator=(const TestScene&) = delete;
+	~TestScene();
 
 	void Release() override;
 	void Reset() override;

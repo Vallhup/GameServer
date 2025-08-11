@@ -67,7 +67,7 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="StartScene.cpp">
+    <ClCompile Include="TestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="MeshRenderer.cpp">
@@ -153,7 +153,7 @@
     <ClInclude Include="Camera.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="StartScene.h">
+    <ClInclude Include="TestScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="MeshRenderer.h">
