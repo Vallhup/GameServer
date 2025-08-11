@@ -14,6 +14,8 @@ public:
 
     const MaterialData& GetMaterialData() const { return materialData; }
 
+    static void ResetStartIndex();
+
 private:
     MaterialData materialData;
     vector<unique_ptr<Texture>> textures;

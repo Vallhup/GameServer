@@ -11,6 +11,7 @@ void LoginScene::Release()
 
 void LoginScene::Reset()
 {
+	OutputDebugStringA("LoginScene Data has been deleted!! \n----------------------------------------\n");
 }
 
 const float* LoginScene::GetBackgroundColor()
@@ -20,12 +21,13 @@ const float* LoginScene::GetBackgroundColor()
 
 void LoginScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
 {
+	OutputDebugStringA("----------------------------------------\nLoginScene Data has been created!! \n");
 }
 
 void LoginScene::UpdateScene(const float deltaTime)
 {
 	if (GET(Input).GetKeyDown(VK_TAB))
-		GET(SceneManager).ChangeScene(SceneType::ServerSquare);
+		GET(SceneManager).RequestSceneChange(SceneType::ServerSquare);
 }
 
 void LoginScene::RenderScene()

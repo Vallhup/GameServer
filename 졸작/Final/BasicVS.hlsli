@@ -10,10 +10,12 @@ cbuffer ObjectCB : register(b1)
     matrix world;
     int useTexture;
     float heightScale;
-    float2 padding;
+    int useInstancing;
+    float padding;
 };
 
 Texture2D heightmapTexture : register(t0);
+StructuredBuffer<matrix> instanceTransforms : register(t0, space1);
 SamplerState heightmapSampler : register(s0);
 
 struct VS_IN
@@ -38,7 +40,7 @@ struct VS_OUT
     float4 color : COLOR;
 };
 
-VS_OUT VSMain(VS_IN input)
+VS_OUT VSMain(VS_IN input, uint instanceID : SV_InstanceID)
 {
     VS_OUT output;
     
@@ -50,7 +52,13 @@ VS_OUT VSMain(VS_IN input)
         modifiedPos.y += height * heightScale;
     }
     
-    float4 worldPos = mul(float4(modifiedPos, 1.0f), world);
+    matrix worldMatrix;
+    if (useInstancing)
+        worldMatrix = instanceTransforms[instanceID];
+    else
+        worldMatrix = world;
+    
+    float4 worldPos = mul(float4(modifiedPos, 1.0f), worldMatrix);
     float4 viewPos = mul(worldPos, view);
     output.pos = mul(viewPos, projection);
     

@@ -11,6 +11,7 @@ void ServerSquareScene::Release()
 
 void ServerSquareScene::Reset()
 {
+	OutputDebugStringA("ServerSquareScene Data has been deleted!! \n----------------------------------------\n");
 }
 
 const float* ServerSquareScene::GetBackgroundColor()
@@ -20,12 +21,13 @@ const float* ServerSquareScene::GetBackgroundColor()
 
 void ServerSquareScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
 {
+	OutputDebugStringA("----------------------------------------\nServerSquareScene Data has been created!! \n");
 }
 
 void ServerSquareScene::UpdateScene(const float deltaTime)
 {
 	if (GET(Input).GetKeyDown(VK_TAB))
-		GET(SceneManager).ChangeScene(SceneType::MainGame);
+		GET(SceneManager).RequestSceneChange(SceneType::MainGame);
 }
 
 void ServerSquareScene::RenderScene()

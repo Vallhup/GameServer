@@ -14,11 +14,11 @@
 #include "Transform.h"
 #include "Material.h"
 
-int MeshRenderer::nextInstanceId = 0;
+UINT MeshRenderer::idCounter = 0;
 
 MeshRenderer::MeshRenderer()
 {
-    instanceId = nextInstanceId++;
+    myID = idCounter++;
 }
 
 MeshRenderer::~MeshRenderer() = default;
@@ -39,12 +39,12 @@ void MeshRenderer::Render()
     objConstants.world = XMMatrixTranspose(world);
     objConstants.useTexture = (material != nullptr) ? 1 : 0;
     objConstants.heightScale = 1.0f;
+    objConstants.useInstancing = 0;  // 일반 렌더링
 
-    size_t alignedOffset = instanceId * 256;  // 각 인스턴스마다 고유 offset
-    GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), alignedOffset);
-    //GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);  // 하나 일때
+    UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
+    UINT offset = myID * cbSize;
 
-
+    GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), offset);
 
     auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
     cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
@@ -52,14 +52,10 @@ void MeshRenderer::Render()
 
     ID3D12DescriptorHeap* descriptorHeaps[] = { GET(DX12Graphics).GetDescHeap()->GetSRVHeap() };
     cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-    cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
-    
-    D3D12_GPU_VIRTUAL_ADDRESS cbAddress = GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + alignedOffset;
-    cmdList->SetGraphicsRootConstantBufferView(1, cbAddress);
 
-    // 하나 일 때
-    //cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress());
-    
+    cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
+    cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + offset);
+
     cmdList->SetGraphicsRootDescriptorTable(2, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
     cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetGroundTexture()->GetSRV());
 
@@ -68,8 +64,45 @@ void MeshRenderer::Render()
         material->BindToShader(cmdList, 4);
     }
 
-    vertexIndexBuffer->Bind(cmdList); 
-    vertexIndexBuffer->Draw(cmdList); 
+    vertexIndexBuffer->Bind(cmdList);
+    vertexIndexBuffer->Draw(cmdList);
+}
+
+void MeshRenderer::RenderInstanced(UINT instanceCount, UploadBuffer* instanceBuffer)
+{
+    if (!visible || !vertexIndexBuffer || !instanceBuffer) return;
+
+    ObjectConstants objConstants = {};
+    objConstants.world = XMMatrixIdentity();  // 사용하지 않음
+    objConstants.useTexture = (material != nullptr) ? 1 : 0;
+    objConstants.heightScale = 1.0f;
+    objConstants.useInstancing = 1;  // 인스턴싱 사용
+
+    GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);
+
+    auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
+    cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
+    cmdList->SetGraphicsRootSignature(GET(DX12Graphics).GetRootSig()->Get());
+
+    ID3D12DescriptorHeap* descriptorHeaps[] = { GET(DX12Graphics).GetDescHeap()->GetSRVHeap() };
+    cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
+    // Frame Constants (View/Projection)
+    cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
+    cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress());
+    cmdList->SetGraphicsRootShaderResourceView(5, instanceBuffer->GetGPUVirtualAddress());
+
+    // 텍스처들
+    cmdList->SetGraphicsRootDescriptorTable(2, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
+    cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetGroundTexture()->GetSRV());
+
+    if (material)
+    {
+        material->BindToShader(cmdList, 4);
+    }
+
+    vertexIndexBuffer->Bind(cmdList);
+    vertexIndexBuffer->DrawInstanced(cmdList, instanceCount);  // 새 메서드 필요
 }
 
 void MeshRenderer::SetMesh(const wstring& path)

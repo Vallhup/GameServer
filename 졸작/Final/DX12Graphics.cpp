@@ -56,6 +56,12 @@ void DX12Graphics::FlushCommandQueue()
 	cmdQueue->WaitSync();
 }
 
+void DX12Graphics::ResetCommandQueue()
+{
+	cmdQueue->GetCmdAlloc()->Reset();
+	cmdQueue->GetCmdList()->Reset(cmdQueue->GetCmdAlloc().Get(), nullptr);
+}
+
 void DX12Graphics::RenderBegin(D3D12_VIEWPORT viewport, D3D12_RECT scissorRect)
 {
 	cmdQueue->RenderBegin(viewport, scissorRect, swapchain, depthstencilbuffer->GetDSVCpuHandle());

@@ -3,7 +3,7 @@
 
 void RootSignature::Initialize(ID3D12Device* device)
 {
-	CD3DX12_ROOT_PARAMETER rootParams[5];
+	CD3DX12_ROOT_PARAMETER rootParams[6];
 
 	rootParams[0].InitAsConstantBufferView(0);	// register(b0)
 	rootParams[1].InitAsConstantBufferView(1);	// register(b1)
@@ -19,6 +19,8 @@ void RootSignature::Initialize(ID3D12Device* device)
 	CD3DX12_DESCRIPTOR_RANGE materialRange;
 	materialRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 2);		// t2~t9±îÁö 8°³
 	rootParams[4].InitAsDescriptorTable(1, &materialRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	rootParams[5].InitAsShaderResourceView(0, 1);		// register(t0) & space1
 
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc[3];
 	

@@ -32,10 +32,10 @@ void SceneManager::Initialize(HWND hwnd)
 {
 	mHwnd = hwnd;
 
-    RegisterScene<TestScene>(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), SceneType::Start);
-    RegisterScene<LoginScene>(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), SceneType::Login);
-    RegisterScene<ServerSquareScene>(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), SceneType::ServerSquare);
-    RegisterScene<GameScene>(GET(DX12Graphics).GetDevice()->GetDevice().Get(), GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(), SceneType::MainGame);
+    RegisterScene<TestScene>(SceneType::Start);
+    RegisterScene<LoginScene>(SceneType::Login);
+    RegisterScene<ServerSquareScene>(SceneType::ServerSquare);
+    RegisterScene<GameScene>(SceneType::MainGame);
  
     SceneStart();
 }
@@ -77,12 +77,7 @@ Scene* SceneManager::GetCurrentScene() const
 
 void SceneManager::SceneStart()
 {
-    ChangeScene(SceneType::Start);
-}
-
-void SceneManager::ChangeScene(SceneType type)
-{
-    size_t index = static_cast<size_t>(type);
+    size_t index = static_cast<size_t>(SceneType::Start);
 
     if (static_cast<size_t>(SceneType::END) == index)
     {
@@ -91,11 +86,41 @@ void SceneManager::ChangeScene(SceneType type)
     }
 
     mCurrentScene = mScenes[index].get();
-    
+    mCurrentScene->Initialize(
+        GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+        GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get()
+    );
+
     GET(DX12Graphics).GetCmdQueue()->SetBackgroundColor(mCurrentScene->GetBackgroundColor());
+}
+
+void SceneManager::RequestSceneChange(SceneType type)
+{
+    pendingSceneChange = true;
+    nextSceneType = type;
+}
+
+void SceneManager::ProcessPendingSceneChange()
+{
+    if (!pendingSceneChange) return;
+
+    pendingSceneChange = false;
 
     if (mCurrentScene)
     {
         mCurrentScene->Reset();
     }
+
+    GET(DX12Graphics).ResetCommandQueue();
+
+    size_t index = static_cast<size_t>(nextSceneType);
+    mCurrentScene = mScenes[index].get();
+    mCurrentScene->Initialize(
+        GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+        GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get()
+    );
+
+    GET(DX12Graphics).FlushCommandQueue();
+
+    GET(DX12Graphics).GetCmdQueue()->SetBackgroundColor(mCurrentScene->GetBackgroundColor());
 }

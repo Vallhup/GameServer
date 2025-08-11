@@ -23,5 +23,7 @@ protected:
 
 private:
 	shared_ptr<GameObject> Dragon;
+	shared_ptr<GameObject> strut;
+	shared_ptr<GameObject> strut2;
 };
 

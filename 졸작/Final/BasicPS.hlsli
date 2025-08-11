@@ -4,7 +4,8 @@ cbuffer ObjectCB : register(b1)
     matrix world;
     int useTexture;
     float heightScale;
-    float2 padding;
+    int useInstancing;
+    float padding;
 };
 
 struct PS_IN

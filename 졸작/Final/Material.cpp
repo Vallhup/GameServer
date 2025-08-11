@@ -57,3 +57,8 @@ void Material::BindToShader(ID3D12GraphicsCommandList* cmdList, UINT startSlot)
         cmdList->SetGraphicsRootDescriptorTable(4, handle);
     }
 }
+
+void Material::ResetStartIndex()
+{
+    nextStartIndex = 2;
+}

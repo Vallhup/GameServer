@@ -2,6 +2,7 @@
 #include "Scene.h"
 
 class GameObject;
+class UploadBuffer;
 
 class TestScene final : public Scene
 {
@@ -22,7 +23,10 @@ protected:
 	int GetSceneWidth() const override;
 
 private:
-	array<shared_ptr<GameObject>, 100> knights;
-	shared_ptr<GameObject> knight;
+	shared_ptr<GameObject> knightTemplate;
+	vector<XMMATRIX> knightMatrix;
+	unique_ptr<UploadBuffer> instanceBuffer;
+
+	static constexpr int INSTANCE_COUNT = 10000;
 };
 

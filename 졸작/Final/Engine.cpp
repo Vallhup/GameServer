@@ -39,6 +39,7 @@ void Engine::Initialize(HWND hwnd)
 
 void Engine::Update(const float deltaTime)
 {
+    GET(SceneManager).ProcessPendingSceneChange();
     GET(SceneManager).Update(deltaTime);
 }
 

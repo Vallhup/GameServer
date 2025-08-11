@@ -16,7 +16,8 @@ struct ObjectConstants
     XMMATRIX world;
     int useTexture;
     float heightScale;
-    float padding[2];
+    int useInstancing;
+    float padding;
 };
 
 class DX12Graphics
@@ -26,6 +27,7 @@ public:
 
 	void Initialize(HWND hwnd);
     void FlushCommandQueue();
+    void ResetCommandQueue();
 
     void RenderBegin(D3D12_VIEWPORT viewport, D3D12_RECT scissorRect);
     void RenderEnd();
