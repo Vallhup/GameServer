@@ -5,7 +5,7 @@ cbuffer ObjectCB : register(b1)
     int useTexture;
     float heightScale;
     int useInstancing;
-    float padding;
+    int hasAlpha;
 };
 
 struct PS_IN
@@ -42,6 +42,12 @@ float4 PSMain(PS_IN input) : SV_Target
         float roughness = roughnessTex.Sample(sampler2, input.uv).r;
         float metallic = metallicTex.Sample(sampler2, input.uv).r;
         
+        // Alpha 처리 - 기본값 1.0
+        float alpha = 1.0;
+        // Alpha 텍스처가 유효한 경우만 샘플링
+        // (실제로는 항상 샘플링되지만 빈 텍스처는 1.0 반환하도록 설정)
+        alpha = alphaTex.Sample(sampler2, input.uv).a;
+        
         // 간단한 라이팅
         float3 lightDir = normalize(float3(0, 0, 1));
         float3 worldNormal = normalize(input.normal + normalMap * 0.3);
@@ -58,7 +64,7 @@ float4 PSMain(PS_IN input) : SV_Target
         
         float3 finalColor = diffuse + ambient + spec;
         
-        return float4(finalColor, baseColor.a);
+        return float4(finalColor, baseColor.a * alpha);
     }
     else
     {

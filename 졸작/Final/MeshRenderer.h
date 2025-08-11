@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "Importer.h"
 
 class VertexIndexBuffer;
 class Material;
@@ -17,7 +18,11 @@ public:
 	void SetMesh(const wstring& path);
 private:
 	unique_ptr<VertexIndexBuffer> vertexIndexBuffer;  
-	shared_ptr<Material> material;
+	shared_ptr<Material> material;				// 단일 material
+	
+	vector<shared_ptr<Material>> materials;		// 다중 material
+	vector<SubMeshInfo> subMeshes;				// 서브메시 정보 (다중 머티리얼용)
+
 	bool visible = true;
 
 	UINT myID;

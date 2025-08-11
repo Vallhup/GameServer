@@ -102,3 +102,8 @@ void VertexIndexBuffer::DrawInstanced(ID3D12GraphicsCommandList* cmdList, UINT i
 {
     cmdList->DrawIndexedInstanced(indexcount, instanceCount, 0, 0, 0);
 }
+
+void VertexIndexBuffer::DrawIndexed(ID3D12GraphicsCommandList* cmdList, UINT indexCount, UINT startIndex)
+{
+    cmdList->DrawIndexedInstanced(indexCount, 1, startIndex, 0, 0);
+}

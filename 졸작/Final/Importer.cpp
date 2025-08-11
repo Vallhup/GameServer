@@ -57,6 +57,10 @@ bool Importer::LoadMesh(const wstring& path)
     ifs.read(reinterpret_cast<char*>(meshData.vertices.data()),
         sizeof(Vertex) * header.vertexCount);
 
+    meshData.subMeshes.resize(header.subMeshCount);
+    ifs.read(reinterpret_cast<char*>(meshData.subMeshes.data()),
+        sizeof(SubMeshInfo) * header.subMeshCount);
+
     meshData.indices.resize(header.indexCount);
     ifs.read(reinterpret_cast<char*>(meshData.indices.data()),
         sizeof(UINT) * header.indexCount);

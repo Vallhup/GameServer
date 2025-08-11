@@ -52,7 +52,8 @@ void GameScene::UpdateScene(const float deltaTime)
 {
 	GET(Camera).Update(deltaTime);
 
-	Dragon->Update(deltaTime);
+	//Dragon->Update(deltaTime);
+	//strut->Update(deltaTime);
 }
 
 void GameScene::RenderScene()

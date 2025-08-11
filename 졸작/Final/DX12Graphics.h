@@ -17,7 +17,7 @@ struct ObjectConstants
     int useTexture;
     float heightScale;
     int useInstancing;
-    float padding;
+    int hasAlpha;
 };
 
 class DX12Graphics

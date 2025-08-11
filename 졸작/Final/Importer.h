@@ -1,12 +1,18 @@
 #pragma once
 
-// 바이너리 헤더 구조체들
 struct MeshBinaryHeader {
     uint32_t magic;           // 'MESH'
     uint32_t vertexCount;
     uint32_t indexCount;
     uint32_t materialCount;
     uint32_t hasAnimation;
+    uint32_t subMeshCount;
+};
+
+struct SubMeshInfo {
+    uint32_t startIndex;
+    uint32_t indexCount;
+    uint32_t materialIndex;
 };
 
 struct SkeletonBinaryHeader {
@@ -27,14 +33,12 @@ struct MaterialBinaryHeader {
     uint32_t materialCount;
 };
 
-// 개별 머티리얼 데이터
 struct MaterialBinaryData {
     char name[64];
     XMFLOAT4 diffuse;
     XMFLOAT4 ambient;
     XMFLOAT4 specular;
 
-    // 모든 텍스처 경로
     char baseColorTexPath[256];
     char normalTexPath[256];
     char roughnessTexPath[256];
@@ -52,10 +56,10 @@ struct BoneBinaryData {
     float offsetMatrix[16];
 };
 
-// 게임 엔진용 데이터 구조체들
 struct MeshData {
     vector<Vertex> vertices;
     vector<UINT> indices;
+    vector<SubMeshInfo> subMeshes;
     bool hasAnimation = false;
 };
 
@@ -102,7 +106,6 @@ public:
     bool LoadModel(const wstring& basePath);
     void Release();
 
-    // 데이터 접근자들
     const MeshData& GetMesh() const { return meshData; }
     const SkeletonData& GetSkeleton() const { return skeletonData; }
     const vector<AnimationData>& GetAnimations() const { return animationData; }

@@ -8,44 +8,46 @@ int Material::nextStartIndex = 2;
 
 void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const MaterialData& matData, DescriptorHeap* descHeap)
 {
-    OutputDebugStringA(("BaseColor path: " + matData.baseColorTexPath + "\n").c_str());
-    OutputDebugStringA(("Normal path: " + matData.normalTexPath + "\n").c_str());
-    OutputDebugStringA(("Roughness path: " + matData.roughnessTexPath + "\n").c_str());
-    OutputDebugStringA(("Metallic path: " + matData.metallicTexPath + "\n").c_str());
-    OutputDebugStringA(("HeightTex path: " + matData.heightTexPath + "\n").c_str());
-    OutputDebugStringA(("AlphaTex path: " + matData.alphaTexPath + "\n").c_str());
-    OutputDebugStringA(("EmissionTex path: " + matData.emissionTexPath + "\n").c_str());
-    OutputDebugStringA(("AO path: " + matData.aoTexPath + "\n").c_str());
-
     materialData = matData;
+    UINT baseSlot = nextStartIndex;
 
-    // 텍스처 경로 배열
-    vector<string> texPaths = {
-        matData.baseColorTexPath,
-        matData.normalTexPath,
-        matData.roughnessTexPath,
-        matData.metallicTexPath,
-        matData.heightTexPath,
-        matData.alphaTexPath,
-        matData.emissionTexPath,
-        matData.aoTexPath
+    struct TextureInfo {
+        const string& path;
+        const string& name;
+        UINT slotOffset;
     };
 
-    UINT currentIndex = nextStartIndex;  // 0,1은 heightmap, ground용
+    vector<TextureInfo> textureInfos = {
+        {matData.baseColorTexPath, "BaseColor", 0},
+        {matData.normalTexPath, "Normal", 1},
+        {matData.roughnessTexPath, "Roughness", 2},
+        {matData.metallicTexPath, "Metallic", 3},
+        {matData.heightTexPath, "Height", 4},
+        {matData.alphaTexPath, "Alpha", 5},
+        {matData.emissionTexPath, "Emission", 6},
+        {matData.aoTexPath, "AO", 7},
+    };
 
-    for (const auto& path : texPaths) {
-        if (!path.empty()) {
+    for (const auto& info : textureInfos)
+        OutputDebugStringA((info.name + " path: " + info.path + "\n").c_str());
+
+    for (const auto& info : textureInfos)
+    {
+        if (!info.path.empty()) {
             auto texture = make_unique<Texture>();
-            wstring wpath = L"../FBXOutput/" + wstring(path.begin(), path.end());
+            wstring wpath = L"../FBXOutput/" + wstring(info.path.begin(), info.path.end());
             texture->Initialize(device, cmdList, wpath);
-            texture->CreateSRV(device, descHeap, currentIndex);
 
+            UINT slotIndex = baseSlot + info.slotOffset;
+            texture->CreateSRV(device, descHeap, slotIndex);
             textures.push_back(move(texture));
-            descriptorIndices.push_back(currentIndex++);
+            descriptorIndices.push_back(slotIndex);
+
+            OutputDebugStringA(("  t" + to_string(slotIndex) + " -> " + info.name + "\n").c_str());
         }
     }
 
-    nextStartIndex = currentIndex;
+    nextStartIndex = baseSlot + 8;
 }
 
 void Material::BindToShader(ID3D12GraphicsCommandList* cmdList, UINT startSlot)

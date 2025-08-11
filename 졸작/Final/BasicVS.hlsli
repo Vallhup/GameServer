@@ -11,7 +11,7 @@ cbuffer ObjectCB : register(b1)
     int useTexture;
     float heightScale;
     int useInstancing;
-    float padding;
+    int hasAlpha;
 };
 
 Texture2D heightmapTexture : register(t0);
@@ -64,10 +64,10 @@ VS_OUT VSMain(VS_IN input, uint instanceID : SV_InstanceID)
     
     output.color = input.color;
     output.uv = input.uv;
-    output.normal = input.normal; // ← 추가!
-    output.tangent = input.tangent; // ← 추가!
-    output.weights = input.weights; // ← 추가!
-    output.indices = input.indices; // ← 추가!
+    output.normal = input.normal; 
+    output.tangent = input.tangent;
+    output.weights = input.weights;
+    output.indices = input.indices;
     
     return output;
 }
