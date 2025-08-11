@@ -17,6 +17,11 @@ void GameScene::Reset()
 {
 }
 
+void GameScene::AddGameObject(shared_ptr<GameObject> obj)
+{
+	gameObjects.push_back(obj);
+}
+
 const float* GameScene::GetBackgroundColor()
 {
 	return Colors::Snow;
@@ -27,53 +32,47 @@ void GameScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
 	GET(Camera).Initialize();
 
-	Dragon = make_shared<GameObject>();
-	auto meshRenderer = Dragon->AddComponent<MeshRenderer>();
-	meshRenderer->SetMesh(L"../FBXOutput/Dragon");
-	auto transform = Dragon->AddComponent<Transform>();
-	transform->SetPosition(0.f, 0.f, 0.5f);
-	transform->SetRotation(0.f, 0.f, 0.f);
-	transform->SetScale(0.01f, 0.01f, 0.01f);
+	{
+		Dragon = make_shared<GameObject>();
+		auto meshRenderer = Dragon->AddComponent<MeshRenderer>();
+		auto transform = Dragon->AddComponent<Transform>();
+		meshRenderer->SetMesh(L"../FBXOutput/Dragon");
+		transform->SetPosition(0.f, 0.f, 0.5f);
+		transform->SetRotation(0.f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+		AddGameObject(Dragon);
 
-	OutputDebugStringA("Dragon created!!\n");
+		OutputDebugStringA("Dragon created!!\n");
+	}
 
-	strut = make_shared<GameObject>();
-	auto meshRenderer2 = strut->AddComponent<MeshRenderer>();
-	meshRenderer2->SetMesh(L"../FBXOutput/knight");
-	auto transform2 = strut->AddComponent<Transform>();
-	transform2->SetPosition(1.f, 0.f, 0.5f);
-	transform2->SetRotation(0.f, 0.f, 0.f);
-	transform2->SetScale(0.01f, 0.01f, 0.01f);
+	{
+		knight = make_shared<GameObject>();
+		auto meshRenderer = knight->AddComponent<MeshRenderer>();
+		auto transform = knight->AddComponent<Transform>();
+		meshRenderer->SetMesh(L"../FBXOutput/knight");
+		transform->SetPosition(1.f, 0.f, 0.5f);
+		transform->SetRotation(0.f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+		AddGameObject(knight);
 
-	OutputDebugStringA("Strut created!!\n");
+		OutputDebugStringA("Strut created!!\n");
+	}
 }
 
 void GameScene::UpdateScene(const float deltaTime)
 {
 	GET(Camera).Update(deltaTime);
 
-	//Dragon->Update(deltaTime);
-	//strut->Update(deltaTime);
+	for (const auto& obj : gameObjects)
+		obj->Update(deltaTime);
 }
 
 void GameScene::RenderScene()
 {
-	if (Dragon)
+	for (const auto& obj : gameObjects)
 	{
-		auto meshRenderer = Dragon->GetComponent<MeshRenderer>();
-
-		if (meshRenderer)
+		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 			meshRenderer->Render();
-
-	}
-
-	if (strut)
-	{
-		auto meshRenderer = strut->GetComponent<MeshRenderer>();
-
-		if (meshRenderer)
-			meshRenderer->Render();
-
 	}
 }
 

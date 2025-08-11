@@ -14,6 +14,8 @@ public:
 	void Release() override;
 	void Reset() override;
 
+	void AddGameObject(shared_ptr<GameObject> obj);
+
 protected:
 	const float* GetBackgroundColor() override;
 	void InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) override;
@@ -22,8 +24,9 @@ protected:
 	int GetSceneWidth() const override;
 
 private:
+	vector<shared_ptr<GameObject>> gameObjects;
+
 	shared_ptr<GameObject> Dragon;
-	shared_ptr<GameObject> strut;
+	shared_ptr<GameObject> knight;
 	shared_ptr<GameObject> strut2;
 };
-
