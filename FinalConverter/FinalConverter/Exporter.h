@@ -8,6 +8,13 @@ struct MeshBinaryHeader {
     uint32_t indexCount;
     uint32_t materialCount;
     uint32_t hasAnimation;
+    uint32_t subMeshCount;
+};
+
+struct SubMeshInfo {
+    uint32_t startIndex;
+    uint32_t indexCount;
+    uint32_t materialIndex;
 };
 
 struct SkeletonBinaryHeader {

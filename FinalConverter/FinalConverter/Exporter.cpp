@@ -49,11 +49,23 @@ bool Exporter::ExportMesh(const FbxMeshInfo& meshInfo, const wstring& path)
     header.indexCount = totalIndices;
     header.materialCount = static_cast<uint32_t>(meshInfo.materials.size());
     header.hasAnimation = meshInfo.hasAnimation ? 1 : 0;
+    header.subMeshCount = static_cast<uint32_t>(meshInfo.indices.size());
 
     ofs.write(reinterpret_cast<const char*>(&header), sizeof(header));
 
     ofs.write(reinterpret_cast<const char*>(meshInfo.vertices.data()),
         sizeof(Vertex) * meshInfo.vertices.size());
+
+    uint32_t currentOffset = 0;
+    for (size_t i = 0; i < meshInfo.indices.size(); ++i) {
+        SubMeshInfo subMesh = {};
+        subMesh.startIndex = currentOffset;
+        subMesh.indexCount = static_cast<uint32_t>(meshInfo.indices[i].size());
+        subMesh.materialIndex = static_cast<uint32_t>(i);
+
+        ofs.write(reinterpret_cast<const char*>(&subMesh), sizeof(subMesh));
+        currentOffset += subMesh.indexCount;
+    }
 
     for (const auto& indices : meshInfo.indices) {
         ofs.write(reinterpret_cast<const char*>(indices.data()),
@@ -61,7 +73,8 @@ bool Exporter::ExportMesh(const FbxMeshInfo& meshInfo, const wstring& path)
     }
 
     wcout << L"메시 저장 완료: " << path << endl;
-    wcout << L"  정점: " << header.vertexCount << L", 인덱스: " << header.indexCount << endl;
+    wcout << L"  정점: " << header.vertexCount << L", 인덱스: " << header.indexCount
+        << L", 서브메시: " << header.subMeshCount << endl;
     return true;
 }
 
