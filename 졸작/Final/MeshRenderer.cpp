@@ -121,6 +121,24 @@ void MeshRenderer::SetMesh(const wstring& path)
 		);
 
         const auto& materials = importer.GetMaterials();
+
+        // µð¹ö±ë Ãß°¡
+        OutputDebugStringA(("Total materials found: " + to_string(materials.size()) + "\n").c_str());
+
+        for (size_t i = 0; i < materials.size(); ++i) {
+            string msg = "Material[" + to_string(i) + "]: " + materials[i].name + "\n";
+            OutputDebugStringA(msg.c_str());
+
+            OutputDebugStringA(("  BaseColor: " + materials[i].baseColorTexPath + "\n").c_str());
+            OutputDebugStringA(("  Normal: " + materials[i].normalTexPath + "\n").c_str());
+            OutputDebugStringA(("  Roughness: " + materials[i].roughnessTexPath + "\n").c_str());
+            OutputDebugStringA(("  Metallic: " + materials[i].metallicTexPath + "\n").c_str());
+            OutputDebugStringA(("  Height: " + materials[i].heightTexPath + "\n").c_str());
+            OutputDebugStringA(("  Alpha: " + materials[i].alphaTexPath + "\n").c_str());
+            OutputDebugStringA(("  Emission: " + materials[i].emissionTexPath + "\n").c_str());
+            OutputDebugStringA(("  AO: " + materials[i].aoTexPath + "\n").c_str());
+        }
+
         if (!materials.empty())
         {
             material = make_shared<Material>();

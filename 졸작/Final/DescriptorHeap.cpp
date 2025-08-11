@@ -5,7 +5,7 @@
 void DescriptorHeap::Initialize(ID3D12Device* device)
 {
     D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-    srvHeapDesc.NumDescriptors = 10;  // 2 + 40, 일단 현재 한 캐릭당 4개 추가씩
+    srvHeapDesc.NumDescriptors = 10;  // 1번 height 2번 terrain 3 ~ 10 하나의 캐릭터
     srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 

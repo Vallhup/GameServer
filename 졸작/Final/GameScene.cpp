@@ -39,10 +39,10 @@ void GameScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 
 	strut = make_shared<GameObject>();
 	auto meshRenderer2 = strut->AddComponent<MeshRenderer>();
-	meshRenderer2->SetMesh(L"../FBXOutput/Strut Walking");
+	meshRenderer2->SetMesh(L"../FBXOutput/knight");
 	auto transform2 = strut->AddComponent<Transform>();
 	transform2->SetPosition(1.f, 0.f, 0.5f);
-	transform2->SetRotation(-1.57f, 0.f, 0.f);
+	transform2->SetRotation(0.f, 0.f, 0.f);
 	transform2->SetScale(0.01f, 0.01f, 0.01f);
 
 	OutputDebugStringA("Strut created!!\n");
