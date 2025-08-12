@@ -10,6 +10,10 @@ void Texture::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdLis
 
     const Image* img = image.GetImage(0, 0, 0);
 
+    // 디버깅 로그 추가
+    OutputDebugStringA(("Texture size: " + to_string(img->width) + "x" + to_string(img->height) + "\n").c_str());
+    OutputDebugStringA(("Texture memory: " + to_string(img->slicePitch) + " bytes\n").c_str());
+
     D3D12_RESOURCE_DESC textureDesc = {};
     textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
     textureDesc.Width = static_cast<UINT>(img->width);
@@ -33,6 +37,7 @@ void Texture::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdLis
     MASSERT(SUCCEEDED(hr), "Failed to create texture resource");
 
     UINT64 uploadBufferSize = GetRequiredIntermediateSize(texture.Get(), 0, 1);
+    OutputDebugStringA(("Upload buffer size: " + to_string(uploadBufferSize) + " bytes\n").c_str());
 
     CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
     CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
