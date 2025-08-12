@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <sstream>
 
-enum LogLevel : char
+enum class LogLevel : char
 {
 	Debug,
 	Info,

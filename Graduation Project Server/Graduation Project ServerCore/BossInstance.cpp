@@ -8,11 +8,7 @@ void BossInstance::Update(float deltaTime)
 
 void BossInstance::LoadStaticGameObject()
 {
-	// TEMP : 각 Instance에 맞는 Static Object Load
-
-	ObjectId tempId{ 0, Static };
-	auto temp = std::make_shared<GameObject>(tempId);
-	_objMng->AddObject(temp);
+	// TODO : 각 Instance에 맞는 Static Object Load
 }
 
 void BossInstance::Stop()

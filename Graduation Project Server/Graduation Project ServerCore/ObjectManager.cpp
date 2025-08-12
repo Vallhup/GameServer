@@ -10,7 +10,7 @@ ObjectId IObjectManager::GenerateObjectId(ObjectType type)
 void ObjectManager::AddObject(const std::shared_ptr<GameObject>& object)
 {
     std::unique_lock lock{ _mutex };
-    _objects.insert(std::make_pair(IObjectManager::GenerateObjectId(Static), object));
+    _objects.insert(std::make_pair(object->GetId(), object));
 }
 
 void ObjectManager::RemoveObject(ObjectId objectId)
