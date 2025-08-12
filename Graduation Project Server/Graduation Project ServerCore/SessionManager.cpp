@@ -29,5 +29,5 @@ void SessionManager::RemoveSession(int sessionId)
 
 void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& packet)
 {
-	//_gameCtx.GetGameLogic();
+	//_gameCtx.GetGameWorld().GetInstance(instanceId).GetCharacter(sessionId);
 }

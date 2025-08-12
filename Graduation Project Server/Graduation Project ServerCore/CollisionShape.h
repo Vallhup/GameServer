@@ -1,6 +1,6 @@
 #pragma once
 
-enum ShapeType : char { Box, Sphere, Cylinder };
+enum class ShapeType : char { Box, Sphere, Cylinder };
 
 class CollisionShape {
 public:
@@ -23,7 +23,7 @@ protected:
 class BoxShape : public CollisionShape {
 public:
 	BoxShape() = delete;
-	BoxShape(const vec3& offset, const vec3& halfSize) : CollisionShape(Box, offset), _halfSize(halfSize) {}
+	BoxShape(const vec3& offset, const vec3& halfSize) : CollisionShape(ShapeType::Box, offset), _halfSize(halfSize) {}
 	virtual ~BoxShape() = default;
 
 public:
@@ -39,7 +39,7 @@ private:
 class SphereShape : public CollisionShape {
 public:
 	SphereShape() = delete;
-	SphereShape(const vec3& offset, float radius) : CollisionShape(Sphere, offset), _radius(radius) {}
+	SphereShape(const vec3& offset, float radius) : CollisionShape(ShapeType::Sphere, offset), _radius(radius) {}
 	virtual ~SphereShape() = default;
 
 public:
@@ -56,7 +56,7 @@ class CylinderShape : public CollisionShape {
 public:
 	CylinderShape() = delete;
 	CylinderShape(const vec3& offset, float radius, float height, const vec3& direction)
-		: CollisionShape(Cylinder, offset), _radius(radius), _height(height), _direction(direction) {}
+		: CollisionShape(ShapeType::Cylinder, offset), _radius(radius), _height(height), _direction(direction) {}
 	virtual ~CylinderShape() = default;
 
 public:

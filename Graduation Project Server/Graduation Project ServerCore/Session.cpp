@@ -18,11 +18,11 @@ HANDLE Session::GetHandle() const
 
 void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 {
-	if (expOver->CheckOpType(Recv)) {
+	if (expOver->CheckOpType(OperationType::Recv)) {
 		ProcessRecv(numOfBytes);
 	}
 
-	else if (expOver->CheckOpType(Send)) {
+	else if (expOver->CheckOpType(OperationType::Send)) {
 		ProcessSend();
 	}
 }

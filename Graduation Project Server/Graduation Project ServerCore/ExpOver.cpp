@@ -11,13 +11,13 @@ bool ExpOver::CheckOpType(OperationType opType)
 	return _opType == opType;
 }
 
-AcceptOver::AcceptOver() : ExpOver(Accept)
+AcceptOver::AcceptOver() : ExpOver(OperationType::Accept)
 {
 	memset(_buffer, 0, sizeof(_buffer));
 	_socket = INVALID_SOCKET;
 }
 
-RecvOver::RecvOver() : ExpOver(Recv)
+RecvOver::RecvOver() : ExpOver(OperationType::Recv)
 {
 }
 
@@ -41,7 +41,7 @@ int RecvOver::SetBuffers()
 	return 1;
 }
 
-SendOver::SendOver() : ExpOver(Send)
+SendOver::SendOver() : ExpOver(OperationType::Send)
 {
 }
 

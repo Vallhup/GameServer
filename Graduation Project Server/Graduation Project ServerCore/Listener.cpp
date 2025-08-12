@@ -76,7 +76,7 @@ HANDLE Listener::GetHandle() const
 
 void Listener::Dispatch(ExpOver* expOver, int numOfBytes)
 {
-	if (expOver->CheckOpType(Accept)) {
+	if (expOver->CheckOpType(OperationType::Accept)) {
 		AcceptOver* acceptOver = static_cast<AcceptOver*>(expOver);
 		ProcessAccept(acceptOver);
 	}

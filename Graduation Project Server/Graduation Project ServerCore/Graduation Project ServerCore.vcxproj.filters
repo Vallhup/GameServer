@@ -117,7 +117,13 @@
     <ClCompile Include="TransformComponent.cpp">
       <Filter>Game\Component</Filter>
     </ClCompile>
-    <ClCompile Include="MovementComponent.cpp" />
+    <ClCompile Include="MovementComponent.cpp">
+      <Filter>Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="InputComponent.cpp">
+      <Filter>Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -207,6 +213,12 @@
     <ClInclude Include="TransformComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
-    <ClInclude Include="MovementComponent.h" />
+    <ClInclude Include="MovementComponent.h">
+      <Filter>Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="InputComponent.h">
+      <Filter>Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h" />
   </ItemGroup>
 </Project>

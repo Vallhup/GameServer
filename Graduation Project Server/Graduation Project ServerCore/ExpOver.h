@@ -1,6 +1,6 @@
 #pragma once
 
-enum OperationType : char
+enum class OperationType : char
 {
 	Accept,
 	Recv,

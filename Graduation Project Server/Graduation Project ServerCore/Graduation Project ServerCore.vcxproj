@@ -161,6 +161,8 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameWorld.h" />
     <ClInclude Include="IComponent.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="InputComponent.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="Listener.h" />
@@ -193,6 +195,8 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="IComponent.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="Instance.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="Listener.cpp" />

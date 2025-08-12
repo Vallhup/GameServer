@@ -45,6 +45,8 @@
 #include "SessionManager.h"
 #include "TimerManager.h"
 
+#include "Input.h"
+
 #include "ComponentHost.h"
 #include "IComponent.h"
 #include "TransformComponent.h"
