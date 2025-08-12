@@ -13,7 +13,7 @@ void Instance::RemoveSession(int sessionId)
 	_sessions.erase(sessionId);
 }
 
-void Instance::BroadCast(const std::vector<char>& packet, int exceptId = -1)
+void Instance::BroadCast(const std::vector<char>& packet, int exceptId)
 {
 	std::vector<Session*> sessions;
 	{
@@ -31,30 +31,12 @@ void Instance::BroadCast(const std::vector<char>& packet, int exceptId = -1)
 	}
 }
 
-void Instance::AddObject(const std::shared_ptr<DynamicGameObject>& obj)
+void Instance::AddObject(const std::shared_ptr<GameObject>& obj)
 {
-	_objMng->AddDynamicObject(obj);
+	_objMng->AddObject(obj);
 }
 
 void Instance::RemoveObject(const ObjectId& id)
 {
 	_objMng->RemoveObject(id);
-}
-
-void TownInstance::Update(float deltaTime)
-{
-	// TODO : Object Update
-}
-
-void TownInstance::LoadStaticGameObject()
-{
-	// TEMP : 각 Instance에 맞는 Static Object Load
-
-	auto temp = std::make_shared<StaticGameObject>();
-	_objMng->AddStaticObject(temp);
-}
-
-void TownInstance::Stop()
-{
-	// TODO : Resource 정리, 상위 Class (GameWorld or IGameContext)에 삭제 알림
 }

@@ -14,6 +14,5 @@ public:
 
 private:
 	mutable std::shared_mutex _mutex;
-	std::unordered_map<int, std::shared_ptr<Instance>> _instances;
+	std::unordered_map<int, std::shared_ptr<class Instance>> _instances;
 };
-

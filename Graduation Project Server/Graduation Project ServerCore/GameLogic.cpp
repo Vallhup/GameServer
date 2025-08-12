@@ -26,7 +26,7 @@ void GameLogic::OnPlayerAction(int sessionId, const std::vector<char>& packet)
 	}
 
 	else {
-		LOG_ERR("Unknown Packet Type");
+		LOG_ERR("Unknown Packet Type : %d", packetType);
 	}
 }
 
