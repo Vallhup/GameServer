@@ -88,6 +88,9 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -174,12 +177,21 @@
     <ClInclude Include="GameScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicPS.hlsli">
       <Filter>Shaders</Filter>
     </None>
     <None Include="BasicVS.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="animation.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="math.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

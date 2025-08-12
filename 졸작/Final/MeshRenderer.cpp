@@ -4,7 +4,6 @@
 #include "DX12Graphics.h"
 #include "Device.h"
 #include "CommandQueue.h"
-#include "UploadBuffer.h"
 #include "Shader.h"
 #include "RootSignature.h"
 #include "DescriptorHeap.h"
@@ -12,6 +11,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "Material.h"
+#include "Animator.h"
 
 UINT MeshRenderer::idCounter = 0;
 
@@ -31,10 +31,44 @@ void MeshRenderer::Render()
 {
     if (!visible || !vertexIndexBuffer) return;
     
+    // 1. Animator 컴포넌트 확인
+    auto animator = GetGameObject()->GetComponent<Animator>();
+    auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
+
+    // 2. 애니메이션이 있으면 Compute Shader 실행
+    if (animator) {
+        OutputDebugStringA(("Bone Count: " + to_string(animator->GetBoneCount()) + "\n").c_str());
+        OutputDebugStringA(("Current Frame: " + to_string(animator->GetCurrentFrame()) + "\n").c_str());
+        OutputDebugStringA(("Frame Ratio: " + to_string(animator->GetFrameRatio()) + "\n").c_str());
+
+        // AnimationConstants 설정
+        AnimationConstants animData = {};
+        animData.boneCount = animator->GetBoneCount();
+        animData.currentFrame = animator->GetCurrentFrame();
+        animData.nextFrame = animator->GetNextFrame();
+        animData.ratio = animator->GetFrameRatio();
+
+        // Compute Shader 실행
+        GET(DX12Graphics).GetAnimationCB()->CopyData(&animData, sizeof(AnimationConstants));
+
+        cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetComputePSO());
+        cmdList->SetComputeRootSignature(GET(DX12Graphics).GetRootSig()->Get());
+        cmdList->SetComputeRootConstantBufferView(2, GET(DX12Graphics).GetAnimationCB()->GetGPUVirtualAddress());
+
+        // BoneFrame, Offset 데이터 바인딩
+        cmdList->SetComputeRootShaderResourceView(6, animator->GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t10
+        cmdList->SetComputeRootShaderResourceView(7, animator->GetOffsetBuffer()->GetGPUVirtualAddress());     // t11
+
+        // Final 본 행렬 바인딩 (Compute Shader 출력)
+        cmdList->SetComputeRootUnorderedAccessView(8, animator->GetFinalBuffer()->GetGPUVirtualAddress());     // u0
+
+        UINT groupCount = (animData.boneCount + 255) / 256;  // 256으로 나눠서 올림
+        cmdList->Dispatch(groupCount, 1, 1);
+    }
+
     auto transform = GetGameObject()->GetComponent<Transform>();
     XMMATRIX world = transform->GetWorldMatrix();
     
-    auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
     cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
     cmdList->SetGraphicsRootSignature(GET(DX12Graphics).GetRootSig()->Get());
 
@@ -42,8 +76,12 @@ void MeshRenderer::Render()
     cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
     cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
-    cmdList->SetGraphicsRootDescriptorTable(2, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
-    cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetGroundTexture()->GetSRV());
+    cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
+    cmdList->SetGraphicsRootDescriptorTable(4, GET(DX12Graphics).GetGroundTexture()->GetSRV());
+
+    if (animator) {
+        cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());
+    }
 
     if (!materials.empty()) {
         // 다중 머티리얼 렌더링
@@ -67,7 +105,7 @@ void MeshRenderer::Render()
             cmdList->SetGraphicsRootConstantBufferView(1, 
                 GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
             
-            materials[i]->BindToShader(cmdList, 4);
+            materials[i]->BindToShader(cmdList, 5);
             vertexIndexBuffer->DrawIndexed(cmdList,
                 subMeshes[i].indexCount,
                 subMeshes[i].startIndex);
@@ -88,7 +126,7 @@ void MeshRenderer::Render()
         
         cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + offset);
         
-        material->BindToShader(cmdList, 4);
+        material->BindToShader(cmdList, 5);
         vertexIndexBuffer->Bind(cmdList);
         vertexIndexBuffer->Draw(cmdList);
     }
@@ -115,14 +153,14 @@ void MeshRenderer::RenderInstanced(UINT instanceCount, UploadBuffer* instanceBuf
 
     cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
     cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress());
-    cmdList->SetGraphicsRootShaderResourceView(5, instanceBuffer->GetGPUVirtualAddress());
+    cmdList->SetGraphicsRootShaderResourceView(9, instanceBuffer->GetGPUVirtualAddress());
 
-    cmdList->SetGraphicsRootDescriptorTable(2, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
-    cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetGroundTexture()->GetSRV());
+    cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
+    cmdList->SetGraphicsRootDescriptorTable(4, GET(DX12Graphics).GetGroundTexture()->GetSRV());
 
     if (material)
     {
-        material->BindToShader(cmdList, 4);
+        material->BindToShader(cmdList, 5);
     }
 
     vertexIndexBuffer->Bind(cmdList);
@@ -198,6 +236,19 @@ void MeshRenderer::SetMesh(const wstring& path)
                 mats[0],
                 GET(DX12Graphics).GetDescHeap()
             );
+        }
+
+        // 애니메이션 데이터 전달 추가
+        auto animator = GetGameObject()->GetComponent<Animator>();
+        if (animator) {
+            const auto& animations = importer.GetAnimations();
+            const auto& skeleton = importer.GetSkeleton();
+
+            if (!animations.empty()) {
+                animator->SetAnimationData(animations);
+                animator->SetSkeletonData(skeleton);
+                OutputDebugStringA("Animation data loaded!\n");
+            }
         }
 
 		OutputDebugStringA("FBX Mesh created for rendering!\n");

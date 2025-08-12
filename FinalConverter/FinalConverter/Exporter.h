@@ -77,6 +77,7 @@ private:
 
     // ÇïÆÛ ÇÔ¼öµé
     void ConvertFbxMatrixToFloat4x4(const FbxAMatrix& fbxMatrix, float matrix[16]);
+    FbxAMatrix ApplyReflectionMatrix(const FbxAMatrix& matrix);
     wstring GetRelativeTexturePath(const wstring& textureName);
     bool CopyTextureFile(const wstring& sourcePath, const wstring& destPath);
 };

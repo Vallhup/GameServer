@@ -3,8 +3,8 @@
 
 void Shader::Initialize(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
 {
-    CompileShader(vsPath, "VSMain", "vs_5_1", vertexshader);
-    CompileShader(psPath, "PSMain", "ps_5_1", pixelshader);
+    CompileShader(vsPath, "VSMain", "vs_5_1", vertexShader);
+    CompileShader(psPath, "PSMain", "ps_5_1", pixelShader);
 
     D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -19,8 +19,8 @@ void Shader::Initialize(ID3D12Device* device, ID3D12RootSignature* rootSig, cons
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
     psoDesc.pRootSignature = rootSig;
-    psoDesc.VS = { vertexshader->GetBufferPointer(), vertexshader->GetBufferSize() };
-    psoDesc.PS = { pixelshader->GetBufferPointer(), pixelshader->GetBufferSize() };
+    psoDesc.VS = { vertexShader->GetBufferPointer(), vertexShader->GetBufferSize() };
+    psoDesc.PS = { pixelShader->GetBufferPointer(), pixelShader->GetBufferSize() };
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -53,6 +53,18 @@ void Shader::Initialize(ID3D12Device* device, ID3D12RootSignature* rootSig, cons
     MASSERT(SUCCEEDED(hr), "Failed to create Transparent PSO");
 }
 
+void Shader::InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath)
+{
+    CompileShader(csPath, "CSMain", "cs_5_1", computeShader);
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC computePsoDesc = {};
+    computePsoDesc.pRootSignature = rootSig;
+    computePsoDesc.CS = { computeShader->GetBufferPointer(), computeShader->GetBufferSize() };
+
+    HRESULT hr = device->CreateComputePipelineState(&computePsoDesc, IID_PPV_ARGS(&computePSO));
+    MASSERT(SUCCEEDED(hr), "Failed to create Compute PSO");
+}
+
 ID3D12PipelineState* Shader::GetOpaquePSO() const
 {
     return opaquePSO.Get();
@@ -61,6 +73,11 @@ ID3D12PipelineState* Shader::GetOpaquePSO() const
 ID3D12PipelineState* Shader::GetTransparentPSO() const
 {
     return transparentPSO.Get();
+}
+
+ID3D12PipelineState* Shader::GetComputePSO() const
+{
+    return computePSO.Get();
 }
 
 void Shader::CompileShader(const wstring& path, const string& entry, const string& target, ComPtr<ID3DBlob>& blobOut)

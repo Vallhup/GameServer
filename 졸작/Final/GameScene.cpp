@@ -7,6 +7,7 @@
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "DX12Graphics.h"
+#include "Animator.h"
 
 GameScene::~GameScene() = default;
 
@@ -37,6 +38,7 @@ void GameScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 		Dragon = make_shared<GameObject>();
 		auto meshRenderer = Dragon->AddComponent<MeshRenderer>();
 		auto transform = Dragon->AddComponent<Transform>();
+		auto animator = Dragon->AddComponent<Animator>();
 		meshRenderer->SetMesh(L"../FBXOutput/Dragon");
 		transform->SetPosition(0.f, 0.f, 0.5f);
 		transform->SetRotation(0.f, 0.f, 0.f);

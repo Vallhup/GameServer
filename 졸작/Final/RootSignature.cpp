@@ -3,24 +3,29 @@
 
 void RootSignature::Initialize(ID3D12Device* device)
 {
-	CD3DX12_ROOT_PARAMETER rootParams[6];
+	CD3DX12_ROOT_PARAMETER rootParams[11];
 
 	rootParams[0].InitAsConstantBufferView(0);	// register(b0)
 	rootParams[1].InitAsConstantBufferView(1);	// register(b1)
+	rootParams[2].InitAsConstantBufferView(2);	// register(b2)
 
 	CD3DX12_DESCRIPTOR_RANGE heightRange;
 	heightRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);		// register(t0)
-	rootParams[2].InitAsDescriptorTable(1, &heightRange, D3D12_SHADER_VISIBILITY_VERTEX);		// VertexShader에서만 사용
+	rootParams[3].InitAsDescriptorTable(1, &heightRange, D3D12_SHADER_VISIBILITY_VERTEX);		// VertexShader에서만 사용
 
 	CD3DX12_DESCRIPTOR_RANGE terrainRange;
 	terrainRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);		// register(t1)
-	rootParams[3].InitAsDescriptorTable(1, &terrainRange, D3D12_SHADER_VISIBILITY_PIXEL);		// PixelShader에서만 사용
+	rootParams[4].InitAsDescriptorTable(1, &terrainRange, D3D12_SHADER_VISIBILITY_PIXEL);		// PixelShader에서만 사용
 
 	CD3DX12_DESCRIPTOR_RANGE materialRange;
 	materialRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 2);		// t2~t9까지 8개
-	rootParams[4].InitAsDescriptorTable(1, &materialRange, D3D12_SHADER_VISIBILITY_PIXEL);
+	rootParams[5].InitAsDescriptorTable(1, &materialRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-	rootParams[5].InitAsShaderResourceView(0, 1);		// register(t0) & space1
+	rootParams[6].InitAsShaderResourceView(10);			// register(t10)
+	rootParams[7].InitAsShaderResourceView(11);			// register(t11)
+	rootParams[8].InitAsUnorderedAccessView(0);			// register(u0)
+	rootParams[9].InitAsShaderResourceView(0, 1);		// register(t0) & space1
+	rootParams[10].InitAsShaderResourceView(12);
 
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc[3];
 	

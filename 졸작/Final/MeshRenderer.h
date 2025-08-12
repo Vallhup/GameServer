@@ -1,10 +1,10 @@
 #pragma once
 #include "Component.h"
 #include "Importer.h"
+#include "UploadBuffer.h"
 
 class VertexIndexBuffer;
 class Material;
-class UploadBuffer;
 
 class MeshRenderer : public Component
 {

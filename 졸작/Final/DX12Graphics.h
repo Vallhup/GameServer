@@ -20,6 +20,14 @@ struct ObjectConstants
     int hasAlpha;
 };
 
+struct AnimationConstants
+{
+    int boneCount;
+    int currentFrame;
+    int nextFrame;
+    float ratio;
+};
+
 class DX12Graphics
 {
 public:
@@ -38,6 +46,7 @@ public:
     Shader* GetShader() const;
     UploadBuffer* GetFrameCB() const;
     UploadBuffer* GetSceneCB() const;
+    UploadBuffer* GetAnimationCB() const;
     DescriptorHeap* GetDescHeap() const;
     Texture* GetGroundTexture() const;
     Texture* GetHeightMapTexture() const;
@@ -50,6 +59,7 @@ private:
     unique_ptr<Shader> shader;
     unique_ptr<UploadBuffer> frameCB;
     unique_ptr<UploadBuffer> sceneCB;
+    unique_ptr<UploadBuffer> animationCB;
     unique_ptr<DepthStencilBuffer> depthstencilbuffer;
     unique_ptr<DescriptorHeap> descriptorheap;
     unique_ptr<Texture> groundtexture;

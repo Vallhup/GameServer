@@ -142,13 +142,17 @@ bool Exporter::ExportAnimation(const FbxAnimClipInfo& animClip, const wstring& p
 
     ofs.write(reinterpret_cast<const char*>(&header), sizeof(header));
 
+    // ← 여기서 키프레임 처리 시 reflection 적용!
     for (const auto& boneKeyFrames : animClip.keyFrames) {
         for (const auto& keyFrame : boneKeyFrames) {
             float time = static_cast<float>(keyFrame.time);
             ofs.write(reinterpret_cast<const char*>(&time), sizeof(time));
 
+            // Reflection 변환 적용 (루키스 방식)
+            FbxAMatrix reflectedMatrix = ApplyReflectionMatrix(keyFrame.matTransform);
+            
             float matrix[16];
-            ConvertFbxMatrixToFloat4x4(keyFrame.matTransform, matrix);
+            ConvertFbxMatrixToFloat4x4(reflectedMatrix, matrix);
             ofs.write(reinterpret_cast<const char*>(matrix), sizeof(matrix));
         }
     }
@@ -247,6 +251,24 @@ void Exporter::ConvertFbxMatrixToFloat4x4(const FbxAMatrix& fbxMatrix, float mat
             matrix[i * 4 + j] = static_cast<float>(fbxMatrix.mData[i][j]);
         }
     }
+}
+
+FbxAMatrix Exporter::ApplyReflectionMatrix(const FbxAMatrix& matrix)
+{
+    // 루키스와 동일한 reflection 행렬 (Y-Z 축 스왑)
+    FbxVector4 v1 = { 1, 0, 0, 0 };
+    FbxVector4 v2 = { 0, 0, 1, 0 };  // Y-Z 스왑
+    FbxVector4 v3 = { 0, 1, 0, 0 };
+    FbxVector4 v4 = { 0, 0, 0, 1 };
+
+    FbxAMatrix matReflect;
+    matReflect.mData[0] = v1;
+    matReflect.mData[1] = v2;
+    matReflect.mData[2] = v3;
+    matReflect.mData[3] = v4;
+
+    // reflection * matrix * reflection 적용 (루키스 방식)
+    return matReflect * matrix * matReflect;
 }
 
 wstring Exporter::GetRelativeTexturePath(const wstring& textureName)
