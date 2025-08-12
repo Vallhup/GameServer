@@ -10,7 +10,7 @@ public:
     void LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
         const MaterialData& matData, DescriptorHeap* descHeap);
 
-    void BindToShader(ID3D12GraphicsCommandList* cmdList, UINT startSlot = 2);
+    void BindToShader(ID3D12GraphicsCommandList* cmdList, UINT rootParamIndex);
 
     const MaterialData& GetMaterialData() const { return materialData; }
 

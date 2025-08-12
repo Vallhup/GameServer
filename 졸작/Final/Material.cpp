@@ -50,13 +50,13 @@ void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandL
     nextStartIndex = baseSlot + 8;
 }
 
-void Material::BindToShader(ID3D12GraphicsCommandList* cmdList, UINT startSlot)
+void Material::BindToShader(ID3D12GraphicsCommandList* cmdList, UINT rootParamIndex)
 {
     if (!textures.empty()) {
         UINT firstIndex = descriptorIndices[0];
         //OutputDebugStringA(("Binding texture at descriptor index: " + to_string(firstIndex) + "\n").c_str());
         D3D12_GPU_DESCRIPTOR_HANDLE handle = GET(DX12Graphics).GetDescHeap()->GetGPUHandle(firstIndex);
-        cmdList->SetGraphicsRootDescriptorTable(4, handle);
+        cmdList->SetGraphicsRootDescriptorTable(rootParamIndex, handle);
     }
 }
 
