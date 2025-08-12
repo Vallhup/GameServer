@@ -45,14 +45,26 @@
 #include "SessionManager.h"
 #include "TimerManager.h"
 
+#include "ComponentHost.h"
+#include "IComponent.h"
+#include "TransformComponent.h"
+#include "MovementComponent.h"
+#include "InputComponent.h"
+
 #include "GameObject.h"
 #include "Character.h"
 #include "Monster.h"
 
 #include "GameWorld.h"
 #include "GameLogic.h"
-#include "Instance.h"
 #include "ObjectManager.h"
+
+#include "Instance.h"
+#include "TownInstance.h"
+#include "MainInstance.h"
+#include "BossInstance.h"
+#include "PvpInstance.h"
+
 
 #include "UserRepository.h"
 

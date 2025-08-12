@@ -15,14 +15,14 @@ struct vec3 {
 		return vec3{ x - other.x, y - other.y, z - other.z };
 	}
 
-	vec3 operator*(float other) const
+	vec3 operator*(float val) const
 	{
-		return vec3{ x * other, y * other, z * other };
+		return vec3{ x * val, y * val, z * val };
 	}
 
-	vec3 operator/(float other) const
+	vec3 operator/(float val) const
 	{
-		return vec3{ x / other, y / other, z / other };
+		return vec3{ x / val, y / val, z / val };
 	}
 
 	vec3& operator+=(const vec3& other)
@@ -32,6 +32,11 @@ struct vec3 {
 		z += other.z;
 
 		return *this;
+	}
+
+	float DistanceSq() const
+	{
+		return x * x + y * y + z * z;
 	}
 
 	float DistanceSq(const vec3& other) const

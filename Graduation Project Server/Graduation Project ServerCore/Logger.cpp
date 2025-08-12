@@ -30,8 +30,8 @@ void Logger::Log(LogLevel level, const char* file, int line, const char* fmt, ..
 	const char* levelString = "";
 	switch (level) {
 	case LogLevel::Debug: levelString = "DBG"; break;
-	case LogLevel::Info: levelString = "INF"; break;
-	case LogLevel::Warn: levelString = "WRN"; break;
+	case LogLevel::Info:  levelString = "INF"; break;
+	case LogLevel::Warn:  levelString = "WRN"; break;
 	case LogLevel::Error: levelString = "ERR"; break;
 	}
 

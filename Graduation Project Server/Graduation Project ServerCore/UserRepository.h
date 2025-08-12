@@ -11,6 +11,7 @@
 
 struct UserData {
 	// TEMP : DB Load or Save할 때 사용할 구조체
+	//        DB Table에 따라 늘어날 예정
 };
 
 class IUserRepository {

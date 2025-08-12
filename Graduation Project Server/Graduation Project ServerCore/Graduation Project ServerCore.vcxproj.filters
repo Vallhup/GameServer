@@ -28,6 +28,12 @@
     <Filter Include="Database">
       <UniqueIdentifier>{f04d5712-76ca-41d9-aad5-1a00e3456d1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Instance">
+      <UniqueIdentifier>{fb67c1ac-35ae-47c7-94d5-d29dd381b15b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Component">
+      <UniqueIdentifier>{4c1ff901-2738-4538-bacb-8514d8cc46ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -75,9 +81,6 @@
     <ClCompile Include="GameWorld.cpp">
       <Filter>Game\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Instance.cpp">
-      <Filter>Game\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Game\Object</Filter>
     </ClCompile>
@@ -90,6 +93,31 @@
     <ClCompile Include="UserRepository.cpp">
       <Filter>Database</Filter>
     </ClCompile>
+    <ClCompile Include="Instance.cpp">
+      <Filter>Game\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="TownInstance.cpp">
+      <Filter>Game\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="MainInstance.cpp">
+      <Filter>Game\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="BossInstance.cpp">
+      <Filter>Game\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="PvpInstance.cpp">
+      <Filter>Game\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="IComponent.cpp">
+      <Filter>Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentHost.cpp">
+      <Filter>Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformComponent.cpp">
+      <Filter>Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -143,9 +171,6 @@
     <ClInclude Include="GameWorld.h">
       <Filter>Game\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Instance.h">
-      <Filter>Game\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Game\Object</Filter>
     </ClInclude>
@@ -158,5 +183,30 @@
     <ClInclude Include="UserRepository.h">
       <Filter>Database</Filter>
     </ClInclude>
+    <ClInclude Include="Instance.h">
+      <Filter>Game\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="TownInstance.h">
+      <Filter>Game\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="MainInstance.h">
+      <Filter>Game\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="BossInstance.h">
+      <Filter>Game\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="PvpInstance.h">
+      <Filter>Game\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="IComponent.h">
+      <Filter>Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentHost.h">
+      <Filter>Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementComponent.h" />
   </ItemGroup>
 </Project>
