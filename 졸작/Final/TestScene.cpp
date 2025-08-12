@@ -8,6 +8,7 @@
 #include "SceneManager.h"
 #include "UploadBuffer.h"
 #include "Material.h"
+#include "DX12Graphics.h"
 
 TestScene::~TestScene() = default;
 
@@ -59,6 +60,13 @@ void TestScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 	instanceBuffer = make_unique<UploadBuffer>();
 	instanceBuffer->Initialize(device, sizeof(XMMATRIX) * INSTANCE_COUNT);
 	instanceBuffer->CopyData(knightMatrix.data(), sizeof(XMMATRIX) * INSTANCE_COUNT);
+
+	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
+	GET(DX12Graphics).FlushCommandQueue();  
+	GET(DX12Graphics).ResetCommandQueue();
+	
+	meshRenderer->ReleaseUploadBuffers();
+	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
 }
 
 void TestScene::UpdateScene(const float deltaTime)

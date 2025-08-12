@@ -16,6 +16,9 @@ public:
 	void Render();
 	void RenderInstanced(UINT instanceCount, UploadBuffer* instancedBuffer);
 	void SetMesh(const wstring& path);
+
+	void ReleaseUploadBuffers();
+
 private:
 	unique_ptr<VertexIndexBuffer> vertexIndexBuffer;  
 	shared_ptr<Material> material;				// ¥‹¿œ material

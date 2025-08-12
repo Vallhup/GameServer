@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
+#include "DX12Graphics.h"
 
 GameScene::~GameScene() = default;
 
@@ -57,6 +58,17 @@ void GameScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 
 		OutputDebugStringA("Strut created!!\n");
 	}
+
+	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
+	GET(DX12Graphics).FlushCommandQueue();  
+	GET(DX12Graphics).ResetCommandQueue();
+	
+	for (const auto& obj : gameObjects)
+	{
+		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+			meshRenderer->ReleaseUploadBuffers();
+	}
+	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
 }
 
 void GameScene::UpdateScene(const float deltaTime)

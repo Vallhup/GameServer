@@ -12,6 +12,8 @@ public:
 
     void BindToShader(ID3D12GraphicsCommandList* cmdList, UINT rootParamIndex);
 
+    void ReleaseUploadBuffers(); 
+
     const MaterialData& GetMaterialData() const { return materialData; }
 
     static void ResetStartIndex();

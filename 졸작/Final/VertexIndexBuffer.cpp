@@ -107,3 +107,9 @@ void VertexIndexBuffer::DrawIndexed(ID3D12GraphicsCommandList* cmdList, UINT ind
 {
     cmdList->DrawIndexedInstanced(indexCount, 1, startIndex, 0, 0);
 }
+
+void VertexIndexBuffer::ReleaseUploadBuffers()
+{
+    vertexuploadbuffer.Reset(); 
+    indexuploadbuffer.Reset();
+}

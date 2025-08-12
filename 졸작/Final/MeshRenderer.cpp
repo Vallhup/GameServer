@@ -205,3 +205,16 @@ void MeshRenderer::SetMesh(const wstring& path)
 	else
 		OutputDebugStringA("Cannot create FBX Mesh for rendering!\n");
 }
+
+void MeshRenderer::ReleaseUploadBuffers()
+{
+    if (vertexIndexBuffer) {
+        vertexIndexBuffer->ReleaseUploadBuffers();
+    }
+    if (material) {
+        material->ReleaseUploadBuffers();
+    }
+    for (auto& mat : materials) {
+        mat->ReleaseUploadBuffers();
+    }
+}

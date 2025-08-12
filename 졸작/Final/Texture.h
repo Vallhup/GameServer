@@ -11,6 +11,7 @@ public:
 
     ID3D12Resource* GetTexture() const { return texture.Get(); }
     D3D12_GPU_DESCRIPTOR_HANDLE GetSRV() const { return srvGpuHandle; }
+    void ReleaseUploadBuffer() { uploadBuffer.Reset(); }
 
 private:
     ComPtr<ID3D12Resource> texture;

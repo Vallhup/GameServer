@@ -60,6 +60,13 @@ void Material::BindToShader(ID3D12GraphicsCommandList* cmdList, UINT rootParamIn
     }
 }
 
+void Material::ReleaseUploadBuffers()
+{
+    for (auto& texture : textures) {
+        texture->ReleaseUploadBuffer();
+    }
+}
+
 void Material::ResetStartIndex()
 {
     nextStartIndex = 2;

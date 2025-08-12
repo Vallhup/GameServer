@@ -9,6 +9,7 @@ public:
     void Draw(ID3D12GraphicsCommandList* cmdList);
     void DrawInstanced(ID3D12GraphicsCommandList* cmdList, UINT instanceCount);
     void DrawIndexed(ID3D12GraphicsCommandList* cmdList, UINT indexCount, UINT startIndex);
+    void ReleaseUploadBuffers();
 
 private:
     ComPtr<ID3D12Resource> vertexbuffer;
