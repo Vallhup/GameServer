@@ -43,11 +43,12 @@
 #include "Session.h"
 
 #include "SessionManager.h"
-#include "TimerManager.h"
+#include "EventManager.h"
+
+#include "TickScheduler.h"
 
 #include "Input.h"
 
-#include "ComponentHost.h"
 #include "IComponent.h"
 #include "TransformComponent.h"
 #include "MovementComponent.h"

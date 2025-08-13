@@ -19,7 +19,7 @@ constexpr uint32_t Button(InputButton button)
 template<InputButton... Btns>
 constexpr uint32_t Mask()
 {
-	return (0u | Button(Btns) | ...);
+	return (0u | ... | Button(Btns));
 }
 
 constexpr uint32_t EVENT_MASK = Mask<InputButton::Attack, InputButton::Parry>();

@@ -1,13 +1,14 @@
 #include "pch.h"
 #include "MovementComponent.h"
+#include "TickScheduler.h"
 
-MovementComponent::MovementComponent(GameObject& owner, IGameContext& gameCtx) : IComponent(owner, gameCtx) 
+MovementComponent::MovementComponent(GameObject& owner, Instance& instance) : IComponent(owner, instance)
 {
 	_velocity = { 0.0f, 0.0f, 0.0f };
 	_maxSpeed = 0.0f;
 }
 
-void MovementComponent::Update(float deltaTime)
+void MovementComponent::Tick(float deltaTime)
 {
 	if (auto* trComp = _owner.GetComponent<TransformComponent>()) {
 		ClampSpeed();

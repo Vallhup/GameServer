@@ -6,18 +6,19 @@
 //
 // Python은 의사결정만 담당하도록
 // 실제 FSM or BT는 CPP에서 유지
-//
-// 
-//
+
 
 class AIComponent : public IComponent {
 public:
 	AIComponent() = delete;
-	AIComponent(GameObject& owner, IGameContext& gameCtx) : IComponent(owner, gameCtx) {}
+	AIComponent(GameObject& owner, Instance& instance) : IComponent(owner, instance) {}
 	virtual ~AIComponent() = default;
 
-public:
-	virtual void Update(float deltaTime) override;
+private:
+	virtual void OnRegister() override;
+	virtual void OnDeregister() override;
+	virtual void OnActivate() override;
+	virtual void OnDeactivate() override;
 
 private:
 };

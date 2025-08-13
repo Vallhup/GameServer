@@ -1,5 +1,7 @@
 #pragma once
 
+class TickScheduler;
+
 class Instance {
 public:
 	Instance() = delete;
@@ -7,10 +9,11 @@ public:
 	virtual ~Instance() = default;
 
 public:
+	virtual void Start() = 0;
 	virtual void Update(float deltaTime) = 0;
 	virtual void Stop() = 0;
 
-private:
+protected:
 	virtual void LoadStaticGameObject() = 0;
 
 public:
@@ -22,7 +25,8 @@ public:
 	void AddObject(const std::shared_ptr<class GameObject>& obj);
 	void RemoveObject(const ObjectId& id);
 
-	bool GetId() const { return _id; }
+	int GetId() const { return _id; }
+	TickScheduler& GetScheduler() const { return _scheduler; }
 	bool IsActive() const { return _isActive.load(); }
 
 protected:
@@ -30,6 +34,7 @@ protected:
 	std::atomic<bool> _isActive;
 
 	IGameContext& _gameCtx;
+	TickScheduler& _scheduler;
 
 	std::unique_ptr<class IObjectManager> _objMng;
 

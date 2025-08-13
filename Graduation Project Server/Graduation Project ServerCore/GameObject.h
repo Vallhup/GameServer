@@ -1,5 +1,7 @@
 #pragma once
 
+#include <typeindex>
+
 enum class ObjectType : char { Static, Dynamic };
 
 struct ObjectId {
@@ -28,7 +30,7 @@ struct ObjectId {
 
 namespace std {
 	template<>
-	struct std::hash<ObjectId> {
+	struct hash<ObjectId> {
 		using UnderType = std::underlying_type_t<ObjectType>;
 		size_t operator()(const ObjectId& id) const {
 			return std::hash<int>{}(id.value) ^ 
@@ -37,15 +39,74 @@ namespace std {
 	};
 }
 
-class GameObject : public ComponentHost {
+class GameObject {
 public:
 	GameObject() = delete;
-	GameObject(ObjectId id) : _id(id) {}
-	virtual ~GameObject() = default;
+	GameObject(ObjectId id, Instance& instance) : _id(id), _instance(instance) {}
+	virtual ~GameObject();
+
+public:
+	template<typename T, typename... Args>
+	T* AddComponent(Args&&... args)
+	{
+		if (GetComponent<T>()) {
+			return nullptr;
+		}
+
+		auto component = std::make_unique<T>(*this, _instance, std::forward<Args>(args)...);
+		T* raw = component.get();
+
+		_types[std::type_index(typeid(T))] = raw;
+		_components.push_back(std::move(component));
+
+		raw->Register();
+		return raw;
+	}
+
+	template<typename T>
+	bool RemoveComponent()
+	{
+		if (not Getcomponent<T>()) {
+			return false;
+		}
+
+		auto it = _types.find(std::type_index(typeid(T)));
+		if (it != _types.end()) {
+			auto* component = it->second;
+
+			for (auto& uniqeCmp : _components) {
+				if (component == uniqeCmp.get()) {
+					component->Deregister();
+
+					_components.erase(uniqeCmp);
+					_types.erase(it);
+
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	template<typename T>
+	T* GetComponent() const
+	{
+		auto it = _types.find(std::type_index(typeid(T)));
+		if (it != _types.end()) {
+			return static_cast<T*>(it->second);
+		}
+
+		return nullptr;
+	}
 
 public:
 	const ObjectId& GetId() const { return _id; }
 
 protected:
 	ObjectId _id;
+	Instance& _instance;
+
+	std::vector<std::unique_ptr<IComponent>> _components;
+	std::unordered_map<std::type_index, IComponent*> _types;
 };

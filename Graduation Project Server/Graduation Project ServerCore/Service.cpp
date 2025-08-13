@@ -7,7 +7,7 @@ Service::Service()
 
 	_iocpCore = std::make_unique<IocpCore>();
 
-	_timerMng = std::make_unique<TimerManager>();
+	_eventMng = std::make_unique<EventManager>();
 
 	_sessMng = std::make_unique<SessionManager>(*this);
 	_gameLogic = std::make_unique<GameLogic>(*this);
@@ -45,8 +45,8 @@ bool Service::Start()
 			return false;
 		}
 
-		if (not _timerMng->Start()) {
-			LOG_ERR("TimerManager already Start");
+		if (not _eventMng->Start()) {
+			LOG_ERR("EventManager already Start");
 			return false;
 		}
 
@@ -86,7 +86,7 @@ void Service::Stop()
 	bool expected{ true };
 	if (_running.compare_exchange_strong(expected, false)) {
 		_listener->Stop();
-		_timerMng->Stop();
+		_eventMng->Stop();
 
 		for (size_t i = 0; i < _workers.size(); ++i) {
 			PostQueuedCompletionStatus(_iocpCore->GetHandle(), 0, 0, nullptr);

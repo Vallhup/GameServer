@@ -75,9 +75,6 @@
     <ClCompile Include="ObjectManager.cpp">
       <Filter>Game\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="TimerManager.cpp">
-      <Filter>Core\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="GameWorld.cpp">
       <Filter>Game\Manager</Filter>
     </ClCompile>
@@ -111,9 +108,6 @@
     <ClCompile Include="IComponent.cpp">
       <Filter>Game\Component</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentHost.cpp">
-      <Filter>Game\Component</Filter>
-    </ClCompile>
     <ClCompile Include="TransformComponent.cpp">
       <Filter>Game\Component</Filter>
     </ClCompile>
@@ -124,6 +118,15 @@
       <Filter>Game\Component</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="AIComponent.cpp">
+      <Filter>Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>Game\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="TickScheduler.cpp">
+      <Filter>Game\Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -171,9 +174,6 @@
     <ClInclude Include="ObjectManager.h">
       <Filter>Game\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="TimerManager.h">
-      <Filter>Core\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="GameWorld.h">
       <Filter>Game\Manager</Filter>
     </ClInclude>
@@ -207,9 +207,6 @@
     <ClInclude Include="IComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentHost.h">
-      <Filter>Game\Component</Filter>
-    </ClInclude>
     <ClInclude Include="TransformComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
@@ -220,5 +217,14 @@
       <Filter>Game\Component</Filter>
     </ClInclude>
     <ClInclude Include="Input.h" />
+    <ClInclude Include="AIComponent.h">
+      <Filter>Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>Game\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="TickScheduler.h">
+      <Filter>Game\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

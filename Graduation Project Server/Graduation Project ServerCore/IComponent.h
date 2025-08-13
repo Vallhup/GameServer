@@ -2,23 +2,44 @@
 
 class GameObject;
 class IGameContext;
+class Instance;
 
 class IComponent {
 public:
 	IComponent() = delete;
-	IComponent(GameObject& owner, IGameContext& gameCtx) 
-		: _owner(owner), _gameCtx(gameCtx) { _version = 0; }
+	IComponent(GameObject& owner, Instance& instance) 
+		: _owner(owner), _instance(instance) { _version = 0; _enable = false; }
 	virtual ~IComponent() = default;
 
 public:
-	virtual void Update(float deltaTime) = 0;
+	void Register() { OnRegister(); }
+	void Deregister() { OnDeregister(); }
+
+protected:
+	virtual void OnRegister() = 0;
+	virtual void OnDeregister() = 0;
+	virtual void OnActivate() = 0;
+	virtual void OnDeactivate() = 0;
 
 public:
-	uint64_t Version() const { return _version; }
+	uint64_t Version() const { return _version.load(); }
+	bool Enable() const { return _enable.load(); }
+
+	void SetEnable(bool e);
 
 protected:
 	GameObject& _owner;
-	IGameContext& _gameCtx;
+	Instance& _instance;
 
-	uint64_t _version;
+	std::atomic<bool> _enable;
+	std::atomic<uint64_t> _version;
+};
+
+class ITickable {
+public:
+	virtual ~ITickable() = default;
+	
+public:
+	virtual void Tick(float deltaTime) = 0;
+	virtual bool TickEnable() = 0;
 };

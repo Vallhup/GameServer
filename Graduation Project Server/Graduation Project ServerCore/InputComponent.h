@@ -1,20 +1,20 @@
 #pragma once
 
-// 포기
-// 내 능력에 비해 너무 많은 걸 건드려버렸다
-
 class InputComponent : public IComponent {
 public:
 	InputComponent() = delete;
-	InputComponent(GameObject& owner, IGameContext& gameCtx) : IComponent(owner, gameCtx) {}
+	InputComponent(GameObject& owner, Instance& instance) : IComponent(owner, instance) {}
 	virtual ~InputComponent() = default;
-
-public:
-	virtual void Update(float) override;
 
 public:
 	void EnqueueCommand(const InputStruct::InputCommand& cmd);
 	bool DequeueIntent(InputStruct::IntentEvent& out);
+
+private:
+	virtual void OnRegister() override;
+	virtual void OnDeregister() override;
+	virtual void OnActivate() override;
+	virtual void OnDeactivate() override;
 
 private:
 	concurrency::concurrent_queue<InputStruct::InputCommand> _commandQueue;
