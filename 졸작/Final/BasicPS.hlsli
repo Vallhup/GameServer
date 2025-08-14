@@ -3,7 +3,6 @@ cbuffer ObjectCB : register(b1)
 {
     matrix world;
     int useTexture;
-    float heightScale;
     int useInstancing;
     int hasAlpha;
 };
@@ -19,34 +18,32 @@ struct PS_IN
     float4 color : COLOR;
 };
 
-Texture2D tex : register(t1);
-Texture2D baseColorTex : register(t2);
-Texture2D normalTex : register(t3);
-Texture2D roughnessTex : register(t4);
-Texture2D metallicTex : register(t5);
-Texture2D heightTex : register(t6);
-Texture2D alphaTex : register(t7);
-Texture2D emissionTex : register(t8);
-Texture2D aoTex : register(t9);
+Texture2D baseColorTex : register(t0);
+Texture2D normalTex : register(t1);
+Texture2D roughnessTex : register(t2);
+Texture2D metallicTex : register(t3);
+Texture2D heightTex : register(t4);
+Texture2D alphaTex : register(t5);
+Texture2D emissionTex : register(t6);
+Texture2D aoTex : register(t7);
 
-SamplerState sampler1 : register(s1);
-SamplerState sampler2 : register(s2);
+SamplerState textureSampler : register(s0);
 
 float4 PSMain(PS_IN input) : SV_Target
 {
     if (useTexture)
     {
-        float4 baseColor = baseColorTex.Sample(sampler2, input.uv);
-        float3 normalMap = normalTex.Sample(sampler2, input.uv).rgb;
+        float4 baseColor = baseColorTex.Sample(textureSampler, input.uv);
+        float3 normalMap = normalTex.Sample(textureSampler, input.uv).rgb;
         normalMap = (normalMap - 0.5) * 2.0;
-        float roughness = roughnessTex.Sample(sampler2, input.uv).r;
-        float metallic = metallicTex.Sample(sampler2, input.uv).r;
+        float roughness = roughnessTex.Sample(textureSampler, input.uv).r;
+        float metallic = metallicTex.Sample(textureSampler, input.uv).r;
         
         // Alpha 처리 - 기본값 1.0
         float alpha = 1.0;
         // Alpha 텍스처가 유효한 경우만 샘플링
         // (실제로는 항상 샘플링되지만 빈 텍스처는 1.0 반환하도록 설정)
-        alpha = alphaTex.Sample(sampler2, input.uv).a;
+        alpha = alphaTex.Sample(textureSampler, input.uv).a;
         
         // 간단한 라이팅
         float3 lightDir = normalize(float3(0, 0, 1));

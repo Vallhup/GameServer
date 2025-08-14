@@ -17,8 +17,8 @@ struct AnimFrameParams
     float4 translation;
 };
 
-StructuredBuffer<AnimFrameParams> g_bone_frame : register(t10);
-StructuredBuffer<matrix> g_offset : register(t11);
+StructuredBuffer<AnimFrameParams> g_bone_frame : register(t8);
+StructuredBuffer<matrix> g_offset : register(t9);
 RWStructuredBuffer<matrix> g_final : register(u0);
 
 // ComputeAnimation

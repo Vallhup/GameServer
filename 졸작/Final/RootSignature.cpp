@@ -3,55 +3,32 @@
 
 void RootSignature::Initialize(ID3D12Device* device)
 {
-	CD3DX12_ROOT_PARAMETER rootParams[11];
+	CD3DX12_ROOT_PARAMETER rootParams[9];
 
-	rootParams[0].InitAsConstantBufferView(0);	// register(b0)
-	rootParams[1].InitAsConstantBufferView(1);	// register(b1)
-	rootParams[2].InitAsConstantBufferView(2);	// register(b2)
-
-	CD3DX12_DESCRIPTOR_RANGE heightRange;
-	heightRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);		// register(t0)
-	rootParams[3].InitAsDescriptorTable(1, &heightRange, D3D12_SHADER_VISIBILITY_VERTEX);		// VertexShader에서만 사용
-
-	CD3DX12_DESCRIPTOR_RANGE terrainRange;
-	terrainRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);		// register(t1)
-	rootParams[4].InitAsDescriptorTable(1, &terrainRange, D3D12_SHADER_VISIBILITY_PIXEL);		// PixelShader에서만 사용
+	rootParams[0].InitAsConstantBufferView(0);	// register(b0) - view & projection Constant BUFF
+	rootParams[1].InitAsConstantBufferView(1);	// register(b1) - object Constant BUFF
+	rootParams[2].InitAsConstantBufferView(2);	// register(b2) - animationparams Constant BUFF
 
 	CD3DX12_DESCRIPTOR_RANGE materialRange;
-	materialRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 2);		// t2~t9까지 8개
-	rootParams[5].InitAsDescriptorTable(1, &materialRange, D3D12_SHADER_VISIBILITY_PIXEL);
+	materialRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 0);		// register(t0~t7) - material textures
+	rootParams[3].InitAsDescriptorTable(1, &materialRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-	rootParams[6].InitAsShaderResourceView(10);			// register(t10)
-	rootParams[7].InitAsShaderResourceView(11);			// register(t11)
-	rootParams[8].InitAsUnorderedAccessView(0);			// register(u0)
-	rootParams[9].InitAsShaderResourceView(0, 1);		// register(t0) & space1
-	rootParams[10].InitAsShaderResourceView(12);
+	rootParams[4].InitAsShaderResourceView(8);			// register(t8) - animation bone frame structured BUFF
+	rootParams[5].InitAsShaderResourceView(9);			// register(t9) - animation offset structured BUFF
+	rootParams[6].InitAsUnorderedAccessView(0);			// register(u0) - animation final Read&Write structured BUFF
+	rootParams[7].InitAsShaderResourceView(0, 1);		// register(t0) & space1 - instance structured BUFF
+	rootParams[8].InitAsShaderResourceView(10);			// register(t10) - finalBone Structured BUFF
 
-	CD3DX12_STATIC_SAMPLER_DESC samplerDesc[3];
-	
+	CD3DX12_STATIC_SAMPLER_DESC samplerDesc[1];
 	samplerDesc[0].Init(
-		0,		// register(s0)
-		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
-		D3D12_TEXTURE_ADDRESS_MODE_CLAMP
-	);
-
-	samplerDesc[1].Init(
-		1,		// register(s1)
-		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-		D3D12_TEXTURE_ADDRESS_MODE_WRAP
-	);
-
-	samplerDesc[2].Init(
-		2,		// register(s2)
+		0,		// register(s0) - texture Sampler
 		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
 		D3D12_TEXTURE_ADDRESS_MODE_WRAP
 	);
 
 	CD3DX12_ROOT_SIGNATURE_DESC desc{};
-	desc.Init(_countof(rootParams), rootParams, 3, samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	desc.Init(_countof(rootParams), rootParams, 1, samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> serializedRootSig = nullptr;
 	ComPtr<ID3DBlob> errorBlob = nullptr;

@@ -29,8 +29,6 @@ void DX12Graphics::Initialize(HWND hwnd)
 	animationCB = make_unique<UploadBuffer>();
 	depthstencilbuffer = make_unique<DepthStencilBuffer>();
 	descriptorheap = make_unique<DescriptorHeap>();
-	heighttexture = make_unique<Texture>();
-	groundtexture = make_unique<Texture>();
 
 	device->Initialize(hwnd);
 	cmdQueue->Initialize(device->GetDevice().Get());
@@ -43,10 +41,6 @@ void DX12Graphics::Initialize(HWND hwnd)
 	animationCB->Initialize(device->GetDevice().Get(), sizeof(AnimationConstants));
 	depthstencilbuffer->Initialize(device->GetDevice().Get());
 	descriptorheap->Initialize(device->GetDevice().Get());
-	heighttexture->InitializeFromRAW(device->GetDevice().Get(), cmdQueue->GetCmdList().Get(), L"..\\Assets\\HeightMap\\HeightMap.raw", 256, 256);
-	heighttexture->CreateSRV(device->GetDevice().Get(), descriptorheap.get(), 0);
-	groundtexture->Initialize(device->GetDevice().Get(), cmdQueue->GetCmdList().Get(), L"..\\Assets\\Images\\sand.png");
-	groundtexture->CreateSRV(device->GetDevice().Get(), descriptorheap.get(), 1);
 }
 
 void DX12Graphics::FlushCommandQueue()
@@ -93,16 +87,6 @@ UploadBuffer* DX12Graphics::GetAnimationCB() const
 DescriptorHeap* DX12Graphics::GetDescHeap() const
 {
 	return descriptorheap.get();
-}
-
-Texture* DX12Graphics::GetGroundTexture() const
-{
-	return groundtexture.get();
-}
-
-Texture* DX12Graphics::GetHeightMapTexture() const
-{
-	return heighttexture.get();
 }
 
 Device* DX12Graphics::GetDevice() const

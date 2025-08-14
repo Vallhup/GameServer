@@ -4,7 +4,7 @@
 #include "DescriptorHeap.h"
 #include "Texture.h"
 
-int Material::nextStartIndex = 2;
+int Material::nextStartIndex = 0;
 
 void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const MaterialData& matData, DescriptorHeap* descHeap)
 {
@@ -69,5 +69,5 @@ void Material::ReleaseUploadBuffers()
 
 void Material::ResetStartIndex()
 {
-    nextStartIndex = 2;
+    nextStartIndex = 0;
 }

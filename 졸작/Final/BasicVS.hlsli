@@ -8,15 +8,12 @@ cbuffer ObjectCB : register(b1)
 {
     matrix world;
     int useTexture;
-    float heightScale;
     int useInstancing;
     int hasAlpha;
 };
 
-Texture2D heightmapTexture : register(t0);
 StructuredBuffer<matrix> instanceTransforms : register(t0, space1);
-StructuredBuffer<matrix> finalBoneTransforms : register(t12);
-SamplerState heightmapSampler : register(s0);
+StructuredBuffer<matrix> finalBoneTransforms : register(t10);
 
 struct VS_IN
 {
@@ -85,13 +82,6 @@ VS_OUT VSMain(VS_IN input, uint instanceID : SV_InstanceID)
     if (hasAnimation)
     {
         Skinning(modifiedPos, modifiedNormal, modifiedTangent, input.weights, input.indices);
-    }
-    
-    // 하이트맵 적용
-    if (heightScale > 0.0f)
-    {
-        float height = heightmapTexture.SampleLevel(heightmapSampler, input.uv, 0).r;
-        modifiedPos.y += height * heightScale;
     }
     
     // 월드 변환

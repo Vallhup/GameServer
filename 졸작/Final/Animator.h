@@ -16,6 +16,8 @@ public:
     void ExecuteComputeShader();
     void LoadAnimationFromImporter(const Importer& importer);
 
+    void DebugAnimationInfo();
+
     // Compute Shader용 버퍼들
     UploadBuffer* GetBoneFrameBuffer() const { return _boneFrameBuffer.get(); }
     UploadBuffer* GetOffsetBuffer() const { return _offsetBuffer.get(); }

@@ -6,7 +6,6 @@ public:
 	void Initialize(ID3D12Device* device);
 
 	void CreateSRV(ID3D12Device* device, ID3D12Resource* texture, UINT index);
-	void ClearDescriptors(UINT startIndex = 2);
 
 	ID3D12DescriptorHeap* GetSRVHeap() const;
 	UINT GetSRVHeapSize() const;

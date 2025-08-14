@@ -40,7 +40,7 @@ void MeshRenderer::Render()
     SetupRenderingState(cmdList);
 
     if (animator) {
-        cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());
+        cmdList->SetGraphicsRootShaderResourceView(8, animator->GetFinalBuffer()->GetGPUVirtualAddress());
     }
 
     auto transform = GetGameObject()->GetComponent<Transform>();
@@ -61,7 +61,6 @@ void MeshRenderer::RenderInstanced(UINT instanceCount, UploadBuffer* instanceBuf
     ObjectConstants objConstants = {};
     objConstants.world = XMMatrixIdentity();  // 사용하지 않음
     objConstants.useTexture = (material != nullptr) ? 1 : 0;
-    objConstants.heightScale = 1.0f;
     objConstants.useInstancing = 1;  // 인스턴싱 사용
 
     GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);
@@ -73,7 +72,7 @@ void MeshRenderer::RenderInstanced(UINT instanceCount, UploadBuffer* instanceBuf
 
     if (material)
     {
-        material->BindToShader(cmdList, 5);
+        material->BindToShader(cmdList, 3);
     }
 
     vertexIndexBuffer->Bind(cmdList);
@@ -85,7 +84,6 @@ void MeshRenderer::RenderSingleMaterial(ID3D12GraphicsCommandList* cmdList, cons
     ObjectConstants objConstants = {};
     objConstants.world = XMMatrixTranspose(world);
     objConstants.useTexture = 1;
-    objConstants.heightScale = 1.0f;
     objConstants.useInstancing = 0;
     objConstants.hasAlpha = 0;  // 단일 머티리얼은 Alpha 없음
 
@@ -95,7 +93,7 @@ void MeshRenderer::RenderSingleMaterial(ID3D12GraphicsCommandList* cmdList, cons
 
     cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + offset);
 
-    material->BindToShader(cmdList, 5);
+    material->BindToShader(cmdList, 3);
     vertexIndexBuffer->Bind(cmdList);
     vertexIndexBuffer->Draw(cmdList);
 }
@@ -108,7 +106,6 @@ void MeshRenderer::RenderMultiMaterial(ID3D12GraphicsCommandList* cmdList, const
         ObjectConstants objConstants = {};
         objConstants.world = XMMatrixTranspose(world);
         objConstants.useTexture = 1;
-        objConstants.heightScale = 1.0f;
         objConstants.useInstancing = 0;
 
         const auto& matData = materials[i]->GetMaterialData();
@@ -120,7 +117,7 @@ void MeshRenderer::RenderMultiMaterial(ID3D12GraphicsCommandList* cmdList, const
         cmdList->SetGraphicsRootConstantBufferView(1,
             GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
 
-        materials[i]->BindToShader(cmdList, 5);
+        materials[i]->BindToShader(cmdList, 3);
         vertexIndexBuffer->Bind(cmdList);
         vertexIndexBuffer->DrawIndexed(cmdList, subMeshes[i].indexCount, subMeshes[i].startIndex);
     }
@@ -175,11 +172,9 @@ void MeshRenderer::SetupRenderingState(ID3D12GraphicsCommandList* cmdList, Uploa
     cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
     cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
-    cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
-    cmdList->SetGraphicsRootDescriptorTable(4, GET(DX12Graphics).GetGroundTexture()->GetSRV());
 
     if (instanceBuffer) {
-        cmdList->SetGraphicsRootShaderResourceView(9, instanceBuffer->GetGPUVirtualAddress());
+        cmdList->SetGraphicsRootShaderResourceView(7, instanceBuffer->GetGPUVirtualAddress());
     }
 }
 

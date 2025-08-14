@@ -15,7 +15,6 @@ struct ObjectConstants
 {
     XMMATRIX world;
     int useTexture;
-    float heightScale;
     int useInstancing;
     int hasAlpha;
 };
@@ -49,8 +48,6 @@ public:
     UploadBuffer* GetSceneCB() const;
     UploadBuffer* GetAnimationCB() const;
     DescriptorHeap* GetDescHeap() const;
-    Texture* GetGroundTexture() const;
-    Texture* GetHeightMapTexture() const;
 
 private:
     unique_ptr<Device> device;
@@ -63,6 +60,4 @@ private:
     unique_ptr<UploadBuffer> animationCB;
     unique_ptr<DepthStencilBuffer> depthstencilbuffer;
     unique_ptr<DescriptorHeap> descriptorheap;
-    unique_ptr<Texture> groundtexture;
-    unique_ptr<Texture> heighttexture;
 };

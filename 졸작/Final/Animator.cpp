@@ -24,11 +24,11 @@ void Animator::Update(float deltaTime)
         _updateTime = 0.0f;
     }
 
-    const int32_t ratio = static_cast<int32_t>(animClip.frameCount / animClip.duration);
-    _frame = static_cast<int32_t>(_updateTime * ratio);
+    const float framerate = static_cast<float>(animClip.frameCount) / animClip.duration;
+    _frame = static_cast<int32_t>(_updateTime * framerate);
     _frame = min(_frame, animClip.frameCount - 1);
     _nextFrame = min(_frame + 1, animClip.frameCount - 1);
-    _frameRatio = static_cast<float>(_updateTime * ratio - _frame);  
+    _frameRatio = static_cast<float>(_updateTime * framerate - _frame);
 }
 
 void Animator::SetAnimationData(const vector<AnimClipInfo>& animations)  
@@ -105,9 +105,7 @@ void Animator::ExecuteComputeShader()
 {
     auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
 
-    OutputDebugStringA(("Bone Count: " + to_string(GetBoneCount()) + "\n").c_str());
-    OutputDebugStringA(("Current Frame: " + to_string(GetCurrentFrame()) + "\n").c_str());
-    OutputDebugStringA(("Frame Ratio: " + to_string(GetFrameRatio()) + "\n").c_str());
+    DebugAnimationInfo();
 
     AnimationConstants animData = {};
     animData.boneCount = GetBoneCount();
@@ -122,10 +120,10 @@ void Animator::ExecuteComputeShader()
     cmdList->SetComputeRootSignature(GET(DX12Graphics).GetRootSig()->Get());
     cmdList->SetComputeRootConstantBufferView(2, GET(DX12Graphics).GetAnimationCB()->GetGPUVirtualAddress());
 
-    cmdList->SetComputeRootShaderResourceView(6, GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t10
-    cmdList->SetComputeRootShaderResourceView(7, GetOffsetBuffer()->GetGPUVirtualAddress());     // t11
+    cmdList->SetComputeRootShaderResourceView(4, GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t8
+    cmdList->SetComputeRootShaderResourceView(5, GetOffsetBuffer()->GetGPUVirtualAddress());     // t9
 
-    cmdList->SetComputeRootUnorderedAccessView(8, GetFinalBuffer()->GetGPUVirtualAddress());     // u0
+    cmdList->SetComputeRootUnorderedAccessView(6, GetFinalBuffer()->GetGPUVirtualAddress());     // u0
 
     UINT groupCount = (animData.boneCount + 255) / 256;  // 256으로 나눠서 올림
     cmdList->Dispatch(groupCount, 1, 1);
@@ -141,4 +139,11 @@ void Animator::LoadAnimationFromImporter(const Importer& importer)
         SetSkeletonData(skeleton);
         OutputDebugStringA("Animation data loaded!\n");
     }
+}
+
+void Animator::DebugAnimationInfo()
+{
+    OutputDebugStringA(("Bone Count: " + to_string(GetBoneCount()) + "\n").c_str());
+    OutputDebugStringA(("Current Frame: " + to_string(GetCurrentFrame()) + "\n").c_str());
+    OutputDebugStringA(("Frame Ratio: " + to_string(GetFrameRatio()) + "\n").c_str());
 }
