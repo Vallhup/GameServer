@@ -4,48 +4,42 @@
 
 class UploadBuffer;
 
-struct AnimFrameParams
-{
-    XMFLOAT4 scale;
-    XMFLOAT4 rotation;
-    XMFLOAT4 translation;
-};
-
 class Animator : public Component
 {
 public:
     void Update(float deltaTime) override;
 
-    // 애니메이션 설정
-    void InitializeBuffers();
-    void SetAnimationData(const vector<AnimationData>& animations);
+    void SetAnimationData(const vector<AnimClipInfo>& animations);  // 변경
     void SetSkeletonData(const SkeletonData& skeleton);
     void PlayAnimation(int animIndex);
 
-    // 현재 애니메이션 정보 getter
-    UploadBuffer* GetBoneFrameBuffer() const { return boneFrameBuffer.get(); }
-    UploadBuffer* GetOffsetBuffer() const { return offsetBuffer.get(); }
-    UploadBuffer* GetFinalBuffer() const { return finalBuffer.get(); }
+    // Compute Shader용 버퍼들
+    UploadBuffer* GetBoneFrameBuffer() const { return _boneFrameBuffer.get(); }
+    UploadBuffer* GetOffsetBuffer() const { return _offsetBuffer.get(); }
+    UploadBuffer* GetFinalBuffer() const { return _finalBuffer.get(); }
 
-    int GetBoneCount() const { return boneCount; }
-    int GetCurrentFrame() const { return currentFrame; }
-    int GetNextFrame() const { return nextFrame; }
-    float GetFrameRatio() const { return frameRatio; }
+    int GetBoneCount() const { return _boneCount; }
+    int GetCurrentFrame() const { return _frame; }
+    int GetNextFrame() const { return _nextFrame; }
+    float GetFrameRatio() const { return _frameRatio; }
+    int GetCurrentAnimOffset() const { return _currentAnimationOffset; }
 
 private:
-    vector<AnimationData> animations;  // Importer에서 가져온 데이터
+    void CreateBuffers();
 
-    unique_ptr<UploadBuffer> boneFrameBuffer;  // 키프레임 데이터
-    unique_ptr<UploadBuffer> offsetBuffer;     // 오프셋 행렬
-    unique_ptr<UploadBuffer> finalBuffer;      // 최종 본 행렬 (Compute 결과)
+    vector<AnimClipInfo> _animations;  // 변경
+    vector<BoneInfo> _bones;
 
-    int boneCount = 0;
-    int currentAnimIndex = 0;
-    float animationTime = 0.0f;
+    unique_ptr<UploadBuffer> _boneFrameBuffer;    // 키프레임 데이터
+    unique_ptr<UploadBuffer> _offsetBuffer;       // 오프셋 행렬
+    unique_ptr<UploadBuffer> _finalBuffer;        // 최종 본 행렬 (Compute 출력)
 
-    int currentFrame = 0;
-    int nextFrame = 0;
-    float frameRatio = 0.0f;
-
-    bool isInitialized = false;
+    int _boneCount = 0;
+    int _clipIndex = 0;
+    float _updateTime = 0.0f;
+    int _frame = 0;
+    int _nextFrame = 0;
+    float _frameRatio = 0.0f;
+    int _currentAnimationOffset = 0;
+    bool _isInitialized = false;
 };

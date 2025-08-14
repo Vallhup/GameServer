@@ -7,6 +7,7 @@ cbuffer AnimationParams : register(b2)
     int g_currentFrame;  
     int g_nextFrame; 
     float g_ratio; 
+    int animationOffset;
 }
 
 struct AnimFrameParams
@@ -36,8 +37,8 @@ void CSMain(int3 threadIdx : SV_DispatchThreadID)
     int nextFrame = g_nextFrame;
     float ratio = g_ratio;
 
-    uint idx = (boneCount * currentFrame) + threadIdx.x;
-    uint nextIdx = (boneCount * nextFrame) + threadIdx.x;
+    uint idx = animationOffset + (boneCount * currentFrame) + threadIdx.x;
+    uint nextIdx = animationOffset + (boneCount * nextFrame) + threadIdx.x;
 
     float4 quaternionZero = float4(0.f, 0.f, 0.f, 1.f);
 

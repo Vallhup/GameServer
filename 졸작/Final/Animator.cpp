@@ -6,101 +6,95 @@
 
 void Animator::Update(float deltaTime)
 {
-    if (animations.empty()) return;
+    if (_animations.empty()) return;
 
-    animationTime += deltaTime;
-    const auto& currentAnim = animations[currentAnimIndex];
-
-    if (animationTime >= currentAnim.duration) {
-        animationTime = 0.0f;
+    _currentAnimationOffset = 0;
+    for (int i = 0; i < _clipIndex; ++i) {
+        _currentAnimationOffset += _animations[i].keyFrames.size();
     }
 
-    int totalFrames = static_cast<int>(currentAnim.boneKeyFrames[0].size());
+    _updateTime += deltaTime;
+    const auto& animClip = _animations[_clipIndex];
 
-    float frameFloat = (animationTime / currentAnim.duration) * totalFrames;
-    currentFrame = static_cast<int>(frameFloat);
-    nextFrame = (currentFrame + 1) % totalFrames;  
-    frameRatio = frameFloat - currentFrame;  
+    if (_updateTime >= animClip.duration) {
+        _updateTime = 0.0f;
+    }
+
+    // 레퍼런스와 동일한 프레임 계산
+    const int32_t ratio = static_cast<int32_t>(animClip.frameCount / animClip.duration);
+    _frame = static_cast<int32_t>(_updateTime * ratio);
+    _frame = min(_frame, animClip.frameCount - 1);
+    _nextFrame = min(_frame + 1, animClip.frameCount - 1);
+    _frameRatio = static_cast<float>(_updateTime * ratio - _frame);  // 소수점 부분
 }
 
-void Animator::InitializeBuffers()
+void Animator::SetAnimationData(const vector<AnimClipInfo>& animations)  // 변경
 {
-    // BoneFrame 버퍼 크기 계산
-    size_t totalKeyFrames = 0;
-    for (const auto& anim : animations) {
-        totalKeyFrames += anim.boneKeyFrames.size() * anim.boneKeyFrames[0].size();
-    }
-
-    // 초기화
-    boneFrameBuffer->Initialize(GET(DX12Graphics).GetDevice()->GetDevice().Get(),
-        totalKeyFrames * sizeof(AnimFrameParams));
-
-    offsetBuffer->Initialize(GET(DX12Graphics).GetDevice()->GetDevice().Get(),
-        boneCount * sizeof(XMMATRIX));
-
-    finalBuffer->Initialize(GET(DX12Graphics).GetDevice()->GetDevice().Get(),
-        boneCount * sizeof(XMMATRIX));
-
-    // AnimationData → AnimFrameParams 변환
-    vector<AnimFrameParams> frameData;
-
-    for (const auto& anim : animations) {
-        for (int boneIdx = 0; boneIdx < boneCount; ++boneIdx) {
-            for (const auto& keyFrame : anim.boneKeyFrames[boneIdx]) {
-                AnimFrameParams params;
-
-                // XMMATRIX → SQT 분해
-                XMVECTOR scale, rotation, translation;
-                XMMatrixDecompose(&scale, &rotation, &translation, keyFrame.transform);
-
-                XMStoreFloat4(&params.scale, scale);
-                XMStoreFloat4(&params.rotation, rotation);
-                XMStoreFloat4(&params.translation, translation);
-
-                frameData.push_back(params);
-            }
-        }
-    }
-
-    // 버퍼에 복사
-    boneFrameBuffer->CopyData(frameData.data(), frameData.size() * sizeof(AnimFrameParams));
-}
-
-void Animator::SetAnimationData(const vector<AnimationData>& anims)
-{
-    animations = anims;
-    if (!animations.empty()) {
-        boneCount = static_cast<int>(animations[0].boneKeyFrames.size());
-
-        if (!isInitialized) {
-            // 여기서 UploadBuffer 생성 및 초기화
-            boneFrameBuffer = make_unique<UploadBuffer>();
-            offsetBuffer = make_unique<UploadBuffer>();
-            finalBuffer = make_unique<UploadBuffer>();
-
-            // 실제 데이터로 초기화
-            InitializeBuffers();
-            isInitialized = true;
-        }
+    _animations = animations;
+    if (!_animations.empty()) {
+        _boneCount = static_cast<int>(_animations[0].keyFrames.size() / _animations[0].frameCount);
+        CreateBuffers();
     }
 }
 
 void Animator::SetSkeletonData(const SkeletonData& skeleton)
 {
-    if (offsetBuffer) {
-        // 오프셋 행렬들을 버퍼에 복사
+    _bones = skeleton.bones;
+
+    if (_offsetBuffer && !_bones.empty()) {
+        // ★ 실제 오프셋 행렬 사용
         vector<XMMATRIX> offsetMatrices;
-        for (const auto& bone : skeleton.bones) {
-            offsetMatrices.push_back(bone.offsetMatrix);
+        for (const auto& bone : _bones) {
+            offsetMatrices.push_back(bone.matOffset);  // 실제 데이터 사용
         }
-        offsetBuffer->CopyData(offsetMatrices.data(), offsetMatrices.size() * sizeof(XMMATRIX));
+        _offsetBuffer->CopyData(offsetMatrices.data(), offsetMatrices.size() * sizeof(XMMATRIX));
     }
+}
+
+void Animator::CreateBuffers()
+{
+    if (_animations.empty()) return;
+
+    // 버퍼 생성
+    _boneFrameBuffer = make_unique<UploadBuffer>();
+    _offsetBuffer = make_unique<UploadBuffer>();
+    _finalBuffer = make_unique<UploadBuffer>();
+
+    // BoneFrame 버퍼 - 레퍼런스와 동일한 구조
+    size_t totalKeyFrames = 0;
+    for (const auto& anim : _animations) {
+        totalKeyFrames += anim.keyFrames.size();
+    }
+
+    _boneFrameBuffer->Initialize(
+        GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+        totalKeyFrames * sizeof(AnimFrameParams)
+    );
+
+    _offsetBuffer->Initialize(
+        GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+        _boneCount * sizeof(XMMATRIX)
+    );
+
+    _finalBuffer->Initialize(
+        GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+        _boneCount * sizeof(XMMATRIX)
+    );
+
+    // 모든 애니메이션 데이터를 하나의 버퍼에 복사
+    vector<AnimFrameParams> allFrameData;
+    for (const auto& anim : _animations) {
+        allFrameData.insert(allFrameData.end(), anim.keyFrames.begin(), anim.keyFrames.end());
+    }
+
+    _boneFrameBuffer->CopyData(allFrameData.data(), allFrameData.size() * sizeof(AnimFrameParams));
+    _isInitialized = true;
 }
 
 void Animator::PlayAnimation(int animIndex)
 {
-    if (animIndex >= 0 && animIndex < animations.size()) {
-        currentAnimIndex = animIndex;
-        animationTime = 0.0f;  
+    if (animIndex >= 0 && animIndex < _animations.size()) {
+        _clipIndex = animIndex;
+        _updateTime = 0.0f;
     }
 }

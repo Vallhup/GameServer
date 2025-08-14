@@ -1,5 +1,27 @@
 #pragma once
 
+struct AnimFrameParams
+{
+    XMFLOAT4 scale;
+    XMFLOAT4 rotation;    // Quaternion
+    XMFLOAT4 translation;
+};
+
+struct BoneInfo
+{
+    string boneName;
+    int32_t parentIdx;
+    XMMATRIX matOffset;
+};
+
+struct AnimClipInfo
+{
+    string animName;
+    int32_t frameCount;
+    float duration;
+    vector<AnimFrameParams> keyFrames;  // [frameIndex * boneCount + boneIndex] 순서
+};
+
 struct MeshBinaryHeader {
     uint32_t magic;           // 'MESH'
     uint32_t vertexCount;
@@ -49,7 +71,6 @@ struct MaterialBinaryData {
     char aoTexPath[256];
 };
 
-// 본 데이터 (FbxAMatrix를 float 배열로 변환)
 struct BoneBinaryData {
     char name[64];
     int32_t parentIndex;
@@ -63,25 +84,8 @@ struct MeshData {
     bool hasAnimation = false;
 };
 
-struct BoneData {
-    string name;
-    int32_t parentIndex;
-    XMMATRIX offsetMatrix;
-};
-
 struct SkeletonData {
-    vector<BoneData> bones;
-};
-
-struct KeyFrameData {
-    float time;
-    XMMATRIX transform;
-};
-
-struct AnimationData {
-    string name;
-    float duration;
-    vector<vector<KeyFrameData>> boneKeyFrames; // [boneIndex][frameIndex]
+    vector<BoneInfo> bones;
 };
 
 struct MaterialData {
@@ -108,7 +112,7 @@ public:
 
     const MeshData& GetMesh() const { return meshData; }
     const SkeletonData& GetSkeleton() const { return skeletonData; }
-    const vector<AnimationData>& GetAnimations() const { return animationData; }
+    const vector<AnimClipInfo>& GetAnimations() const { return animationData; }
     const vector<MaterialData>& GetMaterials() const { return materialData; }
 
     bool HasAnimation() const { return meshData.hasAnimation; }
@@ -124,7 +128,7 @@ private:
 private:
     MeshData meshData;
     SkeletonData skeletonData;
-    vector<AnimationData> animationData;
+    vector<AnimClipInfo> animationData;
     vector<MaterialData> materialData;
 };
 

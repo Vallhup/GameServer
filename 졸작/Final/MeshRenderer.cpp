@@ -47,6 +47,7 @@ void MeshRenderer::Render()
         animData.currentFrame = animator->GetCurrentFrame();
         animData.nextFrame = animator->GetNextFrame();
         animData.ratio = animator->GetFrameRatio();
+        animData.animationOffset = animator->GetCurrentAnimOffset();
 
         // Compute Shader ½ÇÇà
         GET(DX12Graphics).GetAnimationCB()->CopyData(&animData, sizeof(AnimationConstants));

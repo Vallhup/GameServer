@@ -91,10 +91,10 @@ bool Importer::LoadSkeleton(const wstring& path)
         BoneBinaryData boneData;
         ifs.read(reinterpret_cast<char*>(&boneData), sizeof(boneData));
 
-        BoneData& bone = skeletonData.bones[i];
-        bone.name = string(boneData.name);
-        bone.parentIndex = boneData.parentIndex;
-        ConvertFloat4x4ToMatrix(boneData.offsetMatrix, bone.offsetMatrix);
+        BoneInfo& bone = skeletonData.bones[i];
+        bone.boneName = string(boneData.name);
+        bone.parentIdx = boneData.parentIndex;
+        ConvertFloat4x4ToMatrix(boneData.offsetMatrix, bone.matOffset);
     }
 
     return true;
@@ -103,7 +103,6 @@ bool Importer::LoadSkeleton(const wstring& path)
 bool Importer::LoadAnimations(const wstring& basePath)
 {
     wstring searchPath = basePath + L"_*.anim";
-
     WIN32_FIND_DATAW findData;
     HANDLE hFind = FindFirstFileW(searchPath.c_str(), &findData);
 
@@ -116,35 +115,25 @@ bool Importer::LoadAnimations(const wstring& basePath)
 
     do {
         wstring animPath = directory + findData.cFileName;
-
         ifstream ifs(animPath, ios::binary);
         if (!ifs) continue;
 
         AnimationBinaryHeader header;
         ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
 
-        if (header.magic != 'MINA') { 
-            continue;
-        }
+        if (header.magic != 'MINA') continue;
 
-        AnimationData animData;
-        animData.name = string(header.name);
+        AnimClipInfo animData;  // 구조 변경
+        animData.animName = string(header.name);
         animData.duration = header.duration;
-        animData.boneKeyFrames.resize(header.boneCount);
+        animData.frameCount = header.frameCount;
 
-        for (uint32_t boneIdx = 0; boneIdx < header.boneCount; ++boneIdx) {
-            animData.boneKeyFrames[boneIdx].resize(header.frameCount);
+        // 레퍼런스와 동일한 구조로 로드: [frameIndex * boneCount + boneIndex]
+        size_t totalFrames = header.boneCount * header.frameCount;
+        animData.keyFrames.resize(totalFrames);
 
-            for (uint32_t frameIdx = 0; frameIdx < header.frameCount; ++frameIdx) {
-                KeyFrameData& keyFrame = animData.boneKeyFrames[boneIdx][frameIdx];
-
-                ifs.read(reinterpret_cast<char*>(&keyFrame.time), sizeof(float));
-
-                float matrix[16];
-                ifs.read(reinterpret_cast<char*>(matrix), sizeof(matrix));
-                ConvertFloat4x4ToMatrix(matrix, keyFrame.transform);
-            }
-        }
+        ifs.read(reinterpret_cast<char*>(animData.keyFrames.data()),
+            totalFrames * sizeof(AnimFrameParams));
 
         animationData.push_back(animData);
 

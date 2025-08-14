@@ -29,4 +29,10 @@ private:
 	shared_ptr<GameObject> Dragon;
 	shared_ptr<GameObject> knight;
 	shared_ptr<GameObject> strut2;
+
+	bool key1Pressed = false;
+	bool key2Pressed = false;
+	bool key3Pressed = false;
+	bool key4Pressed = false;
+
 };

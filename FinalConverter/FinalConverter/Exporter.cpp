@@ -112,6 +112,7 @@ bool Exporter::ExportSkeleton(const vector<shared_ptr<FbxBoneInfo>>& bones, cons
     return true;
 }
 
+// ExportAnimation 함수 수정 - FBX Quaternion 타입 문제 해결
 bool Exporter::ExportAnimation(const FbxAnimClipInfo& animClip, const wstring& path)
 {
     if (animClip.keyFrames.empty()) return true;
@@ -123,15 +124,26 @@ bool Exporter::ExportAnimation(const FbxAnimClipInfo& animClip, const wstring& p
     }
 
     AnimationBinaryHeader header = {};
-    header.magic = 'MINA';  
+    header.magic = 'MINA';
     header.boneCount = static_cast<uint32_t>(animClip.keyFrames.size());
 
-    header.frameCount = animClip.keyFrames.empty() ? 0 :
-        static_cast<uint32_t>(animClip.keyFrames[0].size());
+    // 키프레임이 있는 첫 번째 본에서 frameCount 가져오기
+    header.frameCount = 0;
+    for (const auto& boneFrames : animClip.keyFrames) {
+        if (!boneFrames.empty()) {
+            header.frameCount = static_cast<uint32_t>(boneFrames.size());
+            break;
+        }
+    }
 
+    // duration 계산
     if (header.frameCount > 0) {
-        const auto& firstBone = animClip.keyFrames[0];
-        header.duration = static_cast<float>(firstBone.back().time - firstBone.front().time);
+        for (const auto& boneFrames : animClip.keyFrames) {
+            if (!boneFrames.empty()) {
+                header.duration = static_cast<float>(boneFrames.back().time - boneFrames.front().time);
+                break;
+            }
+        }
     }
     else {
         header.duration = 0.0f;
@@ -139,26 +151,57 @@ bool Exporter::ExportAnimation(const FbxAnimClipInfo& animClip, const wstring& p
 
     string animName = ws2s(animClip.name);
     strncpy_s(header.name, animName.c_str(), sizeof(header.name) - 1);
-
     ofs.write(reinterpret_cast<const char*>(&header), sizeof(header));
 
-    // ← 여기서 키프레임 처리 시 reflection 적용!
-    for (const auto& boneKeyFrames : animClip.keyFrames) {
-        for (const auto& keyFrame : boneKeyFrames) {
-            float time = static_cast<float>(keyFrame.time);
-            ofs.write(reinterpret_cast<const char*>(&time), sizeof(time));
+    // ★ 기존 프로젝트와 동일한 레이아웃으로 저장: [frame * boneCount + bone]
+    for (uint32_t frameIdx = 0; frameIdx < header.frameCount; ++frameIdx) {
+        for (uint32_t boneIdx = 0; boneIdx < header.boneCount; ++boneIdx) {
 
-            // Reflection 변환 적용 (루키스 방식)
-            FbxAMatrix reflectedMatrix = ApplyReflectionMatrix(keyFrame.matTransform);
-            
-            float matrix[16];
-            ConvertFbxMatrixToFloat4x4(reflectedMatrix, matrix);
-            ofs.write(reinterpret_cast<const char*>(matrix), sizeof(matrix));
+            if (frameIdx < animClip.keyFrames[boneIdx].size()) {
+                const auto& keyFrame = animClip.keyFrames[boneIdx][frameIdx];
+
+                // SQT 분해
+                FbxVector4 scale = keyFrame.matTransform.GetS();
+                FbxQuaternion rotation = keyFrame.matTransform.GetQ();
+                FbxVector4 translation = keyFrame.matTransform.GetT();
+
+                struct AnimFrameParams {
+                    float scale[4];
+                    float rotation[4];
+                    float translation[4];
+                } params;
+
+                params.scale[0] = static_cast<float>(scale[0]);
+                params.scale[1] = static_cast<float>(scale[1]);
+                params.scale[2] = static_cast<float>(scale[2]);
+                params.scale[3] = 1.0f;
+
+                params.rotation[0] = static_cast<float>(rotation[0]);
+                params.rotation[1] = static_cast<float>(rotation[1]);
+                params.rotation[2] = static_cast<float>(rotation[2]);
+                params.rotation[3] = static_cast<float>(rotation[3]);
+
+                params.translation[0] = static_cast<float>(translation[0]);
+                params.translation[1] = static_cast<float>(translation[1]);
+                params.translation[2] = static_cast<float>(translation[2]);
+                params.translation[3] = 0.0f;
+
+                ofs.write(reinterpret_cast<const char*>(&params), sizeof(params));
+            }
+            else {
+                // 프레임이 없으면 기본값
+                struct AnimFrameParams {
+                    float scale[4] = { 1,1,1,1 };
+                    float rotation[4] = { 0,0,0,1 };
+                    float translation[4] = { 0,0,0,0 };
+                } params;
+
+                ofs.write(reinterpret_cast<const char*>(&params), sizeof(params));
+            }
         }
     }
 
     wcout << L"애니메이션 저장 완료: " << path << endl;
-    wcout << L"  본: " << header.boneCount << L", 프레임: " << header.frameCount << endl;
     return true;
 }
 

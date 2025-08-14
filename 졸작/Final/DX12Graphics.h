@@ -26,6 +26,7 @@ struct AnimationConstants
     int currentFrame;
     int nextFrame;
     float ratio;
+    int animationOffset;
 };
 
 class DX12Graphics
