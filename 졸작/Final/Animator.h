@@ -9,7 +9,7 @@ class Animator : public Component
 public:
     void Update(float deltaTime) override;
 
-    void SetAnimationData(const vector<AnimClipInfo>& animations);  // 변경
+    void SetAnimationData(const vector<AnimClipInfo>& animations);  
     void SetSkeletonData(const SkeletonData& skeleton);
     void PlayAnimation(int animIndex);
 
@@ -30,7 +30,7 @@ public:
 private:
     void CreateBuffers();
 
-    vector<AnimClipInfo> _animations;  // 변경
+    vector<AnimClipInfo> _animations;  
     vector<BoneInfo> _bones;
 
     unique_ptr<UploadBuffer> _boneFrameBuffer;    // 키프레임 데이터

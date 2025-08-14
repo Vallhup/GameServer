@@ -35,9 +35,6 @@ void MeshRenderer::Render()
     if (animator) {
         animator->ExecuteComputeShader();
     }
-
-    auto transform = GetGameObject()->GetComponent<Transform>();
-    XMMATRIX world = transform->GetWorldMatrix();
     
     auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
     SetupRenderingState(cmdList);
@@ -45,6 +42,9 @@ void MeshRenderer::Render()
     if (animator) {
         cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());
     }
+
+    auto transform = GetGameObject()->GetComponent<Transform>();
+    XMMATRIX world = transform->GetWorldMatrix();
 
     if (!materials.empty()) {
         RenderMultiMaterial(cmdList, world);
@@ -143,31 +143,7 @@ void MeshRenderer::SetMesh(const wstring& path)
 
         const auto& mats = importer.GetMaterials();
 
-        OutputDebugStringA(("Total materials found: " + to_string(mats.size()) + "\n").c_str());
-
-        for (size_t i = 0; i < mats.size(); ++i) {
-            string msg = "Material[" + to_string(i) + "]: " + mats[i].name + "\n";
-            OutputDebugStringA(msg.c_str());
-
-            OutputDebugStringA(("  BaseColor: " + mats[i].baseColorTexPath + "\n").c_str());
-            OutputDebugStringA(("  Normal: " + mats[i].normalTexPath + "\n").c_str());
-            OutputDebugStringA(("  Roughness: " + mats[i].roughnessTexPath + "\n").c_str());
-            OutputDebugStringA(("  Metallic: " + mats[i].metallicTexPath + "\n").c_str());
-            OutputDebugStringA(("  Height: " + mats[i].heightTexPath + "\n").c_str());
-            OutputDebugStringA(("  Alpha: " + mats[i].alphaTexPath + "\n").c_str());
-            OutputDebugStringA(("  Emission: " + mats[i].emissionTexPath + "\n").c_str());
-            OutputDebugStringA(("  AO: " + mats[i].aoTexPath + "\n").c_str());
-        }
-
-        OutputDebugStringA(("SubMesh count: " + to_string(mesh.subMeshes.size()) + "\n").c_str());
-
-        for (size_t i = 0; i < mesh.subMeshes.size(); ++i) {
-            string msg = "SubMesh[" + to_string(i) + "]: ";
-            msg += "StartIndex=" + to_string(mesh.subMeshes[i].startIndex) + ", ";
-            msg += "IndexCount=" + to_string(mesh.subMeshes[i].indexCount) + ", ";
-            msg += "MaterialIndex=" + to_string(mesh.subMeshes[i].materialIndex) + "\n";
-            OutputDebugStringA(msg.c_str());
-        }
+        DebugMaterialInfo(mesh, mats);
 
         if (mesh.subMeshes.size() > 1)
         {
@@ -246,4 +222,33 @@ void MeshRenderer::ReleaseUploadBuffers()
     }
 
     // 애니메이션 관련 Uploadbuffers는 지속적인 업데이트를 위해 해제 안하는게 맞음.
+}
+
+void MeshRenderer::DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData> mats)
+{
+    OutputDebugStringA(("Total materials found: " + to_string(mats.size()) + "\n").c_str());
+
+    for (size_t i = 0; i < mats.size(); ++i) {
+        string msg = "Material[" + to_string(i) + "]: " + mats[i].name + "\n";
+        OutputDebugStringA(msg.c_str());
+
+        OutputDebugStringA(("  BaseColor: " + mats[i].baseColorTexPath + "\n").c_str());
+        OutputDebugStringA(("  Normal: " + mats[i].normalTexPath + "\n").c_str());
+        OutputDebugStringA(("  Roughness: " + mats[i].roughnessTexPath + "\n").c_str());
+        OutputDebugStringA(("  Metallic: " + mats[i].metallicTexPath + "\n").c_str());
+        OutputDebugStringA(("  Height: " + mats[i].heightTexPath + "\n").c_str());
+        OutputDebugStringA(("  Alpha: " + mats[i].alphaTexPath + "\n").c_str());
+        OutputDebugStringA(("  Emission: " + mats[i].emissionTexPath + "\n").c_str());
+        OutputDebugStringA(("  AO: " + mats[i].aoTexPath + "\n").c_str());
+    }
+
+    OutputDebugStringA(("SubMesh count: " + to_string(mesh.subMeshes.size()) + "\n").c_str());
+
+    for (size_t i = 0; i < mesh.subMeshes.size(); ++i) {
+        string msg = "SubMesh[" + to_string(i) + "]: ";
+        msg += "StartIndex=" + to_string(mesh.subMeshes[i].startIndex) + ", ";
+        msg += "IndexCount=" + to_string(mesh.subMeshes[i].indexCount) + ", ";
+        msg += "MaterialIndex=" + to_string(mesh.subMeshes[i].materialIndex) + "\n";
+        OutputDebugStringA(msg.c_str());
+    }
 }

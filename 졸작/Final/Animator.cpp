@@ -24,15 +24,14 @@ void Animator::Update(float deltaTime)
         _updateTime = 0.0f;
     }
 
-    // 레퍼런스와 동일한 프레임 계산
     const int32_t ratio = static_cast<int32_t>(animClip.frameCount / animClip.duration);
     _frame = static_cast<int32_t>(_updateTime * ratio);
     _frame = min(_frame, animClip.frameCount - 1);
     _nextFrame = min(_frame + 1, animClip.frameCount - 1);
-    _frameRatio = static_cast<float>(_updateTime * ratio - _frame);  // 소수점 부분
+    _frameRatio = static_cast<float>(_updateTime * ratio - _frame);  
 }
 
-void Animator::SetAnimationData(const vector<AnimClipInfo>& animations)  // 변경
+void Animator::SetAnimationData(const vector<AnimClipInfo>& animations)  
 {
     _animations = animations;
     if (!_animations.empty()) {
@@ -46,10 +45,9 @@ void Animator::SetSkeletonData(const SkeletonData& skeleton)
     _bones = skeleton.bones;
 
     if (_offsetBuffer && !_bones.empty()) {
-        // ★ 실제 오프셋 행렬 사용
         vector<XMMATRIX> offsetMatrices;
         for (const auto& bone : _bones) {
-            offsetMatrices.push_back(bone.matOffset);  // 실제 데이터 사용
+            offsetMatrices.push_back(bone.matOffset);  
         }
         _offsetBuffer->CopyData(offsetMatrices.data(), offsetMatrices.size() * sizeof(XMMATRIX));
     }
@@ -111,7 +109,6 @@ void Animator::ExecuteComputeShader()
     OutputDebugStringA(("Current Frame: " + to_string(GetCurrentFrame()) + "\n").c_str());
     OutputDebugStringA(("Frame Ratio: " + to_string(GetFrameRatio()) + "\n").c_str());
 
-    // AnimationConstants 설정
     AnimationConstants animData = {};
     animData.boneCount = GetBoneCount();
     animData.currentFrame = GetCurrentFrame();
@@ -119,18 +116,15 @@ void Animator::ExecuteComputeShader()
     animData.ratio = GetFrameRatio();
     animData.animationOffset = GetCurrentAnimOffset();
 
-    // Compute Shader 실행
     GET(DX12Graphics).GetAnimationCB()->CopyData(&animData, sizeof(AnimationConstants));
 
     cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetComputePSO());
     cmdList->SetComputeRootSignature(GET(DX12Graphics).GetRootSig()->Get());
     cmdList->SetComputeRootConstantBufferView(2, GET(DX12Graphics).GetAnimationCB()->GetGPUVirtualAddress());
 
-    // BoneFrame, Offset 데이터 바인딩
     cmdList->SetComputeRootShaderResourceView(6, GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t10
     cmdList->SetComputeRootShaderResourceView(7, GetOffsetBuffer()->GetGPUVirtualAddress());     // t11
 
-    // Final 본 행렬 바인딩 (Compute Shader 출력)
     cmdList->SetComputeRootUnorderedAccessView(8, GetFinalBuffer()->GetGPUVirtualAddress());     // u0
 
     UINT groupCount = (animData.boneCount + 255) / 256;  // 256으로 나눠서 올림

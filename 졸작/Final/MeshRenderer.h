@@ -25,6 +25,8 @@ public:
 
 	void ReleaseUploadBuffers();
 
+	void DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData> mats);
+
 private:
 	unique_ptr<VertexIndexBuffer> vertexIndexBuffer;  
 
