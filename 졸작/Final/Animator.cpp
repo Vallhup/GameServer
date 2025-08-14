@@ -3,6 +3,10 @@
 #include "UploadBuffer.h"
 #include "DX12Graphics.h"
 #include "Device.h"
+#include "CommandQueue.h"
+#include "GameObject.h"
+#include "Shader.h"
+#include "RootSignature.h"
 
 void Animator::Update(float deltaTime)
 {
@@ -96,5 +100,51 @@ void Animator::PlayAnimation(int animIndex)
     if (animIndex >= 0 && animIndex < _animations.size()) {
         _clipIndex = animIndex;
         _updateTime = 0.0f;
+    }
+}
+
+void Animator::ExecuteComputeShader()
+{
+    auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
+
+    OutputDebugStringA(("Bone Count: " + to_string(GetBoneCount()) + "\n").c_str());
+    OutputDebugStringA(("Current Frame: " + to_string(GetCurrentFrame()) + "\n").c_str());
+    OutputDebugStringA(("Frame Ratio: " + to_string(GetFrameRatio()) + "\n").c_str());
+
+    // AnimationConstants 설정
+    AnimationConstants animData = {};
+    animData.boneCount = GetBoneCount();
+    animData.currentFrame = GetCurrentFrame();
+    animData.nextFrame = GetNextFrame();
+    animData.ratio = GetFrameRatio();
+    animData.animationOffset = GetCurrentAnimOffset();
+
+    // Compute Shader 실행
+    GET(DX12Graphics).GetAnimationCB()->CopyData(&animData, sizeof(AnimationConstants));
+
+    cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetComputePSO());
+    cmdList->SetComputeRootSignature(GET(DX12Graphics).GetRootSig()->Get());
+    cmdList->SetComputeRootConstantBufferView(2, GET(DX12Graphics).GetAnimationCB()->GetGPUVirtualAddress());
+
+    // BoneFrame, Offset 데이터 바인딩
+    cmdList->SetComputeRootShaderResourceView(6, GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t10
+    cmdList->SetComputeRootShaderResourceView(7, GetOffsetBuffer()->GetGPUVirtualAddress());     // t11
+
+    // Final 본 행렬 바인딩 (Compute Shader 출력)
+    cmdList->SetComputeRootUnorderedAccessView(8, GetFinalBuffer()->GetGPUVirtualAddress());     // u0
+
+    UINT groupCount = (animData.boneCount + 255) / 256;  // 256으로 나눠서 올림
+    cmdList->Dispatch(groupCount, 1, 1);
+}
+
+void Animator::LoadAnimationFromImporter(const Importer& importer)
+{
+    const auto& animations = importer.GetAnimations();
+    const auto& skeleton = importer.GetSkeleton();
+
+    if (!animations.empty()) {
+        SetAnimationData(animations);
+        SetSkeletonData(skeleton);
+        OutputDebugStringA("Animation data loaded!\n");
     }
 }

@@ -31,105 +31,26 @@ void MeshRenderer::Render()
 {
     if (!visible || !vertexIndexBuffer) return;
     
-    // 1. Animator 컴포넌트 확인
     auto animator = GetGameObject()->GetComponent<Animator>();
-    auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
-
-    // 2. 애니메이션이 있으면 Compute Shader 실행
     if (animator) {
-        OutputDebugStringA(("Bone Count: " + to_string(animator->GetBoneCount()) + "\n").c_str());
-        OutputDebugStringA(("Current Frame: " + to_string(animator->GetCurrentFrame()) + "\n").c_str());
-        OutputDebugStringA(("Frame Ratio: " + to_string(animator->GetFrameRatio()) + "\n").c_str());
-
-        // AnimationConstants 설정
-        AnimationConstants animData = {};
-        animData.boneCount = animator->GetBoneCount();
-        animData.currentFrame = animator->GetCurrentFrame();
-        animData.nextFrame = animator->GetNextFrame();
-        animData.ratio = animator->GetFrameRatio();
-        animData.animationOffset = animator->GetCurrentAnimOffset();
-
-        // Compute Shader 실행
-        GET(DX12Graphics).GetAnimationCB()->CopyData(&animData, sizeof(AnimationConstants));
-
-        cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetComputePSO());
-        cmdList->SetComputeRootSignature(GET(DX12Graphics).GetRootSig()->Get());
-        cmdList->SetComputeRootConstantBufferView(2, GET(DX12Graphics).GetAnimationCB()->GetGPUVirtualAddress());
-
-        // BoneFrame, Offset 데이터 바인딩
-        cmdList->SetComputeRootShaderResourceView(6, animator->GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t10
-        cmdList->SetComputeRootShaderResourceView(7, animator->GetOffsetBuffer()->GetGPUVirtualAddress());     // t11
-
-        // Final 본 행렬 바인딩 (Compute Shader 출력)
-        cmdList->SetComputeRootUnorderedAccessView(8, animator->GetFinalBuffer()->GetGPUVirtualAddress());     // u0
-
-        UINT groupCount = (animData.boneCount + 255) / 256;  // 256으로 나눠서 올림
-        cmdList->Dispatch(groupCount, 1, 1);
+        animator->ExecuteComputeShader();
     }
 
     auto transform = GetGameObject()->GetComponent<Transform>();
     XMMATRIX world = transform->GetWorldMatrix();
     
-    cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
-    cmdList->SetGraphicsRootSignature(GET(DX12Graphics).GetRootSig()->Get());
-
-    ID3D12DescriptorHeap* descriptorHeaps[] = { GET(DX12Graphics).GetDescHeap()->GetSRVHeap() };
-    cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-
-    cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
-    cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
-    cmdList->SetGraphicsRootDescriptorTable(4, GET(DX12Graphics).GetGroundTexture()->GetSRV());
+    auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
+    SetupRenderingState(cmdList);
 
     if (animator) {
         cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());
     }
 
     if (!materials.empty()) {
-        // 다중 머티리얼 렌더링
-        vertexIndexBuffer->Bind(cmdList);
-        
-        UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
-        
-        for (size_t i = 0; i < subMeshes.size(); ++i) {
-            ObjectConstants objConstants = {};
-            objConstants.world = XMMatrixTranspose(world);
-            objConstants.useTexture = 1;
-            objConstants.heightScale = 1.0f;
-            objConstants.useInstancing = 0;
-            
-            const auto& matData = materials[i]->GetMaterialData();
-            objConstants.hasAlpha = !matData.alphaTexPath.empty() ? 1 : 0;
-            
-            UINT materialOffset = (myID * 5 + i) * cbSize;  // 5는 최대 머티리얼 수
-            GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
-            
-            cmdList->SetGraphicsRootConstantBufferView(1, 
-                GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
-            
-            materials[i]->BindToShader(cmdList, 5);
-            vertexIndexBuffer->DrawIndexed(cmdList,
-                subMeshes[i].indexCount,
-                subMeshes[i].startIndex);
-        }
+        RenderMultiMaterial(cmdList, world);
     }
     else if (material) {
-        // 기존 단일 머티리얼 렌더링
-        ObjectConstants objConstants = {};
-        objConstants.world = XMMatrixTranspose(world);
-        objConstants.useTexture = 1;
-        objConstants.heightScale = 1.0f;
-        objConstants.useInstancing = 0;
-        objConstants.hasAlpha = 0;  // 단일 머티리얼은 Alpha 없음
-        
-        UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
-        UINT offset = myID * cbSize;
-        GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), offset);
-        
-        cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + offset);
-        
-        material->BindToShader(cmdList, 5);
-        vertexIndexBuffer->Bind(cmdList);
-        vertexIndexBuffer->Draw(cmdList);
+        RenderSingleMaterial(cmdList, world);
     }
 }
 
@@ -146,18 +67,9 @@ void MeshRenderer::RenderInstanced(UINT instanceCount, UploadBuffer* instanceBuf
     GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);
 
     auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
-    cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
-    cmdList->SetGraphicsRootSignature(GET(DX12Graphics).GetRootSig()->Get());
+    SetupRenderingState(cmdList, instanceBuffer);
 
-    ID3D12DescriptorHeap* descriptorHeaps[] = { GET(DX12Graphics).GetDescHeap()->GetSRVHeap() };
-    cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-
-    cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
     cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress());
-    cmdList->SetGraphicsRootShaderResourceView(9, instanceBuffer->GetGPUVirtualAddress());
-
-    cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
-    cmdList->SetGraphicsRootDescriptorTable(4, GET(DX12Graphics).GetGroundTexture()->GetSRV());
 
     if (material)
     {
@@ -166,6 +78,52 @@ void MeshRenderer::RenderInstanced(UINT instanceCount, UploadBuffer* instanceBuf
 
     vertexIndexBuffer->Bind(cmdList);
     vertexIndexBuffer->DrawInstanced(cmdList, instanceCount);  
+}
+
+void MeshRenderer::RenderSingleMaterial(ID3D12GraphicsCommandList* cmdList, const XMMATRIX& world)
+{
+    ObjectConstants objConstants = {};
+    objConstants.world = XMMatrixTranspose(world);
+    objConstants.useTexture = 1;
+    objConstants.heightScale = 1.0f;
+    objConstants.useInstancing = 0;
+    objConstants.hasAlpha = 0;  // 단일 머티리얼은 Alpha 없음
+
+    UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
+    UINT offset = myID * cbSize;
+    GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), offset);
+
+    cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + offset);
+
+    material->BindToShader(cmdList, 5);
+    vertexIndexBuffer->Bind(cmdList);
+    vertexIndexBuffer->Draw(cmdList);
+}
+
+void MeshRenderer::RenderMultiMaterial(ID3D12GraphicsCommandList* cmdList, const XMMATRIX& world)
+{
+    UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
+
+    for (size_t i = 0; i < subMeshes.size(); ++i) {
+        ObjectConstants objConstants = {};
+        objConstants.world = XMMatrixTranspose(world);
+        objConstants.useTexture = 1;
+        objConstants.heightScale = 1.0f;
+        objConstants.useInstancing = 0;
+
+        const auto& matData = materials[i]->GetMaterialData();
+        objConstants.hasAlpha = !matData.alphaTexPath.empty() ? 1 : 0;
+
+        UINT materialOffset = (myID * 5 + i) * cbSize;  // 5는 캐릭당 최대 머티리얼 수
+        GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
+
+        cmdList->SetGraphicsRootConstantBufferView(1,
+            GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
+
+        materials[i]->BindToShader(cmdList, 5);
+        vertexIndexBuffer->Bind(cmdList);
+        vertexIndexBuffer->DrawIndexed(cmdList, subMeshes[i].indexCount, subMeshes[i].startIndex);
+    }
 }
 
 void MeshRenderer::SetMesh(const wstring& path)
@@ -213,49 +171,66 @@ void MeshRenderer::SetMesh(const wstring& path)
 
         if (mesh.subMeshes.size() > 1)
         {
-            // 다중 Material 용
             subMeshes = mesh.subMeshes;
-            for (const auto& matData : mats)
-            {
-                auto mat = make_shared<Material>();
-                mat->LoadFromMaterialData(GET(DX12Graphics).GetDevice()->GetDevice().Get(),
-                    GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(),
-                    matData,
-                    GET(DX12Graphics).GetDescHeap()
-                );
-
-                materials.push_back(mat);
-            }
+            SetMultiMaterials(mats);
         }
         else
         {
-            // 단일 Material 용
-            material = make_shared<Material>();
-            material->LoadFromMaterialData(
-                GET(DX12Graphics).GetDevice()->GetDevice().Get(),
-                GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(),
-                mats[0],
-                GET(DX12Graphics).GetDescHeap()
-            );
+            SetSingleMaterial(mats);
         }
 
-        // 애니메이션 데이터 전달 추가
         auto animator = GetGameObject()->GetComponent<Animator>();
         if (animator) {
-            const auto& animations = importer.GetAnimations();
-            const auto& skeleton = importer.GetSkeleton();
-
-            if (!animations.empty()) {
-                animator->SetAnimationData(animations);
-                animator->SetSkeletonData(skeleton);
-                OutputDebugStringA("Animation data loaded!\n");
-            }
+            animator->LoadAnimationFromImporter(importer);
         }
 
 		OutputDebugStringA("FBX Mesh created for rendering!\n");
 	}
 	else
 		OutputDebugStringA("Cannot create FBX Mesh for rendering!\n");
+}
+
+void MeshRenderer::SetupRenderingState(ID3D12GraphicsCommandList* cmdList, UploadBuffer* instanceBuffer)
+{
+    cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
+    cmdList->SetGraphicsRootSignature(GET(DX12Graphics).GetRootSig()->Get());
+
+    ID3D12DescriptorHeap* descriptorHeaps[] = { GET(DX12Graphics).GetDescHeap()->GetSRVHeap() };
+    cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
+    cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
+    cmdList->SetGraphicsRootDescriptorTable(3, GET(DX12Graphics).GetHeightMapTexture()->GetSRV());
+    cmdList->SetGraphicsRootDescriptorTable(4, GET(DX12Graphics).GetGroundTexture()->GetSRV());
+
+    if (instanceBuffer) {
+        cmdList->SetGraphicsRootShaderResourceView(9, instanceBuffer->GetGPUVirtualAddress());
+    }
+}
+
+void MeshRenderer::SetSingleMaterial(const vector<MaterialData> mats)
+{
+    material = make_shared<Material>();
+    material->LoadFromMaterialData(
+        GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+        GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(),
+        mats[0],
+        GET(DX12Graphics).GetDescHeap()
+    );
+}
+
+void MeshRenderer::SetMultiMaterials(const vector<MaterialData> mats)
+{
+    for (const auto& matData : mats)
+    {
+        auto mat = make_shared<Material>();
+        mat->LoadFromMaterialData(GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+            GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(),
+            matData,
+            GET(DX12Graphics).GetDescHeap()
+        );
+
+        materials.push_back(mat);
+    }
 }
 
 void MeshRenderer::ReleaseUploadBuffers()

@@ -13,6 +13,9 @@ public:
     void SetSkeletonData(const SkeletonData& skeleton);
     void PlayAnimation(int animIndex);
 
+    void ExecuteComputeShader();
+    void LoadAnimationFromImporter(const Importer& importer);
+
     // Compute Shader용 버퍼들
     UploadBuffer* GetBoneFrameBuffer() const { return _boneFrameBuffer.get(); }
     UploadBuffer* GetOffsetBuffer() const { return _offsetBuffer.get(); }
