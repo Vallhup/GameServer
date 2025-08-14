@@ -17,6 +17,9 @@ public:
 
 	// 3. 시간 정보
 	virtual float GetNowTime() = 0;
+
+	// 4. Script VM 접근
+	virtual class ScriptVM& GetScriptVM() = 0;
 };
 
 class Service : public IGameContext {
@@ -45,6 +48,8 @@ public:
 
 	virtual float GetNowTime() override;
 
+	virtual class ScriptVM& GetScriptVM() override { return *_scriptVM; }
+
 private:
 	std::atomic<bool> _running{ false };
 
@@ -57,4 +62,6 @@ private:
 	std::unique_ptr<IEventManager> _eventMng;
 	std::unique_ptr<IGameLogic> _gameLogic;
 	std::unique_ptr<IGameWorld> _gameWorld;
+
+	static thread_local std::unique_ptr<ScriptVM> _scriptVM;
 };

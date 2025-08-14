@@ -56,6 +56,10 @@ bool Service::Start()
 		for (unsigned int i = 0; i < threadCount; ++i) {
 			_workers.emplace_back([this]()
 				{
+					if (not _scriptVM) {
+						_scriptVM = std::make_unique<ScriptVM>(/* Script Load °æ·Î */);
+					}
+
 					while (_running.load()) {
 						if (not _iocpCore->Dispatch()) {
 							int error = WSAGetLastError();
