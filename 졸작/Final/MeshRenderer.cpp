@@ -269,4 +269,6 @@ void MeshRenderer::ReleaseUploadBuffers()
     for (auto& mat : materials) {
         mat->ReleaseUploadBuffers();
     }
+
+    // 애니메이션 관련 Uploadbuffers는 지속적인 업데이트를 위해 해제 안하는게 맞음.
 }

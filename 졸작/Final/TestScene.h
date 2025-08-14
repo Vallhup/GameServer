@@ -27,6 +27,8 @@ private:
 	vector<XMMATRIX> knightMatrix;
 	unique_ptr<UploadBuffer> instanceBuffer;
 
+	shared_ptr<GameObject> strut;
+
 	static constexpr int INSTANCE_COUNT = 10000;
 };
 

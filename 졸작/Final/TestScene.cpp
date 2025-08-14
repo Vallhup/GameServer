@@ -9,6 +9,7 @@
 #include "UploadBuffer.h"
 #include "Material.h"
 #include "DX12Graphics.h"
+#include "Animator.h"
 
 TestScene::~TestScene() = default;
 
@@ -37,7 +38,21 @@ void TestScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 	OutputDebugStringA("----------------------------------------\nTestScene Data has been created!! \n");
     GET(Camera).Initialize();
 
-	knightTemplate = make_shared<GameObject>();
+	strut = make_shared<GameObject>();
+	auto meshrenderer = strut->AddComponent<MeshRenderer>();
+	auto transform = strut->AddComponent<Transform>();
+	auto animator = strut->AddComponent<Animator>();
+	meshrenderer->SetMesh(L"../FBXOutput/Strut Walking");
+	transform->SetPosition(0.f, 0.f, 0.5f);
+	transform->SetRotation(-1.57f, 0.f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+
+	GET(DX12Graphics).FlushCommandQueue();
+	GET(DX12Graphics).ResetCommandQueue();
+
+	meshrenderer->ReleaseUploadBuffers();
+
+	/*knightTemplate = make_shared<GameObject>();
 	auto meshRenderer = knightTemplate->AddComponent<MeshRenderer>();
 	meshRenderer->SetMesh(L"../FBXOutput/Strut Walking");
 
@@ -66,14 +81,15 @@ void TestScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 	GET(DX12Graphics).ResetCommandQueue();
 	
 	meshRenderer->ReleaseUploadBuffers();
-	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
+	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");*/
 }
 
 void TestScene::UpdateScene(const float deltaTime)
 {
 	GET(Camera).Update(deltaTime);
 
-	knightTemplate->Update(deltaTime);
+	strut->Update(deltaTime);
+	/*knightTemplate->Update(deltaTime);*/
 
 	if (GET(Input).GetKeyDown(VK_TAB))
 		GET(SceneManager).RequestSceneChange(SceneType::Login);
@@ -81,12 +97,18 @@ void TestScene::UpdateScene(const float deltaTime)
 
 void TestScene::RenderScene()
 {
-	if (knightTemplate)
+	if (strut)
+	{
+		auto meshrenderer = strut->GetComponent<MeshRenderer>();
+		if (meshrenderer)
+			meshrenderer->Render();
+	}
+	/*if (knightTemplate)
 	{
 		auto meshRenderer = knightTemplate->GetComponent<MeshRenderer>();
 		if (meshRenderer)
 			meshRenderer->RenderInstanced(INSTANCE_COUNT, instanceBuffer.get());
-	}
+	}*/
 }
 
 int TestScene::GetSceneWidth() const
