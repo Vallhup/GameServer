@@ -49,6 +49,8 @@
 
 #include "Input.h"
 
+#include "IAiBehavior.h"
+
 #include "IComponent.h"
 #include "TransformComponent.h"
 #include "MovementComponent.h"

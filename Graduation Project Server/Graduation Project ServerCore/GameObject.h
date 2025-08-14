@@ -58,8 +58,8 @@ public:
 
 		_types[std::type_index(typeid(T))] = raw;
 		_components.push_back(std::move(component));
-
 		raw->Register();
+
 		return raw;
 	}
 

@@ -1,8 +1,5 @@
 #pragma once
 
-// 포기
-// 내 능력에 비해 너무 많은 걸 건드려버렸다
-
 enum class InputButton : uint32_t
 {
 	None = 0,
