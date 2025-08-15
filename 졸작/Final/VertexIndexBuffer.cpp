@@ -5,7 +5,7 @@ void VertexIndexBuffer::Initialize(ID3D12Device* device, ID3D12GraphicsCommandLi
 {
     UINT vbSize = static_cast<UINT>(sizeof(Vertex) * vertices.size());
     UINT ibSize = static_cast<UINT>(sizeof(UINT) * indices.size());
-    indexcount = static_cast<UINT>(indices.size());
+    indexCount = static_cast<UINT>(indices.size());
 
     CD3DX12_HEAP_PROPERTIES heapDefault(D3D12_HEAP_TYPE_DEFAULT);
     CD3DX12_RESOURCE_DESC vbDesc = CD3DX12_RESOURCE_DESC::Buffer(vbSize);
@@ -16,7 +16,7 @@ void VertexIndexBuffer::Initialize(ID3D12Device* device, ID3D12GraphicsCommandLi
         &vbDesc,
         D3D12_RESOURCE_STATE_COPY_DEST,
         nullptr,
-        IID_PPV_ARGS(&vertexbuffer)
+        IID_PPV_ARGS(&vertexBuffer)
     )), "Failed to create VertexBuffer");
 
     CD3DX12_HEAP_PROPERTIES heapUpload(D3D12_HEAP_TYPE_UPLOAD);
@@ -26,7 +26,7 @@ void VertexIndexBuffer::Initialize(ID3D12Device* device, ID3D12GraphicsCommandLi
         &vbDesc,
         D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
-        IID_PPV_ARGS(&vertexuploadbuffer)
+        IID_PPV_ARGS(&vertexUploadBuffer)
     )), "Failed to create Vertex UploadBuffer");
 
     D3D12_SUBRESOURCE_DATA vbData = {};
@@ -34,18 +34,18 @@ void VertexIndexBuffer::Initialize(ID3D12Device* device, ID3D12GraphicsCommandLi
     vbData.RowPitch = vbSize;
     vbData.SlicePitch = vbSize;
 
-    UpdateSubresources<1>(cmdList, vertexbuffer.Get(), vertexuploadbuffer.Get(), 0, 0, 1, &vbData);
+    UpdateSubresources<1>(cmdList, vertexBuffer.Get(), vertexUploadBuffer.Get(), 0, 0, 1, &vbData);
 
     CD3DX12_RESOURCE_BARRIER vbBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
-        vertexbuffer.Get(),
+        vertexBuffer.Get(),
         D3D12_RESOURCE_STATE_COPY_DEST,
         D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER
     );
     cmdList->ResourceBarrier(1, &vbBarrier);
 
-    vertexview.BufferLocation = vertexbuffer->GetGPUVirtualAddress();
-    vertexview.StrideInBytes = sizeof(Vertex);
-    vertexview.SizeInBytes = vbSize;
+    vertexView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
+    vertexView.StrideInBytes = sizeof(Vertex);
+    vertexView.SizeInBytes = vbSize;
 
     CD3DX12_RESOURCE_DESC ibDesc = CD3DX12_RESOURCE_DESC::Buffer(ibSize);
 
@@ -55,7 +55,7 @@ void VertexIndexBuffer::Initialize(ID3D12Device* device, ID3D12GraphicsCommandLi
         &ibDesc,
         D3D12_RESOURCE_STATE_COPY_DEST,
         nullptr,
-        IID_PPV_ARGS(&indexbuffer)
+        IID_PPV_ARGS(&indexBuffer)
     )), "Failed to create IndexBuffer");
 
     MASSERT(SUCCEEDED(device->CreateCommittedResource(
@@ -64,7 +64,7 @@ void VertexIndexBuffer::Initialize(ID3D12Device* device, ID3D12GraphicsCommandLi
         &ibDesc,
         D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
-        IID_PPV_ARGS(&indexuploadbuffer)
+        IID_PPV_ARGS(&indexUploadBuffer)
     )), "Failed to create Index UploadBuffer");
 
     D3D12_SUBRESOURCE_DATA ibData = {};
@@ -72,44 +72,44 @@ void VertexIndexBuffer::Initialize(ID3D12Device* device, ID3D12GraphicsCommandLi
     ibData.RowPitch = ibSize;
     ibData.SlicePitch = ibSize;
 
-    UpdateSubresources<1>(cmdList, indexbuffer.Get(), indexuploadbuffer.Get(), 0, 0, 1, &ibData);
+    UpdateSubresources<1>(cmdList, indexBuffer.Get(), indexUploadBuffer.Get(), 0, 0, 1, &ibData);
 
     CD3DX12_RESOURCE_BARRIER ibBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
-        indexbuffer.Get(),
+        indexBuffer.Get(),
         D3D12_RESOURCE_STATE_COPY_DEST,
         D3D12_RESOURCE_STATE_INDEX_BUFFER
     );
     cmdList->ResourceBarrier(1, &ibBarrier);
 
-    indexview.BufferLocation = indexbuffer->GetGPUVirtualAddress();
-    indexview.SizeInBytes = ibSize;
-    indexview.Format = DXGI_FORMAT_R32_UINT;
+    indexView.BufferLocation = indexBuffer->GetGPUVirtualAddress();
+    indexView.SizeInBytes = ibSize;
+    indexView.Format = DXGI_FORMAT_R32_UINT;
 }
 
 void VertexIndexBuffer::Bind(ID3D12GraphicsCommandList* cmdList)
 {
     cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    cmdList->IASetVertexBuffers(0, 1, &vertexview);
-    cmdList->IASetIndexBuffer(&indexview);
+    cmdList->IASetVertexBuffers(0, 1, &vertexView);
+    cmdList->IASetIndexBuffer(&indexView);
 }
 
 void VertexIndexBuffer::Draw(ID3D12GraphicsCommandList* cmdList)
 {
-    cmdList->DrawIndexedInstanced(indexcount, 1, 0, 0, 0);
+    cmdList->DrawIndexedInstanced(indexCount, 1, 0, 0, 0);
 }
 
-void VertexIndexBuffer::DrawInstanced(ID3D12GraphicsCommandList* cmdList, UINT instanceCount)
+void VertexIndexBuffer::DrawInstanced(ID3D12GraphicsCommandList* cmdList, UINT instancecount)
 {
-    cmdList->DrawIndexedInstanced(indexcount, instanceCount, 0, 0, 0);
+    cmdList->DrawIndexedInstanced(indexCount, instancecount, 0, 0, 0);
 }
 
-void VertexIndexBuffer::DrawIndexed(ID3D12GraphicsCommandList* cmdList, UINT indexCount, UINT startIndex)
+void VertexIndexBuffer::DrawIndexed(ID3D12GraphicsCommandList* cmdList, UINT indexcount, UINT startindex)
 {
-    cmdList->DrawIndexedInstanced(indexCount, 1, startIndex, 0, 0);
+    cmdList->DrawIndexedInstanced(indexcount, 1, startindex, 0, 0);
 }
 
 void VertexIndexBuffer::ReleaseUploadBuffers()
 {
-    vertexuploadbuffer.Reset(); 
-    indexuploadbuffer.Reset();
+    vertexUploadBuffer.Reset(); 
+    indexUploadBuffer.Reset();
 }

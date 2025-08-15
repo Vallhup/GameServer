@@ -27,14 +27,14 @@ private:
 	void CreateFence(ID3D12Device* device);
 
 private:
-	ComPtr<ID3D12CommandQueue>			cmdqueue;
-	ComPtr<ID3D12CommandAllocator>		cmdalloc;
-	ComPtr<ID3D12GraphicsCommandList>	cmdlist;
+	ComPtr<ID3D12CommandQueue>			cmdQueue;
+	ComPtr<ID3D12CommandAllocator>		cmdAlloc;
+	ComPtr<ID3D12GraphicsCommandList>	cmdList;
 
 	ComPtr<ID3D12Fence>		fence;
-	UINT64					fencevalue = 0;
-	HANDLE					fenceevent = INVALID_HANDLE_VALUE;
+	UINT64					fenceValue = 0;
+	HANDLE					fenceEvent = INVALID_HANDLE_VALUE;
 
-	const float* backgroundcolor = {};
+	const float* backgroundColor = {};
 };
 

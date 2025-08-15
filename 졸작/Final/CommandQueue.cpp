@@ -4,7 +4,7 @@
 
 CommandQueue::~CommandQueue()
 {
-	CloseHandle(fenceevent);
+	CloseHandle(fenceEvent);
 }
 
 void CommandQueue::Initialize(ID3D12Device* device)
@@ -14,13 +14,13 @@ void CommandQueue::Initialize(ID3D12Device* device)
 	CreateCommandList(device);
 
 	CreateFence(device);
-	fenceevent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
 void CommandQueue::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect, shared_ptr<SwapChain> swapchain, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle)
 {
-	cmdalloc->Reset();
-	cmdlist->Reset(cmdalloc.Get(), nullptr);
+	cmdAlloc->Reset();
+	cmdList->Reset(cmdAlloc.Get(), nullptr);
 
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		swapchain->GetBackRTVBuffer().Get(),
@@ -28,19 +28,19 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect,
 		D3D12_RESOURCE_STATE_RENDER_TARGET
 	);
 
-	cmdlist->ResourceBarrier(1, &barrier);
+	cmdList->ResourceBarrier(1, &barrier);
 
-	cmdlist->RSSetViewports(1, &vp);
-	cmdlist->RSSetScissorRects(1, &rect);
+	cmdList->RSSetViewports(1, &vp);
+	cmdList->RSSetScissorRects(1, &rect);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = swapchain->GetBackRTV();
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsv = dsvHandle;
 
-	cmdlist->ClearRenderTargetView(rtv, backgroundcolor, 0, nullptr);
-	cmdlist->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	cmdList->ClearRenderTargetView(rtv, backgroundColor, 0, nullptr);
+	cmdList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-	cmdlist->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+	cmdList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 }
 
 void CommandQueue::RenderEnd(shared_ptr<SwapChain> swapchain)
@@ -50,11 +50,11 @@ void CommandQueue::RenderEnd(shared_ptr<SwapChain> swapchain)
 		D3D12_RESOURCE_STATE_RENDER_TARGET,		
 		D3D12_RESOURCE_STATE_PRESENT);			
 
-	cmdlist->ResourceBarrier(1, &barrier);
-	cmdlist->Close();
+	cmdList->ResourceBarrier(1, &barrier);
+	cmdList->Close();
 
-	ID3D12CommandList* cmdListArr[] = { cmdlist.Get() };
-	cmdqueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
+	ID3D12CommandList* cmdListArr[] = { cmdList.Get() };
+	cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
 
 	swapchain->Present();		
 
@@ -65,30 +65,30 @@ void CommandQueue::RenderEnd(shared_ptr<SwapChain> swapchain)
 
 void CommandQueue::WaitSync()
 {
-	fencevalue++;
+	fenceValue++;
 
-	cmdqueue->Signal(fence.Get(), fencevalue);
+	cmdQueue->Signal(fence.Get(), fenceValue);
 
-	if (fence->GetCompletedValue() < fencevalue)
+	if (fence->GetCompletedValue() < fenceValue)
 	{
-		fence->SetEventOnCompletion(fencevalue, fenceevent);
-		WaitForSingleObject(fenceevent, INFINITE);
+		fence->SetEventOnCompletion(fenceValue, fenceEvent);
+		WaitForSingleObject(fenceEvent, INFINITE);
 	}
 }
 
 ComPtr<ID3D12CommandQueue> CommandQueue::GetCmdQueue() const
 {
-	return cmdqueue;
+	return cmdQueue;
 }
 
 ComPtr<ID3D12CommandAllocator> CommandQueue::GetCmdAlloc() const
 {
-	return cmdalloc;
+	return cmdAlloc;
 }
 
 ComPtr<ID3D12GraphicsCommandList> CommandQueue::GetCmdList() const
 {
-	return cmdlist;
+	return cmdList;
 }
 
 void CommandQueue::CreateCommandQueue(ID3D12Device* device)
@@ -98,7 +98,7 @@ void CommandQueue::CreateCommandQueue(ID3D12Device* device)
 		.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE
 	};
 
-	HRESULT hr = device->CreateCommandQueue(&desc, IID_PPV_ARGS(&cmdqueue));
+	HRESULT hr = device->CreateCommandQueue(&desc, IID_PPV_ARGS(&cmdQueue));
 
 	if (FAILED(hr))
 		OutputDebugStringA("Failed to create Command Queue\n");
@@ -106,7 +106,7 @@ void CommandQueue::CreateCommandQueue(ID3D12Device* device)
 
 void CommandQueue::CreateCommandAlloc(ID3D12Device* device)
 {
-	HRESULT hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdalloc));
+	HRESULT hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAlloc));
 
 	if (FAILED(hr))
 		OutputDebugStringA("Failed to create Command Allocator\n");
@@ -114,7 +114,7 @@ void CommandQueue::CreateCommandAlloc(ID3D12Device* device)
 
 void CommandQueue::CreateCommandList(ID3D12Device* device)
 {
-	HRESULT hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdalloc.Get(), nullptr, IID_PPV_ARGS(&cmdlist));
+	HRESULT hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAlloc.Get(), nullptr, IID_PPV_ARGS(&cmdList));
 
 	if (FAILED(hr))
 		OutputDebugStringA("Failed to create Command List\n");
@@ -130,5 +130,5 @@ void CommandQueue::CreateFence(ID3D12Device* device)
 
 void CommandQueue::SetBackgroundColor(const float* color)
 {
-	backgroundcolor = color;
+	backgroundColor = color;
 }

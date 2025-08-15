@@ -52,7 +52,7 @@ void RootSignature::Initialize(ID3D12Device* device)
 		0,
 		serializedRootSig->GetBufferPointer(),
 		serializedRootSig->GetBufferSize(),
-		IID_PPV_ARGS(&rootsignature)
+		IID_PPV_ARGS(&rootSignature)
 	);
 
 	MASSERT(SUCCEEDED(hr), "Failed to create Root Signature");
@@ -60,5 +60,5 @@ void RootSignature::Initialize(ID3D12Device* device)
 
 ID3D12RootSignature* RootSignature::Get() const
 {
-	return rootsignature.Get();
+	return rootSignature.Get();
 }

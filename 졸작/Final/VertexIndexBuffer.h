@@ -7,18 +7,18 @@ public:
 
     void Bind(ID3D12GraphicsCommandList* cmdList);
     void Draw(ID3D12GraphicsCommandList* cmdList);
-    void DrawInstanced(ID3D12GraphicsCommandList* cmdList, UINT instanceCount);
-    void DrawIndexed(ID3D12GraphicsCommandList* cmdList, UINT indexCount, UINT startIndex);
+    void DrawInstanced(ID3D12GraphicsCommandList* cmdList, UINT instancecount);
+    void DrawIndexed(ID3D12GraphicsCommandList* cmdList, UINT indexcount, UINT startindex);
     void ReleaseUploadBuffers();
 
 private:
-    ComPtr<ID3D12Resource> vertexbuffer;
-    ComPtr<ID3D12Resource> vertexuploadbuffer;
-    D3D12_VERTEX_BUFFER_VIEW vertexview = {};
+    ComPtr<ID3D12Resource> vertexBuffer;
+    ComPtr<ID3D12Resource> vertexUploadBuffer;
+    D3D12_VERTEX_BUFFER_VIEW vertexView = {};
 
-    ComPtr<ID3D12Resource> indexbuffer;
-    ComPtr<ID3D12Resource> indexuploadbuffer;
-    D3D12_INDEX_BUFFER_VIEW indexview = {};
+    ComPtr<ID3D12Resource> indexBuffer;
+    ComPtr<ID3D12Resource> indexUploadBuffer;
+    D3D12_INDEX_BUFFER_VIEW indexView = {};
 
-    UINT indexcount = 0;
+    UINT indexCount = 0;
 };

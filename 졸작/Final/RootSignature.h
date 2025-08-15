@@ -7,6 +7,6 @@ public:
 
 	ID3D12RootSignature* Get() const;
 private:
-	ComPtr<ID3D12RootSignature> rootsignature;
+	ComPtr<ID3D12RootSignature> rootSignature;
 };
 

@@ -51,13 +51,13 @@ public:
 
 private:
     unique_ptr<Device> device;
-    shared_ptr<SwapChain> swapchain;
+    shared_ptr<SwapChain> swapChain;
     unique_ptr<CommandQueue> cmdQueue;
     unique_ptr<RootSignature> rootSig;
     unique_ptr<Shader> shader;
     unique_ptr<UploadBuffer> frameCB;
     unique_ptr<UploadBuffer> sceneCB;
     unique_ptr<UploadBuffer> animationCB;
-    unique_ptr<DepthStencilBuffer> depthstencilbuffer;
-    unique_ptr<DescriptorHeap> descriptorheap;
+    unique_ptr<DepthStencilBuffer> depthStencilBuffer;
+    unique_ptr<DescriptorHeap> descriptorHeap;
 };

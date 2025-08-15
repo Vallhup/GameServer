@@ -26,7 +26,7 @@ protected:
 private:
 	vector<shared_ptr<GameObject>> gameObjects;
 
-	shared_ptr<GameObject> Dragon;
+	shared_ptr<GameObject> dragon;
 	shared_ptr<GameObject> knight;
 	shared_ptr<GameObject> strut2;
 

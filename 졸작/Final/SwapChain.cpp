@@ -9,27 +9,27 @@ void SwapChain::Initialize(HWND hwnd, IDXGIFactory6* dxgi, ID3D12Device* device,
 
 void SwapChain::Present()
 {
-	swapchain->Present(0, 0);
+	swapChain->Present(0, 0);
 }
 
 void SwapChain::SwapIndex()
 {
-	backbufferindex = (backbufferindex + 1) % SWAP_CHAIN_BUFFER_COUNT;
+	backBufferIndex = (backBufferIndex + 1) % SWAP_CHAIN_BUFFER_COUNT;
 }
 
 ComPtr<ID3D12Resource> SwapChain::GetBackRTVBuffer() const
 {
-	return rtvbuffer[backbufferindex];
+	return rtvBuffer[backBufferIndex];
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE SwapChain::GetBackRTV() const
 {
-	return rtvhandle[backbufferindex];
+	return rtvHandle[backBufferIndex];
 }
 
 void SwapChain::CreateSwapChain(HWND hwnd, IDXGIFactory6* dxgi, ID3D12CommandQueue* cmdQueue)
 {
-	swapchain.Reset();
+	swapChain.Reset();
 
 	DXGI_SWAP_CHAIN_DESC sd = {
 		.BufferDesc = {
@@ -55,10 +55,10 @@ void SwapChain::CreateSwapChain(HWND hwnd, IDXGIFactory6* dxgi, ID3D12CommandQue
 		.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
 	};
 
-	dxgi->CreateSwapChain(cmdQueue, &sd, &swapchain);
+	dxgi->CreateSwapChain(cmdQueue, &sd, &swapChain);
 
 	for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
-		swapchain->GetBuffer(i, IID_PPV_ARGS(&rtvbuffer[i]));
+		swapChain->GetBuffer(i, IID_PPV_ARGS(&rtvBuffer[i]));
 }
 
 void SwapChain::CreateRenderTargetView(ID3D12Device* device)
@@ -72,13 +72,13 @@ void SwapChain::CreateRenderTargetView(ID3D12Device* device)
 		.NodeMask = 0
 	};
 
-	device->CreateDescriptorHeap(&rtvDesc, IID_PPV_ARGS(&rtvheap));
+	device->CreateDescriptorHeap(&rtvDesc, IID_PPV_ARGS(&rtvHeap));
 
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapBegin = rtvheap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapBegin = rtvHeap->GetCPUDescriptorHandleForHeapStart();
 
 	for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
 	{
-		rtvhandle[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeapBegin, i * _rtvHeapSize);
-		device->CreateRenderTargetView(rtvbuffer[i].Get(), nullptr, rtvhandle[i]);
+		rtvHandle[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeapBegin, i * _rtvHeapSize);
+		device->CreateRenderTargetView(rtvBuffer[i].Get(), nullptr, rtvHandle[i]);
 	}
 }

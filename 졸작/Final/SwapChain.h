@@ -15,12 +15,12 @@ private:
 	void CreateRenderTargetView(ID3D12Device* device);
 
 private:
-	ComPtr<IDXGISwapChain> swapchain;
+	ComPtr<IDXGISwapChain> swapChain;
 	
-	ComPtr<ID3D12Resource>			rtvbuffer[SWAP_CHAIN_BUFFER_COUNT];
-	ComPtr<ID3D12DescriptorHeap>	rtvheap;
-	D3D12_CPU_DESCRIPTOR_HANDLE		rtvhandle[SWAP_CHAIN_BUFFER_COUNT];
+	ComPtr<ID3D12Resource>			rtvBuffer[SWAP_CHAIN_BUFFER_COUNT];
+	ComPtr<ID3D12DescriptorHeap>	rtvHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE		rtvHandle[SWAP_CHAIN_BUFFER_COUNT];
 
-	UINT32 backbufferindex = 0;
+	UINT32 backBufferIndex = 0;
 };
 

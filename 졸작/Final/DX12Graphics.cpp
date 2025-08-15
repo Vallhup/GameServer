@@ -20,27 +20,27 @@ DX12Graphics& DX12Graphics::Get()
 void DX12Graphics::Initialize(HWND hwnd)
 {
 	device = make_unique<Device>();
-	swapchain = make_shared<SwapChain>();
+	swapChain = make_shared<SwapChain>();
 	cmdQueue = make_unique<CommandQueue>();
 	rootSig = make_unique<RootSignature>();
 	shader = make_unique<Shader>();
 	frameCB = make_unique<UploadBuffer>();
 	sceneCB = make_unique<UploadBuffer>();
 	animationCB = make_unique<UploadBuffer>();
-	depthstencilbuffer = make_unique<DepthStencilBuffer>();
-	descriptorheap = make_unique<DescriptorHeap>();
+	depthStencilBuffer = make_unique<DepthStencilBuffer>();
+	descriptorHeap = make_unique<DescriptorHeap>();
 
 	device->Initialize(hwnd);
 	cmdQueue->Initialize(device->GetDevice().Get());
-	swapchain->Initialize(hwnd, device->GetDXGI().Get(), device->GetDevice().Get(), cmdQueue->GetCmdQueue().Get());
+	swapChain->Initialize(hwnd, device->GetDXGI().Get(), device->GetDevice().Get(), cmdQueue->GetCmdQueue().Get());
 	rootSig->Initialize(device->GetDevice().Get());
 	shader->Initialize(device->GetDevice().Get(), rootSig->Get(), L"BasicVS.hlsli", L"BasicPS.hlsli");
 	shader->InitializeComputeShader(device->GetDevice().Get(), rootSig->Get(), L"Animation.hlsli");
 	frameCB->Initialize(device->GetDevice().Get(), sizeof(XMMATRIX) * 2);
 	sceneCB->Initialize(device->GetDevice().Get(), 256 * 100);
 	animationCB->Initialize(device->GetDevice().Get(), sizeof(AnimationConstants));
-	depthstencilbuffer->Initialize(device->GetDevice().Get());
-	descriptorheap->Initialize(device->GetDevice().Get());
+	depthStencilBuffer->Initialize(device->GetDevice().Get());
+	descriptorHeap->Initialize(device->GetDevice().Get());
 }
 
 void DX12Graphics::FlushCommandQueue()
@@ -61,12 +61,12 @@ void DX12Graphics::ResetCommandQueue()
 
 void DX12Graphics::RenderBegin(D3D12_VIEWPORT viewport, D3D12_RECT scissorRect)
 {
-	cmdQueue->RenderBegin(viewport, scissorRect, swapchain, depthstencilbuffer->GetDSVCpuHandle());
+	cmdQueue->RenderBegin(viewport, scissorRect, swapChain, depthStencilBuffer->GetDSVCpuHandle());
 }
 
 void DX12Graphics::RenderEnd()
 {
-	cmdQueue->RenderEnd(swapchain);
+	cmdQueue->RenderEnd(swapChain);
 }
 
 UploadBuffer* DX12Graphics::GetFrameCB() const
@@ -86,7 +86,7 @@ UploadBuffer* DX12Graphics::GetAnimationCB() const
 
 DescriptorHeap* DX12Graphics::GetDescHeap() const
 {
-	return descriptorheap.get();
+	return descriptorHeap.get();
 }
 
 Device* DX12Graphics::GetDevice() const

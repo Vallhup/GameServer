@@ -9,8 +9,8 @@ public:
 	DXGI_FORMAT GetDSVFormat();
 
 private:
-	ComPtr<ID3D12Resource>				dsvbuffer;
-	ComPtr<ID3D12DescriptorHeap>		dsvheap;
-	D3D12_CPU_DESCRIPTOR_HANDLE			dsvhandle = {};
-	DXGI_FORMAT							dsvformat = {};
+	ComPtr<ID3D12Resource>				dsvBuffer;
+	ComPtr<ID3D12DescriptorHeap>		dsvHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE			dsvHandle = {};
+	DXGI_FORMAT							dsvFormat = {};
 };

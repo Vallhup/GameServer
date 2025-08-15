@@ -35,15 +35,15 @@ void GameScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 	GET(Camera).Initialize();
 
 	{
-		Dragon = make_shared<GameObject>();
-		auto meshRenderer = Dragon->AddComponent<MeshRenderer>();
-		auto transform = Dragon->AddComponent<Transform>();
-		auto animator = Dragon->AddComponent<Animator>();
+		dragon = make_shared<GameObject>();
+		auto meshRenderer = dragon->AddComponent<MeshRenderer>();
+		auto transform = dragon->AddComponent<Transform>();
+		auto animator = dragon->AddComponent<Animator>();
 		meshRenderer->SetMesh(L"../FBXOutput/Dragon");
 		transform->SetPosition(0.f, 0.f, 0.5f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(Dragon);
+		AddGameObject(dragon);
 
 		OutputDebugStringA("Dragon created!!\n");
 	}
@@ -78,8 +78,8 @@ void GameScene::UpdateScene(const float deltaTime)
 	GET(Camera).Update(deltaTime);
 
 	// ★ Dragon 애니메이션 전환 (키 중복 방지)
-	if (Dragon) {
-		auto animator = Dragon->GetComponent<Animator>();
+	if (dragon) {
+		auto animator = dragon->GetComponent<Animator>();
 		if (animator) {
 			// 1번 키
 			bool key1Current = (GetAsyncKeyState('1') & 0x8000) != 0;
