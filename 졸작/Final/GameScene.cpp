@@ -137,7 +137,7 @@ void GameScene::UpdateScene(const float deltaTime)
 			// 3번 키
 			bool key3Current = (GetAsyncKeyState('3') & 0x8000) != 0;
 			if (key3Current && !key3Pressed) {
-				animator->TransitionToAnimation(2, 0.3f);  // Run
+				animator->TransitionToAnimation(2, 0.4f);  // Run
 				OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
 			}
 			key3Pressed = key3Current;
@@ -145,7 +145,7 @@ void GameScene::UpdateScene(const float deltaTime)
 			// 4번 키
 			bool key4Current = (GetAsyncKeyState('4') & 0x8000) != 0;
 			if (key4Current && !key4Pressed) {
-				animator->TransitionToAnimation(3, 0.25f);  // Walk
+				animator->TransitionToAnimation(3, 0.4f);  // Walk
 				OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
 			}
 			key4Pressed = key4Current;

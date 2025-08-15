@@ -5,7 +5,7 @@
 void DescriptorHeap::Initialize(ID3D12Device* device)
 {
     D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-    srvHeapDesc.NumDescriptors = 80;  // 1¹ø height + 2¹ø terrain + ¸ðµ¨´ç 40°³ x2 = 82
+    srvHeapDesc.NumDescriptors = 80;  // ¸ðµ¨´ç 40°³ x2 = 80
     srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
