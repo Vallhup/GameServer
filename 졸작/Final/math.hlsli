@@ -59,11 +59,13 @@ matrix MatrixRotationQuaternion(in float4 Quaternion)
 }
 
 
-matrix MatrixAffineTransformation(in float4 Scaling, in float4 RotationOrigin, in float4 RotationQuaternion, in float4 Translation)
+matrix MatrixAffineTransformation(in float4 Scaling, in float4 RotationQuaternion, in float4 Translation)
 {
+    float3 RotationOrigin = (float3) 0.f;
+    
     matrix MScaling = (matrix) 0.f;
     MScaling._11_22_33 = Scaling.xyz;
-    float4 VRotationOrigin = float4(RotationOrigin.xyz, 0.f);
+    float4 VRotationOrigin = float4(RotationOrigin, 0.f);
     matrix MRotation = MatrixRotationQuaternion(RotationQuaternion);
     float4 VTranslation = float4(Translation.xyz, 0.f);
 

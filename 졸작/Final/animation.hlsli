@@ -35,13 +35,11 @@ matrix CalculateBoneMatrix(int boneIndex, int currentFrame, int nextFrame, float
     uint idx = animOffset + (aBoneCount * currentFrame) + boneIndex;
     uint nextIdx = animOffset + (aBoneCount * nextFrame) + boneIndex;
 
-    float4 quaternionZero = float4(0.f, 0.f, 0.f, 1.f);
-
     float4 scale = lerp(aBoneFrame[idx].scale, aBoneFrame[nextIdx].scale, ratio);
     float4 rotation = QuaternionSlerp(aBoneFrame[idx].rotation, aBoneFrame[nextIdx].rotation, ratio);
     float4 translation = lerp(aBoneFrame[idx].translation, aBoneFrame[nextIdx].translation, ratio);
 
-    matrix matBone = MatrixAffineTransformation(scale, quaternionZero, rotation, translation);
+    matrix matBone = MatrixAffineTransformation(scale, rotation, translation);
 
     return mul(aOffset[boneIndex], matBone);
 }
