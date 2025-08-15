@@ -10,95 +10,156 @@
 
 void Animator::Update(float deltaTime)
 {
-    if (_animations.empty()) return;
+    if (mAnimations.empty()) return;
 
-    _currentAnimationOffset = 0;
-    for (int i = 0; i < _clipIndex; ++i) {
-        _currentAnimationOffset += _animations[i].keyFrames.size();
+    if (mIsBlending) {
+        blendTime += deltaTime;
+        blendRatio = blendTime / blendDuration;
+
+        if (blendRatio >= 1.0f) {
+            blendRatio = 1.0f;
+            mIsBlending = false;
+            mPrevClipIndex = -1;
+        }
+
+        UpdatePrevAnimation(deltaTime);
+        UpdateCurrentAnimation(deltaTime);
+    }
+    else
+        UpdateCurrentAnimation(deltaTime);
+}
+
+void Animator::UpdateCurrentAnimation(float deltaTime)
+{
+    mCurrentAnimOffset = 0;
+
+    for (int i = 0; i < mClipIndex; ++i) {
+        mCurrentAnimOffset += mAnimations[i].keyFrames.size();
     }
 
-    _updateTime += deltaTime;
-    const auto& animClip = _animations[_clipIndex];
+    mUpdateTime += deltaTime;
+    const auto& animClip = mAnimations[mClipIndex];
 
-    if (_updateTime >= animClip.duration) {
-        _updateTime = 0.0f;
+    if (mUpdateTime >= animClip.duration) {
+        mUpdateTime = 0.0f;
     }
 
     const float framerate = static_cast<float>(animClip.frameCount) / animClip.duration;
-    _frame = static_cast<int32_t>(_updateTime * framerate);
-    _frame = min(_frame, animClip.frameCount - 1);
-    _nextFrame = min(_frame + 1, animClip.frameCount - 1);
-    _frameRatio = static_cast<float>(_updateTime * framerate - _frame);
+    mFrame = static_cast<int32_t>(mUpdateTime * framerate);
+    mFrame = min(mFrame, animClip.frameCount - 1);
+    mNextFrame = min(mFrame + 1, animClip.frameCount - 1);
+    mFrameRatio = static_cast<float>(mUpdateTime * framerate - mFrame);
+}
+
+void Animator::UpdatePrevAnimation(float deltaTime)
+{
+    if (mPrevClipIndex < 0 || mPrevClipIndex >= mAnimations.size()) return;
+
+    mPrevAnimOffset = 0;
+
+    for (int i = 0; i < mPrevClipIndex; ++i) {
+        mPrevAnimOffset += mAnimations[i].keyFrames.size();
+    }
+
+    mPrevUpdateTime += deltaTime;
+
+    const auto& animClip = mAnimations[mPrevClipIndex];
+
+    if (mPrevUpdateTime >= animClip.duration) {
+        mPrevUpdateTime = 0.0f;
+    }
+
+    const float framerate = static_cast<float>(animClip.frameCount) / animClip.duration;
+    mPrevFrame = static_cast<int32_t>(mPrevUpdateTime * framerate);
+    mPrevFrame = min(mPrevFrame, animClip.frameCount - 1);
+    mPrevNextFrame = min(mPrevFrame + 1, animClip.frameCount - 1);
+    mPrevFrameRatio = static_cast<float>(mPrevUpdateTime * framerate - mPrevFrame);
 }
 
 void Animator::SetAnimationData(const vector<AnimClipInfo>& animations)  
 {
-    _animations = animations;
-    if (!_animations.empty()) {
-        _boneCount = static_cast<int>(_animations[0].keyFrames.size() / _animations[0].frameCount);
+    mAnimations = animations;
+    if (!mAnimations.empty()) {
+        mBoneCount = static_cast<int>(mAnimations[0].keyFrames.size() / mAnimations[0].frameCount);
         CreateBuffers();
     }
 }
 
 void Animator::SetSkeletonData(const SkeletonData& skeleton)
 {
-    _bones = skeleton.bones;
+    mBones = skeleton.bones;
 
-    if (_offsetBuffer && !_bones.empty()) {
+    if (mOffsetBuffer && !mBones.empty()) {
         vector<XMMATRIX> offsetMatrices;
-        for (const auto& bone : _bones) {
+        for (const auto& bone : mBones) {
             offsetMatrices.push_back(bone.matOffset);  
         }
-        _offsetBuffer->CopyData(offsetMatrices.data(), offsetMatrices.size() * sizeof(XMMATRIX));
+        mOffsetBuffer->CopyData(offsetMatrices.data(), offsetMatrices.size() * sizeof(XMMATRIX));
     }
 }
 
 void Animator::CreateBuffers()
 {
-    if (_animations.empty()) return;
+    if (mAnimations.empty()) return;
 
     // 버퍼 생성
-    _boneFrameBuffer = make_unique<UploadBuffer>();
-    _offsetBuffer = make_unique<UploadBuffer>();
-    _finalBuffer = make_unique<UploadBuffer>();
+    mBoneFrameBuffer = make_unique<UploadBuffer>();
+    mOffsetBuffer = make_unique<UploadBuffer>();
+    mFinalBuffer = make_unique<UploadBuffer>();
 
     // BoneFrame 버퍼 - 레퍼런스와 동일한 구조
     size_t totalKeyFrames = 0;
-    for (const auto& anim : _animations) {
+    for (const auto& anim : mAnimations) {
         totalKeyFrames += anim.keyFrames.size();
     }
 
-    _boneFrameBuffer->Initialize(
+    mBoneFrameBuffer->Initialize(
         GET(DX12Graphics).GetDevice()->GetDevice().Get(),
         totalKeyFrames * sizeof(AnimFrameParams)
     );
 
-    _offsetBuffer->Initialize(
+    mOffsetBuffer->Initialize(
         GET(DX12Graphics).GetDevice()->GetDevice().Get(),
-        _boneCount * sizeof(XMMATRIX)
+        mBoneCount * sizeof(XMMATRIX)
     );
 
-    _finalBuffer->Initialize(
+    mFinalBuffer->Initialize(
         GET(DX12Graphics).GetDevice()->GetDevice().Get(),
-        _boneCount * sizeof(XMMATRIX)
+        mBoneCount * sizeof(XMMATRIX)
     );
 
     // 모든 애니메이션 데이터를 하나의 버퍼에 복사
     vector<AnimFrameParams> allFrameData;
-    for (const auto& anim : _animations) {
+    for (const auto& anim : mAnimations) {
         allFrameData.insert(allFrameData.end(), anim.keyFrames.begin(), anim.keyFrames.end());
     }
 
-    _boneFrameBuffer->CopyData(allFrameData.data(), allFrameData.size() * sizeof(AnimFrameParams));
-    _isInitialized = true;
+    mBoneFrameBuffer->CopyData(allFrameData.data(), allFrameData.size() * sizeof(AnimFrameParams));
+    mIsInitialized = true;
 }
 
 void Animator::PlayAnimation(int animIndex)
 {
-    if (animIndex >= 0 && animIndex < _animations.size()) {
-        _clipIndex = animIndex;
-        _updateTime = 0.0f;
-    }
+    if (animIndex < 0 || animIndex >= mAnimations.size()) return;
+    
+    mClipIndex = animIndex;
+    mUpdateTime = 0.0f;
+}
+
+void Animator::TransitionToAnimation(int animIndex, float Duration)
+{
+    if (animIndex < 0 || animIndex >= mAnimations.size()) return;
+    if (mClipIndex == animIndex) return;
+
+    mPrevClipIndex = mClipIndex;
+    mClipIndex = animIndex;
+    blendDuration = Duration;
+    mPrevUpdateTime = mUpdateTime;
+    mUpdateTime = 0.0f;
+    mIsBlending = true;
+
+    blendTime = 0.0f;
+    blendRatio = 0.0f;
 }
 
 void Animator::ExecuteComputeShader()
@@ -113,6 +174,12 @@ void Animator::ExecuteComputeShader()
     animData.nextFrame = GetNextFrame();
     animData.ratio = GetFrameRatio();
     animData.animationOffset = GetCurrentAnimOffset();
+    animData.isBlending = IsBlending();
+    animData.prevCurrentFrame = GetPrevCurrentFrame();
+    animData.prevNextFrame = GetPrevNextFrame();
+    animData.prevRatio = GetPrevFrameRatio();
+    animData.prevAnimationOffset = GetPrevAnimOffset();
+    animData.blendRatio = GetBlendRatio();
 
     GET(DX12Graphics).GetAnimationCB()->CopyData(&animData, sizeof(AnimationConstants));
 

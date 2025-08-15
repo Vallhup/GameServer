@@ -10,6 +10,7 @@ cbuffer ObjectCB : register(b1)
     int useTexture;
     int useInstancing;
     int hasAlpha;
+    int padding;
 };
 
 StructuredBuffer<matrix> instanceTransforms : register(t0, space1);

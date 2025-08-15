@@ -5,6 +5,7 @@ cbuffer ObjectCB : register(b1)
     int useTexture;
     int useInstancing;
     int hasAlpha;
+    int padding;
 };
 
 struct PS_IN

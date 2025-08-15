@@ -17,6 +17,7 @@ struct ObjectConstants
     int useTexture;
     int useInstancing;
     int hasAlpha;
+    int padding;
 };
 
 struct AnimationConstants
@@ -26,6 +27,15 @@ struct AnimationConstants
     int nextFrame;
     float ratio;
     int animationOffset;
+
+    int isBlending;
+    int prevCurrentFrame;
+    int prevNextFrame;
+    float prevRatio;
+    int prevAnimationOffset;
+    float blendRatio;
+
+    float padding;
 };
 
 class DX12Graphics
