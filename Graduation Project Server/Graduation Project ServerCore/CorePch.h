@@ -45,11 +45,17 @@
 #include "SessionManager.h"
 #include "EventManager.h"
 
+#include "IAiBehavior.h"
+
+#include "BTNode.h"
+#include "CompositeNode.h"
+#include "DecoratorNode.h"
+#include "LeafNode.h"
+
 #include "TickScheduler.h"
 
 #include "Input.h"
-
-#include "IAiBehavior.h"
+#include "ScriptVM.h"
 
 #include "IComponent.h"
 #include "TransformComponent.h"

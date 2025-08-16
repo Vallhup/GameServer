@@ -11,8 +11,8 @@ public:
 	virtual bool TickEnable() override { return Enable(); }
 
 private:
-	virtual void OnRegister() override { _instance.GetScheduler().Register(this); }
-	virtual void OnDeregister() override { _instance.GetScheduler().Deregister(this); }
+	virtual void OnRegister() override;
+	virtual void OnDeregister() override;
 	virtual void OnActivate() override {}
 	virtual void OnDeactivate() override {}
 

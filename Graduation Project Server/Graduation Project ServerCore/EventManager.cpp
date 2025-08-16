@@ -32,12 +32,16 @@ void EventManager::Stop()
 	}
 }
 
-void EventManager::AddEvent(const std::function<void()>& func, float delayMs)
+std::future<EventReturn> EventManager::AddEvent(const EventFunc& func, float delayMs)
 {
 	using namespace std::chrono;
 
 	Event event{ func, high_resolution_clock::now() + milliseconds(static_cast<int>(delayMs)) };
-	_eventQueue.push(event);
+	
+	auto future = event.promise->get_future();
+	_eventQueue.push(std::move(event));
+
+	return future;
 }
 
 void EventManager::EventThreadLoop()
@@ -52,7 +56,13 @@ void EventManager::EventThreadLoop()
 				break;
 			}
 
-			event.func();
+			try {
+				auto future = event.func();
+				event.promise->set_value(future);
+			}
+			catch (...) {
+				event.promise->set_exception(std::current_exception());
+			}
 		}
 	}
 }

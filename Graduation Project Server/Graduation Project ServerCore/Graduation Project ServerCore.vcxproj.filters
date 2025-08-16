@@ -22,9 +22,6 @@
     <Filter Include="Game\Manager">
       <UniqueIdentifier>{d681449f-c24a-4c6f-be95-64637bedffc2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Object">
-      <UniqueIdentifier>{4c2eb05f-d55c-4780-a77b-8509d99f736c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Database">
       <UniqueIdentifier>{f04d5712-76ca-41d9-aad5-1a00e3456d1c}</UniqueIdentifier>
     </Filter>
@@ -33,6 +30,18 @@
     </Filter>
     <Filter Include="Game\Component">
       <UniqueIdentifier>{4c1ff901-2738-4538-bacb-8514d8cc46ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI">
+      <UniqueIdentifier>{9e407648-0b73-43c3-9f03-97e17c9e4256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Script">
+      <UniqueIdentifier>{1c572cf5-3a4c-4138-8595-8653b03f3c28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Object">
+      <UniqueIdentifier>{4c2eb05f-d55c-4780-a77b-8509d99f736c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\AI\BT">
+      <UniqueIdentifier>{0d6753ef-b878-4b92-a587-f2aa3c3f82c3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +135,24 @@
     </ClCompile>
     <ClCompile Include="TickScheduler.cpp">
       <Filter>Game\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="IAiBehavior.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptVM.cpp">
+      <Filter>Script</Filter>
+    </ClCompile>
+    <ClCompile Include="BTNode.cpp">
+      <Filter>Game\AI\BT</Filter>
+    </ClCompile>
+    <ClCompile Include="CompositeNode.cpp">
+      <Filter>Game\AI\BT</Filter>
+    </ClCompile>
+    <ClCompile Include="DecoratorNode.cpp">
+      <Filter>Game\AI\BT</Filter>
+    </ClCompile>
+    <ClCompile Include="LeafNode.cpp">
+      <Filter>Game\AI\BT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +252,24 @@
     </ClInclude>
     <ClInclude Include="TickScheduler.h">
       <Filter>Game\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="IAiBehavior.h">
+      <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptVM.h">
+      <Filter>Script</Filter>
+    </ClInclude>
+    <ClInclude Include="BTNode.h">
+      <Filter>Game\AI\BT</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositeNode.h">
+      <Filter>Game\AI\BT</Filter>
+    </ClInclude>
+    <ClInclude Include="DecoratorNode.h">
+      <Filter>Game\AI\BT</Filter>
+    </ClInclude>
+    <ClInclude Include="LeafNode.h">
+      <Filter>Game\AI\BT</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

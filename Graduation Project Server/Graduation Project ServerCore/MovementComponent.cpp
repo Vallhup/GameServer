@@ -44,3 +44,13 @@ void MovementComponent::ClampSpeed()
 	//  2) candidaterk 1이상인 경우 (speed가 _maxSpeed보다 작은 경우)
 	// 를 고려해 줘야함 (나중에 속도 계산 더 복잡해지면 해볼 예정...?)
 }
+
+void MovementComponent::OnRegister()
+{
+	_instance.GetScheduler().Register(this);
+}
+
+void MovementComponent::OnDeregister()
+{
+	_instance.GetScheduler().Deregister(this);
+}

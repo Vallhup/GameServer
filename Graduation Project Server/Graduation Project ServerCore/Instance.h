@@ -26,7 +26,7 @@ public:
 	void RemoveObject(const ObjectId& id);
 
 	int GetId() const { return _id; }
-	TickScheduler& GetScheduler() const { return _scheduler; }
+	TickScheduler GetScheduler() const { return _scheduler; }
 	bool IsActive() const { return _isActive.load(); }
 
 protected:
@@ -34,7 +34,7 @@ protected:
 	std::atomic<bool> _isActive;
 
 	IGameContext& _gameCtx;
-	TickScheduler& _scheduler;
+	TickScheduler _scheduler;
 
 	std::unique_ptr<class IObjectManager> _objMng;
 

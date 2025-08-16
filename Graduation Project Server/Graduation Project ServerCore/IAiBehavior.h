@@ -8,7 +8,7 @@ enum class AiType {
 class IAiBehavior {
 public:
 	IAiBehavior() = delete;
-	IAiBehavior(AiType type) : _type(type) {}
+	IAiBehavior(AiType type, ScriptVM& scriptVM) : _type(type), _scriptVM(scriptVM) {}
 	virtual ~IAiBehavior() = default;
 
 public:
@@ -16,5 +16,5 @@ public:
 
 protected:
 	AiType _type;
+	ScriptVM& _scriptVM;
 };
-

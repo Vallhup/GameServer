@@ -1,5 +1,7 @@
 #pragma once
 
+class ITickable;
+
 class TickScheduler {
 public:
 	void Register(ITickable* t);
