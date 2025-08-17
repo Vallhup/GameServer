@@ -8,7 +8,6 @@ class Shader;
 class UploadBuffer;
 class DepthStencilBuffer;
 class VertexIndexBuffer;
-class DescriptorHeap;
 class Texture;
 
 struct ObjectConstants
@@ -17,7 +16,7 @@ struct ObjectConstants
     int useTexture;
     int useInstancing;
     int hasAlpha;
-    int padding;
+    UINT materialIndex;
 };
 
 struct AnimationConstants
@@ -57,7 +56,6 @@ public:
     UploadBuffer* GetFrameCB() const;
     UploadBuffer* GetSceneCB() const;
     UploadBuffer* GetAnimationCB() const;
-    DescriptorHeap* GetDescHeap() const;
 
 private:
     unique_ptr<Device> device;
@@ -69,5 +67,4 @@ private:
     unique_ptr<UploadBuffer> sceneCB;
     unique_ptr<UploadBuffer> animationCB;
     unique_ptr<DepthStencilBuffer> depthStencilBuffer;
-    unique_ptr<DescriptorHeap> descriptorHeap;
 };

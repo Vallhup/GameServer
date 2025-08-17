@@ -10,9 +10,6 @@
     <ClCompile Include="DepthStencilView.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
-    <ClCompile Include="DescriptorHeap.cpp">
-      <Filter>DirectX12</Filter>
-    </ClCompile>
     <ClCompile Include="Device.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
@@ -100,9 +97,6 @@
       <Filter>DirectX12</Filter>
     </ClInclude>
     <ClInclude Include="DepthStencilView.h">
-      <Filter>DirectX12</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorHeap.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
     <ClInclude Include="Device.h">

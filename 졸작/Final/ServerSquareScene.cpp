@@ -2,6 +2,7 @@
 #include "ServerSquareScene.h"
 #include "Input.h"
 #include "SceneManager.h"
+#include "Material.h"
 
 ServerSquareScene::~ServerSquareScene() = default;
 
@@ -11,6 +12,7 @@ void ServerSquareScene::Release()
 
 void ServerSquareScene::Reset()
 {
+	Material::Cleanup();
 	OutputDebugStringA("ServerSquareScene Data has been deleted!! \n----------------------------------------\n");
 }
 

@@ -1,26 +1,45 @@
 #pragma once
 #include "Importer.h"
 
-class DescriptorHeap;
 class Texture;
+class UploadBuffer;
+
+struct MaterialGPUData
+{
+    UINT baseColorTexIndex;
+    UINT normalTexIndex;
+    UINT roughnessTexIndex;
+    UINT metallicTexIndex;
+    UINT heightTexIndex;
+    UINT alphaTexIndex;
+    UINT emissionTexIndex;
+    UINT aoTexIndex;
+};
 
 class Material
 {
 public:
     void LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
-        const MaterialData& matData, DescriptorHeap* descHeap);
+        const MaterialData& matData);
+    UINT GetMaterialIndex() const { return materialIndex; }
 
-    void BindToShader(ID3D12GraphicsCommandList* cmdList, UINT rootParamIndex);
-
-    void ReleaseUploadBuffers(); 
-
-    const MaterialData& GetMaterialData() const { return materialData; }
-
-    static void ResetStartIndex();
+    static void InitializeBindlessSystem(ID3D12Device* device);
+    static void BindBindlessResources(ID3D12GraphicsCommandList* cmdList);
+    static void UpdateMaterialBuffer();
+    static void ReleaseUploadBuffers();
+    static void Cleanup();
 
 private:
-    MaterialData materialData;
-    vector<unique_ptr<Texture>> textures;
-    vector<UINT> descriptorIndices;  // DescriptorHeap에서의 인덱스들
-    static int nextStartIndex;
+    UINT materialIndex = 0xFFFFFFFF;
+
+    static ComPtr<ID3D12DescriptorHeap> bindlessHeap;
+    static unique_ptr<UploadBuffer> materialBuffer;
+    static vector<MaterialGPUData> materials;
+    static vector<unique_ptr<Texture>> allTextures;  
+    static UINT nextTextureIndex;
+    static UINT descriptorSize;
+    static bool bufferDirty;
+
+    UINT RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
+        const wstring& path);
 };

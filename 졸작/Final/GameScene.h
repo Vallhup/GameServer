@@ -28,7 +28,7 @@ private:
 
 	shared_ptr<GameObject> dragon;
 	shared_ptr<GameObject> knight;
-	shared_ptr<GameObject> strut2;
+	shared_ptr<GameObject> knight2;
 
 	bool key1Pressed = false;
 	bool key2Pressed = false;

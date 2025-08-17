@@ -84,13 +84,19 @@ void Shader::CompileShader(const wstring& path, const string& entry, const strin
 {
     ComPtr<ID3DBlob> errorBlob;
 
+    UINT compileFlags = 0;
+#ifdef _DEBUG
+    compileFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+    compileFlags |= D3DCOMPILE_ENABLE_UNBOUNDED_DESCRIPTOR_TABLES;
+
     HRESULT hr = D3DCompileFromFile(
         path.c_str(),
         nullptr,
         D3D_COMPILE_STANDARD_FILE_INCLUDE,
         entry.c_str(),
         target.c_str(),
-        0, 0,
+        compileFlags, 0,
         &blobOut,
         &errorBlob
     );

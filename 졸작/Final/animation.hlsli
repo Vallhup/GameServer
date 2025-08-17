@@ -26,8 +26,8 @@ struct AnimFrameParams
     float4 translation;
 };
 
-StructuredBuffer<AnimFrameParams> aBoneFrame : register(t8);
-StructuredBuffer<matrix> aOffset : register(t9);
+StructuredBuffer<AnimFrameParams> aBoneFrame : register(t1);
+StructuredBuffer<matrix> aOffset : register(t2);
 RWStructuredBuffer<matrix> aFinal : register(u0);
 
 matrix CalculateBoneMatrix(int boneIndex, int currentFrame, int nextFrame, float ratio, int animOffset)

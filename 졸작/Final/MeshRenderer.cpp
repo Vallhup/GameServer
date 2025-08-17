@@ -6,7 +6,6 @@
 #include "CommandQueue.h"
 #include "Shader.h"
 #include "RootSignature.h"
-#include "DescriptorHeap.h"
 #include "Texture.h"
 #include "GameObject.h"
 #include "Transform.h"
@@ -62,6 +61,7 @@ void MeshRenderer::RenderInstanced(UINT instanceCount, UploadBuffer* instanceBuf
     objConstants.world = XMMatrixIdentity();  // 사용하지 않음
     objConstants.useTexture = (material != nullptr) ? 1 : 0;
     objConstants.useInstancing = 1;  // 인스턴싱 사용
+    objConstants.materialIndex = material ? material->GetMaterialIndex() : 0xFFFFFFFF;
 
     GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);
 
@@ -69,11 +69,6 @@ void MeshRenderer::RenderInstanced(UINT instanceCount, UploadBuffer* instanceBuf
     SetupRenderingState(cmdList, instanceBuffer);
 
     cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress());
-
-    if (material)
-    {
-        material->BindToShader(cmdList, 3);
-    }
 
     vertexIndexBuffer->Bind(cmdList);
     vertexIndexBuffer->DrawInstanced(cmdList, instanceCount);  
@@ -85,7 +80,8 @@ void MeshRenderer::RenderSingleMaterial(ID3D12GraphicsCommandList* cmdList, cons
     objConstants.world = XMMatrixTranspose(world);
     objConstants.useTexture = 1;
     objConstants.useInstancing = 0;
-    objConstants.hasAlpha = 0;  // 단일 머티리얼은 Alpha 없음
+    objConstants.hasAlpha = 0;
+    objConstants.materialIndex = material->GetMaterialIndex();
 
     UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
     UINT offset = myID * cbSize;
@@ -93,7 +89,6 @@ void MeshRenderer::RenderSingleMaterial(ID3D12GraphicsCommandList* cmdList, cons
 
     cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + offset);
 
-    material->BindToShader(cmdList, 3);
     vertexIndexBuffer->Bind(cmdList);
     vertexIndexBuffer->Draw(cmdList);
 }
@@ -107,9 +102,8 @@ void MeshRenderer::RenderMultiMaterial(ID3D12GraphicsCommandList* cmdList, const
         objConstants.world = XMMatrixTranspose(world);
         objConstants.useTexture = 1;
         objConstants.useInstancing = 0;
-
-        const auto& matData = materials[i]->GetMaterialData();
-        objConstants.hasAlpha = !matData.alphaTexPath.empty() ? 1 : 0;
+        objConstants.hasAlpha = 0;
+        objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
         UINT materialOffset = (myID * 5 + i) * cbSize;  // 5는 캐릭당 최대 머티리얼 수
         GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
@@ -117,7 +111,6 @@ void MeshRenderer::RenderMultiMaterial(ID3D12GraphicsCommandList* cmdList, const
         cmdList->SetGraphicsRootConstantBufferView(1,
             GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
 
-        materials[i]->BindToShader(cmdList, 3);
         vertexIndexBuffer->Bind(cmdList);
         vertexIndexBuffer->DrawIndexed(cmdList, subMeshes[i].indexCount, subMeshes[i].startIndex);
     }
@@ -168,13 +161,12 @@ void MeshRenderer::SetupRenderingState(ID3D12GraphicsCommandList* cmdList, Uploa
     cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
     cmdList->SetGraphicsRootSignature(GET(DX12Graphics).GetRootSig()->Get());
 
-    ID3D12DescriptorHeap* descriptorHeaps[] = { GET(DX12Graphics).GetDescHeap()->GetSRVHeap() };
-    cmdList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+    Material::BindBindlessResources(cmdList);
 
     cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
 
     if (instanceBuffer) {
-        cmdList->SetGraphicsRootShaderResourceView(7, instanceBuffer->GetGPUVirtualAddress());
+        cmdList->SetGraphicsRootShaderResourceView(9, instanceBuffer->GetGPUVirtualAddress());
     }
 }
 
@@ -184,8 +176,7 @@ void MeshRenderer::SetSingleMaterial(const vector<MaterialData> mats)
     material->LoadFromMaterialData(
         GET(DX12Graphics).GetDevice()->GetDevice().Get(),
         GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(),
-        mats[0],
-        GET(DX12Graphics).GetDescHeap()
+        mats[0]
     );
 }
 
@@ -196,8 +187,7 @@ void MeshRenderer::SetMultiMaterials(const vector<MaterialData> mats)
         auto mat = make_shared<Material>();
         mat->LoadFromMaterialData(GET(DX12Graphics).GetDevice()->GetDevice().Get(),
             GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(),
-            matData,
-            GET(DX12Graphics).GetDescHeap()
+            matData
         );
 
         materials.push_back(mat);
@@ -208,12 +198,6 @@ void MeshRenderer::ReleaseUploadBuffers()
 {
     if (vertexIndexBuffer) {
         vertexIndexBuffer->ReleaseUploadBuffers();
-    }
-    if (material) {
-        material->ReleaseUploadBuffers();
-    }
-    for (auto& mat : materials) {
-        mat->ReleaseUploadBuffers();
     }
 
     // 애니메이션 관련 Uploadbuffers는 지속적인 업데이트를 위해 해제 안하는게 맞음.

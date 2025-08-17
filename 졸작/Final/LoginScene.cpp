@@ -2,6 +2,7 @@
 #include "LoginScene.h"
 #include "Input.h"
 #include "SceneManager.h"
+#include "Material.h"
 
 LoginScene::~LoginScene() = default;
 
@@ -11,6 +12,7 @@ void LoginScene::Release()
 
 void LoginScene::Reset()
 {
+	Material::Cleanup();
 	OutputDebugStringA("LoginScene Data has been deleted!! \n----------------------------------------\n");
 }
 

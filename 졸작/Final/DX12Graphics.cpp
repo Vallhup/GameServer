@@ -8,7 +8,6 @@
 #include "UploadBuffer.h"
 #include "DepthStencilView.h"
 #include "VertexIndexBuffer.h"
-#include "DescriptorHeap.h"
 #include "Texture.h"
 
 DX12Graphics& DX12Graphics::Get()
@@ -28,7 +27,6 @@ void DX12Graphics::Initialize(HWND hwnd)
 	sceneCB = make_unique<UploadBuffer>();
 	animationCB = make_unique<UploadBuffer>();
 	depthStencilBuffer = make_unique<DepthStencilBuffer>();
-	descriptorHeap = make_unique<DescriptorHeap>();
 
 	device->Initialize(hwnd);
 	cmdQueue->Initialize(device->GetDevice().Get());
@@ -40,7 +38,6 @@ void DX12Graphics::Initialize(HWND hwnd)
 	sceneCB->Initialize(device->GetDevice().Get(), 256 * 100);
 	animationCB->Initialize(device->GetDevice().Get(), sizeof(AnimationConstants));
 	depthStencilBuffer->Initialize(device->GetDevice().Get());
-	descriptorHeap->Initialize(device->GetDevice().Get());
 }
 
 void DX12Graphics::FlushCommandQueue()
@@ -82,11 +79,6 @@ UploadBuffer* DX12Graphics::GetSceneCB() const
 UploadBuffer* DX12Graphics::GetAnimationCB() const
 {
 	return animationCB.get();
-}
-
-DescriptorHeap* DX12Graphics::GetDescHeap() const
-{
-	return descriptorHeap.get();
 }
 
 Device* DX12Graphics::GetDevice() const

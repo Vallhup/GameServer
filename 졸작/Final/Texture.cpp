@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "Texture.h"
-#include "DescriptorHeap.h"
 
 void Texture::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath)
 {
@@ -106,10 +105,4 @@ void Texture::InitializeFromRAW(ID3D12Device* device, ID3D12GraphicsCommandList*
     UpdateSubresources(cmdList, texture.Get(), uploadBuffer.Get(), 0, 0, 1, &textureData);
     CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     cmdList->ResourceBarrier(1, &barrier);
-}
-
-void Texture::CreateSRV(ID3D12Device* device, DescriptorHeap* descHeap, UINT index)
-{
-    descHeap->CreateSRV(device, texture.Get(), index);
-    srvGpuHandle = descHeap->GetGPUHandle(index);
 }

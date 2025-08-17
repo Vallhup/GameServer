@@ -9,7 +9,6 @@
 #include "RootSignature.h"
 #include "Input.h"
 #include "Timer.h"
-#include "DescriptorHeap.h"
 #include "Texture.h"
 #include "Camera.h"
 #include "TestScene.h"

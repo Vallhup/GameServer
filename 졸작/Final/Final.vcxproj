@@ -150,7 +150,6 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Component.cpp" />
-    <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="LoginScene.cpp" />
@@ -187,7 +186,6 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="LoginScene.h" />

@@ -1,73 +1,136 @@
 #include "pch.h"
 #include "Material.h"
-#include "DX12Graphics.h"
-#include "DescriptorHeap.h"
 #include "Texture.h"
+#include "UploadBuffer.h"
 
-int Material::nextStartIndex = 0;
+ComPtr<ID3D12DescriptorHeap> Material::bindlessHeap = nullptr;
+unique_ptr<UploadBuffer> Material::materialBuffer = nullptr;
+vector<MaterialGPUData> Material::materials;
+vector<unique_ptr<Texture>> Material::allTextures;
+UINT Material::nextTextureIndex = 0;  
+UINT Material::descriptorSize = 0;
+bool Material::bufferDirty = false;
 
-void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const MaterialData& matData, DescriptorHeap* descHeap)
+void Material::InitializeBindlessSystem(ID3D12Device* device)
 {
-    materialData = matData;
-    UINT baseSlot = nextStartIndex;
+    D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+    heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    heapDesc.NumDescriptors = 1000;
+    heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+
+    HRESULT hr = device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&bindlessHeap));
+    MASSERT(SUCCEEDED(hr), "Failed to create bindless heap");
+
+    descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+    materialBuffer = make_unique<UploadBuffer>();
+    materialBuffer->Initialize(device, sizeof(MaterialGPUData) * 500);
+
+    OutputDebugStringA("Bindless material system initialized!\n");
+}
+
+void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
+    const MaterialData& matData)
+{
+    MaterialGPUData gpuMaterial = {};
 
     struct TextureInfo {
+        UINT* texIndex;
         const string& path;
-        const string& name;
-        UINT slotOffset;
     };
 
     vector<TextureInfo> textureInfos = {
-        {matData.baseColorTexPath, "BaseColor", 0},
-        {matData.normalTexPath, "Normal", 1},
-        {matData.roughnessTexPath, "Roughness", 2},
-        {matData.metallicTexPath, "Metallic", 3},
-        {matData.heightTexPath, "Height", 4},
-        {matData.alphaTexPath, "Alpha", 5},
-        {matData.emissionTexPath, "Emission", 6},
-        {matData.aoTexPath, "AO", 7},
+        {&gpuMaterial.baseColorTexIndex, matData.baseColorTexPath},
+        {&gpuMaterial.normalTexIndex, matData.normalTexPath},
+        {&gpuMaterial.roughnessTexIndex, matData.roughnessTexPath},
+        {&gpuMaterial.metallicTexIndex, matData.metallicTexPath},
+        {&gpuMaterial.heightTexIndex, matData.heightTexPath},
+        {&gpuMaterial.alphaTexIndex, matData.alphaTexPath},
+        {&gpuMaterial.emissionTexIndex, matData.emissionTexPath},
+        {&gpuMaterial.aoTexIndex, matData.aoTexPath}
     };
 
-    for (const auto& info : textureInfos)
-        OutputDebugStringA((info.name + " path: " + info.path + "\n").c_str());
-
-    for (const auto& info : textureInfos)
+    for (auto& infos : textureInfos)
     {
-        if (!info.path.empty()) {
-            auto texture = make_unique<Texture>();
-            wstring wpath = L"../FBXOutput/" + wstring(info.path.begin(), info.path.end());
-            texture->Initialize(device, cmdList, wpath);
-
-            UINT slotIndex = baseSlot + info.slotOffset;
-            texture->CreateSRV(device, descHeap, slotIndex);
-            textures.push_back(move(texture));
-            descriptorIndices.push_back(slotIndex);
-
-            OutputDebugStringA(("  t" + to_string(slotIndex) + " -> " + info.name + "\n").c_str());
-        }
+        *infos.texIndex = infos.path.empty() ? 0xFFFFFFFF :
+            RegisterTexture(device, cmdList, L"../FBXOutput/" + wstring(infos.path.begin(), infos.path.end()));
     }
 
-    nextStartIndex = baseSlot + 8;
+    materials.push_back(gpuMaterial);
+    materialIndex = static_cast<UINT>(materials.size() - 1);
+    bufferDirty = true;
+
+    OutputDebugStringA(("Material created with index: " + to_string(materialIndex) + "\n").c_str());
 }
 
-void Material::BindToShader(ID3D12GraphicsCommandList* cmdList, UINT rootParamIndex)
+UINT Material::RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
+    const wstring& path)
 {
-    if (!textures.empty()) {
-        UINT firstIndex = descriptorIndices[0];
-        //OutputDebugStringA(("Binding texture at descriptor index: " + to_string(firstIndex) + "\n").c_str());
-        D3D12_GPU_DESCRIPTOR_HANDLE handle = GET(DX12Graphics).GetDescHeap()->GetGPUHandle(firstIndex);
-        cmdList->SetGraphicsRootDescriptorTable(rootParamIndex, handle);
+    if (!bindlessHeap) {
+        OutputDebugStringA("Bindless system not initialized!\n");
+        return 0xFFFFFFFF;
+    }
+
+    auto texture = make_unique<Texture>();
+    texture->Initialize(device, cmdList, path);
+
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = bindlessHeap->GetCPUDescriptorHandleForHeapStart();
+    cpuHandle.ptr += nextTextureIndex * descriptorSize;
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.Texture2D.MipLevels = 1;
+
+    device->CreateShaderResourceView(texture->GetTexture(), &srvDesc, cpuHandle);
+
+    UINT index = nextTextureIndex++;
+    allTextures.push_back(move(texture));
+
+    OutputDebugStringA(("Texture registered at index: " + to_string(index) + "\n").c_str());
+    return index;
+}
+
+void Material::BindBindlessResources(ID3D12GraphicsCommandList* cmdList)
+{
+    if (bindlessHeap && materialBuffer) {
+        ID3D12DescriptorHeap* heaps[] = { bindlessHeap.Get() };
+        cmdList->SetDescriptorHeaps(1, heaps);
+
+        D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = bindlessHeap->GetGPUDescriptorHandleForHeapStart();
+        cmdList->SetGraphicsRootDescriptorTable(3, gpuHandle);
+
+        cmdList->SetGraphicsRootShaderResourceView(4, materialBuffer->GetGPUVirtualAddress());
+    }
+}
+
+void Material::UpdateMaterialBuffer()
+{
+    if (bufferDirty && !materials.empty() && materialBuffer) {
+        materialBuffer->CopyData(materials.data(), materials.size() * sizeof(MaterialGPUData));
+        bufferDirty = false;
+        OutputDebugStringA("Material buffer updated!\n");
     }
 }
 
 void Material::ReleaseUploadBuffers()
 {
-    for (auto& texture : textures) {
-        texture->ReleaseUploadBuffer();
+    for (auto& texture : allTextures) {
+        if (texture) {
+            texture->ReleaseUploadBuffer();
+        }
     }
+    OutputDebugStringA("Material upload buffers released!\n");
 }
 
-void Material::ResetStartIndex()
+void Material::Cleanup()
 {
-    nextStartIndex = 0;
+    bindlessHeap.Reset();
+    materialBuffer.reset();
+    materials.clear();
+    allTextures.clear();
+    nextTextureIndex = 0;
+    bufferDirty = false;
+    OutputDebugStringA("Bindless material system cleaned up!\n");
 }

@@ -10,11 +10,11 @@ cbuffer ObjectCB : register(b1)
     int useTexture;
     int useInstancing;
     int hasAlpha;
-    int padding;
+    uint materialIndex;
 };
 
-StructuredBuffer<matrix> instanceTransforms : register(t0, space1);
-StructuredBuffer<matrix> finalBoneTransforms : register(t10);
+StructuredBuffer<matrix> instanceTransforms : register(t0, space2);
+StructuredBuffer<matrix> finalBoneTransforms : register(t3);
 
 struct VS_IN
 {
@@ -36,11 +36,10 @@ struct VS_OUT
     float4 weights : WEIGHT;
     float4 indices : INDICES;
     float4 color : COLOR;
+    uint materialIndex : MATERIAL_INDEX;
 };
 
-// 루키스 방식의 스키닝 함수
-void Skinning(inout float3 pos, inout float3 normal, inout float3 tangent,
-    inout float4 weight, inout float4 indices)
+void Skinning(inout float3 pos, inout float3 normal, inout float3 tangent, inout float4 weight, inout float4 indices)
 {
     float3 skinnedPos = float3(0, 0, 0);
     float3 skinnedNormal = float3(0, 0, 0);
@@ -72,11 +71,9 @@ VS_OUT VSMain(VS_IN input, uint instanceID : SV_InstanceID)
     float3 modifiedNormal = input.normal;
     float3 modifiedTangent = input.tangent;
     
-    // 애니메이션 적용 체크
     float totalWeight = input.weights.x + input.weights.y + input.weights.z + input.weights.w;
     bool hasAnimation = (totalWeight > 0.001f);
     
-    // 인스턴싱 모드에서는 애니메이션 비활성화
     if (useInstancing)
         hasAnimation = false;
     
@@ -85,8 +82,8 @@ VS_OUT VSMain(VS_IN input, uint instanceID : SV_InstanceID)
         Skinning(modifiedPos, modifiedNormal, modifiedTangent, input.weights, input.indices);
     }
     
-    // 월드 변환
     matrix worldMatrix;
+    
     if (useInstancing)
         worldMatrix = instanceTransforms[instanceID];
     else
@@ -102,6 +99,7 @@ VS_OUT VSMain(VS_IN input, uint instanceID : SV_InstanceID)
     output.tangent = modifiedTangent;
     output.weights = input.weights;
     output.indices = input.indices;
+    output.materialIndex = materialIndex;
     
     return output;
 }

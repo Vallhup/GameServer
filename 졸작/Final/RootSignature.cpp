@@ -3,21 +3,23 @@
 
 void RootSignature::Initialize(ID3D12Device* device)
 {
-	CD3DX12_ROOT_PARAMETER rootParams[9];
+	CD3DX12_ROOT_PARAMETER rootParams[10];
 
 	rootParams[0].InitAsConstantBufferView(0);	// register(b0) - view & projection Constant BUFF
 	rootParams[1].InitAsConstantBufferView(1);	// register(b1) - object Constant BUFF
 	rootParams[2].InitAsConstantBufferView(2);	// register(b2) - animationparams Constant BUFF
 
-	CD3DX12_DESCRIPTOR_RANGE materialRange;
-	materialRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 0);		// register(t0~t7) - material textures
-	rootParams[3].InitAsDescriptorTable(1, &materialRange, D3D12_SHADER_VISIBILITY_PIXEL);
+	CD3DX12_DESCRIPTOR_RANGE bindlessRange;
+	bindlessRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, UINT_MAX, 0, 1);  // space1
+	rootParams[3].InitAsDescriptorTable(1, &bindlessRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
-	rootParams[4].InitAsShaderResourceView(8);			// register(t8) - animation bone frame structured BUFF
-	rootParams[5].InitAsShaderResourceView(9);			// register(t9) - animation offset structured BUFF
-	rootParams[6].InitAsUnorderedAccessView(0);			// register(u0) - animation final Read&Write structured BUFF
-	rootParams[7].InitAsShaderResourceView(0, 1);		// register(t0) & space1 - instance structured BUFF
-	rootParams[8].InitAsShaderResourceView(10);			// register(t10) - finalBone Structured BUFF
+	// Material structured buffer
+	rootParams[4].InitAsShaderResourceView(0);			// register(t0) - material buffer
+	rootParams[5].InitAsShaderResourceView(1);			// register(t1) - animation bone frame structured BUFF
+	rootParams[6].InitAsShaderResourceView(2);			// register(t2) - animation offset structured BUFF
+	rootParams[7].InitAsUnorderedAccessView(0);			// register(u0) - animation final Read&Write structured BUFF
+	rootParams[8].InitAsShaderResourceView(3);			// register(t3) - finalBone Structured BUFF
+	rootParams[9].InitAsShaderResourceView(0, 2);		// register(t0) & space2 - instance structured BUFF
 
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc[1];
 	samplerDesc[0].Init(
