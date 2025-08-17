@@ -63,16 +63,18 @@ void GameScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 		OutputDebugStringA("Strut created!!\n");
 	}
 
-	for (int i = 1; i < 10; ++i) {
-		auto newKnight = make_shared<GameObject>();
-		auto meshRenderer = newKnight->AddComponent<MeshRenderer>();
-		auto transform = newKnight->AddComponent<Transform>();
-		meshRenderer->SetMesh(L"../FBXOutput/knight");
-		transform->SetPosition(i * 1.5f + 1.0f, 0.f, 0.5f);
-		transform->SetRotation(0.f, 0.f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(newKnight);
-	}
+	/*{
+		for (int i = 1; i < 10; ++i) {
+			auto newKnight = make_shared<GameObject>();
+			auto meshRenderer = newKnight->AddComponent<MeshRenderer>();
+			auto transform = newKnight->AddComponent<Transform>();
+			meshRenderer->SetMesh(L"../FBXOutput/knight");
+			transform->SetPosition(i * 1.5f + 1.0f, 0.f, 0.5f);
+			transform->SetRotation(0.f, 0.f, 0.f);
+			transform->SetScale(0.01f, 0.01f, 0.01f);
+			AddGameObject(newKnight);
+		}
+	}*/
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
 	GET(DX12Graphics).FlushCommandQueue();  

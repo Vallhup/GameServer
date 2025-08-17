@@ -187,8 +187,8 @@ void Animator::ExecuteComputeShader()
     cmdList->SetComputeRootSignature(GET(DX12Graphics).GetRootSig()->Get());
     cmdList->SetComputeRootConstantBufferView(2, GET(DX12Graphics).GetAnimationCB()->GetGPUVirtualAddress());
 
-    cmdList->SetComputeRootShaderResourceView(5, GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t8
-    cmdList->SetComputeRootShaderResourceView(6, GetOffsetBuffer()->GetGPUVirtualAddress());     // t9
+    cmdList->SetComputeRootShaderResourceView(5, GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t1, space0
+    cmdList->SetComputeRootShaderResourceView(6, GetOffsetBuffer()->GetGPUVirtualAddress());     // t2, space0
 
     cmdList->SetComputeRootUnorderedAccessView(7, GetFinalBuffer()->GetGPUVirtualAddress());     // u0
 

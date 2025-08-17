@@ -99,9 +99,9 @@ void Material::BindBindlessResources(ID3D12GraphicsCommandList* cmdList)
         cmdList->SetDescriptorHeaps(1, heaps);
 
         D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = bindlessHeap->GetGPUDescriptorHandleForHeapStart();
-        cmdList->SetGraphicsRootDescriptorTable(3, gpuHandle);
+        cmdList->SetGraphicsRootDescriptorTable(3, gpuHandle);                                      // t0, space1
 
-        cmdList->SetGraphicsRootShaderResourceView(4, materialBuffer->GetGPUVirtualAddress());
+        cmdList->SetGraphicsRootShaderResourceView(4, materialBuffer->GetGPUVirtualAddress());      // t0, space0
     }
 }
 

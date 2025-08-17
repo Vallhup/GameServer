@@ -8,7 +8,6 @@
 #include "UploadBuffer.h"
 #include "DepthStencilView.h"
 #include "VertexIndexBuffer.h"
-#include "Texture.h"
 
 DX12Graphics& DX12Graphics::Get()
 {

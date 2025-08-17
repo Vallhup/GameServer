@@ -8,7 +8,6 @@ class Shader;
 class UploadBuffer;
 class DepthStencilBuffer;
 class VertexIndexBuffer;
-class Texture;
 
 struct ObjectConstants
 {
