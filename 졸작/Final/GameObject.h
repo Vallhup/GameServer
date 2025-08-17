@@ -2,40 +2,41 @@
 
 class Component;
 
-class GameObject : public enable_shared_from_this<GameObject>
+class GameObject
 {
 public:
 	template<typename T>
-	shared_ptr<T> AddComponent();
+	T* AddComponent();
 
 	template<typename T>
-	shared_ptr<T> GetComponent();
+	T* GetComponent();
 
 	void Update(float deltaTime);
 
 private:
-	vector<shared_ptr<Component>> components;
+	vector<unique_ptr<Component>> components;
 };
 
 template<typename T>
-inline shared_ptr<T> GameObject::AddComponent()
+inline T* GameObject::AddComponent()
 {
 	if (GetComponent<T>())
 		return nullptr;
 
-	auto component = make_shared<T>();
-	component->owner = shared_from_this();
-	components.push_back(component);
+	auto component = make_unique<T>();
+	T* rawPtr = component.get();
+	component->owner = this;
+	components.push_back(std::move(component));
 
-	return component;
+	return rawPtr;
 }
 
 template<typename T>
-inline shared_ptr<T> GameObject::GetComponent()
+inline T* GameObject::GetComponent()
 {
 	for (auto& comp : components)
 	{
-		if (auto casted = dynamic_pointer_cast<T>(comp))
+		if (T* casted = dynamic_cast<T*>(comp.get()))
 			return casted;
 	}
 

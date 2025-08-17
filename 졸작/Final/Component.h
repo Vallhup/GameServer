@@ -9,9 +9,9 @@ public:
 	virtual void Init() {}
 	virtual void Update(float deltaTime) {}
 
-	shared_ptr<GameObject> GetGameObject();
+	GameObject* GetGameObject();
 
 private:
 	friend class GameObject;
-	weak_ptr<GameObject> owner;
+	GameObject* owner = nullptr;
 };

@@ -88,6 +88,9 @@
     <ClCompile Include="Animator.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="DX12Core.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -173,6 +176,9 @@
     </ClInclude>
     <ClInclude Include="Animator.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="DX12Core.h">
+      <Filter>DirectX12</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
