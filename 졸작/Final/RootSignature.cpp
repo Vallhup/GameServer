@@ -3,11 +3,12 @@
 
 void RootSignature::Initialize(ID3D12Device* device)
 {
-	CD3DX12_ROOT_PARAMETER rootParams[10];
+	CD3DX12_ROOT_PARAMETER rootParams[11];
 
 	rootParams[0].InitAsConstantBufferView(0);			// register(b0) - view & projection Constant BUFF
 	rootParams[1].InitAsConstantBufferView(1);			// register(b1) - object Constant BUFF
 	rootParams[2].InitAsConstantBufferView(2);			// register(b2) - animationparams Constant BUFF
+	rootParams[10].InitAsConstantBufferView(3);
 
 	CD3DX12_DESCRIPTOR_RANGE bindlessRange;
 	bindlessRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, UINT_MAX, 0, 1);					// register(t0, space1)

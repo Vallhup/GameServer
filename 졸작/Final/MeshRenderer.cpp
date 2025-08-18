@@ -163,6 +163,11 @@ void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuf
 
     cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
 
+    // юс╫ц Direction Light
+    LightConstants light = { {0, 0, -1}, 0, {1, 1, 1}, 2.0f };
+    core.GetDirectionalLightCB()->CopyData(&light, sizeof(LightConstants));
+    cmdList->SetGraphicsRootConstantBufferView(10, core.GetDirectionalLightCB()->GetGPUVirtualAddress());
+
     if (instanceBuffer) {
         cmdList->SetGraphicsRootShaderResourceView(9, instanceBuffer->GetGPUVirtualAddress());
     }

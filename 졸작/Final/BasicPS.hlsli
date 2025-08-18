@@ -8,6 +8,14 @@ cbuffer ObjectCB : register(b1)
     uint materialIndex;
 };
 
+cbuffer LightCB : register(b3)
+{
+    float3 lightDirection;
+    float padding;
+    float3 lightColor;
+    float lightIntensity;
+}
+
 struct MaterialData
 {
     uint baseColorTexIndex;
@@ -75,18 +83,18 @@ float4 PSMain(PS_IN input) : SV_Target
             alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv).a;
         }
         
-        float3 lightDir = normalize(float3(0, 0, 1));
+        float3 lightDir = normalize(-lightDirection);
         float3 worldNormal = normalize(input.normal + normalMap * 0.3);
         float NdotL = max(0.0, dot(worldNormal, -lightDir));
         
         float3 diffuse = baseColor.rgb * NdotL * 0.7;
-        float3 ambient = baseColor.rgb * 0.6;
+        float3 ambient = baseColor.rgb * 0.1;
         
         float3 viewDir = normalize(float3(0.1, 0.1, -1));
         float3 reflectDir = reflect(lightDir, worldNormal);
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0) * metallic * 0.3;
         
-        float3 finalColor = diffuse + ambient + spec;
+        float3 finalColor = (diffuse + ambient + spec) * lightColor * lightIntensity;
         
         return float4(finalColor, baseColor.a * alpha);
     }

@@ -28,6 +28,14 @@ struct AnimationConstants
 	float padding;
 };
 
+struct LightConstants
+{
+	XMFLOAT3 direction;
+	float padding;
+	XMFLOAT3 color;
+	float intensity;
+};
+
 class RootSignature;
 class Shader;
 
@@ -57,6 +65,7 @@ public:
 	UploadBuffer* GetFrameCB() const;
 	UploadBuffer* GetSceneCB() const;
 	UploadBuffer* GetAnimationCB() const;
+	UploadBuffer* GetDirectionalLightCB() const;
 
 	void SetBackgroundColor(const float* color);
 
@@ -90,4 +99,5 @@ private:
 	unique_ptr<UploadBuffer> frameCB;
 	unique_ptr<UploadBuffer> sceneCB;
 	unique_ptr<UploadBuffer> animationCB;
+	unique_ptr<UploadBuffer> directionLightCB;
 };
