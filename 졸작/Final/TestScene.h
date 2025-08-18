@@ -1,7 +1,6 @@
 #pragma once
 #include "Scene.h"
 
-class GameObject;
 class UploadBuffer;
 
 class TestScene final : public Scene
@@ -17,10 +16,11 @@ public:
 
 protected:
 	const float* GetBackgroundColor() override;
-	void InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) override;
+	void InitializeLogic() override;
 	void UpdateScene(const float deltaTime) override;
 	void RenderScene() override;
 	int GetSceneWidth() const override;
+	void RequestSceneChange() override;
 
 private:
 	shared_ptr<GameObject> knightTemplate;
@@ -31,4 +31,3 @@ private:
 
 	static constexpr int INSTANCE_COUNT = 10000;
 };
-

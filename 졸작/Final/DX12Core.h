@@ -1,10 +1,93 @@
 #pragma once
+#include "UploadBuffer.h"
+
+struct ObjectConstants
+{
+	XMMATRIX world;
+	int useTexture;
+	int useInstancing;
+	int hasAlpha;
+	UINT materialIndex;
+};
+
+struct AnimationConstants
+{
+	int boneCount;
+	int currentFrame;
+	int nextFrame;
+	float ratio;
+	int animationOffset;
+
+	int isBlending;
+	int prevCurrentFrame;
+	int prevNextFrame;
+	float prevRatio;
+	int prevAnimationOffset;
+	float blendRatio;
+
+	float padding;
+};
+
+class RootSignature;
+class Shader;
 
 class DX12Core
 {
 public:
-	void Initialize();
+	void Initialize(HWND hwnd);
+
+	void CreateDevice();
+	void CreateDXGI(HWND hwnd);
+	void CreateCommandObjects();
+	void CreateSwapChain(HWND hwnd);
+	void CreateRenderTargetView();
+	void CreateDepthStencilBuffer(DXGI_FORMAT dsvformat = DXGI_FORMAT_D32_FLOAT);
+
+	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+	void RenderEnd();
+	void WaitSync();
+
+	void FlushCommandQueue();
+	void ResetCommandQueue();
+
+	ID3D12Device* GetDevice() const;
+	ID3D12GraphicsCommandList* GetGraphicsCmdList() const;
+	RootSignature* GetRootSig() const;
+	Shader* GetShader() const;
+	UploadBuffer* GetFrameCB() const;
+	UploadBuffer* GetSceneCB() const;
+	UploadBuffer* GetAnimationCB() const;
+
+	void SetBackgroundColor(const float* color);
 
 private:
+	// 고정
+	ComPtr<ID3D12Device> device;
+	ComPtr<IDXGIFactory7> dxgi;
 
+	ComPtr<ID3D12CommandQueue> cmdQueue;
+	ComPtr<ID3D12CommandAllocator> cmdAlloc;
+	ComPtr<ID3D12GraphicsCommandList> cmdList;
+	ComPtr<ID3D12Fence> fence;
+	UINT64 fenceValue = 0;
+	HANDLE fenceEvent = INVALID_HANDLE_VALUE;
+	const float* backgroundColor = {};
+
+	ComPtr<IDXGISwapChain> swapChain;
+	ComPtr<ID3D12Resource> rtvBuffer[SWAP_CHAIN_BUFFER_COUNT];
+	ComPtr<ID3D12DescriptorHeap> rtvHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle[SWAP_CHAIN_BUFFER_COUNT];
+	UINT32 backBufferIndex = 0;
+
+	ComPtr<ID3D12Resource> dsvBuffer;
+	ComPtr<ID3D12DescriptorHeap> dsvHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = {};
+	DXGI_FORMAT dsvFormat = {};
+
+	// 변경 가능
+	unique_ptr<RootSignature> rootSig;
+	unique_ptr<Shader> shader;
+	unique_ptr<UploadBuffer> frameCB;
+	unique_ptr<UploadBuffer> sceneCB;
+	unique_ptr<UploadBuffer> animationCB;
 };

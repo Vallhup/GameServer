@@ -1,14 +1,14 @@
 #include "pch.h"
 #include "GameScene.h"
+#include "DX12Core.h"
 #include "Input.h"
 #include "SceneManager.h"
-#include "Camera.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
-#include "DX12Graphics.h"
 #include "Animator.h"
 #include "Material.h"
+#include "Camera.h"
 
 GameScene::~GameScene() = default;
 
@@ -31,17 +31,16 @@ const float* GameScene::GetBackgroundColor()
 	return Colors::Snow;
 }
 
-void GameScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
+void GameScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
-	GET(Camera).Initialize();
 
 	{
 		dragon = make_shared<GameObject>();
 		auto meshRenderer = dragon->AddComponent<MeshRenderer>();
 		auto transform = dragon->AddComponent<Transform>();
 		auto animator = dragon->AddComponent<Animator>();
-		meshRenderer->SetMesh(L"../FBXOutput/Dragon");
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/Dragon");
 		transform->SetPosition(0.f, 0.f, 0.5f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
@@ -54,7 +53,7 @@ void GameScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 		knight = make_shared<GameObject>();
 		auto meshRenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
-		meshRenderer->SetMesh(L"../FBXOutput/knight");
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight");
 		transform->SetPosition(1.f, 0.f, 0.5f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
@@ -77,8 +76,8 @@ void GameScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 	}*/
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
-	GET(DX12Graphics).FlushCommandQueue();  
-	GET(DX12Graphics).ResetCommandQueue();
+	coreRef->FlushCommandQueue();
+	coreRef->ResetCommandQueue();
 	
 	for (const auto& obj : gameObjects)
 	{
@@ -90,8 +89,6 @@ void GameScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 
 void GameScene::UpdateScene(const float deltaTime)
 {
-	GET(Camera).Update(deltaTime);
-
 	// ★ Dragon 애니메이션 전환 (키 중복 방지)
 	//if (dragon) {
 	//	auto animator = dragon->GetComponent<Animator>();
@@ -176,11 +173,20 @@ void GameScene::RenderScene()
 	for (const auto& obj : gameObjects)
 	{
 		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
-			meshRenderer->Render();
+			meshRenderer->Render(*coreRef);
 	}
 }
 
 int GameScene::GetSceneWidth() const
 {
 	return 0;
+}
+
+void GameScene::RequestSceneChange()
+{
+	if (GET(Input).GetKeyDown(VK_TAB))
+	{
+		if (sManagerRef)
+			sManagerRef->RequestSceneChange(SceneType::Start);
+	}
 }

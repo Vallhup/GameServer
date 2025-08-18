@@ -1,29 +1,43 @@
 #include "pch.h"
 #include "Scene.h"
-#include "DX12Graphics.h"
-#include "UploadBuffer.h"
+#include "DX12Core.h"
+#include "SceneManager.h"
 #include "Material.h"
+#include "Camera.h"
 
-void Scene::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
+void Scene::Initialize(DX12Core& core)
 {
-    Material::InitializeBindlessSystem(device);
+    coreRef = &core;
 
-    InitializeLogic(device, cmdList);
+    cam = make_unique<Camera>();
+    cam->Initialize();
+
+    Material::InitializeBindlessSystem(coreRef->GetDevice());
+
+    InitializeLogic();
 
     Material::UpdateMaterialBuffer();
 
-    GET(DX12Graphics).FlushCommandQueue();  
-    GET(DX12Graphics).ResetCommandQueue();
+    coreRef->FlushCommandQueue();
+    coreRef->ResetCommandQueue();
 
     Material::ReleaseUploadBuffers();
 }
 
 void Scene::Update(const float deltaTime)
 {
+    cam->Update(*coreRef, deltaTime);
+
     UpdateScene(deltaTime);
+    RequestSceneChange();
 }
 
 void Scene::Render()
 {
     RenderScene();
+}
+
+void Scene::SetSceneManager(SceneManager* manager)
+{
+    sManagerRef = manager;
 }

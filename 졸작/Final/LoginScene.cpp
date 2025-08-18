@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "LoginScene.h"
+#include "DX12Core.h"
 #include "Input.h"
 #include "SceneManager.h"
 #include "Material.h"
+#include "Camera.h"
 
 LoginScene::~LoginScene() = default;
 
@@ -21,15 +23,13 @@ const float* LoginScene::GetBackgroundColor()
 	return Colors::MediumAquamarine;
 }
 
-void LoginScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
+void LoginScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nLoginScene Data has been created!! \n");
 }
 
 void LoginScene::UpdateScene(const float deltaTime)
 {
-	if (GET(Input).GetKeyDown(VK_TAB))
-		GET(SceneManager).RequestSceneChange(SceneType::ServerSquare);
 }
 
 void LoginScene::RenderScene()
@@ -39,4 +39,13 @@ void LoginScene::RenderScene()
 int LoginScene::GetSceneWidth() const
 {
 	return 0;
+}
+
+void LoginScene::RequestSceneChange()
+{
+	if (GET(Input).GetKeyDown(VK_TAB))
+	{
+		if (sManagerRef)
+			sManagerRef->RequestSceneChange(SceneType::ServerSquare);
+	}
 }

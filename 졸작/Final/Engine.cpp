@@ -1,17 +1,13 @@
 #include "pch.h"
 #include "Engine.h"
-#include "Timer.h"
+#include "DX12Core.h"
 #include "SceneManager.h"
-#include "Device.h"
-#include "SwapChain.h"
-#include "CommandQueue.h"
+#include "Timer.h"
 #include "RootSignature.h"
 #include "Shader.h"
-#include "UploadBuffer.h"
-#include "DepthStencilView.h"
 #include "VertexIndexBuffer.h"
-#include "DX12Graphics.h"
 #include "Importer.h"
+#include "Camera.h"
 
 Engine& Engine::Get()
 {
@@ -26,37 +22,35 @@ void Engine::Initialize(HWND hwnd)
     viewport = { 0, 0, static_cast<FLOAT>(WinSize.x), static_cast<FLOAT>(WinSize.y), 0.0f, 1.0f };
     scissorRect = CD3DX12_RECT(0, 0, WinSize.x, WinSize.y);
 
-    GET(DX12Graphics).Initialize(mHwnd);
+    graphics = make_unique<DX12Core>();
+    graphics->Initialize(mHwnd);
 
-    SceneManager& sManager = GET(SceneManager);
+    sManager = make_unique<SceneManager>();
+    sManager->Initialize(*graphics);
 
-    sManager.Initialize(mHwnd);
-
-    //TestFBXImport();
-
-    GET(DX12Graphics).FlushCommandQueue();
+    graphics->FlushCommandQueue();
 }
 
 void Engine::Update(const float deltaTime)
 {
-    GET(SceneManager).ProcessPendingSceneChange();
-    GET(SceneManager).Update(deltaTime);
+    sManager->ProcessPendingSceneChange(*graphics);
+    sManager->Update(deltaTime);
 }
 
 void Engine::Render()
 {
-    GET(DX12Graphics).RenderBegin(viewport, scissorRect);
+    graphics->RenderBegin(viewport, scissorRect);
     
-    GET(SceneManager).Render();
+    sManager->Render();
 
-    GET(DX12Graphics).RenderEnd();
+    graphics->RenderEnd();
 
     ShowFps();
 }
 
 void Engine::Shutdown()
 {
-    GET(SceneManager).Release();
+    sManager->Release();
 }
 
 void Engine::ShowFps()

@@ -148,7 +148,6 @@
   <ItemGroup>
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DX12Core.cpp" />
     <ClCompile Include="GameScene.cpp" />
@@ -161,9 +160,6 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
-    <ClCompile Include="DepthStencilView.cpp" />
-    <ClCompile Include="Device.cpp" />
-    <ClCompile Include="DX12Graphics.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -178,14 +174,12 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animator.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DX12Core.h" />
     <ClInclude Include="GameScene.h" />
@@ -198,9 +192,6 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="UploadBuffer.h" />
-    <ClInclude Include="DepthStencilView.h" />
-    <ClInclude Include="Device.h" />
-    <ClInclude Include="DX12Graphics.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Input.h" />
@@ -209,7 +200,6 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="SwapChain.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="VertexIndexBuffer.h" />
   </ItemGroup>

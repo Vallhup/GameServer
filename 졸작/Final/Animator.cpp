@@ -1,9 +1,6 @@
 #include "pch.h"
 #include "Animator.h"
-#include "UploadBuffer.h"
-#include "DX12Graphics.h"
-#include "Device.h"
-#include "CommandQueue.h"
+#include "DX12Core.h"
 #include "GameObject.h"
 #include "Shader.h"
 #include "RootSignature.h"
@@ -76,12 +73,12 @@ void Animator::UpdatePrevAnimation(float deltaTime)
     mPrevFrameRatio = static_cast<float>(mPrevUpdateTime * framerate - mPrevFrame);
 }
 
-void Animator::SetAnimationData(const vector<AnimClipInfo>& animations)  
+void Animator::SetAnimationData(DX12Core& core, const vector<AnimClipInfo>& animations)
 {
     mAnimations = animations;
     if (!mAnimations.empty()) {
         mBoneCount = static_cast<int>(mAnimations[0].keyFrames.size() / mAnimations[0].frameCount);
-        CreateBuffers();
+        CreateBuffers(core);
     }
 }
 
@@ -98,7 +95,7 @@ void Animator::SetSkeletonData(const SkeletonData& skeleton)
     }
 }
 
-void Animator::CreateBuffers()
+void Animator::CreateBuffers(DX12Core& core)
 {
     if (mAnimations.empty()) return;
 
@@ -114,17 +111,17 @@ void Animator::CreateBuffers()
     }
 
     mBoneFrameBuffer->Initialize(
-        GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+        core.GetDevice(),
         totalKeyFrames * sizeof(AnimFrameParams)
     );
 
     mOffsetBuffer->Initialize(
-        GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+        core.GetDevice(),
         mBoneCount * sizeof(XMMATRIX)
     );
 
     mFinalBuffer->Initialize(
-        GET(DX12Graphics).GetDevice()->GetDevice().Get(),
+        core.GetDevice(),
         mBoneCount * sizeof(XMMATRIX)
     );
 
@@ -162,9 +159,9 @@ void Animator::TransitionToAnimation(int animIndex, float Duration)
     blendRatio = 0.0f;
 }
 
-void Animator::ExecuteComputeShader()
+void Animator::ExecuteComputeShader(DX12Core& core)
 {
-    auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
+    auto cmdList = core.GetGraphicsCmdList();
 
     DebugAnimationInfo();
 
@@ -181,11 +178,11 @@ void Animator::ExecuteComputeShader()
     animData.prevAnimationOffset = GetPrevAnimOffset();
     animData.blendRatio = GetBlendRatio();
 
-    GET(DX12Graphics).GetAnimationCB()->CopyData(&animData, sizeof(AnimationConstants));
+    core.GetAnimationCB()->CopyData(&animData, sizeof(AnimationConstants));
 
-    cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetComputePSO());
-    cmdList->SetComputeRootSignature(GET(DX12Graphics).GetRootSig()->Get());
-    cmdList->SetComputeRootConstantBufferView(2, GET(DX12Graphics).GetAnimationCB()->GetGPUVirtualAddress());
+    cmdList->SetPipelineState(core.GetShader()->GetComputePSO());
+    cmdList->SetComputeRootSignature(core.GetRootSig()->Get());
+    cmdList->SetComputeRootConstantBufferView(2, core.GetAnimationCB()->GetGPUVirtualAddress());
 
     cmdList->SetComputeRootShaderResourceView(5, GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t1, space0
     cmdList->SetComputeRootShaderResourceView(6, GetOffsetBuffer()->GetGPUVirtualAddress());     // t2, space0
@@ -196,13 +193,13 @@ void Animator::ExecuteComputeShader()
     cmdList->Dispatch(groupCount, 1, 1);
 }
 
-void Animator::LoadAnimationFromImporter(const Importer& importer)
+void Animator::LoadAnimationFromImporter(DX12Core& core, const Importer& importer)
 {
     const auto& animations = importer.GetAnimations();
     const auto& skeleton = importer.GetSkeleton();
 
     if (!animations.empty()) {
-        SetAnimationData(animations);
+        SetAnimationData(core, animations);
         SetSkeletonData(skeleton);
         OutputDebugStringA("Animation data loaded!\n");
     }

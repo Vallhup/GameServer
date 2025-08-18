@@ -1,15 +1,14 @@
 #include "pch.h"
 #include "TestScene.h"
-#include "Camera.h"
+#include "DX12Core.h"
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "Input.h"
 #include "SceneManager.h"
-#include "UploadBuffer.h"
 #include "Material.h"
-#include "DX12Graphics.h"
 #include "Animator.h"
+#include "Camera.h"
 
 TestScene::~TestScene() = default;
 
@@ -33,23 +32,22 @@ const float* TestScene::GetBackgroundColor()
 	return Colors::LightBlue;
 }
 
-void TestScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
+void TestScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nTestScene Data has been created!! \n");
-    GET(Camera).Initialize();
 
 	{
 		strut = make_shared<GameObject>();
 		auto meshrenderer = strut->AddComponent<MeshRenderer>();
 		auto transform = strut->AddComponent<Transform>();
 		auto animator = strut->AddComponent<Animator>();
-		meshrenderer->SetMesh(L"../FBXOutput/Strut Walking");
+		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/Strut Walking");
 		transform->SetPosition(0.f, 0.f, 0.5f);
 		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 
-		GET(DX12Graphics).FlushCommandQueue();
-		GET(DX12Graphics).ResetCommandQueue();
+		coreRef->FlushCommandQueue();
+		coreRef->ResetCommandQueue();
 
 		meshrenderer->ReleaseUploadBuffers();
 	}
@@ -90,8 +88,6 @@ void TestScene::InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList*
 
 void TestScene::UpdateScene(const float deltaTime)
 {
-	GET(Camera).Update(deltaTime);
-
 	{
 		strut->Update(deltaTime);
 	}
@@ -99,9 +95,6 @@ void TestScene::UpdateScene(const float deltaTime)
 	/*{
 		knightTemplate->Update(deltaTime);
 	}*/
-
-	if (GET(Input).GetKeyDown(VK_TAB))
-		GET(SceneManager).RequestSceneChange(SceneType::Login);
 }
 
 void TestScene::RenderScene()
@@ -111,7 +104,7 @@ void TestScene::RenderScene()
 		{
 			auto meshrenderer = strut->GetComponent<MeshRenderer>();
 			if (meshrenderer)
-				meshrenderer->Render();
+				meshrenderer->Render(*coreRef);
 		}
 	}
 
@@ -128,4 +121,13 @@ void TestScene::RenderScene()
 int TestScene::GetSceneWidth() const
 {
 	return 0;
+}
+
+void TestScene::RequestSceneChange()
+{
+	if (GET(Input).GetKeyDown(VK_TAB))
+	{
+		if (sManagerRef)
+			sManagerRef->RequestSceneChange(SceneType::Login);
+	}
 }

@@ -14,31 +14,25 @@ enum class SceneType {
 class SceneManager
 {
 public:
-    static SceneManager& Get();
-
     ~SceneManager();
-
-    void Initialize(HWND hwnd);
+    void Initialize(DX12Core& core);        
     void Update(const float deltaTime);
-    void Render();
+    void Render();            
     void Release();
 
     template <typename T>
     void RegisterScene(SceneType type);
-
     Scene* GetCurrentScene() const;
 
 public:
-    void SceneStart();
-
+    void SceneStart(DX12Core& core);       
     void RequestSceneChange(SceneType type);
-    void ProcessPendingSceneChange();
+    void ProcessPendingSceneChange(DX12Core& core);  
 
 private:
-    HWND mHwnd = nullptr;
     Scene* mCurrentScene = nullptr;
     std::array<std::unique_ptr<Scene>, static_cast<size_t>(SceneType::END)> mScenes;
-    
+
     bool pendingSceneChange = false;
     SceneType nextSceneType;
 };

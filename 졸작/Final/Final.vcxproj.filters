@@ -4,25 +4,10 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="CommandQueue.cpp">
-      <Filter>DirectX12</Filter>
-    </ClCompile>
-    <ClCompile Include="DepthStencilView.cpp">
-      <Filter>DirectX12</Filter>
-    </ClCompile>
-    <ClCompile Include="Device.cpp">
-      <Filter>DirectX12</Filter>
-    </ClCompile>
-    <ClCompile Include="DX12Graphics.cpp">
-      <Filter>DirectX12</Filter>
-    </ClCompile>
     <ClCompile Include="RootSignature.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
-      <Filter>DirectX12</Filter>
-    </ClCompile>
-    <ClCompile Include="SwapChain.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
@@ -96,25 +81,10 @@
     <ClInclude Include="GameObject.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="CommandQueue.h">
-      <Filter>DirectX12</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthStencilView.h">
-      <Filter>DirectX12</Filter>
-    </ClInclude>
-    <ClInclude Include="Device.h">
-      <Filter>DirectX12</Filter>
-    </ClInclude>
-    <ClInclude Include="DX12Graphics.h">
-      <Filter>DirectX12</Filter>
-    </ClInclude>
     <ClInclude Include="RootSignature.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>DirectX12</Filter>
-    </ClInclude>
-    <ClInclude Include="SwapChain.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">

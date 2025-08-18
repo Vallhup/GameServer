@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "Importer.h"
 
+class DX12Core;
 class UploadBuffer;
 
 class Animator : public Component
@@ -13,7 +14,7 @@ public:
     void UpdateCurrentAnimation(float deltaTime);
     void UpdatePrevAnimation(float deltaTime);
 
-    void SetAnimationData(const vector<AnimClipInfo>& animations);  
+    void SetAnimationData(DX12Core& core, const vector<AnimClipInfo>& animations);
     void SetSkeletonData(const SkeletonData& skeleton);
 
     // 블렌딩 없는 애니메이션
@@ -21,8 +22,8 @@ public:
     // 블렌딩 있는 애니메이션
     void TransitionToAnimation(int animIndex, float Duration);
 
-    void ExecuteComputeShader();
-    void LoadAnimationFromImporter(const Importer& importer);
+    void ExecuteComputeShader(DX12Core& core);
+    void LoadAnimationFromImporter(DX12Core& core, const Importer& importer);
 
     void DebugAnimationInfo();
 
@@ -46,7 +47,7 @@ public:
     float GetBlendRatio() const { return blendRatio; }
 
 private:
-    void CreateBuffers();
+    void CreateBuffers(DX12Core& core);
 
     vector<AnimClipInfo> mAnimations;  
     vector<BoneInfo> mBones;

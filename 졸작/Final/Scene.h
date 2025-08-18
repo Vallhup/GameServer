@@ -1,10 +1,16 @@
 #pragma once
 
+class DX12Core;
+class SceneManager;
+enum class SceneType;
+class GameObject;
+class Camera;
+
 class Scene
 {
 public:
 	virtual ~Scene() {}
-    virtual void Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
+    virtual void Initialize(DX12Core& core);
     virtual void Update(const float deltaTime);
     virtual void Render();
     virtual void Release() = 0;
@@ -12,14 +18,22 @@ public:
 
 	virtual const float* GetBackgroundColor() = 0;
 
+	void SetSceneManager(SceneManager* manager);
+
 protected:
-	virtual void InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) = 0;
+	virtual void InitializeLogic() = 0;
 	virtual void UpdateScene(const float deltaTime) = 0;
 	virtual void RenderScene() = 0;
 	virtual int GetSceneWidth() const = 0;
+	virtual void RequestSceneChange() = 0;
 
 protected:
 	XMFLOAT4X4 mView = {};
 	XMFLOAT4X4 mProjection = {};
+
+	DX12Core* coreRef = nullptr;
+	SceneManager* sManagerRef = nullptr;
+
+	unique_ptr<Camera> cam;
 };
 

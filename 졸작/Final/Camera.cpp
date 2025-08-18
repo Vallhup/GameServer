@@ -1,14 +1,7 @@
 #include "pch.h"
 #include "Camera.h"
+#include "DX12Core.h"
 #include "Input.h"
-#include "DX12Graphics.h"
-#include "UploadBuffer.h"
-
-Camera& Camera::Get()
-{
-    static Camera camera;
-    return camera;
-}
 
 void Camera::Initialize()
 {
@@ -24,10 +17,10 @@ void Camera::Initialize()
     //OutputDebugStringA("Camera init!!\n");
 }
 
-void Camera::Update(float deltaTime)
+void Camera::Update(DX12Core& core, float deltaTime)
 {
     UpdateInputtoCamLogic(deltaTime);
-    UpdateCameraMatrices();
+    UpdateCameraMatrices(core);
 }
 
 void Camera::UpdateInputtoCamLogic(float deltaTime)
@@ -37,7 +30,7 @@ void Camera::UpdateInputtoCamLogic(float deltaTime)
     ChangePosByInput(deltaTime);
 }
 
-void Camera::UpdateCameraMatrices()
+void Camera::UpdateCameraMatrices(DX12Core& core)
 {
     XMVECTOR eyePos = XMLoadFloat3(&position);
     XMVECTOR lookAt = XMVectorAdd(eyePos, XMLoadFloat3(&camForward));
@@ -49,8 +42,8 @@ void Camera::UpdateCameraMatrices()
     matView = XMMatrixTranspose(matView);
     matProj = XMMatrixTranspose(matProj);
 
-    GET(DX12Graphics).GetFrameCB()->CopyData(&matView, sizeof(XMMATRIX), 0);
-    GET(DX12Graphics).GetFrameCB()->CopyData(&matProj, sizeof(XMMATRIX), sizeof(XMMATRIX));
+    core.GetFrameCB()->CopyData(&matView, sizeof(XMMATRIX), 0);
+    core.GetFrameCB()->CopyData(&matProj, sizeof(XMMATRIX), sizeof(XMMATRIX));
 }
 
 void Camera::UpdateForwardAndRight()

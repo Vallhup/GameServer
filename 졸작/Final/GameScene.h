@@ -1,8 +1,6 @@
 #pragma once
 #include "Scene.h"
 
-class GameObject;
-
 class GameScene final : public Scene
 {
 public:
@@ -18,10 +16,11 @@ public:
 
 protected:
 	const float* GetBackgroundColor() override;
-	void InitializeLogic(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) override;
+	void InitializeLogic() override;
 	void UpdateScene(const float deltaTime) override;
 	void RenderScene() override;
 	int GetSceneWidth() const override;
+	void RequestSceneChange() override;
 
 private:
 	vector<shared_ptr<GameObject>> gameObjects;

@@ -1,10 +1,11 @@
 #pragma once
 #include "Component.h"
 #include "Importer.h"
-#include "UploadBuffer.h"
 
+class DX12Core;
 class VertexIndexBuffer;
 class Material;
+class UploadBuffer;
 
 class MeshRenderer : public Component
 {
@@ -13,15 +14,15 @@ public:
 	~MeshRenderer();
 
 	void Update(float deltaTime) override;
-	void Render();
-	void RenderInstanced(UINT instanceCount, UploadBuffer* instancedBuffer);
-	void RenderSingleMaterial(ID3D12GraphicsCommandList* cmdList, const XMMATRIX& world);
-	void RenderMultiMaterial(ID3D12GraphicsCommandList* cmdList, const XMMATRIX& world);
+	void Render(DX12Core& core);
+	void RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuffer* instancedBuffer);
+	void RenderSingleMaterial(DX12Core& core, const XMMATRIX& world);
+	void RenderMultiMaterial(DX12Core& core, const XMMATRIX& world);
 
-	void SetMesh(const wstring& path);
-	void SetupRenderingState(ID3D12GraphicsCommandList* cmdList, UploadBuffer* instanceBuffer = nullptr);
-	void SetSingleMaterial(const vector<MaterialData> mats);
-	void SetMultiMaterials(const vector<MaterialData> mats);
+	void SetMesh(DX12Core& core, const wstring& path);
+	void SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer = nullptr);
+	void SetSingleMaterial(DX12Core& core, const vector<MaterialData> mats);
+	void SetMultiMaterials(DX12Core& core, const vector<MaterialData> mats);
 
 	void ReleaseUploadBuffers();
 

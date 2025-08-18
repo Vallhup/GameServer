@@ -1,14 +1,7 @@
 #pragma once
 
-enum class SceneType;
-class Device;
-class SwapChain;
-class CommandQueue;
-class RootSignature;
-class Shader;
-class UploadBuffer;
-class VertexIndexBuffer;
-class DepthStencilBuffer;
+class DX12Core;
+class SceneManager;
 
 class Engine
 {
@@ -29,4 +22,7 @@ private:
 
     D3D12_VIEWPORT	viewport = {};
     D3D12_RECT		scissorRect = {};
+
+    unique_ptr<DX12Core> graphics;
+    unique_ptr<SceneManager> sManager;
 };

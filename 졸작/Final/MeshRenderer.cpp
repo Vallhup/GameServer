@@ -1,15 +1,13 @@
 #include "pch.h"
 #include "MeshRenderer.h"
-#include "VertexIndexBuffer.h"
-#include "DX12Graphics.h"
-#include "Device.h"
-#include "CommandQueue.h"
+#include "DX12Core.h"
 #include "Shader.h"
 #include "RootSignature.h"
 #include "Texture.h"
 #include "GameObject.h"
 #include "Transform.h"
 #include "Material.h"
+#include "VertexIndexBuffer.h"
 #include "Animator.h"
 
 UINT MeshRenderer::idCounter = 0;
@@ -26,17 +24,17 @@ void MeshRenderer::Update(float deltaTime)
     //OutputDebugStringA("Renderer's Update 호출!!\n");
 }
 
-void MeshRenderer::Render()
+void MeshRenderer::Render(DX12Core& core)
 {
     if (!visible || !vertexIndexBuffer) return;
     
     auto animator = GetGameObject()->GetComponent<Animator>();
     if (animator) {
-        animator->ExecuteComputeShader();
+        animator->ExecuteComputeShader(core);
     }
     
-    auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
-    SetupRenderingState(cmdList);
+    auto cmdList = core.GetGraphicsCmdList();
+    SetupRenderingState(core);
 
     if (animator) {
         cmdList->SetGraphicsRootShaderResourceView(8, animator->GetFinalBuffer()->GetGPUVirtualAddress());
@@ -46,14 +44,14 @@ void MeshRenderer::Render()
     XMMATRIX world = transform->GetWorldMatrix();
 
     if (!materials.empty()) {
-        RenderMultiMaterial(cmdList, world);
+        RenderMultiMaterial(core, world);
     }
     else if (material) {
-        RenderSingleMaterial(cmdList, world);
+        RenderSingleMaterial(core, world);
     }
 }
 
-void MeshRenderer::RenderInstanced(UINT instanceCount, UploadBuffer* instanceBuffer)
+void MeshRenderer::RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuffer* instanceBuffer)
 {
     if (!visible || !vertexIndexBuffer || !instanceBuffer) return;
 
@@ -63,18 +61,18 @@ void MeshRenderer::RenderInstanced(UINT instanceCount, UploadBuffer* instanceBuf
     objConstants.useInstancing = 1;  // 인스턴싱 사용
     objConstants.materialIndex = material ? material->GetMaterialIndex() : 0xFFFFFFFF;
 
-    GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);
+    core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), 0);
 
-    auto cmdList = GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get();
-    SetupRenderingState(cmdList, instanceBuffer);
+    auto cmdList = core.GetGraphicsCmdList();
+    SetupRenderingState(core, instanceBuffer);
 
-    cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress());
+    cmdList->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress());
 
     vertexIndexBuffer->Bind(cmdList);
     vertexIndexBuffer->DrawInstanced(cmdList, instanceCount);  
 }
 
-void MeshRenderer::RenderSingleMaterial(ID3D12GraphicsCommandList* cmdList, const XMMATRIX& world)
+void MeshRenderer::RenderSingleMaterial(DX12Core& core, const XMMATRIX& world)
 {
     ObjectConstants objConstants = {};
     objConstants.world = XMMatrixTranspose(world);
@@ -85,15 +83,15 @@ void MeshRenderer::RenderSingleMaterial(ID3D12GraphicsCommandList* cmdList, cons
 
     UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
     UINT offset = myID * cbSize;
-    GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), offset);
+    core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), offset);
 
-    cmdList->SetGraphicsRootConstantBufferView(1, GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + offset);
+    core.GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress() + offset);
 
-    vertexIndexBuffer->Bind(cmdList);
-    vertexIndexBuffer->Draw(cmdList);
+    vertexIndexBuffer->Bind(core.GetGraphicsCmdList());
+    vertexIndexBuffer->Draw(core.GetGraphicsCmdList());
 }
 
-void MeshRenderer::RenderMultiMaterial(ID3D12GraphicsCommandList* cmdList, const XMMATRIX& world)
+void MeshRenderer::RenderMultiMaterial(DX12Core& core, const XMMATRIX& world)
 {
     UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
 
@@ -106,17 +104,16 @@ void MeshRenderer::RenderMultiMaterial(ID3D12GraphicsCommandList* cmdList, const
         objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
         UINT materialOffset = (myID * 5 + i) * cbSize;  // 5는 캐릭당 최대 머티리얼 수
-        GET(DX12Graphics).GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
+        core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
 
-        cmdList->SetGraphicsRootConstantBufferView(1,
-            GET(DX12Graphics).GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
+        core.GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
 
-        vertexIndexBuffer->Bind(cmdList);
-        vertexIndexBuffer->DrawIndexed(cmdList, subMeshes[i].indexCount, subMeshes[i].startIndex);
+        vertexIndexBuffer->Bind(core.GetGraphicsCmdList());
+        vertexIndexBuffer->DrawIndexed(core.GetGraphicsCmdList(), subMeshes[i].indexCount, subMeshes[i].startIndex);
     }
 }
 
-void MeshRenderer::SetMesh(const wstring& path)
+void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
 {
 	Importer importer;
 
@@ -125,8 +122,8 @@ void MeshRenderer::SetMesh(const wstring& path)
 		const MeshData& mesh = importer.GetMesh();
 		vertexIndexBuffer = make_unique<VertexIndexBuffer>();
 		vertexIndexBuffer->Initialize(
-			GET(DX12Graphics).GetDevice()->GetDevice().Get(),
-			GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(),
+            core.GetDevice(),
+            core.GetGraphicsCmdList(),
 			mesh.vertices,
 			mesh.indices
 		);
@@ -138,16 +135,16 @@ void MeshRenderer::SetMesh(const wstring& path)
         if (mesh.subMeshes.size() > 1)
         {
             subMeshes = mesh.subMeshes;
-            SetMultiMaterials(mats);
+            SetMultiMaterials(core, mats);
         }
         else
         {
-            SetSingleMaterial(mats);
+            SetSingleMaterial(core, mats);
         }
 
         auto animator = GetGameObject()->GetComponent<Animator>();
         if (animator) {
-            animator->LoadAnimationFromImporter(importer);
+            animator->LoadAnimationFromImporter(core, importer);
         }
 
 		OutputDebugStringA("FBX Mesh created for rendering!\n");
@@ -156,37 +153,39 @@ void MeshRenderer::SetMesh(const wstring& path)
 		OutputDebugStringA("Cannot create FBX Mesh for rendering!\n");
 }
 
-void MeshRenderer::SetupRenderingState(ID3D12GraphicsCommandList* cmdList, UploadBuffer* instanceBuffer)
+void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer)
 {
-    cmdList->SetPipelineState(GET(DX12Graphics).GetShader()->GetOpaquePSO());
-    cmdList->SetGraphicsRootSignature(GET(DX12Graphics).GetRootSig()->Get());
+    ID3D12GraphicsCommandList* cmdList = core.GetGraphicsCmdList();
+    cmdList->SetPipelineState(core.GetShader()->GetOpaquePSO());
+    cmdList->SetGraphicsRootSignature(core.GetRootSig()->Get());
 
     Material::BindBindlessResources(cmdList);
 
-    cmdList->SetGraphicsRootConstantBufferView(0, GET(DX12Graphics).GetFrameCB()->GetGPUVirtualAddress());
+    cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
 
     if (instanceBuffer) {
         cmdList->SetGraphicsRootShaderResourceView(9, instanceBuffer->GetGPUVirtualAddress());
     }
 }
 
-void MeshRenderer::SetSingleMaterial(const vector<MaterialData> mats)
+void MeshRenderer::SetSingleMaterial(DX12Core& core, const vector<MaterialData> mats)
 {
     material = make_shared<Material>();
     material->LoadFromMaterialData(
-        GET(DX12Graphics).GetDevice()->GetDevice().Get(),
-        GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(),
+        core.GetDevice(),
+        core.GetGraphicsCmdList(),
         mats[0]
     );
 }
 
-void MeshRenderer::SetMultiMaterials(const vector<MaterialData> mats)
+void MeshRenderer::SetMultiMaterials(DX12Core& core, const vector<MaterialData> mats)
 {
     for (const auto& matData : mats)
     {
         auto mat = make_shared<Material>();
-        mat->LoadFromMaterialData(GET(DX12Graphics).GetDevice()->GetDevice().Get(),
-            GET(DX12Graphics).GetCmdQueue()->GetCmdList().Get(),
+        mat->LoadFromMaterialData(
+            core.GetDevice(),
+            core.GetGraphicsCmdList(),
             matData
         );
 

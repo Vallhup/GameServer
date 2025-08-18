@@ -1,14 +1,14 @@
 #pragma once
 
+class DX12Core;
+
 class Camera
 {
 public:
-	static Camera& Get();
-
 	void Initialize();
-	void Update(float deltaTime);
+	void Update(DX12Core& core, float deltaTime);
 	void UpdateInputtoCamLogic(float deltaTime);
-	void UpdateCameraMatrices();
+	void UpdateCameraMatrices(DX12Core& core);
 
 	void UpdateForwardAndRight();
 	void ChangePosByInput(float deltaTime);
