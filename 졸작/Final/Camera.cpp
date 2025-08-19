@@ -44,7 +44,8 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     XMVECTOR upDir = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     XMMATRIX matView = XMMatrixLookAtLH(eyePos, lookAt, upDir);
 
-    XMMATRIX matProj = XMMatrixPerspectiveFovLH(XM_PIDIV4, 800.0f / 600.0f, 0.1f, 1000.0f);
+    float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
+    XMMATRIX matProj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 1000.0f);
 
     matView = XMMatrixTranspose(matView);
     matProj = XMMatrixTranspose(matProj);

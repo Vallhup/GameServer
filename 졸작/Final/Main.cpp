@@ -47,6 +47,9 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
 {
     ASSERT(hInstance != nullptr);
 
+    WinSize.x = GetSystemMetrics(SM_CXSCREEN);
+    WinSize.y = GetSystemMetrics(SM_CYSCREEN);
+
     const TCHAR* appName = _T("Final");
 
     WNDCLASSEXW wcex = {
@@ -68,13 +71,9 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
         MASSERT(false, "Regiser failed!");
     }
 
-    RECT winRect = { 0, 0, static_cast<LONG>(WinSize.x), static_cast<LONG>(WinSize.y) };
-    AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, false);
-
     *hwnd = CreateWindow(wcex.lpszClassName, wcex.lpszClassName,
-        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-        CW_USEDEFAULT, CW_USEDEFAULT,
-        winRect.right - winRect.left, winRect.bottom - winRect.top,
+        WS_POPUP,
+        0, 0, WinSize.x, WinSize.y,
         nullptr, nullptr, hInstance, nullptr);
 
     ShowWindow(*hwnd, nCmdShow);
@@ -85,6 +84,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
     case WM_KEYDOWN:
+        if (wParam == VK_ESCAPE) {
+            DestroyWindow(hWnd);
+            return 0;
+        }
     case WM_KEYUP:
         GET(Input).SetKey(static_cast<size_t>(wParam), static_cast<bool>(WM_KEYUP - message));
         return 0;

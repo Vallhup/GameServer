@@ -94,7 +94,7 @@ void DX12Core::CreateCommandObjects()
 
 void DX12Core::CreateSwapChain(HWND hwnd)
 {
-	swapChain.Reset();
+	ComPtr<IDXGISwapChain> tempSwapChain;
 
 	DXGI_SWAP_CHAIN_DESC sd = {
 		.BufferDesc = {
@@ -115,12 +115,16 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
 		.BufferCount = SWAP_CHAIN_BUFFER_COUNT,
 		.OutputWindow = hwnd,
-		.Windowed = true,
+		.Windowed = false,
 		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
 		.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
 	};
 
-	dxgi->CreateSwapChain(cmdQueue.Get(), &sd, &swapChain);
+	HRESULT hr = dxgi->CreateSwapChain(cmdQueue.Get(), &sd, &tempSwapChain);
+	MASSERT(SUCCEEDED(hr), "Failed to create SwapChain");
+
+	hr = tempSwapChain.As(&swapChain);
+	MASSERT(SUCCEEDED(hr), "Failed to cast to IDXGISwapChain4");
 
 	for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
 		swapChain->GetBuffer(i, IID_PPV_ARGS(&rtvBuffer[i]));
@@ -218,11 +222,34 @@ void DX12Core::RenderEnd()
 	ID3D12CommandList* cmdListArr[] = { cmdList.Get() };
 	cmdQueue->ExecuteCommandLists(_countof(cmdListArr), cmdListArr);
 
-	swapChain->Present(0, 0);
+	HRESULT hr = swapChain->Present(0, 0);
 
 	WaitSync();
 
-	backBufferIndex = (backBufferIndex + 1) % SWAP_CHAIN_BUFFER_COUNT;
+	// ResizeBuffers가 필요한 경우 처리
+	if (hr == DXGI_ERROR_INVALID_CALL || hr == DXGI_STATUS_OCCLUDED) {
+		// 백버퍼 참조 해제
+		for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i) {
+			rtvBuffer[i].Reset();
+		}
+
+		// ResizeBuffers 호출
+		swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+
+		// 백버퍼 다시 가져오기
+		for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i) {
+			swapChain->GetBuffer(i, IID_PPV_ARGS(&rtvBuffer[i]));
+		}
+
+		// 렌더 타겟 뷰 다시 생성
+		CreateRenderTargetView();
+
+		// 인덱스 갱신
+		backBufferIndex = swapChain->GetCurrentBackBufferIndex();
+	}
+	else if (SUCCEEDED(hr)) {
+		backBufferIndex = swapChain->GetCurrentBackBufferIndex();
+	}
 }
 
 void DX12Core::WaitSync()
@@ -262,6 +289,11 @@ ID3D12Device* DX12Core::GetDevice() const
 ID3D12GraphicsCommandList* DX12Core::GetGraphicsCmdList() const
 {
 	return cmdList.Get();
+}
+
+IDXGISwapChain4* DX12Core::GetSwapChain() const
+{
+	return swapChain.Get();
 }
 
 RootSignature* DX12Core::GetRootSig() const

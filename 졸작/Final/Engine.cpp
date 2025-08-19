@@ -50,6 +50,8 @@ void Engine::Render()
 
 void Engine::Shutdown()
 {
+    if (graphics)
+        graphics->GetSwapChain()->SetFullscreenState(FALSE, nullptr);
     sManager->Release();
 }
 

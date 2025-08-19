@@ -69,7 +69,7 @@ using namespace Microsoft::WRL;
 using UINT32 = unsigned __int32;
 using UINT64 = unsigned __int64;
 
-constexpr XMINT2 WinSize(800, 600);
+inline XMINT2 WinSize;
 constexpr int SWAP_CHAIN_BUFFER_COUNT = 2;
 constexpr float HEIGHTMAP_SCALE = 3.0f;
 constexpr float HEIGHT_OFFSET = 0.12f;

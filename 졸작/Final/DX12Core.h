@@ -60,6 +60,7 @@ public:
 
 	ID3D12Device* GetDevice() const;
 	ID3D12GraphicsCommandList* GetGraphicsCmdList() const;
+	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;
 	Shader* GetShader() const;
 	UploadBuffer* GetFrameCB() const;
@@ -82,7 +83,7 @@ private:
 	HANDLE fenceEvent = INVALID_HANDLE_VALUE;
 	const float* backgroundColor = {};
 
-	ComPtr<IDXGISwapChain> swapChain;
+	ComPtr<IDXGISwapChain4> swapChain;
 	ComPtr<ID3D12Resource> rtvBuffer[SWAP_CHAIN_BUFFER_COUNT];
 	ComPtr<ID3D12DescriptorHeap> rtvHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle[SWAP_CHAIN_BUFFER_COUNT];

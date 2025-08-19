@@ -44,16 +44,18 @@ void SceneManager::Render()
 
 void SceneManager::Release()
 {
+    if (mCurrentScene)
+        mCurrentScene->Reset();
+
+    mCurrentScene = nullptr;
+
     for (auto& scene : mScenes)
     {
         if (scene)
         {
-            scene->Release();  
             scene.reset();     
         }
     }
-
-    mCurrentScene = nullptr;
 }
 
 Scene* SceneManager::GetCurrentScene() const
