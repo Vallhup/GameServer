@@ -35,6 +35,8 @@ private:
 	vector<shared_ptr<Material>> materials;		// 다중 material
 	vector<SubMeshInfo> subMeshes;				// 서브메시 정보 (다중 머티리얼용)
 
+	vector<MaterialData> originalMaterialData;
+
 	bool visible = true;
 
 	UINT myID;

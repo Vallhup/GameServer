@@ -74,6 +74,10 @@ void MeshRenderer::RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuf
 
 void MeshRenderer::RenderSingleMaterial(DX12Core& core, const XMMATRIX& world)
 {
+    auto cmdList = core.GetGraphicsCmdList();
+
+    cmdList->SetPipelineState(core.GetShader()->GetOpaquePSO());
+
     ObjectConstants objConstants = {};
     objConstants.world = XMMatrixTranspose(world);
     objConstants.useTexture = 1;
@@ -94,8 +98,14 @@ void MeshRenderer::RenderSingleMaterial(DX12Core& core, const XMMATRIX& world)
 void MeshRenderer::RenderMultiMaterial(DX12Core& core, const XMMATRIX& world)
 {
     UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
+    auto cmdList = core.GetGraphicsCmdList();
+
+    cmdList->SetPipelineState(core.GetShader()->GetOpaquePSO());
 
     for (size_t i = 0; i < subMeshes.size(); ++i) {
+        bool hasAlphaTexture = !originalMaterialData[i].alphaTexPath.empty();
+        if (hasAlphaTexture) continue; 
+
         ObjectConstants objConstants = {};
         objConstants.world = XMMatrixTranspose(world);
         objConstants.useTexture = 1;
@@ -103,15 +113,36 @@ void MeshRenderer::RenderMultiMaterial(DX12Core& core, const XMMATRIX& world)
         objConstants.hasAlpha = 0;
         objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
-        UINT materialOffset = (myID * 5 + i) * cbSize;  // 5는 캐릭당 최대 머티리얼 수
+        UINT materialOffset = (myID * 5 + i) * cbSize;
         core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
+        cmdList->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
 
-        core.GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
+        vertexIndexBuffer->Bind(cmdList);
+        vertexIndexBuffer->DrawIndexed(cmdList, subMeshes[i].indexCount, subMeshes[i].startIndex);
+    }
 
-        vertexIndexBuffer->Bind(core.GetGraphicsCmdList());
-        vertexIndexBuffer->DrawIndexed(core.GetGraphicsCmdList(), subMeshes[i].indexCount, subMeshes[i].startIndex);
+    cmdList->SetPipelineState(core.GetShader()->GetTransparentPSO());
+
+    for (size_t i = 0; i < subMeshes.size(); ++i) {
+        bool hasAlphaTexture = !originalMaterialData[i].alphaTexPath.empty();
+        if (!hasAlphaTexture) continue; 
+
+        ObjectConstants objConstants = {};
+        objConstants.world = XMMatrixTranspose(world);
+        objConstants.useTexture = 1;
+        objConstants.useInstancing = 0;
+        objConstants.hasAlpha = 1;
+        objConstants.materialIndex = materials[i]->GetMaterialIndex();
+
+        UINT materialOffset = (myID * 5 + i) * cbSize;
+        core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
+        cmdList->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
+
+        vertexIndexBuffer->Bind(cmdList);
+        vertexIndexBuffer->DrawIndexed(cmdList, subMeshes[i].indexCount, subMeshes[i].startIndex);
     }
 }
+
 
 void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
 {
@@ -156,7 +187,7 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
 void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer)
 {
     ID3D12GraphicsCommandList* cmdList = core.GetGraphicsCmdList();
-    cmdList->SetPipelineState(core.GetShader()->GetOpaquePSO());
+
     cmdList->SetGraphicsRootSignature(core.GetRootSig()->Get());
 
     Material::BindBindlessResources(cmdList);
@@ -164,7 +195,7 @@ void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuf
     cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
 
     // 임시 Direction Light
-    LightConstants light = { {0, 0, -1}, 0, {1, 1, 1}, 2.0f };
+    LightConstants light = { {0, 0, -1}, 0, {1, 1, 1}, 0.6f };
     core.GetDirectionalLightCB()->CopyData(&light, sizeof(LightConstants));
     cmdList->SetGraphicsRootConstantBufferView(10, core.GetDirectionalLightCB()->GetGPUVirtualAddress());
 
@@ -185,6 +216,8 @@ void MeshRenderer::SetSingleMaterial(DX12Core& core, const vector<MaterialData> 
 
 void MeshRenderer::SetMultiMaterials(DX12Core& core, const vector<MaterialData> mats)
 {
+    originalMaterialData = mats;
+
     for (const auto& matData : mats)
     {
         auto mat = make_shared<Material>();

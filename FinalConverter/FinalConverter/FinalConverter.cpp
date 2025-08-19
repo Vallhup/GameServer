@@ -7,9 +7,9 @@ int wmain(int argc, wchar_t* argv[])
     _wsetlocale(LC_ALL, L"korean");
     SetConsoleOutputCP(CP_UTF8);
 
-    wstring inputFbx = L"../FBX/Dragon.fbx";          // 입력 FBX 파일
+    wstring inputFbx = L"../FBX/knight2.fbx";          // 입력 FBX 파일
     wstring fbxDir = L"../FBX";
-    wstring outputBase = L"../FBXOutput/Dragon";           // 출력 기본 이름
+    wstring outputBase = L"../FBXOutput/knight2";           // 출력 기본 이름
 
     FBXLoader loader;
     if (!loader.LoadFbx(inputFbx)) {

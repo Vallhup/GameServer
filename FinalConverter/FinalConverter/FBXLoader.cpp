@@ -211,10 +211,10 @@ void FBXLoader::LoadAllTextures(FbxSurfaceMaterial* surfaceMaterial, FbxMaterial
 				string propName = prop.GetName().Buffer();
 				wstring textureName = s2ws(texture->GetRelativeFileName());
 
-				if (ContainsKeyword(propName, { "diffusecolor", "basecolor", "albedo" })) {
+				if (ContainsKeyword(propName, { "diffusecolor", "base", "basecolor", "albedo" })) {
 					material.baseColorTexName = textureName;
 				}
-				else if (ContainsKeyword(propName, { "normal", "bump" })) {
+				else if (ContainsKeyword(propName, { "norm", "normal", "bump" })) {
 					material.normalTexName = textureName;
 				}
 				else if (ContainsKeyword(propName, { "roughness", "rough", "specular", "shininess" })) {
