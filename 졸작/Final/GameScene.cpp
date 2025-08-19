@@ -43,7 +43,7 @@ void GameScene::InitializeLogic()
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/Dragon");
 		transform->SetPosition(0.f, 0.f, 0.5f);
 		transform->SetRotation(0.f, 0.f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
+		transform->SetScale(0.1f, 0.1f, 0.1f);
 		AddGameObject(dragon);
 
 		OutputDebugStringA("Dragon created!!\n");

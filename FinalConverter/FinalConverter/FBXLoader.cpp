@@ -16,13 +16,13 @@ FBXLoader::~FBXLoader()
 
 bool FBXLoader::LoadFbx(const wstring& path)
 {
-    if (!Import(path)) return false;
-    
-    LoadBones(_scene->GetRootNode());
-    LoadAnimationInfo();
-    ParseNode(_scene->GetRootNode());
-    
-    return true;  // 성공
+	if (!Import(path)) return false;
+
+	LoadBones(_scene->GetRootNode());
+	LoadAnimationInfo();
+	ParseNode(_scene->GetRootNode());
+
+	return true;  // 성공
 }
 
 bool FBXLoader::Import(const wstring& path)
@@ -116,85 +116,116 @@ void FBXLoader::LoadMesh(FbxMesh* mesh)
 {
 	_meshes.push_back(FbxMeshInfo());
 	FbxMeshInfo& meshInfo = _meshes.back();
-
 	meshInfo.name = s2ws(mesh->GetName());
 
-	const int32 vertexCount = mesh->GetControlPointsCount();
-	meshInfo.vertices.resize(vertexCount);
-	meshInfo.boneWeights.resize(vertexCount);
-
-	// Position
+	// 정점 확장
+	vector<Vertex> expandedVertices;
+	vector<int32> controlPointMapping;
 	FbxVector4* controlPoints = mesh->GetControlPoints();
-	for (int32 i = 0; i < vertexCount; ++i)
-	{
-		meshInfo.vertices[i].pos.x = static_cast<float>(controlPoints[i].mData[0]);
-		meshInfo.vertices[i].pos.y = static_cast<float>(controlPoints[i].mData[2]);
-		meshInfo.vertices[i].pos.z = static_cast<float>(controlPoints[i].mData[1]);
-	}
 
 	const int32 materialCount = mesh->GetNode()->GetMaterialCount();
 	meshInfo.indices.resize(materialCount);
-
 	FbxGeometryElementMaterial* geometryElementMaterial = mesh->GetElementMaterial();
 
-	const int32 polygonSize = mesh->GetPolygonSize(0);
-	assert(polygonSize == 3);
+	uint32 currentVertexIndex = 0;
+	const int32 triCount = mesh->GetPolygonCount();
 
-	uint32 arrIdx[3];
-	uint32 vertexCounter = 0; // 정점의 개수
+	for (int32 i = 0; i < triCount; i++) {
+		uint32 triangleIndices[3];
 
-	const int32 triCount = mesh->GetPolygonCount(); // 메쉬의 삼각형 개수를 가져온다
-	for (int32 i = 0; i < triCount; i++) // 삼각형의 개수
-	{
-		for (int32 j = 0; j < 3; j++) // 삼각형은 세 개의 정점으로 구성
-		{
-			int32 controlPointIndex = mesh->GetPolygonVertex(i, j); // 제어점의 인덱스 추출
-			arrIdx[j] = controlPointIndex;
+		for (int32 j = 0; j < 3; j++) {
+			int32 controlPointIndex = mesh->GetPolygonVertex(i, j);
+			Vertex newVertex = {};
 
-			GetNormal(mesh, &meshInfo, controlPointIndex, vertexCounter);
-			GetTangent(mesh, &meshInfo, controlPointIndex, vertexCounter);
-			GetUV(mesh, &meshInfo, controlPointIndex, mesh->GetTextureUVIndex(i, j));
+			// Position
+			newVertex.pos.x = static_cast<float>(controlPoints[controlPointIndex].mData[0]);
+			newVertex.pos.y = static_cast<float>(controlPoints[controlPointIndex].mData[2]);
+			newVertex.pos.z = static_cast<float>(controlPoints[controlPointIndex].mData[1]);
 
-			vertexCounter++;
+			// UV
+			FbxVector2 uv = mesh->GetElementUV()->GetDirectArray().GetAt(mesh->GetTextureUVIndex(i, j));
+			newVertex.uv.x = static_cast<float>(uv.mData[0]);
+			newVertex.uv.y = 1.f - static_cast<float>(uv.mData[1]);
+
+			// Normal - 직접 계산
+			if (mesh->GetElementNormalCount() > 0) {
+				FbxGeometryElementNormal* normal = mesh->GetElementNormal();
+				uint32 normalIdx = currentVertexIndex;
+				if (normal->GetMappingMode() == FbxGeometryElement::eByPolygonVertex) {
+					if (normal->GetReferenceMode() == FbxGeometryElement::eDirect)
+						normalIdx = currentVertexIndex;
+					else
+						normalIdx = normal->GetIndexArray().GetAt(currentVertexIndex);
+				}
+				FbxVector4 vec = normal->GetDirectArray().GetAt(normalIdx);
+				newVertex.normal.x = static_cast<float>(vec.mData[0]);
+				newVertex.normal.y = static_cast<float>(vec.mData[2]);
+				newVertex.normal.z = static_cast<float>(vec.mData[1]);
+			}
+
+			// Tangent - 기본값
+			newVertex.tangent = { 1.0f, 0.0f, 0.0f };
+
+			expandedVertices.push_back(newVertex);
+			controlPointMapping.push_back(controlPointIndex);
+			triangleIndices[j] = currentVertexIndex;
+			currentVertexIndex++;
 		}
 
 		const uint32 subsetIdx = geometryElementMaterial->GetIndexArray().GetAt(i);
-		meshInfo.indices[subsetIdx].push_back(arrIdx[0]);
-		meshInfo.indices[subsetIdx].push_back(arrIdx[2]);
-		meshInfo.indices[subsetIdx].push_back(arrIdx[1]);
+		meshInfo.indices[subsetIdx].push_back(triangleIndices[0]);
+		meshInfo.indices[subsetIdx].push_back(triangleIndices[2]);
+		meshInfo.indices[subsetIdx].push_back(triangleIndices[1]);
 	}
 
-	// Animation
+	meshInfo.vertices = expandedVertices;
+
+	const int32 originalVertexCount = mesh->GetControlPointsCount();
+	meshInfo.boneWeights.resize(originalVertexCount);
+
+	// 애니메이션 로드
 	LoadAnimationData(mesh, &meshInfo);
+
+	vector<BoneWeight> originalWeights = meshInfo.boneWeights;
+	meshInfo.boneWeights.resize(expandedVertices.size());
+
+	for (size_t i = 0; i < controlPointMapping.size(); ++i) {
+		int32 originalIndex = controlPointMapping[i];
+		if (originalIndex < originalWeights.size()) {
+			meshInfo.boneWeights[i] = originalWeights[originalIndex];
+		}
+	}
+
+	FillBoneWeight(mesh, &meshInfo);
 }
 
 void FBXLoader::LoadMaterial(FbxSurfaceMaterial* surfaceMaterial)
 {
 	FbxMaterialInfo material{};
-    material.name = s2ws(surfaceMaterial->GetName());
+	material.name = s2ws(surfaceMaterial->GetName());
 
-    // 기본 색상 정보
-    material.diffuse = GetMaterialData(surfaceMaterial, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor);
-    material.ambient = GetMaterialData(surfaceMaterial, FbxSurfaceMaterial::sAmbient, FbxSurfaceMaterial::sAmbientFactor);
-    material.specular = GetMaterialData(surfaceMaterial, FbxSurfaceMaterial::sSpecular, FbxSurfaceMaterial::sSpecularFactor);
+	// 기본 색상 정보
+	material.diffuse = GetMaterialData(surfaceMaterial, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor);
+	material.ambient = GetMaterialData(surfaceMaterial, FbxSurfaceMaterial::sAmbient, FbxSurfaceMaterial::sAmbientFactor);
+	material.specular = GetMaterialData(surfaceMaterial, FbxSurfaceMaterial::sSpecular, FbxSurfaceMaterial::sSpecularFactor);
 
-    //// 모든 텍스처 타입 추출
-    //material.baseColorTexName = GetTextureRelativeName(surfaceMaterial, FbxSurfaceMaterial::sDiffuse);
-    //material.diffuseTexName = material.baseColorTexName;  // 호환성을 위해
-    //
-    //material.normalTexName = GetTextureRelativeName(surfaceMaterial, FbxSurfaceMaterial::sNormalMap);
-    //material.roughnessTexName = GetTextureRelativeName(surfaceMaterial, "Roughness");
-    //material.specularTexName = material.roughnessTexName;  // 호환성을 위해
-    //
-    //material.metallicTexName = GetTextureRelativeName(surfaceMaterial, "Metallic");
-    //material.heightTexName = GetTextureRelativeName(surfaceMaterial, "Height");
-    //material.alphaTexName = GetTextureRelativeName(surfaceMaterial, "Opacity");
-    //material.emissionTexName = GetTextureRelativeName(surfaceMaterial, "Emission");
-    //material.aoTexName = GetTextureRelativeName(surfaceMaterial, "AmbientOcclusion");
+	//// 모든 텍스처 타입 추출
+	//material.baseColorTexName = GetTextureRelativeName(surfaceMaterial, FbxSurfaceMaterial::sDiffuse);
+	//material.diffuseTexName = material.baseColorTexName;  // 호환성을 위해
+	//
+	//material.normalTexName = GetTextureRelativeName(surfaceMaterial, FbxSurfaceMaterial::sNormalMap);
+	//material.roughnessTexName = GetTextureRelativeName(surfaceMaterial, "Roughness");
+	//material.specularTexName = material.roughnessTexName;  // 호환성을 위해
+	//
+	//material.metallicTexName = GetTextureRelativeName(surfaceMaterial, "Metallic");
+	//material.heightTexName = GetTextureRelativeName(surfaceMaterial, "Height");
+	//material.alphaTexName = GetTextureRelativeName(surfaceMaterial, "Opacity");
+	//material.emissionTexName = GetTextureRelativeName(surfaceMaterial, "Emission");
+	//material.aoTexName = GetTextureRelativeName(surfaceMaterial, "AmbientOcclusion");
 
 	LoadAllTextures(surfaceMaterial, material);
 
-    _meshes.back().materials.push_back(material);
+	_meshes.back().materials.push_back(material);
 }
 
 void FBXLoader::LoadAllTextures(FbxSurfaceMaterial* surfaceMaterial, FbxMaterialInfo& material)
@@ -449,8 +480,6 @@ void FBXLoader::LoadAnimationData(FbxMesh* mesh, FbxMeshInfo* meshInfo)
 			}
 		}
 	}
-
-	FillBoneWeight(mesh, meshInfo);
 }
 
 
@@ -474,6 +503,25 @@ void FBXLoader::FillBoneWeight(FbxMesh* mesh, FbxMeshInfo* meshInfo)
 
 		memcpy(&meshInfo->vertices[v].indices, animBoneIndex, sizeof(Vec4));
 		memcpy(&meshInfo->vertices[v].weights, animBoneWeight, sizeof(Vec4));
+	}
+}
+
+void FBXLoader::RemapBoneWeights(FbxMesh* mesh, const vector<int32>& controlPointMapping, FbxMeshInfo& meshInfo)
+{
+	const int32 originalVertexCount = mesh->GetControlPointsCount();
+	vector<BoneWeight> originalWeights(originalVertexCount);
+
+	// 기존 애니메이션 로직이 원본 크기로 로드했다면 백업
+	for (int32 i = 0; i < originalVertexCount && i < meshInfo.boneWeights.size(); ++i) {
+		originalWeights[i] = meshInfo.boneWeights[i];
+	}
+
+	// 확장된 정점에 매핑
+	for (size_t i = 0; i < controlPointMapping.size(); ++i) {
+		int32 originalIndex = controlPointMapping[i];
+		if (originalIndex < originalWeights.size()) {
+			meshInfo.boneWeights[i] = originalWeights[originalIndex];
+		}
 	}
 }
 

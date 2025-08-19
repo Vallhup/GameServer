@@ -126,6 +126,7 @@ private:
 	FbxAMatrix GetTransform(FbxNode* node);
 
 	void FillBoneWeight(FbxMesh* mesh, FbxMeshInfo* meshInfo);
+	void RemapBoneWeights(FbxMesh* mesh, const vector<int32>& controlPointMapping, FbxMeshInfo& meshInfo);
 
 private:
 	FbxManager* _manager = nullptr;
