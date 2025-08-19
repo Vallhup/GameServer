@@ -26,9 +26,8 @@ void Scene::Initialize(DX12Core& core)
 
 void Scene::Update(const float deltaTime)
 {
-    cam->Update(*coreRef, deltaTime);
-
     UpdateScene(deltaTime);
+    cam->Update(*coreRef, deltaTime);
     RequestSceneChange();
 }
 

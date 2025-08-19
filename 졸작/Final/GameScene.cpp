@@ -62,6 +62,8 @@ void GameScene::InitializeLogic()
 		OutputDebugStringA("Strut created!!\n");
 	}
 
+	cam->InitCameraPositionFromCharacter(knight->GetComponent<Transform>()->GetPosition());
+
 	/*{
 		for (int i = 1; i < 10; ++i) {
 			auto newKnight = make_shared<GameObject>();
@@ -163,6 +165,41 @@ void GameScene::UpdateScene(const float deltaTime)
 			key4Pressed = key4Current;
 		}
 	}
+
+	if (knight)
+	{
+		auto transform = knight->GetComponent<Transform>();
+		XMFLOAT3 currentPos = transform->GetPosition();
+
+		if (GET(Input).GetKey('W'))
+		{
+			currentPos.z -= 2.f * deltaTime;
+		}
+		if (GET(Input).GetKey('S'))
+		{
+			currentPos.z += 2.f * deltaTime;
+		}
+		if (GET(Input).GetKey('A'))
+		{
+			currentPos.x += 2.f * deltaTime;
+		}
+		if (GET(Input).GetKey('D'))
+		{
+			currentPos.x -= 2.f * deltaTime;
+		}
+
+		transform->SetPosition(currentPos);
+
+		XMFLOAT3 currentRot = transform->GetRotation();
+		if (GET(Input).GetKey(VK_RIGHT))
+			currentRot.y += 1.57f * deltaTime;
+		if (GET(Input).GetKey(VK_LEFT))
+			currentRot.y -= 1.57f * deltaTime;
+
+		transform->SetRotation(currentRot);
+	}
+
+	cam->SetCameraPosition(knight->GetComponent<Transform>()->GetPosition());
 
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);

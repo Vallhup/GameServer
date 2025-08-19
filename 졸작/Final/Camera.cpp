@@ -5,16 +5,25 @@
 
 void Camera::Initialize()
 {
-	position = { 0.0f, 2.0f, -5.0f };
+	position = { 0.0f, 0.0f, 0.0f };
+    targetPosition = { 0.0f, 0.0f, 1.0f };
 
 	yaw = 0.0f;
-	pitch = 0.0f;
+	pitch = -26.57f;
 	moveSpeed = 5.0f;
 	rotateSpeed = 90.0f;
+
+    lastMousePos = GET(Input).GetMousePosition();
 
     UpdateForwardAndRight();
 
     //OutputDebugStringA("Camera init!!\n");
+}
+
+void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
+{
+    targetPosition = { pos.x, pos.y + 2.0f, pos.z };
+    position = { targetPosition.x, targetPosition.y + 2.0f, targetPosition.z + 4.0f };
 }
 
 void Camera::Update(DX12Core& core, float deltaTime)
@@ -25,15 +34,13 @@ void Camera::Update(DX12Core& core, float deltaTime)
 
 void Camera::UpdateInputtoCamLogic(float deltaTime)
 {
-    UpdateForwardAndRight();
     ChangeAngleByInput(deltaTime);
-    ChangePosByInput(deltaTime);
 }
 
 void Camera::UpdateCameraMatrices(DX12Core& core)
 {
     XMVECTOR eyePos = XMLoadFloat3(&position);
-    XMVECTOR lookAt = XMVectorAdd(eyePos, XMLoadFloat3(&camForward));
+    XMVECTOR lookAt = XMLoadFloat3(&targetPosition);
     XMVECTOR upDir = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     XMMATRIX matView = XMMatrixLookAtLH(eyePos, lookAt, upDir);
 
@@ -61,39 +68,6 @@ void Camera::UpdateForwardAndRight()
     XMStoreFloat3(&right, rightVec);
 }
 
-void Camera::ChangePosByInput(float deltaTime)
-{
-    XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
-
-    if (GET(Input).GetKey('W'))
-    {
-        moveDir.x += camForward.x;
-        moveDir.y += camForward.y;
-        moveDir.z += camForward.z;
-    }
-    if (GET(Input).GetKey('S'))
-    {
-        moveDir.x -= camForward.x;
-        moveDir.y -= camForward.y;
-        moveDir.z -= camForward.z;
-    }
-    if (GET(Input).GetKey('A'))
-    {
-        moveDir.x -= right.x;
-        moveDir.z -= right.z;
-    }
-    if (GET(Input).GetKey('D'))
-    {
-        moveDir.x += right.x;
-        moveDir.z += right.z;
-    }
-
-    float moveDistance = moveSpeed * deltaTime;
-    position.x += moveDir.x * moveDistance;
-    position.y += moveDir.y * moveDistance;
-    position.z += moveDir.z * moveDistance;
-}
-
 void Camera::ChangeAngleByInput(float deltaTime)
 {
     if (GET(Input).GetKey(VK_LEFT))  yaw -= rotateSpeed * deltaTime;
@@ -101,6 +75,30 @@ void Camera::ChangeAngleByInput(float deltaTime)
     if (GET(Input).GetKey(VK_UP))    pitch += rotateSpeed * deltaTime;
     if (GET(Input).GetKey(VK_DOWN))  pitch -= rotateSpeed * deltaTime;
 
+    XMFLOAT2 currentMousePos = GET(Input).GetMousePosition();
+
+    float deltaX = currentMousePos.x - lastMousePos.x;
+    float deltaY = currentMousePos.y - lastMousePos.y;
+
+    yaw += deltaX * mouseSensitivity;
+    pitch += deltaY * mouseSensitivity;  
+
+    lastMousePos = currentMousePos;
+
     constexpr float MAX_PITCH_DEGREE = 89.0f;   // 90µµ ÂïÈ÷¸é Áü¹ú¶ô°É·Á¿ä~
     pitch = max(-MAX_PITCH_DEGREE, min(MAX_PITCH_DEGREE, pitch));
+}
+
+void Camera::SetCameraPosition(const XMFLOAT3& pos)
+{
+    targetPosition = { pos.x, pos.y + 2.0f, pos.z };
+
+    float distance = sqrt(4 * 4 + 2 * 2); 
+
+    float radYaw = XMConvertToRadians(yaw);
+    float radPitch = XMConvertToRadians(-pitch);
+
+    position.x = targetPosition.x + distance * cos(radPitch) * sin(radYaw);
+    position.y = targetPosition.y + distance * sin(radPitch);
+    position.z = targetPosition.z + distance * cos(radPitch) * cos(radYaw);
 }

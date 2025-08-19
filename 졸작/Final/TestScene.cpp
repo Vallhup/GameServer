@@ -40,6 +40,23 @@ void TestScene::InitializeLogic()
 		strut = make_shared<GameObject>();
 		auto meshrenderer = strut->AddComponent<MeshRenderer>();
 		auto transform = strut->AddComponent<Transform>();
+		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight2");
+		transform->SetPosition(0.f, 0.f, 0.f);
+		transform->SetRotation(0.f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+
+		coreRef->FlushCommandQueue();
+		coreRef->ResetCommandQueue();
+
+		meshrenderer->ReleaseUploadBuffers();
+	}
+
+	cam->InitCameraPositionFromCharacter(strut->GetComponent<Transform>()->GetPosition());
+
+	/*{
+		strut = make_shared<GameObject>();
+		auto meshrenderer = strut->AddComponent<MeshRenderer>();
+		auto transform = strut->AddComponent<Transform>();
 		auto animator = strut->AddComponent<Animator>();
 		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/Strut Walking");
 		transform->SetPosition(0.f, 0.f, -0.5f);
@@ -50,7 +67,7 @@ void TestScene::InitializeLogic()
 		coreRef->ResetCommandQueue();
 
 		meshrenderer->ReleaseUploadBuffers();
-	}
+	}*/
 
 	/*{
 		knightTemplate = make_shared<GameObject>();
@@ -92,6 +109,8 @@ void TestScene::UpdateScene(const float deltaTime)
 		strut->Update(deltaTime);
 	}
 	
+	cam->SetCameraPosition(strut->GetComponent<Transform>()->GetPosition());
+
 	/*{
 		knightTemplate->Update(deltaTime);
 	}*/

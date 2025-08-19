@@ -163,7 +163,7 @@ void Animator::ExecuteComputeShader(DX12Core& core)
 {
     auto cmdList = core.GetGraphicsCmdList();
 
-    DebugAnimationInfo();
+    //DebugAnimationInfo();
 
     AnimationConstants animData = {};
     animData.boneCount = GetBoneCount();
