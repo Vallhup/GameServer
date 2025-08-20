@@ -80,24 +80,7 @@ float4 PSMain(PS_IN input) : SV_Target
         
         if (material.alphaTexIndex != 0xFFFFFFFF)
         {
-            if (hasAlpha)
-            {
-                float2 texelSize = float2(0.00015f, 0.00015f);
-    
-                // 8샘플 (십자 + 대각선)
-                float alphaSum = 0.0f;
-                alphaSum += bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv + float2(-texelSize.x, 0)).a;
-                alphaSum += bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv + float2(texelSize.x, 0)).a;
-                alphaSum += bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv + float2(0, -texelSize.y)).a;
-                alphaSum += bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv + float2(0, texelSize.y)).a;
-                alphaSum += bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv + float2(-texelSize.x, -texelSize.y)).a;
-                alphaSum += bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv + float2(texelSize.x, -texelSize.y)).a;
-                alphaSum += bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv + float2(-texelSize.x, texelSize.y)).a;
-                alphaSum += bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv + float2(texelSize.x, texelSize.y)).a;
-    
-                alpha = alphaSum / 8.0f;
-                alpha = smoothstep(0.01f, 0.99f, alpha); // 더 부드러운 전환
-            }
+            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv).a;
         }
         
         float3 lightDir = normalize(-lightDirection);
