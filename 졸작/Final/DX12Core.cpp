@@ -31,9 +31,7 @@ void DX12Core::Initialize(HWND hwnd)
 void DX12Core::CreateDevice()
 {
 	HRESULT hr = D3D12CreateDevice(NULL, D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&device));
-
-	if (FAILED(hr))
-		OutputDebugStringA("Failed to create D3D12 device\n");
+	MASSERT(SUCCEEDED(hr), "Failed to create D3D12 device");
 }
 
 void DX12Core::CreateDXGI(HWND hwnd)
@@ -54,92 +52,51 @@ void DX12Core::CreateDXGI(HWND hwnd)
 #endif
 
 	HRESULT hr = CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&dxgi));
-
-	if (FAILED(hr))
-		OutputDebugStringA("Failed to create DXGI factory\n");
+	MASSERT(SUCCEEDED(hr), "Failed to create DXGI factory");
 }
 
 void DX12Core::CreateCommandObjects()
 {
-	// cmdQueue 생성
 	D3D12_COMMAND_QUEUE_DESC desc = {
 		.Type = D3D12_COMMAND_LIST_TYPE_DIRECT,
 		.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE
 	};
 
 	HRESULT hr = device->CreateCommandQueue(&desc, IID_PPV_ARGS(&cmdQueue));
+    MASSERT(SUCCEEDED(hr), "Failed to create Command Queue");
 
-	if (FAILED(hr))
-		OutputDebugStringA("Failed to create Command Queue\n");
+    hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAlloc));
+    MASSERT(SUCCEEDED(hr), "Failed to create Command Allocator");
 
-	// cmdAlloc 생성
-	hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&cmdAlloc));
+    hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAlloc.Get(), nullptr, IID_PPV_ARGS(&cmdList));
+    MASSERT(SUCCEEDED(hr), "Failed to create Command List");
 
-	if (FAILED(hr))
-		OutputDebugStringA("Failed to create Command Allocator\n");
+    hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+    MASSERT(SUCCEEDED(hr), "Failed to create Fence");
 
-	// cmdList 생성
-	hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAlloc.Get(), nullptr, IID_PPV_ARGS(&cmdList));
-
-	if (FAILED(hr))
-		OutputDebugStringA("Failed to create Command List\n");
-
-	// fence 생성
-	hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
-
-	if (FAILED(hr))
-		OutputDebugStringA("Failed to create Fence\n");
-
-	fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+    fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
 void DX12Core::CreateSwapChain(HWND hwnd)
 {
 	ComPtr<IDXGISwapChain> tempSwapChain;
 
-	// 현재 화면 크기 로그
-	OutputDebugStringA(("Current WinSize: " + std::to_string(WinSize.x) + "x" + std::to_string(WinSize.y) + "\n").c_str());
-
-	// DXGI 어댑터로 모니터 정보 가져오기
 	ComPtr<IDXGIAdapter> adapter;
 	HRESULT hr = dxgi->EnumAdapters(0, &adapter);
-	if (FAILED(hr)) {
-		OutputDebugStringA("Failed to get adapter!\n");
-		return;
-	}
+	MASSERT(SUCCEEDED(hr), "Failed to get adapter!");
 
 	ComPtr<IDXGIOutput> output;
 	hr = adapter->EnumOutputs(0, &output);
-	if (FAILED(hr)) {
-		OutputDebugStringA("Failed to get output!\n");
-		return;
-	}
+	MASSERT(SUCCEEDED(hr), "Failed to get output!");
 
 	UINT numModes = 0;
 	output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, nullptr);
 
-	OutputDebugStringA(("Total display modes found: " + std::to_string(numModes) + "\n").c_str());
-
 	std::vector<DXGI_MODE_DESC> displayModes(numModes);
 	output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModes.data());
 
-	// 모든 디스플레이 모드 로그 출력
-	OutputDebugStringA("=== All Display Modes ===\n");
-	for (size_t i = 0; i < displayModes.size(); ++i) {
-		const auto& mode = displayModes[i];
-		float refreshRate = static_cast<float>(mode.RefreshRate.Numerator) / mode.RefreshRate.Denominator;
-
-		string modeInfo = "Mode[" + std::to_string(i) + "]: " +
-			std::to_string(mode.Width) + "x" + std::to_string(mode.Height) +
-			" @ " + std::to_string(refreshRate) + "Hz (" +
-			std::to_string(mode.RefreshRate.Numerator) + "/" +
-			std::to_string(mode.RefreshRate.Denominator) + ")\n";
-		OutputDebugStringA(modeInfo.c_str());
-	}
-
-	// 현재 해상도와 가장 가까운 모드 찾기
 	DXGI_MODE_DESC bestMode = {};
-	float bestRefreshRate = 0.0f;  // 실제 주사율 값으로 비교
+	float bestRefreshRate = 0.0f;
 
 	OutputDebugStringA("=== Matching Modes ===\n");
 
@@ -153,7 +110,6 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 				std::to_string(mode.RefreshRate.Denominator) + ")\n";
 			OutputDebugStringA(matchInfo.c_str());
 
-			// 실제 주사율 값으로 비교 (수정된 부분)
 			if (refreshRate > bestRefreshRate) {
 				bestMode = mode;
 				bestRefreshRate = refreshRate;
@@ -165,7 +121,6 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 		}
 	}
 
-	// 기본값 설정 (찾지 못한 경우)
 	if (bestRefreshRate == 0.0f) {
 		OutputDebugStringA("No matching mode found! Using default 60Hz\n");
 		bestMode.RefreshRate.Numerator = 60;
@@ -180,14 +135,13 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 		std::to_string(bestMode.RefreshRate.Numerator) + "/" +
 		std::to_string(bestMode.RefreshRate.Denominator) + ")\n").c_str());
 
-	// Timer에 주사율 전달
 	GET(Timer).SetTargetFPS(bestRefreshRate);
 
 	DXGI_SWAP_CHAIN_DESC sd = {
 		.BufferDesc = {
 			.Width = static_cast<UINT32>(WinSize.x),
 			.Height = static_cast<UINT32>(WinSize.y),
-			.RefreshRate = bestMode.RefreshRate,  // 동적으로 설정
+			.RefreshRate = bestMode.RefreshRate,  
 			.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
 			.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
 			.Scaling = DXGI_MODE_SCALING_UNSPECIFIED
@@ -205,13 +159,6 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 	};
 
 	hr = dxgi->CreateSwapChain(cmdQueue.Get(), &sd, &tempSwapChain);
-	if (SUCCEEDED(hr)) {
-		OutputDebugStringA("SwapChain created successfully!\n");
-	}
-	else {
-		OutputDebugStringA("Failed to create SwapChain!\n");
-	}
-
 	MASSERT(SUCCEEDED(hr), "Failed to create SwapChain");
 
 	hr = tempSwapChain.As(&swapChain);
