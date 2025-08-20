@@ -84,7 +84,22 @@ float4 PSMain(PS_IN input) : SV_Target
         }
         
         float3 lightDir = normalize(-lightDirection);
-        float3 worldNormal = normalize(input.normal + normalMap * 0.3);
+        
+        float3 worldNormal = normalize(input.normal);
+        if (material.normalTexIndex != 0xFFFFFFFF)
+        {
+            float3 N = worldNormal;
+            float3 T = normalize(input.tangent);
+            float3 B = cross(N, T);
+            
+            float3x3 TBN = float3x3(T, B, N);
+            
+            float normalStrength = 1.0f;
+            float3 tangentNormal = float3(normalMap.x * normalStrength, normalMap.y * normalStrength, normalMap.z);
+            tangentNormal = normalize(tangentNormal);
+            worldNormal = normalize(mul(tangentNormal, TBN));
+        }
+        
         float NdotL = max(0.0, dot(worldNormal, -lightDir));
         
         float3 diffuse = baseColor.rgb * NdotL * 0.7;
