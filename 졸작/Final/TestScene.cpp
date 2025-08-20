@@ -40,7 +40,7 @@ void TestScene::InitializeLogic()
 		strut = make_shared<GameObject>();
 		auto meshrenderer = strut->AddComponent<MeshRenderer>();
 		auto transform = strut->AddComponent<Transform>();
-		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight3");
+		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight2");
 		transform->SetPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
