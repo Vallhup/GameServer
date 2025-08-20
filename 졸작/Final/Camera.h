@@ -35,6 +35,6 @@ private:
 	int centerX;
 	int centerY;
 
-	float mouseSensitivity = 0.25f;
+	float mouseSensitivity = 0.1f;
 	bool space = false;
 };

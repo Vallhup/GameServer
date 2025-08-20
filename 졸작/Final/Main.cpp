@@ -11,10 +11,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     HWND hwnd = nullptr;
     InitWindow(hInstance, nCmdShow, &hwnd);
 
+    GET(Timer).Initialize();
+
     Engine& game = GET(Engine);
     game.Initialize(hwnd);
-
-    GET(Timer).Initialize();
 
     MSG msg{};
 

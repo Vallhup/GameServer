@@ -2,6 +2,7 @@
 #include "DX12Core.h"
 #include "RootSignature.h"
 #include "Shader.h"
+#include "Timer.h"
 
 void DX12Core::Initialize(HWND hwnd)
 {
@@ -96,22 +97,98 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 {
 	ComPtr<IDXGISwapChain> tempSwapChain;
 
+	// 현재 화면 크기 로그
+	OutputDebugStringA(("Current WinSize: " + std::to_string(WinSize.x) + "x" + std::to_string(WinSize.y) + "\n").c_str());
+
+	// DXGI 어댑터로 모니터 정보 가져오기
+	ComPtr<IDXGIAdapter> adapter;
+	HRESULT hr = dxgi->EnumAdapters(0, &adapter);
+	if (FAILED(hr)) {
+		OutputDebugStringA("Failed to get adapter!\n");
+		return;
+	}
+
+	ComPtr<IDXGIOutput> output;
+	hr = adapter->EnumOutputs(0, &output);
+	if (FAILED(hr)) {
+		OutputDebugStringA("Failed to get output!\n");
+		return;
+	}
+
+	UINT numModes = 0;
+	output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, nullptr);
+
+	OutputDebugStringA(("Total display modes found: " + std::to_string(numModes) + "\n").c_str());
+
+	std::vector<DXGI_MODE_DESC> displayModes(numModes);
+	output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModes.data());
+
+	// 모든 디스플레이 모드 로그 출력
+	OutputDebugStringA("=== All Display Modes ===\n");
+	for (size_t i = 0; i < displayModes.size(); ++i) {
+		const auto& mode = displayModes[i];
+		float refreshRate = static_cast<float>(mode.RefreshRate.Numerator) / mode.RefreshRate.Denominator;
+
+		string modeInfo = "Mode[" + std::to_string(i) + "]: " +
+			std::to_string(mode.Width) + "x" + std::to_string(mode.Height) +
+			" @ " + std::to_string(refreshRate) + "Hz (" +
+			std::to_string(mode.RefreshRate.Numerator) + "/" +
+			std::to_string(mode.RefreshRate.Denominator) + ")\n";
+		OutputDebugStringA(modeInfo.c_str());
+	}
+
+	// 현재 해상도와 가장 가까운 모드 찾기
+	DXGI_MODE_DESC bestMode = {};
+	OutputDebugStringA("=== Matching Modes ===\n");
+
+	for (const auto& mode : displayModes) {
+		if (mode.Width == WinSize.x && mode.Height == WinSize.y) {
+			float refreshRate = static_cast<float>(mode.RefreshRate.Numerator) / mode.RefreshRate.Denominator;
+
+			string matchInfo = "Match found: " + std::to_string(mode.Width) + "x" + std::to_string(mode.Height) +
+				" @ " + std::to_string(refreshRate) + "Hz\n";
+			OutputDebugStringA(matchInfo.c_str());
+
+			if (mode.RefreshRate.Numerator > bestMode.RefreshRate.Numerator) {
+				bestMode = mode;
+				OutputDebugStringA("  -> New best mode selected!\n");
+			}
+			else {
+				OutputDebugStringA("  -> Lower refresh rate, skipped\n");
+			}
+		}
+	}
+
+	// 기본값 설정 (찾지 못한 경우)
+	if (bestMode.RefreshRate.Numerator == 0) {
+		OutputDebugStringA("No matching mode found! Using default 60Hz\n");
+		bestMode.RefreshRate.Numerator = 60;
+		bestMode.RefreshRate.Denominator = 1;
+		bestMode.Width = WinSize.x;
+		bestMode.Height = WinSize.y;
+	}
+
+	float finalRefreshRate = static_cast<float>(bestMode.RefreshRate.Numerator) / bestMode.RefreshRate.Denominator;
+	OutputDebugStringA(("Selected refresh rate: " + std::to_string(finalRefreshRate) + "Hz (" +
+		std::to_string(bestMode.RefreshRate.Numerator) + "/" +
+		std::to_string(bestMode.RefreshRate.Denominator) + ")\n").c_str());
+	OutputDebugStringA(("Selected resolution: " + std::to_string(bestMode.Width) + "x" + std::to_string(bestMode.Height) + "\n").c_str());
+
+	GET(Timer).SetTargetFPS(finalRefreshRate);
+
 	DXGI_SWAP_CHAIN_DESC sd = {
 		.BufferDesc = {
 			.Width = static_cast<UINT32>(WinSize.x),
 			.Height = static_cast<UINT32>(WinSize.y),
-			.RefreshRate = {
-				.Numerator = 60,
-				.Denominator = 1
-				},
+			.RefreshRate = bestMode.RefreshRate,  // 동적으로 설정
 			.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
 			.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
 			.Scaling = DXGI_MODE_SCALING_UNSPECIFIED
-			},
+		},
 		.SampleDesc = {
 			.Count = 1,
 			.Quality = 0
-			},
+		},
 		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
 		.BufferCount = SWAP_CHAIN_BUFFER_COUNT,
 		.OutputWindow = hwnd,
@@ -120,7 +197,14 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 		.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
 	};
 
-	HRESULT hr = dxgi->CreateSwapChain(cmdQueue.Get(), &sd, &tempSwapChain);
+	hr = dxgi->CreateSwapChain(cmdQueue.Get(), &sd, &tempSwapChain);
+	if (SUCCEEDED(hr)) {
+		OutputDebugStringA("SwapChain created successfully!\n");
+	}
+	else {
+		OutputDebugStringA("Failed to create SwapChain!\n");
+	}
+
 	MASSERT(SUCCEEDED(hr), "Failed to create SwapChain");
 
 	hr = tempSwapChain.As(&swapChain);
@@ -128,6 +212,8 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 
 	for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
 		swapChain->GetBuffer(i, IID_PPV_ARGS(&rtvBuffer[i]));
+
+	OutputDebugStringA("=== SwapChain Creation Complete ===\n");
 }
 
 void DX12Core::CreateRenderTargetView()

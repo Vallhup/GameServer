@@ -9,8 +9,8 @@ Timer& Timer::Get()
 
 void Timer::Initialize()
 {
-	QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&_frequency));
-	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&_prevCount));		
+	QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&frequency));
+	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&prevCount));		
 }
 
 void Timer::Update()
@@ -18,37 +18,44 @@ void Timer::Update()
 	UINT64 currentCount;
 	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
 
-	_deltaTime = (currentCount - _prevCount) / static_cast<float>(_frequency);
+	deltaTime = (currentCount - prevCount) / static_cast<float>(frequency);
 	
-	constexpr float targetFrameTime = 1.0f / 240.0f;
+	float targetFrameTime = 1.0f / targetFPS;
 	constexpr float epsilon = 0.0001f;
 
-	while (_deltaTime < targetFrameTime - epsilon)
+	while (deltaTime < targetFrameTime - epsilon)
 	{
 		QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
-		_deltaTime = (currentCount - _prevCount) / static_cast<float>(_frequency);
+		deltaTime = (currentCount - prevCount) / static_cast<float>(frequency);
 	}
 
-	_prevCount = currentCount;
+	prevCount = currentCount;
 
-	_frameCount++;
-	_frameTime += _deltaTime;
+	frameCount++;
+	frameTime += deltaTime;
 
-	if (_frameTime > 1.f)
+	if (frameTime > 1.f)
 	{
-		_fps = static_cast<UINT32>(_frameCount / _frameTime);
+		fps = static_cast<UINT32>(frameCount / frameTime);
 
-		_frameTime = 0.f;
-		_frameCount = 0;
+		frameTime = 0.f;
+		frameCount = 0;
 	}
 }
 
 void Timer::Reset()
 {
-	_frameCount = 0;
-	_frameTime = 0.f;
-	_fps = 0;
+	frameCount = 0;
+	frameTime = 0.f;
+	fps = 0;
 
-	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&_prevCount));
-	_deltaTime = 0.f;
+	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&prevCount));
+	deltaTime = 0.f;
+}
+
+void Timer::SetTargetFPS(float fps)
+{
+	targetFPS = fps;
+	string msg = "TargetFPS: " + to_string(targetFPS) + "\n";
+	OutputDebugStringA(msg.c_str());
 }

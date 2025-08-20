@@ -10,16 +10,20 @@ public:
 	void Update();
 	void Reset();
 
-	UINT32 GetFps() { return _fps; }
-	float GetDeltaTime() { return _deltaTime; }
+	UINT32 GetFps() { return fps; }
+	float GetDeltaTime() { return deltaTime; }
+
+	void SetTargetFPS(float fps);
 
 private:
-	UINT64	_frequency = 0;
-	UINT64	_prevCount = 0;
-	float	_deltaTime = 0.f;
+	UINT64	frequency = 0;
+	UINT64	prevCount = 0;
+	float	deltaTime = 0.f;
 
 private:
-	UINT32	_frameCount = 0;
-	float	_frameTime = 0.f;
-	UINT32	_fps = 0;
+	UINT32	frameCount = 0;
+	float	frameTime = 0.f;
+	UINT32	fps = 0;
+
+	float targetFPS = 60.0f;
 };
