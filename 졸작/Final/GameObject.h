@@ -11,7 +11,7 @@ public:
 	template<typename T>
 	T* GetComponent();
 
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime);
 
 private:
 	vector<unique_ptr<Component>> components;

@@ -15,6 +15,9 @@ public:
 	void UpdateForwardAndRight();
 	void ChangeAngleByInput(float deltaTime);
 
+	XMFLOAT3 GetForward() const;
+	XMFLOAT3 GetRight() const;
+
 	void SetCameraPosition(const XMFLOAT3& pos);
 	void SetCursor();
 	void ChangeCursorInfo(bool in);
@@ -25,7 +28,7 @@ private:
 	XMFLOAT3 targetPosition;
 
 	XMFLOAT3 camForward;		// ╬у ╣з
-	XMFLOAT3 right;				// аб ©Л
+	XMFLOAT3 camRight;				// аб ©Л
 
 	float yaw;
 	float pitch;

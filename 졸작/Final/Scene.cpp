@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "DX12Core.h"
 #include "SceneManager.h"
+#include "MainCharacter.h"
 #include "Material.h"
 #include "Camera.h"
 

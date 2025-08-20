@@ -77,7 +77,7 @@ void Camera::UpdateForwardAndRight()
     XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     XMVECTOR rightVec = XMVector3Cross(up, forward);    // up & forward 인자 순서 반대하면 leftVec
     rightVec = XMVector3Normalize(rightVec);
-    XMStoreFloat3(&right, rightVec);
+    XMStoreFloat3(&camRight, rightVec);
 }
 
 void Camera::ChangeAngleByInput(float deltaTime)
@@ -104,11 +104,22 @@ void Camera::ChangeAngleByInput(float deltaTime)
     UpdateForwardAndRight();
 }
 
+XMFLOAT3 Camera::GetForward() const
+{
+    return camForward;
+}
+
+XMFLOAT3 Camera::GetRight() const
+{
+    return camRight;
+}
+
 void Camera::SetCameraPosition(const XMFLOAT3& pos)
 {
     targetPosition = { pos.x, pos.y + 2.0f, pos.z };
 
-    float distance = sqrt(4 * 4 + 2 * 2); 
+    // 원래 sqrt(4 * 4 + 2 * 2) 임 임시적으로 실험중
+    float distance = sqrt(8 * 8 + 4 * 4); 
 
     float radYaw = XMConvertToRadians(yaw);
     float radPitch = XMConvertToRadians(-pitch);

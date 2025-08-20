@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "SceneManager.h"
 #include "GameObject.h"
+#include "MainCharacter.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "Animator.h"
@@ -38,7 +39,7 @@ void GameScene::InitializeLogic()
 	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
 
 	{
-		dragon = make_shared<GameObject>();
+		dragon = make_shared<MainCharacter>();
 		auto meshRenderer = dragon->AddComponent<MeshRenderer>();
 		auto transform = dragon->AddComponent<Transform>();
 		auto animator = dragon->AddComponent<Animator>();
@@ -46,6 +47,7 @@ void GameScene::InitializeLogic()
 		transform->SetPosition(0.f, 0.f, 0.5f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.1f, 0.1f, 0.1f);
+		dragon->SetCamera(cam.get());
 		AddGameObject(dragon);
 
 		OutputDebugStringA("Dragon created!!\n");
@@ -131,80 +133,47 @@ void GameScene::UpdateScene(const float deltaTime)
 	//	}
 	//}
 
-	if (dragon) {
-		auto animator = dragon->GetComponent<Animator>();
-		if (animator) {
-			// 1번 키
-			bool key1Current = (GetAsyncKeyState('1') & 0x8000) != 0;
-			if (key1Current && !key1Pressed) {
-				animator->TransitionToAnimation(0, 0.6f);  // Fly
-				OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
-			}
-			key1Pressed = key1Current;
+	//if (dragon) {
+	//	auto animator = dragon->GetComponent<Animator>();
+	//	if (animator) {
+	//		// 1번 키
+	//		bool key1Current = (GetAsyncKeyState('1') & 0x8000) != 0;
+	//		if (key1Current && !key1Pressed) {
+	//			animator->TransitionToAnimation(0, 0.6f);  // Fly
+	//			OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
+	//		}
+	//		key1Pressed = key1Current;
 
-			// 2번 키
-			bool key2Current = (GetAsyncKeyState('2') & 0x8000) != 0;
-			if (key2Current && !key2Pressed) {
-				animator->TransitionToAnimation(1, 0.4f);  // Idle
-				OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
-			}
-			key2Pressed = key2Current;
+	//		// 2번 키
+	//		bool key2Current = (GetAsyncKeyState('2') & 0x8000) != 0;
+	//		if (key2Current && !key2Pressed) {
+	//			animator->TransitionToAnimation(1, 0.4f);  // Idle
+	//			OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
+	//		}
+	//		key2Pressed = key2Current;
 
-			// 3번 키
-			bool key3Current = (GetAsyncKeyState('3') & 0x8000) != 0;
-			if (key3Current && !key3Pressed) {
-				animator->TransitionToAnimation(2, 0.4f);  // Run
-				OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
-			}
-			key3Pressed = key3Current;
+	//		// 3번 키
+	//		bool key3Current = (GetAsyncKeyState('3') & 0x8000) != 0;
+	//		if (key3Current && !key3Pressed) {
+	//			animator->TransitionToAnimation(2, 0.4f);  // Run
+	//			OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
+	//		}
+	//		key3Pressed = key3Current;
 
-			// 4번 키
-			bool key4Current = (GetAsyncKeyState('4') & 0x8000) != 0;
-			if (key4Current && !key4Pressed) {
-				animator->TransitionToAnimation(3, 0.4f);  // Walk
-				OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
-			}
-			key4Pressed = key4Current;
-		}
-	}
-
-	if (knight)
-	{
-		auto transform = knight->GetComponent<Transform>();
-		XMFLOAT3 currentPos = transform->GetPosition();
-
-		if (GET(Input).GetKey('W'))
-		{
-			currentPos.z -= 2.f * deltaTime;
-		}
-		if (GET(Input).GetKey('S'))
-		{
-			currentPos.z += 2.f * deltaTime;
-		}
-		if (GET(Input).GetKey('A'))
-		{
-			currentPos.x += 2.f * deltaTime;
-		}
-		if (GET(Input).GetKey('D'))
-		{
-			currentPos.x -= 2.f * deltaTime;
-		}
-
-		transform->SetPosition(currentPos);
-
-		XMFLOAT3 currentRot = transform->GetRotation();
-		if (GET(Input).GetKey(VK_RIGHT))
-			currentRot.y += 1.57f * deltaTime;
-		if (GET(Input).GetKey(VK_LEFT))
-			currentRot.y -= 1.57f * deltaTime;
-
-		transform->SetRotation(currentRot);
-	}
-
-	cam->SetCameraPosition(knight->GetComponent<Transform>()->GetPosition());
+	//		// 4번 키
+	//		bool key4Current = (GetAsyncKeyState('4') & 0x8000) != 0;
+	//		if (key4Current && !key4Pressed) {
+	//			animator->TransitionToAnimation(3, 0.4f);  // Walk
+	//			OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
+	//		}
+	//		key4Pressed = key4Current;
+	//	}
+	//}
 
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
+
+	cam->SetCameraPosition(dragon->GetComponent<Transform>()->GetPosition());
 }
 
 void GameScene::RenderScene()

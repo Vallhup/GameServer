@@ -76,6 +76,9 @@
     <ClCompile Include="DX12Core.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
+    <ClCompile Include="MainCharacter.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -149,6 +152,9 @@
     </ClInclude>
     <ClInclude Include="DX12Core.h">
       <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="MainCharacter.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

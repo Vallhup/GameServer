@@ -2,6 +2,7 @@
 #include "TestScene.h"
 #include "DX12Core.h"
 #include "GameObject.h"
+#include "MainCharacter.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "Input.h"
@@ -37,9 +38,9 @@ void TestScene::InitializeLogic()
 	OutputDebugStringA("----------------------------------------\nTestScene Data has been created!! \n");
 
 	{
-		strut = make_shared<GameObject>();
-		auto meshrenderer = strut->AddComponent<MeshRenderer>();
-		auto transform = strut->AddComponent<Transform>();
+		knight = make_shared<MainCharacter>();
+		auto meshrenderer = knight->AddComponent<MeshRenderer>();
+		auto transform = knight->AddComponent<Transform>();
 		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight4");
 		transform->SetPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
@@ -49,9 +50,11 @@ void TestScene::InitializeLogic()
 		coreRef->ResetCommandQueue();
 
 		meshrenderer->ReleaseUploadBuffers();
+
+		knight->SetCamera(cam.get());
 	}
 
-	cam->InitCameraPositionFromCharacter(strut->GetComponent<Transform>()->GetPosition());
+	cam->InitCameraPositionFromCharacter(knight->GetComponent<Transform>()->GetPosition());
 
 	/*{
 		strut = make_shared<GameObject>();
@@ -106,10 +109,10 @@ void TestScene::InitializeLogic()
 void TestScene::UpdateScene(const float deltaTime)
 {
 	{
-		strut->Update(deltaTime);
+		knight->Update(deltaTime);
 	}
 	
-	cam->SetCameraPosition(strut->GetComponent<Transform>()->GetPosition());
+	cam->SetCameraPosition(knight->GetComponent<Transform>()->GetPosition());
 
 	/*{
 		knightTemplate->Update(deltaTime);
@@ -119,9 +122,9 @@ void TestScene::UpdateScene(const float deltaTime)
 void TestScene::RenderScene()
 {
 	{
-		if (strut)
+		if (knight)
 		{
-			auto meshrenderer = strut->GetComponent<MeshRenderer>();
+			auto meshrenderer = knight->GetComponent<MeshRenderer>();
 			if (meshrenderer)
 				meshrenderer->Render(*coreRef);
 		}
