@@ -18,7 +18,9 @@ void GameScene::Release()
 
 void GameScene::Reset()
 {
+	// TODO: 씬 데이터 리셋 코드 추가
 	Material::Cleanup();
+	OutputDebugStringA("GameScene Data has been deleted!! \n----------------------------------------\n");
 }
 
 void GameScene::AddGameObject(shared_ptr<GameObject> obj)

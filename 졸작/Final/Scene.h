@@ -18,6 +18,7 @@ public:
 
 	virtual const float* GetBackgroundColor() = 0;
 
+	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
 
 protected:

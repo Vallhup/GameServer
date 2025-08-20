@@ -50,6 +50,16 @@ void Engine::Render()
 
 void Engine::Shutdown()
 {
+    if (sManager && sManager->GetCurrentScene())
+    {
+        auto camera = sManager->GetCurrentScene()->GetCamera();
+        if (camera)
+        {
+            camera->ReleaseMouse();
+            OutputDebugStringA("Mouse Released!! \n");
+        }
+    }
+
     if (graphics)
         graphics->GetSwapChain()->SetFullscreenState(FALSE, nullptr);
     sManager->Release();

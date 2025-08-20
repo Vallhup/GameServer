@@ -13,10 +13,19 @@ void Camera::Initialize()
 	moveSpeed = 5.0f;
 	rotateSpeed = 90.0f;
 
-    lastMousePos = GET(Input).GetMousePosition();
+    centerX = WinSize.x / 2;
+    centerY = WinSize.y / 2;
+
+    CURSORINFO cursorInfo;
+    cursorInfo.cbSize = sizeof(CURSORINFO);
+    GetCursorInfo(&cursorInfo);
+    bool cursorVisible = (cursorInfo.flags == CURSOR_SHOWING);
+
+    space = cursorVisible;
+
+    ChangeCursorInfo(space);
 
     UpdateForwardAndRight();
-
     //OutputDebugStringA("Camera init!!\n");
 }
 
@@ -30,11 +39,13 @@ void Camera::Update(DX12Core& core, float deltaTime)
 {
     UpdateInputtoCamLogic(deltaTime);
     UpdateCameraMatrices(core);
+    SetCursor();
 }
 
 void Camera::UpdateInputtoCamLogic(float deltaTime)
 {
-    ChangeAngleByInput(deltaTime);
+    if (!space)
+        ChangeAngleByInput(deltaTime);
 }
 
 void Camera::UpdateCameraMatrices(DX12Core& core)
@@ -76,18 +87,21 @@ void Camera::ChangeAngleByInput(float deltaTime)
     if (GET(Input).GetKey(VK_UP))    pitch += rotateSpeed * deltaTime;
     if (GET(Input).GetKey(VK_DOWN))  pitch -= rotateSpeed * deltaTime;
 
-    XMFLOAT2 currentMousePos = GET(Input).GetMousePosition();
+    POINT mousePos;
+    GetCursorPos(&mousePos);
 
-    float deltaX = currentMousePos.x - lastMousePos.x;
-    float deltaY = currentMousePos.y - lastMousePos.y;
+    float deltaX = static_cast<float>(mousePos.x - centerX);
+    float deltaY = static_cast<float>(mousePos.y - centerY);
 
     yaw += deltaX * mouseSensitivity;
-    pitch += deltaY * mouseSensitivity;  
+    pitch -= deltaY * mouseSensitivity;  
 
-    lastMousePos = currentMousePos;
+    SetCursorPos(centerX, centerY);
 
     constexpr float MAX_PITCH_DEGREE = 89.0f;   // 90µµ ÂïÈ÷¸é Áü¹ú¶ô°É·Á¿ä~
     pitch = max(-MAX_PITCH_DEGREE, min(MAX_PITCH_DEGREE, pitch));
+
+    UpdateForwardAndRight();
 }
 
 void Camera::SetCameraPosition(const XMFLOAT3& pos)
@@ -102,4 +116,35 @@ void Camera::SetCameraPosition(const XMFLOAT3& pos)
     position.x = targetPosition.x + distance * cos(radPitch) * sin(radYaw);
     position.y = targetPosition.y + distance * sin(radPitch);
     position.z = targetPosition.z + distance * cos(radPitch) * cos(radYaw);
+}
+
+void Camera::SetCursor()
+{
+    if (GET(Input).GetKeyDown(VK_SPACE))
+    {
+        space = !space;
+        ShowCursor(space);
+
+        ChangeCursorInfo(space);
+
+        OutputDebugStringA("space changed!\n");
+    }
+}
+
+void Camera::ChangeCursorInfo(bool in)
+{
+    if (in)
+        ClipCursor(nullptr);
+    else {
+        RECT cliprect = { 0, 0, WinSize.x, WinSize.y };
+        ClipCursor(&cliprect);
+        SetCursorPos(centerX, centerY);
+    }
+}
+
+void Camera::ReleaseMouse()
+{
+    ShowCursor(TRUE);
+
+    ClipCursor(nullptr);
 }

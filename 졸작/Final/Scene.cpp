@@ -36,6 +36,11 @@ void Scene::Render()
     RenderScene();
 }
 
+Camera* Scene::GetCamera() const
+{
+    return cam.get();
+}
+
 void Scene::SetSceneManager(SceneManager* manager)
 {
     sManagerRef = manager;

@@ -13,23 +13,28 @@ public:
 	void UpdateCameraMatrices(DX12Core& core);
 
 	void UpdateForwardAndRight();
-	void ChangePosByInput(float deltaTime);
 	void ChangeAngleByInput(float deltaTime);
 
 	void SetCameraPosition(const XMFLOAT3& pos);
+	void SetCursor();
+	void ChangeCursorInfo(bool in);
+	void ReleaseMouse();
 
 private:
 	XMFLOAT3 position;
 	XMFLOAT3 targetPosition;
 
 	XMFLOAT3 camForward;		// ╬у ╣з
-	XMFLOAT3 right;			// аб ©Л
+	XMFLOAT3 right;				// аб ©Л
 
 	float yaw;
 	float pitch;
 	float moveSpeed;
 	float rotateSpeed;
 
-	XMFLOAT2 lastMousePos;
+	int centerX;
+	int centerY;
+
 	float mouseSensitivity = 0.25f;
+	bool space = false;
 };
