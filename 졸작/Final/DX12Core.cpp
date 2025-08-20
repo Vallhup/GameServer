@@ -139,6 +139,8 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 
 	// 현재 해상도와 가장 가까운 모드 찾기
 	DXGI_MODE_DESC bestMode = {};
+	float bestRefreshRate = 0.0f;  // 실제 주사율 값으로 비교
+
 	OutputDebugStringA("=== Matching Modes ===\n");
 
 	for (const auto& mode : displayModes) {
@@ -146,11 +148,15 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 			float refreshRate = static_cast<float>(mode.RefreshRate.Numerator) / mode.RefreshRate.Denominator;
 
 			string matchInfo = "Match found: " + std::to_string(mode.Width) + "x" + std::to_string(mode.Height) +
-				" @ " + std::to_string(refreshRate) + "Hz\n";
+				" @ " + std::to_string(refreshRate) + "Hz (" +
+				std::to_string(mode.RefreshRate.Numerator) + "/" +
+				std::to_string(mode.RefreshRate.Denominator) + ")\n";
 			OutputDebugStringA(matchInfo.c_str());
 
-			if (mode.RefreshRate.Numerator > bestMode.RefreshRate.Numerator) {
+			// 실제 주사율 값으로 비교 (수정된 부분)
+			if (refreshRate > bestRefreshRate) {
 				bestMode = mode;
+				bestRefreshRate = refreshRate;
 				OutputDebugStringA("  -> New best mode selected!\n");
 			}
 			else {
@@ -160,21 +166,22 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 	}
 
 	// 기본값 설정 (찾지 못한 경우)
-	if (bestMode.RefreshRate.Numerator == 0) {
+	if (bestRefreshRate == 0.0f) {
 		OutputDebugStringA("No matching mode found! Using default 60Hz\n");
 		bestMode.RefreshRate.Numerator = 60;
 		bestMode.RefreshRate.Denominator = 1;
 		bestMode.Width = WinSize.x;
 		bestMode.Height = WinSize.y;
+		bestRefreshRate = 60.0f;
 	}
 
-	float finalRefreshRate = static_cast<float>(bestMode.RefreshRate.Numerator) / bestMode.RefreshRate.Denominator;
-	OutputDebugStringA(("Selected refresh rate: " + std::to_string(finalRefreshRate) + "Hz (" +
+	OutputDebugStringA("=== FINAL SELECTION ===\n");
+	OutputDebugStringA(("Selected refresh rate: " + std::to_string(bestRefreshRate) + "Hz (" +
 		std::to_string(bestMode.RefreshRate.Numerator) + "/" +
 		std::to_string(bestMode.RefreshRate.Denominator) + ")\n").c_str());
-	OutputDebugStringA(("Selected resolution: " + std::to_string(bestMode.Width) + "x" + std::to_string(bestMode.Height) + "\n").c_str());
 
-	GET(Timer).SetTargetFPS(finalRefreshRate);
+	// Timer에 주사율 전달
+	GET(Timer).SetTargetFPS(bestRefreshRate);
 
 	DXGI_SWAP_CHAIN_DESC sd = {
 		.BufferDesc = {
