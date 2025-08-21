@@ -66,8 +66,6 @@ void GameScene::InitializeLogic()
 		OutputDebugStringA("Strut created!!\n");
 	}
 
-	//cam->InitCameraPositionFromCharacter(knight->GetComponent<Transform>()->GetPosition());
-
 	/*{
 		for (int i = 1; i < 10; ++i) {
 			auto newKnight = make_shared<GameObject>();
@@ -172,8 +170,6 @@ void GameScene::UpdateScene(const float deltaTime)
 
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
-
-	//cam->SetCameraPosition(knight->GetComponent<Transform>()->GetPosition());
 }
 
 void GameScene::RenderScene()

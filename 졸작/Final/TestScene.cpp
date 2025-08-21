@@ -54,8 +54,6 @@ void TestScene::InitializeLogic()
 		knight->SetCamera(cam.get());
 	}
 
-	//cam->InitCameraPositionFromCharacter(knight->GetComponent<Transform>()->GetPosition());
-
 	/*{
 		strut = make_shared<GameObject>();
 		auto meshrenderer = strut->AddComponent<MeshRenderer>();
@@ -111,8 +109,6 @@ void TestScene::UpdateScene(const float deltaTime)
 	{
 		knight->Update(deltaTime);
 	}
-	
-	//cam->SetCameraPosition(knight->GetComponent<Transform>()->GetPosition());
 
 	/*{
 		knightTemplate->Update(deltaTime);
