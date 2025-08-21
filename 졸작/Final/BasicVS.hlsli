@@ -95,8 +95,8 @@ VS_OUT VSMain(VS_IN input, uint instanceID : SV_InstanceID)
     
     output.color = input.color;
     output.uv = input.uv;
-    output.normal = modifiedNormal;
-    output.tangent = modifiedTangent;
+    output.normal = normalize(mul(float4(modifiedNormal, 0.0f), worldMatrix).xyz);
+    output.tangent = normalize(mul(float4(modifiedTangent, 0.0f), worldMatrix).xyz);
     output.weights = input.weights;
     output.indices = input.indices;
     output.materialIndex = materialIndex;
