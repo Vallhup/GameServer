@@ -118,8 +118,7 @@ void Camera::SetCameraPosition(const XMFLOAT3& pos)
 {
     targetPosition = { pos.x, pos.y + 2.0f, pos.z };
 
-    // 원래 sqrt(4 * 4 + 2 * 2) 임 임시적으로 실험중
-    float distance = sqrt(8 * 8 + 4 * 4); 
+    float distance = sqrt(4 * 4 + 2 * 2); 
 
     float radYaw = XMConvertToRadians(yaw);
     float radPitch = XMConvertToRadians(-pitch);

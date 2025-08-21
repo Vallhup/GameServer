@@ -112,7 +112,7 @@ void TestScene::UpdateScene(const float deltaTime)
 		knight->Update(deltaTime);
 	}
 	
-	cam->SetCameraPosition(knight->GetComponent<Transform>()->GetPosition());
+	//cam->SetCameraPosition(knight->GetComponent<Transform>()->GetPosition());
 
 	/*{
 		knightTemplate->Update(deltaTime);

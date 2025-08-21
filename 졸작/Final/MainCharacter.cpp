@@ -14,6 +14,7 @@ void MainCharacter::Update(float deltaTime)
 	GameObject::Update(deltaTime);
 
 	// MainCharacter Update TODO
+	camera->SetCameraPosition(GetComponent<Transform>()->GetPosition());
 }
 
 void MainCharacter::UpdateMovementDirections()
