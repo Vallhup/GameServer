@@ -10,7 +10,6 @@ void DX12Core::Initialize(HWND hwnd)
 	shader = make_unique<Shader>();
 	frameCB = make_unique<UploadBuffer>();
 	sceneCB = make_unique<UploadBuffer>();
-	animationCB = make_unique<UploadBuffer>();
 	directionLightCB = make_unique<UploadBuffer>();
 
 	CreateDXGI(hwnd);
@@ -23,7 +22,6 @@ void DX12Core::Initialize(HWND hwnd)
 	shader->InitializeComputeShader(GetDevice(), GetRootSig()->Get(), L"Animation.hlsli");
 	frameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	sceneCB->Initialize(GetDevice(), 256 * 100);
-	animationCB->Initialize(GetDevice(), sizeof(AnimationConstants));
 	directionLightCB->Initialize(GetDevice(), sizeof(LightConstants));
 	CreateDepthStencilBuffer();
 }
@@ -354,11 +352,6 @@ UploadBuffer* DX12Core::GetFrameCB() const
 UploadBuffer* DX12Core::GetSceneCB() const
 {
 	return sceneCB.get();
-}
-
-UploadBuffer* DX12Core::GetAnimationCB() const
-{
-	return animationCB.get();
 }
 
 UploadBuffer* DX12Core::GetDirectionalLightCB() const

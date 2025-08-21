@@ -56,9 +56,10 @@ void GameScene::InitializeLogic()
 		knight = make_shared<MainCharacter>();
 		auto meshRenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight4");
+		auto animator = knight->AddComponent<Animator>();
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
 		transform->SetPosition(1.f, 0.f, 0.5f);
-		transform->SetRotation(0.f, 0.f, 0.f);
+		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		knight->SetCamera(cam.get());
 		AddGameObject(knight);

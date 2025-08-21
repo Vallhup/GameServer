@@ -103,6 +103,7 @@ void Animator::CreateBuffers(DX12Core& core)
     mBoneFrameBuffer = make_unique<UploadBuffer>();
     mOffsetBuffer = make_unique<UploadBuffer>();
     mFinalBuffer = make_unique<UploadBuffer>();
+    mAnimationCB = make_unique<UploadBuffer>();
 
     // BoneFrame 버퍼 - 레퍼런스와 동일한 구조
     size_t totalKeyFrames = 0;
@@ -123,6 +124,11 @@ void Animator::CreateBuffers(DX12Core& core)
     mFinalBuffer->Initialize(
         core.GetDevice(),
         mBoneCount * sizeof(XMMATRIX)
+    );
+
+    mAnimationCB->Initialize(
+        core.GetDevice(),
+        sizeof(AnimationConstants)
     );
 
     // 모든 애니메이션 데이터를 하나의 버퍼에 복사
@@ -178,11 +184,11 @@ void Animator::ExecuteComputeShader(DX12Core& core)
     animData.prevAnimationOffset = GetPrevAnimOffset();
     animData.blendRatio = GetBlendRatio();
 
-    core.GetAnimationCB()->CopyData(&animData, sizeof(AnimationConstants));
+    mAnimationCB->CopyData(&animData, sizeof(AnimationConstants));
 
     cmdList->SetPipelineState(core.GetShader()->GetComputePSO());
     cmdList->SetComputeRootSignature(core.GetRootSig()->Get());
-    cmdList->SetComputeRootConstantBufferView(2, core.GetAnimationCB()->GetGPUVirtualAddress());
+    cmdList->SetComputeRootConstantBufferView(2, mAnimationCB->GetGPUVirtualAddress());
 
     cmdList->SetComputeRootShaderResourceView(5, GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t1, space0
     cmdList->SetComputeRootShaderResourceView(6, GetOffsetBuffer()->GetGPUVirtualAddress());     // t2, space0

@@ -116,6 +116,8 @@ private:
 	void LoadBones(FbxNode* node) { LoadBones(node, 0, -1); }
 	void LoadBones(FbxNode* node, int32 idx, int32 parentIdx);
 	void LoadAnimationInfo();
+	void LoadStandaloneAnimations();
+	void LoadBoneKeyframes(int32 animIndex, FbxNode* boneNode, int32 boneIdx);
 
 	void LoadAnimationData(FbxMesh* mesh, FbxMeshInfo* meshInfo);
 	void LoadBoneWeight(FbxCluster* cluster, int32 boneIdx, FbxMeshInfo* meshInfo);

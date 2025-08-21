@@ -5,6 +5,24 @@
 class DX12Core;
 class UploadBuffer;
 
+struct AnimationConstants
+{
+    int boneCount;
+    int currentFrame;
+    int nextFrame;
+    float ratio;
+    int animationOffset;
+
+    int isBlending;
+    int prevCurrentFrame;
+    int prevNextFrame;
+    float prevRatio;
+    int prevAnimationOffset;
+    float blendRatio;
+
+    float padding;
+};
+
 class Animator : public Component
 {
 public:
@@ -55,6 +73,7 @@ private:
     unique_ptr<UploadBuffer> mBoneFrameBuffer;    // 키프레임 데이터
     unique_ptr<UploadBuffer> mOffsetBuffer;       // 오프셋 행렬
     unique_ptr<UploadBuffer> mFinalBuffer;        // 최종 본 행렬 (Compute 출력)
+    unique_ptr<UploadBuffer> mAnimationCB;
 
     int mBoneCount = 0;
     int mClipIndex = 0;

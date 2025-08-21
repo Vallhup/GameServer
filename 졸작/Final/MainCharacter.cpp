@@ -98,12 +98,12 @@ void MainCharacter::BasicMove(float deltaTime)
 	auto animator = GetComponent<Animator>();
 	if (animator) {
 		if (isMoving && !wasMoving) {
-			animator->TransitionToAnimation(2, 0.3f);
-			currentAnimState = 2;
-		}
-		else if (!isMoving && wasMoving) {
 			animator->TransitionToAnimation(1, 0.3f);
 			currentAnimState = 1;
+		}
+		else if (!isMoving && wasMoving) {
+			animator->TransitionToAnimation(0, 0.3f);
+			currentAnimState = 0;
 		}
 	}
 

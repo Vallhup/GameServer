@@ -10,24 +10,6 @@ struct ObjectConstants
 	UINT materialIndex;
 };
 
-struct AnimationConstants
-{
-	int boneCount;
-	int currentFrame;
-	int nextFrame;
-	float ratio;
-	int animationOffset;
-
-	int isBlending;
-	int prevCurrentFrame;
-	int prevNextFrame;
-	float prevRatio;
-	int prevAnimationOffset;
-	float blendRatio;
-
-	float padding;
-};
-
 struct LightConstants
 {
 	XMFLOAT3 direction;
@@ -65,7 +47,6 @@ public:
 	Shader* GetShader() const;
 	UploadBuffer* GetFrameCB() const;
 	UploadBuffer* GetSceneCB() const;
-	UploadBuffer* GetAnimationCB() const;
 	UploadBuffer* GetDirectionalLightCB() const;
 
 	void SetBackgroundColor(const float* color);
@@ -99,6 +80,5 @@ private:
 	unique_ptr<Shader> shader;
 	unique_ptr<UploadBuffer> frameCB;
 	unique_ptr<UploadBuffer> sceneCB;
-	unique_ptr<UploadBuffer> animationCB;
 	unique_ptr<UploadBuffer> directionLightCB;
 };

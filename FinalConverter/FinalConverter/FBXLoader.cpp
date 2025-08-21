@@ -22,6 +22,11 @@ bool FBXLoader::LoadFbx(const wstring& path)
 	LoadAnimationInfo();
 	ParseNode(_scene->GetRootNode());
 
+	if (_meshes.empty() && !_animClips.empty() && !_bones.empty())
+	{
+		LoadStandaloneAnimations();
+	}
+
 	return true;  // 성공
 }
 
@@ -442,10 +447,73 @@ void FBXLoader::LoadAnimationInfo()
 	}
 }
 
+void FBXLoader::LoadStandaloneAnimations()
+{
+	if (_animClips.empty() || _bones.empty()) return;
+
+	// 스켈레톤 노드들을 찾아서 애니메이션 키프레임 로드
+	for (size_t animIdx = 0; animIdx < _animClips.size(); ++animIdx)
+	{
+		FbxAnimStack* animStack = _scene->FindMember<FbxAnimStack>(_animNames[animIdx]->Buffer());
+		if (!animStack) continue;
+
+		_scene->SetCurrentAnimationStack(animStack);
+
+		for (size_t boneIdx = 0; boneIdx < _bones.size(); ++boneIdx)
+		{
+			// 본 이름으로 노드 찾기
+			string boneName = ws2s(_bones[boneIdx]->boneName);
+			FbxNode* boneNode = _scene->FindNodeByName(boneName.c_str());
+
+			if (boneNode)
+			{
+				LoadBoneKeyframes(animIdx, boneNode, boneIdx);
+			}
+		}
+	}
+}
+
+void FBXLoader::LoadBoneKeyframes(int32 animIndex, FbxNode* boneNode, int32 boneIdx)
+{
+	if (!boneNode || animIndex >= _animClips.size()) return;
+
+	FbxTime::EMode timeMode = _scene->GetGlobalSettings().GetTimeMode();
+	FbxLongLong startFrame = _animClips[animIndex]->startTime.GetFrameCount(timeMode);
+	FbxLongLong endFrame = _animClips[animIndex]->endTime.GetFrameCount(timeMode);
+
+	// Reflection 행렬 (좌표계 변환용)
+	FbxVector4 v1 = { 1, 0, 0, 0 };
+	FbxVector4 v2 = { 0, 0, 1, 0 };
+	FbxVector4 v3 = { 0, 1, 0, 0 };
+	FbxVector4 v4 = { 0, 0, 0, 1 };
+	FbxAMatrix matReflect;
+	matReflect.mData[0] = v1;
+	matReflect.mData[1] = v2;
+	matReflect.mData[2] = v3;
+	matReflect.mData[3] = v4;
+
+	for (FbxLongLong frame = startFrame; frame < endFrame; frame++)
+	{
+		FbxKeyFrameInfo keyFrameInfo = {};
+		FbxTime fbxTime;
+		fbxTime.SetFrame(frame, timeMode);
+
+		FbxNode* rootNode = _scene->GetRootNode();
+		FbxAMatrix matFromRoot = rootNode->EvaluateGlobalTransform(fbxTime);
+		FbxAMatrix matTransform = matFromRoot.Inverse() * boneNode->EvaluateGlobalTransform(fbxTime);
+		FbxAMatrix finalTransform = matReflect * matTransform * matReflect;
+
+		keyFrameInfo.time = fbxTime.GetSecondDouble();
+		keyFrameInfo.matTransform = finalTransform;
+
+		_animClips[animIndex]->keyFrames[boneIdx].push_back(keyFrameInfo);
+	}
+}
+
 void FBXLoader::LoadAnimationData(FbxMesh* mesh, FbxMeshInfo* meshInfo)
 {
 	const int32 skinCount = mesh->GetDeformerCount(FbxDeformer::eSkin);
-	if (skinCount <= 0 || _animClips.empty())
+	if (skinCount <= 0)
 		return;
 
 	meshInfo->hasAnimation = true;
@@ -473,15 +541,16 @@ void FBXLoader::LoadAnimationData(FbxMesh* mesh, FbxMeshInfo* meshInfo)
 					LoadBoneWeight(cluster, boneIdx, meshInfo);
 					LoadOffsetMatrix(cluster, matNodeTransform, boneIdx, meshInfo);
 
-					const int32 animCount = _animNames.Size();
-					for (int32 k = 0; k < animCount; k++)
-						LoadKeyframe(k, mesh->GetNode(), cluster, matNodeTransform, boneIdx, meshInfo);
+					if (!_animClips.empty()) {
+						const int32 animCount = _animNames.Size();
+						for (int32 k = 0; k < animCount; k++)
+							LoadKeyframe(k, mesh->GetNode(), cluster, matNodeTransform, boneIdx, meshInfo);
+					}
 				}
 			}
 		}
 	}
 }
-
 
 void FBXLoader::FillBoneWeight(FbxMesh* mesh, FbxMeshInfo* meshInfo)
 {
