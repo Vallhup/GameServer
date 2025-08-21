@@ -54,7 +54,7 @@ void TestScene::InitializeLogic()
 		knight->SetCamera(cam.get());
 	}
 
-	cam->InitCameraPositionFromCharacter(knight->GetComponent<Transform>()->GetPosition());
+	//cam->InitCameraPositionFromCharacter(knight->GetComponent<Transform>()->GetPosition());
 
 	/*{
 		strut = make_shared<GameObject>();

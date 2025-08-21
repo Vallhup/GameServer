@@ -115,4 +115,6 @@ void MainCharacter::BasicMove(float deltaTime)
 void MainCharacter::SetCamera(Camera* cam)
 {
 	camera = cam;
+
+	camera->InitCameraPositionFromCharacter(GetComponent<Transform>()->GetPosition());
 }

@@ -8,6 +8,10 @@ void Camera::Initialize()
 	position = { 0.0f, 0.0f, 0.0f };
     targetPosition = { 0.0f, 0.0f, 1.0f };
 
+    desiredPosition = position;
+    currentTargetPos = targetPosition;
+    desiredTargetPos = targetPosition;
+
 	yaw = 0.0f;
 	pitch = -26.57f;
 	moveSpeed = 5.0f;
@@ -21,31 +25,70 @@ void Camera::Initialize()
     GetCursorInfo(&cursorInfo);
     bool cursorVisible = (cursorInfo.flags == CURSOR_SHOWING);
 
-    space = cursorVisible;
+    spacePressed = cursorVisible;
 
-    ChangeCursorInfo(space);
+    ChangeCursorInfo(spacePressed);
 
     UpdateForwardAndRight();
-    //OutputDebugStringA("Camera init!!\n");
 }
 
 void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
 {
-    targetPosition = { pos.x, pos.y + 2.0f, pos.z };
-    position = { targetPosition.x, targetPosition.y + 2.0f, targetPosition.z + 4.0f };
+    desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };
+
+    float distance = sqrt(4 * 4 + 2 * 2);
+    float radYaw = XMConvertToRadians(yaw);
+    float radPitch = XMConvertToRadians(-pitch);
+
+    desiredPosition.x = desiredTargetPos.x + distance * cos(radPitch) * sin(radYaw);
+    desiredPosition.y = desiredTargetPos.y + distance * sin(radPitch);
+    desiredPosition.z = desiredTargetPos.z + distance * cos(radPitch) * cos(radYaw);
+
+    position = desiredPosition;
+    targetPosition = desiredTargetPos;
+    currentTargetPos = desiredTargetPos;
 }
 
 void Camera::Update(DX12Core& core, float deltaTime)
 {
     UpdateInputtoCamLogic(deltaTime);
+    UpdateSmoothFollow(deltaTime);
     UpdateCameraMatrices(core);
     SetCursor();
 }
 
 void Camera::UpdateInputtoCamLogic(float deltaTime)
 {
-    if (!space)
+    if (!spacePressed)
         ChangeAngleByInput(deltaTime);
+}
+
+void Camera::UpdateSmoothFollow(float deltaTime)
+{
+    // 캐릭터 추적 코드
+    XMVECTOR currentTarget = XMLoadFloat3(&currentTargetPos);
+    XMVECTOR desiredTarget = XMLoadFloat3(&desiredTargetPos);
+    XMVECTOR newTarget = XMVectorLerp(currentTarget, desiredTarget, TARGET_FOLLOW_SPEED * deltaTime);
+    XMStoreFloat3(&currentTargetPos, newTarget);
+
+    // 마우스 각도 반영 코드
+    float distance = sqrt(4 * 4 + 2 * 2);
+    float radYaw = XMConvertToRadians(yaw);
+    float radPitch = XMConvertToRadians(-pitch);
+
+    XMFLOAT3 targetCameraPos;
+    targetCameraPos.x = currentTargetPos.x + distance * cos(radPitch) * sin(radYaw);
+    targetCameraPos.y = currentTargetPos.y + distance * sin(radPitch);
+    targetCameraPos.z = currentTargetPos.z + distance * cos(radPitch) * cos(radYaw);
+
+    // 마우스 반응성 코드
+    XMVECTOR currentPos = XMLoadFloat3(&position);
+    XMVECTOR targetPos = XMLoadFloat3(&targetCameraPos);
+
+    XMVECTOR newPos = XMVectorLerp(currentPos, targetPos, CAMERA_FOLLOW_SPEED * deltaTime);
+    XMStoreFloat3(&position, newPos);
+
+    targetPosition = currentTargetPos;
 }
 
 void Camera::UpdateCameraMatrices(DX12Core& core)
@@ -82,26 +125,24 @@ void Camera::UpdateForwardAndRight()
 
 void Camera::ChangeAngleByInput(float deltaTime)
 {
-    if (GET(Input).GetKey(VK_LEFT))  yaw -= rotateSpeed * deltaTime;
-    if (GET(Input).GetKey(VK_RIGHT)) yaw += rotateSpeed * deltaTime;
-    if (GET(Input).GetKey(VK_UP))    pitch += rotateSpeed * deltaTime;
-    if (GET(Input).GetKey(VK_DOWN))  pitch -= rotateSpeed * deltaTime;
-
     POINT mousePos;
     GetCursorPos(&mousePos);
 
     float deltaX = static_cast<float>(mousePos.x - centerX);
     float deltaY = static_cast<float>(mousePos.y - centerY);
 
-    yaw += deltaX * mouseSensitivity;
-    pitch -= deltaY * mouseSensitivity;  
+    // 마우스 입력이 있을 때만 각도 업데이트
+    if (abs(deltaX) > 0.1f || abs(deltaY) > 0.1f) {
+        yaw += deltaX * MOUSE_SENSITIVITY;
+        pitch -= deltaY * MOUSE_SENSITIVITY;
 
-    SetCursorPos(centerX, centerY);
+        SetCursorPos(centerX, centerY);
 
-    constexpr float MAX_PITCH_DEGREE = 89.0f;   // 90도 찍히면 짐벌락걸려요~
-    pitch = max(-MAX_PITCH_DEGREE, min(MAX_PITCH_DEGREE, pitch));
+        constexpr float MAX_PITCH_DEGREE = 89.0f;
+        pitch = max(-MAX_PITCH_DEGREE, min(MAX_PITCH_DEGREE, pitch));
 
-    UpdateForwardAndRight();
+        UpdateForwardAndRight();
+    }
 }
 
 XMFLOAT3 Camera::GetForward() const
@@ -116,26 +157,17 @@ XMFLOAT3 Camera::GetRight() const
 
 void Camera::SetCameraPosition(const XMFLOAT3& pos)
 {
-    targetPosition = { pos.x, pos.y + 2.0f, pos.z };
-
-    float distance = sqrt(4 * 4 + 2 * 2); 
-
-    float radYaw = XMConvertToRadians(yaw);
-    float radPitch = XMConvertToRadians(-pitch);
-
-    position.x = targetPosition.x + distance * cos(radPitch) * sin(radYaw);
-    position.y = targetPosition.y + distance * sin(radPitch);
-    position.z = targetPosition.z + distance * cos(radPitch) * cos(radYaw);
+    desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };
 }
 
 void Camera::SetCursor()
 {
     if (GET(Input).GetKeyDown(VK_SPACE))
     {
-        space = !space;
-        ShowCursor(space);
+        spacePressed = !spacePressed;
+        ShowCursor(spacePressed);
 
-        ChangeCursorInfo(space);
+        ChangeCursorInfo(spacePressed);
 
         OutputDebugStringA("space changed!\n");
     }

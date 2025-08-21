@@ -66,7 +66,7 @@ void GameScene::InitializeLogic()
 		OutputDebugStringA("Strut created!!\n");
 	}
 
-	cam->InitCameraPositionFromCharacter(knight->GetComponent<Transform>()->GetPosition());
+	//cam->InitCameraPositionFromCharacter(knight->GetComponent<Transform>()->GetPosition());
 
 	/*{
 		for (int i = 1; i < 10; ++i) {
