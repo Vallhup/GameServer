@@ -174,7 +174,7 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="MainInstance.h" />
-    <ClInclude Include="Math.h" />
+    <ClInclude Include="vec3.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="NormalBehavior.h" />

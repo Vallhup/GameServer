@@ -79,6 +79,9 @@
     <ClCompile Include="MainCharacter.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="NetworkManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -155,6 +158,9 @@
     </ClInclude>
     <ClInclude Include="MainCharacter.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

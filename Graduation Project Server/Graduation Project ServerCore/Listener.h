@@ -3,6 +3,7 @@
 class IGameContext;
 
 class Listener : public IocpObject {
+	static constexpr u_short PORT_NUM{ 7000 };
 public: 
 	Listener() = delete;
 	Listener(IGameContext& gameCtx);
@@ -13,7 +14,7 @@ public:
 	virtual void Dispatch(class ExpOver* expOver, int numOfBytes = 0) override;
 
 public:
-	bool Init(int portNum = 5000);
+	bool Init(u_short portNum = PORT_NUM);
 	bool Start();
 	void Stop();
 

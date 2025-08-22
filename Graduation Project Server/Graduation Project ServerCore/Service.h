@@ -63,5 +63,5 @@ private:
 	std::unique_ptr<IGameLogic> _gameLogic;
 	std::unique_ptr<IGameWorld> _gameWorld;
 
-	static thread_local std::unique_ptr<ScriptVM> _scriptVM;
+	inline static thread_local std::unique_ptr<class ScriptVM> _scriptVM{ nullptr };
 };

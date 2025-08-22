@@ -32,7 +32,7 @@
 
 #include "Logger.h"
 #include "Macro.h"
-#include "Math.h"
+#include "vec3.h"
 #include "RecvBuffer.h"
 #include "CollisionShape.h"
 
@@ -76,9 +76,7 @@
 #include "BossInstance.h"
 #include "PvpInstance.h"
 
-
 #include "UserRepository.h"
 
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "MSWSock.LIB")
-#pragma comment(lib, "lua54.lib")

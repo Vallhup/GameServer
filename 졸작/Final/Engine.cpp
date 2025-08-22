@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "DX12Core.h"
 #include "SceneManager.h"
+#include "NetworkManager.h"
 #include "Timer.h"
 #include "RootSignature.h"
 #include "Shader.h"
@@ -28,6 +29,9 @@ void Engine::Initialize(HWND hwnd)
     sManager = make_unique<SceneManager>();
     sManager->Initialize(*graphics);
 
+    nManager = make_unique<NetworkManager>();
+    nManager->Initialize("127.0.0.1");
+
     graphics->FlushCommandQueue();
 }
 
@@ -35,6 +39,8 @@ void Engine::Update(const float deltaTime)
 {
     sManager->ProcessPendingSceneChange(*graphics);
     sManager->Update(deltaTime);
+
+    nManager->Update();
 }
 
 void Engine::Render()
@@ -63,6 +69,8 @@ void Engine::Shutdown()
     if (graphics)
         graphics->GetSwapChain()->SetFullscreenState(FALSE, nullptr);
     sManager->Release();
+
+    nManager->Release();
 }
 
 void Engine::ShowFps()

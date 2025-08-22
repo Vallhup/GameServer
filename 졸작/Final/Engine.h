@@ -2,6 +2,7 @@
 
 class DX12Core;
 class SceneManager;
+class NetworkManager;
 
 class Engine
 {
@@ -25,4 +26,5 @@ private:
 
     unique_ptr<DX12Core> graphics;
     unique_ptr<SceneManager> sManager;
+    unique_ptr<NetworkManager> nManager;
 };

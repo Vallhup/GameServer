@@ -11,7 +11,7 @@ Listener::~Listener()
 	Stop();
 }
 
-bool Listener::Init(int portNum)
+bool Listener::Init(u_short portNum)
 {
 	_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 	if (INVALID_SOCKET == _socket) {
@@ -102,7 +102,7 @@ void Listener::RegisterAccept(AcceptOver* acceptOver)
 		int error = WSAGetLastError();
 		if (error != ERROR_IO_PENDING) {
 			// Error Log
-			RegisterAccept(acceptOver);
+			//RegisterAccept(acceptOver);
 		}
 	}	
 }

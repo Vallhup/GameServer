@@ -4,6 +4,8 @@
 
 #include <SDKDDKVer.h>
 #define WIN32_LEAN_AND_MEAN  
+#include <winsock2.h>    
+#include <ws2tcpip.h>
 #include <windows.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -37,6 +39,8 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "d3dcompiler.lib")
+
+#pragma comment(lib, "ws2_32.lib")
 
 #if !defined(ASSERT)
 #include <cassert>

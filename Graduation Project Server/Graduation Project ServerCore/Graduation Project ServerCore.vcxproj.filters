@@ -192,7 +192,7 @@
     <ClInclude Include="GameLogic.h">
       <Filter>Game\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Math.h">
+    <ClInclude Include="vec3.h">
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="CollisionShape.h">

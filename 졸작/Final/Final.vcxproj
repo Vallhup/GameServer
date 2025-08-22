@@ -156,6 +156,7 @@
     <ClCompile Include="MainCharacter.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="ServerSquareScene.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="MainCharacter.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="ServerSquareScene.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture.h" />
