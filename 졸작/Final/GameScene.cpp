@@ -94,78 +94,28 @@ void GameScene::InitializeLogic()
 
 void GameScene::UpdateScene(const float deltaTime)
 {
-	// ★ Dragon 애니메이션 전환 (키 중복 방지)
-	//if (dragon) {
-	//	auto animator = dragon->GetComponent<Animator>();
-	//	if (animator) {
-	//		// 1번 키
-	//		bool key1Current = (GetAsyncKeyState('1') & 0x8000) != 0;
-	//		if (key1Current && !key1Pressed) {
-	//			animator->PlayAnimation(0);  // Fly
-	//			OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
-	//		}
-	//		key1Pressed = key1Current;
-
-	//		// 2번 키
-	//		bool key2Current = (GetAsyncKeyState('2') & 0x8000) != 0;
-	//		if (key2Current && !key2Pressed) {
-	//			animator->PlayAnimation(1);  // Idle
-	//			OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
-	//		}
-	//		key2Pressed = key2Current;
-
-	//		// 3번 키
-	//		bool key3Current = (GetAsyncKeyState('3') & 0x8000) != 0;
-	//		if (key3Current && !key3Pressed) {
-	//			animator->PlayAnimation(2);  // Run
-	//			OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
-	//		}
-	//		key3Pressed = key3Current;
-
-	//		// 4번 키
-	//		bool key4Current = (GetAsyncKeyState('4') & 0x8000) != 0;
-	//		if (key4Current && !key4Pressed) {
-	//			animator->PlayAnimation(3);  // Walk
-	//			OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
-	//		}
-	//		key4Pressed = key4Current;
-	//	}
-	//}
-
 	if (dragon) {
 		auto animator = dragon->GetComponent<Animator>();
 		if (animator) {
-			// 1번 키
-			bool key1Current = (GetAsyncKeyState('1') & 0x8000) != 0;
-			if (key1Current && !key1Pressed) {
+			if (GET(Input).GetKeyDown('1')) {
 				animator->TransitionToAnimation(0, 0.6f);  // Fly
 				OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
 			}
-			key1Pressed = key1Current;
 
-			// 2번 키
-			bool key2Current = (GetAsyncKeyState('2') & 0x8000) != 0;
-			if (key2Current && !key2Pressed) {
+			if (GET(Input).GetKeyDown('2')) {
 				animator->TransitionToAnimation(1, 0.4f);  // Idle
 				OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
 			}
-			key2Pressed = key2Current;
 
-			// 3번 키
-			bool key3Current = (GetAsyncKeyState('3') & 0x8000) != 0;
-			if (key3Current && !key3Pressed) {
+			if (GET(Input).GetKeyDown('3')) {
 				animator->TransitionToAnimation(2, 0.4f);  // Run
 				OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
 			}
-			key3Pressed = key3Current;
 
-			// 4번 키
-			bool key4Current = (GetAsyncKeyState('4') & 0x8000) != 0;
-			if (key4Current && !key4Pressed) {
+			if (GET(Input).GetKeyDown('4')) {
 				animator->TransitionToAnimation(3, 0.4f);  // Walk
 				OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
 			}
-			key4Pressed = key4Current;
 		}
 	}
 

@@ -55,10 +55,6 @@ void Animator::UpdateCurrentAnimation(float deltaTime)
     }
 
     mFrameRatio = frameFloat - mFrame;
-
-    OutputDebugStringA(("Current Frame: " + to_string(mFrame) +
-        " -> Next Frame: " + to_string(mNextFrame) +
-        " (Ratio: " + to_string(mFrameRatio) + ")\n").c_str());
 }
 
 void Animator::UpdatePrevAnimation(float deltaTime)
