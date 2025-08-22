@@ -177,6 +177,7 @@
     <ClInclude Include="Math.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="MovementComponent.h" />
+    <ClInclude Include="NormalBehavior.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PvpInstance.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="MainInstance.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
+    <ClCompile Include="NormalBehavior.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

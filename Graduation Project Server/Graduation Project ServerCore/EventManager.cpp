@@ -15,7 +15,6 @@ bool EventManager::Start()
 	bool expected{ false };
 	if (_running.compare_exchange_strong(expected, true)) {
 		_oneTimeTaskThread = std::thread([this]() { this->EventThreadLoop(); });
-
 		return true;
 	}
 

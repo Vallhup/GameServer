@@ -10,7 +10,7 @@ public:
 
 public:
 	virtual void Start() = 0;
-	virtual void Update(float deltaTime) = 0;
+	virtual void Update(float deltaTime) { _scheduler.Tick(deltaTime); }
 	virtual void Stop() = 0;
 
 protected:

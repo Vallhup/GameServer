@@ -2,7 +2,9 @@
 
 enum class AiType {
 	Normal,
-	Boss
+	FirstBoss,
+	SecondBoss,
+	FinalBoss
 };
 
 class IAiBehavior {

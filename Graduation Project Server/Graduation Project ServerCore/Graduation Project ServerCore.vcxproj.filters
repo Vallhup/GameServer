@@ -154,6 +154,9 @@
     <ClCompile Include="LeafNode.cpp">
       <Filter>Game\AI\BT</Filter>
     </ClCompile>
+    <ClCompile Include="NormalBehavior.cpp">
+      <Filter>Game\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -270,6 +273,9 @@
     </ClInclude>
     <ClInclude Include="LeafNode.h">
       <Filter>Game\AI\BT</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalBehavior.h">
+      <Filter>Game\AI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
