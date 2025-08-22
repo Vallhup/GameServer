@@ -5,8 +5,8 @@ int main()
 {
 	setlocale(LC_ALL, "korean");
 
-	Logger::Init();
-	Logger::SetLevel(LogLevel::Error);
+	Logger::Init("", "C:/Users/Hadenpel/Desktop/GameServer/Graduation Project Server/Graduation Project ServerCore/");
+	Logger::SetLevel(LogLevel::Debug);
 
 	auto service = std::make_unique<Service>();
 

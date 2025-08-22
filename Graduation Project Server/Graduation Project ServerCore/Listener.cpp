@@ -88,8 +88,10 @@ void Listener::RegisterAccept(AcceptOver* acceptOver)
 		return;
 	}
 
+	acceptOver->Init();
 	acceptOver->_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, NULL, WSA_FLAG_OVERLAPPED);
 	if (INVALID_SOCKET == acceptOver->_socket) {
+		LOG_ERR("WSASocket for AcceptEx failed: %d", WSAGetLastError());
 		return;
 	}
 
@@ -101,16 +103,24 @@ void Listener::RegisterAccept(AcceptOver* acceptOver)
 	if (not result) {
 		int error = WSAGetLastError();
 		if (error != ERROR_IO_PENDING) {
-			// Error Log
+			LOG_ERR("AcceptEx error : %d", error);
 		}
-	}	
+	}
+
+	else {
+		LOG_INF("AcceptEx Success");
+	}
 }
 
 void Listener::ProcessAccept(AcceptOver* acceptOver)
 {
+	LOG_DBG("ProcessAccept");
+
 	if (not _accepting.load()) {
 		return;
 	}
+
+	setsockopt(acceptOver->_socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, (char*)&_socket, sizeof(_socket));
 
 	_gameCtx.GetSessionManager().AddSession(acceptOver->_socket);
 	RegisterAccept(acceptOver);

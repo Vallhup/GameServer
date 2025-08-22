@@ -167,6 +167,7 @@
     <ClInclude Include="IComponent.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="InputComponent.h" />
+    <ClInclude Include="InputSystem.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="LeafNode.h" />
@@ -187,7 +188,7 @@
     <ClInclude Include="Session.h" />
     <ClInclude Include="SessionManager.h" />
     <ClInclude Include="EventManager.h" />
-    <ClInclude Include="TickScheduler.h" />
+    <ClInclude Include="TickSystem.h" />
     <ClInclude Include="TownInstance.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="UserRepository.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="IComponent.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputComponent.cpp" />
+    <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="Instance.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="LeafNode.cpp" />
@@ -232,7 +234,7 @@
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="EventManager.cpp" />
-    <ClCompile Include="TickScheduler.cpp" />
+    <ClCompile Include="TickSystem.cpp" />
     <ClCompile Include="TownInstance.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="UserRepository.cpp" />

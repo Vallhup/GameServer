@@ -16,6 +16,7 @@ public:
 	virtual ~ExpOver() = default;
 	
 public:
+	void Init();
 	bool CheckOpType(OperationType opType);
 
 protected:

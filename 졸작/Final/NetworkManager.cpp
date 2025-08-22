@@ -32,7 +32,6 @@ void NetworkManager::Initialize(const char* IP, u_short port)
 
 	if (connect(clientSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
 	{
-		cout << "Connection failed!" << endl;
 		closesocket(clientSocket);
 		WSACleanup();
 		return;
@@ -42,7 +41,6 @@ void NetworkManager::Initialize(const char* IP, u_short port)
 	ioctlsocket(clientSocket, FIONBIO, &nonBlocking);
 
 	isConnected = true;
-	cout << "Connected to Server!" << endl;
 }
 
 void NetworkManager::Update()

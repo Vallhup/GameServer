@@ -43,6 +43,9 @@
     <Filter Include="Game\AI\BT">
       <UniqueIdentifier>{0d6753ef-b878-4b92-a587-f2aa3c3f82c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Instance\System">
+      <UniqueIdentifier>{81a005bd-c367-43e2-b3f1-f842dc8b480a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -133,9 +136,6 @@
     <ClCompile Include="EventManager.cpp">
       <Filter>Game\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="TickScheduler.cpp">
-      <Filter>Game\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="IAiBehavior.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
@@ -156,6 +156,12 @@
     </ClCompile>
     <ClCompile Include="NormalBehavior.cpp">
       <Filter>Game\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="TickSystem.cpp">
+      <Filter>Game\Instance\System</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem.cpp">
+      <Filter>Game\Instance\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -253,9 +259,6 @@
     <ClInclude Include="EventManager.h">
       <Filter>Game\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="TickScheduler.h">
-      <Filter>Game\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="IAiBehavior.h">
       <Filter>Game\AI</Filter>
     </ClInclude>
@@ -276,6 +279,12 @@
     </ClInclude>
     <ClInclude Include="NormalBehavior.h">
       <Filter>Game\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="TickSystem.h">
+      <Filter>Game\Instance\System</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem.h">
+      <Filter>Game\Instance\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

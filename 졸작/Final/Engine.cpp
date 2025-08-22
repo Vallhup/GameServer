@@ -30,7 +30,7 @@ void Engine::Initialize(HWND hwnd)
     sManager->Initialize(*graphics);
 
     nManager = make_unique<NetworkManager>();
-    nManager->Initialize("127.0.0.1");
+    nManager->Initialize();
 
     graphics->FlushCommandQueue();
 }

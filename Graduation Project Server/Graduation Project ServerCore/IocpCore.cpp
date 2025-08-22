@@ -40,18 +40,18 @@ bool IocpCore::Dispatch(unsigned int timeOutMs)
 
 //  for (const auto& entry : entries | std::span(entries.date(), numEntries)) {
 	for (const auto& entry : entries | std::views::take(numEntries)) {
-		ExpOver* expOver = reinterpret_cast<ExpOver*>(entry.lpOverlapped);
+		ExpOver* expOver = static_cast<ExpOver*>(entry.lpOverlapped);
 		IocpObject* iocpObject = reinterpret_cast<IocpObject*>(entry.lpCompletionKey);
 		DWORD ioSize = entry.dwNumberOfBytesTransferred;
 		
 		if (nullptr == expOver) {
-			// 이미 ShutDown 된 요청 (Warning Log)
+			LOG_WRN("Already ShutDown");
 			SetLastError(ERROR_OPERATION_ABORTED);
 			continue;
 		}
 
 		if (nullptr == iocpObject) {
-			// 이미 ShutDown 된 요청 (Warning Log)
+			LOG_WRN("Already ShutDown");
 			delete expOver;
 			continue;
 		}

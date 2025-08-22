@@ -50,4 +50,5 @@ NodeStatus SelectorNode::OnEvent(EventManager& eventMng)
 NodeStatus ParallelNode::OnEvent(EventManager& eventMng)
 {
 	// TODO : 자식 노드 동시 실행 (성공, 실패 조건은 마음대로)
+	return NodeStatus::Success;
 }

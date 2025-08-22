@@ -12,4 +12,6 @@ std::future<UserData> MsSQLUserRepository::LoadUserAsync(int userId)
         // 2. Query ½ÇÇà
         // 3. Column Binding
     }
+
+    return std::future<UserData>();
 }

@@ -62,7 +62,7 @@ void TestScene::InitializeLogic()
 		auto animator = strut->AddComponent<Animator>();
 		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/Strut Walking");
 		transform->SetPosition(0.f, 0.f, -0.5f);
-		transform->SetRotation(-1.57f, 0.f, 0.f);
+		transform->SetRotation(-1.57f, 0.f, 0.f);	
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 
 		coreRef->FlushCommandQueue();

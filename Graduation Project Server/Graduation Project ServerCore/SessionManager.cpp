@@ -7,6 +7,8 @@ SessionManager::SessionManager(IGameContext& gameCtx) : _gameCtx(gameCtx)
 
 void SessionManager::AddSession(SOCKET clientSocket)
 {
+	LOG_DBG("Session[%d] Add", _nextSessionId.load());
+
 	auto session = std::make_shared<Session>(_nextSessionId, clientSocket);
 	session->SetPacketHandler([this](int sessionId, const std::vector<char>& packet)
 		{
