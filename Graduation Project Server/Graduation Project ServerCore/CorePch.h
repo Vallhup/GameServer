@@ -29,6 +29,7 @@
 #include <codecvt>
 #include <future>
 #include <ranges>
+#include <bitset>
 
 #include "Logger.h"
 #include "Macro.h"
@@ -52,7 +53,7 @@
 #include "DecoratorNode.h"
 #include "LeafNode.h"
 
-#include "TickScheduler.h"
+#include "TickSystem.h"
 
 #include "Input.h"
 #include "ScriptVM.h"

@@ -41,9 +41,10 @@ void TestScene::InitializeLogic()
 		knight = make_shared<MainCharacter>();
 		auto meshrenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
-		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight4");
+		auto animator = knight->AddComponent<Animator>();
+		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
 		transform->SetPosition(0.f, 0.f, 0.f);
-		transform->SetRotation(0.f, 0.f, 0.f);
+		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 
 		coreRef->FlushCommandQueue();

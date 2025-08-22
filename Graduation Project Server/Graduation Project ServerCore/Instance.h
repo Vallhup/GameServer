@@ -1,6 +1,6 @@
 #pragma once
 
-class TickScheduler;
+class TickSystem;
 
 class Instance {
 public:
@@ -26,7 +26,7 @@ public:
 	void RemoveObject(const ObjectId& id);
 
 	int GetId() const { return _id; }
-	TickScheduler GetScheduler() const { return _scheduler; }
+	TickSystem GetScheduler() const { return _scheduler; }
 	bool IsActive() const { return _isActive.load(); }
 
 protected:
@@ -34,7 +34,7 @@ protected:
 	std::atomic<bool> _isActive;
 
 	IGameContext& _gameCtx;
-	TickScheduler _scheduler;
+	TickSystem _scheduler;
 
 	std::unique_ptr<class IObjectManager> _objMng;
 

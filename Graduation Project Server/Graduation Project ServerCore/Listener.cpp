@@ -102,7 +102,6 @@ void Listener::RegisterAccept(AcceptOver* acceptOver)
 		int error = WSAGetLastError();
 		if (error != ERROR_IO_PENDING) {
 			// Error Log
-			//RegisterAccept(acceptOver);
 		}
 	}	
 }

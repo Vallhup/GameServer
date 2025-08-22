@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "MovementComponent.h"
-#include "TickScheduler.h"
+#include "TickSystem.h"
 
 MovementComponent::MovementComponent(GameObject& owner, Instance& instance) : IComponent(owner, instance)
 {

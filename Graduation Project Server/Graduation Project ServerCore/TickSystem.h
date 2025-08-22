@@ -2,7 +2,7 @@
 
 class ITickable;
 
-class TickScheduler {
+class TickSystem {
 public:
 	void Register(ITickable* t);
 	void Deregister(ITickable* t);

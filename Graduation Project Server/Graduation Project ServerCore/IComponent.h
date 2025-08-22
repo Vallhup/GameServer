@@ -43,3 +43,12 @@ public:
 	virtual void Tick(float deltaTime) = 0;
 	virtual bool TickEnable() = 0;
 };
+
+class IInputable {
+public:
+	virtual ~IInputable() = default;
+
+public:
+	virtual void HandleInput() = 0;
+	virtual void InputEnable() = 0;
+};
