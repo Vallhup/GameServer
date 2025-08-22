@@ -42,10 +42,23 @@ void Animator::UpdateCurrentAnimation(float deltaTime)
     }
 
     const float framerate = static_cast<float>(animClip.frameCount) / animClip.duration;
-    mFrame = static_cast<int32_t>(mUpdateTime * framerate);
-    mFrame = min(mFrame, animClip.frameCount - 1);
-    mNextFrame = min(mFrame + 1, animClip.frameCount - 1);
-    mFrameRatio = static_cast<float>(mUpdateTime * framerate - mFrame);
+    float frameFloat = (mUpdateTime * framerate) + 1.0f;
+
+    mFrame = static_cast<int32_t>(frameFloat);
+    mFrame = max(1, min(mFrame, animClip.frameCount));
+
+    if (mFrame == animClip.frameCount) {
+        mNextFrame = 1;
+    }
+    else {
+        mNextFrame = mFrame + 1;
+    }
+
+    mFrameRatio = frameFloat - mFrame;
+
+    OutputDebugStringA(("Current Frame: " + to_string(mFrame) +
+        " -> Next Frame: " + to_string(mNextFrame) +
+        " (Ratio: " + to_string(mFrameRatio) + ")\n").c_str());
 }
 
 void Animator::UpdatePrevAnimation(float deltaTime)
@@ -67,10 +80,19 @@ void Animator::UpdatePrevAnimation(float deltaTime)
     }
 
     const float framerate = static_cast<float>(animClip.frameCount) / animClip.duration;
-    mPrevFrame = static_cast<int32_t>(mPrevUpdateTime * framerate);
-    mPrevFrame = min(mPrevFrame, animClip.frameCount - 1);
-    mPrevNextFrame = min(mPrevFrame + 1, animClip.frameCount - 1);
-    mPrevFrameRatio = static_cast<float>(mPrevUpdateTime * framerate - mPrevFrame);
+
+    float frameFloat = (mPrevUpdateTime * framerate) + 1.0f;
+    mPrevFrame = static_cast<int32_t>(frameFloat);
+    mPrevFrame = max(1, min(mPrevFrame, animClip.frameCount));
+
+    if (mPrevFrame == animClip.frameCount) {
+        mPrevNextFrame = 1;
+    }
+    else {
+        mPrevNextFrame = mPrevFrame + 1;
+    }
+
+    mPrevFrameRatio = frameFloat - mPrevFrame;
 }
 
 void Animator::SetAnimationData(DX12Core& core, const vector<AnimClipInfo>& animations)
@@ -89,7 +111,7 @@ void Animator::SetSkeletonData(const SkeletonData& skeleton)
     if (mOffsetBuffer && !mBones.empty()) {
         vector<XMMATRIX> offsetMatrices;
         for (const auto& bone : mBones) {
-            offsetMatrices.push_back(bone.matOffset);  
+            offsetMatrices.push_back(bone.matOffset);
         }
         mOffsetBuffer->CopyData(offsetMatrices.data(), offsetMatrices.size() * sizeof(XMMATRIX));
     }
@@ -144,7 +166,7 @@ void Animator::CreateBuffers(DX12Core& core)
 void Animator::PlayAnimation(int animIndex)
 {
     if (animIndex < 0 || animIndex >= mAnimations.size()) return;
-    
+
     mClipIndex = animIndex;
     mUpdateTime = 0.0f;
 }

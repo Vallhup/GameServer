@@ -32,8 +32,11 @@ RWStructuredBuffer<matrix> aFinal : register(u0);
 
 matrix CalculateBoneMatrix(int boneIndex, int currentFrame, int nextFrame, float ratio, int animOffset)
 {
-    uint idx = animOffset + (aBoneCount * currentFrame) + boneIndex;
-    uint nextIdx = animOffset + (aBoneCount * nextFrame) + boneIndex;
+    int currentFrameIndex = currentFrame - 1;
+    int nextFrameIndex = nextFrame - 1;
+    
+    uint idx = animOffset + (aBoneCount * currentFrameIndex) + boneIndex;
+    uint nextIdx = animOffset + (aBoneCount * nextFrameIndex) + boneIndex;
 
     float4 scale = lerp(aBoneFrame[idx].scale, aBoneFrame[nextIdx].scale, ratio);
     float4 rotation = QuaternionSlerp(aBoneFrame[idx].rotation, aBoneFrame[nextIdx].rotation, ratio);
