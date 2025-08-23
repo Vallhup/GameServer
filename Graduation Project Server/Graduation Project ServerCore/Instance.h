@@ -10,7 +10,7 @@ public:
 
 public:
 	virtual void Start() = 0;
-	virtual void Update(float deltaTime) { _scheduler.Tick(deltaTime); }
+	virtual void Update(float deltaTime) { _tickSystem.Tick(deltaTime); }
 	virtual void Stop() = 0;
 
 protected:
@@ -26,7 +26,7 @@ public:
 	void RemoveObject(const ObjectId& id);
 
 	int GetId() const { return _id; }
-	TickSystem GetScheduler() const { return _scheduler; }
+	TickSystem GetTickSystem() const { return _tickSystem; }
 	bool IsActive() const { return _isActive.load(); }
 
 protected:
@@ -34,7 +34,9 @@ protected:
 	std::atomic<bool> _isActive;
 
 	IGameContext& _gameCtx;
-	TickSystem _scheduler;
+
+	TickSystem _tickSystem;
+	InputSystem _inputSystem;
 
 	std::unique_ptr<class IObjectManager> _objMng;
 

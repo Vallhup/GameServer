@@ -54,6 +54,7 @@
 #include "LeafNode.h"
 
 #include "TickSystem.h"
+#include "InputSystem.h"
 
 #include "Input.h"
 #include "ScriptVM.h"

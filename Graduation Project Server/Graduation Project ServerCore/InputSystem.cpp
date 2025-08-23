@@ -1,7 +1,22 @@
 #include "pch.h"
 #include "InputSystem.h"
 
+void InputSystem::Register(int id, IInputable* i)
+{
+	_inputables.try_emplace(id, i);
+}
+
+void InputSystem::Deregister(int id)
+{
+	_inputables.erase(id);
+}
+
 void InputSystem::HandleInput(const TestInputPacket& packet)
 {
-	// TODO : Intent 생성 후 Object의 InputComponent에 전달
+	auto it = _inputables.find(packet.id);
+	if (it != _inputables.end()) {
+		it->second->HandleInput(packet);
+	}
+
+	// TODO : EventQueue에 key입력 Event Push
 }

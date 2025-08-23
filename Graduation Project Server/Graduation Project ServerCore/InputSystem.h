@@ -17,22 +17,20 @@ struct TestInputPacket {
 	char inputType;
 };
 
-constexpr size_t INPUT_KEY_COUNT = static_cast<size_t>(TestInput::Max);
+class IInputable;
 
 class InputSystem {
 public:
+	static constexpr size_t INPUT_KEY_COUNT = static_cast<size_t>(TestInput::Max);
 	using KeyState = std::bitset<INPUT_KEY_COUNT>;
-	
+
 public:
-
-
+	void Register(int id, IInputable* i);
+	void Deregister(int id);
 
 	void HandleInput(const TestInputPacket& packet);
 
-public:
-	const KeyState& GetState(int sessionId) const;
-
 private:
-	std::vector<IInputable> _inputs;
+	std::unordered_map<int, IInputable*> _inputables;
 };
 

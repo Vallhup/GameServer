@@ -163,6 +163,15 @@
     <ClCompile Include="InputSystem.cpp">
       <Filter>Game\Instance\System</Filter>
     </ClCompile>
+    <ClCompile Include="Protocols\Enum.pb.cc">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocols\Struct.pb.cc">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocols\Test.pb.cc">
+      <Filter>Protocol</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -285,6 +294,15 @@
     </ClInclude>
     <ClInclude Include="InputSystem.h">
       <Filter>Game\Instance\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocols\Enum.pb.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocols\Struct.pb.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocols\Test.pb.h">
+      <Filter>Protocol</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,7 +2,8 @@
 #include "MovementComponent.h"
 #include "TickSystem.h"
 
-MovementComponent::MovementComponent(GameObject& owner, Instance& instance) : IComponent(owner, instance)
+MovementComponent::MovementComponent(GameObject& owner, Instance& instance) 
+	: IComponent(owner, instance)
 {
 	_velocity = { 0.0f, 0.0f, 0.0f };
 	_maxSpeed = 0.0f;
@@ -47,10 +48,10 @@ void MovementComponent::ClampSpeed()
 
 void MovementComponent::OnRegister()
 {
-	_instance.GetScheduler().Register(this);
+	_instance.GetTickSystem().Register(this);
 }
 
 void MovementComponent::OnDeregister()
 {
-	_instance.GetScheduler().Deregister(this);
+	_instance.GetTickSystem().Deregister(this);
 }
