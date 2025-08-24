@@ -1,6 +1,9 @@
 #pragma once
 
+#include "ObjectManager.h"
+
 class TickSystem;
+class IGameLogic;
 
 class Instance {
 public:
@@ -26,7 +29,9 @@ public:
 	void RemoveObject(int id);
 
 	int GetId() const { return _id; }
-	TickSystem GetTickSystem() const { return _tickSystem; }
+	TickSystem& GetTickSystem() { return _tickSystem; }
+	InputSystem& GetInputSystem() { return _inputSystem; }
+	IGameLogic& GetGameLogic() const { return *_gameLogic; }
 	bool IsActive() const { return _isActive.load(); }
 	std::shared_ptr<GameObject> GetGameObject(int id) const { return _objMng->GetGameObject(id); }
 

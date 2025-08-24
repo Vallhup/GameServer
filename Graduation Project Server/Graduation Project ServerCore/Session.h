@@ -1,5 +1,7 @@
 #pragma once
 
+class GameObject;
+
 class Session : public IocpObject {
 	static constexpr int MAX_PACKET{ 32 };
 
@@ -25,8 +27,10 @@ public:
 
 public:
 	int GetId() const { return _id; }
+	GameObject* GetCharacter() const { return _character; }
 
 	void SetPacketHandler(PacketHandler handler) { _packetHandler = handler; }
+	void SetCharacter(GameObject* character) { _character = character; }
 
 private:
 	void InternalSend();
@@ -43,5 +47,7 @@ private:
 	PacketHandler _packetHandler;
 
 	std::atomic<bool> _connected;
+
+	GameObject* _character;
 };
 

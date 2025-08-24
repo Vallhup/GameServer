@@ -26,4 +26,3 @@ private:
 
 	std::vector<char> recvBuffer;
 };
-

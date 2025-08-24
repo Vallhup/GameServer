@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "InputComponent.h"
 
-void InputComponent::HandleInput(const TestInputPacket& packet)
+void InputComponent::HandleInput(const Protocol::CS_INPUT_PACKET& packet)
 {
-	if (packet.inputType == (char)TestInputType::KeyDown) {
-		_keyState.set((size_t)packet.key);
+	if (packet.inputtype() == Protocol::InputType::KeyDown) {
+		_keyState.set((size_t)packet.key());
 	}
 
 	else {
-		_keyState.reset((size_t)packet.key);
+		_keyState.reset((size_t)packet.key());
 	}
 }

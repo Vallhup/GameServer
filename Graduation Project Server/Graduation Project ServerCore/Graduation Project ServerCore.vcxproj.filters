@@ -46,6 +46,12 @@
     <Filter Include="Game\Instance\System">
       <UniqueIdentifier>{81a005bd-c367-43e2-b3f1-f842dc8b480a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Protocol\proto">
+      <UniqueIdentifier>{f98a3723-d56d-4b70-aff8-42292b686012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\pb.%2a">
+      <UniqueIdentifier>{c4dc58f6-e8ca-465c-9247-a0c23eb590cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -163,17 +169,20 @@
     <ClCompile Include="InputSystem.cpp">
       <Filter>Game\Instance\System</Filter>
     </ClCompile>
-    <ClCompile Include="Protocols\Enum.pb.cc">
-      <Filter>Protocol</Filter>
-    </ClCompile>
-    <ClCompile Include="Protocols\Struct.pb.cc">
-      <Filter>Protocol</Filter>
-    </ClCompile>
-    <ClCompile Include="Protocols\Test.pb.cc">
-      <Filter>Protocol</Filter>
-    </ClCompile>
     <ClCompile Include="Event.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocols\Enum.pb.cc">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocols\Protocol.pb.cc">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocols\Struct.pb.cc">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketFactory.cpp">
+      <Filter>Protocol</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -298,17 +307,31 @@
     <ClInclude Include="InputSystem.h">
       <Filter>Game\Instance\System</Filter>
     </ClInclude>
-    <ClInclude Include="Protocols\Enum.pb.h">
-      <Filter>Protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="Protocols\Struct.pb.h">
-      <Filter>Protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="Protocols\Test.pb.h">
-      <Filter>Protocol</Filter>
-    </ClInclude>
     <ClInclude Include="Event.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="Protocols\Enum.pb.h">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocols\Protocol.pb.h">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocols\Struct.pb.h">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketFactory.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="protos\Struct.proto">
+      <Filter>Protocol\proto</Filter>
+    </None>
+    <None Include="protos\Protocol.proto">
+      <Filter>Protocol\proto</Filter>
+    </None>
+    <None Include="protos\Enum.proto">
+      <Filter>Protocol\proto</Filter>
+    </None>
   </ItemGroup>
 </Project>

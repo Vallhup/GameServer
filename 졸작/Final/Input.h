@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NetworkManager.h"
+
 enum class MouseButton 
 {
 	LEFT,
@@ -10,6 +12,11 @@ enum class MouseButton
 
 class Input final
 {
+public:
+	Input() = default;
+	Input(NetworkManager* net) : network(net) {}
+	~Input() { delete network; }
+
 public:
 	static Input& Get();
 
@@ -26,11 +33,19 @@ public:
 	void SetMouseButton(const MouseButton button, const bool bPressed);
 	void SetMousePosition(const XMFLOAT2 mousePosition);
 
+	void SetNetworkManager(NetworkManager* net) { network = net; }
+
+public:
+	// Network Send
+	void SendInputPacket(Protocol::Input key, Protocol::InputType type);
+
 private:
 	bitset<256> mPressedKeys = {};
 	bitset<256> mChangeKeyState = {};
 
 	XMFLOAT2 mMousePos = {};
 	bool mPressedMouseButtons[static_cast<size_t>(MouseButton::END)] = {};
+
+	NetworkManager* network{ nullptr };
 };
 

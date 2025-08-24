@@ -1,10 +1,22 @@
 syntax = "proto3";
 package Protocol;
 
-enum PlayerType
-{
-	PLAYER_TYPE_NONE = 0;
-	PLAYER_TYPE_KNIGHT = 1;
-	PLAYER_TYPE_MAGE = 2;
-	PLAYER_TYPE_ARCHER = 3;
+enum PacketType {
+	CS_INPUT = 0;
+
+	SC_MOVE_OBJECT = 1;
+}
+
+enum Input {
+	MOVE_FRONT = 0;
+	MOVE_BACK = 1;
+	MOVE_LEFT = 2;
+	MOVE_RIGHT = 3;
+
+	MAX = 4;
+}
+
+enum InputType {
+	KeyDown = 0;
+	KeyUp = 1;
 }

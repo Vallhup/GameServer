@@ -55,40 +55,107 @@ namespace protobuf {
 }  // namespace google
 
 namespace Protocol {
-enum PlayerType : int {
-  PLAYER_TYPE_NONE = 0,
-  PLAYER_TYPE_KNIGHT = 1,
-  PLAYER_TYPE_MAGE = 2,
-  PLAYER_TYPE_ARCHER = 3,
-  PlayerType_INT_MIN_SENTINEL_DO_NOT_USE_ =
+enum PacketType : int {
+  CS_INPUT = 0,
+  SC_MOVE_OBJECT = 1,
+  PacketType_INT_MIN_SENTINEL_DO_NOT_USE_ =
       std::numeric_limits<::int32_t>::min(),
-  PlayerType_INT_MAX_SENTINEL_DO_NOT_USE_ =
+  PacketType_INT_MAX_SENTINEL_DO_NOT_USE_ =
       std::numeric_limits<::int32_t>::max(),
 };
 
-bool PlayerType_IsValid(int value);
-extern const uint32_t PlayerType_internal_data_[];
-constexpr PlayerType PlayerType_MIN = static_cast<PlayerType>(0);
-constexpr PlayerType PlayerType_MAX = static_cast<PlayerType>(3);
-constexpr int PlayerType_ARRAYSIZE = 3 + 1;
+bool PacketType_IsValid(int value);
+extern const uint32_t PacketType_internal_data_[];
+constexpr PacketType PacketType_MIN = static_cast<PacketType>(0);
+constexpr PacketType PacketType_MAX = static_cast<PacketType>(1);
+constexpr int PacketType_ARRAYSIZE = 1 + 1;
 const ::google::protobuf::EnumDescriptor*
-PlayerType_descriptor();
+PacketType_descriptor();
 template <typename T>
-const std::string& PlayerType_Name(T value) {
-  static_assert(std::is_same<T, PlayerType>::value ||
+const std::string& PacketType_Name(T value) {
+  static_assert(std::is_same<T, PacketType>::value ||
                     std::is_integral<T>::value,
-                "Incorrect type passed to PlayerType_Name().");
-  return PlayerType_Name(static_cast<PlayerType>(value));
+                "Incorrect type passed to PacketType_Name().");
+  return PacketType_Name(static_cast<PacketType>(value));
 }
 template <>
-inline const std::string& PlayerType_Name(PlayerType value) {
-  return ::google::protobuf::internal::NameOfDenseEnum<PlayerType_descriptor,
-                                                 0, 3>(
+inline const std::string& PacketType_Name(PacketType value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<PacketType_descriptor,
+                                                 0, 1>(
       static_cast<int>(value));
 }
-inline bool PlayerType_Parse(absl::string_view name, PlayerType* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<PlayerType>(
-      PlayerType_descriptor(), name, value);
+inline bool PacketType_Parse(absl::string_view name, PacketType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<PacketType>(
+      PacketType_descriptor(), name, value);
+}
+enum Input : int {
+  MOVE_FRONT = 0,
+  MOVE_BACK = 1,
+  MOVE_LEFT = 2,
+  MOVE_RIGHT = 3,
+  MAX = 4,
+  Input_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  Input_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool Input_IsValid(int value);
+extern const uint32_t Input_internal_data_[];
+constexpr Input Input_MIN = static_cast<Input>(0);
+constexpr Input Input_MAX = static_cast<Input>(4);
+constexpr int Input_ARRAYSIZE = 4 + 1;
+const ::google::protobuf::EnumDescriptor*
+Input_descriptor();
+template <typename T>
+const std::string& Input_Name(T value) {
+  static_assert(std::is_same<T, Input>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to Input_Name().");
+  return Input_Name(static_cast<Input>(value));
+}
+template <>
+inline const std::string& Input_Name(Input value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<Input_descriptor,
+                                                 0, 4>(
+      static_cast<int>(value));
+}
+inline bool Input_Parse(absl::string_view name, Input* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<Input>(
+      Input_descriptor(), name, value);
+}
+enum InputType : int {
+  KeyDown = 0,
+  KeyUp = 1,
+  InputType_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  InputType_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool InputType_IsValid(int value);
+extern const uint32_t InputType_internal_data_[];
+constexpr InputType InputType_MIN = static_cast<InputType>(0);
+constexpr InputType InputType_MAX = static_cast<InputType>(1);
+constexpr int InputType_ARRAYSIZE = 1 + 1;
+const ::google::protobuf::EnumDescriptor*
+InputType_descriptor();
+template <typename T>
+const std::string& InputType_Name(T value) {
+  static_assert(std::is_same<T, InputType>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to InputType_Name().");
+  return InputType_Name(static_cast<InputType>(value));
+}
+template <>
+inline const std::string& InputType_Name(InputType value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<InputType_descriptor,
+                                                 0, 1>(
+      static_cast<int>(value));
+}
+inline bool InputType_Parse(absl::string_view name, InputType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<InputType>(
+      InputType_descriptor(), name, value);
 }
 
 // ===================================================================
@@ -119,10 +186,22 @@ namespace google {
 namespace protobuf {
 
 template <>
-struct is_proto_enum<::Protocol::PlayerType> : std::true_type {};
+struct is_proto_enum<::Protocol::PacketType> : std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor<::Protocol::PlayerType>() {
-  return ::Protocol::PlayerType_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::PacketType>() {
+  return ::Protocol::PacketType_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::Input> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::Input>() {
+  return ::Protocol::Input_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::InputType> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::InputType>() {
+  return ::Protocol::InputType_descriptor();
 }
 
 }  // namespace protobuf

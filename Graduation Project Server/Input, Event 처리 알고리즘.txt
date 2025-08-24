@@ -1,0 +1,10 @@
+Session::ProcessRecv -> packetHandler 함수 실행 
+packetHandler = SessionManager::OnSessionPacket -> Session과 연결된 Character의 Instance 찾아서 그 Instance의 InputSystem 호출 + GameLogic의 OnPlayerAction 호출
+
+InputSystem::HandleInput -> _inputables에서 해당 inputable(Character의 InputComponent)의 HandleInput 호출
+InputComponent::HandleInput -> 자신이 관리하는 keyState 최신화
+
+GameLogic::OnPlayerAction -> EventManager에 Input Event Push
+GameLogic::LogicUpdate -> EventManager에서 Event Pop해서 ExecuteEvent
+GameLogic::ExecuteEvent -> EventType에 따라 Intent 처리
+

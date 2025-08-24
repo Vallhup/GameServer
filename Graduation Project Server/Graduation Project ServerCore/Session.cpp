@@ -4,6 +4,7 @@
 Session::Session(int id, SOCKET socket) : _id(id), _socket(socket)
 {
 	_connected = true;
+	_character = nullptr;
 }
 
 Session::~Session()

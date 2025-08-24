@@ -1,34 +1,18 @@
 #pragma once
 
-enum class TestInput : uint8_t {
-	Move,
-	Attack,
-	Max
-};
-
-enum class TestInputType : uint8_t {
-	KeyDown,
-	KeyUp
-};
-
-struct TestInputPacket {
-	int id;
-	char key;
-	char inputType;
-};
+#include "Protocols/Protocol.pb.h"
 
 class IInputable;
 
 class InputSystem {
 public:
-	static constexpr size_t INPUT_KEY_COUNT = static_cast<size_t>(TestInput::Max);
-	using KeyState = std::bitset<INPUT_KEY_COUNT>;
+	using KeyState = std::bitset<256>;
 
 public:
 	void Register(int id, IInputable* i);
 	void Deregister(int id);
 
-	void HandleInput(const TestInputPacket& packet);
+	void HandleInput(const Protocol::CS_INPUT_PACKET& packet);
 
 private:
 	std::unordered_map<int, IInputable*> _inputables;

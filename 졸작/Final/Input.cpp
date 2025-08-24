@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "Input.h"
 
+#include "../../Graduation Project Server/Graduation Project ServerCore/PacketFactory.h"
+
 Input& Input::Get()
 {
-	static Input input;
+	static Input input{ new NetworkManager };
 	return input;
 }
 
@@ -42,4 +44,12 @@ void Input::SetMouseButton(const MouseButton button, const bool bPressed)
 void Input::SetMousePosition(const XMFLOAT2 mousePosition)
 {
 	mMousePos = mousePosition;
+}
+
+void Input::SendInputPacket(Protocol::Input key, Protocol::InputType type)
+{
+	if (!network) return;
+
+	vector<char> packet = PacketFactory::CSInputPacket(key, type);
+	network->Send(packet);
 }

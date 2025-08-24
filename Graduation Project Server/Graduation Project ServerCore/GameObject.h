@@ -2,6 +2,8 @@
 
 #include <typeindex>
 
+#include "Instance.h"
+
 class GameObject {
 public:
 	GameObject() = delete;
@@ -65,6 +67,7 @@ public:
 
 public:
 	int GetId() const { return _id; }
+	int GetInstanceId() const { return _instance.GetId(); }
 
 protected:
 	int _id;

@@ -7,6 +7,8 @@ public:
 public:
 	virtual void AddSession(SOCKET clientSocket) = 0;;
 	virtual void RemoveSession(int sessionId) = 0;
+
+	virtual Session* GetSession(int sessionId) = 0;
 };
 
 class SessionManager : public ISessionManager {
@@ -18,6 +20,8 @@ public:
 public:
 	virtual void AddSession(SOCKET clientSocket) override;
 	virtual void RemoveSession(int sessionId) override;
+
+	virtual Session* GetSession(int sessionId) override;
 
 private:
 	void OnSessionPacket(int sessionId, const std::vector<char>& packet);

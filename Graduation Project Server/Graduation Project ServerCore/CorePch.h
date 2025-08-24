@@ -82,5 +82,7 @@
 
 #include "UserRepository.h"
 
+#include "PacketFactory.h"
+
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "MSWSock.LIB")

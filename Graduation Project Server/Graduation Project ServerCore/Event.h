@@ -4,6 +4,7 @@
 
 #include "InputSystem.h"
 #include "BTNode.h"
+#include "Protocols/Enum.pb.h"
 
 enum class EventType {
 	BT,
@@ -13,8 +14,8 @@ enum class EventType {
 
 struct InputEventData {
 	int sessionId;
-	TestInput key;
-	TestInputType type;
+	Protocol::Input key;
+	Protocol::InputType type;
 };
 
 struct TimerEventData {

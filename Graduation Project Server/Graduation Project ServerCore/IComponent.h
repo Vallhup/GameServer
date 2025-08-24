@@ -49,6 +49,6 @@ public:
 	virtual ~IInputable() = default;
 
 public:
-	virtual void HandleInput(const TestInputPacket& packet) = 0;
+	virtual void HandleInput(const Protocol::CS_INPUT_PACKET& packet) = 0;
 	virtual void InputEnable() = 0;
 };

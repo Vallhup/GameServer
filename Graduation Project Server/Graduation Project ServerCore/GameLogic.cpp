@@ -24,7 +24,7 @@ void GameLogic::NetworkUpdate()
 	// TODO : Logic Result Send
 }
 
-void GameLogic::OnPlayerAction(int sessionId, const std::vector<char>& packet)
+void GameLogic::OnPlayerAction(int sessionId, const Protocol::CS_INPUT_PACKET& packet)
 {
 	InputEventData data;
 	Event ev{ EventType::Input, data, std::chrono::high_resolution_clock::now() };
@@ -38,11 +38,7 @@ void GameLogic::ExecuteEvent(Event event)
 		case EventType::Input: {
 			auto& data = std::get<InputEventData>(event.data);
 			HandleInput(data);
-			if (auto obj = _instance.GetGameObject(data.sessionId)) {
-				if (auto inputComp = obj->GetComponent<InputComponent>()) {
-					// TODO : Input에 맞는 Intent 처리
-				}
-			}
+			
 
 			break;
 		}
@@ -67,4 +63,15 @@ void GameLogic::ExecuteEvent(Event event)
 			data.promise->set_exception(std::current_exception());
 		}
 	}
+}
+
+void GameLogic::HandleInput(const InputEventData& data)
+{
+	if (auto obj = _instance.GetGameObject(data.sessionId)) {
+		if (auto inputComp = obj->GetComponent<InputComponent>()) {
+			// TODO : Input에 맞는 Intent 처리
+		}
+	}
+
+
 }

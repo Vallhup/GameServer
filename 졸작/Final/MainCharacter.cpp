@@ -6,6 +6,9 @@
 #include "Camera.h"
 #include "Animator.h"
 
+#include "../../Graduation Project Server/Graduation Project ServerCore/PacketFactory.h"
+#include "../../Graduation Project Server/Graduation Project ServerCore/Protocols/Protocol.pb.h"
+
 void MainCharacter::Update(float deltaTime)
 {
 	UpdateMovementDirections();
@@ -49,6 +52,8 @@ void MainCharacter::BasicMove(float deltaTime)
 		moveDirection.x -= characterForward.x;  
 		moveDirection.z -= characterForward.z;
 		isMoving = true;
+
+		input.SendInputPacket(Protocol::Input::MOVE_FRONT, Protocol::InputType::KeyDown);
 	}
 	if (input.GetKey('S'))
 	{
@@ -57,6 +62,8 @@ void MainCharacter::BasicMove(float deltaTime)
 		moveDirection.x += characterForward.x;
 		moveDirection.z += characterForward.z;
 		isMoving = true;
+
+		input.SendInputPacket(Protocol::Input::MOVE_BACK, Protocol::InputType::KeyDown);
 	}
 	if (input.GetKey('A'))
 	{
@@ -65,6 +72,8 @@ void MainCharacter::BasicMove(float deltaTime)
 		moveDirection.x += characterRight.x;   
 		moveDirection.z += characterRight.z;
 		isMoving = true;
+
+		input.SendInputPacket(Protocol::Input::MOVE_LEFT, Protocol::InputType::KeyDown);
 	}
 	if (input.GetKey('D'))
 	{
@@ -73,6 +82,8 @@ void MainCharacter::BasicMove(float deltaTime)
 		moveDirection.x -= characterRight.x;
 		moveDirection.z -= characterRight.z;
 		isMoving = true;
+
+		input.SendInputPacket(Protocol::Input::MOVE_RIGHT, Protocol::InputType::KeyDown);
 	}
 	transform->SetPosition(currentPos);
 
