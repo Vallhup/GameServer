@@ -82,6 +82,18 @@
     <ClCompile Include="NetworkManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.cc">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Protocol.pb.cc">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Struct.pb.cc">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\PacketFactory.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -162,6 +174,18 @@
     <ClInclude Include="NetworkManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.h">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Protocol.pb.h">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Struct.pb.h">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\PacketFactory.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicPS.hlsli">
@@ -219,6 +243,12 @@
     </Filter>
     <Filter Include="Importer">
       <UniqueIdentifier>{fb3b4387-ca26-490a-bbd0-8ccce2eaa6f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{3a4d116a-b316-4ab2-a8d2-9ecfb53a6575}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\pb.%2a">
+      <UniqueIdentifier>{8f75e9c6-16ce-44ea-bb94-59e53792e9c6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -146,6 +146,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\PacketFactory.cpp" />
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.cc" />
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Protocol.pb.cc" />
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Struct.pb.cc" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -180,6 +184,10 @@
     <ClCompile Include="VertexIndexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\PacketFactory.h" />
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.h" />
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Protocol.pb.h" />
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Struct.pb.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
