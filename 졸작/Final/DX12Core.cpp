@@ -316,16 +316,24 @@ void DX12Core::CreateGBuffer()
 
 void DX12Core::BeginGBufferPass()
 {
-	// *** G-Buffer를 SRV → RTV로 상태 변경 (이전 프레임에서 SRV로 바뀌었으니까) ***
-	D3D12_RESOURCE_BARRIER barriers[3];
-	for (int i = 0; i < 3; ++i) {
-		barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(
-			gBufferRT[i].Get(),
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,  // 이전 상태
-			D3D12_RESOURCE_STATE_RENDER_TARGET           // 새 상태
-		);
+	// 첫 번째 프레임에서는 상태 전환 건너뛰기
+	static bool firstFrame = true;
+
+	if (!firstFrame) {
+		// 기존 상태 전환 코드
+		D3D12_RESOURCE_BARRIER barriers[3];
+		for (int i = 0; i < 3; ++i) {
+			barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(
+				gBufferRT[i].Get(),
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				D3D12_RESOURCE_STATE_RENDER_TARGET
+			);
+		}
+		cmdList->ResourceBarrier(3, barriers);
 	}
-	cmdList->ResourceBarrier(3, barriers);
+	else {
+		firstFrame = false;
+	}
 
 	// G-Buffer 3개를 렌더 타겟으로 설정
 	cmdList->OMSetRenderTargets(3, gBufferRTVHandles, FALSE, &dsvHandle);
@@ -339,7 +347,7 @@ void DX12Core::BeginGBufferPass()
 	// Depth 클리어
 	cmdList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-	OutputDebugStringA("G-Buffer Pass started\n");
+	//OutputDebugStringA("G-Buffer Pass started\n");
 }
 
 void DX12Core::EndGBufferPass()
@@ -355,11 +363,13 @@ void DX12Core::EndGBufferPass()
 	}
 	cmdList->ResourceBarrier(3, barriers);
 
-	OutputDebugStringA("G-Buffer Pass ended\n");
+	//OutputDebugStringA("G-Buffer Pass ended\n");
 }
 
 void DX12Core::BeginLightingPass()
 {
+	SetupLightng();
+
 	// 백버퍼를 렌더 타겟으로 설정
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtvHandle[backBufferIndex];
 	cmdList->OMSetRenderTargets(1, &rtv, FALSE, nullptr);  // Depth 사용 안함
@@ -373,7 +383,67 @@ void DX12Core::BeginLightingPass()
 	// G-Buffer SRV 테이블 바인딩 (root parameter 11번)
 	cmdList->SetGraphicsRootDescriptorTable(11, gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart());
 
-	OutputDebugStringA("Lighting Pass started\n");
+	//OutputDebugStringA("Lighting Pass started\n");
+}
+
+void DX12Core::SetupLightng()
+{
+	// 32개 조명 설정
+	static bool lightsInitialized = false;
+	static LightConstants lightData = {};
+
+	if (!lightsInitialized) {
+		lightData.lightCount = 50;
+
+		// 기존 directional light 유지
+		lightData.lights[0] = {
+			{0, 0, -1}, 0,               // direction (기존과 동일)
+			{1, 1, 1}, 0.6f,             // color, intensity (기존과 동일)
+			0,                           // type: directional
+			{0, 0, 0}                    // padding
+		};
+
+		lightData.lights[1] = {
+			{0, 0, 1}, 0,               // direction (기존과 동일)
+			{1, 1, 1}, 0.3f,             // color, intensity (기존과 동일)
+			0,                           // type: directional
+			{0, 0, 0}                    // padding
+		};
+
+		// Point lights 31개 - Z축 마이너스 방향으로 일직선 배치
+		float spacing = 2.0f;
+		for (int i = 2; i < 50; ++i) {
+			float x = 0; // X축 고정
+			float z = -(i - 1) * spacing; // 0, -3, -6, -9, ... -90
+			float height = 2.0f; // 모든 조명 동일한 높이
+
+			// 색상 계산 (HSV 기반으로 다양한 색상)
+			float hue = (float)(i - 1) / 100.0f;
+			XMFLOAT3 color;
+
+			// HSV to RGB 변환 (간단 버전)
+			if (hue < 0.33f) {
+				color = { 1.0f, hue * 3.0f, 0.0f }; // 빨강 -> 노랑
+			}
+			else if (hue < 0.66f) {
+				color = { 1.0f - (hue - 0.33f) * 3.0f, 1.0f, 0.0f }; // 노랑 -> 녹색
+			}
+			else {
+				color = { 0.0f, 1.0f - (hue - 0.66f) * 3.0f, (hue - 0.66f) * 3.0f }; // 녹색 -> 파랑
+			}
+
+			lightData.lights[i] = {
+				{x, height, z}, 2.0f,    // position, range
+				color, 0.8f,             // color, intensity
+				1,                       // type: point light
+				{0, 0, 0}               // padding
+			};
+		}
+
+		lightsInitialized = true;
+	}
+
+	directionLightCB->CopyData(&lightData, sizeof(LightConstants));
 }
 
 void DX12Core::RenderFullscreenQuad()
@@ -391,7 +461,7 @@ void DX12Core::RenderFullscreenQuad()
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	cmdList->DrawInstanced(6, 1, 0, 0);  // 6개 정점
 
-	OutputDebugStringA("Fullscreen quad rendered\n");
+	//OutputDebugStringA("Fullscreen quad rendered\n");
 }
 
 void DX12Core::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
@@ -495,6 +565,11 @@ void DX12Core::ResetCommandQueue()
 ID3D12Device* DX12Core::GetDevice() const
 {
 	return device.Get();
+}
+
+ID3D12CommandQueue* DX12Core::GetCmdQueue() const
+{
+	return cmdQueue.Get();
 }
 
 ID3D12GraphicsCommandList* DX12Core::GetGraphicsCmdList() const

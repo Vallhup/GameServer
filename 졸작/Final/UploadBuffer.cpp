@@ -27,6 +27,11 @@ void UploadBuffer::CopyData(const void* src, size_t size, size_t offset)
     memcpy(mMappedData + offset, src, size);
 }
 
+ID3D12Resource* UploadBuffer::GetResource() const
+{
+    return mResource.Get();
+}
+
 D3D12_GPU_VIRTUAL_ADDRESS UploadBuffer::GetGPUVirtualAddress() const
 {
      return mResource->GetGPUVirtualAddress();

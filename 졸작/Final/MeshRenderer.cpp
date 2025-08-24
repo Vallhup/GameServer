@@ -257,21 +257,17 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
 		OutputDebugStringA("Cannot create FBX Mesh for rendering!\n");
 }
 
+// MeshRenderer::SetupRenderingState에서 조명 관련 코드 전부 삭제
 void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer)
 {
     ID3D12GraphicsCommandList* cmdList = core.GetGraphicsCmdList();
 
     cmdList->SetGraphicsRootSignature(core.GetRootSig()->Get());
-
     Material::BindBindlessResources(cmdList);
-
     cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
 
-    // 임시 Direction Light
-    LightConstants light = { {0, 0, -1}, 0, {1, 1, 1}, 0.6f };
-    core.GetDirectionalLightCB()->CopyData(&light, sizeof(LightConstants));
-    cmdList->SetGraphicsRootConstantBufferView(10, core.GetDirectionalLightCB()->GetGPUVirtualAddress());
-
+    // 조명 설정 코드 전부 삭제!
+    
     if (instanceBuffer) {
         cmdList->SetGraphicsRootShaderResourceView(9, instanceBuffer->GetGPUVirtualAddress());
     }

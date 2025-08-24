@@ -7,6 +7,7 @@ public:
 
     void CopyData(const void* src, size_t size, size_t offset = 0);
 
+    ID3D12Resource* GetResource() const;
     D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() const;
 
 private:

@@ -10,12 +10,19 @@ struct ObjectConstants
 	UINT materialIndex;
 };
 
-struct LightConstants
-{
-	XMFLOAT3 direction;
-	float padding;
+struct LightData {
+	XMFLOAT3 position;    // Point light용 (directional일 때는 direction)
+	float range;          // Point light 범위
 	XMFLOAT3 color;
 	float intensity;
+	int type;             // 0=directional, 1=point
+	XMFLOAT3 padding;
+};
+
+struct LightConstants {
+	int lightCount;
+	XMFLOAT3 padding;
+	LightData lights[50]; // 최대 16개 조명
 };
 
 class RootSignature;
@@ -37,6 +44,7 @@ public:
 	void BeginGBufferPass();
 	void EndGBufferPass();
 	void BeginLightingPass();
+	void SetupLightng();
 	void RenderFullscreenQuad();
 
 	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
@@ -47,6 +55,7 @@ public:
 	void ResetCommandQueue();
 
 	ID3D12Device* GetDevice() const;
+	ID3D12CommandQueue* GetCmdQueue() const;
 	ID3D12GraphicsCommandList* GetGraphicsCmdList() const;
 	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;
