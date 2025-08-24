@@ -172,6 +172,9 @@
     <ClCompile Include="Protocols\Test.pb.cc">
       <Filter>Protocol</Filter>
     </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -303,6 +306,9 @@
     </ClInclude>
     <ClInclude Include="Protocols\Test.pb.h">
       <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

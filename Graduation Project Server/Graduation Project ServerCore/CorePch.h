@@ -43,6 +43,8 @@
 #include "Service.h"
 #include "Session.h"
 
+#include "Event.h"
+
 #include "SessionManager.h"
 #include "EventManager.h"
 

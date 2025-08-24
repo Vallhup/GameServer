@@ -17,6 +17,4 @@ void InputSystem::HandleInput(const TestInputPacket& packet)
 	if (it != _inputables.end()) {
 		it->second->HandleInput(packet);
 	}
-
-	// TODO : EventQueue¿¡ keyÀÔ·Â Event Push
 }

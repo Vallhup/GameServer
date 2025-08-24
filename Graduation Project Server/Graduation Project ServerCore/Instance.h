@@ -23,11 +23,12 @@ public:
 	void BroadCast(const std::vector<char>& packet, int exceptId = -1);
 
 	void AddObject(const std::shared_ptr<class GameObject>& obj);
-	void RemoveObject(const ObjectId& id);
+	void RemoveObject(int id);
 
 	int GetId() const { return _id; }
 	TickSystem GetTickSystem() const { return _tickSystem; }
 	bool IsActive() const { return _isActive.load(); }
+	std::shared_ptr<GameObject> GetGameObject(int id) const { return _objMng->GetGameObject(id); }
 
 protected:
 	int _id;
@@ -38,6 +39,8 @@ protected:
 	TickSystem _tickSystem;
 	InputSystem _inputSystem;
 
+	std::unique_ptr<class IGameLogic> _gameLogic;
+	std::unique_ptr<class IEventManager> _eventMng;
 	std::unique_ptr<class IObjectManager> _objMng;
 
 	mutable std::shared_mutex _mutex;

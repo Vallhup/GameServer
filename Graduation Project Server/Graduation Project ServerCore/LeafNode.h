@@ -12,6 +12,7 @@ public:
 };
 
 class ActionNode : public LeafNode {
+	using EventFunc = std::function<NodeStatus()>;
 public:
 	ActionNode() = delete;
 	ActionNode(int id, const EventFunc& eventFunc, float delayMs)
@@ -25,7 +26,7 @@ public:
 private:
 	EventFunc _eventFunc;
 	float _delayMs;
-	std::future<EventReturn> _future;
+	std::future<NodeStatus> _future;
 };
 
 class ConditionNode : public LeafNode {

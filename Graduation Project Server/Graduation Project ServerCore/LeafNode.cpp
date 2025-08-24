@@ -3,21 +3,22 @@
 
 NodeStatus ActionNode::OnEvent(EventManager& eventMng)
 {
+	using namespace std::chrono;
+
 	if (not _future.valid()) {
-		_future = eventMng.AddEvent(_eventFunc, _delayMs);
+		auto promise = std::make_shared<std::promise<NodeStatus>>();
+		_future = promise->get_future();
+
+		BTEventData data{ _eventFunc, promise };
+		Event ev{ EventType::BT, data,
+			high_resolution_clock::now() + milliseconds((int)_delayMs) };
+
+		eventMng.Push(ev);
 		return NodeStatus::Running;
 	}
 
 	if (_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-		auto future = _future.get();
-		if (auto result = std::get_if<NodeStatus>(&future)) {
-			return *result;
-		}
-
-		else {
-			// NodeStatus가 아닌 다른 Return 값이면 Success 처리
-			return NodeStatus::Success;
-		}
+		return _future.get();
 
 		{
 			// C++ 17 표준 문법
@@ -54,7 +55,7 @@ NodeStatus ActionNode::OnEvent(EventManager& eventMng)
 void ActionNode::Reset()
 {
 	// TEMP : 가능하다면 Event자체 취소 기능 구현
-	_future = std::future<EventReturn>();
+	_future = std::future<NodeStatus>();
 }
 
 NodeStatus ConditionNode::OnEvent(EventManager&)

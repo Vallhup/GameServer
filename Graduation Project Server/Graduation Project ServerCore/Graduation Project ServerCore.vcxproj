@@ -175,6 +175,7 @@
     <ClInclude Include="CompositeNode.h" />
     <ClInclude Include="CorePch.h" />
     <ClInclude Include="DecoratorNode.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="ExpOver.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
@@ -221,6 +222,7 @@
     <ClCompile Include="CompositeNode.cpp" />
     <ClCompile Include="CorePch.cpp" />
     <ClCompile Include="DecoratorNode.cpp" />
+    <ClCompile Include="Event.cpp" />
     <ClCompile Include="ExpOver.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameObject.cpp" />

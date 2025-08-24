@@ -31,5 +31,5 @@ void SessionManager::RemoveSession(int sessionId)
 
 void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& packet)
 {
-	// TODO : session과 연결된 Character의 Instance 찾아서 그 Instance의 InputSystem 호출
+	// TODO : session과 연결된 Character의 Instance 찾아서 그 Instance의 InputSystem HandleInput + GameLogic OnPlayerAction 호출
 }

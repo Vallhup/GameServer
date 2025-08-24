@@ -11,11 +11,9 @@ public:
 };
 
 class GameLogic : public IGameLogic {
-	using PacketHandler = std::function<void(int, const std::vector<char>&)>;
-
 public:
 	GameLogic() = delete;
-	GameLogic(IGameContext& gameCtx);
+	GameLogic(Instance& instance, EventManager& eventMng);
 	virtual ~GameLogic() = default;
 
 public:
@@ -24,11 +22,10 @@ public:
 	virtual void OnPlayerAction(int sessionId, const std::vector<char>& packet) override;
 
 private:
-	void RegisterHandlers();
+	void ExecuteEvent(Event event);
+	void HandleInput(const InputEventData& data);
 
 private:
-	IGameContext& _gameCtx;
-
-	std::unordered_map<unsigned char, PacketHandler> _packetHandlers;
+	Instance& _instance;
+	EventManager& _eventMng;
 };
-

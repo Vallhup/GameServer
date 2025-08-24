@@ -36,7 +36,7 @@ void Instance::AddObject(const std::shared_ptr<GameObject>& obj)
 	_objMng->AddObject(obj);
 }
 
-void Instance::RemoveObject(const ObjectId& id)
+void Instance::RemoveObject(int id)
 {
 	_objMng->RemoveObject(id);
 }

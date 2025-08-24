@@ -7,10 +7,7 @@ Service::Service()
 
 	_iocpCore = std::make_unique<IocpCore>();
 
-	_eventMng = std::make_unique<EventManager>();
-
 	_sessMng = std::make_unique<SessionManager>(*this);
-	_gameLogic = std::make_unique<GameLogic>(*this);
 	_gameWorld = std::make_unique<GameWorld>();
 }
 
@@ -42,11 +39,6 @@ bool Service::Start()
 	if (_running.compare_exchange_strong(expected, true)) {
 		if (not _listener->Start()) {
 			LOG_ERR("Listener StartAccept failed");
-			return false;
-		}
-
-		if (not _eventMng->Start()) {
-			LOG_ERR("EventManager already Start");
 			return false;
 		}
 
@@ -90,7 +82,6 @@ void Service::Stop()
 	bool expected{ true };
 	if (_running.compare_exchange_strong(expected, false)) {
 		_listener->Stop();
-		_eventMng->Stop();
 
 		for (size_t i = 0; i < _workers.size(); ++i) {
 			PostQueuedCompletionStatus(_iocpCore->GetHandle(), 0, 0, nullptr);

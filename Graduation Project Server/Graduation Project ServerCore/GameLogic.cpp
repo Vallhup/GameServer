@@ -1,14 +1,22 @@
 #include "pch.h"
 #include "GameLogic.h"
 
-GameLogic::GameLogic(IGameContext& gameCtx) : _gameCtx(gameCtx)
+GameLogic::GameLogic(Instance& instance, EventManager& eventMng)
+	: _instance(instance), _eventMng(eventMng)
 {
-	RegisterHandlers();
 }
 
 void GameLogic::LogicUpdate(float deltaTime)
 {
-	// TODO : Update Object
+	Event ev;
+	while (_eventMng.TryPop(ev)) {
+		if (ev.targetTime > std::chrono::high_resolution_clock::now()) {
+			_eventMng.Push(std::move(ev));
+			break;
+		}
+
+		ExecuteEvent(ev);
+	}
 }
 
 void GameLogic::NetworkUpdate()
@@ -18,19 +26,45 @@ void GameLogic::NetworkUpdate()
 
 void GameLogic::OnPlayerAction(int sessionId, const std::vector<char>& packet)
 {
-	const unsigned char packetType = packet[1];
-
-	auto it = _packetHandlers.find(packetType);
-	if (it != _packetHandlers.end()) {
-		it->second(sessionId, packet);
-	}
-
-	else {
-		LOG_ERR("Unknown Packet Type : %d", packetType);
-	}
+	InputEventData data;
+	Event ev{ EventType::Input, data, std::chrono::high_resolution_clock::now() };
+	_eventMng.Push(std::move(ev));
 }
 
-void GameLogic::RegisterHandlers()
+void GameLogic::ExecuteEvent(Event event)
 {
-	// TODO : Register Handler Functions
+	try {
+		switch (event.type) {
+		case EventType::Input: {
+			auto& data = std::get<InputEventData>(event.data);
+			HandleInput(data);
+			if (auto obj = _instance.GetGameObject(data.sessionId)) {
+				if (auto inputComp = obj->GetComponent<InputComponent>()) {
+					// TODO : Input에 맞는 Intent 처리
+				}
+			}
+
+			break;
+		}
+		case EventType::Timer: {
+			auto& data = std::get<TimerEventData>(event.data);
+			data.func();
+			break;
+		}
+		case EventType::BT: {
+			// TEMP : 추후 Worker Thread로 작업 넘길 예정
+			auto& data = std::get<BTEventData>(event.data);
+			auto result = data.func();
+			data.promise->set_value(result);
+			break;
+		}
+		}
+	}
+		
+	catch (...) {
+		if (event.type == EventType::BT) {
+			auto& data = std::get<BTEventData>(event.data);
+			data.promise->set_exception(std::current_exception());
+		}
+	}
 }
