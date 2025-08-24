@@ -211,6 +211,10 @@
     <None Include="animation.hlsli" />
     <None Include="BasicPS.hlsli" />
     <None Include="BasicVS.hlsli" />
+    <None Include="FullscreenVS.hlsli" />
+    <None Include="GBufferPS.hlsli" />
+    <None Include="GBufferVS.hlsli" />
+    <None Include="LightingPS.hlsli" />
     <None Include="math.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
