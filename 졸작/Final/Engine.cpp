@@ -45,9 +45,24 @@ void Engine::Update(const float deltaTime)
 
 void Engine::Render()
 {
-    graphics->RenderBegin(viewport, scissorRect);
+    /*graphics->RenderBegin(viewport, scissorRect);
     
     sManager->Render();
+
+    graphics->RenderEnd();*/
+
+    // 아래는 Deferred rendering test
+
+    graphics->RenderBegin(viewport, scissorRect);
+
+    // 1. G-Buffer Pass
+    graphics->BeginGBufferPass();
+    sManager->Render();  // G-Buffer에 렌더링
+    graphics->EndGBufferPass();
+
+    // 2. Lighting Pass  
+    graphics->BeginLightingPass();
+    graphics->RenderFullscreenQuad();  // 풀스크린으로 라이팅 적용
 
     graphics->RenderEnd();
 

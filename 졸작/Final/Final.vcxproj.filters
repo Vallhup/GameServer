@@ -176,6 +176,18 @@
     <None Include="math.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="GBufferPS.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="GBufferVS.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="FullscreenVS.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="LightingPS.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">

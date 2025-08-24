@@ -33,7 +33,7 @@ void MeshRenderer::Render(DX12Core& core)
         animator->ExecuteComputeShader(core);
     }
     
-    auto cmdList = core.GetGraphicsCmdList();
+    /*auto cmdList = core.GetGraphicsCmdList();
     SetupRenderingState(core);
 
     if (animator) {
@@ -48,6 +48,35 @@ void MeshRenderer::Render(DX12Core& core)
     }
     else if (material) {
         RenderSingleMaterial(core, world);
+    }*/
+
+    // 아래는 GBuffer test
+    RenderToGBuffer(core);
+}
+
+void MeshRenderer::RenderToGBuffer(DX12Core& core)
+{
+    auto cmdList = core.GetGraphicsCmdList();
+    auto transform = GetGameObject()->GetComponent<Transform>();
+    XMMATRIX world = transform->GetWorldMatrix();
+
+    // *** 핵심: G-Buffer PSO 사용! ***
+    cmdList->SetPipelineState(core.GetShader()->GetGBufferPSO());
+
+    SetupRenderingState(core);
+
+    if (auto animator = GetGameObject()->GetComponent<Animator>()) {
+        cmdList->SetGraphicsRootShaderResourceView(8,
+            animator->GetFinalBuffer()->GetGPUVirtualAddress());
+    }
+
+    if (!materials.empty()) {
+        // 멀티 머티리얼인 경우
+        RenderMultiMaterialToGBuffer(core, world);
+    }
+    else if (material) {
+        // 단일 머티리얼인 경우
+        RenderSingleMaterialToGBuffer(core, world);
     }
 }
 
@@ -143,6 +172,50 @@ void MeshRenderer::RenderMultiMaterial(DX12Core& core, const XMMATRIX& world)
     }
 }
 
+void MeshRenderer::RenderSingleMaterialToGBuffer(DX12Core& core, const XMMATRIX& world)
+{
+    auto cmdList = core.GetGraphicsCmdList();
+
+    ObjectConstants objConstants = {};
+    objConstants.world = XMMatrixTranspose(world);
+    objConstants.useTexture = 1;
+    objConstants.useInstancing = 0;
+    objConstants.hasAlpha = 0;
+    objConstants.materialIndex = material->GetMaterialIndex();
+
+    UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
+    UINT offset = myID * cbSize;
+    core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), offset);
+    cmdList->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress() + offset);
+
+    vertexIndexBuffer->Bind(core.GetGraphicsCmdList());
+    vertexIndexBuffer->Draw(core.GetGraphicsCmdList());
+}
+
+void MeshRenderer::RenderMultiMaterialToGBuffer(DX12Core& core, const XMMATRIX& world)
+{
+    UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
+    auto cmdList = core.GetGraphicsCmdList();
+
+    for (size_t i = 0; i < subMeshes.size(); ++i) {
+        ObjectConstants objConstants = {};
+        objConstants.world = XMMatrixTranspose(world);
+        objConstants.useTexture = 1;
+        objConstants.useInstancing = 0;
+        objConstants.hasAlpha = 0;
+        objConstants.materialIndex = materials[i]->GetMaterialIndex();
+
+        UINT materialOffset = (myID * 5 + i) * cbSize;
+        core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
+        cmdList->SetGraphicsRootConstantBufferView(1,
+            core.GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
+
+        vertexIndexBuffer->Bind(cmdList);
+        vertexIndexBuffer->DrawIndexed(cmdList,
+            subMeshes[i].indexCount,
+            subMeshes[i].startIndex);
+    }
+}
 
 void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
 {

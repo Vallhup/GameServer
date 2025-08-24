@@ -53,6 +53,82 @@ void Shader::Initialize(ID3D12Device* device, ID3D12RootSignature* rootSig, cons
     MASSERT(SUCCEEDED(hr), "Failed to create Transparent PSO");
 }
 
+void Shader::InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
+{
+    CompileShader(vsPath, "VSMain", "vs_5_1", gBufferVertexShader);
+    CompileShader(psPath, "PSMain", "ps_5_1", gBufferPixelShader);
+
+    D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "WEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "INDICES", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 60, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 76, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+    };
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
+    psoDesc.pRootSignature = rootSig;
+    psoDesc.VS = { gBufferVertexShader->GetBufferPointer(), gBufferVertexShader->GetBufferSize() };
+    psoDesc.PS = { gBufferPixelShader->GetBufferPointer(), gBufferPixelShader->GetBufferSize() };
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+    psoDesc.NumRenderTargets = 3;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    psoDesc.RTVFormats[1] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    psoDesc.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+    psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&gBufferPSO));
+    MASSERT(SUCCEEDED(hr), "Failed to create GBuffer PSO");
+
+    OutputDebugStringA("G-Buffer PSO created!!\n");
+}
+
+void Shader::InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
+{
+    // 라이팅 셰이더 컴파일
+    CompileShader(vsPath, "VSMain", "vs_5_1", fullscreenVertexShader);
+    CompileShader(psPath, "PSMain", "ps_5_1", lightingPixelShader);
+
+    // 라이팅 PSO 설정 (입력 레이아웃 없음! - 풀스크린 쿼드)
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { nullptr, 0 };  // 정점 버퍼 없음!
+    psoDesc.pRootSignature = rootSig;
+    psoDesc.VS = { fullscreenVertexShader->GetBufferPointer(), fullscreenVertexShader->GetBufferSize() };
+    psoDesc.PS = { lightingPixelShader->GetBufferPointer(), lightingPixelShader->GetBufferSize() };
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+    // 1개 Render Target (백버퍼)
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;  // 백버퍼 포맷
+
+    psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;  // Depth 사용 안함
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
+    // Depth 테스트 비활성화 (풀스크린이므로)
+    D3D12_DEPTH_STENCIL_DESC depthDesc = {};
+    depthDesc.DepthEnable = FALSE;
+    depthDesc.StencilEnable = FALSE;
+    psoDesc.DepthStencilState = depthDesc;
+
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&lightingPSO));
+    MASSERT(SUCCEEDED(hr), "Failed to create Lighting PSO");
+
+    OutputDebugStringA("Lighting PSO created successfully!\n");
+}
+
 void Shader::InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath)
 {
     CompileShader(csPath, "CSMain", "cs_5_1", computeShader);
@@ -73,6 +149,16 @@ ID3D12PipelineState* Shader::GetOpaquePSO() const
 ID3D12PipelineState* Shader::GetTransparentPSO() const
 {
     return transparentPSO.Get();
+}
+
+ID3D12PipelineState* Shader::GetGBufferPSO() const
+{
+    return gBufferPSO.Get();
+}
+
+ID3D12PipelineState* Shader::GetLightingPSO() const
+{
+    return lightingPSO.Get();
 }
 
 ID3D12PipelineState* Shader::GetComputePSO() const
