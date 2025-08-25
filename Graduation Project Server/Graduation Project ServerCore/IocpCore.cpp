@@ -45,13 +45,13 @@ bool IocpCore::Dispatch(unsigned int timeOutMs)
 		DWORD ioSize = entry.dwNumberOfBytesTransferred;
 		
 		if (nullptr == expOver) {
-			LOG_WRN("Already ShutDown");
+			LOG_WRN("ExpOver Already ShutDown");
 			SetLastError(ERROR_OPERATION_ABORTED);
 			continue;
 		}
 
 		if (nullptr == iocpObject) {
-			LOG_WRN("Already ShutDown");
+			LOG_WRN("IocpObject Already ShutDown");
 			delete expOver;
 			continue;
 		}

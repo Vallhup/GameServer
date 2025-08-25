@@ -14,9 +14,9 @@ void SessionManager::AddSession(SOCKET clientSocket)
 		{
 			OnSessionPacket(sessionId, packet);
 		});
-	session->RegisterRecv();
 
 	_gameCtx.GetIocpCore().Register(session);
+	session->RegisterRecv();
 	{
 		std::unique_lock lock{ _mutex };
 		_sessions.insert(std::make_pair(_nextSessionId++, session));

@@ -13,11 +13,7 @@ enum class MouseButton
 class Input final
 {
 public:
-	Input() = default;
-	Input(NetworkManager* net) : network(net) {}
-	~Input() { delete network; }
-
-public:
+	static void Initialize(NetworkManager* net) { Get().network = net; }
 	static Input& Get();
 
 	void Renew();

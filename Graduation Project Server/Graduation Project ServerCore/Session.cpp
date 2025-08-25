@@ -31,12 +31,13 @@ void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 void Session::RegisterRecv()
 {
 	if (not _connected.load() or _socket == INVALID_SOCKET) {
+		DisConnect();
 		return;
 	}
 
 	DWORD recvFlag{ 0 };
 	int wsaBufCount = _recvOver.SetBuffers();
-	int result = WSARecv(_socket, _recvOver._wsaBuf.data(), wsaBufCount, NULL, &recvFlag, reinterpret_cast<LPWSAOVERLAPPED>(&_recvOver), NULL);
+	int result = WSARecv(_socket, _recvOver._wsaBuf.data(), wsaBufCount, NULL, &recvFlag, static_cast<LPWSAOVERLAPPED>(&_recvOver), NULL);
 	if (SOCKET_ERROR == result) {
 		int error = WSAGetLastError();
 		if (WSA_IO_PENDING != error) {
@@ -67,7 +68,14 @@ void Session::RegisterSend(const std::vector<char>& data)
 
 void Session::ProcessRecv(DWORD numBytes)
 {
-	if (numBytes == 0 or not _recvOver._buffer.Write(nullptr, numBytes)) {
+	if (numBytes == 0) {
+		LOG_INF("Session[%d] DisConnected", _id);
+		DisConnect();
+		return;
+	}
+
+	if (not _recvOver._buffer.Write(nullptr, numBytes)) {
+		LOG_ERR("RecvBuffer overflow in Session[%d]", _id);
 		DisConnect();
 		return;
 	}
@@ -89,6 +97,8 @@ void Session::ProcessSend()
 
 void Session::DisConnect()
 {
+	LOG_DBG("Session[%d] DisConnect", _id);
+
 	bool expected{ true };
 	if (_connected.compare_exchange_strong(expected, false)) {
 		shutdown(_socket, SD_BOTH);
@@ -122,7 +132,7 @@ void Session::InternalSend()
 	sendOver->SetBuffers(std::move(packets));
 
 	DWORD bytesSent{ 0 };
-	int result = WSASend(_socket, sendOver->_wsaBufs.data(), static_cast<DWORD>(sendOver->_wsaBufs.size()), &bytesSent, 0, reinterpret_cast<LPWSAOVERLAPPED>(sendOver), NULL);
+	int result = WSASend(_socket, sendOver->_wsaBufs.data(), static_cast<DWORD>(sendOver->_wsaBufs.size()), &bytesSent, 0, static_cast<LPWSAOVERLAPPED>(sendOver), NULL);
 	if (SOCKET_ERROR == result) {
 		int error = WSAGetLastError();
 		if ((error == WSAECONNRESET) or (error == WSAENOTCONN) or (error == WSAESHUTDOWN)) {

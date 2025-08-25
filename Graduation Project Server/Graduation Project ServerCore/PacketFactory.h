@@ -9,4 +9,3 @@ public:
 public:
 	static std::vector<char> SCMovePakcet();
 };
-

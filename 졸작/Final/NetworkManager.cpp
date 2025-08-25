@@ -13,14 +13,14 @@ void NetworkManager::Initialize(const char* IP, u_short port)
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
-		cout << "WSAStartup failed!" << endl;
+		OutputDebugStringA("WSAStartup Failed");
 		return;
 	}
 
 	clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (clientSocket == INVALID_SOCKET)
 	{
-		cout << "Socket creation failed!" << endl;
+		OutputDebugStringA("INVALID SOCKET");
 		WSACleanup();
 		return;
 	}
@@ -32,6 +32,8 @@ void NetworkManager::Initialize(const char* IP, u_short port)
 
 	if (connect(clientSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
 	{
+		int error = WSAGetLastError();
+		OutputDebugStringA(("connect failed: " + std::to_string(error) + "\n").c_str());
 		closesocket(clientSocket);
 		WSACleanup();
 		return;
@@ -41,6 +43,8 @@ void NetworkManager::Initialize(const char* IP, u_short port)
 	ioctlsocket(clientSocket, FIONBIO, &nonBlocking);
 
 	isConnected = true;
+
+	OutputDebugStringA("Initialize Success");
 }
 
 void NetworkManager::Update()
@@ -57,15 +61,17 @@ void NetworkManager::Update()
 			return;
 		}
 
-		else {
-			std::cerr << "recv() error : " << error << std::endl;
+		else if (WSAECONNRESET == error or WSAENOTCONN == error) {
 			Release();
+			return;
+		}
+
+		else {
 			return;
 		}
 	}
 
 	else if (0 >= recvLen) {
-		std::cout << "Server DisConneted\n";
 		Release();
 		return;
 	}
@@ -74,51 +80,63 @@ void NetworkManager::Update()
 		recvBuffer.insert(recvBuffer.end(), tempBuffer, tempBuffer + recvLen);
 
 		while (true) {
-			if (recvBuffer.size() < sizeof(unsigned char)) {
+			if (recvBuffer.size() < sizeof(uint16_t)) {
 				break;
 			}
 
-			unsigned char packetSize = static_cast<unsigned char>(recvBuffer[0]);
+			uint16_t packetSize;
+			memcpy(&packetSize, recvBuffer.data(), sizeof(uint16_t));
 
-			if (packetSize <= 0 or packetSize > 32) {
-				std::cerr << "Invalid Packet Size : " << (int)packetSize << std::endl;
+			if (packetSize <= 0 or packetSize > 4096) {
 				recvBuffer.clear();
 				break;
 			}
 
-			if (recvBuffer.size() < packetSize) {
+			if (recvBuffer.size() < sizeof(uint16_t) + packetSize) {
 				break;
 			}
 
-			std::vector<char> packet(recvBuffer.begin(), recvBuffer.begin() + packetSize);
-			recvBuffer.erase(recvBuffer.begin(), recvBuffer.begin() + packetSize);
+			std::vector<char> packet(recvBuffer.begin() + sizeof(uint16_t), recvBuffer.begin() + sizeof(uint16_t) + packetSize);
+			recvBuffer.erase(recvBuffer.begin(), recvBuffer.begin() + sizeof(uint16_t) + packetSize);
 
 			ProcessPacket(packet);
 		}
 	}
 }
 
-void NetworkManager::Release()
+void NetworkManager::Release()	
 {
+	
 	if (isConnected)
 	{
 		closesocket(clientSocket);
 		isConnected = false;
-
-		cout << "Socket closed!" << endl;
 	}
+	OutputDebugStringA("Release\n");
 	WSACleanup();
 }
 
 void NetworkManager::Send(const std::vector<char>& packet)
 {
-	if (SOCKET_ERROR == send(clientSocket, packet.data(), packet.size(), 0)) {
+	if (not isConnected or clientSocket == INVALID_SOCKET) {
+		OutputDebugStringA("Socket Invalid\n");
+		OutputDebugStringA(to_string(clientSocket).c_str());
+		return;
+	}
+
+	int sent = send(clientSocket, packet.data(), packet.size(), 0);
+	if (SOCKET_ERROR == sent) {
 		int error = WSAGetLastError();
-		if (WSAEWOULDBLOCK == error) {
-			// 송신 버퍼 OverFlow -> 별도 처리 X (패킷 누락)
-		}
-		else {
+		std::string msg = "send() failed, error=" + std::to_string(error) + "\n";
+		OutputDebugStringA(msg.c_str());
+
+		if (WSAEWOULDBLOCK != error) {
+			OutputDebugStringA("Fucking Release ");
 			Release();
+		}
+
+		else {
+			OutputDebugStringA(to_string(packet.size()).c_str());
 		}
 	}
 }
@@ -127,12 +145,13 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 {
 	if (packet.size() < 2) return;
 
+	// TODO : Packet Parsing
+
 	const unsigned char packetType = packet[1];
 	switch (packetType) {
 		// TODO : Packet 처리
 
 	default:
-		std::cout << "[UNKNOWN PACKET] Type: " << (int)packetType << std::endl;
 		break;
 	}
 }

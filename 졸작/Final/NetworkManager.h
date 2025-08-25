@@ -4,7 +4,7 @@ class NetworkManager {
 	static constexpr u_short PORT_NUM{ 7000 };
 
 public:
-	NetworkManager() = default;
+	NetworkManager() : clientSocket(INVALID_SOCKET), isConnected(false) {}
 	~NetworkManager();
 
 public:

@@ -10,6 +10,8 @@
 #include "Importer.h"
 #include "Camera.h"
 
+#include "Input.h"
+
 Engine& Engine::Get()
 {
     static Engine engine;
@@ -33,6 +35,8 @@ void Engine::Initialize(HWND hwnd)
     nManager->Initialize();
 
     graphics->FlushCommandQueue();
+
+    Input::Initialize(nManager.get());
 }
 
 void Engine::Update(const float deltaTime)

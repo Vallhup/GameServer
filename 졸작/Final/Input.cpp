@@ -5,7 +5,7 @@
 
 Input& Input::Get()
 {
-	static Input input{ new NetworkManager };
+	static Input input;
 	return input;
 }
 
