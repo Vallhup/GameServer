@@ -58,7 +58,7 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 		{
 			if (action == GLFW_PRESS)
 			{
-				input->graphics->DebugAllCharacterPositions();
+				//input->graphics->DebugAllCharacterPositions();
 				if (input->sceneType == SceneType::Scene1)
 					input->mainCat->GoToEndPosition();
 			}
@@ -144,19 +144,19 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 			}
 		}
 		break;
-	case GLFW_KEY_V:
-		if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
-		{
-			if (action == GLFW_PRESS)
-			{
-				input->camera->ChangeViewType();
+	//case GLFW_KEY_V:
+	//	if ((input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead())/* || finish*/)
+	//	{
+	//		if (action == GLFW_PRESS)
+	//		{
+	//			input->camera->ChangeViewType();
 
-				if (input->camera->GetViewType()) {
-					input->camera->SetInitialDirection(mouseDir);
-				}
-			}
-		}
-		break;
+	//			if (input->camera->GetViewType()) {
+	//				input->camera->SetInitialDirection(mouseDir);
+	//			}
+	//		}
+	//	}
+	//	break;
 	case GLFW_KEY_0:
 		if (input->camera->Get_start_pos() == 0 && !input->mainCat->GetDead()/* && !finish*/)
 		{
