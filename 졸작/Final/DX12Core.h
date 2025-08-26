@@ -22,7 +22,7 @@ struct LightData {
 struct LightConstants {
 	int lightCount;
 	XMFLOAT3 padding;
-	LightData lights[50]; // 최대 16개 조명
+	LightData lights[50]; // 조명 60개부터 렉걸린다 이유 해결 안됨
 };
 
 class RootSignature;

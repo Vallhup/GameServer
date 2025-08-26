@@ -94,6 +94,9 @@
     <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\PacketFactory.cpp">
       <Filter>Protocol</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -185,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\PacketFactory.h">
       <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

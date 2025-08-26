@@ -9,6 +9,7 @@
 #include "Material.h"
 #include "VertexIndexBuffer.h"
 #include "Animator.h"
+#include "ResourceManager.h"
 
 UINT MeshRenderer::idCounter = 0;
 
@@ -219,12 +220,38 @@ void MeshRenderer::RenderMultiMaterialToGBuffer(DX12Core& core, const XMMATRIX& 
 
 void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
 {
-	Importer importer;
+    auto startTime = chrono::high_resolution_clock::now();
 
+    auto cachedMesh = GET(ResourceManager).GetCachedMesh(path);
+    if (cachedMesh) {
+        vertexIndexBuffer = cachedMesh->vertexIndexBuffer;
+        subMeshes = cachedMesh->subMeshes;
+        originalMaterialData = cachedMesh->originalMaterialData;
+        
+        if (originalMaterialData.size() > 1) {
+            SetMultiMaterials(core, originalMaterialData);
+        }
+        else {
+            SetSingleMaterial(core, originalMaterialData);
+        }
+
+        auto animator = GetGameObject()->GetComponent<Animator>();
+        if (animator && cachedMesh->hasAnimation) {
+            animator->SetAnimationData(core, cachedMesh->animationClips);
+            animator->SetSkeletonData(cachedMesh->skeletonData);
+        }
+
+        auto endTime = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime);
+        OutputDebugStringA(("CACHE HIT - SetMesh time: " + to_string(duration.count()) + "ms\n").c_str());
+        return;
+    }
+
+	Importer importer;
 	if (importer.LoadModel(path))
 	{
 		const MeshData& mesh = importer.GetMesh();
-		vertexIndexBuffer = make_unique<VertexIndexBuffer>();
+		vertexIndexBuffer = make_shared<VertexIndexBuffer>();
 		vertexIndexBuffer->Initialize(
             core.GetDevice(),
             core.GetGraphicsCmdList(),
@@ -250,6 +277,13 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
         if (animator) {
             animator->LoadAnimationFromImporter(core, importer);
         }
+
+        GET(ResourceManager).CacheMesh(path, vertexIndexBuffer, subMeshes, originalMaterialData, 
+            mesh.hasAnimation, importer.GetAnimations(), importer.GetSkeleton());
+
+        auto endTime = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime);
+        OutputDebugStringA(("CACHE MISS - SetMesh time: " + to_string(duration.count()) + "ms\n").c_str());
 
 		OutputDebugStringA("FBX Mesh created for rendering!\n");
 	}

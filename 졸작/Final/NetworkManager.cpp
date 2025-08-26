@@ -119,8 +119,8 @@ void NetworkManager::Release()
 void NetworkManager::Send(const std::vector<char>& packet)
 {
 	if (not isConnected or clientSocket == INVALID_SOCKET) {
-		OutputDebugStringA("Socket Invalid\n");
-		OutputDebugStringA(to_string(clientSocket).c_str());
+		//OutputDebugStringA("Socket Invalid\n");
+		//OutputDebugStringA(to_string(clientSocket).c_str());
 		return;
 	}
 

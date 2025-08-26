@@ -34,7 +34,7 @@ public:
 	void DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData> mats);
 
 private:
-	unique_ptr<VertexIndexBuffer> vertexIndexBuffer;  
+	shared_ptr<VertexIndexBuffer> vertexIndexBuffer;  
 
 	shared_ptr<Material> material;				// 단일 material
 	vector<shared_ptr<Material>> materials;		// 다중 material

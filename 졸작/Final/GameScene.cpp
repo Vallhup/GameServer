@@ -20,6 +20,10 @@ void GameScene::Release()
 void GameScene::Reset()
 {
 	// TODO: 씬 데이터 리셋 코드 추가
+	dragon.reset();
+	knight.reset();
+	gameObjects.clear();
+
 	Material::Cleanup();
 	OutputDebugStringA("GameScene Data has been deleted!! \n----------------------------------------\n");
 }
