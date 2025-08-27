@@ -55,25 +55,25 @@ public:
 
     // 애니메이션
     void SaveAnimations();
-    void UpdateAnimation(float deltaTime);
+    void UpdateAnimation();
 
     // 로컬 (Scene1) 전용
     void UpdateLocalPlayerMovement(float deltaTime);
     void UpdateLocalPlayerState();
     void LocalMove(float deltaTime);
-    void UpdateLocalBullets(array<array<AlienCharacter*, 9>, 3>& aliens);
+    void UpdateLocalBullets(array<array<AlienCharacter*, 9>, 3>& aliens, const float deltaTime);
     void CreateLocalBullet();
     void CheckFireAnimationTiming();
     void CheckBulletAlienHit(int bulletIndex, array<array<AlienCharacter*, 9>, 3>& aliens);
     void CheckBulletWallHit(int bulletIndex);
-    void UpdateLocalPlayerRevive();
+    void UpdateLocalPlayerRevive(const float deltaTime);
     void CheckLocalEnd(array<array<AlienCharacter*, 9>, 3>& aliens);
     void ResetAllStates();
     void GoToEndPosition() { characterPos = glm::vec3(-45.0f, 0.0f, -40.0f); }  // 잠시 사용하기 위해 만든 함수
 
     // 공통 함수
     void UpdateAllPlayersMovement(float deltaTime);
-    void UpdateHitDecision();
+    void UpdateHitDecision(const float deltaTime);
     void SetSceneManager(SceneManager* sm) { sceneManager = sm; }
 
     // Getter
@@ -107,10 +107,10 @@ private:
 
     // 캐릭터 상태
     bool dying = { false }, dead = { false };
-    int hit_cnt = { 0 };
+    float hit_cnt = { 0 };
     bool firing = { false };
     int life = { 5 };       // local life
-    int reviveCount = { 300 };
+    float reviveCount = { 3.0f };
 
     // 입력
     bool _Right = { false }, _Left = { false }, _Top = { false }, _Bottom = { false };

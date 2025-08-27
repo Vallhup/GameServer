@@ -41,15 +41,23 @@ AlienCharacter::~AlienCharacter()
 	glDeleteBuffers(1, &aEBO);
 	glDeleteTextures(1, &aTexture);
 	glDeleteProgram(aShaderprogram);
+
+	for (int i = 0; i < MAX_BULLETS; ++i) {
+		delete bullets[i].bullet;
+	}
+
+	glDeleteVertexArrays(1, &lVAO);
+	glDeleteBuffers(1, &lVBO);
+	glDeleteProgram(lShaderprogram);
 }
 
 void AlienCharacter::Update(float deltaTime, MainCharacter* Cat)
 {
 	RotateAliens(Cat);
-	ChangeAnimation(deltaTime);
-	UpdateStateAndBehavior(Cat);
-	UpdateBullets(Cat);
-	UpdateHitDecision();
+	ChangeAnimation();
+	UpdateStateAndBehavior(Cat, deltaTime);
+	UpdateBullets(Cat, deltaTime);
+	UpdateHitDecision(deltaTime);
 }
 
 void AlienCharacter::Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap)
@@ -277,7 +285,7 @@ void AlienCharacter::RotateAliens(MainCharacter* Cat)
 	model = glm::rotate(model, viewingAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-void AlienCharacter::ChangeAnimation(float deltaTime)
+void AlienCharacter::ChangeAnimation()
 {
 	if (state == 0)
 	{
@@ -311,7 +319,7 @@ void AlienCharacter::ChangeAnimation(float deltaTime)
 	}
 }
 
-void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
+void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat, const float deltaTime)
 {
 	glm::vec3 pos = Cat->GetPosition();
 	glm::vec3 direction = glm::normalize(pos - alienPos);
@@ -326,7 +334,7 @@ void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
 	}
 	else if (state == 1)
 	{
-		MoveToward(Cat);
+		MoveToward(Cat, deltaTime);
 	}
 	else if (state == 2)
 	{
@@ -344,7 +352,8 @@ void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
 				shotFired[interval] = true;  // 해당 구간 발사 완료 표시
 			}
 		}
-		else if (alien_CurrentAnim->CurrentTime + 10 >= alien_CurrentAnim->Duration)
+		float progress = alien_CurrentAnim->CurrentTime / alien_CurrentAnim->Duration;
+		if (progress >= 0.95f)
 		{
 			for (int i = 0; i < 10; ++i)
 			{
@@ -370,7 +379,8 @@ void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
 	}
 	else if (state == 3)
 	{
-		if (alien_CurrentAnim->CurrentTime + 10 >= alien_CurrentAnim->Duration)
+		float progress = alien_CurrentAnim->CurrentTime / alien_CurrentAnim->Duration;
+		if (progress >= 0.95f)
 		{
 			if (distance > 4.0f && distance < 13.0f)
 			{
@@ -384,14 +394,15 @@ void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat)
 	}
 	else if (state == 4)
 	{
-		if (alien_CurrentAnim->CurrentTime + 10 >= alien_CurrentAnim->Duration)
+		float progress = alien_CurrentAnim->CurrentTime / alien_CurrentAnim->Duration;
+		if (progress >= 0.95f)
 		{
 			dead = true;
 		}
 	}
 }
 
-void AlienCharacter::MoveToward(MainCharacter* Cat)
+void AlienCharacter::MoveToward(MainCharacter* Cat, const float deltaTime)
 {
 	if (Cat->GetDead())
 	{
@@ -404,32 +415,27 @@ void AlienCharacter::MoveToward(MainCharacter* Cat)
 
 	glm::vec3 pos = Cat->GetPosition();
 	float distance = glm::length(glm::vec2(pos.x - alienPos.x, pos.z - alienPos.z));
-	glm::vec3 movement = glm::vec3(0, 0, 0);
-	float Move_SPEED = 0.01f;
+	glm::vec3 direction = glm::normalize(glm::vec3(pos.x - alienPos.x, 0.0f, pos.z - alienPos.z));
 
-	if (pos.z > alienPos.z)
-		movement.z += Move_SPEED;
-	if (pos.z < alienPos.z)
-		movement.z -= Move_SPEED;
-	if (pos.x > alienPos.x)
-		movement.x += Move_SPEED;
-	if (pos.x < alienPos.x)
-		movement.x -= Move_SPEED;
-	
-	glm::vec3 newPos = alienPos + movement;
+	float Move_SPEED = 2.5f;
+	glm::vec3 movement = direction * Move_SPEED * deltaTime;
 
-	if (!GET_SINGLE(CollisionManager)->IsInsideCollisionBox(newPos.x, newPos.z))
-		alienPos = newPos;
-	else
-	{
-		auto* collisionManager = GET_SINGLE(CollisionManager);
+	if (distance > 0.1f) {
+        glm::vec3 newPos = alienPos + movement;
 
-		if (movement.x != 0 && !collisionManager->IsInsideCollisionBox(alienPos.x + movement.x, alienPos.z))
-			alienPos.x += movement.x;
+        if (!GET_SINGLE(CollisionManager)->IsInsideCollisionBox(newPos.x, newPos.z))
+            alienPos = newPos;
+        else
+        {
+            auto* collisionManager = GET_SINGLE(CollisionManager);
 
-		if (movement.z != 0 && !collisionManager->IsInsideCollisionBox(alienPos.x, alienPos.z + movement.z))
-			alienPos.z += movement.z;
-	}
+            if (movement.x != 0 && !collisionManager->IsInsideCollisionBox(alienPos.x + movement.x, alienPos.z))
+                alienPos.x += movement.x;
+
+            if (movement.z != 0 && !collisionManager->IsInsideCollisionBox(alienPos.x, alienPos.z + movement.z))
+                alienPos.z += movement.z;
+        }
+    }
 
 	if (distance <= 4.0f)
 	{
@@ -462,13 +468,13 @@ void AlienCharacter::DeactivateBullets()
 	}
 }
 
-void AlienCharacter::UpdateBullets(MainCharacter* Cat)
+void AlienCharacter::UpdateBullets(MainCharacter* Cat, const float deltaTime)
 {
 	for (int i = 0; i < MAX_BULLETS; ++i)
 	{
 		if (bullets[i].isActive)
 		{
-			bullets[i].bullet->BulletUpdate();
+			bullets[i].bullet->BulletUpdate(deltaTime, 10.0f);
 
 			if (bullets[i].bullet->IsCollapsed(Cat))
 			{
@@ -492,10 +498,10 @@ void AlienCharacter::CheckBulletWallHit(int bulletIndex)
 	}
 }
 
-void AlienCharacter::UpdateHitDecision()
+void AlienCharacter::UpdateHitDecision(const float deltaTime)
 {
 	if (hit_cnt > 0)
-		hit_cnt--;
+		hit_cnt -= deltaTime;
 	else
 	{
 		if (hitcolor != glm::vec4(1.0f, 1.0f, 1.0f, 1.0f))
@@ -512,6 +518,6 @@ void AlienCharacter::UpdateHitDecision()
 void AlienCharacter::SetHit()
 {
 	life -= 1;
-	hit_cnt = 200;
+	hit_cnt = 2.0f;
 	hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
 }

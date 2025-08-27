@@ -22,7 +22,8 @@ void Engine::Update()
 
 	while (!glfwWindowShouldClose(window)) {
 		GET_SINGLE(Timer)->Update();
-		sceneManager->Update(window);
+		const float deltaTime = GET_SINGLE(Timer)->GetDeltaTime();
+		sceneManager->Update(window, deltaTime);
 		sceneManager->Render();
 
 		ShowFps();

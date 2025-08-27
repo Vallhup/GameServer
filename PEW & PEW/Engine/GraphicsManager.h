@@ -14,7 +14,7 @@ class GraphicsManager
 public:
 	void Init();
 	void InitPVPMap();
-	void Update(SceneType type);
+	void Update(SceneType type, const float deltaTime);
 	void Render(SceneType type);
 	void RenderFade(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& viewPos);
 	void RenderShadow(SceneType type);

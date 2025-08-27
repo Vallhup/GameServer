@@ -33,11 +33,11 @@ void Camera::Render()
         tpscrosshair->RenderCrosshair();
 }
 
-void Camera::Update()
+void Camera::Update(const float deltaTime)
 {
     if (start)
     {
-        Starting();
+        Starting(deltaTime);
     }
 
     HandleMouseMovement(cur_x, cur_y);
@@ -122,10 +122,10 @@ void Camera::HandleScroll(double yoffset)
     }
 }
 
-void Camera::Starting()
+void Camera::Starting(const float deltaTime)
 {
     if (start_pos > 0.0f)
-        start_pos -= 0.1f;
+        start_pos -= 25.0f * deltaTime;
     else if (start_pos < 0.0f)
     {
         start_pos = 0.0f;

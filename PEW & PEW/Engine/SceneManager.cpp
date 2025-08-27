@@ -15,15 +15,15 @@ void SceneManager::Init()
 	InitScene1();
 }
 
-void SceneManager::Update(GLFWwindow* window)
+void SceneManager::Update(GLFWwindow* window, const float deltaTime)
 {
-	TransitionUpdate();
+	TransitionUpdate(deltaTime);
 
 	if (currentScene == SceneType::Scene2)
 		UpdateScene2();
 
 	input->Update(window);
-	graphics->Update(currentScene);
+	graphics->Update(currentScene, deltaTime);
 }
 
 void SceneManager::Render()
@@ -36,11 +36,11 @@ void SceneManager::Release()
 	ReleaseScene2();
 }
 
-void SceneManager::TransitionUpdate()
+void SceneManager::TransitionUpdate(const float deltaTime)
 {
 	if (isTransitioning) {
 		Fade* fade = graphics->GetFade();
-		fade->AddFadeAlpha();
+		fade->AddFadeAlpha(deltaTime);
 
 		if (fade->GetFadeAlpha() >= 1.0f) {
 			input->SetMainCharacter(nullptr);
@@ -50,17 +50,25 @@ void SceneManager::TransitionUpdate()
 			ReleaseScene1();
 			InitScene2(localCharType);
 			isTransitioning = false;
+			isSceneLoaded = false;
 		}
 
 		if (!input->GetInputBlock())
 			input->SetInputBlock(true);
+	}
+	else if (!isSceneLoaded)
+	{
+		loadingTimer -= deltaTime;
+
+		if (loadingTimer <= 0.0f)
+			isSceneLoaded = true;
 	}
 	else
 	{
 		Fade* fade = graphics->GetFade();
 
 		if (fade->GetFadeAlpha() > 0.0f)
-			fade->SubtractFadeAlpha();
+			fade->SubtractFadeAlpha(deltaTime);
 
 		if (fade->GetFadeAlpha() <= 0.0f)
 		{

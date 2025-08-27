@@ -67,8 +67,8 @@ void MainCharacter::Init(int type)
 void MainCharacter::Update(float deltaTime)
 {
     UpdateAllPlayersMovement(deltaTime);
-    UpdateAnimation(deltaTime);
-    UpdateHitDecision();
+    UpdateAnimation();
+    UpdateHitDecision(deltaTime);
     UpdateBulletsFromServer(deltaTime);
 }
 
@@ -78,10 +78,10 @@ void MainCharacter::Update(float deltaTime, array<array<AlienCharacter*, 9>, 3>&
     UpdateLocalPlayerState();
     UpdateLocalPlayerMovement(deltaTime);
     CheckFireAnimationTiming();
-    UpdateLocalBullets(aliens);
-    UpdateAnimation(deltaTime);
-    UpdateHitDecision();
-    UpdateLocalPlayerRevive();
+    UpdateLocalBullets(aliens, deltaTime);
+    UpdateAnimation();
+    UpdateHitDecision(deltaTime);
+    UpdateLocalPlayerRevive(deltaTime);
     CheckLocalEnd(aliens);
 }
 
@@ -300,12 +300,12 @@ void MainCharacter::LocalMove(float deltaTime)
     }
 }
 
-void MainCharacter::UpdateLocalBullets(array<array<AlienCharacter*, 9>, 3>& aliens)
+void MainCharacter::UpdateLocalBullets(array<array<AlienCharacter*, 9>, 3>& aliens, const float deltaTime)
 {
     for (int i = 0; i < MAX_BULLETS; ++i)
     {
         if (bullets[i].isActive && bullets[i].bullet) {
-            bullets[i].bullet->BulletUpdate();
+            bullets[i].bullet->BulletUpdate(deltaTime, 20.0f);
             CheckBulletAlienHit(i, aliens);
             CheckBulletWallHit(i);
         }
@@ -333,24 +333,23 @@ void MainCharacter::CreateLocalBullet()
 void MainCharacter::CheckFireAnimationTiming() 
 {
     std::string currentAnim = animLibrary->GetCurrentAnimation();
-
     if (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun") {
-        float firetimer = player_CurrentAnim->Duration * 0.56f;
+        float progress = player_CurrentAnim->CurrentTime / player_CurrentAnim->Duration;
 
-        if (player_CurrentAnim->CurrentTime >= firetimer && !localBulletFired[0]) {
+        if (progress >= 0.56f && !localBulletFired[0]) {
             CreateLocalBullet();
             localBulletFired[0] = true;
         }
-        else if (player_CurrentAnim->CurrentTime >= firetimer + 150.0f && !localBulletFired[1]) {
+        else if (progress >= 0.65f && !localBulletFired[1]) {  
             CreateLocalBullet();
             localBulletFired[1] = true;
         }
-        else if (player_CurrentAnim->CurrentTime >= firetimer + 300.0f && !localBulletFired[2]) {
+        else if (progress >= 0.75f && !localBulletFired[2]) {  
             CreateLocalBullet();
             localBulletFired[2] = true;
         }
 
-        if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration) {
+        if (progress >= 0.95f) {
             localBulletFired[0] = localBulletFired[1] = localBulletFired[2] = false;
         }
     }
@@ -382,11 +381,11 @@ void MainCharacter::CheckBulletWallHit(int bulletIndex)
     }
 }
 
-void MainCharacter::UpdateLocalPlayerRevive()
+void MainCharacter::UpdateLocalPlayerRevive(const float deltaTime)
 {
     if (dead)
     {
-        reviveCount -= 1;
+        reviveCount -= deltaTime;
         cout << reviveCount << '\n';
     }
 
@@ -397,7 +396,7 @@ void MainCharacter::UpdateLocalPlayerRevive()
         dead = false;
         characterPos = glm::vec3(-37.3051f, 0.0f, 42.5001f);
         targetPos = characterPos;
-        reviveCount = 300;      // 부활 시간 3초
+        reviveCount = 3.0f;      // 부활 시간 3초
     }
 }
 
@@ -440,10 +439,10 @@ void MainCharacter::UpdateAllPlayersMovement(float deltaTime)
     }
 }
 
-void MainCharacter::UpdateHitDecision()
+void MainCharacter::UpdateHitDecision(const float deltaTime)
 {
     if (hit_cnt > 0)
-        hit_cnt--;
+        hit_cnt -= deltaTime;
     else
     {
         if (hitcolor != glm::vec4(1.0f, 1.0f, 1.0f, 1.0f))
@@ -462,7 +461,7 @@ void MainCharacter::UpdateHitDecision()
 void MainCharacter::SetHit()
 {
     life -= 1;
-    hit_cnt = 200;
+    hit_cnt = 2.0f;
     hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
 }
 
@@ -484,7 +483,7 @@ void MainCharacter::SaveAnimations()
     animLibrary->ChangeAnimation("Idle", *player_CurrentAnim);
 }
 
-void MainCharacter::UpdateAnimation(float deltaTime)
+void MainCharacter::UpdateAnimation()
 {
     if (dying)
     {
@@ -492,7 +491,8 @@ void MainCharacter::UpdateAnimation(float deltaTime)
             animLibrary->ChangeAnimation("Die", *player_CurrentAnim);
         else
         {
-            if (player_CurrentAnim->CurrentTime + 10 >= player_CurrentAnim->Duration)
+            float progress = player_CurrentAnim->CurrentTime / player_CurrentAnim->Duration;
+            if (progress >= 0.95f)
                 SetDead(true);
         }
 
@@ -559,7 +559,8 @@ void MainCharacter::UpdateAnimation(float deltaTime)
 
     if (animLibrary->GetCurrentAnimation() == "FireRun")
     {
-        if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
+        float progress = player_CurrentAnim->CurrentTime / player_CurrentAnim->Duration;
+        if (progress >= 0.95f)
         {
             if (!firing)
             {
@@ -589,7 +590,8 @@ void MainCharacter::UpdateAnimation(float deltaTime)
     }
     else if (animLibrary->GetCurrentAnimation() == "FireWalk")
     {
-        if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
+        float progress = player_CurrentAnim->CurrentTime / player_CurrentAnim->Duration;
+        if (progress >= 0.95f)
         {
             if (!firing)
             {
@@ -619,7 +621,8 @@ void MainCharacter::UpdateAnimation(float deltaTime)
     }
     else if (animLibrary->GetCurrentAnimation() == "Fire")
     {
-        if (player_CurrentAnim->CurrentTime + 10.0f >= player_CurrentAnim->Duration)
+        float progress = player_CurrentAnim->CurrentTime / player_CurrentAnim->Duration;
+        if (progress >= 0.95f)
         {
             if (!firing)
             {
@@ -670,7 +673,7 @@ void MainCharacter::ReviveFromPacket(float x, float y, float z)
 
 void MainCharacter::DamagedFromPacket()
 {
-    hit_cnt = 200;
+    hit_cnt = 2.0f;
     hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
 }
 

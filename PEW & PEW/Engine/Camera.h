@@ -26,11 +26,11 @@ public:
     ~Camera();
 
     void Render();
-    void Update();
+    void Update(const float deltaTime);
     void HandleAltKey(bool pressed);
     void HandleMouseMovement(double cur_x, double cur_y);
     void HandleScroll(double yoffset);
-    void Starting();
+    void Starting(const float deltaTime);
 
     glm::mat4 Get1stPersonViewMatrix(const glm::vec3& targetPos);
     glm::mat4 Get3rdPersonViewMatrix(const glm::vec3& targetPos);
@@ -74,7 +74,7 @@ private:
     double first_cur_y = { 0.0f };
     float camera_horizontal_angle = { 0.0f };
     float camera_vertical_angle = { 0.0f };
-    float start_pos = { 30.0f };
+    float start_pos = { 3.0f };
     float finish_pos = { 0.0f };
 
     bool FirstPersonView = { false };

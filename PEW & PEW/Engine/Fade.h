@@ -9,8 +9,8 @@ public:
 	void Release();
 
 	float GetFadeAlpha() const { return fadeAlpha; }
-	void AddFadeAlpha() { fadeAlpha += 0.001f; }
-	void SubtractFadeAlpha() { fadeAlpha -= 0.001f; }
+	void AddFadeAlpha(const float deltaTime) { fadeAlpha += 0.25f * deltaTime; }
+	void SubtractFadeAlpha(const float deltaTime) { fadeAlpha -= 0.25f * deltaTime; }
 
 private:
 	void CreateQuad();

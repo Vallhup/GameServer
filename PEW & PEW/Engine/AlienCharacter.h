@@ -33,16 +33,16 @@ public:
 	void SetupShaders();
 
 	void RotateAliens(MainCharacter* Cat);
-	void ChangeAnimation(float deltaTime);
-	void UpdateStateAndBehavior(MainCharacter* Cat);
-	void MoveToward(MainCharacter* Cat);
+	void ChangeAnimation();
+	void UpdateStateAndBehavior(MainCharacter* Cat, const float deltaTime);
+	void MoveToward(MainCharacter* Cat, const float deltaTime);
 
 	void ActivateBullets();
 	void DeactivateBullets();
-	void UpdateBullets(MainCharacter* Cat);
+	void UpdateBullets(MainCharacter* Cat, const float deltaTime);
 	void CheckBulletWallHit(int bulletIndex);
 
-	void UpdateHitDecision();
+	void UpdateHitDecision(const float deltaTime);
 	void SetHit();
 	void SetDying() { dying = true; }
 
@@ -61,7 +61,7 @@ private:
 	bool shotFired[10] = { false };
 
 	glm::vec4 hitcolor = { 1.0f, 1.0f, 1.0f, 1.0f };
-	int hit_cnt = { 200 };
+	float hit_cnt = { 2.0f };
 
 	// 적 종류와 위치
 	int alienType;

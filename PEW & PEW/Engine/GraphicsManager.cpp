@@ -31,11 +31,9 @@ void GraphicsManager::InitPVPMap()
 	GET_SINGLE(StaticObjectManager)->InitPVPMap();
 }
 
-void GraphicsManager::Update(SceneType type)
+void GraphicsManager::Update(SceneType type, const float deltaTime)
 {
-	float deltaTime = GET_SINGLE(Timer)->GetDeltaTime();
-
-	camera->Update();
+	camera->Update(deltaTime);
 
 	int scenetype = static_cast<int>(type);
 

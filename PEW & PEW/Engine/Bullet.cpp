@@ -238,9 +238,9 @@ void Bullet::CatBulletUpdateFromServer(float deltaTime)
 	model = glm::scale(model, glm::vec3(1.5f, 1.5f, 1.5f));
 }
 
-void Bullet::BulletUpdate()
+void Bullet::BulletUpdate(const float deltaTime, const float bulletspeed)
 {
-	position += direction * bulletSpeed;
+	position += direction * bulletspeed * deltaTime;
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
