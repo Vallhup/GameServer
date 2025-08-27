@@ -325,8 +325,8 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 			else
 			{
 				AnimInfo* currentAnimInfo = mainCat->GetCurrentAnim();
-
-				if (currentAnimInfo->CurrentTime + 50.0f >= currentAnimInfo->Duration)
+				float progress = currentAnimInfo->CurrentTime / currentAnimInfo->Duration;
+				if (progress >= 0.95f)
 				{
 					// 첫 공격 시작
 					isAttacking = true;
@@ -343,8 +343,8 @@ void Input::CheckContinuousAttack(GLFWwindow* window)
 			if (isFireAnim)
 			{
 				AnimInfo* currentAnimInfo = mainCat->GetCurrentAnim();
-
-				if (currentAnimInfo->CurrentTime + 50.0f >= currentAnimInfo->Duration)
+				float progress = currentAnimInfo->CurrentTime / currentAnimInfo->Duration;
+				if (progress >= 0.95f)
 				{
 					if (!wasFireAnimation)
 					{
