@@ -55,20 +55,20 @@ bool RecvBuffer::Write(const char* data, int dataSize)
 	return true;
 }
 
-bool RecvBuffer::Peek(char* outBuffer, int size) const
+bool RecvBuffer::Peek(void* outBuffer, int size) const
 {
 	if (size <= 0) return false;
-	if (size > GetFreeSize()) {
+	if (size > GetUsedSize()) {
 		LOG_WRN("RecvBuffer::Write overflow (size: %d, free: %d)", size, GetFreeSize());
 		return false;
 	}
 
-	int	sizeToEnd = static_cast<int>(_buffer.size()) - _writePos;
+	int	sizeToEnd = static_cast<int>(_buffer.size()) - _readPos;
 	int firstCopySize = std::min<int>(size, sizeToEnd);
 	int secondCopySize = size - firstCopySize;
 
 	std::memcpy(outBuffer, &_buffer[_readPos], firstCopySize);
-	std::memcpy(outBuffer + firstCopySize, &_buffer[0], secondCopySize);
+	std::memcpy(static_cast<char*>(outBuffer) + firstCopySize, &_buffer[0], secondCopySize);
 
 	return true;
 }
@@ -81,12 +81,14 @@ bool RecvBuffer::Read(char* readBuffer, int readSize)
 		return false;
 	}
 
-	int sizeToEnd = static_cast<int>(_buffer.size()) - _readPos;
-	int firstCopySize = std::min<int>(readSize, sizeToEnd);
-	int secondCopySize = readSize - firstCopySize;
+	if (readBuffer != nullptr) {
+		int sizeToEnd = static_cast<int>(_buffer.size()) - _readPos;
+		int firstCopySize = std::min<int>(readSize, sizeToEnd);
+		int secondCopySize = readSize - firstCopySize;
 
-	std::memcpy(readBuffer, &_buffer[_readPos], firstCopySize);
-	std::memcpy(readBuffer + firstCopySize, &_buffer[0], secondCopySize);
+		std::memcpy(readBuffer, &_buffer[_readPos], firstCopySize);
+		std::memcpy(readBuffer + firstCopySize, &_buffer[0], secondCopySize);
+	}
 
 	_readPos = (_readPos + readSize) % static_cast<int>(_buffer.size());
 

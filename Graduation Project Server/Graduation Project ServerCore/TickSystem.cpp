@@ -15,8 +15,8 @@ void TickSystem::Deregister(ITickable* t)
 
 void TickSystem::Tick(float deltaTime)
 {
-	for (auto tickable : _tickables) {
-		if(tickable->TickEnable()) {
+	for (auto& tickable : _tickables) {
+		if (tickable->TickEnable()) {
 			tickable->Tick(deltaTime);
 		}
 	}

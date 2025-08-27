@@ -79,6 +79,7 @@
 #include "MainInstance.h"
 #include "BossInstance.h"
 #include "PvpInstance.h"
+#include "TestInstance.h"
 
 #include "UserRepository.h"
 

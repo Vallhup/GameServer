@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "BossInstance.h"
 
-void BossInstance::Update(float deltaTime)
+void BossInstance::Start()
 {
-	// TODO : Object Update
+	// TODO : Reosurce Setting
 }
 
 void BossInstance::LoadStaticGameObject()

@@ -1,5 +1,9 @@
 #include "pch.h"
 #include "NetworkManager.h"
+#include "SceneManager.h"
+#include "Engine.h"
+#include "Camera.h"
+#include "ServerTestScene.h"
 
 NetworkManager::~NetworkManager()
 {
@@ -119,8 +123,6 @@ void NetworkManager::Release()
 void NetworkManager::Send(const std::vector<char>& packet)
 {
 	if (not isConnected or clientSocket == INVALID_SOCKET) {
-		//OutputDebugStringA("Socket Invalid\n");
-		//OutputDebugStringA(to_string(clientSocket).c_str());
 		return;
 	}
 
@@ -131,7 +133,6 @@ void NetworkManager::Send(const std::vector<char>& packet)
 		OutputDebugStringA(msg.c_str());
 
 		if (WSAEWOULDBLOCK != error) {
-			OutputDebugStringA("Fucking Release ");
 			Release();
 		}
 
@@ -143,15 +144,33 @@ void NetworkManager::Send(const std::vector<char>& packet)
 
 void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 {
-	if (packet.size() < 2) return;
+	Protocol::GamePacket gamePacket;
+	if (not gamePacket.ParseFromArray(packet.data(), packet.size())) {
+		OutputDebugStringA("GamePacket Parsing failed");
+		return;
+	}
 
-	// TODO : Packet Parsing
+	// TEMP : Server Test
+	if (SceneManager* sManager = GET(Engine).GetSceneManager()) {
+		if (Scene* scene = sManager->GetCurrentScene()) {
+			if (auto testScene = dynamic_cast<ServerTestScene*>(scene)) {
+				testScene->HandlePacket(gamePacket);
+			}
+		}
+	}
 
-	const unsigned char packetType = packet[1];
-	switch (packetType) {
-		// TODO : Packet Ã³¸®
+	/*const auto& header = gamePacket.header();
+	switch (header.type()) {
+	case Protocol::PacketType::SC_ADD: {
 
+	}
+	case Protocol::PacketType::SC_MOVE_OBJECT: {
+
+	}
+	case Protocol::PacketType::SC_REMOVE: {
+
+	}
 	default:
 		break;
-	}
+	}*/
 }

@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "MainInstance.h"
 
-void MainInstance::Update(float deltaTime)
+void MainInstance::Start()
 {
-	// TODO : Object Update
+	// TODO : Reosurce Setting
 }
 
 void MainInstance::LoadStaticGameObject()

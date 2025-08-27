@@ -80,11 +80,28 @@ void Session::ProcessRecv(DWORD numBytes)
 		return;
 	}
 
-	std::vector<char> readBuffer(numBytes);
-	_recvOver._buffer.Read(readBuffer.data(), numBytes);
+	while (true) {
+		if (_recvOver._buffer.GetUsedSize() < sizeof(uint16_t)) {
+			break;
+		}
 
-	if (_packetHandler) {
-		_packetHandler(_id, std::move(readBuffer));
+		uint16_t packetSize{ 0 };
+		if (not _recvOver._buffer.Peek(&packetSize, sizeof(packetSize))) {
+			break;
+		}
+
+		if (_recvOver._buffer.GetUsedSize() < sizeof(packetSize) + packetSize) {
+			break;
+		}
+
+		_recvOver._buffer.Read(nullptr, sizeof(packetSize));
+
+		std::vector<char> readBuffer(packetSize);
+		_recvOver._buffer.Read(readBuffer.data(), packetSize);
+
+		if (_packetHandler) {
+			_packetHandler(_id, std::move(readBuffer));
+		}
 	}
 
 	RegisterRecv();

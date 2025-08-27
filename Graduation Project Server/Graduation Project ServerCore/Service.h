@@ -57,5 +57,7 @@ private:
 	std::unique_ptr<ISessionManager> _sessMng;
 	std::unique_ptr<IGameWorld> _gameWorld;
 
+	std::thread _logicThread;
+
 	inline static thread_local std::unique_ptr<class ScriptVM> _scriptVM{ nullptr };
 };

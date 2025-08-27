@@ -196,6 +196,7 @@
     <ClInclude Include="Protocols\Enum.pb.h" />
     <ClInclude Include="Protocols\Protocol.pb.h" />
     <ClInclude Include="Protocols\Struct.pb.h" />
+    <ClInclude Include="TestInstance.h" />
     <ClInclude Include="vec3.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="MovementComponent.h" />
@@ -275,6 +276,7 @@
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="EventManager.cpp" />
+    <ClCompile Include="TestInstance.cpp" />
     <ClCompile Include="TickSystem.cpp" />
     <ClCompile Include="TownInstance.cpp" />
     <ClCompile Include="TransformComponent.cpp" />

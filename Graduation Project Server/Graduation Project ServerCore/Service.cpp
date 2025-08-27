@@ -8,7 +8,7 @@ Service::Service()
 	_iocpCore = std::make_unique<IocpCore>();
 
 	_sessMng = std::make_unique<SessionManager>(*this);
-	_gameWorld = std::make_unique<GameWorld>();
+	_gameWorld = std::make_unique<GameWorld>(*this);
 }
 
 bool Service::Init()
@@ -70,6 +70,20 @@ bool Service::Start()
 					}
 				});
 		}
+
+		_logicThread = std::thread([this]()
+			{
+				using namespace std::chrono;
+
+				auto prev = high_resolution_clock::now();
+				while (_running.load()) {
+					auto now = high_resolution_clock::now();
+					float deltaTime = duration<float>(now - prev).count();
+					prev = now;
+
+					_gameWorld->Update(deltaTime);
+				}
+			});
 
 		return true;
 	}

@@ -2,21 +2,30 @@ syntax = "proto3";
 package Protocol;
 
 enum PacketType {
-	CS_INPUT = 0;
+	NONE_TYPE = 0;
 
-	SC_MOVE_OBJECT = 1;
+	CS_INPUT = 1;
+
+	SC_LOGIN = 2;
+	SC_ADD = 3;
+	SC_MOVE_OBJECT = 4;
+	SC_REMOVE = 5;
 }
 
 enum Input {
-	MOVE_FRONT = 0;
-	MOVE_BACK = 1;
-	MOVE_LEFT = 2;
-	MOVE_RIGHT = 3;
+	NONE_INPUT = 0;
 
-	MAX = 4;
+	MOVE_FRONT = 1;
+	MOVE_BACK = 2;
+	MOVE_LEFT = 3;
+	MOVE_RIGHT = 4;
+
+	MAX = 5;
 }
 
 enum InputType {
-	KeyDown = 0;
-	KeyUp = 1;
+	NONE_INPUT_TYPE = 0;
+
+	KeyDown = 1;
+	KeyUp = 2;
 }

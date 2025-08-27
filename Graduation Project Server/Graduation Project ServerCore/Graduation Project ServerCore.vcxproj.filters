@@ -184,6 +184,9 @@
     <ClCompile Include="PacketFactory.cpp">
       <Filter>Protocol</Filter>
     </ClCompile>
+    <ClCompile Include="TestInstance.cpp">
+      <Filter>Game\Instance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -321,6 +324,9 @@
     </ClInclude>
     <ClInclude Include="PacketFactory.h">
       <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="TestInstance.h">
+      <Filter>Game\Instance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

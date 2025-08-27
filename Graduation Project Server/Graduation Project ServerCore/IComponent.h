@@ -8,7 +8,7 @@ class IComponent {
 public:
 	IComponent() = delete;
 	IComponent(GameObject& owner, Instance& instance) 
-		: _owner(owner), _instance(instance) { _version = 0; _enable = false; }
+		: _owner(owner), _instance(instance) { _version = 0; _lastSentVersion = 0;_enable = false; }
 	virtual ~IComponent() = default;
 
 public:
@@ -23,6 +23,7 @@ protected:
 
 public:
 	uint64_t Version() const { return _version.load(); }
+	bool VersionCheckAndChange();
 	bool Enable() const { return _enable.load(); }
 
 	void SetEnable(bool e);
@@ -33,6 +34,7 @@ protected:
 
 	std::atomic<bool> _enable;
 	std::atomic<uint64_t> _version;
+	uint64_t _lastSentVersion;
 };
 
 class ITickable {
@@ -46,9 +48,17 @@ public:
 
 class IInputable {
 public:
+	IInputable() = delete;
+	IInputable(int id) : _id(id) {};
 	virtual ~IInputable() = default;
 
 public:
 	virtual void HandleInput(const Protocol::CS_INPUT_PACKET& packet) = 0;
 	virtual void InputEnable() = 0;
+
+public:
+	int GetId() const { return _id; }
+
+protected:
+	int _id;
 };

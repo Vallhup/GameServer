@@ -9,6 +9,8 @@ public:
 	virtual void RemoveSession(int sessionId) = 0;
 
 	virtual Session* GetSession(int sessionId) = 0;
+
+	virtual void SetCharacter(int sessionId, GameObject* character) = 0;
 };
 
 class SessionManager : public ISessionManager {
@@ -23,6 +25,8 @@ public:
 
 	virtual Session* GetSession(int sessionId) override;
 
+	virtual void SetCharacter(int sessionId, GameObject* character) override;
+
 private:
 	void OnSessionPacket(int sessionId, const std::vector<char>& packet);
 
@@ -34,4 +38,3 @@ private:
 
 	std::atomic<int> _nextSessionId;
 };
-

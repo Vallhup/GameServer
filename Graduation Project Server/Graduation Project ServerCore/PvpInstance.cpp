@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "PvpInstance.h"
 
-void PvpInstance::Update(float deltaTime)
+void PvpInstance::Start()
 {
-	// TODO : Object Update
+	// TODO : Reosurce Setting
 }
 
 void PvpInstance::LoadStaticGameObject()

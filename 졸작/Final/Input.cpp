@@ -33,6 +33,8 @@ void Input::SetKey(const size_t key, const bool pressed)
 {
 	mChangeKeyState[key] = (mPressedKeys[key] != pressed);
 	mPressedKeys[key] = pressed;
+
+	SendInputPacket(key, pressed);
 }
 
 void Input::SetMouseButton(const MouseButton button, const bool bPressed)
@@ -46,10 +48,29 @@ void Input::SetMousePosition(const XMFLOAT2 mousePosition)
 	mMousePos = mousePosition;
 }
 
-void Input::SendInputPacket(Protocol::Input key, Protocol::InputType type)
+std::pair<Protocol::Input, Protocol::InputType> Input::GameInput(size_t key, bool pressed)
+{
+	WPARAM wParam = static_cast<WPARAM>(key);
+	
+	Protocol::Input input;
+	switch (wParam) {
+	case 'W': input = Protocol::Input::MOVE_FRONT; break;
+	case 'A': input = Protocol::Input::MOVE_LEFT; break;
+	case 'S': input = Protocol::Input::MOVE_BACK; break;
+	case 'D': input = Protocol::Input::MOVE_RIGHT; break;
+	}
+
+	Protocol::InputType type = 
+		pressed ? Protocol::InputType::KeyDown : Protocol::InputType::KeyUp;
+
+	return { input, type };
+}
+
+void Input::SendInputPacket(const size_t key, const bool pressed)
 {
 	if (!network) return;
 
-	vector<char> packet = PacketFactory::CSInputPacket(key, type);
+	auto input = GameInput(key, pressed);
+	vector<char> packet = PacketFactory::CSInputPacket(input.first, input.second);
 	network->Send(packet);
 }

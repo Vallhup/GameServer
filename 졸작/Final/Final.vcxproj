@@ -178,6 +178,7 @@
     <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ServerSquareScene.cpp" />
+    <ClCompile Include="ServerTestScene.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ServerSquareScene.h" />
+    <ClInclude Include="ServerTestScene.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />

@@ -3,11 +3,11 @@
 class BossInstance : public Instance {
 public:
 	BossInstance() = delete;
-	BossInstance(int id, IGameContext& gameCtx) : Instance(id, gameCtx) { LoadStaticGameObject(); }
+	BossInstance(int id, IGameContext& gameCtx) : Instance(id, InstanceType::Boss, gameCtx) { LoadStaticGameObject(); }
 	virtual ~BossInstance() = default;
 
 public:
-	virtual void Update(float deltaTime) override;
+	virtual void Start() override;
 	virtual void Stop() override;
 
 private:

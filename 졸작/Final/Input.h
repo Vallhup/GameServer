@@ -29,11 +29,11 @@ public:
 	void SetMouseButton(const MouseButton button, const bool bPressed);
 	void SetMousePosition(const XMFLOAT2 mousePosition);
 
-	void SetNetworkManager(NetworkManager* net) { network = net; }
+private:
+	std::pair<Protocol::Input, Protocol::InputType> GameInput(size_t key, bool pressed);
 
-public:
 	// Network Send
-	void SendInputPacket(Protocol::Input key, Protocol::InputType type);
+	void SendInputPacket(const size_t key, const bool pressed);
 
 private:
 	bitset<256> mPressedKeys = {};

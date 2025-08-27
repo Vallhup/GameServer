@@ -4,15 +4,31 @@ package Protocol;
 import "Enum.proto";
 import "Struct.proto";
 
+message GamePacket{
+	PacketHeader header = 1;
+	bytes body =2;
+}
+
 message CS_INPUT_PACKET
 {
-	PacketHeader header = 1;
-	Input key = 2;
-	InputType inputType = 3;
+	Input key = 1;
+	InputType inputType = 2;
+}
+
+message SC_LOGIN_PACKET
+{
+}
+
+message SC_ADD_PACKET
+{
+	Vec3 pos = 1;
 }
 
 message SC_MOVE_PACKET
 {
-	PacketHeader header = 1;
-	Vec3 pos = 2;
+	Vec3 pos = 1;
+}
+
+message SC_REMOVE_PACKET
+{
 }

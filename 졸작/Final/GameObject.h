@@ -13,8 +13,17 @@ public:
 
 	virtual void Update(float deltaTime);
 
+public:
+	// Server Test
+	int GetId() const { return _id; }
+	void SetId(int id) { _id = id; }
+
 private:
 	vector<unique_ptr<Component>> components;
+
+protected:
+	// Server Test
+	int _id;
 };
 
 template<typename T>

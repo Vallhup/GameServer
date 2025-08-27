@@ -18,6 +18,10 @@ public:
 
     HWND GetHWND() const { return mHwnd; }
 
+public:
+    // Server Test
+    SceneManager* GetSceneManager() { return sManager.get(); }
+
 private:
     HWND mHwnd = nullptr;
 

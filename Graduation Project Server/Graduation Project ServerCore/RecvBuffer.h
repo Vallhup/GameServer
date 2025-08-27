@@ -19,7 +19,7 @@ public:
 	bool Read(char* readBuffer, int readSize);
 	bool Write(const char* data, int dataSize);
 
-	bool Peek(char* outBuffer, int size) const;
+	bool Peek(void* outBuffer, int size) const;
 
 private:
 	std::vector<char> _buffer;

@@ -11,9 +11,9 @@ void InputSystem::Deregister(int id)
 	_inputables.erase(id);
 }
 
-void InputSystem::HandleInput(const Protocol::CS_INPUT_PACKET& packet)
+void InputSystem::HandleInput(int id, const Protocol::CS_INPUT_PACKET& packet)
 {
-	auto it = _inputables.find(packet.header().sessionid());
+	auto it = _inputables.find(id);
 	if (it != _inputables.end()) {
 		it->second->HandleInput(packet);
 	}

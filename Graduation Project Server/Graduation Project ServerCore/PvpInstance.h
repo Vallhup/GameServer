@@ -3,11 +3,11 @@
 class PvpInstance : public Instance {
 public:
 	PvpInstance() = delete;
-	PvpInstance(int id, IGameContext& gameCtx) : Instance(id, gameCtx) { LoadStaticGameObject(); }
+	PvpInstance(int id, IGameContext& gameCtx) : Instance(id, InstanceType::Pvp, gameCtx) { LoadStaticGameObject(); }
 	virtual ~PvpInstance() = default;
 
 public:
-	virtual void Update(float deltaTime) override;
+	virtual void Start() override;
 	virtual void Stop() override;
 
 private:

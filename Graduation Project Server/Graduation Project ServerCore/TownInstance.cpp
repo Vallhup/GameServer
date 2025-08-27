@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "TownInstance.h"
 
-void TownInstance::Update(float deltaTime)
+void TownInstance::Start()
 {
-	// TODO : Object Update
+	// TODO : Reosurce Setting
 }
 
 void TownInstance::LoadStaticGameObject()

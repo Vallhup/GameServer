@@ -3,7 +3,7 @@
 
 int IObjectManager::GenerateObjectId()
 {
-    static std::atomic<int> _nextId{ 0 };
+    static std::atomic<int> _nextId{ 1 };
     return _nextId++;
 }
 
@@ -29,4 +29,18 @@ std::shared_ptr<GameObject> ObjectManager::GetGameObject(int objectId) const
     }
 
     return nullptr;
+}
+
+std::vector<std::shared_ptr<GameObject>> ObjectManager::GetGameObjectList() const
+{
+    std::shared_lock lock{ _mutex };
+
+    std::vector<std::shared_ptr<GameObject>> objectList;
+    objectList.reserve(_objects.size());
+
+    for (const auto& [id, object] : _objects) {
+        objectList.push_back(object);
+    }
+
+    return objectList;
 }

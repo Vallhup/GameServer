@@ -13,7 +13,7 @@ public:
 class GameLogic : public IGameLogic {
 public:
 	GameLogic() = delete;
-	GameLogic(Instance& instance, EventManager& eventMng);
+	GameLogic(Instance* instance, IEventManager* eventMng);
 	virtual ~GameLogic() = default;
 
 public:
@@ -26,6 +26,6 @@ private:
 	void HandleInput(const InputEventData& data);
 
 private:
-	Instance& _instance;
-	EventManager& _eventMng;
+	Instance* _instance;
+	IEventManager* _eventMng;
 };
