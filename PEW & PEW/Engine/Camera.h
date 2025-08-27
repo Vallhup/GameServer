@@ -18,6 +18,7 @@
 
 // vector<long long*> s = 
 
+class SoundManager;
 class CrossHair;
 
 class Camera final {
@@ -26,11 +27,11 @@ public:
     ~Camera();
 
     void Render();
-    void Update(const float deltaTime);
+    void Update(SoundManager& soundmanager, const float deltaTime);
     void HandleAltKey(bool pressed);
     void HandleMouseMovement(double cur_x, double cur_y);
     void HandleScroll(double yoffset);
-    void Starting(const float deltaTime);
+    void Starting(SoundManager& soundmanager, const float deltaTime);
 
     glm::mat4 Get1stPersonViewMatrix(const glm::vec3& targetPos);
     glm::mat4 Get3rdPersonViewMatrix(const glm::vec3& targetPos);

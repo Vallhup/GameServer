@@ -129,7 +129,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine\External\include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\External\include;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\inc;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -148,7 +148,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine\External\include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\External\include;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\inc;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -180,6 +180,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShadowMapping.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="StaticObject.h" />
     <ClInclude Include="StaticObjectManager.h" />
     <ClInclude Include="stb_image.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ShadowMapping.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="StaticObject.cpp" />
     <ClCompile Include="StaticObjectManager.cpp" />
     <ClCompile Include="stb_image.cpp" />

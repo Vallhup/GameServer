@@ -30,6 +30,8 @@ using namespace std;
 #include <assimp/scene.h>
 #include <assimp/DefaultLogger.hpp>
 
+#include <fmod.hpp>
+
 // 각종 lib
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glew32.lib")
@@ -42,6 +44,8 @@ using namespace std;
 #else
 #pragma comment(lib, "assimp-vc143-mt.lib")
 #endif
+
+#pragma comment(lib, "fmod_vc.lib")
 
 // 각종 typedef
 using int8 = __int8;

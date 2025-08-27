@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "CrossHair.h"
 #include "WindowInfo.h"
+#include "SoundManager.h"
 
 Camera::Camera()
 {
@@ -33,11 +34,11 @@ void Camera::Render()
         tpscrosshair->RenderCrosshair();
 }
 
-void Camera::Update(const float deltaTime)
+void Camera::Update(SoundManager& soundmanager, const float deltaTime)
 {
     if (start)
     {
-        Starting(deltaTime);
+        Starting(soundmanager, deltaTime);
     }
 
     HandleMouseMovement(cur_x, cur_y);
@@ -122,7 +123,7 @@ void Camera::HandleScroll(double yoffset)
     }
 }
 
-void Camera::Starting(const float deltaTime)
+void Camera::Starting(SoundManager& soundmanager, const float deltaTime)
 {
     if (start_pos > 0.0f)
         start_pos -= 25.0f * deltaTime;
@@ -130,6 +131,7 @@ void Camera::Starting(const float deltaTime)
     {
         start_pos = 0.0f;
 
+        soundmanager.ChangeBGM("music/chipi.mp3");
         //startbgm->setIsPaused(true);
         //basebgm->setIsPaused(false);
         //cloud_go = true;

@@ -3,6 +3,7 @@
 #include "Skybox.h"
 #include "StaticObjectManager.h"
 #include "ShadowMapping.h"
+#include "SoundManager.h"
 #include "Camera.h"
 #include "Timer.h"
 #include "NetworkManager.h"
@@ -31,9 +32,9 @@ void GraphicsManager::InitPVPMap()
 	GET_SINGLE(StaticObjectManager)->InitPVPMap();
 }
 
-void GraphicsManager::Update(SceneType type, const float deltaTime)
+void GraphicsManager::Update(SceneType type, SoundManager& soundmanager, const float deltaTime)
 {
-	camera->Update(deltaTime);
+	camera->Update(soundmanager, deltaTime);
 
 	int scenetype = static_cast<int>(type);
 
@@ -51,7 +52,7 @@ void GraphicsManager::Update(SceneType type, const float deltaTime)
 	}
 }
 
-void GraphicsManager::Render(SceneType type)
+void GraphicsManager::Render(SceneType type, SoundManager& soundmanager)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	float deltatime = GET_SINGLE(Timer)->GetDeltaTime();
@@ -96,6 +97,12 @@ void GraphicsManager::Render(SceneType type)
 	camera->Render();
 
 	RenderFade(projection, view, viewPos);
+
+	if (!firstRenderDone)
+	{
+		soundmanager.PlayBGM();
+		firstRenderDone = true;
+	}
 
 	glFinish();
 }

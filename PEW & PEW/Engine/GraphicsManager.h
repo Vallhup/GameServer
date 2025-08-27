@@ -3,6 +3,7 @@
 
 class Camera;
 class ShadowMapping;
+class SoundManager;
 class NetworkManager;
 class MainCharacter;
 class AlienCharacter;
@@ -14,8 +15,8 @@ class GraphicsManager
 public:
 	void Init();
 	void InitPVPMap();
-	void Update(SceneType type, const float deltaTime);
-	void Render(SceneType type);
+	void Update(SceneType type, SoundManager& soundmanager, const float deltaTime);
+	void Render(SceneType type, SoundManager& soundmanager);
 	void RenderFade(const glm::mat4& projection, const glm::mat4& view, const glm::vec3& viewPos);
 	void RenderShadow(SceneType type);
 	void Release();
@@ -48,4 +49,6 @@ private:
 	std::map<int, MainCharacter*> catCharacters;
 	int characterType = { 0 };
 	std::array<std::array<AlienCharacter*, 9>, 3> alienCharacters;
+
+	bool firstRenderDone = { false };
 };

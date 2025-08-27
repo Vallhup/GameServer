@@ -5,6 +5,7 @@ enum class SceneType {
     Scene2
 };
 
+class SoundManager;
 class NetworkManager;
 class GraphicsManager;
 class Input;
@@ -12,7 +13,7 @@ class Input;
 class SceneManager
 {
 public:
-    void Init();
+    void Init(SoundManager& soundmanager);
     void Update(GLFWwindow* window, const float deltaTime);
     void Render();
     void Release();
@@ -33,6 +34,7 @@ private:
     void SendLoginPacket(int characterType);
 
 private:
+    SoundManager* soundRef;
     NetworkManager* network;
     GraphicsManager* graphics;
     Input* input = { nullptr };

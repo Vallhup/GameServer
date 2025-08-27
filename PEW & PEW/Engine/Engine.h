@@ -1,5 +1,6 @@
 #pragma once
 
+class SoundManager;
 class SceneManager;
 
 class Engine
@@ -13,5 +14,6 @@ private:
 	void ShowFps();
 
 private:
+	SoundManager* soundManager;
 	SceneManager* sceneManager;
 };

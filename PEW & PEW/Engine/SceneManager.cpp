@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "SceneManager.h"
+#include "SoundManager.h"
 #include "NetworkManager.h"
 #include "GraphicsManager.h"
 #include "Input.h"
@@ -9,8 +10,10 @@
 #include "Skybox.h"
 #include "PacketFactory.h"
 
-void SceneManager::Init()
+void SceneManager::Init(SoundManager& soundmanager)
 {
+	soundRef = &soundmanager;
+
 	currentScene = SceneType::Scene1;
 	InitScene1();
 }
@@ -23,12 +26,12 @@ void SceneManager::Update(GLFWwindow* window, const float deltaTime)
 		UpdateScene2();
 
 	input->Update(window);
-	graphics->Update(currentScene, deltaTime);
+	graphics->Update(currentScene, *soundRef, deltaTime);
 }
 
 void SceneManager::Render()
 {
-	graphics->Render(currentScene);
+	graphics->Render(currentScene, *soundRef);
 }
 
 void SceneManager::Release()
@@ -51,6 +54,7 @@ void SceneManager::TransitionUpdate(const float deltaTime)
 			InitScene2(localCharType);
 			isTransitioning = false;
 			isSceneLoaded = false;
+			soundRef->ChangeBGM("music/wassobaesso.mp3", true);
 		}
 
 		if (!input->GetInputBlock())
@@ -61,7 +65,10 @@ void SceneManager::TransitionUpdate(const float deltaTime)
 		loadingTimer -= deltaTime;
 
 		if (loadingTimer <= 0.0f)
+		{
 			isSceneLoaded = true;
+			soundRef->PlayBGM();
+		}
 	}
 	else
 	{
@@ -98,6 +105,7 @@ void SceneManager::InitScene1()
 	input->SetCamera(graphics->GetCamera());
 	input->SetGraphicsManager(graphics);
 	input->SetSceneType(currentScene);
+	input->SetSoundManager(soundRef);
 
 	GLFWwindow* window = GET_SINGLE(WindowInfo)->GetWindow();
 	glfwSetWindowUserPointer(window, input);

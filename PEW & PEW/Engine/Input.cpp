@@ -6,6 +6,7 @@
 #include "GraphicsManager.h"
 #include "MainCharacter.h"
 #include "WindowInfo.h"
+#include "SoundManager.h"
 
 void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -204,6 +205,20 @@ void Input::KeyBoardInput(GLFWwindow* window, int key, int scancode, int action,
 				input->camera->HandleAltKey(true);
 			else if (action == GLFW_RELEASE)
 				input->camera->HandleAltKey(false);
+		}
+		break;
+	case GLFW_KEY_EQUAL:
+		if (action == GLFW_PRESS) {
+			if (mods & GLFW_MOD_SHIFT) {
+				input->soundRef->SetVolume(input->soundRef->GetVolume() + 0.1f);
+				cout << input->soundRef->GetVolume() << "\n";
+			}
+		}
+		break;
+	case GLFW_KEY_MINUS:
+		if (action == GLFW_PRESS) {
+			input->soundRef->SetVolume(input->soundRef->GetVolume() - 0.1f);
+			cout << input->soundRef->GetVolume() << "\n";
 		}
 		break;
 		//case GLFW_KEY_EQUAL:

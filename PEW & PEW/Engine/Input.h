@@ -5,6 +5,7 @@ class Camera;
 class MainCharacter;
 class NetworkManager;
 class GraphicsManager;
+class SoundManager;
 
 class Input
 {
@@ -26,6 +27,7 @@ public:
 	void SetNetworkManager(NetworkManager* net) { network = net; }
 	void SetGraphicsManager(GraphicsManager* gfx) { graphics = gfx; }
 	void SetSceneType(SceneType type) { sceneType = type; }
+	void SetSoundManager(SoundManager* soundmanager) { soundRef = soundmanager; }
 
 	bool GetInputBlock() const { return blockInput; }
 	void SetInputBlock(bool in) { blockInput = in; }
@@ -35,6 +37,7 @@ private:
 	MainCharacter* mainCat = { nullptr };
 	NetworkManager* network = { nullptr };
 	GraphicsManager* graphics = { nullptr };
+	SoundManager* soundRef = { nullptr };
 
 	double lastMouseAngle = { 0.0f };
 	bool isAttacking = { false };           // 현재 공격 중인지
