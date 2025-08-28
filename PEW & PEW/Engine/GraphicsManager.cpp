@@ -43,6 +43,7 @@ void GraphicsManager::Update(SceneType type, SoundManager& soundmanager, const f
 		MainCharacter* cat = GetLocalCharacter();
 		cat->Update(deltaTime, alienCharacters);
 		UpdateAlienCharacters(deltaTime);
+		GET_SINGLE(StaticObjectManager)->Update(deltaTime);
 	}
 	else
 	{
@@ -50,6 +51,15 @@ void GraphicsManager::Update(SceneType type, SoundManager& soundmanager, const f
 			character->Update(deltaTime);
 		}
 	}
+
+	UpdateLightAngle(deltaTime);
+}
+
+void GraphicsManager::UpdateLightAngle(const float deltaTime)
+{
+	if (light_angle > 6.28f)
+		light_angle -= 6.28f;
+	light_angle += 0.1f * deltaTime;
 }
 
 void GraphicsManager::Render(SceneType type, SoundManager& soundmanager)

@@ -10,14 +10,15 @@ public:
 	void Init();
 	void InitPVPMap();
 	void Release();
-	void Update();
+	void Update(const float deltaTime);
 	void Draw(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos,
 		glm::mat4 lightSpaceMatrix, GLuint shadowMap);
 	void DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader);
 
-	StaticObject* AddStaticObject(const char* glb, const char* png);
+	StaticObject* AddStaticObject(const char* glb, const char* png, const char* let);
 
 private:
 	vector<StaticObject*> StaticObjects;
+	float cloudPosition = 0.0f;
 };
 

@@ -4,40 +4,40 @@
 
 void StaticObjectManager::Init()
 {
-	AddStaticObject("StaticGlb/ground.glb", "Texture/map.png");
-	AddStaticObject("StaticGlb/title.glb", "Texture/title.png");
-	AddStaticObject("StaticGlb/fence.glb", "Texture/fence.png");
-	AddStaticObject("StaticGlb/tree1.glb", "Texture/tree1.png");
-	AddStaticObject("StaticGlb/tree2.glb", "Texture/tree2.png");
-	AddStaticObject("StaticGlb/tree3.glb", "Texture/tree3.png");
-	AddStaticObject("StaticGlb/tree4.glb", "Texture/tree4.png");
-	AddStaticObject("StaticGlb/bridge.glb", "Texture/bridge.png");
-	AddStaticObject("StaticGlb/box.glb", "Texture/box.png");
-	AddStaticObject("StaticGlb/cart.glb", "Texture/cart.png");
-	AddStaticObject("StaticGlb/housemain.glb", "Texture/housemain.png");
-	AddStaticObject("StaticGlb/house1.glb", "Texture/house1.png");
-	AddStaticObject("StaticGlb/house2.glb", "Texture/house2.png");
-	AddStaticObject("StaticGlb/house3.glb", "Texture/house3.png");
-	AddStaticObject("StaticGlb/house4.glb", "Texture/house4.png");
-	AddStaticObject("StaticGlb/house5.glb", "Texture/house5.png");
-	AddStaticObject("StaticGlb/house6.glb", "Texture/house6.png");
-	AddStaticObject("StaticGlb/house7.glb", "Texture/house7.png");
-	AddStaticObject("StaticGlb/house8.glb", "Texture/house8.png");
-	AddStaticObject("StaticGlb/house9.glb", "Texture/house9.png");
-	AddStaticObject("StaticGlb/rock1.glb", "Texture/rock1.png");
-	AddStaticObject("StaticGlb/rock2.glb", "Texture/rock2.png");
-	AddStaticObject("StaticGlb/waterwheel.glb", "Texture/waterwheel.png");
-	AddStaticObject("StaticGlb/windmill.glb", "Texture/windmill.png");
-	AddStaticObject("StaticGlb/cloud.glb", "Texture/cloud.png");
-	AddStaticObject("StaticGlb/cave.glb", "Texture/cave.png");
-	AddStaticObject("StaticGlb/startlogo.glb", "Texture/startlogo.png");
-	AddStaticObject("StaticGlb/gameclear.glb", "Texture/gameclear.png");
+	AddStaticObject("StaticGlb/ground.glb", "Texture/map.png", "Ground");
+	AddStaticObject("StaticGlb/title.glb", "Texture/title.png", "Title");
+	AddStaticObject("StaticGlb/fence.glb", "Texture/fence.png", "Fence1");
+	AddStaticObject("StaticGlb/tree1.glb", "Texture/tree1.png", "Tree1");
+	AddStaticObject("StaticGlb/tree2.glb", "Texture/tree2.png", "Tree2");
+	AddStaticObject("StaticGlb/tree3.glb", "Texture/tree3.png", "Tree3");
+	AddStaticObject("StaticGlb/tree4.glb", "Texture/tree4.png", "Tree4");
+	AddStaticObject("StaticGlb/bridge.glb", "Texture/bridge.png", "Bridge");
+	AddStaticObject("StaticGlb/box.glb", "Texture/box.png", "Box");
+	AddStaticObject("StaticGlb/cart.glb", "Texture/cart.png", "Cart");
+	AddStaticObject("StaticGlb/housemain.glb", "Texture/housemain.png", "Housemain");
+	AddStaticObject("StaticGlb/house1.glb", "Texture/house1.png", "House1");
+	AddStaticObject("StaticGlb/house2.glb", "Texture/house2.png", "House2");
+	AddStaticObject("StaticGlb/house3.glb", "Texture/house3.png", "House3");
+	AddStaticObject("StaticGlb/house4.glb", "Texture/house4.png", "House4");
+	AddStaticObject("StaticGlb/house5.glb", "Texture/house5.png", "House5");
+	AddStaticObject("StaticGlb/house6.glb", "Texture/house6.png", "House6");
+	AddStaticObject("StaticGlb/house7.glb", "Texture/house7.png", "House7");
+	AddStaticObject("StaticGlb/house8.glb", "Texture/house8.png", "House8");
+	AddStaticObject("StaticGlb/house9.glb", "Texture/house9.png", "House9");
+	AddStaticObject("StaticGlb/rock1.glb", "Texture/rock1.png", "Rock1");
+	AddStaticObject("StaticGlb/rock2.glb", "Texture/rock2.png", "Rock2");
+	AddStaticObject("StaticGlb/waterwheel.glb", "Texture/waterwheel.png", "Waterwheel");
+	AddStaticObject("StaticGlb/windmill.glb", "Texture/windmill.png", "Windmill");
+	AddStaticObject("StaticGlb/cloud.glb", "Texture/cloud.png", "Cloud");
+	AddStaticObject("StaticGlb/cave.glb", "Texture/cave.png", "Cave");
+	AddStaticObject("StaticGlb/startlogo.glb", "Texture/startlogo.png", "Startlogo");
+	AddStaticObject("StaticGlb/gameclear.glb", "Texture/gameclear.png", "GameClear");
 }
 
 void StaticObjectManager::InitPVPMap()
 {
-	AddStaticObject("StaticGlb/ground2.glb", "Texture/map2.png");
-	AddStaticObject("StaticGlb/fence3.glb", "Texture/fence.png");
+	AddStaticObject("StaticGlb/ground2.glb", "Texture/map2.png", "Map2");
+	AddStaticObject("StaticGlb/fence3.glb", "Texture/fence.png", "Fence2");
 }
 
 void StaticObjectManager::Release()
@@ -49,9 +49,23 @@ void StaticObjectManager::Release()
 	StaticObjects.clear();
 }
 
-void StaticObjectManager::Update()
+void StaticObjectManager::Update(const float deltaTime)
 {
 	// 구름 같은 움직이는 오브젝트들 업데이트 필요
+	for (auto& obj : StaticObjects)
+	{
+		if (obj->GetName() == "Cloud")
+		{	
+			cloudPosition += 1.0f * deltaTime;
+			obj->MoveStaticobject(deltaTime);
+
+			if (cloudPosition >= 118.0f)
+			{
+				obj->MoveStaticobjectToBeginPos();
+				cloudPosition -= 236.0f;
+			}
+		}
+	}
 }
 
 void StaticObjectManager::Draw(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos,
@@ -71,9 +85,9 @@ void StaticObjectManager::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint d
 	}
 }
 
-StaticObject* StaticObjectManager::AddStaticObject(const char* glb, const char* png)
+StaticObject* StaticObjectManager::AddStaticObject(const char* glb, const char* png, const char* let)
 {
-	StaticObject* obj = new StaticObject(glb, png);
+	StaticObject* obj = new StaticObject(glb, png, let);
 	StaticObjects.push_back(obj);
 	return obj;
 }
