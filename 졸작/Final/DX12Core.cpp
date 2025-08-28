@@ -365,7 +365,7 @@ void DX12Core::BeginGBufferPass()
 	cmdList->OMSetRenderTargets(4, gBufferRTVHandles, FALSE, &dsvHandle);
 
 	// G-Buffer 클리어 (검은색으로)
-	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	for (int i = 0; i < 4; ++i) {
 		cmdList->ClearRenderTargetView(gBufferRTVHandles[i], clearColor, 0, nullptr);
 	}
@@ -414,53 +414,48 @@ void DX12Core::BeginLightingPass()
 
 void DX12Core::SetupLightng()
 {
-	// 32개 조명 설정
+	// 50개 조명 설정 (Directional 2개 + Point Light 48개)
 	static bool lightsInitialized = false;
 	static LightConstants lightData = {};
-
 	if (!lightsInitialized) {
 		lightData.lightCount = 50;
 
 		// 기존 directional light 유지
 		lightData.lights[0] = {
-			{0, 0, -1}, 0,               // direction (기존과 동일)
-			{1, 1, 1}, 0.6f,             // color, intensity (기존과 동일)
+			{0, 0, -1}, 0,               // direction
+			{1, 1, 1}, 0.6f,             // color, intensity
 			0,                           // type: directional
 			{0, 0, 0}                    // padding
 		};
-
 		lightData.lights[1] = {
-			{0, 0, 1}, 0,               // direction (기존과 동일)
-			{1, 1, 1}, 0.3f,             // color, intensity (기존과 동일)
+			{0, 0, 1}, 0,               // direction
+			{1, 1, 1}, 0.3f,             // color, intensity
 			0,                           // type: directional
 			{0, 0, 0}                    // padding
 		};
 
-		// Point lights 31개 - Z축 마이너스 방향으로 일직선 배치
-		float spacing = 2.0f;
+		// Point lights 48개 - 두 줄로 24개씩 배치
+		float spacing = 4.0f;
+		float height = 2.0f;           // 높이 2.5
+		float leftX = -1.5f;           // 왼쪽 줄 X 위치
+		float rightX = 1.5f;           // 오른쪽 줄 X 위치
+
 		for (int i = 2; i < 50; ++i) {
-			float x = 0; // X축 고정
-			float z = -(i - 1) * spacing; // 0, -3, -6, -9, ... -90
-			float height = 2.0f; // 모든 조명 동일한 높이
+			int lightIndex = i - 2;   // 0~47 인덱스
+			int rowIndex = lightIndex % 24;  // 0~23 (각 줄의 인덱스)
+			bool isLeftRow = (lightIndex < 24);  // 첫 24개는 왼쪽 줄
 
-			// 색상 계산 (HSV 기반으로 다양한 색상)
-			float hue = (float)(i - 1) / 100.0f;
-			XMFLOAT3 color;
+			float x = isLeftRow ? leftX : rightX;
+			float z = -(rowIndex * spacing);  // 0, -2, -4, -6, ... -46
 
-			// HSV to RGB 변환 (간단 버전)
-			if (hue < 0.33f) {
-				color = { 1.0f, hue * 3.0f, 0.0f }; // 빨강 -> 노랑
-			}
-			else if (hue < 0.66f) {
-				color = { 1.0f - (hue - 0.33f) * 3.0f, 1.0f, 0.0f }; // 노랑 -> 녹색
-			}
-			else {
-				color = { 0.0f, 1.0f - (hue - 0.66f) * 3.0f, (hue - 0.66f) * 3.0f }; // 녹색 -> 파랑
-			}
+			// 색상: 왼쪽 줄은 파란색, 오른쪽 줄은 빨간색
+			XMFLOAT3 color = isLeftRow ?
+				XMFLOAT3{ 0.0f, 1.0f, 1.0f } :  // 파란색 (왼쪽 줄)
+				XMFLOAT3{ 1.0f, 0.0f, 1.0f };   // 빨간색 (오른쪽 줄)
 
 			lightData.lights[i] = {
-				{x, height, z}, 2.0f,    // position, range
-				color, 0.8f,             // color, intensity
+				{x, height, z}, 3.0f,    // position, range
+				color, 1.0f,             // color, intensity
 				1,                       // type: point light
 				{0, 0, 0}               // padding
 			};
@@ -468,7 +463,6 @@ void DX12Core::SetupLightng()
 
 		lightsInitialized = true;
 	}
-
 	deferredLightCB->CopyData(&lightData, sizeof(LightConstants));
 }
 
