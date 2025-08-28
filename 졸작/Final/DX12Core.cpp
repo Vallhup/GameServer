@@ -16,7 +16,8 @@ void DX12Core::Initialize(HWND hwnd)
 	shader = make_unique<Shader>();
 	frameCB = make_unique<UploadBuffer>();
 	sceneCB = make_unique<UploadBuffer>();
-	directionLightCB = make_unique<UploadBuffer>();
+	deferredLightCB = make_unique<UploadBuffer>();
+	forwardLightCB = make_unique<UploadBuffer>();
 
 	rootSig->Initialize(GetDevice());
 	shader->Initialize(GetDevice(), GetRootSig()->Get(), L"BasicVS.hlsli", L"BasicPS.hlsli");
@@ -25,7 +26,8 @@ void DX12Core::Initialize(HWND hwnd)
 	shader->InitializeComputeShader(GetDevice(), GetRootSig()->Get(), L"Animation.hlsli");
 	frameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	sceneCB->Initialize(GetDevice(), 256 * 100);
-	directionLightCB->Initialize(GetDevice(), sizeof(LightConstants));
+	deferredLightCB->Initialize(GetDevice(), sizeof(LightConstants));
+	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
 
 	CreateDepthStencilBuffer();
 	CreateGBuffer();
@@ -331,8 +333,9 @@ void DX12Core::BeginForwardPass()
 
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
-	cmdList->SetGraphicsRootConstantBufferView(10,
-		GetDirectionalLightCB()->GetGPUVirtualAddress());
+	ForwardLightConstants light = { {0, 0, -1}, 0, {1, 1, 1}, 0.6f };
+	GetForwardLightCB()->CopyData(&light, sizeof(ForwardLightConstants));
+	cmdList->SetGraphicsRootConstantBufferView(10, GetForwardLightCB()->GetGPUVirtualAddress());
 
 	//OutputDebugStringA("Forward pass started\n");
 }
@@ -466,7 +469,7 @@ void DX12Core::SetupLightng()
 		lightsInitialized = true;
 	}
 
-	directionLightCB->CopyData(&lightData, sizeof(LightConstants));
+	deferredLightCB->CopyData(&lightData, sizeof(LightConstants));
 }
 
 void DX12Core::RenderFullscreenQuad()
@@ -478,7 +481,7 @@ void DX12Core::RenderFullscreenQuad()
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
 	// 라이트 데이터 바인딩
-	cmdList->SetGraphicsRootConstantBufferView(10, GetDirectionalLightCB()->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(10, GetDeferredLightCB()->GetGPUVirtualAddress());
 
 	// 정점 버퍼 없이 6개 정점으로 사각형 그리기 (2개 삼각형)
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -625,9 +628,14 @@ UploadBuffer* DX12Core::GetSceneCB() const
 	return sceneCB.get();
 }
 
-UploadBuffer* DX12Core::GetDirectionalLightCB() const
+UploadBuffer* DX12Core::GetDeferredLightCB() const
 {
-	return directionLightCB.get();
+	return deferredLightCB.get();
+}
+
+UploadBuffer* DX12Core::GetForwardLightCB() const
+{
+	return forwardLightCB.get();
 }
 
 void DX12Core::SetBackgroundColor(const float* color)

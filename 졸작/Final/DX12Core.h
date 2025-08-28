@@ -25,6 +25,13 @@ struct LightConstants {
 	LightData lights[50]; // 조명 60개부터 렉걸린다 이유 해결 안됨
 };
 
+struct ForwardLightConstants {
+	XMFLOAT3 direction;
+	float padding;
+	XMFLOAT3 color;
+	float intensity;
+};
+
 class RootSignature;
 class Shader;
 
@@ -63,7 +70,8 @@ public:
 	Shader* GetShader() const;
 	UploadBuffer* GetFrameCB() const;
 	UploadBuffer* GetSceneCB() const;
-	UploadBuffer* GetDirectionalLightCB() const;
+	UploadBuffer* GetDeferredLightCB() const;
+	UploadBuffer* GetForwardLightCB() const;
 
 	void SetBackgroundColor(const float* color);
 
@@ -105,5 +113,6 @@ private:
 	unique_ptr<Shader> shader;
 	unique_ptr<UploadBuffer> frameCB;
 	unique_ptr<UploadBuffer> sceneCB;
-	unique_ptr<UploadBuffer> directionLightCB;
+	unique_ptr<UploadBuffer> deferredLightCB;
+	unique_ptr<UploadBuffer> forwardLightCB;
 };
