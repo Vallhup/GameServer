@@ -112,13 +112,17 @@ void ServerTestScene::UpdateScene(const float deltaTime)
 	}
 }
 
-void ServerTestScene::RenderScene()
+void ServerTestScene::RenderSceneDeferred()
 {
 	for (auto& [id, obj] : _objects) {
 		if (auto meshRenderer = obj->GetComponent<MeshRenderer>()) {
 			meshRenderer->Render(*coreRef);
 		}
 	}
+}
+
+void ServerTestScene::RenderSceneForward()
+{
 }
 
 int ServerTestScene::GetSceneWidth() const

@@ -15,14 +15,19 @@ public:
 
 	void Update(float deltaTime) override;
 	void Render(DX12Core& core);
+
+	void RenderForward(DX12Core& core);
+	void RenderDeferred(DX12Core& core);
+
 	void RenderToGBuffer(DX12Core& core);
 	void RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuffer* instancedBuffer);
 
 	void RenderSingleMaterial(DX12Core& core, const XMMATRIX& world);
 	void RenderMultiMaterial(DX12Core& core, const XMMATRIX& world);
+	void RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX& world);
 
 	void RenderSingleMaterialToGBuffer(DX12Core& core, const XMMATRIX& world);
-	void RenderMultiMaterialToGBuffer(DX12Core& core, const XMMATRIX& world);
+	void RenderMultiMaterialDeferredOnly(DX12Core& core, const XMMATRIX& world);
 
 	void SetMesh(DX12Core& core, const wstring& path);
 	void SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer = nullptr);

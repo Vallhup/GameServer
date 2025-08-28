@@ -55,6 +55,55 @@ void MeshRenderer::Render(DX12Core& core)
     RenderToGBuffer(core);
 }
 
+void MeshRenderer::RenderForward(DX12Core& core)
+{
+    if (!visible || !vertexIndexBuffer) return;
+
+    auto cmdList = core.GetGraphicsCmdList();
+    auto transform = GetGameObject()->GetComponent<Transform>();
+    XMMATRIX world = transform->GetWorldMatrix();
+
+    cmdList->SetPipelineState(core.GetShader()->GetTransparentPSO());
+    SetupRenderingState(core);
+
+    if (auto animator = GetGameObject()->GetComponent<Animator>()) {
+        cmdList->SetGraphicsRootShaderResourceView(8, animator->GetFinalBuffer()->GetGPUVirtualAddress());
+    }
+
+    if (!materials.empty()) {   // 많은 머티리얼 중 투명 값이 있는 머티리얼만 렌더링
+        RenderMultiMaterialForwardOnly(core, world);
+    }
+}
+
+void MeshRenderer::RenderDeferred(DX12Core& core)
+{
+    if (!visible || !vertexIndexBuffer) return;
+
+    auto animator = GetGameObject()->GetComponent<Animator>();
+    if (animator) {
+        animator->ExecuteComputeShader(core);
+    }
+
+    auto cmdList = core.GetGraphicsCmdList();
+    auto transform = GetGameObject()->GetComponent<Transform>();
+    XMMATRIX world = transform->GetWorldMatrix();
+
+    cmdList->SetPipelineState(core.GetShader()->GetGBufferPSO());
+    SetupRenderingState(core);
+
+    if (animator) {
+        cmdList->SetGraphicsRootShaderResourceView(8,
+            animator->GetFinalBuffer()->GetGPUVirtualAddress());
+    }
+
+    if (!materials.empty()) {
+        RenderMultiMaterialDeferredOnly(core, world);
+    }
+    else if (material) {
+        RenderSingleMaterialToGBuffer(core, world);
+    }
+}
+
 void MeshRenderer::RenderToGBuffer(DX12Core& core)
 {
     auto cmdList = core.GetGraphicsCmdList();
@@ -73,7 +122,7 @@ void MeshRenderer::RenderToGBuffer(DX12Core& core)
 
     if (!materials.empty()) {
         // 멀티 머티리얼인 경우
-        RenderMultiMaterialToGBuffer(core, world);
+        RenderMultiMaterialDeferredOnly(core, world);
     }
     else if (material) {
         // 단일 머티리얼인 경우
@@ -173,6 +222,34 @@ void MeshRenderer::RenderMultiMaterial(DX12Core& core, const XMMATRIX& world)
     }
 }
 
+void MeshRenderer::RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX& world)
+{
+    UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
+    auto cmdList = core.GetGraphicsCmdList();
+
+    for (size_t i = 0; i < subMeshes.size(); ++i) {
+        bool hasAlphaTexture = !originalMaterialData[i].alphaTexPath.empty();
+        if (!hasAlphaTexture) continue;
+
+        ObjectConstants objConstants = {};
+        objConstants.world = XMMatrixTranspose(world);
+        objConstants.useTexture = 1;
+        objConstants.useInstancing = 0;
+        objConstants.hasAlpha = 0;
+        objConstants.materialIndex = materials[i]->GetMaterialIndex();
+
+        UINT materialOffset = (myID * 5 + i) * cbSize;
+        core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
+        cmdList->SetGraphicsRootConstantBufferView(1,
+            core.GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
+
+        vertexIndexBuffer->Bind(cmdList);
+        vertexIndexBuffer->DrawIndexed(cmdList,
+            subMeshes[i].indexCount,
+            subMeshes[i].startIndex);
+    }
+}
+
 void MeshRenderer::RenderSingleMaterialToGBuffer(DX12Core& core, const XMMATRIX& world)
 {
     auto cmdList = core.GetGraphicsCmdList();
@@ -193,12 +270,15 @@ void MeshRenderer::RenderSingleMaterialToGBuffer(DX12Core& core, const XMMATRIX&
     vertexIndexBuffer->Draw(core.GetGraphicsCmdList());
 }
 
-void MeshRenderer::RenderMultiMaterialToGBuffer(DX12Core& core, const XMMATRIX& world)
+void MeshRenderer::RenderMultiMaterialDeferredOnly(DX12Core& core, const XMMATRIX& world)
 {
     UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
     auto cmdList = core.GetGraphicsCmdList();
 
     for (size_t i = 0; i < subMeshes.size(); ++i) {
+        bool hasAlphaTexture = !originalMaterialData[i].alphaTexPath.empty();
+        if (hasAlphaTexture) continue;
+
         ObjectConstants objConstants = {};
         objConstants.world = XMMatrixTranspose(world);
         objConstants.useTexture = 1;

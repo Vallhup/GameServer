@@ -324,6 +324,19 @@ void DX12Core::CreateGBuffer()
 	OutputDebugStringA("G-Buffer created successfully!\n");
 }
 
+void DX12Core::BeginForwardPass()
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtvHandle[backBufferIndex];
+	cmdList->OMSetRenderTargets(1, &rtv, FALSE, &dsvHandle);
+
+	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
+
+	cmdList->SetGraphicsRootConstantBufferView(10,
+		GetDirectionalLightCB()->GetGPUVirtualAddress());
+
+	//OutputDebugStringA("Forward pass started\n");
+}
+
 void DX12Core::BeginGBufferPass()
 {
 	// 첫 번째 프레임에서는 상태 전환 건너뛰기
@@ -349,7 +362,7 @@ void DX12Core::BeginGBufferPass()
 	cmdList->OMSetRenderTargets(4, gBufferRTVHandles, FALSE, &dsvHandle);
 
 	// G-Buffer 클리어 (검은색으로)
-	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	for (int i = 0; i < 4; ++i) {
 		cmdList->ClearRenderTargetView(gBufferRTVHandles[i], clearColor, 0, nullptr);
 	}

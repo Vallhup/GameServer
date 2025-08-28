@@ -41,6 +41,7 @@ public:
 	void CreateDepthStencilBuffer(DXGI_FORMAT dsvformat = DXGI_FORMAT_D32_FLOAT);
 
 	void CreateGBuffer();
+	void BeginForwardPass();
 	void BeginGBufferPass();
 	void EndGBufferPass();
 	void BeginLightingPass();

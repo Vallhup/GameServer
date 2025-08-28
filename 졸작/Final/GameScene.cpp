@@ -127,12 +127,21 @@ void GameScene::UpdateScene(const float deltaTime)
 		obj->Update(deltaTime);
 }
 
-void GameScene::RenderScene()
+void GameScene::RenderSceneDeferred()
 {
 	for (const auto& obj : gameObjects)
 	{
 		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
-			meshRenderer->Render(*coreRef);
+			meshRenderer->RenderDeferred(*coreRef);
+	}
+}
+
+void GameScene::RenderSceneForward()
+{
+	for (const auto& obj : gameObjects)
+	{
+		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+			meshRenderer->RenderForward(*coreRef);
 	}
 }
 

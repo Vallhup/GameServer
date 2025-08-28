@@ -17,7 +17,9 @@ public:
     ~SceneManager();
     void Initialize(DX12Core& core);        
     void Update(const float deltaTime);
-    void Render();            
+    void Render();   
+    void RenderDeferred();
+    void RenderForward();
     void Release();
 
     template <typename T>

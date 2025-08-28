@@ -32,9 +32,14 @@ void Scene::Update(const float deltaTime)
     RequestSceneChange();
 }
 
-void Scene::Render()
+void Scene::RenderDeferred()
 {
-    RenderScene();
+    RenderSceneDeferred();
+}
+
+void Scene::RenderForward()
+{
+    RenderSceneForward();
 }
 
 Camera* Scene::GetCamera() const

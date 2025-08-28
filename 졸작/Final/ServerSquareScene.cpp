@@ -32,8 +32,13 @@ void ServerSquareScene::UpdateScene(const float deltaTime)
 {
 }
 
-void ServerSquareScene::RenderScene()
+void ServerSquareScene::RenderSceneDeferred()
 {
+}
+
+void ServerSquareScene::RenderSceneForward()
+{
+
 }
 
 int ServerSquareScene::GetSceneWidth() const

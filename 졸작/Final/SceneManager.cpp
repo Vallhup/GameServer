@@ -40,7 +40,23 @@ void SceneManager::Render()
 {
     if (mCurrentScene)
     {
-        mCurrentScene->Render();
+        mCurrentScene->RenderDeferred();
+    }
+}
+
+void SceneManager::RenderDeferred()
+{
+    if (mCurrentScene)
+    {
+        mCurrentScene->RenderDeferred();
+    }
+}
+
+void SceneManager::RenderForward()
+{
+    if (mCurrentScene)
+    {
+        mCurrentScene->RenderForward();
     }
 }
 
