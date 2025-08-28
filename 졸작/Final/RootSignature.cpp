@@ -8,7 +8,7 @@ void RootSignature::Initialize(ID3D12Device* device)
 	rootParams[0].InitAsConstantBufferView(0);			// register(b0) - view & projection Constant BUFF
 	rootParams[1].InitAsConstantBufferView(1);			// register(b1) - object Constant BUFF
 	rootParams[2].InitAsConstantBufferView(2);			// register(b2) - animationparams Constant BUFF
-	rootParams[10].InitAsConstantBufferView(3);
+	rootParams[10].InitAsConstantBufferView(3);			// register(b3) - light Constant BUFF
 
 	CD3DX12_DESCRIPTOR_RANGE bindlessRange;
 	bindlessRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, UINT_MAX, 0, 1);					// register(t0, space1)
@@ -22,7 +22,7 @@ void RootSignature::Initialize(ID3D12Device* device)
 	rootParams[9].InitAsShaderResourceView(0, 2);		// register(t0, space2) - instance structured BUFF
 
 	CD3DX12_DESCRIPTOR_RANGE gBufferRange;
-	gBufferRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 4, 0);                      // register(t4-t6, space0)
+	gBufferRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 4, 4, 0);                      // register(t4-t6, space0)
 	rootParams[11].InitAsDescriptorTable(1, &gBufferRange, D3D12_SHADER_VISIBILITY_PIXEL);  // G-Buffer SRV Å×ÀÌºí
 
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc[1];

@@ -244,34 +244,44 @@ void DX12Core::CreateGBuffer()
 	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
 	D3D12_CLEAR_VALUE clearValue = {};
 
-	// RT0: Position (RGBA32F)
-	rtDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	// RT0: BaseColor.rgb + Metallic.r (RGBA8UN)
+	rtDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	clearValue.Format = rtDesc.Format;
 	memset(clearValue.Color, 0, sizeof(clearValue.Color));
 
 	HRESULT hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
 		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
 		IID_PPV_ARGS(&gBufferRT[0]));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer Position RT");
+	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[0]");
 
-	// RT1: Normal (RGBA32F)  
+	// RT1: Normal.xyz + Roughness.r (RGBA32F)  
+	rtDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	clearValue.Format = rtDesc.Format;
 	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
 		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
 		IID_PPV_ARGS(&gBufferRT[1]));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer Normal RT");
+	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[1]");
 
-	// RT2: Albedo (RGBA8)
-	rtDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	// RT2: WorldPos.xyz + A0.r (RGBA32F)
+	rtDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	clearValue.Format = rtDesc.Format;
 	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
 		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
 		IID_PPV_ARGS(&gBufferRT[2]));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer Albedo RT");
+	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[2]");
+
+	// RT3: Emossion.rgb + Alpha.r (RGBA32F)
+	rtDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	clearValue.Format = rtDesc.Format;
+	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
+		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
+		IID_PPV_ARGS(&gBufferRT[3]));
+	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[3]");
 
 	// === 2. RTV Descriptor Heap 생성 ===
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtvHeapDesc.NumDescriptors = 3;
+	rtvHeapDesc.NumDescriptors = 4;
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	hr = device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&gBufferRTVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RTV Heap");
@@ -279,7 +289,7 @@ void DX12Core::CreateGBuffer()
 	// === 3. SRV Descriptor Heap 생성 (라이팅 패스에서 읽기용) ===
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.NumDescriptors = 3;
+	srvHeapDesc.NumDescriptors = 4;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&gBufferSRVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer SRV Heap");
@@ -288,7 +298,7 @@ void DX12Core::CreateGBuffer()
 	UINT rtvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = gBufferRTVHeap->GetCPUDescriptorHandleForHeapStart();
 
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		gBufferRTVHandles[i] = rtvHandle;
 		device->CreateRenderTargetView(gBufferRT[i].Get(), nullptr, rtvHandle);
 		rtvHandle.ptr += rtvSize;
@@ -301,7 +311,7 @@ void DX12Core::CreateGBuffer()
 	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = gBufferSRVHeap->GetCPUDescriptorHandleForHeapStart();
 	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart();
 
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		gBufferSRVHandles[i] = srvGpuHandle;
 		device->CreateShaderResourceView(gBufferRT[i].Get(), nullptr, srvCpuHandle);
 
@@ -321,26 +331,26 @@ void DX12Core::BeginGBufferPass()
 
 	if (!firstFrame) {
 		// 기존 상태 전환 코드
-		D3D12_RESOURCE_BARRIER barriers[3];
-		for (int i = 0; i < 3; ++i) {
+		D3D12_RESOURCE_BARRIER barriers[4];
+		for (int i = 0; i < 4; ++i) {
 			barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(
 				gBufferRT[i].Get(),
 				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 				D3D12_RESOURCE_STATE_RENDER_TARGET
 			);
 		}
-		cmdList->ResourceBarrier(3, barriers);
+		cmdList->ResourceBarrier(4, barriers);
 	}
 	else {
 		firstFrame = false;
 	}
 
-	// G-Buffer 3개를 렌더 타겟으로 설정
-	cmdList->OMSetRenderTargets(3, gBufferRTVHandles, FALSE, &dsvHandle);
+	// G-Buffer 4개를 렌더 타겟으로 설정
+	cmdList->OMSetRenderTargets(4, gBufferRTVHandles, FALSE, &dsvHandle);
 
 	// G-Buffer 클리어 (검은색으로)
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		cmdList->ClearRenderTargetView(gBufferRTVHandles[i], clearColor, 0, nullptr);
 	}
 
@@ -353,15 +363,15 @@ void DX12Core::BeginGBufferPass()
 void DX12Core::EndGBufferPass()
 {
 	// G-Buffer를 RTV → SRV로 상태 변경 (라이팅 패스에서 읽기 위해)
-	D3D12_RESOURCE_BARRIER barriers[3];
-	for (int i = 0; i < 3; ++i) {
+	D3D12_RESOURCE_BARRIER barriers[4];
+	for (int i = 0; i < 4; ++i) {
 		barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(
 			gBufferRT[i].Get(),
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 		);
 	}
-	cmdList->ResourceBarrier(3, barriers);
+	cmdList->ResourceBarrier(4, barriers);
 
 	//OutputDebugStringA("G-Buffer Pass ended\n");
 }

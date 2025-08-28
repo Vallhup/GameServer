@@ -91,11 +91,11 @@ private:
 	DXGI_FORMAT dsvFormat = {};
 
 	// deferred rendering
-	ComPtr<ID3D12Resource> gBufferRT[3];
+	ComPtr<ID3D12Resource> gBufferRT[4];
 	ComPtr<ID3D12DescriptorHeap> gBufferRTVHeap;
 	ComPtr<ID3D12DescriptorHeap> gBufferSRVHeap;
-	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[3];
-	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[3];
+	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[4];
+	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[4];
 
 	bool useDeferredRendering = true;
 
