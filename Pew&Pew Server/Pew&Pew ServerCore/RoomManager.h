@@ -7,6 +7,7 @@ public:
 public:
 	virtual void AddCharacter(Character* character) = 0;
 	virtual std::shared_ptr<Room> GetRoomByCharacter(int characterId) = 0;
+	virtual std::shared_ptr<Room> GetRoomByProjectile(int projectileId) = 0;
 };
 
 class RoomManager : public IRoomManager {
@@ -19,6 +20,7 @@ public:
 public:
 	virtual void AddCharacter(Character* character) override;
 	virtual std::shared_ptr<Room> GetRoomByCharacter(int characterId) override;
+	virtual std::shared_ptr<Room> GetRoomByProjectile(int projectileId) override;
 
 private:
 	IGameContext& _gameCtx;

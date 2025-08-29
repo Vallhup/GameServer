@@ -8,14 +8,23 @@ public:
 public:
 	void AddCharacter(Character* character);
 
-	bool Contains(int characterId) const;
+	void AddProjectile(Projectile* projectile);
+	void RemoveProjectile(Projectile* projectile);
+
+	bool ContainsChar(int characterId) const;
+	bool ContainsProj(int projectileId) const;
+	std::vector<Character*> GetCharacterList() const { return _characters; };
 
 	void OnDeath(int deathId);
+
+	void BroadCast(const std::vector<char>& packet, int exceptId = -1);
 
 private:
 	IGameContext& _gameCtx;
 
 	int _id;
+
 	std::vector<Character*> _characters;
+	std::vector<Projectile*> _projectiles;
 };
 

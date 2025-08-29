@@ -17,14 +17,18 @@ void GameLogic::LogicUpdate(float deltaTime)
 void GameLogic::NetworkUpdate()
 {
 	for (auto& character : _gameCtx.GetCharacterManager().GetCharacterList()) {
+		auto room = _gameCtx.GetRoomManager().GetRoomByCharacter(character->GetId());
 		if (character->VersionCheckAndChange()) {
-			_gameCtx.BroadCast(PacketFactory::SCMovePacket(*character));
+			//_gameCtx.BroadCast(PacketFactory::SCMovePacket(*character));
+			room->BroadCast(PacketFactory::SCMovePacket(*character));
 		}
 	}
 
 	for (auto& projectile : _gameCtx.GetProjectileManager().GetProjectileList()) {
+		auto room = _gameCtx.GetRoomManager().GetRoomByProjectile(projectile->GetId());
 		if (projectile->VersionCheckAndChange()) {
-			_gameCtx.BroadCast(PacketFactory::SCMovePacket(*projectile));
+			//_gameCtx.BroadCast(PacketFactory::SCMovePacket(*projectile));
+			room->BroadCast(PacketFactory::SCMovePacket(*projectile));
 		}
 	}
 }
@@ -53,9 +57,14 @@ void GameLogic::UpdateCharacters(float deltaTime)
 	// 2. 공격
 	auto projectiles = _gameCtx.GetCharacterManager().GetPendingProjectiles(_gameCtx.GetNowTime());
 	for (auto& projectile : projectiles) {
+		auto room = _gameCtx.GetRoomManager().GetRoomByCharacter(projectile.characterId);
 		auto projectilePtr = std::make_shared<Projectile>(projectileId++, projectile.characterId, projectile.position, projectile.direction, 10);
+
 		_gameCtx.GetProjectileManager().AddProjectile(projectilePtr);
-		_gameCtx.BroadCast(PacketFactory::SCAddPacket(*projectilePtr));
+		room->AddProjectile(projectilePtr.get());
+
+		//_gameCtx.BroadCast(PacketFactory::SCAddPacket(*projectilePtr));
+		room->BroadCast(PacketFactory::SCAddPacket(*projectilePtr));
 	}
 }
 
@@ -67,8 +76,14 @@ void GameLogic::UpdateProjectiles(float deltaTime)
 	// 2. 시간 초과 (삭제)
 	for (auto& projectile : _gameCtx.GetProjectileManager().GetProjectileList()) {
 		if (not projectile->IsActive()) {
+			const int projId = projectile->GetId();
+			auto room = _gameCtx.GetRoomManager().GetRoomByProjectile(projId);
+
 			_gameCtx.GetProjectileManager().RemoveProjectile(projectile->GetId());
-			_gameCtx.BroadCast(PacketFactory::SCRemovePacket(*projectile));
+			room->RemoveProjectile(projectile.get());
+
+			//_gameCtx.BroadCast(PacketFactory::SCRemovePacket(*projectile));
+			room->BroadCast(PacketFactory::SCRemovePacket(*projectile));
 		}
 	}
 }
@@ -83,9 +98,17 @@ void GameLogic::CheckCollisions()
 	for (auto& [projectile, character] : collisionList) {
 		character->TakeDamage(projectile->GetDamage());
 		projectile->SetInactive();
-		_gameCtx.GetProjectileManager().RemoveProjectile(projectile->GetId());
-		_gameCtx.BroadCast(PacketFactory::SCRemovePacket(*projectile));
-		_gameCtx.BroadCast(PacketFactory::SCStatUpdatePacket(*character));
+
+		const int projId = projectile->GetId();
+		auto room = _gameCtx.GetRoomManager().GetRoomByProjectile(projId);
+
+		_gameCtx.GetProjectileManager().RemoveProjectile(projId);
+		room->RemoveProjectile(projectile.get());
+
+		/*_gameCtx.BroadCast(PacketFactory::SCRemovePacket(*projectile));
+		_gameCtx.BroadCast(PacketFactory::SCStatUpdatePacket(*character));*/
+		room->BroadCast(PacketFactory::SCRemovePacket(*projectile));
+		room->BroadCast(PacketFactory::SCStatUpdatePacket(*character));
 	}
 
 	auto deathList = _gameCtx.GetCharacterManager().GetDeathCharacterList();
@@ -94,15 +117,15 @@ void GameLogic::CheckCollisions()
 			deathCharacter->SetDeadProcessed(true);
 			_gameCtx.BroadCast(PacketFactory::SCDeadPacket(*deathCharacter));
 
-			/*{
+			{
 
 				int deathId = deathCharacter->GetId();
 				if (auto room = _gameCtx.GetRoomManager().GetRoomByCharacter(deathId)) {
 					room->OnDeath(deathId);
 				}
-			}*/
+			}
 
-			{
+			/*{
 				_gameCtx.GetTimerManager().AddOneTimeTask(
 					[deathCharacter, this]()
 					{
@@ -111,7 +134,7 @@ void GameLogic::CheckCollisions()
 							_gameCtx.BroadCast(PacketFactory::SCRevivePacket(*deathCharacter));
 						}
 					}, REVIVE_TIME);
-			}
+			}*/
 		}
 	}
 }
@@ -153,13 +176,22 @@ void GameLogic::OnPlayerLogin(int sessionId, const std::vector<char>& packet)
 	session->Send(PacketFactory::SCLoginPacket());
 
 	_gameCtx.GetCharacterManager().AddCharacter(character);
-	_gameCtx.BroadCast(PacketFactory::SCAddPacket(*character));
-
 	_gameCtx.GetRoomManager().AddCharacter(character.get());
 
-	for (const auto& otherChar : _gameCtx.GetCharacterManager().GetCharacterList()) {
+	auto room = _gameCtx.GetRoomManager().GetRoomByCharacter(sessionId);
+
+	//_gameCtx.BroadCast(PacketFactory::SCAddPacket(*character));
+	room->BroadCast(PacketFactory::SCAddPacket(*character));
+
+	/*for (const auto& otherChar : _gameCtx.GetCharacterManager().GetCharacterList()) {
 		if (otherChar->GetId() == character->GetId()) continue;
 		session->Send(PacketFactory::SCAddPacket(*otherChar));
+	}*/
+	for (const auto& otherChar : room->GetCharacterList()) {
+		if (otherChar) {
+			if (otherChar->GetId() == character->GetId()) continue;
+			session->Send(PacketFactory::SCAddPacket(*otherChar));
+		}
 	}
 }
 
@@ -167,13 +199,15 @@ void GameLogic::OnPlayerMove(int sessionId, const std::vector<char>& packet)
 {
 	auto move = PacketFactory::Deserialize<CS_MOVE_PACKET>(packet);
 	auto session = _gameCtx.GetSessionManager().GetSession(sessionId);
+	auto room = _gameCtx.GetRoomManager().GetRoomByCharacter(sessionId);
 	auto character = session->GetCharacter();
 
 	if (character) {
 		character->SetInput(move.angle, move.direction, move.isRun);
 
 		if (move.direction < 0 or move.direction >= 8) {
-			_gameCtx.BroadCast(PacketFactory::SCMovePacket(*character));
+			//_gameCtx.BroadCast(PacketFactory::SCMovePacket(*character));
+			room->BroadCast(PacketFactory::SCMovePacket(*character));
 		}
 	}
 }
@@ -182,12 +216,14 @@ void GameLogic::OnPlayerAttack(int sessionId, const std::vector<char>& packet)
 {
 	auto attack = PacketFactory::Deserialize<CS_ATTACK_PACKET>(packet);
 	auto session = _gameCtx.GetSessionManager().GetSession(sessionId);
+	auto room = _gameCtx.GetRoomManager().GetRoomByCharacter(sessionId);
 	auto character = session->GetCharacter();
 
 	if (character) {
 		vec3 attackDir{ attack.x, attack.y, attack.z };
 		character->SetAttackSequence(_gameCtx.GetNowTime(), attackDir);
-		_gameCtx.BroadCast(PacketFactory::SCAttackPacket(*session));
+		//_gameCtx.BroadCast(PacketFactory::SCAttackPacket(*session));
+		room->BroadCast(PacketFactory::SCAttackPacket(*session));
 	}
 }
 
@@ -195,9 +231,11 @@ void GameLogic::OnPlayerAttackEnd(int sessionId, const std::vector<char>& packet
 {
 	auto end = PacketFactory::Deserialize<CS_ATTACK_END_PACKET>(packet);
 	auto session = _gameCtx.GetSessionManager().GetSession(sessionId);
+	auto room = _gameCtx.GetRoomManager().GetRoomByCharacter(sessionId);
 	auto character = session->GetCharacter();
 
 	if (character) {
-		_gameCtx.BroadCast(PacketFactory::SCAttackEndPacket(*session));
+		//_gameCtx.BroadCast(PacketFactory::SCAttackEndPacket(*session));
+		room->BroadCast(PacketFactory::SCAttackEndPacket(*session));
 	}
 }

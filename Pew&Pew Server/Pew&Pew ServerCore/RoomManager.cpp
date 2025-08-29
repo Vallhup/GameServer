@@ -20,7 +20,16 @@ void RoomManager::AddCharacter(Character* character)
 std::shared_ptr<Room> RoomManager::GetRoomByCharacter(int characterId)
 {
 	for (auto& [id, room] : _rooms) {
-		if (room->Contains(characterId)) return room;
+		if (room->ContainsChar(characterId)) return room;
+	}
+
+	return nullptr;
+}
+
+std::shared_ptr<Room> RoomManager::GetRoomByProjectile(int projectileId)
+{
+	for (auto& [id, room] : _rooms) {
+		if (room->ContainsProj(projectileId)) return room;
 	}
 
 	return nullptr;

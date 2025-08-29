@@ -8,9 +8,9 @@ Service::Service()
 
 	_charMng = std::make_unique<CharacterManager>();
 	_projMng = std::make_unique<ProjectileManager>();
-	_collMng = std::make_unique<CollisionManager>();
 	_timerMng = std::make_unique<TimerManager>();
 
+	_collMng = std::make_unique<CollisionManager>(*this);
 	_sessMng = std::make_unique<SessionManager>(*this);
 	_roomMng = std::make_unique<RoomManager>(*this);
 	_gameLogic = std::make_unique<GameLogic>(*this);

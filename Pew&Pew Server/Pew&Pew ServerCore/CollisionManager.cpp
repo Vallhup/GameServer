@@ -25,7 +25,11 @@ std::vector<std::pair<std::shared_ptr<Projectile>, std::shared_ptr<Character>>> 
 	std::vector<std::pair<std::shared_ptr<Projectile>, std::shared_ptr<Character>>> collisionList;
 
 	for (auto& projectile : projectiles) {
+		auto projRoom = _gameCtx.GetRoomManager().GetRoomByProjectile(projectile->GetId());
+
 		for (auto& character : characters) {
+			auto charRoom = _gameCtx.GetRoomManager().GetRoomByCharacter(character->GetId());
+			if (projRoom != charRoom) continue;
 			if (not character->IsAlive()) continue;
 			if (projectile->GetOwnerId() == character->GetId()) continue;
 
