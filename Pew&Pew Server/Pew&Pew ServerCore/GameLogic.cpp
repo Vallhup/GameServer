@@ -115,8 +115,9 @@ void GameLogic::CheckCollisions()
 	for (auto& deathCharacter : deathList) {
 		if (not deathCharacter->IsDeadProcessed()) {
 			deathCharacter->SetDeadProcessed(true);
-			_gameCtx.BroadCast(PacketFactory::SCDeadPacket(*deathCharacter));
 
+			//_gameCtx.BroadCast(PacketFactory::SCDeadPacket(*deathCharacter));
+			_gameCtx.GetRoomManager().GetRoomByCharacter(deathCharacter->GetId())->BroadCast(PacketFactory::SCDeadPacket(*deathCharacter));
 			{
 
 				int deathId = deathCharacter->GetId();
