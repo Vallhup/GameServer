@@ -35,11 +35,16 @@ void SessionManager::AcceptSession(SOCKET clientSocket)
 void SessionManager::CloseSession(int sessionId)
 {
 	auto character = _gameCtx.GetCharacterManager().GetCharacter(sessionId);
-	_gameCtx.BroadCast(PacketFactory::SCRemovePacket(*character));
+	auto room = _gameCtx.GetRoomManager().GetRoomByCharacter(sessionId);
+	
+	if (character and room) {
+		room->BroadCast(PacketFactory::SCRemovePacket(*character));
+		room->RemoveCharacter(character->GetId());
+	}
 
 	RemoveSession(sessionId);
 	_gameCtx.GetCharacterManager().RemoveCharacter(sessionId);
-
+	
 	_sessionIds.push_back(sessionId);
 }
 

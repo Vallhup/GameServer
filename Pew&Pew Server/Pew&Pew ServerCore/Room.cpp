@@ -6,14 +6,21 @@ void Room::AddCharacter(Character* character)
 	_characters.push_back(character);
 }
 
+void Room::RemoveCharacter(int characterId)
+{
+	std::erase_if(_characters,
+		[&characterId](Character* c) { return c->GetId() == characterId; });
+}
+
 void Room::AddProjectile(Projectile* projectile)
 {
 	_projectiles.push_back(projectile);
 }
 
-void Room::RemoveProjectile(Projectile* projectile)
+void Room::RemoveProjectile(int projectileId)
 {
-	std::erase(_projectiles, projectile);
+	std::erase_if(_projectiles,
+		[&projectileId](Projectile* p) { return p->GetId() == projectileId; });
 }
 
 bool Room::ContainsChar(int characterId) const
@@ -33,14 +40,16 @@ void Room::OnDeath(int deathId)
 	auto& sessMng = _gameCtx.GetSessionManager();
 
 	for (auto& character : _characters) {
-		const int charId = character->GetId();
+		if (character) {
+			const int charId = character->GetId();
 
-		if (charId == deathId) {
-			//sessMng.GetSession(charId)->Send(/* Lose Packet */);
-		}
+			if (charId == deathId) {
+				sessMng.GetSession(charId)->Send(PacketFactory::SCGameLosePacket());
+			}
 
-		else {
-			//sessMng.GetSession(charId)->Send(/* Win  Packet */);
+			else {
+				sessMng.GetSession(charId)->Send(PacketFactory::SCGameWinPacket());
+			}
 		}
 	}
 }
@@ -50,7 +59,11 @@ void Room::BroadCast(const std::vector<char>& packet, int exceptId)
 	auto& sessMng = _gameCtx.GetSessionManager();
 
 	for (auto& character : _characters) {
-		if (character->GetId() == exceptId) continue;
-		sessMng.GetSession(character->GetId())->Send(packet);
+		if (character) {
+			if (character->GetId() == exceptId) continue;
+			if (auto session = sessMng.GetSession(character->GetId())) {
+				session->Send(packet);
+			}
+		}
 	}
 }

@@ -16,7 +16,10 @@ enum PacketType : char {
 	SC_ATTACK_END,
 	SC_DEAD,
 	SC_REVIVE,
-	SC_STAT_UPDATE
+	SC_STAT_UPDATE,
+	SC_GAME_START,
+	SC_GAME_WIN,
+	SC_GAME_LOSE
 };
 
 enum MoveDirection : char {
@@ -124,6 +127,21 @@ struct SC_STAT_UPDATE_PACKET {
 	unsigned char size;
 	char type;
 	int id;
+};
+
+struct SC_GAME_START_PACKET {
+	unsigned char size;
+	char type;
+};
+
+struct SC_GAME_WIN_PACKET {
+	unsigned char size;
+	char type;
+};
+
+struct SC_GAME_LOSE_PACKET {
+	unsigned char size;
+	char type;
 };
 
 #pragma pack(pop)

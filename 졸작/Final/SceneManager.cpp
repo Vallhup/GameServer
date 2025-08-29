@@ -23,7 +23,7 @@ void SceneManager::Initialize(DX12Core& core)
     RegisterScene<LoginScene>(SceneType::Login);
     RegisterScene<ServerSquareScene>(SceneType::ServerSquare);
     RegisterScene<GameScene>(SceneType::MainGame);
-    //RegisterScene<ServerTestScene>(SceneType::Scene1);
+    RegisterScene<ServerTestScene>(SceneType::Scene1);
  
     SceneStart(core);
 }

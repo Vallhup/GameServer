@@ -7,9 +7,10 @@ public:
 
 public:
 	void AddCharacter(Character* character);
+	void RemoveCharacter(int characterId);
 
 	void AddProjectile(Projectile* projectile);
-	void RemoveProjectile(Projectile* projectile);
+	void RemoveProjectile(int projectileId);
 
 	bool IsFull() const { return _characters.size() == 2; }
 	bool ContainsChar(int characterId) const;

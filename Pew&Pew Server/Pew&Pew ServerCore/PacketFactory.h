@@ -21,6 +21,9 @@ public:
 	static std::vector<char> SCAttackEndPacket(const Session& session);
 	static std::vector<char> SCDeadPacket(const Character& character);
 	static std::vector<char> SCRevivePacket(const Character& character);
+	static std::vector<char> SCGameStartPacket();
+	static std::vector<char> SCGameWinPacket();
+	static std::vector<char> SCGameLosePacket();
 
 
 public:

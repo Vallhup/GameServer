@@ -155,6 +155,6 @@ void GameScene::RequestSceneChange()
 	if (GET(Input).GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
-			sManagerRef->RequestSceneChange(SceneType::Start);
+			sManagerRef->RequestSceneChange(SceneType::Scene1);
 	}
 }

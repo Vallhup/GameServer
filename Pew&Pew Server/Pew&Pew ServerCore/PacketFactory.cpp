@@ -181,3 +181,30 @@ std::vector<char> PacketFactory::SCRevivePacket(const Character& character)
 	return Serialize(revive);
 }
 
+std::vector<char> PacketFactory::SCGameStartPacket()
+{
+	SC_GAME_START_PACKET start;
+	start.size = sizeof(start);
+	start.type = SC_GAME_START;
+
+	return Serialize(start);
+}
+
+std::vector<char> PacketFactory::SCGameWinPacket()
+{
+	SC_GAME_WIN_PACKET win;
+	win.size = sizeof(win);
+	win.type = SC_GAME_START;
+
+	return Serialize(win);
+}
+
+std::vector<char> PacketFactory::SCGameLosePacket()
+{
+	SC_GAME_LOSE_PACKET lose;
+	lose.size = sizeof(lose);
+	lose.type = SC_GAME_LOSE;
+
+	return Serialize(lose);
+}
+

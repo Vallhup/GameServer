@@ -21,15 +21,11 @@ void GameLogic::LogicUpdate(float deltaTime)
 
 void GameLogic::NetworkUpdate()
 {
-	LOG_DBG("GameLogic NetworkUpdate");
-
 	auto objList = _instance->GetGameObjectList();
 
 	for (auto& obj : objList) {
 		if (auto trComp = obj->GetComponent<TransformComponent>()) {
 			if (trComp->VersionCheckAndChange()) {
-				LOG_DBG("GameLogic NetworkUpdate");
-
 				vec3 pos = trComp->GetPosition();
 
 				Protocol::Vec3 protoPos;

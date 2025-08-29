@@ -79,8 +79,8 @@ void GameLogic::UpdateProjectiles(float deltaTime)
 			const int projId = projectile->GetId();
 			auto room = _gameCtx.GetRoomManager().GetRoomByProjectile(projId);
 
-			_gameCtx.GetProjectileManager().RemoveProjectile(projectile->GetId());
-			room->RemoveProjectile(projectile.get());
+			_gameCtx.GetProjectileManager().RemoveProjectile(projId);
+			room->RemoveProjectile(projId);
 
 			//_gameCtx.BroadCast(PacketFactory::SCRemovePacket(*projectile));
 			room->BroadCast(PacketFactory::SCRemovePacket(*projectile));
@@ -103,7 +103,7 @@ void GameLogic::CheckCollisions()
 		auto room = _gameCtx.GetRoomManager().GetRoomByProjectile(projId);
 
 		_gameCtx.GetProjectileManager().RemoveProjectile(projId);
-		room->RemoveProjectile(projectile.get());
+		room->RemoveProjectile(projId);
 
 		/*_gameCtx.BroadCast(PacketFactory::SCRemovePacket(*projectile));
 		_gameCtx.BroadCast(PacketFactory::SCStatUpdatePacket(*character));*/
