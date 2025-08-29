@@ -21,6 +21,7 @@ void ServerTestScene::Reset()
 	_objects.clear();
 
 	Material::Cleanup();
+	OutputDebugStringA("ServerTestScene Data has been deleted!! \n----------------------------------------\n");
 }
 
 void ServerTestScene::AddGameObject(const shared_ptr<GameObject>& obj)
@@ -35,6 +36,7 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
 
 	switch (header.type()) {
 	case Protocol::PacketType::SC_LOGIN:{
+		OutputDebugStringA("SC_LOGIN packet received\n");
 		Protocol::SC_LOGIN_PACKET login;
 		if (login.ParseFromArray(packet.body().data(), packet.body().size())) {
 			myId = packet.header().sessionid();
@@ -42,7 +44,7 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
 		break;
 	}
 	case Protocol::PacketType::SC_ADD: {
-		OutputDebugStringA("SC_ADD apcket received\n");
+		OutputDebugStringA("SC_ADD packet received\n");
 
 		Protocol::SC_ADD_PACKET add;
 		if (add.ParseFromArray(packet.body().data(), packet.body().size())) {
@@ -79,7 +81,7 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
 		break;
 	}
 	case Protocol::PacketType::SC_MOVE_OBJECT: {
-		OutputDebugStringA("SC_MOVE_OBJECT apcket received\n");
+		OutputDebugStringA("SC_MOVE_OBJECT packet received\n");
 
 		Protocol::SC_MOVE_PACKET move;
 		if (move.ParseFromArray(packet.body().data(), packet.body().size())) {
@@ -90,7 +92,7 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
 		break;
 	}
 	case Protocol::PacketType::SC_REMOVE: {
-		OutputDebugStringA("SC_REMOVE apcket received\n");
+		OutputDebugStringA("SC_REMOVE packet received\n");
 		break;
 	}
 	}
@@ -103,6 +105,8 @@ const float* ServerTestScene::GetBackgroundColor()
 
 void ServerTestScene::InitializeLogic()
 {
+	OutputDebugStringA("----------------------------------------\nServerTestScene Data has been created!! \n");
+
 }
 
 void ServerTestScene::UpdateScene(const float deltaTime)
