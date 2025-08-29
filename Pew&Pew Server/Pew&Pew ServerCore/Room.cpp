@@ -44,3 +44,13 @@ void Room::OnDeath(int deathId)
 		}
 	}
 }
+
+void Room::BroadCast(const std::vector<char>& packet, int exceptId)
+{
+	auto& sessMng = _gameCtx.GetSessionManager();
+
+	for (auto& character : _characters) {
+		if (character->GetId() == exceptId) continue;
+		sessMng.GetSession(character->GetId())->Send(packet);
+	}
+}
