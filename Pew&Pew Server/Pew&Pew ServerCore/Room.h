@@ -11,6 +11,7 @@ public:
 	void AddProjectile(Projectile* projectile);
 	void RemoveProjectile(Projectile* projectile);
 
+	bool IsFull() const { return _characters.size() == 2; }
 	bool ContainsChar(int characterId) const;
 	bool ContainsProj(int projectileId) const;
 	std::vector<Character*> GetCharacterList() const { return _characters; };

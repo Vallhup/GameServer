@@ -13,7 +13,7 @@ void Room::AddProjectile(Projectile* projectile)
 
 void Room::RemoveProjectile(Projectile* projectile)
 {
-	std::remove(_projectiles.begin(), _projectiles.end(), projectile);
+	std::erase(_projectiles, projectile);
 }
 
 bool Room::ContainsChar(int characterId) const

@@ -3,18 +3,17 @@
 
 void RoomManager::AddCharacter(Character* character)
 {
-	if (_waiting) {
-		_waiting = character;
+	for (auto& [id, room] : _rooms) {
+		if (not room->IsFull()) {
+			room->AddCharacter(character);
+			return;
+		}
 	}
 
-	else {
-		auto room = std::make_shared<Room>(_nextRoomId, _gameCtx);
-		room->AddCharacter(_waiting);
-		room->AddCharacter(character);
+	auto newRoom = std::make_shared<Room>(_nextRoomId, _gameCtx);
+	newRoom->AddCharacter(character);
 
-		_rooms.try_emplace(_nextRoomId++, room);
-		_waiting = nullptr;
-	}
+	_rooms.try_emplace(_nextRoomId++, newRoom);
 }
 
 std::shared_ptr<Room> RoomManager::GetRoomByCharacter(int characterId)
