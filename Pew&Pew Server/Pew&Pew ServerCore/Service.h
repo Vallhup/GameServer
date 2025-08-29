@@ -7,6 +7,7 @@ class IProjectileManager;
 class ICollisionManager;
 class ISessionManager;
 class ITimerManager;
+class IRoomManager;
 class IGameLogic;
 
 class IGameContext {
@@ -23,6 +24,7 @@ public:
 	virtual ICollisionManager& GetCollisionManager() = 0;
 	virtual ISessionManager& GetSessionManager() = 0;
 	virtual ITimerManager& GetTimerManager() = 0;
+	virtual IRoomManager& GetRoomManager() = 0;
 	virtual IGameLogic& GetGameLogic() = 0;
 
 	// 3. 시간 정보
@@ -53,6 +55,7 @@ public:
 	virtual ICollisionManager& GetCollisionManager() override { return *_collMng; }
 	virtual ISessionManager& GetSessionManager() override { return *_sessMng; }
 	virtual ITimerManager& GetTimerManager() override { return *_timerMng; }
+	virtual IRoomManager& GetRoomManager() override { return *_roomMng; }
 	virtual IGameLogic& GetGameLogic() override { return *_gameLogic; }
 
 	virtual float GetNowTime() override;
@@ -67,6 +70,7 @@ private:
 	std::unique_ptr<ICollisionManager> _collMng;
 	std::unique_ptr<ISessionManager> _sessMng;
 	std::unique_ptr<ITimerManager> _timerMng;
+	std::unique_ptr<IRoomManager> _roomMng;
 	std::unique_ptr<IGameLogic> _gameLogic;
 };
 

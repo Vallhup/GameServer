@@ -12,6 +12,7 @@ Service::Service()
 	_timerMng = std::make_unique<TimerManager>();
 
 	_sessMng = std::make_unique<SessionManager>(*this);
+	_roomMng = std::make_unique<RoomManager>(*this);
 	_gameLogic = std::make_unique<GameLogic>(*this);
 }
 

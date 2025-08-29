@@ -78,6 +78,12 @@
     <ClInclude Include="TimerManager.h">
       <Filter>Core\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="RoomManager.h">
+      <Filter>Game\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -127,6 +133,12 @@
     </ClCompile>
     <ClCompile Include="TimerManager.cpp">
       <Filter>Core\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomManager.cpp">
+      <Filter>Game\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

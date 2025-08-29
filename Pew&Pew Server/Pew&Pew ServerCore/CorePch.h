@@ -44,6 +44,9 @@
 #include "TimerManager.h"
 #include "GameLogic.h"
 
+#include "Room.h"
+#include "RoomManager.h"
+
 #include "RecvBuffer.h"
 
 #include "Macro.h"
