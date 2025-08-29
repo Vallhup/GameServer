@@ -16,7 +16,8 @@ void DX12Core::Initialize(HWND hwnd)
 	shader = make_unique<Shader>();
 	frameCB = make_unique<UploadBuffer>();
 	sceneCB = make_unique<UploadBuffer>();
-	directionLightCB = make_unique<UploadBuffer>();
+	deferredLightCB = make_unique<UploadBuffer>();
+	forwardLightCB = make_unique<UploadBuffer>();
 
 	rootSig->Initialize(GetDevice());
 	shader->Initialize(GetDevice(), GetRootSig()->Get(), L"BasicVS.hlsli", L"BasicPS.hlsli");
@@ -25,7 +26,8 @@ void DX12Core::Initialize(HWND hwnd)
 	shader->InitializeComputeShader(GetDevice(), GetRootSig()->Get(), L"Animation.hlsli");
 	frameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	sceneCB->Initialize(GetDevice(), 256 * 100);
-	directionLightCB->Initialize(GetDevice(), sizeof(LightConstants));
+	deferredLightCB->Initialize(GetDevice(), sizeof(LightConstants));
+	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
 
 	CreateDepthStencilBuffer();
 	CreateGBuffer();
@@ -244,34 +246,44 @@ void DX12Core::CreateGBuffer()
 	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
 	D3D12_CLEAR_VALUE clearValue = {};
 
-	// RT0: Position (RGBA32F)
-	rtDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	// RT0: BaseColor.rgb + Metallic.r (RGBA8UN)
+	rtDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	clearValue.Format = rtDesc.Format;
 	memset(clearValue.Color, 0, sizeof(clearValue.Color));
 
 	HRESULT hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
 		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
 		IID_PPV_ARGS(&gBufferRT[0]));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer Position RT");
+	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[0]");
 
-	// RT1: Normal (RGBA32F)  
+	// RT1: Normal.xyz + Roughness.r (RGBA32F)  
+	rtDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	clearValue.Format = rtDesc.Format;
 	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
 		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
 		IID_PPV_ARGS(&gBufferRT[1]));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer Normal RT");
+	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[1]");
 
-	// RT2: Albedo (RGBA8)
-	rtDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	// RT2: WorldPos.xyz + A0.r (RGBA32F)
+	rtDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	clearValue.Format = rtDesc.Format;
 	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
 		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
 		IID_PPV_ARGS(&gBufferRT[2]));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer Albedo RT");
+	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[2]");
+
+	// RT3: Emossion.rgb + Alpha.r (RGBA32F)
+	rtDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	clearValue.Format = rtDesc.Format;
+	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
+		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
+		IID_PPV_ARGS(&gBufferRT[3]));
+	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[3]");
 
 	// === 2. RTV Descriptor Heap 생성 ===
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtvHeapDesc.NumDescriptors = 3;
+	rtvHeapDesc.NumDescriptors = 4;
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	hr = device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&gBufferRTVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RTV Heap");
@@ -279,7 +291,7 @@ void DX12Core::CreateGBuffer()
 	// === 3. SRV Descriptor Heap 생성 (라이팅 패스에서 읽기용) ===
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.NumDescriptors = 3;
+	srvHeapDesc.NumDescriptors = 4;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&gBufferSRVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer SRV Heap");
@@ -288,7 +300,7 @@ void DX12Core::CreateGBuffer()
 	UINT rtvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = gBufferRTVHeap->GetCPUDescriptorHandleForHeapStart();
 
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		gBufferRTVHandles[i] = rtvHandle;
 		device->CreateRenderTargetView(gBufferRT[i].Get(), nullptr, rtvHandle);
 		rtvHandle.ptr += rtvSize;
@@ -301,7 +313,7 @@ void DX12Core::CreateGBuffer()
 	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = gBufferSRVHeap->GetCPUDescriptorHandleForHeapStart();
 	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart();
 
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		gBufferSRVHandles[i] = srvGpuHandle;
 		device->CreateShaderResourceView(gBufferRT[i].Get(), nullptr, srvCpuHandle);
 
@@ -314,6 +326,20 @@ void DX12Core::CreateGBuffer()
 	OutputDebugStringA("G-Buffer created successfully!\n");
 }
 
+void DX12Core::BeginForwardPass()
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtvHandle[backBufferIndex];
+	cmdList->OMSetRenderTargets(1, &rtv, FALSE, &dsvHandle);
+
+	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
+
+	ForwardLightConstants light = { {0, 0, -1}, 0, {1, 1, 1}, 0.6f };
+	GetForwardLightCB()->CopyData(&light, sizeof(ForwardLightConstants));
+	cmdList->SetGraphicsRootConstantBufferView(10, GetForwardLightCB()->GetGPUVirtualAddress());
+
+	//OutputDebugStringA("Forward pass started\n");
+}
+
 void DX12Core::BeginGBufferPass()
 {
 	// 첫 번째 프레임에서는 상태 전환 건너뛰기
@@ -321,26 +347,26 @@ void DX12Core::BeginGBufferPass()
 
 	if (!firstFrame) {
 		// 기존 상태 전환 코드
-		D3D12_RESOURCE_BARRIER barriers[3];
-		for (int i = 0; i < 3; ++i) {
+		D3D12_RESOURCE_BARRIER barriers[4];
+		for (int i = 0; i < 4; ++i) {
 			barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(
 				gBufferRT[i].Get(),
 				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 				D3D12_RESOURCE_STATE_RENDER_TARGET
 			);
 		}
-		cmdList->ResourceBarrier(3, barriers);
+		cmdList->ResourceBarrier(4, barriers);
 	}
 	else {
 		firstFrame = false;
 	}
 
-	// G-Buffer 3개를 렌더 타겟으로 설정
-	cmdList->OMSetRenderTargets(3, gBufferRTVHandles, FALSE, &dsvHandle);
+	// G-Buffer 4개를 렌더 타겟으로 설정
+	cmdList->OMSetRenderTargets(4, gBufferRTVHandles, FALSE, &dsvHandle);
 
 	// G-Buffer 클리어 (검은색으로)
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		cmdList->ClearRenderTargetView(gBufferRTVHandles[i], clearColor, 0, nullptr);
 	}
 
@@ -353,15 +379,15 @@ void DX12Core::BeginGBufferPass()
 void DX12Core::EndGBufferPass()
 {
 	// G-Buffer를 RTV → SRV로 상태 변경 (라이팅 패스에서 읽기 위해)
-	D3D12_RESOURCE_BARRIER barriers[3];
-	for (int i = 0; i < 3; ++i) {
+	D3D12_RESOURCE_BARRIER barriers[4];
+	for (int i = 0; i < 4; ++i) {
 		barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(
 			gBufferRT[i].Get(),
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 		);
 	}
-	cmdList->ResourceBarrier(3, barriers);
+	cmdList->ResourceBarrier(4, barriers);
 
 	//OutputDebugStringA("G-Buffer Pass ended\n");
 }
@@ -388,53 +414,48 @@ void DX12Core::BeginLightingPass()
 
 void DX12Core::SetupLightng()
 {
-	// 32개 조명 설정
+	// 50개 조명 설정 (Directional 2개 + Point Light 48개)
 	static bool lightsInitialized = false;
 	static LightConstants lightData = {};
-
 	if (!lightsInitialized) {
 		lightData.lightCount = 50;
 
 		// 기존 directional light 유지
 		lightData.lights[0] = {
-			{0, 0, -1}, 0,               // direction (기존과 동일)
-			{1, 1, 1}, 0.6f,             // color, intensity (기존과 동일)
+			{0, 0, -1}, 0,               // direction
+			{1, 1, 1}, 0.6f,             // color, intensity
 			0,                           // type: directional
 			{0, 0, 0}                    // padding
 		};
-
 		lightData.lights[1] = {
-			{0, 0, 1}, 0,               // direction (기존과 동일)
-			{1, 1, 1}, 0.3f,             // color, intensity (기존과 동일)
+			{0, 0, 1}, 0,               // direction
+			{1, 1, 1}, 0.3f,             // color, intensity
 			0,                           // type: directional
 			{0, 0, 0}                    // padding
 		};
 
-		// Point lights 31개 - Z축 마이너스 방향으로 일직선 배치
-		float spacing = 2.0f;
+		// Point lights 48개 - 두 줄로 24개씩 배치
+		float spacing = 4.0f;
+		float height = 2.0f;           // 높이 2.5
+		float leftX = -1.5f;           // 왼쪽 줄 X 위치
+		float rightX = 1.5f;           // 오른쪽 줄 X 위치
+
 		for (int i = 2; i < 50; ++i) {
-			float x = 0; // X축 고정
-			float z = -(i - 1) * spacing; // 0, -3, -6, -9, ... -90
-			float height = 2.0f; // 모든 조명 동일한 높이
+			int lightIndex = i - 2;   // 0~47 인덱스
+			int rowIndex = lightIndex % 24;  // 0~23 (각 줄의 인덱스)
+			bool isLeftRow = (lightIndex < 24);  // 첫 24개는 왼쪽 줄
 
-			// 색상 계산 (HSV 기반으로 다양한 색상)
-			float hue = (float)(i - 1) / 100.0f;
-			XMFLOAT3 color;
+			float x = isLeftRow ? leftX : rightX;
+			float z = -(rowIndex * spacing);  // 0, -2, -4, -6, ... -46
 
-			// HSV to RGB 변환 (간단 버전)
-			if (hue < 0.33f) {
-				color = { 1.0f, hue * 3.0f, 0.0f }; // 빨강 -> 노랑
-			}
-			else if (hue < 0.66f) {
-				color = { 1.0f - (hue - 0.33f) * 3.0f, 1.0f, 0.0f }; // 노랑 -> 녹색
-			}
-			else {
-				color = { 0.0f, 1.0f - (hue - 0.66f) * 3.0f, (hue - 0.66f) * 3.0f }; // 녹색 -> 파랑
-			}
+			// 색상: 왼쪽 줄은 파란색, 오른쪽 줄은 빨간색
+			XMFLOAT3 color = isLeftRow ?
+				XMFLOAT3{ 0.0f, 1.0f, 1.0f } :  // 파란색 (왼쪽 줄)
+				XMFLOAT3{ 1.0f, 0.0f, 1.0f };   // 빨간색 (오른쪽 줄)
 
 			lightData.lights[i] = {
-				{x, height, z}, 2.0f,    // position, range
-				color, 0.8f,             // color, intensity
+				{x, height, z}, 3.0f,    // position, range
+				color, 1.0f,             // color, intensity
 				1,                       // type: point light
 				{0, 0, 0}               // padding
 			};
@@ -442,8 +463,7 @@ void DX12Core::SetupLightng()
 
 		lightsInitialized = true;
 	}
-
-	directionLightCB->CopyData(&lightData, sizeof(LightConstants));
+	deferredLightCB->CopyData(&lightData, sizeof(LightConstants));
 }
 
 void DX12Core::RenderFullscreenQuad()
@@ -455,7 +475,7 @@ void DX12Core::RenderFullscreenQuad()
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
 	// 라이트 데이터 바인딩
-	cmdList->SetGraphicsRootConstantBufferView(10, GetDirectionalLightCB()->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(10, GetDeferredLightCB()->GetGPUVirtualAddress());
 
 	// 정점 버퍼 없이 6개 정점으로 사각형 그리기 (2개 삼각형)
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -602,9 +622,14 @@ UploadBuffer* DX12Core::GetSceneCB() const
 	return sceneCB.get();
 }
 
-UploadBuffer* DX12Core::GetDirectionalLightCB() const
+UploadBuffer* DX12Core::GetDeferredLightCB() const
 {
-	return directionLightCB.get();
+	return deferredLightCB.get();
+}
+
+UploadBuffer* DX12Core::GetForwardLightCB() const
+{
+	return forwardLightCB.get();
 }
 
 void DX12Core::SetBackgroundColor(const float* color)

@@ -13,7 +13,8 @@ public:
 	virtual ~Scene() {}
     virtual void Initialize(DX12Core& core);
     virtual void Update(const float deltaTime);
-    virtual void Render();
+    virtual void RenderDeferred();
+	virtual void RenderForward();
     virtual void Release() = 0;
     virtual void Reset() = 0;
 
@@ -25,7 +26,8 @@ public:
 protected:
 	virtual void InitializeLogic() = 0;
 	virtual void UpdateScene(const float deltaTime) = 0;
-	virtual void RenderScene() = 0;
+	virtual void RenderSceneDeferred() = 0;
+	virtual void RenderSceneForward() = 0;
 	virtual int GetSceneWidth() const = 0;
 	virtual void RequestSceneChange() = 0;
 

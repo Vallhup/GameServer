@@ -32,7 +32,11 @@ void LoginScene::UpdateScene(const float deltaTime)
 {
 }
 
-void LoginScene::RenderScene()
+void LoginScene::RenderSceneDeferred()
+{
+}
+
+void LoginScene::RenderSceneForward()
 {
 }
 

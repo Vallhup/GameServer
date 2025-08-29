@@ -49,24 +49,21 @@ void Engine::Update(const float deltaTime)
 
 void Engine::Render()
 {
-    /*graphics->RenderBegin(viewport, scissorRect);
-    
-    sManager->Render();
-
-    graphics->RenderEnd();*/
-
-    // 아래는 Deferred rendering test
-
     graphics->RenderBegin(viewport, scissorRect);
 
-    // 1. G-Buffer Pass
+    // 1. Deferred G-Buffer Pass (불투명 머티리얼만)
     graphics->BeginGBufferPass();
-    sManager->Render();  // G-Buffer에 렌더링
+    sManager->RenderDeferred();  // 불투명한 것들만
     graphics->EndGBufferPass();
 
-    // 2. Lighting Pass  
+    // 2. Deferred Lighting Pass  
     graphics->BeginLightingPass();
-    graphics->RenderFullscreenQuad();  // 풀스크린으로 라이팅 적용
+    graphics->RenderFullscreenQuad();
+
+    // 3. Forward Alpha Pass (투명 머티리얼)
+    // 백버퍼 + depth buffer 사용, alpha blending 활성화
+    graphics->BeginForwardPass();
+    sManager->RenderForward();   // 머리카락 등 투명한 것들
 
     graphics->RenderEnd();
 

@@ -118,14 +118,14 @@ void TestScene::UpdateScene(const float deltaTime)
 	}*/
 }
 
-void TestScene::RenderScene()
+void TestScene::RenderSceneDeferred()
 {
 	{
 		if (knight)
 		{
 			auto meshrenderer = knight->GetComponent<MeshRenderer>();
 			if (meshrenderer)
-				meshrenderer->Render(*coreRef);
+				meshrenderer->RenderDeferred(*coreRef);
 		}
 	}
 
@@ -137,6 +137,18 @@ void TestScene::RenderScene()
 				meshRenderer->RenderInstanced(INSTANCE_COUNT, instanceBuffer.get());
 		}
 	}*/
+}
+
+void TestScene::RenderSceneForward()
+{
+	{
+		if (knight)
+		{
+			auto meshrenderer = knight->GetComponent<MeshRenderer>();
+			if (meshrenderer)
+				meshrenderer->RenderForward(*coreRef);
+		}
+	}
 }
 
 int TestScene::GetSceneWidth() const

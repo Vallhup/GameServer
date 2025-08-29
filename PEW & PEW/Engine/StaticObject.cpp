@@ -2,11 +2,12 @@
 #include "StaticObject.h"
 #include "stb_image.h"
 
-StaticObject::StaticObject(const char* glb, const char* png)
+StaticObject::StaticObject(const char* glb, const char* png, const char* let)
 {
 	SetupShader("Shaders/StaticObjectVert.glsl", "Shaders/StaticObjectFrag.glsl", shaderprogram);
 	LoadStaticObjectGLB(glb);
 	Texture = LoadTexture(png);
+	name = let;
 }
 
 StaticObject::~StaticObject()
@@ -215,4 +216,19 @@ void StaticObject::drawStaticobjectShadow(const glm::mat4& lightSpaceMatrix, GLu
 		1, GL_FALSE, glm::value_ptr(model));
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
+}
+
+void StaticObject::MoveStaticobject(const float deltaTime)
+{
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 1.0f * deltaTime));
+}
+
+void StaticObject::MoveStaticobjectToBeginPos()
+{
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, -236.0f));
+}
+
+const char* StaticObject::GetName()
+{
+	return name;
 }

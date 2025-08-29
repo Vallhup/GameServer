@@ -25,6 +25,13 @@ struct LightConstants {
 	LightData lights[50]; // 조명 60개부터 렉걸린다 이유 해결 안됨
 };
 
+struct ForwardLightConstants {
+	XMFLOAT3 direction;
+	float padding;
+	XMFLOAT3 color;
+	float intensity;
+};
+
 class RootSignature;
 class Shader;
 
@@ -41,6 +48,7 @@ public:
 	void CreateDepthStencilBuffer(DXGI_FORMAT dsvformat = DXGI_FORMAT_D32_FLOAT);
 
 	void CreateGBuffer();
+	void BeginForwardPass();
 	void BeginGBufferPass();
 	void EndGBufferPass();
 	void BeginLightingPass();
@@ -62,7 +70,8 @@ public:
 	Shader* GetShader() const;
 	UploadBuffer* GetFrameCB() const;
 	UploadBuffer* GetSceneCB() const;
-	UploadBuffer* GetDirectionalLightCB() const;
+	UploadBuffer* GetDeferredLightCB() const;
+	UploadBuffer* GetForwardLightCB() const;
 
 	void SetBackgroundColor(const float* color);
 
@@ -91,11 +100,11 @@ private:
 	DXGI_FORMAT dsvFormat = {};
 
 	// deferred rendering
-	ComPtr<ID3D12Resource> gBufferRT[3];
+	ComPtr<ID3D12Resource> gBufferRT[4];
 	ComPtr<ID3D12DescriptorHeap> gBufferRTVHeap;
 	ComPtr<ID3D12DescriptorHeap> gBufferSRVHeap;
-	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[3];
-	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[3];
+	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[4];
+	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[4];
 
 	bool useDeferredRendering = true;
 
@@ -104,5 +113,6 @@ private:
 	unique_ptr<Shader> shader;
 	unique_ptr<UploadBuffer> frameCB;
 	unique_ptr<UploadBuffer> sceneCB;
-	unique_ptr<UploadBuffer> directionLightCB;
+	unique_ptr<UploadBuffer> deferredLightCB;
+	unique_ptr<UploadBuffer> forwardLightCB;
 };
