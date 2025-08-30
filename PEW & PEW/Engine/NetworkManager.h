@@ -17,12 +17,14 @@ public:
 	void ProcessPacket(const std::vector<char>& packet);
 
 	bool IsConnected() const;
+	bool CanStart() const;
 
 	void SetGraphicsManager(GraphicsManager* gfx) { graphics = gfx; }
 
 private:
 	SOCKET clientSocket;
 	bool isConnected;
+	bool canStart = false;
 
 	std::vector<char> recvBuffer;
 	GraphicsManager* graphics = { nullptr };

@@ -44,5 +44,6 @@ private:
     bool isTransitioning = { false };
     bool isSceneLoaded = { true };
     float loadingTimer = 3.0f;
+    float startTimer = 6.0f;
 };
 

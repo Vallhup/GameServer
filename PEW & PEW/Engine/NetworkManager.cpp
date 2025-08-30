@@ -370,6 +370,13 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		}
 		break;
 	}
+	case SC_GAME_START:
+	{
+		SC_GAME_START_PACKET startPacket = PacketFactory::Deserialize<SC_GAME_START_PACKET>(packet);
+
+		canStart = true;
+		break;
+	}
 	default:
 		std::cout << "[UNKNOWN PACKET] Type: " << (int)packetType << std::endl;
 		break;
@@ -379,4 +386,9 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 bool NetworkManager::IsConnected() const
 {
 	return isConnected;
+}
+
+bool NetworkManager::CanStart() const
+{
+	return canStart;
 }

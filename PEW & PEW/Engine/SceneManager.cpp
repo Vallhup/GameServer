@@ -79,8 +79,21 @@ void SceneManager::TransitionUpdate(const float deltaTime)
 
 		if (fade->GetFadeAlpha() <= 0.0f)
 		{
-			if (input->GetInputBlock())
+			if (input->GetInputBlock() && network->CanStart() && startTimer <= 0.0f)
+			{
+				cout << "GameStart!!" << '\n';
 				input->SetInputBlock(false);
+			}
+			
+		}
+
+		if (network)
+		{
+			if (network->CanStart() && startTimer > 0.0f)
+			{
+				startTimer -= deltaTime;
+				cout << startTimer << '\n';
+			}
 		}
 	}
 }
