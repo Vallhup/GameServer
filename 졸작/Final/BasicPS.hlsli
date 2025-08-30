@@ -103,11 +103,11 @@ float4 PSMain(PS_IN input) : SV_Target
         float NdotL = max(0.0, dot(worldNormal, -lightDir));
         
         float3 diffuse = baseColor.rgb * NdotL * 0.7;
-        float3 ambient = baseColor.rgb * 1.0;
+        float3 ambient = baseColor.rgb * 0.3;
         
         float3 viewDir = normalize(float3(0.1, 0.1, -1));
         float3 reflectDir = reflect(lightDir, worldNormal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0) * metallic * 0.3;
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0) * metallic * 0.01;
         
         float3 finalColor = (diffuse + ambient + spec) * lightColor * lightIntensity;
         
