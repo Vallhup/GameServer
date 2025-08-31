@@ -21,12 +21,6 @@ void SessionManager::AddSession(SOCKET clientSocket)
 		std::unique_lock lock{ _mutex };
 		_sessions.insert(std::make_pair(_nextSessionId++, session));
 	}
-
-	// TEMP : 나중에 Login Packet 만들면 OnSessionPacket에서 처리
-	_gameCtx.GetGameWorld().GetInstance(0)->AddPlayer(session.get());
-
-	// TEMP : Client에 자신의 id값 알려주기위해 임시 Login Packet Send
-	session->RegisterSend(PacketFactory::SCLoginPacket(session->GetId()));
 }
 
 void SessionManager::RemoveSession(int sessionId)
@@ -38,6 +32,7 @@ void SessionManager::RemoveSession(int sessionId)
 Session* SessionManager::GetSession(int sessionId)
 {
 	std::shared_lock lock{ _mutex };
+
 	auto it = _sessions.find(sessionId);
 	if (it != _sessions.end()) {
 		return it->second.get();
@@ -63,6 +58,32 @@ void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& pac
 
 	const auto& header = gamePacket.header();
 	switch (header.type()) {
+	case Protocol::PacketType::CS_LOGIN: {
+		Protocol::CS_LOGIN_PACKET login;
+		if (not login.ParseFromArray(gamePacket.body().data(), gamePacket.body().size())) {
+			LOG_ERR("CS_LOGIN_PACKET parse failed");
+			return;
+		}
+
+		// TEMP : Login Packet에 Character Data 포함? 
+		//        아니면 접속 타이밍, 무결성만 검사하고 따로 Character Select Packet?
+		auto session = GetSession(sessionId);
+
+		// TEMP : 0번 Instance는 Server Town 고정
+		//        나중에 Character 별로 Server Town 나뉘어지면 별도로 분기
+		_gameCtx.GetGameWorld().GetInstance(0)->AddPlayer(session);
+		session->RegisterSend(PacketFactory::SCLoginPacket(session->GetId()));
+
+		const vec3 pos = session->GetCharacter()->GetComponent<TransformComponent>()->GetPosition();
+		Protocol::Vec3 packetPos;
+		packetPos.set_x(pos.x);
+		packetPos.set_y(pos.y);
+		packetPos.set_z(pos.z);
+
+		session->RegisterSend(PacketFactory::SCAddPacket(sessionId, packetPos));
+
+		break;
+	}
 	case Protocol::CS_INPUT: {
 		Protocol::CS_INPUT_PACKET input;
 		if (not input.ParseFromArray(gamePacket.body().data(), gamePacket.body().size())) {

@@ -1,12 +1,16 @@
 #pragma once
 
 #include <unordered_map>
+#include <queue>
 #include "Scene.h"
+#include "NetworkManager.h"
 
 class ServerTestScene final : public Scene {
 public:
 	ServerTestScene() = default;
 	~ServerTestScene() = default;
+
+	void SetNetworkManager(NetworkManager* nManager) { _nManager = nManager; }
 
 public:
 	virtual void Release() override;
@@ -25,6 +29,9 @@ public:
 	void RequestSceneChange() override;
 
 private:
+	NetworkManager* _nManager{ nullptr };
+
 	unordered_map<int, shared_ptr<GameObject>> _objects;
+	queue<shared_ptr<GameObject>> _pendingObjects; 
 };
 

@@ -21,6 +21,7 @@ public:
 public:
     // Server Test
     SceneManager* GetSceneManager() { return sManager.get(); }
+    NetworkManager* GetNetworkManager() { return nManager.get(); }
 
 private:
     HWND mHwnd = nullptr;

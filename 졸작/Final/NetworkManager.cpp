@@ -122,22 +122,28 @@ void NetworkManager::Release()
 
 void NetworkManager::Send(const std::vector<char>& packet)
 {
-	if (not isConnected or clientSocket == INVALID_SOCKET) {
-		return;
-	}
+	if (SceneManager* sManager = GET(Engine).GetSceneManager()) {
+		if (Scene* scene = sManager->GetCurrentScene()) {
+			if (auto testScene = dynamic_cast<ServerTestScene*>(scene)) {
+				if (not isConnected or clientSocket == INVALID_SOCKET) {
+					return;
+				}
 
-	int sent = send(clientSocket, packet.data(), packet.size(), 0);
-	if (SOCKET_ERROR == sent) {
-		int error = WSAGetLastError();
-		std::string msg = "send() failed, error=" + std::to_string(error) + "\n";
-		OutputDebugStringA(msg.c_str());
+				int sent = send(clientSocket, packet.data(), packet.size(), 0);
+				if (SOCKET_ERROR == sent) {
+					int error = WSAGetLastError();
+					std::string msg = "send() failed, error=" + std::to_string(error) + "\n";
+					OutputDebugStringA(msg.c_str());
 
-		if (WSAEWOULDBLOCK != error) {
-			Release();
-		}
+					if (WSAEWOULDBLOCK != error) {
+						Release();
+					}
 
-		else {
-			OutputDebugStringA(to_string(packet.size()).c_str());
+					else {
+						OutputDebugStringA(to_string(packet.size()).c_str());
+					}
+				}
+			}
 		}
 	}
 }

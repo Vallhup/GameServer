@@ -57,11 +57,12 @@ namespace protobuf {
 namespace Protocol {
 enum PacketType : int {
   NONE_TYPE = 0,
-  CS_INPUT = 1,
-  SC_LOGIN = 2,
-  SC_ADD = 3,
-  SC_MOVE_OBJECT = 4,
-  SC_REMOVE = 5,
+  CS_LOGIN = 1,
+  CS_INPUT = 2,
+  SC_LOGIN = 3,
+  SC_ADD = 4,
+  SC_MOVE_OBJECT = 5,
+  SC_REMOVE = 6,
   PacketType_INT_MIN_SENTINEL_DO_NOT_USE_ =
       std::numeric_limits<::int32_t>::min(),
   PacketType_INT_MAX_SENTINEL_DO_NOT_USE_ =
@@ -71,8 +72,8 @@ enum PacketType : int {
 bool PacketType_IsValid(int value);
 extern const uint32_t PacketType_internal_data_[];
 constexpr PacketType PacketType_MIN = static_cast<PacketType>(0);
-constexpr PacketType PacketType_MAX = static_cast<PacketType>(5);
-constexpr int PacketType_ARRAYSIZE = 5 + 1;
+constexpr PacketType PacketType_MAX = static_cast<PacketType>(6);
+constexpr int PacketType_ARRAYSIZE = 6 + 1;
 const ::google::protobuf::EnumDescriptor*
 PacketType_descriptor();
 template <typename T>
@@ -85,7 +86,7 @@ const std::string& PacketType_Name(T value) {
 template <>
 inline const std::string& PacketType_Name(PacketType value) {
   return ::google::protobuf::internal::NameOfDenseEnum<PacketType_descriptor,
-                                                 0, 5>(
+                                                 0, 6>(
       static_cast<int>(value));
 }
 inline bool PacketType_Parse(absl::string_view name, PacketType* value) {

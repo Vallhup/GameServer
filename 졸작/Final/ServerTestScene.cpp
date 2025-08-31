@@ -10,6 +10,7 @@
 #include "Transform.h"
 #include "Animator.h"
 #include "MainCharacter.h"
+#include "Engine.h"
 
 void ServerTestScene::Release()
 {
@@ -19,7 +20,7 @@ void ServerTestScene::Release()
 void ServerTestScene::Reset()
 {
 	_objects.clear();
-
+	while (not _pendingObjects.empty()) _pendingObjects.pop();
 	Material::Cleanup();
 	OutputDebugStringA("ServerTestScene Data has been deleted!! \n----------------------------------------\n");
 }
@@ -44,7 +45,7 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
 		break;
 	}
 	case Protocol::PacketType::SC_ADD: {
-		OutputDebugStringA("SC_ADD packet received\n");
+		//OutputDebugStringA("SC_ADD packet received\n");
 
 		Protocol::SC_ADD_PACKET add;
 		if (add.ParseFromArray(packet.body().data(), packet.body().size())) {
@@ -52,18 +53,16 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
 			if (packet.header().sessionid() == myId) {
 				auto mainObj = make_shared<MainCharacter>();
 				object = mainObj;
-
-				mainObj->SetCamera(cam.get());
 			}
 
 			else {
 				object = make_shared<GameObject>();
 			}
 			
-			auto meshrenderer = object->AddComponent<MeshRenderer>();
+			//auto meshrenderer = object->AddComponent<MeshRenderer>();
 			auto transform = object->AddComponent<Transform>();
-			auto animator = object->AddComponent<Animator>();
-			meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+			//auto animator = object->AddComponent<Animator>();
+			//meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
 
 			Protocol::Vec3 pos = *add.mutable_pos();
 
@@ -71,12 +70,18 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
 			transform->SetRotation(-1.57f, 0.f, 0.f);
 			transform->SetScale(0.01f, 0.01f, 0.01f);
 
-			coreRef->FlushCommandQueue();
+			if (auto mc = dynamic_cast<MainCharacter*>(object.get())) {
+				mc->SetCamera(cam.get());
+			}
+
+			/*coreRef->FlushCommandQueue();
 			coreRef->ResetCommandQueue();
 
-			meshrenderer->ReleaseUploadBuffers();
+			meshrenderer->ReleaseUploadBuffers();*/
 
-			AddGameObject(object);
+			//AddGameObject(object);
+
+			_pendingObjects.push(object);
 		}
 		break;
 	}
@@ -87,6 +92,11 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
 		if (move.ParseFromArray(packet.body().data(), packet.body().size())) {
 			auto it = _objects.find(packet.header().sessionid());
 			if (it != _objects.end()) {
+				// position update
+				Protocol::Vec3 pos = *move.mutable_pos();
+
+				string str = "(" + to_string(pos.x()) + ", " + to_string(pos.y()) + ", " + to_string(pos.z()) + ")\n";
+				OutputDebugStringA(str.c_str());
 			}
 		}
 		break;
@@ -106,11 +116,31 @@ const float* ServerTestScene::GetBackgroundColor()
 void ServerTestScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nServerTestScene Data has been created!! \n");
-
+	SetNetworkManager(GET(Engine).GetNetworkManager());
+	_nManager->Send(PacketFactory::CSLoginPacket());
 }
 
 void ServerTestScene::UpdateScene(const float deltaTime)
 {
+	if (coreRef == nullptr) return;
+
+	while (not _pendingObjects.empty()) {
+		auto obj = _pendingObjects.front();
+		_pendingObjects.pop();
+
+		auto meshrenderer = obj->AddComponent<MeshRenderer>();
+		auto animator = obj->AddComponent<Animator>();
+
+		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+
+		/*coreRef->FlushCommandQueue();
+		coreRef->ResetCommandQueue();
+
+		meshrenderer->ReleaseUploadBuffers();*/
+
+		AddGameObject(obj);
+	}
+
 	for (auto& [id, obj] : _objects) {
 		obj->Update(deltaTime);
 	}

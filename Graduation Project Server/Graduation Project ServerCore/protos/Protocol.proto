@@ -4,9 +4,14 @@ package Protocol;
 import "Enum.proto";
 import "Struct.proto";
 
-message GamePacket{
+message GamePacket
+{
 	PacketHeader header = 1;
 	bytes body =2;
+}
+
+message CS_LOGIN_PACKET
+{
 }
 
 message CS_INPUT_PACKET

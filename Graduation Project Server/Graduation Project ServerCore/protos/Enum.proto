@@ -4,12 +4,13 @@ package Protocol;
 enum PacketType {
 	NONE_TYPE = 0;
 
-	CS_INPUT = 1;
+	CS_LOGIN = 1;
+	CS_INPUT = 2;
 
-	SC_LOGIN = 2;
-	SC_ADD = 3;
-	SC_MOVE_OBJECT = 4;
-	SC_REMOVE = 5;
+	SC_LOGIN = 3;
+	SC_ADD = 4;
+	SC_MOVE_OBJECT = 5;
+	SC_REMOVE = 6;
 }
 
 enum Input {

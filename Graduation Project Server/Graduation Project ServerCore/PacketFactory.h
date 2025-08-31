@@ -4,6 +4,7 @@
 
 class PacketFactory {
 public:
+	static std::vector<char> CSLoginPacket();
 	static std::vector<char> CSInputPacket(Protocol::Input key, Protocol::InputType type);
 
 public:

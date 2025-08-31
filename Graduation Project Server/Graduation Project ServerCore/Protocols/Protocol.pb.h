@@ -58,6 +58,9 @@ namespace Protocol {
 class CS_INPUT_PACKET;
 struct CS_INPUT_PACKETDefaultTypeInternal;
 extern CS_INPUT_PACKETDefaultTypeInternal _CS_INPUT_PACKET_default_instance_;
+class CS_LOGIN_PACKET;
+struct CS_LOGIN_PACKETDefaultTypeInternal;
+extern CS_LOGIN_PACKETDefaultTypeInternal _CS_LOGIN_PACKET_default_instance_;
 class GamePacket;
 struct GamePacketDefaultTypeInternal;
 extern GamePacketDefaultTypeInternal _GamePacket_default_instance_;
@@ -144,7 +147,7 @@ class SC_REMOVE_PACKET final : public ::google::protobuf::internal::ZeroFieldsBa
     return reinterpret_cast<const SC_REMOVE_PACKET*>(
         &_SC_REMOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages = 6;
   friend void swap(SC_REMOVE_PACKET& a, SC_REMOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REMOVE_PACKET* other) {
     if (other == this) return;
@@ -289,7 +292,7 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::internal::ZeroFieldsBas
     return reinterpret_cast<const SC_LOGIN_PACKET*>(
         &_SC_LOGIN_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 2;
+  static constexpr int kIndexInFileMessages = 3;
   friend void swap(SC_LOGIN_PACKET& a, SC_LOGIN_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_LOGIN_PACKET* other) {
     if (other == this) return;
@@ -376,6 +379,151 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::internal::ZeroFieldsBas
 };
 // -------------------------------------------------------------------
 
+class CS_LOGIN_PACKET final : public ::google::protobuf::internal::ZeroFieldsBase
+/* @@protoc_insertion_point(class_definition:Protocol.CS_LOGIN_PACKET) */ {
+ public:
+  inline CS_LOGIN_PACKET() : CS_LOGIN_PACKET(nullptr) {}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_LOGIN_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_LOGIN_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_LOGIN_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_LOGIN_PACKET(const CS_LOGIN_PACKET& from) : CS_LOGIN_PACKET(nullptr, from) {}
+  inline CS_LOGIN_PACKET(CS_LOGIN_PACKET&& from) noexcept
+      : CS_LOGIN_PACKET(nullptr, std::move(from)) {}
+  inline CS_LOGIN_PACKET& operator=(const CS_LOGIN_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_LOGIN_PACKET& operator=(CS_LOGIN_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_LOGIN_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_LOGIN_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_LOGIN_PACKET*>(
+        &_CS_LOGIN_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 1;
+  friend void swap(CS_LOGIN_PACKET& a, CS_LOGIN_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_LOGIN_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_LOGIN_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_LOGIN_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::internal::ZeroFieldsBase::DefaultConstruct<CS_LOGIN_PACKET>(arena);
+  }
+  using ::google::protobuf::internal::ZeroFieldsBase::CopyFrom;
+  inline void CopyFrom(const CS_LOGIN_PACKET& from) {
+    ::google::protobuf::internal::ZeroFieldsBase::CopyImpl(*this, from);
+  }
+  using ::google::protobuf::internal::ZeroFieldsBase::MergeFrom;
+  void MergeFrom(const CS_LOGIN_PACKET& from) {
+    ::google::protobuf::internal::ZeroFieldsBase::MergeImpl(*this, from);
+  }
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_LOGIN_PACKET"; }
+
+ protected:
+  explicit CS_LOGIN_PACKET(::google::protobuf::Arena* arena);
+  CS_LOGIN_PACKET(::google::protobuf::Arena* arena, const CS_LOGIN_PACKET& from);
+  CS_LOGIN_PACKET(::google::protobuf::Arena* arena, CS_LOGIN_PACKET&& from) noexcept
+      : CS_LOGIN_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  // @@protoc_insertion_point(class_scope:Protocol.CS_LOGIN_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 0, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_LOGIN_PACKET& from_msg);
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
 class CS_INPUT_PACKET final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Protocol.CS_INPUT_PACKET) */ {
  public:
@@ -435,7 +583,7 @@ class CS_INPUT_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const CS_INPUT_PACKET*>(
         &_CS_INPUT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 1;
+  static constexpr int kIndexInFileMessages = 2;
   friend void swap(CS_INPUT_PACKET& a, CS_INPUT_PACKET& b) { a.Swap(&b); }
   inline void Swap(CS_INPUT_PACKET* other) {
     if (other == this) return;
@@ -637,7 +785,7 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_MOVE_PACKET*>(
         &_SC_MOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 4;
+  static constexpr int kIndexInFileMessages = 5;
   friend void swap(SC_MOVE_PACKET& a, SC_MOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_MOVE_PACKET* other) {
     if (other == this) return;
@@ -833,7 +981,7 @@ class SC_ADD_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ADD_PACKET*>(
         &_SC_ADD_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 3;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(SC_ADD_PACKET& a, SC_ADD_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ADD_PACKET* other) {
     if (other == this) return;
@@ -1337,6 +1485,10 @@ inline void GamePacket::set_allocated_body(std::string* value) {
   }
   // @@protoc_insertion_point(field_set_allocated:Protocol.GamePacket.body)
 }
+
+// -------------------------------------------------------------------
+
+// CS_LOGIN_PACKET
 
 // -------------------------------------------------------------------
 

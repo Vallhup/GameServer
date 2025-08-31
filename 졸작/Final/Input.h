@@ -29,6 +29,8 @@ public:
 	void SetMouseButton(const MouseButton button, const bool bPressed);
 	void SetMousePosition(const XMFLOAT2 mousePosition);
 
+	NetworkManager* GetNetworkManager() const { return network; }
+
 private:
 	std::pair<Protocol::Input, Protocol::InputType> GameInput(size_t key, bool pressed);
 

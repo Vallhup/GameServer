@@ -1,6 +1,30 @@
 #include "pch.h"
 #include "PacketFactory.h"
 
+std::vector<char> PacketFactory::CSLoginPacket()
+{
+	Protocol::CS_LOGIN_PACKET login;
+
+	std::string body;
+	login.SerializeToString(&body);
+
+	Protocol::GamePacket game;
+	game.mutable_header()->set_type(Protocol::PacketType::CS_LOGIN);
+	game.mutable_header()->set_sessionid(-1);
+	game.set_body(body);
+
+	std::string gameString;
+	game.SerializeToString(&gameString);
+
+	const uint16_t payloadSize = static_cast<uint16_t>(gameString.size());
+
+	std::vector<char> out(sizeof(payloadSize) + payloadSize);
+	memcpy(out.data(), &payloadSize, sizeof(payloadSize));
+	memcpy(out.data() + sizeof(payloadSize), gameString.data(), gameString.size());
+
+	return out;
+}
+
 std::vector<char> PacketFactory::CSInputPacket(Protocol::Input key, Protocol::InputType type)
 {
 	Protocol::CS_INPUT_PACKET input;

@@ -40,6 +40,8 @@ using namespace Microsoft::WRL;
 #include "../../Graduation Project Server/Graduation Project ServerCore/Protocols/Struct.pb.h"
 #include "../../Graduation Project Server/Graduation Project ServerCore/Protocols/Protocol.pb.h"
 
+#include "../../Graduation Project Server/Graduation Project ServerCore/PacketFactory.h"
+
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "d3dcompiler.lib")

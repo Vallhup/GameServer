@@ -61,6 +61,24 @@ struct SC_LOGIN_PACKETDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_LOGIN_PACKETDefaultTypeInternal _SC_LOGIN_PACKET_default_instance_;
+              template <typename>
+PROTOBUF_CONSTEXPR CS_LOGIN_PACKET::CS_LOGIN_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(_class_data_.base()){}
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase() {
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+struct CS_LOGIN_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CS_LOGIN_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CS_LOGIN_PACKETDefaultTypeInternal() {}
+  union {
+    CS_LOGIN_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_LOGIN_PACKETDefaultTypeInternal _CS_LOGIN_PACKET_default_instance_;
 
 inline constexpr CS_INPUT_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -186,6 +204,14 @@ const ::uint32_t
         0,
         ~0u,
         ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_LOGIN_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_INPUT_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -236,14 +262,16 @@ const ::uint32_t
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, 10, -1, sizeof(::Protocol::GamePacket)},
-        {12, -1, -1, sizeof(::Protocol::CS_INPUT_PACKET)},
-        {22, -1, -1, sizeof(::Protocol::SC_LOGIN_PACKET)},
-        {30, 39, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {40, 49, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {50, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {12, -1, -1, sizeof(::Protocol::CS_LOGIN_PACKET)},
+        {20, -1, -1, sizeof(::Protocol::CS_INPUT_PACKET)},
+        {30, -1, -1, sizeof(::Protocol::SC_LOGIN_PACKET)},
+        {38, 47, -1, sizeof(::Protocol::SC_ADD_PACKET)},
+        {48, 57, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {58, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_GamePacket_default_instance_._instance,
+    &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
     &::Protocol::_CS_INPUT_PACKET_default_instance_._instance,
     &::Protocol::_SC_LOGIN_PACKET_default_instance_._instance,
     &::Protocol::_SC_ADD_PACKET_default_instance_._instance,
@@ -255,12 +283,13 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "\n\016Protocol.proto\022\010Protocol\032\nEnum.proto\032\014"
     "Struct.proto\"B\n\nGamePacket\022&\n\006header\030\001 \001"
     "(\0132\026.Protocol.PacketHeader\022\014\n\004body\030\002 \001(\014"
-    "\"W\n\017CS_INPUT_PACKET\022\034\n\003key\030\001 \001(\0162\017.Proto"
-    "col.Input\022&\n\tinputType\030\002 \001(\0162\023.Protocol."
-    "InputType\"\021\n\017SC_LOGIN_PACKET\",\n\rSC_ADD_P"
-    "ACKET\022\033\n\003pos\030\001 \001(\0132\016.Protocol.Vec3\"-\n\016SC"
-    "_MOVE_PACKET\022\033\n\003pos\030\001 \001(\0132\016.Protocol.Vec"
-    "3\"\022\n\020SC_REMOVE_PACKETb\006proto3"
+    "\"\021\n\017CS_LOGIN_PACKET\"W\n\017CS_INPUT_PACKET\022\034"
+    "\n\003key\030\001 \001(\0162\017.Protocol.Input\022&\n\tinputTyp"
+    "e\030\002 \001(\0162\023.Protocol.InputType\"\021\n\017SC_LOGIN"
+    "_PACKET\",\n\rSC_ADD_PACKET\022\033\n\003pos\030\001 \001(\0132\016."
+    "Protocol.Vec3\"-\n\016SC_MOVE_PACKET\022\033\n\003pos\030\001"
+    " \001(\0132\016.Protocol.Vec3\"\022\n\020SC_REMOVE_PACKET"
+    "b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[2] =
     {
@@ -271,13 +300,13 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    349,
+    368,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     descriptor_table_Protocol_2eproto_deps,
     2,
-    6,
+    7,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -569,6 +598,109 @@ void GamePacket::InternalSwap(GamePacket* PROTOBUF_RESTRICT other) {
 
 ::google::protobuf::Metadata GamePacket::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CS_LOGIN_PACKET::_Internal {
+ public:
+};
+
+CS_LOGIN_PACKET::CS_LOGIN_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(arena_constructor:Protocol.CS_LOGIN_PACKET)
+}
+CS_LOGIN_PACKET::CS_LOGIN_PACKET(
+    ::google::protobuf::Arena* arena,
+    const CS_LOGIN_PACKET& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CS_LOGIN_PACKET* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+
+  // @@protoc_insertion_point(copy_constructor:Protocol.CS_LOGIN_PACKET)
+}
+
+inline void* CS_LOGIN_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) CS_LOGIN_PACKET(arena);
+}
+constexpr auto CS_LOGIN_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(CS_LOGIN_PACKET),
+                                            alignof(CS_LOGIN_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull CS_LOGIN_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_CS_LOGIN_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &CS_LOGIN_PACKET::MergeImpl,
+        ::google::protobuf::internal::ZeroFieldsBase::GetNewImpl<CS_LOGIN_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &CS_LOGIN_PACKET::SharedDtor,
+        ::google::protobuf::internal::ZeroFieldsBase::GetClearImpl<CS_LOGIN_PACKET>(), &CS_LOGIN_PACKET::ByteSizeLong,
+            &CS_LOGIN_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(CS_LOGIN_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &CS_LOGIN_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* CS_LOGIN_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 0, 0, 0, 2> CS_LOGIN_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    0, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967295,  // skipmap
+    offsetof(decltype(_table_), field_names),  // no field_entries
+    0,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::CS_LOGIN_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }},
+  // no field_entries, or aux_entries
+  {{
+  }},
+};
+
+
+
+
+
+
+
+
+::google::protobuf::Metadata CS_LOGIN_PACKET::GetMetadata() const {
+  return ::google::protobuf::internal::ZeroFieldsBase::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
 

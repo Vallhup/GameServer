@@ -34,11 +34,12 @@ void GameLogic::NetworkUpdate()
 				protoPos.set_z(pos.z);
 
 				_instance->BroadCast(PacketFactory::SCMovePakcet(obj->GetId(), protoPos));
+				LOG_DBG("Send Move Packet");
 			}
 
-			else {
+			/*else {
 				LOG_DBG("Version not change");
-			}
+			}*/
 		}
 	}
 }
