@@ -71,6 +71,26 @@ void GameScene::InitializeLogic()
 		OutputDebugStringA("Strut created!!\n");
 	}
 
+	vector<wstring> names = { L"bookshelf", L"candle", L"chair", L"pillar", L"statue1", L"statue2", L"statue3", L"table", L"throne" };
+	for (int i = 1; i < 29; ++i)
+	{
+		auto map = make_shared<GameObject>();
+		auto meshRenderer = map->AddComponent<MeshRenderer>();
+		auto transform = map->AddComponent<Transform>();
+		if (i < 10)
+			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_0" + to_wstring(i));
+		else if (i < 20)
+			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_" + to_wstring(i));
+		else
+			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_" + names[i - 20]);
+		transform->SetPosition(0.0f, 0.0f, 0.0f);
+		transform->SetRotation(0.0f, 0.0f, 0.0f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+		AddGameObject(map);
+
+		OutputDebugStringA("Strut created!!\n");
+	}
+
 	/*{
 		for (int i = 1; i < 10; ++i) {
 			auto newKnight = make_shared<GameObject>();

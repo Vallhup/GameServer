@@ -13,6 +13,8 @@ public:
 	MeshRenderer();
 	~MeshRenderer();
 
+	void InitializeObjectBuffer(ID3D12Device* device);
+
 	void Update(float deltaTime) override;
 	void Render(DX12Core& core);
 
@@ -51,5 +53,7 @@ private:
 
 	UINT myID;
 	static UINT idCounter;
+
+	unique_ptr<UploadBuffer> objectCB;
 };
 

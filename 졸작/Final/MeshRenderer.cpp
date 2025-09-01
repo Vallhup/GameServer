@@ -10,15 +10,28 @@
 #include "VertexIndexBuffer.h"
 #include "Animator.h"
 #include "ResourceManager.h"
+#include "UploadBuffer.h"
 
 UINT MeshRenderer::idCounter = 0;
 
 MeshRenderer::MeshRenderer()
 {
     myID = idCounter++;
+    objectCB = nullptr;
 }
 
 MeshRenderer::~MeshRenderer() = default;
+
+void MeshRenderer::InitializeObjectBuffer(ID3D12Device* device)
+{
+    if (!objectCB) {
+        size_t bufferSize = sizeof(ObjectConstants) * 10;   // subMesh 최대 개수 10개 안넘을듯?
+        objectCB = make_unique<UploadBuffer>();
+        objectCB->Initialize(device, bufferSize);
+
+        OutputDebugStringA(("MeshRenderer " + to_string(myID) + " ObjectBuffer initialized\n").c_str());
+    }
+}
 
 void MeshRenderer::Update(float deltaTime)
 {
@@ -224,7 +237,10 @@ void MeshRenderer::RenderMultiMaterial(DX12Core& core, const XMMATRIX& world)
 
 void MeshRenderer::RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX& world)
 {
-    UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
+    if (!objectCB) {
+        InitializeObjectBuffer(core.GetDevice());
+    }
+
     auto cmdList = core.GetGraphicsCmdList();
 
     for (size_t i = 0; i < subMeshes.size(); ++i) {
@@ -238,10 +254,11 @@ void MeshRenderer::RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX
         objConstants.hasAlpha = 0;
         objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
-        UINT materialOffset = (myID * 5 + i) * cbSize;
-        core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
-        cmdList->SetGraphicsRootConstantBufferView(1,
-            core.GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
+        size_t alignedSize = (sizeof(ObjectConstants) + 255) & ~255;
+        size_t offset = i * alignedSize;
+
+        objectCB->CopyData(&objConstants, sizeof(ObjectConstants), offset);
+        cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress() + offset);
 
         vertexIndexBuffer->Bind(cmdList);
         vertexIndexBuffer->DrawIndexed(cmdList,
@@ -252,6 +269,10 @@ void MeshRenderer::RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX
 
 void MeshRenderer::RenderSingleMaterialToGBuffer(DX12Core& core, const XMMATRIX& world)
 {
+    if (!objectCB) {
+        InitializeObjectBuffer(core.GetDevice());
+    }
+
     auto cmdList = core.GetGraphicsCmdList();
 
     ObjectConstants objConstants = {};
@@ -261,10 +282,8 @@ void MeshRenderer::RenderSingleMaterialToGBuffer(DX12Core& core, const XMMATRIX&
     objConstants.hasAlpha = 0;
     objConstants.materialIndex = material->GetMaterialIndex();
 
-    UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
-    UINT offset = myID * cbSize;
-    core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), offset);
-    cmdList->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress() + offset);
+    objectCB->CopyData(&objConstants, sizeof(ObjectConstants));
+    cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress());
 
     vertexIndexBuffer->Bind(core.GetGraphicsCmdList());
     vertexIndexBuffer->Draw(core.GetGraphicsCmdList());
@@ -272,7 +291,10 @@ void MeshRenderer::RenderSingleMaterialToGBuffer(DX12Core& core, const XMMATRIX&
 
 void MeshRenderer::RenderMultiMaterialDeferredOnly(DX12Core& core, const XMMATRIX& world)
 {
-    UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
+    if (!objectCB) {
+        InitializeObjectBuffer(core.GetDevice());
+    }
+
     auto cmdList = core.GetGraphicsCmdList();
 
     for (size_t i = 0; i < subMeshes.size(); ++i) {
@@ -286,10 +308,11 @@ void MeshRenderer::RenderMultiMaterialDeferredOnly(DX12Core& core, const XMMATRI
         objConstants.hasAlpha = 0;
         objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
-        UINT materialOffset = (myID * 5 + i) * cbSize;
-        core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), materialOffset);
-        cmdList->SetGraphicsRootConstantBufferView(1,
-            core.GetSceneCB()->GetGPUVirtualAddress() + materialOffset);
+        size_t alignedSize = (sizeof(ObjectConstants) + 255) & ~255;
+        size_t offset = i * alignedSize;
+
+        objectCB->CopyData(&objConstants, sizeof(ObjectConstants), offset);
+        cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress() + offset);
 
         vertexIndexBuffer->Bind(cmdList);
         vertexIndexBuffer->DrawIndexed(cmdList,

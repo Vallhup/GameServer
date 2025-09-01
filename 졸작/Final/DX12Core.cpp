@@ -25,7 +25,7 @@ void DX12Core::Initialize(HWND hwnd)
 	shader->InitializeLightingShader(GetDevice(), GetRootSig()->Get(), L"FullscreenVS.hlsli", L"LightingPS.hlsli");
 	shader->InitializeComputeShader(GetDevice(), GetRootSig()->Get(), L"Animation.hlsli");
 	frameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
-	sceneCB->Initialize(GetDevice(), 256 * 100);
+	sceneCB->Initialize(GetDevice(), 256 * 1000);
 	deferredLightCB->Initialize(GetDevice(), sizeof(LightConstants));
 	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
 
@@ -418,32 +418,32 @@ void DX12Core::SetupLightng()
 	static bool lightsInitialized = false;
 	static LightConstants lightData = {};
 	if (!lightsInitialized) {
-		lightData.lightCount = 50;
+		lightData.lightCount = 30;
 
 		// 기존 directional light 유지
 		lightData.lights[0] = {
 			{0, 0, -1}, 0,               // direction
-			{1, 1, 1}, 0.6f,             // color, intensity
+			{1, 1, 1}, 0.1f,             // color, intensity
 			0,                           // type: directional
 			{0, 0, 0}                    // padding
 		};
 		lightData.lights[1] = {
 			{0, 0, 1}, 0,               // direction
-			{1, 1, 1}, 0.3f,             // color, intensity
+			{1, 1, 1}, 0.1f,             // color, intensity
 			0,                           // type: directional
 			{0, 0, 0}                    // padding
 		};
 
 		// Point lights 48개 - 두 줄로 24개씩 배치
 		float spacing = 4.0f;
-		float height = 2.0f;           // 높이 2.5
-		float leftX = -1.5f;           // 왼쪽 줄 X 위치
-		float rightX = 1.5f;           // 오른쪽 줄 X 위치
+		float height = 12.0f;           // 높이 2.5
+		float leftX = -7.0f;           // 왼쪽 줄 X 위치
+		float rightX = 7.0f;           // 오른쪽 줄 X 위치
 
-		for (int i = 2; i < 50; ++i) {
+		for (int i = 2; i < 30; ++i) {
 			int lightIndex = i - 2;   // 0~47 인덱스
-			int rowIndex = lightIndex % 24;  // 0~23 (각 줄의 인덱스)
-			bool isLeftRow = (lightIndex < 24);  // 첫 24개는 왼쪽 줄
+			int rowIndex = lightIndex % 15;  // 0~23 (각 줄의 인덱스)
+			bool isLeftRow = (lightIndex < 15);  // 첫 24개는 왼쪽 줄
 
 			float x = isLeftRow ? leftX : rightX;
 			float z = -(rowIndex * spacing);  // 0, -2, -4, -6, ... -46
@@ -454,7 +454,7 @@ void DX12Core::SetupLightng()
 				XMFLOAT3{ 1.0f, 0.0f, 1.0f };   // 빨간색 (오른쪽 줄)
 
 			lightData.lights[i] = {
-				{x, height, z}, 3.0f,    // position, range
+				{x, height, z}, 20.0f,    // position, range
 				color, 1.0f,             // color, intensity
 				1,                       // type: point light
 				{0, 0, 0}               // padding

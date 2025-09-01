@@ -28,5 +28,4 @@ private:
 
 	shared_ptr<GameObject> dragon;
 	shared_ptr<MainCharacter> knight;
-	shared_ptr<GameObject> knight2;
 };

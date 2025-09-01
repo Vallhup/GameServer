@@ -11,7 +11,7 @@ cbuffer LightCB : register(b3)
         float intensity;
         int type;
         float3 lightPadding;
-    } lights[50];
+    } lights[30];
 }
 
 struct PS_IN
