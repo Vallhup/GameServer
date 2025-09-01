@@ -7,76 +7,75 @@ int wmain(int argc, wchar_t* argv[])
     _wsetlocale(LC_ALL, L"korean");
     SetConsoleOutputCP(CP_UTF8);
 
-    //for (int i = 1; i <= 19; ++i) {
-    //    if (i < 10)
-    //    {
-    //        wstring inputFbx = L"../FBX/map_cathedral_0" + to_wstring(i) + L".fbx";          // 입력 FBX 파일
-    //        wstring fbxDir = L"../FBX";
-    //        wstring outputBase = L"../FBXOutput/map_cathedral_0" + to_wstring(i);           // 출력 기본 이름
-
-    //        FBXLoader loader;
-    //        if (!loader.LoadFbx(inputFbx)) {
-    //            wcout << L"FBX 로딩 실패!" << endl;
-    //            return -1;
-    //        }
-
-    //        wcout << L"FBX 로딩중..." << endl;
-
-    //        Exporter exporter;
-    //        if (!exporter.ExportAll(loader, outputBase, fbxDir)) {
-    //            wcout << L"바이너리 변환 실패!" << endl;
-    //            return -1;
-    //        }
-
-    //        wcout << i << L"번째 파일 변환 완료!" << endl;
-    //    }
-    //    else
-    //    {
-    //        wstring inputFbx = L"../FBX/map_cathedral_" + to_wstring(i) + L".fbx";          // 입력 FBX 파일
-    //        wstring fbxDir = L"../FBX";
-    //        wstring outputBase = L"../FBXOutput/map_cathedral_" + to_wstring(i);           // 출력 기본 이름
-
-    //        FBXLoader loader;
-    //        if (!loader.LoadFbx(inputFbx)) {
-    //            wcout << L"FBX 로딩 실패!" << endl;
-    //            return -1;
-    //        }
-
-    //        wcout << L"FBX 로딩중..." << endl;
-
-    //        Exporter exporter;
-    //        if (!exporter.ExportAll(loader, outputBase, fbxDir)) {
-    //            wcout << L"바이너리 변환 실패!" << endl;
-    //            return -1;
-    //        }
-
-    //        wcout << i << L"번째 파일 변환 완료!" << endl;
-    //    }
-    //}
-
     vector<wstring> names = { L"bookshelf", L"candle", L"chair", L"pillar", L"statue1", L"statue2", L"statue3", L"table", L"throne" };
 
-    for (int i = 0; i < 9; ++i)
-    {
-        wstring inputFbx = L"../FBX/map_cathedral_" + names[i] + L".fbx";
-        wstring fbxDir = L"../FBX";
-        wstring outputBase = L"../FBXOutput/map_cathedral_" + names[i];
+    for (int i = 1; i < 29; ++i) {
+        if (i < 10)
+        {
+            wstring inputFbx = L"../FBX/map_cathedral_0" + to_wstring(i) + L".fbx";          // 입력 FBX 파일
+            wstring fbxDir = L"../FBX";
+            wstring outputBase = L"../FBXOutput/map_cathedral_0" + to_wstring(i);           // 출력 기본 이름
 
-        FBXLoader loader;
-        if (!loader.LoadFbx(inputFbx)) {
-            wcout << L"FBX 로딩 실패!" << endl;
-            return -1;
+            FBXLoader loader;
+            if (!loader.LoadFbx(inputFbx)) {
+                wcout << L"FBX 로딩 실패!" << endl;
+                return -1;
+            }
+
+            wcout << L"FBX 로딩중..." << endl;
+
+            Exporter exporter;
+            if (!exporter.ExportAll(loader, outputBase, fbxDir)) {
+                wcout << L"바이너리 변환 실패!" << endl;
+                return -1;
+            }
+
+            wcout << i << L"번째 파일 변환 완료!" << endl;
         }
+        else if (i < 20)
+        {
+            wstring inputFbx = L"../FBX/map_cathedral_" + to_wstring(i) + L".fbx";          // 입력 FBX 파일
+            wstring fbxDir = L"../FBX";
+            wstring outputBase = L"../FBXOutput/map_cathedral_" + to_wstring(i);           // 출력 기본 이름
 
-        wcout << L"FBX 로딩중..." << endl;
+            FBXLoader loader;
+            if (!loader.LoadFbx(inputFbx)) {
+                wcout << L"FBX 로딩 실패!" << endl;
+                return -1;
+            }
 
-        Exporter exporter;
-        if (!exporter.ExportAll(loader, outputBase, fbxDir)) {
-            wcout << L"바이너리 변환 실패!" << endl;
-            return -1;
+            wcout << L"FBX 로딩중..." << endl;
+
+            Exporter exporter;
+            if (!exporter.ExportAll(loader, outputBase, fbxDir)) {
+                wcout << L"바이너리 변환 실패!" << endl;
+                return -1;
+            }
+
+            wcout << i << L"번째 파일 변환 완료!" << endl;
         }
+        else
+        {
+            wstring inputFbx = L"../FBX/map_cathedral_" + names[i - 20] + L".fbx";          // 입력 FBX 파일
+            wstring fbxDir = L"../FBX";
+            wstring outputBase = L"../FBXOutput/map_cathedral_" + names[i - 20];           // 출력 기본 이름
 
-        wcout << i << L"번째 파일 변환 완료!" << endl;
+            FBXLoader loader;
+            if (!loader.LoadFbx(inputFbx)) {
+                wcout << L"FBX 로딩 실패!" << endl;
+                return -1;
+            }
+
+            wcout << L"FBX 로딩중..." << endl;
+
+            Exporter exporter;
+            if (!exporter.ExportAll(loader, outputBase, fbxDir)) {
+                wcout << L"바이너리 변환 실패!" << endl;
+                return -1;
+            }
+
+            wcout << i << L"번째 파일 변환 완료!" << endl;
+        }
     }
 
     //wstring inputFbx = L"../FBX/map_cathedral_02.fbx";          // 입력 FBX 파일
