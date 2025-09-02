@@ -25,7 +25,7 @@ MeshRenderer::~MeshRenderer() = default;
 void MeshRenderer::InitializeObjectBuffer(ID3D12Device* device)
 {
     if (!objectCB) {
-        size_t bufferSize = sizeof(ObjectConstants) * 10;   // subMesh 최대 개수 10개 안넘을듯?
+        size_t bufferSize = CONSTANT_BUFFER_ALIGNMENT * MAX_SUBMESH_COUNT;   // subMesh 최대 개수 10개 안넘을듯?
         objectCB = make_unique<UploadBuffer>();
         objectCB->Initialize(device, bufferSize);
 
@@ -254,8 +254,7 @@ void MeshRenderer::RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX
         objConstants.hasAlpha = 0;
         objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
-        size_t alignedSize = (sizeof(ObjectConstants) + 255) & ~255;
-        size_t offset = i * alignedSize;
+        size_t offset = i * CONSTANT_BUFFER_ALIGNMENT;
 
         objectCB->CopyData(&objConstants, sizeof(ObjectConstants), offset);
         cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress() + offset);
@@ -308,8 +307,7 @@ void MeshRenderer::RenderMultiMaterialDeferredOnly(DX12Core& core, const XMMATRI
         objConstants.hasAlpha = 0;
         objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
-        size_t alignedSize = (sizeof(ObjectConstants) + 255) & ~255;
-        size_t offset = i * alignedSize;
+        size_t offset = i * CONSTANT_BUFFER_ALIGNMENT;
 
         objectCB->CopyData(&objConstants, sizeof(ObjectConstants), offset);
         cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress() + offset);

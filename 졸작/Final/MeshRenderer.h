@@ -55,5 +55,8 @@ private:
 	static UINT idCounter;
 
 	unique_ptr<UploadBuffer> objectCB;
+
+	static constexpr size_t MAX_SUBMESH_COUNT = 10;
+	static constexpr size_t CONSTANT_BUFFER_ALIGNMENT = 256;
 };
 
