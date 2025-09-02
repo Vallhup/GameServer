@@ -14,161 +14,143 @@
 
 void ServerTestScene::Release()
 {
-
 }
 
 void ServerTestScene::Reset()
 {
-	_objects.clear();
-	while (not _pendingObjects.empty()) _pendingObjects.pop();
-	Material::Cleanup();
-	OutputDebugStringA("ServerTestScene Data has been deleted!! \n----------------------------------------\n");
+    knight.reset();
+    gameObjects.clear();
+    _myId = 0;
+    Material::Cleanup();
+    OutputDebugStringA("ServerTestScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-void ServerTestScene::AddGameObject(const shared_ptr<GameObject>& obj)
+void ServerTestScene::AddGameObject(shared_ptr<GameObject> obj)
 {
-	_objects.try_emplace(obj->GetId(), obj);
+    gameObjects.push_back(obj);
 }
 
 void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
 {
-	static int myId{ 0 };
-	const auto& header = packet.header();
+    const auto& header = packet.header();
 
-	switch (header.type()) {
-	case Protocol::PacketType::SC_LOGIN:{
-		OutputDebugStringA("SC_LOGIN packet received\n");
-		Protocol::SC_LOGIN_PACKET login;
-		if (login.ParseFromArray(packet.body().data(), packet.body().size())) {
-			myId = packet.header().sessionid();
-		}
-		break;
-	}
-	case Protocol::PacketType::SC_ADD: {
-		//OutputDebugStringA("SC_ADD packet received\n");
+    switch (header.type()) {
+    case Protocol::PacketType::SC_LOGIN: {
+        OutputDebugStringA("SC_LOGIN packet received\n");
+        Protocol::SC_LOGIN_PACKET login;
+        if (login.ParseFromArray(packet.body().data(), packet.body().size())) {
+            _myId = packet.header().sessionid();
+            OutputDebugStringA(("My Session ID: " + to_string(_myId) + "\n").c_str());
+        }
+        break;
+    }
+    case Protocol::PacketType::SC_ADD: {
+        OutputDebugStringA("SC_ADD packet received\n");
+        Protocol::SC_ADD_PACKET add;
+        if (add.ParseFromArray(packet.body().data(), packet.body().size())) {
+            int sessionId = packet.header().sessionid();
+            Protocol::Vec3 pos = add.pos();
 
-		Protocol::SC_ADD_PACKET add;
-		if (add.ParseFromArray(packet.body().data(), packet.body().size())) {
-			shared_ptr<GameObject> object;
-			if (packet.header().sessionid() == myId) {
-				auto mainObj = make_shared<MainCharacter>();
-				object = mainObj;
-			}
+            // 내 캐릭터만 처리
+            if (sessionId == _myId && knight) {
+                if (auto transform = knight->GetComponent<Transform>()) {
+                    transform->SetPosition(pos.x(), pos.y(), pos.z());
+                }
 
-			else {
-				object = make_shared<GameObject>();
-			}
-			
-			//auto meshrenderer = object->AddComponent<MeshRenderer>();
-			auto transform = object->AddComponent<Transform>();
-			//auto animator = object->AddComponent<Animator>();
-			//meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+                knight->SetCamera(cam.get());
 
-			Protocol::Vec3 pos = *add.mutable_pos();
-
-			transform->SetPosition(pos.x(), pos.y(), pos.z());
-			transform->SetRotation(-1.57f, 0.f, 0.f);
-			transform->SetScale(0.01f, 0.01f, 0.01f);
-
-			if (auto mc = dynamic_cast<MainCharacter*>(object.get())) {
-				mc->SetCamera(cam.get());
-			}
-
-			/*coreRef->FlushCommandQueue();
-			coreRef->ResetCommandQueue();
-
-			meshrenderer->ReleaseUploadBuffers();*/
-
-			//AddGameObject(object);
-
-			_pendingObjects.push(object);
-		}
-		break;
-	}
-	case Protocol::PacketType::SC_MOVE_OBJECT: {
-		OutputDebugStringA("SC_MOVE_OBJECT packet received\n");
-
-		Protocol::SC_MOVE_PACKET move;
-		if (move.ParseFromArray(packet.body().data(), packet.body().size())) {
-			auto it = _objects.find(packet.header().sessionid());
-			if (it != _objects.end()) {
-				// position update
-				Protocol::Vec3 pos = *move.mutable_pos();
-
-				string str = "(" + to_string(pos.x()) + ", " + to_string(pos.y()) + ", " + to_string(pos.z()) + ")\n";
-				OutputDebugStringA(str.c_str());
-			}
-		}
-		break;
-	}
-	case Protocol::PacketType::SC_REMOVE: {
-		OutputDebugStringA("SC_REMOVE packet received\n");
-		break;
-	}
-	}
+                OutputDebugStringA("My character positioned!\n");
+            }
+        }
+        break;
+    }
+    case Protocol::PacketType::SC_MOVE_OBJECT: {
+        Protocol::SC_MOVE_PACKET move;
+        if (move.ParseFromArray(packet.body().data(), packet.body().size())) {
+            int sessionId = packet.header().sessionid();
+            if (sessionId == _myId && knight) {
+                Protocol::Vec3 pos = move.pos();
+                if (auto transform = knight->GetComponent<Transform>()) {
+                    transform->SetPosition(pos.x(), pos.y(), pos.z());
+                }
+            }
+        }
+        break;
+    }
+    case Protocol::PacketType::SC_REMOVE: {
+        OutputDebugStringA("SC_REMOVE packet received\n");
+        break;
+    }
+    }
 }
 
 const float* ServerTestScene::GetBackgroundColor()
 {
-	return Colors::Aqua;
+    return Colors::Aqua;
 }
 
 void ServerTestScene::InitializeLogic()
 {
-	OutputDebugStringA("----------------------------------------\nServerTestScene Data has been created!! \n");
-	SetNetworkManager(GET(Engine).GetNetworkManager());
-	_nManager->Send(PacketFactory::CSLoginPacket());
+    OutputDebugStringA("----------------------------------------\nServerTestScene Data has been created!! \n");
+
+    knight = make_shared<MainCharacter>();
+    auto meshRenderer = knight->AddComponent<MeshRenderer>();
+    auto transform = knight->AddComponent<Transform>();
+    auto animator = knight->AddComponent<Animator>();
+
+    meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+    transform->SetPosition(1.f, 0.f, 0.5f);  
+    transform->SetRotation(-1.57f, 0.f, 0.f);
+    transform->SetScale(0.01f, 0.01f, 0.01f);
+    knight->SetCamera(cam.get());
+    AddGameObject(knight);
+
+    OutputDebugStringA("Knight created!!\n");
+
+    OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
+    coreRef->FlushCommandQueue();
+    coreRef->ResetCommandQueue();
+
+    for (const auto& obj : gameObjects) {
+        if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+            meshRenderer->ReleaseUploadBuffers();
+    }
+    OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
+
+    SetNetworkManager(GET(Engine).GetNetworkManager());
+    _nManager->Send(PacketFactory::CSLoginPacket());
 }
 
 void ServerTestScene::UpdateScene(const float deltaTime)
 {
-	if (coreRef == nullptr) return;
+    if (coreRef == nullptr) return;
 
-	while (not _pendingObjects.empty()) {
-		auto obj = _pendingObjects.front();
-		_pendingObjects.pop();
-
-		auto meshrenderer = obj->AddComponent<MeshRenderer>();
-		auto animator = obj->AddComponent<Animator>();
-
-		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-
-		/*coreRef->FlushCommandQueue();
-		coreRef->ResetCommandQueue();
-
-		meshrenderer->ReleaseUploadBuffers();*/
-
-		AddGameObject(obj);
-	}
-
-	for (auto& [id, obj] : _objects) {
-		obj->Update(deltaTime);
-	}
+    for (const auto& obj : gameObjects)
+        obj->Update(deltaTime);
 }
 
 void ServerTestScene::RenderSceneDeferred()
 {
-	for (auto& [id, obj] : _objects) {
-		if (auto meshRenderer = obj->GetComponent<MeshRenderer>()) {
-			meshRenderer->Render(*coreRef);
-		}
-	}
+    for (const auto& obj : gameObjects) {
+        if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+            meshRenderer->RenderDeferred(*coreRef);
+    }
 }
 
 void ServerTestScene::RenderSceneForward()
 {
+    for (const auto& obj : gameObjects) {
+        if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+            meshRenderer->RenderForward(*coreRef);
+    }
 }
 
 int ServerTestScene::GetSceneWidth() const
 {
-	return 0;
+    return 0;
 }
 
 void ServerTestScene::RequestSceneChange()
 {
-	if (GET(Input).GetKeyDown(VK_TAB))
-	{
-		if (sManagerRef)
-			sManagerRef->RequestSceneChange(SceneType::Start);
-	}
+  
 }

@@ -16,7 +16,7 @@ public:
 	virtual void Release() override;
 	virtual void Reset() override;
 
-	void AddGameObject(const shared_ptr<GameObject>& obj);
+	void AddGameObject(shared_ptr<GameObject> obj);
 	void HandlePacket(const Protocol::GamePacket& packet);
 
 public:
@@ -30,8 +30,8 @@ public:
 
 private:
 	NetworkManager* _nManager{ nullptr };
-
-	unordered_map<int, shared_ptr<GameObject>> _objects;
-	queue<shared_ptr<GameObject>> _pendingObjects; 
+	int _myId = 0;
+	vector<shared_ptr<GameObject>> gameObjects;  
+	shared_ptr<MainCharacter> knight;            
 };
 
