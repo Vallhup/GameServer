@@ -31,11 +31,8 @@ public:
 
 	NetworkManager* GetNetworkManager() const { return network; }
 
-private:
-	std::pair<Protocol::Input, Protocol::InputType> GameInput(size_t key, bool pressed);
-
-	// Network Send
-	void SendInputPacket(const size_t key, const bool pressed);
+public:
+	void SendMovePacket(XMFLOAT3 dir);
 
 private:
 	bitset<256> mPressedKeys = {};

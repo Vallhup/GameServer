@@ -7,7 +7,7 @@ import "Struct.proto";
 message GamePacket
 {
 	PacketHeader header = 1;
-	bytes body =2;
+	bytes body = 2;
 }
 
 message CS_LOGIN_PACKET
@@ -17,7 +17,7 @@ message CS_LOGIN_PACKET
 message CS_INPUT_PACKET
 {
 	Input key = 1;
-	InputType inputType = 2;
+	InputPayload payload = 2;
 }
 
 message SC_LOGIN_PACKET

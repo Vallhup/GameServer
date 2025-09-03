@@ -20,6 +20,7 @@
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/arena.h"
 #include "google/protobuf/arenastring.h"
+#include "google/protobuf/generated_message_bases.h"
 #include "google/protobuf/generated_message_tctable_decl.h"
 #include "google/protobuf/generated_message_util.h"
 #include "google/protobuf/metadata_lite.h"
@@ -53,6 +54,15 @@ struct TableStruct_Struct_2eproto {
 extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_Struct_2eproto;
 namespace Protocol {
+class ActionPayload;
+struct ActionPayloadDefaultTypeInternal;
+extern ActionPayloadDefaultTypeInternal _ActionPayload_default_instance_;
+class InputPayload;
+struct InputPayloadDefaultTypeInternal;
+extern InputPayloadDefaultTypeInternal _InputPayload_default_instance_;
+class MovePayload;
+struct MovePayloadDefaultTypeInternal;
+extern MovePayloadDefaultTypeInternal _MovePayload_default_instance_;
 class PacketHeader;
 struct PacketHeaderDefaultTypeInternal;
 extern PacketHeaderDefaultTypeInternal _PacketHeader_default_instance_;
@@ -486,6 +496,607 @@ class PacketHeader final : public ::google::protobuf::Message
   union { Impl_ _impl_; };
   friend struct ::TableStruct_Struct_2eproto;
 };
+// -------------------------------------------------------------------
+
+class ActionPayload final : public ::google::protobuf::internal::ZeroFieldsBase
+/* @@protoc_insertion_point(class_definition:Protocol.ActionPayload) */ {
+ public:
+  inline ActionPayload() : ActionPayload(nullptr) {}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(ActionPayload* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(ActionPayload));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR ActionPayload(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline ActionPayload(const ActionPayload& from) : ActionPayload(nullptr, from) {}
+  inline ActionPayload(ActionPayload&& from) noexcept
+      : ActionPayload(nullptr, std::move(from)) {}
+  inline ActionPayload& operator=(const ActionPayload& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ActionPayload& operator=(ActionPayload&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ActionPayload& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ActionPayload* internal_default_instance() {
+    return reinterpret_cast<const ActionPayload*>(
+        &_ActionPayload_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 4;
+  friend void swap(ActionPayload& a, ActionPayload& b) { a.Swap(&b); }
+  inline void Swap(ActionPayload* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ActionPayload* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ActionPayload* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::internal::ZeroFieldsBase::DefaultConstruct<ActionPayload>(arena);
+  }
+  using ::google::protobuf::internal::ZeroFieldsBase::CopyFrom;
+  inline void CopyFrom(const ActionPayload& from) {
+    ::google::protobuf::internal::ZeroFieldsBase::CopyImpl(*this, from);
+  }
+  using ::google::protobuf::internal::ZeroFieldsBase::MergeFrom;
+  void MergeFrom(const ActionPayload& from) {
+    ::google::protobuf::internal::ZeroFieldsBase::MergeImpl(*this, from);
+  }
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.ActionPayload"; }
+
+ protected:
+  explicit ActionPayload(::google::protobuf::Arena* arena);
+  ActionPayload(::google::protobuf::Arena* arena, const ActionPayload& from);
+  ActionPayload(::google::protobuf::Arena* arena, ActionPayload&& from) noexcept
+      : ActionPayload(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  // @@protoc_insertion_point(class_scope:Protocol.ActionPayload)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 0, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const ActionPayload& from_msg);
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  friend struct ::TableStruct_Struct_2eproto;
+};
+// -------------------------------------------------------------------
+
+class MovePayload final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.MovePayload) */ {
+ public:
+  inline MovePayload() : MovePayload(nullptr) {}
+  ~MovePayload() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(MovePayload* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(MovePayload));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR MovePayload(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline MovePayload(const MovePayload& from) : MovePayload(nullptr, from) {}
+  inline MovePayload(MovePayload&& from) noexcept
+      : MovePayload(nullptr, std::move(from)) {}
+  inline MovePayload& operator=(const MovePayload& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline MovePayload& operator=(MovePayload&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const MovePayload& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const MovePayload* internal_default_instance() {
+    return reinterpret_cast<const MovePayload*>(
+        &_MovePayload_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 3;
+  friend void swap(MovePayload& a, MovePayload& b) { a.Swap(&b); }
+  inline void Swap(MovePayload* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(MovePayload* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  MovePayload* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<MovePayload>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const MovePayload& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const MovePayload& from) { MovePayload::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(MovePayload* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.MovePayload"; }
+
+ protected:
+  explicit MovePayload(::google::protobuf::Arena* arena);
+  MovePayload(::google::protobuf::Arena* arena, const MovePayload& from);
+  MovePayload(::google::protobuf::Arena* arena, MovePayload&& from) noexcept
+      : MovePayload(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kVelocityFieldNumber = 1,
+    kIsRunFieldNumber = 2,
+  };
+  // .Protocol.Vec3 velocity = 1;
+  bool has_velocity() const;
+  void clear_velocity() ;
+  const ::Protocol::Vec3& velocity() const;
+  PROTOBUF_NODISCARD ::Protocol::Vec3* release_velocity();
+  ::Protocol::Vec3* mutable_velocity();
+  void set_allocated_velocity(::Protocol::Vec3* value);
+  void unsafe_arena_set_allocated_velocity(::Protocol::Vec3* value);
+  ::Protocol::Vec3* unsafe_arena_release_velocity();
+
+  private:
+  const ::Protocol::Vec3& _internal_velocity() const;
+  ::Protocol::Vec3* _internal_mutable_velocity();
+
+  public:
+  // bool isRun = 2;
+  void clear_isrun() ;
+  bool isrun() const;
+  void set_isrun(bool value);
+
+  private:
+  bool _internal_isrun() const;
+  void _internal_set_isrun(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.MovePayload)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      1, 2, 1,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const MovePayload& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::Protocol::Vec3* velocity_;
+    bool isrun_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Struct_2eproto;
+};
+// -------------------------------------------------------------------
+
+class InputPayload final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.InputPayload) */ {
+ public:
+  inline InputPayload() : InputPayload(nullptr) {}
+  ~InputPayload() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(InputPayload* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(InputPayload));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR InputPayload(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline InputPayload(const InputPayload& from) : InputPayload(nullptr, from) {}
+  inline InputPayload(InputPayload&& from) noexcept
+      : InputPayload(nullptr, std::move(from)) {}
+  inline InputPayload& operator=(const InputPayload& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline InputPayload& operator=(InputPayload&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const InputPayload& default_instance() {
+    return *internal_default_instance();
+  }
+  enum PayloadCase {
+    kMove = 10,
+    kAction = 11,
+    PAYLOAD_NOT_SET = 0,
+  };
+  static inline const InputPayload* internal_default_instance() {
+    return reinterpret_cast<const InputPayload*>(
+        &_InputPayload_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 2;
+  friend void swap(InputPayload& a, InputPayload& b) { a.Swap(&b); }
+  inline void Swap(InputPayload* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(InputPayload* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  InputPayload* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<InputPayload>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const InputPayload& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const InputPayload& from) { InputPayload::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(InputPayload* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.InputPayload"; }
+
+ protected:
+  explicit InputPayload(::google::protobuf::Arena* arena);
+  InputPayload(::google::protobuf::Arena* arena, const InputPayload& from);
+  InputPayload(::google::protobuf::Arena* arena, InputPayload&& from) noexcept
+      : InputPayload(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kPriorityFieldNumber = 1,
+    kMoveFieldNumber = 10,
+    kActionFieldNumber = 11,
+  };
+  // uint32 priority = 1;
+  void clear_priority() ;
+  ::uint32_t priority() const;
+  void set_priority(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_priority() const;
+  void _internal_set_priority(::uint32_t value);
+
+  public:
+  // .Protocol.MovePayload move = 10;
+  bool has_move() const;
+  private:
+  bool _internal_has_move() const;
+
+  public:
+  void clear_move() ;
+  const ::Protocol::MovePayload& move() const;
+  PROTOBUF_NODISCARD ::Protocol::MovePayload* release_move();
+  ::Protocol::MovePayload* mutable_move();
+  void set_allocated_move(::Protocol::MovePayload* value);
+  void unsafe_arena_set_allocated_move(::Protocol::MovePayload* value);
+  ::Protocol::MovePayload* unsafe_arena_release_move();
+
+  private:
+  const ::Protocol::MovePayload& _internal_move() const;
+  ::Protocol::MovePayload* _internal_mutable_move();
+
+  public:
+  // .Protocol.ActionPayload action = 11;
+  bool has_action() const;
+  private:
+  bool _internal_has_action() const;
+
+  public:
+  void clear_action() ;
+  const ::Protocol::ActionPayload& action() const;
+  PROTOBUF_NODISCARD ::Protocol::ActionPayload* release_action();
+  ::Protocol::ActionPayload* mutable_action();
+  void set_allocated_action(::Protocol::ActionPayload* value);
+  void unsafe_arena_set_allocated_action(::Protocol::ActionPayload* value);
+  ::Protocol::ActionPayload* unsafe_arena_release_action();
+
+  private:
+  const ::Protocol::ActionPayload& _internal_action() const;
+  ::Protocol::ActionPayload* _internal_mutable_action();
+
+  public:
+  void clear_payload();
+  PayloadCase payload_case() const;
+  // @@protoc_insertion_point(class_scope:Protocol.InputPayload)
+ private:
+  class _Internal;
+  void set_has_move();
+  void set_has_action();
+  inline bool has_payload() const;
+  inline void clear_has_payload();
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 3, 2,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const InputPayload& from_msg);
+    ::uint32_t priority_;
+    union PayloadUnion {
+      constexpr PayloadUnion() : _constinit_{} {}
+      ::google::protobuf::internal::ConstantInitialized _constinit_;
+      ::Protocol::MovePayload* move_;
+      ::Protocol::ActionPayload* action_;
+    } payload_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::uint32_t _oneof_case_[1];
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Struct_2eproto;
+};
 
 // ===================================================================
 
@@ -616,6 +1227,325 @@ inline void Vec3::_internal_set_z(float value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.z_ = value;
 }
+
+// -------------------------------------------------------------------
+
+// InputPayload
+
+// uint32 priority = 1;
+inline void InputPayload::clear_priority() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.priority_ = 0u;
+}
+inline ::uint32_t InputPayload::priority() const {
+  // @@protoc_insertion_point(field_get:Protocol.InputPayload.priority)
+  return _internal_priority();
+}
+inline void InputPayload::set_priority(::uint32_t value) {
+  _internal_set_priority(value);
+  // @@protoc_insertion_point(field_set:Protocol.InputPayload.priority)
+}
+inline ::uint32_t InputPayload::_internal_priority() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.priority_;
+}
+inline void InputPayload::_internal_set_priority(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.priority_ = value;
+}
+
+// .Protocol.MovePayload move = 10;
+inline bool InputPayload::has_move() const {
+  return payload_case() == kMove;
+}
+inline bool InputPayload::_internal_has_move() const {
+  return payload_case() == kMove;
+}
+inline void InputPayload::set_has_move() {
+  _impl_._oneof_case_[0] = kMove;
+}
+inline void InputPayload::clear_move() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (payload_case() == kMove) {
+    if (GetArena() == nullptr) {
+      delete _impl_.payload_.move_;
+    } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
+      ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.payload_.move_);
+    }
+    clear_has_payload();
+  }
+}
+inline ::Protocol::MovePayload* InputPayload::release_move() {
+  // @@protoc_insertion_point(field_release:Protocol.InputPayload.move)
+  if (payload_case() == kMove) {
+    clear_has_payload();
+    auto* temp = _impl_.payload_.move_;
+    if (GetArena() != nullptr) {
+      temp = ::google::protobuf::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.payload_.move_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::Protocol::MovePayload& InputPayload::_internal_move() const {
+  return payload_case() == kMove ? *_impl_.payload_.move_ : reinterpret_cast<::Protocol::MovePayload&>(::Protocol::_MovePayload_default_instance_);
+}
+inline const ::Protocol::MovePayload& InputPayload::move() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.InputPayload.move)
+  return _internal_move();
+}
+inline ::Protocol::MovePayload* InputPayload::unsafe_arena_release_move() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:Protocol.InputPayload.move)
+  if (payload_case() == kMove) {
+    clear_has_payload();
+    auto* temp = _impl_.payload_.move_;
+    _impl_.payload_.move_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void InputPayload::unsafe_arena_set_allocated_move(::Protocol::MovePayload* value) {
+  // We rely on the oneof clear method to free the earlier contents
+  // of this oneof. We can directly use the pointer we're given to
+  // set the new value.
+  clear_payload();
+  if (value) {
+    set_has_move();
+    _impl_.payload_.move_ = value;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.InputPayload.move)
+}
+inline ::Protocol::MovePayload* InputPayload::_internal_mutable_move() {
+  if (payload_case() != kMove) {
+    clear_payload();
+    set_has_move();
+    _impl_.payload_.move_ =
+        ::google::protobuf::Message::DefaultConstruct<::Protocol::MovePayload>(GetArena());
+  }
+  return _impl_.payload_.move_;
+}
+inline ::Protocol::MovePayload* InputPayload::mutable_move() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::Protocol::MovePayload* _msg = _internal_mutable_move();
+  // @@protoc_insertion_point(field_mutable:Protocol.InputPayload.move)
+  return _msg;
+}
+
+// .Protocol.ActionPayload action = 11;
+inline bool InputPayload::has_action() const {
+  return payload_case() == kAction;
+}
+inline bool InputPayload::_internal_has_action() const {
+  return payload_case() == kAction;
+}
+inline void InputPayload::set_has_action() {
+  _impl_._oneof_case_[0] = kAction;
+}
+inline void InputPayload::clear_action() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (payload_case() == kAction) {
+    if (GetArena() == nullptr) {
+      delete _impl_.payload_.action_;
+    } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
+      ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.payload_.action_);
+    }
+    clear_has_payload();
+  }
+}
+inline ::Protocol::ActionPayload* InputPayload::release_action() {
+  // @@protoc_insertion_point(field_release:Protocol.InputPayload.action)
+  if (payload_case() == kAction) {
+    clear_has_payload();
+    auto* temp = _impl_.payload_.action_;
+    if (GetArena() != nullptr) {
+      temp = ::google::protobuf::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.payload_.action_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::Protocol::ActionPayload& InputPayload::_internal_action() const {
+  return payload_case() == kAction ? *_impl_.payload_.action_ : reinterpret_cast<::Protocol::ActionPayload&>(::Protocol::_ActionPayload_default_instance_);
+}
+inline const ::Protocol::ActionPayload& InputPayload::action() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.InputPayload.action)
+  return _internal_action();
+}
+inline ::Protocol::ActionPayload* InputPayload::unsafe_arena_release_action() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:Protocol.InputPayload.action)
+  if (payload_case() == kAction) {
+    clear_has_payload();
+    auto* temp = _impl_.payload_.action_;
+    _impl_.payload_.action_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void InputPayload::unsafe_arena_set_allocated_action(::Protocol::ActionPayload* value) {
+  // We rely on the oneof clear method to free the earlier contents
+  // of this oneof. We can directly use the pointer we're given to
+  // set the new value.
+  clear_payload();
+  if (value) {
+    set_has_action();
+    _impl_.payload_.action_ = value;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.InputPayload.action)
+}
+inline ::Protocol::ActionPayload* InputPayload::_internal_mutable_action() {
+  if (payload_case() != kAction) {
+    clear_payload();
+    set_has_action();
+    _impl_.payload_.action_ =
+        ::google::protobuf::Message::DefaultConstruct<::Protocol::ActionPayload>(GetArena());
+  }
+  return _impl_.payload_.action_;
+}
+inline ::Protocol::ActionPayload* InputPayload::mutable_action() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::Protocol::ActionPayload* _msg = _internal_mutable_action();
+  // @@protoc_insertion_point(field_mutable:Protocol.InputPayload.action)
+  return _msg;
+}
+
+inline bool InputPayload::has_payload() const {
+  return payload_case() != PAYLOAD_NOT_SET;
+}
+inline void InputPayload::clear_has_payload() {
+  _impl_._oneof_case_[0] = PAYLOAD_NOT_SET;
+}
+inline InputPayload::PayloadCase InputPayload::payload_case() const {
+  return InputPayload::PayloadCase(_impl_._oneof_case_[0]);
+}
+// -------------------------------------------------------------------
+
+// MovePayload
+
+// .Protocol.Vec3 velocity = 1;
+inline bool MovePayload::has_velocity() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.velocity_ != nullptr);
+  return value;
+}
+inline void MovePayload::clear_velocity() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.velocity_ != nullptr) _impl_.velocity_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const ::Protocol::Vec3& MovePayload::_internal_velocity() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Protocol::Vec3* p = _impl_.velocity_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::Vec3&>(::Protocol::_Vec3_default_instance_);
+}
+inline const ::Protocol::Vec3& MovePayload::velocity() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.MovePayload.velocity)
+  return _internal_velocity();
+}
+inline void MovePayload::unsafe_arena_set_allocated_velocity(::Protocol::Vec3* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.velocity_);
+  }
+  _impl_.velocity_ = reinterpret_cast<::Protocol::Vec3*>(value);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.MovePayload.velocity)
+}
+inline ::Protocol::Vec3* MovePayload::release_velocity() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::Vec3* released = _impl_.velocity_;
+  _impl_.velocity_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Protocol::Vec3* MovePayload::unsafe_arena_release_velocity() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.MovePayload.velocity)
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::Vec3* temp = _impl_.velocity_;
+  _impl_.velocity_ = nullptr;
+  return temp;
+}
+inline ::Protocol::Vec3* MovePayload::_internal_mutable_velocity() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.velocity_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::Vec3>(GetArena());
+    _impl_.velocity_ = reinterpret_cast<::Protocol::Vec3*>(p);
+  }
+  return _impl_.velocity_;
+}
+inline ::Protocol::Vec3* MovePayload::mutable_velocity() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  ::Protocol::Vec3* _msg = _internal_mutable_velocity();
+  // @@protoc_insertion_point(field_mutable:Protocol.MovePayload.velocity)
+  return _msg;
+}
+inline void MovePayload::set_allocated_velocity(::Protocol::Vec3* value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete (_impl_.velocity_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = (value)->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+
+  _impl_.velocity_ = reinterpret_cast<::Protocol::Vec3*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.MovePayload.velocity)
+}
+
+// bool isRun = 2;
+inline void MovePayload::clear_isrun() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.isrun_ = false;
+}
+inline bool MovePayload::isrun() const {
+  // @@protoc_insertion_point(field_get:Protocol.MovePayload.isRun)
+  return _internal_isrun();
+}
+inline void MovePayload::set_isrun(bool value) {
+  _internal_set_isrun(value);
+  // @@protoc_insertion_point(field_set:Protocol.MovePayload.isRun)
+}
+inline bool MovePayload::_internal_isrun() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.isrun_;
+}
+inline void MovePayload::_internal_set_isrun(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.isrun_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ActionPayload
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

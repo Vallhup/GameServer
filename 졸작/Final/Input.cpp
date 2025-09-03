@@ -33,8 +33,6 @@ void Input::SetKey(const size_t key, const bool pressed)
 {
 	mChangeKeyState[key] = (mPressedKeys[key] != pressed);
 	mPressedKeys[key] = pressed;
-
-	SendInputPacket(key, pressed);
 }
 
 void Input::SetMouseButton(const MouseButton button, const bool bPressed)
@@ -48,29 +46,15 @@ void Input::SetMousePosition(const XMFLOAT2 mousePosition)
 	mMousePos = mousePosition;
 }
 
-std::pair<Protocol::Input, Protocol::InputType> Input::GameInput(size_t key, bool pressed)
-{
-	WPARAM wParam = static_cast<WPARAM>(key);
-	
-	Protocol::Input input;
-	switch (wParam) {
-	case 'W': input = Protocol::Input::MOVE_FRONT; break;
-	case 'A': input = Protocol::Input::MOVE_LEFT; break;
-	case 'S': input = Protocol::Input::MOVE_BACK; break;
-	case 'D': input = Protocol::Input::MOVE_RIGHT; break;
-	}
-
-	Protocol::InputType type = 
-		pressed ? Protocol::InputType::KeyDown : Protocol::InputType::KeyUp;
-
-	return { input, type };
-}
-
-void Input::SendInputPacket(const size_t key, const bool pressed)
+void Input::SendMovePacket(XMFLOAT3 dir)
 {
 	if (!network) return;
 
-	auto input = GameInput(key, pressed);
-	vector<char> packet = PacketFactory::CSInputPacket(input.first, input.second);
+	Protocol::Vec3 netDir;
+	netDir.set_x(dir.x);
+	netDir.set_y(dir.y);
+	netDir.set_z(dir.z);
+
+	vector<char> packet = PacketFactory::CSMovePacket(netDir);
 	network->Send(packet);
 }

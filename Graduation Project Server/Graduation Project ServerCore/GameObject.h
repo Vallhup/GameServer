@@ -7,7 +7,7 @@
 class GameObject {
 public:
 	GameObject() = delete;
-	GameObject(int id, Instance& instance) : _id(id), _instance(instance) {}
+	GameObject(int id, Instance* instance) : _id(id), _instance(instance) {}
 	virtual ~GameObject();
 
 public:
@@ -23,7 +23,6 @@ public:
 
 		_types[std::type_index(typeid(T))] = raw;
 		_components.push_back(std::move(component));
-		raw->Register();
 
 		return raw;
 	}
@@ -41,8 +40,6 @@ public:
 
 			for (auto& uniqeCmp : _components) {
 				if (component == uniqeCmp.get()) {
-					component->Deregister();
-
 					_components.erase(uniqeCmp);
 					_types.erase(it);
 
@@ -65,13 +62,15 @@ public:
 		return nullptr;
 	}
 
+	void Update(float deltaTime);
+
 public:
 	int GetId() const { return _id; }
-	int GetInstanceId() const { return _instance.GetId(); }
+	int GetInstanceId() const { return _instance->GetId(); }
 
 protected:
 	int _id;
-	Instance& _instance;
+	Instance* _instance;
 
 	std::vector<std::unique_ptr<IComponent>> _components;
 	std::unordered_map<std::type_index, IComponent*> _types;

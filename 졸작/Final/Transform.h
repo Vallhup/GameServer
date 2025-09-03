@@ -25,5 +25,7 @@ private:
 	XMFLOAT3 position;
 	XMFLOAT3 rotation;
 	XMFLOAT3 scale;
+
+	XMFLOAT3 targetPos;
 };
 

@@ -2,20 +2,13 @@
 
 #include <variant>
 
-#include "InputSystem.h"
 #include "BTNode.h"
 #include "Protocols/Enum.pb.h"
+#include "Protocols/Struct.pb.h"
 
 enum class EventType {
 	BT,
-	Input,
 	Timer
-};
-
-struct InputEventData {
-	int sessionId;
-	Protocol::Input key;
-	Protocol::InputType type;
 };
 
 struct TimerEventData {
@@ -28,7 +21,7 @@ struct BTEventData {
 	std::shared_ptr<std::promise<NodeStatus>> promise;
 };
 
-using EventData = std::variant<InputEventData, TimerEventData, BTEventData>;
+using EventData = std::variant<TimerEventData, BTEventData>;
 
 struct Event {
 	EventType type;

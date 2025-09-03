@@ -3,10 +3,13 @@
 
 GameObject::~GameObject()
 {
-	for (auto& uniqeCmp : _components) {
-		uniqeCmp->Deregister();
-	}
-	
 	_components.clear();
 	_types.clear();
+}
+
+void GameObject::Update(float deltaTime)
+{
+	for (auto& comp : _components) {
+		comp->Update(deltaTime);
+	}
 }

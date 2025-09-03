@@ -37,8 +37,6 @@ public:
 	void RemoveObject(int id);
 
 	int GetId() const { return _id; }
-	TickSystem& GetTickSystem() { return _tickSystem; }
-	InputSystem& GetInputSystem() { return _inputSystem; }
 	IGameLogic& GetGameLogic() const { return *_gameLogic; }
 	bool IsActive() const { return _isActive.load(); }
 	std::shared_ptr<GameObject> GetGameObject(int id) const { return _objMng->GetGameObject(id); }
@@ -48,10 +46,7 @@ protected:
 	int _id;
 	std::atomic<bool> _isActive;
 
-	IGameContext& _gameCtx;
-
-	TickSystem _tickSystem;
-	InputSystem _inputSystem;
+	IGameContext& _gameCtx;;
 
 	std::unique_ptr<class IGameLogic> _gameLogic;
 	std::unique_ptr<class IEventManager> _eventMng;

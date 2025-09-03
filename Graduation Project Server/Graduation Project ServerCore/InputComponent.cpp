@@ -1,27 +1,29 @@
 #include "pch.h"
 #include "InputComponent.h"
 
-void InputComponent::HandleInput(const Protocol::CS_INPUT_PACKET& packet)
+void InputComponent::Update(float deltaTime)
 {
-	auto rawKey = packet.key();
-	if (rawKey >= Protocol::MOVE_FRONT and rawKey <= Protocol::MOVE_RIGHT) {
-		auto key = static_cast<size_t>(rawKey) - 1;
+	while (not _inputQueue.empty()) {
+		Protocol::InputPayload payload = _inputQueue.front();
+		_inputQueue.pop();
 
-		(packet.inputtype() == Protocol::InputType::KeyDown) ? 
-			_keyState.set(key) : _keyState.reset(key);
-	}
-
-	else {
-		LOG_DBG("key >= _keyState.size() : key = %d", rawKey);
+		switch (payload.payload_case()) {
+		case Protocol::InputPayload::kMove: {
+			if (auto mvComp = _owner.GetComponent<MovementComponent>()) {
+				mvComp->SetMovePayload(payload);
+			}
+			break;
+		}
+		case Protocol::InputPayload::kAction: {
+			break;
+		}
+		}
 	}
 }
 
-void InputComponent::OnRegister()
+void InputComponent::Enqueue(const Protocol::CS_INPUT_PACKET& data)
 {
-	_instance.GetInputSystem().Register(_id, this);
-}
-
-void InputComponent::OnDeregister()
-{
-	_instance.GetInputSystem().Deregister(_id);
+	Protocol::InputPayload payload;
+	payload.CopyFrom(data.payload());
+	_inputQueue.push(std::move(payload));
 }

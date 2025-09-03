@@ -16,12 +16,9 @@ enum PacketType {
 enum Input {
 	NONE_INPUT = 0;
 
-	MOVE_FRONT = 1;
-	MOVE_BACK = 2;
-	MOVE_LEFT = 3;
-	MOVE_RIGHT = 4;
+	MOVE = 1;
 
-	MAX = 5;
+	MAX = 2;
 }
 
 enum InputType {

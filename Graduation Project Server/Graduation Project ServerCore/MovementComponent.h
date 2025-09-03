@@ -2,30 +2,21 @@
 
 #include "GameObject.h"
 
-class MovementComponent : public IComponent, public ITickable {
+class MovementComponent : public IComponent {
+	static constexpr float WALK_SPEED{ 2.0f };
+	static constexpr float RUN_SPEED{ 4.0f };
+
 public:
 	MovementComponent() = delete;
-	MovementComponent(GameObject& owner, Instance& instance);
+	MovementComponent(GameObject& owner, Instance* instance);
 	virtual ~MovementComponent() = default;
 
-public:
-	virtual void Tick(float deltaTime) override;
-	virtual bool TickEnable() override { return Enable(); }
+	virtual void Update(float deltaTime) override;
 
 public:
-	void SetVelocity(const vec3& velocity) 
-	{ 
-		_velocity = velocity; 
-		/*LOG_DBG("MovementComponent[%d] SetVelocity : velocity={ %.2f, %.2f, %.2f }", 
-			_owner.GetId(), velocity.x, velocity.y, velocity.z);*/
-	}
-
-private:
-	virtual void OnRegister() override;
-	virtual void OnDeregister() override;
-	virtual void OnActivate() override {}
-	virtual void OnDeactivate() override {}
+	void SetMovePayload(const Protocol::InputPayload& payload);
 
 private:
 	vec3 _velocity;
+	bool _isRun;
 };

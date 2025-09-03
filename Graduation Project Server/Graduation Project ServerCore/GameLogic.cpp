@@ -8,6 +8,10 @@ GameLogic::GameLogic(Instance* instance, IEventManager* eventMng)
 
 void GameLogic::LogicUpdate(float deltaTime)
 {
+	for (auto& obj : _instance->GetGameObjectList()) {
+		obj->Update(deltaTime);
+	}
+
 	Event ev;
 	while (_eventMng->TryPop(ev)) {
 		if (ev.targetTime > std::chrono::high_resolution_clock::now()) {
@@ -36,30 +40,19 @@ void GameLogic::NetworkUpdate()
 				_instance->BroadCast(PacketFactory::SCMovePakcet(obj->GetId(), protoPos));
 				LOG_DBG("Send Move Packet");
 			}
-
-			/*else {
-				LOG_DBG("Version not change");
-			}*/
 		}
 	}
 }
 
 void GameLogic::OnPlayerAction(int sessionId, const Protocol::CS_INPUT_PACKET& packet)
 {
-	InputEventData data{ sessionId, packet.key(), packet.inputtype() };
-	Event ev{ EventType::Input, data, std::chrono::high_resolution_clock::now() };
-	_eventMng->Push(std::move(ev));
+	_instance->GetGameObject(sessionId)->GetComponent<InputComponent>()->Enqueue(packet);
 }
 
 void GameLogic::ExecuteEvent(Event event)
 {
 	try {
 		switch (event.type) {
-		case EventType::Input: {
-			auto& data = std::get<InputEventData>(event.data);
-			HandleInput(data);
-			break;
-		}
 		case EventType::Timer: {
 			auto& data = std::get<TimerEventData>(event.data);
 			data.func();
@@ -83,29 +76,35 @@ void GameLogic::ExecuteEvent(Event event)
 	}
 }
 
-void GameLogic::HandleInput(const InputEventData& data)
-{
-	static const std::array<vec3, 4> dirs = {
-		vec3{0.0f,  0.0f, 1.0f},
-		vec3{-1.0f, 0.0f, 0.0f},
-		vec3{0.0f, 0.0f, -1.0f},
-		vec3{1.0f, 0.0f,  0.0f}
-	};
-
-	if (auto obj = _instance->GetGameObject(data.sessionId)) {
-		if (auto inputComp = obj->GetComponent<InputComponent>()) {
-			
-			vec3 dir{ 0, 0, 0 };
-			for (int i = Protocol::MOVE_FRONT; i <= Protocol::MOVE_RIGHT; ++i) {
-				if (inputComp->IsKeyDown((Protocol::Input)(i - 1))) {
-					dir += dirs[i - Protocol::MOVE_FRONT];
-				}
-			}
-
-			if (auto moveComp = obj->GetComponent<MovementComponent>()) {
-				moveComp->SetVelocity(dir);
-				moveComp->SetEnable(true);
-			}
-		}
-	}
-}
+//void GameLogic::HandleInput(const InputEventData& data)
+//{
+//	if (auto obj = _instance->GetGameObject(data.sessionId)) {
+//		if (auto input = obj->GetComponent<InputComponent>()) {
+//			input->Enqueue(data);
+//		}
+//	}
+//
+//	//static const std::array<vec3, 4> dirs = {
+//	//	vec3{0.0f,  0.0f, 1.0f},
+//	//	vec3{-1.0f, 0.0f, 0.0f},
+//	//	vec3{0.0f, 0.0f, -1.0f},
+//	//	vec3{1.0f, 0.0f,  0.0f}
+//	//};
+//
+//	//if (auto obj = _instance->GetGameObject(data.sessionId)) {
+//	//	// data.key()에 따라 분기
+//	//	switch (data.key) {
+//	//	case Protocol::Input::MOVE_FRONT:
+//	//	case Protocol::Input::MOVE_BACK:
+//	//	case Protocol::Input::MOVE_LEFT:
+//	//	case Protocol::Input::MOVE_RIGHT: {
+//	//		if (auto mvComp = obj->GetComponent<MovementComponent>()) {
+//	//			mvComp->~Movemen
+//
+//	//		}
+//	//		break;
+//	//	}
+//
+//	//	}
+//	//}
+//}

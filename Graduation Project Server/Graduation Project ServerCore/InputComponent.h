@@ -1,28 +1,20 @@
 #pragma once
 
 #include "GameObject.h"
+#include "Protocols/Protocol.pb.h"
 
-class InputComponent : public IComponent, public IInputable {
+class InputComponent : public IComponent {
 
 public:
 	InputComponent() = delete;
-	InputComponent(GameObject& owner, Instance& instance)
-		: IComponent(owner, instance), IInputable(owner.GetId()) {}
+	InputComponent(GameObject& owner, Instance* instance)
+		: IComponent(owner, instance) {}
 	virtual ~InputComponent() = default;
 
-public:	
-	virtual void HandleInput(const Protocol::CS_INPUT_PACKET& packet) override;
-	virtual void InputEnable() override { Enable(); }
-	
 public:
-	bool IsKeyDown(Protocol::Input key) const { return _keyState.test((size_t)key); }
+	virtual void Update(float deltaTime) override;
+	void Enqueue(const Protocol::CS_INPUT_PACKET& data);
 
 private:
-	virtual void OnRegister() override;
-	virtual void OnDeregister() override;
-	virtual void OnActivate() override {}
-	virtual void OnDeactivate() override {}
-
-private:
-	InputSystem::KeyState _keyState;
+	std::queue<Protocol::InputPayload> _inputQueue;
 };

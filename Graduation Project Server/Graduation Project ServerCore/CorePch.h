@@ -31,6 +31,10 @@
 #include <ranges>
 #include <bitset>
 
+#include "Protocols/Enum.pb.h"
+#include "Protocols/Struct.pb.h"
+#include "Protocols/Protocol.pb.h"
+
 #include "Logger.h"
 #include "Macro.h"
 #include "vec3.h"
@@ -54,9 +58,6 @@
 #include "CompositeNode.h"
 #include "DecoratorNode.h"
 #include "LeafNode.h"
-
-#include "TickSystem.h"
-#include "InputSystem.h"
 
 #include "Input.h"
 #include "ScriptVM.h"

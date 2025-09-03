@@ -5,16 +5,21 @@
 void Transform::Update(float deltaTime)
 {
 	//rotation.y += XM_PI * deltaTime;
+	position.x += (targetPos.x - position.x) * deltaTime * 10.0f;
+	position.y += (targetPos.y - position.y) * deltaTime * 10.0f;
+	position.z += (targetPos.z - position.z) * deltaTime * 10.0f;
 }
 
 void Transform::SetPosition(float x, float y, float z)
 {
-	position = { x, y, z };
+	//position = { x, y, z };
+	targetPos = { x, y, z };
 }
 
 void Transform::SetPosition(const XMFLOAT3& pos)
 {
-	position = pos;
+	//position = pos;
+	targetPos = pos;
 }
 
 void Transform::SetRotation(float x, float y, float z)

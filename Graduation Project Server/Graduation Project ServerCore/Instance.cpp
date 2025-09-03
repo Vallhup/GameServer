@@ -11,7 +11,6 @@ Instance::Instance(int id, InstanceType type, IGameContext& gameCtx)
 
 void Instance::Update(float deltaTime)
 {
-	_tickSystem.Tick(deltaTime);
 	_gameLogic->LogicUpdate(deltaTime);
 
 	static float networkAcc{ 0.0f };
@@ -25,7 +24,7 @@ void Instance::Update(float deltaTime)
 
 void Instance::AddPlayer(Session* session)
 {
-	auto character = std::make_shared<GameObject>(session->GetId(), *this);
+	auto character = std::make_shared<GameObject>(session->GetId(), this);
 	character->AddComponent<TransformComponent>(vec3{ 0, 0, 0 });
 	character->AddComponent<MovementComponent>();
 	character->AddComponent<InputComponent>();

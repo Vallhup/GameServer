@@ -3,15 +3,9 @@
 class TransformComponent : public IComponent {
 public:
 	TransformComponent() = delete;
-	TransformComponent(GameObject& owner, Instance& instance, const vec3& pos) 
+	TransformComponent(GameObject& owner, Instance* instance, const vec3& pos) 
 		: IComponent(owner, instance), _pos(pos) {}
 	virtual ~TransformComponent() = default;
-
-private:
-	virtual void OnRegister() override {}
-	virtual void OnDeregister() override {}
-	virtual void OnActivate() override {}
-	virtual void OnDeactivate() override {}
 
 public:
 	const vec3& GetPosition() const { return _pos; }

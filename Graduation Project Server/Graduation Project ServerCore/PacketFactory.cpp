@@ -25,12 +25,19 @@ std::vector<char> PacketFactory::CSLoginPacket()
 	return out;
 }
 
-std::vector<char> PacketFactory::CSInputPacket(Protocol::Input key, Protocol::InputType type)
+std::vector<char> PacketFactory::CSMovePacket(const Protocol::Vec3& pos)
 {
 	Protocol::CS_INPUT_PACKET input;
-	
-	input.set_key(key);
-	input.set_inputtype(type);
+
+	input.set_key(Protocol::Input::MOVE);
+
+	Protocol::InputPayload* payload = input.mutable_payload();
+
+	Protocol::MovePayload* movePayload = payload->mutable_move();
+	movePayload->mutable_velocity()->set_x(pos.x());
+	movePayload->mutable_velocity()->set_y(pos.y());
+	movePayload->mutable_velocity()->set_z(pos.z());
+	movePayload->set_isrun(false);
 
 	std::string body;
 	input.SerializeToString(&body);

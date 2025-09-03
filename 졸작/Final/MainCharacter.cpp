@@ -35,7 +35,6 @@ void MainCharacter::BasicMove(float deltaTime)
 	auto transform = GetComponent<Transform>();
 	if (!transform) return;
 
-	XMFLOAT3 currentPos = transform->GetPosition();
 	auto& input = GET(Input);
 
 	static bool wasMoving = false;
@@ -44,37 +43,29 @@ void MainCharacter::BasicMove(float deltaTime)
 
 	if (input.GetKey('W'))
 	{
-		currentPos.x -= characterForward.x * MOVE_SPEED * deltaTime;
-		currentPos.z -= characterForward.z * MOVE_SPEED * deltaTime;
 		moveDirection.x -= characterForward.x;  
 		moveDirection.z -= characterForward.z;
 		isMoving = true;
 	}
 	if (input.GetKey('S'))
 	{
-		currentPos.x += characterForward.x * MOVE_SPEED * deltaTime;
-		currentPos.z += characterForward.z * MOVE_SPEED * deltaTime;
 		moveDirection.x += characterForward.x;
 		moveDirection.z += characterForward.z;
 		isMoving = true;
 	}
 	if (input.GetKey('A'))
 	{
-		currentPos.x += characterRight.x * MOVE_SPEED * deltaTime;
-		currentPos.z += characterRight.z * MOVE_SPEED * deltaTime;
 		moveDirection.x += characterRight.x;   
 		moveDirection.z += characterRight.z;
 		isMoving = true;
 	}
 	if (input.GetKey('D'))
 	{
-		currentPos.x -= characterRight.x * MOVE_SPEED * deltaTime;
-		currentPos.z -= characterRight.z * MOVE_SPEED * deltaTime;
 		moveDirection.x -= characterRight.x;
 		moveDirection.z -= characterRight.z;
 		isMoving = true;
 	}
-	transform->SetPosition(currentPos);
+	input.SendMovePacket(moveDirection);
 
 	XMFLOAT3 currentRot = transform->GetRotation();
 

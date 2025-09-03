@@ -43,9 +43,6 @@
     <Filter Include="Game\AI\BT">
       <UniqueIdentifier>{0d6753ef-b878-4b92-a587-f2aa3c3f82c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Instance\System">
-      <UniqueIdentifier>{81a005bd-c367-43e2-b3f1-f842dc8b480a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Protocol\proto">
       <UniqueIdentifier>{f98a3723-d56d-4b70-aff8-42292b686012}</UniqueIdentifier>
     </Filter>
@@ -162,12 +159,6 @@
     </ClCompile>
     <ClCompile Include="NormalBehavior.cpp">
       <Filter>Game\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="TickSystem.cpp">
-      <Filter>Game\Instance\System</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem.cpp">
-      <Filter>Game\Instance\System</Filter>
     </ClCompile>
     <ClCompile Include="Event.cpp">
       <Filter>Game</Filter>
@@ -303,12 +294,6 @@
     </ClInclude>
     <ClInclude Include="NormalBehavior.h">
       <Filter>Game\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="TickSystem.h">
-      <Filter>Game\Instance\System</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem.h">
-      <Filter>Game\Instance\System</Filter>
     </ClInclude>
     <ClInclude Include="Event.h">
       <Filter>Game</Filter>

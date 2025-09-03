@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Protocols/Protocol.pb.h"
+
 class IGameLogic {
 public:
 	virtual ~IGameLogic() = default;
@@ -23,7 +25,6 @@ public:
 
 private:
 	void ExecuteEvent(Event event);
-	void HandleInput(const InputEventData& data);
 
 private:
 	Instance* _instance;

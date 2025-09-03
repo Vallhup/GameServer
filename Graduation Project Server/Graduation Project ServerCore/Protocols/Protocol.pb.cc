@@ -80,32 +80,6 @@ struct CS_LOGIN_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_LOGIN_PACKETDefaultTypeInternal _CS_LOGIN_PACKET_default_instance_;
 
-inline constexpr CS_INPUT_PACKET::Impl_::Impl_(
-    ::_pbi::ConstantInitialized) noexcept
-      : key_{static_cast< ::Protocol::Input >(0)},
-        inputtype_{static_cast< ::Protocol::InputType >(0)},
-        _cached_size_{0} {}
-
-template <typename>
-PROTOBUF_CONSTEXPR CS_INPUT_PACKET::CS_INPUT_PACKET(::_pbi::ConstantInitialized)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(_class_data_.base()),
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(),
-#endif  // PROTOBUF_CUSTOM_VTABLE
-      _impl_(::_pbi::ConstantInitialized()) {
-}
-struct CS_INPUT_PACKETDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR CS_INPUT_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
-  ~CS_INPUT_PACKETDefaultTypeInternal() {}
-  union {
-    CS_INPUT_PACKET _instance;
-  };
-};
-
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_INPUT_PACKETDefaultTypeInternal _CS_INPUT_PACKET_default_instance_;
-
 inline constexpr SC_MOVE_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
@@ -183,6 +157,32 @@ struct GamePacketDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GamePacketDefaultTypeInternal _GamePacket_default_instance_;
+
+inline constexpr CS_INPUT_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        payload_{nullptr},
+        key_{static_cast< ::Protocol::Input >(0)} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CS_INPUT_PACKET::CS_INPUT_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CS_INPUT_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CS_INPUT_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CS_INPUT_PACKETDefaultTypeInternal() {}
+  union {
+    CS_INPUT_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_INPUT_PACKETDefaultTypeInternal _CS_INPUT_PACKET_default_instance_;
 }  // namespace Protocol
 static constexpr const ::_pb::EnumDescriptor**
     file_level_enum_descriptors_Protocol_2eproto = nullptr;
@@ -211,7 +211,7 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_INPUT_PACKET, _impl_._has_bits_),
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_INPUT_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -220,7 +220,9 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_INPUT_PACKET, _impl_.key_),
-        PROTOBUF_FIELD_OFFSET(::Protocol::CS_INPUT_PACKET, _impl_.inputtype_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_INPUT_PACKET, _impl_.payload_),
+        ~0u,
+        0,
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -263,11 +265,11 @@ static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, 10, -1, sizeof(::Protocol::GamePacket)},
         {12, -1, -1, sizeof(::Protocol::CS_LOGIN_PACKET)},
-        {20, -1, -1, sizeof(::Protocol::CS_INPUT_PACKET)},
-        {30, -1, -1, sizeof(::Protocol::SC_LOGIN_PACKET)},
-        {38, 47, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {48, 57, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {58, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {20, 30, -1, sizeof(::Protocol::CS_INPUT_PACKET)},
+        {32, -1, -1, sizeof(::Protocol::SC_LOGIN_PACKET)},
+        {40, 49, -1, sizeof(::Protocol::SC_ADD_PACKET)},
+        {50, 59, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {60, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_GamePacket_default_instance_._instance,
@@ -283,13 +285,13 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "\n\016Protocol.proto\022\010Protocol\032\nEnum.proto\032\014"
     "Struct.proto\"B\n\nGamePacket\022&\n\006header\030\001 \001"
     "(\0132\026.Protocol.PacketHeader\022\014\n\004body\030\002 \001(\014"
-    "\"\021\n\017CS_LOGIN_PACKET\"W\n\017CS_INPUT_PACKET\022\034"
-    "\n\003key\030\001 \001(\0162\017.Protocol.Input\022&\n\tinputTyp"
-    "e\030\002 \001(\0162\023.Protocol.InputType\"\021\n\017SC_LOGIN"
-    "_PACKET\",\n\rSC_ADD_PACKET\022\033\n\003pos\030\001 \001(\0132\016."
-    "Protocol.Vec3\"-\n\016SC_MOVE_PACKET\022\033\n\003pos\030\001"
-    " \001(\0132\016.Protocol.Vec3\"\022\n\020SC_REMOVE_PACKET"
-    "b\006proto3"
+    "\"\021\n\017CS_LOGIN_PACKET\"X\n\017CS_INPUT_PACKET\022\034"
+    "\n\003key\030\001 \001(\0162\017.Protocol.Input\022\'\n\007payload\030"
+    "\003 \001(\0132\026.Protocol.InputPayload\"\021\n\017SC_LOGI"
+    "N_PACKET\",\n\rSC_ADD_PACKET\022\033\n\003pos\030\001 \001(\0132\016"
+    ".Protocol.Vec3\"-\n\016SC_MOVE_PACKET\022\033\n\003pos\030"
+    "\001 \001(\0132\016.Protocol.Vec3\"\022\n\020SC_REMOVE_PACKE"
+    "Tb\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[2] =
     {
@@ -300,7 +302,7 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    368,
+    369,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -706,8 +708,17 @@ const ::_pbi::TcParseTable<0, 0, 0, 0, 2> CS_LOGIN_PACKET::_table_ = {
 
 class CS_INPUT_PACKET::_Internal {
  public:
+  using HasBits =
+      decltype(std::declval<CS_INPUT_PACKET>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_._has_bits_);
 };
 
+void CS_INPUT_PACKET::clear_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.payload_ != nullptr) _impl_.payload_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
 CS_INPUT_PACKET::CS_INPUT_PACKET(::google::protobuf::Arena* arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(arena, _class_data_.base()) {
@@ -717,10 +728,32 @@ CS_INPUT_PACKET::CS_INPUT_PACKET(::google::protobuf::Arena* arena)
   SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:Protocol.CS_INPUT_PACKET)
 }
+inline PROTOBUF_NDEBUG_INLINE CS_INPUT_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from, const ::Protocol::CS_INPUT_PACKET& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0} {}
+
 CS_INPUT_PACKET::CS_INPUT_PACKET(
-    ::google::protobuf::Arena* arena, const CS_INPUT_PACKET& from)
-    : CS_INPUT_PACKET(arena) {
-  MergeFrom(from);
+    ::google::protobuf::Arena* arena,
+    const CS_INPUT_PACKET& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CS_INPUT_PACKET* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.payload_ = (cached_has_bits & 0x00000001u) ? ::google::protobuf::Message::CopyConstruct<::Protocol::InputPayload>(
+                              arena, *from._impl_.payload_)
+                        : nullptr;
+  _impl_.key_ = from._impl_.key_;
+
+  // @@protoc_insertion_point(copy_constructor:Protocol.CS_INPUT_PACKET)
 }
 inline PROTOBUF_NDEBUG_INLINE CS_INPUT_PACKET::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
@@ -730,11 +763,11 @@ inline PROTOBUF_NDEBUG_INLINE CS_INPUT_PACKET::Impl_::Impl_(
 inline void CS_INPUT_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, key_),
+               offsetof(Impl_, payload_),
            0,
-           offsetof(Impl_, inputtype_) -
-               offsetof(Impl_, key_) +
-               sizeof(Impl_::inputtype_));
+           offsetof(Impl_, key_) -
+               offsetof(Impl_, payload_) +
+               sizeof(Impl_::key_));
 }
 CS_INPUT_PACKET::~CS_INPUT_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.CS_INPUT_PACKET)
@@ -744,6 +777,7 @@ inline void CS_INPUT_PACKET::SharedDtor(MessageLite& self) {
   CS_INPUT_PACKET& this_ = static_cast<CS_INPUT_PACKET&>(self);
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
+  delete this_._impl_.payload_;
   this_._impl_.~Impl_();
 }
 
@@ -783,17 +817,17 @@ const ::google::protobuf::internal::ClassData* CS_INPUT_PACKET::GetClassData() c
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<1, 2, 0, 0, 2> CS_INPUT_PACKET::_table_ = {
+const ::_pbi::TcParseTable<2, 2, 1, 0, 2> CS_INPUT_PACKET::_table_ = {
   {
-    0,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_._has_bits_),
     0, // no _extensions_
-    2, 8,  // max_field_number, fast_idx_mask
+    3, 24,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967292,  // skipmap
+    4294967290,  // skipmap
     offsetof(decltype(_table_), field_entries),
     2,  // num_field_entries
-    0,  // num_aux_entries
-    offsetof(decltype(_table_), field_names),  // no aux_entries
+    1,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
     _class_data_.base(),
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
@@ -801,24 +835,26 @@ const ::_pbi::TcParseTable<1, 2, 0, 0, 2> CS_INPUT_PACKET::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::CS_INPUT_PACKET>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // .Protocol.InputType inputType = 2;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CS_INPUT_PACKET, _impl_.inputtype_), 63>(),
-     {16, 63, 0, PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.inputtype_)}},
+    {::_pbi::TcParser::MiniParse, {}},
     // .Protocol.Input key = 1;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CS_INPUT_PACKET, _impl_.key_), 63>(),
      {8, 63, 0, PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.key_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    // .Protocol.InputPayload payload = 3;
+    {::_pbi::TcParser::FastMtS1,
+     {26, 0, 0, PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.payload_)}},
   }}, {{
     65535, 65535
   }}, {{
     // .Protocol.Input key = 1;
-    {PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.key_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.key_), -1, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
-    // .Protocol.InputType inputType = 2;
-    {PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.inputtype_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
-  }},
-  // no aux_entries
-  {{
+    // .Protocol.InputPayload payload = 3;
+    {PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.payload_), _Internal::kHasBitsOffset + 0, 0,
+    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::Protocol::InputPayload>()},
+  }}, {{
   }},
 };
 
@@ -829,9 +865,13 @@ PROTOBUF_NOINLINE void CS_INPUT_PACKET::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&_impl_.key_, 0, static_cast<::size_t>(
-      reinterpret_cast<char*>(&_impl_.inputtype_) -
-      reinterpret_cast<char*>(&_impl_.key_)) + sizeof(_impl_.inputtype_));
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    ABSL_DCHECK(_impl_.payload_ != nullptr);
+    _impl_.payload_->Clear();
+  }
+  _impl_.key_ = 0;
+  _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -857,11 +897,12 @@ PROTOBUF_NOINLINE void CS_INPUT_PACKET::Clear() {
                 1, this_._internal_key(), target);
           }
 
-          // .Protocol.InputType inputType = 2;
-          if (this_._internal_inputtype() != 0) {
-            target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteEnumToArray(
-                2, this_._internal_inputtype(), target);
+          cached_has_bits = this_._impl_._has_bits_[0];
+          // .Protocol.InputPayload payload = 3;
+          if (cached_has_bits & 0x00000001u) {
+            target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                3, *this_._impl_.payload_, this_._impl_.payload_->GetCachedSize(), target,
+                stream);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -889,15 +930,18 @@ PROTOBUF_NOINLINE void CS_INPUT_PACKET::Clear() {
 
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
+            // .Protocol.InputPayload payload = 3;
+            cached_has_bits = this_._impl_._has_bits_[0];
+            if (cached_has_bits & 0x00000001u) {
+              total_size += 1 +
+                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.payload_);
+            }
+          }
+           {
             // .Protocol.Input key = 1;
             if (this_._internal_key() != 0) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_key());
-            }
-            // .Protocol.InputType inputType = 2;
-            if (this_._internal_inputtype() != 0) {
-              total_size += 1 +
-                            ::_pbi::WireFormatLite::EnumSize(this_._internal_inputtype());
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -907,17 +951,26 @@ PROTOBUF_NOINLINE void CS_INPUT_PACKET::Clear() {
 void CS_INPUT_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
   auto* const _this = static_cast<CS_INPUT_PACKET*>(&to_msg);
   auto& from = static_cast<const CS_INPUT_PACKET&>(from_msg);
+  ::google::protobuf::Arena* arena = _this->GetArena();
   // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.CS_INPUT_PACKET)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    ABSL_DCHECK(from._impl_.payload_ != nullptr);
+    if (_this->_impl_.payload_ == nullptr) {
+      _this->_impl_.payload_ =
+          ::google::protobuf::Message::CopyConstruct<::Protocol::InputPayload>(arena, *from._impl_.payload_);
+    } else {
+      _this->_impl_.payload_->MergeFrom(*from._impl_.payload_);
+    }
+  }
   if (from._internal_key() != 0) {
     _this->_impl_.key_ = from._impl_.key_;
   }
-  if (from._internal_inputtype() != 0) {
-    _this->_impl_.inputtype_ = from._impl_.inputtype_;
-  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -932,12 +985,13 @@ void CS_INPUT_PACKET::CopyFrom(const CS_INPUT_PACKET& from) {
 void CS_INPUT_PACKET::InternalSwap(CS_INPUT_PACKET* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.inputtype_)
-      + sizeof(CS_INPUT_PACKET::_impl_.inputtype_)
-      - PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.key_)>(
-          reinterpret_cast<char*>(&_impl_.key_),
-          reinterpret_cast<char*>(&other->_impl_.key_));
+      PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.key_)
+      + sizeof(CS_INPUT_PACKET::_impl_.key_)
+      - PROTOBUF_FIELD_OFFSET(CS_INPUT_PACKET, _impl_.payload_)>(
+          reinterpret_cast<char*>(&_impl_.payload_),
+          reinterpret_cast<char*>(&other->_impl_.payload_));
 }
 
 ::google::protobuf::Metadata CS_INPUT_PACKET::GetMetadata() const {

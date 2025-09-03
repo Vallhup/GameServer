@@ -32,7 +32,6 @@ bool Service::Init()
 	return true;
 }
 
-
 bool Service::Start()
 {
 	bool expected{ false };

@@ -61,6 +61,14 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
 
                 OutputDebugStringA("My character positioned!\n");
             }
+
+            else if(sessionId != _myId and otherKnight) {
+                if (auto transform = otherKnight->GetComponent<Transform>()) {
+                    transform->SetPosition(pos.x(), pos.y(), pos.z());
+                }
+
+                OutputDebugStringA("Other Character positioned!\n");
+            }
         }
         break;
     }
@@ -68,9 +76,16 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
         Protocol::SC_MOVE_PACKET move;
         if (move.ParseFromArray(packet.body().data(), packet.body().size())) {
             int sessionId = packet.header().sessionid();
+            Protocol::Vec3 pos = move.pos();
+
             if (sessionId == _myId && knight) {
-                Protocol::Vec3 pos = move.pos();
                 if (auto transform = knight->GetComponent<Transform>()) {
+                    transform->SetPosition(pos.x(), pos.y(), pos.z());
+                }
+            }
+
+            else if (sessionId != _myId and otherKnight) {
+                if (auto transform = otherKnight->GetComponent<Transform>()) {
                     transform->SetPosition(pos.x(), pos.y(), pos.z());
                 }
             }
@@ -93,19 +108,36 @@ void ServerTestScene::InitializeLogic()
 {
     OutputDebugStringA("----------------------------------------\nServerTestScene Data has been created!! \n");
 
-    knight = make_shared<MainCharacter>();
-    auto meshRenderer = knight->AddComponent<MeshRenderer>();
-    auto transform = knight->AddComponent<Transform>();
-    auto animator = knight->AddComponent<Animator>();
+    {
+        knight = make_shared<MainCharacter>();
+        auto meshRenderer = knight->AddComponent<MeshRenderer>();
+        auto transform = knight->AddComponent<Transform>();
+        auto animator = knight->AddComponent<Animator>();
 
-    meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-    transform->SetPosition(1.f, 0.f, 0.5f);  
-    transform->SetRotation(-1.57f, 0.f, 0.f);
-    transform->SetScale(0.01f, 0.01f, 0.01f);
-    knight->SetCamera(cam.get());
-    AddGameObject(knight);
+        meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+        transform->SetPosition(1.f, 0.f, 0.5f);
+        transform->SetRotation(-1.57f, 0.f, 0.f);
+        transform->SetScale(0.01f, 0.01f, 0.01f);
+        knight->SetCamera(cam.get());
+        AddGameObject(knight);
 
-    OutputDebugStringA("Knight created!!\n");
+        OutputDebugStringA("Knight created!!\n");
+    }
+
+    {
+        auto dragon = make_shared<GameObject>();
+        auto meshRenderer = dragon->AddComponent<MeshRenderer>();
+        auto transform = dragon->AddComponent<Transform>();
+        auto animator = dragon->AddComponent<Animator>();
+
+        meshRenderer->SetMesh(*coreRef, L"../FBXOutput/Dragon");
+        transform->SetPosition(0.f, 0.f, 0.5f);
+        transform->SetRotation(-1.57f, 0.f, 0.f);
+        transform->SetScale(0.01f, 0.01f, 0.01f);
+        AddGameObject(dragon); 
+
+        OutputDebugStringA("Dragon created!!\n");
+    }
 
     OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
     coreRef->FlushCommandQueue();
@@ -114,7 +146,7 @@ void ServerTestScene::InitializeLogic()
     for (const auto& obj : gameObjects) {
         if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
             meshRenderer->ReleaseUploadBuffers();
-    }
+    }   
     OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
 
     SetNetworkManager(GET(Engine).GetNetworkManager());
