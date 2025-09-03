@@ -100,6 +100,9 @@
     <ClCompile Include="ServerTestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="EffectRenderer.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -197,6 +200,9 @@
     </ClInclude>
     <ClInclude Include="ServerTestScene.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectRenderer.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
