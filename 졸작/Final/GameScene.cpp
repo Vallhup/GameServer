@@ -98,8 +98,8 @@ void GameScene::InitializeLogic()
 		auto transform = flameEffect->AddComponent<Transform>();
 
 		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/Atmosphere.efk");
-		transform->SetPosition(1.f, 6.f, -15.f);
+		effectRenderer->LoadEffect(u"../Effects/Barrior02_HDR.efk");
+		transform->SetPosition(1.f, 0.f, 0.5f);
 
 		AddGameObject(flameEffect);
 	}
