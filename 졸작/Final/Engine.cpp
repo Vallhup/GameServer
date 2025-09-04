@@ -64,6 +64,7 @@ void Engine::Render()
     // 백버퍼 + depth buffer 사용, alpha blending 활성화
     graphics->BeginForwardPass();
     sManager->RenderForward();   // 머리카락 등 투명한 것들
+    sManager->RenderEffects();
 
     graphics->RenderEnd();
 

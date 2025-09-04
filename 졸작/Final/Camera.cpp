@@ -155,6 +155,16 @@ XMFLOAT3 Camera::GetRight() const
     return camRight;
 }
 
+XMFLOAT3 Camera::GetPosition() const
+{
+    return position;
+}
+
+XMFLOAT3 Camera::GetTargetPosition() const
+{
+    return targetPosition;
+}
+
 void Camera::SetCameraPosition(const XMFLOAT3& pos)
 {
     desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };

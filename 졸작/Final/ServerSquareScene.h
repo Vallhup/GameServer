@@ -18,6 +18,7 @@ protected:
 	void UpdateScene(const float deltaTime) override;
 	void RenderSceneDeferred() override;
 	void RenderSceneForward() override;
+	void RenderSceneEffects() override;
 	int GetSceneWidth() const override;
 	void RequestSceneChange() override;
 

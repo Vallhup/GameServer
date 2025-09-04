@@ -151,6 +151,10 @@ void TestScene::RenderSceneForward()
 	}
 }
 
+void TestScene::RenderSceneEffects()
+{
+}
+
 int TestScene::GetSceneWidth() const
 {
 	return 0;

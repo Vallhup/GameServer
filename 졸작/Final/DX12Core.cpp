@@ -172,6 +172,8 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 	for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
 		swapChain->GetBuffer(i, IID_PPV_ARGS(&rtvBuffer[i]));
 
+	backBufferIndex = swapChain->GetCurrentBackBufferIndex();
+
 	OutputDebugStringA("=== SwapChain Creation Complete ===\n");
 }
 

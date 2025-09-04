@@ -42,6 +42,11 @@ void Scene::RenderForward()
     RenderSceneForward();
 }
 
+void Scene::RenderEffects()
+{
+    RenderSceneEffects();
+}
+
 Camera* Scene::GetCamera() const
 {
     return cam.get();

@@ -177,6 +177,10 @@ void ServerTestScene::RenderSceneForward()
     }
 }
 
+void ServerTestScene::RenderSceneEffects()
+{
+}
+
 int ServerTestScene::GetSceneWidth() const
 {
     return 0;

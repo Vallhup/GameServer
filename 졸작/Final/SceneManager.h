@@ -20,6 +20,7 @@ public:
     void Render();   
     void RenderDeferred();
     void RenderForward();
+    void RenderEffects();
     void Release();
 
     template <typename T>

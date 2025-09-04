@@ -40,6 +40,10 @@ void LoginScene::RenderSceneForward()
 {
 }
 
+void LoginScene::RenderSceneEffects()
+{
+}
+
 int LoginScene::GetSceneWidth() const
 {
 	return 0;

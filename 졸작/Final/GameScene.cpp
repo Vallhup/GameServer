@@ -10,6 +10,7 @@
 #include "Animator.h"
 #include "Material.h"
 #include "Camera.h"
+#include "EffectRenderer.h"
 
 GameScene::~GameScene() = default;
 
@@ -42,7 +43,7 @@ void GameScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
 
-	{
+	/*{
 		dragon = make_shared<GameObject>();
 		auto meshRenderer = dragon->AddComponent<MeshRenderer>();
 		auto transform = dragon->AddComponent<Transform>();
@@ -54,7 +55,7 @@ void GameScene::InitializeLogic()
 		AddGameObject(dragon);
 
 		OutputDebugStringA("Dragon created!!\n");
-	}
+	}*/
 
 	{
 		knight = make_shared<MainCharacter>();
@@ -91,6 +92,18 @@ void GameScene::InitializeLogic()
 		OutputDebugStringA("Strut created!!\n");
 	}
 
+	{
+		flameEffect = make_shared<GameObject>();
+		auto effectRenderer = flameEffect->AddComponent<EffectRenderer>();
+		auto transform = flameEffect->AddComponent<Transform>();
+
+		effectRenderer->Initialize(*coreRef);
+		effectRenderer->LoadEffect(u"../Effects/Atmosphere.efk");
+		transform->SetPosition(1.0f, 1.0f, -15.0f);
+
+		AddGameObject(flameEffect);
+	}
+
 	/*{
 		for (int i = 1; i < 10; ++i) {
 			auto newKnight = make_shared<GameObject>();
@@ -118,29 +131,35 @@ void GameScene::InitializeLogic()
 
 void GameScene::UpdateScene(const float deltaTime)
 {
-	if (dragon) {
-		auto animator = dragon->GetComponent<Animator>();
-		if (animator) {
-			if (GET(Input).GetKeyDown('1')) {
-				animator->TransitionToAnimation(0, 0.6f);  // Fly
-				OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
-			}
+	//if (dragon) {
+	//	auto animator = dragon->GetComponent<Animator>();
+	//	if (animator) {
+	//		if (GET(Input).GetKeyDown('1')) {
+	//			animator->TransitionToAnimation(0, 0.6f);  // Fly
+	//			OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
+	//		}
 
-			if (GET(Input).GetKeyDown('2')) {
-				animator->TransitionToAnimation(1, 0.4f);  // Idle
-				OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
-			}
+	//		if (GET(Input).GetKeyDown('2')) {
+	//			animator->TransitionToAnimation(1, 0.4f);  // Idle
+	//			OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
+	//		}
 
-			if (GET(Input).GetKeyDown('3')) {
-				animator->TransitionToAnimation(2, 0.4f);  // Run
-				OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
-			}
+	//		if (GET(Input).GetKeyDown('3')) {
+	//			animator->TransitionToAnimation(2, 0.4f);  // Run
+	//			OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
+	//		}
 
-			if (GET(Input).GetKeyDown('4')) {
-				animator->TransitionToAnimation(3, 0.4f);  // Walk
-				OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
-			}
-		}
+	//		if (GET(Input).GetKeyDown('4')) {
+	//			animator->TransitionToAnimation(3, 0.4f);  // Walk
+	//			OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
+	//		}
+	//	}
+	//}
+
+	if (flameEffect) {
+		auto effectRenderer = flameEffect->GetComponent<EffectRenderer>();
+		if (GET(Input).GetKeyDown('5'))
+			effectRenderer->PlayEffect();
 	}
 
 	for (const auto& obj : gameObjects)
@@ -162,6 +181,15 @@ void GameScene::RenderSceneForward()
 	{
 		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 			meshRenderer->RenderForward(*coreRef);
+	}
+}
+
+void GameScene::RenderSceneEffects()
+{
+	for (const auto& obj : gameObjects)
+	{
+		if (auto effectRenderer = obj->GetComponent<EffectRenderer>())
+			effectRenderer->Render(*coreRef, cam.get());
 	}
 }
 

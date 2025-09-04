@@ -41,6 +41,10 @@ void ServerSquareScene::RenderSceneForward()
 
 }
 
+void ServerSquareScene::RenderSceneEffects()
+{
+}
+
 int ServerSquareScene::GetSceneWidth() const
 {
 	return 0;

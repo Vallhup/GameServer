@@ -60,6 +60,14 @@ void SceneManager::RenderForward()
     }
 }
 
+void SceneManager::RenderEffects()
+{
+    if (mCurrentScene)
+    {
+        mCurrentScene->RenderEffects();
+    }
+}
+
 void SceneManager::Release()
 {
     if (mCurrentScene)
