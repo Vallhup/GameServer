@@ -98,8 +98,8 @@ void GameScene::InitializeLogic()
 		auto transform = flameEffect->AddComponent<Transform>();
 
 		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/PhantasmMeteor.efk");
-		transform->SetPosition(1.0f, 1.0f, -15.0f);
+		effectRenderer->LoadEffect(u"../Effects/Atmosphere.efk");
+		transform->SetPosition(1.f, 6.f, -15.f);
 
 		AddGameObject(flameEffect);
 	}
