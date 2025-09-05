@@ -63,9 +63,8 @@ void Engine::Render()
     // 3. Forward Alpha Pass (투명 머티리얼)
     // 백버퍼 + depth buffer 사용, alpha blending 활성화
     graphics->BeginForwardPass();
-    sManager->RenderForward();   // 머리카락 등 투명한 것들
     sManager->RenderEffects();   // 이펙트를 먼저 그려야 머리카락이 안없어짐
-
+    sManager->RenderForward();   // 머리카락 등 투명한 것들
 
     graphics->RenderEnd();
 

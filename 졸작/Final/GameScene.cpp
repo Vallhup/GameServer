@@ -98,8 +98,8 @@ void GameScene::InitializeLogic()
 		auto transform = flameEffect->AddComponent<Transform>();
 
 		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/Salamander.efk");
-		transform->SetPosition(1.f, 3.f, -1.5f);
+		effectRenderer->LoadEffect(u"../Effects/BloodLance.efk");
+		transform->SetPosition(1.f, 0.f, 0.5f);
 
 		AddGameObject(flameEffect);
 	}
