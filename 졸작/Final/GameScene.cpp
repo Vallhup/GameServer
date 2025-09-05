@@ -98,10 +98,22 @@ void GameScene::InitializeLogic()
 		auto transform = flameEffect->AddComponent<Transform>();
 
 		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/Barrior02_HDR.efk");
-		transform->SetPosition(1.f, 0.f, 0.5f);
+		effectRenderer->LoadEffect(u"../Effects/Fire.efk");
+		transform->SetPosition(1.f, 3.f, -1.5f);
 
 		AddGameObject(flameEffect);
+	}
+
+	{
+		fireWorkEffect = make_shared<GameObject>();
+		auto effectRenderer = fireWorkEffect->AddComponent<EffectRenderer>();
+		auto transform = fireWorkEffect->AddComponent<Transform>();
+
+		effectRenderer->Initialize(*coreRef);
+		effectRenderer->LoadEffect(u"../Effects/Fireworks.efk");
+		transform->SetPosition(1.f, 0.f, -12.0f);
+
+		AddGameObject(fireWorkEffect);
 	}
 
 	/*{
@@ -159,6 +171,12 @@ void GameScene::UpdateScene(const float deltaTime)
 	if (flameEffect) {
 		auto effectRenderer = flameEffect->GetComponent<EffectRenderer>();
 		if (GET(Input).GetKeyDown('5'))
+			effectRenderer->PlayEffect();
+	}
+
+	if (fireWorkEffect) {
+		auto effectRenderer = fireWorkEffect->GetComponent<EffectRenderer>();
+		if (GET(Input).GetKeyDown('6'))
 			effectRenderer->PlayEffect();
 	}
 
