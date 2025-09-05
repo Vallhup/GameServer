@@ -98,7 +98,7 @@ void GameScene::InitializeLogic()
 		auto transform = flameEffect->AddComponent<Transform>();
 
 		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/Fire.efk");
+		effectRenderer->LoadEffect(u"../Effects/Salamander.efk");
 		transform->SetPosition(1.f, 3.f, -1.5f);
 
 		AddGameObject(flameEffect);
