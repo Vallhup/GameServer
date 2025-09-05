@@ -1,0 +1,64 @@
+[Effekseer를 DirectX12 프로젝트에 연동시키는 방법]
+(당신의 컴퓨터 C드라이브 내에 CMake가 다운받아져 있다는 가정을 전제로 한다.)
+
+1. Effekseer 공식 홈페이지에서 Download -> Effekseer for C++ 에서 최신버전 다운
+
+2. 당신의 컴퓨터 C드라이브에 새폴더 만들기 (이름 예시: EffekseerCpp170e)
+
+3. 만든 폴더 안에 1번에서 받은 압축파일 압축 풀기
+
+4. Visual Studio 2022 실행 -> 로컬 폴더 열기 -> 만든 폴더 선택 (예시: EffekseerCpp170e)
+
+5. (Visual Studio 내에서) 프로젝트 -> 캐시 구성 클릭
+
+6. (Visual Studio 내에서) 빌드 -> 모두 빌드 클릭
+※ 여기까지 했을때, 오류가 나는게 정상임 (오류: '/wd"4100"' 어쩌구)
+
+7. (Visual Studio 내에서) 편집 -> 찾기 및 바꾸기 -> 파일에서 찾기 -> 찾기(N)란에 "4100" 입력
+-> 찾는 위치를 EffekseerCpp170e 폴더로 선택 -> 모두 찾기 클릭
+
+8. 찾기 결과란에 4개의 결과가 뜸 -> 하나씩 더블클릭 -> 이동 -> "4100" 부분을 4100 으로 변경 " "제거
+
+9. 4개 부분 모두 4100으로 변경 후 ctrl + shift + s (전체 저장)
+
+10. 오른쪽 솔루션 탐색기에서 CMakeList.txt 더블클릭 -> option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" OFF)를
+option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)으로 변경
+※ C++ 코드생성 런타임 라이브러리를 /MT에서 /MD로 변경 시켜주는 작업임! 무조건 필수!
+
+11. 프로젝트 -> 캐시 삭제 및 다시 구성 클릭 
+
+12. 빌드 -> 모두 다시 빌드
+
+13. 빌드가 성공적으로 끝나면 C드라이브 -> EffekseerCpp170e -> out -> build -> x64-Debug -> src 폴더 안에
+(1). 3rdParty -> LLGI -> src -> LLGI.lib
+(2). Effekseer -> Effekseer.lib
+(3). EffekseerRendererDX12 -> EffekseerRendererDX12.lib
+이 세개의 라이브러리 파일 있는지 확인
+
+14. 이후, 당신의 렌더링 프로젝트에서 
+(1). 프로젝트 -> 프로젝트 속성 -> C/C++ -> 일반 -> 추가 포함 디렉터리에 아래 세개 추가
+C:\EffekseerCpp170e\src\Effekseer
+C:\EffekseerCpp170e\src\EffekseerRendererDX12
+C:\EffekseerCpp170e\src\EffekseerRendererCommon
+
+(2). 프로젝트 -> 프로젝트 속성 -> 링커 -> 일반 -> 추가 라이브러리 디렉터리에 아래 세개 추가
+C:\EffekseerCpp170e\out\build\x64-Debug\src\3rdParty\LLGI\src
+C:\EffekseerCpp170e\out\build\x64-Debug\src\Effekseer
+C:\EffekseerCpp170e\out\build\x64-Debug\src\EffekseerRendererDX12
+
+(3). 프로젝트 -> 프로젝트 속성 -> 링커 -> 입력 -> 추가 종속성에 아래 세개 추가
+Effekseer.lib
+EffekseerRendererDX12.lib
+LLGI.lib
+
+※ 여기서 Release 모드 하는법은 내가 열심히 Debug 모드로 뽑는법 알려줫으니 알아서 공부해서 뽑고 연결해보셈 설명하기 귀찮음
+
+15. 이후 프로젝트 내에서
+#include <Effekseer.h>
+#include <EffekseerRendererDX12.h>
+이런거 추가해보셈. 잘 적용될거임.
+
+16. 그리고 나서 뽑은 샘플 코드 참고해가면서 코딩해서 이펙트 적용하면 됨.
+물론, DirectX12에 대한 이해와 렌더링 동작에 대한 이해는 필수적으로 보유하고 있어야 코딩 가능할거임.
+
+이렇게 적용하면 됨. 존나 힘들었다. AI도 안알려준다 이거. 나중에 기억 안날까봐 정리해놓음.
