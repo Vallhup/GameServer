@@ -31,4 +31,6 @@ private:
 	shared_ptr<MainCharacter> knight;
 	shared_ptr<GameObject> flameEffect;
 	shared_ptr<GameObject> fireWorkEffect;
+	shared_ptr<GameObject> fireWorkEffect2;
+	shared_ptr<GameObject> fireWorkEffect3;
 };

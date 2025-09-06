@@ -110,10 +110,34 @@ void GameScene::InitializeLogic()
 		auto transform = fireWorkEffect->AddComponent<Transform>();
 
 		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/Fireworks.efk");
-		transform->SetPosition(1.f, 0.f, -12.0f);
+		effectRenderer->LoadEffect(u"../Effects/CandleFire2.efk");
+		transform->SetPosition(27.f, 29.f, -70.0f);
 
 		AddGameObject(fireWorkEffect);
+	}
+
+	{
+		fireWorkEffect2 = make_shared<GameObject>();
+		auto effectRenderer = fireWorkEffect2->AddComponent<EffectRenderer>();
+		auto transform = fireWorkEffect2->AddComponent<Transform>();
+
+		effectRenderer->Initialize(*coreRef);
+		effectRenderer->LoadEffect(u"../Effects/CandleFire2.efk");
+		transform->SetPosition(-27.f, 29.f, -70.0f);
+
+		AddGameObject(fireWorkEffect2);
+	}
+
+	{
+		fireWorkEffect3 = make_shared<GameObject>();
+		auto effectRenderer = fireWorkEffect3->AddComponent<EffectRenderer>();
+		auto transform = fireWorkEffect3->AddComponent<Transform>();
+
+		effectRenderer->Initialize(*coreRef);
+		effectRenderer->LoadEffect(u"../Effects/CandleFire3.efk");
+		transform->SetPosition(7.2f, 3.25f, -4.2f);
+
+		AddGameObject(fireWorkEffect3);
 	}
 
 	/*{
@@ -176,6 +200,18 @@ void GameScene::UpdateScene(const float deltaTime)
 
 	if (fireWorkEffect) {
 		auto effectRenderer = fireWorkEffect->GetComponent<EffectRenderer>();
+		if (GET(Input).GetKeyDown('6'))
+			effectRenderer->PlayEffect();
+	}
+
+	if (fireWorkEffect2) {
+		auto effectRenderer = fireWorkEffect2->GetComponent<EffectRenderer>();
+		if (GET(Input).GetKeyDown('6'))
+			effectRenderer->PlayEffect();
+	}
+
+	if (fireWorkEffect3) {
+		auto effectRenderer = fireWorkEffect3->GetComponent<EffectRenderer>();
 		if (GET(Input).GetKeyDown('6'))
 			effectRenderer->PlayEffect();
 	}
