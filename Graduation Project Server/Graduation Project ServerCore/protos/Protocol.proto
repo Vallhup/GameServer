@@ -37,3 +37,13 @@ message SC_MOVE_PACKET
 message SC_REMOVE_PACKET
 {
 }
+
+message SC_ATTACK_PACKET
+{
+	Vec3 dir = 1;
+}
+
+message SC_DODGE_PACKET
+{
+	Vec3 pos = 1;
+}

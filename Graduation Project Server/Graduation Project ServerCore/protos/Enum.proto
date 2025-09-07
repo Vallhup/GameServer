@@ -11,14 +11,16 @@ enum PacketType {
 	SC_ADD = 4;
 	SC_MOVE_OBJECT = 5;
 	SC_REMOVE = 6;
+	SC_ATTACK = 7;
+	SC_DODGE = 8;
 }
 
 enum Input {
 	NONE_INPUT = 0;
 
 	MOVE = 1;
-
-	MAX = 2;
+	ATTACK = 2;
+	DODGE = 3;
 }
 
 enum InputType {

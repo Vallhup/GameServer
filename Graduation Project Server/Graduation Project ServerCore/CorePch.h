@@ -48,6 +48,7 @@
 #include "Session.h"
 
 #include "Event.h"
+#include "Action.h"
 
 #include "SessionManager.h"
 #include "EventManager.h"
@@ -59,13 +60,14 @@
 #include "DecoratorNode.h"
 #include "LeafNode.h"
 
-#include "Input.h"
 #include "ScriptVM.h"
 
 #include "IComponent.h"
 #include "TransformComponent.h"
 #include "MovementComponent.h"
 #include "InputComponent.h"
+#include "ActionComponent.h"
+#include "CollisionComponent.h"
 
 #include "GameObject.h"
 #include "Character.h"

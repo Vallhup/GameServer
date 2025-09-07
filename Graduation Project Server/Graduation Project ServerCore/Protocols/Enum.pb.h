@@ -63,6 +63,8 @@ enum PacketType : int {
   SC_ADD = 4,
   SC_MOVE_OBJECT = 5,
   SC_REMOVE = 6,
+  SC_ATTACK = 7,
+  SC_DODGE = 8,
   PacketType_INT_MIN_SENTINEL_DO_NOT_USE_ =
       std::numeric_limits<::int32_t>::min(),
   PacketType_INT_MAX_SENTINEL_DO_NOT_USE_ =
@@ -72,8 +74,8 @@ enum PacketType : int {
 bool PacketType_IsValid(int value);
 extern const uint32_t PacketType_internal_data_[];
 constexpr PacketType PacketType_MIN = static_cast<PacketType>(0);
-constexpr PacketType PacketType_MAX = static_cast<PacketType>(6);
-constexpr int PacketType_ARRAYSIZE = 6 + 1;
+constexpr PacketType PacketType_MAX = static_cast<PacketType>(8);
+constexpr int PacketType_ARRAYSIZE = 8 + 1;
 const ::google::protobuf::EnumDescriptor*
 PacketType_descriptor();
 template <typename T>
@@ -86,7 +88,7 @@ const std::string& PacketType_Name(T value) {
 template <>
 inline const std::string& PacketType_Name(PacketType value) {
   return ::google::protobuf::internal::NameOfDenseEnum<PacketType_descriptor,
-                                                 0, 6>(
+                                                 0, 8>(
       static_cast<int>(value));
 }
 inline bool PacketType_Parse(absl::string_view name, PacketType* value) {
@@ -96,7 +98,8 @@ inline bool PacketType_Parse(absl::string_view name, PacketType* value) {
 enum Input : int {
   NONE_INPUT = 0,
   MOVE = 1,
-  MAX = 2,
+  ATTACK = 2,
+  DODGE = 3,
   Input_INT_MIN_SENTINEL_DO_NOT_USE_ =
       std::numeric_limits<::int32_t>::min(),
   Input_INT_MAX_SENTINEL_DO_NOT_USE_ =
@@ -106,8 +109,8 @@ enum Input : int {
 bool Input_IsValid(int value);
 extern const uint32_t Input_internal_data_[];
 constexpr Input Input_MIN = static_cast<Input>(0);
-constexpr Input Input_MAX = static_cast<Input>(2);
-constexpr int Input_ARRAYSIZE = 2 + 1;
+constexpr Input Input_MAX = static_cast<Input>(3);
+constexpr int Input_ARRAYSIZE = 3 + 1;
 const ::google::protobuf::EnumDescriptor*
 Input_descriptor();
 template <typename T>
@@ -120,7 +123,7 @@ const std::string& Input_Name(T value) {
 template <>
 inline const std::string& Input_Name(Input value) {
   return ::google::protobuf::internal::NameOfDenseEnum<Input_descriptor,
-                                                 0, 2>(
+                                                 0, 3>(
       static_cast<int>(value));
 }
 inline bool Input_Parse(absl::string_view name, Input* value) {

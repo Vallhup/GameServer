@@ -79,23 +79,41 @@ struct PacketHeaderDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PacketHeaderDefaultTypeInternal _PacketHeader_default_instance_;
               template <typename>
-PROTOBUF_CONSTEXPR ActionPayload::ActionPayload(::_pbi::ConstantInitialized)
+PROTOBUF_CONSTEXPR DodgePayload::DodgePayload(::_pbi::ConstantInitialized)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::internal::ZeroFieldsBase(_class_data_.base()){}
 #else   // PROTOBUF_CUSTOM_VTABLE
     : ::google::protobuf::internal::ZeroFieldsBase() {
 }
 #endif  // PROTOBUF_CUSTOM_VTABLE
-struct ActionPayloadDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR ActionPayloadDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
-  ~ActionPayloadDefaultTypeInternal() {}
+struct DodgePayloadDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR DodgePayloadDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~DodgePayloadDefaultTypeInternal() {}
   union {
-    ActionPayload _instance;
+    DodgePayload _instance;
   };
 };
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ActionPayloadDefaultTypeInternal _ActionPayload_default_instance_;
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 DodgePayloadDefaultTypeInternal _DodgePayload_default_instance_;
+              template <typename>
+PROTOBUF_CONSTEXPR AttackPayload::AttackPayload(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(_class_data_.base()){}
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase() {
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+struct AttackPayloadDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR AttackPayloadDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~AttackPayloadDefaultTypeInternal() {}
+  union {
+    AttackPayload _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AttackPayloadDefaultTypeInternal _AttackPayload_default_instance_;
 
 inline constexpr MovePayload::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -125,8 +143,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 
 inline constexpr InputPayload::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : priority_{0u},
-        payload_{},
+      : payload_{},
         _cached_size_{0},
         _oneof_case_{} {}
 
@@ -186,7 +203,7 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::InputPayload, _impl_.priority_),
+        ::_pbi::kInvalidFieldOffsetTag,
         ::_pbi::kInvalidFieldOffsetTag,
         ::_pbi::kInvalidFieldOffsetTag,
         PROTOBUF_FIELD_OFFSET(::Protocol::InputPayload, _impl_.payload_),
@@ -203,7 +220,15 @@ const ::uint32_t
         0,
         ~0u,
         ~0u,  // no _has_bits_
-        PROTOBUF_FIELD_OFFSET(::Protocol::ActionPayload, _internal_metadata_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::AttackPayload, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::DodgePayload, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
         ~0u,  // no _weak_field_map_
@@ -218,26 +243,29 @@ static const ::_pbi::MigrationSchema
         {10, -1, -1, sizeof(::Protocol::Vec3)},
         {21, -1, -1, sizeof(::Protocol::InputPayload)},
         {33, 43, -1, sizeof(::Protocol::MovePayload)},
-        {45, -1, -1, sizeof(::Protocol::ActionPayload)},
+        {45, -1, -1, sizeof(::Protocol::AttackPayload)},
+        {53, -1, -1, sizeof(::Protocol::DodgePayload)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_PacketHeader_default_instance_._instance,
     &::Protocol::_Vec3_default_instance_._instance,
     &::Protocol::_InputPayload_default_instance_._instance,
     &::Protocol::_MovePayload_default_instance_._instance,
-    &::Protocol::_ActionPayload_default_instance_._instance,
+    &::Protocol::_AttackPayload_default_instance_._instance,
+    &::Protocol::_DodgePayload_default_instance_._instance,
 };
 const char descriptor_table_protodef_Struct_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\014Struct.proto\022\010Protocol\032\nEnum.proto\"E\n\014"
     "PacketHeader\022\"\n\004type\030\001 \001(\0162\024.Protocol.Pa"
     "cketType\022\021\n\tsessionId\030\002 \001(\005\"\'\n\004Vec3\022\t\n\001x"
-    "\030\001 \001(\002\022\t\n\001y\030\002 \001(\002\022\t\n\001z\030\003 \001(\002\"}\n\014InputPay"
-    "load\022\020\n\010priority\030\001 \001(\r\022%\n\004move\030\n \001(\0132\025.P"
-    "rotocol.MovePayloadH\000\022)\n\006action\030\013 \001(\0132\027."
-    "Protocol.ActionPayloadH\000B\t\n\007payload\">\n\013M"
-    "ovePayload\022 \n\010velocity\030\001 \001(\0132\016.Protocol."
-    "Vec3\022\r\n\005isRun\030\002 \001(\010\"\017\n\rActionPayloadb\006pr"
+    "\030\001 \001(\002\022\t\n\001y\030\002 \001(\002\022\t\n\001z\030\003 \001(\002\"\224\001\n\014InputPa"
+    "yload\022%\n\004move\030\001 \001(\0132\025.Protocol.MovePaylo"
+    "adH\000\022)\n\006attack\030\002 \001(\0132\027.Protocol.AttackPa"
+    "yloadH\000\022\'\n\005dodge\030\003 \001(\0132\026.Protocol.DodgeP"
+    "ayloadH\000B\t\n\007payload\">\n\013MovePayload\022 \n\010ve"
+    "locity\030\001 \001(\0132\016.Protocol.Vec3\022\r\n\005isRun\030\002 "
+    "\001(\010\"\017\n\rAttackPayload\"\016\n\014DodgePayloadb\006pr"
     "oto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Struct_2eproto_deps[1] =
@@ -248,13 +276,13 @@ static ::absl::once_flag descriptor_table_Struct_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Struct_2eproto = {
     false,
     false,
-    364,
+    404,
     descriptor_table_protodef_Struct_2eproto,
     "Struct.proto",
     &descriptor_table_Struct_2eproto_once,
     descriptor_table_Struct_2eproto_deps,
     1,
-    5,
+    6,
     schemas,
     file_default_instances,
     TableStruct_Struct_2eproto::offsets,
@@ -784,18 +812,31 @@ void InputPayload::set_allocated_move(::Protocol::MovePayload* move) {
   }
   // @@protoc_insertion_point(field_set_allocated:Protocol.InputPayload.move)
 }
-void InputPayload::set_allocated_action(::Protocol::ActionPayload* action) {
+void InputPayload::set_allocated_attack(::Protocol::AttackPayload* attack) {
   ::google::protobuf::Arena* message_arena = GetArena();
   clear_payload();
-  if (action) {
-    ::google::protobuf::Arena* submessage_arena = action->GetArena();
+  if (attack) {
+    ::google::protobuf::Arena* submessage_arena = attack->GetArena();
     if (message_arena != submessage_arena) {
-      action = ::google::protobuf::internal::GetOwnedMessage(message_arena, action, submessage_arena);
+      attack = ::google::protobuf::internal::GetOwnedMessage(message_arena, attack, submessage_arena);
     }
-    set_has_action();
-    _impl_.payload_.action_ = action;
+    set_has_attack();
+    _impl_.payload_.attack_ = attack;
   }
-  // @@protoc_insertion_point(field_set_allocated:Protocol.InputPayload.action)
+  // @@protoc_insertion_point(field_set_allocated:Protocol.InputPayload.attack)
+}
+void InputPayload::set_allocated_dodge(::Protocol::DodgePayload* dodge) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  clear_payload();
+  if (dodge) {
+    ::google::protobuf::Arena* submessage_arena = dodge->GetArena();
+    if (message_arena != submessage_arena) {
+      dodge = ::google::protobuf::internal::GetOwnedMessage(message_arena, dodge, submessage_arena);
+    }
+    set_has_dodge();
+    _impl_.payload_.dodge_ = dodge;
+  }
+  // @@protoc_insertion_point(field_set_allocated:Protocol.InputPayload.dodge)
 }
 InputPayload::InputPayload(::google::protobuf::Arena* arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
@@ -826,15 +867,17 @@ InputPayload::InputPayload(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  _impl_.priority_ = from._impl_.priority_;
   switch (payload_case()) {
     case PAYLOAD_NOT_SET:
       break;
       case kMove:
         _impl_.payload_.move_ = ::google::protobuf::Message::CopyConstruct<::Protocol::MovePayload>(arena, *from._impl_.payload_.move_);
         break;
-      case kAction:
-        _impl_.payload_.action_ = ::google::protobuf::Message::CopyConstruct<::Protocol::ActionPayload>(arena, *from._impl_.payload_.action_);
+      case kAttack:
+        _impl_.payload_.attack_ = ::google::protobuf::Message::CopyConstruct<::Protocol::AttackPayload>(arena, *from._impl_.payload_.attack_);
+        break;
+      case kDodge:
+        _impl_.payload_.dodge_ = ::google::protobuf::Message::CopyConstruct<::Protocol::DodgePayload>(arena, *from._impl_.payload_.dodge_);
         break;
   }
 
@@ -849,7 +892,6 @@ inline PROTOBUF_NDEBUG_INLINE InputPayload::Impl_::Impl_(
 
 inline void InputPayload::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.priority_ = {};
 }
 InputPayload::~InputPayload() {
   // @@protoc_insertion_point(destructor:Protocol.InputPayload)
@@ -877,11 +919,19 @@ void InputPayload::clear_payload() {
       }
       break;
     }
-    case kAction: {
+    case kAttack: {
       if (GetArena() == nullptr) {
-        delete _impl_.payload_.action_;
+        delete _impl_.payload_.attack_;
       } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
-        ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.payload_.action_);
+        ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.payload_.attack_);
+      }
+      break;
+    }
+    case kDodge: {
+      if (GetArena() == nullptr) {
+        delete _impl_.payload_.dodge_;
+      } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
+        ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.payload_.dodge_);
       }
       break;
     }
@@ -929,16 +979,16 @@ const ::google::protobuf::internal::ClassData* InputPayload::GetClassData() cons
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 3, 2, 0, 2> InputPayload::_table_ = {
+const ::_pbi::TcParseTable<0, 3, 3, 0, 2> InputPayload::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    11, 0,  // max_field_number, fast_idx_mask
+    3, 0,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294965758,  // skipmap
+    4294967288,  // skipmap
     offsetof(decltype(_table_), field_entries),
     3,  // num_field_entries
-    2,  // num_aux_entries
+    3,  // num_aux_entries
     offsetof(decltype(_table_), aux_entries),
     _class_data_.base(),
     nullptr,  // post_loop_handler
@@ -947,24 +997,23 @@ const ::_pbi::TcParseTable<0, 3, 2, 0, 2> InputPayload::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::InputPayload>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // uint32 priority = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(InputPayload, _impl_.priority_), 63>(),
-     {8, 63, 0, PROTOBUF_FIELD_OFFSET(InputPayload, _impl_.priority_)}},
+    {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
-    // uint32 priority = 1;
-    {PROTOBUF_FIELD_OFFSET(InputPayload, _impl_.priority_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
-    // .Protocol.MovePayload move = 10;
+    // .Protocol.MovePayload move = 1;
     {PROTOBUF_FIELD_OFFSET(InputPayload, _impl_.payload_.move_), _Internal::kOneofCaseOffset + 0, 0,
     (0 | ::_fl::kFcOneof | ::_fl::kMessage | ::_fl::kTvTable)},
-    // .Protocol.ActionPayload action = 11;
-    {PROTOBUF_FIELD_OFFSET(InputPayload, _impl_.payload_.action_), _Internal::kOneofCaseOffset + 0, 1,
+    // .Protocol.AttackPayload attack = 2;
+    {PROTOBUF_FIELD_OFFSET(InputPayload, _impl_.payload_.attack_), _Internal::kOneofCaseOffset + 0, 1,
+    (0 | ::_fl::kFcOneof | ::_fl::kMessage | ::_fl::kTvTable)},
+    // .Protocol.DodgePayload dodge = 3;
+    {PROTOBUF_FIELD_OFFSET(InputPayload, _impl_.payload_.dodge_), _Internal::kOneofCaseOffset + 0, 2,
     (0 | ::_fl::kFcOneof | ::_fl::kMessage | ::_fl::kTvTable)},
   }}, {{
     {::_pbi::TcParser::GetTable<::Protocol::MovePayload>()},
-    {::_pbi::TcParser::GetTable<::Protocol::ActionPayload>()},
+    {::_pbi::TcParser::GetTable<::Protocol::AttackPayload>()},
+    {::_pbi::TcParser::GetTable<::Protocol::DodgePayload>()},
   }}, {{
   }},
 };
@@ -976,7 +1025,6 @@ PROTOBUF_NOINLINE void InputPayload::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.priority_ = 0u;
   clear_payload();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -996,23 +1044,22 @@ PROTOBUF_NOINLINE void InputPayload::Clear() {
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
-          // uint32 priority = 1;
-          if (this_._internal_priority() != 0) {
-            target = stream->EnsureSpace(target);
-            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
-                1, this_._internal_priority(), target);
-          }
-
           switch (this_.payload_case()) {
             case kMove: {
               target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-                  10, *this_._impl_.payload_.move_, this_._impl_.payload_.move_->GetCachedSize(), target,
+                  1, *this_._impl_.payload_.move_, this_._impl_.payload_.move_->GetCachedSize(), target,
                   stream);
               break;
             }
-            case kAction: {
+            case kAttack: {
               target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-                  11, *this_._impl_.payload_.action_, this_._impl_.payload_.action_->GetCachedSize(), target,
+                  2, *this_._impl_.payload_.attack_, this_._impl_.payload_.attack_->GetCachedSize(), target,
+                  stream);
+              break;
+            }
+            case kDodge: {
+              target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                  3, *this_._impl_.payload_.dodge_, this_._impl_.payload_.dodge_->GetCachedSize(), target,
                   stream);
               break;
             }
@@ -1042,24 +1089,23 @@ PROTOBUF_NOINLINE void InputPayload::Clear() {
           // Prevent compiler warnings about cached_has_bits being unused
           (void)cached_has_bits;
 
-           {
-            // uint32 priority = 1;
-            if (this_._internal_priority() != 0) {
-              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
-                  this_._internal_priority());
-            }
-          }
           switch (this_.payload_case()) {
-            // .Protocol.MovePayload move = 10;
+            // .Protocol.MovePayload move = 1;
             case kMove: {
               total_size += 1 +
                             ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.payload_.move_);
               break;
             }
-            // .Protocol.ActionPayload action = 11;
-            case kAction: {
+            // .Protocol.AttackPayload attack = 2;
+            case kAttack: {
               total_size += 1 +
-                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.payload_.action_);
+                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.payload_.attack_);
+              break;
+            }
+            // .Protocol.DodgePayload dodge = 3;
+            case kDodge: {
+              total_size += 1 +
+                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.payload_.dodge_);
               break;
             }
             case PAYLOAD_NOT_SET: {
@@ -1079,9 +1125,6 @@ void InputPayload::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::go
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_priority() != 0) {
-    _this->_impl_.priority_ = from._impl_.priority_;
-  }
   if (const uint32_t oneof_from_case = from._impl_._oneof_case_[0]) {
     const uint32_t oneof_to_case = _this->_impl_._oneof_case_[0];
     const bool oneof_needs_init = oneof_to_case != oneof_from_case;
@@ -1102,12 +1145,21 @@ void InputPayload::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::go
         }
         break;
       }
-      case kAction: {
+      case kAttack: {
         if (oneof_needs_init) {
-          _this->_impl_.payload_.action_ =
-              ::google::protobuf::Message::CopyConstruct<::Protocol::ActionPayload>(arena, *from._impl_.payload_.action_);
+          _this->_impl_.payload_.attack_ =
+              ::google::protobuf::Message::CopyConstruct<::Protocol::AttackPayload>(arena, *from._impl_.payload_.attack_);
         } else {
-          _this->_impl_.payload_.action_->MergeFrom(from._internal_action());
+          _this->_impl_.payload_.attack_->MergeFrom(from._internal_attack());
+        }
+        break;
+      }
+      case kDodge: {
+        if (oneof_needs_init) {
+          _this->_impl_.payload_.dodge_ =
+              ::google::protobuf::Message::CopyConstruct<::Protocol::DodgePayload>(arena, *from._impl_.payload_.dodge_);
+        } else {
+          _this->_impl_.payload_.dodge_->MergeFrom(from._internal_dodge());
         }
         break;
       }
@@ -1129,7 +1181,6 @@ void InputPayload::CopyFrom(const InputPayload& from) {
 void InputPayload::InternalSwap(InputPayload* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-        swap(_impl_.priority_, other->_impl_.priority_);
   swap(_impl_.payload_, other->_impl_.payload_);
   swap(_impl_._oneof_case_[0], other->_impl_._oneof_case_[0]);
 }
@@ -1424,71 +1475,71 @@ void MovePayload::InternalSwap(MovePayload* PROTOBUF_RESTRICT other) {
 }
 // ===================================================================
 
-class ActionPayload::_Internal {
+class AttackPayload::_Internal {
  public:
 };
 
-ActionPayload::ActionPayload(::google::protobuf::Arena* arena)
+AttackPayload::AttackPayload(::google::protobuf::Arena* arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::internal::ZeroFieldsBase(arena, _class_data_.base()) {
 #else   // PROTOBUF_CUSTOM_VTABLE
     : ::google::protobuf::internal::ZeroFieldsBase(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
-  // @@protoc_insertion_point(arena_constructor:Protocol.ActionPayload)
+  // @@protoc_insertion_point(arena_constructor:Protocol.AttackPayload)
 }
-ActionPayload::ActionPayload(
+AttackPayload::AttackPayload(
     ::google::protobuf::Arena* arena,
-    const ActionPayload& from)
+    const AttackPayload& from)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::internal::ZeroFieldsBase(arena, _class_data_.base()) {
 #else   // PROTOBUF_CUSTOM_VTABLE
     : ::google::protobuf::internal::ZeroFieldsBase(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
-  ActionPayload* const _this = this;
+  AttackPayload* const _this = this;
   (void)_this;
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
 
-  // @@protoc_insertion_point(copy_constructor:Protocol.ActionPayload)
+  // @@protoc_insertion_point(copy_constructor:Protocol.AttackPayload)
 }
 
-inline void* ActionPayload::PlacementNew_(const void*, void* mem,
+inline void* AttackPayload::PlacementNew_(const void*, void* mem,
                                         ::google::protobuf::Arena* arena) {
-  return ::new (mem) ActionPayload(arena);
+  return ::new (mem) AttackPayload(arena);
 }
-constexpr auto ActionPayload::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(ActionPayload),
-                                            alignof(ActionPayload));
+constexpr auto AttackPayload::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(AttackPayload),
+                                            alignof(AttackPayload));
 }
 PROTOBUF_CONSTINIT
 PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::google::protobuf::internal::ClassDataFull ActionPayload::_class_data_ = {
+const ::google::protobuf::internal::ClassDataFull AttackPayload::_class_data_ = {
     ::google::protobuf::internal::ClassData{
-        &_ActionPayload_default_instance_._instance,
+        &_AttackPayload_default_instance_._instance,
         &_table_.header,
         nullptr,  // OnDemandRegisterArenaDtor
         nullptr,  // IsInitialized
-        &ActionPayload::MergeImpl,
-        ::google::protobuf::internal::ZeroFieldsBase::GetNewImpl<ActionPayload>(),
+        &AttackPayload::MergeImpl,
+        ::google::protobuf::internal::ZeroFieldsBase::GetNewImpl<AttackPayload>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-        &ActionPayload::SharedDtor,
-        ::google::protobuf::internal::ZeroFieldsBase::GetClearImpl<ActionPayload>(), &ActionPayload::ByteSizeLong,
-            &ActionPayload::_InternalSerialize,
+        &AttackPayload::SharedDtor,
+        ::google::protobuf::internal::ZeroFieldsBase::GetClearImpl<AttackPayload>(), &AttackPayload::ByteSizeLong,
+            &AttackPayload::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
-        PROTOBUF_FIELD_OFFSET(ActionPayload, _impl_._cached_size_),
+        PROTOBUF_FIELD_OFFSET(AttackPayload, _impl_._cached_size_),
         false,
     },
-    &ActionPayload::kDescriptorMethods,
+    &AttackPayload::kDescriptorMethods,
     &descriptor_table_Struct_2eproto,
     nullptr,  // tracker
 };
-const ::google::protobuf::internal::ClassData* ActionPayload::GetClassData() const {
+const ::google::protobuf::internal::ClassData* AttackPayload::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 0, 0, 0, 2> ActionPayload::_table_ = {
+const ::_pbi::TcParseTable<0, 0, 0, 0, 2> AttackPayload::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
@@ -1503,7 +1554,7 @@ const ::_pbi::TcParseTable<0, 0, 0, 0, 2> ActionPayload::_table_ = {
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
     #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::Protocol::ActionPayload>(),  // to_prefetch
+    ::_pbi::TcParser::GetTable<::Protocol::AttackPayload>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
@@ -1522,7 +1573,110 @@ const ::_pbi::TcParseTable<0, 0, 0, 0, 2> ActionPayload::_table_ = {
 
 
 
-::google::protobuf::Metadata ActionPayload::GetMetadata() const {
+::google::protobuf::Metadata AttackPayload::GetMetadata() const {
+  return ::google::protobuf::internal::ZeroFieldsBase::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class DodgePayload::_Internal {
+ public:
+};
+
+DodgePayload::DodgePayload(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(arena_constructor:Protocol.DodgePayload)
+}
+DodgePayload::DodgePayload(
+    ::google::protobuf::Arena* arena,
+    const DodgePayload& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  DodgePayload* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+
+  // @@protoc_insertion_point(copy_constructor:Protocol.DodgePayload)
+}
+
+inline void* DodgePayload::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) DodgePayload(arena);
+}
+constexpr auto DodgePayload::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(DodgePayload),
+                                            alignof(DodgePayload));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull DodgePayload::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_DodgePayload_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &DodgePayload::MergeImpl,
+        ::google::protobuf::internal::ZeroFieldsBase::GetNewImpl<DodgePayload>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &DodgePayload::SharedDtor,
+        ::google::protobuf::internal::ZeroFieldsBase::GetClearImpl<DodgePayload>(), &DodgePayload::ByteSizeLong,
+            &DodgePayload::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(DodgePayload, _impl_._cached_size_),
+        false,
+    },
+    &DodgePayload::kDescriptorMethods,
+    &descriptor_table_Struct_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* DodgePayload::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 0, 0, 0, 2> DodgePayload::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    0, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967295,  // skipmap
+    offsetof(decltype(_table_), field_names),  // no field_entries
+    0,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::DodgePayload>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }},
+  // no field_entries, or aux_entries
+  {{
+  }},
+};
+
+
+
+
+
+
+
+
+::google::protobuf::Metadata DodgePayload::GetMetadata() const {
   return ::google::protobuf::internal::ZeroFieldsBase::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

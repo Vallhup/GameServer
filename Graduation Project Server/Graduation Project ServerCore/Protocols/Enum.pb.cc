@@ -34,19 +34,20 @@ static constexpr ::_pbi::MigrationSchema* schemas = nullptr;
 static constexpr ::_pb::Message* const* file_default_instances = nullptr;
 const char descriptor_table_protodef_Enum_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\nEnum.proto\022\010Protocol*t\n\nPacketType\022\r\n\t"
-    "NONE_TYPE\020\000\022\014\n\010CS_LOGIN\020\001\022\014\n\010CS_INPUT\020\002\022"
-    "\014\n\010SC_LOGIN\020\003\022\n\n\006SC_ADD\020\004\022\022\n\016SC_MOVE_OBJ"
-    "ECT\020\005\022\r\n\tSC_REMOVE\020\006**\n\005Input\022\016\n\nNONE_IN"
-    "PUT\020\000\022\010\n\004MOVE\020\001\022\007\n\003MAX\020\002*8\n\tInputType\022\023\n"
-    "\017NONE_INPUT_TYPE\020\000\022\013\n\007KeyDown\020\001\022\t\n\005KeyUp"
-    "\020\002b\006proto3"
+    "\n\nEnum.proto\022\010Protocol*\221\001\n\nPacketType\022\r\n"
+    "\tNONE_TYPE\020\000\022\014\n\010CS_LOGIN\020\001\022\014\n\010CS_INPUT\020\002"
+    "\022\014\n\010SC_LOGIN\020\003\022\n\n\006SC_ADD\020\004\022\022\n\016SC_MOVE_OB"
+    "JECT\020\005\022\r\n\tSC_REMOVE\020\006\022\r\n\tSC_ATTACK\020\007\022\014\n\010"
+    "SC_DODGE\020\010*8\n\005Input\022\016\n\nNONE_INPUT\020\000\022\010\n\004M"
+    "OVE\020\001\022\n\n\006ATTACK\020\002\022\t\n\005DODGE\020\003*8\n\tInputTyp"
+    "e\022\023\n\017NONE_INPUT_TYPE\020\000\022\013\n\007KeyDown\020\001\022\t\n\005K"
+    "eyUp\020\002b\006proto3"
 };
 static ::absl::once_flag descriptor_table_Enum_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Enum_2eproto = {
     false,
     false,
-    250,
+    294,
     descriptor_table_protodef_Enum_2eproto,
     "Enum.proto",
     &descriptor_table_Enum_2eproto_once,
@@ -65,18 +66,18 @@ const ::google::protobuf::EnumDescriptor* PacketType_descriptor() {
   return file_level_enum_descriptors_Enum_2eproto[0];
 }
 PROTOBUF_CONSTINIT const uint32_t PacketType_internal_data_[] = {
-    458752u, 0u, };
+    589824u, 0u, };
 bool PacketType_IsValid(int value) {
-  return 0 <= value && value <= 6;
+  return 0 <= value && value <= 8;
 }
 const ::google::protobuf::EnumDescriptor* Input_descriptor() {
   ::google::protobuf::internal::AssignDescriptors(&descriptor_table_Enum_2eproto);
   return file_level_enum_descriptors_Enum_2eproto[1];
 }
 PROTOBUF_CONSTINIT const uint32_t Input_internal_data_[] = {
-    196608u, 0u, };
+    262144u, 0u, };
 bool Input_IsValid(int value) {
-  return 0 <= value && value <= 2;
+  return 0 <= value && value <= 3;
 }
 const ::google::protobuf::EnumDescriptor* InputType_descriptor() {
   ::google::protobuf::internal::AssignDescriptors(&descriptor_table_Enum_2eproto);

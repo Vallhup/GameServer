@@ -55,6 +55,6 @@ void Input::SendMovePacket(XMFLOAT3 dir)
 	netDir.set_y(dir.y);
 	netDir.set_z(dir.z);
 
-	vector<char> packet = PacketFactory::CSMovePacket(netDir);
+	vector<char> packet = PacketFactory::CSMovePacket(myId, netDir);
 	network->Send(packet);
 }

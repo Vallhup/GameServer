@@ -54,9 +54,12 @@ struct TableStruct_Struct_2eproto {
 extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_Struct_2eproto;
 namespace Protocol {
-class ActionPayload;
-struct ActionPayloadDefaultTypeInternal;
-extern ActionPayloadDefaultTypeInternal _ActionPayload_default_instance_;
+class AttackPayload;
+struct AttackPayloadDefaultTypeInternal;
+extern AttackPayloadDefaultTypeInternal _AttackPayload_default_instance_;
+class DodgePayload;
+struct DodgePayloadDefaultTypeInternal;
+extern DodgePayloadDefaultTypeInternal _DodgePayload_default_instance_;
 class InputPayload;
 struct InputPayloadDefaultTypeInternal;
 extern InputPayloadDefaultTypeInternal _InputPayload_default_instance_;
@@ -498,30 +501,30 @@ class PacketHeader final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
-class ActionPayload final : public ::google::protobuf::internal::ZeroFieldsBase
-/* @@protoc_insertion_point(class_definition:Protocol.ActionPayload) */ {
+class DodgePayload final : public ::google::protobuf::internal::ZeroFieldsBase
+/* @@protoc_insertion_point(class_definition:Protocol.DodgePayload) */ {
  public:
-  inline ActionPayload() : ActionPayload(nullptr) {}
+  inline DodgePayload() : DodgePayload(nullptr) {}
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(ActionPayload* msg, std::destroying_delete_t) {
+  void operator delete(DodgePayload* msg, std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(ActionPayload));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(DodgePayload));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR ActionPayload(
+  explicit PROTOBUF_CONSTEXPR DodgePayload(
       ::google::protobuf::internal::ConstantInitialized);
 
-  inline ActionPayload(const ActionPayload& from) : ActionPayload(nullptr, from) {}
-  inline ActionPayload(ActionPayload&& from) noexcept
-      : ActionPayload(nullptr, std::move(from)) {}
-  inline ActionPayload& operator=(const ActionPayload& from) {
+  inline DodgePayload(const DodgePayload& from) : DodgePayload(nullptr, from) {}
+  inline DodgePayload(DodgePayload&& from) noexcept
+      : DodgePayload(nullptr, std::move(from)) {}
+  inline DodgePayload& operator=(const DodgePayload& from) {
     CopyFrom(from);
     return *this;
   }
-  inline ActionPayload& operator=(ActionPayload&& from) noexcept {
+  inline DodgePayload& operator=(DodgePayload&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -549,16 +552,16 @@ class ActionPayload final : public ::google::protobuf::internal::ZeroFieldsBase
   static const ::google::protobuf::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const ActionPayload& default_instance() {
+  static const DodgePayload& default_instance() {
     return *internal_default_instance();
   }
-  static inline const ActionPayload* internal_default_instance() {
-    return reinterpret_cast<const ActionPayload*>(
-        &_ActionPayload_default_instance_);
+  static inline const DodgePayload* internal_default_instance() {
+    return reinterpret_cast<const DodgePayload*>(
+        &_DodgePayload_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 4;
-  friend void swap(ActionPayload& a, ActionPayload& b) { a.Swap(&b); }
-  inline void Swap(ActionPayload* other) {
+  static constexpr int kIndexInFileMessages = 5;
+  friend void swap(DodgePayload& a, DodgePayload& b) { a.Swap(&b); }
+  inline void Swap(DodgePayload* other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -566,7 +569,7 @@ class ActionPayload final : public ::google::protobuf::internal::ZeroFieldsBase
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(ActionPayload* other) {
+  void UnsafeArenaSwap(DodgePayload* other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -574,15 +577,15 @@ class ActionPayload final : public ::google::protobuf::internal::ZeroFieldsBase
 
   // implements Message ----------------------------------------------
 
-  ActionPayload* New(::google::protobuf::Arena* arena = nullptr) const {
-    return ::google::protobuf::internal::ZeroFieldsBase::DefaultConstruct<ActionPayload>(arena);
+  DodgePayload* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::internal::ZeroFieldsBase::DefaultConstruct<DodgePayload>(arena);
   }
   using ::google::protobuf::internal::ZeroFieldsBase::CopyFrom;
-  inline void CopyFrom(const ActionPayload& from) {
+  inline void CopyFrom(const DodgePayload& from) {
     ::google::protobuf::internal::ZeroFieldsBase::CopyImpl(*this, from);
   }
   using ::google::protobuf::internal::ZeroFieldsBase::MergeFrom;
-  void MergeFrom(const ActionPayload& from) {
+  void MergeFrom(const DodgePayload& from) {
     ::google::protobuf::internal::ZeroFieldsBase::MergeImpl(*this, from);
   }
 
@@ -594,13 +597,13 @@ class ActionPayload final : public ::google::protobuf::internal::ZeroFieldsBase
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "Protocol.ActionPayload"; }
+  static ::absl::string_view FullMessageName() { return "Protocol.DodgePayload"; }
 
  protected:
-  explicit ActionPayload(::google::protobuf::Arena* arena);
-  ActionPayload(::google::protobuf::Arena* arena, const ActionPayload& from);
-  ActionPayload(::google::protobuf::Arena* arena, ActionPayload&& from) noexcept
-      : ActionPayload(arena) {
+  explicit DodgePayload(::google::protobuf::Arena* arena);
+  DodgePayload(::google::protobuf::Arena* arena, const DodgePayload& from);
+  DodgePayload(::google::protobuf::Arena* arena, DodgePayload&& from) noexcept
+      : DodgePayload(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
@@ -614,7 +617,7 @@ class ActionPayload final : public ::google::protobuf::internal::ZeroFieldsBase
   // nested types ----------------------------------------------------
 
   // accessors -------------------------------------------------------
-  // @@protoc_insertion_point(class_scope:Protocol.ActionPayload)
+  // @@protoc_insertion_point(class_scope:Protocol.DodgePayload)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
@@ -636,7 +639,152 @@ class ActionPayload final : public ::google::protobuf::internal::ZeroFieldsBase
                           ::google::protobuf::Arena* arena);
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
-                          const ActionPayload& from_msg);
+                          const DodgePayload& from_msg);
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  friend struct ::TableStruct_Struct_2eproto;
+};
+// -------------------------------------------------------------------
+
+class AttackPayload final : public ::google::protobuf::internal::ZeroFieldsBase
+/* @@protoc_insertion_point(class_definition:Protocol.AttackPayload) */ {
+ public:
+  inline AttackPayload() : AttackPayload(nullptr) {}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(AttackPayload* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(AttackPayload));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR AttackPayload(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline AttackPayload(const AttackPayload& from) : AttackPayload(nullptr, from) {}
+  inline AttackPayload(AttackPayload&& from) noexcept
+      : AttackPayload(nullptr, std::move(from)) {}
+  inline AttackPayload& operator=(const AttackPayload& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline AttackPayload& operator=(AttackPayload&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const AttackPayload& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const AttackPayload* internal_default_instance() {
+    return reinterpret_cast<const AttackPayload*>(
+        &_AttackPayload_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 4;
+  friend void swap(AttackPayload& a, AttackPayload& b) { a.Swap(&b); }
+  inline void Swap(AttackPayload* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(AttackPayload* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  AttackPayload* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::internal::ZeroFieldsBase::DefaultConstruct<AttackPayload>(arena);
+  }
+  using ::google::protobuf::internal::ZeroFieldsBase::CopyFrom;
+  inline void CopyFrom(const AttackPayload& from) {
+    ::google::protobuf::internal::ZeroFieldsBase::CopyImpl(*this, from);
+  }
+  using ::google::protobuf::internal::ZeroFieldsBase::MergeFrom;
+  void MergeFrom(const AttackPayload& from) {
+    ::google::protobuf::internal::ZeroFieldsBase::MergeImpl(*this, from);
+  }
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.AttackPayload"; }
+
+ protected:
+  explicit AttackPayload(::google::protobuf::Arena* arena);
+  AttackPayload(::google::protobuf::Arena* arena, const AttackPayload& from);
+  AttackPayload(::google::protobuf::Arena* arena, AttackPayload&& from) noexcept
+      : AttackPayload(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  // @@protoc_insertion_point(class_scope:Protocol.AttackPayload)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 0, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const AttackPayload& from_msg);
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   friend struct ::TableStruct_Struct_2eproto;
@@ -907,8 +1055,9 @@ class InputPayload final : public ::google::protobuf::Message
     return *internal_default_instance();
   }
   enum PayloadCase {
-    kMove = 10,
-    kAction = 11,
+    kMove = 1,
+    kAttack = 2,
+    kDodge = 3,
     PAYLOAD_NOT_SET = 0,
   };
   static inline const InputPayload* internal_default_instance() {
@@ -1002,21 +1151,11 @@ class InputPayload final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kPriorityFieldNumber = 1,
-    kMoveFieldNumber = 10,
-    kActionFieldNumber = 11,
+    kMoveFieldNumber = 1,
+    kAttackFieldNumber = 2,
+    kDodgeFieldNumber = 3,
   };
-  // uint32 priority = 1;
-  void clear_priority() ;
-  ::uint32_t priority() const;
-  void set_priority(::uint32_t value);
-
-  private:
-  ::uint32_t _internal_priority() const;
-  void _internal_set_priority(::uint32_t value);
-
-  public:
-  // .Protocol.MovePayload move = 10;
+  // .Protocol.MovePayload move = 1;
   bool has_move() const;
   private:
   bool _internal_has_move() const;
@@ -1035,23 +1174,42 @@ class InputPayload final : public ::google::protobuf::Message
   ::Protocol::MovePayload* _internal_mutable_move();
 
   public:
-  // .Protocol.ActionPayload action = 11;
-  bool has_action() const;
+  // .Protocol.AttackPayload attack = 2;
+  bool has_attack() const;
   private:
-  bool _internal_has_action() const;
+  bool _internal_has_attack() const;
 
   public:
-  void clear_action() ;
-  const ::Protocol::ActionPayload& action() const;
-  PROTOBUF_NODISCARD ::Protocol::ActionPayload* release_action();
-  ::Protocol::ActionPayload* mutable_action();
-  void set_allocated_action(::Protocol::ActionPayload* value);
-  void unsafe_arena_set_allocated_action(::Protocol::ActionPayload* value);
-  ::Protocol::ActionPayload* unsafe_arena_release_action();
+  void clear_attack() ;
+  const ::Protocol::AttackPayload& attack() const;
+  PROTOBUF_NODISCARD ::Protocol::AttackPayload* release_attack();
+  ::Protocol::AttackPayload* mutable_attack();
+  void set_allocated_attack(::Protocol::AttackPayload* value);
+  void unsafe_arena_set_allocated_attack(::Protocol::AttackPayload* value);
+  ::Protocol::AttackPayload* unsafe_arena_release_attack();
 
   private:
-  const ::Protocol::ActionPayload& _internal_action() const;
-  ::Protocol::ActionPayload* _internal_mutable_action();
+  const ::Protocol::AttackPayload& _internal_attack() const;
+  ::Protocol::AttackPayload* _internal_mutable_attack();
+
+  public:
+  // .Protocol.DodgePayload dodge = 3;
+  bool has_dodge() const;
+  private:
+  bool _internal_has_dodge() const;
+
+  public:
+  void clear_dodge() ;
+  const ::Protocol::DodgePayload& dodge() const;
+  PROTOBUF_NODISCARD ::Protocol::DodgePayload* release_dodge();
+  ::Protocol::DodgePayload* mutable_dodge();
+  void set_allocated_dodge(::Protocol::DodgePayload* value);
+  void unsafe_arena_set_allocated_dodge(::Protocol::DodgePayload* value);
+  ::Protocol::DodgePayload* unsafe_arena_release_dodge();
+
+  private:
+  const ::Protocol::DodgePayload& _internal_dodge() const;
+  ::Protocol::DodgePayload* _internal_mutable_dodge();
 
   public:
   void clear_payload();
@@ -1060,12 +1218,13 @@ class InputPayload final : public ::google::protobuf::Message
  private:
   class _Internal;
   void set_has_move();
-  void set_has_action();
+  void set_has_attack();
+  void set_has_dodge();
   inline bool has_payload() const;
   inline void clear_has_payload();
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      0, 3, 2,
+      0, 3, 3,
       0, 2>
       _table_;
 
@@ -1083,12 +1242,12 @@ class InputPayload final : public ::google::protobuf::Message
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const InputPayload& from_msg);
-    ::uint32_t priority_;
     union PayloadUnion {
       constexpr PayloadUnion() : _constinit_{} {}
       ::google::protobuf::internal::ConstantInitialized _constinit_;
       ::Protocol::MovePayload* move_;
-      ::Protocol::ActionPayload* action_;
+      ::Protocol::AttackPayload* attack_;
+      ::Protocol::DodgePayload* dodge_;
     } payload_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::uint32_t _oneof_case_[1];
@@ -1232,29 +1391,7 @@ inline void Vec3::_internal_set_z(float value) {
 
 // InputPayload
 
-// uint32 priority = 1;
-inline void InputPayload::clear_priority() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.priority_ = 0u;
-}
-inline ::uint32_t InputPayload::priority() const {
-  // @@protoc_insertion_point(field_get:Protocol.InputPayload.priority)
-  return _internal_priority();
-}
-inline void InputPayload::set_priority(::uint32_t value) {
-  _internal_set_priority(value);
-  // @@protoc_insertion_point(field_set:Protocol.InputPayload.priority)
-}
-inline ::uint32_t InputPayload::_internal_priority() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.priority_;
-}
-inline void InputPayload::_internal_set_priority(::uint32_t value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.priority_ = value;
-}
-
-// .Protocol.MovePayload move = 10;
+// .Protocol.MovePayload move = 1;
 inline bool InputPayload::has_move() const {
   return payload_case() == kMove;
 }
@@ -1333,82 +1470,161 @@ inline ::Protocol::MovePayload* InputPayload::mutable_move() ABSL_ATTRIBUTE_LIFE
   return _msg;
 }
 
-// .Protocol.ActionPayload action = 11;
-inline bool InputPayload::has_action() const {
-  return payload_case() == kAction;
+// .Protocol.AttackPayload attack = 2;
+inline bool InputPayload::has_attack() const {
+  return payload_case() == kAttack;
 }
-inline bool InputPayload::_internal_has_action() const {
-  return payload_case() == kAction;
+inline bool InputPayload::_internal_has_attack() const {
+  return payload_case() == kAttack;
 }
-inline void InputPayload::set_has_action() {
-  _impl_._oneof_case_[0] = kAction;
+inline void InputPayload::set_has_attack() {
+  _impl_._oneof_case_[0] = kAttack;
 }
-inline void InputPayload::clear_action() {
+inline void InputPayload::clear_attack() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (payload_case() == kAction) {
+  if (payload_case() == kAttack) {
     if (GetArena() == nullptr) {
-      delete _impl_.payload_.action_;
+      delete _impl_.payload_.attack_;
     } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
-      ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.payload_.action_);
+      ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.payload_.attack_);
     }
     clear_has_payload();
   }
 }
-inline ::Protocol::ActionPayload* InputPayload::release_action() {
-  // @@protoc_insertion_point(field_release:Protocol.InputPayload.action)
-  if (payload_case() == kAction) {
+inline ::Protocol::AttackPayload* InputPayload::release_attack() {
+  // @@protoc_insertion_point(field_release:Protocol.InputPayload.attack)
+  if (payload_case() == kAttack) {
     clear_has_payload();
-    auto* temp = _impl_.payload_.action_;
+    auto* temp = _impl_.payload_.attack_;
     if (GetArena() != nullptr) {
       temp = ::google::protobuf::internal::DuplicateIfNonNull(temp);
     }
-    _impl_.payload_.action_ = nullptr;
+    _impl_.payload_.attack_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
-inline const ::Protocol::ActionPayload& InputPayload::_internal_action() const {
-  return payload_case() == kAction ? *_impl_.payload_.action_ : reinterpret_cast<::Protocol::ActionPayload&>(::Protocol::_ActionPayload_default_instance_);
+inline const ::Protocol::AttackPayload& InputPayload::_internal_attack() const {
+  return payload_case() == kAttack ? *_impl_.payload_.attack_ : reinterpret_cast<::Protocol::AttackPayload&>(::Protocol::_AttackPayload_default_instance_);
 }
-inline const ::Protocol::ActionPayload& InputPayload::action() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:Protocol.InputPayload.action)
-  return _internal_action();
+inline const ::Protocol::AttackPayload& InputPayload::attack() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.InputPayload.attack)
+  return _internal_attack();
 }
-inline ::Protocol::ActionPayload* InputPayload::unsafe_arena_release_action() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:Protocol.InputPayload.action)
-  if (payload_case() == kAction) {
+inline ::Protocol::AttackPayload* InputPayload::unsafe_arena_release_attack() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:Protocol.InputPayload.attack)
+  if (payload_case() == kAttack) {
     clear_has_payload();
-    auto* temp = _impl_.payload_.action_;
-    _impl_.payload_.action_ = nullptr;
+    auto* temp = _impl_.payload_.attack_;
+    _impl_.payload_.attack_ = nullptr;
     return temp;
   } else {
     return nullptr;
   }
 }
-inline void InputPayload::unsafe_arena_set_allocated_action(::Protocol::ActionPayload* value) {
+inline void InputPayload::unsafe_arena_set_allocated_attack(::Protocol::AttackPayload* value) {
   // We rely on the oneof clear method to free the earlier contents
   // of this oneof. We can directly use the pointer we're given to
   // set the new value.
   clear_payload();
   if (value) {
-    set_has_action();
-    _impl_.payload_.action_ = value;
+    set_has_attack();
+    _impl_.payload_.attack_ = value;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.InputPayload.action)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.InputPayload.attack)
 }
-inline ::Protocol::ActionPayload* InputPayload::_internal_mutable_action() {
-  if (payload_case() != kAction) {
+inline ::Protocol::AttackPayload* InputPayload::_internal_mutable_attack() {
+  if (payload_case() != kAttack) {
     clear_payload();
-    set_has_action();
-    _impl_.payload_.action_ =
-        ::google::protobuf::Message::DefaultConstruct<::Protocol::ActionPayload>(GetArena());
+    set_has_attack();
+    _impl_.payload_.attack_ =
+        ::google::protobuf::Message::DefaultConstruct<::Protocol::AttackPayload>(GetArena());
   }
-  return _impl_.payload_.action_;
+  return _impl_.payload_.attack_;
 }
-inline ::Protocol::ActionPayload* InputPayload::mutable_action() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ::Protocol::ActionPayload* _msg = _internal_mutable_action();
-  // @@protoc_insertion_point(field_mutable:Protocol.InputPayload.action)
+inline ::Protocol::AttackPayload* InputPayload::mutable_attack() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::Protocol::AttackPayload* _msg = _internal_mutable_attack();
+  // @@protoc_insertion_point(field_mutable:Protocol.InputPayload.attack)
+  return _msg;
+}
+
+// .Protocol.DodgePayload dodge = 3;
+inline bool InputPayload::has_dodge() const {
+  return payload_case() == kDodge;
+}
+inline bool InputPayload::_internal_has_dodge() const {
+  return payload_case() == kDodge;
+}
+inline void InputPayload::set_has_dodge() {
+  _impl_._oneof_case_[0] = kDodge;
+}
+inline void InputPayload::clear_dodge() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (payload_case() == kDodge) {
+    if (GetArena() == nullptr) {
+      delete _impl_.payload_.dodge_;
+    } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
+      ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.payload_.dodge_);
+    }
+    clear_has_payload();
+  }
+}
+inline ::Protocol::DodgePayload* InputPayload::release_dodge() {
+  // @@protoc_insertion_point(field_release:Protocol.InputPayload.dodge)
+  if (payload_case() == kDodge) {
+    clear_has_payload();
+    auto* temp = _impl_.payload_.dodge_;
+    if (GetArena() != nullptr) {
+      temp = ::google::protobuf::internal::DuplicateIfNonNull(temp);
+    }
+    _impl_.payload_.dodge_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline const ::Protocol::DodgePayload& InputPayload::_internal_dodge() const {
+  return payload_case() == kDodge ? *_impl_.payload_.dodge_ : reinterpret_cast<::Protocol::DodgePayload&>(::Protocol::_DodgePayload_default_instance_);
+}
+inline const ::Protocol::DodgePayload& InputPayload::dodge() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.InputPayload.dodge)
+  return _internal_dodge();
+}
+inline ::Protocol::DodgePayload* InputPayload::unsafe_arena_release_dodge() {
+  // @@protoc_insertion_point(field_unsafe_arena_release:Protocol.InputPayload.dodge)
+  if (payload_case() == kDodge) {
+    clear_has_payload();
+    auto* temp = _impl_.payload_.dodge_;
+    _impl_.payload_.dodge_ = nullptr;
+    return temp;
+  } else {
+    return nullptr;
+  }
+}
+inline void InputPayload::unsafe_arena_set_allocated_dodge(::Protocol::DodgePayload* value) {
+  // We rely on the oneof clear method to free the earlier contents
+  // of this oneof. We can directly use the pointer we're given to
+  // set the new value.
+  clear_payload();
+  if (value) {
+    set_has_dodge();
+    _impl_.payload_.dodge_ = value;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.InputPayload.dodge)
+}
+inline ::Protocol::DodgePayload* InputPayload::_internal_mutable_dodge() {
+  if (payload_case() != kDodge) {
+    clear_payload();
+    set_has_dodge();
+    _impl_.payload_.dodge_ =
+        ::google::protobuf::Message::DefaultConstruct<::Protocol::DodgePayload>(GetArena());
+  }
+  return _impl_.payload_.dodge_;
+}
+inline ::Protocol::DodgePayload* InputPayload::mutable_dodge() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::Protocol::DodgePayload* _msg = _internal_mutable_dodge();
+  // @@protoc_insertion_point(field_mutable:Protocol.InputPayload.dodge)
   return _msg;
 }
 
@@ -1545,7 +1761,11 @@ inline void MovePayload::_internal_set_isrun(bool value) {
 
 // -------------------------------------------------------------------
 
-// ActionPayload
+// AttackPayload
+
+// -------------------------------------------------------------------
+
+// DodgePayload
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

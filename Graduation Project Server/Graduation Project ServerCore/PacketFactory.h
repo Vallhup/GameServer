@@ -5,7 +5,7 @@
 class PacketFactory {
 public:
 	static std::vector<char> CSLoginPacket();
-	static std::vector<char> CSMovePacket(const Protocol::Vec3& pos);
+	static std::vector<char> CSMovePacket(int id, const Protocol::Vec3& pos);
 
 
 public:
@@ -13,4 +13,5 @@ public:
 	static std::vector<char> SCAddPacket(int id, const Protocol::Vec3& pos);
 	static std::vector<char> SCMovePakcet(int id, const Protocol::Vec3& pos);
 	static std::vector<char> SCRemovePacket(int id);
+	static std::vector<char> SCAttackPacket(int id, const Protocol::Vec3& dir);
 };

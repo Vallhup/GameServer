@@ -4,26 +4,33 @@
 void InputComponent::Update(float deltaTime)
 {
 	while (not _inputQueue.empty()) {
-		Protocol::InputPayload payload = _inputQueue.front();
+		Protocol::CS_INPUT_PACKET packet = _inputQueue.front();
 		_inputQueue.pop();
 
-		switch (payload.payload_case()) {
-		case Protocol::InputPayload::kMove: {
+		switch (packet.key()) {
+		case Protocol::Input::MOVE: {
 			if (auto mvComp = _owner.GetComponent<MovementComponent>()) {
-				mvComp->SetMovePayload(payload);
+				mvComp->SetMovePayload(packet.payload());
 			}
 			break;
 		}
-		case Protocol::InputPayload::kAction: {
+		case Protocol::Input::ATTACK: {
+			if (auto actComp = _owner.GetComponent<ActionComponent>()) {
+				actComp->StartDodge();
+			}
+			break;
+		}
+		case Protocol::Input::DODGE: {
+			if (auto actComp = _owner.GetComponent<ActionComponent>()) {
+				actComp->StartDodge();
+			}
 			break;
 		}
 		}
 	}
 }
 
-void InputComponent::Enqueue(const Protocol::CS_INPUT_PACKET& data)
+void InputComponent::Enqueue(Protocol::CS_INPUT_PACKET& data)
 {
-	Protocol::InputPayload payload;
-	payload.CopyFrom(data.payload());
-	_inputQueue.push(std::move(payload));
+	_inputQueue.push(std::move(data));
 }

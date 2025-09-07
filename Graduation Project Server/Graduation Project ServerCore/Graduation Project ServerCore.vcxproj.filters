@@ -132,7 +132,6 @@
     <ClCompile Include="InputComponent.cpp">
       <Filter>Game\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Input.cpp" />
     <ClCompile Include="AIComponent.cpp">
       <Filter>Game\Component</Filter>
     </ClCompile>
@@ -178,6 +177,11 @@
     <ClCompile Include="TestInstance.cpp">
       <Filter>Game\Instance</Filter>
     </ClCompile>
+    <ClCompile Include="ActionComponent.cpp">
+      <Filter>Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Action.cpp" />
+    <ClCompile Include="CollisionComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -267,7 +271,6 @@
     <ClInclude Include="InputComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h" />
     <ClInclude Include="AIComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
@@ -313,6 +316,11 @@
     <ClInclude Include="TestInstance.h">
       <Filter>Game\Instance</Filter>
     </ClInclude>
+    <ClInclude Include="ActionComponent.h">
+      <Filter>Game\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Action.h" />
+    <ClInclude Include="CollisionComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="protos\Struct.proto">

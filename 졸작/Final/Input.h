@@ -2,6 +2,8 @@
 
 #include "NetworkManager.h"
 
+extern int myId;
+
 enum class MouseButton 
 {
 	LEFT,

@@ -31,7 +31,6 @@ public:
 
 private:
 	NetworkManager* _nManager{ nullptr };
-	int _myId = 0;
 	vector<shared_ptr<GameObject>> gameObjects;  
 	shared_ptr<MainCharacter> knight;
 	shared_ptr<GameObject> otherKnight;

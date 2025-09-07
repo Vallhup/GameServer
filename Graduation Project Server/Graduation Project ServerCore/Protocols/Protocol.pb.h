@@ -67,6 +67,12 @@ extern GamePacketDefaultTypeInternal _GamePacket_default_instance_;
 class SC_ADD_PACKET;
 struct SC_ADD_PACKETDefaultTypeInternal;
 extern SC_ADD_PACKETDefaultTypeInternal _SC_ADD_PACKET_default_instance_;
+class SC_ATTACK_PACKET;
+struct SC_ATTACK_PACKETDefaultTypeInternal;
+extern SC_ATTACK_PACKETDefaultTypeInternal _SC_ATTACK_PACKET_default_instance_;
+class SC_DODGE_PACKET;
+struct SC_DODGE_PACKETDefaultTypeInternal;
+extern SC_DODGE_PACKETDefaultTypeInternal _SC_DODGE_PACKET_default_instance_;
 class SC_LOGIN_PACKET;
 struct SC_LOGIN_PACKETDefaultTypeInternal;
 extern SC_LOGIN_PACKETDefaultTypeInternal _SC_LOGIN_PACKET_default_instance_;
@@ -720,6 +726,398 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
+class SC_DODGE_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_DODGE_PACKET) */ {
+ public:
+  inline SC_DODGE_PACKET() : SC_DODGE_PACKET(nullptr) {}
+  ~SC_DODGE_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_DODGE_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_DODGE_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_DODGE_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_DODGE_PACKET(const SC_DODGE_PACKET& from) : SC_DODGE_PACKET(nullptr, from) {}
+  inline SC_DODGE_PACKET(SC_DODGE_PACKET&& from) noexcept
+      : SC_DODGE_PACKET(nullptr, std::move(from)) {}
+  inline SC_DODGE_PACKET& operator=(const SC_DODGE_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_DODGE_PACKET& operator=(SC_DODGE_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_DODGE_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_DODGE_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_DODGE_PACKET*>(
+        &_SC_DODGE_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 8;
+  friend void swap(SC_DODGE_PACKET& a, SC_DODGE_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_DODGE_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_DODGE_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_DODGE_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_DODGE_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_DODGE_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_DODGE_PACKET& from) { SC_DODGE_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_DODGE_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_DODGE_PACKET"; }
+
+ protected:
+  explicit SC_DODGE_PACKET(::google::protobuf::Arena* arena);
+  SC_DODGE_PACKET(::google::protobuf::Arena* arena, const SC_DODGE_PACKET& from);
+  SC_DODGE_PACKET(::google::protobuf::Arena* arena, SC_DODGE_PACKET&& from) noexcept
+      : SC_DODGE_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kPosFieldNumber = 1,
+  };
+  // .Protocol.Vec3 pos = 1;
+  bool has_pos() const;
+  void clear_pos() ;
+  const ::Protocol::Vec3& pos() const;
+  PROTOBUF_NODISCARD ::Protocol::Vec3* release_pos();
+  ::Protocol::Vec3* mutable_pos();
+  void set_allocated_pos(::Protocol::Vec3* value);
+  void unsafe_arena_set_allocated_pos(::Protocol::Vec3* value);
+  ::Protocol::Vec3* unsafe_arena_release_pos();
+
+  private:
+  const ::Protocol::Vec3& _internal_pos() const;
+  ::Protocol::Vec3* _internal_mutable_pos();
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_DODGE_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 1,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_DODGE_PACKET& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::Protocol::Vec3* pos_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_ATTACK_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_ATTACK_PACKET) */ {
+ public:
+  inline SC_ATTACK_PACKET() : SC_ATTACK_PACKET(nullptr) {}
+  ~SC_ATTACK_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_ATTACK_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_ATTACK_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_ATTACK_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_ATTACK_PACKET(const SC_ATTACK_PACKET& from) : SC_ATTACK_PACKET(nullptr, from) {}
+  inline SC_ATTACK_PACKET(SC_ATTACK_PACKET&& from) noexcept
+      : SC_ATTACK_PACKET(nullptr, std::move(from)) {}
+  inline SC_ATTACK_PACKET& operator=(const SC_ATTACK_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_ATTACK_PACKET& operator=(SC_ATTACK_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_ATTACK_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_ATTACK_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_ATTACK_PACKET*>(
+        &_SC_ATTACK_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 7;
+  friend void swap(SC_ATTACK_PACKET& a, SC_ATTACK_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_ATTACK_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_ATTACK_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_ATTACK_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_ATTACK_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_ATTACK_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_ATTACK_PACKET& from) { SC_ATTACK_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_ATTACK_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_ATTACK_PACKET"; }
+
+ protected:
+  explicit SC_ATTACK_PACKET(::google::protobuf::Arena* arena);
+  SC_ATTACK_PACKET(::google::protobuf::Arena* arena, const SC_ATTACK_PACKET& from);
+  SC_ATTACK_PACKET(::google::protobuf::Arena* arena, SC_ATTACK_PACKET&& from) noexcept
+      : SC_ATTACK_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kDirFieldNumber = 1,
+  };
+  // .Protocol.Vec3 dir = 1;
+  bool has_dir() const;
+  void clear_dir() ;
+  const ::Protocol::Vec3& dir() const;
+  PROTOBUF_NODISCARD ::Protocol::Vec3* release_dir();
+  ::Protocol::Vec3* mutable_dir();
+  void set_allocated_dir(::Protocol::Vec3* value);
+  void unsafe_arena_set_allocated_dir(::Protocol::Vec3* value);
+  ::Protocol::Vec3* unsafe_arena_release_dir();
+
+  private:
+  const ::Protocol::Vec3& _internal_dir() const;
+  ::Protocol::Vec3* _internal_mutable_dir();
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_ATTACK_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 1,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_ATTACK_PACKET& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::Protocol::Vec3* dir_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
 class SC_ADD_PACKET final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Protocol.SC_ADD_PACKET) */ {
  public:
@@ -1276,10 +1674,10 @@ class CS_INPUT_PACKET final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kPayloadFieldNumber = 3,
+    kPayloadFieldNumber = 2,
     kKeyFieldNumber = 1,
   };
-  // .Protocol.InputPayload payload = 3;
+  // .Protocol.InputPayload payload = 2;
   bool has_payload() const;
   void clear_payload() ;
   const ::Protocol::InputPayload& payload() const;
@@ -1309,7 +1707,7 @@ class CS_INPUT_PACKET final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 2, 1,
+      1, 2, 1,
       0, 2>
       _table_;
 
@@ -1522,7 +1920,7 @@ inline void CS_INPUT_PACKET::_internal_set_key(::Protocol::Input value) {
   _impl_.key_ = value;
 }
 
-// .Protocol.InputPayload payload = 3;
+// .Protocol.InputPayload payload = 2;
 inline bool CS_INPUT_PACKET::has_payload() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   PROTOBUF_ASSUME(!value || _impl_.payload_ != nullptr);
@@ -1810,6 +2208,196 @@ inline void SC_MOVE_PACKET::set_allocated_pos(::Protocol::Vec3* value) {
 // -------------------------------------------------------------------
 
 // SC_REMOVE_PACKET
+
+// -------------------------------------------------------------------
+
+// SC_ATTACK_PACKET
+
+// .Protocol.Vec3 dir = 1;
+inline bool SC_ATTACK_PACKET::has_dir() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.dir_ != nullptr);
+  return value;
+}
+inline const ::Protocol::Vec3& SC_ATTACK_PACKET::_internal_dir() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Protocol::Vec3* p = _impl_.dir_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::Vec3&>(::Protocol::_Vec3_default_instance_);
+}
+inline const ::Protocol::Vec3& SC_ATTACK_PACKET::dir() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_ATTACK_PACKET.dir)
+  return _internal_dir();
+}
+inline void SC_ATTACK_PACKET::unsafe_arena_set_allocated_dir(::Protocol::Vec3* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.dir_);
+  }
+  _impl_.dir_ = reinterpret_cast<::Protocol::Vec3*>(value);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_ATTACK_PACKET.dir)
+}
+inline ::Protocol::Vec3* SC_ATTACK_PACKET::release_dir() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::Vec3* released = _impl_.dir_;
+  _impl_.dir_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Protocol::Vec3* SC_ATTACK_PACKET::unsafe_arena_release_dir() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.SC_ATTACK_PACKET.dir)
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::Vec3* temp = _impl_.dir_;
+  _impl_.dir_ = nullptr;
+  return temp;
+}
+inline ::Protocol::Vec3* SC_ATTACK_PACKET::_internal_mutable_dir() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.dir_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::Vec3>(GetArena());
+    _impl_.dir_ = reinterpret_cast<::Protocol::Vec3*>(p);
+  }
+  return _impl_.dir_;
+}
+inline ::Protocol::Vec3* SC_ATTACK_PACKET::mutable_dir() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  ::Protocol::Vec3* _msg = _internal_mutable_dir();
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_ATTACK_PACKET.dir)
+  return _msg;
+}
+inline void SC_ATTACK_PACKET::set_allocated_dir(::Protocol::Vec3* value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.dir_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = reinterpret_cast<::google::protobuf::MessageLite*>(value)->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+
+  _impl_.dir_ = reinterpret_cast<::Protocol::Vec3*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_ATTACK_PACKET.dir)
+}
+
+// -------------------------------------------------------------------
+
+// SC_DODGE_PACKET
+
+// .Protocol.Vec3 pos = 1;
+inline bool SC_DODGE_PACKET::has_pos() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.pos_ != nullptr);
+  return value;
+}
+inline const ::Protocol::Vec3& SC_DODGE_PACKET::_internal_pos() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Protocol::Vec3* p = _impl_.pos_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::Vec3&>(::Protocol::_Vec3_default_instance_);
+}
+inline const ::Protocol::Vec3& SC_DODGE_PACKET::pos() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_DODGE_PACKET.pos)
+  return _internal_pos();
+}
+inline void SC_DODGE_PACKET::unsafe_arena_set_allocated_pos(::Protocol::Vec3* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.pos_);
+  }
+  _impl_.pos_ = reinterpret_cast<::Protocol::Vec3*>(value);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_DODGE_PACKET.pos)
+}
+inline ::Protocol::Vec3* SC_DODGE_PACKET::release_pos() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::Vec3* released = _impl_.pos_;
+  _impl_.pos_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Protocol::Vec3* SC_DODGE_PACKET::unsafe_arena_release_pos() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.SC_DODGE_PACKET.pos)
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::Vec3* temp = _impl_.pos_;
+  _impl_.pos_ = nullptr;
+  return temp;
+}
+inline ::Protocol::Vec3* SC_DODGE_PACKET::_internal_mutable_pos() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.pos_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::Vec3>(GetArena());
+    _impl_.pos_ = reinterpret_cast<::Protocol::Vec3*>(p);
+  }
+  return _impl_.pos_;
+}
+inline ::Protocol::Vec3* SC_DODGE_PACKET::mutable_pos() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  ::Protocol::Vec3* _msg = _internal_mutable_pos();
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_DODGE_PACKET.pos)
+  return _msg;
+}
+inline void SC_DODGE_PACKET::set_allocated_pos(::Protocol::Vec3* value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.pos_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = reinterpret_cast<::google::protobuf::MessageLite*>(value)->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+
+  _impl_.pos_ = reinterpret_cast<::Protocol::Vec3*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_DODGE_PACKET.pos)
+}
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop

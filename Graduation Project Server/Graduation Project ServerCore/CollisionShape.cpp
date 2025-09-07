@@ -1,15 +1,33 @@
 #include "pch.h"
 #include "CollisionShape.h"
 
+/*---------------[ BoxShape ]---------------*/
+
+CollisionShape::CollisionShape(ShapeType shape, CollisionType type, const vec3& offset)
+    : _shape(shape), _type(type), _localOffset(offset)
+{
+    if (_type == CollisionType::Hurt) {
+        _active = true;
+    }
+
+    else {
+        _active = false;
+    }
+}
+
 bool BoxShape::CheckCollision(const CollisionShape& other) const
 {
     return false;
 }
 
+/*---------------[ SphereShape ]---------------*/
+
 bool SphereShape::CheckCollision(const CollisionShape& other) const
 {
     return false;
 }
+
+/*---------------[ CylinderShape ]---------------*/
 
 bool CylinderShape::CheckCollision(const CollisionShape& other) const
 {

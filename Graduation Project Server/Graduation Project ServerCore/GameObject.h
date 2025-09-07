@@ -66,7 +66,7 @@ public:
 
 public:
 	int GetId() const { return _id; }
-	int GetInstanceId() const { return _instance->GetId(); }
+	Instance* GetInstance() const { return _instance; }
 
 protected:
 	int _id;

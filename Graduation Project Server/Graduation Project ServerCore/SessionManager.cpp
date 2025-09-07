@@ -91,10 +91,9 @@ void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& pac
 			return;
 		}
 
-		int instanceId = GetSession(sessionId)->GetCharacter()->GetInstanceId();
-		auto instance = _gameCtx.GetGameWorld().GetInstance(instanceId);
-
-		instance->GetGameLogic().OnPlayerAction(sessionId, input);
+		if (Instance* instance = GetSession(sessionId)->GetCharacter()->GetInstance()) {
+			instance->GetGameLogic().OnPlayerAction(sessionId, input);
+		}
 		break;
 	}
 	}

@@ -1,29 +1,37 @@
 #pragma once
 
 enum class ShapeType : char { Box, Sphere, Cylinder };
+enum class CollisionType : char { Attack, Hurt, Parry };
 
 class CollisionShape {
 public:
 	CollisionShape() = delete;
-	CollisionShape(ShapeType type, const vec3& offset) : _type(type), _localOffset(offset) {}
+	CollisionShape(ShapeType shape, CollisionType type, const vec3& offset);
 	virtual ~CollisionShape() = default;
 
 public:
 	virtual bool CheckCollision(const CollisionShape& other) const = 0;
 
 public:
-	ShapeType GetType() const { return _type; }
+	ShapeType GetShape() const { return _shape; }
+	CollisionType GetCollisionType() const { return _type; }
 	const vec3& GetLocalOffset() const { return _localOffset; }
+	bool IsActive() const { return _active; }
+
+	void SetActive(bool active) { _active = active; }
 
 protected:
-	ShapeType _type;
+	ShapeType _shape;
+	CollisionType _type;
 	vec3 _localOffset;
+	bool _active;
 };
 
 class BoxShape : public CollisionShape {
 public:
 	BoxShape() = delete;
-	BoxShape(const vec3& offset, const vec3& halfSize) : CollisionShape(ShapeType::Box, offset), _halfSize(halfSize) {}
+	BoxShape(CollisionType type, const vec3& offset, const vec3& halfSize) 
+		: CollisionShape(ShapeType::Box, type, offset), _halfSize(halfSize) {}
 	virtual ~BoxShape() = default;
 
 public:
@@ -39,7 +47,8 @@ private:
 class SphereShape : public CollisionShape {
 public:
 	SphereShape() = delete;
-	SphereShape(const vec3& offset, float radius) : CollisionShape(ShapeType::Sphere, offset), _radius(radius) {}
+	SphereShape(CollisionType type, const vec3& offset, float radius) 
+		: CollisionShape(ShapeType::Sphere, type, offset), _radius(radius) {}
 	virtual ~SphereShape() = default;
 
 public:
@@ -55,8 +64,8 @@ private:
 class CylinderShape : public CollisionShape {
 public:
 	CylinderShape() = delete;
-	CylinderShape(const vec3& offset, float radius, float height, const vec3& direction)
-		: CollisionShape(ShapeType::Cylinder, offset), _radius(radius), _height(height), _direction(direction) {}
+	CylinderShape(CollisionType type, const vec3& offset, float radius, float height, const vec3& direction)
+		: CollisionShape(ShapeType::Cylinder, type, offset), _radius(radius), _height(height), _direction(direction) {}
 	virtual ~CylinderShape() = default;
 
 public:

@@ -13,8 +13,8 @@ public:
 
 public:
 	virtual void Update(float deltaTime) override;
-	void Enqueue(const Protocol::CS_INPUT_PACKET& data);
+	void Enqueue(Protocol::CS_INPUT_PACKET& data);
 
 private:
-	std::queue<Protocol::InputPayload> _inputQueue;
+	std::queue<Protocol::CS_INPUT_PACKET> _inputQueue;
 };

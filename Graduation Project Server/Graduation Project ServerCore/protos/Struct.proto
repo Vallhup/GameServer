@@ -21,7 +21,8 @@ message InputPayload
 	oneof payload
 	{
 		MovePayload move = 1;
-		ActionPayload action = 2;
+		AttackPayload attack = 2;
+		DodgePayload dodge = 3;
 	}
 }
 
@@ -31,7 +32,12 @@ message MovePayload
 	bool isRun = 2;
 }
 
-message ActionPayload
+message AttackPayload
+{
+
+}
+
+message DodgePayload
 {
 
 }

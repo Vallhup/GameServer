@@ -44,7 +44,7 @@ void GameLogic::NetworkUpdate()
 	}
 }
 
-void GameLogic::OnPlayerAction(int sessionId, const Protocol::CS_INPUT_PACKET& packet)
+void GameLogic::OnPlayerAction(int sessionId, Protocol::CS_INPUT_PACKET& packet)
 {
 	_instance->GetGameObject(sessionId)->GetComponent<InputComponent>()->Enqueue(packet);
 }
@@ -75,36 +75,3 @@ void GameLogic::ExecuteEvent(Event event)
 		}
 	}
 }
-
-//void GameLogic::HandleInput(const InputEventData& data)
-//{
-//	if (auto obj = _instance->GetGameObject(data.sessionId)) {
-//		if (auto input = obj->GetComponent<InputComponent>()) {
-//			input->Enqueue(data);
-//		}
-//	}
-//
-//	//static const std::array<vec3, 4> dirs = {
-//	//	vec3{0.0f,  0.0f, 1.0f},
-//	//	vec3{-1.0f, 0.0f, 0.0f},
-//	//	vec3{0.0f, 0.0f, -1.0f},
-//	//	vec3{1.0f, 0.0f,  0.0f}
-//	//};
-//
-//	//if (auto obj = _instance->GetGameObject(data.sessionId)) {
-//	//	// data.key()에 따라 분기
-//	//	switch (data.key) {
-//	//	case Protocol::Input::MOVE_FRONT:
-//	//	case Protocol::Input::MOVE_BACK:
-//	//	case Protocol::Input::MOVE_LEFT:
-//	//	case Protocol::Input::MOVE_RIGHT: {
-//	//		if (auto mvComp = obj->GetComponent<MovementComponent>()) {
-//	//			mvComp->~Movemen
-//
-//	//		}
-//	//		break;
-//	//	}
-//
-//	//	}
-//	//}
-//}

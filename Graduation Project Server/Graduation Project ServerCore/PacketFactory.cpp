@@ -25,7 +25,7 @@ std::vector<char> PacketFactory::CSLoginPacket()
 	return out;
 }
 
-std::vector<char> PacketFactory::CSMovePacket(const Protocol::Vec3& pos)
+std::vector<char> PacketFactory::CSMovePacket(int id, const Protocol::Vec3& pos)
 {
 	Protocol::CS_INPUT_PACKET input;
 
@@ -44,9 +44,7 @@ std::vector<char> PacketFactory::CSMovePacket(const Protocol::Vec3& pos)
 
 	Protocol::GamePacket game;
 	game.mutable_header()->set_type(Protocol::PacketType::CS_INPUT);
-
-	// TEMP : 나중에 Client에서 제대로 된 자신의 ID Setting
-	game.mutable_header()->set_sessionid(1);
+	game.mutable_header()->set_sessionid(id);
 	game.set_body(body);
 
 	std::string gameString;
@@ -148,6 +146,33 @@ std::vector<char> PacketFactory::SCRemovePacket(int id)
 
 	Protocol::GamePacket game;
 	game.mutable_header()->set_type(Protocol::PacketType::SC_REMOVE);
+	game.mutable_header()->set_sessionid(id);
+	game.set_body(body);
+
+	std::string gameString;
+	game.SerializeToString(&gameString);
+
+	const uint16_t payloadSize = static_cast<uint16_t>(gameString.size());
+
+	std::vector<char> out(sizeof(payloadSize) + payloadSize);
+	memcpy(out.data(), &payloadSize, sizeof(payloadSize));
+	memcpy(out.data() + sizeof(payloadSize), gameString.data(), gameString.size());
+
+	return out;
+}
+
+std::vector<char> PacketFactory::SCAttackPacket(int id, const Protocol::Vec3& dir)
+{
+	Protocol::SC_ATTACK_PACKET attack;
+	attack.mutable_dir()->set_x(dir.x());
+	attack.mutable_dir()->set_y(dir.y());
+	attack.mutable_dir()->set_z(dir.z());
+
+	std::string body;
+	attack.SerializeToString(&body);
+
+	Protocol::GamePacket game;
+	game.mutable_header()->set_type(Protocol::PacketType::SC_ATTACK);
 	game.mutable_header()->set_sessionid(id);
 	game.set_body(body);
 

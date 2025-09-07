@@ -12,6 +12,8 @@
 #include "MainCharacter.h"
 #include "Engine.h"
 
+int myId{ -1 };
+
 void ServerTestScene::Release()
 {
 }
@@ -20,7 +22,6 @@ void ServerTestScene::Reset()
 {
     knight.reset();
     gameObjects.clear();
-    _myId = 0;
     Material::Cleanup();
     OutputDebugStringA("ServerTestScene Data has been deleted!! \n----------------------------------------\n");
 }
@@ -39,8 +40,8 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
         OutputDebugStringA("SC_LOGIN packet received\n");
         Protocol::SC_LOGIN_PACKET login;
         if (login.ParseFromArray(packet.body().data(), packet.body().size())) {
-            _myId = packet.header().sessionid();
-            OutputDebugStringA(("My Session ID: " + to_string(_myId) + "\n").c_str());
+            myId = packet.header().sessionid();
+            OutputDebugStringA(("My Session ID: " + to_string(myId) + "\n").c_str());
         }
         break;
     }
@@ -52,7 +53,7 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
             Protocol::Vec3 pos = add.pos();
 
             // 내 캐릭터만 처리
-            if (sessionId == _myId && knight) {
+            if (sessionId == myId && knight) {
                 if (auto transform = knight->GetComponent<Transform>()) {
                     transform->SetPosition(pos.x(), pos.y(), pos.z());
                 }
@@ -62,7 +63,7 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
                 OutputDebugStringA("My character positioned!\n");
             }
 
-            else if(sessionId != _myId and otherKnight) {
+            else if(sessionId != myId and otherKnight) {
                 if (auto transform = otherKnight->GetComponent<Transform>()) {
                     transform->SetPosition(pos.x(), pos.y(), pos.z());
                 }
@@ -78,13 +79,13 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
             int sessionId = packet.header().sessionid();
             Protocol::Vec3 pos = move.pos();
 
-            if (sessionId == _myId && knight) {
+            if (sessionId == myId && knight) {
                 if (auto transform = knight->GetComponent<Transform>()) {
                     transform->SetPosition(pos.x(), pos.y(), pos.z());
                 }
             }
 
-            else if (sessionId != _myId and otherKnight) {
+            else if (sessionId != myId and otherKnight) {
                 if (auto transform = otherKnight->GetComponent<Transform>()) {
                     transform->SetPosition(pos.x(), pos.y(), pos.z());
                 }
