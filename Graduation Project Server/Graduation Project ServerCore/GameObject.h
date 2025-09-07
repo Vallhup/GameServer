@@ -72,6 +72,10 @@ protected:
 	int _id;
 	Instance* _instance;
 
+	// 나중에 Character Type 구분 위한 처리 필요
+	// Enum or 전용 Component
+	// Enum 값으로 생각중
+
 	std::vector<std::unique_ptr<IComponent>> _components;
 	std::unordered_map<std::type_index, IComponent*> _types;
 };

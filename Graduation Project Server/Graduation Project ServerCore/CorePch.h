@@ -70,8 +70,6 @@
 #include "CollisionComponent.h"
 
 #include "GameObject.h"
-#include "Character.h"
-#include "Monster.h"
 
 #include "GameWorld.h"
 #include "GameLogic.h"

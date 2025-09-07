@@ -49,6 +49,9 @@
     <Filter Include="Protocol\pb.%2a">
       <UniqueIdentifier>{c4dc58f6-e8ca-465c-9247-a0c23eb590cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\GamePlay">
+      <UniqueIdentifier>{3bee27bd-7d67-4224-9e38-45dbcdcb931e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -84,9 +87,6 @@
     <ClCompile Include="GameLogic.cpp">
       <Filter>Game\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionShape.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="ObjectManager.cpp">
       <Filter>Game\Manager</Filter>
     </ClCompile>
@@ -94,12 +94,6 @@
       <Filter>Game\Manager</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>Game\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>Game\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Monster.cpp">
       <Filter>Game\Object</Filter>
     </ClCompile>
     <ClCompile Include="UserRepository.cpp">
@@ -159,9 +153,6 @@
     <ClCompile Include="NormalBehavior.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
-    <ClCompile Include="Event.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="Protocols\Enum.pb.cc">
       <Filter>Protocol\pb.%2a</Filter>
     </ClCompile>
@@ -180,8 +171,18 @@
     <ClCompile Include="ActionComponent.cpp">
       <Filter>Game\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Action.cpp" />
-    <ClCompile Include="CollisionComponent.cpp" />
+    <ClCompile Include="Event.cpp">
+      <Filter>Game\GamePlay</Filter>
+    </ClCompile>
+    <ClCompile Include="Action.cpp">
+      <Filter>Game\GamePlay</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionComponent.cpp">
+      <Filter>Game\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionShape.cpp">
+      <Filter>Game\GamePlay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -220,9 +221,6 @@
     <ClInclude Include="vec3.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionShape.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="Service.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -233,12 +231,6 @@
       <Filter>Game\Manager</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Game\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>Game\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Monster.h">
       <Filter>Game\Object</Filter>
     </ClInclude>
     <ClInclude Include="UserRepository.h">
@@ -298,9 +290,6 @@
     <ClInclude Include="NormalBehavior.h">
       <Filter>Game\AI</Filter>
     </ClInclude>
-    <ClInclude Include="Event.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="Protocols\Enum.pb.h">
       <Filter>Protocol\pb.%2a</Filter>
     </ClInclude>
@@ -319,8 +308,18 @@
     <ClInclude Include="ActionComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Action.h" />
-    <ClInclude Include="CollisionComponent.h" />
+    <ClInclude Include="Event.h">
+      <Filter>Game\GamePlay</Filter>
+    </ClInclude>
+    <ClInclude Include="Action.h">
+      <Filter>Game\GamePlay</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionShape.h">
+      <Filter>Game\GamePlay</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionComponent.h">
+      <Filter>Game\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="protos\Struct.proto">
