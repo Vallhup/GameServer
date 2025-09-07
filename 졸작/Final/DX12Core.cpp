@@ -420,43 +420,64 @@ void DX12Core::SetupLightng()
 	static bool lightsInitialized = false;
 	static LightConstants lightData = {};
 	if (!lightsInitialized) {
-		lightData.lightCount = 30;
+		lightData.lightCount = 25;
 
 		// 기존 directional light 유지
 		lightData.lights[0] = {
 			{0, 0, -1}, 0,               // direction
-			{1, 1, 1}, 0.1f,             // color, intensity
+			{1, 1, 1}, 0.2f,             // color, intensity
 			0,                           // type: directional
 			{0, 0, 0}                    // padding
 		};
 		lightData.lights[1] = {
 			{0, 0, 1}, 0,               // direction
-			{1, 1, 1}, 0.1f,             // color, intensity
+			{1, 1, 1}, 0.25f,             // color, intensity
+			0,                           // type: directional
+			{0, 0, 0}                    // padding
+		};
+
+		lightData.lights[2] = {
+			{-27.f, 29.f, -70.0f}, 2000.0f,                // direction
+			{0.074, 0, 1}, 0.15f,        // color, intensity
+			1,                           // type: directional
+			{0, 0, 0}                    // padding
+		};
+
+		lightData.lights[3] = {
+			{27.f, 29.f, -70.0f}, 2000.0f,                // direction
+			{0.074, 0, 1}, 0.15f,        // color, intensity
+			1,                           // type: directional
+			{0, 0, 0}                    // padding
+		};
+
+		lightData.lights[4] = {
+			{0, 0, -1}, 0,                // direction
+			{1, 1, 1}, 0.2f,        // color, intensity
 			0,                           // type: directional
 			{0, 0, 0}                    // padding
 		};
 
 		// Point lights 48개 - 두 줄로 24개씩 배치
-		float spacing = 4.0f;
-		float height = 12.0f;           // 높이 2.5
+		float spacing = 15.0f;
+		float height = 4.0;           // 높이 2.5
 		float leftX = -7.0f;           // 왼쪽 줄 X 위치
 		float rightX = 7.0f;           // 오른쪽 줄 X 위치
 
-		for (int i = 2; i < 30; ++i) {
-			int lightIndex = i - 2;   // 0~47 인덱스
-			int rowIndex = lightIndex % 15;  // 0~23 (각 줄의 인덱스)
-			bool isLeftRow = (lightIndex < 15);  // 첫 24개는 왼쪽 줄
+		for (int i = 5; i < 25; ++i) {
+			int lightIndex = i - 5;   // 0~47 인덱스
+			int rowIndex = lightIndex % 10;  // 0~23 (각 줄의 인덱스)
+			bool isLeftRow = (lightIndex < 10);  // 첫 24개는 왼쪽 줄
 
 			float x = isLeftRow ? leftX : rightX;
 			float z = -(rowIndex * spacing);  // 0, -2, -4, -6, ... -46
 
 			// 색상: 왼쪽 줄은 파란색, 오른쪽 줄은 빨간색
 			XMFLOAT3 color = isLeftRow ?
-				XMFLOAT3{ 0.0f, 1.0f, 1.0f } :  // 파란색 (왼쪽 줄)
-				XMFLOAT3{ 1.0f, 0.0f, 1.0f };   // 빨간색 (오른쪽 줄)
+				XMFLOAT3{ 1.0f, 0.25f, 0.0f } :  // 파란색 (왼쪽 줄)
+				XMFLOAT3{ 1.0f, 0.25f, 0.0f };   // 빨간색 (오른쪽 줄)
 
 			lightData.lights[i] = {
-				{x, height, z}, 20.0f,    // position, range
+				{x, height, z + 70.0f}, 10.0f,    // position, range
 				color, 1.0f,             // color, intensity
 				1,                       // type: point light
 				{0, 0, 0}               // padding

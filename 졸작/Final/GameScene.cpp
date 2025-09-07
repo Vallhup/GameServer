@@ -110,7 +110,7 @@ void GameScene::InitializeLogic()
 		auto transform = fireWorkEffect->AddComponent<Transform>();
 
 		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/CandleFire2.efk");
+		effectRenderer->LoadEffect(u"../Effects/CandleFire4.efk");
 		transform->SetPosition(27.f, 29.f, -70.0f);
 
 		AddGameObject(fireWorkEffect);
@@ -122,7 +122,7 @@ void GameScene::InitializeLogic()
 		auto transform = fireWorkEffect2->AddComponent<Transform>();
 
 		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/CandleFire2.efk");
+		effectRenderer->LoadEffect(u"../Effects/CandleFire4.efk");
 		transform->SetPosition(-27.f, 29.f, -70.0f);
 
 		AddGameObject(fireWorkEffect2);
