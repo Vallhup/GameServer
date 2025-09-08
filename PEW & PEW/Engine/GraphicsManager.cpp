@@ -11,6 +11,7 @@
 #include "AlienCharacter.h"
 #include "SceneManager.h"
 #include "Fade.h"
+#include "EffectManager.h"
 
 void GraphicsManager::Init()
 {
@@ -21,6 +22,11 @@ void GraphicsManager::Init()
 	shadowMap = new ShadowMapping();
 	fade = new Fade();
 	fade->Init();
+
+	effect = new EffectManager();
+	effect->Init();
+
+	effect->PlayEffect("CandleFire", glm::vec3{ -35.0322f, 2.0f, 44.6548f });
 
 	glm::vec3 localPos = glm::vec3(-37.3051f, 0.0f, 42.5001f);
 	AddCharacter(0, localPos, 0, true, 0.1f);
@@ -51,6 +57,8 @@ void GraphicsManager::Update(SceneType type, SoundManager& soundmanager, const f
 			character->Update(deltaTime);
 		}
 	}
+
+	effect->Update(deltaTime);
 
 	UpdateLightAngle(deltaTime);
 }
@@ -105,6 +113,10 @@ void GraphicsManager::Render(SceneType type, SoundManager& soundmanager)
 	}
 
 	camera->Render();
+
+	glm::vec3 cameraFront = camera->GetFrontVector(localChar->GetPosition());
+	glm::vec3 cameraTarget = viewPos + cameraFront;
+	effect->Render(viewPos, cameraTarget);
 
 	RenderFade(projection, view, viewPos);
 
@@ -208,6 +220,9 @@ void GraphicsManager::Release()
 
 	fade->Release();
 	delete fade;
+
+	effect->Release();
+	delete effect;
 }
 
 void GraphicsManager::ReleaseScene1()

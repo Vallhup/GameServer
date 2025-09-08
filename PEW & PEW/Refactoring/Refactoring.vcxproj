@@ -152,8 +152,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;Engine.lib;assimp-vc143-mtd.lib;glew32.lib;glfw3.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Engine\External\lib\x64;$(SolutionDir)Output;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;Engine.lib;assimp-vc143-mtd.lib;glew32.lib;glfw3.lib;fmod_vc.lib;Effekseer.lib;EffekseerRendererGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Engine\External\lib\x64;$(SolutionDir)Output;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\lib\x64;C:\EffekseerForCpp170e\out\build\x64-Debug\src\Effekseer;C:\EffekseerForCpp170e\out\build\x64-Debug\src\EffekseerRendererGL</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -174,8 +174,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;Engine.lib;assimp-vc143-mt.lib;glew32.lib;glfw3.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Engine\External\lib\x64;$(SolutionDir)Output;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;Engine.lib;assimp-vc143-mt.lib;glew32.lib;glfw3.lib;fmod_vc.lib;Effekseer.lib;EffekseerRendererGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Engine\External\lib\x64;$(SolutionDir)Output;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\lib\x64;C:\EffekseerForCpp170e\out\build\x64-Release\src\Effekseer;C:\EffekseerForCpp170e\out\build\x64-Release\src\EffekseerRendererGL</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

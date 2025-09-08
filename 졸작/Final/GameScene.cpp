@@ -93,6 +93,54 @@ void GameScene::InitializeLogic()
 	}
 
 	{
+		effectSample = make_shared<GameObject>();
+		auto effectRenderer = effectSample->AddComponent<EffectRenderer>();
+		auto transform = effectSample->AddComponent<Transform>();
+
+		effectRenderer->Initialize(*coreRef);
+		effectRenderer->LoadEffect(u"../Effects/Fireworks.efk");
+		transform->SetPosition(1.f, 0.f, -10.5f);
+
+		AddGameObject(effectSample);
+	}
+
+	{
+		effectSample2 = make_shared<GameObject>();
+		auto effectRenderer = effectSample2->AddComponent<EffectRenderer>();
+		auto transform = effectSample2->AddComponent<Transform>();
+
+		effectRenderer->Initialize(*coreRef);
+		effectRenderer->LoadEffect(u"../Effects/BloodLance.efk");
+		transform->SetPosition(1.f, 0.f, 0.5f);
+
+		AddGameObject(effectSample2);
+	}
+
+	{
+		effectSample3 = make_shared<GameObject>();
+		auto effectRenderer = effectSample3->AddComponent<EffectRenderer>();
+		auto transform = effectSample3->AddComponent<Transform>();
+
+		effectRenderer->Initialize(*coreRef);
+		effectRenderer->LoadEffect(u"../Effects/Aura01_HDR.efk");
+		transform->SetPosition(1.f, 0.f, 0.5f);
+
+		AddGameObject(effectSample3);
+	}
+
+	{
+		effectSample4 = make_shared<GameObject>();
+		auto effectRenderer = effectSample4->AddComponent<EffectRenderer>();
+		auto transform = effectSample4->AddComponent<Transform>();
+
+		effectRenderer->Initialize(*coreRef);
+		effectRenderer->LoadEffect(u"../Effects/Benediction.efk");
+		transform->SetPosition(1.f, 10.f, -10.5f);
+
+		AddGameObject(effectSample4);
+	}
+
+	{
 		flameEffect = make_shared<GameObject>();
 		auto effectRenderer = flameEffect->AddComponent<EffectRenderer>();
 		auto transform = flameEffect->AddComponent<Transform>();
@@ -191,6 +239,30 @@ void GameScene::UpdateScene(const float deltaTime)
 	//		}
 	//	}
 	//}
+
+	if (effectSample) {
+		auto effectRenderer = effectSample->GetComponent<EffectRenderer>();
+		if (GET(Input).GetKeyDown('1'))
+			effectRenderer->PlayEffect();
+	}
+
+	if (effectSample2) {
+		auto effectRenderer = effectSample2->GetComponent<EffectRenderer>();
+		if (GET(Input).GetKeyDown('2'))
+			effectRenderer->PlayEffect();
+	}
+
+	if (effectSample3) {
+		auto effectRenderer = effectSample3->GetComponent<EffectRenderer>();
+		if (GET(Input).GetKeyDown('3'))
+			effectRenderer->PlayEffect();
+	}
+
+	if (effectSample4) {
+		auto effectRenderer = effectSample4->GetComponent<EffectRenderer>();
+		if (GET(Input).GetKeyDown('4'))
+			effectRenderer->PlayEffect();
+	}
 
 	if (flameEffect) {
 		auto effectRenderer = flameEffect->GetComponent<EffectRenderer>();

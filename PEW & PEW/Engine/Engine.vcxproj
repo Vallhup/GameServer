@@ -129,7 +129,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine\External\include;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\inc;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\External\include;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\inc;$(ProjectDir);C:\EffekseerForCpp170e\src\Effekseer;C:\EffekseerForCpp170e\src\EffekseerRendererCommon;C:\EffekseerForCpp170e\src\EffekseerRendererGL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -148,7 +148,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Engine\External\include;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\inc;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Engine\External\include;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\inc;$(ProjectDir);C:\EffekseerForCpp170e\src\Effekseer;C:\EffekseerForCpp170e\src\EffekseerRendererCommon;C:\EffekseerForCpp170e\src\EffekseerRendererGL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -162,6 +162,7 @@
     <ClInclude Include="AlienCharacter.h" />
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="EffectManager.h" />
     <ClInclude Include="Fade.h" />
     <ClInclude Include="MainCharacter.h" />
     <ClInclude Include="CrossHair.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="AlienCharacter.cpp" />
     <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="MainCharacter.cpp" />
     <ClCompile Include="CrossHair.cpp" />
