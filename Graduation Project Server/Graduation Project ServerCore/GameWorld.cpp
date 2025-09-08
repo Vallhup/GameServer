@@ -56,6 +56,6 @@ void GameWorld::Update(float deltaTime)
 	std::unique_lock lock{ _mutex };
 
 	for (auto& [id, instance] : _instances) {
-		instance->Update(deltaTime);
+		_gameCtx.GetJobQueue().Push(std::make_shared<LogicJob>(instance.get(), deltaTime));
 	}
 }

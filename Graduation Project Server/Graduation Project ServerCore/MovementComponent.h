@@ -11,7 +11,7 @@ public:
 	MovementComponent(GameObject& owner, Instance* instance);
 	virtual ~MovementComponent() = default;
 
-	virtual void Update(float deltaTime) override;
+	virtual void LogicUpdate(float deltaTime) override;
 
 public:
 	void SetMovePayload(const Protocol::InputPayload& payload);

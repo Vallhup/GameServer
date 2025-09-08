@@ -10,7 +10,8 @@ public:
 	IComponent(GameObject& owner, Instance* instance);
 	virtual ~IComponent() = default;
 
-	virtual void Update(float deltaTime) {};
+	virtual void LogicUpdate(float deltaTime) {};
+	virtual void NetworkUpdate() {};
 
 public:
 	uint64_t Version() const { return _version.load(); }

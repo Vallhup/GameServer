@@ -8,6 +8,9 @@ public:
 	virtual ~TransformComponent() = default;
 
 public:
+	virtual void NetworkUpdate() override;
+
+public:
 	const vec3& GetPosition() const { return _pos; }
 
 	void SetPosition(const vec3& pos) { _pos = pos; ++_version; }

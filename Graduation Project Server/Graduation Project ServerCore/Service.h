@@ -12,6 +12,7 @@ public:
 	virtual class ISessionManager& GetSessionManager() = 0;
 	virtual class IGameWorld& GetGameWorld() = 0;
 	virtual class IocpCore& GetIocpCore() = 0;
+	virtual class JobQueue& GetJobQueue() = 0;
 
 	// 3. 시간 정보
 	virtual float GetNowTime() = 0;
@@ -41,23 +42,30 @@ public:
 	virtual ISessionManager& GetSessionManager() override { return *_sessMng; }
 	virtual IGameWorld& GetGameWorld() override { return *_gameWorld; }
 	virtual IocpCore& GetIocpCore() override { return *_iocpCore; }
+	virtual JobQueue& GetJobQueue() override { return _jobQueue; };
 
 	virtual float GetNowTime() override;
 
 	virtual class ScriptVM& GetScriptVM() override { return *_scriptVM; }
 
 private:
-	std::atomic<bool> _running{ false };
+	void TickFunc();
+	void IocpFunc();
+	void LogicFunc();
 
-	std::vector<std::thread> _workers;
+private:
+	std::atomic<bool> _running;
+
+	std::thread _tickThread;
+	ThreadPool _iocpWorker;
+	ThreadPool _logicWorker;
+
+	JobQueue _jobQueue;
 
 	std::shared_ptr<Listener> _listener;
 	std::unique_ptr<IocpCore> _iocpCore;
-
 	std::unique_ptr<ISessionManager> _sessMng;
 	std::unique_ptr<IGameWorld> _gameWorld;
-
-	std::thread _logicThread;
 
 	inline static thread_local std::unique_ptr<class ScriptVM> _scriptVM{ nullptr };
 };

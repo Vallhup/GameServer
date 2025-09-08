@@ -62,7 +62,8 @@ public:
 		return nullptr;
 	}
 
-	void Update(float deltaTime);
+	void LogicUpdate(float deltaTime);
+	void NetworkUpdate();
 
 public:
 	int GetId() const { return _id; }

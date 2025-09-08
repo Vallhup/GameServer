@@ -8,9 +8,6 @@ public:
 	virtual ~CollisionComponent() = default;
 
 public:
-	virtual void Update(float deltaTime) override;
-
-public:
 	void Activate(CollisionType type);
 	void Deactivate(CollisionType type);
 

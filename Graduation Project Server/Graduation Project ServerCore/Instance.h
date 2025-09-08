@@ -49,7 +49,6 @@ protected:
 	IGameContext& _gameCtx;;
 
 	std::unique_ptr<class IGameLogic> _gameLogic;
-	std::unique_ptr<class IEventManager> _eventMng;
 	std::unique_ptr<class IObjectManager> _objMng;
 
 	mutable std::shared_mutex _mutex;

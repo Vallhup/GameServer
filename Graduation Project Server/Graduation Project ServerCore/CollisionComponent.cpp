@@ -1,13 +1,6 @@
 #include "pch.h"
 #include "CollisionComponent.h"
 
-void CollisionComponent::Update(float deltaTime)
-{
-	for (const auto& shape : _shapes) {
-		//shape->CheckCollision()
-	}
-}
-
 void CollisionComponent::Activate(CollisionType type)
 {
 	for (auto& shape : _shapes) {

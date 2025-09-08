@@ -12,7 +12,7 @@ public:
 	virtual ~InputComponent() = default;
 
 public:
-	virtual void Update(float deltaTime) override;
+	virtual void LogicUpdate(float deltaTime) override;
 	void Enqueue(Protocol::CS_INPUT_PACKET& data);
 
 private:

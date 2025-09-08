@@ -7,9 +7,16 @@ GameObject::~GameObject()
 	_types.clear();
 }
 
-void GameObject::Update(float deltaTime)
+void GameObject::LogicUpdate(float deltaTime)
 {
 	for (auto& comp : _components) {
-		comp->Update(deltaTime);
+		comp->LogicUpdate(deltaTime);
+	}
+}
+
+void GameObject::NetworkUpdate()
+{
+	for (auto& comp : _components) {
+		comp->NetworkUpdate();
 	}
 }

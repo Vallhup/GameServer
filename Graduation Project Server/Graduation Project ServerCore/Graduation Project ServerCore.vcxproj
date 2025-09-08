@@ -177,7 +177,6 @@
     <ClInclude Include="CompositeNode.h" />
     <ClInclude Include="CorePch.h" />
     <ClInclude Include="DecoratorNode.h" />
-    <ClInclude Include="Event.h" />
     <ClInclude Include="ExpOver.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameObject.h" />
@@ -187,6 +186,8 @@
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="IocpCore.h" />
+    <ClInclude Include="Job.h" />
+    <ClInclude Include="JobQueue.h" />
     <ClInclude Include="LeafNode.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="Logger.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="Protocols\Protocol.pb.h" />
     <ClInclude Include="Protocols\Struct.pb.h" />
     <ClInclude Include="TestInstance.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="vec3.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="NormalBehavior.h" />
@@ -208,7 +210,6 @@
     <ClInclude Include="Service.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="SessionManager.h" />
-    <ClInclude Include="EventManager.h" />
     <ClInclude Include="TownInstance.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="UserRepository.h" />
@@ -224,7 +225,6 @@
     <ClCompile Include="CompositeNode.cpp" />
     <ClCompile Include="CorePch.cpp" />
     <ClCompile Include="DecoratorNode.cpp" />
-    <ClCompile Include="Event.cpp" />
     <ClCompile Include="ExpOver.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -234,6 +234,8 @@
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="Instance.cpp" />
     <ClCompile Include="IocpCore.cpp" />
+    <ClCompile Include="Job.cpp" />
+    <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="LeafNode.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="Logger.cpp" />
@@ -272,8 +274,8 @@
     <ClCompile Include="Service.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="SessionManager.cpp" />
-    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="TestInstance.cpp" />
+    <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="TownInstance.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="UserRepository.cpp" />

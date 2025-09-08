@@ -42,47 +42,10 @@ bool Service::Start()
 		}
 
 		const unsigned int threadCount = std::thread::hardware_concurrency();
-		_workers.reserve(threadCount);
 
-		for (unsigned int i = 0; i < threadCount; ++i) {
-			_workers.emplace_back([this]()
-				{
-					if (not _scriptVM) {
-						_scriptVM = std::make_unique<ScriptVM>(/* Script Load °æ·Î */);
-					}
-
-					while (_running.load()) {
-						if (not _iocpCore->Dispatch()) {
-							int error = WSAGetLastError();
-
-							if (_running.load()) {
-								if (error == WSAECONNRESET || error == WSAENOTCONN || error == ERROR_NETNAME_DELETED || error == WSA_OPERATION_ABORTED) {
-									LOG_WRN("IOCP Dispatch expected error: %d", error);
-								}
-								else {
-									LOG_ERR("IOCP Dispatch critical error: %d", error);
-								}
-							}
-
-							break;
-						}
-					}
-				});
-		}
-
-		_logicThread = std::thread([this]()
-			{
-				using namespace std::chrono;
-
-				auto prev = high_resolution_clock::now();
-				while (_running.load()) {
-					auto now = high_resolution_clock::now();
-					float deltaTime = duration<float>(now - prev).count();
-					prev = now;
-
-					_gameWorld->Update(deltaTime);
-				}
-			});
+		_tickThread = std::thread([this]() { TickFunc(); });
+		_iocpWorker.Start(2, [this]() { IocpFunc();});
+		_logicWorker.Start(threadCount - 3, [this]() { LogicFunc();});
 
 		return true;
 	}
@@ -96,14 +59,8 @@ void Service::Stop()
 	if (_running.compare_exchange_strong(expected, false)) {
 		_listener->Stop();
 
-		for (size_t i = 0; i < _workers.size(); ++i) {
+		for (size_t i = 0; i < 2; ++i) {
 			PostQueuedCompletionStatus(_iocpCore->GetHandle(), 0, 0, nullptr);
-		}
-
-		for (std::thread& worker : _workers) {
-			if (worker.joinable()) {
-				worker.join();
-			}
 		}
 
 		WSACleanup();
@@ -121,4 +78,51 @@ float Service::GetNowTime()
 	static const auto start = high_resolution_clock::now();
 	auto now = high_resolution_clock::now();
 	return duration<float>(now - start).count();
+}
+
+void Service::TickFunc()
+{
+	using namespace std::chrono;
+
+	auto prev = high_resolution_clock::now();
+	while (_running.load()) {
+		auto now = high_resolution_clock::now();
+		float deltaTime = duration<float>(now - prev).count();
+		prev = now;
+
+		_gameWorld->Update(deltaTime);
+
+		// TEMP : 60Hz
+		std::this_thread::sleep_for(16ms);
+	}
+}
+
+void Service::IocpFunc()
+{
+	while (_running.load()) {
+		if (not _iocpCore->Dispatch()) {
+			int error = WSAGetLastError();
+
+			if (_running.load()) {
+				if (error == WSAECONNRESET || error == WSAENOTCONN || error == ERROR_NETNAME_DELETED || error == WSA_OPERATION_ABORTED) {
+					LOG_WRN("IOCP Dispatch expected error: %d", error);
+				}
+				else {
+					LOG_ERR("IOCP Dispatch critical error: %d", error);
+				}
+			}
+
+			break;
+		}
+	}
+}
+
+void Service::LogicFunc()
+{
+	while (_running.load()) {
+		std::shared_ptr<Job> job;
+		if (_jobQueue.TryPop(job)) {
+			job->Execute();
+		}
+	}
 }

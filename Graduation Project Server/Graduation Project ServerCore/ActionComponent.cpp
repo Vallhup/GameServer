@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ActionComponent.h"
 
-void ActionComponent::Update(float deltaTime)
+void ActionComponent::LogicUpdate(float deltaTime)
 {
 	if (_currentAction) {
 		_currentAction->Update(deltaTime);

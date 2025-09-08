@@ -5,21 +5,13 @@ Instance::Instance(int id, InstanceType type, IGameContext& gameCtx)
 	: _id(id), _type(type), _gameCtx(gameCtx) 
 {
 	_objMng = std::make_unique<ObjectManager>();
-	_eventMng = std::make_unique<EventManager>();
-	_gameLogic = std::make_unique<GameLogic>(this, _eventMng.get());
+	_gameLogic = std::make_unique<GameLogic>(this);
 }
 
 void Instance::Update(float deltaTime)
 {
 	_gameLogic->LogicUpdate(deltaTime);
-
-	static float networkAcc{ 0.0f };
-	networkAcc = networkAcc + deltaTime;
-	
-	if (networkAcc >= (1.0f / 60.0f)) {
-		_gameLogic->NetworkUpdate();
-		networkAcc = 0.0f;
-	}
+	_gameLogic->NetworkUpdate();
 }
 
 void Instance::AddPlayer(Session* session)

@@ -7,7 +7,7 @@ public:
 	virtual ~LeafNode() = default;
 
 public:
-	virtual NodeStatus OnEvent(EventManager& eventMng) = 0;
+	virtual NodeStatus OnEvent() = 0;
 	virtual void Reset() = 0;
 };
 
@@ -20,7 +20,7 @@ public:
 	virtual ~ActionNode() = default;
 
 public:
-	virtual NodeStatus OnEvent(EventManager& eventMng) override;
+	virtual NodeStatus OnEvent() override;
 	virtual void Reset() override;
 
 private:
@@ -39,7 +39,7 @@ public:
 	virtual ~ConditionNode() = default;
 
 public:
-	virtual NodeStatus OnEvent(EventManager&) override;
+	virtual NodeStatus OnEvent() override;
 	virtual void Reset() override {}
 
 private:

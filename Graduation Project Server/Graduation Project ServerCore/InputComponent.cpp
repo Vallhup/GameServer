@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "InputComponent.h"
 
-void InputComponent::Update(float deltaTime)
+void InputComponent::LogicUpdate(float deltaTime)
 {
 	while (not _inputQueue.empty()) {
 		Protocol::CS_INPUT_PACKET packet = _inputQueue.front();

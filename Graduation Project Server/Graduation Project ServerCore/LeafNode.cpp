@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "LeafNode.h"
 
-NodeStatus ActionNode::OnEvent(EventManager& eventMng)
+NodeStatus ActionNode::OnEvent()
 {
 	using namespace std::chrono;
 
-	if (not _future.valid()) {
+	/*if (not _future.valid()) {
 		auto promise = std::make_shared<std::promise<NodeStatus>>();
 		_future = promise->get_future();
 
@@ -15,7 +15,7 @@ NodeStatus ActionNode::OnEvent(EventManager& eventMng)
 
 		eventMng.Push(ev);
 		return NodeStatus::Running;
-	}
+	}*/
 
 	if (_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
 		return _future.get();
@@ -58,7 +58,7 @@ void ActionNode::Reset()
 	_future = std::future<NodeStatus>();
 }
 
-NodeStatus ConditionNode::OnEvent(EventManager&)
+NodeStatus ConditionNode::OnEvent()
 {
 	return _condition() ? NodeStatus::Success : NodeStatus::Failure;
 }

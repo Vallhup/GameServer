@@ -129,9 +129,6 @@
     <ClCompile Include="AIComponent.cpp">
       <Filter>Game\Component</Filter>
     </ClCompile>
-    <ClCompile Include="EventManager.cpp">
-      <Filter>Game\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="IAiBehavior.cpp">
       <Filter>Game\AI</Filter>
     </ClCompile>
@@ -171,9 +168,6 @@
     <ClCompile Include="ActionComponent.cpp">
       <Filter>Game\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Event.cpp">
-      <Filter>Game\GamePlay</Filter>
-    </ClCompile>
     <ClCompile Include="Action.cpp">
       <Filter>Game\GamePlay</Filter>
     </ClCompile>
@@ -183,6 +177,11 @@
     <ClCompile Include="CollisionShape.cpp">
       <Filter>Game\GamePlay</Filter>
     </ClCompile>
+    <ClCompile Include="JobQueue.cpp" />
+    <ClCompile Include="Job.cpp">
+      <Filter>Game\GamePlay</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -266,9 +265,6 @@
     <ClInclude Include="AIComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
-    <ClInclude Include="EventManager.h">
-      <Filter>Game\Manager</Filter>
-    </ClInclude>
     <ClInclude Include="IAiBehavior.h">
       <Filter>Game\AI</Filter>
     </ClInclude>
@@ -308,9 +304,6 @@
     <ClInclude Include="ActionComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Event.h">
-      <Filter>Game\GamePlay</Filter>
-    </ClInclude>
     <ClInclude Include="Action.h">
       <Filter>Game\GamePlay</Filter>
     </ClInclude>
@@ -320,6 +313,11 @@
     <ClInclude Include="CollisionComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
+    <ClInclude Include="JobQueue.h" />
+    <ClInclude Include="Job.h">
+      <Filter>Game\GamePlay</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="protos\Struct.proto">

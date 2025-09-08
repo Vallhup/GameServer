@@ -8,7 +8,7 @@ MovementComponent::MovementComponent(GameObject& owner, Instance* instance)
 	_isRun = false;
 }
 
-void MovementComponent::Update(float deltaTime)
+void MovementComponent::LogicUpdate(float deltaTime)
 {
 	if (_velocity == vec3{ 0.0f, 0.0f, 0.0f }) {
 		return;
