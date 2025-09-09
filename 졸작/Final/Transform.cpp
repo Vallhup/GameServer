@@ -22,6 +22,12 @@ void Transform::SetPosition(const XMFLOAT3& pos)
 	targetPos = pos;
 }
 
+void Transform::SetInitPosition(float x, float y, float z)
+{
+	position = { x, y, z };
+	targetPos = { x, y, z };
+}
+
 void Transform::SetRotation(float x, float y, float z)
 {
 	rotation = { x, y, z };

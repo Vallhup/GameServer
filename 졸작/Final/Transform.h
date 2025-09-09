@@ -9,6 +9,8 @@ public:
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3& pos);
 
+	void SetInitPosition(float x, float y, float z);
+
 	void SetRotation(float x, float y, float z);
 	void SetRotation(const XMFLOAT3& rot);
 

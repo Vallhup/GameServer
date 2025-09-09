@@ -23,5 +23,5 @@ protected:
 	void RequestSceneChange() override;
 
 private:
-
+	shared_ptr<MainCharacter> knight;
 };

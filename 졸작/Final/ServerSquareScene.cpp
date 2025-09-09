@@ -5,11 +5,16 @@
 #include "SceneManager.h"
 #include "Material.h"
 #include "Camera.h"
+#include "MainCharacter.h"
+#include "MeshRenderer.h"
+#include "Transform.h"
+#include "Animator.h"
 
 ServerSquareScene::~ServerSquareScene() = default;
 
 void ServerSquareScene::Release()
 {
+	knight.reset();
 }
 
 void ServerSquareScene::Reset()
@@ -26,19 +31,55 @@ const float* ServerSquareScene::GetBackgroundColor()
 void ServerSquareScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nServerSquareScene Data has been created!! \n");
+
+	{
+		knight = make_shared<MainCharacter>();
+		auto meshrenderer = knight->AddComponent<MeshRenderer>();
+		auto transform = knight->AddComponent<Transform>();
+		auto animator = knight->AddComponent<Animator>();
+		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+		transform->SetInitPosition(0.f, 0.f, 0.f);
+		transform->SetRotation(-1.57f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+
+		coreRef->FlushCommandQueue();
+		coreRef->ResetCommandQueue();
+
+		meshrenderer->ReleaseUploadBuffers();
+
+		knight->SetCamera(cam.get());
+	}
 }
 
 void ServerSquareScene::UpdateScene(const float deltaTime)
 {
+	{
+		knight->Update(deltaTime);
+	}
 }
 
 void ServerSquareScene::RenderSceneDeferred()
 {
+	{
+		if (knight)
+		{
+			auto meshrenderer = knight->GetComponent<MeshRenderer>();
+			if (meshrenderer)
+				meshrenderer->RenderDeferred(*coreRef);
+		}
+	}
 }
 
 void ServerSquareScene::RenderSceneForward()
 {
-
+	{
+		if (knight)
+		{
+			auto meshrenderer = knight->GetComponent<MeshRenderer>();
+			if (meshrenderer)
+				meshrenderer->RenderForward(*coreRef);
+		}
+	}
 }
 
 void ServerSquareScene::RenderSceneEffects()

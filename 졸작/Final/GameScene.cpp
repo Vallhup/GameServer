@@ -63,7 +63,7 @@ void GameScene::InitializeLogic()
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-		transform->SetPosition(1.f, 0.f, 0.5f);
+		transform->SetInitPosition(1.f, 0.f, 0.5f);
 		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		knight->SetCamera(cam.get());
@@ -84,7 +84,7 @@ void GameScene::InitializeLogic()
 			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_" + to_wstring(i));
 		else
 			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_" + names[i - 20]);
-		transform->SetPosition(0.0f, 0.0f, 0.0f);
+		transform->SetInitPosition(0.0f, 0.0f, 0.0f);
 		transform->SetRotation(0.0f, 0.0f, 0.0f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		AddGameObject(map);
@@ -99,7 +99,7 @@ void GameScene::InitializeLogic()
 
 		effectRenderer->Initialize(*coreRef);
 		effectRenderer->LoadEffect(u"../Effects/Fireworks.efk");
-		transform->SetPosition(1.f, 0.f, -10.5f);
+		transform->SetInitPosition(1.f, 0.f, -10.5f);
 
 		AddGameObject(effectSample);
 	}
@@ -111,7 +111,7 @@ void GameScene::InitializeLogic()
 
 		effectRenderer->Initialize(*coreRef);
 		effectRenderer->LoadEffect(u"../Effects/BloodLance.efk");
-		transform->SetPosition(1.f, 0.f, 0.5f);
+		transform->SetInitPosition(1.f, 0.f, 0.5f);
 
 		AddGameObject(effectSample2);
 	}
@@ -123,7 +123,7 @@ void GameScene::InitializeLogic()
 
 		effectRenderer->Initialize(*coreRef);
 		effectRenderer->LoadEffect(u"../Effects/Aura01_HDR.efk");
-		transform->SetPosition(1.f, 0.f, 0.5f);
+		transform->SetInitPosition(1.f, 0.f, 0.5f);
 
 		AddGameObject(effectSample3);
 	}
@@ -135,7 +135,7 @@ void GameScene::InitializeLogic()
 
 		effectRenderer->Initialize(*coreRef);
 		effectRenderer->LoadEffect(u"../Effects/Benediction.efk");
-		transform->SetPosition(1.f, 10.f, -10.5f);
+		transform->SetInitPosition(1.f, 10.f, -10.5f);
 
 		AddGameObject(effectSample4);
 	}
@@ -147,7 +147,7 @@ void GameScene::InitializeLogic()
 
 		effectRenderer->Initialize(*coreRef);
 		effectRenderer->LoadEffect(u"../Effects/Atmosphere.efk");
-		transform->SetPosition(1.f, 10.f, -10.5f);
+		transform->SetInitPosition(1.f, 10.f, -10.5f);
 
 		AddGameObject(flameEffect);
 	}
@@ -159,7 +159,7 @@ void GameScene::InitializeLogic()
 
 		effectRenderer->Initialize(*coreRef);
 		effectRenderer->LoadEffect(u"../Effects/CandleFire4.efk");
-		transform->SetPosition(27.f, 29.f, -70.0f);
+		transform->SetInitPosition(27.f, 29.f, -70.0f);
 
 		AddGameObject(fireWorkEffect);
 	}
@@ -171,7 +171,7 @@ void GameScene::InitializeLogic()
 
 		effectRenderer->Initialize(*coreRef);
 		effectRenderer->LoadEffect(u"../Effects/CandleFire4.efk");
-		transform->SetPosition(-27.f, 29.f, -70.0f);
+		transform->SetInitPosition(-27.f, 29.f, -70.0f);
 
 		AddGameObject(fireWorkEffect2);
 	}
@@ -183,7 +183,7 @@ void GameScene::InitializeLogic()
 
 		effectRenderer->Initialize(*coreRef);
 		effectRenderer->LoadEffect(u"../Effects/CandleFire3.efk");
-		transform->SetPosition(7.2f, 3.25f, -4.2f);
+		transform->SetInitPosition(7.2f, 3.25f, -4.2f);
 
 		AddGameObject(fireWorkEffect3);
 	}
@@ -194,7 +194,7 @@ void GameScene::InitializeLogic()
 			auto meshRenderer = newKnight->AddComponent<MeshRenderer>();
 			auto transform = newKnight->AddComponent<Transform>();
 			meshRenderer->SetMesh(L"../FBXOutput/knight");
-			transform->SetPosition(i * 1.5f + 1.0f, 0.f, 0.5f);
+			transform->SetInitPosition(i * 1.5f + 1.0f, 0.f, 0.5f);
 			transform->SetRotation(0.f, 0.f, 0.f);
 			transform->SetScale(0.01f, 0.01f, 0.01f);
 			AddGameObject(newKnight);

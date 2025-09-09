@@ -10,6 +10,9 @@ void Scene::Initialize(DX12Core& core)
 {
     coreRef = &core;
 
+    if (cam)
+        cam.reset();
+
     cam = make_unique<Camera>();
     cam->Initialize();
 
@@ -28,7 +31,10 @@ void Scene::Initialize(DX12Core& core)
 void Scene::Update(const float deltaTime)
 {
     UpdateScene(deltaTime);
-    cam->Update(*coreRef, deltaTime);
+    
+    if (cam)
+        cam->Update(*coreRef, deltaTime);
+    
     RequestSceneChange();
 }
 
