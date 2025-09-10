@@ -14,7 +14,6 @@ public:
     void Render();
     void Shutdown();  
     void ShowFps();
-    void TestFBXImport();
 
     HWND GetHWND() const { return mHwnd; }
 

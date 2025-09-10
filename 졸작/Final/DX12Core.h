@@ -48,6 +48,7 @@ public:
 	void CreateDepthStencilBuffer(DXGI_FORMAT dsvformat = DXGI_FORMAT_D32_FLOAT);
 
 	void CreateGBuffer();
+	void CreateShadowMap();
 	void BeginForwardPass();
 	void BeginGBufferPass();
 	void EndGBufferPass();
@@ -115,4 +116,11 @@ private:
 	unique_ptr<UploadBuffer> sceneCB;
 	unique_ptr<UploadBuffer> deferredLightCB;
 	unique_ptr<UploadBuffer> forwardLightCB;
+
+	// Shadow Mapping resources
+	ComPtr<ID3D12Resource> shadowMapTexture;
+	ComPtr<ID3D12DescriptorHeap> shadowMapDSVHeap;
+	ComPtr<ID3D12DescriptorHeap> shadowMapSRVHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE shadowMapDSVHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE shadowMapSRVHandle;
 };

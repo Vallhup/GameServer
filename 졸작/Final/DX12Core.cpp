@@ -31,6 +31,7 @@ void DX12Core::Initialize(HWND hwnd)
 
 	CreateDepthStencilBuffer();
 	CreateGBuffer();
+	CreateShadowMap();
 }
 
 void DX12Core::CreateDevice()
@@ -326,6 +327,61 @@ void DX12Core::CreateGBuffer()
 	}
 
 	OutputDebugStringA("G-Buffer created successfully!\n");
+}
+
+void DX12Core::CreateShadowMap()
+{
+	D3D12_RESOURCE_DESC shadowDesc = {};
+	shadowDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	shadowDesc.Width = WinSize.x;
+	shadowDesc.Height = WinSize.y;
+	shadowDesc.DepthOrArraySize = 1;
+	shadowDesc.MipLevels = 1;
+	shadowDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	shadowDesc.SampleDesc.Count = 1;
+	shadowDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = DXGI_FORMAT_D32_FLOAT;
+	clearValue.DepthStencil.Depth = 1.0f;
+
+	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+	HRESULT hr = device->CreateCommittedResource(
+		&heapProps, D3D12_HEAP_FLAG_NONE, &shadowDesc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue,
+		IID_PPV_ARGS(&shadowMapTexture));
+	MASSERT(SUCCEEDED(hr), "Failed to create shadowMap Texture!!\n");
+
+	D3D12_DESCRIPTOR_HEAP_DESC shadowDSVDesc = {};
+	shadowDSVDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	shadowDSVDesc.NumDescriptors = 1;
+	shadowDSVDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	hr = device->CreateDescriptorHeap(&shadowDSVDesc, IID_PPV_ARGS(&shadowMapDSVHeap));
+	MASSERT(SUCCEEDED(hr), "Failed to create shadowMap DSV Heap!!\n");
+
+	D3D12_DESCRIPTOR_HEAP_DESC shadowRTVDesc = {};
+	shadowRTVDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	shadowRTVDesc.NumDescriptors = 1;
+	shadowRTVDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	hr = device->CreateDescriptorHeap(&shadowRTVDesc, IID_PPV_ARGS(&shadowMapSRVHeap));
+	MASSERT(SUCCEEDED(hr), "Failed to create shadowMap RTV Heap!!\n");
+
+	shadowMapDSVHandle = shadowMapDSVHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	device->CreateDepthStencilView(shadowMapTexture.Get(), &dsvDesc, shadowMapDSVHandle);
+
+	shadowMapSRVHandle = shadowMapSRVHeap->GetGPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = shadowMapSRVHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	device->CreateShaderResourceView(shadowMapTexture.Get(), &srvDesc, srvCpuHandle);
+
+	OutputDebugStringA("Shadow Map creation succeed!!\n");
 }
 
 void DX12Core::BeginForwardPass()
