@@ -384,6 +384,40 @@ void DX12Core::CreateShadowMap()
 	OutputDebugStringA("Shadow Map creation succeed!!\n");
 }
 
+void DX12Core::BeginShadowPass()
+{
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		shadowMapTexture.Get(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE
+	);
+	cmdList->ResourceBarrier(1, &barrier);
+
+	cmdList->OMSetRenderTargets(0, nullptr, FALSE, &shadowMapDSVHandle);
+
+	cmdList->ClearDepthStencilView(shadowMapDSVHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+	D3D12_VIEWPORT shadowViewport = {};
+	shadowViewport.Width = static_cast<float>(SHADOW_MAP_SIZE);
+	shadowViewport.Height = static_cast<float>(SHADOW_MAP_SIZE);
+	shadowViewport.MinDepth = 0.0f;
+	shadowViewport.MaxDepth = 1.0f;
+	cmdList->RSSetViewports(1, &shadowViewport);
+
+	D3D12_RECT shadowRect = { 0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE };
+	cmdList->RSSetScissorRects(1, &shadowRect);
+}
+
+void DX12Core::EndShadowPass()
+{
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		shadowMapTexture.Get(),
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	cmdList->ResourceBarrier(1, &barrier);
+}
+
 void DX12Core::BeginForwardPass()
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtvHandle[backBufferIndex];

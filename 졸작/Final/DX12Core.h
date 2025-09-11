@@ -49,9 +49,15 @@ public:
 
 	void CreateGBuffer();
 	void CreateShadowMap();
+
+	void BeginShadowPass();
+	void EndShadowPass();
+
 	void BeginForwardPass();
+	
 	void BeginGBufferPass();
 	void EndGBufferPass();
+
 	void BeginLightingPass();
 	void SetupLightng();
 	void RenderFullscreenQuad();
@@ -123,4 +129,6 @@ private:
 	ComPtr<ID3D12DescriptorHeap> shadowMapSRVHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE shadowMapDSVHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE shadowMapSRVHandle;
+
+	static const UINT SHADOW_MAP_SIZE = 2048;
 };
