@@ -19,6 +19,7 @@ void Instance::AddPlayer(Session* session)
 	auto character = std::make_shared<GameObject>(session->GetId(), this);
 	character->AddComponent<TransformComponent>(vec3{ 0, 0, 0 });
 	character->AddComponent<MovementComponent>();
+	character->AddComponent<ActionComponent>();
 	character->AddComponent<InputComponent>();
 
 	_objMng->AddObject(character);

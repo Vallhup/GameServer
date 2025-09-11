@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "Session.h"
 
-Session::Session(int id, SOCKET socket) : _id(id), _socket(socket)
+Session::Session(int id, SOCKET socket, ISessionManager* owner) 
+	: _id(id), _socket(socket), _owner(owner)
 {
 	_connected = true;
 	_character = nullptr;
@@ -122,6 +123,7 @@ void Session::DisConnect()
 		CancelIoEx(GetHandle(), nullptr);
 		closesocket(_socket);
 		_socket = INVALID_SOCKET;
+		_owner->RemoveSession(_id);
 	}
 }
 

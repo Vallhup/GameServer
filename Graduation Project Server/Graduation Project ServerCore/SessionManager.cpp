@@ -9,7 +9,7 @@ void SessionManager::AddSession(SOCKET clientSocket)
 {
 	LOG_DBG("Session[%d] Add", _nextSessionId.load());
 
-	auto session = std::make_shared<Session>(_nextSessionId, clientSocket);
+	auto session = std::make_shared<Session>(_nextSessionId, clientSocket, this);
 	session->SetPacketHandler([this](int sessionId, const std::vector<char>& packet)
 		{
 			OnSessionPacket(sessionId, packet);
@@ -25,8 +25,15 @@ void SessionManager::AddSession(SOCKET clientSocket)
 
 void SessionManager::RemoveSession(int sessionId)
 {
-	std::unique_lock lock{ _mutex };
-	_sessions.erase(sessionId);
+	auto it = _sessions.find(sessionId);
+	if (it != _sessions.end()) {
+		it->second->GetCharacter()->GetInstance()->RemovePlayer(sessionId);
+	}
+
+	{
+		std::unique_lock lock{ _mutex };
+		_sessions.erase(sessionId);
+	}
 }
 
 Session* SessionManager::GetSession(int sessionId)

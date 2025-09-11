@@ -16,5 +16,5 @@ public:
 	void Enqueue(Protocol::CS_INPUT_PACKET& data);
 
 private:
-	std::queue<Protocol::CS_INPUT_PACKET> _inputQueue;
+	concurrency::concurrent_queue<Protocol::CS_INPUT_PACKET> _inputQueue;
 };

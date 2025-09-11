@@ -4,28 +4,28 @@
 void InputComponent::LogicUpdate(float deltaTime)
 {
 	while (not _inputQueue.empty()) {
-		Protocol::CS_INPUT_PACKET packet = _inputQueue.front();
-		_inputQueue.pop();
-
-		switch (packet.key()) {
-		case Protocol::Input::MOVE: {
-			if (auto mvComp = _owner.GetComponent<MovementComponent>()) {
-				mvComp->SetMovePayload(packet.payload());
+		Protocol::CS_INPUT_PACKET packet;
+		if (_inputQueue.try_pop(packet)) {
+			switch (packet.key()) {
+			case Protocol::Input::MOVE: {
+				if (auto mvComp = _owner.GetComponent<MovementComponent>()) {
+					mvComp->SetMovePayload(packet.payload());
+				}
+				break;
 			}
-			break;
-		}
-		case Protocol::Input::ATTACK: {
-			if (auto actComp = _owner.GetComponent<ActionComponent>()) {
-				actComp->StartDodge();
+			case Protocol::Input::ATTACK: {
+				if (auto actComp = _owner.GetComponent<ActionComponent>()) {
+					actComp->StartDodge();
+				}
+				break;
 			}
-			break;
-		}
-		case Protocol::Input::DODGE: {
-			if (auto actComp = _owner.GetComponent<ActionComponent>()) {
-				actComp->StartDodge();
+			case Protocol::Input::DODGE: {
+				if (auto actComp = _owner.GetComponent<ActionComponent>()) {
+					actComp->StartDodge();
+				}
+				break;
 			}
-			break;
-		}
+			}
 		}
 	}
 }

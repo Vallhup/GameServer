@@ -9,7 +9,7 @@ class Session : public IocpObject {
 
 public:
 	Session() = delete;
-	Session(int id, SOCKET socket);
+	Session(int id, SOCKET socket, ISessionManager* owner);
 	virtual ~Session();
 
 public:
@@ -49,5 +49,6 @@ private:
 	std::atomic<bool> _connected;
 
 	GameObject* _character;
+	ISessionManager* _owner;
 };
 

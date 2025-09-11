@@ -9,7 +9,7 @@ public:
 
 public:
 	virtual void LogicUpdate(float deltaTime) override;
-	virtual void NetworkUpdate() override;
+	//virtual void NetworkUpdate() override;
 
 	// 이동 처리 어떻게 해야될 지 고민해야됨
 	// ActionComponent에서 처리할 지 / Action에서 처리할 지
