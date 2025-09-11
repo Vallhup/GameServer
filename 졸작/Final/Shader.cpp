@@ -142,6 +142,11 @@ void Shader::InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* 
     MASSERT(SUCCEEDED(hr), "Failed to create Compute PSO");
 }
 
+void Shader::InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
+{
+
+}
+
 ID3D12PipelineState* Shader::GetOpaquePSO() const
 {
     return opaquePSO.Get();
@@ -165,6 +170,11 @@ ID3D12PipelineState* Shader::GetLightingPSO() const
 ID3D12PipelineState* Shader::GetComputePSO() const
 {
     return computePSO.Get();
+}
+
+ID3D12PipelineState* Shader::GetShadowPSO() const
+{
+    return shadowPSO.Get();
 }
 
 void Shader::CompileShader(const wstring& path, const string& entry, const string& target, ComPtr<ID3DBlob>& blobOut)
