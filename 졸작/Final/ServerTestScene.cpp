@@ -82,12 +82,14 @@ void ServerTestScene::HandlePacket(const Protocol::GamePacket& packet)
             if (sessionId == myId && knight) {
                 if (auto transform = knight->GetComponent<Transform>()) {
                     transform->SetPosition(pos.x(), pos.y(), pos.z());
+                    transform->SetTargetRotation(move.rot());
                 }
             }
 
             else if (sessionId != myId and otherKnight) {
                 if (auto transform = otherKnight->GetComponent<Transform>()) {
                     transform->SetPosition(pos.x(), pos.y(), pos.z());
+                    transform->SetTargetRotation(move.rot());
                 }
             }
         }

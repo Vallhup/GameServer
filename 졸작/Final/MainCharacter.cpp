@@ -32,59 +32,17 @@ void MainCharacter::UpdateMovementDirections()
 
 void MainCharacter::BasicMove(float deltaTime)
 {
-	auto transform = GetComponent<Transform>();
-	if (!transform) return;
-
 	auto& input = GET(Input);
 
 	static bool wasMoving = false;
-	bool isMoving = false;
-	XMFLOAT3 moveDirection = { 0, 0, 0 };
+	bool isMoving = ranges::any_of(
+		initializer_list{ 'W', 'S', 'A', 'D' },
+		[&input](int k) { return input.GetKey(k); }
+	);
 
-	if (input.GetKey('W'))
-	{
-		moveDirection.x -= characterForward.x;  
-		moveDirection.z -= characterForward.z;
-		isMoving = true;
-	}
-	if (input.GetKey('S'))
-	{
-		moveDirection.x += characterForward.x;
-		moveDirection.z += characterForward.z;
-		isMoving = true;
-	}
-	if (input.GetKey('A'))
-	{
-		moveDirection.x += characterRight.x;   
-		moveDirection.z += characterRight.z;
-		isMoving = true;
-	}
-	if (input.GetKey('D'))
-	{
-		moveDirection.x -= characterRight.x;
-		moveDirection.z -= characterRight.z;
-		isMoving = true;
-	}
-	input.SendMovePacket(moveDirection);
-
-	XMFLOAT3 currentRot = transform->GetRotation();
-
-	if (isMoving) {
-		targetYawAngle = atan2(-moveDirection.x, -moveDirection.z);
-		needsRotation = true;
-	}
-
-	if (needsRotation) {
-		float angleDiff = targetYawAngle - currentYawAngle;
-
-		while (angleDiff > XM_PI) angleDiff -= 2 * XM_PI;
-		while (angleDiff < -XM_PI) angleDiff += 2 * XM_PI;
-
-		currentYawAngle += angleDiff * ROT_SPEED * deltaTime;
-		currentRot.y = currentYawAngle;
-
-		if (abs(angleDiff) < 0.1f) needsRotation = false;
-	}
+	// TEMP : 패킷 구조 어떻게 바뀌냐에 따라 달라짐
+	bool dir[4]{ input.GetKey('W'), input.GetKey('S'), input.GetKey('D'), input.GetKey('A') };
+	input.SendMovePacket(dir, camera->GetRadianYaw(), camera->GetRadianPitch());
 
 	auto animator = GetComponent<Animator>();
 	if (animator) {
@@ -99,7 +57,6 @@ void MainCharacter::BasicMove(float deltaTime)
 	}
 
 	wasMoving = isMoving;
-	transform->SetRotation(currentRot);
 }
 
 void MainCharacter::SetCamera(Camera* cam)

@@ -46,15 +46,10 @@ void Input::SetMousePosition(const XMFLOAT2 mousePosition)
 	mMousePos = mousePosition;
 }
 
-void Input::SendMovePacket(XMFLOAT3 dir)
+void Input::SendMovePacket(bool dir[4], float yaw, float pitch)
 {
 	if (!network) return;
 
-	Protocol::Vec3 netDir;
-	netDir.set_x(dir.x);
-	netDir.set_y(dir.y);
-	netDir.set_z(dir.z);
-
-	vector<char> packet = PacketFactory::CSMovePacket(myId, netDir);
+	vector<char> packet = PacketFactory::CSMovePacket(myId, dir, yaw, pitch);
 	network->Send(packet);
 }

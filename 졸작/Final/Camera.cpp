@@ -165,6 +165,16 @@ XMFLOAT3 Camera::GetTargetPosition() const
     return targetPosition;
 }
 
+float Camera::GetRadianYaw() const
+{
+    return XMConvertToRadians(yaw);
+}
+
+float Camera::GetRadianPitch() const
+{
+    return XMConvertToRadians(pitch);
+}
+
 void Camera::SetCameraPosition(const XMFLOAT3& pos)
 {
     desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };

@@ -677,6 +677,7 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
   // accessors -------------------------------------------------------
   enum : int {
     kPosFieldNumber = 1,
+    kRotFieldNumber = 2,
   };
   // .Protocol.Vec3 pos = 1;
   bool has_pos() const;
@@ -693,12 +694,22 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
   ::Protocol::Vec3* _internal_mutable_pos();
 
   public:
+  // float rot = 2;
+  void clear_rot() ;
+  float rot() const;
+  void set_rot(float value);
+
+  private:
+  float _internal_rot() const;
+  void _internal_set_rot(float value);
+
+  public:
   // @@protoc_insertion_point(class_scope:Protocol.SC_MOVE_PACKET)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      0, 1, 1,
+      1, 2, 1,
       0, 2>
       _table_;
 
@@ -719,6 +730,7 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::Protocol::Vec3* pos_;
+    float rot_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -2203,6 +2215,28 @@ inline void SC_MOVE_PACKET::set_allocated_pos(::Protocol::Vec3* value) {
 
   _impl_.pos_ = reinterpret_cast<::Protocol::Vec3*>(value);
   // @@protoc_insertion_point(field_set_allocated:Protocol.SC_MOVE_PACKET.pos)
+}
+
+// float rot = 2;
+inline void SC_MOVE_PACKET::clear_rot() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.rot_ = 0;
+}
+inline float SC_MOVE_PACKET::rot() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_MOVE_PACKET.rot)
+  return _internal_rot();
+}
+inline void SC_MOVE_PACKET::set_rot(float value) {
+  _internal_set_rot(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_MOVE_PACKET.rot)
+}
+inline float SC_MOVE_PACKET::_internal_rot() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.rot_;
+}
+inline void SC_MOVE_PACKET::_internal_set_rot(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.rot_ = value;
 }
 
 // -------------------------------------------------------------------

@@ -28,8 +28,13 @@ message InputPayload
 
 message MovePayload
 {
-	Vec3 velocity = 1;
-	bool isRun = 2;
+	bool front = 1;
+	bool back = 2;
+	bool right = 3;
+	bool left = 4;
+	float camPitch = 5;
+	float camYaw = 6;
+	bool isRun = 7;
 }
 
 message AttackPayload

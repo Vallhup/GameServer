@@ -14,6 +14,8 @@ public:
 	void SetRotation(float x, float y, float z);
 	void SetRotation(const XMFLOAT3& rot);
 
+	void SetTargetRotation(float y);
+
 	void SetScale(float x, float y, float z);
 	void SetScale(const XMFLOAT3& scl);
 
@@ -29,5 +31,6 @@ private:
 	XMFLOAT3 scale;
 
 	XMFLOAT3 targetPos;
+	float targetRot;
 };
 

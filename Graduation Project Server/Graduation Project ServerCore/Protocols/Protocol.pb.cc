@@ -83,7 +83,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 inline constexpr SC_MOVE_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
-        pos_{nullptr} {}
+        pos_{nullptr},
+        rot_{0} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR SC_MOVE_PACKET::SC_MOVE_PACKET(::_pbi::ConstantInitialized)
@@ -300,7 +301,9 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_MOVE_PACKET, _impl_.pos_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_MOVE_PACKET, _impl_.rot_),
         0,
+        ~0u,
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_REMOVE_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -338,10 +341,10 @@ static const ::_pbi::MigrationSchema
         {20, 30, -1, sizeof(::Protocol::CS_INPUT_PACKET)},
         {32, -1, -1, sizeof(::Protocol::SC_LOGIN_PACKET)},
         {40, 49, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {50, 59, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {60, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
-        {68, 77, -1, sizeof(::Protocol::SC_ATTACK_PACKET)},
-        {78, 87, -1, sizeof(::Protocol::SC_DODGE_PACKET)},
+        {50, 60, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {62, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {70, 79, -1, sizeof(::Protocol::SC_ATTACK_PACKET)},
+        {80, 89, -1, sizeof(::Protocol::SC_DODGE_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_GamePacket_default_instance_._instance,
@@ -363,11 +366,11 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "\n\003key\030\001 \001(\0162\017.Protocol.Input\022\'\n\007payload\030"
     "\002 \001(\0132\026.Protocol.InputPayload\"\021\n\017SC_LOGI"
     "N_PACKET\",\n\rSC_ADD_PACKET\022\033\n\003pos\030\001 \001(\0132\016"
-    ".Protocol.Vec3\"-\n\016SC_MOVE_PACKET\022\033\n\003pos\030"
-    "\001 \001(\0132\016.Protocol.Vec3\"\022\n\020SC_REMOVE_PACKE"
-    "T\"/\n\020SC_ATTACK_PACKET\022\033\n\003dir\030\001 \001(\0132\016.Pro"
-    "tocol.Vec3\".\n\017SC_DODGE_PACKET\022\033\n\003pos\030\001 \001"
-    "(\0132\016.Protocol.Vec3b\006proto3"
+    ".Protocol.Vec3\":\n\016SC_MOVE_PACKET\022\033\n\003pos\030"
+    "\001 \001(\0132\016.Protocol.Vec3\022\013\n\003rot\030\002 \001(\002\"\022\n\020SC"
+    "_REMOVE_PACKET\"/\n\020SC_ATTACK_PACKET\022\033\n\003di"
+    "r\030\001 \001(\0132\016.Protocol.Vec3\".\n\017SC_DODGE_PACK"
+    "ET\022\033\n\003pos\030\001 \001(\0132\016.Protocol.Vec3b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[2] =
     {
@@ -378,7 +381,7 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    466,
+    479,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -1476,6 +1479,7 @@ SC_MOVE_PACKET::SC_MOVE_PACKET(
   _impl_.pos_ = (cached_has_bits & 0x00000001u) ? ::google::protobuf::Message::CopyConstruct<::Protocol::Vec3>(
                               arena, *from._impl_.pos_)
                         : nullptr;
+  _impl_.rot_ = from._impl_.rot_;
 
   // @@protoc_insertion_point(copy_constructor:Protocol.SC_MOVE_PACKET)
 }
@@ -1486,7 +1490,12 @@ inline PROTOBUF_NDEBUG_INLINE SC_MOVE_PACKET::Impl_::Impl_(
 
 inline void SC_MOVE_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.pos_ = {};
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, pos_),
+           0,
+           offsetof(Impl_, rot_) -
+               offsetof(Impl_, pos_) +
+               sizeof(Impl_::rot_));
 }
 SC_MOVE_PACKET::~SC_MOVE_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.SC_MOVE_PACKET)
@@ -1536,15 +1545,15 @@ const ::google::protobuf::internal::ClassData* SC_MOVE_PACKET::GetClassData() co
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 1, 0, 2> SC_MOVE_PACKET::_table_ = {
+const ::_pbi::TcParseTable<1, 2, 1, 0, 2> SC_MOVE_PACKET::_table_ = {
   {
     PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_._has_bits_),
     0, // no _extensions_
-    1, 0,  // max_field_number, fast_idx_mask
+    2, 8,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967294,  // skipmap
+    4294967292,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    1,  // num_field_entries
+    2,  // num_field_entries
     1,  // num_aux_entries
     offsetof(decltype(_table_), aux_entries),
     _class_data_.base(),
@@ -1554,6 +1563,9 @@ const ::_pbi::TcParseTable<0, 1, 1, 0, 2> SC_MOVE_PACKET::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::SC_MOVE_PACKET>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
+    // float rot = 2;
+    {::_pbi::TcParser::FastF32S1,
+     {21, 63, 0, PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.rot_)}},
     // .Protocol.Vec3 pos = 1;
     {::_pbi::TcParser::FastMtS1,
      {10, 0, 0, PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.pos_)}},
@@ -1563,6 +1575,9 @@ const ::_pbi::TcParseTable<0, 1, 1, 0, 2> SC_MOVE_PACKET::_table_ = {
     // .Protocol.Vec3 pos = 1;
     {PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.pos_), _Internal::kHasBitsOffset + 0, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    // float rot = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.rot_), -1, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
   }}, {{
     {::_pbi::TcParser::GetTable<::Protocol::Vec3>()},
   }}, {{
@@ -1581,6 +1596,7 @@ PROTOBUF_NOINLINE void SC_MOVE_PACKET::Clear() {
     ABSL_DCHECK(_impl_.pos_ != nullptr);
     _impl_.pos_->Clear();
   }
+  _impl_.rot_ = 0;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -1608,6 +1624,13 @@ PROTOBUF_NOINLINE void SC_MOVE_PACKET::Clear() {
                 stream);
           }
 
+          // float rot = 2;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_rot()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                2, this_._internal_rot(), target);
+          }
+
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
             target =
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -1631,12 +1654,19 @@ PROTOBUF_NOINLINE void SC_MOVE_PACKET::Clear() {
           // Prevent compiler warnings about cached_has_bits being unused
           (void)cached_has_bits;
 
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
             // .Protocol.Vec3 pos = 1;
             cached_has_bits = this_._impl_._has_bits_[0];
             if (cached_has_bits & 0x00000001u) {
               total_size += 1 +
                             ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.pos_);
+            }
+          }
+           {
+            // float rot = 2;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_rot()) != 0) {
+              total_size += 5;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -1662,6 +1692,9 @@ void SC_MOVE_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::
       _this->_impl_.pos_->MergeFrom(*from._impl_.pos_);
     }
   }
+  if (::absl::bit_cast<::uint32_t>(from._internal_rot()) != 0) {
+    _this->_impl_.rot_ = from._impl_.rot_;
+  }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -1678,7 +1711,12 @@ void SC_MOVE_PACKET::InternalSwap(SC_MOVE_PACKET* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  swap(_impl_.pos_, other->_impl_.pos_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.rot_)
+      + sizeof(SC_MOVE_PACKET::_impl_.rot_)
+      - PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.pos_)>(
+          reinterpret_cast<char*>(&_impl_.pos_),
+          reinterpret_cast<char*>(&other->_impl_.pos_));
 }
 
 ::google::protobuf::Metadata SC_MOVE_PACKET::GetMetadata() const {

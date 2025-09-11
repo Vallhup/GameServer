@@ -25,7 +25,7 @@ std::vector<char> PacketFactory::CSLoginPacket()
 	return out;
 }
 
-std::vector<char> PacketFactory::CSMovePacket(int id, const Protocol::Vec3& pos)
+std::vector<char> PacketFactory::CSMovePacket(int id, bool dir[4], float yaw, float pitch)
 {
 	Protocol::CS_INPUT_PACKET input;
 
@@ -34,9 +34,12 @@ std::vector<char> PacketFactory::CSMovePacket(int id, const Protocol::Vec3& pos)
 	Protocol::InputPayload* payload = input.mutable_payload();
 
 	Protocol::MovePayload* movePayload = payload->mutable_move();
-	movePayload->mutable_velocity()->set_x(pos.x());
-	movePayload->mutable_velocity()->set_y(pos.y());
-	movePayload->mutable_velocity()->set_z(pos.z());
+	movePayload->set_front(dir[0]);
+	movePayload->set_back(dir[1]);
+	movePayload->set_right(dir[2]);
+	movePayload->set_left(dir[3]);
+	movePayload->set_camyaw(yaw);
+	movePayload->set_campitch(pitch);
 	movePayload->set_isrun(false);
 
 	std::string body;
@@ -110,12 +113,13 @@ std::vector<char> PacketFactory::SCAddPacket(int id, const Protocol::Vec3& pos)
 	return out;
 }
 
-std::vector<char> PacketFactory::SCMovePakcet(int id, const Protocol::Vec3& pos)
+std::vector<char> PacketFactory::SCMovePakcet(int id, const Protocol::Vec3& pos, float rot)
 {
 	Protocol::SC_MOVE_PACKET move;
 	move.mutable_pos()->set_x(pos.x());
 	move.mutable_pos()->set_y(pos.y());
 	move.mutable_pos()->set_z(pos.z());
+	move.set_rot(rot);
 
 	std::string body;
 	move.SerializeToString(&body);

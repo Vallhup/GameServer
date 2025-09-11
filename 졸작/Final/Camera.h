@@ -20,6 +20,8 @@ public:
 	XMFLOAT3 GetRight() const;
 	XMFLOAT3 GetPosition() const;
 	XMFLOAT3 GetTargetPosition() const;
+	float GetRadianYaw() const;
+	float GetRadianPitch() const;
 
 	void SetCameraPosition(const XMFLOAT3& pos);
 	void SetCursor();

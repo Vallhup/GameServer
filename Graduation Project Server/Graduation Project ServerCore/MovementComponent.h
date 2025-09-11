@@ -17,6 +17,6 @@ public:
 	void SetMovePayload(const Protocol::InputPayload& payload);
 
 private:
-	vec3 _velocity;
+	vec3 _direction;
 	bool _isRun;
 };

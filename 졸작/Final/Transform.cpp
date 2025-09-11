@@ -4,21 +4,27 @@
 
 void Transform::Update(float deltaTime)
 {
-	//rotation.y += XM_PI * deltaTime;
+	// 이동 보간
 	position.x += (targetPos.x - position.x) * deltaTime * 10.0f;
 	position.y += (targetPos.y - position.y) * deltaTime * 10.0f;
 	position.z += (targetPos.z - position.z) * deltaTime * 10.0f;
+
+	// 회전 보간
+	float angleDiff = targetRot - rotation.y;
+
+	while (angleDiff > XM_PI) angleDiff -= 2 * XM_PI;
+	while (angleDiff < -XM_PI) angleDiff += 2 * XM_PI;
+
+	rotation.y += angleDiff * deltaTime * 5.0f;
 }
 
 void Transform::SetPosition(float x, float y, float z)
 {
-	//position = { x, y, z };
 	targetPos = { x, y, z };
 }
 
 void Transform::SetPosition(const XMFLOAT3& pos)
 {
-	//position = pos;
 	targetPos = pos;
 }
 
@@ -36,6 +42,11 @@ void Transform::SetRotation(float x, float y, float z)
 void Transform::SetRotation(const XMFLOAT3& rot)
 {
 	rotation = rot;
+}
+
+void Transform::SetTargetRotation(float y)
+{
+	targetRot = y;
 }
 
 void Transform::SetScale(float x, float y, float z)

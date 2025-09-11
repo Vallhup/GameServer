@@ -34,7 +34,7 @@ public:
 	NetworkManager* GetNetworkManager() const { return network; }
 
 public:
-	void SendMovePacket(XMFLOAT3 dir);
+	void SendMovePacket(bool dir[4], float yaw, float pitch);
 
 private:
 	bitset<256> mPressedKeys = {};

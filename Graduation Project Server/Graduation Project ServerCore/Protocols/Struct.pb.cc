@@ -78,6 +78,37 @@ struct PacketHeaderDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PacketHeaderDefaultTypeInternal _PacketHeader_default_instance_;
+
+inline constexpr MovePayload::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : front_{false},
+        back_{false},
+        right_{false},
+        left_{false},
+        campitch_{0},
+        camyaw_{0},
+        isrun_{false},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR MovePayload::MovePayload(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct MovePayloadDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR MovePayloadDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~MovePayloadDefaultTypeInternal() {}
+  union {
+    MovePayload _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 MovePayloadDefaultTypeInternal _MovePayload_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR DodgePayload::DodgePayload(::_pbi::ConstantInitialized)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
@@ -114,32 +145,6 @@ struct AttackPayloadDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AttackPayloadDefaultTypeInternal _AttackPayload_default_instance_;
-
-inline constexpr MovePayload::Impl_::Impl_(
-    ::_pbi::ConstantInitialized) noexcept
-      : _cached_size_{0},
-        velocity_{nullptr},
-        isrun_{false} {}
-
-template <typename>
-PROTOBUF_CONSTEXPR MovePayload::MovePayload(::_pbi::ConstantInitialized)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(_class_data_.base()),
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(),
-#endif  // PROTOBUF_CUSTOM_VTABLE
-      _impl_(::_pbi::ConstantInitialized()) {
-}
-struct MovePayloadDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR MovePayloadDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
-  ~MovePayloadDefaultTypeInternal() {}
-  union {
-    MovePayload _instance;
-  };
-};
-
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 MovePayloadDefaultTypeInternal _MovePayload_default_instance_;
 
 inline constexpr InputPayload::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -207,7 +212,7 @@ const ::uint32_t
         ::_pbi::kInvalidFieldOffsetTag,
         ::_pbi::kInvalidFieldOffsetTag,
         PROTOBUF_FIELD_OFFSET(::Protocol::InputPayload, _impl_.payload_),
-        PROTOBUF_FIELD_OFFSET(::Protocol::MovePayload, _impl_._has_bits_),
+        ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::MovePayload, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -215,10 +220,13 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::MovePayload, _impl_.velocity_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::MovePayload, _impl_.front_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::MovePayload, _impl_.back_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::MovePayload, _impl_.right_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::MovePayload, _impl_.left_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::MovePayload, _impl_.campitch_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::MovePayload, _impl_.camyaw_),
         PROTOBUF_FIELD_OFFSET(::Protocol::MovePayload, _impl_.isrun_),
-        0,
-        ~0u,
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::AttackPayload, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -242,9 +250,9 @@ static const ::_pbi::MigrationSchema
         {0, -1, -1, sizeof(::Protocol::PacketHeader)},
         {10, -1, -1, sizeof(::Protocol::Vec3)},
         {21, -1, -1, sizeof(::Protocol::InputPayload)},
-        {33, 43, -1, sizeof(::Protocol::MovePayload)},
-        {45, -1, -1, sizeof(::Protocol::AttackPayload)},
-        {53, -1, -1, sizeof(::Protocol::DodgePayload)},
+        {33, -1, -1, sizeof(::Protocol::MovePayload)},
+        {48, -1, -1, sizeof(::Protocol::AttackPayload)},
+        {56, -1, -1, sizeof(::Protocol::DodgePayload)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_PacketHeader_default_instance_._instance,
@@ -263,10 +271,11 @@ const char descriptor_table_protodef_Struct_2eproto[] ABSL_ATTRIBUTE_SECTION_VAR
     "yload\022%\n\004move\030\001 \001(\0132\025.Protocol.MovePaylo"
     "adH\000\022)\n\006attack\030\002 \001(\0132\027.Protocol.AttackPa"
     "yloadH\000\022\'\n\005dodge\030\003 \001(\0132\026.Protocol.DodgeP"
-    "ayloadH\000B\t\n\007payload\">\n\013MovePayload\022 \n\010ve"
-    "locity\030\001 \001(\0132\016.Protocol.Vec3\022\r\n\005isRun\030\002 "
-    "\001(\010\"\017\n\rAttackPayload\"\016\n\014DodgePayloadb\006pr"
-    "oto3"
+    "ayloadH\000B\t\n\007payload\"x\n\013MovePayload\022\r\n\005fr"
+    "ont\030\001 \001(\010\022\014\n\004back\030\002 \001(\010\022\r\n\005right\030\003 \001(\010\022\014"
+    "\n\004left\030\004 \001(\010\022\020\n\010camPitch\030\005 \001(\002\022\016\n\006camYaw"
+    "\030\006 \001(\002\022\r\n\005isRun\030\007 \001(\010\"\017\n\rAttackPayload\"\016"
+    "\n\014DodgePayloadb\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Struct_2eproto_deps[1] =
     {
@@ -276,7 +285,7 @@ static ::absl::once_flag descriptor_table_Struct_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Struct_2eproto = {
     false,
     false,
-    404,
+    462,
     descriptor_table_protodef_Struct_2eproto,
     "Struct.proto",
     &descriptor_table_Struct_2eproto_once,
@@ -1192,10 +1201,6 @@ void InputPayload::InternalSwap(InputPayload* PROTOBUF_RESTRICT other) {
 
 class MovePayload::_Internal {
  public:
-  using HasBits =
-      decltype(std::declval<MovePayload>()._impl_._has_bits_);
-  static constexpr ::int32_t kHasBitsOffset =
-      8 * PROTOBUF_FIELD_OFFSET(MovePayload, _impl_._has_bits_);
 };
 
 MovePayload::MovePayload(::google::protobuf::Arena* arena)
@@ -1207,32 +1212,10 @@ MovePayload::MovePayload(::google::protobuf::Arena* arena)
   SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:Protocol.MovePayload)
 }
-inline PROTOBUF_NDEBUG_INLINE MovePayload::Impl_::Impl_(
-    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
-    const Impl_& from, const ::Protocol::MovePayload& from_msg)
-      : _has_bits_{from._has_bits_},
-        _cached_size_{0} {}
-
 MovePayload::MovePayload(
-    ::google::protobuf::Arena* arena,
-    const MovePayload& from)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, _class_data_.base()) {
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  MovePayload* const _this = this;
-  (void)_this;
-  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
-  _impl_.velocity_ = (cached_has_bits & 0x00000001u) ? ::google::protobuf::Message::CopyConstruct<::Protocol::Vec3>(
-                              arena, *from._impl_.velocity_)
-                        : nullptr;
-  _impl_.isrun_ = from._impl_.isrun_;
-
-  // @@protoc_insertion_point(copy_constructor:Protocol.MovePayload)
+    ::google::protobuf::Arena* arena, const MovePayload& from)
+    : MovePayload(arena) {
+  MergeFrom(from);
 }
 inline PROTOBUF_NDEBUG_INLINE MovePayload::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
@@ -1242,10 +1225,10 @@ inline PROTOBUF_NDEBUG_INLINE MovePayload::Impl_::Impl_(
 inline void MovePayload::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, velocity_),
+               offsetof(Impl_, front_),
            0,
            offsetof(Impl_, isrun_) -
-               offsetof(Impl_, velocity_) +
+               offsetof(Impl_, front_) +
                sizeof(Impl_::isrun_));
 }
 MovePayload::~MovePayload() {
@@ -1256,7 +1239,6 @@ inline void MovePayload::SharedDtor(MessageLite& self) {
   MovePayload& this_ = static_cast<MovePayload&>(self);
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
-  delete this_._impl_.velocity_;
   this_._impl_.~Impl_();
 }
 
@@ -1296,17 +1278,17 @@ const ::google::protobuf::internal::ClassData* MovePayload::GetClassData() const
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<1, 2, 1, 0, 2> MovePayload::_table_ = {
+const ::_pbi::TcParseTable<3, 7, 0, 0, 2> MovePayload::_table_ = {
   {
-    PROTOBUF_FIELD_OFFSET(MovePayload, _impl_._has_bits_),
+    0,  // no _has_bits_
     0, // no _extensions_
-    2, 8,  // max_field_number, fast_idx_mask
+    7, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967292,  // skipmap
+    4294967168,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    2,  // num_field_entries
-    1,  // num_aux_entries
-    offsetof(decltype(_table_), aux_entries),
+    7,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
@@ -1314,24 +1296,55 @@ const ::_pbi::TcParseTable<1, 2, 1, 0, 2> MovePayload::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::MovePayload>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // bool isRun = 2;
+    {::_pbi::TcParser::MiniParse, {}},
+    // bool front = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(MovePayload, _impl_.front_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.front_)}},
+    // bool back = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(MovePayload, _impl_.back_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.back_)}},
+    // bool right = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(MovePayload, _impl_.right_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.right_)}},
+    // bool left = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(MovePayload, _impl_.left_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.left_)}},
+    // float camPitch = 5;
+    {::_pbi::TcParser::FastF32S1,
+     {45, 63, 0, PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.campitch_)}},
+    // float camYaw = 6;
+    {::_pbi::TcParser::FastF32S1,
+     {53, 63, 0, PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.camyaw_)}},
+    // bool isRun = 7;
     {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(MovePayload, _impl_.isrun_), 63>(),
-     {16, 63, 0, PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.isrun_)}},
-    // .Protocol.Vec3 velocity = 1;
-    {::_pbi::TcParser::FastMtS1,
-     {10, 0, 0, PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.velocity_)}},
+     {56, 63, 0, PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.isrun_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // .Protocol.Vec3 velocity = 1;
-    {PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.velocity_), _Internal::kHasBitsOffset + 0, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
-    // bool isRun = 2;
-    {PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.isrun_), -1, 0,
+    // bool front = 1;
+    {PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.front_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kBool)},
-  }}, {{
-    {::_pbi::TcParser::GetTable<::Protocol::Vec3>()},
-  }}, {{
+    // bool back = 2;
+    {PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.back_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+    // bool right = 3;
+    {PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.right_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+    // bool left = 4;
+    {PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.left_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+    // float camPitch = 5;
+    {PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.campitch_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float camYaw = 6;
+    {PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.camyaw_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // bool isRun = 7;
+    {PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.isrun_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+  }},
+  // no aux_entries
+  {{
   }},
 };
 
@@ -1342,13 +1355,9 @@ PROTOBUF_NOINLINE void MovePayload::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    ABSL_DCHECK(_impl_.velocity_ != nullptr);
-    _impl_.velocity_->Clear();
-  }
-  _impl_.isrun_ = false;
-  _impl_._has_bits_.Clear();
+  ::memset(&_impl_.front_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.isrun_) -
+      reinterpret_cast<char*>(&_impl_.front_)) + sizeof(_impl_.isrun_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -1367,19 +1376,53 @@ PROTOBUF_NOINLINE void MovePayload::Clear() {
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
-          cached_has_bits = this_._impl_._has_bits_[0];
-          // .Protocol.Vec3 velocity = 1;
-          if (cached_has_bits & 0x00000001u) {
-            target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-                1, *this_._impl_.velocity_, this_._impl_.velocity_->GetCachedSize(), target,
-                stream);
+          // bool front = 1;
+          if (this_._internal_front() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteBoolToArray(
+                1, this_._internal_front(), target);
           }
 
-          // bool isRun = 2;
+          // bool back = 2;
+          if (this_._internal_back() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteBoolToArray(
+                2, this_._internal_back(), target);
+          }
+
+          // bool right = 3;
+          if (this_._internal_right() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteBoolToArray(
+                3, this_._internal_right(), target);
+          }
+
+          // bool left = 4;
+          if (this_._internal_left() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteBoolToArray(
+                4, this_._internal_left(), target);
+          }
+
+          // float camPitch = 5;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_campitch()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                5, this_._internal_campitch(), target);
+          }
+
+          // float camYaw = 6;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_camyaw()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                6, this_._internal_camyaw(), target);
+          }
+
+          // bool isRun = 7;
           if (this_._internal_isrun() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteBoolToArray(
-                2, this_._internal_isrun(), target);
+                7, this_._internal_isrun(), target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -1407,15 +1450,31 @@ PROTOBUF_NOINLINE void MovePayload::Clear() {
 
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
-            // .Protocol.Vec3 velocity = 1;
-            cached_has_bits = this_._impl_._has_bits_[0];
-            if (cached_has_bits & 0x00000001u) {
-              total_size += 1 +
-                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.velocity_);
+            // bool front = 1;
+            if (this_._internal_front() != 0) {
+              total_size += 2;
             }
-          }
-           {
-            // bool isRun = 2;
+            // bool back = 2;
+            if (this_._internal_back() != 0) {
+              total_size += 2;
+            }
+            // bool right = 3;
+            if (this_._internal_right() != 0) {
+              total_size += 2;
+            }
+            // bool left = 4;
+            if (this_._internal_left() != 0) {
+              total_size += 2;
+            }
+            // float camPitch = 5;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_campitch()) != 0) {
+              total_size += 5;
+            }
+            // float camYaw = 6;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_camyaw()) != 0) {
+              total_size += 5;
+            }
+            // bool isRun = 7;
             if (this_._internal_isrun() != 0) {
               total_size += 2;
             }
@@ -1427,26 +1486,32 @@ PROTOBUF_NOINLINE void MovePayload::Clear() {
 void MovePayload::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
   auto* const _this = static_cast<MovePayload*>(&to_msg);
   auto& from = static_cast<const MovePayload&>(from_msg);
-  ::google::protobuf::Arena* arena = _this->GetArena();
   // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.MovePayload)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    ABSL_DCHECK(from._impl_.velocity_ != nullptr);
-    if (_this->_impl_.velocity_ == nullptr) {
-      _this->_impl_.velocity_ =
-          ::google::protobuf::Message::CopyConstruct<::Protocol::Vec3>(arena, *from._impl_.velocity_);
-    } else {
-      _this->_impl_.velocity_->MergeFrom(*from._impl_.velocity_);
-    }
+  if (from._internal_front() != 0) {
+    _this->_impl_.front_ = from._impl_.front_;
+  }
+  if (from._internal_back() != 0) {
+    _this->_impl_.back_ = from._impl_.back_;
+  }
+  if (from._internal_right() != 0) {
+    _this->_impl_.right_ = from._impl_.right_;
+  }
+  if (from._internal_left() != 0) {
+    _this->_impl_.left_ = from._impl_.left_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_campitch()) != 0) {
+    _this->_impl_.campitch_ = from._impl_.campitch_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_camyaw()) != 0) {
+    _this->_impl_.camyaw_ = from._impl_.camyaw_;
   }
   if (from._internal_isrun() != 0) {
     _this->_impl_.isrun_ = from._impl_.isrun_;
   }
-  _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -1461,13 +1526,12 @@ void MovePayload::CopyFrom(const MovePayload& from) {
 void MovePayload::InternalSwap(MovePayload* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.isrun_)
       + sizeof(MovePayload::_impl_.isrun_)
-      - PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.velocity_)>(
-          reinterpret_cast<char*>(&_impl_.velocity_),
-          reinterpret_cast<char*>(&other->_impl_.velocity_));
+      - PROTOBUF_FIELD_OFFSET(MovePayload, _impl_.front_)>(
+          reinterpret_cast<char*>(&_impl_.front_),
+          reinterpret_cast<char*>(&other->_impl_.front_));
 }
 
 ::google::protobuf::Metadata MovePayload::GetMetadata() const {

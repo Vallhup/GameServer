@@ -32,6 +32,7 @@ message SC_ADD_PACKET
 message SC_MOVE_PACKET
 {
 	Vec3 pos = 1;
+	float rot = 2;
 }
 
 message SC_REMOVE_PACKET
