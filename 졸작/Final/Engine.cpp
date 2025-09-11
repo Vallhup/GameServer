@@ -51,9 +51,9 @@ void Engine::Render()
 {
     graphics->RenderBegin(viewport, scissorRect);
 
-    //graphics->BeginShadowPass();
+    graphics->BeginShadowPass();
     //TODO : RenderShadow();
-    //graphics->EndShadowPass();
+    graphics->EndShadowPass();
 
     // 1. Deferred G-Buffer Pass (불투명 머티리얼만)
     graphics->BeginGBufferPass();
