@@ -412,6 +412,13 @@ void DX12Core::BeginShadowPass()
 
 void DX12Core::EndShadowPass()
 {
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		shadowMapTexture.Get(),
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	cmdList->ResourceBarrier(1, &barrier);
+
 	D3D12_VIEWPORT mainViewPort = {};
 	mainViewPort.Width = static_cast<float>(WinSize.x);
 	mainViewPort.Height = static_cast<float>(WinSize.y);
@@ -421,13 +428,6 @@ void DX12Core::EndShadowPass()
 
 	D3D12_RECT mainRect = { 0, 0, WinSize.x, WinSize.y };
 	cmdList->RSSetScissorRects(1, &mainRect);
-
-	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		shadowMapTexture.Get(),
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-	);
-	cmdList->ResourceBarrier(1, &barrier);
 
 	//OutputDebugStringA("Shadow Pass ended!!\n");
 }
