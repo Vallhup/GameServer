@@ -11,6 +11,10 @@
 #include "Material.h"
 #include "Camera.h"
 #include "EffectRenderer.h"
+#include "Engine.h"
+#include "NetworkManager.h"
+
+int myId{ -1 };
 
 GameScene::~GameScene() = default;
 
@@ -34,6 +38,78 @@ void GameScene::AddGameObject(shared_ptr<GameObject> obj)
 	gameObjects.push_back(obj);
 }
 
+void GameScene::HandlePacket(const Protocol::GamePacket& packet)
+{
+	const auto& header = packet.header();
+
+	switch (header.type()) {
+		case Protocol::PacketType::SC_LOGIN: {
+			OutputDebugStringA("SC_LOGIN packet received\n");
+			Protocol::SC_LOGIN_PACKET login;
+			if (login.ParseFromArray(packet.body().data(), packet.body().size())) {
+				myId = packet.header().sessionid();
+				OutputDebugStringA(("My Session ID: " + to_string(myId) + "\n").c_str());
+			}
+			break;
+		}
+		case Protocol::PacketType::SC_ADD: {
+			OutputDebugStringA("SC_ADD packet received\n");
+			Protocol::SC_ADD_PACKET add;
+			if (add.ParseFromArray(packet.body().data(), packet.body().size())) {
+				int sessionId = packet.header().sessionid();
+				Protocol::Vec3 pos = add.pos();
+
+				// 내 캐릭터만 처리
+				if (sessionId == myId && knight) {
+					if (auto transform = knight->GetComponent<Transform>()) {
+						transform->SetInitPosition(pos.x(), pos.y(), pos.z());
+					}
+
+					knight->SetCamera(cam.get());
+
+					OutputDebugStringA("My character positioned!\n");
+				}
+
+				else if (sessionId != myId and otherKnight) {
+					if (auto transform = otherKnight->GetComponent<Transform>()) {
+						transform->SetPosition(pos.x(), pos.y(), pos.z());
+					}
+
+					OutputDebugStringA("Other Character positioned!\n");
+				}
+			}
+			break;
+		}
+		case Protocol::PacketType::SC_MOVE_OBJECT: {
+			Protocol::SC_MOVE_PACKET move;
+			if (move.ParseFromArray(packet.body().data(), packet.body().size())) {
+				int sessionId = packet.header().sessionid();
+				Protocol::Vec3 pos = move.pos();
+
+				if (sessionId == myId && knight) {
+					if (auto transform = knight->GetComponent<Transform>()) {
+						transform->SetPosition(pos.x(), pos.y(), pos.z());
+						transform->SetTargetRotation(move.rot());
+					}
+				}
+
+				else if (sessionId != myId and otherKnight) {
+					if (auto transform = otherKnight->GetComponent<Transform>()) {
+						transform->SetPosition(pos.x(), pos.y(), pos.z());
+						transform->SetTargetRotation(move.rot());
+					}
+				}
+			}
+			break;
+		}
+		case Protocol::PacketType::SC_REMOVE: {
+			OutputDebugStringA("SC_REMOVE packet received\n");
+			break;
+		}
+	}
+}
+
+
 const float* GameScene::GetBackgroundColor()
 {
 	return Colors::Snow;
@@ -43,19 +119,19 @@ void GameScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
 
-	/*{
+	{
 		dragon = make_shared<GameObject>();
 		auto meshRenderer = dragon->AddComponent<MeshRenderer>();
 		auto transform = dragon->AddComponent<Transform>();
 		auto animator = dragon->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/Dragon");
-		transform->SetPosition(0.f, 0.f, 0.5f);
+		transform->SetPosition(5.f, 0.f, -5.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.1f, 0.1f, 0.1f);
 		AddGameObject(dragon);
 
 		OutputDebugStringA("Dragon created!!\n");
-	}*/
+	}
 
 	{
 		knight = make_shared<MainCharacter>();
@@ -63,7 +139,7 @@ void GameScene::InitializeLogic()
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-		transform->SetInitPosition(1.f, 0.f, 0.5f);
+		transform->SetInitPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		knight->SetCamera(cam.get());
@@ -211,34 +287,38 @@ void GameScene::InitializeLogic()
 			meshRenderer->ReleaseUploadBuffers();
 	}
 	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
+
+	SetNetworkManager(GET(Engine).GetNetworkManager());
+	_nManager->Send(PacketFactory::CSLoginPacket());
+	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
 
 void GameScene::UpdateScene(const float deltaTime)
 {
-	//if (dragon) {
-	//	auto animator = dragon->GetComponent<Animator>();
-	//	if (animator) {
-	//		if (GET(Input).GetKeyDown('1')) {
-	//			animator->TransitionToAnimation(0, 0.6f);  // Fly
-	//			OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
-	//		}
+	if (dragon) {
+		auto animator = dragon->GetComponent<Animator>();
+		if (animator) {
+			if (GET(Input).GetKeyDown('1')) {
+				animator->TransitionToAnimation(0, 0.6f);  // Fly
+				OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
+			}
 
-	//		if (GET(Input).GetKeyDown('2')) {
-	//			animator->TransitionToAnimation(1, 0.4f);  // Idle
-	//			OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
-	//		}
+			if (GET(Input).GetKeyDown('2')) {
+				animator->TransitionToAnimation(1, 0.4f);  // Idle
+				OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
+			}
 
-	//		if (GET(Input).GetKeyDown('3')) {
-	//			animator->TransitionToAnimation(2, 0.4f);  // Run
-	//			OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
-	//		}
+			if (GET(Input).GetKeyDown('3')) {
+				animator->TransitionToAnimation(2, 0.4f);  // Run
+				OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
+			}
 
-	//		if (GET(Input).GetKeyDown('4')) {
-	//			animator->TransitionToAnimation(3, 0.4f);  // Walk
-	//			OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
-	//		}
-	//	}
-	//}
+			if (GET(Input).GetKeyDown('4')) {
+				animator->TransitionToAnimation(3, 0.4f);  // Walk
+				OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
+			}
+		}
+	}
 
 	if (effectSample) {
 		auto effectRenderer = effectSample->GetComponent<EffectRenderer>();

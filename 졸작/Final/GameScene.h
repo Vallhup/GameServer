@@ -1,6 +1,8 @@
 #pragma once
 #include "Scene.h"
 
+class NetworkManager;
+
 class GameScene final : public Scene
 {
 public:
@@ -9,10 +11,13 @@ public:
 	GameScene& operator=(const GameScene&) = delete;
 	~GameScene();
 
+	void SetNetworkManager(NetworkManager* nManager) { _nManager = nManager; }
+
 	void Release() override;
 	void Reset() override;
 
 	void AddGameObject(shared_ptr<GameObject> obj);
+	void HandlePacket(const Protocol::GamePacket& packet);
 
 protected:
 	const float* GetBackgroundColor() override;
@@ -25,10 +30,13 @@ protected:
 	void RequestSceneChange() override;
 
 private:
+	NetworkManager* _nManager{ nullptr };
+
 	vector<shared_ptr<GameObject>> gameObjects;
 
 	shared_ptr<GameObject> dragon;
 	shared_ptr<MainCharacter> knight;
+	shared_ptr<GameObject> otherKnight;
 	shared_ptr<GameObject> effectSample;
 	shared_ptr<GameObject> effectSample2;
 	shared_ptr<GameObject> effectSample3;

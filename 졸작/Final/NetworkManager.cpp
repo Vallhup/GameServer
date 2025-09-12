@@ -3,7 +3,7 @@
 #include "SceneManager.h"
 #include "Engine.h"
 #include "Camera.h"
-#include "ServerTestScene.h"
+#include "GameScene.h"
 
 NetworkManager::~NetworkManager()
 {
@@ -124,7 +124,7 @@ void NetworkManager::Send(const std::vector<char>& packet)
 {
 	if (SceneManager* sManager = GET(Engine).GetSceneManager()) {
 		if (Scene* scene = sManager->GetCurrentScene()) {
-			if (auto testScene = dynamic_cast<ServerTestScene*>(scene)) {
+			if (auto testScene = dynamic_cast<GameScene*>(scene)) {
 				if (not isConnected or clientSocket == INVALID_SOCKET) {
 					return;
 				}
@@ -159,7 +159,7 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 	// TEMP : Server Test
 	if (SceneManager* sManager = GET(Engine).GetSceneManager()) {
 		if (Scene* scene = sManager->GetCurrentScene()) {
-			if (auto testScene = dynamic_cast<ServerTestScene*>(scene)) {
+			if (auto testScene = dynamic_cast<GameScene*>(scene)) {
 				testScene->HandlePacket(gamePacket);
 			}
 		}

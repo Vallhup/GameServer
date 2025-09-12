@@ -55,6 +55,8 @@ void Camera::Update(DX12Core& core, float deltaTime)
     UpdateSmoothFollow(deltaTime);
     UpdateCameraMatrices(core);
     SetCursor();
+
+    //OutputDebugStringA(("PositionX: " + to_string(position.x) + " PositionY: " + to_string(position.y) + " PositionZ: " + to_string(position.z) + "\n").c_str());
 }
 
 void Camera::UpdateInputtoCamLogic(float deltaTime)
