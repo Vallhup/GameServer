@@ -208,10 +208,10 @@ void Animator::ExecuteComputeShader(DX12Core& core)
     cmdList->SetComputeRootSignature(core.GetRootSig()->Get());
     cmdList->SetComputeRootConstantBufferView(2, mAnimationCB->GetGPUVirtualAddress());
 
-    cmdList->SetComputeRootShaderResourceView(5, GetBoneFrameBuffer()->GetGPUVirtualAddress());  // t1, space0
-    cmdList->SetComputeRootShaderResourceView(6, GetOffsetBuffer()->GetGPUVirtualAddress());     // t2, space0
+    cmdList->SetComputeRootShaderResourceView(7, GetBoneFrameBuffer()->GetGPUVirtualAddress());  // 레지 넘버링 부분
+    cmdList->SetComputeRootShaderResourceView(8, GetOffsetBuffer()->GetGPUVirtualAddress());     // 레지 넘버링 부분
 
-    cmdList->SetComputeRootUnorderedAccessView(7, GetFinalBuffer()->GetGPUVirtualAddress());     // u0
+    cmdList->SetComputeRootUnorderedAccessView(10, GetFinalBuffer()->GetGPUVirtualAddress());     // 레지 넘버링 부분
 
     UINT groupCount = (animData.boneCount + 255) / 256;  // 256으로 나눠서 올림
     cmdList->Dispatch(groupCount, 1, 1);

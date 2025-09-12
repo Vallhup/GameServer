@@ -26,7 +26,7 @@ void DX12Core::Initialize(HWND hwnd)
 	shader->InitializeComputeShader(GetDevice(), GetRootSig()->Get(), L"Animation.hlsli");
 	frameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
-	deferredLightCB->Initialize(GetDevice(), sizeof(LightConstants));
+	deferredLightCB->Initialize(GetDevice(), sizeof(DeferredLightConstants));
 	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
 
 	CreateDepthStencilBuffer();
@@ -441,7 +441,7 @@ void DX12Core::BeginForwardPass()
 
 	ForwardLightConstants light = { {0, 0, -1}, 0, {1, 1, 1}, 0.6f };
 	GetForwardLightCB()->CopyData(&light, sizeof(ForwardLightConstants));
-	cmdList->SetGraphicsRootConstantBufferView(10, GetForwardLightCB()->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(4, GetForwardLightCB()->GetGPUVirtualAddress());		// 레지 넘버링 부분
 
 	//OutputDebugStringA("Forward pass started\n");
 }
@@ -512,8 +512,8 @@ void DX12Core::BeginLightingPass()
 	ID3D12DescriptorHeap* heaps[] = { gBufferSRVHeap.Get() };
 	cmdList->SetDescriptorHeaps(1, heaps);
 
-	// G-Buffer SRV 테이블 바인딩 (root parameter 11번)
-	cmdList->SetGraphicsRootDescriptorTable(11, gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart());
+	// G-Buffer SRV 테이블 바인딩 (root parameter 12번)
+	cmdList->SetGraphicsRootDescriptorTable(12, gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart());		// 레지 넘버링 부분
 
 	//OutputDebugStringA("Lighting Pass started\n");
 }
@@ -522,7 +522,7 @@ void DX12Core::SetupLightng()
 {
 	// 50개 조명 설정 (Directional 2개 + Point Light 48개)
 	static bool lightsInitialized = false;
-	static LightConstants lightData = {};
+	static DeferredLightConstants lightData = {};
 	if (!lightsInitialized) {
 		lightData.lightCount = 25;
 
@@ -590,7 +590,7 @@ void DX12Core::SetupLightng()
 
 		lightsInitialized = true;
 	}
-	deferredLightCB->CopyData(&lightData, sizeof(LightConstants));
+	deferredLightCB->CopyData(&lightData, sizeof(DeferredLightConstants));
 }
 
 void DX12Core::RenderFullscreenQuad()
@@ -602,7 +602,7 @@ void DX12Core::RenderFullscreenQuad()
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
 	// 라이트 데이터 바인딩
-	cmdList->SetGraphicsRootConstantBufferView(10, GetDeferredLightCB()->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(3, GetDeferredLightCB()->GetGPUVirtualAddress());		// 레지 넘버링 부분
 
 	// 정점 버퍼 없이 6개 정점으로 사각형 그리기 (2개 삼각형)
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

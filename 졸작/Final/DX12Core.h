@@ -19,7 +19,7 @@ struct LightData {
 	XMFLOAT3 padding;
 };
 
-struct LightConstants {
+struct DeferredLightConstants {
 	int lightCount;
 	XMFLOAT3 padding;
 	LightData lights[25]; // 조명 60개부터 렉걸린다 이유 해결 안됨

@@ -8,7 +8,7 @@ cbuffer ObjectCB : register(b1)
     int objPadding;
 };
 
-cbuffer LightCB : register(b3)
+cbuffer LightCB : register(b4)
 {
     float3 lightDirection;
     float padding;
