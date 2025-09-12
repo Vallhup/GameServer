@@ -238,8 +238,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="animation.hlsli" />
-    <None Include="BasicPS.hlsli" />
-    <None Include="BasicVS.hlsli" />
+    <None Include="ForwardPS.hlsli" />
+    <None Include="ForwardVS.hlsli" />
     <None Include="FullscreenVS.hlsli" />
     <None Include="GBufferPS.hlsli" />
     <None Include="GBufferVS.hlsli" />

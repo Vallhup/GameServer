@@ -25,11 +25,5 @@ protected:
 	void RequestSceneChange() override;
 
 private:
-	shared_ptr<GameObject> knightTemplate;
-	vector<XMMATRIX> knightMatrix;
-	unique_ptr<UploadBuffer> instanceBuffer;
-
 	shared_ptr<MainCharacter> knight;
-
-	static constexpr int INSTANCE_COUNT = 10000;
 };

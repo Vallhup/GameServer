@@ -206,10 +206,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BasicPS.hlsli">
+    <None Include="ForwardPS.hlsli">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="BasicVS.hlsli">
+    <None Include="ForwardVS.hlsli">
       <Filter>Shaders</Filter>
     </None>
     <None Include="animation.hlsli">

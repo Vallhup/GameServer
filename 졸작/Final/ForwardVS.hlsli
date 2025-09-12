@@ -9,8 +9,8 @@ cbuffer ObjectCB : register(b1)
     matrix world;
     int useTexture;
     int useInstancing;
-    int hasAlpha;
     uint materialIndex;
+    int objPadding;
 };
 
 StructuredBuffer<matrix> instanceTransforms : register(t0, space2);

@@ -4,8 +4,8 @@ cbuffer ObjectCB : register(b1)
     matrix world;
     int useTexture;
     int useInstancing;
-    int hasAlpha;
     uint materialIndex;
+    int objPadding;
 };
 
 cbuffer LightCB : register(b3)

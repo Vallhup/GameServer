@@ -15,20 +15,18 @@ public:
 
 	void InitializeObjectBuffer(ID3D12Device* device);
 
-	void Update(float deltaTime) override;
-	void Render(DX12Core& core);
-
 	void RenderForward(DX12Core& core);
 	void RenderDeferred(DX12Core& core);
 
-	void RenderToGBuffer(DX12Core& core);
+	// Instancing 전용 함수는 나중에 사용할 수도 있을 가능성이 높아서 그냥 냅둠
 	void RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuffer* instancedBuffer);
 
-	void RenderSingleMaterial(DX12Core& core, const XMMATRIX& world);
 	void RenderMultiMaterial(DX12Core& core, const XMMATRIX& world);
+
+	void RenderSingleMaterialForwardOnly(DX12Core& core, const XMMATRIX& world);
 	void RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX& world);
 
-	void RenderSingleMaterialToGBuffer(DX12Core& core, const XMMATRIX& world);
+	void RenderSingleMaterialDeferredOnly(DX12Core& core, const XMMATRIX& world);
 	void RenderMultiMaterialDeferredOnly(DX12Core& core, const XMMATRIX& world);
 
 	void SetMesh(DX12Core& core, const wstring& path);

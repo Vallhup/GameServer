@@ -6,8 +6,8 @@ struct ObjectConstants
 	XMMATRIX world;
 	int useTexture;
 	int useInstancing;
-	int hasAlpha;
 	UINT materialIndex;
+	int padding;
 };
 
 struct LightData {

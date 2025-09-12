@@ -33,41 +33,6 @@ void MeshRenderer::InitializeObjectBuffer(ID3D12Device* device)
     }
 }
 
-void MeshRenderer::Update(float deltaTime)
-{
-    //OutputDebugStringA("Renderer's Update 호출!!\n");
-}
-
-void MeshRenderer::Render(DX12Core& core)
-{
-    if (!visible || !vertexIndexBuffer) return;
-    
-    auto animator = GetGameObject()->GetComponent<Animator>();
-    if (animator) {
-        animator->ExecuteComputeShader(core);
-    }
-    
-    /*auto cmdList = core.GetGraphicsCmdList();
-    SetupRenderingState(core);
-
-    if (animator) {
-        cmdList->SetGraphicsRootShaderResourceView(8, animator->GetFinalBuffer()->GetGPUVirtualAddress());
-    }
-
-    auto transform = GetGameObject()->GetComponent<Transform>();
-    XMMATRIX world = transform->GetWorldMatrix();
-
-    if (!materials.empty()) {
-        RenderMultiMaterial(core, world);
-    }
-    else if (material) {
-        RenderSingleMaterial(core, world);
-    }*/
-
-    // 아래는 GBuffer test
-    RenderToGBuffer(core);
-}
-
 void MeshRenderer::RenderForward(DX12Core& core)
 {
     if (!visible || !vertexIndexBuffer) return;
@@ -85,6 +50,9 @@ void MeshRenderer::RenderForward(DX12Core& core)
 
     if (!materials.empty()) {   // 많은 머티리얼 중 투명 값이 있는 머티리얼만 렌더링
         RenderMultiMaterialForwardOnly(core, world);
+    }
+    else if (material) {
+        RenderSingleMaterialForwardOnly(core, world);
     }
 }
 
@@ -113,33 +81,7 @@ void MeshRenderer::RenderDeferred(DX12Core& core)
         RenderMultiMaterialDeferredOnly(core, world);
     }
     else if (material) {
-        RenderSingleMaterialToGBuffer(core, world);
-    }
-}
-
-void MeshRenderer::RenderToGBuffer(DX12Core& core)
-{
-    auto cmdList = core.GetGraphicsCmdList();
-    auto transform = GetGameObject()->GetComponent<Transform>();
-    XMMATRIX world = transform->GetWorldMatrix();
-
-    // *** 핵심: G-Buffer PSO 사용! ***
-    cmdList->SetPipelineState(core.GetShader()->GetGBufferPSO());
-
-    SetupRenderingState(core);
-
-    if (auto animator = GetGameObject()->GetComponent<Animator>()) {
-        cmdList->SetGraphicsRootShaderResourceView(8,
-            animator->GetFinalBuffer()->GetGPUVirtualAddress());
-    }
-
-    if (!materials.empty()) {
-        // 멀티 머티리얼인 경우
-        RenderMultiMaterialDeferredOnly(core, world);
-    }
-    else if (material) {
-        // 단일 머티리얼인 경우
-        RenderSingleMaterialToGBuffer(core, world);
+        RenderSingleMaterialDeferredOnly(core, world);
     }
 }
 
@@ -164,29 +106,6 @@ void MeshRenderer::RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuf
     vertexIndexBuffer->DrawInstanced(cmdList, instanceCount);  
 }
 
-void MeshRenderer::RenderSingleMaterial(DX12Core& core, const XMMATRIX& world)
-{
-    auto cmdList = core.GetGraphicsCmdList();
-
-    cmdList->SetPipelineState(core.GetShader()->GetOpaquePSO());
-
-    ObjectConstants objConstants = {};
-    objConstants.world = XMMatrixTranspose(world);
-    objConstants.useTexture = 1;
-    objConstants.useInstancing = 0;
-    objConstants.hasAlpha = 0;
-    objConstants.materialIndex = material->GetMaterialIndex();
-
-    UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
-    UINT offset = myID * cbSize;
-    core.GetSceneCB()->CopyData(&objConstants, sizeof(ObjectConstants), offset);
-
-    core.GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress() + offset);
-
-    vertexIndexBuffer->Bind(core.GetGraphicsCmdList());
-    vertexIndexBuffer->Draw(core.GetGraphicsCmdList());
-}
-
 void MeshRenderer::RenderMultiMaterial(DX12Core& core, const XMMATRIX& world)
 {
     UINT cbSize = (sizeof(ObjectConstants) + 255) & ~255;
@@ -201,8 +120,7 @@ void MeshRenderer::RenderMultiMaterial(DX12Core& core, const XMMATRIX& world)
         ObjectConstants objConstants = {};
         objConstants.world = XMMatrixTranspose(world);
         objConstants.useTexture = 1;
-        objConstants.useInstancing = 0;
-        objConstants.hasAlpha = 0;
+        objConstants.useInstancing = 0;       
         objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
         UINT materialOffset = (myID * 5 + i) * cbSize;
@@ -223,7 +141,6 @@ void MeshRenderer::RenderMultiMaterial(DX12Core& core, const XMMATRIX& world)
         objConstants.world = XMMatrixTranspose(world);
         objConstants.useTexture = 1;
         objConstants.useInstancing = 0;
-        objConstants.hasAlpha = 1;
         objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
         UINT materialOffset = (myID * 5 + i) * cbSize;
@@ -233,6 +150,27 @@ void MeshRenderer::RenderMultiMaterial(DX12Core& core, const XMMATRIX& world)
         vertexIndexBuffer->Bind(cmdList);
         vertexIndexBuffer->DrawIndexed(cmdList, subMeshes[i].indexCount, subMeshes[i].startIndex);
     }
+}
+
+void MeshRenderer::RenderSingleMaterialForwardOnly(DX12Core& core, const XMMATRIX& world)
+{
+    if (!objectCB) {
+        InitializeObjectBuffer(core.GetDevice());
+    }
+
+    auto cmdList = core.GetGraphicsCmdList();
+
+    ObjectConstants objConstants = {};
+    objConstants.world = XMMatrixTranspose(world);
+    objConstants.useTexture = 1;
+    objConstants.useInstancing = 0;
+    objConstants.materialIndex = material->GetMaterialIndex();
+
+    objectCB->CopyData(&objConstants, sizeof(ObjectConstants));
+    cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress());
+
+    vertexIndexBuffer->Bind(core.GetGraphicsCmdList());
+    vertexIndexBuffer->Draw(core.GetGraphicsCmdList());
 }
 
 void MeshRenderer::RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX& world)
@@ -251,7 +189,6 @@ void MeshRenderer::RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX
         objConstants.world = XMMatrixTranspose(world);
         objConstants.useTexture = 1;
         objConstants.useInstancing = 0;
-        objConstants.hasAlpha = 0;
         objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
         size_t offset = i * CONSTANT_BUFFER_ALIGNMENT;
@@ -266,7 +203,7 @@ void MeshRenderer::RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX
     }
 }
 
-void MeshRenderer::RenderSingleMaterialToGBuffer(DX12Core& core, const XMMATRIX& world)
+void MeshRenderer::RenderSingleMaterialDeferredOnly(DX12Core& core, const XMMATRIX& world)
 {
     if (!objectCB) {
         InitializeObjectBuffer(core.GetDevice());
@@ -278,7 +215,6 @@ void MeshRenderer::RenderSingleMaterialToGBuffer(DX12Core& core, const XMMATRIX&
     objConstants.world = XMMatrixTranspose(world);
     objConstants.useTexture = 1;
     objConstants.useInstancing = 0;
-    objConstants.hasAlpha = 0;
     objConstants.materialIndex = material->GetMaterialIndex();
 
     objectCB->CopyData(&objConstants, sizeof(ObjectConstants));
@@ -304,7 +240,6 @@ void MeshRenderer::RenderMultiMaterialDeferredOnly(DX12Core& core, const XMMATRI
         objConstants.world = XMMatrixTranspose(world);
         objConstants.useTexture = 1;
         objConstants.useInstancing = 0;
-        objConstants.hasAlpha = 0;
         objConstants.materialIndex = materials[i]->GetMaterialIndex();
 
         size_t offset = i * CONSTANT_BUFFER_ALIGNMENT;
@@ -392,7 +327,6 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
 		OutputDebugStringA("Cannot create FBX Mesh for rendering!\n");
 }
 
-// MeshRenderer::SetupRenderingState에서 조명 관련 코드 전부 삭제
 void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer)
 {
     ID3D12GraphicsCommandList* cmdList = core.GetGraphicsCmdList();
@@ -400,8 +334,6 @@ void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuf
     cmdList->SetGraphicsRootSignature(core.GetRootSig()->Get());
     Material::BindBindlessResources(cmdList);
     cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
-
-    // 조명 설정 코드 전부 삭제!
     
     if (instanceBuffer) {
         cmdList->SetGraphicsRootShaderResourceView(9, instanceBuffer->GetGPUVirtualAddress());

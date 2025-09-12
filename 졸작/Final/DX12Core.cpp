@@ -20,7 +20,7 @@ void DX12Core::Initialize(HWND hwnd)
 	forwardLightCB = make_unique<UploadBuffer>();
 
 	rootSig->Initialize(GetDevice());
-	shader->Initialize(GetDevice(), GetRootSig()->Get(), L"BasicVS.hlsli", L"BasicPS.hlsli");
+	shader->InitializeForwardShader(GetDevice(), GetRootSig()->Get(), L"ForwardVS.hlsli", L"ForwardPS.hlsli");
 	shader->InitializeGBufferShader(GetDevice(), GetRootSig()->Get(), L"GBufferVS.hlsli", L"GBufferPS.hlsli");
 	shader->InitializeLightingShader(GetDevice(), GetRootSig()->Get(), L"FullscreenVS.hlsli", L"LightingPS.hlsli");
 	shader->InitializeComputeShader(GetDevice(), GetRootSig()->Get(), L"Animation.hlsli");
