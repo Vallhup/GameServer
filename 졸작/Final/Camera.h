@@ -58,5 +58,5 @@ private:
 	float minDistance = 0.5f;
 	float maxDistance = 4.5f;
 	float zoomSpeedPerNotch = 0.25f;    
-	float zoomFollowSpeed = 10.0f;
+	float zoomFollowSpeed = 2.5f;
 };
