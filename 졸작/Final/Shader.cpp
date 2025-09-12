@@ -96,13 +96,11 @@ void Shader::InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* 
 
 void Shader::InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
 {
-    // 라이팅 셰이더 컴파일
     CompileShader(vsPath, "VSMain", "vs_5_1", fullscreenVertexShader);
     CompileShader(psPath, "PSMain", "ps_5_1", lightingPixelShader);
 
-    // 라이팅 PSO 설정 (입력 레이아웃 없음! - 풀스크린 쿼드)
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-    psoDesc.InputLayout = { nullptr, 0 };  // 정점 버퍼 없음!
+    psoDesc.InputLayout = { nullptr, 0 };  
     psoDesc.pRootSignature = rootSig;
     psoDesc.VS = { fullscreenVertexShader->GetBufferPointer(), fullscreenVertexShader->GetBufferSize() };
     psoDesc.PS = { lightingPixelShader->GetBufferPointer(), lightingPixelShader->GetBufferSize() };
@@ -110,15 +108,13 @@ void Shader::InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature*
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
-    // 1개 Render Target (백버퍼)
     psoDesc.NumRenderTargets = 1;
-    psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;  // 백버퍼 포맷
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;  
 
-    psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;  // Depth 사용 안함
+    psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;  
     psoDesc.SampleDesc.Count = 1;
     psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 
-    // Depth 테스트 비활성화 (풀스크린이므로)
     D3D12_DEPTH_STENCIL_DESC depthDesc = {};
     depthDesc.DepthEnable = FALSE;
     depthDesc.StencilEnable = FALSE;
