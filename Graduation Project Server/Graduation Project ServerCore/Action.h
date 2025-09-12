@@ -37,7 +37,6 @@ protected:
 //
 // 1. 공격 방향
 //  - 캐릭터 forward 기준
-//  - 카메라 forward 기준
 // 
 // 2. Hitbox 생성
 //  - GameObject에 저장해놓고 특정 Action에서만 활성/비활성화

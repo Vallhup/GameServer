@@ -4,9 +4,7 @@
 Service::Service()
 {
 	_listener = std::make_shared<Listener>(*this);
-
 	_iocpCore = std::make_unique<IocpCore>();
-
 	_sessMng = std::make_unique<SessionManager>(*this);
 	_gameWorld = std::make_unique<GameWorld>(*this);
 }
@@ -69,7 +67,7 @@ void Service::Stop()
 
 void Service::BroadCast(const std::vector<char>& packet, int exceptId)
 {
-	// TODO : Session BroadCast
+	// TODO : Session BroadCasts
 }
 
 float Service::GetNowTime()

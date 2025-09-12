@@ -62,6 +62,35 @@ std::vector<char> PacketFactory::CSMovePacket(int id, bool dir[4], float yaw, fl
 	return out;
 }
 
+std::vector<char> PacketFactory::CSAttackPacket(int id)
+{
+	Protocol::CS_INPUT_PACKET input;
+
+	input.set_key(Protocol::Input::ATTACK);
+
+	Protocol::InputPayload* payload = input.mutable_payload();
+	Protocol::AttackPayload* attackPayload = payload->mutable_attack();
+	
+	std::string body;
+	input.SerializeToString(&body);
+
+	Protocol::GamePacket game;
+	game.mutable_header()->set_type(Protocol::PacketType::CS_INPUT);
+	game.mutable_header()->set_sessionid(id);
+	game.set_body(body);
+
+	std::string gameString;
+	game.SerializeToString(&gameString);
+
+	const uint16_t payloadSize = static_cast<uint16_t>(gameString.size());
+
+	std::vector<char> out(sizeof(payloadSize) + payloadSize);
+	memcpy(out.data(), &payloadSize, sizeof(payloadSize));
+	memcpy(out.data() + sizeof(payloadSize), gameString.data(), gameString.size());
+
+	return out;
+}
+
 std::vector<char> PacketFactory::SCLoginPacket(int id)
 {
 	Protocol::SC_LOGIN_PACKET login;
@@ -165,12 +194,10 @@ std::vector<char> PacketFactory::SCRemovePacket(int id)
 	return out;
 }
 
-std::vector<char> PacketFactory::SCAttackPacket(int id, const Protocol::Vec3& dir)
+std::vector<char> PacketFactory::SCAttackPacket(int id, float rot)
 {
 	Protocol::SC_ATTACK_PACKET attack;
-	attack.mutable_dir()->set_x(dir.x());
-	attack.mutable_dir()->set_y(dir.y());
-	attack.mutable_dir()->set_z(dir.z());
+	attack.set_rot(rot);
 
 	std::string body;
 	attack.SerializeToString(&body);

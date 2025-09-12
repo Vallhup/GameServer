@@ -10,9 +10,11 @@ void AttackAction::Start()
 	_finished = false;
 
 	// Attack Packet Send
-	//_owner.GetInstance()->BroadCast(PacketFactory::SCAttackPacket(_owner.GetId(), ));
+	if (auto trComp = _owner.GetComponent<TransformComponent>()) {
+		_owner.GetInstance()->BroadCast(PacketFactory::SCAttackPacket(_owner.GetId(), trComp->GetAngle()));
+	}
 
-	// TODO : 공격 HitBox 활성화 
+	// 공격 HitBox 활성화 
 	if (auto colComp = _owner.GetComponent<CollisionComponent>()) {
 		colComp->Activate(CollisionType::Attack);
 	}
@@ -28,7 +30,7 @@ void AttackAction::Update(float deltaTime)
 
 void AttackAction::End()
 {
-	// TODO : 공격 HitBox 비활성화
+	// 공격 HitBox 비활성화
 	if (auto colComp = _owner.GetComponent<CollisionComponent>()) {
 		colComp->Deactivate(CollisionType::Attack);
 	}

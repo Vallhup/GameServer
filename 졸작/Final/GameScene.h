@@ -36,7 +36,6 @@ private:
 
 	shared_ptr<GameObject> dragon;
 	shared_ptr<MainCharacter> knight;
-	shared_ptr<GameObject> otherKnight;
 	shared_ptr<GameObject> effectSample;
 	shared_ptr<GameObject> effectSample2;
 	shared_ptr<GameObject> effectSample3;

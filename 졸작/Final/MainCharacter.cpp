@@ -8,29 +8,15 @@
 
 void MainCharacter::Update(float deltaTime)
 {
-	UpdateMovementDirections();
-	BasicMove(deltaTime);
+	BasicMove();
+	BasicAttack();
 
 	GameObject::Update(deltaTime);
 
 	camera->SetCameraPosition(GetComponent<Transform>()->GetPosition());
 }
 
-void MainCharacter::UpdateMovementDirections()
-{
-	if (!camera) return;
-
-	characterForward = camera->GetForward();
-	characterRight = camera->GetRight();
-
-	characterForward.y = 0;
-	characterRight.y = 0;
-
-	XMStoreFloat3(&characterForward, XMVector3Normalize(XMLoadFloat3(&characterForward)));
-	XMStoreFloat3(&characterRight, XMVector3Normalize(XMLoadFloat3(&characterRight)));
-}
-
-void MainCharacter::BasicMove(float deltaTime)
+void MainCharacter::BasicMove()
 {
 	auto& input = GET(Input);
 
@@ -57,6 +43,20 @@ void MainCharacter::BasicMove(float deltaTime)
 	}
 
 	wasMoving = isMoving;
+}
+
+void MainCharacter::BasicAttack()
+{
+	auto& input = GET(Input);
+
+	if (input.GetMouseButton(MouseButton::LEFT)) {
+		input.SendAttackPacket();
+
+		auto animator = GetComponent<Animator>();
+		if (animator) {
+			// TODO : Attack Animation
+		}
+	}
 }
 
 void MainCharacter::SetCamera(Camera* cam)

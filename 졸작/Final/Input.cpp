@@ -53,3 +53,11 @@ void Input::SendMovePacket(bool dir[4], float yaw, float pitch)
 	vector<char> packet = PacketFactory::CSMovePacket(myId, dir, yaw, pitch);
 	network->Send(packet);
 }
+
+void Input::SendAttackPacket()
+{
+	if (!network) return;
+
+	vector<char> packet = PacketFactory::CSAttackPacket(myId);
+	network->Send(packet);
+}

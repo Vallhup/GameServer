@@ -61,6 +61,31 @@ struct SC_LOGIN_PACKETDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_LOGIN_PACKETDefaultTypeInternal _SC_LOGIN_PACKET_default_instance_;
+
+inline constexpr SC_ATTACK_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : rot_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_ATTACK_PACKET::SC_ATTACK_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_ATTACK_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_ATTACK_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_ATTACK_PACKETDefaultTypeInternal() {}
+  union {
+    SC_ATTACK_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_ATTACK_PACKETDefaultTypeInternal _SC_ATTACK_PACKET_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR CS_LOGIN_PACKET::CS_LOGIN_PACKET(::_pbi::ConstantInitialized)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
@@ -130,31 +155,6 @@ struct SC_DODGE_PACKETDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_DODGE_PACKETDefaultTypeInternal _SC_DODGE_PACKET_default_instance_;
-
-inline constexpr SC_ATTACK_PACKET::Impl_::Impl_(
-    ::_pbi::ConstantInitialized) noexcept
-      : _cached_size_{0},
-        dir_{nullptr} {}
-
-template <typename>
-PROTOBUF_CONSTEXPR SC_ATTACK_PACKET::SC_ATTACK_PACKET(::_pbi::ConstantInitialized)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(_class_data_.base()),
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(),
-#endif  // PROTOBUF_CUSTOM_VTABLE
-      _impl_(::_pbi::ConstantInitialized()) {
-}
-struct SC_ATTACK_PACKETDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR SC_ATTACK_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
-  ~SC_ATTACK_PACKETDefaultTypeInternal() {}
-  union {
-    SC_ATTACK_PACKET _instance;
-  };
-};
-
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_ATTACK_PACKETDefaultTypeInternal _SC_ATTACK_PACKET_default_instance_;
 
 inline constexpr SC_ADD_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -312,7 +312,7 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ATTACK_PACKET, _impl_._has_bits_),
+        ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ATTACK_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -320,8 +320,7 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ATTACK_PACKET, _impl_.dir_),
-        0,
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ATTACK_PACKET, _impl_.rot_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_DODGE_PACKET, _impl_._has_bits_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_DODGE_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -343,8 +342,8 @@ static const ::_pbi::MigrationSchema
         {40, 49, -1, sizeof(::Protocol::SC_ADD_PACKET)},
         {50, 60, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
         {62, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
-        {70, 79, -1, sizeof(::Protocol::SC_ATTACK_PACKET)},
-        {80, 89, -1, sizeof(::Protocol::SC_DODGE_PACKET)},
+        {70, -1, -1, sizeof(::Protocol::SC_ATTACK_PACKET)},
+        {79, 88, -1, sizeof(::Protocol::SC_DODGE_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_GamePacket_default_instance_._instance,
@@ -368,9 +367,9 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "N_PACKET\",\n\rSC_ADD_PACKET\022\033\n\003pos\030\001 \001(\0132\016"
     ".Protocol.Vec3\":\n\016SC_MOVE_PACKET\022\033\n\003pos\030"
     "\001 \001(\0132\016.Protocol.Vec3\022\013\n\003rot\030\002 \001(\002\"\022\n\020SC"
-    "_REMOVE_PACKET\"/\n\020SC_ATTACK_PACKET\022\033\n\003di"
-    "r\030\001 \001(\0132\016.Protocol.Vec3\".\n\017SC_DODGE_PACK"
-    "ET\022\033\n\003pos\030\001 \001(\0132\016.Protocol.Vec3b\006proto3"
+    "_REMOVE_PACKET\"\037\n\020SC_ATTACK_PACKET\022\013\n\003ro"
+    "t\030\001 \001(\002\".\n\017SC_DODGE_PACKET\022\033\n\003pos\030\001 \001(\0132"
+    "\016.Protocol.Vec3b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[2] =
     {
@@ -381,7 +380,7 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    479,
+    463,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -1829,17 +1828,8 @@ const ::_pbi::TcParseTable<0, 0, 0, 0, 2> SC_REMOVE_PACKET::_table_ = {
 
 class SC_ATTACK_PACKET::_Internal {
  public:
-  using HasBits =
-      decltype(std::declval<SC_ATTACK_PACKET>()._impl_._has_bits_);
-  static constexpr ::int32_t kHasBitsOffset =
-      8 * PROTOBUF_FIELD_OFFSET(SC_ATTACK_PACKET, _impl_._has_bits_);
 };
 
-void SC_ATTACK_PACKET::clear_dir() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (_impl_.dir_ != nullptr) _impl_.dir_->Clear();
-  _impl_._has_bits_[0] &= ~0x00000001u;
-}
 SC_ATTACK_PACKET::SC_ATTACK_PACKET(::google::protobuf::Arena* arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(arena, _class_data_.base()) {
@@ -1849,31 +1839,10 @@ SC_ATTACK_PACKET::SC_ATTACK_PACKET(::google::protobuf::Arena* arena)
   SharedCtor(arena);
   // @@protoc_insertion_point(arena_constructor:Protocol.SC_ATTACK_PACKET)
 }
-inline PROTOBUF_NDEBUG_INLINE SC_ATTACK_PACKET::Impl_::Impl_(
-    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
-    const Impl_& from, const ::Protocol::SC_ATTACK_PACKET& from_msg)
-      : _has_bits_{from._has_bits_},
-        _cached_size_{0} {}
-
 SC_ATTACK_PACKET::SC_ATTACK_PACKET(
-    ::google::protobuf::Arena* arena,
-    const SC_ATTACK_PACKET& from)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, _class_data_.base()) {
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  SC_ATTACK_PACKET* const _this = this;
-  (void)_this;
-  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
-  _impl_.dir_ = (cached_has_bits & 0x00000001u) ? ::google::protobuf::Message::CopyConstruct<::Protocol::Vec3>(
-                              arena, *from._impl_.dir_)
-                        : nullptr;
-
-  // @@protoc_insertion_point(copy_constructor:Protocol.SC_ATTACK_PACKET)
+    ::google::protobuf::Arena* arena, const SC_ATTACK_PACKET& from)
+    : SC_ATTACK_PACKET(arena) {
+  MergeFrom(from);
 }
 inline PROTOBUF_NDEBUG_INLINE SC_ATTACK_PACKET::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
@@ -1882,7 +1851,7 @@ inline PROTOBUF_NDEBUG_INLINE SC_ATTACK_PACKET::Impl_::Impl_(
 
 inline void SC_ATTACK_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.dir_ = {};
+  _impl_.rot_ = {};
 }
 SC_ATTACK_PACKET::~SC_ATTACK_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.SC_ATTACK_PACKET)
@@ -1892,7 +1861,6 @@ inline void SC_ATTACK_PACKET::SharedDtor(MessageLite& self) {
   SC_ATTACK_PACKET& this_ = static_cast<SC_ATTACK_PACKET&>(self);
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
-  delete this_._impl_.dir_;
   this_._impl_.~Impl_();
 }
 
@@ -1932,17 +1900,17 @@ const ::google::protobuf::internal::ClassData* SC_ATTACK_PACKET::GetClassData() 
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 1, 0, 2> SC_ATTACK_PACKET::_table_ = {
+const ::_pbi::TcParseTable<0, 1, 0, 0, 2> SC_ATTACK_PACKET::_table_ = {
   {
-    PROTOBUF_FIELD_OFFSET(SC_ATTACK_PACKET, _impl_._has_bits_),
+    0,  // no _has_bits_
     0, // no _extensions_
     1, 0,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
     4294967294,  // skipmap
     offsetof(decltype(_table_), field_entries),
     1,  // num_field_entries
-    1,  // num_aux_entries
-    offsetof(decltype(_table_), aux_entries),
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
@@ -1950,18 +1918,18 @@ const ::_pbi::TcParseTable<0, 1, 1, 0, 2> SC_ATTACK_PACKET::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::SC_ATTACK_PACKET>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // .Protocol.Vec3 dir = 1;
-    {::_pbi::TcParser::FastMtS1,
-     {10, 0, 0, PROTOBUF_FIELD_OFFSET(SC_ATTACK_PACKET, _impl_.dir_)}},
+    // float rot = 1;
+    {::_pbi::TcParser::FastF32S1,
+     {13, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ATTACK_PACKET, _impl_.rot_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // .Protocol.Vec3 dir = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_ATTACK_PACKET, _impl_.dir_), _Internal::kHasBitsOffset + 0, 0,
-    (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
-  }}, {{
-    {::_pbi::TcParser::GetTable<::Protocol::Vec3>()},
-  }}, {{
+    // float rot = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_ATTACK_PACKET, _impl_.rot_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+  }},
+  // no aux_entries
+  {{
   }},
 };
 
@@ -1972,12 +1940,7 @@ PROTOBUF_NOINLINE void SC_ATTACK_PACKET::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  cached_has_bits = _impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    ABSL_DCHECK(_impl_.dir_ != nullptr);
-    _impl_.dir_->Clear();
-  }
-  _impl_._has_bits_.Clear();
+  _impl_.rot_ = 0;
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -1996,12 +1959,11 @@ PROTOBUF_NOINLINE void SC_ATTACK_PACKET::Clear() {
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
-          cached_has_bits = this_._impl_._has_bits_[0];
-          // .Protocol.Vec3 dir = 1;
-          if (cached_has_bits & 0x00000001u) {
-            target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-                1, *this_._impl_.dir_, this_._impl_.dir_->GetCachedSize(), target,
-                stream);
+          // float rot = 1;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_rot()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                1, this_._internal_rot(), target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -2028,11 +1990,9 @@ PROTOBUF_NOINLINE void SC_ATTACK_PACKET::Clear() {
           (void)cached_has_bits;
 
            {
-            // .Protocol.Vec3 dir = 1;
-            cached_has_bits = this_._impl_._has_bits_[0];
-            if (cached_has_bits & 0x00000001u) {
-              total_size += 1 +
-                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.dir_);
+            // float rot = 1;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_rot()) != 0) {
+              total_size += 5;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -2042,23 +2002,14 @@ PROTOBUF_NOINLINE void SC_ATTACK_PACKET::Clear() {
 void SC_ATTACK_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
   auto* const _this = static_cast<SC_ATTACK_PACKET*>(&to_msg);
   auto& from = static_cast<const SC_ATTACK_PACKET&>(from_msg);
-  ::google::protobuf::Arena* arena = _this->GetArena();
   // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_ATTACK_PACKET)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  cached_has_bits = from._impl_._has_bits_[0];
-  if (cached_has_bits & 0x00000001u) {
-    ABSL_DCHECK(from._impl_.dir_ != nullptr);
-    if (_this->_impl_.dir_ == nullptr) {
-      _this->_impl_.dir_ =
-          ::google::protobuf::Message::CopyConstruct<::Protocol::Vec3>(arena, *from._impl_.dir_);
-    } else {
-      _this->_impl_.dir_->MergeFrom(*from._impl_.dir_);
-    }
+  if (::absl::bit_cast<::uint32_t>(from._internal_rot()) != 0) {
+    _this->_impl_.rot_ = from._impl_.rot_;
   }
-  _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -2073,8 +2024,7 @@ void SC_ATTACK_PACKET::CopyFrom(const SC_ATTACK_PACKET& from) {
 void SC_ATTACK_PACKET::InternalSwap(SC_ATTACK_PACKET* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  swap(_impl_.dir_, other->_impl_.dir_);
+        swap(_impl_.rot_, other->_impl_.rot_);
 }
 
 ::google::protobuf::Metadata SC_ATTACK_PACKET::GetMetadata() const {

@@ -35,6 +35,7 @@ public:
 
 public:
 	void SendMovePacket(bool dir[4], float yaw, float pitch);
+	void SendAttackPacket();
 
 private:
 	bitset<256> mPressedKeys = {};

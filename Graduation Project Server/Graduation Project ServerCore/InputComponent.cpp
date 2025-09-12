@@ -15,7 +15,7 @@ void InputComponent::LogicUpdate(float deltaTime)
 			}
 			case Protocol::Input::ATTACK: {
 				if (auto actComp = _owner.GetComponent<ActionComponent>()) {
-					actComp->StartDodge();
+					actComp->StartAttack();
 				}
 				break;
 			}

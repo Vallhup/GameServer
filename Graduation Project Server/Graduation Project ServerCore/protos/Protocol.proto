@@ -41,7 +41,7 @@ message SC_REMOVE_PACKET
 
 message SC_ATTACK_PACKET
 {
-	Vec3 dir = 1;
+	float rot = 1;
 }
 
 message SC_DODGE_PACKET

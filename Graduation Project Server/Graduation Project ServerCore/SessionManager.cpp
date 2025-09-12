@@ -25,15 +25,15 @@ void SessionManager::AddSession(SOCKET clientSocket)
 
 void SessionManager::RemoveSession(int sessionId)
 {
+	std::unique_lock lock{ _mutex };
 	auto it = _sessions.find(sessionId);
 	if (it != _sessions.end()) {
-		it->second->GetCharacter()->GetInstance()->RemovePlayer(sessionId);
+		if (auto character = it->second->GetCharacter()) {
+			character->GetInstance()->RemovePlayer(sessionId);
+		}
 	}
 
-	{
-		std::unique_lock lock{ _mutex };
-		_sessions.erase(sessionId);
-	}
+	_sessions.erase(sessionId);
 }
 
 Session* SessionManager::GetSession(int sessionId)

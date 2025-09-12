@@ -70,11 +70,14 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 					OutputDebugStringA("My character positioned!\n");
 				}
 
-				else if (sessionId != myId and otherKnight) {
-					if (auto transform = otherKnight->GetComponent<Transform>()) {
-						transform->SetPosition(pos.x(), pos.y(), pos.z());
+				else if (sessionId != myId) {
+					for (auto& obj : gameObjects) {
+						if (obj->GetId() == sessionId) {
+							if (auto transform = obj->GetComponent<Transform>()) {
+								transform->SetInitPosition(pos.x(), pos.y(), pos.z());
+							}
+						}
 					}
-
 					OutputDebugStringA("Other Character positioned!\n");
 				}
 			}
@@ -93,10 +96,14 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 					}
 				}
 
-				else if (sessionId != myId and otherKnight) {
-					if (auto transform = otherKnight->GetComponent<Transform>()) {
-						transform->SetPosition(pos.x(), pos.y(), pos.z());
-						transform->SetTargetRotation(move.rot());
+				else if (sessionId != myId) {
+					for (auto& obj : gameObjects) {
+						if (obj->GetId() == sessionId) {
+							if (auto transform = obj->GetComponent<Transform>()) {
+								transform->SetPosition(pos.x(), pos.y(), pos.z());
+								transform->SetTargetRotation(move.rot());
+							}
+						}
 					}
 				}
 			}
@@ -105,6 +112,17 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 		case Protocol::PacketType::SC_REMOVE: {
 			OutputDebugStringA("SC_REMOVE packet received\n");
 			break;
+		}
+		case Protocol::PacketType::SC_ATTACK: {
+			Protocol::SC_ATTACK_PACKET attack;
+			if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
+				int sessionId = packet.header().sessionid();
+
+				if (sessionId == myId && knight) {
+					// TODO : Client Attack Animation º¸Á¤
+					OutputDebugStringA("SC_ATTACK_PACKET received\n");
+				}
+			}
 		}
 	}
 }
@@ -265,13 +283,13 @@ void GameScene::InitializeLogic()
 	}
 
 	/*{
-		for (int i = 1; i < 10; ++i) {
+		for (int i = 1; i < 2; ++i) {
 			auto newKnight = make_shared<GameObject>();
 			auto meshRenderer = newKnight->AddComponent<MeshRenderer>();
 			auto transform = newKnight->AddComponent<Transform>();
-			meshRenderer->SetMesh(L"../FBXOutput/knight");
-			transform->SetInitPosition(i * 1.5f + 1.0f, 0.f, 0.5f);
-			transform->SetRotation(0.f, 0.f, 0.f);
+			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+			transform->SetInitPosition(0.f, 0.f, 0.f);
+			transform->SetRotation(-1.57f, 0.f, 0.f);
 			transform->SetScale(0.01f, 0.01f, 0.01f);
 			AddGameObject(newKnight);
 		}
@@ -280,7 +298,7 @@ void GameScene::InitializeLogic()
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
-	
+	 
 	for (const auto& obj : gameObjects)
 	{
 		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
