@@ -4,7 +4,7 @@
 void RootSignature::Initialize(ID3D12Device* device)
 {
     std::vector<CD3DX12_ROOT_PARAMETER> rootParams;
-    std::vector<CD3DX12_DESCRIPTOR_RANGE> ranges;
+    std::vector<std::vector<CD3DX12_DESCRIPTOR_RANGE>> tables;
 
     auto AddCBV = [&](UINT reg, UINT space = 0) {
         CD3DX12_ROOT_PARAMETER param;
@@ -25,24 +25,24 @@ void RootSignature::Initialize(ID3D12Device* device)
         };
 
     auto AddBindlessTable = [&](UINT space = 1) {
-        CD3DX12_DESCRIPTOR_RANGE range;
-        range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, UINT_MAX, 0, space);
-        ranges.push_back(range);
+        tables.emplace_back(1); 
+        auto& r = tables.back()[0];
+        r.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, UINT_MAX, 0, space);
 
-        CD3DX12_ROOT_PARAMETER param;
-        param.InitAsDescriptorTable(1, &ranges.back(), D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParams.push_back(param);
-        };
+        CD3DX12_ROOT_PARAMETER p;
+        p.InitAsDescriptorTable(1, tables.back().data(), D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParams.push_back(p);
+    };
 
     auto AddSRVTable = [&](UINT startReg, UINT count, UINT space = 0) {
-        CD3DX12_DESCRIPTOR_RANGE range;
-        range.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, count, startReg, space);
-        ranges.push_back(range);
+        tables.emplace_back(1);
+        auto& r = tables.back()[0];
+        r.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, count, startReg, space);
 
-        CD3DX12_ROOT_PARAMETER param;
-        param.InitAsDescriptorTable(1, &ranges.back(), D3D12_SHADER_VISIBILITY_PIXEL);
-        rootParams.push_back(param);
-        };
+        CD3DX12_ROOT_PARAMETER p;
+        p.InitAsDescriptorTable(1, tables.back().data(), D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParams.push_back(p);
+    };
 
     AddCBV(0);              // rootParmas[0] register(b0) - view & projection Constant BUFF
     AddCBV(1);              // rootParmas[1] register(b1) - object Constant BUFF
