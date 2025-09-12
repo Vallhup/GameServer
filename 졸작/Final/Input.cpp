@@ -12,6 +12,7 @@ Input& Input::Get()
 void Input::Renew()
 {
 	mChangeKeyState.reset();
+	mMouseWheelDelta = 0;
 }
 
 bool Input::GetKey(const size_t key) const
@@ -29,6 +30,11 @@ bool Input::GetMouseButton(const MouseButton button) const
 	return mPressedMouseButtons[static_cast<size_t>(button)];
 }
 
+int Input::GetMouseWheelDelta() const
+{
+	return mMouseWheelDelta;
+}
+
 void Input::SetKey(const size_t key, const bool pressed)
 {
 	mChangeKeyState[key] = (mPressedKeys[key] != pressed);
@@ -44,6 +50,11 @@ void Input::SetMouseButton(const MouseButton button, const bool bPressed)
 void Input::SetMousePosition(const XMFLOAT2 mousePosition)
 {
 	mMousePos = mousePosition;
+}
+
+void Input::SetMouseWheelDelta(int d)
+{
+	mMouseWheelDelta += d;
 }
 
 void Input::SendMovePacket(bool dir[4], float yaw, float pitch)

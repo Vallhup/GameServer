@@ -52,4 +52,11 @@ private:
 	static constexpr float MOUSE_SENSITIVITY = 0.1f;
 	static constexpr float CAMERA_FOLLOW_SPEED = 40.0f;		// 카메라 위치 보간 속도
 	static constexpr float TARGET_FOLLOW_SPEED = 4.0f;		// 캐릭터 위치 보간 속도
+
+	float desiredDistance;   
+	float currentDistance;   
+	float minDistance = 0.5f;
+	float maxDistance = 4.5f;
+	float zoomSpeedPerNotch = 0.25f;    
+	float zoomFollowSpeed = 2.5f;
 };

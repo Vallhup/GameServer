@@ -102,6 +102,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_RBUTTONUP:
         GET(Input).SetMouseButton(MouseButton::RIGHT, static_cast<bool>(WM_RBUTTONUP - message));
         return 0;
+    case WM_MOUSEWHEEL:
+    {
+        const short delta = GET_WHEEL_DELTA_WPARAM(wParam); 
+        GET(Input).SetMouseWheelDelta((int)delta);          
+        return 0;
+    }
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
