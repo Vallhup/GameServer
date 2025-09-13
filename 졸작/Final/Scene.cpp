@@ -20,8 +20,6 @@ void Scene::Initialize(DX12Core& core)
 
     InitializeLogic();
 
-    Material::UpdateMaterialBuffer();
-
     coreRef->FlushCommandQueue();
     coreRef->ResetCommandQueue();
 

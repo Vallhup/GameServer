@@ -60,6 +60,8 @@ void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandL
     materialIndex = static_cast<UINT>(materials.size() - 1);
     bufferDirty = true;
 
+    UpdateMaterialBuffer();
+
     OutputDebugStringA(("Material created with index: " + to_string(materialIndex) + "\n").c_str());
 }
 
