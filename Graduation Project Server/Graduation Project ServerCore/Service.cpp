@@ -67,7 +67,10 @@ void Service::Stop()
 
 void Service::BroadCast(const std::vector<char>& packet, int exceptId)
 {
-	// TODO : Session BroadCasts
+	for (auto& session : _sessMng->GetSessionList()) {
+		if (session->GetId() == exceptId) continue;
+		session->RegisterSend(packet);
+	}
 }
 
 float Service::GetNowTime()

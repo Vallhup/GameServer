@@ -9,6 +9,7 @@ public:
 	virtual void RemoveSession(int sessionId) = 0;
 
 	virtual Session* GetSession(int sessionId) = 0;
+	virtual std::vector<Session*> GetSessionList() = 0;
 
 	virtual void SetCharacter(int sessionId, GameObject* character) = 0;
 };
@@ -24,6 +25,7 @@ public:
 	virtual void RemoveSession(int sessionId) override;
 
 	virtual Session* GetSession(int sessionId) override;
+	virtual std::vector<Session*> GetSessionList() override;
 
 	virtual void SetCharacter(int sessionId, GameObject* character) override;
 

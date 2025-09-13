@@ -28,7 +28,7 @@ void GameScene::CreateKnightPool()
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-		transform->SetInitPosition((1.f * i), 0.f, 5.f);
+		//transform->SetInitPosition((1.f * i), 0.f, 5.f);
 		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		knightPool.push_back(knight);
@@ -177,7 +177,7 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 					myPlayer = player;
 					myPlayer->SetCamera(cam.get());
 					OutputDebugStringA("My character activated!\n");
-				}
+				} 
 			}
 			break;
 		}
@@ -302,11 +302,11 @@ void GameScene::RenderSceneDeferred()
 {
 	for (const auto& obj : gameObjects)
 	{
-		//if (obj->GetId() != -1)
-		//{
+		if (obj->GetId() != -1)
+		{
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 				meshRenderer->RenderDeferred(*coreRef);
-		//}
+		}
 	}
 }
 
@@ -314,11 +314,11 @@ void GameScene::RenderSceneForward()
 {
 	for (const auto& obj : gameObjects)
 	{
-		//if (obj->GetId() != -1)
-		//{
+		if (obj->GetId() != -1)
+		{
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 				meshRenderer->RenderForward(*coreRef);
-		//}
+		}
 	}
 }
 

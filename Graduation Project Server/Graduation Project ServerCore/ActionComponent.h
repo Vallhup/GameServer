@@ -1,8 +1,6 @@
 #pragma once
 
 class ActionComponent : public IComponent {
-	friend class AttackAction;
-
 public:
 	ActionComponent() = delete;
 	ActionComponent(GameObject& owner, Instance* instance)
@@ -19,6 +17,5 @@ public:
 
 private:
 	std::unique_ptr<IAction> _currentAction;
-	concurrency::concurrent_queue<std::vector<char>> _packets;
 };
 

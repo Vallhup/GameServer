@@ -48,6 +48,20 @@ Session* SessionManager::GetSession(int sessionId)
 	return nullptr;
 }
 
+std::vector<Session*> SessionManager::GetSessionList()
+{
+	std::shared_lock lock{ _mutex };
+
+	std::vector<Session*> out;
+	out.reserve(_sessions.size());
+
+	for (auto& [id, session] : _sessions) {
+		out.push_back(session.get());
+	}
+
+	return out;
+}
+
 void SessionManager::SetCharacter(int sessionId, GameObject* character)
 {
 	Session* session = GetSession(sessionId);
@@ -74,21 +88,33 @@ void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& pac
 
 		// TEMP : Login Packet에 Character Data 포함? 
 		//        아니면 접속 타이밍, 무결성만 검사하고 따로 Character Select Packet?
-		auto session = GetSession(sessionId);
+		if (auto session = GetSession(sessionId)) {
+			// TEMP : 0번 Instance는 Server Town 고정
+			//        나중에 Character 별로 Server Town 나뉘어지면 별도로 분기
+			_gameCtx.GetGameWorld().GetInstance(0)->AddPlayer(session);
+			session->RegisterSend(PacketFactory::SCLoginPacket(session->GetId()));
 
-		// TEMP : 0번 Instance는 Server Town 고정
-		//        나중에 Character 별로 Server Town 나뉘어지면 별도로 분기
-		_gameCtx.GetGameWorld().GetInstance(0)->AddPlayer(session);
-		session->RegisterSend(PacketFactory::SCLoginPacket(session->GetId()));
+			const vec3 pos = session->GetCharacter()->GetComponent<TransformComponent>()->GetPosition();
+			Protocol::Vec3 packetPos;
+			packetPos.set_x(pos.x);
+			packetPos.set_y(pos.y);
+			packetPos.set_z(pos.z);
 
-		const vec3 pos = session->GetCharacter()->GetComponent<TransformComponent>()->GetPosition();
-		Protocol::Vec3 packetPos;
-		packetPos.set_x(pos.x);
-		packetPos.set_y(pos.y);
-		packetPos.set_z(pos.z);
+			_gameCtx.BroadCast(PacketFactory::SCAddPacket(sessionId, packetPos));
 
-		session->RegisterSend(PacketFactory::SCAddPacket(sessionId, packetPos));
+			// 지금 login한 놈한테 이미 접속해있던 놈 알려줘야됨
+			auto sessions = GetSessionList();
+			for (auto& sess : sessions) {
+				if (sess->GetId() == sessionId) continue;
 
+				const vec3 sessPos = sess->GetCharacter()->GetComponent<TransformComponent>()->GetPosition();
+				packetPos.set_x(sessPos.x);
+				packetPos.set_y(sessPos.y);
+				packetPos.set_z(sessPos.z);
+
+				session->RegisterSend(PacketFactory::SCAddPacket(sess->GetId(), packetPos));
+			}
+		}
 		break;
 	}
 	case Protocol::CS_INPUT: {
