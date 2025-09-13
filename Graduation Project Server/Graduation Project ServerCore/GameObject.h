@@ -27,7 +27,7 @@ public:
 		return raw;
 	}
 
-	template<typename T>
+	/*template<typename T>
 	bool RemoveComponent()
 	{
 		if (not Getcomponent<T>()) {
@@ -49,7 +49,7 @@ public:
 		}
 
 		return false;
-	}
+	}*/
 
 	template<typename T>
 	T* GetComponent() const

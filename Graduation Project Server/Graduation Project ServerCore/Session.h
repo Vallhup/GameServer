@@ -2,6 +2,12 @@
 
 class GameObject;
 
+enum class SessionState : char {
+	ST_ALLOC,
+	ST_INGAME,
+	ST_FREE
+};
+
 class Session : public IocpObject {
 	static constexpr int MAX_PACKET{ 32 };
 
@@ -27,10 +33,12 @@ public:
 
 public:
 	int GetId() const { return _id; }
+	SessionState GetState() const { return _state.load(); }
 	GameObject* GetCharacter() const { return _character; }
 
 	void SetPacketHandler(PacketHandler handler) { _packetHandler = handler; }
 	void SetCharacter(GameObject* character) { _character = character; }
+	void SetState(SessionState state) { _state = state; }
 
 private:
 	void InternalSend();
@@ -47,6 +55,7 @@ private:
 	PacketHandler _packetHandler;
 
 	std::atomic<bool> _connected;
+	std::atomic<SessionState> _state;
 
 	GameObject* _character;
 	ISessionManager* _owner;

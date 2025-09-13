@@ -4,6 +4,7 @@
 Session::Session(int id, SOCKET socket, ISessionManager* owner) 
 	: _id(id), _socket(socket), _owner(owner)
 {
+	_state = SessionState::ST_ALLOC;
 	_connected = true;
 	_character = nullptr;
 }

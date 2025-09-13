@@ -68,6 +68,7 @@ void Service::Stop()
 void Service::BroadCast(const std::vector<char>& packet, int exceptId)
 {
 	for (auto& session : _sessMng->GetSessionList()) {
+		if (session->GetState() != SessionState::ST_INGAME) continue;
 		if (session->GetId() == exceptId) continue;
 		session->RegisterSend(packet);
 	}

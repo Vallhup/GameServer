@@ -92,6 +92,7 @@ void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& pac
 			// TEMP : 0번 Instance는 Server Town 고정
 			//        나중에 Character 별로 Server Town 나뉘어지면 별도로 분기
 			_gameCtx.GetGameWorld().GetInstance(0)->AddPlayer(session);
+			session->SetState(SessionState::ST_INGAME);
 			session->RegisterSend(PacketFactory::SCLoginPacket(session->GetId()));
 
 			const vec3 pos = session->GetCharacter()->GetComponent<TransformComponent>()->GetPosition();
@@ -102,17 +103,19 @@ void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& pac
 
 			_gameCtx.BroadCast(PacketFactory::SCAddPacket(sessionId, packetPos));
 
-			// 지금 login한 놈한테 이미 접속해있던 놈 알려줘야됨
-			auto sessions = GetSessionList();
-			for (auto& sess : sessions) {
+			// 지금 Login한 놈한테 이미 접속해있던 놈 알려줘야됨
+			for (const auto& sess : GetSessionList()) {
 				if (sess->GetId() == sessionId) continue;
+				if (auto character = sess->GetCharacter()) {
+					if (auto trComp = character->GetComponent<TransformComponent>()) {
+						const vec3 sessPos = trComp->GetPosition();
+						packetPos.set_x(sessPos.x); 
+						packetPos.set_y(sessPos.y);
+						packetPos.set_z(sessPos.z);
 
-				const vec3 sessPos = sess->GetCharacter()->GetComponent<TransformComponent>()->GetPosition();
-				packetPos.set_x(sessPos.x);
-				packetPos.set_y(sessPos.y);
-				packetPos.set_z(sessPos.z);
-
-				session->RegisterSend(PacketFactory::SCAddPacket(sess->GetId(), packetPos));
+						session->RegisterSend(PacketFactory::SCAddPacket(sess->GetId(), packetPos));
+					}
+				}
 			}
 		}
 		break;
