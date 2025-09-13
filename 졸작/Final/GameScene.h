@@ -11,6 +11,12 @@ public:
 	GameScene& operator=(const GameScene&) = delete;
 	~GameScene();
 
+	void CreateKnightPool();
+	void CreateDragon();
+	void CreateCastle();
+	void CreateEffectSamples();
+	shared_ptr<MainCharacter> GetAvailableKnight() const;
+
 	void SetNetworkManager(NetworkManager* nManager) { _nManager = nManager; }
 
 	void Release() override;
@@ -35,13 +41,11 @@ private:
 	vector<shared_ptr<GameObject>> gameObjects;
 
 	shared_ptr<GameObject> dragon;
-	shared_ptr<MainCharacter> knight;
-	shared_ptr<GameObject> effectSample;
-	shared_ptr<GameObject> effectSample2;
-	shared_ptr<GameObject> effectSample3;
-	shared_ptr<GameObject> effectSample4;
-	shared_ptr<GameObject> flameEffect;
-	shared_ptr<GameObject> fireWorkEffect;
-	shared_ptr<GameObject> fireWorkEffect2;
-	shared_ptr<GameObject> fireWorkEffect3;
+
+	vector<shared_ptr<MainCharacter>> knightPool;
+	static constexpr int MAX_KNIGHT_COUNT = 3;
+	unordered_map<int, shared_ptr<MainCharacter>> activePlayers;
+	shared_ptr<MainCharacter> myPlayer;
+
+	vector<shared_ptr<GameObject>> effectObjects;
 };

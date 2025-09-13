@@ -18,6 +18,109 @@ int myId{ -1 };
 
 GameScene::~GameScene() = default;
 
+void GameScene::CreateKnightPool()
+{
+	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
+	{
+		auto knight = make_shared<MainCharacter>();
+		knight->SetId(-1);
+		auto meshRenderer = knight->AddComponent<MeshRenderer>();
+		auto transform = knight->AddComponent<Transform>();
+		auto animator = knight->AddComponent<Animator>();
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+		transform->SetInitPosition((1.f * i), 0.f, 5.f);
+		transform->SetRotation(-1.57f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+		knightPool.push_back(knight);
+		AddGameObject(knight);
+	}
+}
+
+void GameScene::CreateDragon()
+{
+	dragon = make_shared<GameObject>();
+	dragon->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
+	auto meshRenderer = dragon->AddComponent<MeshRenderer>();
+	auto transform = dragon->AddComponent<Transform>();
+	auto animator = dragon->AddComponent<Animator>();
+	meshRenderer->SetMesh(*coreRef, L"../FBXOutput/Dragon");
+	transform->SetPosition(5.f, 0.f, -5.f);
+	transform->SetRotation(0.f, 0.f, 0.f);
+	transform->SetScale(0.1f, 0.1f, 0.1f);
+	AddGameObject(dragon);
+
+	OutputDebugStringA("Dragon created!!\n");
+}
+
+void GameScene::CreateCastle()
+{
+	vector<wstring> names = { L"bookshelf", L"candle", L"chair", L"pillar", L"statue1", L"statue2", L"statue3", L"table", L"throne" };
+	for (int i = 1; i < 29; ++i)
+	{
+		auto map = make_shared<GameObject>();
+		map->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
+		auto meshRenderer = map->AddComponent<MeshRenderer>();
+		auto transform = map->AddComponent<Transform>();
+		if (i < 10)
+			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_0" + to_wstring(i));
+		else if (i < 20)
+			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_" + to_wstring(i));
+		else
+			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_" + names[i - 20]);
+		transform->SetInitPosition(0.0f, 0.0f, 0.0f);
+		transform->SetRotation(0.0f, 0.0f, 0.0f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+		AddGameObject(map);
+
+		OutputDebugStringA("Strut created!!\n");
+	}
+}
+
+void GameScene::CreateEffectSamples()
+{
+	struct EffectInfo {
+		u16string name;
+		float x;
+		float y;
+		float z;
+	};
+
+	vector<EffectInfo> info = {
+		{u"Fireworks", 1.f, 0.f, -10.5f},
+		{u"BloodLance", 1.f, 0.f, 0.5f},
+		{u"Aura01_HDR", 1.f, 0.f, 0.5f},
+		{u"Benediction", 1.f, 10.f, -10.5f},
+		{u"Atmosphere", 1.f, 10.f, -10.5f},
+		{u"CandleFire4", 27.f, 29.f, -70.0f},
+		{u"CandleFire4", -27.f, 29.f, -70.0f},
+		{u"CandleFire3", 7.2f, 3.25f, -4.2f},
+	};
+
+	for (int i = 0; i < info.size(); ++i)
+	{
+		auto effectSample = make_shared<GameObject>();
+		auto effectRenderer = effectSample->AddComponent<EffectRenderer>();
+		auto transform = effectSample->AddComponent<Transform>();
+		effectRenderer->Initialize(*coreRef);
+		u16string path = u"../Effects/" + info[i].name + u".efk";
+		effectRenderer->LoadEffect(path.c_str());
+		transform->SetInitPosition(info[i].x, info[i].y, info[i].z);
+		effectObjects.push_back(effectSample);
+		AddGameObject(effectSample);
+	}
+}
+
+shared_ptr<MainCharacter> GameScene::GetAvailableKnight() const
+{
+	for (auto& knight : knightPool)
+	{
+		if (knight->GetId() == -1)
+			return knight;
+	}
+
+	return nullptr;
+}
+
 void GameScene::Release()
 {
 }
@@ -26,7 +129,9 @@ void GameScene::Reset()
 {
 	// TODO: 씬 데이터 리셋 코드 추가
 	dragon.reset();
-	knight.reset();
+	knightPool.clear();
+	activePlayers.clear();
+	myPlayer = nullptr;
 	gameObjects.clear();
 
 	Material::Cleanup();
@@ -41,13 +146,14 @@ void GameScene::AddGameObject(shared_ptr<GameObject> obj)
 void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 {
 	const auto& header = packet.header();
+	int sessionId = header.sessionid();
 
 	switch (header.type()) {
 		case Protocol::PacketType::SC_LOGIN: {
 			OutputDebugStringA("SC_LOGIN packet received\n");
 			Protocol::SC_LOGIN_PACKET login;
 			if (login.ParseFromArray(packet.body().data(), packet.body().size())) {
-				myId = packet.header().sessionid();
+				myId = sessionId;
 				OutputDebugStringA(("My Session ID: " + to_string(myId) + "\n").c_str());
 			}
 			break;
@@ -56,29 +162,21 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 			OutputDebugStringA("SC_ADD packet received\n");
 			Protocol::SC_ADD_PACKET add;
 			if (add.ParseFromArray(packet.body().data(), packet.body().size())) {
-				int sessionId = packet.header().sessionid();
 				Protocol::Vec3 pos = add.pos();
 
-				// 내 캐릭터만 처리
-				if (sessionId == myId && knight) {
-					if (auto transform = knight->GetComponent<Transform>()) {
-						transform->SetInitPosition(pos.x(), pos.y(), pos.z());
-					}
+				auto player = GetAvailableKnight();
+				if (player) {
+					player->SetId(sessionId);
+					auto transform = player->GetComponent<Transform>();
+					transform->SetInitPosition(pos.x(), pos.y(), pos.z());
 
-					knight->SetCamera(cam.get());
-
-					OutputDebugStringA("My character positioned!\n");
+					activePlayers[sessionId] = player;
 				}
 
-				else if (sessionId != myId) {
-					for (auto& obj : gameObjects) {
-						if (obj->GetId() == sessionId) {
-							if (auto transform = obj->GetComponent<Transform>()) {
-								transform->SetInitPosition(pos.x(), pos.y(), pos.z());
-							}
-						}
-					}
-					OutputDebugStringA("Other Character positioned!\n");
+				if (sessionId == myId) {
+					myPlayer = player;
+					myPlayer->SetCamera(cam.get());
+					OutputDebugStringA("My character activated!\n");
 				}
 			}
 			break;
@@ -89,22 +187,12 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 				int sessionId = packet.header().sessionid();
 				Protocol::Vec3 pos = move.pos();
 
-				if (sessionId == myId && knight) {
-					if (auto transform = knight->GetComponent<Transform>()) {
-						transform->SetPosition(pos.x(), pos.y(), pos.z());
-						transform->SetTargetRotation(move.rot());
-					}
-				}
-
-				else if (sessionId != myId) {
-					for (auto& obj : gameObjects) {
-						if (obj->GetId() == sessionId) {
-							if (auto transform = obj->GetComponent<Transform>()) {
-								transform->SetPosition(pos.x(), pos.y(), pos.z());
-								transform->SetTargetRotation(move.rot());
-							}
-						}
-					}
+				auto it = activePlayers.find(sessionId);
+				if (it != activePlayers.end())
+				{
+					auto transform = it->second->GetComponent<Transform>();
+					transform->SetPosition(pos.x(), pos.y(), pos.z());
+					transform->SetTargetRotation(move.rot());
 				}
 			}
 			break;
@@ -118,7 +206,7 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 			if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
 				int sessionId = packet.header().sessionid();
 
-				if (sessionId == myId && knight) {
+				if (sessionId == myId) {
 					// TODO : Client Attack Animation 보정
 					OutputDebugStringA("SC_ATTACK_PACKET received\n");
 				}
@@ -137,163 +225,10 @@ void GameScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
 
-	{
-		dragon = make_shared<GameObject>();
-		auto meshRenderer = dragon->AddComponent<MeshRenderer>();
-		auto transform = dragon->AddComponent<Transform>();
-		auto animator = dragon->AddComponent<Animator>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/Dragon");
-		transform->SetPosition(5.f, 0.f, -5.f);
-		transform->SetRotation(0.f, 0.f, 0.f);
-		transform->SetScale(0.1f, 0.1f, 0.1f);
-		AddGameObject(dragon);
-
-		OutputDebugStringA("Dragon created!!\n");
-	}
-
-	{
-		knight = make_shared<MainCharacter>();
-		auto meshRenderer = knight->AddComponent<MeshRenderer>();
-		auto transform = knight->AddComponent<Transform>();
-		auto animator = knight->AddComponent<Animator>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-		transform->SetInitPosition(0.f, 0.f, 0.f);
-		transform->SetRotation(-1.57f, 0.f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		knight->SetCamera(cam.get());
-		AddGameObject(knight);
-
-		OutputDebugStringA("Strut created!!\n");
-	}
-
-	vector<wstring> names = { L"bookshelf", L"candle", L"chair", L"pillar", L"statue1", L"statue2", L"statue3", L"table", L"throne" };
-	for (int i = 1; i < 29; ++i)
-	{
-		auto map = make_shared<GameObject>();
-		auto meshRenderer = map->AddComponent<MeshRenderer>();
-		auto transform = map->AddComponent<Transform>();
-		if (i < 10)
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_0" + to_wstring(i));
-		else if (i < 20)
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_" + to_wstring(i));
-		else
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_" + names[i - 20]);
-		transform->SetInitPosition(0.0f, 0.0f, 0.0f);
-		transform->SetRotation(0.0f, 0.0f, 0.0f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(map);
-
-		OutputDebugStringA("Strut created!!\n");
-	}
-
-	{
-		effectSample = make_shared<GameObject>();
-		auto effectRenderer = effectSample->AddComponent<EffectRenderer>();
-		auto transform = effectSample->AddComponent<Transform>();
-
-		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/Fireworks.efk");
-		transform->SetInitPosition(1.f, 0.f, -10.5f);
-
-		AddGameObject(effectSample);
-	}
-
-	{
-		effectSample2 = make_shared<GameObject>();
-		auto effectRenderer = effectSample2->AddComponent<EffectRenderer>();
-		auto transform = effectSample2->AddComponent<Transform>();
-
-		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/BloodLance.efk");
-		transform->SetInitPosition(1.f, 0.f, 0.5f);
-
-		AddGameObject(effectSample2);
-	}
-
-	{
-		effectSample3 = make_shared<GameObject>();
-		auto effectRenderer = effectSample3->AddComponent<EffectRenderer>();
-		auto transform = effectSample3->AddComponent<Transform>();
-
-		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/Aura01_HDR.efk");
-		transform->SetInitPosition(1.f, 0.f, 0.5f);
-
-		AddGameObject(effectSample3);
-	}
-
-	{
-		effectSample4 = make_shared<GameObject>();
-		auto effectRenderer = effectSample4->AddComponent<EffectRenderer>();
-		auto transform = effectSample4->AddComponent<Transform>();
-
-		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/Benediction.efk");
-		transform->SetInitPosition(1.f, 10.f, -10.5f);
-
-		AddGameObject(effectSample4);
-	}
-
-	{
-		flameEffect = make_shared<GameObject>();
-		auto effectRenderer = flameEffect->AddComponent<EffectRenderer>();
-		auto transform = flameEffect->AddComponent<Transform>();
-
-		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/Atmosphere.efk");
-		transform->SetInitPosition(1.f, 10.f, -10.5f);
-
-		AddGameObject(flameEffect);
-	}
-
-	{
-		fireWorkEffect = make_shared<GameObject>();
-		auto effectRenderer = fireWorkEffect->AddComponent<EffectRenderer>();
-		auto transform = fireWorkEffect->AddComponent<Transform>();
-
-		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/CandleFire4.efk");
-		transform->SetInitPosition(27.f, 29.f, -70.0f);
-
-		AddGameObject(fireWorkEffect);
-	}
-
-	{
-		fireWorkEffect2 = make_shared<GameObject>();
-		auto effectRenderer = fireWorkEffect2->AddComponent<EffectRenderer>();
-		auto transform = fireWorkEffect2->AddComponent<Transform>();
-
-		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/CandleFire4.efk");
-		transform->SetInitPosition(-27.f, 29.f, -70.0f);
-
-		AddGameObject(fireWorkEffect2);
-	}
-
-	{
-		fireWorkEffect3 = make_shared<GameObject>();
-		auto effectRenderer = fireWorkEffect3->AddComponent<EffectRenderer>();
-		auto transform = fireWorkEffect3->AddComponent<Transform>();
-
-		effectRenderer->Initialize(*coreRef);
-		effectRenderer->LoadEffect(u"../Effects/CandleFire3.efk");
-		transform->SetInitPosition(7.2f, 3.25f, -4.2f);
-
-		AddGameObject(fireWorkEffect3);
-	}
-
-	/*{
-		for (int i = 1; i < 2; ++i) {
-			auto newKnight = make_shared<GameObject>();
-			auto meshRenderer = newKnight->AddComponent<MeshRenderer>();
-			auto transform = newKnight->AddComponent<Transform>();
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-			transform->SetInitPosition(0.f, 0.f, 0.f);
-			transform->SetRotation(-1.57f, 0.f, 0.f);
-			transform->SetScale(0.01f, 0.01f, 0.01f);
-			AddGameObject(newKnight);
-		}
-	}*/
+	CreateKnightPool();
+	CreateDragon();
+	CreateCastle();
+	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
 	coreRef->FlushCommandQueue();
@@ -338,52 +273,25 @@ void GameScene::UpdateScene(const float deltaTime)
 		}
 	}
 
-	if (effectSample) {
-		auto effectRenderer = effectSample->GetComponent<EffectRenderer>();
-		if (GET(Input).GetKeyDown('1'))
-			effectRenderer->PlayEffect();
-	}
+	if (effectObjects.size() > 0 && GET(Input).GetKeyDown('1'))
+		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectSample2) {
-		auto effectRenderer = effectSample2->GetComponent<EffectRenderer>();
-		if (GET(Input).GetKeyDown('2'))
-			effectRenderer->PlayEffect();
-	}
+	if (effectObjects.size() > 1 && GET(Input).GetKeyDown('2'))
+		effectObjects[1]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectSample3) {
-		auto effectRenderer = effectSample3->GetComponent<EffectRenderer>();
-		if (GET(Input).GetKeyDown('3'))
-			effectRenderer->PlayEffect();
-	}
+	if (effectObjects.size() > 2 && GET(Input).GetKeyDown('3'))
+		effectObjects[2]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectSample4) {
-		auto effectRenderer = effectSample4->GetComponent<EffectRenderer>();
-		if (GET(Input).GetKeyDown('4'))
-			effectRenderer->PlayEffect();
-	}
+	if (effectObjects.size() > 3 && GET(Input).GetKeyDown('4'))
+		effectObjects[3]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (flameEffect) {
-		auto effectRenderer = flameEffect->GetComponent<EffectRenderer>();
-		if (GET(Input).GetKeyDown('5'))
-			effectRenderer->PlayEffect();
-	}
+	if (effectObjects.size() > 4 && GET(Input).GetKeyDown('5'))
+		effectObjects[4]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (fireWorkEffect) {
-		auto effectRenderer = fireWorkEffect->GetComponent<EffectRenderer>();
-		if (GET(Input).GetKeyDown('6'))
-			effectRenderer->PlayEffect();
-	}
-
-	if (fireWorkEffect2) {
-		auto effectRenderer = fireWorkEffect2->GetComponent<EffectRenderer>();
-		if (GET(Input).GetKeyDown('6'))
-			effectRenderer->PlayEffect();
-	}
-
-	if (fireWorkEffect3) {
-		auto effectRenderer = fireWorkEffect3->GetComponent<EffectRenderer>();
-		if (GET(Input).GetKeyDown('6'))
-			effectRenderer->PlayEffect();
+	if (effectObjects.size() > 5 && GET(Input).GetKeyDown('6')) {
+		effectObjects[5]->GetComponent<EffectRenderer>()->PlayEffect();
+		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
+		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
 	}
 
 	for (const auto& obj : gameObjects)
@@ -394,8 +302,11 @@ void GameScene::RenderSceneDeferred()
 {
 	for (const auto& obj : gameObjects)
 	{
-		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
-			meshRenderer->RenderDeferred(*coreRef);
+		//if (obj->GetId() != -1)
+		//{
+			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+				meshRenderer->RenderDeferred(*coreRef);
+		//}
 	}
 }
 
@@ -403,8 +314,11 @@ void GameScene::RenderSceneForward()
 {
 	for (const auto& obj : gameObjects)
 	{
-		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
-			meshRenderer->RenderForward(*coreRef);
+		//if (obj->GetId() != -1)
+		//{
+			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+				meshRenderer->RenderForward(*coreRef);
+		//}
 	}
 }
 

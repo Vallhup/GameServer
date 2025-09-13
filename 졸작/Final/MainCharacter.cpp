@@ -8,12 +8,16 @@
 
 void MainCharacter::Update(float deltaTime)
 {
-	BasicMove();
-	BasicAttack();
+	if (camera)
+	{
+		BasicMove();
+		BasicAttack();
+	}
 
 	GameObject::Update(deltaTime);
 
-	camera->SetCameraPosition(GetComponent<Transform>()->GetPosition());
+	if (camera)
+		camera->SetCameraPosition(GetComponent<Transform>()->GetPosition());
 }
 
 void MainCharacter::BasicMove()
