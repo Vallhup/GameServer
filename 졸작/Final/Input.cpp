@@ -57,11 +57,16 @@ void Input::SetMouseWheelDelta(int d)
 	mMouseWheelDelta += d;
 }
 
+void Input::SetClientID(int id)
+{
+	clientID = id;
+}
+
 void Input::SendMovePacket(bool dir[4], float yaw, float pitch)
 {
 	if (!network) return;
 
-	vector<char> packet = PacketFactory::CSMovePacket(myId, dir, yaw, pitch);
+	vector<char> packet = PacketFactory::CSMovePacket(clientID, dir, yaw, pitch);
 	network->Send(packet);
 }
 
@@ -69,6 +74,6 @@ void Input::SendAttackPacket()
 {
 	if (!network) return;
 
-	vector<char> packet = PacketFactory::CSAttackPacket(myId);
+	vector<char> packet = PacketFactory::CSAttackPacket(clientID);
 	network->Send(packet);
 }

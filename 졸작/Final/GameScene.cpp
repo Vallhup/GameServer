@@ -14,8 +14,6 @@
 #include "Engine.h"
 #include "NetworkManager.h"
 
-int myId{ -1 };
-
 GameScene::~GameScene() = default;
 
 void GameScene::CreateKnightPool()
@@ -28,7 +26,7 @@ void GameScene::CreateKnightPool()
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-		//transform->SetInitPosition((1.f * i), 0.f, 5.f);
+		transform->SetInitPosition((1.f * i), 0.f, 5.f);
 		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		knightPool.push_back(knight);
@@ -39,7 +37,7 @@ void GameScene::CreateKnightPool()
 void GameScene::CreateDragon()
 {
 	dragon = make_shared<GameObject>();
-	dragon->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
+	dragon->SetId(-1);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
 	auto meshRenderer = dragon->AddComponent<MeshRenderer>();
 	auto transform = dragon->AddComponent<Transform>();
 	auto animator = dragon->AddComponent<Animator>();
@@ -153,8 +151,8 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 			OutputDebugStringA("SC_LOGIN packet received\n");
 			Protocol::SC_LOGIN_PACKET login;
 			if (login.ParseFromArray(packet.body().data(), packet.body().size())) {
-				myId = sessionId;
-				OutputDebugStringA(("My Session ID: " + to_string(myId) + "\n").c_str());
+				GET(Input).SetClientID(sessionId);
+				OutputDebugStringA(("My Session ID: " + to_string(GET(Input).GetClientID()) + "\n").c_str());
 			}
 			break;
 		}
@@ -173,7 +171,7 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 					activePlayers[sessionId] = player;
 				}
 
-				if (sessionId == myId) {
+				if (sessionId == GET(Input).GetClientID()) {
 					myPlayer = player;
 					myPlayer->SetCamera(cam.get());
 					OutputDebugStringA("My character activated!\n");
@@ -206,7 +204,7 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 			if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
 				int sessionId = packet.header().sessionid();
 
-				if (sessionId == myId) {
+				if (sessionId == GET(Input).GetClientID()) {
 					// TODO : Client Attack Animation 보정
 					OutputDebugStringA("SC_ATTACK_PACKET received\n");
 				}

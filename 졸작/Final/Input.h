@@ -2,8 +2,6 @@
 
 #include "NetworkManager.h"
 
-extern int myId;
-
 enum class MouseButton 
 {
 	LEFT,
@@ -32,8 +30,10 @@ public:
 	void SetMouseButton(const MouseButton button, const bool bPressed);
 	void SetMousePosition(const XMFLOAT2 mousePosition);
 	void SetMouseWheelDelta(int d);
+	void SetClientID(int id);
 
 	NetworkManager* GetNetworkManager() const { return network; }
+	int GetClientID() const { return clientID; }
 
 public:
 	void SendMovePacket(bool dir[4], float yaw, float pitch);
@@ -48,5 +48,7 @@ private:
 	int mMouseWheelDelta = 0;
 
 	NetworkManager* network{ nullptr };
+
+	int clientID;
 };
 
