@@ -19,7 +19,7 @@ void ServerTestScene::Reset()
 {
     knight.reset();
     gameObjects.clear();
-    Material::Cleanup();
+
     OutputDebugStringA("ServerTestScene Data has been deleted!! \n----------------------------------------\n");
 }
 

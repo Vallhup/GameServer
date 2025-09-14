@@ -7,6 +7,7 @@ class Material;
 struct CachedMeshData
 {
     shared_ptr<VertexIndexBuffer> vertexIndexBuffer;
+    vector<UINT> materialIndices;
     vector<SubMeshInfo> subMeshes;
     vector<MaterialData> originalMaterialData;
     bool hasAnimation = false;
@@ -23,6 +24,7 @@ public:
     shared_ptr<CachedMeshData> GetCachedMesh(const wstring& path);
     void CacheMesh(const wstring& path,
         const shared_ptr<VertexIndexBuffer>& vib,
+        const vector<UINT>& materialIndices,
         const vector<SubMeshInfo>& subMeshes,
         const vector<MaterialData>& originalData,
         bool hasanimation,

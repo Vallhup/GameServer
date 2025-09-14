@@ -24,4 +24,5 @@ protected:
 
 private:
 	shared_ptr<MainCharacter> knight;
+	shared_ptr<GameObject> dragon;
 };

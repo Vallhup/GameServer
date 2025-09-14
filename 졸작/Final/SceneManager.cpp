@@ -11,6 +11,8 @@
 #include "GameScene.h"
 #include "Camera.h"
 #include "ServerTestScene.h"
+#include "Material.h"
+#include "ResourceManager.h"
 
 SceneManager::~SceneManager()
 {
@@ -82,6 +84,9 @@ void SceneManager::Release()
             scene.reset();     
         }
     }
+
+    GET(ResourceManager).ClearCache();
+    Material::Cleanup();
 }
 
 Scene* SceneManager::GetCurrentScene() const
@@ -101,6 +106,7 @@ void SceneManager::SceneStart(DX12Core& core)
 
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
+    Material::InitializeBindlessSystem(core.GetDevice());
     mCurrentScene->Initialize(core);
 
     core.SetBackgroundColor(mCurrentScene->GetBackgroundColor());
@@ -129,8 +135,6 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
     mCurrentScene->Initialize(core);
-
-    core.FlushCommandQueue();
 
     core.SetBackgroundColor(mCurrentScene->GetBackgroundColor());
 }

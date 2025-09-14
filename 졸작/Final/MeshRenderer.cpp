@@ -214,15 +214,22 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
     auto cachedMesh = GET(ResourceManager).GetCachedMesh(path);
     if (cachedMesh) {
         vertexIndexBuffer = cachedMesh->vertexIndexBuffer;
+
+        materials.clear();    // 중복 방지
+        material.reset();
+
+        const auto& matIdx = cachedMesh->materialIndices;
+        if (matIdx.size() > 1) {
+            materials.reserve(matIdx.size());
+            for (UINT idx : matIdx)
+                materials.push_back(Material::FromExistingIndex(idx));
+        }
+        else if (matIdx.size() == 1) {
+            material = Material::FromExistingIndex(matIdx[0]);
+        }
+
         subMeshes = cachedMesh->subMeshes;
         originalMaterialData = cachedMesh->originalMaterialData;
-        
-        if (originalMaterialData.size() > 1) {
-            SetMultiMaterials(core, originalMaterialData);
-        }
-        else {
-            SetSingleMaterial(core, originalMaterialData);
-        }
 
         auto animator = GetGameObject()->GetComponent<Animator>();
         if (animator && cachedMesh->hasAnimation) {
@@ -266,8 +273,18 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
         if (animator) {
             animator->LoadAnimationFromImporter(core, importer);
         }
+        
+        vector<UINT> matIndices;
+        if (!materials.empty()) {
+            matIndices.reserve(materials.size());
+            for (auto& m : materials)
+                matIndices.push_back(m->GetMaterialIndex());
+        }
+        else if (material) {
+            matIndices = { material->GetMaterialIndex() };
+        }
 
-        GET(ResourceManager).CacheMesh(path, vertexIndexBuffer, subMeshes, originalMaterialData, 
+        GET(ResourceManager).CacheMesh(path, vertexIndexBuffer, matIndices, subMeshes, originalMaterialData, 
             mesh.hasAnimation, importer.GetAnimations(), importer.GetSkeleton());
 
         auto endTime = chrono::high_resolution_clock::now();

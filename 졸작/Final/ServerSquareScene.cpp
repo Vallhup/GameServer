@@ -19,7 +19,6 @@ void ServerSquareScene::Release()
 
 void ServerSquareScene::Reset()
 {
-	Material::Cleanup();
 	OutputDebugStringA("ServerSquareScene Data has been deleted!! \n----------------------------------------\n");
 }
 

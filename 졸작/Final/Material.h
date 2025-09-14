@@ -26,6 +26,7 @@ public:
     static void InitializeBindlessSystem(ID3D12Device* device);
     static void BindBindlessResources(ID3D12GraphicsCommandList* cmdList);
     static void UpdateMaterialBuffer();
+    static shared_ptr<Material> FromExistingIndex(UINT idx);
     static void ReleaseUploadBuffers();
     static void Cleanup();
 
@@ -39,6 +40,7 @@ private:
     static UINT nextTextureIndex;
     static UINT descriptorSize;
     static bool bufferDirty;
+    static unordered_map<wstring, UINT> texturePathToIndex;
 
     UINT RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
         const wstring& path);

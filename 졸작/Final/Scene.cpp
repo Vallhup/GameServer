@@ -16,8 +16,6 @@ void Scene::Initialize(DX12Core& core)
     cam = make_unique<Camera>();
     cam->Initialize();
 
-    Material::InitializeBindlessSystem(coreRef->GetDevice());
-
     InitializeLogic();
 
     coreRef->FlushCommandQueue();

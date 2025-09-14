@@ -18,15 +18,18 @@ GameScene::~GameScene() = default;
 
 void GameScene::CreateKnightPool()
 {
+	int j = 0;
+
 	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
 	{
+		j = i / 10;
 		auto knight = make_shared<MainCharacter>();
 		knight->SetId(-1);
 		auto meshRenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-		transform->SetInitPosition((1.f * i), 0.f, 5.f);
+		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f - (1.f *j));
 		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		knightPool.push_back(knight);
@@ -37,7 +40,7 @@ void GameScene::CreateKnightPool()
 void GameScene::CreateDragon()
 {
 	dragon = make_shared<GameObject>();
-	dragon->SetId(-1);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
+	dragon->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
 	auto meshRenderer = dragon->AddComponent<MeshRenderer>();
 	auto transform = dragon->AddComponent<Transform>();
 	auto animator = dragon->AddComponent<Animator>();
@@ -132,7 +135,6 @@ void GameScene::Reset()
 	myPlayer = nullptr;
 	gameObjects.clear();
 
-	Material::Cleanup();
 	OutputDebugStringA("GameScene Data has been deleted!! \n----------------------------------------\n");
 }
 
@@ -306,11 +308,11 @@ void GameScene::RenderSceneDeferred()
 {
 	for (const auto& obj : gameObjects)
 	{
-		if (obj->GetId() != -1)
-		{
+		//if (obj->GetId() != -1)
+		//{
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 				meshRenderer->RenderDeferred(*coreRef);
-		}
+		//}
 	}
 }
 
@@ -318,11 +320,11 @@ void GameScene::RenderSceneForward()
 {
 	for (const auto& obj : gameObjects)
 	{
-		if (obj->GetId() != -1)
-		{
+		//if (obj->GetId() != -1)
+		//{
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 				meshRenderer->RenderForward(*coreRef);
-		}
+		//}
 	}
 }
 

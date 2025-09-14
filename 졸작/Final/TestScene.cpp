@@ -22,7 +22,6 @@ void TestScene::Reset()
 {
 	knight.reset();
 
-	Material::Cleanup();
 	OutputDebugStringA("TestScene Data has been deleted!! \n----------------------------------------\n");
 }
 

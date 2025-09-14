@@ -10,6 +10,7 @@ vector<unique_ptr<Texture>> Material::allTextures;
 UINT Material::nextTextureIndex = 0;  
 UINT Material::descriptorSize = 0;
 bool Material::bufferDirty = false;
+unordered_map<wstring, UINT> Material::texturePathToIndex;
 
 void Material::InitializeBindlessSystem(ID3D12Device* device)
 {
@@ -73,6 +74,10 @@ UINT Material::RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* 
         return 0xFFFFFFFF;
     }
 
+    auto it = texturePathToIndex.find(path);
+    if (it != texturePathToIndex.end())
+        return it->second;
+
     auto texture = make_unique<Texture>();
     texture->Initialize(device, cmdList, path);
 
@@ -90,6 +95,7 @@ UINT Material::RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* 
     UINT index = nextTextureIndex++;
     allTextures.push_back(move(texture));
 
+    texturePathToIndex[path] = index;
     OutputDebugStringA(("Texture registered at index: " + to_string(index) + "\n").c_str());
     return index;
 }
@@ -116,6 +122,13 @@ void Material::UpdateMaterialBuffer()
     }
 }
 
+shared_ptr<Material> Material::FromExistingIndex(UINT idx)
+{
+    auto m = make_shared<Material>();
+    m->materialIndex = idx;
+    return m;
+}
+
 void Material::ReleaseUploadBuffers()
 {
     for (auto& texture : allTextures) {
@@ -132,6 +145,7 @@ void Material::Cleanup()
     materialBuffer.reset();
     materials.clear();
     allTextures.clear();
+    texturePathToIndex.clear();
     nextTextureIndex = 0;
     bufferDirty = false;
     OutputDebugStringA("Bindless material system cleaned up!\n");

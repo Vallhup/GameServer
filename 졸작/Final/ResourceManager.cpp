@@ -23,6 +23,7 @@ shared_ptr<CachedMeshData> ResourceManager::GetCachedMesh(const wstring& path)
 
 void ResourceManager::CacheMesh(const wstring& path,
     const shared_ptr<VertexIndexBuffer>& vib,
+    const vector<UINT>& materialIndices,
     const vector<SubMeshInfo>& subMeshes,
     const vector<MaterialData>& originalData,
     bool hasanimation,
@@ -38,6 +39,7 @@ void ResourceManager::CacheMesh(const wstring& path,
 
     // VertexIndexBuffer는 원본 포인터 저장 (소유권은 유지)
     cachedData->vertexIndexBuffer = vib;
+    cachedData->materialIndices = materialIndices;
     cachedData->subMeshes = subMeshes;
     cachedData->originalMaterialData = originalData;
     cachedData->hasAnimation = hasanimation;
