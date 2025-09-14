@@ -81,6 +81,10 @@ void ServerSquareScene::RenderSceneForward()
 	}
 }
 
+void ServerSquareScene::RenderSceneShadow()
+{
+}
+
 void ServerSquareScene::RenderSceneEffects()
 {
 }

@@ -15,6 +15,7 @@ public:
     virtual void Update(const float deltaTime);
     virtual void RenderDeferred();
 	virtual void RenderForward();
+	virtual void RenderShadow();
 	virtual void RenderEffects();
     virtual void Release() = 0;
     virtual void Reset() = 0;
@@ -29,6 +30,7 @@ protected:
 	virtual void UpdateScene(const float deltaTime) = 0;
 	virtual void RenderSceneDeferred() = 0;
 	virtual void RenderSceneForward() = 0;
+	virtual void RenderSceneShadow() = 0;
 	virtual void RenderSceneEffects() = 0;
 	virtual int GetSceneWidth() const = 0;
 	virtual void RequestSceneChange() = 0;

@@ -328,6 +328,18 @@ void GameScene::RenderSceneForward()
 	}
 }
 
+void GameScene::RenderSceneShadow()
+{
+	for (const auto& obj : gameObjects)
+	{
+		//if (obj->GetId() != -1)
+		//{
+		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+			meshRenderer->RenderShadow(*coreRef);
+		//}
+	}
+}
+
 void GameScene::RenderSceneEffects()
 {
 	for (const auto& obj : gameObjects)

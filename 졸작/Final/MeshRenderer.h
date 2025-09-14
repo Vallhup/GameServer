@@ -17,6 +17,8 @@ public:
 
 	void RenderForward(DX12Core& core);
 	void RenderDeferred(DX12Core& core);
+	
+	void RenderShadow(DX12Core& core);
 
 	// Instancing 전용 함수는 나중에 사용할 수도 있을 가능성이 높아서 그냥 냅둠
 	void RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuffer* instancedBuffer);

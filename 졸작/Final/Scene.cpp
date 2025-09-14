@@ -44,6 +44,11 @@ void Scene::RenderForward()
     RenderSceneForward();
 }
 
+void Scene::RenderShadow()
+{
+    RenderSceneShadow();
+}
+
 void Scene::RenderEffects()
 {
     RenderSceneEffects();

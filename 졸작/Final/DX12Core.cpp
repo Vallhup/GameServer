@@ -24,6 +24,7 @@ void DX12Core::Initialize(HWND hwnd)
 	shader->InitializeGBufferShader(GetDevice(), GetRootSig()->Get(), L"GBufferVS.hlsli", L"GBufferPS.hlsli");
 	shader->InitializeLightingShader(GetDevice(), GetRootSig()->Get(), L"FullscreenVS.hlsli", L"LightingPS.hlsli");
 	shader->InitializeComputeShader(GetDevice(), GetRootSig()->Get(), L"Animation.hlsli");
+	shader->InitializeShadowShader(GetDevice(), GetRootSig()->Get(), L"ShadowVS.hlsli", L"ShadowPS.hlsli");
 	frameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
 	deferredLightCB->Initialize(GetDevice(), sizeof(DeferredLightConstants));
@@ -406,7 +407,7 @@ void DX12Core::BeginShadowPass()
 
 	D3D12_RECT shadowRect = { 0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE };
 	cmdList->RSSetScissorRects(1, &shadowRect);
-	
+
 	//OutputDebugStringA("Shadow Pass started!!\n");
 }
 

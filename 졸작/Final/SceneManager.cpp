@@ -62,6 +62,14 @@ void SceneManager::RenderForward()
     }
 }
 
+void SceneManager::RenderShadow()
+{
+    if (mCurrentScene)
+    {
+        mCurrentScene->RenderShadow();
+    }
+}
+
 void SceneManager::RenderEffects()
 {
     if (mCurrentScene)

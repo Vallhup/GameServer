@@ -20,6 +20,7 @@ public:
     void Render();   
     void RenderDeferred();
     void RenderForward();
+    void RenderShadow();
     void RenderEffects();
     void Release();
 

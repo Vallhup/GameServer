@@ -103,6 +103,10 @@ void ServerTestScene::RenderSceneForward()
     }
 }
 
+void ServerTestScene::RenderSceneShadow()
+{
+}
+
 void ServerTestScene::RenderSceneEffects()
 {
 }

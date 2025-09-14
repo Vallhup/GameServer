@@ -119,6 +119,10 @@ void LoginScene::RenderSceneForward()
 	}
 }
 
+void LoginScene::RenderSceneShadow()
+{
+}
+
 void LoginScene::RenderSceneEffects()
 {
 }

@@ -245,6 +245,8 @@
     <None Include="GBufferVS.hlsli" />
     <None Include="LightingPS.hlsli" />
     <None Include="math.hlsli" />
+    <None Include="ShadowPS.hlsli" />
+    <None Include="ShadowVS.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

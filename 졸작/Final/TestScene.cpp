@@ -84,6 +84,10 @@ void TestScene::RenderSceneForward()
 	}
 }
 
+void TestScene::RenderSceneShadow()
+{
+}
+
 void TestScene::RenderSceneEffects()
 {
 }

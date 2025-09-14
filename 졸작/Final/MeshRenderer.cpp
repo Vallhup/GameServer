@@ -84,6 +84,33 @@ void MeshRenderer::RenderDeferred(DX12Core& core)
     }
 }
 
+void MeshRenderer::RenderShadow(DX12Core& core)
+{
+    if (!visible || !vertexIndexBuffer) return;
+    if (!objectCB) {
+        InitializeObjectBuffer(core.GetDevice());
+    }
+
+    auto cmdList = core.GetGraphicsCmdList();
+    auto transform = GetGameObject()->GetComponent<Transform>();
+    XMMATRIX world = transform->GetWorldMatrix();
+
+    ObjectConstants objConstants = {};
+    objConstants.world = XMMatrixTranspose(world);
+    objConstants.useTexture = 0;
+    objConstants.useInstancing = 0;
+    objConstants.materialIndex = 0;
+
+    objectCB->CopyData(&objConstants, sizeof(ObjectConstants));
+    cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress());
+
+    if (auto animator = GetGameObject()->GetComponent<Animator>())
+        cmdList->SetGraphicsRootShaderResourceView(9, animator->GetFinalBuffer()->GetGPUVirtualAddress());
+
+    vertexIndexBuffer->Bind(cmdList);
+    vertexIndexBuffer->Draw(cmdList);
+}
+
 void MeshRenderer::RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuffer* instanceBuffer)
 {
     if (!visible || !vertexIndexBuffer || !instanceBuffer) return;
