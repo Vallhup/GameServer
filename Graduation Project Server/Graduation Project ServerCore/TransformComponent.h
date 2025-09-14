@@ -15,7 +15,7 @@ public:
 	float GetAngle() const { return _angle; }
 
 	void SetPosition(const vec3& pos) { _pos = pos; ++_version; }
-	void Translate(const vec3& delta);
+	void Translate(const vec3& delta, bool isMoving = true);
 
 private:
 	vec3 _pos;

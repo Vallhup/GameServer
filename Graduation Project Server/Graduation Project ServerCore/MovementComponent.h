@@ -14,6 +14,8 @@ public:
 	virtual void LogicUpdate(float deltaTime) override;
 
 public:
+	const vec3& GetDirection() const { return _direction; }
+
 	void SetMovePayload(const Protocol::InputPayload& payload);
 
 private:

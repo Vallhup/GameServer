@@ -134,7 +134,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 inline constexpr SC_DODGE_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
-        pos_{nullptr} {}
+        dir_{nullptr} {}
 
 template <typename>
 PROTOBUF_CONSTEXPR SC_DODGE_PACKET::SC_DODGE_PACKET(::_pbi::ConstantInitialized)
@@ -329,7 +329,7 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_DODGE_PACKET, _impl_.pos_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_DODGE_PACKET, _impl_.dir_),
         0,
 };
 
@@ -368,7 +368,7 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     ".Protocol.Vec3\":\n\016SC_MOVE_PACKET\022\033\n\003pos\030"
     "\001 \001(\0132\016.Protocol.Vec3\022\013\n\003rot\030\002 \001(\002\"\022\n\020SC"
     "_REMOVE_PACKET\"\037\n\020SC_ATTACK_PACKET\022\013\n\003ro"
-    "t\030\001 \001(\002\".\n\017SC_DODGE_PACKET\022\033\n\003pos\030\001 \001(\0132"
+    "t\030\001 \001(\002\".\n\017SC_DODGE_PACKET\022\033\n\003dir\030\001 \001(\0132"
     "\016.Protocol.Vec3b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[2] =
@@ -2040,9 +2040,9 @@ class SC_DODGE_PACKET::_Internal {
       8 * PROTOBUF_FIELD_OFFSET(SC_DODGE_PACKET, _impl_._has_bits_);
 };
 
-void SC_DODGE_PACKET::clear_pos() {
+void SC_DODGE_PACKET::clear_dir() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (_impl_.pos_ != nullptr) _impl_.pos_->Clear();
+  if (_impl_.dir_ != nullptr) _impl_.dir_->Clear();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
 SC_DODGE_PACKET::SC_DODGE_PACKET(::google::protobuf::Arena* arena)
@@ -2074,8 +2074,8 @@ SC_DODGE_PACKET::SC_DODGE_PACKET(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
   ::uint32_t cached_has_bits = _impl_._has_bits_[0];
-  _impl_.pos_ = (cached_has_bits & 0x00000001u) ? ::google::protobuf::Message::CopyConstruct<::Protocol::Vec3>(
-                              arena, *from._impl_.pos_)
+  _impl_.dir_ = (cached_has_bits & 0x00000001u) ? ::google::protobuf::Message::CopyConstruct<::Protocol::Vec3>(
+                              arena, *from._impl_.dir_)
                         : nullptr;
 
   // @@protoc_insertion_point(copy_constructor:Protocol.SC_DODGE_PACKET)
@@ -2087,7 +2087,7 @@ inline PROTOBUF_NDEBUG_INLINE SC_DODGE_PACKET::Impl_::Impl_(
 
 inline void SC_DODGE_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.pos_ = {};
+  _impl_.dir_ = {};
 }
 SC_DODGE_PACKET::~SC_DODGE_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.SC_DODGE_PACKET)
@@ -2097,7 +2097,7 @@ inline void SC_DODGE_PACKET::SharedDtor(MessageLite& self) {
   SC_DODGE_PACKET& this_ = static_cast<SC_DODGE_PACKET&>(self);
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
-  delete this_._impl_.pos_;
+  delete this_._impl_.dir_;
   this_._impl_.~Impl_();
 }
 
@@ -2155,14 +2155,14 @@ const ::_pbi::TcParseTable<0, 1, 1, 0, 2> SC_DODGE_PACKET::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::SC_DODGE_PACKET>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // .Protocol.Vec3 pos = 1;
+    // .Protocol.Vec3 dir = 1;
     {::_pbi::TcParser::FastMtS1,
-     {10, 0, 0, PROTOBUF_FIELD_OFFSET(SC_DODGE_PACKET, _impl_.pos_)}},
+     {10, 0, 0, PROTOBUF_FIELD_OFFSET(SC_DODGE_PACKET, _impl_.dir_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // .Protocol.Vec3 pos = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_DODGE_PACKET, _impl_.pos_), _Internal::kHasBitsOffset + 0, 0,
+    // .Protocol.Vec3 dir = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_DODGE_PACKET, _impl_.dir_), _Internal::kHasBitsOffset + 0, 0,
     (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
   }}, {{
     {::_pbi::TcParser::GetTable<::Protocol::Vec3>()},
@@ -2179,8 +2179,8 @@ PROTOBUF_NOINLINE void SC_DODGE_PACKET::Clear() {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    ABSL_DCHECK(_impl_.pos_ != nullptr);
-    _impl_.pos_->Clear();
+    ABSL_DCHECK(_impl_.dir_ != nullptr);
+    _impl_.dir_->Clear();
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -2202,10 +2202,10 @@ PROTOBUF_NOINLINE void SC_DODGE_PACKET::Clear() {
           (void)cached_has_bits;
 
           cached_has_bits = this_._impl_._has_bits_[0];
-          // .Protocol.Vec3 pos = 1;
+          // .Protocol.Vec3 dir = 1;
           if (cached_has_bits & 0x00000001u) {
             target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-                1, *this_._impl_.pos_, this_._impl_.pos_->GetCachedSize(), target,
+                1, *this_._impl_.dir_, this_._impl_.dir_->GetCachedSize(), target,
                 stream);
           }
 
@@ -2233,11 +2233,11 @@ PROTOBUF_NOINLINE void SC_DODGE_PACKET::Clear() {
           (void)cached_has_bits;
 
            {
-            // .Protocol.Vec3 pos = 1;
+            // .Protocol.Vec3 dir = 1;
             cached_has_bits = this_._impl_._has_bits_[0];
             if (cached_has_bits & 0x00000001u) {
               total_size += 1 +
-                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.pos_);
+                            ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.dir_);
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -2255,12 +2255,12 @@ void SC_DODGE_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const :
 
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    ABSL_DCHECK(from._impl_.pos_ != nullptr);
-    if (_this->_impl_.pos_ == nullptr) {
-      _this->_impl_.pos_ =
-          ::google::protobuf::Message::CopyConstruct<::Protocol::Vec3>(arena, *from._impl_.pos_);
+    ABSL_DCHECK(from._impl_.dir_ != nullptr);
+    if (_this->_impl_.dir_ == nullptr) {
+      _this->_impl_.dir_ =
+          ::google::protobuf::Message::CopyConstruct<::Protocol::Vec3>(arena, *from._impl_.dir_);
     } else {
-      _this->_impl_.pos_->MergeFrom(*from._impl_.pos_);
+      _this->_impl_.dir_->MergeFrom(*from._impl_.dir_);
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -2279,7 +2279,7 @@ void SC_DODGE_PACKET::InternalSwap(SC_DODGE_PACKET* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  swap(_impl_.pos_, other->_impl_.pos_);
+  swap(_impl_.dir_, other->_impl_.dir_);
 }
 
 ::google::protobuf::Metadata SC_DODGE_PACKET::GetMetadata() const {

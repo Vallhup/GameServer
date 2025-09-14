@@ -54,7 +54,6 @@ private:
 
 	PacketHandler _packetHandler;
 
-	std::atomic<bool> _connected;
 	std::atomic<SessionState> _state;
 
 	GameObject* _character;

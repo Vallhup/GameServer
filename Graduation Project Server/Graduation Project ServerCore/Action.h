@@ -23,7 +23,12 @@ public:
 	virtual void Start() = 0;
 	virtual void Update(float deltaTime) = 0;
 	virtual void End() = 0;
+
+public:
 	virtual bool IsFinished() const { return _finished; }
+	virtual bool CanMove() const { return false; }
+	virtual const vec3 GetForcedVelocity() const { return vec3{ 0, 0, 0 }; }
+
 
 protected:
 	float _timer;
@@ -40,7 +45,6 @@ protected:
 // 
 // 2. Hitbox 생성
 //  - GameObject에 저장해놓고 특정 Action에서만 활성/비활성화
-//  - 각 Action마다 동적으로 생성/삭제
 
 class AttackAction : public IAction {
 	// 공격 모션 시간
@@ -62,6 +66,7 @@ class DodgeAction : public IAction {
 	// 회피 모션(무적) 시간
 	// 얘는 캐릭터 늘어나도 다 똑같겠지?
 	static constexpr float DODGE_DURATION{ 1.0f };
+	static constexpr float DODGE_SPEED{ 3.0f };
 
 public:
 	DodgeAction() = delete;
@@ -72,5 +77,22 @@ public:
 	virtual void Start() override;
 	virtual void Update(float deltaTime) override;
 	virtual void End() override;
+
+public:
+	virtual bool CanMove() const override;
+	virtual const vec3 GetForcedVelocity() const override;
 };
 
+class ParryAction : public IAction {
+	static constexpr float PARRY_DURATION{ 0.5f };
+
+public:
+	ParryAction() = delete;
+	ParryAction(GameObject& owner) : IAction(owner) { Start(); }
+	virtual ~ParryAction() = default;
+
+public:
+	virtual void Start() override;
+	virtual void Update(float deltaTime) override;
+	virtual void End() override;
+};

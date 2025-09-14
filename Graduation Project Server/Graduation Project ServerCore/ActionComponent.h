@@ -10,10 +10,11 @@ public:
 public:
 	virtual void LogicUpdate(float deltaTime) override;
 
-	// 이동 처리 어떻게 해야될 지 고민해야됨
-	// ActionComponent에서 처리할 지 / Action에서 처리할 지
+	IAction* GetCurrentAction() const { return _currentAction.get(); }
+
 	void StartAttack();
 	void StartDodge();
+	void StartParry();
 
 private:
 	std::unique_ptr<IAction> _currentAction;

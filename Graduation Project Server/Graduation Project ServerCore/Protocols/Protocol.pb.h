@@ -1074,21 +1074,21 @@ class SC_DODGE_PACKET final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kPosFieldNumber = 1,
+    kDirFieldNumber = 1,
   };
-  // .Protocol.Vec3 pos = 1;
-  bool has_pos() const;
-  void clear_pos() ;
-  const ::Protocol::Vec3& pos() const;
-  PROTOBUF_NODISCARD ::Protocol::Vec3* release_pos();
-  ::Protocol::Vec3* mutable_pos();
-  void set_allocated_pos(::Protocol::Vec3* value);
-  void unsafe_arena_set_allocated_pos(::Protocol::Vec3* value);
-  ::Protocol::Vec3* unsafe_arena_release_pos();
+  // .Protocol.Vec3 dir = 1;
+  bool has_dir() const;
+  void clear_dir() ;
+  const ::Protocol::Vec3& dir() const;
+  PROTOBUF_NODISCARD ::Protocol::Vec3* release_dir();
+  ::Protocol::Vec3* mutable_dir();
+  void set_allocated_dir(::Protocol::Vec3* value);
+  void unsafe_arena_set_allocated_dir(::Protocol::Vec3* value);
+  ::Protocol::Vec3* unsafe_arena_release_dir();
 
   private:
-  const ::Protocol::Vec3& _internal_pos() const;
-  ::Protocol::Vec3* _internal_mutable_pos();
+  const ::Protocol::Vec3& _internal_dir() const;
+  ::Protocol::Vec3* _internal_mutable_dir();
 
   public:
   // @@protoc_insertion_point(class_scope:Protocol.SC_DODGE_PACKET)
@@ -1116,7 +1116,7 @@ class SC_DODGE_PACKET final : public ::google::protobuf::Message
                           const SC_DODGE_PACKET& from_msg);
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
-    ::Protocol::Vec3* pos_;
+    ::Protocol::Vec3* dir_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -2267,40 +2267,40 @@ inline void SC_ATTACK_PACKET::_internal_set_rot(float value) {
 
 // SC_DODGE_PACKET
 
-// .Protocol.Vec3 pos = 1;
-inline bool SC_DODGE_PACKET::has_pos() const {
+// .Protocol.Vec3 dir = 1;
+inline bool SC_DODGE_PACKET::has_dir() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.pos_ != nullptr);
+  PROTOBUF_ASSUME(!value || _impl_.dir_ != nullptr);
   return value;
 }
-inline const ::Protocol::Vec3& SC_DODGE_PACKET::_internal_pos() const {
+inline const ::Protocol::Vec3& SC_DODGE_PACKET::_internal_dir() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  const ::Protocol::Vec3* p = _impl_.pos_;
+  const ::Protocol::Vec3* p = _impl_.dir_;
   return p != nullptr ? *p : reinterpret_cast<const ::Protocol::Vec3&>(::Protocol::_Vec3_default_instance_);
 }
-inline const ::Protocol::Vec3& SC_DODGE_PACKET::pos() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:Protocol.SC_DODGE_PACKET.pos)
-  return _internal_pos();
+inline const ::Protocol::Vec3& SC_DODGE_PACKET::dir() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_DODGE_PACKET.dir)
+  return _internal_dir();
 }
-inline void SC_DODGE_PACKET::unsafe_arena_set_allocated_pos(::Protocol::Vec3* value) {
+inline void SC_DODGE_PACKET::unsafe_arena_set_allocated_dir(::Protocol::Vec3* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (GetArena() == nullptr) {
-    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.pos_);
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.dir_);
   }
-  _impl_.pos_ = reinterpret_cast<::Protocol::Vec3*>(value);
+  _impl_.dir_ = reinterpret_cast<::Protocol::Vec3*>(value);
   if (value != nullptr) {
     _impl_._has_bits_[0] |= 0x00000001u;
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_DODGE_PACKET.pos)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_DODGE_PACKET.dir)
 }
-inline ::Protocol::Vec3* SC_DODGE_PACKET::release_pos() {
+inline ::Protocol::Vec3* SC_DODGE_PACKET::release_dir() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
 
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::Protocol::Vec3* released = _impl_.pos_;
-  _impl_.pos_ = nullptr;
+  ::Protocol::Vec3* released = _impl_.dir_;
+  _impl_.dir_ = nullptr;
   if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
     auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
     released = ::google::protobuf::internal::DuplicateIfNonNull(released);
@@ -2314,34 +2314,34 @@ inline ::Protocol::Vec3* SC_DODGE_PACKET::release_pos() {
   }
   return released;
 }
-inline ::Protocol::Vec3* SC_DODGE_PACKET::unsafe_arena_release_pos() {
+inline ::Protocol::Vec3* SC_DODGE_PACKET::unsafe_arena_release_dir() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:Protocol.SC_DODGE_PACKET.pos)
+  // @@protoc_insertion_point(field_release:Protocol.SC_DODGE_PACKET.dir)
 
   _impl_._has_bits_[0] &= ~0x00000001u;
-  ::Protocol::Vec3* temp = _impl_.pos_;
-  _impl_.pos_ = nullptr;
+  ::Protocol::Vec3* temp = _impl_.dir_;
+  _impl_.dir_ = nullptr;
   return temp;
 }
-inline ::Protocol::Vec3* SC_DODGE_PACKET::_internal_mutable_pos() {
+inline ::Protocol::Vec3* SC_DODGE_PACKET::_internal_mutable_dir() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (_impl_.pos_ == nullptr) {
+  if (_impl_.dir_ == nullptr) {
     auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::Vec3>(GetArena());
-    _impl_.pos_ = reinterpret_cast<::Protocol::Vec3*>(p);
+    _impl_.dir_ = reinterpret_cast<::Protocol::Vec3*>(p);
   }
-  return _impl_.pos_;
+  return _impl_.dir_;
 }
-inline ::Protocol::Vec3* SC_DODGE_PACKET::mutable_pos() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline ::Protocol::Vec3* SC_DODGE_PACKET::mutable_dir() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   _impl_._has_bits_[0] |= 0x00000001u;
-  ::Protocol::Vec3* _msg = _internal_mutable_pos();
-  // @@protoc_insertion_point(field_mutable:Protocol.SC_DODGE_PACKET.pos)
+  ::Protocol::Vec3* _msg = _internal_mutable_dir();
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_DODGE_PACKET.dir)
   return _msg;
 }
-inline void SC_DODGE_PACKET::set_allocated_pos(::Protocol::Vec3* value) {
+inline void SC_DODGE_PACKET::set_allocated_dir(::Protocol::Vec3* value) {
   ::google::protobuf::Arena* message_arena = GetArena();
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (message_arena == nullptr) {
-    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.pos_);
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.dir_);
   }
 
   if (value != nullptr) {
@@ -2354,8 +2354,8 @@ inline void SC_DODGE_PACKET::set_allocated_pos(::Protocol::Vec3* value) {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
 
-  _impl_.pos_ = reinterpret_cast<::Protocol::Vec3*>(value);
-  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_DODGE_PACKET.pos)
+  _impl_.dir_ = reinterpret_cast<::Protocol::Vec3*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_DODGE_PACKET.dir)
 }
 
 #ifdef __GNUC__

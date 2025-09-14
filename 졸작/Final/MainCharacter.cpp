@@ -6,12 +6,13 @@
 #include "Camera.h"
 #include "Animator.h"
 
-void MainCharacter::Update(float deltaTime)
+void MainCharacter::Update(float deltaTime) 
 {
 	if (camera)
 	{
 		BasicMove();
 		BasicAttack();
+		BasicDodge();
 	}
 
 	GameObject::Update(deltaTime);
@@ -59,6 +60,20 @@ void MainCharacter::BasicAttack()
 		auto animator = GetComponent<Animator>();
 		if (animator) {
 			// TODO : Attack Animation
+		}
+	}
+}
+
+void MainCharacter::BasicDodge()
+{
+	auto& input = GET(Input);
+
+	if (input.GetKey(VK_SHIFT)) {
+		input.SendDodgePacket();
+
+		auto animator = GetComponent<Animator>();
+		if (animator) {
+			// TODO : Dodge Animation
 		}
 	}
 }

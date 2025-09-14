@@ -52,6 +52,7 @@ void Instance::BroadCast(const std::vector<char>& packet, int exceptId)
 	}
 
 	for (const auto& session : sessions) {
+		if (session->GetState() != SessionState::ST_INGAME) continue;
 		if (session->GetId() == exceptId) continue;
 		session->RegisterSend(packet);
 	}

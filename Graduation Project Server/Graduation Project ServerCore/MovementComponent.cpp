@@ -14,6 +14,12 @@ void MovementComponent::LogicUpdate(float deltaTime)
 		return;
 	}
 
+	if (auto actComp = _owner.GetComponent<ActionComponent>()) {
+		if (auto action = actComp->GetCurrentAction()) {
+			return;
+		}
+	}
+
 	if (auto trComp = _owner.GetComponent<TransformComponent>()) {
 		const float MOVE_SPEED = _isRun ? RUN_SPEED : WALK_SPEED;
 		trComp->Translate(_direction * MOVE_SPEED * deltaTime);
@@ -22,16 +28,16 @@ void MovementComponent::LogicUpdate(float deltaTime)
 
 void MovementComponent::SetMovePayload(const Protocol::InputPayload& payload)
 {
-	float yaw = payload.move().camyaw();
-	float pitch = payload.move().campitch();
+	const float yaw = payload.move().camyaw();
+	const float pitch = payload.move().campitch();
 
-	vec3 forward = vec3{
+	const vec3 forward = vec3{
 		cos(pitch) * sin(yaw),
 		sin(pitch),
 		cos(pitch) * cos(yaw)
 	}.Normalize();
-	vec3 up{ 0.0f, 1.0f, 0.0f };
-	vec3 right = up.Cross(forward);
+	const vec3 up{ 0.0f, 1.0f, 0.0f };
+	const vec3 right = up.Cross(forward);
 
 	vec3 direction{ 0.0f, 0.0f, 0.0f };
 

@@ -91,6 +91,34 @@ std::vector<char> PacketFactory::CSAttackPacket(int id)
 	return out;
 }
 
+std::vector<char> PacketFactory::CSDodgePacket(int id)
+{
+	Protocol::CS_INPUT_PACKET input;
+	input.set_key(Protocol::Input::DODGE);
+
+	Protocol::InputPayload* payload = input.mutable_payload();
+	Protocol::DodgePayload* dodgePayload = payload->mutable_dodge();
+
+	std::string body;
+	input.SerializeToString(&body);
+
+	Protocol::GamePacket game;
+	game.mutable_header()->set_type(Protocol::PacketType::CS_INPUT);
+	game.mutable_header()->set_sessionid(id);
+	game.set_body(body);
+
+	std::string gameString;
+	game.SerializeToString(&gameString);
+
+	const uint16_t payloadSize = static_cast<uint16_t>(gameString.size());
+
+	std::vector<char> out(sizeof(payloadSize) + payloadSize);
+	memcpy(out.data(), &payloadSize, sizeof(payloadSize));
+	memcpy(out.data() + sizeof(payloadSize), gameString.data(), gameString.size());
+
+	return out;
+}
+
 std::vector<char> PacketFactory::SCLoginPacket(int id)
 {
 	Protocol::SC_LOGIN_PACKET login;
@@ -204,6 +232,33 @@ std::vector<char> PacketFactory::SCAttackPacket(int id, float rot)
 
 	Protocol::GamePacket game;
 	game.mutable_header()->set_type(Protocol::PacketType::SC_ATTACK);
+	game.mutable_header()->set_sessionid(id);
+	game.set_body(body);
+
+	std::string gameString;
+	game.SerializeToString(&gameString);
+
+	const uint16_t payloadSize = static_cast<uint16_t>(gameString.size());
+
+	std::vector<char> out(sizeof(payloadSize) + payloadSize);
+	memcpy(out.data(), &payloadSize, sizeof(payloadSize));
+	memcpy(out.data() + sizeof(payloadSize), gameString.data(), gameString.size());
+
+	return out;
+}
+
+std::vector<char> PacketFactory::SCDodgePacket(int id, const Protocol::Vec3& dir)
+{
+	Protocol::SC_DODGE_PACKET dodge;
+	dodge.mutable_dir()->set_x(dir.x());
+	dodge.mutable_dir()->set_y(dir.y());
+	dodge.mutable_dir()->set_z(dir.z());
+
+	std::string body;
+	dodge.SerializeToString(&body);
+
+	Protocol::GamePacket game;
+	game.mutable_header()->set_type(Protocol::PacketType::SC_DODGE);
 	game.mutable_header()->set_sessionid(id);
 	game.set_body(body);
 

@@ -17,6 +17,7 @@ public:
 	//        나중에 실제 Server에서 Packet 받아서 처리할 때 보정해주는 코드도 필요함
 	void BasicMove();
 	void BasicAttack();
+	void BasicDodge();
 
 private:
 	Camera* camera = nullptr;

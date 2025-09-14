@@ -16,9 +16,13 @@ void TransformComponent::NetworkUpdate()
 	}
 }
 
-void TransformComponent::Translate(const vec3& delta)
+void TransformComponent::Translate(const vec3& delta, bool isMoving)
 {
 	_pos += delta; 
-	_angle = atan2f(-delta.x, -delta.z);
+
+	if (isMoving) {
+		_angle = atan2f(-delta.x, -delta.z);
+	}
+
 	++_version;
 }

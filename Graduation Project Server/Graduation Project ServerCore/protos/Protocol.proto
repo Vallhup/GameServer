@@ -46,5 +46,5 @@ message SC_ATTACK_PACKET
 
 message SC_DODGE_PACKET
 {
-	Vec3 pos = 1;
+	Vec3 dir = 1;
 }

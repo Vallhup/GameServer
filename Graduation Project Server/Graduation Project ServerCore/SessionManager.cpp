@@ -103,7 +103,6 @@ void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& pac
 
 			_gameCtx.BroadCast(PacketFactory::SCAddPacket(sessionId, packetPos));
 
-			// Áö±Ý LoginÇÑ ³ðÇÑÅ× ÀÌ¹Ì Á¢¼ÓÇØÀÖ´ø ³ð ¾Ë·ÁÁà¾ßµÊ
 			for (const auto& sess : GetSessionList()) {
 				if (sess->GetId() == sessionId) continue;
 				if (auto character = sess->GetCharacter()) {

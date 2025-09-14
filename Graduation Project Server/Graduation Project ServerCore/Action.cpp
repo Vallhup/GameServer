@@ -45,7 +45,13 @@ void DodgeAction::Start()
 	_finished = false;
 
 	// Dodge Packet Send
-	//_owner.GetInstance()->BroadCast(/* Dodge Packet */);
+	const vec3 dir = GetForcedVelocity().Normalize();
+	Protocol::Vec3 netDir;
+	netDir.set_x(dir.x);
+	netDir.set_y(dir.y);
+	netDir.set_z(dir.z);
+
+	_owner.GetInstance()->BroadCast(PacketFactory::SCDodgePacket(_owner.GetId(), netDir));
 
 	// TODO : 公利 贸府 (HitBox 厚劝己拳)
 	if (auto colComp = _owner.GetComponent<CollisionComponent>()) {
@@ -59,6 +65,17 @@ void DodgeAction::Update(float deltaTime)
 	if (_timer >= _duration) {
 		_finished = true;
 	}
+
+	if (auto trComp = _owner.GetComponent<TransformComponent>()) {
+		const float angle = trComp->GetAngle();
+		const vec3 forward = vec3{
+			-sin(angle),
+			0.0f,
+			-cos(angle)
+		}.Normalize();
+
+		trComp->Translate(forward * DODGE_SPEED * deltaTime, false);
+	}
 }
 
 void DodgeAction::End()
@@ -67,4 +84,41 @@ void DodgeAction::End()
 	if (auto colComp = _owner.GetComponent<CollisionComponent>()) {
 		colComp->Activate(CollisionType::Hurt);
 	}
+}
+
+bool DodgeAction::CanMove() const
+{
+	return true;
+}
+
+const vec3 DodgeAction::GetForcedVelocity() const
+{
+	return vec3{ 0, 0, 0 };
+}
+
+/*---------------[ ParryAction ]---------------*/
+
+void ParryAction::Start()
+{
+	_timer = 0.0f;
+	_duration = PARRY_DURATION;
+	_finished = false;
+
+	// Parry Packet Send
+	//_owner.GetInstance()->BroadCast(/* Parry Packet */);
+
+	// TODO : 公利(菩府) 贸府
+}
+
+void ParryAction::Update(float deltaTime)
+{
+	_timer += deltaTime;
+	if (_timer >= _duration) {
+		_finished = true;
+	}
+}
+
+void ParryAction::End()
+{
+	// TODO : 菩府 惑怕 辆丰
 }

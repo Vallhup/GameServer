@@ -25,3 +25,10 @@ void ActionComponent::StartDodge()
 		_currentAction = std::make_unique<DodgeAction>(_owner);
 	}
 }
+
+void ActionComponent::StartParry()
+{
+	if (not _currentAction) {
+		_currentAction = std::make_unique<ParryAction>(_owner);
+	}
+}

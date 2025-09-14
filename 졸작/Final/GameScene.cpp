@@ -182,7 +182,6 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 		case Protocol::PacketType::SC_MOVE_OBJECT: {
 			Protocol::SC_MOVE_PACKET move;
 			if (move.ParseFromArray(packet.body().data(), packet.body().size())) {
-				int sessionId = packet.header().sessionid();
 				Protocol::Vec3 pos = move.pos();
 
 				auto it = activePlayers.find(sessionId);
@@ -193,7 +192,7 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 					transform->SetTargetRotation(move.rot());
 				}
 			}
-			break;
+			break; 
 		}
 		case Protocol::PacketType::SC_REMOVE: {
 			OutputDebugStringA("SC_REMOVE packet received\n");
@@ -202,17 +201,24 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 		case Protocol::PacketType::SC_ATTACK: {
 			Protocol::SC_ATTACK_PACKET attack;
 			if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
-				int sessionId = packet.header().sessionid();
-
 				if (sessionId == GET(Input).GetClientID()) {
 					// TODO : Client Attack Animation 보정
 					OutputDebugStringA("SC_ATTACK_PACKET received\n");
 				}
 			}
+			break;
+		}
+		case Protocol::PacketType::SC_DODGE: {
+			Protocol::SC_DODGE_PACKET dodge;
+			if (dodge.ParseFromArray(packet.body().data(), packet.body().size())) {
+				if (sessionId == GET(Input).GetClientID()) {
+					// TODO : Client Dodge Animation 보정
+					OutputDebugStringA("SC_DODGE_PACKET received\n");
+				}
+			}
 		}
 	}
 }
-
 
 const float* GameScene::GetBackgroundColor()
 {

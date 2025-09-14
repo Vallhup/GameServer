@@ -5,7 +5,6 @@ Session::Session(int id, SOCKET socket, ISessionManager* owner)
 	: _id(id), _socket(socket), _owner(owner)
 {
 	_state = SessionState::ST_ALLOC;
-	_connected = true;
 	_character = nullptr;
 }
 
@@ -32,7 +31,7 @@ void Session::Dispatch(ExpOver* expOver, int numOfBytes)
 
 void Session::RegisterRecv()
 {
-	if (not _connected.load() or _socket == INVALID_SOCKET) {
+	if (_state.load() == SessionState::ST_FREE or _socket == INVALID_SOCKET) {
 		DisConnect();
 		return;
 	}
@@ -55,7 +54,7 @@ void Session::RegisterRecv()
 
 void Session::RegisterSend(const std::vector<char>& data)
 {
-	if (not _connected.load() or _socket == INVALID_SOCKET) {
+	if (_state.load() == SessionState::ST_FREE or _socket == INVALID_SOCKET) {
 		DisConnect();
 		return;
 	}
@@ -118,19 +117,21 @@ void Session::DisConnect()
 {
 	LOG_DBG("Session[%d] DisConnect", _id);
 
-	bool expected{ true };
-	if (_connected.compare_exchange_strong(expected, false)) {
-		shutdown(_socket, SD_BOTH);
-		CancelIoEx(GetHandle(), nullptr);
-		closesocket(_socket);
-		_socket = INVALID_SOCKET;
-		_owner->RemoveSession(_id);
+	std::array<SessionState, 2> expected = { SessionState::ST_ALLOC, SessionState::ST_INGAME };
+	for (auto& expect : expected) {
+		if (_state.compare_exchange_strong(expect, SessionState::ST_FREE)) {
+			shutdown(_socket, SD_BOTH);
+			CancelIoEx(GetHandle(), nullptr);
+			closesocket(_socket);
+			_socket = INVALID_SOCKET;
+			_owner->RemoveSession(_id);
+		}
 	}
 }
 
 void Session::InternalSend()
 {
-	if (not _connected.load() or _socket == INVALID_SOCKET) {
+	if (_state.load() == SessionState::ST_FREE or _socket == INVALID_SOCKET) {
 		DisConnect();
 		return;
 	}

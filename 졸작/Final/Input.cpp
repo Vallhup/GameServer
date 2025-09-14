@@ -77,3 +77,11 @@ void Input::SendAttackPacket()
 	vector<char> packet = PacketFactory::CSAttackPacket(clientID);
 	network->Send(packet);
 }
+
+void Input::SendDodgePacket()
+{
+	if (!network) return;
+
+	vector<char> packet = PacketFactory::CSDodgePacket(clientID);
+	network->Send(packet);
+}
