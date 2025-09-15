@@ -344,8 +344,8 @@ void DX12Core::CreateShadowMap()
 {
 	D3D12_RESOURCE_DESC shadowDesc = {};
 	shadowDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	shadowDesc.Width = WinSize.x;
-	shadowDesc.Height = WinSize.y;
+	shadowDesc.Width = SHADOW_MAP_SIZE;
+	shadowDesc.Height = SHADOW_MAP_SIZE;
 	shadowDesc.DepthOrArraySize = 1;
 	shadowDesc.MipLevels = 1;
 	shadowDesc.Format = DXGI_FORMAT_R32_TYPELESS;
@@ -381,13 +381,13 @@ void DX12Core::CreateShadowMap()
 
 void DX12Core::BeginShadowPass()
 {
-	XMVECTOR lightDir = XMVectorSet(0, 0, 1.f, 0); // 정규화된 방향
-	XMVECTOR lightPos = XMVectorSet(0, 10, -50.0f, 1);  // 높은 위치
+	XMVECTOR lightDir = XMVectorSet(0, 0, -1.f, 0); // 정규화된 방향
+	XMVECTOR lightPos = XMVectorSet(0, 29.f, -70.0f, 1);  // 높은 위치
 	XMVECTOR targetPos = XMVectorSet(0, 0, 0, 1);
 	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
 
 	XMMATRIX lightView = XMMatrixTranspose(XMMatrixLookAtLH(lightPos, targetPos, up));
-	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(100.0f, 100.0f, 1.0f, 200.0f));
+	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(25.0f, 25.0f, 30.0f, 150.0f));
 	
 	shadowFrameCB->CopyData(&lightView, sizeof(XMMATRIX), 0);
 	shadowFrameCB->CopyData(&lightProjection, sizeof(XMMATRIX), sizeof(XMMATRIX));

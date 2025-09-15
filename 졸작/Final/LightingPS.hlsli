@@ -56,7 +56,7 @@ float CalculateShadow(float3 worldPos)
     float shadowMapDepth = shadowMap.Sample(pointSampler, shadowUV).r;
     
     // Shadow 판정 (bias 추가로 shadow acne 방지)
-    float bias = 0.005f;
+    float bias = 0.0001f;
     return (currentDepth - bias) > shadowMapDepth ? 0.2 : 1.0; // 완전 검은색 대신 0.2
 }
 
@@ -146,4 +146,8 @@ float4 PSMain(PS_IN input) : SV_Target
     finalColor += emission;
     
     return float4(finalColor, alpha);
+    
+    // ShadowMap만 그릴때
+    //float shadowDepth = shadowMap.Sample(pointSampler, input.uv).r;
+    //return float4(shadowDepth, shadowDepth, shadowDepth, 1.0);
 }
