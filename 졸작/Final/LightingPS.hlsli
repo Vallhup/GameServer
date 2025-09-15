@@ -57,7 +57,7 @@ float CalculateShadow(float3 worldPos)
     
     // Shadow 판정 (bias 추가로 shadow acne 방지)
     float bias = 0.0001f;
-    return (currentDepth - bias) > shadowMapDepth ? 0.2 : 1.0; // 완전 검은색 대신 0.2
+    return (currentDepth - bias) > shadowMapDepth ? 0.7 : 1.0; // 그림자 연하게 표현 0.7
 }
 
 float4 PSMain(PS_IN input) : SV_Target
@@ -107,8 +107,11 @@ float4 PSMain(PS_IN input) : SV_Target
             
             lightContribution = (diffuse + ambient + spec) * lights[i].color * lights[i].intensity;
             
-            float shadow = CalculateShadow(worldPos);
-            lightContribution *= shadow;
+            if (i == 0)
+            {
+                float shadow = CalculateShadow(worldPos);
+                lightContribution *= shadow;
+            }
         }
         else if (lights[i].type == 1) // Point Light
         {
