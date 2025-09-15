@@ -18,6 +18,7 @@ void DX12Core::Initialize(HWND hwnd)
 	sceneCB = make_unique<UploadBuffer>();
 	deferredLightCB = make_unique<UploadBuffer>();
 	forwardLightCB = make_unique<UploadBuffer>();
+	shadowFrameCB = make_unique<UploadBuffer>();
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeForwardShader(GetDevice(), GetRootSig()->Get(), L"ForwardVS.hlsli", L"ForwardPS.hlsli");
@@ -513,8 +514,8 @@ void DX12Core::BeginLightingPass()
 	ID3D12DescriptorHeap* heaps[] = { gBufferSRVHeap.Get() };
 	cmdList->SetDescriptorHeaps(1, heaps);
 
-	// G-Buffer SRV 테이블 바인딩 (root parameter 12번)
-	cmdList->SetGraphicsRootDescriptorTable(12, gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart());		// 레지 넘버링 부분
+	// G-Buffer SRV 테이블 바인딩 (root parameter 13번)
+	cmdList->SetGraphicsRootDescriptorTable(13, gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart());		// 레지 넘버링 부분
 
 	//OutputDebugStringA("Lighting Pass started\n");
 }

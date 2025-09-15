@@ -1,8 +1,3 @@
-cbuffer FrameCB : register(b0)
-{
-    matrix lightView; 
-    matrix lightProjection; 
-};
 
 cbuffer ObjectCB : register(b1)
 {
@@ -11,6 +6,12 @@ cbuffer ObjectCB : register(b1)
     int useInstancing;
     uint materialIndex;
     int objPadding;
+};
+
+cbuffer shadowFrameCB : register(b5)
+{
+    matrix lightView;
+    matrix lightProjection;
 };
 
 StructuredBuffer<matrix> finalBoneTransforms : register(t3);

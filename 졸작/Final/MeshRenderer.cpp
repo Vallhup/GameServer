@@ -45,7 +45,7 @@ void MeshRenderer::RenderForward(DX12Core& core)
     SetupRenderingState(core);
 
     if (auto animator = GetGameObject()->GetComponent<Animator>()) {
-        cmdList->SetGraphicsRootShaderResourceView(9, animator->GetFinalBuffer()->GetGPUVirtualAddress());      // 레지 넘버링 부분
+        cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());      // 레지 넘버링 부분
     }
 
     if (!materials.empty()) {   // 많은 머티리얼 중 투명 값이 있는 머티리얼만 렌더링
@@ -73,7 +73,7 @@ void MeshRenderer::RenderDeferred(DX12Core& core)
     SetupRenderingState(core);
 
     if (animator) {
-        cmdList->SetGraphicsRootShaderResourceView(9, animator->GetFinalBuffer()->GetGPUVirtualAddress());      // 레지 넘버링 부분
+        cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());      // 레지 넘버링 부분
     }
 
     if (!materials.empty()) {
@@ -105,7 +105,7 @@ void MeshRenderer::RenderShadow(DX12Core& core)
     cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress());
 
     if (auto animator = GetGameObject()->GetComponent<Animator>())
-        cmdList->SetGraphicsRootShaderResourceView(9, animator->GetFinalBuffer()->GetGPUVirtualAddress());
+        cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());
 
     vertexIndexBuffer->Bind(cmdList);
     vertexIndexBuffer->Draw(cmdList);
@@ -333,7 +333,7 @@ void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuf
     cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());       // 레지 넘버링 부분
     
     if (instanceBuffer) {
-        cmdList->SetGraphicsRootShaderResourceView(11, instanceBuffer->GetGPUVirtualAddress());     // 레지 넘버링 부분
+        cmdList->SetGraphicsRootShaderResourceView(12, instanceBuffer->GetGPUVirtualAddress());     // 레지 넘버링 부분
     }
 }
 

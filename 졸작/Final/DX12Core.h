@@ -122,6 +122,7 @@ private:
 	unique_ptr<UploadBuffer> sceneCB;
 	unique_ptr<UploadBuffer> deferredLightCB;
 	unique_ptr<UploadBuffer> forwardLightCB;
+	unique_ptr<UploadBuffer> shadowFrameCB;
 
 	// Shadow Mapping resources
 	ComPtr<ID3D12Resource> shadowMapTexture;

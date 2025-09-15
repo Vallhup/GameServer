@@ -49,14 +49,15 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddCBV(2);              // rootParmas[2] register(b2) - animationparams Constant BUFF
     AddCBV(3);              // rootParmas[3] register(b3) - deferred light Constant BUFF
     AddCBV(4);              // rootParmas[4] register(b4) - forward light Constant BUFF
-    AddBindlessTable(1);    // rootParmas[5] register(t0, space1) - bindless texture ARRAY
-    AddSRV(0, 0);           // rootParmas[6] register(t0, space0) - material buffer
-    AddSRV(1, 0);           // rootParmas[7] register(t1, space0) - animation bone frame structured BUFF
-    AddSRV(2, 0);           // rootParmas[8] register(t2, space0) - animation offset structured BUFF
-    AddSRV(3, 0);           // rootParmas[9] register(t3, space0) - finalBone Structured BUFF
-    AddUAV(0, 0);           // rootParmas[10] register(u0)	- animation final Read&Write structured BUFF
-    AddSRV(0, 2);           // rootParmas[11] register(t0, space2) - instance structured BUFF
-    AddSRVTable(4, 4, 0);   // rootParmas[12] register(t4-t7, space0) - G-Buffer SRV 테이블
+    AddCBV(5);              // rootParmas[5] register(b5) - shadowFrameCB Constant BUFF
+    AddBindlessTable(1);    // rootParmas[6] register(t0, space1) - bindless texture ARRAY
+    AddSRV(0, 0);           // rootParmas[7] register(t0, space0) - material buffer
+    AddSRV(1, 0);           // rootParmas[8] register(t1, space0) - animation bone frame structured BUFF
+    AddSRV(2, 0);           // rootParmas[9] register(t2, space0) - animation offset structured BUFF
+    AddSRV(3, 0);           // rootParmas[10] register(t3, space0) - finalBone Structured BUFF
+    AddUAV(0, 0);           // rootParmas[11] register(u0)	- animation final Read&Write structured BUFF
+    AddSRV(0, 2);           // rootParmas[12] register(t0, space2) - instance structured BUFF
+    AddSRVTable(4, 4, 0);   // rootParmas[13] register(t4-t7, space0) - G-Buffer SRV 테이블
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[1];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,         // register(s0) - texture Sampler
