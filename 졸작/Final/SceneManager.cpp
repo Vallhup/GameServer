@@ -144,5 +144,7 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
     mCurrentScene->SetSceneManager(this);
     mCurrentScene->Initialize(core);
 
+    core.FlushCommandQueue();
+
     core.SetBackgroundColor(mCurrentScene->GetBackgroundColor());
 }
