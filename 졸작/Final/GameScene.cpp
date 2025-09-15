@@ -60,6 +60,8 @@ void GameScene::CreateCastle()
 	{
 		auto map = make_shared<GameObject>();
 		map->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
+		if (i == 20 || i == 22 || i == 27)
+			map->SetId(-1);
 		auto meshRenderer = map->AddComponent<MeshRenderer>();
 		auto transform = map->AddComponent<Transform>();
 		if (i < 10)
@@ -308,11 +310,11 @@ void GameScene::RenderSceneDeferred()
 {
 	for (const auto& obj : gameObjects)
 	{
-		//if (obj->GetId() != -1)
-		//{
+		if (obj->GetId() != -1)
+		{
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 				meshRenderer->RenderDeferred(*coreRef);
-		//}
+		}
 	}
 }
 
@@ -320,11 +322,11 @@ void GameScene::RenderSceneForward()
 {
 	for (const auto& obj : gameObjects)
 	{
-		//if (obj->GetId() != -1)
-		//{
+		if (obj->GetId() != -1)
+		{
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 				meshRenderer->RenderForward(*coreRef);
-		//}
+		}
 	}
 }
 
@@ -332,11 +334,11 @@ void GameScene::RenderSceneShadow()
 {
 	for (const auto& obj : gameObjects)
 	{
-		//if (obj->GetId() != -1)
-		//{
+		if (obj->GetId() != -1)
+		{
 		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 			meshRenderer->RenderShadow(*coreRef);
-		//}
+		}
 	}
 }
 

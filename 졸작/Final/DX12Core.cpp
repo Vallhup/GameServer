@@ -30,10 +30,11 @@ void DX12Core::Initialize(HWND hwnd)
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
 	deferredLightCB->Initialize(GetDevice(), sizeof(DeferredLightConstants));
 	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
+	shadowFrameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 
 	CreateDepthStencilBuffer();
-	CreateGBuffer();
 	CreateShadowMap();
+	CreateGBuffer();
 }
 
 void DX12Core::CreateDevice()
@@ -296,7 +297,7 @@ void DX12Core::CreateGBuffer()
 	// === 3. SRV Descriptor Heap 생성 (라이팅 패스에서 읽기용) ===
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.NumDescriptors = 4;
+	srvHeapDesc.NumDescriptors = 5;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&gBufferSRVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer SRV Heap");
@@ -327,6 +328,14 @@ void DX12Core::CreateGBuffer()
 
 		OutputDebugStringA(("G-Buffer RT" + to_string(i) + " SRV created\n").c_str());
 	}
+
+	shadowMapSRVHandle = srvGpuHandle;  // 멤버 변수로 저장
+	D3D12_SHADER_RESOURCE_VIEW_DESC shadowSrvDesc = {};
+	shadowSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	shadowSrvDesc.Texture2D.MipLevels = 1;
+	shadowSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	device->CreateShaderResourceView(shadowMapTexture.Get(), &shadowSrvDesc, srvCpuHandle);
 
 	OutputDebugStringA("G-Buffer created successfully!\n");
 }
@@ -361,39 +370,41 @@ void DX12Core::CreateShadowMap()
 	hr = device->CreateDescriptorHeap(&shadowDSVDesc, IID_PPV_ARGS(&shadowMapDSVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create shadowMap DSV Heap!!\n");
 
-	D3D12_DESCRIPTOR_HEAP_DESC shadowRTVDesc = {};
-	shadowRTVDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	shadowRTVDesc.NumDescriptors = 1;
-	shadowRTVDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	hr = device->CreateDescriptorHeap(&shadowRTVDesc, IID_PPV_ARGS(&shadowMapSRVHeap));
-	MASSERT(SUCCEEDED(hr), "Failed to create shadowMap RTV Heap!!\n");
-
 	shadowMapDSVHandle = shadowMapDSVHeap->GetCPUDescriptorHandleForHeapStart();
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 	device->CreateDepthStencilView(shadowMapTexture.Get(), &dsvDesc, shadowMapDSVHandle);
 
-	shadowMapSRVHandle = shadowMapSRVHeap->GetGPUDescriptorHandleForHeapStart();
-	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = shadowMapSRVHeap->GetCPUDescriptorHandleForHeapStart();
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	device->CreateShaderResourceView(shadowMapTexture.Get(), &srvDesc, srvCpuHandle);
-
 	OutputDebugStringA("Shadow Map creation succeed!!\n");
 }
 
 void DX12Core::BeginShadowPass()
 {
-	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		shadowMapTexture.Get(),
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE
-	);
-	cmdList->ResourceBarrier(1, &barrier);
+	XMVECTOR lightDir = XMVectorSet(0, 0, 1.f, 0); // 정규화된 방향
+	XMVECTOR lightPos = XMVectorSet(0, 10, -50.0f, 1);  // 높은 위치
+	XMVECTOR targetPos = XMVectorSet(0, 0, 0, 1);
+	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
+
+	XMMATRIX lightView = XMMatrixTranspose(XMMatrixLookAtLH(lightPos, targetPos, up));
+	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(100.0f, 100.0f, 1.0f, 200.0f));
+	
+	shadowFrameCB->CopyData(&lightView, sizeof(XMMATRIX), 0);
+	shadowFrameCB->CopyData(&lightProjection, sizeof(XMMATRIX), sizeof(XMMATRIX));
+
+	static bool firstShadowPass = true;
+
+	if (!firstShadowPass) {
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			shadowMapTexture.Get(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE
+		);
+		cmdList->ResourceBarrier(1, &barrier);
+	}
+	else {
+		firstShadowPass = false;
+	}
 
 	cmdList->OMSetRenderTargets(0, nullptr, FALSE, &shadowMapDSVHandle);
 
@@ -408,6 +419,9 @@ void DX12Core::BeginShadowPass()
 
 	D3D12_RECT shadowRect = { 0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE };
 	cmdList->RSSetScissorRects(1, &shadowRect);
+
+	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
+	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());		// 레지 넘버링 부분
 
 	//OutputDebugStringA("Shadow Pass started!!\n");
 }
@@ -510,13 +524,15 @@ void DX12Core::BeginLightingPass()
 
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
+	cmdList->SetGraphicsRootConstantBufferView(3, GetDeferredLightCB()->GetGPUVirtualAddress());			// 레지 넘버링 부분
+	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());					// 레지 넘버링 부분
+
 	// G-Buffer SRV Heap을 셰이더에 바인딩
 	ID3D12DescriptorHeap* heaps[] = { gBufferSRVHeap.Get() };
 	cmdList->SetDescriptorHeaps(1, heaps);
 
 	// G-Buffer SRV 테이블 바인딩 (root parameter 13번)
 	cmdList->SetGraphicsRootDescriptorTable(13, gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart());		// 레지 넘버링 부분
-
 	//OutputDebugStringA("Lighting Pass started\n");
 }
 
@@ -601,10 +617,6 @@ void DX12Core::RenderFullscreenQuad()
 
 	// 라이팅 PSO 설정
 	cmdList->SetPipelineState(shader->GetLightingPSO());
-	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
-
-	// 라이트 데이터 바인딩
-	cmdList->SetGraphicsRootConstantBufferView(3, GetDeferredLightCB()->GetGPUVirtualAddress());		// 레지 넘버링 부분
 
 	// 정점 버퍼 없이 6개 정점으로 사각형 그리기 (2개 삼각형)
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

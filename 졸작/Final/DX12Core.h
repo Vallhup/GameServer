@@ -127,7 +127,6 @@ private:
 	// Shadow Mapping resources
 	ComPtr<ID3D12Resource> shadowMapTexture;
 	ComPtr<ID3D12DescriptorHeap> shadowMapDSVHeap;
-	ComPtr<ID3D12DescriptorHeap> shadowMapSRVHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE shadowMapDSVHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE shadowMapSRVHandle;
 

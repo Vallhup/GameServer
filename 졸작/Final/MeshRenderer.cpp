@@ -92,6 +92,7 @@ void MeshRenderer::RenderShadow(DX12Core& core)
     }
 
     auto cmdList = core.GetGraphicsCmdList();
+    cmdList->SetPipelineState(core.GetShader()->GetShadowPSO());
     auto transform = GetGameObject()->GetComponent<Transform>();
     XMMATRIX world = transform->GetWorldMatrix();
 

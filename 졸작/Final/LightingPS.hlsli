@@ -14,6 +14,12 @@ cbuffer LightCB : register(b3)
     } lights[25];
 }
 
+cbuffer shadowFrameCB : register(b5)
+{
+    matrix lightView;
+    matrix lightProjection;
+};
+
 struct PS_IN
 {
     float4 pos : SV_POSITION;
@@ -24,7 +30,35 @@ Texture2D gBufferRT0 : register(t4); // BaseColor + Metallic
 Texture2D gBufferRT1 : register(t5); // Normal + Roughness
 Texture2D gBufferRT2 : register(t6); // WorldPos + AO
 Texture2D gBufferRT3 : register(t7); // Emission + Alpha
+Texture2D shadowMap : register(t8);
 SamplerState pointSampler : register(s0);
+
+float CalculateShadow(float3 worldPos)
+{
+    // World space → Light space 변환
+    float4 lightSpacePos = mul(float4(worldPos, 1.0), lightView);
+    lightSpacePos = mul(lightSpacePos, lightProjection);
+    
+    // NDC space로 변환
+    lightSpacePos.xyz /= lightSpacePos.w;
+    
+    // [0,1] 범위로 변환 (UV 좌표용)
+    float2 shadowUV = lightSpacePos.xy * 0.5 + 0.5;
+    shadowUV.y = 1.0 - shadowUV.y; // Y축 뒤집기
+    
+    // 범위 체크
+    if (shadowUV.x < 0.0 || shadowUV.x > 1.0 ||
+        shadowUV.y < 0.0 || shadowUV.y > 1.0)
+        return 1.0; // Shadow 범위 밖
+    
+    // Shadow map과 비교
+    float currentDepth = lightSpacePos.z;
+    float shadowMapDepth = shadowMap.Sample(pointSampler, shadowUV).r;
+    
+    // Shadow 판정 (bias 추가로 shadow acne 방지)
+    float bias = 0.005f;
+    return (currentDepth - bias) > shadowMapDepth ? 0.2 : 1.0; // 완전 검은색 대신 0.2
+}
 
 float4 PSMain(PS_IN input) : SV_Target
 {
@@ -72,6 +106,9 @@ float4 PSMain(PS_IN input) : SV_Target
             float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0) * metallic * 0.3;
             
             lightContribution = (diffuse + ambient + spec) * lights[i].color * lights[i].intensity;
+            
+            float shadow = CalculateShadow(worldPos);
+            lightContribution *= shadow;
         }
         else if (lights[i].type == 1) // Point Light
         {
