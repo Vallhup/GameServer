@@ -59,14 +59,18 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddSRV(0, 2);           // rootParams[12] register(t0, space2) - instance structured BUFF
     AddSRVTable(4, 5, 0);   // rootParams[13] register(t4-t8, space0) - G-Buffer + shadowMap SRV Å×ÀÌºí
 
-    CD3DX12_STATIC_SAMPLER_DESC samplerDesc[1];
+    CD3DX12_STATIC_SAMPLER_DESC samplerDesc[2];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,         // register(s0) - texture Sampler
         D3D12_TEXTURE_ADDRESS_MODE_WRAP,
         D3D12_TEXTURE_ADDRESS_MODE_WRAP);
 
+    samplerDesc[1].Init(1, D3D12_FILTER_MIN_MAG_MIP_LINEAR,         // register(s1) - linear Sampler
+        D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+        D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
+
     CD3DX12_ROOT_SIGNATURE_DESC desc{};
     desc.Init(static_cast<UINT>(rootParams.size()), rootParams.data(),
-        1, samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+        2, samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
     ComPtr<ID3DBlob> serializedRootSig = nullptr;
     ComPtr<ID3DBlob> errorBlob = nullptr;

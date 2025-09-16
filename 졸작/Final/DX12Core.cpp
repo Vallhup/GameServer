@@ -382,12 +382,12 @@ void DX12Core::CreateShadowMap()
 void DX12Core::BeginShadowPass()
 {
 	XMVECTOR lightDir = XMVectorSet(0, 0, -1.f, 0); // 정규화된 방향
-	XMVECTOR lightPos = XMVectorSet(0, 29.f, -70.0f, 1);  // 높은 위치
-	XMVECTOR targetPos = XMVectorSet(0, 0, 0, 1);
+	XMVECTOR lightPos = XMVectorSet(playerCurrentPos.x + 0, playerCurrentPos.y + 29.f, playerCurrentPos.z + -50.0f, 1);  // 높은 위치
+	XMVECTOR targetPos = XMVectorSet(playerCurrentPos.x, playerCurrentPos.y, playerCurrentPos.z, 1);
 	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
 
 	XMMATRIX lightView = XMMatrixTranspose(XMMatrixLookAtLH(lightPos, targetPos, up));
-	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(25.0f, 25.0f, 30.0f, 150.0f));
+	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(25.0f, 25.0f, 1.0f, 100.0f));
 	
 	shadowFrameCB->CopyData(&lightView, sizeof(XMMATRIX), 0);
 	shadowFrameCB->CopyData(&lightProjection, sizeof(XMMATRIX), sizeof(XMMATRIX));
@@ -776,4 +776,9 @@ UploadBuffer* DX12Core::GetForwardLightCB() const
 void DX12Core::SetBackgroundColor(const float* color)
 {
 	backgroundColor = color;
+}
+
+void DX12Core::SetPlayerPosForShadow(const XMFLOAT3& pos)
+{
+	playerCurrentPos = pos;
 }

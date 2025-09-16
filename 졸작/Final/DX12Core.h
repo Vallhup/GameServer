@@ -81,6 +81,7 @@ public:
 	UploadBuffer* GetForwardLightCB() const;
 
 	void SetBackgroundColor(const float* color);
+	void SetPlayerPosForShadow(const XMFLOAT3& pos);
 
 private:
 	// ∞Ì¡§
@@ -131,4 +132,6 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE shadowMapSRVHandle;
 
 	static const UINT SHADOW_MAP_SIZE = 2048;
+
+	XMFLOAT3 playerCurrentPos = { 0, 0, 0 };
 };

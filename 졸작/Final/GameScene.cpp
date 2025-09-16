@@ -302,6 +302,12 @@ void GameScene::UpdateScene(const float deltaTime)
 		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
 	}
 
+	if (myPlayer)	// 그림자 반경을 플레이어 기준으로 움직이는거 테스트 위한 임시 코드임
+	{
+		auto transform = myPlayer->GetComponent<Transform>();
+		coreRef->SetPlayerPosForShadow(transform->GetPosition());
+	}
+
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
 }

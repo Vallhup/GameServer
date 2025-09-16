@@ -31,33 +31,45 @@ Texture2D gBufferRT1 : register(t5); // Normal + Roughness
 Texture2D gBufferRT2 : register(t6); // WorldPos + AO
 Texture2D gBufferRT3 : register(t7); // Emission + Alpha
 Texture2D shadowMap : register(t8);
+
 SamplerState pointSampler : register(s0);
+SamplerState linearSampler : register(s1);
 
 float CalculateShadow(float3 worldPos)
 {
-    // World space → Light space 변환
     float4 lightSpacePos = mul(float4(worldPos, 1.0), lightView);
     lightSpacePos = mul(lightSpacePos, lightProjection);
     
-    // NDC space로 변환
     lightSpacePos.xyz /= lightSpacePos.w;
     
-    // [0,1] 범위로 변환 (UV 좌표용)
     float2 shadowUV = lightSpacePos.xy * 0.5 + 0.5;
-    shadowUV.y = 1.0 - shadowUV.y; // Y축 뒤집기
+    shadowUV.y = 1.0 - shadowUV.y; 
     
-    // 범위 체크
     if (shadowUV.x < 0.0 || shadowUV.x > 1.0 ||
         shadowUV.y < 0.0 || shadowUV.y > 1.0)
-        return 1.0; // Shadow 범위 밖
+        return 1.0; 
     
-    // Shadow map과 비교
     float currentDepth = lightSpacePos.z;
-    float shadowMapDepth = shadowMap.Sample(pointSampler, shadowUV).r;
+    float shadowMapDepth = shadowMap.Sample(linearSampler, shadowUV).r;
     
-    // Shadow 판정 (bias 추가로 shadow acne 방지)
     float bias = 0.0001f;
-    return (currentDepth - bias) > shadowMapDepth ? 0.7 : 1.0; // 그림자 연하게 표현 0.7
+    float shadow = 0.0f;
+    float2 texelSize = 1.0 / 2048.0;
+    
+    for (int x = -2; x <= 2; ++x)
+    {
+        for (int y = -2; y <= 2; ++y)
+        {
+            float2 offset = float2(x, y) * texelSize;
+            float shadowMapDepth = shadowMap.Sample(linearSampler, shadowUV + offset).r;
+            
+            if ((currentDepth - bias) > shadowMapDepth)
+                shadow += 1.0f;
+        }
+    }
+
+    shadow /= 25.0;
+    return lerp(1.0, 0.2, shadow);
 }
 
 float4 PSMain(PS_IN input) : SV_Target
@@ -86,7 +98,6 @@ float4 PSMain(PS_IN input) : SV_Target
     
     float3 finalColor = float3(0, 0, 0);
     
-    // 모든 라이트에 대해 계산
     for (int i = 0; i < lightCount; ++i)
     {
         float3 lightContribution = float3(0, 0, 0);
@@ -96,12 +107,10 @@ float4 PSMain(PS_IN input) : SV_Target
             float3 lightDir = normalize(-lights[i].position);
             float NdotL = max(0.0, dot(worldNormal, -lightDir));
             
-            // BasicPS 스타일: Diffuse + Ambient + Specular
             float3 diffuse = baseColor * NdotL * 0.7;
-            float3 ambient = baseColor * 0.3; // BasicPS에서는 1.0이었지만 너무 밝음
+            float3 ambient = baseColor * 0.3; 
             
-            // Specular 계산 (BasicPS 스타일)
-            float3 viewDir = normalize(float3(0.1, 0.1, -1)); // BasicPS와 동일한 고정 viewDir
+            float3 viewDir = normalize(float3(0.1, 0.1, -1)); 
             float3 reflectDir = reflect(lightDir, worldNormal);
             float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0) * metallic * 0.3;
             
@@ -126,11 +135,9 @@ float4 PSMain(PS_IN input) : SV_Target
                 
                 float NdotL = max(0.0, dot(worldNormal, lightDir));
                 
-                // BasicPS 스타일: Diffuse + Ambient + Specular
                 float3 diffuse = baseColor * NdotL * 0.7;
                 float3 ambient = baseColor * 0.3;
                 
-                // Specular 계산
                 float3 viewDir = normalize(float3(0.1, 0.1, -1));
                 float3 reflectDir = reflect(-lightDir, worldNormal);
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0) * metallic * 0.3;
@@ -142,10 +149,8 @@ float4 PSMain(PS_IN input) : SV_Target
         finalColor += lightContribution;
     }
     
-    // AO 적용 (전체 결과에 곱하기)
     finalColor *= ao;
     
-    // Emission 추가
     finalColor += emission;
     
     return float4(finalColor, alpha);
