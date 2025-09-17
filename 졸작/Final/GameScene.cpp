@@ -91,7 +91,7 @@ void GameScene::CreateEffectSamples()
 	vector<EffectInfo> info = {
 		{u"Fireworks", 1.f, 0.f, -10.5f},
 		{u"BloodLance", 1.f, 0.f, 0.5f},
-		{u"Aura01_HDR", 1.f, 0.f, 0.5f},
+		{u"Aura01_HDR2", 1.f, 0.f, 0.5f},
 		{u"Benediction", 1.f, 10.f, -10.5f},
 		{u"Atmosphere", 1.f, 10.f, -10.5f},
 		{u"CandleFire4", 27.f, 29.f, -70.0f},
@@ -300,6 +300,14 @@ void GameScene::UpdateScene(const float deltaTime)
 		effectObjects[5]->GetComponent<EffectRenderer>()->PlayEffect();
 		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
 		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
+	}
+
+	if (effectObjects[2] && myPlayer) {
+		if (auto transform = effectObjects[2]->GetComponent<Transform>())
+		{
+			XMFLOAT3 pos = myPlayer->GetComponent<Transform>()->GetPosition();
+			transform->SetInitPosition(pos.x, pos.y, pos.z);
+		}
 	}
 
 	if (myPlayer)	// 그림자 반경을 플레이어 기준으로 움직이는거 테스트 위한 임시 코드임
