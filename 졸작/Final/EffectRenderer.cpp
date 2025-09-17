@@ -29,7 +29,7 @@ void EffectRenderer::Initialize(DX12Core& core)
     DXGI_FORMAT renderTargetFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     renderer = EffekseerRendererDX12::Create(
-        efDevice,             // Device, cmdQueue, swapchain buff count
+        efDevice,                   // Device, cmdQueue, swapchain buff count
         &renderTargetFormat,        // renderTargetFormats (Forward Pass - 백버퍼)
         1,                          // renderTargetCount (Forward는 1개)
         DXGI_FORMAT_D32_FLOAT,      // depthFormat 
@@ -78,29 +78,23 @@ void EffectRenderer::Render(DX12Core& core, Camera* camera)
     if (renderer == nullptr || manager == nullptr || camera == nullptr)
         return;
 
-    // 기존 카메라에서 매트릭스 정보 가져오기
     XMFLOAT3 cameraPos = camera->GetPosition();
     XMFLOAT3 cameraTarget = camera->GetTargetPosition();
 
-    // Effekseer 형식으로 변환
     auto viewerPosition = ::Effekseer::Vector3D(cameraPos.x, cameraPos.y, cameraPos.z);
     auto targetPosition = ::Effekseer::Vector3D(cameraTarget.x, cameraTarget.y, cameraTarget.z);
 
-    // 투영 행렬 설정 (기존 카메라와 동일한 설정 사용)
     Effekseer::Matrix44 projectionMatrix;
     float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
-    projectionMatrix.PerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 1000.0f);  // 카메라와 동일
+    projectionMatrix.PerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 1000.0f); 
 
-    // 카메라 행렬 설정
     Effekseer::Matrix44 cameraMatrix;
     cameraMatrix.LookAtLH(viewerPosition, targetPosition, ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f));
 
-    // 레이어 파라미터 설정
     Effekseer::Manager::LayerParameter layerParameter;
     layerParameter.ViewerPosition = viewerPosition;
     manager->SetLayerParameter(0, layerParameter);
 
-    // 렌더러 설정
     renderer->SetTime(totalTime);
     renderer->SetProjectionMatrix(projectionMatrix);
     renderer->SetCameraMatrix(cameraMatrix);
@@ -113,21 +107,17 @@ void EffectRenderer::Render(DX12Core& core, Camera* camera)
 
     renderer->SetCommandList(efCmdList);
 
-    // 렌더링 시작
     renderer->BeginRendering();
 
-    // 드로우 파라미터 설정
     Effekseer::Manager::DrawParameter drawParameter;
-    drawParameter.ZNear = 0.1f;    // 카메라와 동일
-    drawParameter.ZFar = 1000.0f;  // 카메라와 동일
+    drawParameter.ZNear = 0.1f;   
+    drawParameter.ZFar = 1000.0f; 
     drawParameter.ViewProjectionMatrix = renderer->GetCameraProjectionMatrix();
     manager->Draw(drawParameter);
 
-    // 렌더링 종료
     renderer->EndRendering();
 
     EffekseerRendererDX12::EndCommandList(efCmdList);
-    EffekseerRendererDX12::ExecuteCommandList(efCmdList);
 }
 
 void EffectRenderer::LoadEffect(const char16_t* effectPath)
