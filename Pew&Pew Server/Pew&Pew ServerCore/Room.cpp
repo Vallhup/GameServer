@@ -46,7 +46,6 @@ void Room::OnDeath(int deathId)
 			if (charId == deathId) {
 				sessMng.GetSession(charId)->Send(PacketFactory::SCGameLosePacket());
 			}
-
 			else {
 				sessMng.GetSession(charId)->Send(PacketFactory::SCGameWinPacket());
 			}

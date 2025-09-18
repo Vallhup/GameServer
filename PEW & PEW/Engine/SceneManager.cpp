@@ -78,6 +78,7 @@ void SceneManager::TransitionUpdate(const float deltaTime)
 		readyToFightTimer -= deltaTime;
 		if (readyToFightTimer <= 0.0f) {
 			SetPlayerState(PlayerPVPState::FIGHT);
+			input->SetInputBlock(false);
 			waitingForFightTransition = false;
 		}
 
@@ -99,8 +100,6 @@ void SceneManager::TransitionUpdate(const float deltaTime)
 
 				readyToFightTimer = READY_TO_FIGHT_DELAY;
 				waitingForFightTransition = true;
-
-				input->SetInputBlock(false);
 			}
 		}
 	}

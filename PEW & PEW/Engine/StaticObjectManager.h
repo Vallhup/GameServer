@@ -29,7 +29,9 @@ private:
 
 	PlayerPVPState currentPlayerState = PlayerPVPState::WAITING;
 	float fightTextTimer = 0.0f;
-	const float FIGHT_TEXT_DURATION = 3.0f;
+	const float FIGHT_TEXT_DURATION = 1.5f;
 	glm::vec3 pvpPlayerPosition = glm::vec3(0.0f);
+	float endTimer = 0.0f;
+	const float END_DURATION = 10.0f;
 };
 

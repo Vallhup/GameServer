@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "StaticObjectManager.h"
 #include "StaticObject.h"
+#include "WindowInfo.h"
 
 void StaticObjectManager::Init()
 {
@@ -73,6 +74,18 @@ void StaticObjectManager::Update(const float deltaTime)
 
 	if (currentPlayerState == PlayerPVPState::FIGHT && fightTextTimer > 0.0f) {
 		fightTextTimer -= deltaTime;
+	}
+
+	if ((currentPlayerState == PlayerPVPState::WIN || currentPlayerState == PlayerPVPState::LOSE) && endTimer > 0.0f) {
+		endTimer -= deltaTime;
+
+		cout << "EndTimer: " << endTimer << endl;
+
+		if (endTimer <= 0.0f)
+		{
+			GLFWwindow* window = GET_SINGLE(WindowInfo)->GetWindow();
+			glfwSetWindowShouldClose(window, GL_TRUE);
+		}
 	}
 }
 
@@ -151,6 +164,10 @@ void StaticObjectManager::SetPlayerState(PlayerPVPState state)
 
 	if (state == PlayerPVPState::FIGHT) {
 		fightTextTimer = FIGHT_TEXT_DURATION; 
+	}
+
+	if (state == PlayerPVPState::WIN || state == PlayerPVPState::LOSE) {
+		endTimer = END_DURATION;
 	}
 }
 

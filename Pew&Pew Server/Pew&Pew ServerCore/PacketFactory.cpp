@@ -194,7 +194,7 @@ std::vector<char> PacketFactory::SCGameWinPacket()
 {
 	SC_GAME_WIN_PACKET win;
 	win.size = sizeof(win);
-	win.type = SC_GAME_START;
+	win.type = SC_GAME_WIN;
 
 	return Serialize(win);
 }
