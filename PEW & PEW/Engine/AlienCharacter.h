@@ -18,7 +18,7 @@ public:
 	AlienCharacter(int type, int location);
 	~AlienCharacter();
 
-	void Update(float deltaTime, MainCharacter* Cat);
+	void Update(float deltaTime, MainCharacter* Cat, const std::array<std::array<AlienCharacter*, 9>, 3>& allAliens);
 
 	void Draw(glm::mat4 view, glm::mat4 projection, glm::vec3 viewPos, float deltaTime, glm::mat4 lightSpaceMatrix, GLuint depthMap);
 	void DrawShadow(ShadowMapping* shadowMap);
@@ -34,8 +34,8 @@ public:
 
 	void RotateAliens(MainCharacter* Cat);
 	void ChangeAnimation();
-	void UpdateStateAndBehavior(MainCharacter* Cat, const float deltaTime);
-	void MoveToward(MainCharacter* Cat, const float deltaTime);
+	void UpdateStateAndBehavior(MainCharacter* Cat, const float deltaTime, const std::array<std::array<AlienCharacter*, 9>, 3>& allAliens);
+	void MoveToward(MainCharacter* Cat, const float deltaTime, const std::array<std::array<AlienCharacter*, 9>, 3>& allAliens);
 
 	void ActivateBullets();
 	void DeactivateBullets();
@@ -49,6 +49,7 @@ public:
 	const glm::vec3& GetPosition() const { return alienPos; }
 	bool GetDying() const { return dying; }
 	bool GetDead() const { return dead; }
+	glm::vec3 GetAvoidanceVector(const std::array<std::array<AlienCharacter*, 9>, 3>& allAliens) const;
 
 private:
 	// 적 정보
@@ -85,5 +86,7 @@ private:
 
 	// 공격선 OPENGL
 	GLuint lVAO, lVBO, lShaderprogram;
+
+	float avoidanceRadius = 1.5f;
 };
 

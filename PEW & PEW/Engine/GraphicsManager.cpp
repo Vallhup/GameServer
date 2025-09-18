@@ -255,7 +255,7 @@ void GraphicsManager::UpdateAlienCharacters(float deltatime)
 	for (int type = 0; type < 3; ++type) {
 		for (int location = 0; location < 9; ++location) {
 			if (alienCharacters[type][location] && !alienCharacters[type][location]->GetDead()) {
-				alienCharacters[type][location]->Update(deltatime, localChar);
+				alienCharacters[type][location]->Update(deltatime, localChar, alienCharacters);
 			}
 		}
 	}

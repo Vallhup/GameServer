@@ -51,11 +51,11 @@ AlienCharacter::~AlienCharacter()
 	glDeleteProgram(lShaderprogram);
 }
 
-void AlienCharacter::Update(float deltaTime, MainCharacter* Cat)
+void AlienCharacter::Update(float deltaTime, MainCharacter* Cat, const std::array<std::array<AlienCharacter*, 9>, 3>& allAliens)
 {
 	RotateAliens(Cat);
 	ChangeAnimation();
-	UpdateStateAndBehavior(Cat, deltaTime);
+	UpdateStateAndBehavior(Cat, deltaTime, allAliens);
 	UpdateBullets(Cat, deltaTime);
 	UpdateHitDecision(deltaTime);
 }
@@ -319,7 +319,7 @@ void AlienCharacter::ChangeAnimation()
 	}
 }
 
-void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat, const float deltaTime)
+void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat, const float deltaTime, const std::array<std::array<AlienCharacter*, 9>, 3>& allAliens)
 {
 	glm::vec3 pos = Cat->GetPosition();
 	glm::vec3 direction = glm::normalize(pos - alienPos);
@@ -334,7 +334,7 @@ void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat, const float delt
 	}
 	else if (state == 1)
 	{
-		MoveToward(Cat, deltaTime);
+		MoveToward(Cat, deltaTime, allAliens);
 	}
 	else if (state == 2)
 	{
@@ -402,7 +402,7 @@ void AlienCharacter::UpdateStateAndBehavior(MainCharacter* Cat, const float delt
 	}
 }
 
-void AlienCharacter::MoveToward(MainCharacter* Cat, const float deltaTime)
+void AlienCharacter::MoveToward(MainCharacter* Cat, const float deltaTime, const std::array<std::array<AlienCharacter*, 9>, 3>& allAliens)
 {
 	if (Cat->GetDead())
 	{
@@ -417,8 +417,14 @@ void AlienCharacter::MoveToward(MainCharacter* Cat, const float deltaTime)
 	float distance = glm::length(glm::vec2(pos.x - alienPos.x, pos.z - alienPos.z));
 	glm::vec3 direction = glm::normalize(glm::vec3(pos.x - alienPos.x, 0.0f, pos.z - alienPos.z));
 
+	glm::vec3 avoidance = GetAvoidanceVector(allAliens);
+	glm::vec3 finalDirection = direction + (avoidance * 1.0f);
+
+	if (glm::length(finalDirection) > 0.0f)
+		finalDirection = glm::normalize(finalDirection);
+
 	float Move_SPEED = 2.5f;
-	glm::vec3 movement = direction * Move_SPEED * deltaTime;
+	glm::vec3 movement = finalDirection * Move_SPEED * deltaTime;
 
 	if (distance > 0.1f) {
         glm::vec3 newPos = alienPos + movement;
@@ -520,4 +526,32 @@ void AlienCharacter::SetHit()
 	life -= 1;
 	hit_cnt = 2.0f;
 	hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
+}
+
+glm::vec3 AlienCharacter::GetAvoidanceVector(const std::array<std::array<AlienCharacter*, 9>, 3>& allAliens) const
+{
+	glm::vec3 avoidance(0.0f);
+	int nearbyCount = 0;
+
+	for (int type = 0; type < 3; ++type) {
+		for (int location = 0; location < 9; ++location) {
+			const AlienCharacter* other = allAliens[type][location];
+			if (!other || other == this || other->GetDead()) continue;
+
+			glm::vec3 diff = alienPos - other->GetPosition();
+			float distance = glm::length(diff);
+
+			if (distance < avoidanceRadius && distance > 0.1f) {
+				float avoidanceStrength = (avoidanceRadius - distance) / avoidanceRadius;
+				avoidance += glm::normalize(diff) * avoidanceStrength;
+				nearbyCount++;
+			}
+		}
+	}
+
+	if (nearbyCount > 0) {
+		avoidance /= nearbyCount;
+	}
+
+	return avoidance;
 }
