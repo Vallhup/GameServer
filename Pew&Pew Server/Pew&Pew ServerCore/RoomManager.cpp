@@ -9,12 +9,16 @@ void RoomManager::AddCharacter(Character* character)
 		if (not room->IsFull()) {
 			room->AddCharacter(character);
 
-			_gameCtx.GetTimerManager().AddOneTimeTask(
-				[&room]()
-				{
-					room->BroadCast(PacketFactory::SCGameStartPacket());
-				}, 3.0f);
-
+			if (room->IsFull())
+			{
+				std::cout << "Room is full! Starting 10 second timer..." << std::endl;
+				_gameCtx.GetTimerManager().AddOneTimeTask(
+					[&room]()
+					{
+						std::cout << "10 seconds passed! Broadcasting game start..." << std::endl;
+						room->BroadCast(PacketFactory::SCGameStartPacket());
+					}, 10000.0f);
+			}
 			return;
 		}
 	}

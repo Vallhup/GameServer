@@ -56,6 +56,13 @@ void GraphicsManager::Update(SceneType type, SoundManager& soundmanager, const f
 		for (auto& [id, character] : catCharacters) {
 			character->Update(deltaTime);
 		}
+
+		MainCharacter* localPlayer = GetLocalCharacter();
+		if (localPlayer) {
+			GET_SINGLE(StaticObjectManager)->UpdatePVPPlayerPosition(localPlayer->GetPosition());
+		}
+
+		GET_SINGLE(StaticObjectManager)->Update(deltaTime);
 	}
 
 	effect->Update(deltaTime);

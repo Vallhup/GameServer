@@ -3,6 +3,7 @@
 #include "PacketFactory.h"
 #include "GraphicsManager.h"
 #include "MainCharacter.h"
+#include "StaticObjectManager.h"
 
 NetworkManager::NetworkManager()
 {
@@ -375,6 +376,16 @@ void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 		SC_GAME_START_PACKET startPacket = PacketFactory::Deserialize<SC_GAME_START_PACKET>(packet);
 
 		canStart = true;
+		break;
+	}
+	case SC_GAME_WIN:
+	{
+		GET_SINGLE(StaticObjectManager)->SetPlayerState(PlayerPVPState::WIN);
+		break;
+	}
+	case SC_GAME_LOSE:
+	{
+		GET_SINGLE(StaticObjectManager)->SetPlayerState(PlayerPVPState::LOSE);
 		break;
 	}
 	default:

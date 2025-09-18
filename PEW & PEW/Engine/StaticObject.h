@@ -20,8 +20,12 @@ public:
 
 	const char* GetName();
 
+	void SetPosition(const glm::vec3& pos) { position = pos; }
+	void SetScale(const glm::vec3& scl) { scale = scl; }
+
 private:
-	glm::vec3 position;
+	glm::vec3 position = glm::vec3(0.0f);
+	glm::vec3 scale = glm::vec3(1.0f);
 
 	GLuint VAO, VBO, EBO, shaderprogram, Texture;
 	GLuint ViewLoc, ProjLoc, ModelLoc;

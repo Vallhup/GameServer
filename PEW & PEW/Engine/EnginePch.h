@@ -57,6 +57,14 @@ using uint16 = unsigned __int16;
 using uint32 = unsigned __int32;
 using uint64 = unsigned __int64;
 
+enum class PlayerPVPState {
+	WAITING,
+	READY,
+	FIGHT,
+	WIN,
+	LOSE
+};
+
 // ΩÃ±€≈Ê ∏≈≈©∑Œ
 #define DECLARE_SINGLE(type)		\
 private:							\

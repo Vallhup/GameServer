@@ -17,8 +17,19 @@ public:
 
 	StaticObject* AddStaticObject(const char* glb, const char* png, const char* let);
 
+	void UpdatePVPPlayerPosition(const glm::vec3& pos);
+
+	void SetPlayerState(PlayerPVPState state);
+	PlayerPVPState GetPlayerState() const { return currentPlayerState; }
+	bool ShouldRenderStateText(const std::string& textName) const;
+
 private:
 	vector<StaticObject*> StaticObjects;
 	float cloudPosition = 0.0f;
+
+	PlayerPVPState currentPlayerState = PlayerPVPState::WAITING;
+	float fightTextTimer = 0.0f;
+	const float FIGHT_TEXT_DURATION = 3.0f;
+	glm::vec3 pvpPlayerPosition = glm::vec3(0.0f);
 };
 

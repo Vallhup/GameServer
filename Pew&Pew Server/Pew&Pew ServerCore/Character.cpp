@@ -3,7 +3,7 @@
 
 Character::Character(int id, int texture) : _id(id), _name("name"), _texture(texture)
 {
-	_pos = DEFAULT_POS[id % 4];
+	_pos = DEFAULT_POS[id % 2];
 	_angle = 0.0f;
 	_angleChange = false;
 
@@ -50,7 +50,7 @@ bool Character::Move(float deltaTime)
 	}
 
 	_pos += moveVec * moveDistance;
-	_pos.x = std::clamp(_pos.x, -14.6f, 14.6f);
+	_pos.x = std::clamp(_pos.x, -14.5f, 14.5f);
 	_pos.z = std::clamp(_pos.z, -14.6f, 14.4f);
 
 	_version++;
@@ -161,7 +161,7 @@ void Character::Death()
 
 void Character::Revive()
 {
-	_pos = DEFAULT_POS[_id % 4];
+	_pos = DEFAULT_POS[_id % 2];
 	_angle = 0.0f;
 	_angleChange = false;
 

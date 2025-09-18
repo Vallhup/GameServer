@@ -73,11 +73,9 @@ class Character : public std::enable_shared_from_this<Character>
 
 	static constexpr int MAX_HP{ 100 };
 
-	static constexpr vec3 DEFAULT_POS[4] = {
-		{ -13.6f, 0.0f, -13.6f },
-		{  13.6f, 0.0f, -13.6f },
-		{  13.6f, 0.0f,  13.4f },
-		{  -13.6f, 0.0f, 13.4f }
+	static constexpr vec3 DEFAULT_POS[2] = {
+		{ 13.6f, 0.0f, 0.0f },
+		{ -13.6f, 0.0f, 0.0f }
 	};
 
 public:

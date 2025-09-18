@@ -32,6 +32,8 @@ private:
     void ReleaseScene2();
 
     void SendLoginPacket(int characterType);
+    
+    void SetPlayerState(PlayerPVPState state);
 
 private:
     SoundManager* soundRef;
@@ -44,6 +46,11 @@ private:
     bool isTransitioning = { false };
     bool isSceneLoaded = { true };
     float loadingTimer = 3.0f;
-    float startTimer = 6.0f;
+
+    PlayerPVPState currentPlayerState = PlayerPVPState::WAITING;
+
+    float readyToFightTimer = 0.0f;
+    const float READY_TO_FIGHT_DELAY = 1.0f; 
+    bool waitingForFightTransition = false;
 };
 

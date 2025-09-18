@@ -9,6 +9,7 @@
 #include "Fade.h"
 #include "Skybox.h"
 #include "PacketFactory.h"
+#include "StaticObjectManager.h"
 
 void SceneManager::Init(SoundManager& soundmanager)
 {
@@ -55,6 +56,7 @@ void SceneManager::TransitionUpdate(const float deltaTime)
 			isTransitioning = false;
 			isSceneLoaded = false;
 			soundRef->ChangeBGM("music/wassobaesso.mp3", true);
+			SetPlayerState(PlayerPVPState::WAITING);
 		}
 
 		if (!input->GetInputBlock())
@@ -67,32 +69,38 @@ void SceneManager::TransitionUpdate(const float deltaTime)
 		if (loadingTimer <= 0.0f)
 		{
 			isSceneLoaded = true;
+			SetPlayerState(PlayerPVPState::WAITING);
 			soundRef->PlayBGM();
 		}
+	}
+	else if (waitingForFightTransition) 
+	{
+		readyToFightTimer -= deltaTime;
+		if (readyToFightTimer <= 0.0f) {
+			SetPlayerState(PlayerPVPState::FIGHT);
+			waitingForFightTransition = false;
+		}
+
+		Fade* fade = graphics->GetFade();
+		if (fade->GetFadeAlpha() > 0.0f)
+			fade->SubtractFadeAlpha(deltaTime);
 	}
 	else
 	{
 		Fade* fade = graphics->GetFade();
-
 		if (fade->GetFadeAlpha() > 0.0f)
 			fade->SubtractFadeAlpha(deltaTime);
-
 		if (fade->GetFadeAlpha() <= 0.0f)
 		{
-			if (input->GetInputBlock() && network->CanStart() && startTimer <= 0.0f)
+			if (input->GetInputBlock() && network->CanStart())
 			{
 				cout << "GameStart!!" << '\n';
-				input->SetInputBlock(false);
-			}
-			
-		}
+				SetPlayerState(PlayerPVPState::READY);
 
-		if (network)
-		{
-			if (network->CanStart() && startTimer > 0.0f)
-			{
-				startTimer -= deltaTime;
-				cout << startTimer << '\n';
+				readyToFightTimer = READY_TO_FIGHT_DELAY;
+				waitingForFightTransition = true;
+
+				input->SetInputBlock(false);
 			}
 		}
 	}
@@ -172,4 +180,10 @@ void SceneManager::SendLoginPacket(int characterType)
 
 	vector<char> packet = PacketFactory::CSLoginPacket(characterType);
 	network->Send(packet);
+}
+
+void SceneManager::SetPlayerState(PlayerPVPState state)
+{
+	currentPlayerState = state;
+	GET_SINGLE(StaticObjectManager)->SetPlayerState(state);
 }

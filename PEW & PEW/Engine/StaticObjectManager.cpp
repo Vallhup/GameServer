@@ -37,7 +37,12 @@ void StaticObjectManager::Init()
 void StaticObjectManager::InitPVPMap()
 {
 	AddStaticObject("StaticGlb/ground2.glb", "Texture/map2.png", "Map2");
-	AddStaticObject("StaticGlb/fence3.glb", "Texture/fence.png", "Fence2");
+	AddStaticObject("StaticGlb/fence4.glb", "Texture/fence4.png", "Fence2");
+	AddStaticObject("StaticGlb/wordWaiting.glb", "Texture/wordWaiting.png", "Waiting");
+	AddStaticObject("StaticGlb/wordReady.glb", "Texture/wordReady.png", "Ready");
+	AddStaticObject("StaticGlb/wordFight.glb", "Texture/wordFight.png", "Fight");
+	AddStaticObject("StaticGlb/wordWin.glb", "Texture/wordWin.png", "Win");
+	AddStaticObject("StaticGlb/wordLose.glb", "Texture/wordLose.png", "Lose");
 }
 
 void StaticObjectManager::Release()
@@ -51,7 +56,6 @@ void StaticObjectManager::Release()
 
 void StaticObjectManager::Update(const float deltaTime)
 {
-	// 구름 같은 움직이는 오브젝트들 업데이트 필요
 	for (auto& obj : StaticObjects)
 	{
 		if (obj->GetName() == "Cloud")
@@ -66,22 +70,46 @@ void StaticObjectManager::Update(const float deltaTime)
 			}
 		}
 	}
+
+	if (currentPlayerState == PlayerPVPState::FIGHT && fightTextTimer > 0.0f) {
+		fightTextTimer -= deltaTime;
+	}
 }
 
 void StaticObjectManager::Draw(const glm::mat4& orgview, const glm::mat4& orgproj, glm::vec3 viewPos,
 	glm::mat4 lightSpaceMatrix, GLuint shadowMap)
 {
-	for (auto& obj : StaticObjects)
-	{
-		obj->drawStaticobject(orgview, orgproj, viewPos, lightSpaceMatrix, shadowMap);
+	for (auto& obj : StaticObjects) {
+		const std::string& objName = obj->GetName();
+
+		if (objName == "Waiting" || objName == "Ready" || objName == "Fight" ||
+			objName == "Win" || objName == "Lose") {
+
+			if (ShouldRenderStateText(objName)) {
+				obj->drawStaticobject(orgview, orgproj, viewPos, lightSpaceMatrix, shadowMap);
+			}
+		}
+		else {
+			obj->drawStaticobject(orgview, orgproj, viewPos, lightSpaceMatrix, shadowMap);
+		}
 	}
 }
 
 void StaticObjectManager::DrawShadow(const glm::mat4& lightSpaceMatrix, GLuint depthShader)
 {
-	for (auto& obj : StaticObjects)
-	{
-		obj->drawStaticobjectShadow(lightSpaceMatrix, depthShader);
+	for (auto& obj : StaticObjects) {
+		const std::string& objName = obj->GetName();
+
+		if (objName == "Waiting" || objName == "Ready" || objName == "Fight" ||
+			objName == "Win" || objName == "Lose") {
+
+			if (ShouldRenderStateText(objName)) {
+				obj->drawStaticobjectShadow(lightSpaceMatrix, depthShader);
+			}
+		}
+		else {
+			obj->drawStaticobjectShadow(lightSpaceMatrix, depthShader);
+		}
 	}
 }
 
@@ -90,4 +118,62 @@ StaticObject* StaticObjectManager::AddStaticObject(const char* glb, const char* 
 	StaticObject* obj = new StaticObject(glb, png, let);
 	StaticObjects.push_back(obj);
 	return obj;
+}
+
+void StaticObjectManager::UpdatePVPPlayerPosition(const glm::vec3& pos)
+{
+	pvpPlayerPosition = pos;
+
+	for (auto& obj : StaticObjects) {
+		const std::string& objName = obj->GetName();
+
+		if (objName == "Waiting" || objName == "Ready" || objName == "Fight" ||
+			objName == "Win" || objName == "Lose") {
+
+			glm::vec3 textPos = pos;
+			textPos.y += 4.5f;
+			textPos.z += 3.0f;  
+
+			obj->SetPosition(textPos);
+
+			if (objName == "Waiting")
+			{
+				glm::vec3 scale = glm::vec3(0.5f);
+				obj->SetScale(scale);
+			}
+		}
+	}
+}
+
+void StaticObjectManager::SetPlayerState(PlayerPVPState state)
+{
+	currentPlayerState = state;
+
+	if (state == PlayerPVPState::FIGHT) {
+		fightTextTimer = FIGHT_TEXT_DURATION; 
+	}
+}
+
+bool StaticObjectManager::ShouldRenderStateText(const std::string& textName) const
+{
+	switch (currentPlayerState) {
+
+	case PlayerPVPState::WAITING:
+		return textName == "Waiting";
+
+	case PlayerPVPState::READY:
+		return textName == "Ready";
+
+	case PlayerPVPState::FIGHT:
+		return textName == "Fight" && fightTextTimer > 0.0f;
+
+	case PlayerPVPState::WIN:
+		return textName == "Win";
+
+	case PlayerPVPState::LOSE:
+		return textName == "Lose";
+
+	default:
+		return false;
+	}
 }
