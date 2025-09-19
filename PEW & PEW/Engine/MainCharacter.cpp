@@ -7,6 +7,7 @@
 #include "AlienCharacter.h"
 #include "SceneManager.h"
 #include "CollisionManager.h"
+#include "EffectManager.h"
 
 MainCharacter::MainCharacter(int id, glm::vec3 cPos, bool isLocal, float speed) : playerID(id), isLocalPlayer(isLocal)
 {
@@ -16,7 +17,11 @@ MainCharacter::MainCharacter(int id, glm::vec3 cPos, bool isLocal, float speed) 
     animLibrary = new AnimatedModel::AnimationLibrary();
 
     if (isLocalPlayer)
+    {
         hitbox = new BoundingBox();
+        effects = new EffectManager();
+        effects->Init();
+    }
 
     characterPos = cPos;
     targetPos = characterPos;
@@ -74,10 +79,13 @@ void MainCharacter::Update(float deltaTime)
 
 void MainCharacter::Update(float deltaTime, array<array<AlienCharacter*, 9>, 3>& aliens)
 {
-   
     UpdateLocalPlayerState();
     UpdateLocalPlayerMovement(deltaTime);
     CheckFireAnimationTiming();
+    CheckFootEffectTiming();
+    if (effects) {
+        effects->Update(deltaTime);  
+    }
     UpdateLocalBullets(aliens, deltaTime);
     UpdateAnimation();
     UpdateHitDecision(deltaTime);
@@ -355,6 +363,34 @@ void MainCharacter::CheckFireAnimationTiming()
     }
 }
 
+void MainCharacter::CheckFootEffectTiming()
+{
+    std::string currentAnim = animLibrary->GetCurrentAnimation();
+    if (currentAnim == "Walk" || currentAnim == "Run" || currentAnim == "FireWalk" || currentAnim == "FireRun") {
+        float progress = player_CurrentAnim->CurrentTime / player_CurrentAnim->Duration;
+
+        if (progress >= 0.1f && progress < 0.2f && !footPrinted[0])
+        {
+            effects->PlayEffect("FootSmoke", characterPos);
+            footPrinted[0] = true;
+        }
+        else if (progress >= 0.6f && progress < 0.7f && !footPrinted[1])
+        {
+            effects->PlayEffect("FootSmoke", characterPos);
+            footPrinted[1] = true;
+        }
+
+        if (progress >= 0.95f) {
+            footPrinted[0] = footPrinted[1] = false;
+        }
+    }
+    else
+    {
+        if (footPrinted[0] || footPrinted[1])
+            footPrinted[0] = footPrinted[1] = false;
+    }
+}
+
 void MainCharacter::CheckBulletAlienHit(int bulletIndex, array<array<AlienCharacter*, 9>, 3>& aliens) 
 {
     for (int type = 0; type < 3; ++type) {
@@ -456,6 +492,11 @@ void MainCharacter::UpdateHitDecision(const float deltaTime)
         firing = false;
         isRunning = false;
     }
+}
+
+EffectManager* MainCharacter::GetEffects() const
+{
+    return isLocalPlayer ? effects : nullptr;
 }
 
 void MainCharacter::SetHit()

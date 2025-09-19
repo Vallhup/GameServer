@@ -9,7 +9,6 @@ class MainCharacter;
 class AlienCharacter;
 class SceneManager;
 class Fade;
-class EffectManager;
 
 class GraphicsManager
 {
@@ -51,7 +50,6 @@ private:
 	std::map<int, MainCharacter*> catCharacters;
 	int characterType = { 0 };
 	std::array<std::array<AlienCharacter*, 9>, 3> alienCharacters;
-	EffectManager* effect = { nullptr };
 
 	bool firstRenderDone = { false };
 };

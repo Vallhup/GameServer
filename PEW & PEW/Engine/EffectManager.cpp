@@ -31,7 +31,7 @@ void EffectManager::Init()
     manager->SetMaterialLoader(renderer->CreateMaterialLoader());
     manager->SetCurveLoader(Effekseer::MakeRefPtr<Effekseer::CurveLoader>());
 
-    LoadEffect("CandleFire", u"Effects/CosmicMist2.efk");
+    LoadEffect("FootSmoke", u"Effects/FootSmoke.efk");
 }
 
 void EffectManager::Update(float deltaTime)

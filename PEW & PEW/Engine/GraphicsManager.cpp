@@ -23,11 +23,6 @@ void GraphicsManager::Init()
 	fade = new Fade();
 	fade->Init();
 
-	effect = new EffectManager();
-	effect->Init();
-
-	effect->PlayEffect("CandleFire", glm::vec3{ -35.0322f, 2.0f, 44.6548f });
-
 	glm::vec3 localPos = glm::vec3(-37.3051f, 0.0f, 42.5001f);
 	AddCharacter(0, localPos, 0, true, 0.1f);
 	InitAlienCharacters();
@@ -64,8 +59,6 @@ void GraphicsManager::Update(SceneType type, SoundManager& soundmanager, const f
 
 		GET_SINGLE(StaticObjectManager)->Update(deltaTime);
 	}
-
-	effect->Update(deltaTime);
 
 	UpdateLightAngle(deltaTime);
 }
@@ -111,7 +104,9 @@ void GraphicsManager::Render(SceneType type, SoundManager& soundmanager)
 			}
 		}
 
-		effect->Render(view, projection);
+		if (localChar->GetEffects()) {
+			localChar->GetEffects()->Render(view, projection);  // 캐릭터 이펙트
+		}
 	}
 	else
 	{
@@ -225,9 +220,6 @@ void GraphicsManager::Release()
 
 	fade->Release();
 	delete fade;
-
-	effect->Release();
-	delete effect;
 }
 
 void GraphicsManager::ReleaseScene1()

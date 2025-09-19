@@ -6,6 +6,7 @@ class Camera;
 class BoundingBox;
 class AlienCharacter;
 class SceneManager;
+class EffectManager;
 
 struct CatBulletSlot {
     Bullet* bullet = nullptr;
@@ -64,6 +65,7 @@ public:
     void UpdateLocalBullets(array<array<AlienCharacter*, 9>, 3>& aliens, const float deltaTime);
     void CreateLocalBullet();
     void CheckFireAnimationTiming();
+    void CheckFootEffectTiming();
     void CheckBulletAlienHit(int bulletIndex, array<array<AlienCharacter*, 9>, 3>& aliens);
     void CheckBulletWallHit(int bulletIndex);
     void UpdateLocalPlayerRevive(const float deltaTime);
@@ -91,6 +93,7 @@ public:
     float GetAngle() const { return angle; }
     AnimInfo* GetCurrentAnim() { return player_CurrentAnim; }
     AnimatedModel::AnimationLibrary* GetAnimLibrary() { return animLibrary; }
+    EffectManager* GetEffects() const;
 
     // Setter
     void SetDying(bool in) { dying = in; }
@@ -148,4 +151,7 @@ private:
     std::vector<unsigned int> Indices;
     glm::mat4 model;
     glm::vec4 hitcolor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    EffectManager* effects = { nullptr };
+    bool footPrinted[2] = { false, false };
 };
