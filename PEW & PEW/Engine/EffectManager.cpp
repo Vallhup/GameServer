@@ -14,15 +14,12 @@ EffectManager::~EffectManager()
 
 void EffectManager::Init()
 {
-    // 매니저 생성
     manager = Effekseer::Manager::Create(8000);
 
     manager->SetCoordinateSystem(Effekseer::CoordinateSystem::RH);
 
-    // 렌더러 생성
     renderer = EffekseerRendererGL::Renderer::Create(8000, EffekseerRendererGL::OpenGLDeviceType::OpenGL3);
 
-    // 렌더러를 매니저에 설정
     manager->SetSpriteRenderer(renderer->CreateSpriteRenderer());
     manager->SetRibbonRenderer(renderer->CreateRibbonRenderer());
     manager->SetRingRenderer(renderer->CreateRingRenderer());
@@ -34,7 +31,7 @@ void EffectManager::Init()
     manager->SetMaterialLoader(renderer->CreateMaterialLoader());
     manager->SetCurveLoader(Effekseer::MakeRefPtr<Effekseer::CurveLoader>());
 
-    LoadEffect("CandleFire", u"Effects/CandleFire3.efk");
+    LoadEffect("CandleFire", u"Effects/CosmicMist2.efk");
 }
 
 void EffectManager::Update(float deltaTime)
@@ -46,33 +43,19 @@ void EffectManager::Update(float deltaTime)
     manager->Update(deltaTime * 60.0f);
 }
 
-void EffectManager::Render(const glm::vec3& cameraPos, const glm::vec3& cameraTarget)
+void EffectManager::Render(const glm::mat4& view, const glm::mat4& projection)
 {
-    if (renderer == nullptr)
-        return;
+    if (renderer == nullptr) return;
 
-    // Effekseer 내장 함수 사용 (DX12 방식)
-    auto viewerPosition = Effekseer::Vector3D(cameraPos.x, cameraPos.y, cameraPos.z);
-    auto targetPosition = Effekseer::Vector3D(cameraTarget.x, cameraTarget.y, cameraTarget.z);
+    Effekseer::Matrix44 effekseerProjection;
+    Effekseer::Matrix44 effekseerView;
 
-    // 투영 행렬 생성
-    Effekseer::Matrix44 projectionMatrix;
-    float aspectRatio = (float)WIN_W / (float)WIN_H;
-    projectionMatrix.PerspectiveFovRH(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
+    memcpy(&effekseerProjection, glm::value_ptr(projection), sizeof(float) * 16);
+    memcpy(&effekseerView, glm::value_ptr(view), sizeof(float) * 16);
 
-    // 카메라 행렬 생성
-    Effekseer::Matrix44 cameraMatrix;
-    cameraMatrix.LookAtRH(viewerPosition, targetPosition, Effekseer::Vector3D(0.0f, 1.0f, 0.0f));
+    renderer->SetProjectionMatrix(effekseerProjection);
+    renderer->SetCameraMatrix(effekseerView);
 
-    Effekseer::Manager::LayerParameter layerParam;
-    layerParam.ViewerPosition = viewerPosition;
-    manager->SetLayerParameter(0, layerParam);
-
-    // 렌더러 설정
-    renderer->SetProjectionMatrix(projectionMatrix);
-    renderer->SetCameraMatrix(cameraMatrix);
-
-    // 렌더링
     renderer->BeginRendering();
     manager->Draw();
     renderer->EndRendering();
@@ -172,17 +155,4 @@ void EffectManager::LoadEffect(const std::string& name, const char16_t* filePath
 Effekseer::Vector3D EffectManager::ToEffekseerVector(const glm::vec3& vec)
 {
     return Effekseer::Vector3D(vec.x, vec.y, vec.z);
-}
-
-Effekseer::Matrix44 EffectManager::ToEffekseerMatrix(const glm::mat4& mat)
-{
-    Effekseer::Matrix44 result;
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            result.Values[i][j] = mat[j][i]; // GLM은 column-major, Effekseer는 row-major
-        }
-    }
-    return result;
 }

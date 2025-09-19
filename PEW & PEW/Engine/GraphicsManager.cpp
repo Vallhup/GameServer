@@ -110,6 +110,8 @@ void GraphicsManager::Render(SceneType type, SoundManager& soundmanager)
 				}
 			}
 		}
+
+		effect->Render(view, projection);
 	}
 	else
 	{
@@ -120,10 +122,6 @@ void GraphicsManager::Render(SceneType type, SoundManager& soundmanager)
 	}
 
 	camera->Render();
-
-	glm::vec3 cameraFront = camera->GetFrontVector(localChar->GetPosition());
-	glm::vec3 cameraTarget = viewPos + cameraFront;
-	effect->Render(viewPos, cameraTarget);
 
 	RenderFade(projection, view, viewPos);
 
