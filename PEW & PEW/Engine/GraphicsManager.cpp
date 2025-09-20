@@ -12,6 +12,7 @@
 #include "SceneManager.h"
 #include "Fade.h"
 #include "EffectManager.h"
+#include "WindowInfo.h"
 
 void GraphicsManager::Init()
 {
@@ -117,6 +118,30 @@ void GraphicsManager::Render(SceneType type, SoundManager& soundmanager)
 			EffectManager* characterEffects = character->GetEffects();
 			if (characterEffects) {
 				characterEffects->Render(view, projection);
+			}
+		}
+
+		static bool endingScene = false;
+		if (GET_SINGLE(StaticObjectManager)->GetEndingState() && !endingScene)
+		{
+			camera->SetEnding(true);
+			localChar->GetEffects()->PlayEffect("Fireworks", glm::vec3(-10.0f, 0, -10.0f));
+			localChar->GetEffects()->PlayEffect("Fireworks", glm::vec3(-10.0f, 0, 10.0f));
+			localChar->GetEffects()->PlayEffect("Fireworks", glm::vec3(10.0f, 0, 10.0f));
+			localChar->GetEffects()->PlayEffect("Fireworks", glm::vec3(10.0f, 0, -10.0f));
+			endingScene = true;
+		}
+
+		if (endingScene)
+		{
+			endRenderTimer -= deltatime;
+
+			cout << "RealEnd Time Left: " << endRenderTimer << '\n';
+
+			if (endRenderTimer <= 0.0f)
+			{
+				GLFWwindow* window = GET_SINGLE(WindowInfo)->GetWindow();
+				glfwSetWindowShouldClose(window, GL_TRUE);
 			}
 		}
 	}

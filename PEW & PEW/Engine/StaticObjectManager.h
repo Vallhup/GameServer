@@ -22,6 +22,7 @@ public:
 	void SetPlayerState(PlayerPVPState state);
 	PlayerPVPState GetPlayerState() const { return currentPlayerState; }
 	bool ShouldRenderStateText(const std::string& textName) const;
+	bool GetEndingState() const;
 
 private:
 	vector<StaticObject*> StaticObjects;
@@ -32,6 +33,7 @@ private:
 	const float FIGHT_TEXT_DURATION = 1.5f;
 	glm::vec3 pvpPlayerPosition = glm::vec3(0.0f);
 	float endTimer = 0.0f;
-	const float END_DURATION = 10.0f;
+	const float END_DURATION = 5.0f;
+	bool endingScene = false;
 };
 

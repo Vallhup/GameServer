@@ -83,8 +83,8 @@ void StaticObjectManager::Update(const float deltaTime)
 
 		if (endTimer <= 0.0f)
 		{
-			GLFWwindow* window = GET_SINGLE(WindowInfo)->GetWindow();
-			glfwSetWindowShouldClose(window, GL_TRUE);
+			if (!endingScene)
+				endingScene = true;
 		}
 	}
 }
@@ -193,4 +193,9 @@ bool StaticObjectManager::ShouldRenderStateText(const std::string& textName) con
 	default:
 		return false;
 	}
+}
+
+bool StaticObjectManager::GetEndingState() const
+{
+	return endingScene;
 }

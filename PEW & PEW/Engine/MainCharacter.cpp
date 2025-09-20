@@ -354,41 +354,21 @@ void MainCharacter::CheckFireAnimationTiming()
     if (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun") {
         float progress = player_CurrentAnim->CurrentTime / player_CurrentAnim->Duration;
 
-        if (progress >= 0.1f && !localBulletFired[0])
-        {
-            glm::vec3 position = GetFireEffectPosition();
-            fireEffectHandle = effects->PlayEffect("ASalamander", position);
-            isFireEffectActive = true;
+        if (progress >= 0.56f && !localBulletFired[0]) {
+            CreateLocalBullet();
             localBulletFired[0] = true;
         }
-
-        if (isFireEffectActive && fireEffectHandle != -1) {
-            glm::vec3 newPosition = GetFireEffectPosition();
-            effects->SetEffectPosition(fireEffectHandle, newPosition);
-        }
-
-        if (progress >= 0.56f && !localBulletFired[1]) {
+        else if (progress >= 0.65f && !localBulletFired[1]) {  
             CreateLocalBullet();
             localBulletFired[1] = true;
         }
-        else if (progress >= 0.65f && !localBulletFired[2]) {  
+        else if (progress >= 0.75f && !localBulletFired[2]) {  
             CreateLocalBullet();
             localBulletFired[2] = true;
         }
-        else if (progress >= 0.75f && !localBulletFired[3]) {  
-            CreateLocalBullet();
-            localBulletFired[3] = true;
-        }
 
         if (progress >= 0.95f) {
-            localBulletFired[0] = localBulletFired[1] = localBulletFired[2] = localBulletFired[3] = false;
-        }
-    }
-    else {
-        if (isFireEffectActive && fireEffectHandle != -1) {
-            effects->StopEffect(fireEffectHandle);
-            fireEffectHandle = -1;
-            isFireEffectActive = false;
+            localBulletFired[0] = localBulletFired[1] = localBulletFired[2] = false;
         }
     }
 }
@@ -760,6 +740,9 @@ void MainCharacter::ReviveFromPacket(float x, float y, float z)
 
 void MainCharacter::DamagedFromPacket()
 {
+    glm::vec3 pos = characterPos;
+    pos.y += 0.45f;
+    effects->PlayEffect("Hit", pos);
     hit_cnt = 2.0f;
     hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
 }

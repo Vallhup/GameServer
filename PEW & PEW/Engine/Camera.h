@@ -61,6 +61,7 @@ public:
     void SetAngle();
     void SetAngle(float ang);
     void SetStart(bool in) { start = in; }
+    void SetEnding(bool in) { ending = in; }
 
 private:
     // Camera camera;
@@ -87,4 +88,6 @@ private:
 
     CrossHair* fpscrosshair;
     CrossHair* tpscrosshair;
+
+    bool ending = { false };
 };

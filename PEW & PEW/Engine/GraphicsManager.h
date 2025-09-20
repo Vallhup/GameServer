@@ -52,4 +52,5 @@ private:
 	std::array<std::array<AlienCharacter*, 9>, 3> alienCharacters;
 
 	bool firstRenderDone = { false };
+	float endRenderTimer = 8.0f;
 };

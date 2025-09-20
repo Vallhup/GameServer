@@ -161,38 +161,49 @@ glm::mat4 Camera::Get1stPersonViewMatrix(const glm::vec3& targetPos) {
 }
 
 glm::mat4 Camera::Get3rdPersonViewMatrix(const glm::vec3& targetPos) {
-    if (LeftAlt_on) {
-        float radius = sqrt(10.0f * 10.0f + 5.0f * 5.0f) * Rm;
-        float height_offset = radius * sin(camera_vertical_angle);
-        float radius_xz = radius * cos(camera_vertical_angle);
+    if (!ending)
+    {
+        if (LeftAlt_on) {
+            float radius = sqrt(10.0f * 10.0f + 5.0f * 5.0f) * Rm;
+            float height_offset = radius * sin(camera_vertical_angle);
+            float radius_xz = radius * cos(camera_vertical_angle);
 
-        glm::vec3 camera_pos = glm::vec3(
-            targetPos.x + radius_xz * sin(camera_horizontal_angle),
-            targetPos.y + height_offset,
-            targetPos.z + radius_xz * cos(camera_horizontal_angle)
-        );
+            glm::vec3 camera_pos = glm::vec3(
+                targetPos.x + radius_xz * sin(camera_horizontal_angle),
+                targetPos.y + height_offset,
+                targetPos.z + radius_xz * cos(camera_horizontal_angle)
+            );
 
-        return glm::lookAt(
-            camera_pos,
-            targetPos,
-            glm::vec3(0.0f, 1.0f, 0.0f)
-        );
+            return glm::lookAt(
+                camera_pos,
+                targetPos,
+                glm::vec3(0.0f, 1.0f, 0.0f)
+            );
+        }
+        else {
+            //if (!finish)
+            //{
+            return glm::lookAt(
+                glm::vec3(targetPos.x + ((targetPos.x * 0.6f) * (start_pos / 30.0f)), 10.0f * Rm + (5.5f * (start_pos / 30.0f)), targetPos.z + 5.0f * Rm + ((targetPos.z * 0.35f) * (start_pos / 30.0f))),
+                glm::vec3(targetPos.x - (targetPos.x * (start_pos / 30.0f)), 0.0f + (3.5f * (start_pos / 30.0f)), targetPos.z - (targetPos.z * (start_pos / 30.0f))),
+                glm::vec3(0.0f, 1.0f, 0.0f)
+            );
+            //}
+            //else
+                //return glm::lookAt(
+                //    glm::vec3(-44.0f - (finish_pos / 2.0f), 10.0f * Rm + (finish_pos / 4.0f), -50.5f + 5.0f * Rm - (finish_pos / 2.0f)),
+                //    glm::vec3(-44.0f + (44.0f * (finish_pos / 30.0f)), 0.0f + (finish_pos / 30.0f), -50.5f + (50.5f * (finish_pos / 30.0f))),
+                //    glm::vec3(0.0f, 1.0f, 0.0f)
+                //);
+        }
     }
-    else {
-        //if (!finish)
-        //{
+    else
+    {
         return glm::lookAt(
-            glm::vec3(targetPos.x + ((targetPos.x * 0.6f) * (start_pos / 30.0f)), 10.0f * Rm + (5.5f * (start_pos / 30.0f)), targetPos.z + 5.0f * Rm + ((targetPos.z * 0.35f) * (start_pos / 30.0f))),
-            glm::vec3(targetPos.x - (targetPos.x * (start_pos / 30.0f)), 0.0f + (3.5f * (start_pos / 30.0f)), targetPos.z - (targetPos.z * (start_pos / 30.0f))),
+            glm::vec3(0.0f, 40.0f, 60.0f),
+            glm::vec3(0.0f, 20.0f, 0.0f),
             glm::vec3(0.0f, 1.0f, 0.0f)
         );
-        //}
-        //else
-            //return glm::lookAt(
-            //    glm::vec3(-44.0f - (finish_pos / 2.0f), 10.0f * Rm + (finish_pos / 4.0f), -50.5f + 5.0f * Rm - (finish_pos / 2.0f)),
-            //    glm::vec3(-44.0f + (44.0f * (finish_pos / 30.0f)), 0.0f + (finish_pos / 30.0f), -50.5f + (50.5f * (finish_pos / 30.0f))),
-            //    glm::vec3(0.0f, 1.0f, 0.0f)
-            //);
     }
 }
 

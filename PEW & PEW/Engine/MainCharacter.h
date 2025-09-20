@@ -130,9 +130,7 @@ private:
     // 총알
     static const int MAX_BULLETS = { 15 };  // 캐릭터당 최대 총알 수
     array<CatBulletSlot, MAX_BULLETS> bullets;
-    bool localBulletFired[4] = { false, false, false, false };
-    int fireEffectHandle = -1;  
-    bool isFireEffectActive = false;
+    bool localBulletFired[3] = { false, false, false };
 
     // 씬 전환
     SceneManager* sceneManager = nullptr;

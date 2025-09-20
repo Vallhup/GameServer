@@ -14,11 +14,11 @@ EffectManager::~EffectManager()
 
 void EffectManager::Init()
 {
-    manager = Effekseer::Manager::Create(8000);
+    manager = Effekseer::Manager::Create(16000);
 
     manager->SetCoordinateSystem(Effekseer::CoordinateSystem::RH);
 
-    renderer = EffekseerRendererGL::Renderer::Create(8000, EffekseerRendererGL::OpenGLDeviceType::OpenGL3);
+    renderer = EffekseerRendererGL::Renderer::Create(16000, EffekseerRendererGL::OpenGLDeviceType::OpenGL3);
 
     manager->SetSpriteRenderer(renderer->CreateSpriteRenderer());
     manager->SetRibbonRenderer(renderer->CreateRibbonRenderer());
@@ -31,10 +31,10 @@ void EffectManager::Init()
     manager->SetMaterialLoader(renderer->CreateMaterialLoader());
     manager->SetCurveLoader(Effekseer::MakeRefPtr<Effekseer::CurveLoader>());
 
-    LoadEffect("FootSmoke", u"Effects/FootSmoke.efk");
-    LoadEffect("ASalamander", u"Effects/ASalamander.efk");
+    LoadEffect("FootSmoke", u"Effects/FootSmoke3.efk");
     LoadEffect("Hit", u"Effects/Hit.efk");
     LoadEffect("Hit2", u"Effects/Hit2.efk");
+    LoadEffect("Fireworks", u"Effects/Fireworks.efk");
 }
 
 void EffectManager::Update(float deltaTime)
