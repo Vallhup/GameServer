@@ -94,11 +94,12 @@ public:
     AnimInfo* GetCurrentAnim() { return player_CurrentAnim; }
     AnimatedModel::AnimationLibrary* GetAnimLibrary() { return animLibrary; }
     EffectManager* GetEffects() const;
+    glm::vec3 GetFireEffectPosition() const;
 
     // Setter
     void SetDying(bool in) { dying = in; }
     void SetDead(bool in) { dead = in; }
-    void SetHit();
+    void SetHit(const glm::vec3& pos);
 
 private:
     // 기본 정보
@@ -129,7 +130,9 @@ private:
     // 총알
     static const int MAX_BULLETS = { 15 };  // 캐릭터당 최대 총알 수
     array<CatBulletSlot, MAX_BULLETS> bullets;
-    bool localBulletFired[3] = { false, false, false };
+    bool localBulletFired[4] = { false, false, false, false };
+    int fireEffectHandle = -1;  
+    bool isFireEffectActive = false;
 
     // 씬 전환
     SceneManager* sceneManager = nullptr;

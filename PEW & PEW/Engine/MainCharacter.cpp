@@ -19,9 +19,10 @@ MainCharacter::MainCharacter(int id, glm::vec3 cPos, bool isLocal, float speed) 
     if (isLocalPlayer)
     {
         hitbox = new BoundingBox();
-        effects = new EffectManager();
-        effects->Init();
     }
+
+    effects = new EffectManager();
+    effects->Init();
 
     characterPos = cPos;
     targetPos = characterPos;
@@ -38,6 +39,11 @@ MainCharacter::~MainCharacter()
     delete player_CurrentAnim;
     delete player_BoneInfo;
     delete animModel;
+
+    if (effects) {
+        delete effects;
+        effects = nullptr;
+    }
 
     if (animLibrary != nullptr) {
         delete animLibrary;
@@ -75,6 +81,10 @@ void MainCharacter::Update(float deltaTime)
     UpdateAnimation();
     UpdateHitDecision(deltaTime);
     UpdateBulletsFromServer(deltaTime);
+    CheckFootEffectTiming();
+    if (effects) {
+        effects->Update(deltaTime);
+    }
 }
 
 void MainCharacter::Update(float deltaTime, array<array<AlienCharacter*, 9>, 3>& aliens)
@@ -344,21 +354,41 @@ void MainCharacter::CheckFireAnimationTiming()
     if (currentAnim == "Fire" || currentAnim == "FireWalk" || currentAnim == "FireRun") {
         float progress = player_CurrentAnim->CurrentTime / player_CurrentAnim->Duration;
 
-        if (progress >= 0.56f && !localBulletFired[0]) {
-            CreateLocalBullet();
+        if (progress >= 0.1f && !localBulletFired[0])
+        {
+            glm::vec3 position = GetFireEffectPosition();
+            fireEffectHandle = effects->PlayEffect("ASalamander", position);
+            isFireEffectActive = true;
             localBulletFired[0] = true;
         }
-        else if (progress >= 0.65f && !localBulletFired[1]) {  
+
+        if (isFireEffectActive && fireEffectHandle != -1) {
+            glm::vec3 newPosition = GetFireEffectPosition();
+            effects->SetEffectPosition(fireEffectHandle, newPosition);
+        }
+
+        if (progress >= 0.56f && !localBulletFired[1]) {
             CreateLocalBullet();
             localBulletFired[1] = true;
         }
-        else if (progress >= 0.75f && !localBulletFired[2]) {  
+        else if (progress >= 0.65f && !localBulletFired[2]) {  
             CreateLocalBullet();
             localBulletFired[2] = true;
         }
+        else if (progress >= 0.75f && !localBulletFired[3]) {  
+            CreateLocalBullet();
+            localBulletFired[3] = true;
+        }
 
         if (progress >= 0.95f) {
-            localBulletFired[0] = localBulletFired[1] = localBulletFired[2] = false;
+            localBulletFired[0] = localBulletFired[1] = localBulletFired[2] = localBulletFired[3] = false;
+        }
+    }
+    else {
+        if (isFireEffectActive && fireEffectHandle != -1) {
+            effects->StopEffect(fireEffectHandle);
+            fireEffectHandle = -1;
+            isFireEffectActive = false;
         }
     }
 }
@@ -397,6 +427,8 @@ void MainCharacter::CheckBulletAlienHit(int bulletIndex, array<array<AlienCharac
         for (int location = 0; location < 9; ++location) {
             if (aliens[type][location] && !aliens[type][location]->GetDying()) {
                 if (bullets[bulletIndex].bullet->IsCollapsed(aliens[type][location])) {
+                    glm::vec3 pos = bullets[bulletIndex].bullet->GetPosition();
+                    effects->PlayEffect("Hit", pos);
                     bullets[bulletIndex].isActive = false;
                     aliens[type][location]->SetHit();
                     return;  // 충돌 발생
@@ -496,14 +528,28 @@ void MainCharacter::UpdateHitDecision(const float deltaTime)
 
 EffectManager* MainCharacter::GetEffects() const
 {
-    return isLocalPlayer ? effects : nullptr;
+    return effects;
 }
 
-void MainCharacter::SetHit()
+void MainCharacter::SetHit(const glm::vec3& pos)
 {
     life -= 1;
     hit_cnt = 2.0f;
     hitcolor = glm::vec4(1.0f, 0.6f, 0.6f, 1.0f);
+    effects->PlayEffect("Hit2", pos);
+}
+
+glm::vec3 MainCharacter::GetFireEffectPosition() const
+{
+    glm::vec3 position = characterPos;
+    position.y = 0.45f;
+
+    float angle = atan2(mouseDir.x, mouseDir.z);
+
+    position.x += cos(angle) * 0.2f;  
+    position.z -= sin(angle) * 0.2f;  
+
+    return position;
 }
 
 void MainCharacter::SaveAnimations()

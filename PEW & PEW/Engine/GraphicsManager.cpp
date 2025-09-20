@@ -113,6 +113,11 @@ void GraphicsManager::Render(SceneType type, SoundManager& soundmanager)
 		for (auto& [id, character] : catCharacters) {
 			character->Draw(view, projection, viewPos, deltatime, lightSpaceMatrix, shadowMap->GetDepthMap());
 			character->RenderBullets(view, projection, viewPos, lightSpaceMatrix, shadowMap->GetDepthMap());
+		
+			EffectManager* characterEffects = character->GetEffects();
+			if (characterEffects) {
+				characterEffects->Render(view, projection);
+			}
 		}
 	}
 

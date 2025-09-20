@@ -12,16 +12,16 @@ void WindowInfo::Init()
 	glfwInit();
 
 	// 전체화면
-	/*GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 	 
 	WIN_W = mode->width;
 	WIN_H = mode->height;
 
-	window = glfwCreateWindow(mode->width, mode->height, basename, monitor, NULL);*/
+	window = glfwCreateWindow(mode->width, mode->height, basename, monitor, NULL);
 	
 	// 창모드
-	window = glfwCreateWindow(WIN_W, WIN_H, basename, NULL, NULL);
+	//window = glfwCreateWindow(WIN_W, WIN_H, basename, NULL, NULL);
 
 	glfwSetWindowPos(window, WIN_X, WIN_Y);
 	glfwMakeContextCurrent(window);

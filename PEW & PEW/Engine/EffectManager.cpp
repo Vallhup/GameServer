@@ -32,6 +32,9 @@ void EffectManager::Init()
     manager->SetCurveLoader(Effekseer::MakeRefPtr<Effekseer::CurveLoader>());
 
     LoadEffect("FootSmoke", u"Effects/FootSmoke.efk");
+    LoadEffect("ASalamander", u"Effects/ASalamander.efk");
+    LoadEffect("Hit", u"Effects/Hit.efk");
+    LoadEffect("Hit2", u"Effects/Hit2.efk");
 }
 
 void EffectManager::Update(float deltaTime)

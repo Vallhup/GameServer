@@ -485,7 +485,7 @@ void AlienCharacter::UpdateBullets(MainCharacter* Cat, const float deltaTime)
 			if (bullets[i].bullet->IsCollapsed(Cat))
 			{
 				bullets[i].isActive = false;
-				Cat->SetHit();
+				Cat->SetHit(bullets[i].bullet->GetPosition());
 			}
 
 			CheckBulletWallHit(i);
