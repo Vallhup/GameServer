@@ -136,7 +136,7 @@ void GraphicsManager::Render(SceneType type, SoundManager& soundmanager)
 		{
 			endRenderTimer -= deltatime;
 
-			cout << "RealEnd Time Left: " << endRenderTimer << '\n';
+			//cout << "RealEnd Time Left: " << endRenderTimer << '\n';
 
 			if (endRenderTimer <= 0.0f)
 			{

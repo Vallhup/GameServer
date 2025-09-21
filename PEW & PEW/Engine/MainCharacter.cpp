@@ -342,7 +342,7 @@ void MainCharacter::CreateLocalBullet()
 
             glm::vec3 mousePick = camera->GetMousePicking(cur_x, cur_y, projection, view);
             bullets[i].bullet->BulletSetting(this, camera, mousePick);
-            cout << i << "번째 총알 생성!!" << '\n';
+            //cout << i << "번째 총알 생성!!" << '\n';
             return;
         }
     }
@@ -425,7 +425,7 @@ void MainCharacter::CheckBulletWallHit(int bulletIndex)
     if (GET_SINGLE(CollisionManager)->IsInsideCollisionBox(bulletPos.x, bulletPos.z))
     {
         bullets[bulletIndex].isActive = false;
-        cout << bulletIndex << "번째 총알 삭제!!" << '\n';
+        //cout << bulletIndex << "번째 총알 삭제!!" << '\n';
     }
 }
 

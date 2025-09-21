@@ -171,7 +171,7 @@ void AnimatedModel::LoadGLBFile(int j, vector<BoneInfo>& BoneInfoName, const std
 
 	glBindVertexArray(0);
 
-	std::cout << "File loaded: " << filename << std::endl;
+	//std::cout << "File loaded: " << filename << std::endl;
 }
 
 void AnimatedModel::NormalizeBoneWeights()
@@ -530,7 +530,7 @@ void AnimatedModel::AnimationLibrary::LoadAnimation(const std::string& name, con
 	}
 	else
 		cout << "Unloaded animation: " << name << endl;
-	cout << "File loaded: " << filename << '\n';
+	//cout << "File loaded: " << filename << '\n';
 }
 
 void AnimatedModel::AnimationLibrary::ChangeAnimation(const std::string& name, AnimInfo& currentAnim)

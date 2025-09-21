@@ -32,7 +32,6 @@ void StaticObjectManager::Init()
 	AddStaticObject("StaticGlb/cloud.glb", "Texture/cloud.png", "Cloud");
 	AddStaticObject("StaticGlb/cave.glb", "Texture/cave.png", "Cave");
 	AddStaticObject("StaticGlb/startlogo.glb", "Texture/startlogo.png", "Startlogo");
-	AddStaticObject("StaticGlb/gameclear.glb", "Texture/gameclear.png", "GameClear");
 }
 
 void StaticObjectManager::InitPVPMap()
@@ -79,7 +78,7 @@ void StaticObjectManager::Update(const float deltaTime)
 	if ((currentPlayerState == PlayerPVPState::WIN || currentPlayerState == PlayerPVPState::LOSE) && endTimer > 0.0f) {
 		endTimer -= deltaTime;
 
-		cout << "EndTimer: " << endTimer << endl;
+		//cout << "EndTimer: " << endTimer << endl;
 
 		if (endTimer <= 0.0f)
 		{
