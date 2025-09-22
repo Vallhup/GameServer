@@ -31,6 +31,10 @@ const float* LoginScene::GetBackgroundColor()
 	return Colors::MediumAquamarine;
 }
 
+void LoginScene::InitializeSceneObjectPools()
+{
+}
+
 void LoginScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nLoginScene Data has been created!! \n");

@@ -27,6 +27,10 @@ const float* ServerSquareScene::GetBackgroundColor()
 	return Colors::Pink;
 }
 
+void ServerSquareScene::InitializeSceneObjectPools()
+{
+}
+
 void ServerSquareScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nServerSquareScene Data has been created!! \n");
