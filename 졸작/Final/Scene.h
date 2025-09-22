@@ -22,10 +22,12 @@ public:
 
 	virtual const float* GetBackgroundColor() = 0;
 
+	void InitializeObjectPools();
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
 
 protected:
+	virtual void InitializeSceneObjectPools() = 0;
 	virtual void InitializeLogic() = 0;
 	virtual void UpdateScene(const float deltaTime) = 0;
 	virtual void RenderSceneDeferred() = 0;

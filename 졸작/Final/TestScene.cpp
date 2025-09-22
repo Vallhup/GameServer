@@ -30,6 +30,10 @@ const float* TestScene::GetBackgroundColor()
 	return Colors::LightBlue;
 }
 
+void TestScene::InitializeSceneObjectPools()
+{
+}
+
 void TestScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nTestScene Data has been created!! \n");

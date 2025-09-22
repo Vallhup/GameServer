@@ -177,6 +177,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
+    <ClCompile Include="ObjectPoolManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ServerSquareScene.cpp" />
     <ClCompile Include="ServerTestScene.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="NetworkManager.h" />
+    <ClInclude Include="ObjectPoolManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ServerSquareScene.h" />
     <ClInclude Include="ServerTestScene.h" />

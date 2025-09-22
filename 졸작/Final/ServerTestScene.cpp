@@ -33,6 +33,10 @@ const float* ServerTestScene::GetBackgroundColor()
     return Colors::Aqua;
 }
 
+void ServerTestScene::InitializeSceneObjectPools()
+{
+}
+
 void ServerTestScene::InitializeLogic()
 {
     OutputDebugStringA("----------------------------------------\nServerTestScene Data has been created!! \n");

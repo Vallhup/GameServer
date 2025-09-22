@@ -229,6 +229,10 @@ const float* GameScene::GetBackgroundColor()
 	return Colors::Snow;
 }
 
+void GameScene::InitializeSceneObjectPools()
+{
+}
+
 void GameScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");

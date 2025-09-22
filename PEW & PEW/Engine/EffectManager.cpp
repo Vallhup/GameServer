@@ -146,7 +146,7 @@ void EffectManager::LoadEffect(const std::string& name, const char16_t* filePath
         if (effect != nullptr)
         {
             effects[name] = effect;
-            std::cout << "Effect loaded: " << name << std::endl;
+            //std::cout << "Effect loaded: " << name << std::endl;
         }
         else
         {

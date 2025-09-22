@@ -107,7 +107,7 @@ void Bullet::LoadBulletGLB(const std::string& filename) {
 
 	glBindVertexArray(0);
 
-	cout << "File loaded: " << filename << '\n';
+	//cout << "File loaded: " << filename << '\n';
 }
 
 GLuint Bullet::LoadBulletTexture(const char* path)

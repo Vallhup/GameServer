@@ -16,6 +16,8 @@ void Scene::Initialize(DX12Core& core)
     cam = make_unique<Camera>();
     cam->Initialize();
 
+    InitializeObjectPools();
+
     InitializeLogic();
 
     coreRef->FlushCommandQueue();
@@ -52,6 +54,11 @@ void Scene::RenderShadow()
 void Scene::RenderEffects()
 {
     RenderSceneEffects();
+}
+
+void Scene::InitializeObjectPools()
+{
+    InitializeSceneObjectPools();
 }
 
 Camera* Scene::GetCamera() const
