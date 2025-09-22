@@ -21,8 +21,13 @@ class ObjectPoolManager
 {
 public:
 	void Initialize(PoolType type, const PoolInfo& info);
-
 	void ClearPools(PoolType type);
+
+	shared_ptr<GameObject> GetGameObject(PoolType type);
+	shared_ptr<GameObject> FindActiveObject(PoolType type, int id);
+
+	bool ActivateObject(PoolType type, int id, shared_ptr<GameObject> obj);
+	bool DeactivateObject(PoolType type, int id);
 
 private:
 	unordered_map<PoolType, vector<shared_ptr<GameObject>>> pools;						// ≈∏¿‘ ∫∞ pool
