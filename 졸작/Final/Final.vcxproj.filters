@@ -103,6 +103,9 @@
     <ClCompile Include="EffectRenderer.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectPoolManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -203,6 +206,9 @@
     </ClInclude>
     <ClInclude Include="EffectRenderer.h">
       <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPoolManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
