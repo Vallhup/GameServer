@@ -112,7 +112,6 @@ void GameLogic::CheckCollisions()
 
 			_gameCtx.GetRoomManager().GetRoomByCharacter(deathCharacter->GetId())->BroadCast(PacketFactory::SCDeadPacket(*deathCharacter));
 			{
-
 				int deathId = deathCharacter->GetId();
 				if (auto room = _gameCtx.GetRoomManager().GetRoomByCharacter(deathId)) {
 					room->OnDeath(deathId);
