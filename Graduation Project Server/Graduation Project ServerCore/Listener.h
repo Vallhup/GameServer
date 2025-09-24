@@ -4,6 +4,7 @@ class IGameContext;
 
 class Listener : public IocpObject {
 	static constexpr u_short PORT_NUM{ 7000 };
+
 public: 
 	Listener() = delete;
 	Listener(IGameContext& gameCtx);

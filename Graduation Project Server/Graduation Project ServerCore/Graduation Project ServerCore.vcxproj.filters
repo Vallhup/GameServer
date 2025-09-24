@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Core">
-      <UniqueIdentifier>{43f42a4e-c1e9-4d53-822a-01143c523e56}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game">
       <UniqueIdentifier>{51ea2fb0-cabc-4de1-a353-f06856b3c6e4}</UniqueIdentifier>
     </Filter>
@@ -12,12 +9,6 @@
     </Filter>
     <Filter Include="Utility">
       <UniqueIdentifier>{d6f6840a-c8ff-4bc2-b9c8-7faf74f630a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Pch">
-      <UniqueIdentifier>{8a527841-1e63-4885-8200-66896a71f84e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Manager">
-      <UniqueIdentifier>{e21db5e6-fc5e-42fb-9c32-ce8b7e02af1c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game\Manager">
       <UniqueIdentifier>{d681449f-c24a-4c6f-be95-64637bedffc2}</UniqueIdentifier>
@@ -52,31 +43,40 @@
     <Filter Include="Game\GamePlay">
       <UniqueIdentifier>{3bee27bd-7d67-4224-9e38-45dbcdcb931e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{43f42a4e-c1e9-4d53-822a-01143c523e56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Pch">
+      <UniqueIdentifier>{8a527841-1e63-4885-8200-66896a71f84e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Manager">
+      <UniqueIdentifier>{e21db5e6-fc5e-42fb-9c32-ce8b7e02af1c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
-      <Filter>Core\Pch</Filter>
+      <Filter>Network\Pch</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Core\Pch</Filter>
+      <Filter>Network\Pch</Filter>
     </ClCompile>
     <ClCompile Include="ExpOver.cpp">
-      <Filter>Core</Filter>
+      <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="IocpCore.cpp">
-      <Filter>Core</Filter>
+      <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="Listener.cpp">
-      <Filter>Core</Filter>
+      <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="Service.cpp">
-      <Filter>Core</Filter>
+      <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="Session.cpp">
-      <Filter>Core</Filter>
+      <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="SessionManager.cpp">
-      <Filter>Core\Manager</Filter>
+      <Filter>Network\Manager</Filter>
     </ClCompile>
     <ClCompile Include="RecvBuffer.cpp">
       <Filter>Utility</Filter>
@@ -185,25 +185,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
-      <Filter>Core\Pch</Filter>
+      <Filter>Network\Pch</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Core\Pch</Filter>
+      <Filter>Network\Pch</Filter>
     </ClInclude>
     <ClInclude Include="ExpOver.h">
-      <Filter>Core</Filter>
+      <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="IocpCore.h">
-      <Filter>Core</Filter>
+      <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="Listener.h">
-      <Filter>Core</Filter>
+      <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="Session.h">
-      <Filter>Core</Filter>
+      <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="SessionManager.h">
-      <Filter>Core\Manager</Filter>
+      <Filter>Network\Manager</Filter>
     </ClInclude>
     <ClInclude Include="RecvBuffer.h">
       <Filter>Utility</Filter>
@@ -221,7 +221,7 @@
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="Service.h">
-      <Filter>Core</Filter>
+      <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="ObjectManager.h">
       <Filter>Game\Manager</Filter>
