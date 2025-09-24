@@ -247,6 +247,10 @@ void FBXLoader::LoadCollisionMesh(FbxMesh* mesh)
 		meshInfo.indices[0].push_back(idx2);  
 		meshInfo.indices[0].push_back(idx1);
 	}
+
+	meshInfo.boneWeights.resize(vertexCount);
+	LoadAnimationData(mesh, &meshInfo);
+	FillBoneWeight(mesh, &meshInfo);
 }
 
 void FBXLoader::LoadMaterial(FbxSurfaceMaterial* surfaceMaterial)
