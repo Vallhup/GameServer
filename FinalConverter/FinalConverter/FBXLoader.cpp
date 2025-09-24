@@ -98,7 +98,16 @@ void FBXLoader::ParseNode(FbxNode* node)
 		switch (attribute->GetAttributeType())
 		{
 		case FbxNodeAttribute::eMesh:
-			LoadMesh(node->GetMesh());
+		{
+			//const char* meshName = node->GetMesh()->GetName();	이렇게 접근하면 안됨 다찬이가 노드 이름으로 해놧음 mesh 이름이 아니라 mesh이름은 빈 깡통임
+			string nodeNameStr = node->GetName();
+			if (nodeNameStr.find("collision") != string::npos) {
+				LoadCollisionMesh(node->GetMesh());
+			}
+			else {
+				LoadMesh(node->GetMesh());
+			}
+		}
 			break;
 		}
 	}
@@ -202,6 +211,42 @@ void FBXLoader::LoadMesh(FbxMesh* mesh)
 	}
 
 	FillBoneWeight(mesh, &meshInfo);
+}
+
+void FBXLoader::LoadCollisionMesh(FbxMesh* mesh)
+{
+	_meshes.push_back(FbxMeshInfo());
+	FbxMeshInfo& meshInfo = _meshes.back();
+	meshInfo.name = s2ws(mesh->GetName());
+
+	FbxVector4* controlPoints = mesh->GetControlPoints();
+	const int32 vertexCount = mesh->GetControlPointsCount();
+
+	meshInfo.vertices.resize(vertexCount);
+	for (int32 i = 0; i < vertexCount; ++i) {
+		Vertex& vertex = meshInfo.vertices[i];
+
+		vertex.pos.x = static_cast<float>(controlPoints[i].mData[0]);
+		vertex.pos.y = static_cast<float>(controlPoints[i].mData[2]);
+		vertex.pos.z = static_cast<float>(controlPoints[i].mData[1]);
+
+		vertex.uv = { 0.0f, 0.0f };
+		vertex.normal = { 0.0f, 1.0f, 0.0f };
+		vertex.tangent = { 1.0f, 0.0f, 0.0f };
+	}
+
+	meshInfo.indices.resize(1);
+	const int32 triCount = mesh->GetPolygonCount();
+
+	for (int32 i = 0; i < triCount; i++) {
+		int32 idx0 = mesh->GetPolygonVertex(i, 0);
+		int32 idx1 = mesh->GetPolygonVertex(i, 1);
+		int32 idx2 = mesh->GetPolygonVertex(i, 2);
+
+		meshInfo.indices[0].push_back(idx0);
+		meshInfo.indices[0].push_back(idx2);  
+		meshInfo.indices[0].push_back(idx1);
+	}
 }
 
 void FBXLoader::LoadMaterial(FbxSurfaceMaterial* surfaceMaterial)
