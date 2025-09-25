@@ -3,7 +3,7 @@
 class UploadBuffer
 {
 public:
-    void Initialize(ID3D12Device* device, UINT sizeInBytes);
+    void Initialize(ID3D12Device* device, size_t sizeInBytes);
 
     void CopyData(const void* src, size_t size, size_t offset = 0);
 
@@ -13,5 +13,5 @@ public:
 private:
     ComPtr<ID3D12Resource> mResource;
     UINT8* mMappedData = nullptr;
-    UINT mSize = 0;
+    size_t mSize = 0;
 };
