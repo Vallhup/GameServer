@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "UploadBuffer.h"
 
-void UploadBuffer::Initialize(ID3D12Device* device, UINT sizeInBytes)
+void UploadBuffer::Initialize(ID3D12Device* device, size_t sizeInBytes)
 {
     mSize = (sizeInBytes + 255) & ~255;
 
