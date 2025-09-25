@@ -1,7 +1,9 @@
 #include "pch.h"
 #include <iostream>
 
-int main()
+#include "Benchmark.h"
+
+void ServerStart()
 {
 	setlocale(LC_ALL, "korean");
 
@@ -19,4 +21,9 @@ int main()
 	service->Stop();
 
 	Logger::Shutdown();
+}
+
+int main()
+{
+	ObjectPoolBenchmark();
 }

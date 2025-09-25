@@ -35,10 +35,3 @@
  - 프리컴퓨팅(Precomputed Collider Track) : 매 프레임마다 서버에서 본 행렬을 계산하는 것이 아니라 애니메이션 별로
    Bone-Colider Track을 미리 베이킹 시켜놓고 런타임에는 애니메이션 진행 시간만 관리하면서 Colider Position Update
 
-
-
-
-
-아 몰라몰라 하다보면 뭐라도 되겟지지ㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣ
-내가 왜 이런거 읽고이써야대ㅑ노고ㅗㅗㅗㅗㅗㅗ
-

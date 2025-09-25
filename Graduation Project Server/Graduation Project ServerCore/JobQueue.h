@@ -9,5 +9,6 @@ public:
 
 private:
 	concurrency::concurrent_priority_queue<std::shared_ptr<Job>> _jobs;
+	std::atomic<uint64_t> seq{ 0 };
 };
 

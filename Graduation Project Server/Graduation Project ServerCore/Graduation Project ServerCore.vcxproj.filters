@@ -177,11 +177,19 @@
     <ClCompile Include="CollisionShape.cpp">
       <Filter>Game\GamePlay</Filter>
     </ClCompile>
-    <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="Job.cpp">
       <Filter>Game\GamePlay</Filter>
     </ClCompile>
-    <ClCompile Include="ThreadPool.cpp" />
+    <ClCompile Include="DBManager.cpp">
+      <Filter>Database</Filter>
+    </ClCompile>
+    <ClCompile Include="JobQueue.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -313,11 +321,19 @@
     <ClInclude Include="CollisionComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
-    <ClInclude Include="JobQueue.h" />
     <ClInclude Include="Job.h">
       <Filter>Game\GamePlay</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="DBManager.h">
+      <Filter>Database</Filter>
+    </ClInclude>
+    <ClInclude Include="JobQueue.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPool.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="protos\Struct.proto">

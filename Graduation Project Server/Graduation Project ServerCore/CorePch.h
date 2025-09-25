@@ -41,6 +41,7 @@
 #include "RecvBuffer.h"
 #include "ThreadPool.h"
 #include "JobQueue.h"
+#include "ObjectPool.h"
 
 #include "ExpOver.h"
 #include "IocpCore.h"
@@ -84,6 +85,7 @@
 #include "TestInstance.h"
 
 #include "UserRepository.h"
+#include "DBManager.h"
 
 #include "PacketFactory.h"
 

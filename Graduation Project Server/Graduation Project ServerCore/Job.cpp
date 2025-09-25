@@ -33,5 +33,7 @@ LogicJob::LogicJob(Instance* i, float dT) : Job(), instance(i), deltaTime(dT)
 
 void LogicJob::Execute()
 {
-	instance->Update(deltaTime);
+	if (instance) {
+		instance->Update(deltaTime);
+	}
 }

@@ -7,7 +7,6 @@
 // 1. ODBC Environment Handle Alloc
 // 2. ODBC Handle Alloc
 // 3. SQLConnect
-//
 
 struct UserData {
 	// TEMP : DB Load or Save할 때 사용할 구조체

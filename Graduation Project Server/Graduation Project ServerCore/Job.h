@@ -63,3 +63,15 @@ private:
 	Instance* instance;
 	float deltaTime;
 };
+
+class DBJob : public Job {
+public:
+	DBJob() = default;
+	virtual ~DBJob() = default;
+
+public:
+	virtual void Execute() override;
+
+private:
+
+};
