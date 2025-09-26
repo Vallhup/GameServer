@@ -1,10 +1,11 @@
 #pragma once
 
+#include <stack>
+
 // ObjectPool 사용하려고 예상하는 객체
 // 
 // 1. SendOver
 // 2. ODBC Handle
-// 3. Thread Pool도 이 ObjectPool로 합칠까?
 
 // Placement new
 //  - 이미 확보된 메모리 공간에 객체를 생성하는 것
@@ -22,8 +23,8 @@ class ObjectPool {
 	};
 
 public:
-	ObjectPool() = default;
-	~ObjectPool();
+	ObjectPool();
+	~ObjectPool() = default;
 
 public:
 	// 객체마다 생성자에 다른 인자가 들어가야하는 경우를 위해
@@ -31,55 +32,41 @@ public:
 	// 스마트포인터 쓰는 거처럼 쓸 수 있지 않을까?
 	template<typename... Args>
 	T* Acquire(Args&&... args);
-
 	void Release(T* obj);
-
-private:
-	size_t GetFreeObjectIndex();
 
 private:
 	// 객체를 그대로 들고 있어야하나? 아니면 Pointer로?
 	std::array<ObjectSlot, Size> _objects;
-	std::bitset<Size> _inUse;
+	std::stack<size_t> _freeIdxs;
 };
+
+template<typename T, size_t Size>
+inline ObjectPool<T, Size>::ObjectPool()
+{
+	for (size_t i = 0; i < Size; ++i) {
+		_freeIdxs.push(i);
+	}
+}
 
 template<typename T, size_t Size>
 template<typename ...Args>
 inline T* ObjectPool<T, Size>::Acquire(Args&& ...args)
 {
-	size_t idx = GetFreeObjectIndex();
-	if (idx == Size) return nullptr;
-
-	_inUse.set(idx, true);
-	return new (&_objects[idx].data) T(std::forward<Args>(args)...);
-}
-
-template<typename T, size_t Size>
-inline ObjectPool<T, Size>::~ObjectPool()
-{
-	for (size_t i = 0; i < Size; ++i) {
-		if (_inUse.test(i)) {
-			reinterpret_cast<T*>(_objects[i].data)->~T();
-		}
+	if (_freeIdxs.empty()) {
+		return nullptr;
 	}
+
+	size_t idx = _freeIdxs.top(); _freeIdxs.pop();
+	return new (&_objects[idx].data) T(std::forward<Args>(args)...);
 }
 
 template<typename T, size_t Size>
 inline void ObjectPool<T, Size>::Release(T* obj)
 {
-	size_t idx = reinterpret_cast<ObjectSlot*>(obj) - &_objects[0];
-	obj->~T();
-	_inUse.reset(idx);
-}
-
-template<typename T, size_t Size>
-inline size_t ObjectPool<T, Size>::GetFreeObjectIndex()
-{
-	for (size_t i = 0; i < Size; ++i) {
-		if (not _inUse.test(i)) {
-			return i;
-		}
+	if (obj) {
+		obj->~T();
+		//size_t idx = std::distance(&_objects[0], reinterpret_cast<ObjectSlot*>(obj));
+		size_t idx = (reinterpret_cast<std::byte*>(obj) - _objects[0].data) / sizeof(T);
+		_freeIdxs.push(idx);
 	}
-
-	return Size;
 }
