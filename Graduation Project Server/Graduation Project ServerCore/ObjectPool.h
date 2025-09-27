@@ -35,6 +35,9 @@ public:
 	void Release(T* obj);
 
 private:
+	bool IsFromPool(T* obj);
+
+private:
 	// 객체를 그대로 들고 있어야하나? 아니면 Pointer로?
 	std::array<ObjectSlot, Size> _objects;
 	std::stack<size_t> _freeIdxs;
@@ -53,7 +56,7 @@ template<typename ...Args>
 inline T* ObjectPool<T, Size>::Acquire(Args&& ...args)
 {
 	if (_freeIdxs.empty()) {
-		return nullptr;
+		return new T(std::forward<Args>(args)...);
 	}
 
 	size_t idx = _freeIdxs.top(); _freeIdxs.pop();
@@ -63,10 +66,24 @@ inline T* ObjectPool<T, Size>::Acquire(Args&& ...args)
 template<typename T, size_t Size>
 inline void ObjectPool<T, Size>::Release(T* obj)
 {
-	if (obj) {
+	if (obj == nullptr) return;
+	if (IsFromPool(obj)) {
 		obj->~T();
-		//size_t idx = std::distance(&_objects[0], reinterpret_cast<ObjectSlot*>(obj));
 		size_t idx = (reinterpret_cast<std::byte*>(obj) - _objects[0].data) / sizeof(T);
 		_freeIdxs.push(idx);
 	}
+
+	else {
+		delete obj;
+	}
+}
+
+template<typename T, size_t Size>
+inline bool ObjectPool<T, Size>::IsFromPool(T* obj)
+{
+	auto* ptr = reinterpret_cast<std::byte*>(obj);
+	auto* begin = reinterpret_cast<std::byte*>(&_objects[0]);
+	auto* end = reinterpret_cast<std::byte*>(&_objects[Size]);
+
+	return (ptr >= begin and ptr < end);
 }

@@ -12,6 +12,9 @@ public:
 	virtual std::vector<Session*> GetSessionList() = 0;
 
 	virtual void SetCharacter(int sessionId, GameObject* character) = 0;
+
+	virtual SendOver* GetSendOver() = 0;
+	virtual void ReleaseSendOver(SendOver* sendOver) = 0;
 };
 
 class SessionManager : public ISessionManager {
@@ -29,6 +32,9 @@ public:
 
 	virtual void SetCharacter(int sessionId, GameObject* character) override;
 
+	virtual SendOver* GetSendOver() override;
+	virtual void ReleaseSendOver(SendOver* sendOver) override;
+
 private:
 	void OnSessionPacket(int sessionId, const std::vector<char>& packet);
 
@@ -39,4 +45,6 @@ private:
 	std::unordered_map<int, std::shared_ptr<Session>> _sessions;
 
 	std::atomic<int> _nextSessionId;
+
+	static thread_local ObjectPool<SendOver, 2000> _sendOverPool;
 };

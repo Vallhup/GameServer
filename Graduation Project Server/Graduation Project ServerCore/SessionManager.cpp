@@ -68,6 +68,18 @@ void SessionManager::SetCharacter(int sessionId, GameObject* character)
 	session->SetCharacter(character);
 }
 
+SendOver* SessionManager::GetSendOver()
+{
+	if (auto* sendOver = _sendOverPool.Acquire()) {
+		return sendOver;
+	}
+}
+
+void SessionManager::ReleaseSendOver(SendOver* sendOver)
+{
+	_sendOverPool.Release(sendOver);
+}
+
 void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& packet)
 {
 	// 여기서 역직렬화? (나중에 Dispatcher로 따로 뺄 수도?)

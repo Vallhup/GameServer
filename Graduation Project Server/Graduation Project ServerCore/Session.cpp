@@ -149,7 +149,7 @@ void Session::InternalSend()
 		return;
 	}
 
-	auto sendOver = new SendOver;
+	auto sendOver = _owner->GetSendOver();
 	sendOver->SetBuffers(std::move(packets));
 
 	DWORD bytesSent{ 0 };
@@ -165,7 +165,7 @@ void Session::InternalSend()
 		}
 
 		_isSending.store(false);
-		delete sendOver;
+		_owner->ReleaseSendOver(sendOver);
 
 		DisConnect();
 		return;
