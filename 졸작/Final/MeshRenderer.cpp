@@ -25,18 +25,11 @@ MeshRenderer::~MeshRenderer() = default;
 void MeshRenderer::InitializeObjectBuffer(ID3D12Device* device)
 {
     if (!objectCB) {
-        // 병합된 메시를 고려해서 버퍼 크기 증가
-        size_t submeshCount = max(subMeshes.size(), static_cast<size_t>(MAX_SUBMESH_COUNT));
-        size_t bufferSize = CONSTANT_BUFFER_ALIGNMENT * submeshCount;
-
-        // 최소 크기 보장
-        bufferSize = max(bufferSize, static_cast<size_t>(1024));
-
+        size_t bufferSize = CONSTANT_BUFFER_ALIGNMENT * MAX_SUBMESH_COUNT;   // subMesh 최대 개수 10개 안넘을듯?
         objectCB = make_unique<UploadBuffer>();
         objectCB->Initialize(device, bufferSize);
 
-        OutputDebugStringA(("MeshRenderer " + to_string(myID) + " ObjectBuffer initialized with " +
-            to_string(bufferSize) + " bytes for " + to_string(submeshCount) + " submeshes\n").c_str());
+        OutputDebugStringA(("MeshRenderer " + to_string(myID) + " ObjectBuffer initialized\n").c_str());
     }
 }
 
@@ -137,7 +130,7 @@ void MeshRenderer::RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuf
     cmdList->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress());       // 레지 넘버링 부분
 
     vertexIndexBuffer->Bind(cmdList);
-    vertexIndexBuffer->DrawInstanced(cmdList, instanceCount);  
+    vertexIndexBuffer->DrawInstanced(cmdList, instanceCount);
 }
 
 void MeshRenderer::RenderSingleMaterialForwardOnly(DX12Core& core, const XMMATRIX& world)
@@ -278,17 +271,17 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
         return;
     }
 
-	Importer importer;
-	if (importer.LoadModel(path))
-	{
-		const MeshData& mesh = importer.GetMesh();
-		vertexIndexBuffer = make_shared<VertexIndexBuffer>();
-		vertexIndexBuffer->Initialize(
+    Importer importer;
+    if (importer.LoadModel(path))
+    {
+        const MeshData& mesh = importer.GetMesh();
+        vertexIndexBuffer = make_shared<VertexIndexBuffer>();
+        vertexIndexBuffer->Initialize(
             core.GetDevice(),
             core.GetGraphicsCmdList(),
-			mesh.vertices,
-			mesh.indices
-		);
+            mesh.vertices,
+            mesh.indices
+        );
 
         const auto& mats = importer.GetMaterials();
 
@@ -308,7 +301,7 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
         if (animator) {
             animator->LoadAnimationFromImporter(core, importer);
         }
-        
+
         vector<UINT> matIndices;
         if (!materials.empty()) {
             matIndices.reserve(materials.size());
@@ -319,17 +312,17 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
             matIndices = { material->GetMaterialIndex() };
         }
 
-        GET(ResourceManager).CacheMesh(path, vertexIndexBuffer, matIndices, subMeshes, originalMaterialData, 
+        GET(ResourceManager).CacheMesh(path, vertexIndexBuffer, matIndices, subMeshes, originalMaterialData,
             mesh.hasAnimation, importer.GetAnimations(), importer.GetSkeleton());
 
         auto endTime = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime);
         OutputDebugStringA(("CACHE MISS - SetMesh time: " + to_string(duration.count()) + "ms\n").c_str());
 
-		OutputDebugStringA("FBX Mesh created for rendering!\n");
-	}
-	else
-		OutputDebugStringA("Cannot create FBX Mesh for rendering!\n");
+        OutputDebugStringA("FBX Mesh created for rendering!\n");
+    }
+    else
+        OutputDebugStringA("Cannot create FBX Mesh for rendering!\n");
 }
 
 void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer)
@@ -339,7 +332,7 @@ void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuf
     cmdList->SetGraphicsRootSignature(core.GetRootSig()->Get());
     Material::BindBindlessResources(cmdList);
     cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());       // 레지 넘버링 부분
-    
+
     if (instanceBuffer) {
         cmdList->SetGraphicsRootShaderResourceView(12, instanceBuffer->GetGPUVirtualAddress());     // 레지 넘버링 부분
     }

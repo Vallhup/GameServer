@@ -119,7 +119,6 @@ public:
 
 private:
     bool LoadMesh(const wstring& path);
-    bool LoadAndMergeMesh(const wstring& path);
     bool LoadSkeleton(const wstring& path);
     bool LoadAnimations(const wstring& basePath);
     bool LoadMaterials(const wstring& path);
@@ -132,4 +131,3 @@ private:
     vector<AnimClipInfo> animationData;
     vector<MaterialData> materialData;
 };
-

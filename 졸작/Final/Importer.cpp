@@ -5,22 +5,10 @@ bool Importer::LoadModel(const wstring& basePath)
 {
     Release();
 
-    for (int i = 0; i < 9; ++i) {  // 충분한 범위로 검색
-        wstring meshPath = basePath + L"_" + to_wstring(i) + L".mesh";
-
-        ifstream testFile(meshPath);
-        if (!testFile.good()) {
-            if (i == 0) {
-                MASSERT(false, "No mesh files found");
-                return false;
-            }
-            break;  // 더 이상 파일이 없으면 종료
-        }
-        testFile.close();
-
-        if (!LoadAndMergeMesh(meshPath)) {
-            OutputDebugStringA(("Failed to load: " + string(meshPath.begin(), meshPath.end()) + "\n").c_str());
-        }
+    wstring meshPath = basePath + L"_0.mesh";
+    if (!LoadMesh(meshPath)) {
+        MASSERT(false, "Failed to load mesh file");
+        return false;
     }
 
     wstring materialPath = basePath + L".mtl";
@@ -33,11 +21,11 @@ bool Importer::LoadModel(const wstring& basePath)
     if (!LoadSkeleton(skeletonPath)) {
         OutputDebugStringA("Warning: Failed to load skeleton file\n");
     }
-    
+
     if (!LoadAnimations(basePath)) {
         OutputDebugStringA("Warning: Failed to load animation files\n");
     }
-    
+
     return true;
 }
 
@@ -60,7 +48,7 @@ bool Importer::LoadMesh(const wstring& path)
     MeshBinaryHeader header;
     ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
 
-    if (header.magic != 'HSEM') { 
+    if (header.magic != 'HSEM') {
         OutputDebugStringA("Invalid mesh file magic\n");
         return false;
     }
@@ -82,71 +70,6 @@ bool Importer::LoadMesh(const wstring& path)
     return true;
 }
 
-bool Importer::LoadAndMergeMesh(const wstring& path)
-{
-    ifstream ifs(path, ios::binary);
-    if (!ifs) {
-        OutputDebugStringA(("Failed to open: " + string(path.begin(), path.end()) + "\n").c_str());
-        return false;
-    }
-
-    MeshBinaryHeader header;
-    ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
-
-    if (header.magic != 'HSEM') {
-        OutputDebugStringA(("Invalid magic in: " + string(path.begin(), path.end()) + "\n").c_str());
-        return false;
-    }
-
-    if (header.vertexCount == 0 || header.indexCount == 0) {
-        OutputDebugStringA(("Empty mesh: " + string(path.begin(), path.end()) + "\n").c_str());
-        return true;
-    }
-
-    vector<Vertex> tempVertices(header.vertexCount);
-    ifs.read(reinterpret_cast<char*>(tempVertices.data()),
-        sizeof(Vertex) * header.vertexCount);
-
-    vector<SubMeshInfo> tempSubMeshes(header.subMeshCount);
-    ifs.read(reinterpret_cast<char*>(tempSubMeshes.data()),
-        sizeof(SubMeshInfo) * header.subMeshCount);
-
-    vector<UINT> tempIndices(header.indexCount);
-    ifs.read(reinterpret_cast<char*>(tempIndices.data()),
-        sizeof(UINT) * header.indexCount);
-
-    UINT vertexOffset = static_cast<UINT>(meshData.vertices.size());
-    UINT indexOffset = static_cast<UINT>(meshData.indices.size());
-
-    // 버텍스 추가
-    meshData.vertices.insert(meshData.vertices.end(),
-        tempVertices.begin(), tempVertices.end());
-
-    // 인덱스 추가 (오프셋 보정)
-    for (auto& idx : tempIndices) {
-        meshData.indices.push_back(idx + vertexOffset);
-    }
-
-    // *** 핵심: 각 메시의 SubMesh에 고유한 머티리얼 인덱스 할당 ***
-    for (auto& subMesh : tempSubMeshes) {
-        subMesh.startIndex += indexOffset;
-
-        // 충돌체 메시들에게 머티리얼 인덱스 0 할당 (기본 머티리얼)
-        subMesh.materialIndex = 0;
-
-        meshData.subMeshes.push_back(subMesh);
-    }
-
-    if (vertexOffset == 0) {
-        meshData.hasAnimation = (header.hasAnimation == 1);
-    }
-
-    OutputDebugStringA(("Merged: " + string(path.begin(), path.end()) +
-        " - Vertices: " + to_string(tempVertices.size()) +
-        ", Indices: " + to_string(tempIndices.size()) + "\n").c_str());
-    return true;
-}
-
 bool Importer::LoadSkeleton(const wstring& path)
 {
     ifstream ifs(path, ios::binary);
@@ -158,7 +81,7 @@ bool Importer::LoadSkeleton(const wstring& path)
     SkeletonBinaryHeader header;
     ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
 
-    if (header.magic != 'LEKS') { 
+    if (header.magic != 'LEKS') {
         OutputDebugStringA("Invalid skeleton file magic\n");
         return false;
     }
@@ -257,18 +180,6 @@ bool Importer::LoadMaterials(const wstring& path)
         material.aoTexPath = string(matData.aoTexPath);
     }
 
-    // *** 충돌체 메시용 추가 머티리얼들 생성 ***
-    for (int i = 1; i <= 8; ++i) {  // _1~8.mesh용
-        MaterialData collisionMat;
-        collisionMat.name = "Collision_" + to_string(i);
-        collisionMat.diffuse = { 1.0f, 0.0f, 0.0f, 1.0f };  // 빨간색
-        collisionMat.ambient = { 1.0f, 0.0f, 0.0f, 1.0f };
-        collisionMat.specular = { 0.0f, 0.0f, 0.0f, 1.0f };
-        // 모든 텍스처 경로는 빈 문자열 (기본값)
-        materialData.push_back(collisionMat);
-    }
-
-    OutputDebugStringA(("Total materials loaded: " + to_string(materialData.size()) + "\n").c_str());
     return true;
 }
 
