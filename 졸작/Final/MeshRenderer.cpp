@@ -25,11 +25,18 @@ MeshRenderer::~MeshRenderer() = default;
 void MeshRenderer::InitializeObjectBuffer(ID3D12Device* device)
 {
     if (!objectCB) {
-        size_t bufferSize = CONSTANT_BUFFER_ALIGNMENT * MAX_SUBMESH_COUNT;   // subMesh 최대 개수 10개 안넘을듯?
+        // 병합된 메시를 고려해서 버퍼 크기 증가
+        size_t submeshCount = max(subMeshes.size(), static_cast<size_t>(MAX_SUBMESH_COUNT));
+        size_t bufferSize = CONSTANT_BUFFER_ALIGNMENT * submeshCount;
+
+        // 최소 크기 보장
+        bufferSize = max(bufferSize, static_cast<size_t>(1024));
+
         objectCB = make_unique<UploadBuffer>();
         objectCB->Initialize(device, bufferSize);
 
-        OutputDebugStringA(("MeshRenderer " + to_string(myID) + " ObjectBuffer initialized\n").c_str());
+        OutputDebugStringA(("MeshRenderer " + to_string(myID) + " ObjectBuffer initialized with " +
+            to_string(bufferSize) + " bytes for " + to_string(submeshCount) + " submeshes\n").c_str());
     }
 }
 
