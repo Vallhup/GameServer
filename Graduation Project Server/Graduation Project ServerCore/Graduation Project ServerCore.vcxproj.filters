@@ -189,7 +189,9 @@
     <ClCompile Include="ThreadPool.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectPool.cpp" />
+    <ClCompile Include="ObjectPool.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -333,7 +335,9 @@
     <ClInclude Include="ThreadPool.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectPool.h" />
+    <ClInclude Include="ObjectPool.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="protos\Struct.proto">

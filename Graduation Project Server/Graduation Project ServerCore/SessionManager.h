@@ -46,5 +46,5 @@ private:
 
 	std::atomic<int> _nextSessionId;
 
-	static thread_local ObjectPool<SendOver, 2000> _sendOverPool;
+	inline static thread_local ObjectPool<SendOver, 2000> _sendOverPool;
 };
