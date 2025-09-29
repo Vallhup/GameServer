@@ -52,6 +52,9 @@
     <Filter Include="Network\Manager">
       <UniqueIdentifier>{e21db5e6-fc5e-42fb-9c32-ce8b7e02af1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\GamePlay\DBJob">
+      <UniqueIdentifier>{944697a7-377b-41e7-afec-65a70fa4537d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -191,6 +194,9 @@
     </ClCompile>
     <ClCompile Include="ObjectPool.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="DBJob.cpp">
+      <Filter>Game\GamePlay\DBJob</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -337,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="ObjectPool.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="DBJob.h">
+      <Filter>Game\GamePlay\DBJob</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -10,6 +10,7 @@ public:
 
 	// 2. Manager Á¢±Ù
 	virtual class ISessionManager& GetSessionManager() = 0;
+	virtual class IDBManager& GetDBManager() = 0;
 	virtual class IGameWorld& GetGameWorld() = 0;
 	virtual class IocpCore& GetIocpCore() = 0;
 	virtual class JobQueue& GetJobQueue() = 0;
@@ -40,6 +41,7 @@ public:
 	virtual void BroadCast(const std::vector<char>& packet, int exceptId = -1) override;
 
 	virtual ISessionManager& GetSessionManager() override { return *_sessMng; }
+	virtual IDBManager& GetDBManager() override { return *_dbManager; }
 	virtual IGameWorld& GetGameWorld() override { return *_gameWorld; }
 	virtual IocpCore& GetIocpCore() override { return *_iocpCore; }
 	virtual JobQueue& GetJobQueue() override { return _jobQueue; };
@@ -64,8 +66,9 @@ private:
 
 	std::shared_ptr<Listener> _listener;
 	std::unique_ptr<IocpCore> _iocpCore;
+	std::unique_ptr<IDBManager> _dbManager;
 	std::unique_ptr<ISessionManager> _sessMng;
 	std::unique_ptr<IGameWorld> _gameWorld;
 
-	inline static thread_local std::unique_ptr<class ScriptVM> _scriptVM{ nullptr };
+	inline static thread_local std::unique_ptr<class ScriptVM> _scriptVM;
 };

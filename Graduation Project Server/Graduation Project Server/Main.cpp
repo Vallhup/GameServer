@@ -25,6 +25,5 @@ void ServerStart()
 
 int main()
 {
-	//ObjectPoolBenchmark();
 	ServerStart();
 }

@@ -192,6 +192,7 @@
     <ClInclude Include="LeafNode.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="DBJob.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="MainInstance.h" />
     <ClInclude Include="ObjectPool.h" />
@@ -242,6 +243,7 @@
     <ClCompile Include="LeafNode.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="DBJob.cpp" />
     <ClCompile Include="MainInstance.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
     <ClCompile Include="NormalBehavior.cpp" />

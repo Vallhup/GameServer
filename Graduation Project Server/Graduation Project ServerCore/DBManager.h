@@ -9,13 +9,36 @@
 // 
 // Connection Pool·Î Thread-Safe Áö¿ø
 
-class DBManager {
+class IDBManager {
 public:
-	void Init();
-	void Start();
-	void End();
+	IDBManager() = delete;
+	virtual ~IDBManager() = default;
+
+public:
+	virtual bool ExecuteQuery(const std::wstring& query, 
+		const std::function<bool(SQLHSTMT)>& binder) = 0;
+
+protected:
+	IDBManager(const std::wstring& database) : _database(database) {}
+
+protected:
+	std::wstring _database;
+};
+
+class MSSQLManager : public IDBManager {
+public:
+	MSSQLManager() = delete;
+	MSSQLManager(const std::wstring& database);
+	~MSSQLManager();
+
+public:
+	virtual bool ExecuteQuery(const std::wstring& query, 
+		const std::function<bool(SQLHSTMT)>& binder) override;
 
 private:
-	HENV _henv;
-	HDBC _hdbc;
+	bool EnsureThreadConnection();
+
+private:
+	SQLHENV _hEnv;
+	inline static thread_local SQLHDBC _hDbc;
 };

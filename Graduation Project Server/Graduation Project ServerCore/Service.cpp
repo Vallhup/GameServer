@@ -7,6 +7,7 @@ Service::Service()
 	_iocpCore = std::make_unique<IocpCore>();
 	_sessMng = std::make_unique<SessionManager>(*this);
 	_gameWorld = std::make_unique<GameWorld>(*this);
+	_dbManager = std::make_unique<MSSQLManager>(L"Temp");
 }
 
 bool Service::Init()

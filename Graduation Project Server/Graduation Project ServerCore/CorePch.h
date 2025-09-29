@@ -52,6 +52,7 @@
 #include "CollisionShape.h"
 #include "Action.h"
 #include "Job.h"
+#include "DBJob.h"
 
 #include "SessionManager.h"
 
