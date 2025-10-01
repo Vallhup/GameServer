@@ -1,5 +1,1 @@
-<<<<<<< Updated upstream
-C:\Users\Hadenpel\Desktop\GameServer\Graduation Project Server\Graduation Project Server\x64\Release\Graduati.A857B830.Up2Date
-=======
->>>>>>> Stashed changes
 C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\Graduation Project Server\Graduation Project Server\x64\Release\Graduati.A857B830.Up2Date
