@@ -1,8 +1,10 @@
 #include "Service.h"
+#include "ClientManager.h"
 
 Service::Service()
 {
 	_iocpCore = std::make_unique<IocpCore>();
+	_clientMng = std::make_unique<ClientManager>(3000, *this);
 }
 
 bool Service::Start()
@@ -35,6 +37,16 @@ bool Service::Start()
 				});
 		}
 
+		_connectThread = std::thread([&]()
+			{
+
+				while(true) {
+					_clientMng->AdjustClients();
+					_clientMng->OnTick();
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				}
+			});
+
 		return true;
 	}
 
@@ -57,4 +69,9 @@ void Service::Stop()
 
 		WSACleanup();
 	}
+}
+
+void Service::RegisterClient(Client* client)
+{
+	_iocpCore->Register(client);
 }

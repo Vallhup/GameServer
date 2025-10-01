@@ -12,7 +12,7 @@ IocpCore::IocpCore()
 
 IocpCore::~IocpCore()
 {
-	//CloseHandle(_iocpHandle);
+	CloseHandle(_iocpHandle);
 }
 
 bool IocpCore::Register(IocpObject* iocpObject)

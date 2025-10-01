@@ -127,7 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.h" />
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Protocol.pb.h" />
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Struct.pb.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="ClientManager.h" />
     <ClInclude Include="ExpOver.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="RecvBuffer.h" />
@@ -136,7 +140,11 @@
     <ClInclude Include="vec3.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.cc" />
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Protocol.pb.cc" />
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Struct.pb.cc" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="ClientManager.cpp" />
     <ClCompile Include="ExpOver.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="main.cpp" />

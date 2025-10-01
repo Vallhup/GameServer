@@ -12,6 +12,7 @@
 #include <thread>
 
 #include "Client.h"
+#include "ClientManager.h"
 #include "IocpCore.h"
 
 #pragma comment(lib, "ws2_32.lib")
@@ -25,11 +26,14 @@ public:
 	bool Start();
 	void Stop();
 
+	void RegisterClient(Client* client);
+
 private:
-	std::vector<std::unique_ptr<Client>> _clients;
+	std::thread _connectThread;
 	std::vector<std::thread> _workers;
 
 	std::unique_ptr<IocpCore> _iocpCore;
+	std::unique_ptr<ClientManager> _clientMng;
 
 	std::atomic<bool> _running;
 };
