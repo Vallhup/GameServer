@@ -1,6 +1,7 @@
 #pragma once
 
 class GameObject;
+class ISessionManager;
 
 enum class SessionState : char {
 	ST_ALLOC,
@@ -34,10 +35,10 @@ public:
 public:
 	int GetId() const { return _id; }
 	SessionState GetState() const { return _state.load(); }
-	GameObject* GetCharacter() const { return _character; }
+	std::shared_ptr<GameObject> GetCharacter() const { return _character.lock(); }
 
 	void SetPacketHandler(PacketHandler handler) { _packetHandler = handler; }
-	void SetCharacter(GameObject* character) { _character = character; }
+	void SetCharacter(const std::weak_ptr<GameObject>& character) { _character = character; }
 	void SetState(SessionState state) { _state = state; }
 
 private:
@@ -56,7 +57,10 @@ private:
 
 	std::atomic<SessionState> _state;
 
-	GameObject* _character;
+	std::weak_ptr<GameObject> _character;
 	ISessionManager* _owner;
+
+	std::atomic<int> _pendingIoCount;
+	std::atomic<bool> _shouldRelease;
 };
 

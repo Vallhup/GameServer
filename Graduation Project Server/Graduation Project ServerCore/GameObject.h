@@ -1,6 +1,7 @@
 #pragma once
 
 #include <typeindex>
+#include <concurrent_vector.h>
 
 #include "Instance.h"
 
@@ -26,30 +27,6 @@ public:
 
 		return raw;
 	}
-
-	/*template<typename T>
-	bool RemoveComponent()
-	{
-		if (not Getcomponent<T>()) {
-			return false;
-		}
-
-		auto it = _types.find(std::type_index(typeid(T)));
-		if (it != _types.end()) {
-			auto* component = it->second;
-
-			for (auto& uniqeCmp : _components) {
-				if (component == uniqeCmp.get()) {
-					_components.erase(uniqeCmp);
-					_types.erase(it);
-
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}*/
 
 	template<typename T>
 	T* GetComponent() const

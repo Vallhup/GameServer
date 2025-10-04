@@ -35,6 +35,8 @@ void GameWorld::AddInstance(InstanceType type)
 
 void GameWorld::RemoveInstance(int instanceId)
 {
+	std::unique_lock lock{ _mutex };
+
 	auto it = _instances.find(instanceId);
 	if (it != _instances.end()) {
 		_instances.erase(it);
@@ -43,6 +45,8 @@ void GameWorld::RemoveInstance(int instanceId)
 
 Instance* GameWorld::GetInstance(int instanceId)
 {
+	std::shared_lock lock{ _mutex };
+
 	auto it = _instances.find(instanceId);
 	if (it != _instances.end()) {
 		return it->second.get();
@@ -53,9 +57,17 @@ Instance* GameWorld::GetInstance(int instanceId)
 
 void GameWorld::Update(float deltaTime)
 {
-	std::unique_lock lock{ _mutex };
+	std::vector<std::shared_ptr<Instance>> snap;
+	{
+		std::shared_lock lock{ _mutex };
+		for (auto& [id, instance] : _instances) {
+			if (instance) {
+				snap.push_back(instance);
+			}
+		}
+	}
 
-	for (auto& [id, instance] : _instances) {
-		_gameCtx.GetJobQueue().Push(std::make_shared<LogicJob>(instance.get(), deltaTime));
+	for (auto& instance : snap) {
+		_gameCtx.GetJobQueue().Push(std::make_shared<LogicJob>(instance, deltaTime));
 	}
 }

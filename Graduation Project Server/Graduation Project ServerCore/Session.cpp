@@ -2,10 +2,8 @@
 #include "Session.h"
 
 Session::Session(int id, SOCKET socket, ISessionManager* owner) 
-	: _id(id), _socket(socket), _owner(owner)
+	: _id(id), _socket(socket), _owner(owner), _pendingIoCount(0), _shouldRelease(false), _state(SessionState::ST_ALLOC)
 {
-	_state = SessionState::ST_ALLOC;
-	_character = nullptr;
 }
 
 Session::~Session()
@@ -38,16 +36,27 @@ void Session::RegisterRecv()
 
 	DWORD recvFlag{ 0 };
 	int wsaBufCount = _recvOver.SetBuffers();
+
+	_pendingIoCount.fetch_add(1);
 	int result = WSARecv(_socket, _recvOver._wsaBuf.data(), wsaBufCount, NULL, &recvFlag, static_cast<LPWSAOVERLAPPED>(&_recvOver), NULL);
 	if (SOCKET_ERROR == result) {
 		int error = WSAGetLastError();
 		if (WSA_IO_PENDING != error) {
+			if (_pendingIoCount.fetch_sub(1) == 1) {
+				if (_shouldRelease) {
+					_owner->RemoveSession(_id);
+				}
+			}
+
 			if (error == WSAECONNRESET || error == WSAENOTCONN || error == WSAESHUTDOWN || error == WSA_OPERATION_ABORTED) {
 				LOG_WRN("WSARecv disconnected/aborted: %d", error);
 			}
+
 			else {
 				LOG_ERR("WSARecv failed: %d", error);
 			}
+
+			DisConnect();
 		}
 	}
 }
@@ -105,17 +114,31 @@ void Session::ProcessRecv(DWORD numBytes)
 		}
 	}
 
+	if (_pendingIoCount.fetch_sub(1) == 1) {
+		if (_shouldRelease.load()) {
+			_owner->RemoveSession(_id);
+		}
+	}
+
 	RegisterRecv();
 }
 
 void Session::ProcessSend()
 {
+	if (_pendingIoCount.fetch_sub(1) == 1) {
+		if (_shouldRelease.load()) {
+			_owner->RemoveSession(_id);
+		}
+	}
+
 	InternalSend();
 }
 
 void Session::DisConnect()
 {
 	LOG_DBG("Session[%d] DisConnect", _id);
+
+	if (_shouldRelease.exchange(true)) return;
 
 	std::array<SessionState, 2> expected = { SessionState::ST_ALLOC, SessionState::ST_INGAME };
 	for (auto& expect : expected) {
@@ -124,7 +147,8 @@ void Session::DisConnect()
 			CancelIoEx(GetHandle(), nullptr);
 			closesocket(_socket);
 			_socket = INVALID_SOCKET;
-			_owner->RemoveSession(_id);
+			
+			return;
 		}
 	}
 }
@@ -141,7 +165,9 @@ void Session::InternalSend()
 
 	std::vector<char> sendData;
 	while ((packets.size() < MAX_PACKET) and (_sendQueue.try_pop(sendData))) {
-		packets.push_back(sendData);
+		if (not sendData.empty()) {
+			packets.push_back(sendData);
+		}
 	}
 
 	if (packets.empty()) {
@@ -153,21 +179,26 @@ void Session::InternalSend()
 	sendOver->SetBuffers(std::move(packets));
 
 	DWORD bytesSent{ 0 };
+	_pendingIoCount.fetch_add(1);
 	int result = WSASend(_socket, sendOver->_wsaBufs.data(), static_cast<DWORD>(sendOver->_wsaBufs.size()), &bytesSent, 0, static_cast<LPWSAOVERLAPPED>(sendOver), NULL);
 	if (SOCKET_ERROR == result) {
 		int error = WSAGetLastError();
-		if ((error == WSAECONNRESET) or (error == WSAENOTCONN) or (error == WSAESHUTDOWN)) {
-			LOG_INF("Session[%d] disconnected", _id);
+		if (error != WSA_IO_PENDING) {
+			if (_pendingIoCount.fetch_sub(1) == 1) {
+				if (_shouldRelease.load()) {
+					_owner->RemoveSession(_id);
+				}
+			}
+
+			if ((error == WSAECONNRESET) or (error == WSAENOTCONN) or (error == WSAESHUTDOWN)) {
+				LOG_INF("Session[%d] disconnected", _id);
+			}
+
+			_isSending.store(false);
+			_owner->ReleaseSendOver(sendOver);
+
+			DisConnect();
+			return;
 		}
-
-		else if (error != WSA_IO_PENDING) {
-			LOG_ERR("WSASend failed: %d", error);
-		}
-
-		_isSending.store(false);
-		_owner->ReleaseSendOver(sendOver);
-
-		DisConnect();
-		return;
 	}
 }

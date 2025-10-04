@@ -23,7 +23,7 @@ void Instance::AddPlayer(Session* session)
 	character->AddComponent<InputComponent>();
 
 	_objMng->AddObject(character);
-	session->SetCharacter(character.get());
+	session->SetCharacter(character);
 	{
 		std::unique_lock lock{ _mutex };
 		_sessions.insert(std::make_pair(session->GetId(), session));

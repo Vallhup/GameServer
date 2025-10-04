@@ -32,7 +32,6 @@ void SessionManager::RemoveSession(int sessionId)
 			character->GetInstance()->RemovePlayer(sessionId);
 		}
 	}
-
 	_sessions.erase(sessionId);
 }
 
@@ -60,12 +59,6 @@ std::vector<Session*> SessionManager::GetSessionList()
 	}
 
 	return out;
-}
-
-void SessionManager::SetCharacter(int sessionId, GameObject* character)
-{
-	Session* session = GetSession(sessionId);
-	session->SetCharacter(character);
 }
 
 SendOver* SessionManager::GetSendOver()
@@ -106,12 +99,17 @@ void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& pac
 			_gameCtx.GetGameWorld().GetInstance(0)->AddPlayer(session);
 			session->SetState(SessionState::ST_INGAME);
 			session->RegisterSend(PacketFactory::SCLoginPacket(session->GetId()));
-
-			const vec3 pos = session->GetCharacter()->GetComponent<TransformComponent>()->GetPosition();
+			
 			Protocol::Vec3 packetPos;
-			packetPos.set_x(pos.x);
-			packetPos.set_y(pos.y);
-			packetPos.set_z(pos.z);
+			if (auto character = session->GetCharacter()) {
+				if (auto trComp = character->GetComponent<TransformComponent>()) {
+					const vec3 pos = trComp->GetPosition();
+
+					packetPos.set_x(pos.x);
+					packetPos.set_y(pos.y);
+					packetPos.set_z(pos.z);
+				}
+			}
 
 			_gameCtx.BroadCast(PacketFactory::SCAddPacket(sessionId, packetPos));
 
@@ -138,9 +136,18 @@ void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& pac
 			return;
 		}
 
-		if (Instance* instance = GetSession(sessionId)->GetCharacter()->GetInstance()) {
+		/*if (Instance* instance = GetSession(sessionId)->GetCharacter()->GetInstance()) {
 			instance->GetGameLogic().OnPlayerAction(sessionId, input);
+		}*/
+
+		if (auto session = GetSession(sessionId)) {
+			if (auto character = session->GetCharacter()) {
+				if (auto instance = character->GetInstance()) {
+					instance->GetGameLogic().OnPlayerAction(sessionId, input);
+				}
+			}
 		}
+
 		break;
 	}
 	}

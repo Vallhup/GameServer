@@ -53,13 +53,13 @@ private:
 class LogicJob : public Job {
 public:
 	LogicJob() = delete;
-	LogicJob(Instance* i, float dT);
+	LogicJob(const std::shared_ptr<Instance>& i, float dT);
 	virtual ~LogicJob() = default;
 
 public:
 	virtual void Execute() override;
 
 private:
-	Instance* instance;
+	std::weak_ptr<Instance> instance;
 	float deltaTime;
 };

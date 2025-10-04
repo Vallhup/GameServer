@@ -83,7 +83,7 @@ inline bool ObjectPool<T, Size>::IsFromPool(T* obj)
 {
 	auto* ptr = reinterpret_cast<std::byte*>(obj);
 	auto* begin = reinterpret_cast<std::byte*>(&_objects[0]);
-	auto* end = reinterpret_cast<std::byte*>(&_objects[Size]);
+	auto* end = reinterpret_cast<std::byte*>(&_objects[Size - 1]);
 
-	return (ptr >= begin and ptr < end);
+	return (ptr >= begin and ptr <= end);
 }

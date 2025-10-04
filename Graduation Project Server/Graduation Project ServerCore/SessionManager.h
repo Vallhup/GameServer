@@ -11,7 +11,7 @@ public:
 	virtual Session* GetSession(int sessionId) = 0;
 	virtual std::vector<Session*> GetSessionList() = 0;
 
-	virtual void SetCharacter(int sessionId, GameObject* character) = 0;
+	//virtual void SetCharacter(int sessionId, GameObject* character) = 0;
 
 	virtual SendOver* GetSendOver() = 0;
 	virtual void ReleaseSendOver(SendOver* sendOver) = 0;
@@ -30,7 +30,7 @@ public:
 	virtual Session* GetSession(int sessionId) override;
 	virtual std::vector<Session*> GetSessionList() override;
 
-	virtual void SetCharacter(int sessionId, GameObject* character) override;
+	//virtual void SetCharacter(int sessionId, GameObject* character) override;
 
 	virtual SendOver* GetSendOver() override;
 	virtual void ReleaseSendOver(SendOver* sendOver) override;

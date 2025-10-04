@@ -27,13 +27,13 @@ void BTJob::Execute()
 
 /*---------------[ LogicJob ]---------------*/
 
-LogicJob::LogicJob(Instance* i, float dT) : Job(), instance(i), deltaTime(dT)
+LogicJob::LogicJob(const std::shared_ptr<Instance>& i, float dT) : Job(), instance(i), deltaTime(dT)
 {
 }
 
 void LogicJob::Execute()
 {
-	if (instance) {
-		instance->Update(deltaTime);
+	if (auto inst = instance.lock()) {
+		inst->Update(deltaTime);
 	}
 }

@@ -38,7 +38,6 @@ bool IocpCore::Dispatch(unsigned int timeOutMs)
 		}
 	}
 
-//  for (const auto& entry : entries | std::span(entries.date(), numEntries)) {
 	for (const auto& entry : entries | std::views::take(numEntries)) {
 		ExpOver* expOver = static_cast<ExpOver*>(entry.lpOverlapped);
 		IocpObject* iocpObject = reinterpret_cast<IocpObject*>(entry.lpCompletionKey);
