@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\PacketFactory.h" />
     <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.h" />
     <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Protocol.pb.h" />
     <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Struct.pb.h" />
@@ -138,8 +139,10 @@
     <ClInclude Include="Scenario.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="vec3.h" />
+    <ClInclude Include="Visualizer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\PacketFactory.cpp" />
     <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.cc" />
     <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Protocol.pb.cc" />
     <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Struct.pb.cc" />
@@ -151,6 +154,7 @@
     <ClCompile Include="RecvBuffer.cpp" />
     <ClCompile Include="Scenario.cpp" />
     <ClCompile Include="Service.cpp" />
+    <ClCompile Include="Visualizer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

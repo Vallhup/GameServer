@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <ranges>
+#include <shared_mutex>
 
 #include "Client.h"
 
@@ -20,8 +22,10 @@ public:
 	void OnTick();
 	void DisconnectClient(int id);
 
+	std::vector<Client*> GetClientList();
+
 private:
-	std::vector<std::unique_ptr<Client>> _clients;
+	std::vector<std::shared_ptr<Client>> _clients;
 	
 	int _globalDelay;
 	int _maxClients;

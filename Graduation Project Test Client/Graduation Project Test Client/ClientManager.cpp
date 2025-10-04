@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <numeric>
+#include <ranges>
 
 #include "Scenario.h"
 #include "Service.h"
@@ -15,7 +16,7 @@ void ClientManager::AdjustClients()
 	static int maxLimit{ (std::numeric_limits<int>::max)() };
 	static auto lastConnectTime = high_resolution_clock::now();
 
-	int activeCount{ 0 };
+	/*int activeCount{ 0 };
 	for (auto& client : _clients) {
 		if (client and client->IsConnected()) {
 			activeCount++;
@@ -41,11 +42,12 @@ void ClientManager::AdjustClients()
 		}
 
 		return;
-	}
+	}*/
 
-	auto client = std::make_unique<Client>();
+
+	auto client = std::make_shared<Client>();
 	if (client->Connect()) {
-		_service.RegisterClient(client.get());
+		_service.RegisterClient(client);
 		ConnectScenario::Instance().OnStart(client.get());
 
 		_clients.push_back(std::move(client));
@@ -58,9 +60,9 @@ void ClientManager::OnTick()
 	using namespace std::chrono;
 
 	for (auto& client : _clients) {
-		if (client and client->IsConnected()) {
+		if (client and client->GetState() == ClientState::ST_INGAME) {
 			// TEMP : 시나리오 실행
-			ConnectScenario::Instance().OnTick(client.get());
+			MoveScenario::Instance().OnTick(client.get());
 		}
 	}
 }
@@ -72,4 +74,16 @@ void ClientManager::DisconnectClient(int id)
 			client->Disconnect();
 		}
 	}
+}
+
+std::vector<Client*> ClientManager::GetClientList()
+{
+	std::vector<Client*> result;
+	for (auto& client : _clients) {
+		if (client and client->IsConnected()) {
+			result.push_back(client.get());
+		}
+	}
+
+	return result;
 }

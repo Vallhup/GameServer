@@ -21,10 +21,6 @@ bool ExpOver::CheckOpType(OperationType opType)
 
 RecvOver::RecvOver() : ExpOver(OperationType::Recv)
 {
-	for (WSABUF& wsaBuf : _wsaBuf) {
-		wsaBuf.buf = nullptr;
-		wsaBuf.len = 0;
-	}
 }
 
 int RecvOver::SetBuffers()

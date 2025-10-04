@@ -15,10 +15,10 @@ IocpCore::~IocpCore()
 	CloseHandle(_iocpHandle);
 }
 
-bool IocpCore::Register(IocpObject* iocpObject)
+bool IocpCore::Register(const std::shared_ptr<IocpObject>& iocpObject)
 {
 	HANDLE handle = iocpObject->GetHandle();
-	ULONG_PTR key = reinterpret_cast<ULONG_PTR>(iocpObject);
+	ULONG_PTR key = reinterpret_cast<ULONG_PTR>(iocpObject.get());
 
 	return CreateIoCompletionPort(handle, _iocpHandle, key, 0);
 }

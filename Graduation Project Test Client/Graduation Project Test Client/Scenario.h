@@ -1,5 +1,9 @@
 #pragma once
 
+#include <unordered_map>
+#include <random>
+#include <chrono>
+
 #include "Client.h"
 
 class IScenario {
@@ -27,4 +31,25 @@ public:
 	virtual void OnStart(Client* client) override;
 	virtual void OnTick(Client* client) override;
 	virtual void OnPacket(Client* client, const std::vector<char>& packet) override;
+};
+
+class MoveScenario : public IScenario {
+public:
+	static MoveScenario& Instance()
+	{
+		static MoveScenario instance;
+		return instance;
+	}
+
+public:
+	virtual ~MoveScenario() = default;
+
+public:
+	virtual void OnStart(Client* client) override;
+	virtual void OnTick(Client* client) override;
+	virtual void OnPacket(Client* client, const std::vector<char>& packet) override;
+
+private:
+	std::unordered_map<int, std::chrono::high_resolution_clock::time_point> _lastMove;
+	std::default_random_engine dre;
 };

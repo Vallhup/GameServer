@@ -16,6 +16,9 @@
     <Filter Include="Protocol">
       <UniqueIdentifier>{b16cd74b-3cb5-4605-b361-3c75647b563b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Protocol\%2a.pb">
+      <UniqueIdentifier>{f4bdb2a8-793b-487d-b150-20f42c25d4b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -40,15 +43,19 @@
     <ClCompile Include="ClientManager.cpp">
       <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.cc">
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\PacketFactory.cpp">
       <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.cc">
+      <Filter>Protocol\%2a.pb</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Protocol.pb.cc">
-      <Filter>Protocol</Filter>
+      <Filter>Protocol\%2a.pb</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Struct.pb.cc">
-      <Filter>Protocol</Filter>
+      <Filter>Protocol\%2a.pb</Filter>
     </ClCompile>
+    <ClCompile Include="Visualizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -75,14 +82,18 @@
     <ClInclude Include="ClientManager.h">
       <Filter>Client</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.h">
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\PacketFactory.h">
       <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Enum.pb.h">
+      <Filter>Protocol\%2a.pb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Protocol.pb.h">
-      <Filter>Protocol</Filter>
+      <Filter>Protocol\%2a.pb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Graduation Project Server\Graduation Project ServerCore\Protocols\Struct.pb.h">
-      <Filter>Protocol</Filter>
+      <Filter>Protocol\%2a.pb</Filter>
     </ClInclude>
+    <ClInclude Include="Visualizer.h" />
   </ItemGroup>
 </Project>

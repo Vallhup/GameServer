@@ -5,13 +5,16 @@ Service::Service()
 {
 	_iocpCore = std::make_unique<IocpCore>();
 	_clientMng = std::make_unique<ClientManager>(3000, *this);
+	_visualizer = std::make_unique<Visualizer>(800, 600, false);
 }
 
-bool Service::Start()
+void Service::Start()
 {
+	setlocale(LC_ALL, "korean");
+
 	WSADATA WSAData;
 	if (WSAStartup(MAKEWORD(2, 2), &WSAData) != 0) {
-		return false;
+		return;
 	}
 
 	bool expected{ false };
@@ -36,21 +39,9 @@ bool Service::Start()
 					}
 				});
 		}
-
-		_connectThread = std::thread([&]()
-			{
-
-				while(true) {
-					_clientMng->AdjustClients();
-					_clientMng->OnTick();
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
-				}
-			});
-
-		return true;
+		
+		MainLoop();
 	}
-
-	return false;
 }
 
 void Service::Stop()
@@ -71,7 +62,32 @@ void Service::Stop()
 	}
 }
 
-void Service::RegisterClient(Client* client)
+void Service::RegisterClient(const std::shared_ptr<Client>& client)
 {
 	_iocpCore->Register(client);
+}
+
+void Service::MainLoop()
+{
+	for (int i = 0; i < 20; ++i) {
+		_clientMng->AdjustClients();
+	}
+
+	MSG msg;
+	while (_running.load()) {
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+			if (msg.message == WM_QUIT) _running.store(false);
+			else {
+				TranslateMessage(&msg);
+				DispatchMessageW(&msg);
+			}
+		}
+
+		else {
+			_clientMng->OnTick();
+			_visualizer->Render();
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
+	}
 }

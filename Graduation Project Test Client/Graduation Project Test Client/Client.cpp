@@ -22,14 +22,15 @@ bool Client::Connect()
 		return false;
 	}
 
-	_connected.store(true);
+	RegisterRecv();
+
 	return true;
 }
 
 void Client::Disconnect()
 {
-	bool expected{ true };
-	if (_connected.compare_exchange_strong(expected, false)) {
+	std::array<ClientState, 2> expected = { ClientState::ST_ALLOC, ClientState::ST_INGAME };
+	for (auto& expect : expected) {
 		shutdown(_socket, SD_BOTH);
 		CancelIoEx(GetHandle(), nullptr);
 		closesocket(_socket);
@@ -39,7 +40,7 @@ void Client::Disconnect()
 
 void Client::RegisterRecv()
 {
-	if (not _connected.load() or _socket == INVALID_SOCKET) {
+	if (_state.load() == ClientState::ST_FREE or _socket == INVALID_SOCKET) {
 		Disconnect();
 		return;
 	}
@@ -57,7 +58,7 @@ void Client::RegisterRecv()
 
 void Client::RegisterSend(const std::vector<char>& packet)
 {
-	if (not _connected.load() or _socket == INVALID_SOCKET) {
+	if (_state.load() == ClientState::ST_FREE or _socket == INVALID_SOCKET) {
 		Disconnect();
 		return;
 	}
@@ -126,7 +127,7 @@ void Client::Dispatch(ExpOver* expOver, int numOfBytes)
 
 void Client::InternalSend()
 {
-	if (not _connected.load() or _socket == INVALID_SOCKET) {
+	if (_state.load() == ClientState::ST_FREE or _socket == INVALID_SOCKET) {
 		Disconnect();
 		return;
 	}
@@ -181,10 +182,21 @@ void Client::ProcessPacket(const std::vector<char>& packet)
 		_id = gamePacket.header().sessionid();
 		_pos = { 0.0f ,0.0f, 0.0f };
 
+		_state.store(ClientState::ST_INGAME);
 		break;
 	}
 	case Protocol::PacketType::SC_MOVE_OBJECT: {
-		// TODO : ¿Ãµø
+		Protocol::SC_MOVE_PACKET move;
+		if (not move.ParseFromArray(gamePacket.body().data(), gamePacket.body().size())) {
+			return;
+		}
+
+		float x = move.pos().x();
+		float y = move.pos().y();
+		float z = move.pos().z();
+		_pos = { x, y, z };
+		
+		break;
 	}
 	case Protocol::PacketType::SC_ADD: break;
 	case Protocol::PacketType::SC_REMOVE: break;

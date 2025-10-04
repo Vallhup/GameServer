@@ -5,6 +5,8 @@
 #include <mswsock.h>
 #include <Windows.h>
 
+#include <iostream>
+
 class IocpObject {
 public:
 	virtual ~IocpObject() = default;
@@ -28,7 +30,7 @@ public:
 	IocpCore& operator=(IocpCore&&) = delete;
 
 public:
-	bool Register(IocpObject* iocpObject);
+	bool Register(const std::shared_ptr<IocpObject>& iocpObject);
 	bool Dispatch(unsigned int timeOutMs = INFINITE);
 
 public:

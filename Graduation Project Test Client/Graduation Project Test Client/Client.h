@@ -12,12 +12,18 @@
 #include "ExpOver.h"
 #include "vec3.h"
 
+enum class ClientState : char {
+	ST_ALLOC,
+	ST_INGAME,
+	ST_FREE
+};
+
 class Client : public IocpObject {
 	static constexpr int MAX_PACKET{ 32 };
 
 public:
 	Client() 
-		: _id(-1), _connected(false), _isSending(false), _socket(INVALID_SOCKET) 
+		: _id(-1), _state(ClientState::ST_ALLOC), _isSending(false), _socket(INVALID_SOCKET)
 	{ _pos = { 0.0f, 0.0f, 0.0f }; }
 	virtual ~Client() = default;
 
@@ -28,7 +34,9 @@ public:
 	void RegisterSend(const std::vector<char>& packet);
 
 	int GetId() const { return _id; }
-	bool IsConnected() const { return _connected.load(); }
+	const vec3& GetPos() const { return _pos; }
+	ClientState GetState() const { return _state.load(); }
+	bool IsConnected() const { return _state.load() != ClientState::ST_FREE; }
 
 public:
 	virtual HANDLE GetHandle() const override;
@@ -49,7 +57,7 @@ private:
 	SOCKET _socket;
 	RecvOver _recvOver;
 
-	std::atomic<bool> _connected;
+	std::atomic<ClientState> _state;
 	std::atomic<bool> _isSending;
 
 	concurrency::concurrent_queue<std::vector<char>> _sendQueue;

@@ -14,27 +14,39 @@
 #include "Client.h"
 #include "ClientManager.h"
 #include "IocpCore.h"
+#include "Visualizer.h"
 
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "MSWSock.LIB")
 
 class Service {
 public:
+	static Service& Instance()
+	{
+		static Service instance;
+		return instance;
+	}
+
+public:
 	Service();
 	
 public:
-	bool Start();
+	void Start();
 	void Stop();
 
-	void RegisterClient(Client* client);
+	void RegisterClient(const std::shared_ptr<Client>& client);
+
+	ClientManager& GetClientManager() const { return *_clientMng; }
 
 private:
-	std::thread _connectThread;
-	std::vector<std::thread> _workers;
+	void MainLoop();
 
+private:
 	std::unique_ptr<IocpCore> _iocpCore;
+	std::unique_ptr<Visualizer> _visualizer;
 	std::unique_ptr<ClientManager> _clientMng;
 
+	std::vector<std::thread> _workers;
 	std::atomic<bool> _running;
 };
 
