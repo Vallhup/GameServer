@@ -1,6 +1,8 @@
 #include "Service.h"
 #include "ClientManager.h"
 
+#include <chrono>
+
 Service::Service()
 {
 	_iocpCore = std::make_unique<IocpCore>();
@@ -19,6 +21,8 @@ void Service::Start()
 
 	bool expected{ false };
 	if (_running.compare_exchange_strong(expected, true)) {
+		_visualizer->Start();
+
 		const unsigned int threadCount = std::thread::hardware_concurrency();
 		_workers.resize(threadCount);
 
@@ -52,6 +56,8 @@ void Service::Stop()
 			PostQueuedCompletionStatus(_iocpCore->GetHandle(), 0, 0, nullptr);
 		}
 
+		_visualizer->Stop();
+
 		for (auto& worker : _workers) {
 			if (worker.joinable()) {
 				worker.join();
@@ -69,25 +75,32 @@ void Service::RegisterClient(const std::shared_ptr<Client>& client)
 
 void Service::MainLoop()
 {
-	for (int i = 0; i < 20; ++i) {
-		_clientMng->AdjustClients();
-	}
+	using namespace std::chrono;
 
+	int x{ 0 };
 	MSG msg;
+	auto prev = high_resolution_clock::now();
 	while (_running.load()) {
-		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-			if (msg.message == WM_QUIT) _running.store(false);
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+			if (msg.message == WM_QUIT) _running = false;
 			else {
 				TranslateMessage(&msg);
-				DispatchMessageW(&msg);
+				DispatchMessage(&msg);
 			}
 		}
 
-		else {
-			_clientMng->OnTick();
-			_visualizer->Render();
+		_visualizer->Render();
+		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		const auto now = high_resolution_clock::now();
+		const float deltaTime = duration<float>(now - prev).count();
+		prev = now;
+
+		if (x++ < 10) {
+			_clientMng->AdjustClients();
 		}
+		_clientMng->OnTick(deltaTime);
+
+		std::this_thread::sleep_for(1ms);
 	}
 }

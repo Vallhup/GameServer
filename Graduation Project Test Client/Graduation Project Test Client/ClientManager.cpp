@@ -50,17 +50,23 @@ void ClientManager::AdjustClients()
 		_service.RegisterClient(client);
 		ConnectScenario::Instance().OnStart(client.get());
 
-		_clients.push_back(std::move(client));
+		{
+			std::lock_guard lock(_clientMutex);
+			_clients.push_back(std::move(client));
+		}
 		lastConnectTime = high_resolution_clock::now();
 	}
 }
 
-void ClientManager::OnTick()
+void ClientManager::OnTick(float deltaTime)
 {
 	using namespace std::chrono;
 
+	std::lock_guard lock(_clientMutex);
 	for (auto& client : _clients) {
 		if (client and client->GetState() == ClientState::ST_INGAME) {
+			client->Update(deltaTime);
+
 			// TEMP : 시나리오 실행
 			MoveScenario::Instance().OnTick(client.get());
 		}
@@ -69,6 +75,7 @@ void ClientManager::OnTick()
 
 void ClientManager::DisconnectClient(int id)
 {
+	std::lock_guard lock(_clientMutex);
 	for (auto& client : _clients) {
 		if (client->GetId() == id) {
 			client->Disconnect();
@@ -76,14 +83,8 @@ void ClientManager::DisconnectClient(int id)
 	}
 }
 
-std::vector<Client*> ClientManager::GetClientList()
+const std::vector<std::shared_ptr<Client>>& ClientManager::GetClientList()
 {
-	std::vector<Client*> result;
-	for (auto& client : _clients) {
-		if (client and client->IsConnected()) {
-			result.push_back(client.get());
-		}
-	}
-
-	return result;
+	std::lock_guard lock(_clientMutex);
+	return _clients;
 }

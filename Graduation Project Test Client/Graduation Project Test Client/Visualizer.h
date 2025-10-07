@@ -11,6 +11,10 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <thread>
+#include <mutex>
+
+#include "Client.h"
 
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
@@ -24,11 +28,14 @@ public:
 	~Visualizer();
 
 public:
-	void Update();
+	void Start();
+	void Stop();
+
 	void Render();
 
 private:
-	void ResizeGLScene(GLsizei width, GLsizei height);
+	void UpdateClientPositions(const std::vector<std::shared_ptr<Client>>& clients);
+	void ResizeGLWindow(GLsizei width, GLsizei height);
 	void InitOpenGL();
 	void BuildFont();
 	void glPrint(const char* fmt, ...);
@@ -46,5 +53,8 @@ private:
 	bool _isFull;
 
 	GLuint _base;
+
+	std::mutex _clientMutex;
+	std::vector<std::shared_ptr<Client>> _clientSnapshot;
 };
 

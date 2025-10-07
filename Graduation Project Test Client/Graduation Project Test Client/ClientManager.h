@@ -6,6 +6,8 @@
 #include <ranges>
 #include <shared_mutex>
 
+#include <concurrent_vector.h>
+
 #include "Client.h"
 
 class Service;
@@ -19,12 +21,13 @@ public:
 
 public:
 	void AdjustClients();
-	void OnTick();
+	void OnTick(float deltaTime);
 	void DisconnectClient(int id);
 
-	std::vector<Client*> GetClientList();
+	const std::vector<std::shared_ptr<Client>>& GetClientList();
 
 private:
+	std::mutex _clientMutex;
 	std::vector<std::shared_ptr<Client>> _clients;
 	
 	int _globalDelay;

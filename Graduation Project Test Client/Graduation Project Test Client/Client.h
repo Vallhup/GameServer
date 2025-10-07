@@ -24,7 +24,7 @@ class Client : public IocpObject {
 public:
 	Client() 
 		: _id(-1), _state(ClientState::ST_ALLOC), _isSending(false), _socket(INVALID_SOCKET)
-	{ _pos = { 0.0f, 0.0f, 0.0f }; }
+	{ _pos = { 0.0f, 0.0f, 0.0f }; _targetPos = { 0.0f, 0.0f, 0.0f }; }
 	virtual ~Client() = default;
 
 public:
@@ -32,6 +32,8 @@ public:
 	void Disconnect();
 
 	void RegisterSend(const std::vector<char>& packet);
+
+	void Update(float deltaTime);
 
 	int GetId() const { return _id; }
 	const vec3& GetPos() const { return _pos; }
@@ -54,6 +56,7 @@ private:
 private:
 	int _id;
 	vec3 _pos;
+	vec3 _targetPos;
 	SOCKET _socket;
 	RecvOver _recvOver;
 

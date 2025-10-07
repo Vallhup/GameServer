@@ -1,11 +1,13 @@
 #include "Visualizer.h"
 #include "Service.h"
 
+typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC)(int interval);
+typedef int (WINAPI* PFNWGLGETSWAPINTERVALEXTPROC)(void);
+
 Visualizer::Visualizer(int width, int height, bool isFull)
 	: _hWnd(nullptr), _hDC(nullptr), _hRC(nullptr), _active(true), _isFull(isFull), _base(0)
 {
     _hInstance = GetModuleHandle(nullptr);
-
     WNDCLASSEXW wcex = {
         .cbSize = sizeof(WNDCLASSEX),
         .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
@@ -40,7 +42,7 @@ Visualizer::Visualizer(int width, int height, bool isFull)
     AdjustWindowRectEx(&windowRect, dwStyle, FALSE, dwExStyle);
 
     _hWnd = CreateWindowEx(dwExStyle, wcex.lpszClassName, wcex.lpszClassName,
-        WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+        dwStyle | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
         0, 0, width, height, NULL, NULL, _hInstance, NULL);
     SetWindowLongPtr(_hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
@@ -69,7 +71,8 @@ Visualizer::Visualizer(int width, int height, bool isFull)
     wglMakeCurrent(_hDC, _hRC);
 
     ShowWindow(_hWnd, SW_SHOW);
-    ResizeGLScene(width, height);
+    UpdateWindow(_hWnd);
+    ResizeGLWindow(width, height);
 
     InitOpenGL();
 }
@@ -77,61 +80,65 @@ Visualizer::Visualizer(int width, int height, bool isFull)
 Visualizer::~Visualizer()
 {
     KillGLWindow();
+    Stop();
 }
 
-void Visualizer::Update()
+void Visualizer::Start()
 {
-    MSG msg;
-    while (_active) {
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-            if (msg.message == WM_QUIT) _active = false;
-            else {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
-        }
+    /*bool expected{ false };
+    if (_running.compare_exchange_strong(expected, true)) {
+        _renderThread = std::thread([this, &width, &height]()
+            {
+                Update();
+            });
+    }*/
+}
 
-        else {
-            Render();
-        }
-    }
+void Visualizer::Stop()
+{
 }
 
 void Visualizer::Render()
 {
-    auto clientList = Service::Instance().GetClientManager().GetClientList();
+    UpdateClientPositions(Service::Instance().GetClientManager().GetClientList());
 
-    //glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
 
     glColor3f(1.0f, 1.0f, 0.0f);
     glRasterPos2f(50.0f, -275.0f);
-    glPrint("Active Clients : [%d]", clientList.size());
-
+    glPrint("Active Clients : [%d]", _clientSnapshot.size());
+        
     glColor3f(1.0f, 1.0f, 1.0f);
     glPointSize(3.0f);
 
     glBegin(GL_POINTS);
-    for (auto& client : clientList) {
+    for (auto& client : _clientSnapshot) {
         const vec3 glPos = client->GetPos();
-        glVertex2f(glPos.x, -glPos.z);
+        glVertex2f(glPos.x, glPos.z);
     }
-    glVertex2f(50.0f, 50.0f);
-    glVertex2f(100.0f, 50.0f);
     glEnd();
 
     SwapBuffers(_hDC);
 }
 
-void Visualizer::ResizeGLScene(GLsizei width, GLsizei height)
+void Visualizer::UpdateClientPositions(const std::vector<std::shared_ptr<Client>>& clients)
+{
+	std::lock_guard<std::mutex> lock(_clientMutex);
+    _clientSnapshot = clients;
+}
+
+void Visualizer::ResizeGLWindow(GLsizei width, GLsizei height)
 {
     if (height == 0) height = 1;
 
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+
+	const float aspect = static_cast<float>(width) / static_cast<float>(height);
     glOrtho(-300.0f, 300.0f, -300.0f, 300.0f, -1.0f, 1.0f);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
@@ -141,6 +148,13 @@ void Visualizer::InitOpenGL()
     glShadeModel(GL_SMOOTH);
     glClearColor(0, 0, 0, 1.0f);
     glDisable(GL_DEPTH_TEST);
+
+    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT =
+        (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+
+    if (wglSwapIntervalEXT) {
+        wglSwapIntervalEXT(1);
+    }
 
     BuildFont();
 }
@@ -206,7 +220,7 @@ LRESULT Visualizer::VisulizerProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     switch (msg) {
     case WM_SIZE: {
         if (auto vis = reinterpret_cast<Visualizer*>(GetWindowLongPtr(hWnd, GWLP_USERDATA))) {
-            vis->ResizeGLScene(LOWORD(lParam), HIWORD(lParam));
+            vis->ResizeGLWindow(LOWORD(lParam), HIWORD(lParam));
         }
         return 0;
     }

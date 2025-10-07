@@ -71,6 +71,14 @@ void Client::RegisterSend(const std::vector<char>& packet)
 	}
 }
 
+void Client::Update(float deltaTime)
+{
+	static constexpr float lerpSpeed{ 10.0f };
+	//const float alpha = std::clamp(deltaTime * lerpSpeed, 0.0f, 1.0f);
+	const float alpha = 1.0f - expf(-lerpSpeed * deltaTime);
+	_pos += (_targetPos - _pos) * alpha;
+}
+
 void Client::ProcessRecv(DWORD numBytes)
 {
 	if (numBytes == 0 or not _recvOver._buffer.Write(nullptr, numBytes)) {
@@ -180,8 +188,6 @@ void Client::ProcessPacket(const std::vector<char>& packet)
 		}
 
 		_id = gamePacket.header().sessionid();
-		_pos = { 0.0f ,0.0f, 0.0f };
-
 		_state.store(ClientState::ST_INGAME);
 		break;
 	}
@@ -194,7 +200,7 @@ void Client::ProcessPacket(const std::vector<char>& packet)
 		float x = move.pos().x();
 		float y = move.pos().y();
 		float z = move.pos().z();
-		_pos = { x, y, z };
+		_targetPos = { x, y, z };
 		
 		break;
 	}
