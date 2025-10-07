@@ -19,7 +19,11 @@ void GameLogic::NetworkUpdate()
 	}
 }
 
-void GameLogic::OnPlayerAction(int sessionId, Protocol::CS_INPUT_PACKET& packet)
+void GameLogic::OnPlayerAction(int sessionId, Protocol::CS_INPUT_PACKET packet)
 {
-	_instance->GetGameObject(sessionId)->GetComponent<InputComponent>()->Enqueue(packet);
+	if (auto gameObj = _instance->GetGameObject(sessionId)) {
+		if(auto inputComp = gameObj->GetComponent<InputComponent>()) {
+			inputComp->Enqueue(packet);
+		}
+	}
 }

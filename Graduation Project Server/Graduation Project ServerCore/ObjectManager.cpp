@@ -9,19 +9,19 @@ int IObjectManager::GenerateObjectId()
 
 void ObjectManager::AddObject(const std::shared_ptr<GameObject>& object)
 {
-    std::unique_lock lock{ _mutex };
+    //std::unique_lock lock{ _mutex };
     _objects.insert(std::make_pair(object->GetId(), object));
 }
 
 void ObjectManager::RemoveObject(int objectId)
 {
-    std::unique_lock lock{ _mutex };
+    //std::unique_lock lock{ _mutex };
     _objects.erase(objectId);
 }
 
 std::shared_ptr<GameObject> ObjectManager::GetGameObject(int objectId) const
 {
-    std::shared_lock lock{ _mutex };
+    //std::shared_lock lock{ _mutex };
 
     auto it = _objects.find(objectId);
     if (it != _objects.end()) {
@@ -33,7 +33,7 @@ std::shared_ptr<GameObject> ObjectManager::GetGameObject(int objectId) const
 
 std::vector<std::shared_ptr<GameObject>> ObjectManager::GetGameObjectList() const
 {
-    std::shared_lock lock{ _mutex };
+    //std::shared_lock lock{ _mutex };
 
     std::vector<std::shared_ptr<GameObject>> objectList;
     objectList.reserve(_objects.size());

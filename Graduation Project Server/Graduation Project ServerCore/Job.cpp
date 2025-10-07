@@ -3,8 +3,8 @@
 
 /*---------------[ TimerJob ]---------------*/
 
-TimerJob::TimerJob(int id, const std::function<void()>& f, std::chrono::high_resolution_clock::time_point time)
-	: Job(time), objectId(id), func(f)
+TimerJob::TimerJob(const std::function<void()>& f, std::chrono::high_resolution_clock::time_point time)
+	: Job(time), func(f)
 {
 }
 

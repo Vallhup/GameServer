@@ -28,6 +28,8 @@ protected:
 	virtual void LoadStaticGameObject() = 0;
 
 public:
+	void EnqueueJob(const std::function<void()>& job);
+
 	void AddPlayer(Session* session);
 	void RemovePlayer(int sessionId);
 
@@ -43,6 +45,9 @@ public:
 	std::vector<std::shared_ptr<GameObject>> GetGameObjectList() const;
 
 protected:
+	void DequeueJobs();
+
+protected:
 	int _id;
 	std::atomic<bool> _isActive;
 
@@ -53,6 +58,10 @@ protected:
 
 	mutable std::shared_mutex _mutex;
 	std::unordered_map<int, Session*> _sessions;
+
+	std::atomic<bool> _isUpdating;
+
+	JobQueue _jobQueue;
 
 	InstanceType _type;
 };

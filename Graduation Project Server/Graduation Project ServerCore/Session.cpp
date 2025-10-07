@@ -139,17 +139,13 @@ void Session::DisConnect()
 	LOG_DBG("Session[%d] DisConnect", _id);
 
 	if (_shouldRelease.exchange(true)) return;
+	if (_state.exchange(SessionState::ST_FREE) != SessionState::ST_FREE) {
+		shutdown(_socket, SD_BOTH);
+		CancelIoEx(GetHandle(), nullptr);
+		closesocket(_socket);
+		_socket = INVALID_SOCKET;
 
-	std::array<SessionState, 2> expected = { SessionState::ST_ALLOC, SessionState::ST_INGAME };
-	for (auto& expect : expected) {
-		if (_state.compare_exchange_strong(expect, SessionState::ST_FREE)) {
-			shutdown(_socket, SD_BOTH);
-			CancelIoEx(GetHandle(), nullptr);
-			closesocket(_socket);
-			_socket = INVALID_SOCKET;
-			
-			return;
-		}
+		return;
 	}
 }
 

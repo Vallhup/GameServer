@@ -96,37 +96,11 @@ void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& pac
 		if (auto session = GetSession(sessionId)) {
 			// TEMP : 0번 Instance는 Server Town 고정
 			//        나중에 Character 별로 Server Town 나뉘어지면 별도로 분기
-			_gameCtx.GetGameWorld().GetInstance(0)->AddPlayer(session);
-			session->SetState(SessionState::ST_INGAME);
-			session->RegisterSend(PacketFactory::SCLoginPacket(session->GetId()));
-			
-			Protocol::Vec3 packetPos;
-			if (auto character = session->GetCharacter()) {
-				if (auto trComp = character->GetComponent<TransformComponent>()) {
-					const vec3 pos = trComp->GetPosition();
-
-					packetPos.set_x(pos.x);
-					packetPos.set_y(pos.y);
-					packetPos.set_z(pos.z);
-				}
-			}
-
-			_gameCtx.BroadCast(PacketFactory::SCAddPacket(sessionId, packetPos));
-
-			for (const auto& sess : GetSessionList()) {
-				if (sess->GetId() == sessionId) continue;
-				if (auto character = sess->GetCharacter()) {
-					if (auto trComp = character->GetComponent<TransformComponent>()) {
-						const vec3 sessPos = trComp->GetPosition();
-						packetPos.set_x(sessPos.x); 
-						packetPos.set_y(sessPos.y);
-						packetPos.set_z(sessPos.z);
-
-						session->RegisterSend(PacketFactory::SCAddPacket(sess->GetId(), packetPos));
-					}
-				}
+			if (Instance* instance = _gameCtx.GetGameWorld().GetInstance(0)) {
+				instance->EnqueueJob([session, instance]() { instance->AddPlayer(session); });
 			}
 		}
+
 		break;
 	}
 	case Protocol::CS_INPUT: {
@@ -136,14 +110,11 @@ void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& pac
 			return;
 		}
 
-		/*if (Instance* instance = GetSession(sessionId)->GetCharacter()->GetInstance()) {
-			instance->GetGameLogic().OnPlayerAction(sessionId, input);
-		}*/
-
 		if (auto session = GetSession(sessionId)) {
+			if (session->GetState() != SessionState::ST_INGAME) return;
 			if (auto character = session->GetCharacter()) {
 				if (auto instance = character->GetInstance()) {
-					instance->GetGameLogic().OnPlayerAction(sessionId, input);
+					instance->EnqueueJob([sessionId, input, instance]() { instance->GetGameLogic().OnPlayerAction(sessionId, input); });
 				}
 			}
 		}

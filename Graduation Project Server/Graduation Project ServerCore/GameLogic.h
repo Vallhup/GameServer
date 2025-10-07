@@ -9,7 +9,7 @@ public:
 public:
 	virtual void LogicUpdate(float deltaTime) = 0;
 	virtual void NetworkUpdate() = 0;
-	virtual void OnPlayerAction(int sessionId, Protocol::CS_INPUT_PACKET& packet) = 0;
+	virtual void OnPlayerAction(int sessionId, Protocol::CS_INPUT_PACKET packet) = 0;
 };
 
 class GameLogic : public IGameLogic {
@@ -21,7 +21,7 @@ public:
 public:
 	virtual void LogicUpdate(float deltaTime) override;
 	virtual void NetworkUpdate() override;
-	virtual void OnPlayerAction(int sessionId, Protocol::CS_INPUT_PACKET& packet) override;
+	virtual void OnPlayerAction(int sessionId, Protocol::CS_INPUT_PACKET packet) override;
 
 private:
 	Instance* _instance;

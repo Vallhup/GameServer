@@ -25,14 +25,13 @@ protected:
 class TimerJob : public Job {
 public:
 	TimerJob() = delete;
-	TimerJob(int id, const std::function<void()>& f, std::chrono::high_resolution_clock::time_point time);
+	TimerJob(const std::function<void()>& f, std::chrono::high_resolution_clock::time_point time);
 	virtual ~TimerJob() = default;
 
 public:
 	virtual void Execute() override;
 
 private:
-	int objectId;
 	std::function<void()> func;
 };
 
