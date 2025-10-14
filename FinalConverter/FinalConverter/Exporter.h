@@ -71,6 +71,7 @@ private:
     bool ExportMesh(const FbxMeshInfo& meshInfo, const wstring& path);
     bool ExportSkeleton(const vector<shared_ptr<FbxBoneInfo>>& bones, const wstring& path);
     bool ExportAnimation(const FbxAnimClipInfo& animClip, const wstring& path);
+    bool ExportAnimationAsText(const FbxAnimClipInfo& animClip, const wstring& path);
     bool ExportMaterials(const vector<FbxMaterialInfo>& materials, const wstring& path);
     bool ProcessTextures(const vector<FbxMaterialInfo>& materials,
         const wstring& fbxDir, const wstring& outputDir);

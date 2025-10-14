@@ -20,6 +20,9 @@ bool Exporter::ExportAll(FBXLoader& loader, const wstring& basePath, const wstri
         replace(animName.begin(), animName.end(), L'|', L'_');
         wstring animPath = basePath + L"_" + animName + L".anim";
         if (!ExportAnimation(*animClip, animPath)) return false;
+
+        animPath = basePath + L"_Text_" + animName + L".anim";
+        if (!ExportAnimationAsText(*animClip, animPath)) return false;
     }
 
     if (loader.GetMeshCount() > 0 && !loader.GetMesh(0).materials.empty()) {
@@ -197,6 +200,92 @@ bool Exporter::ExportAnimation(const FbxAnimClipInfo& animClip, const wstring& p
                 } params;
 
                 ofs.write(reinterpret_cast<const char*>(&params), sizeof(params));
+            }
+        }
+    }
+
+    wcout << L"애니메이션 저장 완료: " << path << endl;
+    return true;
+}
+
+bool Exporter::ExportAnimationAsText(const FbxAnimClipInfo& animClip, const wstring& path)
+{
+    if (animClip.keyFrames.empty()) return true;
+
+    ofstream ofs(path);
+    if (!ofs) {
+        wcout << L"애니메이션 파일 생성 실패: " << path << endl;
+        return false;
+    }
+
+    AnimationBinaryHeader header = {};
+    header.magic = 'MINA';
+    header.boneCount = static_cast<uint32_t>(animClip.keyFrames.size());
+
+    // 키프레임이 있는 첫 번째 본에서 frameCount 가져오기
+    header.frameCount = 0;
+    for (const auto& boneFrames : animClip.keyFrames) {
+        if (!boneFrames.empty()) {
+            header.frameCount = static_cast<uint32_t>(boneFrames.size());
+            break;
+        }
+    }
+
+    // duration 계산
+    if (header.frameCount > 0) {
+        for (const auto& boneFrames : animClip.keyFrames) {
+            if (!boneFrames.empty()) {
+                header.duration = static_cast<float>(boneFrames.back().time - boneFrames.front().time);
+                break;
+            }
+        }
+    }
+    else {
+        header.duration = 0.0f;
+    }
+
+    string animName = ws2s(animClip.name);
+    strncpy_s(header.name, animName.c_str(), sizeof(header.name) - 1);
+
+    ofs << "magic: " << header.magic << endl;
+    ofs << "boneCount: " << header.boneCount << endl;
+    ofs << "frameCount: " << header.frameCount << endl;
+    ofs << "duration: " << header.duration << endl;
+    ofs << "name: " << header.name << endl;
+    ofs << "------------------------------" << endl;
+
+    for (uint32_t frameIdx = 0; frameIdx < header.frameCount; ++frameIdx) {
+        for (uint32_t boneIdx = 0; boneIdx < header.boneCount; ++boneIdx) {
+
+            if (frameIdx < animClip.keyFrames[boneIdx].size()) {
+                const auto& keyFrame = animClip.keyFrames[boneIdx][frameIdx];
+
+                FbxVector4 scale = keyFrame.matTransform.GetS();
+                FbxQuaternion rotation = keyFrame.matTransform.GetQ();
+                FbxVector4 translation = keyFrame.matTransform.GetT();
+
+                ofs << "Frame[" << frameIdx << "] Bone[" << boneIdx << "]" << endl;
+
+                ofs << "  scale: " << static_cast<float>(scale[0]) << " "
+                    << static_cast<float>(scale[1]) << " "
+                    << static_cast<float>(scale[2]) << " "
+                    << 1.0f << endl;
+
+                ofs << "  rotation: " << static_cast<float>(rotation[0]) << " "
+                    << static_cast<float>(rotation[1]) << " "
+                    << static_cast<float>(rotation[2]) << " "
+                    << static_cast<float>(rotation[3]) << endl;
+
+                ofs << "  translation: " << static_cast<float>(translation[0]) << " "
+                    << static_cast<float>(translation[1]) << " "
+                    << static_cast<float>(translation[2]) << " "
+                    << 0.0f << endl;
+            }
+            else {
+                ofs << "Frame[" << frameIdx << "] Bone[" << boneIdx << "]" << endl;
+                ofs << "  scale: 1 1 1 1" << endl;
+                ofs << "  rotation: 0 0 0 1" << endl;
+                ofs << "  translation: 0 0 0 0" << endl;
             }
         }
     }
