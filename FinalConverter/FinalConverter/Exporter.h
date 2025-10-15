@@ -70,6 +70,7 @@ private:
     // 개별 저장 함수들
     bool ExportMesh(const FbxMeshInfo& meshInfo, const wstring& path);
     bool ExportSkeleton(const vector<shared_ptr<FbxBoneInfo>>& bones, const wstring& path);
+    bool ExportSkeletonText(const vector<shared_ptr<FbxBoneInfo>>& bones, const wstring& path);
     bool ExportAnimation(const FbxAnimClipInfo& animClip, const wstring& path);
     bool ExportAnimationAsText(const FbxAnimClipInfo& animClip, const wstring& path);
     bool ExportMaterials(const vector<FbxMaterialInfo>& materials, const wstring& path);

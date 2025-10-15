@@ -115,6 +115,48 @@ bool Exporter::ExportSkeleton(const vector<shared_ptr<FbxBoneInfo>>& bones, cons
     return true;
 }
 
+bool Exporter::ExportSkeletonText(const vector<shared_ptr<FbxBoneInfo>>& bones, const wstring& path)
+{
+    if (bones.empty()) return true;
+
+    wofstream ofs(path);
+    if (!ofs) {
+        wcout << L"스켈레톤 파일 생성 실패: " << path << endl;
+        return false;
+    }
+
+    SkeletonBinaryHeader header = {};
+    header.magic = 'LEKS';
+    header.boneCount = static_cast<uint32_t>(bones.size());
+
+    ofs << header.magic << endl;
+    ofs << L"BoneCount: " << header.boneCount << endl;
+    ofs << L"------------------------------" << endl;
+
+    for (size_t i = 0; i < bones.size(); ++i) {
+        const auto& bone = bones[i];
+
+        ofs << L"Bone[" << i << L"]" << endl;
+        ofs << L"  Name: " << bone->boneName << endl;
+        ofs << L"  ParentIndex: " << bone->parentIndex << endl;
+        ofs << L"  OffsetMatrix: " << endl;
+
+        float matrix[16];
+        ConvertFbxMatrixToFloat4x4(bone->matOffset, matrix);
+
+        for (int row = 0; row < 4; ++row) {
+            ofs << L"  ";
+            for (int col = 0; col < 4; ++col) {
+                float v = matrix[row * 4 + col];
+                ofs << v;
+                ofs << L"  ";
+            }
+            ofs << endl;
+        }
+        ofs << endl;
+    }
+}
+
 // ExportAnimation 함수 수정 - FBX Quaternion 타입 문제 해결
 bool Exporter::ExportAnimation(const FbxAnimClipInfo& animClip, const wstring& path)
 {
