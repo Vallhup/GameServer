@@ -48,7 +48,7 @@ void MeshRenderer::RenderForward(DX12Core& core)
         cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());      // 레지 넘버링 부분
     }
 
-    if (!materials.empty()) {   // 많은 머티리얼 중 투명 값이 있는 머티리얼만 렌더링
+    if (!materials.empty()) {   
         RenderMultiMaterialForwardOnly(core, world);
     }
     else if (material) {
@@ -96,12 +96,6 @@ void MeshRenderer::RenderShadow(DX12Core& core)
     auto transform = GetGameObject()->GetComponent<Transform>();
     XMMATRIX world = transform->GetWorldMatrix();
 
-    /*ObjectConstants objConstants = {};
-    objConstants.world = XMMatrixTranspose(world);
-    objConstants.useTexture = 0;
-    objConstants.useInstancing = 0;
-    objConstants.materialIndex = 0;*/
-
     ObjectConstants objConstants = SetObjectConstantState(XMMatrixTranspose(world), 0, 0, 0);
 
     objectCB->CopyData(&objConstants, sizeof(ObjectConstants));
@@ -117,12 +111,6 @@ void MeshRenderer::RenderShadow(DX12Core& core)
 void MeshRenderer::RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuffer* instanceBuffer)
 {
     if (!visible || !vertexIndexBuffer || !instanceBuffer) return;
-
-    //ObjectConstants objConstants = {};
-    //objConstants.world = XMMatrixIdentity();  // 사용하지 않음
-    //objConstants.useTexture = (material != nullptr) ? 1 : 0;
-    //objConstants.useInstancing = 1;  // 인스턴싱 사용
-    //objConstants.materialIndex = material ? material->GetMaterialIndex() : 0xFFFFFFFF;
 
     ObjectConstants objConstants = SetObjectConstantState(XMMatrixIdentity(),
         (material != nullptr) ? 1 : 0, 1, material ? material->GetMaterialIndex() : 0xFFFFFFFF);
@@ -146,12 +134,6 @@ void MeshRenderer::RenderSingleMaterialForwardOnly(DX12Core& core, const XMMATRI
 
     auto cmdList = core.GetGraphicsCmdList();
 
-    /*ObjectConstants objConstants = {};
-    objConstants.world = XMMatrixTranspose(world);
-    objConstants.useTexture = 1;
-    objConstants.useInstancing = 0;
-    objConstants.materialIndex = material->GetMaterialIndex();*/
-
     ObjectConstants objConstants = SetObjectConstantState(XMMatrixTranspose(world),
         1, 0, material->GetMaterialIndex());
 
@@ -173,12 +155,6 @@ void MeshRenderer::RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX
     for (size_t i = 0; i < subMeshes.size(); ++i) {
         bool hasAlphaTexture = !originalMaterialData[i].alphaTexPath.empty();
         if (!hasAlphaTexture) continue;
-
-        /*ObjectConstants objConstants = {};
-        objConstants.world = XMMatrixTranspose(world);
-        objConstants.useTexture = 1;
-        objConstants.useInstancing = 0;
-        objConstants.materialIndex = materials[i]->GetMaterialIndex();*/
 
         ObjectConstants objConstants = SetObjectConstantState(XMMatrixTranspose(world),
             1, 0, materials[i]->GetMaterialIndex());
@@ -203,12 +179,6 @@ void MeshRenderer::RenderSingleMaterialDeferredOnly(DX12Core& core, const XMMATR
 
     auto cmdList = core.GetGraphicsCmdList();
 
-    //ObjectConstants objConstants = {};
-    //objConstants.world = XMMatrixTranspose(world);
-    //objConstants.useTexture = 1;
-    //objConstants.useInstancing = 0;
-    //objConstants.materialIndex = material->GetMaterialIndex();
-
     ObjectConstants objConstants = SetObjectConstantState(XMMatrixTranspose(world),
         1, 0, material->GetMaterialIndex());
 
@@ -230,12 +200,6 @@ void MeshRenderer::RenderMultiMaterialDeferredOnly(DX12Core& core, const XMMATRI
     for (size_t i = 0; i < subMeshes.size(); ++i) {
         bool hasAlphaTexture = !originalMaterialData[i].alphaTexPath.empty();
         if (hasAlphaTexture) continue;
-
-        /*ObjectConstants objConstants = {};
-        objConstants.world = XMMatrixTranspose(world);
-        objConstants.useTexture = 1;
-        objConstants.useInstancing = 0;
-        objConstants.materialIndex = materials[i]->GetMaterialIndex();*/
 
         ObjectConstants objConstants = SetObjectConstantState(XMMatrixTranspose(world), 
             1, 0, materials[i]->GetMaterialIndex());
