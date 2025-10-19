@@ -23,6 +23,10 @@ bool Exporter::ExportAll(FBXLoader& loader, const wstring& basePath, const wstri
 
         animPath = basePath + L"_Text_" + animName + L".anim";
         if (!ExportAnimationAsText(*animClip, animPath)) return false;
+
+        wstring bakedPath = basePath + L"_" + animName + L"_baked.bone";
+        if (!ExportBakedAnimation(loader.GetBones(), *animClip, bakedPath))
+            return false;
     }
 
     if (loader.GetMeshCount() > 0 && !loader.GetMesh(0).materials.empty()) {
@@ -78,6 +82,82 @@ bool Exporter::ExportMesh(const FbxMeshInfo& meshInfo, const wstring& path)
     wcout << L"메시 저장 완료: " << path << endl;
     wcout << L"  정점: " << header.vertexCount << L", 인덱스: " << header.indexCount
         << L", 서브메시: " << header.subMeshCount << endl;
+    return true;
+}
+
+bool Exporter::ExportMeshAsText(const FbxMeshInfo& meshInfo, const wstring& path)
+{
+    wofstream ofs(path);
+    if (!ofs) {
+        wcout << L"메시 텍스트 파일 생성 실패: " << path << endl;
+        return false;
+    }
+
+    // 헤더 정보
+    ofs << L"MESH_TEXT" << endl;
+    ofs << L"MeshName: " << meshInfo.name << endl;
+    ofs << L"VertexCount: " << meshInfo.vertices.size() << endl;
+
+    uint32_t totalIndices = 0;
+    for (const auto& indices : meshInfo.indices) {
+        totalIndices += static_cast<uint32_t>(indices.size());
+    }
+    ofs << L"IndexCount: " << totalIndices << endl;
+    ofs << L"MaterialCount: " << meshInfo.materials.size() << endl;
+    ofs << L"HasAnimation: " << (meshInfo.hasAnimation ? 1 : 0) << endl;
+    ofs << L"SubMeshCount: " << meshInfo.indices.size() << endl;
+    ofs << L"---" << endl;
+
+    // 정점 데이터
+    ofs << L"\n[VERTICES]" << endl;
+    for (size_t i = 0; i < meshInfo.vertices.size(); ++i) {
+        const auto& v = meshInfo.vertices[i];
+
+        ofs << L"Vertex[" << i << L"]" << endl;
+        ofs << L"  Position: " << v.pos.x << L" " << v.pos.y << L" " << v.pos.z << endl;
+        ofs << L"  Normal: " << v.normal.x << L" " << v.normal.y << L" " << v.normal.z << endl;
+        ofs << L"  UV: " << v.uv.x << L" " << v.uv.y << endl;
+        ofs << L"  Tangent: " << v.tangent.x << L" " << v.tangent.y << L" " << v.tangent.z << endl;
+
+        // 애니메이션 가중치 (있는 경우)
+        if (meshInfo.hasAnimation) {
+            ofs << L"  BoneIndices: " << v.indices.x << L" " << v.indices.y << L" "
+                << v.indices.z << L" " << v.indices.w << endl;
+            ofs << L"  BoneWeights: " << v.weights.x << L" " << v.weights.y << L" "
+                << v.weights.z << L" " << v.weights.w << endl;
+        }
+    }
+
+    // 서브메시 정보
+    ofs << L"\n[SUBMESHES]" << endl;
+    uint32_t currentOffset = 0;
+    for (size_t i = 0; i < meshInfo.indices.size(); ++i) {
+        ofs << L"SubMesh[" << i << L"]" << endl;
+        ofs << L"  StartIndex: " << currentOffset << endl;
+        ofs << L"  IndexCount: " << meshInfo.indices[i].size() << endl;
+        ofs << L"  MaterialIndex: " << i << endl;
+
+        currentOffset += static_cast<uint32_t>(meshInfo.indices[i].size());
+    }
+
+    // 인덱스 데이터
+    ofs << L"\n[INDICES]" << endl;
+    for (size_t subMeshIdx = 0; subMeshIdx < meshInfo.indices.size(); ++subMeshIdx) {
+        ofs << L"SubMesh[" << subMeshIdx << L"] Indices:" << endl;
+
+        const auto& indices = meshInfo.indices[subMeshIdx];
+
+        // 삼각형 단위로 출력 (가독성)
+        for (size_t i = 0; i < indices.size(); i += 3) {
+            ofs << L"  Triangle[" << (i / 3) << L"]: ";
+            ofs << indices[i] << L" " << indices[i + 1] << L" " << indices[i + 2] << endl;
+        }
+    }
+
+    wcout << L"메시 텍스트 저장 완료: " << path << endl;
+    wcout << L"  정점: " << meshInfo.vertices.size() << L", 인덱스: " << totalIndices
+        << L", 서브메시: " << meshInfo.indices.size() << endl;
+
     return true;
 }
 
@@ -415,6 +495,92 @@ bool Exporter::ProcessTextures(const vector<FbxMaterialInfo>& materials,
     }
 
     wcout << L"텍스처 복사 완료: " << copiedCount << L"개 파일" << endl;
+    return true;
+}
+
+bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones, const FbxAnimClipInfo& animClip, const wstring& path)
+{
+    if (animClip.keyFrames.empty() || bones.empty()) {
+        wcout << L"베이킹할 데이터 없음: " << path << endl;
+        return true;
+    }
+
+    wofstream ofs(path);
+    if (!ofs) {
+        wcout << L"베이킹 파일 생성 실패: " << path << endl;
+        return false;
+    }
+
+    uint32_t boneCount = static_cast<uint32_t>(bones.size());
+    uint32_t frameCount = 0;
+
+    // 프레임 수 계산
+    for (const auto& boneFrames : animClip.keyFrames) {
+        if (!boneFrames.empty()) {
+            frameCount = static_cast<uint32_t>(boneFrames.size());
+            break;
+        }
+    }
+
+    if (frameCount == 0) {
+        wcout << L"프레임 없음: " << path << endl;
+        return true;
+    }
+
+    // 헤더 작성
+    ofs << L"BAKED_ANIMATION" << endl;
+    ofs << L"AnimationName: " << animClip.name << endl;
+    ofs << L"BoneCount: " << boneCount << endl;
+    ofs << L"FrameCount: " << frameCount << endl;
+
+    float duration = 0.0f;
+    for (const auto& boneFrames : animClip.keyFrames) {
+        if (!boneFrames.empty()) {
+            duration = static_cast<float>(
+                boneFrames.back().time - boneFrames.front().time
+                );
+            break;
+        }
+    }
+    ofs << L"Duration: " << duration << endl;
+    ofs << L"FPS: " << (frameCount / duration) << endl;
+    ofs << L"---" << endl;
+
+    // 각 프레임마다 최종 본 행렬 계산
+    for (uint32_t frame = 0; frame < frameCount; ++frame) {
+        ofs << L"Frame[" << frame << L"]" << endl;
+
+        for (uint32_t boneIdx = 0; boneIdx < boneCount; ++boneIdx) {
+            // 1. 애니메이션 변환 가져오기
+            FbxAMatrix animTransform;
+            if (frame < animClip.keyFrames[boneIdx].size()) {
+                animTransform = animClip.keyFrames[boneIdx][frame].matTransform;
+            }
+            else {
+                animTransform.SetIdentity();
+            }
+
+            // 2. Offset 행렬과 곱하기 (T-pose 기준)
+            // finalTransform = Offset × Animation
+            FbxAMatrix finalTransform = bones[boneIdx]->matOffset * animTransform;
+
+            // 3. 텍스트로 저장
+            ofs << L"  Bone[" << boneIdx << L"]:" << endl;
+            for (int row = 0; row < 4; ++row) {
+                ofs << L"    ";
+                for (int col = 0; col < 4; ++col) {
+                    ofs << static_cast<float>(finalTransform.mData[row][col]);
+                    if (col < 3) ofs << L" ";
+                }
+                ofs << endl;
+            }
+        }
+        ofs << endl;
+    }
+
+    wcout << L"베이킹 완료: " << path << endl;
+    wcout << L"  애니메이션: " << animClip.name << endl;
+    wcout << L"  프레임: " << frameCount << L", 본: " << boneCount << endl;
     return true;
 }
 

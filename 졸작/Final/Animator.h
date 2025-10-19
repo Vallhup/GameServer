@@ -4,6 +4,7 @@
 
 class DX12Core;
 class UploadBuffer;
+class ReadBackBuffer;
 
 struct AnimationConstants
 {
@@ -64,6 +65,9 @@ public:
     int GetPrevAnimOffset() const { return mPrevAnimOffset; }
     float GetBlendRatio() const { return blendRatio; }
 
+    void VerifyAgainstBakedFile(DX12Core& core, const wstring& bakedFilePath);
+    void ExportBakedAnimation(DX12Core& core, const wstring& outputPath, int animIndex);
+
 private:
     void CreateBuffers(DX12Core& core);
 
@@ -96,4 +100,6 @@ private:
 
     bool mIsInitialized = false;
     bool mIsBlending = false;
+
+    unique_ptr<ReadBackBuffer> mReadBackBuffer;
 };

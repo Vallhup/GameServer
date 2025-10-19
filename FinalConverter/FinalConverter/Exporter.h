@@ -69,6 +69,7 @@ public:
 private:
     // 개별 저장 함수들
     bool ExportMesh(const FbxMeshInfo& meshInfo, const wstring& path);
+    bool ExportMeshAsText(const FbxMeshInfo& meshInfo, const wstring& path);
     bool ExportSkeleton(const vector<shared_ptr<FbxBoneInfo>>& bones, const wstring& path);
     bool ExportSkeletonText(const vector<shared_ptr<FbxBoneInfo>>& bones, const wstring& path);
     bool ExportAnimation(const FbxAnimClipInfo& animClip, const wstring& path);
@@ -76,6 +77,12 @@ private:
     bool ExportMaterials(const vector<FbxMaterialInfo>& materials, const wstring& path);
     bool ProcessTextures(const vector<FbxMaterialInfo>& materials,
         const wstring& fbxDir, const wstring& outputDir);
+
+    bool ExportBakedAnimation(
+        const vector<shared_ptr<FbxBoneInfo>>& bones,
+        const FbxAnimClipInfo& animClip,
+        const wstring& path
+    );
 
     // 헬퍼 함수들
     void ConvertFbxMatrixToFloat4x4(const FbxAMatrix& fbxMatrix, float matrix[16]);
