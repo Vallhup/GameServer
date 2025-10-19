@@ -256,19 +256,6 @@ void GameScene::InitializeLogic()
 	SetNetworkManager(GET(Engine).GetNetworkManager());
 	_nManager->Send(PacketFactory::CSLoginPacket());
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
-
-	if (auto animator = dragon->GetComponent<Animator>()) {
-		OutputDebugStringA("\n========================================\n");
-		OutputDebugStringA("베이킹 데이터 검증 시작\n");
-		OutputDebugStringA("========================================\n");
-
-		animator->PlayAnimation(3);
-		animator->VerifyAgainstBakedFile(*coreRef, L"../FBXOutput/Dragon_Armature_Walk_New_baked.bone");
-
-		animator->ExportBakedAnimation(*coreRef, L"../ServerData/knight_anim3_baked.bone", 3);
-
-		OutputDebugStringA("========================================\n\n");
-	}
 }
 
 void GameScene::UpdateScene(const float deltaTime)
