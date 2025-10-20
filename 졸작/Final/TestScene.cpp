@@ -59,6 +59,11 @@ void TestScene::InitializeLogic()
 
 void TestScene::UpdateScene(const float deltaTime)
 {
+	if (GET(Input).GetKeyDown('1'))
+	{
+		coreRef->SetSSAOState(true);
+	}
+
 	{
 		knight->Update(deltaTime);
 	}

@@ -28,7 +28,7 @@ float4 PSMain(PS_IN input) : SV_Target
             if (x == 0 && y == 0)
                 continue;
             
-            // TODO (SSAO 샘플링)
+            // TODO (SSAO 샘플링 로직 추가 필요)
         }
 
     }

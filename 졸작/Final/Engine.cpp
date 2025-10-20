@@ -60,6 +60,9 @@ void Engine::Render()
     sManager->RenderDeferred();  // 불투명한 것들만
     graphics->EndGBufferPass();
 
+    // 1.5. SSAO Pass (차폐도)
+    graphics->RenderSSAO();
+
     // 2. Deferred Lighting Pass  
     graphics->BeginLightingPass();
     graphics->RenderFullscreenQuad();
