@@ -12,7 +12,6 @@ void TransformComponent::NetworkUpdate()
 		protoPos.set_z(pos.z);
 
 		_instance->BroadCast(PacketFactory::SCMovePakcet(_owner.GetId(), protoPos, _angle));
-		//LOG_DBG("Send Move Packet");
 	}
 }
 

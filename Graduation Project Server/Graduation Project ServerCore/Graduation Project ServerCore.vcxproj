@@ -170,9 +170,11 @@
     <ClInclude Include="Action.h" />
     <ClInclude Include="ActionComponent.h" />
     <ClInclude Include="AIComponent.h" />
+    <ClInclude Include="animation\json.hpp" />
     <ClInclude Include="BossInstance.h" />
     <ClInclude Include="BTNode.h" />
     <ClInclude Include="CollisionComponent.h" />
+    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="CollisionShape.h" />
     <ClInclude Include="CompositeNode.h" />
     <ClInclude Include="CorePch.h" />
@@ -224,6 +226,7 @@
     <ClCompile Include="BossInstance.cpp" />
     <ClCompile Include="BTNode.cpp" />
     <ClCompile Include="CollisionComponent.cpp" />
+    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="CollisionShape.cpp" />
     <ClCompile Include="CompositeNode.cpp" />
     <ClCompile Include="CorePch.cpp" />
@@ -287,6 +290,7 @@
     <ClCompile Include="UserRepository.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="animation\knight_cylinders.json" />
     <None Include="protos\Enum.proto" />
     <None Include="protos\Protocol.proto" />
     <None Include="protos\Struct.proto" />

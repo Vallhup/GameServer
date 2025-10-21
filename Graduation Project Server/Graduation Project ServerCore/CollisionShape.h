@@ -9,8 +9,13 @@ public:
 	CollisionShape(ShapeType shape, CollisionType type, const vec3& offset);
 	virtual ~CollisionShape() = default;
 
+protected:
+	CollisionShape(const CollisionShape& other) = delete;
+	CollisionShape& operator=(const CollisionShape& other) = delete;
+
 public:
 	virtual bool CheckCollision(const CollisionShape& other) const = 0;
+	virtual std::unique_ptr<CollisionShape> Clone() const = 0;
 
 public:
 	ShapeType GetShape() const { return _shape; }
@@ -34,8 +39,14 @@ public:
 		: CollisionShape(ShapeType::Box, type, offset), _halfSize(halfSize) {}
 	virtual ~BoxShape() = default;
 
+	BoxShape(const BoxShape& other)
+		: CollisionShape(other._shape, other._type, other._localOffset),
+		_halfSize(other._halfSize) {}
+	BoxShape& operator=(const BoxShape& other) = delete;
+
 public:
 	virtual bool CheckCollision(const CollisionShape& other) const override;
+	virtual std::unique_ptr<CollisionShape> Clone() const override;
 
 public:
 	const vec3& GetHalfSize() const { return _halfSize; }
@@ -51,8 +62,14 @@ public:
 		: CollisionShape(ShapeType::Sphere, type, offset), _radius(radius) {}
 	virtual ~SphereShape() = default;
 
+	SphereShape(const SphereShape& other)
+		: CollisionShape(other._shape, other._type, other._localOffset),
+		_radius(other._radius) {}
+	SphereShape& operator=(const SphereShape& other) = delete;
+
 public:
 	virtual bool CheckCollision(const CollisionShape& other) const override;
+	virtual std::unique_ptr<CollisionShape> Clone() const override;
 
 public:
 	float GetRadius() const { return _radius; }
@@ -68,8 +85,14 @@ public:
 		: CollisionShape(ShapeType::Cylinder, type, offset), _radius(radius), _height(height), _direction(direction) {}
 	virtual ~CylinderShape() = default;
 
+	CylinderShape(const CylinderShape& other)
+		: CollisionShape(other._shape, other._type, other._localOffset),
+		_radius(other._radius), _height(other._height), _direction(other._direction) {}
+	CylinderShape& operator=(const CylinderShape& other) = delete;
+
 public:
 	virtual bool CheckCollision(const CollisionShape& other) const override;
+	virtual std::unique_ptr<CollisionShape> Clone() const override;
 
 public:
 	float GetRadius() const { return _radius; }
@@ -81,16 +104,6 @@ private:
 	float _height;
 	vec3 _direction;
 };
-
-// 실제 충돌처리를 Client or Server중 어디서 처리할지도 고려해야 됨
-//
-// 1. Client 처리 + Server 검증
-//  - Server에서 최소한의 무결성 검증만 진행
-//  - 지연 거의 X, Animation Frame에 따라 정확한 충돌 처리 가능
-// 
-// 2. Server 처리
-//  - 약간의 지연 발생 (Client에서 예측, 보정해줘야 됨)
-//  - 처리 일관성 (모든 Logic은 Server에서 처리하는 원칙)
 
 namespace Collision {
 	bool CheckBoxVsBox(const BoxShape& a, const BoxShape& b);

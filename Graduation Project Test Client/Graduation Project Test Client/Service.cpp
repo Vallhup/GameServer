@@ -90,13 +90,12 @@ void Service::MainLoop()
 		}
 
 		_visualizer->Render();
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 
 		const auto now = high_resolution_clock::now();
 		const float deltaTime = duration<float>(now - prev).count();
 		prev = now;
 
-		if (x++ < 10) {
+		if (x++ < 40) {
 			_clientMng->AdjustClients();
 		}
 		_clientMng->OnTick(deltaTime);

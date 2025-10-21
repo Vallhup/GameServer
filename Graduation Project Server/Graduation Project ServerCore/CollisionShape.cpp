@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "CollisionShape.h"
 
-/*---------------[ BoxShape ]---------------*/
-
 CollisionShape::CollisionShape(ShapeType shape, CollisionType type, const vec3& offset)
     : _shape(shape), _type(type), _localOffset(offset)
 {
@@ -15,9 +13,16 @@ CollisionShape::CollisionShape(ShapeType shape, CollisionType type, const vec3& 
     }
 }
 
+/*---------------[ BoxShape ]---------------*/
+
 bool BoxShape::CheckCollision(const CollisionShape& other) const
 {
     return false;
+}
+
+std::unique_ptr<CollisionShape> BoxShape::Clone() const
+{
+	return std::make_unique<BoxShape>(*this);
 }
 
 /*---------------[ SphereShape ]---------------*/
@@ -27,6 +32,11 @@ bool SphereShape::CheckCollision(const CollisionShape& other) const
     return false;
 }
 
+std::unique_ptr<CollisionShape> SphereShape::Clone() const
+{
+    return std::make_unique<SphereShape>(*this);
+}
+
 /*---------------[ CylinderShape ]---------------*/
 
 bool CylinderShape::CheckCollision(const CollisionShape& other) const
@@ -34,7 +44,12 @@ bool CylinderShape::CheckCollision(const CollisionShape& other) const
     return false;
 }
 
+std::unique_ptr<CollisionShape> CylinderShape::Clone() const
+{
+    return std::make_unique<CylinderShape>(*this);
+}
 
+//---------------[ Collision ]---------------*/
 
 bool Collision::CheckBoxVsBox(const BoxShape& a, const BoxShape& b)
 {

@@ -55,6 +55,9 @@
     <Filter Include="Game\GamePlay\DBJob">
       <UniqueIdentifier>{944697a7-377b-41e7-afec-65a70fa4537d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{4c72447a-e658-4d21-8753-b504f5beb9f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -198,6 +201,7 @@
     <ClCompile Include="DBJob.cpp">
       <Filter>Game\GamePlay\DBJob</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -347,6 +351,10 @@
     <ClInclude Include="DBJob.h">
       <Filter>Game\GamePlay\DBJob</Filter>
     </ClInclude>
+    <ClInclude Include="animation\json.hpp">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="protos\Struct.proto">
@@ -357,6 +365,9 @@
     </None>
     <None Include="protos\Enum.proto">
       <Filter>Protocol\proto</Filter>
+    </None>
+    <None Include="animation\knight_cylinders.json">
+      <Filter>Animation</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -8,6 +8,7 @@ Service::Service()
 	_sessMng = std::make_unique<SessionManager>(*this);
 	_gameWorld = std::make_unique<GameWorld>(*this);
 	_dbManager = std::make_unique<MSSQLManager>(L"Temp");
+	_collisionMng = std::make_unique<CollisionManager>();
 }
 
 bool Service::Init()
@@ -28,6 +29,8 @@ bool Service::Init()
 		return false;
 	}
 
+	_collisionMng->LoadFromJson("animation/knight_cylinders.json");
+
 	return true;
 }
 
@@ -44,7 +47,9 @@ bool Service::Start()
 
 		_tickThread = std::thread([this]() { TickFunc(); });
 		_iocpWorker.Start(2, [this]() { IocpFunc();});
-		_logicWorker.Start(threadCount - 3, [this]() { LogicFunc();});
+		_dispatcherThread = std::thread([this]() { LogicFunc(); });
+		_logicWorker.Start(threadCount);
+		//_logicWorker.Start(threadCount, [this]() { LogicFunc();});
 
 		return true;
 	}
@@ -122,10 +127,18 @@ void Service::IocpFunc()
 
 void Service::LogicFunc()
 {
+	using namespace std::chrono;
+
 	while (_running.load()) {
-		std::shared_ptr<Job> job;
+		Job* job{ nullptr };
 		if (_jobQueue.TryPop(job)) {
-			job->Execute();
+			if (job) {
+				_logicWorker.Enqueue([job]()
+					{
+						job->Execute();
+						delete job;
+					});
+			}
 		}
 	}
 }

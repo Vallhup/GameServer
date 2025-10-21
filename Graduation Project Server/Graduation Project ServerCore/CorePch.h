@@ -31,6 +31,8 @@
 #include <ranges>
 #include <bitset>
 
+#include <DirectXMath.h>
+
 #include "Protocols/Enum.pb.h"
 #include "Protocols/Struct.pb.h"
 #include "Protocols/Protocol.pb.h"
@@ -90,5 +92,9 @@
 
 #include "PacketFactory.h"
 
+#include "CollisionManager.h"
+
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "MSWSock.LIB")
+
+using namespace DirectX;

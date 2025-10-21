@@ -9,6 +9,7 @@ public:
 	virtual void BroadCast(const std::vector<char>& packet, int exceptId = -1) = 0;
 
 	// 2. Manager Á¢±Ù
+	virtual class CollisionManager& GetCollisionManager() = 0;
 	virtual class ISessionManager& GetSessionManager() = 0;
 	virtual class IDBManager& GetDBManager() = 0;
 	virtual class IGameWorld& GetGameWorld() = 0;
@@ -40,6 +41,7 @@ public:
 
 	virtual void BroadCast(const std::vector<char>& packet, int exceptId = -1) override;
 
+	virtual CollisionManager& GetCollisionManager() override { return *_collisionMng; };
 	virtual ISessionManager& GetSessionManager() override { return *_sessMng; }
 	virtual IDBManager& GetDBManager() override { return *_dbManager; }
 	virtual IGameWorld& GetGameWorld() override { return *_gameWorld; }
@@ -59,6 +61,7 @@ private:
 	std::atomic<bool> _running;
 
 	std::thread _tickThread;
+	std::thread _dispatcherThread;	
 	ThreadPool _iocpWorker;
 	ThreadPool _logicWorker;
 
@@ -69,6 +72,7 @@ private:
 	std::unique_ptr<IDBManager> _dbManager;
 	std::unique_ptr<ISessionManager> _sessMng;
 	std::unique_ptr<IGameWorld> _gameWorld;
+	std::unique_ptr<CollisionManager> _collisionMng;
 
 	inline static thread_local std::unique_ptr<class ScriptVM> _scriptVM;
 };
