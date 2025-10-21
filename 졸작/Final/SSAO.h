@@ -18,15 +18,16 @@ public:
 	void Initialize(ID3D12Device* device);
 
 	bool GetSSAOState() const;
+	ID3D12Resource* GetSSAOTexture() const;
+	D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHandle() const;
+
 	void SetSSAOState(bool in);
 
 private:
 	ComPtr<ID3D12Resource> ssaoTexture;
 
 	ComPtr<ID3D12DescriptorHeap> ssaoRTVHeap;
-	ComPtr<ID3D12DescriptorHeap> ssaoSRVHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle;
-	D3D12_GPU_DESCRIPTOR_HANDLE ssaoSRVHandle;
 
 	bool enableSSAO = false;
 };

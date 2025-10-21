@@ -31,6 +31,7 @@ Texture2D gBufferRT1 : register(t5); // Normal + Roughness
 Texture2D gBufferRT2 : register(t6); // WorldPos + AO
 Texture2D gBufferRT3 : register(t7); // Emission + Alpha
 Texture2D shadowMap : register(t8);
+Texture2D ssaoMap : register(t9);
 
 SamplerState pointSampler : register(s0);
 SamplerState linearSampler : register(s1);

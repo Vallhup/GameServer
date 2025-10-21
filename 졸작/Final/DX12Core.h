@@ -50,6 +50,7 @@ public:
 
 	void CreateGBuffer();
 	void CreateShadowMap();
+	void CreateDeferredRenderingDescriptors();
 
 	void BeginShadowPass();
 	void EndShadowPass();
@@ -116,9 +117,11 @@ private:
 	// deferred rendering
 	ComPtr<ID3D12Resource> gBufferRT[4];
 	ComPtr<ID3D12DescriptorHeap> gBufferRTVHeap;
-	ComPtr<ID3D12DescriptorHeap> gBufferSRVHeap;
+	//ComPtr<ID3D12DescriptorHeap> gBufferSRVHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[4];
 	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[4];
+
+	ComPtr<ID3D12DescriptorHeap> deferredSRVHeap;
 
 	bool useDeferredRendering = true;
 
@@ -130,7 +133,9 @@ private:
 	unique_ptr<UploadBuffer> deferredLightCB;
 	unique_ptr<UploadBuffer> forwardLightCB;
 	unique_ptr<UploadBuffer> shadowFrameCB;
+	
 	unique_ptr<SSAO> ssao;
+	D3D12_GPU_DESCRIPTOR_HANDLE ssaoSRVHandle;
 
 	// Shadow Mapping resources
 	ComPtr<ID3D12Resource> shadowMapTexture;

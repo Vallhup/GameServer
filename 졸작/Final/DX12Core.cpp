@@ -38,6 +38,7 @@ void DX12Core::Initialize(HWND hwnd)
 	CreateDepthStencilBuffer();
 	CreateShadowMap();
 	CreateGBuffer();
+	CreateDeferredRenderingDescriptors();
 }
 
 void DX12Core::CreateDevice()
@@ -298,12 +299,12 @@ void DX12Core::CreateGBuffer()
 	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RTV Heap");
 
 	// === 3. SRV Descriptor Heap 생성 (라이팅 패스에서 읽기용) ===
-	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+	/*D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.NumDescriptors = 5;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&gBufferSRVHeap));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer SRV Heap");
+	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer SRV Heap");*/
 
 	// === 4. RTV들 생성 ===
 	UINT rtvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -318,27 +319,27 @@ void DX12Core::CreateGBuffer()
 	}
 
 	// === 5. SRV들 생성 ===
-	UINT srvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = gBufferSRVHeap->GetCPUDescriptorHandleForHeapStart();
-	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart();
+	//UINT srvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = gBufferSRVHeap->GetCPUDescriptorHandleForHeapStart();
+	//D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart();
 
-	for (int i = 0; i < 4; ++i) {
-		gBufferSRVHandles[i] = srvGpuHandle;
-		device->CreateShaderResourceView(gBufferRT[i].Get(), nullptr, srvCpuHandle);
+	//for (int i = 0; i < 4; ++i) {
+	//	gBufferSRVHandles[i] = srvGpuHandle;
+	//	device->CreateShaderResourceView(gBufferRT[i].Get(), nullptr, srvCpuHandle);
 
-		srvCpuHandle.ptr += srvSize;
-		srvGpuHandle.ptr += srvSize;
+	//	srvCpuHandle.ptr += srvSize;
+	//	srvGpuHandle.ptr += srvSize;
 
-		OutputDebugStringA(("G-Buffer RT" + to_string(i) + " SRV created\n").c_str());
-	}
+	//	OutputDebugStringA(("G-Buffer RT" + to_string(i) + " SRV created\n").c_str());
+	//}
 
-	shadowMapSRVHandle = srvGpuHandle;  // 멤버 변수로 저장
-	D3D12_SHADER_RESOURCE_VIEW_DESC shadowSrvDesc = {};
-	shadowSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	shadowSrvDesc.Texture2D.MipLevels = 1;
-	shadowSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	device->CreateShaderResourceView(shadowMapTexture.Get(), &shadowSrvDesc, srvCpuHandle);
+	//shadowMapSRVHandle = srvGpuHandle;  // 멤버 변수로 저장
+	//D3D12_SHADER_RESOURCE_VIEW_DESC shadowSrvDesc = {};
+	//shadowSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	//shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	//shadowSrvDesc.Texture2D.MipLevels = 1;
+	//shadowSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//device->CreateShaderResourceView(shadowMapTexture.Get(), &shadowSrvDesc, srvCpuHandle);
 
 	OutputDebugStringA("G-Buffer created successfully!\n");
 }
@@ -380,6 +381,54 @@ void DX12Core::CreateShadowMap()
 	device->CreateDepthStencilView(shadowMapTexture.Get(), &dsvDesc, shadowMapDSVHandle);
 
 	OutputDebugStringA("Shadow Map creation succeed!!\n");
+}
+
+void DX12Core::CreateDeferredRenderingDescriptors()
+{
+	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	srvHeapDesc.NumDescriptors = 6; // Gbuffer(4) + shadow(1) + ssao(1)
+	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	HRESULT hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&deferredSRVHeap));
+	MASSERT(SUCCEEDED(hr), "Failed to create Deferred SRV Heap");
+
+	UINT srvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = deferredSRVHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = deferredSRVHeap->GetGPUDescriptorHandleForHeapStart();
+
+	for (int i = 0; i < 4; ++i) {
+		gBufferSRVHandles[i] = srvGpuHandle;
+		device->CreateShaderResourceView(gBufferRT[i].Get(), nullptr, srvCpuHandle);
+
+		srvCpuHandle.ptr += srvSize;
+		srvGpuHandle.ptr += srvSize;
+
+		OutputDebugStringA(("G-Buffer RT" + to_string(i) + " SRV created\n").c_str());
+	}
+
+	shadowMapSRVHandle = srvGpuHandle;  // 멤버 변수로 저장
+	D3D12_SHADER_RESOURCE_VIEW_DESC shadowSrvDesc = {};
+	shadowSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	shadowSrvDesc.Texture2D.MipLevels = 1;
+	shadowSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	device->CreateShaderResourceView(shadowMapTexture.Get(), &shadowSrvDesc, srvCpuHandle);
+
+	srvCpuHandle.ptr += srvSize;
+	srvGpuHandle.ptr += srvSize;
+	OutputDebugStringA("Shadow Map SRV Created\n");
+
+	ssaoSRVHandle = srvGpuHandle;
+	D3D12_SHADER_RESOURCE_VIEW_DESC ssaoSrvDesc = {};
+	ssaoSrvDesc.Format = DXGI_FORMAT_R8_UNORM;
+	ssaoSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	ssaoSrvDesc.Texture2D.MipLevels = 1;
+	ssaoSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	device->CreateShaderResourceView(ssao->GetSSAOTexture(), &ssaoSrvDesc, srvCpuHandle);
+
+	OutputDebugStringA("SSAO SRV Created!!\n");
+
+	OutputDebugStringA("Deferred Rendering Descriptors created successfully!!\n");
 }
 
 void DX12Core::BeginShadowPass()
@@ -531,11 +580,11 @@ void DX12Core::BeginLightingPass()
 	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());					// 레지 넘버링 부분
 
 	// G-Buffer SRV Heap을 셰이더에 바인딩
-	ID3D12DescriptorHeap* heaps[] = { gBufferSRVHeap.Get() };
+	ID3D12DescriptorHeap* heaps[] = { deferredSRVHeap.Get() };
 	cmdList->SetDescriptorHeaps(1, heaps);
 
 	// G-Buffer SRV 테이블 바인딩 (root parameter 13번)
-	cmdList->SetGraphicsRootDescriptorTable(13, gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart());		// 레지 넘버링 부분
+	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());		// 레지 넘버링 부분
 	//OutputDebugStringA("Lighting Pass started\n");
 }
 

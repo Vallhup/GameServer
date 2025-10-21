@@ -57,7 +57,7 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddSRV(3, 0);           // rootParams[10] register(t3, space0) - finalBone Structured BUFF
     AddUAV(0, 0);           // rootParams[11] register(u0)	- animation final Read&Write structured BUFF
     AddSRV(0, 2);           // rootParams[12] register(t0, space2) - instance structured BUFF
-    AddSRVTable(4, 5, 0);   // rootParams[13] register(t4-t8, space0) - G-Buffer + shadowMap SRV 테이블
+    AddSRVTable(4, 6, 0);   // rootParams[13] register(t4-t9, space0) - G-Buffer + shadowMap + SSAO SRV 테이블
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[2];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,         // register(s0) - texture Sampler
