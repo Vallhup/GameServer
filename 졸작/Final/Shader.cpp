@@ -172,6 +172,38 @@ void Shader::InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* r
     MASSERT(SUCCEEDED(hr), "Failed to create Shadow PSO");
 }
 
+void Shader::InitializeSSAOShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
+{
+    CompileShader(vsPath, "VSMain", "vs_5_1", ssaoVertexShader);
+    CompileShader(psPath, "PSMain", "ps_5_1", ssaoPixelShader);
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { nullptr, 0 };
+    psoDesc.pRootSignature = rootSig;
+    psoDesc.VS = { ssaoVertexShader->GetBufferPointer(), ssaoVertexShader->GetBufferSize() };
+    psoDesc.PS = { ssaoPixelShader->GetBufferPointer(), ssaoPixelShader->GetBufferSize() };
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R8_UNORM;
+
+    psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
+    D3D12_DEPTH_STENCIL_DESC depthDesc = {};
+    depthDesc.DepthEnable = FALSE;
+    depthDesc.StencilEnable = FALSE;
+    psoDesc.DepthStencilState = depthDesc;
+
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&ssaoPSO));
+    MASSERT(SUCCEEDED(hr), "Failed to create ssao PSO");
+
+    OutputDebugStringA("SSAO PSO created successfully!\n");
+}
+
 ID3D12PipelineState* Shader::GetOpaquePSO() const
 {
     return opaquePSO.Get();
@@ -200,6 +232,11 @@ ID3D12PipelineState* Shader::GetComputePSO() const
 ID3D12PipelineState* Shader::GetShadowPSO() const
 {
     return shadowPSO.Get();
+}
+
+ID3D12PipelineState* Shader::GetSSAOPSO() const
+{
+    return ssaoPSO.Get();
 }
 
 void Shader::CompileShader(const wstring& path, const string& entry, const string& target, ComPtr<ID3DBlob>& blobOut)

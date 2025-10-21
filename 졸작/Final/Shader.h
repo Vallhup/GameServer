@@ -8,6 +8,7 @@ public:
 	void InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath);
 	void InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
+	void InitializeSSAOShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 
 	ID3D12PipelineState* GetOpaquePSO() const;
 	ID3D12PipelineState* GetTransparentPSO() const;
@@ -15,6 +16,7 @@ public:
 	ID3D12PipelineState* GetLightingPSO() const;
 	ID3D12PipelineState* GetComputePSO() const;
 	ID3D12PipelineState* GetShadowPSO() const;
+	ID3D12PipelineState* GetSSAOPSO() const;
 
 private:
 	void CompileShader(const wstring& path, const string& entry, const string& target, ComPtr<ID3DBlob>& blobOut);
@@ -44,5 +46,10 @@ private:
 	ComPtr<ID3D12PipelineState> shadowPSO;
 	ComPtr<ID3DBlob> shadowVertexShader;
 	ComPtr<ID3DBlob> shadowPixelShader;
+
+	// SSAO
+	ComPtr<ID3D12PipelineState> ssaoPSO;
+	ComPtr<ID3DBlob> ssaoVertexShader;
+	ComPtr<ID3DBlob> ssaoPixelShader;
 };
 
