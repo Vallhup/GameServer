@@ -79,6 +79,12 @@ void Session::RegisterSend(const std::vector<char>& data)
 void Session::ProcessRecv(DWORD numBytes)
 {
 	if (numBytes == 0) {
+		if (_pendingIoCount.fetch_sub(1) == 1) {
+			if (_shouldRelease.load()) {
+				_owner->RemoveSession(_id);
+			}
+		}
+
 		LOG_INF("Session[%d] DisConnected", _id);
 		DisConnect();
 		return;
@@ -145,6 +151,10 @@ void Session::DisConnect()
 		closesocket(_socket);
 		_socket = INVALID_SOCKET;
 
+		if (_pendingIoCount.load() == 0) {
+			_owner->RemoveSession(_id);
+		}
+
 		return;
 	}
 }
@@ -191,7 +201,9 @@ void Session::InternalSend()
 			}
 
 			_isSending.store(false);
-			_owner->ReleaseSendOver(sendOver);
+			if (_owner) {
+				_owner->ReleaseSendOver(sendOver);
+			}
 
 			DisConnect();
 			return;

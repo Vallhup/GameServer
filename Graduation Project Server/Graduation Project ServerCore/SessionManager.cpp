@@ -29,7 +29,12 @@ void SessionManager::RemoveSession(int sessionId)
 	auto it = _sessions.find(sessionId);
 	if (it != _sessions.end()) {
 		if (auto character = it->second->GetCharacter()) {
-			character->GetInstance()->RemovePlayer(sessionId);
+			character->GetInstance()->EnqueueJob([character, sessionId]()
+				{
+					character->GetInstance()->RemovePlayer(sessionId); 
+				});
+
+
 		}
 	}
 	_sessions.erase(sessionId);
@@ -66,6 +71,8 @@ SendOver* SessionManager::GetSendOver()
 	if (auto* sendOver = _sendOverPool.Acquire()) {
 		return sendOver;
 	}
+
+	return nullptr;
 }
 
 void SessionManager::ReleaseSendOver(SendOver* sendOver)

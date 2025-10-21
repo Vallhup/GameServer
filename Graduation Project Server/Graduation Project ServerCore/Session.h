@@ -35,10 +35,10 @@ public:
 public:
 	int GetId() const { return _id; }
 	SessionState GetState() const { return _state.load(); }
-	std::shared_ptr<GameObject> GetCharacter() const { return _character.lock(); }
+	GameObject* GetCharacter() const { return _character; }
 
 	void SetPacketHandler(PacketHandler handler) { _packetHandler = handler; }
-	void SetCharacter(const std::weak_ptr<GameObject>& character) { _character = character; }
+	void SetCharacter(GameObject* character) { _character = character; }
 	void SetState(SessionState state) { _state = state; }
 
 private:
@@ -57,7 +57,7 @@ private:
 
 	std::atomic<SessionState> _state;
 
-	std::weak_ptr<GameObject> _character;
+	GameObject* _character;
 	ISessionManager* _owner;
 
 	std::atomic<int> _pendingIoCount;
