@@ -16,6 +16,9 @@ void SSAO::Initialize(ID3D12Device* device)
 	D3D12_CLEAR_VALUE clearValue = {};
 	clearValue.Format = desc.Format;
 	clearValue.Color[0] = 1.0f;
+	clearValue.Color[1] = 1.0f;
+	clearValue.Color[2] = 1.0f;
+	clearValue.Color[3] = 1.0f;
 
 	D3D12_HEAP_PROPERTIES heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
@@ -23,7 +26,7 @@ void SSAO::Initialize(ID3D12Device* device)
 		&heapProperty,
 		D3D12_HEAP_FLAG_NONE,
 		&desc,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		&clearValue,
 		IID_PPV_ARGS(&ssaoTexture));
 	MASSERT(SUCCEEDED(hr), "Failed to create SSAO Texture");

@@ -29,6 +29,6 @@ private:
 	ComPtr<ID3D12DescriptorHeap> ssaoRTVHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle;
 
-	bool enableSSAO = false;
+	bool enableSSAO = true;
 };
 

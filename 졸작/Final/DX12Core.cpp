@@ -665,8 +665,6 @@ void DX12Core::SetupLightng()
 
 void DX12Core::RenderFullscreenQuad()
 {
-	auto cmdList = GetGraphicsCmdList();
-
 	// 라이팅 PSO 설정
 	cmdList->SetPipelineState(shader->GetLightingPSO());
 
@@ -680,13 +678,54 @@ void DX12Core::RenderFullscreenQuad()
 void DX12Core::RenderSSAO()
 {
 	if (!ssao->GetSSAOState()) return;
+	
+	// TODO - AI Helped
+	
+	// 1. Resource Barrier: SRV -> RTV
+	static bool firstSSAOPass = true;
 
-	// TODO
-	// ssaoTexture를 렌더 타겟으로 설정하고
-	// SSAO 쉐이더 실행하고
-	// 결과물 Lighting 패스에서 사용
+	if (!firstSSAOPass) {
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			ssao->GetSSAOTexture(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_RENDER_TARGET
+		);
+		cmdList->ResourceBarrier(1, &barrier);
+	}
 
-	OutputDebugStringA("SSAO Rendererd!!\n");
+	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle = ssao->GetRTVHandle();
+
+	// 2. Set ssaoTexture to RTV(Render Target)
+	cmdList->OMSetRenderTargets(1, &ssaoRTVHandle, FALSE, nullptr);
+	 
+	// 3. SSAO Texture Clear (White = No AO)
+	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	cmdList->ClearRenderTargetView(ssaoRTVHandle, clearColor, 0, nullptr);
+
+	// 4. Set SSAO PSO State
+	cmdList->SetPipelineState(shader->GetSSAOPSO());
+
+	// 5. Set RootSig
+	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
+
+	// 6. Depth + Normal Texture Binding (Using deferredSRVHeap Again)
+	ID3D12DescriptorHeap* heaps[] = { deferredSRVHeap.Get() };
+	cmdList->SetDescriptorHeaps(1, heaps);
+	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());
+
+	// 7. Render on Full Screen Quad
+	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	cmdList->DrawInstanced(6, 1, 0, 0);
+
+	// 8. Resource Barrier: RTV -> SRV
+	D3D12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
+		ssao->GetSSAOTexture(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	cmdList->ResourceBarrier(1, &barrierToSRV);
+
+	firstSSAOPass = false;
 }
 
 void DX12Core::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)

@@ -99,6 +99,8 @@ float4 PSMain(PS_IN input) : SV_Target
     
     float3 finalColor = float3(0, 0, 0);
     
+    float ssaoA0 = ssaoMap.Sample(pointSampler, input.uv).r;
+    
     for (int i = 0; i < lightCount; ++i)
     {
         float3 lightContribution = float3(0, 0, 0);
@@ -150,7 +152,7 @@ float4 PSMain(PS_IN input) : SV_Target
         finalColor += lightContribution;
     }
     
-    finalColor *= ao;
+    finalColor *= ao * ssaoA0;
     
     finalColor += emission;
     
