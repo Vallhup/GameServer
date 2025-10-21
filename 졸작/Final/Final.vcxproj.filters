@@ -106,6 +106,9 @@
     <ClCompile Include="ObjectPoolManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="SSAO.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -210,6 +213,9 @@
     <ClInclude Include="ObjectPoolManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
+    <ClInclude Include="SSAO.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ForwardPS.hlsli">
@@ -240,6 +246,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="ShadowVS.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="SSAO.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

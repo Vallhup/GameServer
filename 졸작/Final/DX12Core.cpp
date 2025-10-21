@@ -19,6 +19,7 @@ void DX12Core::Initialize(HWND hwnd)
 	deferredLightCB = make_unique<UploadBuffer>();
 	forwardLightCB = make_unique<UploadBuffer>();
 	shadowFrameCB = make_unique<UploadBuffer>();
+	ssao = make_unique<SSAO>();
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeForwardShader(GetDevice(), GetRootSig()->Get(), L"ForwardVS.hlsli", L"ForwardPS.hlsli");
@@ -31,6 +32,7 @@ void DX12Core::Initialize(HWND hwnd)
 	deferredLightCB->Initialize(GetDevice(), sizeof(DeferredLightConstants));
 	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
 	shadowFrameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
+	ssao->Initialize(GetDevice());
 
 	CreateDepthStencilBuffer();
 	CreateShadowMap();
@@ -625,6 +627,18 @@ void DX12Core::RenderFullscreenQuad()
 	//OutputDebugStringA("Fullscreen quad rendered\n");
 }
 
+void DX12Core::RenderSSAO()
+{
+	if (!ssao->GetSSAOState()) return;
+
+	// TODO
+	// ssaoTexture를 렌더 타겟으로 설정하고
+	// SSAO 쉐이더 실행하고
+	// 결과물 Lighting 패스에서 사용
+
+	OutputDebugStringA("SSAO Rendererd!!\n");
+}
+
 void DX12Core::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 {
 	cmdAlloc->Reset();
@@ -781,4 +795,9 @@ void DX12Core::SetBackgroundColor(const float* color)
 void DX12Core::SetPlayerPosForShadow(const XMFLOAT3& pos)
 {
 	playerCurrentPos = pos;
+}
+
+void DX12Core::SetSSAOState(bool in)
+{
+	ssao->SetSSAOState(in);
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "UploadBuffer.h"
+#include "SSAO.h"
 
 struct ObjectConstants
 {
@@ -62,6 +63,8 @@ public:
 	void SetupLightng();
 	void RenderFullscreenQuad();
 
+	void RenderSSAO();
+
 	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 	void RenderEnd();
 	void WaitSync();
@@ -82,6 +85,9 @@ public:
 
 	void SetBackgroundColor(const float* color);
 	void SetPlayerPosForShadow(const XMFLOAT3& pos);
+
+	// 임시
+	void SetSSAOState(bool in);
 
 private:
 	// 고정
@@ -124,6 +130,7 @@ private:
 	unique_ptr<UploadBuffer> deferredLightCB;
 	unique_ptr<UploadBuffer> forwardLightCB;
 	unique_ptr<UploadBuffer> shadowFrameCB;
+	unique_ptr<SSAO> ssao;
 
 	// Shadow Mapping resources
 	ComPtr<ID3D12Resource> shadowMapTexture;

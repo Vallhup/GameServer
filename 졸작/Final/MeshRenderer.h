@@ -7,6 +7,8 @@ class VertexIndexBuffer;
 class Material;
 class UploadBuffer;
 
+struct ObjectConstants;
+
 class MeshRenderer : public Component
 {
 public:
@@ -33,6 +35,7 @@ public:
 	void SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer = nullptr);
 	void SetSingleMaterial(DX12Core& core, const vector<MaterialData> mats);
 	void SetMultiMaterials(DX12Core& core, const vector<MaterialData> mats);
+	ObjectConstants SetObjectConstantState(const XMMATRIX& world, int hasTexture, int doInstancing, UINT matIndex);
 
 	void ReleaseUploadBuffers();
 
