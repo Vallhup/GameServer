@@ -117,6 +117,9 @@
     - Disconnect함수에서 즉시 delete(컨테이너에서 erase)를 진행하지 않고 _shouldRelease 변수만 true로 바꾸도록 수정
     - _pendingIoCount == 0 and _shouldRelease == true 이면 delete하도록 삭제 로직 변경
 
+   2. 2025. 10. 16(목) - 지연 파기 버그 수정
+    - 일부 누락된 IO Count 관리 추가 및 DisConnect 함수 내부에서도 IO Count 체크 하도록 수정
+
  1.4. ExpOver
   1.4.1. 개요
 
