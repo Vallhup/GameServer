@@ -62,3 +62,28 @@ private:
 	std::weak_ptr<Instance> instance;
 	float deltaTime;
 };
+
+
+//class ObjectBatchJob : public Job {
+//public:
+//	ObjectBatchJob(Instance* instance, float deltaTime, size_t start, size_t end)
+//		: _instance(instance), _deltaTime(deltaTime), _start(start), _end(end) {
+//	}
+//
+//	virtual void Execute() override;
+//
+//private:
+//	Instance* _instance;
+//	float _deltaTime;
+//	size_t _start;
+//	size_t _end;
+//};
+//
+//
+//class FinalizeJob : public Job {
+//public:
+//	explicit FinalizeJob(Instance* inst) : _inst(inst) {}
+//	void Execute() override;
+//private:
+//	Instance* _inst;
+//};

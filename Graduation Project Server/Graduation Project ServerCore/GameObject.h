@@ -54,9 +54,9 @@ protected:
 	// Enum or 전용 Component
 	// Enum 값으로 생각중
 
-	//std::vector<std::unique_ptr<IComponent>> _components;
-	//std::unordered_map<std::type_index, IComponent*> _types;
+	std::vector<std::unique_ptr<IComponent>> _components;
+	std::unordered_map<std::type_index, IComponent*> _types;
 
-	concurrency::concurrent_vector<std::unique_ptr<IComponent>> _components;
-	concurrency::concurrent_unordered_map<std::type_index, IComponent*> _types;
+	//concurrency::concurrent_vector<std::unique_ptr<IComponent>> _components;
+	//concurrency::concurrent_unordered_map<std::type_index, IComponent*> _types;
 };

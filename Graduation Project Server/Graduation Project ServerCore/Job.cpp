@@ -37,3 +37,21 @@ void LogicJob::Execute()
 		inst->Update(deltaTime);
 	}
 }
+
+//void ObjectBatchJob::Execute()
+//{
+//	auto list = _instance->GetGameObjectList();
+//	for (size_t i = _start; i < _end && i < list.size(); ++i) {
+//		list[i]->LogicUpdate(_deltaTime);
+//	}
+//	// 완료 처리
+//	if (--_instance->_pendingBatches == 0) {
+//		_instance->GetJobQueue().Push(new FinalizeJob(_instance));
+//	}
+//}
+//
+//void FinalizeJob::Execute()
+//{
+//	_inst->GetGameLogic().NetworkUpdate(); // 이번 틱 결과 전송
+//	_inst->_isUpdating.store(false);       // 다음 틱 허용
+//}

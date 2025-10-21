@@ -57,17 +57,7 @@ Instance* GameWorld::GetInstance(int instanceId)
 
 void GameWorld::Update(float deltaTime)
 {
-	std::vector<std::shared_ptr<Instance>> snap;
-	{
-		std::shared_lock lock{ _mutex };
-		for (auto& [id, instance] : _instances) {
-			if (instance) {
-				snap.push_back(instance);
-			}
-		}
-	}
-
-	for (auto& instance : snap) {
-		_gameCtx.GetJobQueue().Push(std::make_shared<LogicJob>(instance, deltaTime));
+	for (auto& [id, instance] : _instances) {
+		_gameCtx.GetJobQueue().Push(new LogicJob(instance, deltaTime));
 	}
 }
