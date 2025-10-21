@@ -7,39 +7,33 @@ int IObjectManager::GenerateObjectId()
     return _nextId++;
 }
 
-void ObjectManager::AddObject(const std::shared_ptr<GameObject>& object)
+void ObjectManager::AddObject(std::unique_ptr<GameObject> object)
 {
-    //std::unique_lock lock{ _mutex };
-    _objects.insert(std::make_pair(object->GetId(), object));
+    _objects.try_emplace(object->GetId(), std::move(object));
 }
 
 void ObjectManager::RemoveObject(int objectId)
 {
-    //std::unique_lock lock{ _mutex };
     _objects.erase(objectId);
 }
 
-std::shared_ptr<GameObject> ObjectManager::GetGameObject(int objectId) const
+GameObject* ObjectManager::GetGameObject(int objectId) const
 {
-    //std::shared_lock lock{ _mutex };
-
     auto it = _objects.find(objectId);
     if (it != _objects.end()) {
-        return it->second;
+        return it->second.get();
     }
 
     return nullptr;
 }
 
-std::vector<std::shared_ptr<GameObject>> ObjectManager::GetGameObjectList() const
+std::vector<GameObject*> ObjectManager::GetGameObjectList() const
 {
-    //std::shared_lock lock{ _mutex };
-
-    std::vector<std::shared_ptr<GameObject>> objectList;
+    std::vector<GameObject*> objectList;
     objectList.reserve(_objects.size());
 
     for (const auto& [id, object] : _objects) {
-        objectList.push_back(object);
+        objectList.push_back(object.get());
     }
 
     return objectList;

@@ -8,11 +8,11 @@ public:
 	virtual ~IObjectManager() = default;
 
 public:
-	virtual void AddObject(const std::shared_ptr<GameObject>& object) = 0;
+	virtual void AddObject(std::unique_ptr<GameObject> object) = 0;
 	virtual void RemoveObject(int objectId) = 0;
 
-	virtual std::shared_ptr<GameObject> GetGameObject(int objectId) const = 0;
-	virtual std::vector<std::shared_ptr<GameObject>> GetGameObjectList() const = 0;
+	virtual GameObject* GetGameObject(int objectId) const = 0;
+	virtual std::vector<GameObject*> GetGameObjectList() const = 0;
 };
 
 class ObjectManager : public IObjectManager {
@@ -21,13 +21,13 @@ public:
 	virtual ~ObjectManager() = default;
 
 public:
-	virtual void AddObject(const std::shared_ptr<GameObject>& object) override;
+	virtual void AddObject(std::unique_ptr<GameObject> object) override;
 	virtual void RemoveObject(int objectId) override;
 
-	virtual std::shared_ptr<GameObject> GetGameObject(int objectId) const override;
-	virtual std::vector<std::shared_ptr<GameObject>> GetGameObjectList() const override;
+	virtual GameObject* GetGameObject(int objectId) const override;
+	virtual std::vector<GameObject*> GetGameObjectList() const override;
 
 private:
-	mutable std::shared_mutex _mutex;
-	std::unordered_map<int, std::shared_ptr<GameObject>> _objects;
+	std::unordered_map<int, std::unique_ptr<GameObject>> _objects;
 };
+

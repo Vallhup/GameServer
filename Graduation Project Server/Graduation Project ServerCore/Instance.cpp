@@ -26,26 +26,24 @@ void Instance::Update(float deltaTime)
 
 void Instance::EnqueueJob(const std::function<void()>& job)
 {
-	auto timerJob = std::make_shared<TimerJob>(job, std::chrono::steady_clock::now());
+	auto timerJob = new TimerJob(job, std::chrono::steady_clock::now());
 	_jobQueue.Push(timerJob);
 }
 
 void Instance::AddPlayer(Session* session)
 {
-	auto character = std::make_shared<GameObject>(session->GetId(), this);
+	auto character = std::make_unique<GameObject>(session->GetId(), this);
 	character->AddComponent<TransformComponent>(vec3{ 0, 0, 0 });
 	character->AddComponent<MovementComponent>();
 	character->AddComponent<ActionComponent>();
 	character->AddComponent<InputComponent>();
 
-	_objMng->AddObject(character);
-	session->SetCharacter(character);
-	{
-		std::unique_lock lock{ _mutex };
-		_sessions.insert(std::make_pair(session->GetId(), session));
-	}
+	session->SetCharacter(character.get());
 	session->SetState(SessionState::ST_INGAME);
 	session->RegisterSend(PacketFactory::SCLoginPacket(session->GetId()));
+
+	_objMng->AddObject(std::move(character));
+	_sessions.insert(session->GetId());
 
 	Protocol::Vec3 packetPos;
 	if (auto character = session->GetCharacter()) {
@@ -78,34 +76,24 @@ void Instance::AddPlayer(Session* session)
 void Instance::RemovePlayer(int sessionId)
 {
 	_objMng->RemoveObject(sessionId);
-	{
-		//std::unique_lock lock{ _mutex };
-		_sessions.erase(sessionId);
-	}
+	_sessions.erase(sessionId);
 }
 
 void Instance::BroadCast(const std::vector<char>& packet, int exceptId)
 {
-	//std::vector<Session*> sessions;
-	{
-		//std::shared_lock lock{ _mutex };
-		/*for (const auto& [id, session] : _sessions) {
-			if (session) {
-				sessions.push_back(session);
-			}
-		}*/
-	}
+	for (const auto& id : _sessions) {
+		if (Session* session = _gameCtx.GetSessionManager().GetSession(id)) {
+			if (session->GetState() != SessionState::ST_INGAME) continue;
+			if (session->GetId() == exceptId) continue;
 
-	for (const auto& [id, session] : _sessions) {
-		if (session->GetState() != SessionState::ST_INGAME) continue;
-		if (session->GetId() == exceptId) continue;
-		session->RegisterSend(packet);
+			session->RegisterSend(packet);
+		}
 	}
 }
 
-void Instance::AddObject(const std::shared_ptr<GameObject>& obj)
+void Instance::AddObject(std::unique_ptr<GameObject> obj)
 {
-	_objMng->AddObject(obj);
+	_objMng->AddObject(std::move(obj));
 }
 
 void Instance::RemoveObject(int id)
@@ -113,17 +101,18 @@ void Instance::RemoveObject(int id)
 	_objMng->RemoveObject(id);
 }
 
-std::vector<std::shared_ptr<GameObject>> Instance::GetGameObjectList() const
+std::vector<GameObject*> Instance::GetGameObjectList() const
 {
 	return _objMng->GetGameObjectList();
 }
 
 void Instance::DequeueJobs()
 {
-	std::shared_ptr<Job> job;
+	Job* job{ nullptr };
 	while (_jobQueue.TryPop(job)) {
 		if (job) {
 			job->Execute();
+			delete job;
 		}
 	}
 }

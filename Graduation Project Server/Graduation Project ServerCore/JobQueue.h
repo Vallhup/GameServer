@@ -4,11 +4,9 @@ class Job;
 
 class JobQueue {
 public:
-	void Push(const std::shared_ptr<Job>& job);
-	bool TryPop(std::shared_ptr<Job>& out);
+	void Push(Job* job);
+	bool TryPop(Job*& out);
 
 private:
-	concurrency::concurrent_priority_queue<std::shared_ptr<Job>> _jobs;
-	std::atomic<uint64_t> seq{ 0 };
+	concurrency::concurrent_priority_queue<Job*> _jobs;
 };
-

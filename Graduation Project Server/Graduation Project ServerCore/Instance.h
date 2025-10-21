@@ -35,33 +35,31 @@ public:
 
 	void BroadCast(const std::vector<char>& packet, int exceptId = -1);
 
-	void AddObject(const std::shared_ptr<class GameObject>& obj);
+	void AddObject(std::unique_ptr<class GameObject> obj);
 	void RemoveObject(int id);
 
 	int GetId() const { return _id; }
 	IGameLogic& GetGameLogic() const { return *_gameLogic; }
 	bool IsActive() const { return _isActive.load(); }
-	std::shared_ptr<GameObject> GetGameObject(int id) const { return _objMng->GetGameObject(id); }
-	std::vector<std::shared_ptr<GameObject>> GetGameObjectList() const;
+	GameObject* GetGameObject(int id) const { return _objMng->GetGameObject(id); }
+	std::vector<GameObject*> GetGameObjectList() const;
+
+public:
+	JobQueue& GetJobQueue() { return _gameCtx.GetJobQueue(); }
 
 protected:
 	void DequeueJobs();
 
 protected:
 	int _id;
+	InstanceType _type;
 	std::atomic<bool> _isActive;
+	std::atomic<bool> _isUpdating;
 
 	IGameContext& _gameCtx;;
 
+	JobQueue _jobQueue;
+	std::unordered_set<int> _sessions;
 	std::unique_ptr<class IGameLogic> _gameLogic;
 	std::unique_ptr<class IObjectManager> _objMng;
-
-	mutable std::shared_mutex _mutex;
-	std::unordered_map<int, Session*> _sessions;
-
-	std::atomic<bool> _isUpdating;
-
-	JobQueue _jobQueue;
-
-	InstanceType _type;
 };
