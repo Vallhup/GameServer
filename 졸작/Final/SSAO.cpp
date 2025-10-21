@@ -15,7 +15,7 @@ void SSAO::Initialize(ID3D12Device* device)
 
 	D3D12_CLEAR_VALUE clearValue = {};
 	clearValue.Format = desc.Format;
-	clearValue.Color[0] = clearValue.Color[1] = clearValue.Color[2] = 1.0f;
+	clearValue.Color[0] = 1.0f;
 
 	D3D12_HEAP_PROPERTIES heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
@@ -26,9 +26,37 @@ void SSAO::Initialize(ID3D12Device* device)
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		&clearValue,
 		IID_PPV_ARGS(&ssaoTexture));
+	MASSERT(SUCCEEDED(hr), "Failed to create SSAO Texture");
 
-	if (SUCCEEDED(hr))
-		OutputDebugStringA("SSAO Texture created succeed!!\n");
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	rtvHeapDesc.NumDescriptors = 1;
+	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	hr = device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&ssaoRTVHeap));
+	MASSERT(SUCCEEDED(hr), "Failed to create SSAO RTV Heap");
+
+	ssaoRTVHandle = ssaoRTVHeap->GetCPUDescriptorHandleForHeapStart();
+	device->CreateRenderTargetView(ssaoTexture.Get(), nullptr, ssaoRTVHandle);
+
+	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	srvHeapDesc.NumDescriptors = 1;
+	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&ssaoSRVHeap));
+	MASSERT(SUCCEEDED(hr), "Failed to create SSAO SRV Heap");
+
+	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = ssaoSRVHeap->GetCPUDescriptorHandleForHeapStart();
+	ssaoSRVHandle = ssaoSRVHeap->GetGPUDescriptorHandleForHeapStart();
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_R8_UNORM;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	device->CreateShaderResourceView(ssaoTexture.Get(), &srvDesc, srvCpuHandle);
+
+	OutputDebugStringA("SSAO Texture & Descriptors created successfully!!\n");
 }
 
 bool SSAO::GetSSAOState() const

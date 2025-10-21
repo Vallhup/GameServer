@@ -22,6 +22,12 @@ public:
 
 private:
 	ComPtr<ID3D12Resource> ssaoTexture;
+
+	ComPtr<ID3D12DescriptorHeap> ssaoRTVHeap;
+	ComPtr<ID3D12DescriptorHeap> ssaoSRVHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE ssaoSRVHandle;
+
 	bool enableSSAO = false;
 };
 
