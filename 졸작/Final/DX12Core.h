@@ -88,6 +88,7 @@ public:
 	void SetPlayerPosForShadow(const XMFLOAT3& pos);
 
 	// юс╫ц
+	bool GetSSAOState() const;
 	void SetSSAOState(bool in);
 
 private:

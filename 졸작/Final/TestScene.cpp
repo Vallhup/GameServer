@@ -61,7 +61,8 @@ void TestScene::UpdateScene(const float deltaTime)
 {
 	if (GET(Input).GetKeyDown('1'))
 	{
-		coreRef->SetSSAOState(true);
+		bool result = coreRef->GetSSAOState();
+		coreRef->SetSSAOState(!result);
 	}
 
 	{

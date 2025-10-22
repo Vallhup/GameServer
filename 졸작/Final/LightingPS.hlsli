@@ -152,7 +152,10 @@ float4 PSMain(PS_IN input) : SV_Target
         finalColor += lightContribution;
     }
     
-    finalColor *= ao * ssaoA0;
+    if (ssaoA0 != 0.0f)
+        ao *= ssaoA0;
+        
+    finalColor *= ao;
     
     finalColor += emission;
     

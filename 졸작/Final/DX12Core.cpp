@@ -677,7 +677,15 @@ void DX12Core::RenderFullscreenQuad()
 
 void DX12Core::RenderSSAO()
 {
-	if (!ssao->GetSSAOState()) return;
+	if (!ssao->GetSSAOState()) 
+	{
+		D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle = ssao->GetRTVHandle();
+
+		float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		cmdList->ClearRenderTargetView(ssaoRTVHandle, clearColor, 0, nullptr);
+
+		return;
+	}
 	
 	// TODO - AI Helped
 	
@@ -884,6 +892,11 @@ void DX12Core::SetBackgroundColor(const float* color)
 void DX12Core::SetPlayerPosForShadow(const XMFLOAT3& pos)
 {
 	playerCurrentPos = pos;
+}
+
+bool DX12Core::GetSSAOState() const
+{
+	return ssao->GetSSAOState();
 }
 
 void DX12Core::SetSSAOState(bool in)
