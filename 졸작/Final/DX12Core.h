@@ -91,6 +91,8 @@ public:
 	bool GetSSAOState() const;
 	void SetSSAOState(bool in);
 
+	ID3D12DescriptorHeap* GetDeferredSRVHeap() const;
+
 private:
 	// ∞Ì¡§
 	ComPtr<ID3D12Device> device;

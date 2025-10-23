@@ -903,3 +903,8 @@ void DX12Core::SetSSAOState(bool in)
 {
 	ssao->SetSSAOState(in);
 }
+
+ID3D12DescriptorHeap* DX12Core::GetDeferredSRVHeap() const
+{
+	return deferredSRVHeap.Get();
+}
