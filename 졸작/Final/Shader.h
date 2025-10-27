@@ -39,27 +39,5 @@ private:
 private:
 	array<ComPtr<ID3D12PipelineState>, static_cast<size_t>(PSOType::END)> mPSOs;
 	array<ComPtr<ID3DBlob>, static_cast<size_t>(ShaderType::END)> mShadersBlobs;
-	//// Forward
-	//ComPtr<ID3DBlob> forwardVertexShader;
-	//ComPtr<ID3DBlob> forwardPixelShader;
-
-	//// Deferred 1Pass
-	//ComPtr<ID3DBlob> gBufferVertexShader;
-	//ComPtr<ID3DBlob> gBufferPixelShader;
-
-	//// Deferred 2Pass
-	//ComPtr<ID3DBlob> lightingPixelShader;
-	//ComPtr<ID3DBlob> fullscreenVertexShader;
-
-	//// Compute
-	//ComPtr<ID3DBlob> computeShader;
-
-	//// Shadow
-	//ComPtr<ID3DBlob> shadowVertexShader;
-	//ComPtr<ID3DBlob> shadowPixelShader;
-
-	//// SSAO
-	//ComPtr<ID3DBlob> ssaoVertexShader;
-	//ComPtr<ID3DBlob> ssaoPixelShader;
 };
 
