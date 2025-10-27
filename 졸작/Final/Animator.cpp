@@ -204,7 +204,7 @@ void Animator::ExecuteComputeShader(DX12Core& core)
 
     mAnimationCB->CopyData(&animData, sizeof(AnimationConstants));
 
-    cmdList->SetPipelineState(core.GetShader()->GetComputePSO());
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Compute));
     cmdList->SetComputeRootSignature(core.GetRootSig()->Get());
     cmdList->SetComputeRootConstantBufferView(2, mAnimationCB->GetGPUVirtualAddress());
 

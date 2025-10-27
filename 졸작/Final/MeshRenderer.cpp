@@ -41,7 +41,7 @@ void MeshRenderer::RenderForward(DX12Core& core)
     auto transform = GetGameObject()->GetComponent<Transform>();
     XMMATRIX world = transform->GetWorldMatrix();
 
-    cmdList->SetPipelineState(core.GetShader()->GetTransparentPSO());
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Transparent));
     SetupRenderingState(core);
 
     if (auto animator = GetGameObject()->GetComponent<Animator>()) {
@@ -69,7 +69,7 @@ void MeshRenderer::RenderDeferred(DX12Core& core)
     auto transform = GetGameObject()->GetComponent<Transform>();
     XMMATRIX world = transform->GetWorldMatrix();
 
-    cmdList->SetPipelineState(core.GetShader()->GetGBufferPSO());
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
     SetupRenderingState(core);
 
     if (animator) {
@@ -92,7 +92,7 @@ void MeshRenderer::RenderShadow(DX12Core& core)
     }
 
     auto cmdList = core.GetGraphicsCmdList();
-    cmdList->SetPipelineState(core.GetShader()->GetShadowPSO());
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Shadow));
     auto transform = GetGameObject()->GetComponent<Transform>();
     XMMATRIX world = transform->GetWorldMatrix();
 

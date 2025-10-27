@@ -31,7 +31,7 @@ void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* 
 
     psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT); 
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); 
-    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&opaquePSO));
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Opaque)]));
     MASSERT(SUCCEEDED(hr), "Failed to create Opaque PSO");
 
     D3D12_BLEND_DESC transparentBlend = {};
@@ -49,7 +49,7 @@ void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* 
 
     psoDesc.BlendState = transparentBlend;
     psoDesc.DepthStencilState = transparentDepth;
-    hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&transparentPSO));
+    hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Transparent)]));
     MASSERT(SUCCEEDED(hr), "Failed to create Transparent PSO");
 }
 
@@ -88,7 +88,7 @@ void Shader::InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* 
     psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 
-    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&gBufferPSO));
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::GBuffer)]));
     MASSERT(SUCCEEDED(hr), "Failed to create GBuffer PSO");
 
     OutputDebugStringA("G-Buffer PSO created!!\n");
@@ -120,7 +120,7 @@ void Shader::InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature*
     depthDesc.StencilEnable = FALSE;
     psoDesc.DepthStencilState = depthDesc;
 
-    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&lightingPSO));
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Lighting)]));
     MASSERT(SUCCEEDED(hr), "Failed to create Lighting PSO");
 
     OutputDebugStringA("Lighting PSO created successfully!\n");
@@ -134,7 +134,7 @@ void Shader::InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* 
     computePsoDesc.pRootSignature = rootSig;
     computePsoDesc.CS = { computeShader->GetBufferPointer(), computeShader->GetBufferSize() };
 
-    HRESULT hr = device->CreateComputePipelineState(&computePsoDesc, IID_PPV_ARGS(&computePSO));
+    HRESULT hr = device->CreateComputePipelineState(&computePsoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Compute)]));
     MASSERT(SUCCEEDED(hr), "Failed to create Compute PSO");
 }
 
@@ -168,7 +168,7 @@ void Shader::InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* r
     psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 
-    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&shadowPSO));
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Shadow)]));
     MASSERT(SUCCEEDED(hr), "Failed to create Shadow PSO");
 }
 
@@ -198,45 +198,15 @@ void Shader::InitializeSSAOShader(ID3D12Device* device, ID3D12RootSignature* roo
     depthDesc.StencilEnable = FALSE;
     psoDesc.DepthStencilState = depthDesc;
 
-    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&ssaoPSO));
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::SSAO)]));
     MASSERT(SUCCEEDED(hr), "Failed to create ssao PSO");
 
     OutputDebugStringA("SSAO PSO created successfully!\n");
 }
 
-ID3D12PipelineState* Shader::GetOpaquePSO() const
+ID3D12PipelineState* Shader::GetPSO(PSOType type) const
 {
-    return opaquePSO.Get();
-}
-
-ID3D12PipelineState* Shader::GetTransparentPSO() const
-{
-    return transparentPSO.Get();
-}
-
-ID3D12PipelineState* Shader::GetGBufferPSO() const
-{
-    return gBufferPSO.Get();
-}
-
-ID3D12PipelineState* Shader::GetLightingPSO() const
-{
-    return lightingPSO.Get();
-}
-
-ID3D12PipelineState* Shader::GetComputePSO() const
-{
-    return computePSO.Get();
-}
-
-ID3D12PipelineState* Shader::GetShadowPSO() const
-{
-    return shadowPSO.Get();
-}
-
-ID3D12PipelineState* Shader::GetSSAOPSO() const
-{
-    return ssaoPSO.Get();
+    return mPSOs[static_cast<size_t>(type)].Get();
 }
 
 void Shader::CompileShader(const wstring& path, const string& entry, const string& target, ComPtr<ID3DBlob>& blobOut)

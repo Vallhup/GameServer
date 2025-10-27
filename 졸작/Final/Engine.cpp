@@ -91,7 +91,7 @@ void Engine::Render()
         cmdList->RSSetScissorRects(1, &debugRect);
 
         // 기존 SSAO PSO와 동일하게 그리기
-        cmdList->SetPipelineState(graphics->GetShader()->GetSSAOPSO());
+        cmdList->SetPipelineState(graphics->GetShader()->GetPSO(PSOType::SSAO));
         cmdList->SetGraphicsRootSignature(graphics->GetRootSig()->Get());
 
         ID3D12DescriptorHeap* heaps[] = { graphics->GetDeferredSRVHeap() };

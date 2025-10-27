@@ -666,7 +666,7 @@ void DX12Core::SetupLightng()
 void DX12Core::RenderFullscreenQuad()
 {
 	// 라이팅 PSO 설정
-	cmdList->SetPipelineState(shader->GetLightingPSO());
+	cmdList->SetPipelineState(shader->GetPSO(PSOType::Lighting));
 
 	// 정점 버퍼 없이 6개 정점으로 사각형 그리기 (2개 삼각형)
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -711,7 +711,7 @@ void DX12Core::RenderSSAO()
 	cmdList->ClearRenderTargetView(ssaoRTVHandle, clearColor, 0, nullptr);
 
 	// 4. Set SSAO PSO State
-	cmdList->SetPipelineState(shader->GetSSAOPSO());
+	cmdList->SetPipelineState(shader->GetPSO(PSOType::SSAO));
 
 	// 5. Set RootSig
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
