@@ -65,4 +65,9 @@ struct vec3 {
 		if (len == 0) return { 0, 0, 0 };
 		return *this / len;
 	}
+
+	float Dot(const vec3& other) const
+	{
+		return x * other.x + y * other.y + z * other.z;
+	}
 };

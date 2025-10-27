@@ -82,7 +82,12 @@ class CylinderShape : public CollisionShape {
 public:
 	CylinderShape() = delete;
 	CylinderShape(CollisionType type, const vec3& offset, float radius, float height, const vec3& direction)
-		: CollisionShape(ShapeType::Cylinder, type, offset), _radius(radius), _height(height), _direction(direction) {}
+		: CollisionShape(ShapeType::Cylinder, type, offset), _radius(radius), _height(height), _direction(direction) 
+	{
+		_direction = _direction.Normalize();
+		_endPoints[0] = _localOffset - _direction * (_height * 0.5f);
+		_endPoints[1] = _localOffset + _direction * (_height * 0.5f);
+	}
 	virtual ~CylinderShape() = default;
 
 	CylinderShape(const CylinderShape& other)
@@ -98,11 +103,13 @@ public:
 	float GetRadius() const { return _radius; }
 	float GetHeight() const { return _height; }
 	const vec3& GetDirection() const { return _direction; }
+	const vec3* GetEndPoints() const { return _endPoints; }
 
 private:
 	float _radius;
 	float _height;
 	vec3 _direction;
+	vec3 _endPoints[2];
 };
 
 namespace Collision {
