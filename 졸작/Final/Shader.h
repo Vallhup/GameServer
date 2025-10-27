@@ -24,6 +24,8 @@ enum class ShaderType {
 class Shader
 {
 public:
+	void InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* rootSig);
+
 	void InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);

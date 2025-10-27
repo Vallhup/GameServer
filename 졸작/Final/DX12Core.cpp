@@ -22,12 +22,7 @@ void DX12Core::Initialize(HWND hwnd)
 	ssao = make_unique<SSAO>();
 
 	rootSig->Initialize(GetDevice());
-	shader->InitializeForwardShader(GetDevice(), GetRootSig()->Get(), L"ForwardVS.hlsli", L"ForwardPS.hlsli");
-	shader->InitializeGBufferShader(GetDevice(), GetRootSig()->Get(), L"GBufferVS.hlsli", L"GBufferPS.hlsli");
-	shader->InitializeLightingShader(GetDevice(), GetRootSig()->Get(), L"FullscreenVS.hlsli", L"LightingPS.hlsli");
-	shader->InitializeComputeShader(GetDevice(), GetRootSig()->Get(), L"Animation.hlsli");
-	shader->InitializeShadowShader(GetDevice(), GetRootSig()->Get(), L"ShadowVS.hlsli", L"ShadowPS.hlsli");
-	shader->InitializeSSAOShader(GetDevice(), GetRootSig()->Get(), L"FullscreenVS.hlsli", L"SSAO.hlsli");
+	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
 	frameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
 	deferredLightCB->Initialize(GetDevice(), sizeof(DeferredLightConstants));

@@ -1,6 +1,16 @@
 #include "pch.h"
 #include "Shader.h"
 
+void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* rootSig)
+{
+    InitializeForwardShader(device, rootSig, L"ForwardVS.hlsli", L"ForwardPS.hlsli");
+    InitializeGBufferShader(device, rootSig, L"GBufferVS.hlsli", L"GBufferPS.hlsli");
+    InitializeLightingShader(device, rootSig, L"FullscreenVS.hlsli", L"LightingPS.hlsli");
+    InitializeComputeShader(device, rootSig, L"Animation.hlsli");
+    InitializeShadowShader(device, rootSig, L"ShadowVS.hlsli", L"ShadowPS.hlsli");
+    InitializeSSAOShader(device, rootSig, L"FullscreenVS.hlsli", L"SSAO.hlsli");
+}
+
 void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
 {
     CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::ForwardVS)]);
