@@ -3,8 +3,8 @@
 
 void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
 {
-    CompileShader(vsPath, "VSMain", "vs_5_1", forwardVertexShader);
-    CompileShader(psPath, "PSMain", "ps_5_1", forwardPixelShader);
+    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::ForwardVS)]);
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::ForwardPS)]);
 
     D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -19,8 +19,8 @@ void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
     psoDesc.pRootSignature = rootSig;
-    psoDesc.VS = { forwardVertexShader->GetBufferPointer(), forwardVertexShader->GetBufferSize() };
-    psoDesc.PS = { forwardPixelShader->GetBufferPointer(), forwardPixelShader->GetBufferSize() };
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::ForwardVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ForwardVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::ForwardPS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ForwardPS)]->GetBufferSize() };
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -55,8 +55,8 @@ void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* 
 
 void Shader::InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
 {
-    CompileShader(vsPath, "VSMain", "vs_5_1", gBufferVertexShader);
-    CompileShader(psPath, "PSMain", "ps_5_1", gBufferPixelShader);
+    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::GBufferVS)]);
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::GBufferPS)]);
 
     D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -71,8 +71,8 @@ void Shader::InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
     psoDesc.pRootSignature = rootSig;
-    psoDesc.VS = { gBufferVertexShader->GetBufferPointer(), gBufferVertexShader->GetBufferSize() };
-    psoDesc.PS = { gBufferPixelShader->GetBufferPointer(), gBufferPixelShader->GetBufferSize() };
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::GBufferVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::GBufferVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::GBufferPS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::GBufferPS)]->GetBufferSize() };
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -96,14 +96,14 @@ void Shader::InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* 
 
 void Shader::InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
 {
-    CompileShader(vsPath, "VSMain", "vs_5_1", fullscreenVertexShader);
-    CompileShader(psPath, "PSMain", "ps_5_1", lightingPixelShader);
+    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]);
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::LightingPS)]);
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { nullptr, 0 };  
     psoDesc.pRootSignature = rootSig;
-    psoDesc.VS = { fullscreenVertexShader->GetBufferPointer(), fullscreenVertexShader->GetBufferSize() };
-    psoDesc.PS = { lightingPixelShader->GetBufferPointer(), lightingPixelShader->GetBufferSize() };
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::LightingPS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::LightingPS)]->GetBufferSize() };
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -128,11 +128,11 @@ void Shader::InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature*
 
 void Shader::InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath)
 {
-    CompileShader(csPath, "CSMain", "cs_5_1", computeShader);
+    CompileShader(csPath, "CSMain", "cs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::AnimationCS)]);
 
     D3D12_COMPUTE_PIPELINE_STATE_DESC computePsoDesc = {};
     computePsoDesc.pRootSignature = rootSig;
-    computePsoDesc.CS = { computeShader->GetBufferPointer(), computeShader->GetBufferSize() };
+    computePsoDesc.CS = { mShadersBlobs[static_cast<size_t>(ShaderType::AnimationCS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::AnimationCS)]->GetBufferSize() };
 
     HRESULT hr = device->CreateComputePipelineState(&computePsoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Compute)]));
     MASSERT(SUCCEEDED(hr), "Failed to create Compute PSO");
@@ -140,8 +140,8 @@ void Shader::InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* 
 
 void Shader::InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
 {
-    CompileShader(vsPath, "VSMain", "vs_5_1", shadowVertexShader);
-    CompileShader(psPath, "PSMain", "ps_5_1", shadowPixelShader);
+    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::ShadowVS)]);
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::ShadowPS)]);
 
     D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -156,8 +156,8 @@ void Shader::InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* r
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
     psoDesc.pRootSignature = rootSig;
-    psoDesc.VS = { shadowVertexShader->GetBufferPointer(), shadowVertexShader->GetBufferSize() };
-    psoDesc.PS = { shadowPixelShader->GetBufferPointer(), shadowPixelShader->GetBufferSize() };
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::ShadowVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ShadowVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::ShadowPS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ShadowPS)]->GetBufferSize() };
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -174,14 +174,14 @@ void Shader::InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* r
 
 void Shader::InitializeSSAOShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
 {
-    CompileShader(vsPath, "VSMain", "vs_5_1", ssaoVertexShader);
-    CompileShader(psPath, "PSMain", "ps_5_1", ssaoPixelShader);
+    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::SSAOVS)]);
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::SSAOPS)]);
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { nullptr, 0 };
     psoDesc.pRootSignature = rootSig;
-    psoDesc.VS = { ssaoVertexShader->GetBufferPointer(), ssaoVertexShader->GetBufferSize() };
-    psoDesc.PS = { ssaoPixelShader->GetBufferPointer(), ssaoPixelShader->GetBufferSize() };
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::SSAOVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::SSAOVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::SSAOPS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::SSAOPS)]->GetBufferSize() };
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;

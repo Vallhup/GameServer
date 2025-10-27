@@ -11,6 +11,16 @@ enum class PSOType {
 	END
 };
 
+enum class ShaderType {
+	ForwardVS, ForwardPS,
+	GBufferVS, GBufferPS,
+	FullscreenVS, LightingPS,
+	AnimationCS,
+	ShadowVS, ShadowPS,
+	SSAOVS, SSAOPS,
+	END
+};
+
 class Shader
 {
 public:
@@ -28,28 +38,28 @@ private:
 
 private:
 	array<ComPtr<ID3D12PipelineState>, static_cast<size_t>(PSOType::END)> mPSOs;
+	array<ComPtr<ID3DBlob>, static_cast<size_t>(ShaderType::END)> mShadersBlobs;
+	//// Forward
+	//ComPtr<ID3DBlob> forwardVertexShader;
+	//ComPtr<ID3DBlob> forwardPixelShader;
 
-	// Forward
-	ComPtr<ID3DBlob> forwardVertexShader;
-	ComPtr<ID3DBlob> forwardPixelShader;
+	//// Deferred 1Pass
+	//ComPtr<ID3DBlob> gBufferVertexShader;
+	//ComPtr<ID3DBlob> gBufferPixelShader;
 
-	// Deferred 1Pass
-	ComPtr<ID3DBlob> gBufferVertexShader;
-	ComPtr<ID3DBlob> gBufferPixelShader;
+	//// Deferred 2Pass
+	//ComPtr<ID3DBlob> lightingPixelShader;
+	//ComPtr<ID3DBlob> fullscreenVertexShader;
 
-	// Deferred 2Pass
-	ComPtr<ID3DBlob> lightingPixelShader;
-	ComPtr<ID3DBlob> fullscreenVertexShader;
+	//// Compute
+	//ComPtr<ID3DBlob> computeShader;
 
-	// Compute
-	ComPtr<ID3DBlob> computeShader;
+	//// Shadow
+	//ComPtr<ID3DBlob> shadowVertexShader;
+	//ComPtr<ID3DBlob> shadowPixelShader;
 
-	// Shadow
-	ComPtr<ID3DBlob> shadowVertexShader;
-	ComPtr<ID3DBlob> shadowPixelShader;
-
-	// SSAO
-	ComPtr<ID3DBlob> ssaoVertexShader;
-	ComPtr<ID3DBlob> ssaoPixelShader;
+	//// SSAO
+	//ComPtr<ID3DBlob> ssaoVertexShader;
+	//ComPtr<ID3DBlob> ssaoPixelShader;
 };
 
