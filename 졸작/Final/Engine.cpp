@@ -73,6 +73,35 @@ void Engine::Render()
     sManager->RenderEffects();   // 이펙트를 먼저 그려야 머리카락이 안없어짐
     sManager->RenderForward();   // 머리카락 등 투명한 것들
 
+    if (graphics->GetSSAOState())
+    {
+        // 뷰포트를 오른쪽 하단으로 변경
+        D3D12_VIEWPORT debugVP = {
+            WinSize.x - 1220.f, WinSize.y - 620.f,  // 오른쪽 하단
+            1200.f, 600.f,  // 300x300 크기
+            0.0f, 1.0f
+        };
+        D3D12_RECT debugRect = {
+            (LONG)(WinSize.x - 1220), (LONG)(WinSize.y - 620),
+            (LONG)(WinSize.x - 20), (LONG)(WinSize.y - 20)
+        };
+
+        auto cmdList = graphics->GetGraphicsCmdList();
+        cmdList->RSSetViewports(1, &debugVP);
+        cmdList->RSSetScissorRects(1, &debugRect);
+
+        // 기존 SSAO PSO와 동일하게 그리기
+        cmdList->SetPipelineState(graphics->GetShader()->GetPSO(PSOType::SSAO));
+        cmdList->SetGraphicsRootSignature(graphics->GetRootSig()->Get());
+
+        ID3D12DescriptorHeap* heaps[] = { graphics->GetDeferredSRVHeap() };
+        cmdList->SetDescriptorHeaps(1, heaps);
+        cmdList->SetGraphicsRootDescriptorTable(13, graphics->GetDeferredSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+
+        cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        cmdList->DrawInstanced(6, 1, 0, 0);
+    }
+
     graphics->RenderEnd();
 
     ShowFps();

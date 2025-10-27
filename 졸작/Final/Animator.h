@@ -50,24 +50,10 @@ public:
     UploadBuffer* GetOffsetBuffer() const { return mOffsetBuffer.get(); }
     UploadBuffer* GetFinalBuffer() const { return mFinalBuffer.get(); }
 
-    int GetBoneCount() const { return mBoneCount; }
-    int GetCurrentFrame() const { return mFrame; }
-    int GetNextFrame() const { return mNextFrame; }
-    float GetFrameRatio() const { return mFrameRatio; }
-    int GetCurrentAnimOffset() const { return mCurrentAnimOffset; }
-
-    // 애니메이션 블렌딩 Getter
-    bool IsBlending() const { return mIsBlending; }         
-    int GetPrevCurrentFrame() const { return mPrevFrame; }
-    int GetPrevNextFrame() const { return mPrevNextFrame; }
-    float GetPrevFrameRatio() const { return mPrevFrameRatio; }
-    int GetPrevAnimOffset() const { return mPrevAnimOffset; }
-    float GetBlendRatio() const { return blendRatio; }
-
 private:
     void CreateBuffers(DX12Core& core);
 
-    vector<AnimClipInfo> mAnimations;  
+    vector<AnimClipInfo> mAnimations; 
     vector<BoneInfo> mBones;
 
     unique_ptr<UploadBuffer> mBoneFrameBuffer;    // 키프레임 데이터

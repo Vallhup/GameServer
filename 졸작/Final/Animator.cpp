@@ -190,21 +190,21 @@ void Animator::ExecuteComputeShader(DX12Core& core)
     //DebugAnimationInfo();
 
     AnimationConstants animData = {};
-    animData.boneCount = GetBoneCount();
-    animData.currentFrame = GetCurrentFrame();
-    animData.nextFrame = GetNextFrame();
-    animData.ratio = GetFrameRatio();
-    animData.animationOffset = GetCurrentAnimOffset();
-    animData.isBlending = IsBlending();
-    animData.prevCurrentFrame = GetPrevCurrentFrame();
-    animData.prevNextFrame = GetPrevNextFrame();
-    animData.prevRatio = GetPrevFrameRatio();
-    animData.prevAnimationOffset = GetPrevAnimOffset();
-    animData.blendRatio = GetBlendRatio();
+    animData.boneCount = mBoneCount;
+    animData.currentFrame = mFrame;
+    animData.nextFrame = mNextFrame;
+    animData.ratio = mFrameRatio;
+    animData.animationOffset = mCurrentAnimOffset;
+    animData.isBlending = mIsBlending;
+    animData.prevCurrentFrame = mPrevFrame;
+    animData.prevNextFrame = mPrevNextFrame;
+    animData.prevRatio = mPrevFrameRatio;
+    animData.prevAnimationOffset = mPrevAnimOffset;
+    animData.blendRatio = blendRatio;
 
     mAnimationCB->CopyData(&animData, sizeof(AnimationConstants));
 
-    cmdList->SetPipelineState(core.GetShader()->GetComputePSO());
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Compute));
     cmdList->SetComputeRootSignature(core.GetRootSig()->Get());
     cmdList->SetComputeRootConstantBufferView(2, mAnimationCB->GetGPUVirtualAddress());
 
@@ -231,7 +231,7 @@ void Animator::LoadAnimationFromImporter(DX12Core& core, const Importer& importe
 
 void Animator::DebugAnimationInfo()
 {
-    OutputDebugStringA(("Bone Count: " + to_string(GetBoneCount()) + "\n").c_str());
-    OutputDebugStringA(("Current Frame: " + to_string(GetCurrentFrame()) + "\n").c_str());
-    OutputDebugStringA(("Frame Ratio: " + to_string(GetFrameRatio()) + "\n").c_str());
+    OutputDebugStringA(("Bone Count: " + to_string(mBoneCount) + "\n").c_str());
+    OutputDebugStringA(("Current Frame: " + to_string(mFrame) + "\n").c_str());
+    OutputDebugStringA(("Frame Ratio: " + to_string(mFrameRatio) + "\n").c_str());
 }
