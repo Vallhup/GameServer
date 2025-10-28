@@ -16,27 +16,6 @@
 
 GameScene::~GameScene() = default;
 
-void GameScene::CreateKnightPool()
-{
-	int j = 0;
-
-	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
-	{
-		j = i / 10;
-		auto knight = make_shared<MainCharacter>();
-		knight->SetId(-1);
-		auto meshRenderer = knight->AddComponent<MeshRenderer>();
-		auto transform = knight->AddComponent<Transform>();
-		auto animator = knight->AddComponent<Animator>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f - (1.f *j));
-		transform->SetRotation(-1.57f, 0.f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		knightPool.push_back(knight);
-		AddGameObject(knight);
-	}
-}
-
 void GameScene::CreateDragon()
 {
 	dragon = make_shared<GameObject>();
@@ -113,17 +92,6 @@ void GameScene::CreateEffectSamples()
 	}
 }
 
-shared_ptr<MainCharacter> GameScene::GetAvailableKnight() const
-{
-	for (auto& knight : knightPool)
-	{
-		if (knight->GetId() == -1)
-			return knight;
-	}
-
-	return nullptr;
-}
-
 void GameScene::Release()
 {
 }
@@ -132,8 +100,6 @@ void GameScene::Reset()
 {
 	// TODO: 씬 데이터 리셋 코드 추가
 	dragon.reset();
-	knightPool.clear();
-	activePlayers.clear();
 	myPlayer = nullptr;
 	gameObjects.clear();
 
@@ -166,20 +132,31 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 			if (add.ParseFromArray(packet.body().data(), packet.body().size())) {
 				Protocol::Vec3 pos = add.pos();
 
-				auto player = GetAvailableKnight();
-				if (player) {
-					player->SetId(sessionId);
-					auto transform = player->GetComponent<Transform>();
-					transform->SetInitPosition(pos.x(), pos.y(), pos.z());
-
-					activePlayers[sessionId] = player;
+				auto knight = objManager.GetGameObject(PoolType::KNIGHT);
+				if (!knight) {
+					OutputDebugStringA("No knight existing!!\n");
+					break;
 				}
 
-				if (sessionId == GET(Input).GetClientID()) {
-					myPlayer = player;
-					myPlayer->SetCamera(cam.get());
-					OutputDebugStringA("My character activated!\n");
-				} 
+				if (objManager.ActivateObject(PoolType::KNIGHT, sessionId, knight)) {
+					auto transform = knight->GetComponent<Transform>();
+					transform->SetInitPosition(pos.x(), pos.y(), pos.z());
+
+					gameObjects.push_back(knight);
+
+					if (sessionId == GET(Input).GetClientID()) {
+						myPlayer = dynamic_pointer_cast<MainCharacter>(knight);
+						if (myPlayer) {
+							myPlayer->SetCamera(cam.get());
+							OutputDebugStringA("My character activated!\n");
+						}
+					}
+
+					OutputDebugStringA(("Player " + to_string(sessionId) + " spawned\n").c_str());
+				}
+				else {
+					OutputDebugStringA("ERROR: Failed to activate knight!\n");
+				}
 			}
 			break;
 		}
@@ -188,10 +165,9 @@ void GameScene::HandlePacket(const Protocol::GamePacket& packet)
 			if (move.ParseFromArray(packet.body().data(), packet.body().size())) {
 				Protocol::Vec3 pos = move.pos();
 
-				auto it = activePlayers.find(sessionId);
-				if (it != activePlayers.end())
-				{
-					auto transform = it->second->GetComponent<Transform>();
+				auto knight = objManager.FindActiveObject(PoolType::KNIGHT, sessionId);
+				if (knight) {
+					auto transform = knight->GetComponent<Transform>();
 					transform->SetPosition(pos.x(), pos.y(), pos.z());
 					transform->SetTargetRotation(move.rot());
 				}
@@ -231,13 +207,36 @@ const float* GameScene::GetBackgroundColor()
 
 void GameScene::InitializeSceneObjectPools()
 {
+#pragma region Initialize Knights
+
+	PoolInfo knightInfo;
+	knightInfo.poolSize = 100;
+	knightInfo.createFunc = [this]() -> shared_ptr<GameObject> {
+		auto knight = make_shared<MainCharacter>();
+		auto meshRenderer = knight->AddComponent<MeshRenderer>();
+		auto transform = knight->AddComponent<Transform>();
+		auto animator = knight->AddComponent<Animator>();
+
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+		transform->SetRotation(-1.57f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+
+		return knight;
+		};
+
+	objManager.Initialize(PoolType::KNIGHT, knightInfo);
+
+	OutputDebugStringA("Knights pool has initialized!!\n");
+
+#pragma endregion
+
+
 }
 
 void GameScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
 
-	CreateKnightPool();
 	CreateDragon();
 	CreateCastle();
 	CreateEffectSamples();

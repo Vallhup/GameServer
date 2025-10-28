@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "ObjectPoolManager.h"
 
 class NetworkManager;
 
@@ -11,11 +12,9 @@ public:
 	GameScene& operator=(const GameScene&) = delete;
 	~GameScene();
 
-	void CreateKnightPool();
 	void CreateDragon();
 	void CreateCastle();
 	void CreateEffectSamples();
-	shared_ptr<MainCharacter> GetAvailableKnight() const;
 
 	void SetNetworkManager(NetworkManager* nManager) { _nManager = nManager; }
 
@@ -39,15 +38,10 @@ protected:
 
 private:
 	NetworkManager* _nManager{ nullptr };
+	ObjectPoolManager objManager;
 
 	vector<shared_ptr<GameObject>> gameObjects;
-
 	shared_ptr<GameObject> dragon;
-
-	vector<shared_ptr<MainCharacter>> knightPool;
-	static constexpr int MAX_KNIGHT_COUNT = 100;
-	unordered_map<int, shared_ptr<MainCharacter>> activePlayers;
 	shared_ptr<MainCharacter> myPlayer;
-
 	vector<shared_ptr<GameObject>> effectObjects;
 };

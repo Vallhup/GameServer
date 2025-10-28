@@ -8,8 +8,8 @@ void ObjectPoolManager::Initialize(PoolType type, const PoolInfo& info)
 	
 	ClearPools(type);
 	
-	pools[type].reserve(info.maxSize);
-	for (size_t i = 0; i < info.initSize; ++i) {
+	pools[type].reserve(info.poolSize);
+	for (size_t i = 0; i < info.poolSize; ++i) {
 		auto obj = info.createFunc();
 		obj->SetId(-1);
 		pools[type].push_back(obj);
