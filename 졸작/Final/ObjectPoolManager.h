@@ -12,8 +12,7 @@ enum class PoolType{
 };
 
 struct PoolInfo {
-	size_t initSize = 1;
-	size_t maxSize = 5;
+	size_t poolSize = 1;
 	function<shared_ptr<GameObject>()> createFunc;
 };
 
