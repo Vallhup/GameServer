@@ -81,10 +81,6 @@
 #include "ObjectManager.h"
 
 #include "Instance.h"
-#include "TownInstance.h"
-#include "MainInstance.h"
-#include "BossInstance.h"
-#include "PvpInstance.h"
 #include "TestInstance.h"
 
 #include "UserRepository.h"

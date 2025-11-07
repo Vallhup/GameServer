@@ -4,7 +4,7 @@
 Instance::Instance(int id, InstanceType type, IGameContext& gameCtx)
 	: _id(id), _type(type), _gameCtx(gameCtx) 
 {
-	_objMng = std::make_unique<ObjectManager>();
+	//_objMng = std::make_unique<ObjectManager>();
 	_gameLogic = std::make_unique<GameLogic>(this);
 }
 
@@ -18,6 +18,8 @@ void Instance::Update(float deltaTime)
 		// 게임 로직 업데이트
 		_gameLogic->LogicUpdate(deltaTime);
 		_gameLogic->NetworkUpdate();
+
+		_gameCtx.GetSessionManager().FlushAllSessions();
 
 		// Update Flag 초기화
 		_isUpdating.store(false);
@@ -42,7 +44,8 @@ void Instance::AddPlayer(Session* session)
 	session->SetState(SessionState::ST_INGAME);
 	session->RegisterSend(PacketFactory::SCLoginPacket(session->GetId()));
 
-	_objMng->AddObject(std::move(character));
+	//_objMng->AddObject(std::move(character));
+	_objects.insert(std::make_pair(character->GetId(), std::move(character)));
 	_sessions.insert(session->GetId());
 
 	Protocol::Vec3 packetPos;
@@ -74,8 +77,8 @@ void Instance::AddPlayer(Session* session)
 }
 
 void Instance::RemovePlayer(int sessionId)
-{
-	_objMng->RemoveObject(sessionId);
+{  
+	//_objMng->RemoveObject(sessionId);
 	_sessions.erase(sessionId);
 }
 
@@ -93,17 +96,34 @@ void Instance::BroadCast(const std::vector<char>& packet, int exceptId)
 
 void Instance::AddObject(std::unique_ptr<GameObject> obj)
 {
-	_objMng->AddObject(std::move(obj));
+	//_objMng->AddObject(std::move(obj));
 }
 
 void Instance::RemoveObject(int id)
 {
-	_objMng->RemoveObject(id);
+	//_objMng->RemoveObject(id);
+}
+
+GameObject* Instance::GetGameObject(int id) const
+{
+	auto it = _objects.find(id);
+	if (it != _objects.end()) {
+		return it->second.get();
+	}
+
+	return nullptr;
 }
 
 std::vector<GameObject*> Instance::GetGameObjectList() const
 {
-	return _objMng->GetGameObjectList();
+	std::vector<GameObject*> objectList;
+	objectList.reserve(_objects.size());
+
+	for (const auto& [id, object] : _objects) {
+		objectList.push_back(object.get());
+	}
+
+	return objectList;
 }
 
 void Instance::DequeueJobs()

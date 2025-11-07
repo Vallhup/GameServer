@@ -41,7 +41,7 @@ public:
 	int GetId() const { return _id; }
 	IGameLogic& GetGameLogic() const { return *_gameLogic; }
 	bool IsActive() const { return _isActive.load(); }
-	GameObject* GetGameObject(int id) const { return _objMng->GetGameObject(id); }
+	GameObject* GetGameObject(int id) const;
 	std::vector<GameObject*> GetGameObjectList() const;
 
 public:
@@ -61,5 +61,6 @@ protected:
 	JobQueue _jobQueue;
 	std::unordered_set<int> _sessions;
 	std::unique_ptr<class IGameLogic> _gameLogic;
-	std::unique_ptr<class IObjectManager> _objMng;
+	//std::unique_ptr<class IObjectManager> _objMng;
+	concurrency::concurrent_unordered_map<int, std::unique_ptr<GameObject>> _objects;
 };

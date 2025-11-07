@@ -25,19 +25,21 @@ void SessionManager::AddSession(SOCKET clientSocket)
 
 void SessionManager::RemoveSession(int sessionId)
 {
-	std::unique_lock lock{ _mutex };
-	auto it = _sessions.find(sessionId);
-	if (it != _sessions.end()) {
-		if (auto character = it->second->GetCharacter()) {
-			character->GetInstance()->EnqueueJob([character, sessionId]()
-				{
-					character->GetInstance()->RemovePlayer(sessionId); 
-				});
-
-
-		}
-	}
-	_sessions.erase(sessionId);
+	_gameCtx.GetJobQueue().Push(new TimerJob(
+		[this, sessionId]()
+		{
+			std::unique_lock lock{ _mutex };
+			auto it = _sessions.find(sessionId);
+			if (it != _sessions.end()) {
+				if (auto character = it->second->GetCharacter()) {
+					character->GetInstance()->EnqueueJob([character, sessionId]()
+						{
+							character->GetInstance()->RemovePlayer(sessionId);
+						});
+				}
+			}
+			_sessions.erase(sessionId);
+		}, std::chrono::high_resolution_clock::now()));
 }
 
 Session* SessionManager::GetSession(int sessionId)
@@ -78,6 +80,17 @@ SendOver* SessionManager::GetSendOver()
 void SessionManager::ReleaseSendOver(SendOver* sendOver)
 {
 	_sendOverPool.Release(sendOver);
+}
+
+void SessionManager::FlushAllSessions()
+{
+	std::shared_lock lock{ _mutex };
+
+	for (auto& [id, session] : _sessions) {
+		if (session) {
+			session->InternalSend();
+		}
+	}
 }
 
 void SessionManager::OnSessionPacket(int sessionId, const std::vector<char>& packet)

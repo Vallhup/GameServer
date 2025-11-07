@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Session.h"
 
-Session::Session(int id, SOCKET socket, ISessionManager* owner) 
-	: _id(id), _socket(socket), _owner(owner), _pendingIoCount(0), _shouldRelease(false), _state(SessionState::ST_ALLOC)
+Session::Session(int id, SOCKET socket, SessionManager* owner) 
+	: _id(id), _socket(socket), _owner(owner), _pendingIoCount(0), _shouldRelease(false), _state(SessionState::ST_ALLOC), _character(nullptr)
 {
 }
 
@@ -69,11 +69,6 @@ void Session::RegisterSend(const std::vector<char>& data)
 	}
 
 	_sendQueue.push(data);
-
-	bool expected{ false };
-	if (_isSending.compare_exchange_strong(expected, true)) {
-		InternalSend();
-	}
 }
 
 void Session::ProcessRecv(DWORD numBytes)
@@ -136,8 +131,6 @@ void Session::ProcessSend()
 			_owner->RemoveSession(_id);
 		}
 	}
-
-	InternalSend();
 }
 
 void Session::DisConnect()

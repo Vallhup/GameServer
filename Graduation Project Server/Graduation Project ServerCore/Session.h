@@ -1,7 +1,7 @@
 #pragma once
 
 class GameObject;
-class ISessionManager;
+class SessionManager;
 
 enum class SessionState : char {
 	ST_ALLOC,
@@ -10,13 +10,13 @@ enum class SessionState : char {
 };
 
 class Session : public IocpObject {
-	static constexpr int MAX_PACKET{ 32 };
+	static constexpr int MAX_PACKET{ 256 };
 
 	using PacketHandler = std::function<void(int, const std::vector<char>&)>;
 
 public:
 	Session() = delete;
-	Session(int id, SOCKET socket, ISessionManager* owner);
+	Session(int id, SOCKET socket, SessionManager* owner);
 	virtual ~Session();
 
 public:
@@ -41,7 +41,7 @@ public:
 	void SetCharacter(GameObject* character) { _character = character; }
 	void SetState(SessionState state) { _state = state; }
 
-private:
+public:
 	void InternalSend();
 
 private:
@@ -58,7 +58,7 @@ private:
 	std::atomic<SessionState> _state;
 
 	GameObject* _character;
-	ISessionManager* _owner;
+	SessionManager* _owner;
 
 	std::atomic<int> _pendingIoCount;
 	std::atomic<bool> _shouldRelease;

@@ -4,7 +4,10 @@ class TestInstance : public Instance {
 public:
 	TestInstance() = delete;
 	TestInstance(int id, IGameContext& gameCtx) 
-		: Instance(id, InstanceType::Test, gameCtx) { LoadStaticGameObject(); }
+		: Instance(id, InstanceType::Test, gameCtx) 
+	{ 
+		LoadStaticGameObject();
+	}
 	virtual ~TestInstance() = default;
 
 public:
@@ -14,4 +17,3 @@ public:
 private:
 	virtual void LoadStaticGameObject() override;
 };
-

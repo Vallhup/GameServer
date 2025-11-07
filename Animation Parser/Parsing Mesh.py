@@ -108,6 +108,7 @@ def save_capsule_to_json(object_name, mesh_folder, output_path):
             axis, radius, c1, c2 = CapsuleExtractor(points)
             center = (c1 + c2) / 2
             direction = (c2 - c1)
+            # direction = np.array([direction[2], direction[0], direction[1]])
             direction /= np.linalg.norm(direction)
             height = np.linalg.norm(c2 - c1)
             
@@ -126,8 +127,6 @@ def save_capsule_to_json(object_name, mesh_folder, output_path):
 
 def draw_cylinder_surface(ax, c1, c2, radius, color="skyblue", n_steps=24):
     """c1, c2, radius로 실린더를 3D로 그림 (구머리 없음)"""
-    import numpy as np
-
     u = c2 - c1
     height = np.linalg.norm(u)
     if height < 1e-6:
@@ -209,14 +208,12 @@ def draw_all_meshes(mesh_folder):
 if __name__ == "__main__":
     # save_capsule_to_json(
     #     object_name="Knight",
-    #     mesh_folder=r"C:\Users\Hadenpel\Desktop\GameServer\Graduation Project Server\Graduation Project ServerCore\animation",
-    #     output_path=r"C:\Users\Hadenpel\Desktop\GameServer\Graduation Project Server\Graduation Project ServerCore\animation\knight_capules.json"
+    #     mesh_folder=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser",
+    #     output_path=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight_cylinders.json"
     # )
-    
-   mesh_folder = r"C:\Users\Hadenpel\Desktop\GameServer\Graduation Project Server\Graduation Project ServerCore\animation"
-   draw_all_meshes(mesh_folder)
-    
-    
+
+    mesh_folder = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser"
+    draw_all_meshes(mesh_folder)
     
 def draw_capsule(points, c1, c2, radius, n_steps=40):
     P = np.array(points)

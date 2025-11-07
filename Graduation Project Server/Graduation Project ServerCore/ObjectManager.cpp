@@ -9,12 +9,12 @@ int IObjectManager::GenerateObjectId()
 
 void ObjectManager::AddObject(std::unique_ptr<GameObject> object)
 {
-    _objects.try_emplace(object->GetId(), std::move(object));
+    _objects.insert(std::make_pair(object->GetId(), std::move(object)));
 }
 
 void ObjectManager::RemoveObject(int objectId)
 {
-    _objects.erase(objectId);
+    //_objects.erase(objectId);
 }
 
 GameObject* ObjectManager::GetGameObject(int objectId) const

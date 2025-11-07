@@ -8,7 +8,7 @@ void ServerStart()
 	setlocale(LC_ALL, "korean");
 
 	Logger::Init("", "C:/Users/Hadenpel/Desktop/GameServer/Graduation Project Server/Graduation Project ServerCore/");
-	Logger::SetLevel(LogLevel::Error);
+	Logger::SetLevel(LogLevel::Debug);
 
 	auto service = std::make_unique<Service>();
 
@@ -25,8 +25,8 @@ void ServerStart()
 
 int main()
 {
-	//ServerStart();
-	CollisionManager mgr;
+	ServerStart();
+	/*CollisionManager mgr;
 	mgr.LoadFromJson("animation/knight_cylinders.json");
 
 	const auto shapes = mgr.GetShapes("Knight");
@@ -41,5 +41,5 @@ int main()
 			<< c->GetLocalOffset().x << ", " << c->GetLocalOffset().y << ", " << c->GetLocalOffset().z
 			<< "), radius: " << c->GetRadius() << ", height: " << c->GetHeight() << ", direction(" 
 			<< c->GetDirection().x << ", " << c->GetDirection().y << ", " << c->GetDirection().z << ")\n";
-	}
+	}*/
 }

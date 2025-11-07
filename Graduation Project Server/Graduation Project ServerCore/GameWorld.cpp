@@ -10,18 +10,6 @@ void GameWorld::AddInstance(InstanceType type)
 {
 	std::shared_ptr<Instance> instance;
 	switch (type) {
-	case InstanceType::Town:
-		instance = std::make_shared<TownInstance>(_nextInstanceId, _gameCtx);
-		break;
-	case InstanceType::Main:
-		instance = std::make_shared<MainInstance>(_nextInstanceId, _gameCtx);
-		break;
-	case InstanceType::Boss:
-		instance = std::make_shared<BossInstance>(_nextInstanceId, _gameCtx);
-		break;
-	case InstanceType::Pvp:
-		instance = std::make_shared<PvpInstance>(_nextInstanceId, _gameCtx);
-		break;
 	case InstanceType::Test:
 		instance = std::make_shared<TestInstance>(_nextInstanceId, _gameCtx);
 		break;

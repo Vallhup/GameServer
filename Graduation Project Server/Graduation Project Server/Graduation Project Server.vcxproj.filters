@@ -21,6 +21,9 @@
     <Filter Include="Main\Pch">
       <UniqueIdentifier>{77894eaf-5272-4dc7-b5f2-a0da53cc5ef3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{d5bb012a-c44a-4e1c-be61-9a958ccb89fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -29,5 +32,10 @@
     <ClInclude Include="Benchmark.h">
       <Filter>Benchmark</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="animation\knight_cylinders.json">
+      <Filter>Data</Filter>
+    </None>
   </ItemGroup>
 </Project>

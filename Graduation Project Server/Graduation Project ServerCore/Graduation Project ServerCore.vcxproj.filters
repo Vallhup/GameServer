@@ -55,9 +55,6 @@
     <Filter Include="Game\GamePlay\DBJob">
       <UniqueIdentifier>{944697a7-377b-41e7-afec-65a70fa4537d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Animation">
-      <UniqueIdentifier>{4c72447a-e658-4d21-8753-b504f5beb9f6}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -106,18 +103,6 @@
       <Filter>Database</Filter>
     </ClCompile>
     <ClCompile Include="Instance.cpp">
-      <Filter>Game\Instance</Filter>
-    </ClCompile>
-    <ClCompile Include="TownInstance.cpp">
-      <Filter>Game\Instance</Filter>
-    </ClCompile>
-    <ClCompile Include="MainInstance.cpp">
-      <Filter>Game\Instance</Filter>
-    </ClCompile>
-    <ClCompile Include="BossInstance.cpp">
-      <Filter>Game\Instance</Filter>
-    </ClCompile>
-    <ClCompile Include="PvpInstance.cpp">
       <Filter>Game\Instance</Filter>
     </ClCompile>
     <ClCompile Include="IComponent.cpp">
@@ -258,18 +243,6 @@
     <ClInclude Include="Instance.h">
       <Filter>Game\Instance</Filter>
     </ClInclude>
-    <ClInclude Include="TownInstance.h">
-      <Filter>Game\Instance</Filter>
-    </ClInclude>
-    <ClInclude Include="MainInstance.h">
-      <Filter>Game\Instance</Filter>
-    </ClInclude>
-    <ClInclude Include="BossInstance.h">
-      <Filter>Game\Instance</Filter>
-    </ClInclude>
-    <ClInclude Include="PvpInstance.h">
-      <Filter>Game\Instance</Filter>
-    </ClInclude>
     <ClInclude Include="IComponent.h">
       <Filter>Game\Component</Filter>
     </ClInclude>
@@ -351,9 +324,6 @@
     <ClInclude Include="DBJob.h">
       <Filter>Game\GamePlay\DBJob</Filter>
     </ClInclude>
-    <ClInclude Include="animation\json.hpp">
-      <Filter>Animation</Filter>
-    </ClInclude>
     <ClInclude Include="CollisionManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -365,9 +335,6 @@
     </None>
     <None Include="protos\Enum.proto">
       <Filter>Protocol\proto</Filter>
-    </None>
-    <None Include="animation\knight_cylinders.json">
-      <Filter>Animation</Filter>
     </None>
   </ItemGroup>
 </Project>

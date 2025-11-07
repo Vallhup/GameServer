@@ -38,20 +38,20 @@ void LogicJob::Execute()
 	}
 }
 
-//void ObjectBatchJob::Execute()
+/*---------------[ LogicUpdateJob ]---------------*/
+
+//LogicUpdateJob::LogicUpdateJob(Instance* i, size_t s, size_t e, float dT, const std::shared_ptr<std::barrier<>>& b)
+//	: Job(), instance(i), start(s), end(e), deltaTime(dT), barrier(b)
 //{
-//	auto list = _instance->GetGameObjectList();
-//	for (size_t i = _start; i < _end && i < list.size(); ++i) {
-//		list[i]->LogicUpdate(_deltaTime);
-//	}
-//	// 완료 처리
-//	if (--_instance->_pendingBatches == 0) {
-//		_instance->GetJobQueue().Push(new FinalizeJob(_instance));
-//	}
 //}
 //
-//void FinalizeJob::Execute()
+//void LogicUpdateJob::Execute()
 //{
-//	_inst->GetGameLogic().NetworkUpdate(); // 이번 틱 결과 전송
-//	_inst->_isUpdating.store(false);       // 다음 틱 허용
+//	auto objList = instance->GetGameObjectList();
+//	for (size_t i = start; i < end; ++i) {
+//		objList[i]->LogicUpdate(deltaTime);
+//	}
+//
+//	//cnt->fetch_sub(1);
+//	barrier->arrive_and_wait();
 //}

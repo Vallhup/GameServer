@@ -1,31 +1,18 @@
 #pragma once
 
-class IGameWorld {
-public:
-	virtual ~IGameWorld() = default;
-
-public:
-	virtual void AddInstance(InstanceType type) = 0;
-	virtual void RemoveInstance(int instanceId) = 0;
-
-	virtual Instance* GetInstance(int instanceId) = 0;
-
-	virtual void Update(float deltaTime) = 0;
-};
-
-class GameWorld : public IGameWorld {
+class GameWorld {
 public:
 	GameWorld() = delete;
 	GameWorld(IGameContext& gameCtx);
 	virtual ~GameWorld() = default;
 
 public:
-	virtual void AddInstance(InstanceType type) override;
-	virtual void RemoveInstance(int instanceId) override;
+	void AddInstance(InstanceType type);
+	void RemoveInstance(int instanceId);
 
-	virtual Instance* GetInstance(int instanceId) override;
+	Instance* GetInstance(int instanceId);
 
-	virtual void Update(float deltaTime) override;
+	void Update(float deltaTime);
 
 private:
 	IGameContext& _gameCtx;

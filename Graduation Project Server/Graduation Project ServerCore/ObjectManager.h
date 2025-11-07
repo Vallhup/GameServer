@@ -1,5 +1,7 @@
 #pragma once
 
+#include <concurrent_unordered_map.h>
+
 class IObjectManager {
 public:
 	static int GenerateObjectId();
@@ -28,6 +30,6 @@ public:
 	virtual std::vector<GameObject*> GetGameObjectList() const override;
 
 private:
-	std::unordered_map<int, std::unique_ptr<GameObject>> _objects;
+	concurrency::concurrent_unordered_map<int, std::unique_ptr<GameObject>> _objects;
 };
 

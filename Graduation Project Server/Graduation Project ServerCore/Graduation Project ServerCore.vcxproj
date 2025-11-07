@@ -170,8 +170,6 @@
     <ClInclude Include="Action.h" />
     <ClInclude Include="ActionComponent.h" />
     <ClInclude Include="AIComponent.h" />
-    <ClInclude Include="animation\json.hpp" />
-    <ClInclude Include="BossInstance.h" />
     <ClInclude Include="BTNode.h" />
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="CollisionManager.h" />
@@ -196,7 +194,6 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="DBJob.h" />
     <ClInclude Include="Macro.h" />
-    <ClInclude Include="MainInstance.h" />
     <ClInclude Include="ObjectPool.h" />
     <ClInclude Include="PacketFactory.h" />
     <ClInclude Include="Protocols\Enum.pb.h" />
@@ -209,13 +206,11 @@
     <ClInclude Include="NormalBehavior.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="PvpInstance.h" />
     <ClInclude Include="RecvBuffer.h" />
     <ClInclude Include="ScriptVM.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="SessionManager.h" />
-    <ClInclude Include="TownInstance.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="UserRepository.h" />
   </ItemGroup>
@@ -223,7 +218,6 @@
     <ClCompile Include="Action.cpp" />
     <ClCompile Include="ActionComponent.cpp" />
     <ClCompile Include="AIComponent.cpp" />
-    <ClCompile Include="BossInstance.cpp" />
     <ClCompile Include="BTNode.cpp" />
     <ClCompile Include="CollisionComponent.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
@@ -247,7 +241,6 @@
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="DBJob.cpp" />
-    <ClCompile Include="MainInstance.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
     <ClCompile Include="NormalBehavior.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
@@ -277,7 +270,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PvpInstance.cpp" />
     <ClCompile Include="RecvBuffer.cpp" />
     <ClCompile Include="ScriptVM.cpp" />
     <ClCompile Include="Service.cpp" />
@@ -285,12 +277,10 @@
     <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="TestInstance.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
-    <ClCompile Include="TownInstance.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="UserRepository.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="animation\knight_cylinders.json" />
     <None Include="protos\Enum.proto" />
     <None Include="protos\Protocol.proto" />
     <None Include="protos\Struct.proto" />

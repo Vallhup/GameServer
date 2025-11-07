@@ -47,9 +47,7 @@ bool Service::Start()
 
 		_tickThread = std::thread([this]() { TickFunc(); });
 		_iocpWorker.Start(2, [this]() { IocpFunc();});
-		_dispatcherThread = std::thread([this]() { LogicFunc(); });
-		_logicWorker.Start(threadCount);
-		//_logicWorker.Start(threadCount, [this]() { LogicFunc();});
+		_logicWorker.Start(threadCount, [this]() { LogicFunc();});
 
 		return true;
 	}
@@ -133,11 +131,7 @@ void Service::LogicFunc()
 		Job* job{ nullptr };
 		if (_jobQueue.TryPop(job)) {
 			if (job) {
-				_logicWorker.Enqueue([job]()
-					{
-						job->Execute();
-						delete job;
-					});
+				job->Execute();
 			}
 		}
 	}

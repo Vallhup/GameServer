@@ -27,6 +27,22 @@ private:
 	Instance* _instance;
 };
 
+//class TestLogic : public IGameLogic {
+//public:
+//	TestLogic() = delete;
+//	TestLogic(Instance* instance);
+//	virtual ~TestLogic() = default;
+//
+//public:
+//	virtual void LogicUpdate(float deltaTime) override;
+//	virtual void NetworkUpdate() override;
+//	virtual void OnPlayerAction(int sessionId, Protocol::CS_INPUT_PACKET packet) override;
+//
+//private:
+//	Instance* _instance;
+//	std::atomic<int> _logicCnt;
+//};
+
 // 발전 사항
 //
 // 1. LogicUpdate Multi-Thread화
