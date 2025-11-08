@@ -167,7 +167,7 @@ def main(json_path, bone_path, out_gif="knight_cylinders_anim.gif"):
 if __name__ == "__main__":
     # 파일 경로 수정해서 사용하세요
     
-    cylinder_path = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight_cylinders.json"
-    animation_path = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight5_Walk_mixamo.com_baked.bone"
+    cylinder_path = r"C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\Animation Parser\knight_cylinders.json"
+    animation_path = r"C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\Animation Parser\knight5_Walk_mixamo.com_baked.bone"
     
     main(cylinder_path, animation_path)

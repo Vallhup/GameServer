@@ -208,11 +208,11 @@ def draw_all_meshes(mesh_folder):
 if __name__ == "__main__":
     # save_capsule_to_json(
     #     object_name="Knight",
-    #     mesh_folder=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser",
-    #     output_path=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight_cylinders.json"
+    #     mesh_folder=r"C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\Animation Parser",
+    #     output_path=r"C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\Animation Parser\knight_cylinders.json"
     # )
 
-    mesh_folder = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser"
+    mesh_folder = r"C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\Animation Parser"
     draw_all_meshes(mesh_folder)
     
 def draw_capsule(points, c1, c2, radius, n_steps=40):
