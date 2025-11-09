@@ -39,36 +39,42 @@ def load_mesh(path):
 # ---------------- Bone Parser (대체) ----------------
 def load_bone_file(path):
     frames = []
-    with open(path, "r", encoding="utf-8", errors="ignore") as f:
-        lines = [line.strip() for line in f if line.strip()]
-
-    frame_pattern = re.compile(r"Frame\[(\d+)\]")
-    bone_pattern = re.compile(r"Bone\[(\d+)\]:\s*(.+)")
-
-    idx = 0
-    while idx < len(lines):
-        line = lines[idx]
-        frame_match = frame_pattern.match(line)
-        if frame_match:
-            bones = {}
-            idx += 1
-            while idx < len(lines) and not frame_pattern.match(lines[idx]):
-                bone_match = bone_pattern.match(lines[idx])
-                if bone_match:
-                    bone_id = int(bone_match.group(1))
-                    idx += 1
-                    matrix = []
-                    for _ in range(4):
-                        if idx < len(lines):
-                            row = list(map(float, lines[idx].split()))
-                            matrix.append(row)
-                            idx += 1
-                    bones[bone_id] = np.array(matrix, dtype=np.float32)
+    with open(path, "r", encoding="utf-8") as f:
+        lines = [line.rstrip() for line in f]
+    
+    i = 0
+    while i < len(lines):
+        if lines[i].startswith("Frame["):
+            frame_bones = {}
+            i += 1
+            
+            while i < len(lines) and not lines[i].startswith("Frame["):
+                if lines[i].strip().startswith("Bone["):
+                    bone_match = re.match(r'\s*Bone\[(\d+)\]:', lines[i])
+                    if bone_match:
+                        bone_id = int(bone_match.group(1))
+                        i += 1
+                        
+                        matrix = []
+                        for _ in range(4):
+                            if i < len(lines) and lines[i].strip():
+                                row = [float(x) for x in lines[i].split()]
+                                matrix.append(row)
+                                i += 1
+                            else:
+                                i += 1
+                        
+                        if len(matrix) == 4:
+                            mat = np.array(matrix, dtype=np.float32)
+                            # ★ 전치 (DirectX 행 우선 → NumPy 열 우선)
+                            frame_bones[bone_id] = mat.T
                 else:
-                    idx += 1
-            frames.append(bones)
+                    i += 1
+            
+            frames.append(frame_bones)
         else:
-            idx += 1
+            i += 1
+    
     return frames
 
 # ---------------- Skinning ----------------
@@ -86,7 +92,10 @@ def skin_vertices(verts, bones_dict):
             if b not in bones_dict or w[j] == 0:
                 continue
             skinned += w[j] * (bones_dict[b] @ P)
+        
+        # ★ 변환 제거 (베이킹 파일이 이미 최종 좌표계)
         out[vi] = skinned[:3]
+    
     return out
 
 # ---------------- Rendering ----------------
@@ -124,11 +133,16 @@ def main(asset_dir):
     bone_frames = load_bone_file(os.path.join(asset_dir,"knight5_Walk_mixamo.com_baked.bone"))
     n_frames = len(bone_frames)
 
+    print("\n=== Frame 0, Bone 53 ===")
+    print(bone_frames[0][53])
+    print("\n=== Frame 1, Bone 53 ===")
+    print(bone_frames[1][53])
+
     # Preview
     fig = plt.figure(figsize=(6,6)); ax = fig.add_subplot(111, projection='3d')
-    verts0 = skin_vertices(all_verts, bone_frames[0])
+    verts0 = skin_vertices(all_verts, bone_frames[1])
     render_frame(ax, verts0, faces)
-    plt.title("Frame 0 (skinned)"); plt.show()
+    plt.title("Frame 1 (skinned)"); plt.show()
 
     # GIF
     fig2 = plt.figure(figsize=(6,6)); ax2 = fig2.add_subplot(111, projection='3d')
