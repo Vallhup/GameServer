@@ -314,7 +314,7 @@ void FBXLoader::LoadAllTextures(FbxSurfaceMaterial* surfaceMaterial, FbxMaterial
 				else if (ContainsKeyword(propName, { "transparency", "alpha", "opacity" })) {
 					material.alphaTexName = textureName;
 				}
-				else if (ContainsKeyword(propName, { "emission", "emissive" })) {
+				else if (ContainsKeyword(propName, { "emit", "emission", "emissive" })) {
 					material.emissionTexName = textureName;
 				}
 				else if (ContainsKeyword(propName, { "diffusefactor", "ao", "ambient", "occlusion" })) {
