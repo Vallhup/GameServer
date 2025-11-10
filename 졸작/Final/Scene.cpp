@@ -5,6 +5,7 @@
 #include "MainCharacter.h"
 #include "Material.h"
 #include "Camera.h"
+#include "Input.h"
 
 void Scene::Initialize(DX12Core& core)
 {
@@ -28,6 +29,9 @@ void Scene::Initialize(DX12Core& core)
 
 void Scene::Update(const float deltaTime)
 {
+    if (GET(Input).GetKeyDown('1'))
+        coreRef->SetSSAOState(!coreRef->GetSSAOState());
+
     UpdateScene(deltaTime);
     
     if (cam)
