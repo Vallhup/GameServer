@@ -385,8 +385,8 @@ bool Exporter::ExportAnimationAsText(const FbxAnimClipInfo& animClip, const wstr
                 FbxVector4 scale = keyFrame.matTransform.GetS();
                 FbxQuaternion rotation = keyFrame.matTransform.GetQ();
                 FbxVector4 translation = keyFrame.matTransform.GetT();
-
                 ofs << "Frame[" << frameIdx << "] Bone[" << boneIdx << "]" << endl;
+
 
                 ofs << "  scale: " << static_cast<float>(scale[0]) << " "
                     << static_cast<float>(scale[1]) << " "
@@ -598,16 +598,41 @@ bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones
             // 1. 애니메이션 변환 가져오기
             FbxAMatrix animTransform;
             if (frame < animClip.keyFrames[boneIdx].size()) {
-                animTransform = animClip.keyFrames[boneIdx][frame].matTransform;
+                const auto& keyFrame = animClip.keyFrames[boneIdx][frame];
+
+                FbxVector4 scale = keyFrame.matTransform.GetS();
+                FbxQuaternion rotation = keyFrame.matTransform.GetQ();
+                FbxVector4 translation = keyFrame.matTransform.GetT();
+
+                FbxAMatrix matScale, matRot;
+                matScale.SetS(scale);
+                matRot.SetQ(rotation);
+
+                animTransform = matScale * matRot;
+
+                animTransform.mData[3][0] += translation[0];
+                animTransform.mData[3][1] += translation[1];
+                animTransform.mData[3][2] += translation[2];
             }
             else {
                 animTransform.SetIdentity();
             }
 
             // 2. Offset 행렬과 곱하기 (T-pose 기준)
-            // finalTransform = Offset × Animation
-            FbxAMatrix offset = baseSkeleton[boneIdx]->matOffset.Transpose();
-            FbxAMatrix finalTransform = offset * animTransform;
+            // finalTransform = Offset × Animation                              // 아래 두줄 때문에 개고생함 시발 다시는 까먹지 말자
+            FbxAMatrix offset = baseSkeleton[boneIdx]->matOffset.Transpose();    
+            FbxAMatrix finalTransform = animTransform * offset;                 
+
+            // 내가 왠만해서 이런 주석 안다는데 진짜 벌써 3번째 개고생 한 덕에 단다
+            // ---------------------------------------------------------
+            // 1. matOffset은 FBXLoader에서 이미 Transpose되어 DirectX Row-major 형식으로 저장됨
+            // 2. Transpose()로 다시 FBX Column-major 형식으로 복원
+            // 3. FBX SDK의 행렬 곱셈(Column-major)으로 animTransform * offset 계산
+            // 4. 이 결과가 DirectX의 mul(offset, animTransform)과 동일한 효과
+            // 
+            // 핵심: FBX Column-major의 "A * B"는 DirectX Row-major의 "B × A"와 같음
+            // 따라서 animTransform * offset = DirectX의 offset × animTransform
+            // ---------------------------------------------------------
 
             // 3. 텍스트로 저장
             ofs << L"  Bone[" << boneIdx << L"]:" << endl;
@@ -619,38 +644,6 @@ bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones
                 }
                 ofs << endl;
             }
-
-            // 디버깅용
-            /*if (frame == 0 && boneIdx == 53)
-            {
-                wcout << L"\n=== DEBUG: Bone 53, Frame 0===" << endl;
-
-                wcout << L"Original matOffset: " << endl;
-                for (int row = 0; row < 4; ++row) {
-                    for (int col = 0; col < 4; ++col) {
-                        wcout << baseSkeleton[boneIdx]->matOffset.mData[row][col] << L" ";
-                    }
-                    wcout << endl;
-                }
-
-                FbxAMatrix offset = baseSkeleton[boneIdx]->matOffset.Transpose();
-                wcout << L"\nTransposed matOffset: " << endl;
-                for (int row = 0; row < 4; ++row) {
-                    for (int col = 0; col < 4; ++col) {
-                        wcout << offset.mData[row][col] << L" ";
-                    }
-                    wcout << endl;
-                }
-
-                FbxAMatrix finalTrans = offset * animTransform;
-                wcout << L"\nFinal with transpose matOffset: " << endl;
-                for (int row = 0; row < 4; ++row) {
-                    for (int col = 0; col < 4; ++col) {
-                        wcout << finalTrans.mData[row][col] << L" ";
-                    }
-                    wcout << endl;
-                }
-            }*/
         }
         ofs << endl;
     }

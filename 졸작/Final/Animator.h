@@ -46,7 +46,6 @@ public:
     void LoadAnimationFromImporter(DX12Core& core, const Importer& importer);
 
     void DebugAnimationInfo();
-    void DebugPrintBoneMatrix(DX12Core& core, int boneIndex);
 
     // Compute Shader용 버퍼들
     UploadBuffer* GetBoneFrameBuffer() const { return mBoneFrameBuffer.get(); }
@@ -85,9 +84,4 @@ private:
 
     bool mIsInitialized = false;
     bool mIsBlending = false;
-
-    ComPtr<ID3D12Resource> mDebugReadbackBuffer;
-    ComPtr<ID3D12Fence> mDebugFence;
-    HANDLE mDebugFenceEvent = nullptr;
-    UINT64 mDebugFenceValue = 0;
 };
