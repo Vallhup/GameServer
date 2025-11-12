@@ -109,6 +109,9 @@
     <ClCompile Include="SSAO.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
+    <ClCompile Include="UAVBuffer.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -214,6 +217,9 @@
       <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="SSAO.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="UAVBuffer.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
   </ItemGroup>

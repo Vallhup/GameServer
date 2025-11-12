@@ -1,9 +1,11 @@
 #pragma once
 #include "Component.h"
 #include "Importer.h"
+#include <wrl/client.h>
 
 class DX12Core;
 class UploadBuffer;
+class UAVBuffer;
 
 struct AnimationConstants
 {
@@ -44,11 +46,12 @@ public:
     void LoadAnimationFromImporter(DX12Core& core, const Importer& importer);
 
     void DebugAnimationInfo();
+    void DebugPrintBoneMatrix(DX12Core& core, int boneIndex);
 
     // Compute Shader용 버퍼들
     UploadBuffer* GetBoneFrameBuffer() const { return mBoneFrameBuffer.get(); }
     UploadBuffer* GetOffsetBuffer() const { return mOffsetBuffer.get(); }
-    UploadBuffer* GetFinalBuffer() const { return mFinalBuffer.get(); }
+    UAVBuffer* GetFinalBuffer() const { return mFinalBuffer.get(); }
 
 private:
     void CreateBuffers(DX12Core& core);
@@ -58,7 +61,7 @@ private:
 
     unique_ptr<UploadBuffer> mBoneFrameBuffer;    // 키프레임 데이터
     unique_ptr<UploadBuffer> mOffsetBuffer;       // 오프셋 행렬
-    unique_ptr<UploadBuffer> mFinalBuffer;        // 최종 본 행렬 (Compute 출력)
+    unique_ptr<UAVBuffer> mFinalBuffer;        // 최종 본 행렬 (Compute 출력)
     unique_ptr<UploadBuffer> mAnimationCB;
 
     int mBoneCount = 0;
@@ -82,4 +85,9 @@ private:
 
     bool mIsInitialized = false;
     bool mIsBlending = false;
+
+    ComPtr<ID3D12Resource> mDebugReadbackBuffer;
+    ComPtr<ID3D12Fence> mDebugFence;
+    HANDLE mDebugFenceEvent = nullptr;
+    UINT64 mDebugFenceValue = 0;
 };

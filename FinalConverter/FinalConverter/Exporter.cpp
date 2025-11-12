@@ -12,7 +12,7 @@ bool Exporter::ExportAll(FBXLoader& loader, const wstring& basePath, const wstri
     }
 
     if (!loader.GetBones().empty()) {
-        if (!ExportSkeleton(loader.GetBones(), basePath + L".skel")) return false;
+        if (!ExportSkeletonText(loader.GetBones(), basePath + L".skelt")) return false;
     }
 
     for (auto& animClip : loader.GetAnimClip()) {
@@ -498,11 +498,55 @@ bool Exporter::ProcessTextures(const vector<FbxMaterialInfo>& materials,
     return true;
 }
 
+bool Exporter::LoadSkeletonFromFile(const wstring& path, vector<shared_ptr<FbxBoneInfo>>& bones)
+{
+    ifstream ifs(path, ios::binary);
+    if (!ifs)
+        return false;
+
+    SkeletonBinaryHeader header = {};
+    ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
+
+    if (header.magic != 'LEKS') {
+        wcout << L"Invalid skeleton file: " << path << endl;
+        return false;
+    }
+
+    bones.clear();
+    bones.reserve(header.boneCount);
+
+    for (uint32_t i = 0; i < header.boneCount; ++i) {
+        BoneBinaryData boneData = {};
+        ifs.read(reinterpret_cast<char*>(&boneData), sizeof(boneData));
+
+        auto bone = make_shared<FbxBoneInfo>();
+        bone->boneName = s2ws(string(boneData.name));
+        bone->parentIndex = boneData.parentIndex;
+
+        for (int row = 0; row < 4; ++row) {
+            for (int col = 0; col < 4; ++col) {
+                bone->matOffset.mData[row][col] = boneData.offsetMatrix[row * 4 + col];
+            }
+        }
+
+        bones.push_back(bone);
+    }
+}
+
 bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones, const FbxAnimClipInfo& animClip, const wstring& path)
 {
-    if (animClip.keyFrames.empty() || bones.empty()) {
+    if (animClip.keyFrames.empty()) {
         wcout << L"베이킹할 데이터 없음: " << path << endl;
         return true;
+    }
+
+    // boss.skel
+    wstring skeletonPath = path.substr(0, path.find(L"_")) + L".skel";
+
+    vector<shared_ptr<FbxBoneInfo>> baseSkeleton;
+    if (!LoadSkeletonFromFile(skeletonPath, baseSkeleton)) {
+        wcout << L"Skeleton 파일 로드 실패: " << skeletonPath << endl;
+        return false;
     }
 
     wofstream ofs(path);
@@ -511,7 +555,7 @@ bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones
         return false;
     }
 
-    uint32_t boneCount = static_cast<uint32_t>(bones.size());
+    uint32_t boneCount = static_cast<uint32_t>(baseSkeleton.size());
     uint32_t frameCount = 0;
 
     // 프레임 수 계산
@@ -562,7 +606,8 @@ bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones
 
             // 2. Offset 행렬과 곱하기 (T-pose 기준)
             // finalTransform = Offset × Animation
-            FbxAMatrix finalTransform = bones[boneIdx]->matOffset * animTransform;
+            FbxAMatrix offset = baseSkeleton[boneIdx]->matOffset.Transpose();
+            FbxAMatrix finalTransform = offset * animTransform;
 
             // 3. 텍스트로 저장
             ofs << L"  Bone[" << boneIdx << L"]:" << endl;
@@ -573,6 +618,37 @@ bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones
                     if (col < 3) ofs << L" ";
                 }
                 ofs << endl;
+            }
+
+            if (frame == 0 && boneIdx == 53)
+            {
+                wcout << L"\n=== DEBUG: Bone 53, Frame 0===" << endl;
+
+                wcout << L"Original matOffset: " << endl;
+                for (int row = 0; row < 4; ++row) {
+                    for (int col = 0; col < 4; ++col) {
+                        wcout << baseSkeleton[boneIdx]->matOffset.mData[row][col] << L" ";
+                    }
+                    wcout << endl;
+                }
+
+                FbxAMatrix offset = baseSkeleton[boneIdx]->matOffset.Transpose();
+                wcout << L"\nTransposed matOffset: " << endl;
+                for (int row = 0; row < 4; ++row) {
+                    for (int col = 0; col < 4; ++col) {
+                        wcout << offset.mData[row][col] << L" ";
+                    }
+                    wcout << endl;
+                }
+
+                FbxAMatrix finalTrans = offset * animTransform;
+                wcout << L"\nFinal with transpose matOffset: " << endl;
+                for (int row = 0; row < 4; ++row) {
+                    for (int col = 0; col < 4; ++col) {
+                        wcout << finalTrans.mData[row][col] << L" ";
+                    }
+                    wcout << endl;
+                }
             }
         }
         ofs << endl;

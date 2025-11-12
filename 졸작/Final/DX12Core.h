@@ -1,5 +1,6 @@
 #pragma once
 #include "UploadBuffer.h"
+#include "UAVBuffer.h"
 #include "SSAO.h"
 
 struct ObjectConstants
