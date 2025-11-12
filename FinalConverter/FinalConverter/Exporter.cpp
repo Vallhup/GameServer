@@ -12,7 +12,7 @@ bool Exporter::ExportAll(FBXLoader& loader, const wstring& basePath, const wstri
     }
 
     if (!loader.GetBones().empty()) {
-        if (!ExportSkeletonText(loader.GetBones(), basePath + L".skelt")) return false;
+        if (!ExportSkeleton(loader.GetBones(), basePath + L".skel")) return false;
     }
 
     for (auto& animClip : loader.GetAnimClip()) {
@@ -620,7 +620,8 @@ bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones
                 ofs << endl;
             }
 
-            if (frame == 0 && boneIdx == 53)
+            // µð¹ö±ë¿ë
+            /*if (frame == 0 && boneIdx == 53)
             {
                 wcout << L"\n=== DEBUG: Bone 53, Frame 0===" << endl;
 
@@ -649,7 +650,7 @@ bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones
                     }
                     wcout << endl;
                 }
-            }
+            }*/
         }
         ofs << endl;
     }

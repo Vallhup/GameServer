@@ -66,11 +66,11 @@ void MeshRenderer::RenderDeferred(DX12Core& core)
         animator->ExecuteComputeShader(core);
     }
 
-    static int debugFrameCount = 0;
+    /*static int debugFrameCount = 0;
     if (debugFrameCount < 2) {
         animator->DebugPrintBoneMatrix(core, 53);
         debugFrameCount++;
-    }
+    }*/
 
     auto cmdList = core.GetGraphicsCmdList();
     auto transform = GetGameObject()->GetComponent<Transform>();
