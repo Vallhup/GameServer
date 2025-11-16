@@ -13,9 +13,9 @@ public:
 
 	void CreateKnightPool();
 	void CreateDragon();
-	void CreateDragon2();
 	void CreateCastle();
 	void CreatePillars();
+	void CreateFloor();
 	void CreateEffectSamples();
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
 

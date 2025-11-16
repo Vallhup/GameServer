@@ -56,7 +56,7 @@ void GameScene::CreateDragon()
 void GameScene::CreateCastle()
 {
 	vector<wstring> names = { L"candle", L"statue1", L"statue2", L"statue3", L"throne" };
-	for (int i = 1; i < 25; ++i)
+	for (int i = 2; i < 25; ++i)
 	{
 		auto map = make_shared<GameObject>();
 		map->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
@@ -131,6 +131,63 @@ void GameScene::CreatePillars()
 		AddGameObject(pillar);
 
 		OutputDebugStringA(("pillar " + to_string(i) + " has created!!\n").c_str());
+	}
+}
+
+void GameScene::CreateFloor()
+{
+	vector<XMFLOAT3> floorpos = {
+		{-11.0406f, 0.0f, 27.0283f	 },
+		{-0.172962f, 0.0f, 27.0283f	 },
+		{10.6946f, 0.0f, 27.0283f		 },
+		{-11.0406f, 0.0f, 16.5593f	 },
+		{-0.172962f, 0.0f, 16.5593f	 },
+		{10.6946f, 0.0f, 16.5593f		 },
+		{-11.0406f, 0.0f, 6.09022f	 },
+		{-0.172962f, 0.0f, 6.09022f	 },
+		{10.6946f, 0.0f, 6.09022f		 },
+		{-11.0406f, 0.0f, -4.37883f	 },
+		{-0.172962f, 0.0f, -4.37883f	 },
+		{10.6946f, 0.0f, -4.37883f	 },
+		{-11.0406f, 0.0f, -14.8479f	 },
+		{-0.172962f, 0.0f, -14.8479f },
+		{10.6946f, 0.0f, -14.8479f	 },
+		{-11.0406f, 0.0f, -25.3169f	 },
+		{-0.172962f, 0.0f, -25.3169f},
+		{10.6946f, 0.0f, -25.3169f	 },
+		{-11.0406f, 0.0f, -35.7861f	 },
+		{-0.172962f, 0.0f, -35.7861f	 },
+		{10.6946f, 0.0f, -35.7861f	 },
+		{-11.0406f, 0.0f, -46.2553f	 },
+		{-0.172962f, 0.0f, -46.2553f	 },
+		{10.6946f, 0.0f, -46.2553f	 },
+		{-32.7753f, 0.0f, -14.8479f	 },
+		{-21.9077f, 0.0f, -14.8479f	 },
+		{-32.7753f, 0.0f, -25.3169f	 },
+		{-21.9077f, 0.0f, -25.3169f	 },
+		{-32.7753f, 0.0f, -35.7861f	 },
+		{-21.9077f, 0.0f, -35.7861f	 },
+		{21.561f, 0.0f, -14.8479f		 },
+		{32.4286f, 0.0f, -14.8479f	 },
+		{21.561f, 0.0f, -25.3169f		 },
+		{32.4286f, 0.0f, -25.3169f	 },
+		{21.561f, 0.0f, -35.7861f		 },
+		{32.4286f, 0.0f, -35.7861f	 }
+	};
+
+	for (int i = 0; i < 36; ++i)
+	{
+		auto floor = make_shared<GameObject>();
+		floor->SetId(0);
+		auto meshRenderer = floor->AddComponent<MeshRenderer>();
+		auto transform = floor->AddComponent<Transform>();
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_01");
+		transform->SetInitPosition(floorpos[i].x, floorpos[i].y, floorpos[i].z);
+		transform->SetRotation(0.0f, 0.0f, 0.0f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+		AddGameObject(floor);
+
+		OutputDebugStringA(("floor " + to_string(i) + " has created!!\n").c_str());
 	}
 }
 
@@ -296,6 +353,7 @@ void GameScene::InitializeLogic()
 	CreateDragon();
 	CreateCastle();
 	CreatePillars();
+	CreateFloor();
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
