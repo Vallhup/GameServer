@@ -28,7 +28,7 @@ void GameScene::CreateKnightPool()
 		auto meshRenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/boss");
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f - (1.f *j));
 		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
@@ -40,12 +40,12 @@ void GameScene::CreateKnightPool()
 void GameScene::CreateDragon()
 {
 	dragon = make_shared<GameObject>();
-	dragon->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
+	dragon->SetId(-1);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
 	auto meshRenderer = dragon->AddComponent<MeshRenderer>();
 	auto transform = dragon->AddComponent<Transform>();
 	auto animator = dragon->AddComponent<Animator>();
 	meshRenderer->SetMesh(*coreRef, L"../FBXOutput/Dragon");
-	transform->SetPosition(5.f, 0.f, -5.f);
+	transform->SetInitPosition(5.f, 0.f, -5.f);
 	transform->SetRotation(0.f, 0.f, 0.f);
 	transform->SetScale(0.1f, 0.1f, 0.1f);
 	AddGameObject(dragon);
@@ -55,27 +55,82 @@ void GameScene::CreateDragon()
 
 void GameScene::CreateCastle()
 {
-	vector<wstring> names = { L"bookshelf", L"candle", L"chair", L"pillar", L"statue1", L"statue2", L"statue3", L"table", L"throne" };
-	for (int i = 1; i < 29; ++i)
+	vector<wstring> names = { L"candle", L"statue1", L"statue2", L"statue3", L"throne" };
+	for (int i = 1; i < 25; ++i)
 	{
 		auto map = make_shared<GameObject>();
 		map->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
-		if (i == 20 || i == 22 || i == 27)
-			map->SetId(-1);
 		auto meshRenderer = map->AddComponent<MeshRenderer>();
 		auto transform = map->AddComponent<Transform>();
 		if (i < 10)
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_0" + to_wstring(i));
+			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_0" + to_wstring(i));
 		else if (i < 20)
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_" + to_wstring(i));
+			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_" + to_wstring(i));
 		else
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/map_cathedral_" + names[i - 20]);
+			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_" + names[i - 20]);
 		transform->SetInitPosition(0.0f, 0.0f, 0.0f);
 		transform->SetRotation(0.0f, 0.0f, 0.0f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		AddGameObject(map);
 
-		OutputDebugStringA("Strut created!!\n");
+		OutputDebugStringA("castle created!!\n");
+	}
+}
+
+void GameScene::CreatePillars()
+{
+	vector<XMFLOAT3> pillarpos = {
+		{5.62315f, -0.016064f, -9.59924f  },
+		{16.504f, -0.016064f, -9.59924f   },
+		{-16.5107f, -0.016064f, -9.59924f},
+		{-5.62991f, -0.016064f, -9.59924f},
+		{5.62315f, -0.016064f, 0.831307f   },
+		{16.504f, -0.016064f, 0.831307f	   },
+		{-16.5107f, -0.016064f, 0.831307f },
+		{-5.62991f, -0.016064f, 0.831307f },
+		{5.62315f, -0.016064f, 11.2619f	   },
+		{16.504f, -0.016064f, 11.2619f	   },
+		{-16.5107f, -0.016064f, 11.2619f  },
+		{-5.62991f, -0.016064f, 11.2619f  },
+		{5.62315f, -0.016064f, 21.8516f	   },
+		{16.504f, -0.016064f, 21.8516f	   },
+		{-16.5107f, -0.016064f, 21.8516f  },
+		{-5.62991f, -0.016064f, 21.8516f  },
+		{5.62315f, -0.016064f, 32.2828f	   },
+		{16.504f, -0.016064f, 32.2828f	   },
+		{-16.5107f, -0.016064f, 32.2828f  },
+		{-5.62991f, -0.016064f, 32.2828f  },
+		{26.9762f, -0.016064f, -9.59924f  },
+		{-26.9815f, -0.016064f, -9.59924f},
+		{5.62315f, -0.016064f, -35.3441f  },
+		{16.504f, -0.016064f, -35.3441f   },
+		{-16.5107f, -0.016064f, -35.3441f},
+		{-5.62991f, -0.016064f, -35.3441f},
+		{26.9762f, -0.016064f, -35.3441f  },
+		{-26.9815f, -0.016064f, -35.3441f},
+		{5.62315f, -0.016064f, -45.8333f  },
+		{16.504f, -0.016064f, -45.8333f   },
+		{-16.5107f, -0.016064f, -45.8333f},
+		{-5.62991f, -0.016064f, -45.8333f},
+		{-34.657f, -0.016064f, -27.727f  },
+		{-34.657f, -0.016064f, -17.2682f },
+		{34.5867f, -0.016064f, -27.727f   },
+		{34.5867f, -0.016064f, -17.2682f  }
+	};
+
+	for (int i = 0; i < 36; ++i)
+	{
+		auto pillar = make_shared<GameObject>();
+		pillar->SetId(0);
+		auto meshRenderer = pillar->AddComponent<MeshRenderer>();
+		auto transform = pillar->AddComponent<Transform>();
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_pillar");
+		transform->SetInitPosition(pillarpos[i].x, pillarpos[i].y, pillarpos[i].z);
+		transform->SetRotation(0.0f, 0.0f, 0.0f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+		AddGameObject(pillar);
+
+		OutputDebugStringA(("pillar " + to_string(i) + " has created!!\n").c_str());
 	}
 }
 
@@ -240,6 +295,7 @@ void GameScene::InitializeLogic()
 	CreateKnightPool();
 	CreateDragon();
 	CreateCastle();
+	CreatePillars();
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
