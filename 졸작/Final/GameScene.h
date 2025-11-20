@@ -14,6 +14,8 @@ public:
 	void CreateKnightPool();
 	void CreateDragon();
 	void CreateCastle();
+	void CreatePillars();
+	void CreateFloor();
 	void CreateEffectSamples();
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
 
@@ -43,6 +45,7 @@ private:
 	vector<shared_ptr<GameObject>> gameObjects;
 
 	shared_ptr<GameObject> dragon;
+	shared_ptr<GameObject> dragon2;
 
 	vector<shared_ptr<MainCharacter>> knightPool;
 	static constexpr int MAX_KNIGHT_COUNT = 100;

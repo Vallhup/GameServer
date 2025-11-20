@@ -78,6 +78,8 @@ private:
     bool ProcessTextures(const vector<FbxMaterialInfo>& materials,
         const wstring& fbxDir, const wstring& outputDir);
 
+    bool LoadSkeletonFromFile(const wstring& path, vector<shared_ptr<FbxBoneInfo>>& bones);
+
     bool ExportBakedAnimation(
         const vector<shared_ptr<FbxBoneInfo>>& bones,
         const FbxAnimClipInfo& animClip,

@@ -385,8 +385,8 @@ bool Exporter::ExportAnimationAsText(const FbxAnimClipInfo& animClip, const wstr
                 FbxVector4 scale = keyFrame.matTransform.GetS();
                 FbxQuaternion rotation = keyFrame.matTransform.GetQ();
                 FbxVector4 translation = keyFrame.matTransform.GetT();
-
                 ofs << "Frame[" << frameIdx << "] Bone[" << boneIdx << "]" << endl;
+
 
                 ofs << "  scale: " << static_cast<float>(scale[0]) << " "
                     << static_cast<float>(scale[1]) << " "
@@ -498,11 +498,55 @@ bool Exporter::ProcessTextures(const vector<FbxMaterialInfo>& materials,
     return true;
 }
 
+bool Exporter::LoadSkeletonFromFile(const wstring& path, vector<shared_ptr<FbxBoneInfo>>& bones)
+{
+    ifstream ifs(path, ios::binary);
+    if (!ifs)
+        return false;
+
+    SkeletonBinaryHeader header = {};
+    ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
+
+    if (header.magic != 'LEKS') {
+        wcout << L"Invalid skeleton file: " << path << endl;
+        return false;
+    }
+
+    bones.clear();
+    bones.reserve(header.boneCount);
+
+    for (uint32_t i = 0; i < header.boneCount; ++i) {
+        BoneBinaryData boneData = {};
+        ifs.read(reinterpret_cast<char*>(&boneData), sizeof(boneData));
+
+        auto bone = make_shared<FbxBoneInfo>();
+        bone->boneName = s2ws(string(boneData.name));
+        bone->parentIndex = boneData.parentIndex;
+
+        for (int row = 0; row < 4; ++row) {
+            for (int col = 0; col < 4; ++col) {
+                bone->matOffset.mData[row][col] = boneData.offsetMatrix[row * 4 + col];
+            }
+        }
+
+        bones.push_back(bone);
+    }
+}
+
 bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones, const FbxAnimClipInfo& animClip, const wstring& path)
 {
-    if (animClip.keyFrames.empty() || bones.empty()) {
+    if (animClip.keyFrames.empty()) {
         wcout << L"베이킹할 데이터 없음: " << path << endl;
         return true;
+    }
+
+    // boss.skel
+    wstring skeletonPath = path.substr(0, path.find(L"_")) + L".skel";
+
+    vector<shared_ptr<FbxBoneInfo>> baseSkeleton;
+    if (!LoadSkeletonFromFile(skeletonPath, baseSkeleton)) {
+        wcout << L"Skeleton 파일 로드 실패: " << skeletonPath << endl;
+        return false;
     }
 
     wofstream ofs(path);
@@ -511,7 +555,7 @@ bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones
         return false;
     }
 
-    uint32_t boneCount = static_cast<uint32_t>(bones.size());
+    uint32_t boneCount = static_cast<uint32_t>(baseSkeleton.size());
     uint32_t frameCount = 0;
 
     // 프레임 수 계산
@@ -554,15 +598,41 @@ bool Exporter::ExportBakedAnimation(const vector<shared_ptr<FbxBoneInfo>>& bones
             // 1. 애니메이션 변환 가져오기
             FbxAMatrix animTransform;
             if (frame < animClip.keyFrames[boneIdx].size()) {
-                animTransform = animClip.keyFrames[boneIdx][frame].matTransform;
+                const auto& keyFrame = animClip.keyFrames[boneIdx][frame];
+
+                FbxVector4 scale = keyFrame.matTransform.GetS();
+                FbxQuaternion rotation = keyFrame.matTransform.GetQ();
+                FbxVector4 translation = keyFrame.matTransform.GetT();
+
+                FbxAMatrix matScale, matRot;
+                matScale.SetS(scale);
+                matRot.SetQ(rotation);
+
+                animTransform = matScale * matRot;
+
+                animTransform.mData[3][0] += translation[0];
+                animTransform.mData[3][1] += translation[1];
+                animTransform.mData[3][2] += translation[2];
             }
             else {
                 animTransform.SetIdentity();
             }
 
             // 2. Offset 행렬과 곱하기 (T-pose 기준)
-            // finalTransform = Offset × Animation
-            FbxAMatrix finalTransform = bones[boneIdx]->matOffset * animTransform;
+            // finalTransform = Offset × Animation                              // 아래 두줄 때문에 개고생함 시발 다시는 까먹지 말자
+            FbxAMatrix offset = baseSkeleton[boneIdx]->matOffset.Transpose();    
+            FbxAMatrix finalTransform = animTransform * offset;                 
+
+            // 내가 왠만해서 이런 주석 안다는데 진짜 벌써 3번째 개고생 한 덕에 단다
+            // ---------------------------------------------------------
+            // 1. matOffset은 FBXLoader에서 이미 Transpose되어 DirectX Row-major 형식으로 저장됨
+            // 2. Transpose()로 다시 FBX Column-major 형식으로 복원
+            // 3. FBX SDK의 행렬 곱셈(Column-major)으로 animTransform * offset 계산
+            // 4. 이 결과가 DirectX의 mul(offset, animTransform)과 동일한 효과
+            // 
+            // 핵심: FBX Column-major의 "A * B"는 DirectX Row-major의 "B × A"와 같음
+            // 따라서 animTransform * offset = DirectX의 offset × animTransform
+            // ---------------------------------------------------------
 
             // 3. 텍스트로 저장
             ofs << L"  Bone[" << boneIdx << L"]:" << endl;

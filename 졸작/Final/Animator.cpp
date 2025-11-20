@@ -120,7 +120,7 @@ void Animator::CreateBuffers(DX12Core& core)
     // 버퍼 생성
     mBoneFrameBuffer = make_unique<UploadBuffer>();
     mOffsetBuffer = make_unique<UploadBuffer>();
-    mFinalBuffer = make_unique<UploadBuffer>();
+    mFinalBuffer = make_unique<UAVBuffer>();
     mAnimationCB = make_unique<UploadBuffer>();
 
     // BoneFrame 버퍼 - 레퍼런스와 동일한 구조
