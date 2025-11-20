@@ -1,0 +1,257 @@
+import numpy as np
+import json
+from math import sqrt
+import matplotlib.pyplot as plt
+
+def rotation_matrix_to_quaternion(R):
+    m00, m01, m02 = R[0]
+    m10, m11, m12 = R[1]
+    m20, m21, m22 = R[2]
+
+    trace = m00 + m11 + m22
+    if trace > 0:
+        s = 0.5 / sqrt(trace + 1.0)
+        w = 0.25 / s
+        x = (m21 - m12) * s
+        y = (m02 - m20) * s
+        z = (m10 - m01) * s
+    elif m00 > m11 and m00 > m22:
+        s = 2.0 * sqrt(1.0 + m00 - m11 - m22)
+        w = (m21 - m12) / s
+        x = 0.25 * s
+        y = (m01 + m10) / s
+        z = (m02 + m20) / s
+    elif m11 > m22:
+        s = 2.0 * sqrt(1.0 + m11 - m00 - m22)
+        w = (m02 - m20) / s
+        x = (m01 + m10) / s
+        y = 0.25 * s
+        z = (m12 + m21) / s
+    else:
+        s = 2.0 * sqrt(1.0 + m22 - m00 - m11)
+        w = (m10 - m01) / s
+        x = (m02 + m20) / s
+        y = (m12 + m21) / s
+        z = 0.25 * s
+
+    return np.array([x, y, z, w], dtype=np.float32)
+
+
+def quat_mul(a, b):
+    ax, ay, az, aw = a
+    bx, by, bz, bw = b
+    return np.array([
+        aw*bx + ax*bw + ay*bz - az*by,
+        aw*by - ax*bz + ay*bw + az*bx,
+        aw*bz + ax*by - ay*bx + az*bw,
+        aw*bw - ax*bx - ay*by - az*bz
+    ], dtype=np.float32)
+
+
+def quat_apply(q, v):
+    qvec = np.array([v[0], v[1], v[2], 0], dtype=np.float32)
+    qc = np.array([-q[0], -q[1], -q[2], q[3]], dtype=np.float32)
+    return quat_mul(quat_mul(q, qvec), qc)[:3]
+
+
+# ======================================================
+# Bone File Parser (With Matrix Transpose)
+# ======================================================
+def parse_bone_file(path):
+    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+        lines = [l.strip() for l in f.readlines()]
+
+    i = 0
+    assert "BAKED_ANIMATION" in lines[i]
+    i += 1
+
+    anim_name = lines[i].split(":")[1].strip(); i+=1
+    bone_count = int(lines[i].split(":")[1].strip()); i+=1
+    frame_count = int(lines[i].split(":")[1].strip()); i+=1
+    duration = float(lines[i].split(":")[1].strip()); i+=1
+    fps = float(lines[i].split(":")[1].strip()); i+=1
+
+    while lines[i] != "---": i+=1
+    i+=1
+
+    frames = []
+
+    def skip_blank(idx):
+        while idx < len(lines) and lines[idx] == "":
+            idx += 1
+        return idx
+
+    for _ in range(frame_count):
+        i = skip_blank(i)
+        assert "Frame[" in lines[i]; i+=1
+
+        bone_matrices = []
+        for _ in range(bone_count):
+            i = skip_blank(i)
+            assert "Bone[" in lines[i]; i+=1
+
+            r0 = list(map(float, lines[i].split())); i+=1
+            r1 = list(map(float, lines[i].split())); i+=1
+            r2 = list(map(float, lines[i].split())); i+=1
+            r3 = list(map(float, lines[i].split())); i+=1
+
+            M = np.array([r0, r1, r2, r3], dtype=np.float32)
+
+            # ★ DirectX row-major matrix → NumPy math matrix (col-major)
+            # 이 단계를 mesh 시각화 코드와 동일하게 맞춘다.
+            M = M.T
+
+            bone_matrices.append(M)
+
+        frames.append(bone_matrices)
+
+    return {
+        "fps": fps,
+        "boneCount": bone_count,
+        "frameCount": frame_count,
+        "frames": frames
+    }
+
+
+# ======================================================
+# Capsule Loader
+# ======================================================
+def load_capsules(path):
+    with open(path, "r") as f:
+        j = json.load(f)
+
+    out = {}
+    for meshName, nodes in j["Meshes"].items():
+        for k, v in nodes.items():
+            idx = int(k)
+            out[idx] = {
+                "radius": v["radius"],
+                "halfHeight": v["halfHeight"],
+                "localOffset": np.array(v["center"], dtype=np.float32),
+                "localDir": np.array(v["direction"], dtype=np.float32),
+            }
+    return out
+
+
+# ======================================================
+# Prebake p0/p1 Using Correct Transform Rules
+# ======================================================
+def prebake(anim, capsules):
+    out_frames = []
+
+    for frame_idx, bones in enumerate(anim["frames"]):
+        frame_list = []
+
+        for boneIndex, cap in capsules.items():
+            M = bones[boneIndex]  # 이미 transpose 적용된 행렬
+
+            # 위치
+            pos = M[:3, 3]
+
+            # 회전 행렬
+            R = M[:3, :3]
+
+            # 로컬 방향/오프셋에 회전 적용
+            rot_offset = R @ cap["localOffset"]
+            rot_dir = R @ cap["localDir"]
+
+            rot_dir /= np.linalg.norm(rot_dir)
+
+            centerWorld = pos + rot_offset
+
+            hh = cap["halfHeight"]
+            p0 = centerWorld + rot_dir * hh
+            p1 = centerWorld - rot_dir * hh
+
+            frame_list.append({
+                "bone": boneIndex,
+                "p0": p0.tolist(),
+                "p1": p1.tolist(),
+                "radius": cap["radius"]
+            })
+
+        out_frames.append(frame_list)
+
+    return {
+        "fps": anim["fps"],
+        "numFrames": anim["frameCount"],
+        "frames": out_frames
+    }
+
+
+# # ----------------------------------------------------
+# # 설정
+# # ----------------------------------------------------
+JSON_PATH = r"C:\Users\Hadenpel\Knight_Walk_COLLIDER_PREBAKED.json"
+FRAME_INDEX = 10  # 보고 싶은 프레임 인덱스
+
+# # ----------------------------------------------------
+# # 데이터 로드
+# # ----------------------------------------------------
+with open(JSON_PATH, "r", encoding="utf-8") as f:
+    data = json.load(f)
+
+frames = data["frames"]
+frame = frames[FRAME_INDEX]   # 선택한 프레임의 캡슐 목록
+
+# # ----------------------------------------------------
+# # 3D 시각화
+# # ----------------------------------------------------
+fig = plt.figure()
+ax = fig.add_subplot(111, projection="3d")
+
+xs, ys, zs = [], [], []
+
+for col in frame:
+    p0 = np.array(col["p0"])
+    p1 = np.array(col["p1"])
+    r  = col["radius"]
+    bone_idx = col["bone"]
+
+    # 선분 그리기
+    ax.plot(
+        [p0[0], p1[0]],
+        [p0[1], p1[1]],
+        [p0[2], p1[2]],
+    )
+
+    # 끝점 점 찍기
+    ax.scatter(p0[0], p0[1], p0[2])
+    ax.scatter(p1[0], p1[1], p1[2])
+
+    # 범위 계산용으로 좌표 모으기
+    xs.extend([p0[0], p1[0]])
+    ys.extend([p0[1], p1[1]])
+    zs.extend([p0[2], p1[2]])
+
+ax.set_title(f"Frame {FRAME_INDEX} Capsule Colliders")
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_zlabel("Z")
+
+# 축 스케일을 비슷하게 맞추기 (왜곡 방지)
+if xs and ys and zs:
+    xmid = (min(xs) + max(xs)) * 0.5
+    ymid = (min(ys) + max(ys)) * 0.5
+    zmid = (min(zs) + max(zs)) * 0.5
+    max_range = max(
+        max(xs) - min(xs),
+        max(ys) - min(ys),
+        max(zs) - min(zs),
+    ) * 0.5
+
+    ax.set_xlim(xmid - max_range, xmid + max_range)
+    ax.set_ylim(ymid - max_range, ymid + max_range)
+    ax.set_zlim(zmid - max_range, zmid + max_range)
+
+plt.show()
+
+# anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight5_Walk_mixamo.com_baked.bone")
+# colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight_capsules.json")
+
+# prebaked = prebake(anim, colliders)
+
+# with open("Knight_Walk_COLLIDER_PREBAKED.json", "w") as f:
+#     json.dump(prebaked, f, indent=2)
+
+# print("Prebaked collider animation 생성 완료!")

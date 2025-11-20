@@ -140,7 +140,7 @@ def main(asset_dir):
 
     # Preview
     fig = plt.figure(figsize=(6,6)); ax = fig.add_subplot(111, projection='3d')
-    verts0 = skin_vertices(all_verts, bone_frames[1])
+    verts0 = skin_vertices(all_verts, bone_frames[4])
     render_frame(ax, verts0, faces)
     plt.title("Frame 1 (skinned)"); plt.show()
 
