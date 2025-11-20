@@ -15,7 +15,12 @@ CollisionShape::CollisionShape(ShapeType shape, CollisionType type, const vec3& 
 
 /*---------------[ BoxShape ]---------------*/
 
-bool BoxShape::CheckCollision(const CollisionShape& other) const
+std::unique_ptr<CollisionShape> BoxShape::ToWorldShape(const TransformComponent& trComp) const
+{
+    return std::unique_ptr<CollisionShape>();
+}
+
+bool BoxShape::CheckCollision(CollisionShape& other) const
 {
     return false;
 }
@@ -27,7 +32,12 @@ std::unique_ptr<CollisionShape> BoxShape::Clone() const
 
 /*---------------[ SphereShape ]---------------*/
 
-bool SphereShape::CheckCollision(const CollisionShape& other) const
+std::unique_ptr<CollisionShape> SphereShape::ToWorldShape(const TransformComponent& trComp) const
+{
+    return std::unique_ptr<CollisionShape>();
+}
+
+bool SphereShape::CheckCollision(CollisionShape& other) const
 {
     return false;
 }
@@ -39,14 +49,49 @@ std::unique_ptr<CollisionShape> SphereShape::Clone() const
 
 /*---------------[ CylinderShape ]---------------*/
 
-bool CylinderShape::CheckCollision(const CollisionShape& other) const
+std::unique_ptr<CollisionShape> CylinderShape::ToWorldShape(const TransformComponent& trComp) const
 {
-    return false;
+    auto RotateY =
+        [](const vec3& v, float yaw) -> vec3
+        {
+            float c = cosf(yaw);
+            float s = sinf(yaw);
+
+            return vec3{
+                v.x * c + v.z * s,
+                v.y,
+                -v.x * s + v.z * c
+            };
+        };
+
+    vec3 worldOffset = trComp.GetPosition() + RotateY(_localOffset, trComp.GetAngle());
+    vec3 worldDir = RotateY(_direction, trComp.GetAngle()).Normalize();
+
+    return std::make_unique<CylinderShape>(_type, worldOffset, GetRadius(), GetHeight(), worldDir);
+}
+
+bool CylinderShape::CheckCollision(CollisionShape& other) const
+{
+    CylinderShape* other_ = static_cast<CylinderShape*>(&other);
+    return Collision::CheckCylinderVsCylinder(*this, *other_);
 }
 
 std::unique_ptr<CollisionShape> CylinderShape::Clone() const
 {
     return std::make_unique<CylinderShape>(*this);
+}
+
+void CylinderShape::Print(const char* name) const
+{
+    std::cout << "=== " << name << " (Cylinder) ===\n";
+    std::cout << " type      = " << (int)_type << "\n";
+    std::cout << " radius    = " << _radius << "\n";
+    std::cout << " height    = " << _height << "\n";
+    std::cout << " localOff  = (" << _localOffset.x << ", " << _localOffset.y << ", " << _localOffset.z << ")\n";
+    std::cout << " direction = (" << _direction.x << ", " << _direction.y << ", " << _direction.z << ")\n";
+    std::cout << " p0(local) = (" << _endPoints[0].x << ", " << _endPoints[0].y << ", " << _endPoints[0].z << ")\n";
+    std::cout << " p1(local) = (" << _endPoints[1].x << ", " << _endPoints[1].y << ", " << _endPoints[1].z << ")\n";
+    std::cout << "=============================\n";
 }
 
 //---------------[ Collision ]---------------*/
@@ -126,7 +171,8 @@ bool Collision::CheckCylinderVsCylinder(const CylinderShape& c1, const CylinderS
     else {
         // 점-선분 거리 계산
         // 나중에 별도 헬퍼 함수로 분리 고려
-        auto PointToSegmentDistSq = [](const vec3& P, const vec3& A, const vec3& B) -> float
+        auto PointToSegmentDistSq = 
+            [](const vec3& P, const vec3& A, const vec3& B) -> float
             {
                 const vec3 AB = B - A;
                 const vec3 AP = P - A;

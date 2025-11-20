@@ -3,6 +3,8 @@
 enum class ShapeType : char { Box, Sphere, Cylinder };
 enum class CollisionType : char { Attack, Hurt, Parry };
 
+class TransformComponent;
+
 class CollisionShape {
 public:
 	CollisionShape() = delete;
@@ -14,8 +16,11 @@ protected:
 	CollisionShape& operator=(const CollisionShape& other) = delete;
 
 public:
-	virtual bool CheckCollision(const CollisionShape& other) const = 0;
+	virtual std::unique_ptr<CollisionShape> ToWorldShape(const TransformComponent& trComp) const = 0;
+	virtual bool CheckCollision(CollisionShape& other) const = 0;
 	virtual std::unique_ptr<CollisionShape> Clone() const = 0;
+
+	virtual void Print(const char* name) const { std::cout << name << ": (base CollisionShape)\n"; }
 
 public:
 	ShapeType GetShape() const { return _shape; }
@@ -45,7 +50,8 @@ public:
 	BoxShape& operator=(const BoxShape& other) = delete;
 
 public:
-	virtual bool CheckCollision(const CollisionShape& other) const override;
+	virtual std::unique_ptr<CollisionShape> ToWorldShape(const TransformComponent& trComp) const override;
+	virtual bool CheckCollision(CollisionShape& other) const override;
 	virtual std::unique_ptr<CollisionShape> Clone() const override;
 
 public:
@@ -68,7 +74,8 @@ public:
 	SphereShape& operator=(const SphereShape& other) = delete;
 
 public:
-	virtual bool CheckCollision(const CollisionShape& other) const override;
+	virtual std::unique_ptr<CollisionShape> ToWorldShape(const TransformComponent& trComp) const override;
+	virtual bool CheckCollision(CollisionShape& other) const override;
 	virtual std::unique_ptr<CollisionShape> Clone() const override;
 
 public:
@@ -92,12 +99,20 @@ public:
 
 	CylinderShape(const CylinderShape& other)
 		: CollisionShape(other._shape, other._type, other._localOffset),
-		_radius(other._radius), _height(other._height), _direction(other._direction) {}
+		_radius(other._radius), _height(other._height), _direction(other._direction) 
+	{
+		_direction = _direction.Normalize();
+		_endPoints[0] = _localOffset - _direction * (_height * 0.5f);
+		_endPoints[1] = _localOffset + _direction * (_height * 0.5f);
+	}
 	CylinderShape& operator=(const CylinderShape& other) = delete;
 
 public:
-	virtual bool CheckCollision(const CollisionShape& other) const override;
+	virtual std::unique_ptr<CollisionShape> ToWorldShape(const TransformComponent& trComp) const override;
+	virtual bool CheckCollision(CollisionShape& other) const override;
 	virtual std::unique_ptr<CollisionShape> Clone() const override;
+
+	virtual void Print(const char* name) const override;
 
 public:
 	float GetRadius() const { return _radius; }

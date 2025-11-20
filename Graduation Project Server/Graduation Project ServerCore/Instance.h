@@ -49,6 +49,9 @@ public:
 
 protected:
 	void DequeueJobs();
+	void CollisionUpdate();
+	void HandleCollision(GameObject* a, GameObject* b,
+		const CollisionShape& sA, const CollisionShape& sB);
 
 protected:
 	int _id;
@@ -61,6 +64,5 @@ protected:
 	JobQueue _jobQueue;
 	std::unordered_set<int> _sessions;
 	std::unique_ptr<class IGameLogic> _gameLogic;
-	//std::unique_ptr<class IObjectManager> _objMng;
 	concurrency::concurrent_unordered_map<int, std::unique_ptr<GameObject>> _objects;
 };
