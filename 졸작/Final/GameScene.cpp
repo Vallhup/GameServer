@@ -399,7 +399,8 @@ void GameScene::UpdateScene(const float deltaTime)
 		}
 	}
 
-	if (effectObjects.size() > 0 && GET(Input).GetKeyDown('1'))
+	// 이펙트 OFF
+	/*if (effectObjects.size() > 0 && GET(Input).GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects.size() > 1 && GET(Input).GetKeyDown('2'))
@@ -426,7 +427,7 @@ void GameScene::UpdateScene(const float deltaTime)
 			XMFLOAT3 pos = myPlayer->GetComponent<Transform>()->GetPosition();
 			transform->SetInitPosition(pos.x, pos.y, pos.z);
 		}
-	}
+	}*/
 
 	if (myPlayer)	// 그림자 반경을 플레이어 기준으로 움직이는거 테스트 위한 임시 코드임
 	{

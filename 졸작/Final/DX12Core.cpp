@@ -571,6 +571,7 @@ void DX12Core::BeginLightingPass()
 
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
+	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
 	cmdList->SetGraphicsRootConstantBufferView(3, GetDeferredLightCB()->GetGPUVirtualAddress());			// 레지 넘버링 부분
 	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());					// 레지 넘버링 부분
 
