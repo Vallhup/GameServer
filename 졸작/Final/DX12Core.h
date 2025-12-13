@@ -3,6 +3,14 @@
 #include "UAVBuffer.h"
 #include "SSAO.h"
 
+struct FrameConstants
+{
+	XMMATRIX view;
+	XMMATRIX projection;
+	XMFLOAT3 cameraPosition;
+	float padding;
+};
+
 struct ObjectConstants
 {
 	XMMATRIX world;

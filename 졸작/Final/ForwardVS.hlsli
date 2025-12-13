@@ -2,6 +2,8 @@ cbuffer FrameCB : register(b0)
 {
     matrix view;
     matrix projection;
+    float3 cameraPosition;
+    float padding;
 };
 
 cbuffer ObjectCB : register(b1)

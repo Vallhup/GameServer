@@ -109,8 +109,13 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     matView = XMMatrixTranspose(matView);
     matProj = XMMatrixTranspose(matProj);
 
-    core.GetFrameCB()->CopyData(&matView, sizeof(XMMATRIX), 0);
-    core.GetFrameCB()->CopyData(&matProj, sizeof(XMMATRIX), sizeof(XMMATRIX));
+    FrameConstants frameData = {};
+    frameData.view = matView;
+    frameData.projection = matProj;
+    frameData.cameraPosition = position;
+    frameData.padding = 0.0f;
+
+    core.GetFrameCB()->CopyData(&frameData, sizeof(FrameConstants));
 }
 
 void Camera::UpdateForwardAndRight()

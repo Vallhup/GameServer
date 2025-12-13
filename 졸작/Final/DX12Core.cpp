@@ -23,7 +23,7 @@ void DX12Core::Initialize(HWND hwnd)
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
-	frameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
+	frameCB->Initialize(GetDevice(), sizeof(FrameConstants));
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
 	deferredLightCB->Initialize(GetDevice(), sizeof(DeferredLightConstants));
 	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
