@@ -253,7 +253,8 @@
     <None Include="math.hlsli" />
     <None Include="ShadowPS.hlsli" />
     <None Include="ShadowVS.hlsli" />
-    <None Include="SSAO.hlsli" />
+    <None Include="SSAOViewSpacePS.hlsli" />
+    <None Include="SSAOViewSpaceVS.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

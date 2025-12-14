@@ -106,10 +106,10 @@
     <ClCompile Include="ObjectPoolManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="SSAO.cpp">
+    <ClCompile Include="UAVBuffer.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
-    <ClCompile Include="UAVBuffer.cpp">
+    <ClCompile Include="SSAO.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
   </ItemGroup>
@@ -216,10 +216,10 @@
     <ClInclude Include="ObjectPoolManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="SSAO.h">
+    <ClInclude Include="UAVBuffer.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
-    <ClInclude Include="UAVBuffer.h">
+    <ClInclude Include="SSAO.h">
       <Filter>DirectX12</Filter>
     </ClInclude>
   </ItemGroup>
@@ -254,7 +254,10 @@
     <None Include="ShadowVS.hlsli">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="SSAO.hlsli">
+    <None Include="SSAOViewSpaceVS.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="SSAOViewSpacePS.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
