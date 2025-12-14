@@ -70,13 +70,13 @@ void SSAO::CreateViewSpaceGBuffer(ID3D12Device* device)
 	desc.Height = WinSize.y;
 	desc.DepthOrArraySize = 1;
 	desc.MipLevels = 1;
-	desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;  // 4 channel float
+	desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	desc.SampleDesc.Count = 1;
 	desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
 	D3D12_CLEAR_VALUE clearValue = {};
 	clearValue.Format = desc.Format;
-	memset(clearValue.Color, 0, sizeof(clearValue.Color));
+	memset(clearValue.Color, 0, sizeof(clearValue.Color));  // ← 검은색 (0,0,0,0)
 
 	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
 
@@ -86,7 +86,7 @@ void SSAO::CreateViewSpaceGBuffer(ID3D12Device* device)
 		D3D12_HEAP_FLAG_NONE,
 		&desc,
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		&clearValue,
+		&clearValue,  // ← 검은색으로 최적화
 		IID_PPV_ARGS(&viewNormal));
 
 	MASSERT(SUCCEEDED(hr), "Failed to create View Normal");
@@ -97,14 +97,13 @@ void SSAO::CreateViewSpaceGBuffer(ID3D12Device* device)
 		D3D12_HEAP_FLAG_NONE,
 		&desc,
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		&clearValue,
+		&clearValue,  // ← 검은색으로 최적화
 		IID_PPV_ARGS(&viewPosition));
 
 	MASSERT(SUCCEEDED(hr), "Failed to create View Position");
 
 	OutputDebugStringA("View Space G-Buffer created\n");
 }
-
 // ============================================================================
 // 3. Random Vector Texture 생성 (256x256)
 // ============================================================================

@@ -234,7 +234,7 @@ float4 PSMain(PS_IN input) : SV_Target
     // Apply SSAO
     if (ssaoValue != 0.0f)
     {
-        float ssaoStrength = 0.25;
+        float ssaoStrength = 0.8;
         ssaoValue = lerp(1.0, ssaoValue, ssaoStrength);
         finalColor *= ssaoValue;
     }

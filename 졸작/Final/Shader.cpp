@@ -8,7 +8,7 @@ void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* roo
     InitializeLightingShader(device, rootSig, L"FullscreenVS.hlsli", L"LightingPS.hlsli");
     InitializeComputeShader(device, rootSig, L"Animation.hlsli");
     InitializeShadowShader(device, rootSig, L"ShadowVS.hlsli", L"ShadowPS.hlsli");
-    InitializeSSAOShader(device, rootSig, L"FullscreenVS.hlsli", L"SSAO.hlsli");
+    InitializeSSAOViewSpaceShader(device, rootSig, L"SSAOViewSpaceVS.hlsli", L"SSAOViewSpacePS.hlsli");
 }
 
 void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
@@ -182,22 +182,34 @@ void Shader::InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* r
     MASSERT(SUCCEEDED(hr), "Failed to create Shadow PSO");
 }
 
-void Shader::InitializeSSAOShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
+void Shader::InitializeSSAOViewSpaceShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
 {
-    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::SSAOVS)]);
-    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::SSAOPS)]);
+    // === 셰이더 컴파일 ===
+    OutputDebugStringA("=== Compiling SSAO View Space Shaders ===\n");
+
+    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::SSAOViewSpaceVS)]);
+    OutputDebugStringA("SSAO View Space VS compiled!\n");
+
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::SSAOViewSpacePS)]);
+    OutputDebugStringA("SSAO View Space PS compiled!\n");
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { nullptr, 0 };
     psoDesc.pRootSignature = rootSig;
-    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::SSAOVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::SSAOVS)]->GetBufferSize() };
-    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::SSAOPS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::SSAOPS)]->GetBufferSize() };
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::SSAOViewSpaceVS)]->GetBufferPointer(),
+                   mShadersBlobs[static_cast<size_t>(ShaderType::SSAOViewSpaceVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::SSAOViewSpacePS)]->GetBufferPointer(),
+                   mShadersBlobs[static_cast<size_t>(ShaderType::SSAOViewSpacePS)]->GetBufferSize() };
+
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
-    psoDesc.NumRenderTargets = 1;
-    psoDesc.RTVFormats[0] = DXGI_FORMAT_R8_UNORM;
+    psoDesc.NumRenderTargets = 2;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    psoDesc.RTVFormats[1] = DXGI_FORMAT_R32G32B32A32_FLOAT;
 
     psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
     psoDesc.SampleDesc.Count = 1;
@@ -208,10 +220,19 @@ void Shader::InitializeSSAOShader(ID3D12Device* device, ID3D12RootSignature* roo
     depthDesc.StencilEnable = FALSE;
     psoDesc.DepthStencilState = depthDesc;
 
-    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::SSAO)]));
-    MASSERT(SUCCEEDED(hr), "Failed to create ssao PSO");
+    OutputDebugStringA("Creating SSAO View Space PSO...\n");
 
-    OutputDebugStringA("SSAO PSO created successfully!\n");
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::SSAOViewSpace)]));
+
+    if (FAILED(hr))
+    {
+        char buffer[256];
+        sprintf_s(buffer, "Failed to create SSAO View Space PSO! HRESULT: 0x%08X\n", hr);
+        OutputDebugStringA(buffer);
+        MASSERT(false, "Failed to create SSAO View Space PSO");
+    }
+
+    OutputDebugStringA("SSAO View Space PSO created successfully!\n");
 }
 
 ID3D12PipelineState* Shader::GetPSO(PSOType type) const

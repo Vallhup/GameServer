@@ -11,26 +11,24 @@ cbuffer FrameCB : register(b0)
     float framePadding;
 };
 
-struct VS_IN
-{
-    float3 pos : POSITION;
-    float2 uv : TEXCOORD;
-};
-
 struct VS_OUT
 {
     float4 pos : SV_POSITION;
     float2 uv : TEXCOORD;
 };
 
-VS_OUT VSMain(VS_IN input)
+VS_OUT VSMain(uint vertexID : SV_VertexID)
 {
     VS_OUT output;
     
-    // Fullscreen quad
-    // 정점 위치: (-1,-1), (1,-1), (-1,1), (1,1) 등
-    output.pos = float4(input.pos, 1.0f);
-    output.uv = input.uv;
+    output.uv = float2((vertexID << 1) & 2, vertexID & 2);
+    
+    output.pos = float4(
+        output.uv.x * 2.0 - 1.0, 
+        1.0 - output.uv.y * 2.0, 
+        0.0,
+        1.0
+    );
     
     return output;
 }

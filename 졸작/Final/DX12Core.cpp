@@ -28,7 +28,7 @@ void DX12Core::Initialize(HWND hwnd)
 	deferredLightCB->Initialize(GetDevice(), sizeof(DeferredLightConstants));
 	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
 	shadowFrameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
-	ssao->Initialize(GetDevice());
+	ssao->Initialize(GetDevice(), GetGraphicsCmdList());
 
 	CreateDepthStencilBuffer();
 	CreateShadowMap();
@@ -671,65 +671,160 @@ void DX12Core::RenderFullscreenQuad()
 	//OutputDebugStringA("Fullscreen quad rendered\n");
 }
 
-void DX12Core::RenderSSAO()
+//void DX12Core::RenderSSAO()
+//{
+//	if (!ssao->GetSSAOState()) 
+//	{
+//		D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle = ssao->GetSSAORTV();
+//
+//		float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+//		cmdList->ClearRenderTargetView(ssaoRTVHandle, clearColor, 0, nullptr);
+//
+//		return;
+//	}
+//	
+//	// TODO - AI Helped
+//	
+//	// 1. Resource Barrier: SRV -> RTV
+//	static bool firstSSAOPass = true;
+//
+//	if (!firstSSAOPass) {
+//		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+//			ssao->GetSSAOTexture(),
+//			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+//			D3D12_RESOURCE_STATE_RENDER_TARGET
+//		);
+//		cmdList->ResourceBarrier(1, &barrier);
+//	}
+//
+//	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle = ssao->GetSSAORTV();
+//
+//	// 2. Set ssaoTexture to RTV(Render Target)
+//	cmdList->OMSetRenderTargets(1, &ssaoRTVHandle, FALSE, nullptr);
+//	 
+//	// 3. SSAO Texture Clear (White = No AO)
+//	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+//	cmdList->ClearRenderTargetView(ssaoRTVHandle, clearColor, 0, nullptr);
+//
+//	// 4. Set SSAO PSO State
+//	cmdList->SetPipelineState(shader->GetPSO(PSOType::SSAOViewSpace));
+//
+//	// 5. Set RootSig
+//	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
+//
+//	// 6. Depth + Normal Texture Binding (Using deferredSRVHeap Again)
+//	ID3D12DescriptorHeap* heaps[] = { deferredSRVHeap.Get() };
+//	cmdList->SetDescriptorHeaps(1, heaps);
+//	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());
+//
+//	// 7. Render on Full Screen Quad
+//	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//	cmdList->DrawInstanced(6, 1, 0, 0);
+//
+//	// 8. Resource Barrier: RTV -> SRV
+//	D3D12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
+//		ssao->GetSSAOTexture(),
+//		D3D12_RESOURCE_STATE_RENDER_TARGET,
+//		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+//	);
+//	cmdList->ResourceBarrier(1, &barrierToSRV);
+//
+//	firstSSAOPass = false;
+//}
+
+void DX12Core::RenderSSAOViewSpace()
 {
-	if (!ssao->GetSSAOState()) 
+	static bool firstFrame = true;
+
+	// === Barrier: View Space를 RTV로 (첫 프레임 제외) ===
+	if (!firstFrame) {
+		D3D12_RESOURCE_BARRIER viewToRTV[2] = {
+			CD3DX12_RESOURCE_BARRIER::Transition(
+				ssao->GetViewNormal(),
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				D3D12_RESOURCE_STATE_RENDER_TARGET
+			),
+			CD3DX12_RESOURCE_BARRIER::Transition(
+				ssao->GetViewPosition(),
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				D3D12_RESOURCE_STATE_RENDER_TARGET
+			)
+		};
+		cmdList->ResourceBarrier(2, viewToRTV);
+	}
+
+	// === Set Render Targets ===
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[2] = {
+		ssao->GetViewNormalRTV(),
+		ssao->GetViewPositionRTV()
+	};
+	cmdList->OMSetRenderTargets(2, rtvs, FALSE, nullptr);
+
+	// === SSAO OFF: 검은색으로 클리어 (경고 제거!) ===
+	if (!ssao->GetSSAOState())
 	{
-		D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle = ssao->GetRTVHandle();
+		float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };  // ← 흰색→검은색
+		cmdList->ClearRenderTargetView(rtvs[0], clearColor, 0, nullptr);
+		cmdList->ClearRenderTargetView(rtvs[1], clearColor, 0, nullptr);
 
-		float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		cmdList->ClearRenderTargetView(ssaoRTVHandle, clearColor, 0, nullptr);
+		// Barrier: View Space를 SRV로
+		D3D12_RESOURCE_BARRIER viewToSRV[2] = {
+			CD3DX12_RESOURCE_BARRIER::Transition(
+				ssao->GetViewNormal(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+			),
+			CD3DX12_RESOURCE_BARRIER::Transition(
+				ssao->GetViewPosition(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+			)
+		};
+		cmdList->ResourceBarrier(2, viewToSRV);
 
+		firstFrame = false;
 		return;
 	}
-	
-	// TODO - AI Helped
-	
-	// 1. Resource Barrier: SRV -> RTV
-	static bool firstSSAOPass = true;
 
-	if (!firstSSAOPass) {
-		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			ssao->GetSSAOTexture(),
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-			D3D12_RESOURCE_STATE_RENDER_TARGET
-		);
-		cmdList->ResourceBarrier(1, &barrier);
-	}
+	// === SSAO ON: 정상 렌더링 ===
 
-	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle = ssao->GetRTVHandle();
+	// Clear (검은색)
+	float clearColor[4] = { 0, 0, 0, 0 };
+	cmdList->ClearRenderTargetView(rtvs[0], clearColor, 0, nullptr);
+	cmdList->ClearRenderTargetView(rtvs[1], clearColor, 0, nullptr);
 
-	// 2. Set ssaoTexture to RTV(Render Target)
-	cmdList->OMSetRenderTargets(1, &ssaoRTVHandle, FALSE, nullptr);
-	 
-	// 3. SSAO Texture Clear (White = No AO)
-	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	cmdList->ClearRenderTargetView(ssaoRTVHandle, clearColor, 0, nullptr);
-
-	// 4. Set SSAO PSO State
-	cmdList->SetPipelineState(shader->GetPSO(PSOType::SSAO));
-
-	// 5. Set RootSig
+	// Set PSO
+	cmdList->SetPipelineState(shader->GetPSO(PSOType::SSAOViewSpace));
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
-	// 6. Depth + Normal Texture Binding (Using deferredSRVHeap Again)
+	// Bind Constants
+	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
+
+	// Bind G-Buffer SRVs
 	ID3D12DescriptorHeap* heaps[] = { deferredSRVHeap.Get() };
 	cmdList->SetDescriptorHeaps(1, heaps);
 	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());
 
-	// 7. Render on Full Screen Quad
+	// Draw Fullscreen Quad
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	cmdList->DrawInstanced(6, 1, 0, 0);
 
-	// 8. Resource Barrier: RTV -> SRV
-	D3D12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
-		ssao->GetSSAOTexture(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-	);
-	cmdList->ResourceBarrier(1, &barrierToSRV);
+	// Barrier: View Space를 SRV로
+	D3D12_RESOURCE_BARRIER viewToSRV[2] = {
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			ssao->GetViewNormal(),
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+		),
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			ssao->GetViewPosition(),
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+		)
+	};
+	cmdList->ResourceBarrier(2, viewToSRV);
 
-	firstSSAOPass = false;
+	firstFrame = false;
 }
 
 void DX12Core::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
