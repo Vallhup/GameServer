@@ -146,7 +146,8 @@ private:
 	unique_ptr<UploadBuffer> deferredLightCB;
 	unique_ptr<UploadBuffer> forwardLightCB;
 	unique_ptr<UploadBuffer> shadowFrameCB;
-	
+	unique_ptr<UploadBuffer> ssaoCB;
+
 	unique_ptr<SSAO> ssao;
 	D3D12_GPU_DESCRIPTOR_HANDLE ssaoSRVHandle;
 

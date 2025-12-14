@@ -17,6 +17,9 @@ void SSAO::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
 	CreateSRVs(device);
 	BuildOffsetVectors();
 
+	ssaoTextureInitialized = false;
+	viewSpaceInitialized = false;
+
 	OutputDebugStringA("=== Orthodox SSAO Initialized Successfully ===\n");
 }
 
@@ -351,4 +354,20 @@ void SSAO::GetOffsetVectors(XMFLOAT4 outOffsets[14]) const
 	{
 		outOffsets[i] = offsetVectors[i];
 	}
+}
+
+void SSAO::GetSSAOConstants(SSAOConstants& outConstants) const
+{
+	// Offset Vectors บนป็
+	for (int i = 0; i < 14; ++i)
+	{
+		outConstants.offsetVectors[i] = offsetVectors[i];
+	}
+
+	// Parameters
+	outConstants.projection = XMMatrixTranspose(projectionMatrix);
+	outConstants.occlusionRadius = occlusionRadius;
+	outConstants.occlusionFadeStart = occlusionFadeStart;
+	outConstants.occlusionFadeEnd = occlusionFadeEnd;
+	outConstants.surfaceEpsilon = surfaceEpsilon;
 }

@@ -7,6 +7,7 @@ enum class PSOType {
 	Lighting,
 	Compute,
 	Shadow,
+	SSAO,
 	SSAOViewSpace,
 	END
 };
@@ -17,6 +18,7 @@ enum class ShaderType {
 	FullscreenVS, LightingPS,
 	AnimationCS,
 	ShadowVS, ShadowPS,
+	SSAOVS, SSAOPS,
 	SSAOViewSpaceVS, SSAOViewSpacePS,
 	END
 };
@@ -31,6 +33,7 @@ public:
 	void InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath);
 	void InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
+	void InitializeSSAOShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeSSAOViewSpaceShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 
 	ID3D12PipelineState* GetPSO(PSOType type) const;

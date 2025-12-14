@@ -64,6 +64,8 @@ void Engine::Render()
     //graphics->RenderSSAO();
     graphics->RenderSSAOViewSpace();
 
+    graphics->RenderSSAO();
+
     // 2. Deferred Lighting Pass  
     graphics->BeginLightingPass();
     graphics->RenderFullscreenQuad();

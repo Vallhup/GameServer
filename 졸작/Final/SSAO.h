@@ -5,6 +5,17 @@
 // Frank Luna 방식 기반 정통 SSAO 구현
 // ============================================================================
 
+struct SSAOConstants
+{
+	XMFLOAT4 offsetVectors[14];
+	XMMATRIX projection;
+	float occlusionRadius;
+	float occlusionFadeStart;
+	float occlusionFadeEnd;
+	float surfaceEpsilon;
+	XMFLOAT3 padding;
+};
+
 class SSAO
 {
 public:
@@ -16,6 +27,8 @@ public:
 	// SSAO 상태
 	bool GetSSAOState() const { return enableSSAO; }
 	void SetSSAOState(bool state) { enableSSAO = state; }
+
+	void SetProjectionMatrix(const XMMATRIX& proj) { projectionMatrix = proj; }
 
 	// SSAO 결과 텍스처
 	ID3D12Resource* GetSSAOTexture() const { return ssaoTexture.Get(); }
@@ -36,8 +49,17 @@ public:
 	ID3D12Resource* GetRandomTexture() const { return randomTexture.Get(); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetRandomSRV() const { return randomSRV; }
 
+	ID3D12DescriptorHeap* GetSRVHeap() const { return srvHeap.Get(); }
+
 	// Offset Vectors (샘플 커널)
 	void GetOffsetVectors(XMFLOAT4 outOffsets[14]) const;
+	
+	void GetSSAOConstants(SSAOConstants& outConstants) const;
+
+	bool IsSSAOTextureInitialized() const { return ssaoTextureInitialized; }
+	bool IsViewSpaceInitialized() const { return viewSpaceInitialized; }
+	void SetSSAOTextureInitialized(bool state) { ssaoTextureInitialized = state; }
+	void SetViewSpaceInitialized(bool state) { viewSpaceInitialized = state; }
 
 private:
 	// === 내부 초기화 함수들 ===
@@ -84,5 +106,14 @@ private:
 
 	// === SSAO 파라미터 ===
 	XMFLOAT4 offsetVectors[14];  // 샘플링 커널
+	XMMATRIX projectionMatrix;
 	bool enableSSAO = false;
+
+	float occlusionRadius = 0.5f;
+	float occlusionFadeStart = 0.2f;
+	float occlusionFadeEnd = 1.0f;
+	float surfaceEpsilon = 0.05f;
+
+	bool ssaoTextureInitialized = false;
+	bool viewSpaceInitialized = false;
 };

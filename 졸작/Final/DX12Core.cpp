@@ -20,6 +20,7 @@ void DX12Core::Initialize(HWND hwnd)
 	forwardLightCB = make_unique<UploadBuffer>();
 	shadowFrameCB = make_unique<UploadBuffer>();
 	ssao = make_unique<SSAO>();
+	ssaoCB = make_unique<UploadBuffer>();
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
@@ -29,6 +30,7 @@ void DX12Core::Initialize(HWND hwnd)
 	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
 	shadowFrameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	ssao->Initialize(GetDevice(), GetGraphicsCmdList());
+	ssaoCB->Initialize(GetDevice(), sizeof(SSAOConstants));
 
 	CreateDepthStencilBuffer();
 	CreateShadowMap();
@@ -732,12 +734,100 @@ void DX12Core::RenderFullscreenQuad()
 //	firstSSAOPass = false;
 //}
 
+void DX12Core::RenderSSAO()
+{
+	// === SSAO OFF 체크 ===
+	if (!ssao->GetSSAOState())
+	{
+		// SSAO Texture를 흰색으로 클리어 (No AO)
+		if (ssao->IsSSAOTextureInitialized()) {  
+			D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+				ssao->GetSSAOTexture(),
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				D3D12_RESOURCE_STATE_RENDER_TARGET
+			);
+			cmdList->ResourceBarrier(1, &barrier);
+		}
+
+		D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTV = ssao->GetSSAORTV();
+		cmdList->OMSetRenderTargets(1, &ssaoRTV, FALSE, nullptr);
+
+		float whiteColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		cmdList->ClearRenderTargetView(ssaoRTV, whiteColor, 0, nullptr);
+
+		D3D12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
+			ssao->GetSSAOTexture(),
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+		);
+		cmdList->ResourceBarrier(1, &barrierToSRV);
+
+		ssao->SetSSAOTextureInitialized(true);  
+		return;
+	}
+
+	// === SSAO ON - 실제 계산 ===
+
+	// Barrier: SSAO Texture를 RTV로
+	if (ssao->IsSSAOTextureInitialized()) {  
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			ssao->GetSSAOTexture(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_RENDER_TARGET
+		);
+		cmdList->ResourceBarrier(1, &barrier);
+	}
+
+	// Set Render Target
+	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTV = ssao->GetSSAORTV();
+	cmdList->OMSetRenderTargets(1, &ssaoRTV, FALSE, nullptr);
+
+	// Clear
+	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	cmdList->ClearRenderTargetView(ssaoRTV, clearColor, 0, nullptr);
+
+	// Set PSO
+	cmdList->SetPipelineState(shader->GetPSO(PSOType::SSAO));
+	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
+
+	float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
+	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 1000.0f);
+	ssao->SetProjectionMatrix(proj);
+
+	// === Constant Buffer 업데이트 ===
+	SSAOConstants ssaoConstants;
+	ssao->GetSSAOConstants(ssaoConstants);
+	ssaoCB->CopyData(&ssaoConstants, sizeof(SSAOConstants));
+
+	// Bind Constants
+	cmdList->SetGraphicsRootConstantBufferView(14, ssaoCB->GetGPUVirtualAddress());
+
+	// === Bind View Space G-Buffer SRVs ===
+	ID3D12DescriptorHeap* heaps[] = { ssao->GetSRVHeap() };
+	cmdList->SetDescriptorHeaps(1, heaps);
+
+	// SSAO SRV Table (t10-t12)
+	cmdList->SetGraphicsRootDescriptorTable(15, ssao->GetSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+
+	// Draw Fullscreen Quad
+	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	cmdList->DrawInstanced(6, 1, 0, 0);
+
+	// Barrier: SSAO Texture를 SRV로
+	D3D12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
+		ssao->GetSSAOTexture(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	cmdList->ResourceBarrier(1, &barrierToSRV);
+
+	ssao->SetSSAOTextureInitialized(true);  
+}
+
 void DX12Core::RenderSSAOViewSpace()
 {
-	static bool firstFrame = true;
-
 	// === Barrier: View Space를 RTV로 (첫 프레임 제외) ===
-	if (!firstFrame) {
+	if (ssao->IsViewSpaceInitialized()) {  
 		D3D12_RESOURCE_BARRIER viewToRTV[2] = {
 			CD3DX12_RESOURCE_BARRIER::Transition(
 				ssao->GetViewNormal(),
@@ -760,10 +850,10 @@ void DX12Core::RenderSSAOViewSpace()
 	};
 	cmdList->OMSetRenderTargets(2, rtvs, FALSE, nullptr);
 
-	// === SSAO OFF: 검은색으로 클리어 (경고 제거!) ===
+	// === SSAO OFF: 검은색으로 클리어 ===
 	if (!ssao->GetSSAOState())
 	{
-		float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };  // ← 흰색→검은색
+		float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		cmdList->ClearRenderTargetView(rtvs[0], clearColor, 0, nullptr);
 		cmdList->ClearRenderTargetView(rtvs[1], clearColor, 0, nullptr);
 
@@ -782,7 +872,7 @@ void DX12Core::RenderSSAOViewSpace()
 		};
 		cmdList->ResourceBarrier(2, viewToSRV);
 
-		firstFrame = false;
+		ssao->SetViewSpaceInitialized(true);  
 		return;
 	}
 
@@ -824,7 +914,7 @@ void DX12Core::RenderSSAOViewSpace()
 	};
 	cmdList->ResourceBarrier(2, viewToSRV);
 
-	firstFrame = false;
+	ssao->SetViewSpaceInitialized(true);  
 }
 
 void DX12Core::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
