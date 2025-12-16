@@ -3,6 +3,15 @@ import json
 from math import sqrt
 import matplotlib.pyplot as plt
 
+def swap_yz(v): 
+    return np.array([v[0], v[2], v[1]], dtype=np.float32)
+
+AXIS_SWAP = np.array([
+    [1, 0, 0],
+    [0, 0, 1],
+    [0, -1, 0],
+], dtype=np.float32)
+
 def rotation_matrix_to_quaternion(R):
     m00, m01, m02 = R[0]
     m10, m11, m12 = R[1]
@@ -143,13 +152,24 @@ def prebake(anim, capsules):
         frame_list = []
 
         for boneIndex, cap in capsules.items():
+            # ROOT_BONE_INDEX = 0
+            
+            # rootM = bones[ROOT_BONE_INDEX]
+            # rootInv = np.linalg.inv(rootM)
+            
+            # boneM = bones[boneIndex]
+            # localM = rootInv @ boneM
+            
+            # R = AXIS_SWAP @ localM[:3, :3]
+            # pos = AXIS_SWAP @ localM[:3, 3]
+            
             M = bones[boneIndex]  # 이미 transpose 적용된 행렬
 
             # 위치
-            pos = M[:3, 3]
+            pos = AXIS_SWAP @ M[:3, 3]
 
             # 회전 행렬
-            R = M[:3, :3]
+            R = AXIS_SWAP @  M[:3, :3]
 
             # 로컬 방향/오프셋에 회전 적용
             rot_offset = R @ cap["localOffset"]
@@ -162,11 +182,14 @@ def prebake(anim, capsules):
             hh = cap["halfHeight"]
             p0 = centerWorld + rot_dir * hh
             p1 = centerWorld - rot_dir * hh
+            
+            p0_out = (p0).tolist()
+            p1_out = (p1).tolist()
 
             frame_list.append({
                 "bone": boneIndex,
-                "p0": p0.tolist(),
-                "p1": p1.tolist(),
+                "p0": p0_out,
+                "p1": p1_out,
                 "radius": cap["radius"]
             })
 
@@ -246,12 +269,12 @@ if xs and ys and zs:
 
 plt.show()
 
-# anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight5_Walk_mixamo.com_baked.bone")
-# colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight_capsules.json")
+anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight5_Walk_mixamo.com_baked.bone")
+colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight_capsules.json")
 
-# prebaked = prebake(anim, colliders)
+prebaked = prebake(anim, colliders)
 
-# with open("Knight_Walk_COLLIDER_PREBAKED.json", "w") as f:
-#     json.dump(prebaked, f, indent=2)
+with open("Knight_Walk_COLLIDER_PREBAKED.json", "w") as f:
+    json.dump(prebaked, f, indent=2)
 
-# print("Prebaked collider animation 생성 완료!")
+print("Prebaked collider animation 생성 완료!")

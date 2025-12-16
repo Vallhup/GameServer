@@ -89,201 +89,49 @@ def save_capsule_to_json(object_name, mesh_folder, output_path):
         "ObjectName": object_name,
         "Meshes": {}
     }
-    
+
     for file in sorted(os.listdir(mesh_folder)):
         if not file.endswith(".mesh"):
             continue
-        
+
         mesh_name = os.path.splitext(file)[0]
         print(f"[처리 중] {mesh_name} ...")
-        
+
         vertices = parse_mesh(os.path.join(mesh_folder, file))
         bone_groups = group_by_bone(vertices)
+
         mesh_capsules = {}
-        
+
         for bone_id, points in bone_groups.items():
             if len(points) < 5:
                 continue
-            
+
             axis, radius, c1, c2 = CapsuleExtractor(points)
-            center = (c1 + c2) / 2
+            center = (c1 + c2) / 2.0
             direction = (c2 - c1)
-            # direction = np.array([direction[2], direction[0], direction[1]])
             direction /= np.linalg.norm(direction)
+
             height = np.linalg.norm(c2 - c1)
-            
+            half_height = height * 0.5
+
             mesh_capsules[str(bone_id)] = {
-                "Offset": center.tolist(),
-                "Radius": float(radius),
-                "Height": float(height),
-                "Direction": direction.tolist()
+                "radius": float(radius),
+                "halfHeight": float(half_height),
+                "center": center.tolist(),
+                "direction": direction.tolist(),
             }
-            
+
+        # Meshes[mesh_name] = { boneIndex → capsule }
         result["Meshes"][mesh_name] = mesh_capsules
-    
+
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=4)
+
     print(f"\n {output_path} 저장 완료")
 
-def draw_cylinder_surface(ax, c1, c2, radius, color="skyblue", n_steps=24):
-    """c1, c2, radius로 실린더를 3D로 그림 (구머리 없음)"""
-    u = c2 - c1
-    height = np.linalg.norm(u)
-    if height < 1e-6:
-        return
-    u /= height
-
-    # 임의의 보조 축 계산 (u와 수직)
-    v = np.array([1, 0, 0])
-    if np.allclose(np.cross(u, v), 0):
-        v = np.array([0, 1, 0])
-    w = np.cross(u, v)
-    v = np.cross(w, u)
-    v /= np.linalg.norm(v)
-    w /= np.linalg.norm(w)
-
-    # 원통 생성
-    theta = np.linspace(0, 2*np.pi, n_steps)
-    z = np.linspace(0, height, n_steps)
-    theta_grid, z_grid = np.meshgrid(theta, z)
-
-    X = radius * np.cos(theta_grid)
-    Y = radius * np.sin(theta_grid)
-    Z = z_grid
-
-    # 로컬 → 월드 변환
-    Xw = c1[0] + X*v[0] + Y*w[0] + Z*u[0]
-    Yw = c1[1] + X*v[1] + Y*w[1] + Z*u[1]
-    Zw = c1[2] + X*v[2] + Y*w[2] + Z*u[2]
-
-    ax.plot_surface(Xw, Yw, Zw, color=color, alpha=0.4, linewidth=0)
-
-def draw_all_meshes(mesh_folder):
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(111, projection='3d')
-
-    colors = plt.cm.tab10(np.linspace(0, 1, 10))
-    color_idx = 0
-
-    for file in sorted(os.listdir(mesh_folder)):
-        if not file.endswith(".mesh"):
-            continue
-
-        mesh_name = os.path.splitext(file)[0]
-        print(f"[시각화 중] {mesh_name}")
-
-        vertices = parse_mesh(os.path.join(mesh_folder, file))
-        bone_groups = group_by_bone(vertices)
-
-        for bone_id, points in bone_groups.items():
-            if len(points) < 5:
-                continue
-
-            axis, radius, c1, c2 = CapsuleExtractor(points)
-
-            color = colors[color_idx % len(colors)]
-            draw_cylinder_surface(ax, c1, c2, radius, color=color)
-            color_idx += 1
-
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-    ax.set_title("All Mesh Capsules")
-    ax.set_box_aspect([1, 1, 1])
-
-    def set_axes_equal(ax):
-        import numpy as np
-        xlim = ax.get_xlim3d(); xmid = np.mean(xlim); xrad = (xlim[1]-xlim[0]) * 0.5
-        ylim = ax.get_ylim3d(); ymid = np.mean(ylim); yrad = (ylim[1]-ylim[0]) * 0.5
-        zlim = ax.get_zlim3d(); zmid = np.mean(zlim); zrad = (zlim[1]-zlim[0]) * 0.5
-        R = max(xrad, yrad, zrad)
-        ax.set_xlim3d([xmid-R, xmid+R])
-        ax.set_ylim3d([ymid-R, ymid+R])
-        ax.set_zlim3d([zmid-R, zmid+R])
-
-    set_axes_equal(ax)
-    plt.tight_layout()
-    plt.show()
-
 if __name__ == "__main__":
-    # save_capsule_to_json(
-    #     object_name="Knight",
-    #     mesh_folder=r"C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\Animation Parser",
-    #     output_path=r"C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\Animation Parser\knight_cylinders.json"
-    # )
-
-    mesh_folder = r"C:\Users\이정호\Desktop\StudyFloder\GameServer\Animation Parser"
-    draw_all_meshes(mesh_folder)
-    
-def draw_capsule(points, c1, c2, radius, n_steps=40):
-    P = np.array(points)
-    u = c2 - c1
-    height = np.linalg.norm(u)
-    u /= height  # 방향 단위벡터
-
-    # 임의의 보조 축 벡터 (u와 수직)
-    v = np.array([1, 0, 0])
-    if np.allclose(np.cross(u, v), 0):  # 거의 평행일 경우
-        v = np.array([0, 1, 0])
-    w = np.cross(u, v)
-    v = np.cross(w, u)
-    v /= np.linalg.norm(v)
-    w /= np.linalg.norm(w)
-
-    # 각도 샘플
-    theta = np.linspace(0, 2*np.pi, n_steps)
-    z = np.linspace(0, height, n_steps)
-    theta_grid, z_grid = np.meshgrid(theta, z)
-
-    # 실린더 표면 생성
-    X = radius * np.cos(theta_grid)
-    Y = radius * np.sin(theta_grid)
-    Z = z_grid
-
-    # 로컬 → 월드 변환
-    Xw = c1[0] + X*v[0] + Y*w[0] + Z*u[0]
-    Yw = c1[1] + X*v[1] + Y*w[1] + Z*u[1]
-    Zw = c1[2] + X*v[2] + Y*w[2] + Z*u[2]
-
-    # 시각화
-    fig = plt.figure(figsize=(6, 6))
-    ax = fig.add_subplot(111, projection='3d')
-
-    # 점 구름
-    ax.scatter(P[:,0], P[:,1], P[:,2], s=10, color='gray', alpha=0.5)
-
-    # 축 (중심선)
-    ax.plot([c1[0], c2[0]], [c1[1], c2[1]], [c1[2], c2[2]],
-            color='red', linewidth=3, label='Capsule Axis')
-
-    # 캡슐 원통 표면
-    ax.plot_surface(Xw, Yw, Zw, color='skyblue', alpha=0.5, linewidth=0)
-
-    # 양쪽 구머리
-    def draw_sphere(center):
-        phi, theta = np.mgrid[0:np.pi:20j, 0:2*np.pi:20j]
-        Xs = center[0] + radius * np.sin(phi) * np.cos(theta)
-        Ys = center[1] + radius * np.sin(phi) * np.sin(theta)
-        Zs = center[2] + radius * np.cos(phi)
-        ax.plot_surface(Xs, Ys, Zs, color='skyblue', alpha=0.5, linewidth=0)
-        
-    draw_sphere(c1)
-    draw_sphere(c2)
-
-    # 축 설정
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-    ax.legend()
-    ax.set_box_aspect([1, 1, 1])
-    
-    xlim = ax.get_xlim3d();  xmid = np.mean(xlim);  xrad = (xlim[1]-xlim[0]) * 0.5
-    ylim = ax.get_ylim3d();  ymid = np.mean(ylim);  yrad = (ylim[1]-ylim[0]) * 0.5
-    zlim = ax.get_zlim3d();  zmid = np.mean(zlim);  zrad = (zlim[1]-zlim[0]) * 0.5
-    R = max(xrad, yrad, zrad)
-    ax.set_xlim3d([xmid-R, xmid+R])
-    ax.set_ylim3d([ymid-R, ymid+R])
-    ax.set_zlim3d([zmid-R, zmid+R])
-    
-    plt.tight_layout()
-    plt.show()
+    save_capsule_to_json(
+        object_name="Knight",
+        mesh_folder=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser",
+        output_path=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight_capsules.json"
+    )
