@@ -53,6 +53,19 @@ void GameScene::CreateDragon()
 	OutputDebugStringA("Dragon created!!\n");
 }
 
+shared_ptr<GameObject> GameScene::CreateStaticMesh(const wstring& path, const XMFLOAT3& pos)
+{
+	auto obj = make_shared<GameObject>();
+	obj->SetId(0);
+	auto meshRenderer = obj->AddComponent<MeshRenderer>();
+	auto transform = obj->AddComponent<Transform>();
+	meshRenderer->SetMesh(*coreRef, path);
+	transform->SetInitPosition(pos.x, pos.y, pos.z);
+	transform->SetRotation(0.0f, 0.0f, 0.0f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+	return obj;
+}
+
 void GameScene::CreateCastle()
 {
 	vector<wstring> names = { L"candle", L"statue1", L"statue2", L"statue3", L"throne" };
@@ -79,7 +92,7 @@ void GameScene::CreateCastle()
 
 void GameScene::CreatePillars()
 {
-	vector<XMFLOAT3> pillarpos = {
+	constexpr XMFLOAT3 pillarpos[] = {
 		{5.62315f, -0.016064f, -9.59924f  },
 		{16.504f, -0.016064f, -9.59924f   },
 		{-16.5107f, -0.016064f, -9.59924f},
@@ -118,25 +131,13 @@ void GameScene::CreatePillars()
 		{34.5867f, -0.016064f, -17.2682f  }
 	};
 
-	for (int i = 0; i < 36; ++i)
-	{
-		auto pillar = make_shared<GameObject>();
-		pillar->SetId(0);
-		auto meshRenderer = pillar->AddComponent<MeshRenderer>();
-		auto transform = pillar->AddComponent<Transform>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_pillar");
-		transform->SetInitPosition(pillarpos[i].x, pillarpos[i].y, pillarpos[i].z);
-		transform->SetRotation(0.0f, 0.0f, 0.0f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(pillar);
-
-		OutputDebugStringA(("pillar " + to_string(i) + " has created!!\n").c_str());
-	}
+	for (const auto& pos : pillarpos)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_pillar", pos));
 }
 
 void GameScene::CreateFloor()
 {
-	vector<XMFLOAT3> floorpos = {
+	constexpr XMFLOAT3 floorpos[] = {
 		{-11.0406f, 0.0f, 27.0283f	 },
 		{-0.172962f, 0.0f, 27.0283f	 },
 		{10.6946f, 0.0f, 27.0283f		 },
@@ -175,20 +176,8 @@ void GameScene::CreateFloor()
 		{32.4286f, 0.0f, -35.7861f	 }
 	};
 
-	for (int i = 0; i < 36; ++i)
-	{
-		auto floor = make_shared<GameObject>();
-		floor->SetId(0);
-		auto meshRenderer = floor->AddComponent<MeshRenderer>();
-		auto transform = floor->AddComponent<Transform>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_01");
-		transform->SetInitPosition(floorpos[i].x, floorpos[i].y, floorpos[i].z);
-		transform->SetRotation(0.0f, 0.0f, 0.0f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(floor);
-
-		OutputDebugStringA(("floor " + to_string(i) + " has created!!\n").c_str());
-	}
+	for (const auto& pos : floorpos)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_01", pos));
 }
 
 void GameScene::CreateEffectSamples()

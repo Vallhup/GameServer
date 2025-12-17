@@ -13,6 +13,9 @@ public:
 
 	void CreateKnightPool();
 	void CreateDragon();
+
+	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const XMFLOAT3& pos);
+
 	void CreateCastle();
 	void CreatePillars();
 	void CreateFloor();
