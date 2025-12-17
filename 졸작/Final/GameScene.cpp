@@ -18,18 +18,15 @@ GameScene::~GameScene() = default;
 
 void GameScene::CreateKnightPool()
 {
-	int j = 0;
-
 	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
 	{
-		j = i / 10;
 		auto knight = make_shared<MainCharacter>();
 		knight->SetId(-1);
 		auto meshRenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f - (1.f *j));
+		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
 		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		knightPool.push_back(knight);
