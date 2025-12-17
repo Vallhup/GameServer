@@ -37,23 +37,7 @@ void GameScene::CreateKnightPool()
 	}
 }
 
-void GameScene::CreateDragon()
-{
-	dragon = make_shared<GameObject>();
-	dragon->SetId(-1);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
-	auto meshRenderer = dragon->AddComponent<MeshRenderer>();
-	auto transform = dragon->AddComponent<Transform>();
-	auto animator = dragon->AddComponent<Animator>();
-	meshRenderer->SetMesh(*coreRef, L"../FBXOutput/Dragon");
-	transform->SetInitPosition(5.f, 0.f, -5.f);
-	transform->SetRotation(0.f, 0.f, 0.f);
-	transform->SetScale(0.1f, 0.1f, 0.1f);
-	AddGameObject(dragon);
-
-	OutputDebugStringA("Dragon created!!\n");
-}
-
-shared_ptr<GameObject> GameScene::CreateStaticMesh(const wstring& path, const XMFLOAT3& pos)
+shared_ptr<GameObject> GameScene::CreateStaticMesh(const wstring& path, const XMFLOAT3& pos, const XMFLOAT3& rot, const XMFLOAT3& scale)
 {
 	auto obj = make_shared<GameObject>();
 	obj->SetId(0);
@@ -61,15 +45,14 @@ shared_ptr<GameObject> GameScene::CreateStaticMesh(const wstring& path, const XM
 	auto transform = obj->AddComponent<Transform>();
 	meshRenderer->SetMesh(*coreRef, path);
 	transform->SetInitPosition(pos.x, pos.y, pos.z);
-	transform->SetRotation(0.0f, 0.0f, 0.0f);
-	transform->SetScale(0.01f, 0.01f, 0.01f);
+	transform->SetRotation(rot.x, rot.y, rot.z);
+	transform->SetScale(scale.x, scale.y, scale.z);
 	return obj;
 }
 
 void GameScene::CreateCastle()
 {
-	vector<wstring> names = { L"candle", L"statue1", L"statue2", L"statue3", L"throne" };
-	for (int i = 2; i < 25; ++i)
+	for (int i = 2; i < 20; ++i)
 	{
 		auto map = make_shared<GameObject>();
 		map->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
@@ -77,10 +60,8 @@ void GameScene::CreateCastle()
 		auto transform = map->AddComponent<Transform>();
 		if (i < 10)
 			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_0" + to_wstring(i));
-		else if (i < 20)
+		else 
 			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_" + to_wstring(i));
-		else
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_" + names[i - 20]);
 		transform->SetInitPosition(0.0f, 0.0f, 0.0f);
 		transform->SetRotation(0.0f, 0.0f, 0.0f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
@@ -178,6 +159,80 @@ void GameScene::CreateFloor()
 
 	for (const auto& pos : floorpos)
 		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_01", pos));
+}
+
+void GameScene::CreateCandles()
+{
+	struct CandleData {
+		XMFLOAT3 position;
+		XMFLOAT3 rotation;
+		XMFLOAT3 scale;
+	};
+
+	constexpr CandleData candleData[] = {
+		// 데이터 새로 받아야 함
+		{{3.56737f, 0.0f, 0.790788f}, {0.0f, 3.14159f, 0.0f}, {1.0f, 0.945804f, 1.0f}},
+		/*{{-3.62466f, 0.0f, 0.790788f}, {0.0f, -0.349066f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{3.56737f, 0.0f, 11.3746f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-3.62466f, 0.0f, 11.3746f}, {0.0f, -0.610865f, 0.0f}, {1.06772f, 1.06772f, 1.06772f}},
+		{{3.56737f, 0.0f, 21.7258f}, {0.0f, -0.261799f, 0.0f}, {1.0f, 1.12763f, 1.0f}},
+		{{-3.62466f, 0.0f, 21.7258f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{3.56737f, 0.0f, -9.55116f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.16163f, 1.0f}},
+		{{-3.62466f, 0.0f, -9.55116f}, {0.0f, 0.261799f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{3.56737f, 0.0f, -35.2663f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.29939f, 1.0f}},
+		{{-3.62466f, 0.0f, -35.2663f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.27554f, 1.0f}},
+		{{-5.69569f, 0.0f, -33.0653f}, {0.0f, 0.374506f, 0.0f}, {1.0f, 0.865495f, 1.0f}},
+		{{-5.69569f, 0.0f, -12.068f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{5.47713f, 0.0f, -33.0653f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{5.47713f, 0.0f, -12.068f}, {0.0f, -0.192159f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{16.5294f, 0.0f, -33.0653f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{16.5294f, 0.0f, -12.068f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{26.2041f, 0.0f, -33.0653f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{26.2041f, 0.0f, -12.068f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-16.5124f, 0.0f, -33.0653f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-16.5124f, 0.0f, -12.068f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-26.3291f, 0.0f, -33.3225f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-26.2811f, 0.201421f, -11.0413f}, {-1.45417f, 1.51516f, -0.495437f}, {1.0f, 1.0f, 1.0f}},
+		{{-32.3072f, 0.0f, -17.9463f}, {0.0f, 0.287839f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-32.6318f, 0.0f, -27.223f}, {0.0f, -0.320081f, 0.0f}, {1.0f, 1.12198f, 1.0f}},
+		{{31.8466f, 0.0f, -17.3366f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{32.3281f, 0.0f, -27.4548f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-7.79683f, 0.0f, -9.63731f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-14.0193f, 0.0f, -9.63731f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{14.1051f, 0.0f, -9.63731f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{7.88262f, 0.0f, -9.63731f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-7.79683f, 0.0f, 0.872659f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-14.0193f, 0.0f, 0.872659f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{14.1051f, 0.0f, 0.872659f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{7.88262f, 0.0f, 0.872659f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-7.79683f, 0.0f, 11.2518f}, {0.0f, 0.174533f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-14.9076f, 0.231538f, 11.2518f}, {0.0f, 0.0f, -1.45794f}, {1.0f, 1.0f, 1.0f}},
+		{{14.1051f, 0.0f, 11.2518f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{7.88262f, 0.0f, 11.2518f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-7.79683f, 0.0f, 21.7484f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{-14.0193f, 0.0f, 21.7484f}, {0.0f, 0.314048f, 0.0f}, {1.0f, 1.07405f, 1.0f}},
+		{{14.1051f, 0.0f, 21.7484f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+		{{7.88262f, 0.0f, 21.7484f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}}*/
+	};
+
+	for (const auto& data : candleData)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_candle", data.position, data.rotation));
+}
+
+void GameScene::CreateStatuesAndThrone()
+{
+	//vector<wstring> names = { L"statue1", L"statue2", L"statue3", L"throne" };
+
+	struct ExtraData {
+		XMFLOAT3 position;
+		XMFLOAT3 rotation;
+		XMFLOAT3 scale;
+	};
+
+	constexpr ExtraData extraData[] = {
+		// 데이터 새로 받아야 함
+		{{3.56737f, 0.0f, 0.790788f}, {0.0f, 3.14159f, 0.0f}, {1.0f, 0.945804f, 1.0f}},
+	};
 }
 
 void GameScene::CreateEffectSamples()
@@ -339,10 +394,10 @@ void GameScene::InitializeLogic()
 	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
 
 	CreateKnightPool();
-	CreateDragon();
 	CreateCastle();
 	CreatePillars();
 	CreateFloor();
+	CreateCandles();
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
