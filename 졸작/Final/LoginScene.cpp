@@ -79,6 +79,31 @@ void LoginScene::InitializeLogic()
 
 void LoginScene::UpdateScene(const float deltaTime)
 {
+	if (dragon) {
+		auto animator = dragon->GetComponent<Animator>();
+		if (animator) {
+			if (GET(Input).GetKeyDown('1')) {
+				animator->TransitionToAnimation(0, 0.6f);  // Fly
+				OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
+			}
+
+			if (GET(Input).GetKeyDown('2')) {
+				animator->TransitionToAnimation(1, 0.4f);  // Idle
+				OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
+			}
+
+			if (GET(Input).GetKeyDown('3')) {
+				animator->TransitionToAnimation(2, 0.4f);  // Run
+				OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
+			}
+
+			if (GET(Input).GetKeyDown('4')) {
+				animator->TransitionToAnimation(3, 0.4f);  // Walk
+				OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
+			}
+		}
+	}
+
 	{
 		knight->Update(deltaTime);
 		dragon->Update(deltaTime);

@@ -16,10 +16,6 @@ public:
 	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const XMFLOAT3& pos = { 0.0f, 0.0f, 0.0f }, const XMFLOAT3& rot = { 0.0f, 0.0f, 0.0f }, const XMFLOAT3& scale = { 0.01f, 0.01f, 0.01f });
 
 	void CreateCastle();
-	void CreatePillars();
-	void CreateFloor();
-	void CreateCandles();
-	void CreateStatuesAndThrone();
 	void CreateEffectSamples();
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
 
@@ -46,9 +42,6 @@ private:
 	NetworkManager* _nManager{ nullptr };
 
 	vector<shared_ptr<GameObject>> gameObjects;
-
-	shared_ptr<GameObject> dragon;
-	shared_ptr<GameObject> dragon2;
 
 	vector<shared_ptr<MainCharacter>> knightPool;
 	static constexpr int MAX_KNIGHT_COUNT = 10;

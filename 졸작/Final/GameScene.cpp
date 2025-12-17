@@ -49,124 +49,110 @@ shared_ptr<GameObject> GameScene::CreateStaticMesh(const wstring& path, const XM
 
 void GameScene::CreateCastle()
 {
-	for (int i = 2; i < 20; ++i)
-	{
-		auto map = make_shared<GameObject>();
-		map->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
-		auto meshRenderer = map->AddComponent<MeshRenderer>();
-		auto transform = map->AddComponent<Transform>();
-		if (i < 10)
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_0" + to_wstring(i));
-		else 
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_" + to_wstring(i));
-		transform->SetInitPosition(0.0f, 0.0f, 0.0f);
-		transform->SetRotation(0.0f, 0.0f, 0.0f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(map);
-
-		OutputDebugStringA("castle created!!\n");
-	}
-}
-
-void GameScene::CreatePillars()
-{
-	constexpr XMFLOAT3 pillarpos[] = {
-		{5.62315f, -0.016064f, -9.59924f  },
-		{16.504f, -0.016064f, -9.59924f   },
-		{-16.5107f, -0.016064f, -9.59924f},
-		{-5.62991f, -0.016064f, -9.59924f},
-		{5.62315f, -0.016064f, 0.831307f   },
-		{16.504f, -0.016064f, 0.831307f	   },
-		{-16.5107f, -0.016064f, 0.831307f },
-		{-5.62991f, -0.016064f, 0.831307f },
-		{5.62315f, -0.016064f, 11.2619f	   },
-		{16.504f, -0.016064f, 11.2619f	   },
-		{-16.5107f, -0.016064f, 11.2619f  },
-		{-5.62991f, -0.016064f, 11.2619f  },
-		{5.62315f, -0.016064f, 21.8516f	   },
-		{16.504f, -0.016064f, 21.8516f	   },
-		{-16.5107f, -0.016064f, 21.8516f  },
-		{-5.62991f, -0.016064f, 21.8516f  },
-		{5.62315f, -0.016064f, 32.2828f	   },
-		{16.504f, -0.016064f, 32.2828f	   },
-		{-16.5107f, -0.016064f, 32.2828f  },
-		{-5.62991f, -0.016064f, 32.2828f  },
-		{26.9762f, -0.016064f, -9.59924f  },
-		{-26.9815f, -0.016064f, -9.59924f},
-		{5.62315f, -0.016064f, -35.3441f  },
-		{16.504f, -0.016064f, -35.3441f   },
-		{-16.5107f, -0.016064f, -35.3441f},
-		{-5.62991f, -0.016064f, -35.3441f},
-		{26.9762f, -0.016064f, -35.3441f  },
-		{-26.9815f, -0.016064f, -35.3441f},
-		{5.62315f, -0.016064f, -45.8333f  },
-		{16.504f, -0.016064f, -45.8333f   },
-		{-16.5107f, -0.016064f, -45.8333f},
-		{-5.62991f, -0.016064f, -45.8333f},
-		{-34.657f, -0.016064f, -27.727f  },
-		{-34.657f, -0.016064f, -17.2682f },
-		{34.5867f, -0.016064f, -27.727f   },
-		{34.5867f, -0.016064f, -17.2682f  }
-	};
-
-	for (const auto& pos : pillarpos)
-		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_pillar", pos));
-}
-
-void GameScene::CreateFloor()
-{
-	constexpr XMFLOAT3 floorpos[] = {
-		{-11.0406f, 0.0f, 27.0283f	 },
-		{-0.172962f, 0.0f, 27.0283f	 },
-		{10.6946f, 0.0f, 27.0283f		 },
-		{-11.0406f, 0.0f, 16.5593f	 },
-		{-0.172962f, 0.0f, 16.5593f	 },
-		{10.6946f, 0.0f, 16.5593f		 },
-		{-11.0406f, 0.0f, 6.09022f	 },
-		{-0.172962f, 0.0f, 6.09022f	 },
-		{10.6946f, 0.0f, 6.09022f		 },
-		{-11.0406f, 0.0f, -4.37883f	 },
-		{-0.172962f, 0.0f, -4.37883f	 },
-		{10.6946f, 0.0f, -4.37883f	 },
-		{-11.0406f, 0.0f, -14.8479f	 },
-		{-0.172962f, 0.0f, -14.8479f },
-		{10.6946f, 0.0f, -14.8479f	 },
-		{-11.0406f, 0.0f, -25.3169f	 },
-		{-0.172962f, 0.0f, -25.3169f},
-		{10.6946f, 0.0f, -25.3169f	 },
-		{-11.0406f, 0.0f, -35.7861f	 },
-		{-0.172962f, 0.0f, -35.7861f	 },
-		{10.6946f, 0.0f, -35.7861f	 },
-		{-11.0406f, 0.0f, -46.2553f	 },
-		{-0.172962f, 0.0f, -46.2553f	 },
-		{10.6946f, 0.0f, -46.2553f	 },
-		{-32.7753f, 0.0f, -14.8479f	 },
-		{-21.9077f, 0.0f, -14.8479f	 },
-		{-32.7753f, 0.0f, -25.3169f	 },
-		{-21.9077f, 0.0f, -25.3169f	 },
-		{-32.7753f, 0.0f, -35.7861f	 },
-		{-21.9077f, 0.0f, -35.7861f	 },
-		{21.561f, 0.0f, -14.8479f		 },
-		{32.4286f, 0.0f, -14.8479f	 },
-		{21.561f, 0.0f, -25.3169f		 },
-		{32.4286f, 0.0f, -25.3169f	 },
-		{21.561f, 0.0f, -35.7861f		 },
-		{32.4286f, 0.0f, -35.7861f	 }
-	};
-
-	for (const auto& pos : floorpos)
-		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_01", pos));
-}
-
-void GameScene::CreateCandles()
-{
-	struct CandleData {
+	struct castleData {
 		XMFLOAT3 position;
 		XMFLOAT3 rotation;
 		XMFLOAT3 scale;
 	};
 
-	constexpr CandleData candleData[] = {
+#pragma region Initialize CASTLEWALL
+	for (int i = 2; i < 20; ++i)
+	{
+		wstring meshName = (i < 10) ? L"../FBXOutput/mesh_0" + to_wstring(i) : L"../FBXOutput/mesh_" + to_wstring(i);
+		AddGameObject(CreateStaticMesh(meshName));
+	}
+#pragma endregion
+
+#pragma region Initialize PILLARS
+	constexpr castleData pillarData[] = {
+		{{5.62315f, -0.016064f, -9.59924f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, -9.59924f   },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, -9.59924f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, -9.59924f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, 0.831307f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, 0.831307f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, 0.831307f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, 0.831307f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, 11.2619f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, 11.2619f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, 11.2619f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, 11.2619f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, 21.8516f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, 21.8516f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, 21.8516f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, 21.8516f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, 32.2828f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, 32.2828f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, 32.2828f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, 32.2828f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{26.9762f, -0.016064f, -9.59924f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-26.9815f, -0.016064f, -9.59924f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, -35.3441f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, -35.3441f   },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, -35.3441f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, -35.3441f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{26.9762f, -0.016064f, -35.3441f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-26.9815f, -0.016064f, -35.3441f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, -45.8333f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, -45.8333f   },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, -45.8333f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, -45.8333f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-34.657f, -0.016064f, -27.727f   },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-34.657f, -0.016064f, -17.2682f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{34.5867f, -0.016064f, -27.727f   },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{34.5867f, -0.016064f, -17.2682f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
+	};
+
+	for (const auto& data : pillarData)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_pillar", data.position, data.rotation, data.scale));
+#pragma endregion
+
+#pragma region Initialize FLOORS
+	constexpr castleData floorData[] = {
+		{{-11.0406f, 0.0f, 27.0283f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, 27.0283f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, 27.0283f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, 16.5593f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, 16.5593f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, 16.5593f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, 6.09022f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, 6.09022f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, 6.09022f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, -4.37883f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, -4.37883f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, -4.37883f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, -14.8479f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, -14.8479f},	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, -14.8479f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, -25.3169f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, -25.3169f},	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, -25.3169f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, -35.7861f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, -35.7861f},	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, -35.7861f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, -46.2553f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, -46.2553f},	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, -46.2553f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-32.7753f, 0.0f, -14.8479f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-21.9077f, 0.0f, -14.8479f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-32.7753f, 0.0f, -25.3169f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-21.9077f, 0.0f, -25.3169f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-32.7753f, 0.0f, -35.7861f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-21.9077f, 0.0f, -35.7861f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{21.561f, 0.0f, -14.8479f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{32.4286f, 0.0f, -14.8479f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{21.561f, 0.0f, -25.3169f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{32.4286f, 0.0f, -25.3169f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{21.561f, 0.0f, -35.7861f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{32.4286f, 0.0f, -35.7861f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
+	};
+
+	for (const auto& data : floorData)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_01", data.position, data.rotation, data.scale));
+#pragma endregion
+
+#pragma region Initialize CANDLES
+	constexpr castleData candleData[] = {
 		{{3.56737f, 0.0f, 0.790788f}, {0.0f, 3.14159f, 0.0f}, {0.01f, 0.00945804f, 0.01f}},
 		{{-3.62466f, 0.0f, 0.790788f}, {0.0f, -0.349066f, 0.0f}, {0.01f, 0.01f, 0.01f}},
 		{{3.56737f, 0.0f, 11.3746f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
@@ -213,44 +199,44 @@ void GameScene::CreateCandles()
 
 	for (const auto& data : candleData)
 		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_candle", data.position, data.rotation, data.scale));
-}
+#pragma endregion
 
-void GameScene::CreateStatuesAndThrone()
-{
-	struct ExtraData {
-		XMFLOAT3 position;
-		XMFLOAT3 rotation;
-		XMFLOAT3 scale;
-	};
-
-	constexpr ExtraData statue1[] = {
+#pragma region Initialize STATUE1
+	constexpr castleData statue1[] = {
 		{{3.04724f, 0.0f, -43.3982f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
 	for (const auto& data : statue1)
 		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_statue1", data.position, data.rotation, data.scale));
+#pragma endregion
 
-	constexpr ExtraData statue2[] = {
+#pragma region Initialize STATUE2
+	constexpr castleData statue2[] = {
 		{{-3.42362f, 0.0f, -41.8548f}, {0.0f, 0.113092f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
 	for (const auto& data : statue2)
 		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_statue2", data.position, data.rotation, data.scale));
+#pragma endregion
 
-	constexpr ExtraData statue3[] = {
+#pragma region Initialize STATUE3
+	constexpr castleData statue3[] = {
 		{{-14.1011f, 0.0f, -43.6773f}, {0.0f, 0.643292f, 0.0f}, {0.01f, 0.01f, 0.01f}},
 		{{14.2448f, 0.0f, -43.6773f}, {0.0f, -0.927505f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
 	for (const auto& data : statue3)
 		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_statue3", data.position, data.rotation, data.scale));
+#pragma endregion
 
-	constexpr ExtraData throne[] = {
+#pragma region Initialize THRONE
+	constexpr castleData throne[] = {
 		{{0.0f, 0.0f, -39.9693f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
 	for (const auto& data : throne)
 		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_throne", data.position, data.rotation, data.scale));
+#pragma endregion
 }
 
 void GameScene::CreateEffectSamples()
@@ -305,7 +291,6 @@ void GameScene::Release()
 void GameScene::Reset()
 {
 	// TODO: 씬 데이터 리셋 코드 추가
-	dragon.reset();
 	knightPool.clear();
 	activePlayers.clear();
 	myPlayer = nullptr;
@@ -413,12 +398,7 @@ void GameScene::InitializeLogic()
 
 	CreateKnightPool();
 
-	// 성 생성
 	CreateCastle();
-	CreatePillars();
-	CreateFloor();
-	CreateCandles();
-	CreateStatuesAndThrone();
 
 	CreateEffectSamples();
 
@@ -440,31 +420,6 @@ void GameScene::InitializeLogic()
 
 void GameScene::UpdateScene(const float deltaTime)
 {
-	if (dragon) {
-		auto animator = dragon->GetComponent<Animator>();
-		if (animator) {
-			if (GET(Input).GetKeyDown('1')) {
-				animator->TransitionToAnimation(0, 0.6f);  // Fly
-				OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
-			}
-
-			if (GET(Input).GetKeyDown('2')) {
-				animator->TransitionToAnimation(1, 0.4f);  // Idle
-				OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
-			}
-
-			if (GET(Input).GetKeyDown('3')) {
-				animator->TransitionToAnimation(2, 0.4f);  // Run
-				OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
-			}
-
-			if (GET(Input).GetKeyDown('4')) {
-				animator->TransitionToAnimation(3, 0.4f);  // Walk
-				OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
-			}
-		}
-	}
-
 	// 이펙트 OFF
 	/*if (effectObjects.size() > 0 && GET(Input).GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
