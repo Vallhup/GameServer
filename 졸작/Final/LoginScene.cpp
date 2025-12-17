@@ -131,11 +131,6 @@ void LoginScene::RenderSceneEffects()
 {
 }
 
-int LoginScene::GetSceneWidth() const
-{
-	return 0;
-}
-
 void LoginScene::RequestSceneChange()
 {
 	if (GET(Input).GetKeyDown(VK_TAB))
