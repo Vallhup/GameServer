@@ -247,6 +247,10 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
             animator->SetSkeletonData(cachedMesh->skeletonData);
         }
 
+        if (cachedMesh->boundingBox.Extents.x > 0) {
+            GetGameObject()->SetLocalBoundingBox(cachedMesh->boundingBox);
+        }
+
         auto endTime = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime);
         OutputDebugStringA(("CACHE HIT - SetMesh time: " + to_string(duration.count()) + "ms\n").c_str());
@@ -257,6 +261,20 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
     if (importer.LoadModel(path))
     {
         const MeshData& mesh = importer.GetMesh();
+
+        // BoundingBox Setting From Mesh
+        BoundingBox localBox;
+        BoundingBox::CreateFromPoints(localBox, mesh.vertices.size(), &mesh.vertices[0].pos, sizeof(Vertex));
+        GetGameObject()->SetLocalBoundingBox(localBox);
+
+        OutputDebugStringA(("Local BoundingBox Created - Center: (" +
+            to_string(localBox.Center.x) + ", " +
+            to_string(localBox.Center.y) + ", " +
+            to_string(localBox.Center.z) + "), Extents: (" +
+            to_string(localBox.Extents.x) + ", " +
+            to_string(localBox.Extents.y) + ", " +
+            to_string(localBox.Extents.z) + ")\n").c_str());
+
         vertexIndexBuffer = make_shared<VertexIndexBuffer>();
         vertexIndexBuffer->Initialize(
             core.GetDevice(),
@@ -295,7 +313,7 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
         }
 
         GET(ResourceManager).CacheMesh(path, vertexIndexBuffer, matIndices, subMeshes, originalMaterialData,
-            mesh.hasAnimation, importer.GetAnimations(), importer.GetSkeleton());
+            mesh.hasAnimation, importer.GetAnimations(), importer.GetSkeleton(), localBox);
 
         auto endTime = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime);

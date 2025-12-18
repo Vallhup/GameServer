@@ -6,6 +6,8 @@ class Transform : public Component
 public:
 	void Update(float deltaTime) override;
 
+	void UpdateBoundingBox();
+
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3& pos);
 

@@ -13,7 +13,9 @@ struct CachedMeshData
     bool hasAnimation = false;
 
     vector<AnimClipInfo> animationClips;    
-    SkeletonData skeletonData;              
+    SkeletonData skeletonData;
+
+    BoundingBox boundingBox;
 };
 
 class ResourceManager
@@ -29,7 +31,8 @@ public:
         const vector<MaterialData>& originalData,
         bool hasanimation,
         const vector<AnimClipInfo>& animationclips,
-        const SkeletonData& skeletondata);
+        const SkeletonData& skeletondata,
+        const BoundingBox& box);
 
     void ClearCache();
     void PrintCacheStatus();

@@ -454,6 +454,10 @@ void GameScene::UpdateScene(const float deltaTime)
 	{
 		auto transform = myPlayer->GetComponent<Transform>();
 		coreRef->SetPlayerPosForShadow(transform->GetPosition());
+
+		// Debug Player's BoundingBox
+		/*if (GET(Input).GetKeyDown('1'))
+			myPlayer->DebugBoundingBox("Player");*/
 	}
 
 	for (const auto& obj : gameObjects)

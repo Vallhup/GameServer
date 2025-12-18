@@ -31,7 +31,6 @@ void MainCharacter::BasicMove()
 		[&input](int k) { return input.GetKey(k); }
 	);
 
-	// TEMP : 패킷 구조 어떻게 바뀌냐에 따라 달라짐
 	bool dir[4]{ input.GetKey('W'), input.GetKey('S'), input.GetKey('D'), input.GetKey('A') };
 	input.SendMovePacket(dir, camera->GetRadianYaw(), camera->GetRadianPitch());
 
