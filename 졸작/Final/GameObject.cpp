@@ -11,7 +11,7 @@ void GameObject::Update(float deltaTime)
 	}
 }
 
-void GameObject::RenderDebugBoundingBox(DX12Core& core, const XMFLOAT4& color) const
+void GameObject::RenderDebugBoundingBox(DX12Core& core, const XMFLOAT4& color)
 {
     if (worldBoundingBox.Extents.x == 0) return;
 

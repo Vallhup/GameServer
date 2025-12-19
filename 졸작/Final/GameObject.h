@@ -13,7 +13,7 @@ public:
 	T* GetComponent();
 
 	virtual void Update(float deltaTime);
-	void RenderDebugBoundingBox(DX12Core& core, const XMFLOAT4& color) const;
+	void RenderDebugBoundingBox(DX12Core& core, const XMFLOAT4& color);
 
 public:
 	int GetId() const { return _id; }
@@ -30,7 +30,7 @@ private:
 	BoundingBox localBoundingBox;
 	BoundingBox worldBoundingBox;
 
-	mutable ComPtr<ID3D12Resource> debugLineBuffer;
+	ComPtr<ID3D12Resource> debugLineBuffer;
 
 protected:
 	int _id;
