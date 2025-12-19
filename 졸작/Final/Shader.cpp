@@ -10,6 +10,7 @@ void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* roo
     InitializeShadowShader(device, rootSig, L"ShadowVS.hlsli", L"ShadowPS.hlsli");
     InitializeSSAOShader(device, rootSig, L"SSAO.hlsli", L"SSAO.hlsli");
     InitializeSSAOViewSpaceShader(device, rootSig, L"SSAOViewSpaceVS.hlsli", L"SSAOViewSpacePS.hlsli");
+    InitializeDebugLinePSO(device, rootSig);
 }
 
 void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
@@ -271,6 +272,41 @@ void Shader::InitializeSSAOViewSpaceShader(ID3D12Device* device, ID3D12RootSigna
     }
 
     OutputDebugStringA("SSAO View Space PSO created successfully!\n");
+}
+
+void Shader::InitializeDebugLinePSO(ID3D12Device* device, ID3D12RootSignature* rootSig)
+{
+    D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "WEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "INDICES", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 60, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 76, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+    };
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
+    psoDesc.pRootSignature = rootSig;
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::ForwardVS)]->GetBufferPointer(),
+                   mShadersBlobs[static_cast<size_t>(ShaderType::ForwardVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::ForwardPS)]->GetBufferPointer(),
+                   mShadersBlobs[static_cast<size_t>(ShaderType::ForwardPS)]->GetBufferSize() };
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;  // ? LINE
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+    psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::DebugLine)]));
+    MASSERT(SUCCEEDED(hr), "Failed to create DebugLine PSO");
+
+    OutputDebugStringA("DebugLine PSO created!\n");
 }
 
 ID3D12PipelineState* Shader::GetPSO(PSOType type) const

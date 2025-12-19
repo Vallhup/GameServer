@@ -9,6 +9,7 @@ enum class PSOType {
 	Shadow,
 	SSAO,
 	SSAOViewSpace,
+	DebugLine,
 	END
 };
 
@@ -35,6 +36,8 @@ public:
 	void InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeSSAOShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeSSAOViewSpaceShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
+	void InitializeDebugLinePSO(ID3D12Device* device, ID3D12RootSignature* rootSig); 
+
 
 	ID3D12PipelineState* GetPSO(PSOType type) const;
 

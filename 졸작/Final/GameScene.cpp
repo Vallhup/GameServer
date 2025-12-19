@@ -450,14 +450,10 @@ void GameScene::UpdateScene(const float deltaTime)
 		}
 	}*/
 
-	if (myPlayer)	// 그림자 반경을 플레이어 기준으로 움직이는거 테스트 위한 임시 코드임
+	if (myPlayer)	// Temporary Code for Player Centered Shadow Mapping
 	{
 		auto transform = myPlayer->GetComponent<Transform>();
 		coreRef->SetPlayerPosForShadow(transform->GetPosition());
-
-		// Debug Player's BoundingBox
-		/*if (GET(Input).GetKeyDown('1'))
-			myPlayer->DebugBoundingBox("Player");*/
 	}
 
 	for (const auto& obj : gameObjects)
@@ -484,6 +480,9 @@ void GameScene::RenderSceneForward()
 		{
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 				meshRenderer->RenderForward(*coreRef);
+
+			// Render Hitbox
+			obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
 		}
 	}
 }
