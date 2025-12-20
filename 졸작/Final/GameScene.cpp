@@ -483,6 +483,7 @@ void GameScene::RenderSceneDeferred()
 		}
 	}
 
+	// 마우스 각도에 따라 캐릭터가 사라지는 경우가 잇던데 해결해야함.
 	//OutputDebugStringA(("Rendered objects count: " + to_string(objCount) + "\n").c_str());
 }
 
