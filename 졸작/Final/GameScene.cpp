@@ -472,7 +472,7 @@ void GameScene::RenderSceneDeferred()
 	{
 		if (obj->GetId() != -1)
 		{
-			if (!obj->IsInFrustum(viewFrustum))
+			if (!myPlayer && !obj->IsInFrustum(viewFrustum))
 				continue;
 
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
@@ -483,7 +483,6 @@ void GameScene::RenderSceneDeferred()
 		}
 	}
 
-	// 마우스 각도에 따라 캐릭터가 사라지는 경우가 잇던데 해결해야함.
 	//OutputDebugStringA(("Rendered objects count: " + to_string(objCount) + "\n").c_str());
 }
 
@@ -495,7 +494,7 @@ void GameScene::RenderSceneForward()
 	{
 		if (obj->GetId() != -1)
 		{
-			if (!obj->IsInFrustum(viewFrustum))
+			if (!myPlayer && !obj->IsInFrustum(viewFrustum))
 				continue;
 
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
