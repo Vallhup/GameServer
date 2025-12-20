@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "DX12Core.h"
 #include "Input.h"
+#include "GameObject.h"
 
 void Camera::Initialize()
 {
@@ -51,9 +52,10 @@ void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
     currentTargetPos = desiredTargetPos;
 }
 
-void Camera::Update(DX12Core& core, float deltaTime)
+void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects)
 {
     UpdateInputtoCamLogic(deltaTime);
+    UpdatePosByObstruction(sceneObjects);
     UpdateSmoothFollow(deltaTime);
     UpdateCameraMatrices(core);
     SetCursor();
@@ -152,6 +154,56 @@ void Camera::ChangeAngleByInput(float deltaTime)
 
         UpdateForwardAndRight();
     }
+}
+
+void Camera::UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneObjects)
+{
+    float adjustedDistance = desiredDistance;
+
+    if (CheckObstruction(sceneObjects, desiredTargetPos, adjustedDistance))
+        desiredDistance = adjustedDistance;
+}
+
+bool Camera::CheckObstruction(const vector<shared_ptr<GameObject>>& objects, const XMFLOAT3& targetPos, float& adjustedDistance)
+{
+    XMVECTOR rayOrigin = XMLoadFloat3(&targetPos);
+    XMVECTOR rayDir = XMLoadFloat3(&position) - rayOrigin;
+    
+    float maxDistance = XMVectorGetX(XMVector3Length(rayDir));
+    rayDir = XMVector3Normalize(rayDir);
+
+    float closestDistance = maxDistance;
+    bool foundObstruction = false;
+
+    for (const auto& obj : objects)
+    {
+        BoundingBox worldBox = obj->GetWorldBoundingBox();
+
+        if (worldBox.Extents.x <= 0.0f) continue;
+
+        float distance = 0.0f;
+        if (worldBox.Intersects(rayOrigin, rayDir, distance))
+        {
+            if (distance < 0.1f) continue;
+            if (distance >= maxDistance) continue;
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                foundObstruction = true;
+
+                //OutputDebugStringA(("Obstruction found at distance: " + to_string(distance) + "\n").c_str());
+            }
+        }
+    }
+
+    if (foundObstruction)
+    {
+        adjustedDistance = max(closestDistance/* - 0.1f*/, minDistance);
+        return true;
+    }
+
+    return false;
 }
 
 XMFLOAT3 Camera::GetForward() const

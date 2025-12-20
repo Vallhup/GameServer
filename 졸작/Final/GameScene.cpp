@@ -458,6 +458,9 @@ void GameScene::UpdateScene(const float deltaTime)
 
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
+
+	if (cam)
+		cam->Update(*coreRef, deltaTime, gameObjects);
 }
 
 void GameScene::RenderSceneDeferred()
@@ -482,7 +485,7 @@ void GameScene::RenderSceneForward()
 				meshRenderer->RenderForward(*coreRef);
 
 			// Render Hitbox
-			obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
+			//obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
 		}
 	}
 }
@@ -510,9 +513,9 @@ void GameScene::RenderSceneEffects()
 
 void GameScene::RequestSceneChange()
 {
-	if (GET(Input).GetKeyDown(VK_TAB))
+	/*if (GET(Input).GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
 			sManagerRef->RequestSceneChange(SceneType::Scene1);
-	}
+	}*/
 }
