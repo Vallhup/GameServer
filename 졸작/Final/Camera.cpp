@@ -108,6 +108,8 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
     XMMATRIX matProj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 1000.0f);
 
+    viewFrustum = BoundingFrustum(matView * matProj);
+
     matView = XMMatrixTranspose(matView);
     matProj = XMMatrixTranspose(matProj);
 
@@ -234,6 +236,11 @@ float Camera::GetRadianYaw() const
 float Camera::GetRadianPitch() const
 {
     return XMConvertToRadians(pitch);
+}
+
+BoundingFrustum Camera::GetViewFrustum() const
+{
+    return viewFrustum;
 }
 
 void Camera::SetCameraPosition(const XMFLOAT3& pos)

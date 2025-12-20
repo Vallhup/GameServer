@@ -27,6 +27,8 @@ public:
 	float GetRadianYaw() const;
 	float GetRadianPitch() const;
 
+	BoundingFrustum GetViewFrustum() const;
+
 	void SetCameraPosition(const XMFLOAT3& pos);
 	void SetCursor();
 	void ChangeCursorInfo(bool in);
@@ -63,4 +65,6 @@ private:
 	float maxDistance = 4.5f;
 	float zoomSpeedPerNotch = 0.25f;    
 	float zoomFollowSpeed = 2.5f;
+
+	BoundingFrustum viewFrustum;
 };
