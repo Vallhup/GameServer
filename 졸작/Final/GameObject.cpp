@@ -95,3 +95,14 @@ void GameObject::RenderDebugBoundingBox(DX12Core& core, const XMFLOAT4& color)
     cmdList->IASetVertexBuffers(0, 1, &vbv);
     cmdList->DrawInstanced(24, 1, 0, 0);
 }
+
+bool GameObject::IsInFrustum(const BoundingFrustum& frustum) const
+{
+    BoundingBox worldBox = GetWorldBoundingBox();
+
+    // SAFETY FOR: EFFECTS / CAMERA / VIRTUAL OBJECTS
+    if (worldBox.Extents.x <= 0.0f)
+        return true;
+
+    return frustum.Intersects(worldBox);
+}

@@ -465,22 +465,38 @@ void GameScene::UpdateScene(const float deltaTime)
 
 void GameScene::RenderSceneDeferred()
 {
+	BoundingFrustum viewFrustum = cam->GetViewFrustum();
+	//int objCount = 0;
+
 	for (const auto& obj : gameObjects)
 	{
 		if (obj->GetId() != -1)
 		{
+			if (!obj->IsInFrustum(viewFrustum))
+				continue;
+
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+			{
 				meshRenderer->RenderDeferred(*coreRef);
+				//objCount++;
+			}
 		}
 	}
+
+	//OutputDebugStringA(("Rendered objects count: " + to_string(objCount) + "\n").c_str());
 }
 
 void GameScene::RenderSceneForward()
 {
+	BoundingFrustum viewFrustum = cam->GetViewFrustum();
+
 	for (const auto& obj : gameObjects)
 	{
 		if (obj->GetId() != -1)
 		{
+			if (!obj->IsInFrustum(viewFrustum))
+				continue;
+
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 				meshRenderer->RenderForward(*coreRef);
 
@@ -504,8 +520,13 @@ void GameScene::RenderSceneShadow()
 
 void GameScene::RenderSceneEffects()
 {
+	BoundingFrustum viewFrustum = cam->GetViewFrustum();
+
 	for (const auto& obj : gameObjects)
 	{
+		if (!obj->IsInFrustum(viewFrustum))
+			continue;
+
 		if (auto effectRenderer = obj->GetComponent<EffectRenderer>())
 			effectRenderer->Render(*coreRef, cam.get());
 	}

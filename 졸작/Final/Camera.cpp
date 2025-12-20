@@ -108,7 +108,10 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
     XMMATRIX matProj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 1000.0f);
 
-    viewFrustum = BoundingFrustum(matView * matProj);
+    BoundingFrustum::CreateFromMatrix(viewFrustum, matProj);
+    
+    XMMATRIX invView = XMMatrixInverse(nullptr, matView);
+    viewFrustum.Transform(viewFrustum, invView);
 
     matView = XMMatrixTranspose(matView);
     matProj = XMMatrixTranspose(matProj);

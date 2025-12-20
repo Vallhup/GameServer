@@ -24,6 +24,8 @@ public:
 	void SetLocalBoundingBox(const BoundingBox& box) { localBoundingBox = box; }
 	void SetWorldBoundingBox(const BoundingBox& box) { worldBoundingBox = box; }
 
+	bool IsInFrustum(const BoundingFrustum& frustum) const;
+
 private:
 	vector<unique_ptr<Component>> components;
 	
