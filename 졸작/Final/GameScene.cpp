@@ -479,6 +479,9 @@ void GameScene::RenderSceneDeferred()
 			{
 				meshRenderer->RenderDeferred(*coreRef);
 				//objCount++;
+
+				// Render Hitbox
+				//obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
 			}
 		}
 	}
@@ -499,9 +502,6 @@ void GameScene::RenderSceneForward()
 
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 				meshRenderer->RenderForward(*coreRef);
-
-			// Render Hitbox
-			//obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
 		}
 	}
 }
