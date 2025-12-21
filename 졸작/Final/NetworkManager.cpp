@@ -84,33 +84,31 @@ void NetworkManager::Update()
 		recvBuffer.insert(recvBuffer.end(), tempBuffer, tempBuffer + recvLen);
 
 		while (true) {
-			if (recvBuffer.size() < sizeof(uint16_t)) {
-				break;
-			}
+			if (recvBuffer.size() < sizeof(PacketHeader)) break;
 
-			uint16_t packetSize;
-			memcpy(&packetSize, recvBuffer.data(), sizeof(uint16_t));
+			PacketHeader header;
+			PacketFactory::PeekHeader(recvBuffer.data(), recvBuffer.size(), &header);
 
-			if (packetSize <= 0 or packetSize > 4096) {
+			if (header.size <= 0 or header.size > 4096)
+			{
 				recvBuffer.clear();
 				break;
 			}
 
-			if (recvBuffer.size() < sizeof(uint16_t) + packetSize) {
-				break;
-			}
+			const int totalSize = header.size;
+			if (recvBuffer.size() < totalSize) break;
 
-			std::vector<char> packet(recvBuffer.begin() + sizeof(uint16_t), recvBuffer.begin() + sizeof(uint16_t) + packetSize);
-			recvBuffer.erase(recvBuffer.begin(), recvBuffer.begin() + sizeof(uint16_t) + packetSize);
+			std::vector<char> packet(recvBuffer.begin(),
+				recvBuffer.begin() + totalSize);
+			recvBuffer.erase(recvBuffer.begin(), recvBuffer.begin() + totalSize);
 
 			ProcessPacket(packet);
 		}
 	}
 }
 
-void NetworkManager::Release()	
+void NetworkManager::Release()
 {
-	
 	if (isConnected)
 	{
 		closesocket(clientSocket);
@@ -150,33 +148,20 @@ void NetworkManager::Send(const std::vector<char>& packet)
 
 void NetworkManager::ProcessPacket(const std::vector<char>& packet)
 {
-	Protocol::GamePacket gamePacket;
-	if (not gamePacket.ParseFromArray(packet.data(), packet.size())) {
-		OutputDebugStringA("GamePacket Parsing failed");
-		return;
-	}
+	// Update 루프에서 패킷재조립 완료된 상태로 packet이 보내짐
+	volatile int a = 1;
+	std::cout << a << std::endl;
+
+	const PacketHeader* header = reinterpret_cast<const PacketHeader*>(packet.data());
+	//const char* body = packet.data() + sizeof(PacketHeader);
 
 	// TEMP : Server Test
-	if (SceneManager* sManager = GET(Engine).GetSceneManager()) {
-		if (Scene* scene = sManager->GetCurrentScene()) {
-			if (auto testScene = dynamic_cast<GameScene*>(scene)) {
-				testScene->HandlePacket(gamePacket);
-			}
+	if (SceneManager* sManager = GET(Engine).GetSceneManager())
+	{
+		if (Scene* scene = sManager->GetCurrentScene())
+		{
+			if (auto testScene = dynamic_cast<GameScene*>(scene))
+				testScene->HandlePacket(header);
 		}
 	}
-
-	/*const auto& header = gamePacket.header();
-	switch (header.type()) {
-	case Protocol::PacketType::SC_ADD: {
-
-	}
-	case Protocol::PacketType::SC_MOVE_OBJECT: {
-
-	}
-	case Protocol::PacketType::SC_REMOVE: {
-
-	}
-	default:
-		break;
-	}*/
 }

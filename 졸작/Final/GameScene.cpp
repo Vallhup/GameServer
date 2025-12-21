@@ -304,82 +304,88 @@ void GameScene::AddGameObject(shared_ptr<GameObject> obj)
 	gameObjects.push_back(obj);
 }
 
-void GameScene::HandlePacket(const Protocol::GamePacket& packet)
+void GameScene::HandlePacket(const PacketHeader* data)
 {
-	const auto& header = packet.header();
-	int sessionId = header.sessionid();
+	PacketType type = static_cast<PacketType>(data->type);
 
-	switch (header.type()) {
-		case Protocol::PacketType::SC_LOGIN: {
-			OutputDebugStringA("SC_LOGIN packet received\n");
-			Protocol::SC_LOGIN_PACKET login;
-			if (login.ParseFromArray(packet.body().data(), packet.body().size())) {
-				GET(Input).SetClientID(sessionId);
-				OutputDebugStringA(("My Session ID: " + to_string(GET(Input).GetClientID()) + "\n").c_str());
+	switch (type) {
+	case PacketType::SC_LOGIN:
+	{
+		OutputDebugStringA("SC_LOGIN packet received\n");
+		Protocol::SC_LOGIN_PACKET login;
+		if (PacketFactory::Deserialize<Protocol::SC_LOGIN_PACKET>(data, &login))
+		{
+			GET(Input).SetClientID(login.sessionid());
+			OutputDebugStringA(("My Session ID: " + to_string(GET(Input).GetClientID()) + "\n").c_str());
+		}
+		break;
+	}
+	case PacketType::SC_ADD:
+	{
+		OutputDebugStringA("SC_ADD packet received\n");
+		Protocol::SC_ADD_PACKET add;
+		if (PacketFactory::Deserialize<Protocol::SC_ADD_PACKET>(data, &add))
+		{
+			int sessionId = add.sessionid();
+			auto player = GetAvailableKnight();
+			if (player)
+			{
+				player->SetId(sessionId);
+				auto transform = player->GetComponent<Transform>();
+				transform->SetInitPosition(add.x(), add.y(), add.z());
+
+				activePlayers[sessionId] = player;
 			}
-			break;
-		}
-		case Protocol::PacketType::SC_ADD: {
-			OutputDebugStringA("SC_ADD packet received\n");
-			Protocol::SC_ADD_PACKET add;
-			if (add.ParseFromArray(packet.body().data(), packet.body().size())) {
-				Protocol::Vec3 pos = add.pos();
 
-				auto player = GetAvailableKnight();
-				if (player) {
-					player->SetId(sessionId);
-					auto transform = player->GetComponent<Transform>();
-					transform->SetInitPosition(pos.x(), pos.y(), pos.z());
-
-					activePlayers[sessionId] = player;
-				}
-
-				if (sessionId == GET(Input).GetClientID()) {
-					myPlayer = player;
-					myPlayer->SetCamera(cam.get());
-					OutputDebugStringA("My character activated!\n");
-				} 
-			}
-			break;
-		}
-		case Protocol::PacketType::SC_MOVE_OBJECT: {
-			Protocol::SC_MOVE_PACKET move;
-			if (move.ParseFromArray(packet.body().data(), packet.body().size())) {
-				Protocol::Vec3 pos = move.pos();
-
-				auto it = activePlayers.find(sessionId);
-				if (it != activePlayers.end())
-				{
-					auto transform = it->second->GetComponent<Transform>();
-					transform->SetPosition(pos.x(), pos.y(), pos.z());
-					transform->SetTargetRotation(move.rot());
-				}
-			}
-			break; 
-		}
-		case Protocol::PacketType::SC_REMOVE: {
-			OutputDebugStringA("SC_REMOVE packet received\n");
-			break;
-		}
-		case Protocol::PacketType::SC_ATTACK: {
-			Protocol::SC_ATTACK_PACKET attack;
-			if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
-				if (sessionId == GET(Input).GetClientID()) {
-					// TODO : Client Attack Animation 보정
-					OutputDebugStringA("SC_ATTACK_PACKET received\n");
-				}
-			}
-			break;
-		}
-		case Protocol::PacketType::SC_DODGE: {
-			Protocol::SC_DODGE_PACKET dodge;
-			if (dodge.ParseFromArray(packet.body().data(), packet.body().size())) {
-				if (sessionId == GET(Input).GetClientID()) {
-					// TODO : Client Dodge Animation 보정
-					OutputDebugStringA("SC_DODGE_PACKET received\n");
-				}
+			if (sessionId == GET(Input).GetClientID())
+			{
+				myPlayer = player;
+				myPlayer->SetCamera(cam.get());
+				OutputDebugStringA("My character activated!\n");
 			}
 		}
+		break;
+	}
+	case PacketType::SC_MOVE_OBJECT:
+	{
+		Protocol::SC_MOVE_PACKET move;
+		if (PacketFactory::Deserialize<Protocol::SC_MOVE_PACKET>(data, &move))
+		{
+			int sessionId = move.sessionid();
+			auto it = activePlayers.find(sessionId);
+			if (it != activePlayers.end())
+			{
+				auto transform = it->second->GetComponent<Transform>();
+				transform->SetPosition(move.x(), move.y(), move.z());
+				transform->SetTargetRotation(move.yaw());
+			}
+		}
+		break;
+	}
+	case PacketType::SC_REMOVE:
+	{
+		OutputDebugStringA("SC_REMOVE packet received\n");
+		break;
+	}
+	//case Protocol::PacketType::SC_ATTACK: {
+	//	Protocol::SC_ATTACK_PACKET attack;
+	//	if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
+	//		if (sessionId == GET(Input).GetClientID()) {
+	//			// TODO : Client Attack Animation 보정
+	//			OutputDebugStringA("SC_ATTACK_PACKET received\n");
+	//		}
+	//	}
+	//	break;
+	//}
+	//case Protocol::PacketType::SC_DODGE: {
+	//	Protocol::SC_DODGE_PACKET dodge;
+	//	if (dodge.ParseFromArray(packet.body().data(), packet.body().size())) {
+	//		if (sessionId == GET(Input).GetClientID()) {
+	//			// TODO : Client Dodge Animation 보정
+	//			OutputDebugStringA("SC_DODGE_PACKET received\n");
+	//		}
+	//	}
+	//}
 	}
 }
 
@@ -414,7 +420,14 @@ void GameScene::InitializeLogic()
 	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
 
 	SetNetworkManager(GET(Engine).GetNetworkManager());
-	_nManager->Send(PacketFactory::CSLoginPacket());
+
+	{
+		Protocol::CS_LOGIN_PACKET login;
+		auto data = PacketFactory::Serialize<Protocol::CS_LOGIN_PACKET>(
+			PacketType::CS_LOGIN, login);
+		_nManager->Send(data);
+	}
+
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
 

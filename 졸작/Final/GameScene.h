@@ -25,7 +25,7 @@ public:
 	void Reset() override;
 
 	void AddGameObject(shared_ptr<GameObject> obj);
-	void HandlePacket(const Protocol::GamePacket& packet);
+	void HandlePacket(const PacketHeader* data);
 
 protected:
 	const float* GetBackgroundColor() override;
