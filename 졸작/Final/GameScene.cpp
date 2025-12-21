@@ -404,6 +404,19 @@ void GameScene::InitializeLogic()
 
 	CreateKnightPool();
 
+	{
+		auto boss = make_shared<GameObject>();
+		boss->SetId(0);
+		auto meshRenderer = boss->AddComponent<MeshRenderer>();
+		auto transform = boss->AddComponent<Transform>();
+		auto animator = boss->AddComponent<Animator>();
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/boss");
+		transform->SetInitPosition(2.f, 0.f, 0.f);
+		transform->SetRotation(-1.57f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+		AddGameObject(boss);
+	}
+
 	CreateCastle();
 
 	CreateEffectSamples();
