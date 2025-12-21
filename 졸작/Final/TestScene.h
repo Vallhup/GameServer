@@ -23,7 +23,6 @@ protected:
 	void RenderSceneForward() override;
 	void RenderSceneShadow() override;
 	void RenderSceneEffects() override;
-	int GetSceneWidth() const override;
 	void RequestSceneChange() override;
 
 private:

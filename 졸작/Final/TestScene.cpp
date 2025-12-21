@@ -96,11 +96,6 @@ void TestScene::RenderSceneEffects()
 {
 }
 
-int TestScene::GetSceneWidth() const
-{
-	return 0;
-}
-
 void TestScene::RequestSceneChange()
 {
 	if (GET(Input).GetKeyDown(VK_TAB))

@@ -1,97 +1,122 @@
+// ============================================================================
+// Orthodox SSAO Shader (Frank Luna Method)
+// ============================================================================
 
-struct PS_IN
+cbuffer SSAOConstants : register(b6)
 {
-    float4 pos : SV_Position;
+    float4 offsetVectors[14]; 
+    matrix projection;
+    float occlusionRadius;
+    float occlusionFadeStart; 
+    float occlusionFadeEnd;
+    float surfaceEpsilon;
+    float3 ssaoPadding;
+};
+
+// View Space G-Buffer
+Texture2D gViewNormal : register(t10); // View Normal
+Texture2D gViewPosition : register(t11); // View Position
+Texture2D gRandomVec : register(t12); // Random Vectors
+
+SamplerState gsamLinearWrap : register(s0);
+SamplerState gsamPointClamp : register(s1);
+
+struct VertexOut
+{
+    float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
 };
 
-Texture2D gBufferRT1 : register(t5); // Normal + Roughness
-Texture2D gBufferRT2 : register(t6); // WorldPos + AO
+// ============================================================================
+// Vertex Shader (Fullscreen Quad)
+// ============================================================================
 
-SamplerState pointSampler : register(s0);
-
-float4 PSMain(PS_IN input) : SV_Target
+VertexOut VSMain(uint vertexID : SV_VertexID)
 {
-    float4 rt1 = gBufferRT1.Sample(pointSampler, input.uv);
-    float4 rt2 = gBufferRT2.Sample(pointSampler, input.uv);
+    VertexOut output;
     
-    float3 worldPos = rt2.xyz;
-    float3 worldNormal = normalize(rt1.xyz);
+    // Fullscreen Quad UV 계산
+    output.uv = float2((vertexID << 1) & 2, vertexID & 2);
     
-    // AI HELPED
-    // Background Check
-    // If normal = 0 || WorldPos is too far ==> Background
-    if (length(worldNormal) < 0.1f || length(worldPos) > 1000.0f)
-        return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    // UV [0,1] → NDC [-1,1]
+    output.position = float4(
+        output.uv.x * 2.0 - 1.0,
+        1.0 - output.uv.y * 2.0,
+        0.0,
+        1.0
+    );
     
-    // Calculate SSAO
-    float ao = 0.0f;
-    float radius = 0.5f;    // Sampling radius
-    int sampleCount = 0;
+    return output;
+}
+
+// ============================================================================
+// Occlusion Function (Frank Luna)
+// ============================================================================
+
+float OcclusionFunction(float distZ)
+{
+    // Fade out based on distance
+    float occlusion = 0.0;
     
-    // 주변 픽셀 샘플링 (5x5 그리드)
-    for (int x = -2; x <= 2; x++)
+    if (distZ > surfaceEpsilon)
     {
-        for (int y = -2; y <= 2; y++)
-        {
-            if (x == 0 && y == 0)
-                continue;
-            
-            // UV 오프셋 계산
-            float2 offset = float2(x, y) * 0.001f; // 픽셀 단위
-            float2 sampleUV = input.uv + offset;
-            
-            // 범위 체크
-            if (sampleUV.x < 0.0f || sampleUV.x > 1.0f ||
-                sampleUV.y < 0.0f || sampleUV.y > 1.0f)
-                continue;
-            
-            // 주변 픽셀의 WorldPos 샘플링
-            float3 samplePos = gBufferRT2.Sample(pointSampler, sampleUV).xyz;
-            
-            // 배경 픽셀 제외
-            if (length(samplePos) > 1000.0f)
-                continue;
-            
-            // 현재 픽셀과의 차이 벡터
-            float3 diff = samplePos - worldPos;
-            float distance = length(diff);
-            
-            float currentDepth = length(worldPos);
-            float depthRatio = distance / currentDepth;
-            
-            if (depthRatio > 0.2f)
-                continue;
-            
-            // 일정 범위 내의 픽셀만 체크
-            if (distance < radius && distance > 0.01f)
-            {
-                // 방향 벡터
-                float3 sampleDir = normalize(diff);
-                
-                // 노멀과의 각도 체크 (앞쪽에 있는 픽셀만)
-                float normalDot = max(0.0f, dot(worldNormal, sampleDir));
-                
-                // AO 누적 (가까울수록, 노멀 방향일수록 강함)
-                float attenuation = 1.0f - (distance / radius);
-                ao += normalDot * attenuation;
-                sampleCount++;
-            }
-        }
+        float fadeLength = occlusionFadeEnd - occlusionFadeStart;
+        
+        // Linear fade
+        occlusion = saturate((occlusionFadeEnd - distZ) / fadeLength);
     }
     
-    // === 4. AO 정규화 및 조절 ===
-    if (sampleCount > 0)
-        ao /= (float) sampleCount;
+    return occlusion;
+}
+
+// ============================================================================
+// Pixel Shader (SSAO Calculation)
+// ============================================================================
+
+float PSMain(VertexOut input) : SV_TARGET
+{
+    float3 viewNormal = gViewNormal.Sample(gsamPointClamp, input.uv).xyz;
+    float3 viewPos = gViewPosition.Sample(gsamPointClamp, input.uv).xyz;
     
-    // AO 강도 조절
-    ao = saturate(ao * 1.0f); // 2.5f = 강도 (높을수록 어두움)
+    if (abs(viewPos.z) < 0.0001f)
+        return 1.0f;
     
-    // 최종 값 (1.0 = 밝음, 0.0 = 어두움)
-    float finalAO = 1.0f - ao;
+    float2 randomUV = input.uv * float2(2560.0 / 256.0, 1440.0 / 256.0);
+    float3 randomVec = gRandomVec.Sample(gsamLinearWrap, randomUV).xyz;
+    randomVec = randomVec * 2.0 - 1.0;
     
-    // 최소값 보정 (너무 어두워지지 않게)
-    finalAO = max(finalAO, 0.3f);
+    float3 tangent = normalize(randomVec - viewNormal * dot(randomVec, viewNormal));
+    float3 bitangent = cross(viewNormal, tangent);
+    float3x3 TBN = float3x3(tangent, bitangent, viewNormal);
     
-    return float4(finalAO, finalAO, finalAO, 1.0f);
+    float occlusionSum = 0.0;
+    
+    for (int i = 0; i < 14; ++i)
+    {
+        float3 offset = mul(offsetVectors[i].xyz, TBN);
+        float3 samplePos = viewPos + offset * occlusionRadius;
+        
+        float4 sampleClip = mul(float4(samplePos, 1.0), projection);
+        sampleClip.xyz /= sampleClip.w;
+        
+        float2 sampleUV = sampleClip.xy * 0.5 + 0.5;
+        sampleUV.y = 1.0 - sampleUV.y;
+        
+        if (sampleUV.x < 0.0 || sampleUV.x > 1.0 ||
+            sampleUV.y < 0.0 || sampleUV.y > 1.0)
+            continue;
+        
+        float3 sampleViewPos = gViewPosition.Sample(gsamPointClamp, sampleUV).xyz;
+        
+        float distZ = sampleViewPos.z - viewPos.z;
+        float dp = max(dot(viewNormal, normalize(sampleViewPos - viewPos)), 0.0);
+        float occlusion = dp * OcclusionFunction(distZ);
+        
+        occlusionSum += occlusion;
+    }
+    
+    occlusionSum /= 14.0;
+    float accessibility = 1.0 - occlusionSum;
+    
+    return saturate(pow(accessibility, 2.0));
 }

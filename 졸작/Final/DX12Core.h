@@ -3,6 +3,14 @@
 #include "UAVBuffer.h"
 #include "SSAO.h"
 
+struct FrameConstants
+{
+	XMMATRIX view;
+	XMMATRIX projection;
+	XMFLOAT3 cameraPosition;
+	float padding;
+};
+
 struct ObjectConstants
 {
 	XMMATRIX world;
@@ -66,6 +74,7 @@ public:
 	void RenderFullscreenQuad();
 
 	void RenderSSAO();
+	void RenderSSAOViewSpace();
 
 	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 	void RenderEnd();
@@ -137,7 +146,8 @@ private:
 	unique_ptr<UploadBuffer> deferredLightCB;
 	unique_ptr<UploadBuffer> forwardLightCB;
 	unique_ptr<UploadBuffer> shadowFrameCB;
-	
+	unique_ptr<UploadBuffer> ssaoCB;
+
 	unique_ptr<SSAO> ssao;
 	D3D12_GPU_DESCRIPTOR_HANDLE ssaoSRVHandle;
 

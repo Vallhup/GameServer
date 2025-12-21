@@ -1,4 +1,5 @@
 #pragma once
+#include "DX12Core.h"
 
 class Component;
 
@@ -12,17 +13,28 @@ public:
 	T* GetComponent();
 
 	virtual void Update(float deltaTime);
+	void RenderDebugBoundingBox(DX12Core& core, const XMFLOAT4& color);
 
 public:
-	// Server Test
 	int GetId() const { return _id; }
 	void SetId(int id) { _id = id; }
+	
+	const BoundingBox& GetLocalBoundingBox() const { return localBoundingBox; }
+	const BoundingBox& GetWorldBoundingBox() const { return worldBoundingBox; }
+	void SetLocalBoundingBox(const BoundingBox& box) { localBoundingBox = box; }
+	void SetWorldBoundingBox(const BoundingBox& box) { worldBoundingBox = box; }
+
+	bool IsInFrustum(const BoundingFrustum& frustum) const;
 
 private:
 	vector<unique_ptr<Component>> components;
+	
+	BoundingBox localBoundingBox;
+	BoundingBox worldBoundingBox;
+
+	ComPtr<ID3D12Resource> debugLineBuffer;
 
 protected:
-	// Server Test
 	int _id;
 };
 

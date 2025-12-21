@@ -115,11 +115,6 @@ void ServerTestScene::RenderSceneEffects()
 {
 }
 
-int ServerTestScene::GetSceneWidth() const
-{
-    return 0;
-}
-
 void ServerTestScene::RequestSceneChange()
 {
   

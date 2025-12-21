@@ -1,6 +1,7 @@
 #pragma once
 
 class DX12Core;
+class GameObject;
 
 class Camera
 {
@@ -8,7 +9,7 @@ public:
 	void Initialize();
 	void InitCameraPositionFromCharacter(const XMFLOAT3& pos);
 
-	void Update(DX12Core& core, float deltaTime);
+	void Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects);
 	void UpdateInputtoCamLogic(float deltaTime);
 	void UpdateSmoothFollow(float deltaTime);
 	void UpdateCameraMatrices(DX12Core& core);
@@ -16,12 +17,17 @@ public:
 	void UpdateForwardAndRight();
 	void ChangeAngleByInput(float deltaTime);
 
+	void UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneObjects);
+	bool CheckObstruction(const vector<shared_ptr<GameObject>>& objects, const XMFLOAT3& targetPos, float& adjustedDistance);
+
 	XMFLOAT3 GetForward() const;
 	XMFLOAT3 GetRight() const;
 	XMFLOAT3 GetPosition() const;
 	XMFLOAT3 GetTargetPosition() const;
 	float GetRadianYaw() const;
 	float GetRadianPitch() const;
+
+	BoundingFrustum GetViewFrustum() const;
 
 	void SetCameraPosition(const XMFLOAT3& pos);
 	void SetCursor();
@@ -59,4 +65,6 @@ private:
 	float maxDistance = 4.5f;
 	float zoomSpeedPerNotch = 0.25f;    
 	float zoomFollowSpeed = 2.5f;
+
+	BoundingFrustum viewFrustum;
 };

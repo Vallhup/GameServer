@@ -28,7 +28,8 @@ void ResourceManager::CacheMesh(const wstring& path,
     const vector<MaterialData>& originalData,
     bool hasanimation,
     const vector<AnimClipInfo>& animationclips,
-    const SkeletonData& skeletondata)
+    const SkeletonData& skeletondata,
+    const BoundingBox& box)
 {
     // 이미 캐시된 경우 무시
     if (meshCache.find(path) != meshCache.end()) {
@@ -37,7 +38,6 @@ void ResourceManager::CacheMesh(const wstring& path,
 
     auto cachedData = make_shared<CachedMeshData>();
 
-    // VertexIndexBuffer는 원본 포인터 저장 (소유권은 유지)
     cachedData->vertexIndexBuffer = vib;
     cachedData->materialIndices = materialIndices;
     cachedData->subMeshes = subMeshes;
@@ -45,6 +45,7 @@ void ResourceManager::CacheMesh(const wstring& path,
     cachedData->hasAnimation = hasanimation;
     cachedData->animationClips = animationclips;
     cachedData->skeletonData = skeletondata;
+    cachedData->boundingBox = box;
 
     meshCache[path] = cachedData;
 

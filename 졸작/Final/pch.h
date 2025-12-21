@@ -38,11 +38,11 @@ using namespace std;
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
-#include "../../Graduation Project Server/Graduation Project ServerCore/Protocols/Enum.pb.h"
-#include "../../Graduation Project Server/Graduation Project ServerCore/Protocols/Struct.pb.h"
-#include "../../Graduation Project Server/Graduation Project ServerCore/Protocols/Protocol.pb.h"
+#include "Protocols/Enum.pb.h"
+#include "Protocols/Struct.pb.h"
+#include "Protocols/Protocol.pb.h"
 
-#include "../../Graduation Project Server/Graduation Project ServerCore/PacketFactory.h"
+#include "Protocol.hpp"
 
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")

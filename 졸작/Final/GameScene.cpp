@@ -18,18 +18,15 @@ GameScene::~GameScene() = default;
 
 void GameScene::CreateKnightPool()
 {
-	int j = 0;
-
 	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
 	{
-		j = i / 10;
 		auto knight = make_shared<MainCharacter>();
 		knight->SetId(-1);
 		auto meshRenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
-		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f - (1.f *j));
+		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
 		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		knightPool.push_back(knight);
@@ -37,158 +34,209 @@ void GameScene::CreateKnightPool()
 	}
 }
 
-void GameScene::CreateDragon()
+shared_ptr<GameObject> GameScene::CreateStaticMesh(const wstring& path, const XMFLOAT3& pos, const XMFLOAT3& rot, const XMFLOAT3& scale)
 {
-	dragon = make_shared<GameObject>();
-	dragon->SetId(-1);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
-	auto meshRenderer = dragon->AddComponent<MeshRenderer>();
-	auto transform = dragon->AddComponent<Transform>();
-	auto animator = dragon->AddComponent<Animator>();
-	meshRenderer->SetMesh(*coreRef, L"../FBXOutput/Dragon");
-	transform->SetInitPosition(5.f, 0.f, -5.f);
-	transform->SetRotation(0.f, 0.f, 0.f);
-	transform->SetScale(0.1f, 0.1f, 0.1f);
-	AddGameObject(dragon);
-
-	OutputDebugStringA("Dragon created!!\n");
+	auto obj = make_shared<GameObject>();
+	obj->SetId(0);
+	auto meshRenderer = obj->AddComponent<MeshRenderer>();
+	auto transform = obj->AddComponent<Transform>();
+	meshRenderer->SetMesh(*coreRef, path);
+	transform->SetInitPosition(pos.x, pos.y, pos.z);
+	transform->SetRotation(rot.x, rot.y, rot.z);
+	transform->SetScale(scale.x, scale.y, scale.z);
+	return obj;
 }
 
 void GameScene::CreateCastle()
 {
-	vector<wstring> names = { L"candle", L"statue1", L"statue2", L"statue3", L"throne" };
-	for (int i = 2; i < 25; ++i)
-	{
-		auto map = make_shared<GameObject>();
-		map->SetId(0);		// Id를 -1로 설정하면 지금 구조에선 렌더링 막아놓음
-		auto meshRenderer = map->AddComponent<MeshRenderer>();
-		auto transform = map->AddComponent<Transform>();
-		if (i < 10)
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_0" + to_wstring(i));
-		else if (i < 20)
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_" + to_wstring(i));
-		else
-			meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_" + names[i - 20]);
-		transform->SetInitPosition(0.0f, 0.0f, 0.0f);
-		transform->SetRotation(0.0f, 0.0f, 0.0f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(map);
-
-		OutputDebugStringA("castle created!!\n");
-	}
-}
-
-void GameScene::CreatePillars()
-{
-	vector<XMFLOAT3> pillarpos = {
-		{5.62315f, -0.016064f, -9.59924f  },
-		{16.504f, -0.016064f, -9.59924f   },
-		{-16.5107f, -0.016064f, -9.59924f},
-		{-5.62991f, -0.016064f, -9.59924f},
-		{5.62315f, -0.016064f, 0.831307f   },
-		{16.504f, -0.016064f, 0.831307f	   },
-		{-16.5107f, -0.016064f, 0.831307f },
-		{-5.62991f, -0.016064f, 0.831307f },
-		{5.62315f, -0.016064f, 11.2619f	   },
-		{16.504f, -0.016064f, 11.2619f	   },
-		{-16.5107f, -0.016064f, 11.2619f  },
-		{-5.62991f, -0.016064f, 11.2619f  },
-		{5.62315f, -0.016064f, 21.8516f	   },
-		{16.504f, -0.016064f, 21.8516f	   },
-		{-16.5107f, -0.016064f, 21.8516f  },
-		{-5.62991f, -0.016064f, 21.8516f  },
-		{5.62315f, -0.016064f, 32.2828f	   },
-		{16.504f, -0.016064f, 32.2828f	   },
-		{-16.5107f, -0.016064f, 32.2828f  },
-		{-5.62991f, -0.016064f, 32.2828f  },
-		{26.9762f, -0.016064f, -9.59924f  },
-		{-26.9815f, -0.016064f, -9.59924f},
-		{5.62315f, -0.016064f, -35.3441f  },
-		{16.504f, -0.016064f, -35.3441f   },
-		{-16.5107f, -0.016064f, -35.3441f},
-		{-5.62991f, -0.016064f, -35.3441f},
-		{26.9762f, -0.016064f, -35.3441f  },
-		{-26.9815f, -0.016064f, -35.3441f},
-		{5.62315f, -0.016064f, -45.8333f  },
-		{16.504f, -0.016064f, -45.8333f   },
-		{-16.5107f, -0.016064f, -45.8333f},
-		{-5.62991f, -0.016064f, -45.8333f},
-		{-34.657f, -0.016064f, -27.727f  },
-		{-34.657f, -0.016064f, -17.2682f },
-		{34.5867f, -0.016064f, -27.727f   },
-		{34.5867f, -0.016064f, -17.2682f  }
+	struct castleData {
+		XMFLOAT3 position;
+		XMFLOAT3 rotation;
+		XMFLOAT3 scale;
 	};
 
-	for (int i = 0; i < 36; ++i)
+#pragma region Initialize CASTLEWALL
+	for (int i = 2; i < 20; ++i)
 	{
-		auto pillar = make_shared<GameObject>();
-		pillar->SetId(0);
-		auto meshRenderer = pillar->AddComponent<MeshRenderer>();
-		auto transform = pillar->AddComponent<Transform>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_pillar");
-		transform->SetInitPosition(pillarpos[i].x, pillarpos[i].y, pillarpos[i].z);
-		transform->SetRotation(0.0f, 0.0f, 0.0f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(pillar);
-
-		OutputDebugStringA(("pillar " + to_string(i) + " has created!!\n").c_str());
+		wstring meshName = (i < 10) ? L"../FBXOutput/mesh_0" + to_wstring(i) : L"../FBXOutput/mesh_" + to_wstring(i);
+		AddGameObject(CreateStaticMesh(meshName));
 	}
-}
+#pragma endregion
 
-void GameScene::CreateFloor()
-{
-	vector<XMFLOAT3> floorpos = {
-		{-11.0406f, 0.0f, 27.0283f	 },
-		{-0.172962f, 0.0f, 27.0283f	 },
-		{10.6946f, 0.0f, 27.0283f		 },
-		{-11.0406f, 0.0f, 16.5593f	 },
-		{-0.172962f, 0.0f, 16.5593f	 },
-		{10.6946f, 0.0f, 16.5593f		 },
-		{-11.0406f, 0.0f, 6.09022f	 },
-		{-0.172962f, 0.0f, 6.09022f	 },
-		{10.6946f, 0.0f, 6.09022f		 },
-		{-11.0406f, 0.0f, -4.37883f	 },
-		{-0.172962f, 0.0f, -4.37883f	 },
-		{10.6946f, 0.0f, -4.37883f	 },
-		{-11.0406f, 0.0f, -14.8479f	 },
-		{-0.172962f, 0.0f, -14.8479f },
-		{10.6946f, 0.0f, -14.8479f	 },
-		{-11.0406f, 0.0f, -25.3169f	 },
-		{-0.172962f, 0.0f, -25.3169f},
-		{10.6946f, 0.0f, -25.3169f	 },
-		{-11.0406f, 0.0f, -35.7861f	 },
-		{-0.172962f, 0.0f, -35.7861f	 },
-		{10.6946f, 0.0f, -35.7861f	 },
-		{-11.0406f, 0.0f, -46.2553f	 },
-		{-0.172962f, 0.0f, -46.2553f	 },
-		{10.6946f, 0.0f, -46.2553f	 },
-		{-32.7753f, 0.0f, -14.8479f	 },
-		{-21.9077f, 0.0f, -14.8479f	 },
-		{-32.7753f, 0.0f, -25.3169f	 },
-		{-21.9077f, 0.0f, -25.3169f	 },
-		{-32.7753f, 0.0f, -35.7861f	 },
-		{-21.9077f, 0.0f, -35.7861f	 },
-		{21.561f, 0.0f, -14.8479f		 },
-		{32.4286f, 0.0f, -14.8479f	 },
-		{21.561f, 0.0f, -25.3169f		 },
-		{32.4286f, 0.0f, -25.3169f	 },
-		{21.561f, 0.0f, -35.7861f		 },
-		{32.4286f, 0.0f, -35.7861f	 }
+#pragma region Initialize PILLARS
+	constexpr castleData pillarData[] = {
+		{{5.62315f, -0.016064f, -9.59924f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, -9.59924f   },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, -9.59924f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, -9.59924f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, 0.831307f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, 0.831307f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, 0.831307f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, 0.831307f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, 11.2619f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, 11.2619f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, 11.2619f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, 11.2619f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, 21.8516f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, 21.8516f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, 21.8516f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, 21.8516f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, 32.2828f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, 32.2828f	  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, 32.2828f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, 32.2828f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{26.9762f, -0.016064f, -9.59924f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-26.9815f, -0.016064f, -9.59924f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, -35.3441f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, -35.3441f   },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, -35.3441f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, -35.3441f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{26.9762f, -0.016064f, -35.3441f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-26.9815f, -0.016064f, -35.3441f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.62315f, -0.016064f, -45.8333f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.504f, -0.016064f, -45.8333f   },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5107f, -0.016064f, -45.8333f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-5.62991f, -0.016064f, -45.8333f },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-34.657f, -0.016064f, -27.727f   },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-34.657f, -0.016064f, -17.2682f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{34.5867f, -0.016064f, -27.727f   },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{34.5867f, -0.016064f, -17.2682f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
-	for (int i = 0; i < 36; ++i)
-	{
-		auto floor = make_shared<GameObject>();
-		floor->SetId(0);
-		auto meshRenderer = floor->AddComponent<MeshRenderer>();
-		auto transform = floor->AddComponent<Transform>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/mesh_01");
-		transform->SetInitPosition(floorpos[i].x, floorpos[i].y, floorpos[i].z);
-		transform->SetRotation(0.0f, 0.0f, 0.0f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(floor);
+	for (const auto& data : pillarData)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_pillar", data.position, data.rotation, data.scale));
+#pragma endregion
 
-		OutputDebugStringA(("floor " + to_string(i) + " has created!!\n").c_str());
-	}
+#pragma region Initialize FLOORS
+	constexpr castleData floorData[] = {
+		{{-11.0406f, 0.0f, 27.0283f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, 27.0283f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, 27.0283f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, 16.5593f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, 16.5593f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, 16.5593f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, 6.09022f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, 6.09022f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, 6.09022f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, -4.37883f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, -4.37883f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, -4.37883f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, -14.8479f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, -14.8479f},	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, -14.8479f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, -25.3169f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, -25.3169f},	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, -25.3169f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, -35.7861f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, -35.7861f},	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, -35.7861f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-11.0406f, 0.0f, -46.2553f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-0.172962f, 0.0f, -46.2553f},	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{10.6946f, 0.0f, -46.2553f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-32.7753f, 0.0f, -14.8479f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-21.9077f, 0.0f, -14.8479f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-32.7753f, 0.0f, -25.3169f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-21.9077f, 0.0f, -25.3169f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-32.7753f, 0.0f, -35.7861f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-21.9077f, 0.0f, -35.7861f },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{21.561f, 0.0f, -14.8479f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{32.4286f, 0.0f, -14.8479f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{21.561f, 0.0f, -25.3169f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{32.4286f, 0.0f, -25.3169f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{21.561f, 0.0f, -35.7861f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{32.4286f, 0.0f, -35.7861f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
+	};
+
+	for (const auto& data : floorData)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_01", data.position, data.rotation, data.scale));
+#pragma endregion
+
+#pragma region Initialize CANDLES
+	constexpr castleData candleData[] = {
+		{{3.56737f, 0.0f, 0.790788f}, {0.0f, 3.14159f, 0.0f}, {0.01f, 0.00945804f, 0.01f}},
+		{{-3.62466f, 0.0f, 0.790788f}, {0.0f, -0.349066f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{3.56737f, 0.0f, 11.3746f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-3.62466f, 0.0f, 11.3746f}, {0.0f, -0.610865f, 0.0f}, {0.0106772f, 0.0106772f, 0.0106772f}},
+		{{3.56737f, 0.0f, 21.7258f}, {0.0f, -0.261799f, 0.0f}, {0.01f, 0.0112763f, 0.01f}},
+		{{-3.62466f, 0.0f, 21.7258f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{3.56737f, 0.0f, -9.55116f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.0116163f, 0.01f}},
+		{{-3.62466f, 0.0f, -9.55116f}, {0.0f, 0.261799f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{3.56737f, 0.0f, -35.2663f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.0129939f, 0.01f}},
+		{{-3.62466f, 0.0f, -35.2663f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.0127554f, 0.01f}},
+		{{-5.69569f, 0.0f, -33.0653f}, {0.0f, 0.374506f, 0.0f}, {0.01f, 0.00865495f, 0.01f}},
+		{{-5.69569f, 0.0f, -12.068f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.47713f, 0.0f, -33.0653f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{5.47713f, 0.0f, -12.068f}, {0.0f, -0.192159f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.5294f, 0.0f, -33.0653f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{16.5294f, 0.0f, -12.068f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{26.2041f, 0.0f, -33.0653f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{26.2041f, 0.0f, -12.068f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5124f, 0.0f, -33.0653f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-16.5124f, 0.0f, -12.068f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-26.3291f, 0.0f, -33.3225f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-26.2811f, 0.201421f, -11.0413f}, {-1.45417f, 1.51516f, -0.495437f}, {0.01f, 0.01f, 0.01f}},
+		{{-32.3072f, 0.0f, -17.9463f}, {0.0f, 0.287839f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-32.6318f, 0.0f, -27.223f}, {0.0f, -0.320081f, 0.0f}, {0.01f, 0.0112198f, 0.01f}},
+		{{31.8466f, 0.0f, -17.3366f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{32.3281f, 0.0f, -27.4548f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-7.79683f, 0.0f, -9.63731f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-14.0193f, 0.0f, -9.63731f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{14.1051f, 0.0f, -9.63731f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{7.88262f, 0.0f, -9.63731f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-7.79683f, 0.0f, 0.872659f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-14.0193f, 0.0f, 0.872659f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{14.1051f, 0.0f, 0.872659f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{7.88262f, 0.0f, 0.872659f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-7.79683f, 0.0f, 11.2518f}, {0.0f, 0.174533f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-14.9076f, 0.231538f, 11.2518f}, {0.0f, 0.0f, -1.45794f}, {0.01f, 0.01f, 0.01f}},
+		{{14.1051f, 0.0f, 11.2518f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{7.88262f, 0.0f, 11.2518f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-7.79683f, 0.0f, 21.7484f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-14.0193f, 0.0f, 21.7484f}, {0.0f, 0.314048f, 0.0f}, {0.01f, 0.0107405f, 0.01f}},
+		{{14.1051f, 0.0f, 21.7484f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{7.88262f, 0.0f, 21.7484f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
+	};
+
+	for (const auto& data : candleData)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_candle", data.position, data.rotation, data.scale));
+#pragma endregion
+
+#pragma region Initialize STATUE1
+	constexpr castleData statue1[] = {
+		{{3.04724f, 0.0f, -43.3982f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
+	};
+
+	for (const auto& data : statue1)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_statue1", data.position, data.rotation, data.scale));
+#pragma endregion
+
+#pragma region Initialize STATUE2
+	constexpr castleData statue2[] = {
+		{{-3.42362f, 0.0f, -41.8548f}, {0.0f, 0.113092f, 0.0f}, {0.01f, 0.01f, 0.01f}}
+	};
+
+	for (const auto& data : statue2)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_statue2", data.position, data.rotation, data.scale));
+#pragma endregion
+
+#pragma region Initialize STATUE3
+	constexpr castleData statue3[] = {
+		{{-14.1011f, 0.0f, -43.6773f}, {0.0f, 0.643292f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{14.2448f, 0.0f, -43.6773f}, {0.0f, -0.927505f, 0.0f}, {0.01f, 0.01f, 0.01f}}
+	};
+
+	for (const auto& data : statue3)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_statue3", data.position, data.rotation, data.scale));
+#pragma endregion
+
+#pragma region Initialize THRONE
+	constexpr castleData throne[] = {
+		{{0.0f, 0.0f, -39.9693f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
+	};
+
+	for (const auto& data : throne)
+		AddGameObject(CreateStaticMesh(L"../FBXOutput/mesh_throne", data.position, data.rotation, data.scale));
+#pragma endregion
 }
 
 void GameScene::CreateEffectSamples()
@@ -243,7 +291,6 @@ void GameScene::Release()
 void GameScene::Reset()
 {
 	// TODO: 씬 데이터 리셋 코드 추가
-	dragon.reset();
 	knightPool.clear();
 	activePlayers.clear();
 	myPlayer = nullptr;
@@ -257,82 +304,88 @@ void GameScene::AddGameObject(shared_ptr<GameObject> obj)
 	gameObjects.push_back(obj);
 }
 
-void GameScene::HandlePacket(const Protocol::GamePacket& packet)
+void GameScene::HandlePacket(const PacketHeader* data)
 {
-	const auto& header = packet.header();
-	int sessionId = header.sessionid();
+	PacketType type = static_cast<PacketType>(data->type);
 
-	switch (header.type()) {
-		case Protocol::PacketType::SC_LOGIN: {
-			OutputDebugStringA("SC_LOGIN packet received\n");
-			Protocol::SC_LOGIN_PACKET login;
-			if (login.ParseFromArray(packet.body().data(), packet.body().size())) {
-				GET(Input).SetClientID(sessionId);
-				OutputDebugStringA(("My Session ID: " + to_string(GET(Input).GetClientID()) + "\n").c_str());
+	switch (type) {
+	case PacketType::SC_LOGIN:
+	{
+		OutputDebugStringA("SC_LOGIN packet received\n");
+		Protocol::SC_LOGIN_PACKET login;
+		if (PacketFactory::Deserialize<Protocol::SC_LOGIN_PACKET>(data, &login))
+		{
+			GET(Input).SetClientID(login.sessionid());
+			OutputDebugStringA(("My Session ID: " + to_string(GET(Input).GetClientID()) + "\n").c_str());
+		}
+		break;
+	}
+	case PacketType::SC_ADD:
+	{
+		OutputDebugStringA("SC_ADD packet received\n");
+		Protocol::SC_ADD_PACKET add;
+		if (PacketFactory::Deserialize<Protocol::SC_ADD_PACKET>(data, &add))
+		{
+			int sessionId = add.sessionid();
+			auto player = GetAvailableKnight();
+			if (player)
+			{
+				player->SetId(sessionId);
+				auto transform = player->GetComponent<Transform>();
+				transform->SetInitPosition(add.x(), add.y(), add.z());
+
+				activePlayers[sessionId] = player;
 			}
-			break;
-		}
-		case Protocol::PacketType::SC_ADD: {
-			OutputDebugStringA("SC_ADD packet received\n");
-			Protocol::SC_ADD_PACKET add;
-			if (add.ParseFromArray(packet.body().data(), packet.body().size())) {
-				Protocol::Vec3 pos = add.pos();
 
-				auto player = GetAvailableKnight();
-				if (player) {
-					player->SetId(sessionId);
-					auto transform = player->GetComponent<Transform>();
-					transform->SetInitPosition(pos.x(), pos.y(), pos.z());
-
-					activePlayers[sessionId] = player;
-				}
-
-				if (sessionId == GET(Input).GetClientID()) {
-					myPlayer = player;
-					myPlayer->SetCamera(cam.get());
-					OutputDebugStringA("My character activated!\n");
-				} 
-			}
-			break;
-		}
-		case Protocol::PacketType::SC_MOVE_OBJECT: {
-			Protocol::SC_MOVE_PACKET move;
-			if (move.ParseFromArray(packet.body().data(), packet.body().size())) {
-				Protocol::Vec3 pos = move.pos();
-
-				auto it = activePlayers.find(sessionId);
-				if (it != activePlayers.end())
-				{
-					auto transform = it->second->GetComponent<Transform>();
-					transform->SetPosition(pos.x(), pos.y(), pos.z());
-					transform->SetTargetRotation(move.rot());
-				}
-			}
-			break; 
-		}
-		case Protocol::PacketType::SC_REMOVE: {
-			OutputDebugStringA("SC_REMOVE packet received\n");
-			break;
-		}
-		case Protocol::PacketType::SC_ATTACK: {
-			Protocol::SC_ATTACK_PACKET attack;
-			if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
-				if (sessionId == GET(Input).GetClientID()) {
-					// TODO : Client Attack Animation 보정
-					OutputDebugStringA("SC_ATTACK_PACKET received\n");
-				}
-			}
-			break;
-		}
-		case Protocol::PacketType::SC_DODGE: {
-			Protocol::SC_DODGE_PACKET dodge;
-			if (dodge.ParseFromArray(packet.body().data(), packet.body().size())) {
-				if (sessionId == GET(Input).GetClientID()) {
-					// TODO : Client Dodge Animation 보정
-					OutputDebugStringA("SC_DODGE_PACKET received\n");
-				}
+			if (sessionId == GET(Input).GetClientID())
+			{
+				myPlayer = player;
+				myPlayer->SetCamera(cam.get());
+				OutputDebugStringA("My character activated!\n");
 			}
 		}
+		break;
+	}
+	case PacketType::SC_MOVE_OBJECT:
+	{
+		Protocol::SC_MOVE_PACKET move;
+		if (PacketFactory::Deserialize<Protocol::SC_MOVE_PACKET>(data, &move))
+		{
+			int sessionId = move.sessionid();
+			auto it = activePlayers.find(sessionId);
+			if (it != activePlayers.end())
+			{
+				auto transform = it->second->GetComponent<Transform>();
+				transform->SetPosition(move.x(), move.y(), move.z());
+				transform->SetTargetRotation(move.yaw());
+			}
+		}
+		break;
+	}
+	case PacketType::SC_REMOVE:
+	{
+		OutputDebugStringA("SC_REMOVE packet received\n");
+		break;
+	}
+	//case Protocol::PacketType::SC_ATTACK: {
+	//	Protocol::SC_ATTACK_PACKET attack;
+	//	if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
+	//		if (sessionId == GET(Input).GetClientID()) {
+	//			// TODO : Client Attack Animation 보정
+	//			OutputDebugStringA("SC_ATTACK_PACKET received\n");
+	//		}
+	//	}
+	//	break;
+	//}
+	//case Protocol::PacketType::SC_DODGE: {
+	//	Protocol::SC_DODGE_PACKET dodge;
+	//	if (dodge.ParseFromArray(packet.body().data(), packet.body().size())) {
+	//		if (sessionId == GET(Input).GetClientID()) {
+	//			// TODO : Client Dodge Animation 보정
+	//			OutputDebugStringA("SC_DODGE_PACKET received\n");
+	//		}
+	//	}
+	//}
 	}
 }
 
@@ -350,10 +403,9 @@ void GameScene::InitializeLogic()
 	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
 
 	CreateKnightPool();
-	CreateDragon();
+
 	CreateCastle();
-	CreatePillars();
-	CreateFloor();
+
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
@@ -368,38 +420,21 @@ void GameScene::InitializeLogic()
 	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
 
 	SetNetworkManager(GET(Engine).GetNetworkManager());
-	_nManager->Send(PacketFactory::CSLoginPacket());
+
+	{
+		Protocol::CS_LOGIN_PACKET login;
+		auto data = PacketFactory::Serialize<Protocol::CS_LOGIN_PACKET>(
+			PacketType::CS_LOGIN, login);
+		_nManager->Send(data);
+	}
+
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
 
 void GameScene::UpdateScene(const float deltaTime)
 {
-	if (dragon) {
-		auto animator = dragon->GetComponent<Animator>();
-		if (animator) {
-			if (GET(Input).GetKeyDown('1')) {
-				animator->TransitionToAnimation(0, 0.6f);  // Fly
-				OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
-			}
-
-			if (GET(Input).GetKeyDown('2')) {
-				animator->TransitionToAnimation(1, 0.4f);  // Idle
-				OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
-			}
-
-			if (GET(Input).GetKeyDown('3')) {
-				animator->TransitionToAnimation(2, 0.4f);  // Run
-				OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
-			}
-
-			if (GET(Input).GetKeyDown('4')) {
-				animator->TransitionToAnimation(3, 0.4f);  // Walk
-				OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
-			}
-		}
-	}
-
-	if (effectObjects.size() > 0 && GET(Input).GetKeyDown('1'))
+	// 이펙트 OFF
+	/*if (effectObjects.size() > 0 && GET(Input).GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects.size() > 1 && GET(Input).GetKeyDown('2'))
@@ -426,9 +461,9 @@ void GameScene::UpdateScene(const float deltaTime)
 			XMFLOAT3 pos = myPlayer->GetComponent<Transform>()->GetPosition();
 			transform->SetInitPosition(pos.x, pos.y, pos.z);
 		}
-	}
+	}*/
 
-	if (myPlayer)	// 그림자 반경을 플레이어 기준으로 움직이는거 테스트 위한 임시 코드임
+	if (myPlayer)	// Temporary Code for Player Centered Shadow Mapping
 	{
 		auto transform = myPlayer->GetComponent<Transform>();
 		coreRef->SetPlayerPosForShadow(transform->GetPosition());
@@ -436,26 +471,48 @@ void GameScene::UpdateScene(const float deltaTime)
 
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
+
+	if (cam)
+		cam->Update(*coreRef, deltaTime, gameObjects);
 }
 
 void GameScene::RenderSceneDeferred()
 {
+	BoundingFrustum viewFrustum = cam->GetViewFrustum();
+	//int objCount = 0;
+
 	for (const auto& obj : gameObjects)
 	{
 		if (obj->GetId() != -1)
 		{
+			if (!myPlayer && !obj->IsInFrustum(viewFrustum))
+				continue;
+
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+			{
 				meshRenderer->RenderDeferred(*coreRef);
+				//objCount++;
+
+				// Render Hitbox
+				//obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
+			}
 		}
 	}
+
+	//OutputDebugStringA(("Rendered objects count: " + to_string(objCount) + "\n").c_str());
 }
 
 void GameScene::RenderSceneForward()
 {
+	BoundingFrustum viewFrustum = cam->GetViewFrustum();
+
 	for (const auto& obj : gameObjects)
 	{
 		if (obj->GetId() != -1)
 		{
+			if (!myPlayer && !obj->IsInFrustum(viewFrustum))
+				continue;
+
 			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
 				meshRenderer->RenderForward(*coreRef);
 		}
@@ -476,23 +533,23 @@ void GameScene::RenderSceneShadow()
 
 void GameScene::RenderSceneEffects()
 {
+	BoundingFrustum viewFrustum = cam->GetViewFrustum();
+
 	for (const auto& obj : gameObjects)
 	{
+		if (!obj->IsInFrustum(viewFrustum))
+			continue;
+
 		if (auto effectRenderer = obj->GetComponent<EffectRenderer>())
 			effectRenderer->Render(*coreRef, cam.get());
 	}
 }
 
-int GameScene::GetSceneWidth() const
-{
-	return 0;
-}
-
 void GameScene::RequestSceneChange()
 {
-	if (GET(Input).GetKeyDown(VK_TAB))
+	/*if (GET(Input).GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
 			sManagerRef->RequestSceneChange(SceneType::Scene1);
-	}
+	}*/
 }

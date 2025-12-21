@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Transform.h"
 #include "Input.h"
+#include "GameObject.h"
 
 void Transform::Update(float deltaTime)
 {
@@ -16,6 +17,21 @@ void Transform::Update(float deltaTime)
 	while (angleDiff < -XM_PI) angleDiff += 2 * XM_PI;
 
 	rotation.y += angleDiff * deltaTime * 5.0f;
+
+	UpdateBoundingBox();
+}
+
+void Transform::UpdateBoundingBox()
+{
+	if (!GetGameObject()) return;
+
+	const BoundingBox& localBox = GetGameObject()->GetLocalBoundingBox();
+	BoundingBox worldBox;
+
+	XMMATRIX worldMatrix = GetWorldMatrix();
+	localBox.Transform(worldBox, worldMatrix);
+
+	GetGameObject()->SetWorldBoundingBox(worldBox);
 }
 
 void Transform::SetPosition(float x, float y, float z)
@@ -32,16 +48,22 @@ void Transform::SetInitPosition(float x, float y, float z)
 {
 	position = { x, y, z };
 	targetPos = { x, y, z };
+
+	UpdateBoundingBox();
 }
 
 void Transform::SetRotation(float x, float y, float z)
 {
 	rotation = { x, y, z };
+
+	UpdateBoundingBox();
 }
 
 void Transform::SetRotation(const XMFLOAT3& rot)
 {
 	rotation = rot;
+
+	UpdateBoundingBox();
 }
 
 void Transform::SetTargetRotation(float y)
@@ -52,11 +74,15 @@ void Transform::SetTargetRotation(float y)
 void Transform::SetScale(float x, float y, float z)
 {
 	scale = { x, y, z };
+
+	UpdateBoundingBox();
 }
 
 void Transform::SetScale(const XMFLOAT3& scl)
 {
 	scale = scl;
+
+	UpdateBoundingBox();
 }
 
 const XMFLOAT3& Transform::GetPosition() const

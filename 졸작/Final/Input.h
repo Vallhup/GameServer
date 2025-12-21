@@ -2,7 +2,7 @@
 
 #include "NetworkManager.h"
 
-enum class MouseButton 
+enum class MouseButton
 {
 	LEFT,
 	RIGHT,
@@ -36,7 +36,7 @@ public:
 	int GetClientID() const { return clientID; }
 
 public:
-	void SendMovePacket(bool dir[4], float yaw, float pitch);
+	void SendMovePacket(int inputX, int intputZ, float yaw);
 	void SendAttackPacket();
 	void SendDodgePacket();
 
@@ -52,4 +52,3 @@ private:
 
 	int clientID;
 };
-

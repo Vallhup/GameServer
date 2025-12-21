@@ -12,10 +12,10 @@ public:
 	~GameScene();
 
 	void CreateKnightPool();
-	void CreateDragon();
+
+	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const XMFLOAT3& pos = { 0.0f, 0.0f, 0.0f }, const XMFLOAT3& rot = { 0.0f, 0.0f, 0.0f }, const XMFLOAT3& scale = { 0.01f, 0.01f, 0.01f });
+
 	void CreateCastle();
-	void CreatePillars();
-	void CreateFloor();
 	void CreateEffectSamples();
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
 
@@ -25,7 +25,7 @@ public:
 	void Reset() override;
 
 	void AddGameObject(shared_ptr<GameObject> obj);
-	void HandlePacket(const Protocol::GamePacket& packet);
+	void HandlePacket(const PacketHeader* data);
 
 protected:
 	const float* GetBackgroundColor() override;
@@ -36,7 +36,6 @@ protected:
 	void RenderSceneForward() override;
 	void RenderSceneShadow() override;
 	void RenderSceneEffects() override;
-	int GetSceneWidth() const override;
 	void RequestSceneChange() override;
 
 private:
@@ -44,11 +43,8 @@ private:
 
 	vector<shared_ptr<GameObject>> gameObjects;
 
-	shared_ptr<GameObject> dragon;
-	shared_ptr<GameObject> dragon2;
-
 	vector<shared_ptr<MainCharacter>> knightPool;
-	static constexpr int MAX_KNIGHT_COUNT = 100;
+	static constexpr int MAX_KNIGHT_COUNT = 10;
 	unordered_map<int, shared_ptr<MainCharacter>> activePlayers;
 	shared_ptr<MainCharacter> myPlayer;
 

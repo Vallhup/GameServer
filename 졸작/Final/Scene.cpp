@@ -29,13 +29,15 @@ void Scene::Initialize(DX12Core& core)
 
 void Scene::Update(const float deltaTime)
 {
-    if (GET(Input).GetKeyDown('1'))
-        coreRef->SetSSAOState(!coreRef->GetSSAOState());
+    // SSAO OFF
+    /*if (GET(Input).GetKeyDown('1'))
+        coreRef->SetSSAOState(!coreRef->GetSSAOState());*/
 
     UpdateScene(deltaTime);
     
-    if (cam)
-        cam->Update(*coreRef, deltaTime);
+    // Temporarily test in GameScene Only
+    //if (cam)
+    //    cam->Update(*coreRef, deltaTime, );
     
     RequestSceneChange();
 }

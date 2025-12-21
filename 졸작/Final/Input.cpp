@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Input.h"
 
-#include "../../Graduation Project Server/Graduation Project ServerCore/PacketFactory.h"
+#include "Protocol.hpp"
 
 Input& Input::Get()
 {
@@ -62,26 +62,33 @@ void Input::SetClientID(int id)
 	clientID = id;
 }
 
-void Input::SendMovePacket(bool dir[4], float yaw, float pitch)
+void Input::SendMovePacket(int inputX, int inputZ, float yaw)
 {
 	if (!network) return;
 
-	vector<char> packet = PacketFactory::CSMovePacket(clientID, dir, yaw, pitch);
-	network->Send(packet);
+	// TEMP : 나중에 별도로 헬퍼 함수 만들 수 있음
+	Protocol::CS_MOVE_PACKET move;
+	move.set_inputx(inputX);
+	move.set_inputz(inputZ);
+	move.set_yaw(yaw);
+
+	auto data = PacketFactory::Serialize<Protocol::CS_MOVE_PACKET>(
+		PacketType::CS_MOVE, move);
+	network->Send(data);
 }
 
 void Input::SendAttackPacket()
 {
-	if (!network) return;
+	/*if (!network) return;
 
 	vector<char> packet = PacketFactory::CSAttackPacket(clientID);
-	network->Send(packet);
+	network->Send(packet);*/
 }
 
 void Input::SendDodgePacket()
 {
-	if (!network) return;
+	/*if (!network) return;
 
 	vector<char> packet = PacketFactory::CSDodgePacket(clientID);
-	network->Send(packet);
+	network->Send(packet);*/
 }

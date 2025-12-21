@@ -34,7 +34,6 @@ protected:
 	virtual void RenderSceneForward() = 0;
 	virtual void RenderSceneShadow() = 0;
 	virtual void RenderSceneEffects() = 0;
-	virtual int GetSceneWidth() const = 0;
 	virtual void RequestSceneChange() = 0;
 
 protected:

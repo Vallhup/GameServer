@@ -61,6 +61,9 @@ void Engine::Render()
     graphics->EndGBufferPass();
 
     // 1.5. SSAO Pass (Â÷Æóµµ)
+    //graphics->RenderSSAO();
+    graphics->RenderSSAOViewSpace();
+
     graphics->RenderSSAO();
 
     // 2. Deferred Lighting Pass  

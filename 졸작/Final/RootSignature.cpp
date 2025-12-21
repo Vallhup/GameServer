@@ -44,27 +44,32 @@ void RootSignature::Initialize(ID3D12Device* device)
         rootParams.push_back(p);
     };
 
-    AddCBV(0);              // rootParams[0] register(b0) - view & projection Constant BUFF
-    AddCBV(1);              // rootParams[1] register(b1) - object Constant BUFF
-    AddCBV(2);              // rootParams[2] register(b2) - animationparams Constant BUFF
-    AddCBV(3);              // rootParams[3] register(b3) - deferred light Constant BUFF
-    AddCBV(4);              // rootParams[4] register(b4) - forward light Constant BUFF
-    AddCBV(5);              // rootParams[5] register(b5) - shadowFrameCB Constant BUFF
-    AddBindlessTable(1);    // rootParams[6] register(t0, space1) - bindless texture ARRAY
-    AddSRV(0, 0);           // rootParams[7] register(t0, space0) - material buffer
-    AddSRV(1, 0);           // rootParams[8] register(t1, space0) - animation bone frame structured BUFF
-    AddSRV(2, 0);           // rootParams[9] register(t2, space0) - animation offset structured BUFF
-    AddSRV(3, 0);           // rootParams[10] register(t3, space0) - finalBone Structured BUFF
-    AddUAV(0, 0);           // rootParams[11] register(u0)	- animation final Read&Write structured BUFF
-    AddSRV(0, 2);           // rootParams[12] register(t0, space2) - instance structured BUFF
-    AddSRVTable(4, 6, 0);   // rootParams[13] register(t4-t9, space0) - G-Buffer + shadowMap + SSAO SRV 테이블
+    AddCBV(0);              // [0]  b0 - FrameCB
+    AddCBV(1);              // [1]  b1 - ObjectCB
+    AddCBV(2);              // [2]  b2 - AnimationParams
+    AddCBV(3);              // [3]  b3 - DeferredLight
+    AddCBV(4);              // [4]  b4 - ForwardLight
+    AddCBV(5);              // [5]  b5 - ShadowFrameCB
+
+    AddBindlessTable(1);    // [6]  t0, space1 - Bindless
+    AddSRV(0, 0);           // [7]  t0 - Material
+    AddSRV(1, 0);           // [8]  t1 - Bone Frame
+    AddSRV(2, 0);           // [9]  t2 - Offset
+    AddSRV(3, 0);           // [10] t3 - Final Bone
+    AddUAV(0, 0);           // [11] u0 - Animation R/W
+    AddSRV(0, 2);           // [12] t0, space2 - Instance
+    AddSRVTable(4, 6, 0);   // [13] t4-t9 - G-Buffer
+
+    // === SSAO 파라미터 ===
+    AddCBV(6);              // [14] b6 - SSAO Constants
+    AddSRVTable(10, 3, 0);  // [15] t10-t12 - SSAO SRVs
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[2];
-    samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,         // register(s0) - texture Sampler
+    samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,
         D3D12_TEXTURE_ADDRESS_MODE_WRAP,
         D3D12_TEXTURE_ADDRESS_MODE_WRAP);
 
-    samplerDesc[1].Init(1, D3D12_FILTER_MIN_MAG_MIP_LINEAR,         // register(s1) - linear Sampler
+    samplerDesc[1].Init(1, D3D12_FILTER_MIN_MAG_MIP_POINT,         // register(s1) - linear Sampler
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
 

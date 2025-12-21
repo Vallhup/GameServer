@@ -93,11 +93,6 @@ void ServerSquareScene::RenderSceneEffects()
 {
 }
 
-int ServerSquareScene::GetSceneWidth() const
-{
-	return 0;
-}
-
 void ServerSquareScene::RequestSceneChange()
 {
 	if (GET(Input).GetKeyDown(VK_TAB))
