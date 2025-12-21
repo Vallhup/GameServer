@@ -481,6 +481,11 @@ void GameScene::RenderSceneDeferred()
 	BoundingFrustum viewFrustum = cam->GetViewFrustum();
 	//int objCount = 0;
 
+	static bool hitOn = false;
+
+	if (GET(Input).GetKeyDown('1'))
+		hitOn = !hitOn;
+
 	for (const auto& obj : gameObjects)
 	{
 		if (obj->GetId() != -1)
@@ -493,8 +498,8 @@ void GameScene::RenderSceneDeferred()
 				meshRenderer->RenderDeferred(*coreRef);
 				//objCount++;
 
-				// Render Hitbox
-				obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
+				if (hitOn)
+					obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
 			}
 		}
 	}
