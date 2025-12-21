@@ -290,7 +290,7 @@ void GameScene::Release()
 
 void GameScene::Reset()
 {
-	// TODO: ¾À µ¥ÀÌÅÍ ¸®¼Â ÄÚµå Ãß°¡
+	// TODO: ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ß°ï¿½
 	knightPool.clear();
 	activePlayers.clear();
 	myPlayer = nullptr;
@@ -371,7 +371,7 @@ void GameScene::HandlePacket(const PacketHeader* data)
 	//	Protocol::SC_ATTACK_PACKET attack;
 	//	if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
 	//		if (sessionId == GET(Input).GetClientID()) {
-	//			// TODO : Client Attack Animation º¸Á¤
+	//			// TODO : Client Attack Animation ï¿½ï¿½ï¿½ï¿½
 	//			OutputDebugStringA("SC_ATTACK_PACKET received\n");
 	//		}
 	//	}
@@ -381,7 +381,7 @@ void GameScene::HandlePacket(const PacketHeader* data)
 	//	Protocol::SC_DODGE_PACKET dodge;
 	//	if (dodge.ParseFromArray(packet.body().data(), packet.body().size())) {
 	//		if (sessionId == GET(Input).GetClientID()) {
-	//			// TODO : Client Dodge Animation º¸Á¤
+	//			// TODO : Client Dodge Animation ï¿½ï¿½ï¿½ï¿½
 	//			OutputDebugStringA("SC_DODGE_PACKET received\n");
 	//		}
 	//	}
@@ -446,17 +446,17 @@ void GameScene::InitializeLogic()
 
 void GameScene::UpdateScene(const float deltaTime)
 {
-	// ÀÌÆåÆ® OFF
+	// ï¿½ï¿½ï¿½ï¿½Æ® OFF
 	/*if (effectObjects.size() > 0 && GET(Input).GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects.size() > 1 && GET(Input).GetKeyDown('2'))
-		effectObjects[1]->GetComponent<EffectRenderer>()->PlayEffect();
+		effectObjects[1]->GetComponent<EffectRenderer>()->PlayEffect();*/
 
 	if (effectObjects.size() > 2 && GET(Input).GetKeyDown('3'))
 		effectObjects[2]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectObjects.size() > 3 && GET(Input).GetKeyDown('4'))
+	/*if (effectObjects.size() > 3 && GET(Input).GetKeyDown('4'))
 		effectObjects[3]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects.size() > 4 && GET(Input).GetKeyDown('5'))
@@ -466,7 +466,7 @@ void GameScene::UpdateScene(const float deltaTime)
 		effectObjects[5]->GetComponent<EffectRenderer>()->PlayEffect();
 		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
 		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
-	}
+	}*/
 
 	if (effectObjects[2] && myPlayer) {
 		if (auto transform = effectObjects[2]->GetComponent<Transform>())
@@ -474,7 +474,7 @@ void GameScene::UpdateScene(const float deltaTime)
 			XMFLOAT3 pos = myPlayer->GetComponent<Transform>()->GetPosition();
 			transform->SetInitPosition(pos.x, pos.y, pos.z);
 		}
-	}*/
+	}
 
 	if (myPlayer)	// Temporary Code for Player Centered Shadow Mapping
 	{
