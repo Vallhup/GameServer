@@ -494,7 +494,7 @@ void GameScene::RenderSceneDeferred()
 				//objCount++;
 
 				// Render Hitbox
-				//obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
+				obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
 			}
 		}
 	}

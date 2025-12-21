@@ -1,0 +1,9 @@
+digraph JobGraph {
+  "class MovementSystem" -> "class ColliderUpdateSystem";
+  "class AnimationStateSystem" -> "class AnimationTimeSystem";
+  "class AnimationTimeSystem" -> "class AnimationRefSystem";
+  "class AnimationRefSystem" -> "class ColliderUpdateSystem";
+  "class AnimationRefSystem" -> "class CollisionSystem";
+  "class ColliderUpdateSystem" -> "class CollisionSystem";
+  "class CollisionSystem";
+}

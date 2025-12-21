@@ -1,0 +1,79 @@
+#pragma once
+
+#include <atomic>
+#include <vector>
+#include <DirectXMath.h>
+
+#include "AnimationManager.h"
+
+using namespace DirectX;
+
+enum class ActionType {
+	None,
+	Attack,
+	Dodge,
+	Parry,
+	Hit,
+	Dead
+};
+
+
+struct Component {
+public:
+	virtual ~Component() = default;
+};
+
+struct Transform : public Component {
+	XMFLOAT3 position{ 0, 0, 0 };
+	XMFLOAT4 rotation{ 0, 0, 0, 1 };
+	XMFLOAT3 scale{ 1, 1, 1 };
+};
+
+struct Velocity : public Component {
+	int inputX{ 0 };
+	int inputZ{ 0 };
+	float yaw{ 0.0f };
+};
+
+struct LocomotionState : public Component {
+	bool isMoving{ false };
+};
+
+struct ActionIntent : public Component {
+	bool attack{ false };
+};
+
+struct ActionState : public Component {
+	ActionType type{ ActionType::None };
+	float elapsed{ 0.0f };
+	float duration{ 0.0f };
+};
+
+struct AttackData : public Component {
+	int damage{ 10 };
+};
+
+struct Health : public Component {
+	int current{ 100 };
+	int max{ 100 };
+};
+
+struct AnimationState : public Component {
+	AnimationId id{ AnimationId::Knight_Idle };
+	float time{ 0.0f };
+	float speed{ 1.0f };
+	bool looping{ true };
+};
+
+struct AnimationRef : public Component {
+	const PrebakedAnimation* anim{ nullptr };
+};
+
+struct Animator : public Component {
+	int currentFrame{ 0 };
+};
+
+struct Collider : public Component {
+	std::vector<Capsule> localCapsules;
+	std::vector<Capsule> worldCapsules;
+};
