@@ -172,6 +172,7 @@
     <ClInclude Include="AnimationRefSystem.h" />
     <ClInclude Include="AnimationStateSystem.h" />
     <ClInclude Include="AnimationTimeSystem.h" />
+    <ClInclude Include="asio.hpp" />
     <ClInclude Include="ColliderUpdateSystem.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="CollisionSystem.h" />

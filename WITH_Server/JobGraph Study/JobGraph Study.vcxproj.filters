@@ -237,6 +237,9 @@
     <ClInclude Include="ActionTimeSystem.h">
       <Filter>ECS\System\Logic\Action</Filter>
     </ClInclude>
+    <ClInclude Include="asio.hpp">
+      <Filter>Utillity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="JobGraph">
