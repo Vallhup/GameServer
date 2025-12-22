@@ -165,6 +165,9 @@ void Camera::UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneO
 {
     float adjustedDistance = desiredDistance;
 
+    // Real-time camera position changes
+    desiredDistance = maxDistance;
+
     if (CheckObstruction(sceneObjects, desiredTargetPos, adjustedDistance))
         desiredDistance = adjustedDistance;
 }
