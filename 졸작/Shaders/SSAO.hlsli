@@ -2,24 +2,12 @@
 // Orthodox SSAO Shader (Frank Luna Method)
 // ============================================================================
 
-cbuffer SSAOConstants : register(b6)
-{
-    float4 offsetVectors[14]; 
-    matrix projection;
-    float occlusionRadius;
-    float occlusionFadeStart; 
-    float occlusionFadeEnd;
-    float surfaceEpsilon;
-    float3 ssaoPadding;
-};
+#include "ShaderResources.hlsli"
 
 // View Space G-Buffer
 Texture2D gViewNormal : register(t10); // View Normal
 Texture2D gViewPosition : register(t11); // View Position
 Texture2D gRandomVec : register(t12); // Random Vectors
-
-SamplerState gsamLinearWrap : register(s0);
-SamplerState gsamPointClamp : register(s1);
 
 struct VertexOut
 {
@@ -75,14 +63,14 @@ float OcclusionFunction(float distZ)
 
 float PSMain(VertexOut input) : SV_TARGET
 {
-    float3 viewNormal = gViewNormal.Sample(gsamPointClamp, input.uv).xyz;
-    float3 viewPos = gViewPosition.Sample(gsamPointClamp, input.uv).xyz;
+    float3 viewNormal = gViewNormal.Sample(pointSampler, input.uv).xyz;
+    float3 viewPos = gViewPosition.Sample(pointSampler, input.uv).xyz;
     
     if (abs(viewPos.z) < 0.0001f)
         return 1.0f;
     
     float2 randomUV = input.uv * float2(2560.0 / 256.0, 1440.0 / 256.0);
-    float3 randomVec = gRandomVec.Sample(gsamLinearWrap, randomUV).xyz;
+    float3 randomVec = gRandomVec.Sample(linearSampler, randomUV).xyz;
     randomVec = randomVec * 2.0 - 1.0;
     
     float3 tangent = normalize(randomVec - viewNormal * dot(randomVec, viewNormal));
@@ -93,10 +81,10 @@ float PSMain(VertexOut input) : SV_TARGET
     
     for (int i = 0; i < 14; ++i)
     {
-        float3 offset = mul(offsetVectors[i].xyz, TBN);
+        float3 offset = mul(ssaoOffsetVectors[i].xyz, TBN);
         float3 samplePos = viewPos + offset * occlusionRadius;
         
-        float4 sampleClip = mul(float4(samplePos, 1.0), projection);
+        float4 sampleClip = mul(float4(samplePos, 1.0), ssaoProjection);
         sampleClip.xyz /= sampleClip.w;
         
         float2 sampleUV = sampleClip.xy * 0.5 + 0.5;
@@ -106,7 +94,7 @@ float PSMain(VertexOut input) : SV_TARGET
             sampleUV.y < 0.0 || sampleUV.y > 1.0)
             continue;
         
-        float3 sampleViewPos = gViewPosition.Sample(gsamPointClamp, sampleUV).xyz;
+        float3 sampleViewPos = gViewPosition.Sample(pointSampler, sampleUV).xyz;
         
         float distZ = sampleViewPos.z - viewPos.z;
         float dp = max(dot(viewNormal, normalize(sampleViewPos - viewPos)), 0.0);

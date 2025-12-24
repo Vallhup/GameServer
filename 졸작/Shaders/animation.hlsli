@@ -1,34 +1,5 @@
-
+#include "ShaderResources.hlsli"
 #include "math.hlsli"
-
-cbuffer AnimationParams : register(b2)
-{
-    int aBoneCount; 
-    int aCurrentFrame;  
-    int aNextFrame; 
-    float aRatio; 
-    int aAnimationOffset;
-    
-    int isBlending;
-    int aPrevCurrentFrame;
-    int aPrevNextFrame;
-    float aPrevRatio;
-    int aPrevAnimationOffset;
-    float aBlendRatio;
-    
-    float padding;
-}
-
-struct AnimFrameParams
-{
-    float4 scale;
-    float4 rotation;
-    float4 translation;
-};
-
-StructuredBuffer<AnimFrameParams> aBoneFrame : register(t1);
-StructuredBuffer<matrix> aOffset : register(t2);
-RWStructuredBuffer<matrix> aFinal : register(u0);
 
 matrix CalculateBoneMatrix(int boneIndex, int currentFrame, int nextFrame, float ratio, int animOffset)
 {

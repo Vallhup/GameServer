@@ -3,13 +3,7 @@
 // 기존 G-Buffer에서 World Space 데이터를 읽어 View Space로 변환
 // ============================================================================
 
-cbuffer FrameCB : register(b0)
-{
-    matrix view;
-    matrix projection;
-    float3 cameraPosition;
-    float framePadding;
-};
+#include "ShaderResources.hlsli"
 
 struct VS_OUT
 {

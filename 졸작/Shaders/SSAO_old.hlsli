@@ -1,3 +1,4 @@
+#include "ShaderResources.hlsli"
 
 struct PS_IN
 {
@@ -5,15 +6,10 @@ struct PS_IN
     float2 uv : TEXCOORD;
 };
 
-Texture2D gBufferRT1 : register(t5); // Normal + Roughness
-Texture2D gBufferRT2 : register(t6); // WorldPos + AO
-
-SamplerState pointSampler : register(s0);
-
 float4 PSMain(PS_IN input) : SV_Target
 {
-    float4 rt1 = gBufferRT1.Sample(pointSampler, input.uv);
-    float4 rt2 = gBufferRT2.Sample(pointSampler, input.uv);
+    float4 rt1 = gBufferRT1.Sample(linearSampler, input.uv);
+    float4 rt2 = gBufferRT2.Sample(linearSampler, input.uv);
     
     float3 worldPos = rt2.xyz;
     float3 worldNormal = normalize(rt1.xyz);
@@ -47,7 +43,7 @@ float4 PSMain(PS_IN input) : SV_Target
                 continue;
             
             // ÁÖº¯ ÇÈ¼¿ÀÇ WorldPos »ùÇÃ¸µ
-            float3 samplePos = gBufferRT2.Sample(pointSampler, sampleUV).xyz;
+            float3 samplePos = gBufferRT2.Sample(linearSampler, sampleUV).xyz;
             
             // ¹è°æ ÇÈ¼¿ Á¦¿Ü
             if (length(samplePos) > 1000.0f)

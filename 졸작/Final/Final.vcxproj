@@ -236,19 +236,27 @@
     <ClInclude Include="VertexIndexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="animation.hlsli" />
-    <None Include="ForwardPS.hlsli" />
-    <None Include="ForwardVS.hlsli" />
-    <None Include="FullscreenVS.hlsli" />
-    <None Include="GBufferPS.hlsli" />
-    <None Include="GBufferVS.hlsli" />
-    <None Include="LightingPS.hlsli" />
-    <None Include="math.hlsli" />
-    <None Include="ShadowPS.hlsli" />
-    <None Include="ShadowVS.hlsli" />
-    <None Include="SSAO.hlsli" />
-    <None Include="SSAOViewSpacePS.hlsli" />
-    <None Include="SSAOViewSpaceVS.hlsli" />
+    <None Include="..\Shaders\animation.hlsli" />
+    <None Include="..\Shaders\Fog.hlsli" />
+    <None Include="..\Shaders\ShaderResources.hlsli" />
+    <None Include="..\Shaders\Constants.hlsli" />
+    <None Include="..\Shaders\ForwardPS.hlsli" />
+    <None Include="..\Shaders\ForwardVS.hlsli" />
+    <None Include="..\Shaders\FullscreenVS.hlsli" />
+    <None Include="..\Shaders\GBufferPS.hlsli" />
+    <None Include="..\Shaders\GBufferVS.hlsli" />
+    <None Include="..\Shaders\InOutFormats.hlsli" />
+    <None Include="..\Shaders\LightingPS.hlsli" />
+    <None Include="..\Shaders\Shadow.hlsli" />
+    <None Include="..\Shaders\StructData.hlsli" />
+    <None Include="..\Shaders\math.hlsli" />
+    <None Include="..\Shaders\PBR.hlsli" />
+    <None Include="..\Shaders\ShadowPS.hlsli" />
+    <None Include="..\Shaders\ShadowVS.hlsli" />
+    <None Include="..\Shaders\SSAO.hlsli" />
+    <None Include="..\Shaders\SSAOViewSpacePS.hlsli" />
+    <None Include="..\Shaders\SSAOViewSpaceVS.hlsli" />
+    <None Include="..\Shaders\SSAO_old.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

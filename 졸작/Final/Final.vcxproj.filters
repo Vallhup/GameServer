@@ -221,44 +221,68 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ForwardPS.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\GBufferVS.hlsli">
+      <Filter>Shaders\GBuffer</Filter>
     </None>
-    <None Include="ForwardVS.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\GBufferPS.hlsli">
+      <Filter>Shaders\GBuffer</Filter>
     </None>
-    <None Include="animation.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\ForwardVS.hlsli">
+      <Filter>Shaders\Forward</Filter>
     </None>
-    <None Include="math.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\ForwardPS.hlsli">
+      <Filter>Shaders\Forward</Filter>
     </None>
-    <None Include="GBufferPS.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\SSAO.hlsli">
+      <Filter>Shaders\SSAO</Filter>
     </None>
-    <None Include="GBufferVS.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\SSAO_old.hlsli">
+      <Filter>Shaders\SSAO</Filter>
     </None>
-    <None Include="FullscreenVS.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\SSAOViewSpacePS.hlsli">
+      <Filter>Shaders\SSAO</Filter>
     </None>
-    <None Include="LightingPS.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\SSAOViewSpaceVS.hlsli">
+      <Filter>Shaders\SSAO</Filter>
     </None>
-    <None Include="ShadowPS.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\math.hlsli">
+      <Filter>Shaders\Util</Filter>
     </None>
-    <None Include="ShadowVS.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\ShaderResources.hlsli">
+      <Filter>Shaders\Common</Filter>
     </None>
-    <None Include="SSAOViewSpaceVS.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\PBR.hlsli">
+      <Filter>Shaders\Lighting</Filter>
     </None>
-    <None Include="SSAOViewSpacePS.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\Constants.hlsli">
+      <Filter>Shaders\Common</Filter>
     </None>
-    <None Include="SSAO.hlsli">
-      <Filter>Shaders</Filter>
+    <None Include="..\Shaders\StructData.hlsli">
+      <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="..\Shaders\InOutFormats.hlsli">
+      <Filter>Shaders\Common</Filter>
+    </None>
+    <None Include="..\Shaders\ShadowPS.hlsli">
+      <Filter>Shaders\Shadow</Filter>
+    </None>
+    <None Include="..\Shaders\ShadowVS.hlsli">
+      <Filter>Shaders\Shadow</Filter>
+    </None>
+    <None Include="..\Shaders\FullscreenVS.hlsli">
+      <Filter>Shaders\Deferred</Filter>
+    </None>
+    <None Include="..\Shaders\LightingPS.hlsli">
+      <Filter>Shaders\Deferred</Filter>
+    </None>
+    <None Include="..\Shaders\animation.hlsli">
+      <Filter>Shaders\Compute</Filter>
+    </None>
+    <None Include="..\Shaders\Shadow.hlsli">
+      <Filter>Shaders\Lighting</Filter>
+    </None>
+    <None Include="..\Shaders\Fog.hlsli">
+      <Filter>Shaders\Lighting</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -297,6 +321,33 @@
     </Filter>
     <Filter Include="Protocol\pb.%2a">
       <UniqueIdentifier>{8f75e9c6-16ce-44ea-bb94-59e53792e9c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Forward">
+      <UniqueIdentifier>{f1336e4c-b49f-485b-83d8-8f6f8110835a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\GBuffer">
+      <UniqueIdentifier>{f33b2445-71b1-4c49-9d0c-68a2b638731e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\SSAO">
+      <UniqueIdentifier>{ff2cba5a-519e-45b2-98be-fe9c2970a031}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Util">
+      <UniqueIdentifier>{0f90f49f-3f3c-47c8-8b3c-82befb949cd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Common">
+      <UniqueIdentifier>{729a15f4-e760-457d-97f4-92ab2efaf64a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Lighting">
+      <UniqueIdentifier>{be6a0cee-4c3f-4c11-9d45-3418c659c215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Shadow">
+      <UniqueIdentifier>{0b27f25f-84f4-4969-a8ac-239023e4ea68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Deferred">
+      <UniqueIdentifier>{bcb78b2e-a242-41c6-b89b-ca9c2026ef83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Compute">
+      <UniqueIdentifier>{d4e073f9-d580-4b7b-8cf0-2189b46c7bf7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

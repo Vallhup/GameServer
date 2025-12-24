@@ -3,13 +3,13 @@
 
 void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* rootSig)
 {
-    InitializeForwardShader(device, rootSig, L"ForwardVS.hlsli", L"ForwardPS.hlsli");
-    InitializeGBufferShader(device, rootSig, L"GBufferVS.hlsli", L"GBufferPS.hlsli");
-    InitializeLightingShader(device, rootSig, L"FullscreenVS.hlsli", L"LightingPS.hlsli");
-    InitializeComputeShader(device, rootSig, L"Animation.hlsli");
-    InitializeShadowShader(device, rootSig, L"ShadowVS.hlsli", L"ShadowPS.hlsli");
-    InitializeSSAOShader(device, rootSig, L"SSAO.hlsli", L"SSAO.hlsli");
-    InitializeSSAOViewSpaceShader(device, rootSig, L"SSAOViewSpaceVS.hlsli", L"SSAOViewSpacePS.hlsli");
+    InitializeForwardShader(device, rootSig, L"../Shaders/ForwardVS.hlsli", L"../Shaders/ForwardPS.hlsli");
+    InitializeGBufferShader(device, rootSig, L"../Shaders/GBufferVS.hlsli", L"../Shaders/GBufferPS.hlsli");
+    InitializeLightingShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/LightingPS.hlsli");
+    InitializeComputeShader(device, rootSig, L"../Shaders/Animation.hlsli");
+    InitializeShadowShader(device, rootSig, L"../Shaders/ShadowVS.hlsli", L"../Shaders/ShadowPS.hlsli");
+    InitializeSSAOShader(device, rootSig, L"../Shaders/SSAO.hlsli", L"../Shaders/SSAO.hlsli");
+    InitializeSSAOViewSpaceShader(device, rootSig, L"../Shaders/SSAOViewSpaceVS.hlsli", L"../Shaders/SSAOViewSpacePS.hlsli");
     InitializeDebugLinePSO(device, rootSig);
 }
 

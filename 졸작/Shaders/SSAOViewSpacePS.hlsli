@@ -3,13 +3,7 @@
 // World Space G-Buffer를 읽어서 View Space로 변환하여 저장
 // ============================================================================
 
-cbuffer FrameCB : register(b0)
-{
-    matrix view;
-    matrix projection;
-    float3 cameraPosition;
-    float framePadding;
-};
+#include "ShaderResources.hlsli"
 
 struct PS_IN
 {
@@ -23,19 +17,13 @@ struct PS_OUT
     float4 viewPosition : SV_Target1;  // View Space Position (xyz) + Depth (w)
 };
 
-// 기존 World Space G-Buffer 읽기
-Texture2D gBufferRT1 : register(t5); // World Normal + Roughness
-Texture2D gBufferRT2 : register(t6); // World Position + AO
-
-SamplerState pointSampler : register(s0);
-
 PS_OUT PSMain(PS_IN input)
 {
     PS_OUT output;
     
     // === 1. World Space G-Buffer 샘플링 ===
-    float4 worldNormalRoughness = gBufferRT1.Sample(pointSampler, input.uv);
-    float4 worldPosAO = gBufferRT2.Sample(pointSampler, input.uv);
+    float4 worldNormalRoughness = gBufferRT1.Sample(linearSampler, input.uv);
+    float4 worldPosAO = gBufferRT2.Sample(linearSampler, input.uv);
     
     float3 worldNormal = worldNormalRoughness.xyz;
     float roughness = worldNormalRoughness.w;

@@ -69,7 +69,7 @@ void RootSignature::Initialize(ID3D12Device* device)
         D3D12_TEXTURE_ADDRESS_MODE_WRAP,
         D3D12_TEXTURE_ADDRESS_MODE_WRAP);
 
-    samplerDesc[1].Init(1, D3D12_FILTER_MIN_MAG_MIP_POINT,         // register(s1) - linear Sampler
+    samplerDesc[1].Init(1, D3D12_FILTER_MIN_MAG_MIP_POINT,         
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
 

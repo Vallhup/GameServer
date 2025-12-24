@@ -1,36 +1,5 @@
-
-cbuffer ObjectCB : register(b1)
-{
-    matrix world;
-    int useTexture;
-    int useInstancing;
-    uint materialIndex;
-    int objPadding;
-};
-
-cbuffer shadowFrameCB : register(b5)
-{
-    matrix lightView;
-    matrix lightProjection;
-};
-
-StructuredBuffer<matrix> finalBoneTransforms : register(t3);
-
-struct VS_IN
-{
-    float3 pos : POSITION;
-    float2 uv : TEXCOORD;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float4 weights : WEIGHT;
-    float4 indices : INDICES;
-    float4 color : COLOR;
-};
-
-struct VS_OUT
-{
-    float4 pos : SV_POSITION; 
-};
+#include "ShaderResources.hlsli"
+#include "InOutFormats.hlsli"
 
 void Skinning(inout float3 pos, inout float4 weight, inout float4 indices)
 {
@@ -49,9 +18,9 @@ void Skinning(inout float3 pos, inout float4 weight, inout float4 indices)
     pos = skinnedPos;
 }
 
-VS_OUT VSMain(VS_IN input)
+SHADOW_VS_OUT VSMain(SHADOW_VS_IN input)
 {
-    VS_OUT output;
+    SHADOW_VS_OUT output;
     
     float3 modifiedPos = input.pos;
     
