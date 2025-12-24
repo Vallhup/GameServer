@@ -31,7 +31,6 @@ void MainCharacter::BasicMove()
 		[&input](int k) { return input.GetKey(k); }
 	);
 
-
 	int inputX{ 0 };
 	int inputZ{ 0 };
 
@@ -42,50 +41,6 @@ void MainCharacter::BasicMove()
 
 	float yaw = camera->GetRadianYaw();
 	input.SendMovePacket(inputX, inputZ, yaw);
-
-	/*static bool wasZero = false;
-	float yaw = camera->GetRadianYaw();
-	if (inputX == 0 && inputZ == 0)
-	{
-		if (!wasZero)
-		{
-			input.SendMovePacket(0, 0, yaw, moveSeq++);
-			wasZero = true;
-		}
-	}
-
-	else
-	{
-		wasZero = false;
-		input.SendMovePacket(inputX, inputZ, yaw, moveSeq++);
-	}*/
-
-	/*if (axisX == 0 && axisZ == 0)
-	{
-		if(!wasZero)
-		{
-			input.SendMovePacket(0, 0, yaw, moveSeq++);
-			wasZero = true;
-		}
-	}
-
-	else
-	{
-		wasZero = false;
-
-		XMVECTOR forward = XMVectorSet(sin(yaw), 0, cos(yaw), 0);
-		XMVECTOR right = XMVector3Cross(XMVectorSet(0, 1, 0, 0), forward);
-
-		XMVECTOR dir =
-			XMVectorAdd(XMVectorScale(forward, axisZ),
-						XMVectorScale(right,   axisX));
-		dir = XMVector3Normalize(dir);
-
-		XMFLOAT3 d;
-		XMStoreFloat3(&d, dir);
-
-		input.SendMovePacket(d.x, d.z, yaw, moveSeq++);
-	}*/
 
 	auto animator = GetComponent<Animator>();
 	if (animator) {

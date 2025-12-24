@@ -30,6 +30,7 @@ message SC_ADD_PACKET
 	float x = 2;
 	float y = 3;
 	float z = 4;
+	float yaw = 5;
 }
 
 message SC_MOVE_PACKET

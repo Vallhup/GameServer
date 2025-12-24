@@ -111,6 +111,7 @@ inline constexpr SC_ADD_PACKET::Impl_::Impl_(
         x_{0},
         y_{0},
         z_{0},
+        yaw_{0},
         _cached_size_{0} {}
 
 template <typename>
@@ -225,6 +226,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.x_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.y_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.z_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.yaw_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_MOVE_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -255,8 +257,8 @@ static const ::_pbi::MigrationSchema
         {8, -1, -1, sizeof(::Protocol::CS_MOVE_PACKET)},
         {19, -1, -1, sizeof(::Protocol::SC_LOGIN_PACKET)},
         {28, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {40, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {53, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {41, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {54, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -272,12 +274,12 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "Struct.proto\"\021\n\017CS_LOGIN_PACKET\"=\n\016CS_MO"
     "VE_PACKET\022\016\n\006inputX\030\001 \001(\005\022\016\n\006inputZ\030\002 \001("
     "\005\022\013\n\003yaw\030\003 \001(\002\"$\n\017SC_LOGIN_PACKET\022\021\n\tses"
-    "sionId\030\001 \001(\005\"C\n\rSC_ADD_PACKET\022\021\n\tsession"
+    "sionId\030\001 \001(\005\"P\n\rSC_ADD_PACKET\022\021\n\tsession"
     "Id\030\001 \001(\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001("
-    "\002\"Q\n\016SC_MOVE_PACKET\022\021\n\tsessionId\030\001 \001(\005\022\t"
-    "\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005"
-    " \001(\002\"&\n\020SC_REMOVE_PACKET\022\022\n\nssessionId\030\001"
-    " \001(\005b\006proto3"
+    "\002\022\013\n\003yaw\030\005 \001(\002\"Q\n\016SC_MOVE_PACKET\022\021\n\tsess"
+    "ionId\030\001 \001(\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004"
+    " \001(\002\022\013\n\003yaw\030\005 \001(\002\"&\n\020SC_REMOVE_PACKET\022\022\n"
+    "\nssessionId\030\001 \001(\005b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[2] =
     {
@@ -288,7 +290,7 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    372,
+    385,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -904,9 +906,9 @@ inline void SC_ADD_PACKET::SharedCtor(::_pb::Arena* arena) {
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, sessionid_),
            0,
-           offsetof(Impl_, z_) -
+           offsetof(Impl_, yaw_) -
                offsetof(Impl_, sessionid_) +
-               sizeof(Impl_::z_));
+               sizeof(Impl_::yaw_));
 }
 SC_ADD_PACKET::~SC_ADD_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.SC_ADD_PACKET)
@@ -955,15 +957,15 @@ const ::google::protobuf::internal::ClassData* SC_ADD_PACKET::GetClassData() con
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 4, 0, 0, 2> SC_ADD_PACKET::_table_ = {
+const ::_pbi::TcParseTable<3, 5, 0, 0, 2> SC_ADD_PACKET::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    4, 24,  // max_field_number, fast_idx_mask
+    5, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967280,  // skipmap
+    4294967264,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    4,  // num_field_entries
+    5,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -973,9 +975,7 @@ const ::_pbi::TcParseTable<2, 4, 0, 0, 2> SC_ADD_PACKET::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::SC_ADD_PACKET>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // float z = 4;
-    {::_pbi::TcParser::FastF32S1,
-     {37, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.z_)}},
+    {::_pbi::TcParser::MiniParse, {}},
     // int32 sessionId = 1;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ADD_PACKET, _impl_.sessionid_), 63>(),
      {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.sessionid_)}},
@@ -985,6 +985,14 @@ const ::_pbi::TcParseTable<2, 4, 0, 0, 2> SC_ADD_PACKET::_table_ = {
     // float y = 3;
     {::_pbi::TcParser::FastF32S1,
      {29, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.y_)}},
+    // float z = 4;
+    {::_pbi::TcParser::FastF32S1,
+     {37, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.z_)}},
+    // float yaw = 5;
+    {::_pbi::TcParser::FastF32S1,
+     {45, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.yaw_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
@@ -1000,6 +1008,9 @@ const ::_pbi::TcParseTable<2, 4, 0, 0, 2> SC_ADD_PACKET::_table_ = {
     // float z = 4;
     {PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.z_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float yaw = 5;
+    {PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.yaw_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
   }},
   // no aux_entries
   {{
@@ -1014,8 +1025,8 @@ PROTOBUF_NOINLINE void SC_ADD_PACKET::Clear() {
   (void) cached_has_bits;
 
   ::memset(&_impl_.sessionid_, 0, static_cast<::size_t>(
-      reinterpret_cast<char*>(&_impl_.z_) -
-      reinterpret_cast<char*>(&_impl_.sessionid_)) + sizeof(_impl_.z_));
+      reinterpret_cast<char*>(&_impl_.yaw_) -
+      reinterpret_cast<char*>(&_impl_.sessionid_)) + sizeof(_impl_.yaw_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -1062,6 +1073,13 @@ PROTOBUF_NOINLINE void SC_ADD_PACKET::Clear() {
                 4, this_._internal_z(), target);
           }
 
+          // float yaw = 5;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_yaw()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                5, this_._internal_yaw(), target);
+          }
+
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
             target =
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -1104,6 +1122,10 @@ PROTOBUF_NOINLINE void SC_ADD_PACKET::Clear() {
             if (::absl::bit_cast<::uint32_t>(this_._internal_z()) != 0) {
               total_size += 5;
             }
+            // float yaw = 5;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_yaw()) != 0) {
+              total_size += 5;
+            }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
                                                      &this_._impl_._cached_size_);
@@ -1129,6 +1151,9 @@ void SC_ADD_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::g
   if (::absl::bit_cast<::uint32_t>(from._internal_z()) != 0) {
     _this->_impl_.z_ = from._impl_.z_;
   }
+  if (::absl::bit_cast<::uint32_t>(from._internal_yaw()) != 0) {
+    _this->_impl_.yaw_ = from._impl_.yaw_;
+  }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -1144,8 +1169,8 @@ void SC_ADD_PACKET::InternalSwap(SC_ADD_PACKET* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.z_)
-      + sizeof(SC_ADD_PACKET::_impl_.z_)
+      PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.yaw_)
+      + sizeof(SC_ADD_PACKET::_impl_.yaw_)
       - PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.sessionid_)>(
           reinterpret_cast<char*>(&_impl_.sessionid_),
           reinterpret_cast<char*>(&other->_impl_.sessionid_));

@@ -44,8 +44,9 @@ void OutputEventSystem::ProcessSpawn(const OutputEvent& event)
 	// 2. Spawn된 Player의 정보를 모든 Player에게 전송
 	if (const auto* trans = ecs.GetStorage<Transform>().GetComponent(event.entity))
 	{
+		float yaw = TransformHelper::QuaternionToYaw(trans->rotation);
 		SendBuffer data2 = PacketFactory::SCAddPacket(sessionId, 
-			trans->position.x, trans->position.y, trans->position.z);
+			trans->position.x, trans->position.y, trans->position.z, yaw);
 		framework.network.Broadcast(data2.data());
 	}
 	
@@ -55,8 +56,9 @@ void OutputEventSystem::ProcessSpawn(const OutputEvent& event)
 		if (sessId == sessionId) continue;
 		if (const auto* trans = ecs.GetStorage<Transform>().GetComponent(entity))
 		{
+			float yaw = TransformHelper::QuaternionToYaw(trans->rotation);
 			SendBuffer data3 = PacketFactory::SCAddPacket(
-				sessId, trans->position.x, trans->position.y, trans->position.z);
+				sessId, trans->position.x, trans->position.y, trans->position.z, yaw);
 			framework.network.Send(sessionId, data3.data());
 		}
 	}

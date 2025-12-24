@@ -18,7 +18,7 @@ void MovementSystem::Execute(const float dT)
 			int inputX = vel->inputX;
 			int inputZ = vel->inputZ;
 			float yaw = vel->yaw;
-
+			
 			XMVECTOR forward = XMVectorSet(sin(yaw), 0, cos(yaw), 0);
 			XMVECTOR right = XMVector3Cross(XMVectorSet(0, 1, 0, 0), forward);
 
@@ -40,16 +40,21 @@ void MovementSystem::Execute(const float dT)
 				moved = false;
 			}
 
-			const float speed = 2.0f;
-			XMVECTOR pos = XMLoadFloat3(&transform.position);
-			pos = XMVectorAdd(pos, XMVectorScale(dir, speed * dT));
-			XMStoreFloat3(&transform.position, pos);
-
-			XMVECTOR q = XMQuaternionRotationRollPitchYaw(0, yaw, 0);
-			XMStoreFloat4(&transform.rotation, q);
-
 			if (moved)
 			{
+				const float speed = 2.0f;
+				XMVECTOR pos = XMLoadFloat3(&transform.position);
+				pos = XMVectorAdd(pos, XMVectorScale(dir, speed * dT));
+				XMStoreFloat3(&transform.position, pos);
+
+				float moveYaw = atan2f(
+					-XMVectorGetX(dir),
+					-XMVectorGetZ(dir)
+				);
+
+				XMVECTOR q = XMQuaternionRotationRollPitchYaw(0, moveYaw, 0);
+				XMStoreFloat4(&transform.rotation, q);
+
 				Framework::Get().outEventQueue.push(OutputEvent{
 					entity, DirtyType::Moved });
 			}

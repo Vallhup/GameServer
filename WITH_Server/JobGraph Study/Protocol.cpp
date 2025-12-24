@@ -8,13 +8,14 @@ SendBuffer PacketFactory::SCLoginPacket(int sessionId)
 	return Serialize<Protocol::SC_LOGIN_PACKET>(PacketType::SC_LOGIN, login);
 }
 
-SendBuffer PacketFactory::SCAddPacket(int sessionId, float x, float y, float z)
+SendBuffer PacketFactory::SCAddPacket(int sessionId, float x, float y, float z, float yaw)
 {
 	Protocol::SC_ADD_PACKET add;
 	add.set_sessionid(sessionId);
 	add.set_x(x);
 	add.set_y(y);
 	add.set_z(z);
+	add.set_yaw(yaw);
 
 	return Serialize<Protocol::SC_ADD_PACKET>(PacketType::SC_ADD, add);
 }

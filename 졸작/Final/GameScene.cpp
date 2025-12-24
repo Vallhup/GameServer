@@ -334,6 +334,9 @@ void GameScene::HandlePacket(const PacketHeader* data)
 				auto transform = player->GetComponent<Transform>();
 				transform->SetInitPosition(add.x(), add.y(), add.z());
 
+				// TEMP : 애니메이션 때문에 회전 이상하게 되서 임시로 targetRotation으로 설정
+				transform->SetTargetRotation(add.yaw());
+
 				activePlayers[sessionId] = player;
 			}
 

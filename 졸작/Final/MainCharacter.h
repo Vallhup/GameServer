@@ -31,8 +31,6 @@ private:
 
 	int currentAnimState = 0;
 
-	size_t moveSeq = 0;
-
 	static constexpr float MOVE_SPEED = 2.0f;
 	static constexpr float ROT_SPEED = 3.14f;
 };
