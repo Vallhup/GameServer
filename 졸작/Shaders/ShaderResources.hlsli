@@ -1,5 +1,5 @@
-#ifndef CONSTANT_BUFFERS_HLSLI
-#define CONSTANT_BUFFERS_HLSLI
+#ifndef SHADERRESOURCES_HLSLI
+#define SHADERRESOURCES_HLSLI
 
 #include "StructData.hlsli"
 
