@@ -257,7 +257,7 @@
     <None Include="..\Shaders\Constants.hlsli">
       <Filter>Shaders\Common</Filter>
     </None>
-    <None Include="..\Shaders\StructData.hlsli">
+    <None Include="..\Shaders\CommonData.hlsli">
       <Filter>Shaders\Common</Filter>
     </None>
     <None Include="..\Shaders\InOutFormats.hlsli">

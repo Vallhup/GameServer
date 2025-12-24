@@ -1,7 +1,7 @@
 #ifndef SHADERRESOURCES_HLSLI
 #define SHADERRESOURCES_HLSLI
 
-#include "StructData.hlsli"
+#include "CommonData.hlsli"
 
 //-------------------------------------------------------
 // CBV START
@@ -81,6 +81,15 @@ cbuffer SSAOConstants : register(b6)
     float occlusionFadeEnd;
     float surfaceEpsilon;
     float3 ssaoPadding;
+};
+
+cbuffer FogConstants : register(b7)
+{
+    float4 fogColor;
+    float fogStart;
+    float fogRange;
+    float fogZoneStart;
+    float fogZoneRange;
 };
 
 //-------------------------------------------------------

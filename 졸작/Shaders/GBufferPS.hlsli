@@ -1,15 +1,6 @@
 #include "ShaderResources.hlsli"
 #include "InOutFormats.hlsli"
 
-float3 ApplyNormalMap(float3 worldNormal, float3 worldTangent, float3 normalMap)
-{
-    float3 N = normalize(worldNormal);
-    float3 T = normalize(worldTangent);
-    float3 B = cross(N, T);
-    float3x3 TBN = float3x3(T, B, N);
-    return normalize(mul(normalMap, TBN));
-}
-
 GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input) : SV_Target
 {
     GBUFFER_PS_OUT output;

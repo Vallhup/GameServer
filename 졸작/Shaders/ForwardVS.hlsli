@@ -38,6 +38,7 @@ FORWARD_VS_OUT VSMain(FORWARD_VS_IN input, uint instanceID : SV_InstanceID)
     output.weights = input.weights;
     output.indices = input.indices;
     output.materialIndex = materialIndex;
+    output.worldPos = worldPos.xyz;
     
     return output;
 }

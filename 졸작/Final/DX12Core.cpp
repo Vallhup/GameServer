@@ -21,6 +21,7 @@ void DX12Core::Initialize(HWND hwnd)
 	shadowFrameCB = make_unique<UploadBuffer>();
 	ssao = make_unique<SSAO>();
 	ssaoCB = make_unique<UploadBuffer>();
+	fogCB = make_unique<UploadBuffer>();
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
@@ -31,6 +32,7 @@ void DX12Core::Initialize(HWND hwnd)
 	shadowFrameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	ssao->Initialize(GetDevice(), GetGraphicsCmdList());
 	ssaoCB->Initialize(GetDevice(), sizeof(SSAOConstants));
+	fogCB->Initialize(GetDevice(), sizeof(FogConstants));
 
 	CreateDepthStencilBuffer();
 	CreateShadowMap();
@@ -504,9 +506,15 @@ void DX12Core::BeginForwardPass()
 
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
+	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
+
 	ForwardLightConstants light = { {0, 0, -1}, 0, {1, 1, 1}, 0.6f };
 	GetForwardLightCB()->CopyData(&light, sizeof(ForwardLightConstants));
 	cmdList->SetGraphicsRootConstantBufferView(4, GetForwardLightCB()->GetGPUVirtualAddress());		// 레지 넘버링 부분
+
+	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 10.0f, 5.0f, 7.0f, 5.0f };
+	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
+	cmdList->SetGraphicsRootConstantBufferView(16, GetFogCB()->GetGPUVirtualAddress());
 
 	//OutputDebugStringA("Forward pass started\n");
 }
@@ -565,7 +573,7 @@ void DX12Core::EndGBufferPass()
 
 void DX12Core::BeginLightingPass()
 {
-	SetupLightng();
+	SetupLighting();
 
 	// 백버퍼를 렌더 타겟으로 설정
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtvHandle[backBufferIndex];
@@ -583,10 +591,15 @@ void DX12Core::BeginLightingPass()
 
 	// G-Buffer SRV 테이블 바인딩 (root parameter 13번)
 	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());		// 레지 넘버링 부분
+
+	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 10.0f, 5.0f, 7.0f, 5.0f };
+	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
+	cmdList->SetGraphicsRootConstantBufferView(16, GetFogCB()->GetGPUVirtualAddress());
+
 	//OutputDebugStringA("Lighting Pass started\n");
 }
 
-void DX12Core::SetupLightng()
+void DX12Core::SetupLighting()
 {
 	// 50개 조명 설정 (Directional 2개 + Point Light 48개)
 	static bool lightsInitialized = false;
@@ -1063,6 +1076,11 @@ UploadBuffer* DX12Core::GetDeferredLightCB() const
 UploadBuffer* DX12Core::GetForwardLightCB() const
 {
 	return forwardLightCB.get();
+}
+
+UploadBuffer* DX12Core::GetFogCB() const
+{
+	return fogCB.get();
 }
 
 void DX12Core::SetBackgroundColor(const float* color)
