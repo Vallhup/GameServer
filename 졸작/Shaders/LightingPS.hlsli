@@ -1,32 +1,5 @@
-cbuffer FrameCB : register(b0)
-{
-    matrix view;
-    matrix projection;
-    float3 cameraPosition;
-    float framePadding;
-};
 
-cbuffer LightCB : register(b3)
-{
-    int lightCount;
-    float3 lightPadding;
-    
-    struct LightData
-    {
-        float3 position;
-        float range;
-        float3 color;
-        float intensity;
-        int type;
-        float3 lightPadding;
-    } lights[25];
-}
-
-cbuffer shadowFrameCB : register(b5)
-{
-    matrix lightView;
-    matrix lightProjection;
-};
+#include "ConstantBuffers.hlsli"
 
 // PBR Constants
 static const float PI = 3.14159265359;

@@ -2,16 +2,7 @@
 // Orthodox SSAO Shader (Frank Luna Method)
 // ============================================================================
 
-cbuffer SSAOConstants : register(b6)
-{
-    float4 offsetVectors[14]; 
-    matrix projection;
-    float occlusionRadius;
-    float occlusionFadeStart; 
-    float occlusionFadeEnd;
-    float surfaceEpsilon;
-    float3 ssaoPadding;
-};
+#include "ConstantBuffers.hlsli"
 
 // View Space G-Buffer
 Texture2D gViewNormal : register(t10); // View Normal
@@ -93,10 +84,10 @@ float PSMain(VertexOut input) : SV_TARGET
     
     for (int i = 0; i < 14; ++i)
     {
-        float3 offset = mul(offsetVectors[i].xyz, TBN);
+        float3 offset = mul(ssaoOffsetVectors[i].xyz, TBN);
         float3 samplePos = viewPos + offset * occlusionRadius;
         
-        float4 sampleClip = mul(float4(samplePos, 1.0), projection);
+        float4 sampleClip = mul(float4(samplePos, 1.0), ssaoProjection);
         sampleClip.xyz /= sampleClip.w;
         
         float2 sampleUV = sampleClip.xy * 0.5 + 0.5;

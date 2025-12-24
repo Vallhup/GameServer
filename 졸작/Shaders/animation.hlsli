@@ -1,23 +1,6 @@
 
+#include "ConstantBuffers.hlsli"
 #include "math.hlsli"
-
-cbuffer AnimationParams : register(b2)
-{
-    int aBoneCount; 
-    int aCurrentFrame;  
-    int aNextFrame; 
-    float aRatio; 
-    int aAnimationOffset;
-    
-    int isBlending;
-    int aPrevCurrentFrame;
-    int aPrevNextFrame;
-    float aPrevRatio;
-    int aPrevAnimationOffset;
-    float aBlendRatio;
-    
-    float padding;
-}
 
 struct AnimFrameParams
 {

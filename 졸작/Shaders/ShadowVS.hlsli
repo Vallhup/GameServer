@@ -1,18 +1,5 @@
 
-cbuffer ObjectCB : register(b1)
-{
-    matrix world;
-    int useTexture;
-    int useInstancing;
-    uint materialIndex;
-    int objPadding;
-};
-
-cbuffer shadowFrameCB : register(b5)
-{
-    matrix lightView;
-    matrix lightProjection;
-};
+#include "ConstantBuffers.hlsli"
 
 StructuredBuffer<matrix> finalBoneTransforms : register(t3);
 

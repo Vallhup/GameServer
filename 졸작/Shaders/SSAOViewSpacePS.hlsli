@@ -3,13 +3,7 @@
 // World Space G-Buffer를 읽어서 View Space로 변환하여 저장
 // ============================================================================
 
-cbuffer FrameCB : register(b0)
-{
-    matrix view;
-    matrix projection;
-    float3 cameraPosition;
-    float framePadding;
-};
+#include "ConstantBuffers.hlsli"
 
 struct PS_IN
 {
