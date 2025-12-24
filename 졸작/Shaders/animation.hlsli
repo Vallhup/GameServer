@@ -1,17 +1,5 @@
-
-#include "ConstantBuffers.hlsli"
+#include "ShaderResources.hlsli"
 #include "math.hlsli"
-
-struct AnimFrameParams
-{
-    float4 scale;
-    float4 rotation;
-    float4 translation;
-};
-
-StructuredBuffer<AnimFrameParams> aBoneFrame : register(t1);
-StructuredBuffer<matrix> aOffset : register(t2);
-RWStructuredBuffer<matrix> aFinal : register(u0);
 
 matrix CalculateBoneMatrix(int boneIndex, int currentFrame, int nextFrame, float ratio, int animOffset)
 {

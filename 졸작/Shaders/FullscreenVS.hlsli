@@ -1,13 +1,8 @@
+#include "InOutFormats.hlsli"
 
-struct VS_OUT
+FULLSCREEN_VS_OUT VSMain(uint vertexID : SV_VertexID)
 {
-    float4 pos : SV_POSITION;
-    float2 uv : TEXCOORD;
-};
-
-VS_OUT VSMain(uint vertexID : SV_VertexID)
-{
-    VS_OUT output;
+    FULLSCREEN_VS_OUT output;
     
     float2 positions[6] =
     {

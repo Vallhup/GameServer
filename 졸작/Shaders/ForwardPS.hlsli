@@ -1,35 +1,7 @@
+#include "ShaderResources.hlsli"
+#include "InOutFormats.hlsli"
 
-#include "ConstantBuffers.hlsli"
-
-struct MaterialData
-{
-    uint baseColorTexIndex;
-    uint normalTexIndex;
-    uint roughnessTexIndex;
-    uint metallicTexIndex;
-    uint heightTexIndex;
-    uint alphaTexIndex;
-    uint emissionTexIndex;
-    uint aoTexIndex;
-};
-
-struct PS_IN
-{
-    float4 pos : SV_POSITION;
-    float2 uv : TEXCOORD;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float4 weights : WEIGHT;
-    float4 indices : INDICES;
-    float4 color : COLOR;
-    uint materialIndex : MATERIAL_INDEX;
-};
-
-Texture2D bindlessTextures[] : register(t0, space1);
-StructuredBuffer<MaterialData> materialBuffer : register(t0);
-SamplerState textureSampler : register(s0);
-
-float4 PSMain(PS_IN input) : SV_Target
+float4 PSMain(FORWARD_PS_IN input) : SV_Target
 {
     if (useTexture)
     {
@@ -44,28 +16,28 @@ float4 PSMain(PS_IN input) : SV_Target
         // Bindless 텍스처 샘플링
         if (material.baseColorTexIndex != 0xFFFFFFFF)
         {
-            baseColor = bindlessTextures[NonUniformResourceIndex(material.baseColorTexIndex)].Sample(textureSampler, input.uv);
+            baseColor = bindlessTextures[NonUniformResourceIndex(material.baseColorTexIndex)].Sample(linearSampler, input.uv);
         }
         
         if (material.normalTexIndex != 0xFFFFFFFF)
         {
-            normalMap = bindlessTextures[NonUniformResourceIndex(material.normalTexIndex)].Sample(textureSampler, input.uv).rgb;
+            normalMap = bindlessTextures[NonUniformResourceIndex(material.normalTexIndex)].Sample(linearSampler, input.uv).rgb;
             normalMap = (normalMap - 0.5) * 2.0;
         }
         
         if (material.roughnessTexIndex != 0xFFFFFFFF)
         {
-            roughness = bindlessTextures[NonUniformResourceIndex(material.roughnessTexIndex)].Sample(textureSampler, input.uv).r;
+            roughness = bindlessTextures[NonUniformResourceIndex(material.roughnessTexIndex)].Sample(linearSampler, input.uv).r;
         }
         
         if (material.metallicTexIndex != 0xFFFFFFFF)
         {
-            metallic = bindlessTextures[NonUniformResourceIndex(material.metallicTexIndex)].Sample(textureSampler, input.uv).r;
+            metallic = bindlessTextures[NonUniformResourceIndex(material.metallicTexIndex)].Sample(linearSampler, input.uv).r;
         }
         
         if (material.alphaTexIndex != 0xFFFFFFFF)
         {
-            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv).a;
+            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).a;
         }
         
         float3 lightDir = normalize(-lightDirection);

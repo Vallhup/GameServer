@@ -237,14 +237,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\animation.hlsli" />
-    <None Include="..\Shaders\ConstantBuffers.hlsli" />
+    <None Include="..\Shaders\Fog.hlsli" />
+    <None Include="..\Shaders\ShaderResources.hlsli" />
+    <None Include="..\Shaders\Constants.hlsli" />
     <None Include="..\Shaders\ForwardPS.hlsli" />
     <None Include="..\Shaders\ForwardVS.hlsli" />
     <None Include="..\Shaders\FullscreenVS.hlsli" />
     <None Include="..\Shaders\GBufferPS.hlsli" />
     <None Include="..\Shaders\GBufferVS.hlsli" />
+    <None Include="..\Shaders\InOutFormats.hlsli" />
     <None Include="..\Shaders\LightingPS.hlsli" />
+    <None Include="..\Shaders\Shadow.hlsli" />
+    <None Include="..\Shaders\StructData.hlsli" />
     <None Include="..\Shaders\math.hlsli" />
+    <None Include="..\Shaders\PBR.hlsli" />
     <None Include="..\Shaders\ShadowPS.hlsli" />
     <None Include="..\Shaders\ShadowVS.hlsli" />
     <None Include="..\Shaders\SSAO.hlsli" />

@@ -1,42 +1,5 @@
-
-#include "ConstantBuffers.hlsli"
-
-struct MaterialData
-{
-    uint baseColorTexIndex;
-    uint normalTexIndex;
-    uint roughnessTexIndex;
-    uint metallicTexIndex;
-    uint heightTexIndex;
-    uint alphaTexIndex;
-    uint emissionTexIndex;
-    uint aoTexIndex;
-};
-
-struct PS_IN
-{
-    float4 pos : SV_POSITION;
-    float2 uv : TEXCOORD;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float4 weights : WEIGHT;
-    float4 indices : INDICES;
-    float4 color : COLOR;
-    uint materialIndex : MATERIAL_INDEX;
-    float4 worldPos : POSITION;
-};
-
-struct PS_OUT
-{
-    float4 RT0 : SV_Target0; // BaseColor.rgb + Metallic.r
-    float4 RT1 : SV_Target1; // Normal.xyz + Roughness.r  
-    float4 RT2 : SV_Target2; // WorldPos.xyz + AO.r
-    float4 RT3 : SV_Target3; // Emission.rgb + Alpha.r (또는 MaterialID)
-};
-
-Texture2D bindlessTextures[] : register(t0, space1);
-StructuredBuffer<MaterialData> materialBuffer : register(t0);
-SamplerState textureSampler : register(s0);
+#include "ShaderResources.hlsli"
+#include "InOutFormats.hlsli"
 
 float3 ApplyNormalMap(float3 worldNormal, float3 worldTangent, float3 normalMap)
 {
@@ -47,9 +10,9 @@ float3 ApplyNormalMap(float3 worldNormal, float3 worldTangent, float3 normalMap)
     return normalize(mul(normalMap, TBN));
 }
 
-PS_OUT PSMain(PS_IN input) : SV_Target
+GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input) : SV_Target
 {
-    PS_OUT output;
+    GBUFFER_PS_OUT output;
 
     if (useTexture)
     {
@@ -66,31 +29,31 @@ PS_OUT PSMain(PS_IN input) : SV_Target
         
         // Bindless 텍스처 샘플링
         if (material.baseColorTexIndex != 0xFFFFFFFF)
-            baseColor = bindlessTextures[NonUniformResourceIndex(material.baseColorTexIndex)].Sample(textureSampler, input.uv);
+            baseColor = bindlessTextures[NonUniformResourceIndex(material.baseColorTexIndex)].Sample(linearSampler, input.uv);
         
         if (material.normalTexIndex != 0xFFFFFFFF)
         {
-            normalMap = bindlessTextures[NonUniformResourceIndex(material.normalTexIndex)].Sample(textureSampler, input.uv).rgb;
+            normalMap = bindlessTextures[NonUniformResourceIndex(material.normalTexIndex)].Sample(linearSampler, input.uv).rgb;
             normalMap = (normalMap - 0.5) * 2.0;
         }
         
         if (material.roughnessTexIndex != 0xFFFFFFFF)
-            roughness = bindlessTextures[NonUniformResourceIndex(material.roughnessTexIndex)].Sample(textureSampler, input.uv).r;
+            roughness = bindlessTextures[NonUniformResourceIndex(material.roughnessTexIndex)].Sample(linearSampler, input.uv).r;
                 
         if (material.metallicTexIndex != 0xFFFFFFFF)
-            metallic = bindlessTextures[NonUniformResourceIndex(material.metallicTexIndex)].Sample(textureSampler, input.uv).r;
+            metallic = bindlessTextures[NonUniformResourceIndex(material.metallicTexIndex)].Sample(linearSampler, input.uv).r;
                
         if (material.alphaTexIndex != 0xFFFFFFFF)
-            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(textureSampler, input.uv).a;
+            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).a;
         
         if (material.emissionTexIndex != 0xFFFFFFFF)
-            emission = bindlessTextures[NonUniformResourceIndex(material.emissionTexIndex)].Sample(textureSampler, input.uv).rgb;
+            emission = bindlessTextures[NonUniformResourceIndex(material.emissionTexIndex)].Sample(linearSampler, input.uv).rgb;
         
         if (material.aoTexIndex != 0xFFFFFFFF)
-            ao = bindlessTextures[NonUniformResourceIndex(material.aoTexIndex)].Sample(textureSampler, input.uv).r;
+            ao = bindlessTextures[NonUniformResourceIndex(material.aoTexIndex)].Sample(linearSampler, input.uv).r;
         
         if (material.heightTexIndex != 0xFFFFFFFF)
-            height = bindlessTextures[NonUniformResourceIndex(material.heightTexIndex)].Sample(textureSampler, input.uv).r;
+            height = bindlessTextures[NonUniformResourceIndex(material.heightTexIndex)].Sample(linearSampler, input.uv).r;
         
         float3 worldNormal = ApplyNormalMap(input.normal, input.tangent, normalMap);
         

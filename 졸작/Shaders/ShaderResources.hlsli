@@ -1,6 +1,12 @@
 #ifndef CONSTANT_BUFFERS_HLSLI
 #define CONSTANT_BUFFERS_HLSLI
 
+#include "StructData.hlsli"
+
+//-------------------------------------------------------
+// CBV START
+//-------------------------------------------------------
+
 cbuffer FrameCB : register(b0)
 {
     matrix view;
@@ -76,5 +82,39 @@ cbuffer SSAOConstants : register(b6)
     float surfaceEpsilon;
     float3 ssaoPadding;
 };
+
+//-------------------------------------------------------
+// VARIOUS TYPES OF SHADER RESOURCES
+//-------------------------------------------------------
+
+Texture2D bindlessTextures[] : register(t0, space1);
+
+StructuredBuffer<MaterialData> materialBuffer : register(t0);
+StructuredBuffer<AnimFrameParams> aBoneFrame : register(t1);
+StructuredBuffer<matrix> aOffset : register(t2);
+StructuredBuffer<matrix> finalBoneTransforms : register(t3);
+
+RWStructuredBuffer<matrix> aFinal : register(u0);
+
+StructuredBuffer<matrix> instanceTransforms : register(t0, space2);
+
+Texture2D gBufferRT0 : register(t4); // BaseColor + Metallic
+Texture2D gBufferRT1 : register(t5); // Normal + Roughness
+Texture2D gBufferRT2 : register(t6); // WorldPos + AO
+Texture2D gBufferRT3 : register(t7); // Emission + Alpha
+Texture2D shadowMap : register(t8);
+Texture2D ssaoMap : register(t9);
+
+//-------------------------------------------------------
+// SSAO PARAMETERS NOT ADDED YET
+//-------------------------------------------------------
+
+
+//-------------------------------------------------------
+// SAMPLERS
+//-------------------------------------------------------
+
+SamplerState linearSampler : register(s0);
+SamplerState pointSampler : register(s1);
 
 #endif

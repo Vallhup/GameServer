@@ -1,32 +1,5 @@
-
-#include "ConstantBuffers.hlsli"
-
-StructuredBuffer<matrix> instanceTransforms : register(t0, space2);
-StructuredBuffer<matrix> finalBoneTransforms : register(t3);
-
-struct VS_IN
-{
-    float3 pos : POSITION;
-    float2 uv : TEXCOORD;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float4 weights : WEIGHT;
-    float4 indices : INDICES;
-    float4 color : COLOR;
-};
-
-struct VS_OUT
-{
-    float4 pos : SV_POSITION;
-    float2 uv : TEXCOORD;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float4 weights : WEIGHT;
-    float4 indices : INDICES;
-    float4 color : COLOR;
-    uint materialIndex : MATERIAL_INDEX;
-    float4 worldPos : POSITION;
-};
+#include "ShaderResources.hlsli"
+#include "InOutFormats.hlsli"
 
 void Skinning(inout float3 pos, inout float3 normal, inout float3 tangent, inout float4 weight, inout float4 indices)
 {
@@ -52,9 +25,9 @@ void Skinning(inout float3 pos, inout float3 normal, inout float3 tangent, inout
     tangent = normalize(skinnedTangent);
 }
 
-VS_OUT VSMain(VS_IN input, uint instanceID : SV_InstanceID)
+GBUFFER_VS_OUT VSMain(GBUFFER_VS_IN input, uint instanceID : SV_InstanceID)
 {
-    VS_OUT output;
+    GBUFFER_VS_OUT output;
     
     float3 modifiedPos = input.pos;
     float3 modifiedNormal = input.normal;
