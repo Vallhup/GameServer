@@ -38,7 +38,7 @@ void DX12Core::Initialize(HWND hwnd)
 	CreateShadowMap();
 	CreateGBuffer();
 	CreateDeferredRenderingDescriptors();
-	SetupLighting();
+	SetupLights();
 }
 
 void DX12Core::CreateDevice()
@@ -593,7 +593,7 @@ void DX12Core::BeginLightingPass()
 	//OutputDebugStringA("Lighting Pass started\n");
 }
 
-void DX12Core::SetupLighting()
+void DX12Core::SetupLights()
 {
 	// Set Forward Lights
 	ForwardLightConstants light = { {0, 0, 1}, 0, {1, 1, 1}, 0.9f };

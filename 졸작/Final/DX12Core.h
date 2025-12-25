@@ -81,7 +81,7 @@ public:
 	void EndGBufferPass();
 
 	void BeginLightingPass();
-	void SetupLighting();
+	void SetupLights();
 	void RenderFullscreenQuad();
 
 	void RenderSSAO();
