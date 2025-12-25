@@ -511,7 +511,7 @@ void DX12Core::BeginForwardPass()
 
 	cmdList->SetGraphicsRootConstantBufferView(4, GetForwardLightCB()->GetGPUVirtualAddress());		// 레지 넘버링 부분
 
-	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 7.0f, 0.0f, 20.0f, 2.0f, {0, 0, 0} };
+	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
 	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
 	cmdList->SetGraphicsRootConstantBufferView(16, GetFogCB()->GetGPUVirtualAddress());
 
@@ -586,7 +586,7 @@ void DX12Core::BeginLightingPass()
 
 	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());		
 
-	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 7.0f, 0.0f, 20.0f, 2.0f, {0, 0, 0} };
+	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
 	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
 	cmdList->SetGraphicsRootConstantBufferView(16, GetFogCB()->GetGPUVirtualAddress());
 
