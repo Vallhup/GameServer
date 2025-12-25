@@ -38,6 +38,7 @@ void DX12Core::Initialize(HWND hwnd)
 	CreateShadowMap();
 	CreateGBuffer();
 	CreateDeferredRenderingDescriptors();
+	SetupLighting();
 }
 
 void DX12Core::CreateDevice()
@@ -508,11 +509,9 @@ void DX12Core::BeginForwardPass()
 
 	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
 
-	ForwardLightConstants light = { {0, 0, -1}, 0, {1, 1, 1}, 0.6f };
-	GetForwardLightCB()->CopyData(&light, sizeof(ForwardLightConstants));
 	cmdList->SetGraphicsRootConstantBufferView(4, GetForwardLightCB()->GetGPUVirtualAddress());		// 레지 넘버링 부분
 
-	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 7.0f, 3.0f, 13.0f, 2.0f, {0, 0, 0} };
+	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 7.0f, 0.0f, 20.0f, 2.0f, {0, 0, 0} };
 	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
 	cmdList->SetGraphicsRootConstantBufferView(16, GetFogCB()->GetGPUVirtualAddress());
 
@@ -573,26 +572,21 @@ void DX12Core::EndGBufferPass()
 
 void DX12Core::BeginLightingPass()
 {
-	SetupLighting();
-
-	// 백버퍼를 렌더 타겟으로 설정
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtvHandle[backBufferIndex];
-	cmdList->OMSetRenderTargets(1, &rtv, FALSE, nullptr);  // Depth 사용 안함
+	cmdList->OMSetRenderTargets(1, &rtv, FALSE, nullptr);  
 
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
 	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
-	cmdList->SetGraphicsRootConstantBufferView(3, GetDeferredLightCB()->GetGPUVirtualAddress());			// 레지 넘버링 부분
-	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());					// 레지 넘버링 부분
+	cmdList->SetGraphicsRootConstantBufferView(3, GetDeferredLightCB()->GetGPUVirtualAddress());			
+	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());					
 
-	// G-Buffer SRV Heap을 셰이더에 바인딩
 	ID3D12DescriptorHeap* heaps[] = { deferredSRVHeap.Get() };
 	cmdList->SetDescriptorHeaps(1, heaps);
 
-	// G-Buffer SRV 테이블 바인딩 (root parameter 13번)
-	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());		// 레지 넘버링 부분
+	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());		
 
-	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 7.0f, 3.0f, 13.0f, 2.0f, {0, 0, 0} };
+	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 7.0f, 0.0f, 20.0f, 2.0f, {0, 0, 0} };
 	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
 	cmdList->SetGraphicsRootConstantBufferView(16, GetFogCB()->GetGPUVirtualAddress());
 
@@ -601,87 +595,87 @@ void DX12Core::BeginLightingPass()
 
 void DX12Core::SetupLighting()
 {
-	// 50개 조명 설정 (Directional 2개 + Point Light 48개)
+	// Set Forward Lights
+	ForwardLightConstants light = { {0, 0, 1}, 0, {1, 1, 1}, 0.9f };
+	GetForwardLightCB()->CopyData(&light, sizeof(ForwardLightConstants));
+
+	// Set Deferred Lights (3 Directional + 22 Point Lights)
 	static bool lightsInitialized = false;
 	static DeferredLightConstants lightData = {};
 	if (!lightsInitialized) {
 		lightData.lightCount = 25;
 
-		// 기존 directional light 유지
 		lightData.lights[0] = {
-			{0, 0, -1}, 0,               // direction
+			{0, 0, -1}, 0,               // direction,  range
 			{1, 1, 1}, 0.2f,             // color, intensity
-			0,                           // type: directional
+			0,                           // 0: directional / 1: point
 			{0, 0, 0}                    // padding
 		};
 		lightData.lights[1] = {
-			{0, 0, 1}, 0,               // direction
-			{1, 1, 1}, 0.25f,             // color, intensity
-			0,                           // type: directional
-			{0, 0, 0}                    // padding
+			{0, 0, 1}, 0,              
+			{1, 1, 1}, 0.25f,          
+			0,                         
+			{0, 0, 0}                  
 		};
 
 		lightData.lights[2] = {
-			{-27.f, 29.f, -70.0f}, 2000.0f,                // direction
-			{0.074, 0, 1}, 0.15f,        // color, intensity
-			1,                           // type: directional
-			{0, 0, 0}                    // padding
+			{-27.f, 29.f, -70.0f}, 2000.0f,               
+			{0.074, 0, 1}, 0.15f,       
+			1,                          
+			{0, 0, 0}                   
 		};
 
 		lightData.lights[3] = {
-			{27.f, 29.f, -70.0f}, 2000.0f,                // direction
-			{0.074, 0, 1}, 0.15f,        // color, intensity
-			1,                           // type: directional
-			{0, 0, 0}                    // padding
+			{27.f, 29.f, -70.0f}, 2000.0f,              
+			{0.074, 0, 1}, 0.15f,       
+			1,                          
+			{0, 0, 0}                   
 		};
 
 		lightData.lights[4] = {
-			{0, 0, -1}, 0,                // direction
-			{1, 1, 1}, 0.2f,        // color, intensity
-			0,                           // type: directional
-			{0, 0, 0}                    // padding
+			{0, 0, -1}, 0,         
+			{1, 1, 1}, 0.2f,       
+			0,                     
+			{0, 0, 0}              
 		};
 
-		// Point lights 48개 - 두 줄로 24개씩 배치
+		// Two lines of 10 Point Lights each
 		float spacing = 15.0f;
-		float height = 4.0;           // 높이 2.5
-		float leftX = -7.0f;           // 왼쪽 줄 X 위치
-		float rightX = 7.0f;           // 오른쪽 줄 X 위치
+		float height = 4.0;          
+		float leftX = -7.0f;         
+		float rightX = 7.0f;         
 
 		for (int i = 5; i < 25; ++i) {
-			int lightIndex = i - 5;   // 0~47 인덱스
-			int rowIndex = lightIndex % 10;  // 0~23 (각 줄의 인덱스)
-			bool isLeftRow = (lightIndex < 10);  // 첫 24개는 왼쪽 줄
+			int lightIndex = i - 5;   
+			int rowIndex = lightIndex % 10;  
+			bool isLeftRow = (lightIndex < 10);  
 
 			float x = isLeftRow ? leftX : rightX;
-			float z = -(rowIndex * spacing);  // 0, -2, -4, -6, ... -46
+			float z = -(rowIndex * spacing); 
 
-			// 색상: 왼쪽 줄은 파란색, 오른쪽 줄은 빨간색
 			XMFLOAT3 color = isLeftRow ?
-				XMFLOAT3{ 1.0f, 0.25f, 0.0f } :  // 파란색 (왼쪽 줄)
-				XMFLOAT3{ 1.0f, 0.25f, 0.0f };   // 빨간색 (오른쪽 줄)
+				XMFLOAT3{ 1.0f, 0.25f, 0.0f } :  
+				XMFLOAT3{ 1.0f, 0.25f, 0.0f };   
 
 			lightData.lights[i] = {
-				{x, height, z + 70.0f}, 10.0f,    // position, range
-				color, 1.0f,             // color, intensity
-				1,                       // type: point light
-				{0, 0, 0}               // padding
+				{x, height, z + 70.0f}, 10.0f,    
+				color, 1.0f,             
+				1,                      
+				{0, 0, 0}              
 			};
 		}
 
 		lightsInitialized = true;
 	}
-	deferredLightCB->CopyData(&lightData, sizeof(DeferredLightConstants));
+	GetDeferredLightCB()->CopyData(&lightData, sizeof(DeferredLightConstants));
 }
 
 void DX12Core::RenderFullscreenQuad()
 {
-	// 라이팅 PSO 설정
 	cmdList->SetPipelineState(shader->GetPSO(PSOType::Lighting));
 
-	// 정점 버퍼 없이 6개 정점으로 사각형 그리기 (2개 삼각형)
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	cmdList->DrawInstanced(6, 1, 0, 0);  // 6개 정점
+	cmdList->DrawInstanced(6, 1, 0, 0);  
 
 	//OutputDebugStringA("Fullscreen quad rendered\n");
 }
