@@ -254,9 +254,8 @@ void GameScene::CreateEffectSamples()
 		{u"Aura01_HDR2", 1.f, 0.f, 0.5f},
 		{u"Benediction", 1.f, 10.f, -10.5f},
 		{u"Atmosphere", 1.f, 10.f, -10.5f},
-		{u"CandleFire4", 27.f, 29.f, -70.0f},
-		{u"CandleFire4", -27.f, 29.f, -70.0f},
-		{u"CandleFire3", 7.2f, 3.25f, -4.2f},
+		{u"CandleFire5", 14.2448f, 14.5f, -43.6773f},
+		{u"CandleFire5", -14.1011f, 14.5f, -43.6773f}
 	};
 
 	for (int i = 0; i < info.size(); ++i)
@@ -459,7 +458,7 @@ void GameScene::UpdateScene(const float deltaTime)
 	if (effectObjects.size() > 2 && GET(Input).GetKeyDown('3'))
 		effectObjects[2]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	/*if (effectObjects.size() > 3 && GET(Input).GetKeyDown('4'))
+	if (effectObjects.size() > 3 && GET(Input).GetKeyDown('4'))
 		effectObjects[3]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects.size() > 4 && GET(Input).GetKeyDown('5'))
@@ -468,8 +467,7 @@ void GameScene::UpdateScene(const float deltaTime)
 	if (effectObjects.size() > 5 && GET(Input).GetKeyDown('6')) {
 		effectObjects[5]->GetComponent<EffectRenderer>()->PlayEffect();
 		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
-		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
-	}*/
+	}
 
 	if (effectObjects[2] && myPlayer) {
 		if (auto transform = effectObjects[2]->GetComponent<Transform>())
