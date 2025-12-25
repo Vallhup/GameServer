@@ -86,10 +86,12 @@ cbuffer SSAOConstants : register(b6)
 cbuffer FogConstants : register(b7)
 {
     float4 fogColor;
-    float fogStart;
-    float fogRange;
-    float fogZoneStart;
-    float fogZoneRange;
+    float fogStart;     // 거리 안개 시작
+    float fogRange;     // 거리 안개 범위
+    float fogZoneStart; // Z축 안개 시작점
+    float fogZoneEnd;   // Z축 안개 끝점
+    float fogZoneFade;  // 보간 거리
+    float3 fogPadding;
 };
 
 //-------------------------------------------------------

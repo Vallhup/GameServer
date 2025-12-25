@@ -48,7 +48,9 @@ struct FogConstants
 	float fogStart;
 	float fogRange;
 	float fogZoneStart;
-	float fogZoneRange;
+	float fogZoneEnd;
+	float fogZoneFade;
+	XMFLOAT3 fogPadding;
 };
 
 class RootSignature;
