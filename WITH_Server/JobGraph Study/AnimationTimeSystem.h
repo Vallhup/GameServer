@@ -16,6 +16,8 @@ public:
 
 		for (const auto& [entity, state] : states)
 		{
+			if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
+
 			auto* animRef = animRefs.GetComponent(entity);
 			auto* anim = anims.GetComponent(entity);
 			if (!animRef or !anim) continue;

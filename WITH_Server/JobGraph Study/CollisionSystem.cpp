@@ -9,7 +9,10 @@ void CollisionSystem::Execute(const float dT)
 	std::vector<Entity> entities;
 	entities.reserve(colliders.end().i);
 	for (const auto& [entity, _] : colliders)
+	{
+		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
 		entities.push_back(entity);
+	}
 
 	for (size_t i = 0; i < entities.size(); ++i)
 	{

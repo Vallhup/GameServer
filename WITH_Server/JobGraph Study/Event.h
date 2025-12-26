@@ -60,6 +60,7 @@ struct Event {
 
 enum class DirtyType {
 	Spawned,
+	Despawned,
 	Moved,
 	AnimationChanged,
 	StatsChanged

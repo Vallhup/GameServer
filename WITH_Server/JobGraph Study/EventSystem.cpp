@@ -61,7 +61,20 @@ void EventSystem::ProcessConnect(const Event& event)
 
 void EventSystem::ProcessDisconnect(const Event& event)
 {
+	const auto* p = std::get_if<DisconnectEvent>(&event.payload);
 
+#ifdef _DEBUG
+	std::cout << "[EventSystem] Player[" << p->sessionId << "] Disconnect\n";
+#endif
+
+	auto& ste = Framework::Get().sessionToEntity;
+
+	auto it = ste.find(p->sessionId);
+	if (it == ste.end()) return;
+	Entity entity = it->second;
+
+	ecs.GetStorage<DisconnectedTag>().AddComponent(entity);
+	Framework::Get().outEventQueue.push(OutputEvent{ entity, DirtyType::Despawned });
 }
 
 void EventSystem::ProcessMove(const Event& event)
@@ -75,17 +88,33 @@ void EventSystem::ProcessMove(const Event& event)
 
 	if (auto* velocity = ecs.GetStorage<Velocity>().GetComponent(entity))
 	{
-		velocity->inputX = p->inputX;
-		velocity->inputZ = p->inputZ;
-		velocity->yaw = p->yaw;
-
 		if (auto* loco = ecs.GetStorage<LocomotionState>().GetComponent(entity))
 		{
-			if (velocity->inputX == 0 && velocity->inputZ == 0)
+			int inputX = p->inputX;
+			int inputZ = p->inputZ;
+			float yaw = p->yaw;
+
+			XMVECTOR forward = XMVectorSet(sin(yaw), 0, cos(yaw), 0);
+			XMVECTOR right = XMVector3Cross(XMVectorSet(0, 1, 0, 0), forward);
+
+			XMVECTOR dir = XMVectorAdd(
+				XMVectorScale(forward, inputZ),
+				XMVectorScale(right, inputX)
+			);
+
+			if (p->inputX == 0 && p->inputZ == 0)
+			{
 				loco->isMoving = false;
+				dir = XMVectorZero();
+			}
 
 			else
+			{
 				loco->isMoving = true;
+				dir = XMVector3Normalize(dir);
+			}
+
+			XMStoreFloat3(&velocity->dir, dir);
 		}
 	}
 }

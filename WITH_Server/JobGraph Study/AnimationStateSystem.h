@@ -16,6 +16,8 @@ public:
 
 		for (const auto& [entity, anim] : animations)
 		{
+			if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
+
 			auto* action = actions.GetComponent(entity);
 			auto* loco = locos.GetComponent(entity);
 			if (!action or !loco) continue;

@@ -21,6 +21,7 @@ public:
 
 private:
 	void ProcessSpawn(const OutputEvent& event);
+	void ProcessDespawn(const OutputEvent& event);
 	void ProcessMove(const OutputEvent& event);
 
 	std::unordered_map<DirtyType, EventHandler> _handlers;

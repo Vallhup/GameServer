@@ -14,6 +14,7 @@ public:
 
 		for (const auto& [entity, action] : actions)
 		{
+			if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
 			if (action.type == ActionType::None) continue;
 
 			action.elapsed += dT;

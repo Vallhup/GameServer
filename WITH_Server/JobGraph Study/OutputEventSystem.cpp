@@ -9,6 +9,7 @@
 OutputEventSystem::OutputEventSystem(ECS& ecs, int p) : System(ecs, p)
 {
 	_handlers[DirtyType::Spawned] = [&](const OutputEvent& ev) { ProcessSpawn(ev); };
+	_handlers[DirtyType::Despawned] = [&](const OutputEvent& ev) { ProcessDespawn(ev); };
 	_handlers[DirtyType::Moved] = [&](const OutputEvent& ev) { ProcessMove(ev); };
 }
 
@@ -62,6 +63,17 @@ void OutputEventSystem::ProcessSpawn(const OutputEvent& event)
 			framework.network.Send(sessionId, data3.data());
 		}
 	}
+}
+
+void OutputEventSystem::ProcessDespawn(const OutputEvent& event)
+{
+	// TODO : Despawn 처리
+	//
+	// 1. Despawn된 Player의 정보를 모든 Player에게 전송
+	// 2. Despawn된 Player의 Session 정보를 EntityToSession 맵에서 제거
+	// 3. Despawn된 Player의 Entity를 ECS에서 제거
+	// 4. Despawn된 Player의 Entity에 할당된 모든 컴포넌트 제거
+	// 5. Despawn된 Player의 Entity ID를 재사용할 수 있도록 관리
 }
 
 void OutputEventSystem::ProcessMove(const OutputEvent& event)

@@ -33,6 +33,7 @@ private:
 
 	// TODO : Handler 함수 추가
 	static bool HandleConnect(int id, const PacketHeader& header, const char* data);
+	static bool HandleDisconnect(int id, const PacketHeader& header, const char* data);
 	static bool HandleMove(int id, const PacketHeader& header, const char* data);
 
 	std::unordered_map<uint16_t, HandlerFunc> _handlerTable;

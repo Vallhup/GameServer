@@ -32,6 +32,10 @@ void Session::Close()
 	_socket.shutdown(tcp::socket::shutdown_both, ec);
 	_socket.close(ec);
 
+	DisconnectEvent dc{ _id };
+	Event ev{ EventType::EV_DISCONNECT, dc };
+	Framework::Get().eventQueue.push(ev);
+
 	if (ec)
 		std::cerr << "Socket close error: " << ec.message() << std::endl;
 }

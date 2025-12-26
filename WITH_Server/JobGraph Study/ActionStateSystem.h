@@ -14,6 +14,7 @@ public:
 
 		for (const auto& [entity, state] : states)
 		{
+			if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
 			if (state.type != ActionType::None) continue;
 			if (auto* intent = ecs.GetStorage<ActionIntent>().GetComponent(entity))
 			{

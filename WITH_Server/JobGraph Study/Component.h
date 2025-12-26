@@ -30,9 +30,8 @@ struct Transform : public Component {
 };
 
 struct Velocity : public Component {
-	int inputX{ 0 };
-	int inputZ{ 0 };
-	float yaw{ 0.0f };
+	XMFLOAT3 dir{ 0, 0, 0 };
+	bool isRun{ false };
 };
 
 struct LocomotionState : public Component {
@@ -41,6 +40,8 @@ struct LocomotionState : public Component {
 
 struct ActionIntent : public Component {
 	bool attack{ false };
+	bool dodge{ false };
+	bool parry{ false };
 };
 
 struct ActionState : public Component {
@@ -77,3 +78,5 @@ struct Collider : public Component {
 	std::vector<Capsule> localCapsules;
 	std::vector<Capsule> worldCapsules;
 };
+
+struct DisconnectedTag :public Component { };

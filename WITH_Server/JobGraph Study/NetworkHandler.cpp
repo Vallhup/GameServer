@@ -14,6 +14,11 @@ bool NetworkHandler::HandleConnect(int id, const PacketHeader& header, const cha
 	return true;
 }
 
+bool NetworkHandler::HandleDisconnect(int id, const PacketHeader& header, const char* data)
+{
+	return false;
+}
+
 bool NetworkHandler::HandleMove(int id, const PacketHeader& header, const char* data)
 {
 	Protocol::CS_MOVE_PACKET move;

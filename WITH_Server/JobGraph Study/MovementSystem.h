@@ -12,7 +12,7 @@ public:
 
 	virtual std::vector<std::type_index> ReadComponents() const override
 	{
-		return { typeid(Velocity) };
+		return { typeid(Velocity), typeid(LocomotionState) };
 	}
 
 	virtual std::vector<std::type_index> WriteComponents() const override

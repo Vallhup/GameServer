@@ -43,7 +43,6 @@ public:
 		_entities.push_back(entity);
 		_dense.emplace_back();
 
-
 		return &_dense.back();
 	}
 
@@ -51,6 +50,13 @@ public:
 	{
 		if (entity.id >= _sparse.size()) return nullptr;
 		return _sparse[entity.id] == INVALID ? 
+			nullptr : &_dense[_sparse[entity.id]];
+	}
+
+	const T* GetComponent(Entity entity) const
+	{
+		if (entity.id >= _sparse.size()) return nullptr;
+		return _sparse[entity.id] == INVALID ?
 			nullptr : &_dense[_sparse[entity.id]];
 	}
 
@@ -70,6 +76,11 @@ public:
 		_entities.pop_back();
 
 		_sparse[entity.id] = INVALID;
+	}
+
+	bool HasComponent(Entity entity) const
+	{
+		return GetComponent(entity) != nullptr;
 	}
 
 	const std::vector<T>&      Dense()    const { return _dense; }

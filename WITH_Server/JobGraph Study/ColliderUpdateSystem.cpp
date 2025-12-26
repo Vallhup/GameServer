@@ -8,6 +8,8 @@ void ColliderUpdateSystem::Execute(const float dT)
 
 	for (const auto& [entity, collider] : colliders)
 	{
+		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
+
 		auto* trans = transforms.GetComponent(entity);
 		if (!trans) continue;
 

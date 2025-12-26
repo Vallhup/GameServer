@@ -9,54 +9,37 @@ void MovementSystem::Execute(const float dT)
 {
 	auto& transforms = ecs.GetStorage<Transform>();
 	auto& velocitys = ecs.GetStorage<Velocity>();
+	auto& locos = ecs.GetStorage<LocomotionState>();
 	auto& framework = Framework::Get();
 
 	for (const auto& [entity, transform] : transforms)
 	{
 		if (auto* vel = velocitys.GetComponent(entity))
 		{
-			int inputX = vel->inputX;
-			int inputZ = vel->inputZ;
-			float yaw = vel->yaw;
-			
-			XMVECTOR forward = XMVectorSet(sin(yaw), 0, cos(yaw), 0);
-			XMVECTOR right = XMVector3Cross(XMVectorSet(0, 1, 0, 0), forward);
-
-			XMVECTOR dir = XMVectorAdd(
-				XMVectorScale(forward, inputZ),
-				XMVectorScale(right, inputX)
-			);
-
-			bool moved{ false };
-			if (XMVectorGetX(XMVector3LengthSq(dir)) > 1e-6f)
+			if (auto* loco = locos.GetComponent(entity))
 			{
-				dir = XMVector3Normalize(dir);
-				moved = true;
-			}
-				
-			else
-			{
-				dir = XMVectorZero();
-				moved = false;
-			}
+				if (loco->isMoving)
+				{
+					// TEMP : 걷기 뛰기에 따라 속도 조정
+					const float speed = 2.0f;
 
-			if (moved)
-			{
-				const float speed = 2.0f;
-				XMVECTOR pos = XMLoadFloat3(&transform.position);
-				pos = XMVectorAdd(pos, XMVectorScale(dir, speed * dT));
-				XMStoreFloat3(&transform.position, pos);
+					XMVECTOR pos = XMLoadFloat3(&transform.position);
+					XMVECTOR dir = XMLoadFloat3(&vel->dir);
 
-				float moveYaw = atan2f(
-					-XMVectorGetX(dir),
-					-XMVectorGetZ(dir)
-				);
+					pos = XMVectorAdd(pos, XMVectorScale(dir, speed * dT));
+					XMStoreFloat3(&transform.position, pos);
 
-				XMVECTOR q = XMQuaternionRotationRollPitchYaw(0, moveYaw, 0);
-				XMStoreFloat4(&transform.rotation, q);
+					float moveYaw = atan2f(
+						-XMVectorGetX(dir),
+						-XMVectorGetZ(dir)
+					);
 
-				Framework::Get().outEventQueue.push(OutputEvent{
-					entity, DirtyType::Moved });
+					XMVECTOR q = XMQuaternionRotationRollPitchYaw(0, moveYaw, 0);
+					XMStoreFloat4(&transform.rotation, q);
+
+					Framework::Get().outEventQueue.push(OutputEvent{
+						entity, DirtyType::Moved });
+				}
 			}
 		}
 	}
