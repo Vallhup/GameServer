@@ -60,9 +60,12 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddSRV(0, 2);           // [12] t0, space2 - Instance
     AddSRVTable(4, 6, 0);   // [13] t4-t9 - G-Buffer
 
-    // === SSAO 파라미터 ===
+    // SSAO 파라미터
     AddCBV(6);              // [14] b6 - SSAO Constants
     AddSRVTable(10, 3, 0);  // [15] t10-t12 - SSAO SRVs
+
+    // Fog 파라미터
+    AddCBV(7);              // [16] b7 - Fog Constants
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[2];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,

@@ -1,7 +1,7 @@
-#ifndef CONSTANT_BUFFERS_HLSLI
-#define CONSTANT_BUFFERS_HLSLI
+#ifndef SHADERRESOURCES_HLSLI
+#define SHADERRESOURCES_HLSLI
 
-#include "StructData.hlsli"
+#include "CommonData.hlsli"
 
 //-------------------------------------------------------
 // CBV START
@@ -81,6 +81,17 @@ cbuffer SSAOConstants : register(b6)
     float occlusionFadeEnd;
     float surfaceEpsilon;
     float3 ssaoPadding;
+};
+
+cbuffer FogConstants : register(b7)
+{
+    float4 fogColor;
+    float fogStart;     // 거리 안개 시작
+    float fogRange;     // 거리 안개 범위
+    float fogZoneStart; // Z축 안개 시작점
+    float fogZoneEnd;   // Z축 안개 끝점
+    float fogZoneFade;  // 보간 거리
+    float3 fogPadding;
 };
 
 //-------------------------------------------------------

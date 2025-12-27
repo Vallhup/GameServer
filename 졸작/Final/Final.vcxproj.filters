@@ -257,7 +257,7 @@
     <None Include="..\Shaders\Constants.hlsli">
       <Filter>Shaders\Common</Filter>
     </None>
-    <None Include="..\Shaders\StructData.hlsli">
+    <None Include="..\Shaders\CommonData.hlsli">
       <Filter>Shaders\Common</Filter>
     </None>
     <None Include="..\Shaders\InOutFormats.hlsli">
@@ -276,13 +276,16 @@
       <Filter>Shaders\Deferred</Filter>
     </None>
     <None Include="..\Shaders\animation.hlsli">
-      <Filter>Shaders\Compute</Filter>
+      <Filter>Shaders\Animation</Filter>
     </None>
     <None Include="..\Shaders\Shadow.hlsli">
       <Filter>Shaders\Lighting</Filter>
     </None>
     <None Include="..\Shaders\Fog.hlsli">
       <Filter>Shaders\Lighting</Filter>
+    </None>
+    <None Include="..\Shaders\Skinning.hlsli">
+      <Filter>Shaders\Animation</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -346,7 +349,7 @@
     <Filter Include="Shaders\Deferred">
       <UniqueIdentifier>{bcb78b2e-a242-41c6-b89b-ca9c2026ef83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\Compute">
+    <Filter Include="Shaders\Animation">
       <UniqueIdentifier>{d4e073f9-d580-4b7b-8cf0-2189b46c7bf7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

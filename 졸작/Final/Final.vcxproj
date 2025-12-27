@@ -248,7 +248,8 @@
     <None Include="..\Shaders\InOutFormats.hlsli" />
     <None Include="..\Shaders\LightingPS.hlsli" />
     <None Include="..\Shaders\Shadow.hlsli" />
-    <None Include="..\Shaders\StructData.hlsli" />
+    <None Include="..\Shaders\Skinning.hlsli" />
+    <None Include="..\Shaders\CommonData.hlsli" />
     <None Include="..\Shaders\math.hlsli" />
     <None Include="..\Shaders\PBR.hlsli" />
     <None Include="..\Shaders\ShadowPS.hlsli" />

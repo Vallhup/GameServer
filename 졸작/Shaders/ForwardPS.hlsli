@@ -1,5 +1,7 @@
 #include "ShaderResources.hlsli"
 #include "InOutFormats.hlsli"
+#include "PBR.hlsli"
+#include "Fog.hlsli"
 
 float4 PSMain(FORWARD_PS_IN input) : SV_Target
 {
@@ -15,9 +17,7 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         
         // Bindless 텍스처 샘플링
         if (material.baseColorTexIndex != 0xFFFFFFFF)
-        {
             baseColor = bindlessTextures[NonUniformResourceIndex(material.baseColorTexIndex)].Sample(linearSampler, input.uv);
-        }
         
         if (material.normalTexIndex != 0xFFFFFFFF)
         {
@@ -26,47 +26,29 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         }
         
         if (material.roughnessTexIndex != 0xFFFFFFFF)
-        {
             roughness = bindlessTextures[NonUniformResourceIndex(material.roughnessTexIndex)].Sample(linearSampler, input.uv).r;
-        }
         
         if (material.metallicTexIndex != 0xFFFFFFFF)
-        {
             metallic = bindlessTextures[NonUniformResourceIndex(material.metallicTexIndex)].Sample(linearSampler, input.uv).r;
-        }
         
         if (material.alphaTexIndex != 0xFFFFFFFF)
-        {
             alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).a;
-        }
         
-        float3 lightDir = normalize(-lightDirection);
-        
-        float3 worldNormal = normalize(input.normal);
+        float3 N = normalize(input.normal);
         if (material.normalTexIndex != 0xFFFFFFFF)
-        {
-            float3 N = worldNormal;
-            float3 T = normalize(input.tangent);
-            float3 B = cross(N, T);
-            
-            float3x3 TBN = float3x3(T, B, N);
-            
-            float normalStrength = 1.0f;
-            float3 tangentNormal = float3(normalMap.x * normalStrength, normalMap.y * normalStrength, normalMap.z);
-            tangentNormal = normalize(tangentNormal);
-            worldNormal = normalize(mul(tangentNormal, TBN));
-        }
+            N = ApplyNormalMap(input.normal, input.tangent, normalMap);
         
-        float NdotL = max(0.0, dot(worldNormal, -lightDir));
+        float3 V = normalize(cameraPosition - input.worldPos);
+        float3 L = normalize(-lightDirection);
         
-        float3 diffuse = baseColor.rgb * NdotL * 0.7;
+        float3 radiance = lightColor * lightIntensity;
+        
+        float3 finalColor = CalculatePBR(N, V, L, baseColor.rgb, metallic, roughness, radiance);
+        
         float3 ambient = baseColor.rgb * 0.3;
+        finalColor += ambient;
         
-        float3 viewDir = normalize(float3(0.1, 0.1, -1));
-        float3 reflectDir = reflect(lightDir, worldNormal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0) * metallic * 0.01;
-        
-        float3 finalColor = (diffuse + ambient + spec) * lightColor * lightIntensity;
+        finalColor = ApplyFog(finalColor, input.worldPos);
         
         return float4(finalColor, baseColor.a * alpha);
     }

@@ -42,6 +42,17 @@ struct ForwardLightConstants {
 	float intensity;
 };
 
+struct FogConstants
+{
+	XMFLOAT4 fogColor;
+	float fogStart;
+	float fogRange;
+	float fogZoneStart;
+	float fogZoneEnd;
+	float fogZoneFade;
+	XMFLOAT3 fogPadding;
+};
+
 class RootSignature;
 class Shader;
 
@@ -70,7 +81,7 @@ public:
 	void EndGBufferPass();
 
 	void BeginLightingPass();
-	void SetupLightng();
+	void SetupLights();
 	void RenderFullscreenQuad();
 
 	void RenderSSAO();
@@ -93,6 +104,7 @@ public:
 	UploadBuffer* GetSceneCB() const;
 	UploadBuffer* GetDeferredLightCB() const;
 	UploadBuffer* GetForwardLightCB() const;
+	UploadBuffer* GetFogCB() const;
 
 	void SetBackgroundColor(const float* color);
 	void SetPlayerPosForShadow(const XMFLOAT3& pos);
@@ -147,6 +159,7 @@ private:
 	unique_ptr<UploadBuffer> forwardLightCB;
 	unique_ptr<UploadBuffer> shadowFrameCB;
 	unique_ptr<UploadBuffer> ssaoCB;
+	unique_ptr<UploadBuffer> fogCB;
 
 	unique_ptr<SSAO> ssao;
 	D3D12_GPU_DESCRIPTOR_HANDLE ssaoSRVHandle;

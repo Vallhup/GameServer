@@ -267,13 +267,13 @@ void MeshRenderer::SetMesh(DX12Core& core, const wstring& path)
         BoundingBox::CreateFromPoints(localBox, mesh.vertices.size(), &mesh.vertices[0].pos, sizeof(Vertex));
         GetGameObject()->SetLocalBoundingBox(localBox);
 
-        OutputDebugStringA(("Local BoundingBox Created - Center: (" +
+        /*OutputDebugStringA(("Local BoundingBox Created - Center: (" +
             to_string(localBox.Center.x) + ", " +
             to_string(localBox.Center.y) + ", " +
             to_string(localBox.Center.z) + "), Extents: (" +
             to_string(localBox.Extents.x) + ", " +
             to_string(localBox.Extents.y) + ", " +
-            to_string(localBox.Extents.z) + ")\n").c_str());
+            to_string(localBox.Extents.z) + ")\n").c_str());*/
 
         vertexIndexBuffer = make_shared<VertexIndexBuffer>();
         vertexIndexBuffer->Initialize(

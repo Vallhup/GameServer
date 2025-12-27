@@ -51,6 +51,7 @@ struct FORWARD_VS_OUT
     float4 indices : INDICES;
     float4 color : COLOR;
     uint materialIndex : MATERIAL_INDEX;
+    float3 worldPos : POSITION;
 };
 
 struct FORWARD_PS_IN
@@ -63,6 +64,7 @@ struct FORWARD_PS_IN
     float4 indices : INDICES;
     float4 color : COLOR;
     uint materialIndex : MATERIAL_INDEX;
+    float3 worldPos : POSITION;
 };
 
 //-------------------------------------------------------
