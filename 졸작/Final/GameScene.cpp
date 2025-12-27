@@ -26,7 +26,7 @@ void GameScene::CreateKnightPool()
 		auto meshRenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight6");
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
 		transform->SetRotation(-1.57f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
@@ -256,7 +256,8 @@ void GameScene::CreateEffectSamples()
 		{u"Benediction", 1.f, 10.f, -10.5f},
 		{u"Atmosphere", 1.f, 10.f, -10.5f},
 		{u"CandleFire5", 14.2448f, 14.5f, -43.6773f},
-		{u"CandleFire5", -14.1011f, 14.5f, -43.6773f}
+		{u"CandleFire5", -14.1011f, 14.5f, -43.6773f},
+		{u"Dissolve", 2.f, 0.f, 0.f}
 	};
 
 	for (int i = 0; i < info.size(); ++i)
@@ -415,7 +416,7 @@ void GameScene::InitializeLogic()
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/boss");
 		transform->SetInitPosition(2.f, 0.f, 0.f);
 		transform->SetRotation(-1.57f, 0.f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
+		transform->SetScale(0.02f, 0.02f, 0.02f);
 		AddGameObject(boss);
 	}
 
@@ -467,6 +468,9 @@ void GameScene::UpdateScene(const float deltaTime)
 		effectObjects[5]->GetComponent<EffectRenderer>()->PlayEffect();
 		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
 	}
+
+	if (effectObjects.size() > 6 && GET(Input).GetKeyDown('7'))
+		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects[2] && myPlayer) {
 		if (auto transform = effectObjects[2]->GetComponent<Transform>())
