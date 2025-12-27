@@ -9,8 +9,8 @@
 #include "VertexIndexBuffer.h"
 #include "Importer.h"
 #include "Camera.h"
-
 #include "Input.h"
+#include "SoundManager.h"
 
 Engine& Engine::Get()
 {
@@ -28,23 +28,28 @@ void Engine::Initialize(HWND hwnd)
     graphics = make_unique<DX12Core>();
     graphics->Initialize(mHwnd);
 
-    sManager = make_unique<SceneManager>();
-    sManager->Initialize(*graphics);
+    sceneManager = make_unique<SceneManager>();
+    sceneManager->Initialize(*graphics);
 
-    nManager = make_unique<NetworkManager>();
-    nManager->Initialize();
+    networkManager = make_unique<NetworkManager>();
+    networkManager->Initialize();
+
+    soundManager = make_unique<SoundManager>();
+    soundManager->Initialize();
 
     graphics->FlushCommandQueue();
 
-    Input::Initialize(nManager.get());
+    Input::Initialize(networkManager.get());
 }
 
 void Engine::Update(const float deltaTime)
 {
-    sManager->ProcessPendingSceneChange(*graphics);
-    sManager->Update(deltaTime);
+    sceneManager->ProcessPendingSceneChange(*graphics);
+    sceneManager->Update(deltaTime);
 
-    nManager->Update();
+    networkManager->Update();
+
+    soundManager->Update();
 }
 
 void Engine::Render()
@@ -52,12 +57,12 @@ void Engine::Render()
     graphics->RenderBegin(viewport, scissorRect);
 
     graphics->BeginShadowPass();
-    sManager->RenderShadow();
+    sceneManager->RenderShadow();
     graphics->EndShadowPass();
 
     // 1. Deferred G-Buffer Pass (불투명 머티리얼만)
     graphics->BeginGBufferPass();
-    sManager->RenderDeferred();  // 불투명한 것들만
+    sceneManager->RenderDeferred();  // 불투명한 것들만
     graphics->EndGBufferPass();
 
     // 1.5. SSAO Pass (차폐도)
@@ -73,8 +78,8 @@ void Engine::Render()
     // 3. Forward Alpha Pass (투명 머티리얼)
     // 백버퍼 + depth buffer 사용, alpha blending 활성화
     graphics->BeginForwardPass();
-    sManager->RenderEffects();   // 이펙트를 먼저 그려야 머리카락이 안없어짐
-    sManager->RenderForward();   // 머리카락 등 투명한 것들
+    sceneManager->RenderEffects();   // 이펙트를 먼저 그려야 머리카락이 안없어짐
+    sceneManager->RenderForward();   // 머리카락 등 투명한 것들
 
     graphics->RenderEnd();
 
@@ -83,9 +88,9 @@ void Engine::Render()
 
 void Engine::Shutdown()
 {
-    if (sManager && sManager->GetCurrentScene())
+    if (sceneManager && sceneManager->GetCurrentScene())
     {
-        auto camera = sManager->GetCurrentScene()->GetCamera();
+        auto camera = sceneManager->GetCurrentScene()->GetCamera();
         if (camera)
         {
             camera->ReleaseMouse();
@@ -95,9 +100,10 @@ void Engine::Shutdown()
 
     if (graphics)
         graphics->GetSwapChain()->SetFullscreenState(FALSE, nullptr);
-    sManager->Release();
 
-    nManager->Release();
+    sceneManager->Release();
+    networkManager->Release();
+    soundManager->Release();
 }
 
 void Engine::ShowFps()

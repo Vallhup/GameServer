@@ -13,6 +13,7 @@
 #include "EffectRenderer.h"
 #include "Engine.h"
 #include "NetworkManager.h"
+#include "SoundManager.h"
 
 GameScene::~GameScene() = default;
 
@@ -289,7 +290,6 @@ void GameScene::Release()
 
 void GameScene::Reset()
 {
-	// TODO: �� ������ ���� �ڵ� �߰�
 	knightPool.clear();
 	activePlayers.clear();
 	myPlayer = nullptr;
@@ -448,7 +448,6 @@ void GameScene::InitializeLogic()
 
 void GameScene::UpdateScene(const float deltaTime)
 {
-	// ����Ʈ OFF
 	/*if (effectObjects.size() > 0 && GET(Input).GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
 
@@ -481,6 +480,18 @@ void GameScene::UpdateScene(const float deltaTime)
 	{
 		auto transform = myPlayer->GetComponent<Transform>();
 		coreRef->SetPlayerPosForShadow(transform->GetPosition());
+
+		SoundManager* sound = GET(Engine).GetSoundManager();
+
+		if (transform->GetPosition().z < -11.0f)
+		{
+			sound->PlayBGM("../Music/BGM/background.mp3");
+		}
+		else
+		{
+			if (GET(Input).GetKeyDown('0'))
+				sound->StopBGM();
+		}
 	}
 
 	for (const auto& obj : gameObjects)

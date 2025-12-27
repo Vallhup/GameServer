@@ -3,6 +3,7 @@
 class DX12Core;
 class SceneManager;
 class NetworkManager;
+class SoundManager;
 
 class Engine
 {
@@ -19,8 +20,9 @@ public:
 
 public:
     // Server Test
-    SceneManager* GetSceneManager() { return sManager.get(); }
-    NetworkManager* GetNetworkManager() { return nManager.get(); }
+    SceneManager* GetSceneManager() { return sceneManager.get(); }
+    NetworkManager* GetNetworkManager() { return networkManager.get(); }
+    SoundManager* GetSoundManager() { return soundManager.get(); }
 
 private:
     HWND mHwnd = nullptr;
@@ -29,6 +31,7 @@ private:
     D3D12_RECT		scissorRect = {};
 
     unique_ptr<DX12Core> graphics;
-    unique_ptr<SceneManager> sManager;
-    unique_ptr<NetworkManager> nManager;
+    unique_ptr<SceneManager> sceneManager;
+    unique_ptr<NetworkManager> networkManager;
+    unique_ptr<SoundManager> soundManager;
 };
