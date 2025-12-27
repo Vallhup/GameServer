@@ -541,6 +541,12 @@ void FBXLoader::LoadBoneKeyframes(int32 animIndex, FbxNode* boneNode, int32 bone
 	matReflect.mData[2] = v3;
 	matReflect.mData[3] = v4;
 
+	// This isn't the correct way to convert an FBX file to an animation file.
+	// But it seems like it needs to be x-rotated 90 degrees to fit the correct shape.
+	// So, as a workaround, I applied the following method: X-rotate 90 degrees in all character animation FBX files.
+	FbxAMatrix rotationFix;
+	rotationFix.SetR(FbxVector4(90, 0, 0));
+
 	for (FbxLongLong frame = startFrame; frame < endFrame; frame++)
 	{
 		FbxKeyFrameInfo keyFrameInfo = {};
@@ -550,6 +556,7 @@ void FBXLoader::LoadBoneKeyframes(int32 animIndex, FbxNode* boneNode, int32 bone
 		FbxNode* rootNode = _scene->GetRootNode();
 		FbxAMatrix matFromRoot = rootNode->EvaluateGlobalTransform(fbxTime);
 		FbxAMatrix matTransform = matFromRoot.Inverse() * boneNode->EvaluateGlobalTransform(fbxTime);
+		matTransform = rotationFix * matTransform;
 		FbxAMatrix finalTransform = matReflect * matTransform * matReflect;
 
 		keyFrameInfo.time = fbxTime.GetSecondDouble();

@@ -28,7 +28,7 @@ void GameScene::CreateKnightPool()
 		auto animator = knight->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight6");
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
-		transform->SetRotation(-1.57f, 0.f, 0.f);
+		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		knightPool.push_back(knight);
 		AddGameObject(knight);
@@ -415,7 +415,7 @@ void GameScene::InitializeLogic()
 		auto animator = boss->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/boss");
 		transform->SetInitPosition(2.f, 0.f, 0.f);
-		transform->SetRotation(-1.57f, 0.f, 0.f);
+		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.02f, 0.02f, 0.02f);
 		AddGameObject(boss);
 	}
