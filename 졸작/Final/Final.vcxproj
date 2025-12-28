@@ -181,7 +181,6 @@
     <ClCompile Include="ServerSquareScene.cpp" />
     <ClCompile Include="ServerTestScene.cpp" />
     <ClCompile Include="SoundManager.cpp" />
-    <ClCompile Include="SSAO.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -226,7 +225,6 @@
     <ClInclude Include="ServerSquareScene.h" />
     <ClInclude Include="ServerTestScene.h" />
     <ClInclude Include="SoundManager.h" />
-    <ClInclude Include="SSAO.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
@@ -262,10 +260,6 @@
     <None Include="..\Shaders\PBR.hlsli" />
     <None Include="..\Shaders\ShadowPS.hlsli" />
     <None Include="..\Shaders\ShadowVS.hlsli" />
-    <None Include="..\Shaders\SSAO.hlsli" />
-    <None Include="..\Shaders\SSAOViewSpacePS.hlsli" />
-    <None Include="..\Shaders\SSAOViewSpaceVS.hlsli" />
-    <None Include="..\Shaders\SSAO_old.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

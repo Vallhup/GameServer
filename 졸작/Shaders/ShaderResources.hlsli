@@ -72,18 +72,7 @@ cbuffer ShadowFrameCB : register(b5)
     matrix lightProjection;
 };
 
-cbuffer SSAOConstants : register(b6)
-{
-    float4 ssaoOffsetVectors[14];
-    matrix ssaoProjection;
-    float occlusionRadius;
-    float occlusionFadeStart;
-    float occlusionFadeEnd;
-    float surfaceEpsilon;
-    float3 ssaoPadding;
-};
-
-cbuffer FogConstants : register(b7)
+cbuffer FogConstants : register(b6)
 {
     float4 fogColor;
     float fogStart;     // 거리 안개 시작
@@ -114,12 +103,6 @@ Texture2D gBufferRT1 : register(t5); // Normal + Roughness
 Texture2D gBufferRT2 : register(t6); // WorldPos + AO
 Texture2D gBufferRT3 : register(t7); // Emission + Alpha
 Texture2D shadowMap : register(t8);
-Texture2D ssaoMap : register(t9);
-
-//-------------------------------------------------------
-// SSAO PARAMETERS NOT ADDED YET
-//-------------------------------------------------------
-
 
 //-------------------------------------------------------
 // SAMPLERS

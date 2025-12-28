@@ -19,8 +19,6 @@ void DX12Core::Initialize(HWND hwnd)
 	deferredLightCB = make_unique<UploadBuffer>();
 	forwardLightCB = make_unique<UploadBuffer>();
 	shadowFrameCB = make_unique<UploadBuffer>();
-	ssao = make_unique<SSAO>();
-	ssaoCB = make_unique<UploadBuffer>();
 	fogCB = make_unique<UploadBuffer>();
 
 	rootSig->Initialize(GetDevice());
@@ -30,8 +28,6 @@ void DX12Core::Initialize(HWND hwnd)
 	deferredLightCB->Initialize(GetDevice(), sizeof(DeferredLightConstants));
 	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
 	shadowFrameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
-	ssao->Initialize(GetDevice(), GetGraphicsCmdList());
-	ssaoCB->Initialize(GetDevice(), sizeof(SSAOConstants));
 	fogCB->Initialize(GetDevice(), sizeof(FogConstants));
 
 	CreateDepthStencilBuffer();
@@ -387,7 +383,7 @@ void DX12Core::CreateDeferredRenderingDescriptors()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.NumDescriptors = 6; // Gbuffer(4) + shadow(1) + ssao(1)
+	srvHeapDesc.NumDescriptors = 5; // Gbuffer(4) + shadow(1)
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	HRESULT hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&deferredSRVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create Deferred SRV Heap");
@@ -417,16 +413,6 @@ void DX12Core::CreateDeferredRenderingDescriptors()
 	srvCpuHandle.ptr += srvSize;
 	srvGpuHandle.ptr += srvSize;
 	OutputDebugStringA("Shadow Map SRV Created\n");
-
-	ssaoSRVHandle = srvGpuHandle;
-	D3D12_SHADER_RESOURCE_VIEW_DESC ssaoSrvDesc = {};
-	ssaoSrvDesc.Format = DXGI_FORMAT_R8_UNORM;
-	ssaoSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	ssaoSrvDesc.Texture2D.MipLevels = 1;
-	ssaoSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	device->CreateShaderResourceView(ssao->GetSSAOTexture(), &ssaoSrvDesc, srvCpuHandle);
-
-	OutputDebugStringA("SSAO SRV Created!!\n");
 
 	OutputDebugStringA("Deferred Rendering Descriptors created successfully!!\n");
 }
@@ -513,7 +499,7 @@ void DX12Core::BeginForwardPass()
 
 	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
 	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
-	cmdList->SetGraphicsRootConstantBufferView(16, GetFogCB()->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(14, GetFogCB()->GetGPUVirtualAddress());
 
 	//OutputDebugStringA("Forward pass started\n");
 }
@@ -588,7 +574,7 @@ void DX12Core::BeginLightingPass()
 
 	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
 	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
-	cmdList->SetGraphicsRootConstantBufferView(16, GetFogCB()->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(14, GetFogCB()->GetGPUVirtualAddress());
 
 	//OutputDebugStringA("Lighting Pass started\n");
 }
@@ -678,250 +664,6 @@ void DX12Core::RenderFullscreenQuad()
 	cmdList->DrawInstanced(6, 1, 0, 0);  
 
 	//OutputDebugStringA("Fullscreen quad rendered\n");
-}
-
-//void DX12Core::RenderSSAO()
-//{
-//	if (!ssao->GetSSAOState()) 
-//	{
-//		D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle = ssao->GetSSAORTV();
-//
-//		float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-//		cmdList->ClearRenderTargetView(ssaoRTVHandle, clearColor, 0, nullptr);
-//
-//		return;
-//	}
-//	
-//	// TODO - AI Helped
-//	
-//	// 1. Resource Barrier: SRV -> RTV
-//	static bool firstSSAOPass = true;
-//
-//	if (!firstSSAOPass) {
-//		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-//			ssao->GetSSAOTexture(),
-//			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-//			D3D12_RESOURCE_STATE_RENDER_TARGET
-//		);
-//		cmdList->ResourceBarrier(1, &barrier);
-//	}
-//
-//	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle = ssao->GetSSAORTV();
-//
-//	// 2. Set ssaoTexture to RTV(Render Target)
-//	cmdList->OMSetRenderTargets(1, &ssaoRTVHandle, FALSE, nullptr);
-//	 
-//	// 3. SSAO Texture Clear (White = No AO)
-//	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-//	cmdList->ClearRenderTargetView(ssaoRTVHandle, clearColor, 0, nullptr);
-//
-//	// 4. Set SSAO PSO State
-//	cmdList->SetPipelineState(shader->GetPSO(PSOType::SSAOViewSpace));
-//
-//	// 5. Set RootSig
-//	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
-//
-//	// 6. Depth + Normal Texture Binding (Using deferredSRVHeap Again)
-//	ID3D12DescriptorHeap* heaps[] = { deferredSRVHeap.Get() };
-//	cmdList->SetDescriptorHeaps(1, heaps);
-//	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());
-//
-//	// 7. Render on Full Screen Quad
-//	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//	cmdList->DrawInstanced(6, 1, 0, 0);
-//
-//	// 8. Resource Barrier: RTV -> SRV
-//	D3D12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
-//		ssao->GetSSAOTexture(),
-//		D3D12_RESOURCE_STATE_RENDER_TARGET,
-//		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-//	);
-//	cmdList->ResourceBarrier(1, &barrierToSRV);
-//
-//	firstSSAOPass = false;
-//}
-
-void DX12Core::RenderSSAO()
-{
-	// === SSAO OFF 체크 ===
-	if (!ssao->GetSSAOState())
-	{
-		// SSAO Texture를 흰색으로 클리어 (No AO)
-		if (ssao->IsSSAOTextureInitialized()) {  
-			D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-				ssao->GetSSAOTexture(),
-				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-				D3D12_RESOURCE_STATE_RENDER_TARGET
-			);
-			cmdList->ResourceBarrier(1, &barrier);
-		}
-
-		D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTV = ssao->GetSSAORTV();
-		cmdList->OMSetRenderTargets(1, &ssaoRTV, FALSE, nullptr);
-
-		float whiteColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		cmdList->ClearRenderTargetView(ssaoRTV, whiteColor, 0, nullptr);
-
-		D3D12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
-			ssao->GetSSAOTexture(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-		);
-		cmdList->ResourceBarrier(1, &barrierToSRV);
-
-		ssao->SetSSAOTextureInitialized(true);  
-		return;
-	}
-
-	// === SSAO ON - 실제 계산 ===
-
-	// Barrier: SSAO Texture를 RTV로
-	if (ssao->IsSSAOTextureInitialized()) {  
-		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			ssao->GetSSAOTexture(),
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-			D3D12_RESOURCE_STATE_RENDER_TARGET
-		);
-		cmdList->ResourceBarrier(1, &barrier);
-	}
-
-	// Set Render Target
-	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTV = ssao->GetSSAORTV();
-	cmdList->OMSetRenderTargets(1, &ssaoRTV, FALSE, nullptr);
-
-	// Clear
-	float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	cmdList->ClearRenderTargetView(ssaoRTV, clearColor, 0, nullptr);
-
-	// Set PSO
-	cmdList->SetPipelineState(shader->GetPSO(PSOType::SSAO));
-	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
-
-	float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
-	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 1000.0f);
-	ssao->SetProjectionMatrix(proj);
-
-	// === Constant Buffer 업데이트 ===
-	SSAOConstants ssaoConstants;
-	ssao->GetSSAOConstants(ssaoConstants);
-	ssaoCB->CopyData(&ssaoConstants, sizeof(SSAOConstants));
-
-	// Bind Constants
-	cmdList->SetGraphicsRootConstantBufferView(14, ssaoCB->GetGPUVirtualAddress());
-
-	// === Bind View Space G-Buffer SRVs ===
-	ID3D12DescriptorHeap* heaps[] = { ssao->GetSRVHeap() };
-	cmdList->SetDescriptorHeaps(1, heaps);
-
-	// SSAO SRV Table (t10-t12)
-	cmdList->SetGraphicsRootDescriptorTable(15, ssao->GetSRVHeap()->GetGPUDescriptorHandleForHeapStart());
-
-	// Draw Fullscreen Quad
-	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	cmdList->DrawInstanced(6, 1, 0, 0);
-
-	// Barrier: SSAO Texture를 SRV로
-	D3D12_RESOURCE_BARRIER barrierToSRV = CD3DX12_RESOURCE_BARRIER::Transition(
-		ssao->GetSSAOTexture(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-	);
-	cmdList->ResourceBarrier(1, &barrierToSRV);
-
-	ssao->SetSSAOTextureInitialized(true);  
-}
-
-void DX12Core::RenderSSAOViewSpace()
-{
-	// === Barrier: View Space를 RTV로 (첫 프레임 제외) ===
-	if (ssao->IsViewSpaceInitialized()) {  
-		D3D12_RESOURCE_BARRIER viewToRTV[2] = {
-			CD3DX12_RESOURCE_BARRIER::Transition(
-				ssao->GetViewNormal(),
-				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-				D3D12_RESOURCE_STATE_RENDER_TARGET
-			),
-			CD3DX12_RESOURCE_BARRIER::Transition(
-				ssao->GetViewPosition(),
-				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-				D3D12_RESOURCE_STATE_RENDER_TARGET
-			)
-		};
-		cmdList->ResourceBarrier(2, viewToRTV);
-	}
-
-	// === Set Render Targets ===
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvs[2] = {
-		ssao->GetViewNormalRTV(),
-		ssao->GetViewPositionRTV()
-	};
-	cmdList->OMSetRenderTargets(2, rtvs, FALSE, nullptr);
-
-	// === SSAO OFF: 검은색으로 클리어 ===
-	if (!ssao->GetSSAOState())
-	{
-		float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-		cmdList->ClearRenderTargetView(rtvs[0], clearColor, 0, nullptr);
-		cmdList->ClearRenderTargetView(rtvs[1], clearColor, 0, nullptr);
-
-		// Barrier: View Space를 SRV로
-		D3D12_RESOURCE_BARRIER viewToSRV[2] = {
-			CD3DX12_RESOURCE_BARRIER::Transition(
-				ssao->GetViewNormal(),
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-			),
-			CD3DX12_RESOURCE_BARRIER::Transition(
-				ssao->GetViewPosition(),
-				D3D12_RESOURCE_STATE_RENDER_TARGET,
-				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-			)
-		};
-		cmdList->ResourceBarrier(2, viewToSRV);
-
-		ssao->SetViewSpaceInitialized(true);  
-		return;
-	}
-
-	// === SSAO ON: 정상 렌더링 ===
-
-	// Clear (검은색)
-	float clearColor[4] = { 0, 0, 0, 0 };
-	cmdList->ClearRenderTargetView(rtvs[0], clearColor, 0, nullptr);
-	cmdList->ClearRenderTargetView(rtvs[1], clearColor, 0, nullptr);
-
-	// Set PSO
-	cmdList->SetPipelineState(shader->GetPSO(PSOType::SSAOViewSpace));
-	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
-
-	// Bind Constants
-	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
-
-	// Bind G-Buffer SRVs
-	ID3D12DescriptorHeap* heaps[] = { deferredSRVHeap.Get() };
-	cmdList->SetDescriptorHeaps(1, heaps);
-	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());
-
-	// Draw Fullscreen Quad
-	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	cmdList->DrawInstanced(6, 1, 0, 0);
-
-	// Barrier: View Space를 SRV로
-	D3D12_RESOURCE_BARRIER viewToSRV[2] = {
-		CD3DX12_RESOURCE_BARRIER::Transition(
-			ssao->GetViewNormal(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-		),
-		CD3DX12_RESOURCE_BARRIER::Transition(
-			ssao->GetViewPosition(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-		)
-	};
-	cmdList->ResourceBarrier(2, viewToSRV);
-
-	ssao->SetViewSpaceInitialized(true);  
 }
 
 void DX12Core::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
@@ -1085,16 +827,6 @@ void DX12Core::SetBackgroundColor(const float* color)
 void DX12Core::SetPlayerPosForShadow(const XMFLOAT3& pos)
 {
 	playerCurrentPos = pos;
-}
-
-bool DX12Core::GetSSAOState() const
-{
-	return ssao->GetSSAOState();
-}
-
-void DX12Core::SetSSAOState(bool in)
-{
-	ssao->SetSSAOState(in);
 }
 
 ID3D12DescriptorHeap* DX12Core::GetDeferredSRVHeap() const

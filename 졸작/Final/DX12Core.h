@@ -1,7 +1,6 @@
 #pragma once
 #include "UploadBuffer.h"
 #include "UAVBuffer.h"
-#include "SSAO.h"
 
 struct FrameConstants
 {
@@ -84,9 +83,6 @@ public:
 	void SetupLights();
 	void RenderFullscreenQuad();
 
-	void RenderSSAO();
-	void RenderSSAOViewSpace();
-
 	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 	void RenderEnd();
 	void WaitSync();
@@ -108,10 +104,6 @@ public:
 
 	void SetBackgroundColor(const float* color);
 	void SetPlayerPosForShadow(const XMFLOAT3& pos);
-
-	// юс╫ц
-	bool GetSSAOState() const;
-	void SetSSAOState(bool in);
 
 	ID3D12DescriptorHeap* GetDeferredSRVHeap() const;
 
@@ -142,7 +134,6 @@ private:
 	// deferred rendering
 	ComPtr<ID3D12Resource> gBufferRT[4];
 	ComPtr<ID3D12DescriptorHeap> gBufferRTVHeap;
-	//ComPtr<ID3D12DescriptorHeap> gBufferSRVHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[4];
 	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[4];
 
@@ -158,11 +149,7 @@ private:
 	unique_ptr<UploadBuffer> deferredLightCB;
 	unique_ptr<UploadBuffer> forwardLightCB;
 	unique_ptr<UploadBuffer> shadowFrameCB;
-	unique_ptr<UploadBuffer> ssaoCB;
 	unique_ptr<UploadBuffer> fogCB;
-
-	unique_ptr<SSAO> ssao;
-	D3D12_GPU_DESCRIPTOR_HANDLE ssaoSRVHandle;
 
 	// Shadow Mapping resources
 	ComPtr<ID3D12Resource> shadowMapTexture;

@@ -65,11 +65,7 @@ void Engine::Render()
     sceneManager->RenderDeferred();  // 불투명한 것들만
     graphics->EndGBufferPass();
 
-    // 1.5. SSAO Pass (차폐도)
-    //graphics->RenderSSAO();
-    graphics->RenderSSAOViewSpace();
-
-    graphics->RenderSSAO();
+    // 1.5. SSAO Pass (차폐도) - 추후 재시도
 
     // 2. Deferred Lighting Pass  
     graphics->BeginLightingPass();
