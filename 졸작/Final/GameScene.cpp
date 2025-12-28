@@ -527,7 +527,9 @@ void GameScene::RenderSceneDeferred()
 				meshRenderer->RenderDeferred(*coreRef);
 				//objCount++;
 
-				if (hitOn)
+				auto animator = obj->GetComponent<Animator>();
+
+				if (hitOn && !animator)
 					obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
 			}
 		}
