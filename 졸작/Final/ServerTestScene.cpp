@@ -47,9 +47,9 @@ void ServerTestScene::InitializeLogic()
         auto transform = knight->AddComponent<Transform>();
         auto animator = knight->AddComponent<Animator>();
 
-        meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+        meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight6");
         transform->SetInitPosition(2.f, 0.f, 0.5f);
-        transform->SetRotation(-1.57f, 0.f, 0.f);
+        transform->SetRotation(0.f, 0.f, 0.f);
         transform->SetScale(0.01f, 0.01f, 0.01f);
         knight->SetCamera(cam.get());
         AddGameObject(knight);
