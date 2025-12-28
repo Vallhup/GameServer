@@ -38,6 +38,8 @@ using namespace std;
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
+#include <fmod.hpp>
+
 #include "Protocols/Enum.pb.h"
 #include "Protocols/Struct.pb.h"
 #include "Protocols/Protocol.pb.h"
@@ -49,6 +51,8 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "d3dcompiler.lib")
 
 #pragma comment(lib, "ws2_32.lib")
+
+#pragma comment(lib, "fmod_vc.lib")
 
 #if !defined(ASSERT)
 #include <cassert>

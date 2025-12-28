@@ -114,14 +114,17 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex\Include;C:\EffekseerForCpp170e\src\Effekseer;C:\EffekseerForCpp170e\src\EffekseerRendererDX12;C:\EffekseerForCpp170e\src\EffekseerRendererCommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex\Include;C:\EffekseerForCpp170e\src\Effekseer;C:\EffekseerForCpp170e\src\EffekseerRendererDX12;C:\EffekseerForCpp170e\src\EffekseerRendererCommon;C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\졸작\FMOD\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)DirectXTex\Lib;C:\EffekseerForCpp170e\out\build\x64-Debug\src\3rdParty\LLGI\src;C:\EffekseerForCpp170e\out\build\x64-Debug\src\Effekseer;C:\EffekseerForCpp170e\out\build\x64-Debug\src\EffekseerRendererDX12;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DirectXTex_debug.lib;Effekseer.lib;EffekseerRendererDX12.lib;LLGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)DirectXTex\Lib;C:\EffekseerForCpp170e\out\build\x64-Debug\src\3rdParty\LLGI\src;C:\EffekseerForCpp170e\out\build\x64-Debug\src\Effekseer;C:\EffekseerForCpp170e\out\build\x64-Debug\src\EffekseerRendererDX12;C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\졸작\FMOD\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTex_debug.lib;Effekseer.lib;EffekseerRendererDX12.lib;LLGI.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "$(ProjectDir)..\FMOD\lib\x64\fmod.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -134,16 +137,19 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex\Include;C:\EffekseerForCpp170e\src\Effekseer;C:\EffekseerForCpp170e\src\EffekseerRendererDX12;C:\EffekseerForCpp170e\src\EffekseerRendererCommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex\Include;C:\EffekseerForCpp170e\src\Effekseer;C:\EffekseerForCpp170e\src\EffekseerRendererDX12;C:\EffekseerForCpp170e\src\EffekseerRendererCommon;C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\졸작\FMOD\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)DirectXTex\Lib;C:\EffekseerForCpp170e\out\build\x64-Release\src\3rdParty\LLGI\src;C:\EffekseerForCpp170e\out\build\x64-Release\src\Effekseer;C:\EffekseerForCpp170e\out\build\x64-Release\src\EffekseerRendererDX12;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DirectXTex.lib;Effekseer.lib;EffekseerRendererDX12.lib;LLGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)DirectXTex\Lib;C:\EffekseerForCpp170e\out\build\x64-Release\src\3rdParty\LLGI\src;C:\EffekseerForCpp170e\out\build\x64-Release\src\Effekseer;C:\EffekseerForCpp170e\out\build\x64-Release\src\EffekseerRendererDX12;C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\졸작\FMOD\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTex.lib;Effekseer.lib;EffekseerRendererDX12.lib;LLGI.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "$(ProjectDir)..\FMOD\lib\x64\fmod.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animator.cpp" />
@@ -174,7 +180,7 @@
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ServerSquareScene.cpp" />
     <ClCompile Include="ServerTestScene.cpp" />
-    <ClCompile Include="SSAO.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -218,7 +224,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ServerSquareScene.h" />
     <ClInclude Include="ServerTestScene.h" />
-    <ClInclude Include="SSAO.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
@@ -254,10 +260,6 @@
     <None Include="..\Shaders\PBR.hlsli" />
     <None Include="..\Shaders\ShadowPS.hlsli" />
     <None Include="..\Shaders\ShadowVS.hlsli" />
-    <None Include="..\Shaders\SSAO.hlsli" />
-    <None Include="..\Shaders\SSAOViewSpacePS.hlsli" />
-    <None Include="..\Shaders\SSAOViewSpaceVS.hlsli" />
-    <None Include="..\Shaders\SSAO_old.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

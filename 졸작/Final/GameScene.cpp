@@ -13,6 +13,7 @@
 #include "EffectRenderer.h"
 #include "Engine.h"
 #include "NetworkManager.h"
+#include "SoundManager.h"
 
 GameScene::~GameScene() = default;
 
@@ -25,9 +26,9 @@ void GameScene::CreateKnightPool()
 		auto meshRenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight5");
+		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/knight6");
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
-		transform->SetRotation(-1.57f, 0.f, 0.f);
+		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 		knightPool.push_back(knight);
 		AddGameObject(knight);
@@ -255,7 +256,8 @@ void GameScene::CreateEffectSamples()
 		{u"Benediction", 1.f, 10.f, -10.5f},
 		{u"Atmosphere", 1.f, 10.f, -10.5f},
 		{u"CandleFire5", 14.2448f, 14.5f, -43.6773f},
-		{u"CandleFire5", -14.1011f, 14.5f, -43.6773f}
+		{u"CandleFire5", -14.1011f, 14.5f, -43.6773f},
+		{u"Dissolve", 2.f, 0.f, 0.f}
 	};
 
 	for (int i = 0; i < info.size(); ++i)
@@ -289,7 +291,6 @@ void GameScene::Release()
 
 void GameScene::Reset()
 {
-	// TODO: �� ������ ���� �ڵ� �߰�
 	knightPool.clear();
 	activePlayers.clear();
 	myPlayer = nullptr;
@@ -414,8 +415,8 @@ void GameScene::InitializeLogic()
 		auto animator = boss->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/boss");
 		transform->SetInitPosition(2.f, 0.f, 0.f);
-		transform->SetRotation(-1.57f, 0.f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
+		transform->SetRotation(0.f, 0.f, 0.f);
+		transform->SetScale(0.02f, 0.02f, 0.02f);
 		AddGameObject(boss);
 	}
 
@@ -448,7 +449,6 @@ void GameScene::InitializeLogic()
 
 void GameScene::UpdateScene(const float deltaTime)
 {
-	// ����Ʈ OFF
 	/*if (effectObjects.size() > 0 && GET(Input).GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
 
@@ -469,6 +469,9 @@ void GameScene::UpdateScene(const float deltaTime)
 		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
 	}
 
+	if (effectObjects.size() > 6 && GET(Input).GetKeyDown('7'))
+		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
+
 	if (effectObjects[2] && myPlayer) {
 		if (auto transform = effectObjects[2]->GetComponent<Transform>())
 		{
@@ -481,13 +484,25 @@ void GameScene::UpdateScene(const float deltaTime)
 	{
 		auto transform = myPlayer->GetComponent<Transform>();
 		coreRef->SetPlayerPosForShadow(transform->GetPosition());
+
+		SoundManager* sound = GET(Engine).GetSoundManager();
+
+		if (transform->GetPosition().z < -11.0f)
+		{
+			sound->PlayBGM("../Music/BGM/background.mp3");
+		}
+		else
+		{
+			if (GET(Input).GetKeyDown('0'))
+				sound->StopBGM();
+		}
 	}
 
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
 
-	if (cam)
-		cam->Update(*coreRef, deltaTime, gameObjects);
+	if (cam && myPlayer)
+		cam->Update(*coreRef, deltaTime, gameObjects, myPlayer);
 }
 
 void GameScene::RenderSceneDeferred()
@@ -512,7 +527,9 @@ void GameScene::RenderSceneDeferred()
 				meshRenderer->RenderDeferred(*coreRef);
 				//objCount++;
 
-				if (hitOn)
+				auto animator = obj->GetComponent<Animator>();
+
+				if (hitOn && !animator)
 					obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
 			}
 		}

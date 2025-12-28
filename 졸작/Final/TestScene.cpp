@@ -45,7 +45,7 @@ void TestScene::InitializeLogic()
 		auto animator = knight->AddComponent<Animator>();
 		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/boss");
 		transform->SetInitPosition(0.f, 0.f, 0.f);
-		transform->SetRotation(-1.57f, 0.f, 0.f);
+		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
 
 		coreRef->FlushCommandQueue();

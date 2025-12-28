@@ -31,7 +31,6 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     float3 V = normalize(cameraPosition - worldPos);
     
     float3 finalColor = float3(0, 0, 0);
-    float ssaoValue = ssaoMap.Sample(pointSampler, input.uv).r;
     
     for (int i = 0; i < lightCount; ++i)
     {
@@ -71,14 +70,6 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
         }
         
         finalColor += lightContribution;
-    }
-    
-    // Apply SSAO
-    if (ssaoValue != 0.0f)
-    {
-        float ssaoStrength = 0.8;
-        ssaoValue = lerp(1.0, ssaoValue, ssaoStrength);
-        finalColor *= ssaoValue;
     }
         
     // Add emission
