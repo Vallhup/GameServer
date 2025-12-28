@@ -67,13 +67,36 @@ void OutputEventSystem::ProcessSpawn(const OutputEvent& event)
 
 void OutputEventSystem::ProcessDespawn(const OutputEvent& event)
 {
-	// TODO : Despawn 처리
-	//
+	Entity entity = event.entity;
+
+	auto& framework = Framework::Get();
+	auto& ets = framework.entityToSession;
+
+	auto it = ets.find(event.entity);
+	if (it == ets.end()) return;
+	int sessionId = it->second;
+
 	// 1. Despawn된 Player의 정보를 모든 Player에게 전송
+	SendBuffer data = PacketFactory::SCRemovePakcet(sessionId);
+	framework.network.Broadcast(data.data());
+
 	// 2. Despawn된 Player의 Session 정보를 EntityToSession 맵에서 제거
+	ets.erase(it);
+
 	// 3. Despawn된 Player의 Entity를 ECS에서 제거
+	ecs.entityMng.Destroy(entity);
+
 	// 4. Despawn된 Player의 Entity에 할당된 모든 컴포넌트 제거
-	// 5. Despawn된 Player의 Entity ID를 재사용할 수 있도록 관리
+	ecs.GetStorage<Transform>().RemoveComponent(entity);
+	ecs.GetStorage<Velocity>().RemoveComponent(entity);
+	ecs.GetStorage<LocomotionState>().RemoveComponent(entity);
+	ecs.GetStorage<ActionIntent>().RemoveComponent(entity);
+	ecs.GetStorage<ActionState>().RemoveComponent(entity);
+	ecs.GetStorage<Health>().RemoveComponent(entity);
+	ecs.GetStorage<AnimationState>().RemoveComponent(entity);
+	ecs.GetStorage<AnimationRef>().RemoveComponent(entity);
+	ecs.GetStorage<Animator>().RemoveComponent(entity);
+	ecs.GetStorage<Collider>().RemoveComponent(entity);
 }
 
 void OutputEventSystem::ProcessMove(const OutputEvent& event)

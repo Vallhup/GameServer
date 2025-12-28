@@ -57,7 +57,7 @@
       <Filter>Network\Protocol\Output</Filter>
     </ClCompile>
     <ClCompile Include="NetworkHandler.cpp">
-      <Filter>Network\Event</Filter>
+      <Filter>Network\Protocol\Event</Filter>
     </ClCompile>
     <ClCompile Include="Protocols\Struct.pb.cc">
       <Filter>Network\Protocol\Output</Filter>
@@ -66,7 +66,7 @@
       <Filter>Network\Protocol\Output</Filter>
     </ClCompile>
     <ClCompile Include="EventQueue.cpp">
-      <Filter>Network\Event</Filter>
+      <Filter>Network\Protocol\Event</Filter>
     </ClCompile>
     <ClCompile Include="System.cpp">
       <Filter>ECS\System</Filter>
@@ -171,7 +171,7 @@
       <Filter>Utillity\Lock-Free Data Structure</Filter>
     </ClInclude>
     <ClInclude Include="Event.h">
-      <Filter>Network\Event</Filter>
+      <Filter>Network\Protocol\Event</Filter>
     </ClInclude>
     <ClInclude Include="Protocols\Protocol.pb.h">
       <Filter>Network\Protocol\Output</Filter>
@@ -180,7 +180,7 @@
       <Filter>Network\Protocol</Filter>
     </ClInclude>
     <ClInclude Include="NetworkHandler.h">
-      <Filter>Network\Event</Filter>
+      <Filter>Network\Protocol\Event</Filter>
     </ClInclude>
     <ClInclude Include="Protocols\Enum.pb.h">
       <Filter>Network\Protocol\Output</Filter>
@@ -189,7 +189,7 @@
       <Filter>Network\Protocol\Output</Filter>
     </ClInclude>
     <ClInclude Include="EventQueue.h">
-      <Filter>Network\Event</Filter>
+      <Filter>Network\Protocol\Event</Filter>
     </ClInclude>
     <ClInclude Include="json.hpp">
       <Filter>Script</Filter>
@@ -281,9 +281,6 @@
     <Filter Include="Utillity\Lock-Free Data Structure">
       <UniqueIdentifier>{d6317159-0fce-4d2f-8dc2-42d4c8a58c8b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Network\Event">
-      <UniqueIdentifier>{f49921b0-d0b4-4d52-8b4f-df8aa9fbc82e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Network\Protocol">
       <UniqueIdentifier>{943627e3-5e3f-4c52-bd33-ec1d1eb5b217}</UniqueIdentifier>
     </Filter>
@@ -316,6 +313,9 @@
     </Filter>
     <Filter Include="ECS\System\Logic\Action">
       <UniqueIdentifier>{d5cd995d-5b7c-4624-bbf2-fd1f8040e3f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Protocol\Event">
+      <UniqueIdentifier>{f49921b0-d0b4-4d52-8b4f-df8aa9fbc82e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

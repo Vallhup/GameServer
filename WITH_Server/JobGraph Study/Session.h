@@ -36,4 +36,6 @@ private:
 	RecvBuffer _recvBuffer;
 	std::deque<SendBuffer*> _sendQueue;
 	std::vector<asio::const_buffer> _gatherBufs;
+
+	std::atomic<bool> _isClosed;
 };

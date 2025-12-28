@@ -30,6 +30,7 @@ concept ProtoT = std::is_base_of_v<google::protobuf::MessageLite, T>;
 struct PacketFactory {
 	static SendBuffer SCLoginPacket(int sessionId);
 	static SendBuffer SCAddPacket(int sessionId, float x, float y, float z, float yaw);
+	static SendBuffer SCRemovePakcet(int sessionId);
 	static SendBuffer SCMovePacket(int sessionId, float x, float y, float z, float yaw);
 
 	template<ProtoT T>

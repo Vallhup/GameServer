@@ -20,6 +20,14 @@ SendBuffer PacketFactory::SCAddPacket(int sessionId, float x, float y, float z, 
 	return Serialize<Protocol::SC_ADD_PACKET>(PacketType::SC_ADD, add);
 }
 
+SendBuffer PacketFactory::SCRemovePakcet(int sessionId)
+{
+	Protocol::SC_REMOVE_PACKET remove;
+	remove.set_ssessionid(sessionId);
+
+	return Serialize<Protocol::SC_REMOVE_PACKET>(PacketType::SC_REMOVE, remove);
+}
+
 SendBuffer PacketFactory::SCMovePacket(int sessionId, float x, float y, float z, float yaw)
 {
 	Protocol::SC_MOVE_PACKET move;

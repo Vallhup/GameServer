@@ -11,7 +11,7 @@
 #include "ObjectPoolManager.h"
 
 Session::Session(tcp::socket s, int id) 
-	: _socket(std::move(s)), _strand(_socket.get_executor()), _id(id)
+	: _socket(std::move(s)), _strand(_socket.get_executor()), _id(id), _isClosed(false)
 {
 }
 
@@ -28,16 +28,20 @@ void Session::Start()
 
 void Session::Close()
 {
-	std::error_code ec;
-	_socket.shutdown(tcp::socket::shutdown_both, ec);
-	_socket.close(ec);
+	bool expected{ false };
+	if (_isClosed.compare_exchange_strong(expected, true))
+	{
+		std::error_code ec;
+		_socket.shutdown(tcp::socket::shutdown_both, ec);
+		_socket.close(ec);
 
-	DisconnectEvent dc{ _id };
-	Event ev{ EventType::EV_DISCONNECT, dc };
-	Framework::Get().eventQueue.push(ev);
+		DisconnectEvent dc{ _id };
+		Event ev{ EventType::EV_DISCONNECT, dc };
+		Framework::Get().eventQueue.push(ev);
 
-	if (ec)
-		std::cerr << "Socket close error: " << ec.message() << std::endl;
+		if (ec)
+			std::cerr << "Socket close error: " << ec.message() << std::endl;
+	}
 }
 
 void Session::Send(const void* data, uint16_t size)
@@ -114,8 +118,14 @@ void Session::InternalSend()
 			{
 				if (ec)
 				{
-					std::cerr << "Send error: " << ec.message() << std::endl;
-					Close();
+					if (ec != asio::error::eof and
+						ec != asio::error::operation_aborted)
+					{
+						std::cout << "Send Error on Session[" << _id << "] EC["
+							<< ec.message() << "]\n";
+					}
+
+					asio::dispatch(_strand, [this, self]() { Close(); });
 					return;
 				}
 
