@@ -114,16 +114,16 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex\Include;C:\EffekseerForCpp170e\src\Effekseer;C:\EffekseerForCpp170e\src\EffekseerRendererDX12;C:\EffekseerForCpp170e\src\EffekseerRendererCommon;C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\졸작\FMOD\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex\Include;C:\EffekseerForCpp170e\src\Effekseer;C:\EffekseerForCpp170e\src\EffekseerRendererDX12;C:\EffekseerForCpp170e\src\EffekseerRendererCommon;$(SolutionDir)Dependency\FMOD\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)DirectXTex\Lib;C:\EffekseerForCpp170e\out\build\x64-Debug\src\3rdParty\LLGI\src;C:\EffekseerForCpp170e\out\build\x64-Debug\src\Effekseer;C:\EffekseerForCpp170e\out\build\x64-Debug\src\EffekseerRendererDX12;C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\졸작\FMOD\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)DirectXTex\Lib;C:\EffekseerForCpp170e\out\build\x64-Debug\src\3rdParty\LLGI\src;C:\EffekseerForCpp170e\out\build\x64-Debug\src\Effekseer;C:\EffekseerForCpp170e\out\build\x64-Debug\src\EffekseerRendererDX12;$(SolutionDir)Dependency\FMOD\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTex_debug.lib;Effekseer.lib;EffekseerRendererDX12.lib;LLGI.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(ProjectDir)..\FMOD\lib\x64\fmod.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y "$(SolutionDir)Dependency\FMOD\lib\x64\fmod.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -137,18 +137,18 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex\Include;C:\EffekseerForCpp170e\src\Effekseer;C:\EffekseerForCpp170e\src\EffekseerRendererDX12;C:\EffekseerForCpp170e\src\EffekseerRendererCommon;C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\졸작\FMOD\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)DirectXTex\Include;C:\EffekseerForCpp170e\src\Effekseer;C:\EffekseerForCpp170e\src\EffekseerRendererDX12;C:\EffekseerForCpp170e\src\EffekseerRendererCommon;$(SolutionDir)Dependency\FMOD\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)DirectXTex\Lib;C:\EffekseerForCpp170e\out\build\x64-Release\src\3rdParty\LLGI\src;C:\EffekseerForCpp170e\out\build\x64-Release\src\Effekseer;C:\EffekseerForCpp170e\out\build\x64-Release\src\EffekseerRendererDX12;C:\Users\alwjw\OneDrive\바탕 화면\StudyFolder\GameServer\졸작\FMOD\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)DirectXTex\Lib;C:\EffekseerForCpp170e\out\build\x64-Release\src\3rdParty\LLGI\src;C:\EffekseerForCpp170e\out\build\x64-Release\src\Effekseer;C:\EffekseerForCpp170e\out\build\x64-Release\src\EffekseerRendererDX12;$(SolutionDir)Dependency\FMOD\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTex.lib;Effekseer.lib;EffekseerRendererDX12.lib;LLGI.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(ProjectDir)..\FMOD\lib\x64\fmod.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y "$(SolutionDir)Dependency\FMOD\lib\x64\fmod.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
