@@ -14,16 +14,17 @@ public:
 
     void DrawDebugUI();
 
-    bool IsEnabled() const { return mEnabled; }
-    void SetEnabled(bool enabled) { mEnabled = enabled; }
+    bool IsEnabled() const { return enabled; }
+    void SetEnabled(bool enabled) { enabled = enabled; }
 
 private:
     ImGuiManager() = default;
     ~ImGuiManager() = default;
 
-    ComPtr<ID3D12DescriptorHeap> mSrvHeap;
-    DX12Core* mCore = nullptr;
-    bool mEnabled = true;
-    bool mShowDemoWindow = false;
-    bool mShowPerformance = true;
+    ComPtr<ID3D12DescriptorHeap> srvHeap;
+    DX12Core* coreRef = nullptr;
+    bool enabled = true;
+    bool showDemoWindow = false;
+    bool showPerformance = true;
+    bool showLightEditor = true;
 };
