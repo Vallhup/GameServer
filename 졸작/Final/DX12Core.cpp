@@ -585,7 +585,7 @@ void DX12Core::SetupLights()
 	forwardLightData = { {0, 0, -1}, 0, {1, 1, 1}, 0.9f };
 
 	// Deferred Light �ʱⰪ
-	deferredLightData.lightCount = 25;
+	deferredLightData.lightCount = 23;
 
 	deferredLightData.lights[0] = {
 		{0, 0, -1}, 0,
@@ -607,28 +607,14 @@ void DX12Core::SetupLights()
 		{0, 0, 0}
 	};
 
-	deferredLightData.lights[3] = {
-		{27.f, 29.f, -70.0f}, 2000.0f,
-		{0.074f, 0, 1}, 0.15f,
-		1,
-		{0, 0, 0}
-	};
-
-	deferredLightData.lights[4] = {
-		{0, 0, -1}, 0,
-		{1, 1, 1}, 0.2f,
-		0,
-		{0, 0, 0}
-	};
-
-	// Point Lights (5~24)
+	// Point Lights (3~22)
 	float spacing = 15.0f;
 	float height = 4.0f;
 	float leftX = -7.0f;
 	float rightX = 7.0f;
 
-	for (int i = 5; i < 25; ++i) {
-		int lightIndex = i - 5;
+	for (int i = 3; i < 23; ++i) {
+		int lightIndex = i - 3;
 		int rowIndex = lightIndex % 10;
 		bool isLeftRow = (lightIndex < 10);
 

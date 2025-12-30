@@ -125,11 +125,26 @@ void ImGuiManager::DrawDebugUI()
             }
 
             // Main Directional Light (Deferred)
-            if (ImGui::CollapsingHeader("Main Directional", ImGuiTreeNodeFlags_DefaultOpen))
+            if (ImGui::CollapsingHeader("Main Directional 1", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                ImGui::SliderFloat3("Direction##D0", &deferred.lights[0].position.x, -1.0f, 1.0f);
-                ImGui::ColorEdit3("Color##D0", &deferred.lights[0].color.x);
-                ImGui::SliderFloat("Intensity##D0", &deferred.lights[0].intensity, 0.0f, 2.0f);
+                ImGui::SliderFloat3("Direction##D1", &deferred.lights[0].position.x, -1.0f, 1.0f);
+                ImGui::ColorEdit3("Color##D1", &deferred.lights[0].color.x);
+                ImGui::SliderFloat("Intensity##D1", &deferred.lights[0].intensity, 0.0f, 2.0f);
+            }
+
+            if (ImGui::CollapsingHeader("Main Directional 2", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                ImGui::SliderFloat3("Direction##D2", &deferred.lights[1].position.x, -1.0f, 1.0f);
+                ImGui::ColorEdit3("Color##D2", &deferred.lights[1].color.x);
+                ImGui::SliderFloat("Intensity##D2", &deferred.lights[1].intensity, 0.0f, 2.0f);
+            }
+
+            if (ImGui::CollapsingHeader("Point Light 1", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                ImGui::SliderFloat3("Position##P1", &deferred.lights[2].position.x, -100.0f, 100.0f);
+                ImGui::SliderFloat("Range##P1", &deferred.lights[2].range, 1.0f, 3000.0f);
+                ImGui::ColorEdit3("Color##P1", &deferred.lights[2].color.x);
+                ImGui::SliderFloat("Intensity##P1", &deferred.lights[2].intensity, 0.0f, 2.0f);
             }
 
             // 업데이트

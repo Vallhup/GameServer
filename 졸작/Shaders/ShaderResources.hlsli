@@ -55,7 +55,7 @@ cbuffer DeferredLightCB : register(b3)
         float intensity;
         int type;
         float3 lightPadding;
-    } lights[25];
+    } lights[23];
 };
 
 cbuffer ForwardLightCB : register(b4)

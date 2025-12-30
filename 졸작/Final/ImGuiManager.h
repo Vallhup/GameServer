@@ -15,7 +15,7 @@ public:
     void DrawDebugUI();
 
     bool IsEnabled() const { return enabled; }
-    void SetEnabled(bool enabled) { enabled = enabled; }
+    void SetEnabled(bool in) { enabled = in; }
 
 private:
     ImGuiManager() = default;

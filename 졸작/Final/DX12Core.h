@@ -31,7 +31,7 @@ struct LightData {
 struct DeferredLightConstants {
 	int lightCount;
 	XMFLOAT3 padding;
-	LightData lights[25]; // 조명 60개부터 렉걸린다 이유 해결 안됨
+	LightData lights[23]; // 조명 60개부터 렉걸린다 이유 해결 안됨
 };
 
 struct ForwardLightConstants {
