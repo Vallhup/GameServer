@@ -26,35 +26,46 @@ void MainCharacter::BasicMove()
 	auto& input = GET(Input);
 
 	static bool wasMoving = false;
+	static bool wasRunning = false;
+
 	bool isMoving = ranges::any_of(
 		initializer_list{ 'W', 'S', 'A', 'D' },
 		[&input](int k) { return input.GetKey(k); }
 	);
 
+	bool isRunning = input.GetKey(VK_SHIFT) && isMoving;
+
 	int inputX{ 0 };
 	int inputZ{ 0 };
 
-	if (input.GetKey('W')) inputZ -= 1;
-	if (input.GetKey('S')) inputZ += 1;
-	if (input.GetKey('D')) inputX -= 1;
-	if (input.GetKey('A')) inputX += 1;
+	if (input.GetKey('W')) inputZ -= isRunning ? 2 : 1;
+	if (input.GetKey('S')) inputZ += isRunning ? 2 : 1;
+	if (input.GetKey('D')) inputX -= isRunning ? 2 : 1;
+	if (input.GetKey('A')) inputX += isRunning ? 2 : 1;
 
 	float yaw = camera->GetRadianYaw();
 	input.SendMovePacket(inputX, inputZ, yaw);
 
 	auto animator = GetComponent<Animator>();
 	if (animator) {
-		if (isMoving && !wasMoving) {
-			animator->TransitionToAnimation(1, 0.3f);
-			currentAnimState = 1;
-		}
-		else if (!isMoving && wasMoving) {
+		if (!isMoving && wasMoving) {
 			animator->TransitionToAnimation(0, 0.3f);
 			currentAnimState = 0;
+		}
+		else if (isMoving && !wasMoving) {
+			int anim = isRunning ? 1 : 2;
+			animator->TransitionToAnimation(anim, 0.3f);
+			currentAnimState = anim;
+		}
+		else if (isMoving && (isRunning != wasRunning)) {
+			int anim = isRunning ? 1 : 2;
+			animator->TransitionToAnimation(anim, 0.3f);
+			currentAnimState = anim;
 		}
 	}
 
 	wasMoving = isMoving;
+	wasRunning = isRunning;
 }
 
 void MainCharacter::BasicAttack()
