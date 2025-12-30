@@ -31,7 +31,7 @@ struct LightData {
 struct DeferredLightConstants {
 	int lightCount;
 	XMFLOAT3 padding;
-	LightData lights[25]; // 조명 60개부터 렉걸린다 이유 해결 안됨
+	LightData lights[23]; // 조명 60개부터 렉걸린다 이유 해결 안됨
 };
 
 struct ForwardLightConstants {
@@ -81,6 +81,7 @@ public:
 
 	void BeginLightingPass();
 	void SetupLights();
+	void UpdateLights();
 	void RenderFullscreenQuad();
 
 	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
@@ -106,6 +107,9 @@ public:
 	void SetPlayerPosForShadow(const XMFLOAT3& pos);
 
 	ID3D12DescriptorHeap* GetDeferredSRVHeap() const;
+
+	DeferredLightConstants& GetDeferredLightData() { return deferredLightData; }
+	ForwardLightConstants& GetForwardLightData() { return forwardLightData; }
 
 private:
 	// 고정
@@ -160,4 +164,6 @@ private:
 	static const UINT SHADOW_MAP_SIZE = 2048;
 
 	XMFLOAT3 playerCurrentPos = { 0, 0, 0 };
+	DeferredLightConstants deferredLightData = {};
+	ForwardLightConstants forwardLightData = {};
 };

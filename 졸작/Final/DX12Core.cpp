@@ -581,79 +581,63 @@ void DX12Core::BeginLightingPass()
 
 void DX12Core::SetupLights()
 {
-	// Set Forward Lights
-	ForwardLightConstants light = { {0, 0, 1}, 0, {1, 1, 1}, 0.9f };
-	GetForwardLightCB()->CopyData(&light, sizeof(ForwardLightConstants));
+	// Forward Light 초기값
+	forwardLightData = { {0, 0, -1}, 0, {1, 1, 1}, 0.9f };
 
-	// Set Deferred Lights (3 Directional + 22 Point Lights)
-	static bool lightsInitialized = false;
-	static DeferredLightConstants lightData = {};
-	if (!lightsInitialized) {
-		lightData.lightCount = 25;
+	// Deferred Light 초기값
+	deferredLightData.lightCount = 23;
 
-		lightData.lights[0] = {
-			{0, 0, -1}, 0,               // direction,  range
-			{1, 1, 1}, 0.2f,             // color, intensity
-			0,                           // 0: directional / 1: point
-			{0, 0, 0}                    // padding
+	deferredLightData.lights[0] = {
+		{0, 0, -1}, 0,
+		{1, 1, 1}, 0.2f,
+		0,
+		{0, 0, 0}
+	};
+	deferredLightData.lights[1] = {
+		{0, 0, 1}, 0,
+		{1, 1, 1}, 0.25f,
+		0,
+		{0, 0, 0}
+	};
+
+	deferredLightData.lights[2] = {
+		{-27.f, 29.f, -70.0f}, 2000.0f,
+		{0.074f, 0, 1}, 0.15f,
+		1,
+		{0, 0, 0}
+	};
+
+	// Point Lights (3~22)
+	float spacing = 15.0f;
+	float height = 4.0f;
+	float leftX = -7.0f;
+	float rightX = 7.0f;
+
+	for (int i = 3; i < 23; ++i) {
+		int lightIndex = i - 3;
+		int rowIndex = lightIndex % 10;
+		bool isLeftRow = (lightIndex < 10);
+
+		float x = isLeftRow ? leftX : rightX;
+		float z = -(rowIndex * spacing);
+
+		XMFLOAT3 color = { 1.0f, 0.25f, 0.0f };
+
+		deferredLightData.lights[i] = {
+			{x, height, z + 70.0f}, 10.0f,
+			color, 1.0f,
+			1,
+			{0, 0, 0}
 		};
-		lightData.lights[1] = {
-			{0, 0, 1}, 0,              
-			{1, 1, 1}, 0.25f,          
-			0,                         
-			{0, 0, 0}                  
-		};
-
-		lightData.lights[2] = {
-			{-27.f, 29.f, -70.0f}, 2000.0f,               
-			{0.074, 0, 1}, 0.15f,       
-			1,                          
-			{0, 0, 0}                   
-		};
-
-		lightData.lights[3] = {
-			{27.f, 29.f, -70.0f}, 2000.0f,              
-			{0.074, 0, 1}, 0.15f,       
-			1,                          
-			{0, 0, 0}                   
-		};
-
-		lightData.lights[4] = {
-			{0, 0, -1}, 0,         
-			{1, 1, 1}, 0.2f,       
-			0,                     
-			{0, 0, 0}              
-		};
-
-		// Two lines of 10 Point Lights each
-		float spacing = 15.0f;
-		float height = 4.0;          
-		float leftX = -7.0f;         
-		float rightX = 7.0f;         
-
-		for (int i = 5; i < 25; ++i) {
-			int lightIndex = i - 5;   
-			int rowIndex = lightIndex % 10;  
-			bool isLeftRow = (lightIndex < 10);  
-
-			float x = isLeftRow ? leftX : rightX;
-			float z = -(rowIndex * spacing); 
-
-			XMFLOAT3 color = isLeftRow ?
-				XMFLOAT3{ 1.0f, 0.25f, 0.0f } :  
-				XMFLOAT3{ 1.0f, 0.25f, 0.0f };   
-
-			lightData.lights[i] = {
-				{x, height, z + 70.0f}, 10.0f,    
-				color, 1.0f,             
-				1,                      
-				{0, 0, 0}              
-			};
-		}
-
-		lightsInitialized = true;
 	}
-	GetDeferredLightCB()->CopyData(&lightData, sizeof(DeferredLightConstants));
+
+	UpdateLights();
+}
+
+void DX12Core::UpdateLights()
+{
+	GetForwardLightCB()->CopyData(&forwardLightData, sizeof(ForwardLightConstants));
+	GetDeferredLightCB()->CopyData(&deferredLightData, sizeof(DeferredLightConstants));
 }
 
 void DX12Core::RenderFullscreenQuad()

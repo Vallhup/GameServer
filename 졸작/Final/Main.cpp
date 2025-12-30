@@ -2,9 +2,12 @@
 #include "Input.h"
 #include "Timer.h"
 #include "Engine.h"
+#include "imgui.h"
+#include "ImGuiManager.h"
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 static void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd);
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -81,6 +84,19 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    bool imguiWantsKeyboard = false;
+    bool imguiWantsMouse = false;
+
+    if (ImGui::GetCurrentContext() != nullptr)
+    {
+        if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+            return true;
+
+        ImGuiIO& io = ImGui::GetIO();
+        imguiWantsKeyboard = io.WantCaptureKeyboard;
+        imguiWantsMouse = io.WantCaptureMouse;
+    }
+
     switch (message)
     {
     case WM_KEYDOWN:
@@ -88,34 +104,48 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             DestroyWindow(hWnd);
             return 0;
         }
+        if (wParam == VK_F1 && ImGui::GetCurrentContext() != nullptr) {
+            GET(ImGuiManager).SetEnabled(!GET(ImGuiManager).IsEnabled());
+            return 0;
+        }
+        [[fallthrough]];
     case WM_KEYUP:
-        GET(Input).SetKey(static_cast<size_t>(wParam), static_cast<bool>(WM_KEYUP - message));
+        if (!imguiWantsKeyboard)
+            GET(Input).SetKey(static_cast<size_t>(wParam), static_cast<bool>(WM_KEYUP - message));
         return 0;
+
     case WM_MOUSEMOVE:
-        GET(Input).SetMousePosition(XMFLOAT2(static_cast<float>(LOWORD(lParam)), static_cast<float>(HIWORD(lParam))));
+        if (!imguiWantsMouse)
+            GET(Input).SetMousePosition(XMFLOAT2(static_cast<float>(LOWORD(lParam)), static_cast<float>(HIWORD(lParam))));
         return 0;
+
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
-        GET(Input).SetMouseButton(MouseButton::LEFT, static_cast<bool>(WM_LBUTTONUP - message));
+        if (!imguiWantsMouse)
+            GET(Input).SetMouseButton(MouseButton::LEFT, static_cast<bool>(WM_LBUTTONUP - message));
         return 0;
+
     case WM_RBUTTONDOWN:
     case WM_RBUTTONUP:
-        GET(Input).SetMouseButton(MouseButton::RIGHT, static_cast<bool>(WM_RBUTTONUP - message));
+        if (!imguiWantsMouse)
+            GET(Input).SetMouseButton(MouseButton::RIGHT, static_cast<bool>(WM_RBUTTONUP - message));
         return 0;
+
     case WM_MOUSEWHEEL:
-    {
-        const short delta = GET_WHEEL_DELTA_WPARAM(wParam); 
-        GET(Input).SetMouseWheelDelta((int)delta);          
+        if (!imguiWantsMouse) {
+            const short delta = GET_WHEEL_DELTA_WPARAM(wParam);
+            GET(Input).SetMouseWheelDelta((int)delta);
+        }
         return 0;
-    }
+
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
         BeginPaint(hWnd, &ps);
-  
         EndPaint(hWnd, &ps);
     }
     break;
+
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

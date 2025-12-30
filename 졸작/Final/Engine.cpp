@@ -12,6 +12,8 @@
 #include "Input.h"
 #include "SoundManager.h"
 
+#include "ImGuiManager.h"
+
 Engine& Engine::Get()
 {
     static Engine engine;
@@ -27,6 +29,8 @@ void Engine::Initialize(HWND hwnd)
 
     graphics = make_unique<DX12Core>();
     graphics->Initialize(mHwnd);
+
+    GET(ImGuiManager).Initialize(mHwnd, *graphics);
 
     sceneManager = make_unique<SceneManager>();
     sceneManager->Initialize(*graphics);
@@ -56,6 +60,8 @@ void Engine::Render()
 {
     graphics->RenderBegin(viewport, scissorRect);
 
+    GET(ImGuiManager).BeginFrame();
+
     graphics->BeginShadowPass();
     sceneManager->RenderShadow();
     graphics->EndShadowPass();
@@ -77,6 +83,9 @@ void Engine::Render()
     sceneManager->RenderEffects();   // 이펙트를 먼저 그려야 머리카락이 안없어짐
     sceneManager->RenderForward();   // 머리카락 등 투명한 것들
 
+    GET(ImGuiManager).DrawDebugUI();
+    GET(ImGuiManager).EndFrame(graphics->GetGraphicsCmdList());
+
     graphics->RenderEnd();
 
     ShowFps();
@@ -84,6 +93,8 @@ void Engine::Render()
 
 void Engine::Shutdown()
 {
+    GET(ImGuiManager).Shutdown();
+
     if (sceneManager && sceneManager->GetCurrentScene())
     {
         auto camera = sceneManager->GetCurrentScene()->GetCamera();

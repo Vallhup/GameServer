@@ -44,7 +44,7 @@ void LoginScene::InitializeLogic()
 		auto meshrenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
-		meshrenderer->SetMesh(*coreRef, L"../FBXOutput/knight6");
+		meshrenderer->SetMesh(*coreRef, L"../Assets/FBXModel/knight6");
 		transform->SetInitPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
@@ -63,7 +63,7 @@ void LoginScene::InitializeLogic()
 		auto transform = dragon->AddComponent<Transform>();
 		auto animator = dragon->AddComponent<Animator>();
 
-		meshRenderer->SetMesh(*coreRef, L"../FBXOutput/Dragon");
+		meshRenderer->SetMesh(*coreRef, L"../Assets/FBXModel/Dragon");
 		transform->SetInitPosition(2.f, 0.f, 0.5f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.1f, 0.1f, 0.1f);

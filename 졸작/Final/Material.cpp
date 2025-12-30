@@ -54,7 +54,7 @@ void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandL
     for (auto& infos : textureInfos)
     {
         *infos.texIndex = infos.path.empty() ? 0xFFFFFFFF :
-            RegisterTexture(device, cmdList, L"../FBXOutput/" + wstring(infos.path.begin(), infos.path.end()));
+            RegisterTexture(device, cmdList, L"../Assets/FBXModel/" + wstring(infos.path.begin(), infos.path.end()));
     }
 
     materials.push_back(gpuMaterial);
