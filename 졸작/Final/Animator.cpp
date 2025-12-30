@@ -10,7 +10,7 @@ void Animator::Update(float deltaTime)
     if (mAnimations.empty()) return;
 
     if (mIsBlending) {
-        blendTime += deltaTime;
+        blendTime += deltaTime * animationSpeed;
         blendRatio = blendTime / blendDuration;
 
         if (blendRatio >= 1.0f) {
@@ -34,7 +34,7 @@ void Animator::UpdateCurrentAnimation(float deltaTime)
         mCurrentAnimOffset += mAnimations[i].keyFrames.size();
     }
 
-    mUpdateTime += deltaTime;
+    mUpdateTime += deltaTime * animationSpeed;
     const auto& animClip = mAnimations[mClipIndex];
 
     if (mUpdateTime >= animClip.duration) {
@@ -67,7 +67,7 @@ void Animator::UpdatePrevAnimation(float deltaTime)
         mPrevAnimOffset += mAnimations[i].keyFrames.size();
     }
 
-    mPrevUpdateTime += deltaTime;
+    mPrevUpdateTime += deltaTime * animationSpeed;
 
     const auto& animClip = mAnimations[mPrevClipIndex];
 

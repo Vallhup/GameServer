@@ -1,6 +1,7 @@
 #pragma once
 
 class DX12Core;
+class MainCharacter;
 
 class ImGuiManager
 {
@@ -16,6 +17,7 @@ public:
 
     bool IsEnabled() const { return enabled; }
     void SetEnabled(bool in) { enabled = in; }
+    void SetMyPlayer(MainCharacter* player) { myPlayer = player; }
 
 private:
     ImGuiManager() = default;
@@ -27,4 +29,7 @@ private:
     bool showDemoWindow = false;
     bool showPerformance = true;
     bool showLightEditor = true;
+
+    bool showAnimationEditor = true;
+    MainCharacter* myPlayer = nullptr;
 };

@@ -52,6 +52,9 @@ public:
     UploadBuffer* GetOffsetBuffer() const { return mOffsetBuffer.get(); }
     UAVBuffer* GetFinalBuffer() const { return mFinalBuffer.get(); }
 
+    float GetAnimationSpeed() const { return animationSpeed; }
+    void SetAnimationSpeed(float speed) { animationSpeed = speed; }
+
 private:
     void CreateBuffers(DX12Core& core);
 
@@ -84,4 +87,6 @@ private:
 
     bool mIsInitialized = false;
     bool mIsBlending = false;
+
+    float animationSpeed = 1.0f;
 };

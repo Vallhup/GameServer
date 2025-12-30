@@ -78,9 +78,9 @@ int wmain(int argc, wchar_t* argv[])
     //    }
     //}
 
-    wstring inputFbx = L"../FBX/boss_WalkForward.fbx";          // 입력 FBX 파일
+    wstring inputFbx = L"../FBX/knight6_Animation_Walk.fbx";          // 입력 FBX 파일
     wstring fbxDir = L"../FBX";
-    wstring outputBase = L"../FBXOutput/boss_WalkForward";           // 출력 기본 이름
+    wstring outputBase = L"../FBXOutput/knight6_Animation_Walk";           // 출력 기본 이름
 
     FBXLoader loader;
     if (!loader.LoadFbx(inputFbx)) {

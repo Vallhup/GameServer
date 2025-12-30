@@ -14,6 +14,7 @@
 #include "Engine.h"
 #include "NetworkManager.h"
 #include "SoundManager.h"
+#include "ImGuiManager.h"
 
 GameScene::~GameScene() = default;
 
@@ -344,6 +345,9 @@ void GameScene::HandlePacket(const PacketHeader* data)
 			{
 				myPlayer = player;
 				myPlayer->SetCamera(cam.get());
+
+				GET(ImGuiManager).SetMyPlayer(myPlayer.get());
+
 				OutputDebugStringA("My character activated!\n");
 			}
 		}

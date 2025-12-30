@@ -5,6 +5,8 @@
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
+#include "MainCharacter.h"
+#include "Animator.h"
 
 ImGuiManager& ImGuiManager::Get()
 {
@@ -119,32 +121,32 @@ void ImGuiManager::DrawDebugUI()
             // Forward Light
             if (ImGui::CollapsingHeader("Forward Light", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                ImGui::SliderFloat3("Direction##F", &forward.direction.x, -1.0f, 1.0f);
-                ImGui::ColorEdit3("Color##F", &forward.color.x);
-                ImGui::SliderFloat("Intensity##F", &forward.intensity, 0.0f, 2.0f);
+                ImGui::SliderFloat3("Direction##For", &forward.direction.x, -1.0f, 1.0f);
+                ImGui::ColorEdit3("Color##For", &forward.color.x);
+                ImGui::SliderFloat("Intensity##For", &forward.intensity, 0.0f, 2.0f);
             }
 
             // Main Directional Light (Deferred)
             if (ImGui::CollapsingHeader("Main Directional 1", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                ImGui::SliderFloat3("Direction##D1", &deferred.lights[0].position.x, -1.0f, 1.0f);
-                ImGui::ColorEdit3("Color##D1", &deferred.lights[0].color.x);
-                ImGui::SliderFloat("Intensity##D1", &deferred.lights[0].intensity, 0.0f, 2.0f);
+                ImGui::SliderFloat3("Direction##Dir1", &deferred.lights[0].position.x, -1.0f, 1.0f);
+                ImGui::ColorEdit3("Color##Dir1", &deferred.lights[0].color.x);
+                ImGui::SliderFloat("Intensity##Dir1", &deferred.lights[0].intensity, 0.0f, 2.0f);
             }
 
             if (ImGui::CollapsingHeader("Main Directional 2", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                ImGui::SliderFloat3("Direction##D2", &deferred.lights[1].position.x, -1.0f, 1.0f);
-                ImGui::ColorEdit3("Color##D2", &deferred.lights[1].color.x);
-                ImGui::SliderFloat("Intensity##D2", &deferred.lights[1].intensity, 0.0f, 2.0f);
+                ImGui::SliderFloat3("Direction##Dir2", &deferred.lights[1].position.x, -1.0f, 1.0f);
+                ImGui::ColorEdit3("Color##Dir2", &deferred.lights[1].color.x);
+                ImGui::SliderFloat("Intensity##Dir2", &deferred.lights[1].intensity, 0.0f, 2.0f);
             }
 
             if (ImGui::CollapsingHeader("Point Light 1", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                ImGui::SliderFloat3("Position##P1", &deferred.lights[2].position.x, -100.0f, 100.0f);
-                ImGui::SliderFloat("Range##P1", &deferred.lights[2].range, 1.0f, 3000.0f);
-                ImGui::ColorEdit3("Color##P1", &deferred.lights[2].color.x);
-                ImGui::SliderFloat("Intensity##P1", &deferred.lights[2].intensity, 0.0f, 2.0f);
+                ImGui::SliderFloat3("Position##Po1", &deferred.lights[2].position.x, -100.0f, 100.0f);
+                ImGui::SliderFloat("Range##Po1", &deferred.lights[2].range, 1.0f, 3000.0f);
+                ImGui::ColorEdit3("Color##Po1", &deferred.lights[2].color.x);
+                ImGui::SliderFloat("Intensity##Po1", &deferred.lights[2].intensity, 0.0f, 2.0f);
             }
 
             // 업데이트
@@ -152,6 +154,24 @@ void ImGuiManager::DrawDebugUI()
         }
         ImGui::End();
     }
+
+    if (showAnimationEditor && myPlayer)
+    {
+        ImGui::SetNextWindowPos(ImVec2(10, 270), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(250, 380), ImGuiCond_FirstUseEver);
+
+        if (ImGui::Begin("Animation Editor", &showAnimationEditor))
+        {
+            if (auto animator = myPlayer->GetComponent<Animator>())
+            {
+                float speed = animator->GetAnimationSpeed();
+                if (ImGui::SliderFloat("Speed##myPlayer", &speed, 0.1f, 10.0f))
+                    animator->SetAnimationSpeed(speed);
+            }
+        }
+        ImGui::End();
+    }
+
 
     if (showDemoWindow)
     {
