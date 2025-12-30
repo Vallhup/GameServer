@@ -111,9 +111,7 @@ void EventSystem::ProcessMove(const Event& event)
 			else
 			{
 				loco->isMoving = true;
-				XMVECTOR lengthVec = XMVector3Length(dir);
-				float length = XMVectorGetX(lengthVec);
-				dir = XMVectorScale(XMVector3Normalize(dir), length);
+				dir = XMVector3Normalize(dir);
 			}
 
 			XMStoreFloat3(&velocity->dir, dir);
