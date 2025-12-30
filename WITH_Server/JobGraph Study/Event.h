@@ -41,7 +41,9 @@ struct MoveEvent {
 
 struct ActionEvent {
 	int sessionId;
-	bool isAttacking;
+	bool attack;
+	bool dodge;
+	bool parry;
 };
 
 using EventPayload = std::variant<

@@ -1,6 +1,17 @@
 digraph JobGraph {
+  "class ActionStateSystem" -> "class ActionTimeSystem";
+  "class ActionStateSystem" -> "class ActionTransitionSystem";
+  "class ActionStateSystem" -> "class AnimationStateSystem";
+  "class ActionStateSystem" -> "class AnimationTimeSystem";
+  "class ActionTimeSystem" -> "class ActionTransitionSystem";
+  "class ActionTimeSystem" -> "class AnimationStateSystem";
+  "class ActionTimeSystem" -> "class AnimationTimeSystem";
+  "class ActionTransitionSystem" -> "class MovementSystem";
+  "class ActionTransitionSystem" -> "class AnimationStateSystem";
+  "class ActionTransitionSystem" -> "class AnimationTimeSystem";
   "class MovementSystem" -> "class ColliderUpdateSystem";
   "class AnimationStateSystem" -> "class AnimationTimeSystem";
+  "class AnimationStateSystem" -> "class AnimationRefSystem";
   "class AnimationTimeSystem" -> "class AnimationRefSystem";
   "class AnimationRefSystem" -> "class ColliderUpdateSystem";
   "class AnimationRefSystem" -> "class CollisionSystem";

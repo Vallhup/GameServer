@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="ActionStateSystem.cpp" />
     <ClCompile Include="ActionTimeSystem.cpp" />
+    <ClCompile Include="ActionTransitionSystem.cpp" />
     <ClCompile Include="AnimationManager.cpp" />
     <ClCompile Include="AnimationRefSystem.cpp" />
     <ClCompile Include="AnimationStateSystem.cpp" />
@@ -168,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="ActionStateSystem.h" />
     <ClInclude Include="ActionTimeSystem.h" />
+    <ClInclude Include="ActionTransitionSystem.h" />
     <ClInclude Include="AnimationManager.h" />
     <ClInclude Include="AnimationRefSystem.h" />
     <ClInclude Include="AnimationStateSystem.h" />

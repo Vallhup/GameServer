@@ -1,23 +1,25 @@
 #include "SystemManager.h"
-#include "EventSystem.h"
 #include "MovementSystem.h"
 #include "AnimationStateSystem.h"
 #include "AnimationTimeSystem.h"
 #include "AnimationRefSystem.h"
 #include "ColliderUpdateSystem.h"
 #include "CollisionSystem.h"
-#include "OutputEventSystem.h"
+#include "ActionStateSystem.h"
+#include "ActionTimeSystem.h"
+#include "ActionTransitionSystem.h"
 
 void SystemManager::Initalize(ECS& ecs, JobGraph& graph)
 {
-	//RegisterSystem<EventSystem>(ecs, 0);
-	RegisterSystem<MovementSystem>(ecs, 1);
-	RegisterSystem<AnimationStateSystem>(ecs, 2);
-	RegisterSystem<AnimationTimeSystem>(ecs, 3);
-	RegisterSystem<AnimationRefSystem>(ecs, 4);
-	RegisterSystem<ColliderUpdateSystem>(ecs, 5);
-	RegisterSystem<CollisionSystem>(ecs, 6);
-	//RegisterSystem<OutputEventSystem>(ecs, 7);
+	RegisterSystem<ActionStateSystem>(ecs, 0);
+	RegisterSystem<ActionTimeSystem>(ecs, 1);
+	RegisterSystem<ActionTransitionSystem>(ecs, 2);
+	RegisterSystem<MovementSystem>(ecs, 3);
+	RegisterSystem<AnimationStateSystem>(ecs, 4);
+	RegisterSystem<AnimationTimeSystem>(ecs, 5);
+	RegisterSystem<AnimationRefSystem>(ecs, 6);
+	RegisterSystem<ColliderUpdateSystem>(ecs, 7);
+	RegisterSystem<CollisionSystem>(ecs, 8);
 }
 
 const std::vector<System*> SystemManager::GetSystems() const

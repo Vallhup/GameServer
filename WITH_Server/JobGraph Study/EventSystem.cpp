@@ -130,6 +130,8 @@ void EventSystem::ProcessAction(const Event& event)
 
 	if(auto* actionIntent = ecs.GetStorage<ActionIntent>().GetComponent(entity))
 	{
-		actionIntent->attack = p->isAttacking;
+		actionIntent->attack = p->attack;
+		actionIntent->dodge = p->dodge;
+		actionIntent->parry = p->parry;
 	}
 }

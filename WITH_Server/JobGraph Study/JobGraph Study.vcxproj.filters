@@ -108,6 +108,9 @@
     <ClCompile Include="ActionTimeSystem.cpp">
       <Filter>ECS\System\Logic\Action</Filter>
     </ClCompile>
+    <ClCompile Include="ActionTransitionSystem.cpp">
+      <Filter>ECS\System\Logic\Action</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Job.h">
@@ -239,6 +242,9 @@
     </ClInclude>
     <ClInclude Include="asio.hpp">
       <Filter>Utillity</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionTransitionSystem.h">
+      <Filter>ECS\System\Logic\Action</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
