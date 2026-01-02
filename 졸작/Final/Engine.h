@@ -16,10 +16,6 @@ public:
     void Shutdown();  
     void ShowFps();
 
-    HWND GetHWND() const { return mHwnd; }
-
-public:
-    // Server Test
     SceneManager* GetSceneManager() { return sceneManager.get(); }
     NetworkManager* GetNetworkManager() { return networkManager.get(); }
     SoundManager* GetSoundManager() { return soundManager.get(); }

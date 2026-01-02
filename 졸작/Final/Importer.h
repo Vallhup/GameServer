@@ -115,8 +115,6 @@ public:
     const vector<AnimClipInfo>& GetAnimations() const { return animationData; }
     const vector<MaterialData>& GetMaterials() const { return materialData; }
 
-    bool HasAnimation() const { return meshData.hasAnimation; }
-
 private:
     bool LoadMesh(const wstring& path);
     bool LoadSkeleton(const wstring& path);

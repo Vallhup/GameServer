@@ -17,21 +17,22 @@ public:
     ~SceneManager();
     void Initialize(DX12Core& core);        
     void Update(const float deltaTime);
-    void Render();   
     void RenderDeferred();
     void RenderForward();
     void RenderShadow();
     void RenderEffects();
     void Release();
 
-    template <typename T>
-    void RegisterScene(SceneType type);
     Scene* GetCurrentScene() const;
 
 public:
     void SceneStart(DX12Core& core);       
     void RequestSceneChange(SceneType type);
     void ProcessPendingSceneChange(DX12Core& core);  
+
+private:
+    template <typename T>
+    void RegisterScene(SceneType type);
 
 private:
     Scene* mCurrentScene = nullptr;

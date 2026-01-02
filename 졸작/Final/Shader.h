@@ -24,18 +24,17 @@ class Shader
 {
 public:
 	void InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* rootSig);
+ 
+	ID3D12PipelineState* GetPSO(PSOType type) const;
 
+private:
 	void InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath);
 	void InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
-	void InitializeDebugLinePSO(ID3D12Device* device, ID3D12RootSignature* rootSig); 
+	void InitializeDebugLinePSO(ID3D12Device* device, ID3D12RootSignature* rootSig);
 
-
-	ID3D12PipelineState* GetPSO(PSOType type) const;
-
-private:
 	void CompileShader(const wstring& path, const string& entry, const string& target, ComPtr<ID3DBlob>& blobOut);
 
 private:

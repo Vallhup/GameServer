@@ -11,12 +11,6 @@ public:
 	GameScene& operator=(const GameScene&) = delete;
 	~GameScene();
 
-	void CreateKnightPool();
-
-	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const XMFLOAT3& pos = { 0.0f, 0.0f, 0.0f }, const XMFLOAT3& rot = { 0.0f, 0.0f, 0.0f }, const XMFLOAT3& scale = { 0.01f, 0.01f, 0.01f });
-
-	void CreateCastle();
-	void CreateEffectSamples();
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
 
 	void SetNetworkManager(NetworkManager* nManager) { _nManager = nManager; }
@@ -37,6 +31,12 @@ protected:
 	void RenderSceneShadow() override;
 	void RenderSceneEffects() override;
 	void RequestSceneChange() override;
+
+private:
+	void CreateKnightPool();
+	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const XMFLOAT3& pos = { 0.0f, 0.0f, 0.0f }, const XMFLOAT3& rot = { 0.0f, 0.0f, 0.0f }, const XMFLOAT3& scale = { 0.01f, 0.01f, 0.01f });
+	void CreateCastle();
+	void CreateEffectSamples();
 
 private:
 	NetworkManager* _nManager{ nullptr };

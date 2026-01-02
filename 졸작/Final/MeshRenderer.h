@@ -15,31 +15,29 @@ public:
 	MeshRenderer();
 	~MeshRenderer();
 
-	void InitializeObjectBuffer(ID3D12Device* device);
-
 	void RenderForward(DX12Core& core);
 	void RenderDeferred(DX12Core& core);
-	
 	void RenderShadow(DX12Core& core);
-
 	// Instancing 전용 함수는 나중에 사용할 수도 있을 가능성이 높아서 그냥 냅둠
 	void RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuffer* instancedBuffer);
 
+	void SetMesh(DX12Core& core, const wstring& path);
+
+	void ReleaseUploadBuffers();
+	void DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData> mats);
+
+private:
+	void InitializeObjectBuffer(ID3D12Device* device);
+
 	void RenderSingleMaterialForwardOnly(DX12Core& core, const XMMATRIX& world);
 	void RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX& world);
-
 	void RenderSingleMaterialDeferredOnly(DX12Core& core, const XMMATRIX& world);
 	void RenderMultiMaterialDeferredOnly(DX12Core& core, const XMMATRIX& world);
 
-	void SetMesh(DX12Core& core, const wstring& path);
 	void SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer = nullptr);
 	void SetSingleMaterial(DX12Core& core, const vector<MaterialData> mats);
 	void SetMultiMaterials(DX12Core& core, const vector<MaterialData> mats);
 	ObjectConstants SetObjectConstantState(const XMMATRIX& world, int hasTexture, int doInstancing, UINT matIndex);
-
-	void ReleaseUploadBuffers();
-
-	void DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData> mats);
 
 private:
 	shared_ptr<VertexIndexBuffer> vertexIndexBuffer;  

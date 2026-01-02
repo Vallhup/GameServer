@@ -38,14 +38,6 @@ void SceneManager::Update(const float deltaTime)
     }
 }
 
-void SceneManager::Render()
-{
-    if (mCurrentScene)
-    {
-        mCurrentScene->RenderDeferred();
-    }
-}
-
 void SceneManager::RenderDeferred()
 {
     if (mCurrentScene)

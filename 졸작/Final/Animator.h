@@ -29,17 +29,11 @@ class Animator : public Component
 {
 public:
     void Update(float deltaTime) override;
-    
-    // 애니메이션 블렌딩 업데이트 함수 2개
-    void UpdateCurrentAnimation(float deltaTime);
-    void UpdatePrevAnimation(float deltaTime);
 
     void SetAnimationData(DX12Core& core, const vector<AnimClipInfo>& animations);
     void SetSkeletonData(const SkeletonData& skeleton);
 
-    // 블렌딩 없는 애니메이션
     void PlayAnimation(int animIndex);
-    // 블렌딩 있는 애니메이션
     void TransitionToAnimation(int animIndex, float Duration);
 
     void ExecuteComputeShader(DX12Core& core);
@@ -58,6 +52,10 @@ public:
 private:
     void CreateBuffers(DX12Core& core);
 
+    void UpdateCurrentAnimation(float deltaTime);
+    void UpdatePrevAnimation(float deltaTime);
+
+private:
     vector<AnimClipInfo> mAnimations; 
     vector<BoneInfo> mBones;
 

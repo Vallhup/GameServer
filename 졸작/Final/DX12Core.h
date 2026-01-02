@@ -60,17 +60,6 @@ class DX12Core
 public:
 	void Initialize(HWND hwnd);
 
-	void CreateDevice();
-	void CreateDXGI(HWND hwnd);
-	void CreateCommandObjects();
-	void CreateSwapChain(HWND hwnd);
-	void CreateRenderTargetView();
-	void CreateDepthStencilBuffer(DXGI_FORMAT dsvformat = DXGI_FORMAT_D32_FLOAT);
-
-	void CreateGBuffer();
-	void CreateShadowMap();
-	void CreateDeferredRenderingDescriptors();
-
 	void BeginShadowPass();
 	void EndShadowPass();
 
@@ -80,7 +69,7 @@ public:
 	void EndGBufferPass();
 
 	void BeginLightingPass();
-	void SetupLights();
+	
 	void UpdateLights();
 	void RenderFullscreenQuad();
 
@@ -103,13 +92,27 @@ public:
 	UploadBuffer* GetForwardLightCB() const;
 	UploadBuffer* GetFogCB() const;
 
-	void SetBackgroundColor(const float* color);
-	void SetPlayerPosForShadow(const XMFLOAT3& pos);
-
 	ID3D12DescriptorHeap* GetDeferredSRVHeap() const;
 
 	DeferredLightConstants& GetDeferredLightData() { return deferredLightData; }
 	ForwardLightConstants& GetForwardLightData() { return forwardLightData; }
+
+	void SetBackgroundColor(const float* color);
+	void SetPlayerPosForShadow(const XMFLOAT3& pos);
+
+private:
+	void CreateDevice();
+	void CreateDXGI(HWND hwnd);
+	void CreateCommandObjects();
+	void CreateSwapChain(HWND hwnd);
+	void CreateRenderTargetView();
+	void CreateDepthStencilBuffer(DXGI_FORMAT dsvformat = DXGI_FORMAT_D32_FLOAT);
+
+	void CreateGBuffer();
+	void CreateShadowMap();
+	void CreateDeferredRenderingDescriptors();
+
+	void SetupLights();
 
 private:
 	// ∞Ì¡§

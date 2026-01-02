@@ -11,15 +11,6 @@ public:
 	void InitCameraPositionFromCharacter(const XMFLOAT3& pos);
 
 	void Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const shared_ptr<MainCharacter>& myPlayer);
-	void UpdateInputtoCamLogic(float deltaTime);
-	void UpdateSmoothFollow(float deltaTime);
-	void UpdateCameraMatrices(DX12Core& core);
-
-	void UpdateForwardAndRight();
-	void ChangeAngleByInput(float deltaTime);
-
-	void UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneObjects, const shared_ptr<MainCharacter>& myPlayer);
-	bool CheckObstruction(const vector<shared_ptr<GameObject>>& objects, const XMFLOAT3& targetPos, float& adjustedDistance, const shared_ptr<MainCharacter>& myPlayer);
 
 	XMFLOAT3 GetForward() const;
 	XMFLOAT3 GetRight() const;
@@ -32,8 +23,19 @@ public:
 
 	void SetCameraPosition(const XMFLOAT3& pos);
 	void SetCursor();
-	void ChangeCursorInfo(bool in);
 	void ReleaseMouse();
+
+private:
+	void UpdateInputtoCamLogic(float deltaTime);
+	void UpdateSmoothFollow(float deltaTime);
+	void UpdateCameraMatrices(DX12Core& core);
+	void UpdateForwardAndRight();
+	void ChangeAngleByInput(float deltaTime);
+
+	void UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneObjects, const shared_ptr<MainCharacter>& myPlayer);
+	bool CheckObstruction(const vector<shared_ptr<GameObject>>& objects, const XMFLOAT3& targetPos, float& adjustedDistance, const shared_ptr<MainCharacter>& myPlayer);
+
+	void ChangeCursorInfo(bool in);
 
 private:
 	XMFLOAT3 position;
