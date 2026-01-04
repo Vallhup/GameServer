@@ -132,4 +132,25 @@ struct LIGHTING_PS_IN
     float2 uv : TEXCOORD;
 };
 
+//-------------------------------------------------------
+// About skybox
+//-------------------------------------------------------
+
+struct SKYBOX_VS_IN
+{
+    float3 pos : POSITION;
+};
+
+struct SKYBOX_VS_OUT
+{
+    float4 pos : SV_POSITION;
+    float3 localPos : TEXCOORD0;
+};
+
+struct SKYBOX_PS_IN
+{
+    float4 pos : SV_POSITION;
+    float3 localPos : TEXCOORD0;
+};
+
 #endif

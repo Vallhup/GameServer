@@ -7,7 +7,8 @@ ComPtr<ID3D12DescriptorHeap> Material::bindlessHeap = nullptr;
 unique_ptr<UploadBuffer> Material::materialBuffer = nullptr;
 vector<MaterialGPUData> Material::materials;
 vector<unique_ptr<Texture>> Material::allTextures;
-UINT Material::nextTextureIndex = 0;  
+UINT Material::nextTextureIndex = 0;
+UINT Material::nextCubeMapIndex = 0;
 UINT Material::descriptorSize = 0;
 bool Material::bufferDirty = false;
 unordered_map<wstring, UINT> Material::texturePathToIndex;
@@ -66,6 +67,41 @@ void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandL
     OutputDebugStringA(("Material created with index: " + to_string(materialIndex) + "\n").c_str());
 }
 
+UINT Material::RegisterCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath)
+{
+    if (!bindlessHeap) {
+        OutputDebugStringA("Bindless system not initialized!\n");
+        return 0xFFFFFFFF;
+    }
+
+    auto it = texturePathToIndex.find(ddsPath);
+    if (it != texturePathToIndex.end())
+        return it->second;
+
+    auto texture = make_unique<Texture>();
+    texture->InitializeCubeMap(device, cmdList, ddsPath);
+
+    UINT cubeMapHeapOffset = 500;
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = bindlessHeap->GetCPUDescriptorHandleForHeapStart();
+    cpuHandle.ptr += (cubeMapHeapOffset + nextCubeMapIndex) * descriptorSize;
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format = texture->GetTexture()->GetDesc().Format;
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.TextureCube.MipLevels = texture->GetTexture()->GetDesc().MipLevels;
+    srvDesc.TextureCube.MostDetailedMip = 0;
+
+    device->CreateShaderResourceView(texture->GetTexture(), &srvDesc, cpuHandle);
+
+    UINT index = nextCubeMapIndex++;
+    allTextures.push_back(move(texture));
+    texturePathToIndex[ddsPath] = index;
+
+    OutputDebugStringA(("CubeMap registered at index: " + to_string(index) + "\n").c_str());
+    return index;
+}
+
 UINT Material::RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
     const wstring& path)
 {
@@ -108,6 +144,10 @@ void Material::BindBindlessResources(ID3D12GraphicsCommandList* cmdList)
 
         D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = bindlessHeap->GetGPUDescriptorHandleForHeapStart();
         cmdList->SetGraphicsRootDescriptorTable(6, gpuHandle);                                      // 레지 넘버링 부분
+
+        D3D12_GPU_DESCRIPTOR_HANDLE cubeMapHandle = gpuHandle;
+        cubeMapHandle.ptr += 500 * descriptorSize;
+        cmdList->SetGraphicsRootDescriptorTable(15, cubeMapHandle);
 
         cmdList->SetGraphicsRootShaderResourceView(7, materialBuffer->GetGPUVirtualAddress());      // 레지 넘버링 부분
     }

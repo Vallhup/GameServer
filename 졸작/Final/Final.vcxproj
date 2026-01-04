@@ -298,6 +298,8 @@
     <None Include="..\Shaders\PBR.hlsli" />
     <None Include="..\Shaders\ShadowPS.hlsli" />
     <None Include="..\Shaders\ShadowVS.hlsli" />
+    <None Include="..\Shaders\SkyboxPS.hlsli" />
+    <None Include="..\Shaders\SkyboxVS.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

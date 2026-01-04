@@ -5,6 +5,7 @@ class Texture
 public:
     void Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath);
     void InitializeFromRAW(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath, UINT width, UINT height);
+    void InitializeCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
 
     ID3D12Resource* GetTexture() const { return texture.Get(); }
     D3D12_GPU_DESCRIPTOR_HANDLE GetSRV() const { return srvGpuHandle; }

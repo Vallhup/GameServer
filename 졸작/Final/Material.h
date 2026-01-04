@@ -21,6 +21,9 @@ class Material
 public:
     void LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
         const MaterialData& matData);
+
+    static UINT RegisterCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
+
     UINT GetMaterialIndex() const { return materialIndex; }
 
     static void InitializeBindlessSystem(ID3D12Device* device);
@@ -38,6 +41,7 @@ private:
     static vector<MaterialGPUData> materials;
     static vector<unique_ptr<Texture>> allTextures;  
     static UINT nextTextureIndex;
+    static UINT nextCubeMapIndex;
     static UINT descriptorSize;
     static bool bufferDirty;
     static unordered_map<wstring, UINT> texturePathToIndex;

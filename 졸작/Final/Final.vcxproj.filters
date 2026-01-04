@@ -326,6 +326,12 @@
     <None Include="..\Shaders\Skinning.hlsli">
       <Filter>Shaders\Animation</Filter>
     </None>
+    <None Include="..\Shaders\SkyboxVS.hlsli">
+      <Filter>Shaders\SkyBox</Filter>
+    </None>
+    <None Include="..\Shaders\SkyboxPS.hlsli">
+      <Filter>Shaders\SkyBox</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">
@@ -390,6 +396,9 @@
     </Filter>
     <Filter Include="Utils\ImGui">
       <UniqueIdentifier>{d186ce39-36e3-43df-a52d-f5699aed14c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\SkyBox">
+      <UniqueIdentifier>{8877b7b0-8fde-44a3-b88d-80c374c87174}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

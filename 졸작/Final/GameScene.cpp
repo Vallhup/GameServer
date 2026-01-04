@@ -15,6 +15,9 @@
 #include "NetworkManager.h"
 #include "SoundManager.h"
 #include "ImGuiManager.h"
+#include "VertexIndexBuffer.h"
+#include "Shader.h"
+#include "RootSignature.h"
 
 GameScene::~GameScene() = default;
 
@@ -57,13 +60,13 @@ void GameScene::CreateCastle()
 		XMFLOAT3 scale;
 	};
 
-#pragma region Initialize CASTLEWALL
-	for (int i = 2; i < 20; ++i)
-	{
-		wstring meshName = (i < 10) ? L"../Assets/FBXModel/mesh_0" + to_wstring(i) : L"../Assets/FBXModel/mesh_" + to_wstring(i);
-		AddGameObject(CreateStaticMesh(meshName));
-	}
-#pragma endregion
+//#pragma region Initialize CASTLEWALL
+//	for (int i = 2; i < 20; ++i)
+//	{
+//		wstring meshName = (i < 10) ? L"../Assets/FBXModel/mesh_0" + to_wstring(i) : L"../Assets/FBXModel/mesh_" + to_wstring(i);
+//		AddGameObject(CreateStaticMesh(meshName));
+//	}
+//#pragma endregion
 
 #pragma region Initialize PILLARS
 	constexpr castleData pillarData[] = {
@@ -275,6 +278,56 @@ void GameScene::CreateEffectSamples()
 	}
 }
 
+void GameScene::CreateSkybox()
+{
+	float s = 1.0f;
+
+	vector<Vertex> vertices = {
+		{{-s, -s, -s}}, {{-s,  s, -s}}, {{ s,  s, -s}}, {{ s, -s, -s}},
+		{{ s, -s,  s}}, {{ s,  s,  s}}, {{-s,  s,  s}}, {{-s, -s,  s}},
+		{{-s,  s, -s}}, {{-s,  s,  s}}, {{ s,  s,  s}}, {{ s,  s, -s}},
+		{{-s, -s,  s}}, {{-s, -s, -s}}, {{ s, -s, -s}}, {{ s, -s,  s}},
+		{{-s, -s,  s}}, {{-s,  s,  s}}, {{-s,  s, -s}}, {{-s, -s, -s}},
+		{{ s, -s, -s}}, {{ s,  s, -s}}, {{ s,  s,  s}}, {{ s, -s,  s}}
+	};
+
+	vector<UINT> indices = {
+		0,1,2, 0,2,3,
+		4,5,6, 4,6,7,
+		8,9,10, 8,10,11,
+		12,13,14, 12,14,15,
+		16,17,18, 16,18,19,
+		20,21,22, 20,22,23
+	};
+
+	skyboxMesh = make_shared<VertexIndexBuffer>();
+	skyboxMesh->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), vertices, indices);
+
+	skyboxCubeMapIndex = Material::RegisterCubeMap(
+		coreRef->GetDevice(),
+		coreRef->GetGraphicsCmdList(),
+		L"../Assets/Skybox/skybox.dds"
+	);
+
+	OutputDebugStringA("Skybox created!\n");
+}
+
+void GameScene::RenderSkybox()
+{
+	if (!skyboxMesh || skyboxCubeMapIndex == 0xFFFFFFFF) return;
+
+	auto cmdList = coreRef->GetGraphicsCmdList();
+
+	cmdList->SetPipelineState(coreRef->GetShader()->GetPSO(PSOType::Skybox));
+	cmdList->SetGraphicsRootSignature(coreRef->GetRootSig()->Get());
+	cmdList->SetGraphicsRootConstantBufferView(0, coreRef->GetFrameCB()->GetGPUVirtualAddress());
+
+	Material::BindBindlessResources(cmdList);
+
+	skyboxMesh->Bind(cmdList);
+	skyboxMesh->Draw(cmdList);
+}
+
 shared_ptr<MainCharacter> GameScene::GetAvailableKnight() const
 {
 	for (auto& knight : knightPool)
@@ -424,6 +477,8 @@ void GameScene::InitializeLogic()
 		AddGameObject(boss);
 	}
 
+	CreateSkybox();
+
 	CreateCastle();
 
 	CreateEffectSamples();
@@ -544,6 +599,8 @@ void GameScene::RenderSceneDeferred()
 
 void GameScene::RenderSceneForward()
 {
+	RenderSkybox();
+
 	BoundingFrustum viewFrustum = cam->GetViewFrustum();
 
 	for (const auto& obj : gameObjects)

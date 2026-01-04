@@ -104,6 +104,8 @@ Texture2D gBufferRT2 : register(t6); // WorldPos + AO
 Texture2D gBufferRT3 : register(t7); // Emission + Alpha
 Texture2D shadowMap : register(t8);
 
+TextureCube bindlessCubeMaps[] : register(t0, space3);
+
 //-------------------------------------------------------
 // SAMPLERS
 //-------------------------------------------------------

@@ -58,10 +58,12 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddSRV(3, 0);           // [10] t3 - Final Bone
     AddUAV(0, 0);           // [11] u0 - Animation R/W
     AddSRV(0, 2);           // [12] t0, space2 - Instance
-    AddSRVTable(4, 6, 0);   // [13] t4-t9 - G-Buffer
+    AddSRVTable(4, 5, 0);   // [13] t4-t8 - G-Buffer
 
     // Fog 파라미터
     AddCBV(6);              // [14] b6 - Fog Constants
+
+    AddBindlessTable(3);    // [15] t0, space3 - Bindless CubeMaps
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[2];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,

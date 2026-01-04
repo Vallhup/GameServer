@@ -9,6 +9,7 @@ void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* roo
     InitializeComputeShader(device, rootSig, L"../Shaders/Animation.hlsli");
     InitializeShadowShader(device, rootSig, L"../Shaders/ShadowVS.hlsli", L"../Shaders/ShadowPS.hlsli");
     InitializeDebugLinePSO(device, rootSig);
+    InitializeSkyboxShader(device, rootSig, L"../Shaders/SkyboxVS.hlsli", L"../Shaders/SkyboxPS.hlsli");
 }
 
 void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
@@ -215,6 +216,46 @@ void Shader::InitializeDebugLinePSO(ID3D12Device* device, ID3D12RootSignature* r
     MASSERT(SUCCEEDED(hr), "Failed to create DebugLine PSO");
 
     OutputDebugStringA("DebugLine PSO created!\n");
+}
+
+void Shader::InitializeSkyboxShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
+{
+    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::SkyboxVS)]);
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::SkyboxPS)]);
+
+    D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+    };
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
+    psoDesc.pRootSignature = rootSig;
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::SkyboxVS)]->GetBufferPointer(),
+                   mShadersBlobs[static_cast<size_t>(ShaderType::SkyboxVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::SkyboxPS)]->GetBufferPointer(),
+                   mShadersBlobs[static_cast<size_t>(ShaderType::SkyboxPS)]->GetBufferSize() };
+
+    D3D12_RASTERIZER_DESC rasterDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    rasterDesc.CullMode = D3D12_CULL_MODE_FRONT;
+    psoDesc.RasterizerState = rasterDesc;
+
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
+    D3D12_DEPTH_STENCIL_DESC depthDesc = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+    depthDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+    depthDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    psoDesc.DepthStencilState = depthDesc;
+
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Skybox)]));
+    MASSERT(SUCCEEDED(hr), "Failed to create Skybox PSO");
+
+    OutputDebugStringA("Skybox PSO created!\n");
 }
 
 ID3D12PipelineState* Shader::GetPSO(PSOType type) const

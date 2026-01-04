@@ -2,6 +2,7 @@
 #include "Scene.h"
 
 class NetworkManager;
+class VertexIndexBuffer;
 
 class GameScene final : public Scene
 {
@@ -38,6 +39,10 @@ private:
 	void CreateCastle();
 	void CreateEffectSamples();
 
+	void CreateSkybox();
+
+	void RenderSkybox();
+
 private:
 	NetworkManager* _nManager{ nullptr };
 
@@ -49,4 +54,7 @@ private:
 	shared_ptr<MainCharacter> myPlayer;
 
 	vector<shared_ptr<GameObject>> effectObjects;
+
+	shared_ptr<VertexIndexBuffer> skyboxMesh;
+	UINT skyboxCubeMapIndex = 0xFFFFFFFF;
 };
