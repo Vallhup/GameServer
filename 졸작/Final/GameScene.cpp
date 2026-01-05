@@ -18,6 +18,7 @@
 #include "VertexIndexBuffer.h"
 #include "Shader.h"
 #include "RootSignature.h"
+#include "SkyBox.h"
 
 GameScene::~GameScene() = default;
 
@@ -278,56 +279,6 @@ void GameScene::CreateEffectSamples()
 	}
 }
 
-void GameScene::CreateSkybox()
-{
-	float s = 1.0f;
-
-	vector<Vertex> vertices = {
-		{{-s, -s, -s}}, {{-s,  s, -s}}, {{ s,  s, -s}}, {{ s, -s, -s}},
-		{{ s, -s,  s}}, {{ s,  s,  s}}, {{-s,  s,  s}}, {{-s, -s,  s}},
-		{{-s,  s, -s}}, {{-s,  s,  s}}, {{ s,  s,  s}}, {{ s,  s, -s}},
-		{{-s, -s,  s}}, {{-s, -s, -s}}, {{ s, -s, -s}}, {{ s, -s,  s}},
-		{{-s, -s,  s}}, {{-s,  s,  s}}, {{-s,  s, -s}}, {{-s, -s, -s}},
-		{{ s, -s, -s}}, {{ s,  s, -s}}, {{ s,  s,  s}}, {{ s, -s,  s}}
-	};
-
-	vector<UINT> indices = {
-		0,1,2, 0,2,3,
-		4,5,6, 4,6,7,
-		8,9,10, 8,10,11,
-		12,13,14, 12,14,15,
-		16,17,18, 16,18,19,
-		20,21,22, 20,22,23
-	};
-
-	skyboxMesh = make_shared<VertexIndexBuffer>();
-	skyboxMesh->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), vertices, indices);
-
-	skyboxCubeMapIndex = Material::RegisterCubeMap(
-		coreRef->GetDevice(),
-		coreRef->GetGraphicsCmdList(),
-		L"../Assets/Skybox/skybox.dds"
-	);
-
-	OutputDebugStringA("Skybox created!\n");
-}
-
-void GameScene::RenderSkybox()
-{
-	if (!skyboxMesh || skyboxCubeMapIndex == 0xFFFFFFFF) return;
-
-	auto cmdList = coreRef->GetGraphicsCmdList();
-
-	cmdList->SetPipelineState(coreRef->GetShader()->GetPSO(PSOType::Skybox));
-	cmdList->SetGraphicsRootSignature(coreRef->GetRootSig()->Get());
-	cmdList->SetGraphicsRootConstantBufferView(0, coreRef->GetFrameCB()->GetGPUVirtualAddress());
-
-	Material::BindBindlessResources(cmdList);
-
-	skyboxMesh->Bind(cmdList);
-	skyboxMesh->Draw(cmdList);
-}
-
 shared_ptr<MainCharacter> GameScene::GetAvailableKnight() const
 {
 	for (auto& knight : knightPool)
@@ -477,7 +428,8 @@ void GameScene::InitializeLogic()
 		AddGameObject(boss);
 	}
 
-	CreateSkybox();
+	skyBox = make_shared<SkyBox>();
+	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
 
 	CreateCastle();
 
@@ -599,7 +551,7 @@ void GameScene::RenderSceneDeferred()
 
 void GameScene::RenderSceneForward()
 {
-	RenderSkybox();
+	skyBox->RenderSkyBox(*coreRef, coreRef->GetGraphicsCmdList());
 
 	BoundingFrustum viewFrustum = cam->GetViewFrustum();
 

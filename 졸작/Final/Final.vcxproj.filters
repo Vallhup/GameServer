@@ -133,6 +133,9 @@
     <ClCompile Include="GPUBuffer.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -269,6 +272,9 @@
     </ClInclude>
     <ClInclude Include="GPUBuffer.h">
       <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

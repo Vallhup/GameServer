@@ -211,6 +211,7 @@
     <ClCompile Include="ServerSquareScene.cpp" />
     <ClCompile Include="ServerTestScene.cpp" />
     <ClCompile Include="Singleton.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -264,6 +265,7 @@
     <ClInclude Include="ServerSquareScene.h" />
     <ClInclude Include="ServerTestScene.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture.h" />
