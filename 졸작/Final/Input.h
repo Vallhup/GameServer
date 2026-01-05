@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Singleton.h"
 #include "NetworkManager.h"
 
 enum class MouseButton
@@ -10,11 +10,13 @@ enum class MouseButton
 	END
 };
 
-class Input final
+class Input : public Singleton<Input>
 {
+	friend class Singleton<Input>;
+	Input() = default;
+
 public:
-	static void Initialize(NetworkManager* net) { Get().network = net; }
-	static Input& Get();
+	void Initialize(NetworkManager* net) { network = net; }
 
 	void Renew();
 
@@ -50,5 +52,5 @@ private:
 
 	NetworkManager* network{ nullptr };
 
-	int clientID;
+	int clientID = -1;
 };

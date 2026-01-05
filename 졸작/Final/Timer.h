@@ -1,17 +1,18 @@
 #pragma once
+#include "Singleton.h"
 
-
-class Timer
+class Timer : public Singleton<Timer>
 {
-public:
-	static Timer& Get();
+	friend class Singleton<Timer>;
+	Timer() = default;
 
+public:
 	void Initialize();
 	void Update();
 	void Reset();
 
-	UINT32 GetFps() { return fps; }
-	float GetDeltaTime() { return deltaTime; }
+	UINT32 GetFps() const { return fps; }
+	float GetDeltaTime() const { return deltaTime; }
 
 	void SetTargetFPS(float fps);
 

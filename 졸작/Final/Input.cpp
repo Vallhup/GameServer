@@ -1,13 +1,6 @@
 #include "pch.h"
 #include "Input.h"
-
 #include "Protocol.hpp"
-
-Input& Input::Get()
-{
-	static Input input;
-	return input;
-}
 
 void Input::Renew()
 {
@@ -59,6 +52,7 @@ void Input::SetMouseWheelDelta(int d)
 
 void Input::SetClientID(int id)
 {
+	OutputDebugStringA(("ClientId: " + to_string(id)).c_str());
 	clientID = id;
 }
 

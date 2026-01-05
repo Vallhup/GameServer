@@ -8,12 +8,6 @@
 #include "MainCharacter.h"
 #include "Animator.h"
 
-ImGuiManager& ImGuiManager::Get()
-{
-    static ImGuiManager instance;
-    return instance;
-}
-
 void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 {
     coreRef = &core;

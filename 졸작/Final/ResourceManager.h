@@ -1,5 +1,6 @@
 #pragma once
 #include "Importer.h"
+#include "Singleton.h"
 
 class VertexIndexBuffer;
 class Material;
@@ -18,11 +19,12 @@ struct CachedMeshData
     BoundingBox boundingBox;
 };
 
-class ResourceManager
+class ResourceManager : public Singleton<ResourceManager>
 {
-public:
-    static ResourceManager& Get();
+    friend class Singleton<ResourceManager>;
+    ResourceManager() = default;
 
+public:
     shared_ptr<CachedMeshData> GetCachedMesh(const wstring& path);
     void CacheMesh(const wstring& path,
         const shared_ptr<VertexIndexBuffer>& vib,
