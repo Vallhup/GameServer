@@ -1,8 +1,6 @@
 #pragma once
 #include "Scene.h"
 
-class UploadBuffer;
-
 class TestScene final : public Scene
 {
 public:

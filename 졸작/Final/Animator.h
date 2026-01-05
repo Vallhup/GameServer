@@ -4,8 +4,6 @@
 #include <wrl/client.h>
 
 class DX12Core;
-class UploadBuffer;
-class UAVBuffer;
 
 struct AnimationConstants
 {

@@ -46,6 +46,8 @@ using namespace Microsoft::WRL;
 
 #include "Protocol.hpp"
 
+#include "GPUBuffer.h"
+
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "d3dcompiler.lib")

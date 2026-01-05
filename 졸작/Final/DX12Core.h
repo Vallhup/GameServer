@@ -1,6 +1,4 @@
 #pragma once
-#include "UploadBuffer.h"
-#include "UAVBuffer.h"
 
 struct FrameConstants
 {
