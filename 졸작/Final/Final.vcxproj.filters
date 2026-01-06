@@ -124,14 +124,20 @@
     <ClCompile Include="ImGuiManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="GPUBuffer.cpp" />
-    <ClCompile Include="Singleton.cpp" />
-    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="ClientConnectionListener.cpp">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="NetworkManager.cpp">
       <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUBuffer.cpp">
+      <Filter>DirectX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Singleton.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -258,14 +264,20 @@
     <ClInclude Include="ImGuiManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="GPUBuffer.h" />
-    <ClInclude Include="Singleton.h" />
-    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="ClientConnectionListener.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="NetworkManager.h">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUBuffer.h">
+      <Filter>DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
