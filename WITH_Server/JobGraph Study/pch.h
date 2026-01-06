@@ -18,6 +18,8 @@
 #include <concurrent_queue.h>
 #include <typeindex>
 
+#include "asio.hpp"
+
 #include "Protocol.pb.h"
 #include "Struct.pb.h"
 #include "Enum.pb.h"

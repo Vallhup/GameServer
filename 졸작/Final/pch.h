@@ -44,6 +44,8 @@ using namespace Microsoft::WRL;
 #include "Struct.pb.h"
 #include "Protocol.pb.h"
 
+#include "asio.hpp"
+
 #include "Asio_Network_Module.h"
 #include "ProtocolLib.h"
 
