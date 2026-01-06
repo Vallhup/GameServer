@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "Input.h"
-#include "Protocol.hpp"
 
 void Input::Renew()
 {
@@ -66,7 +65,7 @@ void Input::SendMovePacket(int inputX, int inputZ, float yaw)
 	move.set_inputz(inputZ);
 	move.set_yaw(yaw);
 
-	auto data = PacketFactory::Serialize<Protocol::CS_MOVE_PACKET>(
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_MOVE_PACKET>(
 		PacketType::CS_MOVE, move);
 	network->Send(data);
 }
