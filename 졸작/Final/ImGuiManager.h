@@ -1,13 +1,16 @@
 #pragma once
+#include "Singleton.h"
 
 class DX12Core;
 class MainCharacter;
 
-class ImGuiManager
+class ImGuiManager : public Singleton<ImGuiManager>
 {
-public:
-    static ImGuiManager& Get();
+    friend class Singleton<ImGuiManager>;
+    ImGuiManager() = default;
+    ~ImGuiManager() = default;
 
+public:
     void Initialize(HWND hwnd, DX12Core& core);
     void BeginFrame();
     void EndFrame(ID3D12GraphicsCommandList* cmdList);
@@ -20,9 +23,6 @@ public:
     void SetMyPlayer(MainCharacter* player) { myPlayer = player; }
 
 private:
-    ImGuiManager() = default;
-    ~ImGuiManager() = default;
-
     ComPtr<ID3D12DescriptorHeap> srvHeap;
     DX12Core* coreRef = nullptr;
     bool enabled = true;

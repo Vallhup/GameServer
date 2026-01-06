@@ -3,12 +3,6 @@
 #include "VertexIndexBuffer.h"
 #include "Material.h"
 
-ResourceManager& ResourceManager::Get()
-{
-    static ResourceManager resourceManager;
-    return resourceManager;
-}
-
 shared_ptr<CachedMeshData> ResourceManager::GetCachedMesh(const wstring& path)
 {
     auto it = meshCache.find(path);

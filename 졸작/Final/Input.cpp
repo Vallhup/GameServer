@@ -1,11 +1,6 @@
 #include "pch.h"
 #include "Input.h"
-
-Input& Input::Get()
-{
-	static Input input;
-	return input;
-}
+#include "Protocol.hpp"
 
 void Input::Renew()
 {
@@ -57,6 +52,7 @@ void Input::SetMouseWheelDelta(int d)
 
 void Input::SetClientID(int id)
 {
+	OutputDebugStringA(("ClientId: " + to_string(id)).c_str());
 	clientID = id;
 }
 
@@ -70,7 +66,7 @@ void Input::SendMovePacket(int inputX, int inputZ, float yaw)
 	move.set_inputz(inputZ);
 	move.set_yaw(yaw);
 
-	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_MOVE_PACKET>(
+	auto data = PacketFactory::Serialize<Protocol::CS_MOVE_PACKET>(
 		PacketType::CS_MOVE, move);
 	network->Send(data);
 }

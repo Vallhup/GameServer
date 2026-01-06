@@ -10,8 +10,6 @@
 #include "VertexIndexBuffer.h"
 #include "Animator.h"
 #include "ResourceManager.h"
-#include "UploadBuffer.h"
-#include "UAVBuffer.h"
 
 UINT MeshRenderer::idCounter = 0;
 

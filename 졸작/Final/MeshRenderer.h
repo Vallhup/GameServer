@@ -5,7 +5,6 @@
 class DX12Core;
 class VertexIndexBuffer;
 class Material;
-class UploadBuffer;
 
 struct ObjectConstants;
 

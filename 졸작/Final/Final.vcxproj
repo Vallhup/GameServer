@@ -203,6 +203,7 @@
     <ClCompile Include="DX12Core.cpp" />
     <ClCompile Include="EffectRenderer.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="GPUBuffer.cpp" />
     <ClCompile Include="ImGuiManager.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="LoginScene.cpp" />
@@ -226,12 +227,12 @@
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ServerSquareScene.cpp" />
     <ClCompile Include="ServerTestScene.cpp" />
+    <ClCompile Include="Singleton.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="UAVBuffer.cpp" />
-    <ClCompile Include="UploadBuffer.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -265,6 +266,7 @@
     <ClInclude Include="DX12Core.h" />
     <ClInclude Include="EffectRenderer.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="GPUBuffer.h" />
     <ClInclude Include="ImGuiManager.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="LoginScene.h" />
@@ -279,12 +281,12 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ServerSquareScene.h" />
     <ClInclude Include="ServerTestScene.h" />
+    <ClInclude Include="Singleton.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
-    <ClInclude Include="UAVBuffer.h" />
-    <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Input.h" />

@@ -2,7 +2,6 @@
 #include "Importer.h"
 
 class Texture;
-class UploadBuffer;
 
 struct MaterialGPUData
 {

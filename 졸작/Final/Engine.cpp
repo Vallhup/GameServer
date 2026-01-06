@@ -11,7 +11,6 @@
 #include "Camera.h"
 #include "Input.h"
 #include "SoundManager.h"
-
 #include "ImGuiManager.h"
 
 Engine& Engine::Get()
@@ -44,7 +43,7 @@ void Engine::Initialize(HWND hwnd, std::string_view ip, uint16 port,
 
     graphics->FlushCommandQueue();
 
-    Input::Initialize(networkManager.get());
+    GET(Input).Initialize(networkManager.get());
 }
 
 void Engine::Update(const float deltaTime)

@@ -47,6 +47,8 @@ using namespace Microsoft::WRL;
 #include "Asio_Network_Module.h"
 #include "ProtocolLib.h"
 
+#include "GPUBuffer.h"
+
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "d3dcompiler.lib")

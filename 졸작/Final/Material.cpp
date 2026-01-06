@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Material.h"
 #include "Texture.h"
-#include "UploadBuffer.h"
 
 ComPtr<ID3D12DescriptorHeap> Material::bindlessHeap = nullptr;
 unique_ptr<UploadBuffer> Material::materialBuffer = nullptr;
