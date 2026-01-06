@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "imgui.h"
 #include "ImGuiManager.h"
+#include "ClientConnectionListener.h"
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 static void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd);
@@ -16,8 +17,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
     GET(Timer).Initialize();
 
+    ClientConnectionListener listener;
+
     Engine& game = GET(Engine);
-    game.Initialize(hwnd);
+    game.Initialize(hwnd, "127.0.0.1", 7000, listener);
 
     MSG msg{};
 

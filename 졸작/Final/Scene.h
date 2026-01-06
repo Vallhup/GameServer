@@ -1,11 +1,12 @@
 #pragma once
 
+#include "Camera.h"
+
 class DX12Core;
 class SceneManager;
 enum class SceneType;
 class GameObject;
 class MainCharacter;
-class Camera;
 
 class Scene
 {

@@ -4,13 +4,15 @@ class DX12Core;
 class SceneManager;
 class NetworkManager;
 class SoundManager;
+class IConnectionListener;
 
 class Engine
 {
 public:
     static Engine& Get();
 
-    void Initialize(HWND hwnd);
+    void Initialize(HWND hwnd, std::string_view ip, uint16 port, 
+        IConnectionListener& listener);
     void Update(const float deltaTime);  
     void Render();
     void Shutdown();  

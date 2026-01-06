@@ -1,21 +1,14 @@
 #pragma once
 
-#include <unordered_map>
-
-#include "Protocol.hpp"
 #include "Event.h"
 
 class NetworkHandler {
-	using HandlerFunc = bool(*)(int, const PacketHeader&, const char*);
+	using HandlerFunc = bool(*)(uint32, const PacketHeader&, const BYTE*);
 
 public:
-	static NetworkHandler& Get()
-	{
-		static NetworkHandler converter;
-		return converter;
-	}
+	NetworkHandler();
 
-	bool Handle(int id, const PacketHeader& header, const char* data)
+	bool Handle(uint32 id, const PacketHeader& header, const BYTE* data)
 	{
 		auto it = _handlerTable.find(header.type);
 		if (it != _handlerTable.end())
@@ -25,15 +18,9 @@ public:
 	}
 
 private:
-	NetworkHandler()
-	{
-		_handlerTable[(uint16_t)PacketType::CS_LOGIN] = &NetworkHandler::HandleConnect;
-		_handlerTable[(uint16_t)PacketType::CS_MOVE] = &NetworkHandler::HandleMove;
-	}
-
 	// TODO : Handler 함수 추가
-	static bool HandleConnect(int id, const PacketHeader& header, const char* data);
-	static bool HandleMove(int id, const PacketHeader& header, const char* data);
+	static bool HandleConnect(uint32 id, const PacketHeader& header, const BYTE* data);
+	static bool HandleMove(uint32 id, const PacketHeader& header, const BYTE* data);
 
-	std::unordered_map<uint16_t, HandlerFunc> _handlerTable;
+	std::unordered_map<uint16, HandlerFunc> _handlerTable;
 };

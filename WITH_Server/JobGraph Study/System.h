@@ -1,9 +1,5 @@
 #pragma once
 
-#include <typeindex>
-#include <vector>
-#include <atomic>
-
 #include "Event.h"
 
 struct ECS;

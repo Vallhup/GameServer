@@ -32,40 +32,13 @@
     <ClCompile Include="GameWorld.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Network.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Listener.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Session.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="Framework.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="ObjectPoolManager.cpp">
       <Filter>ObjectPool</Filter>
     </ClCompile>
-    <ClCompile Include="RecvBuffer.cpp">
-      <Filter>Network\Buffer</Filter>
-    </ClCompile>
-    <ClCompile Include="SendBuffer.cpp">
-      <Filter>Network\Buffer</Filter>
-    </ClCompile>
-    <ClCompile Include="Protocols\Protocol.pb.cc">
-      <Filter>Network\Protocol\Output</Filter>
-    </ClCompile>
     <ClCompile Include="NetworkHandler.cpp">
-      <Filter>Network\Protocol\Event</Filter>
-    </ClCompile>
-    <ClCompile Include="Protocols\Struct.pb.cc">
-      <Filter>Network\Protocol\Output</Filter>
-    </ClCompile>
-    <ClCompile Include="Protocols\Enum.pb.cc">
-      <Filter>Network\Protocol\Output</Filter>
-    </ClCompile>
-    <ClCompile Include="EventQueue.cpp">
       <Filter>Network\Protocol\Event</Filter>
     </ClCompile>
     <ClCompile Include="System.cpp">
@@ -99,9 +72,6 @@
     <ClCompile Include="OutputEventSystem.cpp">
       <Filter>ECS\System\Event</Filter>
     </ClCompile>
-    <ClCompile Include="Protocol.cpp">
-      <Filter>Network\Protocol</Filter>
-    </ClCompile>
     <ClCompile Include="ActionStateSystem.cpp">
       <Filter>ECS\System\Logic\Action</Filter>
     </ClCompile>
@@ -110,6 +80,27 @@
     </ClCompile>
     <ClCompile Include="ActionTransitionSystem.cpp">
       <Filter>ECS\System\Logic\Action</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Utillity</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerConnectionListener.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectionManager.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.cc">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.cc">
+      <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -143,15 +134,6 @@
     <ClInclude Include="GameWorld.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Network.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Listener.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Session.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="Framework.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -160,12 +142,6 @@
     </ClInclude>
     <ClInclude Include="ObjectPoolManager.h">
       <Filter>ObjectPool</Filter>
-    </ClInclude>
-    <ClInclude Include="RecvBuffer.h">
-      <Filter>Network\Buffer</Filter>
-    </ClInclude>
-    <ClInclude Include="SendBuffer.h">
-      <Filter>Network\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
       <Filter>Utillity</Filter>
@@ -176,22 +152,7 @@
     <ClInclude Include="Event.h">
       <Filter>Network\Protocol\Event</Filter>
     </ClInclude>
-    <ClInclude Include="Protocols\Protocol.pb.h">
-      <Filter>Network\Protocol\Output</Filter>
-    </ClInclude>
-    <ClInclude Include="Protocol.hpp">
-      <Filter>Network\Protocol</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkHandler.h">
-      <Filter>Network\Protocol\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="Protocols\Enum.pb.h">
-      <Filter>Network\Protocol\Output</Filter>
-    </ClInclude>
-    <ClInclude Include="Protocols\Struct.pb.h">
-      <Filter>Network\Protocol\Output</Filter>
-    </ClInclude>
-    <ClInclude Include="EventQueue.h">
       <Filter>Network\Protocol\Event</Filter>
     </ClInclude>
     <ClInclude Include="json.hpp">
@@ -240,11 +201,32 @@
     <ClInclude Include="ActionTimeSystem.h">
       <Filter>ECS\System\Logic\Action</Filter>
     </ClInclude>
-    <ClInclude Include="asio.hpp">
-      <Filter>Utillity</Filter>
-    </ClInclude>
     <ClInclude Include="ActionTransitionSystem.h">
       <Filter>ECS\System\Logic\Action</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Utillity</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerConnectionListener.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionManager.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="NetHelper.h">
+      <Filter>Utillity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.h">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.h">
+      <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -281,20 +263,11 @@
     <Filter Include="ObjectPool">
       <UniqueIdentifier>{fbc24831-c2f2-4666-829d-62a8cadfbb2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Network\Buffer">
-      <UniqueIdentifier>{d08fb638-6546-4b90-8c94-b66cd017fb71}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utillity\Lock-Free Data Structure">
       <UniqueIdentifier>{d6317159-0fce-4d2f-8dc2-42d4c8a58c8b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Network\Protocol">
       <UniqueIdentifier>{943627e3-5e3f-4c52-bd33-ec1d1eb5b217}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Network\Protocol\Proto">
-      <UniqueIdentifier>{87aa4b67-ecc0-4d3d-9757-76dc2ee58a2e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Network\Protocol\Output">
-      <UniqueIdentifier>{ad313583-140e-4d19-8985-df63b89e6425}</UniqueIdentifier>
     </Filter>
     <Filter Include="Script">
       <UniqueIdentifier>{9d68a4d1-7265-4454-b9a9-d3166264a635}</UniqueIdentifier>
@@ -323,16 +296,8 @@
     <Filter Include="Network\Protocol\Event">
       <UniqueIdentifier>{f49921b0-d0b4-4d52-8b4f-df8aa9fbc82e}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="protos\Protocol.proto">
-      <Filter>Network\Protocol\Proto</Filter>
-    </None>
-    <None Include="protos\Enum.proto">
-      <Filter>Network\Protocol\Proto</Filter>
-    </None>
-    <None Include="protos\Struct.proto">
-      <Filter>Network\Protocol\Proto</Filter>
-    </None>
+    <Filter Include="Network\Protocol\pb.%2a">
+      <UniqueIdentifier>{fd291135-9f0a-4e34-bbf5-068f4f929071}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -358,16 +358,16 @@ void GameScene::AddGameObject(shared_ptr<GameObject> obj)
 	gameObjects.push_back(obj);
 }
 
-void GameScene::HandlePacket(const PacketHeader* data)
+void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 {
-	PacketType type = static_cast<PacketType>(data->type);
+	PacketType type = static_cast<PacketType>(header.type);
 
 	switch (type) {
 	case PacketType::SC_LOGIN:
 	{
 		OutputDebugStringA("SC_LOGIN packet received\n");
 		Protocol::SC_LOGIN_PACKET login;
-		if (PacketFactory::Deserialize<Protocol::SC_LOGIN_PACKET>(data, &login))
+		if (PacketFactory::Deserialize<Protocol::SC_LOGIN_PACKET>(header, data, &login))
 		{
 			GET(Input).SetClientID(login.sessionid());
 			OutputDebugStringA(("My Session ID: " + to_string(GET(Input).GetClientID()) + "\n").c_str());
@@ -378,7 +378,7 @@ void GameScene::HandlePacket(const PacketHeader* data)
 	{
 		OutputDebugStringA("SC_ADD packet received\n");
 		Protocol::SC_ADD_PACKET add;
-		if (PacketFactory::Deserialize<Protocol::SC_ADD_PACKET>(data, &add))
+		if (PacketFactory::Deserialize<Protocol::SC_ADD_PACKET>(header, data, &add))
 		{
 			int sessionId = add.sessionid();
 			auto player = GetAvailableKnight();
@@ -409,7 +409,7 @@ void GameScene::HandlePacket(const PacketHeader* data)
 	case PacketType::SC_MOVE_OBJECT:
 	{
 		Protocol::SC_MOVE_PACKET move;
-		if (PacketFactory::Deserialize<Protocol::SC_MOVE_PACKET>(data, &move))
+		if (PacketFactory::Deserialize<Protocol::SC_MOVE_PACKET>(header, data, &move))
 		{
 			int sessionId = move.sessionid();
 			auto it = activePlayers.find(sessionId);
@@ -498,7 +498,7 @@ void GameScene::InitializeLogic()
 
 	{
 		Protocol::CS_LOGIN_PACKET login;
-		auto data = PacketFactory::Serialize<Protocol::CS_LOGIN_PACKET>(
+		SendBuffer* data = PacketFactory::Serialize<Protocol::CS_LOGIN_PACKET>(
 			PacketType::CS_LOGIN, login);
 		_nManager->Send(data);
 	}

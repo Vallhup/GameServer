@@ -1,10 +1,6 @@
 #pragma once
 
 #include <string_view>
-#include <vector>
-#include <memory>
-#include <unordered_map>
-#include <DirectXMath.h>
 
 #include "json.hpp"
 

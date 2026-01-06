@@ -1,7 +1,6 @@
+#include "pch.h"
 #include "Listener.h"
 #include "Network.h"
-
-#include <iostream>
 
 Listener::Listener(asio::io_context& io, short port)
 	: _acceptor(io, tcp::endpoint(tcp::v4(), port))

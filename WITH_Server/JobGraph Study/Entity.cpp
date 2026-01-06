@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Entity.h"
 #include "Framework.h"
 
@@ -20,7 +21,7 @@ Entity EntityManager::Create()
     return Entity{ id, _generations[id] };
 }
 
-Entity EntityManager::CreatePlayer(int sessionId)
+Entity EntityManager::CreatePlayer(uint32 sessionId)
 {
     Entity e = Create();
 

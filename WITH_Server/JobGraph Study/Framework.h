@@ -2,7 +2,7 @@
 
 #include "Game.h"
 #include "Network.h"
-#include <concurrent_queue.h>
+#include "ServerConnectionListener.h"
 
 class Framework {
 public:
@@ -20,9 +20,10 @@ public:
 	concurrency::concurrent_queue<Event> eventQueue;
 	concurrency::concurrent_queue<OutputEvent> outEventQueue;
 
-	std::unordered_map<int, Entity> sessionToEntity;
-	std::unordered_map<Entity, int> entityToSession;
+	std::unordered_map<uint32, Entity> sessionToEntity;
+	std::unordered_map<Entity, uint32> entityToSession;
 
+	ServerConnectionListener listener;
 	Network network;
 	Game game;
 

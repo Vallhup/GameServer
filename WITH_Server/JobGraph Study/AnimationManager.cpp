@@ -1,7 +1,6 @@
+#include "pch.h"
 #include "AnimationManager.h"
 #include "json.hpp"
-
-#include <fstream>
 
 void AnimationManager::LoadAnimation(AnimationId id, std::string_view path)
 {

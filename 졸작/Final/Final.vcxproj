@@ -71,6 +71,22 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -182,6 +198,7 @@
     </ClCompile>
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ClientConnectionListener.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DX12Core.cpp" />
     <ClCompile Include="EffectRenderer.cpp" />
@@ -243,6 +260,7 @@
     <ClInclude Include="..\Dependency\ImGui\imstb_truetype.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ClientConnectionListener.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DX12Core.h" />
     <ClInclude Include="EffectRenderer.h" />
@@ -255,7 +273,6 @@
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="ObjectPoolManager.h" />
-    <ClInclude Include="Protocol.hpp" />
     <ClInclude Include="Protocols\Enum.pb.h" />
     <ClInclude Include="Protocols\Protocol.pb.h" />
     <ClInclude Include="Protocols\Struct.pb.h" />

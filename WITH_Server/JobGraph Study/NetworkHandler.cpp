@@ -1,7 +1,16 @@
+#include "pch.h"
 #include "NetworkHandler.h"
 #include "Framework.h"
 
-bool NetworkHandler::HandleConnect(int id, const PacketHeader& header, const char* data)
+#include "PacketFactory.h"
+
+NetworkHandler::NetworkHandler()
+{
+	_handlerTable[(uint16)PacketType::CS_LOGIN] = &NetworkHandler::HandleConnect;
+	_handlerTable[(uint16)PacketType::CS_MOVE] = &NetworkHandler::HandleMove;
+}
+
+bool NetworkHandler::HandleConnect(uint32 id, const PacketHeader& header, const BYTE* data)
 {
 	Protocol::CS_LOGIN_PACKET login;
 	if (not PacketFactory::Deserialize(header, data, &login))
@@ -14,7 +23,7 @@ bool NetworkHandler::HandleConnect(int id, const PacketHeader& header, const cha
 	return true;
 }
 
-bool NetworkHandler::HandleMove(int id, const PacketHeader& header, const char* data)
+bool NetworkHandler::HandleMove(uint32 id, const PacketHeader& header, const BYTE* data)
 {
 	Protocol::CS_MOVE_PACKET move;
 	if (not PacketFactory::Deserialize(header, data, &move))

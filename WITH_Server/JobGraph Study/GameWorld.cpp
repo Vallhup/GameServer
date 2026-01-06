@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "GameWorld.h"
 
 Instance* GameWorld::CreateInstance()

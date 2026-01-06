@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Protocols\Enum.pb.cc">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocols\Protocol.pb.cc">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocols\Struct.pb.cc">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Protocols\Enum.pb.h">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocols\Protocol.pb.h">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocols\Struct.pb.h">
+      <Filter>Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ProtobufCodec.h">
+      <Filter>Codec</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ProtocolLib.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\PacketFactory.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketType.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Codec">
+      <UniqueIdentifier>{7eb5ea7c-e700-4b2c-8f55-f838176a393a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{8329e36f-e5e5-48db-a0e4-bac2dec611c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{3ad497d2-772a-4168-a2cc-0f4263fb4af4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\pb.%2a">
+      <UniqueIdentifier>{b4453fc2-44bc-4da5-b697-da95a671d2e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\proto">
+      <UniqueIdentifier>{c016b231-88f7-4b4d-bc0b-b1452122dabd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="protos\Enum.proto">
+      <Filter>Protocol\proto</Filter>
+    </None>
+    <None Include="protos\Protocol.proto">
+      <Filter>Protocol\proto</Filter>
+    </None>
+    <None Include="protos\Struct.proto">
+      <Filter>Protocol\proto</Filter>
+    </None>
+  </ItemGroup>
+</Project>

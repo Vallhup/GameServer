@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "ColliderUpdateSystem.h"
 #include "Math.h"
 
@@ -29,16 +30,6 @@ void ColliderUpdateSystem::Execute(const float dT)
 
 			worldCapsule.radius *= 0.01f;
 			collider.worldCapsules[i] = worldCapsule;
-
-			/*if (i == 0)
-				printf("Entity %d, LocalCapsule : P0(%f, %f, %f), P1(%f, %f, %f), Radius(%f) --> WorldCapsule : P0(%f, %f, %f), P1(%f, %f, %f), Radius(%f)\n",
-					entity,
-					localCapsule.p0.x, localCapsule.p0.y, localCapsule.p0.z,
-					localCapsule.p1.x, localCapsule.p1.y, localCapsule.p1.z,
-					localCapsule.radius,
-					worldCapsule.p0.x, worldCapsule.p0.y, worldCapsule.p0.z,
-					worldCapsule.p1.x, worldCapsule.p1.y, worldCapsule.p1.z,
-					worldCapsule.radius);*/
 		}
 	}
 }

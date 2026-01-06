@@ -1,7 +1,8 @@
+#include "pch.h"
 #include "Framework.h"
 
 Framework::Framework(size_t size)
-	: game(size), network(7000, size), _running(false)
+	: game(size), network(size, 7000, listener), _running(false)
 {
 	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Idle, "../Animation/Knight_Walk_COLLIDER_PREBAKED.json");
 	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Walk, "../Animation/Knight_Walk_COLLIDER_PREBAKED.json");

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "ActionTimeSystem.h"
 
 void ActionTimeSystem::Execute(const float dT)

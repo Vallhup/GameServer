@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "AnimationRefSystem.h"
 
 void AnimationRefSystem::Execute(const float dT)

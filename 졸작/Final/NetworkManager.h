@@ -1,28 +1,17 @@
 #pragma once
 
+#include "ClientService.h"
+
 class NetworkManager {
-	static constexpr u_short PORT_NUM{ 7000 };
-
 public:
-	NetworkManager() : clientSocket(INVALID_SOCKET), isConnected(false) {}
-	~NetworkManager();
+	NetworkManager() : _service(nullptr) {}
 
-public:
-	void Initialize(const char* IP = "127.0.0.1", u_short port = PORT_NUM);
-	void Update();
+	void Initialize(uint16 threadCnt, std::string_view ip, uint16 port,
+		IConnectionListener& listener);
 	void Release();
 
-	void Send(const std::vector<char>& packet);
-
-public:
-	bool IsConnected() const { return isConnected; }
+	void Send(SendBuffer* packet);
 
 private:
-	void ProcessPacket(const std::vector<char>& packet);
-
-private:
-	SOCKET clientSocket;
-	bool isConnected;
-
-	std::vector<char> recvBuffer;
+	std::unique_ptr<ClientService> _service;
 };

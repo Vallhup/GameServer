@@ -40,11 +40,12 @@ using namespace Microsoft::WRL;
 
 #include <fmod.hpp>
 
-#include "Protocols/Enum.pb.h"
-#include "Protocols/Struct.pb.h"
-#include "Protocols/Protocol.pb.h"
+#include "Enum.pb.h"
+#include "Struct.pb.h"
+#include "Protocol.pb.h"
 
-#include "Protocol.hpp"
+#include "Asio_Network_Module.h"
+#include "ProtocolLib.h"
 
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
@@ -53,6 +54,8 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "ws2_32.lib")
 
 #pragma comment(lib, "fmod_vc.lib")
+
+#pragma comment(lib, "Asio_Network_Module.lib")
 
 #if !defined(ASSERT)
 #include <cassert>

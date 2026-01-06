@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include "ECS.h"
 #include "System.h"
 

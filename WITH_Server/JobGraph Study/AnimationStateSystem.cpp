@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "AnimationStateSystem.h"
 
 void AnimationStateSystem::Execute(const float dT)

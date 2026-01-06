@@ -1,8 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <queue>
-
 struct Entity {
 	int id;
 	int generation;
@@ -33,7 +30,7 @@ namespace std {
 class EntityManager {
 public:
 	Entity Create();
-	Entity CreatePlayer(int sessionId);
+	Entity CreatePlayer(uint32 sessionId);
 
 	void Destroy(Entity entity);
 	bool IsAlive(Entity entity) const;

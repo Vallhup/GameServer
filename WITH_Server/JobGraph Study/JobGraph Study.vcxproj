@@ -70,6 +70,22 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -77,6 +93,8 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -92,6 +110,8 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -105,6 +125,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,6 +142,8 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,6 +151,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ActionStateSystem.cpp" />
     <ClCompile Include="ActionTimeSystem.cpp" />
     <ClCompile Include="ActionTransitionSystem.cpp" />
@@ -141,32 +183,34 @@
     <ClCompile Include="EventSystem.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="NetworkHandler.cpp" />
-    <ClCompile Include="EventQueue.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="Instance.cpp" />
     <ClCompile Include="Job.cpp" />
     <ClCompile Include="JobGraph.cpp" />
-    <ClCompile Include="Listener.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MovementSystem.cpp" />
-    <ClCompile Include="Network.cpp" />
     <ClCompile Include="ObjectPoolManager.cpp" />
     <ClCompile Include="OutputEventSystem.cpp" />
-    <ClCompile Include="Protocol.cpp" />
-    <ClCompile Include="Protocols\Enum.pb.cc" />
-    <ClCompile Include="Protocols\Protocol.pb.cc" />
-    <ClCompile Include="Protocols\Struct.pb.cc" />
-    <ClCompile Include="RecvBuffer.cpp" />
-    <ClCompile Include="SendBuffer.cpp" />
-    <ClCompile Include="Session.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ServerConnectionListener.cpp" />
+    <ClCompile Include="ConnectionManager.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.h" />
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.h" />
     <ClInclude Include="ActionStateSystem.h" />
     <ClInclude Include="ActionTimeSystem.h" />
     <ClInclude Include="ActionTransitionSystem.h" />
@@ -174,7 +218,6 @@
     <ClInclude Include="AnimationRefSystem.h" />
     <ClInclude Include="AnimationStateSystem.h" />
     <ClInclude Include="AnimationTimeSystem.h" />
-    <ClInclude Include="asio.hpp" />
     <ClInclude Include="ColliderUpdateSystem.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="CollisionSystem.h" />
@@ -185,8 +228,9 @@
     <ClInclude Include="ECS.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Event.h" />
+    <ClInclude Include="NetHelper.h" />
+    <ClInclude Include="Network.h" />
     <ClInclude Include="NetworkHandler.h" />
-    <ClInclude Include="EventQueue.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameWorld.h" />
@@ -195,28 +239,17 @@
     <ClInclude Include="JobGraph.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="LF_Stack.h" />
-    <ClInclude Include="Listener.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="MovementSystem.h" />
-    <ClInclude Include="Network.h" />
     <ClInclude Include="ObjectPool.hpp" />
     <ClInclude Include="ObjectPoolManager.h" />
     <ClInclude Include="OutputEventSystem.h" />
-    <ClInclude Include="Protocol.hpp" />
-    <ClInclude Include="Protocols\Enum.pb.h" />
-    <ClInclude Include="Protocols\Protocol.pb.h" />
-    <ClInclude Include="Protocols\Struct.pb.h" />
-    <ClInclude Include="RecvBuffer.h" />
-    <ClInclude Include="SendBuffer.h" />
-    <ClInclude Include="Session.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="ServerConnectionListener.h" />
+    <ClInclude Include="ConnectionManager.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="ThreadPool.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="protos\Enum.proto" />
-    <None Include="protos\Protocol.proto" />
-    <None Include="protos\Struct.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

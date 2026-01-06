@@ -20,7 +20,7 @@ public:
 	void Reset() override;
 
 	void AddGameObject(shared_ptr<GameObject> obj);
-	void HandlePacket(const PacketHeader* data);
+	void HandlePacket(const PacketHeader& header, const BYTE* data);
 
 protected:
 	const float* GetBackgroundColor() override;

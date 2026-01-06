@@ -20,7 +20,8 @@ Engine& Engine::Get()
     return engine;
 }
 
-void Engine::Initialize(HWND hwnd)
+void Engine::Initialize(HWND hwnd, std::string_view ip, uint16 port, 
+    IConnectionListener& listener)
 {
     mHwnd = hwnd;
 
@@ -36,7 +37,7 @@ void Engine::Initialize(HWND hwnd)
     sceneManager->Initialize(*graphics);
 
     networkManager = make_unique<NetworkManager>();
-    networkManager->Initialize();
+    networkManager->Initialize(1, ip, port, listener);
 
     soundManager = make_unique<SoundManager>();
     soundManager->Initialize();
@@ -50,8 +51,6 @@ void Engine::Update(const float deltaTime)
 {
     sceneManager->ProcessPendingSceneChange(*graphics);
     sceneManager->Update(deltaTime);
-
-    networkManager->Update();
 
     soundManager->Update();
 }

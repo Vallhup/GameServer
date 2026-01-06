@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "AnimationTimeSystem.h"
 
 void AnimationTimeSystem::Execute(const float dT)

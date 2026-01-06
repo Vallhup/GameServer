@@ -1,9 +1,7 @@
+#include "pch.h"
 #include "ECS.h"
 #include "Framework.h"
 #include "MovementSystem.h"
-
-#include "Protocol.hpp"
-#include "Protocols/Protocol.pb.h"
 
 void MovementSystem::Execute(const float dT)
 {

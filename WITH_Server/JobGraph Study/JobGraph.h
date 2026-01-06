@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <atomic>
 #include <latch>
 #include <optional>
 #include <unordered_set>

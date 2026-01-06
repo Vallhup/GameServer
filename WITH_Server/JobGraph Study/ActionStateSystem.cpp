@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "ActionStateSystem.h"
 
 ActionStateSystem::ActionStateSystem(ECS& e, int p) : System(e, p) 

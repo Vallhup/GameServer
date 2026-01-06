@@ -1,12 +1,5 @@
 #pragma once
 
-#include <thread>
-#include <atomic>
-#include <vector>
-#include <mutex>
-#include <condition_variable>
-#include <queue>
-
 #include "JobGraph.h"
 
 class ThreadPool {

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <atomic>
-#include <vector>
-#include <DirectXMath.h>
-
 #include "AnimationManager.h"
 
 using namespace DirectX;

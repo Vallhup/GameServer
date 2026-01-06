@@ -1,8 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <memory>
-
 #include "ThreadPool.h"
 #include "GameWorld.h"
 #include "Instance.h"
