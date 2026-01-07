@@ -11,7 +11,15 @@ enum class AnimationId {
 	None,
 	Knight_Idle,
 	Knight_Walk,
-	Knight_Run
+	Knight_Run,
+	Knight_Attack,
+	Knight_Death,
+	Knight_Drinking,
+	Knight_Guard,
+	Knight_Hit,
+	Knight_Parry,
+	Knight_Roll,
+	Knight_Stun,
 };
 
 namespace std {
@@ -52,7 +60,7 @@ public:
 	const PrebakedAnimation* GetAnimation(AnimationId id) const;
 
 private:
-	AnimationManager() = default;
+	AnimationManager();
 	PrebakedAnimation LoadPrebakedAnimation(std::string_view path);
 
 	std::unordered_map<AnimationId, std::unique_ptr<PrebakedAnimation>> _animations;
