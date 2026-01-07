@@ -31,19 +31,20 @@ std::vector<std::type_index> ActionStateSystem::WriteComponents() const
 
 ActionType ActionStateSystem::GetNextAction(const ActionIntent& intent)
 {
-	// TEMP : 우선순위 변경 가능
+	// TODO : 우선순위 정의 필요
+	// Guard의 우선순위에 따라 구현 변화 가능
 	if (intent.parry) return ActionType::Parry;
 	if (intent.dodge) return ActionType::Dodge;
-	if(intent.attack) return ActionType::Attack;
+	if (intent.attack) return ActionType::Attack;
 	return ActionType::None;
 }
 
-bool ActionStateSystem::StartAction(ActionState* state, const ActionType& action)
+bool ActionStateSystem::StartAction(ActionState* state, const ActionType& type)
 {
 	if (!state) return false;
 
 	// TEMP : duration 값 수정 필요(Action별로 다르게)
-	state->type = action;
+	state->type = type;
 	state->elapsed = 0.0f;
 	state->duration = 1.0f;
 }
@@ -53,4 +54,5 @@ void ActionStateSystem::ResetActionIntent(ActionIntent* intent)
 	intent->attack = false;
 	intent->dodge = false;
 	intent->parry = false;
+	intent->guard = false;
 }

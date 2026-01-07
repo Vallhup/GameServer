@@ -12,6 +12,9 @@ public:
 	virtual std::vector<std::type_index> WriteComponents() const;
 
 private:
-	void ActionTransition(ActionState* state);
+	int GetPriority(ActionType type);
+	float GetDuration(ActionType type);
+	ActionType ResolveNextAction(const ActionState& current, const ActionRequestTag& request);
+	void ApplyTransition(ActionState* state, ActionType next);
 };
 

@@ -13,6 +13,6 @@ public:
 
 private:
 	ActionType GetNextAction(const ActionIntent& intent);
-	bool StartAction(ActionState* state, const ActionType& action);
+	bool StartAction(ActionState* state, const ActionType& type);
 	void ResetActionIntent(ActionIntent* intent);
 };

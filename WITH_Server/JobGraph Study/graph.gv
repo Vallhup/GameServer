@@ -6,7 +6,6 @@ digraph JobGraph {
   "class ActionTimeSystem" -> "class ActionTransitionSystem";
   "class ActionTimeSystem" -> "class AnimationStateSystem";
   "class ActionTimeSystem" -> "class AnimationTimeSystem";
-  "class ActionTransitionSystem" -> "class MovementSystem";
   "class ActionTransitionSystem" -> "class AnimationStateSystem";
   "class ActionTransitionSystem" -> "class AnimationTimeSystem";
   "class MovementSystem" -> "class ColliderUpdateSystem";

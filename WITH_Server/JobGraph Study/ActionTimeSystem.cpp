@@ -9,6 +9,7 @@ void ActionTimeSystem::Execute(const float dT)
 	{
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
 		if (action.type == ActionType::None) continue;
+		if (action.type == ActionType::Guard) continue;
 
 		action.elapsed += dT;
 	}

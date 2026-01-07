@@ -102,6 +102,9 @@
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
+    <ClCompile Include="HitSystem.cpp">
+      <Filter>ECS\System\Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Job.h">
@@ -227,6 +230,9 @@
     </ClInclude>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="HitSystem.h">
+      <Filter>ECS\System\Logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
