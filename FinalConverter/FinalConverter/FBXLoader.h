@@ -20,6 +20,35 @@ struct FbxMaterialInfo
 	wstring aoTexName;          // Ambient Occlusion
 };
 
+struct VertexKey {
+	Vec3 pos;
+	Vec2 uv;
+	Vec3 normal;
+
+	bool operator==(const VertexKey& other) const {
+		const float eps = 1e-5f;
+		return fabsf(pos.x - other.pos.x) < eps &&
+			fabsf(pos.y - other.pos.y) < eps &&
+			fabsf(pos.z - other.pos.z) < eps &&
+			fabsf(uv.x - other.uv.x) < eps &&
+			fabsf(uv.y - other.uv.y) < eps &&
+			fabsf(normal.x - other.normal.x) < eps &&
+			fabsf(normal.y - other.normal.y) < eps &&
+			fabsf(normal.z - other.normal.z) < eps;
+	}
+};
+
+struct VertexKeyHash {
+	size_t operator()(const VertexKey& k) const {
+		auto h1 = hash<int>{}(static_cast<int>(k.pos.x * 10000));
+		auto h2 = hash<int>{}(static_cast<int>(k.pos.y * 10000));
+		auto h3 = hash<int>{}(static_cast<int>(k.pos.z * 10000));
+		auto h4 = hash<int>{}(static_cast<int>(k.uv.x * 10000));
+		auto h5 = hash<int>{}(static_cast<int>(k.uv.y * 10000));
+		return h1 ^ (h2 << 1) ^ (h3 << 2) ^ (h4 << 3) ^ (h5 << 4);
+	}
+};
+
 struct BoneWeight
 {
 	using Pair = pair<int32, double>;

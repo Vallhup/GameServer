@@ -126,50 +126,139 @@ void FBXLoader::ParseNode(FbxNode* node)
 		ParseNode(node->GetChild(i));
 }
 
+//void FBXLoader::LoadMesh(FbxMesh* mesh)
+//{
+//	_meshes.push_back(FbxMeshInfo());
+//	FbxMeshInfo& meshInfo = _meshes.back();
+//	meshInfo.name = s2ws(mesh->GetName());
+//
+//	// 정점 확장
+//	vector<Vertex> expandedVertices;
+//	vector<int32> controlPointMapping;
+//	FbxVector4* controlPoints = mesh->GetControlPoints();
+//
+//	const int32 materialCount = mesh->GetNode()->GetMaterialCount();
+//	meshInfo.indices.resize(materialCount);
+//	FbxGeometryElementMaterial* geometryElementMaterial = mesh->GetElementMaterial();
+//
+//	uint32 currentVertexIndex = 0;
+//	const int32 triCount = mesh->GetPolygonCount();
+//
+//	for (int32 i = 0; i < triCount; i++) {
+//		uint32 triangleIndices[3];
+//
+//		for (int32 j = 0; j < 3; j++) {
+//			int32 controlPointIndex = mesh->GetPolygonVertex(i, j);
+//			Vertex newVertex = {};
+//
+//			// Position
+//			newVertex.pos.x = static_cast<float>(controlPoints[controlPointIndex].mData[0]);
+//			newVertex.pos.y = static_cast<float>(controlPoints[controlPointIndex].mData[2]);
+//			newVertex.pos.z = static_cast<float>(controlPoints[controlPointIndex].mData[1]);
+//
+//			// UV
+//			FbxVector2 uv = mesh->GetElementUV()->GetDirectArray().GetAt(mesh->GetTextureUVIndex(i, j));
+//			newVertex.uv.x = static_cast<float>(uv.mData[0]);
+//			newVertex.uv.y = 1.f - static_cast<float>(uv.mData[1]);
+//
+//			// Normal - 직접 계산
+//			if (mesh->GetElementNormalCount() > 0) {
+//				FbxGeometryElementNormal* normal = mesh->GetElementNormal();
+//				uint32 normalIdx = currentVertexIndex;
+//				if (normal->GetMappingMode() == FbxGeometryElement::eByPolygonVertex) {
+//					if (normal->GetReferenceMode() == FbxGeometryElement::eDirect)
+//						normalIdx = currentVertexIndex;
+//					else
+//						normalIdx = normal->GetIndexArray().GetAt(currentVertexIndex);
+//				}
+//				FbxVector4 vec = normal->GetDirectArray().GetAt(normalIdx);
+//				newVertex.normal.x = static_cast<float>(vec.mData[0]);
+//				newVertex.normal.y = static_cast<float>(vec.mData[2]);
+//				newVertex.normal.z = static_cast<float>(vec.mData[1]);
+//			}
+//
+//			// Tangent - 기본값
+//			newVertex.tangent = { 1.0f, 0.0f, 0.0f };
+//
+//			expandedVertices.push_back(newVertex);
+//			controlPointMapping.push_back(controlPointIndex);
+//			triangleIndices[j] = currentVertexIndex;
+//			currentVertexIndex++;
+//		}
+//
+//		const uint32 subsetIdx = geometryElementMaterial->GetIndexArray().GetAt(i);
+//		meshInfo.indices[subsetIdx].push_back(triangleIndices[0]);
+//		meshInfo.indices[subsetIdx].push_back(triangleIndices[2]);
+//		meshInfo.indices[subsetIdx].push_back(triangleIndices[1]);
+//	}
+//
+//	meshInfo.vertices = expandedVertices;
+//
+//	const int32 originalVertexCount = mesh->GetControlPointsCount();
+//	meshInfo.boneWeights.resize(originalVertexCount);
+//
+//	// 애니메이션 로드
+//	LoadAnimationData(mesh, &meshInfo);
+//
+//	vector<BoneWeight> originalWeights = meshInfo.boneWeights;
+//	meshInfo.boneWeights.resize(expandedVertices.size());
+//
+//	for (size_t i = 0; i < controlPointMapping.size(); ++i) {
+//		int32 originalIndex = controlPointMapping[i];
+//		if (originalIndex < originalWeights.size()) {
+//			meshInfo.boneWeights[i] = originalWeights[originalIndex];
+//		}
+//	}
+//
+//	FillBoneWeight(mesh, &meshInfo);
+//}
+
 void FBXLoader::LoadMesh(FbxMesh* mesh)
 {
 	_meshes.push_back(FbxMeshInfo());
 	FbxMeshInfo& meshInfo = _meshes.back();
 	meshInfo.name = s2ws(mesh->GetName());
 
-	// 정점 확장
-	vector<Vertex> expandedVertices;
-	vector<int32> controlPointMapping;
 	FbxVector4* controlPoints = mesh->GetControlPoints();
-
 	const int32 materialCount = mesh->GetNode()->GetMaterialCount();
 	meshInfo.indices.resize(materialCount);
 	FbxGeometryElementMaterial* geometryElementMaterial = mesh->GetElementMaterial();
 
-	uint32 currentVertexIndex = 0;
+	// Vertex Welding용 해시맵
+	unordered_map<VertexKey, uint32, VertexKeyHash> vertexMap;
+	vector<Vertex> uniqueVertices;
+	vector<int32> controlPointMapping;
+
+	uint32 vertexCounter = 0;
 	const int32 triCount = mesh->GetPolygonCount();
 
 	for (int32 i = 0; i < triCount; i++) {
 		uint32 triangleIndices[3];
 
 		for (int32 j = 0; j < 3; j++) {
-			int32 controlPointIndex = mesh->GetPolygonVertex(i, j);
+			int32 cpIdx = mesh->GetPolygonVertex(i, j);
 			Vertex newVertex = {};
 
-			// Position
-			newVertex.pos.x = static_cast<float>(controlPoints[controlPointIndex].mData[0]);
-			newVertex.pos.y = static_cast<float>(controlPoints[controlPointIndex].mData[2]);
-			newVertex.pos.z = static_cast<float>(controlPoints[controlPointIndex].mData[1]);
+			// Position (Y-Z swap)
+			newVertex.pos.x = static_cast<float>(controlPoints[cpIdx].mData[0]);
+			newVertex.pos.y = static_cast<float>(controlPoints[cpIdx].mData[2]);
+			newVertex.pos.z = static_cast<float>(controlPoints[cpIdx].mData[1]);
 
 			// UV
-			FbxVector2 uv = mesh->GetElementUV()->GetDirectArray().GetAt(mesh->GetTextureUVIndex(i, j));
+			FbxVector2 uv = mesh->GetElementUV()->GetDirectArray().GetAt(
+				mesh->GetTextureUVIndex(i, j));
 			newVertex.uv.x = static_cast<float>(uv.mData[0]);
 			newVertex.uv.y = 1.f - static_cast<float>(uv.mData[1]);
 
-			// Normal - 직접 계산
+			// Normal
 			if (mesh->GetElementNormalCount() > 0) {
 				FbxGeometryElementNormal* normal = mesh->GetElementNormal();
-				uint32 normalIdx = currentVertexIndex;
+				uint32 normalIdx = vertexCounter;
 				if (normal->GetMappingMode() == FbxGeometryElement::eByPolygonVertex) {
 					if (normal->GetReferenceMode() == FbxGeometryElement::eDirect)
-						normalIdx = currentVertexIndex;
-					else
-						normalIdx = normal->GetIndexArray().GetAt(currentVertexIndex);
+						normalIdx = vertexCounter;
+					else  
+						normalIdx = normal->GetIndexArray().GetAt(vertexCounter);
 				}
 				FbxVector4 vec = normal->GetDirectArray().GetAt(normalIdx);
 				newVertex.normal.x = static_cast<float>(vec.mData[0]);
@@ -177,13 +266,24 @@ void FBXLoader::LoadMesh(FbxMesh* mesh)
 				newVertex.normal.z = static_cast<float>(vec.mData[1]);
 			}
 
-			// Tangent - 기본값
 			newVertex.tangent = { 1.0f, 0.0f, 0.0f };
 
-			expandedVertices.push_back(newVertex);
-			controlPointMapping.push_back(controlPointIndex);
-			triangleIndices[j] = currentVertexIndex;
-			currentVertexIndex++;
+			// Vertex Welding - 중복 체크
+			VertexKey key = { newVertex.pos, newVertex.uv, newVertex.normal };
+			auto it = vertexMap.find(key);
+
+			if (it != vertexMap.end()) {
+				triangleIndices[j] = it->second;
+			}
+			else {
+				uint32 newIdx = static_cast<uint32>(uniqueVertices.size());
+				uniqueVertices.push_back(newVertex);
+				controlPointMapping.push_back(cpIdx);
+				vertexMap[key] = newIdx;
+				triangleIndices[j] = newIdx;
+			}
+
+			vertexCounter++;
 		}
 
 		const uint32 subsetIdx = geometryElementMaterial->GetIndexArray().GetAt(i);
@@ -192,25 +292,29 @@ void FBXLoader::LoadMesh(FbxMesh* mesh)
 		meshInfo.indices[subsetIdx].push_back(triangleIndices[1]);
 	}
 
-	meshInfo.vertices = expandedVertices;
+	meshInfo.vertices = uniqueVertices;
 
+	// 본 가중치 처리
 	const int32 originalVertexCount = mesh->GetControlPointsCount();
 	meshInfo.boneWeights.resize(originalVertexCount);
 
-	// 애니메이션 로드
 	LoadAnimationData(mesh, &meshInfo);
 
+	// Control Point → Welded Vertex 매핑
 	vector<BoneWeight> originalWeights = meshInfo.boneWeights;
-	meshInfo.boneWeights.resize(expandedVertices.size());
+	meshInfo.boneWeights.resize(uniqueVertices.size());
 
 	for (size_t i = 0; i < controlPointMapping.size(); ++i) {
-		int32 originalIndex = controlPointMapping[i];
-		if (originalIndex < originalWeights.size()) {
-			meshInfo.boneWeights[i] = originalWeights[originalIndex];
+		int32 cpIdx = controlPointMapping[i];
+		if (cpIdx < originalWeights.size()) {
+			meshInfo.boneWeights[i] = originalWeights[cpIdx];
 		}
 	}
 
 	FillBoneWeight(mesh, &meshInfo);
+
+	wcout << L"  Welding: " << vertexCounter << L" → " << uniqueVertices.size()
+		<< L" (" << (100 - uniqueVertices.size() * 100 / vertexCounter) << L"% 감소)" << endl;
 }
 
 void FBXLoader::LoadCollisionMesh(FbxMesh* mesh)
