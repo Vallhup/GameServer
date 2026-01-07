@@ -10,7 +10,6 @@ Game::Game(size_t size)
 	: threadPool(size), graph(threadPool)
 {
 	ecs.systemMng.Initalize(ecs, graph);
-	auto systems = ecs.systemMng.GetSystems();
 	graph.AutoDependencyBuild(ecs.systemMng.GetSystems(), &_deltaTime);
 
 	ecs.systemMng.RegisterSystem<EventSystem> (ecs, 0);

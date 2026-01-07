@@ -12,12 +12,6 @@ public:
 
 	virtual void Execute(const float dT) override;
 
-	virtual std::vector<std::type_index> ReadComponents() const
-	{
-		return { typeid(Transform), typeid(Velocity), typeid(AnimationState),
-		typeid(AnimationRef), typeid(Animator), typeid(Collider) };
-	}
-
 private:
 	void ProcessSpawn(const OutputEvent& event);
 	void ProcessDespawn(const OutputEvent& event);

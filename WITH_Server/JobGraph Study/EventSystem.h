@@ -11,12 +11,6 @@ public:
 
 	virtual void Execute(const float dT) override;
 
-	virtual std::vector<std::type_index> WriteComponents() const 
-	{ 
-		return { typeid(Transform), typeid(Velocity), typeid(AnimationState), 
-		typeid(AnimationRef), typeid(Animator), typeid(Collider) };
-	}
-
 private:
 	void ProcessConnect(const Event& event);
 	void ProcessDisconnect(const Event& event);
