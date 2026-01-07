@@ -170,6 +170,24 @@ exit 0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Dependency\ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -214,18 +232,6 @@ exit 0</Command>
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="ObjectPoolManager.cpp" />
-    <ClCompile Include="Protocols\Enum.pb.cc">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Protocols\Protocol.pb.cc">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Protocols\Struct.pb.cc">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ServerSquareScene.cpp" />
     <ClCompile Include="ServerTestScene.cpp" />
@@ -253,6 +259,9 @@ exit 0</Command>
     <ClCompile Include="VertexIndexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.h" />
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.h" />
     <ClInclude Include="..\Dependency\ImGui\imconfig.h" />
     <ClInclude Include="..\Dependency\ImGui\imgui.h" />
     <ClInclude Include="..\Dependency\ImGui\imgui_impl_dx12.h" />
@@ -277,9 +286,6 @@ exit 0</Command>
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="ObjectPoolManager.h" />
-    <ClInclude Include="Protocols\Enum.pb.h" />
-    <ClInclude Include="Protocols\Protocol.pb.h" />
-    <ClInclude Include="Protocols\Struct.pb.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ServerSquareScene.h" />
     <ClInclude Include="ServerTestScene.h" />
