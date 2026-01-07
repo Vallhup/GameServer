@@ -139,7 +139,8 @@
       <AdditionalDependencies>DirectXTex_debug.lib;Effekseer.lib;EffekseerRendererDX12.lib;LLGI.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(SolutionDir)Dependency\FMOD\lib\x64\fmod.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d /i "$(SolutionDir)Dependency\FMOD\lib\x64\fmod.dll" "$(OutDir)" 2&gt;nul
+exit 0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,7 +165,8 @@
       <AdditionalDependencies>DirectXTex.lib;Effekseer.lib;EffekseerRendererDX12.lib;LLGI.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(SolutionDir)Dependency\FMOD\lib\x64\fmod.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d /i "$(SolutionDir)Dependency\FMOD\lib\x64\fmod.dll" "$(OutDir)" 2&gt;nul
+exit 0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
