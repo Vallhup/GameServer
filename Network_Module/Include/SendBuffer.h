@@ -9,9 +9,15 @@ struct SendBuffer {
 
 class SendBufferPool {
 public:
+	static SendBufferPool& Get()
+	{
+		static SendBufferPool instance;
+		return instance;
+	}
+
 	SendBuffer* Acquire();
 	void Release(SendBuffer* buf);
 
 private:
-	std::vector<SendBuffer*> _free;
+	concurrency::concurrent_queue<SendBuffer*> _free;
 };

@@ -10,8 +10,7 @@ public:
 	explicit ClientService(uint16 threadCnt, std::string_view ip, uint16 port,
 		IConnectionListener& listener);
 	virtual ~ClientService() = default;
-
-	void Send(std::span<const BYTE> data);
+	
 	void Send(SendBuffer* data);
 
 protected:

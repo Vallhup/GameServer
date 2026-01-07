@@ -18,7 +18,6 @@ public:
 	void Start();
 	void Stop();
 
-	void Send(std::span<const BYTE> data);
 	void Send(SendBuffer* data);
 
 	uint32 GetId() const { return _id; }
@@ -50,7 +49,5 @@ private:
 	std::deque<SendBuffer*> _sendQueue;
 	std::deque<std::vector<BYTE>> _sendQueue2;
 	std::vector<asio::const_buffer> _gatherBufs;
-
-	SendBufferPool _sendPool;
 };
 

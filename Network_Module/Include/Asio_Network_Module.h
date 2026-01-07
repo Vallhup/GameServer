@@ -1,8 +1,5 @@
 #pragma once
 
-#define ASIO_STANDALONE
-#include "asio.hpp"
-
 #include <iostream>
 #include <optional>
 #include <thread>
@@ -10,14 +7,18 @@
 #include <deque>
 #include <span>
 
-using asio::ip::tcp;
+#include <concurrent_queue.h>
 
-using BYTE = unsigned char;
-using int8 = __int8;
-using int16 = __int16;
-using int32 = __int32;
-using int64 = __int64;
-using uint8 = unsigned __int8;
-using uint16 = unsigned __int16;
-using uint32 = unsigned __int32;
-using uint64 = unsigned __int64;
+#include "types.h"
+
+#include "ServerService.h"
+#include "ClientService.h"
+
+#include "Acceptor.h"
+#include "IAcceptListener.h"
+
+#include "Connection.h"
+#include "IConnectionListener.h"
+
+#include "SendBuffer.h"
+#include "Protocol.h"

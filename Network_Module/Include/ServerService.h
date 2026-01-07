@@ -17,9 +17,11 @@ public:
 	virtual void OnAccept(tcp::socket s) override = 0;
 
 protected:
-	virtual void OnStart() override;
-	virtual void OnStop() override;
+	virtual void OnStart() override final;
+	virtual void OnStop() override final;
 
-	Acceptor _acceptor;
 	IConnectionListener& _connListener;
+
+private:
+	Acceptor _acceptor;
 };
