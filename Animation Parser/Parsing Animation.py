@@ -8,8 +8,8 @@ def swap_yz(v):
 
 AXIS_SWAP = np.array([
     [1, 0, 0],
+    [0, 1, 0],
     [0, 0, 1],
-    [0, -1, 0],
 ], dtype=np.float32)
 
 def rotation_matrix_to_quaternion(R):
@@ -205,8 +205,8 @@ def prebake(anim, capsules):
 # # ----------------------------------------------------
 # # 설정
 # # ----------------------------------------------------
-JSON_PATH = r"C:\Users\Hadenpel\Knight_Walk_COLLIDER_PREBAKED.json"
-FRAME_INDEX = 10  # 보고 싶은 프레임 인덱스
+JSON_PATH = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\knight_animation_guard.json"
+FRAME_INDEX = 1  # 보고 싶은 프레임 인덱스
 
 # # ----------------------------------------------------
 # # 데이터 로드
@@ -269,12 +269,13 @@ if xs and ys and zs:
 
 plt.show()
 
-anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight5_Walk_mixamo.com_baked.bone")
-colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight_capsules.json")
+anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Knight\Animation\knight_animation_walk_baked.bone")
+colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Capsule\knight_capsules.json")
+output = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\knight_animation_walk.json"
 
 prebaked = prebake(anim, colliders)
 
-with open("Knight_Walk_COLLIDER_PREBAKED.json", "w") as f:
+with open(output, "w") as f:
     json.dump(prebaked, f, indent=2)
 
 print("Prebaked collider animation 생성 완료!")

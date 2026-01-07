@@ -132,6 +132,6 @@ def save_capsule_to_json(object_name, mesh_folder, output_path):
 if __name__ == "__main__":
     save_capsule_to_json(
         object_name="Knight",
-        mesh_folder=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser",
+        mesh_folder=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight",
         output_path=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\knight_capsules.json"
     )
