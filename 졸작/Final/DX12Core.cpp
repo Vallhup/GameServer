@@ -582,7 +582,7 @@ void DX12Core::BeginLightingPass()
 void DX12Core::SetupLights()
 {
 	// Forward Light 초기값
-	forwardLightData = { {0, 0, -1}, 0, {1, 1, 1}, 0.9f };
+	forwardLightData = { {0, 0, -1}, 0, {1, 1, 1}, 0.25f };
 
 	// Deferred Light 초기값
 	deferredLightData.lightCount = 23;

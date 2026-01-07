@@ -31,7 +31,7 @@ void GameScene::CreateKnightPool()
 		auto meshRenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
-		meshRenderer->SetMesh(*coreRef, L"../Assets/FBXModel/knight6");
+		meshRenderer->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
@@ -61,13 +61,13 @@ void GameScene::CreateCastle()
 		XMFLOAT3 scale;
 	};
 
-//#pragma region Initialize CASTLEWALL
-//	for (int i = 2; i < 20; ++i)
-//	{
-//		wstring meshName = (i < 10) ? L"../Assets/FBXModel/mesh_0" + to_wstring(i) : L"../Assets/FBXModel/mesh_" + to_wstring(i);
-//		AddGameObject(CreateStaticMesh(meshName));
-//	}
-//#pragma endregion
+#pragma region Initialize CASTLEWALL
+	for (int i = 2; i < 20; ++i)
+	{
+		wstring meshName = (i < 10) ? L"../Assets/FBXModel/Castle/mesh_0" + to_wstring(i) : L"../Assets/FBXModel/Castle/mesh_" + to_wstring(i);
+		AddGameObject(CreateStaticMesh(meshName));
+	}
+#pragma endregion
 
 #pragma region Initialize PILLARS
 	constexpr castleData pillarData[] = {
@@ -110,7 +110,7 @@ void GameScene::CreateCastle()
 	};
 
 	for (const auto& data : pillarData)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/mesh_pillar", data.position, data.rotation, data.scale));
+		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_pillar", data.position, data.rotation, data.scale));
 #pragma endregion
 
 #pragma region Initialize FLOORS
@@ -154,7 +154,7 @@ void GameScene::CreateCastle()
 	};
 
 	for (const auto& data : floorData)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/mesh_01", data.position, data.rotation, data.scale));
+		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_01", data.position, data.rotation, data.scale));
 #pragma endregion
 
 #pragma region Initialize CANDLES
@@ -204,7 +204,7 @@ void GameScene::CreateCastle()
 	};
 
 	for (const auto& data : candleData)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/mesh_candle", data.position, data.rotation, data.scale));
+		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_candle", data.position, data.rotation, data.scale));
 #pragma endregion
 
 #pragma region Initialize STATUE1
@@ -213,7 +213,7 @@ void GameScene::CreateCastle()
 	};
 
 	for (const auto& data : statue1)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/mesh_statue1", data.position, data.rotation, data.scale));
+		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_statue1", data.position, data.rotation, data.scale));
 #pragma endregion
 
 #pragma region Initialize STATUE2
@@ -222,7 +222,7 @@ void GameScene::CreateCastle()
 	};
 
 	for (const auto& data : statue2)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/mesh_statue2", data.position, data.rotation, data.scale));
+		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_statue2", data.position, data.rotation, data.scale));
 #pragma endregion
 
 #pragma region Initialize STATUE3
@@ -232,7 +232,7 @@ void GameScene::CreateCastle()
 	};
 
 	for (const auto& data : statue3)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/mesh_statue3", data.position, data.rotation, data.scale));
+		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_statue3", data.position, data.rotation, data.scale));
 #pragma endregion
 
 #pragma region Initialize THRONE
@@ -241,7 +241,7 @@ void GameScene::CreateCastle()
 	};
 
 	for (const auto& data : throne)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/mesh_throne", data.position, data.rotation, data.scale));
+		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_throne", data.position, data.rotation, data.scale));
 #pragma endregion
 }
 
@@ -421,7 +421,7 @@ void GameScene::InitializeLogic()
 		auto meshRenderer = boss->AddComponent<MeshRenderer>();
 		auto transform = boss->AddComponent<Transform>();
 		auto animator = boss->AddComponent<Animator>();
-		meshRenderer->SetMesh(*coreRef, L"../Assets/FBXModel/boss");
+		meshRenderer->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
 		transform->SetInitPosition(2.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.02f, 0.02f, 0.02f);
