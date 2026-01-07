@@ -95,6 +95,12 @@ inline JobNode* JobGraph::CreateNode(Args&&... args)
 
 /*--------------------[ Utility ]--------------------*/
 
+enum class DependencyType {
+	None,
+	A_before_B,
+	B_before_A
+};
+
 static inline bool Intersects(const std::vector<std::type_index>& a, const std::vector<std::type_index>& b)
 {
 	for (const std::type_index& x : a)
@@ -106,17 +112,37 @@ static inline bool Intersects(const std::vector<std::type_index>& a, const std::
 	return false;
 }
 
-static inline bool HasConflict(System* A, System* B)
+static inline DependencyType AnalyzeDependency(System* A, System* B, 
+	const std::unordered_map<System*, int>& stableOrder)
 {
 	const auto& aR = A->ReadComponents();
 	const auto& aW = A->WriteComponents();
 	const auto& bR = B->ReadComponents();
 	const auto& bW = B->WriteComponents();
 
-	if (Intersects(aW, bR) ||
-		Intersects(aW, bW) ||
-		Intersects(bW, aR))
-		return true;
+	const bool aW_bW = Intersects(aW, bW);
+	const bool aW_bR = Intersects(aW, bR);
+	const bool aR_bW = Intersects(aR, bW);
 
-	return false;
+	const bool need_order = aW_bW || (aW_bR && aR_bW);
+
+	if (need_order)
+	{
+		// Priority가 작을수록 먼저 실행
+		if (A->GetPriority() != B->GetPriority())
+			return (A->GetPriority() < B->GetPriority())
+				? DependencyType::A_before_B : DependencyType::B_before_A;
+
+		// 동적 시스템 추가 예정 없어서 at으로 구현
+		return (stableOrder.at(A) < stableOrder.at(B))
+			? DependencyType::A_before_B : DependencyType::B_before_A;
+	}
+
+	if (aW_bR)
+		return DependencyType::A_before_B;
+
+	if (aR_bW)
+		return DependencyType::B_before_A;
+
+	return DependencyType::None;
 }

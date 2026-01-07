@@ -58,8 +58,6 @@ void JobGraph::AutoDependencyBuild(const std::vector<System*>& systems, float* d
 		stableOrder[sys] = static_cast<int>(i);
 	}
 
-	// TODO : O(N^2) 순회 
-	//     -> 나중에 시간나면 고치기... 어짜피 런타임에 돌아갈 함수 아님
 	for (size_t i = 0; i < systems.size(); ++i)
 	{
 		for (size_t j = i + 1; j < systems.size(); ++j)
@@ -67,28 +65,23 @@ void JobGraph::AutoDependencyBuild(const std::vector<System*>& systems, float* d
 			System* A = systems[i];
 			System* B = systems[j];
 
-			if (!HasConflict(A, B)) continue;
+			DependencyType dep = AnalyzeDependency(A, B, stableOrder);
+			if (dep == DependencyType::None) continue;
 
-			// 방향 결정: priority -> stableOrder
-			System* first = nullptr;  // 먼저 실행되어야 하는 쪽
-			System* second = nullptr; // first에 의존(뒤에 실행)
+			System* first = nullptr;
+			System* second = nullptr;
 
-			const int priA = A->GetPriority();
-			const int priB = B->GetPriority();
-
-			if (priA != priB)
+			if (dep == DependencyType::A_before_B)
 			{
-				first = (priA < priB) ? A : B;
-				second = (first == A) ? B : A;
+				first = A;
+				second = B;
+			
 			}
-			else
-			{
-				// tie-breaker는 반드시 결정적이어야 합니다.
-				const int ordA = stableOrder[A];
-				const int ordB = stableOrder[B];
 
-				first = (ordA < ordB) ? A : B;
-				second = (first == A) ? B : A;
+			else if(dep == DependencyType::B_before_A)
+			{
+				first = B;
+				second = A;
 			}
 
 			JobNode* from = nodeMap[first];
