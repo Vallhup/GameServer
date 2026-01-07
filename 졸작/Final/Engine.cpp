@@ -33,7 +33,7 @@ void Engine::Initialize(HWND hwnd, std::string_view ip, uint16 port,
     GET(ImGuiManager).Initialize(mHwnd, *graphics);
 
     sceneManager = make_unique<SceneManager>();
-    sceneManager->Initialize(*graphics);
+    sceneManager->Initialize(hwnd, *graphics);
 
     networkManager = make_unique<NetworkManager>();
     networkManager->Initialize(1, ip, port, listener);

@@ -12,7 +12,7 @@ class Scene
 {
 public:
 	virtual ~Scene() {}
-    virtual void Initialize(DX12Core& core);
+    virtual void Initialize(HWND hWnd, DX12Core& core);
     virtual void Update(const float deltaTime);
     virtual void RenderDeferred();
 	virtual void RenderForward();

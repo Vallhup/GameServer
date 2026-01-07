@@ -7,7 +7,7 @@
 #include "Camera.h"
 #include "Input.h"
 
-void Scene::Initialize(DX12Core& core)
+void Scene::Initialize(HWND hWnd, DX12Core& core)
 {
     coreRef = &core;
 
@@ -15,7 +15,7 @@ void Scene::Initialize(DX12Core& core)
         cam.reset();
 
     cam = make_unique<Camera>();
-    cam->Initialize();
+    cam->Initialize(hWnd);
 
     InitializeObjectPools();
 
