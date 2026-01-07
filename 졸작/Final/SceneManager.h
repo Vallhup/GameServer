@@ -15,7 +15,7 @@ class SceneManager
 {
 public:
     ~SceneManager();
-    void Initialize(DX12Core& core);        
+    void Initialize(HWND hWnd, DX12Core& core);
     void Update(const float deltaTime);
     void RenderDeferred();
     void RenderForward();
@@ -35,6 +35,7 @@ private:
     void RegisterScene(SceneType type);
 
 private:
+    HWND hwnd;
     Scene* mCurrentScene = nullptr;
     std::array<std::unique_ptr<Scene>, static_cast<size_t>(SceneType::END)> mScenes;
 

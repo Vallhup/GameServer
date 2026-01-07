@@ -5,8 +5,10 @@
 #include "GameObject.h"
 #include "MainCharacter.h"
 
-void Camera::Initialize()
+void Camera::Initialize(HWND hWnd)
 {
+    hwnd = hWnd;
+
 	position = { 0.0f, 0.0f, 0.0f };
     targetPosition = { 0.0f, 0.0f, 1.0f };
 
@@ -20,9 +22,6 @@ void Camera::Initialize()
 	pitch = -26.57f;
 	moveSpeed = 5.0f;
 	rotateSpeed = 90.0f;
-
-    centerX = WinSize.x / 2;
-    centerY = WinSize.y / 2;
 
     CURSORINFO cursorInfo;
     cursorInfo.cbSize = sizeof(CURSORINFO);
@@ -143,17 +142,20 @@ void Camera::UpdateForwardAndRight()
 
 void Camera::ChangeAngleByInput(float deltaTime)
 {
+    POINT center = { WinSize.x / 2, WinSize.y / 2 };
+    ClientToScreen(hwnd, &center);
+
     POINT mousePos;
     GetCursorPos(&mousePos);
 
-    float deltaX = static_cast<float>(mousePos.x - centerX);
-    float deltaY = static_cast<float>(mousePos.y - centerY);
+    float deltaX = static_cast<float>(mousePos.x - center.x);
+    float deltaY = static_cast<float>(mousePos.y - center.y);
 
     if (abs(deltaX) > 0.1f || abs(deltaY) > 0.1f) {
         yaw += deltaX * MOUSE_SENSITIVITY;
         pitch -= deltaY * MOUSE_SENSITIVITY;
 
-        SetCursorPos(centerX, centerY);
+        SetCursorPos(center.x, center.y);
 
         constexpr float MAX_PITCH_DEGREE = 89.0f;
         pitch = max(-MAX_PITCH_DEGREE, min(MAX_PITCH_DEGREE, pitch));
@@ -276,9 +278,21 @@ void Camera::ChangeCursorInfo(bool in)
     if (in)
         ClipCursor(nullptr);
     else {
-        RECT cliprect = { 0, 0, WinSize.x, WinSize.y };
-        ClipCursor(&cliprect);
-        SetCursorPos(centerX, centerY);
+        RECT clientRect;
+        GetClientRect(hwnd, &clientRect);
+
+        POINT topLeft = { clientRect.left, clientRect.top };
+        POINT bottomRight = { clientRect.right, clientRect.bottom };
+        ClientToScreen(hwnd, &topLeft);
+        ClientToScreen(hwnd, &bottomRight);
+
+        RECT clipRect = { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
+        ClipCursor(&clipRect);
+
+        // 센터도 스크린 좌표로
+        POINT center = { WinSize.x / 2, WinSize.y / 2 };
+        ClientToScreen(hwnd, &center);
+        SetCursorPos(center.x, center.y);
     }
 }
 

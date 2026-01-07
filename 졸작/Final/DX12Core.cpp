@@ -162,7 +162,7 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
 		.BufferCount = SWAP_CHAIN_BUFFER_COUNT,
 		.OutputWindow = hwnd,
-		.Windowed = false,
+		.Windowed = true,
 		.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
 		.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
 	};
@@ -582,7 +582,7 @@ void DX12Core::BeginLightingPass()
 void DX12Core::SetupLights()
 {
 	// Forward Light 초기값
-	forwardLightData = { {0, 0, -1}, 0, {1, 1, 1}, 0.9f };
+	forwardLightData = { {0, 0, -1}, 0, {1, 1, 1}, 0.25f };
 
 	// Deferred Light 초기값
 	deferredLightData.lightCount = 23;

@@ -19,8 +19,10 @@ SceneManager::~SceneManager()
 	Release();
 }
 
-void SceneManager::Initialize(DX12Core& core)
+void SceneManager::Initialize(HWND hWnd, DX12Core& core)
 {
+    hwnd = hWnd;
+
     RegisterScene<TestScene>(SceneType::Start);
     RegisterScene<LoginScene>(SceneType::Login);
     RegisterScene<ServerSquareScene>(SceneType::ServerSquare);
@@ -107,7 +109,7 @@ void SceneManager::SceneStart(DX12Core& core)
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
     Material::InitializeBindlessSystem(core.GetDevice());
-    mCurrentScene->Initialize(core);
+    mCurrentScene->Initialize(hwnd, core);
 
     core.SetBackgroundColor(mCurrentScene->GetBackgroundColor());
 }
@@ -134,7 +136,7 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
     size_t index = static_cast<size_t>(nextSceneType);
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
-    mCurrentScene->Initialize(core);
+    mCurrentScene->Initialize(hwnd, core);
 
     core.FlushCommandQueue();
 

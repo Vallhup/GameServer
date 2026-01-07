@@ -187,8 +187,6 @@ void Animator::ExecuteComputeShader(DX12Core& core)
 {
     auto cmdList = core.GetGraphicsCmdList();
 
-    //DebugAnimationInfo();
-
     AnimationConstants animData = {};
     animData.boneCount = mBoneCount;
     animData.currentFrame = mFrame;
@@ -225,6 +223,9 @@ void Animator::LoadAnimationFromImporter(DX12Core& core, const Importer& importe
     if (!animations.empty()) {
         SetAnimationData(core, animations);
         SetSkeletonData(skeleton);
+
+        // later if I want to debug anim info - turn on
+        //DebugAnimationInfo();
         OutputDebugStringA("Animation data loaded!\n");
     }
 }
@@ -234,4 +235,8 @@ void Animator::DebugAnimationInfo()
     OutputDebugStringA(("Bone Count: " + to_string(mBoneCount) + "\n").c_str());
     OutputDebugStringA(("Current Frame: " + to_string(mFrame) + "\n").c_str());
     OutputDebugStringA(("Frame Ratio: " + to_string(mFrameRatio) + "\n").c_str());
+
+    for (int i = 0; i < mAnimations.size(); ++i) {
+        OutputDebugStringA(("[" + to_string(i) + "] " + mAnimations[i].animName + "\n").c_str());
+    }
 }

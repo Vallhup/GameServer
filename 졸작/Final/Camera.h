@@ -7,7 +7,7 @@ class MainCharacter;
 class Camera
 {
 public:
-	void Initialize();
+	void Initialize(HWND hWnd);
 	void InitCameraPositionFromCharacter(const XMFLOAT3& pos);
 
 	void Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const shared_ptr<MainCharacter>& myPlayer);
@@ -38,6 +38,8 @@ private:
 	void ChangeCursorInfo(bool in);
 
 private:
+	HWND hwnd;
+
 	XMFLOAT3 position;
 	XMFLOAT3 targetPosition;
 
@@ -52,9 +54,6 @@ private:
 	float pitch;
 	float moveSpeed;
 	float rotateSpeed;
-
-	int centerX;
-	int centerY;
 
 	bool spacePressed = false;
 

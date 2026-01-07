@@ -40,7 +40,7 @@ void ServerSquareScene::InitializeLogic()
 		auto meshrenderer = knight->AddComponent<MeshRenderer>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
-		meshrenderer->SetMesh(*coreRef, L"../Assets/FBXModel/knight6");
+		meshrenderer->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
 		transform->SetInitPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
