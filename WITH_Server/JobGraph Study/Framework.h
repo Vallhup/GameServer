@@ -29,6 +29,7 @@ public:
 
 private:
 	static BOOL WINAPI ConsoleHandler(DWORD ctrlType);
+	void LoadAnimations();
 
 	bool _running;
 };

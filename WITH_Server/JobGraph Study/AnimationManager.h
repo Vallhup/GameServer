@@ -60,7 +60,7 @@ public:
 	const PrebakedAnimation* GetAnimation(AnimationId id) const;
 
 private:
-	AnimationManager();
+	AnimationManager() = default;
 	PrebakedAnimation LoadPrebakedAnimation(std::string_view path);
 
 	std::unordered_map<AnimationId, std::unique_ptr<PrebakedAnimation>> _animations;

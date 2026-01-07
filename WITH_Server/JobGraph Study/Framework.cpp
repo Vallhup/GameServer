@@ -11,6 +11,7 @@ void Framework::Start()
 	using namespace std::chrono;
 
 	SetConsoleCtrlHandler(ConsoleHandler, TRUE);
+	LoadAnimations();
 
 	_running = true;
 	network.Start();
@@ -51,4 +52,19 @@ BOOL __stdcall Framework::ConsoleHandler(DWORD ctrlType)
 	}
 
 	return FALSE;
+}
+
+void Framework::LoadAnimations()
+{
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Idle, "../Animation/Knight/knight_animation_idle.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Walk, "../Animation/Knight/knight_animation_walk.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Run, "../Animation/Knight/knight_animation_run.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Attack, "../Animation/Knight/knight_animation_attack.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Death, "../Animation/Knight/knight_animation_death.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Drinking, "../Animation/Knight/knight_animation_drinking.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Guard, "../Animation/Knight/knight_animation_guard.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Hit, "../Animation/Knight/knight_animation_hit.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Parry, "../Animation/Knight/knight_animation_parry.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Roll, "../Animation/Knight/knight_animation_roll.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Stun, "../Animation/Knight/knight_animation_stun.json");
 }

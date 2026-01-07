@@ -2,21 +2,6 @@
 #include "AnimationManager.h"
 #include "json.hpp"
 
-AnimationManager::AnimationManager()
-{
-	LoadAnimation(AnimationId::Knight_Idle, "../Animation/Knight/knight_animation_idle.json");
-	LoadAnimation(AnimationId::Knight_Walk, "../Animation/Knight/knight_animation_walk.json");
-	LoadAnimation(AnimationId::Knight_Run, "../Animation/Knight/knight_animation_run.json");
-	LoadAnimation(AnimationId::Knight_Attack, "../Animation/Knight/knight_animation_attack.json");
-	LoadAnimation(AnimationId::Knight_Death, "../Animation/Knight/knight_animation_death.json");
-	LoadAnimation(AnimationId::Knight_Drinking, "../Animation/Knight/knight_animation_drinking.json");
-	LoadAnimation(AnimationId::Knight_Guard, "../Animation/Knight/knight_animation_guard.json");
-	LoadAnimation(AnimationId::Knight_Hit, "../Animation/Knight/knight_animation_hit.json");
-	LoadAnimation(AnimationId::Knight_Parry, "../Animation/Knight/knight_animation_parry.json");
-	LoadAnimation(AnimationId::Knight_Roll, "../Animation/Knight/knight_animation_roll.json");
-	LoadAnimation(AnimationId::Knight_Stun, "../Animation/Knight/knight_animation_stun.json");
-}
-
 void AnimationManager::LoadAnimation(AnimationId id, std::string_view path)
 {
 	if (_animations.contains(id)) return;
