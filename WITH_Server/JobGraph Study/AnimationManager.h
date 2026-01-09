@@ -18,7 +18,7 @@ enum class AnimationId {
 	Knight_Guard,
 	Knight_Hit,
 	Knight_Parry,
-	Knight_Roll,
+	Knight_Dodge,
 	Knight_Stun,
 };
 

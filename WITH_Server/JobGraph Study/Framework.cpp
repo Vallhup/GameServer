@@ -65,6 +65,6 @@ void Framework::LoadAnimations()
 	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Guard, "../Animation/Knight/knight_animation_guard.json");
 	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Hit, "../Animation/Knight/knight_animation_hit.json");
 	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Parry, "../Animation/Knight/knight_animation_parry.json");
-	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Roll, "../Animation/Knight/knight_animation_roll.json");
+	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Dodge, "../Animation/Knight/knight_animation_dodge.json");
 	AnimationManager::Get().LoadAnimation(AnimationId::Knight_Stun, "../Animation/Knight/knight_animation_stun.json");
 }
