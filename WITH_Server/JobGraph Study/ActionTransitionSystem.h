@@ -14,6 +14,7 @@ public:
 private:
 	int GetPriority(ActionType type);
 	float GetDuration(ActionType type);
+	bool CanBeInterrupted(const ActionState& current, const ActionRequestTag& request);
 	ActionType ResolveNextAction(const ActionState& current, const ActionRequestTag& request);
 	void ApplyTransition(ActionState* state, ActionType next);
 };

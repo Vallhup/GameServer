@@ -129,10 +129,19 @@ void EventSystem::ProcessAction(const Event& event)
 	if (it == Framework::Get().sessionToEntity.end()) return;
 	Entity entity = it->second;
 
-	if(auto* actionIntent = ecs.GetStorage<ActionIntent>().GetComponent(entity))
+	if (auto* actionIntent = ecs.GetStorage<ActionIntent>().GetComponent(entity))
 	{
 		actionIntent->attack = p->attack;
 		actionIntent->dodge = p->dodge;
 		actionIntent->parry = p->parry;
+		actionIntent->guard = p->guard;
+
+		if (auto* actionState = ecs.GetStorage<ActionState>().GetComponent(entity))
+		{
+			if (actionState->type == ActionType::Guard && !p->guard)
+			{
+				ecs.GetStorage<ActionRequestTag>().AddComponent(entity)->type = ActionType::None;
+			}
+		}
 	}
 }

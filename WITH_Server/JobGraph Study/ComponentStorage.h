@@ -92,6 +92,8 @@ public:
 		return (entity.id < _sparse.size()) ? _sparse[entity.id] : INVALID;
 	}
 
+	int Size() const { return static_cast<int>(_dense.size()); }
+
 	Iterator begin() { return { 0, this }; }
 	Iterator end() { return { _dense.size(), this}; }
 

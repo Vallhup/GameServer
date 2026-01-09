@@ -12,7 +12,7 @@ public:
 	virtual std::vector<std::type_index> WriteComponents() const;
 
 private:
-	ActionType GetNextAction(const ActionIntent& intent);
+	ActionType GetNextAction(const ActionState& current, const ActionIntent& intent);
 	bool StartAction(ActionState* state, const ActionType& type);
 	void ResetActionIntent(ActionIntent* intent);
 };

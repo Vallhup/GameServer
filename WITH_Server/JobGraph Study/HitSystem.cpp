@@ -8,6 +8,7 @@ void HitSystem::Execute(const float dT)
 	auto& hitEvents = ecs.GetStorage<HitTag>();
 
 	std::vector<Entity> removeList;
+	removeList.reserve(hitEvents.Size());
 
 	for (const auto& [entity, hitEvent] : hitEvents)
 	{

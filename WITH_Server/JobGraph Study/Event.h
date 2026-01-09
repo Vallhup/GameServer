@@ -43,6 +43,7 @@ struct ActionEvent {
 	bool attack;
 	bool dodge;
 	bool parry;
+	bool guard;
 };
 
 using EventPayload = std::variant<

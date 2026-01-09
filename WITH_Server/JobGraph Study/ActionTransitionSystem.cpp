@@ -7,6 +7,7 @@ void ActionTransitionSystem::Execute(const float dT)
 	auto& requests = ecs.GetStorage<ActionRequestTag>();
 
 	std::vector<Entity> removeList;
+	removeList.reserve(requests.Size());
 
 	for (const auto& [entity, request] : requests)
 	{
@@ -48,7 +49,7 @@ int ActionTransitionSystem::GetPriority(ActionType type)
 	case ActionType::Dodge:	 return 70;
 	case ActionType::Attack: return 60;
 	case ActionType::None:	 return 0;
-	default:                 return 0;	
+	default:                 return 0;
 	}
 }
 
@@ -67,13 +68,63 @@ float ActionTransitionSystem::GetDuration(ActionType type)
 	}
 }
 
+bool ActionTransitionSystem::CanBeInterrupted(const ActionState& current, const ActionRequestTag& request)
+{
+	switch (current.type) {
+	case ActionType::Attack:
+	case ActionType::Dodge:
+	case ActionType::Parry:
+		// Hit / Dead 만 허용
+		return request.type == ActionType::Hit ||
+			request.type == ActionType::Dead;
+
+	case ActionType::None:
+		return true;
+
+	default:
+		return false;
+	}
+}
+
 ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current, const ActionRequestTag& request)
 {
 	if (current.type == ActionType::Dead)
 		return ActionType::Dead;
 
+	if (current.type == ActionType::Guard)
+	{
+		switch (request.type) {
+		case ActionType::Dead:
+			return ActionType::Dead;
+
+		case ActionType::Parry:
+		case ActionType::Dodge:
+		case ActionType::Attack:
+			// Guard 해제 + 요청 Action으로 전이
+			return request.type;
+
+		case ActionType::Hit:
+			// Guard 중에는 Hit 무시
+			return ActionType::Guard;
+
+		case ActionType::None:
+			// Guard 입력 해제 -> None으로 전환
+			return ActionType::None;
+
+		default:
+			return ActionType::Guard;
+		}
+
+	}
+
 	if (GetPriority(request.type) > GetPriority(current.type))
-		return request.type;
+	{
+		if (CanBeInterrupted(current, request))
+			return request.type;
+
+		return current.type;
+	}
+		
 
 	if (current.type != ActionType::None && 
 		current.elapsed >= current.duration)
@@ -88,5 +139,10 @@ void ActionTransitionSystem::ApplyTransition(ActionState* state, ActionType next
 {
 	state->type = next;
 	state->elapsed = 0.0f;
-	state->duration = GetDuration(next);
+
+	if (state->type == ActionType::Guard)
+		state->duration = std::numeric_limits<float>::infinity();
+
+	else
+		state->duration = GetDuration(next);
 }
