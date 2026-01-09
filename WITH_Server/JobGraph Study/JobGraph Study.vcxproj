@@ -183,7 +183,8 @@
     <ClCompile Include="EventSystem.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="HitSystem.cpp" />
+    <ClCompile Include="HitApplySystem.cpp" />
+    <ClCompile Include="HitResolveSystem.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="NetworkHandler.cpp" />
     <ClCompile Include="Framework.cpp" />
@@ -229,7 +230,8 @@
     <ClInclude Include="ECS.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Event.h" />
-    <ClInclude Include="HitSystem.h" />
+    <ClInclude Include="HitApplySystem.h" />
+    <ClInclude Include="HitResolveSystem.h" />
     <ClInclude Include="NetHelper.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="NetworkHandler.h" />

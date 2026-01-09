@@ -1,25 +1,26 @@
 #include "pch.h"
-#include "HitSystem.h"
+#include "HitApplySystem.h"
 
-void HitSystem::Execute(const float dT)
+void HitApplySystem::Execute(const float dT)
 {
 	// TODO : 현재는 frame 단위 처리만 가능, 추후 공격 단위 처리 추가 필요
 	//        ex) 공격 판정이 여러 프레임에 걸쳐 발생하는 경우 등
-	auto& hitEvents = ecs.GetStorage<HitTag>();
+	auto& hits = ecs.GetStorage<HitTag>();
 
 	std::vector<Entity> removeList;
-	removeList.reserve(hitEvents.Size());
+	removeList.reserve(hits.Size());
 
-	for (const auto& [entity, hitEvent] : hitEvents)
+	for (const auto& [entity, hit] : hits)
 	{
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
+		if (hit.invalid) continue;
 
 		auto* actionState = ecs.GetStorage<ActionState>().GetComponent(entity);
 		if (!actionState || actionState->type == ActionType::Dead) continue;
 		if (auto* health = ecs.GetStorage<Health>().GetComponent(entity))
 		{
 			// TODO : guard 처리 필요
-			health->current -= hitEvent.damage;
+			health->current -= hit.damage;
 
 			if (health->current <= 0)
 			{
@@ -38,21 +39,21 @@ void HitSystem::Execute(const float dT)
 
 	for (const auto& entity : removeList)
 	{
-		hitEvents.RemoveComponent(entity);
+		hits.RemoveComponent(entity);
 	}
 }
 
-std::vector<std::type_index> HitSystem::ReadComponents() const
+std::vector<std::type_index> HitApplySystem::ReadComponents() const
 {
 	return { typeid(ActionState) };
 }
 
-std::vector<std::type_index> HitSystem::WriteComponents() const
+std::vector<std::type_index> HitApplySystem::WriteComponents() const
 {
 	return { typeid(HitTag), typeid(Health), typeid(ActionRequestTag) };
 }
 
-void HitSystem::RequestActionTransition(Entity entity, ActionType type)
+void HitApplySystem::RequestActionTransition(Entity entity, ActionType type)
 {
 	ecs.GetStorage<ActionRequestTag>().AddComponent(entity)->type = type;
 }

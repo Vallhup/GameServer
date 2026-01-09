@@ -74,7 +74,7 @@ bool ActionTransitionSystem::CanBeInterrupted(const ActionState& current, const 
 	case ActionType::Attack:
 	case ActionType::Dodge:
 	case ActionType::Parry:
-		// Hit / Dead ¸¸ Çã¿ë
+	case ActionType::Stun:
 		return request.type == ActionType::Hit ||
 			request.type == ActionType::Dead;
 
@@ -115,6 +115,20 @@ ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current,
 			return ActionType::Guard;
 		}
 
+	}
+
+	if (current.type == ActionType::Stun)
+	{
+		switch (request.type) {
+		case ActionType::Dead:
+			return ActionType::Dead;
+
+		case ActionType::Hit:
+			return ActionType::Hit;
+
+		default:
+			return ActionType::Stun;
+		}
 	}
 
 	if (GetPriority(request.type) > GetPriority(current.type))

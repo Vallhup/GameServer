@@ -102,8 +102,11 @@
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
-    <ClCompile Include="HitSystem.cpp">
-      <Filter>ECS\System\Logic</Filter>
+    <ClCompile Include="HitApplySystem.cpp">
+      <Filter>ECS\System\Logic\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="HitResolveSystem.cpp">
+      <Filter>ECS\System\Logic\Hit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -231,8 +234,11 @@
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
-    <ClInclude Include="HitSystem.h">
-      <Filter>ECS\System\Logic</Filter>
+    <ClInclude Include="HitApplySystem.h">
+      <Filter>ECS\System\Logic\Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="HitResolveSystem.h">
+      <Filter>ECS\System\Logic\Hit</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -304,6 +310,9 @@
     </Filter>
     <Filter Include="Network\Protocol\pb.%2a">
       <UniqueIdentifier>{fd291135-9f0a-4e34-bbf5-068f4f929071}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\Hit">
+      <UniqueIdentifier>{91883c6c-1f01-4b0a-b568-61f10505a70f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

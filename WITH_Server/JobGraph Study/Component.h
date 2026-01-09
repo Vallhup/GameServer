@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AnimationManager.h"
+#include "Entity.h"
 
 using namespace DirectX;
 
@@ -11,6 +12,7 @@ enum class ActionType {
 	Parry,
 	Hit,
 	Guard,
+	Stun,
 	Dead
 };
 
@@ -81,8 +83,16 @@ struct DisconnectedTag :public Component { };
 
 struct HitTag : public Component {
 	int damage{ 0 };
+	Entity attacker;
+	bool invalid{ false };
 };
 
 struct ActionRequestTag : public Component {
 	ActionType type;
+};
+
+struct ParryBuff : public Component {
+	int remaining{ 1 };
+	// TEMP : Parry 성공 시 추가 데미지
+	float additionalDamage{ 1.0f };
 };
