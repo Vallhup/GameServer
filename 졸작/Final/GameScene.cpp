@@ -61,6 +61,10 @@ void GameScene::CreateCastle()
 		XMFLOAT3 scale;
 	};
 
+#pragma region Initialize TestBridge
+	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Window_04", { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f }));
+#pragma endregion
+
 #pragma region Initialize CASTLEWALL
 	for (int i = 2; i < 20; ++i)
 	{
