@@ -19,6 +19,8 @@ SHADOW_VS_OUT VSMain(SHADOW_VS_IN input)
     
     float4 lightViewPos = mul(worldPos, lightView);
     output.pos = mul(lightViewPos, lightProjection);
+    output.uv = input.uv;
+    output.materialIndex = materialIndex;
     
     return output;
 }

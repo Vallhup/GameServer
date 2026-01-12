@@ -92,19 +92,45 @@ void MeshRenderer::RenderShadow(DX12Core& core)
 
     auto cmdList = core.GetGraphicsCmdList();
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Shadow));
+
+    SetupRenderingState(core);
+
     auto transform = GetGameObject()->GetComponent<Transform>();
     XMMATRIX world = transform->GetWorldMatrix();
-
-    ObjectConstants objConstants = SetObjectConstantState(XMMatrixTranspose(world), 0, 0, 0);
-
-    objectCB->CopyData(&objConstants, sizeof(ObjectConstants));
-    cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress());
 
     if (auto animator = GetGameObject()->GetComponent<Animator>())
         cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());
 
     vertexIndexBuffer->Bind(cmdList);
-    vertexIndexBuffer->Draw(cmdList);
+
+    if (!subMeshes.empty())
+    {
+        for (size_t i = 0; i < subMeshes.size(); ++i)
+        {
+            UINT matIndex = materials[i]->GetMaterialIndex();
+
+            ObjectConstants objConstants = SetObjectConstantState(XMMatrixTranspose(world), 0, 0, matIndex);
+
+            size_t offset = i * CONSTANT_BUFFER_ALIGNMENT;
+            objectCB->CopyData(&objConstants, sizeof(ObjectConstants), offset);
+
+            cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress() + offset);
+
+            vertexIndexBuffer->DrawIndexed(cmdList,
+                subMeshes[i].indexCount,
+                subMeshes[i].startIndex);
+        }
+    }
+    else
+    {
+        UINT matIndex = (material != nullptr) ? material->GetMaterialIndex() : 0;
+
+        ObjectConstants objConstants = SetObjectConstantState(XMMatrixTranspose(world), 0, 0, matIndex);
+        objectCB->CopyData(&objConstants, sizeof(ObjectConstants));
+        cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress());
+
+        vertexIndexBuffer->Draw(cmdList);
+    }
 }
 
 void MeshRenderer::RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuffer* instanceBuffer)

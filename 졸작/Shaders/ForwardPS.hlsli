@@ -32,7 +32,10 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
             metallic = bindlessTextures[NonUniformResourceIndex(material.metallicTexIndex)].Sample(linearSampler, input.uv).r;
         
         if (material.alphaTexIndex != 0xFFFFFFFF)
-            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).a;
+            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).r;
+        
+        float finalAlpha = baseColor.a * alpha;
+        clip(finalAlpha - 0.01f);
         
         float3 N = normalize(input.normal);
         if (material.normalTexIndex != 0xFFFFFFFF)
@@ -50,7 +53,7 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         
         finalColor = ApplyFog(finalColor, input.worldPos);
         
-        return float4(finalColor, baseColor.a * alpha);
+        return float4(finalColor, finalAlpha);
     }
     else
     {

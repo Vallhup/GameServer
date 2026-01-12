@@ -425,7 +425,7 @@ void DX12Core::BeginShadowPass()
 	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
 
 	XMMATRIX lightView = XMMatrixTranspose(XMMatrixLookAtLH(lightPos, targetPos, up));
-	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(25.0f, 25.0f, 1.0f, 100.0f));
+	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(15.0f, 15.0f, 1.0f, 100.0f));
 	
 	shadowFrameCB->CopyData(&lightView, sizeof(XMMATRIX), 0);
 	shadowFrameCB->CopyData(&lightProjection, sizeof(XMMATRIX), sizeof(XMMATRIX));

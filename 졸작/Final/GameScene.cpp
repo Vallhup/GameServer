@@ -62,7 +62,7 @@ void GameScene::CreateCastle()
 	};
 
 #pragma region Initialize TestBridge
-	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Window_04", { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f }));
+	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Grass_Patch_08", { 0.0f, 0.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f }));
 #pragma endregion
 
 #pragma region Initialize CASTLEWALL
@@ -426,7 +426,7 @@ void GameScene::InitializeLogic()
 		auto transform = boss->AddComponent<Transform>();
 		auto animator = boss->AddComponent<Animator>();
 		meshRenderer->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
-		transform->SetInitPosition(2.f, 0.f, 0.f);
+		transform->SetInitPosition(2.f, 0.f, -5.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.02f, 0.02f, 0.02f);
 		AddGameObject(boss);
