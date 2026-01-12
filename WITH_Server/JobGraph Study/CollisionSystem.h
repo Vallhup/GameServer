@@ -14,5 +14,10 @@ public:
 	{
 		return { typeid(Collider) };
 	}
+
+	virtual std::vector<std::type_index> WriteComponents() const override
+	{
+		return { typeid(HitTag) };
+	}
 };
 

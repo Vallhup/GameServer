@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ActionStateSystem.h"
+#include "ActionManager.h"
 
 ActionStateSystem::ActionStateSystem(ECS& e, int p) : System(e, p) 
 {
@@ -8,6 +9,7 @@ ActionStateSystem::ActionStateSystem(ECS& e, int p) : System(e, p)
 void ActionStateSystem::Execute(const float dT)
 {
 	auto& states = ecs.GetStorage<ActionState>();
+	auto& velocities = ecs.GetStorage<Velocity>();
 
 	for (const auto& [entity, state] : states)
 	{
@@ -18,15 +20,21 @@ void ActionStateSystem::Execute(const float dT)
 			ActionType nextType = GetNextAction(state, *intent);
 			if (nextType == ActionType::None) continue;
 
-			StartAction(&state, nextType);
+			StartAction(entity, &state, nextType);
 			ResetActionIntent(intent);
 		}
 	}
 }
 
+std::vector<std::type_index> ActionStateSystem::ReadComponents() const
+{
+	return { typeid(Velocity) };
+}
+
+
 std::vector<std::type_index> ActionStateSystem::WriteComponents() const
 {
-	return { typeid(ActionIntent), typeid(ActionState) };
+	return { typeid(ActionIntent), typeid(ActionState), typeid(ActionMoveTag) };
 }
 
 ActionType ActionStateSystem::GetNextAction(const ActionState& current, const ActionIntent& intent)
@@ -40,7 +48,7 @@ ActionType ActionStateSystem::GetNextAction(const ActionState& current, const Ac
 	return ActionType::None;
 }
 
-bool ActionStateSystem::StartAction(ActionState* state, const ActionType& type)
+bool ActionStateSystem::StartAction(Entity entity, ActionState* state, const ActionType& type)
 {
 	if (!state) return false;
 
@@ -48,11 +56,27 @@ bool ActionStateSystem::StartAction(ActionState* state, const ActionType& type)
 	state->type = type;
 	state->elapsed = 0.0f;
 
-	if(type == ActionType::Guard)
+	if (type == ActionType::Guard)
 		state->duration = std::numeric_limits<float>::infinity();
 
 	else
-		state->duration = 1.0f;
+		state->duration = 40.0f / 30.7692f;
+
+	if (type == ActionType::Attack)
+	{
+		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
+
+		move->profile = ActionManager::Get().GetActionMoveProfile(type);
+		move->elapsed = 0.0f;
+		move->segmentIndex = 0;
+		move->movedInSegment = 0.0f;
+
+		if (auto* vel = ecs.GetStorage<Velocity>().GetComponent(entity))
+		{
+			move->dir = vel->dir;
+			move->dirLocked = true;
+		}
+	}
 }
 
 void ActionStateSystem::ResetActionIntent(ActionIntent* intent)

@@ -13,7 +13,7 @@ Game::Game(size_t size)
 	graph.AutoDependencyBuild(ecs.systemMng.GetSystems(), &_deltaTime);
 
 	ecs.systemMng.RegisterSystem<EventSystem> (ecs, 0);
-	ecs.systemMng.RegisterSystem<OutputEventSystem>(ecs, 7);
+	ecs.systemMng.RegisterSystem<OutputEventSystem>(ecs, 100);
 
 	graph.Build();
 }

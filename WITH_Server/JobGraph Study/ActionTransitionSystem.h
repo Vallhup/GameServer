@@ -9,6 +9,7 @@ public:
 	virtual ~ActionTransitionSystem() = default;
 
 	virtual void Execute(const float dT) override;
+	virtual std::vector<std::type_index> ReadComponents() const;
 	virtual std::vector<std::type_index> WriteComponents() const;
 
 private:

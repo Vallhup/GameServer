@@ -5,6 +5,7 @@ void ActionTransitionSystem::Execute(const float dT)
 {
 	auto& states = ecs.GetStorage<ActionState>();
 	auto& requests = ecs.GetStorage<ActionRequestTag>();
+	auto& velocities = ecs.GetStorage<Velocity>();
 
 	std::vector<Entity> removeList;
 	removeList.reserve(requests.Size());
@@ -21,6 +22,19 @@ void ActionTransitionSystem::Execute(const float dT)
 				continue;
 			}
 
+			//if (next == ActionType::Dodge)
+			//{
+			//	auto* dodge = ecs.GetStorage<DodgeTag>().AddComponent(entity);
+
+			//	auto* velocity = velocities.GetComponent(entity);
+			//	if (!velocity) continue;
+
+			//	dodge->dir = velocity->dir; 
+
+			//	// TEMP : Dodge 거리 값 설정 필요
+			//	dodge->distance = 3.5f;        
+			//}
+
 			ApplyTransition(state, next);
 			removeList.push_back(entity);
 		}
@@ -32,9 +46,14 @@ void ActionTransitionSystem::Execute(const float dT)
 	}
 }
 
+std::vector<std::type_index> ActionTransitionSystem::ReadComponents() const
+{
+	return { typeid(Velocity) };
+}
+
 std::vector<std::type_index> ActionTransitionSystem::WriteComponents() const
 {
-	return { typeid(ActionState), typeid(ActionRequestTag) };
+	return { typeid(ActionState), typeid(ActionRequestTag), typeid(ActionMoveTag) };
 }
 
 int ActionTransitionSystem::GetPriority(ActionType type)

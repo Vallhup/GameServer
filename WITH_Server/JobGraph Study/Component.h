@@ -1,21 +1,10 @@
 #pragma once
 
 #include "AnimationManager.h"
+#include "ActionManager.h"
 #include "Entity.h"
 
 using namespace DirectX;
-
-enum class ActionType {
-	None,
-	Attack,
-	Dodge,
-	Parry,
-	Hit,
-	Guard,
-	Stun,
-	Dead
-};
-
 
 struct Component {
 public:
@@ -95,4 +84,15 @@ struct ParryBuff : public Component {
 	int remaining{ 1 };
 	// TEMP : Parry 성공 시 추가 데미지
 	float additionalDamage{ 1.0f };
+};
+
+struct ActionMoveTag : public Component {
+	const ActionProfile* profile{ nullptr };
+	
+	float elapsed{ 0.0f };
+	uint8 segmentIndex{ 0 };
+	float movedInSegment{ 0.0f };
+
+	XMFLOAT3 dir{ 0, 0, 0 };
+	bool dirLocked{ false };
 };

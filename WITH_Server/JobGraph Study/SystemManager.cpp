@@ -9,6 +9,8 @@
 #include "ActionStateSystem.h"
 #include "ActionTimeSystem.h"
 #include "ActionTransitionSystem.h"
+#include "HitResolveSystem.h"
+#include "HitApplySystem.h"
 
 void SystemManager::Initalize(ECS& ecs, JobGraph& graph)
 {
@@ -21,6 +23,8 @@ void SystemManager::Initalize(ECS& ecs, JobGraph& graph)
 	RegisterSystem<AnimationRefSystem>(ecs, 6);
 	RegisterSystem<ColliderUpdateSystem>(ecs, 7);
 	RegisterSystem<CollisionSystem>(ecs, 8);
+	RegisterSystem<HitResolveSystem>(ecs, 9);
+	RegisterSystem<HitApplySystem>(ecs, 10);
 }
 
 const std::vector<System*> SystemManager::GetSystems() const

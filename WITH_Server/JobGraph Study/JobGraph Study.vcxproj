@@ -169,6 +169,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ActionManager.cpp" />
     <ClCompile Include="ActionStateSystem.cpp" />
     <ClCompile Include="ActionTimeSystem.cpp" />
     <ClCompile Include="ActionTransitionSystem.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.h" />
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.h" />
+    <ClInclude Include="ActionManager.h" />
     <ClInclude Include="ActionStateSystem.h" />
     <ClInclude Include="ActionTimeSystem.h" />
     <ClInclude Include="ActionTransitionSystem.h" />

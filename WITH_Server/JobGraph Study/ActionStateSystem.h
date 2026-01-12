@@ -9,10 +9,11 @@ public:
 	virtual ~ActionStateSystem() = default;
 
 	virtual void Execute(const float dT) override;
+	virtual std::vector<std::type_index> ReadComponents() const;
 	virtual std::vector<std::type_index> WriteComponents() const;
 
 private:
 	ActionType GetNextAction(const ActionState& current, const ActionIntent& intent);
-	bool StartAction(ActionState* state, const ActionType& type);
+	bool StartAction(Entity entity, ActionState* state, const ActionType& type);
 	void ResetActionIntent(ActionIntent* intent);
 };
