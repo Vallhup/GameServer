@@ -6,6 +6,9 @@
 #include "Material.h"
 #include "Camera.h"
 #include "Input.h"
+#include "SceneRenderer.h"
+#include "GameObject.h"
+#include "Transform.h"
 
 void Scene::Initialize(HWND hWnd, DX12Core& core)
 {
@@ -61,6 +64,23 @@ void Scene::RenderEffects()
 void Scene::InitializeObjectPools()
 {
     InitializeSceneObjectPools();
+}
+
+void Scene::InitializeInstanceGroup(InstanceGroup& group)
+{
+    if (group.objects.empty()) return;
+
+    size_t bufferSize = sizeof(XMMATRIX) * group.objects.size();
+    group.instanceBuffer = make_unique<UploadBuffer>();
+    group.instanceBuffer->Initialize(coreRef->GetDevice(), bufferSize);
+
+    vector<XMMATRIX> transforms;
+    transforms.reserve(group.objects.size());
+    for (const auto& obj : group.objects) {
+        auto transform = obj->GetComponent<Transform>();
+        transforms.push_back(XMMatrixTranspose(transform->GetWorldMatrix()));
+    }
+    group.instanceBuffer->CopyData(transforms.data(), bufferSize, 0);
 }
 
 Camera* Scene::GetCamera() const

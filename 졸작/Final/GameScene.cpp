@@ -114,8 +114,19 @@ void GameScene::CreateCastle()
 		{{34.5867f, -0.016064f, -17.2682f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
-	for (const auto& data : pillarData)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_pillar", data.position, data.rotation, data.scale));
+	{
+		auto firstPillar = CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_pillar", pillarData[0].position, pillarData[0].rotation, pillarData[0].scale);
+		pillarGroup.mesh = firstPillar->GetComponent<Mesh>();
+		pillarGroup.objects.push_back(firstPillar);
+
+		for (int i = 1; i < size(pillarData); ++i) {
+			auto obj = CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_pillar", pillarData[i].position, pillarData[i].rotation, pillarData[i].scale);
+			pillarGroup.objects.push_back(obj);
+		}
+	}
+
+	/*for (const auto& data : pillarData)
+		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_pillar", data.position, data.rotation, data.scale));*/
 #pragma endregion
 
 #pragma region Initialize FLOORS
@@ -158,8 +169,19 @@ void GameScene::CreateCastle()
 		{{32.4286f, 0.0f, -35.7861f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
-	for (const auto& data : floorData)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_01", data.position, data.rotation, data.scale));
+	{
+		auto firstFloor = CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_01", floorData[0].position, floorData[0].rotation, floorData[0].scale);
+		floorGroup.mesh = firstFloor->GetComponent<Mesh>();
+		floorGroup.objects.push_back(firstFloor);
+
+		for (int i = 1; i < size(floorData); ++i) {
+			auto obj = CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_01", floorData[i].position, floorData[i].rotation, floorData[i].scale);
+			floorGroup.objects.push_back(obj);
+		}
+	}
+
+	/*for (const auto& data : floorData)
+		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_01", data.position, data.rotation, data.scale));*/
 #pragma endregion
 
 #pragma region Initialize CANDLES
@@ -208,8 +230,19 @@ void GameScene::CreateCastle()
 		{{7.88262f, 0.0f, 21.7484f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
-	for (const auto& data : candleData)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_candle", data.position, data.rotation, data.scale));
+	{
+		auto firstCandle = CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_candle", candleData[0].position, candleData[0].rotation, candleData[0].scale);
+		candleGroup.mesh = firstCandle->GetComponent<Mesh>();
+		candleGroup.objects.push_back(firstCandle);
+
+		for (int i = 1; i < size(candleData); ++i) {
+			auto obj = CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_candle", candleData[i].position, candleData[i].rotation, candleData[i].scale);
+			candleGroup.objects.push_back(obj);
+		}
+	}
+
+	/*for (const auto& data : candleData)
+		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_candle", data.position, data.rotation, data.scale));*/
 #pragma endregion
 
 #pragma region Initialize STATUE1
@@ -438,6 +471,10 @@ void GameScene::InitializeLogic()
 
 	CreateCastle();
 
+	InitializeInstanceGroup(pillarGroup);
+	InitializeInstanceGroup(floorGroup);
+	InitializeInstanceGroup(candleGroup);
+
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
@@ -449,6 +486,25 @@ void GameScene::InitializeLogic()
 		if (auto mesh = obj->GetComponent<Mesh>())
 			mesh->ReleaseUploadBuffers();
 	}
+
+	for (const auto& obj : pillarGroup.objects)
+	{
+		if (auto mesh = obj->GetComponent<Mesh>())
+			mesh->ReleaseUploadBuffers();
+	}
+
+	for (const auto& obj : floorGroup.objects)
+	{
+		if (auto mesh = obj->GetComponent<Mesh>())
+			mesh->ReleaseUploadBuffers();
+	}
+
+	for (const auto& obj : candleGroup.objects)
+	{
+		if (auto mesh = obj->GetComponent<Mesh>())
+			mesh->ReleaseUploadBuffers();
+	}
+
 	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
 
 	SetNetworkManager(GET(Engine).GetNetworkManager());
@@ -525,6 +581,16 @@ void GameScene::RenderSceneDeferred()
 {
 	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 
+	auto renderer = sManagerRef->GetSceneRenderer();
+	if (pillarGroup.mesh)
+		renderer->RenderInstanced(*coreRef, pillarGroup.mesh, pillarGroup.objects.size(), pillarGroup.instanceBuffer.get());
+
+	if (floorGroup.mesh)
+		renderer->RenderInstanced(*coreRef, floorGroup.mesh, floorGroup.objects.size(), floorGroup.instanceBuffer.get());
+
+	if (candleGroup.mesh)
+		renderer->RenderInstanced(*coreRef, candleGroup.mesh, candleGroup.objects.size(), candleGroup.instanceBuffer.get());
+
 	static bool hitOn = false;
 
 	if (GET(Input).GetKeyDown('1'))
@@ -541,6 +607,39 @@ void GameScene::RenderSceneDeferred()
 				if (hitOn && !animator)
 					obj->RenderDebugBoundingBox(*coreRef, { 1, 0, 0, 1 });
 			}
+		}
+	}
+
+	for (const auto& p : pillarGroup.objects)
+	{
+		if (auto mesh = p->GetComponent<Mesh>())
+		{
+			auto animator = p->GetComponent<Animator>();
+
+			if (hitOn && !animator)
+				p->RenderDebugBoundingBox(*coreRef, { 0, 1, 1, 1 });
+		}
+	}
+
+	for (const auto& p : floorGroup.objects)
+	{
+		if (auto mesh = p->GetComponent<Mesh>())
+		{
+			auto animator = p->GetComponent<Animator>();
+
+			if (hitOn && !animator)
+				p->RenderDebugBoundingBox(*coreRef, { 0, 1, 1, 1 });
+		}
+	}
+
+	for (const auto& p : candleGroup.objects)
+	{
+		if (auto mesh = p->GetComponent<Mesh>())
+		{
+			auto animator = p->GetComponent<Animator>();
+
+			if (hitOn && !animator)
+				p->RenderDebugBoundingBox(*coreRef, { 0, 1, 1, 1 });
 		}
 	}
 

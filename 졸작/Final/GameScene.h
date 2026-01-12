@@ -53,4 +53,8 @@ private:
 	vector<shared_ptr<GameObject>> effectObjects;
 
 	shared_ptr<SkyBox> skyBox;
+
+	InstanceGroup pillarGroup;
+	InstanceGroup floorGroup;
+	InstanceGroup candleGroup;
 };

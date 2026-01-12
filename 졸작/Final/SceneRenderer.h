@@ -7,6 +7,12 @@ class Animator;
 class Camera;
 struct ObjectConstants;
 
+struct InstanceGroup {
+    Mesh* mesh;
+    vector<shared_ptr<GameObject>> objects;
+    unique_ptr<UploadBuffer> instanceBuffer;
+};
+
 class SceneRenderer
 {
 public:

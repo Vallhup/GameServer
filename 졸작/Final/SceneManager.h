@@ -1,6 +1,5 @@
 #pragma once
 #include "Scene.h"
-#include "SceneRenderer.h"
 
 enum class SceneType {
     Start,

@@ -1,6 +1,6 @@
 #pragma once
-
 #include "Camera.h"
+#include "SceneRenderer.h"
 
 class DX12Core;
 class SceneManager;
@@ -24,6 +24,8 @@ public:
 	virtual const float* GetBackgroundColor() = 0;
 
 	void InitializeObjectPools();
+	void InitializeInstanceGroup(InstanceGroup& group);
+
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
 

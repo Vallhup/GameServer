@@ -248,14 +248,21 @@ void SceneRenderer::RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCou
 {
     if (!mesh || !mesh->GetVertexIndexBuffer() || !instanceBuffer) return;
 
+    if (cbIndex >= MAX_OBJECTS) {
+        OutputDebugStringA("cbIndex Overflowed!!\n");
+        return;
+    }
+
     auto cmdList = core.GetGraphicsCmdList();
     SetupRenderingState(core, instanceBuffer);
 
     UINT matIndex = mesh->GetMaterial() ? mesh->GetMaterial()->GetMaterialIndex() : 0xFFFFFFFF;
     auto objConst = MakeObjectConstants(XMMatrixIdentity(), mesh->GetMaterial() ? 1 : 0, 1, matIndex);
+    size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
 
-    objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), 0);
-    cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress());
+    objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
+    cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
+    cbIndex++;
 
     mesh->GetVertexIndexBuffer()->Bind(cmdList);
     mesh->GetVertexIndexBuffer()->DrawInstanced(cmdList, instanceCount);
