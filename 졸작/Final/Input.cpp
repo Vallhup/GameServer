@@ -72,10 +72,15 @@ void Input::SendMovePacket(int inputX, int inputZ, float yaw)
 
 void Input::SendAttackPacket()
 {
-	/*if (!network) return;
+	if (!network) return;
 
-	vector<char> packet = PacketFactory::CSAttackPacket(clientID);
-	network->Send(packet);*/
+	Protocol::CS_ATTACK_PACKET attack;
+	attack.set_dirx(0.0f);
+	attack.set_dirz(0.0f);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_ATTACK_PACKET>(
+		PacketType::CS_ATTACK, attack);
+	network->Send(data);
 }
 
 void Input::SendDodgePacket()

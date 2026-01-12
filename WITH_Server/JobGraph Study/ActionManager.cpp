@@ -11,21 +11,21 @@ ActionManager::ActionManager()
 			{
 				0.0f,
 				11.0f / 40.0f,
-				11.54f,
+				11.54f / 100.f,
 				true
 			},
 
 			{
 				11.0f / 40.0f,
 				20.0f / 40.0f,
-				26.782f,
+				26.782f / 100.f,
 				true
 			},
 
 			{
 				20.0f / 40.0f,
-				1.0,
-				57.311f,
+				1.0f,
+				57.311f / 100.f,
 				true
 			},
 		}
@@ -51,6 +51,8 @@ void ActionManager::LoadAction(ActionType id, std::string_view path)
 
 const ActionProfile* ActionManager::GetActionMoveProfile(ActionType actionType) const
 {
+	auto it = _actionProfiles.find(actionType);
+	if (it != _actionProfiles.end()) return it->second.get();
 	return nullptr;
 }
 

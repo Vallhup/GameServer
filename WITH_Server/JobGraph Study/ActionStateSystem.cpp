@@ -73,7 +73,8 @@ bool ActionStateSystem::StartAction(Entity entity, ActionState* state, const Act
 
 		if (auto* vel = ecs.GetStorage<Velocity>().GetComponent(entity))
 		{
-			move->dir = vel->dir;
+			// TEMP : 공격 방향 정책 수정 필요
+			move->dir = vel->lastNonZeroDir;
 			move->dirLocked = true;
 		}
 	}

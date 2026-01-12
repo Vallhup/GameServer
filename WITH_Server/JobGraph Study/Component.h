@@ -19,6 +19,7 @@ struct Transform : public Component {
 
 struct Velocity : public Component {
 	XMFLOAT3 dir{ 0, 0, 0 };
+	XMFLOAT3 lastNonZeroDir{ 0, 0, 0 };
 	bool isRun{ false };
 };
 

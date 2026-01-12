@@ -16,24 +16,16 @@ void ActionTransitionSystem::Execute(const float dT)
 		if (auto* state = states.GetComponent(entity))
 		{
 			ActionType next = ResolveNextAction(*state, request);
+			if (next == ActionType::None)
+			{
+				ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
+			}
+
 			if (next == state->type)
 			{
 				removeList.push_back(entity);
 				continue;
 			}
-
-			//if (next == ActionType::Dodge)
-			//{
-			//	auto* dodge = ecs.GetStorage<DodgeTag>().AddComponent(entity);
-
-			//	auto* velocity = velocities.GetComponent(entity);
-			//	if (!velocity) continue;
-
-			//	dodge->dir = velocity->dir; 
-
-			//	// TEMP : Dodge 거리 값 설정 필요
-			//	dodge->distance = 3.5f;        
-			//}
 
 			ApplyTransition(state, next);
 			removeList.push_back(entity);

@@ -22,16 +22,14 @@ void MovementSystem::Execute(const float dT)
 				{
 					if (!CanMove(action->type)) continue;
 				
-
 					if (action->type != ActionType::None)
 					{
 						if(auto* actionMove = actionMoves.GetComponent(entity))
-							ApplyActionMovement(entity, *actionMove, transform, *vel, dT);
+ 							ApplyActionMovement(entity, *actionMove, transform, *vel, dT);
 					}
 
 					else
 						ApplyNormalMovement(entity, *loco, transform, *vel, dT);
-					
 				}
 			}
 		}
@@ -69,15 +67,20 @@ void MovementSystem::ApplyActionMovement(Entity entity, ActionMoveTag& action, T
 
 	const auto& seg = segments[action.segmentIndex];
 
-	if (action.elapsed < seg.t0) return;
+	const float segStart = seg.t0 * action.profile->duration;
+	const float segEnd = seg.t1 * action.profile->duration;
 
-	float segDuration = seg.t1 - seg.t0;
-	float speed = seg.distance / segDuration;
+	if (action.elapsed < segStart) return;
 
-	float move = speed * dT;
-	float remain = seg.distance - action.movedInSegment;
+	const float segDuration = segEnd - segStart;
+	if (segDuration <= 0.0f) return;
 
-	float actual = std::min(move, remain);
+	const float speed = seg.distance / segDuration;
+
+	const float move = speed * dT;
+	const float remain = seg.distance - action.movedInSegment;
+	const float actual = std::min(move, remain);
+
 	action.movedInSegment += actual;
 
 	XMVECTOR dir;
@@ -90,7 +93,6 @@ void MovementSystem::ApplyActionMovement(Entity entity, ActionMoveTag& action, T
 		dir = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&vel.dir));
 		dir = XMVector3Normalize(dir);
 
-		// lockDir 세그먼트 진입 시 방향 고정
 		if (seg.lockDir)
 		{
 			XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&action.dir), dir);
@@ -103,13 +105,12 @@ void MovementSystem::ApplyActionMovement(Entity entity, ActionMoveTag& action, T
 	pos = XMVectorAdd(pos, XMVectorScale(dir, actual));
 	XMStoreFloat3(&trans.position, pos);
 
-	// 세그먼트 종료 처리
+	// 세그먼트 종료
 	if (action.movedInSegment >= seg.distance)
 	{
 		action.segmentIndex++;
 		action.movedInSegment = 0.0f;
 
-		// 다음 세그먼트의 lockDir 여부 반영
 		if (action.segmentIndex < segments.size())
 		{
 			if (!segments[action.segmentIndex].lockDir)
@@ -118,7 +119,7 @@ void MovementSystem::ApplyActionMovement(Entity entity, ActionMoveTag& action, T
 	}
 
 	Framework::Get().outEventQueue.push(OutputEvent{
-			entity, DirtyType::Moved });
+		entity, DirtyType::Moved });
 }
 
 void MovementSystem::ApplyNormalMovement(Entity entity, const LocomotionState& loco, Transform& trans, const Velocity& vel, const float dT)
