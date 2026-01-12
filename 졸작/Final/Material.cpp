@@ -142,13 +142,13 @@ void Material::BindBindlessResources(ID3D12GraphicsCommandList* cmdList)
         cmdList->SetDescriptorHeaps(1, heaps);
 
         D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = bindlessHeap->GetGPUDescriptorHandleForHeapStart();
-        cmdList->SetGraphicsRootDescriptorTable(6, gpuHandle);                                      // 레지 넘버링 부분
+        cmdList->SetGraphicsRootDescriptorTable(6, gpuHandle);                                      
 
         D3D12_GPU_DESCRIPTOR_HANDLE cubeMapHandle = gpuHandle;
         cubeMapHandle.ptr += 500 * descriptorSize;
         cmdList->SetGraphicsRootDescriptorTable(15, cubeMapHandle);
 
-        cmdList->SetGraphicsRootShaderResourceView(7, materialBuffer->GetGPUVirtualAddress());      // 레지 넘버링 부분
+        cmdList->SetGraphicsRootShaderResourceView(7, materialBuffer->GetGPUVirtualAddress());      
     }
 }
 

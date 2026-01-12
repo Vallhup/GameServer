@@ -286,7 +286,6 @@ void DX12Core::CreateGBuffer()
 		IID_PPV_ARGS(&gBufferRT[3]));
 	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[3]");
 
-	// === 2. RTV Descriptor Heap 생성 ===
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvHeapDesc.NumDescriptors = 4;
@@ -294,15 +293,6 @@ void DX12Core::CreateGBuffer()
 	hr = device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&gBufferRTVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RTV Heap");
 
-	// === 3. SRV Descriptor Heap 생성 (라이팅 패스에서 읽기용) ===
-	/*D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.NumDescriptors = 5;
-	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&gBufferSRVHeap));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer SRV Heap");*/
-
-	// === 4. RTV들 생성 ===
 	UINT rtvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = gBufferRTVHeap->GetCPUDescriptorHandleForHeapStart();
 
@@ -313,29 +303,6 @@ void DX12Core::CreateGBuffer()
 
 		OutputDebugStringA(("G-Buffer RT" + to_string(i) + " RTV created\n").c_str());
 	}
-
-	// === 5. SRV들 생성 ===
-	//UINT srvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = gBufferSRVHeap->GetCPUDescriptorHandleForHeapStart();
-	//D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = gBufferSRVHeap->GetGPUDescriptorHandleForHeapStart();
-
-	//for (int i = 0; i < 4; ++i) {
-	//	gBufferSRVHandles[i] = srvGpuHandle;
-	//	device->CreateShaderResourceView(gBufferRT[i].Get(), nullptr, srvCpuHandle);
-
-	//	srvCpuHandle.ptr += srvSize;
-	//	srvGpuHandle.ptr += srvSize;
-
-	//	OutputDebugStringA(("G-Buffer RT" + to_string(i) + " SRV created\n").c_str());
-	//}
-
-	//shadowMapSRVHandle = srvGpuHandle;  // 멤버 변수로 저장
-	//D3D12_SHADER_RESOURCE_VIEW_DESC shadowSrvDesc = {};
-	//shadowSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	//shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	//shadowSrvDesc.Texture2D.MipLevels = 1;
-	//shadowSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	//device->CreateShaderResourceView(shadowMapTexture.Get(), &shadowSrvDesc, srvCpuHandle);
 
 	OutputDebugStringA("G-Buffer created successfully!\n");
 }
@@ -459,7 +426,7 @@ void DX12Core::BeginShadowPass()
 	cmdList->RSSetScissorRects(1, &shadowRect);
 
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
-	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());		// 레지 넘버링 부분
+	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());		
 
 	//OutputDebugStringA("Shadow Pass started!!\n");
 }
@@ -495,7 +462,7 @@ void DX12Core::BeginForwardPass()
 
 	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
 
-	cmdList->SetGraphicsRootConstantBufferView(4, GetForwardLightCB()->GetGPUVirtualAddress());		// 레지 넘버링 부분
+	cmdList->SetGraphicsRootConstantBufferView(4, GetForwardLightCB()->GetGPUVirtualAddress());		
 
 	FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
 	GetFogCB()->CopyData(&fog, sizeof(FogConstants));

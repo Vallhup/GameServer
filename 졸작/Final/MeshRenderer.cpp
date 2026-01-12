@@ -24,7 +24,7 @@ MeshRenderer::~MeshRenderer() = default;
 void MeshRenderer::InitializeObjectBuffer(ID3D12Device* device)
 {
     if (!objectCB) {
-        size_t bufferSize = CONSTANT_BUFFER_ALIGNMENT * MAX_SUBMESH_COUNT;   // subMesh 최대 개수 10개 안넘을듯?
+        size_t bufferSize = CONSTANT_BUFFER_ALIGNMENT * MAX_SUBMESH_COUNT;   
         objectCB = make_unique<UploadBuffer>();
         objectCB->Initialize(device, bufferSize);
 
@@ -44,7 +44,7 @@ void MeshRenderer::RenderForward(DX12Core& core)
     SetupRenderingState(core);
 
     if (auto animator = GetGameObject()->GetComponent<Animator>()) {
-        cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());      // 레지 넘버링 부분
+        cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());     
     }
 
     if (!materials.empty()) {   
@@ -72,7 +72,7 @@ void MeshRenderer::RenderDeferred(DX12Core& core)
     SetupRenderingState(core);
 
     if (animator) {
-        cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());      // 레지 넘버링 부분
+        cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());     
     }
 
     if (!materials.empty()) {
@@ -145,7 +145,7 @@ void MeshRenderer::RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuf
     auto cmdList = core.GetGraphicsCmdList();
     SetupRenderingState(core, instanceBuffer);
 
-    cmdList->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress());       // 레지 넘버링 부분
+    cmdList->SetGraphicsRootConstantBufferView(1, core.GetSceneCB()->GetGPUVirtualAddress());      
 
     vertexIndexBuffer->Bind(cmdList);
     vertexIndexBuffer->DrawInstanced(cmdList, instanceCount);
@@ -163,7 +163,7 @@ void MeshRenderer::RenderSingleMaterialForwardOnly(DX12Core& core, const XMMATRI
         1, 0, material->GetMaterialIndex());
 
     objectCB->CopyData(&objConstants, sizeof(ObjectConstants));
-    cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress());        // 레지 넘버링 부분
+    cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress());        
 
     vertexIndexBuffer->Bind(core.GetGraphicsCmdList());
     vertexIndexBuffer->Draw(core.GetGraphicsCmdList());
@@ -187,7 +187,7 @@ void MeshRenderer::RenderMultiMaterialForwardOnly(DX12Core& core, const XMMATRIX
         size_t offset = i * CONSTANT_BUFFER_ALIGNMENT;
 
         objectCB->CopyData(&objConstants, sizeof(ObjectConstants), offset);
-        cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress() + offset);       // 레지 넘버링 부분
+        cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress() + offset);       
 
         vertexIndexBuffer->Bind(cmdList);
         vertexIndexBuffer->DrawIndexed(cmdList,
@@ -208,7 +208,7 @@ void MeshRenderer::RenderSingleMaterialDeferredOnly(DX12Core& core, const XMMATR
         1, 0, material->GetMaterialIndex());
 
     objectCB->CopyData(&objConstants, sizeof(ObjectConstants));
-    cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress());        // 레지 넘버링 부분
+    cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress());       
 
     vertexIndexBuffer->Bind(core.GetGraphicsCmdList());
     vertexIndexBuffer->Draw(core.GetGraphicsCmdList());
@@ -232,7 +232,7 @@ void MeshRenderer::RenderMultiMaterialDeferredOnly(DX12Core& core, const XMMATRI
         size_t offset = i * CONSTANT_BUFFER_ALIGNMENT;
 
         objectCB->CopyData(&objConstants, sizeof(ObjectConstants), offset);
-        cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress() + offset);       // 레지 넘버링 부분
+        cmdList->SetGraphicsRootConstantBufferView(1, objectCB->GetGPUVirtualAddress() + offset);       
 
         vertexIndexBuffer->Bind(cmdList);
         vertexIndexBuffer->DrawIndexed(cmdList,
@@ -355,10 +355,10 @@ void MeshRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuf
 
     cmdList->SetGraphicsRootSignature(core.GetRootSig()->Get());
     Material::BindBindlessResources(cmdList);
-    cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());       // 레지 넘버링 부분
+    cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());      
 
     if (instanceBuffer) {
-        cmdList->SetGraphicsRootShaderResourceView(12, instanceBuffer->GetGPUVirtualAddress());     // 레지 넘버링 부분
+        cmdList->SetGraphicsRootShaderResourceView(12, instanceBuffer->GetGPUVirtualAddress());    
     }
 }
 

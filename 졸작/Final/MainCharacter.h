@@ -11,10 +11,6 @@ public:
 	void SetCamera(Camera* cam);
 
 private:
-	// TEMP : 우선 매 프레임 Key / Mouse Input Check해서 눌려있으면
-	//	      Network Packet Send하도록 만들어놨음
-	//        추가적으로 현재 클라 예측으로 애니메이션도 실행되도록 해놨는데
-	//        나중에 실제 Server에서 Packet 받아서 처리할 때 보정해주는 코드도 필요함
 	void BasicMove();
 	void BasicAttack();
 	void BasicDodge();

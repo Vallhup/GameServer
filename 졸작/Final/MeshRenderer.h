@@ -17,7 +17,7 @@ public:
 	void RenderForward(DX12Core& core);
 	void RenderDeferred(DX12Core& core);
 	void RenderShadow(DX12Core& core);
-	// Instancing 전용 함수는 나중에 사용할 수도 있을 가능성이 높아서 그냥 냅둠
+
 	void RenderInstanced(DX12Core& core, UINT instanceCount, UploadBuffer* instancedBuffer);
 
 	void SetMesh(DX12Core& core, const wstring& path);
@@ -41,9 +41,9 @@ private:
 private:
 	shared_ptr<VertexIndexBuffer> vertexIndexBuffer;  
 
-	shared_ptr<Material> material;				// 단일 material
-	vector<shared_ptr<Material>> materials;		// 다중 material
-	vector<SubMeshInfo> subMeshes;				// 서브메시 정보 (다중 머티리얼용)
+	shared_ptr<Material> material;				
+	vector<shared_ptr<Material>> materials;		
+	vector<SubMeshInfo> subMeshes;				
 
 	vector<MaterialData> originalMaterialData;
 
