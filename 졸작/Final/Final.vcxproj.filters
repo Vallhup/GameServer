@@ -139,6 +139,12 @@
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneRenderer.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -278,6 +284,12 @@
     </ClInclude>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneRenderer.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
