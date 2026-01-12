@@ -24,6 +24,7 @@ protected:
 	void RequestSceneChange() override;
 
 private:
+	vector<shared_ptr<GameObject>> gameObjects;
 	shared_ptr<MainCharacter> knight;
 };
 

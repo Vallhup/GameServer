@@ -10,7 +10,6 @@
 #include "ServerSquareScene.h"
 #include "GameScene.h"
 #include "Camera.h"
-#include "ServerTestScene.h"
 #include "Material.h"
 #include "ResourceManager.h"
 
@@ -27,8 +26,10 @@ void SceneManager::Initialize(HWND hWnd, DX12Core& core)
     RegisterScene<LoginScene>(SceneType::Login);
     RegisterScene<ServerSquareScene>(SceneType::ServerSquare);
     RegisterScene<GameScene>(SceneType::MainGame);
-    RegisterScene<ServerTestScene>(SceneType::Scene1);
- 
+
+    sceneRenderer = make_unique<SceneRenderer>();
+    sceneRenderer->Initialize(core.GetDevice());
+
     SceneStart(core);
 }
 
@@ -38,6 +39,12 @@ void SceneManager::Update(const float deltaTime)
     {
         mCurrentScene->Update(deltaTime);
     }
+}
+
+void SceneManager::BeginRender()
+{
+    if (sceneRenderer)
+        sceneRenderer->BeginFrame();
 }
 
 void SceneManager::RenderDeferred()
@@ -89,11 +96,18 @@ void SceneManager::Release()
 
     GET(ResourceManager).ClearCache();
     Material::Cleanup();
+
+    sceneRenderer->ReleaseUploadBuffer();
 }
 
 Scene* SceneManager::GetCurrentScene() const
 {
 	return mCurrentScene;
+}
+
+SceneRenderer* SceneManager::GetSceneRenderer() const
+{
+    return sceneRenderer.get();
 }
 
 void SceneManager::SceneStart(DX12Core& core)

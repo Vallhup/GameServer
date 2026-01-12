@@ -19,11 +19,15 @@ struct SHADOW_VS_IN
 struct SHADOW_VS_OUT
 {
     float4 pos : SV_POSITION;
+    float2 uv : TEXCOORD0;
+    nointerpolation uint materialIndex : TEXCOORD1;
 };
 
 struct SHADOW_PS_IN
 {
     float4 pos : SV_POSITION;
+    float2 uv : TEXCOORD0;
+    nointerpolation uint materialIndex : TEXCOORD1;
 };
 
 //-------------------------------------------------------

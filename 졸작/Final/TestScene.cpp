@@ -3,13 +3,14 @@
 #include "DX12Core.h"
 #include "GameObject.h"
 #include "MainCharacter.h"
-#include "MeshRenderer.h"
 #include "Transform.h"
 #include "Input.h"
 #include "SceneManager.h"
 #include "Material.h"
 #include "Animator.h"
 #include "Camera.h"
+#include "Mesh.h"
+#include "SceneRenderer.h"
 
 TestScene::~TestScene() = default;
 
@@ -20,8 +21,10 @@ void TestScene::Release()
 
 void TestScene::Reset()
 {
+	gameObjects.clear();
 	knight.reset();
 
+	Material::ReleaseUploadBuffers();
 	OutputDebugStringA("TestScene Data has been deleted!! \n----------------------------------------\n");
 }
 
@@ -40,18 +43,19 @@ void TestScene::InitializeLogic()
 
 	{
 		knight = make_shared<MainCharacter>();
-		auto meshrenderer = knight->AddComponent<MeshRenderer>();
+		auto mesh = knight->AddComponent<Mesh>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
-		meshrenderer->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
 		transform->SetInitPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
+		gameObjects.push_back(knight);
 
 		coreRef->FlushCommandQueue();
 		coreRef->ResetCommandQueue();
 
-		meshrenderer->ReleaseUploadBuffers();
+		mesh->ReleaseUploadBuffers();
 
 		knight->SetCamera(cam.get());
 	}
@@ -59,37 +63,26 @@ void TestScene::InitializeLogic()
 
 void TestScene::UpdateScene(const float deltaTime)
 {	
-	{
-		knight->Update(deltaTime);
-	}
+	for (const auto& obj : gameObjects)
+		obj->Update(deltaTime);
+
+	if (cam)
+		cam->Update(*coreRef, deltaTime, gameObjects, knight);
 }
 
 void TestScene::RenderSceneDeferred()
 {
-	{
-		if (knight)
-		{
-			auto meshrenderer = knight->GetComponent<MeshRenderer>();
-			if (meshrenderer)
-				meshrenderer->RenderDeferred(*coreRef);
-		}
-	}
+	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 }
 
 void TestScene::RenderSceneForward()
 {
-	{
-		if (knight)
-		{
-			auto meshrenderer = knight->GetComponent<MeshRenderer>();
-			if (meshrenderer)
-				meshrenderer->RenderForward(*coreRef);
-		}
-	}
+	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
 void TestScene::RenderSceneShadow()
 {
+	sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
 }
 
 void TestScene::RenderSceneEffects()

@@ -35,7 +35,10 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input) : SV_Target
             metallic = bindlessTextures[NonUniformResourceIndex(material.metallicTexIndex)].Sample(linearSampler, input.uv).r;
                
         if (material.alphaTexIndex != 0xFFFFFFFF)
-            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).a;
+            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).r;
+        
+        float finalAlpha = baseColor.a * alpha;
+        clip(finalAlpha - 0.01f);
         
         if (material.emissionTexIndex != 0xFFFFFFFF)
             emission = bindlessTextures[NonUniformResourceIndex(material.emissionTexIndex)].Sample(linearSampler, input.uv).rgb;

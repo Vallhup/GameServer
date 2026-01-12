@@ -33,6 +33,7 @@ void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* 
     psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::ForwardVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ForwardVS)]->GetBufferSize() };
     psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::ForwardPS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ForwardPS)]->GetBufferSize() };
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     psoDesc.NumRenderTargets = 1;
@@ -169,7 +170,13 @@ void Shader::InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* r
     psoDesc.pRootSignature = rootSig;
     psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::ShadowVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ShadowVS)]->GetBufferSize() };
     psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::ShadowPS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ShadowPS)]->GetBufferSize() };
-    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    
+    CD3DX12_RASTERIZER_DESC rasterizerDesc(D3D12_DEFAULT);
+    rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+    rasterizerDesc.DepthBias = 0;
+    rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+
+    psoDesc.RasterizerState = rasterizerDesc;
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     psoDesc.NumRenderTargets = 0;
