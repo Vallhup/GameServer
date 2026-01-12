@@ -65,6 +65,9 @@ void TestScene::UpdateScene(const float deltaTime)
 {	
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
+
+	if (cam)
+		cam->Update(*coreRef, deltaTime, gameObjects, knight);
 }
 
 void TestScene::RenderSceneDeferred()
