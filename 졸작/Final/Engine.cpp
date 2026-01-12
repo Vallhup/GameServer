@@ -60,6 +60,8 @@ void Engine::Render()
 
     GET(ImGuiManager).BeginFrame();
 
+    sceneManager->BeginRender();
+
     graphics->BeginShadowPass();
     sceneManager->RenderShadow();
     graphics->EndShadowPass();

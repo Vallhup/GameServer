@@ -1,13 +1,12 @@
 #pragma once
 #include "Scene.h"
+#include "SceneRenderer.h"
 
 enum class SceneType {
     Start,
     Login,
     ServerSquare,
     MainGame,
-    Scene1,
-    Scene2,
     END
 };
 
@@ -17,6 +16,7 @@ public:
     ~SceneManager();
     void Initialize(HWND hWnd, DX12Core& core);
     void Update(const float deltaTime);
+    void BeginRender();
     void RenderDeferred();
     void RenderForward();
     void RenderShadow();
@@ -24,6 +24,7 @@ public:
     void Release();
 
     Scene* GetCurrentScene() const;
+    SceneRenderer* GetSceneRenderer() const;
 
 public:
     void SceneStart(DX12Core& core);       
@@ -41,6 +42,8 @@ private:
 
     bool pendingSceneChange = false;
     SceneType nextSceneType;
+
+    unique_ptr<SceneRenderer> sceneRenderer;
 };
 
 template<typename T>

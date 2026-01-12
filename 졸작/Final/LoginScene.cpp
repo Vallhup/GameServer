@@ -6,9 +6,10 @@
 #include "Material.h"
 #include "Camera.h"
 #include "MainCharacter.h"
-#include "MeshRenderer.h"
 #include "Transform.h"
 #include "Animator.h"
+#include "Mesh.h"
+#include "SceneRenderer.h"
 
 LoginScene::~LoginScene() = default;
 
@@ -18,10 +19,10 @@ void LoginScene::Release()
 
 void LoginScene::Reset()
 {
+	gameObjects.clear();
 	knight.reset();
 	dragon.reset();
 
-	// Material::Cleanup();
 	Material::ReleaseUploadBuffers();
 	OutputDebugStringA("LoginScene Data has been deleted!! \n----------------------------------------\n");
 }
@@ -41,37 +42,39 @@ void LoginScene::InitializeLogic()
 
 	{
 		knight = make_shared<MainCharacter>();
-		auto meshrenderer = knight->AddComponent<MeshRenderer>();
+		auto mesh = knight->AddComponent<Mesh>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
-		meshrenderer->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
 		transform->SetInitPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
+		gameObjects.push_back(knight);
 
 		coreRef->FlushCommandQueue();
 		coreRef->ResetCommandQueue();
 
-		meshrenderer->ReleaseUploadBuffers();
+		mesh->ReleaseUploadBuffers();
 
 		knight->SetCamera(cam.get());
 	}
 
 	{
 		dragon = make_shared<GameObject>();
-		auto meshRenderer = dragon->AddComponent<MeshRenderer>();
+		auto mesh = dragon->AddComponent<Mesh>();
 		auto transform = dragon->AddComponent<Transform>();
 		auto animator = dragon->AddComponent<Animator>();
 
-		meshRenderer->SetMesh(*coreRef, L"../Assets/FBXModel/Dragon/Dragon");
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Dragon/Dragon");
 		transform->SetInitPosition(2.f, 0.f, 0.5f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.1f, 0.1f, 0.1f);
+		gameObjects.push_back(dragon);
 
 		coreRef->FlushCommandQueue();
 		coreRef->ResetCommandQueue();
 
-		meshRenderer->ReleaseUploadBuffers();
+		mesh->ReleaseUploadBuffers();
 
 		OutputDebugStringA("Dragon created!!\n");
 	}
@@ -104,52 +107,23 @@ void LoginScene::UpdateScene(const float deltaTime)
 		}
 	}
 
-	{
-		knight->Update(deltaTime);
-		dragon->Update(deltaTime);
-	}
+	for (const auto& obj : gameObjects)
+		obj->Update(deltaTime);
 }
 
 void LoginScene::RenderSceneDeferred()
 {
-	{
-		if (knight)
-		{
-			auto meshrenderer = knight->GetComponent<MeshRenderer>();
-			if (meshrenderer)
-				meshrenderer->RenderDeferred(*coreRef);
-		}
-
-		if (dragon)
-		{
-			auto meshrenderer = dragon->GetComponent<MeshRenderer>();
-			if (meshrenderer)
-				meshrenderer->RenderDeferred(*coreRef);
-		}
-	}
+	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 }
 
 void LoginScene::RenderSceneForward()
 {
-	{
-		if (knight)
-		{
-			auto meshrenderer = knight->GetComponent<MeshRenderer>();
-			if (meshrenderer)
-				meshrenderer->RenderForward(*coreRef);
-		}
-
-		if (dragon)
-		{
-			auto meshrenderer = dragon->GetComponent<MeshRenderer>();
-			if (meshrenderer)
-				meshrenderer->RenderForward(*coreRef);
-		}
-	}
+	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
 void LoginScene::RenderSceneShadow()
 {
+	sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
 }
 
 void LoginScene::RenderSceneEffects()

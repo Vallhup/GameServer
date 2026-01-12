@@ -51,7 +51,7 @@ void Input::SetMouseWheelDelta(int d)
 
 void Input::SetClientID(int id)
 {
-	OutputDebugStringA(("ClientId: " + to_string(id)).c_str());
+	OutputDebugStringA(("ClientId: " + to_string(id) + "\n").c_str());
 	clientID = id;
 }
 

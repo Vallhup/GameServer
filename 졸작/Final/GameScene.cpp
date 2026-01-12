@@ -5,7 +5,6 @@
 #include "SceneManager.h"
 #include "GameObject.h"
 #include "MainCharacter.h"
-#include "MeshRenderer.h"
 #include "Transform.h"
 #include "Animator.h"
 #include "Material.h"
@@ -19,6 +18,8 @@
 #include "Shader.h"
 #include "RootSignature.h"
 #include "SkyBox.h"
+#include "Mesh.h"
+#include "SceneRenderer.h"
 
 GameScene::~GameScene() = default;
 
@@ -28,10 +29,10 @@ void GameScene::CreateKnightPool()
 	{
 		auto knight = make_shared<MainCharacter>();
 		knight->SetId(-1);
-		auto meshRenderer = knight->AddComponent<MeshRenderer>();
+		auto mesh = knight->AddComponent<Mesh>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
-		meshRenderer->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
@@ -44,9 +45,9 @@ shared_ptr<GameObject> GameScene::CreateStaticMesh(const wstring& path, const XM
 {
 	auto obj = make_shared<GameObject>();
 	obj->SetId(0);
-	auto meshRenderer = obj->AddComponent<MeshRenderer>();
+	auto mesh = obj->AddComponent<Mesh>();
 	auto transform = obj->AddComponent<Transform>();
-	meshRenderer->SetMesh(*coreRef, path);
+	mesh->SetMesh(*coreRef, path);
 	transform->SetInitPosition(pos.x, pos.y, pos.z);
 	transform->SetRotation(rot.x, rot.y, rot.z);
 	transform->SetScale(scale.x, scale.y, scale.z);
@@ -422,10 +423,10 @@ void GameScene::InitializeLogic()
 	{
 		auto boss = make_shared<GameObject>();
 		boss->SetId(0);
-		auto meshRenderer = boss->AddComponent<MeshRenderer>();
+		auto mesh = boss->AddComponent<Mesh>();
 		auto transform = boss->AddComponent<Transform>();
 		auto animator = boss->AddComponent<Animator>();
-		meshRenderer->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
 		transform->SetInitPosition(2.f, 0.f, -5.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.02f, 0.02f, 0.02f);
@@ -445,8 +446,8 @@ void GameScene::InitializeLogic()
 	 
 	for (const auto& obj : gameObjects)
 	{
-		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
-			meshRenderer->ReleaseUploadBuffers();
+		if (auto mesh = obj->GetComponent<Mesh>())
+			mesh->ReleaseUploadBuffers();
 	}
 	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
 
@@ -522,8 +523,7 @@ void GameScene::UpdateScene(const float deltaTime)
 
 void GameScene::RenderSceneDeferred()
 {
-	BoundingFrustum viewFrustum = cam->GetViewFrustum();
-	//int objCount = 0;
+	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 
 	static bool hitOn = false;
 
@@ -534,14 +534,8 @@ void GameScene::RenderSceneDeferred()
 	{
 		if (obj->GetId() != -1)
 		{
-			if (!myPlayer && !obj->IsInFrustum(viewFrustum))
-				continue;
-
-			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
+			if (auto mesh = obj->GetComponent<Mesh>())
 			{
-				meshRenderer->RenderDeferred(*coreRef);
-				//objCount++;
-
 				auto animator = obj->GetComponent<Animator>();
 
 				if (hitOn && !animator)
@@ -557,31 +551,12 @@ void GameScene::RenderSceneForward()
 {
 	skyBox->RenderSkyBox(*coreRef, coreRef->GetGraphicsCmdList());
 
-	BoundingFrustum viewFrustum = cam->GetViewFrustum();
-
-	for (const auto& obj : gameObjects)
-	{
-		if (obj->GetId() != -1)
-		{
-			if (!myPlayer && !obj->IsInFrustum(viewFrustum))
-				continue;
-
-			if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
-				meshRenderer->RenderForward(*coreRef);
-		}
-	}
+	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
 void GameScene::RenderSceneShadow()
 {
-	for (const auto& obj : gameObjects)
-	{
-		if (obj->GetId() != -1)
-		{
-		if (auto meshRenderer = obj->GetComponent<MeshRenderer>())
-			meshRenderer->RenderShadow(*coreRef);
-		}
-	}
+	sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
 }
 
 void GameScene::RenderSceneEffects()
@@ -600,9 +575,5 @@ void GameScene::RenderSceneEffects()
 
 void GameScene::RequestSceneChange()
 {
-	/*if (GET(Input).GetKeyDown(VK_TAB))
-	{
-		if (sManagerRef)
-			sManagerRef->RequestSceneChange(SceneType::Scene1);
-	}*/
+
 }

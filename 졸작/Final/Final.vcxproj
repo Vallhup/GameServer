@@ -230,13 +230,11 @@ exit 0</Command>
     <ClCompile Include="MainCharacter.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="ObjectPoolManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
     <ClCompile Include="ServerSquareScene.cpp" />
-    <ClCompile Include="ServerTestScene.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SoundManager.cpp" />
@@ -286,13 +284,11 @@ exit 0</Command>
     <ClInclude Include="MainCharacter.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="ObjectPoolManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneRenderer.h" />
     <ClInclude Include="ServerSquareScene.h" />
-    <ClInclude Include="ServerTestScene.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SoundManager.h" />

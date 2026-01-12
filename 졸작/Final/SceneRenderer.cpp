@@ -9,6 +9,7 @@
 #include "VertexIndexBuffer.h"
 #include "Shader.h"
 #include "RootSignature.h"
+#include "Camera.h"
 
 void SceneRenderer::Initialize(ID3D12Device* device)
 {
@@ -16,17 +17,34 @@ void SceneRenderer::Initialize(ID3D12Device* device)
     objectCBPool->Initialize(device, CONSTANT_BUFFER_ALIGNMENT * MAX_OBJECTS);
 }
 
-void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameObject>>& objects)
+void SceneRenderer::BeginFrame()
 {
+    cbIndex = 0;
+}
+
+void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameObject>>& objects, const Camera* cam)
+{
+    UINT startIndex = cbIndex;
+
     auto cmdList = core.GetGraphicsCmdList();
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
     SetupRenderingState(core);
 
-    size_t cbIndex = 0;
+    BoundingFrustum frustum;
+    if (cam) frustum = cam->GetViewFrustum();
+
     for (const auto& obj : objects)
     {
+        if (obj->GetId() == -1) continue;
+        if (cam && !obj->IsInFrustum(frustum)) continue;
+
         auto mesh = obj->GetComponent<Mesh>();
         if (!mesh || !mesh->GetVertexIndexBuffer()) continue;
+
+        if (cbIndex >= MAX_OBJECTS) {
+            OutputDebugStringA("cbIndex Overflowed!!\n");
+            break;
+        }
 
         auto animator = obj->GetComponent<Animator>();
         if (animator) {
@@ -73,19 +91,38 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
             mesh->GetVertexIndexBuffer()->Draw(cmdList);
         }
     }
+
+    if (GetAsyncKeyState('P') & 0x8000)
+    {
+        string msg = "[Deferred Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
+            + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
+        OutputDebugStringA(msg.c_str());
+    }
 }
 
-void SceneRenderer::RenderForward(DX12Core& core, const vector<shared_ptr<GameObject>>& objects)
+void SceneRenderer::RenderForward(DX12Core& core, const vector<shared_ptr<GameObject>>& objects, const Camera* cam)
 {
+    UINT startIndex = cbIndex;
+
     auto cmdList = core.GetGraphicsCmdList();
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Transparent));
     SetupRenderingState(core);
 
-    size_t cbIndex = 0;
+    BoundingFrustum frustum;
+    if (cam) frustum = cam->GetViewFrustum();
+
     for (const auto& obj : objects)
     {
+        if (obj->GetId() == -1) continue;
+        if (cam && !obj->IsInFrustum(frustum)) continue;
+
         auto mesh = obj->GetComponent<Mesh>();
         if (!mesh || !mesh->GetVertexIndexBuffer()) continue;
+
+        if (cbIndex >= MAX_OBJECTS) {
+            OutputDebugStringA("cbIndex Overflowed!!\n");
+            break;
+        }
 
         auto animator = obj->GetComponent<Animator>();
         if (animator) {
@@ -129,19 +166,36 @@ void SceneRenderer::RenderForward(DX12Core& core, const vector<shared_ptr<GameOb
             mesh->GetVertexIndexBuffer()->Draw(cmdList);
         }
     }
+
+    if (GetAsyncKeyState('P') & 0x8000)
+    {
+        string msg = "[Forward Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
+            + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
+        string totalMsg = ">> Total CB Usage: " + to_string(cbIndex) + " / " + to_string(MAX_OBJECTS) + "\n\n";
+        OutputDebugStringA(msg.c_str());
+        OutputDebugStringA(totalMsg.c_str());
+    }
 }
 
 void SceneRenderer::RenderShadow(DX12Core& core, const vector<shared_ptr<GameObject>>& objects)
 {
+    UINT startIndex = cbIndex;
+
     auto cmdList = core.GetGraphicsCmdList();
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Shadow));
     SetupRenderingState(core);
 
-    size_t cbIndex = 0;
     for (const auto& obj : objects)
     {
+        if (obj->GetId() == -1) continue;
+
         auto mesh = obj->GetComponent<Mesh>();
         if (!mesh || !mesh->GetVertexIndexBuffer()) continue;
+
+        if (cbIndex >= MAX_OBJECTS) {
+            OutputDebugStringA("cbIndex Overflowed!!\n");
+            break;
+        }
 
         auto animator = obj->GetComponent<Animator>();
         if (animator) {
@@ -181,6 +235,13 @@ void SceneRenderer::RenderShadow(DX12Core& core, const vector<shared_ptr<GameObj
             mesh->GetVertexIndexBuffer()->Draw(cmdList);
         }
     }
+
+    if (GetAsyncKeyState('P') & 0x8000)
+    {
+        string msg = "[Shadow Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
+            + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
+        OutputDebugStringA(msg.c_str());
+    }
 }
 
 void SceneRenderer::RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer)
@@ -198,6 +259,14 @@ void SceneRenderer::RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCou
 
     mesh->GetVertexIndexBuffer()->Bind(cmdList);
     mesh->GetVertexIndexBuffer()->DrawInstanced(cmdList, instanceCount);
+}
+
+void SceneRenderer::ReleaseUploadBuffer()
+{
+    if (objectCBPool)
+        objectCBPool.reset();
+
+    OutputDebugStringA("SceneRenderer's UploadBuffer has been deleted!!\n");
 }
 
 void SceneRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer)
