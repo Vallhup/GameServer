@@ -76,7 +76,8 @@ void MainCharacter::BasicAttack()
 		input.SendAttackPacket();
 
 		auto animator = GetComponent<Animator>();
-		if (animator) {
+		if (animator) 
+		{
 			// TODO : Attack Animation
 		}
 	}
@@ -90,7 +91,8 @@ void MainCharacter::BasicDodge()
 		input.SendDodgePacket();
 
 		auto animator = GetComponent<Animator>();
-		if (animator) {
+		if (animator)
+		{
 			// TODO : Dodge Animation
 		}
 	}

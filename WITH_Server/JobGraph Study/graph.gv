@@ -1,13 +1,22 @@
 digraph JobGraph {
   "class ActionStateSystem" -> "class ActionTimeSystem";
   "class ActionStateSystem" -> "class ActionTransitionSystem";
+  "class ActionStateSystem" -> "class MovementSystem";
   "class ActionStateSystem" -> "class AnimationStateSystem";
   "class ActionStateSystem" -> "class AnimationTimeSystem";
+  "class ActionStateSystem" -> "class HitResolveSystem";
+  "class ActionStateSystem" -> "class HitApplySystem";
   "class ActionTimeSystem" -> "class ActionTransitionSystem";
+  "class ActionTimeSystem" -> "class MovementSystem";
   "class ActionTimeSystem" -> "class AnimationStateSystem";
   "class ActionTimeSystem" -> "class AnimationTimeSystem";
+  "class ActionTimeSystem" -> "class HitResolveSystem";
+  "class ActionTimeSystem" -> "class HitApplySystem";
+  "class ActionTransitionSystem" -> "class MovementSystem";
   "class ActionTransitionSystem" -> "class AnimationStateSystem";
   "class ActionTransitionSystem" -> "class AnimationTimeSystem";
+  "class ActionTransitionSystem" -> "class HitResolveSystem";
+  "class ActionTransitionSystem" -> "class HitApplySystem";
   "class MovementSystem" -> "class ColliderUpdateSystem";
   "class AnimationStateSystem" -> "class AnimationTimeSystem";
   "class AnimationStateSystem" -> "class AnimationRefSystem";
@@ -15,5 +24,8 @@ digraph JobGraph {
   "class AnimationRefSystem" -> "class ColliderUpdateSystem";
   "class AnimationRefSystem" -> "class CollisionSystem";
   "class ColliderUpdateSystem" -> "class CollisionSystem";
-  "class CollisionSystem";
+  "class CollisionSystem" -> "class HitResolveSystem";
+  "class CollisionSystem" -> "class HitApplySystem";
+  "class HitResolveSystem" -> "class HitApplySystem";
+  "class HitApplySystem";
 }

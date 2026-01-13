@@ -108,6 +108,7 @@
     <ClCompile Include="HitResolveSystem.cpp">
       <Filter>ECS\System\Logic\Hit</Filter>
     </ClCompile>
+    <ClCompile Include="ActionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Job.h">
@@ -240,6 +241,7 @@
     <ClInclude Include="HitResolveSystem.h">
       <Filter>ECS\System\Logic\Hit</Filter>
     </ClInclude>
+    <ClInclude Include="ActionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="JobGraph">

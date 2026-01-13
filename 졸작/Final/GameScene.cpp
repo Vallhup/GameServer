@@ -63,7 +63,7 @@ void GameScene::CreateCastle()
 	};
 
 #pragma region Initialize TestBridge
-	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Grass_Patch_08", { 0.0f, 0.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f }));
+	//AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Grass_Patch_08", { 0.0f, 0.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f }));
 #pragma endregion
 
 #pragma region Initialize CASTLEWALL
@@ -449,7 +449,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		OutputDebugStringA("SC_REMOVE packet received\n");
 		break;
 	}
-	//case Protocol::PacketType::SC_ATTACK: {
+	//case PacketType::SC_ATTACK: {
 	//	Protocol::SC_ATTACK_PACKET attack;
 	//	if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
 	//		if (sessionId == GET(Input).GetClientID()) {

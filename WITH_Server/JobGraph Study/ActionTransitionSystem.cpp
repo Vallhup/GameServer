@@ -5,6 +5,7 @@ void ActionTransitionSystem::Execute(const float dT)
 {
 	auto& states = ecs.GetStorage<ActionState>();
 	auto& requests = ecs.GetStorage<ActionRequestTag>();
+	auto& velocities = ecs.GetStorage<Velocity>();
 
 	std::vector<Entity> removeList;
 	removeList.reserve(requests.Size());
@@ -15,6 +16,11 @@ void ActionTransitionSystem::Execute(const float dT)
 		if (auto* state = states.GetComponent(entity))
 		{
 			ActionType next = ResolveNextAction(*state, request);
+			if (next == ActionType::None)
+			{
+				ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
+			}
+
 			if (next == state->type)
 			{
 				removeList.push_back(entity);
@@ -32,9 +38,14 @@ void ActionTransitionSystem::Execute(const float dT)
 	}
 }
 
+std::vector<std::type_index> ActionTransitionSystem::ReadComponents() const
+{
+	return { typeid(Velocity) };
+}
+
 std::vector<std::type_index> ActionTransitionSystem::WriteComponents() const
 {
-	return { typeid(ActionState), typeid(ActionRequestTag) };
+	return { typeid(ActionState), typeid(ActionRequestTag), typeid(ActionMoveTag) };
 }
 
 int ActionTransitionSystem::GetPriority(ActionType type)

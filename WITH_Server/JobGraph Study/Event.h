@@ -13,6 +13,14 @@ enum class EventType {
 	EV_ACTION
 };
 
+enum class ActionRequestType {
+	Attack,
+	Dodge,
+	Parry,
+	Guard,
+	GuardRelease
+};
+
 namespace std {
 	template<>
 	struct hash<EventType> {
@@ -40,10 +48,9 @@ struct MoveEvent {
 
 struct ActionEvent {
 	int sessionId;
-	bool attack;
-	bool dodge;
-	bool parry;
-	bool guard;
+	ActionRequestType type;
+	float dirX;
+	float dirZ;
 };
 
 using EventPayload = std::variant<

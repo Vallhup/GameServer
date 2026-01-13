@@ -112,5 +112,11 @@ void OutputEventSystem::ProcessMove(const OutputEvent& event)
 		SendBuffer* data = NetHelper::SCMovePacket(sessionId,
 			trans->position.x, trans->position.y, trans->position.z, yaw);
 		framework.listener.Broadcast(data);
+
+//#ifdef _DEBUG
+//		std::cout << "[OutputEventSystem] (" << trans->position.x << ", "
+//			<< trans->position.y << ", " << trans->position.z << ")\n";
+//#endif
+
 	}
 }

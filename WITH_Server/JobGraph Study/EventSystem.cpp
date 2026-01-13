@@ -107,15 +107,18 @@ void EventSystem::ProcessMove(const Event& event)
 			{
 				loco->isMoving = false;
 				dir = XMVectorZero();
+
+				XMStoreFloat3(&velocity->dir, dir);
 			}
 
 			else
 			{
 				loco->isMoving = true;
 				dir = XMVector3Normalize(dir);
-			}
 
-			XMStoreFloat3(&velocity->dir, dir);
+				XMStoreFloat3(&velocity->dir, dir);
+				XMStoreFloat3(&velocity->lastNonZeroDir, dir);
+			}
 		}
 	}
 }
@@ -131,17 +134,38 @@ void EventSystem::ProcessAction(const Event& event)
 
 	if (auto* actionIntent = ecs.GetStorage<ActionIntent>().GetComponent(entity))
 	{
-		actionIntent->attack = p->attack;
-		actionIntent->dodge = p->dodge;
-		actionIntent->parry = p->parry;
-		actionIntent->guard = p->guard;
-
-		if (auto* actionState = ecs.GetStorage<ActionState>().GetComponent(entity))
+		switch (p->type) {
+		case ActionRequestType::Attack:
 		{
-			if (actionState->type == ActionType::Guard && !p->guard)
+			actionIntent->attack = true;
+			break;
+		}
+		case ActionRequestType::Dodge:
+		{
+			actionIntent->dodge = true;
+			break;
+		}
+		case ActionRequestType::Parry:
+		{
+			actionIntent->parry = true;
+			break;
+		}
+		case ActionRequestType::Guard:
+		{
+			actionIntent->guard = true;
+			break;
+		}
+		case ActionRequestType::GuardRelease:
+		{
+			if (auto* actionState = ecs.GetStorage<ActionState>().GetComponent(entity))
 			{
-				ecs.GetStorage<ActionRequestTag>().AddComponent(entity)->type = ActionType::None;
+				if (actionState->type == ActionType::Guard)
+				{
+					ecs.GetStorage<ActionRequestTag>().AddComponent(entity)->type = ActionType::None;
+				}
 			}
+			break;
+		}
 		}
 	}
 }
