@@ -63,7 +63,7 @@ void GameScene::CreateCastle()
 	};
 
 #pragma region Initialize TestBridge
-	//AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Grass_Patch_08", { 0.0f, 0.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f }));
+	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Grass_Patch_08", { 0.0f, 0.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f }));
 #pragma endregion
 
 #pragma region Initialize CASTLEWALL
@@ -619,7 +619,7 @@ void GameScene::UpdateScene(const float deltaTime)
 		obj->Update(deltaTime);
 
 	if (cam)
-		cam->Update(*coreRef, deltaTime, gameObjects, myPlayer);
+		cam->Update(*coreRef, deltaTime, gameObjects, instanceGroups, myPlayer);
 	
 	BoundingFrustum frustum = cam->GetViewFrustum();
 	for (auto& group : instanceGroups)

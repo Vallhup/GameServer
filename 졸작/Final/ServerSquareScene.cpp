@@ -65,7 +65,7 @@ void ServerSquareScene::UpdateScene(const float deltaTime)
 		obj->Update(deltaTime);
 
 	if (cam)
-		cam->Update(*coreRef, deltaTime, gameObjects, knight);
+		cam->Update(*coreRef, deltaTime, gameObjects, {}, knight);
 }
 
 void ServerSquareScene::RenderSceneDeferred()

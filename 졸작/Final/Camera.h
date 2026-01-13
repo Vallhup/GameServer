@@ -3,6 +3,7 @@
 class DX12Core;
 class GameObject;
 class MainCharacter;
+struct InstanceGroup;
 
 class Camera
 {
@@ -10,7 +11,7 @@ public:
 	void Initialize(HWND hWnd);
 	void InitCameraPositionFromCharacter(const XMFLOAT3& pos);
 
-	void Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const shared_ptr<MainCharacter>& myPlayer);
+	void Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const vector<InstanceGroup>& instanceGroups, const shared_ptr<MainCharacter>& myPlayer);
 
 	XMFLOAT3 GetForward() const;
 	XMFLOAT3 GetRight() const;
@@ -32,8 +33,8 @@ private:
 	void UpdateForwardAndRight();
 	void ChangeAngleByInput(float deltaTime);
 
-	void UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneObjects, const shared_ptr<MainCharacter>& myPlayer);
-	bool CheckObstruction(const vector<shared_ptr<GameObject>>& objects, const XMFLOAT3& targetPos, float& adjustedDistance, const shared_ptr<MainCharacter>& myPlayer);
+	void UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneObjects, const vector<InstanceGroup>& instanceGroups, const shared_ptr<MainCharacter>& myPlayer);
+	bool CheckObstruction(const vector<shared_ptr<GameObject>>& objects, const vector<InstanceGroup>& instanceGroups, const XMFLOAT3& targetPos, float& adjustedDistance, const shared_ptr<MainCharacter>& myPlayer);
 
 	void ChangeCursorInfo(bool in);
 

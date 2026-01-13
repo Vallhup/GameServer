@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "GameObject.h"
 #include "MainCharacter.h"
+#include "SceneRenderer.h"
 
 void Camera::Initialize(HWND hWnd)
 {
@@ -52,10 +53,10 @@ void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
     currentTargetPos = desiredTargetPos;
 }
 
-void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const shared_ptr<MainCharacter>& myPlayer)
+void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const vector<InstanceGroup>& instanceGroups, const shared_ptr<MainCharacter>& myPlayer)
 {
     UpdateInputtoCamLogic(deltaTime);
-    UpdatePosByObstruction(sceneObjects, myPlayer);
+    UpdatePosByObstruction(sceneObjects, instanceGroups, myPlayer);
     UpdateSmoothFollow(deltaTime);
     UpdateCameraMatrices(core);
     SetCursor();
@@ -164,18 +165,18 @@ void Camera::ChangeAngleByInput(float deltaTime)
     }
 }
 
-void Camera::UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneObjects, const shared_ptr<MainCharacter>& myPlayer)
+void Camera::UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneObjects, const vector<InstanceGroup>& instanceGroups, const shared_ptr<MainCharacter>& myPlayer)
 {
     float adjustedDistance = desiredDistance;
 
     // Real-time camera position changes
     desiredDistance = maxDistance;
 
-    if (CheckObstruction(sceneObjects, desiredTargetPos, adjustedDistance, myPlayer))
+    if (CheckObstruction(sceneObjects, instanceGroups, desiredTargetPos, adjustedDistance, myPlayer))
         desiredDistance = adjustedDistance;
 }
 
-bool Camera::CheckObstruction(const vector<shared_ptr<GameObject>>& objects, const XMFLOAT3& targetPos, float& adjustedDistance, const shared_ptr<MainCharacter>& myPlayer)
+bool Camera::CheckObstruction(const vector<shared_ptr<GameObject>>& objects, const vector<InstanceGroup>& instanceGroups, const XMFLOAT3& targetPos, float& adjustedDistance, const shared_ptr<MainCharacter>& myPlayer)
 {
     XMVECTOR rayOrigin = XMLoadFloat3(&targetPos);
     XMVECTOR rayDir = XMLoadFloat3(&position) - rayOrigin;
@@ -205,8 +206,29 @@ bool Camera::CheckObstruction(const vector<shared_ptr<GameObject>>& objects, con
             {
                 closestDistance = distance;
                 foundObstruction = true;
+            }
+        }
+    }
 
-                //OutputDebugStringA(("Obstruction found at distance: " + to_string(distance) + "\n").c_str());
+    for (const auto& group : instanceGroups) 
+    {
+        for (const auto& obj : group.objects)
+        {
+            BoundingBox worldBox = obj->GetWorldBoundingBox();
+
+            if (worldBox.Extents.x <= 0.0f) continue;
+
+            float distance = 0.0f;
+            if (worldBox.Intersects(rayOrigin, rayDir, distance))
+            {
+                if (distance < 0.1f) continue;
+                if (distance >= maxDistance) continue;
+
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    foundObstruction = true;
+                }
             }
         }
     }
