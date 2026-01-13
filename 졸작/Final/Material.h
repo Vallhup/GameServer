@@ -22,6 +22,7 @@ public:
         const MaterialData& matData);
 
     static UINT RegisterCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
+    static UINT RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);
 
     UINT GetMaterialIndex() const { return materialIndex; }
 
@@ -44,7 +45,4 @@ private:
     static UINT descriptorSize;
     static bool bufferDirty;
     static unordered_map<wstring, UINT> texturePathToIndex;
-
-    UINT RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
-        const wstring& path);
 };

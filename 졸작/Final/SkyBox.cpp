@@ -9,7 +9,13 @@
 void SkyBox::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
 {
 	InitializeMesh(device, cmdList);
-	RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox.dds");
+
+	skyboxCubeMapIndex = Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox.dds");
+
+	Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox_irradiance.dds");
+	Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox_radiance.dds");
+
+	Material::RegisterTexture(device, cmdList, L"../Assets/Skybox/brdf_lut.png");
 }
 
 void SkyBox::RenderSkyBox(DX12Core& core, ID3D12GraphicsCommandList* cmdList)
@@ -52,7 +58,3 @@ void SkyBox::InitializeMesh(ID3D12Device* device, ID3D12GraphicsCommandList* cmd
 	skyboxMesh->Initialize(device, cmdList, vertices, indices);
 }
 
-void SkyBox::RegisterCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath)
-{
-	skyboxCubeMapIndex = Material::RegisterCubeMap(device, cmdList, ddsPath);
-}

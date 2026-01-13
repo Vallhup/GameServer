@@ -11,7 +11,6 @@ public:
 
 private:
 	void InitializeMesh(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
-	void RegisterCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
 
 private:
 	shared_ptr<VertexIndexBuffer> skyboxMesh;
