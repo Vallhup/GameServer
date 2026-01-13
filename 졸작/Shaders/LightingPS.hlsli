@@ -25,7 +25,6 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     float ao = rt2.a;
     
     float3 emission = rt3.rgb;
-    float alpha = rt3.a;
     
     float3 N = worldNormal;
     float3 V = normalize(cameraPosition - worldPos);
@@ -77,5 +76,5 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     
     finalColor = ApplyFog(finalColor, worldPos);
     
-    return float4(finalColor, alpha);
+    return float4(finalColor, 1.0);
 }

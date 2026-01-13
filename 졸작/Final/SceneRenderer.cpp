@@ -109,7 +109,16 @@ void SceneRenderer::RenderForward(DX12Core& core, const vector<shared_ptr<GameOb
     SetupRenderingState(core);
 
     BoundingFrustum frustum;
-    if (cam) frustum = cam->GetViewFrustum();
+    XMFLOAT3 camPos = {};
+    if (cam) 
+    {
+        frustum = cam->GetViewFrustum();
+        camPos = cam->GetPosition();
+    }
+
+    XMVECTOR camPosVec = XMLoadFloat3(&camPos);
+
+    vector<pair<float, shared_ptr<GameObject>>> alphaObjects;
 
     for (const auto& obj : objects)
     {
@@ -119,19 +128,43 @@ void SceneRenderer::RenderForward(DX12Core& core, const vector<shared_ptr<GameOb
         auto mesh = obj->GetComponent<Mesh>();
         if (!mesh || !mesh->GetVertexIndexBuffer()) continue;
 
+        bool hasAlpha = false;
+        const auto& originalData = mesh->GetOriginalMaterialData();
+        for (const auto& mat : originalData) {
+            if (!mat.alphaTexPath.empty()) {
+                hasAlpha = true;
+                break;
+            }
+        }
+
+        if (hasAlpha) {
+            auto transform = obj->GetComponent<Transform>();
+            XMFLOAT3 objPos = transform->GetPosition();
+            XMVECTOR objPosVec = XMLoadFloat3(&objPos);
+            float dist = XMVectorGetX(XMVector3Length(XMVectorSubtract(objPosVec, camPosVec)));
+            alphaObjects.push_back({ dist, obj });
+        }
+    }
+
+    sort(alphaObjects.begin(), alphaObjects.end(), [](const auto& a, const auto& b) {
+        return a.first > b.first; });
+
+    for (const auto& [dist, obj] : alphaObjects)
+    {
         if (cbIndex >= MAX_OBJECTS) {
             OutputDebugStringA("cbIndex Overflowed!!\n");
             break;
         }
 
+        auto mesh = obj->GetComponent<Mesh>();
         auto animator = obj->GetComponent<Animator>();
+        auto transform = obj->GetComponent<Transform>();
+
         if (animator) {
             cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());
         }
 
-        auto transform = obj->GetComponent<Transform>();
         XMMATRIX world = XMMatrixTranspose(transform->GetWorldMatrix());
-
         mesh->GetVertexIndexBuffer()->Bind(cmdList);
 
         if (mesh->HasMultiMaterial())
