@@ -640,7 +640,7 @@ void GameScene::RenderSceneDeferred()
 	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 
 	auto renderer = sManagerRef->GetSceneRenderer();
-	for (auto& group : instanceGroups)
+	for (const auto& group : instanceGroups)
 	{
 		if (group.mesh)
 			renderer->RenderInstanced(*coreRef, group.mesh, group.visibleCount, group.instanceBuffer.get());
@@ -724,7 +724,14 @@ void GameScene::RenderSceneForward()
 
 void GameScene::RenderSceneShadow()
 {
-	sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
+	auto renderer = sManagerRef->GetSceneRenderer();
+	renderer->RenderShadow(*coreRef, gameObjects);
+
+	for (const auto& group : instanceGroups)
+	{
+		if (group.mesh)
+			renderer->RenderShadow(*coreRef, group.objects);
+	}
 }
 
 void GameScene::RenderSceneEffects()
