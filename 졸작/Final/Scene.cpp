@@ -83,6 +83,24 @@ void Scene::InitializeInstanceGroup(InstanceGroup& group)
     group.instanceBuffer->CopyData(transforms.data(), bufferSize, 0);
 }
 
+void Scene::UpdateInstanceGroup(InstanceGroup& group, const BoundingFrustum& frustum)
+{
+    vector<XMMATRIX> visibleTransforms;
+    visibleTransforms.reserve(group.objects.size());
+
+    for (const auto& obj : group.objects) {
+        if (obj->IsInFrustum(frustum)) {
+            auto transform = obj->GetComponent<Transform>();
+            visibleTransforms.push_back(XMMatrixTranspose(transform->GetWorldMatrix()));
+        }
+    }
+
+    group.visibleCount = visibleTransforms.size();
+    if (group.visibleCount > 0) {
+        group.instanceBuffer->CopyData(visibleTransforms.data(), sizeof(XMMATRIX) * group.visibleCount, 0);
+    }
+}
+
 Camera* Scene::GetCamera() const
 {
     return cam.get();

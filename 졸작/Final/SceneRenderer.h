@@ -11,6 +11,7 @@ struct InstanceGroup {
     Mesh* mesh;
     vector<shared_ptr<GameObject>> objects;
     unique_ptr<UploadBuffer> instanceBuffer;
+    UINT visibleCount = 0;
 };
 
 class SceneRenderer

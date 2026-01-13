@@ -57,4 +57,5 @@ private:
 	InstanceGroup pillarGroup;
 	InstanceGroup floorGroup;
 	InstanceGroup candleGroup;
+	vector<InstanceGroup> instanceGroups;
 };

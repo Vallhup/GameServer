@@ -25,6 +25,7 @@ public:
 
 	void InitializeObjectPools();
 	void InitializeInstanceGroup(InstanceGroup& group);
+	void UpdateInstanceGroup(InstanceGroup& group, const BoundingFrustum& frustum);
 
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
