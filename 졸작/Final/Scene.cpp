@@ -74,13 +74,18 @@ void Scene::InitializeInstanceGroup(InstanceGroup& group)
     group.instanceBuffer = make_unique<UploadBuffer>();
     group.instanceBuffer->Initialize(coreRef->GetDevice(), bufferSize);
 
+    group.fullInstanceBuffer = make_unique<UploadBuffer>();
+    group.fullInstanceBuffer->Initialize(coreRef->GetDevice(), bufferSize);
+
     vector<XMMATRIX> transforms;
     transforms.reserve(group.objects.size());
     for (const auto& obj : group.objects) {
         auto transform = obj->GetComponent<Transform>();
         transforms.push_back(XMMatrixTranspose(transform->GetWorldMatrix()));
     }
+
     group.instanceBuffer->CopyData(transforms.data(), bufferSize, 0);
+    group.fullInstanceBuffer->CopyData(transforms.data(), bufferSize, 0);
 }
 
 void Scene::UpdateInstanceGroup(InstanceGroup& group, const BoundingFrustum& frustum)

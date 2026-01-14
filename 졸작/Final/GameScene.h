@@ -54,8 +54,5 @@ private:
 
 	shared_ptr<SkyBox> skyBox;
 
-	InstanceGroup pillarGroup;
-	InstanceGroup floorGroup;
-	InstanceGroup candleGroup;
 	vector<InstanceGroup> instanceGroups;
 };

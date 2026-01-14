@@ -12,6 +12,9 @@ struct InstanceGroup {
     vector<shared_ptr<GameObject>> objects;
     unique_ptr<UploadBuffer> instanceBuffer;
     UINT visibleCount = 0;
+
+    // For drawing all object's shadow
+    unique_ptr<UploadBuffer> fullInstanceBuffer;
 };
 
 class SceneRenderer
@@ -24,6 +27,7 @@ public:
     void RenderForward(DX12Core& core, const vector<shared_ptr<GameObject>>& objects, const Camera* cam);
     void RenderShadow(DX12Core& core, const vector<shared_ptr<GameObject>>& objects);
     void RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer);
+    void RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer);
 
     void ReleaseUploadBuffer();
 

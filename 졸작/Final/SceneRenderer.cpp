@@ -279,6 +279,8 @@ void SceneRenderer::RenderShadow(DX12Core& core, const vector<shared_ptr<GameObj
 
 void SceneRenderer::RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer)
 {
+    UINT startIndex = cbIndex;
+
     if (!mesh || !mesh->GetVertexIndexBuffer() || !instanceBuffer) return;
 
     if (cbIndex >= MAX_OBJECTS) {
@@ -299,6 +301,47 @@ void SceneRenderer::RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCou
 
     mesh->GetVertexIndexBuffer()->Bind(cmdList);
     mesh->GetVertexIndexBuffer()->DrawInstanced(cmdList, instanceCount);
+
+    if (GetAsyncKeyState('P') & 0x8000)
+    {
+        string msg = "[Instanced Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
+            + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
+        OutputDebugStringA(msg.c_str());
+    }
+}
+
+void SceneRenderer::RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer)
+{
+    UINT startIndex = cbIndex;
+
+    if (!mesh || !mesh->GetVertexIndexBuffer() || !instanceBuffer) return;
+
+    if (cbIndex >= MAX_OBJECTS) {
+        OutputDebugStringA("cbIndex Overflowed!!\n");
+        return;
+    }
+
+    auto cmdList = core.GetGraphicsCmdList();
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Shadow));
+    SetupRenderingState(core, instanceBuffer);
+
+    UINT matIndex = mesh->GetMaterial() ? mesh->GetMaterial()->GetMaterialIndex() : 0xFFFFFFFF;
+    auto objConst = MakeObjectConstants(XMMatrixIdentity(), mesh->GetMaterial() ? 1 : 0, 1, matIndex);
+    size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
+
+    objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
+    cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
+    cbIndex++;
+
+    mesh->GetVertexIndexBuffer()->Bind(cmdList);
+    mesh->GetVertexIndexBuffer()->DrawInstanced(cmdList, instanceCount);
+
+    if (GetAsyncKeyState('P') & 0x8000)
+    {
+        string msg = "[Instanced Shadow Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
+            + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
+        OutputDebugStringA(msg.c_str());
+    }
 }
 
 void SceneRenderer::ReleaseUploadBuffer()
