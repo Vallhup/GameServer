@@ -226,6 +226,7 @@ exit 0</Command>
     <ClCompile Include="GPUBuffer.cpp" />
     <ClCompile Include="ImGuiManager.cpp" />
     <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="InstancingBatch.cpp" />
     <ClCompile Include="LoginScene.cpp" />
     <ClCompile Include="MainCharacter.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -280,6 +281,7 @@ exit 0</Command>
     <ClInclude Include="GPUBuffer.h" />
     <ClInclude Include="ImGuiManager.h" />
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="InstancingBatch.h" />
     <ClInclude Include="LoginScene.h" />
     <ClInclude Include="MainCharacter.h" />
     <ClInclude Include="Material.h" />

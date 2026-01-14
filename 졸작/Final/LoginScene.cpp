@@ -1,15 +1,10 @@
 #include "pch.h"
 #include "LoginScene.h"
-#include "DX12Core.h"
-#include "Input.h"
 #include "SceneManager.h"
+#include "Input.h"
 #include "Material.h"
-#include "Camera.h"
 #include "MainCharacter.h"
-#include "Transform.h"
 #include "Animator.h"
-#include "Mesh.h"
-#include "SceneRenderer.h"
 
 LoginScene::~LoginScene() = default;
 

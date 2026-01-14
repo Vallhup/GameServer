@@ -36,7 +36,6 @@ protected:
 
 private:
 	void CreateKnightPool();
-	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const XMFLOAT3& pos = { 0.0f, 0.0f, 0.0f }, const XMFLOAT3& rot = { 0.0f, 0.0f, 0.0f }, const XMFLOAT3& scale = { 0.01f, 0.01f, 0.01f });
 	void CreateCastle();
 	void CreateEffectSamples();
 
@@ -54,5 +53,5 @@ private:
 
 	shared_ptr<SkyBox> skyBox;
 
-	vector<InstanceGroup> instanceGroups;
+	vector<shared_ptr<InstancingBatch>> instancingBatches;
 };

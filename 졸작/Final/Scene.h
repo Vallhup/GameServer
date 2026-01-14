@@ -1,11 +1,13 @@
 #pragma once
 #include "Camera.h"
 #include "SceneRenderer.h"
+#include "InstancingBatch.h"
+#include "GameObject.h"		// DX12Core.h 포함
+#include "Mesh.h"			// Component.h 포함
+#include "Transform.h"		// Component.h
 
-class DX12Core;
 class SceneManager;
 enum class SceneType;
-class GameObject;
 class MainCharacter;
 
 class Scene
@@ -23,10 +25,6 @@ public:
 
 	virtual const float* GetBackgroundColor() = 0;
 
-	void InitializeObjectPools();
-	void InitializeInstanceGroup(InstanceGroup& group);
-	void UpdateInstanceGroup(InstanceGroup& group, const BoundingFrustum& frustum);
-
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
 
@@ -40,6 +38,12 @@ protected:
 	virtual void RenderSceneEffects() = 0;
 	virtual void RequestSceneChange() = 0;
 
+	template<typename T>
+	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const T& data);
+
+	template<typename T, size_t N>
+	void CreateAndBatchObjects(const wstring& path, const T(&data)[N], vector<shared_ptr<InstancingBatch>>& targetBatchList);
+
 protected:
 	XMFLOAT4X4 mView = {};
 	XMFLOAT4X4 mProjection = {};
@@ -50,3 +54,38 @@ protected:
 	unique_ptr<Camera> cam;
 };
 
+template <typename T>
+shared_ptr<GameObject> Scene::CreateStaticMesh(const wstring& path, const T& data)
+{
+	auto obj = make_shared<GameObject>();
+	obj->SetId(0);
+	auto mesh = obj->AddComponent<Mesh>();
+	auto transform = obj->AddComponent<Transform>();
+	mesh->SetMesh(*coreRef, path);
+	transform->SetInitPosition(data.position);
+	transform->SetRotation(data.rotation);
+	transform->SetScale(data.scale);
+	return obj;
+}
+
+template <typename T, size_t N>
+void Scene::CreateAndBatchObjects(const wstring& path, const T(&data)[N], vector<shared_ptr<InstancingBatch>>& targetBatchList)
+{
+	auto batch = make_shared<InstancingBatch>();
+
+	for (int i = 0; i < N; ++i)
+	{
+		auto obj = CreateStaticMesh(path, data[i]);
+
+		if (i == 0)
+		{
+			if (auto mesh = obj->GetComponent<Mesh>())
+				batch->Initialize(mesh);
+		}
+
+		batch->AddObject(obj);
+	}
+
+	batch->BuildBuffers(*coreRef);
+	targetBatchList.push_back(move(batch));
+}

@@ -1,16 +1,10 @@
 #include "pch.h"
 #include "TestScene.h"
-#include "DX12Core.h"
-#include "GameObject.h"
-#include "MainCharacter.h"
-#include "Transform.h"
-#include "Input.h"
 #include "SceneManager.h"
+#include "MainCharacter.h"
+#include "Input.h"
 #include "Material.h"
 #include "Animator.h"
-#include "Camera.h"
-#include "Mesh.h"
-#include "SceneRenderer.h"
 
 TestScene::~TestScene() = default;
 

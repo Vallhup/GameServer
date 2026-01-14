@@ -137,7 +137,10 @@
       <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="SceneRenderer.cpp">
-      <Filter>Scene</Filter>
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingBatch.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -277,7 +280,10 @@
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="SceneRenderer.h">
-      <Filter>Scene</Filter>
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingBatch.h">
+      <Filter>Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -411,6 +417,9 @@
     </Filter>
     <Filter Include="Network\Protocol\pb.%2a">
       <UniqueIdentifier>{8f75e9c6-16ce-44ea-bb94-59e53792e9c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{e4a2bbc4-7dee-4d55-bcec-4182cfc74628}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

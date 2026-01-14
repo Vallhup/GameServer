@@ -1,14 +1,10 @@
 #include "pch.h"
 #include "Scene.h"
-#include "DX12Core.h"
 #include "SceneManager.h"
 #include "MainCharacter.h"
 #include "Material.h"
 #include "Camera.h"
 #include "Input.h"
-#include "SceneRenderer.h"
-#include "GameObject.h"
-#include "Transform.h"
 
 void Scene::Initialize(HWND hWnd, DX12Core& core)
 {
@@ -19,8 +15,6 @@ void Scene::Initialize(HWND hWnd, DX12Core& core)
 
     cam = make_unique<Camera>();
     cam->Initialize(hWnd);
-
-    InitializeObjectPools();
 
     InitializeLogic();
 
@@ -59,51 +53,6 @@ void Scene::RenderShadow()
 void Scene::RenderEffects()
 {
     RenderSceneEffects();
-}
-
-void Scene::InitializeObjectPools()
-{
-    InitializeSceneObjectPools();
-}
-
-void Scene::InitializeInstanceGroup(InstanceGroup& group)
-{
-    if (group.objects.empty()) return;
-
-    size_t bufferSize = sizeof(XMMATRIX) * group.objects.size();
-    group.instanceBuffer = make_unique<UploadBuffer>();
-    group.instanceBuffer->Initialize(coreRef->GetDevice(), bufferSize);
-
-    group.fullInstanceBuffer = make_unique<UploadBuffer>();
-    group.fullInstanceBuffer->Initialize(coreRef->GetDevice(), bufferSize);
-
-    vector<XMMATRIX> transforms;
-    transforms.reserve(group.objects.size());
-    for (const auto& obj : group.objects) {
-        auto transform = obj->GetComponent<Transform>();
-        transforms.push_back(XMMatrixTranspose(transform->GetWorldMatrix()));
-    }
-
-    group.instanceBuffer->CopyData(transforms.data(), bufferSize, 0);
-    group.fullInstanceBuffer->CopyData(transforms.data(), bufferSize, 0);
-}
-
-void Scene::UpdateInstanceGroup(InstanceGroup& group, const BoundingFrustum& frustum)
-{
-    vector<XMMATRIX> visibleTransforms;
-    visibleTransforms.reserve(group.objects.size());
-
-    for (const auto& obj : group.objects) {
-        if (obj->IsInFrustum(frustum)) {
-            auto transform = obj->GetComponent<Transform>();
-            visibleTransforms.push_back(XMMatrixTranspose(transform->GetWorldMatrix()));
-        }
-    }
-
-    group.visibleCount = visibleTransforms.size();
-    if (group.visibleCount > 0) {
-        group.instanceBuffer->CopyData(visibleTransforms.data(), sizeof(XMMATRIX) * group.visibleCount, 0);
-    }
 }
 
 Camera* Scene::GetCamera() const

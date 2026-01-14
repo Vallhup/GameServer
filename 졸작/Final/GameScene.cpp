@@ -1,14 +1,10 @@
 #include "pch.h"
 #include "GameScene.h"
-#include "DX12Core.h"
-#include "Input.h"
 #include "SceneManager.h"
-#include "GameObject.h"
+#include "Input.h"
 #include "MainCharacter.h"
-#include "Transform.h"
 #include "Animator.h"
 #include "Material.h"
-#include "Camera.h"
 #include "EffectRenderer.h"
 #include "Engine.h"
 #include "NetworkManager.h"
@@ -18,8 +14,6 @@
 #include "Shader.h"
 #include "RootSignature.h"
 #include "SkyBox.h"
-#include "Mesh.h"
-#include "SceneRenderer.h"
 
 GameScene::~GameScene() = default;
 
@@ -41,19 +35,6 @@ void GameScene::CreateKnightPool()
 	}
 }
 
-shared_ptr<GameObject> GameScene::CreateStaticMesh(const wstring& path, const XMFLOAT3& pos, const XMFLOAT3& rot, const XMFLOAT3& scale)
-{
-	auto obj = make_shared<GameObject>();
-	obj->SetId(0);
-	auto mesh = obj->AddComponent<Mesh>();
-	auto transform = obj->AddComponent<Transform>();
-	mesh->SetMesh(*coreRef, path);
-	transform->SetInitPosition(pos.x, pos.y, pos.z);
-	transform->SetRotation(rot.x, rot.y, rot.z);
-	transform->SetScale(scale.x, scale.y, scale.z);
-	return obj;
-}
-
 void GameScene::CreateCastle()
 {
 	struct castleData {
@@ -63,14 +44,22 @@ void GameScene::CreateCastle()
 	};
 
 #pragma region Initialize TestBridge
-	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Window_04", { 0.0f, 0.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f }));
+	constexpr castleData testData = {
+		{ 0.0f, 0.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f }
+	};
+
+	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Window_04", testData));
 #pragma endregion
 
 #pragma region Initialize CASTLEWALL
+	constexpr castleData wallData = {
+		{ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.01f, 0.01f, 0.01f }
+	};
+
 	for (int i = 2; i < 20; ++i)
 	{
 		wstring meshName = (i < 10) ? L"../Assets/FBXModel/Castle/mesh_0" + to_wstring(i) : L"../Assets/FBXModel/Castle/mesh_" + to_wstring(i);
-		AddGameObject(CreateStaticMesh(meshName));
+		AddGameObject(CreateStaticMesh(meshName, wallData));
 	}
 #pragma endregion
 
@@ -114,16 +103,7 @@ void GameScene::CreateCastle()
 		{{34.5867f, -0.016064f, -17.2682f  },  {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
-	{
-		InstanceGroup group;
-		auto first = CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_pillar", pillarData[0].position, pillarData[0].rotation, pillarData[0].scale);
-		group.mesh = first->GetComponent<Mesh>();
-		group.objects.push_back(first);
-
-		for (int i = 1; i < size(pillarData); ++i)
-			group.objects.push_back(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_pillar", pillarData[i].position, pillarData[i].rotation, pillarData[i].scale));
-		instanceGroups.push_back(move(group));
-	}
+	CreateAndBatchObjects(L"../Assets/FBXModel/Castle/mesh_pillar", pillarData, instancingBatches);
 #pragma endregion
 
 #pragma region Initialize FLOORS
@@ -166,16 +146,7 @@ void GameScene::CreateCastle()
 		{{32.4286f, 0.0f, -35.7861f	 },	{0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
-	{
-		InstanceGroup group;
-		auto first = CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_01", floorData[0].position, floorData[0].rotation, floorData[0].scale);
-		group.mesh = first->GetComponent<Mesh>();
-		group.objects.push_back(first);
-
-		for (int i = 1; i < size(floorData); ++i)
-			group.objects.push_back(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_01", floorData[i].position, floorData[i].rotation, floorData[i].scale));
-		instanceGroups.push_back(move(group));
-	}	
+	CreateAndBatchObjects(L"../Assets/FBXModel/Castle/mesh_01", floorData, instancingBatches);
 #pragma endregion
 
 #pragma region Initialize CANDLES
@@ -224,53 +195,35 @@ void GameScene::CreateCastle()
 		{{7.88262f, 0.0f, 21.7484f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
-	{
-		InstanceGroup group;
-		auto first = CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_candle", candleData[0].position, candleData[0].rotation, candleData[0].scale);
-		group.mesh = first->GetComponent<Mesh>();
-		group.objects.push_back(first);
-
-		for (int i = 1; i < size(candleData); ++i)
-			group.objects.push_back(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_candle", candleData[i].position, candleData[i].rotation, candleData[i].scale));
-		instanceGroups.push_back(move(group));
-	}
+	CreateAndBatchObjects(L"../Assets/FBXModel/Castle/mesh_candle", candleData, instancingBatches);
 #pragma endregion
 
-#pragma region Initialize STATUE1
-	constexpr castleData statue1[] = {
-		{{3.04724f, 0.0f, -43.3982f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
-	};
-
-	for (const auto& data : statue1)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_statue1", data.position, data.rotation, data.scale));
-#pragma endregion
-
-#pragma region Initialize STATUE2
-	constexpr castleData statue2[] = {
-		{{-3.42362f, 0.0f, -41.8548f}, {0.0f, 0.113092f, 0.0f}, {0.01f, 0.01f, 0.01f}}
-	};
-
-	for (const auto& data : statue2)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_statue2", data.position, data.rotation, data.scale));
-#pragma endregion
-
-#pragma region Initialize STATUE3
-	constexpr castleData statue3[] = {
-		{{-14.1011f, 0.0f, -43.6773f}, {0.0f, 0.643292f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+#pragma region Initialize STATUE1~3
+	constexpr castleData statueData[] = {
+		{{3.04724f, 0.0f, -43.3982f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{-3.42362f, 0.0f, -41.8548f}, {0.0f, 0.113092f, 0.0f}, {0.01f, 0.01f, 0.01f}},
+		{{ -14.1011f, 0.0f, -43.6773f }, {0.0f, 0.643292f, 0.0f}, {0.01f, 0.01f, 0.01f} },
 		{{14.2448f, 0.0f, -43.6773f}, {0.0f, -0.927505f, 0.0f}, {0.01f, 0.01f, 0.01f}}
 	};
 
-	for (const auto& data : statue3)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_statue3", data.position, data.rotation, data.scale));
+	for (int i = 0; i < 3; ++i)
+	{
+		if (i == 2)
+		{
+			AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_statue" + to_wstring(i + 1), statueData[i]));
+			AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_statue" + to_wstring(i + 1), statueData[i + 1]));
+		}
+		else
+			AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_statue" + to_wstring(i + 1), statueData[i]));
+	}
 #pragma endregion
 
 #pragma region Initialize THRONE
-	constexpr castleData throne[] = {
-		{{0.0f, 0.0f, -39.9693f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}}
+	constexpr castleData throneData = {
+		{0.0f, 0.0f, -39.9693f}, {0.0f, 0.0f, 0.0f}, {0.01f, 0.01f, 0.01f}
 	};
 
-	for (const auto& data : throne)
-		AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_throne", data.position, data.rotation, data.scale));
+	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Castle/mesh_throne", throneData));
 #pragma endregion
 }
 
@@ -325,7 +278,7 @@ void GameScene::Release()
 
 void GameScene::Reset()
 {
-	instanceGroups.clear();
+	instancingBatches.clear();
 	knightPool.clear();
 	activePlayers.clear();
 	myPlayer = nullptr;
@@ -463,9 +416,6 @@ void GameScene::InitializeLogic()
 
 	CreateCastle();
 
-	for (auto& group : instanceGroups)
-		InitializeInstanceGroup(group);
-
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
@@ -476,15 +426,6 @@ void GameScene::InitializeLogic()
 	{
 		if (auto mesh = obj->GetComponent<Mesh>())
 			mesh->ReleaseUploadBuffers();
-	}
-
-	for (auto& group : instanceGroups)
-	{
-		for (auto& obj : group.objects)
-		{
-			if (auto mesh = obj->GetComponent<Mesh>())
-				mesh->ReleaseUploadBuffers();
-		}
 	}
 
 	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
@@ -556,20 +497,11 @@ void GameScene::UpdateScene(const float deltaTime)
 		obj->Update(deltaTime);
 
 	if (cam)
-		cam->Update(*coreRef, deltaTime, gameObjects, instanceGroups, myPlayer);
+		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);
 	
 	BoundingFrustum frustum = cam->GetViewFrustum();
-	for (auto& group : instanceGroups)
-		UpdateInstanceGroup(group, frustum);
-
-	if (GET(Input).GetKeyDown('K'))
-	{
-		string msg = "=== Instance Groups Visible Count ===\n";
-		msg += "Pillar: " + to_string(instanceGroups[0].visibleCount) + "/" + to_string(instanceGroups[0].objects.size()) + "\n";
-		msg += "Floor: " + to_string(instanceGroups[1].visibleCount) + "/" + to_string(instanceGroups[1].objects.size()) + "\n";
-		msg += "Candle: " + to_string(instanceGroups[2].visibleCount) + "/" + to_string(instanceGroups[2].objects.size()) + "\n";
-		OutputDebugStringA(msg.c_str());
-	}
+	for (auto& batch : instancingBatches)
+		batch->Update(frustum);
 }
 
 void GameScene::RenderSceneDeferred()
@@ -577,10 +509,9 @@ void GameScene::RenderSceneDeferred()
 	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 
 	auto renderer = sManagerRef->GetSceneRenderer();
-	for (const auto& group : instanceGroups)
+	for (const auto& batch : instancingBatches)
 	{
-		if (group.mesh)
-			renderer->RenderInstanced(*coreRef, group.mesh, group.visibleCount, group.instanceBuffer.get());
+		batch->Render(*coreRef, renderer);
 	}
 
 	static bool hitOn = false;
@@ -602,9 +533,11 @@ void GameScene::RenderSceneDeferred()
 		}
 	}
 
-	for (const auto& group : instanceGroups)
+	for (const auto& group : instancingBatches)
 	{
-		for (const auto& obj : group.objects)
+		const auto& batchObjects = group->GetObjects();
+
+		for (const auto& obj : batchObjects)
 		{
 			if (auto mesh = obj->GetComponent<Mesh>())
 			{
@@ -629,10 +562,9 @@ void GameScene::RenderSceneShadow()
 	auto renderer = sManagerRef->GetSceneRenderer();
 	renderer->RenderShadow(*coreRef, gameObjects);
 
-	for (const auto& group : instanceGroups)
+	for (const auto& batch : instancingBatches)
 	{
-		if (group.mesh)
-			renderer->RenderInstancedShadow(*coreRef, group.mesh, group.objects.size(), group.fullInstanceBuffer.get());
+		batch->RenderShadow(*coreRef, renderer);
 	}
 }
 
