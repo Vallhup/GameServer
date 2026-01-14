@@ -37,7 +37,7 @@ float CalculateShadow(float3 worldPos)
     }
 
     shadow /= 25.0;
-    return lerp(1.0, 0.4, shadow);
+    return lerp(1.0, 0.8, shadow);
 }
 
 #endif

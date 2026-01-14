@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "SceneManager.h"
-#include "DX12Core.h"
 #include "Importer.h"
 #include "Input.h"
 #include "Timer.h"

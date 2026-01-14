@@ -7,16 +7,6 @@ class Animator;
 class Camera;
 struct ObjectConstants;
 
-struct InstanceGroup {
-    Mesh* mesh;
-    vector<shared_ptr<GameObject>> objects;
-    unique_ptr<UploadBuffer> instanceBuffer;
-    UINT visibleCount = 0;
-
-    // For drawing all object's shadow
-    unique_ptr<UploadBuffer> fullInstanceBuffer;
-};
-
 class SceneRenderer
 {
 public:
