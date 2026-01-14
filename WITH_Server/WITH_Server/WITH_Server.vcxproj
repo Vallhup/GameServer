@@ -71,20 +71,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Dependency\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Dependency\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Dependency\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Module\Dependency\;$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

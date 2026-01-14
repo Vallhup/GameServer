@@ -1,0 +1,319 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Component.cpp">
+      <Filter>ECS\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentStorage.cpp">
+      <Filter>ECS\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>ECS\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionStateSystem.cpp">
+      <Filter>ECS\System\Logic\Action</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionTimeSystem.cpp">
+      <Filter>ECS\System\Logic\Action</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionTransitionSystem.cpp">
+      <Filter>ECS\System\Logic\Action</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationRefSystem.cpp">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationStateSystem.cpp">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationTimeSystem.cpp">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderUpdateSystem.cpp">
+      <Filter>ECS\System\Logic\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionSystem.cpp">
+      <Filter>ECS\System\Logic\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="EventSystem.cpp">
+      <Filter>ECS\System\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GameWorld.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Instance.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectPoolManager.cpp">
+      <Filter>Utility\ObjectPool</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS.cpp">
+      <Filter>ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="OutputEventSystem.cpp">
+      <Filter>ECS\System\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementSystem.cpp">
+      <Filter>ECS\System\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="HitApplySystem.cpp">
+      <Filter>ECS\System\Logic\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="HitResolveSystem.cpp">
+      <Filter>ECS\System\Logic\Hit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.cc">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectionManager.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkHandler.cpp">
+      <Filter>Network\Protocol\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="Job.cpp">
+      <Filter>JobGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="JobGraph.cpp">
+      <Filter>JobGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerConnectionListener.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="System.cpp">
+      <Filter>ECS\System\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemManager.cpp">
+      <Filter>ECS\System\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.cc">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>JobGraph</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Component.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentStorage.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>ECS\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionStateSystem.h">
+      <Filter>ECS\System\Logic\Action</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionTimeSystem.h">
+      <Filter>ECS\System\Logic\Action</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionTransitionSystem.h">
+      <Filter>ECS\System\Logic\Action</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationRefSystem.h">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationStateSystem.h">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationTimeSystem.h">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderUpdateSystem.h">
+      <Filter>ECS\System\Logic\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionSystem.h">
+      <Filter>ECS\System\Logic\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="EventSystem.h">
+      <Filter>ECS\System\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWorld.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Instance.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPool.hpp">
+      <Filter>Utility\ObjectPool</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPoolManager.h">
+      <Filter>Utility\ObjectPool</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS.h">
+      <Filter>ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="OutputEventSystem.h">
+      <Filter>ECS\System\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementSystem.h">
+      <Filter>ECS\System\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="HitApplySystem.h">
+      <Filter>ECS\System\Logic\Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="HitResolveSystem.h">
+      <Filter>ECS\System\Logic\Hit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.h">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionManager.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Network\Protocol\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkHandler.h">
+      <Filter>Network\Protocol\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Job.h">
+      <Filter>JobGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="JobGraph.h">
+      <Filter>JobGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerConnectionListener.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>ECS\System\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemManager.h">
+      <Filter>ECS\System\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.h">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="LF_Stack.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="NetHelper.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>JobGraph</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ECS">
+      <UniqueIdentifier>{da4fe999-a4f2-48eb-9f3a-63e787bb3a99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\Component">
+      <UniqueIdentifier>{f04ffe61-2a37-4820-a97d-98b07a2a6d8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\Entity">
+      <UniqueIdentifier>{c302d12d-cc6b-4774-a307-7c17917bf42f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System">
+      <UniqueIdentifier>{b2e11ff7-5e39-4797-a38d-c464d9aeb598}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Event">
+      <UniqueIdentifier>{f748aeaf-bee1-4b5d-93bc-0ef299c904d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic">
+      <UniqueIdentifier>{53b80595-2629-4d91-b19f-d67f09f95439}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\Action">
+      <UniqueIdentifier>{e560fd78-3148-4543-aa20-2d9209979bb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\Animation">
+      <UniqueIdentifier>{61eabb6d-5270-49db-b513-016384a93d09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{d4e1d3ec-5d83-45bd-8a04-4c456fca7990}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\Collision">
+      <UniqueIdentifier>{5c4f420a-5cdf-4a56-89f0-b436e2e9c4d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{b8d013d8-4872-4c57-8c7e-a4fbfe8a4bfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{610ff08a-fbf9-47a9-9968-ed7d38b2d4e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{1545b1de-3dfc-433b-a4c6-491fa015a966}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\ObjectPool">
+      <UniqueIdentifier>{3e0ee908-b3d3-4e42-b75d-40f65bd9e33c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\Hit">
+      <UniqueIdentifier>{a57a08ce-8fe7-450e-af4b-879e506c1402}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Base">
+      <UniqueIdentifier>{650bbd2b-1a68-442d-bc92-1803efb17277}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{bedaecbc-eb80-482e-8572-f7b890b448fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Protocol">
+      <UniqueIdentifier>{78581224-a1e5-4384-a9ce-7b4fcf1f3138}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Protocol\pb.%2a">
+      <UniqueIdentifier>{e52e4be1-914a-4013-a884-38fb5e18bc64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Protocol\Event">
+      <UniqueIdentifier>{df32984b-2291-4010-99a8-cdefc1d7d826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JobGraph">
+      <UniqueIdentifier>{aca7f12a-f10c-48cb-a60f-19de8030d8aa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
