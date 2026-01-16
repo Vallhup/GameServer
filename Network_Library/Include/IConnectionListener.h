@@ -1,7 +1,7 @@
 #pragma once
 
 class Connection;
-class PacketHeader;
+struct PacketHeader;
 
 class IConnectionListener {
 public:

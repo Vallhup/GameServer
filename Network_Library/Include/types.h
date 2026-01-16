@@ -1,7 +1,7 @@
 #pragma once
 
 #define ASIO_STANDALONE
-#include "../Dependency/asio.hpp"
+#include "asio.hpp"
 
 using asio::ip::tcp;
 

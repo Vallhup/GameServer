@@ -9,7 +9,7 @@ struct PacketHeader {
 
 #pragma pack(pop)
 
-class SendBuffer;
+struct SendBuffer;
 
 class IPacketCodec {
 public:
