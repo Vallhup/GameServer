@@ -160,9 +160,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\PacketFactory.h" />
+    <ClInclude Include="Include\PacketType.h" />
     <ClInclude Include="Include\ProtobufCodec.h" />
     <ClInclude Include="Include\ProtocolLib.h" />
-    <ClInclude Include="PacketType.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Protocols\Protocol.pb.h" />
   </ItemGroup>

@@ -13,7 +13,7 @@ enum class AnimationId {
 	Knight_Walk,
 	Knight_Run,
 	Knight_Attack,
-	Knight_Death,
+	Knight_Dead,
 	Knight_Drinking,
 	Knight_Guard,
 	Knight_Hit,

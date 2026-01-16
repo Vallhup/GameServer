@@ -2,6 +2,7 @@
 #include "ECS.h"
 #include "Framework.h"
 #include "MovementSystem.h"
+#include "ActionMoveSystem.h"
 
 void MovementSystem::Execute(const float dT)
 {

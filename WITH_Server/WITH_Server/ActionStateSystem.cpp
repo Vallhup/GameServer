@@ -46,9 +46,9 @@ ActionType ActionStateSystem::GetNextAction(const ActionState& current, const Ac
 	return ActionType::None;
 }
 
-bool ActionStateSystem::StartAction(Entity entity, ActionState* state, const ActionType& type)
+void ActionStateSystem::StartAction(Entity entity, ActionState* state, const ActionType& type)
 {
-	if (!state) return false;
+	if (!state) return;
 
 	// TEMP : duration 값 수정 필요(Action별로 다르게)
 	state->type = type;

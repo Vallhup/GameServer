@@ -51,7 +51,7 @@ struct Health : public Component {
 
 struct AnimationState : public Component {
 	AnimationId id{ AnimationId::Knight_Idle };
-	float time{ 0.0f };
+	//float time{ 0.0f };
 	float speed{ 1.0f };
 	bool looping{ true };
 };

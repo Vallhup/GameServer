@@ -21,10 +21,10 @@
     <ClInclude Include="Include\PacketFactory.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="PacketType.h">
+    <ClInclude Include="pch.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
+    <ClInclude Include="Include\PacketType.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>

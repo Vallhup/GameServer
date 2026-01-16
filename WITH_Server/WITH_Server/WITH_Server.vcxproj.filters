@@ -65,9 +65,6 @@
     <ClCompile Include="OutputEventSystem.cpp">
       <Filter>ECS\System\Event</Filter>
     </ClCompile>
-    <ClCompile Include="MovementSystem.cpp">
-      <Filter>ECS\System\Logic</Filter>
-    </ClCompile>
     <ClCompile Include="HitApplySystem.cpp">
       <Filter>ECS\System\Logic\Hit</Filter>
     </ClCompile>
@@ -106,6 +103,15 @@
     </ClCompile>
     <ClCompile Include="ThreadPool.cpp">
       <Filter>JobGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementSystem.cpp">
+      <Filter>ECS\System\Logic\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionMoveSystem.cpp">
+      <Filter>ECS\System\Logic\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="LocomotionMoveSystem.cpp">
+      <Filter>ECS\System\Logic\Move</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -175,9 +181,6 @@
     <ClInclude Include="OutputEventSystem.h">
       <Filter>ECS\System\Event</Filter>
     </ClInclude>
-    <ClInclude Include="MovementSystem.h">
-      <Filter>ECS\System\Logic</Filter>
-    </ClInclude>
     <ClInclude Include="HitApplySystem.h">
       <Filter>ECS\System\Logic\Hit</Filter>
     </ClInclude>
@@ -237,6 +240,15 @@
     </ClInclude>
     <ClInclude Include="ThreadPool.h">
       <Filter>JobGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementSystem.h">
+      <Filter>ECS\System\Logic\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionMoveSystem.h">
+      <Filter>ECS\System\Logic\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="LocomotionMoveSystem.h">
+      <Filter>ECS\System\Logic\Move</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -302,6 +314,9 @@
     </Filter>
     <Filter Include="JobGraph">
       <UniqueIdentifier>{aca7f12a-f10c-48cb-a60f-19de8030d8aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\Move">
+      <UniqueIdentifier>{7d221b54-761f-48a6-8fdc-869029a9e9b1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

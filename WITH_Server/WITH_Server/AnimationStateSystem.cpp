@@ -33,22 +33,27 @@ void AnimationStateSystem::Execute(const float dT)
 			switch (action->type) {
 			case ActionType::Attack:
 			{
+				desired = AnimationId::Knight_Attack;
 				break;
 			}
 			case ActionType::Dodge:
 			{
+				desired = AnimationId::Knight_Dodge;
 				break;
 			}
 			case ActionType::Parry:
 			{
+				desired = AnimationId::Knight_Parry;
 				break;
 			}
 			case ActionType::Hit:
 			{
+				desired = AnimationId::Knight_Hit;
 				break;
 			}
 			case ActionType::Dead:
 			{
+				desired = AnimationId::Knight_Dead;
 				break;
 			}
 			}
@@ -77,7 +82,6 @@ void AnimationStateSystem::ChangeAnimation(Entity e, AnimationId id)
 	if (state->id == id) return;
 
 	state->id = id;
-	state->time = 0.0f;
 	ref->anim = AnimationManager::Get().GetAnimation(id);
 
 	switch (id) {
@@ -85,6 +89,14 @@ void AnimationStateSystem::ChangeAnimation(Entity e, AnimationId id)
 	case AnimationId::Knight_Walk:
 	case AnimationId::Knight_Run:
 		state->looping = true;
+		break;
+
+	case AnimationId::Knight_Attack:
+	case AnimationId::Knight_Dodge:
+	case AnimationId::Knight_Parry:
+	case AnimationId::Knight_Hit:
+	case AnimationId::Knight_Dead:
+		state->looping = false;
 		break;
 	}
 }

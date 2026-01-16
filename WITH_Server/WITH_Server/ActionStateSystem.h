@@ -14,6 +14,6 @@ public:
 
 private:
 	ActionType GetNextAction(const ActionState& current, const ActionIntent& intent);
-	bool StartAction(Entity entity, ActionState* state, const ActionType& type);
+	void StartAction(Entity entity, ActionState* state, const ActionType& type);
 	void ResetActionIntent(ActionIntent* intent);
 };
