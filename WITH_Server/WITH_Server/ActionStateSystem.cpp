@@ -39,8 +39,6 @@ std::vector<std::type_index> ActionStateSystem::WriteComponents() const
 
 ActionType ActionStateSystem::GetNextAction(const ActionState& current, const ActionIntent& intent)
 {
-	// TODO : 우선순위 정의 필요
-	// Guard의 우선순위에 따라 구현 변화 가능
 	if (intent.parry) return ActionType::Parry;
 	if (intent.dodge) return ActionType::Dodge;
 	if (intent.attack) return ActionType::Attack;
@@ -62,7 +60,7 @@ bool ActionStateSystem::StartAction(Entity entity, ActionState* state, const Act
 	else
 		state->duration = 40.0f / 30.7692f;
 
-	if (type == ActionType::Attack)
+	if (type == ActionType::Attack || type == ActionType::Dodge)
 	{
 		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
 
@@ -73,7 +71,7 @@ bool ActionStateSystem::StartAction(Entity entity, ActionState* state, const Act
 
 		if (auto* vel = ecs.GetStorage<Velocity>().GetComponent(entity))
 		{
-			// TEMP : 공격 방향 정책 수정 필요
+			// TEMP : 공격, 회피 방향 정책 수정 필요
 			move->dir = vel->lastNonZeroDir;
 			move->dirLocked = true;
 		}

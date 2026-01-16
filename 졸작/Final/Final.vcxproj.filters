@@ -127,12 +127,6 @@
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.cc">
-      <Filter>Network\Protocol\pb.%2a</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.cc">
-      <Filter>Network\Protocol\pb.%2a</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Component</Filter>
     </ClCompile>
@@ -267,13 +261,7 @@
     <ClInclude Include="Singleton.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.h">
-      <Filter>Network\Protocol\pb.%2a</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
-      <Filter>Network\Protocol\pb.%2a</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">

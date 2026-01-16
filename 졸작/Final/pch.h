@@ -40,8 +40,6 @@ using namespace Microsoft::WRL;
 
 #include <fmod.hpp>
 
-#include "Enum.pb.h"
-#include "Struct.pb.h"
 #include "Protocol.pb.h"
 
 #include "asio.hpp"

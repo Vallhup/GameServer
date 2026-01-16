@@ -33,6 +33,36 @@ ActionManager::ActionManager()
 
 	auto attackPtr = std::make_unique<ActionProfile>(attack);
 	_actionProfiles.try_emplace(ActionType::Attack, std::move(attackPtr));
+
+	ActionProfile dodge{
+		.duration = 50.0f / 30.6122f,
+		.segments =
+		{
+			{
+				0.0f,
+				7.0f / 50.0f,
+				22.796f / 100.f,
+				true
+			},
+
+			{
+				7.0f / 50.0f,
+				40.0f / 50.0f,
+				319.144f / 100.f,
+				true
+			},
+
+			{
+				40.0f / 50.0f,
+				1.0f,
+				6.03f / 100.f,
+				true
+			}
+		}
+	};
+
+	auto dodgePtr = std::make_unique<ActionProfile>(dodge);
+	_actionProfiles.try_emplace(ActionType::Dodge, std::move(dodgePtr));
 }
 
 void ActionManager::LoadAction(ActionType id, std::string_view path)

@@ -74,9 +74,6 @@
     <ClCompile Include="HitResolveSystem.cpp">
       <Filter>ECS\System\Logic\Hit</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.cc">
-      <Filter>Network\Protocol\pb.%2a</Filter>
-    </ClCompile>
     <ClCompile Include="ConnectionManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
@@ -105,9 +102,6 @@
       <Filter>ECS\System\Base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
-      <Filter>Network\Protocol\pb.%2a</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
     <ClCompile Include="ThreadPool.cpp">
@@ -190,9 +184,6 @@
     <ClInclude Include="HitResolveSystem.h">
       <Filter>ECS\System\Logic\Hit</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Enum.pb.h">
-      <Filter>Network\Protocol\pb.%2a</Filter>
-    </ClInclude>
     <ClInclude Include="ConnectionManager.h">
       <Filter>Network</Filter>
     </ClInclude>
@@ -230,9 +221,6 @@
       <Filter>ECS\System\Base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
-      <Filter>Network\Protocol\pb.%2a</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Struct.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
     <ClInclude Include="LF_Stack.h">
