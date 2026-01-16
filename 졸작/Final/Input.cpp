@@ -85,8 +85,13 @@ void Input::SendAttackPacket()
 
 void Input::SendDodgePacket()
 {
-	/*if (!network) return;
+	if (!network) return;
 
-	vector<char> packet = PacketFactory::CSDodgePacket(clientID);
-	network->Send(packet);*/
+	Protocol::CS_DODGE_PACKET dodge;
+	dodge.set_dirx(0.0f);
+	dodge.set_dirz(0.0f);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_DODGE_PACKET>(
+		PacketType::CS_DODGE, dodge);
+	network->Send(data);
 }

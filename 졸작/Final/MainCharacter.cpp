@@ -72,7 +72,10 @@ void MainCharacter::BasicAttack()
 {
 	auto& input = GET(Input);
 
-	if (input.GetMouseButton(MouseButton::LEFT)) {
+	static bool prev{ false };
+	bool now = input.GetMouseButton(MouseButton::LEFT);
+
+	if (now && !prev) {
 		input.SendAttackPacket();
 
 		auto animator = GetComponent<Animator>();
@@ -81,13 +84,15 @@ void MainCharacter::BasicAttack()
 			// TODO : Attack Animation
 		}
 	}
+
+	prev = now;
 }
 
 void MainCharacter::BasicDodge()
 {
 	auto& input = GET(Input);
 
-	if (input.GetKey(VK_SHIFT)) {
+	if (input.GetKeyDown('C')) {
 		input.SendDodgePacket();
 
 		auto animator = GetComponent<Animator>();

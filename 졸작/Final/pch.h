@@ -44,7 +44,7 @@ using namespace Microsoft::WRL;
 
 #include "asio.hpp"
 
-#include "Asio_Network_Module.h"
+#include "Asio_Network_Library.h"
 #include "ProtocolLib.h"
 
 #include "GPUBuffer.h"
@@ -57,7 +57,7 @@ using namespace Microsoft::WRL;
 
 #pragma comment(lib, "fmod_vc.lib")
 
-#pragma comment(lib, "Asio_Network_Module.lib")
+#pragma comment(lib, "Asio_Network_Library.lib")
 
 #if !defined(ASSERT)
 #include <cassert>
