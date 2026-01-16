@@ -122,7 +122,7 @@ void Mesh::ReleaseUploadBuffers()
     }
 }
 
-void Mesh::SetSingleMaterial(DX12Core& core, const vector<MaterialData> mats)
+void Mesh::SetSingleMaterial(DX12Core& core, const vector<MaterialData>& mats)
 {
     material = make_shared<Material>();
     material->LoadFromMaterialData(
@@ -132,7 +132,7 @@ void Mesh::SetSingleMaterial(DX12Core& core, const vector<MaterialData> mats)
     );
 }
 
-void Mesh::SetMultiMaterials(DX12Core& core, const vector<MaterialData> mats)
+void Mesh::SetMultiMaterials(DX12Core& core, const vector<MaterialData>& mats)
 {
     originalMaterialData = mats;
 
@@ -149,7 +149,7 @@ void Mesh::SetMultiMaterials(DX12Core& core, const vector<MaterialData> mats)
     }
 }
 
-void Mesh::DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData> mats)
+void Mesh::DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData>& mats)
 {
     OutputDebugStringA(("Total materials found: " + to_string(mats.size()) + "\n").c_str());
 

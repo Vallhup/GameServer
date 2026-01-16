@@ -23,9 +23,9 @@ public:
 	bool HasMultiMaterial() const { return !materials.empty(); }
 
 private:
-	void SetSingleMaterial(DX12Core& core, const vector<MaterialData> mats);
-	void SetMultiMaterials(DX12Core& core, const vector<MaterialData> mats);
-	void DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData> mats);
+	void SetSingleMaterial(DX12Core& core, const vector<MaterialData>& mats);
+	void SetMultiMaterials(DX12Core& core, const vector<MaterialData>& mats);
+	void DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData>& mats);
 
 private:
 	shared_ptr<VertexIndexBuffer> vertexIndexBuffer;
