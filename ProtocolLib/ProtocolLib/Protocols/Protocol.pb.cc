@@ -308,33 +308,28 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\016Protocol.proto\022\010Protocol\032\nEnum.proto\032\014"
-    "Struct.proto\"\021\n\017CS_LOGIN_PACKET\"=\n\016CS_MO"
-    "VE_PACKET\022\016\n\006inputX\030\001 \001(\005\022\016\n\006inputZ\030\002 \001("
-    "\005\022\013\n\003yaw\030\003 \001(\002\".\n\020CS_ATTACK_PACKET\022\014\n\004di"
-    "rX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"$\n\017SC_LOGIN_PACKE"
-    "T\022\021\n\tsessionId\030\001 \001(\005\"P\n\rSC_ADD_PACKET\022\021\n"
-    "\tsessionId\030\001 \001(\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t"
-    "\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"Q\n\016SC_MOVE_PACKET"
-    "\022\021\n\tsessionId\030\001 \001(\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001("
-    "\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"&\n\020SC_REMOVE_P"
-    "ACKET\022\022\n\nssessionId\030\001 \001(\005b\006proto3"
-};
-static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[2] =
-    {
-        &::descriptor_table_Enum_2eproto,
-        &::descriptor_table_Struct_2eproto,
+    "\n\016Protocol.proto\022\010Protocol\"\021\n\017CS_LOGIN_P"
+    "ACKET\"=\n\016CS_MOVE_PACKET\022\016\n\006inputX\030\001 \001(\005\022"
+    "\016\n\006inputZ\030\002 \001(\005\022\013\n\003yaw\030\003 \001(\002\".\n\020CS_ATTAC"
+    "K_PACKET\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"$\n\017"
+    "SC_LOGIN_PACKET\022\021\n\tsessionId\030\001 \001(\005\"P\n\rSC"
+    "_ADD_PACKET\022\021\n\tsessionId\030\001 \001(\005\022\t\n\001x\030\002 \001("
+    "\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"Q\n\016"
+    "SC_MOVE_PACKET\022\021\n\tsessionId\030\001 \001(\005\022\t\n\001x\030\002"
+    " \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\""
+    "&\n\020SC_REMOVE_PACKET\022\022\n\nssessionId\030\001 \001(\005b"
+    "\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    433,
+    407,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
-    descriptor_table_Protocol_2eproto_deps,
-    2,
+    nullptr,
+    0,
     7,
     schemas,
     file_default_instances,

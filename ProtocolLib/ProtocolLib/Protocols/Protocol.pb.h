@@ -30,8 +30,6 @@
 #include "google/protobuf/repeated_field.h"  // IWYU pragma: export
 #include "google/protobuf/extension_set.h"  // IWYU pragma: export
 #include "google/protobuf/unknown_field_set.h"
-#include "Enum.pb.h"
-#include "Struct.pb.h"
 // @@protoc_insertion_point(includes)
 
 // Must be included last.
