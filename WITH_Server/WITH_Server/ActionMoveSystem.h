@@ -12,17 +12,17 @@ public:
 
 	virtual std::vector<std::type_index> ReadComponents() const override
 	{
-		return { typeid(Velocity), typeid(ActionState), 
-			typeid(ActionMoveTag) };
+		return { typeid(Velocity), typeid(ActionState) };
 	}
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return { typeid(Transform), typeid(ActionMoveTag) };
+		return { typeid(ActionMoveDelta), typeid(ActionMoveTag) };
 	}
 
 private:
 	bool CanMove(ActionType type);
-	void ApplyActionMovement(Entity entity, ActionMoveTag& actionMove, 
-		Transform& trans, const Velocity& vel, const float dT);
+	void ApplyActionMovement(ActionMoveTag* actionMove, 
+		ActionMoveDelta* actionDelta, const ActionState& actionState,
+		const Velocity& vel, const float dT);
 };

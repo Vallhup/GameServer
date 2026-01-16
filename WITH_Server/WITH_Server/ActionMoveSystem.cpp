@@ -1,25 +1,29 @@
 #include "pch.h"
 #include "ActionMoveSystem.h"
 #include "Framework.h"
+#include "Math.h"
 
 void ActionMoveSystem::Execute(const float dT)
 {
-	auto& transforms = ecs.GetStorage<Transform>();
 	auto& velocities = ecs.GetStorage<Velocity>();
 	auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& actionMoves = ecs.GetStorage<ActionMoveTag>();
+	auto& actionDeltas = ecs.GetStorage<ActionMoveDelta>();
 
-	for (const auto& [entity, transform] : transforms)
+	for (const auto& [entity, actionState] : actionStates)
 	{
+		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
+
 		auto* vel = velocities.GetComponent(entity);
-		auto* action = actionStates.GetComponent(entity);
 		auto* actionMove = actionMoves.GetComponent(entity);
+		auto* actionDelta = actionDeltas.GetComponent(entity);
 
-		if(!vel || !action || !actionMove) continue;
-		if (action->type == ActionType::None) continue;
-		if (!CanMove(action->type)) continue;
+		if(!vel || !actionMove || !actionDelta) continue;
+		if (actionState.type == ActionType::None) continue;
+		if (!CanMove(actionState.type)) continue;
 
-		ApplyActionMovement(entity, *actionMove, transform, *vel, dT);
+		ApplyActionMovement(actionMove, actionDelta, actionState, 
+			*vel, dT);
 	}
 }
 
@@ -43,23 +47,21 @@ bool ActionMoveSystem::CanMove(ActionType type)
 	}
 }
 
-void ActionMoveSystem::ApplyActionMovement(Entity entity, 
-	ActionMoveTag& actionMove, Transform& trans, const Velocity& vel, 
-	const float dT)
+void ActionMoveSystem::ApplyActionMovement(
+	ActionMoveTag* actionMove, ActionMoveDelta* actionDelta,
+	const ActionState& actionState, const Velocity& vel, const float dT)
 {
-	if (!actionMove.profile) return;
+	if (!actionMove->profile) return;
 
-	actionMove.elapsed += dT;
+	const auto& segments = actionMove->profile->segments;
+	if (actionMove->segmentIndex >= segments.size()) return;
 
-	const auto& segments = actionMove.profile->segments;
-	if (actionMove.segmentIndex >= segments.size()) return;
+	const auto& seg = segments[actionMove->segmentIndex];
 
-	const auto& seg = segments[actionMove.segmentIndex];
+	const float segStart = seg.t0 * actionState.duration;
+	const float segEnd = seg.t1 * actionState.duration;
 
-	const float segStart = seg.t0 * actionMove.profile->duration;
-	const float segEnd = seg.t1 * actionMove.profile->duration;
-
-	if (actionMove.elapsed < segStart) return;
+	if (actionState.elapsed < segStart) return;
 
 	const float segDuration = segEnd - segStart;
 	if (segDuration <= 0.0f) return;
@@ -67,46 +69,53 @@ void ActionMoveSystem::ApplyActionMovement(Entity entity,
 	const float speed = seg.distance / segDuration;
 
 	const float move = speed * dT;
-	const float remain = seg.distance - actionMove.movedInSegment;
+	const float remain = seg.distance - actionMove->movedInSegment;
 	const float actual = std::min(move, remain);
 
-	actionMove.movedInSegment += actual;
-
 	XMVECTOR dir;
-	if (seg.lockDir && actionMove.dirLocked)
+	XMVECTOR out;
+
+	if (seg.lockDir && actionMove->dirLocked)
 	{
-		dir = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&actionMove.dir));
+		out = XMLoadFloat3(&actionMove->dir);
 	}
+
 	else
 	{
-		dir = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(&vel.dir));
-		dir = XMVector3Normalize(dir);
+		dir = XMLoadFloat3(&vel.dir);
+		if (!TransformHelper::SafeNormalize3(dir, out)) return;
 
 		if (seg.lockDir)
 		{
-			XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(&actionMove.dir), dir);
-			actionMove.dirLocked = true;
+			XMStoreFloat3(&actionMove->dir, out);
+			actionMove->dirLocked = true;
 		}
 	}
 
-	// 위치 적용
-	XMVECTOR pos = XMLoadFloat3(&trans.position);
-	pos = XMVectorAdd(pos, XMVectorScale(dir, actual));
-	XMStoreFloat3(&trans.position, pos);
+	if (actual > 1e-6f)
+	{
+		XMFLOAT3 deltaMove;
+		XMStoreFloat3(&deltaMove, XMVectorScale(out, actual));
+
+  		actionDelta->hasMove = true;
+		actionDelta->deltaPos = deltaMove;
+
+		const float yaw = atan2f(-deltaMove.x, -deltaMove.z);
+		actionDelta->hasYaw = true;
+		actionDelta->yaw = yaw;
+	}
 
 	// 세그먼트 종료
-	if (actionMove.movedInSegment >= seg.distance)
+	actionMove->movedInSegment += actual;
+	if (actionMove->movedInSegment >= seg.distance)
 	{
-		actionMove.segmentIndex++;
-		actionMove.movedInSegment = 0.0f;
+		actionMove->segmentIndex++;
+		actionMove->movedInSegment = 0.0f;
 
-		if (actionMove.segmentIndex < segments.size())
+		if (actionMove->segmentIndex < segments.size())
 		{
-			if (!segments[actionMove.segmentIndex].lockDir)
-				actionMove.dirLocked = false;
+			if (!segments[actionMove->segmentIndex].lockDir)
+				actionMove->dirLocked = false;
 		}
 	}
-
-	Framework::Get().outEventQueue.push(OutputEvent{
-		entity, DirtyType::Moved });
 }

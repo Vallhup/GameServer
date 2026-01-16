@@ -9,6 +9,15 @@ public:
 	virtual ~ActionTimeSystem() = default;
 
 	virtual void Execute(const float dT) override;
-	virtual std::vector<std::type_index> WriteComponents() const;
+
+	virtual std::vector<std::type_index> ReadComponents() const override
+	{
+		return {  };
+	}
+
+	virtual std::vector<std::type_index> WriteComponents() const override
+	{
+		return { typeid(ActionState), typeid(ActionRequestTag) };
+	}
 };
 

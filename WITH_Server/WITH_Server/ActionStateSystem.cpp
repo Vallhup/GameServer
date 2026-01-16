@@ -9,7 +9,6 @@ ActionStateSystem::ActionStateSystem(ECS& e, int p) : System(e, p)
 void ActionStateSystem::Execute(const float dT)
 {
 	auto& states = ecs.GetStorage<ActionState>();
-	auto& velocities = ecs.GetStorage<Velocity>();
 
 	for (const auto& [entity, state] : states)
 	{
@@ -24,17 +23,6 @@ void ActionStateSystem::Execute(const float dT)
 			ResetActionIntent(intent);
 		}
 	}
-}
-
-std::vector<std::type_index> ActionStateSystem::ReadComponents() const
-{
-	return { typeid(Velocity) };
-}
-
-
-std::vector<std::type_index> ActionStateSystem::WriteComponents() const
-{
-	return { typeid(ActionIntent), typeid(ActionState), typeid(ActionMoveTag) };
 }
 
 ActionType ActionStateSystem::GetNextAction(const ActionState& current, const ActionIntent& intent)
@@ -58,14 +46,24 @@ void ActionStateSystem::StartAction(Entity entity, ActionState* state, const Act
 		state->duration = std::numeric_limits<float>::infinity();
 
 	else
-		state->duration = 40.0f / 30.7692f;
+	{
+		float duration{ 0.0f };
+		switch (type) {
+		case ActionType::Parry:  duration = 54.0f / 30.566f; break;
+		case ActionType::Dodge:	 duration = 50.0f / 30.6122f; break;
+		case ActionType::Attack: duration = 40.0f / 30.7692f; break;
+		default:                 duration = 0.0f; break;
+		}
+
+		state->duration = duration;
+	}
+		
 
 	if (type == ActionType::Attack || type == ActionType::Dodge)
 	{
-		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
+  		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
 
  		move->profile = ActionManager::Get().GetActionMoveProfile(type);
-		move->elapsed = 0.0f;
 		move->segmentIndex = 0;
 		move->movedInSegment = 0.0f;
 

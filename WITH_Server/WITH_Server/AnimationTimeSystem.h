@@ -9,7 +9,16 @@ public:
 	virtual ~AnimationTimeSystem() = default;
 
 	virtual void Execute(const float dT) override;
-	virtual std::vector<std::type_index> ReadComponents() const;
-	virtual std::vector<std::type_index> WriteComponents() const;
+
+	virtual std::vector<std::type_index> ReadComponents() const override
+	{
+		return { typeid(AnimationRef), typeid(ActionState), 
+			typeid(LocomotionState), typeid(LocomotionAnimPhase) };
+	}
+
+	virtual std::vector<std::type_index> WriteComponents() const override
+	{
+		return { typeid(Animator) };
+	}
 };
 

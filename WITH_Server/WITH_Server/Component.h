@@ -23,6 +23,25 @@ struct Velocity : public Component {
 	bool isRun{ false };
 };
 
+struct ActionMoveDelta : public Component {
+	bool hasMove{ false };
+	XMFLOAT3 deltaPos{ 0, 0,0 };
+	bool hasYaw{ false };
+	float yaw{ 0.0f };
+};
+
+struct LocomotionMoveDelta : public Component {
+	bool hasMove{ false };
+	XMFLOAT3 deltaPos{ 0, 0,0 };
+	bool hasYaw{ false };
+	float yaw{ 0.0f };
+};
+
+struct LocomotionAnimPhase : public Component {
+	float phase{ 0.0f };
+	bool wasMoving{ false };
+};
+
 struct LocomotionState : public Component {
 	bool isMoving{ false };
 };
@@ -51,7 +70,6 @@ struct Health : public Component {
 
 struct AnimationState : public Component {
 	AnimationId id{ AnimationId::Knight_Idle };
-	//float time{ 0.0f };
 	float speed{ 1.0f };
 	bool looping{ true };
 };
@@ -90,7 +108,7 @@ struct ParryBuff : public Component {
 struct ActionMoveTag : public Component {
 	const ActionProfile* profile{ nullptr };
 	
-	float elapsed{ 0.0f };
+	//float elapsed{ 0.0f };
 	uint8 segmentIndex{ 0 };
 	float movedInSegment{ 0.0f };
 

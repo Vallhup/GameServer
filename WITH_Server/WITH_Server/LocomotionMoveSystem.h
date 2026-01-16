@@ -12,16 +12,18 @@ public:
 
 	virtual std::vector<std::type_index> ReadComponents() const override
 	{
-		return {  };
+		return { typeid(Velocity), typeid(LocomotionState),
+		typeid(ActionState) };
 	}
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return {  };
+		return { typeid(LocomotionMoveDelta) };
 	}
 
 private:
-	void ApplyNormalMovement(Entity entity, const LocomotionState& loco,
-		Transform& trans, const Velocity& vel, const float dT);
+	void ApplyNormalMovement(LocomotionMoveDelta* moveDelta,
+		LocomotionAnimPhase* animPhase, const LocomotionState& loco, 
+		const Velocity& vel, const float dT);
 };
 

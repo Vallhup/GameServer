@@ -9,7 +9,14 @@ public:
 	virtual ~HitResolveSystem() {}
 
 	virtual void Execute(const float dT) override;
-	virtual std::vector<std::type_index> ReadComponents() const override;
-	virtual std::vector<std::type_index> WriteComponents() const override;
-};
 
+	virtual std::vector<std::type_index> ReadComponents() const override
+	{
+		return { typeid(ActionState) };
+	}
+
+	virtual std::vector<std::type_index> WriteComponents() const override
+	{
+		return { typeid(HitTag), typeid(ActionRequestTag), typeid(ParryBuff) };
+	}
+};

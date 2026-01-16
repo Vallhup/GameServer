@@ -9,8 +9,16 @@ public:
 	virtual ~AnimationStateSystem() = default;
 
 	virtual void Execute(const float dT) override;
-	virtual std::vector<std::type_index> ReadComponents() const;
-	virtual std::vector<std::type_index> WriteComponents() const;
+
+	virtual std::vector<std::type_index> ReadComponents() const override
+	{
+		return { typeid(LocomotionState), typeid(ActionState) };
+	}
+
+	virtual std::vector<std::type_index> WriteComponents() const override
+	{
+		return { typeid(AnimationState), typeid(AnimationRef) };
+	}
 
 private:
 	void ChangeAnimation(Entity e, AnimationId id);

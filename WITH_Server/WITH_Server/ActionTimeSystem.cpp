@@ -18,8 +18,3 @@ void ActionTimeSystem::Execute(const float dT)
 		}
 	}
 }
-
-std::vector<std::type_index> ActionTimeSystem::WriteComponents() const
-{
-	return { typeid(ActionState) };
-}

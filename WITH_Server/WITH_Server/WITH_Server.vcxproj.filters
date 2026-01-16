@@ -95,23 +95,23 @@
     <ClCompile Include="System.cpp">
       <Filter>ECS\System\Base</Filter>
     </ClCompile>
-    <ClCompile Include="SystemManager.cpp">
-      <Filter>ECS\System\Base</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
     <ClCompile Include="ThreadPool.cpp">
       <Filter>JobGraph</Filter>
     </ClCompile>
-    <ClCompile Include="MovementSystem.cpp">
-      <Filter>ECS\System\Logic\Move</Filter>
-    </ClCompile>
     <ClCompile Include="ActionMoveSystem.cpp">
       <Filter>ECS\System\Logic\Move</Filter>
     </ClCompile>
     <ClCompile Include="LocomotionMoveSystem.cpp">
       <Filter>ECS\System\Logic\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementApplySystem.cpp">
+      <Filter>ECS\System\Logic\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemManager.cpp">
+      <Filter>ECS\System\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -241,13 +241,13 @@
     <ClInclude Include="ThreadPool.h">
       <Filter>JobGraph</Filter>
     </ClInclude>
-    <ClInclude Include="MovementSystem.h">
-      <Filter>ECS\System\Logic\Move</Filter>
-    </ClInclude>
     <ClInclude Include="ActionMoveSystem.h">
       <Filter>ECS\System\Logic\Move</Filter>
     </ClInclude>
     <ClInclude Include="LocomotionMoveSystem.h">
+      <Filter>ECS\System\Logic\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementApplySystem.h">
       <Filter>ECS\System\Logic\Move</Filter>
     </ClInclude>
   </ItemGroup>

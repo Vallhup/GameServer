@@ -37,4 +37,15 @@ namespace TransformHelper
 
 		return std::atan2(fx, fz);
 	}
+
+	inline bool SafeNormalize3(XMVECTOR v, XMVECTOR& out)
+	{
+		XMVECTOR lenSq = XMVector3LengthSq(v);
+		float ls = XMVectorGetX(lenSq);
+
+		if (!(ls > 1e-12f)) return false;
+
+		out = XMVector3Normalize(v);
+		return true;
+	}
 }

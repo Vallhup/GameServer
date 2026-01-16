@@ -44,6 +44,10 @@ void EventSystem::ProcessConnect(const Event& event)
 	ecs.GetStorage<Transform>().AddComponent(entity);
 	ecs.GetStorage<Velocity>().AddComponent(entity);
 	ecs.GetStorage<LocomotionState>().AddComponent(entity);
+	ecs.GetStorage<ActionMoveDelta>().AddComponent(entity);
+	ecs.GetStorage<LocomotionMoveDelta>().AddComponent(entity);
+	ecs.GetStorage<LocomotionAnimPhase>().AddComponent(entity);
+	ecs.GetStorage<AttackData>().AddComponent(entity);
 	ecs.GetStorage<ActionIntent>().AddComponent(entity);
 	ecs.GetStorage<ActionState>().AddComponent(entity);
 	ecs.GetStorage<Health>().AddComponent(entity);

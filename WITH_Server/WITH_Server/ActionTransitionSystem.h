@@ -9,14 +9,21 @@ public:
 	virtual ~ActionTransitionSystem() = default;
 
 	virtual void Execute(const float dT) override;
-	virtual std::vector<std::type_index> ReadComponents() const;
-	virtual std::vector<std::type_index> WriteComponents() const;
+	virtual std::vector<std::type_index> ReadComponents() const override
+	{
+		return { typeid(Velocity) };
+	}
+
+	virtual std::vector<std::type_index> WriteComponents() const override
+	{
+		return { typeid(ActionRequestTag), typeid(ActionMoveTag) };
+	}
 
 private:
 	int GetPriority(ActionType type);
 	float GetDuration(ActionType type);
 	bool CanBeInterrupted(const ActionState& current, const ActionRequestTag& request);
 	ActionType ResolveNextAction(const ActionState& current, const ActionRequestTag& request);
-	void ApplyTransition(ActionState* state, ActionType next);
+	void ApplyTransition(Entity entity, ActionState* state, ActionType next);
 };
 

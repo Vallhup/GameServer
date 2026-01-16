@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "SystemManager.h"
-#include "MovementSystem.h"
 #include "AnimationStateSystem.h"
 #include "AnimationTimeSystem.h"
 #include "AnimationRefSystem.h"
@@ -11,20 +10,29 @@
 #include "ActionTransitionSystem.h"
 #include "HitResolveSystem.h"
 #include "HitApplySystem.h"
+#include "ActionMoveSystem.h"
+#include "LocomotionMoveSystem.h"
+#include "MovementApplySystem.h"
 
 void SystemManager::Initalize(ECS& ecs, JobGraph& graph)
 {
 	RegisterSystem<ActionStateSystem>(ecs, 0);
 	RegisterSystem<ActionTimeSystem>(ecs, 1);
 	RegisterSystem<ActionTransitionSystem>(ecs, 2);
-	RegisterSystem<MovementSystem>(ecs, 3);
-	RegisterSystem<AnimationStateSystem>(ecs, 4);
-	RegisterSystem<AnimationTimeSystem>(ecs, 5);
-	RegisterSystem<AnimationRefSystem>(ecs, 6);
-	RegisterSystem<ColliderUpdateSystem>(ecs, 7);
-	RegisterSystem<CollisionSystem>(ecs, 8);
-	RegisterSystem<HitResolveSystem>(ecs, 9);
-	RegisterSystem<HitApplySystem>(ecs, 10);
+
+	RegisterSystem<ActionMoveSystem>(ecs, 3);
+	RegisterSystem<LocomotionMoveSystem>(ecs, 4);
+	RegisterSystem<MovementApplySystem>(ecs, 5);
+
+	RegisterSystem<AnimationStateSystem>(ecs, 6);
+	RegisterSystem<AnimationTimeSystem>(ecs, 7);
+	RegisterSystem<AnimationRefSystem>(ecs, 8);
+
+	RegisterSystem<ColliderUpdateSystem>(ecs, 9);
+	RegisterSystem<CollisionSystem>(ecs, 10);
+
+	RegisterSystem<HitResolveSystem>(ecs, 11);
+	RegisterSystem<HitApplySystem>(ecs, 12);
 }
 
 const std::vector<System*> SystemManager::GetSystems() const

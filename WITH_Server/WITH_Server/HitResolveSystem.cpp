@@ -8,6 +8,8 @@ void HitResolveSystem::Execute(const float dT)
 
     for (const auto& [entity, hit] : hits)
     {
+        if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
+
         auto* state = states.GetComponent(entity);
         if (!state)
             continue;
@@ -27,14 +29,4 @@ void HitResolveSystem::Execute(const float dT)
             ecs.GetStorage<ActionRequestTag>().AddComponent(entity)->type = ActionType::Stun;
         }
     }
-}
-
-std::vector<std::type_index> HitResolveSystem::ReadComponents() const
-{
-	return { typeid(ActionState) };
-}
-
-std::vector<std::type_index> HitResolveSystem::WriteComponents() const
-{
-	return { typeid(HitTag), typeid(ActionRequestTag), typeid(ParryBuff) };
 }

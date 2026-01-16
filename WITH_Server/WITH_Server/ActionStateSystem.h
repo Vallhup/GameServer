@@ -9,8 +9,16 @@ public:
 	virtual ~ActionStateSystem() = default;
 
 	virtual void Execute(const float dT) override;
-	virtual std::vector<std::type_index> ReadComponents() const;
-	virtual std::vector<std::type_index> WriteComponents() const;
+
+	virtual std::vector<std::type_index> ReadComponents() const
+	{
+		return {  };
+	}
+
+	virtual std::vector<std::type_index> WriteComponents() const
+	{
+		return { typeid(ActionIntent), typeid(ActionState), typeid(ActionMoveTag) };
+	}
 
 private:
 	ActionType GetNextAction(const ActionState& current, const ActionIntent& intent);

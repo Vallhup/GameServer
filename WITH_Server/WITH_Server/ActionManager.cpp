@@ -5,8 +5,6 @@ ActionManager::ActionManager()
 {
 	// TEMP : 추후 데이터 구조 확정 및 툴 완성 후 분리
 	ActionProfile attack{
-		.duration = 40.0f / 30.7692f,
-		.segments = 
 		{
 			{
 				0.0f,
@@ -35,8 +33,6 @@ ActionManager::ActionManager()
 	_actionProfiles.try_emplace(ActionType::Attack, std::move(attackPtr));
 
 	ActionProfile dodge{
-		.duration = 50.0f / 30.6122f,
-		.segments =
 		{
 			{
 				0.0f,

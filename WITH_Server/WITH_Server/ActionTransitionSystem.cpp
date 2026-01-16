@@ -5,7 +5,6 @@ void ActionTransitionSystem::Execute(const float dT)
 {
 	auto& states = ecs.GetStorage<ActionState>();
 	auto& requests = ecs.GetStorage<ActionRequestTag>();
-	auto& velocities = ecs.GetStorage<Velocity>();
 
 	std::vector<Entity> removeList;
 	removeList.reserve(requests.Size());
@@ -27,7 +26,7 @@ void ActionTransitionSystem::Execute(const float dT)
 				continue;
 			}
 
-			ApplyTransition(state, next);
+			ApplyTransition(entity, state, next);
 			removeList.push_back(entity);
 		}
 	}
@@ -36,16 +35,6 @@ void ActionTransitionSystem::Execute(const float dT)
 	{
 		requests.RemoveComponent(entity);
 	}
-}
-
-std::vector<std::type_index> ActionTransitionSystem::ReadComponents() const
-{
-	return { typeid(Velocity) };
-}
-
-std::vector<std::type_index> ActionTransitionSystem::WriteComponents() const
-{
-	return { typeid(ActionState), typeid(ActionRequestTag), typeid(ActionMoveTag) };
 }
 
 int ActionTransitionSystem::GetPriority(ActionType type)
@@ -66,15 +55,13 @@ int ActionTransitionSystem::GetPriority(ActionType type)
 
 float ActionTransitionSystem::GetDuration(ActionType type)
 {
-	// TEMP : Action 별 Duration 값 설정 필요
-
 	switch (type) {
-	case ActionType::Dead:	 return 1;
-	case ActionType::Hit:	 return 1;
-	case ActionType::Parry:  return 1;
-	case ActionType::Dodge:	 return 1;
-	case ActionType::Attack: return 1;
-	case ActionType::None:	 return 0;
+	case ActionType::Dead:	 return 150.0f / 30.2013f;
+	case ActionType::Hit:	 return 50.0f / 30.6122f;
+	case ActionType::Parry:  return 54.0f / 30.566f;
+	case ActionType::Dodge:	 return 50.0f / 30.6122f;
+	case ActionType::Attack: return 40.0f / 30.7692f;
+	case ActionType::Stun:	 return 96.0f / 30.3158f;
 	default:                 return 0;
 	}
 }
@@ -160,7 +147,8 @@ ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current,
 	return current.type;
 }
 
-void ActionTransitionSystem::ApplyTransition(ActionState* state, ActionType next)
+void ActionTransitionSystem::ApplyTransition(Entity entity, 
+	ActionState* state, ActionType next)
 {
 	state->type = next;
 	state->elapsed = 0.0f;
@@ -170,4 +158,21 @@ void ActionTransitionSystem::ApplyTransition(ActionState* state, ActionType next
 
 	else
 		state->duration = GetDuration(next);
+
+	if (state->type == ActionType::Attack || 
+		state->type == ActionType::Dodge)
+	{
+		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
+
+		move->profile = ActionManager::Get().GetActionMoveProfile(state->type);
+		move->segmentIndex = 0;
+		move->movedInSegment = 0.0f;
+
+		if (auto* vel = ecs.GetStorage<Velocity>().GetComponent(entity))
+		{
+			// TEMP : 공격, 회피 방향 정책 수정 필요
+			move->dir = vel->lastNonZeroDir;
+			move->dirLocked = true;
+		}
+	}
 }

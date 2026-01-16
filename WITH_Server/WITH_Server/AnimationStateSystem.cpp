@@ -64,16 +64,6 @@ void AnimationStateSystem::Execute(const float dT)
 	}
 }
 
-std::vector<std::type_index> AnimationStateSystem::ReadComponents() const
-{
-	return { typeid(LocomotionState), typeid(ActionState) };
-}
-
-std::vector<std::type_index> AnimationStateSystem::WriteComponents() const
-{
-	return { typeid(AnimationState), typeid(AnimationRef) };
-}
-
 void AnimationStateSystem::ChangeAnimation(Entity e, AnimationId id)
 {
 	auto* state = ecs.GetStorage<AnimationState>().GetComponent(e);

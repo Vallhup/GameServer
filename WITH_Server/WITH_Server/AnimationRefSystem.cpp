@@ -13,24 +13,14 @@ void AnimationRefSystem::Execute(const float dT)
 
 		auto* animRef = animRefs.GetComponent(entity);
 		auto* collider = colliders.GetComponent(entity);
-		if (!animRef or !collider) continue;
+		if (!animRef || !collider) continue;
 		if (!animRef->anim) continue;
 
 		const PrebakedAnimation* clip = animRef->anim;
 		int frame = anim.currentFrame;
-		if (frame < 0 or frame >= clip->numFrames) continue;
+		if (frame < 0 || frame >= clip->numFrames) continue;
 
 		const auto& localCapsules = clip->frames[frame];
 		collider->localCapsules = localCapsules;
 	}
-}
-
-std::vector<std::type_index> AnimationRefSystem::ReadComponents() const
-{
-	return { typeid(AnimationRef), typeid(Animator) };
-}
-
-std::vector<std::type_index> AnimationRefSystem::WriteComponents() const
-{
-	return { typeid(Collider) };
 }

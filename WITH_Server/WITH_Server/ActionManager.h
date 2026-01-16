@@ -29,7 +29,6 @@ struct ActionMoveSegment {
 };
 
 struct ActionProfile {
-	float duration;
 	std::vector<ActionMoveSegment> segments;
 };
 

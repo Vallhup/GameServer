@@ -43,16 +43,6 @@ void HitApplySystem::Execute(const float dT)
 	}
 }
 
-std::vector<std::type_index> HitApplySystem::ReadComponents() const
-{
-	return { typeid(ActionState) };
-}
-
-std::vector<std::type_index> HitApplySystem::WriteComponents() const
-{
-	return { typeid(HitTag), typeid(Health), typeid(ActionRequestTag) };
-}
-
 void HitApplySystem::RequestActionTransition(Entity entity, ActionType type)
 {
 	ecs.GetStorage<ActionRequestTag>().AddComponent(entity)->type = type;
