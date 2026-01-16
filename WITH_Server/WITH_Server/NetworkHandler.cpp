@@ -9,6 +9,7 @@ NetworkHandler::NetworkHandler()
 	_handlerTable[(uint16)PacketType::CS_LOGIN] = &NetworkHandler::HandleConnect;
 	_handlerTable[(uint16)PacketType::CS_MOVE] = &NetworkHandler::HandleMove;
 	_handlerTable[(uint16)PacketType::CS_ATTACK] = &NetworkHandler::HandleAttack;
+	_handlerTable[(uint16)PacketType::CS_DODGE] = &NetworkHandler::HandleDodge;
 }
 
 bool NetworkHandler::HandleConnect(uint32 id, const PacketHeader& header, const BYTE* data)
@@ -44,6 +45,19 @@ bool NetworkHandler::HandleAttack(uint32 id, const PacketHeader& header, const B
 		return false;
 
 	ActionEvent ac{ id, ActionRequestType::Attack, attack.dirx(), attack.dirz() };
+	Event ev{ EventType::EV_ACTION, ac };
+	Framework::Get().eventQueue.push(ev);
+
+	return true;
+}
+
+bool NetworkHandler::HandleDodge(uint32 id, const PacketHeader& header, const BYTE* data)
+{
+	Protocol::CS_DODGE_PACKET dodge;
+	if (not PacketFactory::Deserialize(header, data, &dodge))
+		return false;
+
+	ActionEvent ac{ id, ActionRequestType::Dodge, dodge.dirx(), dodge.dirz() };
 	Event ev{ EventType::EV_ACTION, ac };
 	Framework::Get().eventQueue.push(ev);
 

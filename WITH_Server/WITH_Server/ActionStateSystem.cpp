@@ -64,7 +64,7 @@ bool ActionStateSystem::StartAction(Entity entity, ActionState* state, const Act
 	{
 		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
 
-		move->profile = ActionManager::Get().GetActionMoveProfile(type);
+ 		move->profile = ActionManager::Get().GetActionMoveProfile(type);
 		move->elapsed = 0.0f;
 		move->segmentIndex = 0;
 		move->movedInSegment = 0.0f;

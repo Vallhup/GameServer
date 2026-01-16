@@ -22,7 +22,7 @@
 
 #include "Protocol.pb.h"
 
-#include "Asio_Network_Module.h"
+#include "Asio_Network_Library.h"
 #include "ProtocolLib.h"
 
-#pragma comment(lib, "Asio_Network_Module.lib")
+#pragma comment(lib, "Asio_Network_Library.lib")

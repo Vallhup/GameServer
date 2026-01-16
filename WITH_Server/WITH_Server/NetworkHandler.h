@@ -22,6 +22,7 @@ private:
 	static bool HandleConnect(uint32 id, const PacketHeader& header, const BYTE* data);
 	static bool HandleMove(uint32 id, const PacketHeader& header, const BYTE* data);
 	static bool HandleAttack(uint32 id, const PacketHeader& header, const BYTE* data);
+	static bool HandleDodge(uint32 id, const PacketHeader& header, const BYTE* data);
 
 	std::unordered_map<uint16, HandlerFunc> _handlerTable;
 };
