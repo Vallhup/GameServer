@@ -72,23 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Library\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Library\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Library\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Library\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)..\Network_Module\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Module\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -164,9 +164,7 @@
     <ClInclude Include="Include\ProtocolLib.h" />
     <ClInclude Include="PacketType.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Protocols\Enum.pb.h" />
     <ClInclude Include="Protocols\Protocol.pb.h" />
-    <ClInclude Include="Protocols\Struct.pb.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -175,19 +173,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Protocols\Enum.pb.cc">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Protocols\Protocol.pb.cc">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Protocols\Struct.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -195,9 +181,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="protos\Enum.proto" />
     <None Include="protos\Protocol.proto" />
-    <None Include="protos\Struct.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

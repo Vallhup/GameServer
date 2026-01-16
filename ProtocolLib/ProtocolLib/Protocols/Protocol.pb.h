@@ -56,6 +56,9 @@ namespace Protocol {
 class CS_ATTACK_PACKET;
 struct CS_ATTACK_PACKETDefaultTypeInternal;
 extern CS_ATTACK_PACKETDefaultTypeInternal _CS_ATTACK_PACKET_default_instance_;
+class CS_DODGE_PACKET;
+struct CS_DODGE_PACKETDefaultTypeInternal;
+extern CS_DODGE_PACKETDefaultTypeInternal _CS_DODGE_PACKET_default_instance_;
 class CS_LOGIN_PACKET;
 struct CS_LOGIN_PACKETDefaultTypeInternal;
 extern CS_LOGIN_PACKETDefaultTypeInternal _CS_LOGIN_PACKET_default_instance_;
@@ -146,7 +149,7 @@ class SC_REMOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_REMOVE_PACKET*>(
         &_SC_REMOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 6;
+  static constexpr int kIndexInFileMessages = 7;
   friend void swap(SC_REMOVE_PACKET& a, SC_REMOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REMOVE_PACKET* other) {
     if (other == this) return;
@@ -336,7 +339,7 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_MOVE_PACKET*>(
         &_SC_MOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages = 6;
   friend void swap(SC_MOVE_PACKET& a, SC_MOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_MOVE_PACKET* other) {
     if (other == this) return;
@@ -574,7 +577,7 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_LOGIN_PACKET*>(
         &_SC_LOGIN_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 3;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(SC_LOGIN_PACKET& a, SC_LOGIN_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_LOGIN_PACKET* other) {
     if (other == this) return;
@@ -764,7 +767,7 @@ class SC_ADD_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ADD_PACKET*>(
         &_SC_ADD_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 4;
+  static constexpr int kIndexInFileMessages = 5;
   friend void swap(SC_ADD_PACKET& a, SC_ADD_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ADD_PACKET* other) {
     if (other == this) return;
@@ -1302,6 +1305,208 @@ class CS_LOGIN_PACKET final : public ::google::protobuf::internal::ZeroFieldsBas
 };
 // -------------------------------------------------------------------
 
+class CS_DODGE_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_DODGE_PACKET) */ {
+ public:
+  inline CS_DODGE_PACKET() : CS_DODGE_PACKET(nullptr) {}
+  ~CS_DODGE_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_DODGE_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_DODGE_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_DODGE_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_DODGE_PACKET(const CS_DODGE_PACKET& from) : CS_DODGE_PACKET(nullptr, from) {}
+  inline CS_DODGE_PACKET(CS_DODGE_PACKET&& from) noexcept
+      : CS_DODGE_PACKET(nullptr, std::move(from)) {}
+  inline CS_DODGE_PACKET& operator=(const CS_DODGE_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_DODGE_PACKET& operator=(CS_DODGE_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_DODGE_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_DODGE_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_DODGE_PACKET*>(
+        &_CS_DODGE_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 3;
+  friend void swap(CS_DODGE_PACKET& a, CS_DODGE_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_DODGE_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_DODGE_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_DODGE_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_DODGE_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_DODGE_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_DODGE_PACKET& from) { CS_DODGE_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_DODGE_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_DODGE_PACKET"; }
+
+ protected:
+  explicit CS_DODGE_PACKET(::google::protobuf::Arena* arena);
+  CS_DODGE_PACKET(::google::protobuf::Arena* arena, const CS_DODGE_PACKET& from);
+  CS_DODGE_PACKET(::google::protobuf::Arena* arena, CS_DODGE_PACKET&& from) noexcept
+      : CS_DODGE_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kDirXFieldNumber = 1,
+    kDirZFieldNumber = 2,
+  };
+  // float dirX = 1;
+  void clear_dirx() ;
+  float dirx() const;
+  void set_dirx(float value);
+
+  private:
+  float _internal_dirx() const;
+  void _internal_set_dirx(float value);
+
+  public:
+  // float dirZ = 2;
+  void clear_dirz() ;
+  float dirz() const;
+  void set_dirz(float value);
+
+  private:
+  float _internal_dirz() const;
+  void _internal_set_dirz(float value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_DODGE_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      1, 2, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_DODGE_PACKET& from_msg);
+    float dirx_;
+    float dirz_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
 class CS_ATTACK_PACKET final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Protocol.CS_ATTACK_PACKET) */ {
  public:
@@ -1633,6 +1838,54 @@ inline float CS_ATTACK_PACKET::_internal_dirz() const {
   return _impl_.dirz_;
 }
 inline void CS_ATTACK_PACKET::_internal_set_dirz(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.dirz_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_DODGE_PACKET
+
+// float dirX = 1;
+inline void CS_DODGE_PACKET::clear_dirx() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.dirx_ = 0;
+}
+inline float CS_DODGE_PACKET::dirx() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_DODGE_PACKET.dirX)
+  return _internal_dirx();
+}
+inline void CS_DODGE_PACKET::set_dirx(float value) {
+  _internal_set_dirx(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_DODGE_PACKET.dirX)
+}
+inline float CS_DODGE_PACKET::_internal_dirx() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.dirx_;
+}
+inline void CS_DODGE_PACKET::_internal_set_dirx(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.dirx_ = value;
+}
+
+// float dirZ = 2;
+inline void CS_DODGE_PACKET::clear_dirz() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.dirz_ = 0;
+}
+inline float CS_DODGE_PACKET::dirz() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_DODGE_PACKET.dirZ)
+  return _internal_dirz();
+}
+inline void CS_DODGE_PACKET::set_dirz(float value) {
+  _internal_set_dirz(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_DODGE_PACKET.dirZ)
+}
+inline float CS_DODGE_PACKET::_internal_dirz() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.dirz_;
+}
+inline void CS_DODGE_PACKET::_internal_set_dirz(float value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.dirz_ = value;
 }

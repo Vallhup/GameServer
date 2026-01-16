@@ -20,6 +20,12 @@ message CS_ATTACK_PACKET
 	float dirZ = 2;
 }
 
+message CS_DODGE_PACKET
+{
+	float dirX = 1;
+	float dirZ = 2;
+}
+
 /* ------------------------------ [ Server -> Client ]  ------------------------------ */
 
 message SC_LOGIN_PACKET
