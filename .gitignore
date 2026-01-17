@@ -471,3 +471,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 졸작/Assets/FBXModel/
+졸작/Assets/Skybox/skybox2.dds
+졸작/Assets/Skybox/skybox2_irradiance.dds
+졸작/Assets/Skybox/skybox2_radiance.dds
