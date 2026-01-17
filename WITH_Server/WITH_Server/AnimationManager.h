@@ -53,7 +53,7 @@ struct StaticCapsuleData {
 
 struct PrebakedAnimation {
 	float fps;
-	uint8 numFrames;
+	uint16 numFrames;
 
 	std::vector<StaticCapsuleData> staticDatas;
 	std::vector<std::vector<DynamicCapsuleData>> dynamicDatas;

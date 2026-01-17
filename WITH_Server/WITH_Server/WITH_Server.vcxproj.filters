@@ -26,15 +26,6 @@
     <ClCompile Include="AnimationManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationRefSystem.cpp">
-      <Filter>ECS\System\Logic\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationStateSystem.cpp">
-      <Filter>ECS\System\Logic\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationTimeSystem.cpp">
-      <Filter>ECS\System\Logic\Animation</Filter>
-    </ClCompile>
     <ClCompile Include="ColliderUpdateSystem.cpp">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClCompile>
@@ -113,6 +104,18 @@
     <ClCompile Include="SystemManager.cpp">
       <Filter>ECS\System\Base</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationSelectSystem.cpp">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationCommitSystem.cpp">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationFrameSystem.cpp">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationPoseBindSystem.cpp">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h">
@@ -138,15 +141,6 @@
     </ClInclude>
     <ClInclude Include="AnimationManager.h">
       <Filter>Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationRefSystem.h">
-      <Filter>ECS\System\Logic\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationStateSystem.h">
-      <Filter>ECS\System\Logic\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationTimeSystem.h">
-      <Filter>ECS\System\Logic\Animation</Filter>
     </ClInclude>
     <ClInclude Include="ColliderUpdateSystem.h">
       <Filter>ECS\System\Logic\Collision</Filter>
@@ -249,6 +243,18 @@
     </ClInclude>
     <ClInclude Include="MovementApplySystem.h">
       <Filter>ECS\System\Logic\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationSelectSystem.h">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationCommitSystem.h">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationFrameSystem.h">
+      <Filter>ECS\System\Logic\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationPoseBindSystem.h">
+      <Filter>ECS\System\Logic\Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

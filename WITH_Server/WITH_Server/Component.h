@@ -69,26 +69,26 @@ struct Health : public Component {
 };
 
 struct AnimationState : public Component {
-	AnimationId id{ AnimationId::Knight_Idle };
+	AnimationId desiredId{ AnimationId::Knight_Idle };
 	float speed{ 1.0f };
 	bool looping{ true };
 };
 
-struct AnimationRef : public Component {
-	const PrebakedAnimation* anim{ nullptr };
-};
-
 struct Animator : public Component {
-	int currentFrame{ 0 };
+	const PrebakedAnimation* clip{ nullptr };
+	uint16 currentFrame{ 0 };
 };
 
 struct Collider : public Component {
-	std::vector<StaticCapsuleData> staticDatas;
+	const std::vector<StaticCapsuleData>* staticDatas{ nullptr };
+
 	std::vector<DynamicCapsuleData> localDatas;
 	std::vector<DynamicCapsuleData> worldDatas;
 
 	std::vector<uint8> enabledMasks;
 	std::vector<uint32> attackIds;
+
+	uint32 staticCount{ 0 };
 };
 
 struct DisconnectedTag :public Component { };
