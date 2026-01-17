@@ -22,6 +22,14 @@ enum class AnimationId {
 	Knight_Stun,
 };
 
+enum class HitboxType : uint8 {
+	None    = 0,
+	Hurt	= 1 << 0,
+	Hit     = 1 << 1,
+	Guard   = 1 << 2,
+	Parry	= 1 << 3
+};
+
 namespace std {
 	template<>
 	struct hash<AnimationId> {
@@ -32,20 +40,23 @@ namespace std {
 	};
 }
 
-struct Capsule {
-	int bone{ 0 };
-	XMFLOAT3 p0;
-	XMFLOAT3 p1;
-	float radius{ 0.0f };
+struct DynamicCapsuleData {
+	XMFLOAT3 p0{ 0, 0, 0 };
+	XMFLOAT3 p1{ 0, 0, 0 };
+};
 
-	XMVECTOR P0() const { return XMLoadFloat3(&p0); }
-	XMVECTOR P1() const { return XMLoadFloat3(&p1); }
+struct StaticCapsuleData {
+	uint8 bone{ 0 };
+	float radius{ 0.0f };
+	uint8 typeMask{ static_cast<uint8>(HitboxType::None) };
 };
 
 struct PrebakedAnimation {
 	float fps;
-	int numFrames;
-	std::vector<std::vector<Capsule>> frames;
+	uint8 numFrames;
+
+	std::vector<StaticCapsuleData> staticDatas;
+	std::vector<std::vector<DynamicCapsuleData>> dynamicDatas;
 };
 
 class AnimationManager {
@@ -65,4 +76,3 @@ private:
 
 	std::unordered_map<AnimationId, std::unique_ptr<PrebakedAnimation>> _animations;
 };
-

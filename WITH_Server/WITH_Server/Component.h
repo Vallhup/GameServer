@@ -83,8 +83,12 @@ struct Animator : public Component {
 };
 
 struct Collider : public Component {
-	std::vector<Capsule> localCapsules;
-	std::vector<Capsule> worldCapsules;
+	std::vector<StaticCapsuleData> staticDatas;
+	std::vector<DynamicCapsuleData> localDatas;
+	std::vector<DynamicCapsuleData> worldDatas;
+
+	std::vector<uint8> enabledMasks;
+	std::vector<uint32> attackIds;
 };
 
 struct DisconnectedTag :public Component { };
@@ -107,8 +111,7 @@ struct ParryBuff : public Component {
 
 struct ActionMoveTag : public Component {
 	const ActionProfile* profile{ nullptr };
-	
-	//float elapsed{ 0.0f };
+
 	uint8 segmentIndex{ 0 };
 	float movedInSegment{ 0.0f };
 

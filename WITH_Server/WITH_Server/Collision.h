@@ -103,7 +103,7 @@ namespace Collision {
 		return Dot3(diff, diff);
 	}
 
-	bool CheckCapsuleVsCapsule(const Capsule& c1, const Capsule& c2)
+	/*bool CheckCapsuleVsCapsule(const Capsule& c1, const Capsule& c2)
 	{
 		XMVECTOR c1A = c1.P0();
 		XMVECTOR c1B = c1.P1();
@@ -114,5 +114,5 @@ namespace Collision {
 		float R = c1.radius + c2.radius;
 
 		return distSq <= R * R;
-	}
+	}*/
 }

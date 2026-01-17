@@ -4,7 +4,7 @@
 
 void ColliderUpdateSystem::Execute(const float dT)
 {
-	auto& transforms = ecs.GetStorage<Transform>();
+	/*auto& transforms = ecs.GetStorage<Transform>();
 	auto& colliders = ecs.GetStorage<Collider>();
 
 	for (const auto& [entity, collider] : colliders)
@@ -31,5 +31,5 @@ void ColliderUpdateSystem::Execute(const float dT)
 			worldCapsule.radius *= 0.01f;
 			collider.worldCapsules[i] = worldCapsule;
 		}
-	}
+	}*/
 }

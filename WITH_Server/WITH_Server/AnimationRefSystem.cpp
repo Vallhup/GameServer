@@ -3,7 +3,7 @@
 
 void AnimationRefSystem::Execute(const float dT)
 {
-	auto& animRefs = ecs.GetStorage<AnimationRef>();
+	/*auto& animRefs = ecs.GetStorage<AnimationRef>();
 	auto& anims = ecs.GetStorage<Animator>();
 	auto& colliders = ecs.GetStorage<Collider>();
 
@@ -22,5 +22,5 @@ void AnimationRefSystem::Execute(const float dT)
 
 		const auto& localCapsules = clip->frames[frame];
 		collider->localCapsules = localCapsules;
-	}
+	}*/
 }
