@@ -51,17 +51,17 @@ void GameScene::CreateCastle()
 	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Window_04", testData));
 #pragma endregion
 
-#pragma region Initialize CASTLEWALL
-	constexpr castleData wallData = {
-		{ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.01f, 0.01f, 0.01f }
-	};
-
-	for (int i = 2; i < 20; ++i)
-	{
-		wstring meshName = (i < 10) ? L"../Assets/FBXModel/Castle/mesh_0" + to_wstring(i) : L"../Assets/FBXModel/Castle/mesh_" + to_wstring(i);
-		AddGameObject(CreateStaticMesh(meshName, wallData));
-	}
-#pragma endregion
+//#pragma region Initialize CASTLEWALL
+//	constexpr castleData wallData = {
+//		{ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.01f, 0.01f, 0.01f }
+//	};
+//
+//	for (int i = 2; i < 20; ++i)
+//	{
+//		wstring meshName = (i < 10) ? L"../Assets/FBXModel/Castle/mesh_0" + to_wstring(i) : L"../Assets/FBXModel/Castle/mesh_" + to_wstring(i);
+//		AddGameObject(CreateStaticMesh(meshName, wallData));
+//	}
+//#pragma endregion
 
 #pragma region Initialize PILLARS
 	constexpr castleData pillarData[] = {

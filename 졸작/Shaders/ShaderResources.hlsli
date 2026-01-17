@@ -113,4 +113,12 @@ TextureCube bindlessCubeMaps[] : register(t0, space3);
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 
+//-------------------------------------------------------
+// INDEXES
+//-------------------------------------------------------
+
+static const uint IBL_IRRADIANCE_INDEX = 1;
+static const uint IBL_RADIANCE_INDEX = 2;
+static const uint BRDF_LUT_INDEX = 31;
+
 #endif

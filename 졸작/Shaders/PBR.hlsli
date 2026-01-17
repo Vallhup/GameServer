@@ -1,12 +1,17 @@
 #ifndef PBR_HLSLI
 #define PBR_HLSLI
-
 #include "Constants.hlsli"
 
 // Fresnel-Schlick approximation
 float3 FresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0 - F0) * pow(saturate(1.0 - cosTheta), 5.0);
+}
+
+// Fresnel-Schlick with roughness
+float3 FresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
+{
+    return F0 + (max(float3(1.0 - roughness, 1.0 - roughness, 1.0 - roughness), F0) - F0) * pow(saturate(1.0 - cosTheta), 5.0);
 }
 
 // GGX/Trowbridge-Reitz Normal Distribution Function
@@ -63,8 +68,8 @@ float3 CalculatePBR(float3 N, float3 V, float3 L, float3 baseColor,
     
     float3 kS = F;
     float3 kD = float3(1.0, 1.0, 1.0) - kS;
-    kD *= 1.0 - metallic;
-    
+    kD *= 1.0 - metallic;   
+
     float3 numerator = NDF * G * F;
     float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
     float3 specular = numerator / denominator;
@@ -73,4 +78,40 @@ float3 CalculatePBR(float3 N, float3 V, float3 L, float3 baseColor,
     return (kD * baseColor / PI + specular) * radiance * NdotL;
 }
 
+float3 CalculateIBL(float3 N, float3 V, float3 baseColor, float metallic,
+    float roughness, float ao, TextureCube irradianceMap, TextureCube radianceMap,
+    Texture2D brdfLUT, SamplerState samp)
+{
+    float3 F0 = float3(0.04, 0.04, 0.04);
+    F0 = lerp(F0, baseColor, metallic);
+    
+    float NdotV = max(dot(N, V), 0.0);
+    
+    float3 F = FresnelSchlickRoughness(NdotV, F0, roughness);
+    
+    float3 kS = F;
+    float3 kD = 1.0 - kS;
+    kD *= 1.0 - metallic;
+    
+    float3 irradiance = irradianceMap.Sample(samp, N).rgb;
+    float3 diffuseIBL = irradiance * baseColor;
+    
+    float3 R = reflect(-V, N);
+    const float MAX_REFLECTION_LOD = 7.0;
+    float3 prefilteredColor = radianceMap.SampleLevel(samp, R, roughness * MAX_REFLECTION_LOD).rgb;
+    
+    float2 brdfUV = float2(NdotV, roughness);
+    float2 brdf = brdfLUT.Sample(samp, brdfUV).rg;
+    
+    float3 specularIBL = prefilteredColor * (F * brdf.x + brdf.y);
+    
+    float diffuseIntensity = 1.0f; // Irradiance ∞≠µµ (≥∑√„)
+    float specularIntensity = 1.0f; // Radiance ∞≠µµ
+    
+    float3 ambient = (kD * diffuseIBL * diffuseIntensity + specularIBL * specularIntensity) * ao;
+    
+    return ambient;
+}
+
 #endif
+
