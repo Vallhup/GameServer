@@ -16,14 +16,15 @@ public:
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return { typeid(ActionRequestTag), typeid(ActionMoveTag) };
+		return { typeid(ActionMoveTag) };
 	}
 
 private:
 	int GetPriority(ActionType type);
 	float GetDuration(ActionType type);
-	bool CanBeInterrupted(const ActionState& current, const ActionRequestTag& request);
-	ActionType ResolveNextAction(const ActionState& current, const ActionRequestTag& request);
+	bool CanBeInterrupted(const ActionState& current, ActionType request);
+	ActionType ResolveNextAction(const ActionState& current, ActionType request);
 	void ApplyTransition(Entity entity, ActionState* state, ActionType next);
+	void DedupActionRequest(std::vector<ActionRequestEvent>& events);
 };
 
