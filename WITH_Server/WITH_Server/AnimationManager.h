@@ -26,9 +26,17 @@ enum class HitboxType : uint8 {
 	None    = 0,
 	Hurt	= 1 << 0,
 	Hit     = 1 << 1,
-	Guard   = 1 << 2,
-	Parry	= 1 << 3
 };
+
+inline uint8 operator|(HitboxType a, HitboxType b)
+{
+	return static_cast<uint8>(a) | static_cast<uint8>(b);
+}
+
+inline bool HasType(uint8 mask, HitboxType t)
+{
+	return (mask & static_cast<uint8>(t)) != 0;
+}
 
 namespace std {
 	template<>
@@ -43,6 +51,9 @@ namespace std {
 struct DynamicCapsuleData {
 	XMFLOAT3 p0{ 0, 0, 0 };
 	XMFLOAT3 p1{ 0, 0, 0 };
+
+	XMVECTOR P0() const { return XMLoadFloat3(&p0); }
+	XMVECTOR P1() const { return XMLoadFloat3(&p1); }
 };
 
 struct StaticCapsuleData {

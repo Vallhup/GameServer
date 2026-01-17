@@ -6,146 +6,82 @@
     {
       "bone": 1,
       "radius": 13.675934090925551,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 4,
       "radius": 17.11792168429286,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 8,
       "radius": 7.8113029396309,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 9,
       "radius": 7.811316837730694,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 10,
       "radius": 6.074235479312061,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 27,
       "radius": 7.811312921369366,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 28,
       "radius": 7.81131644829777,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 29,
       "radius": 6.0742050067118285,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 45,
       "radius": 6.985376965855599,
-      "roles": [
-        "hit",
-        "guard",
-        "parry"
-      ]
+      "roles": "hit"
     },
     {
       "bone": 46,
       "radius": 10.12894800000576,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 47,
       "radius": 6.985148463902568,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 48,
       "radius": 6.985128216774573,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 49,
       "radius": 6.985161660607999,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 51,
       "radius": 6.985148264225428,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 52,
       "radius": 6.985132199527579,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     },
     {
       "bone": 53,
       "radius": 6.985163369336152,
-      "roles": [
-        "hurt",
-        "guard",
-        "parry"
-      ]
+      "roles": "hurt"
     }
   ],
   "frames": [

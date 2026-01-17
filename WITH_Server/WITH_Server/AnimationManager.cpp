@@ -38,8 +38,6 @@ PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
 
 				if (s == "hurt")		mask |= static_cast<uint8>(HitboxType::Hurt);
 				else if (s == "hit")	mask |= static_cast<uint8>(HitboxType::Hit);
-				else if (s == "guard")	mask |= static_cast<uint8>(HitboxType::Guard);
-				else if (s == "parry")	mask |= static_cast<uint8>(HitboxType::Parry);
 			}
 
 			return mask;
@@ -81,7 +79,7 @@ PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
 
 		StaticCapsuleData sCapData;
 		sCapData.bone = static_cast<uint8>(boneIndex);
-		sCapData.radius = jCap.at("radius").get<float>();
+		sCapData.radius = jCap.at("radius").get<float>() * 0.01f;
 		sCapData.typeMask = RolesToMask(jCap.value("roles", json::array()));
 
 		anim.staticDatas[i] = sCapData;
@@ -113,14 +111,14 @@ PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
 
 			DynamicCapsuleData dCapData;
 			dCapData.p0 = XMFLOAT3(
-				item.at("p0")[0].get<float>(),
-				item.at("p0")[1].get<float>(),
-				item.at("p0")[2].get<float>());
+				item.at("p0")[0].get<float>() * 0.01f,
+				item.at("p0")[1].get<float>() * 0.01f,
+				item.at("p0")[2].get<float>() * 0.01f);
 
 			dCapData.p1 = XMFLOAT3(
-				item.at("p1")[0].get<float>(),
-				item.at("p1")[1].get<float>(),
-				item.at("p1")[2].get<float>());
+				item.at("p1")[0].get<float>() * 0.01f,
+				item.at("p1")[1].get<float>() * 0.01f,
+				item.at("p1")[2].get<float>() * 0.01f);
 
 			anim.dynamicDatas[frame][i] = dCapData;
 		}

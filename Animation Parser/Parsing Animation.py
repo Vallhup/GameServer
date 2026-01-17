@@ -144,66 +144,10 @@ def load_capsules(path):
 
 # ======================================================
 # Prebake p0/p1 Using Correct Transform Rules
-# ======================================================
-# def prebake(anim, capsules):
-#     out_frames = []
-
-#     for frame_idx, bones in enumerate(anim["frames"]):
-#         frame_list = []
-
-#         for boneIndex, cap in capsules.items():
-#             # ROOT_BONE_INDEX = 0
-            
-#             # rootM = bones[ROOT_BONE_INDEX]
-#             # rootInv = np.linalg.inv(rootM)
-            
-#             # boneM = bones[boneIndex]
-#             # localM = rootInv @ boneM
-            
-#             # R = AXIS_SWAP @ localM[:3, :3]
-#             # pos = AXIS_SWAP @ localM[:3, 3]
-            
-#             M = bones[boneIndex]  # 이미 transpose 적용된 행렬
-
-#             # 위치
-#             pos = AXIS_SWAP @ M[:3, 3]
-
-#             # 회전 행렬
-#             R = AXIS_SWAP @  M[:3, :3]
-
-#             # 로컬 방향/오프셋에 회전 적용
-#             rot_offset = R @ cap["localOffset"]
-#             rot_dir = R @ cap["localDir"]
-
-#             rot_dir /= np.linalg.norm(rot_dir)
-
-#             centerWorld = pos + rot_offset
-
-#             hh = cap["halfHeight"]
-#             p0 = centerWorld + rot_dir * hh
-#             p1 = centerWorld - rot_dir * hh
-            
-#             p0_out = (p0).tolist()
-#             p1_out = (p1).tolist()
-
-#             frame_list.append({
-#                 "bone": boneIndex,
-#                 "p0": p0_out,
-#                 "p1": p1_out,
-#                 "radius": cap["radius"]
-#             })
-
-#         out_frames.append(frame_list)
-
-#     return {
-#         "fps": anim["fps"],
-#         "numFrames": anim["frameCount"],
-#         "frames": out_frames
-#     }
-    
+# ======================================================    
 def prebake(anim, capsules, weapon_bones=None,
-            weapon_roles=("hit","guard","parry"),
-            default_roles=("hurt","guard","parry")):
+            weapon_roles="hit",
+            default_roles="hurt"):
 
     weapon_bones = set(weapon_bones or [])
     bone_indices = sorted(capsules.keys())  # 순서 고정
@@ -212,7 +156,7 @@ def prebake(anim, capsules, weapon_bones=None,
     capsule_defs = []
     for boneIndex in bone_indices:
         cap = capsules[boneIndex]
-        roles = list(weapon_roles) if boneIndex in weapon_bones else list(default_roles)
+        roles = weapon_roles if boneIndex in weapon_bones else default_roles
         capsule_defs.append({
             "bone": boneIndex,
             "radius": cap["radius"],
@@ -313,9 +257,9 @@ def prebake(anim, capsules, weapon_bones=None,
 
 
 
-anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Knight\Animation\knight_animation_stun_baked.bone")
+anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Knight\Animation\knight_animation_walk_baked.bone")
 colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Capsule\knight_capsules.json")
-output = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\knight_animation_stun.json"
+output = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\knight_animation_walk.json"
 
 weapon_bone_list = [45]
 prebaked = prebake(anim, colliders, weapon_bones=weapon_bone_list)
