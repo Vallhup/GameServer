@@ -33,6 +33,12 @@ static inline float Clamp01(float x)
 	return std::clamp(x, 0.0f, 1.0f);
 }
 
+struct CapsuleView {
+	XMFLOAT3 p0;
+	XMFLOAT3 p1;
+	float radius;
+};
+
 namespace Collision {
 	static float SegmentSegmentDistSq(XMVECTOR p1, XMVECTOR q1, XMVECTOR p2, XMVECTOR q2)
 	{

@@ -5,9 +5,10 @@
 void CollisionCheckSystem::Execute(const float dT)
 {
 	auto& colliders = ecs.GetStorage<Collider>();
+	auto& events = ecs.collisionEvents;
 
-	ecs.events.clear();
-	ecs.events.reserve(128);
+	events.clear();
+	events.reserve(128);
 
 	std::vector<Entity> entities;
 	entities.reserve(colliders.Size());
@@ -42,8 +43,8 @@ void CollisionCheckSystem::Execute(const float dT)
 	}
 
 #ifdef _DEBUG
-	if (!ecs.events.empty())
-		printf("[Collision] events = %zu\n", ecs.events.size());
+	if (!events.empty())
+		printf("[Collision] events = %zu\n", events.size());
 #endif
 }
 
@@ -93,11 +94,13 @@ void CollisionCheckSystem::CheckCollision(Entity attacker, const Collider& aCol,
 {
 	if (aActives.offensiveHits.empty()) return;
 
+	auto& events = ecs.collisionEvents;
+
 	CheckCollisionInternal(attacker, aCol, aActives.offensiveHits,
 		victim, vCol, vActives.hurts,
 		[&](Entity a, Entity v, uint32 atkId, uint16 aOffHit, uint16 vTarget)
 		{
-			ecs.events.push_back({
+			events.push_back({
 				CollisionType::Strike,
 				a, v, atkId, aOffHit, vTarget });
 		});
@@ -106,7 +109,7 @@ void CollisionCheckSystem::CheckCollision(Entity attacker, const Collider& aCol,
 		victim, vCol, vActives.defensiveHits,
 		[&](Entity a, Entity v, uint32 atkId, uint16 aOffHit, uint16 vTarget)
 		{
-			ecs.events.push_back({
+			events.push_back({
 				CollisionType::Clash,
 				a, v, atkId, aOffHit, vTarget });
 		});

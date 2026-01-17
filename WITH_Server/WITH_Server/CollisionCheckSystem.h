@@ -2,12 +2,7 @@
 
 #include "ECS.h"
 #include "System.h"
-
-struct CapsuleView {
-	XMFLOAT3 p0;
-	XMFLOAT3 p1;
-	float radius;
-};
+#include "Collision.h"
 
 struct ActiveIndices {
 	std::vector<uint16> offensiveHits;
