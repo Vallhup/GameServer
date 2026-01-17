@@ -29,7 +29,7 @@
     <ClCompile Include="ColliderUpdateSystem.cpp">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionSystem.cpp">
+    <ClCompile Include="CollisionCheckSystem.cpp">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClCompile>
     <ClCompile Include="EventSystem.cpp">
@@ -55,12 +55,6 @@
     </ClCompile>
     <ClCompile Include="OutputEventSystem.cpp">
       <Filter>ECS\System\Event</Filter>
-    </ClCompile>
-    <ClCompile Include="HitApplySystem.cpp">
-      <Filter>ECS\System\Logic\Hit</Filter>
-    </ClCompile>
-    <ClCompile Include="HitResolveSystem.cpp">
-      <Filter>ECS\System\Logic\Hit</Filter>
     </ClCompile>
     <ClCompile Include="ConnectionManager.cpp">
       <Filter>Network</Filter>
@@ -116,6 +110,15 @@
     <ClCompile Include="AnimationPoseBindSystem.cpp">
       <Filter>ECS\System\Logic\Animation</Filter>
     </ClCompile>
+    <ClCompile Include="ColliderActivationSystem.cpp">
+      <Filter>ECS\System\Logic\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionHandlingSystem.cpp">
+      <Filter>ECS\System\Logic\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionDedupSystem.cpp">
+      <Filter>ECS\System\Logic\Collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h">
@@ -145,7 +148,7 @@
     <ClInclude Include="ColliderUpdateSystem.h">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionSystem.h">
+    <ClInclude Include="CollisionCheckSystem.h">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClInclude>
     <ClInclude Include="EventSystem.h">
@@ -174,12 +177,6 @@
     </ClInclude>
     <ClInclude Include="OutputEventSystem.h">
       <Filter>ECS\System\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="HitApplySystem.h">
-      <Filter>ECS\System\Logic\Hit</Filter>
-    </ClInclude>
-    <ClInclude Include="HitResolveSystem.h">
-      <Filter>ECS\System\Logic\Hit</Filter>
     </ClInclude>
     <ClInclude Include="ConnectionManager.h">
       <Filter>Network</Filter>
@@ -256,6 +253,15 @@
     <ClInclude Include="AnimationPoseBindSystem.h">
       <Filter>ECS\System\Logic\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="ColliderActivationSystem.h">
+      <Filter>ECS\System\Logic\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionHandlingSystem.h">
+      <Filter>ECS\System\Logic\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionDedupSystem.h">
+      <Filter>ECS\System\Logic\Collision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -299,9 +305,6 @@
     </Filter>
     <Filter Include="Utility\ObjectPool">
       <UniqueIdentifier>{3e0ee908-b3d3-4e42-b75d-40f65bd9e33c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Logic\Hit">
-      <UniqueIdentifier>{a57a08ce-8fe7-450e-af4b-879e506c1402}</UniqueIdentifier>
     </Filter>
     <Filter Include="ECS\System\Base">
       <UniqueIdentifier>{650bbd2b-1a68-442d-bc92-1803efb17277}</UniqueIdentifier>
