@@ -3,21 +3,21 @@
 #include "ECS.h"
 #include "System.h"
 
-class CollisionSystem : public System {
+class CollisionDedupSystem : public System {
 public:
-	CollisionSystem(ECS& e, int p = 0) : System(e, p) {}
-	virtual ~CollisionSystem() = default;
+	CollisionDedupSystem(ECS& e, int p = 0) : System(e, p) {}
+	virtual ~CollisionDedupSystem() = default;
 
 	virtual void Execute(const float dT) override;
 
 	virtual std::vector<std::type_index> ReadComponents() const override
 	{
-		return { typeid(Collider) };
+		return {  };
 	}
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return { typeid(HitTag) };
+		return {  };
 	}
 };
 

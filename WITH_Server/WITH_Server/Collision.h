@@ -103,16 +103,16 @@ namespace Collision {
 		return Dot3(diff, diff);
 	}
 
-	/*bool CheckCapsuleVsCapsule(const Capsule& c1, const Capsule& c2)
+	bool CheckCapsuleVsCapsule(const CapsuleView& c1, const CapsuleView& c2)
 	{
-		XMVECTOR c1A = c1.P0();
-		XMVECTOR c1B = c1.P1();
-		XMVECTOR c2A = c2.P0();
-		XMVECTOR c2B = c2.P1();
+		XMVECTOR c1A = XMLoadFloat3(&c1.p0);
+		XMVECTOR c1B = XMLoadFloat3(&c1.p1);
+		XMVECTOR c2A = XMLoadFloat3(&c2.p0);
+		XMVECTOR c2B = XMLoadFloat3(&c2.p1);
 
 		float distSq = SegmentSegmentDistSq(c1A, c1B, c2A, c2B);
 		float R = c1.radius + c2.radius;
 
 		return distSq <= R * R;
-	}*/
+	}
 }

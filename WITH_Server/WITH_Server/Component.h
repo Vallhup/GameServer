@@ -91,23 +91,18 @@ struct Collider : public Component {
 	uint32 staticCount{ 0 };
 };
 
-struct DisconnectedTag :public Component { };
-
-struct HitTag : public Component {
-	int damage{ 0 };
-	Entity attacker;
-	bool invalid{ false };
+struct AttackState : public Component {
+	uint32 attackId{ 0 };
+	ActionType prevAction{ ActionType::None };
 };
 
-struct ActionRequestTag : public Component {
-	ActionType type;
-};
-
-struct ParryBuff : public Component {
-	int remaining{ 1 };
+struct ParryBuf : public Component {
+	int remaining{ 0 };
 	// TEMP : Parry 성공 시 추가 데미지
 	float additionalDamage{ 1.0f };
 };
+
+struct DisconnectedTag :public Component { };
 
 struct ActionMoveTag : public Component {
 	const ActionProfile* profile{ nullptr };
