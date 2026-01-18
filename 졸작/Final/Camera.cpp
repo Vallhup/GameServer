@@ -286,7 +286,7 @@ void Camera::SetCameraPosition(const XMFLOAT3& pos)
 
 void Camera::SetCursor()
 {
-    if (GET(Input).GetKeyDown(VK_SPACE))
+    if (GET(Input).GetKeyDown(VK_F2))
     {
         spacePressed = !spacePressed;
         ShowCursor(spacePressed);
