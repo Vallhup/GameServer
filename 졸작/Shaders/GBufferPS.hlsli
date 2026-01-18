@@ -4,16 +4,8 @@
 GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input) : SV_Target
 {
     GBUFFER_PS_OUT output;
-
-    if (useTexture == 2)
-    {
-        output.RT0 = float4(1.0, 1.0, 1.0, metallic); 
-        output.RT1 = float4(normalize(input.normal), roughness);
-        output.RT2 = float4(input.worldPos.xyz, 1.0); 
-        output.RT3 = float4(0, 0, 0, 1); 
-        return output;
-    }
-    else if (useTexture == 1)
+    
+    if (useTexture)
     {
         MaterialData material = materialBuffer[input.materialIndex];
 

@@ -416,11 +416,6 @@ void GameScene::InitializeLogic()
 
 	CreateCastle();
 
-	reflectionSpheres = make_unique<ReflectionSphere>();
-	reflectionSpheres->Initialize(*coreRef, 3, 2);  // 5x2 구체 배열
-	reflectionSpheres->SetPosition({ 0, 1.5f, -3.0f });
-	reflectionSpheres->SetEnabled(true);
-
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
@@ -501,13 +496,6 @@ void GameScene::UpdateScene(const float deltaTime)
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
 
-	if (GET(Input).GetKeyDown('9'))
-	{
-		reflectionSpheres->SetEnabled(!reflectionSpheres->IsEnabled());
-		OutputDebugStringA(reflectionSpheres->IsEnabled() ?
-			"Reflection spheres ON\n" : "Reflection spheres OFF\n");
-	}
-
 	if (cam)
 		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);
 	
@@ -525,9 +513,6 @@ void GameScene::RenderSceneDeferred()
 	{
 		batch->Render(*coreRef, renderer);
 	}
-
-	if (reflectionSpheres)
-		reflectionSpheres->Render(*coreRef);
 
 	static bool hitOn = false;
 

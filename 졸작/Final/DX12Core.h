@@ -14,9 +14,7 @@ struct ObjectConstants
 	int useTexture;
 	int useInstancing;
 	UINT materialIndex;
-	float metallic;      
-	float roughness;     
-	float padding3[3];
+	int padding;
 };
 
 struct LightData {
