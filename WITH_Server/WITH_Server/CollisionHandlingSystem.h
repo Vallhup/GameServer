@@ -21,6 +21,8 @@ public:
 	}
 
 private:
+	bool ConsumeHitOnce(const CollisionEvent& event);
+
 	void HandleClash(const CollisionEvent& event);
 	void HandleStrike(const CollisionEvent& event);
 

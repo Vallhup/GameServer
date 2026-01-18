@@ -29,7 +29,11 @@ void ColliderActivationSystem::Execute(const float dT)
 			(attackState->prevAction != ActionType::Attack) &&
 			(actionState->type == ActionType::Attack);
 
-		if (enteredAttack) ++attackState->attackId;
+		if (enteredAttack)
+		{
+			++attackState->attackId;
+			attackState->hitCount = 0;
+		}
 		attackState->prevAction = actionState->type;
 
 		// 2. Attack / Parry 판정 윈도우 설정

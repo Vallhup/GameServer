@@ -94,6 +94,23 @@ struct Collider : public Component {
 struct AttackState : public Component {
 	uint32 attackId{ 0 };
 	ActionType prevAction{ ActionType::None };
+
+	std::array<Entity, 2> hitVictims;
+	uint8 hitCount{ 0 };
+
+	bool HasHit(Entity e) const
+	{
+		for (uint8 i = 0; i < hitCount; ++i)
+			if (hitVictims[i] == e) return true;
+
+		return false;
+	}
+
+	void MarkHit(Entity e)
+	{
+		if (hitCount < hitVictims.size())
+			hitVictims[hitCount++] = e;
+	}
 };
 
 struct ParryBuf : public Component {

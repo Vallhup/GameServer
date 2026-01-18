@@ -9,7 +9,8 @@ void CollisionHandlingSystem::Execute(const float dT)
 	{
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(event.attacker)) continue;
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(event.victim)) continue;
-
+		
+		if (!ConsumeHitOnce(event)) continue;
 		switch (event.type) {
 		case CollisionType::Clash:
 			HandleClash(event);
@@ -22,6 +23,18 @@ void CollisionHandlingSystem::Execute(const float dT)
 	}
 
 	events.clear();
+}
+
+bool CollisionHandlingSystem::ConsumeHitOnce(const CollisionEvent& event)
+{
+	auto* atkState = 
+		ecs.GetStorage<AttackState>().GetComponent(event.attacker);
+	if (!atkState) return false;
+	if (atkState->attackId == event.attackId &&
+		atkState->HasHit(event.victim)) return false;
+
+	atkState->MarkHit(event.victim);
+	return true;
 }
 
 void CollisionHandlingSystem::HandleClash(const CollisionEvent& event)
@@ -117,10 +130,10 @@ void CollisionHandlingSystem::HandleHit(Entity attacker, Entity victim,
 	const int damage = computeDamage(attacker);
 	health->current -= damage;
 
-	const bool isDeath = health->current < 0;
+	const bool isDeath = health->current <= 0;
 
 	if (isDeath)
-		health->current = 0;
+ 		health->current = 0;
 
 	ecs.actionRequestEvents.emplace_back(victim,
 		isDeath ? ActionType::Dead : ActionType::Hit);
