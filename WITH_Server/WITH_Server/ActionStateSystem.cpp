@@ -9,13 +9,14 @@ ActionStateSystem::ActionStateSystem(ECS& e, int p) : System(e, p)
 void ActionStateSystem::Execute(const float dT)
 {
 	auto& states = ecs.GetStorage<ActionState>();
+	auto& intents = ecs.GetStorage<ActionIntent>();
 
 	for (const auto& [entity, state] : states)
 	{
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
 		if (state.type != ActionType::None) continue;
 
-		if (auto* intent = ecs.GetStorage<ActionIntent>().GetComponent(entity))
+		if (auto* intent = intents.GetComponent(entity))
 		{
 			if (intent->parry)
 			{

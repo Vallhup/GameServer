@@ -43,17 +43,19 @@ void EventSystem::ProcessConnect(const Event& event)
 	// TODO : Entity¿¡ Component Ãß°¡
 	ecs.GetStorage<Transform>().AddComponent(entity);
 	ecs.GetStorage<Velocity>().AddComponent(entity);
-	ecs.GetStorage<LocomotionState>().AddComponent(entity);
 	ecs.GetStorage<ActionMoveDelta>().AddComponent(entity);
 	ecs.GetStorage<LocomotionMoveDelta>().AddComponent(entity);
 	ecs.GetStorage<LocomotionAnimPhase>().AddComponent(entity);
-	ecs.GetStorage<AttackData>().AddComponent(entity);
+	ecs.GetStorage<LocomotionState>().AddComponent(entity);
 	ecs.GetStorage<ActionIntent>().AddComponent(entity);
 	ecs.GetStorage<ActionState>().AddComponent(entity);
+	ecs.GetStorage<AttackData>().AddComponent(entity);
 	ecs.GetStorage<Health>().AddComponent(entity);
 	ecs.GetStorage<AnimationState>().AddComponent(entity);
 	auto animator = ecs.GetStorage<Animator>().AddComponent(entity);
 	ecs.GetStorage<Collider>().AddComponent(entity);
+	ecs.GetStorage<AttackState>().AddComponent(entity);
+	ecs.GetStorage<ParryBuf>().AddComponent(entity);
 
 	animator->clip = AnimationManager::Get().GetAnimation(AnimationId::Knight_Idle);
 

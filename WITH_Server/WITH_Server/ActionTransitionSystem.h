@@ -11,12 +11,12 @@ public:
 	virtual void Execute(const float dT) override;
 	virtual std::vector<std::type_index> ReadComponents() const override
 	{
-		return { typeid(Velocity) };
+		return { typeid(Velocity), typeid(ActionIntent) };
 	}
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return { typeid(ActionMoveTag) };
+		return { typeid(ActionMoveTag), typeid(ActionRequestEvent) };
 	}
 
 private:

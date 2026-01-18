@@ -2,7 +2,8 @@
 
 #include "ECS.h"
 #include "System.h"
-#include "Collision.h"
+
+struct CapsuleView;
 
 struct ActiveIndices {
 	std::vector<uint16> offensiveHits;
@@ -19,16 +20,16 @@ public:
 
 	virtual std::vector<std::type_index> ReadComponents() const override
 	{
-		return {  };
+		return { typeid(Collider) };
 	}
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return {  };
+		return { typeid(CollisionEvent) };
 	}
 
 private:
-	inline CapsuleView MakeCapsuleView(const Collider& collider, size_t i);
+	CapsuleView MakeCapsuleView(const Collider& collider, size_t i);
 	void BuildActiveIndices(const Collider& collider, ActiveIndices* out);
 	void CheckCollision(Entity attacker, const Collider& aCol,
 		const ActiveIndices& aActives, Entity victim,
@@ -40,23 +41,3 @@ private:
 		const Collider& vCol, const std::vector<uint16>& vTargets,
 		EmitFunc&& emit);
 };
-
-template<typename EmitFunc>
-inline void CollisionCheckSystem::CheckCollisionInternal(Entity attacker,
-	const Collider& aCol, const std::vector<uint16>& aOffHits, Entity victim, 
-	const Collider& vCol, const std::vector<uint16>& vTargets, EmitFunc&& emit)
-{
-	for (uint16 aOffHit : aOffHits)
-	{
-		const uint32 atkId = aCol.attackIds[aOffHit];
-		const CapsuleView hitCap = MakeCapsuleView(aCol, aOffHit);
-
-		for (uint16 vTarget : vTargets)
-		{
-			const CapsuleView hurtCap = MakeCapsuleView(vCol, vTarget);
-
-			if (Collision::CheckCapsuleVsCapsule(hitCap, hurtCap))
-				emit(attacker, victim, atkId, aOffHit, vTarget);
-		}
-	}
-}

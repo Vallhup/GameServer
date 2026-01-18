@@ -87,17 +87,19 @@ void OutputEventSystem::ProcessDespawn(const OutputEvent& event)
 	// 4. Despawn된 Player의 Entity에 할당된 모든 컴포넌트 제거
 	ecs.GetStorage<Transform>().RemoveComponent(entity);
 	ecs.GetStorage<Velocity>().RemoveComponent(entity);
-	ecs.GetStorage<LocomotionState>().RemoveComponent(entity);
 	ecs.GetStorage<ActionMoveDelta>().RemoveComponent(entity);
 	ecs.GetStorage<LocomotionMoveDelta>().RemoveComponent(entity);
 	ecs.GetStorage<LocomotionAnimPhase>().RemoveComponent(entity);
-	ecs.GetStorage<AttackData>().RemoveComponent(entity);
+	ecs.GetStorage<LocomotionState>().RemoveComponent(entity);
 	ecs.GetStorage<ActionIntent>().RemoveComponent(entity);
 	ecs.GetStorage<ActionState>().RemoveComponent(entity);
+	ecs.GetStorage<AttackData>().RemoveComponent(entity);
 	ecs.GetStorage<Health>().RemoveComponent(entity);
 	ecs.GetStorage<AnimationState>().RemoveComponent(entity);
 	ecs.GetStorage<Animator>().RemoveComponent(entity);
 	ecs.GetStorage<Collider>().RemoveComponent(entity);
+	ecs.GetStorage<AttackState>().RemoveComponent(entity);
+	ecs.GetStorage<ParryBuf>().RemoveComponent(entity);
 }
 
 void OutputEventSystem::ProcessMove(const OutputEvent& event)

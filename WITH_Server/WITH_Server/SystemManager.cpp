@@ -7,23 +7,36 @@
 #include "ActionMoveSystem.h"
 #include "LocomotionMoveSystem.h"
 #include "MovementApplySystem.h"
+#include "AnimationCommitSystem.h"
+#include "AnimationFrameSystem.h"
+#include "AnimationPoseBindSystem.h"
+#include "AnimationSelectSystem.h"
+#include "ColliderActivationSystem.h"
+#include "CollisionCheckSystem.h"
+#include "CollisionDedupSystem.h"
+#include "CollisionHandlingSystem.h"
+
 
 void SystemManager::Initalize(ECS& ecs, JobGraph& graph)
 {
-	RegisterSystem<ActionStateSystem>(ecs, 0);
-	RegisterSystem<ActionTimeSystem>(ecs, 1);
-	RegisterSystem<ActionTransitionSystem>(ecs, 2);
+	RegisterSystem<ActionStateSystem>(ecs, 1);
+	RegisterSystem<ActionTimeSystem>(ecs, 2);
+	RegisterSystem<ActionTransitionSystem>(ecs, 3);
 
-	RegisterSystem<ActionMoveSystem>(ecs, 3);
-	RegisterSystem<LocomotionMoveSystem>(ecs, 4);
-	RegisterSystem<MovementApplySystem>(ecs, 5);
+	RegisterSystem<ActionMoveSystem>(ecs, 11);
+	RegisterSystem<LocomotionMoveSystem>(ecs, 12);
+	RegisterSystem<MovementApplySystem>(ecs, 13);
 
-	//RegisterSystem<AnimationStateSystem>(ecs, 6);
-	//RegisterSystem<AnimationTimeSystem>(ecs, 7);
-	//RegisterSystem<AnimationRefSystem>(ecs, 8);
+	RegisterSystem<AnimationSelectSystem>(ecs, 21);
+	RegisterSystem<AnimationCommitSystem>(ecs, 22);
+	RegisterSystem<AnimationFrameSystem>(ecs, 23);
+	RegisterSystem<AnimationPoseBindSystem>(ecs, 24);
 
-	RegisterSystem<ColliderUpdateSystem>(ecs, 9);
-	//RegisterSystem<CollisionSystem>(ecs, 10);
+	RegisterSystem<ColliderActivationSystem>(ecs, 31);
+	RegisterSystem<ColliderUpdateSystem>(ecs, 32);
+	RegisterSystem<CollisionCheckSystem>(ecs, 33);
+	RegisterSystem<CollisionDedupSystem>(ecs, 34);
+	RegisterSystem<CollisionHandlingSystem>(ecs, 35);
 }
 
 const std::vector<System*> SystemManager::GetSystems() const

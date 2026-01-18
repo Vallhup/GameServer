@@ -25,11 +25,13 @@ void ActionTransitionSystem::Execute(const float dT)
 
 		if (auto* intent = intents.GetComponent(entity))
 		{
-			if (actionState.type == ActionType::Guard && intent->guard == false)
+			if (actionState.type == ActionType::Guard && 
+				intent->guard == false)
 				request = ActionType::None;
 
 			else if (request == ActionType::None &&
-				actionState.type == ActionType::None && intent->guard == true)
+				actionState.type == ActionType::None && 
+				intent->guard == true)
 				request = ActionType::Guard;
 		}
 

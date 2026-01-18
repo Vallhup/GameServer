@@ -114,3 +114,23 @@ void CollisionCheckSystem::CheckCollision(Entity attacker, const Collider& aCol,
 				a, v, atkId, aOffHit, vTarget });
 		});
 }
+
+template<typename EmitFunc>
+inline void CollisionCheckSystem::CheckCollisionInternal(Entity attacker,
+	const Collider& aCol, const std::vector<uint16>& aOffHits, Entity victim,
+	const Collider& vCol, const std::vector<uint16>& vTargets, EmitFunc&& emit)
+{
+	for (uint16 aOffHit : aOffHits)
+	{
+		const uint32 atkId = aCol.attackIds[aOffHit];
+		const CapsuleView hitCap = MakeCapsuleView(aCol, aOffHit);
+
+		for (uint16 vTarget : vTargets)
+		{
+			const CapsuleView hurtCap = MakeCapsuleView(vCol, vTarget);
+
+			if (Collision::CheckCapsuleVsCapsule(hitCap, hurtCap))
+				emit(attacker, victim, atkId, aOffHit, vTarget);
+		}
+	}
+}

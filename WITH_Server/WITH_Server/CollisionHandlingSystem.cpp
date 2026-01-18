@@ -85,9 +85,8 @@ void CollisionHandlingSystem::HandleGuard(Entity attacker, Entity victim,
 void CollisionHandlingSystem::HandleHit(Entity attacker, Entity victim, 
 	uint32 attackId)
 {
-	auto* actionState = ecs.GetStorage<ActionState>().GetComponent(victim);
 	auto* health = ecs.GetStorage<Health>().GetComponent(victim);
-	if (!actionState || !health) return;
+	if (!health) return;
 
 	auto computeDamage =
 		[&](Entity attacker) -> int

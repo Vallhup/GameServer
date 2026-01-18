@@ -12,12 +12,12 @@ public:
 
 	virtual std::vector<std::type_index> ReadComponents() const override
 	{
-		return {  };
+		return { typeid(AnimationState) };
 	}
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return {  };
+		return { typeid(Animator), typeid(Collider) };
 	}
 	
 private:

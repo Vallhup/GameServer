@@ -12,11 +12,11 @@ public:
 
 	virtual std::vector<std::type_index> ReadComponents() const
 	{
-		return {  };
+		return { typeid(ActionState) };
 	}
 
 	virtual std::vector<std::type_index> WriteComponents() const
 	{
-		return { typeid(ActionIntent), typeid(ActionState), typeid(ActionMoveTag) };
+		return { typeid(ActionIntent), typeid(ActionRequestEvent) };
 	}
 };
