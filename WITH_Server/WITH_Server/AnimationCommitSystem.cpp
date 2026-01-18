@@ -18,12 +18,19 @@ void AnimationCommitSystem::Execute(const float dT)
 		const PrebakedAnimation* nextClip =
 			AnimationManager::Get().GetAnimation(animState->desiredId);
 		if (!nextClip) continue;
-		if (animator.clip == nextClip) continue;
 
-		animator.clip = nextClip;
-		animator.currentFrame = 0;
+		const bool needBind =
+			(animator.clip != nextClip) ||
+			(collider->staticDatas == nullptr) ||
+			(collider->staticDatas != &nextClip->staticDatas);
+		
+		if (needBind)
+		{
+			animator.clip = nextClip;
+			animator.currentFrame = 0;
 
-		BindColliderToClip(collider, *nextClip);
+			BindColliderToClip(collider, *nextClip);
+		}
 	}
 }
 
