@@ -44,11 +44,11 @@ void GameScene::CreateCastle()
 	};
 
 #pragma region Initialize TestBridge
-	constexpr castleData testData = {
+	/*constexpr castleData testData = {
 		{ 0.0f, 0.0f, -3.0f }, { 0.0f, 0.0f, 0.0f }, { 1.f, 1.f, 1.f }
 	};
 
-	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Window_04", testData));
+	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/SM_Window_04", testData));*/
 #pragma endregion
 
 //#pragma region Initialize CASTLEWALL

@@ -4,7 +4,7 @@
 GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input) : SV_Target
 {
     GBUFFER_PS_OUT output;
-
+    
     if (useTexture)
     {
         MaterialData material = materialBuffer[input.materialIndex];
