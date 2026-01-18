@@ -21,7 +21,9 @@ cbuffer ObjectCB : register(b1)
     int useTexture;
     int useInstancing;
     uint materialIndex;
-    int objPadding;
+    float metallic;
+    float roughness;
+    float3 objPadding;
 };
 
 cbuffer AnimationParams : register(b2)

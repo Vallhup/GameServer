@@ -7,15 +7,10 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input) : SV_Target
 
     if (useTexture == 2)
     {
-        // 흰색 구체, metallic/roughness는 ObjectCB에서 추가 데이터로 전달
-        // 임시로 color 채널 활용
-        float metallic = input.color.r; // 나중에 별도 상수로 교체
-        float roughness = input.color.g;
-        
-        output.RT0 = float4(1.0, 1.0, 1.0, metallic); // 흰색 + metallic
+        output.RT0 = float4(1.0, 1.0, 1.0, metallic); 
         output.RT1 = float4(normalize(input.normal), roughness);
-        output.RT2 = float4(input.worldPos.xyz, 1.0); // AO = 1
-        output.RT3 = float4(0, 0, 0, 1); // no emission
+        output.RT2 = float4(input.worldPos.xyz, 1.0); 
+        output.RT3 = float4(0, 0, 0, 1); 
         return output;
     }
     else if (useTexture == 1)

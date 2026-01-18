@@ -105,21 +105,7 @@ void ReflectionSphere::Render(DX12Core& core)
 
             XMMATRIX world = XMMatrixTranspose(XMMatrixTranslation(pos.x, pos.y, pos.z));
 
-            // PBR 파라미터를 color에 인코딩 (임시 방법)
-            // 또는 별도 상수버퍼 사용
-            struct SphereConstants
-            {
-                XMMATRIX world;
-                int useTexture;
-                int useInstancing;
-                UINT materialIndex;
-                int padding;
-                float metallic;
-                float roughness;
-                float padding2[2];
-            };
-
-            SphereConstants constants = {};
+            ObjectConstants constants = {};
             constants.world = world;
             constants.useTexture = 2;  // 특수 플래그: 구체 모드
             constants.useInstancing = 0;
@@ -128,7 +114,7 @@ void ReflectionSphere::Render(DX12Core& core)
             constants.roughness = roughness;
 
             size_t offset = idx * 256;
-            sphereCB->CopyData(&constants, sizeof(SphereConstants), offset);
+            sphereCB->CopyData(&constants, sizeof(ObjectConstants), offset);
             cmdList->SetGraphicsRootConstantBufferView(1, sphereCB->GetGPUVirtualAddress() + offset);
 
             sphereMesh->Draw(cmdList);
