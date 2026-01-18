@@ -46,10 +46,18 @@ void ColliderActivationSystem::Execute(const float dT)
 			(actionState->elapsed <= 0.949f);
 
 		const bool guardOn = (actionState->type == ActionType::Guard);
+		const bool dodgeOn = (actionState->type == ActionType::Dodge);
 
 		// 3. Collider 활성화 설정
 		for (size_t i = 0; i < n; ++i)
 		{
+			if (dodgeOn)
+			{
+				collider.enabledMasks[i] = 0;
+				collider.attackIds[i] = 0;
+				continue;
+			}
+
 			const uint8 typeMask = (*collider.staticDatas)[i].typeMask;
 
 			const bool canHurt = HasType(typeMask, HitboxType::Hurt);
