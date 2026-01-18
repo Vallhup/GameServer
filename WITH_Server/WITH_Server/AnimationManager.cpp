@@ -25,6 +25,25 @@ const PrebakedAnimation* AnimationManager::GetAnimation(AnimationId id) const
 
 PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
 {
+	auto RolesToMask =
+		[](const json& rolesArray) -> uint8_t
+		{
+			uint8 mask = static_cast<uint8>(HitboxType::None);
+			if (!rolesArray.is_array()) return mask;
+
+			for (const auto& role : rolesArray)
+			{
+				if (!role.is_string()) continue;
+				const std::string s = role.get<std::string>();
+
+				if (s == "hurt")		mask |= static_cast<uint8>(HitboxType::Hurt);
+				else if (s == "hit")	mask |= static_cast<uint8>(HitboxType::Hit);
+			}
+
+			return mask;
+		};
+
+
 	PrebakedAnimation anim;
 
 	std::ifstream ifs(path.data());
@@ -34,31 +53,74 @@ PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
 	json j;
 	ifs >> j;
 
-	anim.fps = j["fps"].get<float>();
-	anim.numFrames = j["numFrames"].get<int>();
+	const int version = j.value("version", 1);
+	if(version != 2)
+		throw std::runtime_error("지원하지 않는 애니메이션 버전: " + std::to_string(version));
 
-	const auto& jFrames = j["frames"];
-	anim.frames.resize(anim.numFrames);
+	anim.fps = j.at("fps").get<float>();
+
+	const int numFrames = j.at("numFrames").get<int>();
+	if(numFrames <= 0 || numFrames > 255)
+		throw std::runtime_error("잘못된 프레임 수: " + std::to_string(numFrames));
+	anim.numFrames = static_cast<uint8>(numFrames);
+
+	const auto& jCaps = j.at("capsules");
+	if(!jCaps.is_array())
+		throw std::runtime_error("캡슐 데이터가 배열이 아님");
+
+	anim.staticDatas.resize(jCaps.size());
+	for (uint64 i = 0; i < jCaps.size(); ++i)
+	{
+		const auto& jCap = jCaps[i];
+
+		const int boneIndex = jCap.at("bone").get<int>();
+		if(boneIndex < 0 || boneIndex > 255)
+			throw std::runtime_error("잘못된 본 인덱스: " + std::to_string(boneIndex));
+
+		StaticCapsuleData sCapData;
+		sCapData.bone = static_cast<uint8>(boneIndex);
+		sCapData.radius = jCap.at("radius").get<float>() * 0.01f;
+		sCapData.typeMask = RolesToMask(jCap.value("roles", json::array()));
+
+		anim.staticDatas[i] = sCapData;
+	}
+
+	const auto& jFrames = j.at("frames");
+	if(!jFrames.is_array())
+		throw std::runtime_error("프레임 데이터가 배열이 아님");
+
+	if(jFrames.size() != anim.numFrames)
+		throw std::runtime_error("프레임 수 불일치");
+
+	const uint64 capsuleCount = anim.staticDatas.size();
+	anim.dynamicDatas.resize(anim.numFrames);
 
 	for (int frame = 0; frame < anim.numFrames; ++frame)
 	{
 		const auto& jFrame = jFrames[frame];
-		anim.frames[frame].reserve(jFrame.size());
+		if(!jFrame.is_array())
+			throw std::runtime_error("프레임 데이터가 배열이 아님: " + std::to_string(frame));
 
-		for (const auto& item : jFrame)
+		if(jFrame.size() != capsuleCount)
+			throw std::runtime_error("캡슐 수 불일치: " + std::to_string(frame));
+
+		anim.dynamicDatas[frame].resize(capsuleCount);
+		for (uint64 i = 0; i < capsuleCount; ++i)
 		{
-			Capsule capsule;
-			capsule.bone = item["bone"].get<int>();
+			const auto& item = jFrame[i];
 
-			auto p0 = item["p0"];
-			capsule.p0 = XMFLOAT3(p0[0].get<float>(), p0[1].get<float>(), p0[2].get<float>());
+			DynamicCapsuleData dCapData;
+			dCapData.p0 = XMFLOAT3(
+				item.at("p0")[0].get<float>() * 0.01f,
+				item.at("p0")[1].get<float>() * 0.01f,
+				item.at("p0")[2].get<float>() * 0.01f);
 
-			auto p1 = item["p1"];
-			capsule.p1 = XMFLOAT3(p1[0].get<float>(), p1[1].get<float>(), p1[2].get<float>());
+			dCapData.p1 = XMFLOAT3(
+				item.at("p1")[0].get<float>() * 0.01f,
+				item.at("p1")[1].get<float>() * 0.01f,
+				item.at("p1")[2].get<float>() * 0.01f);
 
-			capsule.radius = item["radius"].get<float>();
-
-			anim.frames[frame].push_back(capsule);
+			anim.dynamicDatas[frame][i] = dCapData;
 		}
 	}
 

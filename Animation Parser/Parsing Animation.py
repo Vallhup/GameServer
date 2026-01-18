@@ -144,136 +144,125 @@ def load_capsules(path):
 
 # ======================================================
 # Prebake p0/p1 Using Correct Transform Rules
-# ======================================================
-def prebake(anim, capsules):
+# ======================================================    
+def prebake(anim, capsules, weapon_bones=None,
+            weapon_roles="hit",
+            default_roles="hurt"):
+
+    weapon_bones = set(weapon_bones or [])
+    bone_indices = sorted(capsules.keys())  # 순서 고정
+
+    # 정적 메타: bone/radius/roles 1회 저장
+    capsule_defs = []
+    for boneIndex in bone_indices:
+        cap = capsules[boneIndex]
+        roles = weapon_roles if boneIndex in weapon_bones else default_roles
+        capsule_defs.append({
+            "bone": boneIndex,
+            "radius": cap["radius"],
+            "roles": roles
+        })
+
+    # 동적 포즈: p0/p1만 저장 (capsules와 같은 인덱스 순서)
     out_frames = []
-
-    for frame_idx, bones in enumerate(anim["frames"]):
+    for bones in anim["frames"]:
         frame_list = []
+        for boneIndex in bone_indices:
+            cap = capsules[boneIndex]
+            M = bones[boneIndex]  # transpose 적용 행렬
 
-        for boneIndex, cap in capsules.items():
-            # ROOT_BONE_INDEX = 0
-            
-            # rootM = bones[ROOT_BONE_INDEX]
-            # rootInv = np.linalg.inv(rootM)
-            
-            # boneM = bones[boneIndex]
-            # localM = rootInv @ boneM
-            
-            # R = AXIS_SWAP @ localM[:3, :3]
-            # pos = AXIS_SWAP @ localM[:3, 3]
-            
-            M = bones[boneIndex]  # 이미 transpose 적용된 행렬
-
-            # 위치
             pos = AXIS_SWAP @ M[:3, 3]
+            R   = AXIS_SWAP @ M[:3, :3]
 
-            # 회전 행렬
-            R = AXIS_SWAP @  M[:3, :3]
-
-            # 로컬 방향/오프셋에 회전 적용
             rot_offset = R @ cap["localOffset"]
-            rot_dir = R @ cap["localDir"]
-
-            rot_dir /= np.linalg.norm(rot_dir)
+            rot_dir    = R @ cap["localDir"]
+            n = np.linalg.norm(rot_dir)
+            if n > 0:
+                rot_dir /= n
 
             centerWorld = pos + rot_offset
-
             hh = cap["halfHeight"]
             p0 = centerWorld + rot_dir * hh
             p1 = centerWorld - rot_dir * hh
-            
-            p0_out = (p0).tolist()
-            p1_out = (p1).tolist()
 
             frame_list.append({
-                "bone": boneIndex,
-                "p0": p0_out,
-                "p1": p1_out,
-                "radius": cap["radius"]
+                "p0": p0.tolist(),
+                "p1": p1.tolist()
             })
 
         out_frames.append(frame_list)
 
     return {
+        "version": 2,
         "fps": anim["fps"],
         "numFrames": anim["frameCount"],
+        "capsules": capsule_defs,
         "frames": out_frames
     }
 
 
-# # ----------------------------------------------------
-# # 설정
-# # ----------------------------------------------------
-JSON_PATH = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\knight_animation_guard.json"
-FRAME_INDEX = 1  # 보고 싶은 프레임 인덱스
+# # # ----------------------------------------------------
+# # # 설정
+# # # ----------------------------------------------------
+# JSON_PATH = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\knight_animation_attack.json"
+# FRAME_INDEX = 1  # 보고 싶은 프레임 인덱스
 
-# # ----------------------------------------------------
-# # 데이터 로드
-# # ----------------------------------------------------
-with open(JSON_PATH, "r", encoding="utf-8") as f:
-    data = json.load(f)
+# # # ----------------------------------------------------
+# # # 데이터 로드
+# # # ----------------------------------------------------
+# with open(JSON_PATH, "r", encoding="utf-8") as f:
+#     data = json.load(f)
 
-frames = data["frames"]
-frame = frames[FRAME_INDEX]   # 선택한 프레임의 캡슐 목록
+# capsules = data["capsules"]       # 정적 메타
+# frame = data["frames"][FRAME_INDEX]  # 동적 포즈 (p0/p1만)
 
-# # ----------------------------------------------------
-# # 3D 시각화
-# # ----------------------------------------------------
-fig = plt.figure()
-ax = fig.add_subplot(111, projection="3d")
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection="3d")
 
-xs, ys, zs = [], [], []
+# xs, ys, zs = [], [], []
 
-for col in frame:
-    p0 = np.array(col["p0"])
-    p1 = np.array(col["p1"])
-    r  = col["radius"]
-    bone_idx = col["bone"]
+# for i, pose in enumerate(frame):
+#     meta = capsules[i]
+#     p0 = np.array(pose["p0"], dtype=np.float32)
+#     p1 = np.array(pose["p1"], dtype=np.float32)
 
-    # 선분 그리기
-    ax.plot(
-        [p0[0], p1[0]],
-        [p0[1], p1[1]],
-        [p0[2], p1[2]],
-    )
+#     bone_idx = meta["bone"]
+#     radius = meta["radius"]
+#     roles = meta["roles"]
 
-    # 끝점 점 찍기
-    ax.scatter(p0[0], p0[1], p0[2])
-    ax.scatter(p1[0], p1[1], p1[2])
+#     ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]])
+#     ax.scatter(p0[0], p0[1], p0[2])
+#     ax.scatter(p1[0], p1[1], p1[2])
 
-    # 범위 계산용으로 좌표 모으기
-    xs.extend([p0[0], p1[0]])
-    ys.extend([p0[1], p1[1]])
-    zs.extend([p0[2], p1[2]])
+#     xs.extend([p0[0], p1[0]])
+#     ys.extend([p0[1], p1[1]])
+#     zs.extend([p0[2], p1[2]])
 
-ax.set_title(f"Frame {FRAME_INDEX} Capsule Colliders")
-ax.set_xlabel("X")
-ax.set_ylabel("Y")
-ax.set_zlabel("Z")
+# ax.set_title(f"Frame {FRAME_INDEX} Capsule Colliders (V2)")
+# ax.set_xlabel("X")
+# ax.set_ylabel("Y")
+# ax.set_zlabel("Z")
 
-# 축 스케일을 비슷하게 맞추기 (왜곡 방지)
-if xs and ys and zs:
-    xmid = (min(xs) + max(xs)) * 0.5
-    ymid = (min(ys) + max(ys)) * 0.5
-    zmid = (min(zs) + max(zs)) * 0.5
-    max_range = max(
-        max(xs) - min(xs),
-        max(ys) - min(ys),
-        max(zs) - min(zs),
-    ) * 0.5
+# if xs and ys and zs:
+#     xmid = (min(xs) + max(xs)) * 0.5
+#     ymid = (min(ys) + max(ys)) * 0.5
+#     zmid = (min(zs) + max(zs)) * 0.5
+#     max_range = max(max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs)) * 0.5
 
-    ax.set_xlim(xmid - max_range, xmid + max_range)
-    ax.set_ylim(ymid - max_range, ymid + max_range)
-    ax.set_zlim(zmid - max_range, zmid + max_range)
+#     ax.set_xlim(xmid - max_range, xmid + max_range)
+#     ax.set_ylim(ymid - max_range, ymid + max_range)
+#     ax.set_zlim(zmid - max_range, zmid + max_range)
 
-plt.show()
+# plt.show()
+
+
 
 anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Knight\Animation\knight_animation_walk_baked.bone")
 colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Capsule\knight_capsules.json")
 output = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\knight_animation_walk.json"
 
-prebaked = prebake(anim, colliders)
+weapon_bone_list = [45]
+prebaked = prebake(anim, colliders, weapon_bones=weapon_bone_list)
 
 with open(output, "w") as f:
     json.dump(prebaked, f, indent=2)

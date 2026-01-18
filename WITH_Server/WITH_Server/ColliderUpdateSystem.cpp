@@ -13,23 +13,25 @@ void ColliderUpdateSystem::Execute(const float dT)
 
 		auto* trans = transforms.GetComponent(entity);
 		if (!trans) continue;
+		if (!collider.staticDatas) continue;
 
+		const size_t n = collider.staticDatas->size();
+
+#ifdef _DEBUG
+		assert(collider.localDatas.size() == n);
+		assert(collider.worldDatas.size() == n);
+#endif
 		XMMATRIX world = TransformHelper::ToMatrix(*trans);
 
-		collider.worldCapsules.resize(collider.localCapsules.size());
-		for (size_t i = 0; i < collider.localCapsules.size(); ++i)
+		for (size_t i = 0; i < n; ++i)
 		{
-			const Capsule& localCapsule = collider.localCapsules[i];
-			Capsule worldCapsule = localCapsule;
+			const auto& localData = collider.localDatas[i];
 
-			XMVECTOR p0 = XMVector3Transform(localCapsule.P0() * 0.01f, world);
-			XMVECTOR p1 = XMVector3Transform(localCapsule.P1() * 0.01f, world);
+			XMVECTOR p0 = XMVector3Transform(localData.P0(), world);
+			XMVECTOR p1 = XMVector3Transform(localData.P1(), world);
 
-			XMStoreFloat3(&worldCapsule.p0, p0);
-			XMStoreFloat3(&worldCapsule.p1, p1);
-
-			worldCapsule.radius *= 0.01f;
-			collider.worldCapsules[i] = worldCapsule;
+			XMStoreFloat3(&collider.worldDatas[i].p0, p0);
+			XMStoreFloat3(&collider.worldDatas[i].p1, p1);
 		}
 	}
 }

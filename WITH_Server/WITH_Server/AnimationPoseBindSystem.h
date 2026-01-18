@@ -3,10 +3,10 @@
 #include "ECS.h"
 #include "System.h"
 
-class ActionTimeSystem : public System {
+class AnimationPoseBindSystem : public System {
 public:
-	ActionTimeSystem(ECS& e, int p = 0) : System(e, p) {}
-	virtual ~ActionTimeSystem() = default;
+	AnimationPoseBindSystem(ECS& e, int p = 0) : System(e, p) {}
+	virtual ~AnimationPoseBindSystem() = default;
 
 	virtual void Execute(const float dT) override;
 
@@ -17,7 +17,7 @@ public:
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return { typeid(ActionState) };
+		return {  };
 	}
 };
 

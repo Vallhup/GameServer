@@ -3,7 +3,6 @@
 #include "Instance.h"
 
 #include "EventSystem.h"
-#include "CollisionSystem.h"
 #include "OutputEventSystem.h"
 
 Game::Game(size_t size)

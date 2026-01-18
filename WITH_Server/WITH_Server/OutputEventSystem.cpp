@@ -96,7 +96,6 @@ void OutputEventSystem::ProcessDespawn(const OutputEvent& event)
 	ecs.GetStorage<ActionState>().RemoveComponent(entity);
 	ecs.GetStorage<Health>().RemoveComponent(entity);
 	ecs.GetStorage<AnimationState>().RemoveComponent(entity);
-	ecs.GetStorage<AnimationRef>().RemoveComponent(entity);
 	ecs.GetStorage<Animator>().RemoveComponent(entity);
 	ecs.GetStorage<Collider>().RemoveComponent(entity);
 }

@@ -11,10 +11,5 @@ void ActionTimeSystem::Execute(const float dT)
 		if (action.type == ActionType::None) continue;
 
 		action.elapsed += dT;
-		if (action.elapsed >= action.duration)
-		{
-			auto request = ecs.GetStorage<ActionRequestTag>().AddComponent(entity);
-			request->type = ActionType::None;
-		}
 	}
 }

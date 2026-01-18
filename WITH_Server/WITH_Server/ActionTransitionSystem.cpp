@@ -3,48 +3,56 @@
 
 void ActionTransitionSystem::Execute(const float dT)
 {
-	auto& states = ecs.GetStorage<ActionState>();
-	auto& requests = ecs.GetStorage<ActionRequestTag>();
+	auto& events = ecs.actionRequestEvents;
+	DedupActionRequest(events);
 
-	std::vector<Entity> removeList;
-	removeList.reserve(requests.Size());
+	auto& actionStates = ecs.GetStorage<ActionState>();
+	auto& intents = ecs.GetStorage<ActionIntent>();
 
-	for (const auto& [entity, request] : requests)
+	for (const auto& [entity, actionState] : actionStates)
 	{
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
-		if (auto* state = states.GetComponent(entity))
+
+		auto it = std::lower_bound(events.begin(), events.end(), entity,
+			[](const ActionRequestEvent& event, Entity e)
+			{
+				return event.entity.id < e.id;
+			});
+
+		ActionType request{ ActionType::None };
+		if (it != events.end() && it->entity == entity) 
+			request = it->type;
+
+		if (auto* intent = intents.GetComponent(entity))
 		{
-			ActionType next = ResolveNextAction(*state, request);
-			if (next == ActionType::None)
-			{
-				ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
-			}
+			if (actionState.type == ActionType::Guard && intent->guard == false)
+				request = ActionType::None;
 
-			if (next == state->type)
-			{
-				removeList.push_back(entity);
-				continue;
-			}
-
-			ApplyTransition(entity, state, next);
-			removeList.push_back(entity);
+			else if (request == ActionType::None &&
+				actionState.type == ActionType::None && intent->guard == true)
+				request = ActionType::Guard;
 		}
+
+		ActionType next = ResolveNextAction(actionState, request);
+		if (next != actionState.type)
+			ApplyTransition(entity, &actionState, next);
+
+		else if (next == ActionType::None)
+			ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
 	}
 
-	for (const auto& entity : removeList)
-	{
-		requests.RemoveComponent(entity);
-	}
+	events.clear();
 }
 
 int ActionTransitionSystem::GetPriority(ActionType type)
 {
 	// Action 우선순위
-	// Dead > Hit > Parry > Dodge > Attack > None
+	// Dead > Hit > Stun > Parry > Dodge > Attack > None
 
 	switch (type) {
 	case ActionType::Dead:	 return 100;
 	case ActionType::Hit:	 return 90;
+	case ActionType::Stun:	 return 85;
 	case ActionType::Parry:  return 80;
 	case ActionType::Dodge:	 return 70;
 	case ActionType::Attack: return 60;
@@ -62,20 +70,23 @@ float ActionTransitionSystem::GetDuration(ActionType type)
 	case ActionType::Dodge:	 return 50.0f / 30.6122f;
 	case ActionType::Attack: return 40.0f / 30.7692f;
 	case ActionType::Stun:	 return 96.0f / 30.3158f;
-	default:                 return 0;
+	default:                 return 0.0f;
 	}
 }
 
-bool ActionTransitionSystem::CanBeInterrupted(const ActionState& current, const ActionRequestTag& request)
+bool ActionTransitionSystem::CanBeInterrupted(const ActionState& current, 
+	ActionType request)
 {
 	switch (current.type) {
 	case ActionType::Attack:
 	case ActionType::Dodge:
 	case ActionType::Parry:
 	case ActionType::Stun:
-		return request.type == ActionType::Hit ||
-			request.type == ActionType::Dead;
+		return request == ActionType::Stun ||
+			request == ActionType::Hit ||
+			request == ActionType::Dead;
 
+	case ActionType::Guard:
 	case ActionType::None:
 		return true;
 
@@ -84,22 +95,23 @@ bool ActionTransitionSystem::CanBeInterrupted(const ActionState& current, const 
 	}
 }
 
-ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current, const ActionRequestTag& request)
+ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current, 
+	ActionType request)
 {
 	if (current.type == ActionType::Dead)
 		return ActionType::Dead;
 
 	if (current.type == ActionType::Guard)
 	{
-		switch (request.type) {
-		case ActionType::Dead:
+		switch (request) {
+		case ActionType::Dead: 
 			return ActionType::Dead;
 
 		case ActionType::Parry:
 		case ActionType::Dodge:
 		case ActionType::Attack:
 			// Guard 해제 + 요청 Action으로 전이
-			return request.type;
+			return request;
 
 		case ActionType::Hit:
 			// Guard 중에는 Hit 무시
@@ -117,29 +129,23 @@ ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current,
 
 	if (current.type == ActionType::Stun)
 	{
-		switch (request.type) {
-		case ActionType::Dead:
-			return ActionType::Dead;
-
-		case ActionType::Hit:
-			return ActionType::Hit;
-
-		default:
-			return ActionType::Stun;
+		switch (request) {
+		case ActionType::Dead: return ActionType::Dead;
+		case ActionType::Hit: return ActionType::Hit;
+		default: return ActionType::Stun;
 		}
 	}
 
-	if (GetPriority(request.type) > GetPriority(current.type))
+	if (GetPriority(request) > GetPriority(current.type))
 	{
 		if (CanBeInterrupted(current, request))
-			return request.type;
+			return request;
 
 		return current.type;
 	}
 		
 
-	if (current.type != ActionType::None && 
-		current.elapsed >= current.duration)
+	if (current.type != ActionType::None && current.elapsed >= current.duration)
 	{
 		return ActionType::None;
 	}
@@ -147,9 +153,22 @@ ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current,
 	return current.type;
 }
 
-void ActionTransitionSystem::ApplyTransition(Entity entity, 
-	ActionState* state, ActionType next)
+void ActionTransitionSystem::ApplyTransition(Entity entity, ActionState* state, 
+	ActionType next)
 {
+	const ActionType prev = state->type;
+
+	const bool wasMoved =
+		(prev == ActionType::Attack) || (prev == ActionType::Dodge);
+
+	const bool isMove =
+		(next == ActionType::Attack) || (next == ActionType::Dodge);
+
+	if (wasMoved && !isMove)
+	{
+		ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
+	}
+
 	state->type = next;
 	state->elapsed = 0.0f;
 
@@ -159,8 +178,7 @@ void ActionTransitionSystem::ApplyTransition(Entity entity,
 	else
 		state->duration = GetDuration(next);
 
-	if (state->type == ActionType::Attack || 
-		state->type == ActionType::Dodge)
+	if (isMove)
 	{
 		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
 
@@ -175,4 +193,22 @@ void ActionTransitionSystem::ApplyTransition(Entity entity,
 			move->dirLocked = true;
 		}
 	}
+}
+
+void ActionTransitionSystem::DedupActionRequest(std::vector<ActionRequestEvent>& events)
+{
+	if (events.empty()) return;
+
+	std::sort(events.begin(), events.end(),
+		[&](const ActionRequestEvent& a, const ActionRequestEvent& b)
+		{
+			if (a.entity != b.entity) return a.entity.id < b.entity.id;
+			return GetPriority(a.type) > GetPriority(b.type);
+		});
+
+	events.erase(std::unique(events.begin(), events.end(),
+		[](const ActionRequestEvent& a, const ActionRequestEvent& b)
+		{
+			return a.entity == b.entity;
+		}), events.end());
 }

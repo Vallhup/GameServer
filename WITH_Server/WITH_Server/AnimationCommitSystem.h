@@ -3,10 +3,10 @@
 #include "ECS.h"
 #include "System.h"
 
-class ActionTimeSystem : public System {
+class AnimationCommitSystem : public System {
 public:
-	ActionTimeSystem(ECS& e, int p = 0) : System(e, p) {}
-	virtual ~ActionTimeSystem() = default;
+	AnimationCommitSystem(ECS& e, int p = 0) : System(e, p) {}
+	virtual ~AnimationCommitSystem() = default;
 
 	virtual void Execute(const float dT) override;
 
@@ -17,7 +17,10 @@ public:
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return { typeid(ActionState) };
+		return {  };
 	}
+	
+private:
+	void BindColliderToClip(Collider* collider, const PrebakedAnimation& clip);
 };
 

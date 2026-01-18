@@ -19,9 +19,4 @@ public:
 	{
 		return { typeid(ActionIntent), typeid(ActionState), typeid(ActionMoveTag) };
 	}
-
-private:
-	ActionType GetNextAction(const ActionState& current, const ActionIntent& intent);
-	void StartAction(Entity entity, ActionState* state, const ActionType& type);
-	void ResetActionIntent(ActionIntent* intent);
 };

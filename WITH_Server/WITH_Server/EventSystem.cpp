@@ -52,11 +52,10 @@ void EventSystem::ProcessConnect(const Event& event)
 	ecs.GetStorage<ActionState>().AddComponent(entity);
 	ecs.GetStorage<Health>().AddComponent(entity);
 	ecs.GetStorage<AnimationState>().AddComponent(entity);
-	auto animRef = ecs.GetStorage<AnimationRef>().AddComponent(entity);
-	ecs.GetStorage<Animator>().AddComponent(entity);
+	auto animator = ecs.GetStorage<Animator>().AddComponent(entity);
 	ecs.GetStorage<Collider>().AddComponent(entity);
 
-	animRef->anim = AnimationManager::Get().GetAnimation(AnimationId::Knight_Idle);
+	animator->clip = AnimationManager::Get().GetAnimation(AnimationId::Knight_Idle);
 
 	auto& ets = Framework::Get().entityToSession;
 	auto it = ets.find(entity);
@@ -161,14 +160,14 @@ void EventSystem::ProcessAction(const Event& event)
 		}
 		case ActionRequestType::GuardRelease:
 		{
-			if (auto* actionState = ecs.GetStorage<ActionState>().GetComponent(entity))
+			/*if (auto* actionState = ecs.GetStorage<ActionState>().GetComponent(entity))
 			{
 				if (actionState->type == ActionType::Guard)
 				{
 					ecs.GetStorage<ActionRequestTag>().AddComponent(entity)->type = ActionType::None;
 				}
 			}
-			break;
+			break;*/
 		}
 		}
 	}
