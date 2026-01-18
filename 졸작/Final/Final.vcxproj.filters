@@ -136,6 +136,9 @@
     <ClCompile Include="InstancingBatch.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="ReflectionSphere.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -272,6 +275,9 @@
     </ClInclude>
     <ClInclude Include="InstancingBatch.h">
       <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="ReflectionSphere.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

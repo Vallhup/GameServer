@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "ReflectionSphere.h"
 
 class NetworkManager;
 class VertexIndexBuffer;
@@ -54,4 +55,6 @@ private:
 	shared_ptr<SkyBox> skyBox;
 
 	vector<shared_ptr<InstancingBatch>> instancingBatches;
+
+	unique_ptr<ReflectionSphere> reflectionSpheres;
 };

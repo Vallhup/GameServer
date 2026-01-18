@@ -221,6 +221,7 @@ exit 0</Command>
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="ObjectPoolManager.cpp" />
+    <ClCompile Include="ReflectionSphere.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
     <ClCompile Include="ServerSquareScene.cpp" />
@@ -274,6 +275,7 @@ exit 0</Command>
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="ObjectPoolManager.h" />
+    <ClInclude Include="ReflectionSphere.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneRenderer.h" />
     <ClInclude Include="ServerSquareScene.h" />
