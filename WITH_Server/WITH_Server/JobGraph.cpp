@@ -75,7 +75,6 @@ void JobGraph::AutoDependencyBuild(const std::vector<System*>& systems, float* d
 			{
 				first = A;
 				second = B;
-			
 			}
 
 			else if(dep == DependencyType::B_before_A)

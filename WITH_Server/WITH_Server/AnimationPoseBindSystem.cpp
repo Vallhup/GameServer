@@ -4,7 +4,7 @@
 void AnimationPoseBindSystem::Execute(const float dT)
 {
 	auto& animators = ecs.GetStorage<Animator>();
-	auto& colliders = ecs.GetStorage<Collider>();
+	auto& colliders = ecs.GetStorage<CombatCollider>();
 
 	for (const auto& [entity, animator] : animators)
 	{

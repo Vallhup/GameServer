@@ -53,7 +53,7 @@ void EventSystem::ProcessConnect(const Event& event)
 	ecs.GetStorage<Health>().AddComponent(entity);
 	ecs.GetStorage<AnimationState>().AddComponent(entity);
 	auto animator = ecs.GetStorage<Animator>().AddComponent(entity);
-	ecs.GetStorage<Collider>().AddComponent(entity);
+	ecs.GetStorage<CombatCollider>().AddComponent(entity);
 	ecs.GetStorage<AttackState>().AddComponent(entity);
 	ecs.GetStorage<ParryBuf>().AddComponent(entity);
 

@@ -12,9 +12,9 @@
 #include "AnimationPoseBindSystem.h"
 #include "AnimationSelectSystem.h"
 #include "ColliderActivationSystem.h"
-#include "CollisionCheckSystem.h"
-#include "CollisionDedupSystem.h"
-#include "CollisionHandlingSystem.h"
+#include "CombatCollisionCheckSystem.h"
+#include "CombatCollisionDedupSystem.h"
+#include "CombatCollisionHandlingSystem.h"
 
 
 void SystemManager::Initalize(ECS& ecs, JobGraph& graph)
@@ -32,11 +32,11 @@ void SystemManager::Initalize(ECS& ecs, JobGraph& graph)
 	RegisterSystem<AnimationFrameSystem>(ecs, 23);
 	RegisterSystem<AnimationPoseBindSystem>(ecs, 24);
 
-	RegisterSystem<ColliderActivationSystem>(ecs, 31);
-	RegisterSystem<ColliderUpdateSystem>(ecs, 32);
-	RegisterSystem<CollisionCheckSystem>(ecs, 33);
-	RegisterSystem<CollisionDedupSystem>(ecs, 34);
-	RegisterSystem<CollisionHandlingSystem>(ecs, 35);
+	RegisterSystem<ColliderUpdateSystem>(ecs, 31);
+	RegisterSystem<ColliderActivationSystem>(ecs, 32);
+	RegisterSystem<CombatCollisionCheckSystem>(ecs, 33);
+	RegisterSystem<CombatCollisionDedupSystem>(ecs, 34);
+	RegisterSystem<CombatCollisionHandlingSystem>(ecs, 35);
 }
 
 const std::vector<System*> SystemManager::GetSystems() const

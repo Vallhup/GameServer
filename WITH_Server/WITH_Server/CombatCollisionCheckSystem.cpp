@@ -1,10 +1,10 @@
 #include "pch.h"
-#include "CollisionCheckSystem.h"
+#include "CombatCollisionCheckSystem.h"
 #include "Collision.h"
 
-void CollisionCheckSystem::Execute(const float dT)
+void CombatCollisionCheckSystem::Execute(const float dT)
 {
-	auto& colliders = ecs.GetStorage<Collider>();
+	auto& colliders = ecs.GetStorage<CombatCollider>();
 	auto& events = ecs.collisionEvents;
 
 	events.clear();
@@ -24,7 +24,7 @@ void CollisionCheckSystem::Execute(const float dT)
 	for (size_t i = 0; i < entities.size(); ++i)
 	{
 		Entity a = entities[i];
-		const Collider* colA = colliders.GetComponent(a);
+		const CombatCollider* colA = colliders.GetComponent(a);
 		if (!colA || !colA->staticDatas) continue;
 
 		BuildActiveIndices(*colA, &actA);
@@ -32,7 +32,7 @@ void CollisionCheckSystem::Execute(const float dT)
 		for (size_t j = i + 1; j < entities.size(); ++j)
 		{
 			Entity b = entities[j];
-			const Collider* colB = colliders.GetComponent(b);
+			const CombatCollider* colB = colliders.GetComponent(b);
 			if (!colB || !colB->staticDatas) continue;
 
 			BuildActiveIndices(*colB, &actB);
@@ -48,7 +48,8 @@ void CollisionCheckSystem::Execute(const float dT)
 #endif
 }
 
-CapsuleView CollisionCheckSystem::MakeCapsuleView(const Collider& collider, size_t i)
+CapsuleView CombatCollisionCheckSystem::MakeCapsuleView(
+	const CombatCollider& collider, size_t i)
 {
 	CapsuleView out;
 	out.p0 = collider.worldDatas[i].p0;
@@ -58,8 +59,8 @@ CapsuleView CollisionCheckSystem::MakeCapsuleView(const Collider& collider, size
 	return out;
 }
 
-void CollisionCheckSystem::BuildActiveIndices(const Collider& collider,
-	ActiveIndices* out)
+void CombatCollisionCheckSystem::BuildActiveIndices(
+	const CombatCollider& collider, ActiveIndices* out)
 {
 	out->offensiveHits.clear();
 	out->defensiveHits.clear();
@@ -88,8 +89,9 @@ void CollisionCheckSystem::BuildActiveIndices(const Collider& collider,
 	}
 }
 
-void CollisionCheckSystem::CheckCollision(Entity attacker, const Collider& aCol,
-	const ActiveIndices& aActives, Entity victim, const Collider& vCol, 
+void CombatCollisionCheckSystem::CheckCollision(Entity attacker, 
+	const CombatCollider& aCol, const ActiveIndices& aActives, 
+	Entity victim, const CombatCollider& vCol, 
 	const ActiveIndices& vActives)
 {
 	if (aActives.offensiveHits.empty()) return;
@@ -116,9 +118,11 @@ void CollisionCheckSystem::CheckCollision(Entity attacker, const Collider& aCol,
 }
 
 template<typename EmitFunc>
-inline void CollisionCheckSystem::CheckCollisionInternal(Entity attacker,
-	const Collider& aCol, const std::vector<uint16>& aOffHits, Entity victim,
-	const Collider& vCol, const std::vector<uint16>& vTargets, EmitFunc&& emit)
+inline void CombatCollisionCheckSystem::CheckCollisionInternal(
+	Entity attacker, const CombatCollider& aCol,
+	const std::vector<uint16>& aOffHits, Entity victim,
+	const CombatCollider& vCol, const std::vector<uint16>& vTargets,
+	EmitFunc&& emit)
 {
 	for (uint16 aOffHit : aOffHits)
 	{

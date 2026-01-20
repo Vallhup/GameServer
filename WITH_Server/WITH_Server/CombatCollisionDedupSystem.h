@@ -3,10 +3,10 @@
 #include "ECS.h"
 #include "System.h"
 
-class CollisionDedupSystem : public System {
+class CombatCollisionDedupSystem : public System {
 public:
-	CollisionDedupSystem(ECS& e, int p = 0) : System(e, p) {}
-	virtual ~CollisionDedupSystem() = default;
+	CombatCollisionDedupSystem(ECS& e, int p = 0) : System(e, p) {}
+	virtual ~CombatCollisionDedupSystem() = default;
 
 	virtual void Execute(const float dT) override;
 

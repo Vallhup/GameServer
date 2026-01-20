@@ -11,6 +11,11 @@ struct Entity {
 	{
 		return (id == other.id) and (generation == other.generation);
 	}
+
+	bool operator<(const Entity& other) const noexcept
+	{
+		return id < other.id;
+	}
 };
 
 namespace std {

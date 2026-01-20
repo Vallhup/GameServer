@@ -17,10 +17,10 @@ public:
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return { typeid(Animator), typeid(Collider) };
+		return { typeid(Animator), typeid(CombatCollider) };
 	}
 	
 private:
-	void BindColliderToClip(Collider* collider, const PrebakedAnimation& clip);
+	void BindColliderToClip(CombatCollider* collider, const PrebakedAnimation& clip);
 };
 

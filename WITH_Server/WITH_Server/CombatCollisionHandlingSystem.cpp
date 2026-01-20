@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "CollisionHandlingSystem.h"
+#include "CombatCollisionHandlingSystem.h"
 
-void CollisionHandlingSystem::Execute(const float dT)
+void CombatCollisionHandlingSystem::Execute(const float dT)
 {
 	auto& events = ecs.collisionEvents;
 
@@ -25,7 +25,7 @@ void CollisionHandlingSystem::Execute(const float dT)
 	events.clear();
 }
 
-bool CollisionHandlingSystem::ConsumeHitOnce(const CollisionEvent& event)
+bool CombatCollisionHandlingSystem::ConsumeHitOnce(const CollisionEvent& event)
 {
 	auto* atkState = 
 		ecs.GetStorage<AttackState>().GetComponent(event.attacker);
@@ -37,7 +37,7 @@ bool CollisionHandlingSystem::ConsumeHitOnce(const CollisionEvent& event)
 	return true;
 }
 
-void CollisionHandlingSystem::HandleClash(const CollisionEvent& event)
+void CombatCollisionHandlingSystem::HandleClash(const CollisionEvent& event)
 {
 	if (const ActionState* actionState =
 		ecs.GetStorage<ActionState>().GetComponent(event.victim))
@@ -55,7 +55,7 @@ void CollisionHandlingSystem::HandleClash(const CollisionEvent& event)
 	}
 }
 
-void CollisionHandlingSystem::HandleStrike(const CollisionEvent& event)
+void CombatCollisionHandlingSystem::HandleStrike(const CollisionEvent& event)
 {
 	if (const ActionState* actionState =
 		ecs.GetStorage<ActionState>().GetComponent(event.victim))
@@ -78,7 +78,7 @@ void CollisionHandlingSystem::HandleStrike(const CollisionEvent& event)
 	}
 }
 
-void CollisionHandlingSystem::HandleParry(Entity attacker, Entity victim, 
+void CombatCollisionHandlingSystem::HandleParry(Entity attacker, Entity victim,
 	uint32 attackId)
 {
 	if (ParryBuf* parryBuf =
@@ -89,13 +89,13 @@ void CollisionHandlingSystem::HandleParry(Entity attacker, Entity victim,
 	}
 }
 
-void CollisionHandlingSystem::HandleGuard(Entity attacker, Entity victim, 
+void CombatCollisionHandlingSystem::HandleGuard(Entity attacker, Entity victim,
 	uint32 attackId)
 {
 	// TODO : 추후 방어력 추가해서 데미지 감소
 }
 
-void CollisionHandlingSystem::HandleHit(Entity attacker, Entity victim, 
+void CombatCollisionHandlingSystem::HandleHit(Entity attacker, Entity victim,
 	uint32 attackId)
 {
 	auto* health = ecs.GetStorage<Health>().GetComponent(victim);

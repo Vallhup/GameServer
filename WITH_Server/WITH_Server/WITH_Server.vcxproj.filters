@@ -29,9 +29,6 @@
     <ClCompile Include="ColliderUpdateSystem.cpp">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionCheckSystem.cpp">
-      <Filter>ECS\System\Logic\Collision</Filter>
-    </ClCompile>
     <ClCompile Include="EventSystem.cpp">
       <Filter>ECS\System\Event</Filter>
     </ClCompile>
@@ -113,11 +110,23 @@
     <ClCompile Include="ColliderActivationSystem.cpp">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionHandlingSystem.cpp">
+    <ClCompile Include="CombatCollisionCheckSystem.cpp">
+      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+    </ClCompile>
+    <ClCompile Include="CombatCollisionDedupSystem.cpp">
+      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+    </ClCompile>
+    <ClCompile Include="CombatCollisionHandlingSystem.cpp">
+      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionBroadPhaseSystem.cpp">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionDedupSystem.cpp">
-      <Filter>ECS\System\Logic\Collision</Filter>
+    <ClCompile Include="MapCollisionCheckSystem.cpp">
+      <Filter>ECS\System\Logic\Collision\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="MapCollisionHandlingSystem.cpp">
+      <Filter>ECS\System\Logic\Collision\Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -146,9 +155,6 @@
       <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="ColliderUpdateSystem.h">
-      <Filter>ECS\System\Logic\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionCheckSystem.h">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClInclude>
     <ClInclude Include="EventSystem.h">
@@ -256,11 +262,23 @@
     <ClInclude Include="ColliderActivationSystem.h">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionHandlingSystem.h">
+    <ClInclude Include="CombatCollisionCheckSystem.h">
+      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+    </ClInclude>
+    <ClInclude Include="CombatCollisionDedupSystem.h">
+      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+    </ClInclude>
+    <ClInclude Include="CombatCollisionHandlingSystem.h">
+      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionBroadPhaseSystem.h">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionDedupSystem.h">
-      <Filter>ECS\System\Logic\Collision</Filter>
+    <ClInclude Include="MapCollisionCheckSystem.h">
+      <Filter>ECS\System\Logic\Collision\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="MapCollisionHandlingSystem.h">
+      <Filter>ECS\System\Logic\Collision\Map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -326,6 +344,12 @@
     </Filter>
     <Filter Include="ECS\System\Logic\Move">
       <UniqueIdentifier>{7d221b54-761f-48a6-8fdc-869029a9e9b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\Collision\Combat">
+      <UniqueIdentifier>{f0348ca0-1cf0-416e-8369-d57780c2396f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\Collision\Map">
+      <UniqueIdentifier>{17286690-7cca-4dce-9a82-f2b942aa2a12}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

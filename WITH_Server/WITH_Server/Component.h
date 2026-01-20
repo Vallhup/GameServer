@@ -79,16 +79,27 @@ struct Animator : public Component {
 	uint16 currentFrame{ 0 };
 };
 
-struct Collider : public Component {
-	const std::vector<StaticCapsuleData>* staticDatas{ nullptr };
+struct AABB {
+	XMFLOAT3 min;
+	XMFLOAT3 max;
+};
 
+struct CombatCollider : public Component {
+	const std::vector<StaticCapsuleData>* staticDatas{ nullptr };
 	std::vector<DynamicCapsuleData> localDatas;
 	std::vector<DynamicCapsuleData> worldDatas;
 
 	std::vector<uint8> enabledMasks;
 	std::vector<uint32> attackIds;
+};
 
-	uint32 staticCount{ 0 };
+struct MapCollider : public Component {
+	const StaticCapsuleData* staticBodyData{ nullptr };
+	DynamicCapsuleData localBodyData;
+	DynamicCapsuleData worldBodyData;
+
+	AABB localBodyAABB;
+	AABB worldBodyAABB;
 };
 
 struct AttackState : public Component {

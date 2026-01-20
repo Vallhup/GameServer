@@ -3,7 +3,7 @@
 
 void ColliderActivationSystem::Execute(const float dT)
 {
-	auto& colliders = ecs.GetStorage<Collider>();
+	auto& colliders = ecs.GetStorage<CombatCollider>();
 	auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& attackStates = ecs.GetStorage<AttackState>();
 

@@ -5,7 +5,7 @@
 void ColliderUpdateSystem::Execute(const float dT)
 {
 	auto& transforms = ecs.GetStorage<Transform>();
-	auto& colliders = ecs.GetStorage<Collider>();
+	auto& colliders = ecs.GetStorage<CombatCollider>();
 
 	for (const auto& [entity, collider] : colliders)
 	{

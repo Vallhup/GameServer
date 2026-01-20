@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "CollisionDedupSystem.h"
+#include "CombatCollisionDedupSystem.h"
 
-void CollisionDedupSystem::Execute(const float dT)
+void CombatCollisionDedupSystem::Execute(const float dT)
 {
 	auto& events = ecs.collisionEvents;
 

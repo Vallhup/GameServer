@@ -5,7 +5,7 @@ void AnimationCommitSystem::Execute(const float dT)
 {
 	auto& animStates = ecs.GetStorage<AnimationState>();
 	auto& animators = ecs.GetStorage<Animator>();
-	auto& colliders = ecs.GetStorage<Collider>();
+	auto& colliders = ecs.GetStorage<CombatCollider>();
 
 	for (const auto& [entity, animator] : animators)
 	{
@@ -34,13 +34,12 @@ void AnimationCommitSystem::Execute(const float dT)
 	}
 }
 
-void AnimationCommitSystem::BindColliderToClip(Collider* collider, 
+void AnimationCommitSystem::BindColliderToClip(CombatCollider* collider,
 	const PrebakedAnimation& clip)
 {
 	const size_t n = clip.staticDatas.size();
 
 	collider->staticDatas = &clip.staticDatas;
-	collider->staticCount = static_cast<uint32>(n);
 
 	collider->localDatas.resize(n);
 	collider->worldDatas.resize(n);
