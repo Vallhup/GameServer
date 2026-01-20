@@ -7,7 +7,11 @@ void MapCollisionHandlingSystem::Execute(const float dT)
 	auto& events = ecs.mapCollisionEvents;
 	if (events.empty()) return;
 
-	std::sort(events.begin(), events.end());
+	std::sort(events.begin(), events.end(),
+		[](const MapCollisionEvent& a, const MapCollisionEvent& b)
+		{
+			return a.entity < b.entity;
+		});
 
 	auto& transforms = ecs.GetStorage<Transform>();
 
@@ -27,7 +31,7 @@ void MapCollisionHandlingSystem::Execute(const float dT)
 
 		XMVECTOR corr = XMVectorZero();
 
-		for (auto k = i; k != j; ++k)
+		for (size_t k = i; k != j; ++k)
 		{
 			const XMVECTOR normal = XMLoadFloat3(&events[k].normal);
 			const float pen = events[k].penetration;
@@ -41,7 +45,7 @@ void MapCollisionHandlingSystem::Execute(const float dT)
 				XMVectorScale(normal, remaining));
 		}
 
-		XMFLOAT3 corrF;
+		XMFLOAT3 corrF{ 0, 0, 0 };
 		XMStoreFloat3(&corrF, corr);
 
 		const float corrSq = corrF.x * corrF.x

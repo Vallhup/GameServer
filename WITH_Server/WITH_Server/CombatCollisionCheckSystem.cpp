@@ -5,7 +5,7 @@
 void CombatCollisionCheckSystem::Execute(const float dT)
 {
 	auto& colliders = ecs.GetStorage<CombatCollider>();
-	auto& events = ecs.collisionEvents;
+	auto& events = ecs.combatCollisionEvents;
 
 	events.clear();
 	events.reserve(128);
@@ -48,17 +48,6 @@ void CombatCollisionCheckSystem::Execute(const float dT)
 #endif
 }
 
-CapsuleView CombatCollisionCheckSystem::MakeCapsuleView(
-	const CombatCollider& collider, size_t i)
-{
-	CapsuleView out;
-	out.p0 = collider.worldDatas[i].p0;
-	out.p1 = collider.worldDatas[i].p1;
-	out.radius = (*collider.staticDatas)[i].radius; 
-
-	return out;
-}
-
 void CombatCollisionCheckSystem::BuildActiveIndices(
 	const CombatCollider& collider, ActiveIndices* out)
 {
@@ -96,7 +85,7 @@ void CombatCollisionCheckSystem::CheckCollision(Entity attacker,
 {
 	if (aActives.offensiveHits.empty()) return;
 
-	auto& events = ecs.collisionEvents;
+	auto& events = ecs.combatCollisionEvents;
 
 	CheckCollisionInternal(attacker, aCol, aActives.offensiveHits,
 		victim, vCol, vActives.hurts,

@@ -24,14 +24,3 @@ void MapCollisionCheckSystem::Execute(const float dT)
 		}
 	}
 }
-
-CapsuleView MapCollisionCheckSystem::MakeCapsuleView(
-	const MapCollider& collider)
-{
-	CapsuleView out;
-	out.p0 = collider.worldBodyData.p0;
-	out.p1 = collider.worldBodyData.p1;
-	out.radius = collider.staticBodyData->radius;
-
-	return out;
-}

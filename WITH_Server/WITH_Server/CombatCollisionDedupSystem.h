@@ -17,7 +17,7 @@ public:
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return { typeid(CollisionEvent) };
+		return { typeid(CombatCollisionEvent) };
 	}
 };
 

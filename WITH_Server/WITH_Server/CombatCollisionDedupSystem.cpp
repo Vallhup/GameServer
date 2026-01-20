@@ -3,13 +3,13 @@
 
 void CombatCollisionDedupSystem::Execute(const float dT)
 {
-	auto& events = ecs.collisionEvents;
+	auto& events = ecs.combatCollisionEvents;
 
 	if (events.empty()) return;
 
 	// TEMP : Collision Event 정렬, 중복 제거
 	std::sort(events.begin(), events.end(),
-		[](const CollisionEvent& a, const CollisionEvent& b)
+		[](const CombatCollisionEvent& a, const CombatCollisionEvent& b)
 		{
 			if (a.type != b.type)
 				return static_cast<int>(a.type) < static_cast<int>(b.type);
@@ -26,7 +26,7 @@ void CombatCollisionDedupSystem::Execute(const float dT)
 	);
 
 	events.erase(std::unique(events.begin(), events.end(),
-		[](const CollisionEvent& a, const CollisionEvent& b)
+		[](const CombatCollisionEvent& a, const CombatCollisionEvent& b)
 		{
 			return a.type == b.type &&
 				a.attacker == b.attacker &&
@@ -56,7 +56,7 @@ void CombatCollisionDedupSystem::Execute(const float dT)
 		};
 
 	events.erase(std::remove_if(events.begin(), events.end(),
-		[&](const CollisionEvent& event)
+		[&](const CombatCollisionEvent& event)
 		{
 			if (event.type != CollisionType::Strike) return false;
 			return HasClash(event.attacker, event.victim, event.attackId);

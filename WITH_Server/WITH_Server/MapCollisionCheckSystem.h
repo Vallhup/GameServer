@@ -19,8 +19,5 @@ public:
 	{
 		return { typeid(MapCollisionEvent) };
 	}
-
-private:
-	CapsuleView MakeCapsuleView(const MapCollider& collider);
 };
 

@@ -17,14 +17,14 @@ public:
 
 	virtual std::vector<std::type_index> WriteComponents() const override
 	{
-		return { typeid(CollisionEvent), typeid(ParryBuf), typeid(Health) };
+		return { typeid(CombatCollisionEvent), typeid(ParryBuf), typeid(Health) };
 	}
 
 private:
-	bool ConsumeHitOnce(const CollisionEvent& event);
+	bool ConsumeHitOnce(const CombatCollisionEvent& event);
 
-	void HandleClash(const CollisionEvent& event);
-	void HandleStrike(const CollisionEvent& event);
+	void HandleClash(const CombatCollisionEvent& event);
+	void HandleStrike(const CombatCollisionEvent& event);
 
 	void HandleParry(Entity attacker, Entity victim, uint32 attackId);
 	void HandleGuard(Entity attacker, Entity victim, uint32 attackId);

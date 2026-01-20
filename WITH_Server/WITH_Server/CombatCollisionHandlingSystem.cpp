@@ -3,7 +3,7 @@
 
 void CombatCollisionHandlingSystem::Execute(const float dT)
 {
-	auto& events = ecs.collisionEvents;
+	auto& events = ecs.combatCollisionEvents;
 
 	for (const auto& event : events)
 	{
@@ -25,7 +25,7 @@ void CombatCollisionHandlingSystem::Execute(const float dT)
 	events.clear();
 }
 
-bool CombatCollisionHandlingSystem::ConsumeHitOnce(const CollisionEvent& event)
+bool CombatCollisionHandlingSystem::ConsumeHitOnce(const CombatCollisionEvent& event)
 {
 	auto* atkState = 
 		ecs.GetStorage<AttackState>().GetComponent(event.attacker);
@@ -37,7 +37,7 @@ bool CombatCollisionHandlingSystem::ConsumeHitOnce(const CollisionEvent& event)
 	return true;
 }
 
-void CombatCollisionHandlingSystem::HandleClash(const CollisionEvent& event)
+void CombatCollisionHandlingSystem::HandleClash(const CombatCollisionEvent& event)
 {
 	if (const ActionState* actionState =
 		ecs.GetStorage<ActionState>().GetComponent(event.victim))
@@ -55,7 +55,7 @@ void CombatCollisionHandlingSystem::HandleClash(const CollisionEvent& event)
 	}
 }
 
-void CombatCollisionHandlingSystem::HandleStrike(const CollisionEvent& event)
+void CombatCollisionHandlingSystem::HandleStrike(const CombatCollisionEvent& event)
 {
 	if (const ActionState* actionState =
 		ecs.GetStorage<ActionState>().GetComponent(event.victim))

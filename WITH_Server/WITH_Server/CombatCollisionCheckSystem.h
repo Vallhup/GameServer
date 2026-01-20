@@ -3,8 +3,6 @@
 #include "ECS.h"
 #include "System.h"
 
-struct CapsuleView;
-
 struct ActiveIndices {
 	std::vector<uint16> offensiveHits;
 	std::vector<uint16> defensiveHits;
@@ -29,7 +27,6 @@ public:
 	}
 
 private:
-	CapsuleView MakeCapsuleView(const CombatCollider& collider, size_t i);
 	void BuildActiveIndices(const CombatCollider& collider, ActiveIndices* out);
 	void CheckCollision(Entity attacker, const CombatCollider& aCol,
 		const ActiveIndices& aActives, Entity victim,

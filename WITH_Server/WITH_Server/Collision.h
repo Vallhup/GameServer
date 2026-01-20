@@ -23,12 +23,12 @@
 //   - 우리 알빠는 아닌듯
 //   - 이거도 뭔말인지 잘 모르겠음
 
-static inline float Dot3(XMVECTOR a, XMVECTOR b)
+inline float Dot3(XMVECTOR a, XMVECTOR b)
 {
 	return XMVectorGetX(XMVector3Dot(a, b));
 }
 
-static inline float Clamp01(float x)
+inline float Clamp01(float x)
 {
 	return std::clamp(x, 0.0f, 1.0f);
 }
@@ -38,6 +38,26 @@ struct CapsuleView {
 	XMFLOAT3 p1;
 	float radius;
 };
+
+inline CapsuleView MakeCapsuleView(const MapCollider& collider)
+{
+	CapsuleView out;
+	out.p0 = collider.worldBodyData.p0;
+	out.p1 = collider.worldBodyData.p1;
+	out.radius = collider.staticBodyData->radius;
+
+	return out;
+}
+
+inline CapsuleView MakeCapsuleView(const CombatCollider& collider, size_t i)
+{
+	CapsuleView out;
+	out.p0 = collider.worldDatas[i].p0;
+	out.p1 = collider.worldDatas[i].p1;
+	out.radius = (*collider.staticDatas)[i].radius;
+
+	return out;
+}
 
 namespace Collision {
 	static float SegmentSegmentDistSq(XMVECTOR p1, XMVECTOR q1, XMVECTOR p2, XMVECTOR q2)
@@ -109,7 +129,7 @@ namespace Collision {
 		return Dot3(diff, diff);
 	}
 
-	bool CheckCapsuleVsCapsule(const CapsuleView& c1, const CapsuleView& c2)
+	inline bool CheckCapsuleVsCapsule(const CapsuleView& c1, const CapsuleView& c2)
 	{
 		XMVECTOR c1A = XMLoadFloat3(&c1.p0);
 		XMVECTOR c1B = XMLoadFloat3(&c1.p1);
@@ -122,7 +142,7 @@ namespace Collision {
 		return distSq <= R * R;
 	}
 
-	bool CheckAABBVsAABB(const AABB& a, const AABB& b)
+	inline bool CheckAABBVsAABB(const AABB& a, const AABB& b)
 	{
 		if (a.max.x < b.min.x || a.min.x > b.max.x) return false;
 		if (a.max.y < b.min.y || a.min.y > b.max.y) return false;
@@ -130,7 +150,7 @@ namespace Collision {
 		return true;
 	}
 
-	bool CheckOBBVsCapsule(const OBB& obb, const CapsuleView& capsule,
+	inline bool CheckOBBVsCapsule(const OBB& obb, const CapsuleView& capsule,
 		XMFLOAT3* outNormal, float* outPenetration)
 	{
 		return false;
