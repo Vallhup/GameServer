@@ -8,12 +8,14 @@ class MainCharacter : public GameObject
 public:
 	void Update(float deltaTime) override;
 
-	void SetCamera(Camera* cam);
+	void SetAsLocalPlayer(Camera* cam);
 
 private:
 	void BasicMove();
 	void BasicAttack();
 	void BasicDodge();
+
+	void RegisterAnimationCallback();
 
 private:
 	Camera* camera = nullptr;

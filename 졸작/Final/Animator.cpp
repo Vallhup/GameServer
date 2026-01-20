@@ -239,3 +239,15 @@ void Animator::DebugAnimationInfo()
         OutputDebugStringA(("[" + to_string(i) + "] " + mAnimations[i].animName + "\n").c_str());
     }
 }
+
+float Animator::GetAnimationProgress() const
+{
+    if (mAnimations.empty() || mClipIndex < 0 || mClipIndex >= mAnimations.size())
+        return 0.0f;
+
+    const auto& clip = mAnimations[mClipIndex];
+    if (clip.duration <= 0.0f)
+        return 0.0f;
+
+    return mUpdateTime / clip.duration;     // 0.0 ~ 1.0
+}

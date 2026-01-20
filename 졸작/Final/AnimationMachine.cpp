@@ -12,6 +12,18 @@ void AnimationMachine::Update(float deltaTime)
 {
     if (!currentClip) return;
 
+    if (currentClip->category == AnimCategory::Action)
+    {
+        float progress = animator->GetAnimationProgress();
+        if (progress >= 0.99f && !transitionStarted)
+        {
+            transitionStarted = true;
+
+            string nextClip = onActionEnd ? onActionEnd() : "Idle";
+            PlayClip(nextClip);
+        }
+    }
+
     // Action/Die 카테고리는 애니메이션 끝나면 Base(Idle)로 복귀
     // TODO: duration 체크 후 자동 전환 로직
 }
@@ -81,6 +93,8 @@ void AnimationMachine::PlayClip(const string& clipName)
 
     currentClipName = clipName;
     currentClip = clip;
+
+    transitionStarted = false;
 
     animator->TransitionToAnimation(clip->index, clip->blendDuration);
 }

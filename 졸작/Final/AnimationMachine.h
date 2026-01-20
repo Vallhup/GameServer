@@ -23,6 +23,8 @@ public:
     bool IsPlaying(const string& clipName) const;
     AnimCategory GetCurrentCategory() const;
 
+    function<string()> onActionEnd;
+
 private:
     bool CanTransition(const ClipInfo* from, const ClipInfo* to) const;
     void PlayClip(const string& clipName);
@@ -33,4 +35,6 @@ private:
 
     string currentClipName;
     const ClipInfo* currentClip = nullptr;
+
+    bool transitionStarted = false;
 };

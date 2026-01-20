@@ -336,7 +336,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			if (sessionId == GET(Input).GetClientID())
 			{
 				myPlayer = player;
-				myPlayer->SetCamera(cam.get());
+				myPlayer->SetAsLocalPlayer(cam.get());
 
 				GET(ImGuiManager).SetMyPlayer(myPlayer.get());
 

@@ -16,7 +16,7 @@ struct ClipInfo
 {
     int index = -1;              
     AnimCategory category = AnimCategory::Base;
-    float blendDuration = 0.3f;  
+    float blendDuration = 0.2f;  
 };
 
 class AnimationSet

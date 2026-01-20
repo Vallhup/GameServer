@@ -39,13 +39,14 @@ public:
 
     void DebugAnimationInfo();
 
-    // Compute Shader�� ���۵�
     UploadBuffer* GetBoneFrameBuffer() const { return mBoneFrameBuffer.get(); }
     UploadBuffer* GetOffsetBuffer() const { return mOffsetBuffer.get(); }
     UAVBuffer* GetFinalBuffer() const { return mFinalBuffer.get(); }
 
     float GetAnimationSpeed() const { return animationSpeed; }
     void SetAnimationSpeed(float speed) { animationSpeed = speed; }
+
+    float GetAnimationProgress() const;
 
 private:
     void CreateBuffers(DX12Core& core);
@@ -57,9 +58,9 @@ private:
     vector<AnimClipInfo> mAnimations; 
     vector<BoneInfo> mBones;
 
-    unique_ptr<UploadBuffer> mBoneFrameBuffer;    // Ű������ ������
-    unique_ptr<UploadBuffer> mOffsetBuffer;       // ������ ���
-    unique_ptr<UAVBuffer> mFinalBuffer;        // ���� �� ��� (Compute ���)
+    unique_ptr<UploadBuffer> mBoneFrameBuffer; 
+    unique_ptr<UploadBuffer> mOffsetBuffer;    
+    unique_ptr<UAVBuffer> mFinalBuffer;        
     unique_ptr<UploadBuffer> mAnimationCB;
 
     int mBoneCount = 0;

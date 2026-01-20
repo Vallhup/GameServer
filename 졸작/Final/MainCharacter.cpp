@@ -98,10 +98,30 @@ void MainCharacter::BasicDodge()
 	}
 }
 
-void MainCharacter::SetCamera(Camera* cam)
+void MainCharacter::RegisterAnimationCallback()
+{
+	auto animMachine = GetComponent<AnimationMachine>();
+	if (!animMachine) return;
+
+	animMachine->onActionEnd = [this]() -> string {
+		auto& input = GET(Input);
+
+		bool isMoving = input.GetKey('W') || input.GetKey('A') ||
+						input.GetKey('S') || input.GetKey('D');
+
+		bool isRunning = input.GetKey(VK_SHIFT) && isMoving;
+
+		if (isRunning) return "Run";
+		if (isMoving) return "Walk";
+		return "Idle";
+		};
+}
+
+void MainCharacter::SetAsLocalPlayer(Camera* cam)
 {
 	camera = cam;
-
 	camera->InitCameraPositionFromCharacter(GetComponent<Transform>()->GetPosition());
+
+	RegisterAnimationCallback();
 }
 
