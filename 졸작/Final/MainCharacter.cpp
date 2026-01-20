@@ -106,6 +106,16 @@ void MainCharacter::RegisterAnimationCallback()
 	animMachine->onActionEnd = [this]() -> string {
 		auto& input = GET(Input);
 
+		if (input.GetKey('C')) {
+			input.SendDodgePacket();
+			return "Dodge";
+		}
+
+		if (input.GetMouseButton(MouseButton::LEFT)) {
+			input.SendAttackPacket();
+			return "Attack";
+		}
+
 		bool isMoving = input.GetKey('W') || input.GetKey('A') ||
 						input.GetKey('S') || input.GetKey('D');
 
