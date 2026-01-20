@@ -40,6 +40,14 @@ void EntityManager::Destroy(Entity entity)
     _freeIds.push(id);
 }
 
+void EntityManager::DestoryPlayer(Entity entity, uint32 sessionId)
+{
+    Destroy(entity);
+
+    Framework::Get().entityToSession.erase(entity);
+    Framework::Get().sessionToEntity.erase(sessionId);
+}
+
 bool EntityManager::IsAlive(Entity entity) const
 {
     return entity.id < _generations.size() and

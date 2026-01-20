@@ -78,13 +78,7 @@ void OutputEventSystem::ProcessDespawn(const OutputEvent& event)
 	SendBuffer* data = NetHelper::SCRemovePacket(sessionId);
 	framework.listener.Broadcast(data);
 
-	// 2. Despawn된 Player의 Session 정보를 EntityToSession 맵에서 제거
-	ets.erase(it);
-
-	// 3. Despawn된 Player의 Entity를 ECS에서 제거
-	ecs.entityMng.Destroy(entity);
-
-	// 4. Despawn된 Player의 Entity에 할당된 모든 컴포넌트 제거
+	// 2. Despawn된 Player의 Entity에 할당된 모든 컴포넌트 제거
 	ecs.GetStorage<Transform>().RemoveComponent(entity);
 	ecs.GetStorage<Velocity>().RemoveComponent(entity);
 	ecs.GetStorage<ActionMoveDelta>().RemoveComponent(entity);
@@ -100,6 +94,13 @@ void OutputEventSystem::ProcessDespawn(const OutputEvent& event)
 	ecs.GetStorage<CombatCollider>().RemoveComponent(entity);
 	ecs.GetStorage<AttackState>().RemoveComponent(entity);
 	ecs.GetStorage<ParryBuf>().RemoveComponent(entity);
+	ecs.GetStorage<DisconnectedTag>().RemoveComponent(entity);
+	ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
+
+	// 3. Despawn된 Player의 Session 정보를 EntityToSession 맵에서 제거
+	// 4. Despawn된 Entity의 정보를 SessionToEntity 맵에서 제거
+	// 4. Despawn된 Player의 Entity를 ECS에서 제거
+	ecs.entityMng.DestoryPlayer(entity, sessionId);
 }
 
 void OutputEventSystem::ProcessMove(const OutputEvent& event)

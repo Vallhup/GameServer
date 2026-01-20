@@ -38,6 +38,8 @@ public:
 	Entity CreatePlayer(uint32 sessionId);
 
 	void Destroy(Entity entity);
+	void DestoryPlayer(Entity entity, uint32 sessionId);
+
 	bool IsAlive(Entity entity) const;
 
 private:
