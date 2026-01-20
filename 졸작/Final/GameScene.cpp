@@ -405,7 +405,7 @@ void GameScene::InitializeLogic()
 
 	{
 		auto boss = make_shared<GameObject>();
-		boss->SetId(0);
+		boss->SetId(-1);
 		auto mesh = boss->AddComponent<Mesh>();
 		auto transform = boss->AddComponent<Transform>();
 		auto animator = boss->AddComponent<Animator>();

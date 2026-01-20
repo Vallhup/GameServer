@@ -51,6 +51,8 @@ public:
 private:
     void CreateBuffers(DX12Core& core);
 
+    void UpdateAnimationOffsets();
+
     void UpdateCurrentAnimation(float deltaTime);
     void UpdatePrevAnimation(float deltaTime);
 

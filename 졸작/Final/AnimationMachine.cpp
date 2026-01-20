@@ -15,7 +15,8 @@ void AnimationMachine::Update(float deltaTime)
     if (currentClip->category == AnimCategory::Action)
     {
         float progress = animator->GetAnimationProgress();
-        if (progress >= 0.99f && !transitionStarted)
+
+        if (progress >= 0.95f && !transitionStarted)
         {
             transitionStarted = true;
 

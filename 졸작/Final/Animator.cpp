@@ -26,14 +26,23 @@ void Animator::Update(float deltaTime)
         UpdateCurrentAnimation(deltaTime);
 }
 
-void Animator::UpdateCurrentAnimation(float deltaTime)
+void Animator::UpdateAnimationOffsets()
 {
     mCurrentAnimOffset = 0;
-
     for (int i = 0; i < mClipIndex; ++i) {
         mCurrentAnimOffset += mAnimations[i].keyFrames.size();
     }
 
+    if (mIsBlending && mPrevClipIndex >= 0) {
+        mPrevAnimOffset = 0;
+        for (int i = 0; i < mPrevClipIndex; ++i) {
+            mPrevAnimOffset += mAnimations[i].keyFrames.size();
+        }
+    }
+}
+
+void Animator::UpdateCurrentAnimation(float deltaTime)
+{
     mUpdateTime += deltaTime * animationSpeed;
     const auto& animClip = mAnimations[mClipIndex];
 
@@ -61,18 +70,12 @@ void Animator::UpdatePrevAnimation(float deltaTime)
 {
     if (mPrevClipIndex < 0 || mPrevClipIndex >= mAnimations.size()) return;
 
-    mPrevAnimOffset = 0;
-
-    for (int i = 0; i < mPrevClipIndex; ++i) {
-        mPrevAnimOffset += mAnimations[i].keyFrames.size();
-    }
-
     mPrevUpdateTime += deltaTime * animationSpeed;
 
     const auto& animClip = mAnimations[mPrevClipIndex];
 
     if (mPrevUpdateTime >= animClip.duration) {
-        mPrevUpdateTime = 0.0f;
+        mPrevUpdateTime = animClip.duration - 0.001f;
     }
 
     const float framerate = static_cast<float>(animClip.frameCount) / animClip.duration;
@@ -117,13 +120,11 @@ void Animator::CreateBuffers(DX12Core& core)
 {
     if (mAnimations.empty()) return;
 
-    // ���� ����
     mBoneFrameBuffer = make_unique<UploadBuffer>();
     mOffsetBuffer = make_unique<UploadBuffer>();
     mFinalBuffer = make_unique<UAVBuffer>();
     mAnimationCB = make_unique<UploadBuffer>();
 
-    // BoneFrame ���� - ���۷����� ������ ����
     size_t totalKeyFrames = 0;
     for (const auto& anim : mAnimations) {
         totalKeyFrames += anim.keyFrames.size();
@@ -180,6 +181,30 @@ void Animator::TransitionToAnimation(int animIndex, float Duration)
 
     blendTime = 0.0f;
     blendRatio = 0.0f;
+
+    UpdateAnimationOffsets();
+
+    mFrame = 1;
+    mNextFrame = 2;
+    mFrameRatio = 0.0f;
+
+    if (mPrevClipIndex >= 0 && mPrevClipIndex < mAnimations.size()) {
+        const auto& prevClip = mAnimations[mPrevClipIndex];
+        const float prevFramerate = static_cast<float>(prevClip.frameCount) / prevClip.duration;
+        float prevFrameFloat = (mPrevUpdateTime * prevFramerate) + 1.0f;
+
+        mPrevFrame = static_cast<int32_t>(prevFrameFloat);
+        mPrevFrame = max(1, min(mPrevFrame, prevClip.frameCount));
+
+        if (mPrevFrame == prevClip.frameCount) {
+            mPrevNextFrame = 1;
+        }
+        else {
+            mPrevNextFrame = mPrevFrame + 1;
+        }
+
+        mPrevFrameRatio = prevFrameFloat - mPrevFrame;
+    }
 }
 
 void Animator::ExecuteComputeShader(DX12Core& core)
