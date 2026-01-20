@@ -50,7 +50,7 @@ void ServerSquareScene::InitializeLogic()
 
 		mesh->ReleaseUploadBuffers();
 
-		knight->SetCamera(cam.get());
+		knight->SetAsLocalPlayer(cam.get());
 	}
 }
 

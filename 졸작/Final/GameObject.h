@@ -47,6 +47,7 @@ inline T* GameObject::AddComponent()
 	auto component = make_unique<T>();
 	T* rawPtr = component.get();
 	component->owner = this;
+	component->Init();
 	components.push_back(std::move(component));
 
 	return rawPtr;

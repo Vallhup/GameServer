@@ -14,6 +14,8 @@
 #include "Shader.h"
 #include "RootSignature.h"
 #include "SkyBox.h"
+#include "AnimationMachine.h"
+#include "AnimationSetFactory.h"
 
 GameScene::~GameScene() = default;
 
@@ -26,7 +28,10 @@ void GameScene::CreateKnightPool()
 		auto mesh = knight->AddComponent<Mesh>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
+		auto animMachine = knight->AddComponent<AnimationMachine>();
 		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+
+		animMachine->SetAnimationSet(AnimationSetFactory::CreateKnightSet());
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
@@ -331,7 +336,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			if (sessionId == GET(Input).GetClientID())
 			{
 				myPlayer = player;
-				myPlayer->SetCamera(cam.get());
+				myPlayer->SetAsLocalPlayer(cam.get());
 
 				GET(ImGuiManager).SetMyPlayer(myPlayer.get());
 
@@ -400,7 +405,7 @@ void GameScene::InitializeLogic()
 
 	{
 		auto boss = make_shared<GameObject>();
-		boss->SetId(0);
+		boss->SetId(-1);
 		auto mesh = boss->AddComponent<Mesh>();
 		auto transform = boss->AddComponent<Transform>();
 		auto animator = boss->AddComponent<Animator>();

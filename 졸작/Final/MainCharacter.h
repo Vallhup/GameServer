@@ -8,12 +8,14 @@ class MainCharacter : public GameObject
 public:
 	void Update(float deltaTime) override;
 
-	void SetCamera(Camera* cam);
+	void SetAsLocalPlayer(Camera* cam);
 
 private:
 	void BasicMove();
 	void BasicAttack();
 	void BasicDodge();
+
+	void RegisterAnimationCallback();
 
 private:
 	Camera* camera = nullptr;
@@ -24,8 +26,6 @@ private:
 	float currentYawAngle = 0.0f;
 	float targetYawAngle = 0.0f;
 	bool needsRotation = false;
-
-	int currentAnimState = 0;
 
 	static constexpr float MOVE_SPEED = 2.0f;
 	static constexpr float ROT_SPEED = 3.14f;

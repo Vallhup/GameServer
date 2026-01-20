@@ -39,7 +39,6 @@ public:
 
     void DebugAnimationInfo();
 
-    // Compute Shader용 버퍼들
     UploadBuffer* GetBoneFrameBuffer() const { return mBoneFrameBuffer.get(); }
     UploadBuffer* GetOffsetBuffer() const { return mOffsetBuffer.get(); }
     UAVBuffer* GetFinalBuffer() const { return mFinalBuffer.get(); }
@@ -47,8 +46,12 @@ public:
     float GetAnimationSpeed() const { return animationSpeed; }
     void SetAnimationSpeed(float speed) { animationSpeed = speed; }
 
+    float GetAnimationProgress() const;
+
 private:
     void CreateBuffers(DX12Core& core);
+
+    void UpdateAnimationOffsets();
 
     void UpdateCurrentAnimation(float deltaTime);
     void UpdatePrevAnimation(float deltaTime);
@@ -57,9 +60,9 @@ private:
     vector<AnimClipInfo> mAnimations; 
     vector<BoneInfo> mBones;
 
-    unique_ptr<UploadBuffer> mBoneFrameBuffer;    // 키프레임 데이터
-    unique_ptr<UploadBuffer> mOffsetBuffer;       // 오프셋 행렬
-    unique_ptr<UAVBuffer> mFinalBuffer;        // 최종 본 행렬 (Compute 출력)
+    unique_ptr<UploadBuffer> mBoneFrameBuffer; 
+    unique_ptr<UploadBuffer> mOffsetBuffer;    
+    unique_ptr<UAVBuffer> mFinalBuffer;        
     unique_ptr<UploadBuffer> mAnimationCB;
 
     int mBoneCount = 0;
