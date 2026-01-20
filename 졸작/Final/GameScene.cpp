@@ -14,6 +14,8 @@
 #include "Shader.h"
 #include "RootSignature.h"
 #include "SkyBox.h"
+#include "AnimationMachine.h"
+#include "AnimationSetFactory.h"
 
 GameScene::~GameScene() = default;
 
@@ -26,7 +28,10 @@ void GameScene::CreateKnightPool()
 		auto mesh = knight->AddComponent<Mesh>();
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
+		auto animMachine = knight->AddComponent<AnimationMachine>();
 		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+
+		animMachine->SetAnimationSet(AnimationSetFactory::CreateKnightSet());
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);

@@ -4,7 +4,7 @@
 #include "Transform.h"
 #include "Input.h"
 #include "Camera.h"
-#include "Animator.h"
+#include "AnimationMachine.h"
 
 void MainCharacter::Update(float deltaTime)
 {
@@ -46,21 +46,16 @@ void MainCharacter::BasicMove()
 	float yaw = camera->GetRadianYaw();
 	input.SendMovePacket(inputX, inputZ, yaw);
 
-	auto animator = GetComponent<Animator>();
-	if (animator) {
+	auto animMachine = GetComponent<AnimationMachine>();
+	if (animMachine) {
 		if (!isMoving && wasMoving) {
-			animator->TransitionToAnimation(0, 0.3f);
-			currentAnimState = 0;
+			animMachine->TryPlayClip("Idle");
 		}
 		else if (isMoving && !wasMoving) {
-			int anim = isRunning ? 1 : 2;
-			animator->TransitionToAnimation(anim, 0.3f);
-			currentAnimState = anim;
+			animMachine->TryPlayClip(isRunning ? "Run" : "Walk");
 		}
 		else if (isMoving && (isRunning != wasRunning)) {
-			int anim = isRunning ? 1 : 2;
-			animator->TransitionToAnimation(anim, 0.3f);
-			currentAnimState = anim;
+			animMachine->TryPlayClip(isRunning ? "Run" : "Walk");
 		}
 	}
 
@@ -78,10 +73,10 @@ void MainCharacter::BasicAttack()
 	if (now && !prev) {
 		input.SendAttackPacket();
 
-		auto animator = GetComponent<Animator>();
-		if (animator) 
+		auto animMachine = GetComponent<AnimationMachine>();
+		if (animMachine)
 		{
-			// TODO : Attack Animation
+			animMachine->TryPlayClip("Attack");
 		}
 	}
 
@@ -95,10 +90,10 @@ void MainCharacter::BasicDodge()
 	if (input.GetKeyDown('C')) {
 		input.SendDodgePacket();
 
-		auto animator = GetComponent<Animator>();
-		if (animator)
+		auto animMachine = GetComponent<AnimationMachine>();
+		if (animMachine)
 		{
-			// TODO : Dodge Animation
+			animMachine->TryPlayClip("Dodge");
 		}
 	}
 }

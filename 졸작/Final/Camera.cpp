@@ -158,7 +158,7 @@ void Camera::ChangeAngleByInput(float deltaTime)
 
         SetCursorPos(center.x, center.y);
 
-        constexpr float MAX_PITCH_DEGREE = 89.0f;
+        constexpr float MAX_PITCH_DEGREE = 85.0f;
         pitch = max(-MAX_PITCH_DEGREE, min(MAX_PITCH_DEGREE, pitch));
 
         UpdateForwardAndRight();

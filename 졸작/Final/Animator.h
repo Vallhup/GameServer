@@ -39,7 +39,7 @@ public:
 
     void DebugAnimationInfo();
 
-    // Compute Shader¿ë ¹öÆÛµé
+    // Compute Shaderï¿½ï¿½ ï¿½ï¿½ï¿½Ûµï¿½
     UploadBuffer* GetBoneFrameBuffer() const { return mBoneFrameBuffer.get(); }
     UploadBuffer* GetOffsetBuffer() const { return mOffsetBuffer.get(); }
     UAVBuffer* GetFinalBuffer() const { return mFinalBuffer.get(); }
@@ -57,9 +57,9 @@ private:
     vector<AnimClipInfo> mAnimations; 
     vector<BoneInfo> mBones;
 
-    unique_ptr<UploadBuffer> mBoneFrameBuffer;    // Å°ÇÁ·¹ÀÓ µ¥ÀÌÅÍ
-    unique_ptr<UploadBuffer> mOffsetBuffer;       // ¿ÀÇÁ¼Â Çà·Ä
-    unique_ptr<UAVBuffer> mFinalBuffer;        // ÃÖÁ¾ º» Çà·Ä (Compute Ãâ·Â)
+    unique_ptr<UploadBuffer> mBoneFrameBuffer;    // Å°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    unique_ptr<UploadBuffer> mOffsetBuffer;       // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    unique_ptr<UAVBuffer> mFinalBuffer;        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ (Compute ï¿½ï¿½ï¿½)
     unique_ptr<UploadBuffer> mAnimationCB;
 
     int mBoneCount = 0;

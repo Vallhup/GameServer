@@ -1,0 +1,11 @@
+#pragma once
+
+class AnimationSet;
+
+class AnimationSetFactory
+{
+public:
+	static shared_ptr<AnimationSet> CreateKnightSet();
+	static shared_ptr<AnimationSet> CreateLancerSet();
+	static shared_ptr<AnimationSet> CreateTankerSet();
+};

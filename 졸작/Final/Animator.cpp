@@ -117,13 +117,13 @@ void Animator::CreateBuffers(DX12Core& core)
 {
     if (mAnimations.empty()) return;
 
-    // ¹öÆÛ »ý¼º
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     mBoneFrameBuffer = make_unique<UploadBuffer>();
     mOffsetBuffer = make_unique<UploadBuffer>();
     mFinalBuffer = make_unique<UAVBuffer>();
     mAnimationCB = make_unique<UploadBuffer>();
 
-    // BoneFrame ¹öÆÛ - ·¹ÆÛ·±½º¿Í µ¿ÀÏÇÑ ±¸Á¶
+    // BoneFrame ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½Û·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     size_t totalKeyFrames = 0;
     for (const auto& anim : mAnimations) {
         totalKeyFrames += anim.keyFrames.size();
@@ -149,7 +149,6 @@ void Animator::CreateBuffers(DX12Core& core)
         sizeof(AnimationConstants)
     );
 
-    // ¸ðµç ¾Ö´Ï¸ÞÀÌ¼Ç µ¥ÀÌÅÍ¸¦ ÇÏ³ªÀÇ ¹öÆÛ¿¡ º¹»ç
     vector<AnimFrameParams> allFrameData;
     for (const auto& anim : mAnimations) {
         allFrameData.insert(allFrameData.end(), anim.keyFrames.begin(), anim.keyFrames.end());
@@ -211,7 +210,7 @@ void Animator::ExecuteComputeShader(DX12Core& core)
 
     cmdList->SetComputeRootUnorderedAccessView(11, GetFinalBuffer()->GetGPUVirtualAddress());     
 
-    UINT groupCount = (animData.boneCount + 255) / 256;  // 256À¸·Î ³ª´²¼­ ¿Ã¸²
+    UINT groupCount = (animData.boneCount + 255) / 256;  
     cmdList->Dispatch(groupCount, 1, 1);
 }
 

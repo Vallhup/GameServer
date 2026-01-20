@@ -64,9 +64,6 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Animator.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
     <ClCompile Include="DX12Core.cpp">
       <Filter>DirectX12</Filter>
     </ClCompile>
@@ -136,6 +133,18 @@
     <ClCompile Include="InstancingBatch.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationMachine.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationSet.cpp">
+      <Filter>Common\AnimationSet</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationSetFactory.cpp">
+      <Filter>Common\AnimationSet</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -197,9 +206,6 @@
     </ClInclude>
     <ClInclude Include="GameScene.h">
       <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Animator.h">
-      <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="DX12Core.h">
       <Filter>DirectX12</Filter>
@@ -272,6 +278,18 @@
     </ClInclude>
     <ClInclude Include="InstancingBatch.h">
       <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationMachine.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationSetFactory.h">
+      <Filter>Common\AnimationSet</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationSet.h">
+      <Filter>Common\AnimationSet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -408,6 +426,9 @@
     </Filter>
     <Filter Include="Rendering">
       <UniqueIdentifier>{e4a2bbc4-7dee-4d55-bcec-4182cfc74628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\AnimationSet">
+      <UniqueIdentifier>{8bd870aa-3a8d-4cfa-8546-2bbb595909a0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

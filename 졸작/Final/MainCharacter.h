@@ -25,8 +25,6 @@ private:
 	float targetYawAngle = 0.0f;
 	bool needsRotation = false;
 
-	int currentAnimState = 0;
-
 	static constexpr float MOVE_SPEED = 2.0f;
 	static constexpr float ROT_SPEED = 3.14f;
 };
