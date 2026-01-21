@@ -20,8 +20,7 @@ void AnimationMachine::Update(float deltaTime)
         {
             transitionStarted = true;
 
-            string nextClip = onActionEnd ? onActionEnd() : "Idle";
-            PlayClip(nextClip);
+            EndCurrentClip();
         }
     }
 
@@ -45,6 +44,12 @@ bool AnimationMachine::TryPlayClip(const string& clipName)
 
     PlayClip(clipName);
     return true;
+}
+
+void AnimationMachine::EndCurrentClip()
+{
+    string nextClip = onActionEnd ? onActionEnd() : "Idle";
+    PlayClip(nextClip);
 }
 
 void AnimationMachine::OnServerClipConfirm(const string& clipName)

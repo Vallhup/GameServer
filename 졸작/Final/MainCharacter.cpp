@@ -13,6 +13,8 @@ void MainCharacter::Update(float deltaTime)
 		BasicMove();
 		BasicAttack();
 		BasicDodge();
+		BasicGuard();
+		BasicParry();
 	}
 
 	GameObject::Update(deltaTime);
@@ -24,9 +26,6 @@ void MainCharacter::Update(float deltaTime)
 void MainCharacter::BasicMove()
 {
 	auto& input = GET(Input);
-
-	static bool wasMoving = false;
-	static bool wasRunning = false;
 
 	bool isMoving = ranges::any_of(
 		initializer_list{ 'W', 'S', 'A', 'D' },
@@ -67,10 +66,9 @@ void MainCharacter::BasicAttack()
 {
 	auto& input = GET(Input);
 
-	static bool prev{ false };
-	bool now = input.GetMouseButton(MouseButton::LEFT);
+	bool currentAttack = input.GetMouseButton(MouseButton::LEFT);
 
-	if (now && !prev) {
+	if (currentAttack && !prevAttack) {
 		input.SendAttackPacket();
 
 		auto animMachine = GetComponent<AnimationMachine>();
@@ -80,7 +78,7 @@ void MainCharacter::BasicAttack()
 		}
 	}
 
-	prev = now;
+	prevAttack = currentAttack;
 }
 
 void MainCharacter::BasicDodge()
@@ -98,6 +96,53 @@ void MainCharacter::BasicDodge()
 	}
 }
 
+void MainCharacter::BasicGuard()
+{
+	auto& input = GET(Input);
+
+	bool isGuarding = input.GetKey('Q');
+
+	auto animMachine = GetComponent<AnimationMachine>();
+	if (animMachine) {
+		if (!wasGuarding && isGuarding)
+		{
+			if (animMachine->TryPlayClip("Guard"))
+			{
+				input.SendGuardPacket(true);
+				wasGuarding = true;
+			}
+		}
+		else if (wasGuarding && !isGuarding)
+		{
+			if (animMachine->IsPlaying("Guard"))
+			{
+				input.SendGuardPacket(false);
+				animMachine->EndCurrentClip();
+			}
+			wasGuarding = false;
+		}
+	}
+}
+
+void MainCharacter::BasicParry()
+{
+	auto& input = GET(Input);
+
+	bool currentParry = input.GetMouseButton(MouseButton::RIGHT);
+
+	if (currentParry && !prevParry) {
+		input.SendParryPacket(true);
+
+		auto animMachine = GetComponent<AnimationMachine>();
+		if (animMachine)
+		{
+			animMachine->TryPlayClip("Parry");
+		}
+	}
+
+	prevParry = currentParry;
+}
+
 void MainCharacter::RegisterAnimationCallback()
 {
 	auto animMachine = GetComponent<AnimationMachine>();
@@ -105,6 +150,11 @@ void MainCharacter::RegisterAnimationCallback()
 
 	animMachine->onActionEnd = [this]() -> string {
 		auto& input = GET(Input);
+
+		if (input.GetMouseButton(MouseButton::RIGHT)) {
+			input.SendParryPacket(true);
+			return "Parry";
+		}
 
 		if (input.GetKey('C')) {
 			input.SendDodgePacket();

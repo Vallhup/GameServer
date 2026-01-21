@@ -16,6 +16,7 @@ public:
     void SetAnimationSet(shared_ptr<AnimationSet> animSet);
 
     bool TryPlayClip(const string& clipName);
+    void EndCurrentClip();
 
     void OnServerClipConfirm(const string& clipName);
 
