@@ -95,3 +95,27 @@ void Input::SendDodgePacket()
 		PacketType::CS_DODGE, dodge);
 	network->Send(data);
 }
+
+void Input::SendGuardPacket(bool in)
+{
+	/*if (!network) return;
+
+	Protocol::CS_GUARD_PACKET guard;
+	guard.set_guard(in);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_GUARD_PACKET>(
+		PacketType::CS_GUARD, guard);
+	network->Send(data);*/
+}
+
+void Input::SendParryPacket(bool in)
+{
+	/*if (!network) return;
+
+	Protocol::CS_PARRY_PACKET parry;
+	parry.set_parry(in);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_PARRY_PACKET>(
+		PacketType::CS_PARRY, parry);
+	network->Send(data);*/
+}

@@ -41,6 +41,8 @@ public:
 	void SendMovePacket(int inputX, int intputZ, float yaw);
 	void SendAttackPacket();
 	void SendDodgePacket();
+	void SendGuardPacket(bool in);
+	void SendParryPacket(bool in);
 
 private:
 	bitset<256> mPressedKeys = {};
