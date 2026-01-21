@@ -3,6 +3,7 @@
 #include "RootSignature.h"
 #include "Shader.h"
 #include "Timer.h"
+#include "HiZCuller.h"
 
 void DX12Core::Initialize(HWND hwnd)
 {
@@ -35,6 +36,9 @@ void DX12Core::Initialize(HWND hwnd)
 	CreateGBuffer();
 	CreateDeferredRenderingDescriptors();
 	SetupLights();
+
+	hiZCuller = make_unique<HiZCuller>();
+	hiZCuller->Initialize(device.Get(), WinSize.x, WinSize.y, dsvBuffer.Get());
 }
 
 void DX12Core::CreateDevice()
@@ -212,7 +216,7 @@ void DX12Core::CreateDepthStencilBuffer(DXGI_FORMAT dsvformat)
 	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(dsvFormat, WinSize.x, WinSize.y);
 	desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
-	D3D12_CLEAR_VALUE optimizedClearValue = CD3DX12_CLEAR_VALUE(dsvFormat, 1.0f, 0);
+	D3D12_CLEAR_VALUE optimizedClearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0);
 
 	device->CreateCommittedResource(
 		&heapProperty,
@@ -231,7 +235,11 @@ void DX12Core::CreateDepthStencilBuffer(DXGI_FORMAT dsvformat)
 	device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&dsvHeap));
 
 	dsvHandle = dsvHeap->GetCPUDescriptorHandleForHeapStart();
-	device->CreateDepthStencilView(dsvBuffer.Get(), nullptr, dsvHandle);
+
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	device->CreateDepthStencilView(dsvBuffer.Get(), &dsvDesc, dsvHandle);
 }
 
 void DX12Core::CreateGBuffer()
@@ -715,6 +723,11 @@ void DX12Core::ResetCommandQueue()
 	cmdList->Reset(cmdAlloc.Get(), nullptr);
 }
 
+void DX12Core::GenerateHiZ()
+{
+	hiZCuller->GenerateHiZ(*this);
+}
+
 ID3D12Device* DX12Core::GetDevice() const
 {
 	return device.Get();
@@ -783,4 +796,9 @@ void DX12Core::SetPlayerPosForShadow(const XMFLOAT3& pos)
 ID3D12DescriptorHeap* DX12Core::GetDeferredSRVHeap() const
 {
 	return deferredSRVHeap.Get();
+}
+
+ID3D12Resource* DX12Core::GetDepthBuffer() const
+{
+	return dsvBuffer.Get();
 }

@@ -14,7 +14,7 @@ void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    desc.NumDescriptors = 1;
+    desc.NumDescriptors = 20;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
     HRESULT hr = core.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&srvHeap));
@@ -166,9 +166,44 @@ void ImGuiManager::DrawDebugUI()
         ImGui::End();
     }
 
+    if (ImGui::Begin("Hi-Z Debug", &showHiZDebug))
+    {
+        static int selectedMip = 0;
+        ImGui::SliderInt("Mip Level", &selectedMip, 0, hiZMipLevels - 1);
+
+        UINT descSize = coreRef->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(srvHeap->GetGPUDescriptorHandleForHeapStart());
+        gpuHandle.Offset(hiZSrvStartIndex + selectedMip, descSize);
+
+        // 텍스처 크기 (밉에 따라 축소)
+        float size = 256.0f;
+        ImGui::Image((ImTextureID)gpuHandle.ptr, ImVec2(size, size));
+    }
+    ImGui::End();
 
     if (showDemoWindow)
     {
         ImGui::ShowDemoWindow(&showDemoWindow);
+    }
+}
+
+void ImGuiManager::RegisterHiZTexture(ID3D12Device* device, ID3D12Resource* hiZTexture, UINT mipLevels)
+{
+    hiZMipLevels = mipLevels;
+
+    UINT descSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(srvHeap->GetCPUDescriptorHandleForHeapStart());
+    cpuHandle.Offset(hiZSrvStartIndex, descSize);  // 1번부터 시작
+
+    for (UINT i = 0; i < mipLevels; ++i)
+    {
+        D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+        srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        srvDesc.Texture2D.MipLevels = 1;
+        srvDesc.Texture2D.MostDetailedMip = i;
+        device->CreateShaderResourceView(hiZTexture, &srvDesc, cpuHandle);
+        cpuHandle.Offset(1, descSize);
     }
 }

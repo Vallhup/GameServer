@@ -10,6 +10,7 @@
 #include "Input.h"
 #include "SoundManager.h"
 #include "ImGuiManager.h"
+#include "HiZCuller.h"
 
 Engine& Engine::Get()
 {
@@ -29,6 +30,11 @@ void Engine::Initialize(HWND hwnd, std::string_view ip, uint16 port,
     graphics->Initialize(mHwnd);
 
     GET(ImGuiManager).Initialize(mHwnd, *graphics);
+
+    GET(ImGuiManager).RegisterHiZTexture(
+        graphics->GetDevice(),
+        graphics->GetHiZCuller()->GetHiZTexture(),
+        graphics->GetHiZCuller()->GetMipLevels());
 
     sceneManager = make_unique<SceneManager>();
     sceneManager->Initialize(hwnd, *graphics);
@@ -68,6 +74,8 @@ void Engine::Render()
     graphics->BeginGBufferPass();
     sceneManager->RenderDeferred();  // 불투명한 것들만
     graphics->EndGBufferPass();
+
+    graphics->GenerateHiZ();
 
     // 1.5. SSAO Pass (차폐도) - 추후 재시도
 

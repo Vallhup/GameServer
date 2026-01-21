@@ -52,6 +52,7 @@ struct FogConstants
 
 class RootSignature;
 class Shader;
+class HiZCuller;
 
 class DX12Core
 {
@@ -78,6 +79,8 @@ public:
 	void FlushCommandQueue();
 	void ResetCommandQueue();
 
+	void GenerateHiZ();
+
 	ID3D12Device* GetDevice() const;
 	ID3D12CommandQueue* GetCmdQueue() const;
 	ID3D12GraphicsCommandList* GetGraphicsCmdList() const;
@@ -92,8 +95,12 @@ public:
 
 	ID3D12DescriptorHeap* GetDeferredSRVHeap() const;
 
+	ID3D12Resource* GetDepthBuffer() const;
+
 	DeferredLightConstants& GetDeferredLightData() { return deferredLightData; }
 	ForwardLightConstants& GetForwardLightData() { return forwardLightData; }
+
+	HiZCuller* GetHiZCuller() const { return hiZCuller.get(); }
 
 	void SetBackgroundColor(const float* color);
 	void SetPlayerPosForShadow(const XMFLOAT3& pos);
@@ -104,7 +111,7 @@ private:
 	void CreateCommandObjects();
 	void CreateSwapChain(HWND hwnd);
 	void CreateRenderTargetView();
-	void CreateDepthStencilBuffer(DXGI_FORMAT dsvformat = DXGI_FORMAT_D32_FLOAT);
+	void CreateDepthStencilBuffer(DXGI_FORMAT dsvformat = DXGI_FORMAT_R32_TYPELESS);
 
 	void CreateGBuffer();
 	void CreateShadowMap();
@@ -167,4 +174,6 @@ private:
 	XMFLOAT3 playerCurrentPos = { 0, 0, 0 };
 	DeferredLightConstants deferredLightData = {};
 	ForwardLightConstants forwardLightData = {};
+
+	unique_ptr<HiZCuller> hiZCuller;
 };
