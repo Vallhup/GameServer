@@ -215,7 +215,6 @@ exit 0</Command>
     <ClCompile Include="EffectRenderer.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GPUBuffer.cpp" />
-    <ClCompile Include="HiZCuller.cpp" />
     <ClCompile Include="ImGuiManager.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="InstanceLoader.cpp" />
@@ -273,7 +272,6 @@ exit 0</Command>
     <ClInclude Include="EffectRenderer.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="GPUBuffer.h" />
-    <ClInclude Include="HiZCuller.h" />
     <ClInclude Include="ImGuiManager.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="InstanceLoader.h" />
@@ -307,7 +305,6 @@ exit 0</Command>
   <ItemGroup>
     <None Include="..\Shaders\animation.hlsli" />
     <None Include="..\Shaders\Fog.hlsli" />
-    <None Include="..\Shaders\HiZGenerateCS.hlsli" />
     <None Include="..\Shaders\ShaderResources.hlsli" />
     <None Include="..\Shaders\Constants.hlsli" />
     <None Include="..\Shaders\ForwardPS.hlsli" />

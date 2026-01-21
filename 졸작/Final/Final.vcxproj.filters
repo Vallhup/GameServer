@@ -148,9 +148,6 @@
     <ClCompile Include="InstanceLoader.cpp">
       <Filter>Loader</Filter>
     </ClCompile>
-    <ClCompile Include="HiZCuller.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -300,9 +297,6 @@
     <ClInclude Include="InstanceLoader.h">
       <Filter>Loader</Filter>
     </ClInclude>
-    <ClInclude Include="HiZCuller.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GBufferVS.hlsli">
@@ -364,9 +358,6 @@
     </None>
     <None Include="..\Shaders\SkyboxPS.hlsli">
       <Filter>Shaders\SkyBox</Filter>
-    </None>
-    <None Include="..\Shaders\HiZGenerateCS.hlsli">
-      <Filter>Shaders\HiZCulling</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -444,9 +435,6 @@
     </Filter>
     <Filter Include="Loader">
       <UniqueIdentifier>{fb3b4387-ca26-490a-bbd0-8ccce2eaa6f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\HiZCulling">
-      <UniqueIdentifier>{53c52325-c2f8-4b68-a37b-82202871945f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
