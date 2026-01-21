@@ -79,10 +79,12 @@ void Camera::UpdateSmoothFollow(float deltaTime)
 {
     XMVECTOR currentTarget = XMLoadFloat3(&currentTargetPos);
     XMVECTOR desiredTarget = XMLoadFloat3(&desiredTargetPos);
-    XMVECTOR newTarget = XMVectorLerp(currentTarget, desiredTarget, TARGET_FOLLOW_SPEED * deltaTime);
+    float targetT = min(TARGET_FOLLOW_SPEED * deltaTime, 1.0f);
+    XMVECTOR newTarget = XMVectorLerp(currentTarget, desiredTarget, targetT);
     XMStoreFloat3(&currentTargetPos, newTarget);
 
-    currentDistance = currentDistance + (desiredDistance - currentDistance) * (zoomFollowSpeed * deltaTime);
+    float zoomT = min(zoomFollowSpeed * deltaTime, 1.0f);
+    currentDistance = currentDistance + (desiredDistance - currentDistance) * zoomT;
     float radYaw = XMConvertToRadians(yaw);
     float radPitch = XMConvertToRadians(-pitch);
 
@@ -93,7 +95,8 @@ void Camera::UpdateSmoothFollow(float deltaTime)
 
     XMVECTOR currentPos = XMLoadFloat3(&position);
     XMVECTOR targetPos = XMLoadFloat3(&targetCameraPos);
-    XMVECTOR newPos = XMVectorLerp(currentPos, targetPos, CAMERA_FOLLOW_SPEED * deltaTime);
+    float camT = min(CAMERA_FOLLOW_SPEED * deltaTime, 1.0f);
+    XMVECTOR newPos = XMVectorLerp(currentPos, targetPos, camT);
     XMStoreFloat3(&position, newPos);
 
     targetPosition = currentTargetPos;
@@ -103,11 +106,20 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
 {
     XMVECTOR eyePos = XMLoadFloat3(&position);
     XMVECTOR lookAt = XMLoadFloat3(&targetPosition);
+
+    XMVECTOR diff = XMVectorSubtract(lookAt, eyePos);
+
+    float dist = XMVectorGetX(XMVector3Length(diff));
+    if (dist < 0.001f)
+    {
+        lookAt = XMVectorAdd(eyePos, XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
+    }
+
     XMVECTOR upDir = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
     XMMATRIX matView = XMMatrixLookAtLH(eyePos, lookAt, upDir);
 
     float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
-    XMMATRIX matProj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 1000.0f);
+    XMMATRIX matProj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 50.0f);
 
     BoundingFrustum::CreateFromMatrix(viewFrustum, matProj);
     
@@ -136,7 +148,7 @@ void Camera::UpdateForwardAndRight()
 
     XMVECTOR forward = XMLoadFloat3(&camForward);
     XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    XMVECTOR rightVec = XMVector3Cross(up, forward);    // up & forward 인자 순서 반대하면 leftVec
+    XMVECTOR rightVec = XMVector3Cross(up, forward);    
     rightVec = XMVector3Normalize(rightVec);
     XMStoreFloat3(&camRight, rightVec);
 }
@@ -313,7 +325,6 @@ void Camera::ChangeCursorInfo(bool in)
         RECT clipRect = { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
         ClipCursor(&clipRect);
 
-        // 센터도 스크린 좌표로
         POINT center = { WinSize.x / 2, WinSize.y / 2 };
         ClientToScreen(hwnd, &center);
         SetCursorPos(center.x, center.y);

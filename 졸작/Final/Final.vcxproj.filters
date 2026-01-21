@@ -41,7 +41,7 @@
       <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="Importer.cpp">
-      <Filter>Importer</Filter>
+      <Filter>Loader</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Common</Filter>
@@ -145,6 +145,9 @@
     <ClCompile Include="AnimationSetFactory.cpp">
       <Filter>Common\AnimationSet</Filter>
     </ClCompile>
+    <ClCompile Include="InstanceLoader.cpp">
+      <Filter>Loader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -184,7 +187,7 @@
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="Importer.h">
-      <Filter>Importer</Filter>
+      <Filter>Loader</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Common</Filter>
@@ -291,6 +294,9 @@
     <ClInclude Include="AnimationSet.h">
       <Filter>Common\AnimationSet</Filter>
     </ClInclude>
+    <ClInclude Include="InstanceLoader.h">
+      <Filter>Loader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GBufferVS.hlsli">
@@ -382,9 +388,6 @@
     <Filter Include="Component">
       <UniqueIdentifier>{078e8281-9eda-40e1-84d2-46029c169ce8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Importer">
-      <UniqueIdentifier>{fb3b4387-ca26-490a-bbd0-8ccce2eaa6f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\Forward">
       <UniqueIdentifier>{f1336e4c-b49f-485b-83d8-8f6f8110835a}</UniqueIdentifier>
     </Filter>
@@ -429,6 +432,9 @@
     </Filter>
     <Filter Include="Common\AnimationSet">
       <UniqueIdentifier>{8bd870aa-3a8d-4cfa-8546-2bbb595909a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Loader">
+      <UniqueIdentifier>{fb3b4387-ca26-490a-bbd0-8ccce2eaa6f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

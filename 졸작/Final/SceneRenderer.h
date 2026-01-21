@@ -29,6 +29,6 @@ private:
     unique_ptr<UploadBuffer> objectCBPool;
     UINT cbIndex = 0;
 
-    static constexpr size_t MAX_OBJECTS = 1000;
+    static constexpr size_t MAX_OBJECTS = 5000;
     static constexpr size_t CONSTANT_BUFFER_ALIGNMENT = 256;
 };

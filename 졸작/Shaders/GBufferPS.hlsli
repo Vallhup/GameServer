@@ -1,10 +1,17 @@
 #include "ShaderResources.hlsli"
 #include "InOutFormats.hlsli"
 
-GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input) : SV_Target
+GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : SV_Target
 {
     GBUFFER_PS_OUT output;
     
+    // Is it correct?
+    if (!isFrontFace)
+    {
+        input.normal = -input.normal;
+        input.tangent = -input.tangent;
+    }
+
     if (useTexture)
     {
         MaterialData material = materialBuffer[input.materialIndex];
@@ -18,7 +25,6 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input) : SV_Target
         float3 emission = float3(0, 0, 0);
         float height = 0.0f;
         
-        // Bindless 텍스처 샘플링
         if (material.baseColorTexIndex != 0xFFFFFFFF)
             baseColor = bindlessTextures[NonUniformResourceIndex(material.baseColorTexIndex)].Sample(linearSampler, input.uv);
         

@@ -4,6 +4,7 @@ enum class PSOType {
 	Opaque,
 	Transparent,
 	GBuffer,
+	GBufferInstancing,
 	Lighting,
 	Compute,
 	Shadow,

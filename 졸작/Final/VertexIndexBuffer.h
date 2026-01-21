@@ -9,6 +9,7 @@ public:
     void Draw(ID3D12GraphicsCommandList* cmdList);
     void DrawInstanced(ID3D12GraphicsCommandList* cmdList, UINT instancecount);
     void DrawIndexed(ID3D12GraphicsCommandList* cmdList, UINT indexcount, UINT startindex);
+    void DrawIndexedInstanced(ID3D12GraphicsCommandList* cmdList, UINT indexcount, UINT instancecount, UINT startindex);
     void ReleaseUploadBuffers();
 
 private:

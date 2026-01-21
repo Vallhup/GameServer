@@ -43,6 +43,8 @@ protected:
 
 	template<typename T, size_t N>
 	void CreateAndBatchObjects(const wstring& path, const T(&data)[N], vector<shared_ptr<InstancingBatch>>& targetBatchList);
+	template<typename T>
+	void CreateAndBatchObjects(const wstring& path, const vector<T>& data, vector<shared_ptr<InstancingBatch>>& targetBatchList);
 
 protected:
 	XMFLOAT4X4 mView = {};
@@ -74,6 +76,30 @@ void Scene::CreateAndBatchObjects(const wstring& path, const T(&data)[N], vector
 	auto batch = make_shared<InstancingBatch>();
 
 	for (int i = 0; i < N; ++i)
+	{
+		auto obj = CreateStaticMesh(path, data[i]);
+
+		if (i == 0)
+		{
+			if (auto mesh = obj->GetComponent<Mesh>())
+				batch->Initialize(mesh);
+		}
+
+		batch->AddObject(obj);
+	}
+
+	batch->BuildBuffers(*coreRef);
+	targetBatchList.push_back(move(batch));
+}
+
+template <typename T>
+void Scene::CreateAndBatchObjects(const wstring& path, const vector<T>& data, vector<shared_ptr<InstancingBatch>>& targetBatchList)
+{
+	if (data.empty()) return;
+
+	auto batch = make_shared<InstancingBatch>();
+
+	for (int i = 0; i < data.size(); ++i)
 	{
 		auto obj = CreateStaticMesh(path, data[i]);
 
