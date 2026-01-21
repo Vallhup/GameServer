@@ -6,7 +6,7 @@
 
 void ServerConnectionListener::OnConnected(Connection& conn)
 {
-	_connMng.Add(conn);
+	_connRegistry.Add(conn.shared_from_this());
 }
 
 void ServerConnectionListener::OnDisconnected(Connection& conn)
@@ -17,7 +17,7 @@ void ServerConnectionListener::OnDisconnected(Connection& conn)
 	Event ev{ EventType::EV_DISCONNECT, dc };
 	Framework::Get().eventQueue.push(ev);
 
-	_connMng.Remove(conn);
+	_connRegistry.Remove(id);
 }
 
 void ServerConnectionListener::OnPacketReceived(Connection& conn, const PacketHeader& header, const BYTE* data)
@@ -32,10 +32,10 @@ void ServerConnectionListener::OnPacketReceived(Connection& conn, const PacketHe
 
 void ServerConnectionListener::Send(uint32 id, SendBuffer* data)
 {
-	_connMng.Send(id, data);
+	_connRegistry.Send(id, data);
 }
 
 void ServerConnectionListener::Broadcast(SendBuffer* data, uint32 expected)
 {
-	_connMng.Broadcast(data, expected);
+	_connRegistry.Broadcast(data, expected);
 }

@@ -2,6 +2,7 @@
 
 #include "IConnectionListener.h"
 #include "ConnectionManager.h"
+#include "ConnectionRegistry.h"
 #include "NetworkHandler.h"
 #include "Network.h"
 
@@ -21,5 +22,6 @@ public:
 
 private:
 	NetworkHandler _handler;
-	ConnectionManager _connMng;
+	//ConnectionManager _connMng;
+	ConnectionRegistry _connRegistry;
 };

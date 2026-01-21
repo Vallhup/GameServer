@@ -8,11 +8,13 @@
 #include <span>
 
 #include <concurrent_queue.h>
+#include <concurrent_unordered_map.h>
 
 #include "types.h"
 
 #include "ServerService.h"
 #include "ClientService.h"
+#include "StressTestClientService.h"
 
 #include "Acceptor.h"
 #include "IAcceptListener.h"
