@@ -36,7 +36,7 @@ protected:
 
 private:
 	void CreateKnightPool();
-	void CreateCastle();
+	void CreateMap();
 	void CreateEffectSamples();
 
 private:

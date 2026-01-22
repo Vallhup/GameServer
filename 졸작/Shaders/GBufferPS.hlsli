@@ -5,7 +5,6 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
 {
     GBUFFER_PS_OUT output;
     
-    // Is it correct?
     if (!isFrontFace)
     {
         input.normal = -input.normal;

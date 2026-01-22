@@ -106,7 +106,7 @@ float3 CalculateIBL(float3 N, float3 V, float3 baseColor, float metallic,
     float3 specularIBL = prefilteredColor * (F * brdf.x + brdf.y);
     
     float diffuseIntensity = 1.0f; 
-    float specularIntensity = 1.0f;
+    float specularIntensity = 0.1f;
     
     float3 ambient = (kD * diffuseIBL * diffuseIntensity + specularIBL * specularIntensity) * ao;
     
