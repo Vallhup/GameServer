@@ -46,6 +46,10 @@ struct MapCollisionPair {
 	uint32 obbId;
 };
 
+struct DBEvent {
+
+};
+
 struct ECS {
 	template<CompT T>
 	ComponentStorage<T>& GetStorage()
@@ -65,4 +69,6 @@ struct ECS {
 
 	// TEMP
 	std::vector<OBB> mapOBBs;
+
+	concurrency::concurrent_queue<DBEvent> dbEvents;
 };
