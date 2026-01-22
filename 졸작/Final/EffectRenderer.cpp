@@ -20,7 +20,6 @@ EffectRenderer::~EffectRenderer()
 
 void EffectRenderer::Initialize(DX12Core& core)
 {
-    // Effekseer �ʱ�ȭ
     manager = Effekseer::Manager::Create(8000);
     manager->SetCoordinateSystem(Effekseer::CoordinateSystem::LH);
 
@@ -30,8 +29,8 @@ void EffectRenderer::Initialize(DX12Core& core)
 
     renderer = EffekseerRendererDX12::Create(
         efDevice,                   // Device, cmdQueue, swapchain buff count
-        &renderTargetFormat,        // renderTargetFormats (Forward Pass - �����)
-        1,                          // renderTargetCount (Forward�� 1��)
+        &renderTargetFormat,        // renderTargetFormats
+        1,                          // renderTargetCount
         DXGI_FORMAT_D32_FLOAT,      // depthFormat 
         false,                      // isReversedDepth
         8000                        // squareMaxCount
