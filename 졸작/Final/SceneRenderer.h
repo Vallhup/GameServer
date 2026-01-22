@@ -5,6 +5,7 @@ class GameObject;
 class Mesh;
 class Animator;
 class Camera;
+class Terrain;
 struct ObjectConstants;
 
 class SceneRenderer
@@ -16,6 +17,7 @@ public:
     void RenderDeferred(DX12Core& core, const vector<shared_ptr<GameObject>>& objects, const Camera* cam);
     void RenderForward(DX12Core& core, const vector<shared_ptr<GameObject>>& objects, const Camera* cam);
     void RenderShadow(DX12Core& core, const vector<shared_ptr<GameObject>>& objects);
+    void RenderTerrain(DX12Core& core, Terrain* terrain);
     void RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer);
     void RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer);
 

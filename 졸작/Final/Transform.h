@@ -22,6 +22,8 @@ public:
 	void SetScale(float x, float y, float z);
 	void SetScale(const XMFLOAT3& scl);
 
+	void SetHeightImmediate(float y);
+
 	const XMFLOAT3& GetPosition() const;
 	const XMFLOAT3& GetRotation() const;
 	const XMFLOAT3& GetScale() const;

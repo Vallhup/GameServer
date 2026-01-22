@@ -1,0 +1,38 @@
+#pragma once
+
+class DX12Core;
+class VertexIndexBuffer;
+
+class Terrain
+{
+public:
+	Terrain() = default;
+	~Terrain() = default;
+
+	void Initialize(DX12Core& core, const wstring& heightmapPath, int gridSize, float worldSize, float heightScale);
+
+	void Render(ID3D12GraphicsCommandList* cmdList);
+
+	float SampleHeightAt(float worldX, float worldZ) const;
+
+	VertexIndexBuffer* GetVertexIndexBuffer() const { return vertexIndexBuffer.get(); }
+
+private:
+	void LoadHeightmap(const wstring& path);
+	void BuildVertices();
+	void BuildIndices();
+
+private:
+	shared_ptr<VertexIndexBuffer> vertexIndexBuffer;
+
+	vector<float> heightmapData;
+	int heightmapWidth = 0;
+	int heightmapHeight = 0;
+
+	int gridSize = 0;
+	float worldSize = 0.0f;
+	float heightScale = 0.0f;
+
+	vector<Vertex> vertices;
+	vector<UINT> indices;
+};

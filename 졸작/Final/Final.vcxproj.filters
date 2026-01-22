@@ -148,6 +148,9 @@
     <ClCompile Include="InstanceLoader.cpp">
       <Filter>Loader</Filter>
     </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -296,6 +299,9 @@
     </ClInclude>
     <ClInclude Include="InstanceLoader.h">
       <Filter>Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -10,6 +10,7 @@
 #include "Shader.h"
 #include "RootSignature.h"
 #include "Camera.h"
+#include "Terrain.h"
 
 void SceneRenderer::Initialize(ID3D12Device* device)
 {
@@ -397,6 +398,32 @@ void SceneRenderer::RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT insta
             + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
         OutputDebugStringA(msg.c_str());
     }
+}
+
+void SceneRenderer::RenderTerrain(DX12Core& core, Terrain* terrain)
+{
+    if (!terrain || !terrain->GetVertexIndexBuffer()) return;
+
+    if (cbIndex >= MAX_OBJECTS) {
+        OutputDebugStringA("cbIndex Overflowed!!\n");
+        return;
+    }
+
+    auto cmdList = core.GetGraphicsCmdList();
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
+    SetupRenderingState(core);
+
+    // World matrix is identity (terrain is already in world space)
+    XMMATRIX world = XMMatrixIdentity();
+    auto objConst = MakeObjectConstants(world, 0, 0, 0);  // useTexture = 0
+
+    size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
+    objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
+    cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
+    cbIndex++;
+
+    terrain->GetVertexIndexBuffer()->Bind(cmdList);
+    terrain->GetVertexIndexBuffer()->Draw(cmdList);
 }
 
 void SceneRenderer::ReleaseUploadBuffer()

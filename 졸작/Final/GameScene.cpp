@@ -17,6 +17,7 @@
 #include "AnimationMachine.h"
 #include "AnimationSetFactory.h"
 #include "InstanceLoader.h"
+#include "Terrain.h"
 
 GameScene::~GameScene() = default;
 
@@ -61,11 +62,9 @@ void GameScene::CreateMap()
 	}
 #pragma endregion
 
-#pragma region Initialize Ground
-	constexpr InstanceData groundData = {
-				{ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.01f, 0.01f, 0.01f }
-			};
-	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/Map/ground", groundData));
+#pragma region Initialize Terrain
+	terrain = make_shared<Terrain>();
+	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
 #pragma endregion
 }
 
@@ -101,6 +100,13 @@ void GameScene::CreateEffectSamples()
 		effectObjects.push_back(effectSample);
 		AddGameObject(effectSample);
 	}
+}
+
+float GameScene::SampleHeightAt(float worldX, float worldZ) const
+{
+	if (terrain)
+		return terrain->SampleHeightAt(worldX, worldZ);
+	return 0.0f;
 }
 
 shared_ptr<MainCharacter> GameScene::GetAvailableKnight() const
@@ -191,7 +197,10 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			if (it != activePlayers.end())
 			{
 				auto transform = it->second->GetComponent<Transform>();
-				transform->SetPosition(move.x(), move.y() + 3.5f, move.z());
+				const XMFLOAT3& pos = transform->GetPosition();
+
+				// Y is updated every frame in UpdateScene based on terrain height
+				transform->SetPosition(move.x(), pos.y, move.z());
 				transform->SetTargetRotation(move.yaw());
 			}
 		}
@@ -323,7 +332,7 @@ void GameScene::UpdateScene(const float deltaTime)
 
 		SoundManager* sound = GET(Engine).GetSoundManager();
 
-		if (transform->GetPosition().z < -11.0f)
+		/*if (transform->GetPosition().z < -11.0f)
 		{
 			sound->PlayBGM("../Assets/Music/BGM/background.mp3");
 		}
@@ -331,6 +340,12 @@ void GameScene::UpdateScene(const float deltaTime)
 		{
 			if (GET(Input).GetKeyDown('0'))
 				sound->StopBGM();
+		}*/
+
+		if (GET(Input).GetKeyDown('0'))
+		{
+			XMFLOAT3 pos = myPlayer->GetComponent<Transform>()->GetPosition();
+			OutputDebugStringA(("MyPlayer Pos: " + to_string(pos.x) + ", " + to_string(pos.y) + ", " + to_string(pos.z) + "\n").c_str());
 		}
 	}
 
@@ -338,6 +353,17 @@ void GameScene::UpdateScene(const float deltaTime)
 	{
 		if (!obj->IsStatic())
 			obj->Update(deltaTime);
+	}
+
+	// Update player heights based on terrain
+	for (const auto& [sessionId, player] : activePlayers)
+	{
+		if (auto transform = player->GetComponent<Transform>())
+		{
+			const XMFLOAT3& pos = transform->GetPosition();
+			float terrainHeight = SampleHeightAt(pos.x, pos.z);
+			transform->SetHeightImmediate(terrainHeight);
+		}
 	}
 
 	if (cam)
@@ -351,6 +377,10 @@ void GameScene::UpdateScene(const float deltaTime)
 void GameScene::RenderSceneDeferred()
 {
 	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
+
+	// Render terrain
+	if (terrain)
+		sManagerRef->GetSceneRenderer()->RenderTerrain(*coreRef, terrain.get());
 
 	auto renderer = sManagerRef->GetSceneRenderer();
 	for (const auto& batch : instancingBatches)

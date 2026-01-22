@@ -5,12 +5,10 @@
 
 void Transform::Update(float deltaTime)
 {
-	// 이동 보간
 	position.x += (targetPos.x - position.x) * deltaTime * 10.0f;
-	position.y += (targetPos.y - position.y) * deltaTime * 10.0f;
+	//position.y += (targetPos.y - position.y) * deltaTime * 10.0f;
 	position.z += (targetPos.z - position.z) * deltaTime * 10.0f;
 
-	// 회전 보간
 	float angleDiff = targetRot - rotation.y;
 
 	while (angleDiff > XM_PI) angleDiff -= 2 * XM_PI;
@@ -91,6 +89,12 @@ void Transform::SetScale(const XMFLOAT3& scl)
 	scale = scl;
 
 	UpdateBoundingBox();
+}
+
+void Transform::SetHeightImmediate(float y)
+{
+	position.y = y;
+	targetPos.y = y;
 }
 
 const XMFLOAT3& Transform::GetPosition() const

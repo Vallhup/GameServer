@@ -4,6 +4,7 @@
 class NetworkManager;
 class VertexIndexBuffer;
 class SkyBox;
+class Terrain;
 
 class GameScene final : public Scene
 {
@@ -38,6 +39,8 @@ private:
 	void CreateKnightPool();
 	void CreateMap();
 	void CreateEffectSamples();
+	
+	float SampleHeightAt(float worldX, float worldZ) const;
 
 private:
 	NetworkManager* _nManager{ nullptr };
@@ -54,4 +57,6 @@ private:
 	shared_ptr<SkyBox> skyBox;
 
 	vector<shared_ptr<InstancingBatch>> instancingBatches;
+
+	shared_ptr<Terrain> terrain;
 };
