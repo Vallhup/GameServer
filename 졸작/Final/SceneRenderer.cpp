@@ -413,9 +413,11 @@ void SceneRenderer::RenderTerrain(DX12Core& core, Terrain* terrain)
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
     SetupRenderingState(core);
 
-    // World matrix is identity (terrain is already in world space)
     XMMATRIX world = XMMatrixIdentity();
-    auto objConst = MakeObjectConstants(world, 0, 0, 0);  // useTexture = 0
+
+    int useTexture = terrain->GetMaterial() ? 1 : 0;
+    UINT matIndex = terrain->GetMaterial() ? terrain->GetMaterial()->GetMaterialIndex() : 0;
+    auto objConst = MakeObjectConstants(world, useTexture, 0, matIndex);
 
     size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
     objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);

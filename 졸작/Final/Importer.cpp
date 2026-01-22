@@ -29,6 +29,17 @@ bool Importer::LoadModel(const wstring& basePath)
     return true;
 }
 
+bool Importer::LoadMaterialOnly(const wstring& basePath)
+{
+    wstring materialPath = basePath + L".mtl";
+    if (!LoadMaterials(materialPath)) {
+        MASSERT(false, "Failed to load material file");
+        return false;
+    }
+
+    return true;
+}
+
 void Importer::Release()
 {
     meshData = {};

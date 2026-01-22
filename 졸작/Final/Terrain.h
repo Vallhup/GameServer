@@ -2,6 +2,7 @@
 
 class DX12Core;
 class VertexIndexBuffer;
+class Material;
 
 class Terrain
 {
@@ -9,13 +10,14 @@ public:
 	Terrain() = default;
 	~Terrain() = default;
 
-	void Initialize(DX12Core& core, const wstring& heightmapPath, int gridSize, float worldSize, float heightScale);
+	void Initialize(DX12Core& core, const wstring& basePath, const wstring& heightmapPath, int gridSize, float worldSize, float heightScale);
 
 	void Render(ID3D12GraphicsCommandList* cmdList);
 
 	float SampleHeightAt(float worldX, float worldZ) const;
 
 	VertexIndexBuffer* GetVertexIndexBuffer() const { return vertexIndexBuffer.get(); }
+	Material* GetMaterial() const { return material.get(); }
 
 private:
 	void LoadHeightmap(const wstring& path);
@@ -24,6 +26,7 @@ private:
 
 private:
 	shared_ptr<VertexIndexBuffer> vertexIndexBuffer;
+	shared_ptr<Material> material;
 
 	vector<float> heightmapData;
 	int heightmapWidth = 0;

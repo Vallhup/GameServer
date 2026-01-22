@@ -2,8 +2,10 @@
 #include "Terrain.h"
 #include "DX12Core.h"
 #include "VertexIndexBuffer.h"
+#include "Importer.h"
+#include "Material.h"
 
-void Terrain::Initialize(DX12Core& core, const wstring& heightmapPath, int inGridSize, float inWorldSize, float inHeightScale)
+void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring& heightmapPath, int inGridSize, float inWorldSize, float inHeightScale)
 {
 	gridSize = inGridSize;
 	worldSize = inWorldSize;
@@ -20,6 +22,36 @@ void Terrain::Initialize(DX12Core& core, const wstring& heightmapPath, int inGri
 		vertices,
 		indices
 	);
+
+	Importer importer;
+
+	if (importer.LoadMaterialOnly(basePath)) {
+		const auto& mats = importer.GetMaterials();
+		
+		// Debug material info of terrain
+		/*OutputDebugStringA(("Total materials found: " + to_string(mats.size()) + "\n").c_str());
+
+		for (size_t i = 0; i < mats.size(); ++i) {
+			string msg = "Material[" + to_string(i) + "]: " + mats[i].name + "\n";
+			OutputDebugStringA(msg.c_str());
+
+			OutputDebugStringA(("  BaseColor: " + mats[i].baseColorTexPath + "\n").c_str());
+			OutputDebugStringA(("  Normal: " + mats[i].normalTexPath + "\n").c_str());
+			OutputDebugStringA(("  Roughness: " + mats[i].roughnessTexPath + "\n").c_str());
+			OutputDebugStringA(("  Metallic: " + mats[i].metallicTexPath + "\n").c_str());
+			OutputDebugStringA(("  Height: " + mats[i].heightTexPath + "\n").c_str());
+			OutputDebugStringA(("  Alpha: " + mats[i].alphaTexPath + "\n").c_str());
+			OutputDebugStringA(("  Emission: " + mats[i].emissionTexPath + "\n").c_str());
+			OutputDebugStringA(("  AO: " + mats[i].aoTexPath + "\n").c_str());
+		}*/
+
+		material = make_shared<Material>();
+		material->LoadFromMaterialData(
+			core.GetDevice(),
+			core.GetGraphicsCmdList(),
+			mats[0]
+		);
+	}
 
 	char buf[256];
 	sprintf_s(buf, "Terrain created: gridSize=%d, worldSize=%.1f, vertices=%zu, indices=%zu\n",

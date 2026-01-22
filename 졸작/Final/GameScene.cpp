@@ -64,7 +64,7 @@ void GameScene::CreateMap()
 
 #pragma region Initialize Terrain
 	terrain = make_shared<Terrain>();
-	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
+	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/ground", L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
 #pragma endregion
 }
 

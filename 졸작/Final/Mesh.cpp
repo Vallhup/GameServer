@@ -75,7 +75,8 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
 
         const auto& mats = importer.GetMaterials();
 
-        DebugMaterialInfo(mesh, mats);
+        // Debug mesh and material info of model
+        //DebugMaterialInfo(mesh, mats);
 
         if (mesh.subMeshes.size() > 1)
         {
