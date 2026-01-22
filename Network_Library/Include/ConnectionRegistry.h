@@ -5,9 +5,7 @@ class Connection;
 
 class ConnectionRegistry {
 public:
-	virtual ~ConnectionRegistry() = default;
-
-	void Add(const std::shared_ptr<Connection>& c);
+	void Add(const std::shared_ptr<Connection> c);
 	void Remove(uint32 id);
 
 	std::shared_ptr<Connection> GetConnection(uint32 id);
@@ -15,7 +13,7 @@ public:
 	void Send(uint32 id, SendBuffer* data);
 	void Broadcast(SendBuffer* data, uint32 expected);
 	
-protected:
+private:
 	concurrency::concurrent_unordered_map<uint32,
 		std::atomic<std::shared_ptr<Connection>>> _connections;
 };
