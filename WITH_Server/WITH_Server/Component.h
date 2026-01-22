@@ -6,10 +6,7 @@
 
 using namespace DirectX;
 
-struct Component {
-public:
-	virtual ~Component() = default;
-};
+struct Component { };
 
 struct Transform : public Component {
 	XMFLOAT3 position{ 0, 0, 0 };
@@ -122,6 +119,10 @@ struct AttackState : public Component {
 		if (hitCount < hitVictims.size())
 			hitVictims[hitCount++] = e;
 	}
+};
+
+struct ViewList : public Component {
+	std::vector<uint32> viewList;
 };
 
 struct ParryBuf : public Component {
