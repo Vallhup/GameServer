@@ -128,6 +128,12 @@
     <ClCompile Include="MapCollisionHandlingSystem.cpp">
       <Filter>ECS\System\Logic\Collision\Map</Filter>
     </ClCompile>
+    <ClCompile Include="DBManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewProcessingSystem.cpp">
+      <Filter>ECS\System\Logic\View</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h">
@@ -280,6 +286,12 @@
     <ClInclude Include="MapCollisionHandlingSystem.h">
       <Filter>ECS\System\Logic\Collision\Map</Filter>
     </ClInclude>
+    <ClInclude Include="DBManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewProcessingSystem.h">
+      <Filter>ECS\System\Logic\View</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -350,6 +362,9 @@
     </Filter>
     <Filter Include="ECS\System\Logic\Collision\Map">
       <UniqueIdentifier>{17286690-7cca-4dce-9a82-f2b942aa2a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\View">
+      <UniqueIdentifier>{f6782456-f514-4ebb-a32f-7c803e8180fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

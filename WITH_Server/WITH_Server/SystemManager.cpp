@@ -27,6 +27,8 @@ void SystemManager::Initalize(ECS& ecs, JobGraph& graph)
 	RegisterSystem<LocomotionMoveSystem>(ecs, 12);
 	RegisterSystem<MovementApplySystem>(ecs, 13);
 
+	// TODO : 공간분할
+
 	RegisterSystem<AnimationSelectSystem>(ecs, 21);
 	RegisterSystem<AnimationCommitSystem>(ecs, 22);
 	RegisterSystem<AnimationFrameSystem>(ecs, 23);
@@ -37,6 +39,8 @@ void SystemManager::Initalize(ECS& ecs, JobGraph& graph)
 	RegisterSystem<CombatCollisionCheckSystem>(ecs, 33);
 	RegisterSystem<CombatCollisionDedupSystem>(ecs, 34);
 	RegisterSystem<CombatCollisionHandlingSystem>(ecs, 35);
+
+	// TODO : 시야처리
 }
 
 const std::vector<System*> SystemManager::GetSystems() const

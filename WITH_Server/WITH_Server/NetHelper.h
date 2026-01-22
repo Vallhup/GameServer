@@ -38,7 +38,8 @@ namespace NetHelper {
 			(PacketType::SC_REMOVE, remove);
 	}
 
-	inline SendBuffer* SCMovePacket(uint32 id, float x, float y, float z, float yaw)
+	inline SendBuffer* SCMovePacket(uint32 id, 
+		float x, float y, float z, float yaw)
 	{
 		Protocol::SC_MOVE_PACKET move;
 		move.set_sessionid(id);

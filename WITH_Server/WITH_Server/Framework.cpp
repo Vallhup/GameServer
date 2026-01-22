@@ -2,7 +2,7 @@
 #include "Framework.h"
 
 Framework::Framework(size_t size)
-	: game(size), network(size, 7000, listener), _running(false)
+	: game(4), network(8, 7000, listener), _running(false)
 {
 }
 
