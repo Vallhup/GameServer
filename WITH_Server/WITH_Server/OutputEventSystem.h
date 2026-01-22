@@ -17,7 +17,13 @@ private:
 	void ProcessDespawn(const OutputEvent& event);
 	void ProcessMove(const OutputEvent& event);
 
+	void EnqueueToSession(uint32 sid, const void* data, uint32 len);
+	void FlushOne(uint32 sid, SendBuffer*& buffer);
+	void FlushAll();
+
 	std::unordered_map<DirtyType, EventHandler> _handlers;
+	std::vector<SendBuffer*> _outBuffers;
+	//std::unordered_map<uint32, SendBuffer*> _outBuffers;
 };
 
 // TODO List

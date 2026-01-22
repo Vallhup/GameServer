@@ -6,6 +6,8 @@
 
 OutputEventSystem::OutputEventSystem(ECS& ecs, int p) : System(ecs, p)
 {
+	_outBuffers.resize(5000);
+
 	_handlers[DirtyType::Spawned] = [&](const OutputEvent& ev) { ProcessSpawn(ev); };
 	_handlers[DirtyType::Despawned] = [&](const OutputEvent& ev) { ProcessDespawn(ev); };
 	_handlers[DirtyType::Moved] = [&](const OutputEvent& ev) { ProcessMove(ev); };
@@ -25,6 +27,8 @@ void OutputEventSystem::Execute(const float dT)
 			std::cout << "[OutputEventSystem] Unknown Type Event\n";
 #endif
 	}
+
+	FlushAll();
 }
 
 void OutputEventSystem::ProcessSpawn(const OutputEvent& event)
@@ -38,7 +42,8 @@ void OutputEventSystem::ProcessSpawn(const OutputEvent& event)
 
 	// 1. Spawn된 Player에게 자신의 Login 정보 전송
 	SendBuffer* data = NetHelper::SCLoginPacket(sessionId);
-	framework.listener.Send(sessionId, data);
+	EnqueueToSession(sessionId, data->data, data->size);
+	SendBufferPool::Get().Release(data);
 
 	// 2. Spawn된 Player의 정보를 모든 Player에게 전송
 	if (const auto* trans = ecs.GetStorage<Transform>().GetComponent(event.entity))
@@ -46,7 +51,12 @@ void OutputEventSystem::ProcessSpawn(const OutputEvent& event)
 		float yaw = TransformHelper::QuaternionToYaw(trans->rotation);
 		SendBuffer* data2 = NetHelper::SCAddPacket(sessionId,
 			trans->position.x, trans->position.y, trans->position.z, yaw);
-		framework.listener.Broadcast(data2);
+		for (const auto& [entity, sid] : ets)
+		{
+			EnqueueToSession(sid, data2->data, data2->size);
+		}
+
+		SendBufferPool::Get().Release(data2);
 	}
 	
 	// 3. 기존 Player들의 정보를 Spawn된 Player에게 전송
@@ -58,7 +68,8 @@ void OutputEventSystem::ProcessSpawn(const OutputEvent& event)
 			float yaw = TransformHelper::QuaternionToYaw(trans->rotation);
 			SendBuffer* data3 = NetHelper::SCAddPacket(
 				sessId, trans->position.x, trans->position.y, trans->position.z, yaw);
-			framework.listener.Send(sessionId, data3);
+			EnqueueToSession(sessionId, data3->data, data3->size);
+			SendBufferPool::Get().Release(data3);
 		}
 	}
 }
@@ -72,11 +83,16 @@ void OutputEventSystem::ProcessDespawn(const OutputEvent& event)
 
 	auto it = ets.find(event.entity);
 	if (it == ets.end()) return;
-	int sessionId = it->second;
+	uint32 sessionId = it->second;
 
 	// 1. Despawn된 Player의 정보를 모든 Player에게 전송
 	SendBuffer* data = NetHelper::SCRemovePacket(sessionId);
-	framework.listener.Broadcast(data);
+	for (const auto& [entity, sid] : ets)
+	{
+		EnqueueToSession(sid, data->data, data->size);
+	}
+
+	SendBufferPool::Get().Release(data);
 
 	// 2. Despawn된 Player의 Entity에 할당된 모든 컴포넌트 제거
 	ecs.GetStorage<Transform>().RemoveComponent(entity);
@@ -101,6 +117,10 @@ void OutputEventSystem::ProcessDespawn(const OutputEvent& event)
 	// 4. Despawn된 Entity의 정보를 SessionToEntity 맵에서 제거
 	// 4. Despawn된 Player의 Entity를 ECS에서 제거
 	ecs.entityMng.DestoryPlayer(entity, sessionId);
+	
+	// 5. Despawn된 Player의 Session 정보를 outBuffers 맵에서 제거
+	SendBufferPool::Get().Release(_outBuffers[sessionId]);
+	_outBuffers[sessionId] = nullptr;
 }
 
 void OutputEventSystem::ProcessMove(const OutputEvent& event)
@@ -117,12 +137,54 @@ void OutputEventSystem::ProcessMove(const OutputEvent& event)
 		float yaw = TransformHelper::QuaternionToYaw(trans->rotation);
 		SendBuffer* data = NetHelper::SCMovePacket(sessionId,
 			trans->position.x, trans->position.y, trans->position.z, yaw);
-		framework.listener.Broadcast(data);
+		for (const auto& [entity, sid] : ets)
+		{
+			EnqueueToSession(sid, data->data, data->size);
+		}
 
-//#ifdef _DEBUG
-//		std::cout << "[OutputEventSystem] (" << trans->position.x << ", "
-//			<< trans->position.y << ", " << trans->position.z << ")\n";
-//#endif
-
+		SendBufferPool::Get().Release(data);
 	}
+}
+
+void OutputEventSystem::EnqueueToSession(uint32 sid, const void* data, 
+	uint32 len)
+{
+	auto& buffer = _outBuffers[sid];
+
+	if (!buffer)
+	{
+		buffer = SendBufferPool::Get().
+			Acquire(std::max<uint32>(len, 4096));
+	}
+
+	if (!buffer->TryAppend(data, len))
+	{
+		FlushOne(sid, buffer);
+
+		buffer = SendBufferPool::Get().
+			Acquire(std::max<uint32>(len, 4096));
+		buffer->TryAppend(data, len);
+	}
+}
+
+void OutputEventSystem::FlushOne(uint32 sid, SendBuffer*& buffer)
+{
+	if (!buffer || buffer->size == 0) return;
+	Framework::Get().listener.Send(sid, buffer);
+	buffer = nullptr;
+}
+
+void OutputEventSystem::FlushAll()
+{
+	for (uint32 i = 0; i < _outBuffers.size(); ++i)
+	{
+		if (!_outBuffers[i]) continue;
+		FlushOne(i, _outBuffers[i]);
+	}
+
+	/*for (auto& [sid, buffer] : _outBuffers)
+	{
+		if (!buffer) continue;
+		FlushOne(sid, buffer);
+	}*/
 }
