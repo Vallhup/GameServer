@@ -16,9 +16,12 @@ public:
 	void RenderDebugBoundingBox(DX12Core& core, const XMFLOAT4& color);
 
 public:
-	int GetId() const { return _id; }
-	void SetId(int id) { _id = id; }
-	
+	int GetId() const { return mId; }
+	bool IsStatic() const { return isStatic; }
+
+	void SetId(int id) { mId = id; }
+	void SetStatic(bool value) { isStatic = value; }
+
 	const BoundingBox& GetLocalBoundingBox() const { return localBoundingBox; }
 	const BoundingBox& GetWorldBoundingBox() const { return worldBoundingBox; }
 	void SetLocalBoundingBox(const BoundingBox& box) { localBoundingBox = box; }
@@ -34,8 +37,8 @@ private:
 
 	ComPtr<ID3D12Resource> debugLineBuffer;
 
-protected:
-	int _id;
+	int mId;
+	bool isStatic = false;
 };
 
 template<typename T>
