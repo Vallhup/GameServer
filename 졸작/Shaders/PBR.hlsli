@@ -83,6 +83,7 @@ float3 CalculateIBL(float3 N, float3 V, float3 baseColor, float metallic,
     Texture2D brdfLUT, SamplerState samp)
 {
     float3 F0 = float3(0.04, 0.04, 0.04);
+    metallic *= 0.25;
     F0 = lerp(F0, baseColor, metallic);
     
     float NdotV = max(dot(N, V), 0.0);
