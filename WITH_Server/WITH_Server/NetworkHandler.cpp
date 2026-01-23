@@ -10,6 +10,8 @@ NetworkHandler::NetworkHandler()
 	_handlerTable[(uint16)PacketType::CS_MOVE] = &NetworkHandler::HandleMove;
 	_handlerTable[(uint16)PacketType::CS_ATTACK] = &NetworkHandler::HandleAttack;
 	_handlerTable[(uint16)PacketType::CS_DODGE] = &NetworkHandler::HandleDodge;
+	_handlerTable[(uint16)PacketType::CS_GUARD] = &NetworkHandler::HandleGuard;
+	_handlerTable[(uint16)PacketType::CS_PARRY] = &NetworkHandler::HandleParry;
 }
 
 bool NetworkHandler::HandleConnect(uint32 id, const PacketHeader& header, const BYTE* data)
@@ -44,7 +46,7 @@ bool NetworkHandler::HandleAttack(uint32 id, const PacketHeader& header, const B
 	if (not PacketFactory::Deserialize(header, data, &attack))
 		return false;
 
-	ActionEvent ac{ id, ActionRequestType::Attack, attack.dirx(), attack.dirz() };
+	ActionEvent ac{ id, ActionRequestType::Attack, attack.dirx(), attack.dirz(), true };
 	Event ev{ EventType::EV_ACTION, ac };
 	Framework::Get().eventQueue.push(ev);
 
@@ -57,7 +59,33 @@ bool NetworkHandler::HandleDodge(uint32 id, const PacketHeader& header, const BY
 	if (not PacketFactory::Deserialize(header, data, &dodge))
 		return false;
 
-	ActionEvent ac{ id, ActionRequestType::Dodge, dodge.dirx(), dodge.dirz() };
+	ActionEvent ac{ id, ActionRequestType::Dodge, dodge.dirx(), dodge.dirz(), true };
+	Event ev{ EventType::EV_ACTION, ac };
+	Framework::Get().eventQueue.push(ev);
+
+	return true;
+}
+
+bool NetworkHandler::HandleGuard(uint32 id, const PacketHeader& header, const BYTE* data)
+{
+	Protocol::CS_GUARD_PACKET guard;
+	if (not PacketFactory::Deserialize(header, data, &guard))
+		return false;
+
+	ActionEvent ac{ id, ActionRequestType::Guard, 0.0f, 0.0f, guard.input() };
+	Event ev{ EventType::EV_ACTION, ac };
+	Framework::Get().eventQueue.push(ev);
+
+	return true;
+}
+
+bool NetworkHandler::HandleParry(uint32 id, const PacketHeader& header, const BYTE* data)
+{
+	Protocol::CS_PARRY_PACKET parry;
+	if (not PacketFactory::Deserialize(header, data, &parry))
+		return false;
+
+	ActionEvent ac{ id, ActionRequestType::Parry, parry.dirx(), parry.dirz(), true };
 	Event ev{ EventType::EV_ACTION, ac };
 	Framework::Get().eventQueue.push(ev);
 

@@ -51,6 +51,7 @@ struct ActionEvent {
 	ActionRequestType type;
 	float dirX;
 	float dirZ;
+	bool input;
 };
 
 using EventPayload = std::variant<

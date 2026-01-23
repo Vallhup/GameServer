@@ -157,19 +157,8 @@ void EventSystem::ProcessAction(const Event& event)
 		}
 		case ActionRequestType::Guard:
 		{
-			actionIntent->guard = true;
+			actionIntent->guard = p->input;
 			break;
-		}
-		case ActionRequestType::GuardRelease:
-		{
-			/*if (auto* actionState = ecs.GetStorage<ActionState>().GetComponent(entity))
-			{
-				if (actionState->type == ActionType::Guard)
-				{
-					ecs.GetStorage<ActionRequestTag>().AddComponent(entity)->type = ActionType::None;
-				}
-			}
-			break;*/
 		}
 		}
 	}
