@@ -47,7 +47,7 @@ void GameScene::CreateMap()
 {
 #pragma region Initialize Map Elements
 	InstanceLoader mapLoader;
-	mapLoader.Load(L"MapInstanceData.txt");
+	mapLoader.Load(L"../Assets/FBXModel/Map/MapInstanceData.txt");
 
 	int count = 0;
 	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
