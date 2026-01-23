@@ -27,6 +27,13 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
 {
     UINT startIndex = cbIndex;
 
+    for (const auto& obj : objects)
+    {
+        auto animator = obj->GetComponent<Animator>();
+        if (animator)
+            animator->ExecuteComputeShader(core); 
+    }
+
     auto cmdList = core.GetGraphicsCmdList();
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
     SetupRenderingState(core);
@@ -49,9 +56,6 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
 
         auto animator = obj->GetComponent<Animator>();
         if (animator) {
-            animator->ExecuteComputeShader(core);
-            cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
-            SetupRenderingState(core);
             cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());
         }
 
@@ -397,6 +401,43 @@ void SceneRenderer::RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT insta
         string msg = "[Instanced Shadow Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
             + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
         OutputDebugStringA(msg.c_str());
+    }
+}
+
+void SceneRenderer::RenderCollisionMeshWireframe(DX12Core& core, const vector<shared_ptr<GameObject>>& objects)
+{
+    auto cmdList = core.GetGraphicsCmdList();
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBufferWireframe));
+    SetupRenderingState(core);
+
+    for (const auto& obj : objects)
+    {
+        if (obj->GetId() == -1) continue;
+
+        auto mesh = obj->GetComponent<Mesh>();
+        if (!mesh || !mesh->IsCollisionMeshVisible()) continue;
+
+        if (cbIndex >= MAX_OBJECTS) {
+            OutputDebugStringA("cbIndex Overflowed!!\n");
+            break;
+        }
+
+        auto animator = obj->GetComponent<Animator>();
+        if (animator) {
+            cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());
+        }
+
+        auto transform = obj->GetComponent<Transform>();
+        XMMATRIX world = XMMatrixTranspose(transform->GetWorldMatrix());
+
+        auto objConst = MakeObjectConstants(world, 0, 0, 0);
+        size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
+        objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
+        cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
+        cbIndex++;
+
+        mesh->GetCollisionMeshBuffer()->Bind(cmdList);
+        mesh->GetCollisionMeshBuffer()->Draw(cmdList);
     }
 }
 

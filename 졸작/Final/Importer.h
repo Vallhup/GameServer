@@ -19,7 +19,7 @@ struct AnimClipInfo
     string animName;
     int32_t frameCount;
     float duration;
-    vector<AnimFrameParams> keyFrames;  // [frameIndex * boneCount + boneIndex] ¼ø¼­
+    vector<AnimFrameParams> keyFrames;  // [frameIndex * boneCount + boneIndex] ï¿½ï¿½ï¿½ï¿½
 };
 
 struct MeshBinaryHeader {
@@ -108,6 +108,7 @@ class Importer
 {
 public:
     bool LoadModel(const wstring& basePath);
+    bool LoadAllCollisionMeshes(const wstring& basePath);
     bool LoadMaterialOnly(const wstring& basePath);
     void Release();
 
@@ -118,6 +119,7 @@ public:
 
 private:
     bool LoadMesh(const wstring& path);
+    bool AppendMesh(const wstring& path);
     bool LoadSkeleton(const wstring& path);
     bool LoadAnimations(const wstring& basePath);
     bool LoadMaterials(const wstring& path);

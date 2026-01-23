@@ -15,7 +15,7 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
     if (cachedMesh) {
         vertexIndexBuffer = cachedMesh->vertexIndexBuffer;
 
-        materials.clear();    // Áßº¹ ¹æÁö
+        materials.clear();    // ï¿½ßºï¿½ ï¿½ï¿½ï¿½ï¿½
         material.reset();
 
         const auto& matIdx = cachedMesh->materialIndices;
@@ -116,10 +116,38 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
         OutputDebugStringA("Cannot create FBX Mesh for rendering!\n");
 }
 
+void Mesh::SetCollisionMesh(DX12Core& core, const wstring& path)
+{
+    Importer importer;
+    if (importer.LoadAllCollisionMeshes(path))
+    {
+        const MeshData& mesh = importer.GetMesh();
+
+        collisionMeshBuffer = make_shared<VertexIndexBuffer>();
+        collisionMeshBuffer->Initialize(
+            core.GetDevice(),
+            core.GetGraphicsCmdList(),
+            mesh.vertices,
+            mesh.indices
+        );
+
+        OutputDebugStringA(("Collision Mesh loaded - Vertices: " +
+            to_string(mesh.vertices.size()) + ", Indices: " +
+            to_string(mesh.indices.size()) + "\n").c_str());
+    }
+    else
+    {
+        OutputDebugStringA("No collision meshes found\n");
+    }
+}
+
 void Mesh::ReleaseUploadBuffers()
 {
     if (vertexIndexBuffer) {
         vertexIndexBuffer->ReleaseUploadBuffers();
+    }
+    if (collisionMeshBuffer) {
+        collisionMeshBuffer->ReleaseUploadBuffers();
     }
 }
 

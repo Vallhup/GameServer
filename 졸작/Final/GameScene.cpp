@@ -32,6 +32,7 @@ void GameScene::CreateKnightPool()
 		auto animator = knight->AddComponent<Animator>();
 		auto animMachine = knight->AddComponent<AnimationMachine>();
 		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+		mesh->SetCollisionMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
 
 		animMachine->SetAnimationSet(AnimationSetFactory::CreateKnightSet());
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
@@ -46,7 +47,7 @@ void GameScene::CreateMap()
 {
 #pragma region Initialize Map Elements
 	InstanceLoader mapLoader;
-	mapLoader.Load(L"MapInstanceData.txt");
+	mapLoader.Load(L"../Assets/FBXModel/Map/MapInstanceData.txt");
 
 	int count = 0;
 	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
@@ -347,6 +348,12 @@ void GameScene::UpdateScene(const float deltaTime)
 			XMFLOAT3 pos = myPlayer->GetComponent<Transform>()->GetPosition();
 			OutputDebugStringA(("MyPlayer Pos: " + to_string(pos.x) + ", " + to_string(pos.y) + ", " + to_string(pos.z) + "\n").c_str());
 		}
+
+		if (GET(Input).GetKeyDown('2'))
+		{
+			auto mesh = myPlayer->GetComponent<Mesh>();
+			mesh->ToggleCollisionMesh();
+		}
 	}
 
 	for (const auto& obj : gameObjects)
@@ -376,13 +383,15 @@ void GameScene::UpdateScene(const float deltaTime)
 
 void GameScene::RenderSceneDeferred()
 {
-	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
+	auto renderer = sManagerRef->GetSceneRenderer();
+
+	renderer->RenderDeferred(*coreRef, gameObjects, cam.get());
+	renderer->RenderCollisionMeshWireframe(*coreRef, gameObjects);
 
 	// Render terrain
 	if (terrain)
-		sManagerRef->GetSceneRenderer()->RenderTerrain(*coreRef, terrain.get());
+		renderer->RenderTerrain(*coreRef, terrain.get());
 
-	auto renderer = sManagerRef->GetSceneRenderer();
 	for (const auto& batch : instancingBatches)
 	{
 		batch->Render(*coreRef, renderer);
