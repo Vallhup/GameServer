@@ -12,6 +12,7 @@ class Mesh : public Component
 {
 public:
 	void SetMesh(DX12Core& core, const wstring& path);
+	void SetCollisionMesh(DX12Core& core, const wstring& path);
 	void ReleaseUploadBuffers();
 
 	VertexIndexBuffer* GetVertexIndexBuffer() const { return vertexIndexBuffer.get(); }
@@ -21,6 +22,11 @@ public:
 	const vector<MaterialData>& GetOriginalMaterialData() const { return originalMaterialData; }
 
 	bool HasMultiMaterial() const { return !materials.empty(); }
+
+	// Collision Mesh
+	VertexIndexBuffer* GetCollisionMeshBuffer() const { return collisionMeshBuffer.get(); }
+	void ToggleCollisionMesh() { showCollisionMesh = !showCollisionMesh; }
+	bool IsCollisionMeshVisible() const { return showCollisionMesh && collisionMeshBuffer; }
 
 private:
 	void SetSingleMaterial(DX12Core& core, const vector<MaterialData>& mats);
@@ -34,4 +40,8 @@ private:
 	shared_ptr<Material> material;
 	vector<shared_ptr<Material>> materials;
 	vector<MaterialData> originalMaterialData;
+
+	// Collision Mesh
+	shared_ptr<VertexIndexBuffer> collisionMeshBuffer;
+	bool showCollisionMesh = false;
 };

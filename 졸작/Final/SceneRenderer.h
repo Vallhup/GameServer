@@ -20,6 +20,7 @@ public:
     void RenderTerrain(DX12Core& core, Terrain* terrain);
     void RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer);
     void RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer);
+    void RenderCollisionMeshWireframe(DX12Core& core, const vector<shared_ptr<GameObject>>& objects);
 
     void ReleaseUploadBuffer();
 

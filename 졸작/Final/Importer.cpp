@@ -29,6 +29,70 @@ bool Importer::LoadModel(const wstring& basePath)
     return true;
 }
 
+bool Importer::LoadAllCollisionMeshes(const wstring& basePath)
+{
+    Release();
+
+    int idx = 1;
+    while (true)
+    {
+        wstring meshPath = basePath + L"_" + to_wstring(idx) + L".mesh";
+
+        if (!filesystem::exists(meshPath))
+            break;
+
+        if (!AppendMesh(meshPath)) {
+            MASSERT(false, "Failed to load collision mesh file");
+            return false;
+        }
+
+        idx++;
+    }
+
+    return idx > 1;
+}
+
+bool Importer::AppendMesh(const wstring& path)
+{
+    ifstream ifs(path, ios::binary);
+    if (!ifs) {
+        OutputDebugStringA("Failed to open mesh file\n");
+        return false;
+    }
+
+    MeshBinaryHeader header;
+    ifs.read(reinterpret_cast<char*>(&header), sizeof(header));
+
+    if (header.magic != 'HSEM') {
+        OutputDebugStringA("Invalid mesh file magic\n");
+        return false;
+    }
+
+    UINT vertexOffset = static_cast<UINT>(meshData.vertices.size());
+
+    size_t prevVertexCount = meshData.vertices.size();
+    meshData.vertices.resize(prevVertexCount + header.vertexCount);
+    ifs.read(reinterpret_cast<char*>(meshData.vertices.data() + prevVertexCount),
+        sizeof(Vertex) * header.vertexCount);
+
+    vector<SubMeshInfo> tempSubMeshes(header.subMeshCount);
+    ifs.read(reinterpret_cast<char*>(tempSubMeshes.data()),
+        sizeof(SubMeshInfo) * header.subMeshCount);
+
+    vector<UINT> tempIndices(header.indexCount);
+    ifs.read(reinterpret_cast<char*>(tempIndices.data()),
+        sizeof(UINT) * header.indexCount);
+
+    for (UINT& index : tempIndices) {
+        index += vertexOffset;
+    }
+
+    meshData.indices.insert(meshData.indices.end(), tempIndices.begin(), tempIndices.end());
+    meshData.hasAnimation = (header.hasAnimation == 1);
+
+    return true;
+}
+
 bool Importer::LoadMaterialOnly(const wstring& basePath)
 {
     wstring materialPath = basePath + L".mtl";
@@ -134,12 +198,12 @@ bool Importer::LoadAnimations(const wstring& basePath)
 
         if (header.magic != 'MINA') continue;
 
-        AnimClipInfo animData;  // ±¸Á¶ º¯°æ
+        AnimClipInfo animData;  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         animData.animName = string(header.name);
         animData.duration = header.duration;
         animData.frameCount = header.frameCount;
 
-        // ·¹ÆÛ·±½º¿Í µ¿ÀÏÇÑ ±¸Á¶·Î ·Îµå: [frameIndex * boneCount + boneIndex]
+        // ï¿½ï¿½ï¿½Û·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½: [frameIndex * boneCount + boneIndex]
         size_t totalFrames = header.boneCount * header.frameCount;
         animData.keyFrames.resize(totalFrames);
 
