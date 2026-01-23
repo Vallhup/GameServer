@@ -5,7 +5,7 @@
 
 class ActionTransitionSystem : public System {
 public:
-	ActionTransitionSystem(ECS& e, int p = 0) : System(e, p) {}
+	ActionTransitionSystem(ECS& e, int p = 0);
 	virtual ~ActionTransitionSystem() = default;
 
 	virtual void Execute(const float dT) override;
@@ -20,11 +20,15 @@ public:
 	}
 
 private:
-	int GetPriority(ActionType type);
-	float GetDuration(ActionType type);
-	bool CanBeInterrupted(const ActionState& current, ActionType request);
 	ActionType ResolveNextAction(const ActionState& current, ActionType request);
 	void ApplyTransition(Entity entity, ActionState* state, ActionType next);
 	void DedupActionRequest(std::vector<ActionRequestEvent>& events);
+
+	void LoadTransitionRules();
+	void SetRule(ActionType cur, ActionType req, ActionType next);
+	ActionType GetRule(ActionType cur, ActionType req) const;
+
+	static constexpr ActionType Invalid = static_cast<ActionType>(255);
+	std::array<std::array<ActionType, ActionCount>, ActionCount> _transitionRules;
 };
 

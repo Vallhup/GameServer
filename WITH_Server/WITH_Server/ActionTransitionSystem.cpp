@@ -1,6 +1,18 @@
 #include "pch.h"
 #include "ActionTransitionSystem.h"
 
+ActionTransitionSystem::ActionTransitionSystem(ECS& e, int p)
+	: System(e, p)
+{
+	for (auto& transitionRule : _transitionRules)
+	{
+		for (ActionType& type : transitionRule)
+			type = Invalid;
+	}
+
+	LoadTransitionRules();
+}
+
 void ActionTransitionSystem::Execute(const float dT)
 {
 	auto& events = ecs.actionRequestEvents;
@@ -16,7 +28,7 @@ void ActionTransitionSystem::Execute(const float dT)
 		auto it = std::lower_bound(events.begin(), events.end(), entity,
 			[](const ActionRequestEvent& event, Entity e)
 			{
-				return event.entity.id < e.id;
+				return event.entity < e;
 			});
 
 		ActionType request{ ActionType::None };
@@ -46,125 +58,42 @@ void ActionTransitionSystem::Execute(const float dT)
 	events.clear();
 }
 
-int ActionTransitionSystem::GetPriority(ActionType type)
-{
-	// Action 우선순위
-	// Dead > Hit > Stun > Parry > Dodge > Attack > None
-
-	switch (type) {
-	case ActionType::Dead:	 return 100;
-	case ActionType::Hit:	 return 90;
-	case ActionType::Stun:	 return 85;
-	case ActionType::Parry:  return 80;
-	case ActionType::Dodge:	 return 70;
-	case ActionType::Attack: return 60;
-	case ActionType::None:	 return 0;
-	default:                 return 0;
-	}
-}
-
-float ActionTransitionSystem::GetDuration(ActionType type)
-{
-	switch (type) {
-	case ActionType::Dead:	 return 150.0f / 30.2013f;
-	case ActionType::Hit:	 return 50.0f / 30.6122f;
-	case ActionType::Parry:  return 54.0f / 30.566f;
-	case ActionType::Dodge:	 return 50.0f / 30.6122f;
-	case ActionType::Attack: return 40.0f / 30.7692f;
-	case ActionType::Stun:	 return 96.0f / 30.3158f;
-	default:                 return 0.0f;
-	}
-}
-
-bool ActionTransitionSystem::CanBeInterrupted(const ActionState& current, 
-	ActionType request)
-{
-	switch (current.type) {
-	case ActionType::Attack:
-	case ActionType::Dodge:
-	case ActionType::Parry:
-	case ActionType::Stun:
-		return request == ActionType::Stun ||
-			request == ActionType::Hit ||
-			request == ActionType::Dead;
-
-	case ActionType::Guard:
-	case ActionType::None:
-		return true;
-
-	default:
-		return false;
-	}
-}
-
 ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current, 
 	ActionType request)
 {
-	if (current.type == ActionType::Dead)
+	const ActionType curType = current.type;
+	const auto& aM = ActionManager::Get();
+	const auto& curPol = aM.GetPolicy(curType);
+
+	if (curType == ActionType::Dead) 
 		return ActionType::Dead;
 
-	if (current.type == ActionType::Guard)
-	{
-		switch (request) {
-		case ActionType::Dead: 
-			return ActionType::Dead;
+	ActionType rule = GetRule(curType, request);
+	if (rule != Invalid)
+		return rule;
 
-		case ActionType::Parry:
-		case ActionType::Dodge:
-		case ActionType::Attack:
-			// Guard 해제 + 요청 Action으로 전이
+	const auto& reqPol = aM.GetPolicy(request);
+	if (reqPol.priority > curPol.priority)
+	{
+		if (curPol.interruptMask & Bit(request))
 			return request;
-
-		case ActionType::Hit:
-			// Guard 중에는 Hit 무시
-			return ActionType::Guard;
-
-		case ActionType::None:
-			// Guard 입력 해제 -> None으로 전환
-			return ActionType::None;
-
-		default:
-			return ActionType::Guard;
-		}
-
 	}
 
-	if (current.type == ActionType::Stun)
-	{
-		switch (request) {
-		case ActionType::Dead: return ActionType::Dead;
-		case ActionType::Hit: return ActionType::Hit;
-		default: return ActionType::Stun;
-		}
-	}
-
-	if (GetPriority(request) > GetPriority(current.type))
-	{
-		if (CanBeInterrupted(current, request))
-			return request;
-
-		return current.type;
-	}
-		
-
-	if (current.type != ActionType::None && current.elapsed >= current.duration)
-	{
+	if (curType != ActionType::None &&
+		current.elapsed >= curPol.duration)
 		return ActionType::None;
-	}
 
-	return current.type;
+	return curType;
 }
 
 void ActionTransitionSystem::ApplyTransition(Entity entity, ActionState* state, 
 	ActionType next)
 {
 	const ActionType prev = state->type;
+	const auto& aM = ActionManager::Get();
 
-	const bool wasMoved =
-		(prev == ActionType::Attack) || (prev == ActionType::Dodge);
-
-	const bool isMove =
-		(next == ActionType::Attack) || (next == ActionType::Dodge);
+	const bool wasMoved = aM.GetPolicy(prev).isMoveAction;
+	const bool isMove = aM.GetPolicy(next).isMoveAction;
 
 	if (wasMoved && !isMove)
 	{
@@ -173,18 +102,13 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, ActionState* state,
 
 	state->type = next;
 	state->elapsed = 0.0f;
-
-	if (state->type == ActionType::Guard)
-		state->duration = std::numeric_limits<float>::infinity();
-
-	else
-		state->duration = GetDuration(next);
+	state->duration = ActionManager::Get().GetPolicy(next).duration;
 
 	if (isMove)
 	{
 		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
 
-		move->profile = ActionManager::Get().GetActionMoveProfile(state->type);
+		move->profile = aM.GetActionMoveProfile(state->type);
 		move->segmentIndex = 0;
 		move->movedInSegment = 0.0f;
 
@@ -204,8 +128,12 @@ void ActionTransitionSystem::DedupActionRequest(std::vector<ActionRequestEvent>&
 	std::sort(events.begin(), events.end(),
 		[&](const ActionRequestEvent& a, const ActionRequestEvent& b)
 		{
-			if (a.entity != b.entity) return a.entity.id < b.entity.id;
-			return GetPriority(a.type) > GetPriority(b.type);
+			const auto& aM = ActionManager::Get();
+			const int32 aPriority = aM.GetPolicy(a.type).priority;
+			const int32 bPriority = aM.GetPolicy(b.type).priority;
+
+			if (a.entity != b.entity) return a.entity < b.entity;
+			return aPriority > bPriority;
 		});
 
 	events.erase(std::unique(events.begin(), events.end(),
@@ -213,4 +141,27 @@ void ActionTransitionSystem::DedupActionRequest(std::vector<ActionRequestEvent>&
 		{
 			return a.entity == b.entity;
 		}), events.end());
+}
+
+void ActionTransitionSystem::LoadTransitionRules()
+{
+	SetRule(ActionType::Guard, ActionType::Dead, ActionType::Dead);
+	SetRule(ActionType::Guard, ActionType::Parry, ActionType::Parry);
+	SetRule(ActionType::Guard, ActionType::Dodge, ActionType::Dodge);
+	SetRule(ActionType::Guard, ActionType::Attack, ActionType::Attack);
+	SetRule(ActionType::Guard, ActionType::Hit, ActionType::Guard);
+	SetRule(ActionType::Guard, ActionType::None, ActionType::None);  
+	   
+	SetRule(ActionType::Stun, ActionType::Dead, ActionType::Dead);
+	SetRule(ActionType::Stun, ActionType::Hit, ActionType::Hit);
+}
+
+void ActionTransitionSystem::SetRule(ActionType cur, ActionType req, ActionType next)
+{
+	_transitionRules[ToIndex(cur)][ToIndex(req)] = next;
+}
+
+ActionType ActionTransitionSystem::GetRule(ActionType cur, ActionType req) const
+{
+	return _transitionRules[ToIndex(cur)][ToIndex(req)];
 }
