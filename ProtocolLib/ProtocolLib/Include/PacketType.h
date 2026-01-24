@@ -13,5 +13,6 @@ enum class PacketType : uint8 {
 	SC_LOGIN,
 	SC_MOVE_OBJECT,
 	SC_ADD,
-	SC_REMOVE
+	SC_REMOVE,
+	SC_ANIMATION_CHANGE
 };

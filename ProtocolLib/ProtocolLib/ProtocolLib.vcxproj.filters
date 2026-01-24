@@ -27,6 +27,9 @@
     <ClInclude Include="Include\PacketType.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Include\AnimationType.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Codec">

@@ -66,7 +66,7 @@ struct Health : public Component {
 };
 
 struct AnimationState : public Component {
-	AnimationId desiredId{ AnimationId::Knight_Idle };
+	AnimationType desiredId{ AnimationType::Knight_Idle };
 	float speed{ 1.0f };
 	bool looping{ true };
 };

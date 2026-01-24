@@ -3,6 +3,7 @@
 #include <variant>
 
 #include "Entity.h"
+#include "AnimationType.h"
 
 /* -------- [ Input Event ]-------- */
 
@@ -76,7 +77,28 @@ enum class DirtyType {
 	StatsChanged
 };
 
+struct OutputEventPayload
+{
+	union {
+		struct {
+			AnimationType prevType;
+			AnimationType currType;
+		} anim;
+
+		uint32 raw{ 0 };
+	};
+};
+
 struct OutputEvent {
 	Entity entity;
 	DirtyType type;
+	OutputEventPayload payload;
+
+	static OutputEvent AnimationChanged(Entity e, AnimationType prev,
+		AnimationType curr)
+	{
+		OutputEvent ev{ e, DirtyType::AnimationChanged, { } };
+		ev.payload.anim = { prev, curr };
+		return ev;
+	}
 };

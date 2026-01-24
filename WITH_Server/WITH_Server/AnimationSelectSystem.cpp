@@ -1,16 +1,11 @@
 #include "pch.h"
 #include "AnimationSelectSystem.h"
+#include "Framework.h"
+#include "AnimationType.h"
 
 AnimationSelectSystem::AnimationSelectSystem(ECS& e, int p) 
 	: System(e, p)
 {
-	_actionToAnimationMap[ActionType::Attack]	= { AnimationId::Knight_Attack, false };
-	_actionToAnimationMap[ActionType::Dodge]	= { AnimationId::Knight_Dodge, false };
-	_actionToAnimationMap[ActionType::Parry]	= { AnimationId::Knight_Parry, false };
-	_actionToAnimationMap[ActionType::Guard]	= { AnimationId::Knight_Guard, true };
-	_actionToAnimationMap[ActionType::Stun]		= { AnimationId::Knight_Stun, false };
-	_actionToAnimationMap[ActionType::Hit]		= { AnimationId::Knight_Hit, false };
-	_actionToAnimationMap[ActionType::Dead]		= { AnimationId::Knight_Dead, false };
 }
 
 void AnimationSelectSystem::Execute(const float dT)
@@ -27,26 +22,32 @@ void AnimationSelectSystem::Execute(const float dT)
 		const auto* loco = locos.GetComponent(entity);
 		if (!actionState || !loco) continue;
 
-		auto [next, loop] = GetAnimationIdForAction(actionState->type);
-		if (next == AnimationId::None)
+		auto [next, loop] = AnimationManager::Get()
+			.GetAnimationIdForAction(actionState->type);
+		if (next == AnimationType::None)
 		{
 			loop = true;
 			if (loco->isMoving)
-				next = AnimationId::Knight_Walk;
+				next = AnimationType::Knight_Walk;
 
 			else
-				next = AnimationId::Knight_Idle;
+				next = AnimationType::Knight_Idle;
 		}
 
-		animState.desiredId = next;
-		animState.looping = loop;
-		animState.speed = 1.0f;
-	}
-}
+		if (animState.desiredId != next)
+		{
+			AnimationType prevAnimType = animState.desiredId;
+			animState.desiredId = next;
+			animState.looping = loop;
+			animState.speed = 1.0f;
 
-std::pair<AnimationId, bool> AnimationSelectSystem::GetAnimationIdForAction(ActionType action) const
-{
-	auto it = _actionToAnimationMap.find(action);
-	if (it != _actionToAnimationMap.end()) return it->second;
-	return { AnimationId::None, false };
+			Framework::Get().outEventQueue.push(
+				OutputEvent::AnimationChanged(entity, prevAnimType, next));
+
+#ifdef _DEBUG
+			printf("[Animation] %d -> %d\n",
+				ToInt(prevAnimType), ToInt(next));
+#endif
+		}
+	}
 }

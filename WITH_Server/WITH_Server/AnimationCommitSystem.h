@@ -23,4 +23,3 @@ public:
 private:
 	void BindColliderToClip(CombatCollider* collider, const PrebakedAnimation& clip);
 };
-

@@ -57,7 +57,7 @@ void EventSystem::ProcessConnect(const Event& event)
 	ecs.GetStorage<AttackState>().AddComponent(entity);
 	ecs.GetStorage<ParryBuf>().AddComponent(entity);
 
-	animator->clip = AnimationManager::Get().GetAnimation(AnimationId::Knight_Idle);
+	animator->clip = AnimationManager::Get().GetAnimation(AnimationType::Knight_Idle);
 
 	auto& ets = Framework::Get().entityToSession;
 	auto it = ets.find(entity);

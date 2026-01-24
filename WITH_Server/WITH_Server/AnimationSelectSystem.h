@@ -19,10 +19,4 @@ public:
 	{
 		return { typeid(AnimationState) };
 	}
-
-private:
-	std::pair<AnimationId, bool> GetAnimationIdForAction(ActionType action) const;
-
-	std::unordered_map<ActionType, std::pair<AnimationId, bool>> 
-		_actionToAnimationMap;
 };

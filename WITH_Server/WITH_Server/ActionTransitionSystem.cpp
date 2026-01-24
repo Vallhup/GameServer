@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ActionTransitionSystem.h"
+#include "Framework.h"
 
 ActionTransitionSystem::ActionTransitionSystem(ECS& e, int p)
 	: System(e, p)

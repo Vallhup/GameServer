@@ -51,4 +51,15 @@ namespace NetHelper {
 		return PacketFactory::Serialize<Protocol::SC_MOVE_PACKET>
 			(PacketType::SC_MOVE_OBJECT, move);
 	}
+
+	inline SendBuffer* SCAnimationChangePacket(uint32 id,
+		AnimationType prev, AnimationType curr)
+	{
+		Protocol::SC_ANIMATION_TRANSITION_PACKET anim;
+		anim.set_prevanim(ToInt(prev));
+		anim.set_curranim(ToInt(curr));
+
+		return PacketFactory::Serialize<Protocol::SC_ANIMATION_TRANSITION_PACKET>
+			(PacketType::SC_ANIMATION_CHANGE, anim);
+	}
 }

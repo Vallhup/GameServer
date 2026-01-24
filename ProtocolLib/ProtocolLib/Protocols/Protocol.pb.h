@@ -74,6 +74,9 @@ extern CS_PARRY_PACKETDefaultTypeInternal _CS_PARRY_PACKET_default_instance_;
 class SC_ADD_PACKET;
 struct SC_ADD_PACKETDefaultTypeInternal;
 extern SC_ADD_PACKETDefaultTypeInternal _SC_ADD_PACKET_default_instance_;
+class SC_ANIMATION_TRANSITION_PACKET;
+struct SC_ANIMATION_TRANSITION_PACKETDefaultTypeInternal;
+extern SC_ANIMATION_TRANSITION_PACKETDefaultTypeInternal _SC_ANIMATION_TRANSITION_PACKET_default_instance_;
 class SC_LOGIN_PACKET;
 struct SC_LOGIN_PACKETDefaultTypeInternal;
 extern SC_LOGIN_PACKETDefaultTypeInternal _SC_LOGIN_PACKET_default_instance_;
@@ -706,6 +709,208 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const SC_LOGIN_PACKET& from_msg);
     ::int32_t sessionid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_ANIMATION_TRANSITION_PACKET) */ {
+ public:
+  inline SC_ANIMATION_TRANSITION_PACKET() : SC_ANIMATION_TRANSITION_PACKET(nullptr) {}
+  ~SC_ANIMATION_TRANSITION_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_ANIMATION_TRANSITION_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_ANIMATION_TRANSITION_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_ANIMATION_TRANSITION_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_ANIMATION_TRANSITION_PACKET(const SC_ANIMATION_TRANSITION_PACKET& from) : SC_ANIMATION_TRANSITION_PACKET(nullptr, from) {}
+  inline SC_ANIMATION_TRANSITION_PACKET(SC_ANIMATION_TRANSITION_PACKET&& from) noexcept
+      : SC_ANIMATION_TRANSITION_PACKET(nullptr, std::move(from)) {}
+  inline SC_ANIMATION_TRANSITION_PACKET& operator=(const SC_ANIMATION_TRANSITION_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_ANIMATION_TRANSITION_PACKET& operator=(SC_ANIMATION_TRANSITION_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_ANIMATION_TRANSITION_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_ANIMATION_TRANSITION_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_ANIMATION_TRANSITION_PACKET*>(
+        &_SC_ANIMATION_TRANSITION_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 10;
+  friend void swap(SC_ANIMATION_TRANSITION_PACKET& a, SC_ANIMATION_TRANSITION_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_ANIMATION_TRANSITION_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_ANIMATION_TRANSITION_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_ANIMATION_TRANSITION_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_ANIMATION_TRANSITION_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_ANIMATION_TRANSITION_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_ANIMATION_TRANSITION_PACKET& from) { SC_ANIMATION_TRANSITION_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_ANIMATION_TRANSITION_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_ANIMATION_TRANSITION_PACKET"; }
+
+ protected:
+  explicit SC_ANIMATION_TRANSITION_PACKET(::google::protobuf::Arena* arena);
+  SC_ANIMATION_TRANSITION_PACKET(::google::protobuf::Arena* arena, const SC_ANIMATION_TRANSITION_PACKET& from);
+  SC_ANIMATION_TRANSITION_PACKET(::google::protobuf::Arena* arena, SC_ANIMATION_TRANSITION_PACKET&& from) noexcept
+      : SC_ANIMATION_TRANSITION_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kPrevAnimFieldNumber = 1,
+    kCurrAnimFieldNumber = 2,
+  };
+  // int32 prevAnim = 1;
+  void clear_prevanim() ;
+  ::int32_t prevanim() const;
+  void set_prevanim(::int32_t value);
+
+  private:
+  ::int32_t _internal_prevanim() const;
+  void _internal_set_prevanim(::int32_t value);
+
+  public:
+  // int32 currAnim = 2;
+  void clear_curranim() ;
+  ::int32_t curranim() const;
+  void set_curranim(::int32_t value);
+
+  private:
+  ::int32_t _internal_curranim() const;
+  void _internal_set_curranim(::int32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_ANIMATION_TRANSITION_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      1, 2, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_ANIMATION_TRANSITION_PACKET& from_msg);
+    ::int32_t prevanim_;
+    ::int32_t curranim_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -2640,6 +2845,54 @@ inline ::int32_t SC_REMOVE_PACKET::_internal_ssessionid() const {
 inline void SC_REMOVE_PACKET::_internal_set_ssessionid(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ssessionid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_ANIMATION_TRANSITION_PACKET
+
+// int32 prevAnim = 1;
+inline void SC_ANIMATION_TRANSITION_PACKET::clear_prevanim() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.prevanim_ = 0;
+}
+inline ::int32_t SC_ANIMATION_TRANSITION_PACKET::prevanim() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_ANIMATION_TRANSITION_PACKET.prevAnim)
+  return _internal_prevanim();
+}
+inline void SC_ANIMATION_TRANSITION_PACKET::set_prevanim(::int32_t value) {
+  _internal_set_prevanim(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_ANIMATION_TRANSITION_PACKET.prevAnim)
+}
+inline ::int32_t SC_ANIMATION_TRANSITION_PACKET::_internal_prevanim() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.prevanim_;
+}
+inline void SC_ANIMATION_TRANSITION_PACKET::_internal_set_prevanim(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.prevanim_ = value;
+}
+
+// int32 currAnim = 2;
+inline void SC_ANIMATION_TRANSITION_PACKET::clear_curranim() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.curranim_ = 0;
+}
+inline ::int32_t SC_ANIMATION_TRANSITION_PACKET::curranim() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_ANIMATION_TRANSITION_PACKET.currAnim)
+  return _internal_curranim();
+}
+inline void SC_ANIMATION_TRANSITION_PACKET::set_curranim(::int32_t value) {
+  _internal_set_curranim(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_ANIMATION_TRANSITION_PACKET.currAnim)
+}
+inline ::int32_t SC_ANIMATION_TRANSITION_PACKET::_internal_curranim() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.curranim_;
+}
+inline void SC_ANIMATION_TRANSITION_PACKET::_internal_set_curranim(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.curranim_ = value;
 }
 
 #ifdef __GNUC__

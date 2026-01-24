@@ -11,6 +11,7 @@ OutputEventSystem::OutputEventSystem(ECS& ecs, int p) : System(ecs, p)
 	_handlers[DirtyType::Spawned] = [&](const OutputEvent& ev) { ProcessSpawn(ev); };
 	_handlers[DirtyType::Despawned] = [&](const OutputEvent& ev) { ProcessDespawn(ev); };
 	_handlers[DirtyType::Moved] = [&](const OutputEvent& ev) { ProcessMove(ev); };
+	_handlers[DirtyType::AnimationChanged] = [&](const OutputEvent& ev) { ProcessAnimationChange(ev); };
 }
 
 void OutputEventSystem::Execute(const float dT)
@@ -146,6 +147,25 @@ void OutputEventSystem::ProcessMove(const OutputEvent& event)
 	}
 }
 
+void OutputEventSystem::ProcessAnimationChange(const OutputEvent& event)
+{
+	auto& framework = Framework::Get();
+	auto& ets = framework.entityToSession;
+
+	auto it = ets.find(event.entity);
+	if (it == ets.end()) return;
+	int sessionId = it->second;
+
+	SendBuffer* data = NetHelper::SCAnimationChangePacket(sessionId,
+		event.payload.anim.prevType, event.payload.anim.currType);
+	for (const auto& [entity, sid] : ets)
+	{
+		EnqueueToSession(sid, data->data, data->size);
+	}
+
+	SendBufferPool::Get().Release(data);
+}
+
 void OutputEventSystem::EnqueueToSession(uint32 sid, const void* data, 
 	uint32 len)
 {
@@ -181,10 +201,4 @@ void OutputEventSystem::FlushAll()
 		if (!_outBuffers[i]) continue;
 		FlushOne(i, _outBuffers[i]);
 	}
-
-	/*for (auto& [sid, buffer] : _outBuffers)
-	{
-		if (!buffer) continue;
-		FlushOne(sid, buffer);
-	}*/
 }

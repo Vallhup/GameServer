@@ -105,6 +105,32 @@ struct SC_LOGIN_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_LOGIN_PACKETDefaultTypeInternal _SC_LOGIN_PACKET_default_instance_;
 
+inline constexpr SC_ANIMATION_TRANSITION_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : prevanim_{0},
+        curranim_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_ANIMATION_TRANSITION_PACKET::SC_ANIMATION_TRANSITION_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_ANIMATION_TRANSITION_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_ANIMATION_TRANSITION_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_ANIMATION_TRANSITION_PACKETDefaultTypeInternal() {}
+  union {
+    SC_ANIMATION_TRANSITION_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_ANIMATION_TRANSITION_PACKETDefaultTypeInternal _SC_ANIMATION_TRANSITION_PACKET_default_instance_;
+
 inline constexpr SC_ADD_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : sessionid_{0},
@@ -391,6 +417,16 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_REMOVE_PACKET, _impl_.ssessionid_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _impl_.prevanim_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -405,6 +441,7 @@ static const ::_pbi::MigrationSchema
         {67, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
         {80, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
         {93, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {102, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -417,6 +454,7 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_SC_ADD_PACKET_default_instance_._instance,
     &::Protocol::_SC_MOVE_PACKET_default_instance_._instance,
     &::Protocol::_SC_REMOVE_PACKET_default_instance_._instance,
+    &::Protocol::_SC_ANIMATION_TRANSITION_PACKET_default_instance_._instance,
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -433,19 +471,21 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     " \001(\002\"Q\n\016SC_MOVE_PACKET\022\021\n\tsessionId\030\001 \001("
     "\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003ya"
     "w\030\005 \001(\002\"&\n\020SC_REMOVE_PACKET\022\022\n\nssessionI"
-    "d\030\001 \001(\005b\006proto3"
+    "d\030\001 \001(\005\"D\n\036SC_ANIMATION_TRANSITION_PACKE"
+    "T\022\020\n\010prevAnim\030\001 \001(\005\022\020\n\010currAnim\030\002 \001(\005b\006p"
+    "roto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    535,
+    605,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     nullptr,
     0,
-    10,
+    11,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -2759,6 +2799,247 @@ void SC_REMOVE_PACKET::InternalSwap(SC_REMOVE_PACKET* PROTOBUF_RESTRICT other) {
 }
 
 ::google::protobuf::Metadata SC_REMOVE_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_ANIMATION_TRANSITION_PACKET::_Internal {
+ public:
+};
+
+SC_ANIMATION_TRANSITION_PACKET::SC_ANIMATION_TRANSITION_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_ANIMATION_TRANSITION_PACKET)
+}
+SC_ANIMATION_TRANSITION_PACKET::SC_ANIMATION_TRANSITION_PACKET(
+    ::google::protobuf::Arena* arena, const SC_ANIMATION_TRANSITION_PACKET& from)
+    : SC_ANIMATION_TRANSITION_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_ANIMATION_TRANSITION_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_ANIMATION_TRANSITION_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, prevanim_),
+           0,
+           offsetof(Impl_, curranim_) -
+               offsetof(Impl_, prevanim_) +
+               sizeof(Impl_::curranim_));
+}
+SC_ANIMATION_TRANSITION_PACKET::~SC_ANIMATION_TRANSITION_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_ANIMATION_TRANSITION_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_ANIMATION_TRANSITION_PACKET::SharedDtor(MessageLite& self) {
+  SC_ANIMATION_TRANSITION_PACKET& this_ = static_cast<SC_ANIMATION_TRANSITION_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_ANIMATION_TRANSITION_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_ANIMATION_TRANSITION_PACKET(arena);
+}
+constexpr auto SC_ANIMATION_TRANSITION_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_ANIMATION_TRANSITION_PACKET),
+                                            alignof(SC_ANIMATION_TRANSITION_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_ANIMATION_TRANSITION_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_ANIMATION_TRANSITION_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_ANIMATION_TRANSITION_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_ANIMATION_TRANSITION_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_ANIMATION_TRANSITION_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_ANIMATION_TRANSITION_PACKET>(), &SC_ANIMATION_TRANSITION_PACKET::ByteSizeLong,
+            &SC_ANIMATION_TRANSITION_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_ANIMATION_TRANSITION_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_ANIMATION_TRANSITION_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 0, 2> SC_ANIMATION_TRANSITION_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_ANIMATION_TRANSITION_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // int32 currAnim = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_)}},
+    // int32 prevAnim = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ANIMATION_TRANSITION_PACKET, _impl_.prevanim_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.prevanim_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // int32 prevAnim = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.prevanim_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // int32 currAnim = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_ANIMATION_TRANSITION_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_ANIMATION_TRANSITION_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.prevanim_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.curranim_) -
+      reinterpret_cast<char*>(&_impl_.prevanim_)) + sizeof(_impl_.curranim_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_ANIMATION_TRANSITION_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_ANIMATION_TRANSITION_PACKET& this_ = static_cast<const SC_ANIMATION_TRANSITION_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_ANIMATION_TRANSITION_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_ANIMATION_TRANSITION_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_ANIMATION_TRANSITION_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // int32 prevAnim = 1;
+          if (this_._internal_prevanim() != 0) {
+            target = ::google::protobuf::internal::WireFormatLite::
+                WriteInt32ToArrayWithField<1>(
+                    stream, this_._internal_prevanim(), target);
+          }
+
+          // int32 currAnim = 2;
+          if (this_._internal_curranim() != 0) {
+            target = ::google::protobuf::internal::WireFormatLite::
+                WriteInt32ToArrayWithField<2>(
+                    stream, this_._internal_curranim(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_ANIMATION_TRANSITION_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_ANIMATION_TRANSITION_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_ANIMATION_TRANSITION_PACKET& this_ = static_cast<const SC_ANIMATION_TRANSITION_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_ANIMATION_TRANSITION_PACKET::ByteSizeLong() const {
+          const SC_ANIMATION_TRANSITION_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_ANIMATION_TRANSITION_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // int32 prevAnim = 1;
+            if (this_._internal_prevanim() != 0) {
+              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+                  this_._internal_prevanim());
+            }
+            // int32 currAnim = 2;
+            if (this_._internal_curranim() != 0) {
+              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+                  this_._internal_curranim());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_ANIMATION_TRANSITION_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_ANIMATION_TRANSITION_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_ANIMATION_TRANSITION_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_ANIMATION_TRANSITION_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_prevanim() != 0) {
+    _this->_impl_.prevanim_ = from._impl_.prevanim_;
+  }
+  if (from._internal_curranim() != 0) {
+    _this->_impl_.curranim_ = from._impl_.curranim_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_ANIMATION_TRANSITION_PACKET::CopyFrom(const SC_ANIMATION_TRANSITION_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_ANIMATION_TRANSITION_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_ANIMATION_TRANSITION_PACKET::InternalSwap(SC_ANIMATION_TRANSITION_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_)
+      + sizeof(SC_ANIMATION_TRANSITION_PACKET::_impl_.curranim_)
+      - PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.prevanim_)>(
+          reinterpret_cast<char*>(&_impl_.prevanim_),
+          reinterpret_cast<char*>(&other->_impl_.prevanim_));
+}
+
+::google::protobuf::Metadata SC_ANIMATION_TRANSITION_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)
