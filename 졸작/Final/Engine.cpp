@@ -9,6 +9,7 @@
 #include "Importer.h"
 #include "Input.h"
 #include "SoundManager.h"
+#include "EffectManager.h"
 #include "ImGuiManager.h"
 
 Engine& Engine::Get()
@@ -39,6 +40,8 @@ void Engine::Initialize(HWND hwnd, std::string_view ip, uint16 port,
     soundManager = make_unique<SoundManager>();
     soundManager->Initialize();
 
+    GET(EffectManager).Initialize(*graphics);
+
     graphics->FlushCommandQueue();
 
     GET(Input).Initialize(networkManager.get());
@@ -48,6 +51,8 @@ void Engine::Update(const float deltaTime)
 {
     sceneManager->ProcessPendingSceneChange(*graphics);
     sceneManager->Update(deltaTime);
+
+    GET(EffectManager).Update(deltaTime);
 
     soundManager->Update();
 }
@@ -109,6 +114,7 @@ void Engine::Shutdown()
     sceneManager->Release();
     networkManager->Release();
     soundManager->Release();
+    GET(EffectManager).Release();
 }
 
 void Engine::ShowFps()

@@ -212,6 +212,7 @@ exit 0</Command>
     <ClCompile Include="ClientConnectionListener.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DX12Core.cpp" />
+    <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EffectRenderer.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GPUBuffer.cpp" />
@@ -270,6 +271,7 @@ exit 0</Command>
     <ClInclude Include="ClientConnectionListener.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DX12Core.h" />
+    <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EffectRenderer.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="GPUBuffer.h" />

@@ -5,7 +5,6 @@
 #include "MainCharacter.h"
 #include "Animator.h"
 #include "Material.h"
-#include "EffectRenderer.h"
 #include "Engine.h"
 #include "NetworkManager.h"
 #include "SoundManager.h"
@@ -18,6 +17,8 @@
 #include "AnimationSetFactory.h"
 #include "InstanceLoader.h"
 #include "Terrain.h"
+#include "EffectRenderer.h"
+#include "EffectManager.h"
 
 GameScene::~GameScene() = default;
 
@@ -91,12 +92,15 @@ void GameScene::CreateEffectSamples()
 
 	for (int i = 0; i < info.size(); ++i)
 	{
+		wstring name(info[i].name.begin(), info[i].name.end());
+		GET(EffectManager).PreLoad(name);
+
 		auto effectSample = make_shared<GameObject>();
 		auto effectRenderer = effectSample->AddComponent<EffectRenderer>();
 		auto transform = effectSample->AddComponent<Transform>();
-		effectRenderer->Initialize(*coreRef);
-		u16string path = u"../Assets/Effects/" + info[i].name + u".efk";
-		effectRenderer->LoadEffect(path.c_str());
+
+		effectRenderer->SetEffectName(name);
+
 		transform->SetInitPosition(info[i].x, info[i].y, info[i].z);
 		effectObjects.push_back(effectSample);
 		AddGameObject(effectSample);
@@ -477,16 +481,8 @@ void GameScene::RenderSceneShadow()
 
 void GameScene::RenderSceneEffects()
 {
-	BoundingFrustum viewFrustum = cam->GetViewFrustum();
-
-	for (const auto& obj : gameObjects)
-	{
-		if (!obj->IsInFrustum(viewFrustum))
-			continue;
-
-		if (auto effectRenderer = obj->GetComponent<EffectRenderer>())
-			effectRenderer->Render(*coreRef, cam.get());
-	}
+	if (cam)
+		GET(EffectManager).Render(*coreRef, cam.get());
 }
 
 void GameScene::RequestSceneChange()

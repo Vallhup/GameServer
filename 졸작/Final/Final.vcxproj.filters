@@ -151,6 +151,9 @@
     <ClCompile Include="Terrain.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="EffectManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -302,6 +305,9 @@
     </ClInclude>
     <ClInclude Include="Terrain.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
