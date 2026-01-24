@@ -8,13 +8,13 @@ enum class AnimationType : uint8 {
 	Knight_Walk,
 	Knight_Run,
 	Knight_Attack,
-	Knight_Dead,
-	Knight_Drinking,
-	Knight_Guard,
-	Knight_Hit,
-	Knight_Parry,
 	Knight_Dodge,
+	Knight_Parry,
 	Knight_Stun,
+	Knight_Hit,
+	Knight_Guard,
+	Knight_Drinking,
+	Knight_Dead,
 };
 
 inline uint32 ToInt(AnimationType type) { return static_cast<uint32>(type); }
