@@ -36,18 +36,17 @@ void AnimationSelectSystem::Execute(const float dT)
 
 		if (animState.desiredId != next)
 		{
+#ifdef _DEBUG
 			AnimationType prevAnimType = animState.desiredId;
+			printf("[Animation] %d -> %d\n",
+				ToInt(prevAnimType), ToInt(next));
+#endif
 			animState.desiredId = next;
 			animState.looping = loop;
 			animState.speed = 1.0f;
 
 			Framework::Get().outEventQueue.push(
-				OutputEvent::AnimationChanged(entity, prevAnimType, next));
-
-#ifdef _DEBUG
-			printf("[Animation] %d -> %d\n",
-				ToInt(prevAnimType), ToInt(next));
-#endif
+				OutputEvent::AnimationChanged(entity, next));
 		}
 	}
 }

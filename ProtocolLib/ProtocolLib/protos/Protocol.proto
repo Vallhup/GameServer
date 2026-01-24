@@ -69,6 +69,6 @@ message SC_REMOVE_PACKET
 
 message SC_ANIMATION_TRANSITION_PACKET
 {
-    int32 prevAnim = 1;
+	int32 sesssionId = 1;
     int32 currAnim = 2;
 }

@@ -107,7 +107,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 
 inline constexpr SC_ANIMATION_TRANSITION_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : prevanim_{0},
+      : sesssionid_{0},
         curranim_{0},
         _cached_size_{0} {}
 
@@ -425,7 +425,7 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _impl_.prevanim_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _impl_.sesssionid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_),
 };
 
@@ -471,15 +471,15 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     " \001(\002\"Q\n\016SC_MOVE_PACKET\022\021\n\tsessionId\030\001 \001("
     "\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003ya"
     "w\030\005 \001(\002\"&\n\020SC_REMOVE_PACKET\022\022\n\nssessionI"
-    "d\030\001 \001(\005\"D\n\036SC_ANIMATION_TRANSITION_PACKE"
-    "T\022\020\n\010prevAnim\030\001 \001(\005\022\020\n\010currAnim\030\002 \001(\005b\006p"
-    "roto3"
+    "d\030\001 \001(\005\"F\n\036SC_ANIMATION_TRANSITION_PACKE"
+    "T\022\022\n\nsesssionId\030\001 \001(\005\022\020\n\010currAnim\030\002 \001(\005b"
+    "\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    605,
+    607,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -2829,10 +2829,10 @@ inline PROTOBUF_NDEBUG_INLINE SC_ANIMATION_TRANSITION_PACKET::Impl_::Impl_(
 inline void SC_ANIMATION_TRANSITION_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, prevanim_),
+               offsetof(Impl_, sesssionid_),
            0,
            offsetof(Impl_, curranim_) -
-               offsetof(Impl_, prevanim_) +
+               offsetof(Impl_, sesssionid_) +
                sizeof(Impl_::curranim_));
 }
 SC_ANIMATION_TRANSITION_PACKET::~SC_ANIMATION_TRANSITION_PACKET() {
@@ -2903,14 +2903,14 @@ const ::_pbi::TcParseTable<1, 2, 0, 0, 2> SC_ANIMATION_TRANSITION_PACKET::_table
     // int32 currAnim = 2;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_), 63>(),
      {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_)}},
-    // int32 prevAnim = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ANIMATION_TRANSITION_PACKET, _impl_.prevanim_), 63>(),
-     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.prevanim_)}},
+    // int32 sesssionId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ANIMATION_TRANSITION_PACKET, _impl_.sesssionid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.sesssionid_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // int32 prevAnim = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.prevanim_), 0, 0,
+    // int32 sesssionId = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.sesssionid_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
     // int32 currAnim = 2;
     {PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_), 0, 0,
@@ -2928,9 +2928,9 @@ PROTOBUF_NOINLINE void SC_ANIMATION_TRANSITION_PACKET::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&_impl_.prevanim_, 0, static_cast<::size_t>(
+  ::memset(&_impl_.sesssionid_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.curranim_) -
-      reinterpret_cast<char*>(&_impl_.prevanim_)) + sizeof(_impl_.curranim_));
+      reinterpret_cast<char*>(&_impl_.sesssionid_)) + sizeof(_impl_.curranim_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -2949,11 +2949,11 @@ PROTOBUF_NOINLINE void SC_ANIMATION_TRANSITION_PACKET::Clear() {
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
-          // int32 prevAnim = 1;
-          if (this_._internal_prevanim() != 0) {
+          // int32 sesssionId = 1;
+          if (this_._internal_sesssionid() != 0) {
             target = ::google::protobuf::internal::WireFormatLite::
                 WriteInt32ToArrayWithField<1>(
-                    stream, this_._internal_prevanim(), target);
+                    stream, this_._internal_sesssionid(), target);
           }
 
           // int32 currAnim = 2;
@@ -2988,10 +2988,10 @@ PROTOBUF_NOINLINE void SC_ANIMATION_TRANSITION_PACKET::Clear() {
 
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
-            // int32 prevAnim = 1;
-            if (this_._internal_prevanim() != 0) {
+            // int32 sesssionId = 1;
+            if (this_._internal_sesssionid() != 0) {
               total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-                  this_._internal_prevanim());
+                  this_._internal_sesssionid());
             }
             // int32 currAnim = 2;
             if (this_._internal_curranim() != 0) {
@@ -3011,8 +3011,8 @@ void SC_ANIMATION_TRANSITION_PACKET::MergeImpl(::google::protobuf::MessageLite& 
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_prevanim() != 0) {
-    _this->_impl_.prevanim_ = from._impl_.prevanim_;
+  if (from._internal_sesssionid() != 0) {
+    _this->_impl_.sesssionid_ = from._impl_.sesssionid_;
   }
   if (from._internal_curranim() != 0) {
     _this->_impl_.curranim_ = from._impl_.curranim_;
@@ -3034,9 +3034,9 @@ void SC_ANIMATION_TRANSITION_PACKET::InternalSwap(SC_ANIMATION_TRANSITION_PACKET
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_)
       + sizeof(SC_ANIMATION_TRANSITION_PACKET::_impl_.curranim_)
-      - PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.prevanim_)>(
-          reinterpret_cast<char*>(&_impl_.prevanim_),
-          reinterpret_cast<char*>(&other->_impl_.prevanim_));
+      - PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.sesssionid_)>(
+          reinterpret_cast<char*>(&_impl_.sesssionid_),
+          reinterpret_cast<char*>(&other->_impl_.sesssionid_));
 }
 
 ::google::protobuf::Metadata SC_ANIMATION_TRANSITION_PACKET::GetMetadata() const {

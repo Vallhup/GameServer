@@ -81,7 +81,6 @@ struct OutputEventPayload
 {
 	union {
 		struct {
-			AnimationType prevType;
 			AnimationType currType;
 		} anim;
 
@@ -94,11 +93,10 @@ struct OutputEvent {
 	DirtyType type;
 	OutputEventPayload payload;
 
-	static OutputEvent AnimationChanged(Entity e, AnimationType prev,
-		AnimationType curr)
+	static OutputEvent AnimationChanged(Entity e, AnimationType curr)
 	{
 		OutputEvent ev{ e, DirtyType::AnimationChanged, { } };
-		ev.payload.anim = { prev, curr };
+		ev.payload.anim = { curr };
 		return ev;
 	}
 };

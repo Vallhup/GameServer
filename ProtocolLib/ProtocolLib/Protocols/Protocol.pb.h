@@ -863,17 +863,17 @@ class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kPrevAnimFieldNumber = 1,
+    kSesssionIdFieldNumber = 1,
     kCurrAnimFieldNumber = 2,
   };
-  // int32 prevAnim = 1;
-  void clear_prevanim() ;
-  ::int32_t prevanim() const;
-  void set_prevanim(::int32_t value);
+  // int32 sesssionId = 1;
+  void clear_sesssionid() ;
+  ::int32_t sesssionid() const;
+  void set_sesssionid(::int32_t value);
 
   private:
-  ::int32_t _internal_prevanim() const;
-  void _internal_set_prevanim(::int32_t value);
+  ::int32_t _internal_sesssionid() const;
+  void _internal_set_sesssionid(::int32_t value);
 
   public:
   // int32 currAnim = 2;
@@ -909,7 +909,7 @@ class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const SC_ANIMATION_TRANSITION_PACKET& from_msg);
-    ::int32_t prevanim_;
+    ::int32_t sesssionid_;
     ::int32_t curranim_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
@@ -2851,26 +2851,26 @@ inline void SC_REMOVE_PACKET::_internal_set_ssessionid(::int32_t value) {
 
 // SC_ANIMATION_TRANSITION_PACKET
 
-// int32 prevAnim = 1;
-inline void SC_ANIMATION_TRANSITION_PACKET::clear_prevanim() {
+// int32 sesssionId = 1;
+inline void SC_ANIMATION_TRANSITION_PACKET::clear_sesssionid() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.prevanim_ = 0;
+  _impl_.sesssionid_ = 0;
 }
-inline ::int32_t SC_ANIMATION_TRANSITION_PACKET::prevanim() const {
-  // @@protoc_insertion_point(field_get:Protocol.SC_ANIMATION_TRANSITION_PACKET.prevAnim)
-  return _internal_prevanim();
+inline ::int32_t SC_ANIMATION_TRANSITION_PACKET::sesssionid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_ANIMATION_TRANSITION_PACKET.sesssionId)
+  return _internal_sesssionid();
 }
-inline void SC_ANIMATION_TRANSITION_PACKET::set_prevanim(::int32_t value) {
-  _internal_set_prevanim(value);
-  // @@protoc_insertion_point(field_set:Protocol.SC_ANIMATION_TRANSITION_PACKET.prevAnim)
+inline void SC_ANIMATION_TRANSITION_PACKET::set_sesssionid(::int32_t value) {
+  _internal_set_sesssionid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_ANIMATION_TRANSITION_PACKET.sesssionId)
 }
-inline ::int32_t SC_ANIMATION_TRANSITION_PACKET::_internal_prevanim() const {
+inline ::int32_t SC_ANIMATION_TRANSITION_PACKET::_internal_sesssionid() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.prevanim_;
+  return _impl_.sesssionid_;
 }
-inline void SC_ANIMATION_TRANSITION_PACKET::_internal_set_prevanim(::int32_t value) {
+inline void SC_ANIMATION_TRANSITION_PACKET::_internal_set_sesssionid(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.prevanim_ = value;
+  _impl_.sesssionid_ = value;
 }
 
 // int32 currAnim = 2;

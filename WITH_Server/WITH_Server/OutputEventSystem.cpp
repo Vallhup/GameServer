@@ -156,8 +156,8 @@ void OutputEventSystem::ProcessAnimationChange(const OutputEvent& event)
 	if (it == ets.end()) return;
 	int sessionId = it->second;
 
-	SendBuffer* data = NetHelper::SCAnimationChangePacket(sessionId,
-		event.payload.anim.prevType, event.payload.anim.currType);
+	SendBuffer* data = NetHelper::SCAnimationChangePacket(
+		sessionId, event.payload.anim.currType);
 	for (const auto& [entity, sid] : ets)
 	{
 		EnqueueToSession(sid, data->data, data->size);
