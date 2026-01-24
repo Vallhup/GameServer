@@ -79,6 +79,11 @@ AnimCategory AnimationMachine::GetCurrentCategory() const
     return AnimCategory::Base;
 }
 
+shared_ptr<AnimationSet> AnimationMachine::GetAnimationSet() const
+{
+    return animSet;
+}
+
 bool AnimationMachine::CanTransition(const ClipInfo* from, const ClipInfo* to) const
 {
     if (!from) return true;

@@ -22,13 +22,15 @@ struct ClipInfo
 class AnimationSet
 {
 public:
-    AnimationSet(const string& setName);
+    AnimationSet(const string& setName, uint32_t animStartIdx);
 
     void RegisterClip(const string& clipName, int index,
         AnimCategory category = AnimCategory::Base, float blendDuration = 0.2f);
 
     const ClipInfo* GetClip(const string& clipName) const;
     int GetClipIndex(const string& clipName) const;
+    string GetClipNameByIndex(int idx) const;
+    uint32_t GetStartIndex() const;
 
     const unordered_map<string, ClipInfo>& GetAllClips() const;
 
@@ -36,5 +38,7 @@ public:
 
 private:
     string name;
+    uint32_t startIdx;
     unordered_map<string, ClipInfo> clips;
+    vector<string> clipNames;
 };

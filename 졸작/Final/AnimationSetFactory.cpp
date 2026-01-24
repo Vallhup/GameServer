@@ -2,9 +2,13 @@
 #include "AnimationSetFactory.h"
 #include "AnimationSet.h"
 
+// ---------------------------------------------------------------------
+// Code should be sequentially indexed for naming in AnimationSet Class
+// ---------------------------------------------------------------------
+
 shared_ptr<AnimationSet> AnimationSetFactory::CreateKnightSet()
 {
-	auto set = make_shared<AnimationSet>("Knight");
+	auto set = make_shared<AnimationSet>("Knight", 1);
 
 	set->RegisterClip("Idle",	0, AnimCategory::Base);
 	set->RegisterClip("Walk",	1, AnimCategory::Base);
@@ -26,7 +30,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateKnightSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 {
-	auto set = make_shared<AnimationSet>("Lancer");
+	auto set = make_shared<AnimationSet>("Lancer", 12);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);
@@ -48,7 +52,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateTankerSet()
 {
-	auto set = make_shared<AnimationSet>("Tanker");
+	auto set = make_shared<AnimationSet>("Tanker", 23);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);

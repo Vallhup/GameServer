@@ -23,6 +23,7 @@ public:
     string GetCurrentClip() const;
     bool IsPlaying(const string& clipName) const;
     AnimCategory GetCurrentCategory() const;
+    shared_ptr<AnimationSet> GetAnimationSet() const;
 
     function<string()> onActionEnd;
 

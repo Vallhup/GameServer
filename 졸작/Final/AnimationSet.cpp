@@ -1,9 +1,10 @@
 #include "pch.h"
 #include "AnimationSet.h"
 
-AnimationSet::AnimationSet(const string& setName)
-    : name(setName)
+AnimationSet::AnimationSet(const string& setName, uint32_t animStartIdx)
+    : name(setName), startIdx(animStartIdx)
 {
+    clipNames.reserve(20);
 }
 
 void AnimationSet::RegisterClip(const string& clipName, int index,
@@ -15,6 +16,7 @@ void AnimationSet::RegisterClip(const string& clipName, int index,
     info.blendDuration = blendDuration;
 
     clips[clipName] = info;
+    clipNames.push_back(clipName);
 }
 
 const ClipInfo* AnimationSet::GetClip(const string& clipName) const
@@ -31,6 +33,16 @@ int AnimationSet::GetClipIndex(const string& clipName) const
     if (it != clips.end())
         return it->second.index;
     return -1;
+}
+
+string AnimationSet::GetClipNameByIndex(int idx) const
+{
+    return clipNames[idx];
+}
+
+uint32_t AnimationSet::GetStartIndex() const
+{
+    return startIdx;
 }
 
 const unordered_map<string, ClipInfo>& AnimationSet::GetAllClips() const

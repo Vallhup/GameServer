@@ -212,6 +212,30 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		OutputDebugStringA("SC_REMOVE packet received\n");
 		break;
 	}
+	case PacketType::SC_ANIMATION_CHANGE:
+	{
+		Protocol::SC_ANIMATION_TRANSITION_PACKET anim;
+		if (PacketFactory::Deserialize<Protocol::SC_ANIMATION_TRANSITION_PACKET>(header, data, &anim))
+		{
+			int sessionId = anim.sesssionid();
+			if (sessionId == GET(Input).GetClientID())
+				return;
+
+			auto it = activePlayers.find(sessionId);
+			if (it != activePlayers.end())
+			{
+				if (auto animMachine = it->second->GetComponent<AnimationMachine>())
+				{
+					uint32 serverAnimIdx = anim.curranim();
+					uint32 startIdx = animMachine->GetAnimationSet()->GetStartIndex();
+					string animName = animMachine->GetAnimationSet()->GetClipNameByIndex(serverAnimIdx - startIdx);
+
+					animMachine->TryPlayClip(animName);
+				}
+			}
+		}
+		break;
+	}
 	//case PacketType::SC_ATTACK: {
 	//	Protocol::SC_ATTACK_PACKET attack;
 	//	if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
