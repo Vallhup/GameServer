@@ -1,21 +1,18 @@
 #include "ShaderResources.hlsli"
 #include "math.hlsli"
 
-matrix CalculateBoneMatrix(int boneIndex, int currentFrame, int nextFrame, float ratio, int animOffset)
+void GetInterpolatedSRT(int boneIndex, int currentFrame, int nextFrame, float ratio, int animOffset,
+                        out float4 outS, out float4 outR, out float4 outT)
 {
     int currentFrameIndex = currentFrame - 1;
     int nextFrameIndex = nextFrame - 1;
     
     uint idx = animOffset + (aBoneCount * currentFrameIndex) + boneIndex;
     uint nextIdx = animOffset + (aBoneCount * nextFrameIndex) + boneIndex;
-
-    float4 scale = lerp(aBoneFrame[idx].scale, aBoneFrame[nextIdx].scale, ratio);
-    float4 rotation = QuaternionNlerp(aBoneFrame[idx].rotation, aBoneFrame[nextIdx].rotation, ratio);
-    float4 translation = lerp(aBoneFrame[idx].translation, aBoneFrame[nextIdx].translation, ratio);
-
-    matrix matBone = MatrixAffineTransformation(scale, rotation, translation);
-
-    return mul(aOffset[boneIndex], matBone);
+    
+    outS = lerp(aBoneFrame[idx].scale, aBoneFrame[nextIdx].scale, ratio);
+    outR = QuaternionNlerp(aBoneFrame[idx].rotation, aBoneFrame[nextIdx].rotation, ratio);
+    outT = lerp(aBoneFrame[idx].translation, aBoneFrame[nextIdx].translation, ratio);
 }
 
 [numthreads(256, 1, 1)]
@@ -24,14 +21,29 @@ void CSMain(int3 threadIdx : SV_DispatchThreadID)
     if (aBoneCount <= threadIdx.x)
         return;
     
+    int boneIdx = threadIdx.x;
+    
+    float4 finalS, finalR, finalT;
+    float4 s1, r1, t1;
+    GetInterpolatedSRT(boneIdx, aCurrentFrame, aNextFrame, aRatio, aAnimationOffset, s1, r1, t1);
+    
     if (isBlending)
     {
-        matrix currentmatrix = CalculateBoneMatrix(threadIdx.x, aCurrentFrame, aNextFrame, aRatio, aAnimationOffset);
-        matrix prevmatrix = CalculateBoneMatrix(threadIdx.x, aPrevCurrentFrame, aPrevNextFrame, aPrevRatio, aPrevAnimationOffset);
-        
-        aFinal[threadIdx.x] = lerp(prevmatrix, currentmatrix, aBlendRatio);
-
+        float4 s2, r2, t2;
+        GetInterpolatedSRT(boneIdx, aPrevCurrentFrame, aPrevNextFrame, aPrevRatio, aPrevAnimationOffset, s2, r2, t2);
+   
+        finalS = lerp(s2, s1, aBlendRatio);
+        finalR = QuaternionNlerp(r2, r1, aBlendRatio);
+        finalT = lerp(t2, t1, aBlendRatio);
     }
     else
-        aFinal[threadIdx.x] = CalculateBoneMatrix(threadIdx.x, aCurrentFrame, aNextFrame, aRatio, aAnimationOffset);
+    {
+        finalS = s1;
+        finalR = r1;
+        finalT = t1;
+    }
+    
+    matrix matBone = MatrixAffineTransformation(finalS, finalR, finalT);
+    
+    aFinal[boneIdx] = mul(aOffset[boneIdx], matBone);
 }
