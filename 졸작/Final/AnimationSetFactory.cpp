@@ -28,9 +28,18 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateKnightSet()
 	return set;
 }
 
+shared_ptr<AnimationSet> AnimationSetFactory::CreateFinalBossSet()
+{
+	auto set = make_shared<AnimationSet>("FinalBoss", 12);
+
+	set->RegisterClip("Idle", 0, AnimCategory::Base);
+
+	return set;
+}
+
 shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 {
-	auto set = make_shared<AnimationSet>("Lancer", 12);
+	auto set = make_shared<AnimationSet>("Lancer", 13);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);
@@ -52,7 +61,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateTankerSet()
 {
-	auto set = make_shared<AnimationSet>("Tanker", 23);
+	auto set = make_shared<AnimationSet>("Tanker", 24);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);

@@ -277,23 +277,26 @@ void GameScene::InitializeLogic()
 
 	CreateKnightPool();
 
-	{
-		auto boss = make_shared<GameObject>();
-		boss->SetId(-1);
-		auto mesh = boss->AddComponent<Mesh>();
-		auto transform = boss->AddComponent<Transform>();
-		auto animator = boss->AddComponent<Animator>();
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
-		transform->SetInitPosition(2.f, 0.f, -5.f);
-		transform->SetRotation(0.f, 0.f, 0.f);
-		transform->SetScale(0.02f, 0.02f, 0.02f);
-		AddGameObject(boss);
-	}
-
 	skyBox = make_shared<SkyBox>();
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
 
 	CreateMap();
+
+	{
+		auto boss = make_shared<GameObject>();
+		boss->SetId(0);
+		auto mesh = boss->AddComponent<Mesh>();
+		auto transform = boss->AddComponent<Transform>();
+		auto animator = boss->AddComponent<Animator>();
+		auto animMachine = boss->AddComponent<AnimationMachine>();
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
+
+		animMachine->SetAnimationSet(AnimationSetFactory::CreateFinalBossSet());
+		transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
+		transform->SetRotation(0.f, 3.14f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+		AddGameObject(boss);
+	}
 
 	CreateEffectSamples();
 

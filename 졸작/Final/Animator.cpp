@@ -94,6 +94,48 @@ void Animator::UpdatePrevAnimation(float deltaTime)
     mPrevFrameRatio = frameFloat - mPrevFrame;
 }
 
+int Animator::GetBoneIndex(const string& name)
+{
+    for (int i = 0; i < mBones.size(); ++i)
+    {
+        if (mBones[i].boneName == name)
+            return i;
+    }
+    return -1;
+}
+
+XMVECTOR Animator::QuaternionNlerp(XMVECTOR Q1, XMVECTOR Q2, float t)
+{
+    float dotResult = XMVectorGetX(XMVector4Dot(Q1, Q2));
+    if (dotResult < 0.0f)
+        Q2 = XMVectorNegate(Q2);
+
+    XMVECTOR result = XMVectorLerp(Q1, Q2, t);
+
+    return XMVector4Normalize(result);
+}
+
+void Animator::GetInterpolatedSRT(int boneIndex, int clipIndex, int currentFrame, int nextFrame, float ratio,
+    XMVECTOR& outS, XMVECTOR& outR, XMVECTOR& outT)
+{
+    int currIdx = (currentFrame - 1) * mBoneCount + boneIndex;
+    int nextIdx = (nextFrame - 1) * mBoneCount + boneIndex;
+
+    auto& keyFrames = mAnimations[clipIndex].keyFrames;
+
+    XMVECTOR currS = XMLoadFloat4(&keyFrames[currIdx].scale);
+    XMVECTOR currR = XMLoadFloat4(&keyFrames[currIdx].rotation);
+    XMVECTOR currT = XMLoadFloat4(&keyFrames[currIdx].translation);
+
+    XMVECTOR nextS = XMLoadFloat4(&keyFrames[nextIdx].scale);
+    XMVECTOR nextR = XMLoadFloat4(&keyFrames[nextIdx].rotation);
+    XMVECTOR nextT = XMLoadFloat4(&keyFrames[nextIdx].translation);
+
+    outS = XMVectorLerp(currS, nextS, ratio);
+    outR = QuaternionNlerp(currR, nextR, ratio);
+    outT = XMVectorLerp(currT, nextT, ratio);
+}
+
 void Animator::SetAnimationData(DX12Core& core, const vector<AnimClipInfo>& animations)
 {
     mAnimations = animations;

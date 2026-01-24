@@ -60,6 +60,7 @@ void Transform::SetInitPosition(const XMFLOAT3& pos)
 
 void Transform::SetRotation(float x, float y, float z)
 {
+	targetRot = y;
 	rotation = { x, y, z };
 
 	UpdateBoundingBox();
@@ -67,6 +68,7 @@ void Transform::SetRotation(float x, float y, float z)
 
 void Transform::SetRotation(const XMFLOAT3& rot)
 {
+	targetRot = rot.y;
 	rotation = rot;
 
 	UpdateBoundingBox();

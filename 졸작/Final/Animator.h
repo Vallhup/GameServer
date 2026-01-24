@@ -56,6 +56,15 @@ private:
     void UpdateCurrentAnimation(float deltaTime);
     void UpdatePrevAnimation(float deltaTime);
 
+    //----------------------------------------
+    // CPU Animation
+    //----------------------------------------
+
+    int GetBoneIndex(const string& name);
+    XMVECTOR QuaternionNlerp(XMVECTOR Q1, XMVECTOR Q2, float t);
+    void GetInterpolatedSRT(int boneIndex, int clipIndex, int currentFrame, int nextFrame, float ratio,
+        XMVECTOR& outS, XMVECTOR& outR, XMVECTOR& outT);
+
 private:
     vector<AnimClipInfo> mAnimations; 
     vector<BoneInfo> mBones;
