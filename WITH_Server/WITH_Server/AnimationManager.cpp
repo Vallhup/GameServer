@@ -2,9 +2,9 @@
 #include "AnimationManager.h"
 #include "json.hpp"
 
-void AnimationManager::LoadAnimation(AnimationId id, std::string_view path)
+void AnimationManager::LoadAnimation(AnimationType type, std::string_view path)
 {
-	if (_animations.contains(id)) return;
+	if (_animations.contains(type)) return;
 
 	auto anim = std::make_unique<PrebakedAnimation>(LoadPrebakedAnimation(path));
 
@@ -13,14 +13,34 @@ void AnimationManager::LoadAnimation(AnimationId id, std::string_view path)
 		std::cout << "Animation Load Success: " << path << std::endl;
 #endif
 
-	_animations.try_emplace(id, std::move(anim));
+	_animations.try_emplace(type, std::move(anim));
 }
 
-const PrebakedAnimation* AnimationManager::GetAnimation(AnimationId id) const
+const PrebakedAnimation* AnimationManager::GetAnimation(AnimationType type) const
 {
-	auto it = _animations.find(id);
+	auto it = _animations.find(type);
 	if (it != _animations.end()) return it->second.get();
 	return nullptr;
+}
+
+std::pair<AnimationType, bool> AnimationManager::
+GetAnimationIdForAction(ActionType action) const
+{
+	auto it = _actionToAnimationMap.find(action);
+	if (it != _actionToAnimationMap.end()) return it->second;
+	return { AnimationType::None, false };
+}
+
+void AnimationManager::LoadActionAnimationMap()
+{
+	_actionToAnimationMap[ActionType::None] = { AnimationType::None, false };
+	_actionToAnimationMap[ActionType::Attack] = { AnimationType::Knight_Attack, false };
+	_actionToAnimationMap[ActionType::Dodge] = { AnimationType::Knight_Dodge, false };
+	_actionToAnimationMap[ActionType::Parry] = { AnimationType::Knight_Parry, false };
+	_actionToAnimationMap[ActionType::Guard] = { AnimationType::Knight_Guard, true };
+	_actionToAnimationMap[ActionType::Stun] = { AnimationType::Knight_Stun, false };
+	_actionToAnimationMap[ActionType::Hit] = { AnimationType::Knight_Hit, false };
+	_actionToAnimationMap[ActionType::Dead] = { AnimationType::Knight_Dead, false };
 }
 
 PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)

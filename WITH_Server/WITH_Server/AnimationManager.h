@@ -3,24 +3,11 @@
 #include <string_view>
 
 #include "json.hpp"
+#include "AnimationType.h"
+#include "ActionManager.h"
 
 using json = nlohmann::json;
 using namespace DirectX;
-
-enum class AnimationId {
-	None,
-	Knight_Idle,
-	Knight_Walk,
-	Knight_Run,
-	Knight_Attack,
-	Knight_Dead,
-	Knight_Drinking,
-	Knight_Guard,
-	Knight_Hit,
-	Knight_Parry,
-	Knight_Dodge,
-	Knight_Stun,
-};
 
 enum class HitboxType : uint8 {
 	None    = 0,
@@ -36,16 +23,6 @@ inline uint8 operator|(HitboxType a, HitboxType b)
 inline bool HasType(uint8 mask, HitboxType t)
 {
 	return (mask & static_cast<uint8>(t)) != 0;
-}
-
-namespace std {
-	template<>
-	struct hash<AnimationId> {
-		size_t operator()(const AnimationId& id) const noexcept
-		{
-			return std::hash<int>()(static_cast<int>(id));
-		}
-	};
 }
 
 struct DynamicCapsuleData {
@@ -78,12 +55,16 @@ public:
 		return instance;
 	}
 
-	void LoadAnimation(AnimationId id, std::string_view path);
-	const PrebakedAnimation* GetAnimation(AnimationId id) const;
+	void LoadAnimation(AnimationType type, std::string_view path);
+	void LoadActionAnimationMap();
+	const PrebakedAnimation* GetAnimation(AnimationType type) const;
+	std::pair<AnimationType, bool> GetAnimationIdForAction(
+		ActionType action) const;
 
 private:
 	AnimationManager() = default;
 	PrebakedAnimation LoadPrebakedAnimation(std::string_view path);
 
-	std::unordered_map<AnimationId, std::unique_ptr<PrebakedAnimation>> _animations;
+	std::unordered_map<AnimationType, std::unique_ptr<PrebakedAnimation>> _animations;
+	std::unordered_map<ActionType, std::pair<AnimationType, bool>> _actionToAnimationMap;
 };
