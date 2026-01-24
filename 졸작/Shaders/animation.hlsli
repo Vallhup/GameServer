@@ -10,7 +10,7 @@ matrix CalculateBoneMatrix(int boneIndex, int currentFrame, int nextFrame, float
     uint nextIdx = animOffset + (aBoneCount * nextFrameIndex) + boneIndex;
 
     float4 scale = lerp(aBoneFrame[idx].scale, aBoneFrame[nextIdx].scale, ratio);
-    float4 rotation = QuaternionSlerp(aBoneFrame[idx].rotation, aBoneFrame[nextIdx].rotation, ratio);
+    float4 rotation = QuaternionNlerp(aBoneFrame[idx].rotation, aBoneFrame[nextIdx].rotation, ratio);
     float4 translation = lerp(aBoneFrame[idx].translation, aBoneFrame[nextIdx].translation, ratio);
 
     matrix matBone = MatrixAffineTransformation(scale, rotation, translation);

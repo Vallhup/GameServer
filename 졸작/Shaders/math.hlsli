@@ -177,4 +177,16 @@ float4 QuaternionSlerp(in float4 Q1, in float4 Q2, float Ratio)
     return Result;
 }
 
+float4 QuaternionNlerp(float4 Q1, float4 Q2, float t)
+{
+    float dotResult = dot(Q1, Q2);
+    if (dotResult < 0.0f)
+        Q2 = -Q2;
+    
+    float4 result = lerp(Q1, Q2, t);
+    
+    return normalize(result);
+
+}
+
 #endif
