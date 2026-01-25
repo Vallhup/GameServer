@@ -55,15 +55,15 @@ void Input::SetClientID(int id)
 	clientID = id;
 }
 
-void Input::SendMovePacket(int inputX, int inputZ, float yaw)
+void Input::SendMovePacket(int inputX, int inputZ, float yaw, bool isRun)
 {
 	if (!network) return;
 
-	// TEMP : 나중에 별도로 헬퍼 함수 만들 수 있음
 	Protocol::CS_MOVE_PACKET move;
 	move.set_inputx(inputX);
 	move.set_inputz(inputZ);
 	move.set_yaw(yaw);
+	move.set_isrun(isRun);
 
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_MOVE_PACKET>(
 		PacketType::CS_MOVE, move);

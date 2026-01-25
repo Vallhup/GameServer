@@ -37,13 +37,13 @@ void MainCharacter::BasicMove()
 	int inputX{ 0 };
 	int inputZ{ 0 };
 
-	if (input.GetKey('W')) inputZ -= isRunning ? 2 : 1;
-	if (input.GetKey('S')) inputZ += isRunning ? 2 : 1;
-	if (input.GetKey('D')) inputX -= isRunning ? 2 : 1;
-	if (input.GetKey('A')) inputX += isRunning ? 2 : 1;
+	if (input.GetKey('W')) inputZ -= 1;
+	if (input.GetKey('S')) inputZ += 1;
+	if (input.GetKey('D')) inputX -= 1;
+	if (input.GetKey('A')) inputX += 1;
 
 	float yaw = camera->GetRadianYaw();
-	input.SendMovePacket(inputX, inputZ, yaw);
+	input.SendMovePacket(inputX, inputZ, yaw, isRunning);
 
 	auto animMachine = GetComponent<AnimationMachine>();
 	if (animMachine) {

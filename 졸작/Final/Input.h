@@ -38,7 +38,7 @@ public:
 	int GetClientID() const { return clientID; }
 
 public:
-	void SendMovePacket(int inputX, int intputZ, float yaw);
+	void SendMovePacket(int inputX, int intputZ, float yaw, bool isRun);
 	void SendAttackPacket();
 	void SendDodgePacket();
 	void SendGuardPacket(bool in);
