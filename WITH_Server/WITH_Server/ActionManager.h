@@ -5,9 +5,9 @@ enum class ActionType : uint8 {
 	Attack,
 	Dodge,
 	Parry,
+	Stun,
 	Hit,
 	Guard,
-	Stun,
 	Dead,
 	Count
 };
@@ -43,6 +43,7 @@ struct ActionPolicy {
 	float duration{ 0 };
 	uint32 interruptMask{ 0 };
 	bool isMoveAction{ false };
+	bool isHoldAction{ false };
 };
 
 class ActionManager {

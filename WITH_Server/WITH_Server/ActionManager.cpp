@@ -36,14 +36,14 @@ const ActionProfile* ActionManager::GetActionMoveProfile(ActionType actionType) 
 void ActionManager::LoadPolicy()
 {
 	// TEMP : 추후 데이터 구조 확정 및 툴 완성 후 분리
-	_policies[ToIndex(ActionType::Dead)] = { 100, 150.f / 30.2013f, 0u, false };
-	_policies[ToIndex(ActionType::Hit)] = { 90,  50.f / 30.6122f, Bit(ActionType::Dead), false };
-	_policies[ToIndex(ActionType::Stun)] = { 85,  96.f / 30.3158f, Bit(ActionType::Hit) | Bit(ActionType::Dead), false };
-	_policies[ToIndex(ActionType::Parry)] = { 80,  54.f / 30.566f,  Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), false };
-	_policies[ToIndex(ActionType::Dodge)] = { 70,  50.f / 30.6122f, Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), true };
-	_policies[ToIndex(ActionType::Attack)] = { 60,  40.f / 30.7692f, Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), true };
-	_policies[ToIndex(ActionType::Guard)] = { 10,  std::numeric_limits<float>::infinity(), ~0u, false };
-	_policies[ToIndex(ActionType::None)] = { 0,  0.f, ~0u, false };
+	_policies[ToIndex(ActionType::Dead)] = { 100, 150.f / 30.2013f, 0u, false, false };
+	_policies[ToIndex(ActionType::Hit)] = { 90,  50.f / 30.6122f, Bit(ActionType::Dead), false, false };
+	_policies[ToIndex(ActionType::Stun)] = { 85,  96.f / 30.3158f, Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false };
+	_policies[ToIndex(ActionType::Parry)] = { 80,  54.f / 30.566f,  Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false };
+	_policies[ToIndex(ActionType::Dodge)] = { 70,  50.f / 30.6122f, Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), true, false };
+	_policies[ToIndex(ActionType::Attack)] = { 60,  40.f / 30.7692f, Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), true, false };
+	_policies[ToIndex(ActionType::Guard)] = { 10,  std::numeric_limits<float>::infinity(), ~0u, false, true };
+	_policies[ToIndex(ActionType::None)] = { 0,  0.f, ~0u, false, false };
 }
 
 void ActionManager::LoadProfile()

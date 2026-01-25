@@ -14,7 +14,8 @@ void ActionStateSystem::Execute(const float dT)
 	for (const auto& [entity, state] : states)
 	{
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
-		if (state.type != ActionType::None) continue;
+		if (state.type != ActionType::None &&
+			state.type != ActionType::Guard) continue;
 
 		if (auto* intent = intents.GetComponent(entity))
 		{

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ActionTransitionSystem.h"
 #include "Framework.h"
+#include "Math.h"
 
 ActionTransitionSystem::ActionTransitionSystem(ECS& e, int p)
 	: System(e, p)
@@ -33,34 +34,42 @@ void ActionTransitionSystem::Execute(const float dT)
 			});
 
 		ActionType request{ ActionType::None };
-		if (it != events.end() && it->entity == entity) 
+		if (it != events.end() && it->entity == entity)
 			request = it->type;
-
+		
 		if (auto* intent = intents.GetComponent(entity))
 		{
-			if (actionState.type == ActionType::Guard && 
-				intent->guard == false)
-				request = ActionType::None;
+			const bool guardHeld = intent->guard;
 
-			else if (request == ActionType::None &&
-				actionState.type == ActionType::None && 
-				intent->guard == true)
+			if (actionState.type == ActionType::Guard)
+			{
+				if (!guardHeld)
+					request = ActionType::None;
+
+				else if (request == ActionType::None)
+					request = ActionType::Guard;
+			}
+
+			if (guardHeld && actionState.type == ActionType::None &&
+				request == ActionType::None)
+			{
 				request = ActionType::Guard;
+			}
+		
+			ActionType next = ResolveNextAction(actionState, request, guardHeld);
+			if (next != actionState.type)
+				ApplyTransition(entity, &actionState, next);
+
+			else if (next == ActionType::None)
+				ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
 		}
-
-		ActionType next = ResolveNextAction(actionState, request);
-		if (next != actionState.type)
-			ApplyTransition(entity, &actionState, next);
-
-		else if (next == ActionType::None)
-			ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
 	}
 
 	events.clear();
 }
 
 ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current, 
-	ActionType request)
+	ActionType request, bool guardHeld)
 {
 	const ActionType curType = current.type;
 	const auto& aM = ActionManager::Get();
@@ -80,9 +89,12 @@ ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current,
 			return request;
 	}
 
-	if (curType != ActionType::None &&
+	if (!curPol.isHoldAction && curType != ActionType::None &&
 		current.elapsed >= curPol.duration)
+	{
+		if (guardHeld) return ActionType::Guard;
 		return ActionType::None;
+	}
 
 	return curType;
 }
@@ -113,12 +125,18 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, ActionState* state,
 		move->segmentIndex = 0;
 		move->movedInSegment = 0.0f;
 
-		if (auto* vel = ecs.GetStorage<Velocity>().GetComponent(entity))
+		if (auto* trans = ecs.GetStorage<Transform>().GetComponent(entity))
 		{
-			// TEMP : 공격, 회피 방향 정책 수정 필요
-			move->dir = vel->lastNonZeroDir;
+			XMStoreFloat3(&move->dir, TransformHelper::Forward(*trans));
 			move->dirLocked = true;
 		}
+
+		//if (auto* vel = ecs.GetStorage<Velocity>().GetComponent(entity))
+		//{
+		//	// TEMP : 공격, 회피 방향 정책 수정 필요
+		//	move->dir = vel->lastNonZeroDir;
+		//	move->dirLocked = true;
+		//}
 	}
 }
 
@@ -151,6 +169,7 @@ void ActionTransitionSystem::LoadTransitionRules()
 	SetRule(ActionType::Guard, ActionType::Dodge, ActionType::Dodge);
 	SetRule(ActionType::Guard, ActionType::Attack, ActionType::Attack);
 	SetRule(ActionType::Guard, ActionType::Hit, ActionType::Guard);
+	SetRule(ActionType::Guard, ActionType::Guard, ActionType::Guard);
 	SetRule(ActionType::Guard, ActionType::None, ActionType::None);  
 	   
 	SetRule(ActionType::Stun, ActionType::Dead, ActionType::Dead);
