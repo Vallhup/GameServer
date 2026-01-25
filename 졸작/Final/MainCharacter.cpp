@@ -154,6 +154,7 @@ void MainCharacter::RegisterAnimationCallback()
 
 		if (input.GetKey('Q')) {
 			input.SendGuardPacket(true);
+			wasGuarding = true;
 			return "Guard";
 		}
 
