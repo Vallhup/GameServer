@@ -19,7 +19,7 @@
 
 void SystemManager::Initalize(ECS& ecs, JobGraph& graph)
 {
-	RegisterSystem<ActionStateSystem>(ecs, 1);
+	//RegisterSystem<ActionStateSystem>(ecs, 1);
 	RegisterSystem<ActionTimeSystem>(ecs, 2);
 	RegisterSystem<ActionTransitionSystem>(ecs, 3);
 
