@@ -88,9 +88,11 @@ bool AnimationMachine::CanTransition(const ClipInfo* from, const ClipInfo* to) c
 {
     if (!from) return true;
 
-    if (from->category == AnimCategory::Base ||
-        from->category == AnimCategory::Special)
+    if (from->category == AnimCategory::Base)
         return true;
+
+    if (from->category == AnimCategory::Special)
+        return to->category == AnimCategory::Action;
 
     return false;
 }

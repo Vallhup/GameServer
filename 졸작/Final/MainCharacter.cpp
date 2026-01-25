@@ -114,9 +114,10 @@ void MainCharacter::BasicGuard()
 		}
 		else if (wasGuarding && !isGuarding)
 		{
+			input.SendGuardPacket(false);
+
 			if (animMachine->IsPlaying("Guard"))
 			{
-				input.SendGuardPacket(false);
 				animMachine->EndCurrentClip();
 			}
 			wasGuarding = false;
@@ -150,6 +151,11 @@ void MainCharacter::RegisterAnimationCallback()
 
 	animMachine->onActionEnd = [this]() -> string {
 		auto& input = GET(Input);
+
+		if (input.GetKey('Q')) {
+			input.SendGuardPacket(true);
+			return "Guard";
+		}
 
 		if (input.GetMouseButton(MouseButton::RIGHT)) {
 			input.SendParryPacket(true);
