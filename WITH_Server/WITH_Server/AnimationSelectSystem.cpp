@@ -28,8 +28,14 @@ void AnimationSelectSystem::Execute(const float dT)
 		{
 			loop = true;
 			if (loco->isMoving)
-				next = AnimationType::Knight_Walk;
+			{
+				if (loco->isRun)
+					next = AnimationType::Knight_Run;
 
+				else
+					next = AnimationType::Knight_Walk;
+			}
+				
 			else
 				next = AnimationType::Knight_Idle;
 		}

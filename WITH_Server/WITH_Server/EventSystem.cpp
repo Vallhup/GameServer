@@ -99,6 +99,7 @@ void EventSystem::ProcessMove(const Event& event)
 			int inputX = p->inputX;
 			int inputZ = p->inputZ;
 			float yaw = p->yaw;
+			bool isRun = p->isRun;
 
 			XMVECTOR forward = XMVectorSet(sin(yaw), 0, cos(yaw), 0);
 			XMVECTOR right = XMVector3Cross(XMVectorSet(0, 1, 0, 0), forward);
@@ -111,6 +112,7 @@ void EventSystem::ProcessMove(const Event& event)
 			if (p->inputX == 0 && p->inputZ == 0)
 			{
 				loco->isMoving = false;
+				loco->isRun = false;
 				dir = XMVectorZero();
 
 				XMStoreFloat3(&velocity->dir, dir);
@@ -119,6 +121,7 @@ void EventSystem::ProcessMove(const Event& event)
 			else
 			{
 				loco->isMoving = true;
+				loco->isRun = isRun;
 				dir = XMVector3Normalize(dir);
 
 				XMStoreFloat3(&velocity->dir, dir);

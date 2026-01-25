@@ -33,7 +33,7 @@ bool NetworkHandler::HandleMove(uint32 id, const PacketHeader& header, const BYT
 	if (not PacketFactory::Deserialize(header, data, &move))
 		return false;
 
-	MoveEvent mv{ id, move.inputx(), move.inputz(), move.yaw() };
+	MoveEvent mv{ id, move.inputx(), move.inputz(), move.yaw(), move.isrun() };
 	Event ev{ EventType::EV_MOVE, mv };
 	Framework::Get().eventQueue.push(ev);
 

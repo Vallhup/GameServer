@@ -41,6 +41,7 @@ struct LocomotionAnimPhase : public Component {
 
 struct LocomotionState : public Component {
 	bool isMoving{ false };
+	bool isRun{ false };
 };
 
 struct ActionIntent : public Component {

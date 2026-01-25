@@ -12,6 +12,7 @@ message CS_MOVE_PACKET
 	int32 inputX = 1;
 	int32 inputZ = 2;
 	float yaw = 3;
+	bool isRun = 4;
 }
 
 message CS_ATTACK_PACKET

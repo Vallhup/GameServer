@@ -191,6 +191,7 @@ inline constexpr CS_MOVE_PACKET::Impl_::Impl_(
       : inputx_{0},
         inputz_{0},
         yaw_{0},
+        isrun_{false},
         _cached_size_{0} {}
 
 template <typename>
@@ -334,6 +335,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_MOVE_PACKET, _impl_.inputx_),
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_MOVE_PACKET, _impl_.inputz_),
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_MOVE_PACKET, _impl_.yaw_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_MOVE_PACKET, _impl_.isrun_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_ATTACK_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -433,15 +435,15 @@ static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, -1, -1, sizeof(::Protocol::CS_LOGIN_PACKET)},
         {8, -1, -1, sizeof(::Protocol::CS_MOVE_PACKET)},
-        {19, -1, -1, sizeof(::Protocol::CS_ATTACK_PACKET)},
-        {29, -1, -1, sizeof(::Protocol::CS_DODGE_PACKET)},
-        {39, -1, -1, sizeof(::Protocol::CS_GUARD_PACKET)},
-        {48, -1, -1, sizeof(::Protocol::CS_PARRY_PACKET)},
-        {58, -1, -1, sizeof(::Protocol::SC_LOGIN_PACKET)},
-        {67, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {80, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {93, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
-        {102, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
+        {20, -1, -1, sizeof(::Protocol::CS_ATTACK_PACKET)},
+        {30, -1, -1, sizeof(::Protocol::CS_DODGE_PACKET)},
+        {40, -1, -1, sizeof(::Protocol::CS_GUARD_PACKET)},
+        {49, -1, -1, sizeof(::Protocol::CS_PARRY_PACKET)},
+        {59, -1, -1, sizeof(::Protocol::SC_LOGIN_PACKET)},
+        {68, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
+        {81, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {94, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {103, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -459,27 +461,27 @@ static const ::_pb::Message* const file_default_instances[] = {
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\016Protocol.proto\022\010Protocol\"\021\n\017CS_LOGIN_P"
-    "ACKET\"=\n\016CS_MOVE_PACKET\022\016\n\006inputX\030\001 \001(\005\022"
-    "\016\n\006inputZ\030\002 \001(\005\022\013\n\003yaw\030\003 \001(\002\".\n\020CS_ATTAC"
-    "K_PACKET\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"-\n\017"
-    "CS_DODGE_PACKET\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 "
-    "\001(\002\" \n\017CS_GUARD_PACKET\022\r\n\005input\030\001 \001(\010\"-\n"
-    "\017CS_PARRY_PACKET\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002"
-    " \001(\002\"$\n\017SC_LOGIN_PACKET\022\021\n\tsessionId\030\001 \001"
-    "(\005\"P\n\rSC_ADD_PACKET\022\021\n\tsessionId\030\001 \001(\005\022\t"
-    "\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005"
-    " \001(\002\"Q\n\016SC_MOVE_PACKET\022\021\n\tsessionId\030\001 \001("
-    "\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003ya"
-    "w\030\005 \001(\002\"&\n\020SC_REMOVE_PACKET\022\022\n\nssessionI"
-    "d\030\001 \001(\005\"F\n\036SC_ANIMATION_TRANSITION_PACKE"
-    "T\022\022\n\nsesssionId\030\001 \001(\005\022\020\n\010currAnim\030\002 \001(\005b"
-    "\006proto3"
+    "ACKET\"L\n\016CS_MOVE_PACKET\022\016\n\006inputX\030\001 \001(\005\022"
+    "\016\n\006inputZ\030\002 \001(\005\022\013\n\003yaw\030\003 \001(\002\022\r\n\005isRun\030\004 "
+    "\001(\010\".\n\020CS_ATTACK_PACKET\022\014\n\004dirX\030\001 \001(\002\022\014\n"
+    "\004dirZ\030\002 \001(\002\"-\n\017CS_DODGE_PACKET\022\014\n\004dirX\030\001"
+    " \001(\002\022\014\n\004dirZ\030\002 \001(\002\" \n\017CS_GUARD_PACKET\022\r\n"
+    "\005input\030\001 \001(\010\"-\n\017CS_PARRY_PACKET\022\014\n\004dirX\030"
+    "\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"$\n\017SC_LOGIN_PACKET\022\021"
+    "\n\tsessionId\030\001 \001(\005\"P\n\rSC_ADD_PACKET\022\021\n\tse"
+    "ssionId\030\001 \001(\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z"
+    "\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"Q\n\016SC_MOVE_PACKET\022\021\n"
+    "\tsessionId\030\001 \001(\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t"
+    "\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"&\n\020SC_REMOVE_PACK"
+    "ET\022\022\n\nssessionId\030\001 \001(\005\"F\n\036SC_ANIMATION_T"
+    "RANSITION_PACKET\022\022\n\nsesssionId\030\001 \001(\005\022\020\n\010"
+    "currAnim\030\002 \001(\005b\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    607,
+    622,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -626,9 +628,9 @@ inline void CS_MOVE_PACKET::SharedCtor(::_pb::Arena* arena) {
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, inputx_),
            0,
-           offsetof(Impl_, yaw_) -
+           offsetof(Impl_, isrun_) -
                offsetof(Impl_, inputx_) +
-               sizeof(Impl_::yaw_));
+               sizeof(Impl_::isrun_));
 }
 CS_MOVE_PACKET::~CS_MOVE_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.CS_MOVE_PACKET)
@@ -677,15 +679,15 @@ const ::google::protobuf::internal::ClassData* CS_MOVE_PACKET::GetClassData() co
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 0, 0, 2> CS_MOVE_PACKET::_table_ = {
+const ::_pbi::TcParseTable<2, 4, 0, 0, 2> CS_MOVE_PACKET::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    3, 24,  // max_field_number, fast_idx_mask
+    4, 24,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967288,  // skipmap
+    4294967280,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    3,  // num_field_entries
+    4,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -695,7 +697,9 @@ const ::_pbi::TcParseTable<2, 3, 0, 0, 2> CS_MOVE_PACKET::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::CS_MOVE_PACKET>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    {::_pbi::TcParser::MiniParse, {}},
+    // bool isRun = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CS_MOVE_PACKET, _impl_.isrun_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(CS_MOVE_PACKET, _impl_.isrun_)}},
     // int32 inputX = 1;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CS_MOVE_PACKET, _impl_.inputx_), 63>(),
      {8, 63, 0, PROTOBUF_FIELD_OFFSET(CS_MOVE_PACKET, _impl_.inputx_)}},
@@ -717,6 +721,9 @@ const ::_pbi::TcParseTable<2, 3, 0, 0, 2> CS_MOVE_PACKET::_table_ = {
     // float yaw = 3;
     {PROTOBUF_FIELD_OFFSET(CS_MOVE_PACKET, _impl_.yaw_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // bool isRun = 4;
+    {PROTOBUF_FIELD_OFFSET(CS_MOVE_PACKET, _impl_.isrun_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
   }},
   // no aux_entries
   {{
@@ -731,8 +738,8 @@ PROTOBUF_NOINLINE void CS_MOVE_PACKET::Clear() {
   (void) cached_has_bits;
 
   ::memset(&_impl_.inputx_, 0, static_cast<::size_t>(
-      reinterpret_cast<char*>(&_impl_.yaw_) -
-      reinterpret_cast<char*>(&_impl_.inputx_)) + sizeof(_impl_.yaw_));
+      reinterpret_cast<char*>(&_impl_.isrun_) -
+      reinterpret_cast<char*>(&_impl_.inputx_)) + sizeof(_impl_.isrun_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -770,6 +777,13 @@ PROTOBUF_NOINLINE void CS_MOVE_PACKET::Clear() {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteFloatToArray(
                 3, this_._internal_yaw(), target);
+          }
+
+          // bool isRun = 4;
+          if (this_._internal_isrun() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteBoolToArray(
+                4, this_._internal_isrun(), target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -811,6 +825,10 @@ PROTOBUF_NOINLINE void CS_MOVE_PACKET::Clear() {
             if (::absl::bit_cast<::uint32_t>(this_._internal_yaw()) != 0) {
               total_size += 5;
             }
+            // bool isRun = 4;
+            if (this_._internal_isrun() != 0) {
+              total_size += 2;
+            }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
                                                      &this_._impl_._cached_size_);
@@ -833,6 +851,9 @@ void CS_MOVE_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::
   if (::absl::bit_cast<::uint32_t>(from._internal_yaw()) != 0) {
     _this->_impl_.yaw_ = from._impl_.yaw_;
   }
+  if (from._internal_isrun() != 0) {
+    _this->_impl_.isrun_ = from._impl_.isrun_;
+  }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -848,8 +869,8 @@ void CS_MOVE_PACKET::InternalSwap(CS_MOVE_PACKET* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(CS_MOVE_PACKET, _impl_.yaw_)
-      + sizeof(CS_MOVE_PACKET::_impl_.yaw_)
+      PROTOBUF_FIELD_OFFSET(CS_MOVE_PACKET, _impl_.isrun_)
+      + sizeof(CS_MOVE_PACKET::_impl_.isrun_)
       - PROTOBUF_FIELD_OFFSET(CS_MOVE_PACKET, _impl_.inputx_)>(
           reinterpret_cast<char*>(&_impl_.inputx_),
           reinterpret_cast<char*>(&other->_impl_.inputx_));

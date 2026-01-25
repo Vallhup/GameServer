@@ -45,6 +45,7 @@ struct MoveEvent {
 	int inputX;
 	int inputZ;
 	float yaw;
+	bool isRun;
 };
 
 struct ActionEvent {

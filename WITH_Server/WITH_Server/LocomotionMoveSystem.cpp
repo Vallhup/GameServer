@@ -50,7 +50,7 @@ void LocomotionMoveSystem::ApplyNormalMovement(
 		}
 
 		// TEMP : 걷기 뛰기에 따라 속도 조정
-		const float speed = 2.0f;
+		const float speed = loco.isRun ? 4.0f : 2.0f;
 
 		XMVECTOR raw = XMLoadFloat3(&vel.dir);
 		XMVECTOR dir;

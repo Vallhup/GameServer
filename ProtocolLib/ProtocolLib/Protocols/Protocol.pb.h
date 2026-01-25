@@ -1508,6 +1508,7 @@ class CS_MOVE_PACKET final : public ::google::protobuf::Message
     kInputXFieldNumber = 1,
     kInputZFieldNumber = 2,
     kYawFieldNumber = 3,
+    kIsRunFieldNumber = 4,
   };
   // int32 inputX = 1;
   void clear_inputx() ;
@@ -1539,12 +1540,22 @@ class CS_MOVE_PACKET final : public ::google::protobuf::Message
   void _internal_set_yaw(float value);
 
   public:
+  // bool isRun = 4;
+  void clear_isrun() ;
+  bool isrun() const;
+  void set_isrun(bool value);
+
+  private:
+  bool _internal_isrun() const;
+  void _internal_set_isrun(bool value);
+
+  public:
   // @@protoc_insertion_point(class_scope:Protocol.CS_MOVE_PACKET)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 3, 0,
+      2, 4, 0,
       0, 2>
       _table_;
 
@@ -1565,6 +1576,7 @@ class CS_MOVE_PACKET final : public ::google::protobuf::Message
     ::int32_t inputx_;
     ::int32_t inputz_;
     float yaw_;
+    bool isrun_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -2395,6 +2407,28 @@ inline float CS_MOVE_PACKET::_internal_yaw() const {
 inline void CS_MOVE_PACKET::_internal_set_yaw(float value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.yaw_ = value;
+}
+
+// bool isRun = 4;
+inline void CS_MOVE_PACKET::clear_isrun() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.isrun_ = false;
+}
+inline bool CS_MOVE_PACKET::isrun() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_MOVE_PACKET.isRun)
+  return _internal_isrun();
+}
+inline void CS_MOVE_PACKET::set_isrun(bool value) {
+  _internal_set_isrun(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_MOVE_PACKET.isRun)
+}
+inline bool CS_MOVE_PACKET::_internal_isrun() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.isrun_;
+}
+inline void CS_MOVE_PACKET::_internal_set_isrun(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.isrun_ = value;
 }
 
 // -------------------------------------------------------------------
