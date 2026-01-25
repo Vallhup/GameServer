@@ -9,6 +9,7 @@ public:
     virtual ~EffectRenderer();
 
     void SetEffectName(const std::wstring& name);
+    void SetWorldMatrix(const XMMATRIX& mat);
 
     void Update(float deltaTime) override;
 
@@ -19,4 +20,6 @@ public:
 private:
     std::wstring effectName;
     Effekseer::Handle handle = -1;
+
+    XMMATRIX worldMatrix = XMMatrixIdentity();
 };

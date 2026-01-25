@@ -351,10 +351,30 @@ void GameScene::UpdateScene(const float deltaTime)
 		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects[2] && myPlayer) {
-		if (auto transform = effectObjects[2]->GetComponent<Transform>())
+		if (auto effectRenderer = effectObjects[2]->GetComponent<EffectRenderer>())
 		{
-			XMFLOAT3 pos = myPlayer->GetComponent<Transform>()->GetPosition();
-			transform->SetInitPosition(pos.x, pos.y, pos.z);
+			auto animator = myPlayer->GetComponent<Animator>();
+			auto transform = myPlayer->GetComponent<Transform>();
+
+			XMFLOAT3 bonePos = animator->GetBonePosition(45);
+			XMVECTOR boneRot = animator->GetBoneRotation(45);
+
+			XMMATRIX worldMat = transform->GetWorldMatrix();
+			XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
+
+			// z축 90도 초기 회전 - DirectX12와 effekseer 축 차이인듯?
+			XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
+
+			// 뼈 회전 × 플레이어 회전
+			XMFLOAT3 playerRot = transform->GetRotation();
+			XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
+
+			// 초기 회전 → 뼈 회전 → 플레이어 회전
+			XMVECTOR finalRot = XMQuaternionMultiply(offsetRot, boneRot);
+			finalRot = XMQuaternionMultiply(finalRot, playerRotQuat);
+
+			XMMATRIX finalMat = XMMatrixRotationQuaternion(finalRot) * XMMatrixTranslationFromVector(worldPos);
+			effectRenderer->SetWorldMatrix(finalMat);
 		}
 	}
 

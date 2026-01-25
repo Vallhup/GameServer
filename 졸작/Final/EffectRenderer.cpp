@@ -19,15 +19,16 @@ void EffectRenderer::SetEffectName(const std::wstring& name)
     effectName = name;
 }
 
+void EffectRenderer::SetWorldMatrix(const XMMATRIX& mat)
+{
+    worldMatrix = mat;
+}
+
 void EffectRenderer::Update(float deltaTime)
 {
     if (handle != -1)
     {
-        if (auto tr = GetGameObject()->GetComponent<Transform>())
-        {
-            XMFLOAT3 pos = tr->GetPosition();
-            GET(EffectManager).SetLocation(handle, pos);
-        }
+        GET(EffectManager).SetMatrix(handle, worldMatrix);
     }
 }
 

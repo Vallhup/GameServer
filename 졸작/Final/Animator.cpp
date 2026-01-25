@@ -175,6 +175,26 @@ XMFLOAT3 Animator::GetBonePosition(int boneIndex)
     return pos;
 }
 
+XMVECTOR Animator::GetBoneRotation(int boneIndex)
+{
+    if (boneIndex < 0 || boneIndex >= mBoneCount)
+        return XMQuaternionIdentity();
+
+    XMVECTOR s1, r1, t1;
+    GetInterpolatedSRT(boneIndex, mClipIndex, mFrame, mNextFrame,
+        mFrameRatio, s1, r1, t1);
+
+    if (mIsBlending && mPrevClipIndex >= 0)
+    {
+        XMVECTOR s2, r2, t2;
+        GetInterpolatedSRT(boneIndex, mPrevClipIndex, mPrevFrame,
+            mPrevNextFrame, mPrevFrameRatio, s2, r2, t2);
+        return QuaternionNlerp(r2, r1, blendRatio);
+    }
+
+    return r1;
+}
+
 void Animator::SetAnimationData(DX12Core& core, const vector<AnimClipInfo>& animations)
 {
     mAnimations = animations;

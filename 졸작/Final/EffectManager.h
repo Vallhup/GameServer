@@ -22,7 +22,7 @@ public:
 
     Effekseer::Handle Play(const wstring& effectName, const XMFLOAT3& pos);
     void SetLocation(Effekseer::Handle handle, const XMFLOAT3& pos);
-    void SetRotation(Effekseer::Handle handle, const XMFLOAT3& rot);
+    void SetMatrix(Effekseer::Handle handle, const XMMATRIX& mat);
     void Stop(Effekseer::Handle handle);
 
 private:

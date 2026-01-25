@@ -48,6 +48,10 @@ public:
 
     float GetAnimationProgress() const;
 
+    XMMATRIX GetBoneMatrix(int boneIndex);
+    XMFLOAT3 GetBonePosition(int boneIndex);
+    XMVECTOR GetBoneRotation(int boneIndex);
+
 private:
     void CreateBuffers(DX12Core& core);
 
@@ -64,9 +68,6 @@ private:
     XMVECTOR QuaternionNlerp(XMVECTOR Q1, XMVECTOR Q2, float t);
     void GetInterpolatedSRT(int boneIndex, int clipIndex, int currentFrame, int nextFrame, float ratio,
         XMVECTOR& outS, XMVECTOR& outR, XMVECTOR& outT);
-    XMMATRIX GetBoneMatrix(int boneIndex);
-    XMFLOAT3 GetBonePosition(int boneIndex);
-
 
 private:
     vector<AnimClipInfo> mAnimations; 

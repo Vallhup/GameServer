@@ -124,6 +124,26 @@ void EffectManager::SetLocation(Effekseer::Handle handle, const XMFLOAT3& pos)
     manager->SetLocation(handle, pos.x, pos.y, pos.z);
 }
 
+void EffectManager::SetMatrix(Effekseer::Handle handle, const XMMATRIX& mat)
+{
+    Effekseer::Matrix43 efMat;
+
+    efMat.Value[0][0] = mat.r[0].m128_f32[0];
+    efMat.Value[0][1] = mat.r[0].m128_f32[1];
+    efMat.Value[0][2] = mat.r[0].m128_f32[2];
+    efMat.Value[1][0] = mat.r[1].m128_f32[0];
+    efMat.Value[1][1] = mat.r[1].m128_f32[1];
+    efMat.Value[1][2] = mat.r[1].m128_f32[2];
+    efMat.Value[2][0] = mat.r[2].m128_f32[0];
+    efMat.Value[2][1] = mat.r[2].m128_f32[1];
+    efMat.Value[2][2] = mat.r[2].m128_f32[2];
+    efMat.Value[3][0] = mat.r[3].m128_f32[0];  // position x
+    efMat.Value[3][1] = mat.r[3].m128_f32[1];  // position y
+    efMat.Value[3][2] = mat.r[3].m128_f32[2];  // position z
+
+    manager->SetMatrix(handle, efMat);
+}
+
 void EffectManager::Stop(Effekseer::Handle handle)
 {
     if (manager == nullptr)
