@@ -54,10 +54,8 @@ void AnimationMachine::EndCurrentClip()
 
 void AnimationMachine::OnServerClipConfirm(const string& clipName)
 {
-    // 서버에서 확정된 상태와 현재 예측 상태 비교
     if (currentClipName != clipName)
     {
-        // 불일치 시 서버 상태로 보정
         PlayClip(clipName);
     }
 }

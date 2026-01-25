@@ -222,9 +222,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		if (PacketFactory::Deserialize<Protocol::SC_ANIMATION_TRANSITION_PACKET>(header, data, &anim))
 		{
 			int sessionId = anim.sesssionid();
-			if (sessionId == GET(Input).GetClientID())
-				return;
-
+			
 			auto it = activePlayers.find(sessionId);
 			if (it != activePlayers.end())
 			{
@@ -234,7 +232,10 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 					uint32 startIdx = animMachine->GetAnimationSet()->GetStartIndex();
 					string animName = animMachine->GetAnimationSet()->GetClipNameByIndex(serverAnimIdx - startIdx);
 
-					animMachine->TryPlayClip(animName);
+					if (sessionId == GET(Input).GetClientID())
+						animMachine->OnServerClipConfirm(animName);
+					else
+						animMachine->TryPlayClip(animName);
 				}
 			}
 		}
