@@ -136,6 +136,45 @@ void Animator::GetInterpolatedSRT(int boneIndex, int clipIndex, int currentFrame
     outT = XMVectorLerp(currT, nextT, ratio);
 }
 
+XMMATRIX Animator::GetBoneMatrix(int boneIndex)
+{
+    if (boneIndex < 0 || boneIndex >= mBoneCount)
+        return XMMatrixIdentity();
+
+    XMVECTOR finalS, finalR, finalT;
+    XMVECTOR s1, r1, t1;
+    GetInterpolatedSRT(boneIndex, mClipIndex, mFrame, mNextFrame, mFrameRatio, s1, r1, t1);
+
+    if (mIsBlending && mPrevClipIndex >= 0)
+    {
+        XMVECTOR s2, r2, t2;
+        GetInterpolatedSRT(boneIndex, mPrevClipIndex, mPrevFrame, mPrevNextFrame, mPrevFrameRatio, s2, r2, t2);
+
+        finalS = XMVectorLerp(s2, s1, blendRatio);
+        finalR = QuaternionNlerp(r2, r1, blendRatio);
+        finalT = XMVectorLerp(t2, t1, blendRatio);
+    }
+    else
+    {
+        finalS = s1;
+        finalR = r1;
+        finalT = t1;
+    }
+
+    XMMATRIX matBone = XMMatrixAffineTransformation(finalS, XMVectorZero(), finalR, finalT);
+
+    return XMMatrixMultiply(mBones[boneIndex].matOffset, matBone);
+}
+
+XMFLOAT3 Animator::GetBonePosition(int boneIndex)
+{
+    XMMATRIX mat = GetBoneMatrix(boneIndex);
+    XMFLOAT3 pos;
+    XMStoreFloat3(&pos, mat.r[3]);
+
+    return pos;
+}
+
 void Animator::SetAnimationData(DX12Core& core, const vector<AnimClipInfo>& animations)
 {
     mAnimations = animations;
