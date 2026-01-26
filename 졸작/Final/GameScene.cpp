@@ -233,10 +233,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 					uint32 startIdx = animMachine->GetAnimationSet()->GetStartIndex();
 					string animName = animMachine->GetAnimationSet()->GetClipNameByIndex(serverAnimIdx - startIdx);
 
-					if (sessionId == GET(Input).GetClientID())
-						animMachine->OnServerClipConfirm(animName);
-					else
-						animMachine->TryPlayClip(animName);
+					animMachine->OnServerClipConfirm(animName);
 				}
 			}
 		}
