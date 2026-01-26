@@ -48,4 +48,34 @@ namespace TransformHelper
 		out = XMVector3Normalize(v);
 		return true;
 	}
+
+	inline bool IsInFront90_XZ(const Transform& attackerTr,
+		const Transform& victimTr)
+	{
+		XMVECTOR aPos = XMLoadFloat3(&attackerTr.position);
+		XMVECTOR vPos = XMLoadFloat3(&victimTr.position);
+
+		// dir = aPos - vPos = victim -> attacker
+		XMVECTOR dir = XMVectorSubtract(aPos, vPos);
+		dir = XMVectorSetY(dir, 0.0f);
+
+		// 위치가 너무 가까우면 판정에서 제외
+		float lenSq = XMVectorGetX(XMVector3LengthSq(dir));
+		if (lenSq < 1e-6f) return false;
+
+		dir = XMVector3Normalize(dir);
+
+		XMVECTOR vRot = XMLoadFloat4(&victimTr.rotation);
+
+		const XMVECTOR baseForward = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+		
+		// vForward = victim의 전방 벡터
+		XMVECTOR vForward = XMVector3Rotate(baseForward, vRot);
+		vForward = XMVectorSetY(vForward, 0.0f);
+		vForward = XMVector3Normalize(vForward);
+
+		const float cos45 = 0.70710678f;
+		const float d = XMVectorGetX(XMVector3Dot(vForward, dir));
+		return d >= cos45;
+	}
 }

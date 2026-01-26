@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CombatCollisionHandlingSystem.h"
+#include "Math.h"
 
 void CombatCollisionHandlingSystem::Execute(const float dT)
 {
@@ -57,46 +58,56 @@ void CombatCollisionHandlingSystem::HandleClash(const CombatCollisionEvent& even
 
 void CombatCollisionHandlingSystem::HandleStrike(const CombatCollisionEvent& event)
 {
-	if (const ActionState* actionState =
-		ecs.GetStorage<ActionState>().GetComponent(event.victim))
-	{
-		const bool parryWindowOn =
-			(actionState->type == ActionType::Parry) &&
-			(actionState->elapsed >= 0.752f) &&
-			(actionState->elapsed <= 0.949f);
+	const ActionState* actionState =
+		ecs.GetStorage<ActionState>().GetComponent(event.victim);
 
-		const bool guardOn = (actionState->type == ActionType::Guard);
+	const Transform* aTrans =
+		ecs.GetStorage<Transform>().GetComponent(event.attacker);
 
-		if (guardOn)
-			HandleGuard(event.attacker, event.victim, event.attackId);
+	const Transform* vTrans =
+		ecs.GetStorage<Transform>().GetComponent(event.victim);
 
-		else if (parryWindowOn)
-			HandleParry(event.attacker, event.victim, event.attackId);
+	if (!actionState || !aTrans || !vTrans) return;
 
-		else
-			HandleHit(event.attacker, event.victim, event.attackId);
-	}
+	const bool inFront90 = 
+		TransformHelper::IsInFront90_XZ(*aTrans, *vTrans);
+
+	const bool parryWindowOn =
+		(actionState->type == ActionType::Parry) &&
+		(actionState->elapsed >= 0.001f) && //0.752f
+		(actionState->elapsed <= 0.949f);
+
+	const bool guardOn = (actionState->type == ActionType::Guard);
+
+	if (guardOn && inFront90)
+		HandleGuard(event.attacker, event.victim, event.attackId);
+
+	else if (parryWindowOn && inFront90)
+		HandleParry(event.attacker, event.victim, event.attackId);
+
+	else
+		HandleHit(event.attacker, event.victim, event.attackId);
 }
 
-void CombatCollisionHandlingSystem::HandleParry(Entity attacker, Entity victim,
-	uint32 attackId)
+void CombatCollisionHandlingSystem::HandleParry(Entity attacker, 
+	Entity victim, uint32 attackId)
 {
 	if (ParryBuf* parryBuf =
 		ecs.GetStorage<ParryBuf>().GetComponent(victim))
 	{
 		parryBuf->remaining = 1;
-		ecs.actionRequestEvents.emplace_back(attacker, ActionType::Stun);
+		ecs.actionRequestEvents.emplace_back(attacker, ActionType::Stun, ActionRequestFlag::FromCombat);
 	}
 }
 
-void CombatCollisionHandlingSystem::HandleGuard(Entity attacker, Entity victim,
-	uint32 attackId)
+void CombatCollisionHandlingSystem::HandleGuard(Entity attacker, 
+	Entity victim, uint32 attackId)
 {
 	// TODO : 추후 방어력 추가해서 데미지 감소
 }
 
-void CombatCollisionHandlingSystem::HandleHit(Entity attacker, Entity victim,
-	uint32 attackId)
+void CombatCollisionHandlingSystem::HandleHit(Entity attacker, 
+	Entity victim, uint32 attackId)
 {
 	auto* health = ecs.GetStorage<Health>().GetComponent(victim);
 	if (!health) return;
@@ -136,5 +147,6 @@ void CombatCollisionHandlingSystem::HandleHit(Entity attacker, Entity victim,
  		health->current = 0;
 
 	ecs.actionRequestEvents.emplace_back(victim,
-		isDeath ? ActionType::Dead : ActionType::Hit);
+		isDeath ? ActionType::Dead : ActionType::Hit, 
+		ActionRequestReason::FromCombat);
 }

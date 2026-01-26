@@ -27,7 +27,9 @@ private:
 	void HandleStrike(const CombatCollisionEvent& event);
 
 	void HandleParry(Entity attacker, Entity victim, uint32 attackId);
+	void HandleParryFail(Entity attacker, Entity victim, uint32 attackId);
 	void HandleGuard(Entity attacker, Entity victim, uint32 attackId);
+	void HandleGuardFail(Entity attacker, Entity victim, uint32 attackId);
 	void HandleHit(Entity attacker, Entity victim, uint32 attackId);
 };
 
