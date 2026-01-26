@@ -35,6 +35,12 @@ option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)으로 변
 (3). EffekseerRendererDX12 -> EffekseerRendererDX12.lib
 이 세개의 라이브러리 파일 있는지 확인
 
+13-1. Release 모드로 빌드하는 법
+(1) CMakeSettings.json 파일 더블클릭
+(2) 모든 것을 x64-Release로 맞춰서 변경
+(3) ctrl + s로 저장 -> 자동 CMake 생성 완료됨
+(4) 빌드 -> 모두 빌드 -> out 폴더에 Release 추출 완료
+
 14. 이후, 당신의 렌더링 프로젝트에서 
 (1). 프로젝트 -> 프로젝트 속성 -> C/C++ -> 일반 -> 추가 포함 디렉터리에 아래 세개 추가
 C:\EffekseerCpp170e\src\Effekseer
@@ -50,8 +56,6 @@ C:\EffekseerCpp170e\out\build\x64-Debug\src\EffekseerRendererDX12
 Effekseer.lib
 EffekseerRendererDX12.lib
 LLGI.lib
-
-※ 여기서 Release 모드 하는법은 내가 열심히 Debug 모드로 뽑는법 알려줫으니 알아서 공부해서 뽑고 연결해보셈 설명하기 귀찮음
 
 15. 이후 프로젝트 내에서
 #include <Effekseer.h>
