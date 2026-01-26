@@ -96,7 +96,7 @@ void CombatCollisionHandlingSystem::HandleParry(Entity attacker,
 		ecs.GetStorage<ParryBuf>().GetComponent(victim))
 	{
 		parryBuf->remaining = 1;
-		ecs.actionRequestEvents.emplace_back(attacker, ActionType::Stun, ActionRequestFlag::FromCombat);
+		ecs.actionRequestEvents.emplace_back(attacker, ActionType::Stun, ActionRequestReason::FromCombat);
 	}
 }
 
