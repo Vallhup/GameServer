@@ -87,7 +87,8 @@ void GameScene::CreateEffectSamples()
 		{u"Atmosphere", 1.f, 10.f, -10.5f},
 		{u"CandleFire5", 14.2448f, 14.5f, -43.6773f},
 		{u"CandleFire5", -14.1011f, 14.5f, -43.6773f},
-		{u"Dissolve", 2.f, 0.f, 0.f}
+		{u"Dissolve", 2.f, 0.f, 0.f},
+		{u"SwordThunder", 0.0f, 0.0f, 0.0f}
 	};
 
 	for (int i = 0; i < info.size(); ++i)
@@ -350,8 +351,11 @@ void GameScene::UpdateScene(const float deltaTime)
 	if (effectObjects.size() > 6 && GET(Input).GetKeyDown('7'))
 		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectObjects[2] && myPlayer) {
-		if (auto effectRenderer = effectObjects[2]->GetComponent<EffectRenderer>())
+	if (effectObjects.size() > 7 && GET(Input).GetKeyDown('8'))
+		effectObjects[8]->GetComponent<EffectRenderer>()->PlayEffect();
+
+	if (effectObjects[8] && myPlayer) {
+		if (auto effectRenderer = effectObjects[8]->GetComponent<EffectRenderer>())
 		{
 			auto animator = myPlayer->GetComponent<Animator>();
 			auto transform = myPlayer->GetComponent<Transform>();
