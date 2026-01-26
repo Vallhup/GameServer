@@ -33,30 +33,43 @@ void ActionTransitionSystem::Execute(const float dT)
 				return event.entity < e;
 			});
 
-		ActionType request{ ActionType::None };
+		ActionRequestEvent request
+		{ entity, ActionType::None, ActionRequestReason::None };
+		bool hasReq{ false };
 		if (it != events.end() && it->entity == entity)
-			request = it->type;
+		{
+			request = *it;
+			hasReq = true;
+		}
+
+		const bool isForced =
+			hasReq &&
+			(request.reason == ActionRequestReason::FromCombat);
 		
 		if (auto* intent = intents.GetComponent(entity))
 		{
 			const bool guardHeld = intent->guard;
 
-			if (actionState.type == ActionType::Guard)
+			if(!isForced)
 			{
-				if (!guardHeld)
-					request = ActionType::None;
+				if (actionState.type == ActionType::Guard)
+				{
+					if (!guardHeld)
+						request.type = ActionType::None;
 
-				else if (request == ActionType::None)
-					request = ActionType::Guard;
-			}
+					else if (request.type == ActionType::None)
+						request.type = ActionType::Guard;
+				}
 
-			if (guardHeld && actionState.type == ActionType::None &&
-				request == ActionType::None)
-			{
-				request = ActionType::Guard;
+				if (guardHeld && actionState.type == ActionType::None &&
+					request.type == ActionType::None)
+				{
+					request.type = ActionType::Guard;
+				}
 			}
 		
-			ActionType next = ResolveNextAction(actionState, request, guardHeld);
+			ActionType next = 
+				ResolveNextAction(actionState, request, guardHeld, isForced);
 			if (next != actionState.type)
 				ApplyTransition(entity, &actionState, next);
 
@@ -69,8 +82,10 @@ void ActionTransitionSystem::Execute(const float dT)
 }
 
 ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current, 
-	ActionType request, bool guardHeld)
+	ActionRequestEvent request, bool guardHeld, bool isForced)
 {
+	if (isForced) return request.type;
+
 	const ActionType curType = current.type;
 	const auto& aM = ActionManager::Get();
 	const auto& curPol = aM.GetPolicy(curType);
@@ -78,15 +93,15 @@ ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current,
 	if (curType == ActionType::Dead) 
 		return ActionType::Dead;
 
-	ActionType rule = GetRule(curType, request);
+	ActionType rule = GetRule(curType, request.type);
 	if (rule != Invalid)
 		return rule;
 
-	const auto& reqPol = aM.GetPolicy(request);
+	const auto& reqPol = aM.GetPolicy(request.type);
 	if (reqPol.priority > curPol.priority)
 	{
-		if (curPol.interruptMask & Bit(request))
-			return request;
+		if (curPol.interruptMask & Bit(request.type))
+			return request.type;
 	}
 
 	if (!curPol.isHoldAction && curType != ActionType::None &&
@@ -130,13 +145,6 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, ActionState* state,
 			XMStoreFloat3(&move->dir, TransformHelper::Forward(*trans));
 			move->dirLocked = true;
 		}
-
-		//if (auto* vel = ecs.GetStorage<Velocity>().GetComponent(entity))
-		//{
-		//	// TEMP : 공격, 회피 방향 정책 수정 필요
-		//	move->dir = vel->lastNonZeroDir;
-		//	move->dirLocked = true;
-		//}
 	}
 }
 

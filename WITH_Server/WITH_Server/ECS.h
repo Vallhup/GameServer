@@ -17,9 +17,16 @@ struct CombatCollisionEvent {
 	uint16 bIndex;
 };
 
+enum class ActionRequestReason : uint8 {
+	None,
+	FromCombat,
+	FromInput
+};
+
 struct ActionRequestEvent {
 	Entity entity;
 	ActionType type;
+	ActionRequestReason reason;
 };
 
 struct MapCollisionEvent {

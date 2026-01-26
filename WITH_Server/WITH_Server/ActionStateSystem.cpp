@@ -21,19 +21,25 @@ void ActionStateSystem::Execute(const float dT)
 		{
 			if (intent->parry)
 			{
-				ecs.actionRequestEvents.emplace_back(entity, ActionType::Parry);
+				ecs.actionRequestEvents.
+					emplace_back(entity, ActionType::Parry, 
+						ActionRequestReason::FromInput);
 				intent->parry = false;
 			}
 
 			if (intent->dodge)
 			{
-				ecs.actionRequestEvents.emplace_back(entity, ActionType::Dodge);
+				ecs.actionRequestEvents.
+					emplace_back(entity, ActionType::Dodge, 
+						ActionRequestReason::FromInput);
 				intent->dodge = false;
 			}
 
 			if (intent->attack)
 			{
-				ecs.actionRequestEvents.emplace_back(entity, ActionType::Attack);
+				ecs.actionRequestEvents.
+					emplace_back(entity, ActionType::Attack, 
+						ActionRequestReason::FromInput);
 				intent->attack = false;
 			}
 		}

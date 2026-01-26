@@ -20,7 +20,7 @@ public:
 	}
 
 private:
-	ActionType ResolveNextAction(const ActionState& current, ActionType request, bool guardHeld);
+	ActionType ResolveNextAction(const ActionState& current, ActionRequestEvent request, bool guardHeld, bool isForced);
 	void ApplyTransition(Entity entity, ActionState* state, ActionType next);
 	void DedupActionRequest(std::vector<ActionRequestEvent>& events);
 

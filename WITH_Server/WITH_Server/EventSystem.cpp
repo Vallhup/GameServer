@@ -145,17 +145,23 @@ void EventSystem::ProcessAction(const Event& event)
 		switch (p->type) {
 		case ActionRequestType::Attack:
 		{
-			ecs.actionRequestEvents.emplace_back(entity, ActionType::Attack);
+			ecs.actionRequestEvents.
+				emplace_back(entity, ActionType::Attack, 
+					ActionRequestReason::FromInput);
 			break;
 		}
 		case ActionRequestType::Dodge:
 		{
-			ecs.actionRequestEvents.emplace_back(entity, ActionType::Dodge);
+			ecs.actionRequestEvents.
+				emplace_back(entity, ActionType::Dodge,
+					ActionRequestReason::FromInput);
 			break;
 		}
 		case ActionRequestType::Parry:
 		{
-			ecs.actionRequestEvents.emplace_back(entity, ActionType::Parry);
+			ecs.actionRequestEvents.
+				emplace_back(entity, ActionType::Parry,
+					ActionRequestReason::FromInput);
 			break;
 		}
 		case ActionRequestType::Guard:
