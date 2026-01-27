@@ -59,6 +59,23 @@ inline CapsuleView MakeCapsuleView(const CombatCollider& collider, size_t i)
 	return out;
 }
 
+inline CapsuleView MakeCapsuleView(const XMFLOAT3& center, const XMFLOAT3& dir,
+	float halfHeight, float radius)
+{
+	CapsuleView out;
+	out.radius = radius;
+
+	XMVECTOR c = XMLoadFloat3(&center);
+	XMVECTOR d = XMVector3Normalize(XMLoadFloat3(&dir));
+
+	XMVECTOR offset = XMVectorScale(d, halfHeight);
+	
+	XMStoreFloat3(&out.p0, XMVectorSubtract(c, offset));
+	XMStoreFloat3(&out.p1, XMVectorAdd(c, offset));
+
+	return out;
+}
+
 namespace Collision {
 	static float SegmentSegmentDistSq(XMVECTOR p1, XMVECTOR q1, XMVECTOR p2, XMVECTOR q2)
 	{

@@ -1,9 +1,22 @@
 #include "pch.h"
 #include "Framework.h"
 
+#include "MapCollisionManager.h"
+
 int main()
 {
-	Framework::Get().Start();
+	//Framework::Get().Start();
+
+	MapCollisionManager::Get().
+		LoadCharacterCollider(CharacterType::Knight, "../Animation/Knight/knight_map_capsules.json");
+
+	if (auto* col = MapCollisionManager::Get().GetCharacterCollider(CharacterType::Knight))
+	{
+		std::cout << "stand collider" << std::endl;
+		printf("p0: (%f, %f, %f)\n", col->stand.p0.x, col->stand.p0.y, col->stand.p0.z);
+		printf("p1: (%f, %f, %f)\n", col->stand.p1.x, col->stand.p1.y, col->stand.p1.z);
+		std::cout << "radius: " << col->stand.radius << std::endl;
+	}
 }
 
 // 해야할 것들

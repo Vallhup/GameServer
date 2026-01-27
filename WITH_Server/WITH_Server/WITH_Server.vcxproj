@@ -182,6 +182,7 @@
     <ClCompile Include="LocomotionMoveSystem.cpp" />
     <ClCompile Include="MapCollisionCheckSystem.cpp" />
     <ClCompile Include="MapCollisionHandlingSystem.cpp" />
+    <ClCompile Include="MapCollisionManager.cpp" />
     <ClCompile Include="MovementApplySystem.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="NetworkHandler.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="LocomotionMoveSystem.h" />
     <ClInclude Include="MapCollisionCheckSystem.h" />
     <ClInclude Include="MapCollisionHandlingSystem.h" />
+    <ClInclude Include="MapCollisionManager.h" />
     <ClInclude Include="MovementApplySystem.h" />
     <ClInclude Include="NetHelper.h" />
     <ClInclude Include="Network.h" />

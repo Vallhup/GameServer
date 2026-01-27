@@ -26,3 +26,13 @@
 #include "ProtocolLib.h"
 
 #pragma comment(lib, "Asio_Network_Library.lib")
+
+#include "ECS.h"
+#include "ActionManager.h"
+#include "AnimationManager.h"
+#include "DBManager.h"
+#include "MapCollisionManager.h"
+
+#include "NetHelper.h"
+#include "Collision.h"
+#include "Math.h"

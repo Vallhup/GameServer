@@ -134,6 +134,9 @@
     <ClCompile Include="ViewProcessingSystem.cpp">
       <Filter>ECS\System\Logic\View</Filter>
     </ClCompile>
+    <ClCompile Include="MapCollisionManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h">
@@ -291,6 +294,9 @@
     </ClInclude>
     <ClInclude Include="ViewProcessingSystem.h">
       <Filter>ECS\System\Logic\View</Filter>
+    </ClInclude>
+    <ClInclude Include="MapCollisionManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

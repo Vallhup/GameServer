@@ -257,9 +257,9 @@ def prebake(anim, capsules, weapon_bones=None,
 
 
 
-anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Knight\Animation\knight_animation_walk_baked.bone")
-colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Capsule\knight_capsules.json")
-output = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\knight_animation_walk.json"
+anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Knight\Animation\knight_animation_idle_baked.bone")
+colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Capsule\knight_map_capsules.json")
+output = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\knight_map_capsule_idle.json"
 
 weapon_bone_list = [45]
 prebaked = prebake(anim, colliders, weapon_bones=weapon_bone_list)
