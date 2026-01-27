@@ -52,6 +52,8 @@ public:
     XMFLOAT3 GetBonePosition(int boneIndex);
     XMVECTOR GetBoneRotation(int boneIndex);
 
+    bool IsInitialized() const { return mIsInitialized; }
+
 private:
     void CreateBuffers(DX12Core& core);
 

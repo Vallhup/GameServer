@@ -83,5 +83,12 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 
     finalColor = ApplyFog(finalColor, worldPos);
 
+    finalColor = PBRNeutralToneMapping(finalColor);
+    
+    // Don't need to apply gamma correction
+    // R8G8B8A8_UNORM_SRGB automatically appies it.
+    //const float GAMMA = 2.2;
+    //finalColor = pow(finalColor, 1.0 / GAMMA);
+    
     return float4(finalColor, 1.0);
 }

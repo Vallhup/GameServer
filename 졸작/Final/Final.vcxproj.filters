@@ -350,9 +350,6 @@
     <None Include="..\Shaders\FullscreenVS.hlsli">
       <Filter>Shaders\Deferred</Filter>
     </None>
-    <None Include="..\Shaders\LightingPS.hlsli">
-      <Filter>Shaders\Deferred</Filter>
-    </None>
     <None Include="..\Shaders\animation.hlsli">
       <Filter>Shaders\Animation</Filter>
     </None>
@@ -370,6 +367,9 @@
     </None>
     <None Include="..\Shaders\SkyboxPS.hlsli">
       <Filter>Shaders\SkyBox</Filter>
+    </None>
+    <None Include="..\Shaders\LightingPS.hlsli">
+      <Filter>Shaders\Deferred</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

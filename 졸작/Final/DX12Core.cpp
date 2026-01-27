@@ -196,10 +196,15 @@ void DX12Core::CreateRenderTargetView()
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapBegin = rtvHeap->GetCPUDescriptorHandleForHeapStart();
 
+	// SRGB ë·°ë¡œ ìƒì„±í•˜ì—¬ í•˜ë“œì›¨ì–´ ê°ë§ˆ ë³´ì • ì ìš©
+	D3D12_RENDER_TARGET_VIEW_DESC rtvViewDesc = {};
+	rtvViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	rtvViewDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+
 	for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
 	{
 		rtvHandle[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeapBegin, i * _rtvHeapSize);
-		device->CreateRenderTargetView(rtvBuffer[i].Get(), nullptr, rtvHandle[i]);
+		device->CreateRenderTargetView(rtvBuffer[i].Get(), &rtvViewDesc, rtvHandle[i]);
 	}
 }
 
@@ -238,7 +243,6 @@ void DX12Core::CreateGBuffer()
 {
 	OutputDebugStringA("Create G Buffer\n");
 
-	// === 1. G-Buffer ÅØ½ºÃ³µé »ı¼º ===
 	D3D12_RESOURCE_DESC rtDesc = {};
 	rtDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	rtDesc.Width = WinSize.x;
@@ -369,7 +373,7 @@ void DX12Core::CreateDeferredRenderingDescriptors()
 		OutputDebugStringA(("G-Buffer RT" + to_string(i) + " SRV created\n").c_str());
 	}
 
-	shadowMapSRVHandle = srvGpuHandle;  // ¸â¹ö º¯¼ö·Î ÀúÀå
+	shadowMapSRVHandle = srvGpuHandle;  
 	D3D12_SHADER_RESOURCE_VIEW_DESC shadowSrvDesc = {};
 	shadowSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -386,8 +390,8 @@ void DX12Core::CreateDeferredRenderingDescriptors()
 
 void DX12Core::BeginShadowPass()
 {
-	XMVECTOR lightDir = XMVectorSet(0, 0, -1.f, 0); // Á¤±ÔÈ­µÈ ¹æÇâ
-	XMVECTOR lightPos = XMVectorSet(playerCurrentPos.x + 9.0f, playerCurrentPos.y + 8.f, playerCurrentPos.z + 12.0f, 1);  // ³ôÀº À§Ä¡
+	XMVECTOR lightDir = XMVectorSet(0, 0, -1.f, 0); 
+	XMVECTOR lightPos = XMVectorSet(playerCurrentPos.x + 9.0f, playerCurrentPos.y + 8.f, playerCurrentPos.z + 12.0f, 1);  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
 	XMVECTOR targetPos = XMVectorSet(playerCurrentPos.x, playerCurrentPos.y, playerCurrentPos.z, 1);
 	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
 
@@ -473,11 +477,9 @@ void DX12Core::BeginForwardPass()
 
 void DX12Core::BeginGBufferPass()
 {
-	// Ã¹ ¹øÂ° ÇÁ·¹ÀÓ¿¡¼­´Â »óÅÂ ÀüÈ¯ °Ç³Ê¶Ù±â
 	static bool firstFrame = true;
 
 	if (!firstFrame) {
-		// ±âÁ¸ »óÅÂ ÀüÈ¯ ÄÚµå
 		D3D12_RESOURCE_BARRIER barriers[4];
 		for (int i = 0; i < 4; ++i) {
 			barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -492,16 +494,13 @@ void DX12Core::BeginGBufferPass()
 		firstFrame = false;
 	}
 
-	// G-Buffer 4°³¸¦ ·»´õ Å¸°ÙÀ¸·Î ¼³Á¤
 	cmdList->OMSetRenderTargets(4, gBufferRTVHandles, FALSE, &dsvHandle);
 
-	// G-Buffer Å¬¸®¾î (°ËÀº»öÀ¸·Î)
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	for (int i = 0; i < 4; ++i) {
 		cmdList->ClearRenderTargetView(gBufferRTVHandles[i], clearColor, 0, nullptr);
 	}
 
-	// Depth Å¬¸®¾î
 	cmdList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	//OutputDebugStringA("G-Buffer Pass started\n");
@@ -509,7 +508,6 @@ void DX12Core::BeginGBufferPass()
 
 void DX12Core::EndGBufferPass()
 {
-	// G-Buffer¸¦ RTV ¡æ SRV·Î »óÅÂ º¯°æ (¶óÀÌÆÃ ÆĞ½º¿¡¼­ ÀĞ±â À§ÇØ)
 	D3D12_RESOURCE_BARRIER barriers[4];
 	for (int i = 0; i < 4; ++i) {
 		barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -548,10 +546,10 @@ void DX12Core::BeginLightingPass()
 
 void DX12Core::SetupLights()
 {
-	// Forward Light ÃÊ±â°ª
+	// Forward Light ï¿½Ê±â°ª
 	forwardLightData = { {0, 0, -1}, 0, {1, 1, 1}, 0.25f };
 
-	// Deferred Light ÃÊ±â°ª
+	// Deferred Light ï¿½Ê±â°ª
 	deferredLightData.lightCount = 23;
 
 	deferredLightData.lights[0] = {
@@ -660,25 +658,19 @@ void DX12Core::RenderEnd()
 
 	WaitSync();
 
-	// ResizeBuffers°¡ ÇÊ¿äÇÑ °æ¿ì Ã³¸®
 	if (hr == DXGI_ERROR_INVALID_CALL || hr == DXGI_STATUS_OCCLUDED) {
-		// ¹é¹öÆÛ ÂüÁ¶ ÇØÁ¦
 		for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i) {
 			rtvBuffer[i].Reset();
 		}
 
-		// ResizeBuffers È£Ãâ
 		swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 
-		// ¹é¹öÆÛ ´Ù½Ã °¡Á®¿À±â
 		for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i) {
 			swapChain->GetBuffer(i, IID_PPV_ARGS(&rtvBuffer[i]));
 		}
 
-		// ·»´õ Å¸°Ù ºä ´Ù½Ã »ı¼º
 		CreateRenderTargetView();
 
-		// ÀÎµ¦½º °»½Å
 		backBufferIndex = swapChain->GetCurrentBackBufferIndex();
 	}
 	else if (SUCCEEDED(hr)) {

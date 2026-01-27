@@ -357,6 +357,8 @@ void GameScene::UpdateScene(const float deltaTime)
 			auto animator = myPlayer->GetComponent<Animator>();
 			auto transform = myPlayer->GetComponent<Transform>();
 
+			if (!animator || !animator->IsInitialized()) return;
+
 			XMFLOAT3 bonePos = animator->GetBonePosition(45);
 			XMVECTOR boneRot = animator->GetBoneRotation(45);
 

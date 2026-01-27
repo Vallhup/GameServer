@@ -10,7 +10,7 @@ void EffectManager::Initialize(DX12Core& core)
 
     efDevice = EffekseerRendererDX12::CreateGraphicsDevice(core.GetDevice(), core.GetCmdQueue(), SWAP_CHAIN_BUFFER_COUNT);
 
-    DXGI_FORMAT renderTargetFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+    DXGI_FORMAT renderTargetFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
     renderer = EffekseerRendererDX12::Create(efDevice, &renderTargetFormat, 1, DXGI_FORMAT_D32_FLOAT, false, 8000);
     efMemPool = EffekseerRenderer::CreateSingleFrameMemoryPool(efDevice);

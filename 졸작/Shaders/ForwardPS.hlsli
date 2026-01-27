@@ -15,7 +15,6 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         float metallic = 0.0f;
         float alpha = 1.0f;
         
-        // Bindless 텍스처 샘플링
         if (material.baseColorTexIndex != 0xFFFFFFFF)
             baseColor = bindlessTextures[NonUniformResourceIndex(material.baseColorTexIndex)].Sample(linearSampler, input.uv);
         
@@ -48,10 +47,12 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         
         float3 finalColor = CalculatePBR(N, V, L, baseColor.rgb, metallic, roughness, radiance);
         
-        float3 ambient = baseColor.rgb * 0.3;
+        float3 ambient = baseColor.rgb * 0.15;
         finalColor += ambient;
         
         finalColor = ApplyFog(finalColor, input.worldPos);
+        
+        finalColor = PBRNeutralToneMapping(finalColor);
         
         return float4(finalColor, finalAlpha);
     }

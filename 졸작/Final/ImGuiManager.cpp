@@ -32,7 +32,7 @@ void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
     ImGui_ImplDX12_Init(
         core.GetDevice(),
         SWAP_CHAIN_BUFFER_COUNT,
-        DXGI_FORMAT_R8G8B8A8_UNORM,
+        DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
         srvHeap.Get(),
         srvHeap->GetCPUDescriptorHandleForHeapStart(),
         srvHeap->GetGPUDescriptorHandleForHeapStart()
@@ -83,7 +83,7 @@ void ImGuiManager::DrawDebugUI()
 {
     if (!enabled) return;
 
-    // ¼º´É ¸ð´ÏÅÍ
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     if (showPerformance)
     {
         ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
@@ -101,7 +101,7 @@ void ImGuiManager::DrawDebugUI()
         ImGui::End();
     }
 
-    // === ¶óÀÌÆ® ¿¡µðÅÍ Ãß°¡ ===
+    // === ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ===
     if (showLightEditor && coreRef)
     {
         ImGui::SetNextWindowPos(ImVec2(10, 140), ImGuiCond_FirstUseEver);
@@ -143,7 +143,7 @@ void ImGuiManager::DrawDebugUI()
                 ImGui::SliderFloat("Intensity##Po1", &deferred.lights[2].intensity, 0.0f, 2.0f);
             }
 
-            // ¾÷µ¥ÀÌÆ®
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
             coreRef->UpdateLights();
         }
         ImGui::End();

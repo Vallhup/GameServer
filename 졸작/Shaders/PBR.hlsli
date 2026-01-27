@@ -29,26 +29,25 @@ float DistributionGGX(float3 N, float3 H, float roughness)
     return num / max(denom, 0.0001);
 }
 
-// Smith's method with Schlick-GGX
-float GeometrySchlickGGX(float NdotV, float roughness)
+// Schlick's approximation of Smith GSF
+// Epic Games tuning formula (roughness + 1)^2 / 8
+float G1_Schlick_Epic(float NdotX, float roughness)
 {
     float r = (roughness + 1.0);
     float k = (r * r) / 8.0;
     
-    float num = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
+    float num = NdotX;
+    float denom = NdotX * (1.0 - k) + k;
     
     return num / max(denom, 0.0001);
 }
 
-float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
+float SmithSchlickGSF(float3 N, float3 V, float3 L, float roughness)
 {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
     
-    return ggx1 * ggx2;
+    return G1_Schlick_Epic(NdotV, roughness) * G1_Schlick_Epic(NdotL, roughness);
 }
 
 // Cook-Torrance BRDF
@@ -63,7 +62,7 @@ float3 CalculatePBR(float3 N, float3 V, float3 L, float3 baseColor,
     
     // Cook-Torrance BRDF
     float NDF = DistributionGGX(N, H, roughness);
-    float G = GeometrySmith(N, V, L, roughness);
+    float G = SmithSchlickGSF(N, V, L, roughness);
     float3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
     
     float3 kS = F;
@@ -112,6 +111,29 @@ float3 CalculateIBL(float3 N, float3 V, float3 baseColor, float metallic,
     float3 ambient = (kD * diffuseIBL * diffuseIntensity + specularIBL * specularIntensity) * ao;
     
     return ambient;
+}
+
+float3 PBRNeutralToneMapping(float3 color)
+{
+    const float startCompression = 0.8 - 0.04;
+    const float desaturation = 0.15;
+    
+    float x = min(color.r, min(color.g, color.b));
+    float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
+    color -= offset;
+    
+    float peak = max(color.r, max(color.g, color.b));
+    if (peak < startCompression)
+        return color;
+    
+    const float d = 1.0 - startCompression;
+    float newPeak = 1.0 - d * d / (peak + d - startCompression);
+    
+    color *= newPeak / peak;
+    
+    float g = 1.0 - 1.0 / (desaturation * (peak - newPeak) + 1.0);
+    
+    return lerp(color, newPeak * float3(1, 1, 1), g);
 }
 
 #endif
