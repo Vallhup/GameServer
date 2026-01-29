@@ -12,6 +12,7 @@ void Framework::Start()
 
 	SetConsoleCtrlHandler(ConsoleHandler, TRUE);
 	LoadAnimations();
+	LoadMapColliders();
 
 	_running = true;
 	network.Start();
@@ -69,4 +70,10 @@ void Framework::LoadAnimations()
 	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Stun, "../Animation/Knight/knight_animation_stun.json");
 
 	AnimationManager::Get().LoadActionAnimationMap();
+}
+
+void Framework::LoadMapColliders()
+{
+	MapCollisionManager::Get().
+		LoadCharacterCollider(CharacterType::Knight, "../Animation/Knight/knight_map_capsules.json");
 }
