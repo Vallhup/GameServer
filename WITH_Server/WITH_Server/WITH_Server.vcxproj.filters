@@ -11,9 +11,6 @@
     <ClCompile Include="Entity.cpp">
       <Filter>ECS\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="ActionStateSystem.cpp">
-      <Filter>ECS\System\Logic\Action</Filter>
-    </ClCompile>
     <ClCompile Include="ActionTimeSystem.cpp">
       <Filter>ECS\System\Logic\Action</Filter>
     </ClCompile>
@@ -137,6 +134,9 @@
     <ClCompile Include="MapCollisionManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="AIThinkSystem.cpp">
+      <Filter>ECS\System\Logic\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h">
@@ -147,9 +147,6 @@
     </ClInclude>
     <ClInclude Include="Entity.h">
       <Filter>ECS\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="ActionStateSystem.h">
-      <Filter>ECS\System\Logic\Action</Filter>
     </ClInclude>
     <ClInclude Include="ActionTimeSystem.h">
       <Filter>ECS\System\Logic\Action</Filter>
@@ -298,6 +295,9 @@
     <ClInclude Include="MapCollisionManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
+    <ClInclude Include="AIThinkSystem.h">
+      <Filter>ECS\System\Logic\AI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -371,6 +371,9 @@
     </Filter>
     <Filter Include="ECS\System\Logic\View">
       <UniqueIdentifier>{f6782456-f514-4ebb-a32f-7c803e8180fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\AI">
+      <UniqueIdentifier>{44555b47-8095-4a1f-8a1a-98f11988c98c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -16,7 +16,6 @@ struct Transform : public Component {
 
 struct Velocity : public Component {
 	XMFLOAT3 dir{ 0, 0, 0 };
-	XMFLOAT3 lastNonZeroDir{ 0, 0, 0 };
 	bool isRun{ false };
 };
 
@@ -49,6 +48,17 @@ struct ActionIntent : public Component {
 	bool dodge{ false };
 	bool parry{ false };
 	bool guard{ false };
+};
+
+struct AIState : public Component {
+	Entity target;
+	Entity lastAttacker;
+	int patternsOnTarget;
+};
+
+struct AIThinkState : public Component {
+	float thinkAcc{ 0.0f };
+	float thinkInterval{ 5.0f };
 };
 
 struct ActionState : public Component {
@@ -92,9 +102,7 @@ struct CombatCollider : public Component {
 };
 
 struct MapCollider : public Component {
-	const StaticCapsuleData* staticBodyData{ nullptr };
-	DynamicCapsuleData localBodyData;
-	DynamicCapsuleData worldBodyData;
+	const CharacterMapCapsule* capsules;
 
 	AABB localBodyAABB;
 	AABB worldBodyAABB;
@@ -102,6 +110,7 @@ struct MapCollider : public Component {
 
 struct AttackState : public Component {
 	uint32 attackId{ 0 };
+	AttackType type{ AttackType::None };
 	ActionType prevAction{ ActionType::None };
 
 	std::array<Entity, 2> hitVictims;
@@ -133,6 +142,7 @@ struct ParryBuf : public Component {
 };
 
 struct DisconnectedTag :public Component { };
+struct PlayerTag :public Component { };
 
 struct ActionMoveTag : public Component {
 	const ActionProfile* profile{ nullptr };

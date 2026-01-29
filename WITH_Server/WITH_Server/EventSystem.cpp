@@ -125,7 +125,6 @@ void EventSystem::ProcessMove(const Event& event)
 				dir = XMVector3Normalize(dir);
 
 				XMStoreFloat3(&velocity->dir, dir);
-				XMStoreFloat3(&velocity->lastNonZeroDir, dir);
 			}
 		}
 	}
@@ -147,21 +146,21 @@ void EventSystem::ProcessAction(const Event& event)
 		{
 			ecs.actionRequestEvents.
 				emplace_back(entity, ActionType::Attack, 
-					ActionRequestReason::FromInput);
+					AttackType::Light, ActionRequestReason::FromInput);
 			break;
 		}
 		case ActionRequestType::Dodge:
 		{
 			ecs.actionRequestEvents.
 				emplace_back(entity, ActionType::Dodge,
-					ActionRequestReason::FromInput);
+					AttackType::None, ActionRequestReason::FromInput);
 			break;
 		}
 		case ActionRequestType::Parry:
 		{
 			ecs.actionRequestEvents.
 				emplace_back(entity, ActionType::Parry,
-					ActionRequestReason::FromInput);
+					AttackType::None, ActionRequestReason::FromInput);
 			break;
 		}
 		case ActionRequestType::Guard:

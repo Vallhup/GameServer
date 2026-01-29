@@ -159,9 +159,9 @@
     </ClCompile>
     <ClCompile Include="ActionManager.cpp" />
     <ClCompile Include="ActionMoveSystem.cpp" />
-    <ClCompile Include="ActionStateSystem.cpp" />
     <ClCompile Include="ActionTimeSystem.cpp" />
     <ClCompile Include="ActionTransitionSystem.cpp" />
+    <ClCompile Include="AIThinkSystem.cpp" />
     <ClCompile Include="AnimationCommitSystem.cpp" />
     <ClCompile Include="AnimationFrameSystem.cpp" />
     <ClCompile Include="AnimationManager.cpp" />
@@ -212,9 +212,9 @@
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
     <ClInclude Include="ActionManager.h" />
     <ClInclude Include="ActionMoveSystem.h" />
-    <ClInclude Include="ActionStateSystem.h" />
     <ClInclude Include="ActionTimeSystem.h" />
     <ClInclude Include="ActionTransitionSystem.h" />
+    <ClInclude Include="AIThinkSystem.h" />
     <ClInclude Include="AnimationCommitSystem.h" />
     <ClInclude Include="AnimationFrameSystem.h" />
     <ClInclude Include="AnimationManager.h" />

@@ -20,12 +20,14 @@ struct CombatCollisionEvent {
 enum class ActionRequestReason : uint8 {
 	None,
 	FromCombat,
-	FromInput
+	FromInput,
+	FromAI
 };
 
 struct ActionRequestEvent {
 	Entity entity;
-	ActionType type;
+	ActionType actionType;
+	AttackType attackType;
 	ActionRequestReason reason;
 };
 

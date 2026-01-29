@@ -34,7 +34,7 @@ void ActionTransitionSystem::Execute(const float dT)
 			});
 
 		ActionRequestEvent request
-		{ entity, ActionType::None, ActionRequestReason::None };
+		{ entity, ActionType::None, AttackType::None, ActionRequestReason::None };
 		bool hasReq{ false };
 		if (it != events.end() && it->entity == entity)
 		{
@@ -46,36 +46,37 @@ void ActionTransitionSystem::Execute(const float dT)
 			hasReq &&
 			(request.reason == ActionRequestReason::FromCombat);
 		
+		bool guardHeld{ false };
 		if (auto* intent = intents.GetComponent(entity))
 		{
-			const bool guardHeld = intent->guard;
+			guardHeld = intent->guard;
 
 			if(!isForced)
 			{
 				if (actionState.type == ActionType::Guard)
 				{
 					if (!guardHeld)
-						request.type = ActionType::None;
+						request.actionType = ActionType::None;
 
-					else if (request.type == ActionType::None)
-						request.type = ActionType::Guard;
+					else if (request.actionType == ActionType::None)
+						request.actionType = ActionType::Guard;
 				}
 
 				if (guardHeld && actionState.type == ActionType::None &&
-					request.type == ActionType::None)
+					request.actionType == ActionType::None)
 				{
-					request.type = ActionType::Guard;
+					request.actionType = ActionType::Guard;
 				}
 			}
-		
-			ActionType next = 
-				ResolveNextAction(actionState, request, guardHeld, isForced);
-			if (next != actionState.type)
-				ApplyTransition(entity, &actionState, next);
-
-			else if (next == ActionType::None)
-				ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
 		}
+
+		ActionType next =
+			ResolveNextAction(actionState, request, guardHeld, isForced);
+		if (next != actionState.type)
+			ApplyTransition(entity, &actionState, next);
+
+		else if (next == ActionType::None)
+			ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
 	}
 
 	events.clear();
@@ -84,7 +85,7 @@ void ActionTransitionSystem::Execute(const float dT)
 ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current, 
 	ActionRequestEvent request, bool guardHeld, bool isForced)
 {
-	if (isForced) return request.type;
+	if (isForced) return request.actionType;
 
 	const ActionType curType = current.type;
 	const auto& aM = ActionManager::Get();
@@ -93,15 +94,15 @@ ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current,
 	if (curType == ActionType::Dead) 
 		return ActionType::Dead;
 
-	ActionType rule = GetRule(curType, request.type);
+	ActionType rule = GetRule(curType, request.actionType);
 	if (rule != Invalid)
 		return rule;
 
-	const auto& reqPol = aM.GetPolicy(request.type);
+	const auto& reqPol = aM.GetPolicy(request.actionType);
 	if (reqPol.priority > curPol.priority)
 	{
-		if (curPol.interruptMask & Bit(request.type))
-			return request.type;
+		if (curPol.interruptMask & Bit(request.actionType))
+			return request.actionType;
 	}
 
 	if (!curPol.isHoldAction && curType != ActionType::None &&
@@ -143,6 +144,7 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, ActionState* state,
 		if (auto* trans = ecs.GetStorage<Transform>().GetComponent(entity))
 		{
 			XMStoreFloat3(&move->dir, TransformHelper::Forward(*trans));
+			// TEMP : 나중에 데이터로 분리
 			move->dirLocked = true;
 		}
 	}
@@ -156,8 +158,8 @@ void ActionTransitionSystem::DedupActionRequest(std::vector<ActionRequestEvent>&
 		[&](const ActionRequestEvent& a, const ActionRequestEvent& b)
 		{
 			const auto& aM = ActionManager::Get();
-			const int32 aPriority = aM.GetPolicy(a.type).priority;
-			const int32 bPriority = aM.GetPolicy(b.type).priority;
+			const int32 aPriority = aM.GetPolicy(a.actionType).priority;
+			const int32 bPriority = aM.GetPolicy(b.actionType).priority;
 
 			if (a.entity != b.entity) return a.entity < b.entity;
 			return aPriority > bPriority;

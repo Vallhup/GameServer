@@ -1,0 +1,158 @@
+#include "pch.h"
+#include "AIThinkSystem.h"
+#include "Framework.h"
+
+void AIThinkSystem::Execute(const float dT)
+{
+	// TODO : AI 로직에 따라 ActionTransitionRequest 만들기
+	const auto& actionStates = ecs.GetStorage<ActionState>();
+	auto& aiStates = ecs.GetStorage<AIState>();
+	auto& aiThinkStates = ecs.GetStorage<AIThinkState>();
+
+	for (const auto& [entity, aiState] : aiStates)
+	{
+		const auto* actionState = actionStates.GetComponent(entity);
+		auto* aiThinkState = aiThinkStates.GetComponent(entity);
+		if (!actionState || !aiThinkState) continue;
+		
+		if (actionState->type != ActionType::None) continue;
+
+		aiThinkState->thinkAcc += dT;
+		if (aiThinkState->thinkAcc >= aiThinkState->thinkInterval)
+		{
+			aiThinkState->thinkAcc -= aiThinkState->thinkInterval;
+
+			AttackType next = Think(entity, &aiState);
+			ecs.actionRequestEvents.
+				emplace_back(entity, ActionType::Attack, next, ActionRequestReason::FromAI);
+		}
+	}
+}
+
+AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
+{
+	auto& transforms = ecs.GetStorage<Transform>();
+	const auto* selfTransform = transforms.GetComponent(self);
+	if (!selfTransform) return AttackType::None;
+
+	if (aiState->target.id == -1)
+	{
+		Entity target = FindTargetPlayer(self, *aiState, *selfTransform);
+		if (target.id == -1) return AttackType::None;
+
+		aiState->target = target;
+		aiState->patternsOnTarget = 0;
+	}
+
+	else if (aiState->patternsOnTarget > 3)
+	{
+		Entity target = FindFarthestPlayer(self, *selfTransform);
+		if (target.id == -1) return AttackType::None;
+
+		aiState->target = target;
+		aiState->patternsOnTarget = 0;
+	}
+	
+	const auto* targetTransform = transforms.GetComponent(aiState->target);
+	if (!targetTransform) return AttackType::None;
+
+	const float targetDx = targetTransform->position.x - selfTransform->position.x;
+	const float targetDz = targetTransform->position.z - selfTransform->position.z;
+	const float targetDistance = targetDx * targetDx + targetDz * targetDz;
+
+	// 메테오 조건
+	const float nearDistance{ 5.0 * 5.0f };
+	int nearCount{ 0 };
+
+	auto& players = ecs.GetStorage<PlayerTag>();
+	for (const auto& [entity, player] : players)
+	{
+		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
+		if (entity == self) continue;
+
+		const auto* pTransform = transforms.GetComponent(entity);
+		if (!pTransform) continue;
+
+		const float dx = pTransform->position.x - selfTransform->position.x;
+		const float dz = pTransform->position.z - selfTransform->position.z;
+		const float distance = dx * dx + dz * dz;
+
+		if (distance <= nearDistance) 
+			nearCount++;
+	}
+
+	AttackType out{ AttackType::None };
+
+	const float midDistance{ 10.0 * 10.0 };
+	const float farDistance{ 15.0 * 15.0 };
+
+	if (nearCount >= 2 && rand() % 100 > 70)
+		out = AttackType::Meteor;
+
+	else if (targetDistance > farDistance)
+	{
+		if (rand() % 100 > 30)
+			out = AttackType::JumpSlam;
+
+		else
+			out = AttackType::FarWaveSlash;
+	}
+
+	else if (targetDistance > midDistance)
+		out = AttackType::DashSlash;
+
+	else
+	{
+		if (rand() % 100 > 50)
+			out = AttackType::Thrust;
+
+		else
+			out = AttackType::CloseSlash;
+	}
+
+	if (out != AttackType::None)
+		aiState->patternsOnTarget++;
+
+	return out;
+}
+
+Entity AIThinkSystem::FindTargetPlayer(Entity self, const AIState& aiState, const Transform& transform)
+{
+	if (aiState.lastAttacker.id != -1)
+	{
+		if (!ecs.GetStorage<DisconnectedTag>().HasComponent(aiState.lastAttacker))
+			return aiState.lastAttacker;
+	}
+
+	return FindFarthestPlayer(self, transform);
+}
+
+Entity AIThinkSystem::FindFarthestPlayer(Entity self, const Transform& selfTrans)
+{
+	const auto& transforms = ecs.GetStorage<Transform>();
+	auto& players = ecs.GetStorage<PlayerTag>();
+
+	Entity best;
+	float bestDistance{ 0.0f };
+
+	for (const auto& [entity, player] : players)
+	{
+		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
+		if (entity == self) continue;
+		
+		const auto* transform = transforms.GetComponent(entity);
+		if (!transform) continue;
+
+		const float dx = transform->position.x - selfTrans.position.x;
+		const float dz = transform->position.z - selfTrans.position.z;
+		const float distance = dx * dx + dz * dz;
+
+		if (bestDistance < distance)
+		{
+			bestDistance = distance;
+			best = entity;
+		}
+	}
+
+	return best;
+}

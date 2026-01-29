@@ -1,5 +1,21 @@
 #pragma once
 
+enum class AttackType : uint8 {
+	None,
+
+	// Player
+	Light,
+	Heavy,
+
+	// Boss
+	JumpSlam,
+	FarWaveSlash,
+	DashSlash,
+	Thrust,
+	CloseSlash,
+	Meteor,
+};
+
 enum class ActionType : uint8 {
 	None,
 	Attack,
