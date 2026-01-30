@@ -102,7 +102,7 @@ struct CombatCollider : public Component {
 };
 
 struct MapCollider : public Component {
-	const CharacterMapCapsule* capsules;
+	const struct CharacterMapCapsule* capsules;
 
 	AABB localBodyAABB;
 	AABB worldBodyAABB;
