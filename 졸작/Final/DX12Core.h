@@ -59,7 +59,7 @@ public:
 	void Initialize(HWND hwnd);
 
 	void BeginShadowPass();
-	void EndShadowPass();
+	void EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 
 	void BeginForwardPass();
 	

@@ -67,7 +67,7 @@ void Engine::Render()
 
     graphics->BeginShadowPass();
     sceneManager->RenderShadow();
-    graphics->EndShadowPass();
+    graphics->EndShadowPass(viewport, scissorRect);
 
     // 1. Deferred G-Buffer Pass (불투명 머티리얼만)
     graphics->BeginGBufferPass();

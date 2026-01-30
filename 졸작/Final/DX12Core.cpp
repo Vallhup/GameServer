@@ -435,7 +435,7 @@ void DX12Core::BeginShadowPass()
 	//OutputDebugStringA("Shadow Pass started!!\n");
 }
 
-void DX12Core::EndShadowPass()
+void DX12Core::EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 {
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		shadowMapTexture.Get(),
@@ -443,16 +443,8 @@ void DX12Core::EndShadowPass()
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
 	cmdList->ResourceBarrier(1, &barrier);
-
-	D3D12_VIEWPORT mainViewPort = {};
-	mainViewPort.Width = static_cast<float>(WinSize.x);
-	mainViewPort.Height = static_cast<float>(WinSize.y);
-	mainViewPort.MinDepth = 0.0f;
-	mainViewPort.MaxDepth = 1.0f;
-	cmdList->RSSetViewports(1, &mainViewPort);
-
-	D3D12_RECT mainRect = { 0, 0, WinSize.x, WinSize.y };
-	cmdList->RSSetScissorRects(1, &mainRect);
+	cmdList->RSSetViewports(1, &vp);
+	cmdList->RSSetScissorRects(1, &rect);
 
 	//OutputDebugStringA("Shadow Pass ended!!\n");
 }
@@ -546,10 +538,8 @@ void DX12Core::BeginLightingPass()
 
 void DX12Core::SetupLights()
 {
-	// Forward Light �ʱⰪ
 	forwardLightData = { {0, 0, -1}, 0, {1, 1, 1}, 0.25f };
 
-	// Deferred Light �ʱⰪ
 	deferredLightData.lightCount = 23;
 
 	deferredLightData.lights[0] = {
