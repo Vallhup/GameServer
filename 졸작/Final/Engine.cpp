@@ -11,6 +11,7 @@
 #include "SoundManager.h"
 #include "EffectManager.h"
 #include "ImGuiManager.h"
+#include "UIManager.h"
 
 Engine& Engine::Get()
 {
@@ -28,6 +29,9 @@ void Engine::Initialize(HWND hwnd, std::string_view ip, uint16 port,
 
     graphics = make_unique<DX12Core>();
     graphics->Initialize(mHwnd);
+
+    uiManager = make_unique<UIManager>();
+    uiManager->Initialize(*graphics);
 
     GET(ImGuiManager).Initialize(mHwnd, *graphics);
 
@@ -86,6 +90,8 @@ void Engine::Render()
     sceneManager->RenderEffects();   // 이펙트를 먼저 그려야 머리카락이 안없어짐
     sceneManager->RenderForward();   // 머리카락 등 투명한 것들
 
+    uiManager->Render(graphics->GetGraphicsCmdList(), graphics->GetCmdQueue(), viewport);
+
     GET(ImGuiManager).DrawDebugUI();
     GET(ImGuiManager).EndFrame(graphics->GetGraphicsCmdList());
 
@@ -97,6 +103,7 @@ void Engine::Render()
 void Engine::Shutdown()
 {
     GET(ImGuiManager).Shutdown();
+    uiManager->Release();
 
     if (sceneManager && sceneManager->GetCurrentScene())
     {

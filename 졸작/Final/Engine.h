@@ -4,6 +4,7 @@ class DX12Core;
 class SceneManager;
 class NetworkManager;
 class SoundManager;
+class UIManager;
 class IConnectionListener;
 
 class Engine
@@ -32,4 +33,5 @@ private:
     unique_ptr<SceneManager> sceneManager;
     unique_ptr<NetworkManager> networkManager;
     unique_ptr<SoundManager> soundManager;
+    unique_ptr<UIManager> uiManager;
 };

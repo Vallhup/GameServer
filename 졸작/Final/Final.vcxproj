@@ -251,6 +251,7 @@ exit 0</Command>
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -304,6 +305,7 @@ exit 0</Command>
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="UIManager.h" />
     <ClInclude Include="VertexIndexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
