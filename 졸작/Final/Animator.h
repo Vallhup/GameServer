@@ -83,8 +83,8 @@ private:
     int mBoneCount = 0;
     int mClipIndex = 0;
     float mUpdateTime = 0.0f;
-    int mFrame = 0;
-    int mNextFrame = 0;
+    int mFrame = 1;
+    int mNextFrame = 1;
     float mFrameRatio = 0.0f;
     int mCurrentAnimOffset = 0;
 
