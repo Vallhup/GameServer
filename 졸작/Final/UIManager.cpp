@@ -48,7 +48,7 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 
 	static bool status = true;
 
-	if (GET(Input).GetKeyDown(VK_F2))
+	if (GET(Input).GetKeyDown('K'))
 		status = !status;
 
 	if (status)
@@ -83,6 +83,7 @@ void UIManager::Release()
 void UIManager::RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload)
 {
 	if (nextIndex >= 31) return;
+	if (uiFontMap.find(name) != uiFontMap.end()) return;
 
 	auto& font = uiFontMap[name];
 	font.heapIndex = nextIndex;
@@ -95,6 +96,7 @@ void UIManager::RegisterFont(const wstring& name, const wchar_t* path, DX12Core&
 void UIManager::RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload)
 {
 	if (nextIndex >= 31) return;
+	if (uiTextureMap.find(name) != uiTextureMap.end()) return;
 
 	auto& tex = uiTextureMap[name];
 	tex.heapIndex = nextIndex;
