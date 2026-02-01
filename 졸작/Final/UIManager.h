@@ -7,6 +7,16 @@
 
 class DX12Core;
 
+struct UIFontData {
+	UINT heapIndex;
+	unique_ptr<SpriteFont> font;
+};
+
+struct UITextureData {
+	UINT heapIndex;
+	ComPtr<ID3D12Resource> resource;
+};
+
 class UIManager
 {
 public:
@@ -14,10 +24,16 @@ public:
 	void Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp);
 	void Release();
 
+	void RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
+	void RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
+
 private:
 	unique_ptr<GraphicsMemory> graphicsMemory;
 	unique_ptr<DescriptorHeap> uiSrvHeap;
 	unique_ptr<SpriteBatch> spriteBatch;
-	unique_ptr<SpriteFont> spriteFont;
-	ComPtr<ID3D12Resource> statusTexture;
+
+	unordered_map<wstring, UIFontData> uiFontMap;
+	unordered_map<wstring, UITextureData> uiTextureMap;
+
+	static UINT nextIndex;
 };

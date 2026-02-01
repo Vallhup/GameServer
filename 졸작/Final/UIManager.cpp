@@ -5,6 +5,8 @@
 #include "DX12Core.h"
 #include "Input.h"
 
+UINT UIManager::nextIndex = 0;
+
 void UIManager::Initialize(DX12Core& core)
 {
 	graphicsMemory = make_unique<GraphicsMemory>(core.GetDevice());
@@ -25,13 +27,12 @@ void UIManager::Initialize(DX12Core& core)
 	SpriteBatchPipelineStateDescription pd(rtState);
 
 	spriteBatch = make_unique<SpriteBatch>(core.GetDevice(), resourceUpload, pd, nullptr);
-	spriteFont = make_unique<SpriteFont>(core.GetDevice(), resourceUpload, L"../Assets/UI/Fonts/MalgunGothic.spritefont",
-		uiSrvHeap->GetCpuHandle(0), uiSrvHeap->GetGpuHandle(0));
 
-	CreateWICTextureFromFile(core.GetDevice(), resourceUpload, L"../Assets/UI/Textures/Status.png",
-		statusTexture.ReleaseAndGetAddressOf());
-	CreateShaderResourceView(core.GetDevice(), statusTexture.Get(),
-		uiSrvHeap->GetCpuHandle(1));
+	// Registering Font
+	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);
+
+	// Registering Texture
+	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);
 
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
 	uploadFinished.wait();
@@ -52,16 +53,18 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 
 	if (status)
 	{
-		XMUINT2 texSize = GetTextureSize(statusTexture.Get());
+		auto& statusTex = uiTextureMap[L"Status"];
+
+		XMUINT2 texSize = GetTextureSize(statusTex.resource.Get());
 		RECT destRect = { 0, 0, static_cast<LONG>(texSize.x * 0.5f), static_cast<LONG>(texSize.y * 0.5f) };
-		spriteBatch->Draw(uiSrvHeap->GetGpuHandle(1), texSize, destRect);
+		spriteBatch->Draw(uiSrvHeap->GetGpuHandle(statusTex.heapIndex), texSize, destRect);
 	}
 
-	XMVECTOR textSize = spriteFont->MeasureString(L"Hello, I'm JeongHo Lee");
+	auto& font = uiFontMap[L"MalgunGothic"].font;
+	XMVECTOR textSize = font->MeasureString(L"Hello, I'm JeongHo Lee");
 	XMFLOAT2 origin(XMVectorGetX(textSize) / 2.f, XMVectorGetY(textSize) / 2.f);
 	XMFLOAT2 pos(vp.Width / 2.f, vp.Height / 2.f);
-
-	spriteFont->DrawString(spriteBatch.get(), L"Hello, I'm JeongHo Lee", pos, Colors::White, 0.f, origin);
+	font->DrawString(spriteBatch.get(), L"Hello, I'm JeongHo Lee", pos, Colors::White, 0.f, origin);
 
 	spriteBatch->End();
 
@@ -70,9 +73,34 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 
 void UIManager::Release()
 {
-	statusTexture.Reset();
-	spriteFont.reset();
+	uiTextureMap.clear();
+	uiFontMap.clear();
 	spriteBatch.reset();
 	uiSrvHeap.reset();
 	graphicsMemory.reset();
+}
+
+void UIManager::RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload)
+{
+	if (nextIndex >= 31) return;
+
+	auto& font = uiFontMap[name];
+	font.heapIndex = nextIndex;
+	font.font = make_unique<SpriteFont>(core.GetDevice(), upload, path, 
+		uiSrvHeap->GetCpuHandle(font.heapIndex), uiSrvHeap->GetGpuHandle(font.heapIndex));
+
+	nextIndex++;
+}
+
+void UIManager::RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload)
+{
+	if (nextIndex >= 31) return;
+
+	auto& tex = uiTextureMap[name];
+	tex.heapIndex = nextIndex;
+
+	CreateWICTextureFromFile(core.GetDevice(), upload, path, tex.resource.ReleaseAndGetAddressOf());
+	CreateShaderResourceView(core.GetDevice(), tex.resource.Get(), uiSrvHeap->GetCpuHandle(tex.heapIndex));
+	
+	nextIndex++;
 }
