@@ -57,14 +57,13 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 
 	if (moved)
 	{
-		XMVECTOR pos = XMLoadFloat3(&trans->position);
-		XMVECTOR delta = XMLoadFloat3(&totalMoveDelta);
+		totalMoveDelta.y = 0;
 
-		pos = XMVectorAdd(pos, delta);
-		XMStoreFloat3(&trans->position, pos);
+		trans->position.x += totalMoveDelta.x;
+		trans->position.z += totalMoveDelta.z;
 
-		float yPos = MapCollisionManager::Get().SampleHeightAt(trans->position.x, trans->position.z);
-		trans->position.y = yPos;
+		trans->position.y =
+			MapCollisionManager::Get().SampleHeightAt(trans->position.x, trans->position.z);
 
 		Framework::Get().outEventQueue.push(OutputEvent{
 			entity, DirtyType::Moved });

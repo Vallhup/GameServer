@@ -174,7 +174,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			{
 				player->SetId(sessionId);
 				auto transform = player->GetComponent<Transform>();
-				transform->SetInitPosition(add.x(), add.y()/* + 3.5f*/, add.z());
+				transform->SetInitPosition(add.x(), add.y(), add.z());
 
 				transform->SetTargetRotation(add.yaw());
 
@@ -205,7 +205,6 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 				auto transform = it->second->GetComponent<Transform>();
 				const XMFLOAT3& pos = transform->GetPosition();
 
-				// Y is updated every frame in UpdateScene based on terrain height
 				transform->SetPosition(move.x(), move.y(), move.z());
 				transform->SetTargetRotation(move.yaw());
 			}

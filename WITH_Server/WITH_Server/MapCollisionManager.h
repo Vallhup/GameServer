@@ -33,8 +33,8 @@ private:
 	// TEMP : 맵 여러개 되면 확장 필요
 	std::array<bool, Width * Height> _mapGrid{ false, };
 
-	uint32 _heightMapWidth;
-	uint32 _heightMapHeight;
+	int32 _heightMapWidth;
+	int32 _heightMapHeight;
 	std::vector<float> _heightMapData;
 };
 

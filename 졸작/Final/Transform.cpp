@@ -6,7 +6,7 @@
 void Transform::Update(float deltaTime)
 {
 	position.x += (targetPos.x - position.x) * deltaTime * 10.0f;
-	//position.y += (targetPos.y - position.y) * deltaTime * 10.0f;
+	position.y += (targetPos.y - position.y) * deltaTime * 10.0f;
 	position.z += (targetPos.z - position.z) * deltaTime * 10.0f;
 
 	float angleDiff = targetRot - rotation.y;
