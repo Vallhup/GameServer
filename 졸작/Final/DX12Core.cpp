@@ -144,7 +144,7 @@ void DX12Core::CreateSwapChain(HWND hwnd)
 		std::to_string(bestMode.RefreshRate.Numerator) + "/" +
 		std::to_string(bestMode.RefreshRate.Denominator) + ")\n").c_str());
 
-	GET(Timer).SetTargetFPS(bestRefreshRate);
+	TIMER.SetTargetFPS(bestRefreshRate);
 
 	DXGI_SWAP_CHAIN_DESC sd = {
 		.BufferDesc = {

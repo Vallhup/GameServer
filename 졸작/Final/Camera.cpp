@@ -67,7 +67,7 @@ void Camera::UpdateInputtoCamLogic(float deltaTime)
     if (!spacePressed)
         ChangeAngleByInput(deltaTime);
 
-    const int wheel = GET(Input).GetMouseWheelDelta();
+    const int wheel = INPUT.GetMouseWheelDelta();
     if (wheel != 0) {
         float steps = (float)wheel / (float)WHEEL_DELTA; 
         desiredDistance -= steps * zoomSpeedPerNotch;
@@ -298,7 +298,7 @@ void Camera::SetCameraPosition(const XMFLOAT3& pos)
 
 void Camera::SetCursor()
 {
-    if (GET(Input).GetKeyDown(VK_F2))
+    if (INPUT.GetKeyDown(VK_F2))
     {
         spacePressed = !spacePressed;
         ShowCursor(spacePressed);

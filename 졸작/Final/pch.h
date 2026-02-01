@@ -77,6 +77,19 @@ using namespace Microsoft::WRL;
 
 #define GET(type) type::Get()
 
+// Engine class member
+#define SCENE_MANAGER    GET(Engine).GetSceneManager()
+#define NETWORK_MANAGER  GET(Engine).GetNetworkManager()
+#define SOUND_MANAGER    GET(Engine).GetSoundManager()
+#define EFFECT_MANAGER   GET(Engine).GetEffectManager()
+#define UI_MANAGER       GET(Engine).GetUIManager()
+
+// Singleton based classes
+#define RESOURCE		 GET(ResourceManager)
+#define IMGUI			 GET(ImGuiManager)
+#define TIMER			 GET(Timer)
+#define INPUT			 GET(Input)
+
 #if !defined(RELEASE_COM)
 #define RELEASE_COM(x) \
 	if ((x) != nullptr) \

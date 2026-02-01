@@ -1,17 +1,12 @@
 #pragma once
-#include "Singleton.h"
 #include <Effekseer.h>
 #include <EffekseerRendererDX12.h>
 
 class DX12Core;
 class Camera;
 
-class EffectManager : public Singleton<EffectManager>
+class EffectManager
 {
-    friend class Singleton<EffectManager>;
-    EffectManager() = default;
-    ~EffectManager() = default;
-
 public:
     void Initialize(DX12Core& core);
     void Update(float deltaTime);

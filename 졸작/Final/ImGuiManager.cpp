@@ -91,8 +91,8 @@ void ImGuiManager::DrawDebugUI()
 
         if (ImGui::Begin("Performance", &showPerformance))
         {
-            ImGui::Text("FPS: %d", GET(Timer).GetFps());
-            ImGui::Text("Delta Time: %.3f ms", GET(Timer).GetDeltaTime() * 1000.0f);
+            ImGui::Text("FPS: %d", TIMER.GetFps());
+            ImGui::Text("Delta Time: %.3f ms", TIMER.GetDeltaTime() * 1000.0f);
 
             ImGui::Separator();
             ImGui::Checkbox("Light Editor", &showLightEditor);

@@ -80,22 +80,22 @@ void LoginScene::UpdateScene(const float deltaTime)
 	if (dragon) {
 		auto animator = dragon->GetComponent<Animator>();
 		if (animator) {
-			if (GET(Input).GetKeyDown('1')) {
+			if (INPUT.GetKeyDown('1')) {
 				animator->TransitionToAnimation(0, 0.6f);  // Fly
 				OutputDebugStringA("Dragon Animation 0 (Fly) played!\n");
 			}
 
-			if (GET(Input).GetKeyDown('2')) {
+			if (INPUT.GetKeyDown('2')) {
 				animator->TransitionToAnimation(1, 0.4f);  // Idle
 				OutputDebugStringA("Dragon Animation 1 (Idle) played!\n");
 			}
 
-			if (GET(Input).GetKeyDown('3')) {
+			if (INPUT.GetKeyDown('3')) {
 				animator->TransitionToAnimation(2, 0.4f);  // Run
 				OutputDebugStringA("Dragon Animation 2 (Run) played!\n");
 			}
 
-			if (GET(Input).GetKeyDown('4')) {
+			if (INPUT.GetKeyDown('4')) {
 				animator->TransitionToAnimation(3, 0.4f);  // Walk
 				OutputDebugStringA("Dragon Animation 3 (Walk) played!\n");
 			}
@@ -130,7 +130,7 @@ void LoginScene::RenderSceneEffects()
 
 void LoginScene::RequestSceneChange()
 {
-	if (GET(Input).GetKeyDown(VK_TAB))
+	if (INPUT.GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
 			sManagerRef->RequestSceneChange(SceneType::ServerSquare);

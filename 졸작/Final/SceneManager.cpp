@@ -93,7 +93,7 @@ void SceneManager::Release()
         }
     }
 
-    GET(ResourceManager).ClearCache();
+    RESOURCE.ClearCache();
     Material::Cleanup();
 
     sceneRenderer->ReleaseUploadBuffer();
