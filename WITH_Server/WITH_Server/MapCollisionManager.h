@@ -1,20 +1,19 @@
 #pragma once
 
-#include "Collision.h"
+static inline bool IsWhite(uint8 r, uint8 g, uint8 b)
+{
+	return (r == 255 && g == 255 && b == 255);
+}
 
-enum class CharacterType : uint8 {
-	Knight,
-	Lancer,
-};
-
-inline uint8 ToInt(CharacterType type) { return static_cast<uint8>(type); }
-
-struct CharacterMapCapsule {
-	CapsuleView stand;
-	CapsuleView dodge;
-};
+static inline bool IsBlack(uint8 r, uint8 g, uint8 b)
+{
+	return (r == 0 && g == 0 && b == 0);
+}
 
 class MapCollisionManager {
+	static constexpr int Width{ 1025 };
+	static constexpr int Height{ 1025 };
+
 public:
 	static MapCollisionManager& Get()
 	{
@@ -22,13 +21,20 @@ public:
 		return instance;
 	}
 
-	CharacterMapCapsule* GetCharacterCollider(CharacterType type);
+	void LoadMapData(std::string_view path);
+	void LoadHeightMap(std::string_view path);
 
-	void LoadMapCollider(std::string_view path);
-	void LoadCharacterCollider(CharacterType type, std::string_view path);
+	bool CanMove(float x, float z) const;
+	float SampleHeightAt(float x, float z) const;
 
 private:
-	CharacterMapCapsule LoadCharacterColliderInternal(std::string_view path);
+	std::pair<int, int> WorldToGrid(float x, float z) const;
 
-	std::array<std::unique_ptr<CharacterMapCapsule>, 3> _charMapCapsules;
+	// TEMP : 맵 여러개 되면 확장 필요
+	std::array<bool, Width * Height> _mapGrid{ false, };
+
+	uint32 _heightMapWidth;
+	uint32 _heightMapHeight;
+	std::vector<float> _heightMapData;
 };
+

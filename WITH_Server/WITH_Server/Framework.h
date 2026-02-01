@@ -30,7 +30,7 @@ public:
 private:
 	static BOOL WINAPI ConsoleHandler(DWORD ctrlType);
 	void LoadAnimations();
-	void LoadMapColliders();
+	void LoadMapDatas();
 
 	bool _running;
 };

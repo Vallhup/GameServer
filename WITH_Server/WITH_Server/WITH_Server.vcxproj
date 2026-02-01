@@ -169,7 +169,6 @@
     <ClCompile Include="AnimationSelectSystem.cpp" />
     <ClCompile Include="ColliderActivationSystem.cpp" />
     <ClCompile Include="ColliderUpdateSystem.cpp" />
-    <ClCompile Include="CollisionBroadPhaseSystem.cpp" />
     <ClCompile Include="CombatCollisionCheckSystem.cpp" />
     <ClCompile Include="CombatCollisionDedupSystem.cpp" />
     <ClCompile Include="CombatCollisionHandlingSystem.cpp" />
@@ -180,8 +179,6 @@
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="LocomotionMoveSystem.cpp" />
-    <ClCompile Include="MapCollisionCheckSystem.cpp" />
-    <ClCompile Include="MapCollisionHandlingSystem.cpp" />
     <ClCompile Include="MapCollisionManager.cpp" />
     <ClCompile Include="MovementApplySystem.cpp" />
     <ClCompile Include="Network.cpp" />
@@ -223,7 +220,6 @@
     <ClInclude Include="ColliderActivationSystem.h" />
     <ClInclude Include="ColliderUpdateSystem.h" />
     <ClInclude Include="Collision.h" />
-    <ClInclude Include="CollisionBroadPhaseSystem.h" />
     <ClInclude Include="CombatCollisionCheckSystem.h" />
     <ClInclude Include="CombatCollisionDedupSystem.h" />
     <ClInclude Include="CombatCollisionHandlingSystem.h" />
@@ -236,8 +232,6 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="LocomotionMoveSystem.h" />
-    <ClInclude Include="MapCollisionCheckSystem.h" />
-    <ClInclude Include="MapCollisionHandlingSystem.h" />
     <ClInclude Include="MapCollisionManager.h" />
     <ClInclude Include="MovementApplySystem.h" />
     <ClInclude Include="NetHelper.h" />
@@ -258,6 +252,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="ServerConnectionListener.h" />
     <ClInclude Include="ConnectionManager.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="ThreadPool.h" />

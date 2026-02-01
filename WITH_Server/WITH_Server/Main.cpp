@@ -1,9 +1,14 @@
 #include "pch.h"
 #include "Framework.h"
 
+#include "MapCollisionManager.h"
+
 int main()
 {
 	Framework::Get().Start();
+
+	//MapCollisionManager::Get().LoadMapData("../Map//map_1_collision.png");
+	//MapCollisionManager::Get().LoadHeightMap("../Map/map_1_terrain.raw");
 }
 
 // 해야할 것들

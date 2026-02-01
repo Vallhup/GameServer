@@ -12,7 +12,7 @@ void Framework::Start()
 
 	SetConsoleCtrlHandler(ConsoleHandler, TRUE);
 	LoadAnimations();
-	LoadMapColliders();
+	LoadMapDatas();
 
 	_running = true;
 	network.Start();
@@ -72,8 +72,7 @@ void Framework::LoadAnimations()
 	AnimationManager::Get().LoadActionAnimationMap();
 }
 
-void Framework::LoadMapColliders()
+void Framework::LoadMapDatas()
 {
-	MapCollisionManager::Get().
-		LoadCharacterCollider(CharacterType::Knight, "../Animation/Knight/knight_map_capsules.json");
+	MapCollisionManager::Get().LoadHeightMap("../Map/map_1_terrain.raw");
 }

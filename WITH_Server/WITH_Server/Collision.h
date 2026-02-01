@@ -39,16 +39,6 @@ struct CapsuleView {
 	float radius;
 };
 
-inline CapsuleView MakeCapsuleView(const MapCollider& collider)
-{
-	CapsuleView out;
-	/*out.p0 = collider.worldBodyData.p0;
-	out.p1 = collider.worldBodyData.p1;
-	out.radius = collider.staticBodyData->radius;*/
-
-	return out;
-}
-
 inline CapsuleView MakeCapsuleView(const CombatCollider& collider, size_t i)
 {
 	CapsuleView out;
@@ -165,11 +155,5 @@ namespace Collision {
 		if (a.max.y < b.min.y || a.min.y > b.max.y) return false;
 		if (a.max.z < b.min.z || a.min.z > b.max.z) return false;
 		return true;
-	}
-
-	inline bool CheckOBBVsCapsule(const OBB& obb, const CapsuleView& capsule,
-		XMFLOAT3* outNormal, float* outPenetration)
-	{
-		return false;
 	}
 }

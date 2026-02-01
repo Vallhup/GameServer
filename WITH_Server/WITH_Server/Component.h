@@ -101,13 +101,6 @@ struct CombatCollider : public Component {
 	std::vector<uint32> attackIds;
 };
 
-struct MapCollider : public Component {
-	const struct CharacterMapCapsule* capsules;
-
-	AABB localBodyAABB;
-	AABB worldBodyAABB;
-};
-
 struct AttackState : public Component {
 	uint32 attackId{ 0 };
 	AttackType type{ AttackType::None };

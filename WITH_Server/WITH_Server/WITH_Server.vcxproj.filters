@@ -116,26 +116,17 @@
     <ClCompile Include="CombatCollisionHandlingSystem.cpp">
       <Filter>ECS\System\Logic\Collision\Combat</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionBroadPhaseSystem.cpp">
-      <Filter>ECS\System\Logic\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="MapCollisionCheckSystem.cpp">
-      <Filter>ECS\System\Logic\Collision\Map</Filter>
-    </ClCompile>
-    <ClCompile Include="MapCollisionHandlingSystem.cpp">
-      <Filter>ECS\System\Logic\Collision\Map</Filter>
-    </ClCompile>
     <ClCompile Include="DBManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="ViewProcessingSystem.cpp">
       <Filter>ECS\System\Logic\View</Filter>
     </ClCompile>
-    <ClCompile Include="MapCollisionManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
     <ClCompile Include="AIThinkSystem.cpp">
       <Filter>ECS\System\Logic\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="MapCollisionManager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -277,26 +268,20 @@
     <ClInclude Include="CombatCollisionHandlingSystem.h">
       <Filter>ECS\System\Logic\Collision\Combat</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionBroadPhaseSystem.h">
-      <Filter>ECS\System\Logic\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="MapCollisionCheckSystem.h">
-      <Filter>ECS\System\Logic\Collision\Map</Filter>
-    </ClInclude>
-    <ClInclude Include="MapCollisionHandlingSystem.h">
-      <Filter>ECS\System\Logic\Collision\Map</Filter>
-    </ClInclude>
     <ClInclude Include="DBManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="ViewProcessingSystem.h">
       <Filter>ECS\System\Logic\View</Filter>
     </ClInclude>
+    <ClInclude Include="AIThinkSystem.h">
+      <Filter>ECS\System\Logic\AI</Filter>
+    </ClInclude>
     <ClInclude Include="MapCollisionManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="AIThinkSystem.h">
-      <Filter>ECS\System\Logic\AI</Filter>
+    <ClInclude Include="stb_image.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -365,9 +350,6 @@
     </Filter>
     <Filter Include="ECS\System\Logic\Collision\Combat">
       <UniqueIdentifier>{f0348ca0-1cf0-416e-8369-d57780c2396f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Logic\Collision\Map">
-      <UniqueIdentifier>{17286690-7cca-4dce-9a82-f2b942aa2a12}</UniqueIdentifier>
     </Filter>
     <Filter Include="ECS\System\Logic\View">
       <UniqueIdentifier>{f6782456-f514-4ebb-a32f-7c803e8180fd}</UniqueIdentifier>
