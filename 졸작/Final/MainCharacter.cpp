@@ -25,7 +25,7 @@ void MainCharacter::Update(float deltaTime)
 
 void MainCharacter::BasicMove()
 {
-	auto& input = GET(Input);
+	auto& input = INPUT;
 
 	bool isMoving = ranges::any_of(
 		initializer_list{ 'W', 'S', 'A', 'D' },
@@ -64,7 +64,7 @@ void MainCharacter::BasicMove()
 
 void MainCharacter::BasicAttack()
 {
-	auto& input = GET(Input);
+	auto& input = INPUT;
 
 	bool currentAttack = input.GetMouseButton(MouseButton::LEFT);
 
@@ -83,7 +83,7 @@ void MainCharacter::BasicAttack()
 
 void MainCharacter::BasicDodge()
 {
-	auto& input = GET(Input);
+	auto& input = INPUT;
 
 	if (input.GetKeyDown('C')) {
 		input.SendDodgePacket();
@@ -98,7 +98,7 @@ void MainCharacter::BasicDodge()
 
 void MainCharacter::BasicGuard()
 {
-	auto& input = GET(Input);
+	auto& input = INPUT;
 
 	bool isGuarding = input.GetKey('Q');
 
@@ -127,7 +127,7 @@ void MainCharacter::BasicGuard()
 
 void MainCharacter::BasicParry()
 {
-	auto& input = GET(Input);
+	auto& input = INPUT;
 
 	bool currentParry = input.GetMouseButton(MouseButton::RIGHT);
 
@@ -150,7 +150,7 @@ void MainCharacter::RegisterAnimationCallback()
 	if (!animMachine) return;
 
 	animMachine->onActionEnd = [this]() -> string {
-		auto& input = GET(Input);
+		auto& input = INPUT;
 
 		if (input.GetKey('Q')) {
 			input.SendGuardPacket(true);

@@ -94,7 +94,7 @@ void GameScene::CreateEffectSamples()
 	for (int i = 0; i < info.size(); ++i)
 	{
 		wstring name(info[i].name.begin(), info[i].name.end());
-		GET(EffectManager).PreLoad(name);
+		EFFECT_MANAGER->PreLoad(name);
 
 		auto effectSample = make_shared<GameObject>();
 		auto effectRenderer = effectSample->AddComponent<EffectRenderer>();
@@ -157,8 +157,8 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		Protocol::SC_LOGIN_PACKET login;
 		if (PacketFactory::Deserialize<Protocol::SC_LOGIN_PACKET>(header, data, &login))
 		{
-			GET(Input).SetClientID(login.sessionid());
-			OutputDebugStringA(("My Session ID: " + to_string(GET(Input).GetClientID()) + "\n").c_str());
+			INPUT.SetClientID(login.sessionid());
+			OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
 		}
 		break;
 	}
@@ -181,12 +181,12 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 				activePlayers[sessionId] = player;
 			}
 
-			if (sessionId == GET(Input).GetClientID())
+			if (sessionId == INPUT.GetClientID())
 			{
 				myPlayer = player;
 				myPlayer->SetAsLocalPlayer(cam.get());
 
-				GET(ImGuiManager).SetMyPlayer(myPlayer.get());
+				IMGUI.SetMyPlayer(myPlayer.get());
 
 				OutputDebugStringA("My character activated!\n");
 			}
@@ -242,7 +242,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 	//case PacketType::SC_ATTACK: {
 	//	Protocol::SC_ATTACK_PACKET attack;
 	//	if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
-	//		if (sessionId == GET(Input).GetClientID()) {
+	//		if (sessionId == INPUT.GetClientID()) {
 	//			// TODO : Client Attack Animation ����
 	//			OutputDebugStringA("SC_ATTACK_PACKET received\n");
 	//		}
@@ -252,7 +252,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 	//case Protocol::PacketType::SC_DODGE: {
 	//	Protocol::SC_DODGE_PACKET dodge;
 	//	if (dodge.ParseFromArray(packet.body().data(), packet.body().size())) {
-	//		if (sessionId == GET(Input).GetClientID()) {
+	//		if (sessionId == INPUT.GetClientID()) {
 	//			// TODO : Client Dodge Animation ����
 	//			OutputDebugStringA("SC_DODGE_PACKET received\n");
 	//		}
@@ -311,7 +311,7 @@ void GameScene::InitializeLogic()
 
 	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
 
-	SetNetworkManager(GET(Engine).GetNetworkManager());
+	SetNetworkManager(NETWORK_MANAGER);
 
 	{
 		Protocol::CS_LOGIN_PACKET login;
@@ -325,30 +325,30 @@ void GameScene::InitializeLogic()
 
 void GameScene::UpdateScene(const float deltaTime)
 {
-	/*if (effectObjects.size() > 0 && GET(Input).GetKeyDown('1'))
+	/*if (effectObjects.size() > 0 && INPUT.GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectObjects.size() > 1 && GET(Input).GetKeyDown('2'))
+	if (effectObjects.size() > 1 && INPUT.GetKeyDown('2'))
 		effectObjects[1]->GetComponent<EffectRenderer>()->PlayEffect();*/
 
-	if (effectObjects.size() > 2 && GET(Input).GetKeyDown('3'))
+	if (effectObjects.size() > 2 && INPUT.GetKeyDown('3'))
 		effectObjects[2]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectObjects.size() > 3 && GET(Input).GetKeyDown('4'))
+	if (effectObjects.size() > 3 && INPUT.GetKeyDown('4'))
 		effectObjects[3]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectObjects.size() > 4 && GET(Input).GetKeyDown('5'))
+	if (effectObjects.size() > 4 && INPUT.GetKeyDown('5'))
 		effectObjects[4]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectObjects.size() > 5 && GET(Input).GetKeyDown('6')) {
+	if (effectObjects.size() > 5 && INPUT.GetKeyDown('6')) {
 		effectObjects[5]->GetComponent<EffectRenderer>()->PlayEffect();
 		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
 	}
 
-	if (effectObjects.size() > 6 && GET(Input).GetKeyDown('7'))
+	if (effectObjects.size() > 6 && INPUT.GetKeyDown('7'))
 		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectObjects.size() > 7 && GET(Input).GetKeyDown('8'))
+	if (effectObjects.size() > 7 && INPUT.GetKeyDown('8'))
 		effectObjects[8]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects[8] && myPlayer) {
@@ -386,7 +386,7 @@ void GameScene::UpdateScene(const float deltaTime)
 		auto transform = myPlayer->GetComponent<Transform>();
 		coreRef->SetPlayerPosForShadow(transform->GetPosition());
 
-		SoundManager* sound = GET(Engine).GetSoundManager();
+		SoundManager* sound = SOUND_MANAGER;
 
 		/*if (transform->GetPosition().z < -11.0f)
 		{
@@ -394,17 +394,17 @@ void GameScene::UpdateScene(const float deltaTime)
 		}
 		else
 		{
-			if (GET(Input).GetKeyDown('0'))
+			if (INPUT.GetKeyDown('0'))
 				sound->StopBGM();
 		}*/
 
-		if (GET(Input).GetKeyDown('0'))
+		if (INPUT.GetKeyDown('0'))
 		{
 			XMFLOAT3 pos = myPlayer->GetComponent<Transform>()->GetPosition();
 			OutputDebugStringA(("MyPlayer Pos: " + to_string(pos.x) + ", " + to_string(pos.y) + ", " + to_string(pos.z) + "\n").c_str());
 		}
 
-		if (GET(Input).GetKeyDown('2'))
+		if (INPUT.GetKeyDown('2'))
 		{
 			auto mesh = myPlayer->GetComponent<Mesh>();
 			mesh->ToggleCollisionMesh();
@@ -454,7 +454,7 @@ void GameScene::RenderSceneDeferred()
 
 	static bool hitOn = false;
 
-	if (GET(Input).GetKeyDown('1'))
+	if (INPUT.GetKeyDown('1'))
 		hitOn = !hitOn;
 
 	for (const auto& obj : gameObjects)
@@ -509,7 +509,7 @@ void GameScene::RenderSceneShadow()
 void GameScene::RenderSceneEffects()
 {
 	if (cam)
-		GET(EffectManager).Render(*coreRef, cam.get());
+		EFFECT_MANAGER->Render(*coreRef, cam.get());
 }
 
 void GameScene::RequestSceneChange()

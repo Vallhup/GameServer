@@ -11,7 +11,7 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
 {
     auto startTime = chrono::high_resolution_clock::now();
 
-    auto cachedMesh = GET(ResourceManager).GetCachedMesh(path);
+    auto cachedMesh = RESOURCE.GetCachedMesh(path);
     if (cachedMesh) {
         vertexIndexBuffer = cachedMesh->vertexIndexBuffer;
 
@@ -103,7 +103,7 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
             matIndices = { material->GetMaterialIndex() };
         }
 
-        GET(ResourceManager).CacheMesh(path, vertexIndexBuffer, matIndices, subMeshes, originalMaterialData,
+        RESOURCE.CacheMesh(path, vertexIndexBuffer, matIndices, subMeshes, originalMaterialData,
             mesh.hasAnimation, importer.GetAnimations(), importer.GetSkeleton(), localBox);
 
         auto endTime = chrono::high_resolution_clock::now();

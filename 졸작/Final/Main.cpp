@@ -15,7 +15,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     HWND hwnd = nullptr;
     InitWindow(hInstance, nCmdShow, &hwnd);
 
-    GET(Timer).Initialize();
+    TIMER.Initialize();
 
     ClientConnectionListener listener;
 
@@ -26,9 +26,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
     while (true)
     {
-        GET(Input).Renew();
-        GET(Timer).Update();
-        const float deltatime = GET(Timer).GetDeltaTime();
+        INPUT.Renew();
+        TIMER.Update();
+        const float deltatime = TIMER.GetDeltaTime();
 
         while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
@@ -111,36 +111,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             return 0;
         }
         if (wParam == VK_F1 && ImGui::GetCurrentContext() != nullptr) {
-            GET(ImGuiManager).SetEnabled(!GET(ImGuiManager).IsEnabled());
+            IMGUI.SetEnabled(!IMGUI.IsEnabled());
             return 0;
         }
         [[fallthrough]];
     case WM_KEYUP:
         if (!imguiWantsKeyboard)
-            GET(Input).SetKey(static_cast<size_t>(wParam), static_cast<bool>(WM_KEYUP - message));
+            INPUT.SetKey(static_cast<size_t>(wParam), static_cast<bool>(WM_KEYUP - message));
         return 0;
 
     case WM_MOUSEMOVE:
         if (!imguiWantsMouse)
-            GET(Input).SetMousePosition(XMFLOAT2(static_cast<float>(LOWORD(lParam)), static_cast<float>(HIWORD(lParam))));
+            INPUT.SetMousePosition(XMFLOAT2(static_cast<float>(LOWORD(lParam)), static_cast<float>(HIWORD(lParam))));
         return 0;
 
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
         if (!imguiWantsMouse)
-            GET(Input).SetMouseButton(MouseButton::LEFT, static_cast<bool>(WM_LBUTTONUP - message));
+            INPUT.SetMouseButton(MouseButton::LEFT, static_cast<bool>(WM_LBUTTONUP - message));
         return 0;
 
     case WM_RBUTTONDOWN:
     case WM_RBUTTONUP:
         if (!imguiWantsMouse)
-            GET(Input).SetMouseButton(MouseButton::RIGHT, static_cast<bool>(WM_RBUTTONUP - message));
+            INPUT.SetMouseButton(MouseButton::RIGHT, static_cast<bool>(WM_RBUTTONUP - message));
         return 0;
 
     case WM_MOUSEWHEEL:
         if (!imguiWantsMouse) {
             const short delta = GET_WHEEL_DELTA_WPARAM(wParam);
-            GET(Input).SetMouseWheelDelta((int)delta);
+            INPUT.SetMouseWheelDelta((int)delta);
         }
         return 0;
 

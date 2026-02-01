@@ -19,8 +19,7 @@ Engine& Engine::Get()
     return engine;
 }
 
-void Engine::Initialize(HWND hwnd, std::string_view ip, uint16 port, 
-    IConnectionListener& listener)
+void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListener& listener)
 {
     mHwnd = hwnd;
 
@@ -33,7 +32,7 @@ void Engine::Initialize(HWND hwnd, std::string_view ip, uint16 port,
     uiManager = make_unique<UIManager>();
     uiManager->Initialize(*graphics);
 
-    GET(ImGuiManager).Initialize(mHwnd, *graphics);
+    IMGUI.Initialize(mHwnd, *graphics);
 
     sceneManager = make_unique<SceneManager>();
     sceneManager->Initialize(hwnd, *graphics);
@@ -44,11 +43,12 @@ void Engine::Initialize(HWND hwnd, std::string_view ip, uint16 port,
     soundManager = make_unique<SoundManager>();
     soundManager->Initialize();
 
-    GET(EffectManager).Initialize(*graphics);
+    effectManager = make_unique<EffectManager>();
+    effectManager->Initialize(*graphics);
 
     graphics->FlushCommandQueue();
 
-    GET(Input).Initialize(networkManager.get());
+    INPUT.Initialize(networkManager.get());
 }
 
 void Engine::Update(const float deltaTime)
@@ -56,7 +56,7 @@ void Engine::Update(const float deltaTime)
     sceneManager->ProcessPendingSceneChange(*graphics);
     sceneManager->Update(deltaTime);
 
-    GET(EffectManager).Update(deltaTime);
+    effectManager->Update(deltaTime);
 
     soundManager->Update();
 }
@@ -65,7 +65,7 @@ void Engine::Render()
 {
     graphics->RenderBegin(viewport, scissorRect);
 
-    GET(ImGuiManager).BeginFrame();
+    IMGUI.BeginFrame();
 
     sceneManager->BeginRender();
 
@@ -92,8 +92,8 @@ void Engine::Render()
 
     uiManager->Render(graphics->GetGraphicsCmdList(), graphics->GetCmdQueue(), viewport);
 
-    GET(ImGuiManager).DrawDebugUI();
-    GET(ImGuiManager).EndFrame(graphics->GetGraphicsCmdList());
+    IMGUI.DrawDebugUI();
+    IMGUI.EndFrame(graphics->GetGraphicsCmdList());
 
     graphics->RenderEnd();
 
@@ -102,7 +102,7 @@ void Engine::Render()
 
 void Engine::Shutdown()
 {
-    GET(ImGuiManager).Shutdown();
+    IMGUI.Shutdown();
     uiManager->Release();
 
     if (sceneManager && sceneManager->GetCurrentScene())
@@ -121,12 +121,12 @@ void Engine::Shutdown()
     sceneManager->Release();
     networkManager->Release();
     soundManager->Release();
-    GET(EffectManager).Release();
+    effectManager->Release();
 }
 
 void Engine::ShowFps()
 {
-    UINT32 fps = GET(Timer).GetFps();
+    UINT32 fps = TIMER.GetFps();
     WCHAR text[100] = L"";
     wsprintf(text, L"Final      FPS: %d", fps);
     SetWindowText(mHwnd, text);

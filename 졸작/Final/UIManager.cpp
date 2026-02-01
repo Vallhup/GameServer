@@ -48,7 +48,7 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 
 	static bool status = true;
 
-	if (GET(Input).GetKeyDown('K'))
+	if (INPUT.GetKeyDown('K'))
 		status = !status;
 
 	if (status)

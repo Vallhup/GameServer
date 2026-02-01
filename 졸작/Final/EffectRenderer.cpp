@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "EffectRenderer.h"
+#include "Engine.h"
 #include "GameObject.h"
 #include "Transform.h"
 #include "EffectManager.h"
@@ -28,7 +29,7 @@ void EffectRenderer::Update(float deltaTime)
 {
     if (handle != -1)
     {
-        GET(EffectManager).SetMatrix(handle, worldMatrix);
+        EFFECT_MANAGER->SetMatrix(handle, worldMatrix);
     }
 }
 
@@ -40,14 +41,14 @@ void EffectRenderer::PlayEffect()
     auto tr = GetGameObject()->GetComponent<Transform>();
     XMFLOAT3 pos = tr ? tr->GetPosition() : XMFLOAT3(0, 0, 0);
 
-    handle = GET(EffectManager).Play(effectName, pos);
+    handle = EFFECT_MANAGER->Play(effectName, pos);
 }
 
 void EffectRenderer::StopEffect()
 {
     if (handle != -1)
     {
-        GET(EffectManager).Stop(handle);
+        EFFECT_MANAGER->Stop(handle);
         handle = -1;
     }
 }

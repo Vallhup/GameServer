@@ -17,7 +17,7 @@ void ClientConnectionListener::OnDisconnected(Connection& owner)
 void ClientConnectionListener::OnPacketReceived(Connection& owner, const PacketHeader& header, const BYTE* data)
 {
 	// TEMP : Server Test
-	if (SceneManager* sManager = GET(Engine).GetSceneManager())
+	if (SceneManager* sManager = SCENE_MANAGER)
 	{
 		if (Scene* scene = sManager->GetCurrentScene())
 		{
