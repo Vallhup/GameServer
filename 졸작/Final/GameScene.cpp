@@ -51,6 +51,7 @@ void GameScene::CreateMap()
 	mapLoader.Load(L"../Assets/FBXModel/Map/MapInstanceData.txt");
 
 	int count = 0;
+	// during count 50 ~ 60 rapid lower fps range
 	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
 		if (instanceData.empty())  
 			continue;
@@ -62,6 +63,7 @@ void GameScene::CreateMap()
 
 		CreateAndBatchObjects(path, instanceData, instancingBatches);
 	}
+	//OutputDebugStringA(("Map data count: " + to_string(count) + '\n').c_str());
 #pragma endregion
 
 #pragma region Initialize Terrain
