@@ -2,8 +2,12 @@
 #include "UIManager.h"
 #include <WICTextureLoader.h>
 #include <DirectXHelpers.h>
+#include "Engine.h"
 #include "DX12Core.h"
 #include "Input.h"
+#include "SceneManager.h"
+#include "GameScene.h"
+#include "MainCharacter.h"
 
 UINT UIManager::nextIndex = 0;
 
@@ -65,6 +69,30 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 	XMFLOAT2 origin(XMVectorGetX(textSize) / 2.f, XMVectorGetY(textSize) / 2.f);
 	XMFLOAT2 pos(vp.Width / 2.f, vp.Height / 2.f);
 	font->DrawString(spriteBatch.get(), L"Hello, I'm JeongHo Lee", pos, Colors::White, 0.f, origin);
+
+	if (SCENE_MANAGER->GetCurrentSceneType() == SceneType::MainGame)
+	{
+		auto player = static_cast<GameScene*>(SCENE_MANAGER->GetCurrentScene())->GetMyPlayer();
+		auto cam = SCENE_MANAGER->GetCurrentScene()->GetCamera();
+
+		auto playerPos = player->GetComponent<Transform>()->GetPosition();
+		playerPos.y += 2.2f;
+
+		XMMATRIX view = cam->GetViewMatrix();
+		XMMATRIX proj = cam->GetProjectionMatrix();
+
+		XMVECTOR screenPos = XMVector3Project(XMLoadFloat3(&playerPos),
+			vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height,
+			vp.MinDepth, vp.MaxDepth, proj, view, XMMatrixIdentity());
+
+		XMFLOAT3 screen;
+		XMStoreFloat3(&screen, screenPos);
+
+		XMVECTOR textSize2 = font->MeasureString(L"Health Bar");
+		XMFLOAT2 origin2(XMVectorGetX(textSize2) / 2.f, XMVectorGetY(textSize2) / 2.f);
+		XMFLOAT2 pos2(screen.x, screen.y);
+		font->DrawString(spriteBatch.get(), L"Health Bar", pos2, Colors::White, 0.f, origin2);
+	}
 
 	spriteBatch->End();
 

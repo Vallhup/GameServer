@@ -126,6 +126,12 @@ shared_ptr<MainCharacter> GameScene::GetAvailableKnight() const
 	return nullptr;
 }
 
+shared_ptr<MainCharacter> GameScene::GetMyPlayer() const
+{
+	if (myPlayer)
+		return myPlayer;
+}
+
 void GameScene::Release()
 {
 }

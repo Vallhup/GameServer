@@ -23,6 +23,7 @@ public:
     void Release();
 
     Scene* GetCurrentScene() const;
+    SceneType GetCurrentSceneType() const;
     SceneRenderer* GetSceneRenderer() const;
 
 public:
@@ -40,6 +41,7 @@ private:
     std::array<std::unique_ptr<Scene>, static_cast<size_t>(SceneType::END)> mScenes;
 
     bool pendingSceneChange = false;
+    SceneType currSceneType;
     SceneType nextSceneType;
 
     unique_ptr<SceneRenderer> sceneRenderer;
