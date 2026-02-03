@@ -28,7 +28,15 @@ void UIManager::Initialize(DX12Core& core)
 	ResourceUploadBatch resourceUpload(core.GetDevice());
 	resourceUpload.Begin();
 
-	SpriteBatchPipelineStateDescription pd(rtState);
+	// srcRGB * srcAlpha + destRGB * (1 - srcAlpha)
+	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+
+	SpriteBatchPipelineStateDescription pd(rtState, &blendDesc);
 
 	spriteBatch = make_unique<SpriteBatch>(core.GetDevice(), resourceUpload, pd, nullptr);
 
@@ -42,6 +50,21 @@ void UIManager::Initialize(DX12Core& core)
 	uploadFinished.wait();
 }
 
+void UIManager::Update(float deltaTime)
+{
+	for (auto& [name, tex] : uiTextureMap)
+	{
+		if (tex.fading)
+		{
+			tex.fadeElapsed += deltaTime;
+			tex.fadeAlpha = clamp(tex.fadeElapsed / tex.fadeDuration, 0.0f, 1.0f);
+
+			if (tex.fadeAlpha >= 1.0f)
+				tex.fading = false;
+		}
+	}
+}
+
 void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp)
 {
 	ID3D12DescriptorHeap* heaps[] = { uiSrvHeap->Heap() };
@@ -50,10 +73,20 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 	spriteBatch->SetViewport(vp);
 	spriteBatch->Begin(cmdList);
 
-	static bool status = true;
+	static bool status = false;
 
 	if (INPUT.GetKeyDown('K'))
+	{
 		status = !status;
+		if (status)
+		{
+			auto& statusTex = uiTextureMap[L"Status"];
+			statusTex.fadeElapsed = 0.0f;
+			statusTex.fadeDuration = 4.0f;
+			statusTex.fadeAlpha = 0.0f;
+			statusTex.fading = true;
+		}
+	}
 
 	if (status)
 	{
@@ -61,7 +94,8 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 
 		XMUINT2 texSize = GetTextureSize(statusTex.resource.Get());
 		RECT destRect = { 0, 0, static_cast<LONG>(texSize.x * 0.5f), static_cast<LONG>(texSize.y * 0.5f) };
-		spriteBatch->Draw(uiSrvHeap->GetGpuHandle(statusTex.heapIndex), texSize, destRect);
+		XMVECTOR color = XMVectorSet(1.0f, 1.0f, 1.0f, statusTex.fadeAlpha);
+		spriteBatch->Draw(uiSrvHeap->GetGpuHandle(statusTex.heapIndex), texSize, destRect, color);
 	}
 
 	auto& font = uiFontMap[L"MalgunGothic"].font;

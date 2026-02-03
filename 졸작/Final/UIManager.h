@@ -15,12 +15,18 @@ struct UIFontData {
 struct UITextureData {
 	UINT heapIndex;
 	ComPtr<ID3D12Resource> resource;
+
+	float fadeAlpha = 0.0f;
+	float fadeDuration = 0.0f;
+	float fadeElapsed = 0.0f;
+	bool fading = false;
 };
 
 class UIManager
 {
 public:
 	void Initialize(DX12Core& core);
+	void Update(float deltaTime);
 	void Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp);
 	void Release();
 
