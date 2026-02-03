@@ -49,8 +49,9 @@ void OutputEventSystem::ProcessSpawn(const OutputEvent& event)
 	// 2. Spawn된 Player의 정보를 모든 Player에게 전송
 	if (const auto* trans = ecs.GetStorage<Transform>().GetComponent(event.entity))
 	{
+		uint32 type = ToInt(event.entity.type);
 		float yaw = TransformHelper::QuaternionToYaw(trans->rotation);
-		SendBuffer* data2 = NetHelper::SCAddPacket(sessionId,
+		SendBuffer* data2 = NetHelper::SCAddPacket(sessionId, type,
 			trans->position.x, trans->position.y, trans->position.z, yaw);
 		for (const auto& [entity, sid] : ets)
 		{
@@ -66,9 +67,10 @@ void OutputEventSystem::ProcessSpawn(const OutputEvent& event)
 		if (sessId == sessionId) continue;
 		if (const auto* trans = ecs.GetStorage<Transform>().GetComponent(entity))
 		{
+			uint32 type = ToInt(event.entity.type);
 			float yaw = TransformHelper::QuaternionToYaw(trans->rotation);
-			SendBuffer* data3 = NetHelper::SCAddPacket(
-				sessId, trans->position.x, trans->position.y, trans->position.z, yaw);
+			SendBuffer* data3 = NetHelper::SCAddPacket(sessId, type,
+				trans->position.x, trans->position.y, trans->position.z, yaw);
 			EnqueueToSession(sessionId, data3->data, data3->size);
 			SendBufferPool::Get().Release(data3);
 		}

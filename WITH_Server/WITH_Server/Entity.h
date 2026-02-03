@@ -1,11 +1,14 @@
 #pragma once
 
+#include "EntityType.h"
+
 struct Entity {
 	int id;
 	int generation;
+	EntityType type;
 
 	Entity(int id = -1, int g = 0) 
-		: id(id), generation(g) {}
+		: id(id), generation(g), type(EntityType::Knight) {}
 
 	bool operator==(const Entity& other) const noexcept
 	{

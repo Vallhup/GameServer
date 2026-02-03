@@ -9,7 +9,7 @@ using namespace DirectX;
 struct Component { };
 
 struct Transform : public Component {
-	XMFLOAT3 position{ 0, 0, 0 };
+	XMFLOAT3 position{ 10.0f, 0, 10.0f };
 	XMFLOAT4 rotation{ 0, 0, 0, 1 };
 	XMFLOAT3 scale{ 1, 1, 1 };
 };

@@ -168,20 +168,24 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		Protocol::SC_ADD_PACKET add;
 		if (PacketFactory::Deserialize<Protocol::SC_ADD_PACKET>(header, data, &add))
 		{
-			int sessionId = add.sessionid();
+			int id = add.id();
+			int type = add.type();
+
+			// TODO : type값에 따라 Knight, Lancer, Boss 등 분기
+
 			auto player = GetAvailableKnight();
 			if (player)
 			{
-				player->SetId(sessionId);
+				player->SetId(id);
 				auto transform = player->GetComponent<Transform>();
 				transform->SetInitPosition(add.x(), add.y(), add.z());
 
 				transform->SetTargetRotation(add.yaw());
 
-				activePlayers[sessionId] = player;
+				activePlayers[id] = player;
 			}
 
-			if (sessionId == INPUT.GetClientID())
+			if (id == INPUT.GetClientID())
 			{
 				myPlayer = player;
 				myPlayer->SetAsLocalPlayer(cam.get());
@@ -198,8 +202,8 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		Protocol::SC_MOVE_PACKET move;
 		if (PacketFactory::Deserialize<Protocol::SC_MOVE_PACKET>(header, data, &move))
 		{
-			int sessionId = move.sessionid();
-			auto it = activePlayers.find(sessionId);
+			int id = move.id();
+			auto it = activePlayers.find(id);
 			if (it != activePlayers.end())
 			{
 				auto transform = it->second->GetComponent<Transform>();
@@ -221,9 +225,9 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		Protocol::SC_ANIMATION_TRANSITION_PACKET anim;
 		if (PacketFactory::Deserialize<Protocol::SC_ANIMATION_TRANSITION_PACKET>(header, data, &anim))
 		{
-			int sessionId = anim.sesssionid();
+			int id = anim.id();
 			
-			auto it = activePlayers.find(sessionId);
+			auto it = activePlayers.find(id);
 			if (it != activePlayers.end())
 			{
 				if (auto animMachine = it->second->GetComponent<AnimationMachine>())

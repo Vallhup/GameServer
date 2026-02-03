@@ -16,10 +16,11 @@ namespace NetHelper {
 			(PacketType::SC_LOGIN, login);
 	}
 
-	inline SendBuffer* SCAddPacket(uint32 id, float x, float y, float z, float yaw)
+	inline SendBuffer* SCAddPacket(uint32 id, uint32 type, float x, float y, float z, float yaw)
 	{
 		Protocol::SC_ADD_PACKET add;
-		add.set_sessionid(id);
+		add.set_id(id);
+		add.set_type(type);
 		add.set_x(x);
 		add.set_y(y);
 		add.set_z(z);
@@ -32,7 +33,7 @@ namespace NetHelper {
 	inline SendBuffer* SCRemovePacket(uint32 id)
 	{
 		Protocol::SC_REMOVE_PACKET remove;
-		remove.set_ssessionid(id);
+		remove.set_id(id);
 
 		return PacketFactory::Serialize<Protocol::SC_REMOVE_PACKET>
 			(PacketType::SC_REMOVE, remove);
@@ -42,7 +43,7 @@ namespace NetHelper {
 		float x, float y, float z, float yaw)
 	{
 		Protocol::SC_MOVE_PACKET move;
-		move.set_sessionid(id);
+		move.set_id(id);
 		move.set_x(x);
 		move.set_y(y);
 		move.set_z(z);
@@ -55,7 +56,7 @@ namespace NetHelper {
 	inline SendBuffer* SCAnimationChangePacket(uint32 id, AnimationType curr)
 	{
 		Protocol::SC_ANIMATION_TRANSITION_PACKET anim;
-		anim.set_sesssionid(id);
+		anim.set_id(id);
 		anim.set_curranim(ToInt(curr));
 
 		return PacketFactory::Serialize<Protocol::SC_ANIMATION_TRANSITION_PACKET>

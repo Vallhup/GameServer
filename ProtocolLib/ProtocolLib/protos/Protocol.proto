@@ -47,16 +47,17 @@ message SC_LOGIN_PACKET
 
 message SC_ADD_PACKET
 {
-	int32 sessionId = 1;
-	float x = 2;
-	float y = 3;
-	float z = 4;
-	float yaw = 5;
+	int32 id = 1;
+	int32 type = 2;
+	float x = 3;
+	float y = 4;
+	float z = 5;
+	float yaw = 6;
 }
 
 message SC_MOVE_PACKET
 {
-	int32 sessionId = 1;
+	int32 id = 1;
 	float x = 2;
 	float y = 3;
 	float z = 4;
@@ -65,11 +66,11 @@ message SC_MOVE_PACKET
 
 message SC_REMOVE_PACKET
 {
-	int32 ssessionId = 1;
+	int32 id = 1;
 }
 
 message SC_ANIMATION_TRANSITION_PACKET
 {
-	int32 sesssionId = 1;
+	int32 id = 1;
     int32 currAnim = 2;
 }
