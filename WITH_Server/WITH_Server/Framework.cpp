@@ -74,5 +74,7 @@ void Framework::LoadAnimations()
 
 void Framework::LoadMapDatas()
 {
+	MapCollisionManager::Get().LoadMapData("../Map//map_1_collision.png");
+
 	MapCollisionManager::Get().LoadHeightMap("../Map/map_1_terrain.raw");
 }

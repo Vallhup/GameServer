@@ -86,10 +86,10 @@ void MapCollisionManager::LoadHeightMap(std::string_view path)
 bool MapCollisionManager::CanMove(float x, float z) const
 {
 	auto [xIdx, zIdx] = WorldToGrid(x, z);
-	if (xIdx < 0 || zIdx < 0)
+	if (xIdx < 0 || zIdx < 0 || xIdx * Width + xIdx >= Width * Height)
 		return false;
 
-	return _mapGrid[zIdx * Width + zIdx];
+	return _mapGrid[zIdx * Width + xIdx];
 }
 
 float MapCollisionManager::SampleHeightAt(float x, float z) const
@@ -130,5 +130,25 @@ float MapCollisionManager::SampleHeightAt(float x, float z) const
 std::pair<int, int> MapCollisionManager::WorldToGrid(float x, float z) const
 {
 	// TODO : World 좌표 정규화해서 Grid좌표로 바꾸는 코드
-	return std::pair<int, int>();
+	static constexpr float mapSize = 160.0f;
+
+	float u = x / mapSize;
+	float v = z / mapSize;
+
+	if (u < 0.0f || u > 1.0f ||
+		v < 0.0f || v > 1.0f) return { -1, -1 };
+
+
+	const float maxX = static_cast<float>(Width - 1);
+	const float maxZ = static_cast<float>(Height - 1);
+
+	int px = static_cast<int>(std::lround(u * maxX));
+	int pz = static_cast<int>(std::lround(v * maxZ));
+
+	px = std::clamp<int>(px, 0, maxX);
+	pz = std::clamp<int>(pz, 0, maxZ);
+
+	pz = maxZ - pz;
+
+	return { px, pz };
 }

@@ -11,8 +11,8 @@ static inline bool IsBlack(uint8 r, uint8 g, uint8 b)
 }
 
 class MapCollisionManager {
-	static constexpr int Width{ 1025 };
-	static constexpr int Height{ 1025 };
+	static constexpr int Width{ 4097 };
+	static constexpr int Height{ 4097 };
 
 public:
 	static MapCollisionManager& Get()

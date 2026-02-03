@@ -59,13 +59,25 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 	{
 		totalMoveDelta.y = 0;
 
-		trans->position.x += totalMoveDelta.x;
-		trans->position.z += totalMoveDelta.z;
+		float nx = trans->position.x;
+		float nz = trans->position.z;
 
-		trans->position.y =
-			MapCollisionManager::Get().SampleHeightAt(trans->position.x, trans->position.z);
+		if (MapCollisionManager::Get().CanMove(nx + totalMoveDelta.x, nz))
+			nx += totalMoveDelta.x;
 
-		Framework::Get().outEventQueue.push(OutputEvent{
-			entity, DirtyType::Moved });
+		if (MapCollisionManager::Get().CanMove(nx, nz + totalMoveDelta.z))
+			nz += totalMoveDelta.z;
+
+		if (nx != trans->position.x || nz != trans->position.z)
+		{
+			trans->position.x = nx;
+			trans->position.z = nz;
+
+			trans->position.y =
+				MapCollisionManager::Get().SampleHeightAt(trans->position.x, trans->position.z);
+
+			Framework::Get().outEventQueue.push(OutputEvent{
+				entity, DirtyType::Moved });
+		}
 	}
 }
