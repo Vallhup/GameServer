@@ -116,22 +116,25 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     }
 
     XMVECTOR upDir = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    XMMATRIX matView = XMMatrixLookAtLH(eyePos, lookAt, upDir);
+    XMMATRIX view = XMMatrixLookAtLH(eyePos, lookAt, upDir);
 
     float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
-    XMMATRIX matProj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 50.0f);
+    XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 50.0f);
 
-    BoundingFrustum::CreateFromMatrix(viewFrustum, matProj);
-    
-    XMMATRIX invView = XMMatrixInverse(nullptr, matView);
+    BoundingFrustum::CreateFromMatrix(viewFrustum, proj);
+
+    XMMATRIX invView = XMMatrixInverse(nullptr, view);
     viewFrustum.Transform(viewFrustum, invView);
 
-    matView = XMMatrixTranspose(matView);
-    matProj = XMMatrixTranspose(matProj);
+    XMStoreFloat4x4(&matView, view);
+    XMStoreFloat4x4(&matProj, proj);
+
+    view = XMMatrixTranspose(view);
+    proj = XMMatrixTranspose(proj);
 
     FrameConstants frameData = {};
-    frameData.view = matView;
-    frameData.projection = matProj;
+    frameData.view = view;
+    frameData.projection = proj;
     frameData.cameraPosition = position;
     frameData.padding = 0.0f;
 
@@ -289,6 +292,16 @@ float Camera::GetRadianPitch() const
 BoundingFrustum Camera::GetViewFrustum() const
 {
     return viewFrustum;
+}
+
+XMMATRIX Camera::GetViewMatrix() const
+{
+    return XMLoadFloat4x4(&matView);
+}
+
+XMMATRIX Camera::GetProjectionMatrix() const
+{
+    return XMLoadFloat4x4(&matProj);
 }
 
 void Camera::SetCameraPosition(const XMFLOAT3& pos)

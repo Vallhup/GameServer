@@ -21,6 +21,8 @@ public:
 	float GetRadianPitch() const;
 
 	BoundingFrustum GetViewFrustum() const;
+	XMMATRIX GetViewMatrix() const;
+	XMMATRIX GetProjectionMatrix() const;
 
 	void SetCameraPosition(const XMFLOAT3& pos);
 	void SetCursor();
@@ -44,12 +46,12 @@ private:
 	XMFLOAT3 position;
 	XMFLOAT3 targetPosition;
 
-	XMFLOAT3 desiredPosition;      // ¸ñÇ¥ÇÏ´Â Ä«¸Þ¶ó À§Ä¡
-	XMFLOAT3 currentTargetPos;     // ÇöÀç ÃßÀû ÁßÀÎ Å¸°Ù À§Ä¡
-	XMFLOAT3 desiredTargetPos;     // ¸ñÇ¥ÇÏ´Â Å¸°Ù À§Ä¡
+	XMFLOAT3 desiredPosition;      // ï¿½ï¿½Ç¥ï¿½Ï´ï¿½ Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½Ä¡
+	XMFLOAT3 currentTargetPos;     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½Ä¡
+	XMFLOAT3 desiredTargetPos;     // ï¿½ï¿½Ç¥ï¿½Ï´ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½Ä¡
 
-	XMFLOAT3 camForward;			// ¾Õ µÚ
-	XMFLOAT3 camRight;				// ÁÂ ¿ì
+	XMFLOAT3 camForward;			// ï¿½ï¿½ ï¿½ï¿½
+	XMFLOAT3 camRight;				// ï¿½ï¿½ ï¿½ï¿½
 
 	float yaw;
 	float pitch;
@@ -59,8 +61,8 @@ private:
 	bool spacePressed = false;
 
 	static constexpr float MOUSE_SENSITIVITY = 0.1f;
-	static constexpr float CAMERA_FOLLOW_SPEED = 40.0f;		// Ä«¸Þ¶ó À§Ä¡ º¸°£ ¼Óµµ
-	static constexpr float TARGET_FOLLOW_SPEED = 4.0f;		// Ä³¸¯ÅÍ À§Ä¡ º¸°£ ¼Óµµ
+	static constexpr float CAMERA_FOLLOW_SPEED = 40.0f;		// Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½
+	static constexpr float TARGET_FOLLOW_SPEED = 4.0f;		// Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½
 
 	float desiredDistance;   
 	float currentDistance;   
@@ -70,4 +72,7 @@ private:
 	float zoomFollowSpeed = 2.5f;
 
 	BoundingFrustum viewFrustum;
+
+	XMFLOAT4X4 matView;
+	XMFLOAT4X4 matProj;
 };

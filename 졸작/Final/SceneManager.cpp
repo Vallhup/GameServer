@@ -104,6 +104,11 @@ Scene* SceneManager::GetCurrentScene() const
 	return mCurrentScene;
 }
 
+SceneType SceneManager::GetCurrentSceneType() const
+{
+    return currSceneType;
+}
+
 SceneRenderer* SceneManager::GetSceneRenderer() const
 {
     return sceneRenderer.get();
@@ -118,6 +123,8 @@ void SceneManager::SceneStart(DX12Core& core)
         PostQuitMessage(0);
         return;
     }
+
+    currSceneType = SceneType::Start;
 
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
@@ -150,6 +157,7 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
     mCurrentScene->Initialize(hwnd, core);
+    currSceneType = nextSceneType;
 
     core.FlushCommandQueue();
 

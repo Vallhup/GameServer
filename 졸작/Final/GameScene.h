@@ -15,6 +15,7 @@ public:
 	~GameScene();
 
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
+	shared_ptr<MainCharacter> GetMyPlayer() const;
 
 	void SetNetworkManager(NetworkManager* nManager) { _nManager = nManager; }
 
