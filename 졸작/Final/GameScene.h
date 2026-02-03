@@ -38,6 +38,7 @@ protected:
 
 private:
 	void CreateKnightPool();
+	void CreateBossObject();
 	void CreateMap();
 	void CreateEffectSamples();
 	
@@ -50,8 +51,10 @@ private:
 
 	vector<shared_ptr<MainCharacter>> knightPool;
 	static constexpr int MAX_KNIGHT_COUNT = 10;
-	unordered_map<int, shared_ptr<MainCharacter>> activePlayers;
+	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
 	shared_ptr<MainCharacter> myPlayer;
+
+	shared_ptr<GameObject> bossObject;
 
 	vector<shared_ptr<GameObject>> effectObjects;
 

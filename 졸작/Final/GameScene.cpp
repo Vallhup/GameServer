@@ -44,6 +44,23 @@ void GameScene::CreateKnightPool()
 	}
 }
 
+void GameScene::CreateBossObject()
+{
+	bossObject = make_shared<GameObject>();
+	bossObject->SetId(-1);
+	auto mesh = bossObject->AddComponent<Mesh>();
+	auto transform = bossObject->AddComponent<Transform>();
+	auto animator = bossObject->AddComponent<Animator>();
+	auto animMachine = bossObject->AddComponent<AnimationMachine>();
+	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
+
+	animMachine->SetAnimationSet(AnimationSetFactory::CreateFinalBossSet());
+	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
+	transform->SetRotation(0.f, 3.14f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+	AddGameObject(bossObject);
+}
+
 void GameScene::CreateMap()
 {
 #pragma region Initialize Map Elements
@@ -142,8 +159,9 @@ void GameScene::Reset()
 {
 	instancingBatches.clear();
 	knightPool.clear();
-	activePlayers.clear();
+	activeCharacters.clear();
 	myPlayer = nullptr;
+	bossObject = nullptr;
 	gameObjects.clear();
 
 	OutputDebugStringA("GameScene Data has been deleted!! \n----------------------------------------\n");
@@ -179,28 +197,38 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			int id = add.id();
 			int type = add.type();
 
-			// TODO : type값에 따라 Knight, Lancer, Boss 등 분기
-
-			auto player = GetAvailableKnight();
-			if (player)
+			if (type == 4) // Final_Boss
 			{
-				player->SetId(id);
-				auto transform = player->GetComponent<Transform>();
-				transform->SetInitPosition(add.x(), add.y(), add.z());
-
-				transform->SetTargetRotation(add.yaw());
-
-				activePlayers[id] = player;
+				if (bossObject)
+				{
+					bossObject->SetId(id);
+					auto transform = bossObject->GetComponent<Transform>();
+					transform->SetInitPosition(add.x(), add.y(), add.z());
+					transform->SetTargetRotation(add.yaw());
+					activeCharacters[id] = bossObject;
+				}
 			}
-
-			if (id == INPUT.GetClientID())
+			else if (type == 0) // Knight
 			{
-				myPlayer = player;
-				myPlayer->SetAsLocalPlayer(cam.get());
+				auto player = GetAvailableKnight();
+				if (player)
+				{
+					player->SetId(id);
+					auto transform = player->GetComponent<Transform>();
+					transform->SetInitPosition(add.x(), add.y(), add.z());
+					transform->SetTargetRotation(add.yaw());
+					activeCharacters[id] = player;
+				}
 
-				IMGUI.SetMyPlayer(myPlayer.get());
+				if (id == INPUT.GetClientID())
+				{
+					myPlayer = player;
+					myPlayer->SetAsLocalPlayer(cam.get());
 
-				OutputDebugStringA("My character activated!\n");
+					IMGUI.SetMyPlayer(myPlayer.get());
+
+					OutputDebugStringA("My character activated!\n");
+				}
 			}
 		}
 		break;
@@ -211,8 +239,8 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		if (PacketFactory::Deserialize<Protocol::SC_MOVE_PACKET>(header, data, &move))
 		{
 			int id = move.id();
-			auto it = activePlayers.find(id);
-			if (it != activePlayers.end())
+			auto it = activeCharacters.find(id);
+			if (it != activeCharacters.end())
 			{
 				auto transform = it->second->GetComponent<Transform>();
 				const XMFLOAT3& pos = transform->GetPosition();
@@ -235,8 +263,8 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		{
 			int id = anim.id();
 			
-			auto it = activePlayers.find(id);
-			if (it != activePlayers.end())
+			auto it = activeCharacters.find(id);
+			if (it != activeCharacters.end() && it->second != bossObject)
 			{
 				if (auto animMachine = it->second->GetComponent<AnimationMachine>())
 				{
@@ -291,23 +319,7 @@ void GameScene::InitializeLogic()
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
 
 	CreateMap();
-
-	{
-		auto boss = make_shared<GameObject>();
-		boss->SetId(0);
-		auto mesh = boss->AddComponent<Mesh>();
-		auto transform = boss->AddComponent<Transform>();
-		auto animator = boss->AddComponent<Animator>();
-		auto animMachine = boss->AddComponent<AnimationMachine>();
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
-
-		animMachine->SetAnimationSet(AnimationSetFactory::CreateFinalBossSet());
-		transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
-		transform->SetRotation(0.f, 3.14f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(boss);
-	}
-
+	CreateBossObject();
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
@@ -429,7 +441,7 @@ void GameScene::UpdateScene(const float deltaTime)
 	}
 
 	// Update player heights based on terrain
-	/*for (const auto& [sessionId, player] : activePlayers)
+	/*for (const auto& [sessionId, player] : activeCharacters)
 	{
 		if (auto transform = player->GetComponent<Transform>())
 		{
