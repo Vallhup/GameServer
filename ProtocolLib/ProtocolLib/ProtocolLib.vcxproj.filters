@@ -30,6 +30,9 @@
     <ClInclude Include="Include\AnimationType.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Include\EntityType.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Codec">
