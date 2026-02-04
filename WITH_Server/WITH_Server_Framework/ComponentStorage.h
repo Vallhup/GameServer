@@ -1,40 +1,21 @@
 #pragma once
 
+#include <vector>
+
 #include "Entity.h"
-
-struct Component;
-
-template<typename T>
-concept CompT = std::is_base_of_v<Component, T>;
+#include "Component.h"
 
 template<CompT T>
 class ComponentStorage {
 	static constexpr int INVALID{ -1 };
 
-	struct Iterator {
-		size_t i;
-		ComponentStorage<T>* storage;
-
-		Iterator(size_t i, ComponentStorage<T>* s) : i(i), storage(s) {}
-		Iterator& operator++() { ++i; return *this; }
-		bool operator!=(const Iterator& other) const { return i != other.i; }
-
-		auto operator*() const
-		{
-			return std::pair<Entity, T&>(
-				storage->_entities[i],
-				storage->_dense[i]
-			);
-		}
-	};
-
 public:
 	T* AddComponent(Entity entity)
 	{
-		if (entity.id >= _sparse.size()) 
+		if (entity.id >= _sparse.size())
 			_sparse.resize(entity.id + 1, INVALID);
 
-		if (_sparse[entity.id] != INVALID) 
+		if (_sparse[entity.id] != INVALID)
 			return &_dense[_sparse[entity.id]];
 
 		int di = _dense.size();
@@ -48,7 +29,7 @@ public:
 	T* GetComponent(Entity entity)
 	{
 		if (entity.id >= _sparse.size()) return nullptr;
-		return _sparse[entity.id] == INVALID ? 
+		return _sparse[entity.id] == INVALID ?
 			nullptr : &_dense[_sparse[entity.id]];
 	}
 
@@ -82,10 +63,10 @@ public:
 		return GetComponent(entity) != nullptr;
 	}
 
-	const std::vector<T>&      Dense()    const { return _dense; }
-	      std::vector<T>&	   Dense()          { return _dense; }
+	const std::vector<T>& Dense()    const { return _dense; }
+	std::vector<T>& Dense() { return _dense; }
 	const std::vector<Entity>& Entities() const { return _entities; }
-		  std::vector<Entity>& Entities()	    { return _entities; }
+	std::vector<Entity>& Entities() { return _entities; }
 
 	int DenseIndex(Entity entity) const
 	{
@@ -94,12 +75,9 @@ public:
 
 	int Size() const { return static_cast<int>(_dense.size()); }
 
-	Iterator begin() { return { 0, this }; }
-	Iterator end() { return { _dense.size(), this}; }
-
 private:
 	std::vector<T> _dense;
 	std::vector<Entity> _entities;
+
 	std::vector<int> _sparse;
 };
-

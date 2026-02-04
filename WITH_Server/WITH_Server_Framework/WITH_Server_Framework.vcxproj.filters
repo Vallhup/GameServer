@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>ECS\Entity</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Entity.h">
+      <Filter>ECS\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>ECS\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentStorage.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ECS">
+      <UniqueIdentifier>{e0ee2551-186e-43f0-b511-389968092128}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\Entity">
+      <UniqueIdentifier>{2e433175-59b9-42ea-ab13-5aada61ea10d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\Component">
+      <UniqueIdentifier>{81a775e9-c598-4f57-bf90-3ed16fa19e9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System">
+      <UniqueIdentifier>{d16764a6-dfb5-40da-b480-641f5d7d9c80}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
