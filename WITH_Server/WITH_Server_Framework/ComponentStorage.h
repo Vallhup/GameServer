@@ -6,8 +6,20 @@
 #include "Entity.h"
 #include "Component.h"
 
+using TypeId = int;
+
+class IStorage {
+public:
+	virtual ~IStorage() = default;
+
+	virtual void OnEntityDestroyed(Entity e) = 0;
+	virtual void Clear() = 0;
+
+	virtual size_t Size() const = 0;
+};
+
 template<CompT T>
-class ComponentStorage {
+class ComponentStorage final : public IStorage {
 	static constexpr int INVALID{ -1 };
 
 public:
@@ -103,8 +115,6 @@ public:
 	using iterator = BasicIterator<false>;
 	using const_iterator = BasicIterator<true>;
 
-	size_t Size() const { return _dense.size(); }
-
 	iterator begin() { return iterator(this, 0); }
 	iterator end() { return iterator(this, Size()); }
 
@@ -114,6 +124,21 @@ public:
 	const_iterator cbegin() const { return const_iterator(this, 0); }
 	const_iterator cend() const { return const_iterator(this, Size()); }
 
+public:
+	const Entity& EntityAtDense(size_t i) const { return _entities[i]; }
+
+	int DenseIndex(Entity entity) const
+	{
+		if (entity.id >= _sparse.size()) return INVALID;
+
+		const int di = _sparse[entity.id];
+		const bool invalidCheck =
+			(di == INVALID) ||
+			(_entities[di] != entity);
+
+		if (invalidCheck) return INVALID;
+		else return di;
+	}
 
 public:
 	T* AddComponent(Entity entity)
@@ -144,9 +169,9 @@ public:
 	{
 		if (entity.id >= _sparse.size()) return nullptr;
 
-		int di = _sparse[entity.id];
+		const int di = _sparse[entity.id];
 		const bool invalidCheck =
-			(di == INVALIE) ||				 // valid check
+			(di == INVALID) ||				 // valid check
 			(_entities[di] != entity);		 // generation check
 
 		if (invalidCheck) return nullptr;
@@ -157,9 +182,9 @@ public:
 	{
 		if (entity.id >= _sparse.size()) return nullptr;
 
-		int di = _sparse[entity.id];
+		const int di = _sparse[entity.id];
 		const bool invalidCheck =
-			(di == INVALIE) ||				 // valid check
+			(di == INVALID) ||				 // valid check
 			(_entities[di] != entity);		 // generation check
 
 		if (invalidCheck) return nullptr;
@@ -191,22 +216,28 @@ public:
 		return GetComponent(entity) != nullptr;
 	}
 
-	const std::vector<T>& Dense()    const { return _dense; }
-	std::vector<T>& Dense() { return _dense; }
-	const std::vector<Entity>& Entities() const { return _entities; }
-	std::vector<Entity>& Entities() { return _entities; }
+public:
 
-	int DenseIndex(Entity entity) const
+	virtual void OnEntityDestroyed(Entity e) override
 	{
-		if (entity.id >= _sparse.size()) return INVALID;
+		if (e.id < _sparse.size())
+		{
+			const int di = _sparse[e.id];
+			if (di != INVALID && _entities[di] == e)
+				RemoveComponent(e);
+		}
+	}
 
-		const int di = _sparse[entity.id];
-		const bool invalidCheck =
-			(di == INVALID) ||
-			(_entities[di] != entity);
+	virtual void Clear() override
+	{
+		_dense.clear();
+		_entities.clear();
+		_sparse.clear();
+	}
 
-		if (invalidCheck) return INVALID;
-		else return di;
+	virtual size_t Size() const override
+	{
+		return _dense.size();
 	}
 
 private:
