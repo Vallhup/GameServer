@@ -38,9 +38,11 @@ public:
 	const ComponentStorage<T>& GetStorage() const
 	{
 		const TypeId id = TypeIdOf<T>();
-		if (id >= _storages.size() || !_storages[id])
-			throw std::runtime_error(
-				"const GetStorage<T>() called but storage not created yet.");
+		if (_storages.size() <= id)
+			_storages.resize(id + 1);
+
+		if (!_storages[id])
+			_storages[id] = std::make_unique<ComponentStorage<T>>();
 
 		return static_cast<const ComponentStorage<T>&>(*_storages[id]);
 	}
@@ -49,6 +51,7 @@ public:
 	void Clear();
 
 private:
-	std::vector<std::unique_ptr<IStorage>> _storages;
+	// Storage 생성은 초기화 단계에서만 수행 -> Data Race 방지
+	mutable std::vector<std::unique_ptr<IStorage>> _storages;
 };
 
