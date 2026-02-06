@@ -14,5 +14,5 @@ void ECS::DestroyEntity(Entity e)
 
 bool ECS::IsAlive(Entity e) const
 {
-	_entityMng.IsAlive(e);
+	return _entityMng.IsAlive(e);
 }

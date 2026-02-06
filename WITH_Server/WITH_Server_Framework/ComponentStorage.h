@@ -16,6 +16,7 @@ public:
 	virtual void Clear() = 0;
 
 	virtual size_t Size() const = 0;
+	virtual Entity EntityAt(size_t i) const = 0;
 };
 
 template<CompT T>
@@ -238,6 +239,12 @@ public:
 	virtual size_t Size() const override
 	{
 		return _dense.size();
+	}
+
+	virtual Entity EntityAt(size_t i) const override
+	{
+		assert(i < _entities.size());
+		return _entities[i];
 	}
 
 private:
