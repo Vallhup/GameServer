@@ -70,9 +70,8 @@ private:
 	StorageRegistry _storageRegistry;
 };
 
-// 1. JoinView
-// 2. CommandBuffer
-// 3. Dirty Tracking
-// 4. Resource Registry
-// 5. Access Metadata 구조화
-// 6. Entity Identity 정책
+// 1. CommandBuffer
+// 2. Dirty Tracking
+// 3. Resource Registry
+// 4. Access Metadata 구조화
+// 5. Entity Identity 정책
