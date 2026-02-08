@@ -264,7 +264,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			int id = anim.id();
 			
 			auto it = activeCharacters.find(id);
-			if (it != activeCharacters.end() && it->second != bossObject)
+			if (it != activeCharacters.end())
 			{
 				if (auto animMachine = it->second->GetComponent<AnimationMachine>())
 				{
