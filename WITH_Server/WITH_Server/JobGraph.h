@@ -86,7 +86,7 @@ inline JobNode* JobGraph::CreateNode(Args&&... args)
 	T* job = new T(std::forward<Args>(args)...);
 	_allocatedJobs.push_back(job);
 
-	JobData data{ T::Execute, job};
+	JobData data{ T::Execute, job };
 	JobNode* node = new JobNode(data, this);
 	_nodes.push_back(node);
 

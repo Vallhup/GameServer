@@ -23,19 +23,6 @@ Game::Game(size_t size)
 	ecs.systemMng.RegisterSystem<OutputEventSystem>(ecs, 100);
 
 	graph.Build();
-
-	Entity boss = ecs.entityMng.Create();
-	boss.type = EntityType::Final_Boss;
-
-	auto* transform = ecs.GetStorage<Transform>().AddComponent(boss);
-	transform->position =
-	{ 22.0f, MapCollisionManager::Get().SampleHeightAt(22.0f, 22.0f), 22.0f };
-	ecs.GetStorage<AIState>().AddComponent(boss);
-	ecs.GetStorage<AIThinkState>().AddComponent(boss);
-	ecs.GetStorage<ActionState>().AddComponent(boss);
-	ecs.GetStorage<AttackData>().AddComponent(boss);
-	ecs.GetStorage<Health>().AddComponent(boss);
-	ecs.GetStorage<AttackState>().AddComponent(boss);
 }
 
 void Game::Update(const float dT)
