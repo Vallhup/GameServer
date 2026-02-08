@@ -1,7 +1,7 @@
 ﻿#ifndef PCH_H
 #define PCH_H
 
-#include "Entity.h"
-#include "EntityManager.h"
+#include "ProtocolLib.h"
+#include "WITH_Server_Framework.h"
 
 #endif //PCH_H

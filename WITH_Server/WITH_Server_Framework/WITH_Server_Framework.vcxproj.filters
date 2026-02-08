@@ -5,6 +5,21 @@
     <ClCompile Include="EntityManager.cpp">
       <Filter>ECS\Entity</Filter>
     </ClCompile>
+    <ClCompile Include="SystemManager.cpp">
+      <Filter>ECS\System</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS.cpp">
+      <Filter>ECS\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="StorageRegistry.cpp">
+      <Filter>ECS\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="NetIdAllocator.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="NetIdRegistry.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -20,6 +35,28 @@
     <ClInclude Include="ComponentStorage.h">
       <Filter>ECS\Component</Filter>
     </ClInclude>
+    <ClInclude Include="SystemManager.h">
+      <Filter>ECS\System</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS.h">
+      <Filter>ECS\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicView.h">
+      <Filter>ECS\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="StorageRegistry.h">
+      <Filter>ECS\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="WITH_Server_Framework.h" />
+    <ClInclude Include="System.h">
+      <Filter>ECS\System</Filter>
+    </ClInclude>
+    <ClInclude Include="NetIdAllocator.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="NetIdRegistry.h">
+      <Filter>Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -33,6 +70,15 @@
     </Filter>
     <Filter Include="ECS\System">
       <UniqueIdentifier>{d16764a6-dfb5-40da-b480-641f5d7d9c80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\Core">
+      <UniqueIdentifier>{371696c9-58d4-4dec-a169-0e96fffb7da6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\Utility">
+      <UniqueIdentifier>{9eb60b08-f38c-4149-863c-6dd836af2240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{7e7ec8d2-891a-47c5-83ee-fa96488183e3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

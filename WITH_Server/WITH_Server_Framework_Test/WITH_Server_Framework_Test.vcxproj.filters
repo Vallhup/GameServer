@@ -1,10 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="BasicView_BenchMark.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="NetId_Test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Test">
+      <UniqueIdentifier>{31fdfe9b-727a-4222-9ca7-bfc82c24b25b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

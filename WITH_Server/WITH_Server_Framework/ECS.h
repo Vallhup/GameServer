@@ -75,3 +75,4 @@ private:
 // 3. Resource Registry
 // 4. Access Metadata 구조화
 // 5. Entity Identity 정책
+// 6. Entity Mapping

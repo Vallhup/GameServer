@@ -1,5 +1,7 @@
 #pragma once
 
+#include <concurrent_queue.h>
+
 struct SendBuffer {
 	uint32 size;
 	uint32 capacity;

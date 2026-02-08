@@ -11,6 +11,7 @@ struct Entity
 		: id(i), generation(g) {}
 
 	static constexpr int InvalidId{ std::numeric_limits<int>::min() };
+	static Entity Null() { return Entity{}; }
 	constexpr bool IsNull() const { return id == InvalidId; }
 
 	bool operator==(const Entity& other) const noexcept

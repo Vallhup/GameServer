@@ -165,6 +165,7 @@
     <ClInclude Include="Include\PacketType.h" />
     <ClInclude Include="Include\ProtobufCodec.h" />
     <ClInclude Include="Include\ProtocolLib.h" />
+    <ClInclude Include="NetId.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Protocols\Protocol.pb.h" />
   </ItemGroup>

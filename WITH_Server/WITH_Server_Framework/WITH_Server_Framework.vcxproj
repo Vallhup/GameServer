@@ -72,15 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Library\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(SolutionDir)..\ProtocolLib\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Library\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(SolutionDir)..\ProtocolLib\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Library\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(SolutionDir)..\ProtocolLib\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Library\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(SolutionDir)..\ProtocolLib\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -153,18 +161,31 @@
   <ItemGroup>
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentStorage.h" />
+    <ClInclude Include="ECS.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="BasicView.h" />
+    <ClInclude Include="NetIdAllocator.h" />
+    <ClInclude Include="NetIdRegistry.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="StorageRegistry.h" />
+    <ClInclude Include="SystemManager.h" />
+    <ClInclude Include="WITH_Server_Framework.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ECS.cpp" />
     <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="NetIdAllocator.cpp" />
+    <ClCompile Include="NetIdRegistry.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="StorageRegistry.cpp" />
+    <ClInclude Include="System.h" />
+    <ClCompile Include="SystemManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

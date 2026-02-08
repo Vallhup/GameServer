@@ -33,6 +33,9 @@
     <ClInclude Include="Include\EntityType.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="NetId.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Codec">
