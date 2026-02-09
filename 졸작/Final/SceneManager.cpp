@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "SceneManager.h"
+#include "Engine.h"
 #include "Importer.h"
 #include "Input.h"
 #include "Timer.h"
@@ -11,6 +12,7 @@
 #include "Camera.h"
 #include "Material.h"
 #include "ResourceManager.h"
+#include "UIManager.h"
 
 SceneManager::~SceneManager()
 {
@@ -130,6 +132,7 @@ void SceneManager::SceneStart(DX12Core& core)
     mCurrentScene->SetSceneManager(this);
     Material::InitializeBindlessSystem(core.GetDevice());
     mCurrentScene->Initialize(hwnd, core);
+    UI_MANAGER->SetCurrentScene(currSceneType);
 
     core.SetBackgroundColor(mCurrentScene->GetBackgroundColor());
 }
@@ -157,6 +160,7 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
     mCurrentScene->Initialize(hwnd, core);
+    UI_MANAGER->SetCurrentScene(nextSceneType);
     currSceneType = nextSceneType;
 
     core.FlushCommandQueue();

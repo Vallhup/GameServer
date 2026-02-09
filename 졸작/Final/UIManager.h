@@ -15,11 +15,6 @@ struct UIFontData {
 struct UITextureData {
 	UINT heapIndex;
 	ComPtr<ID3D12Resource> resource;
-
-	float fadeAlpha = 0.0f;
-	float fadeDuration = 0.0f;
-	float fadeElapsed = 0.0f;
-	bool fading = false;
 };
 
 class UIManager
@@ -30,11 +25,19 @@ public:
 	void Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp);
 	void Release();
 
-	void AddComponent(shared_ptr<UIComponent> comp);
-	void SetCurrentScene(SceneType scene) { currentScene = scene; }
+	void AddUIComponent(shared_ptr<UIComponent> comp);
+	
+	template<typename T>
+	T* GetUIComponent(const wstring& name);
 
+	void SetCurrentScene(SceneType scene) { currentScene = scene; }
+	UITextureData* GetUITexture(const wstring& name);
+	DescriptorHeap* GetUISrvHeap() const { return uiSrvHeap.get(); }
+
+private:
 	void RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
 	void RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
+	void RegisterComponents();
 
 private:
 	unique_ptr<GraphicsMemory> graphicsMemory;
@@ -49,3 +52,18 @@ private:
 
 	static UINT nextIndex;
 };
+
+template<typename T>
+inline T* UIManager::GetUIComponent(const wstring& name)
+{
+	for (auto& comp : sceneUIMap[currentScene])
+	{
+		if (T* casted = dynamic_cast<T*>(comp.get()))
+		{
+			if (casted->GetUIName() == name)
+				return casted;
+		}
+	}
+
+	return nullptr;
+}

@@ -8,6 +8,7 @@
 #include "SceneManager.h"
 #include "GameScene.h"
 #include "MainCharacter.h"
+#include "PanelUI.h"
 
 UINT UIManager::nextIndex = 0;
 
@@ -40,11 +41,10 @@ void UIManager::Initialize(DX12Core& core)
 
 	spriteBatch = make_unique<SpriteBatch>(core.GetDevice(), resourceUpload, pd, nullptr);
 
-	// Registering Font
 	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);
-
-	// Registering Texture
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);
+
+	RegisterComponents();
 
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
 	uploadFinished.wait();
@@ -52,16 +52,18 @@ void UIManager::Initialize(DX12Core& core)
 
 void UIManager::Update(float deltaTime)
 {
-	for (auto& [name, tex] : uiTextureMap)
+	// Temporarily
+	if (INPUT.GetKeyDown('K'))
 	{
-		if (tex.fading)
-		{
-			tex.fadeElapsed += deltaTime;
-			tex.fadeAlpha = clamp(tex.fadeElapsed / tex.fadeDuration, 0.0f, 1.0f);
+		auto status = GetUIComponent<PanelUI>(L"Status");
+		if (status)
+			status->Toggle();
+	}
 
-			if (tex.fadeAlpha >= 1.0f)
-				tex.fading = false;
-		}
+	for (auto& comp : sceneUIMap[currentScene])
+	{
+		if (comp->IsVisible())
+			comp->Update(deltaTime);
 	}
 }
 
@@ -133,7 +135,7 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 
 	for (auto& comp : sceneUIMap[currentScene])
 	{
-		if (comp->Isvisible())
+		if (comp->IsVisible())
 			comp->Render(spriteBatch.get());
 	}
 
@@ -150,10 +152,16 @@ void UIManager::Release()
 	graphicsMemory.reset();
 }
 
-void UIManager::AddComponent(shared_ptr<UIComponent> comp)
+void UIManager::AddUIComponent(shared_ptr<UIComponent> comp)
 {
 	SceneType scene = comp->GetOwnerSceneType();
 	sceneUIMap[scene].push_back(comp);
+}
+
+UITextureData* UIManager::GetUITexture(const wstring& name)
+{
+	auto it = uiTextureMap.find(name);
+	return (it != uiTextureMap.end()) ? &it->second : nullptr;
 }
 
 void UIManager::RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload)
@@ -181,4 +189,15 @@ void UIManager::RegisterUITexture(const wstring& name, const wchar_t* path, DX12
 	CreateShaderResourceView(core.GetDevice(), tex.resource.Get(), uiSrvHeap->GetCpuHandle(tex.heapIndex));
 	
 	nextIndex++;
+}
+
+void UIManager::RegisterComponents()
+{
+#pragma region GameScene UI
+	auto statusPanel = make_shared<PanelUI>(L"Status");
+	statusPanel->Init(this, SceneType::MainGame);
+	statusPanel->SetPosition(300.f, 150.f);
+	statusPanel->SetScale(0.5f);
+	AddUIComponent(statusPanel);
+#pragma endregion
 }

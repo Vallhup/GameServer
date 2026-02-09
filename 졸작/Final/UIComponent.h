@@ -12,12 +12,23 @@ public:
 	virtual void Render(SpriteBatch* batch) = 0;
 
 	void SetVisible(bool in) { visible = in; }
-	bool Isvisible() const { return visible; }
+	bool IsVisible() const { return visible; }
 	SceneType GetOwnerSceneType() const { return ownerScene; }
+	const wstring& GetUIName() const { return uiName; }
+
+	void SetPosition(float x, float y);
+	void SetScale(float scl);
 
 protected:
 	UIManager* uiManager = nullptr;
 	SceneType ownerScene;
-	bool visible = true;
+
+	// [LAW] uiName = TextureName
+	wstring uiName;
+	bool visible = false;
+
+	// UI transform
+	float posX = 0.f, posY = 0.f;
+	float scale = 1.f;
 };
 

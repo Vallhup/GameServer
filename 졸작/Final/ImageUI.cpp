@@ -5,6 +5,6 @@ void ImageUI::Update(float deltaTime)
 {
 }
 
-void ImageUI::Render()
+void ImageUI::Render(SpriteBatch* batch)
 {
 }

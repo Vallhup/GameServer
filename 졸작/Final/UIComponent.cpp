@@ -8,3 +8,14 @@ void UIComponent::Init(UIManager* manager, SceneType scene)
 	uiManager = manager;
 	ownerScene = scene;
 }
+
+void UIComponent::SetPosition(float x, float y)
+{
+	posX = x;
+	posY = y;
+}
+
+void UIComponent::SetScale(float scl)
+{
+	scale = scl;
+}
