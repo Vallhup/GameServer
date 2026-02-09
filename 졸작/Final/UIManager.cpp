@@ -9,6 +9,7 @@
 #include "GameScene.h"
 #include "MainCharacter.h"
 #include "PanelUI.h"
+#include "TextUI.h"
 
 UINT UIManager::nextIndex = 0;
 
@@ -164,6 +165,12 @@ UITextureData* UIManager::GetUITexture(const wstring& name)
 	return (it != uiTextureMap.end()) ? &it->second : nullptr;
 }
 
+UIFontData* UIManager::GetFont(const wstring& name)
+{
+	auto it = uiFontMap.find(name);
+	return (it != uiFontMap.end()) ? &it->second : nullptr;
+}
+
 void UIManager::RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload)
 {
 	if (nextIndex >= 31) return;
@@ -199,5 +206,12 @@ void UIManager::RegisterComponents()
 	statusPanel->SetPosition(300.f, 150.f);
 	statusPanel->SetScale(0.5f);
 	AddUIComponent(statusPanel);
+
+	auto testText = make_shared<TextUI>(L"TestText", L"MalgunGothic");
+	testText->Init(this, SceneType::MainGame);
+	testText->SetText(L"Hello World");
+	testText->SetPosition(100.f, 100.f);
+	testText->SetVisible(true);
+	AddUIComponent(testText);
 #pragma endregion
 }

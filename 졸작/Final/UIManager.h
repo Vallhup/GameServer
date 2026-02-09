@@ -32,6 +32,7 @@ public:
 
 	void SetCurrentScene(SceneType scene) { currentScene = scene; }
 	UITextureData* GetUITexture(const wstring& name);
+	UIFontData* GetFont(const wstring& name);
 	DescriptorHeap* GetUISrvHeap() const { return uiSrvHeap.get(); }
 
 private:
