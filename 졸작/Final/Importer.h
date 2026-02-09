@@ -108,6 +108,7 @@ class Importer
 {
 public:
     bool LoadModel(const wstring& basePath);
+    bool LoadModel2(const wstring& basePath);
     bool LoadAllCollisionMeshes(const wstring& basePath);
     bool LoadMaterialOnly(const wstring& basePath);
     void Release();

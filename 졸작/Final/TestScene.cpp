@@ -57,26 +57,26 @@ void TestScene::InitializeLogic()
 
 void TestScene::UpdateScene(const float deltaTime)
 {	
-	for (const auto& obj : gameObjects)
+	/*for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
 
 	if (cam)
-		cam->Update(*coreRef, deltaTime, gameObjects, {}, knight);
+		cam->Update(*coreRef, deltaTime, gameObjects, {}, knight);*/
 }
 
 void TestScene::RenderSceneDeferred()
 {
-	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
+	//sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 }
 
 void TestScene::RenderSceneForward()
 {
-	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
+	//sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
 void TestScene::RenderSceneShadow()
 {
-	sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
+	//sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
 }
 
 void TestScene::RenderSceneEffects()
@@ -85,9 +85,21 @@ void TestScene::RenderSceneEffects()
 
 void TestScene::RequestSceneChange()
 {
-	if (INPUT.GetKeyDown(VK_TAB))
+	if (INPUT.GetMouseButton(MouseButton::LEFT) ||
+		INPUT.GetMouseButton(MouseButton::RIGHT))
 	{
 		if (sManagerRef)
 			sManagerRef->RequestSceneChange(SceneType::Login);
+		return;
+	}
+
+	for (int key = 0x08; key <= 0xFE; key++)
+	{
+		if (GetAsyncKeyState(key) & 0x8000)
+		{
+			if (sManagerRef)
+				sManagerRef->RequestSceneChange(SceneType::Login);
+			return;
+		}
 	}
 }

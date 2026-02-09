@@ -10,6 +10,7 @@
 #include "MainCharacter.h"
 #include "PanelUI.h"
 #include "TextUI.h"
+#include "ImageUI.h"
 
 UINT UIManager::nextIndex = 0;
 
@@ -42,8 +43,10 @@ void UIManager::Initialize(DX12Core& core)
 
 	spriteBatch = make_unique<SpriteBatch>(core.GetDevice(), resourceUpload, pd, nullptr);
 
-	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);
-	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);
+	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);	// ∏º¿∫∞ÌµÒ
+	RegisterUITexture(L"MainPage", L"../Assets/UI/Textures/MainPage.png", core, resourceUpload);		// ∏ﬁ¿Œ»≠∏È
+	RegisterUITexture(L"PAB", L"../Assets/UI/Textures/PAB.png", core, resourceUpload);					// PRESS ANY BUTTON
+	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);			// Ω∫≈»√¢
 
 	RegisterComponents();
 
@@ -200,6 +203,26 @@ void UIManager::RegisterUITexture(const wstring& name, const wchar_t* path, DX12
 
 void UIManager::RegisterComponents()
 {
+#pragma region TestScene UI
+	auto mainImage = make_shared<ImageUI>(L"MainPage");
+	mainImage->Init(this, SceneType::Start);
+	mainImage->SetHoriLength(WinSize.x);
+	mainImage->SetVertLength(WinSize.y);
+	mainImage->SetVisible(true);
+	AddUIComponent(mainImage);
+
+	auto pabImage = make_shared<ImageUI>(L"PAB");
+	pabImage->Init(this, SceneType::Start);
+	pabImage->SetPosition((WinSize.x - 350.0f) / 2.f, WinSize.y * 0.7f);
+	pabImage->SetHoriLength(350.f);
+	pabImage->SetVertLength(60.0f);
+	AddUIComponent(pabImage);
+
+	mainImage->SetOnFadeComplete([pabImage]() {
+		pabImage->SetVisible(true);
+		pabImage->SetPulsing(true); });
+#pragma endregion
+
 #pragma region GameScene UI
 	auto statusPanel = make_shared<PanelUI>(L"Status");
 	statusPanel->Init(this, SceneType::MainGame);
