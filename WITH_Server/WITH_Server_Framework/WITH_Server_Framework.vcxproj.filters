@@ -57,6 +57,12 @@
     <ClInclude Include="NetIdRegistry.h">
       <Filter>Network</Filter>
     </ClInclude>
+    <ClInclude Include="EventQueue.h">
+      <Filter>ECS\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="EventRegistry.h">
+      <Filter>ECS\Event</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -79,6 +85,9 @@
     </Filter>
     <Filter Include="Network">
       <UniqueIdentifier>{7e7ec8d2-891a-47c5-83ee-fa96488183e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\Event">
+      <UniqueIdentifier>{fa67a4c0-e67c-4f90-8196-5908953c743f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

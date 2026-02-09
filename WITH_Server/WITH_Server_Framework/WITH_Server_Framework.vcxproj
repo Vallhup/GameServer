@@ -165,6 +165,8 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="BasicView.h" />
+    <ClInclude Include="EventQueue.h" />
+    <ClInclude Include="EventRegistry.h" />
     <ClInclude Include="NetIdAllocator.h" />
     <ClInclude Include="NetIdRegistry.h" />
     <ClInclude Include="pch.h" />
