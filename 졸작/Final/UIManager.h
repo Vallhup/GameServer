@@ -1,9 +1,9 @@
 #pragma once
 #include <DescriptorHeap.h>
-#include <SpriteBatch.h>
 #include <SpriteFont.h>
 #include <ResourceUploadBatch.h>
 #include <GraphicsMemory.h>
+#include "UIComponent.h"
 
 class DX12Core;
 
@@ -30,6 +30,9 @@ public:
 	void Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp);
 	void Release();
 
+	void AddComponent(shared_ptr<UIComponent> comp);
+	void SetCurrentScene(SceneType scene) { currentScene = scene; }
+
 	void RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
 	void RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
 
@@ -40,6 +43,9 @@ private:
 
 	unordered_map<wstring, UIFontData> uiFontMap;
 	unordered_map<wstring, UITextureData> uiTextureMap;
+
+	unordered_map<SceneType, vector<shared_ptr<UIComponent>>> sceneUIMap;
+	SceneType currentScene;
 
 	static UINT nextIndex;
 };

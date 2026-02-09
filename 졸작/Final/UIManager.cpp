@@ -73,66 +73,71 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 	spriteBatch->SetViewport(vp);
 	spriteBatch->Begin(cmdList);
 
-	static bool status = false;
+	//static bool status = false;
 
-	if (INPUT.GetKeyDown('K'))
+	//if (INPUT.GetKeyDown('K'))
+	//{
+	//	status = !status;
+	//	if (status)
+	//	{
+	//		auto& statusTex = uiTextureMap[L"Status"];
+	//		statusTex.fadeElapsed = 0.0f;
+	//		statusTex.fadeDuration = 2.0f;
+	//		statusTex.fadeAlpha = 0.0f;
+	//		statusTex.fading = true;
+	//	}
+	//}
+
+	//if (status)
+	//{
+	//	auto& statusTex = uiTextureMap[L"Status"];
+
+	//	XMUINT2 texSize = GetTextureSize(statusTex.resource.Get());
+	//	RECT destRect = { 0, 0, static_cast<LONG>(texSize.x * 0.5f), static_cast<LONG>(texSize.y * 0.5f) };
+	//	XMVECTOR color = XMVectorSet(1.0f, 1.0f, 1.0f, statusTex.fadeAlpha);
+	//	spriteBatch->Draw(uiSrvHeap->GetGpuHandle(statusTex.heapIndex), texSize, destRect, color);
+	//}
+
+	//auto& font = uiFontMap[L"MalgunGothic"].font;
+	////XMVECTOR textSize = font->MeasureString(L"Hello, I'm JeongHo Lee");
+	////XMFLOAT2 origin(XMVectorGetX(textSize) / 2.f, XMVectorGetY(textSize) / 2.f);
+	////XMFLOAT2 pos(vp.Width / 2.f, vp.Height / 2.f);
+	////font->DrawString(spriteBatch.get(), L"Hello, I'm JeongHo Lee", pos, Colors::White, 0.f, origin);
+
+	//if (SCENE_MANAGER->GetCurrentSceneType() == SceneType::MainGame)
+	//{
+	//	auto player = static_cast<GameScene*>(SCENE_MANAGER->GetCurrentScene())->GetMyPlayer();
+	//	auto cam = SCENE_MANAGER->GetCurrentScene()->GetCamera();
+	//	auto camPos = cam->GetPosition();
+
+	//	auto playerPos = player->GetComponent<Transform>()->GetPosition();
+	//	playerPos.y += 2.2f;
+
+	//	XMMATRIX view = cam->GetViewMatrix();
+	//	XMMATRIX proj = cam->GetProjectionMatrix();
+
+	//	XMVECTOR screenPos = XMVector3Project(XMLoadFloat3(&playerPos),
+	//		vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height,
+	//		vp.MinDepth, vp.MaxDepth, proj, view, XMMatrixIdentity());
+
+	//	XMFLOAT3 screen;
+	//	XMStoreFloat3(&screen, screenPos);
+
+	//	XMVECTOR textSize2 = font->MeasureString(L"Health Bar");
+	//	XMFLOAT2 origin2(XMVectorGetX(textSize2) / 2.f, XMVectorGetY(textSize2) / 2.f);
+	//	XMFLOAT2 pos2(screen.x, screen.y);
+	//	float dist = XMVectorGetX(XMVector3Length(XMLoadFloat3(&playerPos) - XMLoadFloat3(&camPos)));
+	//	float scale = 4.5f / dist;
+	//	font->DrawString(spriteBatch.get(), L"Health Bar", pos2, Colors::White, 0.f, origin2, scale);
+	//}
+
+	for (auto& comp : sceneUIMap[currentScene])
 	{
-		status = !status;
-		if (status)
-		{
-			auto& statusTex = uiTextureMap[L"Status"];
-			statusTex.fadeElapsed = 0.0f;
-			statusTex.fadeDuration = 4.0f;
-			statusTex.fadeAlpha = 0.0f;
-			statusTex.fading = true;
-		}
-	}
-
-	if (status)
-	{
-		auto& statusTex = uiTextureMap[L"Status"];
-
-		XMUINT2 texSize = GetTextureSize(statusTex.resource.Get());
-		RECT destRect = { 0, 0, static_cast<LONG>(texSize.x * 0.5f), static_cast<LONG>(texSize.y * 0.5f) };
-		XMVECTOR color = XMVectorSet(1.0f, 1.0f, 1.0f, statusTex.fadeAlpha);
-		spriteBatch->Draw(uiSrvHeap->GetGpuHandle(statusTex.heapIndex), texSize, destRect, color);
-	}
-
-	auto& font = uiFontMap[L"MalgunGothic"].font;
-	//XMVECTOR textSize = font->MeasureString(L"Hello, I'm JeongHo Lee");
-	//XMFLOAT2 origin(XMVectorGetX(textSize) / 2.f, XMVectorGetY(textSize) / 2.f);
-	//XMFLOAT2 pos(vp.Width / 2.f, vp.Height / 2.f);
-	//font->DrawString(spriteBatch.get(), L"Hello, I'm JeongHo Lee", pos, Colors::White, 0.f, origin);
-
-	if (SCENE_MANAGER->GetCurrentSceneType() == SceneType::MainGame)
-	{
-		auto player = static_cast<GameScene*>(SCENE_MANAGER->GetCurrentScene())->GetMyPlayer();
-		auto cam = SCENE_MANAGER->GetCurrentScene()->GetCamera();
-		auto camPos = cam->GetPosition();
-
-		auto playerPos = player->GetComponent<Transform>()->GetPosition();
-		playerPos.y += 2.2f;
-
-		XMMATRIX view = cam->GetViewMatrix();
-		XMMATRIX proj = cam->GetProjectionMatrix();
-
-		XMVECTOR screenPos = XMVector3Project(XMLoadFloat3(&playerPos),
-			vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height,
-			vp.MinDepth, vp.MaxDepth, proj, view, XMMatrixIdentity());
-
-		XMFLOAT3 screen;
-		XMStoreFloat3(&screen, screenPos);
-
-		XMVECTOR textSize2 = font->MeasureString(L"Health Bar");
-		XMFLOAT2 origin2(XMVectorGetX(textSize2) / 2.f, XMVectorGetY(textSize2) / 2.f);
-		XMFLOAT2 pos2(screen.x, screen.y);
-		float dist = XMVectorGetX(XMVector3Length(XMLoadFloat3(&playerPos) - XMLoadFloat3(&camPos)));
-		float scale = 4.5f / dist;
-		font->DrawString(spriteBatch.get(), L"Health Bar", pos2, Colors::White, 0.f, origin2, scale);
+		if (comp->Isvisible())
+			comp->Render(spriteBatch.get());
 	}
 
 	spriteBatch->End();
-
 	graphicsMemory->Commit(cmdQueue);
 }
 
@@ -143,6 +148,12 @@ void UIManager::Release()
 	spriteBatch.reset();
 	uiSrvHeap.reset();
 	graphicsMemory.reset();
+}
+
+void UIManager::AddComponent(shared_ptr<UIComponent> comp)
+{
+	SceneType scene = comp->GetOwnerSceneType();
+	sceneUIMap[scene].push_back(comp);
 }
 
 void UIManager::RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload)
