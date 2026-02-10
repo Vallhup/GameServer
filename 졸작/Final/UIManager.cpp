@@ -46,6 +46,8 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);	// ∏º¿∫∞ÌµÒ
 	RegisterUITexture(L"MainPage", L"../Assets/UI/Textures/MainPage.png", core, resourceUpload);		// ∏ﬁ¿Œ»≠∏È
 	RegisterUITexture(L"PAB", L"../Assets/UI/Textures/PAB.png", core, resourceUpload);					// PRESS ANY BUTTON
+	RegisterUITexture(L"LOGIN", L"../Assets/UI/Textures/LOGIN.png", core, resourceUpload);
+	RegisterUITexture(L"EXIT", L"../Assets/UI/Textures/EXIT.png", core, resourceUpload);
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);			// Ω∫≈»√¢
 
 	RegisterComponents();
@@ -213,14 +215,38 @@ void UIManager::RegisterComponents()
 
 	auto pabImage = make_shared<ImageUI>(L"PAB");
 	pabImage->Init(this, SceneType::Start);
-	pabImage->SetPosition((WinSize.x - 350.0f) / 2.f, WinSize.y * 0.7f);
-	pabImage->SetHoriLength(350.f);
-	pabImage->SetVertLength(60.0f);
+	pabImage->SetPosition((WinSize.x * 0.727f) / 2.f, WinSize.y * 0.7f);
+	pabImage->SetHoriLength(WinSize.x * 0.273f);
+	pabImage->SetVertLength(WinSize.y * 0.083f);
 	AddUIComponent(pabImage);
+
+	auto loginImage = make_shared<ImageUI>(L"LOGIN");
+	loginImage->Init(this, SceneType::Start);
+	loginImage->SetPosition(WinSize.x * 0.3215f, WinSize.y * 0.7f);
+	loginImage->SetHoriLength(WinSize.x * 0.117f);
+	loginImage->SetVertLength(WinSize.y * 0.1f);
+	AddUIComponent(loginImage);
+
+	auto exitImage = make_shared<ImageUI>(L"EXIT");
+	exitImage->Init(this, SceneType::Start);
+	exitImage->SetPosition(WinSize.x * 0.5615f, WinSize.y * 0.7f);
+	exitImage->SetHoriLength(WinSize.x * 0.117f);
+	exitImage->SetVertLength(WinSize.y * 0.1f);
+	AddUIComponent(exitImage);
 
 	mainImage->SetOnFadeComplete([pabImage]() {
 		pabImage->SetVisible(true);
 		pabImage->SetPulsing(true); });
+
+	pabImage->SetOnPulsing([pabImage, loginImage, exitImage]() {
+		pabImage->SetVisible(false);
+		pabImage->SetPulsing(false);
+
+		loginImage->SetVisible(true);
+		loginImage->SetPulsing(true);
+
+		exitImage->SetVisible(true);
+		exitImage->SetPulsing(true); });
 #pragma endregion
 
 #pragma region GameScene UI

@@ -26,7 +26,26 @@ void ImageUI::Update(float deltaTime)
 	{
 		pulseTime += deltaTime * pulseSpeed;
 		float t = (sin(pulseTime) + 1.0f) / 2.0f;
-		fadeAlpha = 0.1f + t * 0.9f;
+		fadeAlpha = 0.01f + t * 0.99f;
+
+		BYTE keyState[256];
+		bool anyInput = false;
+		if (GetKeyboardState(keyState))
+		{
+			for (int vk = 0x01; vk <= 0xFE; vk++)
+			{
+				if (keyState[vk] & 0x80)
+				{
+					anyInput = true;
+					break;
+				}
+			}
+		}
+
+		if (anyInput && onPulsing)
+		{
+			onPulsing();
+		}
 	}
 }
 
@@ -54,8 +73,11 @@ void ImageUI::Render(SpriteBatch* batch)
 
 void ImageUI::SetPulsing(bool enable)
 {
-	pulsing = enable; 
+	pulsing = enable;
 
-	if (enable) 
-		pulseTime = XM_PIDIV2;
+	if (enable)
+	{
+		firstRender = false;
+		pulseTime = -XM_PIDIV2;
+	}
 }

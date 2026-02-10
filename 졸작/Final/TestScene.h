@@ -22,8 +22,4 @@ protected:
 	void RenderSceneShadow() override;
 	void RenderSceneEffects() override;
 	void RequestSceneChange() override;
-
-private:
-	vector<shared_ptr<GameObject>> gameObjects;
-	shared_ptr<MainCharacter> knight;
 };

@@ -15,6 +15,7 @@ public:
 	void SetVertLength(float length) { verticalLength = length; }
 
 	void SetOnFadeComplete(function<void()> callback) { onFadeComplete = callback; }
+	void SetOnPulsing(function<void()> callback) { onPulsing = callback; }
 
 	void SetPulsing(bool enable);
 	void SetPulseSpeed(float speed) { pulseSpeed = speed; }
@@ -34,6 +35,7 @@ private:
 	float verticalLength = 0.0f;
 
 	function<void()> onFadeComplete;
+	function<void()> onPulsing;
 
 	bool pulsing = false;
 	float pulseSpeed = 2.0f;

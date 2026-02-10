@@ -15,9 +15,6 @@ void TestScene::Release()
 
 void TestScene::Reset()
 {
-	gameObjects.clear();
-	knight.reset();
-
 	Material::ReleaseUploadBuffers();
 	OutputDebugStringA("TestScene Data has been deleted!! \n----------------------------------------\n");
 }
@@ -36,47 +33,31 @@ void TestScene::InitializeLogic()
 	OutputDebugStringA("----------------------------------------\nTestScene Data has been created!! \n");
 
 	{
-		knight = make_shared<MainCharacter>();
+		auto knight = make_shared<MainCharacter>();
 		auto mesh = knight->AddComponent<Mesh>();
-		auto transform = knight->AddComponent<Transform>();
-		auto animator = knight->AddComponent<Animator>();
 		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
-		transform->SetInitPosition(0.f, 0.f, 0.f);
-		transform->SetRotation(0.f, 0.f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		gameObjects.push_back(knight);
 
 		coreRef->FlushCommandQueue();
 		coreRef->ResetCommandQueue();
 
 		mesh->ReleaseUploadBuffers();
-
-		knight->SetAsLocalPlayer(cam.get());
 	}
 }
 
 void TestScene::UpdateScene(const float deltaTime)
 {	
-	/*for (const auto& obj : gameObjects)
-		obj->Update(deltaTime);
-
-	if (cam)
-		cam->Update(*coreRef, deltaTime, gameObjects, {}, knight);*/
 }
 
 void TestScene::RenderSceneDeferred()
 {
-	//sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 }
 
 void TestScene::RenderSceneForward()
 {
-	//sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
 void TestScene::RenderSceneShadow()
 {
-	//sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
 }
 
 void TestScene::RenderSceneEffects()
@@ -85,21 +66,9 @@ void TestScene::RenderSceneEffects()
 
 void TestScene::RequestSceneChange()
 {
-	if (INPUT.GetMouseButton(MouseButton::LEFT) ||
-		INPUT.GetMouseButton(MouseButton::RIGHT))
+	if (INPUT.GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
 			sManagerRef->RequestSceneChange(SceneType::Login);
-		return;
-	}
-
-	for (int key = 0x08; key <= 0xFE; key++)
-	{
-		if (GetAsyncKeyState(key) & 0x8000)
-		{
-			if (sManagerRef)
-				sManagerRef->RequestSceneChange(SceneType::Login);
-			return;
-		}
 	}
 }
