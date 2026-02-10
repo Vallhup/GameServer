@@ -25,7 +25,7 @@ public:
 private:
     ComPtr<ID3D12DescriptorHeap> srvHeap;
     DX12Core* coreRef = nullptr;
-    bool enabled = true;
+    bool enabled = false;
     bool showDemoWindow = false;
     bool showPerformance = true;
     bool showLightEditor = true;
