@@ -20,6 +20,18 @@
     <ClCompile Include="NetIdRegistry.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIdAllocator.cpp">
+      <Filter>Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldRegistry.cpp">
+      <Filter>Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldScheduler.cpp">
+      <Filter>Game\World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -58,10 +70,25 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="EventQueue.h">
-      <Filter>ECS\Event</Filter>
+      <Filter>Game\Event</Filter>
     </ClInclude>
     <ClInclude Include="EventRegistry.h">
-      <Filter>ECS\Event</Filter>
+      <Filter>Game\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldId.h">
+      <Filter>Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldIdAllocator.h">
+      <Filter>Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldRegistry.h">
+      <Filter>Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldScheduler.h">
+      <Filter>Game\World</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -86,8 +113,14 @@
     <Filter Include="Network">
       <UniqueIdentifier>{7e7ec8d2-891a-47c5-83ee-fa96488183e3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\Event">
+    <Filter Include="Game">
+      <UniqueIdentifier>{445d764b-606f-41a0-b75f-553ba3fd0767}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Event">
       <UniqueIdentifier>{fa67a4c0-e67c-4f90-8196-5908953c743f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World">
+      <UniqueIdentifier>{a81af5f6-72ae-4ae8-bc4b-aabbb8f04c52}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

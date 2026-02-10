@@ -167,16 +167,22 @@
     <ClInclude Include="BasicView.h" />
     <ClInclude Include="EventQueue.h" />
     <ClInclude Include="EventRegistry.h" />
+    <ClInclude Include="World.h" />
     <ClInclude Include="NetIdAllocator.h" />
     <ClInclude Include="NetIdRegistry.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="StorageRegistry.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="WITH_Server_Framework.h" />
+    <ClInclude Include="WorldId.h" />
+    <ClInclude Include="WorldIdAllocator.h" />
+    <ClInclude Include="WorldRegistry.h" />
+    <ClInclude Include="WorldScheduler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="World.cpp" />
     <ClCompile Include="NetIdAllocator.cpp" />
     <ClCompile Include="NetIdRegistry.cpp" />
     <ClCompile Include="pch.cpp">
@@ -186,6 +192,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StorageRegistry.cpp" />
+    <ClCompile Include="WorldIdAllocator.cpp" />
+    <ClCompile Include="WorldRegistry.cpp" />
+    <ClCompile Include="WorldScheduler.cpp" />
     <ClInclude Include="System.h" />
     <ClCompile Include="SystemManager.cpp" />
   </ItemGroup>
