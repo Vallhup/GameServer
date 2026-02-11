@@ -29,6 +29,7 @@ protected:
 
 	// UI transform
 	float posX = 0.f, posY = 0.f;
+	float basePosX = 0.f, basePosY = 0.f;
 	float scale = 1.f;
 };
 

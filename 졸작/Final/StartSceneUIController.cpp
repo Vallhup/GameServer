@@ -4,6 +4,7 @@
 #include "UIManager.h"
 #include "Engine.h"
 #include "Input.h"
+#include "SceneManager.h"
 
 void StartSceneUIController::Init(UIManager* manager)
 {
@@ -60,6 +61,33 @@ void StartSceneUIController::Update(float deltaTime)
 		pabImage->ChangeState(ImageUIState::Hidden);
 		loginImage->ChangeState(ImageUIState::Pulsing);
 		exitImage->ChangeState(ImageUIState::Pulsing);
+	}
+
+	// 3. loginImage 또는 exitImage Pulsing 중 마우스가 이미지 내부에 있으면 확대
+	if (loginImage->GetState() == ImageUIState::Pulsing ||
+		loginImage->GetState() == ImageUIState::Visible)
+	{
+		loginImage->SetHovered(loginImage->IsMouseInside());
+	}
+
+	if (exitImage->GetState() == ImageUIState::Pulsing ||
+		exitImage->GetState() == ImageUIState::Visible)
+	{
+		exitImage->SetHovered(exitImage->IsMouseInside());
+	}
+
+	// 4. loginImage가 확대 된 상태일 때 클릭하면 로그인창 (씬 전환으로 대체)
+	if (loginImage->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+	{
+		SCENE_MANAGER->RequestSceneChange(SceneType::Login);
+		OutputDebugStringA("loginImage clicked!!\n");
+	}
+
+	// 5. exitImage가 확대 된 상태일 때 클릭하면 프로그램 종료
+	if (exitImage->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+	{
+		DestroyWindow(ENGINE.GetHwnd());
+		OutputDebugStringA("exitImage clicked!!\n");
 	}
 }
 

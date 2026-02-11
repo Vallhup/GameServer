@@ -19,7 +19,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
     ClientConnectionListener listener;
 
-    Engine& game = GET(Engine);
+    Engine& game = ENGINE;
     game.Initialize(hwnd, "127.0.0.1", 7000, listener);
 
     MSG msg{};

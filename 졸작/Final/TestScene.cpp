@@ -66,9 +66,9 @@ void TestScene::RenderSceneEffects()
 
 void TestScene::RequestSceneChange()
 {
-	if (INPUT.GetKeyDown(VK_TAB))
+	/*if (INPUT.GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
 			sManagerRef->RequestSceneChange(SceneType::Login);
-	}
+	}*/
 }

@@ -5,6 +5,9 @@ void Input::Renew()
 {
 	mChangeKeyState.reset();
 	mMouseWheelDelta = 0;
+
+	for (int i = 0; i < static_cast<int>(MouseButton::END); ++i)
+		mChangeMouseButtonState[i] = false;
 }
 
 bool Input::GetKey(const size_t key) const
@@ -33,6 +36,12 @@ bool Input::GetMouseButton(const MouseButton button) const
 	return mPressedMouseButtons[static_cast<size_t>(button)];
 }
 
+bool Input::GetMouseButtonDown(const MouseButton button) const
+{
+	size_t idx = static_cast<size_t>(button);
+	return mPressedMouseButtons[idx] && mChangeMouseButtonState[idx];
+}
+
 int Input::GetMouseWheelDelta() const
 {
 	return mMouseWheelDelta;
@@ -46,8 +55,9 @@ void Input::SetKey(const size_t key, const bool pressed)
 
 void Input::SetMouseButton(const MouseButton button, const bool bPressed)
 {
-	size_t mouseidx = static_cast<size_t>(button);
-	mPressedMouseButtons[mouseidx] = bPressed;
+	size_t idx = static_cast<size_t>(button);
+	mChangeMouseButtonState[idx] = (mPressedMouseButtons[idx] != bPressed);
+	mPressedMouseButtons[idx] = bPressed;
 }
 
 void Input::SetMousePosition(const XMFLOAT2 mousePosition)

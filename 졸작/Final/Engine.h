@@ -19,6 +19,8 @@ public:
     void Shutdown();  
     void ShowFps();
 
+    HWND GetHwnd() const { return mHwnd; }
+
     SceneManager* GetSceneManager() const { return sceneManager.get(); }
     NetworkManager* GetNetworkManager() const { return networkManager.get(); }
     SoundManager* GetSoundManager() const { return soundManager.get(); }

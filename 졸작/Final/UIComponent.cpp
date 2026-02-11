@@ -11,8 +11,8 @@ void UIComponent::Init(UIManager* manager, SceneType scene)
 
 void UIComponent::SetPosition(float x, float y)
 {
-	posX = x;
-	posY = y;
+	posX = basePosX = x;
+	posY = basePosY = y;
 }
 
 void UIComponent::SetScale(float scl)

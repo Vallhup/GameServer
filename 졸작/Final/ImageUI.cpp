@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ImageUI.h"
 #include "UIManager.h"
+#include "Input.h"
 #include <DirectXHelpers.h>
 
 ImageUI::ImageUI(const wstring& name, ImageUIState s) : textureName(name), state(s)
@@ -65,6 +66,40 @@ void ImageUI::ChangeState(ImageUIState newState)
 	if (state == newState) return;
 	state = newState;
 	EnterState(newState);
+}
+
+bool ImageUI::IsMouseInside() const
+{
+	const XMFLOAT2& mousePos = INPUT.GetMousePosition();
+	return (mousePos.x >= posX && mousePos.x <= posX + horizontalLength &&
+			mousePos.y >= posY && mousePos.y <= posY + verticalLength);
+}
+
+void ImageUI::SetHovered(bool hover)
+{
+	if (isHovered == hover) return;
+	isHovered = hover;
+
+	if (isHovered)
+	{
+		ChangeState(ImageUIState::Visible);
+
+		float newWidth = baseHoriLength * hoverScale;
+		float newHeight = baseVertLength * hoverScale;
+		posX = basePosX - (newWidth - baseHoriLength) / 2.0f;
+		posY = basePosY - (newHeight - baseVertLength) / 2.0f;
+		horizontalLength = newWidth;
+		verticalLength = newHeight;
+	}
+	else
+	{
+		ChangeState(ImageUIState::Pulsing);
+
+		posX = basePosX;
+		posY = basePosY;
+		horizontalLength = baseHoriLength;
+		verticalLength = baseVertLength;
+	}
 }
 
 void ImageUI::EnterState(ImageUIState newState)

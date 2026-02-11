@@ -18,12 +18,17 @@ public:
 	void Render(SpriteBatch* batch) override;
 
 	void SetFadeDuration(float duration) { fadeDuration = duration; }
-	void SetHoriLength(float length) { horizontalLength = length; }
-	void SetVertLength(float length) { verticalLength = length; }
+	void SetHoriLength(float length) { horizontalLength = baseHoriLength = length; }
+	void SetVertLength(float length) { verticalLength = baseVertLength = length; }
 	void SetPulseSpeed(float speed) { pulseSpeed = speed; }
+	void SetHoverScale(float scale) { hoverScale = scale; }
 
 	void ChangeState(ImageUIState newState);
 	ImageUIState GetState() const { return state; }
+
+	bool IsMouseInside() const;
+	void SetHovered(bool hover);
+	bool IsHovered() const { return isHovered; };
 
 private:
 	void EnterState(ImageUIState newState);
@@ -40,5 +45,10 @@ private:
 
 	float pulseSpeed = 2.0f;
 	float pulseTime = 0.0f;
+
+	bool isHovered = false;
+	float hoverScale = 1.15f;
+	float baseHoriLength = 0.0f;
+	float baseVertLength = 0.0f;
 };
 

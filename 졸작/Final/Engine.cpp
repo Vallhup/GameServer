@@ -35,7 +35,7 @@ void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListe
     IMGUI.Initialize(mHwnd, *graphics);
 
     sceneManager = make_unique<SceneManager>();
-    sceneManager->Initialize(hwnd, *graphics);
+    sceneManager->Initialize(mHwnd, *graphics);
 
     networkManager = make_unique<NetworkManager>();
     networkManager->Initialize(1, ip, port, listener);
