@@ -1,8 +1,11 @@
 #include "pch.h"
 #include "WorldRegistry.h"
 #include "World.h"
+#include "ThreadPool.h"
+#include "WorldFactory.h"
 
-WorldRegistry::WorldRegistry(uint32 reserve)
+WorldRegistry::WorldRegistry(uint32 reserve, ThreadPool& pool, IWorldFactory& factory)
+	: _threadPool(pool), _worldFactory(factory)
 {
 	_worlds.reserve(reserve);
 	_worlds.push_back(WorldSlot{});
@@ -17,11 +20,13 @@ WorldId WorldRegistry::CreateWorld(const WorldDesc& desc)
 	EnsureSlotCapacity(id);
 
 	WorldSlot& slot = _worlds[id];
-
 	assert(slot.world == nullptr);
 
 	slot.gen = gen;
-	slot.world = std::make_unique<World>(wId, desc);
+
+	auto impl = _worldFactory.CreateImpl(desc);
+	slot.world = std::make_unique<World>(wId, desc, _threadPool, std::move(impl));
+	slot.world->Init();
 
 	return wId;
 }
@@ -46,7 +51,7 @@ void WorldRegistry::DestroyWorld(WorldId worldId)
 	_allocator.Free(worldId);
 }
 
-World* WorldRegistry::GetWorld(WorldId worldId)
+IWorld* WorldRegistry::GetWorld(WorldId worldId)
 {
 	if (!worldId.IsValid()) return nullptr;
 
@@ -61,7 +66,7 @@ World* WorldRegistry::GetWorld(WorldId worldId)
 	return slot.world.get();
 }
 
-const World* WorldRegistry::GetWorld(WorldId worldId) const
+const IWorld* WorldRegistry::GetWorld(WorldId worldId) const
 {
 	if (!worldId.IsValid()) return nullptr;
 

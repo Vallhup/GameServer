@@ -21,16 +21,28 @@
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="World.cpp">
-      <Filter>Game\World</Filter>
+      <Filter>Game\World\Core</Filter>
     </ClCompile>
     <ClCompile Include="WorldIdAllocator.cpp">
-      <Filter>Game\World</Filter>
+      <Filter>Game\World\Core</Filter>
     </ClCompile>
     <ClCompile Include="WorldRegistry.cpp">
-      <Filter>Game\World</Filter>
+      <Filter>Game\World\Manager</Filter>
     </ClCompile>
     <ClCompile Include="WorldScheduler.cpp">
-      <Filter>Game\World</Filter>
+      <Filter>Game\World\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="JobGraph.cpp">
+      <Filter>JobGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>JobGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Job.cpp">
+      <Filter>JobGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldRuntime.cpp">
+      <Filter>Game\World\Parameter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,19 +88,40 @@
       <Filter>Game\Event</Filter>
     </ClInclude>
     <ClInclude Include="World.h">
-      <Filter>Game\World</Filter>
+      <Filter>Game\World\Core</Filter>
     </ClInclude>
     <ClInclude Include="WorldId.h">
-      <Filter>Game\World</Filter>
+      <Filter>Game\World\Core</Filter>
     </ClInclude>
     <ClInclude Include="WorldIdAllocator.h">
-      <Filter>Game\World</Filter>
+      <Filter>Game\World\Core</Filter>
     </ClInclude>
     <ClInclude Include="WorldRegistry.h">
-      <Filter>Game\World</Filter>
+      <Filter>Game\World\Manager</Filter>
     </ClInclude>
     <ClInclude Include="WorldScheduler.h">
-      <Filter>Game\World</Filter>
+      <Filter>Game\World\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDesc.h">
+      <Filter>Game\World\Parameter</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldConfig.h">
+      <Filter>Game\World\Parameter</Filter>
+    </ClInclude>
+    <ClInclude Include="Job.h">
+      <Filter>JobGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="JobGraph.h">
+      <Filter>JobGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>JobGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldRuntime.h">
+      <Filter>Game\World\Parameter</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldFactory.h">
+      <Filter>Game\World\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +154,18 @@
     </Filter>
     <Filter Include="Game\World">
       <UniqueIdentifier>{a81af5f6-72ae-4ae8-bc4b-aabbb8f04c52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\Manager">
+      <UniqueIdentifier>{f9aa007d-7d08-47cf-bcba-0abaab167169}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\Parameter">
+      <UniqueIdentifier>{fdf5e158-a6fe-4eca-846a-c0a5568daff2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\Core">
+      <UniqueIdentifier>{0a4f98f4-01b3-4e9b-a3d1-85fd1a4064fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JobGraph">
+      <UniqueIdentifier>{20f28bfd-9995-4570-913a-aecb95f4fae9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
