@@ -33,10 +33,7 @@ void WorldScheduler::Register(WorldId id, uint32 tickRate)
 void WorldScheduler::Unregister(WorldId id)
 {
 	auto it = std::find_if(_entries.begin(), _entries.end(),
-		[&](const Entry& e)
-		{
-			return e.id == id;
-		});
+		[&](const Entry& e) { return e.id == id; });
 
 	if (it != _entries.end())
 		_entries.erase(it);
@@ -49,12 +46,12 @@ void WorldScheduler::Update(const double dT)
 	for (Entry& entry : _entries)
 	{
 		if (entry.paused) continue;
-		
+
 		entry.acc += clampDT;
 
 		if (entry.acc >= entry.tickInterval)
 		{
-			World* world = _reg.GetWorld(entry.id);
+			IWorld* world = _reg.GetWorld(entry.id);
 			if (!world)
 			{
 				entry.paused = true;
@@ -62,7 +59,7 @@ void WorldScheduler::Update(const double dT)
 			}
 
 			world->Update();
-			entry.acc = 
+			entry.acc =
 				std::max<double>(0.0, entry.acc - entry.tickInterval);
 		}
 	}
