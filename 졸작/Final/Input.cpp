@@ -17,6 +17,17 @@ bool Input::GetKeyDown(const size_t key) const
 	return mPressedKeys[key] && mChangeKeyState[key];
 }
 
+bool Input::GetAnyKeyDown() const
+{
+	if ((mPressedKeys & mChangeKeyState).any())
+		return true;
+
+	if (GetMouseButton(MouseButton::LEFT) || GetMouseButton(MouseButton::RIGHT))
+		return true;
+
+	return false;
+}
+
 bool Input::GetMouseButton(const MouseButton button) const
 {
 	return mPressedMouseButtons[static_cast<size_t>(button)];

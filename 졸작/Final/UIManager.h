@@ -3,7 +3,8 @@
 #include <SpriteFont.h>
 #include <ResourceUploadBatch.h>
 #include <GraphicsMemory.h>
-#include "UIComponent.h"
+#include "UIController.h"
+#include "SceneManager.h"
 
 class DX12Core;
 
@@ -25,11 +26,6 @@ public:
 	void Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp);
 	void Release();
 
-	void AddUIComponent(shared_ptr<UIComponent> comp);
-	
-	template<typename T>
-	T* GetUIComponent(const wstring& name);
-
 	void SetCurrentScene(SceneType scene) { currentScene = scene; }
 	UITextureData* GetUITexture(const wstring& name);
 	UIFontData* GetFont(const wstring& name);
@@ -38,7 +34,7 @@ public:
 private:
 	void RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
 	void RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
-	void RegisterComponents();
+	void RegisterControllers();
 
 private:
 	unique_ptr<GraphicsMemory> graphicsMemory;
@@ -48,23 +44,10 @@ private:
 	unordered_map<wstring, UIFontData> uiFontMap;
 	unordered_map<wstring, UITextureData> uiTextureMap;
 
-	unordered_map<SceneType, vector<shared_ptr<UIComponent>>> sceneUIMap;
+	unordered_map<SceneType, unique_ptr<UIController>> controllers;
+
 	SceneType currentScene;
 
 	static UINT nextIndex;
 };
 
-template<typename T>
-inline T* UIManager::GetUIComponent(const wstring& name)
-{
-	for (auto& comp : sceneUIMap[currentScene])
-	{
-		if (T* casted = dynamic_cast<T*>(comp.get()))
-		{
-			if (casted->GetUIName() == name)
-				return casted;
-		}
-	}
-
-	return nullptr;
-}

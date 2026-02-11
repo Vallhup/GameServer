@@ -157,20 +157,29 @@
     <ClCompile Include="UIManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="UIComponent.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="StartSceneUIController.cpp">
+      <Filter>UI\Controller</Filter>
     </ClCompile>
-    <ClCompile Include="ImageUI.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UIController.cpp">
+      <Filter>UI\Controller</Filter>
     </ClCompile>
-    <ClCompile Include="TextUI.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="PanelUI.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="GameSceneUIController.cpp">
+      <Filter>UI\Controller</Filter>
     </ClCompile>
     <ClCompile Include="BarUI.cpp">
-      <Filter>UI</Filter>
+      <Filter>UI\UIType</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageUI.cpp">
+      <Filter>UI\UIType</Filter>
+    </ClCompile>
+    <ClCompile Include="PanelUI.cpp">
+      <Filter>UI\UIType</Filter>
+    </ClCompile>
+    <ClCompile Include="TextUI.cpp">
+      <Filter>UI\UIType</Filter>
+    </ClCompile>
+    <ClCompile Include="UIComponent.cpp">
+      <Filter>UI\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -330,20 +339,29 @@
     <ClInclude Include="UIManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="UIComponent.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="StartSceneUIController.h">
+      <Filter>UI\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="ImageUI.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UIController.h">
+      <Filter>UI\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="TextUI.h">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="PanelUI.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="GameSceneUIController.h">
+      <Filter>UI\Controller</Filter>
     </ClInclude>
     <ClInclude Include="BarUI.h">
-      <Filter>UI</Filter>
+      <Filter>UI\UIType</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageUI.h">
+      <Filter>UI\UIType</Filter>
+    </ClInclude>
+    <ClInclude Include="PanelUI.h">
+      <Filter>UI\UIType</Filter>
+    </ClInclude>
+    <ClInclude Include="TextUI.h">
+      <Filter>UI\UIType</Filter>
+    </ClInclude>
+    <ClInclude Include="UIComponent.h">
+      <Filter>UI\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -486,6 +504,15 @@
     </Filter>
     <Filter Include="UI">
       <UniqueIdentifier>{5773ab61-cdf7-4a5f-9718-27c0ab953626}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Controller">
+      <UniqueIdentifier>{6a87b0ca-3e3f-4b93-a355-6d70b38a7128}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\UIType">
+      <UniqueIdentifier>{b91760ed-b027-4f80-aa5b-46c22e0167ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Base">
+      <UniqueIdentifier>{2c6f86b5-0336-4e90-9afc-36dd169dcc3b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

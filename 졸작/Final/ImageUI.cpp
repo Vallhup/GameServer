@@ -3,61 +3,50 @@
 #include "UIManager.h"
 #include <DirectXHelpers.h>
 
-ImageUI::ImageUI(const wstring& name) : textureName(name)
+ImageUI::ImageUI(const wstring& name, ImageUIState s) : textureName(name), state(s)
 {
 	uiName = name;
+	EnterState(state);
 }
 
 void ImageUI::Update(float deltaTime)
 {
-	if (fading)
+	switch (state)
 	{
+	case ImageUIState::Hidden:
+		break;
+
+	case ImageUIState::FadingIn:
 		fadeElapsed += deltaTime;
 		fadeAlpha = clamp(fadeElapsed / fadeDuration, 0.0f, 1.0f);
-
 		if (fadeAlpha >= 1.0f)
 		{
-			fading = false;
-			if (onFadeComplete) onFadeComplete();
+			ChangeState(ImageUIState::Visible);
 		}
-	}
+		break;
 
-	if (pulsing && !fading)
-	{
+	case ImageUIState::Visible:
+		break;
+
+	case ImageUIState::Pulsing:
 		pulseTime += deltaTime * pulseSpeed;
-		float t = (sin(pulseTime) + 1.0f) / 2.0f;
-		fadeAlpha = 0.01f + t * 0.99f;
+		fadeAlpha = 0.01f + ((sin(pulseTime) + 1.0f) / 2.0f) * 0.99f;
+		break;
 
-		BYTE keyState[256];
-		bool anyInput = false;
-		if (GetKeyboardState(keyState))
+	case ImageUIState::FadingOut:
+		fadeElapsed += deltaTime;
+		fadeAlpha = 1.0f - clamp(fadeElapsed / fadeDuration, 0.0f, 1.0f);
+		if (fadeAlpha <= 0.0f)
 		{
-			for (int vk = 0x01; vk <= 0xFE; vk++)
-			{
-				if (keyState[vk] & 0x80)
-				{
-					anyInput = true;
-					break;
-				}
-			}
+			ChangeState(ImageUIState::Hidden);
 		}
-
-		if (anyInput && onPulsing)
-		{
-			onPulsing();
-		}
+		break;
 	}
 }
 
 void ImageUI::Render(SpriteBatch* batch)
 {
-	if (firstRender)
-	{
-		firstRender = false;
-		fading = true;
-		fadeElapsed = 0.0f;
-		fadeAlpha = 0.0f;
-	}
+	if (state == ImageUIState::Hidden) return;
 
 	auto tex = uiManager->GetUITexture(textureName);
 	if (!tex) return;
@@ -71,13 +60,42 @@ void ImageUI::Render(SpriteBatch* batch)
 	batch->Draw(heap->GetGpuHandle(tex->heapIndex), texSize, destRect, color);
 }
 
-void ImageUI::SetPulsing(bool enable)
+void ImageUI::ChangeState(ImageUIState newState)
 {
-	pulsing = enable;
+	if (state == newState) return;
+	state = newState;
+	EnterState(newState);
+}
 
-	if (enable)
+void ImageUI::EnterState(ImageUIState newState)
+{
+	switch (newState)
 	{
-		firstRender = false;
+	case ImageUIState::Hidden:
+		fadeAlpha = 0.0f;
+		visible = false;
+		break;
+
+	case ImageUIState::FadingIn:
+		fadeElapsed = 0.0f;
+		fadeAlpha = 0.0f;
+		visible = true;
+		break;
+
+	case ImageUIState::Visible:
+		fadeAlpha = 1.0f;
+		visible = true;
+		break;
+
+	case ImageUIState::Pulsing:
 		pulseTime = -XM_PIDIV2;
+		visible = true;
+		break;
+
+	case ImageUIState::FadingOut:
+		fadeElapsed = 0.0f;
+		fadeAlpha = 1.0f;
+		visible = true;
+		break;
 	}
 }

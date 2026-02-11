@@ -22,6 +22,7 @@ public:
 
 	bool GetKey(const size_t key) const;
 	bool GetKeyDown(const size_t key) const;
+	bool GetAnyKeyDown() const;
 
 	const XMFLOAT2& GetMousePosition() { return mMousePos; }
 	bool GetMouseButton(const MouseButton button) const;

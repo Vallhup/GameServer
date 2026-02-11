@@ -1,11 +1,18 @@
 #pragma once
 #include "UIComponent.h"
 
-// 오로지 Image 기반, Text 없음
+enum class ImageUIState {
+	Hidden,
+	FadingIn,
+	Visible,
+	Pulsing,
+	FadingOut,
+};
+
 class ImageUI : public UIComponent
 {
 public:
-	ImageUI(const wstring& name);
+	ImageUI(const wstring& name, ImageUIState s);
 
 	void Update(float deltaTime) override;
 	void Render(SpriteBatch* batch) override;
@@ -13,31 +20,24 @@ public:
 	void SetFadeDuration(float duration) { fadeDuration = duration; }
 	void SetHoriLength(float length) { horizontalLength = length; }
 	void SetVertLength(float length) { verticalLength = length; }
-
-	void SetOnFadeComplete(function<void()> callback) { onFadeComplete = callback; }
-	void SetOnPulsing(function<void()> callback) { onPulsing = callback; }
-
-	void SetPulsing(bool enable);
 	void SetPulseSpeed(float speed) { pulseSpeed = speed; }
 
+	void ChangeState(ImageUIState newState);
+	ImageUIState GetState() const { return state; }
+
 private:
+	void EnterState(ImageUIState newState);
+
 	wstring textureName;
+	ImageUIState state;
 
 	float fadeAlpha = 0.0f;
 	float fadeDuration = 3.0f;
 	float fadeElapsed = 0.0f;
-	bool fading = false;
 
-	bool firstRender = true;
-
-	// ImageUI의 가로 & 세로 길이
 	float horizontalLength = 0.0f;
 	float verticalLength = 0.0f;
 
-	function<void()> onFadeComplete;
-	function<void()> onPulsing;
-
-	bool pulsing = false;
 	float pulseSpeed = 2.0f;
 	float pulseTime = 0.0f;
 };

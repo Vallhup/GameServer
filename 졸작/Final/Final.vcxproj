@@ -216,6 +216,7 @@ exit 0</Command>
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EffectRenderer.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="GameSceneUIController.cpp" />
     <ClCompile Include="GPUBuffer.cpp" />
     <ClCompile Include="ImGuiManager.cpp" />
     <ClCompile Include="Importer.cpp" />
@@ -235,6 +236,7 @@ exit 0</Command>
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="ImageUI.cpp" />
+    <ClCompile Include="StartSceneUIController.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="TextUI.cpp" />
@@ -256,6 +258,7 @@ exit 0</Command>
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="UIComponent.cpp" />
+    <ClCompile Include="UIController.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
   </ItemGroup>
@@ -281,6 +284,7 @@ exit 0</Command>
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EffectRenderer.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="GameSceneUIController.h" />
     <ClInclude Include="GPUBuffer.h" />
     <ClInclude Include="ImGuiManager.h" />
     <ClInclude Include="Importer.h" />
@@ -300,6 +304,7 @@ exit 0</Command>
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="ImageUI.h" />
+    <ClInclude Include="StartSceneUIController.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="TextUI.h" />
@@ -315,6 +320,7 @@ exit 0</Command>
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="UIComponent.h" />
+    <ClInclude Include="UIController.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="VertexIndexBuffer.h" />
   </ItemGroup>
