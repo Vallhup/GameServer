@@ -22,9 +22,11 @@ WorldId WorldRegistry::CreateWorld(const WorldDesc& desc)
 
 	slot.gen = gen;
 	slot.world = std::make_unique<World>(wId, desc);
+
+	return wId;
 }
 
-void WorldRegistry::DetroyWorld(WorldId worldId)
+void WorldRegistry::DestroyWorld(WorldId worldId)
 {
 	if (!worldId.IsValid()) return;
 

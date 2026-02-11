@@ -10,7 +10,7 @@ public:
 	explicit WorldRegistry(uint32 reserve = 256);
 
 	WorldId CreateWorld(const WorldDesc& desc);
-	void DetroyWorld(WorldId worldId);
+	void DestroyWorld(WorldId worldId);
 
 	World* GetWorld(WorldId worldId);
 	const World* GetWorld(WorldId worldId) const;

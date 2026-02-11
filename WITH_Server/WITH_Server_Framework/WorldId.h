@@ -19,8 +19,7 @@ public:
 	constexpr uint32 GetId() const { return uint32(_value & 0xFFFFFFFF); }
 	constexpr uint32 GetGen() const { return uint32((_value >> 32) & 0xFFFFFFFF); }
 
-	constexpr bool operator==(const WorldId& other) { return _value == other._value; }
-	constexpr bool operator!=(const WorldId& other) { return _value != other._value; }
+	constexpr bool operator==(const WorldId& other) const { return _value == other._value; }
 
 private:
 	uint64 _value;
