@@ -1,14 +1,48 @@
 #pragma once
 
-struct WorldDesc;
+#include "WorldId.h"
+#include "WorldDesc.h"
+#include "WorldConfig.h"
+#include "WorldRuntime.h"
 
-class World {
+class IWorld {
 public:
-	World(WorldId id, const WorldDesc& desc);
+	virtual ~IWorld() = default;
 
-	void Init();
-	void Update();
-	void Shutdown();
+	virtual void Init() = 0;
+	virtual void Update(const float dT) = 0;
+	virtual void Shutdown() = 0;
+};
+
+class IWorldImpl {
+public:
+	virtual ~IWorldImpl() = default;
+
+	virtual void Build(WorldRuntime& rt) = 0;
+
+	virtual void ApplyInbox(WorldRuntime& rt, float dT) = 0;
+	virtual void Execute(WorldRuntime& rt, float dT) = 0;
+	virtual void BuildOutbox(WorldRuntime& rt, float dT) = 0;
+	virtual void FlushOutbox(WorldRuntime& rt, float dT) = 0;
+
+	virtual void OnShutdown(WorldRuntime& rt) = 0;
+};
+
+class World final : public IWorld {
+public:
+	World(WorldId id, const WorldDesc& desc, ThreadPool& pool,
+		std::unique_ptr<IWorldImpl> impl);
+
+	virtual void Init() override;
+	virtual void Update(const float dT) override;
+	virtual void Shutdown() override;
+
+private:
+	WorldId _id;
+	WorldDesc _desc;
+
+	WorldRuntime _runtime;
+	std::unique_ptr<IWorldImpl> _impl;
 };
 
 // World 구조 및 구현 상 특징 예상
@@ -17,7 +51,6 @@ public:
 //
 // - World Lifecycle 관리: 생성, 초기화, 업데이트, 종료 등
 //   - WorldDesc(맵, maxPlayers, tickRate등 정적 데이터)
-//   - WorldConfig(동적 설정값)
 //   - WorldRegistry(생성/소멸)
 //   - WorldScheduler(스케줄링)
 //   - 보스 처치/실패 시 월드 종료 및 결과 처리
