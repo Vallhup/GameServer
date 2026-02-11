@@ -2,7 +2,7 @@
 #include "ClientConnectionListener.h"
 #include "Engine.h"
 #include "SceneManager.h"
-#include "GameScene.h"
+#include "SoloGameScene.h"
 
 void ClientConnectionListener::OnConnected(Connection& owner)
 {
@@ -21,7 +21,7 @@ void ClientConnectionListener::OnPacketReceived(Connection& owner, const PacketH
 	{
 		if (Scene* scene = sManager->GetCurrentScene())
 		{
-			if (auto testScene = dynamic_cast<GameScene*>(scene))
+			if (auto testScene = dynamic_cast<SoloGameScene*>(scene))
 				testScene->HandlePacket(header, data);
 		}
 	}

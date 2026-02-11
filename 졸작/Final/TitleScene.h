@@ -1,13 +1,13 @@
 #pragma once
 #include "Scene.h"
 
-class TestScene final : public Scene
+class TitleScene final : public Scene
 {
 public:
-	TestScene() = default;
-	TestScene(const TestScene&) = delete;
-	TestScene& operator=(const TestScene&) = delete;
-	~TestScene();
+	TitleScene() = default;
+	TitleScene(const TitleScene&) = delete;
+	TitleScene& operator=(const TitleScene&) = delete;
+	~TitleScene();
 
 	void Release() override;
 	void Reset() override;

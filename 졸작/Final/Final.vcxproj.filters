@@ -31,9 +31,6 @@
     <ClCompile Include="SceneManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
@@ -46,23 +43,11 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="TestScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="LoginScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="ServerSquareScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="DX12Core.cpp">
       <Filter>DirectX12</Filter>
@@ -181,6 +166,27 @@
     <ClCompile Include="UIComponent.cpp">
       <Filter>UI\Base</Filter>
     </ClCompile>
+    <ClCompile Include="TitleScene.cpp">
+      <Filter>Scene\1. Title</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectScene.cpp">
+      <Filter>Scene\2. Select</Filter>
+    </ClCompile>
+    <ClCompile Include="TownScene.cpp">
+      <Filter>Scene\3. Town</Filter>
+    </ClCompile>
+    <ClCompile Include="SoloGameScene.cpp">
+      <Filter>Scene\4. SoloGame</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiGameScene.cpp">
+      <Filter>Scene\5. MultiGame</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectSceneUIController.cpp">
+      <Filter>UI\Controller</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -213,9 +219,6 @@
     <ClInclude Include="SceneManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Component.h">
       <Filter>Component</Filter>
     </ClInclude>
@@ -225,23 +228,11 @@
     <ClInclude Include="Camera.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="TestScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Transform.h">
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="LoginScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="ServerSquareScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="GameScene.h">
-      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="DX12Core.h">
       <Filter>DirectX12</Filter>
@@ -362,6 +353,27 @@
     </ClInclude>
     <ClInclude Include="UIComponent.h">
       <Filter>UI\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScene.h">
+      <Filter>Scene\1. Title</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectScene.h">
+      <Filter>Scene\2. Select</Filter>
+    </ClInclude>
+    <ClInclude Include="TownScene.h">
+      <Filter>Scene\3. Town</Filter>
+    </ClInclude>
+    <ClInclude Include="SoloGameScene.h">
+      <Filter>Scene\4. SoloGame</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiGameScene.h">
+      <Filter>Scene\5. MultiGame</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectSceneUIController.h">
+      <Filter>UI\Controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -513,6 +525,24 @@
     </Filter>
     <Filter Include="UI\Base">
       <UniqueIdentifier>{2c6f86b5-0336-4e90-9afc-36dd169dcc3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\2. Select">
+      <UniqueIdentifier>{69b3b71e-9ee4-4be9-9079-059e773a30ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\1. Title">
+      <UniqueIdentifier>{9c20e160-7567-4319-b316-77548508eefb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\3. Town">
+      <UniqueIdentifier>{623dc269-42ef-4be0-b757-f385bbc2ebe5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Base">
+      <UniqueIdentifier>{302555da-ea64-4da8-a7b0-f6417d15fa6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\4. SoloGame">
+      <UniqueIdentifier>{8a5228af-b772-4c10-b81a-d1f594f328d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\5. MultiGame">
+      <UniqueIdentifier>{3986df8b-d380-4d3e-b231-40dbb68cff73}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

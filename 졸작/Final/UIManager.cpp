@@ -125,8 +125,8 @@ void UIManager::RegisterUITexture(const wstring& name, const wchar_t* path, DX12
 
 void UIManager::RegisterControllers()
 {
-	controllers[SceneType::Start] = make_unique<StartSceneUIController>();
-	controllers[SceneType::Start]->Init(this);
+	controllers[SceneType::Title] = make_unique<StartSceneUIController>();
+	controllers[SceneType::Title]->Init(this);
 
 	controllers[SceneType::MainGame] = make_unique<GameSceneUIController>();
 	controllers[SceneType::MainGame]->Init(this);

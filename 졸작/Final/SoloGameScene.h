@@ -6,13 +6,13 @@ class VertexIndexBuffer;
 class SkyBox;
 class Terrain;
 
-class GameScene final : public Scene
+class SoloGameScene final : public Scene
 {
 public:
-	GameScene() = default;
-	GameScene(const GameScene&) = delete;
-	GameScene& operator=(const GameScene&) = delete;
-	~GameScene();
+	SoloGameScene() = default;
+	SoloGameScene(const SoloGameScene&) = delete;
+	SoloGameScene& operator=(const SoloGameScene&) = delete;
+	~SoloGameScene();
 
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
 	shared_ptr<MainCharacter> GetMyPlayer() const;

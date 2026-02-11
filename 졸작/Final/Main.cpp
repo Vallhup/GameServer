@@ -22,6 +22,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     Engine& game = ENGINE;
     game.Initialize(hwnd, "127.0.0.1", 7000, listener);
 
+    TIMER.Reset();
+
     MSG msg{};
 
     while (true)

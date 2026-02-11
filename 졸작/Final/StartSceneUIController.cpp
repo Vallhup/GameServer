@@ -12,27 +12,27 @@ void StartSceneUIController::Init(UIManager* manager)
 
 	// MainPage - 전체 화면 배경
 	mainImage = make_shared<ImageUI>(L"MainPage", ImageUIState::FadingIn);
-	mainImage->Init(uiManager, SceneType::Start);
+	mainImage->Init(uiManager, SceneType::Title);
 	mainImage->SetHoriLength(WinSize.x);
 	mainImage->SetVertLength(WinSize.y);
 
 	// PAB - Press Any Button
 	pabImage = make_shared<ImageUI>(L"PAB", ImageUIState::Hidden);
-	pabImage->Init(uiManager, SceneType::Start);
+	pabImage->Init(uiManager, SceneType::Title);
 	pabImage->SetPosition((WinSize.x * 0.727f) / 2.f, WinSize.y * 0.7f);
 	pabImage->SetHoriLength(WinSize.x * 0.273f);
 	pabImage->SetVertLength(WinSize.y * 0.083f);
 
 	// LOGIN 버튼
 	loginImage = make_shared<ImageUI>(L"LOGIN", ImageUIState::Hidden);
-	loginImage->Init(uiManager, SceneType::Start);
+	loginImage->Init(uiManager, SceneType::Title);
 	loginImage->SetPosition(WinSize.x * 0.3215f, WinSize.y * 0.7f);
 	loginImage->SetHoriLength(WinSize.x * 0.117f);
 	loginImage->SetVertLength(WinSize.y * 0.1f);
 
 	// EXIT 버튼
 	exitImage = make_shared<ImageUI>(L"EXIT", ImageUIState::Hidden);
-	exitImage->Init(uiManager, SceneType::Start);
+	exitImage->Init(uiManager, SceneType::Title);
 	exitImage->SetPosition(WinSize.x * 0.5615f, WinSize.y * 0.7f);
 	exitImage->SetHoriLength(WinSize.x * 0.117f);
 	exitImage->SetVertLength(WinSize.y * 0.1f);
@@ -79,7 +79,7 @@ void StartSceneUIController::Update(float deltaTime)
 	// 4. loginImage가 확대 된 상태일 때 클릭하면 로그인창 (씬 전환으로 대체)
 	if (loginImage->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 	{
-		SCENE_MANAGER->RequestSceneChange(SceneType::Login);
+		SCENE_MANAGER->RequestSceneChange(SceneType::Select);
 		OutputDebugStringA("loginImage clicked!!\n");
 	}
 

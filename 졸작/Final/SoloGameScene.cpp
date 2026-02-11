@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "GameScene.h"
+#include "SoloGameScene.h"
 #include "SceneManager.h"
 #include "Input.h"
 #include "MainCharacter.h"
@@ -20,9 +20,9 @@
 #include "EffectRenderer.h"
 #include "EffectManager.h"
 
-GameScene::~GameScene() = default;
+SoloGameScene::~SoloGameScene() = default;
 
-void GameScene::CreateKnightPool()
+void SoloGameScene::CreateKnightPool()
 {
 	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
 	{
@@ -44,7 +44,7 @@ void GameScene::CreateKnightPool()
 	}
 }
 
-void GameScene::CreateBossObject()
+void SoloGameScene::CreateBossObject()
 {
 	bossObject = make_shared<GameObject>();
 	bossObject->SetId(-1);
@@ -61,7 +61,7 @@ void GameScene::CreateBossObject()
 	AddGameObject(bossObject);
 }
 
-void GameScene::CreateMap()
+void SoloGameScene::CreateMap()
 {
 #pragma region Initialize Map Elements
 	InstanceLoader mapLoader;
@@ -106,7 +106,7 @@ void GameScene::CreateMap()
 //#pragma endregion
 }
 
-void GameScene::CreateEffectSamples()
+void SoloGameScene::CreateEffectSamples()
 {
 	struct EffectInfo {
 		u16string name;
@@ -144,14 +144,14 @@ void GameScene::CreateEffectSamples()
 	}
 }
 
-float GameScene::SampleHeightAt(float worldX, float worldZ) const
+float SoloGameScene::SampleHeightAt(float worldX, float worldZ) const
 {
 	if (terrain)
 		return terrain->SampleHeightAt(worldX, worldZ);
 	return 0.0f;
 }
 
-shared_ptr<MainCharacter> GameScene::GetAvailableKnight() const
+shared_ptr<MainCharacter> SoloGameScene::GetAvailableKnight() const
 {
 	for (auto& knight : knightPool)
 	{
@@ -162,17 +162,17 @@ shared_ptr<MainCharacter> GameScene::GetAvailableKnight() const
 	return nullptr;
 }
 
-shared_ptr<MainCharacter> GameScene::GetMyPlayer() const
+shared_ptr<MainCharacter> SoloGameScene::GetMyPlayer() const
 {
 	if (myPlayer)
 		return myPlayer;
 }
 
-void GameScene::Release()
+void SoloGameScene::Release()
 {
 }
 
-void GameScene::Reset()
+void SoloGameScene::Reset()
 {
 	instancingBatches.clear();
 	knightPool.clear();
@@ -181,15 +181,15 @@ void GameScene::Reset()
 	bossObject = nullptr;
 	gameObjects.clear();
 
-	OutputDebugStringA("GameScene Data has been deleted!! \n----------------------------------------\n");
+	OutputDebugStringA("SoloGameScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-void GameScene::AddGameObject(shared_ptr<GameObject> obj)
+void SoloGameScene::AddGameObject(shared_ptr<GameObject> obj)
 {
 	gameObjects.push_back(obj);
 }
 
-void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
+void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 {
 	PacketType type = static_cast<PacketType>(header.type);
 
@@ -317,18 +317,18 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 	}
 }
 
-const float* GameScene::GetBackgroundColor()
+const float* SoloGameScene::GetBackgroundColor()
 {
 	return Colors::Snow;
 }
 
-void GameScene::InitializeSceneObjectPools()
+void SoloGameScene::InitializeSceneObjectPools()
 {
 }
 
-void GameScene::InitializeLogic()
+void SoloGameScene::InitializeLogic()
 {
-	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
+	OutputDebugStringA("----------------------------------------\nSoloGameScene Data has been created!! \n");
 
 	CreateKnightPool();
 
@@ -363,7 +363,7 @@ void GameScene::InitializeLogic()
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
 
-void GameScene::UpdateScene(const float deltaTime)
+void SoloGameScene::UpdateScene(const float deltaTime)
 {
 	/*if (effectObjects.size() > 0 && INPUT.GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
@@ -476,7 +476,7 @@ void GameScene::UpdateScene(const float deltaTime)
 		batch->Update(frustum);
 }
 
-void GameScene::RenderSceneDeferred()
+void SoloGameScene::RenderSceneDeferred()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
 
@@ -528,14 +528,14 @@ void GameScene::RenderSceneDeferred()
 	}
 }
 
-void GameScene::RenderSceneForward()
+void SoloGameScene::RenderSceneForward()
 {
 	skyBox->RenderSkyBox(*coreRef, coreRef->GetGraphicsCmdList());
 
 	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
-void GameScene::RenderSceneShadow()
+void SoloGameScene::RenderSceneShadow()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
 	renderer->RenderShadow(*coreRef, gameObjects);
@@ -546,13 +546,13 @@ void GameScene::RenderSceneShadow()
 	}
 }
 
-void GameScene::RenderSceneEffects()
+void SoloGameScene::RenderSceneEffects()
 {
 	if (cam)
 		EFFECT_MANAGER->Render(*coreRef, cam.get());
 }
 
-void GameScene::RequestSceneChange()
+void SoloGameScene::RequestSceneChange()
 {
 
 }

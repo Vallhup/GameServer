@@ -1,39 +1,39 @@
 #include "pch.h"
-#include "LoginScene.h"
+#include "SelectScene.h"
 #include "SceneManager.h"
 #include "Input.h"
 #include "Material.h"
 #include "MainCharacter.h"
 #include "Animator.h"
 
-LoginScene::~LoginScene() = default;
+SelectScene::~SelectScene() = default;
 
-void LoginScene::Release()
+void SelectScene::Release()
 {
 }
 
-void LoginScene::Reset()
+void SelectScene::Reset()
 {
 	gameObjects.clear();
 	knight.reset();
 	dragon.reset();
 
 	Material::ReleaseUploadBuffers();
-	OutputDebugStringA("LoginScene Data has been deleted!! \n----------------------------------------\n");
+	OutputDebugStringA("SelectScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-const float* LoginScene::GetBackgroundColor()
+const float* SelectScene::GetBackgroundColor()
 {
 	return Colors::MediumAquamarine;
 }
 
-void LoginScene::InitializeSceneObjectPools()
+void SelectScene::InitializeSceneObjectPools()
 {
 }
 
-void LoginScene::InitializeLogic()
+void SelectScene::InitializeLogic()
 {
-	OutputDebugStringA("----------------------------------------\nLoginScene Data has been created!! \n");
+	OutputDebugStringA("----------------------------------------\nSelectScene Data has been created!! \n");
 
 	{
 		knight = make_shared<MainCharacter>();
@@ -75,7 +75,7 @@ void LoginScene::InitializeLogic()
 	}
 }
 
-void LoginScene::UpdateScene(const float deltaTime)
+void SelectScene::UpdateScene(const float deltaTime)
 {
 	if (dragon) {
 		auto animator = dragon->GetComponent<Animator>();
@@ -109,30 +109,30 @@ void LoginScene::UpdateScene(const float deltaTime)
 		cam->Update(*coreRef, deltaTime, gameObjects, {}, knight);
 }
 
-void LoginScene::RenderSceneDeferred()
+void SelectScene::RenderSceneDeferred()
 {
 	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 }
 
-void LoginScene::RenderSceneForward()
+void SelectScene::RenderSceneForward()
 {
 	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
-void LoginScene::RenderSceneShadow()
+void SelectScene::RenderSceneShadow()
 {
 	sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
 }
 
-void LoginScene::RenderSceneEffects()
+void SelectScene::RenderSceneEffects()
 {
 }
 
-void LoginScene::RequestSceneChange()
+void SelectScene::RequestSceneChange()
 {
 	if (INPUT.GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
-			sManagerRef->RequestSceneChange(SceneType::ServerSquare);
+			sManagerRef->RequestSceneChange(SceneType::Town);
 	}
 }

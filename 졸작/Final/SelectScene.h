@@ -1,13 +1,13 @@
 #pragma once
 #include "Scene.h"
 
-class LoginScene final : public Scene
+class SelectScene final : public Scene
 {
 public:
-	LoginScene() = default;
-	LoginScene(const LoginScene&) = delete;
-	LoginScene& operator=(const LoginScene&) = delete;
-	~LoginScene();
+	SelectScene() = default;
+	SelectScene(const SelectScene&) = delete;
+	SelectScene& operator=(const SelectScene&) = delete;
+	~SelectScene();
 
 	void Release() override;
 	void Reset() override;

@@ -1,13 +1,13 @@
 #pragma once
 #include "Scene.h"
 
-class ServerSquareScene final : public Scene
+class TownScene final : public Scene
 {
 public:
-	ServerSquareScene() = default;
-	ServerSquareScene(const ServerSquareScene&) = delete;
-	ServerSquareScene& operator=(const ServerSquareScene&) = delete;
-	~ServerSquareScene();
+	TownScene() = default;
+	TownScene(const TownScene&) = delete;
+	TownScene& operator=(const TownScene&) = delete;
+	~TownScene();
 
 	void Release() override;
 	void Reset() override;
