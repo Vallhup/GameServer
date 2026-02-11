@@ -87,6 +87,23 @@ void GameScene::CreateMap()
 	terrain = make_shared<Terrain>();
 	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/ground", L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
 #pragma endregion
+
+//#pragma region Initialize Map2 Elements
+//	InstanceLoader mapLoader;
+//	mapLoader.Load(L"../Assets/FBXModel/Map2/MapInstanceData.txt");
+//
+//	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
+//		if (instanceData.empty())
+//			continue;
+//
+//		wstring path = L"../Assets/FBXModel/Map2/" + wstring(modelName.begin(), modelName.end());
+//
+//		if (!filesystem::exists(path + L"_0.mesh"))
+//			continue;
+//
+//		CreateAndBatchObjects(path, instanceData, instancingBatches);
+//	}
+//#pragma endregion
 }
 
 void GameScene::CreateEffectSamples()
