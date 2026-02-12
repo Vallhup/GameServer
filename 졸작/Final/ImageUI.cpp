@@ -93,7 +93,7 @@ void ImageUI::SetHovered(bool hover)
 	}
 	else
 	{
-		ChangeState(ImageUIState::Pulsing);
+		ChangeState(ImageUIState::Visible);
 
 		posX = basePosX;
 		posY = basePosY;

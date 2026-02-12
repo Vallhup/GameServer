@@ -16,6 +16,7 @@ void StartSceneUIController::Init(UIManager* manager)
 	mainImage->Init(uiManager, SceneType::Title);
 	mainImage->SetHoriLength(WinSize.x);
 	mainImage->SetVertLength(WinSize.y);
+	mainImage->SetFadeDuration(4.0f);
 
 	// PAB - Press Any Button
 	pabImage = make_shared<ImageUI>(L"PAB", ImageUIState::Hidden);
@@ -30,6 +31,8 @@ void StartSceneUIController::Init(UIManager* manager)
 	loginImage->SetPosition(WinSize.x * 0.3215f, WinSize.y * 0.7f);
 	loginImage->SetHoriLength(WinSize.x * 0.117f);
 	loginImage->SetVertLength(WinSize.y * 0.1f);
+	loginImage->SetFadeDuration(2.0f);
+	loginImage->SetHoverScale(1.1f);
 
 	// EXIT 버튼
 	exitImage = make_shared<ImageUI>(L"EXIT", ImageUIState::Hidden);
@@ -37,6 +40,8 @@ void StartSceneUIController::Init(UIManager* manager)
 	exitImage->SetPosition(WinSize.x * 0.5615f, WinSize.y * 0.7f);
 	exitImage->SetHoriLength(WinSize.x * 0.117f);
 	exitImage->SetVertLength(WinSize.y * 0.1f);
+	exitImage->SetFadeDuration(2.0f);
+	exitImage->SetHoverScale(1.1f);
 }
 
 void StartSceneUIController::Update(float deltaTime)
@@ -60,18 +65,18 @@ void StartSceneUIController::Update(float deltaTime)
 	if (pabImage->GetState() == ImageUIState::Pulsing && INPUT.GetAnyKeyDown())
 	{
 		pabImage->ChangeState(ImageUIState::Hidden);
-		loginImage->ChangeState(ImageUIState::Pulsing);
-		exitImage->ChangeState(ImageUIState::Pulsing);
+		loginImage->ChangeState(ImageUIState::FadingIn);
+		exitImage->ChangeState(ImageUIState::FadingIn);
 	}
 
 	// 3. loginImage 또는 exitImage Pulsing 중 마우스가 이미지 내부에 있으면 확대
-	if (loginImage->GetState() == ImageUIState::Pulsing ||
+	if (loginImage->GetState() == ImageUIState::FadingIn ||
 		loginImage->GetState() == ImageUIState::Visible)
 	{
 		loginImage->SetHovered(loginImage->IsMouseInside());
 	}
 
-	if (exitImage->GetState() == ImageUIState::Pulsing ||
+	if (exitImage->GetState() == ImageUIState::FadingIn ||
 		exitImage->GetState() == ImageUIState::Visible)
 	{
 		exitImage->SetHovered(exitImage->IsMouseInside());
