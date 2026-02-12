@@ -299,7 +299,7 @@ void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 	//	Protocol::SC_ATTACK_PACKET attack;
 	//	if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
 	//		if (sessionId == INPUT.GetClientID()) {
-	//			// TODO : Client Attack Animation ����
+	//			// TODO : Client Attack Animation
 	//			OutputDebugStringA("SC_ATTACK_PACKET received\n");
 	//		}
 	//	}
@@ -309,7 +309,7 @@ void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 	//	Protocol::SC_DODGE_PACKET dodge;
 	//	if (dodge.ParseFromArray(packet.body().data(), packet.body().size())) {
 	//		if (sessionId == INPUT.GetClientID()) {
-	//			// TODO : Client Dodge Animation ����
+	//			// TODO : Client Dodge Animation 
 	//			OutputDebugStringA("SC_DODGE_PACKET received\n");
 	//		}
 	//	}

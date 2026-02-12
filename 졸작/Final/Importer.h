@@ -19,7 +19,7 @@ struct AnimClipInfo
     string animName;
     int32_t frameCount;
     float duration;
-    vector<AnimFrameParams> keyFrames;  // [frameIndex * boneCount + boneIndex] ����
+    vector<AnimFrameParams> keyFrames;  // [frameIndex * boneCount + boneIndex]
 };
 
 struct MeshBinaryHeader {

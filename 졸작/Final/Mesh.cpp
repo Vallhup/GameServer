@@ -15,7 +15,7 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
     if (cachedMesh) {
         vertexIndexBuffer = cachedMesh->vertexIndexBuffer;
 
-        materials.clear();    // �ߺ� ����
+        materials.clear();   
         material.reset();
 
         const auto& matIdx = cachedMesh->materialIndices;
@@ -124,7 +124,7 @@ void Mesh::SetMesh2(DX12Core& core, const wstring& path)
     if (cachedMesh) {
         vertexIndexBuffer = cachedMesh->vertexIndexBuffer;
 
-        materials.clear();    // �ߺ� ����
+        materials.clear();   
         material.reset();
 
         const auto& matIdx = cachedMesh->materialIndices;

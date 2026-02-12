@@ -229,12 +229,11 @@ bool Importer::LoadAnimations(const wstring& basePath)
 
         if (header.magic != 'MINA') continue;
 
-        AnimClipInfo animData;  // ���� ����
+        AnimClipInfo animData;  
         animData.animName = string(header.name);
         animData.duration = header.duration;
         animData.frameCount = header.frameCount;
 
-        // ���۷����� ������ ������ �ε�: [frameIndex * boneCount + boneIndex]
         size_t totalFrames = header.boneCount * header.frameCount;
         animData.keyFrames.resize(totalFrames);
 

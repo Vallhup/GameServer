@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "Input.h"
 #include "SceneManager.h"
+#include "ImGuiManager.h"
 
 void StartSceneUIController::Init(UIManager* manager)
 {
@@ -76,14 +77,22 @@ void StartSceneUIController::Update(float deltaTime)
 		exitImage->SetHovered(exitImage->IsMouseInside());
 	}
 
-	// 4. loginImage가 확대 된 상태일 때 클릭하면 로그인창 (씬 전환으로 대체)
+	// 4. loginImage가 확대 된 상태일 때 클릭하면 로그인창 표시
 	if (loginImage->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 	{
-		SCENE_MANAGER->RequestSceneChange(SceneType::Select);
+		IMGUI.ShowLoginWindow();
 		OutputDebugStringA("loginImage clicked!!\n");
 	}
 
-	// 5. exitImage가 확대 된 상태일 때 클릭하면 프로그램 종료
+	// 5. 로그인 성공 시 Select 씬으로 이동
+	if (IMGUI.IsLoginSuccess())
+	{
+		IMGUI.ResetLoginSuccess();
+		SCENE_MANAGER->RequestSceneChange(SceneType::Select);
+		OutputDebugStringA("Login success! Moving to Select scene.\n");
+	}
+
+	// 6. exitImage가 확대 된 상태일 때 클릭하면 프로그램 종료
 	if (exitImage->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 	{
 		DestroyWindow(ENGINE.GetHwnd());
