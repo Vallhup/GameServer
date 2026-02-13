@@ -1,43 +1,98 @@
 #pragma once
 
+#include <span>
+#include <array>
 #include <memory>
+#include <unordered_map>
+#include <typeindex>
 #include "System.h"
 
 class ECS;
+
+enum class SystemPhase : uint8_t { Pre, Graph, Post, Count };
 
 template<typename T>
 concept SysT = std::derived_from<T, System>;
 
 class SystemManager {
+	static constexpr int kPhaseCnt{ static_cast<int>(SystemPhase::Count) };
+
 public:
+	SystemManager() { _rawSystemsDirty.fill(true); }
+
 	template<SysT T, typename... Args>
-	T* RegisterSystem(Args&&... args)
+	T* RegisterSystem(SystemPhase phase, Args&&... args)
 	{
+		static_assert(std::is_constructible_v<T, Args...>, "System T is not constructible from Args...");
+		int index = static_cast<int>(phase);
+		assert(index >= 0 && index < kPhaseCnt);
+
 		auto sys = std::make_unique<T>(std::forward<Args>(args)...);
 		sys->stableOrder = _nextOrder++;
 
 		T* ptr = sys.get();
-		_systems.push_back(std::move(sys));
+		_systems[index].push_back(std::move(sys));
+
+		const auto key = std::type_index(typeid(T));
+		assert(_typeMap[index].find(key) == _typeMap[index].end());
+
+		_typeMap[index][key] = ptr;
+		_rawSystemsDirty[index] = true;
+
 		return ptr;
 	}
 
-	void Initialize(ECS& e);
-
 	template<SysT T>
-	T* GetSystem()
+	T* GetSystem(SystemPhase phase)
 	{
-		for (const auto& sys : _systems)
-		{
-			if (auto* casted = dynamic_cast<T*>(sys.get()))
-				return casted;
-		}
+		int index = static_cast<int>(phase);
+		const auto key = std::type_index(typeid(T));
 
-		return nullptr;
+		auto it = _typeMap[index].find(key);
+		if (it == _typeMap[index].end()) return nullptr;
+		return static_cast<T*>(it->second);
 	}
 
-	const std::vector<System*> GetSystems() const;
+	std::span<System*> GetSystems(SystemPhase phase)
+	{
+		int index = static_cast<int>(phase);
+		RebuildRaw(index);
+		return _rawSystems[index];
+	}
+
+	std::span<const System*> GetSystems(SystemPhase phase) const
+	{
+		int index = static_cast<int>(phase);
+		RebuildRaw(index);
+		return _rawConstSystems[index];
+	}
 
 private:
+	void RebuildRaw(int index) const
+	{
+		if (!_rawSystemsDirty[index]) return;
+
+		_rawSystems[index].clear();
+		_rawConstSystems[index].clear();
+
+		_rawSystems[index].reserve(_systems[index].size());
+		_rawConstSystems[index].reserve(_systems[index].size());
+
+		for (const auto& system : _systems[index])
+		{
+			System* p = system.get();
+			_rawSystems[index].push_back(p);
+			_rawConstSystems[index].push_back(p);
+		}
+
+		_rawSystemsDirty[index] = false;
+	}
+
 	int _nextOrder{ 0 };
-	std::vector<std::unique_ptr<System>> _systems;
+	std::array<std::vector<std::unique_ptr<System>>, kPhaseCnt> _systems;
+	std::array<std::unordered_map<std::type_index, System*>, kPhaseCnt> _typeMap;
+
+	mutable std::array<bool, kPhaseCnt> _rawSystemsDirty;
+	mutable std::array<std::vector<System*>, kPhaseCnt> _rawSystems;
+	mutable std::array<std::vector<const System*>, kPhaseCnt> _rawConstSystems;
 };
