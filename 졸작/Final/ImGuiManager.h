@@ -17,19 +17,29 @@ public:
     void Shutdown();
 
     void DrawDebugUI();
+    void DrawLoginUI();
 
     bool IsEnabled() const { return enabled; }
     void SetEnabled(bool in) { enabled = in; }
     void SetMyPlayer(MainCharacter* player) { myPlayer = player; }
 
+    void ShowLoginWindow() { showLoginWindow = true; }
+    bool IsLoginSuccess() const { return loginSuccess; }
+    void ResetLoginSuccess() { loginSuccess = false; }
+
 private:
     ComPtr<ID3D12DescriptorHeap> srvHeap;
     DX12Core* coreRef = nullptr;
-    bool enabled = true;
+    bool enabled = false;
     bool showDemoWindow = false;
     bool showPerformance = true;
     bool showLightEditor = true;
 
     bool showAnimationEditor = true;
     MainCharacter* myPlayer = nullptr;
+
+    bool showLoginWindow = false;
+    bool loginSuccess = false;
+    char loginId[64] = "";
+    char loginPw[64] = "";
 };

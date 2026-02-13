@@ -33,13 +33,24 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateFinalBossSet()
 	auto set = make_shared<AnimationSet>("FinalBoss", 12);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base);
+	set->RegisterClip("Walk", 1, AnimCategory::Base);
+
+	set->RegisterClip("Thrust", 2, AnimCategory::Action);
+	set->RegisterClip("Slash", 3, AnimCategory::Action);
+	set->RegisterClip("DashSlash", 4, AnimCategory::Action);
+	set->RegisterClip("JumpSlash", 5, AnimCategory::Action);
+	set->RegisterClip("MultiSlash", 6, AnimCategory::Action);
+	set->RegisterClip("Stun", 7, AnimCategory::Action);
+	set->RegisterClip("Hit", 8, AnimCategory::Action);
+
+	set->RegisterClip("Death", 9, AnimCategory::Die);
 
 	return set;
 }
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 {
-	auto set = make_shared<AnimationSet>("Lancer", 13);
+	auto set = make_shared<AnimationSet>("Lancer", 22);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);
@@ -61,7 +72,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateTankerSet()
 {
-	auto set = make_shared<AnimationSet>("Tanker", 24);
+	auto set = make_shared<AnimationSet>("Tanker", 33);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);

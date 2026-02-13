@@ -1,9 +1,10 @@
 #pragma once
 #include <DescriptorHeap.h>
-#include <SpriteBatch.h>
 #include <SpriteFont.h>
 #include <ResourceUploadBatch.h>
 #include <GraphicsMemory.h>
+#include "UIController.h"
+#include "SceneManager.h"
 
 class DX12Core;
 
@@ -21,11 +22,19 @@ class UIManager
 {
 public:
 	void Initialize(DX12Core& core);
+	void Update(float deltaTime);
 	void Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp);
 	void Release();
 
+	void SetCurrentScene(SceneType scene) { currentScene = scene; }
+	UITextureData* GetUITexture(const wstring& name);
+	UIFontData* GetFont(const wstring& name);
+	DescriptorHeap* GetUISrvHeap() const { return uiSrvHeap.get(); }
+
+private:
 	void RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
 	void RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
+	void RegisterControllers();
 
 private:
 	unique_ptr<GraphicsMemory> graphicsMemory;
@@ -35,5 +44,10 @@ private:
 	unordered_map<wstring, UIFontData> uiFontMap;
 	unordered_map<wstring, UITextureData> uiTextureMap;
 
+	unordered_map<SceneType, unique_ptr<UIController>> controllers;
+
+	SceneType currentScene;
+
 	static UINT nextIndex;
 };
+

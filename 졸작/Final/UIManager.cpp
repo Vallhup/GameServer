@@ -4,10 +4,8 @@
 #include <DirectXHelpers.h>
 #include "Engine.h"
 #include "DX12Core.h"
-#include "Input.h"
-#include "SceneManager.h"
-#include "GameScene.h"
-#include "MainCharacter.h"
+#include "StartSceneUIController.h"
+#include "GameSceneUIController.h"
 
 UINT UIManager::nextIndex = 0;
 
@@ -28,18 +26,36 @@ void UIManager::Initialize(DX12Core& core)
 	ResourceUploadBatch resourceUpload(core.GetDevice());
 	resourceUpload.Begin();
 
-	SpriteBatchPipelineStateDescription pd(rtState);
+	// srcRGB * srcAlpha + destRGB * (1 - srcAlpha)
+	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+
+	SpriteBatchPipelineStateDescription pd(rtState, &blendDesc);
 
 	spriteBatch = make_unique<SpriteBatch>(core.GetDevice(), resourceUpload, pd, nullptr);
 
-	// Registering Font
-	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);
-
-	// Registering Texture
-	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);
+	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);	
+	RegisterUITexture(L"MainPage", L"../Assets/UI/Textures/MainPage.png", core, resourceUpload);		
+	RegisterUITexture(L"PAB", L"../Assets/UI/Textures/PAB.png", core, resourceUpload);					
+	RegisterUITexture(L"LOGIN", L"../Assets/UI/Textures/LOGIN.png", core, resourceUpload);
+	RegisterUITexture(L"EXIT", L"../Assets/UI/Textures/EXIT.png", core, resourceUpload);
+	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);			
 
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
 	uploadFinished.wait();
+
+	RegisterControllers();
+}
+
+void UIManager::Update(float deltaTime)
+{
+	auto it = controllers.find(currentScene);
+	if (it != controllers.end())
+		it->second->Update(deltaTime);
 }
 
 void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp)
@@ -50,65 +66,34 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 	spriteBatch->SetViewport(vp);
 	spriteBatch->Begin(cmdList);
 
-	static bool status = true;
-
-	if (INPUT.GetKeyDown('K'))
-		status = !status;
-
-	if (status)
-	{
-		auto& statusTex = uiTextureMap[L"Status"];
-
-		XMUINT2 texSize = GetTextureSize(statusTex.resource.Get());
-		RECT destRect = { 0, 0, static_cast<LONG>(texSize.x * 0.5f), static_cast<LONG>(texSize.y * 0.5f) };
-		spriteBatch->Draw(uiSrvHeap->GetGpuHandle(statusTex.heapIndex), texSize, destRect);
-	}
-
-	auto& font = uiFontMap[L"MalgunGothic"].font;
-	//XMVECTOR textSize = font->MeasureString(L"Hello, I'm JeongHo Lee");
-	//XMFLOAT2 origin(XMVectorGetX(textSize) / 2.f, XMVectorGetY(textSize) / 2.f);
-	//XMFLOAT2 pos(vp.Width / 2.f, vp.Height / 2.f);
-	//font->DrawString(spriteBatch.get(), L"Hello, I'm JeongHo Lee", pos, Colors::White, 0.f, origin);
-
-	if (SCENE_MANAGER->GetCurrentSceneType() == SceneType::MainGame)
-	{
-		auto player = static_cast<GameScene*>(SCENE_MANAGER->GetCurrentScene())->GetMyPlayer();
-		auto cam = SCENE_MANAGER->GetCurrentScene()->GetCamera();
-		auto camPos = cam->GetPosition();
-
-		auto playerPos = player->GetComponent<Transform>()->GetPosition();
-		playerPos.y += 2.2f;
-
-		XMMATRIX view = cam->GetViewMatrix();
-		XMMATRIX proj = cam->GetProjectionMatrix();
-
-		XMVECTOR screenPos = XMVector3Project(XMLoadFloat3(&playerPos),
-			vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height,
-			vp.MinDepth, vp.MaxDepth, proj, view, XMMatrixIdentity());
-
-		XMFLOAT3 screen;
-		XMStoreFloat3(&screen, screenPos);
-
-		XMVECTOR textSize2 = font->MeasureString(L"Health Bar");
-		XMFLOAT2 origin2(XMVectorGetX(textSize2) / 2.f, XMVectorGetY(textSize2) / 2.f);
-		XMFLOAT2 pos2(screen.x, screen.y);
-		float dist = XMVectorGetX(XMVector3Length(XMLoadFloat3(&playerPos) - XMLoadFloat3(&camPos)));
-		float scale = 4.5f / dist;
-		font->DrawString(spriteBatch.get(), L"Health Bar", pos2, Colors::White, 0.f, origin2, scale);
-	}
+	auto it = controllers.find(currentScene);
+	if (it != controllers.end())
+		it->second->Render(spriteBatch.get());
 
 	spriteBatch->End();
-
 	graphicsMemory->Commit(cmdQueue);
 }
 
 void UIManager::Release()
 {
+	controllers.clear();
 	uiTextureMap.clear();
 	uiFontMap.clear();
 	spriteBatch.reset();
 	uiSrvHeap.reset();
 	graphicsMemory.reset();
+}
+
+UITextureData* UIManager::GetUITexture(const wstring& name)
+{
+	auto it = uiTextureMap.find(name);
+	return (it != uiTextureMap.end()) ? &it->second : nullptr;
+}
+
+UIFontData* UIManager::GetFont(const wstring& name)
+{
+	auto it = uiFontMap.find(name);
+	return (it != uiFontMap.end()) ? &it->second : nullptr;
 }
 
 void UIManager::RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload)
@@ -136,4 +121,13 @@ void UIManager::RegisterUITexture(const wstring& name, const wchar_t* path, DX12
 	CreateShaderResourceView(core.GetDevice(), tex.resource.Get(), uiSrvHeap->GetCpuHandle(tex.heapIndex));
 	
 	nextIndex++;
+}
+
+void UIManager::RegisterControllers()
+{
+	controllers[SceneType::Title] = make_unique<StartSceneUIController>();
+	controllers[SceneType::Title]->Init(this);
+
+	controllers[SceneType::MainGame] = make_unique<GameSceneUIController>();
+	controllers[SceneType::MainGame]->Init(this);
 }

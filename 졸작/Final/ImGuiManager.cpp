@@ -49,8 +49,6 @@ void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 
 void ImGuiManager::BeginFrame()
 {
-    if (!enabled) return;
-
     ImGui_ImplDX12_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
@@ -58,9 +56,10 @@ void ImGuiManager::BeginFrame()
 
 void ImGuiManager::EndFrame(ID3D12GraphicsCommandList* cmdList)
 {
-    if (!enabled) return;
-
     ImGui::Render();
+
+    // 아무것도 그릴게 없으면 렌더 스킵
+    if (!enabled && !showLoginWindow) return;
 
     ID3D12DescriptorHeap* heaps[] = { srvHeap.Get() };
     cmdList->SetDescriptorHeaps(1, heaps);
@@ -83,7 +82,6 @@ void ImGuiManager::DrawDebugUI()
 {
     if (!enabled) return;
 
-    // ���� �����
     if (showPerformance)
     {
         ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
@@ -101,7 +99,6 @@ void ImGuiManager::DrawDebugUI()
         ImGui::End();
     }
 
-    // === ����Ʈ ������ �߰� ===
     if (showLightEditor && coreRef)
     {
         ImGui::SetNextWindowPos(ImVec2(10, 140), ImGuiCond_FirstUseEver);
@@ -143,7 +140,6 @@ void ImGuiManager::DrawDebugUI()
                 ImGui::SliderFloat("Intensity##Po1", &deferred.lights[2].intensity, 0.0f, 2.0f);
             }
 
-            // ������Ʈ
             coreRef->UpdateLights();
         }
         ImGui::End();
@@ -171,4 +167,80 @@ void ImGuiManager::DrawDebugUI()
     {
         ImGui::ShowDemoWindow(&showDemoWindow);
     }
+}
+
+void ImGuiManager::DrawLoginUI()
+{
+    if (!showLoginWindow) return;
+
+    ImGuiIO& io = ImGui::GetIO();
+    ImVec2 center(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
+    ImVec2 windowSize(350, 180);
+
+    ImGui::SetNextWindowPos(ImVec2(center.x - windowSize.x * 0.5f, center.y - windowSize.y * 0.5f), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(windowSize, ImGuiCond_Always);
+
+    // Style
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(20, 15));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5f, 0.5f));  
+
+    // Color
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.15f, 0.95f));           // 어두운 배경
+    ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.08f, 0.08f, 0.10f, 1.0f));             // 타이틀바
+    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.15f, 0.15f, 0.20f, 1.0f));       // 타이틀바 활성
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.30f, 0.30f, 0.35f, 1.0f));             // 입력창 배경
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.22f, 0.20f, 0.25f, 1.0f));              // 버튼
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.28f, 0.34f, 1.0f));       // 버튼 호버
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.18f, 0.16f, 0.20f, 1.0f));        // 버튼 클릭
+
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse;
+
+    if (ImGui::Begin("Login", &showLoginWindow, flags))
+    {
+        float contentWidth = ImGui::GetContentRegionAvail().x;
+
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10);
+
+        ImGui::SetNextItemWidth(contentWidth);
+        ImGui::InputTextWithHint("##id", "ID", loginId, 64);
+
+        ImGui::Spacing();
+
+        ImGui::SetNextItemWidth(contentWidth);
+        ImGui::InputTextWithHint("##pw", "Password", loginPw, 64, ImGuiInputTextFlags_Password);
+
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20);
+
+        float buttonWidth = 100;
+        float spacing = 20;
+        float totalWidth = buttonWidth * 2 + spacing;
+        ImGui::SetCursorPosX((windowSize.x - totalWidth) * 0.5f);
+
+        if (ImGui::Button("Login", ImVec2(buttonWidth, 30)))
+        {
+            OutputDebugStringA("Login attempted!\n");
+            OutputDebugStringA(("ID: " + string(loginId) + "\n").c_str());
+            OutputDebugStringA(("Password: " + string(loginPw) + "\n").c_str());
+
+            loginSuccess = true;
+            showLoginWindow = false;
+
+            memset(loginId, 0, sizeof(loginId));
+            memset(loginPw, 0, sizeof(loginPw));
+        }
+
+        ImGui::SameLine(0, spacing);
+
+        if (ImGui::Button("Cancel", ImVec2(buttonWidth, 30)))
+        {
+            showLoginWindow = false;
+            memset(loginId, 0, sizeof(loginId));
+            memset(loginPw, 0, sizeof(loginPw));
+        }
+    }
+    ImGui::End();
+    ImGui::PopStyleColor(7);
+    ImGui::PopStyleVar(4);
 }

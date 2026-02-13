@@ -35,7 +35,7 @@ void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListe
     IMGUI.Initialize(mHwnd, *graphics);
 
     sceneManager = make_unique<SceneManager>();
-    sceneManager->Initialize(hwnd, *graphics);
+    sceneManager->Initialize(mHwnd, *graphics);
 
     networkManager = make_unique<NetworkManager>();
     networkManager->Initialize(1, ip, port, listener);
@@ -53,6 +53,8 @@ void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListe
 
 void Engine::Update(const float deltaTime)
 {
+    uiManager->Update(deltaTime);
+
     sceneManager->ProcessPendingSceneChange(*graphics);
     sceneManager->Update(deltaTime);
 
@@ -73,26 +75,21 @@ void Engine::Render()
     sceneManager->RenderShadow();
     graphics->EndShadowPass(viewport, scissorRect);
 
-    // 1. Deferred G-Buffer Pass (불투명 머티리얼만)
     graphics->BeginGBufferPass();
-    sceneManager->RenderDeferred();  // 불투명한 것들만
+    sceneManager->RenderDeferred();  
     graphics->EndGBufferPass();
 
-    // 1.5. SSAO Pass (차폐도) - 추후 재시도
-
-    // 2. Deferred Lighting Pass  
     graphics->BeginLightingPass();
     graphics->RenderFullscreenQuad();
 
-    // 3. Forward Alpha Pass (투명 머티리얼)
-    // 백버퍼 + depth buffer 사용, alpha blending 활성화
     graphics->BeginForwardPass();
-    sceneManager->RenderEffects();   // 이펙트를 먼저 그려야 머리카락이 안없어짐
-    sceneManager->RenderForward();   // 머리카락 등 투명한 것들
+    sceneManager->RenderEffects();   
+    sceneManager->RenderForward();   
 
     uiManager->Render(graphics->GetGraphicsCmdList(), graphics->GetCmdQueue(), viewport);
 
     IMGUI.DrawDebugUI();
+    IMGUI.DrawLoginUI();
     IMGUI.EndFrame(graphics->GetGraphicsCmdList());
 
     graphics->RenderEnd();

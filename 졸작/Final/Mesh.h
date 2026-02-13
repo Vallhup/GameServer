@@ -12,6 +12,7 @@ class Mesh : public Component
 {
 public:
 	void SetMesh(DX12Core& core, const wstring& path);
+	void SetMesh2(DX12Core& core, const wstring& path);
 	void SetCollisionMesh(DX12Core& core, const wstring& path);
 	void ReleaseUploadBuffers();
 

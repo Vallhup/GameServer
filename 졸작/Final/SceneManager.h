@@ -2,9 +2,9 @@
 #include "Scene.h"
 
 enum class SceneType {
-    Start,
-    Login,
-    ServerSquare,
+    Title,
+    Select,
+    Town,
     MainGame,
     END
 };

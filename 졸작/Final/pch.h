@@ -76,6 +76,7 @@ using namespace Microsoft::WRL;
 #endif				
 
 #define GET(type) type::Get()
+#define ENGINE			 GET(Engine)
 
 // Engine class member
 #define SCENE_MANAGER    GET(Engine).GetSceneManager()

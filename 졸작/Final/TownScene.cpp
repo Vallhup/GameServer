@@ -1,38 +1,38 @@
 #include "pch.h"
-#include "ServerSquareScene.h"
+#include "TownScene.h"
 #include "SceneManager.h"
 #include "Input.h"
 #include "Material.h"
 #include "MainCharacter.h"
 #include "Animator.h"
 
-ServerSquareScene::~ServerSquareScene() = default;
+TownScene::~TownScene() = default;
 
-void ServerSquareScene::Release()
+void TownScene::Release()
 {
 }
 
-void ServerSquareScene::Reset()
+void TownScene::Reset()
 {
 	gameObjects.clear();
 	knight.reset();
 
 	Material::ReleaseUploadBuffers();
-	OutputDebugStringA("ServerSquareScene Data has been deleted!! \n----------------------------------------\n");
+	OutputDebugStringA("TownScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-const float* ServerSquareScene::GetBackgroundColor()
+const float* TownScene::GetBackgroundColor()
 {
 	return Colors::Pink;
 }
 
-void ServerSquareScene::InitializeSceneObjectPools()
+void TownScene::InitializeSceneObjectPools()
 {
 }
 
-void ServerSquareScene::InitializeLogic()
+void TownScene::InitializeLogic()
 {
-	OutputDebugStringA("----------------------------------------\nServerSquareScene Data has been created!! \n");
+	OutputDebugStringA("----------------------------------------\nTownScene Data has been created!! \n");
 
 	{
 		knight = make_shared<MainCharacter>();
@@ -54,7 +54,7 @@ void ServerSquareScene::InitializeLogic()
 	}
 }
 
-void ServerSquareScene::UpdateScene(const float deltaTime)
+void TownScene::UpdateScene(const float deltaTime)
 {
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
@@ -63,26 +63,26 @@ void ServerSquareScene::UpdateScene(const float deltaTime)
 		cam->Update(*coreRef, deltaTime, gameObjects, {}, knight);
 }
 
-void ServerSquareScene::RenderSceneDeferred()
+void TownScene::RenderSceneDeferred()
 {
 	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 }
 
-void ServerSquareScene::RenderSceneForward()
+void TownScene::RenderSceneForward()
 {
 	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
-void ServerSquareScene::RenderSceneShadow()
+void TownScene::RenderSceneShadow()
 {
 	sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
 }
 
-void ServerSquareScene::RenderSceneEffects()
+void TownScene::RenderSceneEffects()
 {
 }
 
-void ServerSquareScene::RequestSceneChange()
+void TownScene::RequestSceneChange()
 {
 	if (INPUT.GetKeyDown(VK_TAB))
 	{

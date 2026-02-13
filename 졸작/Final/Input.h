@@ -22,9 +22,11 @@ public:
 
 	bool GetKey(const size_t key) const;
 	bool GetKeyDown(const size_t key) const;
+	bool GetAnyKeyDown() const;
 
 	const XMFLOAT2& GetMousePosition() { return mMousePos; }
 	bool GetMouseButton(const MouseButton button) const;
+	bool GetMouseButtonDown(const MouseButton button) const;
 	int GetMouseWheelDelta() const;
 
 	void SetKey(const size_t key, const bool pressed);
@@ -50,6 +52,7 @@ private:
 
 	XMFLOAT2 mMousePos = {};
 	bool mPressedMouseButtons[static_cast<size_t>(MouseButton::END)] = {};
+	bool mChangeMouseButtonState[static_cast<size_t>(MouseButton::END)] = {};
 	int mMouseWheelDelta = 0;
 
 	NetworkManager* network{ nullptr };

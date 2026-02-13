@@ -391,7 +391,7 @@ void DX12Core::CreateDeferredRenderingDescriptors()
 void DX12Core::BeginShadowPass()
 {
 	XMVECTOR lightDir = XMVectorSet(0, 0, -1.f, 0); 
-	XMVECTOR lightPos = XMVectorSet(playerCurrentPos.x + 9.0f, playerCurrentPos.y + 8.f, playerCurrentPos.z + 12.0f, 1);  // ���� ��ġ
+	XMVECTOR lightPos = XMVectorSet(playerCurrentPos.x + 9.0f, playerCurrentPos.y + 8.f, playerCurrentPos.z + 12.0f, 1);  
 	XMVECTOR targetPos = XMVectorSet(playerCurrentPos.x, playerCurrentPos.y, playerCurrentPos.z, 1);
 	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
 

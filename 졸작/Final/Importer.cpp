@@ -29,6 +29,37 @@ bool Importer::LoadModel(const wstring& basePath)
     return true;
 }
 
+bool Importer::LoadModel2(const wstring& basePath)
+{
+    Release();
+
+    wstring meshPath = basePath + L"_1.mesh";
+    if (!filesystem::exists(meshPath))
+        meshPath = basePath + L"_0.mesh";
+
+    if (!LoadMesh(meshPath)) {
+        MASSERT(false, "Failed to load mesh file");
+        return false;
+    }
+
+    wstring materialPath = basePath + L".mtl";
+    if (!LoadMaterials(materialPath)) {
+        MASSERT(false, "Failed to load material file");
+        return false;
+    }
+
+    wstring skeletonPath = basePath + L".skel";
+    if (!LoadSkeleton(skeletonPath)) {
+        OutputDebugStringA("Warning: Failed to load skeleton file\n");
+    }
+
+    if (!LoadAnimations(basePath)) {
+        OutputDebugStringA("Warning: Failed to load animation files\n");
+    }
+
+    return true;
+}
+
 bool Importer::LoadAllCollisionMeshes(const wstring& basePath)
 {
     Release();
@@ -198,12 +229,11 @@ bool Importer::LoadAnimations(const wstring& basePath)
 
         if (header.magic != 'MINA') continue;
 
-        AnimClipInfo animData;  // ���� ����
+        AnimClipInfo animData;  
         animData.animName = string(header.name);
         animData.duration = header.duration;
         animData.frameCount = header.frameCount;
 
-        // ���۷����� ������ ������ �ε�: [frameIndex * boneCount + boneIndex]
         size_t totalFrames = header.boneCount * header.frameCount;
         animData.keyFrames.resize(totalFrames);
 

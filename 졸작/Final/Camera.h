@@ -46,12 +46,12 @@ private:
 	XMFLOAT3 position;
 	XMFLOAT3 targetPosition;
 
-	XMFLOAT3 desiredPosition;      // ��ǥ�ϴ� ī�޶� ��ġ
-	XMFLOAT3 currentTargetPos;     // ���� ���� ���� Ÿ�� ��ġ
-	XMFLOAT3 desiredTargetPos;     // ��ǥ�ϴ� Ÿ�� ��ġ
+	XMFLOAT3 desiredPosition;      
+	XMFLOAT3 currentTargetPos;     
+	XMFLOAT3 desiredTargetPos;     
 
-	XMFLOAT3 camForward;			// �� ��
-	XMFLOAT3 camRight;				// �� ��
+	XMFLOAT3 camForward;			
+	XMFLOAT3 camRight;			
 
 	float yaw;
 	float pitch;
@@ -61,8 +61,8 @@ private:
 	bool spacePressed = false;
 
 	static constexpr float MOUSE_SENSITIVITY = 0.1f;
-	static constexpr float CAMERA_FOLLOW_SPEED = 40.0f;		// ī�޶� ��ġ ���� �ӵ�
-	static constexpr float TARGET_FOLLOW_SPEED = 4.0f;		// ĳ���� ��ġ ���� �ӵ�
+	static constexpr float CAMERA_FOLLOW_SPEED = 40.0f;		
+	static constexpr float TARGET_FOLLOW_SPEED = 4.0f;		
 
 	float desiredDistance;   
 	float currentDistance;   

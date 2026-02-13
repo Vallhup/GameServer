@@ -1,0 +1,21 @@
+#include "pch.h"
+#include "UIComponent.h"
+#include "UIManager.h"
+#include "SceneManager.h"
+
+void UIComponent::Init(UIManager* manager, SceneType scene)
+{
+	uiManager = manager;
+	ownerScene = scene;
+}
+
+void UIComponent::SetPosition(float x, float y)
+{
+	posX = basePosX = x;
+	posY = basePosY = y;
+}
+
+void UIComponent::SetScale(float scl)
+{
+	scale = scl;
+}

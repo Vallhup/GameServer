@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "GameScene.h"
+#include "SoloGameScene.h"
 #include "SceneManager.h"
 #include "Input.h"
 #include "MainCharacter.h"
@@ -20,9 +20,9 @@
 #include "EffectRenderer.h"
 #include "EffectManager.h"
 
-GameScene::~GameScene() = default;
+SoloGameScene::~SoloGameScene() = default;
 
-void GameScene::CreateKnightPool()
+void SoloGameScene::CreateKnightPool()
 {
 	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
 	{
@@ -44,7 +44,24 @@ void GameScene::CreateKnightPool()
 	}
 }
 
-void GameScene::CreateMap()
+void SoloGameScene::CreateBossObject()
+{
+	bossObject = make_shared<GameObject>();
+	bossObject->SetId(-1);
+	auto mesh = bossObject->AddComponent<Mesh>();
+	auto transform = bossObject->AddComponent<Transform>();
+	auto animator = bossObject->AddComponent<Animator>();
+	auto animMachine = bossObject->AddComponent<AnimationMachine>();
+	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
+
+	animMachine->SetAnimationSet(AnimationSetFactory::CreateFinalBossSet());
+	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
+	transform->SetRotation(0.f, 3.14f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+	AddGameObject(bossObject);
+}
+
+void SoloGameScene::CreateMap()
 {
 #pragma region Initialize Map Elements
 	InstanceLoader mapLoader;
@@ -70,9 +87,26 @@ void GameScene::CreateMap()
 	terrain = make_shared<Terrain>();
 	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/ground", L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
 #pragma endregion
+
+//#pragma region Initialize Map2 Elements
+//	InstanceLoader mapLoader;
+//	mapLoader.Load(L"../Assets/FBXModel/Map2/MapInstanceData.txt");
+//
+//	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
+//		if (instanceData.empty())
+//			continue;
+//
+//		wstring path = L"../Assets/FBXModel/Map2/" + wstring(modelName.begin(), modelName.end());
+//
+//		if (!filesystem::exists(path + L"_0.mesh"))
+//			continue;
+//
+//		CreateAndBatchObjects(path, instanceData, instancingBatches);
+//	}
+//#pragma endregion
 }
 
-void GameScene::CreateEffectSamples()
+void SoloGameScene::CreateEffectSamples()
 {
 	struct EffectInfo {
 		u16string name;
@@ -110,14 +144,14 @@ void GameScene::CreateEffectSamples()
 	}
 }
 
-float GameScene::SampleHeightAt(float worldX, float worldZ) const
+float SoloGameScene::SampleHeightAt(float worldX, float worldZ) const
 {
 	if (terrain)
 		return terrain->SampleHeightAt(worldX, worldZ);
 	return 0.0f;
 }
 
-shared_ptr<MainCharacter> GameScene::GetAvailableKnight() const
+shared_ptr<MainCharacter> SoloGameScene::GetAvailableKnight() const
 {
 	for (auto& knight : knightPool)
 	{
@@ -128,33 +162,34 @@ shared_ptr<MainCharacter> GameScene::GetAvailableKnight() const
 	return nullptr;
 }
 
-shared_ptr<MainCharacter> GameScene::GetMyPlayer() const
+shared_ptr<MainCharacter> SoloGameScene::GetMyPlayer() const
 {
 	if (myPlayer)
 		return myPlayer;
 }
 
-void GameScene::Release()
+void SoloGameScene::Release()
 {
 }
 
-void GameScene::Reset()
+void SoloGameScene::Reset()
 {
 	instancingBatches.clear();
 	knightPool.clear();
-	activePlayers.clear();
+	activeCharacters.clear();
 	myPlayer = nullptr;
+	bossObject = nullptr;
 	gameObjects.clear();
 
-	OutputDebugStringA("GameScene Data has been deleted!! \n----------------------------------------\n");
+	OutputDebugStringA("SoloGameScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-void GameScene::AddGameObject(shared_ptr<GameObject> obj)
+void SoloGameScene::AddGameObject(shared_ptr<GameObject> obj)
 {
 	gameObjects.push_back(obj);
 }
 
-void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
+void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 {
 	PacketType type = static_cast<PacketType>(header.type);
 
@@ -179,28 +214,38 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			int id = add.id();
 			int type = add.type();
 
-			// TODO : type값에 따라 Knight, Lancer, Boss 등 분기
-
-			auto player = GetAvailableKnight();
-			if (player)
+			if (type == 4) // Final_Boss
 			{
-				player->SetId(id);
-				auto transform = player->GetComponent<Transform>();
-				transform->SetInitPosition(add.x(), add.y(), add.z());
-
-				transform->SetTargetRotation(add.yaw());
-
-				activePlayers[id] = player;
+				if (bossObject)
+				{
+					bossObject->SetId(id);
+					auto transform = bossObject->GetComponent<Transform>();
+					transform->SetInitPosition(add.x(), add.y(), add.z());
+					transform->SetTargetRotation(add.yaw());
+					activeCharacters[id] = bossObject;
+				}
 			}
-
-			if (id == INPUT.GetClientID())
+			else if (type == 0) // Knight
 			{
-				myPlayer = player;
-				myPlayer->SetAsLocalPlayer(cam.get());
+				auto player = GetAvailableKnight();
+				if (player)
+				{
+					player->SetId(id);
+					auto transform = player->GetComponent<Transform>();
+					transform->SetInitPosition(add.x(), add.y(), add.z());
+					transform->SetTargetRotation(add.yaw());
+					activeCharacters[id] = player;
+				}
 
-				IMGUI.SetMyPlayer(myPlayer.get());
+				if (id == INPUT.GetClientID())
+				{
+					myPlayer = player;
+					myPlayer->SetAsLocalPlayer(cam.get());
 
-				OutputDebugStringA("My character activated!\n");
+					IMGUI.SetMyPlayer(myPlayer.get());
+
+					OutputDebugStringA("My character activated!\n");
+				}
 			}
 		}
 		break;
@@ -211,8 +256,8 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		if (PacketFactory::Deserialize<Protocol::SC_MOVE_PACKET>(header, data, &move))
 		{
 			int id = move.id();
-			auto it = activePlayers.find(id);
-			if (it != activePlayers.end())
+			auto it = activeCharacters.find(id);
+			if (it != activeCharacters.end())
 			{
 				auto transform = it->second->GetComponent<Transform>();
 				const XMFLOAT3& pos = transform->GetPosition();
@@ -235,8 +280,8 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		{
 			int id = anim.id();
 			
-			auto it = activePlayers.find(id);
-			if (it != activePlayers.end())
+			auto it = activeCharacters.find(id);
+			if (it != activeCharacters.end())
 			{
 				if (auto animMachine = it->second->GetComponent<AnimationMachine>())
 				{
@@ -254,7 +299,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 	//	Protocol::SC_ATTACK_PACKET attack;
 	//	if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
 	//		if (sessionId == INPUT.GetClientID()) {
-	//			// TODO : Client Attack Animation ����
+	//			// TODO : Client Attack Animation
 	//			OutputDebugStringA("SC_ATTACK_PACKET received\n");
 	//		}
 	//	}
@@ -264,7 +309,7 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 	//	Protocol::SC_DODGE_PACKET dodge;
 	//	if (dodge.ParseFromArray(packet.body().data(), packet.body().size())) {
 	//		if (sessionId == INPUT.GetClientID()) {
-	//			// TODO : Client Dodge Animation ����
+	//			// TODO : Client Dodge Animation 
 	//			OutputDebugStringA("SC_DODGE_PACKET received\n");
 	//		}
 	//	}
@@ -272,18 +317,18 @@ void GameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 	}
 }
 
-const float* GameScene::GetBackgroundColor()
+const float* SoloGameScene::GetBackgroundColor()
 {
 	return Colors::Snow;
 }
 
-void GameScene::InitializeSceneObjectPools()
+void SoloGameScene::InitializeSceneObjectPools()
 {
 }
 
-void GameScene::InitializeLogic()
+void SoloGameScene::InitializeLogic()
 {
-	OutputDebugStringA("----------------------------------------\nGameScene Data has been created!! \n");
+	OutputDebugStringA("----------------------------------------\nSoloGameScene Data has been created!! \n");
 
 	CreateKnightPool();
 
@@ -291,23 +336,7 @@ void GameScene::InitializeLogic()
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
 
 	CreateMap();
-
-	{
-		auto boss = make_shared<GameObject>();
-		boss->SetId(0);
-		auto mesh = boss->AddComponent<Mesh>();
-		auto transform = boss->AddComponent<Transform>();
-		auto animator = boss->AddComponent<Animator>();
-		auto animMachine = boss->AddComponent<AnimationMachine>();
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
-
-		animMachine->SetAnimationSet(AnimationSetFactory::CreateFinalBossSet());
-		transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
-		transform->SetRotation(0.f, 3.14f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(boss);
-	}
-
+	CreateBossObject();
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
@@ -334,7 +363,7 @@ void GameScene::InitializeLogic()
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
 
-void GameScene::UpdateScene(const float deltaTime)
+void SoloGameScene::UpdateScene(const float deltaTime)
 {
 	/*if (effectObjects.size() > 0 && INPUT.GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
@@ -429,7 +458,7 @@ void GameScene::UpdateScene(const float deltaTime)
 	}
 
 	// Update player heights based on terrain
-	/*for (const auto& [sessionId, player] : activePlayers)
+	/*for (const auto& [sessionId, player] : activeCharacters)
 	{
 		if (auto transform = player->GetComponent<Transform>())
 		{
@@ -447,7 +476,7 @@ void GameScene::UpdateScene(const float deltaTime)
 		batch->Update(frustum);
 }
 
-void GameScene::RenderSceneDeferred()
+void SoloGameScene::RenderSceneDeferred()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
 
@@ -499,14 +528,14 @@ void GameScene::RenderSceneDeferred()
 	}
 }
 
-void GameScene::RenderSceneForward()
+void SoloGameScene::RenderSceneForward()
 {
 	skyBox->RenderSkyBox(*coreRef, coreRef->GetGraphicsCmdList());
 
 	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
-void GameScene::RenderSceneShadow()
+void SoloGameScene::RenderSceneShadow()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
 	renderer->RenderShadow(*coreRef, gameObjects);
@@ -517,13 +546,13 @@ void GameScene::RenderSceneShadow()
 	}
 }
 
-void GameScene::RenderSceneEffects()
+void SoloGameScene::RenderSceneEffects()
 {
 	if (cam)
 		EFFECT_MANAGER->Render(*coreRef, cam.get());
 }
 
-void GameScene::RequestSceneChange()
+void SoloGameScene::RequestSceneChange()
 {
 
 }

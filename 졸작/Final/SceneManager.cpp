@@ -1,16 +1,18 @@
 #include "pch.h"
 #include "SceneManager.h"
+#include "Engine.h"
 #include "Importer.h"
 #include "Input.h"
 #include "Timer.h"
 #include "Texture.h"
-#include "TestScene.h"
-#include "LoginScene.h"
-#include "ServerSquareScene.h"
-#include "GameScene.h"
+#include "TitleScene.h"
+#include "SelectScene.h"
+#include "TownScene.h"
+#include "SoloGameScene.h"
 #include "Camera.h"
 #include "Material.h"
 #include "ResourceManager.h"
+#include "UIManager.h"
 
 SceneManager::~SceneManager()
 {
@@ -21,10 +23,10 @@ void SceneManager::Initialize(HWND hWnd, DX12Core& core)
 {
     hwnd = hWnd;
 
-    RegisterScene<TestScene>(SceneType::Start);
-    RegisterScene<LoginScene>(SceneType::Login);
-    RegisterScene<ServerSquareScene>(SceneType::ServerSquare);
-    RegisterScene<GameScene>(SceneType::MainGame);
+    RegisterScene<TitleScene>(SceneType::Title);
+    RegisterScene<SelectScene>(SceneType::Select);
+    RegisterScene<TownScene>(SceneType::Town);
+    RegisterScene<SoloGameScene>(SceneType::MainGame);
 
     sceneRenderer = make_unique<SceneRenderer>();
     sceneRenderer->Initialize(core.GetDevice());
@@ -116,7 +118,7 @@ SceneRenderer* SceneManager::GetSceneRenderer() const
 
 void SceneManager::SceneStart(DX12Core& core)
 {
-    size_t index = static_cast<size_t>(SceneType::Start);
+    size_t index = static_cast<size_t>(SceneType::Title);
 
     if (static_cast<size_t>(SceneType::END) == index)
     {
@@ -124,12 +126,13 @@ void SceneManager::SceneStart(DX12Core& core)
         return;
     }
 
-    currSceneType = SceneType::Start;
+    currSceneType = SceneType::Title;
 
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
     Material::InitializeBindlessSystem(core.GetDevice());
     mCurrentScene->Initialize(hwnd, core);
+    UI_MANAGER->SetCurrentScene(currSceneType);
 
     core.SetBackgroundColor(mCurrentScene->GetBackgroundColor());
 }
@@ -157,6 +160,7 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
     mCurrentScene->Initialize(hwnd, core);
+    UI_MANAGER->SetCurrentScene(nextSceneType);
     currSceneType = nextSceneType;
 
     core.FlushCommandQueue();
