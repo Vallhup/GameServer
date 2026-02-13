@@ -58,7 +58,7 @@ void WorldScheduler::Update(const double dT)
 				continue;
 			}
 
-			world->Update();
+			world->Update(dT);
 			entry.acc =
 				std::max<double>(0.0, entry.acc - entry.tickInterval);
 		}

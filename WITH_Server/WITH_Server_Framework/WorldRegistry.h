@@ -5,6 +5,7 @@
 class IWorld;
 struct WorldDesc;
 class IWorldFactory;
+class ThreadPool;
 
 class WorldRegistry {
 public:

@@ -56,6 +56,12 @@ public:
 		return MakeView<true, Get...>(*this, ex);
 	}
 
+	template<SysT T, typename... Args>
+	T* AddSystem(SystemPhase phase, Args&&... args)
+	{
+		return _systemMng.RegisterSystem<T>(phase, std::forward<Args>(args)...);
+	}
+
 private:
 	
 	template<bool IsConst, CompT... Get, CompT... Ex>
@@ -64,6 +70,7 @@ private:
 		return BasicView<IsConst, std::tuple<Get...>, std::tuple<Ex...>>(ecs);
 	}
 
+	friend class WorldRuntime;
 
 	EntityManager _entityMng;
 	SystemManager _systemMng;

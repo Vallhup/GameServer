@@ -12,13 +12,13 @@ struct Job {
 
 struct SystemJob : public Job {
 	System* system;
-	const float dT;
+	float* dTRef;
 
-	SystemJob(System* s, float deltaTime) : system(s), dT(deltaTime) {}
+	SystemJob(System* s, float* deltaTime) : system(s), dTRef(deltaTime) {}
 	static void Execute(void* ctx)
 	{
 		SystemJob* job = static_cast<SystemJob*>(ctx);
-		job->system->Execute(job->dT);
+		job->system->Execute(*job->dTRef);
 	}
 };
 

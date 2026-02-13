@@ -20,12 +20,12 @@ public:
 
 	virtual void Build(WorldRuntime& rt) = 0;
 
-	virtual void ApplyInbox(WorldRuntime& rt, float dT) = 0;
+	virtual void ApplyInbox(WorldRuntime& rt, float dT) {};
 	virtual void Execute(WorldRuntime& rt, float dT) = 0;
-	virtual void BuildOutbox(WorldRuntime& rt, float dT) = 0;
-	virtual void FlushOutbox(WorldRuntime& rt, float dT) = 0;
+	virtual void BuildOutbox(WorldRuntime& rt, float dT) {};
+	virtual void FlushOutbox(WorldRuntime& rt, float dT) {};
 
-	virtual void OnShutdown(WorldRuntime& rt) = 0;
+	virtual void OnShutdown(WorldRuntime& rt) {};
 };
 
 class World final : public IWorld {

@@ -40,7 +40,7 @@ JobGraph::~JobGraph()
 		delete node;
 }
 
-void JobGraph::AutoDependencyBuild(const std::vector<System*>& systems, float* dTRef)
+void JobGraph::AutoDependencyBuild(std::span<System*> systems, float* dTRef)
 {
 	std::unordered_map<System*, JobNode*> nodeMap;
 	nodeMap.reserve(systems.size());

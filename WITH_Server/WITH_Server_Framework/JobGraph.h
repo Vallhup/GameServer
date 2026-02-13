@@ -59,7 +59,7 @@ public:
 	template<JobT T, typename... Args>
 	JobNode* CreateNode(Args&&... args);
 
-	void AutoDependencyBuild(const std::vector<System*>& systems, float* dTRef);
+	void AutoDependencyBuild(std::span<System*> systems, float* dTRef);
 	void AddManualDependency(System* before, System* after);
 
 	void Build();
@@ -115,10 +115,10 @@ static inline bool Intersects(const std::vector<std::type_index>& a, const std::
 static inline DependencyType AnalyzeDependency(System* A, System* B, 
 	const std::unordered_map<System*, int>& stableOrder)
 {
-	const auto& aR = A->ReadComponents();
-	const auto& aW = A->WriteComponents();
-	const auto& bR = B->ReadComponents();
-	const auto& bW = B->WriteComponents();
+	const auto& aR = A->ReadResources();
+	const auto& aW = A->WriteResources();
+	const auto& bR = B->ReadResources();
+	const auto& bW = B->WriteResources();
 
 	const bool aW_bW = Intersects(aW, bW);
 	const bool aW_bR = Intersects(aW, bR);
