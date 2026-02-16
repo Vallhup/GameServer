@@ -3,8 +3,10 @@
 #include "Framework.h"
 #include "Math.h"
 
-void LocomotionMoveSystem::Execute(const float dT)
+void LocomotionMoveSystem::Execute(const double dT)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	auto& velocities = ecs.GetStorage<Velocity>();
 	auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& locos = ecs.GetStorage<LocomotionState>();
@@ -30,7 +32,7 @@ void LocomotionMoveSystem::Execute(const float dT)
 
 void LocomotionMoveSystem::ApplyNormalMovement(
 	LocomotionMoveDelta* moveDelta, LocomotionAnimPhase* animPhase, 
-	const LocomotionState& loco, const Velocity& vel, const float dT)
+	const LocomotionState& loco, const Velocity& vel, const double dT)
 {
 	moveDelta->hasMove = false;
 	moveDelta->hasYaw = false;

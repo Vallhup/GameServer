@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "ColliderActivationSystem.h"
 
-void ColliderActivationSystem::Execute(const float dT)
+void ColliderActivationSystem::Execute(const double dT)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	auto& colliders = ecs.GetStorage<CombatCollider>();
 	auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& attackStates = ecs.GetStorage<AttackState>();

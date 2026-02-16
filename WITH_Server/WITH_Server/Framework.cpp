@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Framework.h"
 
-Framework::Framework(size_t size)
-	: game(4), network(8, 7000, listener), _running(false)
+Framework::Framework(const Game::Config& cfg)
+	: game(cfg, factory), network(4, 7000, listener), _running(false)
 {
 }
 
@@ -16,23 +16,23 @@ void Framework::Start()
 
 	_running = true;
 	network.Start();
+
+	// TEMP
+	WorldDesc desc;
+	WorldId wId = game.CreateWorld(desc, 60);
 	
-	const float dT = 1.0f / 60.0f;
 	auto prev = steady_clock::now();
 	while (_running)
 	{
 		auto now = steady_clock::now();
-		float elapsed = duration<float>(now - prev).count();
+		double elapsed = duration<double>(now - prev).count();
+		prev = now;
 
-		if (elapsed >= dT)
-		{
-			prev = now;
-			game.Update(dT);
-		}
+		game.Update(elapsed);
 	}
 
 	network.Stop();
-	game.threadPool.Stop();
+	game.Stop();
 }
 
 void Framework::Stop()

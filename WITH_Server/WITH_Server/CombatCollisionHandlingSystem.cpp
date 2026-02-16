@@ -2,9 +2,11 @@
 #include "CombatCollisionHandlingSystem.h"
 #include "Math.h"
 
-void CombatCollisionHandlingSystem::Execute(const float dT)
+void CombatCollisionHandlingSystem::Execute(const double dT)
 {
-	auto& events = ecs.combatCollisionEvents;
+	ECS& ecs = _runtime.GetECS();
+
+	auto events = _runtime.Events().Queue<CombatCollisionEvent>().ConsumeView();
 
 	for (const auto& event : events)
 	{
@@ -22,14 +24,12 @@ void CombatCollisionHandlingSystem::Execute(const float dT)
 			break;
 		}
 	}
-
-	events.clear();
 }
 
 bool CombatCollisionHandlingSystem::ConsumeHitOnce(const CombatCollisionEvent& event)
 {
 	auto* atkState = 
-		ecs.GetStorage<AttackState>().GetComponent(event.attacker);
+		_runtime.GetECS().GetStorage<AttackState>().GetComponent(event.attacker);
 	if (!atkState) return false;
 	if (atkState->attackId == event.attackId &&
 		atkState->HasHit(event.victim)) return false;
@@ -41,7 +41,7 @@ bool CombatCollisionHandlingSystem::ConsumeHitOnce(const CombatCollisionEvent& e
 void CombatCollisionHandlingSystem::HandleClash(const CombatCollisionEvent& event)
 {
 	if (const ActionState* actionState =
-		ecs.GetStorage<ActionState>().GetComponent(event.victim))
+		_runtime.GetECS().GetStorage<ActionState>().GetComponent(event.victim))
 	{
 		const bool parryWindowOn =
 			(actionState->type == ActionType::Parry) &&
@@ -58,6 +58,8 @@ void CombatCollisionHandlingSystem::HandleClash(const CombatCollisionEvent& even
 
 void CombatCollisionHandlingSystem::HandleStrike(const CombatCollisionEvent& event)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	const ActionState* actionState =
 		ecs.GetStorage<ActionState>().GetComponent(event.victim);
 
@@ -93,11 +95,17 @@ void CombatCollisionHandlingSystem::HandleParry(Entity attacker,
 	Entity victim, uint32 attackId)
 {
 	if (ParryBuf* parryBuf =
-		ecs.GetStorage<ParryBuf>().GetComponent(victim))
+		_runtime.GetECS().GetStorage<ParryBuf>().GetComponent(victim))
 	{
 		parryBuf->remaining = 1;
-		ecs.actionRequestEvents.
-			emplace_back(attacker, ActionType::Stun, AttackType::None, ActionRequestReason::FromCombat);
+		ActionRequestEvent ev
+		{
+			.entity = attacker,
+			.actionType = ActionType::Stun,
+			.attackType = AttackType::None,
+			.reason = ActionRequestReason::FromCombat
+		};
+		_runtime.Events().Queue<ActionRequestEvent>().Publish(ev);
 	}
 }
 
@@ -110,6 +118,8 @@ void CombatCollisionHandlingSystem::HandleGuard(Entity attacker,
 void CombatCollisionHandlingSystem::HandleHit(Entity attacker, 
 	Entity victim, uint32 attackId)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	auto* health = ecs.GetStorage<Health>().GetComponent(victim);
 	if (!health) return;
 
@@ -126,7 +136,7 @@ void CombatCollisionHandlingSystem::HandleHit(Entity attacker,
 				{
 					// TEMP : 데미지 공식 정해야됨
 					//        (현재는 임시로 additionalDamage만큼 배율로 때리고있음)
-					const float mul = 1.0f + pb->additionalDamage;
+					const double mul = 1.0f + pb->additionalDamage;
 					pb->remaining -= 1;
 
 					if (pb->remaining <= 0)
@@ -147,7 +157,12 @@ void CombatCollisionHandlingSystem::HandleHit(Entity attacker,
 	if (isDeath)
  		health->current = 0;
 
-	ecs.actionRequestEvents.emplace_back(victim,
-		isDeath ? ActionType::Dead : ActionType::Hit, 
-		AttackType::None, ActionRequestReason::FromCombat);
+	ActionRequestEvent ev
+	{
+		.entity = victim,
+		.actionType = isDeath ? ActionType::Dead : ActionType::Hit,
+		.attackType = AttackType::None,
+		.reason = ActionRequestReason::FromCombat
+	};
+	_runtime.Events().Queue<ActionRequestEvent>().Publish(ev);
 }

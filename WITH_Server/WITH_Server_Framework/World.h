@@ -10,7 +10,7 @@ public:
 	virtual ~IWorld() = default;
 
 	virtual void Init() = 0;
-	virtual void Update(const float dT) = 0;
+	virtual void Update(const double dT) = 0;
 	virtual void Shutdown() = 0;
 };
 
@@ -18,12 +18,15 @@ class IWorldImpl {
 public:
 	virtual ~IWorldImpl() = default;
 
+	virtual void SpawnInitial(WorldRuntime& rt) = 0;
+	virtual Entity SpawnPlayer(WorldRuntime& rt, uint32 connId) = 0;
+
 	virtual void Build(WorldRuntime& rt) = 0;
 
-	virtual void ApplyInbox(WorldRuntime& rt, float dT) {};
-	virtual void Execute(WorldRuntime& rt, float dT) = 0;
-	virtual void BuildOutbox(WorldRuntime& rt, float dT) {};
-	virtual void FlushOutbox(WorldRuntime& rt, float dT) {};
+	virtual void ApplyInbox(WorldRuntime& rt, double dT) {};
+	virtual void Execute(WorldRuntime& rt, double dT) = 0;
+	virtual void BuildOutbox(WorldRuntime& rt, double dT) {};
+	virtual void FlushOutbox(WorldRuntime& rt, double dT) {};
 
 	virtual void OnShutdown(WorldRuntime& rt) {};
 };
@@ -34,8 +37,10 @@ public:
 		std::unique_ptr<IWorldImpl> impl);
 
 	virtual void Init() override;
-	virtual void Update(const float dT) override;
+	virtual void Update(const double dT) override;
 	virtual void Shutdown() override;
+
+	Entity SpawnPlayer(uint32 connId);
 
 private:
 	WorldId _id;

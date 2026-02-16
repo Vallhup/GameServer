@@ -14,7 +14,7 @@ OutputEventSystem::OutputEventSystem(ECS& ecs, int p) : System(ecs, p)
 	_handlers[DirtyType::AnimationChanged] = [&](const OutputEvent& ev) { ProcessAnimationChange(ev); };
 }
 
-void OutputEventSystem::Execute(const float dT)
+void OutputEventSystem::Execute(const double dT)
 {
 	OutputEvent ev;
 	while (Framework::Get().outEventQueue.try_pop(ev))

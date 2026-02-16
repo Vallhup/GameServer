@@ -3,14 +3,14 @@
 #include <vector>
 #include <typeindex>
 
-class ECS;
+class WorldRuntime;
 
 class System {
 public:
-	System(ECS& e, int p = 0) : ecs(e), _priority(p) {}
+	System(WorldRuntime& rt, int p = 0) : _runtime(rt), _priority(p) {}
 	virtual ~System() = default;
 
-	virtual void Execute(const float dT) = 0;
+	virtual void Execute(const double dT) = 0;
 
 	virtual std::vector<std::type_index> ReadResources() const = 0;
 	virtual std::vector<std::type_index> WriteResources() const = 0;
@@ -21,6 +21,6 @@ public:
 	int stableOrder{ -1 };
 
 protected:
-	ECS& ecs;
+	WorldRuntime& _runtime;
 	int _priority;
 };

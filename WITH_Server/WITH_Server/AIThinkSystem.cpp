@@ -2,9 +2,11 @@
 #include "AIThinkSystem.h"
 #include "Framework.h"
 
-void AIThinkSystem::Execute(const float dT)
+void AIThinkSystem::Execute(const double dT)
 {
 	// TODO : AI 로직에 따라 ActionTransitionRequest 만들기
+	ECS& ecs = _runtime.GetECS();
+
 	const auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& aiStates = ecs.GetStorage<AIState>();
 	auto& aiThinkStates = ecs.GetStorage<AIThinkState>();
@@ -23,14 +25,23 @@ void AIThinkSystem::Execute(const float dT)
 			aiThinkState->thinkAcc -= aiThinkState->thinkInterval;
 
 			AttackType next = Think(entity, &aiState);
-			ecs.actionRequestEvents.
-				emplace_back(entity, ActionType::Attack, next, ActionRequestReason::FromAI);
+			ActionRequestEvent ev
+			{
+				.entity = entity,
+				.actionType = ActionType::Attack,
+				.attackType = next,
+				.reason = ActionRequestReason::FromAI
+			};
+
+			_runtime.Events().Queue<ActionRequestEvent>().Publish(ev);
 		}
 	}
 }
 
 AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	auto& transforms = ecs.GetStorage<Transform>();
 	const auto* selfTransform = transforms.GetComponent(self);
 	if (!selfTransform) return AttackType::None;
@@ -56,12 +67,12 @@ AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
 	const auto* targetTransform = transforms.GetComponent(aiState->target);
 	if (!targetTransform) return AttackType::None;
 
-	const float targetDx = targetTransform->position.x - selfTransform->position.x;
-	const float targetDz = targetTransform->position.z - selfTransform->position.z;
-	const float targetDistance = targetDx * targetDx + targetDz * targetDz;
+	const double targetDx = targetTransform->position.x - selfTransform->position.x;
+	const double targetDz = targetTransform->position.z - selfTransform->position.z;
+	const double targetDistance = targetDx * targetDx + targetDz * targetDz;
 
 	// 메테오 조건
-	const float nearDistance{ 5.0 * 5.0f };
+	const double nearDistance{ 5.0 * 5.0f };
 	int nearCount{ 0 };
 
 	auto& players = ecs.GetStorage<PlayerTag>();
@@ -73,9 +84,9 @@ AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
 		const auto* pTransform = transforms.GetComponent(entity);
 		if (!pTransform) continue;
 
-		const float dx = pTransform->position.x - selfTransform->position.x;
-		const float dz = pTransform->position.z - selfTransform->position.z;
-		const float distance = dx * dx + dz * dz;
+		const double dx = pTransform->position.x - selfTransform->position.x;
+		const double dz = pTransform->position.z - selfTransform->position.z;
+		const double distance = dx * dx + dz * dz;
 
 		if (distance <= nearDistance) 
 			nearCount++;
@@ -83,8 +94,8 @@ AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
 
 	AttackType out{ AttackType::None };
 
-	const float midDistance{ 10.0 * 10.0 };
-	const float farDistance{ 15.0 * 15.0 };
+	const double midDistance{ 10.0 * 10.0 };
+	const double farDistance{ 15.0 * 15.0 };
 
 	if (nearCount >= 2 && rand() % 100 > 70)
 		out = AttackType::Meteor;
@@ -120,7 +131,7 @@ Entity AIThinkSystem::FindTargetPlayer(Entity self, const AIState& aiState, cons
 {
 	if (aiState.lastAttacker.id != -1)
 	{
-		if (!ecs.GetStorage<DisconnectedTag>().HasComponent(aiState.lastAttacker))
+		if (!_runtime.GetECS().GetStorage<DisconnectedTag>().HasComponent(aiState.lastAttacker))
 			return aiState.lastAttacker;
 	}
 
@@ -129,11 +140,13 @@ Entity AIThinkSystem::FindTargetPlayer(Entity self, const AIState& aiState, cons
 
 Entity AIThinkSystem::FindFarthestPlayer(Entity self, const Transform& selfTrans)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	const auto& transforms = ecs.GetStorage<Transform>();
 	auto& players = ecs.GetStorage<PlayerTag>();
 
 	Entity best;
-	float bestDistance{ 0.0f };
+	double bestDistance{ 0.0f };
 
 	for (const auto& [entity, player] : players)
 	{
@@ -143,9 +156,9 @@ Entity AIThinkSystem::FindFarthestPlayer(Entity self, const Transform& selfTrans
 		const auto* transform = transforms.GetComponent(entity);
 		if (!transform) continue;
 
-		const float dx = transform->position.x - selfTrans.position.x;
-		const float dz = transform->position.z - selfTrans.position.z;
-		const float distance = dx * dx + dz * dz;
+		const double dx = transform->position.x - selfTrans.position.x;
+		const double dz = transform->position.z - selfTrans.position.z;
+		const double distance = dx * dx + dz * dz;
 
 		if (bestDistance < distance)
 		{

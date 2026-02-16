@@ -2,8 +2,10 @@
 #include "MovementApplySystem.h"
 #include "Framework.h"
 
-void MovementApplySystem::Execute(const float dT)
+void MovementApplySystem::Execute(const double dT)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	auto& transforms = ecs.GetStorage<Transform>();
 	auto& aDeltas = ecs.GetStorage<ActionMoveDelta>();
 	auto& lDeltas = ecs.GetStorage<LocomotionMoveDelta>();
@@ -21,7 +23,7 @@ void MovementApplySystem::Execute(const float dT)
 }
 
 void MovementApplySystem::MovementApply(Entity entity, Transform* trans, 
-	ActionMoveDelta* aDelta, LocomotionMoveDelta* lDelta, const float dT)
+	ActionMoveDelta* aDelta, LocomotionMoveDelta* lDelta, const double dT)
 {
 	XMFLOAT3 totalMoveDelta{ 0, 0, 0 };
 	bool moved{ false };

@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "AnimationFrameSystem.h"
 
-void AnimationFrameSystem::Execute(const float dT)
+void AnimationFrameSystem::Execute(const double dT)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& animStates = ecs.GetStorage<AnimationState>();
 	auto& animators = ecs.GetStorage<Animator>();

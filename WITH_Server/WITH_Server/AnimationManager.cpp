@@ -77,7 +77,7 @@ PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
 	if(version != 2)
 		throw std::runtime_error("지원하지 않는 애니메이션 버전: " + std::to_string(version));
 
-	anim.fps = j.at("fps").get<float>();
+	anim.fps = j.at("fps").get<double>();
 
 	const int numFrames = j.at("numFrames").get<int>();
 	if(numFrames <= 0 || numFrames > 255)
@@ -99,7 +99,7 @@ PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
 
 		StaticCapsuleData sCapData;
 		sCapData.bone = static_cast<uint8>(boneIndex);
-		sCapData.radius = jCap.at("radius").get<float>() * 0.01f;
+		sCapData.radius = jCap.at("radius").get<double>() * 0.01f;
 		sCapData.typeMask = RolesToMask(jCap.value("roles", json::array()));
 
 		anim.staticDatas[i] = sCapData;
@@ -131,14 +131,14 @@ PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
 
 			DynamicCapsuleData dCapData;
 			dCapData.p0 = XMFLOAT3(
-				item.at("p0")[0].get<float>() * 0.01f,
-				item.at("p0")[1].get<float>() * 0.01f,
-				item.at("p0")[2].get<float>() * 0.01f);
+				item.at("p0")[0].get<double>() * 0.01f,
+				item.at("p0")[1].get<double>() * 0.01f,
+				item.at("p0")[2].get<double>() * 0.01f);
 
 			dCapData.p1 = XMFLOAT3(
-				item.at("p1")[0].get<float>() * 0.01f,
-				item.at("p1")[1].get<float>() * 0.01f,
-				item.at("p1")[2].get<float>() * 0.01f);
+				item.at("p1")[0].get<double>() * 0.01f,
+				item.at("p1")[1].get<double>() * 0.01f,
+				item.at("p1")[2].get<double>() * 0.01f);
 
 			anim.dynamicDatas[frame][i] = dCapData;
 		}

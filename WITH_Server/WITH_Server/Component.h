@@ -3,10 +3,9 @@
 #include "AnimationManager.h"
 #include "ActionManager.h"
 #include "Entity.h"
+#include "Component.h"
 
 using namespace DirectX;
-
-struct Component { };
 
 struct Transform : public Component {
 	XMFLOAT3 position{ 10.0f, 0, 10.0f };
@@ -23,18 +22,18 @@ struct ActionMoveDelta : public Component {
 	bool hasMove{ false };
 	XMFLOAT3 deltaPos{ 0, 0,0 };
 	bool hasYaw{ false };
-	float yaw{ 0.0f };
+	double yaw{ 0.0f };
 };
 
 struct LocomotionMoveDelta : public Component {
 	bool hasMove{ false };
 	XMFLOAT3 deltaPos{ 0, 0,0 };
 	bool hasYaw{ false };
-	float yaw{ 0.0f };
+	double yaw{ 0.0f };
 };
 
 struct LocomotionAnimPhase : public Component {
-	float phase{ 0.0f };
+	double phase{ 0.0f };
 	bool wasMoving{ false };
 };
 
@@ -57,14 +56,14 @@ struct AIState : public Component {
 };
 
 struct AIThinkState : public Component {
-	float thinkAcc{ 0.0f };
-	float thinkInterval{ 5.0f };
+	double thinkAcc{ 0.0f };
+	double thinkInterval{ 5.0f };
 };
 
 struct ActionState : public Component {
 	ActionType type{ ActionType::None };
-	float elapsed{ 0.0f };
-	float duration{ 0.0f };
+	double elapsed{ 0.0f };
+	double duration{ 0.0f };
 };
 
 struct AttackData : public Component {
@@ -78,7 +77,7 @@ struct Health : public Component {
 
 struct AnimationState : public Component {
 	AnimationType desiredId{ AnimationType::Knight_Idle };
-	float speed{ 1.0f };
+	double speed{ 1.0f };
 	bool looping{ true };
 };
 
@@ -131,17 +130,17 @@ struct ViewList : public Component {
 struct ParryBuf : public Component {
 	int remaining{ 0 };
 	// TEMP : Parry 성공 시 추가 데미지
-	float additionalDamage{ 1.0f };
+	double additionalDamage{ 1.0f };
 };
 
-struct DisconnectedTag :public Component { };
-struct PlayerTag :public Component { };
+struct DisconnectedTag :public TagComponent { };
+struct PlayerTag :public TagComponent { };
 
-struct ActionMoveTag : public Component {
+struct ActionMoveTag : public TagComponent {
 	const ActionProfile* profile{ nullptr };
 
 	uint8 segmentIndex{ 0 };
-	float movedInSegment{ 0.0f };
+	double movedInSegment{ 0.0f };
 
 	XMFLOAT3 dir{ 0, 0, 0 };
 	bool dirLocked{ false };

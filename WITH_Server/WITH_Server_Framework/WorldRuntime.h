@@ -2,22 +2,30 @@
 
 #include "ECS.h"
 #include "JobGraph.h"
+#include "EventRegistry.h"
+
+class IWorldImpl;
 
 class WorldRuntime {
 public:
-	WorldRuntime(ThreadPool& pool);
+	WorldRuntime(ThreadPool& pool, IWorldImpl& impl);
 
 	void GraphBuild();
-	void Run(const float dT);
+	void Run(const double dT);
+
+	Entity SpawnPlayer(uint32 connId);
 
 	ECS& GetECS() { return _ecs; }
 	const ECS& GetECS() const { return _ecs; }
 
+	EventRegistry& Events() { return _events; }
+	const EventRegistry& Events() const { return _events; }
+
 	// void Commit();
 
 private:
-	void RunPre(const float dT);
-	void RunPost(const float dT);
+	void RunPre(const double dT);
+	void RunPost(const double dT);
 
 	friend class ECS;
 
@@ -25,7 +33,10 @@ private:
 	JobGraph _graph;
 	ThreadPool& _threadPool;
 
-	float _deltaTime;
+	EventRegistry _events;
+	IWorldImpl& _impl;
+
+	double _deltaTime;
 	bool _graphBuilt;
 
 	// CommandBuffer _commandBuffer;

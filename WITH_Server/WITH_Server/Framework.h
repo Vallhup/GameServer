@@ -3,6 +3,8 @@
 #include "Game.h"
 #include "Network.h"
 #include "ServerConnectionListener.h"
+#include "NetIdRegistry.h"
+#include "TestWorldFactory.h"
 
 class Framework {
 public:
@@ -12,7 +14,7 @@ public:
 		return framework;
 	}
 
-	Framework(size_t size = std::thread::hardware_concurrency());
+	Framework(const Game::Config& cfg = { 4, 64 });
 
 	void Start();
 	void Stop();
@@ -23,6 +25,9 @@ public:
 	std::unordered_map<uint32, Entity> sessionToEntity;
 	std::unordered_map<Entity, uint32> entityToSession;
 
+	NetIdRegistry netIdRegistry;
+
+	TestWorldFactory factory;
 	ServerConnectionListener listener;
 	Network network;
 	Game game;

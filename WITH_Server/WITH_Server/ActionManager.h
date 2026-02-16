@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types.h"
+
 enum class AttackType : uint8 {
 	None,
 
@@ -15,6 +17,8 @@ enum class AttackType : uint8 {
 	CloseSlash,
 	Meteor,
 };
+
+constexpr uint32 ToInt(AttackType type) { return static_cast<uint32>(type); }
 
 enum class ActionType : uint8 {
 	None,
@@ -44,9 +48,9 @@ constexpr size_t ActionCount = ToIndex(ActionType::Count);
 constexpr uint32 Bit(ActionType type) { return (uint32)1u << ToIndex(type); }
 
 struct ActionMoveSegment {
-	float t0;
-	float t1;
-	float distance;
+	double t0;
+	double t1;
+	double distance;
 	bool lockDir;
 };
 
@@ -56,7 +60,7 @@ struct ActionProfile {
 
 struct ActionPolicy {
 	int32 priority{ 0 };
-	float duration{ 0 };
+	double duration{ 0 };
 	uint32 interruptMask{ 0 };
 	bool isMoveAction{ false };
 	bool isHoldAction{ false };

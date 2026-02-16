@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "ActionTimeSystem.h"
 
-void ActionTimeSystem::Execute(const float dT)
+void ActionTimeSystem::Execute(const double dT)
 {
-	auto& actions = ecs.GetStorage<ActionState>();
+	auto& actions = _runtime.GetECS().GetStorage<ActionState>();
 
 	for (const auto& [entity, action] : actions)
 	{
-		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
+		if (_runtime.GetECS().GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
 		if (action.type == ActionType::None) continue;
 
 		action.elapsed += dT;

@@ -1,21 +1,20 @@
 #pragma once
 
-#include "ECS.h"
 #include "System.h"
 
 class ColliderActivationSystem : public System {
 public:
-	ColliderActivationSystem(ECS& e, int p = 0) : System(e, p) {}
+	ColliderActivationSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
 	virtual ~ColliderActivationSystem() = default;
 
-	virtual void Execute(const float dT) override;
+	virtual void Execute(const double dT) override;
 
-	virtual std::vector<std::type_index> ReadComponents() const override
+	virtual std::vector<std::type_index> ReadResources() const override
 	{
 		return { typeid(ActionState) };
 	}
 
-	virtual std::vector<std::type_index> WriteComponents() const override
+	virtual std::vector<std::type_index> WriteResources() const override
 	{
 		return { typeid(AttackState), typeid(CombatCollider) };
 	}

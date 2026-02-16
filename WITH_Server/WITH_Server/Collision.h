@@ -23,20 +23,20 @@
 //   - 우리 알빠는 아닌듯
 //   - 이거도 뭔말인지 잘 모르겠음
 
-inline float Dot3(XMVECTOR a, XMVECTOR b)
+inline double Dot3(XMVECTOR a, XMVECTOR b)
 {
 	return XMVectorGetX(XMVector3Dot(a, b));
 }
 
-inline float Clamp01(float x)
+inline double Clamp01(double x)
 {
-	return std::clamp(x, 0.0f, 1.0f);
+	return std::clamp<double>(x, 0.0, 1.0);
 }
 
 struct CapsuleView {
 	XMFLOAT3 p0;
 	XMFLOAT3 p1;
-	float radius;
+	double radius;
 };
 
 inline CapsuleView MakeCapsuleView(const CombatCollider& collider, size_t i)
@@ -50,7 +50,7 @@ inline CapsuleView MakeCapsuleView(const CombatCollider& collider, size_t i)
 }
 
 inline CapsuleView MakeCapsuleView(const XMFLOAT3& center, const XMFLOAT3& dir,
-	float halfHeight, float radius)
+	double halfHeight, double radius)
 {
 	CapsuleView out;
 	out.radius = radius;
@@ -67,20 +67,20 @@ inline CapsuleView MakeCapsuleView(const XMFLOAT3& center, const XMFLOAT3& dir,
 }
 
 namespace Collision {
-	static float SegmentSegmentDistSq(XMVECTOR p1, XMVECTOR q1, XMVECTOR p2, XMVECTOR q2)
+	static double SegmentSegmentDistSq(XMVECTOR p1, XMVECTOR q1, XMVECTOR p2, XMVECTOR q2)
 	{
-		constexpr float EPS = 1e-8f;
+		constexpr double EPS = 1e-8f;
 
 		XMVECTOR d1 = q1 - p1; // 방향1
 		XMVECTOR d2 = q2 - p2; // 방향2
 		XMVECTOR r = p1 - p2;
 
-		float a = Dot3(d1, d1); // |d1|^2
-		float e = Dot3(d2, d2); // |d2|^2
-		float f = Dot3(d2, r);
+		double a = Dot3(d1, d1); // |d1|^2
+		double e = Dot3(d2, d2); // |d2|^2
+		double f = Dot3(d2, r);
 
-		float s = 0.0f;
-		float t = 0.0f;
+		double s = 0.0f;
+		double t = 0.0f;
 
 		// 두 선분이 둘 다 점인 경우
 		if (a <= EPS && e <= EPS)
@@ -94,7 +94,7 @@ namespace Collision {
 		}
 		else
 		{
-			float c = Dot3(d1, r);
+			double c = Dot3(d1, r);
 
 			// 두 번째 선분이 점인 경우
 			if (e <= EPS)
@@ -104,8 +104,8 @@ namespace Collision {
 			}
 			else
 			{
-				float b = Dot3(d1, d2);
-				float denom = a * e - b * b;
+				double b = Dot3(d1, d2);
+				double denom = a * e - b * b;
 
 				// 일반적인 경우: 내부 해
 				if (fabsf(denom) > EPS)
@@ -143,17 +143,9 @@ namespace Collision {
 		XMVECTOR c2A = XMLoadFloat3(&c2.p0);
 		XMVECTOR c2B = XMLoadFloat3(&c2.p1);
 
-		float distSq = SegmentSegmentDistSq(c1A, c1B, c2A, c2B);
-		float R = c1.radius + c2.radius;
+		double distSq = SegmentSegmentDistSq(c1A, c1B, c2A, c2B);
+		double R = c1.radius + c2.radius;
 
 		return distSq <= R * R;
-	}
-
-	inline bool CheckAABBVsAABB(const AABB& a, const AABB& b)
-	{
-		if (a.max.x < b.min.x || a.min.x > b.max.x) return false;
-		if (a.max.y < b.min.y || a.min.y > b.max.y) return false;
-		if (a.max.z < b.min.z || a.min.z > b.max.z) return false;
-		return true;
 	}
 }

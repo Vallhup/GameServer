@@ -3,8 +3,8 @@
 #include "Framework.h"
 #include "Math.h"
 
-ActionTransitionSystem::ActionTransitionSystem(ECS& e, int p)
-	: System(e, p)
+ActionTransitionSystem::ActionTransitionSystem(WorldRuntime& rt, int p)
+	: System(rt, p)
 {
 	for (auto& transitionRule : _transitionRules)
 	{
@@ -15,10 +15,12 @@ ActionTransitionSystem::ActionTransitionSystem(ECS& e, int p)
 	LoadTransitionRules();
 }
 
-void ActionTransitionSystem::Execute(const float dT)
+void ActionTransitionSystem::Execute(const double dT)
 {
-	auto& events = ecs.actionRequestEvents;
-	DedupActionRequest(events);
+	auto evView = _runtime.Events().Queue<ActionRequestEvent>().ConsumeView();
+	auto events = DedupActionRequest(evView);
+
+	auto& ecs = _runtime.GetECS();
 
 	auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& intents = ecs.GetStorage<ActionIntent>();
@@ -78,8 +80,6 @@ void ActionTransitionSystem::Execute(const float dT)
 		else if (next == ActionType::None)
 			ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
 	}
-
-	events.clear();
 }
 
 ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current, 
@@ -118,6 +118,8 @@ ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current,
 void ActionTransitionSystem::ApplyTransition(Entity entity, ActionState* state, 
 	ActionType next)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	const ActionType prev = state->type;
 	const auto& aM = ActionManager::Get();
 
@@ -150,9 +152,9 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, ActionState* state,
 	}
 }
 
-void ActionTransitionSystem::DedupActionRequest(std::vector<ActionRequestEvent>& events)
+std::span<ActionRequestEvent> ActionTransitionSystem::DedupActionRequest(std::span<ActionRequestEvent> events)
 {
-	if (events.empty()) return;
+	if (events.empty()) return events;
 
 	std::sort(events.begin(), events.end(),
 		[&](const ActionRequestEvent& a, const ActionRequestEvent& b)
@@ -165,11 +167,14 @@ void ActionTransitionSystem::DedupActionRequest(std::vector<ActionRequestEvent>&
 			return aPriority > bPriority;
 		});
 
-	events.erase(std::unique(events.begin(), events.end(),
-		[](const ActionRequestEvent& a, const ActionRequestEvent& b)
-		{
-			return a.entity == b.entity;
-		}), events.end());
+	size_t w{ 0 };
+	for (size_t i = 0; i < events.size(); ++i)
+	{
+		if (w == 0 || events[i].entity != events[w - 1].entity)
+			events[w++] = events[i];
+	}
+
+	return events.first(w);
 }
 
 void ActionTransitionSystem::LoadTransitionRules()

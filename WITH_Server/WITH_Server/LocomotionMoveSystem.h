@@ -1,22 +1,21 @@
 #pragma once
 
-#include "ECS.h"
 #include "System.h"
 
 class LocomotionMoveSystem : public System {
 public:
-	LocomotionMoveSystem(ECS& e, int p = 0) : System(e, p) {}
+	LocomotionMoveSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
 	virtual ~LocomotionMoveSystem() = default;
 
-	virtual void Execute(const float dT) override;
+	virtual void Execute(const double dT) override;
 
-	virtual std::vector<std::type_index> ReadComponents() const override
+	virtual std::vector<std::type_index> ReadResources() const override
 	{
 		return { typeid(Velocity), typeid(LocomotionState),
 		typeid(ActionState) };
 	}
 
-	virtual std::vector<std::type_index> WriteComponents() const override
+	virtual std::vector<std::type_index> WriteResources() const override
 	{
 		return { typeid(LocomotionMoveDelta) };
 	}
@@ -24,6 +23,6 @@ public:
 private:
 	void ApplyNormalMovement(LocomotionMoveDelta* moveDelta,
 		LocomotionAnimPhase* animPhase, const LocomotionState& loco, 
-		const Velocity& vel, const float dT);
+		const Velocity& vel, const double dT);
 };
 

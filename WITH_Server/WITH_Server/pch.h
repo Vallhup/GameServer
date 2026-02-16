@@ -24,10 +24,11 @@
 
 #include "Asio_Network_Library.h"
 #include "ProtocolLib.h"
+#include "WITH_Server_Framework.h"
 
 #pragma comment(lib, "Asio_Network_Library.lib")
+#pragma comment(lib, "WITH_Server_Framework.lib")
 
-#include "ECS.h"
 #include "ActionManager.h"
 #include "AnimationManager.h"
 #include "DBManager.h"

@@ -2,13 +2,12 @@
 #include "CombatCollisionCheckSystem.h"
 #include "Collision.h"
 
-void CombatCollisionCheckSystem::Execute(const float dT)
+void CombatCollisionCheckSystem::Execute(const double dT)
 {
-	auto& colliders = ecs.GetStorage<CombatCollider>();
-	auto& events = ecs.combatCollisionEvents;
+	ECS& ecs = _runtime.GetECS();
 
-	events.clear();
-	events.reserve(128);
+	auto& colliders = ecs.GetStorage<CombatCollider>();
+	auto events = _runtime.Events().Queue<CombatCollisionEvent>().ConsumeView();
 
 	std::vector<Entity> entities;
 	entities.reserve(colliders.Size());
@@ -85,13 +84,13 @@ void CombatCollisionCheckSystem::CheckCollision(Entity attacker,
 {
 	if (aActives.offensiveHits.empty()) return;
 
-	auto& events = ecs.combatCollisionEvents;
+	auto events = _runtime.Events().Queue<CombatCollisionEvent>();
 
 	CheckCollisionInternal(attacker, aCol, aActives.offensiveHits,
 		victim, vCol, vActives.hurts,
 		[&](Entity a, Entity v, uint32 atkId, uint16 aOffHit, uint16 vTarget)
 		{
-			events.push_back({
+			events.Publish({
 				CollisionType::Strike,
 				a, v, atkId, aOffHit, vTarget });
 		});
@@ -100,7 +99,7 @@ void CombatCollisionCheckSystem::CheckCollision(Entity attacker,
 		victim, vCol, vActives.defensiveHits,
 		[&](Entity a, Entity v, uint32 atkId, uint16 aOffHit, uint16 vTarget)
 		{
-			events.push_back({
+			events.Publish({
 				CollisionType::Clash,
 				a, v, atkId, aOffHit, vTarget });
 		});

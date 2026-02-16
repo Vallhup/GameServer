@@ -1,20 +1,19 @@
 #pragma once
 
-#include "ECS.h"
 #include "System.h"
 
 class ActionTransitionSystem : public System {
 public:
-	ActionTransitionSystem(ECS& e, int p = 0);
+	ActionTransitionSystem(WorldRuntime& rt, int p = 0);
 	virtual ~ActionTransitionSystem() = default;
 
-	virtual void Execute(const float dT) override;
-	virtual std::vector<std::type_index> ReadComponents() const override
+	virtual void Execute(const double dT) override;
+	virtual std::vector<std::type_index> ReadResources() const override
 	{
 		return { typeid(Velocity), typeid(ActionIntent) };
 	}
 
-	virtual std::vector<std::type_index> WriteComponents() const override
+	virtual std::vector<std::type_index> WriteResources() const override
 	{
 		return { typeid(ActionMoveTag), typeid(ActionRequestEvent) };
 	}
@@ -22,7 +21,8 @@ public:
 private:
 	ActionType ResolveNextAction(const ActionState& current, ActionRequestEvent request, bool guardHeld, bool isForced);
 	void ApplyTransition(Entity entity, ActionState* state, ActionType next);
-	void DedupActionRequest(std::vector<ActionRequestEvent>& events);
+	std::span<ActionRequestEvent> DedupActionRequest(std::span<ActionRequestEvent> events);
+	
 
 	void LoadTransitionRules();
 	void SetRule(ActionType cur, ActionType req, ActionType next);

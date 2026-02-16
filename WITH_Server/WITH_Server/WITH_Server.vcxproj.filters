@@ -2,15 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Component.cpp">
-      <Filter>ECS\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentStorage.cpp">
-      <Filter>ECS\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>ECS\Entity</Filter>
-    </ClCompile>
     <ClCompile Include="ActionTimeSystem.cpp">
       <Filter>ECS\System\Logic\Action</Filter>
     </ClCompile>
@@ -29,38 +20,17 @@
     <ClCompile Include="EventSystem.cpp">
       <Filter>ECS\System\Event</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="GameWorld.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="Framework.cpp">
       <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Instance.cpp">
-      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="ObjectPoolManager.cpp">
       <Filter>Utility\ObjectPool</Filter>
     </ClCompile>
-    <ClCompile Include="ECS.cpp">
-      <Filter>ECS</Filter>
-    </ClCompile>
     <ClCompile Include="OutputEventSystem.cpp">
       <Filter>ECS\System\Event</Filter>
     </ClCompile>
-    <ClCompile Include="ConnectionManager.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="NetworkHandler.cpp">
       <Filter>Network\Protocol\Event</Filter>
-    </ClCompile>
-    <ClCompile Include="Job.cpp">
-      <Filter>JobGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="JobGraph.cpp">
-      <Filter>JobGraph</Filter>
     </ClCompile>
     <ClCompile Include="Network.cpp">
       <Filter>Network</Filter>
@@ -71,14 +41,8 @@
     <ClCompile Include="pch.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="System.cpp">
-      <Filter>ECS\System\Base</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
-    </ClCompile>
-    <ClCompile Include="ThreadPool.cpp">
-      <Filter>JobGraph</Filter>
     </ClCompile>
     <ClCompile Include="ActionMoveSystem.cpp">
       <Filter>ECS\System\Logic\Move</Filter>
@@ -88,9 +52,6 @@
     </ClCompile>
     <ClCompile Include="MovementApplySystem.cpp">
       <Filter>ECS\System\Logic\Move</Filter>
-    </ClCompile>
-    <ClCompile Include="SystemManager.cpp">
-      <Filter>ECS\System\Base</Filter>
     </ClCompile>
     <ClCompile Include="AnimationSelectSystem.cpp">
       <Filter>ECS\System\Logic\Animation</Filter>
@@ -128,16 +89,22 @@
     <ClCompile Include="MapCollisionManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="TestWorldImpl.cpp">
+      <Filter>Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="TestWorldFactory.cpp">
+      <Filter>Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="NetIdMap.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h">
       <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentStorage.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>ECS\Entity</Filter>
     </ClInclude>
     <ClInclude Include="ActionTimeSystem.h">
       <Filter>ECS\System\Logic\Action</Filter>
@@ -157,17 +124,8 @@
     <ClInclude Include="EventSystem.h">
       <Filter>ECS\System\Event</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="GameWorld.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="Framework.h">
       <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Instance.h">
-      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="ObjectPool.hpp">
       <Filter>Utility\ObjectPool</Filter>
@@ -175,14 +133,8 @@
     <ClInclude Include="ObjectPoolManager.h">
       <Filter>Utility\ObjectPool</Filter>
     </ClInclude>
-    <ClInclude Include="ECS.h">
-      <Filter>ECS</Filter>
-    </ClInclude>
     <ClInclude Include="OutputEventSystem.h">
       <Filter>ECS\System\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="ConnectionManager.h">
-      <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Utility</Filter>
@@ -190,17 +142,8 @@
     <ClInclude Include="Constants.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Event.h">
-      <Filter>Network\Protocol\Event</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkHandler.h">
       <Filter>Network\Protocol\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="Job.h">
-      <Filter>JobGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="JobGraph.h">
-      <Filter>JobGraph</Filter>
     </ClInclude>
     <ClInclude Include="Network.h">
       <Filter>Network</Filter>
@@ -210,12 +153,6 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="System.h">
-      <Filter>ECS\System\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="SystemManager.h">
-      <Filter>ECS\System\Base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
@@ -231,9 +168,6 @@
     </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="ThreadPool.h">
-      <Filter>JobGraph</Filter>
     </ClInclude>
     <ClInclude Include="ActionMoveSystem.h">
       <Filter>ECS\System\Logic\Move</Filter>
@@ -283,6 +217,21 @@
     <ClInclude Include="stb_image.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="TestWorldImpl.h">
+      <Filter>Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="TestWorldFactory.h">
+      <Filter>Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="NetIdMap.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -290,9 +239,6 @@
     </Filter>
     <Filter Include="ECS\Component">
       <UniqueIdentifier>{f04ffe61-2a37-4820-a97d-98b07a2a6d8a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\Entity">
-      <UniqueIdentifier>{c302d12d-cc6b-4774-a307-7c17917bf42f}</UniqueIdentifier>
     </Filter>
     <Filter Include="ECS\System">
       <UniqueIdentifier>{b2e11ff7-5e39-4797-a38d-c464d9aeb598}</UniqueIdentifier>
@@ -327,9 +273,6 @@
     <Filter Include="Utility\ObjectPool">
       <UniqueIdentifier>{3e0ee908-b3d3-4e42-b75d-40f65bd9e33c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\System\Base">
-      <UniqueIdentifier>{650bbd2b-1a68-442d-bc92-1803efb17277}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Network">
       <UniqueIdentifier>{bedaecbc-eb80-482e-8572-f7b890b448fb}</UniqueIdentifier>
     </Filter>
@@ -342,9 +285,6 @@
     <Filter Include="Network\Protocol\Event">
       <UniqueIdentifier>{df32984b-2291-4010-99a8-cdefc1d7d826}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JobGraph">
-      <UniqueIdentifier>{aca7f12a-f10c-48cb-a60f-19de8030d8aa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ECS\System\Logic\Move">
       <UniqueIdentifier>{7d221b54-761f-48a6-8fdc-869029a9e9b1}</UniqueIdentifier>
     </Filter>
@@ -356,6 +296,9 @@
     </Filter>
     <Filter Include="ECS\System\Logic\AI">
       <UniqueIdentifier>{44555b47-8095-4a1f-8a1a-98f11988c98c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World">
+      <UniqueIdentifier>{79fd08d1-3e39-412f-9d86-eec9a69015bd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

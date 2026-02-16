@@ -71,23 +71,23 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -176,23 +176,16 @@
     <ClCompile Include="CombatCollisionCheckSystem.cpp" />
     <ClCompile Include="CombatCollisionDedupSystem.cpp" />
     <ClCompile Include="CombatCollisionHandlingSystem.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="ComponentStorage.cpp" />
     <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="EventSystem.cpp" />
-    <ClCompile Include="ECS.cpp" />
-    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="LocomotionMoveSystem.cpp" />
     <ClCompile Include="MapCollisionManager.cpp" />
     <ClCompile Include="MovementApplySystem.cpp" />
+    <ClCompile Include="NetIdMap.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="NetworkHandler.cpp" />
     <ClCompile Include="Framework.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameWorld.cpp" />
-    <ClCompile Include="Instance.cpp" />
-    <ClCompile Include="Job.cpp" />
-    <ClCompile Include="JobGraph.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ObjectPoolManager.cpp" />
     <ClCompile Include="OutputEventSystem.cpp" />
@@ -203,10 +196,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ServerConnectionListener.cpp" />
-    <ClCompile Include="ConnectionManager.cpp" />
-    <ClCompile Include="System.cpp" />
-    <ClCompile Include="SystemManager.cpp" />
-    <ClCompile Include="ThreadPool.cpp" />
+    <ClCompile Include="TestWorldFactory.cpp" />
+    <ClCompile Include="TestWorldImpl.cpp" />
     <ClCompile Include="ViewProcessingSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -228,25 +219,19 @@
     <ClInclude Include="CombatCollisionDedupSystem.h" />
     <ClInclude Include="CombatCollisionHandlingSystem.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="ComponentStorage.h" />
     <ClInclude Include="DBManager.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="EventSystem.h" />
     <ClInclude Include="Constants.h" />
-    <ClInclude Include="ECS.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="Event.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="LocomotionMoveSystem.h" />
     <ClInclude Include="MapCollisionManager.h" />
     <ClInclude Include="MovementApplySystem.h" />
     <ClInclude Include="NetHelper.h" />
+    <ClInclude Include="NetIdMap.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="NetworkHandler.h" />
     <ClInclude Include="Framework.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameWorld.h" />
-    <ClInclude Include="Instance.h" />
-    <ClInclude Include="Job.h" />
-    <ClInclude Include="JobGraph.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="LF_Stack.h" />
     <ClInclude Include="Math.h" />
@@ -255,11 +240,9 @@
     <ClInclude Include="OutputEventSystem.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ServerConnectionListener.h" />
-    <ClInclude Include="ConnectionManager.h" />
     <ClInclude Include="stb_image.h" />
-    <ClInclude Include="System.h" />
-    <ClInclude Include="SystemManager.h" />
-    <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="TestWorldFactory.h" />
+    <ClInclude Include="TestWorldImpl.h" />
     <ClInclude Include="ViewProcessingSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

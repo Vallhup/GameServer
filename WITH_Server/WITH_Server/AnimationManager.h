@@ -35,12 +35,12 @@ struct DynamicCapsuleData {
 
 struct StaticCapsuleData {
 	uint8 bone{ 0 };
-	float radius{ 0.0f };
+	double radius{ 0.0f };
 	uint8 typeMask{ static_cast<uint8>(HitboxType::None) };
 };
 
 struct PrebakedAnimation {
-	float fps;
+	double fps;
 	uint16 numFrames;
 
 	std::vector<StaticCapsuleData> staticDatas;

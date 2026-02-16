@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "EventQueue.h"
+#include "WorldDesc.h"
 
 class EventRegistry {
 public:
@@ -12,7 +13,7 @@ public:
 	EventQueue<T, SingleThreadBuffer>& Queue()
 	{
 		using HolderT = QueueHolder<T, SingleThreadBuffer>;
-		const std::type_index key = stD::type_index(typeid(T));
+		const std::type_index key = std::type_index(typeid(T));
 
 		auto it = _queues.find(key);
 		if (it == _queues.end())
@@ -64,3 +65,8 @@ private:
 	std::unordered_map<std::type_index, std::unique_ptr<IQueueHolder>> _queues;
 };
 
+//static void RegisterWorldEvents(EventRegistry& registry, const WorldDesc& desc)
+//{
+//	(void)registry.Queue<CombatCollisionEvent>();
+//	(void)registry.Queue<ActionRequestEvent>();
+//}

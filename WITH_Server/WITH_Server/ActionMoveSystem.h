@@ -1,21 +1,20 @@
 #pragma once
 
-#include "ECS.h"
 #include "System.h"
 
 class ActionMoveSystem : public System {
 public:
-	ActionMoveSystem(ECS& e, int p = 0) : System(e, p) {}
+	ActionMoveSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
 	virtual ~ActionMoveSystem() = default;
 
-	virtual void Execute(const float dT) override;
+	virtual void Execute(const double dT) override;
 
-	virtual std::vector<std::type_index> ReadComponents() const override
+	virtual std::vector<std::type_index> ReadResources() const override
 	{
 		return { typeid(Velocity), typeid(ActionState) };
 	}
 
-	virtual std::vector<std::type_index> WriteComponents() const override
+	virtual std::vector<std::type_index> WriteResources() const override
 	{
 		return { typeid(ActionMoveDelta), typeid(ActionMoveTag) };
 	}
@@ -24,5 +23,5 @@ private:
 	bool CanMove(ActionType type);
 	void ApplyActionMovement(ActionMoveTag* actionMove, 
 		ActionMoveDelta* actionDelta, const ActionState& actionState,
-		const Velocity& vel, const float dT);
+		const Velocity& vel, const double dT);
 };

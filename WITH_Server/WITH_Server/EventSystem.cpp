@@ -5,7 +5,7 @@
 #include "Entity.h"
 #include "Component.h"
 
-EventSystem::EventSystem(ECS& e, int p) : System(e, p) 
+EventSystem::EventSystem(WorldRuntime& rt, int p) : System(rt, p) 
 {
 	_handlers[EventType::EV_CONNECT] = [&](const Event& ev) { ProcessConnect(ev); };
 	_handlers[EventType::EV_DISCONNECT] = [&](const Event& ev) { ProcessDisconnect(ev); };
@@ -13,7 +13,7 @@ EventSystem::EventSystem(ECS& e, int p) : System(e, p)
 	_handlers[EventType::EV_ACTION] = [&](const Event& ev) { ProcessAction(ev); };
 }
 
-void EventSystem::Execute(const float dT)
+void EventSystem::Execute(const double dT)
 {
 	Event ev;
 	while (Framework::Get().eventQueue.try_pop(ev))
@@ -38,26 +38,7 @@ void EventSystem::ProcessConnect(const Event& event)
 	std::cout << "[EventSystem] Player[" << p->sessionId << "] Login\n";
 #endif
 
-	Entity entity = ecs.entityMng.CreatePlayer(p->sessionId);
-
-	// TODO : Entity¿¡ Component Ãß°¡
-	ecs.GetStorage<Transform>().AddComponent(entity);
-	ecs.GetStorage<Velocity>().AddComponent(entity);
-	ecs.GetStorage<ActionMoveDelta>().AddComponent(entity);
-	ecs.GetStorage<LocomotionMoveDelta>().AddComponent(entity);
-	ecs.GetStorage<LocomotionAnimPhase>().AddComponent(entity);
-	ecs.GetStorage<LocomotionState>().AddComponent(entity);
-	ecs.GetStorage<ActionIntent>().AddComponent(entity);
-	ecs.GetStorage<ActionState>().AddComponent(entity);
-	ecs.GetStorage<AttackData>().AddComponent(entity);
-	ecs.GetStorage<Health>().AddComponent(entity);
-	ecs.GetStorage<AnimationState>().AddComponent(entity);
-	auto animator = ecs.GetStorage<Animator>().AddComponent(entity);
-	ecs.GetStorage<CombatCollider>().AddComponent(entity);
-	ecs.GetStorage<AttackState>().AddComponent(entity);
-	ecs.GetStorage<ParryBuf>().AddComponent(entity);
-
-	animator->clip = AnimationManager::Get().GetAnimation(AnimationType::Knight_Idle);
+	Entity entity = _runtime.SpawnPlayer(p->sessionId);
 
 	auto& ets = Framework::Get().entityToSession;
 	auto it = ets.find(entity);
@@ -79,7 +60,7 @@ void EventSystem::ProcessDisconnect(const Event& event)
 	if (it == ste.end()) return;
 	Entity entity = it->second;
 
-	ecs.GetStorage<DisconnectedTag>().AddComponent(entity);
+	_runtime.GetECS().GetStorage<DisconnectedTag>().AddComponent(entity);
 	Framework::Get().outEventQueue.push(OutputEvent{ entity, DirtyType::Despawned });
 }
 
@@ -92,13 +73,13 @@ void EventSystem::ProcessMove(const Event& event)
 	if (it == Framework::Get().sessionToEntity.end()) return;
 	Entity entity = it->second;
 
-	if (auto* velocity = ecs.GetStorage<Velocity>().GetComponent(entity))
+	if (auto* velocity = _runtime.GetECS().GetStorage<Velocity>().GetComponent(entity))
 	{
-		if (auto* loco = ecs.GetStorage<LocomotionState>().GetComponent(entity))
+		if (auto* loco = _runtime.GetECS().GetStorage<LocomotionState>().GetComponent(entity))
 		{
 			int inputX = p->inputX;
 			int inputZ = p->inputZ;
-			float yaw = p->yaw;
+			double yaw = p->yaw;
 			bool isRun = p->isRun;
 
 			XMVECTOR forward = XMVectorSet(sin(yaw), 0, cos(yaw), 0);
@@ -139,28 +120,46 @@ void EventSystem::ProcessAction(const Event& event)
 	if (it == Framework::Get().sessionToEntity.end()) return;
 	Entity entity = it->second;
 
-	if (auto* actionIntent = ecs.GetStorage<ActionIntent>().GetComponent(entity))
+	if (auto* actionIntent = _runtime.GetECS().GetStorage<ActionIntent>().GetComponent(entity))
 	{
 		switch (p->type) {
 		case ActionRequestType::Attack:
 		{
-			ecs.actionRequestEvents.
-				emplace_back(entity, ActionType::Attack, 
-					AttackType::Light, ActionRequestReason::FromInput);
+			ActionRequestEvent ev
+			{
+				.entity = entity,
+				.actionType = ActionType::Attack,
+				.attackType = AttackType::Light,
+				.reason = ActionRequestReason::FromInput
+			};
+
+			_runtime.Events().Queue<ActionRequestEvent>().Publish(ev);
 			break;
 		}
 		case ActionRequestType::Dodge:
 		{
-			ecs.actionRequestEvents.
-				emplace_back(entity, ActionType::Dodge,
-					AttackType::None, ActionRequestReason::FromInput);
+			ActionRequestEvent ev
+			{
+				.entity = entity,
+				.actionType = ActionType::Dodge,
+				.attackType = AttackType::None,
+				.reason = ActionRequestReason::FromInput
+			};
+
+			_runtime.Events().Queue<ActionRequestEvent>().Publish(ev);
 			break;
 		}
 		case ActionRequestType::Parry:
 		{
-			ecs.actionRequestEvents.
-				emplace_back(entity, ActionType::Parry,
-					AttackType::None, ActionRequestReason::FromInput);
+			ActionRequestEvent ev
+			{
+				.entity = entity,
+				.actionType = ActionType::Parry,
+				.attackType = AttackType::None,
+				.reason = ActionRequestReason::FromInput
+			};
+
+			_runtime.Events().Queue<ActionRequestEvent>().Publish(ev);
 			break;
 		}
 		case ActionRequestType::Guard:

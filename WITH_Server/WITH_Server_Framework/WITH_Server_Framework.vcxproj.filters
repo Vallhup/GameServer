@@ -42,7 +42,7 @@
       <Filter>JobGraph</Filter>
     </ClCompile>
     <ClCompile Include="WorldRuntime.cpp">
-      <Filter>Game\World\Parameter</Filter>
+      <Filter>Game\World\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,11 +117,11 @@
     <ClInclude Include="ThreadPool.h">
       <Filter>JobGraph</Filter>
     </ClInclude>
-    <ClInclude Include="WorldRuntime.h">
-      <Filter>Game\World\Parameter</Filter>
-    </ClInclude>
     <ClInclude Include="WorldFactory.h">
       <Filter>Game\World\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldRuntime.h">
+      <Filter>Game\World\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

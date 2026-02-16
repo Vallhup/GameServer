@@ -3,8 +3,10 @@
 #include "Framework.h"
 #include "Math.h"
 
-void ActionMoveSystem::Execute(const float dT)
+void ActionMoveSystem::Execute(const double dT)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	auto& velocities = ecs.GetStorage<Velocity>();
 	auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& actionMoves = ecs.GetStorage<ActionMoveTag>();
@@ -49,7 +51,7 @@ bool ActionMoveSystem::CanMove(ActionType type)
 
 void ActionMoveSystem::ApplyActionMovement(
 	ActionMoveTag* actionMove, ActionMoveDelta* actionDelta,
-	const ActionState& actionState, const Velocity& vel, const float dT)
+	const ActionState& actionState, const Velocity& vel, const double dT)
 {
 	if (!actionMove->profile) return;
 
@@ -58,19 +60,19 @@ void ActionMoveSystem::ApplyActionMovement(
 
 	const auto& seg = segments[actionMove->segmentIndex];
 
-	const float segStart = seg.t0 * actionState.duration;
-	const float segEnd = seg.t1 * actionState.duration;
+	const double segStart = seg.t0 * actionState.duration;
+	const double segEnd = seg.t1 * actionState.duration;
 
 	if (actionState.elapsed < segStart) return;
 
-	const float segDuration = segEnd - segStart;
+	const double segDuration = segEnd - segStart;
 	if (segDuration <= 0.0f) return;
 
-	const float speed = seg.distance / segDuration;
+	const double speed = seg.distance / segDuration;
 
-	const float move = speed * dT;
-	const float remain = seg.distance - actionMove->movedInSegment;
-	const float actual = std::min(move, remain);
+	const double move = speed * dT;
+	const double remain = seg.distance - actionMove->movedInSegment;
+	const double actual = std::min(move, remain);
 
 	XMVECTOR dir;
 	XMVECTOR out;
@@ -100,7 +102,7 @@ void ActionMoveSystem::ApplyActionMovement(
   		actionDelta->hasMove = true;
 		actionDelta->deltaPos = deltaMove;
 
-		const float yaw = atan2f(-deltaMove.x, -deltaMove.z);
+		const double yaw = atan2f(-deltaMove.x, -deltaMove.z);
 		actionDelta->hasYaw = true;
 		actionDelta->yaw = yaw;
 	}

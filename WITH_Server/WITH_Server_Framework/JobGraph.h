@@ -59,7 +59,7 @@ public:
 	template<JobT T, typename... Args>
 	JobNode* CreateNode(Args&&... args);
 
-	void AutoDependencyBuild(std::span<System*> systems, float* dTRef);
+	void AutoDependencyBuild(std::span<System*> systems, double* dTRef);
 	void AddManualDependency(System* before, System* after);
 
 	void Build();

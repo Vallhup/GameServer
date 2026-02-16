@@ -42,7 +42,7 @@ void ActionManager::LoadPolicy()
 	_policies[ToIndex(ActionType::Parry)] = { 80,  54.f / 30.566f,  Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false };
 	_policies[ToIndex(ActionType::Dodge)] = { 70,  50.f / 30.6122f, Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), true, false };
 	_policies[ToIndex(ActionType::Attack)] = { 60,  40.f / 30.7692f, Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), true, false };
-	_policies[ToIndex(ActionType::Guard)] = { 10,  std::numeric_limits<float>::infinity(), ~0u, false, true };
+	_policies[ToIndex(ActionType::Guard)] = { 10,  std::numeric_limits<double>::infinity(), ~0u, false, true };
 	_policies[ToIndex(ActionType::None)] = { 0,  0.f, ~0u, false, false };
 }
 

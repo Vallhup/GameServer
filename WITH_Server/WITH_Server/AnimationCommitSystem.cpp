@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "AnimationCommitSystem.h"
 
-void AnimationCommitSystem::Execute(const float dT)
+void AnimationCommitSystem::Execute(const double dT)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	auto& animStates = ecs.GetStorage<AnimationState>();
 	auto& animators = ecs.GetStorage<Animator>();
 	auto& colliders = ecs.GetStorage<CombatCollider>();

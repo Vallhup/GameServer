@@ -101,3 +101,32 @@ struct OutputEvent {
 		return ev;
 	}
 };
+
+/* -------- [ Game Event ]-------- */
+
+enum class CollisionType : uint8 { Strike, Clash };
+
+struct CombatCollisionEvent {
+	CollisionType type;
+
+	Entity attacker;
+	Entity victim;
+
+	uint32 attackId;
+	uint16 aIndex;
+	uint16 bIndex;
+};
+
+enum class ActionRequestReason : uint8 {
+	None,
+	FromCombat,
+	FromInput,
+	FromAI
+};
+
+struct ActionRequestEvent {
+	Entity entity;
+	ActionType actionType;
+	AttackType attackType;
+	ActionRequestReason reason;
+};

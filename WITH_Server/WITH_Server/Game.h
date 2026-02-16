@@ -1,23 +1,42 @@
 #pragma once
 
 #include "ThreadPool.h"
-#include "GameWorld.h"
-#include "Instance.h"
-#include "ECS.h"
 
-#include "Constants.h"
-
-class Game {
+class Game final {
 public:
-	Game(size_t size);
+	struct Config
+	{
+		size_t workerThreadCnt{ 4 };
+		uint32 registryReserve{ 64 };
+	};
 
-	void Update(const float dT);
 
-	ECS ecs;
-	JobGraph graph;
-	ThreadPool threadPool;
-	GameWorld world;
+	Game(const Config& cfg, IWorldFactory& factory);
+	~Game();
+
+	Game(const Game&) = delete;
+	Game& operator=(const Game&) = delete;
+
+	WorldId CreateWorld(const WorldDesc& desc, uint32 tickRate);
+	void DestroyWorld(WorldId worldId);
+
+	void PauseWorld(WorldId worldId);
+	void ResumeWorld(WorldId worldId);
+
+	void Update(const double dT);
+	void Stop();
 
 private:
-	float _deltaTime{ 0.0f };
+	void DestroyAllWorlds();
+
+	bool _running;
+	Config _cfg;
+
+	ThreadPool _pool;
+	IWorldFactory& _factory;
+
+	WorldRegistry _registry;
+	WorldScheduler _scheduler;
+
+	std::vector<WorldId> _ownedWorldIds;
 };

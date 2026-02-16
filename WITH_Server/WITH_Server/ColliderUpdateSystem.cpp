@@ -2,8 +2,10 @@
 #include "ColliderUpdateSystem.h"
 #include "Math.h"
 
-void ColliderUpdateSystem::Execute(const float dT)
+void ColliderUpdateSystem::Execute(const double dT)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	auto& transforms = ecs.GetStorage<Transform>();
 	auto& colliders = ecs.GetStorage<CombatCollider>();
 

@@ -1,13 +1,56 @@
 #include "pch.h"
 #include "CombatCollisionDedupSystem.h"
 
-void CombatCollisionDedupSystem::Execute(const float dT)
+void CombatCollisionDedupSystem::Execute(const double dT)
 {
-	auto& events = ecs.combatCollisionEvents;
+	auto& eventQ = _runtime.Events().Queue<CombatCollisionEvent>();
+	auto evView = eventQ.ConsumeView();
+	auto events = DedupCollisionEvent(evView);
+	
 
-	if (events.empty()) return;
+	struct CollisionKey 
+	{ 
+		Entity a; Entity v; uint32 id; 
 
-	// TEMP : Collision Event 정렬, 중복 제거
+		bool operator==(const CollisionKey& other) const noexcept
+		{
+			return a == other.a && v == other.v && id == other.id;
+		}
+	};
+	
+	std::vector<CollisionKey> clashKeys;
+	clashKeys.reserve(events.size());
+
+	for (const auto& event : events)
+	{
+		if (event.type == CollisionType::Clash)
+			clashKeys.emplace_back(event.attacker, event.victim, event.attackId);
+	}
+
+	auto HasClash =
+		[&](Entity a, Entity v, uint32 id) -> bool
+		{
+			const CollisionKey key{ a, v, id };
+			return std::find(clashKeys.begin(), clashKeys.end(), key) != clashKeys.end();
+		};
+
+	size_t w{ 0 };
+	for (size_t i = 0; i < events.size(); ++i)
+	{
+		const auto& ev = events[i];
+		if (ev.type == CollisionType::Strike &&
+			HasClash(ev.attacker, ev.victim, ev.attackId)) continue;
+
+		events[w++] = ev;
+	}
+
+	eventQ.ReadResize(w);
+}
+
+std::span<CombatCollisionEvent> CombatCollisionDedupSystem::DedupCollisionEvent(std::span<CombatCollisionEvent> events)
+{
+	if (events.empty()) return events;
+
 	std::sort(events.begin(), events.end(),
 		[](const CombatCollisionEvent& a, const CombatCollisionEvent& b)
 		{
@@ -25,40 +68,28 @@ void CombatCollisionDedupSystem::Execute(const float dT)
 		}
 	);
 
-	events.erase(std::unique(events.begin(), events.end(),
-		[](const CombatCollisionEvent& a, const CombatCollisionEvent& b)
-		{
-			return a.type == b.type &&
-				a.attacker == b.attacker &&
-				a.attackId == b.attackId &&
-				a.aIndex == b.aIndex &&
-				a.bIndex == b.bIndex;
-		}), events.end());
-
-	struct CollisionKey { Entity a; Entity v; uint32 id; };
-	
-	std::vector<CollisionKey> clashKeys;
-	clashKeys.reserve(events.size());
-
-	for (const auto& event : events)
+	size_t w{ 0 };
+	for (size_t i = 0; i < events.size(); ++i)
 	{
-		if (event.type == CollisionType::Clash)
-			clashKeys.emplace_back(event.attacker, event.victim, event.attackId);
+		if (w == 0)
+		{
+			events[w++] = events[i];
+			continue;
+		}
+
+		const auto& prev = events[w - 1];
+		const auto& cur = events[i];
+
+		const bool equalEvent = 
+			cur.type		== prev.type &&
+			cur.attacker	== prev.attacker &&
+			cur.attackId	== prev.attackId &&
+			cur.aIndex		== prev.aIndex &&
+			cur.bIndex		== prev.bIndex;
+
+		if (!equalEvent)
+			events[w++] = cur;
 	}
 
-	auto HasClash =
-		[&](Entity a, Entity v, uint32 id) -> bool
-		{
-			for (const auto& key : clashKeys)
-				if (key.a == a && key.v == v && key.id == id) return true;
-
-			return false;
-		};
-
-	events.erase(std::remove_if(events.begin(), events.end(),
-		[&](const CombatCollisionEvent& event)
-		{
-			if (event.type != CollisionType::Strike) return false;
-			return HasClash(event.attacker, event.victim, event.attackId);
-		}), events.end());
+	return events.first(w);
 }

@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "AnimationPoseBindSystem.h"
 
-void AnimationPoseBindSystem::Execute(const float dT)
+void AnimationPoseBindSystem::Execute(const double dT)
 {
+	ECS& ecs = _runtime.GetECS();
+
 	auto& animators = ecs.GetStorage<Animator>();
 	auto& colliders = ecs.GetStorage<CombatCollider>();
 

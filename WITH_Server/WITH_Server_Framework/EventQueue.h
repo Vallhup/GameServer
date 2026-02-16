@@ -17,8 +17,11 @@ public:
 		_read.swap(_write);
 	}
 
-	[[nodiscard]] std::span<const T> ConsumeView() const { return _read.view(); }
+	[[nodiscard]] std::span<T> ConsumeView() { return _read.view(); }
 
+	void ReadResize(size_t n) { _read.resize(n); }
+
+	void ClearRead() { _read.clear(); }
 	void ClearAll() { _read.clear(); _write.clear(); }
 
 private:
@@ -36,7 +39,10 @@ public:
 
 	void clear() { _buffer.clear(); }
 
+	std::span<T> view() { return _buffer; }
 	std::span<const T> view() const { return _buffer; }
+
+	void resize(size_t n) { _buffer.resize(n); }
 
 	void swap(SingleThreadBuffer& other) noexcept
 	{

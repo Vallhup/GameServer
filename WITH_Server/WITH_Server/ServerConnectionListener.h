@@ -1,9 +1,9 @@
 #pragma once
 
 #include "IConnectionListener.h"
-#include "ConnectionManager.h"
 #include "ConnectionRegistry.h"
 #include "NetworkHandler.h"
+#include "NetIdMap.h"
 #include "Network.h"
 
 class ServerConnectionListener : public IConnectionListener {
@@ -15,6 +15,8 @@ public:
 	virtual void OnPacketReceived(Connection& conn, 
 		const PacketHeader& header, const BYTE* data) override;
 
+	void EnsurePlayerBound(uint32 connId, WorldId world);
+
 	// TEMP
 	void Send(uint32 id, SendBuffer* data);
 	void Broadcast(SendBuffer* data, 
@@ -22,6 +24,7 @@ public:
 
 private:
 	NetworkHandler _handler;
-	//ConnectionManager _connMng;
+
+	NetIdMap _idMap;
 	ConnectionRegistry _connRegistry;
 };

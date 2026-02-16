@@ -3,13 +3,10 @@
 #include "Framework.h"
 #include "AnimationType.h"
 
-AnimationSelectSystem::AnimationSelectSystem(ECS& e, int p) 
-	: System(e, p)
+void AnimationSelectSystem::Execute(const double dT)
 {
-}
+	ECS& ecs = _runtime.GetECS();
 
-void AnimationSelectSystem::Execute(const float dT)
-{
 	auto& animStates = ecs.GetStorage<AnimationState>();
 	auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& locos = ecs.GetStorage<LocomotionState>();

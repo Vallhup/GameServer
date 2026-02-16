@@ -1,15 +1,24 @@
 #pragma once
 
-#include "ECS.h"
 #include "System.h"
 
 class EventSystem : public System {
 	using EventHandler = std::function<void(const Event&)>;
 
 public:
-	EventSystem(ECS& e, int p = 0);
+	EventSystem(WorldRuntime& rt, int p = 0);
 
-	virtual void Execute(const float dT) override;
+	virtual void Execute(const double dT) override;
+
+	virtual std::vector<std::type_index> ReadResources() const override
+	{
+		return {  };
+	}
+
+	virtual std::vector<std::type_index> WriteResources() const override
+	{
+		return {  };
+	}
 
 private:
 	void ProcessConnect(const Event& event);

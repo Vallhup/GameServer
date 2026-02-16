@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ECS.h"
 #include "System.h"
 
 class OutputEventSystem : public System {
@@ -10,7 +9,17 @@ public:
 	OutputEventSystem(ECS& ecs, int p = 0);
 	virtual ~OutputEventSystem() = default;
 
-	virtual void Execute(const float dT) override;
+	virtual void Execute(const double dT) override;
+
+	virtual std::vector<std::type_index> ReadResources() const override
+	{
+		return {  };
+	}
+
+	virtual std::vector<std::type_index> WriteResources() const override
+	{
+		return {  };
+	}
 
 private:
 	void ProcessSpawn(const OutputEvent& event);
