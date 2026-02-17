@@ -2,7 +2,6 @@
 #include "UIController.h"
 
 class ImageUI;
-class TextUI;
 
 class LoadingSceneUIController : public UIController
 {
@@ -16,9 +15,9 @@ public:
 private:
 	shared_ptr<ImageUI> mainImage;
 	shared_ptr<ImageUI> loadBarBackImage;
-
-	shared_ptr<TextUI> progressText;
+	shared_ptr<ImageUI> loadBar;
 
 	float loadProgress = 0.0f;
+	float loadBarMaxWidth = 0.0f;
 };
 

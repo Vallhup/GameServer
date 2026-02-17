@@ -119,6 +119,6 @@ SamplerState pointSampler : register(s1);
 
 static const uint IBL_IRRADIANCE_INDEX = 1;
 static const uint IBL_RADIANCE_INDEX = 2;
-static const uint BRDF_LUT_INDEX = 26;
+static const uint BRDF_LUT_INDEX = 120;
 
 #endif

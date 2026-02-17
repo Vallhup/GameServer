@@ -81,6 +81,12 @@ public:
 	ID3D12Device* GetDevice() const;
 	ID3D12CommandQueue* GetCmdQueue() const;
 	ID3D12GraphicsCommandList* GetGraphicsCmdList() const;
+	ID3D12GraphicsCommandList* GetLoadingCmdList() const;
+	ID3D12GraphicsCommandList* GetActiveCmdList() const;
+
+	void SetLoadingMode(bool loading);
+	void ExecuteLoadingCommands();
+
 	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;
 	Shader* GetShader() const;
@@ -120,6 +126,11 @@ private:
 	ComPtr<ID3D12CommandQueue> cmdQueue;
 	ComPtr<ID3D12CommandAllocator> cmdAlloc;
 	ComPtr<ID3D12GraphicsCommandList> cmdList;
+
+	ComPtr<ID3D12CommandAllocator> loadingCmdAlloc;
+	ComPtr<ID3D12GraphicsCommandList> loadingCmdList;
+	bool isLoadingMode = false;
+
 	ComPtr<ID3D12Fence> fence;
 	UINT64 fenceValue = 0;
 	HANDLE fenceEvent = INVALID_HANDLE_VALUE;
