@@ -31,6 +31,9 @@ public:
 	UIFontData* GetFont(const wstring& name);
 	DescriptorHeap* GetUISrvHeap() const { return uiSrvHeap.get(); }
 
+	template<typename T>
+	T* GetController(SceneType type);
+
 private:
 	void RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
 	void RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
@@ -51,3 +54,11 @@ private:
 	static UINT nextIndex;
 };
 
+template<typename T>
+inline T* UIManager::GetController(SceneType type)
+{
+	auto it = controllers.find(type);
+	if (it != controllers.end())
+		return static_cast<T*>(it->second.get());
+	return nullptr;
+}

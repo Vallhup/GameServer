@@ -4,7 +4,6 @@
 #include "UIManager.h"
 #include "Engine.h"
 #include "Input.h"
-#include "SceneManager.h"
 #include "ImGuiManager.h"
 
 void StartSceneUIController::Init(UIManager* manager)
@@ -13,21 +12,21 @@ void StartSceneUIController::Init(UIManager* manager)
 
 	// MainPage - 전체 화면 배경
 	mainImage = make_shared<ImageUI>(L"MainPage", ImageUIState::FadingIn);
-	mainImage->Init(uiManager, SceneType::Title);
+	mainImage->Init(uiManager);
 	mainImage->SetHoriLength(WinSize.x);
 	mainImage->SetVertLength(WinSize.y);
 	mainImage->SetFadeDuration(4.0f);
 
 	// PAB - Press Any Button
 	pabImage = make_shared<ImageUI>(L"PAB", ImageUIState::Hidden);
-	pabImage->Init(uiManager, SceneType::Title);
+	pabImage->Init(uiManager);
 	pabImage->SetPosition((WinSize.x * 0.727f) / 2.f, WinSize.y * 0.7f);
 	pabImage->SetHoriLength(WinSize.x * 0.273f);
 	pabImage->SetVertLength(WinSize.y * 0.083f);
 
 	// LOGIN 버튼
 	loginImage = make_shared<ImageUI>(L"LOGIN", ImageUIState::Hidden);
-	loginImage->Init(uiManager, SceneType::Title);
+	loginImage->Init(uiManager);
 	loginImage->SetPosition(WinSize.x * 0.3215f, WinSize.y * 0.7f);
 	loginImage->SetHoriLength(WinSize.x * 0.117f);
 	loginImage->SetVertLength(WinSize.y * 0.1f);
@@ -36,7 +35,7 @@ void StartSceneUIController::Init(UIManager* manager)
 
 	// EXIT 버튼
 	exitImage = make_shared<ImageUI>(L"EXIT", ImageUIState::Hidden);
-	exitImage->Init(uiManager, SceneType::Title);
+	exitImage->Init(uiManager);
 	exitImage->SetPosition(WinSize.x * 0.5615f, WinSize.y * 0.7f);
 	exitImage->SetHoriLength(WinSize.x * 0.117f);
 	exitImage->SetVertLength(WinSize.y * 0.1f);
@@ -93,7 +92,7 @@ void StartSceneUIController::Update(float deltaTime)
 	if (IMGUI.IsLoginSuccess())
 	{
 		IMGUI.ResetLoginSuccess();
-		SCENE_MANAGER->RequestSceneChange(SceneType::Select);
+		SCENE_MANAGER->RequestSceneChange(SceneType::Loading);
 		OutputDebugStringA("Login success! Moving to Select scene.\n");
 	}
 

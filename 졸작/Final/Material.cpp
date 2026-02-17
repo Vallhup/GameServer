@@ -16,7 +16,7 @@ void Material::InitializeBindlessSystem(ID3D12Device* device)
 {
     D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
     heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    heapDesc.NumDescriptors = 1000;
+    heapDesc.NumDescriptors = 2000;
     heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
     HRESULT hr = device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&bindlessHeap));
@@ -25,7 +25,7 @@ void Material::InitializeBindlessSystem(ID3D12Device* device)
     descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
     materialBuffer = make_unique<UploadBuffer>();
-    materialBuffer->Initialize(device, sizeof(MaterialGPUData) * 500);
+    materialBuffer->Initialize(device, sizeof(MaterialGPUData) * 1000);
 
     OutputDebugStringA("Bindless material system initialized!\n");
 }
@@ -80,7 +80,7 @@ UINT Material::RegisterCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* 
     auto texture = make_unique<Texture>();
     texture->InitializeCubeMap(device, cmdList, ddsPath);
 
-    UINT cubeMapHeapOffset = 500;
+    UINT cubeMapHeapOffset = 1000;
     D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = bindlessHeap->GetCPUDescriptorHandleForHeapStart();
     cpuHandle.ptr += (cubeMapHeapOffset + nextCubeMapIndex) * descriptorSize;
 
@@ -145,7 +145,7 @@ void Material::BindBindlessResources(ID3D12GraphicsCommandList* cmdList)
         cmdList->SetGraphicsRootDescriptorTable(6, gpuHandle);                                      
 
         D3D12_GPU_DESCRIPTOR_HANDLE cubeMapHandle = gpuHandle;
-        cubeMapHandle.ptr += 500 * descriptorSize;
+        cubeMapHandle.ptr += 1000 * descriptorSize;
         cmdList->SetGraphicsRootDescriptorTable(15, cubeMapHandle);
 
         cmdList->SetGraphicsRootShaderResourceView(7, materialBuffer->GetGPUVirtualAddress());      

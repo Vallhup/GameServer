@@ -6,6 +6,7 @@
 #include "DX12Core.h"
 #include "StartSceneUIController.h"
 #include "GameSceneUIController.h"
+#include "LoadingSceneUIController.h"
 
 UINT UIManager::nextIndex = 0;
 
@@ -39,10 +40,14 @@ void UIManager::Initialize(DX12Core& core)
 	spriteBatch = make_unique<SpriteBatch>(core.GetDevice(), resourceUpload, pd, nullptr);
 
 	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);	
-	RegisterUITexture(L"MainPage", L"../Assets/UI/Textures/MainPage.png", core, resourceUpload);		
+	RegisterUITexture(L"MainPage", L"../Assets/UI/Textures/MainPage.png", core, resourceUpload);
 	RegisterUITexture(L"PAB", L"../Assets/UI/Textures/PAB.png", core, resourceUpload);					
 	RegisterUITexture(L"LOGIN", L"../Assets/UI/Textures/LOGIN.png", core, resourceUpload);
 	RegisterUITexture(L"EXIT", L"../Assets/UI/Textures/EXIT.png", core, resourceUpload);
+
+	RegisterUITexture(L"LoadingPage", L"../Assets/UI/Textures/LoadingPage.png", core, resourceUpload);
+	RegisterUITexture(L"LoadingBarBack", L"../Assets/UI/Textures/LoadingBarBack.png", core, resourceUpload);
+
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);			
 
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
@@ -130,4 +135,7 @@ void UIManager::RegisterControllers()
 
 	controllers[SceneType::MainGame] = make_unique<GameSceneUIController>();
 	controllers[SceneType::MainGame]->Init(this);
+
+	controllers[SceneType::Loading] = make_unique<LoadingSceneUIController>();
+	controllers[SceneType::Loading]->Init(this);
 }

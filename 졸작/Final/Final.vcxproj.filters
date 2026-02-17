@@ -188,7 +188,10 @@
       <Filter>UI\Controller</Filter>
     </ClCompile>
     <ClCompile Include="LoadingScene.cpp">
-      <Filter>Scene\0. Loading</Filter>
+      <Filter>Scene\99. Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadingSceneUIController.cpp">
+      <Filter>UI\Controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -379,7 +382,10 @@
       <Filter>UI\Controller</Filter>
     </ClInclude>
     <ClInclude Include="LoadingScene.h">
-      <Filter>Scene\0. Loading</Filter>
+      <Filter>Scene\99. Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingSceneUIController.h">
+      <Filter>UI\Controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -550,7 +556,7 @@
     <Filter Include="Scene\5. MultiGame">
       <UniqueIdentifier>{3986df8b-d380-4d3e-b231-40dbb68cff73}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\0. Loading">
+    <Filter Include="Scene\99. Loading">
       <UniqueIdentifier>{0af137ca-4db1-4aec-a1fe-d4af63a948e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

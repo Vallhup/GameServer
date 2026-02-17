@@ -10,13 +10,13 @@ void GameSceneUIController::Init(UIManager* manager)
 
 	// Status 패널
 	statusPanel = make_shared<PanelUI>(L"Status");
-	statusPanel->Init(uiManager, SceneType::MainGame);
+	statusPanel->Init(uiManager);
 	statusPanel->SetPosition(300.f, 150.f);
 	statusPanel->SetScale(0.5f);
 
 	// 테스트 텍스트
 	testText = make_shared<TextUI>(L"TestText", L"MalgunGothic");
-	testText->Init(uiManager, SceneType::MainGame);
+	testText->Init(uiManager);
 	testText->SetText(L"Hello World");
 	testText->SetPosition(100.f, 100.f);
 	testText->SetVisible(true);
