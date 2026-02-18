@@ -11,6 +11,9 @@
     <ClCompile Include="World_System_Test.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="WorldPipeline_Test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

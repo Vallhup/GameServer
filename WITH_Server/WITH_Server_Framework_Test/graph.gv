@@ -1,3 +1,3 @@
 digraph JobGraph {
-  "class DebugGraphSystem";
+  "class GraphCheckSystem";
 }
