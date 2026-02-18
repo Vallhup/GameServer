@@ -53,7 +53,7 @@ public:
 		return static_cast<uint16>((_value & SPARE_MASK) >> SPARE_SHIFT);
 	}
 
-	constexpr uint64 ToUInt64() const { return _value; }
+	constexpr uint64 GetRaw() const { return _value; }
 
 	constexpr bool operator==(const NetId& other) const { return _value == other._value; }
 	constexpr bool operator!=(const NetId& other) const { return _value != other._value; }
@@ -61,3 +61,13 @@ public:
 private:
 	uint64 _value;
 };
+
+namespace std {
+	template<>
+	struct hash<NetId> {
+		size_t operator()(const NetId& id) const noexcept
+		{
+			return std::hash<uint64>()(id.GetRaw());
+		}
+	};
+}
