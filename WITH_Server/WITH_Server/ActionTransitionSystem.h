@@ -1,6 +1,7 @@
 #pragma once
 
 #include "System.h"
+#include "Event.h"
 
 class ActionTransitionSystem : public System {
 public:

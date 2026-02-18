@@ -84,7 +84,7 @@ void CombatCollisionCheckSystem::CheckCollision(Entity attacker,
 {
 	if (aActives.offensiveHits.empty()) return;
 
-	auto events = _runtime.Events().Queue<CombatCollisionEvent>();
+	auto& events = _runtime.Events().Queue<CombatCollisionEvent>();
 
 	CheckCollisionInternal(attacker, aCol, aActives.offensiveHits,
 		victim, vCol, vActives.hurts,

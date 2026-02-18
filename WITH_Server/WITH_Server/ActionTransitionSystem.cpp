@@ -80,6 +80,8 @@ void ActionTransitionSystem::Execute(const double dT)
 		else if (next == ActionType::None)
 			ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
 	}
+
+	_runtime.Events().Queue<ActionRequestEvent>().Clear();
 }
 
 ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current, 

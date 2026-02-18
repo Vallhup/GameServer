@@ -7,7 +7,6 @@ void CombatCollisionHandlingSystem::Execute(const double dT)
 	ECS& ecs = _runtime.GetECS();
 
 	auto events = _runtime.Events().Queue<CombatCollisionEvent>().ConsumeView();
-
 	for (const auto& event : events)
 	{
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(event.attacker)) continue;
@@ -24,6 +23,8 @@ void CombatCollisionHandlingSystem::Execute(const double dT)
 			break;
 		}
 	}
+
+	_runtime.Events().Queue<CombatCollisionEvent>().Clear();
 }
 
 bool CombatCollisionHandlingSystem::ConsumeHitOnce(const CombatCollisionEvent& event)
