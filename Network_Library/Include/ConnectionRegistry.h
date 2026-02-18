@@ -1,5 +1,7 @@
 #pragma once
 
+#include <concurrent_unordered_map.h>
+
 struct SendBuffer;
 class Connection;
 
@@ -12,6 +14,8 @@ public:
 	
 	void Send(uint32 id, SendBuffer* data);
 	void Broadcast(SendBuffer* data, uint32 expected);
+
+	void FillConnIds(std::vector<uint32>& out) const;
 	
 private:
 	concurrency::concurrent_unordered_map<uint32,

@@ -7,6 +7,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="NetChannel.cpp">
+      <Filter>NetChannel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Protocols\Protocol.pb.h">
@@ -36,6 +39,9 @@
     <ClInclude Include="NetId.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="NetChannel.h">
+      <Filter>NetChannel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Codec">
@@ -52,6 +58,9 @@
     </Filter>
     <Filter Include="Protocol\proto">
       <UniqueIdentifier>{c016b231-88f7-4b4d-bc0b-b1452122dabd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetChannel">
+      <UniqueIdentifier>{8b55d361-7c03-4747-b9d3-a1f5a939f13e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

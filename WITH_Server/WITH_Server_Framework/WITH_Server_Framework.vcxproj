@@ -161,14 +161,22 @@
   <ItemGroup>
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentStorage.h" />
+    <ClInclude Include="DirtyTracker.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="BasicView.h" />
     <ClInclude Include="EventQueue.h" />
     <ClInclude Include="EventRegistry.h" />
+    <ClInclude Include="IConnContext.h" />
+    <ClInclude Include="IInterestPolicy.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobGraph.h" />
+    <ClInclude Include="RepComponent.h" />
+    <ClInclude Include="ReplicationSystem.h" />
+    <ClInclude Include="RepRegistry.h" />
+    <ClInclude Include="ServerContext.h" />
+    <ClInclude Include="SessionRepState.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="World.h" />
     <ClInclude Include="NetIdAllocator.h" />
@@ -187,10 +195,13 @@
     <ClInclude Include="WorldScheduler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DirtyTracker.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="Job.cpp" />
     <ClCompile Include="JobGraph.cpp" />
+    <ClCompile Include="ReplicationSystem.cpp" />
+    <ClCompile Include="RepRegistry.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="World.cpp" />
     <ClCompile Include="NetIdAllocator.cpp" />

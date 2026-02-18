@@ -28,7 +28,7 @@ namespace Protocol {
 
 inline constexpr SC_REMOVE_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : id_{0},
+      : netid_{::uint64_t{0u}},
         _cached_size_{0} {}
 
 template <typename>
@@ -53,7 +53,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 
 inline constexpr SC_MOVE_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : id_{0},
+      : netid_{::uint64_t{0u}},
         x_{0},
         y_{0},
         z_{0},
@@ -82,7 +82,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 
 inline constexpr SC_LOGIN_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : sessionid_{0},
+      : netid_{::uint64_t{0u}},
         _cached_size_{0} {}
 
 template <typename>
@@ -107,7 +107,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 
 inline constexpr SC_ANIMATION_TRANSITION_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : id_{0},
+      : netid_{::uint64_t{0u}},
         curranim_{0},
         _cached_size_{0} {}
 
@@ -133,8 +133,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
 
 inline constexpr SC_ADD_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
-      : id_{0},
-        type_{0},
+      : netid_{::uint64_t{0u}},
+        typeid__{0u},
         x_{0},
         y_{0},
         z_{0},
@@ -309,6 +309,36 @@ struct CS_ATTACK_PACKETDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_ATTACK_PACKETDefaultTypeInternal _CS_ATTACK_PACKET_default_instance_;
+
+inline constexpr SC_REPLICATION_FRAME_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : spawns_{},
+        despawns_{},
+        moves_{},
+        anims_{},
+        frameseq_{0u},
+        servertick_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_REPLICATION_FRAME_PACKET::SC_REPLICATION_FRAME_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_REPLICATION_FRAME_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_REPLICATION_FRAME_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_REPLICATION_FRAME_PACKETDefaultTypeInternal() {}
+  union {
+    SC_REPLICATION_FRAME_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_REPLICATION_FRAME_PACKETDefaultTypeInternal _SC_REPLICATION_FRAME_PACKET_default_instance_;
 }  // namespace Protocol
 static constexpr const ::_pb::EnumDescriptor**
     file_level_enum_descriptors_Protocol_2eproto = nullptr;
@@ -384,7 +414,7 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_PACKET, _impl_.sessionid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_PACKET, _impl_.netid_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -393,8 +423,8 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.id_),
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.type_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.netid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.typeid__),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.x_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.y_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _impl_.z_),
@@ -407,7 +437,7 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_MOVE_PACKET, _impl_.id_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_MOVE_PACKET, _impl_.netid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_MOVE_PACKET, _impl_.x_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_MOVE_PACKET, _impl_.y_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_MOVE_PACKET, _impl_.z_),
@@ -420,7 +450,7 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_REMOVE_PACKET, _impl_.id_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_REMOVE_PACKET, _impl_.netid_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -429,8 +459,22 @@ const ::uint32_t
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _impl_.id_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _impl_.netid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_REPLICATION_FRAME_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_REPLICATION_FRAME_PACKET, _impl_.frameseq_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_REPLICATION_FRAME_PACKET, _impl_.servertick_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_REPLICATION_FRAME_PACKET, _impl_.spawns_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_REPLICATION_FRAME_PACKET, _impl_.despawns_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_REPLICATION_FRAME_PACKET, _impl_.moves_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_REPLICATION_FRAME_PACKET, _impl_.anims_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -446,6 +490,7 @@ static const ::_pbi::MigrationSchema
         {82, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
         {95, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
         {104, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
+        {114, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -459,6 +504,7 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_SC_MOVE_PACKET_default_instance_._instance,
     &::Protocol::_SC_REMOVE_PACKET_default_instance_._instance,
     &::Protocol::_SC_ANIMATION_TRANSITION_PACKET_default_instance_._instance,
+    &::Protocol::_SC_REPLICATION_FRAME_PACKET_default_instance_._instance,
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -469,27 +515,33 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "\004dirZ\030\002 \001(\002\"-\n\017CS_DODGE_PACKET\022\014\n\004dirX\030\001"
     " \001(\002\022\014\n\004dirZ\030\002 \001(\002\" \n\017CS_GUARD_PACKET\022\r\n"
     "\005input\030\001 \001(\010\"-\n\017CS_PARRY_PACKET\022\014\n\004dirX\030"
-    "\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"$\n\017SC_LOGIN_PACKET\022\021"
-    "\n\tsessionId\030\001 \001(\005\"W\n\rSC_ADD_PACKET\022\n\n\002id"
-    "\030\001 \001(\005\022\014\n\004type\030\002 \001(\005\022\t\n\001x\030\003 \001(\002\022\t\n\001y\030\004 \001"
-    "(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\"J\n\016SC_MOVE_PA"
-    "CKET\022\n\n\002id\030\001 \001(\005\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t"
-    "\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"\036\n\020SC_REMOVE_PACK"
-    "ET\022\n\n\002id\030\001 \001(\005\">\n\036SC_ANIMATION_TRANSITIO"
-    "N_PACKET\022\n\n\002id\030\001 \001(\005\022\020\n\010currAnim\030\002 \001(\005b\006"
-    "proto3"
+    "\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\" \n\017SC_LOGIN_PACKET\022\r"
+    "\n\005netid\030\001 \001(\004\"\\\n\rSC_ADD_PACKET\022\r\n\005netid\030"
+    "\001 \001(\004\022\016\n\006typeid\030\002 \001(\r\022\t\n\001x\030\003 \001(\002\022\t\n\001y\030\004 "
+    "\001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\"M\n\016SC_MOVE_P"
+    "ACKET\022\r\n\005netid\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001"
+    "(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"!\n\020SC_REMOVE_"
+    "PACKET\022\r\n\005netid\030\001 \001(\004\"A\n\036SC_ANIMATION_TR"
+    "ANSITION_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010currAn"
+    "im\030\002 \001(\005\"\374\001\n\033SC_REPLICATION_FRAME_PACKET"
+    "\022\020\n\010frameSeq\030\001 \001(\r\022\022\n\nserverTick\030\002 \001(\r\022\'"
+    "\n\006spawns\030\003 \003(\0132\027.Protocol.SC_ADD_PACKET\022"
+    ",\n\010despawns\030\004 \003(\0132\032.Protocol.SC_REMOVE_P"
+    "ACKET\022\'\n\005moves\030\005 \003(\0132\030.Protocol.SC_MOVE_"
+    "PACKET\0227\n\005anims\030\006 \003(\0132(.Protocol.SC_ANIM"
+    "ATION_TRANSITION_PACKETb\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    606,
+    871,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     nullptr,
     0,
-    11,
+    12,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -1831,7 +1883,7 @@ inline PROTOBUF_NDEBUG_INLINE SC_LOGIN_PACKET::Impl_::Impl_(
 
 inline void SC_LOGIN_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.sessionid_ = {};
+  _impl_.netid_ = {};
 }
 SC_LOGIN_PACKET::~SC_LOGIN_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.SC_LOGIN_PACKET)
@@ -1898,15 +1950,15 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> SC_LOGIN_PACKET::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::SC_LOGIN_PACKET>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // int32 sessionId = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_LOGIN_PACKET, _impl_.sessionid_), 63>(),
-     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_LOGIN_PACKET, _impl_.sessionid_)}},
+    // uint64 netid = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_LOGIN_PACKET, _impl_.netid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_LOGIN_PACKET, _impl_.netid_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // int32 sessionId = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_PACKET, _impl_.sessionid_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // uint64 netid = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_PACKET, _impl_.netid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
   }},
   // no aux_entries
   {{
@@ -1920,7 +1972,7 @@ PROTOBUF_NOINLINE void SC_LOGIN_PACKET::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.sessionid_ = 0;
+  _impl_.netid_ = ::uint64_t{0u};
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -1939,11 +1991,11 @@ PROTOBUF_NOINLINE void SC_LOGIN_PACKET::Clear() {
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
-          // int32 sessionId = 1;
-          if (this_._internal_sessionid() != 0) {
-            target = ::google::protobuf::internal::WireFormatLite::
-                WriteInt32ToArrayWithField<1>(
-                    stream, this_._internal_sessionid(), target);
+          // uint64 netid = 1;
+          if (this_._internal_netid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_netid(), target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -1970,10 +2022,10 @@ PROTOBUF_NOINLINE void SC_LOGIN_PACKET::Clear() {
           (void)cached_has_bits;
 
            {
-            // int32 sessionId = 1;
-            if (this_._internal_sessionid() != 0) {
-              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-                  this_._internal_sessionid());
+            // uint64 netid = 1;
+            if (this_._internal_netid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_netid());
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -1988,8 +2040,8 @@ void SC_LOGIN_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const :
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_sessionid() != 0) {
-    _this->_impl_.sessionid_ = from._impl_.sessionid_;
+  if (from._internal_netid() != 0) {
+    _this->_impl_.netid_ = from._impl_.netid_;
   }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -2005,7 +2057,7 @@ void SC_LOGIN_PACKET::CopyFrom(const SC_LOGIN_PACKET& from) {
 void SC_LOGIN_PACKET::InternalSwap(SC_LOGIN_PACKET* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-        swap(_impl_.sessionid_, other->_impl_.sessionid_);
+        swap(_impl_.netid_, other->_impl_.netid_);
 }
 
 ::google::protobuf::Metadata SC_LOGIN_PACKET::GetMetadata() const {
@@ -2039,10 +2091,10 @@ inline PROTOBUF_NDEBUG_INLINE SC_ADD_PACKET::Impl_::Impl_(
 inline void SC_ADD_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, id_),
+               offsetof(Impl_, netid_),
            0,
            offsetof(Impl_, yaw_) -
-               offsetof(Impl_, id_) +
+               offsetof(Impl_, netid_) +
                sizeof(Impl_::yaw_));
 }
 SC_ADD_PACKET::~SC_ADD_PACKET() {
@@ -2111,12 +2163,12 @@ const ::_pbi::TcParseTable<3, 6, 0, 0, 2> SC_ADD_PACKET::_table_ = {
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
-    // int32 id = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ADD_PACKET, _impl_.id_), 63>(),
-     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.id_)}},
-    // int32 type = 2;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ADD_PACKET, _impl_.type_), 63>(),
-     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.type_)}},
+    // uint64 netid = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_ADD_PACKET, _impl_.netid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.netid_)}},
+    // uint32 typeid = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ADD_PACKET, _impl_.typeid__), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.typeid__)}},
     // float x = 3;
     {::_pbi::TcParser::FastF32S1,
      {29, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.x_)}},
@@ -2133,12 +2185,12 @@ const ::_pbi::TcParseTable<3, 6, 0, 0, 2> SC_ADD_PACKET::_table_ = {
   }}, {{
     65535, 65535
   }}, {{
-    // int32 id = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.id_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
-    // int32 type = 2;
-    {PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.type_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // uint64 netid = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.netid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint32 typeid = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.typeid__), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
     // float x = 3;
     {PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.x_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
@@ -2164,9 +2216,9 @@ PROTOBUF_NOINLINE void SC_ADD_PACKET::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&_impl_.id_, 0, static_cast<::size_t>(
+  ::memset(&_impl_.netid_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.yaw_) -
-      reinterpret_cast<char*>(&_impl_.id_)) + sizeof(_impl_.yaw_));
+      reinterpret_cast<char*>(&_impl_.netid_)) + sizeof(_impl_.yaw_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -2185,18 +2237,18 @@ PROTOBUF_NOINLINE void SC_ADD_PACKET::Clear() {
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
-          // int32 id = 1;
-          if (this_._internal_id() != 0) {
-            target = ::google::protobuf::internal::WireFormatLite::
-                WriteInt32ToArrayWithField<1>(
-                    stream, this_._internal_id(), target);
+          // uint64 netid = 1;
+          if (this_._internal_netid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_netid(), target);
           }
 
-          // int32 type = 2;
-          if (this_._internal_type() != 0) {
-            target = ::google::protobuf::internal::WireFormatLite::
-                WriteInt32ToArrayWithField<2>(
-                    stream, this_._internal_type(), target);
+          // uint32 typeid = 2;
+          if (this_._internal_typeid_() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                2, this_._internal_typeid_(), target);
           }
 
           // float x = 3;
@@ -2252,15 +2304,15 @@ PROTOBUF_NOINLINE void SC_ADD_PACKET::Clear() {
 
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
-            // int32 id = 1;
-            if (this_._internal_id() != 0) {
-              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-                  this_._internal_id());
+            // uint64 netid = 1;
+            if (this_._internal_netid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_netid());
             }
-            // int32 type = 2;
-            if (this_._internal_type() != 0) {
-              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-                  this_._internal_type());
+            // uint32 typeid = 2;
+            if (this_._internal_typeid_() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_typeid_());
             }
             // float x = 3;
             if (::absl::bit_cast<::uint32_t>(this_._internal_x()) != 0) {
@@ -2291,11 +2343,11 @@ void SC_ADD_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::g
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_id() != 0) {
-    _this->_impl_.id_ = from._impl_.id_;
+  if (from._internal_netid() != 0) {
+    _this->_impl_.netid_ = from._impl_.netid_;
   }
-  if (from._internal_type() != 0) {
-    _this->_impl_.type_ = from._impl_.type_;
+  if (from._internal_typeid_() != 0) {
+    _this->_impl_.typeid__ = from._impl_.typeid__;
   }
   if (::absl::bit_cast<::uint32_t>(from._internal_x()) != 0) {
     _this->_impl_.x_ = from._impl_.x_;
@@ -2326,9 +2378,9 @@ void SC_ADD_PACKET::InternalSwap(SC_ADD_PACKET* PROTOBUF_RESTRICT other) {
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.yaw_)
       + sizeof(SC_ADD_PACKET::_impl_.yaw_)
-      - PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.id_)>(
-          reinterpret_cast<char*>(&_impl_.id_),
-          reinterpret_cast<char*>(&other->_impl_.id_));
+      - PROTOBUF_FIELD_OFFSET(SC_ADD_PACKET, _impl_.netid_)>(
+          reinterpret_cast<char*>(&_impl_.netid_),
+          reinterpret_cast<char*>(&other->_impl_.netid_));
 }
 
 ::google::protobuf::Metadata SC_ADD_PACKET::GetMetadata() const {
@@ -2362,10 +2414,10 @@ inline PROTOBUF_NDEBUG_INLINE SC_MOVE_PACKET::Impl_::Impl_(
 inline void SC_MOVE_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, id_),
+               offsetof(Impl_, netid_),
            0,
            offsetof(Impl_, yaw_) -
-               offsetof(Impl_, id_) +
+               offsetof(Impl_, netid_) +
                sizeof(Impl_::yaw_));
 }
 SC_MOVE_PACKET::~SC_MOVE_PACKET() {
@@ -2434,9 +2486,9 @@ const ::_pbi::TcParseTable<3, 5, 0, 0, 2> SC_MOVE_PACKET::_table_ = {
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
-    // int32 id = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_MOVE_PACKET, _impl_.id_), 63>(),
-     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.id_)}},
+    // uint64 netid = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_MOVE_PACKET, _impl_.netid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.netid_)}},
     // float x = 2;
     {::_pbi::TcParser::FastF32S1,
      {21, 63, 0, PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.x_)}},
@@ -2454,9 +2506,9 @@ const ::_pbi::TcParseTable<3, 5, 0, 0, 2> SC_MOVE_PACKET::_table_ = {
   }}, {{
     65535, 65535
   }}, {{
-    // int32 id = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.id_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // uint64 netid = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.netid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
     // float x = 2;
     {PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.x_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
@@ -2482,9 +2534,9 @@ PROTOBUF_NOINLINE void SC_MOVE_PACKET::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&_impl_.id_, 0, static_cast<::size_t>(
+  ::memset(&_impl_.netid_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.yaw_) -
-      reinterpret_cast<char*>(&_impl_.id_)) + sizeof(_impl_.yaw_));
+      reinterpret_cast<char*>(&_impl_.netid_)) + sizeof(_impl_.yaw_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -2503,11 +2555,11 @@ PROTOBUF_NOINLINE void SC_MOVE_PACKET::Clear() {
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
-          // int32 id = 1;
-          if (this_._internal_id() != 0) {
-            target = ::google::protobuf::internal::WireFormatLite::
-                WriteInt32ToArrayWithField<1>(
-                    stream, this_._internal_id(), target);
+          // uint64 netid = 1;
+          if (this_._internal_netid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_netid(), target);
           }
 
           // float x = 2;
@@ -2563,10 +2615,10 @@ PROTOBUF_NOINLINE void SC_MOVE_PACKET::Clear() {
 
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
-            // int32 id = 1;
-            if (this_._internal_id() != 0) {
-              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-                  this_._internal_id());
+            // uint64 netid = 1;
+            if (this_._internal_netid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_netid());
             }
             // float x = 2;
             if (::absl::bit_cast<::uint32_t>(this_._internal_x()) != 0) {
@@ -2597,8 +2649,8 @@ void SC_MOVE_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_id() != 0) {
-    _this->_impl_.id_ = from._impl_.id_;
+  if (from._internal_netid() != 0) {
+    _this->_impl_.netid_ = from._impl_.netid_;
   }
   if (::absl::bit_cast<::uint32_t>(from._internal_x()) != 0) {
     _this->_impl_.x_ = from._impl_.x_;
@@ -2629,9 +2681,9 @@ void SC_MOVE_PACKET::InternalSwap(SC_MOVE_PACKET* PROTOBUF_RESTRICT other) {
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.yaw_)
       + sizeof(SC_MOVE_PACKET::_impl_.yaw_)
-      - PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.id_)>(
-          reinterpret_cast<char*>(&_impl_.id_),
-          reinterpret_cast<char*>(&other->_impl_.id_));
+      - PROTOBUF_FIELD_OFFSET(SC_MOVE_PACKET, _impl_.netid_)>(
+          reinterpret_cast<char*>(&_impl_.netid_),
+          reinterpret_cast<char*>(&other->_impl_.netid_));
 }
 
 ::google::protobuf::Metadata SC_MOVE_PACKET::GetMetadata() const {
@@ -2664,7 +2716,7 @@ inline PROTOBUF_NDEBUG_INLINE SC_REMOVE_PACKET::Impl_::Impl_(
 
 inline void SC_REMOVE_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.id_ = {};
+  _impl_.netid_ = {};
 }
 SC_REMOVE_PACKET::~SC_REMOVE_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.SC_REMOVE_PACKET)
@@ -2731,15 +2783,15 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> SC_REMOVE_PACKET::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::SC_REMOVE_PACKET>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // int32 id = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_REMOVE_PACKET, _impl_.id_), 63>(),
-     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_REMOVE_PACKET, _impl_.id_)}},
+    // uint64 netid = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_REMOVE_PACKET, _impl_.netid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_REMOVE_PACKET, _impl_.netid_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // int32 id = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_REMOVE_PACKET, _impl_.id_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // uint64 netid = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_REMOVE_PACKET, _impl_.netid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
   }},
   // no aux_entries
   {{
@@ -2753,7 +2805,7 @@ PROTOBUF_NOINLINE void SC_REMOVE_PACKET::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.id_ = 0;
+  _impl_.netid_ = ::uint64_t{0u};
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -2772,11 +2824,11 @@ PROTOBUF_NOINLINE void SC_REMOVE_PACKET::Clear() {
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
-          // int32 id = 1;
-          if (this_._internal_id() != 0) {
-            target = ::google::protobuf::internal::WireFormatLite::
-                WriteInt32ToArrayWithField<1>(
-                    stream, this_._internal_id(), target);
+          // uint64 netid = 1;
+          if (this_._internal_netid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_netid(), target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -2803,10 +2855,10 @@ PROTOBUF_NOINLINE void SC_REMOVE_PACKET::Clear() {
           (void)cached_has_bits;
 
            {
-            // int32 id = 1;
-            if (this_._internal_id() != 0) {
-              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-                  this_._internal_id());
+            // uint64 netid = 1;
+            if (this_._internal_netid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_netid());
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -2821,8 +2873,8 @@ void SC_REMOVE_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const 
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_id() != 0) {
-    _this->_impl_.id_ = from._impl_.id_;
+  if (from._internal_netid() != 0) {
+    _this->_impl_.netid_ = from._impl_.netid_;
   }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -2838,7 +2890,7 @@ void SC_REMOVE_PACKET::CopyFrom(const SC_REMOVE_PACKET& from) {
 void SC_REMOVE_PACKET::InternalSwap(SC_REMOVE_PACKET* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-        swap(_impl_.id_, other->_impl_.id_);
+        swap(_impl_.netid_, other->_impl_.netid_);
 }
 
 ::google::protobuf::Metadata SC_REMOVE_PACKET::GetMetadata() const {
@@ -2872,10 +2924,10 @@ inline PROTOBUF_NDEBUG_INLINE SC_ANIMATION_TRANSITION_PACKET::Impl_::Impl_(
 inline void SC_ANIMATION_TRANSITION_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char *>(&_impl_) +
-               offsetof(Impl_, id_),
+               offsetof(Impl_, netid_),
            0,
            offsetof(Impl_, curranim_) -
-               offsetof(Impl_, id_) +
+               offsetof(Impl_, netid_) +
                sizeof(Impl_::curranim_));
 }
 SC_ANIMATION_TRANSITION_PACKET::~SC_ANIMATION_TRANSITION_PACKET() {
@@ -2946,15 +2998,15 @@ const ::_pbi::TcParseTable<1, 2, 0, 0, 2> SC_ANIMATION_TRANSITION_PACKET::_table
     // int32 currAnim = 2;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_), 63>(),
      {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_)}},
-    // int32 id = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ANIMATION_TRANSITION_PACKET, _impl_.id_), 63>(),
-     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.id_)}},
+    // uint64 netid = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_ANIMATION_TRANSITION_PACKET, _impl_.netid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.netid_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // int32 id = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.id_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
+    // uint64 netid = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.netid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
     // int32 currAnim = 2;
     {PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kInt32)},
@@ -2971,9 +3023,9 @@ PROTOBUF_NOINLINE void SC_ANIMATION_TRANSITION_PACKET::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&_impl_.id_, 0, static_cast<::size_t>(
+  ::memset(&_impl_.netid_, 0, static_cast<::size_t>(
       reinterpret_cast<char*>(&_impl_.curranim_) -
-      reinterpret_cast<char*>(&_impl_.id_)) + sizeof(_impl_.curranim_));
+      reinterpret_cast<char*>(&_impl_.netid_)) + sizeof(_impl_.curranim_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -2992,11 +3044,11 @@ PROTOBUF_NOINLINE void SC_ANIMATION_TRANSITION_PACKET::Clear() {
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
-          // int32 id = 1;
-          if (this_._internal_id() != 0) {
-            target = ::google::protobuf::internal::WireFormatLite::
-                WriteInt32ToArrayWithField<1>(
-                    stream, this_._internal_id(), target);
+          // uint64 netid = 1;
+          if (this_._internal_netid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_netid(), target);
           }
 
           // int32 currAnim = 2;
@@ -3031,10 +3083,10 @@ PROTOBUF_NOINLINE void SC_ANIMATION_TRANSITION_PACKET::Clear() {
 
           ::_pbi::Prefetch5LinesFrom7Lines(&this_);
            {
-            // int32 id = 1;
-            if (this_._internal_id() != 0) {
-              total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-                  this_._internal_id());
+            // uint64 netid = 1;
+            if (this_._internal_netid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_netid());
             }
             // int32 currAnim = 2;
             if (this_._internal_curranim() != 0) {
@@ -3054,8 +3106,8 @@ void SC_ANIMATION_TRANSITION_PACKET::MergeImpl(::google::protobuf::MessageLite& 
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from._internal_id() != 0) {
-    _this->_impl_.id_ = from._impl_.id_;
+  if (from._internal_netid() != 0) {
+    _this->_impl_.netid_ = from._impl_.netid_;
   }
   if (from._internal_curranim() != 0) {
     _this->_impl_.curranim_ = from._impl_.curranim_;
@@ -3077,12 +3129,427 @@ void SC_ANIMATION_TRANSITION_PACKET::InternalSwap(SC_ANIMATION_TRANSITION_PACKET
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_)
       + sizeof(SC_ANIMATION_TRANSITION_PACKET::_impl_.curranim_)
-      - PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.id_)>(
-          reinterpret_cast<char*>(&_impl_.id_),
-          reinterpret_cast<char*>(&other->_impl_.id_));
+      - PROTOBUF_FIELD_OFFSET(SC_ANIMATION_TRANSITION_PACKET, _impl_.netid_)>(
+          reinterpret_cast<char*>(&_impl_.netid_),
+          reinterpret_cast<char*>(&other->_impl_.netid_));
 }
 
 ::google::protobuf::Metadata SC_ANIMATION_TRANSITION_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_REPLICATION_FRAME_PACKET::_Internal {
+ public:
+};
+
+SC_REPLICATION_FRAME_PACKET::SC_REPLICATION_FRAME_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_REPLICATION_FRAME_PACKET)
+}
+inline PROTOBUF_NDEBUG_INLINE SC_REPLICATION_FRAME_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from, const ::Protocol::SC_REPLICATION_FRAME_PACKET& from_msg)
+      : spawns_{visibility, arena, from.spawns_},
+        despawns_{visibility, arena, from.despawns_},
+        moves_{visibility, arena, from.moves_},
+        anims_{visibility, arena, from.anims_},
+        _cached_size_{0} {}
+
+SC_REPLICATION_FRAME_PACKET::SC_REPLICATION_FRAME_PACKET(
+    ::google::protobuf::Arena* arena,
+    const SC_REPLICATION_FRAME_PACKET& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SC_REPLICATION_FRAME_PACKET* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, frameseq_),
+           reinterpret_cast<const char *>(&from._impl_) +
+               offsetof(Impl_, frameseq_),
+           offsetof(Impl_, servertick_) -
+               offsetof(Impl_, frameseq_) +
+               sizeof(Impl_::servertick_));
+
+  // @@protoc_insertion_point(copy_constructor:Protocol.SC_REPLICATION_FRAME_PACKET)
+}
+inline PROTOBUF_NDEBUG_INLINE SC_REPLICATION_FRAME_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : spawns_{visibility, arena},
+        despawns_{visibility, arena},
+        moves_{visibility, arena},
+        anims_{visibility, arena},
+        _cached_size_{0} {}
+
+inline void SC_REPLICATION_FRAME_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, frameseq_),
+           0,
+           offsetof(Impl_, servertick_) -
+               offsetof(Impl_, frameseq_) +
+               sizeof(Impl_::servertick_));
+}
+SC_REPLICATION_FRAME_PACKET::~SC_REPLICATION_FRAME_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_REPLICATION_FRAME_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_REPLICATION_FRAME_PACKET::SharedDtor(MessageLite& self) {
+  SC_REPLICATION_FRAME_PACKET& this_ = static_cast<SC_REPLICATION_FRAME_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_REPLICATION_FRAME_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_REPLICATION_FRAME_PACKET(arena);
+}
+constexpr auto SC_REPLICATION_FRAME_PACKET::InternalNewImpl_() {
+  constexpr auto arena_bits = ::google::protobuf::internal::EncodePlacementArenaOffsets({
+      PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.spawns_) +
+          decltype(SC_REPLICATION_FRAME_PACKET::_impl_.spawns_)::
+              InternalGetArenaOffset(
+                  ::google::protobuf::Message::internal_visibility()),
+      PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.despawns_) +
+          decltype(SC_REPLICATION_FRAME_PACKET::_impl_.despawns_)::
+              InternalGetArenaOffset(
+                  ::google::protobuf::Message::internal_visibility()),
+      PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.moves_) +
+          decltype(SC_REPLICATION_FRAME_PACKET::_impl_.moves_)::
+              InternalGetArenaOffset(
+                  ::google::protobuf::Message::internal_visibility()),
+      PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.anims_) +
+          decltype(SC_REPLICATION_FRAME_PACKET::_impl_.anims_)::
+              InternalGetArenaOffset(
+                  ::google::protobuf::Message::internal_visibility()),
+  });
+  if (arena_bits.has_value()) {
+    return ::google::protobuf::internal::MessageCreator::ZeroInit(
+        sizeof(SC_REPLICATION_FRAME_PACKET), alignof(SC_REPLICATION_FRAME_PACKET), *arena_bits);
+  } else {
+    return ::google::protobuf::internal::MessageCreator(&SC_REPLICATION_FRAME_PACKET::PlacementNew_,
+                                 sizeof(SC_REPLICATION_FRAME_PACKET),
+                                 alignof(SC_REPLICATION_FRAME_PACKET));
+  }
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_REPLICATION_FRAME_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_REPLICATION_FRAME_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_REPLICATION_FRAME_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_REPLICATION_FRAME_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_REPLICATION_FRAME_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_REPLICATION_FRAME_PACKET>(), &SC_REPLICATION_FRAME_PACKET::ByteSizeLong,
+            &SC_REPLICATION_FRAME_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_REPLICATION_FRAME_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_REPLICATION_FRAME_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 6, 4, 0, 2> SC_REPLICATION_FRAME_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    6, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967232,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    6,  // num_field_entries
+    4,  // num_aux_entries
+    offsetof(decltype(_table_), aux_entries),
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_REPLICATION_FRAME_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint32 frameSeq = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_REPLICATION_FRAME_PACKET, _impl_.frameseq_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.frameseq_)}},
+    // uint32 serverTick = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_REPLICATION_FRAME_PACKET, _impl_.servertick_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.servertick_)}},
+    // repeated .Protocol.SC_ADD_PACKET spawns = 3;
+    {::_pbi::TcParser::FastMtR1,
+     {26, 63, 0, PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.spawns_)}},
+    // repeated .Protocol.SC_REMOVE_PACKET despawns = 4;
+    {::_pbi::TcParser::FastMtR1,
+     {34, 63, 1, PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.despawns_)}},
+    // repeated .Protocol.SC_MOVE_PACKET moves = 5;
+    {::_pbi::TcParser::FastMtR1,
+     {42, 63, 2, PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.moves_)}},
+    // repeated .Protocol.SC_ANIMATION_TRANSITION_PACKET anims = 6;
+    {::_pbi::TcParser::FastMtR1,
+     {50, 63, 3, PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.anims_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 frameSeq = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.frameseq_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 serverTick = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.servertick_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // repeated .Protocol.SC_ADD_PACKET spawns = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.spawns_), 0, 0,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+    // repeated .Protocol.SC_REMOVE_PACKET despawns = 4;
+    {PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.despawns_), 0, 1,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+    // repeated .Protocol.SC_MOVE_PACKET moves = 5;
+    {PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.moves_), 0, 2,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+    // repeated .Protocol.SC_ANIMATION_TRANSITION_PACKET anims = 6;
+    {PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.anims_), 0, 3,
+    (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+  }}, {{
+    {::_pbi::TcParser::GetTable<::Protocol::SC_ADD_PACKET>()},
+    {::_pbi::TcParser::GetTable<::Protocol::SC_REMOVE_PACKET>()},
+    {::_pbi::TcParser::GetTable<::Protocol::SC_MOVE_PACKET>()},
+    {::_pbi::TcParser::GetTable<::Protocol::SC_ANIMATION_TRANSITION_PACKET>()},
+  }}, {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_REPLICATION_FRAME_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_REPLICATION_FRAME_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.spawns_.Clear();
+  _impl_.despawns_.Clear();
+  _impl_.moves_.Clear();
+  _impl_.anims_.Clear();
+  ::memset(&_impl_.frameseq_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.servertick_) -
+      reinterpret_cast<char*>(&_impl_.frameseq_)) + sizeof(_impl_.servertick_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_REPLICATION_FRAME_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_REPLICATION_FRAME_PACKET& this_ = static_cast<const SC_REPLICATION_FRAME_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_REPLICATION_FRAME_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_REPLICATION_FRAME_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_REPLICATION_FRAME_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint32 frameSeq = 1;
+          if (this_._internal_frameseq() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                1, this_._internal_frameseq(), target);
+          }
+
+          // uint32 serverTick = 2;
+          if (this_._internal_servertick() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                2, this_._internal_servertick(), target);
+          }
+
+          // repeated .Protocol.SC_ADD_PACKET spawns = 3;
+          for (unsigned i = 0, n = static_cast<unsigned>(
+                                   this_._internal_spawns_size());
+               i < n; i++) {
+            const auto& repfield = this_._internal_spawns().Get(i);
+            target =
+                ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                    3, repfield, repfield.GetCachedSize(),
+                    target, stream);
+          }
+
+          // repeated .Protocol.SC_REMOVE_PACKET despawns = 4;
+          for (unsigned i = 0, n = static_cast<unsigned>(
+                                   this_._internal_despawns_size());
+               i < n; i++) {
+            const auto& repfield = this_._internal_despawns().Get(i);
+            target =
+                ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                    4, repfield, repfield.GetCachedSize(),
+                    target, stream);
+          }
+
+          // repeated .Protocol.SC_MOVE_PACKET moves = 5;
+          for (unsigned i = 0, n = static_cast<unsigned>(
+                                   this_._internal_moves_size());
+               i < n; i++) {
+            const auto& repfield = this_._internal_moves().Get(i);
+            target =
+                ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                    5, repfield, repfield.GetCachedSize(),
+                    target, stream);
+          }
+
+          // repeated .Protocol.SC_ANIMATION_TRANSITION_PACKET anims = 6;
+          for (unsigned i = 0, n = static_cast<unsigned>(
+                                   this_._internal_anims_size());
+               i < n; i++) {
+            const auto& repfield = this_._internal_anims().Get(i);
+            target =
+                ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+                    6, repfield, repfield.GetCachedSize(),
+                    target, stream);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_REPLICATION_FRAME_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_REPLICATION_FRAME_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_REPLICATION_FRAME_PACKET& this_ = static_cast<const SC_REPLICATION_FRAME_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_REPLICATION_FRAME_PACKET::ByteSizeLong() const {
+          const SC_REPLICATION_FRAME_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_REPLICATION_FRAME_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // repeated .Protocol.SC_ADD_PACKET spawns = 3;
+            {
+              total_size += 1UL * this_._internal_spawns_size();
+              for (const auto& msg : this_._internal_spawns()) {
+                total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+              }
+            }
+            // repeated .Protocol.SC_REMOVE_PACKET despawns = 4;
+            {
+              total_size += 1UL * this_._internal_despawns_size();
+              for (const auto& msg : this_._internal_despawns()) {
+                total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+              }
+            }
+            // repeated .Protocol.SC_MOVE_PACKET moves = 5;
+            {
+              total_size += 1UL * this_._internal_moves_size();
+              for (const auto& msg : this_._internal_moves()) {
+                total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+              }
+            }
+            // repeated .Protocol.SC_ANIMATION_TRANSITION_PACKET anims = 6;
+            {
+              total_size += 1UL * this_._internal_anims_size();
+              for (const auto& msg : this_._internal_anims()) {
+                total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+              }
+            }
+          }
+           {
+            // uint32 frameSeq = 1;
+            if (this_._internal_frameseq() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_frameseq());
+            }
+            // uint32 serverTick = 2;
+            if (this_._internal_servertick() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_servertick());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_REPLICATION_FRAME_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_REPLICATION_FRAME_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_REPLICATION_FRAME_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_REPLICATION_FRAME_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_internal_mutable_spawns()->MergeFrom(
+      from._internal_spawns());
+  _this->_internal_mutable_despawns()->MergeFrom(
+      from._internal_despawns());
+  _this->_internal_mutable_moves()->MergeFrom(
+      from._internal_moves());
+  _this->_internal_mutable_anims()->MergeFrom(
+      from._internal_anims());
+  if (from._internal_frameseq() != 0) {
+    _this->_impl_.frameseq_ = from._impl_.frameseq_;
+  }
+  if (from._internal_servertick() != 0) {
+    _this->_impl_.servertick_ = from._impl_.servertick_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_REPLICATION_FRAME_PACKET::CopyFrom(const SC_REPLICATION_FRAME_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_REPLICATION_FRAME_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_REPLICATION_FRAME_PACKET::InternalSwap(SC_REPLICATION_FRAME_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.spawns_.InternalSwap(&other->_impl_.spawns_);
+  _impl_.despawns_.InternalSwap(&other->_impl_.despawns_);
+  _impl_.moves_.InternalSwap(&other->_impl_.moves_);
+  _impl_.anims_.InternalSwap(&other->_impl_.anims_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.servertick_)
+      + sizeof(SC_REPLICATION_FRAME_PACKET::_impl_.servertick_)
+      - PROTOBUF_FIELD_OFFSET(SC_REPLICATION_FRAME_PACKET, _impl_.frameseq_)>(
+          reinterpret_cast<char*>(&_impl_.frameseq_),
+          reinterpret_cast<char*>(&other->_impl_.frameseq_));
+}
+
+::google::protobuf::Metadata SC_REPLICATION_FRAME_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

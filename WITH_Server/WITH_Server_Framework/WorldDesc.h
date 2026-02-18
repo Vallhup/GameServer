@@ -11,7 +11,6 @@
 //  - maxPlayers, maxEntities µî
 // 4) Map Id
 // 5) NetPolicy
-// 6) Threading Policy
 
 #include "types.h"
 
@@ -21,5 +20,4 @@ struct WorldDesc {
 	uint64 Capacity;
 	int mapId;
 	uint8 netPolicy;
-	uint8 threadingPolicy;
 };

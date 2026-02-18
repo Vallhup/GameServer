@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="pch.cpp" />
     <ClCompile Include="EntityManager.cpp">
       <Filter>ECS\Entity</Filter>
     </ClCompile>
@@ -44,9 +43,20 @@
     <ClCompile Include="WorldRuntime.cpp">
       <Filter>Game\World\Core</Filter>
     </ClCompile>
+    <ClCompile Include="DirtyTracker.cpp">
+      <Filter>ReplicationCore</Filter>
+    </ClCompile>
+    <ClCompile Include="ReplicationSystem.cpp">
+      <Filter>ReplicationCore</Filter>
+    </ClCompile>
+    <ClCompile Include="RepRegistry.cpp">
+      <Filter>ReplicationCore</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
     <ClInclude Include="Entity.h">
       <Filter>ECS\Entity</Filter>
     </ClInclude>
@@ -71,7 +81,6 @@
     <ClInclude Include="StorageRegistry.h">
       <Filter>ECS\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="WITH_Server_Framework.h" />
     <ClInclude Include="System.h">
       <Filter>ECS\System</Filter>
     </ClInclude>
@@ -123,6 +132,36 @@
     <ClInclude Include="WorldRuntime.h">
       <Filter>Game\World\Core</Filter>
     </ClInclude>
+    <ClInclude Include="DirtyTracker.h">
+      <Filter>ReplicationCore</Filter>
+    </ClInclude>
+    <ClInclude Include="ReplicationSystem.h">
+      <Filter>ReplicationCore</Filter>
+    </ClInclude>
+    <ClInclude Include="RepRegistry.h">
+      <Filter>ReplicationCore</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionRepState.h">
+      <Filter>ReplicationCore</Filter>
+    </ClInclude>
+    <ClInclude Include="RepComponent.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="WITH_Server_Framework.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerContext.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="IInterestPolicy.h">
+      <Filter>ReplicationCore\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IConnContext.h">
+      <Filter>ReplicationCore\Interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -166,6 +205,15 @@
     </Filter>
     <Filter Include="JobGraph">
       <UniqueIdentifier>{20f28bfd-9995-4570-913a-aecb95f4fae9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ReplicationCore">
+      <UniqueIdentifier>{8be81388-b32f-49e3-9c71-98080e0f3171}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{6df8462f-88f4-4f0d-a3f4-882035ffcb3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ReplicationCore\Interface">
+      <UniqueIdentifier>{d4bf3cd7-c3a5-4c3b-9bfc-80eaaba4468b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
