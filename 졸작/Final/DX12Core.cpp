@@ -80,6 +80,12 @@ void DX12Core::CreateCommandObjects()
     hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdAlloc.Get(), nullptr, IID_PPV_ARGS(&cmdList));
     MASSERT(SUCCEEDED(hr), "Failed to create Command List");
 
+	hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&loadingCmdAlloc));
+	MASSERT(SUCCEEDED(hr), "Failed to create Loading Command Allocator");
+	
+	hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, loadingCmdAlloc.Get(), nullptr, IID_PPV_ARGS(&loadingCmdList));
+	MASSERT(SUCCEEDED(hr), "Failed to create Loading Command List");
+
     hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
     MASSERT(SUCCEEDED(hr), "Failed to create Fence");
 
@@ -710,6 +716,31 @@ ID3D12CommandQueue* DX12Core::GetCmdQueue() const
 ID3D12GraphicsCommandList* DX12Core::GetGraphicsCmdList() const
 {
 	return cmdList.Get();
+}
+
+ID3D12GraphicsCommandList* DX12Core::GetLoadingCmdList() const
+{
+	return loadingCmdList.Get();
+}
+
+ID3D12GraphicsCommandList* DX12Core::GetActiveCmdList() const
+{
+	return isLoadingMode ? loadingCmdList.Get() : cmdList.Get();
+}
+
+void DX12Core::SetLoadingMode(bool loading)
+{
+	isLoadingMode = loading;
+}
+
+void DX12Core::ExecuteLoadingCommands()
+{
+	loadingCmdList->Close();
+	ID3D12CommandList * lists[] = { loadingCmdList.Get() };
+	cmdQueue->ExecuteCommandLists(1, lists);
+	WaitSync();
+	loadingCmdAlloc->Reset();
+	loadingCmdList->Reset(loadingCmdAlloc.Get(), nullptr);
 }
 
 IDXGISwapChain4* DX12Core::GetSwapChain() const

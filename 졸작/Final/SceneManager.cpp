@@ -9,6 +9,7 @@
 #include "SelectScene.h"
 #include "TownScene.h"
 #include "SoloGameScene.h"
+#include "LoadingScene.h"
 #include "Camera.h"
 #include "Material.h"
 #include "ResourceManager.h"
@@ -27,6 +28,8 @@ void SceneManager::Initialize(HWND hWnd, DX12Core& core)
     RegisterScene<SelectScene>(SceneType::Select);
     RegisterScene<TownScene>(SceneType::Town);
     RegisterScene<SoloGameScene>(SceneType::MainGame);
+
+    RegisterScene<LoadingScene>(SceneType::Loading);
 
     sceneRenderer = make_unique<SceneRenderer>();
     sceneRenderer->Initialize(core.GetDevice());

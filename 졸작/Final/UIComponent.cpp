@@ -1,12 +1,10 @@
 #include "pch.h"
 #include "UIComponent.h"
 #include "UIManager.h"
-#include "SceneManager.h"
 
-void UIComponent::Init(UIManager* manager, SceneType scene)
+void UIComponent::Init(UIManager* manager)
 {
 	uiManager = manager;
-	ownerScene = scene;
 }
 
 void UIComponent::SetPosition(float x, float y)

@@ -119,7 +119,7 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     XMMATRIX view = XMMatrixLookAtLH(eyePos, lookAt, upDir);
 
     float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
-    XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 50.0f);
+    XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 150.0f);
 
     BoundingFrustum::CreateFromMatrix(viewFrustum, proj);
 

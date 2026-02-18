@@ -53,12 +53,12 @@ void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListe
 
 void Engine::Update(const float deltaTime)
 {
-    uiManager->Update(deltaTime);
-
     sceneManager->ProcessPendingSceneChange(*graphics);
     sceneManager->Update(deltaTime);
 
     effectManager->Update(deltaTime);
+
+    uiManager->Update(deltaTime);
 
     soundManager->Update();
 }

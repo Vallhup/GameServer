@@ -32,16 +32,23 @@ void TitleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nTitleScene Data has been created!! \n");
 
-	{
-		auto knight = make_shared<MainCharacter>();
-		auto mesh = knight->AddComponent<Mesh>();
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+	
+	auto knight = make_shared<MainCharacter>();
+	auto mesh = knight->AddComponent<Mesh>();
+	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+	
+	auto dragon = make_shared<GameObject>();
+	auto mesh2 = dragon->AddComponent<Mesh>();
+	mesh2->SetMesh(*coreRef, L"../Assets/FBXModel/Dragon/Dragon");
 
-		coreRef->FlushCommandQueue();
-		coreRef->ResetCommandQueue();
+	coreRef->FlushCommandQueue();
+	coreRef->ResetCommandQueue();
 
-		mesh->ReleaseUploadBuffers();
-	}
+	mesh->ReleaseUploadBuffers();
+	mesh2->ReleaseUploadBuffers();
+
+	OutputDebugStringA("Dragon created!!\n");
+	
 }
 
 void TitleScene::UpdateScene(const float deltaTime)

@@ -68,7 +68,7 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
         vertexIndexBuffer = make_shared<VertexIndexBuffer>();
         vertexIndexBuffer->Initialize(
             core.GetDevice(),
-            core.GetGraphicsCmdList(),
+            core.GetActiveCmdList(),
             mesh.vertices,
             mesh.indices
         );
@@ -177,7 +177,7 @@ void Mesh::SetMesh2(DX12Core& core, const wstring& path)
         vertexIndexBuffer = make_shared<VertexIndexBuffer>();
         vertexIndexBuffer->Initialize(
             core.GetDevice(),
-            core.GetGraphicsCmdList(),
+            core.GetActiveCmdList(),
             mesh.vertices,
             mesh.indices
         );
@@ -235,7 +235,7 @@ void Mesh::SetCollisionMesh(DX12Core& core, const wstring& path)
         collisionMeshBuffer = make_shared<VertexIndexBuffer>();
         collisionMeshBuffer->Initialize(
             core.GetDevice(),
-            core.GetGraphicsCmdList(),
+            core.GetActiveCmdList(),
             mesh.vertices,
             mesh.indices
         );
@@ -265,7 +265,7 @@ void Mesh::SetSingleMaterial(DX12Core& core, const vector<MaterialData>& mats)
     material = make_shared<Material>();
     material->LoadFromMaterialData(
         core.GetDevice(),
-        core.GetGraphicsCmdList(),
+        core.GetActiveCmdList(),
         mats[0]
     );
 }
@@ -279,7 +279,7 @@ void Mesh::SetMultiMaterials(DX12Core& core, const vector<MaterialData>& mats)
         auto mat = make_shared<Material>();
         mat->LoadFromMaterialData(
             core.GetDevice(),
-            core.GetGraphicsCmdList(),
+            core.GetActiveCmdList(),
             matData
         );
 

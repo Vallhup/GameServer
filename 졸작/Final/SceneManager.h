@@ -6,6 +6,7 @@ enum class SceneType {
     Select,
     Town,
     MainGame,
+    Loading,
     END
 };
 
