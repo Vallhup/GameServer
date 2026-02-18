@@ -14,6 +14,8 @@ public:
 	void DestroyEntity(Entity e);
 	bool IsAlive(Entity e) const;
 
+	std::span<const Entity> AliveEntities() const { return _entityMng.AliveEntities(); }
+
 	template<CompT T>
 	ComponentStorage<T>& GetStorage()
 	{

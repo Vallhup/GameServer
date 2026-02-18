@@ -5,7 +5,6 @@
 Entity EntityManager::Create()
 {
 	int id;
-
 	if (!_freeIds.empty())
 	{
 		id = _freeIds.back();
@@ -19,20 +18,40 @@ Entity EntityManager::Create()
 
 		id = static_cast<int>(_generations.size());
 		_generations.push_back(0);
+		_aliveIndex.push_back(-1);
 	}
 
-	++_aliveCount;
-	return Entity{ id, _generations[id] };
+	Entity e{ id, _generations[id] };
+
+	_aliveIndex[id] = static_cast<int>(_alive.size());
+	_alive.push_back(e);
+
+	_aliveCount = _alive.size();
+	return e;
 }
 
 bool EntityManager::Destroy(Entity e)
 {
 	if (!IsAlive(e)) return false;
 
-	++_generations[e.id];
-	_freeIds.push_back(e.id);
+	const int id = e.id;
+	int idx = _aliveIndex[id];
 
-	--_aliveCount;
+	const int last = static_cast<int>(_alive.size() - 1);
+	if (idx != last)
+	{
+		Entity moved = _alive[last];
+		_alive[idx] = moved;
+		_aliveIndex[moved.id] = idx;
+	}
+
+	_alive.pop_back();
+	_aliveIndex[id] = -1;
+
+	++_generations[id];
+	_freeIds.push_back(id);
+
+	_aliveCount = _alive.size();
 	return true;
 }
 
