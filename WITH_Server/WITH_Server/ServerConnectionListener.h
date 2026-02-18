@@ -15,7 +15,11 @@ public:
 	virtual void OnPacketReceived(Connection& conn, 
 		const PacketHeader& header, const BYTE* data) override;
 
-	void EnsurePlayerBound(uint32 connId, WorldId world);
+	NetIdMap& GetIdMap() { return _idMap; }
+	const NetIdMap& GetIdMap() const { return _idMap; }
+
+	ConnectionRegistry& GetConnRegistry() { return _connRegistry; }
+	const ConnectionRegistry& GetConnRegistry() const { return _connRegistry; }
 
 	// TEMP
 	void Send(uint32 id, SendBuffer* data);

@@ -1,12 +1,13 @@
 #pragma once
 
 #include "System.h"
+#include "Event.h"
 
 class OutputEventSystem : public System {
 	using EventHandler = std::function<void(const OutputEvent&)>;
 
 public:
-	OutputEventSystem(ECS& ecs, int p = 0);
+	OutputEventSystem(WorldRuntime& rt, int p = 0);
 	virtual ~OutputEventSystem() = default;
 
 	virtual void Execute(const double dT) override;

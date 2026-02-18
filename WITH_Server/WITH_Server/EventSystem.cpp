@@ -4,6 +4,7 @@
 #include "Framework.h"
 #include "Entity.h"
 #include "Component.h"
+#include "RepComponent.h"
 
 EventSystem::EventSystem(WorldRuntime& rt, int p) : System(rt, p) 
 {
@@ -38,12 +39,17 @@ void EventSystem::ProcessConnect(const Event& event)
 	std::cout << "[EventSystem] Player[" << p->sessionId << "] Login\n";
 #endif
 
-	Entity entity = _runtime.SpawnPlayer(p->sessionId);
+	Framework& framework = Framework::Get();
 
-	auto& ets = Framework::Get().entityToSession;
-	auto it = ets.find(entity);
-	if (it != ets.end())
-		Framework::Get().outEventQueue.push(OutputEvent{ entity, DirtyType::Spawned });
+	const uint32 connId = p->sessionId;
+	Entity entity = _runtime.SpawnPlayer(connId);
+	NetId nId = framework.netIdRegistry.Allocate();
+
+	_runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity)->id = nId;
+
+	framework.listener.GetIdMap().BindPlayer(connId, nId);
+	framework.netIdRegistry.BindEntity(nId, entity);
+	framework.outEventQueue.push(OutputEvent{ nId, DirtyType::Spawned });
 }
 
 void EventSystem::ProcessDisconnect(const Event& event)
@@ -51,17 +57,13 @@ void EventSystem::ProcessDisconnect(const Event& event)
 	const auto* p = std::get_if<DisconnectEvent>(&event.payload);
 
 #ifdef _DEBUG
-	std::cout << "[EventSystem] Player[" << p->sessionId << "] Disconnect\n";
+	std::cout << "[EventSystem] Player[" << p->id.GetId() << "] Disconnect\n";
 #endif
-
-	auto& ste = Framework::Get().sessionToEntity;
-
-	auto it = ste.find(p->sessionId);
-	if (it == ste.end()) return;
-	Entity entity = it->second;
+	Framework& framework = Framework::Get();
+	Entity entity = framework.netIdRegistry.FindEntity(p->id);
 
 	_runtime.GetECS().GetStorage<DisconnectedTag>().AddComponent(entity);
-	Framework::Get().outEventQueue.push(OutputEvent{ entity, DirtyType::Despawned });
+	framework.outEventQueue.push(OutputEvent{ p->id, DirtyType::Despawned });
 }
 
 void EventSystem::ProcessMove(const Event& event)
@@ -69,9 +71,8 @@ void EventSystem::ProcessMove(const Event& event)
 	const auto* p = std::get_if<MoveEvent>(&event.payload);
 	if (!p) return;
 
-	auto it = Framework::Get().sessionToEntity.find(p->sessionId);
-	if (it == Framework::Get().sessionToEntity.end()) return;
-	Entity entity = it->second;
+	Framework& framework = Framework::Get();
+	Entity entity = framework.netIdRegistry.FindEntity(p->id);
 
 	if (auto* velocity = _runtime.GetECS().GetStorage<Velocity>().GetComponent(entity))
 	{
@@ -116,9 +117,8 @@ void EventSystem::ProcessAction(const Event& event)
 	const auto* p = std::get_if<ActionEvent>(&event.payload);
 	if (!p) return;
 
-	auto it = Framework::Get().sessionToEntity.find(p->sessionId);
-	if (it == Framework::Get().sessionToEntity.end()) return;
-	Entity entity = it->second;
+	Framework& framework = Framework::Get();
+	Entity entity = framework.netIdRegistry.FindEntity(p->id);
 
 	if (auto* actionIntent = _runtime.GetECS().GetStorage<ActionIntent>().GetComponent(entity))
 	{

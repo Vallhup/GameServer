@@ -13,13 +13,14 @@ void ServerConnectionListener::OnConnected(Connection& conn)
 void ServerConnectionListener::OnDisconnected(Connection& conn)
 {
 	uint32 id = conn.GetId();
+	NetId nId = _idMap.GetPlayer(id);
 
-	DisconnectEvent dc{ id };
+	DisconnectEvent dc{ nId };
 	Event ev{ EventType::EV_DISCONNECT, dc };
 	Framework::Get().eventQueue.push(ev);
 
 	_connRegistry.Remove(id);
-	_idMap.OnDisconnected(id);
+	//_idMap.OnDisconnected(id);
 }
 
 void ServerConnectionListener::OnPacketReceived(Connection& conn, const PacketHeader& header, const BYTE* data)
@@ -30,16 +31,6 @@ void ServerConnectionListener::OnPacketReceived(Connection& conn, const PacketHe
 	{
 		_handler.Handle(id, header, data);
 	}
-}
-
-void ServerConnectionListener::EnsurePlayerBound(uint32 connId, WorldId world)
-{
-	if (_idMap.GetPlayer(connId).IsValid())
-		return;
-
-	NetId id = Framework::Get().netIdRegistry.Allocate();
-	_idMap.BindPlayer(connId, id);
-	_idMap.EnterWorld(connId, world);
 }
 
 void ServerConnectionListener::Send(uint32 id, SendBuffer* data)

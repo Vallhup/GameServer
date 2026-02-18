@@ -5,22 +5,24 @@
 #include "PacketFactory.h"
 
 #include "Protocol.pb.h"
+#include "NetId.h"
+#include "EntityType.h"
 
 namespace NetHelper {
-	inline SendBuffer* SCLoginPacket(uint32 id)
+	inline SendBuffer* SCLoginPacket(NetId id)
 	{
 		Protocol::SC_LOGIN_PACKET login;
-		login.set_sessionid(id);
+		login.set_netid(id.GetRaw());
 
 		return PacketFactory::Serialize<Protocol::SC_LOGIN_PACKET>
 			(PacketType::SC_LOGIN, login);
 	}
 
-	inline SendBuffer* SCAddPacket(uint32 id, uint32 type, float x, float y, float z, float yaw)
+	inline SendBuffer* SCAddPacket(NetId id, EntityType type, float x, float y, float z, float yaw)
 	{
 		Protocol::SC_ADD_PACKET add;
-		add.set_id(id);
-		add.set_type(type);
+		add.set_netid(id.GetRaw());
+		add.set_typeid_(ToInt(type));
 		add.set_x(x);
 		add.set_y(y);
 		add.set_z(z);
@@ -30,20 +32,20 @@ namespace NetHelper {
 			(PacketType::SC_ADD, add);
 	}
 
-	inline SendBuffer* SCRemovePacket(uint32 id)
+	inline SendBuffer* SCRemovePacket(NetId id)
 	{
 		Protocol::SC_REMOVE_PACKET remove;
-		remove.set_id(id);
+		remove.set_netid(id.GetRaw());
 
 		return PacketFactory::Serialize<Protocol::SC_REMOVE_PACKET>
 			(PacketType::SC_REMOVE, remove);
 	}
 
-	inline SendBuffer* SCMovePacket(uint32 id, 
+	inline SendBuffer* SCMovePacket(NetId id, 
 		float x, float y, float z, float yaw)
 	{
 		Protocol::SC_MOVE_PACKET move;
-		move.set_id(id);
+		move.set_netid(id.GetRaw());
 		move.set_x(x);
 		move.set_y(y);
 		move.set_z(z);
@@ -53,10 +55,10 @@ namespace NetHelper {
 			(PacketType::SC_MOVE_OBJECT, move);
 	}
 
-	inline SendBuffer* SCAnimationChangePacket(uint32 id, AnimationType curr)
+	inline SendBuffer* SCAnimationChangePacket(NetId id, AnimationType curr)
 	{
 		Protocol::SC_ANIMATION_TRANSITION_PACKET anim;
-		anim.set_id(id);
+		anim.set_netid(id.GetRaw());
 		anim.set_curranim(ToInt(curr));
 
 		return PacketFactory::Serialize<Protocol::SC_ANIMATION_TRANSITION_PACKET>

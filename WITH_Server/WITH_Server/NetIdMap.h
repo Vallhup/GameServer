@@ -2,6 +2,7 @@
 
 #include "NetId.h"
 #include "WorldId.h"
+#include "IConnContext.h"
 
 struct NetBinding
 {
@@ -10,8 +11,13 @@ struct NetBinding
 	bool inWorld;
 };
 
-class NetIdMap {
+class NetIdMap : public IConnContext {
 public:
+	virtual ~NetIdMap() = default;
+
+	virtual bool TryGetWorld(uint32 connId, WorldId& out) const override;
+	virtual bool TryGetOwnerPlayer(uint32 connId, NetId& out) const override;
+
 	void OnConnected(uint32 connId);
 	void OnDisconnected(uint32 connId);
 	
@@ -20,10 +26,12 @@ public:
 
 	void BindPlayer(uint32 connId, NetId player);
 
+	uint32 GetConn(NetId player) const;
 	NetId GetPlayer(uint32 connId) const;
 	WorldId GetWorld(NetId player) const;
 
 private:
 	std::unordered_map<uint32, NetBinding> _bindMap;
+	std::unordered_map<NetId, uint32> _connByNetId;
 };
 

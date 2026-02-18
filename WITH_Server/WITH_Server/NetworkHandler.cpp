@@ -33,7 +33,8 @@ bool NetworkHandler::HandleMove(uint32 id, const PacketHeader& header, const BYT
 	if (not PacketFactory::Deserialize(header, data, &move))
 		return false;
 
-	MoveEvent mv{ id, move.inputx(), move.inputz(), move.yaw(), move.isrun() };
+	NetId nId = Framework::Get().listener.GetIdMap().GetPlayer(id);
+	MoveEvent mv{ nId, move.inputx(), move.inputz(), move.yaw(), move.isrun() };
 	Event ev{ EventType::EV_MOVE, mv };
 	Framework::Get().eventQueue.push(ev);
 
@@ -46,7 +47,8 @@ bool NetworkHandler::HandleAttack(uint32 id, const PacketHeader& header, const B
 	if (not PacketFactory::Deserialize(header, data, &attack))
 		return false;
 
-	ActionEvent ac{ id, ActionRequestType::Attack, attack.dirx(), attack.dirz(), true };
+	NetId nId = Framework::Get().listener.GetIdMap().GetPlayer(id);
+	ActionEvent ac{ nId, ActionRequestType::Attack, attack.dirx(), attack.dirz(), true };
 	Event ev{ EventType::EV_ACTION, ac };
 	Framework::Get().eventQueue.push(ev);
 
@@ -59,7 +61,8 @@ bool NetworkHandler::HandleDodge(uint32 id, const PacketHeader& header, const BY
 	if (not PacketFactory::Deserialize(header, data, &dodge))
 		return false;
 
-	ActionEvent ac{ id, ActionRequestType::Dodge, dodge.dirx(), dodge.dirz(), true };
+	NetId nId = Framework::Get().listener.GetIdMap().GetPlayer(id);
+	ActionEvent ac{ nId, ActionRequestType::Dodge, dodge.dirx(), dodge.dirz(), true };
 	Event ev{ EventType::EV_ACTION, ac };
 	Framework::Get().eventQueue.push(ev);
 
@@ -72,7 +75,8 @@ bool NetworkHandler::HandleGuard(uint32 id, const PacketHeader& header, const BY
 	if (not PacketFactory::Deserialize(header, data, &guard))
 		return false;
 
-	ActionEvent ac{ id, ActionRequestType::Guard, 0.0f, 0.0f, guard.input() };
+	NetId nId = Framework::Get().listener.GetIdMap().GetPlayer(id);
+	ActionEvent ac{ nId, ActionRequestType::Guard, 0.0f, 0.0f, guard.input() };
 	Event ev{ EventType::EV_ACTION, ac };
 	Framework::Get().eventQueue.push(ev);
 
@@ -85,7 +89,8 @@ bool NetworkHandler::HandleParry(uint32 id, const PacketHeader& header, const BY
 	if (not PacketFactory::Deserialize(header, data, &parry))
 		return false;
 
-	ActionEvent ac{ id, ActionRequestType::Parry, parry.dirx(), parry.dirz(), true };
+	NetId nId = Framework::Get().listener.GetIdMap().GetPlayer(id);
+	ActionEvent ac{ nId, ActionRequestType::Parry, parry.dirx(), parry.dirz(), true };
 	Event ev{ EventType::EV_ACTION, ac };
 	Framework::Get().eventQueue.push(ev);
 

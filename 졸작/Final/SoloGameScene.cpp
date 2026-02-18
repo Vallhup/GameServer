@@ -20,6 +20,9 @@
 #include "EffectRenderer.h"
 #include "EffectManager.h"
 
+
+#include "NetId.h"
+
 SoloGameScene::~SoloGameScene() = default;
 
 void SoloGameScene::CreateKnightPool()
@@ -200,7 +203,9 @@ void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		Protocol::SC_LOGIN_PACKET login;
 		if (PacketFactory::Deserialize<Protocol::SC_LOGIN_PACKET>(header, data, &login))
 		{
-			INPUT.SetClientID(login.sessionid());
+			NetId nid{ login.netid() };
+			int id = nid.GetId();
+			INPUT.SetClientID(id);
 			OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
 		}
 		break;
@@ -211,8 +216,9 @@ void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		Protocol::SC_ADD_PACKET add;
 		if (PacketFactory::Deserialize<Protocol::SC_ADD_PACKET>(header, data, &add))
 		{
-			int id = add.id();
-			int type = add.type();
+			NetId nid{ add.netid() };
+			int id = nid.GetId();
+			int type = add.typeid_();
 
 			if (type == 4) // Final_Boss
 			{
@@ -255,7 +261,8 @@ void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		Protocol::SC_MOVE_PACKET move;
 		if (PacketFactory::Deserialize<Protocol::SC_MOVE_PACKET>(header, data, &move))
 		{
-			int id = move.id();
+			NetId nid{ move.netid() };
+			int id = nid.GetId();
 			auto it = activeCharacters.find(id);
 			if (it != activeCharacters.end())
 			{
@@ -278,7 +285,8 @@ void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 		Protocol::SC_ANIMATION_TRANSITION_PACKET anim;
 		if (PacketFactory::Deserialize<Protocol::SC_ANIMATION_TRANSITION_PACKET>(header, data, &anim))
 		{
-			int id = anim.id();
+			NetId nid{ anim.netid() };
+			int id = nid.GetId();
 			
 			auto it = activeCharacters.find(id);
 			if (it != activeCharacters.end())

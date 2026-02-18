@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MovementApplySystem.h"
 #include "Framework.h"
+#include "RepComponent.h"
 
 void MovementApplySystem::Execute(const double dT)
 {
@@ -78,8 +79,11 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 			trans->position.y =
 				MapCollisionManager::Get().SampleHeightAt(trans->position.x, trans->position.z);
 
+			const auto* netComp = _runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity);
+			if (!netComp) return;
+
 			Framework::Get().outEventQueue.push(OutputEvent{
-				entity, DirtyType::Moved });
+				netComp->id, DirtyType::Moved});
 		}
 	}
 }

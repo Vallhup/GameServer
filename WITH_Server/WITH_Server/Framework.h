@@ -22,9 +22,6 @@ public:
 	concurrency::concurrent_queue<Event> eventQueue;
 	concurrency::concurrent_queue<OutputEvent> outEventQueue;
 
-	std::unordered_map<uint32, Entity> sessionToEntity;
-	std::unordered_map<Entity, uint32> entityToSession;
-
 	NetIdRegistry netIdRegistry;
 
 	TestWorldFactory factory;

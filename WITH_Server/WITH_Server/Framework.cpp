@@ -57,19 +57,32 @@ BOOL __stdcall Framework::ConsoleHandler(DWORD ctrlType)
 
 void Framework::LoadAnimations()
 {
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Idle, "../Animation/Knight/knight_animation_idle.json");
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Walk, "../Animation/Knight/knight_animation_walk.json");
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Run, "../Animation/Knight/knight_animation_run.json");
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Attack, "../Animation/Knight/knight_animation_attack.json");
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Dead, "../Animation/Knight/knight_animation_death.json");
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Drinking, "../Animation/Knight/knight_animation_drinking.json");
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Guard, "../Animation/Knight/knight_animation_guard.json");
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Hit, "../Animation/Knight/knight_animation_hit.json");
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Parry, "../Animation/Knight/knight_animation_parry.json");
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Dodge, "../Animation/Knight/knight_animation_dodge.json");
-	AnimationManager::Get().LoadAnimation(AnimationType::Knight_Stun, "../Animation/Knight/knight_animation_stun.json");
+	auto& aM = AnimationManager::Get();
 
-	AnimationManager::Get().LoadActionAnimationMap();
+	aM.LoadAnimation(AnimationType::Knight_Idle,		"../Animation/Knight/knight_animation_idle.json");
+	aM.LoadAnimation(AnimationType::Knight_Walk,		"../Animation/Knight/knight_animation_walk.json");
+	aM.LoadAnimation(AnimationType::Knight_Run,			"../Animation/Knight/knight_animation_run.json");
+	aM.LoadAnimation(AnimationType::Knight_Attack,		"../Animation/Knight/knight_animation_attack.json");
+	aM.LoadAnimation(AnimationType::Knight_Dead,		"../Animation/Knight/knight_animation_death.json");
+	aM.LoadAnimation(AnimationType::Knight_Drinking,	"../Animation/Knight/knight_animation_drinking.json");
+	aM.LoadAnimation(AnimationType::Knight_Guard,		"../Animation/Knight/knight_animation_guard.json");
+	aM.LoadAnimation(AnimationType::Knight_Hit,			"../Animation/Knight/knight_animation_hit.json");
+	aM.LoadAnimation(AnimationType::Knight_Parry,		"../Animation/Knight/knight_animation_parry.json");
+	aM.LoadAnimation(AnimationType::Knight_Dodge,		"../Animation/Knight/knight_animation_dodge.json");
+	aM.LoadAnimation(AnimationType::Knight_Stun,		"../Animation/Knight/knight_animation_stun.json");
+	
+	aM.LoadActionAnimationMap();
+
+	aM.LoadAnimation(AnimationType::FinalBoss_Idle,			"../Animation/Final_Boss/final_boss_animation_idle.json");
+	aM.LoadAnimation(AnimationType::FinalBoss_Walk,			"../Animation/Final_Boss/final_boss_animation_walk.json");
+	aM.LoadAnimation(AnimationType::FinalBoss_Thrust,		"../Animation/Final_Boss/final_boss_animation_thrust.json");
+	aM.LoadAnimation(AnimationType::FinalBoss_Slash,		"../Animation/Final_Boss/final_boss_animation_slash.json");
+	aM.LoadAnimation(AnimationType::FinalBoss_DashSlash,	"../Animation/Final_Boss/final_boss_animation_dashslash.json");
+	aM.LoadAnimation(AnimationType::FinalBoss_JumpSlash,	"../Animation/Final_Boss/final_boss_animation_jumpslash.json");
+	aM.LoadAnimation(AnimationType::FinalBoss_MultiSlash,	"../Animation/Final_Boss/final_boss_animation_multislash.json");
+	aM.LoadAnimation(AnimationType::FinalBoss_Dead,			"../Animation/Final_Boss/final_boss_animation_death.json");
+	aM.LoadAnimation(AnimationType::FinalBoss_Hit,			"../Animation/Final_Boss/final_boss_animation_hit.json");
+	aM.LoadAnimation(AnimationType::FinalBoss_Stun,			"../Animation/Final_Boss/final_boss_animation_stun.json");
 }
 
 void Framework::LoadMapDatas()

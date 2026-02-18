@@ -37,11 +37,11 @@ struct ConnectEvent {
 };
 
 struct DisconnectEvent {
-	int sessionId;
+	NetId id;
 };
 
 struct MoveEvent {
-	int sessionId;
+	NetId id;
 	int inputX;
 	int inputZ;
 	float yaw;
@@ -49,7 +49,7 @@ struct MoveEvent {
 };
 
 struct ActionEvent {
-	int sessionId;
+	NetId id;
 	ActionRequestType type;
 	float dirX;
 	float dirZ;
@@ -90,13 +90,13 @@ struct OutputEventPayload
 };
 
 struct OutputEvent {
-	Entity entity;
+	NetId netId;
 	DirtyType type;
 	OutputEventPayload payload;
 
-	static OutputEvent AnimationChanged(Entity e, AnimationType curr)
+	static OutputEvent AnimationChanged(NetId netId, AnimationType curr)
 	{
-		OutputEvent ev{ e, DirtyType::AnimationChanged, { } };
+		OutputEvent ev{ netId, DirtyType::AnimationChanged, { } };
 		ev.payload.anim = { curr };
 		return ev;
 	}
