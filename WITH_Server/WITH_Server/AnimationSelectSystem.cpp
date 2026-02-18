@@ -2,6 +2,7 @@
 #include "AnimationSelectSystem.h"
 #include "Framework.h"
 #include "AnimationType.h"
+#include "RepComponent.h"
 
 void AnimationSelectSystem::Execute(const double dT)
 {
@@ -48,8 +49,11 @@ void AnimationSelectSystem::Execute(const double dT)
 			animState.looping = loop;
 			animState.speed = 1.0f;
 
+			const auto* netComp = ecs.GetStorage<NetIdComp>().GetComponent(entity);
+			if (!netComp) continue;
+
 			Framework::Get().outEventQueue.push(
-				OutputEvent::AnimationChanged(entity, next));
+				OutputEvent::AnimationChanged(netComp->id, next));
 		}
 	}
 }

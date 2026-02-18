@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Component.h"
 #include "AnimationManager.h"
 
 // 물리 기반 이펙트??
