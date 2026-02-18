@@ -13,7 +13,7 @@ public:
 	EventQueue<T, SingleThreadBuffer>& Queue()
 	{
 		using HolderT = QueueHolder<T, SingleThreadBuffer>;
-		const std::type_index key = std::type_index(typeid(T));
+		const std::type_index key{ typeid(HolderT) };
 
 		auto it = _queues.find(key);
 		if (it == _queues.end())
@@ -25,22 +25,23 @@ public:
 			return ptr->queue;
 		}
 
-		return static_cast<HolderT*>(it->second.get())->queue;
+		HolderT* holder = static_cast<HolderT*>(it->second.get());
+		return holder->queue;
 	}
 
-	void SwapAllBuffers()
+	/*void SwapAllBuffers()
 	{
 		for (auto& [_, queue] : _queues)
 		{
 			queue->SwapBuffers();
 		}
-	}
+	}*/
 
 	void ClearAll()
 	{
 		for (auto& [_, queue] : _queues)
 		{
-			queue->ClearAll();
+			queue->Clear();
 		}
 	}
 
@@ -48,8 +49,7 @@ private:
 	struct IQueueHolder {
 		virtual ~IQueueHolder() = default;
 
-		virtual void SwapBuffers() = 0;
-		virtual void ClearAll() = 0;
+		virtual void Clear() = 0;
 	};
 
 	template<typename T, template<typename> class BufferPolicy>
@@ -58,8 +58,7 @@ private:
 
 		virtual ~QueueHolder() = default;
 
-		virtual void SwapBuffers() override { queue.SwapBuffers(); }
-		virtual void ClearAll() override { queue.ClearAll(); }
+		virtual void Clear() override { queue.Clear(); }
 	};
 
 	std::unordered_map<std::type_index, std::unique_ptr<IQueueHolder>> _queues;

@@ -8,25 +8,24 @@
 template<typename T, template<typename> class BufferPolicy>
 class EventQueue {
 public:
-	void Publish(const T& event) { _write.push(event); }
-	void Publish(T&& event) { _write.push(std::move(event)); }
+	void Publish(const T& event) { _buffer.push(event); }
+	void Publish(T&& event) { _buffer.push(std::move(event)); }
 
-	void SwapBuffers()
+	/*void SwapBuffers()
 	{
 		_read.clear();
 		_read.swap(_write);
-	}
+	}*/
 
-	[[nodiscard]] std::span<T> ConsumeView() { return _read.view(); }
+	[[nodiscard]] std::span<T> ConsumeView() { return _buffer.view(); }
 
-	void ReadResize(size_t n) { _read.resize(n); }
+	size_t Size() const { return _buffer.size(); }
+	void ReadResize(size_t n) { _buffer.resize(n); }
 
-	void ClearRead() { _read.clear(); }
-	void ClearAll() { _read.clear(); _write.clear(); }
+	void Clear() { _buffer.clear(); }
 
 private:
-	BufferPolicy<T> _read;
-	BufferPolicy<T> _write;
+	BufferPolicy<T> _buffer;
 };
 
 template<typename T>
@@ -42,6 +41,7 @@ public:
 	std::span<T> view() { return _buffer; }
 	std::span<const T> view() const { return _buffer; }
 
+	size_t size() const { return _buffer.size(); }
 	void resize(size_t n) { _buffer.resize(n); }
 
 	void swap(SingleThreadBuffer& other) noexcept
