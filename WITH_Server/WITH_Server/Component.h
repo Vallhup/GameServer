@@ -3,12 +3,14 @@
 #include "AnimationManager.h"
 #include "ActionManager.h"
 #include "Entity.h"
-#include "Component.h"
+
+#include <DirectXMath.h>
+#include "../WITH_Server_Framework/Component.h"
 
 using namespace DirectX;
 
 struct Transform : public Component {
-	XMFLOAT3 position{ 10.0f, 0, 10.0f };
+	XMFLOAT3 position{ 10.0f, 5.0f, 10.0f };
 	XMFLOAT4 rotation{ 0, 0, 0, 1 };
 	XMFLOAT3 scale{ 1, 1, 1 };
 };
@@ -84,11 +86,6 @@ struct AnimationState : public Component {
 struct Animator : public Component {
 	const PrebakedAnimation* clip{ nullptr };
 	uint16 currentFrame{ 0 };
-};
-
-struct AABB {
-	XMFLOAT3 min;
-	XMFLOAT3 max;
 };
 
 struct CombatCollider : public Component {

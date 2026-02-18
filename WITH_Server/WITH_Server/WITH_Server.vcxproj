@@ -72,22 +72,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDIr)..\ProtocolLib\Library\$(Configuration)\;$(SolutionDir)Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDIr)..\ProtocolLib\Library\$(Configuration)\;$(SolutionDir)Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDIr)..\ProtocolLib\Library\$(Configuration)\;$(SolutionDir)Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDIr)..\ProtocolLib\Library\$(Configuration)\;$(SolutionDir)Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -10,7 +10,6 @@ public:
 
 	virtual void Build(WorldRuntime& rt) override;
 
-	virtual void Execute(WorldRuntime& rt, double dT) override;
 	virtual void OnShutdown(WorldRuntime& rt) override;
 };
 

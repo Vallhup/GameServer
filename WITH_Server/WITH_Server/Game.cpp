@@ -47,6 +47,7 @@ void Game::ResumeWorld(WorldId worldId)
 
 void Game::Update(const double dT)
 {
+	// TODO : 동적 World 추가
 	_scheduler.Update(dT);
 }
 
