@@ -23,7 +23,7 @@ void LocomotionMoveSystem::Execute(const double dT)
 		auto* animPhase = animPhases.GetComponent(entity);
 
 		if(!vel || !moveDelta || !actionState || !animPhase) continue;
-		if (actionState->type != ActionType::None) continue;
+		if (actionState->action != ActionType::None) continue;
 		
 		ApplyNormalMovement(moveDelta, animPhase, 
 			loco, *vel, dT);

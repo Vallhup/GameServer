@@ -45,7 +45,7 @@ void CombatCollisionHandlingSystem::HandleClash(const CombatCollisionEvent& even
 		_runtime.GetECS().GetStorage<ActionState>().GetComponent(event.victim))
 	{
 		const bool parryWindowOn =
-			(actionState->type == ActionType::Parry) &&
+			(actionState->action == ActionType::Parry) &&
 			(actionState->elapsed >= 0.752f) &&
 			(actionState->elapsed <= 0.949f);
 
@@ -76,11 +76,11 @@ void CombatCollisionHandlingSystem::HandleStrike(const CombatCollisionEvent& eve
 		TransformHelper::IsInFront90_XZ(*aTrans, *vTrans);
 
 	const bool parryWindowOn =
-		(actionState->type == ActionType::Parry) &&
+		(actionState->action == ActionType::Parry) &&
 		(actionState->elapsed >= 0.001f) && //0.752f
 		(actionState->elapsed <= 0.949f);
 
-	const bool guardOn = (actionState->type == ActionType::Guard);
+	const bool guardOn = (actionState->action == ActionType::Guard);
 
 	if (guardOn && inFront90)
 		HandleGuard(event.attacker, event.victim, event.attackId);

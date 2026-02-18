@@ -63,7 +63,8 @@ struct AIThinkState : public Component {
 };
 
 struct ActionState : public Component {
-	ActionType type{ ActionType::None };
+	ActionType action{ ActionType::None };
+	AttackType attack{ AttackType::None };
 	double elapsed{ 0.0f };
 	double duration{ 0.0f };
 };

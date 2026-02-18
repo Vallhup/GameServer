@@ -29,30 +29,30 @@ void ColliderActivationSystem::Execute(const double dT)
 		//    (연속 공격은 어떻게 할지 고민 필요)
 		const bool enteredAttack =
 			(attackState->prevAction != ActionType::Attack) &&
-			(actionState->type == ActionType::Attack);
+			(actionState->action == ActionType::Attack);
 
 		if (enteredAttack)
 		{
 			++attackState->attackId;
 			attackState->hitCount = 0;
 		}
-		attackState->prevAction = actionState->type;
+		attackState->prevAction = actionState->action;
 
 		// 2. Attack / Parry 판정 윈도우 설정
 		//    (elapsed 기반 / frame 기반 고민 필요)
 		//    (현재는 elapsed 기반으로 임시 구현)
 		const bool attackWindowOn =
-			(actionState->type == ActionType::Attack) &&
+			(actionState->action == ActionType::Attack) &&
 			(actionState->elapsed >= 0.683f) &&
 			(actionState->elapsed <= 0.975f);
 
 		const bool parryWIndowOn = 
-			(actionState->type == ActionType::Parry) &&
+			(actionState->action == ActionType::Parry) &&
 			(actionState->elapsed >= 0.752f) &&
 			(actionState->elapsed <= 0.949f);
 
-		const bool guardOn = (actionState->type == ActionType::Guard);
-		const bool dodgeOn = (actionState->type == ActionType::Dodge);
+		const bool guardOn = (actionState->action == ActionType::Guard);
+		const bool dodgeOn = (actionState->action == ActionType::Dodge);
 
 		// 3. Collider 활성화 설정
 		for (size_t i = 0; i < n; ++i)

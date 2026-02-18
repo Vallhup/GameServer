@@ -11,6 +11,7 @@ void AnimationSelectSystem::Execute(const double dT)
 	auto& animStates = ecs.GetStorage<AnimationState>();
 	auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& locos = ecs.GetStorage<LocomotionState>();
+	auto& types = ecs.GetStorage<SpawnTypeComp>();
 
 	for (const auto& [entity, animState] : animStates)
 	{
@@ -18,10 +19,11 @@ void AnimationSelectSystem::Execute(const double dT)
 
 		const auto* actionState = actionStates.GetComponent(entity);
 		const auto* loco = locos.GetComponent(entity);
-		if (!actionState || !loco) continue;
+		const auto* typeComp = types.GetComponent(entity);
+		if (!actionState || !loco || !typeComp) continue;
 
 		auto [next, loop] = AnimationManager::Get()
-			.GetAnimationIdForAction(actionState->type);
+			.GetAnimationIdForAction(actionState->action, typeComp->type, actionState->attack);
 		if (next == AnimationType::None)
 		{
 			loop = true;

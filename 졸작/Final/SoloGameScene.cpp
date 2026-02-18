@@ -220,7 +220,7 @@ void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 			int id = nid.GetId();
 			int type = add.typeid_();
 
-			if (type == 4) // Final_Boss
+			if (type == 5) // Final_Boss
 			{
 				if (bossObject)
 				{
@@ -231,7 +231,7 @@ void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 					activeCharacters[id] = bossObject;
 				}
 			}
-			else if (type == 0) // Knight
+			else if (type == 1) // Knight
 			{
 				auto player = GetAvailableKnight();
 				if (player)

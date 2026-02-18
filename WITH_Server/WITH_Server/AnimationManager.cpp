@@ -31,6 +31,16 @@ GetAnimationIdForAction(ActionType action) const
 	return { AnimationType::None, false };
 }
 
+std::pair<AnimationType, bool> AnimationManager::GetAnimationIdForAction(ActionType action, EntityType entity, AttackType attack) const
+{
+	const AnimEntry* out{ nullptr };
+
+	if (out = Find(action, entity, attack))
+		return { out->anim, out->loop };
+
+	return { AnimationType::None, false };
+}
+
 void AnimationManager::LoadActionAnimationMap()
 {
 	_actionToAnimationMap[ActionType::None] = { AnimationType::None, false };
@@ -41,6 +51,26 @@ void AnimationManager::LoadActionAnimationMap()
 	_actionToAnimationMap[ActionType::Stun] = { AnimationType::Knight_Stun, false };
 	_actionToAnimationMap[ActionType::Hit] = { AnimationType::Knight_Hit, false };
 	_actionToAnimationMap[ActionType::Dead] = { AnimationType::Knight_Dead, false };
+
+	Set(ActionType::None,	EntityType::Knight, AttackType::None,	AnimationType::None,			false);
+	Set(ActionType::Attack, EntityType::Knight, AttackType::Light,	AnimationType::Knight_Attack,	false);
+	Set(ActionType::Dodge,	EntityType::Knight, AttackType::None,	AnimationType::Knight_Dodge,	false);
+	Set(ActionType::Parry,	EntityType::Knight, AttackType::None,	AnimationType::Knight_Parry,	false);
+	Set(ActionType::Guard,	EntityType::Knight, AttackType::None,	AnimationType::Knight_Guard,	true);
+	Set(ActionType::Stun,	EntityType::Knight, AttackType::None,	AnimationType::Knight_Stun,		false);
+	Set(ActionType::Hit,	EntityType::Knight, AttackType::None,	AnimationType::Knight_Hit,		false);
+	Set(ActionType::Dead,	EntityType::Knight, AttackType::None,	AnimationType::Knight_Dead,		false);
+
+	Set(ActionType::None,	EntityType::Final_Boss, AttackType::None,		AnimationType::None,					false);
+	Set(ActionType::Attack, EntityType::Final_Boss, AttackType::JumpSlash,	AnimationType::FinalBoss_JumpSlash,		false);
+	Set(ActionType::Attack, EntityType::Final_Boss, AttackType::MultiSlash, AnimationType::FinalBoss_MultiSlash,	false);
+	Set(ActionType::Attack, EntityType::Final_Boss, AttackType::DashSlash,	AnimationType::FinalBoss_DashSlash,		false);
+	Set(ActionType::Attack, EntityType::Final_Boss, AttackType::Thrust,		AnimationType::FinalBoss_Thrust,		false);
+	Set(ActionType::Attack, EntityType::Final_Boss, AttackType::Slash,		AnimationType::FinalBoss_Slash,			false);
+	Set(ActionType::Stun,	EntityType::Final_Boss, AttackType::None,		AnimationType::FinalBoss_Stun,			false);
+	Set(ActionType::Hit,	EntityType::Final_Boss, AttackType::None,		AnimationType::FinalBoss_Hit,			false);
+	Set(ActionType::Dead,	EntityType::Final_Boss, AttackType::None,		AnimationType::FinalBoss_Dead,			false);
+	
 }
 
 PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
@@ -145,4 +175,16 @@ PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
 	}
 
 	return anim;
+}
+
+void AnimationManager::Set(ActionType action, EntityType entity, AttackType attack, AnimationType anim, bool loop)
+{
+	_actionToAnimation[Index(action, entity, attack)] = AnimEntry{ anim, loop };
+}
+
+const AnimationManager::AnimEntry* AnimationManager::Find(ActionType action, EntityType entity, AttackType attack) const
+{
+	const auto& entry = _actionToAnimation[Index(action, entity, attack)];
+	if (entry.anim == AnimationType::None) return nullptr;
+	return &entry;
 }

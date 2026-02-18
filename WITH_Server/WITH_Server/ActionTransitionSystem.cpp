@@ -2,6 +2,7 @@
 #include "ActionTransitionSystem.h"
 #include "Framework.h"
 #include "Math.h"
+#include "RepComponent.h"
 
 ActionTransitionSystem::ActionTransitionSystem(WorldRuntime& rt, int p)
 	: System(rt, p)
@@ -35,6 +36,9 @@ void ActionTransitionSystem::Execute(const double dT)
 				return event.entity < e;
 			});
 
+		const auto* typeComp = ecs.GetStorage<SpawnTypeComp>().GetComponent(entity);
+		if (!typeComp) continue;
+
 		ActionRequestEvent request
 		{ entity, ActionType::None, AttackType::None, ActionRequestReason::None };
 		bool hasReq{ false };
@@ -55,7 +59,7 @@ void ActionTransitionSystem::Execute(const double dT)
 
 			if(!isForced)
 			{
-				if (actionState.type == ActionType::Guard)
+				if (actionState.action == ActionType::Guard)
 				{
 					if (!guardHeld)
 						request.actionType = ActionType::None;
@@ -64,7 +68,7 @@ void ActionTransitionSystem::Execute(const double dT)
 						request.actionType = ActionType::Guard;
 				}
 
-				if (guardHeld && actionState.type == ActionType::None &&
+				if (guardHeld && actionState.action == ActionType::None &&
 					request.actionType == ActionType::None)
 				{
 					request.actionType = ActionType::Guard;
@@ -72,76 +76,80 @@ void ActionTransitionSystem::Execute(const double dT)
 			}
 		}
 
-		ActionType next =
-			ResolveNextAction(actionState, request, guardHeld, isForced);
-		if (next != actionState.type)
-			ApplyTransition(entity, &actionState, next);
+		auto [nextAction, nextAttack] =
+			ResolveNextAction(typeComp->type, actionState, request, guardHeld, isForced);
 
-		else if (next == ActionType::None)
+		if (nextAction != actionState.action)
+			ApplyTransition(entity, typeComp->type, &actionState, nextAction, nextAttack);
+
+		else if (nextAction == ActionType::None)
 			ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
 	}
 
 	_runtime.Events().Queue<ActionRequestEvent>().Clear();
 }
 
-ActionType ActionTransitionSystem::ResolveNextAction(const ActionState& current, 
+std::pair<ActionType, AttackType> ActionTransitionSystem::ResolveNextAction(EntityType type, const ActionState& current,
 	ActionRequestEvent request, bool guardHeld, bool isForced)
 {
-	if (isForced) return request.actionType;
+	if (isForced) return { request.actionType, request.attackType };
 
-	const ActionType curType = current.type;
+	const ActionType curAction = current.action;
+	const AttackType curAttack = current.attack;
 	const auto& aM = ActionManager::Get();
-	const auto& curPol = aM.GetPolicy(curType);
+	const auto& curPol = aM.GetPolicy(curAction, type, curAttack);
 
-	if (curType == ActionType::Dead) 
-		return ActionType::Dead;
+	if (curAction == ActionType::Dead)
+		return { ActionType::Dead, AttackType::None };
 
-	ActionType rule = GetRule(curType, request.actionType);
+	ActionType rule = GetRule(curAction, request.actionType);
 	if (rule != Invalid)
-		return rule;
+		return { rule, AttackType::Light }; // TEMP : 예외 Rule도 Attack Type 제대로 반영하도록 수정해야됨
 
-	const auto& reqPol = aM.GetPolicy(request.actionType);
+	const auto& reqPol = aM.GetPolicy(request.actionType, type, request.attackType);
 	if (reqPol.priority > curPol.priority)
 	{
 		if (curPol.interruptMask & Bit(request.actionType))
-			return request.actionType;
+			return { request.actionType, request.attackType };
 	}
 
-	if (!curPol.isHoldAction && curType != ActionType::None &&
+	if (!curPol.isHoldAction && curAction != ActionType::None &&
 		current.elapsed >= curPol.duration)
 	{
-		if (guardHeld) return ActionType::Guard;
-		return ActionType::None;
+		if (guardHeld) return { ActionType::Guard, AttackType::None };
+		return { ActionType::None, AttackType::None };
 	}
 
-	return curType;
+	return { curAction, curAttack };
 }
 
-void ActionTransitionSystem::ApplyTransition(Entity entity, ActionState* state, 
-	ActionType next)
+void ActionTransitionSystem::ApplyTransition(Entity entity, EntityType type, 
+	ActionState* state, ActionType nextAction, AttackType nextAttack)
 {
 	ECS& ecs = _runtime.GetECS();
 
-	const ActionType prev = state->type;
+	const ActionType prevAction = state->action;
+	const AttackType prevAttack = state->attack;
 	const auto& aM = ActionManager::Get();
 
-	const bool wasMoved = aM.GetPolicy(prev).isMoveAction;
-	const bool isMove = aM.GetPolicy(next).isMoveAction;
+	const bool wasMoved = aM.GetPolicy(prevAction, type, prevAttack).isMoveAction;
+	const bool isMove = aM.GetPolicy(nextAction, type, nextAttack).isMoveAction;
 
 	if (wasMoved && !isMove)
 	{
 		ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
 	}
 
-	state->type = next;
+	state->action = nextAction;
+	state->attack = nextAttack;
 	state->elapsed = 0.0f;
-	state->duration = ActionManager::Get().GetPolicy(next).duration;
+	state->duration = ActionManager::Get().GetPolicy(nextAction, type, nextAttack).duration;
 
 	if (isMove)
 	{
 		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
 
-		move->profile = aM.GetActionMoveProfile(state->type);
+		move->profile = aM.GetActionMoveProfile(state->action);
 		move->segmentIndex = 0;
 		move->movedInSegment = 0.0f;
 
@@ -162,8 +170,12 @@ std::span<ActionRequestEvent> ActionTransitionSystem::DedupActionRequest(std::sp
 		[&](const ActionRequestEvent& a, const ActionRequestEvent& b)
 		{
 			const auto& aM = ActionManager::Get();
-			const int32 aPriority = aM.GetPolicy(a.actionType).priority;
-			const int32 bPriority = aM.GetPolicy(b.actionType).priority;
+
+			const EntityType aType = _runtime.GetECS().GetStorage<SpawnTypeComp>().GetComponent(a.entity)->type;
+			const EntityType bType = _runtime.GetECS().GetStorage<SpawnTypeComp>().GetComponent(b.entity)->type;
+
+			const int32 aPriority = aM.GetPolicy(a.actionType, aType, a.attackType).priority;
+			const int32 bPriority = aM.GetPolicy(b.actionType, bType, b.attackType).priority;
 
 			if (a.entity != b.entity) return a.entity < b.entity;
 			return aPriority > bPriority;

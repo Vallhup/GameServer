@@ -21,8 +21,8 @@ void ActionMoveSystem::Execute(const double dT)
 		auto* actionDelta = actionDeltas.GetComponent(entity);
 
 		if(!vel || !actionMove || !actionDelta) continue;
-		if (actionState.type == ActionType::None) continue;
-		if (!CanMove(actionState.type)) continue;
+		if (actionState.action == ActionType::None) continue;
+		if (!CanMove(actionState.action)) continue;
 
 		ApplyActionMovement(actionMove, actionDelta, actionState, 
 			*vel, dT);

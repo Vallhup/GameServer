@@ -17,7 +17,7 @@ void AIThinkSystem::Execute(const double dT)
 		auto* aiThinkState = aiThinkStates.GetComponent(entity);
 		if (!actionState || !aiThinkState) continue;
 		
-		if (actionState->type != ActionType::None) continue;
+		if (actionState->action != ActionType::None) continue;
 
 		aiThinkState->thinkAcc += dT;
 		if (aiThinkState->thinkAcc >= aiThinkState->thinkInterval)
@@ -104,10 +104,10 @@ AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
 	else if (targetDistance > farDistance)
 	{
 		if (rand() % 100 > 30)
-			out = AttackType::JumpSlam;
+			out = AttackType::JumpSlash;
 
 		else
-			out = AttackType::FarWaveSlash;
+			out = AttackType::MultiSlash;
 	}
 
 	else if (targetDistance > midDistance)
@@ -119,7 +119,7 @@ AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
 			out = AttackType::Thrust;
 
 		else
-			out = AttackType::CloseSlash;
+			out = AttackType::Slash;
 	}
 
 	if (out != AttackType::None)

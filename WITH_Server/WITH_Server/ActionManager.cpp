@@ -21,9 +21,18 @@ void ActionManager::LoadAction(ActionType id, std::string_view path)
 	_actionProfiles.try_emplace(id, std::move(anim));
 }
 
-const ActionPolicy& ActionManager::GetPolicy(ActionType type) const
+const ActionPolicy& ActionManager::GetPolicy(ActionType action) const
 {
-	return _policies[ToIndex(type)];
+	return _policies[ToIndex(action)];
+}
+
+const ActionPolicy& ActionManager::GetPolicy(ActionType action, EntityType entity, AttackType attack) const
+{
+	const ActionPolicy* out{ nullptr };
+	if (out = Find(action, entity, attack))
+		return *out;
+
+	return ActionPolicy{};
 }
 
 const ActionProfile* ActionManager::GetActionMoveProfile(ActionType actionType) const
@@ -44,6 +53,61 @@ void ActionManager::LoadPolicy()
 	_policies[ToIndex(ActionType::Attack)] = { 60,  40.f / 30.7692f, Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), true, false };
 	_policies[ToIndex(ActionType::Guard)] = { 10,  std::numeric_limits<double>::infinity(), ~0u, false, true };
 	_policies[ToIndex(ActionType::None)] = { 0,  0.f, ~0u, false, false };
+
+	// Knight
+	SetPolicy(ActionType::None, EntityType::Knight, AttackType::None,
+		ActionPolicy{ 0,  0.f, ~0u, false, false });
+
+	SetPolicy(ActionType::Guard, EntityType::Knight, AttackType::None,
+		ActionPolicy{ 10,  std::numeric_limits<double>::infinity(), ~0u, false, true });
+
+	SetPolicy(ActionType::Attack, EntityType::Knight, AttackType::None,
+		ActionPolicy{ 60,  40.f / 30.7692f, Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), true, false });
+
+	SetPolicy(ActionType::Dodge, EntityType::Knight, AttackType::None,
+		ActionPolicy{ 70,  50.f / 30.6122f, Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), true, false });
+
+	SetPolicy(ActionType::Parry, EntityType::Knight, AttackType::None,
+		ActionPolicy{ 80,  54.f / 30.566f,  Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false });
+
+	SetPolicy(ActionType::Stun, EntityType::Knight, AttackType::Light,
+		ActionPolicy{ 85,  96.f / 30.3158f, Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false });
+
+	SetPolicy(ActionType::Hit, EntityType::Knight, AttackType::None,
+		ActionPolicy{ 90,  50.f / 30.6122f, Bit(ActionType::Dead), false, false });
+
+	SetPolicy(ActionType::Dead, EntityType::Knight, AttackType::None,
+		ActionPolicy{ 100, 150.f / 30.2013f, 0u, false, false });
+
+	
+	// FInal Boss
+	SetPolicy(ActionType::None, EntityType::Final_Boss, AttackType::None, 
+		ActionPolicy{ 0,  0.f, ~0u, false, false });
+
+	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::JumpSlash, 
+		ActionPolicy{ 60, 50.f / 30.6122f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false});
+
+	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::MultiSlash, 
+		ActionPolicy{ 60, 93.f / 30.3261f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
+
+	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::DashSlash, 
+		ActionPolicy{ 60, 56.f / 30.5455f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
+
+	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::Thrust, 
+		ActionPolicy{ 60, 56.f / 30.5455f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
+
+	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::Slash, 
+		ActionPolicy{ 60, 47.f / 30.6522f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
+
+	SetPolicy(ActionType::Stun, EntityType::Final_Boss, AttackType::None, 
+		ActionPolicy{ 85, 201.f / 30.15f, Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false });
+
+	SetPolicy(ActionType::Hit, EntityType::Final_Boss, AttackType::None,
+		ActionPolicy{ 90, 35.f / 30.8824f, Bit(ActionType::Dead), false, false });
+
+	SetPolicy(ActionType::Dead, EntityType::Final_Boss, AttackType::None, 
+		ActionPolicy{ 100, 166.f / 30.1818f, 0u, false, false });
+
 }
 
 void ActionManager::LoadProfile()
@@ -109,4 +173,16 @@ void ActionManager::LoadProfile()
 ActionProfile ActionManager::LoadActionProfile(std::string_view path)
 {
 	return ActionProfile();
+}
+
+void ActionManager::SetPolicy(ActionType action, EntityType entity, AttackType attack, const ActionPolicy& policy)
+{
+	_policyTable[Index(action, entity, attack)] = policy;
+}
+
+const ActionPolicy* ActionManager::Find(ActionType action, EntityType entity, AttackType attack) const
+{
+	const auto& policy = _policyTable[Index(action, entity, attack)];
+	if (policy.IsValid()) return nullptr;
+	return &policy;
 }

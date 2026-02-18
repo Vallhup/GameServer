@@ -5,7 +5,7 @@
 
 #include "json.hpp"
 #include "AnimationType.h"
-#include "ActionManager.h"
+#include "Constants.h"
 
 using json = nlohmann::json;
 using namespace DirectX;
@@ -41,14 +41,22 @@ struct StaticCapsuleData {
 };
 
 struct PrebakedAnimation {
-	double fps;
-	uint16 numFrames;
+	double fps{ 0.0 };
+	uint16 numFrames{ 0 };
 
 	std::vector<StaticCapsuleData> staticDatas;
 	std::vector<std::vector<DynamicCapsuleData>> dynamicDatas;
 };
 
 class AnimationManager {
+	struct AnimEntry
+	{
+		AnimationType anim{ AnimationType::None };
+		bool loop{ false };
+	};
+
+	using AnimTable = std::array<AnimEntry, actionCnt* entityCnt* attackCnt>;
+
 public:
 	static AnimationManager& Get()
 	{
@@ -59,13 +67,17 @@ public:
 	void LoadAnimation(AnimationType type, std::string_view path);
 	void LoadActionAnimationMap();
 	const PrebakedAnimation* GetAnimation(AnimationType type) const;
-	std::pair<AnimationType, bool> GetAnimationIdForAction(
-		ActionType action) const;
+	std::pair<AnimationType, bool> GetAnimationIdForAction(ActionType action) const;
+	std::pair<AnimationType, bool> GetAnimationIdForAction(ActionType action, EntityType entity, AttackType attack) const;
 
 private:
 	AnimationManager() = default;
 	PrebakedAnimation LoadPrebakedAnimation(std::string_view path);
 
+	void Set(ActionType action, EntityType entity, AttackType attack, AnimationType anim, bool loop);
+	const AnimEntry* Find(ActionType action, EntityType entity, AttackType attack) const;
+
 	std::unordered_map<AnimationType, std::unique_ptr<PrebakedAnimation>> _animations;
 	std::unordered_map<ActionType, std::pair<AnimationType, bool>> _actionToAnimationMap;
+	AnimTable _actionToAnimation;
 };

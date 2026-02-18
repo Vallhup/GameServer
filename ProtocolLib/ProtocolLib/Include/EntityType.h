@@ -3,12 +3,16 @@
 #include "types.h"
 
 enum class EntityType : uint8 {
+	None,
+
 	Knight,
 	Lancer,
 
 	First_Boss,
 	Mid_Boss,
 	Final_Boss,
+
+	Count
 };
 
 inline uint32 ToInt(EntityType type) { return static_cast<uint32>(type); }

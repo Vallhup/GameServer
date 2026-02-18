@@ -23,7 +23,7 @@ void AnimationFrameSystem::Execute(const double dT)
 		if (!clip || clip->numFrames == 0) continue;
 
 		uint16 frame{ 0 };
-		if (actionState->type != ActionType::None)
+		if (actionState->action != ActionType::None)
 			frame = static_cast<uint16>(actionState->elapsed * clip->fps);
 
 		else

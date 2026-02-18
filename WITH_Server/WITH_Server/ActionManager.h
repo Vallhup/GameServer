@@ -1,51 +1,8 @@
 #pragma once
 
 #include "types.h"
-
-enum class AttackType : uint8 {
-	None,
-
-	// Player
-	Light,
-	Heavy,
-
-	// Boss
-	JumpSlam,
-	FarWaveSlash,
-	DashSlash,
-	Thrust,
-	CloseSlash,
-	Meteor,
-};
-
-constexpr uint32 ToInt(AttackType type) { return static_cast<uint32>(type); }
-
-enum class ActionType : uint8 {
-	None,
-	Attack,
-	Dodge,
-	Parry,
-	Stun,
-	Hit,
-	Guard,
-	Dead,
-	Count
-};
-
-namespace std {
-	template<>
-	struct hash<ActionType> {
-		size_t operator()(const ActionType& id) const noexcept
-		{
-			return std::hash<uint8>()(static_cast<uint8>(id));
-		}
-	};
-}
-
-constexpr size_t ToIndex(ActionType type) { return static_cast<size_t>(type); }
-constexpr size_t ActionCount = ToIndex(ActionType::Count);
-
-constexpr uint32 Bit(ActionType type) { return (uint32)1u << ToIndex(type); }
+#include "AnimationManager.h"
+#include "Constants.h"
 
 struct ActionMoveSegment {
 	double t0;
@@ -64,9 +21,13 @@ struct ActionPolicy {
 	uint32 interruptMask{ 0 };
 	bool isMoveAction{ false };
 	bool isHoldAction{ false };
+
+	constexpr bool IsValid() const { return priority == 0 && duration == 0 && interruptMask == 0; }
 };
 
 class ActionManager {
+	using ActionTable = std::array<ActionPolicy, actionCnt* entityCnt* attackCnt>;
+
 public:
 	static ActionManager& Get()
 	{
@@ -76,7 +37,8 @@ public:
 
 	void LoadAction(ActionType id, std::string_view path);
 
-	const ActionPolicy& GetPolicy(ActionType type) const;
+	const ActionPolicy& GetPolicy(ActionType action) const;
+	const ActionPolicy& GetPolicy(ActionType action, EntityType entity, AttackType attack) const;
 	const ActionProfile* GetActionMoveProfile (ActionType actionType) const;
 
 private:
@@ -86,7 +48,11 @@ private:
 	void LoadProfile();
 	ActionProfile LoadActionProfile(std::string_view path);
 
-	std::array<ActionPolicy, ActionCount> _policies;
+	void SetPolicy(ActionType action, EntityType entity, AttackType attack, const ActionPolicy& policy);
+	const ActionPolicy* Find(ActionType action, EntityType entity, AttackType attack) const;
+
+	std::array<ActionPolicy, actionCnt> _policies;
+	ActionTable _policyTable;
 	std::unordered_map<ActionType, std::unique_ptr<ActionProfile>> _actionProfiles;
 };
 

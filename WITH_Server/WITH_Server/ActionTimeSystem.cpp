@@ -8,7 +8,7 @@ void ActionTimeSystem::Execute(const double dT)
 	for (const auto& [entity, action] : actions)
 	{
 		if (_runtime.GetECS().GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
-		if (action.type == ActionType::None) continue;
+		if (action.action == ActionType::None) continue;
 
 		action.elapsed += dT;
 	}

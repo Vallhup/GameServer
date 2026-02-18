@@ -30,7 +30,8 @@ void TestWorldImpl::SpawnInitial(WorldRuntime& rt)
 	ECS& ecs = rt.GetECS();
 	Entity e = ecs.CreateEntity();
 
-	ecs.GetStorage<Transform>().AddComponent(e);
+	ecs.GetStorage<Transform>().AddComponent(e)->position = 
+	{ 10.0f, MapCollisionManager::Get().SampleHeightAt(10.f, 10.f), 10.0f };
 	ecs.GetStorage<Velocity>().AddComponent(e);
 	ecs.GetStorage<ActionMoveDelta>().AddComponent(e);
 	ecs.GetStorage<LocomotionMoveDelta>().AddComponent(e);
