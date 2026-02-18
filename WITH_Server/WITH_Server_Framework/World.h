@@ -22,12 +22,6 @@ public:
 	virtual Entity SpawnPlayer(WorldRuntime& rt, uint32 connId) = 0;
 
 	virtual void Build(WorldRuntime& rt) = 0;
-
-	virtual void ApplyInbox(WorldRuntime& rt, double dT) {};
-	virtual void Execute(WorldRuntime& rt, double dT) = 0;
-	virtual void BuildOutbox(WorldRuntime& rt, double dT) {};
-	virtual void FlushOutbox(WorldRuntime& rt, double dT) {};
-
 	virtual void OnShutdown(WorldRuntime& rt) {};
 };
 

@@ -18,12 +18,7 @@ void World::Init()
 
 void World::Update(const double dT)
 {
-	_impl->ApplyInbox(_runtime, dT);
-	_impl->Execute(_runtime, dT);
-	_impl->BuildOutbox(_runtime, dT);
-	_impl->FlushOutbox(_runtime, dT);
-
-	// _runtime.Commit();
+	_runtime.Run(dT);
 }
 
 void World::Shutdown()

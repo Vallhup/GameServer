@@ -22,7 +22,7 @@ public:
 private:
 	struct WorldSlot
 	{
-		uint16 gen{ 0 };
+		uint32 gen{ 0 };
 		std::unique_ptr<IWorld> world{ nullptr };
 	};
 

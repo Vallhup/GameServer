@@ -29,12 +29,13 @@ void WorldRuntime::Run(const double dT)
 
 	_deltaTime = dT;
 
+	//_events.SwapAllBuffers();
+
 	RunPre(dT);
-
-	_events.SwapAllBuffers();
 	_graph.Run();
-
 	RunPost(dT);
+
+	//_events.ClearAll();
 }
 
 void WorldRuntime::RunPre(const double dT)
