@@ -39,8 +39,8 @@ void LoadingScene::InitializeLogic()
           wstring path = L"../Assets/FBXModel/Map/" + wstring(modelName.begin(), modelName.end());
           if (!filesystem::exists(path + L"_0.mesh")) continue;
 
-          loadTasks.push([this, path, data = instanceData]() {
-              CreateAndBatchObjects(path, data, instancingBatches);
+          loadTasks.push([this, path, instanceData]() {
+              CreateAndBatchObjects(path, instanceData, instancingBatches);
           });
       }
 
