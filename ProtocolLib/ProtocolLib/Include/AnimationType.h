@@ -4,6 +4,7 @@
 
 enum class AnimationType : uint8 {
 	None,
+
 	Knight_Idle,
 	Knight_Walk,
 	Knight_Run,

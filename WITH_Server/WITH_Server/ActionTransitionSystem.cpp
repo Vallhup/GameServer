@@ -149,7 +149,7 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, EntityType type,
 	{
 		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
 
-		move->profile = aM.GetActionMoveProfile(state->action);
+		move->profile = aM.GetActionMoveProfile(state->action, type, nextAttack);
 		move->segmentIndex = 0;
 		move->movedInSegment = 0.0f;
 

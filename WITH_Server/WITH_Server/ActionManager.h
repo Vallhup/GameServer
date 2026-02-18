@@ -4,11 +4,30 @@
 #include "AnimationManager.h"
 #include "Constants.h"
 
+enum class MoveMode : uint8
+{
+	None,
+
+	FixedDistance,
+	DashToTarget
+};
+
+struct MoveParams
+{
+	float maxSpeed{ 0.0f };
+	float maxTravel{ 0.0f };
+	float stopRange{ 0.0f };
+
+	float distance{ 0.0f };
+
+	bool lockDir{ false };
+};
+
 struct ActionMoveSegment {
 	double t0;
 	double t1;
-	double distance;
-	bool lockDir;
+	MoveMode mode;
+	MoveParams params;
 };
 
 struct ActionProfile {
@@ -26,7 +45,8 @@ struct ActionPolicy {
 };
 
 class ActionManager {
-	using ActionTable = std::array<ActionPolicy, actionCnt* entityCnt* attackCnt>;
+	using PolicyTable = std::array<ActionPolicy, actionCnt* entityCnt* attackCnt>;
+	using ProfileTable = std::array<ActionProfile, actionCnt* entityCnt* attackCnt>;
 
 public:
 	static ActionManager& Get()
@@ -37,9 +57,8 @@ public:
 
 	void LoadAction(ActionType id, std::string_view path);
 
-	const ActionPolicy& GetPolicy(ActionType action) const;
 	const ActionPolicy& GetPolicy(ActionType action, EntityType entity, AttackType attack) const;
-	const ActionProfile* GetActionMoveProfile (ActionType actionType) const;
+	const ActionProfile* GetActionMoveProfile (ActionType action, EntityType entity, AttackType attack) const;
 
 private:
 	ActionManager();
@@ -49,10 +68,12 @@ private:
 	ActionProfile LoadActionProfile(std::string_view path);
 
 	void SetPolicy(ActionType action, EntityType entity, AttackType attack, const ActionPolicy& policy);
-	const ActionPolicy* Find(ActionType action, EntityType entity, AttackType attack) const;
+	void SetProfile(ActionType action, EntityType entity, AttackType attack, const ActionProfile& profile);
 
-	std::array<ActionPolicy, actionCnt> _policies;
-	ActionTable _policyTable;
-	std::unordered_map<ActionType, std::unique_ptr<ActionProfile>> _actionProfiles;
+	const ActionPolicy* FindPolicy(ActionType action, EntityType entity, AttackType attack) const;
+	const ActionProfile* FindProfile(ActionType action, EntityType entity, AttackType attack) const;
+
+	PolicyTable _policyTable;
+	ProfileTable _profileTable;
 };
 

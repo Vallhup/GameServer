@@ -95,7 +95,7 @@ void TestWorldImpl::Build(WorldRuntime& rt)
 
 	ecs.AddSystem<EventSystem>(SystemPhase::Pre, rt, 0);
 
-	ecs.AddSystem<AIThinkSystem>(SystemPhase::Graph, rt, 1);
+	ecs.AddSystem<AIThinkSystem>(SystemPhase::Graph, rt, 0);
 
 	ecs.AddSystem<ActionTimeSystem>(SystemPhase::Graph, rt, 1);
 	ecs.AddSystem<ActionTransitionSystem>(SystemPhase::Graph, rt, 2);

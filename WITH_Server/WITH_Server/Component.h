@@ -137,9 +137,15 @@ struct PlayerTag :public TagComponent { };
 struct ActionMoveTag : public TagComponent {
 	const ActionProfile* profile{ nullptr };
 
-	uint8 segmentIndex{ 0 };
+	int8 segmentIndex{ 0 };
 	double movedInSegment{ 0.0f };
 
 	XMFLOAT3 dir{ 0, 0, 0 };
 	bool dirLocked{ false };
+
+	int8 lastSegmentIndex{ -1 };
+	bool dashHasTarget{ false };
+	XMFLOAT3 dashTargetPos{ 0, 0, 0 };
+	double dashTraveled{ 0.0 };
+
 };
