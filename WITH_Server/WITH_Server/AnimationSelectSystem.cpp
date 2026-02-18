@@ -26,18 +26,31 @@ void AnimationSelectSystem::Execute(const double dT)
 			.GetAnimationIdForAction(actionState->action, typeComp->type, actionState->attack);
 		if (next == AnimationType::None)
 		{
-			loop = true;
-			if (loco->isMoving)
+			if(typeComp->type == EntityType::Knight)
 			{
-				if (loco->isRun)
-					next = AnimationType::Knight_Run;
+				loop = true;
+				if (loco->isMoving)
+				{
+					if (loco->isRun)
+						next = AnimationType::Knight_Run;
+
+					else
+						next = AnimationType::Knight_Walk;
+				}
 
 				else
-					next = AnimationType::Knight_Walk;
+					next = AnimationType::Knight_Idle;
 			}
-				
-			else
-				next = AnimationType::Knight_Idle;
+
+			else if (typeComp->type == EntityType::Final_Boss)
+			{
+				loop = true;
+				if (loco->isMoving)
+					next = AnimationType::FinalBoss_Walk;
+
+				else
+					next = AnimationType::FinalBoss_Idle;
+			}
 		}
 
 		if (animState.desiredId != next)
