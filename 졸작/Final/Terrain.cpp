@@ -119,17 +119,23 @@ void Terrain::BuildVertices()
 			float px = (float)x / gridSize * worldSize;
 			float pz = (float)z / gridSize * worldSize;
 
-			// UV without flip
-			float u = (float)x / gridSize;
-			float v = (float)z / gridSize;
+			// 높이맵용 UV (0~1 범위)
+			float normalizedU = (float)x / gridSize;
+			float normalizedV = (float)z / gridSize;
 
-			// Sample height from heightmap
+			// 텍스처 타일링용 UV (2x2 단위로 반복)
+			float tileSize = 2.0f;
+			float uvScale = worldSize / tileSize;
+			float u = normalizedU * uvScale;
+			float v = normalizedV * uvScale;
+
+			// Sample height from heightmap (정규화된 UV 사용)
 			float height = 0.0f;
 			if (!heightmapData.empty())
 			{
 				// Map UV to heightmap pixel coordinates
-				float hx = u * (heightmapWidth - 1);
-				float hz = v * (heightmapHeight - 1);
+				float hx = normalizedU * (heightmapWidth - 1);
+				float hz = normalizedV * (heightmapHeight - 1);
 
 				int x0 = static_cast<int>(floor(hx));
 				int z0 = static_cast<int>(floor(hz));
