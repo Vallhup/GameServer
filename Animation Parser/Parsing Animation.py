@@ -146,8 +146,8 @@ def load_capsules(path):
 # Prebake p0/p1 Using Correct Transform Rules
 # ======================================================    
 def prebake(anim, capsules, weapon_bones=None,
-            weapon_roles="hit",
-            default_roles="hurt"):
+            weapon_roles=("hit", ),
+            default_roles=("hurt", )):
 
     weapon_bones = set(weapon_bones or [])
     bone_indices = sorted(capsules.keys())  # 순서 고정
@@ -160,7 +160,7 @@ def prebake(anim, capsules, weapon_bones=None,
         capsule_defs.append({
             "bone": boneIndex,
             "radius": cap["radius"],
-            "roles": roles
+            "roles": list(roles)
         })
 
     # 동적 포즈: p0/p1만 저장 (capsules와 같은 인덱스 순서)
@@ -259,7 +259,7 @@ def prebake(anim, capsules, weapon_bones=None,
 
 anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Final_Boss\Animation\boss_animation_walk_baked.bone")
 colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Capsule\final_boss_capsules.json")
-output = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\final_boss_capsule_walk.json"
+output = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\final_boss_animation_walk.json"
 
 weapon_bone_list = [45]
 prebaked = prebake(anim, colliders, weapon_bones=weapon_bone_list)

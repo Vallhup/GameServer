@@ -6,72 +6,100 @@
     {
       "bone": 1,
       "radius": 19.27524526845402,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 3,
       "radius": 27.107711061186787,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 6,
       "radius": 11.20530160947631,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 8,
       "radius": 13.019635741310573,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 9,
       "radius": 13.019658307817277,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 27,
       "radius": 13.591138419832669,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 28,
       "radius": 13.019689008891818,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 45,
       "radius": 11.139541156194467,
-      "roles": "hit"
+      "roles": [
+        "hit"
+      ]
     },
     {
       "bone": 46,
       "radius": 16.417183463896382,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 47,
       "radius": 16.41720339681138,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 48,
       "radius": 10.581684753734281,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 50,
       "radius": 16.417189709079704,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 51,
       "radius": 16.417160704788532,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     },
     {
       "bone": 52,
       "radius": 10.581680244448055,
-      "roles": "hurt"
+      "roles": [
+        "hurt"
+      ]
     }
   ],
   "frames": [
