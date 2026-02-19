@@ -22,7 +22,7 @@ void LoadingSceneUIController::Init(UIManager* manager)
 
 	loadBar = make_shared<ImageUI>(L"LoadingBar", ImageUIState::Visible);
 	loadBar->Init(uiManager);
-	loadBar->SetPosition((WinSize.x * 0.5f) / 2.f, WinSize.y * 0.766f);
+	loadBar->SetPosition((WinSize.x * 0.5f) / 2.f, WinSize.y * 0.765f);
 	loadBar->SetHoriLength(0);  // 처음에는 0
 	loadBar->SetVertLength(WinSize.y * 0.03f);
 
@@ -30,7 +30,7 @@ void LoadingSceneUIController::Init(UIManager* manager)
 
 	loadArrow = make_shared<ImageUI>(L"LoadingArrow", ImageUIState::Visible);
 	loadArrow->Init(uiManager);
-	loadArrow->SetPosition((WinSize.x * 0.446f) / 2.f, WinSize.y * 0.731f);
+	loadArrow->SetPosition((WinSize.x * 0.446f) / 2.f, WinSize.y * 0.73f);
 	loadArrow->SetHoriLength(WinSize.y * 0.1f);
 	loadArrow->SetVertLength(WinSize.y * 0.1f);
 }
@@ -65,6 +65,6 @@ void LoadingSceneUIController::SetProgress(float progress)
 	}
 
 	if (loadArrow) {
-		loadArrow->SetPosition((WinSize.x * 0.446f) / 2.f + loadBarMaxWidth * progress, WinSize.y * 0.731f);
+		loadArrow->SetPosition((WinSize.x * 0.446f) / 2.f + loadBarMaxWidth * progress, WinSize.y * 0.73f);
 	}
 }

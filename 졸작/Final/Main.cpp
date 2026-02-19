@@ -55,11 +55,14 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
 {
     ASSERT(hInstance != nullptr);
 
-    WinSize.x = 1280;
-    WinSize.y = 720;
+    WinSize.x = GetSystemMetrics(SM_CXSCREEN);
+    WinSize.y = GetSystemMetrics(SM_CYSCREEN);
 
-    RECT rc = { 0, 0, WinSize.x, WinSize.y };
-    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+    //WinSize.x = 1280;
+    //WinSize.y = 720;
+
+    //RECT rc = { 0, 0, WinSize.x, WinSize.y };
+    //AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
     const TCHAR* appName = _T("Final");
 
@@ -83,9 +86,14 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
     }
 
     *hwnd = CreateWindow(wcex.lpszClassName, wcex.lpszClassName,
+        WS_POPUP,
+        0, 0, WinSize.x, WinSize.y,
+        nullptr, nullptr, hInstance, nullptr);
+
+    /*hwnd = CreateWindow(wcex.lpszClassName, wcex.lpszClassName,
         WS_OVERLAPPEDWINDOW,
         100, 100, rc.right - rc.left, rc.bottom - rc.top,
-        nullptr, nullptr, hInstance, nullptr);
+        nullptr, nullptr, hInstance, nullptr);*/
 
     ShowWindow(*hwnd, nCmdShow);
 }
