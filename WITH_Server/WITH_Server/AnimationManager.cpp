@@ -23,14 +23,6 @@ const PrebakedAnimation* AnimationManager::GetAnimation(AnimationType type) cons
 	return nullptr;
 }
 
-std::pair<AnimationType, bool> AnimationManager::
-GetAnimationIdForAction(ActionType action) const
-{
-	auto it = _actionToAnimationMap.find(action);
-	if (it != _actionToAnimationMap.end()) return it->second;
-	return { AnimationType::None, false };
-}
-
 std::pair<AnimationType, bool> AnimationManager::GetAnimationIdForAction(ActionType action, EntityType entity, AttackType attack) const
 {
 	const AnimEntry* out{ nullptr };
@@ -43,15 +35,6 @@ std::pair<AnimationType, bool> AnimationManager::GetAnimationIdForAction(ActionT
 
 void AnimationManager::LoadActionAnimationMap()
 {
-	_actionToAnimationMap[ActionType::None] = { AnimationType::None, false };
-	_actionToAnimationMap[ActionType::Attack] = { AnimationType::Knight_Attack, false };
-	_actionToAnimationMap[ActionType::Dodge] = { AnimationType::Knight_Dodge, false };
-	_actionToAnimationMap[ActionType::Parry] = { AnimationType::Knight_Parry, false };
-	_actionToAnimationMap[ActionType::Guard] = { AnimationType::Knight_Guard, true };
-	_actionToAnimationMap[ActionType::Stun] = { AnimationType::Knight_Stun, false };
-	_actionToAnimationMap[ActionType::Hit] = { AnimationType::Knight_Hit, false };
-	_actionToAnimationMap[ActionType::Dead] = { AnimationType::Knight_Dead, false };
-
 	Set(ActionType::None,	EntityType::Knight, AttackType::None,	AnimationType::None,			false);
 	Set(ActionType::Attack, EntityType::Knight, AttackType::Light,	AnimationType::Knight_Attack,	false);
 	Set(ActionType::Dodge,	EntityType::Knight, AttackType::None,	AnimationType::Knight_Dodge,	false);
@@ -70,7 +53,6 @@ void AnimationManager::LoadActionAnimationMap()
 	Set(ActionType::Stun,	EntityType::Final_Boss, AttackType::None,		AnimationType::FinalBoss_Stun,			false);
 	Set(ActionType::Hit,	EntityType::Final_Boss, AttackType::None,		AnimationType::FinalBoss_Hit,			false);
 	Set(ActionType::Dead,	EntityType::Final_Boss, AttackType::None,		AnimationType::FinalBoss_Dead,			false);
-	
 }
 
 PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
@@ -131,6 +113,9 @@ PrebakedAnimation AnimationManager::LoadPrebakedAnimation(std::string_view path)
 		sCapData.bone = static_cast<uint8>(boneIndex);
 		sCapData.radius = jCap.at("radius").get<double>() * 0.01f;
 		sCapData.typeMask = RolesToMask(jCap.value("roles", json::array()));
+
+		const bool a = HasType(sCapData.typeMask, HitboxType::Hit);
+		if (a) std::cout << "has Hit\n";
 
 		anim.staticDatas[i] = sCapData;
 	}

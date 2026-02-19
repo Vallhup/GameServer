@@ -45,7 +45,7 @@ void ActionManager::LoadPolicy()
 	SetPolicy(ActionType::Guard, EntityType::Knight, AttackType::None,
 		ActionPolicy{ 10,  std::numeric_limits<double>::infinity(), ~0u, false, true });
 
-	SetPolicy(ActionType::Attack, EntityType::Knight, AttackType::None,
+	SetPolicy(ActionType::Attack, EntityType::Knight, AttackType::Light,
 		ActionPolicy{ 60,  40.f / 30.7692f, Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), true, false });
 
 	SetPolicy(ActionType::Dodge, EntityType::Knight, AttackType::None,
@@ -54,7 +54,7 @@ void ActionManager::LoadPolicy()
 	SetPolicy(ActionType::Parry, EntityType::Knight, AttackType::None,
 		ActionPolicy{ 80,  54.f / 30.566f,  Bit(ActionType::Stun) | Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false });
 
-	SetPolicy(ActionType::Stun, EntityType::Knight, AttackType::Light,
+	SetPolicy(ActionType::Stun, EntityType::Knight, AttackType::None,
 		ActionPolicy{ 85,  96.f / 30.3158f, Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false });
 
 	SetPolicy(ActionType::Hit, EntityType::Knight, AttackType::None,
@@ -78,10 +78,10 @@ void ActionManager::LoadPolicy()
 		ActionPolicy{ 60, 56.f / 30.5455f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
 
 	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::Thrust, 
-		ActionPolicy{ 60, 56.f / 30.5455f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
+		ActionPolicy{ 60, 56.f / 30.5455f, Bit(ActionType::Stun) | Bit(ActionType::Dead), false, false });
 
 	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::Slash, 
-		ActionPolicy{ 60, 47.f / 30.6522f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
+		ActionPolicy{ 60, 47.f / 30.6522f, Bit(ActionType::Stun) | Bit(ActionType::Dead), false, false });
 
 	SetPolicy(ActionType::Stun, EntityType::Final_Boss, AttackType::None, 
 		ActionPolicy{ 85, 201.f / 30.15f, Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false });

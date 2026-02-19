@@ -67,7 +67,6 @@ public:
 	void LoadAnimation(AnimationType type, std::string_view path);
 	void LoadActionAnimationMap();
 	const PrebakedAnimation* GetAnimation(AnimationType type) const;
-	std::pair<AnimationType, bool> GetAnimationIdForAction(ActionType action) const;
 	std::pair<AnimationType, bool> GetAnimationIdForAction(ActionType action, EntityType entity, AttackType attack) const;
 
 private:
@@ -78,6 +77,5 @@ private:
 	const AnimEntry* Find(ActionType action, EntityType entity, AttackType attack) const;
 
 	std::unordered_map<AnimationType, std::unique_ptr<PrebakedAnimation>> _animations;
-	std::unordered_map<ActionType, std::pair<AnimationType, bool>> _actionToAnimationMap;
 	AnimTable _actionToAnimation;
 };

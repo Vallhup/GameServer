@@ -180,7 +180,6 @@ void OutputEventSystem::ProcessAnimationChange(const OutputEvent& event)
 	uint32 myConnId = framework.listener.GetIdMap().GetConn(myId);
 
 	SendBuffer* data = NetHelper::SCAnimationChangePacket(myId, event.payload.anim.currType);
-	std::cout << static_cast<int>(event.payload.anim.currType) << std::endl;
 
 	std::vector<uint32> connIds;
 	framework.listener.GetConnRegistry().FillConnIds(connIds);

@@ -43,12 +43,8 @@ void EventSystem::ProcessConnect(const Event& event)
 
 	const uint32 connId = p->sessionId;
 	Entity entity = _runtime.SpawnPlayer(connId);
-	NetId nId = framework.netIdRegistry.Allocate();
+	NetId nId = framework.listener.GetIdMap().GetPlayer(connId);
 
-	_runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity)->id = nId;
-
-	framework.listener.GetIdMap().BindPlayer(connId, nId);
-	framework.netIdRegistry.BindEntity(nId, entity);
 	framework.outEventQueue.push(OutputEvent{ nId, DirtyType::Spawned });
 }
 

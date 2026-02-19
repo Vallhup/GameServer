@@ -71,7 +71,7 @@ void ColliderActivationSystem::Execute(const double dT)
 
 			const bool hitOn =
 				canHit && (attackWindowOn || guardOn || parryWIndowOn);
-			const bool offensiveHitOn = canHit && attackWindowOn;
+			const bool offensiveHitOn = canHit && attackWindowOn; 
 
 			uint8 enabled{ 0 };
 			if (canHurt) enabled |= static_cast<uint8>(HitboxType::Hurt);

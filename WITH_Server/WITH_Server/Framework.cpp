@@ -71,7 +71,7 @@ void Framework::LoadAnimations()
 	aM.LoadAnimation(AnimationType::Knight_Dodge,		"../Animation/Knight/knight_animation_dodge.json");
 	aM.LoadAnimation(AnimationType::Knight_Stun,		"../Animation/Knight/knight_animation_stun.json");
 	
-	aM.LoadActionAnimationMap();
+	
 
 	aM.LoadAnimation(AnimationType::FinalBoss_Idle,			"../Animation/Final_Boss/final_boss_animation_idle.json");
 	aM.LoadAnimation(AnimationType::FinalBoss_Walk,			"../Animation/Final_Boss/final_boss_animation_walk.json");
@@ -83,6 +83,8 @@ void Framework::LoadAnimations()
 	aM.LoadAnimation(AnimationType::FinalBoss_Dead,			"../Animation/Final_Boss/final_boss_animation_death.json");
 	aM.LoadAnimation(AnimationType::FinalBoss_Hit,			"../Animation/Final_Boss/final_boss_animation_hit.json");
 	aM.LoadAnimation(AnimationType::FinalBoss_Stun,			"../Animation/Final_Boss/final_boss_animation_stun.json");
+
+	aM.LoadActionAnimationMap();
 }
 
 void Framework::LoadMapDatas()

@@ -80,8 +80,15 @@ Entity TestWorldImpl::SpawnPlayer(WorldRuntime& rt, uint32 connId)
 	ecs.GetStorage<ParryBuf>().AddComponent(e);
 	ecs.GetStorage<PlayerTag>().AddComponent(e);
 	ecs.GetStorage<SpawnTypeComp>().AddComponent(e)->type = EntityType::Knight;
-	ecs.GetStorage<NetIdComp>().AddComponent(e);
+	
 	ecs.GetStorage<WorldIdComp>().AddComponent(e);
+
+	Framework& framework = Framework::Get();
+	NetId nId = framework.netIdRegistry.Allocate();
+
+	ecs.GetStorage<NetIdComp>().AddComponent(e)->id = nId;
+	framework.listener.GetIdMap().BindPlayer(connId, nId);
+	framework.netIdRegistry.BindEntity(nId, e);
 
 	animator->clip = 
 		AnimationManager::Get().GetAnimation(AnimationType::Knight_Idle);
