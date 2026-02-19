@@ -27,6 +27,12 @@ void LoadingSceneUIController::Init(UIManager* manager)
 	loadBar->SetVertLength(WinSize.y * 0.03f);
 
 	loadBarMaxWidth = WinSize.x * 0.5f;
+
+	loadArrow = make_shared<ImageUI>(L"LoadingArrow", ImageUIState::Visible);
+	loadArrow->Init(uiManager);
+	loadArrow->SetPosition((WinSize.x * 0.446f) / 2.f, WinSize.y * 0.731f);
+	loadArrow->SetHoriLength(WinSize.y * 0.1f);
+	loadArrow->SetVertLength(WinSize.y * 0.1f);
 }
 
 void LoadingSceneUIController::Update(float deltaTime)
@@ -34,6 +40,7 @@ void LoadingSceneUIController::Update(float deltaTime)
 	if (mainImage) mainImage->Update(deltaTime);
 	if (loadBarBackImage) loadBarBackImage->Update(deltaTime);
 	if (loadBar) loadBar->Update(deltaTime);
+	if (loadArrow) loadArrow->Update(deltaTime);
 
 	if (loadProgress >= 1.0f && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 	{
@@ -46,6 +53,7 @@ void LoadingSceneUIController::Render(SpriteBatch* batch)
 	if (mainImage) mainImage->Render(batch);
 	if (loadBarBackImage) loadBarBackImage->Render(batch);
 	if (loadBar) loadBar->Render(batch);
+	if (loadArrow) loadArrow->Render(batch);
 }
 
 void LoadingSceneUIController::SetProgress(float progress)
@@ -54,5 +62,9 @@ void LoadingSceneUIController::SetProgress(float progress)
 
 	if (loadBar) {
 		loadBar->SetHoriLength(loadBarMaxWidth * progress);
+	}
+
+	if (loadArrow) {
+		loadArrow->SetPosition((WinSize.x * 0.446f) / 2.f + loadBarMaxWidth * progress, WinSize.y * 0.731f);
 	}
 }
