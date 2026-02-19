@@ -2,6 +2,7 @@
 #include "ActionMoveSystem.h"
 #include "Framework.h"
 #include "Math.h"
+#include "RepComponent.h"
 
 void ActionMoveSystem::Execute(const double dT)
 {
@@ -13,6 +14,7 @@ void ActionMoveSystem::Execute(const double dT)
 	auto& actionMoves = ecs.GetStorage<ActionMoveTag>();
 	auto& actionDeltas = ecs.GetStorage<ActionMoveDelta>();
 	auto& aiStates = ecs.GetStorage<AIState>();
+	auto& spawnComps = ecs.GetStorage<SpawnTypeComp>();
 
 	for (const auto& [entity, actionState] : actionStates)
 	{
@@ -23,33 +25,24 @@ void ActionMoveSystem::Execute(const double dT)
 		auto* actionMove = actionMoves.GetComponent(entity);
 		auto* actionDelta = actionDeltas.GetComponent(entity);
 		auto* aiState = aiStates.GetComponent(entity);
+		const auto* spawnComp = spawnComps.GetComponent(entity);
 
-		if(!trans || !vel || !actionMove || !actionDelta || !aiState) continue;
+		if (!trans || !vel || !actionMove || !actionDelta || !spawnComp) continue;
+		if (spawnComp->type == EntityType::Final_Boss && !aiState) continue;
 		if (actionState.action == ActionType::None) continue;
-		if (!CanMove(actionState.action)) continue;
+		if (!CanMove(actionState.action, spawnComp->type, actionState.attack)) continue;
+		
+		Entity target = Entity::Null();
+		if (aiState) target = aiState->target;
 
-		ApplyActionMovement(actionMove, actionDelta, actionState, *trans, *vel, entity, aiState->target, dT);
+		ApplyActionMovement(actionMove, actionDelta, actionState, *trans, *vel, spawnComp->type, entity, target, dT);
 	}
 }
 
-bool ActionMoveSystem::CanMove(ActionType type)
+bool ActionMoveSystem::CanMove(ActionType action, EntityType entity, AttackType attack)
 {
-	switch (type) {
-	case ActionType::None:
-	case ActionType::Attack:
-	case ActionType::Dodge:
-		return true;
-
-	case ActionType::Guard:
-	case ActionType::Parry:
-	case ActionType::Hit:
-	case ActionType::Stun:
-	case ActionType::Dead:
-		return false;
-
-	default:
-		return false;
-	}
+	const auto& policy = ActionManager::Get().GetPolicy(action, entity, attack);
+	return policy.isMoveAction;
 }
 
 bool ActionMoveSystem::AdvanceSegmentByTime(ActionMoveTag* actionMove, const ActionState& actionState, const std::vector<ActionMoveSegment>& segs)
@@ -114,7 +107,7 @@ void ActionMoveSystem::ForceNextSegment(ActionMoveTag* actionMove, const std::ve
 	actionMove->dirLocked = false;
 }
 
-bool ActionMoveSystem::GetLockDirectionFromVelocity(ActionMoveTag* actionMove, const Velocity& vel, bool lockDir, XMVECTOR& outDir)
+bool ActionMoveSystem::GetLockDirection(ActionMoveTag* actionMove, const Transform& trans, const Velocity& vel, bool lockDir, XMVECTOR& outDir)
 {
 	if (lockDir && actionMove->dirLocked)
 	{
@@ -124,7 +117,11 @@ bool ActionMoveSystem::GetLockDirectionFromVelocity(ActionMoveTag* actionMove, c
 
 	XMVECTOR dir = XMLoadFloat3(&vel.dir);
 	if (!TransformHelper::SafeNormalize3(dir, outDir))
-		return false;
+	{
+		XMVECTOR forward = TransformHelper::Forward(trans);
+		if (!TransformHelper::SafeNormalize3(forward, outDir))
+			return false;
+	}
 
 	if (lockDir)
 	{
@@ -135,7 +132,8 @@ bool ActionMoveSystem::GetLockDirectionFromVelocity(ActionMoveTag* actionMove, c
 	return true;
 }
 
-bool ActionMoveSystem::HandleFixedDIstance(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const ActionMoveSegment& seg, const ActionState& actionState, const Velocity& vel, const double dT)
+bool ActionMoveSystem::HandleFixedDistance(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const ActionMoveSegment& seg, const ActionState& actionState, 
+	const Transform& tr, const Velocity& vel, EntityType type, Entity target, const double dT)
 {
 	const double segStart = seg.t0 * actionState.duration;
 	const double segEnd = seg.t1 * actionState.duration;
@@ -152,8 +150,43 @@ bool ActionMoveSystem::HandleFixedDIstance(ActionMoveTag* actionMove, ActionMove
 	const double actual = std::min(move, remain);
 
 	XMVECTOR dir;
-	if (!GetLockDirectionFromVelocity(actionMove, vel, seg.params.lockDir, dir))
-		return false;
+	bool gotDir{ false };
+
+	const bool isMonster = (type != EntityType::Knight);
+	if (isMonster && !target.IsNull())
+	{
+		if (const auto* targetTr = _runtime.GetECS().GetStorage<Transform>().GetComponent(target))
+		{
+			XMVECTOR selfPos = XMLoadFloat3(&tr.position);
+			XMVECTOR targetPos = XMLoadFloat3(&targetTr->position);
+			XMVECTOR toTarget = XMVectorSubtract(targetPos, selfPos);
+
+			XMVECTOR norm;
+			if (TransformHelper::SafeNormalize3(toTarget, norm))
+			{
+				dir = norm;
+				gotDir = true;
+
+				if (seg.params.lockDir)
+				{
+					if (actionMove->dirLocked)
+						dir = XMLoadFloat3(&actionMove->dir);
+
+					else
+					{
+						XMStoreFloat3(&actionMove->dir, dir);
+						actionMove->dirLocked = true;
+					}
+				}
+			}
+		}
+	}
+
+	if(!gotDir)
+	{
+		if (!GetLockDirection(actionMove, tr, vel, seg.params.lockDir, dir))
+			return false;
+	}
 
 	if (actual > 1e-6)
 	{
@@ -242,7 +275,8 @@ bool ActionMoveSystem::HandleDashToTarget(ActionMoveTag* actionMove, ActionMoveD
 	return false;
 }
 
-void ActionMoveSystem::ApplyActionMovement(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const ActionState& actionState, const Transform& trans, const Velocity& vel, Entity self, Entity targetEnt, const double dT)
+void ActionMoveSystem::ApplyActionMovement(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const ActionState& actionState, 
+	const Transform& trans, const Velocity& vel, EntityType type, Entity self, Entity targetEnt, const double dT)
 {
 	if (!actionMove->profile) return;
 
@@ -264,7 +298,7 @@ void ActionMoveSystem::ApplyActionMovement(ActionMoveTag* actionMove, ActionMove
 	switch (seg.mode) {
 	case MoveMode::FixedDistance:
 	{
-		finished = HandleFixedDIstance(actionMove, actionDelta, seg, actionState, vel, dT);
+		finished = HandleFixedDistance(actionMove, actionDelta, seg, actionState, trans, vel, type, targetEnt, dT);
 		break;
 	}
 	case MoveMode::DashToTarget:
