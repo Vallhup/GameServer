@@ -36,12 +36,7 @@ void PanelUI::Render(SpriteBatch* batch)
 
 void PanelUI::Toggle()
 {
-	visible = !visible;
-
-	if (visible)
-	{
-		fadeElapsed = 0.0f;
-		fadeAlpha = 0.0f;
-		fading = true;
-	}
+	fadeElapsed = 0.0f;
+	fadeAlpha = 0.0f;
+	fading = true;
 }

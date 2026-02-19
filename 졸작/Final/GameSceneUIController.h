@@ -1,8 +1,7 @@
 #pragma once
 #include "UIController.h"
 
-class PanelUI;
-class TextUI;
+class ImageUI;
 
 class GameSceneUIController : public UIController
 {
@@ -12,7 +11,9 @@ public:
 	void Render(SpriteBatch* batch) override;
 
 private:
-	shared_ptr<PanelUI> statusPanel;
-	shared_ptr<TextUI> testText;
+	shared_ptr<ImageUI> statusImage;
+	shared_ptr<ImageUI> localCharBarsBack;
+	shared_ptr<ImageUI> localCharHpBar;
+	shared_ptr<ImageUI> localCharStaminaBar;
 };
 

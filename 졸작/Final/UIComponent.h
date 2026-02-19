@@ -10,8 +10,6 @@ public:
 	virtual void Update(float deltaTime) = 0;
 	virtual void Render(SpriteBatch* batch) = 0;
 
-	void SetVisible(bool in) { visible = in; }
-	bool IsVisible() const { return visible; }
 	const wstring& GetUIName() const { return uiName; }
 
 	void SetPosition(float x, float y);
@@ -22,7 +20,6 @@ protected:
 
 	// [LAW] uiName = TextureName
 	wstring uiName;
-	bool visible = false;
 
 	// UI transform
 	float posX = 0.f, posY = 0.f;

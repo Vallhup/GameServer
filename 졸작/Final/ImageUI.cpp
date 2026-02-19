@@ -108,29 +108,24 @@ void ImageUI::EnterState(ImageUIState newState)
 	{
 	case ImageUIState::Hidden:
 		fadeAlpha = 0.0f;
-		visible = false;
 		break;
 
 	case ImageUIState::FadingIn:
 		fadeElapsed = 0.0f;
 		fadeAlpha = 0.0f;
-		visible = true;
 		break;
 
 	case ImageUIState::Visible:
 		fadeAlpha = 1.0f;
-		visible = true;
 		break;
 
 	case ImageUIState::Pulsing:
 		pulseTime = -XM_PIDIV2;
-		visible = true;
 		break;
 
 	case ImageUIState::FadingOut:
 		fadeElapsed = 0.0f;
 		fadeAlpha = 1.0f;
-		visible = true;
 		break;
 	}
 }
