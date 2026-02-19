@@ -84,6 +84,7 @@ bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMov
 	actionMove->movedInSegment = 0.0;
 	actionMove->dashTraveled = 0.0;
 	actionMove->dashHasTarget = false;
+	actionMove->dashStartPos = trans.position;
 
 	if (!seg.moveParams.lockDir)
 		actionMove->dirLocked = false;
@@ -96,6 +97,13 @@ bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMov
 			{
 				actionMove->dashTargetPos = targetTr->position;
 				actionMove->dashHasTarget = true;
+
+				XMVECTOR selfPos = XMLoadFloat3(&trans.position);
+				XMVECTOR targetPos = XMLoadFloat3(&actionMove->dashTargetPos);
+				XMVECTOR toTarget = XMVectorSubtract(targetPos, selfPos);
+
+				const float dist = XMVectorGetX(XMVector3Length(toTarget));
+				actionMove->dashTotalDist = static_cast<double>(std::max(0.0f, dist - seg.moveParams.stopRange));
 			}
 		}
 	}
@@ -159,7 +167,6 @@ bool ActionMoveSystem::ComputeYaw_FaceTarget(Entity self, Entity target, const T
 
 	XMVECTOR selfPos = XMLoadFloat3(&trans.position);
 	XMVECTOR targetPos = XMLoadFloat3(&targetTr->position);
-
 	XMVECTOR toTarget = XMVectorSubtract(targetPos, selfPos);
 	toTarget = XMVectorSetY(toTarget, 0.0f);
 
@@ -258,15 +265,22 @@ bool ActionMoveSystem::HandleDashToTarget(ActionMoveTag* actionMove, ActionMoveD
 	if (!actionMove->dashHasTarget)
 		return true;
 
+	const double segStart = seg.t0 * actionState.duration;
+	const double segEnd = seg.t1 * actionState.duration;
+	const double segDuration = segEnd - segStart;
+	if (segDuration <= 1e-9f) return true;
+
+	double timeRemain = segEnd - actionState.elapsed;
+	if (timeRemain <= 1e-9f) return true;
+
 	XMVECTOR pos = XMLoadFloat3(&tr.position);
 	XMVECTOR targetPos = XMLoadFloat3(&actionMove->dashTargetPos);
 	XMVECTOR toTarget = XMVectorSubtract(targetPos, pos);
 
 	const float dist = XMVectorGetX(XMVector3Length(toTarget));
 	const float stopRange = seg.moveParams.stopRange;
-
-	if (dist <= stopRange + 1e-4f)
-		return true;
+	const double distRemain = std::max(0.0, (double)dist - (double)stopRange);
+	if (distRemain <= 1e-6) return true;
 
 	XMVECTOR dir;
 	if (!TransformHelper::SafeNormalize3(toTarget, dir))
@@ -284,7 +298,35 @@ bool ActionMoveSystem::HandleDashToTarget(ActionMoveTag* actionMove, ActionMoveD
 		}
 	}
 
+	double move = distRemain * (dT / timeRemain);
 	const double maxSpeed = static_cast<double>(seg.moveParams.maxSpeed);
+	if (maxSpeed > 1e-9)
+		move = std::min(move, maxSpeed * dT);
+
+	const double maxTravel = static_cast<double>(seg.moveParams.maxTravel);
+	if (maxTravel > 1e-9)
+	{
+		const double travelRemain = maxTravel - actionMove->dashTraveled;
+		if (travelRemain <= 1e-9) return true;
+		move = std::min(move, travelRemain);
+	}
+
+	move = std::min(move, distRemain);
+	if (move > 1e-6)
+	{
+		XMFLOAT3 deltaMove;
+		XMStoreFloat3(&deltaMove, XMVectorScale(dir, (float)move));
+
+		actionDelta->hasMove = true;
+		actionDelta->deltaPos.x += deltaMove.x;
+		actionDelta->deltaPos.z += deltaMove.z;
+
+		actionMove->dashTraveled += move;
+	}
+
+	return (move >= distRemain);
+
+	/*const double maxSpeed = static_cast<double>(seg.moveParams.maxSpeed);
 	if (maxSpeed <= 1e-9) return true;
 
 	const double move = maxSpeed * dT;
@@ -314,7 +356,34 @@ bool ActionMoveSystem::HandleDashToTarget(ActionMoveTag* actionMove, ActionMoveD
 	if (distRemain <= actual)
 		return true;
 
-	return false;
+	return false;*/
+}
+
+bool ActionMoveSystem::HandleFixedDeltaY(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const ActionMoveSegment& seg, const ActionState& actionState, const double dT)
+{
+	const double segStart = seg.t0 * actionState.duration;
+	const double segEnd = seg.t1 * actionState.duration;
+	const double segDuration = segEnd - segStart;
+	if (segDuration <= 0.0) return true;
+
+	const double dy = static_cast<double>(seg.vParams.deltaY);
+	if (std::fabs(dy) <= 1e-6) return true;
+
+	const double speed = dy / segDuration;
+	const double step = speed * dT;
+
+	const double dyAbs = std::abs(dy);
+	const double remain = dyAbs - actionMove->vMovedInSegment;
+	if (remain <= 1e-9) return true;
+
+	const double actualAbs = std::min(std::abs(step), remain);
+	const double signedActual = (dy >= 0.0 ? actualAbs : -actualAbs);
+
+	actionDelta->hasMove = true;
+	actionDelta->deltaPos.y += static_cast<float>(signedActual);
+
+	actionMove->vMovedInSegment += actualAbs;
+	return (actionMove->vMovedInSegment >= dyAbs);
 }
 
 void ActionMoveSystem::ApplyActionMovement(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const ActionState& actionState, 
@@ -337,7 +406,7 @@ void ActionMoveSystem::ApplyActionMovement(ActionMoveTag* actionMove, ActionMove
 
 	OnEnterSegment(actionMove, seg, trans, self, targetEnt);
 
-	// 1. Yaw 먼저 계산
+	// 1. YawMode::FaceTarget이면 Yaw 먼저 계산
 	bool yawAligned{ false };
 	if (seg.yawMode == YawMode::FaceTarget)
 	{
@@ -353,22 +422,39 @@ void ActionMoveSystem::ApplyActionMovement(ActionMoveTag* actionMove, ActionMove
 			actionMove->yaw = desiredYaw;
 			actionMove->yawLocked = true;		
 		}
+
+		const double segEnd = seg.t1 * actionState.duration;
+		double timeRemain = segEnd - actionState.elapsed;
+		if (timeRemain < 0.0) timeRemain = 1e-6;
+
 		const float curYaw = TransformHelper::WrapPi(TransformHelper::QuaternionToYaw(trans.rotation));
 		const float yawDelta = TransformHelper::AngleDelta(curYaw, desiredYaw);
-		if (std::fabs(yawDelta) <= seg.yawParams.yawEpsRad)
+
+		if (timeRemain <= dT || timeRemain <= 1e-6)
 		{
 			actionDelta->hasYaw = true;
 			actionDelta->yaw = desiredYaw;
 			yawAligned = true;
 		}
-		
+
 		else
 		{
-			const float maxStep = seg.yawParams.turnSpeedRad * dT;
-			const float step = std::clamp(yawDelta, -maxStep, maxStep);
+			const float needSpeed = std::fabs(yawDelta) / timeRemain;
+			const float effSpeed = std::max(seg.yawParams.turnSpeedRad, needSpeed);
+
+			const float maxStep = effSpeed * dT;
+			float step = std::clamp(yawDelta, -maxStep, maxStep);
+
+			float nextYaw = TransformHelper::WrapPi(curYaw + step);
+
+			if (std::fabs(yawDelta) <= maxStep + seg.yawParams.yawEpsRad)
+			{
+				nextYaw = desiredYaw;
+				yawAligned = true;
+			}
 
 			actionDelta->hasYaw = true;
-			actionDelta->yaw = TransformHelper::WrapPi(curYaw + step);
+			actionDelta->yaw = nextYaw;
 		}
 	}
 
@@ -382,21 +468,35 @@ AFTER_YAW:;
 	}
 
 	// 2. 이후 Move 처리
-	bool finished{ false };
+	bool finishedH{ false };
 	switch (seg.moveMode) {
 	case MoveMode::FixedDistance:
 	{
-		finished = HandleFixedDistance(actionMove, actionDelta, seg, actionState, trans, vel, type, targetEnt, dT);
+		finishedH = HandleFixedDistance(actionMove, actionDelta, seg, actionState, trans, vel, type, targetEnt, dT);
 		break;
 	}
 	case MoveMode::DashToTarget:
 	{
-		finished = HandleDashToTarget(actionMove, actionDelta, seg, actionState, trans, dT);
+		finishedH = HandleDashToTarget(actionMove, actionDelta, seg, actionState, trans, dT);
 		break;
 	}
 	default:
 	{
-		finished = false;
+		finishedH = true;
+		break;
+	}
+	}
+
+	bool finishedV{ false };
+	switch (seg.vMode) {
+	case VerticalMode::FixedDeltaY:
+	{
+		finishedV = HandleFixedDeltaY(actionMove, actionDelta, seg, actionState, dT);
+		break;
+	}
+	default:
+	{
+		finishedV = true;
 		break;
 	}
 	}
@@ -416,6 +516,6 @@ AFTER_YAW:;
 		}
 	}
 
-	if (finished)
+	if (finishedH && finishedV)
 		ForceNextSegment(actionMove, segments);
 }

@@ -138,7 +138,8 @@ struct ActionMoveTag : public TagComponent {
 	const ActionProfile* profile{ nullptr };
 
 	int8 segmentIndex{ 0 };
-	double movedInSegment{ 0.0f };
+	double movedInSegment{ 0.0 };
+	double vMovedInSegment{ 0.0 };
 
 	XMFLOAT3 dir{ 0, 0, 0 };
 	bool dirLocked{ false };
@@ -150,5 +151,6 @@ struct ActionMoveTag : public TagComponent {
 	bool dashHasTarget{ false };
 	XMFLOAT3 dashTargetPos{ 0, 0, 0 };
 	double dashTraveled{ 0.0 };
-
+	XMFLOAT3 dashStartPos{ 0, 0, 0 };
+	double dashTotalDist{ 0.0 };
 };

@@ -61,8 +61,6 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 
 	if (moved)
 	{
-		totalMoveDelta.y = 0;
-
 		float nx = trans->position.x;
 		float nz = trans->position.z;
 
@@ -72,19 +70,19 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 		if (MapCollisionManager::Get().CanMove(nx, nz + totalMoveDelta.z))
 			nz += totalMoveDelta.z;
 
-		if (nx != trans->position.x || nz != trans->position.z)
-		{
-			trans->position.x = nx;
-			trans->position.z = nz;
+		trans->position.x = nx;
+		trans->position.z = nz;
 
-			trans->position.y =
-				MapCollisionManager::Get().SampleHeightAt(trans->position.x, trans->position.z);
+		float groundY = MapCollisionManager::Get().SampleHeightAt(nx, nz);
+		trans->position.y += totalMoveDelta.y;
 
-			const auto* netComp = _runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity);
-			if (!netComp) return;
+		if (totalMoveDelta.y < 1e-6f || trans->position.y <= groundY)
+			trans->position.y = groundY;
 
-			Framework::Get().outEventQueue.push(OutputEvent{netComp->id, DirtyType::Moved});
-		}
+		const auto* netComp = _runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity);
+		if (!netComp) return;
+
+		Framework::Get().outEventQueue.push(OutputEvent{ netComp->id, DirtyType::Moved });
 	}
 
 	if (rotated)

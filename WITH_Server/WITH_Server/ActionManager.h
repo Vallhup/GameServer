@@ -20,6 +20,13 @@ enum class YawMode : uint8
 	FaceMoveDir,
 };
 
+enum class VerticalMode : uint8
+{
+	None,
+
+	FixedDeltaY,
+};
+
 struct MoveParams
 {
 	float maxSpeed{ 0.0f };
@@ -38,6 +45,11 @@ struct YawParams
 	float yawEpsRad{ 0.02f };
 };
 
+struct VerticalParams
+{
+	float deltaY{ 0.0f };
+};
+
 struct ActionMoveSegment {
 	double t0;
 	double t1;
@@ -47,6 +59,9 @@ struct ActionMoveSegment {
 
 	YawMode yawMode{ YawMode::None };
 	YawParams yawParams;
+
+	VerticalMode vMode{ VerticalMode::None };
+	VerticalParams vParams;
 };
 
 struct ActionProfile {

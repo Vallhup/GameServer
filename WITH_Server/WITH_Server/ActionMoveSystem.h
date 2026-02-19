@@ -35,6 +35,9 @@ private:
 	bool HandleDashToTarget(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const ActionMoveSegment& seg,
 		const ActionState& actionState, const Transform& tr, const double dT);
 
+	bool HandleFixedDeltaY(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const ActionMoveSegment& seg,
+		const ActionState& actionState, const double dT);
+
 	void ApplyActionMovement(ActionMoveTag* actionMove, 
 		ActionMoveDelta* actionDelta, const ActionState& actionState,
 		const Transform& trans, const Velocity& vel, EntityType type, Entity self, Entity targetEnt, const double dT);

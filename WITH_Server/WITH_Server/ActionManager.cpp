@@ -310,7 +310,7 @@ void ActionManager::LoadProfile()
 				YawMode::FaceTarget,
 				YawParams
 				{
-					.turnSpeedRad = 50.0f,
+					.turnSpeedRad = 150.0f,
 					.yawEpsRad = 0.02f
 				}
 			},
@@ -342,6 +342,96 @@ void ActionManager::LoadProfile()
 	};
 
 	SetProfile(ActionType::Attack, EntityType::Final_Boss, AttackType::DashSlash, dashSlash);
+
+	ActionProfile jumpSlash
+	{
+		{
+			{
+				0.0f,
+				7.0f / 41.0f,
+				MoveMode::None,
+				MoveParams {},
+				YawMode::FaceTarget,
+				YawParams
+				{
+					.turnSpeedRad = 150.0f,
+					.yawEpsRad = 0.01f
+				},
+				VerticalMode::None,
+				VerticalParams {}
+			},
+
+			{
+				7.0f / 41.0f,
+				18.0f / 41.0f,
+				MoveMode::DashToTarget,
+				MoveParams
+				{
+					.maxSpeed = 40.0f,
+					.maxTravel = 10000.0f,
+					.stopRange = 1.5f,
+					.lockDir = true,
+				},
+				YawMode::None,
+				YawParams{},
+				VerticalMode::FixedDeltaY,
+				VerticalParams
+				{
+					.deltaY = 347.3f / 100.0f
+				}
+			},
+
+			{
+				18.0f / 41.0f,
+				26.0f / 41.0f,
+				MoveMode::DashToTarget,
+				MoveParams
+				{
+					.maxSpeed = 40.0f,
+					.maxTravel = 10000.0f,
+					.stopRange = 1.5f,
+					.lockDir = true,
+				},
+				YawMode::None,
+				YawParams{},
+				VerticalMode::FixedDeltaY,
+				VerticalParams
+				{
+					.deltaY = -347.3f / 100.0f
+				}
+			},
+
+			{
+				26.0f / 41.0f,
+				28.0f / 41.0f,
+				MoveMode::DashToTarget,
+				MoveParams
+				{
+					.maxSpeed = 70.0f,
+					.maxTravel = 10000.0f,
+					.stopRange = 1.5f,
+					.lockDir = true,
+				},
+				YawMode::None,
+				YawParams{},
+				VerticalMode::None,
+				VerticalParams {}
+			},
+
+			{
+				28.0f / 41.0f,
+				1.0f,
+				MoveMode::None,
+				MoveParams {},
+				YawMode::None,
+				YawParams{},
+				VerticalMode::None,
+				VerticalParams {}
+			},
+		}
+	};
+
+	SetProfile(ActionType::Attack, EntityType::Final_Boss, AttackType::JumpSlash, jumpSlash);
 }
 
 ActionProfile ActionManager::LoadActionProfile(std::string_view path)
