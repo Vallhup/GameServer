@@ -35,6 +35,11 @@ void ActionMoveSystem::Execute(const double dT)
 		Entity target = Entity::Null();
 		if (aiState) target = aiState->target;
 
+		actionDelta->hasMove = false;
+		actionDelta->hasYaw = false;
+		actionDelta->deltaPos = XMFLOAT3{ 0, 0, 0 };
+		actionDelta->yaw = 0.0f;
+
 		ApplyActionMovement(actionMove, actionDelta, actionState, *trans, *vel, spawnComp->type, entity, target, dT);
 	}
 }
@@ -64,12 +69,13 @@ bool ActionMoveSystem::AdvanceSegmentByTime(ActionMoveTag* actionMove, const Act
 		actionMove->dashTraveled = 0.0;
 		actionMove->dashHasTarget = false;
 		actionMove->dirLocked = false;
+		actionMove->yawLocked = false;
 	}
 	
 	return advanced;
 }
 
-bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMoveSegment& seg, Entity self, Entity targetEnt)
+bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMoveSegment& seg, const Transform& trans, Entity self, Entity targetEnt)
 {
 	if (actionMove->lastSegmentIndex == actionMove->segmentIndex)
 		return false;
@@ -79,10 +85,10 @@ bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMov
 	actionMove->dashTraveled = 0.0;
 	actionMove->dashHasTarget = false;
 
-	if (!seg.params.lockDir)
+	if (!seg.moveParams.lockDir)
 		actionMove->dirLocked = false;
 
-	if (seg.mode == MoveMode::DashToTarget)
+	if (seg.moveMode == MoveMode::DashToTarget)
 	{
 		if (!targetEnt.IsNull())
 		{
@@ -91,6 +97,17 @@ bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMov
 				actionMove->dashTargetPos = targetTr->position;
 				actionMove->dashHasTarget = true;
 			}
+		}
+	}
+
+	actionMove->yawLocked = false;
+	if (seg.yawMode == YawMode::FaceTarget)
+	{
+		float desiredYaw;
+		if (ComputeYaw_FaceTarget(self, targetEnt, trans, desiredYaw))
+		{
+			actionMove->yaw = desiredYaw;
+			actionMove->yawLocked = true;
 		}
 	}
 
@@ -105,6 +122,7 @@ void ActionMoveSystem::ForceNextSegment(ActionMoveTag* actionMove, const std::ve
 	actionMove->dashTraveled = 0.0;
 	actionMove->dashHasTarget = false;
 	actionMove->dirLocked = false;
+	actionMove->yawLocked = false;
 }
 
 bool ActionMoveSystem::GetLockDirection(ActionMoveTag* actionMove, const Transform& trans, const Velocity& vel, bool lockDir, XMVECTOR& outDir)
@@ -132,6 +150,33 @@ bool ActionMoveSystem::GetLockDirection(ActionMoveTag* actionMove, const Transfo
 	return true;
 }
 
+bool ActionMoveSystem::ComputeYaw_FaceTarget(Entity self, Entity target, const Transform& trans, float& outYaw) const
+{
+	if (target.IsNull()) return false;
+
+	const auto* targetTr = _runtime.GetECS().GetStorage<Transform>().GetComponent(target);
+	if (!targetTr) return false;
+
+	XMVECTOR selfPos = XMLoadFloat3(&trans.position);
+	XMVECTOR targetPos = XMLoadFloat3(&targetTr->position);
+
+	XMVECTOR toTarget = XMVectorSubtract(targetPos, selfPos);
+	toTarget = XMVectorSetY(toTarget, 0.0f);
+
+	const float lenSq = XMVectorGetX(XMVector3LengthSq(toTarget));
+	if (lenSq < 1e-6f) return false;
+
+	XMVECTOR norm;
+	if (!TransformHelper::SafeNormalize3(toTarget, norm))
+		return false;
+
+	XMFLOAT3 dir;
+	XMStoreFloat3(&dir, norm);
+
+	outYaw = std::atan2(-dir.x, -dir.z);
+	return true;
+}
+
 bool ActionMoveSystem::HandleFixedDistance(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const ActionMoveSegment& seg, const ActionState& actionState, 
 	const Transform& tr, const Velocity& vel, EntityType type, Entity target, const double dT)
 {
@@ -140,14 +185,20 @@ bool ActionMoveSystem::HandleFixedDistance(ActionMoveTag* actionMove, ActionMove
 	const double segDuration = segEnd - segStart;
 	if (segDuration <= 0.0) return true;
 
-	const double dist = static_cast<double>(seg.params.distance);
+	const double dist = static_cast<double>(seg.moveParams.distance);
 	if (dist <= 1e-9) return true;
 
 	const double speed = dist / segDuration;
 	const double move = speed * dT;
+	if (move <= 0.0) return true;
 
 	const double remain = dist - actionMove->movedInSegment;
 	const double actual = std::min(move, remain);
+
+	int8 dirMul = seg.moveParams.dirMul;
+	if (dirMul != 1 && dirMul != -1) dirMul = 1;
+
+	const float signedActual = actual * float(dirMul);
 
 	XMVECTOR dir;
 	bool gotDir{ false };
@@ -160,6 +211,7 @@ bool ActionMoveSystem::HandleFixedDistance(ActionMoveTag* actionMove, ActionMove
 			XMVECTOR selfPos = XMLoadFloat3(&tr.position);
 			XMVECTOR targetPos = XMLoadFloat3(&targetTr->position);
 			XMVECTOR toTarget = XMVectorSubtract(targetPos, selfPos);
+			toTarget = XMVectorSetY(toTarget, 0.0f);
 
 			XMVECTOR norm;
 			if (TransformHelper::SafeNormalize3(toTarget, norm))
@@ -167,7 +219,7 @@ bool ActionMoveSystem::HandleFixedDistance(ActionMoveTag* actionMove, ActionMove
 				dir = norm;
 				gotDir = true;
 
-				if (seg.params.lockDir)
+				if (seg.moveParams.lockDir)
 				{
 					if (actionMove->dirLocked)
 						dir = XMLoadFloat3(&actionMove->dir);
@@ -184,22 +236,17 @@ bool ActionMoveSystem::HandleFixedDistance(ActionMoveTag* actionMove, ActionMove
 
 	if(!gotDir)
 	{
-		if (!GetLockDirection(actionMove, tr, vel, seg.params.lockDir, dir))
+		if (!GetLockDirection(actionMove, tr, vel, seg.moveParams.lockDir, dir))
 			return false;
 	}
 
 	if (actual > 1e-6)
 	{
 		XMFLOAT3 deltaMove;
-		XMStoreFloat3(&deltaMove, XMVectorScale(dir, actual));
+		XMStoreFloat3(&deltaMove, XMVectorScale(dir, signedActual));
 
 		actionDelta->hasMove = true;
 		actionDelta->deltaPos = deltaMove;
-
-		const double yaw = atan2f(-deltaMove.x, -deltaMove.z);
-		actionDelta->hasYaw = true;
-		actionDelta->yaw = yaw;
-
 		actionMove->movedInSegment += actual;
 	}
 
@@ -216,7 +263,7 @@ bool ActionMoveSystem::HandleDashToTarget(ActionMoveTag* actionMove, ActionMoveD
 	XMVECTOR toTarget = XMVectorSubtract(targetPos, pos);
 
 	const float dist = XMVectorGetX(XMVector3Length(toTarget));
-	const float stopRange = seg.params.stopRange;
+	const float stopRange = seg.moveParams.stopRange;
 
 	if (dist <= stopRange + 1e-4f)
 		return true;
@@ -225,7 +272,7 @@ bool ActionMoveSystem::HandleDashToTarget(ActionMoveTag* actionMove, ActionMoveD
 	if (!TransformHelper::SafeNormalize3(toTarget, dir))
 		return true;
 
-	if (seg.params.lockDir)
+	if (seg.moveParams.lockDir)
 	{
 		if (actionMove->dirLocked)
 			dir = XMLoadFloat3(&actionMove->dir);
@@ -237,12 +284,12 @@ bool ActionMoveSystem::HandleDashToTarget(ActionMoveTag* actionMove, ActionMoveD
 		}
 	}
 
-	const double maxSpeed = static_cast<double>(seg.params.maxSpeed);
+	const double maxSpeed = static_cast<double>(seg.moveParams.maxSpeed);
 	if (maxSpeed <= 1e-9) return true;
 
 	const double move = maxSpeed * dT;
 
-	const double maxTravel = static_cast<double>(seg.params.maxTravel);
+	const double maxTravel = static_cast<double>(seg.moveParams.maxTravel);
 	const double travelRemain = maxTravel - actionMove->dashTraveled;
 	if (travelRemain <= 1e-9)
 		return true;
@@ -258,11 +305,6 @@ bool ActionMoveSystem::HandleDashToTarget(ActionMoveTag* actionMove, ActionMoveD
 
 		actionDelta->hasMove = true;
 		actionDelta->deltaPos = deltaMove;
-
-		const double yaw = atan2f(-deltaMove.x, -deltaMove.z);
-		actionDelta->hasYaw = true;
-		actionDelta->yaw = yaw;
-
 		actionMove->dashTraveled += actual;
 	}
 
@@ -281,21 +323,67 @@ void ActionMoveSystem::ApplyActionMovement(ActionMoveTag* actionMove, ActionMove
 	if (!actionMove->profile) return;
 
 	const auto& segments = actionMove->profile->segments;
-	if (actionMove->segmentIndex >= segments.size()) return;
+	if (actionMove->segmentIndex >= segments.size()) 
+		return;
 
 	AdvanceSegmentByTime(actionMove, actionState, segments);
-	if (actionMove->segmentIndex >= segments.size()) return;
+	if (actionMove->segmentIndex >= segments.size()) 
+		return;
 
 	const auto& seg = segments[actionMove->segmentIndex];
 
 	const double segStart = seg.t0 * actionState.duration;
-	const double segEnd = seg.t1 * actionState.duration;
 	if (actionState.elapsed < segStart) return;
 
-	OnEnterSegment(actionMove, seg, self, targetEnt);
+	OnEnterSegment(actionMove, seg, trans, self, targetEnt);
 
+	// 1. Yaw 먼저 계산
+	bool yawAligned{ false };
+	if (seg.yawMode == YawMode::FaceTarget)
+	{
+		float desiredYaw{ 0.0f };
+		if (actionMove->yawLocked)
+			desiredYaw = actionMove->yaw;
+
+		else
+		{
+			if (!ComputeYaw_FaceTarget(self, targetEnt, trans, desiredYaw))
+				goto AFTER_YAW;
+			
+			actionMove->yaw = desiredYaw;
+			actionMove->yawLocked = true;		
+		}
+		const float curYaw = TransformHelper::WrapPi(TransformHelper::QuaternionToYaw(trans.rotation));
+		const float yawDelta = TransformHelper::AngleDelta(curYaw, desiredYaw);
+		if (std::fabs(yawDelta) <= seg.yawParams.yawEpsRad)
+		{
+			actionDelta->hasYaw = true;
+			actionDelta->yaw = desiredYaw;
+			yawAligned = true;
+		}
+		
+		else
+		{
+			const float maxStep = seg.yawParams.turnSpeedRad * dT;
+			const float step = std::clamp(yawDelta, -maxStep, maxStep);
+
+			actionDelta->hasYaw = true;
+			actionDelta->yaw = TransformHelper::WrapPi(curYaw + step);
+		}
+	}
+
+AFTER_YAW:;
+
+	// 회전-only segment면, 회전 정렬되면 바로 skip
+	if (seg.moveMode == MoveMode::None && seg.yawMode != YawMode::None && yawAligned)
+	{
+		ForceNextSegment(actionMove, segments);
+		return;
+	}
+
+	// 2. 이후 Move 처리
 	bool finished{ false };
-	switch (seg.mode) {
+	switch (seg.moveMode) {
 	case MoveMode::FixedDistance:
 	{
 		finished = HandleFixedDistance(actionMove, actionDelta, seg, actionState, trans, vel, type, targetEnt, dT);
@@ -311,6 +399,21 @@ void ActionMoveSystem::ApplyActionMovement(ActionMoveTag* actionMove, ActionMove
 		finished = false;
 		break;
 	}
+	}
+
+	// 3. YawMode::FaceMoveDir이면 이동 후 deltaPos로 yaw 계산
+	if (seg.yawMode == YawMode::FaceMoveDir && actionDelta->hasMove)
+	{
+		const float dx = actionDelta->deltaPos.x;
+		const float dz = actionDelta->deltaPos.z;
+		const float deltaMove = dx * dx + dz * dz;
+
+		if (deltaMove > 1e-6)
+		{
+			const float yaw = std::atan2(-dx, -dz);
+			actionDelta->hasYaw = true;
+			actionDelta->yaw = yaw;
+		}
 	}
 
 	if (finished)

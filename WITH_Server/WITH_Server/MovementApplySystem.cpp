@@ -26,6 +26,21 @@ void MovementApplySystem::Execute(const double dT)
 void MovementApplySystem::MovementApply(Entity entity, Transform* trans, 
 	ActionMoveDelta* aDelta, LocomotionMoveDelta* lDelta, const double dT)
 {
+	bool rotated{ false };
+	if (aDelta->hasYaw)
+	{
+		XMVECTOR q = XMQuaternionRotationRollPitchYaw(0.0f, aDelta->yaw, 0.0f);
+		XMStoreFloat4(&trans->rotation, q);
+		rotated = true;
+	}
+
+	else if (lDelta->hasYaw)
+	{
+		XMVECTOR q = XMQuaternionRotationRollPitchYaw(0.0f, lDelta->yaw, 0.0f);
+		XMStoreFloat4(&trans->rotation, q);
+		rotated = true;
+	}
+
 	XMFLOAT3 totalMoveDelta{ 0, 0, 0 };
 	bool moved{ false };
 
@@ -33,26 +48,12 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 	{
 		totalMoveDelta = aDelta->deltaPos;
 		moved = true;
-
-		if (aDelta->hasYaw)
-		{
-			XMVECTOR q = XMQuaternionRotationRollPitchYaw(
-				0.0f, aDelta->yaw, 0.0f);
-			XMStoreFloat4(&trans->rotation, q);
-		}
 	}
 
 	else if (lDelta->hasMove)
 	{
 		totalMoveDelta = lDelta->deltaPos;
 		moved = true;
-
-		if (lDelta->hasYaw)
-		{
-			XMVECTOR q = XMQuaternionRotationRollPitchYaw(
-				0.0f, lDelta->yaw, 0.0f);
-			XMStoreFloat4(&trans->rotation, q);
-		}
 	}
 
 	aDelta->hasMove = false; aDelta->hasYaw = false;
@@ -82,8 +83,15 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 			const auto* netComp = _runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity);
 			if (!netComp) return;
 
-			Framework::Get().outEventQueue.push(OutputEvent{
-				netComp->id, DirtyType::Moved});
+			Framework::Get().outEventQueue.push(OutputEvent{netComp->id, DirtyType::Moved});
 		}
+	}
+
+	if (rotated)
+	{
+		const auto* netComp = _runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity);
+		if (!netComp) return;
+
+		Framework::Get().outEventQueue.push(OutputEvent{ netComp->id, DirtyType::Moved });
 	}
 }

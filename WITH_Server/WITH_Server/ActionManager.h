@@ -12,6 +12,14 @@ enum class MoveMode : uint8
 	DashToTarget
 };
 
+enum class YawMode : uint8
+{
+	None,
+
+	FaceTarget,
+	FaceMoveDir,
+};
+
 struct MoveParams
 {
 	float maxSpeed{ 0.0f };
@@ -19,15 +27,26 @@ struct MoveParams
 	float stopRange{ 0.0f };
 
 	float distance{ 0.0f };
+	int8 dirMul{ 1 };
 
 	bool lockDir{ false };
+};
+
+struct YawParams
+{
+	float turnSpeedRad{ 10.0f };
+	float yawEpsRad{ 0.02f };
 };
 
 struct ActionMoveSegment {
 	double t0;
 	double t1;
-	MoveMode mode;
-	MoveParams params;
+
+	MoveMode moveMode{ MoveMode::None };
+	MoveParams moveParams;
+
+	YawMode yawMode{ YawMode::None };
+	YawParams yawParams;
 };
 
 struct ActionProfile {

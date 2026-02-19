@@ -143,6 +143,9 @@ struct ActionMoveTag : public TagComponent {
 	XMFLOAT3 dir{ 0, 0, 0 };
 	bool dirLocked{ false };
 
+	float yaw{ 0.0f };
+	bool yawLocked{ false };
+
 	int8 lastSegmentIndex{ -1 };
 	bool dashHasTarget{ false };
 	XMFLOAT3 dashTargetPos{ 0, 0, 0 };
