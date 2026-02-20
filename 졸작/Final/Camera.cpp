@@ -119,7 +119,7 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     XMMATRIX view = XMMatrixLookAtLH(eyePos, lookAt, upDir);
 
     float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
-    XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 150.0f);
+    XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 50.0f);
 
     BoundingFrustum::CreateFromMatrix(viewFrustum, proj);
 
@@ -135,6 +135,11 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     FrameConstants frameData = {};
     frameData.view = view;
     frameData.projection = proj;
+
+    XMMATRIX vp = XMMatrixMultiply(XMMatrixTranspose(view), XMMatrixTranspose(proj));
+    XMMATRIX invVp = XMMatrixInverse(nullptr, vp);
+
+    frameData.invViewProj = XMMatrixTranspose(invVp);
     frameData.cameraPosition = position;
     frameData.padding = 0.0f;
 

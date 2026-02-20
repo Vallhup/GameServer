@@ -96,7 +96,6 @@ struct GBUFFER_VS_OUT
     float4 indices : INDICES;
     float4 color : COLOR;
     uint materialIndex : MATERIAL_INDEX;
-    float4 worldPos : POSITION;
 };
 
 struct GBUFFER_PS_IN
@@ -109,15 +108,13 @@ struct GBUFFER_PS_IN
     float4 indices : INDICES;
     float4 color : COLOR;
     uint materialIndex : MATERIAL_INDEX;
-    float4 worldPos : POSITION;
 };
 
 struct GBUFFER_PS_OUT
 {
-    float4 RT0 : SV_Target0; // BaseColor.rgb + Metallic.r
-    float4 RT1 : SV_Target1; // Normal.xyz + Roughness.r  
-    float4 RT2 : SV_Target2; // WorldPos.xyz + AO.r
-    float4 RT3 : SV_Target3; // Emission.rgb + Alpha.r (¶Ç´Â MaterialID)
+    float4 RT0 : SV_Target0; // BaseColor.rgb + Metallic
+    float4 RT1 : SV_Target1; // Normal.xyz + Roughness
+    float4 RT2 : SV_Target2; // Emission.rgb AO
 };
 
 //-------------------------------------------------------

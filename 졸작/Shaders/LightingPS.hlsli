@@ -8,9 +8,9 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     float4 rt0 = gBufferRT0.Sample(pointSampler, input.uv);
     float4 rt1 = gBufferRT1.Sample(pointSampler, input.uv);
     float4 rt2 = gBufferRT2.Sample(pointSampler, input.uv);
-    float4 rt3 = gBufferRT3.Sample(pointSampler, input.uv);
+    float depth = depthBuffer.Sample(pointSampler, input.uv).r;
 
-    if (rt0.a == 0.0f && rt1.a == 0.0f && rt2.a == 0.0f && rt3.a == 0.0f)
+    if (depth >= 1.0f)
     {
         return float4(0.0f, 0.0f, 0.0f, 1.0f);
     }
@@ -21,10 +21,13 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     float3 worldNormal = normalize(rt1.xyz);
     float roughness = rt1.w;
 
-    float3 worldPos = rt2.xyz;
+    float2 ndc = float2(input.uv.x * 2.0 - 1.0, (1.0 - input.uv.y) * 2.0 - 1.0);
+    float4 clipPos = float4(ndc, depth, 1.0);
+    float4 wp = mul(clipPos, invViewProj);
+    float3 worldPos = wp.xyz / wp.w;
+    
+    float3 emission = rt2.rgb;
     float ao = rt2.a;
-
-    float3 emission = rt3.rgb;
 
     float3 N = worldNormal;
     float3 V = normalize(cameraPosition - worldPos);
