@@ -72,16 +72,16 @@ void ActionManager::LoadPolicy()
 		ActionPolicy{ 60, 50.f / 30.6122f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false});
 
 	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::MultiSlash, 
-		ActionPolicy{ 60, 93.f / 30.3261f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
+		ActionPolicy{ 60, 93.f / 30.3261f, Bit(ActionType::Stun) | Bit(ActionType::Dead), false, false });
 
 	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::DashSlash, 
 		ActionPolicy{ 60, 56.f / 30.5455f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
 
 	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::Thrust, 
-		ActionPolicy{ 60, 56.f / 30.5455f, Bit(ActionType::Stun) | Bit(ActionType::Dead), false, false });
+		ActionPolicy{ 60, 56.f / 30.5455f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
 
 	SetPolicy(ActionType::Attack, EntityType::Final_Boss, AttackType::Slash, 
-		ActionPolicy{ 60, 47.f / 30.6522f, Bit(ActionType::Stun) | Bit(ActionType::Dead), false, false });
+		ActionPolicy{ 60, 47.f / 30.6522f, Bit(ActionType::Stun) | Bit(ActionType::Dead), true, false });
 
 	SetPolicy(ActionType::Stun, EntityType::Final_Boss, AttackType::None, 
 		ActionPolicy{ 85, 201.f / 30.15f, Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false });
@@ -108,6 +108,12 @@ void ActionManager::LoadProfile()
 				{
 					.distance = 11.54f / 100.f,
 					.lockDir = true
+				},
+				YawMode::FaceMoveDir,
+				YawParams 
+				{
+					.turnSpeedRad = 10.0f,
+					.yawEpsRad = 0.02f
 				}
 			},
 
@@ -119,7 +125,9 @@ void ActionManager::LoadProfile()
 				{
 					.distance = 26.782f / 100.f,
 					.lockDir = true
-				}
+				},
+				YawMode::None,
+				YawParams {}
 			},
 
 			{
@@ -130,7 +138,9 @@ void ActionManager::LoadProfile()
 				{
 					.distance = 57.311f / 100.f,
 					.lockDir = true
-				}
+				},
+				YawMode::None,
+				YawParams {}
 			},
 		}
 	};
@@ -148,6 +158,12 @@ void ActionManager::LoadProfile()
 				{
 					.distance = 22.796f / 100.f,
 					.lockDir = true
+				},
+				YawMode::FaceMoveDir,
+				YawParams
+				{
+					.turnSpeedRad = 10.0f,
+					.yawEpsRad = 0.02f
 				}
 			},
 
@@ -159,7 +175,9 @@ void ActionManager::LoadProfile()
 				{
 					.distance = 319.144f / 100.f,
 					.lockDir = true
-				}
+				},
+				YawMode::None,
+				YawParams {}
 			},
 
 			{
@@ -170,12 +188,116 @@ void ActionManager::LoadProfile()
 				{
 					.distance = 6.03f / 100.f,
 					.lockDir = true
-				}
+				},
+				YawMode::None,
+				YawParams {}
 			},
 		}
 	};
 
 	SetProfile(ActionType::Dodge, EntityType::Knight, AttackType::None, dodge);
+
+	ActionProfile thrust
+	{
+		{
+			{
+				0.0,
+				21.0 / 56.0,
+				MoveMode::None,
+				MoveParams {},
+				YawMode::FaceTarget,
+				YawParams
+				{
+					.turnSpeedRad = 50.0f,
+					.yawEpsRad = 0.02f
+				}
+			},
+
+			{
+				21.0 / 56.0,
+				31.0 / 56.0,
+				MoveMode::FixedDistance,
+				MoveParams
+				{
+					.distance = 98.108f / 100.f,
+					.lockDir = true
+				},
+				YawMode::None,
+				YawParams{}
+			},
+
+			{
+				31.0 / 56.0,
+				38.0 / 56.0,
+				MoveMode::None,
+				MoveParams {},
+				YawMode::None,
+				YawParams{}
+			},
+
+			{
+				38.0 / 56.0,
+				1.0,
+				MoveMode::FixedDistance,
+				MoveParams
+				{
+					.distance = 47.39f / 100.f,
+					.lockDir = true
+				},
+				YawMode::None,
+				YawParams{}
+			},
+		}
+	};
+
+	SetProfile(ActionType::Attack, EntityType::Final_Boss, AttackType::Thrust, thrust);
+
+	ActionProfile slash
+	{
+		{
+			{
+				0.0f,
+				26.0f / 47.0f,
+				MoveMode::FixedDistance,
+				MoveParams
+				{
+					.distance = 8.453f / 100.f,
+					.dirMul = -1,
+					.lockDir = false
+				},
+				YawMode::FaceTarget,
+				YawParams
+				{
+					.turnSpeedRad = 10.0f,
+					.yawEpsRad = 0.02f
+				}
+			},
+
+			{
+				26.0f / 47.0f,
+				37.0f / 47.0f,
+				MoveMode::FixedDistance,
+				MoveParams
+				{
+					.distance = 100.467f / 100.f,
+					.lockDir = true
+				},
+				YawMode::None,
+				YawParams{}
+			},
+
+			{
+				37.0f / 47.0f,
+				1.0f,
+				MoveMode::None,
+				MoveParams {},
+				YawMode::None,
+				YawParams{}
+			},
+		}
+	};
+
+	SetProfile(ActionType::Attack, EntityType::Final_Boss, AttackType::Slash, slash);
 
 	ActionProfile dashSlash
 	{
@@ -184,6 +306,13 @@ void ActionManager::LoadProfile()
 				0.0f,
 				20.0f / 56.0f,
 				MoveMode::None,
+				MoveParams {},
+				YawMode::FaceTarget,
+				YawParams
+				{
+					.turnSpeedRad = 150.0f,
+					.yawEpsRad = 0.02f
+				}
 			},
 
 			{
@@ -192,22 +321,117 @@ void ActionManager::LoadProfile()
 				MoveMode::DashToTarget,
 				MoveParams
 				{
-					.maxSpeed = 100.0f,
-					.maxTravel = 1000000.0f,
-					.stopRange = 0.6f,
-					.lockDir = false,
-				}
+					.maxSpeed = 70.0f,
+					.maxTravel = 10000.0f,
+					.stopRange = 1.5f,
+					.lockDir = true,
+				},
+				YawMode::None,
+				YawParams{}
 			},
 			
 			{
 				25.0f / 56.0f,
 				1.0f,
 				MoveMode::None,
+				MoveParams {},
+				YawMode::None,
+				YawParams{}
 			},
 		}
 	};
 
 	SetProfile(ActionType::Attack, EntityType::Final_Boss, AttackType::DashSlash, dashSlash);
+
+	ActionProfile jumpSlash
+	{
+		{
+			{
+				0.0f,
+				7.0f / 41.0f,
+				MoveMode::None,
+				MoveParams {},
+				YawMode::FaceTarget,
+				YawParams
+				{
+					.turnSpeedRad = 150.0f,
+					.yawEpsRad = 0.01f
+				},
+				VerticalMode::None,
+				VerticalParams {}
+			},
+
+			{
+				7.0f / 41.0f,
+				18.0f / 41.0f,
+				MoveMode::DashToTarget,
+				MoveParams
+				{
+					.maxSpeed = 40.0f,
+					.maxTravel = 10000.0f,
+					.stopRange = 1.5f,
+					.lockDir = true,
+				},
+				YawMode::None,
+				YawParams{},
+				VerticalMode::FixedDeltaY,
+				VerticalParams
+				{
+					.deltaY = 347.3f / 100.0f
+				}
+			},
+
+			{
+				18.0f / 41.0f,
+				26.0f / 41.0f,
+				MoveMode::DashToTarget,
+				MoveParams
+				{
+					.maxSpeed = 40.0f,
+					.maxTravel = 10000.0f,
+					.stopRange = 1.5f,
+					.lockDir = true,
+				},
+				YawMode::None,
+				YawParams{},
+				VerticalMode::FixedDeltaY,
+				VerticalParams
+				{
+					.deltaY = -347.3f / 100.0f
+				}
+			},
+
+			{
+				26.0f / 41.0f,
+				28.0f / 41.0f,
+				MoveMode::DashToTarget,
+				MoveParams
+				{
+					.maxSpeed = 70.0f,
+					.maxTravel = 10000.0f,
+					.stopRange = 1.5f,
+					.lockDir = true,
+				},
+				YawMode::None,
+				YawParams{},
+				VerticalMode::None,
+				VerticalParams {}
+			},
+
+			{
+				28.0f / 41.0f,
+				1.0f,
+				MoveMode::None,
+				MoveParams {},
+				YawMode::None,
+				YawParams{},
+				VerticalMode::None,
+				VerticalParams {}
+			},
+		}
+	};
+
+	SetProfile(ActionType::Attack, EntityType::Final_Boss, AttackType::JumpSlash, jumpSlash);
 }
 
 ActionProfile ActionManager::LoadActionProfile(std::string_view path)

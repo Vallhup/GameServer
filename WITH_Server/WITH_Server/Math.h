@@ -78,4 +78,16 @@ namespace TransformHelper
 		const float d = XMVectorGetX(XMVector3Dot(vForward, dir));
 		return d >= cos45;
 	}
+
+	inline float WrapPi(float a)
+	{
+		while (a > XM_PI) a -= XM_2PI;
+		while (a <= -XM_PI) a += XM_2PI;
+		return a;
+	}
+
+	inline float AngleDelta(float from, float to)
+	{
+		return WrapPi(to - from);
+	}
 }
