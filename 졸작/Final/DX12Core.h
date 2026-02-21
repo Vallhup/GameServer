@@ -174,7 +174,7 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE shadowMapDSVHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE shadowMapSRVHandle;
 
-	static const UINT SHADOW_MAP_SIZE = 2048;
+	static const UINT SHADOW_MAP_SIZE = 4096;
 
 	XMFLOAT3 playerCurrentPos = { 0, 0, 0 };
 	DeferredLightConstants deferredLightData = {};

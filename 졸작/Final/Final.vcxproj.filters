@@ -449,6 +449,9 @@
     <None Include="..\Shaders\LightingPS.hlsli">
       <Filter>Shaders\Deferred</Filter>
     </None>
+    <None Include="..\Shaders\VolumetricFog.hlsli">
+      <Filter>Shaders\Volumetric</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">
@@ -558,6 +561,9 @@
     </Filter>
     <Filter Include="Scene\99. Loading">
       <UniqueIdentifier>{0af137ca-4db1-4aec-a1fe-d4af63a948e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Volumetric">
+      <UniqueIdentifier>{e5afff66-9f45-40f4-935c-00edbd23181b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -400,12 +400,12 @@ void DX12Core::CreateDeferredRenderingDescriptors()
 void DX12Core::BeginShadowPass()
 {
 	XMVECTOR lightDir = XMVectorSet(0, 0, -1.f, 0); 
-	XMVECTOR lightPos = XMVectorSet(playerCurrentPos.x + 9.0f, playerCurrentPos.y + 8.f, playerCurrentPos.z + 12.0f, 1);  
-	XMVECTOR targetPos = XMVectorSet(playerCurrentPos.x, playerCurrentPos.y, playerCurrentPos.z, 1);
+	XMVECTOR lightPos = XMVectorSet(80.0f + 45.0f, 40.0f, 80.0f + 60.0f, 1);
+	XMVECTOR targetPos = XMVectorSet(80.0f, 0.0f, 80.0f, 1);
 	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
 
 	XMMATRIX lightView = XMMatrixTranspose(XMMatrixLookAtLH(lightPos, targetPos, up));
-	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(15.0f, 15.0f, 1.0f, 100.0f));
+	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(180.0f, 180.0f, 1.0f, 200.0f));
 	
 	shadowFrameCB->CopyData(&lightView, sizeof(XMMATRIX), 0);
 	shadowFrameCB->CopyData(&lightProjection, sizeof(XMMATRIX), sizeof(XMMATRIX));
