@@ -3,6 +3,7 @@
 #include "RootSignature.h"
 #include "Shader.h"
 #include "Timer.h"
+#include "LightManager.h"
 
 void DX12Core::Initialize(HWND hwnd)
 {
@@ -16,25 +17,24 @@ void DX12Core::Initialize(HWND hwnd)
 	shader = make_unique<Shader>();
 	frameCB = make_unique<UploadBuffer>();
 	sceneCB = make_unique<UploadBuffer>();
-	deferredLightCB = make_unique<UploadBuffer>();
-	forwardLightCB = make_unique<UploadBuffer>();
 	shadowFrameCB = make_unique<UploadBuffer>();
 	fogCB = make_unique<UploadBuffer>();
+
+	lightMgr = make_unique<LightManager>();
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
 	frameCB->Initialize(GetDevice(), sizeof(FrameConstants));
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
-	deferredLightCB->Initialize(GetDevice(), sizeof(DeferredLightConstants));
-	forwardLightCB->Initialize(GetDevice(), sizeof(ForwardLightConstants));
 	shadowFrameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	fogCB->Initialize(GetDevice(), sizeof(FogConstants));
+
+	lightMgr->Initialize(GetDevice());
 
 	CreateDepthStencilBuffer();
 	CreateShadowMap();
 	CreateGBuffer();
 	CreateDeferredRenderingDescriptors();
-	SetupLights();
 }
 
 void DX12Core::CreateDevice()
@@ -472,7 +472,7 @@ void DX12Core::BeginForwardPass()
 
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
-	cmdList->SetGraphicsRootConstantBufferView(4, GetForwardLightCB()->GetGPUVirtualAddress());		
+	cmdList->SetGraphicsRootConstantBufferView(4, lightMgr->GetForwardLightCB()->GetGPUVirtualAddress());		
 
 	/*FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
 	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
@@ -537,7 +537,7 @@ void DX12Core::BeginLightingPass()
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
 	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
-	cmdList->SetGraphicsRootConstantBufferView(3, GetDeferredLightCB()->GetGPUVirtualAddress());			
+	cmdList->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
 	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());					
 
 	ID3D12DescriptorHeap* heaps[] = { deferredSRVHeap.Get() };
@@ -550,65 +550,6 @@ void DX12Core::BeginLightingPass()
 	cmdList->SetGraphicsRootConstantBufferView(14, GetFogCB()->GetGPUVirtualAddress());*/
 
 	//OutputDebugStringA("Lighting Pass started\n");
-}
-
-void DX12Core::SetupLights()
-{
-	forwardLightData = { {0, 0, -1}, 0, {1, 1, 1}, 0.25f };
-
-	deferredLightData.lightCount = 23;
-
-	deferredLightData.lights[0] = {
-		{0, 0, -1}, 0,
-		{1, 1, 1}, 0.2f,
-		0,
-		{0, 0, 0}
-	};
-	deferredLightData.lights[1] = {
-		{0, 0, 1}, 0,
-		{1, 1, 1}, 0.2f,
-		0,
-		{0, 0, 0}
-	};
-
-	deferredLightData.lights[2] = {
-		{-27.f, 29.f, -70.0f}, 2000.0f,
-		{0.074f, 0, 1}, 0.15f,
-		1,
-		{0, 0, 0}
-	};
-
-	// Point Lights (3~22)
-	float spacing = 15.0f;
-	float height = 4.0f;
-	float leftX = -7.0f;
-	float rightX = 7.0f;
-
-	for (int i = 3; i < 23; ++i) {
-		int lightIndex = i - 3;
-		int rowIndex = lightIndex % 10;
-		bool isLeftRow = (lightIndex < 10);
-
-		float x = isLeftRow ? leftX : rightX;
-		float z = -(rowIndex * spacing);
-
-		XMFLOAT3 color = { 1.0f, 0.25f, 0.0f };
-
-		deferredLightData.lights[i] = {
-			{x, height, z + 70.0f}, 10.0f,
-			color, 1.0f,
-			1,
-			{0, 0, 0}
-		};
-	}
-
-	UpdateLights();
-}
-
-void DX12Core::UpdateLights()
-{
-	GetForwardLightCB()->CopyData(&forwardLightData, sizeof(ForwardLightConstants));
-	GetDeferredLightCB()->CopyData(&deferredLightData, sizeof(DeferredLightConstants));
 }
 
 void DX12Core::RenderFullscreenQuad()
@@ -776,16 +717,6 @@ UploadBuffer* DX12Core::GetFrameCB() const
 UploadBuffer* DX12Core::GetSceneCB() const
 {
 	return sceneCB.get();
-}
-
-UploadBuffer* DX12Core::GetDeferredLightCB() const
-{
-	return deferredLightCB.get();
-}
-
-UploadBuffer* DX12Core::GetForwardLightCB() const
-{
-	return forwardLightCB.get();
 }
 
 UploadBuffer* DX12Core::GetFogCB() const

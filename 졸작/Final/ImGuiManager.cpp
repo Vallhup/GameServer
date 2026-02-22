@@ -7,6 +7,7 @@
 #include "imgui_impl_dx12.h"
 #include "MainCharacter.h"
 #include "Animator.h"
+#include "LightManager.h"
 
 void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 {
@@ -106,8 +107,8 @@ void ImGuiManager::DrawDebugUI()
 
         if (ImGui::Begin("Light Editor", &showLightEditor))
         {
-            auto& forward = coreRef->GetForwardLightData();
-            auto& deferred = coreRef->GetDeferredLightData();
+            auto& forward = coreRef->GetLightMgr()->GetForwardLightData();
+            auto& deferred = coreRef->GetLightMgr()->GetDeferredLightData();
 
             // Forward Light
             if (ImGui::CollapsingHeader("Forward Light", ImGuiTreeNodeFlags_DefaultOpen))
@@ -140,7 +141,7 @@ void ImGuiManager::DrawDebugUI()
                 ImGui::SliderFloat("Intensity##Po1", &deferred.lights[2].intensity, 0.0f, 2.0f);
             }
 
-            coreRef->UpdateLights();
+            coreRef->GetLightMgr()->UpdateLights();
         }
         ImGui::End();
     }

@@ -18,28 +18,6 @@ struct ObjectConstants
 	int padding;
 };
 
-struct LightData {
-	XMFLOAT3 position;    // Point light용 (directional일 때는 direction)
-	float range;          // Point light 범위
-	XMFLOAT3 color;
-	float intensity;
-	int type;             // 0=directional, 1=point
-	XMFLOAT3 padding;
-};
-
-struct DeferredLightConstants {
-	int lightCount;
-	XMFLOAT3 padding;
-	LightData lights[23]; // 조명 60개부터 렉걸린다 이유 해결 안됨
-};
-
-struct ForwardLightConstants {
-	XMFLOAT3 direction;
-	float padding;
-	XMFLOAT3 color;
-	float intensity;
-};
-
 struct FogConstants
 {
 	XMFLOAT4 fogColor;
@@ -53,6 +31,7 @@ struct FogConstants
 
 class RootSignature;
 class Shader;
+class LightManager;
 
 class DX12Core
 {
@@ -69,7 +48,6 @@ public:
 
 	void BeginLightingPass();
 	
-	void UpdateLights();
 	void RenderFullscreenQuad();
 
 	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
@@ -93,14 +71,11 @@ public:
 	Shader* GetShader() const;
 	UploadBuffer* GetFrameCB() const;
 	UploadBuffer* GetSceneCB() const;
-	UploadBuffer* GetDeferredLightCB() const;
-	UploadBuffer* GetForwardLightCB() const;
 	UploadBuffer* GetFogCB() const;
 
-	ID3D12DescriptorHeap* GetDeferredSRVHeap() const;
+	LightManager* GetLightMgr() { return lightMgr.get(); }
 
-	DeferredLightConstants& GetDeferredLightData() { return deferredLightData; }
-	ForwardLightConstants& GetForwardLightData() { return forwardLightData; }
+	ID3D12DescriptorHeap* GetDeferredSRVHeap() const;
 
 	void SetBackgroundColor(const float* color);
 	void SetPlayerPosForShadow(const XMFLOAT3& pos);
@@ -116,8 +91,6 @@ private:
 	void CreateGBuffer();
 	void CreateShadowMap();
 	void CreateDeferredRenderingDescriptors();
-
-	void SetupLights();
 
 private:
 	// 고정
@@ -160,8 +133,6 @@ private:
 	unique_ptr<Shader> shader;
 	unique_ptr<UploadBuffer> frameCB;
 	unique_ptr<UploadBuffer> sceneCB;
-	unique_ptr<UploadBuffer> deferredLightCB;
-	unique_ptr<UploadBuffer> forwardLightCB;
 	unique_ptr<UploadBuffer> shadowFrameCB;
 	unique_ptr<UploadBuffer> fogCB;
 
@@ -174,6 +145,6 @@ private:
 	static const UINT SHADOW_MAP_SIZE = 4096;
 
 	XMFLOAT3 playerCurrentPos = { 0, 0, 0 };
-	DeferredLightConstants deferredLightData = {};
-	ForwardLightConstants forwardLightData = {};
+
+	unique_ptr<LightManager> lightMgr;
 };

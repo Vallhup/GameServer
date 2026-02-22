@@ -12,6 +12,7 @@
 #include "EffectManager.h"
 #include "ImGuiManager.h"
 #include "UIManager.h"
+#include "LightManager.h"
 
 Engine& Engine::Get()
 {

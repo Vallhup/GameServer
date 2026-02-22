@@ -193,6 +193,9 @@
     <ClCompile Include="LoadingSceneUIController.cpp">
       <Filter>UI\Controller</Filter>
     </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -386,6 +389,9 @@
     </ClInclude>
     <ClInclude Include="LoadingSceneUIController.h">
       <Filter>UI\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
