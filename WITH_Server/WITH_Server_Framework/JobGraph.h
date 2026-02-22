@@ -139,10 +139,16 @@ static inline DependencyType AnalyzeDependency(System* A, System* B,
 	}
 
 	if (aW_bR)
-		return DependencyType::A_before_B;
+	{
+		if(A->GetPriority() < B->GetPriority())
+			return DependencyType::A_before_B;
+	}
 
 	if (aR_bW)
-		return DependencyType::B_before_A;
+	{
+		if (A->GetPriority() > B->GetPriority())
+			return DependencyType::B_before_A;
+	}
 
 	return DependencyType::None;
 }
