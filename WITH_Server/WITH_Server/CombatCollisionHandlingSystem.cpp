@@ -115,6 +115,56 @@ void CombatCollisionHandlingSystem::HandleGuard(Entity attacker,
 	Entity victim, uint32 attackId)
 {
 	// TODO : 추후 방어력 추가해서 데미지 감소
+	ECS& ecs = _runtime.GetECS();
+
+	auto* vitals = ecs.GetStorage<Vital>().GetComponent(victim);
+	if (!vitals) return;
+
+	auto computeDamage =
+		[&](Entity attacker, Entity victim) -> int
+		{
+			int damage{ 0 };
+			if (const auto* aAttr = ecs.GetStorage<Attribute>().GetComponent(attacker))
+				damage = aAttr->power;
+
+			if (auto* aBuf = ecs.GetStorage<ParryBuf>().GetComponent(attacker))
+			{
+				if (aBuf->remaining > 0)
+				{
+					const double mul = 1.0f + aBuf->additionalDamage;
+					aBuf->remaining -= 1;
+
+					if (aBuf->remaining <= 0)
+						aBuf->remaining = 0;
+
+					damage = std::lround(damage * mul);
+				}
+			}
+
+			if (const auto* vAttr = ecs.GetStorage<Attribute>().GetComponent(victim))
+			{
+				damage = damage * (100 / (100 + vAttr->defense));
+			}
+
+			return damage;
+		};
+
+	int damage = computeDamage(attacker, victim);
+	vitals->curHp -= damage;
+
+	const bool isDeath = vitals->curHp <= 0;
+
+	if (isDeath)
+		vitals->curHp = 0;
+
+	ActionRequestEvent ev
+	{
+		.entity = victim,
+		.actionType = isDeath ? ActionType::Dead : ActionType::Hit,
+		.attackType = AttackType::None,
+		.reason = ActionRequestReason::FromCombat
+	};
+	_runtime.Events().Queue<ActionRequestEvent>().Publish(ev);
 }
 
 void CombatCollisionHandlingSystem::HandleHit(Entity attacker, 
