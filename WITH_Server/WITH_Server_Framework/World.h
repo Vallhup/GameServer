@@ -4,6 +4,7 @@
 #include "WorldDesc.h"
 #include "WorldConfig.h"
 #include "WorldRuntime.h"
+#include "PlayerSnapshot.h"
 
 class IWorld {
 public:
@@ -23,6 +24,10 @@ public:
 
 	virtual void Build(WorldRuntime& rt) = 0;
 	virtual void OnShutdown(WorldRuntime& rt) {};
+
+	virtual bool TryMakeSnapshot(WorldRuntime& rt, uint32 connId, PlayerSnapshot& out) { return false; };
+	virtual bool ApplySnapshot(WorldRuntime& rt, uint32 connId, const PlayerSnapshot& snapshot) { return false; };
+	virtual bool DespawnPlayer(WorldRuntime& rt, uint32 connId) { return false; };
 };
 
 class World final : public IWorld {
@@ -35,6 +40,15 @@ public:
 	virtual void Shutdown() override;
 
 	Entity SpawnPlayer(uint32 connId);
+	
+	bool TryMakeSnapshot(WorldRuntime& rt, uint32 connId, PlayerSnapshot& out);
+	bool ApplySnapshot(WorldRuntime& rt, uint32 connId, const PlayerSnapshot& snapshot);
+	bool DespawnPlayer(WorldRuntime& rt, uint32 connId);
+
+	bool HasPlayer(uint32 connId);
+
+	WorldRuntime& Runtime() { return _runtime; }
+	const WorldRuntime& Runtime() const { return _runtime; }
 
 private:
 	WorldId _id;
@@ -42,6 +56,9 @@ private:
 
 	WorldRuntime _runtime;
 	std::unique_ptr<IWorldImpl> _impl;
+
+	// Thread-Safe 필요하면 concurrent_unordered_set으로 변경
+	std::unordered_set<uint32> _connIds;
 };
 
 // World 구조 및 구현 상 특징 예상

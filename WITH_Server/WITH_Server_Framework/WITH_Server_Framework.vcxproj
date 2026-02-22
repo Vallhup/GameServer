@@ -172,6 +172,7 @@
     <ClInclude Include="IInterestPolicy.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobGraph.h" />
+    <ClInclude Include="PlayerSnapshot.h" />
     <ClInclude Include="RepComponent.h" />
     <ClInclude Include="ReplicationSystem.h" />
     <ClInclude Include="RepRegistry.h" />
@@ -190,9 +191,12 @@
     <ClInclude Include="WorldFactory.h" />
     <ClInclude Include="WorldId.h" />
     <ClInclude Include="WorldIdAllocator.h" />
+    <ClInclude Include="WorldLeapData.h" />
+    <ClInclude Include="WorldLeapManager.h" />
     <ClInclude Include="WorldRegistry.h" />
     <ClInclude Include="WorldRuntime.h" />
     <ClInclude Include="WorldScheduler.h" />
+    <ClInclude Include="WorldService.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirtyTracker.cpp" />
@@ -214,9 +218,11 @@
     </ClCompile>
     <ClCompile Include="StorageRegistry.cpp" />
     <ClCompile Include="WorldIdAllocator.cpp" />
+    <ClCompile Include="WorldLeapManager.cpp" />
     <ClCompile Include="WorldRegistry.cpp" />
     <ClCompile Include="WorldRuntime.cpp" />
     <ClCompile Include="WorldScheduler.cpp" />
+    <ClCompile Include="WorldService.cpp" />
     <ClInclude Include="System.h" />
     <ClCompile Include="SystemManager.cpp" />
   </ItemGroup>

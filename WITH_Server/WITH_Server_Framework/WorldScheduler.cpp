@@ -2,6 +2,8 @@
 #include "WorldScheduler.h"
 #include "World.h"
 #include "WorldRegistry.h"
+#include "WorldLeapManager.h"
+#include "WorldService.h"
 
 void WorldScheduler::Register(WorldId id, uint32 tickRate)
 {
@@ -60,6 +62,9 @@ void WorldScheduler::Update(const double dT)
 				std::max<double>(0.0, entry.acc - entry.tickInterval);
 		}
 	}
+
+	_leapMng.CommitFrame();
+	_service.CommitDestroy();
 
 	_entries.erase(std::remove_if(_entries.begin(), _entries.end(),
 		[](const Entry& e) { return e.paused; }), _entries.end());

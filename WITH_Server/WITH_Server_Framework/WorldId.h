@@ -18,10 +18,21 @@ public:
 
 	constexpr uint32 GetId() const { return uint32(_value & 0xFFFFFFFF); }
 	constexpr uint32 GetGen() const { return uint32((_value >> 32) & 0xFFFFFFFF); }
+	constexpr uint64 GetRaw() const { return _value; }
 
-	constexpr bool operator==(const WorldId& other) const { return _value == other._value; }
+	constexpr std::strong_ordering operator<=>(const WorldId& rhs) const { return _value <=> rhs._value; }
+	constexpr bool operator==(const WorldId& rhs) const { return _value == rhs._value; }
 
 private:
 	uint64 _value;
 };
 
+namespace std {
+	template<>
+	struct hash<WorldId> {
+		size_t operator()(const WorldId& id) const noexcept
+		{
+			return std::hash<uint64>()(id.GetRaw());
+		}
+	};
+}

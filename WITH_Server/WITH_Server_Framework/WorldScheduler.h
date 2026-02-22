@@ -3,10 +3,13 @@
 #include "WorldId.h"
 
 class WorldRegistry;
+class WorldService;
+class WorldLeapManager;
 
 class WorldScheduler {
 public:
-	explicit WorldScheduler(WorldRegistry& reg) : _reg(reg) {}
+	explicit WorldScheduler(WorldRegistry& reg, WorldService& service, WorldLeapManager& leapMng) 
+		: _reg(reg), _service(service), _leapMng(leapMng){}
 
 	void Register(WorldId id, uint32 tickRate);
 	void Unregister(WorldId id);
@@ -23,6 +26,9 @@ private:
 	};
 
 	WorldRegistry& _reg;
+	WorldService& _service;
+	WorldLeapManager& _leapMng;
+
 	std::vector<Entry> _entries;
 };
 

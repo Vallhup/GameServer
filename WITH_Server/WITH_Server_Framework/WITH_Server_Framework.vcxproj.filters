@@ -55,6 +55,12 @@
     <ClCompile Include="pch.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="WorldLeapManager.cpp">
+      <Filter>Game\World\Manager\WorldLeap</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldService.cpp">
+      <Filter>Game\World\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -162,6 +168,18 @@
     <ClInclude Include="IConnContext.h">
       <Filter>ReplicationCore\Interface</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerSnapshot.h">
+      <Filter>Game\World\Parameter</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldLeapManager.h">
+      <Filter>Game\World\Manager\WorldLeap</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldLeapData.h">
+      <Filter>Game\World\Manager\WorldLeap</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldService.h">
+      <Filter>Game\World\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -214,6 +232,9 @@
     </Filter>
     <Filter Include="ReplicationCore\Interface">
       <UniqueIdentifier>{d4bf3cd7-c3a5-4c3b-9bfc-80eaaba4468b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\Manager\WorldLeap">
+      <UniqueIdentifier>{bc05f686-6dde-4e5f-afd4-334f1c774064}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -28,5 +28,34 @@ void World::Shutdown()
 
 Entity World::SpawnPlayer(uint32 connId)
 {
-	return _impl->SpawnPlayer(_runtime, connId);
+	if (_connIds.contains(connId))
+		return Entity{};
+
+	Entity e = _impl->SpawnPlayer(_runtime, connId);
+	if (!e.IsNull())
+		_connIds.insert(connId);
+
+	return e;
 };
+
+bool World::TryMakeSnapshot(WorldRuntime& rt, uint32 connId, PlayerSnapshot& out)
+{
+	return _impl->TryMakeSnapshot(rt, connId, out);
+}
+
+bool World::ApplySnapshot(WorldRuntime& rt, uint32 connId, const PlayerSnapshot& snapshot)
+{
+	return _impl->ApplySnapshot(rt, connId, snapshot);
+}
+
+bool World::DespawnPlayer(WorldRuntime& rt, uint32 connId)
+{
+	const bool result = _impl->DespawnPlayer(rt, connId);
+	if(result) _connIds.erase(connId);
+	return result;
+}
+
+bool World::HasPlayer(uint32 connId)
+{
+	return _connIds.contains(connId);
+}

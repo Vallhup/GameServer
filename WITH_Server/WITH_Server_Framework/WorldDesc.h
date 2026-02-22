@@ -14,8 +14,18 @@
 
 #include "types.h"
 
+enum class WorldType : uint8
+{
+	None,
+	Square,
+	Start,
+	Middle,
+	Final,
+	PVP
+};
+
 struct WorldDesc {
-	uint8 worldType;
+	WorldType type;
 	int worldRulesetId;
 	uint64 Capacity;
 	int mapId;
