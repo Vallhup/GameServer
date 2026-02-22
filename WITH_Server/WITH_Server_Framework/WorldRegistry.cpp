@@ -81,8 +81,24 @@ const IWorld* WorldRegistry::GetWorld(WorldId worldId) const
 	return slot.world.get();
 }
 
+void WorldRegistry::Clear()
+{
+	for (WorldSlot& slot : _worlds)
+	{
+		if (slot.world)
+		{
+			slot.world->Shutdown();
+			slot.world.reset();
+		}
+	}
+
+	_worlds.clear();
+	_allocator.Clear();
+}
+
 void WorldRegistry::EnsureSlotCapacity(uint32 id)
 {
 	if (id < _worlds.size()) return;
 	_worlds.resize(id + 1);
 }
+

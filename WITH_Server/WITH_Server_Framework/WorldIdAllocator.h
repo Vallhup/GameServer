@@ -11,6 +11,8 @@ public:
 
 	bool IsAlive(WorldId worldId) const;
 
+	void Clear();
+
 private:
 	std::vector<uint32> _gens;
 	std::vector<uint32> _freeIds;

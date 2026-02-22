@@ -4,8 +4,10 @@
 
 Game::Game(const Config& cfg, IWorldFactory& factory)
 	: _running(true), _cfg(cfg), _pool(cfg.workerThreadCnt), _factory(factory),
-	_registry(cfg.registryReserve, _pool, _factory), _scheduler(_registry)
+	_registry(cfg.registryReserve, _pool, _factory), _service(_registry),
+	_leapMng(_registry, _service), _scheduler(_registry, _service, _leapMng)
 {
+	_service.SetScheduler(_scheduler);
 }
 
 Game::~Game()
@@ -13,41 +15,15 @@ Game::~Game()
 	Stop();
 }
 
-WorldId Game::CreateWorld(const WorldDesc& desc, uint32 tickRate)
+bool Game::Init()
 {
-	const WorldId id = _registry.CreateWorld(desc);
-	_scheduler.Register(id, tickRate);
-	_ownedWorldIds.push_back(id);
-	return id;
-}
-
-void Game::DestroyWorld(WorldId worldId)
-{
-	_scheduler.Unregister(worldId);
-
-	if (auto* world = _registry.GetWorld(worldId))
-		world->Shutdown();
-
-	_registry.DestroyWorld(worldId);
-
-	_ownedWorldIds.erase(
-		std::remove(_ownedWorldIds.begin(), _ownedWorldIds.end(), worldId), 
-		_ownedWorldIds.end());
-}
-
-void Game::PauseWorld(WorldId worldId)
-{
-	// TODO : World Pause/Resume 기능 추가? 고민중
-}
-
-void Game::ResumeWorld(WorldId worldId)
-{
-	// TODO : World Pause/Resume 기능 추가? 고민중
+	const bool result = _service.InitSquare();
+	assert(result);
+	return result;
 }
 
 void Game::Update(const double dT)
 {
-	// TODO : 동적 World 추가
 	_scheduler.Update(dT);
 }
 
@@ -65,19 +41,11 @@ void Game::Stop()
 
 void Game::DestroyAllWorlds()
 {
-	auto ids = _ownedWorldIds;
+	_leapMng.CommitFrame();
+	_leapMng.CommitFrame();
+	_service.CommitDestroy();
 
-	for (WorldId id : ids)
-		_scheduler.Unregister(id);
-
-	for (WorldId id : ids)
-	{
-		if (auto* world = _registry.GetWorld(id))
-			world->Shutdown();
-	}
-
-	for (WorldId id : ids)
-		_registry.DestroyWorld(id);
-
-	_ownedWorldIds.clear();
+	_service.Clear();
+	_scheduler.Clear();
+	_registry.Clear();
 }

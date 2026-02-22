@@ -16,6 +16,8 @@ public:
 
 	void Update(const double dT);
 
+	void Clear();
+
 private:
 	struct Entry 
 	{

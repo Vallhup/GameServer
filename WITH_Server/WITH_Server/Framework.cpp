@@ -14,12 +14,14 @@ void Framework::Start()
 	LoadAnimations();
 	LoadMapDatas();
 
+	if (!game.Init())
+	{
+		assert(false);
+		return;
+	}
+
 	_running = true;
 	network.Start();
-
-	// TEMP
-	WorldDesc desc;
-	WorldId wId = game.CreateWorld(desc, 60);
 	
 	auto prev = steady_clock::now();
 	while (_running)

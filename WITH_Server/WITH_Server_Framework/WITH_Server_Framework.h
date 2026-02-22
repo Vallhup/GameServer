@@ -24,9 +24,13 @@
 #include "WorldRegistry.h"
 #include "WorldScheduler.h"
 
+#include "WorldLeapData.h"
+#include "WorldLeapManager.h"
+
 #include "WorldConfig.h"
 #include "WorldDesc.h"
 #include "WorldRuntime.h"
+#include "WorldService.h"
 
 #include "World.h"
 

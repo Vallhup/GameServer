@@ -17,11 +17,18 @@ bool WorldService::InitSquare()
 	_squareWorldId = _reg.CreateWorld(desc);
 	if (_squareWorldId.IsValid())
 	{
-		_scheduler.Register(_squareWorldId, 30);
-		return true;
+		if (_scheduler)
+			_scheduler->Register(_squareWorldId, 30);
+
+#ifdef _DEBUG
+		else
+			throw std::runtime_error("스케줄러 초기화 누락");
+#endif
+
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 WorldId WorldService::ResolveTargetWorld(WorldType type, uint64 key)
@@ -103,7 +110,13 @@ void WorldService::CommitDestroy()
 
 		if (inst.pendingDestroy)
 		{
-			_scheduler.Unregister(id);
+			if (_scheduler)
+				_scheduler->Unregister(id);
+
+#ifdef _DEBUG
+		else
+			throw std::runtime_error("스케줄러 초기화 누락");
+#endif
 
 			if (inst.instanceKey != 0)
 			{
@@ -125,6 +138,13 @@ void WorldService::CommitDestroy()
 	}
 }
 
+void WorldService::Clear()
+{
+	_squareWorldId = WorldId::Invalid();
+	_resolved.clear();
+	_instances.clear();
+}
+
 WorldId WorldService::CreateWorld(WorldType type, uint64 key)
 {
 	WorldDesc temp
@@ -139,7 +159,13 @@ WorldId WorldService::CreateWorld(WorldType type, uint64 key)
 	if (!id.IsValid()) return WorldId::Invalid();
 
 	// TEMP : WorldDesc의 TickRate로 설정
-	_scheduler.Register(id, 60);
+	if (_scheduler)
+		_scheduler->Register(id, 60);
+
+#ifdef _DEBUG
+	else
+		throw std::runtime_error("스케줄러 초기화 누락");
+#endif
 
 	Instance inst
 	{

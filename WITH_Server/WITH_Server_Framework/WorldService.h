@@ -8,8 +8,8 @@ class WorldScheduler;
 
 class WorldService {
 public:
-	explicit WorldService(WorldRegistry& reg, WorldScheduler& scheduler)
-		: _reg(reg), _scheduler(scheduler) {}
+	explicit WorldService(WorldRegistry& reg)
+		: _reg(reg), _scheduler(nullptr) {}
 
 	bool InitSquare();
 
@@ -19,6 +19,9 @@ public:
 	void OnPlayerLeave(WorldId worldId, uint32 count = 1);
 
 	void CommitDestroy();
+
+	void SetScheduler(WorldScheduler& scheduler) { _scheduler = &scheduler; }
+	void Clear();
 
 private:
 	struct Instance
@@ -55,7 +58,7 @@ private:
 	WorldId CreateWorld(WorldType type, uint64 key);
 
 	WorldRegistry& _reg;
-	WorldScheduler& _scheduler;
+	WorldScheduler* _scheduler;
 	WorldId _squareWorldId;
 
 	std::unordered_map<InstKey, WorldId, InstKeyHash> _resolved;

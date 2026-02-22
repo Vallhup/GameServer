@@ -69,3 +69,8 @@ void WorldScheduler::Update(const double dT)
 	_entries.erase(std::remove_if(_entries.begin(), _entries.end(),
 		[](const Entry& e) { return e.paused; }), _entries.end());
 }
+
+void WorldScheduler::Clear()
+{
+	_entries.clear();
+}

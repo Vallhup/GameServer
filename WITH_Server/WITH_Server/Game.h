@@ -16,12 +16,7 @@ public:
 	Game(const Game&) = delete;
 	Game& operator=(const Game&) = delete;
 
-	WorldId CreateWorld(const WorldDesc& desc, uint32 tickRate);
-	void DestroyWorld(WorldId worldId);
-
-	void PauseWorld(WorldId worldId);
-	void ResumeWorld(WorldId worldId);
-
+	bool Init();
 	void Update(const double dT);
 	void Stop();
 
@@ -31,10 +26,12 @@ private:
 	bool _running;
 	Config _cfg;
 
-	ThreadPool _pool;
 	IWorldFactory& _factory;
 
+	ThreadPool _pool;
 	WorldRegistry _registry;
+	WorldService _service;
+	WorldLeapManager _leapMng;
 	WorldScheduler _scheduler;
 
 	std::vector<WorldId> _ownedWorldIds;

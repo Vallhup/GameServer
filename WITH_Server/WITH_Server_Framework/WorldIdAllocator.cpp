@@ -65,3 +65,11 @@ bool WorldIdAllocator::IsAlive(WorldId worldId) const
 
 	return isAlive;
 }
+
+void WorldIdAllocator::Clear()
+{
+	_gens.clear();
+	_freeIds.clear();
+
+	_gens.push_back(0);
+}

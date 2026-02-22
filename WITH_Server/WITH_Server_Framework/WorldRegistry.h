@@ -19,6 +19,8 @@ public:
 
 	bool IsAlive(WorldId worldId) const { return _allocator.IsAlive(worldId); }
 
+	void Clear();
+
 private:
 	struct WorldSlot
 	{
