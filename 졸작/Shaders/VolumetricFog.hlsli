@@ -87,7 +87,8 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
              // Phase function
             float cosTheta = dot(rayDir, lightDir);
             float phase = HenyeyGreenstein(cosTheta, VF_HG_ANISOTROPY);
-
+            phase = max(phase, 0.2);
+            
              // In-scattering °è»ê
             float3 lightContrib = VF_LIGHT_COLOR * VF_LIGHT_INTENSITY * lights[0].intensity;
             float3 scattering = lightContrib * phase * VF_SCATTERING * shadowFactor;

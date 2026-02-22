@@ -153,10 +153,7 @@ private:
 	ComPtr<ID3D12DescriptorHeap> gBufferRTVHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[3];
 	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[3];
-
 	ComPtr<ID3D12DescriptorHeap> deferredSRVHeap;
-
-	bool useDeferredRendering = true;
 
 	// 변경 가능
 	unique_ptr<RootSignature> rootSig;
