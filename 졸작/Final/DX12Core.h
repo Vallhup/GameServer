@@ -4,6 +4,7 @@ struct FrameConstants
 {
 	XMMATRIX view;
 	XMMATRIX projection;
+	XMMATRIX invViewProj;
 	XMFLOAT3 cameraPosition;
 	float padding;
 };
@@ -148,14 +149,11 @@ private:
 	DXGI_FORMAT dsvFormat = {};
 
 	// deferred rendering
-	ComPtr<ID3D12Resource> gBufferRT[4];
+	ComPtr<ID3D12Resource> gBufferRT[3];
 	ComPtr<ID3D12DescriptorHeap> gBufferRTVHeap;
-	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[4];
-	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[4];
-
+	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[3];
+	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[3];
 	ComPtr<ID3D12DescriptorHeap> deferredSRVHeap;
-
-	bool useDeferredRendering = true;
 
 	// 변경 가능
 	unique_ptr<RootSignature> rootSig;
@@ -173,7 +171,7 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE shadowMapDSVHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE shadowMapSRVHandle;
 
-	static const UINT SHADOW_MAP_SIZE = 2048;
+	static const UINT SHADOW_MAP_SIZE = 4096;
 
 	XMFLOAT3 playerCurrentPos = { 0, 0, 0 };
 	DeferredLightConstants deferredLightData = {};

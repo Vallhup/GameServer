@@ -11,6 +11,7 @@ cbuffer FrameCB : register(b0)
 {
     matrix view;
     matrix projection;
+    matrix invViewProj;
     float3 cameraPosition;
     float framePadding;
 };
@@ -100,8 +101,8 @@ StructuredBuffer<matrix> instanceTransforms : register(t0, space2);
 
 Texture2D gBufferRT0 : register(t4); // BaseColor + Metallic
 Texture2D gBufferRT1 : register(t5); // Normal + Roughness
-Texture2D gBufferRT2 : register(t6); // WorldPos + AO
-Texture2D gBufferRT3 : register(t7); // Emission + Alpha
+Texture2D gBufferRT2 : register(t6); // Emission + AO
+Texture2D depthBuffer : register(t7); // Depth
 Texture2D shadowMap : register(t8);
 
 TextureCube bindlessCubeMaps[] : register(t0, space3);

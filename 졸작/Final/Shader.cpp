@@ -89,11 +89,10 @@ void Shader::InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* 
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
-    psoDesc.NumRenderTargets = 4;
+    psoDesc.NumRenderTargets = 3;
     psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-    psoDesc.RTVFormats[1] = DXGI_FORMAT_R32G32B32A32_FLOAT;
-    psoDesc.RTVFormats[2] = DXGI_FORMAT_R32G32B32A32_FLOAT;
-    psoDesc.RTVFormats[3] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    psoDesc.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    psoDesc.RTVFormats[2] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     psoDesc.SampleDesc.Count = 1;

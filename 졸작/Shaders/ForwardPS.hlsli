@@ -2,6 +2,7 @@
 #include "InOutFormats.hlsli"
 #include "PBR.hlsli"
 #include "Fog.hlsli"
+#include "VolumetricFog.hlsli"
 
 float4 PSMain(FORWARD_PS_IN input) : SV_Target
 {
@@ -50,7 +51,7 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         float3 ambient = baseColor.rgb * 0.15;
         finalColor += ambient;
         
-        finalColor = ApplyFog(finalColor, input.worldPos);
+        finalColor = ApplyVolumetricFog(finalColor, input.worldPos, input.uv, cameraPosition);
         
         finalColor = PBRNeutralToneMapping(finalColor);
         

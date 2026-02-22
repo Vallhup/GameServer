@@ -58,15 +58,13 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
         
         output.RT0 = float4(baseColor.rgb, metallic);
         output.RT1 = float4(worldNormal, roughness);
-        output.RT2 = float4(input.worldPos.xyz, ao);
-        output.RT3 = float4(emission, alpha);
+        output.RT2 = float4(emission, ao);
     }
     else
     {
         output.RT0 = float4(input.color.rgb, 0);
         output.RT1 = float4(normalize(input.normal), 0.8);
-        output.RT2 = float4(input.worldPos.xyz, 1.0);
-        output.RT3 = float4(0, 0, 0, 1);
+        output.RT2 = float4(0, 0, 0, 1.0);
     }
     
     return output;
