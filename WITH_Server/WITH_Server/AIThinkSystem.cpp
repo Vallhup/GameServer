@@ -21,8 +21,8 @@ void AIThinkSystem::Execute(const double dT)
 		auto* aiThinkState = aiThinkStates.GetComponent(entity);
 		if (!actionState || !aiThinkState) continue;
 		
-		if (actionState->action != ActionType::None) continue;
-		if (actionState->action != ActionType::Hit) continue;
+		if (actionState->action != ActionType::None && 
+			actionState->action != ActionType::Hit) continue;
 
 		aiThinkState->thinkAcc += dT;
 		if (aiThinkState->thinkAcc >= aiThinkState->thinkInterval)
