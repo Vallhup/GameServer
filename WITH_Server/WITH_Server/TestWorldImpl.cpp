@@ -21,6 +21,8 @@
 #include "Framework.h"
 #include "AIThinkSystem.h"
 
+#include "Tags.h"
+
 TestWorldImpl::TestWorldImpl()
 {
 }
@@ -38,8 +40,8 @@ void TestWorldImpl::SpawnInitial(WorldRuntime& rt)
 	ecs.GetStorage<LocomotionAnimPhase>().AddComponent(e);
 	ecs.GetStorage<LocomotionState>().AddComponent(e);
 	ecs.GetStorage<ActionState>().AddComponent(e);
-	ecs.GetStorage<AttackData>().AddComponent(e);
-	ecs.GetStorage<Health>().AddComponent(e);
+	ecs.GetStorage<Attribute>().AddComponent(e);
+	ecs.GetStorage<Vital>().AddComponent(e);
 	ecs.GetStorage<AnimationState>().AddComponent(e);
 	auto animator = ecs.GetStorage<Animator>().AddComponent(e);
 	ecs.GetStorage<CombatCollider>().AddComponent(e);
@@ -71,8 +73,8 @@ Entity TestWorldImpl::SpawnPlayer(WorldRuntime& rt, uint32 connId)
 	ecs.GetStorage<LocomotionState>().AddComponent(e);
 	ecs.GetStorage<ActionIntent>().AddComponent(e);
 	ecs.GetStorage<ActionState>().AddComponent(e);
-	ecs.GetStorage<AttackData>().AddComponent(e);
-	ecs.GetStorage<Health>().AddComponent(e);
+	ecs.GetStorage<Attribute>().AddComponent(e);
+	ecs.GetStorage<Vital>().AddComponent(e);
 	ecs.GetStorage<AnimationState>().AddComponent(e);
 	auto animator = ecs.GetStorage<Animator>().AddComponent(e);
 	ecs.GetStorage<CombatCollider>().AddComponent(e);
@@ -101,8 +103,7 @@ void TestWorldImpl::Build(WorldRuntime& rt)
 	auto& ecs = rt.GetECS();
 
 	ecs.AddSystem<EventSystem>(SystemPhase::Pre, rt, 0);
-
-	ecs.AddSystem<AIThinkSystem>(SystemPhase::Graph, rt, 0);
+	ecs.AddSystem<AIThinkSystem>(SystemPhase::Pre, rt, 0);
 
 	ecs.AddSystem<ActionTimeSystem>(SystemPhase::Graph, rt, 1);
 	ecs.AddSystem<ActionTransitionSystem>(SystemPhase::Graph, rt, 2);

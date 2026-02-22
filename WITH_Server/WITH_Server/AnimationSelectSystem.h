@@ -1,6 +1,9 @@
 #pragma once
 
 #include "System.h"
+#include "Action.h"
+#include "Animation.h"
+#include "Movement.h"
 
 class AnimationSelectSystem : public System {
 public:

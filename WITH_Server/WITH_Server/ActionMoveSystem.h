@@ -2,6 +2,10 @@
 
 #include "System.h"
 
+#include "AI.h"
+#include "Action.h"
+#include "Movement.h"
+
 class ActionMoveSystem : public System {
 public:
 	ActionMoveSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
@@ -11,7 +15,7 @@ public:
 
 	virtual std::vector<std::type_index> ReadResources() const override
 	{
-		return { /*typeid(Transform),*/ typeid(Velocity), typeid(ActionState), typeid(AIState) };
+		return { typeid(Transform), typeid(Velocity), typeid(ActionState), typeid(AIState) };
 	}
 
 	virtual std::vector<std::type_index> WriteResources() const override

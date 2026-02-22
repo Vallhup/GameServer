@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Event.h"
 #include "System.h"
+
+struct AIState;
 
 class AIThinkSystem : public System {
 public:
@@ -11,12 +14,12 @@ public:
 
 	virtual std::vector<std::type_index> ReadResources() const override
 	{
-		return { /*typeid(Transform),*/ typeid(ActionState) };
+		return { };
 	}
 
 	virtual std::vector<std::type_index> WriteResources() const override
 	{
-		return { typeid(AIState), typeid(AIThinkState) };
+		return { };
 	}
 
 private:

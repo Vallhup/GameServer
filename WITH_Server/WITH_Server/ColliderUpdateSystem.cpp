@@ -1,19 +1,20 @@
 #include "pch.h"
 #include "ColliderUpdateSystem.h"
 #include "Math.h"
+#include "Tags.h"
 
 void ColliderUpdateSystem::Execute(const double dT)
 {
 	ECS& ecs = _runtime.GetECS();
 
-	auto& transforms = ecs.GetStorage<Transform>();
+	const auto& transforms = ecs.GetStorage<Transform>();
 	auto& colliders = ecs.GetStorage<CombatCollider>();
 
 	for (const auto& [entity, collider] : colliders)
 	{
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
 
-		auto* trans = transforms.GetComponent(entity);
+		const auto* trans = transforms.GetComponent(entity);
 		if (!trans) continue;
 		if (!collider.staticDatas) continue;
 

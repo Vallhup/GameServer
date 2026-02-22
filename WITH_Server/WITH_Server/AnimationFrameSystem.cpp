@@ -1,22 +1,23 @@
 #include "pch.h"
 #include "AnimationFrameSystem.h"
+#include "Tags.h"
 
 void AnimationFrameSystem::Execute(const double dT)
 {
 	ECS& ecs = _runtime.GetECS();
 
-	auto& actionStates = ecs.GetStorage<ActionState>();
-	auto& animStates = ecs.GetStorage<AnimationState>();
+	const auto& actionStates = ecs.GetStorage<ActionState>();
+	const auto& animStates = ecs.GetStorage<AnimationState>();
+	const auto& locoPhases = ecs.GetStorage<LocomotionAnimPhase>();
 	auto& animators = ecs.GetStorage<Animator>();
-	auto& locoPhases = ecs.GetStorage<LocomotionAnimPhase>();
 
 	for (const auto& [entity, animator] : animators)
 	{
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
 
-		auto* actionState = actionStates.GetComponent(entity);
-		auto* animState = animStates.GetComponent(entity);
-		auto* locoPhase = locoPhases.GetComponent(entity);
+		const auto* actionState = actionStates.GetComponent(entity);
+		const auto* animState = animStates.GetComponent(entity);
+		const auto* locoPhase = locoPhases.GetComponent(entity);
 		if (!actionState || !animState || !locoPhase) continue;
 
 		const PrebakedAnimation* clip = animator.clip;

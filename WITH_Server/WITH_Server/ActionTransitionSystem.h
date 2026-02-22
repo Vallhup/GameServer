@@ -2,6 +2,8 @@
 
 #include "System.h"
 #include "Event.h"
+#include "Action.h"
+#include "Intent.h"
 
 class ActionTransitionSystem : public System {
 public:
@@ -11,12 +13,12 @@ public:
 	virtual void Execute(const double dT) override;
 	virtual std::vector<std::type_index> ReadResources() const override
 	{
-		return { typeid(Velocity), typeid(ActionIntent) };
+		return { typeid(Transform), typeid(ActionIntent) };
 	}
 
 	virtual std::vector<std::type_index> WriteResources() const override
 	{
-		return { typeid(ActionMoveTag), typeid(ActionRequestEvent) };
+		return { typeid(ActionMoveTag), typeid(ActionRequestEvent), typeid(ActionState) };
 	}
 
 private:

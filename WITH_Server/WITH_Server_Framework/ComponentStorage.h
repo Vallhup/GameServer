@@ -60,7 +60,7 @@ public:
 
 		// 생성자
 		BasicIterator() = default;
-		BasicIterator(storage_t* s, size_t i) : _s(s), _i(i) {}
+		BasicIterator(storage_t* s, size_t i) : _s(s), _i(i), _cache(nullptr) {}
 
 		// 증감연산자
 		BasicIterator& operator++() { ++_i; return *this; }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "System.h"
+#include "Action.h"
+#include "Animation.h"
 
 class AnimationFrameSystem : public System {
 public:
@@ -11,12 +13,12 @@ public:
 
 	virtual std::vector<std::type_index> ReadResources() const override
 	{
-		return { typeid(ActionState), typeid(AnimationState) };
+		return { typeid(ActionState), typeid(AnimationState), typeid(LocomotionAnimPhase) };
 	}
 
 	virtual std::vector<std::type_index> WriteResources() const override
 	{
-		return { typeid(Animator), typeid(LocomotionAnimPhase) };
+		return { typeid(Animator) };
 	}
 };
 

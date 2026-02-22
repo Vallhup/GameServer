@@ -3,14 +3,15 @@
 #include "Framework.h"
 #include "AnimationType.h"
 #include "RepComponent.h"
+#include "Tags.h"
 
 void AnimationSelectSystem::Execute(const double dT)
 {
 	ECS& ecs = _runtime.GetECS();
 
+	const auto& locos = ecs.GetStorage<LocomotionState>();
+	const auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& animStates = ecs.GetStorage<AnimationState>();
-	auto& actionStates = ecs.GetStorage<ActionState>();
-	auto& locos = ecs.GetStorage<LocomotionState>();
 	auto& types = ecs.GetStorage<SpawnTypeComp>();
 
 	for (const auto& [entity, animState] : animStates)
@@ -22,8 +23,8 @@ void AnimationSelectSystem::Execute(const double dT)
 		const auto* typeComp = types.GetComponent(entity);
 		if (!actionState || !loco || !typeComp) continue;
 
-		auto [next, loop] = AnimationManager::Get()
-			.GetAnimationIdForAction(actionState->action, typeComp->type, actionState->attack);
+		auto [next, loop] = 
+			AnimationManager::Get().GetAnimationIdForAction(actionState->action, typeComp->type, actionState->attack);
 		if (next == AnimationType::None)
 		{
 			if(typeComp->type == EntityType::Knight)

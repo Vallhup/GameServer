@@ -87,7 +87,7 @@ void ActionManager::LoadPolicy()
 		ActionPolicy{ 85, 201.f / 30.15f, Bit(ActionType::Hit) | Bit(ActionType::Dead), false, false });
 
 	SetPolicy(ActionType::Hit, EntityType::Final_Boss, AttackType::None,
-		ActionPolicy{ 90, 35.f / 30.8824f, Bit(ActionType::Dead), false, false });
+		ActionPolicy{ 90, 35.f / 30.8824f, Bit(ActionType::Attack) | Bit(ActionType::Dead), false, false });
 
 	SetPolicy(ActionType::Dead, EntityType::Final_Boss, AttackType::None, 
 		ActionPolicy{ 100, 166.f / 30.1818f, 0u, false, false });

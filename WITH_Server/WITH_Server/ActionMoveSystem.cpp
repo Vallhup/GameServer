@@ -3,29 +3,31 @@
 #include "Framework.h"
 #include "Math.h"
 #include "RepComponent.h"
+#include "Tags.h"
 
 void ActionMoveSystem::Execute(const double dT)
 {
 	ECS& ecs = _runtime.GetECS();
 
-	auto& transforms = ecs.GetStorage<Transform>();
-	auto& velocities = ecs.GetStorage<Velocity>();
-	auto& actionStates = ecs.GetStorage<ActionState>();
+	const auto& transforms = ecs.GetStorage<Transform>();
+	const auto& velocities = ecs.GetStorage<Velocity>();
+	const auto& actionStates = ecs.GetStorage<ActionState>();
+	const auto& aiStates = ecs.GetStorage<AIState>();
+	const auto& spawnComps = ecs.GetStorage<SpawnTypeComp>();
+
 	auto& actionMoves = ecs.GetStorage<ActionMoveTag>();
 	auto& actionDeltas = ecs.GetStorage<ActionMoveDelta>();
-	auto& aiStates = ecs.GetStorage<AIState>();
-	auto& spawnComps = ecs.GetStorage<SpawnTypeComp>();
 
 	for (const auto& [entity, actionState] : actionStates)
 	{
 		if (ecs.GetStorage<DisconnectedTag>().HasComponent(entity)) continue;
 
-		auto* trans = transforms.GetComponent(entity);
-		auto* vel = velocities.GetComponent(entity);
+		const auto* trans = transforms.GetComponent(entity);
+		const auto* vel = velocities.GetComponent(entity);
+		const auto* aiState = aiStates.GetComponent(entity);
+		const auto* spawnComp = spawnComps.GetComponent(entity);
 		auto* actionMove = actionMoves.GetComponent(entity);
 		auto* actionDelta = actionDeltas.GetComponent(entity);
-		auto* aiState = aiStates.GetComponent(entity);
-		const auto* spawnComp = spawnComps.GetComponent(entity);
 
 		if (!trans || !vel || !actionMove || !actionDelta || !spawnComp) continue;
 		if (spawnComp->type == EntityType::Final_Boss && !aiState) continue;

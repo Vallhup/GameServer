@@ -4,6 +4,7 @@
 #include "Math.h"
 #include "NetHelper.h"
 #include "RepComponent.h"
+#include "Tags.h"
 
 OutputEventSystem::OutputEventSystem(WorldRuntime& rt, int p) : System(rt, p)
 {

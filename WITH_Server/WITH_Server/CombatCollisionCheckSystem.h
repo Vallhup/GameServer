@@ -18,12 +18,12 @@ public:
 
 	virtual std::vector<std::type_index> ReadResources() const override
 	{
-		return { typeid(CombatCollider) };
+		return { typeid(CombatCollider), typeid(CombatCollisionEvent) };
 	}
 
 	virtual std::vector<std::type_index> WriteResources() const override
 	{
-		return { typeid(CombatCollisionEvent) };
+		return {  };
 	}
 
 private:

@@ -2,6 +2,7 @@
 #include "MovementApplySystem.h"
 #include "Framework.h"
 #include "RepComponent.h"
+#include "Tags.h"
 
 void MovementApplySystem::Execute(const double dT)
 {

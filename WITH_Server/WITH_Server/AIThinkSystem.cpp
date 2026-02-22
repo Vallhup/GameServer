@@ -2,6 +2,10 @@
 #include "AIThinkSystem.h"
 #include "Framework.h"
 
+#include "AI.h"
+#include "Action.h"
+#include "Tags.h"
+
 void AIThinkSystem::Execute(const double dT)
 {
 	// TODO : AI 로직에 따라 ActionTransitionRequest 만들기
@@ -18,6 +22,7 @@ void AIThinkSystem::Execute(const double dT)
 		if (!actionState || !aiThinkState) continue;
 		
 		if (actionState->action != ActionType::None) continue;
+		if (actionState->action != ActionType::Hit) continue;
 
 		aiThinkState->thinkAcc += dT;
 		if (aiThinkState->thinkAcc >= aiThinkState->thinkInterval)

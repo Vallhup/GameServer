@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CombatCollisionHandlingSystem.h"
 #include "Math.h"
+#include "Tags.h"
 
 void CombatCollisionHandlingSystem::Execute(const double dT)
 {
@@ -121,15 +122,15 @@ void CombatCollisionHandlingSystem::HandleHit(Entity attacker,
 {
 	ECS& ecs = _runtime.GetECS();
 
-	auto* health = ecs.GetStorage<Health>().GetComponent(victim);
-	if (!health) return;
+	auto* vitals = ecs.GetStorage<Vital>().GetComponent(victim);
+	if (!vitals) return;
 
 	auto computeDamage =
 		[&](Entity attacker) -> int
 		{
 			int damage{ 0 };
-			if (const auto* ad = ecs.GetStorage<AttackData>().GetComponent(attacker))
-				damage = ad->damage;
+			if (const auto* attribute = ecs.GetStorage<Attribute>().GetComponent(attacker))
+				damage = attribute->power;
 
 			if (auto* pb = ecs.GetStorage<ParryBuf>().GetComponent(attacker))
 			{
@@ -151,12 +152,12 @@ void CombatCollisionHandlingSystem::HandleHit(Entity attacker,
 		};
 
 	const int damage = computeDamage(attacker);
-	health->current -= damage;
+	vitals->curHp -= damage;
 
-	const bool isDeath = health->current <= 0;
+	const bool isDeath = vitals->curHp <= 0;
 
 	if (isDeath)
- 		health->current = 0;
+		vitals->curHp = 0;
 
 	ActionRequestEvent ev
 	{

@@ -1,12 +1,13 @@
 #include "pch.h"
 #include "ColliderActivationSystem.h"
+#include "Tags.h"
 
 void ColliderActivationSystem::Execute(const double dT)
 {
 	ECS& ecs = _runtime.GetECS();
 
+	const auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& colliders = ecs.GetStorage<CombatCollider>();
-	auto& actionStates = ecs.GetStorage<ActionState>();
 	auto& attackStates = ecs.GetStorage<AttackState>();
 
 	for (const auto& [entity, collider] : colliders)

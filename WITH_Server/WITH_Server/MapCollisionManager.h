@@ -14,6 +14,8 @@ class MapCollisionManager {
 	static constexpr int Width{ 4097 };
 	static constexpr int Height{ 4097 };
 
+	static constexpr int GridSize{ Width * Height };
+
 public:
 	static MapCollisionManager& Get()
 	{
@@ -31,7 +33,7 @@ private:
 	std::pair<int, int> WorldToGrid(float x, float z) const;
 
 	// TEMP : 맵 여러개 되면 확장 필요
-	std::array<bool, Width * Height> _mapGrid{ false, };
+	std::array<bool, GridSize> _mapGrid{ false, };
 
 	int32 _heightMapWidth;
 	int32 _heightMapHeight;

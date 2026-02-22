@@ -2,6 +2,9 @@
 
 #include "Event.h"
 #include "System.h"
+#include "Bufs.h"
+#include "Stats.h"
+#include "Action.h"
 
 class CombatCollisionHandlingSystem : public System {
 public:
@@ -12,12 +15,12 @@ public:
 
 	virtual std::vector<std::type_index> ReadResources() const override
 	{
-		return { typeid(AttackData) };
+		return { typeid(Attribute), typeid(ActionState), typeid(Transform) };
 	}
 
 	virtual std::vector<std::type_index> WriteResources() const override
 	{
-		return { typeid(CombatCollisionEvent), typeid(ParryBuf), typeid(Health) };
+		return { typeid(CombatCollisionEvent), typeid(ActionRequestEvent), typeid(AttackState), typeid(ParryBuf), typeid(Vital) };
 	}
 
 private:

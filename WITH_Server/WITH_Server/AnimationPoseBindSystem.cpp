@@ -1,11 +1,12 @@
 #include "pch.h"
 #include "AnimationPoseBindSystem.h"
+#include "Tags.h"
 
 void AnimationPoseBindSystem::Execute(const double dT)
 {
 	ECS& ecs = _runtime.GetECS();
 
-	auto& animators = ecs.GetStorage<Animator>();
+	const auto& animators = ecs.GetStorage<Animator>();
 	auto& colliders = ecs.GetStorage<CombatCollider>();
 
 	for (const auto& [entity, animator] : animators)
@@ -30,7 +31,6 @@ void AnimationPoseBindSystem::Execute(const double dT)
 		assert(dynamicData.size() == n);
 #endif
 		
-		std::copy(dynamicData.begin(), dynamicData.end(),
-			collider->localDatas.begin());
+		std::copy(dynamicData.begin(), dynamicData.end(), collider->localDatas.begin());
 	}
 }

@@ -2,6 +2,8 @@
 #include "AnimationManager.h"
 #include "json.hpp"
 
+using namespace nlohmann;
+
 void AnimationManager::LoadAnimation(AnimationType type, std::string_view path)
 {
 	if (_animations.contains(type)) return;

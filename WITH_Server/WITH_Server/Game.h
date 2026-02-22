@@ -10,7 +10,6 @@ public:
 		uint32 registryReserve{ 64 };
 	};
 
-
 	Game(const Config& cfg, IWorldFactory& factory);
 	~Game();
 

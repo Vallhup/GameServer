@@ -202,30 +202,38 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
+    <ClInclude Include="Action.h" />
+    <ClInclude Include="ActionData.h" />
     <ClInclude Include="ActionManager.h" />
     <ClInclude Include="ActionMoveSystem.h" />
     <ClInclude Include="ActionTimeSystem.h" />
     <ClInclude Include="ActionTransitionSystem.h" />
+    <ClInclude Include="AI.h" />
     <ClInclude Include="AIThinkSystem.h" />
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationCommitSystem.h" />
+    <ClInclude Include="AnimationData.h" />
     <ClInclude Include="AnimationFrameSystem.h" />
     <ClInclude Include="AnimationManager.h" />
     <ClInclude Include="AnimationPoseBindSystem.h" />
     <ClInclude Include="AnimationSelectSystem.h" />
+    <ClInclude Include="Bufs.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="ColliderActivationSystem.h" />
     <ClInclude Include="ColliderUpdateSystem.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="CombatCollisionCheckSystem.h" />
     <ClInclude Include="CombatCollisionDedupSystem.h" />
     <ClInclude Include="CombatCollisionHandlingSystem.h" />
-    <ClInclude Include="Component.h" />
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventSystem.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Intent.h" />
     <ClInclude Include="LocomotionMoveSystem.h" />
     <ClInclude Include="MapCollisionManager.h" />
+    <ClInclude Include="Movement.h" />
     <ClInclude Include="MovementApplySystem.h" />
     <ClInclude Include="NetHelper.h" />
     <ClInclude Include="NetIdMap.h" />
@@ -240,10 +248,14 @@
     <ClInclude Include="OutputEventSystem.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ServerConnectionListener.h" />
+    <ClInclude Include="Stats.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Tags.h" />
     <ClInclude Include="TestWorldFactory.h" />
     <ClInclude Include="TestWorldImpl.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="ViewProcessingSystem.h" />
+    <ClInclude Include="Visibility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,11 +1,12 @@
 #include "pch.h"
 #include "AnimationCommitSystem.h"
+#include "Tags.h"
 
 void AnimationCommitSystem::Execute(const double dT)
 {
 	ECS& ecs = _runtime.GetECS();
 
-	auto& animStates = ecs.GetStorage<AnimationState>();
+	const auto& animStates = ecs.GetStorage<AnimationState>();
 	auto& animators = ecs.GetStorage<Animator>();
 	auto& colliders = ecs.GetStorage<CombatCollider>();
 

@@ -3,14 +3,14 @@
 #include "Framework.h"
 #include "Math.h"
 #include "RepComponent.h"
+#include "Tags.h"
 
 ActionTransitionSystem::ActionTransitionSystem(WorldRuntime& rt, int p)
 	: System(rt, p)
 {
 	for (auto& transitionRule : _transitionRules)
 	{
-		for (ActionType& type : transitionRule)
-			type = Invalid;
+		transitionRule.fill(Invalid);
 	}
 
 	LoadTransitionRules();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "System.h"
+#include "Action.h"
 
 class ActionTimeSystem : public System {
 public:

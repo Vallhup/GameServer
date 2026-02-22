@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Component.h"
-#include "AnimationManager.h"
+#include "Collider.h"
+//#include "AnimationManager.h"
 
 // 물리 기반 이펙트??
 // ex) 칼에 베인 방향대로 이펙트 출력
@@ -23,6 +23,8 @@
 //  C. 충돌 노멀을 기준으로 양쪽 방향 결정
 //   - 우리 알빠는 아닌듯
 //   - 이거도 뭔말인지 잘 모르겠음
+
+using namespace DirectX;
 
 inline double Dot3(XMVECTOR a, XMVECTOR b)
 {

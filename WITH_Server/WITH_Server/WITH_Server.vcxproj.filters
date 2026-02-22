@@ -8,12 +8,6 @@
     <ClCompile Include="ActionTransitionSystem.cpp">
       <Filter>ECS\System\Logic\Action</Filter>
     </ClCompile>
-    <ClCompile Include="ActionManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
     <ClCompile Include="ColliderUpdateSystem.cpp">
       <Filter>ECS\System\Logic\Collision</Filter>
     </ClCompile>
@@ -101,22 +95,19 @@
     <ClCompile Include="NetIdMap.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="ActionManager.cpp">
+      <Filter>Manager\Action</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationManager.cpp">
+      <Filter>Manager\Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Component.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
     <ClInclude Include="ActionTimeSystem.h">
       <Filter>ECS\System\Logic\Action</Filter>
     </ClInclude>
     <ClInclude Include="ActionTransitionSystem.h">
       <Filter>ECS\System\Logic\Action</Filter>
-    </ClInclude>
-    <ClInclude Include="ActionManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationManager.h">
-      <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="ColliderUpdateSystem.h">
       <Filter>ECS\System\Logic\Collision</Filter>
@@ -135,9 +126,6 @@
     </ClInclude>
     <ClInclude Include="OutputEventSystem.h">
       <Filter>ECS\System\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="Collision.h">
-      <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
       <Filter>Utility</Filter>
@@ -158,15 +146,6 @@
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
     <ClInclude Include="LF_Stack.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="json.hpp">
-      <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="NetHelper.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Math.h">
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="ActionMoveSystem.h">
@@ -214,9 +193,6 @@
     <ClInclude Include="MapCollisionManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="TestWorldImpl.h">
       <Filter>Game\World</Filter>
     </ClInclude>
@@ -231,6 +207,66 @@
     </ClInclude>
     <ClInclude Include="Event.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="AI.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Action.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionManager.h">
+      <Filter>Manager\Action</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionData.h">
+      <Filter>Manager\Action</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationManager.h">
+      <Filter>Manager\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationData.h">
+      <Filter>Manager\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Bufs.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Visibility.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Stats.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Tags.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Intent.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>Utility\Dependency</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Utility\Dependency</Filter>
+    </ClInclude>
+    <ClInclude Include="NetHelper.h">
+      <Filter>Utility\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Utility\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Utility\Helper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -299,6 +335,18 @@
     </Filter>
     <Filter Include="Game\World">
       <UniqueIdentifier>{79fd08d1-3e39-412f-9d86-eec9a69015bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Action">
+      <UniqueIdentifier>{1d4d7527-e7e6-4e8b-8114-5e089d70c7e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Animation">
+      <UniqueIdentifier>{db083fa2-28c7-4839-9e9a-d52d54201c4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Dependency">
+      <UniqueIdentifier>{9ff9b2d7-ea9b-4f87-81b5-f82f9aaa1afd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Helper">
+      <UniqueIdentifier>{ac6e6e7d-0ccf-4904-97b6-35acba654e95}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

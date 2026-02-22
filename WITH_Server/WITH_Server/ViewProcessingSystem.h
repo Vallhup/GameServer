@@ -1,6 +1,7 @@
 #pragma once
 
 #include "System.h"
+#include "Visibility.h"
 
 class ViewProcessingSystem : public System {
 public:

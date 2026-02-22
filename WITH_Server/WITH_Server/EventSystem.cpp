@@ -6,6 +6,10 @@
 #include "Component.h"
 #include "RepComponent.h"
 
+#include "Intent.h"
+#include "Tags.h"
+#include "Movement.h"
+
 EventSystem::EventSystem(WorldRuntime& rt, int p) : System(rt, p) 
 {
 	_handlers[EventType::EV_CONNECT] = [&](const Event& ev) { ProcessConnect(ev); };

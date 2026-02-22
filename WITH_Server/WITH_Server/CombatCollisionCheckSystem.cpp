@@ -1,12 +1,13 @@
 #include "pch.h"
 #include "CombatCollisionCheckSystem.h"
 #include "Collision.h"
+#include "Tags.h"
 
 void CombatCollisionCheckSystem::Execute(const double dT)
 {
 	ECS& ecs = _runtime.GetECS();
 
-	auto& colliders = ecs.GetStorage<CombatCollider>();
+	const auto& colliders = ecs.GetStorage<CombatCollider>();
 	auto events = _runtime.Events().Queue<CombatCollisionEvent>().ConsumeView();
 
 	std::vector<Entity> entities;

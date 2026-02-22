@@ -1,5 +1,7 @@
 #pragma once
+
 #include "System.h"
+#include "Movement.h"
 
 class MovementApplySystem : public System {
 public:
@@ -15,8 +17,7 @@ public:
 
 	virtual std::vector<std::type_index> WriteResources() const override
 	{
-		return { typeid(Transform),
-			typeid(ActionMoveDelta), typeid(LocomotionMoveDelta) };
+		return { typeid(Transform), typeid(ActionMoveDelta), typeid(LocomotionMoveDelta) };
 	}
 
 private:

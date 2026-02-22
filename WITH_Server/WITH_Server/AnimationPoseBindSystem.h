@@ -1,6 +1,7 @@
 #pragma once
 
 #include "System.h"
+#include "Animation.h"
 
 class AnimationPoseBindSystem : public System {
 public:
