@@ -6,8 +6,7 @@ class WorldRegistry;
 
 class WorldScheduler {
 public:
-	explicit WorldScheduler(WorldRegistry& reg)
-		: _reg(reg) {}
+	explicit WorldScheduler(WorldRegistry& reg) : _reg(reg) {}
 
 	void Register(WorldId id, uint32 tickRate);
 	void Unregister(WorldId id);
@@ -15,7 +14,8 @@ public:
 	void Update(const double dT);
 
 private:
-	struct Entry {
+	struct Entry 
+	{
 		WorldId id;
 		double tickInterval{ 0.016 };
 		double acc{ 0.0 };

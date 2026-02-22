@@ -19,7 +19,6 @@ enum class ActionRequestType {
 	Dodge,
 	Parry,
 	Guard,
-	GuardRelease
 };
 
 namespace std {

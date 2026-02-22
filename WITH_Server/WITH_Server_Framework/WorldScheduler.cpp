@@ -6,10 +6,7 @@
 void WorldScheduler::Register(WorldId id, uint32 tickRate)
 {
 	auto it = std::find_if(_entries.begin(), _entries.end(),
-		[&](const Entry& e)
-		{
-			return e.id == id;
-		});
+		[&](const Entry& e) { return e.id == id; });
 
 	if (it != _entries.end())
 	{

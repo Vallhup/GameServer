@@ -145,9 +145,6 @@
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
-    <ClInclude Include="LF_Stack.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="ActionMoveSystem.h">
       <Filter>ECS\System\Logic\Move</Filter>
     </ClInclude>

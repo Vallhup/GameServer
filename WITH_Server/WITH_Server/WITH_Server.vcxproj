@@ -241,7 +241,6 @@
     <ClInclude Include="NetworkHandler.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="json.hpp" />
-    <ClInclude Include="LF_Stack.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="ObjectPool.hpp" />
     <ClInclude Include="ObjectPoolManager.h" />
