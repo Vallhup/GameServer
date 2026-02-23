@@ -325,11 +325,6 @@ void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
 	}
 }
 
-const float* SoloGameScene::GetBackgroundColor()
-{
-	return Colors::Snow;
-}
-
 void SoloGameScene::InitializeSceneObjectPools()
 {
 }

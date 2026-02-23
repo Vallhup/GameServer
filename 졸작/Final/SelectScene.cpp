@@ -22,11 +22,6 @@ void SelectScene::Reset()
 	OutputDebugStringA("SelectScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-const float* SelectScene::GetBackgroundColor()
-{
-	return Colors::MediumAquamarine;
-}
-
 void SelectScene::InitializeSceneObjectPools()
 {
 }

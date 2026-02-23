@@ -19,11 +19,6 @@ void LoadingScene::Reset()
 	OutputDebugStringA("LoadingScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-const float* LoadingScene::GetBackgroundColor()
-{
-	return Colors::LightBlue;
-}
-
 void LoadingScene::InitializeSceneObjectPools()
 {
 }

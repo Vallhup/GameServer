@@ -12,6 +12,8 @@
 #include "EffectManager.h"
 #include "ImGuiManager.h"
 #include "UIManager.h"
+#include "DeviceContext.h"
+#include "SwapChain.h"
 #include "RenderTargetManager.h"
 #include "LightManager.h"
 

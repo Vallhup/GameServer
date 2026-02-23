@@ -21,11 +21,6 @@ void TownScene::Reset()
 	OutputDebugStringA("TownScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-const float* TownScene::GetBackgroundColor()
-{
-	return Colors::Pink;
-}
-
 void TownScene::InitializeSceneObjectPools()
 {
 }

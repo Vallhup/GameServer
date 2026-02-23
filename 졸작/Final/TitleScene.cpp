@@ -19,11 +19,6 @@ void TitleScene::Reset()
 	OutputDebugStringA("TitleScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-const float* TitleScene::GetBackgroundColor()
-{
-	return Colors::LightBlue;
-}
-
 void TitleScene::InitializeSceneObjectPools()
 {
 }

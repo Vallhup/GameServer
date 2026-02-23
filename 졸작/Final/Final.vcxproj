@@ -212,6 +212,7 @@ exit 0</Command>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ClientConnectionListener.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="DeviceContext.cpp" />
     <ClCompile Include="DX12Core.cpp" />
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EffectRenderer.cpp" />
@@ -237,6 +238,7 @@ exit 0</Command>
     <ClCompile Include="PanelUI.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
+    <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="TownScene.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="SkyBox.cpp" />
@@ -286,6 +288,7 @@ exit 0</Command>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ClientConnectionListener.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="DeviceContext.h" />
     <ClInclude Include="DX12Core.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EffectRenderer.h" />
@@ -311,6 +314,7 @@ exit 0</Command>
     <ClInclude Include="PanelUI.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneRenderer.h" />
+    <ClInclude Include="SwapChain.h" />
     <ClInclude Include="TownScene.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SkyBox.h" />

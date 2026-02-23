@@ -23,8 +23,6 @@ public:
     virtual void Release() = 0;
     virtual void Reset() = 0;
 
-	virtual const float* GetBackgroundColor() = 0;
-
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
 

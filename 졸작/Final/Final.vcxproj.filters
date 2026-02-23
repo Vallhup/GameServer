@@ -199,6 +199,12 @@
     <ClCompile Include="VertexIndexBuffer.cpp">
       <Filter>DirectX12\Parts</Filter>
     </ClCompile>
+    <ClCompile Include="DeviceContext.cpp">
+      <Filter>DirectX12\Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChain.cpp">
+      <Filter>DirectX12\Parts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -397,6 +403,12 @@
       <Filter>DirectX12\Parts</Filter>
     </ClInclude>
     <ClInclude Include="VertexIndexBuffer.h">
+      <Filter>DirectX12\Parts</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceContext.h">
+      <Filter>DirectX12\Parts</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChain.h">
       <Filter>DirectX12\Parts</Filter>
     </ClInclude>
   </ItemGroup>

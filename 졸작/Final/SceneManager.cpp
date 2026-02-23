@@ -136,8 +136,6 @@ void SceneManager::SceneStart(DX12Core& core)
     Material::InitializeBindlessSystem(core.GetDevice());
     mCurrentScene->Initialize(hwnd, core);
     UI_MANAGER->SetCurrentScene(currSceneType);
-
-    core.SetBackgroundColor(mCurrentScene->GetBackgroundColor());
 }
 
 void SceneManager::RequestSceneChange(SceneType type)
@@ -167,6 +165,4 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
     currSceneType = nextSceneType;
 
     core.FlushCommandQueue();
-
-    core.SetBackgroundColor(mCurrentScene->GetBackgroundColor());
 }
