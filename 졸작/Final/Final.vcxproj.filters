@@ -4,18 +4,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="RootSignature.cpp">
-      <Filter>DirectX12</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>DirectX12</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>DirectX12</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexIndexBuffer.cpp">
-      <Filter>DirectX12</Filter>
-    </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -48,9 +36,6 @@
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="DX12Core.cpp">
-      <Filter>DirectX12</Filter>
     </ClCompile>
     <ClCompile Include="MainCharacter.cpp">
       <Filter>Common</Filter>
@@ -99,9 +84,6 @@
     </ClCompile>
     <ClCompile Include="SkyBox.cpp">
       <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="GPUBuffer.cpp">
-      <Filter>DirectX12</Filter>
     </ClCompile>
     <ClCompile Include="Singleton.cpp">
       <Filter>Utils</Filter>
@@ -199,22 +181,28 @@
     <ClCompile Include="RenderTargetManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="DX12Core.cpp">
+      <Filter>DirectX12\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GPUBuffer.cpp">
+      <Filter>DirectX12\Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="RootSignature.cpp">
+      <Filter>DirectX12\Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>DirectX12\Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>DirectX12\Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexIndexBuffer.cpp">
+      <Filter>DirectX12\Parts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
       <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="RootSignature.h">
-      <Filter>DirectX12</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>DirectX12</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>DirectX12</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexIndexBuffer.h">
-      <Filter>DirectX12</Filter>
     </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Engine</Filter>
@@ -245,9 +233,6 @@
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="DX12Core.h">
-      <Filter>DirectX12</Filter>
     </ClInclude>
     <ClInclude Include="MainCharacter.h">
       <Filter>Common</Filter>
@@ -299,9 +284,6 @@
     </ClInclude>
     <ClInclude Include="SkyBox.h">
       <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="GPUBuffer.h">
-      <Filter>DirectX12</Filter>
     </ClInclude>
     <ClInclude Include="Singleton.h">
       <Filter>Utils</Filter>
@@ -398,6 +380,24 @@
     </ClInclude>
     <ClInclude Include="RenderTargetManager.h">
       <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="DX12Core.h">
+      <Filter>DirectX12\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUBuffer.h">
+      <Filter>DirectX12\Parts</Filter>
+    </ClInclude>
+    <ClInclude Include="RootSignature.h">
+      <Filter>DirectX12\Parts</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>DirectX12\Parts</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>DirectX12\Parts</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexIndexBuffer.h">
+      <Filter>DirectX12\Parts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -576,6 +576,12 @@
     </Filter>
     <Filter Include="Shaders\Volumetric">
       <UniqueIdentifier>{e5afff66-9f45-40f4-935c-00edbd23181b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX12\Core">
+      <UniqueIdentifier>{2643efe5-2320-45e9-a31b-baea158b4bf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX12\Parts">
+      <UniqueIdentifier>{1ebfab93-145c-40db-9f96-3273b4b50ad3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
