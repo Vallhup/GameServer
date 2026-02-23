@@ -3,6 +3,7 @@
 #include "RootSignature.h"
 #include "Shader.h"
 #include "Timer.h"
+#include "RenderTargetManager.h"
 #include "LightManager.h"
 
 void DX12Core::Initialize(HWND hwnd)
@@ -20,6 +21,7 @@ void DX12Core::Initialize(HWND hwnd)
 	shadowFrameCB = make_unique<UploadBuffer>();
 	fogCB = make_unique<UploadBuffer>();
 
+	rtMgr = make_unique<RenderTargetManager>();
 	lightMgr = make_unique<LightManager>();
 
 	rootSig->Initialize(GetDevice());
@@ -29,12 +31,8 @@ void DX12Core::Initialize(HWND hwnd)
 	shadowFrameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	fogCB->Initialize(GetDevice(), sizeof(FogConstants));
 
+	rtMgr->Initialize(GetDevice());
 	lightMgr->Initialize(GetDevice());
-
-	CreateDepthStencilBuffer();
-	CreateShadowMap();
-	CreateGBuffer();
-	CreateDeferredRenderingDescriptors();
 }
 
 void DX12Core::CreateDevice()
@@ -214,199 +212,16 @@ void DX12Core::CreateRenderTargetView()
 	}
 }
 
-void DX12Core::CreateDepthStencilBuffer(DXGI_FORMAT dsvformat)
-{
-	dsvFormat = dsvformat;
-
-	D3D12_HEAP_PROPERTIES heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-
-	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R32_TYPELESS, WinSize.x, WinSize.y);
-	desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-
-	D3D12_CLEAR_VALUE optimizedClearValue = CD3DX12_CLEAR_VALUE(dsvFormat, 1.0f, 0);
-
-	device->CreateCommittedResource(
-		&heapProperty,
-		D3D12_HEAP_FLAG_NONE,
-		&desc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		&optimizedClearValue,
-		IID_PPV_ARGS(&dsvBuffer));
-
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {
-		.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
-		.NumDescriptors = 1,
-		.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE
-	};
-
-	device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&dsvHeap));
-
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-	dsvDesc.Format = dsvFormat;
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-
-	dsvHandle = dsvHeap->GetCPUDescriptorHandleForHeapStart();
-	device->CreateDepthStencilView(dsvBuffer.Get(), &dsvDesc, dsvHandle);
-}
-
-void DX12Core::CreateGBuffer()
-{
-	OutputDebugStringA("Create G Buffer\n");
-
-	D3D12_RESOURCE_DESC rtDesc = {};
-	rtDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	rtDesc.Width = WinSize.x;
-	rtDesc.Height = WinSize.y;
-	rtDesc.DepthOrArraySize = 1;
-	rtDesc.MipLevels = 1;
-	rtDesc.SampleDesc.Count = 1;
-	rtDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	rtDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-
-	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
-	D3D12_CLEAR_VALUE clearValue = {};
-
-	// RT0: BaseColor.rgb + Metallic (RGBA8UN)
-	rtDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	clearValue.Format = rtDesc.Format;
-	memset(clearValue.Color, 0, sizeof(clearValue.Color));
-
-	HRESULT hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
-		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
-		IID_PPV_ARGS(&gBufferRT[0]));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[0]");
-
-	// RT1: Normal.xyz + Roughness (RGBA16F)  
-	rtDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-	clearValue.Format = rtDesc.Format;
-	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
-		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
-		IID_PPV_ARGS(&gBufferRT[1]));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[1]");
-
-	// RT2: Emission.rgb + A0 (RGBA16F)
-	rtDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-	clearValue.Format = rtDesc.Format;
-	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
-		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
-		IID_PPV_ARGS(&gBufferRT[2]));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RT[2]");
-
-	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtvHeapDesc.NumDescriptors = 3;
-	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	hr = device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&gBufferRTVHeap));
-	MASSERT(SUCCEEDED(hr), "Failed to create G-Buffer RTV Heap");
-
-	UINT rtvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = gBufferRTVHeap->GetCPUDescriptorHandleForHeapStart();
-
-	for (int i = 0; i < 3; ++i) {
-		gBufferRTVHandles[i] = rtvHandle;
-		device->CreateRenderTargetView(gBufferRT[i].Get(), nullptr, rtvHandle);
-		rtvHandle.ptr += rtvSize;
-
-		OutputDebugStringA(("G-Buffer RT" + to_string(i) + " RTV created\n").c_str());
-	}
-
-	OutputDebugStringA("G-Buffer created successfully!\n");
-}
-
-void DX12Core::CreateShadowMap()
-{
-	D3D12_RESOURCE_DESC shadowDesc = {};
-	shadowDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	shadowDesc.Width = SHADOW_MAP_SIZE;
-	shadowDesc.Height = SHADOW_MAP_SIZE;
-	shadowDesc.DepthOrArraySize = 1;
-	shadowDesc.MipLevels = 1;
-	shadowDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-	shadowDesc.SampleDesc.Count = 1;
-	shadowDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-
-	D3D12_CLEAR_VALUE clearValue = {};
-	clearValue.Format = DXGI_FORMAT_D32_FLOAT;
-	clearValue.DepthStencil.Depth = 1.0f;
-
-	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
-	HRESULT hr = device->CreateCommittedResource(
-		&heapProps, D3D12_HEAP_FLAG_NONE, &shadowDesc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue,
-		IID_PPV_ARGS(&shadowMapTexture));
-	MASSERT(SUCCEEDED(hr), "Failed to create shadowMap Texture!!\n");
-
-	D3D12_DESCRIPTOR_HEAP_DESC shadowDSVDesc = {};
-	shadowDSVDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	shadowDSVDesc.NumDescriptors = 1;
-	shadowDSVDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	hr = device->CreateDescriptorHeap(&shadowDSVDesc, IID_PPV_ARGS(&shadowMapDSVHeap));
-	MASSERT(SUCCEEDED(hr), "Failed to create shadowMap DSV Heap!!\n");
-
-	shadowMapDSVHandle = shadowMapDSVHeap->GetCPUDescriptorHandleForHeapStart();
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	device->CreateDepthStencilView(shadowMapTexture.Get(), &dsvDesc, shadowMapDSVHandle);
-
-	OutputDebugStringA("Shadow Map creation succeed!!\n");
-}
-
-void DX12Core::CreateDeferredRenderingDescriptors()
-{
-	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.NumDescriptors = 5; // Gbuffer(3) + depth(1) + shadow(1)
-	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	HRESULT hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&deferredSRVHeap));
-	MASSERT(SUCCEEDED(hr), "Failed to create Deferred SRV Heap");
-
-	UINT srvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = deferredSRVHeap->GetCPUDescriptorHandleForHeapStart();
-	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = deferredSRVHeap->GetGPUDescriptorHandleForHeapStart();
-
-	for (int i = 0; i < 3; ++i) {
-		gBufferSRVHandles[i] = srvGpuHandle;
-		device->CreateShaderResourceView(gBufferRT[i].Get(), nullptr, srvCpuHandle);
-
-		srvCpuHandle.ptr += srvSize;
-		srvGpuHandle.ptr += srvSize;
-
-		OutputDebugStringA(("G-Buffer RT" + to_string(i) + " SRV created\n").c_str());
-	}
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
-	depthSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	depthSrvDesc.Texture2D.MipLevels = 1;
-	depthSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	device->CreateShaderResourceView(dsvBuffer.Get(), &depthSrvDesc, srvCpuHandle);
-	srvCpuHandle.ptr += srvSize;
-	srvGpuHandle.ptr += srvSize;
-
-	shadowMapSRVHandle = srvGpuHandle;  
-	D3D12_SHADER_RESOURCE_VIEW_DESC shadowSrvDesc = {};
-	shadowSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	shadowSrvDesc.Texture2D.MipLevels = 1;
-	shadowSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	device->CreateShaderResourceView(shadowMapTexture.Get(), &shadowSrvDesc, srvCpuHandle);
-
-	OutputDebugStringA("Shadow Map SRV Created\n");
-
-	OutputDebugStringA("Deferred Rendering Descriptors created successfully!!\n");
-}
-
 void DX12Core::BeginShadowPass()
 {
-	XMVECTOR lightDir = XMVectorSet(0, 0, -1.f, 0); 
+	XMVECTOR lightDir = XMVectorSet(0, 0, -1.f, 0);
 	XMVECTOR lightPos = XMVectorSet(80.0f + 45.0f, 40.0f, 80.0f + 60.0f, 1);
 	XMVECTOR targetPos = XMVectorSet(80.0f, 0.0f, 80.0f, 1);
 	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
 
 	XMMATRIX lightView = XMMatrixTranspose(XMMatrixLookAtLH(lightPos, targetPos, up));
 	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(180.0f, 180.0f, 1.0f, 200.0f));
-	
+
 	shadowFrameCB->CopyData(&lightView, sizeof(XMMATRIX), 0);
 	shadowFrameCB->CopyData(&lightProjection, sizeof(XMMATRIX), sizeof(XMMATRIX));
 
@@ -414,7 +229,7 @@ void DX12Core::BeginShadowPass()
 
 	if (!firstShadowPass) {
 		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			shadowMapTexture.Get(),
+			rtMgr->GetShadowMap(),
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 			D3D12_RESOURCE_STATE_DEPTH_WRITE
 		);
@@ -424,22 +239,24 @@ void DX12Core::BeginShadowPass()
 		firstShadowPass = false;
 	}
 
-	cmdList->OMSetRenderTargets(0, nullptr, FALSE, &shadowMapDSVHandle);
+	D3D12_CPU_DESCRIPTOR_HANDLE shadowDSV = rtMgr->GetShadowMapDSV();
+	cmdList->OMSetRenderTargets(0, nullptr, FALSE, &shadowDSV);
 
-	cmdList->ClearDepthStencilView(shadowMapDSVHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	cmdList->ClearDepthStencilView(shadowDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
+	UINT shadowMapSize = rtMgr->GetShadowMapSize();
 	D3D12_VIEWPORT shadowViewport = {};
-	shadowViewport.Width = static_cast<float>(SHADOW_MAP_SIZE);
-	shadowViewport.Height = static_cast<float>(SHADOW_MAP_SIZE);
+	shadowViewport.Width = static_cast<float>(shadowMapSize);
+	shadowViewport.Height = static_cast<float>(shadowMapSize);
 	shadowViewport.MinDepth = 0.0f;
 	shadowViewport.MaxDepth = 1.0f;
 	cmdList->RSSetViewports(1, &shadowViewport);
 
-	D3D12_RECT shadowRect = { 0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE };
+	D3D12_RECT shadowRect = { 0, 0, static_cast<LONG>(shadowMapSize), static_cast<LONG>(shadowMapSize) };
 	cmdList->RSSetScissorRects(1, &shadowRect);
 
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
-	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());		
+	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());
 
 	//OutputDebugStringA("Shadow Pass started!!\n");
 }
@@ -447,7 +264,7 @@ void DX12Core::BeginShadowPass()
 void DX12Core::EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 {
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		shadowMapTexture.Get(),
+		rtMgr->GetShadowMap(),
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
@@ -461,18 +278,19 @@ void DX12Core::EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 void DX12Core::BeginForwardPass()
 {
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		dsvBuffer.Get(),
+		rtMgr->GetDepthBuffer(),
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		D3D12_RESOURCE_STATE_DEPTH_WRITE
 	);
 	cmdList->ResourceBarrier(1, &barrier);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtvHandle[backBufferIndex];
-	cmdList->OMSetRenderTargets(1, &rtv, FALSE, &dsvHandle);
+	D3D12_CPU_DESCRIPTOR_HANDLE dsv = rtMgr->GetDSVHandle();
+	cmdList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
-	cmdList->SetGraphicsRootConstantBufferView(4, lightMgr->GetForwardLightCB()->GetGPUVirtualAddress());		
+	cmdList->SetGraphicsRootConstantBufferView(4, lightMgr->GetForwardLightCB()->GetGPUVirtualAddress());
 
 	/*FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
 	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
@@ -489,7 +307,7 @@ void DX12Core::BeginGBufferPass()
 		D3D12_RESOURCE_BARRIER barriers[3];
 		for (int i = 0; i < 3; ++i) {
 			barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(
-				gBufferRT[i].Get(),
+				rtMgr->GetGBuffer(i),
 				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 				D3D12_RESOURCE_STATE_RENDER_TARGET
 			);
@@ -500,14 +318,15 @@ void DX12Core::BeginGBufferPass()
 		firstFrame = false;
 	}
 
-	cmdList->OMSetRenderTargets(3, gBufferRTVHandles, FALSE, &dsvHandle);
+	D3D12_CPU_DESCRIPTOR_HANDLE dsv = rtMgr->GetDSVHandle();
+	cmdList->OMSetRenderTargets(3, rtMgr->GetGBufferRTVArray(), FALSE, &dsv);
 
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	for (int i = 0; i < 3; ++i) {
-		cmdList->ClearRenderTargetView(gBufferRTVHandles[i], clearColor, 0, nullptr);
+		cmdList->ClearRenderTargetView(rtMgr->GetGBufferRTV(i), clearColor, 0, nullptr);
 	}
 
-	cmdList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	cmdList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
 void DX12Core::EndGBufferPass()
@@ -515,13 +334,13 @@ void DX12Core::EndGBufferPass()
 	D3D12_RESOURCE_BARRIER barriers[4];
 	for (int i = 0; i < 3; ++i) {
 		barriers[i] = CD3DX12_RESOURCE_BARRIER::Transition(
-			gBufferRT[i].Get(),
+			rtMgr->GetGBuffer(i),
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 		);
 	}
 	barriers[3] = CD3DX12_RESOURCE_BARRIER::Transition(
-		dsvBuffer.Get(),
+		rtMgr->GetDepthBuffer(),
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
@@ -532,18 +351,18 @@ void DX12Core::EndGBufferPass()
 void DX12Core::BeginLightingPass()
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtvHandle[backBufferIndex];
-	cmdList->OMSetRenderTargets(1, &rtv, FALSE, nullptr);  
+	cmdList->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
 
 	cmdList->SetGraphicsRootSignature(GetRootSig()->Get());
 
 	cmdList->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
 	cmdList->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
-	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());					
+	cmdList->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());
 
-	ID3D12DescriptorHeap* heaps[] = { deferredSRVHeap.Get() };
+	ID3D12DescriptorHeap* heaps[] = { rtMgr->GetDeferredSRVHeap() };
 	cmdList->SetDescriptorHeaps(1, heaps);
 
-	cmdList->SetGraphicsRootDescriptorTable(13, deferredSRVHeap->GetGPUDescriptorHandleForHeapStart());		
+	cmdList->SetGraphicsRootDescriptorTable(13, rtMgr->GetDeferredSRVHeap()->GetGPUDescriptorHandleForHeapStart());
 
 	/*FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
 	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
@@ -579,8 +398,7 @@ void DX12Core::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 	cmdList->RSSetScissorRects(1, &rect);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtvHandle[backBufferIndex];
-
-	D3D12_CPU_DESCRIPTOR_HANDLE dsv = dsvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE dsv = rtMgr->GetDSVHandle();
 
 	cmdList->ClearRenderTargetView(rtv, backgroundColor, 0, nullptr);
 	cmdList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
@@ -732,9 +550,4 @@ void DX12Core::SetBackgroundColor(const float* color)
 void DX12Core::SetPlayerPosForShadow(const XMFLOAT3& pos)
 {
 	playerCurrentPos = pos;
-}
-
-ID3D12DescriptorHeap* DX12Core::GetDeferredSRVHeap() const
-{
-	return deferredSRVHeap.Get();
 }

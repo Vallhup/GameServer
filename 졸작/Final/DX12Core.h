@@ -31,6 +31,7 @@ struct FogConstants
 
 class RootSignature;
 class Shader;
+class RenderTargetManager;
 class LightManager;
 
 class DX12Core
@@ -74,8 +75,7 @@ public:
 	UploadBuffer* GetFogCB() const;
 
 	LightManager* GetLightMgr() { return lightMgr.get(); }
-
-	ID3D12DescriptorHeap* GetDeferredSRVHeap() const;
+	RenderTargetManager* GetRenderTargetMgr() { return rtMgr.get(); }
 
 	void SetBackgroundColor(const float* color);
 	void SetPlayerPosForShadow(const XMFLOAT3& pos);
@@ -86,14 +86,8 @@ private:
 	void CreateCommandObjects();
 	void CreateSwapChain(HWND hwnd);
 	void CreateRenderTargetView();
-	void CreateDepthStencilBuffer(DXGI_FORMAT dsvformat = DXGI_FORMAT_D32_FLOAT);
-
-	void CreateGBuffer();
-	void CreateShadowMap();
-	void CreateDeferredRenderingDescriptors();
 
 private:
-	// 고정
 	ComPtr<ID3D12Device> device;
 	ComPtr<IDXGIFactory7> dxgi;
 
@@ -116,19 +110,6 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle[SWAP_CHAIN_BUFFER_COUNT];
 	UINT32 backBufferIndex = 0;
 
-	ComPtr<ID3D12Resource> dsvBuffer;
-	ComPtr<ID3D12DescriptorHeap> dsvHeap;
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = {};
-	DXGI_FORMAT dsvFormat = {};
-
-	// deferred rendering
-	ComPtr<ID3D12Resource> gBufferRT[3];
-	ComPtr<ID3D12DescriptorHeap> gBufferRTVHeap;
-	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[3];
-	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[3];
-	ComPtr<ID3D12DescriptorHeap> deferredSRVHeap;
-
-	// 변경 가능
 	unique_ptr<RootSignature> rootSig;
 	unique_ptr<Shader> shader;
 	unique_ptr<UploadBuffer> frameCB;
@@ -136,15 +117,9 @@ private:
 	unique_ptr<UploadBuffer> shadowFrameCB;
 	unique_ptr<UploadBuffer> fogCB;
 
-	// Shadow Mapping resources
-	ComPtr<ID3D12Resource> shadowMapTexture;
-	ComPtr<ID3D12DescriptorHeap> shadowMapDSVHeap;
-	D3D12_CPU_DESCRIPTOR_HANDLE shadowMapDSVHandle;
-	D3D12_GPU_DESCRIPTOR_HANDLE shadowMapSRVHandle;
-
-	static const UINT SHADOW_MAP_SIZE = 4096;
+	// Managers
+	unique_ptr<RenderTargetManager> rtMgr;
+	unique_ptr<LightManager> lightMgr;
 
 	XMFLOAT3 playerCurrentPos = { 0, 0, 0 };
-
-	unique_ptr<LightManager> lightMgr;
 };

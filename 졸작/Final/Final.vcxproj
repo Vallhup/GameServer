@@ -218,6 +218,7 @@ exit 0</Command>
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingSceneUIController.cpp" />
+    <ClCompile Include="RenderTargetManager.cpp" />
     <ClCompile Include="SelectSceneUIController.cpp" />
     <ClCompile Include="SoloGameScene.cpp" />
     <ClCompile Include="GameSceneUIController.cpp" />
@@ -291,6 +292,7 @@ exit 0</Command>
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LoadingSceneUIController.h" />
+    <ClInclude Include="RenderTargetManager.h" />
     <ClInclude Include="SelectSceneUIController.h" />
     <ClInclude Include="SoloGameScene.h" />
     <ClInclude Include="GameSceneUIController.h" />
