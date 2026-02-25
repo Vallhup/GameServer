@@ -39,12 +39,20 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
     SetupRenderingState(core);
 
     BoundingFrustum frustum;
-    if (cam) frustum = cam->GetViewFrustum();
+    XMFLOAT3 camPos = {};
+
+    if (cam) 
+    {
+        frustum = cam->GetViewFrustum();
+        camPos = cam->GetPosition();
+    }
+
+    XMVECTOR camPosVec = XMLoadFloat3(&camPos);
 
     for (const auto& obj : objects)
     {
         if (obj->GetId() == -1) continue;
-        if (cam && !obj->IsInFrustum(frustum)) continue;
+        if (cam && !obj->IsVisible(frustum, camPosVec)) continue;
 
         auto mesh = obj->GetComponent<Mesh>();
         if (!mesh || !mesh->GetVertexIndexBuffer()) continue;
@@ -128,7 +136,7 @@ void SceneRenderer::RenderForward(DX12Core& core, const vector<shared_ptr<GameOb
     for (const auto& obj : objects)
     {
         if (obj->GetId() == -1) continue;
-        if (cam && !obj->IsInFrustum(frustum)) continue;
+        if (cam && !obj->IsVisible(frustum, camPosVec)) continue;
 
         auto mesh = obj->GetComponent<Mesh>();
         if (!mesh || !mesh->GetVertexIndexBuffer()) continue;

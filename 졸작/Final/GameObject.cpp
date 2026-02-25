@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "Shader.h"
 #include "RootSignature.h"
+#include "Transform.h"
 
 void GameObject::Update(float deltaTime)
 {
@@ -105,4 +106,23 @@ bool GameObject::IsInFrustum(const BoundingFrustum& frustum) const
         return true;
 
     return frustum.Intersects(worldBox);
+}
+
+bool GameObject::IsInRange(const XMVECTOR& camPos) const
+{
+    if (!needDistanceCull)
+        return true;
+
+    auto objPos = GetComponent<Transform>()->GetPosition();
+    XMVECTOR objPosVec = XMLoadFloat3(&objPos);
+
+    float dist = XMVectorGetX(XMVector3Length(camPos - objPosVec));
+
+    return dist <= cullDistance;
+}
+
+bool GameObject::IsVisible(const BoundingFrustum& frustum, const XMVECTOR& camPos) const
+{
+    if (!IsInRange(camPos)) return false;   // First check: should distance cull or not
+    return IsInFrustum(frustum);            // Second check: is in frustum?
 }

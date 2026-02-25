@@ -11,7 +11,7 @@ public:
 	void Initialize(Mesh* m);
 	void AddObject(shared_ptr<GameObject> obj);
 	void BuildBuffers(DX12Core& core);
-	void Update(const BoundingFrustum& frustum);
+	void Update(const BoundingFrustum& frustum, const XMVECTOR& camPos);
 	void Render(DX12Core& core, SceneRenderer* renderer);
 	void RenderShadow(DX12Core& core, SceneRenderer* renderer);
 	void Clear();
