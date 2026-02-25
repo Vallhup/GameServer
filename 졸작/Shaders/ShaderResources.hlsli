@@ -13,7 +13,7 @@ cbuffer FrameCB : register(b0)
     matrix projection;
     matrix invViewProj;
     float3 cameraPosition;
-    float framePadding;
+    float time;
 };
 
 cbuffer ObjectCB : register(b1)
@@ -76,11 +76,11 @@ cbuffer ShadowFrameCB : register(b5)
 cbuffer FogConstants : register(b6)
 {
     float4 fogColor;
-    float fogStart;     // °Å¸® ¾È°³ ½ÃÀÛ
-    float fogRange;     // °Å¸® ¾È°³ ¹üÀ§
-    float fogZoneStart; // ZÃà ¾È°³ ½ÃÀÛÁ¡
-    float fogZoneEnd;   // ZÃà ¾È°³ ³¡Á¡
-    float fogZoneFade;  // º¸°£ °Å¸®
+    float fogStart;     // ï¿½Å¸ï¿½ ï¿½È°ï¿½ ï¿½ï¿½ï¿½ï¿½
+    float fogRange;     // ï¿½Å¸ï¿½ ï¿½È°ï¿½ ï¿½ï¿½ï¿½ï¿½
+    float fogZoneStart; // Zï¿½ï¿½ ï¿½È°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    float fogZoneEnd;   // Zï¿½ï¿½ ï¿½È°ï¿½ ï¿½ï¿½ï¿½ï¿½
+    float fogZoneFade;  // ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½
     float3 fogPadding;
 };
 

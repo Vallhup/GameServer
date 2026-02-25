@@ -17,7 +17,7 @@ void InstanceLoader::Load(const wstring& filename)
 		if (ContainsAny(modelName, { "Grass", "Bush" }))
 		{
 			data.distanceCull = true;
-			data.cullDistance = 25.0f;
+			data.cullDistance = 35.0f;
 		}
 		else
 			data.distanceCull = false;

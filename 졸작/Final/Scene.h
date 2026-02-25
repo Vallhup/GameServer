@@ -63,7 +63,7 @@ shared_ptr<GameObject> Scene::CreateStaticMesh(const wstring& path, const T& dat
 	obj->SetDistanceCull(data.distanceCull, data.cullDistance);
 	auto mesh = obj->AddComponent<Mesh>();
 	auto transform = obj->AddComponent<Transform>();
-	mesh->SetMesh2(*coreRef, path);
+	mesh->SetMesh(*coreRef, path);
 	transform->SetInitPosition(data.position);
 	transform->SetRotation(data.rotation);
 	transform->SetScale(data.scale);

@@ -476,6 +476,9 @@
     <None Include="..\Shaders\VolumetricFog.hlsli">
       <Filter>Shaders\Volumetric</Filter>
     </None>
+    <None Include="..\Shaders\VertexAnimation.hlsli">
+      <Filter>Shaders\Animation</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">

@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "MainCharacter.h"
 #include "InstancingBatch.h"
+#include "Timer.h"
 
 void Camera::Initialize(HWND hWnd)
 {
@@ -141,7 +142,7 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
 
     frameData.invViewProj = XMMatrixTranspose(invVp);
     frameData.cameraPosition = position;
-    frameData.padding = 0.0f;
+    frameData.time = TIMER.GetTotalTime();
 
     core.GetFrameCB()->CopyData(&frameData, sizeof(FrameConstants));
 }
