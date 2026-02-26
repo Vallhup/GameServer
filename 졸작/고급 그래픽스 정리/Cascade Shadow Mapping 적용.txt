@@ -1,0 +1,18 @@
+//--------------------------------------------------------------------------------------------------
+// CSM을 위한 세팅 변경사항
+//--------------------------------------------------------------------------------------------------
+[ShadowMap Texture]
+기존: ComPtr<ID3D12Resource> shadowMapTexture (Texture2D)
+변경: ComPtr<ID3D12Resource> shadowMapTexture (Texture2DArray)
+
+[DSV handle]
+기존: D3D12_CPU_DESCRIPTOR_HANDLE shadowMapDSVHandle
+변경: D3D12_CPU_DESCRIPTOR_HANDLE shadowMapDSVHandle[CASCADE_COUNT]
+
+//--------------------------------------------------------------------------------------------------
+// 이제 해야할 것
+//--------------------------------------------------------------------------------------------------
+1. 일단, 조명 하나에 대한 CSM 적용 목표
+2. Shadow Constants 정의
+3. BeginShadowPass를 수정하든, CascadeShadowMapping 클래스를 만들든 추후에 사용할
+Shadow Atlas 혹은 Shadow2DArray를 통합으로 관리하는 ShadowMapManager 클래스를 제작하든 해야함
