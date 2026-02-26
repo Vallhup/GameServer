@@ -178,9 +178,6 @@
     <ClCompile Include="LightManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="RenderTargetManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
     <ClCompile Include="DX12Core.cpp">
       <Filter>DirectX12\Core</Filter>
     </ClCompile>
@@ -203,6 +200,9 @@
       <Filter>DirectX12\Parts</Filter>
     </ClCompile>
     <ClCompile Include="SwapChain.cpp">
+      <Filter>DirectX12\Parts</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTargets.cpp">
       <Filter>DirectX12\Parts</Filter>
     </ClCompile>
   </ItemGroup>
@@ -384,9 +384,6 @@
     <ClInclude Include="LightManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="RenderTargetManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
     <ClInclude Include="DX12Core.h">
       <Filter>DirectX12\Core</Filter>
     </ClInclude>
@@ -409,6 +406,9 @@
       <Filter>DirectX12\Parts</Filter>
     </ClInclude>
     <ClInclude Include="SwapChain.h">
+      <Filter>DirectX12\Parts</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTargets.h">
       <Filter>DirectX12\Parts</Filter>
     </ClInclude>
   </ItemGroup>

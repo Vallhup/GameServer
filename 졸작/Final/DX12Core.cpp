@@ -4,7 +4,7 @@
 #include "Shader.h"
 #include "DeviceContext.h"
 #include "SwapChain.h"
-#include "RenderTargetManager.h"
+#include "RenderTargets.h"
 #include "LightManager.h"
 
 void DX12Core::Initialize(HWND hwnd)
@@ -22,7 +22,7 @@ void DX12Core::Initialize(HWND hwnd)
 	shadowFrameCB = make_unique<UploadBuffer>();
 	fogCB = make_unique<UploadBuffer>();
 
-	rtMgr = make_unique<RenderTargetManager>();
+	rtMgr = make_unique<RenderTargets>();
 	lightMgr = make_unique<LightManager>();
 
 	rootSig->Initialize(GetDevice());

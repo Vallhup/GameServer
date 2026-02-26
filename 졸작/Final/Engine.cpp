@@ -14,7 +14,7 @@
 #include "UIManager.h"
 #include "DeviceContext.h"
 #include "SwapChain.h"
-#include "RenderTargetManager.h"
+#include "RenderTargets.h"
 #include "LightManager.h"
 
 Engine& Engine::Get()

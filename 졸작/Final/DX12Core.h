@@ -31,7 +31,7 @@ struct FogConstants
 
 class DeviceContext;
 class SwapChain;
-class RenderTargetManager;
+class RenderTargets;
 class LightManager;
 class RootSignature;
 class Shader;
@@ -72,7 +72,7 @@ public:
 	//-------------------------------------------------------
 
 	LightManager* GetLightMgr() { return lightMgr.get(); }
-	RenderTargetManager* GetRenderTargetMgr() { return rtMgr.get(); }
+	RenderTargets* GetRenderTargetMgr() { return rtMgr.get(); }
 
 	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;
@@ -87,7 +87,7 @@ private:
 	// Managers
 	unique_ptr<DeviceContext> deviceCtx;
 	unique_ptr<SwapChain> swapChainMgr;
-	unique_ptr<RenderTargetManager> rtMgr;
+	unique_ptr<RenderTargets> rtMgr;
 	unique_ptr<LightManager> lightMgr;
 
 	unique_ptr<RootSignature> rootSig;
