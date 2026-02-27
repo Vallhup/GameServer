@@ -221,6 +221,7 @@ exit 0</Command>
     <ClCompile Include="LoadingSceneUIController.cpp" />
     <ClCompile Include="RenderTargets.cpp" />
     <ClCompile Include="SelectSceneUIController.cpp" />
+    <ClCompile Include="ShadowMappingManager.cpp" />
     <ClCompile Include="SoloGameScene.cpp" />
     <ClCompile Include="GameSceneUIController.cpp" />
     <ClCompile Include="GPUBuffer.cpp" />
@@ -297,6 +298,7 @@ exit 0</Command>
     <ClInclude Include="LoadingSceneUIController.h" />
     <ClInclude Include="RenderTargets.h" />
     <ClInclude Include="SelectSceneUIController.h" />
+    <ClInclude Include="ShadowMappingManager.h" />
     <ClInclude Include="SoloGameScene.h" />
     <ClInclude Include="GameSceneUIController.h" />
     <ClInclude Include="GPUBuffer.h" />

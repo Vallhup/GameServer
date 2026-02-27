@@ -14,6 +14,7 @@
 #include "UIManager.h"
 #include "DeviceContext.h"
 #include "SwapChain.h"
+#include "ShadowMappingManager.h"
 #include "RenderTargets.h"
 #include "LightManager.h"
 

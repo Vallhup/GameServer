@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "DeviceContext.h"
 #include "SwapChain.h"
+#include "ShadowMappingManager.h"
 #include "RenderTargets.h"
 #include "LightManager.h"
 
@@ -22,6 +23,7 @@ void DX12Core::Initialize(HWND hwnd)
 	shadowFrameCB = make_unique<UploadBuffer>();
 	fogCB = make_unique<UploadBuffer>();
 
+	shadowMgr = make_unique<ShadowMappingManager>();
 	rtMgr = make_unique<RenderTargets>();
 	lightMgr = make_unique<LightManager>();
 
@@ -32,7 +34,8 @@ void DX12Core::Initialize(HWND hwnd)
 	shadowFrameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	fogCB->Initialize(GetDevice(), sizeof(FogConstants));
 
-	rtMgr->Initialize(GetDevice());
+	shadowMgr->Initialize(GetDevice());
+	rtMgr->Initialize(GetDevice(), shadowMgr.get());
 	lightMgr->Initialize(GetDevice());
 }
 
@@ -52,7 +55,7 @@ void DX12Core::BeginShadowPass()
 
 	if (!firstShadowPass) {
 		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			rtMgr->GetShadowMap(),
+			shadowMgr->GetCsmResource(),
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 			D3D12_RESOURCE_STATE_DEPTH_WRITE
 		);
@@ -62,12 +65,12 @@ void DX12Core::BeginShadowPass()
 		firstShadowPass = false;
 	}
 
-	D3D12_CPU_DESCRIPTOR_HANDLE shadowDSV = rtMgr->GetShadowMapDSV();
+	D3D12_CPU_DESCRIPTOR_HANDLE shadowDSV = shadowMgr->GetCsmDSV(0);
 	deviceCtx->GetGraphicsCmdList()->OMSetRenderTargets(0, nullptr, FALSE, &shadowDSV);
 
 	deviceCtx->GetGraphicsCmdList()->ClearDepthStencilView(shadowDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-	UINT shadowMapSize = rtMgr->GetShadowMapSize();
+	UINT shadowMapSize = shadowMgr->GetShadowMapSize();
 	D3D12_VIEWPORT shadowViewport = {};
 	shadowViewport.Width = static_cast<float>(shadowMapSize);
 	shadowViewport.Height = static_cast<float>(shadowMapSize);
@@ -87,7 +90,7 @@ void DX12Core::BeginShadowPass()
 void DX12Core::EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 {
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		rtMgr->GetShadowMap(),
+		shadowMgr->GetCsmResource(),
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);

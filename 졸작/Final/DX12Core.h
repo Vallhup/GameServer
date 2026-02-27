@@ -31,6 +31,7 @@ struct FogConstants
 
 class DeviceContext;
 class SwapChain;
+class ShadowMappingManager;
 class RenderTargets;
 class LightManager;
 class RootSignature;
@@ -87,6 +88,7 @@ private:
 	// Managers
 	unique_ptr<DeviceContext> deviceCtx;
 	unique_ptr<SwapChain> swapChainMgr;
+	unique_ptr<ShadowMappingManager> shadowMgr;
 	unique_ptr<RenderTargets> rtMgr;
 	unique_ptr<LightManager> lightMgr;
 

@@ -205,6 +205,9 @@
     <ClCompile Include="RenderTargets.cpp">
       <Filter>DirectX12\Parts</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowMappingManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -410,6 +413,9 @@
     </ClInclude>
     <ClInclude Include="RenderTargets.h">
       <Filter>DirectX12\Parts</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMappingManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
