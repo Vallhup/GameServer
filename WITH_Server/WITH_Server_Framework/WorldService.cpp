@@ -22,13 +22,17 @@ bool WorldService::InitSquare()
 
 #ifdef _DEBUG
 		else
+		{
 			throw std::runtime_error("스케줄러 초기화 누락");
+			return false;
+		}
+			
 #endif
 
-		return false;
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 WorldId WorldService::ResolveTargetWorld(WorldType type, uint64 key)

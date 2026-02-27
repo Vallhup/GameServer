@@ -62,8 +62,11 @@ void EventSystem::ProcessDisconnect(const Event& event)
 	Framework& framework = Framework::Get();
 	Entity entity = framework.netIdRegistry.FindEntity(p->id);
 
-	_runtime.GetECS().GetStorage<DisconnectedTag>().AddComponent(entity);
-	framework.outEventQueue.push(OutputEvent{ p->id, DirtyType::Despawned });
+	if(!entity.IsNull())
+	{
+		_runtime.GetECS().GetStorage<DisconnectedTag>().AddComponent(entity);
+		framework.outEventQueue.push(OutputEvent{ p->id, DirtyType::Despawned });
+	}
 }
 
 void EventSystem::ProcessMove(const Event& event)

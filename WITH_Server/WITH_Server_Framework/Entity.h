@@ -7,7 +7,7 @@ struct Entity
 	int id;
 	int generation;
 
-	Entity(int i = -1, int g = 0)
+	Entity(int i = InvalidId, int g = 0)
 		: id(i), generation(g) {}
 
 	static constexpr int InvalidId{ std::numeric_limits<int>::min() };
