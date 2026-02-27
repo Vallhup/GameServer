@@ -144,6 +144,7 @@ public:
 public:
 	T* AddComponent(Entity entity)
 	{
+		if (entity.IsNull()) return nullptr;
 		if (entity.id >= _sparse.size())
 			_sparse.resize(entity.id + 1, INVALID);
 
