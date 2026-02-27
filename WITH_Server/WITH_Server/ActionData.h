@@ -73,6 +73,7 @@ struct ActionPolicy {
 	uint32 interruptMask{ 0 };
 	bool isMoveAction{ false };
 	bool isHoldAction{ false };
+	bool useAttackSpeed{ false };
 
 	constexpr bool IsValid() const { return priority == 0 && duration == 0 && interruptMask == 0; }
 };

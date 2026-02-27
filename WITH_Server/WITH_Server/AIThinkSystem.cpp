@@ -8,7 +8,6 @@
 
 void AIThinkSystem::Execute(const double dT)
 {
-	// TODO : AI 로직에 따라 ActionTransitionRequest 만들기
 	ECS& ecs = _runtime.GetECS();
 
 	const auto& actionStates = ecs.GetStorage<ActionState>();

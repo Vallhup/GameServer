@@ -63,7 +63,7 @@ void AnimationSelectSystem::Execute(const double dT)
 #endif
 			animState.desiredId = next;
 			animState.looping = loop;
-			animState.speed = 1.0f;
+			//animState.speed = 1.0f;
 
 			const auto* netComp = ecs.GetStorage<NetIdComp>().GetComponent(entity);
 			if (!netComp) continue;

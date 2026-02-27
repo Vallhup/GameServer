@@ -25,16 +25,21 @@ void AnimationFrameSystem::Execute(const double dT)
 
 		uint16 frame{ 0 };
 		if (actionState->action != ActionType::None)
-			frame = static_cast<uint16>(actionState->elapsed * clip->fps);
+		{
+			const double progress = std::clamp(actionState->progress, 0.0, 1.0);
+			frame = static_cast<uint16>(progress * (clip->numFrames - 1));
+		}
 
 		else
 			frame = static_cast<uint16>(locoPhase->phase * clip->numFrames);
+
 
 		if (animState->looping)
 			frame = frame % clip->numFrames;
 
 		else if (frame >= clip->numFrames)
 			frame = clip->numFrames - 1;
+
 
 		animator.currentFrame = frame;
 	}

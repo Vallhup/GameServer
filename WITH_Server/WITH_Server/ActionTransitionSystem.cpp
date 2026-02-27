@@ -4,6 +4,7 @@
 #include "Math.h"
 #include "RepComponent.h"
 #include "Tags.h"
+#include "Stats.h"
 
 ActionTransitionSystem::ActionTransitionSystem(WorldRuntime& rt, int p)
 	: System(rt, p)
@@ -114,7 +115,7 @@ std::pair<ActionType, AttackType> ActionTransitionSystem::ResolveNextAction(Enti
 	}
 
 	if (!curPol.isHoldAction && curAction != ActionType::None &&
-		current.elapsed >= curPol.duration)
+		current.progress >= 1.0)
 	{
 		if (guardHeld) return { ActionType::Guard, AttackType::None };
 		return { ActionType::None, AttackType::None };
@@ -142,8 +143,20 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, EntityType type,
 
 	state->action = nextAction;
 	state->attack = nextAttack;
-	state->elapsed = 0.0f;
-	state->duration = ActionManager::Get().GetPolicy(nextAction, type, nextAttack).duration;
+	
+	const auto& pol = aM.GetPolicy(nextAction, type, nextAttack);
+
+	double duration = pol.duration;
+	if (pol.useAttackSpeed)
+	{
+		const auto* attr = ecs.GetStorage<Attribute>().GetComponent(entity);
+		const double atkSpeed = std::max(attr ? attr->attackSpeed : 1.0, 0.1);
+		duration = pol.duration / atkSpeed;
+	}
+
+	state->duration = duration;
+	state->elapsed = 0.0;
+	state->progress = 0.0;
 
 	if (isMove)
 	{

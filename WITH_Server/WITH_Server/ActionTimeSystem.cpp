@@ -12,5 +12,7 @@ void ActionTimeSystem::Execute(const double dT)
 		if (action.action == ActionType::None) continue;
 
 		action.elapsed += dT;
+		action.progress = (action.duration > 0.0) ?
+			std::clamp(action.elapsed / action.duration, 0.0, 1.0) : 1.0;
 	}
 }

@@ -11,6 +11,7 @@ struct ActionState : public Component {
 	AttackType attack{ AttackType::None };
 	double elapsed{ 0.0f };
 	double duration{ 0.0f };
+	double progress{ 0.0f };
 };
 
 struct AttackState : public Component {

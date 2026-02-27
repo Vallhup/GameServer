@@ -76,6 +76,16 @@ void CombatCollisionHandlingSystem::HandleStrike(const CombatCollisionEvent& eve
 	const bool inFront90 = 
 		TransformHelper::IsInFront90_XZ(*aTrans, *vTrans);
 
+	const auto* typeComp = ecs.GetStorage<SpawnTypeComp>().GetComponent(entity);
+	if (!typeComp) continue;
+
+	const auto& pol = ActionManager::Get().GetPolicy(actionState->action, typeComp->type, actionState->attack);
+	const float baseDuration = pol.duration;
+
+	const float atkStartN = 0.683f / baseDuration;
+	const float atkEndN = 0.975f / baseDuration;
+
+
 	const bool parryWindowOn =
 		(actionState->action == ActionType::Parry) &&
 		(actionState->elapsed >= 0.001f) && //0.752f

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ColliderActivationSystem.h"
 #include "Tags.h"
+#include "RepComponent.h"
 
 void ColliderActivationSystem::Execute(const double dT)
 {
@@ -26,6 +27,9 @@ void ColliderActivationSystem::Execute(const double dT)
 		assert(collider.attackIds.size() == n);
 #endif
 
+		const auto* typeComp = ecs.GetStorage<SpawnTypeComp>().GetComponent(entity);
+		if (!typeComp) continue;
+
 		// 1. Attack 진입 시 Attack ID 증가
 		//    (연속 공격은 어떻게 할지 고민 필요)
 		const bool enteredAttack =
@@ -40,17 +44,25 @@ void ColliderActivationSystem::Execute(const double dT)
 		attackState->prevAction = actionState->action;
 
 		// 2. Attack / Parry 판정 윈도우 설정
-		//    (elapsed 기반 / frame 기반 고민 필요)
-		//    (현재는 elapsed 기반으로 임시 구현)
+		//    (하드코딩되어있는 판정 윈도우 값 데이터 분리 필요)
+		const auto& pol = ActionManager::Get().GetPolicy(actionState->action, typeComp->type, actionState->attack);
+		const float baseDuration = pol.duration;
+
+		const float atkStartN = 0.683f / baseDuration;
+		const float atkEndN = 0.975f / baseDuration;
+
+		const float parryStartN = 0.752f;
+		const float parryEndN = 0.949f;
+
+		const float progress = static_cast<float>(actionState->progress);
+
 		const bool attackWindowOn =
 			(actionState->action == ActionType::Attack) &&
-			(actionState->elapsed >= 0.683f) &&
-			(actionState->elapsed <= 0.975f);
+			(progress >= atkStartN && progress <= atkEndN);
 
-		const bool parryWIndowOn = 
+		const bool parryWIndowOn =
 			(actionState->action == ActionType::Parry) &&
-			(actionState->elapsed >= 0.752f) &&
-			(actionState->elapsed <= 0.949f);
+			(progress >= parryStartN && progress <= parryEndN);
 
 		const bool guardOn = (actionState->action == ActionType::Guard);
 		const bool dodgeOn = (actionState->action == ActionType::Dodge);
