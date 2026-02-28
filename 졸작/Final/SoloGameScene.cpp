@@ -475,8 +475,11 @@ void SoloGameScene::UpdateScene(const float deltaTime)
 		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);
 	
 	BoundingFrustum frustum = cam->GetViewFrustum();
+	XMFLOAT3 camPos = cam->GetPosition();
+	XMVECTOR camPosVec = XMLoadFloat3(&camPos);
+
 	for (auto& batch : instancingBatches)
-		batch->Update(frustum);
+		batch->Update(frustum, camPosVec);
 }
 
 void SoloGameScene::RenderSceneDeferred()

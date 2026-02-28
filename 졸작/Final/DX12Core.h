@@ -6,7 +6,7 @@ struct FrameConstants
 	XMMATRIX projection;
 	XMMATRIX invViewProj;
 	XMFLOAT3 cameraPosition;
-	float padding;
+	float time;
 };
 
 struct ObjectConstants
@@ -31,7 +31,8 @@ struct FogConstants
 
 class DeviceContext;
 class SwapChain;
-class RenderTargetManager;
+class ShadowMappingManager;
+class RenderTargets;
 class LightManager;
 class RootSignature;
 class Shader;
@@ -41,11 +42,13 @@ class DX12Core
 public:
 	void Initialize(HWND hwnd);
 
+	void Update();
+
 	//-------------------------------------------------------
 	// Render line
 	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
-	void BeginShadowPass();
-	void EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+	void BeginShadowPass(int cascadeIdx);
+	void EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect, int cascadeIdx);
 
 	void BeginGBufferPass();
 	void EndGBufferPass();
@@ -71,8 +74,9 @@ public:
 	void ResetCommandQueue();
 	//-------------------------------------------------------
 
+	ShadowMappingManager* GetShadowMgr() { return shadowMgr.get(); }
+	RenderTargets* GetRenderTargetMgr() { return rtMgr.get(); }
 	LightManager* GetLightMgr() { return lightMgr.get(); }
-	RenderTargetManager* GetRenderTargetMgr() { return rtMgr.get(); }
 
 	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;
@@ -87,14 +91,14 @@ private:
 	// Managers
 	unique_ptr<DeviceContext> deviceCtx;
 	unique_ptr<SwapChain> swapChainMgr;
-	unique_ptr<RenderTargetManager> rtMgr;
+	unique_ptr<ShadowMappingManager> shadowMgr;
+	unique_ptr<RenderTargets> rtMgr;
 	unique_ptr<LightManager> lightMgr;
 
 	unique_ptr<RootSignature> rootSig;
 	unique_ptr<Shader> shader;
 	unique_ptr<UploadBuffer> frameCB;
 	unique_ptr<UploadBuffer> sceneCB;
-	unique_ptr<UploadBuffer> shadowFrameCB;
 	unique_ptr<UploadBuffer> fogCB;
 
 	XMFLOAT3 playerCurrentPos = { 0, 0, 0 };

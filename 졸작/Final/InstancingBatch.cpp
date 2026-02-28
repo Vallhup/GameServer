@@ -39,7 +39,7 @@ void InstancingBatch::BuildBuffers(DX12Core& core)
     fullInstanceBuffer->CopyData(transforms.data(), bufferSize, 0);
 }
 
-void InstancingBatch::Update(const BoundingFrustum& frustum)
+void InstancingBatch::Update(const BoundingFrustum& frustum, const XMVECTOR& camPos)
 {
     if (objects.empty()) return;
 
@@ -47,7 +47,7 @@ void InstancingBatch::Update(const BoundingFrustum& frustum)
     visibleTransforms.reserve(objects.size());
 
     for (const auto& obj : objects) {
-        if (obj->IsInFrustum(frustum)) {
+        if (obj->IsVisible(frustum, camPos)) {
             visibleTransforms.push_back(XMMatrixTranspose(obj->GetComponent<Transform>()->GetWorldMatrix()));
         }
     }

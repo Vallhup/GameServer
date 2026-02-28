@@ -1,5 +1,6 @@
 #include "Skinning.hlsli"
 #include "InOutFormats.hlsli"
+#include "VertexAnimation.hlsli"
 
 SHADOW_VS_OUT VSMain(SHADOW_VS_IN input, uint instanceID : SV_InstanceID)
 {
@@ -25,10 +26,14 @@ SHADOW_VS_OUT VSMain(SHADOW_VS_IN input, uint instanceID : SV_InstanceID)
     else
         worldMatrix = world;
     
+    if (useInstancing && input.color.r > 0.1f)
+    {
+        VertexAnimation(modifiedPos, worldMatrix, input.color, time);
+    }
+    
     float4 worldPos = mul(float4(modifiedPos, 1.0f), worldMatrix);
     
-    float4 lightViewPos = mul(worldPos, lightView);
-    output.pos = mul(lightViewPos, lightProjection);
+    output.pos = mul(worldPos, lightVP[cascadeIndex]);
     output.uv = input.uv;
     output.materialIndex = materialIndex;
     

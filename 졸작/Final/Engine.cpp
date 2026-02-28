@@ -14,7 +14,8 @@
 #include "UIManager.h"
 #include "DeviceContext.h"
 #include "SwapChain.h"
-#include "RenderTargetManager.h"
+#include "ShadowMappingManager.h"
+#include "RenderTargets.h"
 #include "LightManager.h"
 
 Engine& Engine::Get()
@@ -60,6 +61,8 @@ void Engine::Update(const float deltaTime)
     sceneManager->ProcessPendingSceneChange(*graphics);
     sceneManager->Update(deltaTime);
 
+    graphics->Update();
+
     effectManager->Update(deltaTime);
 
     uiManager->Update(deltaTime);
@@ -75,9 +78,11 @@ void Engine::Render()
 
     sceneManager->BeginRender();
 
-    graphics->BeginShadowPass();
-    sceneManager->RenderShadow();
-    graphics->EndShadowPass(viewport, scissorRect);
+    for (int i = 0; i < graphics->GetShadowMgr()->GetCascadeCount(); ++i) {
+        graphics->BeginShadowPass(i);
+        sceneManager->RenderShadow();
+        graphics->EndShadowPass(viewport, scissorRect, i);
+    }
 
     graphics->BeginGBufferPass();
     sceneManager->RenderDeferred();  

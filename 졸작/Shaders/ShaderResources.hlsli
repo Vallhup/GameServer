@@ -13,7 +13,7 @@ cbuffer FrameCB : register(b0)
     matrix projection;
     matrix invViewProj;
     float3 cameraPosition;
-    float framePadding;
+    float time;
 };
 
 cbuffer ObjectCB : register(b1)
@@ -69,19 +69,25 @@ cbuffer ForwardLightCB : register(b4)
 
 cbuffer ShadowFrameCB : register(b5)
 {
-    matrix lightView;
-    matrix lightProjection;
+    matrix lightVP[4];
+    float4 cascadeSplit;
 };
 
 cbuffer FogConstants : register(b6)
 {
     float4 fogColor;
-    float fogStart;     // 거리 안개 시작
-    float fogRange;     // 거리 안개 범위
-    float fogZoneStart; // Z축 안개 시작점
-    float fogZoneEnd;   // Z축 안개 끝점
-    float fogZoneFade;  // 보간 거리
+    float fogStart;     
+    float fogRange;     
+    float fogZoneStart; 
+    float fogZoneEnd;   
+    float fogZoneFade;  
     float3 fogPadding;
+};
+
+cbuffer CascadeShadowIndex : register(b7)
+{
+    int cascadeIndex;
+    int3 cascadePadding;
 };
 
 //-------------------------------------------------------
@@ -103,7 +109,7 @@ Texture2D gBufferRT0 : register(t4); // BaseColor + Metallic
 Texture2D gBufferRT1 : register(t5); // Normal + Roughness
 Texture2D gBufferRT2 : register(t6); // Emission + AO
 Texture2D depthBuffer : register(t7); // Depth
-Texture2D shadowMap : register(t8);
+Texture2DArray shadowMapArray : register(t8);
 
 TextureCube bindlessCubeMaps[] : register(t0, space3);
 

@@ -27,6 +27,7 @@ void Timer::Update()
 
 	frameCount++;
 	frameTime += deltaTime;
+	totalTime += deltaTime;
 
 	if (frameTime > 1.f)
 	{

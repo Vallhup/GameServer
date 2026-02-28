@@ -1,15 +1,15 @@
 #include "pch.h"
-#include "RenderTargetManager.h"
+#include "RenderTargets.h"
+#include "ShadowMappingManager.h"
 
-void RenderTargetManager::Initialize(ID3D12Device* device)
+void RenderTargets::Initialize(ID3D12Device* device, ShadowMappingManager* shadowMgr)
 {
 	CreateDepthStencilBuffer(device);
-	CreateShadowMap(device);
 	CreateGBuffer(device);
-	CreateDeferredRenderingDescriptors(device);
+	CreateDeferredRenderingDescriptors(device, shadowMgr);
 }
 
-void RenderTargetManager::CreateDepthStencilBuffer(ID3D12Device* device)
+void RenderTargets::CreateDepthStencilBuffer(ID3D12Device* device)
 {
 	D3D12_HEAP_PROPERTIES heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
@@ -42,7 +42,7 @@ void RenderTargetManager::CreateDepthStencilBuffer(ID3D12Device* device)
 	device->CreateDepthStencilView(dsvBuffer.Get(), &dsvDesc, dsvHandle);
 }
 
-void RenderTargetManager::CreateGBuffer(ID3D12Device* device)
+void RenderTargets::CreateGBuffer(ID3D12Device* device)
 {
 	OutputDebugStringA("Create G Buffer\n");
 
@@ -106,46 +106,7 @@ void RenderTargetManager::CreateGBuffer(ID3D12Device* device)
 	OutputDebugStringA("G-Buffer created successfully!\n");
 }
 
-void RenderTargetManager::CreateShadowMap(ID3D12Device* device)
-{
-	D3D12_RESOURCE_DESC shadowDesc = {};
-	shadowDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	shadowDesc.Width = SHADOW_MAP_SIZE;
-	shadowDesc.Height = SHADOW_MAP_SIZE;
-	shadowDesc.DepthOrArraySize = 1;
-	shadowDesc.MipLevels = 1;
-	shadowDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-	shadowDesc.SampleDesc.Count = 1;
-	shadowDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-
-	D3D12_CLEAR_VALUE clearValue = {};
-	clearValue.Format = DXGI_FORMAT_D32_FLOAT;
-	clearValue.DepthStencil.Depth = 1.0f;
-
-	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
-	HRESULT hr = device->CreateCommittedResource(
-		&heapProps, D3D12_HEAP_FLAG_NONE, &shadowDesc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue,
-		IID_PPV_ARGS(&shadowMapTexture));
-	MASSERT(SUCCEEDED(hr), "Failed to create shadowMap Texture!!\n");
-
-	D3D12_DESCRIPTOR_HEAP_DESC shadowDSVDesc = {};
-	shadowDSVDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	shadowDSVDesc.NumDescriptors = 1;
-	shadowDSVDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	hr = device->CreateDescriptorHeap(&shadowDSVDesc, IID_PPV_ARGS(&shadowMapDSVHeap));
-	MASSERT(SUCCEEDED(hr), "Failed to create shadowMap DSV Heap!!\n");
-
-	shadowMapDSVHandle = shadowMapDSVHeap->GetCPUDescriptorHandleForHeapStart();
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-	device->CreateDepthStencilView(shadowMapTexture.Get(), &dsvDesc, shadowMapDSVHandle);
-
-	OutputDebugStringA("Shadow Map creation succeed!!\n");
-}
-
-void RenderTargetManager::CreateDeferredRenderingDescriptors(ID3D12Device* device)
+void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, ShadowMappingManager* shadowMgr)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -177,13 +138,15 @@ void RenderTargetManager::CreateDeferredRenderingDescriptors(ID3D12Device* devic
 	srvCpuHandle.ptr += srvSize;
 	srvGpuHandle.ptr += srvSize;
 
-	shadowMapSRVHandle = srvGpuHandle;
 	D3D12_SHADER_RESOURCE_VIEW_DESC shadowSrvDesc = {};
 	shadowSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	shadowSrvDesc.Texture2D.MipLevels = 1;
+	shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+	shadowSrvDesc.Texture2DArray.MostDetailedMip = 0;
+	shadowSrvDesc.Texture2DArray.MipLevels = 1;
+	shadowSrvDesc.Texture2DArray.FirstArraySlice = 0;
+	shadowSrvDesc.Texture2DArray.ArraySize = shadowMgr->GetCascadeCount();
 	shadowSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	device->CreateShaderResourceView(shadowMapTexture.Get(), &shadowSrvDesc, srvCpuHandle);
+	device->CreateShaderResourceView(shadowMgr->GetCsmResource(), &shadowSrvDesc, srvCpuHandle);
 
 	OutputDebugStringA("Shadow Map SRV Created\n");
 

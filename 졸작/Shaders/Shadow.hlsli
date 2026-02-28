@@ -2,11 +2,24 @@
 #define SHADOW_HLSLI
 
 #include "ShaderResources.hlsli"
+#include "Constants.hlsli"
 
-float CalculateShadow(float3 worldPos)
+int SelectCascade(float viewDepth)
 {
-    float4 lightSpacePos = mul(float4(worldPos, 1.0), lightView);
-    lightSpacePos = mul(lightSpacePos, lightProjection);
+    if (viewDepth < cascadeSplit.x)
+        return 0;
+    if (viewDepth < cascadeSplit.y)
+        return 1;
+    if (viewDepth < cascadeSplit.z)
+        return 2;
+    return 3;
+}
+
+float CalculateShadow(float3 worldPos, float viewDepth)
+{
+    int cascade = SelectCascade(viewDepth);
+    
+    float4 lightSpacePos = mul(float4(worldPos, 1.0), lightVP[cascade]);
     
     lightSpacePos.xyz /= lightSpacePos.w;
     
@@ -18,9 +31,7 @@ float CalculateShadow(float3 worldPos)
         return 1.0;
     
     float currentDepth = lightSpacePos.z;
-    float shadowMapDepth = shadowMap.Sample(linearSampler, shadowUV).r;
     
-    float bias = 0.0001f;
     float shadow = 0.0f;
     float2 texelSize = 1.0 / 4096.0;
     
@@ -29,15 +40,15 @@ float CalculateShadow(float3 worldPos)
         for (int y = -2; y <= 2; ++y)
         {
             float2 offset = float2(x, y) * texelSize;
-            float shadowMapDepth = shadowMap.Sample(linearSampler, shadowUV + offset).r;
+            float shadowMapDepth = shadowMapArray.Sample(linearSampler, float3(shadowUV + offset, cascade)).r;
             
-            if ((currentDepth - bias) > shadowMapDepth)
+            if ((currentDepth - cascadeBias[cascade]) > shadowMapDepth)
                 shadow += 1.0f;
         }
     }
 
     shadow /= 25.0;
-    return lerp(1.0, 0.7, shadow);
+    return lerp(1.0, 0.6, shadow);
 }
 
 #endif
