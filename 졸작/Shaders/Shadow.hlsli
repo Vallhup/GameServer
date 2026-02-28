@@ -2,6 +2,7 @@
 #define SHADOW_HLSLI
 
 #include "ShaderResources.hlsli"
+#include "Constants.hlsli"
 
 int SelectCascade(float viewDepth)
 {
@@ -31,7 +32,6 @@ float CalculateShadow(float3 worldPos, float viewDepth)
     
     float currentDepth = lightSpacePos.z;
     
-    float bias = 0.0001f;
     float shadow = 0.0f;
     float2 texelSize = 1.0 / 4096.0;
     
@@ -42,7 +42,7 @@ float CalculateShadow(float3 worldPos, float viewDepth)
             float2 offset = float2(x, y) * texelSize;
             float shadowMapDepth = shadowMapArray.Sample(linearSampler, float3(shadowUV + offset, cascade)).r;
             
-            if ((currentDepth - bias) > shadowMapDepth)
+            if ((currentDepth - cascadeBias[cascade]) > shadowMapDepth)
                 shadow += 1.0f;
         }
     }

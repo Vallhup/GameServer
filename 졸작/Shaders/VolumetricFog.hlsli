@@ -40,8 +40,7 @@ float SampleShadowMap(float3 worldPos, float viewDepth)
     float currentDepth = lightSpacePos.z;
     float shadowMapDepth = shadowMapArray.Sample(linearSampler, float3(shadowUV, cascade)).r;
     
-    float bias = 0.0001f;
-    return (currentDepth - bias) > shadowMapDepth ? 0.0 : 1.0;
+    return (currentDepth - cascadeBias[cascade]) > shadowMapDepth ? 0.0 : 1.0;
 }
 
 float HenyeyGreenstein(float cosTheta, float g)
