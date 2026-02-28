@@ -23,7 +23,6 @@ public:
 	void Reset() override;
 
 	void AddGameObject(shared_ptr<GameObject> obj);
-	void HandlePacket(const PacketHeader& header, const BYTE* data);
 
 protected:
 	void InitializeSceneObjectPools() override;
@@ -42,6 +41,13 @@ private:
 	void CreateEffectSamples();
 	
 	float SampleHeightAt(float worldX, float worldZ) const;
+
+	// Network Handler Function Override
+	void HandleLogin(const Protocol::SC_LOGIN_PACKET& login) override;
+	void HandleAdd(const Protocol::SC_ADD_PACKET& add) override;
+	void HandleMove(const Protocol::SC_MOVE_PACKET& move) override;
+	void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove) override;
+	void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim) override;
 
 private:
 	NetworkManager* _nManager{ nullptr };

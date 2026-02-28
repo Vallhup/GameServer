@@ -25,6 +25,7 @@ public:
 
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
+	void HandlePacket(const PacketHeader& header, const BYTE* data);
 
 protected:
 	virtual void InitializeSceneObjectPools() = 0;
@@ -35,6 +36,13 @@ protected:
 	virtual void RenderSceneShadow() = 0;
 	virtual void RenderSceneEffects() = 0;
 	virtual void RequestSceneChange() = 0;
+
+	// Network Handler Function Interface
+	virtual void HandleLogin(const Protocol::SC_LOGIN_PACKET& login) {}
+	virtual void HandleAdd(const Protocol::SC_ADD_PACKET& add) {}
+	virtual void HandleMove(const Protocol::SC_MOVE_PACKET& move) {}
+	virtual void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove) {}
+	virtual void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim) {}
 
 	template<typename T>
 	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const T& data);

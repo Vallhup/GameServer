@@ -20,8 +20,8 @@
 #include "EffectRenderer.h"
 #include "EffectManager.h"
 
-
 #include "NetId.h"
+#include "NetHelper.h"
 
 SoloGameScene::~SoloGameScene() = default;
 
@@ -154,6 +154,94 @@ float SoloGameScene::SampleHeightAt(float worldX, float worldZ) const
 	return 0.0f;
 }
 
+void SoloGameScene::HandleLogin(const Protocol::SC_LOGIN_PACKET& login)
+{
+	NetId nid{ login.netid() };
+	int id = nid.GetId();
+	INPUT.SetClientID(id);
+	OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
+}
+
+void SoloGameScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
+{
+	NetId nid{ add.netid() };
+	int id = nid.GetId();
+	int type = add.typeid_();
+
+	if (type == 5) // Final_Boss
+	{
+		if (bossObject)
+		{
+			bossObject->SetId(id);
+			auto transform = bossObject->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = bossObject;
+		}
+	}
+	else if (type == 1) // Knight
+	{
+		auto player = GetAvailableKnight();
+		if (player)
+		{
+			player->SetId(id);
+			auto transform = player->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = player;
+		}
+
+		if (id == INPUT.GetClientID())
+		{
+			myPlayer = player;
+			myPlayer->SetAsLocalPlayer(cam.get());
+
+			IMGUI.SetMyPlayer(myPlayer.get());
+
+			OutputDebugStringA("My character activated!\n");
+		}
+	}
+}
+
+void SoloGameScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
+{
+	NetId nid{ move.netid() };
+	int id = nid.GetId();
+	auto it = activeCharacters.find(id);
+	if (it != activeCharacters.end())
+	{
+		auto transform = it->second->GetComponent<Transform>();
+		const XMFLOAT3& pos = transform->GetPosition();
+
+		transform->SetPosition(move.x(), move.y(), move.z());
+		transform->SetTargetRotation(move.yaw());
+	}
+}
+
+void SoloGameScene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
+{
+	OutputDebugStringA("SC_REMOVE packet received\n");
+}
+
+void SoloGameScene::HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim)
+{
+	NetId nid{ anim.netid() };
+	int id = nid.GetId();
+
+	auto it = activeCharacters.find(id);
+	if (it != activeCharacters.end())
+	{
+		if (auto animMachine = it->second->GetComponent<AnimationMachine>())
+		{
+			uint32 serverAnimIdx = anim.curranim();
+			uint32 startIdx = animMachine->GetAnimationSet()->GetStartIndex();
+			string animName = animMachine->GetAnimationSet()->GetClipNameByIndex(serverAnimIdx - startIdx);
+
+			animMachine->OnServerClipConfirm(animName);
+		}
+	}
+}
+
 shared_ptr<MainCharacter> SoloGameScene::GetAvailableKnight() const
 {
 	for (auto& knight : knightPool)
@@ -169,6 +257,8 @@ shared_ptr<MainCharacter> SoloGameScene::GetMyPlayer() const
 {
 	if (myPlayer)
 		return myPlayer;
+
+	return nullptr;
 }
 
 void SoloGameScene::Release()
@@ -190,139 +280,6 @@ void SoloGameScene::Reset()
 void SoloGameScene::AddGameObject(shared_ptr<GameObject> obj)
 {
 	gameObjects.push_back(obj);
-}
-
-void SoloGameScene::HandlePacket(const PacketHeader& header, const BYTE* data)
-{
-	PacketType type = static_cast<PacketType>(header.type);
-
-	switch (type) {
-	case PacketType::SC_LOGIN:
-	{
-		OutputDebugStringA("SC_LOGIN packet received\n");
-		Protocol::SC_LOGIN_PACKET login;
-		if (PacketFactory::Deserialize<Protocol::SC_LOGIN_PACKET>(header, data, &login))
-		{
-			NetId nid{ login.netid() };
-			int id = nid.GetId();
-			INPUT.SetClientID(id);
-			OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
-		}
-		break;
-	}
-	case PacketType::SC_ADD:
-	{
-		OutputDebugStringA("SC_ADD packet received\n");
-		Protocol::SC_ADD_PACKET add;
-		if (PacketFactory::Deserialize<Protocol::SC_ADD_PACKET>(header, data, &add))
-		{
-			NetId nid{ add.netid() };
-			int id = nid.GetId();
-			int type = add.typeid_();
-
-			if (type == 5) // Final_Boss
-			{
-				if (bossObject)
-				{
-					bossObject->SetId(id);
-					auto transform = bossObject->GetComponent<Transform>();
-					transform->SetInitPosition(add.x(), add.y(), add.z());
-					transform->SetTargetRotation(add.yaw());
-					activeCharacters[id] = bossObject;
-				}
-			}
-			else if (type == 1) // Knight
-			{
-				auto player = GetAvailableKnight();
-				if (player)
-				{
-					player->SetId(id);
-					auto transform = player->GetComponent<Transform>();
-					transform->SetInitPosition(add.x(), add.y(), add.z());
-					transform->SetTargetRotation(add.yaw());
-					activeCharacters[id] = player;
-				}
-
-				if (id == INPUT.GetClientID())
-				{
-					myPlayer = player;
-					myPlayer->SetAsLocalPlayer(cam.get());
-
-					IMGUI.SetMyPlayer(myPlayer.get());
-
-					OutputDebugStringA("My character activated!\n");
-				}
-			}
-		}
-		break;
-	}
-	case PacketType::SC_MOVE_OBJECT:
-	{
-		Protocol::SC_MOVE_PACKET move;
-		if (PacketFactory::Deserialize<Protocol::SC_MOVE_PACKET>(header, data, &move))
-		{
-			NetId nid{ move.netid() };
-			int id = nid.GetId();
-			auto it = activeCharacters.find(id);
-			if (it != activeCharacters.end())
-			{
-				auto transform = it->second->GetComponent<Transform>();
-				const XMFLOAT3& pos = transform->GetPosition();
-
-				transform->SetPosition(move.x(), move.y(), move.z());
-				transform->SetTargetRotation(move.yaw());
-			}
-		}
-		break;
-	}
-	case PacketType::SC_REMOVE:
-	{
-		OutputDebugStringA("SC_REMOVE packet received\n");
-		break;
-	}
-	case PacketType::SC_ANIMATION_CHANGE:
-	{
-		Protocol::SC_ANIMATION_TRANSITION_PACKET anim;
-		if (PacketFactory::Deserialize<Protocol::SC_ANIMATION_TRANSITION_PACKET>(header, data, &anim))
-		{
-			NetId nid{ anim.netid() };
-			int id = nid.GetId();
-			
-			auto it = activeCharacters.find(id);
-			if (it != activeCharacters.end())
-			{
-				if (auto animMachine = it->second->GetComponent<AnimationMachine>())
-				{
-					uint32 serverAnimIdx = anim.curranim();
-					uint32 startIdx = animMachine->GetAnimationSet()->GetStartIndex();
-					string animName = animMachine->GetAnimationSet()->GetClipNameByIndex(serverAnimIdx - startIdx);
-
-					animMachine->OnServerClipConfirm(animName);
-				}
-			}
-		}
-		break;
-	}
-	//case PacketType::SC_ATTACK: {
-	//	Protocol::SC_ATTACK_PACKET attack;
-	//	if (attack.ParseFromArray(packet.body().data(), packet.body().size())) {
-	//		if (sessionId == INPUT.GetClientID()) {
-	//			// TODO : Client Attack Animation
-	//			OutputDebugStringA("SC_ATTACK_PACKET received\n");
-	//		}
-	//	}
-	//	break;
-	//}
-	//case Protocol::PacketType::SC_DODGE: {
-	//	Protocol::SC_DODGE_PACKET dodge;
-	//	if (dodge.ParseFromArray(packet.body().data(), packet.body().size())) {
-	//		if (sessionId == INPUT.GetClientID()) {
-	//			// TODO : Client Dodge Animation 
-	//			OutputDebugStringA("SC_DODGE_PACKET received\n");
-	//		}
-	//	}
-	//}
-	}
 }
 
 void SoloGameScene::InitializeSceneObjectPools()

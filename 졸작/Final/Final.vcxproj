@@ -296,6 +296,7 @@ exit 0</Command>
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LoadingSceneUIController.h" />
+    <ClInclude Include="NetHelper.h" />
     <ClInclude Include="RenderTargets.h" />
     <ClInclude Include="SelectSceneUIController.h" />
     <ClInclude Include="ShadowMappingManager.h" />

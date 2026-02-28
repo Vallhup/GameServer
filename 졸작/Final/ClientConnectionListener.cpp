@@ -16,13 +16,9 @@ void ClientConnectionListener::OnDisconnected(Connection& owner)
 
 void ClientConnectionListener::OnPacketReceived(Connection& owner, const PacketHeader& header, const BYTE* data)
 {
-	// TEMP : Server Test
 	if (SceneManager* sManager = SCENE_MANAGER)
 	{
 		if (Scene* scene = sManager->GetCurrentScene())
-		{
-			if (auto testScene = dynamic_cast<SoloGameScene*>(scene))
-				testScene->HandlePacket(header, data);
-		}
+			scene->HandlePacket(header, data);
 	}
 }

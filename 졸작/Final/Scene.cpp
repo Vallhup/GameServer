@@ -6,6 +6,8 @@
 #include "Camera.h"
 #include "Input.h"
 
+#include "NetHelper.h"
+
 void Scene::Initialize(HWND hWnd, DX12Core& core)
 {
     coreRef = &core;
@@ -63,4 +65,37 @@ Camera* Scene::GetCamera() const
 void Scene::SetSceneManager(SceneManager* manager)
 {
     sManagerRef = manager;
+}
+
+void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
+{
+	PacketType type = static_cast<PacketType>(header.type);
+
+	switch (type) {
+	case PacketType::SC_LOGIN:
+	{
+		return NetHelper::DispatchPacket<Protocol::SC_LOGIN_PACKET>(header, data,
+			[this](const auto& packet) { HandleLogin(packet); });
+	}
+	case PacketType::SC_ADD:
+	{
+		return NetHelper::DispatchPacket<Protocol::SC_ADD_PACKET>(header, data,
+			[this](const auto& packet) { HandleAdd(packet); });
+	}
+	case PacketType::SC_MOVE_OBJECT:
+	{
+		return NetHelper::DispatchPacket<Protocol::SC_MOVE_PACKET>(header, data,
+			[this](const auto& packet) { HandleMove(packet); });
+	}
+	case PacketType::SC_REMOVE:
+	{
+		return NetHelper::DispatchPacket<Protocol::SC_REMOVE_PACKET>(header, data,
+			[this](const auto& packet) { HandleRemove(packet); });
+	}
+	case PacketType::SC_ANIMATION_CHANGE:
+	{
+		return NetHelper::DispatchPacket<Protocol::SC_ANIMATION_TRANSITION_PACKET>(header, data,
+			[this](const auto& packet) { HandleAnimationChange(packet); });
+	}
+	}
 }
