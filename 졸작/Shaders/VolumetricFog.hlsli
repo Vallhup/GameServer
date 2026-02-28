@@ -16,10 +16,17 @@ float BeerLambert(float density, float distance)
     return exp(-sigma_t * distance);
 }
 
-float SampleShadowMap(float3 worldPos)
+float SampleShadowMap(float3 worldPos, float viewDepth)
 {
-    float4 lightSpacePos = mul(float4(worldPos, 1.0), lightView);
-    lightSpacePos = mul(lightSpacePos, lightProjection);
+    int cascade = 3;
+    if (viewDepth < cascadeSplit.x)
+        cascade = 0;
+    if (viewDepth < cascadeSplit.y)
+        cascade = 1;
+    if (viewDepth < cascadeSplit.z)
+        cascade = 2;
+    
+    float4 lightSpacePos = mul(float4(worldPos, 1.0), lightVP[cascade]);
     
     lightSpacePos.xyz /= lightSpacePos.w;
     
@@ -31,7 +38,7 @@ float SampleShadowMap(float3 worldPos)
         return 1.0;
     
     float currentDepth = lightSpacePos.z;
-    float shadowMapDepth = shadowMap.Sample(linearSampler, shadowUV).r;
+    float shadowMapDepth = shadowMapArray.Sample(linearSampler, float3(shadowUV, cascade)).r;
     
     float bias = 0.0001f;
     return (currentDepth - bias) > shadowMapDepth ? 0.0 : 1.0;
@@ -82,7 +89,7 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
         if (density > 0.0001)
         {
              // Shadow 체크 (Light Shaft 효과)
-            float shadowFactor = SampleShadowMap(samplePos);
+            float shadowFactor = SampleShadowMap(samplePos, currentDistance);
 
              // Phase function
             float cosTheta = dot(rayDir, lightDir);

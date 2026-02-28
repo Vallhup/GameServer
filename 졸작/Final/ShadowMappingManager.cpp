@@ -3,12 +3,47 @@
 
 void ShadowMappingManager::Initialize(ID3D12Device* device)
 {
+	SettingsForCSM();
 	CreateCSMResources(device);
 	CreateAtlasResources();
 }
 
+void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
+{
+	XMVECTOR centerPos = XMLoadFloat3(&center);
+
+	for (int i = 0; i < CASCADE_COUNT; ++i)
+	{
+		float cascadeSize = (&csmConstants.cascadeSplit.x)[i];
+
+		// 광원 위치 = center에서 lightDir 반대 방향으로 이동 center - (lightdir * cascadeSize)
+		XMVECTOR lightPos = XMVectorSubtract(centerPos, XMVectorScale(csmLightDir, cascadeSize));
+		XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+		// 광원 시선 = lightPos에서 center 바라봄
+		XMMATRIX lightView = XMMatrixLookAtLH(lightPos, centerPos, up);
+		// 광원 투영 = cascadeSize 기반
+		XMMATRIX lightProj = XMMatrixOrthographicLH(cascadeSize * 2.0f, cascadeSize * 2.0f, 0.1f, cascadeSize * 2.0f);
+
+		csmConstants.lightVP[i] = XMMatrixTranspose(XMMatrixMultiply(lightView, lightProj));
+	}
+
+	csmConstantBuffer->CopyData(&csmConstants, sizeof(CascadeShadowConstants));
+}
+
+void ShadowMappingManager::SettingsForCSM()
+{
+	XMVECTOR lightDir = XMVectorSet(-45.0f, -40.0f, -60.0f, 0);
+	csmLightDir = XMVector3Normalize(lightDir);
+
+	csmConstants.cascadeSplit = { 10.0f, 30.0f, 80.0f, 180.0f };
+}
+
 void ShadowMappingManager::CreateCSMResources(ID3D12Device* device)
 {
+	csmConstantBuffer = make_unique<UploadBuffer>();
+	csmConstantBuffer->Initialize(device, sizeof(CascadeShadowConstants));
+
 	D3D12_RESOURCE_DESC shadowDesc = {};
 	shadowDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	shadowDesc.Width = SHADOW_MAP_SIZE;

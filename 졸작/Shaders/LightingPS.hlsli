@@ -49,7 +49,8 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 
             if (i == 0)
             {
-                shadow = CalculateShadow(worldPos);
+                float viewDepth = length(worldPos - cameraPosition);
+                shadow = CalculateShadow(worldPos, viewDepth);
                 lightContribution *= shadow;
             }
         }

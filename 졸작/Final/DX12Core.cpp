@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "DX12Core.h"
+#include "Engine.h"
+#include "SceneManager.h"
 #include "RootSignature.h"
 #include "Shader.h"
 #include "DeviceContext.h"
@@ -20,7 +22,6 @@ void DX12Core::Initialize(HWND hwnd)
 	shader = make_unique<Shader>();
 	frameCB = make_unique<UploadBuffer>();
 	sceneCB = make_unique<UploadBuffer>();
-	shadowFrameCB = make_unique<UploadBuffer>();
 	fogCB = make_unique<UploadBuffer>();
 
 	shadowMgr = make_unique<ShadowMappingManager>();
@@ -31,7 +32,6 @@ void DX12Core::Initialize(HWND hwnd)
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
 	frameCB->Initialize(GetDevice(), sizeof(FrameConstants));
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
-	shadowFrameCB->Initialize(GetDevice(), sizeof(XMMATRIX) * 2);
 	fogCB->Initialize(GetDevice(), sizeof(FogConstants));
 
 	shadowMgr->Initialize(GetDevice());
@@ -39,33 +39,31 @@ void DX12Core::Initialize(HWND hwnd)
 	lightMgr->Initialize(GetDevice());
 }
 
-void DX12Core::BeginShadowPass()
+void DX12Core::Update()
 {
-	XMVECTOR lightPos = XMVectorSet(80.0f + 45.0f, 40.0f, 80.0f + 60.0f, 1);
-	XMVECTOR targetPos = XMVectorSet(80.0f, 0.0f, 80.0f, 1);
-	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
+	// CSM Update
+	shadowMgr->UpdateCascadeShadow(SCENE_MANAGER->GetCurrentScene()->GetCamera()->GetPosition());
+}
 
-	XMMATRIX lightView = XMMatrixTranspose(XMMatrixLookAtLH(lightPos, targetPos, up));
-	XMMATRIX lightProjection = XMMatrixTranspose(XMMatrixOrthographicLH(180.0f, 180.0f, 1.0f, 200.0f));
+void DX12Core::BeginShadowPass(int cascadeIdx)
+{
+	if (cascadeIdx == 0) {
+		static bool firstShadowPass = true;
 
-	shadowFrameCB->CopyData(&lightView, sizeof(XMMATRIX), 0);
-	shadowFrameCB->CopyData(&lightProjection, sizeof(XMMATRIX), sizeof(XMMATRIX));
-
-	static bool firstShadowPass = true;
-
-	if (!firstShadowPass) {
-		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			shadowMgr->GetCsmResource(),
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-			D3D12_RESOURCE_STATE_DEPTH_WRITE
-		);
-		deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
-	}
-	else {
-		firstShadowPass = false;
+		if (!firstShadowPass) {
+			D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+				shadowMgr->GetCsmResource(),
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				D3D12_RESOURCE_STATE_DEPTH_WRITE
+			);
+			deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+		}
+		else {
+			firstShadowPass = false;
+		}
 	}
 
-	D3D12_CPU_DESCRIPTOR_HANDLE shadowDSV = shadowMgr->GetCsmDSV(0);
+	D3D12_CPU_DESCRIPTOR_HANDLE shadowDSV = shadowMgr->GetCsmDSV(cascadeIdx);
 	deviceCtx->GetGraphicsCmdList()->OMSetRenderTargets(0, nullptr, FALSE, &shadowDSV);
 
 	deviceCtx->GetGraphicsCmdList()->ClearDepthStencilView(shadowDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
@@ -82,19 +80,24 @@ void DX12Core::BeginShadowPass()
 	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &shadowRect);
 
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootSignature(GetRootSig()->Get());
-	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRoot32BitConstant(16, cascadeIdx, 0);
 
 	//OutputDebugStringA("Shadow Pass started!!\n");
 }
 
-void DX12Core::EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
+void DX12Core::EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect, int cascadeIdx)
 {
-	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-		shadowMgr->GetCsmResource(),
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-	);
-	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+	if (cascadeIdx == shadowMgr->GetCascadeCount() - 1)
+	{
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			shadowMgr->GetCsmResource(),
+			D3D12_RESOURCE_STATE_DEPTH_WRITE,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+		);
+		deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+	}
+
 	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
 	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
 
@@ -182,7 +185,7 @@ void DX12Core::BeginLightingPass()
 
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
-	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowFrameCB->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
 
 	ID3D12DescriptorHeap* heaps[] = { rtMgr->GetDeferredSRVHeap() };
 	deviceCtx->GetGraphicsCmdList()->SetDescriptorHeaps(1, heaps);

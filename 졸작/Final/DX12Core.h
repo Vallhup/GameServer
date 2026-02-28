@@ -42,11 +42,13 @@ class DX12Core
 public:
 	void Initialize(HWND hwnd);
 
+	void Update();
+
 	//-------------------------------------------------------
 	// Render line
 	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
-	void BeginShadowPass();
-	void EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+	void BeginShadowPass(int cascadeIdx);
+	void EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect, int cascadeIdx);
 
 	void BeginGBufferPass();
 	void EndGBufferPass();
@@ -72,8 +74,9 @@ public:
 	void ResetCommandQueue();
 	//-------------------------------------------------------
 
-	LightManager* GetLightMgr() { return lightMgr.get(); }
+	ShadowMappingManager* GetShadowMgr() { return shadowMgr.get(); }
 	RenderTargets* GetRenderTargetMgr() { return rtMgr.get(); }
+	LightManager* GetLightMgr() { return lightMgr.get(); }
 
 	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;
@@ -96,7 +99,6 @@ private:
 	unique_ptr<Shader> shader;
 	unique_ptr<UploadBuffer> frameCB;
 	unique_ptr<UploadBuffer> sceneCB;
-	unique_ptr<UploadBuffer> shadowFrameCB;
 	unique_ptr<UploadBuffer> fogCB;
 
 	XMFLOAT3 playerCurrentPos = { 0, 0, 0 };

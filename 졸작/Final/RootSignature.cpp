@@ -32,7 +32,7 @@ void RootSignature::Initialize(ID3D12Device* device)
         CD3DX12_ROOT_PARAMETER p;
         p.InitAsDescriptorTable(1, tables.back().data(), D3D12_SHADER_VISIBILITY_PIXEL);
         rootParams.push_back(p);
-    };
+        };
 
     auto AddSRVTable = [&](UINT startReg, UINT count, UINT space = 0) {
         tables.emplace_back(1);
@@ -42,7 +42,13 @@ void RootSignature::Initialize(ID3D12Device* device)
         CD3DX12_ROOT_PARAMETER p;
         p.InitAsDescriptorTable(1, tables.back().data(), D3D12_SHADER_VISIBILITY_PIXEL);
         rootParams.push_back(p);
-    };
+        };
+
+    auto AddConstant = [&](UINT value, UINT reg) {
+        CD3DX12_ROOT_PARAMETER param;
+        param.InitAsConstants(value, reg);
+        rootParams.push_back(param);
+        };
 
     AddCBV(0);              // [0]  b0 - FrameCB
     AddCBV(1);              // [1]  b1 - ObjectCB
@@ -64,6 +70,8 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddCBV(6);              // [14] b6 - Fog Constants
 
     AddBindlessTable(3);    // [15] t0, space3 - Bindless CubeMaps
+
+    AddConstant(1, 7);      // [16] b7 - Cascade shadow index
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[2];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,

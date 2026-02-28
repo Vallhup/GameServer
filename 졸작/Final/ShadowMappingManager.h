@@ -10,14 +10,18 @@ class ShadowMappingManager
 {
 public:
 	void Initialize(ID3D12Device* device);
+	void UpdateCascadeShadow(const XMFLOAT3& center);
 
 	ID3D12Resource* GetCsmResource() const { return csmTexture.Get(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCsmDSV(int index) const { return csmDSVHandle[index]; }
 	int GetCascadeCount() const { return CASCADE_COUNT; }
 	UINT GetShadowMapSize() const { return SHADOW_MAP_SIZE; }
+	UploadBuffer* GetCsmCB() const { return csmConstantBuffer.get(); }
 
 private:
+	void SettingsForCSM();
 	void CreateCSMResources(ID3D12Device* device);
+
 	void CreateAtlasResources();
 
 private:
@@ -30,6 +34,8 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE csmDSVHandle[CASCADE_COUNT];
 
 	unique_ptr<UploadBuffer> csmConstantBuffer;
+	CascadeShadowConstants csmConstants;
+	XMVECTOR csmLightDir;
 
 	// Shadow Atlas (ÃßÈÄ)
 
