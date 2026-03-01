@@ -171,6 +171,7 @@
     <ClCompile Include="AnimationManager.cpp" />
     <ClCompile Include="AnimationPoseBindSystem.cpp" />
     <ClCompile Include="AnimationSelectSystem.cpp" />
+    <ClCompile Include="BuffManager.cpp" />
     <ClCompile Include="ColliderActivationSystem.cpp" />
     <ClCompile Include="ColliderUpdateSystem.cpp" />
     <ClCompile Include="CombatCollisionCheckSystem.cpp" />
@@ -217,6 +218,8 @@
     <ClInclude Include="AnimationManager.h" />
     <ClInclude Include="AnimationPoseBindSystem.h" />
     <ClInclude Include="AnimationSelectSystem.h" />
+    <ClInclude Include="BuffData.h" />
+    <ClInclude Include="BuffManager.h" />
     <ClInclude Include="Bufs.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ColliderActivationSystem.h" />
