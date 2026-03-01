@@ -90,6 +90,14 @@ cbuffer CascadeShadowIndex : register(b7)
     int3 cascadePadding;
 };
 
+cbuffer SsaoCB : register(b8)
+{
+    float4 samples[16];
+    float2 noiseScale;
+    float samplingRadius;
+    float ssaoPadding;
+};
+
 //-------------------------------------------------------
 // VARIOUS TYPES OF SHADER RESOURCES
 //-------------------------------------------------------

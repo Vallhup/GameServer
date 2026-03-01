@@ -72,6 +72,7 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddBindlessTable(3);    // [15] t0, space3 - Bindless CubeMaps
 
     AddConstant(1, 7);      // [16] b7 - Cascade shadow index
+    AddCBV(8);              // [17] b8 - SsaoCB
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[2];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,

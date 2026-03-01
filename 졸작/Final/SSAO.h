@@ -1,5 +1,13 @@
 #pragma once
 
+struct SSAOConstants 
+{
+	XMFLOAT4 samples[16];
+	XMFLOAT2 noiseScale;
+	float samplingRadius;
+	float padding;
+};
+
 class SSAO
 {
 public:
@@ -9,9 +17,11 @@ public:
 	ID3D12Resource* GetSsaoBlurRT() const { return ssaoBlurRT.Get(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetSsaoRTVHandle() const { return ssaoRTVHandle; }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetSsaoBlurRTVHandle() const { return ssaoBlurRTVHandle; }
+	UploadBuffer* GetSsaoCB() const { return ssaoCB.get(); }
 
 private:
 	void CreateSSAOResources(ID3D12Device* device);
+	void GenerateSampleKernel();
 
 private:
 	ComPtr<ID3D12Resource> ssaoRT;
@@ -21,4 +31,7 @@ private:
 	ComPtr<ID3D12DescriptorHeap> ssaoSRVHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTVHandle = {};
 	D3D12_CPU_DESCRIPTOR_HANDLE ssaoBlurRTVHandle = {};
+
+	SSAOConstants ssaoConstant;
+	unique_ptr<UploadBuffer> ssaoCB;
 };

@@ -49,4 +49,36 @@ void SSAO::CreateSSAOResources(ID3D12Device* device)
 	device->CreateRenderTargetView(ssaoBlurRT.Get(), nullptr, ssaoBlurRTVHandle);
 
 	OutputDebugStringA("Ssao Blur RTV Created!!\n");
+
+	GenerateSampleKernel();
+
+	ssaoCB = make_unique<UploadBuffer>();
+	ssaoCB->Initialize(device, sizeof(SSAOConstants));
+	ssaoCB->CopyData(&ssaoConstant, sizeof(SSAOConstants));
+}
+
+void SSAO::GenerateSampleKernel()
+{
+	random_device rd;
+	mt19937 gen(rd());
+	uniform_real_distribution<float> dist(0.0f, 1.0f);
+	
+	for (int i = 0; i < 16; ++i)
+	{
+		XMFLOAT3 sample = { dist(gen) * 2.0f - 1.0f, dist(gen) * 2.0f - 1.0f , dist(gen) };
+
+		XMVECTOR v = XMLoadFloat3(&sample);
+		v = XMVector3Normalize(v);
+
+		float scale = (float)i / 16.0f;
+		scale = 0.1f + scale * scale * 0.9f;  // 중심에 더 밀집
+		v = XMVectorScale(v, scale);
+
+		XMStoreFloat3((XMFLOAT3*)&ssaoConstant.samples[i], v);
+		ssaoConstant.samples[i].w = 0.0f;
+	}
+
+	ssaoConstant.noiseScale = XMFLOAT2(WinSize.x / 2.0f / 4.0f, WinSize.y / 2.0f / 4.0f);
+	ssaoConstant.samplingRadius = 0.5f;
+	ssaoConstant.padding = 0.0f;
 }
