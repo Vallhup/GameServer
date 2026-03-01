@@ -1,0 +1,71 @@
+//------------------------------------------------------------------------------------
+// Froxel 정의
+//------------------------------------------------------------------------------------
+Froxel = Frustum + Voxel (Frustum을 3D 격자 형태로 분할하여 지정한 단위)
+
+각 Froxel이 저장하는 내용
+- RGB: 산란된 빛의 색, A: 투과율 (Transmittance) 또는 밀도(Density)
+
+사용처 - Volumetric Ray Marching 혹은 Clustered rendering
+
+본 프로젝트에서 Froxel Grid 크기 160 x 90 x 64 = 921600개의 Froxel
+즉, 1개의 Froxel의 크기는 12 x 12 x depth 범위
+1 depth slice = 160 x 90 = 14400개 Froxel
+160 = 1920 / 12
+90 = 1080 / 12
+64 = Depth에 대한 분할
+
+
+//------------------------------------------------------------------------------------
+// Depth Slicing (Z축 분할)
+//------------------------------------------------------------------------------------
+
+균일 분할 vs 지수 분할:
+
+[균일 분할 - Linear]
+Near ├──┼──┼──┼──┼──┼──┼──┤ Far
+       같은 간격
+
+[지수 분할 - Exponential] (일반적으로 사용)
+Near ├┼┼─┼──┼────┼────────┤ Far
+       가까울수록 촘촘, 멀수록 듬성
+
+float SliceToDepth(int slice, int numSlices, float nearZ, float farZ)
+{
+    float t = float(slice) / float(numSlices);
+    return nearZ * pow(farZ / nearZ, t);  // Exponential
+}
+
+
+//------------------------------------------------------------------------------------
+// Froxel Resource 구성 이유
+//------------------------------------------------------------------------------------
+
+왜 UAV(Unordered Access View)가 필요?
+- 읽기 + 쓰기 가능
+- Compute shader에서 임의의 위치에 값 저장 가능하기에..
+
+왜 SRV(Shader Resource View)가 필요?
+- 읽기 전용
+- Pixel/Vertex Shader에서 샘플링 가능하기에..
+
+Froxel 볼륨은 3D Texture로 생성 후 Compute Shader에서 각 셀에 scattering 값을 기록해야 하기 때문에 UAV 필요
+
+
+//------------------------------------------------------------------------------------
+// Froxel에 대해 두개의 텍스처(Scattering / Integrated)를 사용하는 이유
+//------------------------------------------------------------------------------------
+
+Pass 1: Scattering 계산
+- froxelScattering (UAV) : 현재 프레임의 산란 계산, Light 기여도 + 밀도
+
+Pass 2: Temporal Integration (시간 누적)
+- froxelIntegrated (UAV/SRV) - 이전 프레임 + 현재 (블렌딩), 노이즈 감소
+
+Pass 3 : 최종 적용
+- froxelIntegrated (SRV) - Lighting Pass에서 샘플링, Ray Marching으로 Fog 누적
+
+3 Pass에서 중간인 Temporal Integration이 필요한 이유
+- 매 프레임 Scattering 계산만 하면 flickering/noise 발생
+- 이전 프레임과 블렌딩하면 안정적 결과 도출
+
