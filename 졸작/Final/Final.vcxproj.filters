@@ -208,6 +208,9 @@
     <ClCompile Include="ShadowMappingManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="FroxelManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -415,6 +418,10 @@
       <Filter>DirectX12\Parts</Filter>
     </ClInclude>
     <ClInclude Include="ShadowMappingManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="NetHelper.h" />
+    <ClInclude Include="FroxelManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>

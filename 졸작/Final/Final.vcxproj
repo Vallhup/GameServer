@@ -216,6 +216,7 @@ exit 0</Command>
     <ClCompile Include="DX12Core.cpp" />
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EffectRenderer.cpp" />
+    <ClCompile Include="FroxelManager.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingSceneUIController.cpp" />
@@ -293,6 +294,7 @@ exit 0</Command>
     <ClInclude Include="DX12Core.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EffectRenderer.h" />
+    <ClInclude Include="FroxelManager.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LoadingSceneUIController.h" />

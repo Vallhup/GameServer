@@ -20,4 +20,23 @@ Shadow Atlas 혹은 Shadow2DArray를 통합으로 관리하는 ShadowMapManager 
 
 [26-02-27]
 1. CSM & Shadow Atlas 둘다 관리하는 ShadowMappingManager 클래스 생성으로 결정
-2. 일단 CSM에 해당하는 부분들만 코딩
+2. 일단 CSM 기본 구조에 해당하는 부분들만 코딩
+[2번에 해당하는 것들]
+- Shadow Manager 클래스와 DX12에서 사용되는 Resource 관련 요소들과 각각의 생성 및 설정
+- RenderTarget 클래스에서 shadow 관련한 것중 SRV 제외하고 다 삭제해주기
+(내 프로젝트에서 Shadow SRV는 deferredSRVHeap로 같이 관리되기 때문에 유지)
+
+[26-02-28]
+1. CSM 나머지 세부 로직 구현
+- cascade별 LightVP 행렬 지정 및 전달
+- Shadow Pass 리소스 상태 관리 (첫 cascadeIdx때 BeginShadowPass에서와 마지막 cascadeIdx때 EndShadowPass에서만 변경)
+- 셰이더로 cascadeIndex 전달하는 Constant 생성 & 셰이더에서 Cascade 선택 로직 생성
+- shadow pass 루프 count 순서만큼 돌고 이런건 알아서 찾아보면서 적용
+
+2. CSM을 구현 햇더니 오는 세부적인 문제들 해결
+- cascade 0 <-> cascade 1 사이 경계선 문제 -> 각 cascade별 고유 bias 지정을 통한 해결
+(왜 이렇게 해결? 각 cascade는 같은 크기의 해상도 (4K)의 shadow map으로 서로 다른 크기의 영역의 그림자를 커버함.
+그래서 픽셀당 월드 공간의 크기 (정밀도)가 다름. 따라서 각 cascade별 고유한 bias를 지정해 모든 cascade에서 품질 향상)
+- 캐릭터에 입혀지는 그림자 격자 현상 -> shadow map 해상도 4k & cascade 0번 거리 10m & pcf 5x5로 해결 (더 좋은 방법이 있지 않을까 싶음)
+- 각 cascade에 적용되는 물체들이 제각각 달라서 생기는 그림자 잘림 현상 -> 
+모든 cascade의 Light pos와 depth range 통일 후 각 cascade별 shadow map 해상도만 분리
