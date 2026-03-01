@@ -51,10 +51,10 @@ AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
 	const auto* selfTransform = transforms.GetComponent(self);
 	if (!selfTransform) return AttackType::None;
 
-	if (aiState->target.id == -1)
+	if (aiState->target.id == Entity::InvalidId)
 	{
 		Entity target = FindTargetPlayer(self, *aiState, *selfTransform);
-		if (target.id == -1) return AttackType::None;
+		if (target.id == Entity::InvalidId) return AttackType::None;
 
 		aiState->target = target;
 		aiState->patternsOnTarget = 0;
@@ -63,7 +63,7 @@ AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
 	else if (aiState->patternsOnTarget > 3)
 	{
 		Entity target = FindFarthestPlayer(self, *selfTransform);
-		if (target.id == -1) return AttackType::None;
+		if (target.id == Entity::InvalidId) return AttackType::None;
 
 		aiState->target = target;
 		aiState->patternsOnTarget = 0;
@@ -77,7 +77,7 @@ AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
 	const double targetDistance = targetDx * targetDx + targetDz * targetDz;
 
 	// 메테오 조건
-	const double nearDistance{ 5.0 * 5.0f };
+	const double nearDistance{ 5.0 * 5.0 };
 	int nearCount{ 0 };
 
 	auto& players = ecs.GetStorage<PlayerTag>();
@@ -134,7 +134,7 @@ AttackType AIThinkSystem::Think(Entity self, AIState* aiState)
 
 Entity AIThinkSystem::FindTargetPlayer(Entity self, const AIState& aiState, const Transform& transform)
 {
-	if (aiState.lastAttacker.id != -1)
+	if (aiState.lastAttacker.id != Entity::InvalidId)
 	{
 		if (!_runtime.GetECS().GetStorage<DisconnectedTag>().HasComponent(aiState.lastAttacker))
 			return aiState.lastAttacker;
