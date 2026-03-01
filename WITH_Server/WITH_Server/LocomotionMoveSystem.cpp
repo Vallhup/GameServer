@@ -54,7 +54,6 @@ void LocomotionMoveSystem::ApplyNormalMovement(
 			animPhase->wasMoving = true;
 		}
 
-		// TEMP : 걷기 뛰기에 따라 속도 조정
 		float speed = static_cast<float>(attribute.moveSpeed);
 		if (loco.isRun) speed *= 2;
 

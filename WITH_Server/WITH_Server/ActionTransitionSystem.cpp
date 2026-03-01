@@ -5,6 +5,7 @@
 #include "RepComponent.h"
 #include "Tags.h"
 #include "Stats.h"
+#include "Movement.h"
 
 ActionTransitionSystem::ActionTransitionSystem(WorldRuntime& rt, int p)
 	: System(rt, p)
@@ -166,12 +167,24 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, EntityType type,
 		move->segmentIndex = 0;
 		move->movedInSegment = 0.0f;
 
-		if (auto* trans = ecs.GetStorage<Transform>().GetComponent(entity))
+		XMVECTOR dir = XMVectorZero();
+		if (const auto* vel = ecs.GetStorage<Velocity>().GetComponent(entity))
 		{
-			XMStoreFloat3(&move->dir, TransformHelper::Forward(*trans));
-			// TEMP : 나중에 데이터로 분리
-			move->dirLocked = true;
+			dir = XMLoadFloat3(&vel->dir);
 		}
+
+		XMVECTOR normDir;
+		if (!TransformHelper::SafeNormalize3(dir, normDir))
+		{
+			if (const auto* trans = ecs.GetStorage<Transform>().GetComponent(entity))
+				normDir = TransformHelper::Forward(*trans);
+
+			else
+				normDir = XMVectorZero();
+		}
+		
+		XMStoreFloat3(&move->dir, normDir);
+		move->dirLocked = true;
 	}
 }
 

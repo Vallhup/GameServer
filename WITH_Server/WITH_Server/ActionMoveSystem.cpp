@@ -70,8 +70,8 @@ bool ActionMoveSystem::AdvanceSegmentByTime(ActionMoveTag* actionMove, const Act
 		actionMove->lastSegmentIndex = -1;
 		actionMove->dashTraveled = 0.0;
 		actionMove->dashHasTarget = false;
-		actionMove->dirLocked = false;
-		actionMove->yawLocked = false;
+		//actionMove->dirLocked = false;
+		//actionMove->yawLocked = false;
 	}
 	
 	return advanced;
@@ -88,8 +88,8 @@ bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMov
 	actionMove->dashHasTarget = false;
 	actionMove->dashStartPos = trans.position;
 
-	if (!seg.moveParams.lockDir)
-		actionMove->dirLocked = false;
+	/*if (!seg.moveParams.lockDir)
+		actionMove->dirLocked = false;*/
 
 	if (seg.moveMode == MoveMode::DashToTarget)
 	{
@@ -131,8 +131,8 @@ void ActionMoveSystem::ForceNextSegment(ActionMoveTag* actionMove, const std::ve
 	actionMove->movedInSegment = 0.0;
 	actionMove->dashTraveled = 0.0;
 	actionMove->dashHasTarget = false;
-	actionMove->dirLocked = false;
-	actionMove->yawLocked = false;
+	//actionMove->dirLocked = false;
+	//actionMove->yawLocked = false;
 }
 
 bool ActionMoveSystem::GetLockDirection(ActionMoveTag* actionMove, const Transform& trans, const Velocity& vel, bool lockDir, XMVECTOR& outDir)
@@ -327,38 +327,6 @@ bool ActionMoveSystem::HandleDashToTarget(ActionMoveTag* actionMove, ActionMoveD
 	}
 
 	return (move >= distRemain);
-
-	/*const double maxSpeed = static_cast<double>(seg.moveParams.maxSpeed);
-	if (maxSpeed <= 1e-9) return true;
-
-	const double move = maxSpeed * dT;
-
-	const double maxTravel = static_cast<double>(seg.moveParams.maxTravel);
-	const double travelRemain = maxTravel - actionMove->dashTraveled;
-	if (travelRemain <= 1e-9)
-		return true;
-
-	const double distRemain = 
-		std::max(0.0, static_cast<double>(dist) - static_cast<double>(stopRange));
-
-	const double actual = std::min({ move, travelRemain, distRemain });
-	if (actual > 1e-6)
-	{
-		XMFLOAT3 deltaMove;
-		XMStoreFloat3(&deltaMove, XMVectorScale(dir, actual));
-
-		actionDelta->hasMove = true;
-		actionDelta->deltaPos = deltaMove;
-		actionMove->dashTraveled += actual;
-	}
-
-	if (actionMove->dashTraveled >= maxTravel)
-		return true;
-
-	if (distRemain <= actual)
-		return true;
-
-	return false;*/
 }
 
 bool ActionMoveSystem::HandleFixedDeltaY(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const ActionMoveSegment& seg, const ActionState& actionState, const double dT)
