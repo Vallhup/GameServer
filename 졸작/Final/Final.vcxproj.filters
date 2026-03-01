@@ -211,6 +211,9 @@
     <ClCompile Include="FroxelManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="SSAO.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -424,6 +427,9 @@
     <ClInclude Include="FroxelManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
+    <ClInclude Include="SSAO.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GBufferVS.hlsli">
@@ -491,6 +497,12 @@
     </None>
     <None Include="..\Shaders\VertexAnimation.hlsli">
       <Filter>Shaders\Animation</Filter>
+    </None>
+    <None Include="..\Shaders\SsaoVS.hlsli">
+      <Filter>Shaders\SSAO</Filter>
+    </None>
+    <None Include="..\Shaders\SsaoPS.hlsli">
+      <Filter>Shaders\SSAO</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -610,6 +622,12 @@
     </Filter>
     <Filter Include="DirectX12\Parts">
       <UniqueIdentifier>{1ebfab93-145c-40db-9f96-3273b4b50ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\SSAO">
+      <UniqueIdentifier>{e1356d59-826d-45f0-86fd-5727d48d741d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{54ad2961-692c-45b9-9790-32fdb3c48307}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

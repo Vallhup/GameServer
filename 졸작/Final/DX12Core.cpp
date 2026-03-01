@@ -10,6 +10,7 @@
 #include "RenderTargets.h"
 #include "LightManager.h"
 #include "FroxelManager.h"
+#include "SSAO.h"
 
 void DX12Core::Initialize(HWND hwnd)
 {
@@ -29,6 +30,7 @@ void DX12Core::Initialize(HWND hwnd)
 	rtMgr = make_unique<RenderTargets>();
 	lightMgr = make_unique<LightManager>();
 	froxelMgr = make_unique<FroxelManager>();
+	ssaoMgr = make_unique<SSAO>();
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
@@ -40,6 +42,7 @@ void DX12Core::Initialize(HWND hwnd)
 	rtMgr->Initialize(GetDevice(), shadowMgr.get());
 	lightMgr->Initialize(GetDevice());
 	froxelMgr->Initialize(GetDevice());
+	ssaoMgr->Initialize(GetDevice());
 }
 
 void DX12Core::Update()

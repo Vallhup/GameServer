@@ -240,6 +240,7 @@ exit 0</Command>
     <ClCompile Include="PanelUI.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
+    <ClCompile Include="SSAO.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="TownScene.cpp" />
     <ClCompile Include="Singleton.cpp" />
@@ -319,6 +320,7 @@ exit 0</Command>
     <ClInclude Include="PanelUI.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneRenderer.h" />
+    <ClInclude Include="SSAO.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="TownScene.h" />
     <ClInclude Include="Singleton.h" />
@@ -366,6 +368,8 @@ exit 0</Command>
     <None Include="..\Shaders\ShadowVS.hlsli" />
     <None Include="..\Shaders\SkyboxPS.hlsli" />
     <None Include="..\Shaders\SkyboxVS.hlsli" />
+    <None Include="..\Shaders\SsaoPS.hlsli" />
+    <None Include="..\Shaders\SsaoVS.hlsli" />
     <None Include="..\Shaders\VertexAnimation.hlsli" />
     <None Include="..\Shaders\VolumetricFog.hlsli" />
   </ItemGroup>

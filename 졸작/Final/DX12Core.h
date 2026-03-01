@@ -35,6 +35,7 @@ class ShadowMappingManager;
 class RenderTargets;
 class LightManager;
 class FroxelManager;
+class SSAO;
 class RootSignature;
 class Shader;
 
@@ -78,6 +79,8 @@ public:
 	ShadowMappingManager* GetShadowMgr() { return shadowMgr.get(); }
 	RenderTargets* GetRenderTargetMgr() { return rtMgr.get(); }
 	LightManager* GetLightMgr() { return lightMgr.get(); }
+	FroxelManager* GetFroxelMgr() { return froxelMgr.get(); }
+	SSAO* GetSsaoMgr() { return ssaoMgr.get(); }
 
 	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;
@@ -96,6 +99,7 @@ private:
 	unique_ptr<RenderTargets> rtMgr;
 	unique_ptr<LightManager> lightMgr;
 	unique_ptr<FroxelManager> froxelMgr;
+	unique_ptr<SSAO> ssaoMgr;
 
 	unique_ptr<RootSignature> rootSig;
 	unique_ptr<Shader> shader;

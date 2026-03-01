@@ -18,6 +18,7 @@
 #include "RenderTargets.h"
 #include "LightManager.h"
 #include "FroxelManager.h"
+#include "SSAO.h"
 
 Engine& Engine::Get()
 {
