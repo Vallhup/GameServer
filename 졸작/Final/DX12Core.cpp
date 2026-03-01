@@ -9,6 +9,7 @@
 #include "ShadowMappingManager.h"
 #include "RenderTargets.h"
 #include "LightManager.h"
+#include "FroxelManager.h"
 
 void DX12Core::Initialize(HWND hwnd)
 {
@@ -27,6 +28,7 @@ void DX12Core::Initialize(HWND hwnd)
 	shadowMgr = make_unique<ShadowMappingManager>();
 	rtMgr = make_unique<RenderTargets>();
 	lightMgr = make_unique<LightManager>();
+	froxelMgr = make_unique<FroxelManager>();
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
@@ -37,6 +39,7 @@ void DX12Core::Initialize(HWND hwnd)
 	shadowMgr->Initialize(GetDevice());
 	rtMgr->Initialize(GetDevice(), shadowMgr.get());
 	lightMgr->Initialize(GetDevice());
+	froxelMgr->Initialize(GetDevice());
 }
 
 void DX12Core::Update()

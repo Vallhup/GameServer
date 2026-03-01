@@ -17,6 +17,7 @@
 #include "ShadowMappingManager.h"
 #include "RenderTargets.h"
 #include "LightManager.h"
+#include "FroxelManager.h"
 
 Engine& Engine::Get()
 {

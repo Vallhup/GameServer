@@ -34,6 +34,7 @@ class SwapChain;
 class ShadowMappingManager;
 class RenderTargets;
 class LightManager;
+class FroxelManager;
 class RootSignature;
 class Shader;
 
@@ -94,6 +95,7 @@ private:
 	unique_ptr<ShadowMappingManager> shadowMgr;
 	unique_ptr<RenderTargets> rtMgr;
 	unique_ptr<LightManager> lightMgr;
+	unique_ptr<FroxelManager> froxelMgr;
 
 	unique_ptr<RootSignature> rootSig;
 	unique_ptr<Shader> shader;
