@@ -154,4 +154,14 @@ struct SKYBOX_PS_IN
     float3 localPos : TEXCOORD0;
 };
 
+//-------------------------------------------------------
+// About ssao
+//-------------------------------------------------------
+
+struct SSAO_PS_IN
+{
+    float4 pos : SV_POSITION;
+    float2 uv : TEXCOORD;
+};
+
 #endif

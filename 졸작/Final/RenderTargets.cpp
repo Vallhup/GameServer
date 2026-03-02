@@ -9,6 +9,16 @@ void RenderTargets::Initialize(ID3D12Device* device, ShadowMappingManager* shado
 	CreateDeferredRenderingDescriptors(device, shadowMgr);
 }
 
+void RenderTargets::AddSsaoSRV(ID3D12Device* device, ID3D12Resource* ssaoRT)
+{
+	UINT srvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = deferredSRVHeap->GetCPUDescriptorHandleForHeapStart();
+	handle.ptr += srvSize * 5;
+
+	device->CreateShaderResourceView(ssaoRT, nullptr, handle);
+	OutputDebugStringA("SSAO SRV added\n");
+}
+
 void RenderTargets::CreateDepthStencilBuffer(ID3D12Device* device)
 {
 	D3D12_HEAP_PROPERTIES heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -110,7 +120,7 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 {
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.NumDescriptors = 5; // Gbuffer(3) + depth(1) + shadow(1)
+	srvHeapDesc.NumDescriptors = 6; // Gbuffer(3) + depth(1) + shadow(1) + Ssao(1, 이건 AddSsaoSRV 함수로 추가)
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	HRESULT hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&deferredSRVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create Deferred SRV Heap");

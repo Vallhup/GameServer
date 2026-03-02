@@ -369,7 +369,6 @@ exit 0</Command>
     <None Include="..\Shaders\SkyboxPS.hlsli" />
     <None Include="..\Shaders\SkyboxVS.hlsli" />
     <None Include="..\Shaders\SsaoPS.hlsli" />
-    <None Include="..\Shaders\SsaoVS.hlsli" />
     <None Include="..\Shaders\VertexAnimation.hlsli" />
     <None Include="..\Shaders\VolumetricFog.hlsli" />
   </ItemGroup>

@@ -498,9 +498,6 @@
     <None Include="..\Shaders\VertexAnimation.hlsli">
       <Filter>Shaders\Animation</Filter>
     </None>
-    <None Include="..\Shaders\SsaoVS.hlsli">
-      <Filter>Shaders\SSAO</Filter>
-    </None>
     <None Include="..\Shaders\SsaoPS.hlsli">
       <Filter>Shaders\SSAO</Filter>
     </None>

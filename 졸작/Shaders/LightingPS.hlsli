@@ -29,7 +29,7 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     
     float3 emission = rt2.rgb;
     float ao = rt2.a;
-
+    
     float3 N = worldNormal;
     float3 V = normalize(cameraPosition - worldPos);
 
@@ -74,8 +74,12 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
         directLight += lightContribution;
     }
 
+    float ssao = ssaoTexture.Sample(linearSampler, input.uv).r;
+    ssao = lerp(1.0, ssao, 0.5);
+    float finalAO = ao * ssao;
+    
     float3 iblAmbient = CalculateIBL(
-        N, V, baseColor, metallic, roughness, ao,
+        N, V, baseColor, metallic, roughness, finalAO,
         bindlessCubeMaps[NonUniformResourceIndex(IBL_IRRADIANCE_INDEX)],    // irradiance
         bindlessCubeMaps[NonUniformResourceIndex(IBL_RADIANCE_INDEX)],      // radiance
         bindlessTextures[NonUniformResourceIndex(BRDF_LUT_INDEX)],          // BRDF LUT

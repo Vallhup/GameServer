@@ -1,7 +1,16 @@
 #ifndef CONSTANTS_HLSLI
 #define CONSTANTS_HLSLI
 
+//-------------------------------------------------------
+// Common Constants
+//-------------------------------------------------------
+
 static const float PI = 3.14159265359;
+
+//-------------------------------------------------------
+// CSM Constants
+//-------------------------------------------------------
+
 const static float cascadeBias[4] = { 0.0001f, 0.0003f, 0.0008f, 0.0018f };
 
 //-------------------------------------------------------
@@ -22,5 +31,12 @@ static const float VF_GROUND_HEIGHT = 3.0f;                         // 기준 �
 
 static const float3 VF_LIGHT_COLOR = float3(1.0f, 1.0f, 1.0f);     // 안개 속 빛 색상
 static const float VF_LIGHT_INTENSITY = 1.5f;                       // 빛 강도
+
+//-------------------------------------------------------
+// Ssao Constants
+//-------------------------------------------------------
+
+static const int KERNEL_SIZE = 16;
+static const float ssaoBias = 0.05;
 
 #endif

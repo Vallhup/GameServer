@@ -11,6 +11,7 @@ enum class PSOType {
 	Shadow,
 	DebugLine,
 	Skybox,
+	Ssao,
 	END
 };
 
@@ -21,6 +22,7 @@ enum class ShaderType {
 	AnimationCS,
 	ShadowVS, ShadowPS,
 	SkyboxVS, SkyboxPS,
+	SsaoPS,
 	END
 };
 
@@ -39,6 +41,7 @@ private:
 	void InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeDebugLinePSO(ID3D12Device* device, ID3D12RootSignature* rootSig);
 	void InitializeSkyboxShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
+	void InitializeSsaoShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 
 	void CompileShader(const wstring& path, const string& entry, const string& target, ComPtr<ID3DBlob>& blobOut);
 
