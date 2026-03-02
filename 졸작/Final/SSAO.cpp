@@ -70,7 +70,7 @@ void SSAO::GenerateSampleKernel(ID3D12Device* device)
 		v = XMVector3Normalize(v);
 
 		float scale = (float)i / 16.0f;
-		scale = 0.1f + scale * scale * 0.9f;  // ¡ﬂΩ…ø° ¥ı π–¡˝
+		scale = 0.1f + scale * scale * 0.9f;  // Ï§ëÏã¨Ïóê Îçî Î∞ÄÏßë
 		v = XMVectorScale(v, scale);
 
 		XMStoreFloat3((XMFLOAT3*)&ssaoConstant.samples[i], v);
@@ -79,7 +79,7 @@ void SSAO::GenerateSampleKernel(ID3D12Device* device)
 
 	ssaoConstant.noiseScale = XMFLOAT2(WinSize.x / 2.0f / 4.0f, WinSize.y / 2.0f / 4.0f);
 	ssaoConstant.samplingRadius = 0.5f;
-	ssaoConstant.padding = 0.0f;
+	ssaoConstant.ssaoBias = 0.025f;
 
 	ssaoCB = make_unique<UploadBuffer>();
 	ssaoCB->Initialize(device, sizeof(SSAOConstants));

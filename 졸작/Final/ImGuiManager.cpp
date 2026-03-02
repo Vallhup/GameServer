@@ -8,6 +8,7 @@
 #include "MainCharacter.h"
 #include "Animator.h"
 #include "LightManager.h"
+#include "SSAO.h"
 
 void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 {
@@ -95,7 +96,36 @@ void ImGuiManager::DrawDebugUI()
 
             ImGui::Separator();
             ImGui::Checkbox("Light Editor", &showLightEditor);
+            ImGui::Checkbox("SSAO Editor", &showSsaoEditor);
             ImGui::Checkbox("Demo Window", &showDemoWindow);
+        }
+        ImGui::End();
+    }
+
+    if (showSsaoEditor && coreRef)
+    {
+        ImGui::SetNextWindowPos(ImVec2(270, 10), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(280, 130), ImGuiCond_FirstUseEver);
+
+        if (ImGui::Begin("SSAO Editor", &showSsaoEditor))
+        {
+            auto ssao = coreRef->GetSsaoMgr();
+            if (ssao)
+            {
+                float radius = ssao->GetSamplingRadius();
+                float bias = ssao->GetSsaoBias();
+
+                bool changed = false;
+                changed |= ImGui::SliderFloat("Radius", &radius, 0.1f, 5.0f);
+                changed |= ImGui::SliderFloat("Bias", &bias, 0.001f, 0.5f);
+
+                if (changed)
+                {
+                    ssao->SetSamplingRadius(radius);
+                    ssao->SetSsaoBias(bias);
+                    ssao->UpdateConstants();
+                }
+            }
         }
         ImGui::End();
     }

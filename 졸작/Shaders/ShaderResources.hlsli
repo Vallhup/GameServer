@@ -95,7 +95,7 @@ cbuffer SsaoCB : register(b8)
     float4 ssaoSamples[16];
     float2 noiseScale;
     float samplingRadius;
-    float ssaoPadding;
+    float ssaoBias;
 };
 
 //-------------------------------------------------------

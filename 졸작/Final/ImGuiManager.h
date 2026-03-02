@@ -34,6 +34,7 @@ private:
     bool showDemoWindow = false;
     bool showPerformance = true;
     bool showLightEditor = true;
+    bool showSsaoEditor = true;
 
     bool showAnimationEditor = true;
     MainCharacter* myPlayer = nullptr;

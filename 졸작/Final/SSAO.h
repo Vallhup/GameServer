@@ -1,11 +1,11 @@
 #pragma once
 
-struct SSAOConstants 
+struct SSAOConstants
 {
 	XMFLOAT4 samples[16];
 	XMFLOAT2 noiseScale;
 	float samplingRadius;
-	float padding;
+	float ssaoBias;				// Imgui 위한 bias 인자, 원래는 padding
 };
 
 class RenderTargets;
@@ -21,6 +21,14 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE GetSsaoRTVHandle() const { return ssaoRTVHandle; }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetSsaoBlurRTVHandle() const { return ssaoBlurRTVHandle; }
 	UploadBuffer* GetSsaoCB() const { return ssaoCB.get(); }
+
+	// Imgui 위한 Getter
+	float GetSamplingRadius() const { return ssaoConstant.samplingRadius; }
+	float GetSsaoBias() const { return ssaoConstant.ssaoBias; }
+	void SetSamplingRadius(float radius) { ssaoConstant.samplingRadius = radius; }
+	void SetSsaoBias(float bias) { ssaoConstant.ssaoBias = bias; }
+	void UpdateConstants() { ssaoCB->CopyData(&ssaoConstant, sizeof(SSAOConstants)); }
+	// 여기까지
 
 private:
 	void CreateSSAOResources(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, RenderTargets* rt);
