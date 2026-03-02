@@ -9,13 +9,13 @@ void RenderTargets::Initialize(ID3D12Device* device, ShadowMappingManager* shado
 	CreateDeferredRenderingDescriptors(device, shadowMgr);
 }
 
-void RenderTargets::AddSsaoSRV(ID3D12Device* device, ID3D12Resource* ssaoRT)
+void RenderTargets::AddSsaoSRV(ID3D12Device* device, ID3D12Resource* ssaoBlurRT)
 {
 	UINT srvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	D3D12_CPU_DESCRIPTOR_HANDLE handle = deferredSRVHeap->GetCPUDescriptorHandleForHeapStart();
 	handle.ptr += srvSize * 5;
 
-	device->CreateShaderResourceView(ssaoRT, nullptr, handle);
+	device->CreateShaderResourceView(ssaoBlurRT, nullptr, handle);
 	OutputDebugStringA("SSAO SRV added\n");
 }
 

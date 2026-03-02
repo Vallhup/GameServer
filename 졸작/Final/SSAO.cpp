@@ -29,7 +29,7 @@ void SSAO::CreateSSAOResources(ID3D12Device* device, ID3D12GraphicsCommandList* 
 	MASSERT(SUCCEEDED(hr), "Failed to create ssao RT");
 
 	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &ssaoDesc,
-		D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue, IID_PPV_ARGS(&ssaoBlurRT));
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, &clearValue, IID_PPV_ARGS(&ssaoBlurRT));
 	MASSERT(SUCCEEDED(hr), "Failed to create ssao blur RT");
 
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};

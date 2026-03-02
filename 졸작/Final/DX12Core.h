@@ -57,6 +57,8 @@ public:
 
 	void BeginSsaoPass();
 	void EndSsaoPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+	void BeginSsaoBlurPass();
+	void EndSsaoBlurPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 	void ClearSsaoRT();
 
 	void BeginLightingPass();

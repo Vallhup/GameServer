@@ -501,6 +501,9 @@
     <None Include="..\Shaders\SsaoPS.hlsli">
       <Filter>Shaders\SSAO</Filter>
     </None>
+    <None Include="..\Shaders\SsaoBlurPS.hlsli">
+      <Filter>Shaders\SSAO</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">

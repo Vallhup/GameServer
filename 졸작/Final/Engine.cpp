@@ -101,6 +101,8 @@ void Engine::Render()
     {
         graphics->BeginSsaoPass();
         graphics->EndSsaoPass(viewport, scissorRect);
+        graphics->BeginSsaoBlurPass();
+        graphics->EndSsaoBlurPass(viewport, scissorRect);
     }
     else
         graphics->ClearSsaoRT();

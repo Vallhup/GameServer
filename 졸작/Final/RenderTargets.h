@@ -7,7 +7,7 @@ class RenderTargets
 public:
 	void Initialize(ID3D12Device* device, ShadowMappingManager* shadowMgr);
 
-	void AddSsaoSRV(ID3D12Device* device, ID3D12Resource* ssaoRT);
+	void AddSsaoSRV(ID3D12Device* device, ID3D12Resource* ssaoBlurRT);
 
 	ID3D12Resource* GetDepthBuffer() const { return dsvBuffer.Get(); }
 	ID3D12Resource* GetGBuffer(int index) const { return gBufferRT[index].Get(); }
