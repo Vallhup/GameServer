@@ -42,7 +42,7 @@ void DX12Core::Initialize(HWND hwnd)
 	rtMgr->Initialize(GetDevice(), shadowMgr.get());
 	lightMgr->Initialize(GetDevice());
 	froxelMgr->Initialize(GetDevice());
-	ssaoMgr->Initialize(GetDevice());
+	ssaoMgr->Initialize(GetDevice(), GetGraphicsCmdList(), GetRenderTargetMgr());
 }
 
 void DX12Core::Update()
