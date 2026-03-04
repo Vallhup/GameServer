@@ -1,10 +1,7 @@
 #pragma once
 
 #include <sqlext.h>
-
-struct DBQuery {
-
-};
+#include "DBData.h"
 
 class DBManager {
 public:
@@ -19,21 +16,20 @@ public:
 	void Start(std::wstring_view database);
 	void Stop();
 
-	void QueryRequest(DBQuery query);
+	void PushCommand(std::shared_ptr<IDBCommand> cmd);
+	void PushResult(DBResult&& result);
+	bool TryPopResult(DBResult& out);
 
 private:
 	DBManager();
-
-	bool EnsureThreadConnection();
+	void WorkerLoop();
 
 	bool _running;
-
-	SQLHENV _hEnv;
-	SQLHDBC _hDbc;
 
 	std::wstring _database;
 	std::thread _worker;
 
-	concurrency::concurrent_queue<DBQuery> _queryQueue;
+	concurrency::concurrent_queue<std::shared_ptr<IDBCommand>> _commandQueue;
+	concurrency::concurrent_queue<DBResult> _resultQueue;
 };
 

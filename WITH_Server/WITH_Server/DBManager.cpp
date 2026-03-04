@@ -1,43 +1,13 @@
 #include "pch.h"
 #include "DBManager.h"
+#include "DBConn.h"
 
 DBManager::DBManager() : _running(false)
 {
-	SQLRETURN retcode = SQLAllocHandle(SQL_HANDLE_ENV, 
-		SQL_NULL_HANDLE, &_hEnv);
-
-	if ((retcode != SQL_SUCCESS) &&
-		(retcode != SQL_SUCCESS_WITH_INFO))
-	{
-#ifdef _DEBUG
-		std::cout << "SQLHENV Alloc Failed\n";
-#endif
-		return;
-	}
-
-	retcode = SQLSetEnvAttr(_hEnv, SQL_ATTR_ODBC_VERSION,
-		(SQLPOINTER)SQL_OV_ODBC3, 0);
-
-	if ((retcode != SQL_SUCCESS) &&
-		(retcode != SQL_SUCCESS_WITH_INFO))
-	{
-#ifdef _DEBUG
-		std::cout << "SQLHENV Set Attr Failed\n";
-#endif
-		return;
-	}
 }
 
 DBManager::~DBManager()
 {
-	if (_hDbc != SQL_NULL_HDBC)
-	{
-		SQLDisconnect(_hDbc);
-		SQLFreeHandle(SQL_HANDLE_DBC, _hDbc);
-	}
-
-	if (_hEnv != SQL_NULL_HENV)
-		SQLFreeHandle(SQL_HANDLE_ENV, _hEnv);
 }
 
 void DBManager::Start(std::wstring_view database)
@@ -46,63 +16,54 @@ void DBManager::Start(std::wstring_view database)
 
 	_running = true;
 	_database = database;
-	_worker = std::thread(
-		[&]()
-		{
-			while (_running)
-			{
-				DBQuery query;
-				if (_queryQueue.try_pop(query))
-				{
-					// TODO : Query ½ÇÇà
-				}
-
-				std::this_thread::sleep_for(1ms);
-			}
-		}
-	);
-
-	_worker.join();
+	_worker = std::thread([this]() { this->WorkerLoop(); });
 }
 
 void DBManager::Stop()
 {
 	_running = false;
+	_worker.join();
 }
 
-void DBManager::QueryRequest(DBQuery query)
+void DBManager::PushCommand(std::shared_ptr<IDBCommand> cmd)
 {
-	_queryQueue.push(query);
+	_commandQueue.push(std::move(cmd));
 }
 
-bool DBManager::EnsureThreadConnection()
+void DBManager::PushResult(DBResult&& result)
 {
-	if (_hDbc == SQL_NULL_HDBC)
+	_resultQueue.push(std::move(result));
+}
+
+bool DBManager::TryPopResult(DBResult& out)
+{
+	return _resultQueue.try_pop(out);
+}
+
+void DBManager::WorkerLoop()
+{
+	DBConn conn;
+	if (!conn.ConnectDSN(_database))
 	{
-		SQLRETURN retcode = SQLAllocHandle(SQL_HANDLE_DBC,
-			_hEnv, &_hDbc);
+		DBResult result;
+		result.op = DBOp::Test;
+		result.requestId = 0;
+		result.ok = false;
+		result.error = DBError::ConnectFail;
+		result.msg = L"Connect failed.";
 
-		if ((retcode != SQL_SUCCESS) &&
-			(retcode != SQL_SUCCESS_WITH_INFO))
+		PushResult(std::move(result));
+		return;
+	}
+
+	while (_running)
+	{
+		std::shared_ptr<IDBCommand> cmd;
+		if (_commandQueue.try_pop(cmd))
 		{
-#ifdef _DEBUG
-			std::cout << "SQLHDBC Alloc Failed\n";
-#endif
-			return false;
-		}
-
-		retcode = SQLConnect(_hDbc, (SQLWCHAR*)_database.c_str(),
-			SQL_NTS, (SQLWCHAR*)NULL, 0, NULL, 0);
-
-		if ((retcode != SQL_SUCCESS) &&
-			(retcode != SQL_SUCCESS_WITH_INFO))
-		{
-#ifdef _DEBUG
-			std::cout << "SQLConnect Failed\n";
-#endif
-			return false;
+			cmd->Execute(conn, *this);
 		}
 	}
 
-	return true;
+	conn.Disconnect();
 }
