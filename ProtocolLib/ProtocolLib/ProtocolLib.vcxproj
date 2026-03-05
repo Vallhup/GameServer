@@ -161,17 +161,17 @@
   <ItemGroup>
     <ClInclude Include="Include\AnimationType.h" />
     <ClInclude Include="Include\EntityType.h" />
+    <ClInclude Include="Include\NetChannel.h" />
+    <ClInclude Include="Include\NetId.h" />
     <ClInclude Include="Include\PacketFactory.h" />
     <ClInclude Include="Include\PacketType.h" />
     <ClInclude Include="Include\ProtobufCodec.h" />
     <ClInclude Include="Include\ProtocolLib.h" />
-    <ClInclude Include="NetChannel.h" />
-    <ClInclude Include="NetId.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Protocols\Protocol.pb.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="NetChannel.cpp" />
+    <ClCompile Include="Include\NetChannel.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

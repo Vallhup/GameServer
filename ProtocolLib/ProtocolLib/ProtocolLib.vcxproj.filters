@@ -7,7 +7,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="NetChannel.cpp">
+    <ClCompile Include="Include\NetChannel.cpp">
       <Filter>NetChannel</Filter>
     </ClCompile>
   </ItemGroup>
@@ -36,10 +36,10 @@
     <ClInclude Include="Include\EntityType.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="NetId.h">
+    <ClInclude Include="Include\NetId.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="NetChannel.h">
+    <ClInclude Include="Include\NetChannel.h">
       <Filter>NetChannel</Filter>
     </ClInclude>
   </ItemGroup>
