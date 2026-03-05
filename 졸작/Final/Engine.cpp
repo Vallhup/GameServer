@@ -18,6 +18,7 @@
 #include "RenderTargets.h"
 #include "LightManager.h"
 #include "FroxelManager.h"
+#include "SSAO.h"
 
 Engine& Engine::Get()
 {
@@ -88,6 +89,24 @@ void Engine::Render()
     graphics->BeginGBufferPass();
     sceneManager->RenderDeferred();  
     graphics->EndGBufferPass();
+
+    static bool ssaoOn = false;
+
+    if (INPUT.GetKeyDown('L'))
+    {
+        ssaoOn = !ssaoOn;
+    }
+    
+    if (ssaoOn)
+    {
+        graphics->BeginSsaoPass();
+        graphics->EndSsaoPass(viewport, scissorRect);
+        graphics->BeginSsaoBlurPass();
+        graphics->EndSsaoBlurPass(viewport, scissorRect);
+    }
+    else
+        graphics->ClearSsaoRT();
+    
 
     graphics->BeginLightingPass();
     graphics->RenderFullscreenQuad();

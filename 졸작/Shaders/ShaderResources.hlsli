@@ -90,6 +90,14 @@ cbuffer CascadeShadowIndex : register(b7)
     int3 cascadePadding;
 };
 
+cbuffer SsaoCB : register(b8)
+{
+    float4 ssaoSamples[16];
+    float2 noiseScale;
+    float samplingRadius;
+    float ssaoBias;
+};
+
 //-------------------------------------------------------
 // VARIOUS TYPES OF SHADER RESOURCES
 //-------------------------------------------------------
@@ -110,8 +118,14 @@ Texture2D gBufferRT1 : register(t5); // Normal + Roughness
 Texture2D gBufferRT2 : register(t6); // Emission + AO
 Texture2D depthBuffer : register(t7); // Depth
 Texture2DArray shadowMapArray : register(t8);
+Texture2D ssaoTexture : register(t9);
 
 TextureCube bindlessCubeMaps[] : register(t0, space3);
+
+Texture2D ssaoNormal : register(t0, space4);
+Texture2D ssaoDepth : register(t1, space4);
+Texture2D ssaoNoise : register(t2, space4);
+Texture2D ssaoResult : register(t3, space4);
 
 //-------------------------------------------------------
 // SAMPLERS

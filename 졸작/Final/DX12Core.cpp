@@ -10,6 +10,7 @@
 #include "RenderTargets.h"
 #include "LightManager.h"
 #include "FroxelManager.h"
+#include "SSAO.h"
 
 void DX12Core::Initialize(HWND hwnd)
 {
@@ -29,6 +30,7 @@ void DX12Core::Initialize(HWND hwnd)
 	rtMgr = make_unique<RenderTargets>();
 	lightMgr = make_unique<LightManager>();
 	froxelMgr = make_unique<FroxelManager>();
+	ssaoMgr = make_unique<SSAO>();
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
@@ -40,6 +42,8 @@ void DX12Core::Initialize(HWND hwnd)
 	rtMgr->Initialize(GetDevice(), shadowMgr.get());
 	lightMgr->Initialize(GetDevice());
 	froxelMgr->Initialize(GetDevice());
+	ssaoMgr->Initialize(GetDevice(), GetGraphicsCmdList(), GetRenderTargetMgr());
+	rtMgr->AddSsaoSRV(GetDevice(), ssaoMgr->GetSsaoBlurRT());
 }
 
 void DX12Core::Update()
@@ -177,6 +181,149 @@ void DX12Core::EndGBufferPass()
 	);
 
 	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(4, barriers);
+}
+
+void DX12Core::BeginSsaoPass()
+{
+	static bool firstFrame = true;
+	if (!firstFrame) {
+		D3D12_RESOURCE_BARRIER barrier;
+
+		barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			ssaoMgr->GetSsaoRT(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_RENDER_TARGET
+		);
+		
+		deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+	}
+	else {
+		firstFrame = false;
+	}
+
+	// AI 코드임 이 아래
+	// Half resolution viewport
+	D3D12_VIEWPORT ssaoViewport = {};
+	ssaoViewport.Width = WinSize.x / 2.0f;
+	ssaoViewport.Height = WinSize.y / 2.0f;
+	ssaoViewport.MinDepth = 0.0f;
+	ssaoViewport.MaxDepth = 1.0f;
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &ssaoViewport);
+
+	D3D12_RECT ssaoRect = { 0, 0, static_cast<LONG>(WinSize.x / 2), static_cast<LONG>(WinSize.y / 2) };
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &ssaoRect);
+
+	// Clear and set RTV
+	D3D12_CPU_DESCRIPTOR_HANDLE ssaoRTV = ssaoMgr->GetSsaoRTVHandle();
+	float clearValue[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+	deviceCtx->GetGraphicsCmdList()->ClearRenderTargetView(ssaoRTV, clearValue, 0, nullptr);
+	deviceCtx->GetGraphicsCmdList()->OMSetRenderTargets(1, &ssaoRTV, FALSE, nullptr);
+
+	// Set PSO and root signature
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootSignature(GetRootSig()->Get());
+	deviceCtx->GetGraphicsCmdList()->SetPipelineState(shader->GetPSO(PSOType::Ssao));
+
+	// Bind cbuffers
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(17, ssaoMgr->GetSsaoCB()->GetGPUVirtualAddress());
+
+	// Bind SSAO SRV heap (t0-t3, space4)
+	ID3D12DescriptorHeap* heaps[] = { ssaoMgr->GetSsaoSRVHeap() };
+	deviceCtx->GetGraphicsCmdList()->SetDescriptorHeaps(1, heaps);
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootDescriptorTable(18, ssaoMgr->GetSsaoSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+
+	// Draw fullscreen quad
+	deviceCtx->GetGraphicsCmdList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceCtx->GetGraphicsCmdList()->DrawInstanced(6, 1, 0, 0);
+	// 여기까지
+}
+
+void DX12Core::EndSsaoPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
+{
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		ssaoMgr->GetSsaoRT(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
+}
+
+void DX12Core::BeginSsaoBlurPass()
+{
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		ssaoMgr->GetSsaoBlurRT(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+	
+	D3D12_VIEWPORT ssaoViewport = {};
+	ssaoViewport.Width = WinSize.x / 2.0f;
+	ssaoViewport.Height = WinSize.y / 2.0f;
+	ssaoViewport.MinDepth = 0.0f;
+	ssaoViewport.MaxDepth = 1.0f;
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &ssaoViewport);
+
+	D3D12_RECT ssaoRect = { 0, 0, static_cast<LONG>(WinSize.x / 2), static_cast<LONG>(WinSize.y / 2) };
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &ssaoRect);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE ssaoBlurRTV = ssaoMgr->GetSsaoBlurRTVHandle();
+	float clearValue[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+	deviceCtx->GetGraphicsCmdList()->ClearRenderTargetView(ssaoBlurRTV, clearValue, 0, nullptr);
+	deviceCtx->GetGraphicsCmdList()->OMSetRenderTargets(1, &ssaoBlurRTV, FALSE, nullptr);
+
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootSignature(GetRootSig()->Get());
+	deviceCtx->GetGraphicsCmdList()->SetPipelineState(shader->GetPSO(PSOType::SsaoBlur));
+
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(17, ssaoMgr->GetSsaoCB()->GetGPUVirtualAddress());
+
+	ID3D12DescriptorHeap* heaps[] = { ssaoMgr->GetSsaoSRVHeap() };
+	deviceCtx->GetGraphicsCmdList()->SetDescriptorHeaps(1, heaps);
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootDescriptorTable(18, ssaoMgr->GetSsaoSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+
+	deviceCtx->GetGraphicsCmdList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceCtx->GetGraphicsCmdList()->DrawInstanced(6, 1, 0, 0);
+}
+
+void DX12Core::EndSsaoBlurPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
+{
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		ssaoMgr->GetSsaoBlurRT(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
+}
+
+void DX12Core::ClearSsaoRT()
+{
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		ssaoMgr->GetSsaoBlurRT(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+	
+
+	D3D12_CPU_DESCRIPTOR_HANDLE blurRTV = ssaoMgr->GetSsaoBlurRTVHandle();  
+	float clearValue[4] = { 1.0f, 0.0f, 0.0f, 0.0f };
+	deviceCtx->GetGraphicsCmdList()->ClearRenderTargetView(blurRTV, clearValue, 0, nullptr);
+
+	barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		ssaoMgr->GetSsaoBlurRT(),  
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
 }
 
 void DX12Core::BeginLightingPass()

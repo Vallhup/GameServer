@@ -58,8 +58,8 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
     /*WinSize.x = GetSystemMetrics(SM_CXSCREEN);
     WinSize.y = GetSystemMetrics(SM_CYSCREEN);*/
 
-    WinSize.x = 1280;
-    WinSize.y = 720;
+    WinSize.x = 1920;
+    WinSize.y = 1080;
 
     RECT rc = { 0, 0, WinSize.x, WinSize.y };
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
