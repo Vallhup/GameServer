@@ -29,7 +29,7 @@ void AIThinkSystem::Execute(const double dT)
 			aiThinkState->thinkAcc -= aiThinkState->thinkInterval;
 
 			AttackType next = Think(entity, &aiState);
-			std::cout << static_cast<int>(next) << std::endl;
+			//std::cout << static_cast<int>(next) << std::endl;
 
 			ActionRequestEvent ev
 			{

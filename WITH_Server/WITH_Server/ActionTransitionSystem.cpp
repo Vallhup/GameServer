@@ -145,6 +145,25 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, EntityType type,
 	state->action = nextAction;
 	state->attack = nextAttack;
 	
+	if (prevAction != ActionType::Dead &&
+		nextAction == ActionType::Dead)
+	{
+		const auto* typeComp = ecs.GetStorage<SpawnTypeComp>().GetComponent(entity);
+		if (!typeComp) return;
+
+		// TEMP
+		if (typeComp->type == EntityType::Final_Boss)
+		{
+			DeathEvent event
+			{
+				.dead = entity,
+				.killer = Entity{},
+				.deadType = typeComp->type
+			};
+			_runtime.Events().Queue<DeathEvent>().Publish(event);
+		}
+	}
+
 	const auto& pol = aM.GetPolicy(nextAction, type, nextAttack);
 
 	double duration = pol.duration;
