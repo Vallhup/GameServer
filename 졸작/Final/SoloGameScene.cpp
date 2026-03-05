@@ -20,6 +20,9 @@
 #include "EffectRenderer.h"
 #include "EffectManager.h"
 
+#include "UIManager.h"
+#include "GameSceneUIController.h"
+
 #include "NetId.h"
 #include "NetHelper.h"
 
@@ -240,6 +243,18 @@ void SoloGameScene::HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITIO
 			animMachine->OnServerClipConfirm(animName);
 		}
 	}
+}
+
+void SoloGameScene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
+{
+	const NetId nid{ stat.netid() };
+	const int id = nid.GetId();
+
+	const int hp = stat.hp();
+	const int stamina = stat.stamina();
+
+	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::MainGame);
+	if (controller) controller->HandleStatChange(hp, stamina);
 }
 
 shared_ptr<MainCharacter> SoloGameScene::GetAvailableKnight() const

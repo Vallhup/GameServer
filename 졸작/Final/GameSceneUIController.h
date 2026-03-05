@@ -10,6 +10,8 @@ public:
 	void Update(float deltaTime) override;
 	void Render(SpriteBatch* batch) override;
 
+	void HandleStatChange(int hp, int stamina);
+
 private:
 	shared_ptr<ImageUI> statusImage;
 	shared_ptr<ImageUI> localCharBarsBack;

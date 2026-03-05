@@ -43,6 +43,7 @@ protected:
 	virtual void HandleMove(const Protocol::SC_MOVE_PACKET& move) {}
 	virtual void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove) {}
 	virtual void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim) {}
+	virtual void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat) {}
 
 	template<typename T>
 	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const T& data);

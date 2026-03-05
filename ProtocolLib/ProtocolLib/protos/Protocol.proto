@@ -75,6 +75,13 @@ message SC_ANIMATION_TRANSITION_PACKET
     int32 currAnim = 2;
 }
 
+message SC_STAT_CHANGE_PACKET
+{
+	uint64 netid = 1;
+	uint32 hp = 2;
+	uint32 stamina = 3;
+}
+
 message SC_REPLICATION_FRAME_PACKET
 {
 	uint32 frameSeq = 1;

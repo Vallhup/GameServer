@@ -71,9 +71,6 @@
     <ClCompile Include="CombatCollisionHandlingSystem.cpp">
       <Filter>ECS\System\Logic\Collision\Combat</Filter>
     </ClCompile>
-    <ClCompile Include="DBManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
     <ClCompile Include="ViewProcessingSystem.cpp">
       <Filter>ECS\System\Logic\View</Filter>
     </ClCompile>
@@ -103,6 +100,18 @@
     </ClCompile>
     <ClCompile Include="BuffManager.cpp">
       <Filter>Manager\Buff</Filter>
+    </ClCompile>
+    <ClCompile Include="BuffApplySystem.cpp">
+      <Filter>ECS\System\Logic\Buff</Filter>
+    </ClCompile>
+    <ClCompile Include="DBManager.cpp">
+      <Filter>Database</Filter>
+    </ClCompile>
+    <ClCompile Include="DBData.cpp">
+      <Filter>Database</Filter>
+    </ClCompile>
+    <ClCompile Include="DBConn.cpp">
+      <Filter>Database</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,9 +189,6 @@
     </ClInclude>
     <ClInclude Include="CombatCollisionHandlingSystem.h">
       <Filter>ECS\System\Logic\Collision\Combat</Filter>
-    </ClInclude>
-    <ClInclude Include="DBManager.h">
-      <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="ViewProcessingSystem.h">
       <Filter>ECS\System\Logic\View</Filter>
@@ -274,6 +280,18 @@
     <ClInclude Include="BuffManager.h">
       <Filter>Manager\Buff</Filter>
     </ClInclude>
+    <ClInclude Include="BuffApplySystem.h">
+      <Filter>ECS\System\Logic\Buff</Filter>
+    </ClInclude>
+    <ClInclude Include="DBManager.h">
+      <Filter>Database</Filter>
+    </ClInclude>
+    <ClInclude Include="DBData.h">
+      <Filter>Database</Filter>
+    </ClInclude>
+    <ClInclude Include="DBConn.h">
+      <Filter>Database</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -356,6 +374,12 @@
     </Filter>
     <Filter Include="Manager\Buff">
       <UniqueIdentifier>{35a1ad55-db0b-41f1-bdee-8748600e6908}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\Buff">
+      <UniqueIdentifier>{d7ba8e47-853f-48d2-895d-4b6e86100b19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Database">
+      <UniqueIdentifier>{1e0d516a-c4f7-4552-8f88-552e04029cdc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

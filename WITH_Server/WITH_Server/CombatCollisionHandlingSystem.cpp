@@ -3,6 +3,7 @@
 #include "Math.h"
 #include "Tags.h"
 #include "RepComponent.h"
+#include "Framework.h"
 
 void CombatCollisionHandlingSystem::Execute(const double dT)
 {
@@ -158,6 +159,16 @@ void CombatCollisionHandlingSystem::HandleGuard(Entity attacker,
 	if (isDeath)
 		vitals->curHp = 0;
 
+	const auto* player = ecs.GetStorage<PlayerTag>().GetComponent(victim);
+	if (player && damage > 0)
+	{
+		const auto* netComp = ecs.GetStorage<NetIdComp>().GetComponent(victim);
+		if (!netComp) return;
+
+		Framework::Get().outEventQueue.push(
+			OutputEvent::StatChanged(netComp->id, vitals->curHp, vitals->curStamina));
+	}
+
 	ActionRequestEvent ev
 	{
 		.entity = victim,
@@ -209,6 +220,16 @@ void CombatCollisionHandlingSystem::HandleHit(Entity attacker,
 
 	if (isDeath)
 		vitals->curHp = 0;
+
+	const auto* player = ecs.GetStorage<PlayerTag>().GetComponent(victim);
+	if (player && damage > 0)
+	{
+		const auto* netComp = ecs.GetStorage<NetIdComp>().GetComponent(victim);
+		if (!netComp) return;
+
+		Framework::Get().outEventQueue.push(
+			OutputEvent::StatChanged(netComp->id, vitals->curHp, vitals->curStamina));
+	}
 
 	ActionRequestEvent ev
 	{

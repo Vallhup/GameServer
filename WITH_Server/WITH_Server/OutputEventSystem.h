@@ -27,6 +27,7 @@ private:
 	void ProcessDespawn(const OutputEvent& event);
 	void ProcessMove(const OutputEvent& event);
 	void ProcessAnimationChange(const OutputEvent& event);
+	void ProcessStatChange(const OutputEvent& event);
 
 	void EnqueueToSession(uint32 sid, const void* data, uint32 len);
 	void FlushOne(uint32 sid, SendBuffer*& buffer);

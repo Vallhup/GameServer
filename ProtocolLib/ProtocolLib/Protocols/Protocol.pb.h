@@ -89,6 +89,9 @@ extern SC_REMOVE_PACKETDefaultTypeInternal _SC_REMOVE_PACKET_default_instance_;
 class SC_REPLICATION_FRAME_PACKET;
 struct SC_REPLICATION_FRAME_PACKETDefaultTypeInternal;
 extern SC_REPLICATION_FRAME_PACKETDefaultTypeInternal _SC_REPLICATION_FRAME_PACKET_default_instance_;
+class SC_STAT_CHANGE_PACKET;
+struct SC_STAT_CHANGE_PACKETDefaultTypeInternal;
+extern SC_STAT_CHANGE_PACKETDefaultTypeInternal _SC_STAT_CHANGE_PACKET_default_instance_;
 }  // namespace Protocol
 namespace google {
 namespace protobuf {
@@ -100,6 +103,220 @@ namespace Protocol {
 // ===================================================================
 
 
+// -------------------------------------------------------------------
+
+class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_STAT_CHANGE_PACKET) */ {
+ public:
+  inline SC_STAT_CHANGE_PACKET() : SC_STAT_CHANGE_PACKET(nullptr) {}
+  ~SC_STAT_CHANGE_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_STAT_CHANGE_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_STAT_CHANGE_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_STAT_CHANGE_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_STAT_CHANGE_PACKET(const SC_STAT_CHANGE_PACKET& from) : SC_STAT_CHANGE_PACKET(nullptr, from) {}
+  inline SC_STAT_CHANGE_PACKET(SC_STAT_CHANGE_PACKET&& from) noexcept
+      : SC_STAT_CHANGE_PACKET(nullptr, std::move(from)) {}
+  inline SC_STAT_CHANGE_PACKET& operator=(const SC_STAT_CHANGE_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_STAT_CHANGE_PACKET& operator=(SC_STAT_CHANGE_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_STAT_CHANGE_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_STAT_CHANGE_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_STAT_CHANGE_PACKET*>(
+        &_SC_STAT_CHANGE_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 11;
+  friend void swap(SC_STAT_CHANGE_PACKET& a, SC_STAT_CHANGE_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_STAT_CHANGE_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_STAT_CHANGE_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_STAT_CHANGE_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_STAT_CHANGE_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_STAT_CHANGE_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_STAT_CHANGE_PACKET& from) { SC_STAT_CHANGE_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_STAT_CHANGE_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_STAT_CHANGE_PACKET"; }
+
+ protected:
+  explicit SC_STAT_CHANGE_PACKET(::google::protobuf::Arena* arena);
+  SC_STAT_CHANGE_PACKET(::google::protobuf::Arena* arena, const SC_STAT_CHANGE_PACKET& from);
+  SC_STAT_CHANGE_PACKET(::google::protobuf::Arena* arena, SC_STAT_CHANGE_PACKET&& from) noexcept
+      : SC_STAT_CHANGE_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kNetidFieldNumber = 1,
+    kHpFieldNumber = 2,
+    kStaminaFieldNumber = 3,
+  };
+  // uint64 netid = 1;
+  void clear_netid() ;
+  ::uint64_t netid() const;
+  void set_netid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_netid() const;
+  void _internal_set_netid(::uint64_t value);
+
+  public:
+  // uint32 hp = 2;
+  void clear_hp() ;
+  ::uint32_t hp() const;
+  void set_hp(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_hp() const;
+  void _internal_set_hp(::uint32_t value);
+
+  public:
+  // uint32 stamina = 3;
+  void clear_stamina() ;
+  ::uint32_t stamina() const;
+  void set_stamina(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_stamina() const;
+  void _internal_set_stamina(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_STAT_CHANGE_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      2, 3, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_STAT_CHANGE_PACKET& from_msg);
+    ::uint64_t netid_;
+    ::uint32_t hp_;
+    ::uint32_t stamina_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
 // -------------------------------------------------------------------
 
 class SC_REMOVE_PACKET final : public ::google::protobuf::Message
@@ -2398,7 +2615,7 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_REPLICATION_FRAME_PACKET*>(
         &_SC_REPLICATION_FRAME_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 11;
+  static constexpr int kIndexInFileMessages = 12;
   friend void swap(SC_REPLICATION_FRAME_PACKET& a, SC_REPLICATION_FRAME_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REPLICATION_FRAME_PACKET* other) {
     if (other == this) return;
@@ -3242,6 +3459,76 @@ inline ::int32_t SC_ANIMATION_TRANSITION_PACKET::_internal_curranim() const {
 inline void SC_ANIMATION_TRANSITION_PACKET::_internal_set_curranim(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.curranim_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_STAT_CHANGE_PACKET
+
+// uint64 netid = 1;
+inline void SC_STAT_CHANGE_PACKET::clear_netid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.netid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_STAT_CHANGE_PACKET::netid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.netid)
+  return _internal_netid();
+}
+inline void SC_STAT_CHANGE_PACKET::set_netid(::uint64_t value) {
+  _internal_set_netid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.netid)
+}
+inline ::uint64_t SC_STAT_CHANGE_PACKET::_internal_netid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.netid_;
+}
+inline void SC_STAT_CHANGE_PACKET::_internal_set_netid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.netid_ = value;
+}
+
+// uint32 hp = 2;
+inline void SC_STAT_CHANGE_PACKET::clear_hp() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.hp_ = 0u;
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::hp() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.hp)
+  return _internal_hp();
+}
+inline void SC_STAT_CHANGE_PACKET::set_hp(::uint32_t value) {
+  _internal_set_hp(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.hp)
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_hp() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.hp_;
+}
+inline void SC_STAT_CHANGE_PACKET::_internal_set_hp(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.hp_ = value;
+}
+
+// uint32 stamina = 3;
+inline void SC_STAT_CHANGE_PACKET::clear_stamina() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.stamina_ = 0u;
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::stamina() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.stamina)
+  return _internal_stamina();
+}
+inline void SC_STAT_CHANGE_PACKET::set_stamina(::uint32_t value) {
+  _internal_set_stamina(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.stamina)
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_stamina() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.stamina_;
+}
+inline void SC_STAT_CHANGE_PACKET::_internal_set_stamina(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.stamina_ = value;
 }
 
 // -------------------------------------------------------------------

@@ -48,6 +48,7 @@ private:
 	void HandleMove(const Protocol::SC_MOVE_PACKET& move) override;
 	void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove) override;
 	void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim) override;
+	void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat) override;
 
 private:
 	NetworkManager* _nManager{ nullptr };

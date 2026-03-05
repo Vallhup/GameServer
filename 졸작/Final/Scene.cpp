@@ -97,5 +97,10 @@ void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
 		return NetHelper::DispatchPacket<Protocol::SC_ANIMATION_TRANSITION_PACKET>(header, data,
 			[this](const auto& packet) { HandleAnimationChange(packet); });
 	}
+	case PacketType::SC_STAT_CHANGE:
+	{
+		return NetHelper::DispatchPacket<Protocol::SC_STAT_CHANGE_PACKET>(header, data,
+			[this](const auto& packet) { HandleStatChange(packet); });
+	}
 	}
 }

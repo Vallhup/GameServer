@@ -64,4 +64,15 @@ namespace NetHelper {
 		return PacketFactory::Serialize<Protocol::SC_ANIMATION_TRANSITION_PACKET>
 			(PacketType::SC_ANIMATION_CHANGE, anim);
 	}
+
+	inline SendBuffer* SCStatChangePacket(NetId id, int curHp, int curStamina)
+	{
+		Protocol::SC_STAT_CHANGE_PACKET stat;
+		stat.set_netid(id.GetRaw());
+		stat.set_hp(curHp);
+		stat.set_stamina(curStamina);
+
+		return PacketFactory::Serialize<Protocol::SC_STAT_CHANGE_PACKET>
+			(PacketType::SC_STAT_CHANGE, stat);
+	}
 }

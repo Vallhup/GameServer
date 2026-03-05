@@ -171,12 +171,15 @@
     <ClCompile Include="AnimationManager.cpp" />
     <ClCompile Include="AnimationPoseBindSystem.cpp" />
     <ClCompile Include="AnimationSelectSystem.cpp" />
+    <ClCompile Include="BuffApplySystem.cpp" />
     <ClCompile Include="BuffManager.cpp" />
     <ClCompile Include="ColliderActivationSystem.cpp" />
     <ClCompile Include="ColliderUpdateSystem.cpp" />
     <ClCompile Include="CombatCollisionCheckSystem.cpp" />
     <ClCompile Include="CombatCollisionDedupSystem.cpp" />
     <ClCompile Include="CombatCollisionHandlingSystem.cpp" />
+    <ClCompile Include="DBConn.cpp" />
+    <ClCompile Include="DBData.cpp" />
     <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="EventSystem.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -218,6 +221,7 @@
     <ClInclude Include="AnimationManager.h" />
     <ClInclude Include="AnimationPoseBindSystem.h" />
     <ClInclude Include="AnimationSelectSystem.h" />
+    <ClInclude Include="BuffApplySystem.h" />
     <ClInclude Include="BuffData.h" />
     <ClInclude Include="BuffManager.h" />
     <ClInclude Include="Bufs.h" />
@@ -228,6 +232,8 @@
     <ClInclude Include="CombatCollisionCheckSystem.h" />
     <ClInclude Include="CombatCollisionDedupSystem.h" />
     <ClInclude Include="CombatCollisionHandlingSystem.h" />
+    <ClInclude Include="DBConn.h" />
+    <ClInclude Include="DBData.h" />
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventSystem.h" />

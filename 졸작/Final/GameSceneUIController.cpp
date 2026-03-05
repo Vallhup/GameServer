@@ -58,3 +58,16 @@ void GameSceneUIController::Render(SpriteBatch* batch)
 	if (localCharHpBar) localCharHpBar->Render(batch);
 	if (localCharStaminaBar) localCharStaminaBar->Render(batch);
 }
+
+void GameSceneUIController::HandleStatChange(int hp, int stamina)
+{
+	// TEMP : Max HP = 100
+	const float maxHpLength = WinSize.y * 0.3457;
+	const float hpPercent = hp / 100.0f;
+	localCharHpBar->SetHoriLength(maxHpLength * hpPercent);
+
+	// TEMP : Max Stamina = 100
+	const float maxStaminaLength = WinSize.y * 0.2566;
+	const float staminaPercent = stamina / 100.0f;
+	localCharStaminaBar->SetHoriLength(maxStaminaLength * staminaPercent);
+}

@@ -84,6 +84,12 @@ struct OutputEventPayload
 			AnimationType currType;
 		} anim;
 
+		struct
+		{
+			int curHp;
+			int curStamina;
+		} stat;
+
 		uint32 raw{ 0 };
 	};
 };
@@ -97,6 +103,13 @@ struct OutputEvent {
 	{
 		OutputEvent ev{ netId, DirtyType::AnimationChanged, { } };
 		ev.payload.anim = { curr };
+		return ev;
+	}
+
+	static OutputEvent StatChanged(NetId netId, int curHp, int curStamina)
+	{
+		OutputEvent ev{ netId, DirtyType::StatsChanged, { } };
+		ev.payload.stat = { curHp, curStamina };
 		return ev;
 	}
 };
@@ -128,4 +141,11 @@ struct ActionRequestEvent {
 	ActionType actionType;
 	AttackType attackType;
 	ActionRequestReason reason;
+};
+
+struct DeathEvent
+{
+	Entity dead;
+	Entity killer;
+	EntityType deadType{ EntityType::None };
 };

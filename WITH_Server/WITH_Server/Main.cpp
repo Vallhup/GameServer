@@ -4,6 +4,43 @@
 int main()
 {
 	Framework::Get().Start();
+
+	//DBManager& db = DBManager::Get();
+
+	//db.Start(L"WITH_Server_DB");
+
+	//auto cmd = std::make_shared<TestCommand>(1);
+	//db.PushCommand(cmd);
+
+	//DBResult result;
+	//bool got{ false };
+
+	//auto start = std::chrono::steady_clock::now();
+	//while (std::chrono::steady_clock::now() - start < std::chrono::seconds(3))
+	//{
+	//	if (got = db.TryPopResult(result))
+	//		break;
+
+	//	std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	//}
+
+	//db.Stop();
+
+	//if (!got)
+	//{
+	//	std::cout << "No result (timeout)\n";
+	//	return -1;
+	//}
+
+	//std::wcout
+	//	<< L"op=" << (int)result.op
+	//	<< L" rid=" << result.requestId
+	//	<< L" ok=" << (result.ok ? L"true" : L"false")
+	//	<< L" err=" << (int)result.error
+	//	<< L" msg=" << result.msg
+	//	<< L"\n";
+
+	//return result.ok ? 0 : -1;
 }
 
 // 해야할 것들

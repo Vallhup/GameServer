@@ -10,10 +10,11 @@ OutputEventSystem::OutputEventSystem(WorldRuntime& rt, int p) : System(rt, p)
 {
 	_outBuffers.resize(5000);
 
-	_handlers[DirtyType::Spawned] = [&](const OutputEvent& ev) { ProcessSpawn(ev); };
-	_handlers[DirtyType::Despawned] = [&](const OutputEvent& ev) { ProcessDespawn(ev); };
-	_handlers[DirtyType::Moved] = [&](const OutputEvent& ev) { ProcessMove(ev); };
-	_handlers[DirtyType::AnimationChanged] = [&](const OutputEvent& ev) { ProcessAnimationChange(ev); };
+	_handlers[DirtyType::Spawned]			= [&](const OutputEvent& ev) { ProcessSpawn(ev); };
+	_handlers[DirtyType::Despawned]			= [&](const OutputEvent& ev) { ProcessDespawn(ev); };
+	_handlers[DirtyType::Moved]				= [&](const OutputEvent& ev) { ProcessMove(ev); };
+	_handlers[DirtyType::AnimationChanged]	= [&](const OutputEvent& ev) { ProcessAnimationChange(ev); };
+	_handlers[DirtyType::StatsChanged]		= [&](const OutputEvent& ev) { ProcessStatChange(ev); };
 }
 
 void OutputEventSystem::Execute(const double dT)
@@ -190,6 +191,22 @@ void OutputEventSystem::ProcessAnimationChange(const OutputEvent& event)
 		EnqueueToSession(connId, data->data, data->size);
 	}
 
+	SendBufferPool::Get().Release(data);
+}
+
+void OutputEventSystem::ProcessStatChange(const OutputEvent& event)
+{
+	Framework& framework = Framework::Get();
+
+	NetId myId = event.netId;
+	Entity myEntity = framework.netIdRegistry.FindEntity(myId);
+	uint32 myConnId = framework.listener.GetIdMap().GetConn(myId);
+
+	const int curHp		 = event.payload.stat.curHp;
+	const int curStamina = event.payload.stat.curStamina;
+
+	SendBuffer* data = NetHelper::SCStatChangePacket(myId, curHp, curStamina);
+	EnqueueToSession(myConnId, data->data, data->size);
 	SendBufferPool::Get().Release(data);
 }
 

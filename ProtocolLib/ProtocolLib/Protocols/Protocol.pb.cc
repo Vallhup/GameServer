@@ -26,6 +26,33 @@ namespace _pbi = ::google::protobuf::internal;
 namespace _fl = ::google::protobuf::internal::field_layout;
 namespace Protocol {
 
+inline constexpr SC_STAT_CHANGE_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : netid_{::uint64_t{0u}},
+        hp_{0u},
+        stamina_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_STAT_CHANGE_PACKET::SC_STAT_CHANGE_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_STAT_CHANGE_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_STAT_CHANGE_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_STAT_CHANGE_PACKETDefaultTypeInternal() {}
+  union {
+    SC_STAT_CHANGE_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_STAT_CHANGE_PACKETDefaultTypeInternal _SC_STAT_CHANGE_PACKET_default_instance_;
+
 inline constexpr SC_REMOVE_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : netid_{::uint64_t{0u}},
@@ -462,6 +489,17 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _impl_.netid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _impl_.curranim_),
         ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.netid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.hp_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.stamina_),
+        ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_REPLICATION_FRAME_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -490,7 +528,8 @@ static const ::_pbi::MigrationSchema
         {82, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
         {95, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
         {104, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
-        {114, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
+        {114, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
+        {125, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -504,6 +543,7 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_SC_MOVE_PACKET_default_instance_._instance,
     &::Protocol::_SC_REMOVE_PACKET_default_instance_._instance,
     &::Protocol::_SC_ANIMATION_TRANSITION_PACKET_default_instance_._instance,
+    &::Protocol::_SC_STAT_CHANGE_PACKET_default_instance_._instance,
     &::Protocol::_SC_REPLICATION_FRAME_PACKET_default_instance_._instance,
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
@@ -523,25 +563,27 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"!\n\020SC_REMOVE_"
     "PACKET\022\r\n\005netid\030\001 \001(\004\"A\n\036SC_ANIMATION_TR"
     "ANSITION_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010currAn"
-    "im\030\002 \001(\005\"\374\001\n\033SC_REPLICATION_FRAME_PACKET"
-    "\022\020\n\010frameSeq\030\001 \001(\r\022\022\n\nserverTick\030\002 \001(\r\022\'"
-    "\n\006spawns\030\003 \003(\0132\027.Protocol.SC_ADD_PACKET\022"
-    ",\n\010despawns\030\004 \003(\0132\032.Protocol.SC_REMOVE_P"
-    "ACKET\022\'\n\005moves\030\005 \003(\0132\030.Protocol.SC_MOVE_"
-    "PACKET\0227\n\005anims\030\006 \003(\0132(.Protocol.SC_ANIM"
-    "ATION_TRANSITION_PACKETb\006proto3"
+    "im\030\002 \001(\005\"C\n\025SC_STAT_CHANGE_PACKET\022\r\n\005net"
+    "id\030\001 \001(\004\022\n\n\002hp\030\002 \001(\r\022\017\n\007stamina\030\003 \001(\r\"\374\001"
+    "\n\033SC_REPLICATION_FRAME_PACKET\022\020\n\010frameSe"
+    "q\030\001 \001(\r\022\022\n\nserverTick\030\002 \001(\r\022\'\n\006spawns\030\003 "
+    "\003(\0132\027.Protocol.SC_ADD_PACKET\022,\n\010despawns"
+    "\030\004 \003(\0132\032.Protocol.SC_REMOVE_PACKET\022\'\n\005mo"
+    "ves\030\005 \003(\0132\030.Protocol.SC_MOVE_PACKET\0227\n\005a"
+    "nims\030\006 \003(\0132(.Protocol.SC_ANIMATION_TRANS"
+    "ITION_PACKETb\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    871,
+    940,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     nullptr,
     0,
-    12,
+    13,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -3135,6 +3177,269 @@ void SC_ANIMATION_TRANSITION_PACKET::InternalSwap(SC_ANIMATION_TRANSITION_PACKET
 }
 
 ::google::protobuf::Metadata SC_ANIMATION_TRANSITION_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_STAT_CHANGE_PACKET::_Internal {
+ public:
+};
+
+SC_STAT_CHANGE_PACKET::SC_STAT_CHANGE_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_STAT_CHANGE_PACKET)
+}
+SC_STAT_CHANGE_PACKET::SC_STAT_CHANGE_PACKET(
+    ::google::protobuf::Arena* arena, const SC_STAT_CHANGE_PACKET& from)
+    : SC_STAT_CHANGE_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_STAT_CHANGE_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_STAT_CHANGE_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, netid_),
+           0,
+           offsetof(Impl_, stamina_) -
+               offsetof(Impl_, netid_) +
+               sizeof(Impl_::stamina_));
+}
+SC_STAT_CHANGE_PACKET::~SC_STAT_CHANGE_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_STAT_CHANGE_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_STAT_CHANGE_PACKET::SharedDtor(MessageLite& self) {
+  SC_STAT_CHANGE_PACKET& this_ = static_cast<SC_STAT_CHANGE_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_STAT_CHANGE_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_STAT_CHANGE_PACKET(arena);
+}
+constexpr auto SC_STAT_CHANGE_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_STAT_CHANGE_PACKET),
+                                            alignof(SC_STAT_CHANGE_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_STAT_CHANGE_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_STAT_CHANGE_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_STAT_CHANGE_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_STAT_CHANGE_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_STAT_CHANGE_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_STAT_CHANGE_PACKET>(), &SC_STAT_CHANGE_PACKET::ByteSizeLong,
+            &SC_STAT_CHANGE_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_STAT_CHANGE_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_STAT_CHANGE_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 3, 0, 0, 2> SC_STAT_CHANGE_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    3, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967288,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    3,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_STAT_CHANGE_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint64 netid = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.netid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.netid_)}},
+    // uint32 hp = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.hp_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.hp_)}},
+    // uint32 stamina = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.stamina_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.stamina_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 netid = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.netid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint32 hp = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.hp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 stamina = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.stamina_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_STAT_CHANGE_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_STAT_CHANGE_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.netid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.stamina_) -
+      reinterpret_cast<char*>(&_impl_.netid_)) + sizeof(_impl_.stamina_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_STAT_CHANGE_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_STAT_CHANGE_PACKET& this_ = static_cast<const SC_STAT_CHANGE_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_STAT_CHANGE_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_STAT_CHANGE_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_STAT_CHANGE_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 netid = 1;
+          if (this_._internal_netid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_netid(), target);
+          }
+
+          // uint32 hp = 2;
+          if (this_._internal_hp() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                2, this_._internal_hp(), target);
+          }
+
+          // uint32 stamina = 3;
+          if (this_._internal_stamina() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                3, this_._internal_stamina(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_STAT_CHANGE_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_STAT_CHANGE_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_STAT_CHANGE_PACKET& this_ = static_cast<const SC_STAT_CHANGE_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_STAT_CHANGE_PACKET::ByteSizeLong() const {
+          const SC_STAT_CHANGE_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_STAT_CHANGE_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 netid = 1;
+            if (this_._internal_netid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_netid());
+            }
+            // uint32 hp = 2;
+            if (this_._internal_hp() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_hp());
+            }
+            // uint32 stamina = 3;
+            if (this_._internal_stamina() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_stamina());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_STAT_CHANGE_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_STAT_CHANGE_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_STAT_CHANGE_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_STAT_CHANGE_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_netid() != 0) {
+    _this->_impl_.netid_ = from._impl_.netid_;
+  }
+  if (from._internal_hp() != 0) {
+    _this->_impl_.hp_ = from._impl_.hp_;
+  }
+  if (from._internal_stamina() != 0) {
+    _this->_impl_.stamina_ = from._impl_.stamina_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_STAT_CHANGE_PACKET::CopyFrom(const SC_STAT_CHANGE_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_STAT_CHANGE_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_STAT_CHANGE_PACKET::InternalSwap(SC_STAT_CHANGE_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.stamina_)
+      + sizeof(SC_STAT_CHANGE_PACKET::_impl_.stamina_)
+      - PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.netid_)>(
+          reinterpret_cast<char*>(&_impl_.netid_),
+          reinterpret_cast<char*>(&other->_impl_.netid_));
+}
+
+::google::protobuf::Metadata SC_STAT_CHANGE_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
