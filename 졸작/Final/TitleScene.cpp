@@ -68,9 +68,4 @@ void TitleScene::RenderSceneEffects()
 
 void TitleScene::RequestSceneChange()
 {
-	/*if (INPUT.GetKeyDown(VK_TAB))
-	{
-		if (sManagerRef)
-			sManagerRef->RequestSceneChange(SceneType::Select);
-	}*/
 }

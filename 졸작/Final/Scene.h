@@ -108,6 +108,9 @@ void Scene::CreateAndBatchObjects(const wstring& path, const vector<T>& data, ve
 
 	auto batch = make_shared<InstancingBatch>();
 
+	if (data[0].distanceCull)
+		batch->SetCastShadow(false);
+
 	for (int i = 0; i < data.size(); ++i)
 	{
 		auto obj = CreateStaticMesh(path, data[i]);

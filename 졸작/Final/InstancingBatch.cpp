@@ -68,6 +68,7 @@ void InstancingBatch::Render(DX12Core& core, SceneRenderer* renderer)
 
 void InstancingBatch::RenderShadow(DX12Core& core, SceneRenderer* renderer)
 {
+    if (!castShadow) return;
     if (objects.empty() || !mesh || !fullInstanceBuffer) return;
 
     renderer->RenderInstancedShadow(core, mesh, static_cast<UINT>(objects.size()), fullInstanceBuffer.get());

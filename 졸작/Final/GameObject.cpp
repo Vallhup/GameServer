@@ -30,19 +30,18 @@ void GameObject::RenderDebugBoundingBox(DX12Core& core, const XMFLOAT4& color)
     };
 
     LineVertex lineTemplate = {
-        {0,0,0},        // pos
-        {0,0},          // uv
-        {0,1,0},        // normal
-        {1,0,0},        // tangent
-        {0,0,0,0},      // weights
-        {0,0,0,0},      // indices
-        color           // color
+        {0,0,0},        
+        {0,0},          
+        {0,1,0},        
+        {1,0,0},        
+        {0,0,0,0},      
+        {0,0,0,0},      
+        color           
     };
 
     LineVertex lines[24];
     fill_n(lines, 24, lineTemplate);
 
-    // Bottom face                 // Top face                     // Vertical lines
     lines[0].pos = corners[0];     lines[8].pos = corners[4];      lines[16].pos = corners[0];
     lines[1].pos = corners[1];     lines[9].pos = corners[5];      lines[17].pos = corners[4];
     lines[2].pos = corners[1];     lines[10].pos = corners[5];     lines[18].pos = corners[1];

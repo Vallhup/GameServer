@@ -62,7 +62,7 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
     WinSize.y = 1080;
 
     RECT rc = { 0, 0, WinSize.x, WinSize.y };
-    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+    AdjustWindowRect(&rc, WS_POPUP, FALSE);
 
     const TCHAR* appName = _T("Final");
 
@@ -91,8 +91,8 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
         nullptr, nullptr, hInstance, nullptr);*/
 
     *hwnd = CreateWindow(wcex.lpszClassName, wcex.lpszClassName,
-        WS_OVERLAPPEDWINDOW,
-        100, 100, rc.right - rc.left, rc.bottom - rc.top,
+        WS_POPUP,
+        0, 0, rc.right - rc.left, rc.bottom - rc.top,
         nullptr, nullptr, hInstance, nullptr);
 
     ShowWindow(*hwnd, nCmdShow);

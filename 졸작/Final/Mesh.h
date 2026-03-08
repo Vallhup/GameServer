@@ -24,7 +24,6 @@ public:
 
 	bool HasMultiMaterial() const { return !materials.empty(); }
 
-	// Collision Mesh
 	VertexIndexBuffer* GetCollisionMeshBuffer() const { return collisionMeshBuffer.get(); }
 	void ToggleCollisionMesh() { showCollisionMesh = !showCollisionMesh; }
 	bool IsCollisionMeshVisible() const { return showCollisionMesh && collisionMeshBuffer; }
@@ -42,7 +41,6 @@ private:
 	vector<shared_ptr<Material>> materials;
 	vector<MaterialData> originalMaterialData;
 
-	// Collision Mesh
 	shared_ptr<VertexIndexBuffer> collisionMeshBuffer;
 	bool showCollisionMesh = false;
 };

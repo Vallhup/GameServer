@@ -52,18 +52,9 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
     {
         const MeshData& mesh = importer.GetMesh();
 
-        // BoundingBox Setting From Mesh
         BoundingBox localBox;
         BoundingBox::CreateFromPoints(localBox, mesh.vertices.size(), &mesh.vertices[0].pos, sizeof(Vertex));
         GetGameObject()->SetLocalBoundingBox(localBox);
-
-        /*OutputDebugStringA(("Local BoundingBox Created - Center: (" +
-            to_string(localBox.Center.x) + ", " +
-            to_string(localBox.Center.y) + ", " +
-            to_string(localBox.Center.z) + "), Extents: (" +
-            to_string(localBox.Extents.x) + ", " +
-            to_string(localBox.Extents.y) + ", " +
-            to_string(localBox.Extents.z) + ")\n").c_str());*/
 
         vertexIndexBuffer = make_shared<VertexIndexBuffer>();
         vertexIndexBuffer->Initialize(
@@ -161,18 +152,9 @@ void Mesh::SetMesh2(DX12Core& core, const wstring& path)
     {
         const MeshData& mesh = importer.GetMesh();
 
-        // BoundingBox Setting From Mesh
         BoundingBox localBox;
         BoundingBox::CreateFromPoints(localBox, mesh.vertices.size(), &mesh.vertices[0].pos, sizeof(Vertex));
         GetGameObject()->SetLocalBoundingBox(localBox);
-
-        /*OutputDebugStringA(("Local BoundingBox Created - Center: (" +
-            to_string(localBox.Center.x) + ", " +
-            to_string(localBox.Center.y) + ", " +
-            to_string(localBox.Center.z) + "), Extents: (" +
-            to_string(localBox.Extents.x) + ", " +
-            to_string(localBox.Extents.y) + ", " +
-            to_string(localBox.Extents.z) + ")\n").c_str());*/
 
         vertexIndexBuffer = make_shared<VertexIndexBuffer>();
         vertexIndexBuffer->Initialize(

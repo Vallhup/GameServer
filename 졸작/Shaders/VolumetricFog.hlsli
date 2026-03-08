@@ -18,7 +18,7 @@ float BeerLambert(float density, float distance)
 
 float SampleShadowMap(float3 worldPos, float viewDepth)
 {
-    int cascade = 3;
+    int cascade = 2;
     if (viewDepth < cascadeSplit.x)
         cascade = 0;
     if (viewDepth < cascadeSplit.y)
@@ -64,45 +64,44 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
     float jitter = GetJitter(screenUV);
     float currentDistance = jitter * stepSize;
     
-    // 
     // 누적 변수
     float3 totalInScattering = float3(0.0, 0.0, 0.0);
     float transmittance = 1.0;
 
-     // 주 광원 방향 (lights[0]가 Directional Light)
+    // 주 광원 방향 (lights[0]가 Directional Light)
     float3 lightDir = normalize(-lights[0].position);
 
-     // Ray Marching Loop
+    // Ray Marching Loop
     [loop]
     for (int i = 0; i < VF_MAX_STEPS; ++i)
     {
-         // Early exit
+        // Early exit
         if (transmittance < 0.01 || currentDistance >= marchDistance)
             break;
 
         float3 samplePos = rayOrigin + rayDir * currentDistance;
 
-         // 현재 위치의 밀도
+        // 현재 위치의 밀도
         float density = GetFogDensity(samplePos);
 
         if (density > 0.0001)
         {
-             // Shadow 체크 (Light Shaft 효과)
+            // Shadow 체크 (Light Shaft 효과)
             float shadowFactor = SampleShadowMap(samplePos, currentDistance);
 
-             // Phase function
+            // Phase function
             float cosTheta = dot(rayDir, lightDir);
             float phase = HenyeyGreenstein(cosTheta, VF_HG_ANISOTROPY);
             phase = max(phase, 0.2);
             
-             // In-scattering 계산
+            // In-scattering 계산
             float3 lightContrib = VF_LIGHT_COLOR * VF_LIGHT_INTENSITY * lights[0].intensity;
             float3 scattering = lightContrib * phase * VF_SCATTERING * shadowFactor;
 
-             // Beer-Lambert 투과율
+            // Beer-Lambert 투과율
             float stepTransmittance = BeerLambert(density, stepSize);
 
-             // 에너지 보존 적분
+            // 에너지 보존 적분
             float3 integScatter = scattering * (1.0 - stepTransmittance);
             totalInScattering += transmittance * integScatter;
 
@@ -112,7 +111,7 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
         currentDistance += stepSize;
     }
 
-     // Ambient 산란 (fogColor 사용)
+    // Ambient 산란 (fogColor 사용)
     float3 ambientScatter = fogColor.rgb * (1.0 - transmittance) * 0.3;
     totalInScattering += ambientScatter;
 

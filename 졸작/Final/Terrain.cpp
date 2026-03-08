@@ -27,23 +27,6 @@ void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring&
 
 	if (importer.LoadMaterialOnly(basePath)) {
 		const auto& mats = importer.GetMaterials();
-		
-		// Debug material info of terrain
-		/*OutputDebugStringA(("Total materials found: " + to_string(mats.size()) + "\n").c_str());
-
-		for (size_t i = 0; i < mats.size(); ++i) {
-			string msg = "Material[" + to_string(i) + "]: " + mats[i].name + "\n";
-			OutputDebugStringA(msg.c_str());
-
-			OutputDebugStringA(("  BaseColor: " + mats[i].baseColorTexPath + "\n").c_str());
-			OutputDebugStringA(("  Normal: " + mats[i].normalTexPath + "\n").c_str());
-			OutputDebugStringA(("  Roughness: " + mats[i].roughnessTexPath + "\n").c_str());
-			OutputDebugStringA(("  Metallic: " + mats[i].metallicTexPath + "\n").c_str());
-			OutputDebugStringA(("  Height: " + mats[i].heightTexPath + "\n").c_str());
-			OutputDebugStringA(("  Alpha: " + mats[i].alphaTexPath + "\n").c_str());
-			OutputDebugStringA(("  Emission: " + mats[i].emissionTexPath + "\n").c_str());
-			OutputDebugStringA(("  AO: " + mats[i].aoTexPath + "\n").c_str());
-		}*/
 
 		material = make_shared<Material>();
 		material->LoadFromMaterialData(
@@ -81,7 +64,6 @@ void Terrain::LoadHeightmap(const wstring& path)
 	size_t fileSize = file.tellg();
 	file.seekg(0, ios::beg);
 
-	// Assume 16-bit heightmap, calculate dimensions
 	size_t pixelCount = fileSize / sizeof(unsigned short);
 	int dimension = static_cast<int>(sqrt(pixelCount));
 
@@ -92,7 +74,6 @@ void Terrain::LoadHeightmap(const wstring& path)
 	file.read(reinterpret_cast<char*>(rawData.data()), fileSize);
 	file.close();
 
-	// Normalize to 0.0 ~ 1.0
 	heightmapData.resize(pixelCount);
 	for (size_t i = 0; i < pixelCount; ++i)
 	{
@@ -115,25 +96,20 @@ void Terrain::BuildVertices()
 		{
 			Vertex vertex = {};
 
-			// Position: 0 ~ worldSize
 			float px = (float)x / gridSize * worldSize;
 			float pz = (float)z / gridSize * worldSize;
 
-			// 높이맵용 UV (0~1 범위)
 			float normalizedU = (float)x / gridSize;
 			float normalizedV = (float)z / gridSize;
 
-			// 텍스처 타일링용 UV (2x2 단위로 반복)
 			float tileSize = 2.0f;
 			float uvScale = worldSize / tileSize;
 			float u = normalizedU * uvScale;
 			float v = normalizedV * uvScale;
 
-			// Sample height from heightmap (정규화된 UV 사용)
 			float height = 0.0f;
 			if (!heightmapData.empty())
 			{
-				// Map UV to heightmap pixel coordinates
 				float hx = normalizedU * (heightmapWidth - 1);
 				float hz = normalizedV * (heightmapHeight - 1);
 
@@ -158,19 +134,17 @@ void Terrain::BuildVertices()
 			vertex.pos = XMFLOAT3(px, height * heightScale, pz);
 			vertex.uv = XMFLOAT2(u, v);
 
-			// Calculate normal (will be recalculated after all vertices)
 			vertex.normal = XMFLOAT3(0.0f, 1.0f, 0.0f);
 			vertex.tangent = XMFLOAT3(1.0f, 0.0f, 0.0f);
 
 			vertex.weights = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 			vertex.indices = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-			vertex.color = XMFLOAT4(0.5059f, 0.7569f, 0.2784f, 1.0f);  // Green color
+			vertex.color = XMFLOAT4(0.5059f, 0.7569f, 0.2784f, 1.0f);  
 
 			vertices.push_back(vertex);
 		}
 	}
 
-	// Calculate normals from adjacent vertices
 	for (int z = 0; z <= gridSize; ++z)
 	{
 		for (int x = 0; x <= gridSize; ++x)
@@ -192,7 +166,6 @@ void Terrain::BuildVertices()
 
 			XMStoreFloat3(&vertices[idx].normal, normal);
 
-			// Tangent (along X axis)
 			vertices[idx].tangent = XMFLOAT3(1.0f, (hR - hL) / (2.0f * cellSize), 0.0f);
 		}
 	}
@@ -212,12 +185,10 @@ void Terrain::BuildIndices()
 			int bottomLeft = (z + 1) * (gridSize + 1) + x;
 			int bottomRight = bottomLeft + 1;
 
-			// Triangle 1
 			indices.push_back(topRight);
 			indices.push_back(topLeft);
 			indices.push_back(bottomLeft);
 
-			// Triangle 2
 			indices.push_back(topRight);
 			indices.push_back(bottomLeft);
 			indices.push_back(bottomRight);
@@ -229,17 +200,14 @@ float Terrain::SampleHeightAt(float worldX, float worldZ) const
 {
 	if (heightmapData.empty() || worldSize <= 0.0f) return 0.0f;
 
-	// World position to UV (same as vertex generation)
 	float u = worldX / worldSize;
 	float v = worldZ / worldSize;
 
-	// Clamp to valid range
 	if (u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f)
 	{
 		return 0.0f;
 	}
 
-	// UV to heightmap pixel coordinates
 	float hx = u * (heightmapWidth - 1);
 	float hz = v * (heightmapHeight - 1);
 

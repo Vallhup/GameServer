@@ -18,10 +18,13 @@ public:
 
 	const vector<shared_ptr<GameObject>>& GetObjects() const { return objects; }
 
+	void SetCastShadow(bool in) { castShadow = in; }
+
 private:
 	Mesh* mesh;
 	vector<shared_ptr<GameObject>> objects;
 	unique_ptr<UploadBuffer> instanceBuffer;
 	unique_ptr<UploadBuffer> fullInstanceBuffer;
 	UINT visibleCount = 0;
+	bool castShadow = true;
 };
