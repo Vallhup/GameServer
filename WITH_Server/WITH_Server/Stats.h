@@ -2,21 +2,40 @@
 
 #include "Component.h"
 
-struct Vital : public Component
+struct BaseVital : Component
 {
-	int curHp{ 100 };
-	int maxHp{ 100 };
-
-	int curStamina{ 100 };
+	int maxHp{ 10 };
 	int maxStamina{ 100 };
-
 	double staminaRecoveryPerSec{ 10.0 };
 };
 
-struct Attribute : public Component
+struct BaseAttribute : Component
 {
 	int power{ 10 };
 	double attackSpeed{ 1.0 };
 	int defense{ 10 };
 	int moveSpeed{ 2 };
+};
+
+struct FinalVital : Component
+{
+	int maxHp{ 100 };
+	int maxStamina{ 100 };
+	double staminaRecoveryPerSec{ 10.0 };
+	bool dirty{ false };
+};
+
+struct FinalAttribute : Component
+{
+	int power{ 10 };
+	double attackSpeed{ 1.0 };
+	int defense{ 10 };
+	int moveSpeed{ 2 };
+	bool dirty{ false };
+};
+
+struct Vital : public Component
+{
+	int curHp{ 100 };
+	int curStamina{ 100 };
 };

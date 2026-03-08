@@ -4,7 +4,6 @@
 #include "Bufs.h"
 #include "BuffManager.h"
 
-
 void BuffApplySystem::Execute(const double dT)
 {
 	auto events = _runtime.Events().Queue<DeathEvent>().ConsumeView();
@@ -41,6 +40,7 @@ void BuffApplySystem::Execute(const double dT)
 			}
 		}
 	}
+	_runtime.Events().Queue<DeathEvent>().Clear();
 }
 
 void BuffApplySystem::FindTargetEntities(const ECS& ecs, std::vector<Entity>& out)
@@ -57,12 +57,27 @@ void BuffApplySystem::FindTargetEntities(const ECS& ecs, std::vector<Entity>& ou
 void BuffApplySystem::GiveBuff(Entity target, BuffType type)
 {
 	auto* bufComp = _runtime.GetECS().GetStorage<BuffsComp>().GetComponent(target);
-	if (bufComp) return;
+	if (!bufComp) return;
 
 	const BuffDef& buf = BuffManager::Get().GetBuff(type);
 	
 	// TODO : buf type, policy, effect에 따라 bufComp에 적용
+	auto it = std::find_if(bufComp->buffs.begin(), bufComp->buffs.end(),
+		[type](const BuffInstance& buf) { return buf.type == type; });
 
+	if (it != bufComp->buffs.end())
+	{
+		it->stackCount += 1;
+	}
+
+	else
+	{
+		BuffInstance bufInst;
+		bufInst.type = type;
+		bufInst.stackCount = 1;
+
+		bufComp->buffs.push_back(bufInst);
+	}
+
+	bufComp->dirty = true;
 }
-
-

@@ -13,4 +13,5 @@ struct ParryBuf : Component {
 struct BuffsComp : Component
 {
 	std::vector<BuffInstance> buffs;
+	bool dirty{ false };
 };

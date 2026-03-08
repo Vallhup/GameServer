@@ -3,6 +3,7 @@
 #include "System.h"
 #include "Event.h"
 #include "BuffData.h"
+#include "Bufs.h"
 
 class BuffApplySystem : public System {
 public:
@@ -17,7 +18,7 @@ public:
 
 	virtual std::vector<std::type_index> WriteResources() const override
 	{
-		return {  };
+		return { typeid(DeathEvent), typeid(BuffsComp) };
 	}
 
 private:
