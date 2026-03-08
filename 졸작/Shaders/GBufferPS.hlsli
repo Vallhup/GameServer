@@ -27,6 +27,12 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
         if (material.baseColorTexIndex != 0xFFFFFFFF)
             baseColor = bindlessTextures[NonUniformResourceIndex(material.baseColorTexIndex)].Sample(linearSampler, input.uv);
         
+        if (material.alphaTexIndex != 0xFFFFFFFF)
+            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).r;
+        
+        float finalAlpha = baseColor.a * alpha;
+        clip(finalAlpha - 0.01f);
+        
         if (material.normalTexIndex != 0xFFFFFFFF)
         {
             normalMap = bindlessTextures[NonUniformResourceIndex(material.normalTexIndex)].Sample(linearSampler, input.uv).rgb;
@@ -38,12 +44,6 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
                 
         if (material.metallicTexIndex != 0xFFFFFFFF)
             metallic = bindlessTextures[NonUniformResourceIndex(material.metallicTexIndex)].Sample(linearSampler, input.uv).r;
-               
-        if (material.alphaTexIndex != 0xFFFFFFFF)
-            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).r;
-        
-        float finalAlpha = baseColor.a * alpha;
-        clip(finalAlpha - 0.01f);
         
         if (material.emissionTexIndex != 0xFFFFFFFF)
             emission = bindlessTextures[NonUniformResourceIndex(material.emissionTexIndex)].Sample(linearSampler, input.uv).rgb;
