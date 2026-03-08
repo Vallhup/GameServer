@@ -169,7 +169,7 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, EntityType type,
 	double duration = pol.duration;
 	if (pol.useAttackSpeed)
 	{
-		const auto* attr = ecs.GetStorage<Attribute>().GetComponent(entity);
+		const auto* attr = ecs.GetStorage<FinalAttribute>().GetComponent(entity);
 		const double atkSpeed = std::max(attr ? attr->attackSpeed : 1.0, 0.1);
 		duration = pol.duration / atkSpeed;
 	}

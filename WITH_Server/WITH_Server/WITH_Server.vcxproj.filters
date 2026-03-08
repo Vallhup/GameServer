@@ -113,6 +113,12 @@
     <ClCompile Include="DBConn.cpp">
       <Filter>Database</Filter>
     </ClCompile>
+    <ClCompile Include="AIMovementSystem.cpp">
+      <Filter>ECS\System\Logic\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="StatRecalSystem.cpp">
+      <Filter>ECS\System\Logic\Stat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionTimeSystem.h">
@@ -292,6 +298,12 @@
     <ClInclude Include="DBConn.h">
       <Filter>Database</Filter>
     </ClInclude>
+    <ClInclude Include="AIMovementSystem.h">
+      <Filter>ECS\System\Logic\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="StatRecalSystem.h">
+      <Filter>ECS\System\Logic\Stat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -380,6 +392,9 @@
     </Filter>
     <Filter Include="Database">
       <UniqueIdentifier>{1e0d516a-c4f7-4552-8f88-552e04029cdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Logic\Stat">
+      <UniqueIdentifier>{40fdad71-d807-4c76-8963-2afb1cfeb802}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

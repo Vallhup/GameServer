@@ -25,6 +25,11 @@ namespace TransformHelper
 		);
 	}
 
+	inline XMVECTOR ForwardFromYaw(float yaw)
+	{
+		return XMVectorSet(-sin(yaw), 0.0f, -cos(yaw), 0.0f);
+	}
+
 	inline float QuaternionToYaw(const XMFLOAT4& quat)
 	{
 		XMVECTOR q = XMLoadFloat4(&quat);

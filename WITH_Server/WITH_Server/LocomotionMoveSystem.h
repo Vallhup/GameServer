@@ -16,7 +16,7 @@ public:
 	virtual std::vector<std::type_index> ReadResources() const override
 	{
 		return { typeid(Velocity), typeid(LocomotionState), typeid(ActionState),
-		typeid(Attribute) };
+		typeid(FinalAttribute) };
 	}
 
 	virtual std::vector<std::type_index> WriteResources() const override
@@ -27,6 +27,6 @@ public:
 private:
 	void ApplyNormalMovement(LocomotionMoveDelta* moveDelta,
 		LocomotionAnimPhase* animPhase, const LocomotionState& loco, 
-		const Velocity& vel, const Attribute& attribute, const double dT);
+		const Velocity& vel, const FinalAttribute& attribute, const double dT);
 };
 

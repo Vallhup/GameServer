@@ -10,7 +10,7 @@ void LocomotionMoveSystem::Execute(const double dT)
 	const auto& velocities = ecs.GetStorage<Velocity>();
 	const auto& actionStates = ecs.GetStorage<ActionState>();
 	const auto& locos = ecs.GetStorage<LocomotionState>();
-	const auto& attributes = ecs.GetStorage<Attribute>();
+	const auto& attributes = ecs.GetStorage<FinalAttribute>();
 
 	auto& moveDeltas = ecs.GetStorage<LocomotionMoveDelta>();
 	auto& animPhases = ecs.GetStorage<LocomotionAnimPhase>();
@@ -35,7 +35,7 @@ void LocomotionMoveSystem::Execute(const double dT)
 
 void LocomotionMoveSystem::ApplyNormalMovement(
 	LocomotionMoveDelta* moveDelta, LocomotionAnimPhase* animPhase, 
-	const LocomotionState& loco, const Velocity& vel, const Attribute& attribute, const double dT)
+	const LocomotionState& loco, const Velocity& vel, const FinalAttribute& attribute, const double dT)
 {
 	moveDelta->hasMove = false;
 	moveDelta->hasYaw = false;

@@ -15,7 +15,7 @@ public:
 
 	virtual std::vector<std::type_index> ReadResources() const override
 	{
-		return { typeid(Attribute), typeid(ActionState), typeid(Transform) };
+		return { typeid(FinalAttribute), typeid(ActionState), typeid(Transform) };
 	}
 
 	virtual std::vector<std::type_index> WriteResources() const override

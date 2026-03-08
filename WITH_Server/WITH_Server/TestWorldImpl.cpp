@@ -16,6 +16,8 @@
 #include "CombatCollisionCheckSystem.h"
 #include "CombatCollisionDedupSystem.h"
 #include "CombatCollisionHandlingSystem.h"
+#include "BuffApplySystem.h"
+#include "StatRecalSystem.h"
 
 #include "RepComponent.h"
 #include "Framework.h"
@@ -40,7 +42,10 @@ void TestWorldImpl::SpawnInitial(WorldRuntime& rt)
 	ecs.GetStorage<LocomotionAnimPhase>().AddComponent(e);
 	ecs.GetStorage<LocomotionState>().AddComponent(e);
 	ecs.GetStorage<ActionState>().AddComponent(e);
-	ecs.GetStorage<Attribute>().AddComponent(e);
+	ecs.GetStorage<BaseAttribute>().AddComponent(e);
+	ecs.GetStorage<FinalAttribute>().AddComponent(e);
+	ecs.GetStorage<BaseVital>().AddComponent(e);
+	ecs.GetStorage<FinalVital>().AddComponent(e);
 	ecs.GetStorage<Vital>().AddComponent(e);
 	ecs.GetStorage<AnimationState>().AddComponent(e);
 	auto animator = ecs.GetStorage<Animator>().AddComponent(e);
@@ -73,8 +78,12 @@ Entity TestWorldImpl::SpawnPlayer(WorldRuntime& rt, uint32 connId)
 	ecs.GetStorage<LocomotionState>().AddComponent(e);
 	ecs.GetStorage<ActionIntent>().AddComponent(e);
 	ecs.GetStorage<ActionState>().AddComponent(e);
-	ecs.GetStorage<Attribute>().AddComponent(e);
+	ecs.GetStorage<BaseAttribute>().AddComponent(e);
+	ecs.GetStorage<FinalAttribute>().AddComponent(e);
+	ecs.GetStorage<BaseVital>().AddComponent(e);
+	ecs.GetStorage<FinalVital>().AddComponent(e);
 	ecs.GetStorage<Vital>().AddComponent(e);
+	ecs.GetStorage<BuffsComp>().AddComponent(e);
 	ecs.GetStorage<AnimationState>().AddComponent(e);
 	auto animator = ecs.GetStorage<Animator>().AddComponent(e);
 	ecs.GetStorage<CombatCollider>().AddComponent(e);
@@ -107,6 +116,9 @@ void TestWorldImpl::Build(WorldRuntime& rt)
 
 	ecs.AddSystem<ActionTimeSystem>(SystemPhase::Graph, rt, 1);
 	ecs.AddSystem<ActionTransitionSystem>(SystemPhase::Graph, rt, 2);
+
+	ecs.AddSystem<BuffApplySystem>(SystemPhase::Graph, rt, 3);
+	ecs.AddSystem<StatRecalSystem>(SystemPhase::Graph, rt, 4);
 
 	ecs.AddSystem<ActionMoveSystem>(SystemPhase::Graph, rt, 11);
 	ecs.AddSystem<LocomotionMoveSystem>(SystemPhase::Graph, rt, 12);

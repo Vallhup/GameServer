@@ -126,24 +126,24 @@ void CombatCollisionHandlingSystem::HandleGuard(Entity attacker,
 		[&](Entity attacker, Entity victim) -> int
 		{
 			int damage{ 0 };
-			if (const auto* aAttr = ecs.GetStorage<Attribute>().GetComponent(attacker))
+			if (const auto* aAttr = ecs.GetStorage<FinalAttribute>().GetComponent(attacker))
 				damage = aAttr->power;
 
-			if (auto* aBuf = ecs.GetStorage<ParryBuf>().GetComponent(attacker))
+			if (auto* pBuf = ecs.GetStorage<ParryBuf>().GetComponent(attacker))
 			{
-				if (aBuf->remaining > 0)
+				if (pBuf->remaining > 0)
 				{
-					const double mul = 1.0f + aBuf->additionalDamage;
-					aBuf->remaining -= 1;
+					const double mul = 1.0f + pBuf->additionalDamage;
+					pBuf->remaining -= 1;
 
-					if (aBuf->remaining <= 0)
-						aBuf->remaining = 0;
+					if (pBuf->remaining <= 0)
+						pBuf->remaining = 0;
 
 					damage = std::lround(damage * mul);
 				}
 			}
 
-			if (const auto* vAttr = ecs.GetStorage<Attribute>().GetComponent(victim))
+			if (const auto* vAttr = ecs.GetStorage<FinalAttribute>().GetComponent(victim))
 			{
 				damage = damage * (100 / (100 + vAttr->defense));
 			}
@@ -191,7 +191,7 @@ void CombatCollisionHandlingSystem::HandleHit(Entity attacker,
 		[&](Entity attacker) -> int
 		{
 			int damage{ 0 };
-			if (const auto* attribute = ecs.GetStorage<Attribute>().GetComponent(attacker))
+			if (const auto* attribute = ecs.GetStorage<FinalAttribute>().GetComponent(attacker))
 				damage = attribute->power;
 
 			if (auto* pb = ecs.GetStorage<ParryBuf>().GetComponent(attacker))
