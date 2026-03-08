@@ -3,6 +3,7 @@
 #include "ImageUI.h"
 #include "UIManager.h"
 #include "Input.h"
+#include "TextUI.h"
 
 void GameSceneUIController::Init(UIManager* manager)
 {
@@ -33,6 +34,11 @@ void GameSceneUIController::Init(UIManager* manager)
 	localCharStaminaBar->SetPosition(WinSize.x * 0.0767f, WinSize.y * 0.087499f);
 	localCharStaminaBar->SetHoriLength(WinSize.y * 0.2566);
 	localCharStaminaBar->SetVertLength(WinSize.y * 0.00626);
+
+	tempStatusText = make_shared<TextUI>(L"Texture", L"MalgunGothic");
+	tempStatusText->Init(uiManager);
+	tempStatusText->SetPosition(0.0f, 0.0f);
+	tempStatusText->SetText(L"TempText");
 }
 
 void GameSceneUIController::Update(float deltaTime)
@@ -57,17 +63,39 @@ void GameSceneUIController::Render(SpriteBatch* batch)
 	if (localCharBarsBack) localCharBarsBack->Render(batch);
 	if (localCharHpBar) localCharHpBar->Render(batch);
 	if (localCharStaminaBar) localCharStaminaBar->Render(batch);
+	if (tempStatusText) tempStatusText->Render(batch);
 }
 
-void GameSceneUIController::HandleStatChange(int hp, int stamina)
+void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curStamina, int maxStamina)
 {
-	// TEMP : Max HP = 100
 	const float maxHpLength = WinSize.y * 0.3457;
-	const float hpPercent = hp / 100.0f;
+	const float hpPercent = (float)curHp / maxHp;
 	localCharHpBar->SetHoriLength(maxHpLength * hpPercent);
 
-	// TEMP : Max Stamina = 100
 	const float maxStaminaLength = WinSize.y * 0.2566;
-	const float staminaPercent = stamina / 100.0f;
+	const float staminaPercent = (float)curStamina / maxStamina;
 	localCharStaminaBar->SetHoriLength(maxStaminaLength * staminaPercent);
+}
+
+void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curStamina, int maxStamina, int power, double aSpeed, int defense, int mSpeed)
+{
+	// TODO : StatusText 변경
+	std::wstring text =
+		L"curHp: " + to_wstring(curHp) + L"\n" +
+		L"maxHp: " + to_wstring(maxHp) + L"\n" +
+		L"curStamina: " + to_wstring(curStamina) + L"\n" +
+		L"maxStamina: " + to_wstring(maxStamina) + L"\n" +
+		L"power: " + to_wstring(power) + L"\n" +
+		L"aSpeed: " + to_wstring(aSpeed) + L"\n" +
+		L"defense" + to_wstring(defense) + L"\n" +
+		L"mSpeed: " + to_wstring(mSpeed) + L"\n";
+
+	if (tempStatusText)
+		tempStatusText->SetText(text);
+}
+
+bool GameSceneUIController::IsStatWindowOn() const
+{
+	return statusImage ? 
+		(statusImage->GetState() == ImageUIState::FadingIn || statusImage->GetState() == ImageUIState::Visible) : false;
 }

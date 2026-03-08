@@ -250,11 +250,26 @@ void SoloGameScene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat
 	const NetId nid{ stat.netid() };
 	const int id = nid.GetId();
 
-	const int hp = stat.hp();
-	const int stamina = stat.stamina();
+	const int curHp = stat.curhp();
+	const int curStamina = stat.curstamina();
+
+	const int maxHp = stat.maxhp();
+	const int maxStamina = stat.maxstamina();
+
+	const int power = stat.power();
+	const int defense = stat.defense();
+	const int mSpeed = stat.movespeed();
+	const double aSpeed = stat.attackspeed();
 
 	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::MainGame);
-	if (controller) controller->HandleStatChange(hp, stamina);
+	if (controller)
+	{
+		controller->HandleStatBarChange(curHp, maxHp, curStamina, maxStamina);
+		if (controller->IsStatWindowOn())
+			controller->HandleStatImageChange(
+				curHp, maxHp, curStamina, maxStamina,
+				power, aSpeed, defense, mSpeed);
+	}
 }
 
 shared_ptr<MainCharacter> SoloGameScene::GetAvailableKnight() const

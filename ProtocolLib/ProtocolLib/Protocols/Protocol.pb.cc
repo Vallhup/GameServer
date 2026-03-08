@@ -29,8 +29,14 @@ namespace Protocol {
 inline constexpr SC_STAT_CHANGE_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : netid_{::uint64_t{0u}},
-        hp_{0u},
-        stamina_{0u},
+        curhp_{0u},
+        maxhp_{0u},
+        curstamina_{0u},
+        maxstamina_{0u},
+        power_{0u},
+        attackspeed_{0},
+        defense_{0u},
+        movespeed_{0u},
         _cached_size_{0} {}
 
 template <typename>
@@ -497,8 +503,14 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.netid_),
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.hp_),
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.stamina_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.curhp_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.maxhp_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.curstamina_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.maxstamina_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.power_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.attackspeed_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.defense_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_STAT_CHANGE_PACKET, _impl_.movespeed_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_REPLICATION_FRAME_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -529,7 +541,7 @@ static const ::_pbi::MigrationSchema
         {95, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
         {104, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
         {114, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
-        {125, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
+        {131, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -563,21 +575,24 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"!\n\020SC_REMOVE_"
     "PACKET\022\r\n\005netid\030\001 \001(\004\"A\n\036SC_ANIMATION_TR"
     "ANSITION_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010currAn"
-    "im\030\002 \001(\005\"C\n\025SC_STAT_CHANGE_PACKET\022\r\n\005net"
-    "id\030\001 \001(\004\022\n\n\002hp\030\002 \001(\r\022\017\n\007stamina\030\003 \001(\r\"\374\001"
-    "\n\033SC_REPLICATION_FRAME_PACKET\022\020\n\010frameSe"
-    "q\030\001 \001(\r\022\022\n\nserverTick\030\002 \001(\r\022\'\n\006spawns\030\003 "
-    "\003(\0132\027.Protocol.SC_ADD_PACKET\022,\n\010despawns"
-    "\030\004 \003(\0132\032.Protocol.SC_REMOVE_PACKET\022\'\n\005mo"
-    "ves\030\005 \003(\0132\030.Protocol.SC_MOVE_PACKET\0227\n\005a"
-    "nims\030\006 \003(\0132(.Protocol.SC_ANIMATION_TRANS"
-    "ITION_PACKETb\006proto3"
+    "im\030\002 \001(\005\"\264\001\n\025SC_STAT_CHANGE_PACKET\022\r\n\005ne"
+    "tid\030\001 \001(\004\022\r\n\005curhp\030\002 \001(\r\022\r\n\005maxhp\030\003 \001(\r\022"
+    "\022\n\ncurstamina\030\004 \001(\r\022\022\n\nmaxstamina\030\005 \001(\r\022"
+    "\r\n\005power\030\006 \001(\r\022\023\n\013attackspeed\030\007 \001(\002\022\017\n\007d"
+    "efense\030\010 \001(\r\022\021\n\tmovespeed\030\t \001(\r\"\374\001\n\033SC_R"
+    "EPLICATION_FRAME_PACKET\022\020\n\010frameSeq\030\001 \001("
+    "\r\022\022\n\nserverTick\030\002 \001(\r\022\'\n\006spawns\030\003 \003(\0132\027."
+    "Protocol.SC_ADD_PACKET\022,\n\010despawns\030\004 \003(\013"
+    "2\032.Protocol.SC_REMOVE_PACKET\022\'\n\005moves\030\005 "
+    "\003(\0132\030.Protocol.SC_MOVE_PACKET\0227\n\005anims\030\006"
+    " \003(\0132(.Protocol.SC_ANIMATION_TRANSITION_"
+    "PACKETb\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    940,
+    1054,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -3209,9 +3224,9 @@ inline void SC_STAT_CHANGE_PACKET::SharedCtor(::_pb::Arena* arena) {
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, netid_),
            0,
-           offsetof(Impl_, stamina_) -
+           offsetof(Impl_, movespeed_) -
                offsetof(Impl_, netid_) +
-               sizeof(Impl_::stamina_));
+               sizeof(Impl_::movespeed_));
 }
 SC_STAT_CHANGE_PACKET::~SC_STAT_CHANGE_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.SC_STAT_CHANGE_PACKET)
@@ -3260,15 +3275,15 @@ const ::google::protobuf::internal::ClassData* SC_STAT_CHANGE_PACKET::GetClassDa
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 0, 0, 2> SC_STAT_CHANGE_PACKET::_table_ = {
+const ::_pbi::TcParseTable<4, 9, 0, 0, 2> SC_STAT_CHANGE_PACKET::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    3, 24,  // max_field_number, fast_idx_mask
+    9, 120,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967288,  // skipmap
+    4294966784,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    3,  // num_field_entries
+    9,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -3282,23 +3297,65 @@ const ::_pbi::TcParseTable<2, 3, 0, 0, 2> SC_STAT_CHANGE_PACKET::_table_ = {
     // uint64 netid = 1;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.netid_), 63>(),
      {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.netid_)}},
-    // uint32 hp = 2;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.hp_), 63>(),
-     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.hp_)}},
-    // uint32 stamina = 3;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.stamina_), 63>(),
-     {24, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.stamina_)}},
+    // uint32 curhp = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.curhp_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.curhp_)}},
+    // uint32 maxhp = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.maxhp_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.maxhp_)}},
+    // uint32 curstamina = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.curstamina_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.curstamina_)}},
+    // uint32 maxstamina = 5;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.maxstamina_), 63>(),
+     {40, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.maxstamina_)}},
+    // uint32 power = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.power_), 63>(),
+     {48, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.power_)}},
+    // float attackspeed = 7;
+    {::_pbi::TcParser::FastF32S1,
+     {61, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.attackspeed_)}},
+    // uint32 defense = 8;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.defense_), 63>(),
+     {64, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.defense_)}},
+    // uint32 movespeed = 9;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_STAT_CHANGE_PACKET, _impl_.movespeed_), 63>(),
+     {72, 63, 0, PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.movespeed_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
   }}, {{
     // uint64 netid = 1;
     {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.netid_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
-    // uint32 hp = 2;
-    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.hp_), 0, 0,
+    // uint32 curhp = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.curhp_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
-    // uint32 stamina = 3;
-    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.stamina_), 0, 0,
+    // uint32 maxhp = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.maxhp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 curstamina = 4;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.curstamina_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 maxstamina = 5;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.maxstamina_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 power = 6;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.power_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // float attackspeed = 7;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.attackspeed_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // uint32 defense = 8;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.defense_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 movespeed = 9;
+    {PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.movespeed_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
   }},
   // no aux_entries
@@ -3314,8 +3371,8 @@ PROTOBUF_NOINLINE void SC_STAT_CHANGE_PACKET::Clear() {
   (void) cached_has_bits;
 
   ::memset(&_impl_.netid_, 0, static_cast<::size_t>(
-      reinterpret_cast<char*>(&_impl_.stamina_) -
-      reinterpret_cast<char*>(&_impl_.netid_)) + sizeof(_impl_.stamina_));
+      reinterpret_cast<char*>(&_impl_.movespeed_) -
+      reinterpret_cast<char*>(&_impl_.netid_)) + sizeof(_impl_.movespeed_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -3341,18 +3398,60 @@ PROTOBUF_NOINLINE void SC_STAT_CHANGE_PACKET::Clear() {
                 1, this_._internal_netid(), target);
           }
 
-          // uint32 hp = 2;
-          if (this_._internal_hp() != 0) {
+          // uint32 curhp = 2;
+          if (this_._internal_curhp() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
-                2, this_._internal_hp(), target);
+                2, this_._internal_curhp(), target);
           }
 
-          // uint32 stamina = 3;
-          if (this_._internal_stamina() != 0) {
+          // uint32 maxhp = 3;
+          if (this_._internal_maxhp() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
-                3, this_._internal_stamina(), target);
+                3, this_._internal_maxhp(), target);
+          }
+
+          // uint32 curstamina = 4;
+          if (this_._internal_curstamina() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                4, this_._internal_curstamina(), target);
+          }
+
+          // uint32 maxstamina = 5;
+          if (this_._internal_maxstamina() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                5, this_._internal_maxstamina(), target);
+          }
+
+          // uint32 power = 6;
+          if (this_._internal_power() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                6, this_._internal_power(), target);
+          }
+
+          // float attackspeed = 7;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_attackspeed()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                7, this_._internal_attackspeed(), target);
+          }
+
+          // uint32 defense = 8;
+          if (this_._internal_defense() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                8, this_._internal_defense(), target);
+          }
+
+          // uint32 movespeed = 9;
+          if (this_._internal_movespeed() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                9, this_._internal_movespeed(), target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -3385,15 +3484,44 @@ PROTOBUF_NOINLINE void SC_STAT_CHANGE_PACKET::Clear() {
               total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
                   this_._internal_netid());
             }
-            // uint32 hp = 2;
-            if (this_._internal_hp() != 0) {
+            // uint32 curhp = 2;
+            if (this_._internal_curhp() != 0) {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
-                  this_._internal_hp());
+                  this_._internal_curhp());
             }
-            // uint32 stamina = 3;
-            if (this_._internal_stamina() != 0) {
+            // uint32 maxhp = 3;
+            if (this_._internal_maxhp() != 0) {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
-                  this_._internal_stamina());
+                  this_._internal_maxhp());
+            }
+            // uint32 curstamina = 4;
+            if (this_._internal_curstamina() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_curstamina());
+            }
+            // uint32 maxstamina = 5;
+            if (this_._internal_maxstamina() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_maxstamina());
+            }
+            // uint32 power = 6;
+            if (this_._internal_power() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_power());
+            }
+            // float attackspeed = 7;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_attackspeed()) != 0) {
+              total_size += 5;
+            }
+            // uint32 defense = 8;
+            if (this_._internal_defense() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_defense());
+            }
+            // uint32 movespeed = 9;
+            if (this_._internal_movespeed() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_movespeed());
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -3411,11 +3539,29 @@ void SC_STAT_CHANGE_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, c
   if (from._internal_netid() != 0) {
     _this->_impl_.netid_ = from._impl_.netid_;
   }
-  if (from._internal_hp() != 0) {
-    _this->_impl_.hp_ = from._impl_.hp_;
+  if (from._internal_curhp() != 0) {
+    _this->_impl_.curhp_ = from._impl_.curhp_;
   }
-  if (from._internal_stamina() != 0) {
-    _this->_impl_.stamina_ = from._impl_.stamina_;
+  if (from._internal_maxhp() != 0) {
+    _this->_impl_.maxhp_ = from._impl_.maxhp_;
+  }
+  if (from._internal_curstamina() != 0) {
+    _this->_impl_.curstamina_ = from._impl_.curstamina_;
+  }
+  if (from._internal_maxstamina() != 0) {
+    _this->_impl_.maxstamina_ = from._impl_.maxstamina_;
+  }
+  if (from._internal_power() != 0) {
+    _this->_impl_.power_ = from._impl_.power_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_attackspeed()) != 0) {
+    _this->_impl_.attackspeed_ = from._impl_.attackspeed_;
+  }
+  if (from._internal_defense() != 0) {
+    _this->_impl_.defense_ = from._impl_.defense_;
+  }
+  if (from._internal_movespeed() != 0) {
+    _this->_impl_.movespeed_ = from._impl_.movespeed_;
   }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -3432,8 +3578,8 @@ void SC_STAT_CHANGE_PACKET::InternalSwap(SC_STAT_CHANGE_PACKET* PROTOBUF_RESTRIC
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.stamina_)
-      + sizeof(SC_STAT_CHANGE_PACKET::_impl_.stamina_)
+      PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.movespeed_)
+      + sizeof(SC_STAT_CHANGE_PACKET::_impl_.movespeed_)
       - PROTOBUF_FIELD_OFFSET(SC_STAT_CHANGE_PACKET, _impl_.netid_)>(
           reinterpret_cast<char*>(&_impl_.netid_),
           reinterpret_cast<char*>(&other->_impl_.netid_));

@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "StatRecalSystem.h"
+#include "Framework.h"
+#include "RepComponent.h""
 
 void StatRecalSystem::Execute(const double dT)
 {
@@ -37,6 +39,12 @@ void StatRecalSystem::Execute(const double dT)
 
 		finalAttr.dirty = false;
 		finalVital.dirty = false;
+
+		const auto* netComp = ecs.GetStorage<NetIdComp>().GetComponent(entity);
+		if (!netComp) continue;
+
+		Framework::Get().outEventQueue.push(
+			OutputEvent::StatChanged(netComp->id));
 
 #ifdef _DEBUG
 		std::printf("MaxHp: %d, MaxStamina: %d",

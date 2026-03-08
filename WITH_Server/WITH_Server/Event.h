@@ -84,12 +84,6 @@ struct OutputEventPayload
 			AnimationType currType;
 		} anim;
 
-		struct
-		{
-			int curHp;
-			int curStamina;
-		} stat;
-
 		uint32 raw{ 0 };
 	};
 };
@@ -106,10 +100,9 @@ struct OutputEvent {
 		return ev;
 	}
 
-	static OutputEvent StatChanged(NetId netId, int curHp, int curStamina)
+	static OutputEvent StatChanged(NetId netId)
 	{
 		OutputEvent ev{ netId, DirtyType::StatsChanged, { } };
-		ev.payload.stat = { curHp, curStamina };
 		return ev;
 	}
 };

@@ -78,8 +78,14 @@ message SC_ANIMATION_TRANSITION_PACKET
 message SC_STAT_CHANGE_PACKET
 {
 	uint64 netid = 1;
-	uint32 hp = 2;
-	uint32 stamina = 3;
+	uint32 curhp = 2;
+	uint32 maxhp = 3;
+	uint32 curstamina = 4;
+	uint32 maxstamina = 5;
+	uint32 power = 6;
+	float attackspeed = 7;
+	uint32 defense = 8;
+	uint32 movespeed = 9;
 }
 
 message SC_REPLICATION_FRAME_PACKET

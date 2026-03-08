@@ -65,12 +65,20 @@ namespace NetHelper {
 			(PacketType::SC_ANIMATION_CHANGE, anim);
 	}
 
-	inline SendBuffer* SCStatChangePacket(NetId id, int curHp, int curStamina)
+	inline SendBuffer* SCStatChangePacket(NetId id, int curHp,
+		int maxHp, int curStamina, int maxStamina, int power,
+		double aSpeed, int defense, int mSpeed)
 	{
 		Protocol::SC_STAT_CHANGE_PACKET stat;
 		stat.set_netid(id.GetRaw());
-		stat.set_hp(curHp);
-		stat.set_stamina(curStamina);
+		stat.set_curhp(curHp);
+		stat.set_maxhp(maxHp);
+		stat.set_curstamina(curStamina);
+		stat.set_maxstamina(maxStamina);
+		stat.set_power(power);
+		stat.set_attackspeed(aSpeed);
+		stat.set_defense(defense);
+		stat.set_movespeed(mSpeed);
 
 		return PacketFactory::Serialize<Protocol::SC_STAT_CHANGE_PACKET>
 			(PacketType::SC_STAT_CHANGE, stat);

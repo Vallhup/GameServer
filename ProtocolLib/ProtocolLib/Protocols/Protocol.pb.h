@@ -252,8 +252,14 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
   // accessors -------------------------------------------------------
   enum : int {
     kNetidFieldNumber = 1,
-    kHpFieldNumber = 2,
-    kStaminaFieldNumber = 3,
+    kCurhpFieldNumber = 2,
+    kMaxhpFieldNumber = 3,
+    kCurstaminaFieldNumber = 4,
+    kMaxstaminaFieldNumber = 5,
+    kPowerFieldNumber = 6,
+    kAttackspeedFieldNumber = 7,
+    kDefenseFieldNumber = 8,
+    kMovespeedFieldNumber = 9,
   };
   // uint64 netid = 1;
   void clear_netid() ;
@@ -265,24 +271,84 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
   void _internal_set_netid(::uint64_t value);
 
   public:
-  // uint32 hp = 2;
-  void clear_hp() ;
-  ::uint32_t hp() const;
-  void set_hp(::uint32_t value);
+  // uint32 curhp = 2;
+  void clear_curhp() ;
+  ::uint32_t curhp() const;
+  void set_curhp(::uint32_t value);
 
   private:
-  ::uint32_t _internal_hp() const;
-  void _internal_set_hp(::uint32_t value);
+  ::uint32_t _internal_curhp() const;
+  void _internal_set_curhp(::uint32_t value);
 
   public:
-  // uint32 stamina = 3;
-  void clear_stamina() ;
-  ::uint32_t stamina() const;
-  void set_stamina(::uint32_t value);
+  // uint32 maxhp = 3;
+  void clear_maxhp() ;
+  ::uint32_t maxhp() const;
+  void set_maxhp(::uint32_t value);
 
   private:
-  ::uint32_t _internal_stamina() const;
-  void _internal_set_stamina(::uint32_t value);
+  ::uint32_t _internal_maxhp() const;
+  void _internal_set_maxhp(::uint32_t value);
+
+  public:
+  // uint32 curstamina = 4;
+  void clear_curstamina() ;
+  ::uint32_t curstamina() const;
+  void set_curstamina(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_curstamina() const;
+  void _internal_set_curstamina(::uint32_t value);
+
+  public:
+  // uint32 maxstamina = 5;
+  void clear_maxstamina() ;
+  ::uint32_t maxstamina() const;
+  void set_maxstamina(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_maxstamina() const;
+  void _internal_set_maxstamina(::uint32_t value);
+
+  public:
+  // uint32 power = 6;
+  void clear_power() ;
+  ::uint32_t power() const;
+  void set_power(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_power() const;
+  void _internal_set_power(::uint32_t value);
+
+  public:
+  // float attackspeed = 7;
+  void clear_attackspeed() ;
+  float attackspeed() const;
+  void set_attackspeed(float value);
+
+  private:
+  float _internal_attackspeed() const;
+  void _internal_set_attackspeed(float value);
+
+  public:
+  // uint32 defense = 8;
+  void clear_defense() ;
+  ::uint32_t defense() const;
+  void set_defense(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_defense() const;
+  void _internal_set_defense(::uint32_t value);
+
+  public:
+  // uint32 movespeed = 9;
+  void clear_movespeed() ;
+  ::uint32_t movespeed() const;
+  void set_movespeed(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_movespeed() const;
+  void _internal_set_movespeed(::uint32_t value);
 
   public:
   // @@protoc_insertion_point(class_scope:Protocol.SC_STAT_CHANGE_PACKET)
@@ -290,7 +356,7 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      2, 3, 0,
+      4, 9, 0,
       0, 2>
       _table_;
 
@@ -309,8 +375,14 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const SC_STAT_CHANGE_PACKET& from_msg);
     ::uint64_t netid_;
-    ::uint32_t hp_;
-    ::uint32_t stamina_;
+    ::uint32_t curhp_;
+    ::uint32_t maxhp_;
+    ::uint32_t curstamina_;
+    ::uint32_t maxstamina_;
+    ::uint32_t power_;
+    float attackspeed_;
+    ::uint32_t defense_;
+    ::uint32_t movespeed_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -3487,48 +3559,180 @@ inline void SC_STAT_CHANGE_PACKET::_internal_set_netid(::uint64_t value) {
   _impl_.netid_ = value;
 }
 
-// uint32 hp = 2;
-inline void SC_STAT_CHANGE_PACKET::clear_hp() {
+// uint32 curhp = 2;
+inline void SC_STAT_CHANGE_PACKET::clear_curhp() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.hp_ = 0u;
+  _impl_.curhp_ = 0u;
 }
-inline ::uint32_t SC_STAT_CHANGE_PACKET::hp() const {
-  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.hp)
-  return _internal_hp();
+inline ::uint32_t SC_STAT_CHANGE_PACKET::curhp() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.curhp)
+  return _internal_curhp();
 }
-inline void SC_STAT_CHANGE_PACKET::set_hp(::uint32_t value) {
-  _internal_set_hp(value);
-  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.hp)
+inline void SC_STAT_CHANGE_PACKET::set_curhp(::uint32_t value) {
+  _internal_set_curhp(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.curhp)
 }
-inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_hp() const {
+inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_curhp() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.hp_;
+  return _impl_.curhp_;
 }
-inline void SC_STAT_CHANGE_PACKET::_internal_set_hp(::uint32_t value) {
+inline void SC_STAT_CHANGE_PACKET::_internal_set_curhp(::uint32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.hp_ = value;
+  _impl_.curhp_ = value;
 }
 
-// uint32 stamina = 3;
-inline void SC_STAT_CHANGE_PACKET::clear_stamina() {
+// uint32 maxhp = 3;
+inline void SC_STAT_CHANGE_PACKET::clear_maxhp() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.stamina_ = 0u;
+  _impl_.maxhp_ = 0u;
 }
-inline ::uint32_t SC_STAT_CHANGE_PACKET::stamina() const {
-  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.stamina)
-  return _internal_stamina();
+inline ::uint32_t SC_STAT_CHANGE_PACKET::maxhp() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.maxhp)
+  return _internal_maxhp();
 }
-inline void SC_STAT_CHANGE_PACKET::set_stamina(::uint32_t value) {
-  _internal_set_stamina(value);
-  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.stamina)
+inline void SC_STAT_CHANGE_PACKET::set_maxhp(::uint32_t value) {
+  _internal_set_maxhp(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.maxhp)
 }
-inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_stamina() const {
+inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_maxhp() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.stamina_;
+  return _impl_.maxhp_;
 }
-inline void SC_STAT_CHANGE_PACKET::_internal_set_stamina(::uint32_t value) {
+inline void SC_STAT_CHANGE_PACKET::_internal_set_maxhp(::uint32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.stamina_ = value;
+  _impl_.maxhp_ = value;
+}
+
+// uint32 curstamina = 4;
+inline void SC_STAT_CHANGE_PACKET::clear_curstamina() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.curstamina_ = 0u;
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::curstamina() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.curstamina)
+  return _internal_curstamina();
+}
+inline void SC_STAT_CHANGE_PACKET::set_curstamina(::uint32_t value) {
+  _internal_set_curstamina(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.curstamina)
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_curstamina() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.curstamina_;
+}
+inline void SC_STAT_CHANGE_PACKET::_internal_set_curstamina(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.curstamina_ = value;
+}
+
+// uint32 maxstamina = 5;
+inline void SC_STAT_CHANGE_PACKET::clear_maxstamina() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.maxstamina_ = 0u;
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::maxstamina() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.maxstamina)
+  return _internal_maxstamina();
+}
+inline void SC_STAT_CHANGE_PACKET::set_maxstamina(::uint32_t value) {
+  _internal_set_maxstamina(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.maxstamina)
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_maxstamina() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.maxstamina_;
+}
+inline void SC_STAT_CHANGE_PACKET::_internal_set_maxstamina(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.maxstamina_ = value;
+}
+
+// uint32 power = 6;
+inline void SC_STAT_CHANGE_PACKET::clear_power() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.power_ = 0u;
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::power() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.power)
+  return _internal_power();
+}
+inline void SC_STAT_CHANGE_PACKET::set_power(::uint32_t value) {
+  _internal_set_power(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.power)
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_power() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.power_;
+}
+inline void SC_STAT_CHANGE_PACKET::_internal_set_power(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.power_ = value;
+}
+
+// float attackspeed = 7;
+inline void SC_STAT_CHANGE_PACKET::clear_attackspeed() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.attackspeed_ = 0;
+}
+inline float SC_STAT_CHANGE_PACKET::attackspeed() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.attackspeed)
+  return _internal_attackspeed();
+}
+inline void SC_STAT_CHANGE_PACKET::set_attackspeed(float value) {
+  _internal_set_attackspeed(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.attackspeed)
+}
+inline float SC_STAT_CHANGE_PACKET::_internal_attackspeed() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.attackspeed_;
+}
+inline void SC_STAT_CHANGE_PACKET::_internal_set_attackspeed(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.attackspeed_ = value;
+}
+
+// uint32 defense = 8;
+inline void SC_STAT_CHANGE_PACKET::clear_defense() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.defense_ = 0u;
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::defense() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.defense)
+  return _internal_defense();
+}
+inline void SC_STAT_CHANGE_PACKET::set_defense(::uint32_t value) {
+  _internal_set_defense(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.defense)
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_defense() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.defense_;
+}
+inline void SC_STAT_CHANGE_PACKET::_internal_set_defense(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.defense_ = value;
+}
+
+// uint32 movespeed = 9;
+inline void SC_STAT_CHANGE_PACKET::clear_movespeed() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.movespeed_ = 0u;
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::movespeed() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.movespeed)
+  return _internal_movespeed();
+}
+inline void SC_STAT_CHANGE_PACKET::set_movespeed(::uint32_t value) {
+  _internal_set_movespeed(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.movespeed)
+}
+inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_movespeed() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.movespeed_;
+}
+inline void SC_STAT_CHANGE_PACKET::_internal_set_movespeed(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.movespeed_ = value;
 }
 
 // -------------------------------------------------------------------

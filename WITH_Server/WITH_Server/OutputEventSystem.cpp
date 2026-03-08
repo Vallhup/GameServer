@@ -5,6 +5,7 @@
 #include "NetHelper.h"
 #include "RepComponent.h"
 #include "Tags.h"
+#include "Stats.h"
 
 OutputEventSystem::OutputEventSystem(WorldRuntime& rt, int p) : System(rt, p)
 {
@@ -197,15 +198,32 @@ void OutputEventSystem::ProcessAnimationChange(const OutputEvent& event)
 void OutputEventSystem::ProcessStatChange(const OutputEvent& event)
 {
 	Framework& framework = Framework::Get();
+	ECS& ecs = _runtime.GetECS();
 
 	NetId myId = event.netId;
 	Entity myEntity = framework.netIdRegistry.FindEntity(myId);
 	uint32 myConnId = framework.listener.GetIdMap().GetConn(myId);
 
-	const int curHp		 = event.payload.stat.curHp;
-	const int curStamina = event.payload.stat.curStamina;
+	const auto* fVital = ecs.GetStorage<FinalVital>().GetComponent(myEntity);
+	const auto* fAttr = ecs.GetStorage<FinalAttribute>().GetComponent(myEntity);
+	const auto* vital = ecs.GetStorage<Vital>().GetComponent(myEntity);
+	if (!fVital || !fAttr || !vital) return;
 
-	SendBuffer* data = NetHelper::SCStatChangePacket(myId, curHp, curStamina);
+	const int curHp = vital->curHp;
+	const int curStamina = vital->curStamina;
+
+	const int maxHp = fVital->maxHp;
+	const int maxStamina = fVital->maxStamina;
+
+	const int power = fAttr->power;
+	const int defense = fAttr->defense;
+	const int mSpeed = fAttr->moveSpeed;
+	const double aSpeed = fAttr->attackSpeed;
+
+	SendBuffer* data = NetHelper::SCStatChangePacket(myId, 
+			curHp, maxHp, curStamina, maxStamina, 
+			power, aSpeed, defense, mSpeed);
+
 	EnqueueToSession(myConnId, data->data, data->size);
 	SendBufferPool::Get().Release(data);
 }

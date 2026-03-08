@@ -4,7 +4,7 @@
 
 struct BaseVital : Component
 {
-	int maxHp{ 10 };
+	int maxHp{ 20 };
 	int maxStamina{ 100 };
 	double staminaRecoveryPerSec{ 10.0 };
 };
@@ -19,7 +19,7 @@ struct BaseAttribute : Component
 
 struct FinalVital : Component
 {
-	int maxHp{ 100 };
+	int maxHp{ 20 };
 	int maxStamina{ 100 };
 	double staminaRecoveryPerSec{ 10.0 };
 	bool dirty{ false };
@@ -34,8 +34,8 @@ struct FinalAttribute : Component
 	bool dirty{ false };
 };
 
-struct Vital : public Component
+struct Vital : Component
 {
-	int curHp{ 100 };
+	int curHp{ 20 };
 	int curStamina{ 100 };
 };

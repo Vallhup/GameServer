@@ -166,7 +166,7 @@ void CombatCollisionHandlingSystem::HandleGuard(Entity attacker,
 		if (!netComp) return;
 
 		Framework::Get().outEventQueue.push(
-			OutputEvent::StatChanged(netComp->id, vitals->curHp, vitals->curStamina));
+			OutputEvent::StatChanged(netComp->id));
 	}
 
 	ActionRequestEvent ev
@@ -228,7 +228,7 @@ void CombatCollisionHandlingSystem::HandleHit(Entity attacker,
 		if (!netComp) return;
 
 		Framework::Get().outEventQueue.push(
-			OutputEvent::StatChanged(netComp->id, vitals->curHp, vitals->curStamina));
+			OutputEvent::StatChanged(netComp->id));
 	}
 
 	ActionRequestEvent ev
