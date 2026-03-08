@@ -52,7 +52,7 @@ bool ActionMoveSystem::CanMove(ActionType action, EntityType entity, AttackType 
 	return policy.isMoveAction;
 }
 
-bool ActionMoveSystem::AdvanceSegmentByTime(ActionMoveTag* actionMove, const ActionState& actionState, const std::vector<ActionMoveSegment>& segs)
+bool ActionMoveSystem::AdvanceSegmentByTime(ActionMoveTag* actionMove, const ActionState& actionState, const std::vector<ActionMoveSegment>& segs, EntityType type)
 {
 	bool advanced{ false };
 	while (actionMove->segmentIndex < segs.size())
@@ -64,20 +64,13 @@ bool ActionMoveSystem::AdvanceSegmentByTime(ActionMoveTag* actionMove, const Act
 			break;
 
 		advanced = true;
-
-		actionMove->segmentIndex++;
-		actionMove->movedInSegment = 0.0f;
-		actionMove->lastSegmentIndex = -1;
-		actionMove->dashTraveled = 0.0;
-		actionMove->dashHasTarget = false;
-		//actionMove->dirLocked = false;
-		//actionMove->yawLocked = false;
+		ForceNextSegment(actionMove, type);
 	}
 	
 	return advanced;
 }
 
-bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMoveSegment& seg, const Transform& trans, Entity self, Entity targetEnt)
+bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMoveSegment& seg, const Transform& trans, Entity self, Entity targetEnt, EntityType type)
 {
 	if (actionMove->lastSegmentIndex == actionMove->segmentIndex)
 		return false;
@@ -88,8 +81,11 @@ bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMov
 	actionMove->dashHasTarget = false;
 	actionMove->dashStartPos = trans.position;
 
-	/*if (!seg.moveParams.lockDir)
-		actionMove->dirLocked = false;*/
+	if(type == EntityType::Final_Boss)
+	{
+		if (!seg.moveParams.lockDir)
+			actionMove->dirLocked = false;
+	}
 
 	if (seg.moveMode == MoveMode::DashToTarget)
 	{
@@ -124,18 +120,22 @@ bool ActionMoveSystem::OnEnterSegment(ActionMoveTag* actionMove, const ActionMov
 	return true;
 }
 
-void ActionMoveSystem::ForceNextSegment(ActionMoveTag* actionMove, const std::vector<ActionMoveSegment>& segs)
+void ActionMoveSystem::ForceNextSegment(ActionMoveTag* actionMove, EntityType type)
 {
 	actionMove->segmentIndex++;
 	actionMove->lastSegmentIndex = -1;
 	actionMove->movedInSegment = 0.0;
 	actionMove->dashTraveled = 0.0;
 	actionMove->dashHasTarget = false;
-	//actionMove->dirLocked = false;
-	//actionMove->yawLocked = false;
+
+	if (type == EntityType::Final_Boss)
+	{
+		actionMove->dirLocked = false;
+		actionMove->yawLocked = false;
+	}
 }
 
-bool ActionMoveSystem::GetLockDirection(ActionMoveTag* actionMove, const Transform& trans, const Velocity& vel, bool lockDir, XMVECTOR& outDir)
+bool ActionMoveSystem::GetLockDirection(ActionMoveTag* actionMove, ActionMoveDelta* actionDelta, const Transform& trans, const Velocity& vel, bool lockDir, XMVECTOR& outDir)
 {
 	if (lockDir && actionMove->dirLocked)
 	{
@@ -143,21 +143,38 @@ bool ActionMoveSystem::GetLockDirection(ActionMoveTag* actionMove, const Transfo
 		return true;
 	}
 
-	XMVECTOR dir = XMLoadFloat3(&vel.dir);
-	if (!TransformHelper::SafeNormalize3(dir, outDir))
-	{
-		XMVECTOR forward = TransformHelper::Forward(trans);
-		if (!TransformHelper::SafeNormalize3(forward, outDir))
-			return false;
-	}
+	XMVECTOR dir;
+	if (!GetMoveBasisDirection(actionDelta, trans, vel, true, dir))
+		return false;
 
 	if (lockDir)
 	{
 		XMStoreFloat3(&actionMove->dir, outDir);
 		actionMove->dirLocked = true;
 	}
-
+	
+	outDir = dir;
 	return true;
+}
+
+bool ActionMoveSystem::GetMoveBasisDirection(const ActionMoveDelta* actionDelta, const Transform& trans, const Velocity& vel, bool preferVelocity, XMVECTOR& outDir)
+{
+	if (actionDelta && actionDelta->hasYaw)
+	{
+		XMVECTOR dir = TransformHelper::ForwardFromYaw(actionDelta->yaw);
+		if (TransformHelper::SafeNormalize3(dir, outDir))
+			return true;
+	}
+
+	if (preferVelocity)
+	{
+		XMVECTOR dir = XMLoadFloat3(&vel.dir);
+		if (TransformHelper::SafeNormalize3(dir, outDir))
+			return true;
+	}
+
+	XMVECTOR forward = TransformHelper::Forward(trans);
+	return TransformHelper::SafeNormalize3(forward, outDir);
 }
 
 bool ActionMoveSystem::ComputeYaw_FaceTarget(Entity self, Entity target, const Transform& trans, float& outYaw) const
@@ -245,7 +262,7 @@ bool ActionMoveSystem::HandleFixedDistance(ActionMoveTag* actionMove, ActionMove
 
 	if(!gotDir)
 	{
-		if (!GetLockDirection(actionMove, tr, vel, seg.moveParams.lockDir, dir))
+		if (!GetLockDirection(actionMove, actionDelta, tr, vel, seg.moveParams.lockDir, dir))
 			return false;
 	}
 
@@ -365,7 +382,7 @@ void ActionMoveSystem::ApplyActionMovement(ActionMoveTag* actionMove, ActionMove
 	if (actionMove->segmentIndex >= segments.size()) 
 		return;
 
-	AdvanceSegmentByTime(actionMove, actionState, segments);
+	AdvanceSegmentByTime(actionMove, actionState, segments, type);
 	if (actionMove->segmentIndex >= segments.size()) 
 		return;
 
@@ -374,7 +391,7 @@ void ActionMoveSystem::ApplyActionMovement(ActionMoveTag* actionMove, ActionMove
 	const double segStart = seg.t0 * actionState.duration;
 	if (actionState.elapsed < segStart) return;
 
-	OnEnterSegment(actionMove, seg, trans, self, targetEnt);
+	OnEnterSegment(actionMove, seg, trans, self, targetEnt, type);
 
 	// 1. YawMode::FaceTarget이면 Yaw 먼저 계산
 	bool yawAligned{ false };
@@ -433,7 +450,7 @@ AFTER_YAW:;
 	// 회전-only segment면, 회전 정렬되면 바로 skip
 	if (seg.moveMode == MoveMode::None && seg.yawMode != YawMode::None && yawAligned)
 	{
-		ForceNextSegment(actionMove, segments);
+		ForceNextSegment(actionMove, type);
 		return;
 	}
 
@@ -487,5 +504,5 @@ AFTER_YAW:;
 	}
 
 	if (finishedH && finishedV)
-		ForceNextSegment(actionMove, segments);
+		ForceNextSegment(actionMove, type);
 }

@@ -263,7 +263,7 @@ void ActionManager::LoadProfile()
 				{
 					.distance = 8.453f / 100.f,
 					.dirMul = -1,
-					.lockDir = false
+					.lockDir = true
 				},
 				YawMode::FaceTarget,
 				YawParams
