@@ -114,7 +114,10 @@ UINT Material::RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* 
         return it->second;
 
     auto texture = make_unique<Texture>();
-    texture->Initialize(device, cmdList, path);
+    filesystem::path p(path);
+    p.replace_extension(L".dds");
+    wstring ddsPath = p.wstring();
+    texture->InitializeDDS(device, cmdList, ddsPath);
 
     D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = bindlessHeap->GetCPUDescriptorHandleForHeapStart();
     cpuHandle.ptr += nextTextureIndex * descriptorSize;

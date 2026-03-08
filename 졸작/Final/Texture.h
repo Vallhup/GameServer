@@ -4,6 +4,7 @@ class Texture
 {
 public:
     void Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath);
+    void InitializeDDS(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath);
     void InitializeFromRAW(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath, UINT width, UINT height);
     void InitializeCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
 

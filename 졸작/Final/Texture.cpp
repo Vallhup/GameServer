@@ -64,6 +64,50 @@ void Texture::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdLis
     cmdList->ResourceBarrier(1, &barrier);
 }
 
+void Texture::InitializeDDS(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath)
+{
+    ScratchImage image;
+    HRESULT hr = LoadFromDDSFile(filePath.c_str(), DDS_FLAGS_NONE, nullptr, image);
+    MASSERT(SUCCEEDED(hr), "Failed to load texture file");
+
+    const Image* img = image.GetImage(0, 0, 0);
+
+    D3D12_RESOURCE_DESC desc = {};
+    desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+    desc.Width = static_cast<UINT>(img->width);
+    desc.Height = static_cast<UINT>(img->height);
+    desc.DepthOrArraySize = 1;
+    desc.MipLevels = 1;
+    desc.Format = img->format;
+    desc.SampleDesc.Count = 1;
+    desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+    CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
+    hr = device->CreateCommittedResource(&defaultHeap, D3D12_HEAP_FLAG_NONE, &desc,
+        D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&texture));
+    MASSERT(SUCCEEDED(hr), "Failed to create DDS texture");
+
+    UINT64 uploadSize = GetRequiredIntermediateSize(texture.Get(), 0, 1);
+    CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
+    CD3DX12_RESOURCE_DESC bufDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadSize);
+    hr = device->CreateCommittedResource(&uploadHeap, D3D12_HEAP_FLAG_NONE, &bufDesc,
+        D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&uploadBuffer));
+    MASSERT(SUCCEEDED(hr), "Failed to create DDS upload buffer");
+
+    D3D12_SUBRESOURCE_DATA textureData = {};
+    textureData.pData = img->pixels;
+    textureData.RowPitch = img->rowPitch;
+    textureData.SlicePitch = img->slicePitch;
+
+    UpdateSubresources(cmdList, texture.Get(), uploadBuffer.Get(), 0, 0, 1, &textureData);
+
+    CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+        texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    cmdList->ResourceBarrier(1, &barrier);
+
+    OutputDebugStringA("DDS based texture loaded!\n");
+}
+
 void Texture::InitializeFromRAW(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath, UINT width, UINT height)
 {
     std::ifstream file(filePath, std::ios::binary);
