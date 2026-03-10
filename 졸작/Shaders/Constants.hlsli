@@ -17,7 +17,7 @@ const static float cascadeBias[4] = { 0.0001f, 0.0003f, 0.0008f, 0.0018f };
 // Volumetric Fog Constants (Test)
 //-------------------------------------------------------
 
-static const float VF_DENSITY = 0.05f;                               // 안개 밀도
+static const float VF_DENSITY = 0.02f;                               // 안개 밀도
 static const float VF_SCATTERING = 0.8f;                             // 산란 계수
 static const float VF_ABSORPTION = 0.1f;                             // 흡수 계수
 static const float VF_HG_ANISOTROPY = 0.6f;                          // Phase function g값 (0=등방, 1=전방산란)
