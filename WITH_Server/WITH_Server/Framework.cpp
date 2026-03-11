@@ -91,8 +91,8 @@ void Framework::LoadAnimations()
 
 void Framework::LoadMapDatas()
 {
-	MapCollisionManager::Get().LoadMapData("../Map//map2_collision.png");
+	MapCollisionManager::Get().LoadMapData("../Map/map_1_collision.png");
 
-	MapCollisionManager::Get().LoadHeightMap("../Map/map2_terrain.raw");
+	MapCollisionManager::Get().LoadHeightMap("../Map/map1_terrain.raw");
 }
 	
