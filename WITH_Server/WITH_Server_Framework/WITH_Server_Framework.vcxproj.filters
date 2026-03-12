@@ -43,15 +43,6 @@
     <ClCompile Include="WorldRuntime.cpp">
       <Filter>Game\World\Core</Filter>
     </ClCompile>
-    <ClCompile Include="DirtyTracker.cpp">
-      <Filter>ReplicationCore</Filter>
-    </ClCompile>
-    <ClCompile Include="ReplicationSystem.cpp">
-      <Filter>ReplicationCore</Filter>
-    </ClCompile>
-    <ClCompile Include="RepRegistry.cpp">
-      <Filter>ReplicationCore</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
@@ -138,18 +129,6 @@
     <ClInclude Include="WorldRuntime.h">
       <Filter>Game\World\Core</Filter>
     </ClInclude>
-    <ClInclude Include="DirtyTracker.h">
-      <Filter>ReplicationCore</Filter>
-    </ClInclude>
-    <ClInclude Include="ReplicationSystem.h">
-      <Filter>ReplicationCore</Filter>
-    </ClInclude>
-    <ClInclude Include="RepRegistry.h">
-      <Filter>ReplicationCore</Filter>
-    </ClInclude>
-    <ClInclude Include="SessionRepState.h">
-      <Filter>ReplicationCore</Filter>
-    </ClInclude>
     <ClInclude Include="RepComponent.h">
       <Filter>ECS\Component</Filter>
     </ClInclude>
@@ -161,12 +140,6 @@
     </ClInclude>
     <ClInclude Include="ServerContext.h">
       <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="IInterestPolicy.h">
-      <Filter>ReplicationCore\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IConnContext.h">
-      <Filter>ReplicationCore\Interface</Filter>
     </ClInclude>
     <ClInclude Include="PlayerSnapshot.h">
       <Filter>Game\World\Parameter</Filter>
@@ -224,14 +197,8 @@
     <Filter Include="JobGraph">
       <UniqueIdentifier>{20f28bfd-9995-4570-913a-aecb95f4fae9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ReplicationCore">
-      <UniqueIdentifier>{8be81388-b32f-49e3-9c71-98080e0f3171}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utility">
       <UniqueIdentifier>{6df8462f-88f4-4f0d-a3f4-882035ffcb3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ReplicationCore\Interface">
-      <UniqueIdentifier>{d4bf3cd7-c3a5-4c3b-9bfc-80eaaba4468b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Game\World\Manager\WorldLeap">
       <UniqueIdentifier>{bc05f686-6dde-4e5f-afd4-334f1c774064}</UniqueIdentifier>

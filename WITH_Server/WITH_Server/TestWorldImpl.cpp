@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "TestWorldImpl.h"
 #include "EventSystem.h"
-#include "OutputEventSystem.h"
 #include "ColliderUpdateSystem.h"
 #include "ActionTimeSystem.h"
 #include "ActionTransitionSystem.h"
@@ -22,6 +21,9 @@
 #include "RepComponent.h"
 #include "Framework.h"
 #include "AIThinkSystem.h"
+
+#include "LifecycleReplicationSystem.h"
+#include "DirtyReplicationSystem.h"
 
 #include "Tags.h"
 
@@ -54,6 +56,7 @@ void TestWorldImpl::SpawnInitial(WorldRuntime& rt)
 	ecs.GetStorage<SpawnTypeComp>().AddComponent(e)->type = EntityType::Final_Boss;
 	ecs.GetStorage<AIState>().AddComponent(e);
 	ecs.GetStorage<AIThinkState>().AddComponent(e);
+	ecs.GetStorage<DirtyFlagsComp>().AddComponent(e);
 
 	Framework& framework = Framework::Get();
 	NetId id = framework.netIdRegistry.Allocate();
@@ -93,6 +96,7 @@ Entity TestWorldImpl::SpawnPlayer(WorldRuntime& rt, uint32 connId)
 	ecs.GetStorage<SpawnTypeComp>().AddComponent(e)->type = EntityType::Knight;
 	
 	ecs.GetStorage<WorldIdComp>().AddComponent(e);
+	ecs.GetStorage<DirtyFlagsComp>().AddComponent(e);
 
 	Framework& framework = Framework::Get();
 	NetId nId = framework.netIdRegistry.Allocate();
@@ -139,7 +143,8 @@ void TestWorldImpl::Build(WorldRuntime& rt)
 
 	// TODO : 시야처리
 
-	ecs.AddSystem<OutputEventSystem>(SystemPhase::Post, rt, 100);
+	ecs.AddSystem<DirtyReplicationSystem>(SystemPhase::Post, rt, 100);
+	ecs.AddSystem<LifecycleReplicationSystem>(SystemPhase::Post, rt, 101);
 }
 
 void TestWorldImpl::OnShutdown(WorldRuntime& rt)

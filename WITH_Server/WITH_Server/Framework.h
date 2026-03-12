@@ -20,7 +20,7 @@ public:
 	void Stop();
 
 	concurrency::concurrent_queue<Event> eventQueue;
-	concurrency::concurrent_queue<OutputEvent> outEventQueue;
+	concurrency::concurrent_queue<LifecycleEvent> lifecycleEventQueue;
 
 	NetIdRegistry netIdRegistry;
 

@@ -162,11 +162,7 @@ void CombatCollisionHandlingSystem::HandleGuard(Entity attacker,
 	const auto* player = ecs.GetStorage<PlayerTag>().GetComponent(victim);
 	if (player && damage > 0)
 	{
-		const auto* netComp = ecs.GetStorage<NetIdComp>().GetComponent(victim);
-		if (!netComp) return;
-
-		Framework::Get().outEventQueue.push(
-			OutputEvent::StatChanged(netComp->id));
+		_runtime.MarkDirty(victim, WorldDirtyType::Stat);
 	}
 
 	ActionRequestEvent ev
@@ -224,11 +220,7 @@ void CombatCollisionHandlingSystem::HandleHit(Entity attacker,
 	const auto* player = ecs.GetStorage<PlayerTag>().GetComponent(victim);
 	if (player && damage > 0)
 	{
-		const auto* netComp = ecs.GetStorage<NetIdComp>().GetComponent(victim);
-		if (!netComp) return;
-
-		Framework::Get().outEventQueue.push(
-			OutputEvent::StatChanged(netComp->id));
+		_runtime.MarkDirty(victim, WorldDirtyType::Stat);
 	}
 
 	ActionRequestEvent ev

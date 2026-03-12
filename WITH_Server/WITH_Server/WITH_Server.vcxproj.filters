@@ -3,13 +3,13 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ActionTimeSystem.cpp">
-      <Filter>ECS\System\Logic\Action</Filter>
+      <Filter>ECS\System\Action</Filter>
     </ClCompile>
     <ClCompile Include="ActionTransitionSystem.cpp">
-      <Filter>ECS\System\Logic\Action</Filter>
+      <Filter>ECS\System\Action</Filter>
     </ClCompile>
     <ClCompile Include="ColliderUpdateSystem.cpp">
-      <Filter>ECS\System\Logic\Collision</Filter>
+      <Filter>ECS\System\Collision</Filter>
     </ClCompile>
     <ClCompile Include="EventSystem.cpp">
       <Filter>ECS\System\Event</Filter>
@@ -19,9 +19,6 @@
     </ClCompile>
     <ClCompile Include="ObjectPoolManager.cpp">
       <Filter>Utility\ObjectPool</Filter>
-    </ClCompile>
-    <ClCompile Include="OutputEventSystem.cpp">
-      <Filter>ECS\System\Event</Filter>
     </ClCompile>
     <ClCompile Include="NetworkHandler.cpp">
       <Filter>Network\Protocol\Event</Filter>
@@ -39,43 +36,43 @@
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
     <ClCompile Include="ActionMoveSystem.cpp">
-      <Filter>ECS\System\Logic\Move</Filter>
+      <Filter>ECS\System\Move</Filter>
     </ClCompile>
     <ClCompile Include="LocomotionMoveSystem.cpp">
-      <Filter>ECS\System\Logic\Move</Filter>
+      <Filter>ECS\System\Move</Filter>
     </ClCompile>
     <ClCompile Include="MovementApplySystem.cpp">
-      <Filter>ECS\System\Logic\Move</Filter>
+      <Filter>ECS\System\Move</Filter>
     </ClCompile>
     <ClCompile Include="AnimationSelectSystem.cpp">
-      <Filter>ECS\System\Logic\Animation</Filter>
+      <Filter>ECS\System\Animation</Filter>
     </ClCompile>
     <ClCompile Include="AnimationCommitSystem.cpp">
-      <Filter>ECS\System\Logic\Animation</Filter>
+      <Filter>ECS\System\Animation</Filter>
     </ClCompile>
     <ClCompile Include="AnimationFrameSystem.cpp">
-      <Filter>ECS\System\Logic\Animation</Filter>
+      <Filter>ECS\System\Animation</Filter>
     </ClCompile>
     <ClCompile Include="AnimationPoseBindSystem.cpp">
-      <Filter>ECS\System\Logic\Animation</Filter>
+      <Filter>ECS\System\Animation</Filter>
     </ClCompile>
     <ClCompile Include="ColliderActivationSystem.cpp">
-      <Filter>ECS\System\Logic\Collision</Filter>
+      <Filter>ECS\System\Collision</Filter>
     </ClCompile>
     <ClCompile Include="CombatCollisionCheckSystem.cpp">
-      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+      <Filter>ECS\System\Collision\Combat</Filter>
     </ClCompile>
     <ClCompile Include="CombatCollisionDedupSystem.cpp">
-      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+      <Filter>ECS\System\Collision\Combat</Filter>
     </ClCompile>
     <ClCompile Include="CombatCollisionHandlingSystem.cpp">
-      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+      <Filter>ECS\System\Collision\Combat</Filter>
     </ClCompile>
     <ClCompile Include="ViewProcessingSystem.cpp">
-      <Filter>ECS\System\Logic\View</Filter>
+      <Filter>ECS\System\View</Filter>
     </ClCompile>
     <ClCompile Include="AIThinkSystem.cpp">
-      <Filter>ECS\System\Logic\AI</Filter>
+      <Filter>ECS\System\AI</Filter>
     </ClCompile>
     <ClCompile Include="MapCollisionManager.cpp">
       <Filter>Manager</Filter>
@@ -102,7 +99,7 @@
       <Filter>Manager\Buff</Filter>
     </ClCompile>
     <ClCompile Include="BuffApplySystem.cpp">
-      <Filter>ECS\System\Logic\Buff</Filter>
+      <Filter>ECS\System\Buff</Filter>
     </ClCompile>
     <ClCompile Include="DBManager.cpp">
       <Filter>Database</Filter>
@@ -114,21 +111,30 @@
       <Filter>Database</Filter>
     </ClCompile>
     <ClCompile Include="AIMovementSystem.cpp">
-      <Filter>ECS\System\Logic\AI</Filter>
+      <Filter>ECS\System\AI</Filter>
     </ClCompile>
     <ClCompile Include="StatRecalSystem.cpp">
-      <Filter>ECS\System\Logic\Stat</Filter>
+      <Filter>ECS\System\Stat</Filter>
+    </ClCompile>
+    <ClCompile Include="DirtyReplicationSystem.cpp">
+      <Filter>ECS\System\Replication</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionSendBufferManager.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="LifecycleReplicationSystem.cpp">
+      <Filter>ECS\System\Replication</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionTimeSystem.h">
-      <Filter>ECS\System\Logic\Action</Filter>
+      <Filter>ECS\System\Action</Filter>
     </ClInclude>
     <ClInclude Include="ActionTransitionSystem.h">
-      <Filter>ECS\System\Logic\Action</Filter>
+      <Filter>ECS\System\Action</Filter>
     </ClInclude>
     <ClInclude Include="ColliderUpdateSystem.h">
-      <Filter>ECS\System\Logic\Collision</Filter>
+      <Filter>ECS\System\Collision</Filter>
     </ClInclude>
     <ClInclude Include="EventSystem.h">
       <Filter>ECS\System\Event</Filter>
@@ -141,9 +147,6 @@
     </ClInclude>
     <ClInclude Include="ObjectPoolManager.h">
       <Filter>Utility\ObjectPool</Filter>
-    </ClInclude>
-    <ClInclude Include="OutputEventSystem.h">
-      <Filter>ECS\System\Event</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
       <Filter>Utility</Filter>
@@ -164,43 +167,43 @@
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
     <ClInclude Include="ActionMoveSystem.h">
-      <Filter>ECS\System\Logic\Move</Filter>
+      <Filter>ECS\System\Move</Filter>
     </ClInclude>
     <ClInclude Include="LocomotionMoveSystem.h">
-      <Filter>ECS\System\Logic\Move</Filter>
+      <Filter>ECS\System\Move</Filter>
     </ClInclude>
     <ClInclude Include="MovementApplySystem.h">
-      <Filter>ECS\System\Logic\Move</Filter>
+      <Filter>ECS\System\Move</Filter>
     </ClInclude>
     <ClInclude Include="AnimationSelectSystem.h">
-      <Filter>ECS\System\Logic\Animation</Filter>
+      <Filter>ECS\System\Animation</Filter>
     </ClInclude>
     <ClInclude Include="AnimationCommitSystem.h">
-      <Filter>ECS\System\Logic\Animation</Filter>
+      <Filter>ECS\System\Animation</Filter>
     </ClInclude>
     <ClInclude Include="AnimationFrameSystem.h">
-      <Filter>ECS\System\Logic\Animation</Filter>
+      <Filter>ECS\System\Animation</Filter>
     </ClInclude>
     <ClInclude Include="AnimationPoseBindSystem.h">
-      <Filter>ECS\System\Logic\Animation</Filter>
+      <Filter>ECS\System\Animation</Filter>
     </ClInclude>
     <ClInclude Include="ColliderActivationSystem.h">
-      <Filter>ECS\System\Logic\Collision</Filter>
+      <Filter>ECS\System\Collision</Filter>
     </ClInclude>
     <ClInclude Include="CombatCollisionCheckSystem.h">
-      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+      <Filter>ECS\System\Collision\Combat</Filter>
     </ClInclude>
     <ClInclude Include="CombatCollisionDedupSystem.h">
-      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+      <Filter>ECS\System\Collision\Combat</Filter>
     </ClInclude>
     <ClInclude Include="CombatCollisionHandlingSystem.h">
-      <Filter>ECS\System\Logic\Collision\Combat</Filter>
+      <Filter>ECS\System\Collision\Combat</Filter>
     </ClInclude>
     <ClInclude Include="ViewProcessingSystem.h">
-      <Filter>ECS\System\Logic\View</Filter>
+      <Filter>ECS\System\View</Filter>
     </ClInclude>
     <ClInclude Include="AIThinkSystem.h">
-      <Filter>ECS\System\Logic\AI</Filter>
+      <Filter>ECS\System\AI</Filter>
     </ClInclude>
     <ClInclude Include="MapCollisionManager.h">
       <Filter>Manager</Filter>
@@ -287,7 +290,7 @@
       <Filter>Manager\Buff</Filter>
     </ClInclude>
     <ClInclude Include="BuffApplySystem.h">
-      <Filter>ECS\System\Logic\Buff</Filter>
+      <Filter>ECS\System\Buff</Filter>
     </ClInclude>
     <ClInclude Include="DBManager.h">
       <Filter>Database</Filter>
@@ -299,10 +302,19 @@
       <Filter>Database</Filter>
     </ClInclude>
     <ClInclude Include="AIMovementSystem.h">
-      <Filter>ECS\System\Logic\AI</Filter>
+      <Filter>ECS\System\AI</Filter>
     </ClInclude>
     <ClInclude Include="StatRecalSystem.h">
-      <Filter>ECS\System\Logic\Stat</Filter>
+      <Filter>ECS\System\Stat</Filter>
+    </ClInclude>
+    <ClInclude Include="DirtyReplicationSystem.h">
+      <Filter>ECS\System\Replication</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionSendBufferManager.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="LifecycleReplicationSystem.h">
+      <Filter>ECS\System\Replication</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -318,20 +330,8 @@
     <Filter Include="ECS\System\Event">
       <UniqueIdentifier>{f748aeaf-bee1-4b5d-93bc-0ef299c904d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\System\Logic">
-      <UniqueIdentifier>{53b80595-2629-4d91-b19f-d67f09f95439}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Logic\Action">
-      <UniqueIdentifier>{e560fd78-3148-4543-aa20-2d9209979bb6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Logic\Animation">
-      <UniqueIdentifier>{61eabb6d-5270-49db-b513-016384a93d09}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Manager">
       <UniqueIdentifier>{d4e1d3ec-5d83-45bd-8a04-4c456fca7990}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Logic\Collision">
-      <UniqueIdentifier>{5c4f420a-5cdf-4a56-89f0-b436e2e9c4d9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Framework">
       <UniqueIdentifier>{b8d013d8-4872-4c57-8c7e-a4fbfe8a4bfb}</UniqueIdentifier>
@@ -357,18 +357,6 @@
     <Filter Include="Network\Protocol\Event">
       <UniqueIdentifier>{df32984b-2291-4010-99a8-cdefc1d7d826}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\System\Logic\Move">
-      <UniqueIdentifier>{7d221b54-761f-48a6-8fdc-869029a9e9b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Logic\Collision\Combat">
-      <UniqueIdentifier>{f0348ca0-1cf0-416e-8369-d57780c2396f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Logic\View">
-      <UniqueIdentifier>{f6782456-f514-4ebb-a32f-7c803e8180fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Logic\AI">
-      <UniqueIdentifier>{44555b47-8095-4a1f-8a1a-98f11988c98c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game\World">
       <UniqueIdentifier>{79fd08d1-3e39-412f-9d86-eec9a69015bd}</UniqueIdentifier>
     </Filter>
@@ -387,14 +375,38 @@
     <Filter Include="Manager\Buff">
       <UniqueIdentifier>{35a1ad55-db0b-41f1-bdee-8748600e6908}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\System\Logic\Buff">
-      <UniqueIdentifier>{d7ba8e47-853f-48d2-895d-4b6e86100b19}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Database">
       <UniqueIdentifier>{1e0d516a-c4f7-4552-8f88-552e04029cdc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\System\Logic\Stat">
+    <Filter Include="ECS\System\Action">
+      <UniqueIdentifier>{e560fd78-3148-4543-aa20-2d9209979bb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\AI">
+      <UniqueIdentifier>{44555b47-8095-4a1f-8a1a-98f11988c98c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Animation">
+      <UniqueIdentifier>{61eabb6d-5270-49db-b513-016384a93d09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Buff">
+      <UniqueIdentifier>{d7ba8e47-853f-48d2-895d-4b6e86100b19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Collision">
+      <UniqueIdentifier>{5c4f420a-5cdf-4a56-89f0-b436e2e9c4d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Collision\Combat">
+      <UniqueIdentifier>{f0348ca0-1cf0-416e-8369-d57780c2396f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Move">
+      <UniqueIdentifier>{7d221b54-761f-48a6-8fdc-869029a9e9b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Stat">
       <UniqueIdentifier>{40fdad71-d807-4c76-8963-2afb1cfeb802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Replication">
+      <UniqueIdentifier>{0d5e6308-4891-4e16-9edf-9a6d71381b9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\View">
+      <UniqueIdentifier>{f6782456-f514-4ebb-a32f-7c803e8180fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

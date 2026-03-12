@@ -79,18 +79,10 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 
 		if (totalMoveDelta.y < 1e-6f || trans->position.y <= groundY)
 			trans->position.y = groundY;
-
-		const auto* netComp = _runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity);
-		if (!netComp) return;
-
-		Framework::Get().outEventQueue.push(OutputEvent{ netComp->id, DirtyType::Moved });
 	}
 
-	if (rotated)
+	if (moved || rotated)
 	{
-		const auto* netComp = _runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity);
-		if (!netComp) return;
-
-		Framework::Get().outEventQueue.push(OutputEvent{ netComp->id, DirtyType::Moved });
+		_runtime.MarkDirty(entity, WorldDirtyType::Transform);
 	}
 }

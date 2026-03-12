@@ -35,8 +35,11 @@ struct ConnectEvent {
 	int sessionId;
 };
 
-struct DisconnectEvent {
-	NetId id;
+struct DisconnectEvent 
+{
+	uint32_t connId;
+	NetId netId;
+	Entity entity;
 };
 
 struct MoveEvent {
@@ -67,42 +70,54 @@ struct Event {
 	EventPayload payload;
 };
 
-/* -------- [ Output Event ]-------- */
+/* -------- [ Lifecycle Event ]-------- */
 
-enum class DirtyType {
+enum class LifecycleEventType : uint8_t
+{
+	None,
 	Spawned,
 	Despawned,
-	Moved,
-	AnimationChanged,
-	StatsChanged
 };
 
-struct OutputEventPayload
+struct LifecycleEventPayload
 {
-	union {
-		struct {
-			AnimationType currType;
-		} anim;
+	union 
+	{
+		struct
+		{
+			uint32_t connId;
+			Entity entity;
+		} despawn;
 
 		uint32 raw{ 0 };
 	};
 };
 
-struct OutputEvent {
+struct LifecycleEvent {
+	LifecycleEventType type;
 	NetId netId;
-	DirtyType type;
-	OutputEventPayload payload;
+	Entity entity;
+	uint32_t connId{ std::numeric_limits<uint32_t>::max() };
 
-	static OutputEvent AnimationChanged(NetId netId, AnimationType curr)
+	inline static LifecycleEvent Spawned(NetId netId)
 	{
-		OutputEvent ev{ netId, DirtyType::AnimationChanged, { } };
-		ev.payload.anim = { curr };
+		LifecycleEvent ev
+		{
+			.type = LifecycleEventType::Spawned,
+			.netId = netId,
+		};
 		return ev;
 	}
 
-	static OutputEvent StatChanged(NetId netId)
+	inline static LifecycleEvent Despawned(NetId netId, uint32_t connId, Entity entity)
 	{
-		OutputEvent ev{ netId, DirtyType::StatsChanged, { } };
+		LifecycleEvent ev
+		{ 
+			.type = LifecycleEventType::Despawned,
+			.netId = netId,
+			.entity = entity,
+			.connId = connId
+		};
 		return ev;
 	}
 };
@@ -111,7 +126,8 @@ struct OutputEvent {
 
 enum class CollisionType : uint8 { Strike, Clash };
 
-struct CombatCollisionEvent {
+struct CombatCollisionEvent 
+{
 	CollisionType type;
 
 	Entity attacker;

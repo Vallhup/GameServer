@@ -49,23 +49,23 @@ void EventSystem::ProcessConnect(const Event& event)
 	Entity entity = _runtime.SpawnPlayer(connId);
 	NetId nId = framework.listener.GetIdMap().GetPlayer(connId);
 
-	framework.outEventQueue.push(OutputEvent{ nId, DirtyType::Spawned });
+	framework.lifecycleEventQueue.push(LifecycleEvent::Spawned(nId));
 }
 
 void EventSystem::ProcessDisconnect(const Event& event)
 {
 	const auto* p = std::get_if<DisconnectEvent>(&event.payload);
+	if (!p) return;
 
 #ifdef _DEBUG
-	std::cout << "[EventSystem] Player[" << p->id.GetId() << "] Disconnect\n";
+	std::cout << "[EventSystem] Player[" << p->netId.GetId() << "] Disconnect\n";
 #endif
 	Framework& framework = Framework::Get();
-	Entity entity = framework.netIdRegistry.FindEntity(p->id);
 
-	if(!entity.IsNull())
+	if(!p->entity.IsNull())
 	{
-		_runtime.GetECS().GetStorage<DisconnectedTag>().AddComponent(entity);
-		framework.outEventQueue.push(OutputEvent{ p->id, DirtyType::Despawned });
+		_runtime.GetECS().GetStorage<DisconnectedTag>().AddComponent(p->entity);
+		framework.lifecycleEventQueue.push(LifecycleEvent::Despawned(p->netId, p->connId, p->entity));
 	}
 }
 

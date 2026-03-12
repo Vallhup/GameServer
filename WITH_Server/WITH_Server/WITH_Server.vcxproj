@@ -184,16 +184,17 @@
     <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="EventSystem.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="LifecycleReplicationSystem.cpp" />
     <ClCompile Include="LocomotionMoveSystem.cpp" />
     <ClCompile Include="MapCollisionManager.cpp" />
     <ClCompile Include="MovementApplySystem.cpp" />
+    <ClCompile Include="DirtyReplicationSystem.cpp" />
     <ClCompile Include="NetIdMap.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="NetworkHandler.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ObjectPoolManager.cpp" />
-    <ClCompile Include="OutputEventSystem.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -201,6 +202,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ServerConnectionListener.cpp" />
+    <ClCompile Include="SessionSendBufferManager.cpp" />
     <ClCompile Include="StatRecalSystem.cpp" />
     <ClCompile Include="TestWorldFactory.cpp" />
     <ClCompile Include="TestWorldImpl.cpp" />
@@ -243,10 +245,12 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Intent.h" />
+    <ClInclude Include="LifecycleReplicationSystem.h" />
     <ClInclude Include="LocomotionMoveSystem.h" />
     <ClInclude Include="MapCollisionManager.h" />
     <ClInclude Include="Movement.h" />
     <ClInclude Include="MovementApplySystem.h" />
+    <ClInclude Include="DirtyReplicationSystem.h" />
     <ClInclude Include="NetHelper.h" />
     <ClInclude Include="NetIdMap.h" />
     <ClInclude Include="Network.h" />
@@ -256,9 +260,9 @@
     <ClInclude Include="Math.h" />
     <ClInclude Include="ObjectPool.hpp" />
     <ClInclude Include="ObjectPoolManager.h" />
-    <ClInclude Include="OutputEventSystem.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ServerConnectionListener.h" />
+    <ClInclude Include="SessionSendBufferManager.h" />
     <ClInclude Include="StatRecalSystem.h" />
     <ClInclude Include="Stats.h" />
     <ClInclude Include="stb_image.h" />

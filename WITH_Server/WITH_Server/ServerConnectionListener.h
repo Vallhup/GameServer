@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SessionSendBufferManager.h"
 #include "IConnectionListener.h"
 #include "ConnectionRegistry.h"
 #include "NetworkHandler.h"
@@ -8,6 +9,7 @@
 
 class ServerConnectionListener : public IConnectionListener {
 public:
+	ServerConnectionListener();
 	virtual ~ServerConnectionListener() = default;
 
 	virtual void OnConnected(Connection& conn) override;
@@ -21,7 +23,8 @@ public:
 	ConnectionRegistry& GetConnRegistry() { return _connRegistry; }
 	const ConnectionRegistry& GetConnRegistry() const { return _connRegistry; }
 
-	// TEMP
+	SessionSendBufferManager& SendBuffers() { return _sendBuffers; }
+
 	void Send(uint32 id, SendBuffer* data);
 	void Broadcast(SendBuffer* data, 
 		uint32 expected = std::numeric_limits<uint32>::max());
@@ -31,4 +34,6 @@ private:
 
 	NetIdMap _idMap;
 	ConnectionRegistry _connRegistry;
+
+	SessionSendBufferManager _sendBuffers;
 };

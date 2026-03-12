@@ -65,11 +65,7 @@ void AnimationSelectSystem::Execute(const double dT)
 			animState.looping = loop;
 			//animState.speed = 1.0f;
 
-			const auto* netComp = ecs.GetStorage<NetIdComp>().GetComponent(entity);
-			if (!netComp) continue;
-
-			Framework::Get().outEventQueue.push(
-				OutputEvent::AnimationChanged(netComp->id, next));
+			_runtime.MarkDirty(entity, WorldDirtyType::Animation);
 		}
 	}
 }

@@ -40,11 +40,7 @@ void StatRecalSystem::Execute(const double dT)
 		finalAttr.dirty = false;
 		finalVital.dirty = false;
 
-		const auto* netComp = ecs.GetStorage<NetIdComp>().GetComponent(entity);
-		if (!netComp) continue;
-
-		Framework::Get().outEventQueue.push(
-			OutputEvent::StatChanged(netComp->id));
+		_runtime.MarkDirty(entity, WorldDirtyType::Stat);
 
 #ifdef _DEBUG
 		std::printf("MaxHp: %d, MaxStamina: %d",
