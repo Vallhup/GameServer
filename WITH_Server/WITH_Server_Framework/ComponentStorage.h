@@ -25,7 +25,8 @@ class ComponentStorage final : public IStorage {
 
 public:
 	template<bool IsConst>
-	struct ItemRef {
+	struct ItemRef 
+	{
 		using entity_ref = std::conditional_t<IsConst, const Entity&, Entity&>;
 		using comp_ref	 = std::conditional_t<IsConst, const T&, T&>;
 
@@ -39,7 +40,8 @@ public:
 	};
 
 	template<bool IsConst>
-	struct ItemPtr {
+	struct ItemPtr 
+	{
 		using entity_ptr = std::conditional_t<IsConst, const Entity*, Entity*>;
 		using comp_ptr	 = std::conditional_t<IsConst, const T*, T*>;
 

@@ -5,7 +5,8 @@
 #include "AnimationData.h"
 #include "types.h"
 
-struct CombatCollider : public Component {
+struct CombatCollider : public Component 
+{
 	const std::vector<StaticCapsuleData>* staticDatas{ nullptr };
 	std::vector<DynamicCapsuleData> localDatas;
 	std::vector<DynamicCapsuleData> worldDatas;

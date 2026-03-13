@@ -6,7 +6,8 @@
 #include "Constants.h"
 #include "Entity.h"
 
-struct ActionState : public Component {
+struct ActionState : public Component 
+{
 	ActionType action{ ActionType::None };
 	AttackType attack{ AttackType::None };
 	double elapsed{ 0.0f };
@@ -14,7 +15,8 @@ struct ActionState : public Component {
 	double progress{ 0.0f };
 };
 
-struct AttackState : public Component {
+struct AttackState : public Component 
+{
 	uint32 attackId{ 0 };
 	AttackType type{ AttackType::None };
 	ActionType prevAction{ ActionType::None };
@@ -37,7 +39,8 @@ struct AttackState : public Component {
 	}
 };
 
-struct ActionMoveTag : public TagComponent {
+struct ActionMoveTag : public TagComponent 
+{
 	const ActionProfile* profile{ nullptr };
 
 	int8 segmentIndex{ 0 };
