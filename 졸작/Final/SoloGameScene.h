@@ -56,7 +56,7 @@ private:
 	vector<shared_ptr<GameObject>> gameObjects;
 
 	vector<shared_ptr<MainCharacter>> knightPool;
-	static constexpr int MAX_KNIGHT_COUNT = 10;
+	static constexpr int MAX_KNIGHT_COUNT = 151;
 	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
 	shared_ptr<MainCharacter> myPlayer;
 

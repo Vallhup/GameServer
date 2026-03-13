@@ -67,7 +67,7 @@ namespace NetHelper {
 
 	inline SendBuffer* SCStatChangePacket(NetId id, int curHp,
 		int maxHp, int curStamina, int maxStamina, int power,
-		double aSpeed, int defense, int mSpeed)
+		double aSpeed, int defense, double mSpeed)
 	{
 		Protocol::SC_STAT_CHANGE_PACKET stat;
 		stat.set_netid(id.GetRaw());

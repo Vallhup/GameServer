@@ -14,7 +14,7 @@ public:
 	void HandleStatBarChange(int curHp, int maxHp, int curStamina, int maxStamina);
 	void HandleStatImageChange(
 		int curHp, int maxHp, int curStamina, int maxStamina, 
-		int power, double aSpeed, int defense, int mSpeed);
+		int power, double aSpeed, int defense, double mSpeed);
 	bool IsStatWindowOn() const;
 
 private:

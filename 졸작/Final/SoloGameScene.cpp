@@ -258,7 +258,7 @@ void SoloGameScene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat
 
 	const int power = stat.power();
 	const int defense = stat.defense();
-	const int mSpeed = stat.movespeed();
+	const double mSpeed = stat.movespeed();
 	const double aSpeed = stat.attackspeed();
 
 	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::MainGame);

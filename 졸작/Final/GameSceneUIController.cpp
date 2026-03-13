@@ -77,7 +77,7 @@ void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curSta
 	localCharStaminaBar->SetHoriLength(maxStaminaLength * staminaPercent);
 }
 
-void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curStamina, int maxStamina, int power, double aSpeed, int defense, int mSpeed)
+void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curStamina, int maxStamina, int power, double aSpeed, int defense, double mSpeed)
 {
 	// TODO : StatusText 변경
 	std::wstring text =
