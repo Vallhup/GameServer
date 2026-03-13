@@ -165,7 +165,7 @@
     <ClCompile Include="ActionMoveSystem.cpp" />
     <ClCompile Include="ActionTimeSystem.cpp" />
     <ClCompile Include="ActionTransitionSystem.cpp" />
-    <ClCompile Include="AIMovementSystem.cpp" />
+    <ClCompile Include="AIControlSystem.cpp" />
     <ClCompile Include="AIThinkSystem.cpp" />
     <ClCompile Include="AnimationCommitSystem.cpp" />
     <ClCompile Include="AnimationFrameSystem.cpp" />
@@ -217,7 +217,7 @@
     <ClInclude Include="ActionTimeSystem.h" />
     <ClInclude Include="ActionTransitionSystem.h" />
     <ClInclude Include="AI.h" />
-    <ClInclude Include="AIMovementSystem.h" />
+    <ClInclude Include="AIControlSystem.h" />
     <ClInclude Include="AIThinkSystem.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationCommitSystem.h" />

@@ -95,4 +95,11 @@ namespace TransformHelper
 	{
 		return WrapPi(to - from);
 	}
+
+	inline double DistanceSq(const Transform& t1, const Transform& t2)
+	{
+		const double dx = t1.position.x - t2.position.x;
+		const double dz = t1.position.z - t2.position.z;
+		return dx * dx + dz * dz;
+	}
 }

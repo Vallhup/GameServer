@@ -110,9 +110,6 @@
     <ClCompile Include="DBConn.cpp">
       <Filter>Database</Filter>
     </ClCompile>
-    <ClCompile Include="AIMovementSystem.cpp">
-      <Filter>ECS\System\AI</Filter>
-    </ClCompile>
     <ClCompile Include="StatRecalSystem.cpp">
       <Filter>ECS\System\Stat</Filter>
     </ClCompile>
@@ -124,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="LifecycleReplicationSystem.cpp">
       <Filter>ECS\System\Replication</Filter>
+    </ClCompile>
+    <ClCompile Include="AIControlSystem.cpp">
+      <Filter>ECS\System\AI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -301,9 +301,6 @@
     <ClInclude Include="DBConn.h">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="AIMovementSystem.h">
-      <Filter>ECS\System\AI</Filter>
-    </ClInclude>
     <ClInclude Include="StatRecalSystem.h">
       <Filter>ECS\System\Stat</Filter>
     </ClInclude>
@@ -315,6 +312,9 @@
     </ClInclude>
     <ClInclude Include="LifecycleReplicationSystem.h">
       <Filter>ECS\System\Replication</Filter>
+    </ClInclude>
+    <ClInclude Include="AIControlSystem.h">
+      <Filter>ECS\System\AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

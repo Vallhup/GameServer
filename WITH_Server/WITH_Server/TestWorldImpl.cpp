@@ -21,6 +21,7 @@
 #include "RepComponent.h"
 #include "Framework.h"
 #include "AIThinkSystem.h"
+#include "AIControlSystem.h"
 
 #include "LifecycleReplicationSystem.h"
 #include "DirtyReplicationSystem.h"
@@ -44,7 +45,7 @@ void TestWorldImpl::SpawnInitial(WorldRuntime& rt)
 	ecs.GetStorage<LocomotionAnimPhase>().AddComponent(e);
 	ecs.GetStorage<LocomotionState>().AddComponent(e);
 	ecs.GetStorage<ActionState>().AddComponent(e);
-	ecs.GetStorage<BaseAttribute>().AddComponent(e);
+	ecs.GetStorage<BaseAttribute>().AddComponent(e)->moveSpeed = 2.5;
 	ecs.GetStorage<FinalAttribute>().AddComponent(e);
 	ecs.GetStorage<BaseVital>().AddComponent(e);
 	ecs.GetStorage<FinalVital>().AddComponent(e);
@@ -56,12 +57,14 @@ void TestWorldImpl::SpawnInitial(WorldRuntime& rt)
 	ecs.GetStorage<SpawnTypeComp>().AddComponent(e)->type = EntityType::Final_Boss;
 	ecs.GetStorage<AIState>().AddComponent(e);
 	ecs.GetStorage<AIThinkState>().AddComponent(e);
+	ecs.GetStorage<AIIntent>().AddComponent(e);
+	ecs.GetStorage<AICombatTuning>().AddComponent(e);
 	ecs.GetStorage<DirtyFlagsComp>().AddComponent(e);
 
 	Framework& framework = Framework::Get();
 	NetId id = framework.netIdRegistry.Allocate();
+
 	ecs.GetStorage<NetIdComp>().AddComponent(e)->id = id;
-	
 	framework.netIdRegistry.BindEntity(id, e);
 
 	animator->clip = 
@@ -73,7 +76,8 @@ Entity TestWorldImpl::SpawnPlayer(WorldRuntime& rt, uint32 connId)
 	ECS& ecs = rt.GetECS();
 	Entity e = ecs.CreateEntity();
 
-	ecs.GetStorage<Transform>().AddComponent(e);
+	ecs.GetStorage<Transform>().AddComponent(e)->position = 
+	{ 10.0f, MapCollisionManager::Get().SampleHeightAt(10.f, 10.f), 10.0f };
 	ecs.GetStorage<Velocity>().AddComponent(e);
 	ecs.GetStorage<ActionMoveDelta>().AddComponent(e);
 	ecs.GetStorage<LocomotionMoveDelta>().AddComponent(e);
@@ -117,6 +121,7 @@ void TestWorldImpl::Build(WorldRuntime& rt)
 
 	ecs.AddSystem<EventSystem>(SystemPhase::Pre, rt, 0);
 	ecs.AddSystem<AIThinkSystem>(SystemPhase::Pre, rt, 0);
+	ecs.AddSystem< AIControlSystem>(SystemPhase::Pre, rt, 0);
 
 	ecs.AddSystem<ActionTimeSystem>(SystemPhase::Graph, rt, 1);
 	ecs.AddSystem<ActionTransitionSystem>(SystemPhase::Graph, rt, 2);
