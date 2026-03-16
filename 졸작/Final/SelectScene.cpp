@@ -55,7 +55,7 @@ void SelectScene::InitializeLogic()
 		auto transform = dragon->AddComponent<Transform>();
 		auto animator = dragon->AddComponent<Animator>();
 
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Smallboss/monster_smallboss");
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Tank/monster_smallboss");
 		transform->SetInitPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
