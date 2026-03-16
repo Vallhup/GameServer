@@ -48,7 +48,7 @@ void ColliderActivationSystem::Execute(const double dT)
 		const auto& pol = ActionManager::Get().GetPolicy(actionState->action, typeComp->type, actionState->attack);
 		const float baseDuration = pol.duration;
 
-		const float atkStartN = 0.683f / baseDuration;
+		const float atkStartN = 0.683f / baseDuration; // 0.683f
 		const float atkEndN = 0.975f / baseDuration;
 
 		const float parryStartN = 0.752f;

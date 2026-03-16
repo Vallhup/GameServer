@@ -20,8 +20,12 @@
 
 #include "RepComponent.h"
 #include "Framework.h"
-#include "AIThinkSystem.h"
-#include "AIControlSystem.h"
+
+#include "AISensingSystem.h"
+#include "AITacticSystem.h"
+#include "AIActionRequestSystem.h"
+#include "AICommandBuildSystem.h"
+#include "AICommandConsumeSystem.h"
 
 #include "LifecycleReplicationSystem.h"
 #include "DirtyReplicationSystem.h"
@@ -57,8 +61,11 @@ void TestWorldImpl::SpawnInitial(WorldRuntime& rt)
 	ecs.GetStorage<SpawnTypeComp>().AddComponent(e)->type = EntityType::Final_Boss;
 	ecs.GetStorage<AIState>().AddComponent(e);
 	ecs.GetStorage<AIThinkState>().AddComponent(e);
-	ecs.GetStorage<AIIntent>().AddComponent(e);
+	ecs.GetStorage<AISenseState>().AddComponent(e);
+	ecs.GetStorage<AIBehavior>().AddComponent(e);
+	ecs.GetStorage<AICommand>().AddComponent(e);
 	ecs.GetStorage<AICombatTuning>().AddComponent(e);
+	ecs.GetStorage<AIActionRequestState>().AddComponent(e);
 	ecs.GetStorage<DirtyFlagsComp>().AddComponent(e);
 
 	Framework& framework = Framework::Get();
@@ -120,8 +127,11 @@ void TestWorldImpl::Build(WorldRuntime& rt)
 	auto& ecs = rt.GetECS();
 
 	ecs.AddSystem<EventSystem>(SystemPhase::Pre, rt, 0);
-	ecs.AddSystem<AIThinkSystem>(SystemPhase::Pre, rt, 0);
-	ecs.AddSystem< AIControlSystem>(SystemPhase::Pre, rt, 0);
+	ecs.AddSystem<AISensingSystem>(SystemPhase::Pre, rt, 0);
+	ecs.AddSystem<AITacticSystem>(SystemPhase::Pre, rt, 0);
+	ecs.AddSystem<AIActionRequestSystem>(SystemPhase::Pre, rt, 0);
+	ecs.AddSystem<AICommandBuildSystem>(SystemPhase::Pre, rt, 0);
+	ecs.AddSystem<AICommandConsumeSystem>(SystemPhase::Pre, rt, 0);
 
 	ecs.AddSystem<ActionTimeSystem>(SystemPhase::Graph, rt, 1);
 	ecs.AddSystem<ActionTransitionSystem>(SystemPhase::Graph, rt, 2);

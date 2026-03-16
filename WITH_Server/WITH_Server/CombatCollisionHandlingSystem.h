@@ -20,7 +20,8 @@ public:
 
 	virtual std::vector<std::type_index> WriteResources() const override
 	{
-		return { typeid(CombatCollisionEvent), typeid(ActionRequestEvent), typeid(AttackState), typeid(ParryBuf), typeid(Vital) };
+		return { /*typeid(CombatCollisionEvent), */typeid(ActionRequestEvent), 
+			typeid(AttackState), typeid(ParryBuf), typeid(Vital) };
 	}
 
 private:

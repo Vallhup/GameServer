@@ -6,6 +6,8 @@
 #include "WorldRuntime.h"
 #include "PlayerSnapshot.h"
 
+#include <unordered_set>
+
 class IWorld {
 public:
 	virtual ~IWorld() = default;

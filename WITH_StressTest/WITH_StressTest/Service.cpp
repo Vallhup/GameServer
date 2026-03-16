@@ -94,7 +94,7 @@ void Service::MainLoop()
 		const float deltaTime = duration<float>(now - prev).count();
 		prev = now;
 
-		if (x++ < 100) {
+		if (x++ < 150) {
 			_clientMng->AdjustClients();
 		}
 		_clientMng->OnTick(deltaTime);

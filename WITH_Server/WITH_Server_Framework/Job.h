@@ -6,11 +6,13 @@
 #include "Component.h"
 #include "System.h"
 
-struct Job {
+struct Job 
+{
 	virtual ~Job() = default;
 };
 
-struct SystemJob : public Job {
+struct SystemJob : public Job 
+{
 	System* system;
 	double* dTRef;
 
@@ -25,7 +27,8 @@ struct SystemJob : public Job {
 extern std::atomic<int> activeJobs;
 extern std::atomic<int> peak;
 
-struct ParallelForJob : public Job {
+struct ParallelForJob : public Job 
+{
 	int begin;
 	int end;
 	std::function<void(int, int)> func;
@@ -39,7 +42,8 @@ struct ParallelForJob : public Job {
 		ParallelForJob* job = static_cast<ParallelForJob*>(ctx);
 
 		bool expected{ false };
-		if (job->executed.compare_exchange_strong(expected, true)) {
+		if (job->executed.compare_exchange_strong(expected, true)) 
+		{
 			job->func(job->begin, job->end);
 			job->latch->count_down();
 			delete job;

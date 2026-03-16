@@ -4,9 +4,6 @@
     <ClCompile Include="EntityManager.cpp">
       <Filter>ECS\Entity</Filter>
     </ClCompile>
-    <ClCompile Include="SystemManager.cpp">
-      <Filter>ECS\System</Filter>
-    </ClCompile>
     <ClCompile Include="ECS.cpp">
       <Filter>ECS\Core</Filter>
     </ClCompile>
@@ -52,6 +49,12 @@
     <ClCompile Include="WorldService.cpp">
       <Filter>Game\World\Core</Filter>
     </ClCompile>
+    <ClCompile Include="SystemManager.cpp">
+      <Filter>ECS\System\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemScheduler.cpp">
+      <Filter>ECS\System\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -66,9 +69,6 @@
     <ClInclude Include="ComponentStorage.h">
       <Filter>ECS\Component</Filter>
     </ClInclude>
-    <ClInclude Include="SystemManager.h">
-      <Filter>ECS\System</Filter>
-    </ClInclude>
     <ClInclude Include="ECS.h">
       <Filter>ECS\Core</Filter>
     </ClInclude>
@@ -77,9 +77,6 @@
     </ClInclude>
     <ClInclude Include="StorageRegistry.h">
       <Filter>ECS\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="System.h">
-      <Filter>ECS\System</Filter>
     </ClInclude>
     <ClInclude Include="NetIdAllocator.h">
       <Filter>Network</Filter>
@@ -138,12 +135,6 @@
     <ClInclude Include="WITH_Server_Framework.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="ServerContext.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerSnapshot.h">
-      <Filter>Game\World\Parameter</Filter>
-    </ClInclude>
     <ClInclude Include="WorldLeapManager.h">
       <Filter>Game\World\Manager\WorldLeap</Filter>
     </ClInclude>
@@ -152,6 +143,27 @@
     </ClInclude>
     <ClInclude Include="WorldService.h">
       <Filter>Game\World\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSnapshot.h">
+      <Filter>Game\World\Parameter</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemMeta.h">
+      <Filter>ECS\System\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>ECS\System\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemManager.h">
+      <Filter>ECS\System\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemMetaHelper.h">
+      <Filter>ECS\System\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemMetaStorage.h">
+      <Filter>ECS\System\Metadata</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemScheduler.h">
+      <Filter>ECS\System\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +214,12 @@
     </Filter>
     <Filter Include="Game\World\Manager\WorldLeap">
       <UniqueIdentifier>{bc05f686-6dde-4e5f-afd4-334f1c774064}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Metadata">
+      <UniqueIdentifier>{18ee01d1-aa2b-48c2-a030-ceee4d9573cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Core">
+      <UniqueIdentifier>{ddb1dc91-f93a-410b-a4ef-31216d9ef68c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

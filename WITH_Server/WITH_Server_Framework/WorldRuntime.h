@@ -4,8 +4,10 @@
 #include "JobGraph.h"
 #include "EventRegistry.h"
 #include "RepComponent.h"
+#include "SystemScheduler.h"
 
 class IWorldImpl;
+class ThreadPool;
 
 class WorldRuntime {
 public:
@@ -35,8 +37,11 @@ private:
 	friend class ECS;
 
 	ECS _ecs;
-	JobGraph _graph;
+	//JobGraph _graph;
 	ThreadPool& _threadPool;
+
+	SystemScheduler _scheduler;
+	CompiledSystemSchedule _compiledGraphSchedule;
 
 	EventRegistry _events;
 	IWorldImpl& _impl;

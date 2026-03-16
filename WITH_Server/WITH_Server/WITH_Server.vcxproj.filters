@@ -71,9 +71,6 @@
     <ClCompile Include="ViewProcessingSystem.cpp">
       <Filter>ECS\System\View</Filter>
     </ClCompile>
-    <ClCompile Include="AIThinkSystem.cpp">
-      <Filter>ECS\System\AI</Filter>
-    </ClCompile>
     <ClCompile Include="MapCollisionManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
@@ -122,7 +119,19 @@
     <ClCompile Include="LifecycleReplicationSystem.cpp">
       <Filter>ECS\System\Replication</Filter>
     </ClCompile>
-    <ClCompile Include="AIControlSystem.cpp">
+    <ClCompile Include="AISensingSystem.cpp">
+      <Filter>ECS\System\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AIActionRequestSystem.cpp">
+      <Filter>ECS\System\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AICommandBuildSystem.cpp">
+      <Filter>ECS\System\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AITacticSystem.cpp">
+      <Filter>ECS\System\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AICommandConsumeSystem.cpp">
       <Filter>ECS\System\AI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -201,9 +210,6 @@
     </ClInclude>
     <ClInclude Include="ViewProcessingSystem.h">
       <Filter>ECS\System\View</Filter>
-    </ClInclude>
-    <ClInclude Include="AIThinkSystem.h">
-      <Filter>ECS\System\AI</Filter>
     </ClInclude>
     <ClInclude Include="MapCollisionManager.h">
       <Filter>Manager</Filter>
@@ -313,7 +319,19 @@
     <ClInclude Include="LifecycleReplicationSystem.h">
       <Filter>ECS\System\Replication</Filter>
     </ClInclude>
-    <ClInclude Include="AIControlSystem.h">
+    <ClInclude Include="AISensingSystem.h">
+      <Filter>ECS\System\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AIActionRequestSystem.h">
+      <Filter>ECS\System\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AICommandBuildSystem.h">
+      <Filter>ECS\System\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AITacticSystem.h">
+      <Filter>ECS\System\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="AICommandConsumeSystem.h">
       <Filter>ECS\System\AI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -408,5 +426,10 @@
     <Filter Include="ECS\System\View">
       <UniqueIdentifier>{f6782456-f514-4ebb-a32f-7c803e8180fd}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Component Naming Rule.txt">
+      <Filter>ECS\Component</Filter>
+    </Text>
   </ItemGroup>
 </Project>

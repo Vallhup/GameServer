@@ -12,8 +12,8 @@ struct BaseVital : Component
 struct BaseAttribute : Component
 {
 	int power{ 10 };
-	double attackSpeed{ 1.0 };
 	int defense{ 10 };
+	double attackSpeed{ 1.0 };
 	double moveSpeed{ 2.0 };
 };
 
@@ -28,8 +28,8 @@ struct FinalVital : Component
 struct FinalAttribute : Component
 {
 	int power{ 10 };
-	double attackSpeed{ 1.0 };
 	int defense{ 10 };
+	double attackSpeed{ 1.0 };
 	double moveSpeed{ 2.0 };
 	bool dirty{ false };
 };

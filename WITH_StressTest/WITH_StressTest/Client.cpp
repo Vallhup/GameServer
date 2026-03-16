@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Client.h"
 #include "SendBuffer.h"
+#include "NetId.h"
 
 bool Client::Connect()
 {
@@ -197,7 +198,8 @@ void Client::ProcessPacket(const PacketHeader& header, const BYTE* data)
 		if (PacketFactory::Deserialize<Protocol::SC_LOGIN_PACKET>(
 			header, data, &login))
 		{
-			_id = login.sessionid();
+			NetId id{ login.netid() };
+			_id = id.GetId();
 			_state.store(ClientState::ST_INGAME);
 		}
 		break;

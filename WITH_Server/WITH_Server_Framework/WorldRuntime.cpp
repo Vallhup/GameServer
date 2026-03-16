@@ -2,8 +2,37 @@
 #include "WorldRuntime.h"
 #include "World.h"
 
+namespace
+{
+	std::vector<SystemScheduleDesc> BuildGraphScheduleDescs(std::span<System*> systems)
+	{
+		std::vector<SystemScheduleDesc> descs;
+		descs.reserve(systems.size());
+
+		for (size_t i = 0; i < systems.size(); ++i)
+		{
+			System* s = systems[i];
+			if (!s)
+				throw std::runtime_error("Null system in graph-phase system list.");
+
+			// 아래는 현재 System API에 맞춰 조정 필요
+			// 예: const SystemMeta* meta = s->Meta();
+			const SystemMeta& meta = s->Meta();
+
+			SystemScheduleDesc desc;
+			desc.system = s;
+			desc.meta = &meta;
+			desc.registrationOrder = static_cast<uint32_t>(i);
+
+			descs.push_back(desc);
+		}
+
+		return descs;
+	}
+}
+
 WorldRuntime::WorldRuntime(ThreadPool& pool, IWorldImpl& impl)
-	: _graph(pool), _threadPool(pool), _impl(impl),
+	: /*_graph(pool),*/ _threadPool(pool), _impl(impl),
 	_deltaTime(0.0), _graphBuilt(false)
 {
 }
@@ -29,9 +58,14 @@ void WorldRuntime::MarkDirty(Entity entity, WorldDirtyType type)
 void WorldRuntime::GraphBuild()
 {
 	auto systemsForGraph = _ecs._systemMng.GetSystems(SystemPhase::Graph);
+	
+	{
+		auto descs = BuildGraphScheduleDescs(systemsForGraph);
+		_compiledGraphSchedule = _scheduler.Compile(descs);
+	}
 
-	_graph.AutoDependencyBuild(systemsForGraph, &_deltaTime);
-	_graph.Build();
+	/*_graph.AutoDependencyBuild(systemsForGraph, &_deltaTime);
+	_graph.Build();*/
 
 	_graphBuilt = true;
 }
@@ -44,7 +78,8 @@ void WorldRuntime::Run(const double dT)
 
 
 	RunPre(dT);
-	_graph.Run();
+	//_graph.Run();
+	_scheduler.Execute(_compiledGraphSchedule, _threadPool, dT);
 	RunPost(dT);
 }
 
