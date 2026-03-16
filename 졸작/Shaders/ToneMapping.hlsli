@@ -33,14 +33,14 @@ float3 ACESFilmicToneMapping(float3 color)
           0.59719, 0.35458, 0.04823,
           0.07600, 0.90834, 0.01566,
           0.02840, 0.13383, 0.83777
-      );
+    );
 
     // ACES output matrix (ACES -> sRGB)
     const float3x3 outputMat = float3x3(
           1.60475, -0.53108, -0.07367,
           -0.10208, 1.10813, -0.00605,
           -0.00327, -0.07276, 1.07602
-      );
+    );
 
     float exposure = 1.2;
     float contrast = 1.15;
@@ -84,17 +84,18 @@ float3 Uncharted2ToneMapping(float3 color)
 
 float3 DarkFantasyToneMapping(float3 color)
 {
-      // 1. ACES Filmic
+    // 1. ACES Filmic
     const float3x3 inputMat = float3x3(
           0.59719, 0.35458, 0.04823,
           0.07600, 0.90834, 0.01566,
           0.02840, 0.13383, 0.83777
-      );
+    );
+    
     const float3x3 outputMat = float3x3(
           1.60475, -0.53108, -0.07367,
           -0.10208, 1.10813, -0.00605,
           -0.00327, -0.07276, 1.07602
-      );
+    );
 
     color = mul(inputMat, color);
     float3 a = color * (color + 0.0245786) - 0.000090537;
@@ -103,19 +104,19 @@ float3 DarkFantasyToneMapping(float3 color)
     color = mul(outputMat, color);
     color = saturate(color);
 
-      // 2. 다크 판타지 후보정
+    // 2. 다크 판타지 후보정
     float contrast = 1.2;
-    float saturation = 1.15; // 살짝 desaturate (0.85 / 0.95 / 1.15 / 1.35)
+    float saturation = 0.85; // 살짝 desaturate (0.85 / 0.95 / 1.15 / 1.35)
     float3 shadowTint = float3(0.9, 0.9, 1.1); // 그림자에 차가운 톤
 
-      // 콘트라스트
+    // 콘트라스트
     color = pow(color, contrast);
 
-      // 채도 조절
+    // 채도 조절
     float luma = dot(color, float3(0.299, 0.587, 0.114));
     color = lerp(float3(luma, luma, luma), color, saturation);
 
-      // 어두운 부분에 차가운 틴트
+    // 어두운 부분에 차가운 틴트
     float shadowMask = 1.0 - luma;
     color *= lerp(float3(1, 1, 1), shadowTint, shadowMask * 0.3);
 

@@ -78,9 +78,12 @@ int wmain(int argc, wchar_t* argv[])
     //    }
     //}
 
-    wstring inputFbx = L"../FBX/boss.fbx";          // 입력 FBX 파일
+    wstring inputFbx = L"../FBX/monster_smallboss.fbx";          // 입력 FBX 파일
     wstring fbxDir = L"../FBX";
-    wstring outputBase = L"../FBXOutput/boss";           // 출력 기본 이름
+    wstring outputBase = L"../FBXOutput/monster_smallboss";           // 출력 기본 이름
+
+    // 애니메이션 전용 FBX의 경우, 메시의 스켈레톤을 기준으로 매핑
+    wstring referenceSkeleton = L"../FBXOutput/monster_smallboss.skel";  // 메시에서 추출한 스켈레톤
 
     FBXLoader loader;
     if (!loader.LoadFbx(inputFbx)) {
@@ -88,10 +91,10 @@ int wmain(int argc, wchar_t* argv[])
         return -1;
     }
 
-    wcout << L"FBX 로딩중..." << endl;
+    wcout << L"FBX 로딩 완료" << endl;
 
     Exporter exporter;
-    if (!exporter.ExportAll(loader, outputBase, fbxDir)) {
+    if (!exporter.ExportAll(loader, outputBase, fbxDir, referenceSkeleton)) {
         wcout << L"바이너리 변환 실패!" << endl;
         return -1;
     }

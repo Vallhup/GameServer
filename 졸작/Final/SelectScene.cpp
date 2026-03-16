@@ -55,10 +55,10 @@ void SelectScene::InitializeLogic()
 		auto transform = dragon->AddComponent<Transform>();
 		auto animator = dragon->AddComponent<Animator>();
 
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Dragon/Dragon");
-		transform->SetInitPosition(2.f, 0.f, 0.5f);
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Smallboss/monster_smallboss");
+		transform->SetInitPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
-		transform->SetScale(0.1f, 0.1f, 0.1f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
 		gameObjects.push_back(dragon);
 
 		coreRef->FlushCommandQueue();
