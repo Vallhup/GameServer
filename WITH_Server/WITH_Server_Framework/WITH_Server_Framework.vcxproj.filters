@@ -55,6 +55,9 @@
     <ClCompile Include="SystemScheduler.cpp">
       <Filter>ECS\System\Core</Filter>
     </ClCompile>
+    <ClCompile Include="CommandBuffer.cpp">
+      <Filter>ECS\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -164,6 +167,9 @@
     </ClInclude>
     <ClInclude Include="SystemScheduler.h">
       <Filter>ECS\System\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandBuffer.h">
+      <Filter>ECS\Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

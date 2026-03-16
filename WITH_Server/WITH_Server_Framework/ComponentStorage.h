@@ -144,7 +144,8 @@ public:
 	}
 
 public:
-	T* AddComponent(Entity entity)
+	template<typename... Args>
+	T* EmplaceComponent(Entity entity, Args&&... args)
 	{
 		if (entity.IsNull()) return nullptr;
 		if (entity.id >= _sparse.size())
@@ -155,16 +156,59 @@ public:
 		{
 			if (_entities[di] != entity)
 			{
-				assert(false && "AddComponent clled with stale Entity.");
+				assert(false && 
+					"EmplaceComponent called with stale Entity.");
 				return nullptr;
 			}
 
+			assert(false &&
+				"EmplaceComponent called for existing component.");
+			return nullptr;
+		}
+
+		di = static_cast<int>(_dense.size());
+		_entities.push_back(entity);
+		_dense.emplace_back(std::forward<Args>(args)...);
+
+		return &_dense.back();
+	}
+
+	T* AddComponent(Entity entity, const T& value)
+	{
+		return EmplaceComponent(entity, value);
+	}
+
+	T* AddComponent(Entity entity, T&& value)
+	{
+		return EmplaceComponent(entity, std::move(value));
+	}
+
+	template<typename U>
+	T* AddOrAssignComponent(Entity entity, U&& value)
+	{
+		static_assert(std::is_same_v<std::decay_t<U>, T>);
+
+		if (entity.IsNull()) return nullptr;
+		if (entity.id >= _sparse.size())
+			_sparse.resize(entity.id + 1, INVALID);
+
+		int& di = _sparse[entity.id];
+		if (di != INVALID)
+		{
+			if (_entities[di] != entity)
+			{
+				assert(false &&
+					"AddOrAssignComponent called with stale Entity.");
+				return nullptr;
+			}
+
+			_dense[di] = std::forward<U>(value);
 			return &_dense[di];
 		}
 
 		di = static_cast<int>(_dense.size());
 		_entities.push_back(entity);
-		_dense.emplace_back();
+		_dense.emplace_back(std::forward<U>(value));
 
 		return &_dense.back();
 	}

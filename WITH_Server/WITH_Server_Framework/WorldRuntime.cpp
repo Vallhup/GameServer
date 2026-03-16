@@ -15,8 +15,6 @@ namespace
 			if (!s)
 				throw std::runtime_error("Null system in graph-phase system list.");
 
-			// 아래는 현재 System API에 맞춰 조정 필요
-			// 예: const SystemMeta* meta = s->Meta();
 			const SystemMeta& meta = s->Meta();
 
 			SystemScheduleDesc desc;
@@ -55,6 +53,26 @@ void WorldRuntime::MarkDirty(Entity entity, WorldDirtyType type)
 	}
 }
 
+void WorldRuntime::DeferredDestroy(Entity e)
+{
+	_commandBuffer.Enqueue(
+		[e](WorldRuntime& rt)
+		{
+			rt.GetECS().DestroyEntity(e);
+		}
+	);
+}
+
+void WorldRuntime::DeferredMarkDirty(Entity e, WorldDirtyType dirtyType)
+{
+	_commandBuffer.Enqueue(
+		[e, dirtyType](WorldRuntime& rt)
+		{
+			rt.MarkDirty(e, dirtyType);
+		}
+	);
+}
+
 void WorldRuntime::GraphBuild()
 {
 	auto systemsForGraph = _ecs._systemMng.GetSystems(SystemPhase::Graph);
@@ -76,13 +94,21 @@ void WorldRuntime::Run(const double dT)
 
 	_deltaTime = dT;
 
+	try
+	{
+		RunPre(dT);
+		RunGraph(dT);
+		RunPost(dT);
 
-	RunPre(dT);
-	//_graph.Run();
-	_scheduler.Execute(_compiledGraphSchedule, _threadPool, dT);
-	RunPost(dT);
+		_commandBuffer.Commit(*this);
+	}
+	catch (...)
+	{
+		_commandBuffer.Clear();
+		throw;
+	}
 }
-
+	
 void WorldRuntime::RunPre(const double dT)
 {
 	for (System* s : _ecs._systemMng.GetSystems(SystemPhase::Pre))
@@ -93,4 +119,10 @@ void WorldRuntime::RunPost(const double dT)
 {
 	for (System* s : _ecs._systemMng.GetSystems(SystemPhase::Post))
 		s->Execute(dT);
+}
+
+void WorldRuntime::RunGraph(const double dT)
+{
+	//_graph.Run();
+	_scheduler.Execute(_compiledGraphSchedule, _threadPool, dT);
 }

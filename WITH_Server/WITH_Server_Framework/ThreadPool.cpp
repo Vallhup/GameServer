@@ -115,7 +115,7 @@ void ThreadPool::WorkerLoop()
 			task.fn(task.ctx);
 		}
 
-		catch (std::exception& ex)
+		catch (const std::exception& ex)
 		{
 			if (task.counter)
 			{

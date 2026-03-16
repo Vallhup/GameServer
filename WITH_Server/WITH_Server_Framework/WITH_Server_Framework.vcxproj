@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CommandBuffer.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentStorage.h" />
     <ClInclude Include="ECS.h" />
@@ -196,6 +197,7 @@
     <ClInclude Include="WorldService.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CommandBuffer.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="Job.cpp" />
