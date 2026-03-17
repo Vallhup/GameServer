@@ -26,16 +26,15 @@ void SceneRenderer::BeginFrame()
 void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameObject>>& objects, const Camera* cam)
 {
     UINT startIndex = cbIndex;
+    auto cmdList = core.GetGraphicsCmdList();
 
     for (const auto& obj : objects)
     {
         auto animator = obj->GetComponent<Animator>();
         if (animator)
-            animator->ExecuteComputeShader(core); 
+            animator->ExecuteComputeShader(core);
     }
 
-    auto cmdList = core.GetGraphicsCmdList();
-    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
     SetupRenderingState(core);
 
     BoundingFrustum frustum;
@@ -61,6 +60,11 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
             OutputDebugStringA("cbIndex Overflowed!!\n");
             break;
         }
+
+        if (mesh->IsTwoSided())
+            cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBufferNonCulling));
+        else
+            cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
 
         auto animator = obj->GetComponent<Animator>();
         if (animator) {

@@ -28,6 +28,9 @@ public:
 	void ToggleCollisionMesh() { showCollisionMesh = !showCollisionMesh; }
 	bool IsCollisionMeshVisible() const { return showCollisionMesh && collisionMeshBuffer; }
 
+	void SetTwoSided(bool in) { twoSided = in; }
+	bool IsTwoSided() const { return twoSided; }
+
 private:
 	void SetSingleMaterial(DX12Core& core, const vector<MaterialData>& mats);
 	void SetMultiMaterials(DX12Core& core, const vector<MaterialData>& mats);
@@ -43,4 +46,6 @@ private:
 
 	shared_ptr<VertexIndexBuffer> collisionMeshBuffer;
 	bool showCollisionMesh = false;
+
+	bool twoSided = false;	// 양면 렌더링 여부
 };
