@@ -36,13 +36,13 @@ void LightManager::SetupLights()
 
 	deferredLightData.lights[0] = {
 		{-0.5, 0, -1}, 0,
-		{1, 1, 1}, 0.25f,
+		{1, 1, 1}, 3.0f,
 		0,
 		{0, 0, 0}
 	};
 	deferredLightData.lights[1] = {
 		{0, 0, 1}, 0,
-		{1, 1, 1}, 0.2f,
+		{1, 1, 1}, 3.0f,
 		0,
 		{0, 0, 0}
 	};

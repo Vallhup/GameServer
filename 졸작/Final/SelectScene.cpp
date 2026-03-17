@@ -33,9 +33,10 @@ void SelectScene::InitializeLogic()
 	{
 		knight = make_shared<MainCharacter>();
 		auto mesh = knight->AddComponent<Mesh>();
+		mesh->SetTwoSided(true);
 		auto transform = knight->AddComponent<Transform>();
 		auto animator = knight->AddComponent<Animator>();
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Imp/monster_Imp");
 		transform->SetInitPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
@@ -49,17 +50,17 @@ void SelectScene::InitializeLogic()
 		knight->SetAsLocalPlayer(cam.get());
 	}
 
-	{
+	/*{
 		dragon = make_shared<GameObject>();
 		auto mesh = dragon->AddComponent<Mesh>();
 		mesh->SetTwoSided(true);
 		auto transform = dragon->AddComponent<Transform>();
 		auto animator = dragon->AddComponent<Animator>();
 
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Tank/monster_Tank");
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Imp/monster_Imp");
 		transform->SetInitPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
-		transform->SetScale(0.006f, 0.006f, 0.006f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
 		gameObjects.push_back(dragon);
 
 		coreRef->FlushCommandQueue();
@@ -68,13 +69,13 @@ void SelectScene::InitializeLogic()
 		mesh->ReleaseUploadBuffers();
 
 		OutputDebugStringA("Dragon created!!\n");
-	}
+	}*/
 }
 
 void SelectScene::UpdateScene(const float deltaTime)
 {
-	if (dragon) {
-		auto animator = dragon->GetComponent<Animator>();
+	if (knight) {
+		auto animator = knight->GetComponent<Animator>();
 		if (animator) {
 			if (INPUT.GetKeyDown('1')) 
 				animator->TransitionToAnimation(0, 0.4f);
