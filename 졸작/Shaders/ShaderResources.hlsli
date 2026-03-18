@@ -15,7 +15,9 @@ cbuffer FrameCB : register(b0)
     float3 cameraPosition;
     float time;
     uint lutIndex;
-    float3 framePadding;
+    uint prevLutIndex;
+    float lutBlendFactor;
+    float saturationFactor;
 };
 
 cbuffer ObjectCB : register(b1)

@@ -8,7 +8,9 @@ struct FrameConstants
 	XMFLOAT3 cameraPosition;
 	float time;
 	UINT lutIndex;
-	XMFLOAT3 framePadding;
+	UINT prevLutIndex;
+	float lutBlendFactor;
+	float saturationFactor;
 };
 
 struct ObjectConstants

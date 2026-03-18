@@ -65,6 +65,9 @@ void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<Gam
 
 void Camera::UpdateInputtoCamLogic(float deltaTime)
 {
+    if (lutBlendFactor < 1.0f)
+        lutBlendFactor = min(lutBlendFactor + deltaTime * lutTransitionSpeed, 1.0f);
+
     if (!spacePressed)
         ChangeAngleByInput(deltaTime);
 
@@ -79,34 +82,56 @@ void Camera::UpdateInputtoCamLogic(float deltaTime)
     {
         if (lutIndex == 0xFFFFFFFF)
         {
+            prevLutIndex = 0;
             lutIndex = 0;
-            OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+            lutBlendFactor = 1.0f;  // 즉시 적용
         }
         else if (lutIndex < 219)
         {
+            prevLutIndex = lutIndex;
             lutIndex += 1;
-            OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+            lutBlendFactor = 0.0f;  // 블렌딩 시작
         }
+        OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
     }
 
     if (INPUT.GetKeyDown(VK_F4))
     {
         if (lutIndex == 0xFFFFFFFF)
         {
+            prevLutIndex = 0;
             lutIndex = 0;
-            OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+            lutBlendFactor = 1.0f;  // 즉시 적용
         }
         else if (lutIndex > 0)
         {
+            prevLutIndex = lutIndex;
             lutIndex -= 1;
-            OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+            lutBlendFactor = 0.0f;  // 블렌딩 시작
         }
+        OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
     }
 
     if (INPUT.GetKeyDown(VK_F5))
     {
+        prevLutIndex = lutIndex;
         lutIndex = 0xFFFFFFFF;
+        lutBlendFactor = 1.0f;  // LUT 끄기는 즉시
         OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+    }
+
+    if (INPUT.GetKeyDown('9'))
+    {
+        if (toneSaturationFactor < 2.0f)
+            toneSaturationFactor += 0.1f;
+        OutputDebugStringA(("toneSaturationFactor: " + to_string(toneSaturationFactor) + "\n").c_str());
+    }
+
+    if (INPUT.GetKeyDown('0'))
+    {
+        if (toneSaturationFactor > 0.0f)
+            toneSaturationFactor -= 0.1f;
+        OutputDebugStringA(("toneSaturationFactor: " + to_string(toneSaturationFactor) + "\n").c_str());
     }
 }
 
@@ -178,6 +203,9 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     frameData.cameraPosition = position;
     frameData.time = TIMER.GetTotalTime();
     frameData.lutIndex = lutIndex;
+    frameData.prevLutIndex = prevLutIndex;
+    frameData.lutBlendFactor = lutBlendFactor;
+    frameData.saturationFactor = toneSaturationFactor;
 
     core.GetFrameCB()->CopyData(&frameData, sizeof(FrameConstants));
 }

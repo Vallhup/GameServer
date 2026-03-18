@@ -77,4 +77,8 @@ private:
 	XMFLOAT4X4 matProj;
 
 	UINT lutIndex = 0;
+	UINT prevLutIndex = 0;
+	float lutBlendFactor = 1.0f;
+	float lutTransitionSpeed = 2.0f;
+	float toneSaturationFactor = 0.85f;
 };

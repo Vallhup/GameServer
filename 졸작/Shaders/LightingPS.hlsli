@@ -93,10 +93,18 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 
     finalColor = ApplyVolumetricFog(finalColor, worldPos, input.uv, cameraPosition);
 
-    finalColor = DarkFantasyToneMapping(finalColor);
+    finalColor = DarkFantasyToneMapping(finalColor, saturationFactor);
     
     if (lutIndex != 0xFFFFFFFF)
-    finalColor = ApplyLUT(bindlessTextures3D[lutIndex], lutLinearSampler, finalColor);
+    {
+        if (lutBlendFactor >= 1.0)
+            finalColor = ApplyLUT(bindlessTextures3D[lutIndex], lutLinearSampler, finalColor);
+        else
+            finalColor = ApplyLUTWipe(
+          bindlessTextures3D[lutIndex],
+          bindlessTextures3D[prevLutIndex],
+          lutLinearSampler, finalColor, lutBlendFactor, input.uv);
+    }
     
     // Don't need to apply gamma correction
     // R8G8B8A8_UNORM_SRGB automatically appies it.
