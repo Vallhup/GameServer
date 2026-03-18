@@ -8,6 +8,7 @@ vector<MaterialGPUData> Material::materials;
 vector<unique_ptr<Texture>> Material::allTextures;
 UINT Material::nextTextureIndex = 0;
 UINT Material::nextCubeMapIndex = 0;
+UINT Material::nextTexture3DIndex = 0;
 UINT Material::descriptorSize = 0;
 bool Material::bufferDirty = false;
 unordered_map<wstring, UINT> Material::texturePathToIndex;
@@ -16,7 +17,7 @@ void Material::InitializeBindlessSystem(ID3D12Device* device)
 {
     D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
     heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    heapDesc.NumDescriptors = 2000;
+    heapDesc.NumDescriptors = 3000;
     heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
     HRESULT hr = device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&bindlessHeap));
@@ -138,6 +139,41 @@ UINT Material::RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* 
     return index;
 }
 
+UINT Material::RegisterLUT(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path)
+{
+    if (!bindlessHeap) {
+        OutputDebugStringA("Bindless system not initialized!\n");
+        return 0xFFFFFFFF;
+    }
+
+    auto it = texturePathToIndex.find(path);
+    if (it != texturePathToIndex.end())
+        return it->second;
+
+    auto texture = make_unique<Texture>();
+    texture->InitializeLUT(device, cmdList, path);
+
+    UINT tex3DHeapOffset = 2000;
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = bindlessHeap->GetCPUDescriptorHandleForHeapStart();
+    cpuHandle.ptr += (tex3DHeapOffset + nextTexture3DIndex) * descriptorSize;
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format = texture->GetTexture()->GetDesc().Format;
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.Texture3D.MipLevels = 1;
+    srvDesc.Texture3D.MostDetailedMip = 0;
+
+    device->CreateShaderResourceView(texture->GetTexture(), &srvDesc, cpuHandle);
+
+    UINT index = nextTexture3DIndex++;
+    allTextures.push_back(move(texture));
+
+    texturePathToIndex[path] = index;
+    OutputDebugStringA(("3D LUT registered at index: " + to_string(index) + "\n").c_str());
+    return index;
+}
+
 void Material::BindBindlessResources(ID3D12GraphicsCommandList* cmdList)
 {
     if (bindlessHeap && materialBuffer) {
@@ -151,7 +187,11 @@ void Material::BindBindlessResources(ID3D12GraphicsCommandList* cmdList)
         cubeMapHandle.ptr += 1000 * descriptorSize;
         cmdList->SetGraphicsRootDescriptorTable(15, cubeMapHandle);
 
-        cmdList->SetGraphicsRootShaderResourceView(7, materialBuffer->GetGPUVirtualAddress());      
+        cmdList->SetGraphicsRootShaderResourceView(7, materialBuffer->GetGPUVirtualAddress()); 
+
+        D3D12_GPU_DESCRIPTOR_HANDLE tex3DHandle = gpuHandle;
+        tex3DHandle.ptr += 2000 * descriptorSize;
+        cmdList->SetGraphicsRootDescriptorTable(19, tex3DHandle);
     }
 }
 

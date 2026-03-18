@@ -74,6 +74,40 @@ void Camera::UpdateInputtoCamLogic(float deltaTime)
         desiredDistance -= steps * zoomSpeedPerNotch;
         desiredDistance = std::clamp(desiredDistance, minDistance, maxDistance);
     }
+
+    if (INPUT.GetKeyDown(VK_F3))
+    {
+        if (lutIndex == 0xFFFFFFFF)
+        {
+            lutIndex = 0;
+            OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+        }
+        else if (lutIndex < 219)
+        {
+            lutIndex += 1;
+            OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+        }
+    }
+
+    if (INPUT.GetKeyDown(VK_F4))
+    {
+        if (lutIndex == 0xFFFFFFFF)
+        {
+            lutIndex = 0;
+            OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+        }
+        else if (lutIndex > 0)
+        {
+            lutIndex -= 1;
+            OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+        }
+    }
+
+    if (INPUT.GetKeyDown(VK_F5))
+    {
+        lutIndex = 0xFFFFFFFF;
+        OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+    }
 }
 
 void Camera::UpdateSmoothFollow(float deltaTime)
@@ -143,6 +177,7 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     frameData.invViewProj = XMMatrixTranspose(invVp);
     frameData.cameraPosition = position;
     frameData.time = TIMER.GetTotalTime();
+    frameData.lutIndex = lutIndex;
 
     core.GetFrameCB()->CopyData(&frameData, sizeof(FrameConstants));
 }

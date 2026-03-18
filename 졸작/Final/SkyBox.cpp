@@ -16,6 +16,20 @@ void SkyBox::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList
 	Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox_radiance.dds");
 
 	Material::RegisterTexture(device, cmdList, L"../Assets/Skybox/brdf_lut.png");
+
+	vector<filesystem::path> allLUTs;
+	wstring rootPath = L"../Assets/LUTs";
+
+	for (const auto& entry : filesystem::recursive_directory_iterator(rootPath))
+	{
+		if (entry.is_regular_file() && entry.path().extension() == L".png")
+			allLUTs.push_back(entry.path());
+	}
+
+	sort(allLUTs.begin(), allLUTs.end());
+
+	for (const auto& lut : allLUTs)
+		Material::RegisterLUT(device, cmdList, lut.wstring());
 }
 
 void SkyBox::RenderSkyBox(DX12Core& core, ID3D12GraphicsCommandList* cmdList)

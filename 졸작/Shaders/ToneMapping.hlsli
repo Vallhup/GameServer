@@ -123,4 +123,14 @@ float3 DarkFantasyToneMapping(float3 color)
     return saturate(color);
 }
 
+float3 ApplyLUT(Texture3D lutTex, SamplerState samp, float3 color)
+{
+    const float LUT_SIZE = 32.0;
+    float scale = (LUT_SIZE - 1.0) / LUT_SIZE;
+    float offset = 0.5 / LUT_SIZE;
+
+    float3 lutCoord = saturate(color) * scale + offset;
+    return lutTex.Sample(samp, lutCoord).rgb;
+}
+
 #endif

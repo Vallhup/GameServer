@@ -7,6 +7,8 @@ struct FrameConstants
 	XMMATRIX invViewProj;
 	XMFLOAT3 cameraPosition;
 	float time;
+	UINT lutIndex;
+	XMFLOAT3 framePadding;
 };
 
 struct ObjectConstants

@@ -14,6 +14,8 @@ cbuffer FrameCB : register(b0)
     matrix invViewProj;
     float3 cameraPosition;
     float time;
+    uint lutIndex;
+    float3 framePadding;
 };
 
 cbuffer ObjectCB : register(b1)
@@ -113,10 +115,10 @@ RWStructuredBuffer<matrix> aFinal : register(u0);
 
 StructuredBuffer<matrix> instanceTransforms : register(t0, space2);
 
-Texture2D gBufferRT0 : register(t4); // BaseColor + Metallic
-Texture2D gBufferRT1 : register(t5); // Normal + Roughness
-Texture2D gBufferRT2 : register(t6); // Emission + AO
-Texture2D depthBuffer : register(t7); // Depth
+Texture2D gBufferRT0 : register(t4);    // BaseColor + Metallic
+Texture2D gBufferRT1 : register(t5);    // Normal + Roughness
+Texture2D gBufferRT2 : register(t6);    // Emission + AO
+Texture2D depthBuffer : register(t7);   // Depth
 Texture2DArray shadowMapArray : register(t8);
 Texture2D ssaoTexture : register(t9);
 
@@ -127,12 +129,15 @@ Texture2D ssaoDepth : register(t1, space4);
 Texture2D ssaoNoise : register(t2, space4);
 Texture2D ssaoResult : register(t3, space4);
 
+Texture3D bindlessTextures3D[] : register(t0, space5);
+
 //-------------------------------------------------------
 // SAMPLERS
 //-------------------------------------------------------
 
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
+SamplerState lutLinearSampler : register(s2);
 
 //-------------------------------------------------------
 // INDEXES
@@ -140,6 +145,6 @@ SamplerState pointSampler : register(s1);
 
 static const uint IBL_IRRADIANCE_INDEX = 1;
 static const uint IBL_RADIANCE_INDEX = 2;
-static const uint BRDF_LUT_INDEX = 127;
+static const uint BRDF_LUT_INDEX = 132;
 
 #endif

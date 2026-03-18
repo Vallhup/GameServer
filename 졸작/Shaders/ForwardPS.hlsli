@@ -55,6 +55,7 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         finalColor = ApplyVolumetricFog(finalColor, input.worldPos, input.uv, cameraPosition);
         
         finalColor = DarkFantasyToneMapping(finalColor);
+        finalColor = ApplyLUT(bindlessTextures3D[lutIndex], lutLinearSampler, finalColor);
         
         return float4(finalColor, finalAlpha);
     }

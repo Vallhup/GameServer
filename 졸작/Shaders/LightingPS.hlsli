@@ -95,6 +95,9 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 
     finalColor = DarkFantasyToneMapping(finalColor);
     
+    if (lutIndex != 0xFFFFFFFF)
+    finalColor = ApplyLUT(bindlessTextures3D[lutIndex], lutLinearSampler, finalColor);
+    
     // Don't need to apply gamma correction
     // R8G8B8A8_UNORM_SRGB automatically appies it.
     //const float GAMMA = 2.2;

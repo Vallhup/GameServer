@@ -74,7 +74,9 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddCBV(8);              // [17] b8 - SsaoCB
     AddSRVTable(0, 4, 4);   // [18] t0-t3, space4 - Ssao SRVs
 
-    CD3DX12_STATIC_SAMPLER_DESC samplerDesc[2];
+    AddBindlessTable(5);    // [19] t0, space5 - Bindless 3D Textures For LUT
+
+    CD3DX12_STATIC_SAMPLER_DESC samplerDesc[3];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,
         D3D12_TEXTURE_ADDRESS_MODE_WRAP,
         D3D12_TEXTURE_ADDRESS_MODE_WRAP);
@@ -83,9 +85,13 @@ void RootSignature::Initialize(ID3D12Device* device)
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
 
+    samplerDesc[2].Init(2, D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+        D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+        D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
+
     CD3DX12_ROOT_SIGNATURE_DESC desc{};
     desc.Init(static_cast<UINT>(rootParams.size()), rootParams.data(),
-        2, samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+        3, samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
     ComPtr<ID3DBlob> serializedRootSig = nullptr;
     ComPtr<ID3DBlob> errorBlob = nullptr;

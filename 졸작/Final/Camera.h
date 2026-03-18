@@ -75,4 +75,6 @@ private:
 
 	XMFLOAT4X4 matView;
 	XMFLOAT4X4 matProj;
+
+	UINT lutIndex = 0;
 };
