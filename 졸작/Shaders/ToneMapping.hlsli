@@ -136,14 +136,8 @@ float3 ApplyLUT(Texture3D lutTex, SamplerState samp, float3 color)
 float3 ApplyLUTWithTransition(Texture3D lutTex, Texture3D prevLutTex, SamplerState samp,
                                 float3 color, float blendFactor)
 {
-    const float LUT_SIZE = 32.0;
-    float scale = (LUT_SIZE - 1.0) / LUT_SIZE;
-    float offset = 0.5 / LUT_SIZE;
-    
-    float3 lutCoord = saturate(color) * scale + offset;
-
-    float3 prevColor = prevLutTex.Sample(samp, lutCoord).rgb;
-    float3 newColor = lutTex.Sample(samp, lutCoord).rgb;
+    float3 prevColor = ApplyLUT(prevLutTex, samp, color);
+    float3 newColor = ApplyLUT(lutTex, samp, color);
 
     return lerp(prevColor, newColor, blendFactor);
 }
@@ -151,15 +145,34 @@ float3 ApplyLUTWithTransition(Texture3D lutTex, Texture3D prevLutTex, SamplerSta
 float3 ApplyLUTWipe(Texture3D lutTex, Texture3D prevLutTex,
       SamplerState samp, float3 color, float blendFactor, float2 uv)
 {
-    const float LUT_SIZE = 32.0;
-    float scale = (LUT_SIZE - 1.0) / LUT_SIZE;
-    float offset = 0.5 / LUT_SIZE;
-    float3 lutCoord = saturate(color) * scale + offset;
-
-    float3 prevColor = prevLutTex.Sample(samp, lutCoord).rgb;
-    float3 newColor = lutTex.Sample(samp, lutCoord).rgb;
+    float3 prevColor = ApplyLUT(prevLutTex, samp, color);
+    float3 newColor = ApplyLUT(lutTex, samp, color);
     
     float edge = smoothstep(blendFactor - 0.05, blendFactor + 0.05, uv.x);
+    return lerp(newColor, prevColor, edge);
+}
+
+float3 ApplyLUTDiagonal(Texture3D lutTex, Texture3D prevLutTex,
+      SamplerState samp, float3 color, float blendFactor, float2 uv)
+{
+    float3 prevColor = ApplyLUT(prevLutTex, samp, color);
+    float3 newColor = ApplyLUT(lutTex, samp, color);
+    
+    float edge = smoothstep(blendFactor - 0.05, blendFactor + 0.05, (uv.x + uv.y) * 0.5);
+    return lerp(newColor, prevColor, edge);
+}
+
+float3 ApplyLUTCircle(Texture3D lutTex, Texture3D prevLutTex,
+      SamplerState samp, float3 color, float blendFactor, float2 uv)
+{
+    float3 prevColor = ApplyLUT(prevLutTex, samp, color);
+    float3 newColor = ApplyLUT(lutTex, samp, color);
+    
+    float dist = length(uv - 0.5);
+    float maxDist = 0.7071;
+    float normalizedDist = dist / maxDist;
+    
+    float edge = smoothstep(blendFactor - 0.05, blendFactor + 0.05, normalizedDist);
     return lerp(newColor, prevColor, edge);
 }
 

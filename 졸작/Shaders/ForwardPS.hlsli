@@ -61,7 +61,7 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
             if (lutBlendFactor >= 1.0)
                 finalColor = ApplyLUT(bindlessTextures3D[lutIndex], lutLinearSampler, finalColor);
             else
-                finalColor = ApplyLUTWipe(
+                finalColor = ApplyLUTCircle(
           bindlessTextures3D[lutIndex],
           bindlessTextures3D[prevLutIndex],
           lutLinearSampler, finalColor, lutBlendFactor, input.uv);
