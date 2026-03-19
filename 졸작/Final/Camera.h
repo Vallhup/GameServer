@@ -29,7 +29,7 @@ public:
 	void ReleaseMouse();
 
 private:
-	void UpdateInputtoCamLogic(float deltaTime);
+	void UpdateInputtoCamLogic(DX12Core& core, float deltaTime);
 	void UpdateSmoothFollow(float deltaTime);
 	void UpdateCameraMatrices(DX12Core& core);
 	void UpdateForwardAndRight();

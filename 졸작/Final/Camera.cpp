@@ -6,6 +6,7 @@
 #include "MainCharacter.h"
 #include "InstancingBatch.h"
 #include "Timer.h"
+#include "LookUpTextures.h"
 
 void Camera::Initialize(HWND hWnd)
 {
@@ -56,14 +57,14 @@ void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
 
 void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const shared_ptr<MainCharacter>& myPlayer)
 {
-    UpdateInputtoCamLogic(deltaTime);
+    UpdateInputtoCamLogic(core, deltaTime);
     UpdatePosByObstruction(sceneObjects, instancingBatches, myPlayer);
     UpdateSmoothFollow(deltaTime);
     UpdateCameraMatrices(core);
     SetCursor();
 }
 
-void Camera::UpdateInputtoCamLogic(float deltaTime)
+void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
 {
     if (lutBlendFactor < 1.0f)
         lutBlendFactor = min(lutBlendFactor + deltaTime * lutTransitionSpeed, 1.0f);
@@ -93,6 +94,7 @@ void Camera::UpdateInputtoCamLogic(float deltaTime)
             lutBlendFactor = 0.0f;  // 블렌딩 시작
         }
         OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+        OutputDebugStringW((L"lutPath: " + core.GetLUTMgr()->GetPathFromIndex(lutIndex) + L"\n").c_str());
     }
 
     if (INPUT.GetKeyDown(VK_F4))
@@ -110,6 +112,7 @@ void Camera::UpdateInputtoCamLogic(float deltaTime)
             lutBlendFactor = 0.0f;  // 블렌딩 시작
         }
         OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+        OutputDebugStringW((L"lutPath: " + core.GetLUTMgr()->GetPathFromIndex(lutIndex) + L"\n").c_str());
     }
 
     if (INPUT.GetKeyDown(VK_F5))

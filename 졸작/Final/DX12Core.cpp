@@ -11,6 +11,8 @@
 #include "LightManager.h"
 #include "FroxelManager.h"
 #include "SSAO.h"
+#include "LookUpTextures.h"
+#include "Material.h"
 
 void DX12Core::Initialize(HWND hwnd)
 {
@@ -31,6 +33,7 @@ void DX12Core::Initialize(HWND hwnd)
 	lightMgr = make_unique<LightManager>();
 	froxelMgr = make_unique<FroxelManager>();
 	ssaoMgr = make_unique<SSAO>();
+	lutMgr = make_unique<LookUpTextures>();
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
@@ -44,6 +47,9 @@ void DX12Core::Initialize(HWND hwnd)
 	froxelMgr->Initialize(GetDevice());
 	ssaoMgr->Initialize(GetDevice(), GetGraphicsCmdList(), GetRenderTargetMgr());
 	rtMgr->AddSsaoSRV(GetDevice(), ssaoMgr->GetSsaoBlurRT());
+
+	Material::InitializeBindlessSystem(GetDevice());
+	lutMgr->Initialize(GetDevice(), GetGraphicsCmdList());
 }
 
 void DX12Core::Update()

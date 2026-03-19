@@ -40,6 +40,7 @@ class RenderTargets;
 class LightManager;
 class FroxelManager;
 class SSAO;
+class LookUpTextures;
 class RootSignature;
 class Shader;
 
@@ -91,6 +92,7 @@ public:
 	LightManager* GetLightMgr() { return lightMgr.get(); }
 	FroxelManager* GetFroxelMgr() { return froxelMgr.get(); }
 	SSAO* GetSsaoMgr() { return ssaoMgr.get(); }
+	LookUpTextures* GetLUTMgr() { return lutMgr.get(); }
 
 	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;
@@ -110,6 +112,7 @@ private:
 	unique_ptr<LightManager> lightMgr;
 	unique_ptr<FroxelManager> froxelMgr;
 	unique_ptr<SSAO> ssaoMgr;
+	unique_ptr<LookUpTextures> lutMgr;
 
 	unique_ptr<RootSignature> rootSig;
 	unique_ptr<Shader> shader;

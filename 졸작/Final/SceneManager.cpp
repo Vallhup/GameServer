@@ -133,7 +133,6 @@ void SceneManager::SceneStart(DX12Core& core)
 
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
-    Material::InitializeBindlessSystem(core.GetDevice());
     mCurrentScene->Initialize(hwnd, core);
     UI_MANAGER->SetCurrentScene(currSceneType);
 }

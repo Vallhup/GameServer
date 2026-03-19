@@ -19,6 +19,7 @@
 #include "LightManager.h"
 #include "FroxelManager.h"
 #include "SSAO.h"
+#include "LookUpTextures.h"
 
 Engine& Engine::Get()
 {
