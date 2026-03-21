@@ -9,6 +9,7 @@
 #include "Animator.h"
 #include "LightManager.h"
 #include "SSAO.h"
+#include "SkyBox.h"
 
 void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 {
@@ -97,6 +98,7 @@ void ImGuiManager::DrawDebugUI()
             ImGui::Separator();
             ImGui::Checkbox("Light Editor", &showLightEditor);
             ImGui::Checkbox("SSAO Editor", &showSsaoEditor);
+            ImGui::Checkbox("Skybox Editor", &showSkyboxEditor);
             ImGui::Checkbox("Demo Window", &showDemoWindow);
         }
         ImGui::End();
@@ -125,6 +127,36 @@ void ImGuiManager::DrawDebugUI()
                     ssao->SetSsaoBias(bias);
                     ssao->UpdateConstants();
                 }
+            }
+        }
+        ImGui::End();
+    }
+
+    if (showSkyboxEditor && skyBox)
+    {
+        ImGui::SetNextWindowPos(ImVec2(560, 10), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(280, 150), ImGuiCond_FirstUseEver);
+
+        if (ImGui::Begin("Skybox Editor", &showSkyboxEditor))
+        {
+            auto& constants = skyBox->GetConstants();
+
+            bool changed = false;
+            changed |= ImGui::ColorEdit3("Tint Color", &constants.skyTintColor.x);
+            changed |= ImGui::SliderFloat("Exposure", &constants.skyExposure, 0.1f, 3.0f);
+            changed |= ImGui::SliderFloat("Saturation", &constants.skySaturation, 0.0f, 2.0f);
+
+            if (changed)
+            {
+                skyBox->UpdateConstants();
+            }
+
+            if (ImGui::Button("Reset"))
+            {
+                constants.skyTintColor = { 1.0f, 1.0f, 1.0f };
+                constants.skyExposure = 1.0f;
+                constants.skySaturation = 1.0f;
+                skyBox->UpdateConstants();
             }
         }
         ImGui::End();

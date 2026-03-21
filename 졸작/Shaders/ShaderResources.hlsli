@@ -102,6 +102,14 @@ cbuffer SsaoCB : register(b8)
     float ssaoBias;
 };
 
+cbuffer SkyboxCB : register(b9)
+{
+    float3 skyTintColor;
+    float skyExposure;
+    float skySaturation;
+    float3 skyPadding;
+};
+
 //-------------------------------------------------------
 // VARIOUS TYPES OF SHADER RESOURCES
 //-------------------------------------------------------

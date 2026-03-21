@@ -3,6 +3,7 @@
 
 class DX12Core;
 class MainCharacter;
+class SkyBox;
 
 class ImGuiManager : public Singleton<ImGuiManager>
 {
@@ -22,6 +23,7 @@ public:
     bool IsEnabled() const { return enabled; }
     void SetEnabled(bool in) { enabled = in; }
     void SetMyPlayer(MainCharacter* player) { myPlayer = player; }
+    void SetSkyBox(SkyBox* sky) { skyBox = sky; }
 
     void ShowLoginWindow() { showLoginWindow = true; }
     bool IsLoginSuccess() const { return loginSuccess; }
@@ -35,9 +37,11 @@ private:
     bool showPerformance = true;
     bool showLightEditor = true;
     bool showSsaoEditor = true;
+    bool showSkyboxEditor = true;
 
     bool showAnimationEditor = true;
     MainCharacter* myPlayer = nullptr;
+    SkyBox* skyBox = nullptr;
 
     bool showLoginWindow = false;
     bool loginSuccess = false;

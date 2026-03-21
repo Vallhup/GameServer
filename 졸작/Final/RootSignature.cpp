@@ -76,6 +76,8 @@ void RootSignature::Initialize(ID3D12Device* device)
 
     AddBindlessTable(5);    // [19] t0, space5 - Bindless 3D Textures For LUT
 
+    AddCBV(9);              // [20] b9 - SkyboxCB
+
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[3];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,
         D3D12_TEXTURE_ADDRESS_MODE_WRAP,
