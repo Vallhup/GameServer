@@ -58,6 +58,9 @@
     <ClCompile Include="CommandBuffer.cpp">
       <Filter>ECS\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="WorldBuilder.cpp">
+      <Filter>Game\World\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -171,6 +174,12 @@
     <ClInclude Include="CommandBuffer.h">
       <Filter>ECS\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="ViewFwd.h">
+      <Filter>ECS\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldBuilder.h">
+      <Filter>Game\World\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -226,6 +235,9 @@
     </Filter>
     <Filter Include="ECS\System\Core">
       <UniqueIdentifier>{ddb1dc91-f93a-410b-a4ef-31216d9ef68c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\Utility">
+      <UniqueIdentifier>{bcad29e1-e0b9-46d1-889d-ce5716ce16cb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

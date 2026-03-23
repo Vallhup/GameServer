@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NetId.h"
+#include "WorldId.h"
 #include "Component.h"
 #include "EntityType.h"
 
@@ -16,7 +17,14 @@ struct WorldIdComp : Component
 
 struct SpawnTypeComp : Component
 {
-	EntityType type;
+	EntityType entityType;
+	Faction faction;
+	CharacterType charType;
+};
+
+struct AITypeComp : Component
+{
+	AIArchetypeId aiType;
 };
 
 struct ReplicatedTag : TagComponent { };

@@ -177,6 +177,7 @@
     <ClInclude Include="SystemMetaHelper.h" />
     <ClInclude Include="SystemScheduler.h" />
     <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="ViewFwd.h" />
     <ClInclude Include="World.h" />
     <ClInclude Include="NetIdAllocator.h" />
     <ClInclude Include="NetIdRegistry.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="StorageRegistry.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="WITH_Server_Framework.h" />
+    <ClInclude Include="WorldBuilder.h" />
     <ClInclude Include="WorldConfig.h" />
     <ClInclude Include="WorldDesc.h" />
     <ClInclude Include="WorldFactory.h" />
@@ -214,6 +216,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StorageRegistry.cpp" />
+    <ClCompile Include="WorldBuilder.cpp" />
     <ClCompile Include="WorldIdAllocator.cpp" />
     <ClCompile Include="WorldLeapManager.cpp" />
     <ClCompile Include="WorldRegistry.cpp" />
