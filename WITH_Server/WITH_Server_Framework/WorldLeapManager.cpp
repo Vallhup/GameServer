@@ -84,7 +84,13 @@ void WorldLeapManager::HandleDefault(const WorldLeapRequest& request)
 	bool applyOk{ true };
 	for (const SnapShot& snapshot : snapshots)
 	{
-		if (toWorld->SpawnPlayer(snapshot.connId).IsNull())
+		if (toWorld->HasPresence(snapshot.connId))
+		{
+			spawnOk = false;
+			break;
+		}
+
+		if (toWorld->RequestSpawnPlayer(snapshot.connId).IsNull())
 		{
 			spawnOk = false;
 			break;
@@ -102,7 +108,7 @@ void WorldLeapManager::HandleDefault(const WorldLeapRequest& request)
 	{
 		// TODO : SpawnFail
 		for (uint32 connId : spawned)
-			toWorld->DespawnPlayer(toRt, connId);
+			toWorld->RequestDespawnPlayer(connId);
 
 		WorldLeapRequest leap
 		{
@@ -120,7 +126,7 @@ void WorldLeapManager::HandleDefault(const WorldLeapRequest& request)
 	{
 		// TODO : ApplyFail
 		for (uint32 connId : spawned)
-			toWorld->DespawnPlayer(toRt, connId);
+			toWorld->RequestDespawnPlayer(connId);
 
 		WorldLeapRequest leap
 		{
@@ -135,7 +141,7 @@ void WorldLeapManager::HandleDefault(const WorldLeapRequest& request)
 	}
 
 	for (const SnapShot& snapshot : snapshots)
-		fromWorld->DespawnPlayer(fromRt, snapshot.connId);
+		fromWorld->RequestDespawnPlayer(snapshot.connId);
 
 	const uint32 playerCnt = static_cast<uint32>(snapshots.size());
 
@@ -164,9 +170,9 @@ void WorldLeapManager::HandleRecoverToSquare(const WorldLeapRequest& request)
 	uint32 spawnedCount{ 0 };
 	for (uint32 connId : request.connIds)
 	{
-		if (squareWorld->HasPlayer(connId)) continue;
+		if (squareWorld->HasPresence(connId)) continue;
 
-		Entity e = squareWorld->SpawnPlayer(connId);
+		Entity e = squareWorld->RequestSpawnPlayer(connId);
 		if (e.IsNull())
 		{
 			// TODO : 복구 불가

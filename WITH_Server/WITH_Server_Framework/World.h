@@ -8,6 +8,14 @@
 
 #include <unordered_set>
 
+enum class PlayerPresenceState : uint8_t
+{
+	None,
+	PendingSpawn,
+	Active,
+	PendingDespawn
+};
+
 class IWorld {
 public:
 	virtual ~IWorld() = default;
@@ -17,19 +25,22 @@ public:
 	virtual void Shutdown() = 0;
 };
 
+class WorldBuilder;
+
 class IWorldImpl {
 public:
 	virtual ~IWorldImpl() = default;
 
-	virtual void SpawnInitial(WorldRuntime& rt) = 0;
-	virtual Entity SpawnPlayer(WorldRuntime& rt, uint32 connId) = 0;
+	virtual void Configure(WorldBuilder& builder) = 0;
 
-	virtual void Build(WorldRuntime& rt) = 0;
+	virtual Entity SpawnPlayer(WorldRuntime& rt, uint32_t connId) = 0;
+	virtual bool DespawnPlayer(WorldRuntime& rt, uint32_t connId) { return false; };
+
+	virtual bool TryMakeSnapshot(WorldRuntime& rt, uint32_t connId, PlayerSnapshot& out) { return false; };
+	virtual bool ApplySnapshot(WorldRuntime& rt, uint32_t connId, const PlayerSnapshot& snapshot) { return false; };
+
 	virtual void OnShutdown(WorldRuntime& rt) {};
 
-	virtual bool TryMakeSnapshot(WorldRuntime& rt, uint32 connId, PlayerSnapshot& out) { return false; };
-	virtual bool ApplySnapshot(WorldRuntime& rt, uint32 connId, const PlayerSnapshot& snapshot) { return false; };
-	virtual bool DespawnPlayer(WorldRuntime& rt, uint32 connId) { return false; };
 };
 
 class World final : public IWorld {
@@ -41,26 +52,36 @@ public:
 	virtual void Update(const double dT) override;
 	virtual void Shutdown() override;
 
-	Entity SpawnPlayer(uint32 connId);
-	
-	bool TryMakeSnapshot(WorldRuntime& rt, uint32 connId, PlayerSnapshot& out);
-	bool ApplySnapshot(WorldRuntime& rt, uint32 connId, const PlayerSnapshot& snapshot);
-	bool DespawnPlayer(WorldRuntime& rt, uint32 connId);
+	Entity RequestSpawnPlayer(uint32_t connId);
+	bool RequestDespawnPlayer(uint32_t connId);
 
-	bool HasPlayer(uint32 connId);
+	bool TryMakeSnapshot(WorldRuntime& rt, uint32_t connId, PlayerSnapshot& out);
+	bool ApplySnapshot(WorldRuntime& rt, uint32_t connId, const PlayerSnapshot& snapshot);
+
+	bool HasPresence(uint32_t connId) const;
+	bool HasPlayer(uint32_t connId) const;
+	bool IsPlayerPendingSpawn(uint32_t connId) const;
+	bool IsPlayerPendingDespawn(uint32_t connId) const;
+
+	void FinalizePresence();
 
 	WorldRuntime& Runtime() { return _runtime; }
 	const WorldRuntime& Runtime() const { return _runtime; }
 
 private:
+	struct PlayerPresenceEntry
+	{
+		PlayerPresenceState state{ PlayerPresenceState::None };
+		Entity entity{};
+	};
+
 	WorldId _id;
 	WorldDesc _desc;
 
 	WorldRuntime _runtime;
 	std::unique_ptr<IWorldImpl> _impl;
 
-	// Thread-Safe 필요하면 concurrent_unordered_set으로 변경
-	std::unordered_set<uint32> _connIds;
+	std::unordered_map<uint32_t, PlayerPresenceEntry> _players;
 };
 
 // World 구조 및 구현 상 특징 예상
@@ -96,3 +117,40 @@ private:
 // 5. Final - 동접 3, 몬스터 1
 // 
 // 6. PVP - 동접 3
+
+
+
+// 2026. 03. 17 코드 리뷰 결과
+//
+// 장점
+//  1. 명확한 아키텍처 축과 책임 분리
+// 
+// 단점
+//  1. 운영 안정성
+//   - 예외 처리, 틱 드리프트 방지, 실패 복구 등
+//  
+//  2. Event 모듈의 완성도 부족
+//   - 이름만 붙인 임시 버퍼에 불과한 수준
+// 
+// 개선 우선순위
+//  1. EventQueue 계약 재설계
+//   - ConsumeView의 계약 재설계
+//   - consume / double-buffer frame event / persistent log
+// 
+//  2. WorldScheduler fixed timestep 수정 (완료)
+//   - 틱 드리프트 방지를 위한 capped substep loop 필요
+// 
+//  3. WorldLeapRequest 표현 수정
+//   - std::array<uint32_t, 3>이 아닌 
+//     실제 player count가 드러나는 구조로 수정
+// 
+//  4. WorldRegistry 생성 rollback 추가
+//   - factory null check
+//   - init failed
+//   - id 반환 취소 등
+// 
+//  5. WorldService 설정 데이터화
+//   - 하드코딩 제거
+//   - WorldDesc가 의미를 가지도록 
+// 
+//  6. WorldIdAllocator Type 일치
