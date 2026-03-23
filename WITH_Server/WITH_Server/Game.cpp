@@ -32,10 +32,7 @@ void Game::Stop()
 	if (_running)
 	{
 		_running = false;
-
 		DestroyAllWorlds();
-
-		_pool.Stop();
 	}
 }
 

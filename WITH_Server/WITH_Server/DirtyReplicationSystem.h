@@ -1,23 +1,22 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaHelper.h"
+#include "SystemMetaStorage.h"
 
 class DirtyReplicationSystem : public System {
+	static inline auto kMeta = MakeMetaStorage(
+		SysTag<DirtyReplicationSystem>(),
+		"DirtyReplicationSystem",
+		std::array<AccessSpec, 0>{ }
+	);
+
 public:
-	DirtyReplicationSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
+	DirtyReplicationSystem(WorldRuntime& rt) : System(rt) {}
 	virtual ~DirtyReplicationSystem() = default;
 
 	virtual void Execute(const double dT) override;
-
-	virtual std::vector<std::type_index> ReadResources() const override
-	{
-		return {  };
-	}
-
-	virtual std::vector<std::type_index> WriteResources() const override
-	{
-		return {  };
-	}
+	virtual const SystemMeta& Meta() const override { return kMeta.meta; }
 
 private:
 	void FlushEntity(Entity entity, const DirtyFlagsComp& dirty);

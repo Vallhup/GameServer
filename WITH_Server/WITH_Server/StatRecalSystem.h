@@ -1,26 +1,33 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaHelper.h"
+#include "SystemMetaStorage.h"
+
 #include "Stats.h"
 #include "Bufs.h"
 #include "Tags.h"
 
 class StatRecalSystem : public System {
+	static inline auto kMeta = MakeMetaStorage(
+		SysTag<StatRecalSystem>(),
+		"StatRecalSystem",
+		std::array{
+			ReadImmediate(ComponentRes<BaseVital>()),
+			ReadImmediate(ComponentRes<BaseAttribute>()),
+			WriteImmediate(ComponentRes<FinalVital>()),
+			WriteImmediate(ComponentRes<FinalAttribute>()),
+			WriteImmediate(ComponentRes<BuffsComp>()),
+			WriteImmediate(ComponentRes<Vital>())
+		}
+	);
+
 public:
-	StatRecalSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
+	StatRecalSystem(WorldRuntime& rt) : System(rt) {}
 	virtual ~StatRecalSystem() = default;
 
 	virtual void Execute(const double dT) override;
-	virtual std::vector<std::type_index> ReadResources() const override
-	{
-		return { typeid(BaseVital), typeid(BaseAttribute) };
-	}
-
-	virtual std::vector<std::type_index> WriteResources() const override
-	{
-		return { typeid(FinalVital), typeid(FinalAttribute),
-		typeid(BuffsComp), typeid(Vital) };
-	}
+	virtual const SystemMeta& Meta() const override { return kMeta.meta; }
 
 private:
 	void ApplyBuff(Entity entity, const BuffInstance& inst, FinalVital& fVital, FinalAttribute& fAttr);

@@ -7,23 +7,27 @@
 
 /* -------- [ Input Event ]-------- */
 
-enum class EventType {
+enum class EventType : uint8_t
+{
 	EV_CONNECT,
 	EV_DISCONNECT,
 	EV_MOVE,
 	EV_ACTION
 };
 
-enum class ActionRequestType {
+enum class ActionRequestType : uint8_t
+{
 	Attack,
 	Dodge,
 	Parry,
 	Guard,
 };
 
-namespace std {
+namespace std 
+{
 	template<>
-	struct hash<EventType> {
+	struct hash<EventType> 
+	{
 		size_t operator()(const EventType& id) const noexcept
 		{
 			return std::hash<int>()(static_cast<int>(id));
@@ -32,7 +36,7 @@ namespace std {
 }
 
 struct ConnectEvent {
-	int sessionId;
+	uint32_t connId;
 };
 
 struct DisconnectEvent 

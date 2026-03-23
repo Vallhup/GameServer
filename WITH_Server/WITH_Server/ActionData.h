@@ -49,7 +49,8 @@ struct VerticalParams
 	float deltaY{ 0.0f };
 };
 
-struct ActionMoveSegment {
+struct ActionMoveSegment 
+{
 	double t0;
 	double t1;
 
@@ -63,11 +64,13 @@ struct ActionMoveSegment {
 	VerticalParams vParams;
 };
 
-struct ActionProfile {
+struct ActionProfile 
+{
 	std::vector<ActionMoveSegment> segments;
 };
 
-struct ActionPolicy {
+struct ActionPolicy 
+{
 	int32 priority{ 0 };
 	double duration{ 0 };
 	uint32 interruptMask{ 0 };

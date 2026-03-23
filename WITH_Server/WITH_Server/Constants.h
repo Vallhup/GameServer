@@ -27,7 +27,8 @@ enum class AttackType : uint8 {
 
 constexpr uint32 ToInt(AttackType type) { return static_cast<uint32>(type); }
 
-enum class ActionType : uint8 {
+enum class ActionType : uint8 
+{
 	None,
 	Attack,
 	Dodge,
