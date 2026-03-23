@@ -7,11 +7,14 @@ class WorldService;
 class WorldLeapManager;
 
 class WorldScheduler {
+	static constexpr double kMaxFrameDelta{ 0.25 };
+	static constexpr int kMaxSubStepsPerFrame{ 8 };
+
 public:
 	explicit WorldScheduler(WorldRegistry& reg, WorldService& service, WorldLeapManager& leapMng) 
 		: _reg(reg), _service(service), _leapMng(leapMng){}
 
-	void Register(WorldId id, uint32 tickRate);
+	void Register(WorldId id, uint32_t tickRate);
 	void Unregister(WorldId id);
 
 	void Update(const double dT);
@@ -34,7 +37,7 @@ private:
 	std::vector<Entry> _entries;
 };
 
-static inline double TickIntervalFromRate(uint32 tickRate)
+static inline double TickIntervalFromRate(uint32_t tickRate)
 {
 	if (tickRate == 0) tickRate = 1;
 	return 1.0 / double(tickRate);

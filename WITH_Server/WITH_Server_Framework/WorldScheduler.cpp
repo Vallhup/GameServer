@@ -5,7 +5,7 @@
 #include "WorldLeapManager.h"
 #include "WorldService.h"
 
-void WorldScheduler::Register(WorldId id, uint32 tickRate)
+void WorldScheduler::Register(WorldId id, uint32_t tickRate)
 {
 	auto it = std::find_if(_entries.begin(), _entries.end(),
 		[&](const Entry& e) { return e.id == id; });
@@ -40,26 +40,34 @@ void WorldScheduler::Unregister(WorldId id)
 
 void WorldScheduler::Update(const double dT)
 {
-	const double clampDT = std::clamp<double>(dT, 0.0, 0.25);
+	const double clampDT = 
+		std::clamp<double>(dT, 0.0, kMaxFrameDelta);
 
 	for (Entry& entry : _entries)
 	{
 		if (entry.paused) continue;
 
+		IWorld* world = _reg.GetWorld(entry.id);
+		if (!world)
+		{
+			entry.paused = true;
+			continue;
+		}
+
 		entry.acc += clampDT;
 
-		if (entry.acc >= entry.tickInterval)
-		{
-			IWorld* world = _reg.GetWorld(entry.id);
-			if (!world)
-			{
-				entry.paused = true;
-				continue;
-			}
+		const double maxAccum =
+			entry.tickInterval * static_cast<double>(kMaxSubStepsPerFrame);
 
+		entry.acc = std::min(entry.acc, maxAccum);
+
+		int subSteps{ 0 };
+		while (entry.acc >= entry.tickInterval && 
+			subSteps < kMaxSubStepsPerFrame)
+		{
 			world->Update(entry.tickInterval);
-			entry.acc =
-				std::max<double>(0.0, entry.acc - entry.tickInterval);
+			entry.acc = std::max(0.0, entry.acc - entry.tickInterval);
+			++subSteps;
 		}
 	}
 
