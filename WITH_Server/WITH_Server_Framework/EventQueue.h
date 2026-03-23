@@ -52,4 +52,3 @@ public:
 private:
 	std::vector<T> _buffer;
 };
-

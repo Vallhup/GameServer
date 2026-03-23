@@ -26,18 +26,6 @@ public:
 	CommandBuffer(const CommandBuffer&) = delete;
 	CommandBuffer& operator=(const CommandBuffer&) = delete;
 
-	template<CommandT T>
-	void Enqueue(T&& fn)
-	{
-		using Fn = std::decay_t<T>;
-
-		auto cmd = std::make_unique<CommandModel<Fn>>(std::forward<T>(fn));
-		{
-			std::lock_guard lock{ _mtx };
-			_pendingCommands.push_back(std::move(cmd));
-		}
-	}
-
 	void Commit(WorldRuntime& rt);
 	void Clear();
 	bool Empty() const;
@@ -63,6 +51,20 @@ private:
 
 		F fn;
 	};
+
+	template<CommandT T>
+	void Enqueue(T&& fn)
+	{
+		using Fn = std::decay_t<T>;
+
+		auto cmd = std::make_unique<CommandModel<Fn>>(std::forward<T>(fn));
+		{
+			std::lock_guard lock{ _mtx };
+			_pendingCommands.push_back(std::move(cmd));
+		}
+	}
+
+	friend class WorldRuntime;
 
 	mutable std::mutex _mtx;
 	std::vector<std::unique_ptr<ICommand>> _pendingCommands;

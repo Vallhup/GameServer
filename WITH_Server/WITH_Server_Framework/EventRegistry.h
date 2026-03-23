@@ -29,14 +29,6 @@ public:
 		return holder->queue;
 	}
 
-	/*void SwapAllBuffers()
-	{
-		for (auto& [_, queue] : _queues)
-		{
-			queue->SwapBuffers();
-		}
-	}*/
-
 	void ClearAll()
 	{
 		for (auto& [_, queue] : _queues)
@@ -48,7 +40,6 @@ public:
 private:
 	struct IQueueHolder {
 		virtual ~IQueueHolder() = default;
-
 		virtual void Clear() = 0;
 	};
 
@@ -57,7 +48,6 @@ private:
 		EventQueue<T, BufferPolicy> queue;
 
 		virtual ~QueueHolder() = default;
-
 		virtual void Clear() override { queue.Clear(); }
 	};
 
