@@ -1,23 +1,26 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaHelper.h"
+#include "SystemMetaStorage.h"
+
 #include "Animation.h"
 
 class AnimationPoseBindSystem : public System {
+	static inline auto kMeta = MakeMetaStorage(
+		SysTag<AnimationPoseBindSystem>(),
+		"AnimationPoseBindSystem",
+		std::array{
+			ReadImmediate(ComponentRes<Animator>()),
+			WriteImmediate(ComponentRes<CombatCollider>())
+		}
+	);
+
 public:
-	AnimationPoseBindSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
+	AnimationPoseBindSystem(WorldRuntime& rt) : System(rt) {}
 	virtual ~AnimationPoseBindSystem() = default;
 
 	virtual void Execute(const double dT) override;
-
-	virtual std::vector<std::type_index> ReadResources() const override
-	{
-		return { typeid(Animator) };
-	}
-
-	virtual std::vector<std::type_index> WriteResources() const override
-	{
-		return { typeid(CombatCollider) };
-	}
+	virtual const SystemMeta& Meta() const override { return kMeta.meta; }
 };
 

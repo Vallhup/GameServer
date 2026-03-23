@@ -1,23 +1,27 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaHelper.h"
+#include "SystemMetaStorage.h"
+
 #include "Action.h"
 
 class ColliderActivationSystem : public System {
+	static inline auto kMeta = MakeMetaStorage(
+		SysTag<ColliderActivationSystem>(),
+		"ColliderActivationSystem",
+		std::array{
+			ReadImmediate(ComponentRes<ActionState>()),
+			WriteImmediate(ComponentRes<AttackState>()),
+			WriteImmediate(ComponentRes<CombatCollider>())
+		}
+	);
+
 public:
-	ColliderActivationSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
+	ColliderActivationSystem(WorldRuntime& rt) : System(rt) {}
 	virtual ~ColliderActivationSystem() = default;
 
 	virtual void Execute(const double dT) override;
-
-	virtual std::vector<std::type_index> ReadResources() const override
-	{
-		return { typeid(ActionState) };
-	}
-
-	virtual std::vector<std::type_index> WriteResources() const override
-	{
-		return { typeid(AttackState), typeid(CombatCollider) };
-	}
+	virtual const SystemMeta& Meta() const override { return kMeta.meta; }
 };
 

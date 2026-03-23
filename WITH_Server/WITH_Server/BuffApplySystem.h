@@ -1,25 +1,29 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaHelper.h"
+#include "SystemMetaStorage.h"
+
 #include "Event.h"
 #include "BuffData.h"
 #include "Bufs.h"
 
 class BuffApplySystem : public System {
+	static inline auto kMeta = MakeMetaStorage(
+		SysTag<BuffApplySystem>(),
+		"BuffApplySystem",
+		std::array{
+			WriteImmediate(ComponentRes<BuffsComp>()),
+			WriteImmediate(EventRes<DeathEvent>())
+		}
+	);
+
 public:
-	BuffApplySystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
+	BuffApplySystem(WorldRuntime& rt) : System(rt) {}
 	virtual ~BuffApplySystem() = default;
 
 	virtual void Execute(const double dT) override;
-	virtual std::vector<std::type_index> ReadResources() const override
-	{
-		return {  };
-	}
-
-	virtual std::vector<std::type_index> WriteResources() const override
-	{
-		return { typeid(DeathEvent), typeid(BuffsComp) };
-	}
+	virtual const SystemMeta& Meta() const override { return kMeta.meta; }
 
 private:
 	void FindTargetEntities(const ECS& ecs, std::vector<Entity>& out);

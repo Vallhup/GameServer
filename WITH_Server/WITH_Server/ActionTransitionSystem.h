@@ -1,25 +1,32 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaHelper.h"
+#include "SystemMetaStorage.h"
+
 #include "Event.h"
 #include "Action.h"
 #include "Intent.h"
 
 class ActionTransitionSystem : public System {
+	static inline auto kMeta = MakeMetaStorage(
+		SysTag<ActionTransitionSystem>(),
+		"ActionTransitionSystem",
+		std::array{
+			ReadImmediate(ComponentRes<Transform>()),
+			ReadImmediate(ComponentRes<ActionIntent>()),
+			WriteImmediate(ComponentRes<ActionMoveTag>()),
+			WriteImmediate(ComponentRes<ActionState>()),
+			WriteImmediate(EventRes<ActionRequestEvent>())
+		}
+	);
+
 public:
-	ActionTransitionSystem(WorldRuntime& rt, int p = 0);
+	ActionTransitionSystem(WorldRuntime& rt);
 	virtual ~ActionTransitionSystem() = default;
 
 	virtual void Execute(const double dT) override;
-	virtual std::vector<std::type_index> ReadResources() const override
-	{
-		return { typeid(Transform), typeid(ActionIntent) };
-	}
-
-	virtual std::vector<std::type_index> WriteResources() const override
-	{
-		return { typeid(ActionMoveTag), typeid(ActionRequestEvent), typeid(ActionState) };
-	}
+	virtual const SystemMeta& Meta() const override { return kMeta.meta; }
 
 private:
 	std::pair<ActionType, AttackType> ResolveNextAction(EntityType type, const ActionState& current, ActionRequestEvent request, bool guardHeld, bool isForced);

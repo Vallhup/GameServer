@@ -137,5 +137,5 @@ void LifecycleReplicationSystem::ProcessDespawn(const LifecycleEvent& event)
 	}
 	SendBufferPool::Get().Release(data);
 
-	ecs.DestroyEntity(myEntity);
+	_runtime.DeferredDestroyEntity(myEntity);
 }

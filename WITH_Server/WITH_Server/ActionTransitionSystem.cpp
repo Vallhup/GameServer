@@ -7,8 +7,8 @@
 #include "Stats.h"
 #include "Movement.h"
 
-ActionTransitionSystem::ActionTransitionSystem(WorldRuntime& rt, int p)
-	: System(rt, p)
+ActionTransitionSystem::ActionTransitionSystem(WorldRuntime& rt)
+	: System(rt)
 {
 	for (auto& transitionRule : _transitionRules)
 	{
@@ -85,7 +85,7 @@ void ActionTransitionSystem::Execute(const double dT)
 			ApplyTransition(entity, typeComp->type, &actionState, nextAction, nextAttack);
 
 		else if (nextAction == ActionType::None)
-			ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
+			_runtime.DeferredRemoveComponent<ActionMoveTag>(entity);
 	}
 
 	_runtime.Events().Queue<ActionRequestEvent>().Clear();
@@ -139,7 +139,7 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, EntityType type,
 
 	if (wasMoved && !isMove)
 	{
-		ecs.GetStorage<ActionMoveTag>().RemoveComponent(entity);
+		_runtime.DeferredRemoveComponent<ActionMoveTag>(entity);
 	}
 
 	state->action = nextAction;
@@ -180,12 +180,6 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, EntityType type,
 
 	if (isMove)
 	{
-		auto* move = ecs.GetStorage<ActionMoveTag>().AddComponent(entity);
-
-		move->profile = aM.GetActionMoveProfile(state->action, type, state->attack);
-		move->segmentIndex = 0;
-		move->movedInSegment = 0.0f;
-
 		XMVECTOR dir = XMVectorZero();
 		if (const auto* vel = ecs.GetStorage<Velocity>().GetComponent(entity))
 		{
@@ -201,9 +195,17 @@ void ActionTransitionSystem::ApplyTransition(Entity entity, EntityType type,
 			else
 				normDir = XMVectorZero();
 		}
-		
-		XMStoreFloat3(&move->dir, normDir);
-		move->dirLocked = true;
+
+		_runtime.DeferredUpsertComponent<ActionMoveTag>(entity,
+			[aM, state, type, normDir](ActionMoveTag& moveTag)
+			{
+				moveTag.profile = aM.GetActionMoveProfile(state->action, type, state->attack);
+				moveTag.segmentIndex = 0;
+				moveTag.movedInSegment = 0.0f;
+
+				XMStoreFloat3(&moveTag.dir, normDir);
+				moveTag.dirLocked = true;
+			});
 	}
 }
 

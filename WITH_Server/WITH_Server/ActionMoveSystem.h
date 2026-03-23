@@ -1,27 +1,33 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaHelper.h"
+#include "SystemMetaStorage.h"
 
 #include "AI.h"
 #include "Action.h"
 #include "Movement.h"
 
 class ActionMoveSystem : public System {
+	static inline auto kMeta = MakeMetaStorage(
+		SysTag<ActionMoveSystem>(),
+		"ActionMoveSystem",
+		std::array{
+			ReadImmediate(ComponentRes<Transform>()),
+			ReadImmediate(ComponentRes<Velocity>()),
+			ReadImmediate(ComponentRes<ActionState>()),
+			ReadImmediate(ComponentRes<AIState>()),
+			WriteImmediate(ComponentRes<ActionMoveDelta>()),
+			WriteImmediate(ComponentRes<ActionMoveTag>())
+		}
+	);
+
 public:
-	ActionMoveSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
+	ActionMoveSystem(WorldRuntime& rt) : System(rt) {}
 	virtual ~ActionMoveSystem() = default;
 
 	virtual void Execute(const double dT) override;
-
-	virtual std::vector<std::type_index> ReadResources() const override
-	{
-		return { typeid(Transform), typeid(Velocity), typeid(ActionState), typeid(AIState) };
-	}
-
-	virtual std::vector<std::type_index> WriteResources() const override
-	{
-		return { typeid(ActionMoveDelta), typeid(ActionMoveTag) };
-	}
+	virtual const SystemMeta& Meta() const override { return kMeta.meta; }
 
 private:
 	bool CanMove(ActionType action, EntityType entity, AttackType attack);

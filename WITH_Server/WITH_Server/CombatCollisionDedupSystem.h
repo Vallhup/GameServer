@@ -1,24 +1,26 @@
 #pragma once
 
-#include "Event.h"
 #include "System.h"
+#include "SystemMetaHelper.h"
+#include "SystemMetaStorage.h"
+
+#include "Event.h"
 
 class CombatCollisionDedupSystem : public System {
+	static inline auto kMeta = MakeMetaStorage(
+		SysTag<CombatCollisionDedupSystem>(),
+		"CombatCollisionDedupSystem",
+		std::array{
+			WriteImmediate(EventRes<CombatCollisionEvent>())
+		}
+	);
+
 public:
-	CombatCollisionDedupSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
+	CombatCollisionDedupSystem(WorldRuntime& rt) : System(rt) {}
 	virtual ~CombatCollisionDedupSystem() = default;
 
 	virtual void Execute(const double dT) override;
-
-	virtual std::vector<std::type_index> ReadResources() const override
-	{
-		return {  };
-	}
-
-	virtual std::vector<std::type_index> WriteResources() const override
-	{
-		return { typeid(CombatCollisionEvent) };
-	}
+	virtual const SystemMeta& Meta() const override { return kMeta.meta; }
 
 private:
 	std::span<CombatCollisionEvent> DedupCollisionEvent(std::span<CombatCollisionEvent> events);

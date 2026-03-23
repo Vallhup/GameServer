@@ -1,23 +1,23 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaHelper.h"
+#include "SystemMetaStorage.h"
+
 #include "Action.h"
 
-class ActionTimeSystem : public System {
+class ActionTimeSystem final : public System {
+	static inline auto kMeta = MakeMetaStorage(
+		SysTag<ActionTimeSystem>(),
+		"ActionTimeSystem",
+		std::array{ WriteImmediate(ComponentRes<ActionState>()) }
+	);
+
 public:
-	ActionTimeSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
+	ActionTimeSystem(WorldRuntime& rt) : System(rt) {}
 	virtual ~ActionTimeSystem() = default;
 
 	virtual void Execute(const double dT) override;
-
-	virtual std::vector<std::type_index> ReadResources() const override
-	{
-		return {  };
-	}
-
-	virtual std::vector<std::type_index> WriteResources() const override
-	{
-		return { typeid(ActionState) };
-	}
+	virtual const SystemMeta& Meta() const override { return kMeta.meta; }
 };
 

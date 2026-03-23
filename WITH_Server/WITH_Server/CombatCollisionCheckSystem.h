@@ -1,7 +1,10 @@
 #pragma once
 
-#include "Event.h"
 #include "System.h"
+#include "SystemMetaHelper.h"
+#include "SystemMetaStorage.h"
+
+#include "Event.h"
 
 struct ActiveIndices {
 	std::vector<uint16> offensiveHits;
@@ -10,21 +13,21 @@ struct ActiveIndices {
 };
 
 class CombatCollisionCheckSystem : public System {
+	static inline auto kMeta = MakeMetaStorage(
+		SysTag<CombatCollisionCheckSystem>(),
+		"CombatCollisionCheckSystem",
+		std::array{  
+			ReadImmediate(ComponentRes<CombatCollider>()),
+			ReadImmediate(EventRes<CombatCollisionEvent>())
+		}
+	);
+
 public:
-	CombatCollisionCheckSystem(WorldRuntime& rt, int p = 0) : System(rt, p) {}
+	CombatCollisionCheckSystem(WorldRuntime& rt) : System(rt) {}
 	virtual ~CombatCollisionCheckSystem() = default;
 
 	virtual void Execute(const double dT) override;
-
-	virtual std::vector<std::type_index> ReadResources() const override
-	{
-		return { typeid(CombatCollider), typeid(CombatCollisionEvent) };
-	}
-
-	virtual std::vector<std::type_index> WriteResources() const override
-	{
-		return {  };
-	}
+	virtual const SystemMeta& Meta() const override { return kMeta.meta; }
 
 private:
 	void BuildActiveIndices(const CombatCollider& collider, ActiveIndices* out);
