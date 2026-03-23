@@ -16,12 +16,16 @@ struct Entity
 
 	bool operator==(const Entity& other) const noexcept
 	{
-		return (id == other.id) and (generation == other.generation);
+		return (id == other.id) && (generation == other.generation);
 	}
 
 	bool operator<(const Entity& other) const noexcept
 	{
-		return id < other.id;
+		if (id != other.id)
+			return id < other.id;
+
+		else
+			return generation < other.generation;
 	}
 };
 
