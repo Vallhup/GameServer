@@ -10,6 +10,7 @@
 #include "LightManager.h"
 #include "SSAO.h"
 #include "SkyBox.h"
+#include "Camera.h"
 
 void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 {
@@ -99,6 +100,7 @@ void ImGuiManager::DrawDebugUI()
             ImGui::Checkbox("Light Editor", &showLightEditor);
             ImGui::Checkbox("SSAO Editor", &showSsaoEditor);
             ImGui::Checkbox("Skybox Editor", &showSkyboxEditor);
+            ImGui::Checkbox("LUT Presets", &showLutPresets);
             ImGui::Checkbox("Demo Window", &showDemoWindow);
         }
         ImGui::End();
@@ -225,6 +227,50 @@ void ImGuiManager::DrawDebugUI()
         ImGui::End();
     }
 
+    if (showLutPresets && camera)
+    {
+        ImGui::SetNextWindowPos(ImVec2(850, 10), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(300, 350), ImGuiCond_FirstUseEver);
+
+        if (ImGui::Begin("LUT Presets", &showLutPresets))
+        {
+            ImGui::Text("Current: LUT %d, Sat %.2f", camera->GetLutIndex(), camera->GetSaturation());
+            ImGui::Separator();
+
+            for (int i = 0; i < 8; ++i)
+            {
+                ImGui::PushID(i);
+
+                char label[16];
+                sprintf_s(label, "Preset %d", i + 1);
+
+                if (ImGui::CollapsingHeader(label))
+                {
+                    int lutIdx = static_cast<int>(lutPresets[i].lutIndex);
+                    if (ImGui::SliderInt("LUT Index", &lutIdx, 0, 219))
+                        lutPresets[i].lutIndex = static_cast<UINT>(lutIdx);
+
+                    ImGui::SliderFloat("Saturation", &lutPresets[i].saturation, 0.0f, 2.0f);
+
+                    if (ImGui::Button("Apply"))
+                    {
+                        camera->SetLutPreset(lutPresets[i].lutIndex, lutPresets[i].saturation);
+                    }
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Save Current"))
+                    {
+                        lutPresets[i].lutIndex = camera->GetLutIndex();
+                        lutPresets[i].saturation = camera->GetSaturation();
+                    }
+                }
+
+                ImGui::PopID();
+            }
+        }
+        ImGui::End();
+    }
 
     if (showDemoWindow)
     {

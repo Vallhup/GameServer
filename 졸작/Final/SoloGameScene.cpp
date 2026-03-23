@@ -325,6 +325,7 @@ void SoloGameScene::InitializeLogic()
 	skyBox = make_shared<SkyBox>();
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
 	IMGUI.SetSkyBox(skyBox.get());
+	IMGUI.SetCamera(GetCamera());
 
 	CreateMap();
 	CreateBossObject();

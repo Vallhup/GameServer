@@ -376,6 +376,14 @@ XMMATRIX Camera::GetProjectionMatrix() const
     return XMLoadFloat4x4(&matProj);
 }
 
+void Camera::SetLutPreset(UINT idx, float saturation)
+{
+    prevLutIndex = lutIndex;
+    lutIndex = idx;
+    toneSaturationFactor = saturation;
+    lutBlendFactor = 0.0f;
+}
+
 void Camera::SetCameraPosition(const XMFLOAT3& pos)
 {
     desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };

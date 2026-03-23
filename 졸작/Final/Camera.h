@@ -24,6 +24,11 @@ public:
 	XMMATRIX GetViewMatrix() const;
 	XMMATRIX GetProjectionMatrix() const;
 
+	// LUT - IMGUI 관련
+	UINT GetLutIndex() const { return lutIndex; }
+	float GetSaturation() const { return toneSaturationFactor; }
+	void SetLutPreset(UINT idx, float saturation);
+
 	void SetCameraPosition(const XMFLOAT3& pos);
 	void SetCursor();
 	void ReleaseMouse();
