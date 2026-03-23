@@ -53,12 +53,22 @@ void WorldRuntime::MarkDirty(Entity entity, WorldDirtyType type)
 	}
 }
 
-void WorldRuntime::DeferredDestroy(Entity e)
+void WorldRuntime::DeferredCreateEntity()
+{
+	_commandBuffer.Enqueue(
+		[](WorldRuntime& rt)
+		{
+			rt.GetECS().CreateEntityImmediate();
+		}
+	);
+}
+
+void WorldRuntime::DeferredDestroyEntity(Entity e)
 {
 	_commandBuffer.Enqueue(
 		[e](WorldRuntime& rt)
 		{
-			rt.GetECS().DestroyEntity(e);
+			rt.GetECS().DestroyEntityImmediate(e);
 		}
 	);
 }
@@ -73,9 +83,9 @@ void WorldRuntime::DeferredMarkDirty(Entity e, WorldDirtyType dirtyType)
 	);
 }
 
-void WorldRuntime::GraphBuild()
+void WorldRuntime::BuildGraph()
 {
-	auto systemsForGraph = _ecs._systemMng.GetSystems(SystemPhase::Graph);
+	auto systemsForGraph = _systemMng.GetSystems(SystemPhase::Graph);
 	
 	{
 		auto descs = BuildGraphScheduleDescs(systemsForGraph);
@@ -111,13 +121,13 @@ void WorldRuntime::Run(const double dT)
 	
 void WorldRuntime::RunPre(const double dT)
 {
-	for (System* s : _ecs._systemMng.GetSystems(SystemPhase::Pre))
+	for (System* s : _systemMng.GetSystems(SystemPhase::Pre))
 		s->Execute(dT);
 }
 
 void WorldRuntime::RunPost(const double dT)
 {
-	for (System* s : _ecs._systemMng.GetSystems(SystemPhase::Post))
+	for (System* s : _systemMng.GetSystems(SystemPhase::Post))
 		s->Execute(dT);
 }
 
