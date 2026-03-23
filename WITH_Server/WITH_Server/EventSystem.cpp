@@ -6,11 +6,12 @@
 #include "Component.h"
 #include "RepComponent.h"
 
-#include "Intent.h"
 #include "Tags.h"
+#include "Intent.h"
+#include "Command.h"
 #include "Movement.h"
 
-EventSystem::EventSystem(WorldRuntime& rt, int p) : System(rt, p) 
+EventSystem::EventSystem(WorldRuntime& rt) : System(rt) 
 {
 	_handlers[EventType::EV_CONNECT] = [&](const Event& ev) { ProcessConnect(ev); };
 	_handlers[EventType::EV_DISCONNECT] = [&](const Event& ev) { ProcessDisconnect(ev); };
@@ -40,14 +41,14 @@ void EventSystem::ProcessConnect(const Event& event)
 	if (!p) return;
 
 #ifdef _DEBUG
-	std::cout << "[EventSystem] Player[" << p->sessionId << "] Login\n";
+	std::cout << "[EventSystem] Player[" << p->connId << "] Login\n";
 #endif
 
 	Framework& framework = Framework::Get();
 
-	const uint32 connId = p->sessionId;
-	Entity entity = _runtime.SpawnPlayer(connId);
-	NetId nId = framework.listener.GetIdMap().GetPlayer(connId);
+	const uint32 connId = p->connId;
+	const Entity entity = _runtime.SpawnPlayer(connId);
+	const NetId nId = framework.listener.GetIdMap().GetPlayer(connId);
 
 	framework.lifecycleEventQueue.push(LifecycleEvent::Spawned(nId));
 }
@@ -64,8 +65,9 @@ void EventSystem::ProcessDisconnect(const Event& event)
 
 	if(!p->entity.IsNull())
 	{
-		_runtime.GetECS().GetStorage<DisconnectedTag>().AddComponent(p->entity);
-		framework.lifecycleEventQueue.push(LifecycleEvent::Despawned(p->netId, p->connId, p->entity));
+		_runtime.ImmediateAddComponent<DisconnectedTag>(p->entity);
+		framework.lifecycleEventQueue.push(
+			LifecycleEvent::Despawned(p->netId, p->connId, p->entity));
 	}
 }
 
@@ -75,44 +77,24 @@ void EventSystem::ProcessMove(const Event& event)
 	if (!p) return;
 
 	Framework& framework = Framework::Get();
-	Entity entity = framework.netIdRegistry.FindEntity(p->id);
+	const Entity entity = framework.netIdRegistry.FindEntity(p->id);
+	if (entity.IsNull()) return;
 
-	if (auto* velocity = _runtime.GetECS().GetStorage<Velocity>().GetComponent(entity))
+	auto* cmd =
+		_runtime.GetECS().GetStorage<EntityCommandFrame>().GetComponent(entity);
+	if (!cmd) return;
+
+	cmd->source = CommandSource::Player;
+
+	if (p->inputX == 0 && p->inputZ == 0)
 	{
-		if (auto* loco = _runtime.GetECS().GetStorage<LocomotionState>().GetComponent(entity))
-		{
-			int inputX = p->inputX;
-			int inputZ = p->inputZ;
-			double yaw = p->yaw;
-			bool isRun = p->isRun;
-
-			XMVECTOR forward = XMVectorSet(sin(yaw), 0, cos(yaw), 0);
-			XMVECTOR right = XMVector3Cross(XMVectorSet(0, 1, 0, 0), forward);
-
-			XMVECTOR dir = XMVectorAdd(
-				XMVectorScale(forward, inputZ),
-				XMVectorScale(right, inputX)
-			);
-
-			if (p->inputX == 0 && p->inputZ == 0)
-			{
-				loco->isMoving = false;
-				loco->isRun = false;
-				dir = XMVectorZero();
-
-				XMStoreFloat3(&velocity->dir, dir);
-			}
-
-			else
-			{
-				loco->isMoving = true;
-				loco->isRun = isRun;
-				dir = XMVector3Normalize(dir);
-
-				XMStoreFloat3(&velocity->dir, dir);
-			}
-		}
+		cmd->move.Clear();
+		return;
 	}
+
+	cmd->move.hasMove = true;
+	cmd->move.moveRun = p->isRun;
+	cmd->move.moveDir = BuildMoveDirFromYawInput(p->inputX, p->inputZ, p->yaw);
 }
 
 void EventSystem::ProcessAction(const Event& event)
@@ -121,55 +103,84 @@ void EventSystem::ProcessAction(const Event& event)
 	if (!p) return;
 
 	Framework& framework = Framework::Get();
-	Entity entity = framework.netIdRegistry.FindEntity(p->id);
+	const Entity entity = framework.netIdRegistry.FindEntity(p->id);
+	if (entity.IsNull()) return;
 
-	if (auto* actionIntent = _runtime.GetECS().GetStorage<ActionIntent>().GetComponent(entity))
+	auto* cmd = 
+		_runtime.GetECS().GetStorage<EntityCommandFrame>().GetComponent(entity);
+	if (!cmd) return;
+
+	cmd->source = CommandSource::Player;
+
+	switch (p->type) {
+	case ActionRequestType::Attack:
 	{
-		switch (p->type) {
-		case ActionRequestType::Attack:
-		{
-			ActionRequestEvent ev
-			{
-				.entity = entity,
-				.actionType = ActionType::Attack,
-				.attackType = AttackType::Light,
-				.reason = ActionRequestReason::FromInput
-			};
+		if (!p->input) return;
 
-			_runtime.Events().Queue<ActionRequestEvent>().Publish(ev);
-			break;
-		}
-		case ActionRequestType::Dodge:
-		{
-			ActionRequestEvent ev
-			{
-				.entity = entity,
-				.actionType = ActionType::Dodge,
-				.attackType = AttackType::None,
-				.reason = ActionRequestReason::FromInput
-			};
+		cmd->action.hasAction = true;
+		cmd->action.actionType = ActionType::Attack;
+		cmd->action.attackType = AttackType::Light;
+		cmd->action.sequence++;
+		break;
+	}
+	case ActionRequestType::Dodge:
+	{
+		if (!p->input) return;
 
-			_runtime.Events().Queue<ActionRequestEvent>().Publish(ev);
-			break;
-		}
-		case ActionRequestType::Parry:
-		{
-			ActionRequestEvent ev
-			{
-				.entity = entity,
-				.actionType = ActionType::Parry,
-				.attackType = AttackType::None,
-				.reason = ActionRequestReason::FromInput
-			};
+		cmd->action.hasAction = true;
+		cmd->action.actionType = ActionType::Dodge;
+		cmd->action.attackType = AttackType::None;
+		cmd->action.sequence++;
+		break;
+	}
+	case ActionRequestType::Parry:
+	{
+		if (!p->input) return;
 
-			_runtime.Events().Queue<ActionRequestEvent>().Publish(ev);
-			break;
-		}
-		case ActionRequestType::Guard:
-		{
-			actionIntent->guard = p->input;
-			break;
-		}
-		}
+		cmd->action.hasAction = true;
+		cmd->action.actionType = ActionType::Parry;
+		cmd->action.attackType = AttackType::None;
+		cmd->action.sequence++;
+		break;
+	}
+	case ActionRequestType::Guard:
+	{
+		cmd->guard.hasGuard = true;
+		cmd->guard.guardHeld = p->input;
+		break;
+	}
+	default:
+	{
+		break;
+	}
+	}
+}
+
+XMFLOAT3 EventSystem::BuildMoveDirFromYawInput(
+	const int inputX, 
+	const int inputZ, 
+	const float yaw)
+{
+	if (inputX == 0 && inputZ == 0)
+		return XMFLOAT3{ 0, 0, 0 };
+
+	const XMVECTOR forward = XMVectorSet(sin(yaw), 0, cos(yaw), 0);
+	const XMVECTOR right = XMVector3Cross(XMVectorSet(0, 1, 0, 0), forward);
+
+	XMVECTOR dir = XMVectorAdd(
+		XMVectorScale(forward, static_cast<float>(inputZ)),
+		XMVectorScale(right, static_cast<float>(inputX))
+	);
+
+	if (TransformHelper::SafeNormalize3(dir, dir))
+	{
+		XMFLOAT3 out;
+		XMStoreFloat3(&out, dir);
+		return out;
+	}
+
+	else
+	{
+		return XMFLOAT3{ 0, 0, 0 };
 	}
 }
