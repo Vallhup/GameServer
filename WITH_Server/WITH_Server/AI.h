@@ -3,187 +3,169 @@
 #include "Entity.h"
 #include "Component.h"
 
-enum class AIMoveMode : uint8_t
-{
-	None,
-	Hold,
-	Walk,
-	Run
-};
+#include "Command.h"
 
-enum class AICommandType : uint8_t
+struct AIPerceptionCache : Component
 {
-	None,
-	Move,
-	Attack
-};
+	Entity selectedTarget{ Entity::Null() };
 
-enum class AIBehaviorState : uint8_t
-{
-	Idle,
-	Reposition,
-	AttackWindow,
-	CommitAttack,
-	Recover
-};
+	double distanceToTarget{ (std::numeric_limits<double>::max)() };
+	double distanceToTargetSq{ (std::numeric_limits<double>::max)() };
+	double targetForwardDot{ (std::numeric_limits<double>::min)() };
 
-struct AIState : public Component
-{
-	Entity target;
-	Entity lastAttacker;
-
-	AttackType lastAttack{ AttackType::None };
-	int patternsOnTarget{ 0 };
-	bool strafeLeft{ true };
-};
-
-struct AISenseState : public Component
-{
 	bool hasTarget{ false };
-	bool targetLost{ false };
-
-	Entity target;
-
-	double distToTarget{ 0.0 };
-	double distSqToTarget{ 0.0 };
-
-	XMFLOAT3 toTargetDir{ 0, 0, 0 };
-	XMFLOAT3 awayFromTargetDir{ 0, 0, 0 };
-
-	int nearbyPlayerCount{ 0 };
-
-	bool targetInPreferredRange{ false };
+	bool targetVisible{ false };
+	bool targetInSightRange{ false };
 	bool targetInAttackRange{ false };
-	bool targetTooClose{ false };
-	bool targetTooFar{ false };
+	bool targetInFront{ false };
 
-	inline void Clear()
-	{
-		hasTarget = false;
-		targetLost = false;
+	uint32_t hostileInSightCount{ 0 };
 
-		target = {};
+	double timeSinceTargetLastSeen{ (std::numeric_limits<double>::max)() };
 
-		distToTarget = 0.0;
-		distSqToTarget = 0.0;
-
-		toTargetDir = { 0, 0, 0 };
-		awayFromTargetDir = { 0, 0, 0 };
-
-		nearbyPlayerCount = 0;
-
-		targetInPreferredRange = false;
-		targetInAttackRange = false;
-		targetTooClose = false;
-		targetTooFar = false;
-	}
+	uint64_t builtFrame{ 0 };
 };
 
-struct AIThinkState : public Component 
+// TEMP : Arcetype이 같은 모든 Entity가 동일한 설정값을 들고 있는 것은 비효율적
+//		  추후 Arcetype과 유사한 식별 System의 구현에 따라 Tuning Table 참조로 이전
+struct AIPerceptionTuning : Component
 {
-	double thinkAcc{ 0.0 };
-	double thinkInterval{ 0.2 };
+	const double sightRange{ 12.0 };
+	const double attackRange{ 2.5 };
+	const double frontDotThreshold{ 0.2 };
+	
+	const double targetKeepBonus{ 4.0 };
+	const double lastAttackerBonus{ 2.5 };
+	const double frontBonus{ 1.0 };
+	const double switchScoreMargin{ 3.0 };
+	 
+	const double loseSightGraceTime{ 1.2 };
+	const double leashRange{ 18.0 };
+	const double assistRange{ 6.0 };
+};
+
+struct AIBlackboard : Component
+{
+	Entity currentTarget{ Entity::Null() };
+	Entity lastAttacker{ Entity::Null() };
+
+	double timeSinceCurrentTargetSeen{ (std::numeric_limits<double>::max)() };
+
+	bool forceRetarget{ false };
+
+	XMFLOAT3 lastKnownTargetPosition{ 0, 0, 0 };
+	bool hasLastKnownTargetPosition{ false };
+};
+
+enum class AIStateType : uint8_t
+{
+	Idle,	// 유효 타겟이 없을 때
+	Chase,	// 타겟은 있지만 아직 공격 상태가 아닐 때
+	Combat,	// 공격 사거리 진입 후 공격 / 회피 등 판단할 때
+	Search,	// 타겟을 잃었지만 grace time 내에서 탐색할 때
+	React	// 피격, 스턴 등 외부 이벤트 처리 상태
+};
+
+struct AIDecisionState : Component
+{
+	AIStateType curState{ AIStateType::Idle };
+	AIStateType prevState{ AIStateType::Idle };
+
+	bool transitionRequested{ false };
+	AIStateType requestedState{ AIStateType::Idle };
+
+	double stateTime{ 0.0 };
+	double globalDecisionAcc{ 0.0 };
 
 	double attackCooldownAcc{ 0.0 };
-	double attackCooldown{ 1.6 };
+	double repathCooldownAcc{ 0.0 };
 
-	double retargetCooldownAcc{ 0.0 };
-	double retargetCooldown{ 5.0 };
+	bool enteredThisFrame{ true };
 
-	double stuckAcc{ 0.0 };
+	inline void RequestTransition(AIStateType next)
+	{
+		transitionRequested = true;
+		requestedState = next;
+	}
 };
 
-struct AICommand : public Component
+struct AIDecisionTuning : Component
 {
-	AICommandType type{ AICommandType::None };
+	const double decisionInterval{ 0.2 };
+	const double attackCooldown{ 1.2 };
+};
 
-	AIMoveMode moveMode{ AIMoveMode::None };
+struct AIReactionCache : Component
+{
+	Entity instigator{ Entity::Null() };
+	bool gotHitThisFrame{ false };
+	bool gotParriedThisFrame{ false };
+
+	inline void Clear()
+	{
+		instigator = Entity::Null();
+		gotHitThisFrame = false;
+		gotParriedThisFrame = false;
+	}
+
+	inline bool GotReactionEvent() const
+	{
+		return gotHitThisFrame || gotParriedThisFrame;
+	}
+};
+
+struct AIMotionIntent
+{
+	bool hasMove{ false };
+	bool moveRun{ false };
 	XMFLOAT3 moveDir{ 0, 0, 0 };
 
+	bool hasLookTarget{ false };
+	Entity lookTarget{ Entity::Null() };
+};
+
+struct AIActionIntent
+{
+	bool hasAction{ false };
+	ActionType actionType{ ActionType::None };
 	AttackType attackType{ AttackType::None };
 
-	uint32_t serial{ 0 };
+	uint32_t sequence{ 0 };
+};
 
-	inline void Clear()
+struct AIIntent : Component
+{
+	/*bool clearMovement{ false };
+	bool hasStrafe{ false };
+	double strafeSign{ 0.0 };*/
+
+	AIMotionIntent motion;
+	AIActionIntent action;
+
+	inline void ClearFrameTransient()
 	{
-		type = AICommandType::None;
-		moveMode = AIMoveMode::None;
-		moveDir = { 0, 0, 0 };
-		attackType = AttackType::None;
+		action = {};
+	}
+
+	void ClearAll()
+	{
+		motion = {};
+		action = {};
 	}
 };
 
-struct AICombatTuning : public Component
+struct AIExecutionState : Component
 {
-	double preferredMinDistance{ 1.0 };
-	double preferredMaxDistance{ 6.0 };
+	uint32_t lastConsumedActionSeq{ 0 };
 
-	double attackDistance{ 15.0 };
-	double chaseDistance{ 16.0 };
-	double loseTargetDistance{ 25.0 };
+	bool suppressMoveThisFrame{ false };
+	bool suppressActionThisFrame{ false };
 
-	double meteorCheckDistance{ 5.0 };
-	int meteorMinTargets{ 2 };
+	CommandSource lastSource{ CommandSource::None };
 
-	double nearCheckDistance{ 1.0 };
-	double midCheckDistance{ 10.0 };
-	double farCheckDistance{ 15.0 };
-
-	double actionRequestTimeout{ 0.3 };
-};
-
-struct AIBehavior : public Component
-{
-	AIBehaviorState state{ AIBehaviorState::Idle };
-	double stateTime{ 0.0 };
-	double minStateDuration{ 0.0 };
-
-	double moveBurstDuration{ 0.0 };
-	XMFLOAT3 moveBurstDir{ 0, 0, 0 };
-	bool moveBurstRun{ false };
-
-	inline void ChangeBehavior(AIBehaviorState nextState, double minDuration)
+	inline void ClearFrameTransient()
 	{
-		if (state == nextState) return;
-		state				= nextState;
-		stateTime			= 0.0;
-		minStateDuration	= minDuration;
-
-		moveBurstDuration	= 0.0;
-		moveBurstDir		= { 0, 0, 0 };
-		moveBurstRun		= false;
-	}
-};
-
-enum class AIActionRequestStatus : uint8_t
-{
-	None,
-	Requested,
-	Running,
-	Finished,
-	Rejected
-};
-
-struct AIActionRequestState : public Component
-{
-	uint32_t requestId{ 0 };
-	AIActionRequestStatus status{ AIActionRequestStatus::None };
-
-	ActionType requestedAction{ ActionType::None };
-	AttackType requestedAttack{ AttackType::None };
-
-	double elapsed{ 0.0 };
-
-	bool requestIssued{ false };
-	bool acceptedByActionSystem{ false };
-
-	inline void Clear()
-	{
-		status = AIActionRequestStatus::None;
-		requestedAction = ActionType::None;
-		requestedAttack = AttackType::None;
-		elapsed = 0.0;
-		requestIssued = false;
-		acceptedByActionSystem = false;
+		suppressMoveThisFrame = false;
+		suppressActionThisFrame = false;
 	}
 };

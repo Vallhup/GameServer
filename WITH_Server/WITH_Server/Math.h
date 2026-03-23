@@ -102,4 +102,34 @@ namespace TransformHelper
 		const double dz = t1.position.z - t2.position.z;
 		return dx * dx + dz * dz;
 	}
+
+	inline XMVECTOR Direction(const Transform& from, const Transform& to)
+	{
+		const XMVECTOR vFrom = XMLoadFloat3(&from.position);
+		const XMVECTOR vTo   = XMLoadFloat3(&to.position);
+
+		XMVECTOR dir = XMVectorSubtract(vTo, vFrom);
+		if (SafeNormalize3(dir, dir))
+			return dir;
+
+		return XMVectorZero();
+	}
+
+	inline XMVECTOR Direction(const XMFLOAT3& from, const XMFLOAT3& to)
+	{
+		const XMVECTOR vFrom = XMLoadFloat3(&from);
+		const XMVECTOR vTo = XMLoadFloat3(&to);
+
+		XMVECTOR dir = XMVectorSubtract(vTo, vFrom);
+		if (SafeNormalize3(dir, dir))
+			return dir;
+
+		return XMVectorZero();
+	}
+
+
+	inline double Dot(const XMVECTOR v1, const XMVECTOR v2)
+	{
+		return static_cast<double>(XMVectorGetX(XMVector3Dot(v1, v2)));
+	}
 }
