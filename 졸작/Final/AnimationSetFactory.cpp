@@ -10,7 +10,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateKnightSet()
 {
 	auto set = make_shared<AnimationSet>("Knight", 1);
 
-	set->RegisterClip("Idle",	0, AnimCategory::Base);
+	set->RegisterClip("Idle",	0, AnimCategory::Base, 0.05f);
 	set->RegisterClip("Walk",	1, AnimCategory::Base);
 	set->RegisterClip("Run",	2, AnimCategory::Base);
 
