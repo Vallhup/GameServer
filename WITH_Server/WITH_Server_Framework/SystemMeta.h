@@ -11,7 +11,7 @@ enum class ResourceKind : uint8_t
 {
 	Component,
 	EventQueue,
-	DirtyTraker,
+	DirtyTracker,
 	CommandBuffer,
 	External
 };

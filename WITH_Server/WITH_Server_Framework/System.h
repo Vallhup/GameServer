@@ -15,3 +15,6 @@ public:
 protected:
 	WorldRuntime& _runtime;
 };
+
+template<typename T>
+concept SysT = std::derived_from<T, System>;

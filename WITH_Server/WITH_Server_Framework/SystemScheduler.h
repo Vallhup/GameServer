@@ -1,5 +1,11 @@
 #pragma once
 
+#include <cstdint>
+#include <vector>
+#include <span>
+
+#include "SystemManager.h"
+
 enum class DependencyOrder : uint8_t
 {
 	None,

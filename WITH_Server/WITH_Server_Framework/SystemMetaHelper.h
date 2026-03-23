@@ -26,16 +26,14 @@ inline ResourceId ExternalRes()
 	return { ResourceKind::External, std::type_index(typeid(T)) };
 }
 
-struct DIrtyTrakerResourceTag {};
+struct DirtyTrackerResourceTag {};
 struct CommandBufferResourceTag {};
 
-template<typename T>
-inline ResourceId DirtyTrakerRes()
+inline ResourceId DirtyTrackerRes()
 {
-	return { ResourceKind::DirtyTraker, std::type_index(typeid(DIrtyTrakerResourceTag)) };
+	return { ResourceKind::DirtyTracker, std::type_index(typeid(DirtyTrackerResourceTag)) };
 }
 
-template<typename T>
 inline ResourceId CommandBufferRes()
 {
 	return { ResourceKind::CommandBuffer, std::type_index(typeid(CommandBufferResourceTag)) };
@@ -63,6 +61,26 @@ inline AccessSpec WriteDeferred(
 	StructuralEffect se = StructuralEffect::None)
 {
 	return { res, AccessMode::Write, Visibility::Deferred, se };
+}
+
+inline AccessSpec AddRemoveImmediate(ResourceId res)
+{
+	return { res, AccessMode::Write, Visibility::Immediate, StructuralEffect::AddRemoveComponent };
+}
+
+inline AccessSpec CreateDestroyImmediate(ResourceId res)
+{
+	return { res, AccessMode::Write, Visibility::Immediate, StructuralEffect::CreateDestroyEntity };
+}
+
+inline AccessSpec AddRemoveDeferred(ResourceId res)
+{
+	return { res, AccessMode::Write, Visibility::Deferred, StructuralEffect::AddRemoveComponent };
+}
+
+inline AccessSpec CreateDestroyDeferred(ResourceId res)
+{
+	return { res, AccessMode::Write, Visibility::Deferred, StructuralEffect::CreateDestroyEntity };
 }
 
 inline AccessSpec EmitDeferred(ResourceId res)

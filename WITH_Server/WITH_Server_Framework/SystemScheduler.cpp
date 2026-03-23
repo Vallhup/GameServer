@@ -191,13 +191,17 @@ void SystemScheduler::Execute(const CompiledSystemSchedule& schedule, ThreadPool
 				pool.Wait(counter);
 		}
 
-		catch (...)
+		catch (const std::logic_error& e)
 		{
 			batchException = std::current_exception();
+			std::cout << e.what() << std::endl;
 		}
 
 		if (batchException)
+		{
 			std::rethrow_exception(batchException);
+		}
+			
 
 		if (submitFailed)
 			throw std::runtime_error("ThreadPool::Submit failed while executing a system batch.");

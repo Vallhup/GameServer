@@ -13,9 +13,6 @@ struct SystemMeta;
 
 enum class SystemPhase : uint8_t { Pre, Graph, Post, Count };
 
-template<typename T>
-concept SysT = std::derived_from<T, System>;
-
 struct SystemScheduleDesc
 {
 	System* system{ nullptr };
