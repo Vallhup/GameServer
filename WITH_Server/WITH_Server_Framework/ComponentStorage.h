@@ -144,6 +144,67 @@ public:
 	}
 
 public:
+	T* GetComponent(Entity entity)
+	{
+		if (entity.id >= _sparse.size()) return nullptr;
+
+		const int di = _sparse[entity.id];
+		const bool invalidCheck =
+			(di == INVALID) ||				 // valid check
+			(_entities[di] != entity);		 // generation check
+
+		if (invalidCheck) return nullptr;
+		else return &_dense[di];
+	}
+
+	const T* GetComponent(Entity entity) const
+	{
+		if (entity.id >= _sparse.size()) return nullptr;
+
+		const int di = _sparse[entity.id];
+		const bool invalidCheck =
+			(di == INVALID) ||				 // valid check
+			(_entities[di] != entity);		 // generation check
+
+		if (invalidCheck) return nullptr;
+		else return &_dense[di];
+	}
+
+	bool HasComponent(Entity entity) const
+	{
+		return GetComponent(entity) != nullptr;
+	}
+
+public:
+	virtual void OnEntityDestroyed(Entity e) override
+	{
+		if (e.id < _sparse.size())
+		{
+			const int di = _sparse[e.id];
+			if (di != INVALID && _entities[di] == e)
+				RemoveComponent(e);
+		}
+	}
+
+	virtual void Clear() override
+	{
+		_dense.clear();
+		_entities.clear();
+		_sparse.clear();
+	}
+
+	virtual size_t Size() const override
+	{
+		return _dense.size();
+	}
+
+	virtual Entity EntityAt(size_t i) const override
+	{
+		assert(i < _entities.size());
+		return _entities[i];
+	}
+
+private:
 	template<typename... Args>
 	T* EmplaceComponent(Entity entity, Args&&... args)
 	{
@@ -156,7 +217,7 @@ public:
 		{
 			if (_entities[di] != entity)
 			{
-				assert(false && 
+				assert(false &&
 					"EmplaceComponent called with stale Entity.");
 				return nullptr;
 			}
@@ -213,32 +274,6 @@ public:
 		return &_dense.back();
 	}
 
-	T* GetComponent(Entity entity)
-	{
-		if (entity.id >= _sparse.size()) return nullptr;
-
-		const int di = _sparse[entity.id];
-		const bool invalidCheck =
-			(di == INVALID) ||				 // valid check
-			(_entities[di] != entity);		 // generation check
-
-		if (invalidCheck) return nullptr;
-		else return &_dense[di];
-	}
-
-	const T* GetComponent(Entity entity) const
-	{
-		if (entity.id >= _sparse.size()) return nullptr;
-
-		const int di = _sparse[entity.id];
-		const bool invalidCheck =
-			(di == INVALID) ||				 // valid check
-			(_entities[di] != entity);		 // generation check
-
-		if (invalidCheck) return nullptr;
-		else return &_dense[di];
-	}
-
 	void RemoveComponent(Entity entity)
 	{
 		if (entity.id >= _sparse.size() || _dense.empty()) return;
@@ -259,42 +294,9 @@ public:
 		_sparse[entity.id] = INVALID;
 	}
 
-	bool HasComponent(Entity entity) const
-	{
-		return GetComponent(entity) != nullptr;
-	}
+	friend class ECS;
+	friend class WorldRuntime;
 
-public:
-
-	virtual void OnEntityDestroyed(Entity e) override
-	{
-		if (e.id < _sparse.size())
-		{
-			const int di = _sparse[e.id];
-			if (di != INVALID && _entities[di] == e)
-				RemoveComponent(e);
-		}
-	}
-
-	virtual void Clear() override
-	{
-		_dense.clear();
-		_entities.clear();
-		_sparse.clear();
-	}
-
-	virtual size_t Size() const override
-	{
-		return _dense.size();
-	}
-
-	virtual Entity EntityAt(size_t i) const override
-	{
-		assert(i < _entities.size());
-		return _entities[i];
-	}
-
-private:
 	std::vector<T> _dense;
 	std::vector<Entity> _entities;
 	std::vector<int> _sparse;
