@@ -21,14 +21,32 @@ WorldId WorldRegistry::CreateWorld(const WorldDesc& desc)
 
 	WorldSlot& slot = _worlds[id];
 	assert(slot.world == nullptr);
+	assert(slot.gen == 0 || slot.gen != gen);
 
 	slot.gen = gen;
 
-	auto impl = _worldFactory.CreateImpl(desc);
-	slot.world = std::make_unique<World>(wId, desc, _threadPool, std::move(impl));
-	slot.world->Init();
+	try
+	{
+		if (auto impl = _worldFactory.CreateImpl(desc))
+		{
+			auto world = std::make_unique<World>(wId, desc, _threadPool, std::move(impl));
+			world->Init();
 
-	return wId;
+			slot.world = std::move(world);
+			return wId;
+		}
+
+		else
+		{
+			RollbackCreate(wId);
+			return WorldId::Invalid();
+		}
+	}
+	catch (...)
+	{
+		RollbackCreate(wId);
+		throw;
+	}
 }
 
 void WorldRegistry::DestroyWorld(WorldId worldId)
@@ -47,6 +65,7 @@ void WorldRegistry::DestroyWorld(WorldId worldId)
 		slot.world->Shutdown();
 		slot.world.reset();
 	}
+	slot.gen = 0;
 
 	_allocator.Free(worldId);
 }
@@ -100,5 +119,20 @@ void WorldRegistry::EnsureSlotCapacity(uint32 id)
 {
 	if (id < _worlds.size()) return;
 	_worlds.resize(id + 1);
+}
+
+void WorldRegistry::RollbackCreate(WorldId worldId)
+{
+	if (!worldId.IsValid()) return;
+
+	const uint32_t id = worldId.GetId();
+	if (id == 0 || id >= _worlds.size())
+		return;
+
+	WorldSlot& slot = _worlds[id];
+	slot.world.reset();
+	slot.gen = 0;
+
+	_allocator.Free(worldId);
 }
 

@@ -29,6 +29,7 @@ private:
 	};
 
 	void EnsureSlotCapacity(uint32 id);
+	void RollbackCreate(WorldId worldId);
 
 	ThreadPool& _threadPool;
 	IWorldFactory& _worldFactory;
