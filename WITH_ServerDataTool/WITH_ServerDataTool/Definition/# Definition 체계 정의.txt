@@ -1,0 +1,34 @@
+﻿
+Definition 정의 규칙
+ 1. Definition은 순수 불변 데이터
+ 2. Definition간 참조는 ID만 사용하도록 한다.
+ 3. Root Definition은 독립 ID를 가진다.
+ 4. 하위 Definition은 상위 Definition 내부 값 객체로 구성한다.
+
+
+
+1. Character 계열
+ - CharacterDef : CharacterId
+
+
+2. Action 계열
+ - ActionDef : (CharacterId, ActionLocalId)
+	- ActionSegmentDef
+
+
+3. Animation 계열
+ - AnimationResourceDef : AnimationId
+
+
+4. Buff 계열
+ - BuffDef : BuffId
+	- BuffModifierDef
+
+
+5. World 계열
+ - WorldDef : WorldId (SpawnSetId 참조)
+	- MapDef
+
+ - SpawnSetDef : SpawnSetId
+	- SpawnEntryDef (CharacterId 참조)
+
