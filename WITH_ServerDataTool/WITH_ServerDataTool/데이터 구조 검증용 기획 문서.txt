@@ -1,0 +1,126 @@
+﻿데이터 구조 검증용 기획 문서
+
+1. 게임 핵심 전투 개요
+ - 실시간 근접 전투
+ - 약공 / 강공 / 회피 / 가드 / 패링 중심의 전투
+ - 패링 이후 특수 공격 1종 존재
+ - 스태미나 기반 행동 제한
+ - 일부 보스는 슈퍼아머, 발사체 패턴 사용 가능
+
+2. 플레이어 공통 상태 규칙
+ * Idle, Walk, Run은 별도 Locomotion State로 관리한다.
+ * 이외 모든 상태는 Action으로 관리한다.
+
+
+ 1) Idle
+  - 입력 : None
+  - 비용 : None
+  - 종료 : None
+  - 전이 : Request Requirements를 만족하는 Action
+
+ 2) Walk, Run
+  - 입력 : Action None일 때 wasd + shift(Run)
+  - 비용 : None
+  - 종료 : None
+  - 전이 : Request Requirements를 만족하는 Action
+
+ 3) LightAttack1
+  - 입력 : LightAttack 
+  - 비용 : 미정
+  - 종료 : 자연 종료
+  - 전이
+    - Interrupt : Hit, Stun, Dead
+    - Cancel : LightAttack2, Dodge
+
+  4) LightAttack2
+   - 입력 : LightAttack1 중 LightAttack
+   - 비용 : 미정
+   - 종료 : 자연 종료
+   - 전이
+     - Interrupt : Hit, Stun, Dead
+     - Cancel : LightAttack3, Dodge
+
+  5) LightAttack3
+   - 입력 : LightAttack2 중 LightAttack
+   - 비용 : 미정
+   - 종료 : 자연 종료
+   - 전이
+     - Interrupt : Hit, Stun, Dead
+     - Cancel : Dodge
+
+  6) Heavy Attack
+   - 입력 : HeavyAttack 
+   - 비용 : 미정
+   - 종료 : 자연 종료
+   - 전이
+     - Interrupt : Hit, Stun, Dead
+     - Cancel : None
+
+  7) Special Attack
+   - 입력 : Parry 성공 후 일정 시간 안에 Attack(LightAttack, HeavyAttack)
+   - 비용 : None
+   - 종료 : 자연 종료
+   - 전이
+     - Interrupt : Hit, Stun, Dead
+     - Cancel : None
+
+  8) Dodge
+   - 입력 : Dodge
+   - 비용 : Stamina 소모
+   - 종료 : 자연 종료
+   - 전이
+     - Interrupt : Dead
+     - Cancel : None
+
+  9) Guard
+   - 입력 : Guard Hold
+   - 비용 : Hold 중 Stamina 소모
+   - 종료 : Hold 해제
+   - 전이
+     - Interrupt : Dead
+     - Cancel : LightAttack1, HeavyAttack, Dodge, Parry, (UseItem (미정))
+
+  10) Parry
+   - 입력 : Parry
+   - 비용 : Stamina 소모
+   - 종료 : 자연 종료
+   - 전이
+     - Interrupt : Hit, Dead
+     - Cancel : None
+
+  11) UseItem
+   - 입력 : Potion 사용
+   - 비용 : HpPotion 1
+   - 종료 : 자연 종료
+   - 전이
+     - Interrupt : Hit, Dead
+     - Cancel : None
+
+  12) Hit
+   - 입력 : 피격 Event
+   - 비용 : Hp
+   - 종료 : 자연 종료
+   - 전이
+     - Interrupt : Dead
+     - Cancel : None
+
+  13) Stun
+   - 입력 : 패링 피격 Event
+   - 비용 : None
+   - 종료 : 자연 종료
+   - 전이
+     - Interrupt : Hit, Dead
+     - Cancel : None
+
+  14) Dead
+   - 입력 : Hp <= 0
+   - 비용 : None
+   - 종료 : 부활 입력
+   - 전이 : None
+
+3. 적/보스 공통 상태 규칙 (기획 구체화 X)
+ - 공통 : 공격 중 슈퍼아머 (경직 X)
+
+ - 일반 / 초반 보스 몬스터
+ - 중반 보스 몬스터
+ - 최종 보스 몬스터 : 체력 별 기믹, 발사체 생성 등

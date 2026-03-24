@@ -12,12 +12,160 @@ Definition 정의 규칙
 
 
 2. Action 계열
- - ActionDef : (CharacterId, ActionLocalId)
-	- ActionSegmentDef
+ - ActionDef : ActionId
+	- EndPolicyDef
+	- RequestRequirementDef[]
+	- ResourceCostDef
+	- TransitionRuleDef
+	- CombatWindowDef[]
+	- ActionEventDef[]
+	- ActionMovementSegmentDef[]
+
+A. 식별
+ - 이 액션은 누구의 어떤 행동인가
+
+ 1) ActionId - 주 식별자
+ 2) Name - 보조 식별자
+ 3) CharacterId - 이 액션을 가지는 Character
+ 4) ActionKindId - 상위 상태 (Attack, Dodge, Guard 등)
+ 5) PlayerActionInputId - 플레이어 입력 하위 상태(Light_Attack, Heavy_Attack 등)
+ 6) ComboGroupId - 어떤 Action들과 Combo Chain을 이루는가
+ 7) ComboIndex - ComboGroup의 몇 번째 Action인가
+
+ * Character, ActionKindId, PlayerActionInputId는 중복 정보이지만 
+   런타임 식별 편의를 위해 유지한다.
+
+B. 시간
+ - 얼마나 지속되는가
+ - 어떤 시간축으로 해석되는가
+
+ 1) Duration - 초 단위 (Hold일 경우 최대 유지시간 개념으로 사용될 수 있음)
+ 2) 정규화 기준 - 모든 Window는 Normalized로 통일 / 런타임에서는 Secs로 환산 해석
+ 3) 종료 방식 
+  - 기본 종료 정책: 전이 없으면 자연 종료
+  - 홀드형 Action은 입력 유지 / 해제 규칙에 따른 별도 종료 정책 적용
+
+ * Loop Action은 지원하지 않는다.
+
+ EndPolicyDef
+  - EndType
+  - DefaultNextActionId
+  - HoldReleaseBehavior
+  - MaxHoldDuration (optional)
+
+C. 표현
+ - 어떤 애니메이션을 참조하는가
+
+ 1) 참조 애니메이션 
+  - 기본 ActionId + Locomotion State <-> AnimationId 1vs1 대응
+  
+  * 현재는 액션별 재생 오버라이드를 지원하지 않는다.
+  * 필요 시 Animation 선택 규칙은 확장 가능하다.
+
+
+
+D. 시작 조건 - RequestRequirementDef, ResourceCostDef
+ - 언제 발동 가능한가
+
+ 1) Request Requirements 
+  - 이 액션을 요청할 수 있는가
+  - ex) 현재 금지 상태 여부, 자원 충분 여부 등
+
+ 2) Resource Cost - Stamina 등
+ 3) 실제 진입 가능 여부는 [E]에서 처리
+
+
+ - RequirementType
+ - Parameter
+ - Negate (optional)
+
+
+ - ResourceType
+ - Amount
+ - ConsumeTiming
+
+
+E. 전이 규칙 - TransitionRuleDef
+ - 도중에 무엇으로 갈 수 있는가
+
+ 1) Interrupt Rules - 외부 이벤트 인터럽트 (피격, 스턴(패링 당함), 사망 등)
+ 2) Cancel Rules - 현재 액션이 스스로 허용하는 전이
+ 3) Resolve Priority - 여러 전이 규칙이 동시에 만족될 때 선택 순서
+ 4) Input Buffer Policy - 전이 판정 전 입력 후보를 보존하는 시스템 전역 정책
+
+ * Interrupt는 Cancel보다 우선 평가된다.
+ * Resolve Priority는 Interrupt, Cancel 평가 후보가 다수일 경우 적용한다.
+
+
+ - TransitionType : Interrupt or Cancel
+ - ToActionId : 전이 대상 Action
+ - WindowPolicy : Always or Range
+ - WindowStartNormalized : Window 허용 시작
+ - WindowEndNormalized : Window 허용 끝
+ - InputRequirement : 전이에 필요한 입력
+ - ConditionType : 입력 외 추가 조건 (ex. OnHitReceived, OnParried, OnHpZero etc.)
+ - Priority : 같은 후보군 내 우선순위
+
+F. 동작 세그먼트 - ActionMovementSegmentDef
+ - 액션 도중 어떻게 움직이는가
+
+ 1) Movement - 수평 이동
+ 2) Rotation - 회전
+ 3) Vertical Move - 수직 이동
+ 4) Direction Policy 
+  - 어떤 기준 방향을 따르는가
+  - 언제 샘플링 하는가
+
+
+ - StartNormalized : Segment의 시작
+ - EndNormalized : Segment의 끝
+ - MovementMode : 수평 이동 방식
+ - MoveDistance : 이동량
+ - RotationMode : 회전 방식
+ - VerticalMoveMode : 수직 이동 방식
+ - VerticalAmount : 수직 이동량
+ - DirectionPolicy : 방향 기준 정책
+ - DirectionSampleTiming : 방향 샘플링 타이밍
+
+
+G. 전투 판정 - CombatWindowDef
+ - 판정 윈도우 활성화는 언제되는가
+
+ 1) Active Combat Window 
+  - 능동적으로 판정에 참여하는 Window
+  - Attack Window, Parry Window 등
+
+ 2) Defensive State Window 
+  - 특정 피격 반응을 무시하거나, 경직 전이를 제한하는 상태
+  - Armor Window, Invulnerability Window 등
+
+ * Defensive State Window는 필요 시 특정 판정 타입에 대한 무효화를 포함한다.
+
+
+ - WindowType : 윈도우 종류
+ - StartNormalized : 윈도우 시작
+ - EndNormalized : 윈도우 끝
+ - ProfileId : 실제로 무엇을 활성화하는가
+ - AppliesTo : 어떤 판정에 적용되는가 (optional) (ex. FrontPhysical, ParryableAttack etc.)
+
+
+H. 이벤트 - ActionEventDef
+ - 부가 효과가 언제 발생하는가
+
+ 1) Action Event - 발사체 생성
+
+
+ - EventType : 이벤트 종류
+ - TimeNormalized : 언제 발생하는가
+ - PayloadId : 구체 데이터 참조
+ - TriggerConditionType : 발동 조건 종류 (ex. Always, OnParrySuccess etc.)
+
 
 
 3. Animation 계열
- - AnimationResourceDef : AnimationId
+ - AnimationDef : AnimationId
+	- StaticCapsuleData
+	- DynamicCapsuleData
 
 
 4. Buff 계열
