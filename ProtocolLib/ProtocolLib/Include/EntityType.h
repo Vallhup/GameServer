@@ -1,28 +1,61 @@
 #pragma once
 
-#include "types.h"
+#include <cstdint>
+#include <xhash>
 
-enum class EntityType : uint8 {
+enum class EntityType : uint8_t 
+{
 	None,
-
-	Knight,
-	Lancer,
-
-	First_Boss,
-	Mid_Boss,
-	Final_Boss,
+	Character,
+	Interactable,
+	WorldObject,
 
 	Count
 };
 
-inline uint32 ToInt(EntityType type) { return static_cast<uint32>(type); }
+enum class Faction : uint8_t
+{
+	Neutral,
+	Player,
+	Enemy
+};
 
-namespace std {
+enum class CharacterType : uint8_t
+{
+	None,
+	Knight,
+	Lancer,
+	/* 3번째 캐릭터 */
+
+	Imp,
+	/* 2번째 잡몹 */
+	/* 3번째 잡몹 */
+
+	DemonWarrior,
+	Tank,
+	FinalBoss
+};
+
+enum class AIArchetypeId : uint8_t
+{
+	None,
+	Humanoid,
+	NormalMonster,
+	FirstBossMonster,
+	MidBossMonster,
+	FinalBossMonster
+};
+
+inline uint32_t ToInt(EntityType type) { return static_cast<uint32_t>(type); }
+
+namespace std 
+{
 	template<>
-	struct hash<EntityType> {
+	struct hash<EntityType> 
+	{
 		size_t operator()(const EntityType& type) const noexcept
 		{
-			return std::hash<uint32>()(ToInt(type));
+			return std::hash<uint32_t>()(ToInt(type));
 		}
 	};
 }

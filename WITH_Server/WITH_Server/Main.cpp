@@ -53,3 +53,35 @@ int main()
 // 
 // 3. 시야처리
 // 4. 공간분할
+
+
+// 1. AI FSM / Input Event로 Intent 생성
+// 
+// 2. Locomotion / Action FSM으로 상태 결정
+// 
+// 3. 상태에 따라 이동 Contribution 결정
+// 
+// 4. Contribution Compose하여 FinalMovementDelta 생성
+// 
+// 5. Movement Apply (Transform 확정)
+// 
+// 6. Combat Collision Check
+// 
+// 7. Combat Collision Handling
+//
+//
+// # 위의 루프와 병렬로 
+//   Buff 적용, Stat 계산하여 Collision Handling에 적용
+// 
+// # Stat도 Movement에 적용되는 것도 있고 
+//   Collision Handling에 적용되는 것도 있는데?
+//   -> 분리 결정
+// 
+//  # Event Queue의 문제점
+//    -> 현재 Event는 동일 프레임에서 처리되는 것도 있고
+//       다음 프레임에서 처리되는 것도 있음
+// 
+//    -> 이를 처리하기 위해 double buffer로는 부족함
+// 
+//    -> triple buffer로 변경 결정
+//

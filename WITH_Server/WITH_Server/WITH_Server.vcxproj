@@ -165,11 +165,10 @@
     <ClCompile Include="ActionMoveSystem.cpp" />
     <ClCompile Include="ActionTimeSystem.cpp" />
     <ClCompile Include="ActionTransitionSystem.cpp" />
-    <ClCompile Include="AIActionRequestSystem.cpp" />
-    <ClCompile Include="AICommandBuildSystem.cpp" />
-    <ClCompile Include="AICommandConsumeSystem.cpp" />
-    <ClCompile Include="AISensingSystem.cpp" />
-    <ClCompile Include="AITacticSystem.cpp" />
+    <ClCompile Include="AIDecisionSystem.cpp" />
+    <ClCompile Include="AIExecutionSystem.cpp" />
+    <ClCompile Include="AIPerceptionSystem.cpp" />
+    <ClCompile Include="AIFSMRegistry.cpp" />
     <ClCompile Include="AnimationCommitSystem.cpp" />
     <ClCompile Include="AnimationFrameSystem.cpp" />
     <ClCompile Include="AnimationManager.cpp" />
@@ -185,6 +184,7 @@
     <ClCompile Include="DBConn.cpp" />
     <ClCompile Include="DBData.cpp" />
     <ClCompile Include="DBManager.cpp" />
+    <ClCompile Include="EntityCommandConsumeSystem.cpp" />
     <ClCompile Include="EventSystem.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="LifecycleReplicationSystem.cpp" />
@@ -197,6 +197,12 @@
     <ClCompile Include="NetworkHandler.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NormalAIChaseState.cpp" />
+    <ClCompile Include="NormalAICombatState.cpp" />
+    <ClCompile Include="NormalAIIdleState.cpp" />
+    <ClCompile Include="NormalAIMovementPolicy.cpp" />
+    <ClCompile Include="NormalAIReactState.cpp" />
+    <ClCompile Include="NormalAISearchState.cpp" />
     <ClCompile Include="ObjectPoolManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -220,11 +226,10 @@
     <ClInclude Include="ActionTimeSystem.h" />
     <ClInclude Include="ActionTransitionSystem.h" />
     <ClInclude Include="AI.h" />
-    <ClInclude Include="AIActionRequestSystem.h" />
-    <ClInclude Include="AICommandBuildSystem.h" />
-    <ClInclude Include="AICommandConsumeSystem.h" />
-    <ClInclude Include="AISensingSystem.h" />
-    <ClInclude Include="AITacticSystem.h" />
+    <ClInclude Include="AIDecisionSystem.h" />
+    <ClInclude Include="AIExecutionSystem.h" />
+    <ClInclude Include="AIPerceptionSystem.h" />
+    <ClInclude Include="AIFSMRegistry.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationCommitSystem.h" />
     <ClInclude Include="AnimationData.h" />
@@ -243,13 +248,17 @@
     <ClInclude Include="CombatCollisionCheckSystem.h" />
     <ClInclude Include="CombatCollisionDedupSystem.h" />
     <ClInclude Include="CombatCollisionHandlingSystem.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="DBConn.h" />
     <ClInclude Include="DBData.h" />
     <ClInclude Include="DBManager.h" />
+    <ClInclude Include="EntityCommandConsumeSystem.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventSystem.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="IAIState.h" />
+    <ClInclude Include="IMovementPolicy.h" />
     <ClInclude Include="Intent.h" />
     <ClInclude Include="LifecycleReplicationSystem.h" />
     <ClInclude Include="LocomotionMoveSystem.h" />
@@ -264,6 +273,12 @@
     <ClInclude Include="Framework.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="NormalAIChaseState.h" />
+    <ClInclude Include="NormalAICombatState.h" />
+    <ClInclude Include="NormalAIIdleState.h" />
+    <ClInclude Include="NormalAIMovementPolicy.h" />
+    <ClInclude Include="NormalAIReactState.h" />
+    <ClInclude Include="NormalAISearchState.h" />
     <ClInclude Include="ObjectPool.hpp" />
     <ClInclude Include="ObjectPoolManager.h" />
     <ClInclude Include="pch.h" />
@@ -280,7 +295,8 @@
     <ClInclude Include="Visibility.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Component Naming Rule.txt" />
+    <Text Include="AI Pipeline 설계.txt" />
+    <Text Include="데이터 관리 구조.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

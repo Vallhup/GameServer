@@ -16,6 +16,17 @@ enum class AnimationType : uint8 {
 	Knight_Guard,
 	Knight_Drinking,
 	Knight_Dead,
+
+	Imp_Idle,
+	Imp_Walk,
+	Imp_melee_1,
+	Imp_melee_2,
+	Imp_melee_3,
+	Imp_melee_4,
+	Imp_melee_5,
+	Imp_Stun,
+	Imp_Hit,
+	Imp_Dead,
 	
 	FinalBoss_Idle,
 	FinalBoss_Walk,

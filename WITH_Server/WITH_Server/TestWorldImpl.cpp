@@ -21,11 +21,9 @@
 #include "RepComponent.h"
 #include "Framework.h"
 
-#include "AISensingSystem.h"
-#include "AITacticSystem.h"
-#include "AIActionRequestSystem.h"
-#include "AICommandBuildSystem.h"
-#include "AICommandConsumeSystem.h"
+#include "AIPerceptionSystem.h"
+#include "AIDecisionSystem.h"
+#include "AIExecutionSystem.h"
 
 #include "LifecycleReplicationSystem.h"
 #include "DirtyReplicationSystem.h"
@@ -36,130 +34,165 @@ TestWorldImpl::TestWorldImpl()
 {
 }
 
-void TestWorldImpl::SpawnInitial(WorldRuntime& rt)
+void TestWorldImpl::Configure(WorldBuilder& builder)
 {
-	ECS& ecs = rt.GetECS();
-	Entity e = ecs.CreateEntity();
-
-	ecs.GetStorage<Transform>().AddComponent(e)->position = 
-	{ 10.0f, MapCollisionManager::Get().SampleHeightAt(10.f, 10.f), 10.0f };
-	ecs.GetStorage<Velocity>().AddComponent(e);
-	ecs.GetStorage<ActionMoveDelta>().AddComponent(e);
-	ecs.GetStorage<LocomotionMoveDelta>().AddComponent(e);
-	ecs.GetStorage<LocomotionAnimPhase>().AddComponent(e);
-	ecs.GetStorage<LocomotionState>().AddComponent(e);
-	ecs.GetStorage<ActionState>().AddComponent(e);
-	ecs.GetStorage<BaseAttribute>().AddComponent(e)->moveSpeed = 2.5;
-	ecs.GetStorage<FinalAttribute>().AddComponent(e);
-	ecs.GetStorage<BaseVital>().AddComponent(e);
-	ecs.GetStorage<FinalVital>().AddComponent(e);
-	ecs.GetStorage<Vital>().AddComponent(e);
-	ecs.GetStorage<AnimationState>().AddComponent(e);
-	auto animator = ecs.GetStorage<Animator>().AddComponent(e);
-	ecs.GetStorage<CombatCollider>().AddComponent(e);
-	ecs.GetStorage<AttackState>().AddComponent(e);
-	ecs.GetStorage<SpawnTypeComp>().AddComponent(e)->type = EntityType::Final_Boss;
-	ecs.GetStorage<AIState>().AddComponent(e);
-	ecs.GetStorage<AIThinkState>().AddComponent(e);
-	ecs.GetStorage<AISenseState>().AddComponent(e);
-	ecs.GetStorage<AIBehavior>().AddComponent(e);
-	ecs.GetStorage<AICommand>().AddComponent(e);
-	ecs.GetStorage<AICombatTuning>().AddComponent(e);
-	ecs.GetStorage<AIActionRequestState>().AddComponent(e);
-	ecs.GetStorage<DirtyFlagsComp>().AddComponent(e);
+	builder.Components<Transform, Velocity, ActionMoveDelta,
+		LocomotionMoveDelta, LocomotionAnimPhase, LocomotionState,
+		ActionState, ActionIntent, BaseAttribute, FinalAttribute,
+		BaseVital, FinalVital, Vital, AnimationState, Animator,
+		CombatCollider, AttackState, SpawnTypeComp, AIPerceptionCache, 
+		AIPerceptionTuning, AIBlackboard, AIDecisionState, AIDecisionTuning, 
+		AIReactionCache, AIIntent, AIExecutionState, EntityCommandFrame, DirtyFlagsComp,
+		NetIdComp, WorldIdComp, ParryBuf, PlayerTag, DisconnectedTag,
+		ActionMoveTag, BuffsComp>()
+		.PreSystem<EventSystem>()
+		.PreSystem<AIPerceptionSystem>()
+		.PreSystem<AIDecisionSystem>()
+		.PreSystem<AIExecutionSystem>()
+		.GraphSystem<ActionTimeSystem>()
+		.GraphSystem<ActionTransitionSystem>()
+		.GraphSystem<BuffApplySystem>()
+		.GraphSystem<StatRecalSystem>()
+		.GraphSystem<ActionMoveSystem>()
+		.GraphSystem<LocomotionMoveSystem>()
+		.GraphSystem<MovementApplySystem>()
+		.GraphSystem<AnimationSelectSystem>()
+		.GraphSystem<AnimationCommitSystem>()
+		.GraphSystem<AnimationFrameSystem>()
+		.GraphSystem<AnimationPoseBindSystem>()
+		.GraphSystem<ColliderUpdateSystem>()
+		.GraphSystem<ColliderActivationSystem>()
+		.GraphSystem<CombatCollisionCheckSystem>()
+		.GraphSystem<CombatCollisionDedupSystem>()
+		.GraphSystem<CombatCollisionHandlingSystem>()
+		.PostSystem<DirtyReplicationSystem>()
+		.PostSystem<LifecycleReplicationSystem>()
+		.BeginInitialSpawns();
 
 	Framework& framework = Framework::Get();
-	NetId id = framework.netIdRegistry.Allocate();
+	NetId netId = framework.netIdRegistry.Allocate();
 
-	ecs.GetStorage<NetIdComp>().AddComponent(e)->id = id;
-	framework.netIdRegistry.BindEntity(id, e);
+	Entity entity = builder.Spawn(
+		Transform{ .position = { 10.0f, MapCollisionManager::Get().SampleHeightAt(10.f, 10.f), 10.0f } },
+		Velocity{}, ActionMoveDelta{}, LocomotionMoveDelta{},
+		LocomotionAnimPhase{}, LocomotionState{}, ActionState{},
+		BaseAttribute{ .moveSpeed = 2.5 }, FinalAttribute{},
+		BaseVital{}, FinalVital{}, Vital{}, AnimationState{},
+		Animator{ .clip = AnimationManager::Get().GetAnimation(AnimationType::Imp_Idle) },
+		CombatCollider{}, AttackState{}, SpawnTypeComp{ .entityType = EntityType::Character, .faction = Faction::Enemy, .charType = CharacterType::Imp },
+		AIPerceptionCache{}, AIPerceptionTuning{}, AIBlackboard{}, AIDecisionState{}, AIDecisionTuning{},
+		AIReactionCache{}, AIIntent{}, AIExecutionState{}, EntityCommandFrame{}, DirtyFlagsComp{}, NetIdComp{ .id = netId }
+	);
 
-	animator->clip = 
-		AnimationManager::Get().GetAnimation(AnimationType::FinalBoss_Idle);
+	framework.netIdRegistry.BindEntity(netId, entity);
 }
 
 Entity TestWorldImpl::SpawnPlayer(WorldRuntime& rt, uint32 connId)
 {
 	ECS& ecs = rt.GetECS();
-	Entity e = ecs.CreateEntity();
+	Entity e = ecs.CreateEntityImmediate();
 
-	ecs.GetStorage<Transform>().AddComponent(e)->position = 
-	{ 10.0f, MapCollisionManager::Get().SampleHeightAt(10.f, 10.f), 10.0f };
-	ecs.GetStorage<Velocity>().AddComponent(e);
-	ecs.GetStorage<ActionMoveDelta>().AddComponent(e);
-	ecs.GetStorage<LocomotionMoveDelta>().AddComponent(e);
-	ecs.GetStorage<LocomotionAnimPhase>().AddComponent(e);
-	ecs.GetStorage<LocomotionState>().AddComponent(e);
-	ecs.GetStorage<ActionIntent>().AddComponent(e);
-	ecs.GetStorage<ActionState>().AddComponent(e);
-	ecs.GetStorage<BaseAttribute>().AddComponent(e);
-	ecs.GetStorage<FinalAttribute>().AddComponent(e);
-	ecs.GetStorage<BaseVital>().AddComponent(e);
-	ecs.GetStorage<FinalVital>().AddComponent(e);
-	ecs.GetStorage<Vital>().AddComponent(e);
-	ecs.GetStorage<BuffsComp>().AddComponent(e);
-	ecs.GetStorage<AnimationState>().AddComponent(e);
-	auto animator = ecs.GetStorage<Animator>().AddComponent(e);
-	ecs.GetStorage<CombatCollider>().AddComponent(e);
-	ecs.GetStorage<AttackState>().AddComponent(e);
-	ecs.GetStorage<ParryBuf>().AddComponent(e);
-	ecs.GetStorage<PlayerTag>().AddComponent(e);
-	ecs.GetStorage<SpawnTypeComp>().AddComponent(e)->type = EntityType::Knight;
-	
-	ecs.GetStorage<WorldIdComp>().AddComponent(e);
-	ecs.GetStorage<DirtyFlagsComp>().AddComponent(e);
+	Transform tr{ .position = { 10.0f, MapCollisionManager::Get().SampleHeightAt(10.f, 10.f), 10.0f } };
+
+	rt.ImmediateAddComponent<Transform>(e, std::move(tr));
+
+	rt.ImmediateAddComponent<Velocity>(e);
+	rt.ImmediateAddComponent<ActionMoveDelta>(e);
+	rt.ImmediateAddComponent<LocomotionMoveDelta>(e);
+	rt.ImmediateAddComponent<LocomotionAnimPhase>(e);
+	rt.ImmediateAddComponent<LocomotionState>(e);
+	rt.ImmediateAddComponent<ActionIntent>(e);
+	rt.ImmediateAddComponent<ActionState>(e);
+	rt.ImmediateAddComponent<BaseAttribute>(e);
+	rt.ImmediateAddComponent<FinalAttribute>(e);
+	rt.ImmediateAddComponent<BaseVital>(e);
+	rt.ImmediateAddComponent<FinalVital>(e);
+	rt.ImmediateAddComponent<Vital>(e);
+	rt.ImmediateAddComponent<BuffsComp>(e);
+	rt.ImmediateAddComponent<AnimationState>(e);
+
+	Animator animator{ .clip = AnimationManager::Get().GetAnimation(AnimationType::Knight_Idle) };
+
+	rt.ImmediateAddComponent<Animator>(e, std::move(animator));
+
+	rt.ImmediateAddComponent<CombatCollider>(e);
+	rt.ImmediateAddComponent<AttackState>(e);
+	rt.ImmediateAddComponent<ParryBuf>(e);
+	rt.ImmediateAddComponent<PlayerTag>(e);
+
+	SpawnTypeComp typeComp;
+	typeComp.entityType = EntityType::Character;
+	typeComp.faction = Faction::Player;
+	typeComp.charType = CharacterType::Knight;
+
+	rt.ImmediateAddComponent<SpawnTypeComp>(e, std::move(typeComp));
+
+	rt.ImmediateAddComponent<WorldIdComp>(e);
+	rt.ImmediateAddComponent<DirtyFlagsComp>(e);
 
 	Framework& framework = Framework::Get();
 	NetId nId = framework.netIdRegistry.Allocate();
 
-	ecs.GetStorage<NetIdComp>().AddComponent(e)->id = nId;
+	NetIdComp idComp{ .id = nId };
+
+	rt.ImmediateAddComponent<NetIdComp>(e, std::move(idComp));
+
+	/*rt.DeferredUpsertComponent<Transform>(e,
+		[&](Transform& tr)
+		{
+			tr.position = 
+			{ 10.0f, MapCollisionManager::Get().SampleHeightAt(10.f, 10.f), 10.0f };
+		});
+
+	rt.DeferredAddComponent<Velocity>(e);
+	rt.DeferredAddComponent<ActionMoveDelta>(e);
+	rt.DeferredAddComponent<LocomotionMoveDelta>(e);
+	rt.DeferredAddComponent<LocomotionAnimPhase>(e);
+	rt.DeferredAddComponent<LocomotionState>(e);
+	rt.DeferredAddComponent<ActionIntent>(e);
+	rt.DeferredAddComponent<ActionState>(e);
+	rt.DeferredAddComponent<BaseAttribute>(e);
+	rt.DeferredAddComponent<FinalAttribute>(e);
+	rt.DeferredAddComponent<BaseVital>(e);
+	rt.DeferredAddComponent<FinalVital>(e);
+	rt.DeferredAddComponent<Vital>(e);
+	rt.DeferredAddComponent<BuffsComp>(e);
+	rt.DeferredAddComponent<AnimationState>(e);
+
+	rt.DeferredUpsertComponent<Animator>(e,
+		[&](Animator& animator)
+		{
+			animator.clip =
+				AnimationManager::Get().GetAnimation(AnimationType::Knight_Idle);
+		});
+
+	rt.DeferredAddComponent<CombatCollider>(e);
+	rt.DeferredAddComponent<AttackState>(e);
+	rt.DeferredAddComponent<ParryBuf>(e);
+	rt.DeferredAddComponent<PlayerTag>(e);
+
+	rt.DeferredUpsertComponent<SpawnTypeComp>(e,
+		[&](SpawnTypeComp& typeComp)
+		{
+			typeComp.type = EntityType::Knight;
+		});
+
+	rt.DeferredAddComponent<WorldIdComp>(e);
+	rt.DeferredAddComponent<DirtyFlagsComp>(e);
+
+	Framework& framework = Framework::Get();
+	NetId nId = framework.netIdRegistry.Allocate();
+
+	rt.DeferredUpsertComponent<NetIdComp>(e,
+		[nId](NetIdComp& idComp)
+		{
+			idComp.id = nId;
+		});*/
+
 	framework.listener.GetIdMap().BindPlayer(connId, nId);
 	framework.netIdRegistry.BindEntity(nId, e);
 
-	animator->clip = 
-		AnimationManager::Get().GetAnimation(AnimationType::Knight_Idle);
-
 	return e;
-}
-
-void TestWorldImpl::Build(WorldRuntime& rt)
-{
-	auto& ecs = rt.GetECS();
-
-	ecs.AddSystem<EventSystem>(SystemPhase::Pre, rt, 0);
-	ecs.AddSystem<AISensingSystem>(SystemPhase::Pre, rt, 0);
-	ecs.AddSystem<AITacticSystem>(SystemPhase::Pre, rt, 0);
-	ecs.AddSystem<AIActionRequestSystem>(SystemPhase::Pre, rt, 0);
-	ecs.AddSystem<AICommandBuildSystem>(SystemPhase::Pre, rt, 0);
-	ecs.AddSystem<AICommandConsumeSystem>(SystemPhase::Pre, rt, 0);
-
-	ecs.AddSystem<ActionTimeSystem>(SystemPhase::Graph, rt, 1);
-	ecs.AddSystem<ActionTransitionSystem>(SystemPhase::Graph, rt, 2);
-
-	ecs.AddSystem<BuffApplySystem>(SystemPhase::Graph, rt, 3);
-	ecs.AddSystem<StatRecalSystem>(SystemPhase::Graph, rt, 4);
-
-	ecs.AddSystem<ActionMoveSystem>(SystemPhase::Graph, rt, 11);
-	ecs.AddSystem<LocomotionMoveSystem>(SystemPhase::Graph, rt, 12);
-	ecs.AddSystem<MovementApplySystem>(SystemPhase::Graph, rt, 13);
-
-	// TODO : 공간분할
-
-	ecs.AddSystem<AnimationSelectSystem>(SystemPhase::Graph, rt, 21);
-	ecs.AddSystem<AnimationCommitSystem>(SystemPhase::Graph, rt, 22);
-	ecs.AddSystem<AnimationFrameSystem>(SystemPhase::Graph, rt, 23);
-	ecs.AddSystem<AnimationPoseBindSystem>(SystemPhase::Graph, rt, 24);
-
-	ecs.AddSystem<ColliderUpdateSystem>(SystemPhase::Graph, rt, 31);
-	ecs.AddSystem<ColliderActivationSystem>(SystemPhase::Graph, rt, 32);
-	ecs.AddSystem<CombatCollisionCheckSystem>(SystemPhase::Graph, rt, 33);
-	ecs.AddSystem<CombatCollisionDedupSystem>(SystemPhase::Graph, rt, 34);
-	ecs.AddSystem<CombatCollisionHandlingSystem>(SystemPhase::Graph, rt, 35);
-
-	// TODO : 시야처리
-
-	ecs.AddSystem<DirtyReplicationSystem>(SystemPhase::Post, rt, 100);
-	ecs.AddSystem<LifecycleReplicationSystem>(SystemPhase::Post, rt, 101);
 }
 
 void TestWorldImpl::OnShutdown(WorldRuntime& rt)

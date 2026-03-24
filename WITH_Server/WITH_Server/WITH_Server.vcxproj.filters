@@ -119,20 +119,38 @@
     <ClCompile Include="LifecycleReplicationSystem.cpp">
       <Filter>ECS\System\Replication</Filter>
     </ClCompile>
-    <ClCompile Include="AISensingSystem.cpp">
+    <ClCompile Include="AIPerceptionSystem.cpp">
       <Filter>ECS\System\AI</Filter>
     </ClCompile>
-    <ClCompile Include="AIActionRequestSystem.cpp">
+    <ClCompile Include="AIDecisionSystem.cpp">
       <Filter>ECS\System\AI</Filter>
     </ClCompile>
-    <ClCompile Include="AICommandBuildSystem.cpp">
+    <ClCompile Include="NormalAIChaseState.cpp">
+      <Filter>FSM\Normal\State</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAICombatState.cpp">
+      <Filter>FSM\Normal\State</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAIIdleState.cpp">
+      <Filter>FSM\Normal\State</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAIReactState.cpp">
+      <Filter>FSM\Normal\State</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAISearchState.cpp">
+      <Filter>FSM\Normal\State</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAIMovementPolicy.cpp">
+      <Filter>FSM\Normal\MovementPolicy</Filter>
+    </ClCompile>
+    <ClCompile Include="AIFSMRegistry.cpp">
+      <Filter>FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="AIExecutionSystem.cpp">
       <Filter>ECS\System\AI</Filter>
     </ClCompile>
-    <ClCompile Include="AITacticSystem.cpp">
-      <Filter>ECS\System\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="AICommandConsumeSystem.cpp">
-      <Filter>ECS\System\AI</Filter>
+    <ClCompile Include="EntityCommandConsumeSystem.cpp">
+      <Filter>ECS\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -319,20 +337,47 @@
     <ClInclude Include="LifecycleReplicationSystem.h">
       <Filter>ECS\System\Replication</Filter>
     </ClInclude>
-    <ClInclude Include="AISensingSystem.h">
+    <ClInclude Include="AIPerceptionSystem.h">
       <Filter>ECS\System\AI</Filter>
     </ClInclude>
-    <ClInclude Include="AIActionRequestSystem.h">
+    <ClInclude Include="AIDecisionSystem.h">
       <Filter>ECS\System\AI</Filter>
     </ClInclude>
-    <ClInclude Include="AICommandBuildSystem.h">
+    <ClInclude Include="IAIState.h">
+      <Filter>FSM\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IMovementPolicy.h">
+      <Filter>FSM\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAIChaseState.h">
+      <Filter>FSM\Normal\State</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAICombatState.h">
+      <Filter>FSM\Normal\State</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAIIdleState.h">
+      <Filter>FSM\Normal\State</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAIReactState.h">
+      <Filter>FSM\Normal\State</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAISearchState.h">
+      <Filter>FSM\Normal\State</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAIMovementPolicy.h">
+      <Filter>FSM\Normal\MovementPolicy</Filter>
+    </ClInclude>
+    <ClInclude Include="AIFSMRegistry.h">
+      <Filter>FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="AIExecutionSystem.h">
       <Filter>ECS\System\AI</Filter>
     </ClInclude>
-    <ClInclude Include="AITacticSystem.h">
-      <Filter>ECS\System\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="AICommandConsumeSystem.h">
-      <Filter>ECS\System\AI</Filter>
+    <ClInclude Include="EntityCommandConsumeSystem.h">
+      <Filter>ECS\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -426,10 +471,28 @@
     <Filter Include="ECS\System\View">
       <UniqueIdentifier>{f6782456-f514-4ebb-a32f-7c803e8180fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FSM">
+      <UniqueIdentifier>{ffa3fdcf-b51c-4482-abfc-43d87761403f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\Normal">
+      <UniqueIdentifier>{fdce34fc-f4be-45cf-b13e-5ad1fb5218ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\Interface">
+      <UniqueIdentifier>{1a227fac-543e-4738-9395-7c97d4a87fef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\Normal\State">
+      <UniqueIdentifier>{d5ae6fa3-6063-49c3-b329-2cf49511a118}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\Normal\MovementPolicy">
+      <UniqueIdentifier>{aa5136d0-4a12-4f05-bb46-848492ef0bdd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Component Naming Rule.txt">
-      <Filter>ECS\Component</Filter>
+    <Text Include="AI Pipeline 설계.txt">
+      <Filter>FSM</Filter>
+    </Text>
+    <Text Include="데이터 관리 구조.txt">
+      <Filter>Manager</Filter>
     </Text>
   </ItemGroup>
 </Project>
