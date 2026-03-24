@@ -1,7 +1,7 @@
 #pragma once
 #include "FBXLoader.h"
 
-// ¹ÙÀÌ³Ê¸® Çì´õ ±¸Á¶Ã¼µé
+// ë°”ì´ë„ˆë¦¬ í—¤ë” êµ¬ì¡°ì²´ë“¤
 struct MeshBinaryHeader {
     uint32_t magic;           // 'MESH'
     uint32_t vertexCount;
@@ -35,14 +35,14 @@ struct MaterialBinaryHeader {
     uint32_t materialCount;
 };
 
-// °³º° ¸ÓÆ¼¸®¾ó µ¥ÀÌÅÍ
+// ê°œë³„ ë¨¸í‹°ë¦¬ì–¼ ë°ì´í„°
 struct MaterialBinaryData {
     char name[64];
     Vec4 diffuse;
     Vec4 ambient;
     Vec4 specular;
 
-    // ¸ğµç ÅØ½ºÃ³ °æ·Î
+    // ëª¨ë“  í…ìŠ¤ì²˜ ê²½ë¡œ
     char baseColorTexPath[256];
     char normalTexPath[256];
     char roughnessTexPath[256];
@@ -53,7 +53,7 @@ struct MaterialBinaryData {
     char aoTexPath[256];
 };
 
-// º» µ¥ÀÌÅÍ (FbxAMatrix¸¦ float ¹è¿­·Î º¯È¯)
+// ë³¸ ë°ì´í„° (FbxAMatrixë¥¼ float ë°°ì—´ë¡œ ë³€í™˜)
 struct BoneBinaryData {
     char name[64];
     int32_t parentIndex;
@@ -63,17 +63,33 @@ struct BoneBinaryData {
 class Exporter
 {
 public:
-    // ¸ŞÀÎ ÇÔ¼ö - ¸ğµç °ÍÀ» ÇÑ¹ø¿¡ ÀúÀå
-    bool ExportAll(FBXLoader& loader, const wstring& basePath, const wstring& fbxDir);
+    // ë©”ì¸ í•¨ìˆ˜ - ëª¨ë“  íŒŒì¼ í•œë²ˆì— ë‚´ë³´ë‚´ê¸°
+    bool ExportAll(FBXLoader& loader, const wstring& basePath, const wstring& fbxDir,
+        const wstring& referenceSkeletonPath = L"");  // ê¸°ì¤€ ìŠ¤ì¼ˆë ˆí†¤ ê²½ë¡œ (ì• ë‹ˆë©”ì´ì…˜ ë§¤í•‘ìš©)
 
 private:
-    // °³º° ÀúÀå ÇÔ¼öµé
+    // ê°œë³„ ë‚´ë³´ë‚´ê¸° í•¨ìˆ˜ë“¤
     bool ExportMesh(const FbxMeshInfo& meshInfo, const wstring& path);
     bool ExportMeshAsText(const FbxMeshInfo& meshInfo, const wstring& path);
     bool ExportSkeleton(const vector<shared_ptr<FbxBoneInfo>>& bones, const wstring& path);
     bool ExportSkeletonText(const vector<shared_ptr<FbxBoneInfo>>& bones, const wstring& path);
+
+    // ê¸°ì¡´ (ë§¤í•‘ ì—†ì´)
     bool ExportAnimation(const FbxAnimClipInfo& animClip, const wstring& path);
     bool ExportAnimationAsText(const FbxAnimClipInfo& animClip, const wstring& path);
+
+    // ê¸°ì¤€ ìŠ¤ì¼ˆë ˆí†¤ ë§¤í•‘ ë²„ì „
+    bool ExportAnimationWithMapping(
+        const FbxAnimClipInfo& animClip,
+        const vector<shared_ptr<FbxBoneInfo>>& animBones,
+        const vector<shared_ptr<FbxBoneInfo>>& refBones,
+        const wstring& path);
+    bool ExportAnimationAsTextWithMapping(
+        const FbxAnimClipInfo& animClip,
+        const vector<shared_ptr<FbxBoneInfo>>& animBones,
+        const vector<shared_ptr<FbxBoneInfo>>& refBones,
+        const wstring& path);
+
     bool ExportMaterials(const vector<FbxMaterialInfo>& materials, const wstring& path);
     bool ProcessTextures(const vector<FbxMaterialInfo>& materials,
         const wstring& fbxDir, const wstring& outputDir);
@@ -81,12 +97,16 @@ private:
     bool LoadSkeletonFromFile(const wstring& path, vector<shared_ptr<FbxBoneInfo>>& bones);
 
     bool ExportBakedAnimation(
-        const vector<shared_ptr<FbxBoneInfo>>& bones,
+        const vector<shared_ptr<FbxBoneInfo>>& animBones,
+        const vector<shared_ptr<FbxBoneInfo>>& refBones,
         const FbxAnimClipInfo& animClip,
         const wstring& path
     );
 
-    // ÇïÆÛ ÇÔ¼öµé
+    // ë³¸ ì´ë¦„ìœ¼ë¡œ ì• ë‹ˆë©”ì´ì…˜ ë³¸ ì¸ë±ìŠ¤ ì°¾ê¸°
+    int32_t FindAnimBoneIndex(const vector<shared_ptr<FbxBoneInfo>>& animBones, const wstring& boneName);
+
+    // ìœ í‹¸ í•¨ìˆ˜ë“¤
     void ConvertFbxMatrixToFloat4x4(const FbxAMatrix& fbxMatrix, float matrix[16]);
     FbxAMatrix ApplyReflectionMatrix(const FbxAMatrix& matrix);
     wstring GetRelativeTexturePath(const wstring& textureName);

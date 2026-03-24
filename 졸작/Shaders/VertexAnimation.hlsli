@@ -5,7 +5,7 @@ void VertexAnimation(inout float3 pos, matrix mat, float4 color, float time)
 {
     float3 worldPosTemp = mul(float4(pos, 1.0f), mat).xyz;
 
-    float windSpeed = 0.8f;
+    float windSpeed = 2.0f;
     float windScale = 0.1f;
 
     // Primary wave (큰 움직임)

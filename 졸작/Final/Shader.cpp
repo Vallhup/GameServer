@@ -104,6 +104,10 @@ void Shader::InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* 
     HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::GBuffer)]));
     MASSERT(SUCCEEDED(hr), "Failed to create GBuffer PSO");
 
+    psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+    hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::GBufferNonCulling)]));
+    MASSERT(SUCCEEDED(hr), "Failed to create GBufferNonCulling PSO");
+
     OutputDebugStringA("G-Buffer PSO created!!\n");
 
     // For instancing GBuffer PSO (CullMode = NONE)

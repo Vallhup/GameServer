@@ -3,6 +3,7 @@
 #include "PBR.hlsli"
 #include "Fog.hlsli"
 #include "VolumetricFog.hlsli"
+#include "ToneMapping.hlsli"
 
 float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 {
@@ -90,9 +91,9 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     
     float3 finalColor = directLight + iblAmbient + emission;
 
-    finalColor = ApplyVolumetricFog(finalColor, worldPos, input.uv, cameraPosition);
+    //finalColor = ApplyVolumetricFog(finalColor, worldPos, input.uv, cameraPosition);
 
-    finalColor = PBRNeutralToneMapping(finalColor);
+    finalColor = DarkFantasyToneMapping(finalColor);
     
     // Don't need to apply gamma correction
     // R8G8B8A8_UNORM_SRGB automatically appies it.

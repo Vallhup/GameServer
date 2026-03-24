@@ -78,24 +78,65 @@ int wmain(int argc, wchar_t* argv[])
     //    }
     //}
 
-    wstring inputFbx = L"../FBX/boss.fbx";          // 입력 FBX 파일
-    wstring fbxDir = L"../FBX";
-    wstring outputBase = L"../FBXOutput/boss";           // 출력 기본 이름
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // 몬스터 애니메이션 추출 코드
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    //vector<wstring> names = { L"Death_1", L"Death_2", L"Idle_1", L"Idle_2", L"Idle_3", L"Idle_4", L"Idle_5", L"Jump_1", L"Jump_2", L"Melee_1", L"Melee_2", L"Melee_3", L"Melee_4",
+    //L"Melee_5", L"Melee_6", L"Melee_7", L"Melee_8", L"Running_1", L"Running_2", L"Turn_Left", L"Turn_Right",
+    //L"Walk_1", L"Walk_2", L"Walk_Back", L"Walk_Left", L"Walk_Left_Back", L"Walk_Right", L"Walk_Right_Back"};
+
+    //for (int i = 0; i < 28; i++)
+    //{
+    //    wstring inputFbx = L"../FBX/monster_Tank_" + names[i] + L".fbx";
+    //    wstring fbxDir = L"../FBX";
+    //    wstring outputBase = L"../FBXOutput/monster_Tank_" + names[i];           // 출력 기본 이름
+
+    //    // 애니메이션 전용 FBX의 경우, 메시의 스켈레톤을 기준으로 매핑
+    //    wstring referenceSkeleton = L"../FBXOutput/monster_Tank.skel";  // 메시에서 추출한 스켈레톤
+
+    //    FBXLoader loader;
+    //    if (!loader.LoadFbx(inputFbx)) {
+    //        wcout << L"FBX 로딩 실패!" << endl;
+    //        return -1;
+    //    }
+
+    //    wcout << L"FBX 로딩 완료" << endl;
+
+    //    Exporter exporter;
+    //    if (!exporter.ExportAll(loader, outputBase, fbxDir, referenceSkeleton)) {
+    //        wcout << L"바이너리 변환 실패!" << endl;
+    //        return -1;
+    //    }
+
+    //    wcout << i << L"번째 파일 변환 완료!" << endl;
+    //}
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // 몬스터 T-pose 추출 코드
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    wstring inputFbx = L"../FBX/monster_Tank.fbx";          // 입력 FBX 파일
+    wstring fbxDir = L"../FBX";
+    wstring outputBase = L"../FBXOutput/monster_Tank";           // 출력 기본 이름
+    
+    // 애니메이션 전용 FBX의 경우, 메시의 스켈레톤을 기준으로 매핑
+    wstring referenceSkeleton = L"";  // 메시에서 추출한 스켈레톤
+    
     FBXLoader loader;
     if (!loader.LoadFbx(inputFbx)) {
         wcout << L"FBX 로딩 실패!" << endl;
         return -1;
     }
-
-    wcout << L"FBX 로딩중..." << endl;
-
+    
+    wcout << L"FBX 로딩 완료" << endl;
+    
     Exporter exporter;
-    if (!exporter.ExportAll(loader, outputBase, fbxDir)) {
+    if (!exporter.ExportAll(loader, outputBase, fbxDir, referenceSkeleton)) {
         wcout << L"바이너리 변환 실패!" << endl;
         return -1;
     }
-
+    
     wcout << L"변환 완료!" << endl;
     return 0;
 }
