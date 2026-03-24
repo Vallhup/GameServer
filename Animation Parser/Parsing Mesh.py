@@ -131,7 +131,7 @@ def save_capsule_to_json(object_name, mesh_folder, output_path):
 
 if __name__ == "__main__":
     save_capsule_to_json(
-        object_name="Final_Boss",
-        mesh_folder=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Final_Boss\Mesh",
-        output_path=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\final_boss_capsules.json"
+        object_name="Imp",
+        mesh_folder=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Imp\Mesh",
+        output_path=r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Capsule\imp_capsules.json"
     )

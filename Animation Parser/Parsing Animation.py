@@ -257,9 +257,9 @@ def prebake(anim, capsules, weapon_bones=None,
 
 
 
-anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Final_Boss\Animation\boss_animation_walk_baked.bone")
-colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Capsule\final_boss_capsules.json")
-output = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\final_boss_animation_walk.json"
+anim = parse_bone_file(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Imp\Animation\monster_Imp_walk_right_baked.bone")
+colliders = load_capsules(r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Capsule\imp_capsules.json")
+output = r"C:\Users\Hadenpel\Desktop\GameServer\Animation Parser\Output\Animation\imp_animation_walk_right.json"
 
 weapon_bone_list = [45]
 prebaked = prebake(anim, colliders, weapon_bones=weapon_bone_list)
