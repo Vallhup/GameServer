@@ -69,30 +69,30 @@ void SoloGameScene::CreateBossObject()
 
 void SoloGameScene::CreateMap()
 {
-#pragma region Initialize Map Elements
-	InstanceLoader mapLoader;
-	mapLoader.Load(L"../Assets/FBXModel/Map/MapInstanceData.txt");
+//#pragma region Initialize Map Elements
+//	InstanceLoader mapLoader;
+//	mapLoader.Load(L"../Assets/FBXModel/Map/MapInstanceData.txt");
+//
+//	int count = 0;
+//	// during count 50 ~ 60 rapid lower fps range
+//	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
+//		if (instanceData.empty())  
+//			continue;
+//
+//		wstring path = L"../Assets/FBXModel/Map/" + wstring(modelName.begin(), modelName.end());
+//
+//		if (!filesystem::exists(path + L"_0.mesh"))
+//			continue;
+//
+//		CreateAndBatchObjects(path, instanceData, instancingBatches);
+//	}
+//	//OutputDebugStringA(("Map data count: " + to_string(count) + '\n').c_str());
+//#pragma endregion
 
-	int count = 0;
-	// during count 50 ~ 60 rapid lower fps range
-	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
-		if (instanceData.empty())  
-			continue;
-
-		wstring path = L"../Assets/FBXModel/Map/" + wstring(modelName.begin(), modelName.end());
-
-		if (!filesystem::exists(path + L"_0.mesh"))
-			continue;
-
-		CreateAndBatchObjects(path, instanceData, instancingBatches);
-	}
-	//OutputDebugStringA(("Map data count: " + to_string(count) + '\n').c_str());
-#pragma endregion
-
-#pragma region Initialize Terrain
-	terrain = make_shared<Terrain>();
-	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/ground", L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
-#pragma endregion
+//#pragma region Initialize Terrain
+//	terrain = make_shared<Terrain>();
+//	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/ground", L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
+//#pragma endregion
 
 //#pragma region Initialize Map2 Elements
 //	InstanceLoader mapLoader;
@@ -110,6 +110,12 @@ void SoloGameScene::CreateMap()
 //		CreateAndBatchObjects(path, instanceData, instancingBatches);
 //	}
 //#pragma endregion
+
+	constexpr InstanceData testData = {
+		{ 14.0f, 4.0f, 14.0f }, { 0.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f }, false, 25.0f
+	};
+
+	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/CaveMap/SM_Wall_Aztec_B", testData));
 }
 
 void SoloGameScene::CreateEffectSamples()
