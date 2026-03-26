@@ -64,18 +64,67 @@ namespace WITH_ServerDataTool.ID
 
 
     /* [ Logic ID ] */
-    public enum ActionId : byte
+    public enum ActionId : ushort
     {
-        None    = 0,
-        Attack  = 1,
-        Dodge   = 2,
-        Parry   = 3,
-        Stun    = 4,
-        Hit     = 5,
-        Guard   = 6,
-        Dead    = 7,
+        None = 0,
+
+        Knight_Light_Attack1    = 1,
+        Knight_Light_Attack2    = 2,
+        Knight_Light_Attack3    = 3,
+        Knight_Heavy_Attack     = 4,
+        Knight_Special_Attack   = 5,
+        Knight_Dodge            = 6,
+        Knight_Parry            = 7,
+        Knight_Stun             = 8,
+        Knight_Hit              = 9,
+        Knight_Guard            = 10,
+        Knight_Drinking         = 11,
+        Knight_Dead             = 12,
+
+        /* Lancer [ 41 ~ 80 ] */
+
+        /* Third Character [ 81 ~ 120 ] */
+
+        /* Imp [ 121 ~ 160 ]  */
+
+        /* Second Normal Monster [ 161 ~ 200 ] */
+
+        /* Third Normal Monster [ 201 ~ 240 ] */
+
+        /* First Boss Monster [ 241 ~ 280 ] */
+
+        /* Second Boss Monster [ 281 ~ 320 ] */
+
+        FinalBoss_Thrust = 321,
+        FinalBoss_Slash = 322,
+        FinalBoss_DashSlash = 323,
+        FinalBoss_JumpSlash = 324,
+        FinalBoss_MultiSlash = 325,
+        FinalBoss_Stun = 326,
+        FinalBoss_Hit = 327,
+        FinalBoss_Dead = 328,
+    }
+    
+    public enum ActionKind : byte
+    {
+        None        = 0,
+        Attack      = 1,
+        Dodge       = 2,
+        Parry       = 3,
+        Stun        = 4,
+        Hit         = 5,
+        Guard       = 6,
+        UseItem     = 7,
+        Dead        = 8,
     }
 
+    public enum PlayerAttackInput : byte
+    {
+        None    = 0,
+        Normal  = 1,
+        Heavy   = 2,
+        Special = 3,
+    }
 
     /* [ Resource ID ] */
     public enum AnimationId : ushort

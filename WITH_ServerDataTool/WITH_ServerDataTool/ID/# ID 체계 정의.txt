@@ -34,14 +34,14 @@ Contents 규칙
 
 3. Logic ID
  - ActionId
- - ActionKindId
- - PlayerAttackInputId
+ - ActionKind
+ - PlayerAttackInput
 
 
 Logic 규칙
  1. ActionId는 개별 액션의 고유ID이다.
- 2. ActionKindId는 상위 행동 분류이다.
- 3. PlayerAttackInputId는 플레이어 입력 분류이다.
+ 2. ActionKind는 상위 행동 분류이다.
+ 3. PlayerAttackInput는 플레이어 입력 분류이다.
  4. policy / profile / animation binding은 같은 Action Key 체계로 묶는다.
 
 --------------------------------------------------------------------

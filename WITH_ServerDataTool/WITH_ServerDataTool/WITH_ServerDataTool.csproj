@@ -36,15 +36,15 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Utility\06. Import.cs" />
     <None Include="App.config" />
-    <Compile Include="Editor\05. Controls.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Definition\# Definition 체계 정의.txt" />
-    <Content Include="Editor\# Editor 구조.txt" />
     <Content Include="ID\# ID 체계 정의.txt" />
-    <Content Include="TextFile1.txt" />
+    <Content Include="Action System 명세.txt" />
+    <Content Include="데이터 구조 검증용 기획 문서.txt" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Definition\00. IDefinition.cs" />
@@ -54,47 +54,6 @@
     <Compile Include="Definition\06. SpawnDef.cs" />
     <Compile Include="Definition\05. WorldDef.cs" />
     <Compile Include="Definition\01. CharacterDef.cs" />
-    <Compile Include="Editor\02. EditorController.cs" />
-    <Compile Include="Editor\03. GameDataSerializer.cs" />
-    <Compile Include="Editor\01. MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Editor\07. CharacterDefEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\09. ActionDefEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\08. ActionSegmentDefEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\10. DefinitionEditorFactory.cs" />
-    <Compile Include="Editor\00. Program.cs" />
-    <Compile Include="Editor\04. DefinitionEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\06. PropertyGridEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\10. Providers.cs" />
-    <Compile Include="Editor\AnimationResourceDefEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\BuffDefEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\BuffModifierDefEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\SpawnEntryDefEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\SpawnSetDefEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\WorldDefEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="ID\01. IDs.cs" />
     <Compile Include="Utility\02. Common.cs" />
     <Compile Include="Utility\01. Utility.cs" />
@@ -111,11 +70,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Editor\01. MainForm.resx">
-      <DependentUpon>01. MainForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
