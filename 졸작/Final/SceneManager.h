@@ -30,11 +30,14 @@ public:
 public:
     void SceneStart(DX12Core& core);       
     void RequestSceneChange(SceneType type);
-    void ProcessPendingSceneChange(DX12Core& core);  
+    void RequestLoadingScene(SceneType targetSceneType);
+    void ProcessPendingSceneChange(DX12Core& core);
 
 private:
     template <typename T>
     void RegisterScene(SceneType type);
+
+    void MoveInstancingBatches(SceneType type);
 
 private:
     HWND hwnd;

@@ -53,6 +53,7 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"LocalCharBarsBack", L"../Assets/UI/Textures/LocalCharBarsBack.png", core, resourceUpload);
 	RegisterUITexture(L"BarBack", L"../Assets/UI/Textures/BarBack.png", core, resourceUpload);
 	RegisterUITexture(L"HpBar", L"../Assets/UI/Textures/HpBar.png", core, resourceUpload);
+	RegisterUITexture(L"HpBar2", L"../Assets/UI/Textures/HpBar2.png", core, resourceUpload);
 	RegisterUITexture(L"StaminaBar", L"../Assets/UI/Textures/StaminaBar.png", core, resourceUpload);
 
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);			

@@ -58,7 +58,7 @@ void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
 void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const shared_ptr<MainCharacter>& myPlayer)
 {
     UpdateInputtoCamLogic(core, deltaTime);
-    UpdatePosByObstruction(sceneObjects, instancingBatches, myPlayer);
+    //UpdatePosByObstruction(sceneObjects, instancingBatches, myPlayer);
     UpdateSmoothFollow(deltaTime);
     UpdateCameraMatrices(core);
     SetCursor();
@@ -182,7 +182,7 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     XMMATRIX view = XMMatrixLookAtLH(eyePos, lookAt, upDir);
 
     float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
-    XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 150.0f);
+    XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 10000.0f);
 
     BoundingFrustum::CreateFromMatrix(viewFrustum, proj);
 

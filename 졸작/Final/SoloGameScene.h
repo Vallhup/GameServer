@@ -66,7 +66,5 @@ private:
 
 	shared_ptr<SkyBox> skyBox;
 
-	vector<shared_ptr<InstancingBatch>> instancingBatches;
-
 	shared_ptr<Terrain> terrain;
 };

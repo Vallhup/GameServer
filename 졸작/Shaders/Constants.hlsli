@@ -11,7 +11,7 @@ static const float PI = 3.14159265359;
 // CSM Constants
 //-------------------------------------------------------
 
-const static float cascadeBias[4] = { 0.0001f, 0.0003f, 0.0008f, 0.0018f };
+const static float cascadeBias[4] = { 0.0001f, 0.0005f, 0.0008f, 0.0018f };
 
 //-------------------------------------------------------
 // Volumetric Fog Constants (Test)

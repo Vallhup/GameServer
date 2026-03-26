@@ -82,6 +82,6 @@ void TownScene::RequestSceneChange()
 	if (INPUT.GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
-			sManagerRef->RequestSceneChange(SceneType::MainGame);
+			sManagerRef->RequestLoadingScene(SceneType::MainGame);
 	}
 }

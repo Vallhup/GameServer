@@ -4,7 +4,7 @@
 #include "Component.h"
 
 struct Transform : public Component {
-	DirectX::XMFLOAT3 position{ 10.0f, 5.0f, 10.0f };
+	DirectX::XMFLOAT3 position{ -72.0f, -350.0f, -382.0f };
 	DirectX::XMFLOAT4 rotation{ 0, 0, 0, 1 };
 	DirectX::XMFLOAT3 scale{ 1, 1, 1 };
 };

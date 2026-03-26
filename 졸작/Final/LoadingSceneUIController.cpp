@@ -4,6 +4,7 @@
 #include "UIManager.h"
 #include "Engine.h"
 #include "Input.h"
+#include "SceneManager.h"
 
 void LoadingSceneUIController::Init(UIManager* manager)
 {
@@ -44,7 +45,7 @@ void LoadingSceneUIController::Update(float deltaTime)
 
 	if (loadProgress >= 1.0f && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 	{
-		SCENE_MANAGER->RequestSceneChange(SceneType::Select);
+		SCENE_MANAGER->RequestSceneChange(targetScene);
 	}
 }
 
@@ -67,4 +68,9 @@ void LoadingSceneUIController::SetProgress(float progress)
 	if (loadArrow) {
 		loadArrow->SetPosition((WinSize.x * 0.446f) / 2.f + loadBarMaxWidth * progress, WinSize.y * 0.73f);
 	}
+}
+
+void LoadingSceneUIController::SetTargetScene(SceneType type)
+{
+	targetScene = type;
 }

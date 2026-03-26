@@ -10,9 +10,7 @@ int SelectCascade(float viewDepth)
         return 0;
     if (viewDepth < cascadeSplit.y)
         return 1;
-    if (viewDepth < cascadeSplit.z)
-        return 2;
-    return 2;
+    return 1;
 }
 
 float CalculateShadow(float3 worldPos, float viewDepth)
@@ -33,7 +31,7 @@ float CalculateShadow(float3 worldPos, float viewDepth)
     float currentDepth = lightSpacePos.z;
     
     float shadow = 0.0f;
-    float2 texelSize = 1.0 / 4096.0;
+    float2 texelSize = 1.0 / 2048.0;
     
     for (int x = -2; x <= 2; ++x)
     {

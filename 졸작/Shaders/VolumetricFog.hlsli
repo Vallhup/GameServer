@@ -18,13 +18,11 @@ float BeerLambert(float density, float distance)
 
 float SampleShadowMap(float3 worldPos, float viewDepth)
 {
-    int cascade = 2;
+    int cascade = 1;
     if (viewDepth < cascadeSplit.x)
         cascade = 0;
     if (viewDepth < cascadeSplit.y)
         cascade = 1;
-    if (viewDepth < cascadeSplit.z)
-        cascade = 2;
     
     float4 lightSpacePos = mul(float4(worldPos, 1.0), lightVP[cascade]);
     

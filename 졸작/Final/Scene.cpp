@@ -104,3 +104,8 @@ void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
 	}
 	}
 }
+
+void Scene::SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches)
+{
+	instancingBatches = move(batches);
+}

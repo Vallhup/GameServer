@@ -143,6 +143,13 @@ void SceneManager::RequestSceneChange(SceneType type)
     nextSceneType = type;
 }
 
+void SceneManager::RequestLoadingScene(SceneType targetSceneType)
+{
+    auto* loading = static_cast<LoadingScene*>(mScenes[(size_t)SceneType::Loading].get());
+    loading->SetTargetScene(targetSceneType);
+    RequestSceneChange(SceneType::Loading);
+}
+
 void SceneManager::ProcessPendingSceneChange(DX12Core& core)
 {
     if (!pendingSceneChange) return;
@@ -159,9 +166,19 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
     size_t index = static_cast<size_t>(nextSceneType);
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
+    
+    MoveInstancingBatches(nextSceneType);
+
     mCurrentScene->Initialize(hwnd, core);
     UI_MANAGER->SetCurrentScene(nextSceneType);
     currSceneType = nextSceneType;
 
     core.FlushCommandQueue();
+}
+
+void SceneManager::MoveInstancingBatches(SceneType type)
+{
+    auto* loading = static_cast<LoadingScene*>(mScenes[(size_t)SceneType::Loading].get());
+    auto batches = loading->TakeBatches(type);
+    mCurrentScene->SetInstancingBatches(move(batches));
 }

@@ -285,6 +285,6 @@ void SelectScene::RequestSceneChange()
 	if (INPUT.GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
-			sManagerRef->RequestSceneChange(SceneType::Town);
+			sManagerRef->RequestLoadingScene(SceneType::Town);
 	}
 }

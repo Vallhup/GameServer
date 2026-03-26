@@ -94,28 +94,28 @@ void SoloGameScene::CreateMap()
 //	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/ground", L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
 //#pragma endregion
 
-//#pragma region Initialize Map2 Elements
-//	InstanceLoader mapLoader;
-//	mapLoader.Load(L"../Assets/FBXModel/Map2/MapInstanceData.txt");
-//
-//	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
-//		if (instanceData.empty())
-//			continue;
-//
-//		wstring path = L"../Assets/FBXModel/Map2/" + wstring(modelName.begin(), modelName.end());
-//
-//		if (!filesystem::exists(path + L"_0.mesh"))
-//			continue;
-//
-//		CreateAndBatchObjects(path, instanceData, instancingBatches);
-//	}
-//#pragma endregion
+#pragma region Initialize VillageMap Elements
+	InstanceLoader mapLoader;
+	mapLoader.Load(L"../Assets/FBXModel/VillageMap/MapInstanceData.txt");
 
-	constexpr InstanceData testData = {
+	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
+		if (instanceData.empty())
+			continue;
+
+		wstring path = L"../Assets/FBXModel/VillageMap/" + wstring(modelName.begin(), modelName.end());
+
+		if (!filesystem::exists(path + L"_0.mesh"))
+			continue;
+
+		CreateAndBatchObjects(path, instanceData, instancingBatches);
+	}
+#pragma endregion
+
+	/*constexpr InstanceData testData = {
 		{ 14.0f, 4.0f, 14.0f }, { 0.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f }, false, 25.0f
 	};
 
-	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/CaveMap/SM_Wall_Aztec_B", testData));
+	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/VillageMap/SM_Wall_04", testData));*/
 }
 
 void SoloGameScene::CreateEffectSamples()
@@ -333,7 +333,7 @@ void SoloGameScene::InitializeLogic()
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
 
-	CreateMap();
+	//CreateMap();
 	CreateBossObject();
 	CreateEffectSamples();
 

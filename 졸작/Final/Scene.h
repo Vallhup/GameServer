@@ -26,6 +26,7 @@ public:
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
 	void HandlePacket(const PacketHeader& header, const BYTE* data);
+	void SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches);
 
 protected:
 	virtual void InitializeSceneObjectPools() = 0;
@@ -61,6 +62,8 @@ protected:
 	SceneManager* sManagerRef = nullptr;
 
 	unique_ptr<Camera> cam;
+
+	vector<shared_ptr<InstancingBatch>> instancingBatches;
 };
 
 template <typename T>
