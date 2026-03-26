@@ -152,6 +152,9 @@
     <ClCompile Include="EntityCommandConsumeSystem.cpp">
       <Filter>ECS\System</Filter>
     </ClCompile>
+    <ClCompile Include="ActionConditionCollectSystem.cpp">
+      <Filter>ECS\System\Action</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionTimeSystem.h">
@@ -379,6 +382,33 @@
     <ClInclude Include="EntityCommandConsumeSystem.h">
       <Filter>ECS\System</Filter>
     </ClInclude>
+    <ClInclude Include="ActionConditionCollectSystem.h">
+      <Filter>ECS\System\Action</Filter>
+    </ClInclude>
+    <ClInclude Include="Action_v2.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="BuffDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnSetDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="IDs.h">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -485,6 +515,12 @@
     </Filter>
     <Filter Include="FSM\Normal\MovementPolicy">
       <UniqueIdentifier>{aa5136d0-4a12-4f05-bb46-848492ef0bdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{f8d1d43e-0bea-4505-be9d-386880ced6f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Definition">
+      <UniqueIdentifier>{79b63e12-648f-4eb8-a404-ed7b0c26470b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

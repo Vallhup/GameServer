@@ -1,0 +1,256 @@
+#pragma once
+
+#include "AnimationId.h"
+#include "IDs.h"
+#include <string>
+
+enum class ActionKind : uint8_t
+{
+	None,
+	Attack, 
+	Dodge,
+	Parry,
+	Stun,
+	Hit,
+	Guard,
+	UseItem,
+	Dead
+};
+
+enum class PlayerActionInput : uint8_t
+{
+	None,
+	LightAttack,
+	HeavAttack,
+	Guard,
+	Parry,
+	UseItem
+};
+
+enum class ActionNormalizedPolicy : uint8_t
+{
+	FixedDuration,
+	Holdable
+};
+
+enum class ActionEndType : uint8_t
+{
+	NaturalEnd,
+	HoldRelease,
+	ImmediateTransition
+};
+
+struct ActionEndPolicyDef
+{
+	ActionEndType endType;
+	ActionId defaultNextActionId;
+};
+
+enum class ActionRequestRequirementType : uint8_t
+{
+	None,
+	HasEnoughStamina,
+	MissingStateFlag,
+	HasStateFlag,
+	HasTarget,
+	IsGrounded
+};
+
+struct ActionRequestRequirementDef
+{
+	ActionRequestRequirementType type;
+	std::optional<float> parameter;
+};
+
+enum class ActionResourceType : uint8_t
+{
+	Hp,
+	Stamina
+};
+
+enum class ActionResourceConsumeTiming : uint8_t
+{
+	OnRequest,
+	OnCommit,
+	OnWindowEnter
+};
+
+struct ActionResourceCostDef
+{
+	ActionResourceType type;
+	ActionResourceConsumeTiming consumeTiming;
+	float amount;
+};
+
+enum class ActionInterruptCauseType : uint8_t
+{
+	OnHitReceived,
+	OnParried,
+	OnHpZero
+};
+
+enum class ActionWindowPolicy : uint8_t
+{
+	Always,
+	Range
+};
+
+struct ActionInterruptRule
+{
+	ActionInterruptCauseType causeType;
+	ActionId toActionId;
+	ActionWindowPolicy windowPolicy;
+	std::optional<float> windowStartNormalized;
+	std::optional<float> windowEndNormalized;
+	int priority;
+};
+
+enum class ActionCancelKind : uint8_t
+{
+	Combo,
+	HoldRelease,
+	DodgeCancel,
+	GuardCancel
+};
+
+struct ActionCancelRule
+{
+	ActionCancelKind cancelKind;
+	ActionId toActionId;
+	ActionWindowPolicy windowPolicy;
+	std::optional<float> windowStartNormalized;
+	std::optional<float> windowEndNormalized;
+	int priority;
+};
+
+struct ActionTransitionRuleDef
+{
+	std::vector<ActionInterruptRule> interruptRules;
+	std::vector<ActionCancelRule> cancelRules;
+};
+
+enum class HorizontalMovementMode : uint8_t
+{
+	None,
+	ForwardFixedDistance,
+	InputDirectionDistance
+};
+
+enum class RotationMode : uint8_t
+{
+	None,
+	FaceMoveDirection,
+	FaceTarget
+};
+
+enum class VerticalMovementMode : uint8_t
+{
+	None,
+	FixedOffset
+};
+
+enum class DirectionPolicy : uint8_t
+{
+	ActionStartInput,
+	CurrentInput,
+	FacingDirection,
+	TargetDirection
+};
+
+enum class DirectionSampleTiming : uint8_t
+{
+	OnSegmentStart,
+	Continuous
+};
+
+struct ActionMovementSegmentDef
+{
+	float startNormalized;
+	float endNormalized;
+
+	HorizontalMovementMode horizontalMoveMode;
+	std::optional<float> moveDistance;
+
+	RotationMode rotationMode;
+	std::optional<float> rotationRate;
+
+	VerticalMovementMode verticalMoveMode;
+	std::optional<float> verticalAmount;
+
+	DirectionPolicy dirPolicy;
+	DirectionSampleTiming dirSampleTiming;
+};
+
+using CombatProfileId = uint16_t;
+
+enum class CombatWindowType : uint8_t
+{
+	Attack,
+	Parry,
+	Armor,
+	Invulnerability
+};
+
+enum class ActionCombatApplyTo : uint8_t
+{
+	FrontPhysical,
+	ParryableAttack
+};
+
+struct ActionCombatWindowDef
+{
+	CombatWindowType windowType;
+	float startNormalized;
+	float endNormalized;
+
+	CombatProfileId profileId;
+	std::optional<ActionCombatApplyTo> appliesTo;
+};
+
+enum class EventType : uint8_t
+{
+	SpawnProjectile,
+	PlayEffect
+};
+
+enum class TriggerConditionType : uint8_t
+{
+	Always,
+	OnParrySuccess
+};
+
+using EventPayloadId = uint16_t;
+
+struct ActionEventDef
+{
+	EventType type;
+	float timeNormalized;
+	std::optional<EventPayloadId> payloadId;
+	TriggerConditionType conditionType;
+};
+
+using ComboGroupId = uint16_t;
+
+struct ActionDef
+{
+	ActionId id;
+	std::string name;
+	
+	CharacterId characterId;
+	ActionKind kind;
+	PlayerActionInput playerInput;
+
+	std::optional<ComboGroupId> comboGroupId;
+	std::optional<uint8_t> comboIndex;
+
+	float duration;
+	ActionNormalizedPolicy normalizedPolicy;
+
+	ActionEndPolicyDef endPolicy;
+	std::vector<ActionRequestRequirementDef> requestRequirements;
+	std::vector<ActionResourceCostDef> resourceCosts;
+	ActionTransitionRuleDef transitionRule;
+	std::vector<ActionCombatWindowDef> combatWindows;
+	std::vector<ActionEventDef> events;
+	std::vector<ActionMovementSegmentDef> moveSegments;
+};

@@ -161,6 +161,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ActionConditionCollectSystem.cpp" />
     <ClCompile Include="ActionManager.cpp" />
     <ClCompile Include="ActionMoveSystem.cpp" />
     <ClCompile Include="ActionTimeSystem.cpp" />
@@ -220,11 +221,14 @@
   <ItemGroup>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
     <ClInclude Include="Action.h" />
+    <ClInclude Include="ActionConditionCollectSystem.h" />
     <ClInclude Include="ActionData.h" />
+    <ClInclude Include="ActionDef.h" />
     <ClInclude Include="ActionManager.h" />
     <ClInclude Include="ActionMoveSystem.h" />
     <ClInclude Include="ActionTimeSystem.h" />
     <ClInclude Include="ActionTransitionSystem.h" />
+    <ClInclude Include="Action_v2.h" />
     <ClInclude Include="AI.h" />
     <ClInclude Include="AIDecisionSystem.h" />
     <ClInclude Include="AIExecutionSystem.h" />
@@ -233,14 +237,17 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationCommitSystem.h" />
     <ClInclude Include="AnimationData.h" />
+    <ClInclude Include="AnimationDef.h" />
     <ClInclude Include="AnimationFrameSystem.h" />
     <ClInclude Include="AnimationManager.h" />
     <ClInclude Include="AnimationPoseBindSystem.h" />
     <ClInclude Include="AnimationSelectSystem.h" />
     <ClInclude Include="BuffApplySystem.h" />
     <ClInclude Include="BuffData.h" />
+    <ClInclude Include="BuffDef.h" />
     <ClInclude Include="BuffManager.h" />
     <ClInclude Include="Bufs.h" />
+    <ClInclude Include="CharacterDef.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ColliderActivationSystem.h" />
     <ClInclude Include="ColliderUpdateSystem.h" />
@@ -258,6 +265,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="IAIState.h" />
+    <ClInclude Include="IDs.h" />
     <ClInclude Include="IMovementPolicy.h" />
     <ClInclude Include="Intent.h" />
     <ClInclude Include="LifecycleReplicationSystem.h" />
@@ -284,6 +292,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="ServerConnectionListener.h" />
     <ClInclude Include="SessionSendBufferManager.h" />
+    <ClInclude Include="SpawnSetDef.h" />
     <ClInclude Include="StatRecalSystem.h" />
     <ClInclude Include="Stats.h" />
     <ClInclude Include="stb_image.h" />
@@ -293,6 +302,7 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="ViewProcessingSystem.h" />
     <ClInclude Include="Visibility.h" />
+    <ClInclude Include="WorldDef.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="AI Pipeline 설계.txt" />
