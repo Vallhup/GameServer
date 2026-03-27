@@ -1,0 +1,140 @@
+# World 구조 재설계
+
+0. 재설계 목적
+    - 기존 World 구조의 핵심인 WorldService, WorldLeapManager, WorldScheduler의 디커플링
+    - World lifecycle state machine, Presence lifecycle state machine, 
+      completion / close / destroy 등 운영 정책 요구의 안정적 수용
+
+
+1. 새 구조의 계층과 책임
+
+    1. Definition/Policy 계층
+        - WorldDef를 읽는 순수 정책 계층
+        - "어떤 월드가 어떻게 운영되어야 하는가"만 정의
+
+
+    2. Instance / Runtime 계층
+        - 실제 시뮬레이션 컨테이너인 WorldInstance + WorldRuntime
+        - 기존 World의 역할을 흡수하되, 정책적 판단은 제외
+
+
+    3. Lifecycle 관리 계층
+        - WorldManager
+            - World lifecycle state machine
+            - presence lifecycle
+            - empty destroy delay
+            - completion close
+            - fallback close
+
+        - 기존 WorldService의 기능을 확장하여 재구성
+
+
+    4. Admission 계층
+        - WorldAdmissionService
+        - 입장 가능 여부와 reservation 판단
+            - stage
+            - join policy
+            - max player count
+            - reentry
+            - closing / destroy pending 상태
+            - in-flight transfer overflow
+
+
+    5. Transfer 계층
+        - WorldTransferService
+        - durable transaction 기반 월드 이동 처리
+            - WorldTransferRequest
+            - WorldTransferTxn (TransferStage)
+
+
+    6. Scheduling 계층
+        - WorldScheduler
+        - world stage와 lifecycle command flush를 인지하는 lifecycle-aware scheduler
+
+
+2. 새 구조의 설계 원칙과 보장 사항
+
+    1. 식별 체계 분리
+        - WorldDefId : 월드 정의 ID
+        - WorldId : 실제 생성된 런타임 world instance 핸들
+        - InstanceKey : 같은 WorldDefId 아래 여러 논리 인스턴스를 구분하는 resolve key
+
+
+    2. lifecycle state machine
+        - 새 구조는 World lifecycle, Presence lifecycle, Transfer lifecycle을 
+          별도 상태 모델로 표현하여, 월드가 현재 어떤 운영 상태에 있는지를
+          코드 레벨에서 명확히 추적 가능하게 하는 것을 목표로 한다.
+
+
+    3. Transfer의 request / txn 분리
+        - Transfer의 입력과 처리 상태를 분리함으로써 처리 도중 상태를
+          durable하게 보존하고 이를 운영 중 참고 자료로써 활용한다.
+
+
+3. 마일스톤 및 진행도
+    
+    1. 상태 모델 및 관리 골격 정리
+    목표
+        - lifecycle enum, world record, transfer txn, manager 인터페이스 안정화
+        - id 체계 고정
+
+    진행 상태
+        - 세부 naming / validation 규칙 추가 정리 필요
+
+
+    2. WorldManager 최소 구현
+    목표
+        - World resolve / create 흐름을 WorldManager로 이동
+        - 기존 WorldService 의존 제거
+
+    필요 작업
+        - 기존 WorldRegistry와 연결
+        - WorldDefId + InstanceKey 기반 resolve 규칙 명시
+        - persistent / instanced / session scoped 처리 기준 정리
+
+    진행 상태
+        - (2026. 03. 28 ~)
+
+
+    3. Admission / Transfer 분리 구현
+    목표
+        - WorldAdmissionService 도입
+        - WorldTransferService 도입
+        - 기존 WorldLeapManager 의존 제거
+
+    필요 작업
+        - Admission 판단
+        - request -> txn 생성
+        - txn progression 구현
+        - fail reason 및 fallback 정책 정의
+
+    진행 상태
+        - (2026. 03. 28 ~)
+
+
+    4. Presence / Lifecycle command 분리
+    목표
+        - presence를 별도 lifecycle 계층으로 분리
+        - 일반 command buffer와 lifecycle command buffer 분리
+
+    진행 상태
+        - (2026. 03. 28 ~)
+        
+
+    5. Scheduler 재작성 (0%)
+    목표
+        - scheduler를 lifecycle-aware 구조로 전환
+        - frame end direct commit 구조 제거
+
+    진행 상태
+        - (2026. 03. 28 ~)
+
+
+    6. Legacy 제거 및 migration 완료
+    목표
+        - WorldService, WorldLeapManager, 기존 WorldScheduler 제거
+        - 새 구조를 기본 운영 경로로 전환
+
+    진행 상태
+        - (2026. 03. 28 ~)
+
