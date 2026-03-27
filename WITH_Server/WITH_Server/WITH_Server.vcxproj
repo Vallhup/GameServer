@@ -302,7 +302,6 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="ViewProcessingSystem.h" />
     <ClInclude Include="Visibility.h" />
-    <ClInclude Include="WorldDef.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="AI Pipeline 설계.txt" />

@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AdmissionTypes.h" />
     <ClInclude Include="CommandBuffer.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentStorage.h" />
@@ -172,13 +173,11 @@
     <ClInclude Include="JobGraph.h" />
     <ClInclude Include="SystemMetaStorage.h" />
     <ClInclude Include="SystemMeta.h" />
-    <ClInclude Include="PlayerSnapshot.h" />
     <ClInclude Include="RepComponent.h" />
     <ClInclude Include="SystemMetaHelper.h" />
     <ClInclude Include="SystemScheduler.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="ViewFwd.h" />
-    <ClInclude Include="World.h" />
     <ClInclude Include="NetIdAllocator.h" />
     <ClInclude Include="NetIdRegistry.h" />
     <ClInclude Include="pch.h" />
@@ -186,17 +185,19 @@
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="WITH_Server_Framework.h" />
     <ClInclude Include="WorldBuilder.h" />
-    <ClInclude Include="WorldConfig.h" />
-    <ClInclude Include="WorldDesc.h" />
+    <ClInclude Include="WorldContentIds.h" />
+    <ClInclude Include="WorldDef.h" />
+    <ClInclude Include="WorldLifecycleEnums.h" />
     <ClInclude Include="WorldFactory.h" />
     <ClInclude Include="WorldId.h" />
     <ClInclude Include="WorldIdAllocator.h" />
-    <ClInclude Include="WorldLeapData.h" />
-    <ClInclude Include="WorldLeapManager.h" />
+    <ClInclude Include="WorldInstanceRecord.h" />
+    <ClInclude Include="WorldManager.h" />
     <ClInclude Include="WorldRegistry.h" />
     <ClInclude Include="WorldRuntime.h" />
-    <ClInclude Include="WorldScheduler.h" />
-    <ClInclude Include="WorldService.h" />
+    <ClInclude Include="WorldTargetSpec.h" />
+    <ClInclude Include="WorldTransferRequest.h" />
+    <ClInclude Include="WorldTransferTxn.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommandBuffer.cpp" />
@@ -206,7 +207,6 @@
     <ClCompile Include="JobGraph.cpp" />
     <ClCompile Include="SystemScheduler.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
-    <ClCompile Include="World.cpp" />
     <ClCompile Include="NetIdAllocator.cpp" />
     <ClCompile Include="NetIdRegistry.cpp" />
     <ClCompile Include="pch.cpp">
@@ -218,13 +218,13 @@
     <ClCompile Include="StorageRegistry.cpp" />
     <ClCompile Include="WorldBuilder.cpp" />
     <ClCompile Include="WorldIdAllocator.cpp" />
-    <ClCompile Include="WorldLeapManager.cpp" />
     <ClCompile Include="WorldRegistry.cpp" />
     <ClCompile Include="WorldRuntime.cpp" />
-    <ClCompile Include="WorldScheduler.cpp" />
-    <ClCompile Include="WorldService.cpp" />
     <ClInclude Include="System.h" />
     <ClCompile Include="SystemManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="World 구조 재설계.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

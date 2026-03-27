@@ -1,6 +1,8 @@
 #pragma once
 
-#include "IDs.h"
+#include "WorldContentIds.h"
+
+#include <vector>
 #include <string>
 #include <optional>
 
@@ -8,7 +10,7 @@ enum class WorldKind : uint8_t
 {
 	Hub,
 	Dungeon,
-	Filed
+	Field
 };
 
 enum class InstanceType : uint8_t
@@ -21,7 +23,7 @@ enum class InstanceType : uint8_t
 struct WorldTopologyDef
 {
 	WorldKind kind;
-	InstanceType type;
+	InstanceType instanceType;
 };
 
 enum class CreationPolicy : uint8_t
@@ -45,7 +47,7 @@ struct WorldEntryPolicyDef
 	bool allowReEntry;
 	bool destroyWhenEmpty;
 	std::optional<float> emptyDestroyDelaySec;
-	std::optional<WorldId> fallbackWorldId;
+	std::optional<WorldDefId> fallbackWorldDefId;
 };
 
 using MapResourceId = uint16_t;
@@ -61,7 +63,7 @@ struct NamedSpawnPointDef
 
 struct MapDef
 {
-	MapResourceId id;
+	MapResourceId resourceId;
 	SpawnPointId defaultPlayerSpawnPointId;
 	std::vector<NamedSpawnPointDef> namedSpawnPoints;
 	std::optional<NavigationProfileId> navigationProfileId;
@@ -120,23 +122,21 @@ enum class WorldLinkConditionType : uint8_t
 	RequireItem
 };
 
-using EntryPointId = uint16_t;
-
 struct WorldLinkRuleDef
 {
 	WorldLinkType linkType;
-	WorldId targetWorldId;
+	WorldDefId targetWorldDefId;
 
 	WorldLinkConditionType linkConditionType;
-	std::optional<float> conditionParameter;
+	std::optional<float> numericConditionParameter;
 
-	std::optional<WorldId> fallbackWorldId;
-	std::optional<EntryPointId> entryPoindId;
+	std::optional<WorldDefId> fallbackWorldDefId;
+	std::optional<SpawnPointId> spawnPointId;
 };
 
 struct WorldDef
 {
-	WorldId id;
+	WorldDefId id;
 	std::string name;
 
 	WorldTopologyDef topology;

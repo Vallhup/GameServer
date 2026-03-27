@@ -397,9 +397,6 @@
     <ClInclude Include="BuffDef.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
-    <ClInclude Include="WorldDef.h">
-      <Filter>Data\Definition</Filter>
-    </ClInclude>
     <ClInclude Include="SpawnSetDef.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>

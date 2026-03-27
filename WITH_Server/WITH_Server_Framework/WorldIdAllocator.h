@@ -4,7 +4,7 @@
 
 class WorldIdAllocator {
 public:
-	explicit WorldIdAllocator(uint32 reserve = 256);
+	explicit WorldIdAllocator(uint32_t reserve = 256);
 
 	WorldId Allocate();
 	void Free(WorldId worldId);
@@ -14,7 +14,7 @@ public:
 	void Clear();
 
 private:
-	std::vector<uint32> _gens;
-	std::vector<uint32> _freeIds;
+	std::vector<uint32_t> _gens;
+	std::vector<uint32_t> _freeIds;
 };
 

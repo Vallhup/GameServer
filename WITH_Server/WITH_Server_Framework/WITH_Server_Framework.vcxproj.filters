@@ -16,18 +16,6 @@
     <ClCompile Include="NetIdRegistry.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="World.cpp">
-      <Filter>Game\World\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldIdAllocator.cpp">
-      <Filter>Game\World\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldRegistry.cpp">
-      <Filter>Game\World\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldScheduler.cpp">
-      <Filter>Game\World\Manager</Filter>
-    </ClCompile>
     <ClCompile Include="JobGraph.cpp">
       <Filter>JobGraph</Filter>
     </ClCompile>
@@ -37,17 +25,8 @@
     <ClCompile Include="Job.cpp">
       <Filter>JobGraph</Filter>
     </ClCompile>
-    <ClCompile Include="WorldRuntime.cpp">
-      <Filter>Game\World\Core</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldLeapManager.cpp">
-      <Filter>Game\World\Manager\WorldLeap</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldService.cpp">
-      <Filter>Game\World\Core</Filter>
     </ClCompile>
     <ClCompile Include="SystemManager.cpp">
       <Filter>ECS\System\Core</Filter>
@@ -58,8 +37,17 @@
     <ClCompile Include="CommandBuffer.cpp">
       <Filter>ECS\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="WorldRuntime.cpp">
+      <Filter>Game\World\02_Runtime</Filter>
+    </ClCompile>
     <ClCompile Include="WorldBuilder.cpp">
-      <Filter>Game\World\Utility</Filter>
+      <Filter>Game\World\02_Runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldRegistry.cpp">
+      <Filter>Game\World\04_Management</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldIdAllocator.cpp">
+      <Filter>Game\World\00_Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -96,27 +84,6 @@
     <ClInclude Include="EventRegistry.h">
       <Filter>Game\Event</Filter>
     </ClInclude>
-    <ClInclude Include="World.h">
-      <Filter>Game\World\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldId.h">
-      <Filter>Game\World\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldIdAllocator.h">
-      <Filter>Game\World\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldRegistry.h">
-      <Filter>Game\World\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldScheduler.h">
-      <Filter>Game\World\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldDesc.h">
-      <Filter>Game\World\Parameter</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldConfig.h">
-      <Filter>Game\World\Parameter</Filter>
-    </ClInclude>
     <ClInclude Include="Job.h">
       <Filter>JobGraph</Filter>
     </ClInclude>
@@ -126,12 +93,6 @@
     <ClInclude Include="ThreadPool.h">
       <Filter>JobGraph</Filter>
     </ClInclude>
-    <ClInclude Include="WorldFactory.h">
-      <Filter>Game\World\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldRuntime.h">
-      <Filter>Game\World\Core</Filter>
-    </ClInclude>
     <ClInclude Include="RepComponent.h">
       <Filter>ECS\Component</Filter>
     </ClInclude>
@@ -140,18 +101,6 @@
     </ClInclude>
     <ClInclude Include="WITH_Server_Framework.h">
       <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldLeapManager.h">
-      <Filter>Game\World\Manager\WorldLeap</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldLeapData.h">
-      <Filter>Game\World\Manager\WorldLeap</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldService.h">
-      <Filter>Game\World\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerSnapshot.h">
-      <Filter>Game\World\Parameter</Filter>
     </ClInclude>
     <ClInclude Include="SystemMeta.h">
       <Filter>ECS\System\Metadata</Filter>
@@ -177,8 +126,50 @@
     <ClInclude Include="ViewFwd.h">
       <Filter>ECS\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="WorldLifecycleEnums.h">
+      <Filter>Game\World\00_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldRuntime.h">
+      <Filter>Game\World\02_Runtime</Filter>
+    </ClInclude>
     <ClInclude Include="WorldBuilder.h">
-      <Filter>Game\World\Utility</Filter>
+      <Filter>Game\World\02_Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldFactory.h">
+      <Filter>Game\World\08_Bootstrap</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldRegistry.h">
+      <Filter>Game\World\04_Management</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldId.h">
+      <Filter>Game\World\00_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldIdAllocator.h">
+      <Filter>Game\World\00_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldInstanceRecord.h">
+      <Filter>Game\World\04_Management</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDef.h">
+      <Filter>Game\World\00_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AdmissionTypes.h">
+      <Filter>Game\World\05_Admission</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTargetSpec.h">
+      <Filter>Game\World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTransferRequest.h">
+      <Filter>Game\World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTransferTxn.h">
+      <Filter>Game\World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldManager.h">
+      <Filter>Game\World\04_Management</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldContentIds.h">
+      <Filter>Game\World\00_Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -212,23 +203,11 @@
     <Filter Include="Game\World">
       <UniqueIdentifier>{a81af5f6-72ae-4ae8-bc4b-aabbb8f04c52}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\Manager">
-      <UniqueIdentifier>{f9aa007d-7d08-47cf-bcba-0abaab167169}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\World\Parameter">
-      <UniqueIdentifier>{fdf5e158-a6fe-4eca-846a-c0a5568daff2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\World\Core">
-      <UniqueIdentifier>{0a4f98f4-01b3-4e9b-a3d1-85fd1a4064fd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JobGraph">
       <UniqueIdentifier>{20f28bfd-9995-4570-913a-aecb95f4fae9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utility">
       <UniqueIdentifier>{6df8462f-88f4-4f0d-a3f4-882035ffcb3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\World\Manager\WorldLeap">
-      <UniqueIdentifier>{bc05f686-6dde-4e5f-afd4-334f1c774064}</UniqueIdentifier>
     </Filter>
     <Filter Include="ECS\System\Metadata">
       <UniqueIdentifier>{18ee01d1-aa2b-48c2-a030-ceee4d9573cb}</UniqueIdentifier>
@@ -236,8 +215,37 @@
     <Filter Include="ECS\System\Core">
       <UniqueIdentifier>{ddb1dc91-f93a-410b-a4ef-31216d9ef68c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\Utility">
-      <UniqueIdentifier>{bcad29e1-e0b9-46d1-889d-ce5716ce16cb}</UniqueIdentifier>
+    <Filter Include="Game\World\00_Common">
+      <UniqueIdentifier>{3336e0dc-12e7-4dd2-8e20-29a980beb473}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\World\01_Definition">
+      <UniqueIdentifier>{0a228783-608a-4632-920e-79f94050df2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\02_Runtime">
+      <UniqueIdentifier>{4bdbb86b-7547-44dd-9408-414946d005e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\03_Instance">
+      <UniqueIdentifier>{8e70feda-924f-4c1a-8bbd-143ea2e21a36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\04_Management">
+      <UniqueIdentifier>{f5475f71-2649-45e9-9b9f-814c03eebcad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\05_Admission">
+      <UniqueIdentifier>{2fdf79ee-cffa-4522-b89e-68c275c65c26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\06_Transfer">
+      <UniqueIdentifier>{63f3cbaf-f74b-4e5d-ba0a-7a0c1044fe09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\07_Scheduling">
+      <UniqueIdentifier>{fd4332c5-7cd4-4a19-ab9d-a2eb1a70739c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\World\08_Bootstrap">
+      <UniqueIdentifier>{b7305ae5-2079-44a5-bb70-5fc6375555cd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="World 구조 재설계.txt">
+      <Filter>Game\World</Filter>
+    </Text>
   </ItemGroup>
 </Project>
