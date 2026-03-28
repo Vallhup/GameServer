@@ -78,7 +78,7 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 		trans->position.y += totalMoveDelta.y;
 
 		if (totalMoveDelta.y < 1e-6f || trans->position.y <= groundY)
-			trans->position.y = 40.0f;
+			trans->position.y = groundY;
 
 		const auto* netComp = _runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity);
 		if (!netComp) return;

@@ -111,8 +111,8 @@ void LoadingScene::LoadTownGameResources()
 
 void LoadingScene::LoadMainGameResources()
 {
-	/*InstanceLoader mapLoader;
-	mapLoader.Load(L"../Assets/FBXModel/VillageMap/MapInstanceData.txt");
+	InstanceLoader mapLoader;
+	mapLoader.Load(L"../Assets/FBXModel/VillageMap/MapInstanceData.txt", L"../Assets/FBXModel/VillageMap/CullingData.txt");
 
 	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
 		if (instanceData.empty()) continue;
@@ -125,7 +125,7 @@ void LoadingScene::LoadMainGameResources()
 			});
 	}
 
-	totalTasks = loadTasks.size();*/
+	totalTasks = loadTasks.size();
 
 	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
 	if (controller) controller->SetProgress(1.0f);

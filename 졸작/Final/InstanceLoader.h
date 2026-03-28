@@ -11,12 +11,12 @@ struct InstanceData
 
 class InstanceLoader {
 public:
-	void Load(const wstring& filename);
+	void Load(const wstring& fileName, const wstring& cullingFileName);
 
 	const unordered_map<string, vector<InstanceData>>& GetAllData() const { return instanceData; }
 
 private:
-	bool ContainsAny(const string& str, initializer_list<string> keywords);
+	bool ContainsAny(const string& str, const vector<string>& keywords);
 
 private:
 	unordered_map<string, vector<InstanceData>> instanceData;

@@ -1,9 +1,20 @@
 #include "pch.h"
 #include "InstanceLoader.h"
 
-void InstanceLoader::Load(const wstring& filename)
+void InstanceLoader::Load(const wstring& fileName, const wstring& cullingFileName)
 {
-	ifstream file(filename);
+	ifstream cullingFile(cullingFileName);
+	if (!cullingFile.is_open()) return;
+
+	string name;
+	vector<string> cullingDatas;
+
+	while (cullingFile >> name)
+	{
+		cullingDatas.push_back(name);
+	}
+
+	ifstream file(fileName);
 	if (!file.is_open()) return;
 
 	string modelName;
@@ -14,10 +25,7 @@ void InstanceLoader::Load(const wstring& filename)
 		>> data.rotation.x >> data.rotation.y >> data.rotation.z
 		>> data.scale.x >> data.scale.y >> data.scale.z)
 	{
-		if (ContainsAny(modelName, { "Anvil", "Apple", "Axe", "Bar", "Barrel", "Beam",
-			"Bed", "Bench", "Bottle", "Bowl", "Candle", "Carrot", "Chair", "Crate", "Flagon",
-			"Goblet", "Hammer", "Horse", "Jar", "KettlePot", "Log", "Mug", "Plate",
-			"Pot", "Potato", "Pumpkin", "Sack", "Stone", "Stool", "Sword"}))
+		if (ContainsAny(modelName, cullingDatas))
 		{
 			data.distanceCull = true;
 			data.cullDistance = 50.0f;
@@ -29,7 +37,7 @@ void InstanceLoader::Load(const wstring& filename)
 	}
 }
 
-bool InstanceLoader::ContainsAny(const string& str, initializer_list<string> keywords)
+bool InstanceLoader::ContainsAny(const string& str, const vector<string>& keywords)
 {
 	for (const auto& keyword : keywords)
 	{

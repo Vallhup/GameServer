@@ -46,7 +46,7 @@ void InstancingBatch::BuildBuffers(DX12Core& core)
         data.position = transform->GetPosition();
         data.boundingBox = obj->GetWorldBoundingBox();
         data.cullDistance = obj->GetCullDistance();
-        data.needDistanceCull = false;
+        data.needDistanceCull = obj->NeedDistanceCull();
         cachedData.push_back(data);
     }
 
@@ -136,7 +136,7 @@ void InstancingBatch::Update(const BoundingFrustum& frustum, const XMVECTOR& cam
             visibleTransforms.push_back(data.worldMatrix);
         }
 
-        if (isNearPlayer && isVisible) {
+        if (isNearPlayer) {
             shadowTransforms.push_back(data.worldMatrix);
         }
     }

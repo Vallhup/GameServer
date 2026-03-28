@@ -98,8 +98,8 @@ float MapCollisionManager::SampleHeightAt(float x, float z) const
 	if (_heightMapData.empty()) return 0.0f;
 
 	// TEMP : 맵 크기 160 고정
-	float u = x / 160.0f;
-	float v = z / 160.0f;
+	float u = x / 1023.0f;
+	float v = z / 1023.0f;
 
 	if (u < 0.0f || u > 1.0f ||
 		v < 0.0f || v > 1.0f) return 0.0f;
@@ -124,14 +124,14 @@ float MapCollisionManager::SampleHeightAt(float x, float z) const
 	float h1 = h01 * (1.0f - fx) + h11 * fx;
 	float height = h0 * (1.0f - fz) + h1 * fz;
 	
-	// TEMP : Map Scale 600 고정
-	return height * 600.0f;
+	// TEMP : Map Scale 159.4766f 고정
+	return height * 159.4766f;
 }
 
 std::pair<int, int> MapCollisionManager::WorldToGrid(float x, float z) const
 {
 	// TODO : World 좌표 정규화해서 Grid좌표로 바꾸는 코드
-	static constexpr float mapSize = 160.0f;
+	static constexpr float mapSize = 1023.0f;
 
 	float u = x / mapSize;
 	float v = z / mapSize;
