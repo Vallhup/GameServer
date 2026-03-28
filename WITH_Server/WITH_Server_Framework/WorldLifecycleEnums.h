@@ -52,6 +52,7 @@ enum class AdmissionDecision : uint8_t
 enum class TransferFailureReason : uint8_t
 {
 	None,
+	TimedOut,
 	StaleSource,
 	TargetResolveFailed,
 	AdmissionRejected,

@@ -36,6 +36,8 @@ public:
 	bool AddInflightTransferOut(WorldId worldId, uint32_t slots);
 	bool RemoveInflightTransferOut(WorldId worldId, uint32_t slots);
 
+	const WorldRegistry& GetRegistry() const { return _registry; }
+
 private:
 	static void FillRecordFromDef(
 		WorldInstanceRecord& record,

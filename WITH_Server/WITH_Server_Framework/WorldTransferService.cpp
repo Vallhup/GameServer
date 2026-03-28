@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "WorldTransferService.h"
 
+#include "WorldRegistry.h"
+
 #include "WorldManager.h"
 #include "WorldInstanceRecord.h"
 
@@ -36,25 +38,31 @@ TransferId WorldTransferService::EnqueueRequest(
 	txn.sourceWorldId = request.sourceWorldId;
 	txn.target = request.target;
 	txn.partyId = request.partyId;
+	txn.allowFallback = request.allowFallback;
 
 	txn.createdAtSec = nowSec;
 	txn.updatedAtSec = nowSec;
 	txn.deadlineSec = nowSec + 10.0;
 
-	_txns.emplace(txn.id, std::move(txn));
+	_txns.try_emplace(txn.id, std::move(txn));
 	return txn.id;
 }
 
 void WorldTransferService::Tick(const double nowSec)
 {
-	for (auto& [id, txn] : _txns)
+	for (auto& [_, txn] : _txns)
 	{
-		(void)id;
-
 		if (txn.IsTerminal())
 			continue;
 
 		txn.updatedAtSec = nowSec;
+
+		if (IsTimedOut(txn, nowSec))
+		{
+			FailTxn(txn, TransferFailureReason::TimedOut, nowSec);
+			continue;
+		}
+
 		ProgressTxn(txn, nowSec);
 	}
 }
@@ -297,6 +305,85 @@ bool WorldTransferService::StepReleaseSource(WorldTransferTxn& txn, const double
 	return true;
 }
 
+bool WorldTransferService::IsTimedOut(const WorldTransferTxn& txn, const double nowSec) const
+{
+	return
+		txn.deadlineSec > 0.0 &&
+		nowSec >= txn.deadlineSec;
+}
+
+void WorldTransferService::CleanupFailedTxn(WorldTransferTxn& txn, const double nowSec)
+{
+	switch (txn.stage) {
+	case TransferStage::Requested:
+	case TransferStage::SourceValidated:
+	case TransferStage::TargetResolved:
+	{
+		CleanupPresenceOnFailure(txn, nowSec);
+		break;
+	}
+	case TransferStage::AdmissionReserved:
+	case TransferStage::SnapshotBuilt:
+	{
+		CleanupReservationOnFailure(txn);
+		CleanupPresenceOnFailure(txn, nowSec);
+		txn.snapshots.clear();
+		break;
+	}
+	case TransferStage::TargetImported:
+	{
+		CleanupReservationOnFailure(txn);
+		CleanupImportedTargetOnFailure(txn);
+		CleanupPresenceOnFailure(txn, nowSec);
+		txn.snapshots.clear();
+		break;
+	}
+	case TransferStage::SourceReleased:
+	case TransferStage::Completed:
+	case TransferStage::Failed:
+	default:
+	{
+		break;
+	}
+	}
+
+}
+
+void WorldTransferService::CleanupPresenceOnFailure(WorldTransferTxn& txn, const double nowSec)
+{
+	for (uint32_t connectionId : txn.connectionIds)
+	{
+		_presenceManager.FailTransfer(connectionId, txn.id, nowSec);
+	}
+}
+
+void WorldTransferService::CleanupReservationOnFailure(WorldTransferTxn& txn)
+{
+	if (txn.reservation.IsActiveReservation())
+	{
+		_admissionService.CancelReservation(txn.reservation.ticket);
+	}
+}
+
+void WorldTransferService::CleanupImportedTargetOnFailure(WorldTransferTxn& txn)
+{
+	if (!txn.resolvedTargetWorldId.IsValid())
+		return;
+
+	WorldInstanceRecord* target = _worldManager.FindRecord(txn.resolvedTargetWorldId);
+	if (target == nullptr)
+		return;
+
+	if (target->activePlayers >= txn.PlayerCount())
+	{
+		target->activePlayers -= txn.PlayerCount();
+	}
+	else
+	{
+		target->activePlayers = 0;
+	}
+}
+
 void WorldTransferService::FailTxn(
 	WorldTransferTxn& txn,
 	TransferFailureReason reason,
@@ -304,14 +391,22 @@ void WorldTransferService::FailTxn(
 {
 	txn.failReason = reason;
 
-	if (txn.reservation.IsActiveReservation())
+	if (reason == TransferFailureReason::TimedOut)
 	{
-		_admissionService.CancelReservation(txn.reservation.ticket);
+		++txn.retryCount;
 	}
 
-	for (uint32_t connectionId : txn.connectionIds)
+	if (txn.stage == TransferStage::TargetImported ||
+		reason == TransferFailureReason::SourceReleaseFailed)
 	{
-		_presenceManager.FailTransfer(connectionId, txn.id, nowSec);
+		txn.rollbackRequired = true;
+	}
+
+	CleanupFailedTxn(txn, nowSec);
+
+	if (TryApplyFallback(txn, reason, nowSec))
+	{
+		return;
 	}
 
 	txn.stage = TransferStage::Failed;
@@ -320,6 +415,84 @@ void WorldTransferService::FailTxn(
 void WorldTransferService::CompleteTxn(WorldTransferTxn& txn)
 {
 	txn.stage = TransferStage::Completed;
+}
+
+bool WorldTransferService::CanFallback(
+	const WorldTransferTxn& txn,
+	TransferFailureReason reason) const
+{
+	if (!txn.allowFallback)
+		return false;
+
+	switch (reason) {
+	case TransferFailureReason::TargetResolveFailed:
+	case TransferFailureReason::AdmissionRejected:
+	{
+		return true;
+	}
+	case TransferFailureReason::TimedOut:
+	{
+		return
+			txn.stage == TransferStage::Requested ||
+			txn.stage == TransferStage::SourceValidated ||
+			txn.stage == TransferStage::TargetResolved ||
+			txn.stage == TransferStage::AdmissionReserved;
+	}
+	default:
+	{
+		return false;
+	}
+	}
+}
+
+bool WorldTransferService::TryApplyFallback(
+	WorldTransferTxn& txn,
+	TransferFailureReason reason,
+	const double nowSec)
+{
+	if (!CanFallback(txn, reason))
+		return false;
+
+	const std::optional<WorldTargetSpec> fallbackTarget = BuildFallbackTarget(txn);
+	if (!fallbackTarget.has_value())
+		return false;
+
+	txn.target = *fallbackTarget;
+	txn.resolvedTargetWorldId = WorldId::Invalid();
+	txn.reservation = AdmissionReservation{};
+	txn.snapshots.clear();
+	txn.failReason = TransferFailureReason::None;
+	txn.rollbackRequired = false;
+	txn.updatedAtSec = nowSec;
+	txn.deadlineSec = nowSec + 10.0;
+	++txn.retryCount;
+
+	// source 검증은 이미 끝난 것으로 보고 target resolve부터 재시도
+	txn.stage = TransferStage::SourceValidated;
+	return true;
+}
+
+std::optional<WorldTargetSpec> WorldTransferService::BuildFallbackTarget(
+	const WorldTransferTxn& txn) const
+{
+	if (txn.target.explicitTargetId.has_value())
+		return std::nullopt;
+
+	if (!txn.target.targetWorldDefId.has_value())
+		return std::nullopt;
+
+	const WorldDef* targetDef =
+		_worldManager.GetRegistry().FindWorldDef(*txn.target.targetWorldDefId);
+	if (targetDef == nullptr)
+		return std::nullopt;
+
+	if (!targetDef->entryPolicy.fallbackWorldDefId.has_value())
+		return std::nullopt;
+
+	WorldTargetSpec spec;
+	spec.targetWorldDefId = *targetDef->entryPolicy.fallbackWorldDefId;
+	spec.instanceKey = 0;
+	return spec;
 }
 
 TransferId WorldTransferService::AllocateTransferId()

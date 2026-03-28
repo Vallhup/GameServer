@@ -22,6 +22,8 @@ struct WorldTransferTxn
 
 	PartyId partyId;
 
+	bool allowFallback{ false };
+
 	WorldId resolvedTargetWorldId{ WorldId::Invalid() };
 	AdmissionReservation reservation;
 

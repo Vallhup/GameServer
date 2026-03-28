@@ -143,6 +143,7 @@ bool PresenceManager::FailTransfer(
 		return false;
 
 	record->state = PresenceStage::Active;;
+	record->sourceWorldId = WorldId::Invalid();
 	record->targetWorldId = WorldId::Invalid();
 	record->activeTransferId = 0;
 	record->updatedAtSec = nowSec;
