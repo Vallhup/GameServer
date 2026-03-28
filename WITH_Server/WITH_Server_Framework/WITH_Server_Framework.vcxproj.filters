@@ -43,11 +43,26 @@
     <ClCompile Include="WorldBuilder.cpp">
       <Filter>Game\World\02_Runtime</Filter>
     </ClCompile>
+    <ClCompile Include="WorldIdAllocator.cpp">
+      <Filter>Game\World\00_Common</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldManager.cpp">
+      <Filter>Game\World\04_Management</Filter>
+    </ClCompile>
     <ClCompile Include="WorldRegistry.cpp">
       <Filter>Game\World\04_Management</Filter>
     </ClCompile>
-    <ClCompile Include="WorldIdAllocator.cpp">
-      <Filter>Game\World\00_Common</Filter>
+    <ClCompile Include="WorldInstance.cpp">
+      <Filter>Game\World\03_Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldAdmissionService.cpp">
+      <Filter>Game\World\05_Admission</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTransferService.cpp">
+      <Filter>Game\World\06_Transfer</Filter>
+    </ClCompile>
+    <ClCompile Include="PresenceManager.cpp">
+      <Filter>Game\World\04_Management</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -135,12 +150,6 @@
     <ClInclude Include="WorldBuilder.h">
       <Filter>Game\World\02_Runtime</Filter>
     </ClInclude>
-    <ClInclude Include="WorldFactory.h">
-      <Filter>Game\World\08_Bootstrap</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldRegistry.h">
-      <Filter>Game\World\04_Management</Filter>
-    </ClInclude>
     <ClInclude Include="WorldId.h">
       <Filter>Game\World\00_Common</Filter>
     </ClInclude>
@@ -170,6 +179,36 @@
     </ClInclude>
     <ClInclude Include="WorldContentIds.h">
       <Filter>Game\World\00_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldResolveKey.h">
+      <Filter>Game\World\00_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldResolveRules.h">
+      <Filter>Game\World\00_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldRegistry.h">
+      <Filter>Game\World\04_Management</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldInstance.h">
+      <Filter>Game\World\03_Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="PresenceRecord.h">
+      <Filter>Game\World\04_Management</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldAdmissionService.h">
+      <Filter>Game\World\05_Admission</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTransferService.h">
+      <Filter>Game\World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldIds.h">
+      <Filter>Game\World\00_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="PresenceManager.h">
+      <Filter>Game\World\04_Management</Filter>
+    </ClInclude>
+    <ClInclude Include="IWorldInstanceFactory.h">
+      <Filter>Game\World\08_Bootstrap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -247,5 +286,10 @@
     <Text Include="World 구조 재설계.txt">
       <Filter>Game\World</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="world_redesign_policy_summary.md">
+      <Filter>Game\World</Filter>
+    </None>
   </ItemGroup>
 </Project>

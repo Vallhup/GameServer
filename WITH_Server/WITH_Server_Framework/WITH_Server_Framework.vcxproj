@@ -169,8 +169,11 @@
     <ClInclude Include="BasicView.h" />
     <ClInclude Include="EventQueue.h" />
     <ClInclude Include="EventRegistry.h" />
+    <ClInclude Include="IWorldInstanceFactory.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobGraph.h" />
+    <ClInclude Include="PresenceManager.h" />
+    <ClInclude Include="PresenceRecord.h" />
     <ClInclude Include="SystemMetaStorage.h" />
     <ClInclude Include="SystemMeta.h" />
     <ClInclude Include="RepComponent.h" />
@@ -184,19 +187,24 @@
     <ClInclude Include="StorageRegistry.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="WITH_Server_Framework.h" />
+    <ClInclude Include="WorldAdmissionService.h" />
     <ClInclude Include="WorldBuilder.h" />
     <ClInclude Include="WorldContentIds.h" />
     <ClInclude Include="WorldDef.h" />
+    <ClInclude Include="WorldIds.h" />
+    <ClInclude Include="WorldInstance.h" />
     <ClInclude Include="WorldLifecycleEnums.h" />
-    <ClInclude Include="WorldFactory.h" />
     <ClInclude Include="WorldId.h" />
     <ClInclude Include="WorldIdAllocator.h" />
     <ClInclude Include="WorldInstanceRecord.h" />
     <ClInclude Include="WorldManager.h" />
     <ClInclude Include="WorldRegistry.h" />
+    <ClInclude Include="WorldResolveKey.h" />
+    <ClInclude Include="WorldResolveRules.h" />
     <ClInclude Include="WorldRuntime.h" />
     <ClInclude Include="WorldTargetSpec.h" />
     <ClInclude Include="WorldTransferRequest.h" />
+    <ClInclude Include="WorldTransferService.h" />
     <ClInclude Include="WorldTransferTxn.h" />
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +213,7 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="Job.cpp" />
     <ClCompile Include="JobGraph.cpp" />
+    <ClCompile Include="PresenceManager.cpp" />
     <ClCompile Include="SystemScheduler.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="NetIdAllocator.cpp" />
@@ -216,15 +225,22 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StorageRegistry.cpp" />
+    <ClCompile Include="WorldAdmissionService.cpp" />
     <ClCompile Include="WorldBuilder.cpp" />
     <ClCompile Include="WorldIdAllocator.cpp" />
+    <ClCompile Include="WorldInstance.cpp" />
+    <ClCompile Include="WorldManager.cpp" />
     <ClCompile Include="WorldRegistry.cpp" />
     <ClCompile Include="WorldRuntime.cpp" />
+    <ClCompile Include="WorldTransferService.cpp" />
     <ClInclude Include="System.h" />
     <ClCompile Include="SystemManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="World 구조 재설계.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="world_redesign_policy_summary.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
