@@ -54,6 +54,8 @@ public:
 		const double nowSec
 	);
 
+	bool CanReEnterWorld(uint32_t connectionId, WorldId targetWorldId) const;
+
 private:
 	std::unordered_map<uint32_t, PresenceRecord> _records;
 	PresenceId _nextPresenceId{ 1 };

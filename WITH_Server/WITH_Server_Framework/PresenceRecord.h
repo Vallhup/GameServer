@@ -19,7 +19,7 @@ struct PresenceRecord
 	TransferId activeTransferId{ 0 };
 
 	bool disconnected{ false };
-	bool reentryEligible{ false };
+	bool reEntryEligible{ false };
 
 	double updatedAtSec{ 0.0 };
 
@@ -38,5 +38,14 @@ struct PresenceRecord
 		return
 			state == PresenceStage::Active &&
 			currentWorldId == worldId;
+	}
+
+	inline bool CanReEnterWorld(WorldId targetWorldId) const
+	{
+		return
+			disconnected &&
+			reEntryEligible &&
+			currentWorldId == targetWorldId &&
+			!IsTransfering();
 	}
 };

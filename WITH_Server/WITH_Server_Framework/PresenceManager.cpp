@@ -178,3 +178,15 @@ bool PresenceManager::SetDisconnected(
 	record->updatedAtSec = nowSec;
 	return true;
 }
+
+bool PresenceManager::CanReEnterWorld(uint32_t connectionId, WorldId targetWorldId) const
+{
+	const PresenceRecord* record = FindByConnectionId(connectionId);
+	if (record == nullptr)
+		return false;
+
+	if (!targetWorldId.IsValid())
+		return false;
+
+	return record->CanReEnterWorld(targetWorldId);
+}

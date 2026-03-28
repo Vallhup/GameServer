@@ -1,8 +1,12 @@
 #include "pch.h"
 #include "WorldAdmissionService.h"
 
-WorldAdmissionService::WorldAdmissionService(WorldManager& worldManager)
-	: _worldMng(worldManager)
+#include "PresenceManager.h"
+
+WorldAdmissionService::WorldAdmissionService(
+	WorldManager& worldMng, 
+	PresenceManager& presenceMng)
+	: _worldMng(worldMng), _presenceMng(presenceMng)
 {
 }
 
@@ -138,8 +142,6 @@ AdmissionDecision WorldAdmissionService::EvaluateRequest(
 	if (record.IsClosingLike())
 		return AdmissionDecision::RejectedClosing;
 
-	// 현재 request에는 party / matchmaking context가 없으므로
-	// FreeJoin 외 정책은 보수적으로 거절한다.
 	switch (record.joinPolicy) {
 	case JoinPolicy::FreeJoin:
 	{
@@ -157,8 +159,14 @@ AdmissionDecision WorldAdmissionService::EvaluateRequest(
 	}
 	}
 
-	if (request.reason == AdmissionReason::ReEntry && !record.allowReEntry)
-		return AdmissionDecision::RejectedReEntry;
+	if (request.reason == AdmissionReason::ReEntry)
+	{
+		if (!record.allowReEntry)
+			return AdmissionDecision::RejectedReEntry;
+
+		if (!ValidateReEntryRequest(request))
+			return AdmissionDecision::RejectedReEntry;
+	}
 
 	if (!record.CanReserve(request.RequestedPlayerCount()))
 		return AdmissionDecision::RejectedCapacity;
@@ -170,6 +178,15 @@ AdmissionDecision WorldAdmissionService::EvaluateRequest(
 	}
 
 	return AdmissionDecision::Accepted;
+}
+
+bool WorldAdmissionService::ValidateReEntryRequest(const AdmissionRequest& request) const
+{
+	for (uint32_t connectionId : request.connectionIds)
+	{
+		if (!_presenceMng.CanReEnterWorld(connectionId, request.targetWorldId))
+			return false;
+	}
 }
 
 AdmissionResult WorldAdmissionService::MakeRejectedResult(AdmissionDecision decision) const
