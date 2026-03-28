@@ -14,6 +14,7 @@ public:
 	explicit WorldManager(WorldRegistry& registry);
 
 	WorldId ResolveOrCreate(WorldDefId worldDefId, uint64_t instanceKey);
+	WorldId RegisterPreCreatedWorld(WorldDefId worldDefId, uint64_t instanceKey);
 
 	WorldInstanceRecord* FindRecord(WorldId worldId);
 	const WorldInstanceRecord* FindRecord(WorldId worldId) const;
@@ -21,7 +22,6 @@ public:
 	void RequestClose(WorldId worldId);
 	void FlushLifecycle();
 	void CollectDestroyable();
-
 
 	// [ admission / transfer accounting ]
 	bool AddReservedSlots(WorldId worldId, uint32_t slots);
@@ -34,6 +34,13 @@ public:
 	bool RemoveInflightTransferOut(WorldId worldId, uint32_t slots);
 
 private:
+	static void FillRecordFromDef(
+		WorldInstanceRecord& record,
+		const WorldDef& def,
+		uint64_t normalizedInstanceKey
+	);
+
+
 	WorldRegistry& _registry;
 	std::unordered_map<WorldId, WorldInstanceRecord> _records;
 	std::unordered_map<WorldResolveKey, WorldId> _resolveIndex;
