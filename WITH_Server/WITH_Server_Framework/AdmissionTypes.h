@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "WorldId.h"
+#include "WorldIds.h"
 #include "WorldLifecycleEnums.h"
 
 enum class AdmissionReason : uint8_t
@@ -29,7 +30,7 @@ struct AdmissionRequest
 	std::vector<uint32_t> connectionIds;
 	AdmissionReason reason{ AdmissionReason::Transfer };
 
-	uint64_t partyId{ 0 };
+	PartyId partyId{ 0 };
 
 	inline bool IsValid() const
 	{
@@ -51,12 +52,12 @@ struct AdmissionReservation
 {
 	AdmissionReservationStage stage{ AdmissionReservationStage::None };
 	AdmissionReason reason{ AdmissionReason::Transfer };
-	uint64_t ticket{ 0 };
+	ReservationTicket ticket{ 0 };
 
 	WorldId targetWorldId{ WorldId::Invalid() };
 
 	// PartyOnly world에서 발급된 reservation이면 0이 아니어야 함
-	uint64_t partyId{ 0 };
+	PartyId partyId{ 0 };
 
 	// 기본 정책
 	// reservedSlots == request.connectionIds.size()
