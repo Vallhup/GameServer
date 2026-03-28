@@ -130,6 +130,146 @@
             - 추후 ResolveResult와 같은 관리 체계 추가
 
 
+    5. Transfer 실패 복구 정책
+
+        1. 기본 원칙
+            - Transfer는 완전한 원자적 transaction이 아니라,
+              단계별 side effect를 남기며 진행되는 durable transaction으로 본다.
+            - 따라서 실패 복구는 "전체를 원상복구"하는 방식이 아니라,
+              현재 stage까지 반영된 side effect를 기준으로
+              취소(cancel) 또는 보상(compensation)하는 방식으로 설계한다.
+            - FailTxn은 즉시 Failed로 끝내지 않고,
+              stage별 cleanup 정책을 먼저 수행한 뒤 terminal 상태로 전이한다.
+            - timeout은 일반 실패와 구분되는 별도 failure reason으로 관리한다.
+
+
+        2. side effect 발생 시점
+            - Requested
+                - request만 생성된 상태
+                - 아직 side effect 없음
+
+            - SourceValidated
+                - source world / source membership 검증만 끝난 상태
+                - 아직 side effect 없음
+
+            - TargetResolved
+                - target world는 확정되었고
+                  presence는 TransferPending 상태로 진입했을 수 있음
+                - reservation은 아직 없음
+
+            - AdmissionReserved
+                - target admission reservation이 발급되었고
+                  reservedSlots가 점유됨
+
+            - SnapshotBuilt
+                - source snapshot이 확보된 상태
+                - 1차 구현에서는 snapshot은 메모리상의 임시 데이터로 간주
+
+            - TargetImported
+                - target import / spawn이 반영되었을 수 있음
+                - reservation은 consumed 되었을 수 있음
+                - target activePlayers 증가,
+                  presence ImportedToTarget 전이가 일부 또는 전체 반영되었을 수 있음
+
+            - SourceReleased
+                - source release / despawn이 반영되었고
+                  presence CompleteTransfer까지 끝났을 수 있음
+
+
+        3. stage별 실패 복구 규칙
+
+            1. Requested / SourceValidated 실패
+                - reservation cleanup 없음
+                - source / target occupancy rollback 없음
+                - presence가 TransferPending으로 들어간 흔적이 있으면
+                  FailTransfer로 정리
+                - txn은 Failed로 종료
+
+            2. TargetResolved 실패
+                - reservation cleanup 없음
+                - presence TransferPending 정리 필요
+                - source / target occupancy rollback 없음
+                - txn은 Failed로 종료
+
+            3. AdmissionReserved 실패
+                - reservation이 active 상태이면 CancelReservation 수행
+                - presence TransferPending 정리
+                - source / target activePlayers 변경은 없음
+                - txn은 Failed로 종료
+
+            4. SnapshotBuilt 실패
+                - reservation이 active 상태이면 CancelReservation 수행
+                - presence TransferPending 정리
+                - snapshot 임시 데이터는 폐기
+                - source / target activePlayers 변경은 없음
+                - txn은 Failed로 종료
+
+            5. TargetImported 실패
+                - reservation이 아직 active면 CancelReservation 수행
+                - reservation이 이미 consumed 된 경우에는
+                  reservation 복구 대신 target side compensation을 수행
+                - target activePlayers 증가가 반영되었으면 해당 수만큼 감산
+                - presence ImportedToTarget / TransferPending 흔적 정리 필요
+                - 이 구간부터는 rollbackRequired = true 로 표시 가능
+                - txn은 Failed로 종료
+
+            6. SourceReleaseFailed
+                - 가장 위험한 실패 구간으로 간주
+                - target import는 이미 반영되었을 수 있으나
+                  source release / presence complete가 불완전할 수 있음
+                - 1차 구현에서는 자동 source 복구를 시도하지 않는다
+                - rollbackRequired = true 로 표시하고
+                  운영 개입 또는 후속 정리 대상으로 남긴다
+                - txn은 Failed로 종료
+
+
+        4. timeout 정책
+            - 각 txn은 deadlineSec을 가진다
+            - nowSec >= deadlineSec 이면 timeout으로 간주한다
+            - timeout은 별도 failure reason(TimedOut)으로 기록한다
+            - timeout 시 cleanup은 해당 시점의 stage에 맞는 복구 규칙을 따른다
+            - 1차 구현에서는 timeout 후 자동 retry를 수행하지 않는다
+            - retryCount는 운영 참고용 기록값으로만 유지한다
+
+
+        5. fallback 정책
+            - fallback은 allowFallback == true 인 요청에 대해서만 허용한다
+            - fallback은 초기 단계 실패에만 허용한다
+
+            1. fallback 허용 구간
+                - TargetResolveFailed
+                - AdmissionRejected
+                - TimedOut 이면서 stage <= AdmissionReserved 인 경우
+
+            2. fallback 금지 구간
+                - SnapshotBuilt 이후 실패
+                - TargetImported 실패
+                - SourceReleaseFailed
+
+            3. fallback target 규칙
+                - 우선순위 1 : target WorldDef 또는 link rule에 명시된 fallbackWorldDefId
+                - 우선순위 2 : 시스템 기본 fallback world
+                - fallback은 새로운 request를 만들어 재시도하는 것이 아니라,
+                  기존 txn의 실패 cleanup이 끝난 뒤 별도 정책으로 재진입시킨다
+
+
+        6. rollbackRequired의 의미
+            - rollbackRequired == false
+                - 일반 cleanup만으로 상태 정리가 가능한 실패
+            - rollbackRequired == true
+                - target import 또는 source release 이후의 실패처럼
+                  자동 정리가 불완전할 수 있는 실패
+                - 운영 개입 또는 별도 recovery pass의 대상
+
+
+        7. 구현상 제약 및 1차 범위
+            - 1차 구현에서는 retry 자동 재시도는 도입하지 않는다
+            - 1차 구현에서는 fallback도 초기 단계에서만 허용한다
+            - 1차 구현에서는 SourceReleaseFailed를 완전 자동 복구하지 않는다
+            - snapshot / import / release가 아직 mock 수준인 부분은
+              현재 side effect 모델에 맞춰 최소 cleanup만 수행한다
+
+
 4. 마일스톤 및 진행상황
 
     1. 상태 모델 및 관리 골격 정리
