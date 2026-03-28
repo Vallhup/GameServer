@@ -1,12 +1,10 @@
 #pragma once
 
 #include "WorldId.h"
+#include "WorldIds.h"
 #include "WorldLifecycleEnums.h"
 
-using PresenceId = uint64_t;
-using TransferId = uint64_t;
-
-struct PResenceRecord
+struct PresenceRecord
 {
 	PresenceId id{ 0 };
 
@@ -23,6 +21,8 @@ struct PResenceRecord
 	bool disconnected{ false };
 	bool reentryEligible{ false };
 
+	double updatedAtSec{ 0.0 };
+
 	inline bool IsTransfering() const
 	{
 		return activeTransferId != 0;
@@ -31,5 +31,12 @@ struct PResenceRecord
 	inline bool HasCurrentWorld() const
 	{
 		return currentWorldId.IsValid();
+	}
+
+	inline bool IsActiveInWorld(WorldId worldId) const
+	{
+		return
+			state == PresenceStage::Active &&
+			currentWorldId == worldId;
 	}
 };
