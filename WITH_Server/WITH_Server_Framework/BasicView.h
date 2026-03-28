@@ -2,7 +2,7 @@
 
 #include <array>
 
-#include "ECS.h"
+#include "ECSCore.h"
 #include "Entity.h"
 #include "Component.h"
 #include "ComponentStorage.h"
@@ -20,7 +20,7 @@ template<bool IsConst, CompT... Get, CompT... Ex>
 class BasicView<IsConst, std::tuple<Get...>, std::tuple<Ex...>> {
 	static_assert(sizeof...(Get) > 0, "BasicView must have at least one component to get.");
 
-	using ECS_ref = std::conditional_t<IsConst, const ECS&, ECS&>;
+	using ECS_ref = std::conditional_t<IsConst, const ECSCore&, ECSCore&>;
 
 	template<CompT T>
 	using storage_ptr = std::conditional_t<IsConst, const ComponentStorage<T>*, ComponentStorage<T>*>;
@@ -36,6 +36,9 @@ public:
 
 	class BasicViewIterator {
 	public:
+		using iterator_category = std::forward_iterator_tag;
+		using difference_type = std::ptrdiff_t;
+
 		BasicViewIterator(const BasicView* v, size_t i) : _view(v), _i(i) { Skip(); }
 
 		BasicViewIterator& operator++() { ++_i; Skip(); return *this; }
@@ -105,10 +108,10 @@ public:
 	using iterator = BasicViewIterator;
 
 	iterator begin() const { return iterator(this, 0); }
-	iterator end()	 const { return iterator(this, Size()); }
+	iterator end()	 const { return iterator(this, BaseSize()); }
 
 	bool Empty() const noexcept { return _empty; }
-	size_t Size() const noexcept { return _empty ? 0 : Base().Size(); }
+	size_t BaseSize() const noexcept { return _empty ? 0 : Base().Size(); }
 
 private:
 	void Init(ECS_ref ecs)
@@ -149,7 +152,7 @@ private:
 	const IStorage& Base() const { return *_pools[_base]; }
 
 	bool _empty{ false };
-	size_t _base;
+	size_t _base{ 0 };
 
 	std::array<const IStorage*, sizeof...(Get)> _pools{};
 	std::tuple<storage_ptr<Get>...> _getStorages;

@@ -6,6 +6,9 @@
 #include <unordered_map>
 #include <typeindex>
 #include <algorithm>
+#include <vector>
+#include <cassert>
+
 #include "System.h"
 
 class ECS;
@@ -59,62 +62,15 @@ public:
 		return static_cast<T*>(it->second);
 	}
 
-	std::span<System*> GetSystems(SystemPhase phase)
-	{
-		const int index = static_cast<int>(phase);
-		RebuildRaw(index);
-		return _rawSystems[index];
-	}
+	std::span<System*> GetSystems(SystemPhase phase);
+	std::span<const System*> GetSystems(SystemPhase phase) const;
 
-	std::span<const System*> GetSystems(SystemPhase phase) const
-	{
-		const int index = static_cast<int>(phase);
-		RebuildRaw(index);
-		return _rawConstSystems[index];
-	}
+	std::vector<SystemScheduleDesc> BuildScheduleDescs(SystemPhase phase) const;
 
-	std::vector<SystemScheduleDesc> BuildScheduleDescs(SystemPhase phase) const
-	{
-		const int index = static_cast<int>(phase);
-
-		std::vector<SystemScheduleDesc> out;
-		out.reserve(_systems[index].size());
-
-		for (const SystemEntry& entry : _systems[index])
-		{
-			System* sys = entry.system.get();
-			out.emplace_back(sys, &sys->Meta(), entry.registrationOrder);
-		}
-
-		std::sort(out.begin(), out.end(),
-			[](const auto& a, const auto& b)
-			{
-				return a.registrationOrder < b.registrationOrder;
-			});
-
-		return out;
-	}
+	void Clear();
 
 private:
-	void RebuildRaw(int index) const
-	{
-		if (!_rawSystemsDirty[index]) return;
-
-		_rawSystems[index].clear();
-		_rawConstSystems[index].clear();
-
-		_rawSystems[index].reserve(_systems[index].size());
-		_rawConstSystems[index].reserve(_systems[index].size());
-
-		for (const SystemEntry& entry : _systems[index])
-		{
-			System* sys = entry.system.get();
-			_rawSystems[index].push_back(sys);
-			_rawConstSystems[index].push_back(sys);
-		}
-
-		_rawSystemsDirty[index] = false;
-	}
+	void RebuildRaw(int index) const;
 
 	struct SystemEntry
 	{
@@ -122,6 +78,7 @@ private:
 		int registrationOrder{ -1 };
 	};
 
+private:
 	int _nextOrder{ 0 };
 
 	std::array<std::vector<SystemEntry>, kPhaseCnt> _systems;

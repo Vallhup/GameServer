@@ -1,19 +1,23 @@
 #pragma once
 
 #include "SystemMeta.h"
+#include "ECSView.h"
 
 class WorldRuntime;
 
+struct SystemContext
+{
+	WorldRuntime& runtime;
+	ECSView ecs;
+	double dtSec;
+};
+
 class System {
 public:
-	System(WorldRuntime& rt) : _runtime(rt) {}
 	virtual ~System() = default;
 
-	virtual void Execute(const double dT) = 0;
+	virtual void Execute(SystemContext& ctx) = 0;
 	virtual const SystemMeta& Meta() const = 0;
-
-protected:
-	WorldRuntime& _runtime;
 };
 
 template<typename T>
