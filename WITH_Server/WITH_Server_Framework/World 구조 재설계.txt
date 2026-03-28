@@ -130,29 +130,58 @@
             - 추후 ResolveResult와 같은 관리 체계 추가
 
 
-4. 마일스톤 및 진행도
-    
+4. 마일스톤 및 진행상황
+
     1. 상태 모델 및 관리 골격 정리
     목표
         - lifecycle enum, world record, transfer txn, manager 인터페이스 안정화
         - id 체계 고정
+        - resolve / admission / transfer / presence가 공유하는 상태 모델 정리
 
-    진행 상태
-        - 세부 naming / validation 규칙 추가 정리 필요
+    진행 상황
+        - 완료
+            - WorldStage / PresenceStage / TransferStage / AdmissionDecision /
+              TransferFailureReason 등 핵심 enum 정의 완료
+            - AdmissionRequest / AdmissionReservation / AdmissionResult 정의 완료
+            - WorldTransferRequest / WorldTransferTxn 정의 완료
+            - PresenceRecord 정의 완료
+
+        - 현재 수준
+            - 상태 모델의 큰 축은 고정 가능한 수준까지 올라왔음
+            - 새 구조의 최소 운영 골격을 설명할 수 있는 데이터 모델이 확보됨
+
+        - 남은 작업
+            - 세부 naming 정리
+            - validation / result type의 표준화
+            - rollback, fault handling, timeout 정책을 상태 모델에 더 엄격히 반영
 
 
     2. WorldManager 최소 구현
     목표
         - World resolve / create 흐름을 WorldManager로 이동
         - 기존 WorldService 의존 제거
+        - WorldDefId + instanceKey 기반 resolve 규칙을 코드에 반영
 
-    필요 작업
-        - 기존 WorldRegistry와 연결
-        - WorldDefId + InstanceKey 기반 resolve 규칙 명시
-        - persistent / instanced / session scoped 처리 기준 정리
+    진행 상황
+        - 부분 완료
+            - WorldRegistry 연동 완료
+            - ResolveOrCreate / RegisterPreCreatedWorld 구현 완료
+            - resolve index와 world record 등록 경로 구현 완료
+            - def 기반 record 초기화(FillRecordFromDef) 구현 완료
+            - reservedSlots / inFlightTransfersIn / inFlightTransfersOut accounting 구현 완료
+            - closeRequested 마킹 구현 완료
 
-    진행 상태
-        - (2026. 03. 28 ~)
+        - 현재 수준
+            - 월드 resolve / 생성 / record 등록 / 운영 카운터 관리의 최소 경로는 동작함
+            - Persistent / Instanced / SessionScoped resolve 규칙은 WorldResolveRules를 통해
+              검증 및 정규화되는 방향으로 연결됨
+
+        - 미구현 / 보강 필요
+            - FlushLifecycle 미구현
+            - CollectDestroyable 미구현
+            - 실제 stage progression(Allocated -> Bootstrapping -> Running -> Closing ...)
+              관리 로직 미구현
+            - empty destroy delay / completion close / fallback close 정책 미구현
 
 
     3. Admission / Transfer 분리 구현
@@ -160,33 +189,76 @@
         - WorldAdmissionService 도입
         - WorldTransferService 도입
         - 기존 WorldLeapManager 의존 제거
+        - request / txn / reservation을 분리한 durable flow 확보
 
-    필요 작업
-        - Admission 판단
-        - request -> txn 생성
-        - txn progression 구현
-        - fail reason 및 fallback 정책 정의
+    진행 상황
+        - 부분 완료
+            - WorldAdmissionService 구현 완료
+                - stage / closing / join policy / capacity / reentry /
+                  in-flight transfer overflow 기반 판단 구현
+                - reservation 발급 / consume / cancel / expire 구현
 
-    진행 상태
-        - (2026. 03. 28 ~)
+            - WorldTransferService 구현 완료
+                - request enqueue
+                - txn 저장 및 Tick 기반 progression
+                - SourceValidated -> TargetResolved -> AdmissionReserved ->
+                  SnapshotBuilt -> TargetImported -> SourceReleased -> Completed
+                  단계 전이 구현
+                - 실패 시 reservation cancel 및 presence fail 처리 구현
+
+            - request / txn 분리 구조는 코드 수준에서 반영 완료
+
+        - 현재 수준
+            - transfer는 "실제 import/release 로직이 mock인 최소 실행 골격"까지는 올라옴
+            - durable transaction 기반으로 단계 추적 가능한 구조가 마련됨
+
+        - 미구현 / 보강 필요
+            - 실제 snapshot 내용 구성
+            - 실제 target import / spawn 처리
+            - 실제 source release / despawn 처리의 강화
+            - deadline timeout 처리
+            - retry / rollback 고도화
+            - allowFallback 사용 및 fallback 정책 연결
 
 
     4. Presence / Lifecycle command 분리
     목표
         - presence를 별도 lifecycle 계층으로 분리
-        - 일반 command buffer와 lifecycle command buffer 분리
+        - transfer 과정의 source / target 귀속 상태를 명확히 추적
+        - lifecycle command 분리의 기반을 마련
 
-    진행 상태
-        - (2026. 03. 28 ~)
-        
+    진행 상황
+        - 부분 완료
+            - PresenceManager / PresenceRecord 구현 완료
+            - AttachToWorld / BeginTransfer / MarkTargetImported /
+              CompleteTransfer / FailTransfer / RemovePresence / SetDisconnected
+              경로 구현 완료
+            - connectionId 기준 presence 관리 및 transfer 연계 완료
 
-    5. Scheduler 재작성 (0%)
+        - 현재 수준
+            - presence lifecycle은 독립 관리가 가능한 상태까지 분리됨
+            - 다만 lifecycle command buffer 체계까지 분리된 것은 아님
+
+        - 미구현 / 보강 필요
+            - 일반 command buffer와 lifecycle command buffer의 실질적 분리
+            - reentryEligible 활용 정책 보강
+            - disconnect 이후 복귀 / 정리 정책 고도화
+            - world lifecycle과 presence lifecycle의 프레임 단위 flush 통합
+
+
+    5. Scheduler 재작성
     목표
         - scheduler를 lifecycle-aware 구조로 전환
+        - world stage와 lifecycle flush를 인지하는 실행 모델로 재작성
         - frame end direct commit 구조 제거
 
-    진행 상태
+    진행 상황
         - (2026. 03. 28 ~)
+
+        - 선행 조건
+            - WorldManager의 lifecycle flush / destroy collect 완성
+            - lifecycle command 경계 확정
+            - world stage progression 정책 확정
 
 
     6. Legacy 제거 및 migration 완료
@@ -194,6 +266,13 @@
         - WorldService, WorldLeapManager, 기존 WorldScheduler 제거
         - 새 구조를 기본 운영 경로로 전환
 
-    진행 상태
-        - (2026. 03. 28 ~)
+    진행 상황
+        - 미완료
+            - 새 구조의 핵심 골격은 생겼지만 운영 경로 전환 단계는 아님
+            - 특히 lifecycle / scheduler / 실제 import-release 경로가 아직 덜 닫힘
 
+        - 남은 작업
+            - legacy 호출 경로 차단
+            - 새 admission / transfer / presence 흐름을 기본 경로로 연결
+            - 운영 중 장애 복구 / fallback / close / destroy 정책 실장
+            - 테스트와 migration 검증 완료
