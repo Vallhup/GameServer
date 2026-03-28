@@ -71,4 +71,13 @@ struct WorldInstanceRecord
 
 		return GetEffectiveTargetOccupancy() + requestSlots <= maxPlayerCount;
 	}
+
+	inline bool HasNoOccupantsOrPendingWork() const
+	{
+		return
+			activePlayers == 0 &&
+			reservedSlots == 0 &&
+			inFlightTransfersIn == 0 &&
+			inFlightTransfersOut == 0;
+	}
 };

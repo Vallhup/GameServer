@@ -4,13 +4,13 @@
 
 enum class WorldStage : uint8_t
 {
-	Allocated,
-	Bootstrapping,
-	Running,
-	Closing,
-	DestroyPending,
-	Destroyed,
-	Faulted
+	Allocated,			// registry에는 생성되었지만 아직 runtime 시작 전
+	Bootstrapping,		// init / startup 중
+	Running,			// admission / transfer 대상 가능
+	Closing,			// 신규 admission 금지, 기존 플레이어 / 전이 정리 대기
+	DestroyPending,		// destroy 직전, 새 작업 금지
+	Destroyed,			// record는 남아 있어도 registry에는 실체 없음
+	Faulted				// 운영 실패 상태
 };
 
 enum class PresenceStage : uint8_t

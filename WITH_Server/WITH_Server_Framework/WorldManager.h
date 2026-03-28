@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <vector>
 
 #include "WorldId.h"
 #include "WorldResolveKey.h"
@@ -20,7 +21,9 @@ public:
 	const WorldInstanceRecord* FindRecord(WorldId worldId) const;
 
 	void RequestClose(WorldId worldId);
-	void FlushLifecycle();
+
+	// dtSec 기준 누적 시간 업데이트
+	void FlushLifecycle(double dtSec);
 	void CollectDestroyable();
 
 	// [ admission / transfer accounting ]
@@ -40,7 +43,30 @@ private:
 		uint64_t normalizedInstanceKey
 	);
 
+	bool TryFindAliveResolvedWorld(
+		const WorldResolveKey& key,
+		WorldId& outWorldId
+	);
 
+	WorldId CreateAndRegisterWorld(
+		const WorldDef& def,
+		uint64_t normalizedInstanceKey,
+		const WorldResolveKey& key
+	);
+
+	static WorldResolveKey MakeRecordResolveKey(const WorldInstanceRecord& record);
+
+	static bool HasClosingIntent(const WorldInstanceRecord& record);
+	static bool IsDestroySafe(const WorldInstanceRecord& record);
+	static bool ShouldStartClosing(const WorldInstanceRecord& record);
+	static bool ShouldEnterDestroyPending(const WorldInstanceRecord& record);
+
+	static void UpdateEmptyElapsed(WorldInstanceRecord& record, const double dtSec);
+	static void UpdateClosingElapsed(WorldInstanceRecord& record, const double dtSec);
+	static void ResetLifecycleAccumulatorsOnActivity(WorldInstanceRecord& record);
+
+
+private:
 	WorldRegistry& _registry;
 	std::unordered_map<WorldId, WorldInstanceRecord> _records;
 	std::unordered_map<WorldResolveKey, WorldId> _resolveIndex;
