@@ -6,6 +6,8 @@
 #include "AdmissionTypes.h"
 #include "WorldManager.h"
 
+class PresenceManager;
+
 class WorldAdmissionService final {
 public:
 	explicit WorldAdmissionService(
