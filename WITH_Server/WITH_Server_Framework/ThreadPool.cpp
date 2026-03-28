@@ -1,7 +1,12 @@
 #include "pch.h"
 #include "ThreadPool.h"
+#include "TaskGroup.h"
 
-ThreadPool::ThreadPool(uint32_t threadCnt) : _running(false), _stopping(false)
+#include <algorithm>
+#include <stdexcept>
+#include <string>
+
+ThreadPool::ThreadPool(uint32_t threadCnt)
 {
 	Start(threadCnt);
 }
@@ -13,7 +18,7 @@ ThreadPool::~ThreadPool()
 
 void ThreadPool::Start(uint32_t threadCnt) 
 {
-	if (_running.load(std::memory_order_acquire))
+	if (_running.exchange(true))
 		return;
 
 	if (threadCnt == 0)
@@ -21,8 +26,7 @@ void ThreadPool::Start(uint32_t threadCnt)
 		threadCnt = std::max(1u, std::thread::hardware_concurrency());
 	}
 
-	_stopping.store(false, std::memory_order_release);
-	_running.store(true, std::memory_order_release);
+	_stopping.store(false);
 
 	_workers.reserve(threadCnt);
 	for (uint32_t i = 0; i < threadCnt; ++i)
@@ -33,10 +37,10 @@ void ThreadPool::Start(uint32_t threadCnt)
 
 void ThreadPool::Stop()
 {
-	if (!_running.exchange(false, std::memory_order_acq_rel))
+	if (!_running.exchange(false))
 		return;
 
-	_stopping.store(true, std::memory_order_release);
+	_stopping.store(true);
 	_queueCv.notify_all();
 
 	for (std::thread& worker : _workers)
@@ -45,7 +49,20 @@ void ThreadPool::Stop()
 			worker.join();
 	}
 	_workers.clear();
-	_queue.clear();
+
+	{
+		std::lock_guard lock{ _queueMtx };
+
+		while (!_queue.empty())
+		{
+			TaskDesc& task = _queue.front();
+
+			if (task.group)
+				task.group->RollbackTaskSlot();
+
+			_queue.pop_front();
+		}
+	}
 }
 
 bool ThreadPool::Submit(TaskFn fn, void* ctx)
@@ -53,43 +70,39 @@ bool ThreadPool::Submit(TaskFn fn, void* ctx)
 	return Submit(TaskDesc{ fn, ctx, nullptr });
 }
 
-bool ThreadPool::Submit(TaskFn fn, void* ctx, TaskCounter& counter)
+bool ThreadPool::Submit(TaskFn fn, void* ctx, TaskGroup& group)
 {
-	return Submit(TaskDesc{ fn, ctx, &counter });
+	return Submit(TaskDesc{ fn, ctx, &group });
 }
 
 bool ThreadPool::Submit(TaskDesc task)
 {
-	if (!task.fn) return false;
+	if (!task.fn) 
+		return false;
+
+	if (task.group && !task.group->TryAcquireTaskSlot())
+		return false;
 
 	{
 		std::lock_guard lock{ _queueMtx };
 
-		if (!_running.load(std::memory_order_acquire) ||
-			_stopping.load(std::memory_order_acquire))
+		if (!_running.load() || _stopping.load())
+		{
+			if (task.group)
+				task.group->RollbackTaskSlot();
 			return false;
+		}
 
 		_queue.push_back(task);
-
-		if (task.counter)
-			task.counter->remaining.fetch_add(1, std::memory_order_relaxed);
 	}
 
 	_queueCv.notify_one();
 	return true;
 }
 
-void ThreadPool::Wait(TaskCounter& counter)
+void ThreadPool::Wait(TaskGroup& group)
 {
-	if (counter.remaining.load(std::memory_order_acquire) != 0)
-	{
-		std::unique_lock lock{ counter.mtx };
-		counter.cv.wait(lock,
-			[&]() { return counter.remaining.load(std::memory_order_acquire) == 0; });
-	}
-
-	if (counter.firstException)
-		std::rethrow_exception(counter.firstException);
+	group.Wait();
 }
 
 void ThreadPool::WorkerLoop()
@@ -110,25 +123,41 @@ void ThreadPool::WorkerLoop()
 			_queue.pop_front();
 		}
 
+		bool executed{ false };
+		bool skipped{ false };
+		bool failed{ false };
+
 		try
 		{
-			task.fn(task.ctx);
-		}
-
-		catch (const std::exception& ex)
-		{
-			if (task.counter)
+			if (task.group &&
+				task.group->IsCancelRequested() &&
+				task.group->GetMode() == TaskGroupMode::StopOnFirstFailure)
 			{
-				task.counter->RecordException(std::current_exception());
+				skipped = true;
 			}
-
 			else
 			{
-				throw std::runtime_error("Exception occurred in Task without Counter: " + std::string(ex.what()));
+				task.fn(task.ctx);
+				executed = true;
 			}
 		}
 
-		if (task.counter)
-			task.counter->FinishTask();
+		catch (...)
+		{
+			failed = true;
+
+			if (task.group)
+			{
+				task.group->RecordException(std::current_exception());
+			}
+			else
+			{
+				// worker를 죽이지 않고 삼킨다.
+				// 추후 전역 uncaught handler / log hook 추가 가능.
+			}
+		}
+
+		if (task.group)
+			task.group->Release(executed, skipped, failed);
 	}
 }
