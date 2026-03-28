@@ -13,7 +13,7 @@ enum class WorldKind : uint8_t
 	Field
 };
 
-enum class InstanceType : uint8_t
+enum class WorldInstanceType : uint8_t
 {
 	Persistent,
 	Instanced,
@@ -23,7 +23,7 @@ enum class InstanceType : uint8_t
 struct WorldTopologyDef
 {
 	WorldKind kind;
-	InstanceType instanceType;
+	WorldInstanceType instanceType;
 };
 
 enum class CreationPolicy : uint8_t
@@ -35,8 +35,7 @@ enum class CreationPolicy : uint8_t
 enum class JoinPolicy : uint8_t
 {
 	FreeJoin,
-	PartyOnly,
-	MatchmakingOnly
+	PartyOnly
 };
 
 struct WorldEntryPolicyDef

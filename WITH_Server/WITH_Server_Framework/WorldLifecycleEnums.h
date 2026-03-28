@@ -41,13 +41,6 @@ enum class TransferStage : uint8_t
 	Failed
 };
 
-enum class WorldLifetimeKind : uint8_t
-{
-	Persistent,
-	Instanced,
-	SessionScoped
-};
-
 enum class AdmissionDecision : uint8_t
 {
 	Accepted,
@@ -70,3 +63,22 @@ enum class TransferFailureReason : uint8_t
 	SourceReleaseFailed,
 	RollbackFailed
 };
+
+inline bool IsWorldRunnable(WorldStage stage)
+{
+	return stage == WorldStage::Running;
+}
+
+inline bool IsWorldTerminal(WorldStage stage)
+{
+	return
+		stage == WorldStage::Destroyed ||
+		stage == WorldStage::Faulted;
+}
+
+inline bool IsTransferTerminal(TransferStage stage)
+{
+	return
+		stage == TransferStage::Completed ||
+		stage == TransferStage::Failed;
+}

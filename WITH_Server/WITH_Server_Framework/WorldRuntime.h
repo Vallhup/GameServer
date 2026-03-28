@@ -136,4 +136,3 @@ private:
 	
 	std::vector<Entity> _dirtyEntities;
 };
-

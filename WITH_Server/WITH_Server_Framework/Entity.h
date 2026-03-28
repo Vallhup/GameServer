@@ -29,9 +29,11 @@ struct Entity
 	}
 };
 
-namespace std {
+namespace std 
+{
 	template<>
-	struct hash<Entity> {
+	struct hash<Entity> 
+	{
 		size_t operator()(const Entity& e) const noexcept
 		{
 			size_t h1 = std::hash<int>()(e.id);
