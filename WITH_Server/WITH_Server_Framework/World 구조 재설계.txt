@@ -57,7 +57,7 @@
     1. 식별 체계 분리
         - WorldDefId : 월드 정의 ID
         - WorldId : 실제 생성된 런타임 world instance 핸들
-        - InstanceKey : 같은 WorldDefId 아래 여러 논리 인스턴스를 구분하는 resolve key
+        - instanceKey : 같은 WorldDefId 아래 여러 논리 인스턴스를 구분하는 resolve key
 
 
     2. lifecycle state machine
@@ -71,7 +71,66 @@
           durable하게 보존하고 이를 운영 중 참고 자료로써 활용한다.
 
 
-3. 마일스톤 및 진행도
+3. 핵심 개념 및 규칙
+
+    1. resolve 입력 규칙
+        - explicitTargetId가 있으면 그 WorldId를 우선 사용
+            - 이 경우 targetWorldDefId, instanceKey는 무시
+
+        - explicitTargetId가 없으면 targetWorldDefId + instanceKey로 resolve
+            - 이 경우 WorldManager::ResolveOrCreate(defId, instanceKey)를 사용
+
+
+    2. instanceKey 기본 규칙
+
+        1. 공통 규칙
+            - instanceKey는 월드 정의 내부의 논리 인스턴스 식별값
+            - 같은 의미의 월드는 항상 같은 key를 써야 함
+            - 임의 난수 key의 사용을 제한할 것
+
+
+        2. instanceKey == 0 규칙
+            - 0은 singleton/default instance key
+            - Persistent 월드에서는 기본적으로 0만 사용
+            - Instanced, SessionScoped에서는 0사용 금지
+
+
+    3. InstanceType 별 resolve 규칙
+
+        1. Persistent
+            - instanceKey는 항상 0으로 정규화
+            - 같은 WorldDefId에 대해 런타임 인스턴스는 하나만 존재
+
+
+	    2. Instanced
+            - 호출자가 준 instanceKey를 그대로 사용
+            - instanceKey != 0
+            - 같은 (WorldDefId , instanceKey) 면 같은 월드 재사용
+
+
+	    3. SessionScoped
+            - 세션/매치 단위 key 사용
+            - instanceKey != 0
+            - 세션 종료 후 lifecycle에 따라 파괴
+
+
+    4. resolve 실패 규칙
+
+        1. 실패 조건
+            - 아래의 조건에서는 ResolveOrCreate가 실패해야 함
+                - worldDefId == None
+                - WorldDef 조회 실패
+                - IntanceType에 따른 instanceKey 정규화 규칙 위반
+                - CreationPolicy == PreCreated 인데 기존 월드 없음
+                - Registry 생성 실패
+
+
+        2. 실패 처리
+            - 1차 구현에서는 WorldId::Invalid()를 반환하고 내부 로그 추가
+            - 추후 ResolveResult와 같은 관리 체계 추가
+
+
+4. 마일스톤 및 진행도
     
     1. 상태 모델 및 관리 골격 정리
     목표
