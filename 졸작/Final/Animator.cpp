@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "Animator.h"
-#include "DX12Core.h"
 #include "GameObject.h"
 #include "Shader.h"
 #include "RootSignature.h"

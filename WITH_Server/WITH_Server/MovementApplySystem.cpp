@@ -66,10 +66,10 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 		float nz = trans->position.z;
 
 		if (MapCollisionManager::Get().CanMove(nx + totalMoveDelta.x, nz))
-			nx += totalMoveDelta.x * 2;
+			nx += totalMoveDelta.x;
 
 		if (MapCollisionManager::Get().CanMove(nx, nz + totalMoveDelta.z))
-			nz += totalMoveDelta.z * 2;
+			nz += totalMoveDelta.z;
 
 		trans->position.x = nx;
 		trans->position.z = nz;
@@ -78,7 +78,7 @@ void MovementApplySystem::MovementApply(Entity entity, Transform* trans,
 		trans->position.y += totalMoveDelta.y;
 
 		if (totalMoveDelta.y < 1e-6f || trans->position.y <= groundY)
-			trans->position.y = -350.0f;
+			trans->position.y = groundY;
 
 		const auto* netComp = _runtime.GetECS().GetStorage<NetIdComp>().GetComponent(entity);
 		if (!netComp) return;

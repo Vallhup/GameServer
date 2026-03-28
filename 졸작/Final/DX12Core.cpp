@@ -207,7 +207,7 @@ void DX12Core::BeginSsaoPass()
 		firstFrame = false;
 	}
 
-	// AI ÄÚµåÀÓ ÀÌ ¾Æ·¡
+	// AI ì½”ë“œìž„ ì´ ì•„ëž˜
 	// Half resolution viewport
 	D3D12_VIEWPORT ssaoViewport = {};
 	ssaoViewport.Width = WinSize.x / 2.0f;
@@ -241,7 +241,7 @@ void DX12Core::BeginSsaoPass()
 	// Draw fullscreen quad
 	deviceCtx->GetGraphicsCmdList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceCtx->GetGraphicsCmdList()->DrawInstanced(6, 1, 0, 0);
-	// ¿©±â±îÁö
+	// ì—¬ê¸°ê¹Œì§€
 }
 
 void DX12Core::EndSsaoPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)

@@ -2,8 +2,8 @@
 #include "Camera.h"
 #include "SceneRenderer.h"
 #include "InstancingBatch.h"
-#include "GameObject.h"		// DX12Core.h Æ÷ÇÔ
-#include "Mesh.h"			// Component.h Æ÷ÇÔ
+#include "GameObject.h"		// DX12Core.h í¬í•¨
+#include "Mesh.h"			// Component.h í¬í•¨
 #include "Transform.h"		// Component.h
 
 class SceneManager;

@@ -1,9 +1,8 @@
 #include "pch.h"
 #include "Mesh.h"
-#include "DX12Core.h"
+#include "GameObject.h"
 #include "VertexIndexBuffer.h"
 #include "Material.h"
-#include "GameObject.h"
 #include "Animator.h"
 #include "ResourceManager.h"
 

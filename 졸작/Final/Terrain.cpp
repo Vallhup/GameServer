@@ -36,6 +36,20 @@ void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring&
 		);
 	}
 
+	objectCB = make_unique<UploadBuffer>();
+	objectCB->Initialize(core.GetDevice(), CONSTANT_BUFFER_ALIGNMENT);
+
+	int useTexture = material ? 1 : 0;
+	UINT matIndex = material ? material->GetMaterialIndex() : 0;
+
+	ObjectConstants obj = {};
+	obj.world = XMMatrixTranspose(XMMatrixIdentity());
+	obj.useTexture = useTexture;
+	obj.useInstancing = 0;
+	obj.materialIndex = matIndex;
+
+	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
+
 	char buf[256];
 	sprintf_s(buf, "Terrain created: gridSize=%d, worldSize=%.1f, vertices=%zu, indices=%zu\n",
 		gridSize, worldSize, vertices.size(), indices.size());

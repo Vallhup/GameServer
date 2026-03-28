@@ -18,6 +18,7 @@ public:
 
 	VertexIndexBuffer* GetVertexIndexBuffer() const { return vertexIndexBuffer.get(); }
 	Material* GetMaterial() const { return material.get(); }
+	D3D12_GPU_VIRTUAL_ADDRESS GetCBAddress() const { return objectCB->GetGPUVirtualAddress(); }
 
 private:
 	void LoadHeightmap(const wstring& path);
@@ -38,4 +39,6 @@ private:
 
 	vector<Vertex> vertices;
 	vector<UINT> indices;
+
+	unique_ptr<UploadBuffer> objectCB;
 };

@@ -69,6 +69,8 @@ void SoloGameScene::CreateBossObject()
 
 void SoloGameScene::CreateMap()
 {
+// 이걸 여기서 한번 더 호출할 경우엔, 어떻게 되냐면 이제 똑같은 위치에 똑같은 맵 에셋을 두번 그리게 되는거임
+// 그렇게 하면 프레임이 당연히 안나오겟죠 ?
 //#pragma region Initialize Map Elements
 //	InstanceLoader mapLoader;
 //	mapLoader.Load(L"../Assets/FBXModel/Map/MapInstanceData.txt");
@@ -89,27 +91,28 @@ void SoloGameScene::CreateMap()
 //	//OutputDebugStringA(("Map data count: " + to_string(count) + '\n').c_str());
 //#pragma endregion
 
-//#pragma region Initialize Terrain
-//	terrain = make_shared<Terrain>();
-//	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/ground", L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
-//#pragma endregion
-
-#pragma region Initialize VillageMap Elements
-	InstanceLoader mapLoader;
-	mapLoader.Load(L"../Assets/FBXModel/VillageMap/MapInstanceData.txt");
-
-	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
-		if (instanceData.empty())
-			continue;
-
-		wstring path = L"../Assets/FBXModel/VillageMap/" + wstring(modelName.begin(), modelName.end());
-
-		if (!filesystem::exists(path + L"_0.mesh"))
-			continue;
-
-		CreateAndBatchObjects(path, instanceData, instancingBatches);
-	}
+	// 새거 1023 1023 159.4766 513x513
+#pragma region Initialize Terrain
+	terrain = make_shared<Terrain>();
+	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/ground", L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
 #pragma endregion
+
+//#pragma region Initialize VillageMap Elements
+//	InstanceLoader mapLoader;
+//	mapLoader.Load(L"../Assets/FBXModel/VillageMap/MapInstanceData.txt");
+//
+//	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
+//		if (instanceData.empty())
+//			continue;
+//
+//		wstring path = L"../Assets/FBXModel/VillageMap/" + wstring(modelName.begin(), modelName.end());
+//
+//		if (!filesystem::exists(path + L"_0.mesh"))
+//			continue;
+//
+//		CreateAndBatchObjects(path, instanceData, instancingBatches);
+//	}
+//#pragma endregion
 
 	/*constexpr InstanceData testData = {
 		{ 14.0f, 4.0f, 14.0f }, { 0.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f }, false, 25.0f
@@ -333,7 +336,7 @@ void SoloGameScene::InitializeLogic()
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
 
-	//CreateMap();
+	CreateMap();
 	CreateBossObject();
 	CreateEffectSamples();
 
@@ -473,8 +476,12 @@ void SoloGameScene::UpdateScene(const float deltaTime)
 	XMFLOAT3 camPos = cam->GetPosition();
 	XMVECTOR camPosVec = XMLoadFloat3(&camPos);
 
+	/*auto start = chrono::high_resolution_clock::now();*/
 	for (auto& batch : instancingBatches)
 		batch->Update(frustum, camPosVec);
+	//auto end = chrono::high_resolution_clock::now();
+	//auto ms = chrono::duration_cast<chrono::microseconds>(end - start).count();
+	//OutputDebugStringA(("Update: " + to_string(ms) + "us\n").c_str());
 }
 
 void SoloGameScene::RenderSceneDeferred()
@@ -482,7 +489,7 @@ void SoloGameScene::RenderSceneDeferred()
 	auto renderer = sManagerRef->GetSceneRenderer();
 
 	renderer->RenderDeferred(*coreRef, gameObjects, cam.get());
-	renderer->RenderCollisionMeshWireframe(*coreRef, gameObjects);
+	//renderer->RenderCollisionMeshWireframe(*coreRef, gameObjects);
 
 	// Render terrain
 	if (terrain)

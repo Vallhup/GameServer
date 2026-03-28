@@ -14,10 +14,13 @@ void InstanceLoader::Load(const wstring& filename)
 		>> data.rotation.x >> data.rotation.y >> data.rotation.z
 		>> data.scale.x >> data.scale.y >> data.scale.z)
 	{
-		if (ContainsAny(modelName, { "Grass", "Bush" }))
+		if (ContainsAny(modelName, { "Anvil", "Apple", "Axe", "Bar", "Barrel", "Beam",
+			"Bed", "Bench", "Bottle", "Bowl", "Candle", "Carrot", "Chair", "Crate", "Flagon",
+			"Goblet", "Hammer", "Horse", "Jar", "KettlePot", "Log", "Mug", "Plate",
+			"Pot", "Potato", "Pumpkin", "Sack", "Stone", "Stool", "Sword"}))
 		{
 			data.distanceCull = true;
-			data.cullDistance = 35.0f;
+			data.cullDistance = 50.0f;
 		}
 		else
 			data.distanceCull = false;

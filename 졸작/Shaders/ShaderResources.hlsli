@@ -73,7 +73,7 @@ cbuffer ForwardLightCB : register(b4)
 
 cbuffer ShadowFrameCB : register(b5)
 {
-    matrix lightVP[4];
+    matrix lightVP[2];
     float4 cascadeSplit;
 };
 
@@ -155,6 +155,6 @@ SamplerState lutLinearSampler : register(s2);
 
 static const uint IBL_IRRADIANCE_INDEX = 1;
 static const uint IBL_RADIANCE_INDEX = 2;
-static const uint BRDF_LUT_INDEX = 114;
+static const uint BRDF_LUT_INDEX = 132;
 
 #endif

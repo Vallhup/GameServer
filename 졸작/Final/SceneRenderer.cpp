@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "SceneRenderer.h"
-#include "DX12Core.h"
 #include "GameObject.h"
 #include "Mesh.h"
 #include "Animator.h"
@@ -11,6 +10,7 @@
 #include "RootSignature.h"
 #include "Camera.h"
 #include "Terrain.h"
+#include "InstancingBatch.h"
 
 void SceneRenderer::Initialize(ID3D12Device* device)
 {
@@ -294,16 +294,9 @@ void SceneRenderer::RenderShadow(DX12Core& core, const vector<shared_ptr<GameObj
     }
 }
 
-void SceneRenderer::RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer)
+void SceneRenderer::RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer, InstancingBatch* batch)
 {
-    UINT startIndex = cbIndex;
-
     if (!mesh || !mesh->GetVertexIndexBuffer() || !instanceBuffer) return;
-
-    if (cbIndex >= MAX_OBJECTS) {
-        OutputDebugStringA("cbIndex Overflowed!!\n");
-        return;
-    }
 
     auto cmdList = core.GetGraphicsCmdList();
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBufferInstancing));
@@ -314,57 +307,23 @@ void SceneRenderer::RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCou
     if (mesh->HasMultiMaterial())
     {
         const auto& subMeshes = mesh->GetSubMeshes();
-        const auto& materials = mesh->GetMaterials();
 
         for (size_t i = 0; i < subMeshes.size(); ++i)
         {
-            if (cbIndex >= MAX_OBJECTS) {
-                OutputDebugStringA("cbIndex Overflowed in multi-material instanced!!\n");
-                break;
-            }
-
-            UINT matIndex = materials[i]->GetMaterialIndex();
-            auto objConst = MakeObjectConstants(XMMatrixIdentity(), 1, 1, matIndex);
-            size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
-
-            objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
-            cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
-            cbIndex++;
-
+            cmdList->SetGraphicsRootConstantBufferView(1, batch->GetCBAddress(i));
             mesh->GetVertexIndexBuffer()->DrawIndexedInstanced(cmdList, subMeshes[i].indexCount, instanceCount, subMeshes[i].startIndex);
         }
     }
     else
     {
-        UINT matIndex = mesh->GetMaterial() ? mesh->GetMaterial()->GetMaterialIndex() : 0xFFFFFFFF;
-        auto objConst = MakeObjectConstants(XMMatrixIdentity(), mesh->GetMaterial() ? 1 : 0, 1, matIndex);
-        size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
-
-        objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
-        cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
-        cbIndex++;
-
+        cmdList->SetGraphicsRootConstantBufferView(1, batch->GetCBAddress(0));
         mesh->GetVertexIndexBuffer()->DrawInstanced(cmdList, instanceCount);
-    }
-
-    if (GetAsyncKeyState('P') & 0x8000)
-    {
-        string msg = "[Instanced Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
-            + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
-        OutputDebugStringA(msg.c_str());
     }
 }
 
-void SceneRenderer::RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer)
+void SceneRenderer::RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer, InstancingBatch* batch)
 {
-    UINT startIndex = cbIndex;
-
     if (!mesh || !mesh->GetVertexIndexBuffer() || !instanceBuffer) return;
-
-    if (cbIndex >= MAX_OBJECTS) {
-        OutputDebugStringA("cbIndex Overflowed!!\n");
-        return;
-    }
 
     auto cmdList = core.GetGraphicsCmdList();
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Shadow));
@@ -375,44 +334,17 @@ void SceneRenderer::RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT insta
     if (mesh->HasMultiMaterial())
     {
         const auto& subMeshes = mesh->GetSubMeshes();
-        const auto& materials = mesh->GetMaterials();
 
         for (size_t i = 0; i < subMeshes.size(); ++i)
         {
-            if (cbIndex >= MAX_OBJECTS) {
-                OutputDebugStringA("cbIndex Overflowed in multi-material instanced shadow!!\n");
-                break;
-            }
-
-            UINT matIndex = materials[i]->GetMaterialIndex();
-            auto objConst = MakeObjectConstants(XMMatrixIdentity(), 1, 1, matIndex);
-            size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
-
-            objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
-            cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
-            cbIndex++;
-
+            cmdList->SetGraphicsRootConstantBufferView(1, batch->GetCBAddress(i));
             mesh->GetVertexIndexBuffer()->DrawIndexedInstanced(cmdList, subMeshes[i].indexCount, instanceCount, subMeshes[i].startIndex);
         }
     }
     else
     {
-        UINT matIndex = mesh->GetMaterial() ? mesh->GetMaterial()->GetMaterialIndex() : 0xFFFFFFFF;
-        auto objConst = MakeObjectConstants(XMMatrixIdentity(), mesh->GetMaterial() ? 1 : 0, 1, matIndex);
-        size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
-
-        objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
-        cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
-        cbIndex++;
-
+        cmdList->SetGraphicsRootConstantBufferView(1, batch->GetCBAddress(0));
         mesh->GetVertexIndexBuffer()->DrawInstanced(cmdList, instanceCount);
-    }
-
-    if (GetAsyncKeyState('P') & 0x8000)
-    {
-        string msg = "[Instanced Shadow Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
-            + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
-        OutputDebugStringA(msg.c_str());
     }
 }
 
@@ -457,25 +389,11 @@ void SceneRenderer::RenderTerrain(DX12Core& core, Terrain* terrain)
 {
     if (!terrain || !terrain->GetVertexIndexBuffer()) return;
 
-    if (cbIndex >= MAX_OBJECTS) {
-        OutputDebugStringA("cbIndex Overflowed!!\n");
-        return;
-    }
-
     auto cmdList = core.GetGraphicsCmdList();
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
     SetupRenderingState(core);
 
-    XMMATRIX world = XMMatrixIdentity();
-
-    int useTexture = terrain->GetMaterial() ? 1 : 0;
-    UINT matIndex = terrain->GetMaterial() ? terrain->GetMaterial()->GetMaterialIndex() : 0;
-    auto objConst = MakeObjectConstants(world, useTexture, 0, matIndex);
-
-    size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
-    objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
-    cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
-    cbIndex++;
+    cmdList->SetGraphicsRootConstantBufferView(1, terrain->GetCBAddress());
 
     terrain->GetVertexIndexBuffer()->Bind(cmdList);
     terrain->GetVertexIndexBuffer()->Draw(cmdList);
