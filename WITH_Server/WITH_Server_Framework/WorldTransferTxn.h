@@ -4,12 +4,8 @@
 
 #include "WorldIds.h"
 #include "AdmissionTypes.h"
+#include "ITransferContext.h"
 #include "WorldTransferRequest.h"
-
-struct PlayerSnapshot
-{
-	uint32_t connectionId{ 0 };
-};
 
 struct WorldTransferTxn
 {
@@ -27,11 +23,21 @@ struct WorldTransferTxn
 	WorldId resolvedTargetWorldId{ WorldId::Invalid() };
 	AdmissionReservation reservation;
 
-	std::vector<PlayerSnapshot> snapshots;
+	std::unique_ptr<ITransferContext> context;
 	TransferFailureReason failReason{ TransferFailureReason::None };
 
 	uint32_t retryCount{ 0 };
 	bool rollbackRequired{ false };
+
+	// [ side-effect tracking ]
+	bool reservationConsumed{ false };
+	bool targetInflightAdded{ false };
+	bool sourceInflightAdded{ false };
+	bool targetActivePlayersAdded{ false };
+	bool sourceActivePlayersRemoved{ false };
+
+	std::vector<uint32_t> importedConnectionIds;
+	std::vector<uint32_t> releasedConnectionIds;
 
 	double createdAtSec{ 0.0 };
 	double updatedAtSec{ 0.0 };
@@ -40,6 +46,21 @@ struct WorldTransferTxn
 	inline uint32_t PlayerCount() const
 	{
 		return static_cast<uint32_t>(connectionIds.size());
+	}
+
+	inline uint32_t ContextPlayerCount() const
+	{
+		return context ? context->PlayerCount() : 0u;
+	}
+
+	inline uint32_t ImportedPlayerCount() const
+	{
+		return static_cast<uint32_t>(importedConnectionIds.size());
+	}
+
+	inline uint32_t ReleasedPlayerCount() const
+	{
+		return static_cast<uint32_t>(releasedConnectionIds.size());
 	}
 
 	inline bool HasResolvedTarget() const
@@ -52,9 +73,9 @@ struct WorldTransferTxn
 		return reservation.IsActiveReservation();
 	}
 
-	inline bool HasSnapshots() const
+	inline bool HasContext() const
 	{
-		return !snapshots.empty();
+		return static_cast<bool>(context);
 	}
 
 	inline bool IsTerminal() const

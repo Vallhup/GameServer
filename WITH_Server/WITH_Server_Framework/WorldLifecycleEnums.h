@@ -27,15 +27,15 @@ enum class PresenceStage : uint8_t
 
 enum class TransferStage : uint8_t
 {
-	Requested,          // request만 접수됨
-	SourceValidated,    // source world / source membership 검증 완료
-	TargetResolved,     // target world 확정
-	AdmissionReserved,  // target slot reservation 완료
-	SnapshotBuilt,      // source snapshot 확보 완료
-	TargetImported,     // target 쪽 import/spawn 완료
-	SourceReleased,     // source 쪽 release/despawn 완료
-	Completed,          // 전이 완료
-	Failed              // 실패 종료
+	Requested,				// request만 접수됨
+	SourceValidated,		// source world / source membership 검증 완료
+	TargetResolved,			// target world 확정
+	AdmissionReserved,		// target slot reservation 완료
+	TransferContextBuilt,   // source snapshot 확보 완료
+	TargetImported,			// target 쪽 import/spawn 완료
+	SourceReleased,			// source 쪽 release/despawn 완료
+	Completed,				// 전이 완료
+	Failed					// 실패 종료
 };
 
 enum class AdmissionDecision : uint8_t
@@ -56,7 +56,7 @@ enum class TransferFailureReason : uint8_t
 	StaleSource,
 	TargetResolveFailed,
 	AdmissionRejected,
-	SnapshotFailed,
+	TransferContextBuildFailed,
 	ImportFailed,
 	SourceReleaseFailed,
 	RollbackFailed

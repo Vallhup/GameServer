@@ -187,6 +187,8 @@ bool WorldAdmissionService::ValidateReEntryRequest(const AdmissionRequest& reque
 		if (!_presenceMng.CanReEnterWorld(connectionId, request.targetWorldId))
 			return false;
 	}
+
+	return true;
 }
 
 AdmissionResult WorldAdmissionService::MakeRejectedResult(AdmissionDecision decision) const

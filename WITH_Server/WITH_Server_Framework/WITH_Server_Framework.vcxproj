@@ -169,7 +169,9 @@
     <ClInclude Include="BasicView.h" />
     <ClInclude Include="EventQueue.h" />
     <ClInclude Include="EventRegistry.h" />
+    <ClInclude Include="ITransferContext.h" />
     <ClInclude Include="IWorldInstanceFactory.h" />
+    <ClInclude Include="IWorldTransferRuntimeBridge.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobGraph.h" />
     <ClInclude Include="PresenceManager.h" />

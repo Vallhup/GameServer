@@ -210,6 +210,12 @@
     <ClInclude Include="IWorldInstanceFactory.h">
       <Filter>Game\World\08_Bootstrap</Filter>
     </ClInclude>
+    <ClInclude Include="IWorldTransferRuntimeBridge.h">
+      <Filter>Game\World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="ITransferContext.h">
+      <Filter>Game\World\06_Transfer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">

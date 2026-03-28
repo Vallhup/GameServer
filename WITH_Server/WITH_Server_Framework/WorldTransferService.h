@@ -10,6 +10,8 @@ class WorldAdmissionService;
 
 class PresenceManager;
 
+class IWorldTransferRuntimeBridge;
+
 struct WorldTransferTxn;
 struct WorldTransferRequest;
 
@@ -18,7 +20,8 @@ public:
 	WorldTransferService(
 		WorldManager& worldManager,
 		WorldAdmissionService& admissionService,
-		PresenceManager& presenceManager);
+		PresenceManager& presenceManager,
+		IWorldTransferRuntimeBridge& runtimeBridge);
 
 	TransferId EnqueueRequest(const WorldTransferRequest& request, const double nowSec);
 
@@ -33,7 +36,7 @@ private:
 	bool StepValidateSource(WorldTransferTxn& txn);
 	bool StepResolveTarget(WorldTransferTxn& txn);
 	bool StepReserveAdmission(WorldTransferTxn& txn, const double nowSec);
-	bool StepBuildSnapshots(WorldTransferTxn& txn);
+	bool StepBuildTransferContext(WorldTransferTxn& txn);
 	bool StepImportTarget(WorldTransferTxn& txn, const double nowSec);
 	bool StepReleaseSource(WorldTransferTxn& txn, const double nowSec);
 
@@ -43,6 +46,7 @@ private:
 	void CleanupPresenceOnFailure(WorldTransferTxn& txn, const double nowSec);
 	void CleanupReservationOnFailure(WorldTransferTxn& txn);
 	void CleanupImportedTargetOnFailure(WorldTransferTxn& txn);
+	void CleanupSourceInflightOnFailure(WorldTransferTxn& txn);
 
 	void FailTxn(
 		WorldTransferTxn& txn, 
@@ -61,6 +65,7 @@ private:
 	WorldManager& _worldManager;
 	WorldAdmissionService& _admissionService;
 	PresenceManager& _presenceManager;
+	IWorldTransferRuntimeBridge& _runtimeBridge;
 
 	std::unordered_map<TransferId, WorldTransferTxn> _txns;
 	TransferId _nextTransferId{ 1 };
@@ -72,4 +77,4 @@ private:
 // 
 // fallback instanceKey는 1차 구현에서 0으로 고정
 // 
-// SnaphsotBuilt 이후 실페에는 fallback 적용 X
+// TransferContextBuilt 이후 실페에는 fallback 적용 X

@@ -8,6 +8,8 @@
 
 #include "PresenceManager.h"
 
+#include "IWorldTransferRuntimeBridge.h"
+
 #include "WorldAdmissionService.h"
 
 #include "WorldTransferTxn.h"
@@ -16,10 +18,12 @@
 WorldTransferService::WorldTransferService(
 	WorldManager& worldManager, 
 	WorldAdmissionService& admissionService, 
-	PresenceManager& presenceManager)
+	PresenceManager& presenceManager, 
+	IWorldTransferRuntimeBridge& runtimeBridge)
 	: _worldManager(worldManager)
 	, _admissionService(admissionService)
 	, _presenceManager(presenceManager)
+	, _runtimeBridge(runtimeBridge)
 {
 }
 
@@ -114,13 +118,13 @@ void WorldTransferService::ProgressTxn(WorldTransferTxn& txn, const double nowSe
 	}
 	case TransferStage::AdmissionReserved:
 	{
-		if (StepBuildSnapshots(txn))
-			txn.stage = TransferStage::SnapshotBuilt;
+		if (StepBuildTransferContext(txn))
+			txn.stage = TransferStage::TransferContextBuilt;
 		else
-			FailTxn(txn, TransferFailureReason::SnapshotFailed, nowSec);
+			FailTxn(txn, TransferFailureReason::TransferContextBuildFailed, nowSec);
 		break;
 	}
-	case TransferStage::SnapshotBuilt:
+	case TransferStage::TransferContextBuilt:
 	{
 		if (StepImportTarget(txn, nowSec))
 			txn.stage = TransferStage::TargetImported;
@@ -222,22 +226,35 @@ bool WorldTransferService::StepReserveAdmission(WorldTransferTxn& txn, const dou
 		return false;
 
 	txn.reservation = result.reservation;
+	txn.reservationConsumed = false;
 	return true;
 }
 
-bool WorldTransferService::StepBuildSnapshots(WorldTransferTxn& txn)
+bool WorldTransferService::StepBuildTransferContext(WorldTransferTxn& txn)
 {
-	txn.snapshots.clear();
-	txn.snapshots.reserve(txn.connectionIds.size());
+	txn.context.reset();
 
-	for (uint32_t connectionId : txn.connectionIds)
+	if (!_runtimeBridge.BuildTransferContext(
+		txn.sourceWorldId,
+		txn.connectionIds,
+		txn.context))
 	{
-		PlayerSnapshot snapshot;
-		snapshot.connectionId = connectionId;
-		txn.snapshots.push_back(snapshot);
+		return false;
 	}
 
-	return !txn.snapshots.empty();
+	if (!txn.context)
+		return false;
+
+	if (txn.context->PlayerCount() == 0)
+		return false;
+
+	if (txn.context->PlayerCount() != txn.PlayerCount())
+		return false;
+
+	// TODO : 더 엄격하게 검사한다면
+	//        txn.connectionIds == context 내부 connection 집합 일치 확인
+
+	return true;
 }
 
 bool WorldTransferService::StepImportTarget(WorldTransferTxn& txn, const double nowSec)
@@ -246,14 +263,33 @@ bool WorldTransferService::StepImportTarget(WorldTransferTxn& txn, const double 
 	if (target == nullptr)
 		return false;
 
-	// 실제 import/spawn은 아직 mock 처리
+	if (!txn.context)
+		return false;
+
+	txn.importedConnectionIds.clear();
+
 	if (!_admissionService.ConsumeReservation(txn.reservation.ticket, nowSec))
 		return false;
+
+	txn.reservationConsumed = true;
 
 	if (!_worldManager.AddInflightTransferIn(target->id, txn.PlayerCount()))
 		return false;
 
-	for (uint32_t connectionId : txn.connectionIds)
+	txn.targetInflightAdded = true;
+
+	if (!_runtimeBridge.ImportTransferContext(
+		txn.resolvedTargetWorldId,
+		*txn.context,
+		txn.importedConnectionIds))
+	{
+		return false;
+	}
+
+	if (txn.importedConnectionIds.empty())
+		return false;
+
+	for (uint32_t connectionId : txn.importedConnectionIds)
 	{
 		if (!_presenceManager.MarkTargetImported(
 			connectionId,
@@ -268,8 +304,12 @@ bool WorldTransferService::StepImportTarget(WorldTransferTxn& txn, const double 
 	if (!_worldManager.RemoveInflightTransferIn(target->id, txn.PlayerCount()))
 		return false;
 
-	target->activePlayers += txn.PlayerCount();
-	return true;
+	txn.targetInflightAdded = false;
+
+	target->activePlayers += txn.ImportedPlayerCount();
+	txn.targetActivePlayersAdded = true;
+
+	return txn.ImportedPlayerCount() == txn.PlayerCount();
 }
 
 bool WorldTransferService::StepReleaseSource(WorldTransferTxn& txn, const double nowSec)
@@ -278,18 +318,28 @@ bool WorldTransferService::StepReleaseSource(WorldTransferTxn& txn, const double
 	if (source == nullptr)
 		return false;
 
+	if (!txn.context)
+		return false;
+
+	txn.releasedConnectionIds.clear();
+
 	if (!_worldManager.AddInflightTransferOut(source->id, txn.PlayerCount()))
 		return false;
 
-	if (source->activePlayers < txn.PlayerCount())
+	txn.sourceInflightAdded = true;
+
+	if (!_runtimeBridge.ReleaseTransferContext(
+		txn.sourceWorldId,
+		*txn.context,
+		txn.releasedConnectionIds))
+	{
+		return false;
+	}
+
+	if (txn.releasedConnectionIds.empty())
 		return false;
 
-	source->activePlayers -= txn.PlayerCount();
-
-	if (!_worldManager.RemoveInflightTransferOut(source->id, txn.PlayerCount()))
-		return false;
-
-	for (uint32_t connectionId : txn.connectionIds)
+	for (uint32_t connectionId : txn.releasedConnectionIds)
 	{
 		if (!_presenceManager.CompleteTransfer(
 			connectionId,
@@ -302,7 +352,18 @@ bool WorldTransferService::StepReleaseSource(WorldTransferTxn& txn, const double
 		}
 	}
 
-	return true;
+	if (source->activePlayers < txn.ReleasedPlayerCount())
+		return false;
+
+	source->activePlayers -= txn.ReleasedPlayerCount();
+	txn.sourceActivePlayersRemoved = true;
+
+	if (!_worldManager.RemoveInflightTransferOut(source->id, txn.PlayerCount()))
+		return false;
+
+	txn.sourceInflightAdded = false;
+
+	return txn.ReleasedPlayerCount() == txn.PlayerCount();
 }
 
 bool WorldTransferService::IsTimedOut(const WorldTransferTxn& txn, const double nowSec) const
@@ -323,11 +384,11 @@ void WorldTransferService::CleanupFailedTxn(WorldTransferTxn& txn, const double 
 		break;
 	}
 	case TransferStage::AdmissionReserved:
-	case TransferStage::SnapshotBuilt:
+	case TransferStage::TransferContextBuilt:
 	{
 		CleanupReservationOnFailure(txn);
 		CleanupPresenceOnFailure(txn, nowSec);
-		txn.snapshots.clear();
+		txn.context.reset();
 		break;
 	}
 	case TransferStage::TargetImported:
@@ -335,7 +396,7 @@ void WorldTransferService::CleanupFailedTxn(WorldTransferTxn& txn, const double 
 		CleanupReservationOnFailure(txn);
 		CleanupImportedTargetOnFailure(txn);
 		CleanupPresenceOnFailure(txn, nowSec);
-		txn.snapshots.clear();
+		txn.context.reset();
 		break;
 	}
 	case TransferStage::SourceReleased:
@@ -347,6 +408,7 @@ void WorldTransferService::CleanupFailedTxn(WorldTransferTxn& txn, const double 
 	}
 	}
 
+	CleanupSourceInflightOnFailure(txn);
 }
 
 void WorldTransferService::CleanupPresenceOnFailure(WorldTransferTxn& txn, const double nowSec)
@@ -374,14 +436,46 @@ void WorldTransferService::CleanupImportedTargetOnFailure(WorldTransferTxn& txn)
 	if (target == nullptr)
 		return;
 
-	if (target->activePlayers >= txn.PlayerCount())
+	if (!txn.importedConnectionIds.empty())
 	{
-		target->activePlayers -= txn.PlayerCount();
+		_runtimeBridge.RollbackImportedTransferContext(
+			txn.resolvedTargetWorldId,
+			*txn.context,
+			txn.importedConnectionIds);
 	}
-	else
+
+	if (txn.targetActivePlayersAdded)
 	{
-		target->activePlayers = 0;
+		const uint32_t importedCount = txn.ImportedPlayerCount();
+
+		if (target->activePlayers >= importedCount)
+		{
+			target->activePlayers -= importedCount;
+		}
+		else
+		{
+			target->activePlayers = 0;
+		}
+
+		txn.targetActivePlayersAdded = false;
 	}
+
+	if (txn.targetInflightAdded)
+	{
+		_worldManager.RemoveInflightTransferIn(
+			txn.resolvedTargetWorldId,
+			txn.PlayerCount());
+		txn.targetInflightAdded = false;
+	}
+}
+
+void WorldTransferService::CleanupSourceInflightOnFailure(WorldTransferTxn& txn)
+{
+	if (!txn.sourceInflightAdded)
+		return;
+
+	_worldManager.RemoveInflightTransferOut(txn.sourceWorldId, txn.PlayerCount());
+	txn.sourceInflightAdded = false;
 }
 
 void WorldTransferService::FailTxn(
@@ -460,14 +554,22 @@ bool WorldTransferService::TryApplyFallback(
 	txn.target = *fallbackTarget;
 	txn.resolvedTargetWorldId = WorldId::Invalid();
 	txn.reservation = AdmissionReservation{};
-	txn.snapshots.clear();
+	txn.context.reset();
 	txn.failReason = TransferFailureReason::None;
 	txn.rollbackRequired = false;
+
+	txn.reservationConsumed = false;
+	txn.targetInflightAdded = false;
+	txn.sourceInflightAdded = false;
+	txn.targetActivePlayersAdded = false;
+	txn.sourceActivePlayersRemoved = false;
+	txn.importedConnectionIds.clear();
+	txn.releasedConnectionIds.clear();
+
 	txn.updatedAtSec = nowSec;
 	txn.deadlineSec = nowSec + 10.0;
 	++txn.retryCount;
 
-	// source 검증은 이미 끝난 것으로 보고 target resolve부터 재시도
 	txn.stage = TransferStage::SourceValidated;
 	return true;
 }
