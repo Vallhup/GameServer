@@ -111,13 +111,13 @@ void LoadingScene::LoadTownGameResources()
 
 void LoadingScene::LoadMainGameResources()
 {
-	InstanceLoader mapLoader;
-	mapLoader.Load(L"../Assets/FBXModel/Map/MapInstanceData.txt");
+	/*InstanceLoader mapLoader;
+	mapLoader.Load(L"../Assets/FBXModel/VillageMap/MapInstanceData.txt");
 
 	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
 		if (instanceData.empty()) continue;
 
-		wstring path = L"../Assets/FBXModel/Map/" + wstring(modelName.begin(), modelName.end());
+		wstring path = L"../Assets/FBXModel/VillageMap/" + wstring(modelName.begin(), modelName.end());
 		if (!filesystem::exists(path + L"_0.mesh")) continue;
 
 		loadTasks.push([this, path, instanceData]() {
@@ -125,10 +125,10 @@ void LoadingScene::LoadMainGameResources()
 			});
 	}
 
-	totalTasks = loadTasks.size();
+	totalTasks = loadTasks.size();*/
 
-	/*auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
-	if (controller) controller->SetProgress(1.0f);*/
+	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
+	if (controller) controller->SetProgress(1.0f);
 
 	coreRef->SetLoadingMode(true);
 }

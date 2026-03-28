@@ -217,6 +217,9 @@
     <ClCompile Include="LookUpTextures.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="Water.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -434,6 +437,9 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="LookUpTextures.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Water.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>

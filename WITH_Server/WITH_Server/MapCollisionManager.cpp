@@ -85,6 +85,7 @@ void MapCollisionManager::LoadHeightMap(std::string_view path)
 
 bool MapCollisionManager::CanMove(float x, float z) const
 {
+	return true;
 	auto [xIdx, zIdx] = WorldToGrid(x, z);
 	if (xIdx < 0 || zIdx < 0 || xIdx * Width + xIdx >= Width * Height)
 		return false;

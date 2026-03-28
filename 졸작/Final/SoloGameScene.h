@@ -5,6 +5,7 @@ class NetworkManager;
 class VertexIndexBuffer;
 class SkyBox;
 class Terrain;
+class Water;
 
 class SoloGameScene final : public Scene
 {
@@ -67,4 +68,5 @@ private:
 	shared_ptr<SkyBox> skyBox;
 
 	shared_ptr<Terrain> terrain;
+	shared_ptr<Water> water;
 };

@@ -17,6 +17,7 @@
 #include "AnimationSetFactory.h"
 #include "InstanceLoader.h"
 #include "Terrain.h"
+#include "Water.h"
 #include "EffectRenderer.h"
 #include "EffectManager.h"
 
@@ -94,7 +95,14 @@ void SoloGameScene::CreateMap()
 	// 새거 1023 1023 159.4766 513x513
 #pragma region Initialize Terrain
 	terrain = make_shared<Terrain>();
-	terrain->Initialize(*coreRef, L"../Assets/FBXModel/Map/ground", L"../Assets/FBXModel/Map/terrain.raw", 256, 160.0f, 600.0f);
+	terrain->Initialize(*coreRef, L"../Assets/FBXModel/VillageMap/ground", L"../Assets/FBXModel/VillageMap/terrain.raw", 513, 1023.0f, 159.4766f);
+#pragma endregion
+
+#pragma region Initialize Water
+	water = make_shared<Water>();
+	water->Initialize(*coreRef);
+	water->SetPosition(0.0f, 41.0f, 0.0f);
+	water->SetScale(10.0f);
 #pragma endregion
 
 //#pragma region Initialize VillageMap Elements
@@ -494,6 +502,10 @@ void SoloGameScene::RenderSceneDeferred()
 	// Render terrain
 	if (terrain)
 		renderer->RenderTerrain(*coreRef, terrain.get());
+
+	// Render water
+	if (water)
+		renderer->RenderWater(*coreRef, water.get());
 
 	for (const auto& batch : instancingBatches)
 	{

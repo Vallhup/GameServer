@@ -273,6 +273,7 @@ exit 0</Command>
     <ClCompile Include="UIController.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
+    <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
@@ -348,6 +349,7 @@ exit 0</Command>
     <ClInclude Include="UIController.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="VertexIndexBuffer.h" />
+    <ClInclude Include="Water.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\animation.hlsli" />

@@ -6,6 +6,7 @@ class Mesh;
 class Animator;
 class Camera;
 class Terrain;
+class Water;
 class InstancingBatch;
 struct ObjectConstants;
 
@@ -19,9 +20,11 @@ public:
     void RenderForward(DX12Core& core, const vector<shared_ptr<GameObject>>& objects, const Camera* cam);
     void RenderShadow(DX12Core& core, const vector<shared_ptr<GameObject>>& objects);
     void RenderTerrain(DX12Core& core, Terrain* terrain);
+    void RenderWater(DX12Core& core, Water* water);
     void RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer, InstancingBatch* batch);
     void RenderInstancedShadow(DX12Core& core, Mesh* mesh, UINT instanceCount, UploadBuffer* instanceBuffer, InstancingBatch* batch);
     void RenderCollisionMeshWireframe(DX12Core& core, const vector<shared_ptr<GameObject>>& objects);
+
 
     void ReleaseUploadBuffer();
 

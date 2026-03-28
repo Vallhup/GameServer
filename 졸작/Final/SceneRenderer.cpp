@@ -10,6 +10,7 @@
 #include "RootSignature.h"
 #include "Camera.h"
 #include "Terrain.h"
+#include "Water.h"
 #include "InstancingBatch.h"
 
 void SceneRenderer::Initialize(ID3D12Device* device)
@@ -387,7 +388,7 @@ void SceneRenderer::RenderCollisionMeshWireframe(DX12Core& core, const vector<sh
 
 void SceneRenderer::RenderTerrain(DX12Core& core, Terrain* terrain)
 {
-    if (!terrain || !terrain->GetVertexIndexBuffer()) return;
+    if (!terrain) return;
 
     auto cmdList = core.GetGraphicsCmdList();
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
@@ -395,8 +396,20 @@ void SceneRenderer::RenderTerrain(DX12Core& core, Terrain* terrain)
 
     cmdList->SetGraphicsRootConstantBufferView(1, terrain->GetCBAddress());
 
-    terrain->GetVertexIndexBuffer()->Bind(cmdList);
-    terrain->GetVertexIndexBuffer()->Draw(cmdList);
+    terrain->Render(cmdList);
+}
+
+void SceneRenderer::RenderWater(DX12Core& core, Water* water)
+{
+    if (!water) return;
+
+    auto cmdList = core.GetGraphicsCmdList();
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBuffer));
+    SetupRenderingState(core);
+
+    cmdList->SetGraphicsRootConstantBufferView(1, water->GetCBAddress());
+
+    water->Render(cmdList);
 }
 
 void SceneRenderer::ReleaseUploadBuffer()
