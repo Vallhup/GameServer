@@ -8,8 +8,6 @@
 
 #include "PresenceManager.h"
 
-#include "IWorldTransferRuntimeBridge.h"
-
 #include "WorldAdmissionService.h"
 
 #include "WorldTransferTxn.h"
@@ -17,13 +15,13 @@
 
 WorldTransferService::WorldTransferService(
 	WorldManager& worldManager, 
+	WorldRegistry& worldRegistry,
 	WorldAdmissionService& admissionService, 
-	PresenceManager& presenceManager, 
-	IWorldTransferRuntimeBridge& runtimeBridge)
+	PresenceManager& presenceManager)
 	: _worldManager(worldManager)
+	, _worldRegistry(worldRegistry)
 	, _admissionService(admissionService)
 	, _presenceManager(presenceManager)
-	, _runtimeBridge(runtimeBridge)
 {
 }
 
@@ -234,13 +232,14 @@ bool WorldTransferService::StepBuildTransferContext(WorldTransferTxn& txn)
 {
 	txn.context.reset();
 
-	if (!_runtimeBridge.BuildTransferContext(
-		txn.sourceWorldId,
-		txn.connectionIds,
-		txn.context))
-	{
+	WorldInstance* sourceWorld = _worldRegistry.FindWorld(txn.sourceWorldId);
+	if (sourceWorld == nullptr)
 		return false;
-	}
+
+	WorldRuntime& runtime = sourceWorld->GetRuntime();
+
+	if (!runtime.BuildTransferContext(txn.connectionIds, txn.context))
+		return false;
 
 	if (!txn.context)
 		return false;
@@ -266,6 +265,10 @@ bool WorldTransferService::StepImportTarget(WorldTransferTxn& txn, const double 
 	if (!txn.context)
 		return false;
 
+	WorldInstance* targetWorld = _worldRegistry.FindWorld(txn.resolvedTargetWorldId);
+	if (targetWorld == nullptr)
+		return false;
+
 	txn.importedConnectionIds.clear();
 
 	if (!_admissionService.ConsumeReservation(txn.reservation.ticket, nowSec))
@@ -278,8 +281,7 @@ bool WorldTransferService::StepImportTarget(WorldTransferTxn& txn, const double 
 
 	txn.targetInflightAdded = true;
 
-	if (!_runtimeBridge.ImportTransferContext(
-		txn.resolvedTargetWorldId,
+	if (!targetWorld->GetRuntime().ImportTransferContext(
 		*txn.context,
 		txn.importedConnectionIds))
 	{
@@ -321,6 +323,10 @@ bool WorldTransferService::StepReleaseSource(WorldTransferTxn& txn, const double
 	if (!txn.context)
 		return false;
 
+	WorldInstance* sourceWorld = _worldRegistry.FindWorld(txn.sourceWorldId);
+	if (sourceWorld == nullptr)
+		return false;
+
 	txn.releasedConnectionIds.clear();
 
 	if (!_worldManager.AddInflightTransferOut(source->id, txn.PlayerCount()))
@@ -328,8 +334,7 @@ bool WorldTransferService::StepReleaseSource(WorldTransferTxn& txn, const double
 
 	txn.sourceInflightAdded = true;
 
-	if (!_runtimeBridge.ReleaseTransferContext(
-		txn.sourceWorldId,
+	if (!sourceWorld->GetRuntime().ReleaseTransferContext(
 		*txn.context,
 		txn.releasedConnectionIds))
 	{
@@ -352,16 +357,16 @@ bool WorldTransferService::StepReleaseSource(WorldTransferTxn& txn, const double
 		}
 	}
 
+	if (!_worldManager.RemoveInflightTransferOut(source->id, txn.PlayerCount()))
+		return false;
+
+	txn.sourceInflightAdded = false;
+
 	if (source->activePlayers < txn.ReleasedPlayerCount())
 		return false;
 
 	source->activePlayers -= txn.ReleasedPlayerCount();
 	txn.sourceActivePlayersRemoved = true;
-
-	if (!_worldManager.RemoveInflightTransferOut(source->id, txn.PlayerCount()))
-		return false;
-
-	txn.sourceInflightAdded = false;
 
 	return txn.ReleasedPlayerCount() == txn.PlayerCount();
 }
@@ -429,44 +434,19 @@ void WorldTransferService::CleanupReservationOnFailure(WorldTransferTxn& txn)
 
 void WorldTransferService::CleanupImportedTargetOnFailure(WorldTransferTxn& txn)
 {
-	if (!txn.resolvedTargetWorldId.IsValid())
+	if (!txn.context)
 		return;
 
-	WorldInstanceRecord* target = _worldManager.FindRecord(txn.resolvedTargetWorldId);
-	if (target == nullptr)
+	if (txn.importedConnectionIds.empty())
 		return;
 
-	if (!txn.importedConnectionIds.empty())
-	{
-		_runtimeBridge.RollbackImportedTransferContext(
-			txn.resolvedTargetWorldId,
-			*txn.context,
-			txn.importedConnectionIds);
-	}
+	WorldInstance* targetWorld = _worldRegistry.FindWorld(txn.resolvedTargetWorldId);
+	if (targetWorld == nullptr)
+		return;
 
-	if (txn.targetActivePlayersAdded)
-	{
-		const uint32_t importedCount = txn.ImportedPlayerCount();
-
-		if (target->activePlayers >= importedCount)
-		{
-			target->activePlayers -= importedCount;
-		}
-		else
-		{
-			target->activePlayers = 0;
-		}
-
-		txn.targetActivePlayersAdded = false;
-	}
-
-	if (txn.targetInflightAdded)
-	{
-		_worldManager.RemoveInflightTransferIn(
-			txn.resolvedTargetWorldId,
-			txn.PlayerCount());
-		txn.targetInflightAdded = false;
-	}
+	targetWorld->GetRuntime().RollbackImportedTransferContext(
+		*txn.context,
+		txn.importedConnectionIds);
 }
 
 void WorldTransferService::CleanupSourceInflightOnFailure(WorldTransferTxn& txn)

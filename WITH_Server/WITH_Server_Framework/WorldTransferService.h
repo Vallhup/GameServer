@@ -3,9 +3,11 @@
 #include <optional>
 
 #include "WorldIds.h"
+#include "WorldTargetSpec.h"
 #include "WorldLifecycleEnums.h"
 
 class WorldManager;
+class WorldRegistry;
 class WorldAdmissionService;
 
 class PresenceManager;
@@ -19,9 +21,9 @@ class WorldTransferService {
 public:
 	WorldTransferService(
 		WorldManager& worldManager,
+		WorldRegistry& worldRegistry,
 		WorldAdmissionService& admissionService,
-		PresenceManager& presenceManager,
-		IWorldTransferRuntimeBridge& runtimeBridge);
+		PresenceManager& presenceManager);
 
 	TransferId EnqueueRequest(const WorldTransferRequest& request, const double nowSec);
 
@@ -63,9 +65,9 @@ private:
 
 private:
 	WorldManager& _worldManager;
+	WorldRegistry& _worldRegistry;
 	WorldAdmissionService& _admissionService;
 	PresenceManager& _presenceManager;
-	IWorldTransferRuntimeBridge& _runtimeBridge;
 
 	std::unordered_map<TransferId, WorldTransferTxn> _txns;
 	TransferId _nextTransferId{ 1 };
