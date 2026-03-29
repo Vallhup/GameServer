@@ -93,6 +93,7 @@ public:
 	FroxelManager* GetFroxelMgr() { return froxelMgr.get(); }
 	SSAO* GetSsaoMgr() { return ssaoMgr.get(); }
 	LookUpTextures* GetLUTMgr() { return lutMgr.get(); }
+	SwapChain* GetSwapChainMgr() { return swapChainMgr.get(); }
 
 	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;

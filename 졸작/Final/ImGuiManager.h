@@ -32,6 +32,7 @@ public:
     void SetMyPlayer(MainCharacter* player) { myPlayer = player; }
     void SetSkyBox(SkyBox* sky) { skyBox = sky; }
     void SetCamera(Camera* cam) { camera = cam; }
+    void SetWaterDebugTexture(ID3D12Device* device, ID3D12Resource* texture);
 
     void ShowLoginWindow() { showLoginWindow = true; }
     bool IsLoginSuccess() const { return loginSuccess; }
@@ -69,4 +70,7 @@ private:
     bool loginSuccess = false;
     char loginId[64] = "";
     char loginPw[64] = "";
+
+    D3D12_GPU_DESCRIPTOR_HANDLE waterDebugSRV = {};
+    bool hasWaterDebug = false;
 };

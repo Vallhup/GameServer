@@ -135,7 +135,7 @@ bool Importer::LoadMaterialOnly(const wstring& basePath)
 {
     wstring materialPath = basePath + L".mtl";
     if (!LoadMaterials(materialPath)) {
-        MASSERT(false, "Failed to load material file");
+        OutputDebugStringA("Failed to load material file");
         return false;
     }
 

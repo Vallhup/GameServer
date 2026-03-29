@@ -20,6 +20,9 @@ public:
 	Material* GetMaterial() const { return material.get(); }
 	D3D12_GPU_VIRTUAL_ADDRESS GetCBAddress() const { return objectCB->GetGPUVirtualAddress(); }
 
+	void SetPosition(float x, float y, float z);
+	void SetScale(float x, float y, float z);
+
 private:
 	void LoadHeightmap(const wstring& path);
 	void BuildVertices();
@@ -41,4 +44,7 @@ private:
 	vector<UINT> indices;
 
 	unique_ptr<UploadBuffer> objectCB;
+
+	XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 scale = { 1.0f, 1.0f, 1.0f };
 };

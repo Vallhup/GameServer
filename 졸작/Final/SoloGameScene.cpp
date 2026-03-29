@@ -20,7 +20,6 @@
 #include "Water.h"
 #include "EffectRenderer.h"
 #include "EffectManager.h"
-
 #include "UIManager.h"
 #include "GameSceneUIController.h"
 
@@ -95,14 +94,20 @@ void SoloGameScene::CreateMap()
 	// 새거 1023 1023 159.4766 513x513
 #pragma region Initialize Terrain
 	terrain = make_shared<Terrain>();
-	terrain->Initialize(*coreRef, L"../Assets/FBXModel/VillageMap/ground", L"../Assets/FBXModel/VillageMap/terrain.raw", 513, 1023.0f, 159.4766f);
+	terrain->Initialize(*coreRef, L"../Assets/FBXModel/VillageMap/ground", L"../Assets/FBXModel/VillageMap/villageTerrain.raw", 513, 1023.0f, 159.4766f);
+#pragma endregion
+
+#pragma region Initialize Ocean Floor
+	oceanFloor = make_shared<Terrain>();
+	oceanFloor->Initialize(*coreRef, L"textures/OceanFloor", L"../Assets/FBXModel/VillageMap/oceanFloorTerrain.raw", 513, 1946.701f, 170.3121f);
+	oceanFloor->SetPosition(-903.851200f, 32.799990f, 160.528700f);
 #pragma endregion
 
 #pragma region Initialize Water
 	water = make_shared<Water>();
 	water->Initialize(*coreRef);
-	water->SetPosition(0.0f, 41.0f, 0.0f);
-	water->SetScale(10.0f);
+	water->SetPosition(144.0472f, 46.79999f, 939.9999f);
+	water->SetScale(1500.0f, 1.0f, 2546.25f);
 #pragma endregion
 
 //#pragma region Initialize VillageMap Elements
@@ -123,10 +128,10 @@ void SoloGameScene::CreateMap()
 //#pragma endregion
 
 	/*constexpr InstanceData testData = {
-		{ 14.0f, 4.0f, 14.0f }, { 0.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f }, false, 25.0f
+		{ 158.0, 50.0f, 655.0f }, { 0.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f }, false, 25.0f
 	};
 
-	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/VillageMap/SM_Wall_04", testData));*/
+	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/VillageMap/test2", testData));*/
 }
 
 void SoloGameScene::CreateEffectSamples()
@@ -369,6 +374,8 @@ void SoloGameScene::InitializeLogic()
 		_nManager->Send(data);
 	}
 
+	IMGUI.SetWaterDebugTexture(coreRef->GetDevice(), water->GetReflectionRT());
+
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
 
@@ -503,9 +510,9 @@ void SoloGameScene::RenderSceneDeferred()
 	if (terrain)
 		renderer->RenderTerrain(*coreRef, terrain.get());
 
-	// Render water
-	if (water)
-		renderer->RenderWater(*coreRef, water.get());
+	// Render oceanFloor
+	if (oceanFloor)
+		renderer->RenderTerrain(*coreRef, oceanFloor.get());
 
 	for (const auto& batch : instancingBatches)
 	{
@@ -550,9 +557,14 @@ void SoloGameScene::RenderSceneDeferred()
 
 void SoloGameScene::RenderSceneForward()
 {
+	auto renderer = sManagerRef->GetSceneRenderer();
+
 	skyBox->RenderSkyBox(*coreRef, coreRef->GetGraphicsCmdList());
 
-	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
+	if (water)
+		renderer->RenderWater(*coreRef, water.get());
+
+	renderer->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
 void SoloGameScene::RenderSceneShadow()

@@ -68,5 +68,6 @@ private:
 	shared_ptr<SkyBox> skyBox;
 
 	shared_ptr<Terrain> terrain;
+	shared_ptr<Terrain> oceanFloor;
 	shared_ptr<Water> water;
 };

@@ -29,11 +29,16 @@ void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring&
 		const auto& mats = importer.GetMaterials();
 
 		material = make_shared<Material>();
-		material->LoadFromMaterialData(
-			core.GetDevice(),
-			core.GetGraphicsCmdList(),
-			mats[0]
-		);
+		material->LoadFromMaterialData(core.GetDevice(), core.GetGraphicsCmdList(), mats[0]);
+	}
+	else
+	{
+		MaterialData matData = {};
+		string pathStr(basePath.begin(), basePath.end());
+		matData.baseColorTexPath = pathStr;
+
+		material = make_shared<Material>();
+		material->LoadFromMaterialData(core.GetDevice(), core.GetGraphicsCmdList(), matData);
 	}
 
 	objectCB = make_unique<UploadBuffer>();
@@ -63,6 +68,40 @@ void Terrain::Render(ID3D12GraphicsCommandList* cmdList)
 		vertexIndexBuffer->Bind(cmdList);
 		vertexIndexBuffer->Draw(cmdList);
 	}
+}
+
+void Terrain::SetPosition(float x, float y, float z)
+{
+	position = { x, y, z };
+
+	XMMATRIX scaleMat = XMMatrixScaling(scale.x, scale.y, scale.z);
+	XMMATRIX transMat = XMMatrixTranslation(x, y, z);
+	XMMATRIX world = XMMatrixTranspose(scaleMat * transMat);
+
+	ObjectConstants obj = {};
+	obj.world = world;
+	obj.useTexture = material ? 1 : 0;
+	obj.useInstancing = 0;
+	obj.materialIndex = material ? material->GetMaterialIndex() : 0;
+
+	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
+}
+
+void Terrain::SetScale(float x, float y, float z)
+{
+	scale = { x, y, z };
+
+	XMMATRIX scaleMat = XMMatrixScaling(x, y, z);
+	XMMATRIX transMat = XMMatrixTranslation(position.x, position.y, position.z);
+	XMMATRIX world = XMMatrixTranspose(scaleMat * transMat);
+
+	ObjectConstants obj = {};
+	obj.world = world;
+	obj.useTexture = material ? 1 : 0;
+	obj.useInstancing = 0;
+	obj.materialIndex = material ? material->GetMaterialIndex() : 0;
+
+	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
 }
 
 void Terrain::LoadHeightmap(const wstring& path)

@@ -31,7 +31,7 @@ float CalculateShadow(float3 worldPos, float viewDepth)
     float currentDepth = lightSpacePos.z;
     
     float shadow = 0.0f;
-    float2 texelSize = 1.0 / 2048.0;
+    float2 texelSize = 1.0 / 4096.0;
     
     for (int x = -2; x <= 2; ++x)
     {
