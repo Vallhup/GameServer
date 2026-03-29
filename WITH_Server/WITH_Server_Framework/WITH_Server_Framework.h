@@ -12,7 +12,8 @@
 #include "BasicView.h"
 #include "StorageRegistry.h"
 
-#include "ECS.h"
+#include "ECSCore.h"
+#include "ECSView.h"
 
 #include "EventQueue.h"
 #include "EventRegistry.h"

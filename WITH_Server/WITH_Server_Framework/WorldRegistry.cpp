@@ -49,12 +49,16 @@ WorldInstance* WorldRegistry::CreateWorld(const WorldDef& def, uint64_t instance
 		return nullptr;
 
 	WorldInstanceCreateParams params;
-	params.id = worldId;
-	params.defId = def.id;
-	params.instanceKey = instanceKey;
+	params.identity.id = worldId;
+	params.identity.defId = def.id;
+	params.identity.instanceKey = instanceKey;
 	params.def = &def;
+	params.impl = std::move(impl);
 
-	auto instance = std::make_unique<WorldInstance>(params, std::move(impl));
+	// TODO
+	// params.executionModel = _factory.CreateExecutionModel(def);
+
+	auto instance = std::make_unique<WorldInstance>(std::move(params));
 	WorldInstance* raw = instance.get();
 
 	_worlds.try_emplace(worldId, std::move(instance));

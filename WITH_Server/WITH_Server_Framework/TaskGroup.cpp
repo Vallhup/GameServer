@@ -77,20 +77,6 @@ void TaskGroup::Release(bool executed, bool skipped, bool failed)
 	}
 }
 
-void TaskGroup::RecordException(std::exception_ptr eptr)
-{
-	{
-		std::lock_guard lock{ _mtx };
-		if (!_firstException)
-			_firstException = eptr;
-	}
-
-	_failed.store(true);
-
-	if (_mode == TaskGroupMode::StopOnFirstFailure)
-		_cancelRequested.store(true);
-}
-
 void TaskGroup::CloseSubmit()
 {
 	_accepting.store(false);
