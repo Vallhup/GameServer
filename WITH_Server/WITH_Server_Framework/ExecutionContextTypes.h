@@ -10,7 +10,7 @@
 struct WorldFrameSelectionSet;
 struct WorldExecutionModelRegistry;
 struct ExecutionSourceRegistry;
-struct BuildPolicy;
+struct ExecutionGraphBuildPolicy;
 
 class WorldRuntime;
 
@@ -25,7 +25,7 @@ struct FrameBuildContext
     const WorldFrameSelectionSet* frameSelectionSet{ nullptr };
     const WorldExecutionModelRegistry* executionModelRegistry{ nullptr };
     const ExecutionSourceRegistry* executionSourceRegistry{ nullptr };
-    const BuildPolicy* buildPolicy{ nullptr };
+    const ExecutionGraphBuildPolicy* buildPolicy{ nullptr };
 
     [[nodiscard]]
     bool IsValid() const noexcept

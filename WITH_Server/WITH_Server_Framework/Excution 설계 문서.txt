@@ -377,7 +377,7 @@ Reconcile 내부 노드 분류
 		- WorldFrameSelectionSet (scheduler가 제공한 frame 입력)
 		- WorldExecutionModeRegistry (builder가 조회하는 execution model registry)
 		- ExecutionSourceRegistry (builder가 조회하는 execution source registry)
-		- BuildPolicy (builder 내부 규약)
+		- ExecutionGraphBuildPolicy (builder 내부 규약)
 
 
 	2. FrameExecContext - 현재 frame 실행 동안만 유효

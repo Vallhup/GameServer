@@ -53,7 +53,7 @@ private:
 
 	TaskGroupMode _mode{ TaskGroupMode::StopOnFirstFailure };
 
-	std::mutex _mtx;
+	mutable std::mutex _mtx;
 	std::condition_variable _cv;
 	std::exception_ptr _firstException{ nullptr };
 };

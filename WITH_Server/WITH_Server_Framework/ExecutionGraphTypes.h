@@ -75,6 +75,8 @@ struct FrameTaskGraph
     uint32_t simulateNodeCount{ 0 };
     uint32_t scopeCount{ 0 };
 
+    std::string debugNameBlob;
+
     [[nodiscard]]
     bool IsValidNodeId(ExecNodeId nodeId) const noexcept
     {
