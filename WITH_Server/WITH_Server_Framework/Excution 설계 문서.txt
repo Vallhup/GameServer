@@ -1,0 +1,498 @@
+
+A. Execution Source
+	- 그래프의 원천 데이터
+		- StaticSystemSource
+		- DynamicTaskSource
+		- LifecycleFlushSource
+		- ReconcileSource
+
+	- "무엇을 실행하고 싶은가"만 제출
+
+
+B. Execution Spec
+	- 무엇을 실행하는가
+
+
+C. Constraint
+	- 어떤 조건에서 실행 가능한가
+
+
+D. World Fragment
+	- 한 World 기준의 local DAG 조각
+
+
+E. FrameTaskGraph
+	- 여러 World Fragment + global post-frame 작업을 합쳐서 만든
+	  프레임 단위 immutable 실행 계획
+
+
+F. TaskExecutor
+	- 그래프를 실제로 돌리는 실행기
+	- ThreadPool을 하부 primitive로 두고, 상위 정책 결정
+
+
+
+1. 프레임 실행 계약
+	1. 프레임 그래프는 build 후 immutable하다.
+	2. 실행 중 graph mutation은 금지한다. (1차 구현)
+	3. 실패 전파 범위는 world-fragment 단위 cancel이다.
+	4. 구조적 변경은 단일 commit 구간으로 몰아야 한다.
+
+
+
+
+
+Phase
+	- 프레임 실행의 시간적 구간
+	- "지금 프레임이 어느 단계에 있는가"를 나타내는 개념
+		- Simulate
+		- Commit
+		- LifecycleFlush
+		- Reconcile
+
+Lane
+	- "그 Phase 안에서 어떤 실행 방식으로 돌 수 있는가"를 나타내는 개념
+		- Parallel
+		- Serial
+		- Main
+
+Commit boundary
+	- 어떤 종류의 변경을 언제 실제 반영할 것인가에 대한 경계
+	- 어떤 Phase 전환 지점에서 Deferred effect를 materialize할 것인가에 대한 규칙
+
+
+
+Node State
+	- NotReady
+	- Ready
+	- Queued
+	- Running
+
+	- terminal state
+		- Succeeded
+		- Failed
+		- Canceled
+		- Skipped
+
+ * terminal 재전이 금지
+ * Running -> Canceled / Skipped 금지
+ * Queued -> Running은 worker만 수행
+
+
+Scope Phase
+	- Open
+	- CancelRequested
+	- Draining (1차 구현 제외)
+	- Closed
+
+
+Scope Flag
+	- HasFailure
+	- WasCanceled
+
+
+
+
+
+
+1. Simulate
+	- Lane : Parallel / 필요 시 제한적 Serial / Main
+	- Dispatch : concurrent ready queue
+	- Phase 종료 판정 : Simulate phase outstanding counter
+		- Simulate phase 시작 전에 전체 node 수를 세고
+		  이를 remainingSimulateNodes 초기값으로 둔다
+		- 실행 중 증가 X / 단조 감소가 중요함
+		- remainingSimulateNodes == 0 -> phase primary 종료
+
+
+	- 초기화 단계
+		1. remainingDeps 초기화
+		2. remainingSimulateNodes 초기화
+		3. remainaingNodesInScope 초기화
+		4. simulatePhaseDone = false
+		5. dep count == 0인 simulate node 탐색
+		6. NotReady -> Ready -> Queued
+		7. queue push
+
+	- worker 루프
+		1. queue pop
+		2. Queued 상태 재검사
+		3. scope 상태 재검사
+		4. 실행 가능 시 Queued -> Running
+		5. 실행 불가 시 Queued -> Canceled / Skipped
+		6. 실행 후 Running -> Succeeded / Failed
+		7. sucessor dep 감소
+		8. 마지막 dependency 해소자가 successor enqueue 책임 가짐
+
+
+2. Commit
+	- Lane : Serial
+	- Dispatch : Serial execution pass
+
+
+3. LifecycleFlush
+	- Lane : Serial
+	- Dispatch : Serial execution pass
+
+
+4. Reconcile
+	- Lane : Serial
+	- Dispatch : Serial execution pass
+
+
+* 1차 구현에서 serial phase ordering은 build-time dependency 기반
+  stable topological order로 고정
+
+Serial phase 공통 절차
+	1. serialExecutionOrder[plan.begin, plan.end) 순회
+	2. node state가 NotReady이면 NotReady -> Ready (-> Queued)
+	3. scope 상태 재확인
+	4. 실행 가능 시 Ready -> Running
+	5. 실행 불가 시 Ready -> Canceled / Skipped
+	6. 실행 후 terminal 처리
+	7. scope counter 감소 및 close candidate signal 게시
+
+
+Serial phase ordering 저장 형식
+	- serialExecutionOrder : ExecNodeId[]
+	- commitPlan { begin, count }
+	- lifecycleFlushPlan { begin, count }
+	- reconcilePlan { begin, count }
+
+
+
+phase 내부 topological order를 만드는 절차
+	1. phase node 수집
+	2. phase 내부 edge 추출
+	3. indegree 계산
+	4. stable topological sort 수행 (ExecNodeId 오름차순)
+	5. 결과를 serialExecutionOrder에 append
+
+buile-time validation
+	1. phase 내부 cycle 금지
+	2. phase mismatch dependency 처리
+	3. 앞 phase 의존은 허용하되 런타임 의존으로 두지 않음
+
+
+* scope 취소면 남은 serial node를 모두 terminal 처리
+
+
+
+
+Scope 종료 판정 : scope outstanding counter
+	- remainingNodesInScope
+		- 해당 scope에 속한 node 중 아직 terminal이 아닌 node 수
+		- scope 소속 node 수 전체를 초기값으로 두고,
+		  그 scope의 node가 terminal로 최초 진입할 때마다 감소
+		- Grpah build가 끝난 뒤, 실행 시작 전에 계산
+		- remainingNodesInScope == 0 -> Closed 가능
+
+
+
+Counter underflow 제한 규칙
+	1. 카운터 감소는 오직 terminal state 최초 진입 시점에만 허용
+	2. terminal state 간 재전이는 금지
+	3. fetch_sub 반환값이 0이면 즉시 assert / fatal
+
+
+
+phase close / scope close의 소유권 모델
+	1. terminal event 발생
+		- scope counter 감소
+		- simulate counter 감소
+		- old == 1 -> 마지막 종료 감지
+
+
+	2. close candidate 게시
+		- 그 스레드는 직접 close를 완료하지 않고
+		  "이 scope/phase는 close 후보임"을 executor에 알림
+
+	3. executor 확정
+		- executor가 그 후보를 보고 실제 close를 수행
+			- scope state를 Closed로 전이
+			- simulate phase 종료 확정
+			- 다음 serial phase 진입 결정
+
+
+scope close 후보 처리 모델
+	- node terminal 진입 시 counter.fetch_sub(1)
+	- 반환값이 1이면 마지막 node 종료
+	- 해당 스레드는 scopeCloseRequested = true 를 set
+	- executor가 이후 이 플래그를 보고 scopePhase -> Closed 확정
+	- scope close의 본체는 counter, flag는 후처리 트리거
+
+
+simulate phase close 모델
+	- simulate node terminal 진입 시 counter.fetch_sub(1)
+	- 반환값이 1이면 마지막 simulate node 종료
+	- 그 스레드는 simulatePhaseDone = true 같은 완료 신호 set
+	- executor가 이를 보고 Simulate 종료를 확정
+	- phase close는 반드시 executor가 확정하도록
+
+
+close candidate 게시 방법
+	1. bool flag per scope / phase 
+		- 1차 구현 적용
+
+	2. close queue
+	3. epoch / bitmap
+
+
+executor의 scope close 후보 처리 시점
+	1. 즉시 처리
+	2. phase 경계에서 처리 (1차 구현 적용)
+
+
+worker 책임
+	1. node 실행
+	2. successor 해소
+	3. terminal 진입
+	4. counter 감소
+	5. 마지막 감소 감지
+	6. close candidate signal set
+
+executor 책임
+	1. close candidate 수집 / 확정
+	2. scope phase Closed 반영
+	3. simulate phase 종료 확정
+	4. 다음 phase 진입
+
+* 1차 구현에서는 executor가 scope close 후보를 늦게 반영해도 괜찮음
+
+
+Commit 내부 노드 분류
+	1. Structural Apply
+		- ECS 구조 자체를 바꾸는 반영
+			- entity create/destroy
+			- component add/remove
+			- structural command buffer flush
+
+	2. Deferred State Apply
+		- 구조는 이미 정해졌고, 그 위에 지연된 상태 값을 실제 반영
+			- deferred component value write
+			- runtime cache apply
+			- local stat/transform/action state finalize
+			- dirty-marked local data materialization
+
+	3. Post-Commit Finalize
+		- commit 결과를 정리/봉인해서 다음 phase가 읽을 수 있게 만드는 작업
+			- dirty flag finalize / reset
+			- local output buffer finalize
+			- local event/lifecycle handoff 준비
+			- post-commit consistency finalize
+
+
+LifecycleFlush 내부 노드 분류
+	1. LifecycleFlush
+		- spawned / despawned signal flush
+		- attach/detach lifecycle signal flush
+		- disconnected lifecycle signal flush
+		- output flush trigger / local lifecycle bridge flush
+
+
+Reconcile 내부 노드 분류
+	1. Reconcile
+		- transfer txn cleanup / finalize
+		- admission reservation consume / cancel / expire finalize
+		- presence cleanup / finalize
+		- world lifecycle progression / update
+		- destroy candidate collect
+		- rollbackRequired / failure mark finalize
+		- frame-end operational summary finalize
+
+
+1. ExecNodeRecord 
+	- ExecNodeId
+	- ExecScopeId
+	
+	- ExecPhase
+	- ExecLane
+	- ExecNodeKind
+	- ExecNodeFlag
+
+	- predBegin
+	- predCount
+
+	- succBegin
+	- succCount
+
+	- debugNameOffset
+	- sourceToken ( system id, task token, flush token 등 )
+
+
+2. ExecRuntimeState / Counters / Signals
+
+	1. ExecNodeRuntime
+		- atomic_ExecNodeState
+		- atomic_remainingDeps
+
+	2. ExecScopeRuntime
+		- atomic_ExecScopePhase
+		- atomic_flags
+
+		- atomic_remainingNodes
+		- atomic_closeCandidate
+
+
+	3. ExecRuntimeSignals
+		- atomic_remainaingSimulateNodes
+		- atomic_simulatePhaseDone
+
+	4. ExecRuntimeState
+		- span_ExecNodeRuntime
+		- span_ExecScopeRuntime
+		- ExecRuntimeSignals
+
+
+3. Build 결과물
+
+	1. FrameTaskGraph
+		- vector_Nodes
+		- vector_edges
+		- vector_scopeToWorld
+		- vector_serialExecutionOrder
+
+		- commitPlan
+		- lifecycleFlushPlan
+		- reconcilePlan
+
+		- simulateNodeCount
+		- scopeCount
+
+
+	2. BuildDiagnostic
+		- Severity
+		- message
+
+
+	3. BuildResult
+		- FrameTaskGraph
+		- vector_BuildDiagnostic
+		- Success Flag
+
+
+4. Context 규약
+
+	1. FrameBuildContext
+		- WorldFrameSelectionSet (scheduler가 제공한 frame 입력)
+		- WorldExecutionModeRegistry (builder가 조회하는 execution model registry)
+		- ExecutionSourceRegistry (builder가 조회하는 execution source registry)
+		- BuildPolicy (builder 내부 규약)
+
+
+	2. FrameExecContext - 현재 frame 실행 동안만 유효
+		- const FrameTaskGraph
+
+		- ExecutionOps : 허용된 operation surface
+			- WorldManager
+			- WorldRegistry
+			- WorldTransferService
+			- WorldAdmissionService
+			- PresenceManager
+			* 위 Manager / Service들의 제한된 운영 API만 노출한다.
+
+		- runtimeByScope : scopeId -> runtime 매핑
+
+
+	3. NodeExecContext - 단일 callback 호출 동안만 유효
+		- FrameExecContext 참조
+		- ExecNodeId
+		- ExecScopeId
+		- sourceToken
+		- NodeScratch
+
+
+	* build 이후 새 node 추가 금지
+	* execution 중 shared graph mutation 금지
+	* node-local scratch만 허용
+	* cross-node result 전달은 명시적 service API 또는
+	  stage-owned durable channel을 통해서만 허용
+
+	* FrameTaskGraph : build 완료 후 executor 종료까지 읽기 전용으로 유지
+	* scope runtime / world runtime 포인터 : executor 시작 전에 고정 frame 중간에 교체 금지
+
+	* node callback 계약 : ExecFn = ExecCallResult(*)(NodeExecContext&)
+		- callback 실패는 ExecCallResult::Failed 또는 exception으로 표현 가능
+		- worker는 둘 다 Running -> Failed로 정규화
+		- ExecNodeFlag_NoThrow가 설정된 node에서 exception 발생 시 
+		  invariant 위반으로 fatal 처리 가능
+		- failure detail은 ExecFailureRecord에 수집
+
+5. Scratch arena 규약
+
+	1. scratch 종류 분리
+		1. FrameScratch
+			- executor가 frame 시작 시 확보
+			- debug / log / temp execution helper 용
+			- node에 직접 노출하지 않음
+
+		2. NodeScratch
+			- node callback 단위 임시 메모리
+			- callback 종료 시 폐기
+			- 다른 node와 공유 금지
+
+		3. ScopeScratch
+			- 1차 구현에서는 금지
+
+
+	2. scratch 용도 제한
+		- 문자열 포맷
+		- 임시 배열
+		- 소규모 계산용 캐시
+		- 외부 API 호출용 staging buffer
+
+
+	3. scratch 금지 용도
+		- 다음 phase까지 살야아 하는 결과 저장
+		- 다른 node가 읽어야 하는 상태 저장
+		- world lifecycle / transfer state의 영속 저장
+
+
+6. 실패 처리 정책 최소 규약
+
+	1. ExecFailureRecord
+		- ExecNodeId
+		- ExecScopeId
+		- ExecFailureClass
+		- message
+
+
+	2. ExecuteResult
+		- Success Flag
+		- Fatal Flag
+		- vector_ExecFailureRecord
+
+
+	* node failure 1건 발생 시 해당 scope만 CancelRequested
+	* 다른 scope는 계속 진행
+	* counter underflow, illegal CAS transition, phase / order invariant 위반은
+      즉시 fatal
+	* build validation error는 실행 시작 자체를 금지
+
+
+7. Debug assertion 목록
+
+	1. terminal state에서 다시 CAS 성공하면 fatal
+	2. remainingDeps.fetch_sub() == 0 이면 fatal
+	3. remainingNodes.fetch_sub() == 0이면 fatal
+	4. Queue -> Running은 worker만 가능
+	5. Running -> Canceled / Skipped 시도 시 fatal
+	6. serial phase node가 phase != expectedPhase이면 fatal
+	7. scopePhase == Closed 인에 non-terminal node가 남아 있으면 fatal
+	8. simulatePhaseDone == true 인데 remainingSimulateNodes != 0 이면 fatal
+	9. build 결과에서 commnit / lifecycle / reconcile plan 구간이 겹치면 fatal
+	10. Queued 상태가 아닌 node에 대해 worker가 dequeue 실행을 시도하면 fatal
+	11. 마지막 dependency 해소자가 아닌 스레드가 successor ready 전이를 시도하면
+	    fatal 또는 debug assert
+
+
+8. 구현 순서
+
+	0. core enum / id / flag / result type 고정
+	1. ExecnodeRecord, FrameTaskGraph, BuildResult 고정
+	2. ExecRuntimeState, ExecScopeRuntime, ExecNodeRuntime 구현
+	3. ExecutionGraphBuilder 구현
+	4. serial phase executor 구현
+	5. Simulate ready queue + worker dequeue path 구현
+	6. scope cancel / close candidate / simulate phase done 신호 추가
+	7. 실패 기록, ExecuteResult 추가
