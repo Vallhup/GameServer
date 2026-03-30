@@ -6,50 +6,50 @@
 #include <mutex>
 #include <condition_variable>
 
-using TaskFn = void(*)(void*);
-
-class TaskGroup;
-
-struct TaskDesc
-{
-	TaskFn fn{ nullptr };
-	void* ctx{ nullptr };
-	TaskGroup* group{ nullptr };
-};
+using WorkerPumpFn = bool(*)(void*);
 
 class ThreadPool final {
 public:
-	explicit ThreadPool(uint32_t threadCnt = 0);
+	ThreadPool() = default;
 	~ThreadPool();
 
 	ThreadPool(const ThreadPool&) = delete;
 	ThreadPool& operator=(const ThreadPool&) = delete;
 
-	bool Submit(TaskFn fn, void* ctx);
-	bool Submit(TaskFn fn, void* ctx, TaskGroup& group);
-	bool Submit(TaskDesc task);
+public:
+	bool Start(uint32_t threadCnt, WorkerPumpFn pump, void* pumpCtx);
+	void Stop() noexcept;
 
-	void Wait(TaskGroup& group);
+	void WakeOne() noexcept;
+	void WakeAll() noexcept;
 
-	uint32_t WorkerCount() const noexcept 
-	{ 
-		return static_cast<uint32_t>(_workers.size()); 
+	[[nodiscard]]
+	bool IsRunning() const noexcept
+	{
+		return _running.load();
+	}
+
+	[[nodiscard]]
+	uint32_t WorkerCount() const noexcept
+	{
+		return static_cast<uint32_t>(_workers.size());
 	}
 
 private:
-	void Start(uint32_t threadCnt = 1);
-	void Stop();
 	void WorkerLoop();
 
 private:
 	std::vector<std::thread> _workers;
 
-	std::mutex _queueMtx;
-	std::condition_variable _queueCv;
-	std::deque<TaskDesc> _queue;
+	std::mutex _cvMtx;
+	std::condition_variable _cv;
 
 	std::atomic<bool> _running{ false };
 	std::atomic<bool> _stopping{ false };
+	std::atomic<uint64_t> _workEpoch{ 0 };
+
+	WorkerPumpFn _pump{ nullptr };
+	void* _pumpCtx{ nullptr };
 };
 
 // 1. Work-Stealing

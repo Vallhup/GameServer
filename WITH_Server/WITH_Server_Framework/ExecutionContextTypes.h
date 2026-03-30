@@ -8,11 +8,11 @@
 #include "ExecutionOps.h"
 
 struct WorldFrameSelectionSet;
-struct WorldExecutionModelRegistry;
-struct ExecutionSourceRegistry;
 struct ExecutionGraphBuildPolicy;
 
 class WorldRuntime;
+class ExecutionSourceRegistry;
+class WorldExecutionModelRegistry;
 
 struct NodeScratch
 {

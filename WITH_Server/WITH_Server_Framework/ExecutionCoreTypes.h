@@ -106,6 +106,8 @@ enum ExecScopeFlags : uint8_t
     ExecScopeFlag_WasCanceled = 1u << 1,
 };
 
+using ExecFn = ExecCallResult(*)(struct NodeExecContext&);
+
 constexpr bool IsTerminalNodeState(ExecNodeState state) noexcept
 {
     switch (state) {

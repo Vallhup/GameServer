@@ -10,25 +10,28 @@ struct ExecutionSourceDesc
 {
     ExecToken token{ InvalidExecToken };
 
-    ExecPhase phase{ ExecPhase::Simulate };
-    ExecLane lane{ ExecLane::Parallel };
+    ExecPhase phase{ ExecPhase::None };
+    ExecLane lane{ ExecLane::None };
     ExecNodeKind kind{ ExecNodeKind::None };
     uint32_t flags{ ExecNodeFlag_None };
+
+    ExecFn fn{ nullptr };
 
     std::string debugName;
 
     // TODO
     //
-    // 1. callback pointer
-    // 2. bound runtime function
-    // 3. ECS write/read footprint
-    // 4. metadata-based scheduling contract
+    // 1. bound runtime function
+    // 2. ECS write/read footprint
+    // 3. metadata-based scheduling contract
 
     [[nodiscard]]
     bool IsValid() const noexcept
     {
-        return token != InvalidExecToken &&
-            kind != ExecNodeKind::None;
+        return
+            token != InvalidExecToken &&
+            kind != ExecNodeKind::None &&
+            fn != nullptr;
     }
 };
 
@@ -45,9 +48,17 @@ public:
         return nullptr;
     }
 
-    void Register(const ExecutionSourceDesc& desc)
+    [[nodiscard]]
+    bool Register(const ExecutionSourceDesc& desc)
     {
+        if (!desc.IsValid())
+            return false;
+
+        if (TryGet(desc.token) != nullptr)
+            return false;
+
         _sources.push_back(desc);
+        return true;
     }
 
     void Clear()
@@ -56,5 +67,6 @@ public:
     }
 
 private:
+    // TODO: 선형 탐색 병목 시 unordered_map 기반으로 수정
     std::vector<ExecutionSourceDesc> _sources;
 };
