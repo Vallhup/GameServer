@@ -110,6 +110,11 @@ cbuffer SkyboxCB : register(b9)
     float3 skyPadding;
 };
 
+cbuffer WaterCB : register(b10)
+{
+    float4 waterClipPlane;
+};
+
 //-------------------------------------------------------
 // VARIOUS TYPES OF SHADER RESOURCES
 //-------------------------------------------------------

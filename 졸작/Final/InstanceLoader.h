@@ -17,6 +17,7 @@ public:
 
 private:
 	bool ContainsAny(const string& str, const vector<string>& keywords);
+	bool ContainsAny(const string& str, initializer_list<string> keywords);
 
 private:
 	unordered_map<string, vector<InstanceData>> instanceData;

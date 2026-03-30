@@ -56,6 +56,7 @@ struct FORWARD_VS_OUT
     float4 color : COLOR;
     uint materialIndex : MATERIAL_INDEX;
     float3 worldPos : POSITION;
+    float clipDist : SV_ClipDistance0;
 };
 
 struct FORWARD_PS_IN
@@ -96,6 +97,7 @@ struct GBUFFER_VS_OUT
     float4 indices : INDICES;
     float4 color : COLOR;
     uint materialIndex : MATERIAL_INDEX;
+    float clipDist : SV_ClipDistance0;
 };
 
 struct GBUFFER_PS_IN

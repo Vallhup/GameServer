@@ -31,6 +31,9 @@ void Water::Initialize(DX12Core& core)
 	obj.materialIndex = 0;
 
 	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
+
+	waterCB = make_unique<UploadBuffer>();
+	waterCB->Initialize(core.GetDevice(), sizeof(WaterConstants));
 }
 
 void Water::Render(DX12Core& core, ID3D12GraphicsCommandList* cmdList)
@@ -59,6 +62,10 @@ void Water::SetPosition(float x, float y, float z)
 	obj.materialIndex = 0;
 
 	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
+
+	WaterConstants wt = {};
+	wt.clipPlane = XMFLOAT4(0.0f, 1.0f, 0.0f, -y);
+	waterCB->CopyData(&wt, sizeof(WaterConstants), 0);
 }
 
 void Water::SetScale(float x, float y, float z)

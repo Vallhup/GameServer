@@ -503,6 +503,12 @@ void SoloGameScene::RenderSceneDeferred()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
 
+	if (water)
+	{
+		auto cmdList = coreRef->GetGraphicsCmdList();
+		cmdList->SetGraphicsRootConstantBufferView(21, water->GetWaterCBAddress());
+	}
+
 	renderer->RenderDeferred(*coreRef, gameObjects, cam.get());
 	//renderer->RenderCollisionMeshWireframe(*coreRef, gameObjects);
 

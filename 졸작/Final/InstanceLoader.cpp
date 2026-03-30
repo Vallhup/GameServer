@@ -30,6 +30,11 @@ void InstanceLoader::Load(const wstring& fileName, const wstring& cullingFileNam
 			data.distanceCull = true;
 			data.cullDistance = 50.0f;
 		}
+		else if (ContainsAny(modelName, {"house"}))
+		{
+			data.distanceCull = true;
+			data.cullDistance = 80.0f;
+		}
 		else
 			data.distanceCull = false;
 
@@ -38,6 +43,17 @@ void InstanceLoader::Load(const wstring& fileName, const wstring& cullingFileNam
 }
 
 bool InstanceLoader::ContainsAny(const string& str, const vector<string>& keywords)
+{
+	for (const auto& keyword : keywords)
+	{
+		if (str.find(keyword) != string::npos)
+			return true;
+	}
+
+	return false;
+}
+
+bool InstanceLoader::ContainsAny(const string& str, initializer_list<string> keywords)
 {
 	for (const auto& keyword : keywords)
 	{

@@ -3,6 +3,10 @@
 class DX12Core;
 class VertexIndexBuffer;
 
+struct WaterConstants {
+	XMFLOAT4 clipPlane;
+};
+
 class Water
 {
 public:
@@ -13,6 +17,7 @@ public:
 	void Render(DX12Core& core, ID3D12GraphicsCommandList* cmdList);
 
 	D3D12_GPU_VIRTUAL_ADDRESS GetCBAddress() const { return objectCB->GetGPUVirtualAddress(); }
+	D3D12_GPU_VIRTUAL_ADDRESS GetWaterCBAddress() const { return waterCB->GetGPUVirtualAddress(); }
 
 	void SetPosition(float x, float y, float z);
 	void SetScale(float x, float y, float z);
@@ -69,5 +74,7 @@ private:
 
 	ComPtr<ID3D12DescriptorHeap> refractionSRVHeap;
 	D3D12_GPU_DESCRIPTOR_HANDLE refractionSRVHandle = {};
+
+	unique_ptr<UploadBuffer> waterCB;
 };
 
