@@ -124,12 +124,12 @@ void LoadingScene::LoadTownGameResources()
 void LoadingScene::LoadMainGameResources()
 {
 	InstanceLoader mapLoader;
-	mapLoader.Load(L"../Assets/FBXModel/VillageMap/MapInstanceData.txt", L"../Assets/FBXModel/VillageMap/CullingData.txt");
+	mapLoader.Load(L"../Assets/FBXModel/CastleMap/MapInstanceData.txt", L"../Assets/FBXModel/VillageMap/CullingData.txt");
 
 	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
 		if (instanceData.empty()) continue;
 
-		wstring path = L"../Assets/FBXModel/VillageMap/" + wstring(modelName.begin(), modelName.end());
+		wstring path = L"../Assets/FBXModel/CastleMap/" + wstring(modelName.begin(), modelName.end());
 		if (!filesystem::exists(path + L"_0.mesh")) continue;
 
 		loadTasks.push([this, path, instanceData]() {

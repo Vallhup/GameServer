@@ -77,7 +77,7 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 
     float ssao = ssaoTexture.Sample(linearSampler, input.uv).r;
     ssao = lerp(1.0, ssao, 0.5);
-    float finalAO = ao * ssao;
+    float finalAO = ao * ssao;  // 추후에 어떻게 진행할지 생각 필요, 다찬이와 논의
     
     float3 iblAmbient = CalculateIBL(
         N, V, baseColor, metallic, roughness, finalAO,

@@ -349,7 +349,7 @@ void SoloGameScene::InitializeLogic()
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
 
-	CreateMap();
+	//CreateMap();
 	CreateBossObject();
 	CreateEffectSamples();
 
@@ -374,7 +374,7 @@ void SoloGameScene::InitializeLogic()
 		_nManager->Send(data);
 	}
 
-	IMGUI.SetWaterDebugTexture(coreRef->GetDevice(), water->GetReflectionRT());
+	//IMGUI.SetWaterDebugTexture(coreRef->GetDevice(), water->GetReflectionRT());
 
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }

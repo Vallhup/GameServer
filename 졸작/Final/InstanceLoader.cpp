@@ -36,7 +36,7 @@ void InstanceLoader::Load(const wstring& fileName, const wstring& cullingFileNam
 			data.castShadow = false;
 			data.twoSided = true;
 		}
-		else if (ContainsAny(modelName, {"Tree", "SilverFir"}))
+		else if (ContainsAny(modelName, {"Tree", "SilverFir", "European", "Eagle", "WildCarrot"}))
 		{
 			data.distanceCull = false;
 			data.twoSided = true;

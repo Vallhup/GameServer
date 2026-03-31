@@ -26,7 +26,7 @@ void Material::InitializeBindlessSystem(ID3D12Device* device)
     descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
     materialBuffer = make_unique<UploadBuffer>();
-    materialBuffer->Initialize(device, sizeof(MaterialGPUData) * 1000);
+    materialBuffer->Initialize(device, sizeof(MaterialGPUData) * 2000);
 
     OutputDebugStringA("Bindless material system initialized!\n");
 }
@@ -62,7 +62,12 @@ void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandL
     materialIndex = static_cast<UINT>(materials.size() - 1);
     bufferDirty = true;
 
-    UpdateMaterialBuffer();
+    if (materialBuffer) {
+        size_t offset = materialIndex * sizeof(MaterialGPUData);
+        materialBuffer->CopyData(reinterpret_cast<char*>(materials.data()) + offset, sizeof(MaterialGPUData), offset);
+    }
+
+    //UpdateMaterialBuffer();
 
     OutputDebugStringA(("Material created with index: " + to_string(materialIndex) + "\n").c_str());
 }
