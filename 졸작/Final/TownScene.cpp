@@ -17,7 +17,6 @@ void TownScene::Reset()
 	gameObjects.clear();
 	knight.reset();
 
-	Material::ReleaseUploadBuffers();
 	OutputDebugStringA("TownScene Data has been deleted!! \n----------------------------------------\n");
 }
 

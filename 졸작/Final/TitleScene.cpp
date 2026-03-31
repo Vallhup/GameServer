@@ -15,7 +15,6 @@ void TitleScene::Release()
 
 void TitleScene::Reset()
 {
-	Material::ReleaseUploadBuffers();
 	OutputDebugStringA("TitleScene Data has been deleted!! \n----------------------------------------\n");
 }
 

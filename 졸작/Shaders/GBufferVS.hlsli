@@ -30,7 +30,7 @@ GBUFFER_VS_OUT VSMain(GBUFFER_VS_IN input, uint instanceID : SV_InstanceID)
     
     if (useInstancing && input.color.r > 0.1f)
     {
-        //VertexAnimation(modifiedPos, worldMatrix, input.color, time);
+        VertexAnimation(modifiedPos, worldMatrix, input.color, time);
     }
 
     float4 worldPos = mul(float4(modifiedPos, 1.0f), worldMatrix);

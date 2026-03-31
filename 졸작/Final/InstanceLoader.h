@@ -6,7 +6,9 @@ struct InstanceData
 	XMFLOAT3 rotation;
 	XMFLOAT3 scale;
 	bool distanceCull = false;
-	float cullDistance = 50.0;
+	float cullDistance = 60.0f;
+	bool castShadow = true;
+	bool twoSided = false;
 };
 
 class InstanceLoader {

@@ -300,7 +300,8 @@ void SceneRenderer::RenderInstanced(DX12Core& core, Mesh* mesh, UINT instanceCou
     if (!mesh || !mesh->GetVertexIndexBuffer() || !instanceBuffer) return;
 
     auto cmdList = core.GetGraphicsCmdList();
-    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::GBufferInstancing));
+    PSOType psoType = batch->IsTwoSided() ? PSOType::GBufferNonCulling : PSOType::GBufferInstancing;
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(psoType));
     SetupRenderingState(core, instanceBuffer);
 
     mesh->GetVertexIndexBuffer()->Bind(cmdList);

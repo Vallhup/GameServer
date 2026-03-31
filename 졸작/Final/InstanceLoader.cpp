@@ -25,18 +25,32 @@ void InstanceLoader::Load(const wstring& fileName, const wstring& cullingFileNam
 		>> data.rotation.x >> data.rotation.y >> data.rotation.z
 		>> data.scale.x >> data.scale.y >> data.scale.z)
 	{
-		if (ContainsAny(modelName, cullingDatas))
+		data.distanceCull = false;
+		data.castShadow = true;
+		data.twoSided = false;
+
+		if (ContainsAny(modelName, {"Grass"}))
 		{
 			data.distanceCull = true;
-			data.cullDistance = 50.0f;
+			data.cullDistance = 60.0f;
+			data.castShadow = false;
+			data.twoSided = true;
+		}
+		else if (ContainsAny(modelName, {"Tree", "SilverFir"}))
+		{
+			data.distanceCull = false;
+			data.twoSided = true;
+		}
+		else if (ContainsAny(modelName, cullingDatas))
+		{
+			data.distanceCull = true;
+			data.cullDistance = 60.0f;
 		}
 		else if (ContainsAny(modelName, {"house"}))
 		{
 			data.distanceCull = true;
-			data.cullDistance = 80.0f;
+			data.cullDistance = 90.0f;
 		}
-		else
-			data.distanceCull = false;
 
 		instanceData[modelName].push_back(data);
 	}

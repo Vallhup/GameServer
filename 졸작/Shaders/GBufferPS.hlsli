@@ -19,7 +19,6 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
         float3 normalMap = float3(0, 0, 1);
         float roughness = 0.5f;
         float metallic = 0.0f;
-        float alpha = 1.0f;
         float ao = 1.0f;
         float3 emission = float3(0, 0, 0);
         float height = 0.0f;
@@ -27,10 +26,7 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
         if (material.baseColorTexIndex != 0xFFFFFFFF)
             baseColor = bindlessTextures[NonUniformResourceIndex(material.baseColorTexIndex)].Sample(linearSampler, input.uv);
         
-        if (material.alphaTexIndex != 0xFFFFFFFF)
-            alpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).r;
-        
-        float finalAlpha = baseColor.a * alpha;
+        float finalAlpha = baseColor.a;
         clip(finalAlpha - 0.01f);
         
         if (material.normalTexIndex != 0xFFFFFFFF)

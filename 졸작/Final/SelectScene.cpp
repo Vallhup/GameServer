@@ -17,7 +17,6 @@ void SelectScene::Reset()
 	gameObjects.clear();
 	demonStriker.reset();
 
-	Material::ReleaseUploadBuffers();
 	OutputDebugStringA("SelectScene Data has been deleted!! \n----------------------------------------\n");
 }
 

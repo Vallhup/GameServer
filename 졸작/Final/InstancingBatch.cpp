@@ -111,7 +111,7 @@ void InstancingBatch::Update(const BoundingFrustum& frustum, const XMVECTOR& cam
 
     float camX = currentCamPos.x;
     float camZ = currentCamPos.z;
-    constexpr float shadowRange = 50.0f;
+    constexpr float shadowRange = 80.0f;
 
     for (const auto& data : cachedData) {
         // Frustum culling (캐싱된 bounding box 사용)

@@ -29,6 +29,8 @@ public:
 
 	D3D12_GPU_VIRTUAL_ADDRESS GetCBAddress(size_t idx) const { return objectCBs[idx]->GetGPUVirtualAddress(); }
 	void SetCastShadow(bool in) { castShadow = in; }
+	void SetTwoSided(bool in) { twoSided = in; }
+	bool IsTwoSided() const { return twoSided; }
 
 private:
 	Mesh* mesh = nullptr;
@@ -41,6 +43,7 @@ private:
 	UINT visibleCount = 0;
 	UINT shadowCount = 0;
 	bool castShadow = true;
+	bool twoSided = false;
 
 	XMFLOAT3 lastCamPos = { FLT_MAX, FLT_MAX, FLT_MAX };
 	static constexpr float UPDATE_THRESHOLD_SQ = 0.015625;  // 0.125^2

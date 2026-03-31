@@ -37,6 +37,8 @@ void LoadingScene::InitializeSceneObjectPools()
 
 void LoadingScene::InitializeLogic()
 {
+	OutputDebugStringA("----------------------------------------\nLoadingScene Data has been created!! \n");
+
 	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
 	controller->SetTargetScene(targetScene);
 
@@ -61,6 +63,16 @@ void LoadingScene::UpdateScene(const float deltaTime)
 		loadTasks.pop();
 
 		coreRef->ExecuteLoadingCommands();
+
+		auto& batches = sceneBatches[targetScene];
+		if (!batches.empty()) {
+			auto& lastBatch = batches.back();
+			auto& objects = lastBatch->GetObjects();
+			if (!objects.empty()) {
+				if (auto mesh = objects[0]->GetComponent<Mesh>())
+					mesh->ReleaseUploadBuffers();
+			}
+		}
 
 		completedTasks++;
 
@@ -126,9 +138,6 @@ void LoadingScene::LoadMainGameResources()
 	}
 
 	totalTasks = loadTasks.size();
-
-	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
-	if (controller) controller->SetProgress(1.0f);
 
 	coreRef->SetLoadingMode(true);
 }
