@@ -7,7 +7,7 @@ public:
 	TitleScene() = default;
 	TitleScene(const TitleScene&) = delete;
 	TitleScene& operator=(const TitleScene&) = delete;
-	~TitleScene();
+	~TitleScene() = default;
 
 	void Release() override;
 	void Reset() override;

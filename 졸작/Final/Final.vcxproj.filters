@@ -154,17 +154,17 @@
     <ClCompile Include="SelectScene.cpp">
       <Filter>Scene\2. Select</Filter>
     </ClCompile>
-    <ClCompile Include="TownScene.cpp">
-      <Filter>Scene\3. Town</Filter>
+    <ClCompile Include="PlazaScene.cpp">
+      <Filter>Scene\3. Plaza</Filter>
     </ClCompile>
-    <ClCompile Include="SoloGameScene.cpp">
-      <Filter>Scene\4. SoloGame</Filter>
+    <ClCompile Include="FirstBattleScene.cpp">
+      <Filter>Scene\4. Village</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Scene\Base</Filter>
     </ClCompile>
-    <ClCompile Include="MultiGameScene.cpp">
-      <Filter>Scene\5. MultiGame</Filter>
+    <ClCompile Include="SecondBattleScene.cpp">
+      <Filter>Scene\5. Castle</Filter>
     </ClCompile>
     <ClCompile Include="SelectSceneUIController.cpp">
       <Filter>UI\Controller</Filter>
@@ -219,6 +219,9 @@
     </ClCompile>
     <ClCompile Include="Water.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="FinalBattleScene.cpp">
+      <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -375,17 +378,17 @@
     <ClInclude Include="SelectScene.h">
       <Filter>Scene\2. Select</Filter>
     </ClInclude>
-    <ClInclude Include="TownScene.h">
-      <Filter>Scene\3. Town</Filter>
+    <ClInclude Include="PlazaScene.h">
+      <Filter>Scene\3. Plaza</Filter>
     </ClInclude>
-    <ClInclude Include="SoloGameScene.h">
-      <Filter>Scene\4. SoloGame</Filter>
+    <ClInclude Include="FirstBattleScene.h">
+      <Filter>Scene\4. Village</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Scene\Base</Filter>
     </ClInclude>
-    <ClInclude Include="MultiGameScene.h">
-      <Filter>Scene\5. MultiGame</Filter>
+    <ClInclude Include="SecondBattleScene.h">
+      <Filter>Scene\5. Castle</Filter>
     </ClInclude>
     <ClInclude Include="SelectSceneUIController.h">
       <Filter>UI\Controller</Filter>
@@ -441,6 +444,9 @@
     </ClInclude>
     <ClInclude Include="Water.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalBattleScene.h">
+      <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -614,17 +620,8 @@
     <Filter Include="Scene\1. Title">
       <UniqueIdentifier>{9c20e160-7567-4319-b316-77548508eefb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\3. Town">
-      <UniqueIdentifier>{623dc269-42ef-4be0-b757-f385bbc2ebe5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene\Base">
       <UniqueIdentifier>{302555da-ea64-4da8-a7b0-f6417d15fa6a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scene\4. SoloGame">
-      <UniqueIdentifier>{8a5228af-b772-4c10-b81a-d1f594f328d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scene\5. MultiGame">
-      <UniqueIdentifier>{3986df8b-d380-4d3e-b231-40dbb68cff73}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scene\99. Loading">
       <UniqueIdentifier>{0af137ca-4db1-4aec-a1fe-d4af63a948e4}</UniqueIdentifier>
@@ -643,6 +640,18 @@
     </Filter>
     <Filter Include="Graphics">
       <UniqueIdentifier>{54ad2961-692c-45b9-9790-32fdb3c48307}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\3. Plaza">
+      <UniqueIdentifier>{623dc269-42ef-4be0-b757-f385bbc2ebe5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\4. Village">
+      <UniqueIdentifier>{8a5228af-b772-4c10-b81a-d1f594f328d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\5. Castle">
+      <UniqueIdentifier>{3986df8b-d380-4d3e-b231-40dbb68cff73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\6. Final %28Boss &amp; PVP%29">
+      <UniqueIdentifier>{c462c292-ea8d-4f4c-9687-a962f76608ff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

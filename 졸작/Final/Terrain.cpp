@@ -5,14 +5,14 @@
 #include "Importer.h"
 #include "Material.h"
 
-void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring& heightmapPath, int inGridSize, float inWorldSize, float inHeightScale)
+void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring& heightmapPath, int inGridSize, float inWorldSize, float inHeightScale, float tileSize)
 {
 	gridSize = inGridSize;
 	worldSize = inWorldSize;
 	heightScale = inHeightScale;
 
 	LoadHeightmap(heightmapPath);
-	BuildVertices();
+	BuildVertices(tileSize);
 	BuildIndices();
 
 	vertexIndexBuffer = make_shared<VertexIndexBuffer>();
@@ -75,8 +75,35 @@ void Terrain::SetPosition(float x, float y, float z)
 	position = { x, y, z };
 
 	XMMATRIX scaleMat = XMMatrixScaling(scale.x, scale.y, scale.z);
+	XMMATRIX rotMat = XMMatrixRotationRollPitchYaw(
+		XMConvertToRadians(rotation.x),
+		XMConvertToRadians(rotation.y),
+		XMConvertToRadians(rotation.z)
+	);
 	XMMATRIX transMat = XMMatrixTranslation(x, y, z);
-	XMMATRIX world = XMMatrixTranspose(scaleMat * transMat);
+	XMMATRIX world = XMMatrixTranspose(scaleMat * rotMat * transMat);
+
+	ObjectConstants obj = {};
+	obj.world = world;
+	obj.useTexture = material ? 1 : 0;
+	obj.useInstancing = 0;
+	obj.materialIndex = material ? material->GetMaterialIndex() : 0;
+
+	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
+}
+
+void Terrain::SetRotation(float x, float y, float z)
+{
+	rotation = { x, y, z };
+
+	XMMATRIX scaleMat = XMMatrixScaling(scale.x, scale.y, scale.z);
+	XMMATRIX rotMat = XMMatrixRotationRollPitchYaw(
+		XMConvertToRadians(x),
+		XMConvertToRadians(y),
+		XMConvertToRadians(z)
+	);
+	XMMATRIX transMat = XMMatrixTranslation(position.x, position.y, position.z);
+	XMMATRIX world = XMMatrixTranspose(scaleMat * rotMat * transMat);
 
 	ObjectConstants obj = {};
 	obj.world = world;
@@ -92,8 +119,13 @@ void Terrain::SetScale(float x, float y, float z)
 	scale = { x, y, z };
 
 	XMMATRIX scaleMat = XMMatrixScaling(x, y, z);
+	XMMATRIX rotMat = XMMatrixRotationRollPitchYaw(
+		XMConvertToRadians(rotation.x),
+		XMConvertToRadians(rotation.y),
+		XMConvertToRadians(rotation.z)
+	);
 	XMMATRIX transMat = XMMatrixTranslation(position.x, position.y, position.z);
-	XMMATRIX world = XMMatrixTranspose(scaleMat * transMat);
+	XMMATRIX world = XMMatrixTranspose(scaleMat * rotMat * transMat);
 
 	ObjectConstants obj = {};
 	obj.world = world;
@@ -138,7 +170,7 @@ void Terrain::LoadHeightmap(const wstring& path)
 	OutputDebugStringA(buf);
 }
 
-void Terrain::BuildVertices()
+void Terrain::BuildVertices(float tileSize)
 {
 	vertices.clear();
 	vertices.reserve((gridSize + 1) * (gridSize + 1));
@@ -155,8 +187,8 @@ void Terrain::BuildVertices()
 			float normalizedU = (float)x / gridSize;
 			float normalizedV = (float)z / gridSize;
 
-			float tileSize = 2.0f;
-			float uvScale = worldSize / tileSize;
+			float tilingSize = tileSize;
+			float uvScale = worldSize / tilingSize;
 			float u = normalizedU * uvScale;
 			float v = normalizedV * uvScale;
 

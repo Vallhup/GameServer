@@ -1,13 +1,13 @@
 #pragma once
 #include "Scene.h"
 
-class SelectScene final : public Scene
+class PlazaScene final : public Scene
 {
 public:
-	SelectScene() = default;
-	SelectScene(const SelectScene&) = delete;
-	SelectScene& operator=(const SelectScene&) = delete;
-	~SelectScene() = default;
+	PlazaScene() = default;
+	PlazaScene(const PlazaScene&) = delete;
+	PlazaScene& operator=(const PlazaScene&) = delete;
+	~PlazaScene() = default;
 
 	void Release() override;
 	void Reset() override;
@@ -24,6 +24,6 @@ protected:
 
 private:
 	vector<shared_ptr<GameObject>> gameObjects;
-	shared_ptr<MainCharacter> demonStriker;
-	shared_ptr<GameObject> imp;
+	shared_ptr<MainCharacter> knight;
 };
+

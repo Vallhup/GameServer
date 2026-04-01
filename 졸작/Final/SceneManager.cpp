@@ -7,8 +7,10 @@
 #include "Texture.h"
 #include "TitleScene.h"
 #include "SelectScene.h"
-#include "TownScene.h"
-#include "SoloGameScene.h"
+#include "PlazaScene.h"
+#include "FirstBattleScene.h"
+#include "SecondBattleScene.h"
+#include "FinalBattleScene.h"
 #include "LoadingScene.h"
 #include "Camera.h"
 #include "Material.h"
@@ -26,8 +28,10 @@ void SceneManager::Initialize(HWND hWnd, DX12Core& core)
 
     RegisterScene<TitleScene>(SceneType::Title);
     RegisterScene<SelectScene>(SceneType::Select);
-    RegisterScene<TownScene>(SceneType::Town);
-    RegisterScene<SoloGameScene>(SceneType::MainGame);
+    RegisterScene<PlazaScene>(SceneType::Plaza);
+    RegisterScene<FirstBattleScene>(SceneType::Village);
+    RegisterScene<SecondBattleScene>(SceneType::Castle);
+    RegisterScene<FinalBattleScene>(SceneType::Final);
 
     RegisterScene<LoadingScene>(SceneType::Loading);
 

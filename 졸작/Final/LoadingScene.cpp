@@ -45,13 +45,19 @@ void LoadingScene::InitializeLogic()
 	switch (targetScene)
 	{
 	case SceneType::Select:
-		LoadSelectGameResources();
+		LoadSelectSceneResources();
 		break;
-	case SceneType::Town:
-		LoadTownGameResources();
+	case SceneType::Plaza:
+		LoadPlazaSceneResources();
 		break;
-	case SceneType::MainGame:
-		LoadMainGameResources();
+	case SceneType::Village:
+		LoadFirstBattleSceneResources();
+		break;
+	case SceneType::Castle:
+		LoadSecondBattleSceneResources();
+		break;
+	case SceneType::Final:
+		LoadFinalBattleSceneResources();
 		break;
 	}
 }
@@ -107,21 +113,42 @@ void LoadingScene::RequestSceneChange()
 {
 }
 
-void LoadingScene::LoadSelectGameResources()
+void LoadingScene::LoadSelectSceneResources()
 {
 	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
 	if (controller) controller->SetProgress(1.0f);
 	coreRef->SetLoadingMode(true);
 }
 
-void LoadingScene::LoadTownGameResources()
+void LoadingScene::LoadPlazaSceneResources()
 {
 	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
 	if (controller) controller->SetProgress(1.0f);
 	coreRef->SetLoadingMode(true);
 }
 
-void LoadingScene::LoadMainGameResources()
+void LoadingScene::LoadFirstBattleSceneResources()
+{
+	InstanceLoader mapLoader;
+	mapLoader.Load(L"../Assets/FBXModel/VillageMap/MapInstanceData.txt", L"../Assets/FBXModel/VillageMap/CullingData.txt");
+
+	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
+		if (instanceData.empty()) continue;
+
+		wstring path = L"../Assets/FBXModel/VillageMap/" + wstring(modelName.begin(), modelName.end());
+		if (!filesystem::exists(path + L"_0.mesh")) continue;
+
+		loadTasks.push([this, path, instanceData]() {
+			CreateAndBatchObjects(path, instanceData, sceneBatches[SceneType::Village]);
+			});
+	}
+
+	totalTasks = loadTasks.size();
+
+	coreRef->SetLoadingMode(true);
+}
+
+void LoadingScene::LoadSecondBattleSceneResources()
 {
 	InstanceLoader mapLoader;
 	mapLoader.Load(L"../Assets/FBXModel/CastleMap/MapInstanceData.txt", L"../Assets/FBXModel/VillageMap/CullingData.txt");
@@ -133,11 +160,15 @@ void LoadingScene::LoadMainGameResources()
 		if (!filesystem::exists(path + L"_0.mesh")) continue;
 
 		loadTasks.push([this, path, instanceData]() {
-			CreateAndBatchObjects(path, instanceData, sceneBatches[SceneType::MainGame]);
+			CreateAndBatchObjects(path, instanceData, sceneBatches[SceneType::Castle]);
 			});
 	}
 
 	totalTasks = loadTasks.size();
 
 	coreRef->SetLoadingMode(true);
+}
+
+void LoadingScene::LoadFinalBattleSceneResources()
+{
 }

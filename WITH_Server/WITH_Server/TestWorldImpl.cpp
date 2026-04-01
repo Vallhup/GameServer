@@ -35,7 +35,7 @@ void TestWorldImpl::SpawnInitial(WorldRuntime& rt)
 	Entity e = ecs.CreateEntity();
 
 	ecs.GetStorage<Transform>().AddComponent(e)->position = 
-	{ -7.0f, 10.0f, -242.0f };
+	{ 156.0f, 50.0f, 650.0f };
 	ecs.GetStorage<Velocity>().AddComponent(e);
 	ecs.GetStorage<ActionMoveDelta>().AddComponent(e);
 	ecs.GetStorage<LocomotionMoveDelta>().AddComponent(e);

@@ -141,8 +141,8 @@ void UIManager::RegisterControllers()
 	controllers[SceneType::Title] = make_unique<StartSceneUIController>();
 	controllers[SceneType::Title]->Init(this);
 
-	controllers[SceneType::MainGame] = make_unique<GameSceneUIController>();
-	controllers[SceneType::MainGame]->Init(this);
+	controllers[SceneType::Village] = make_unique<GameSceneUIController>();
+	controllers[SceneType::Village]->Init(this);
 
 	controllers[SceneType::Loading] = make_unique<LoadingSceneUIController>();
 	controllers[SceneType::Loading]->Init(this);

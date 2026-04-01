@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "SoloGameScene.h"
+#include "FirstBattleScene.h"
 #include "SceneManager.h"
 #include "Input.h"
 #include "MainCharacter.h"
@@ -26,9 +26,7 @@
 #include "NetId.h"
 #include "NetHelper.h"
 
-SoloGameScene::~SoloGameScene() = default;
-
-void SoloGameScene::CreateKnightPool()
+void FirstBattleScene::CreateKnightPool()
 {
 	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
 	{
@@ -50,7 +48,7 @@ void SoloGameScene::CreateKnightPool()
 	}
 }
 
-void SoloGameScene::CreateBossObject()
+void FirstBattleScene::CreateBossObject()
 {
 	bossObject = make_shared<GameObject>();
 	bossObject->SetId(-1);
@@ -67,39 +65,20 @@ void SoloGameScene::CreateBossObject()
 	AddGameObject(bossObject);
 }
 
-void SoloGameScene::CreateMap()
+void FirstBattleScene::CreateMap()
 {
-// 이걸 여기서 한번 더 호출할 경우엔, 어떻게 되냐면 이제 똑같은 위치에 똑같은 맵 에셋을 두번 그리게 되는거임
-// 그렇게 하면 프레임이 당연히 안나오겟죠 ?
-//#pragma region Initialize Map Elements
-//	InstanceLoader mapLoader;
-//	mapLoader.Load(L"../Assets/FBXModel/Map/MapInstanceData.txt");
-//
-//	int count = 0;
-//	// during count 50 ~ 60 rapid lower fps range
-//	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
-//		if (instanceData.empty())  
-//			continue;
-//
-//		wstring path = L"../Assets/FBXModel/Map/" + wstring(modelName.begin(), modelName.end());
-//
-//		if (!filesystem::exists(path + L"_0.mesh"))
-//			continue;
-//
-//		CreateAndBatchObjects(path, instanceData, instancingBatches);
-//	}
-//	//OutputDebugStringA(("Map data count: " + to_string(count) + '\n').c_str());
-//#pragma endregion
+// Village 맵 전용
+#pragma region Initialize VillageMap Elements
 
-	// 새거 1023 1023 159.4766 513x513
+// 새거 1023 1023 159.4766 513x513
 #pragma region Initialize Terrain
 	terrain = make_shared<Terrain>();
-	terrain->Initialize(*coreRef, L"../Assets/FBXModel/VillageMap/ground", L"../Assets/FBXModel/VillageMap/villageTerrain.raw", 513, 1023.0f, 159.4766f);
+	terrain->Initialize(*coreRef, L"../Assets/FBXModel/VillageMap/ground", L"../Assets/FBXModel/VillageMap/villageTerrain.raw", 513, 1023.0f, 159.4766f, 2.0f);
 #pragma endregion
 
 #pragma region Initialize Ocean Floor
 	oceanFloor = make_shared<Terrain>();
-	oceanFloor->Initialize(*coreRef, L"textures/OceanFloor", L"../Assets/FBXModel/VillageMap/oceanFloorTerrain.raw", 513, 1946.701f, 170.3121f);
+	oceanFloor->Initialize(*coreRef, L"textures/OceanFloor", L"../Assets/FBXModel/VillageMap/oceanFloorTerrain.raw", 513, 1946.701f, 170.3121f, 2.0f);
 	oceanFloor->SetPosition(-903.851200f, 32.799990f, 160.528700f);
 #pragma endregion
 
@@ -110,31 +89,17 @@ void SoloGameScene::CreateMap()
 	water->SetScale(1500.0f, 1.0f, 2546.25f);
 #pragma endregion
 
-//#pragma region Initialize VillageMap Elements
-//	InstanceLoader mapLoader;
-//	mapLoader.Load(L"../Assets/FBXModel/VillageMap/MapInstanceData.txt");
-//
-//	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
-//		if (instanceData.empty())
-//			continue;
-//
-//		wstring path = L"../Assets/FBXModel/VillageMap/" + wstring(modelName.begin(), modelName.end());
-//
-//		if (!filesystem::exists(path + L"_0.mesh"))
-//			continue;
-//
-//		CreateAndBatchObjects(path, instanceData, instancingBatches);
-//	}
-//#pragma endregion
+#pragma endregion
 
-	/*constexpr InstanceData testData = {
-		{ 158.0, 50.0f, 655.0f }, { 0.0f, 0.0f, 0.0f}, { 1.0f, 1.0f, 1.0f }, false, 25.0f
-	};
 
-	AddGameObject(CreateStaticMesh(L"../Assets/FBXModel/VillageMap/test2", testData));*/
+// Castle 맵 전용
+#pragma region Initialize Castle Terrain
+	//terrain = make_shared<Terrain>();
+	//terrain->Initialize(*coreRef, L"textures/CastleFloor", L"../Assets/FBXModel/CastleMap/castleTerrain.raw", 513, 650.2402f, 79.28662f, 8.0f);
+#pragma endregion
 }
 
-void SoloGameScene::CreateEffectSamples()
+void FirstBattleScene::CreateEffectSamples()
 {
 	struct EffectInfo {
 		u16string name;
@@ -172,14 +137,14 @@ void SoloGameScene::CreateEffectSamples()
 	}
 }
 
-float SoloGameScene::SampleHeightAt(float worldX, float worldZ) const
+float FirstBattleScene::SampleHeightAt(float worldX, float worldZ) const
 {
 	if (terrain)
 		return terrain->SampleHeightAt(worldX, worldZ);
 	return 0.0f;
 }
 
-void SoloGameScene::HandleLogin(const Protocol::SC_LOGIN_PACKET& login)
+void FirstBattleScene::HandleLogin(const Protocol::SC_LOGIN_PACKET& login)
 {
 	NetId nid{ login.netid() };
 	int id = nid.GetId();
@@ -187,7 +152,7 @@ void SoloGameScene::HandleLogin(const Protocol::SC_LOGIN_PACKET& login)
 	OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
 }
 
-void SoloGameScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
+void FirstBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 {
 	NetId nid{ add.netid() };
 	int id = nid.GetId();
@@ -228,7 +193,7 @@ void SoloGameScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 	}
 }
 
-void SoloGameScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
+void FirstBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 {
 	NetId nid{ move.netid() };
 	int id = nid.GetId();
@@ -238,17 +203,17 @@ void SoloGameScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 		auto transform = it->second->GetComponent<Transform>();
 		const XMFLOAT3& pos = transform->GetPosition();
 
-		transform->SetPosition(move.x(), move.y(), move.z());
+		transform->SetPosition(move.x(), SampleHeightAt(move.x(), move.z())/*move.y()*/, move.z());
 		transform->SetTargetRotation(move.yaw());
 	}
 }
 
-void SoloGameScene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
+void FirstBattleScene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 {
 	OutputDebugStringA("SC_REMOVE packet received\n");
 }
 
-void SoloGameScene::HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim)
+void FirstBattleScene::HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim)
 {
 	NetId nid{ anim.netid() };
 	int id = nid.GetId();
@@ -267,7 +232,7 @@ void SoloGameScene::HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITIO
 	}
 }
 
-void SoloGameScene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
+void FirstBattleScene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
 {
 	const NetId nid{ stat.netid() };
 	const int id = nid.GetId();
@@ -283,7 +248,7 @@ void SoloGameScene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat
 	const int mSpeed = stat.movespeed();
 	const double aSpeed = stat.attackspeed();
 
-	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::MainGame);
+	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Village);
 	if (controller)
 	{
 		controller->HandleStatBarChange(curHp, maxHp, curStamina, maxStamina);
@@ -294,7 +259,7 @@ void SoloGameScene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat
 	}
 }
 
-shared_ptr<MainCharacter> SoloGameScene::GetAvailableKnight() const
+shared_ptr<MainCharacter> FirstBattleScene::GetAvailableKnight() const
 {
 	for (auto& knight : knightPool)
 	{
@@ -305,7 +270,7 @@ shared_ptr<MainCharacter> SoloGameScene::GetAvailableKnight() const
 	return nullptr;
 }
 
-shared_ptr<MainCharacter> SoloGameScene::GetMyPlayer() const
+shared_ptr<MainCharacter> FirstBattleScene::GetMyPlayer() const
 {
 	if (myPlayer)
 		return myPlayer;
@@ -313,12 +278,18 @@ shared_ptr<MainCharacter> SoloGameScene::GetMyPlayer() const
 	return nullptr;
 }
 
-void SoloGameScene::Release()
+void FirstBattleScene::Release()
 {
 }
 
-void SoloGameScene::Reset()
+void FirstBattleScene::Reset()
 {
+	//----
+	// 임시 코드임, First->Second 연결 해보려고 시도하는 코드임
+	sManagerRef->SetSharedKnight(myPlayer);
+	sManagerRef->SetSharedBoss(bossObject);
+	//----
+
 	instancingBatches.clear();
 	knightPool.clear();
 	activeCharacters.clear();
@@ -329,16 +300,16 @@ void SoloGameScene::Reset()
 	OutputDebugStringA("SoloGameScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-void SoloGameScene::AddGameObject(shared_ptr<GameObject> obj)
+void FirstBattleScene::AddGameObject(shared_ptr<GameObject> obj)
 {
 	gameObjects.push_back(obj);
 }
 
-void SoloGameScene::InitializeSceneObjectPools()
+void FirstBattleScene::InitializeSceneObjectPools()
 {
 }
 
-void SoloGameScene::InitializeLogic()
+void FirstBattleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nSoloGameScene Data has been created!! \n");
 
@@ -349,7 +320,7 @@ void SoloGameScene::InitializeLogic()
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
 
-	//CreateMap();
+	CreateMap();
 	CreateBossObject();
 	CreateEffectSamples();
 
@@ -379,7 +350,7 @@ void SoloGameScene::InitializeLogic()
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
 
-void SoloGameScene::UpdateScene(const float deltaTime)
+void FirstBattleScene::UpdateScene(const float deltaTime)
 {
 	/*if (effectObjects.size() > 0 && INPUT.GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
@@ -499,7 +470,7 @@ void SoloGameScene::UpdateScene(const float deltaTime)
 	//OutputDebugStringA(("Update: " + to_string(ms) + "us\n").c_str());
 }
 
-void SoloGameScene::RenderSceneDeferred()
+void FirstBattleScene::RenderSceneDeferred()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
 
@@ -561,7 +532,7 @@ void SoloGameScene::RenderSceneDeferred()
 	}
 }
 
-void SoloGameScene::RenderSceneForward()
+void FirstBattleScene::RenderSceneForward()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
 
@@ -573,7 +544,7 @@ void SoloGameScene::RenderSceneForward()
 	renderer->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
-void SoloGameScene::RenderSceneShadow()
+void FirstBattleScene::RenderSceneShadow()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
 	renderer->RenderShadow(*coreRef, gameObjects);
@@ -584,13 +555,17 @@ void SoloGameScene::RenderSceneShadow()
 	}
 }
 
-void SoloGameScene::RenderSceneEffects()
+void FirstBattleScene::RenderSceneEffects()
 {
 	if (cam)
 		EFFECT_MANAGER->Render(*coreRef, cam.get());
 }
 
-void SoloGameScene::RequestSceneChange()
+void FirstBattleScene::RequestSceneChange()
 {
-
+	if (INPUT.GetKeyDown(VK_TAB))
+	{
+		if (sManagerRef)
+			sManagerRef->RequestLoadingScene(SceneType::Castle);
+	}
 }

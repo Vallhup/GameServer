@@ -6,8 +6,6 @@
 #include "MainCharacter.h"
 #include "Animator.h"
 
-SelectScene::~SelectScene() = default;
-
 void SelectScene::Release()
 {
 }
@@ -284,6 +282,6 @@ void SelectScene::RequestSceneChange()
 	if (INPUT.GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
-			sManagerRef->RequestLoadingScene(SceneType::Town);
+			sManagerRef->RequestLoadingScene(SceneType::Plaza);
 	}
 }

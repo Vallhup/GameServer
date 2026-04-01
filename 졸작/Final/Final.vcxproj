@@ -216,6 +216,7 @@ exit 0</Command>
     <ClCompile Include="DX12Core.cpp" />
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EffectRenderer.cpp" />
+    <ClCompile Include="FinalBattleScene.cpp" />
     <ClCompile Include="FroxelManager.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
@@ -224,14 +225,14 @@ exit 0</Command>
     <ClCompile Include="RenderTargets.cpp" />
     <ClCompile Include="SelectSceneUIController.cpp" />
     <ClCompile Include="ShadowMappingManager.cpp" />
-    <ClCompile Include="SoloGameScene.cpp" />
+    <ClCompile Include="FirstBattleScene.cpp" />
     <ClCompile Include="GameSceneUIController.cpp" />
     <ClCompile Include="GPUBuffer.cpp" />
     <ClCompile Include="ImGuiManager.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="InstanceLoader.cpp" />
     <ClCompile Include="InstancingBatch.cpp" />
-    <ClCompile Include="MultiGameScene.cpp" />
+    <ClCompile Include="SecondBattleScene.cpp" />
     <ClCompile Include="SelectScene.cpp" />
     <ClCompile Include="MainCharacter.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -243,7 +244,7 @@ exit 0</Command>
     <ClCompile Include="SceneRenderer.cpp" />
     <ClCompile Include="SSAO.cpp" />
     <ClCompile Include="SwapChain.cpp" />
-    <ClCompile Include="TownScene.cpp" />
+    <ClCompile Include="PlazaScene.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SoundManager.cpp" />
@@ -297,6 +298,7 @@ exit 0</Command>
     <ClInclude Include="DX12Core.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EffectRenderer.h" />
+    <ClInclude Include="FinalBattleScene.h" />
     <ClInclude Include="FroxelManager.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="LoadingScene.h" />
@@ -306,14 +308,14 @@ exit 0</Command>
     <ClInclude Include="RenderTargets.h" />
     <ClInclude Include="SelectSceneUIController.h" />
     <ClInclude Include="ShadowMappingManager.h" />
-    <ClInclude Include="SoloGameScene.h" />
+    <ClInclude Include="FirstBattleScene.h" />
     <ClInclude Include="GameSceneUIController.h" />
     <ClInclude Include="GPUBuffer.h" />
     <ClInclude Include="ImGuiManager.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="InstanceLoader.h" />
     <ClInclude Include="InstancingBatch.h" />
-    <ClInclude Include="MultiGameScene.h" />
+    <ClInclude Include="SecondBattleScene.h" />
     <ClInclude Include="SelectScene.h" />
     <ClInclude Include="MainCharacter.h" />
     <ClInclude Include="Material.h" />
@@ -325,7 +327,7 @@ exit 0</Command>
     <ClInclude Include="SceneRenderer.h" />
     <ClInclude Include="SSAO.h" />
     <ClInclude Include="SwapChain.h" />
-    <ClInclude Include="TownScene.h" />
+    <ClInclude Include="PlazaScene.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SoundManager.h" />

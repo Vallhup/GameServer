@@ -7,13 +7,13 @@ class SkyBox;
 class Terrain;
 class Water;
 
-class SoloGameScene final : public Scene
+class FirstBattleScene final : public Scene
 {
 public:
-	SoloGameScene() = default;
-	SoloGameScene(const SoloGameScene&) = delete;
-	SoloGameScene& operator=(const SoloGameScene&) = delete;
-	~SoloGameScene();
+	FirstBattleScene() = default;
+	FirstBattleScene(const FirstBattleScene&) = delete;
+	FirstBattleScene& operator=(const FirstBattleScene&) = delete;
+	~FirstBattleScene() = default;
 
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
 	shared_ptr<MainCharacter> GetMyPlayer() const;

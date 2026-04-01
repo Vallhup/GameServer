@@ -1,13 +1,13 @@
 #pragma once
 #include "Scene.h"
 
-class TownScene final : public Scene
+class FinalBattleScene final : public Scene
 {
 public:
-	TownScene() = default;
-	TownScene(const TownScene&) = delete;
-	TownScene& operator=(const TownScene&) = delete;
-	~TownScene();
+	FinalBattleScene() = default;
+	FinalBattleScene(const FinalBattleScene&) = delete;
+	FinalBattleScene& operator=(const FinalBattleScene&) = delete;
+	~FinalBattleScene() = default;
 
 	void Release() override;
 	void Reset() override;
@@ -22,8 +22,5 @@ protected:
 	void RenderSceneEffects() override;
 	void RequestSceneChange() override;
 
-private:
-	vector<shared_ptr<GameObject>> gameObjects;
-	shared_ptr<MainCharacter> knight;
 };
 

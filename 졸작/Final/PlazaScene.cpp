@@ -1,18 +1,16 @@
 #include "pch.h"
-#include "TownScene.h"
+#include "PlazaScene.h"
 #include "SceneManager.h"
 #include "Input.h"
 #include "Material.h"
 #include "MainCharacter.h"
 #include "Animator.h"
 
-TownScene::~TownScene() = default;
-
-void TownScene::Release()
+void PlazaScene::Release()
 {
 }
 
-void TownScene::Reset()
+void PlazaScene::Reset()
 {
 	gameObjects.clear();
 	knight.reset();
@@ -20,11 +18,11 @@ void TownScene::Reset()
 	OutputDebugStringA("TownScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-void TownScene::InitializeSceneObjectPools()
+void PlazaScene::InitializeSceneObjectPools()
 {
 }
 
-void TownScene::InitializeLogic()
+void PlazaScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nTownScene Data has been created!! \n");
 
@@ -48,7 +46,7 @@ void TownScene::InitializeLogic()
 	}
 }
 
-void TownScene::UpdateScene(const float deltaTime)
+void PlazaScene::UpdateScene(const float deltaTime)
 {
 	for (const auto& obj : gameObjects)
 		obj->Update(deltaTime);
@@ -57,30 +55,30 @@ void TownScene::UpdateScene(const float deltaTime)
 		cam->Update(*coreRef, deltaTime, gameObjects, {}, knight);
 }
 
-void TownScene::RenderSceneDeferred()
+void PlazaScene::RenderSceneDeferred()
 {
 	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
 }
 
-void TownScene::RenderSceneForward()
+void PlazaScene::RenderSceneForward()
 {
 	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
-void TownScene::RenderSceneShadow()
+void PlazaScene::RenderSceneShadow()
 {
 	sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
 }
 
-void TownScene::RenderSceneEffects()
+void PlazaScene::RenderSceneEffects()
 {
 }
 
-void TownScene::RequestSceneChange()
+void PlazaScene::RequestSceneChange()
 {
 	if (INPUT.GetKeyDown(VK_TAB))
 	{
 		if (sManagerRef)
-			sManagerRef->RequestLoadingScene(SceneType::MainGame);
+			sManagerRef->RequestLoadingScene(SceneType::Village);
 	}
 }

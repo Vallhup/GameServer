@@ -33,9 +33,11 @@ protected:
 	void RequestSceneChange() override;
 
 private:
-	void LoadSelectGameResources();
-	void LoadTownGameResources();
-	void LoadMainGameResources();
+	void LoadSelectSceneResources();
+	void LoadPlazaSceneResources();
+	void LoadFirstBattleSceneResources();
+	void LoadSecondBattleSceneResources();
+	void LoadFinalBattleSceneResources();
 
 private:
 	SceneType targetScene;
