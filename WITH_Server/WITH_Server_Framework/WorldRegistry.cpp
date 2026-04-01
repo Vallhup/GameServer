@@ -1,8 +1,34 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "WorldRegistry.h"
 
 WorldRegistry::WorldRegistry(IWorldInstanceFactory& factory)
 	: _factory(factory)
+{
+}
+
+WorldRegistry::WorldRegistry(
+	IWorldInstanceFactory& factory,
+	WorldExecutionModelRegistry& executionModelRegistry)
+	: _factory(factory)
+	, _executionModelRegistry(&executionModelRegistry)
+{
+}
+
+WorldRegistry::WorldRegistry(
+	IWorldInstanceFactory& factory,
+	WorldExecutionModelRegistry& executionModelRegistry,
+	WorldTransferProfileRegistry& transferProfileRegistry)
+	: _factory(factory)
+	, _executionModelRegistry(&executionModelRegistry)
+	, _transferProfileRegistry(&transferProfileRegistry)
+{
+}
+
+WorldRegistry::WorldRegistry(
+	IWorldInstanceFactory& factory,
+	WorldTransferProfileRegistry& transferProfileRegistry)
+	: _factory(factory)
+	, _transferProfileRegistry(&transferProfileRegistry)
 {
 }
 
@@ -15,9 +41,31 @@ const WorldDef* WorldRegistry::FindWorldDef(WorldDefId defId) const
 	return &it->second;
 }
 
-void WorldRegistry::RegisterWorldDef(const WorldDef& def)
+bool WorldRegistry::RegisterWorldDef(const WorldDef& def)
 {
+	if (def.id == WorldDefId::None)
+		return false;
+
+	if (def.executionModelKey == InvalidWorldExecutionModelKey)
+		return false;
+
+	if (_executionModelRegistry == nullptr)
+		return false;
+
+	if (!_executionModelRegistry->Has(def.executionModelKey))
+		return false;
+
+	if (def.transferProfileId != InvalidWorldTransferProfileId)
+	{
+		if (_transferProfileRegistry == nullptr)
+			return false;
+
+		if (!_transferProfileRegistry->Has(def.transferProfileId))
+			return false;
+	}
+
 	_defs[def.id] = def;
+	return true;
 }
 
 WorldInstance* WorldRegistry::FindWorld(WorldId worldId)
@@ -44,6 +92,28 @@ WorldInstance* WorldRegistry::CreateWorld(const WorldDef& def, uint64_t instance
 	if (!impl)
 		return nullptr;
 
+	if (def.executionModelKey == InvalidWorldExecutionModelKey)
+		return nullptr;
+
+	if (_executionModelRegistry == nullptr)
+		return nullptr;
+
+	const WorldExecutionModel* executionModel =
+		_executionModelRegistry->TryGet(def.executionModelKey);
+	if (executionModel == nullptr)
+		return nullptr;
+
+	const WorldTransferProfile* transferProfile = nullptr;
+	if (def.transferProfileId != InvalidWorldTransferProfileId)
+	{
+		if (_transferProfileRegistry == nullptr)
+			return nullptr;
+
+		transferProfile = _transferProfileRegistry->Find(def.transferProfileId);
+		if (transferProfile == nullptr)
+			return nullptr;
+	}
+
 	const WorldId worldId = _idAllocator.Allocate();
 	if (!worldId.IsValid())
 		return nullptr;
@@ -53,10 +123,9 @@ WorldInstance* WorldRegistry::CreateWorld(const WorldDef& def, uint64_t instance
 	params.identity.defId = def.id;
 	params.identity.instanceKey = instanceKey;
 	params.def = &def;
+	params.executionModel = *executionModel;
+	params.transferProfile = transferProfile;
 	params.impl = std::move(impl);
-
-	// TODO
-	// params.executionModel = _factory.CreateExecutionModel(def);
 
 	auto instance = std::make_unique<WorldInstance>(std::move(params));
 	WorldInstance* raw = instance.get();
@@ -95,3 +164,4 @@ void WorldRegistry::Clear()
 	_defs.clear();
 	_idAllocator.Clear();
 }
+
