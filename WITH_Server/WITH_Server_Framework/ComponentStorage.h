@@ -14,8 +14,8 @@ using TypeId = int;
 
 class ECSCore;
 class WorldRuntime;
-class WorldCommandBuffer;
-class LifecycleCommandBuffer;
+class WorldMutationBuffer;
+class WorldLifecycleBuffer;
 
 class IStorage
 {
@@ -285,8 +285,8 @@ private:
 private:
 	friend class ECSCore;
 	friend class WorldRuntime;
-	friend class WorldCommandBuffer;
-	friend class LifecycleCommandBuffer;
+	friend class WorldMutationBuffer;
+	friend class WorldLifecycleBuffer;
 
 	std::vector<T> _dense;
 	std::vector<Entity> _entities;
