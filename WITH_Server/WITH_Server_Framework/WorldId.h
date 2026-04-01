@@ -27,9 +27,11 @@ private:
 	uint64_t _value;
 };
 
-namespace std {
+namespace std 
+{
 	template<>
-	struct hash<WorldId> {
+	struct hash<WorldId> 
+	{
 		size_t operator()(const WorldId& id) const noexcept
 		{
 			return std::hash<uint64_t>()(id.GetRaw());

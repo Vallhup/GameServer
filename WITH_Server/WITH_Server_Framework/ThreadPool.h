@@ -56,12 +56,3 @@ private:
 // 2. Lock-Free Deque
 // 3. Fiber
 // 4. Nested Continuation
-
-// 1. FrameJobGraph 자료구조 정의
-// 2. ThreadPool -> FrameJobExecutor 확장
-// 3. SystemMeta 기반 dependency builder 구현
-// 4. ExecutionGraphScheduler(world-local fragment builder) 구현
-// 5. WorldScheduler에서 selected worlds + dt policy 산출
-// 6. WorldRuntime 최소 표면 정리
-// 7. WorldInstance가 Runtime + ExecutionModel 소유하도록 정리
-// 8. PostFrame lifecycle flush / transfer-admission reconcile 연결

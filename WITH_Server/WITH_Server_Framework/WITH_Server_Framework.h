@@ -15,9 +15,6 @@
 #include "ECSCore.h"
 #include "ECSView.h"
 
-#include "EventQueue.h"
-#include "EventRegistry.h"
-
 #include "ProtocolLib.h"
 
 #pragma comment(lib, "ProtocolLib.lib")
