@@ -55,6 +55,23 @@ struct ExecRuntimeState
     std::span<ExecScopeRuntime> scopes;
     ExecRuntimeSignals signals;
 
+    void ClearViews() noexcept
+    {
+        nodes = {};
+        scopes = {};
+        signals.Reset(0);
+    }
+
+    void BindViews(
+        std::span<ExecNodeRuntime> inNodes,
+        std::span<ExecScopeRuntime> inScopes,
+        uint32_t simulateNodeCount = 0) noexcept
+    {
+        nodes = inNodes;
+        scopes = inScopes;
+        signals.Reset(simulateNodeCount);
+    }
+
     [[nodiscard]]
     bool IsValidNodeId(ExecNodeId nodeId) const noexcept
     {

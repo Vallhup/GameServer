@@ -1,12 +1,12 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
+#include <span>
 
 class ITransferContext {
 public:
 	virtual ~ITransferContext() = default;
 
 	virtual uint32_t PlayerCount() const = 0;
-	virtual const std::vector<uint32_t>& ConnectionIds() const = 0;
+	virtual std::span<const uint32_t> ConnectionIds() const noexcept = 0;
 };

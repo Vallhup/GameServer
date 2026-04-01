@@ -44,6 +44,13 @@ struct FrameExecContext
     ExecutionOps* ops{ nullptr };
     std::span<WorldRuntime*> runtimeByScope{};
 
+    void Clear() noexcept
+    {
+        graph = nullptr;
+        ops = nullptr;
+        runtimeByScope = {};
+    }
+
     [[nodiscard]]
     bool IsValid() const noexcept
     {
