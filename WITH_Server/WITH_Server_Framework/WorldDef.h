@@ -146,4 +146,6 @@ struct WorldDef
 	WorldProgressRuleDef progressRule;
 	
 	std::vector<WorldLinkRuleDef> linkRules;
+	WorldExecutionModelKey executionModelKey{ InvalidWorldExecutionModelKey };
+	WorldTransferProfileId transferProfileId{ InvalidWorldTransferProfileId };
 };

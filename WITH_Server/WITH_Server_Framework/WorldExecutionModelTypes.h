@@ -1,9 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include <cstdint>
+#include <unordered_set>
 #include <vector>
 
 #include "ExecutionCoreTypes.h"
+#include "ExecutionSourceTypes.h"
 #include "WorldFrameSelectionTypes.h"
 
 struct ExecutionDependencyEdge
@@ -20,18 +22,18 @@ struct ExecutionDependencyEdge
     }
 };
 
-// 1Â÷ ±¸Çö validation ±ÔÄ¢
+// 1ì°¨ êµ¬í˜„ validation ê·œì¹™
 //
-// 1. model ÀüÃ¼ source ÁıÇÕ¿¡¼­ token Áßº¹ ±İÁö
-// 2. explicit edgeÀÇ from/to tokenÀº ¹İµå½Ã model ³»ºÎ source¿©¾ß ÇÔ
-// 3. self-edge ±İÁö
-// 4. source descriptor.phase ¿Í model declared phase´Â ÀÏÄ¡ÇØ¾ß ÇÔ
-// 5. µÚ phase -> ¾Õ phase ¿ªÇà edge ±İÁö
-//    Çã¿ë ¼ø¼­: Simulate <= Commit <= LifecycleFlush <= Reconcile
-// 6. °°Àº phase ³»ºÎ cycle ±İÁö
-// 7. ¾Õ phase -> µÚ phase edge´Â Çã¿ë
-//    ´Ü, serial phase ordering / build ordering¿¡¸¸ ¹İ¿µÇÏ°í
-//    runtime remainingDeps¿¡´Â ¹İ¿µÇÏÁö ¾ÊÀ½
+// 1. model ì „ì²´ source ì§‘í•©ì—ì„œ token ì¤‘ë³µ ê¸ˆì§€
+// 2. explicit edgeì˜ from/to tokenì€ ë°˜ë“œì‹œ model ë‚´ë¶€ sourceì—¬ì•¼ í•¨
+// 3. self-edge ê¸ˆì§€
+// 4. source descriptor.phase ì™€ model declared phaseëŠ” ì¼ì¹˜í•´ì•¼ í•¨
+// 5. ë’¤ phase -> ì• phase ì—­í–‰ edge ê¸ˆì§€
+//    í—ˆìš© ìˆœì„œ: Simulate <= Commit <= LifecycleFlush <= Reconcile
+// 6. ê°™ì€ phase ë‚´ë¶€ cycle ê¸ˆì§€
+// 7. ì• phase -> ë’¤ phase edgeëŠ” í—ˆìš©
+//    ë‹¨, serial phase ordering / build orderingì—ë§Œ ë°˜ì˜í•˜ê³ 
+//    runtime remainingDepsì—ëŠ” ë°˜ì˜í•˜ì§€ ì•ŠìŒ
 
 struct WorldExecutionModel
 {
@@ -63,37 +65,7 @@ struct WorldExecutionModel
     }
 
     [[nodiscard]]
-    ExecPhase TryGetDeclaredPhase(ExecToken token) const noexcept
-    {
-        if (token == InvalidExecToken)
-            return ExecPhase::None;
-
-        for (ExecToken t : simulateSources)
-        {
-            if (t == token)
-                return ExecPhase::Simulate;
-        }
-
-        for (ExecToken t : commitSources)
-        {
-            if (t == token)
-                return ExecPhase::Commit;
-        }
-
-        for (ExecToken t : lifecycleFlushSources)
-        {
-            if (t == token)
-                return ExecPhase::LifecycleFlush;
-        }
-
-        for (ExecToken t : reconcileSources)
-        {
-            if (t == token)
-                return ExecPhase::Reconcile;
-        }
-
-        return ExecPhase::None;
-    }
+    ExecPhase TryGetDeclaredPhase(ExecToken token) const noexcept;
 
     [[nodiscard]]
     uint32_t GetSourceCount() const noexcept
@@ -108,26 +80,17 @@ struct WorldExecutionModel
 
 class WorldExecutionModelRegistry {
 public:
+    bool Register(
+        const WorldExecutionModel& model,
+        const ExecutionSourceRegistry& sourceRegistry);
+
     [[nodiscard]]
-    const WorldExecutionModel* TryGet(WorldExecutionModelKey key) const noexcept
-    {
-        for (const WorldExecutionModel& model : _models)
-        {
-            if (model.key == key)
-                return &model;
-        }
-        return nullptr;
-    }
+    const WorldExecutionModel* TryGet(WorldExecutionModelKey key) const noexcept;
 
-    void Register(const WorldExecutionModel& model)
-    {
-        _models.push_back(model);
-    }
+    [[nodiscard]]
+    bool Has(WorldExecutionModelKey key) const noexcept { return TryGet(key) != nullptr; }
 
-    void Clear()
-    {
-        _models.clear();
-    }
+    void Clear() { _models.clear(); }
 
 private:
     std::vector<WorldExecutionModel> _models;
