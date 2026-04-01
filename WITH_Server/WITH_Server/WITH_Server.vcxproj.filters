@@ -2,31 +2,34 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ActionTimeSystem.cpp">
-      <Filter>ECS\System\Action</Filter>
-    </ClCompile>
-    <ClCompile Include="ActionTransitionSystem.cpp">
-      <Filter>ECS\System\Action</Filter>
-    </ClCompile>
-    <ClCompile Include="ColliderUpdateSystem.cpp">
-      <Filter>ECS\System\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="EventSystem.cpp">
-      <Filter>ECS\System\Event</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectPoolManager.cpp">
-      <Filter>Utility\ObjectPool</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkHandler.cpp">
-      <Filter>Network\Protocol\Event</Filter>
-    </ClCompile>
-    <ClCompile Include="Network.cpp">
+    <ClCompile Include="GameServerNetworkService.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="ServerConnectionListener.cpp">
+    <ClCompile Include="GameSendBufferManager.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="InboundMessageProcessor.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerApp.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerAppTest.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionBindingRegistry.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkRuntime.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="GameServerNetworkListener.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -35,68 +38,8 @@
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
-    <ClCompile Include="ActionMoveSystem.cpp">
-      <Filter>ECS\System\Move</Filter>
-    </ClCompile>
-    <ClCompile Include="LocomotionMoveSystem.cpp">
-      <Filter>ECS\System\Move</Filter>
-    </ClCompile>
-    <ClCompile Include="MovementApplySystem.cpp">
-      <Filter>ECS\System\Move</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationSelectSystem.cpp">
-      <Filter>ECS\System\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationCommitSystem.cpp">
-      <Filter>ECS\System\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationFrameSystem.cpp">
-      <Filter>ECS\System\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationPoseBindSystem.cpp">
-      <Filter>ECS\System\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="ColliderActivationSystem.cpp">
-      <Filter>ECS\System\Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="CombatCollisionCheckSystem.cpp">
-      <Filter>ECS\System\Collision\Combat</Filter>
-    </ClCompile>
-    <ClCompile Include="CombatCollisionDedupSystem.cpp">
-      <Filter>ECS\System\Collision\Combat</Filter>
-    </ClCompile>
-    <ClCompile Include="CombatCollisionHandlingSystem.cpp">
-      <Filter>ECS\System\Collision\Combat</Filter>
-    </ClCompile>
-    <ClCompile Include="ViewProcessingSystem.cpp">
-      <Filter>ECS\System\View</Filter>
-    </ClCompile>
-    <ClCompile Include="MapCollisionManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="TestWorldImpl.cpp">
-      <Filter>Game\World</Filter>
-    </ClCompile>
-    <ClCompile Include="TestWorldFactory.cpp">
-      <Filter>Game\World</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="NetIdMap.cpp">
       <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="ActionManager.cpp">
-      <Filter>Manager\Action</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationManager.cpp">
-      <Filter>Manager\Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="BuffManager.cpp">
-      <Filter>Manager\Buff</Filter>
-    </ClCompile>
-    <ClCompile Include="BuffApplySystem.cpp">
-      <Filter>ECS\System\Buff</Filter>
     </ClCompile>
     <ClCompile Include="DBManager.cpp">
       <Filter>Database</Filter>
@@ -107,87 +50,40 @@
     <ClCompile Include="DBConn.cpp">
       <Filter>Database</Filter>
     </ClCompile>
-    <ClCompile Include="StatRecalSystem.cpp">
-      <Filter>ECS\System\Stat</Filter>
-    </ClCompile>
-    <ClCompile Include="DirtyReplicationSystem.cpp">
-      <Filter>ECS\System\Replication</Filter>
-    </ClCompile>
-    <ClCompile Include="SessionSendBufferManager.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="LifecycleReplicationSystem.cpp">
-      <Filter>ECS\System\Replication</Filter>
-    </ClCompile>
-    <ClCompile Include="AIPerceptionSystem.cpp">
-      <Filter>ECS\System\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="AIDecisionSystem.cpp">
-      <Filter>ECS\System\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalAIChaseState.cpp">
-      <Filter>FSM\Normal\State</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalAICombatState.cpp">
-      <Filter>FSM\Normal\State</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalAIIdleState.cpp">
-      <Filter>FSM\Normal\State</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalAIReactState.cpp">
-      <Filter>FSM\Normal\State</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalAISearchState.cpp">
-      <Filter>FSM\Normal\State</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalAIMovementPolicy.cpp">
-      <Filter>FSM\Normal\MovementPolicy</Filter>
-    </ClCompile>
-    <ClCompile Include="AIFSMRegistry.cpp">
-      <Filter>FSM</Filter>
-    </ClCompile>
-    <ClCompile Include="AIExecutionSystem.cpp">
-      <Filter>ECS\System\AI</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityCommandConsumeSystem.cpp">
-      <Filter>ECS\System</Filter>
-    </ClCompile>
-    <ClCompile Include="ActionConditionCollectSystem.cpp">
-      <Filter>ECS\System\Action</Filter>
+    <ClCompile Include="ServerWorldBootstrap.cpp" />
+    <ClCompile Include="FrameworkRuntime.cpp">
+      <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ActionTimeSystem.h">
-      <Filter>ECS\System\Action</Filter>
+    <ClInclude Include="GameServerNetworkService.h">
+      <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="ActionTransitionSystem.h">
-      <Filter>ECS\System\Action</Filter>
+    <ClInclude Include="GameSendBufferManager.h">
+      <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="ColliderUpdateSystem.h">
-      <Filter>ECS\System\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="EventSystem.h">
-      <Filter>ECS\System\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectPool.hpp">
-      <Filter>Utility\ObjectPool</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectPoolManager.h">
-      <Filter>Utility\ObjectPool</Filter>
+    <ClInclude Include="ServerApp.h">
+      <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkHandler.h">
-      <Filter>Network\Protocol\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="Network.h">
+    <ClInclude Include="InboundMessage.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="ServerConnectionListener.h">
+    <ClInclude Include="InboundMessageProcessor.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkRuntime.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="GameServerNetworkListener.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionManager.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
@@ -196,128 +92,17 @@
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
-    <ClInclude Include="ActionMoveSystem.h">
-      <Filter>ECS\System\Move</Filter>
-    </ClInclude>
-    <ClInclude Include="LocomotionMoveSystem.h">
-      <Filter>ECS\System\Move</Filter>
-    </ClInclude>
-    <ClInclude Include="MovementApplySystem.h">
-      <Filter>ECS\System\Move</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationSelectSystem.h">
-      <Filter>ECS\System\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationCommitSystem.h">
-      <Filter>ECS\System\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationFrameSystem.h">
-      <Filter>ECS\System\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationPoseBindSystem.h">
-      <Filter>ECS\System\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="ColliderActivationSystem.h">
-      <Filter>ECS\System\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="CombatCollisionCheckSystem.h">
-      <Filter>ECS\System\Collision\Combat</Filter>
-    </ClInclude>
-    <ClInclude Include="CombatCollisionDedupSystem.h">
-      <Filter>ECS\System\Collision\Combat</Filter>
-    </ClInclude>
-    <ClInclude Include="CombatCollisionHandlingSystem.h">
-      <Filter>ECS\System\Collision\Combat</Filter>
-    </ClInclude>
-    <ClInclude Include="ViewProcessingSystem.h">
-      <Filter>ECS\System\View</Filter>
-    </ClInclude>
-    <ClInclude Include="MapCollisionManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="TestWorldImpl.h">
-      <Filter>Game\World</Filter>
-    </ClInclude>
-    <ClInclude Include="TestWorldFactory.h">
-      <Filter>Game\World</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="NetIdMap.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="Event.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Movement.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="AI.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Action.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ActionManager.h">
-      <Filter>Manager\Action</Filter>
-    </ClInclude>
-    <ClInclude Include="ActionData.h">
-      <Filter>Manager\Action</Filter>
-    </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationManager.h">
-      <Filter>Manager\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationData.h">
-      <Filter>Manager\Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="Bufs.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Visibility.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Stats.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Tags.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Intent.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
     <ClInclude Include="json.hpp">
       <Filter>Utility\Dependency</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Utility\Dependency</Filter>
-    </ClInclude>
-    <ClInclude Include="NetHelper.h">
-      <Filter>Utility\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="Math.h">
-      <Filter>Utility\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="Collision.h">
-      <Filter>Utility\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="BuffData.h">
-      <Filter>Manager\Buff</Filter>
-    </ClInclude>
-    <ClInclude Include="BuffManager.h">
-      <Filter>Manager\Buff</Filter>
-    </ClInclude>
-    <ClInclude Include="BuffApplySystem.h">
-      <Filter>ECS\System\Buff</Filter>
     </ClInclude>
     <ClInclude Include="DBManager.h">
       <Filter>Database</Filter>
@@ -327,66 +112,6 @@
     </ClInclude>
     <ClInclude Include="DBConn.h">
       <Filter>Database</Filter>
-    </ClInclude>
-    <ClInclude Include="StatRecalSystem.h">
-      <Filter>ECS\System\Stat</Filter>
-    </ClInclude>
-    <ClInclude Include="DirtyReplicationSystem.h">
-      <Filter>ECS\System\Replication</Filter>
-    </ClInclude>
-    <ClInclude Include="SessionSendBufferManager.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="LifecycleReplicationSystem.h">
-      <Filter>ECS\System\Replication</Filter>
-    </ClInclude>
-    <ClInclude Include="AIPerceptionSystem.h">
-      <Filter>ECS\System\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="AIDecisionSystem.h">
-      <Filter>ECS\System\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="IAIState.h">
-      <Filter>FSM\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="IMovementPolicy.h">
-      <Filter>FSM\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalAIChaseState.h">
-      <Filter>FSM\Normal\State</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalAICombatState.h">
-      <Filter>FSM\Normal\State</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalAIIdleState.h">
-      <Filter>FSM\Normal\State</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalAIReactState.h">
-      <Filter>FSM\Normal\State</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalAISearchState.h">
-      <Filter>FSM\Normal\State</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalAIMovementPolicy.h">
-      <Filter>FSM\Normal\MovementPolicy</Filter>
-    </ClInclude>
-    <ClInclude Include="AIFSMRegistry.h">
-      <Filter>FSM</Filter>
-    </ClInclude>
-    <ClInclude Include="Command.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="AIExecutionSystem.h">
-      <Filter>ECS\System\AI</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityCommandConsumeSystem.h">
-      <Filter>ECS\System</Filter>
-    </ClInclude>
-    <ClInclude Include="ActionConditionCollectSystem.h">
-      <Filter>ECS\System\Action</Filter>
-    </ClInclude>
-    <ClInclude Include="Action_v2.h">
-      <Filter>ECS\Component</Filter>
     </ClInclude>
     <ClInclude Include="CharacterDef.h">
       <Filter>Data\Definition</Filter>
@@ -406,34 +131,23 @@
     <ClInclude Include="IDs.h">
       <Filter>Data</Filter>
     </ClInclude>
+    <ClInclude Include="ServerWorldBootstrap.h" />
+    <ClInclude Include="ServerAppTest.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionBindingRegistry.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameworkRuntime.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="ECS">
-      <UniqueIdentifier>{da4fe999-a4f2-48eb-9f3a-63e787bb3a99}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\Component">
-      <UniqueIdentifier>{f04ffe61-2a37-4820-a97d-98b07a2a6d8a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System">
-      <UniqueIdentifier>{b2e11ff7-5e39-4797-a38d-c464d9aeb598}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Event">
-      <UniqueIdentifier>{f748aeaf-bee1-4b5d-93bc-0ef299c904d1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Manager">
-      <UniqueIdentifier>{d4e1d3ec-5d83-45bd-8a04-4c456fca7990}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Framework">
-      <UniqueIdentifier>{b8d013d8-4872-4c57-8c7e-a4fbfe8a4bfb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game">
-      <UniqueIdentifier>{610ff08a-fbf9-47a9-9968-ed7d38b2d4e1}</UniqueIdentifier>
+    <Filter Include="App">
+      <UniqueIdentifier>{8e1c1450-ab12-4fd8-93f1-1d65eeb9e2aa}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utility">
       <UniqueIdentifier>{1545b1de-3dfc-433b-a4c6-491fa015a966}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utility\ObjectPool">
-      <UniqueIdentifier>{3e0ee908-b3d3-4e42-b75d-40f65bd9e33c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Network">
       <UniqueIdentifier>{bedaecbc-eb80-482e-8572-f7b890b448fb}</UniqueIdentifier>
@@ -444,74 +158,11 @@
     <Filter Include="Network\Protocol\pb.%2a">
       <UniqueIdentifier>{e52e4be1-914a-4013-a884-38fb5e18bc64}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Network\Protocol\Event">
-      <UniqueIdentifier>{df32984b-2291-4010-99a8-cdefc1d7d826}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\World">
-      <UniqueIdentifier>{79fd08d1-3e39-412f-9d86-eec9a69015bd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Manager\Action">
-      <UniqueIdentifier>{1d4d7527-e7e6-4e8b-8114-5e089d70c7e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Manager\Animation">
-      <UniqueIdentifier>{db083fa2-28c7-4839-9e9a-d52d54201c4c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utility\Dependency">
       <UniqueIdentifier>{9ff9b2d7-ea9b-4f87-81b5-f82f9aaa1afd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utility\Helper">
-      <UniqueIdentifier>{ac6e6e7d-0ccf-4904-97b6-35acba654e95}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Manager\Buff">
-      <UniqueIdentifier>{35a1ad55-db0b-41f1-bdee-8748600e6908}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Database">
       <UniqueIdentifier>{1e0d516a-c4f7-4552-8f88-552e04029cdc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Action">
-      <UniqueIdentifier>{e560fd78-3148-4543-aa20-2d9209979bb6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\AI">
-      <UniqueIdentifier>{44555b47-8095-4a1f-8a1a-98f11988c98c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Animation">
-      <UniqueIdentifier>{61eabb6d-5270-49db-b513-016384a93d09}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Buff">
-      <UniqueIdentifier>{d7ba8e47-853f-48d2-895d-4b6e86100b19}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Collision">
-      <UniqueIdentifier>{5c4f420a-5cdf-4a56-89f0-b436e2e9c4d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Collision\Combat">
-      <UniqueIdentifier>{f0348ca0-1cf0-416e-8369-d57780c2396f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Move">
-      <UniqueIdentifier>{7d221b54-761f-48a6-8fdc-869029a9e9b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Stat">
-      <UniqueIdentifier>{40fdad71-d807-4c76-8963-2afb1cfeb802}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Replication">
-      <UniqueIdentifier>{0d5e6308-4891-4e16-9edf-9a6d71381b9d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\View">
-      <UniqueIdentifier>{f6782456-f514-4ebb-a32f-7c803e8180fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FSM">
-      <UniqueIdentifier>{ffa3fdcf-b51c-4482-abfc-43d87761403f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FSM\Normal">
-      <UniqueIdentifier>{fdce34fc-f4be-45cf-b13e-5ad1fb5218ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FSM\Interface">
-      <UniqueIdentifier>{1a227fac-543e-4738-9395-7c97d4a87fef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FSM\Normal\State">
-      <UniqueIdentifier>{d5ae6fa3-6063-49c3-b329-2cf49511a118}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FSM\Normal\MovementPolicy">
-      <UniqueIdentifier>{aa5136d0-4a12-4f05-bb46-848492ef0bdd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Data">
       <UniqueIdentifier>{f8d1d43e-0bea-4505-be9d-386880ced6f4}</UniqueIdentifier>
@@ -519,13 +170,8 @@
     <Filter Include="Data\Definition">
       <UniqueIdentifier>{79b63e12-648f-4eb8-a404-ed7b0c26470b}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="AI Pipeline 설계.txt">
-      <Filter>FSM</Filter>
-    </Text>
-    <Text Include="데이터 관리 구조.txt">
-      <Filter>Manager</Filter>
-    </Text>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{04b8348f-b0f3-42b5-9f79-6ba7a45ae352}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
