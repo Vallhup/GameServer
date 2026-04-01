@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "WorldManager.h"
 
 #include <vector>
@@ -89,8 +89,12 @@ void WorldManager::FlushLifecycle(double dtSec)
 	if (dtSec < 0.0)
 		dtSec = 0.0;
 
+	bool runnableStateChanged = false;
+
 	for (auto& [_, record] : _records)
 	{
+		const WorldStage previousStage = record.stage;
+
 		switch (record.stage) {
 		case WorldStage::Allocated:
 		{
@@ -136,7 +140,13 @@ void WorldManager::FlushLifecycle(double dtSec)
 			break;
 		}
 		}
+
+		if (previousStage != record.stage)
+			runnableStateChanged = true;
 	}
+
+	if (runnableStateChanged)
+		MarkRunnableWorldIdsDirty();
 }
 
 void WorldManager::CollectDestroyable()
@@ -165,6 +175,7 @@ void WorldManager::CollectDestroyable()
 		{
 			_resolveIndex.erase(key);
 			_records.erase(it);
+			MarkRunnableWorldIdsDirty();
 		}
 	}
 }
@@ -238,6 +249,16 @@ bool WorldManager::RemoveInflightTransferOut(WorldId worldId, uint32_t slots)
 	return true;
 }
 
+std::span<const WorldId> WorldManager::GetRunnableWorldIds()
+{
+	if (_runnableWorldIdsDirty)
+		RebuildRunnableWorldIds();
+
+	return std::span<const WorldId>(
+		_runnableWorldIds.data(),
+		_runnableWorldIds.size());
+}
+
 void WorldManager::FillRecordFromDef(
 	WorldInstanceRecord& record,
 	const WorldDef& def,
@@ -302,8 +323,28 @@ WorldId WorldManager::CreateAndRegisterWorld(
 
 	_records[record.id] = record;
 	_resolveIndex[key] = record.id;
+	MarkRunnableWorldIdsDirty();
 
 	return record.id;
+}
+
+void WorldManager::MarkRunnableWorldIdsDirty() noexcept
+{
+	_runnableWorldIdsDirty = true;
+}
+
+void WorldManager::RebuildRunnableWorldIds()
+{
+	_runnableWorldIds.clear();
+	_runnableWorldIds.reserve(_records.size());
+
+	for (const auto& [worldId, record] : _records)
+	{
+		if (record.IsRunnable())
+			_runnableWorldIds.push_back(worldId);
+	}
+
+	_runnableWorldIdsDirty = false;
 }
 
 WorldResolveKey WorldManager::MakeRecordResolveKey(const WorldInstanceRecord& record)
@@ -329,7 +370,7 @@ bool WorldManager::ShouldStartClosing(const WorldInstanceRecord& record)
 	if (HasClosingIntent(record))
 		return true;
 
-	// destroyWhenEmpty ÀÚµ¿ close´Â persistent¿¡´Â Àû¿ëÇÏÁö ¾ÊÀ½
+	// destroyWhenEmpty ìë™ closeëŠ” persistentì—ëŠ” ì ìš©í•˜ì§€ ì•ŠìŒ
 	if (!record.destroyWhenEmpty)
 		return false;
 

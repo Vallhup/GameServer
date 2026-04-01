@@ -1,5 +1,6 @@
-#pragma once
+Ôªø#pragma once
 
+#include <span>
 #include <unordered_map>
 #include <vector>
 
@@ -22,7 +23,7 @@ public:
 
 	void RequestClose(WorldId worldId);
 
-	// dtSec ±‚¡ÿ ¥©¿˚ Ω√∞£ æ˜µ•¿Ã∆Æ
+	// dtSec Í∏∞Ï§Ä ÎàÑÏ†Å ÏãúÍ∞Ñ ÏóÖÎç∞Ïù¥Ìä∏
 	void FlushLifecycle(double dtSec);
 	void CollectDestroyable();
 
@@ -36,9 +37,14 @@ public:
 	bool AddInflightTransferOut(WorldId worldId, uint32_t slots);
 	bool RemoveInflightTransferOut(WorldId worldId, uint32_t slots);
 
+	std::span<const WorldId> GetRunnableWorldIds();
+
 	const WorldRegistry& GetRegistry() const { return _registry; }
 
 private:
+	void MarkRunnableWorldIdsDirty() noexcept;
+	void RebuildRunnableWorldIds();
+
 	static void FillRecordFromDef(
 		WorldInstanceRecord& record,
 		const WorldDef& def,
@@ -72,4 +78,7 @@ private:
 	WorldRegistry& _registry;
 	std::unordered_map<WorldId, WorldInstanceRecord> _records;
 	std::unordered_map<WorldResolveKey, WorldId> _resolveIndex;
+
+	std::vector<WorldId> _runnableWorldIds;
+	bool _runnableWorldIdsDirty{ true };
 };
