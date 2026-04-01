@@ -75,6 +75,11 @@ private:
         ExecPhase expectedPhase
     );
 
+    void RunScopeSerialPhase(
+        const ExecRange& range,
+        ExecPhase expectedPhase
+    );
+
     void FinalizeScopeClosures() noexcept;
 
     void WaitForSimulateDone();

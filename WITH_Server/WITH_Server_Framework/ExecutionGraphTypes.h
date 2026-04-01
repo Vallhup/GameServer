@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <cstdint>
 #include <string>
@@ -50,7 +50,7 @@ struct BuildDiagnostic
     std::string message;
 };
 
-// WorldId·Î Ä¡È¯ °¡´É
+// WorldIdë¡œ ì¹˜í™˜ ê°€ëŠ¥
 using WorldBinding = uint64_t;
 
 struct FrameTaskGraph
@@ -62,15 +62,21 @@ struct FrameTaskGraph
     std::vector<ExecNodeId> edges;
 
     // scopeId -> world/runtime binding key.
-    // 1Â÷ ±¸Çö¿¡¼­´Â WorldId ¶Ç´Â ±×¿¡ ÁØÇÏ´Â handleÀ» ´ã´Â ÂÊÀÌ ÀÚ¿¬½º·´´Ù.
     std::vector<WorldBinding> scopeToWorld;
 
-    // Stable topological order for serial phases.
+    // Stable topological order for source-defined serial phases.
     std::vector<ExecNodeId> serialExecutionOrder;
+
+    // Stable scope order for framework-owned serial phases.
+    std::vector<ExecScopeId> serialScopeOrder;
 
     ExecRange commitPlan;
     ExecRange lifecycleFlushPlan;
     ExecRange reconcilePlan;
+
+    ExecRange commitScopePlan;
+    ExecRange lifecycleFlushScopePlan;
+    ExecRange reconcileScopePlan;
 
     uint32_t simulateNodeCount{ 0 };
     uint32_t scopeCount{ 0 };
@@ -103,6 +109,14 @@ struct FrameTaskGraph
     }
 
     [[nodiscard]]
+    bool IsValidSerialScopeRange(const ExecRange& range) const noexcept
+    {
+        return
+            range.begin <= serialScopeOrder.size() &&
+            range.End() <= serialScopeOrder.size();
+    }
+
+    [[nodiscard]]
     bool IsValidPredRange(const ExecNodeRecord& node) const noexcept
     {
         return 
@@ -124,16 +138,27 @@ struct FrameTaskGraph
         return !serialExecutionOrder.empty();
     }
 
+    [[nodiscard]]
+    bool HasSerialScopePlan() const noexcept
+    {
+        return !serialScopeOrder.empty();
+    }
+
     void Clear()
     {
         nodes.clear();
         edges.clear();
         scopeToWorld.clear();
         serialExecutionOrder.clear();
+        serialScopeOrder.clear();
 
         commitPlan = {};
         lifecycleFlushPlan = {};
         reconcilePlan = {};
+
+        commitScopePlan = {};
+        lifecycleFlushScopePlan = {};
+        reconcileScopePlan = {};
 
         simulateNodeCount = 0;
         scopeCount = 0;
@@ -146,7 +171,7 @@ struct BuildResult
     std::vector<BuildDiagnostic> diagnostics;
 
     // succcess == !HasError()
-    // builder°¡ ¸¶Áö¸·¿¡ ¸í½ÃÀûÀ¸·Î ¼¼ÆÃ
+    // builderê°€ ë§ˆì§€ë§‰ì— ëª…ì‹œì ìœ¼ë¡œ ì„¸íŒ…
     bool success{ false };
 
     [[nodiscard]]

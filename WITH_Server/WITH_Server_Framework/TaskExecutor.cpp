@@ -72,17 +72,19 @@ bool TaskExecutor::ExecuteFrame(
     SeedInitialSimulateNodes();
     NotifyAllWorkers();
     WaitForSimulateDone();
-    FinalizeScopeClosures();
 
     const FrameTaskGraph& graph = Graph();
 
     RunSerialPhase(graph.commitPlan, ExecPhase::Commit);
+    RunScopeSerialPhase(graph.commitScopePlan, ExecPhase::Commit);
     FinalizeScopeClosures();
 
     RunSerialPhase(graph.lifecycleFlushPlan, ExecPhase::LifecycleFlush);
+    RunScopeSerialPhase(graph.lifecycleFlushScopePlan, ExecPhase::LifecycleFlush);
     FinalizeScopeClosures();
 
     RunSerialPhase(graph.reconcilePlan, ExecPhase::Reconcile);
+    RunScopeSerialPhase(graph.reconcileScopePlan, ExecPhase::Reconcile);
     FinalizeScopeClosures();
 
     UnbindFrame();
@@ -293,6 +295,46 @@ void TaskExecutor::RunSerialPhase(
 
             MarkScopeFailedAndCancelRequested(node.scopeId);
             CompleteNodeTerminal(nodeId, ExecNodeState::Failed);
+        }
+    }
+}
+
+void TaskExecutor::RunScopeSerialPhase(
+    const ExecRange& range,
+    ExecPhase expectedPhase)
+{
+    const FrameTaskGraph& graph = Graph();
+    FrameExecContext& frame = Frame();
+
+    if (range.IsEmpty())
+        return;
+
+    assert(graph.IsValidSerialScopeRange(range));
+    assert(frame.ops != nullptr);
+
+    for (uint32_t i = 0; i < range.count; ++i)
+    {
+        const ExecScopeId scopeId =
+            graph.serialScopeOrder[range.begin + i];
+
+        assert(frame.IsValidScopeId(scopeId));
+
+        switch (expectedPhase) {
+        case ExecPhase::Commit:
+            frame.ops->CommitScope(scopeId, frame.runtimeByScope);
+            break;
+
+        case ExecPhase::LifecycleFlush:
+            frame.ops->FlushLifecycle(scopeId, frame.runtimeByScope);
+            break;
+
+        case ExecPhase::Reconcile:
+            frame.ops->ReconcileScope(scopeId, frame.runtimeByScope);
+            break;
+
+        default:
+            assert(false);
+            break;
         }
     }
 }

@@ -1,4 +1,4 @@
-#include "pch.h"
+Ôªø#include "pch.h"
 #include "ExecutionGraphBuilder.h"
 
 #include <algorithm>
@@ -387,7 +387,7 @@ bool ExecutionGraphBuilder::ValidateFragmentAcyclicPerPhase(
     auto validatePhase = 
         [&](ExecPhase phase, const char* phaseName) -> bool
         {
-            // 1) ¿Ã phaseø° º”«— local node∏∏ ºˆ¡˝
+            // 1) Ïù¥ phaseÏóê ÏÜçÌïú local nodeÎßå ÏàòÏßë
             std::vector<uint32_t> phaseLocalIndices;
             phaseLocalIndices.reserve(fragment.localNodes.size());
 
@@ -399,11 +399,11 @@ bool ExecutionGraphBuilder::ValidateFragmentAcyclicPerPhase(
                     phaseLocalIndices.push_back(localIndex);
             }
 
-            // node∞° 0∞≥≥™ 1∞≥∏È cycle æ¯¿Ω
+            // nodeÍ∞Ä 0Í∞úÎÇò 1Í∞úÎ©¥ cycle ÏóÜÏùå
             if (phaseLocalIndices.size() <= 1)
                 return true;
 
-            // 2) localIndex -> compactIndex ∏≈«Œ
+            // 2) localIndex -> compactIndex Îß§Ìïë
             std::unordered_map<uint32_t, uint32_t> localToCompact;
             localToCompact.reserve(phaseLocalIndices.size());
 
@@ -414,7 +414,7 @@ bool ExecutionGraphBuilder::ValidateFragmentAcyclicPerPhase(
                 localToCompact.emplace(phaseLocalIndices[compactIndex], compactIndex);
             }
 
-            // 3) same-phase edge∏∏ ªÃæ∆º≠ indegree/adjacency ±∏º∫
+            // 3) same-phase edgeÎßå ÎΩëÏïÑÏÑú indegree/adjacency Íµ¨ÏÑ±
             std::vector<uint32_t> indegree(phaseLocalIndices.size(), 0);
             std::vector<std::vector<uint32_t>> adjacency(phaseLocalIndices.size());
 
@@ -430,7 +430,7 @@ bool ExecutionGraphBuilder::ValidateFragmentAcyclicPerPhase(
                 const ExecNodeRecord& fromNode = fragment.localNodes[edge.fromLocalIndex];
                 const ExecNodeRecord& toNode = fragment.localNodes[edge.toLocalIndex];
 
-                // cross-phase edge¥¬ cycle ∞ÀªÁ ¥ÎªÛ æ∆¥‘
+                // cross-phase edgeÎäî cycle Í≤ÄÏÇ¨ ÎåÄÏÉÅ ÏïÑÎãò
                 if (fromNode.phase != phase || toNode.phase != phase)
                     continue;
 
@@ -451,8 +451,8 @@ bool ExecutionGraphBuilder::ValidateFragmentAcyclicPerPhase(
             }
 
             // 4) stable topo sort
-            // local index ø¿∏ß¬˜º¯ æ»¡§º∫¿ª ¿Ø¡ˆ«œ∑¡∏È
-            // compactIndex ¿⁄√º∞° phaseLocalIndices ¿‘∑¬ º¯º≠∏¶ µ˚∏£∞‘ µ–¥Ÿ.
+            // local index Ïò§Î¶ÑÏ∞®Ïàú ÏïàÏ†ïÏÑ±ÏùÑ Ïú†ÏßÄÌïòÎ†§Î©¥
+            // compactIndex ÏûêÏ≤¥Í∞Ä phaseLocalIndices ÏûÖÎ†• ÏàúÏÑúÎ•º Îî∞Î•¥Í≤å ÎëîÎã§.
             std::deque<uint32_t> ready;
 
             for (uint32_t i = 0; i < static_cast<uint32_t>(indegree.size()); ++i)
@@ -672,17 +672,18 @@ void ExecutionGraphBuilder::BuildSerialExecutionPlan(
     (void)policy;
 
     graph.serialExecutionOrder.clear();
+    graph.serialScopeOrder.clear();
     graph.commitPlan = {};
     graph.lifecycleFlushPlan = {};
     graph.reconcilePlan = {};
-
-    if (graph.nodes.empty())
-        return;
+    graph.commitScopePlan = {};
+    graph.lifecycleFlushScopePlan = {};
+    graph.reconcileScopePlan = {};
 
     auto buildPhasePlan = 
         [&](ExecPhase phase, ExecRange& outRange)
         {
-            // 1) phase node ºˆ¡˝
+            // 1) phase node ÏàòÏßë
             std::vector<ExecNodeId> phaseNodes;
             phaseNodes.reserve(graph.nodes.size());
 
@@ -701,7 +702,7 @@ void ExecutionGraphBuilder::BuildSerialExecutionPlan(
             if (phaseNodes.empty())
                 return;
 
-            // ExecNodeId ø¿∏ß¬˜º¯ stable order∏¶ ¿ß«ÿ ¡§∑ƒ
+            // ExecNodeId Ïò§Î¶ÑÏ∞®Ïàú stable orderÎ•º ÏúÑÌï¥ Ï†ïÎ†¨
             std::sort(phaseNodes.begin(), phaseNodes.end());
 
             // 2) global node id -> compact index
@@ -709,7 +710,7 @@ void ExecutionGraphBuilder::BuildSerialExecutionPlan(
             for (uint32_t i = 0; i < static_cast<uint32_t>(phaseNodes.size()); ++i)
                 nodeToCompact[phaseNodes[i]] = static_cast<int32_t>(i);
 
-            // 3) phase ≥ª∫Œ edge √ﬂ√‚ + indegree ∞ËªÍ
+            // 3) phase ÎÇ¥Î∂Ä edge Ï∂îÏ∂ú + indegree Í≥ÑÏÇ∞
             std::vector<uint32_t> indegree(phaseNodes.size(), 0);
             std::vector<std::vector<uint32_t>> adjacency(phaseNodes.size());
 
@@ -720,7 +721,7 @@ void ExecutionGraphBuilder::BuildSerialExecutionPlan(
                 const ExecNodeId fromNodeId = phaseNodes[compactFrom];
                 const ExecNodeRecord& fromNode = graph.nodes[fromNodeId];
 
-                // same-phase succ∏∏ ªÁøÎ
+                // same-phase succÎßå ÏÇ¨Ïö©
                 for (uint32_t i = 0; i < fromNode.succCount; ++i)
                 {
                     const uint32_t edgeIndex = fromNode.succBegin + i;
@@ -744,7 +745,7 @@ void ExecutionGraphBuilder::BuildSerialExecutionPlan(
                 }
             }
 
-            // 4) stable topo sort (ExecNodeId ø¿∏ß¬˜º¯)
+            // 4) stable topo sort (ExecNodeId Ïò§Î¶ÑÏ∞®Ïàú)
             using ReadyItem = std::pair<ExecNodeId, uint32_t>; // {nodeId, compactIndex}
             auto cmp = 
                 [](const ReadyItem& a, const ReadyItem& b)
@@ -773,7 +774,7 @@ void ExecutionGraphBuilder::BuildSerialExecutionPlan(
                 for (uint32_t nextCompact : adjacency[compactIndex])
                 {
                     if (indegree[nextCompact] == 0)
-                        continue; // cycle ∞ÀªÁ¥¬ ValidateGraph/¿Ã¿¸ ¥‹∞Ëø°º≠ √≥∏Æ
+                        continue; // cycle Í≤ÄÏÇ¨Îäî ValidateGraph/Ïù¥Ï†Ñ Îã®Í≥ÑÏóêÏÑú Ï≤òÎ¶¨
 
                     --indegree[nextCompact];
                     if (indegree[nextCompact] == 0)
@@ -786,9 +787,34 @@ void ExecutionGraphBuilder::BuildSerialExecutionPlan(
             outRange.count = appendedCount;
         };
 
+    auto buildScopePlan =
+        [&](ExecRange& outRange)
+        {
+            outRange.begin = static_cast<uint32_t>(graph.serialScopeOrder.size());
+            outRange.count = 0;
+
+            if (graph.scopeToWorld.empty())
+                return;
+
+            for (ExecScopeId scopeId = 0;
+                scopeId < static_cast<ExecScopeId>(graph.scopeToWorld.size());
+                ++scopeId)
+            {
+                if (graph.scopeToWorld[scopeId] == InvalidWorldBinding)
+                    continue;
+
+                graph.serialScopeOrder.push_back(scopeId);
+                ++outRange.count;
+            }
+        };
+
     buildPhasePlan(ExecPhase::Commit, graph.commitPlan);
     buildPhasePlan(ExecPhase::LifecycleFlush, graph.lifecycleFlushPlan);
     buildPhasePlan(ExecPhase::Reconcile, graph.reconcilePlan);
+
+    buildScopePlan(graph.commitScopePlan);
+    buildScopePlan(graph.lifecycleFlushScopePlan);
+    buildScopePlan(graph.reconcileScopePlan);
 }
 
 bool ExecutionGraphBuilder::ValidateGraph(
@@ -805,10 +831,25 @@ bool ExecutionGraphBuilder::ValidateGraph(
             ok = false;
         };
 
-    // 1) scope table ¡§«’º∫
+    // 1) scope table Ï†ïÌï©ÏÑ±
     if (graph.scopeCount != static_cast<uint32_t>(graph.scopeToWorld.size()))
     {
         fail("ValidateGraph - scopeCount does not match scopeToWorld size");
+    }
+
+    if (!graph.IsValidSerialScopeRange(graph.commitScopePlan))
+    {
+        fail("ValidateGraph - commitScopePlan range out of bounds");
+    }
+
+    if (!graph.IsValidSerialScopeRange(graph.lifecycleFlushScopePlan))
+    {
+        fail("ValidateGraph - lifecycleFlushScopePlan range out of bounds");
+    }
+
+    if (!graph.IsValidSerialScopeRange(graph.reconcileScopePlan))
+    {
+        fail("ValidateGraph - reconcileScopePlan range out of bounds");
     }
 
     if (policy.requireDenseScopeIds)
@@ -822,7 +863,7 @@ bool ExecutionGraphBuilder::ValidateGraph(
         }
     }
 
-    // 2) node ±‚∫ª ¡§«’º∫ + pred/succ range ∞ÀªÁ
+    // 2) node Í∏∞Î≥∏ Ï†ïÌï©ÏÑ± + pred/succ range Í≤ÄÏÇ¨
     uint32_t simulateCount = 0;
 
     for (uint32_t expectedNodeId = 0;
@@ -906,7 +947,7 @@ bool ExecutionGraphBuilder::ValidateGraph(
         fail("ValidateGraph - simulateNodeCount does not match actual simulate node count");
     }
 
-    // 3) pred/succ ªÛ»£ ¿œ∞¸º∫
+    // 3) pred/succ ÏÉÅÌò∏ ÏùºÍ¥ÄÏÑ±
     for (uint32_t nodeId = 0;
         nodeId < static_cast<uint32_t>(graph.nodes.size());
         ++nodeId)
@@ -946,7 +987,7 @@ bool ExecutionGraphBuilder::ValidateGraph(
         }
     }
 
-    // 4) serial plan range ¡§«’º∫
+    // 4) serial plan range Ï†ïÌï©ÏÑ±
     auto validateRange =
         [&](const ExecRange& range, ExecPhase expectedPhase, const char* name)
         {
@@ -991,7 +1032,7 @@ bool ExecutionGraphBuilder::ValidateGraph(
     validateRange(graph.lifecycleFlushPlan, ExecPhase::LifecycleFlush, "LifecycleFlush");
     validateRange(graph.reconcilePlan, ExecPhase::Reconcile, "Reconcile");
 
-    // 5) serial range º¯º≠ / ∫Ò¡ﬂ√∏º∫
+    // 5) serial range ÏàúÏÑú / ÎπÑÏ§ëÏ≤©ÏÑ±
     if (policy.requireContiguousSerialPlans)
     {
         const uint32_t commitEnd = graph.commitPlan.End();
@@ -1019,7 +1060,7 @@ bool ExecutionGraphBuilder::ValidateGraph(
         }
     }
 
-    // 6) serial topo order ¿Ø»øº∫
+    // 6) serial topo order Ïú†Ìö®ÏÑ±
     if (policy.requireSerialTopoValidity)
     {
         std::vector<int32_t> serialPosition(graph.nodes.size(), -1);
@@ -1123,3 +1164,4 @@ void ExecutionGraphBuilder::AddWarning(BuildResult& result, const char* message)
             (message != nullptr) ? message : "ExecutionGraphBuilder - unknown warning"
         });
 }
+
