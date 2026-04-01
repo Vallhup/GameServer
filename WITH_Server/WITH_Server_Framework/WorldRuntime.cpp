@@ -1,138 +1,663 @@
 #include "pch.h"
 #include "WorldRuntime.h"
-#include "World.h"
+
+#include <unordered_set>
+
+#include "IWorldTransferBinding.h"
+#include "WorldTransferContext.h"
+#include "WorldTransferProfile.h"
 
 namespace
 {
-	std::vector<SystemScheduleDesc> BuildGraphScheduleDescs(std::span<System*> systems)
-	{
-		std::vector<SystemScheduleDesc> descs;
-		descs.reserve(systems.size());
+	thread_local std::vector<WorldLifecycleCommand>* g_activeLifecycleSignalStaging{ nullptr };
 
-		for (size_t i = 0; i < systems.size(); ++i)
+	class ScopedLifecycleSignalStaging final {
+	public:
+		explicit ScopedLifecycleSignalStaging(std::vector<WorldLifecycleCommand>& staging)
+			: _previous(g_activeLifecycleSignalStaging)
 		{
-			System* s = systems[i];
-			if (!s)
-				throw std::runtime_error("Null system in graph-phase system list.");
-
-			const SystemMeta& meta = s->Meta();
-
-			SystemScheduleDesc desc;
-			desc.system = s;
-			desc.meta = &meta;
-			desc.registrationOrder = static_cast<uint32_t>(i);
-
-			descs.push_back(desc);
+			g_activeLifecycleSignalStaging = &staging;
 		}
 
-		return descs;
-	}
-}
-
-WorldRuntime::WorldRuntime(ThreadPool& pool, IWorldImpl& impl)
-	: /*_graph(pool),*/ _threadPool(pool), _impl(impl),
-	_deltaTime(0.0), _graphBuilt(false)
-{
-}
-
-Entity WorldRuntime::SpawnPlayer(uint32 connId)
-{
-	return _impl.SpawnPlayer(*this, connId);
-}
-
-void WorldRuntime::MarkDirty(Entity entity, WorldDirtyType type)
-{
-	auto* dirty = _ecs.GetStorage<DirtyFlagsComp>().GetComponent(entity);
-	if (dirty)
-	{
-		const bool wasClean = !dirty->AnyDirty();
-		dirty->MarkDirty(type);
-
-		if (wasClean)
-			_dirtyEntities.push_back(entity);
-	}
-}
-
-void WorldRuntime::DeferredCreateEntity()
-{
-	_commandBuffer.Enqueue(
-		[](WorldRuntime& rt)
+		~ScopedLifecycleSignalStaging()
 		{
-			rt.GetECS().CreateEntityImmediate();
+			g_activeLifecycleSignalStaging = _previous;
 		}
-	);
+
+	private:
+		std::vector<WorldLifecycleCommand>* _previous{ nullptr };
+	};
+
+	const WorldTransferContext* TryGetConcreteTransferContext(const ITransferContext& context) noexcept
+	{
+		return dynamic_cast<const WorldTransferContext*>(&context);
+	}
 }
 
-void WorldRuntime::DeferredDestroyEntity(Entity e)
+WorldRuntime::WorldRuntime(WorldRuntimeCreateParams params)
+	: _def(params.def)
+	, _executionModel(params.executionModel)
+	, _transferBinding(params.transferBinding)
+	, _transferProfile(params.transferProfile)
 {
-	_commandBuffer.Enqueue(
-		[e](WorldRuntime& rt)
+}
+
+bool WorldRuntime::Initialize()
+{
+	if (IsShutdown())
+		return false;
+
+	if (IsInitialized())
+		return true;
+
+	if (IsFaulted())
+		return false;
+
+	if (_def == nullptr || _executionModel == nullptr)
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::InitFailed,
+			"WorldRuntime requires valid WorldDef and WorldExecutionModel.");
+		return false;
+	}
+
+	_lifecycleState = WorldRuntimeLifecycleState::Running;
+	_commitState = WorldRuntimeCommitState::NotCommitted;
+	_lifecycleFlushState = WorldRuntimeLifecycleFlushState::NotFlushed;
+	_hasBegunAnyFrame = false;
+	_frameOpen = false;
+	_frameIndex = 0;
+	_lastNowSec = 0.0;
+	_lastDtSec = 0.0;
+	return true;
+}
+
+void WorldRuntime::Shutdown()
+{
+	if (IsShutdown())
+		return;
+
+	_frameCommands.Clear();
+	_lifecycleCommands.Clear();
+	_lifecycleOutbox.clear();
+	_systems.Clear();
+	_ecs.Clear();
+
+	_commitState = WorldRuntimeCommitState::NotCommitted;
+	_lifecycleFlushState = WorldRuntimeLifecycleFlushState::NotFlushed;
+	_lifecycleState = WorldRuntimeLifecycleState::Shutdown;
+	_storagesFixed = false;
+	_hasBegunAnyFrame = false;
+	_frameOpen = false;
+	_frameIndex = 0;
+	_lastNowSec = 0.0;
+	_lastDtSec = 0.0;
+}
+
+bool WorldRuntime::BeginFrame(uint64_t frameIndex, double nowSec, double dtSec)
+{
+	if (!CanBeginFrame())
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::InvalidOperation,
+			"BeginFrame is not allowed in the current runtime state.");
+		return false;
+	}
+
+	if (_hasBegunAnyFrame && frameIndex <= _frameIndex)
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::InvalidOperation,
+			"BeginFrame requires strictly increasing frameIndex.");
+		return false;
+	}
+
+	_frameIndex = frameIndex;
+	_lastNowSec = nowSec;
+	_lastDtSec = dtSec;
+	_commitState = WorldRuntimeCommitState::NotCommitted;
+	_lifecycleFlushState = WorldRuntimeLifecycleFlushState::NotFlushed;
+	_hasBegunAnyFrame = true;
+	_frameOpen = true;
+	return true;
+}
+
+bool WorldRuntime::FlushFrameCommands()
+{
+	if (!CanFlushFrameCommands())
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::InvalidOperation,
+			"FlushFrameCommands is not allowed in the current runtime state.");
+		if (_frameOpen && _commitState == WorldRuntimeCommitState::NotCommitted)
 		{
-			rt.GetECS().DestroyEntityImmediate(e);
+			_commitState = WorldRuntimeCommitState::CommitFailed;
 		}
-	);
+		return false;
+	}
+
+	std::vector<WorldLifecycleCommand> stagedSignals;
+	{
+		ScopedLifecycleSignalStaging stagingScope(stagedSignals);
+		_frameCommands.Commit(*this);
+	}
+
+	if (IsFaulted())
+	{
+		_commitState = WorldRuntimeCommitState::CommitFailed;
+		return false;
+	}
+
+	for (WorldLifecycleCommand& command : stagedSignals)
+	{
+		_lifecycleCommands.Enqueue(std::move(command));
+	}
+
+	_commitState = WorldRuntimeCommitState::CommitSucceeded;
+	return true;
 }
 
-void WorldRuntime::DeferredMarkDirty(Entity e, WorldDirtyType dirtyType)
+bool WorldRuntime::FlushLifecycleCommands()
 {
-	_commandBuffer.Enqueue(
-		[e, dirtyType](WorldRuntime& rt)
+	if (!CanFlushLifecycleCommands())
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::InvalidOperation,
+			"FlushLifecycleCommands is not allowed in the current runtime state.");
+		return false;
+	}
+
+	_lifecycleOutbox.clear();
+	_lifecycleCommands.DrainTo(_lifecycleOutbox);
+	_lifecycleFlushState = WorldRuntimeLifecycleFlushState::Flushed;
+	_frameOpen = false;
+	return true;
+}
+
+bool WorldRuntime::BuildTransferContext(
+	const std::vector<uint32_t>& connectionIds,
+	std::unique_ptr<ITransferContext>& outContext)
+{
+	outContext.reset();
+
+	if (_lifecycleState != WorldRuntimeLifecycleState::Running || IsShutdown() || IsFaulted())
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::TransferBuildFailed,
+			"BuildTransferContext is not allowed in the current runtime state.");
+		return false;
+	}
+
+	if (_transferProfile == nullptr)
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::TransferBuildFailed,
+			"BuildTransferContext requires a resolved WorldTransferProfile.");
+		return false;
+	}
+
+	if (_transferBinding == nullptr)
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::TransferBuildFailed,
+			"BuildTransferContext requires a valid IWorldTransferBinding.");
+		return false;
+	}
+
+	if (connectionIds.empty())
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::TransferBuildFailed,
+			"BuildTransferContext requires at least one connectionId.");
+		return false;
+	}
+
+	ECSView sourceView = MakeView();
+	auto context = std::make_unique<WorldTransferContext>();
+	auto& contextConnectionIds = context->MutableConnectionIds();
+	auto& entities = context->MutableEntities();
+
+	contextConnectionIds.reserve(connectionIds.size());
+	entities.reserve(connectionIds.size());
+
+	std::unordered_set<uint32_t> seenConnectionIds;
+	seenConnectionIds.reserve(connectionIds.size());
+
+	for (uint32_t connectionId : connectionIds)
+	{
+		if (!seenConnectionIds.insert(connectionId).second)
 		{
-			rt.MarkDirty(e, dirtyType);
+			MarkFault(
+				WorldRuntimeFaultCode::TransferBuildFailed,
+				"BuildTransferContext received duplicate connectionId.");
+			return false;
 		}
-	);
-}
 
-void WorldRuntime::BuildGraph()
-{
-	auto systemsForGraph = _systemMng.GetSystems(SystemPhase::Graph);
-	
-	{
-		auto descs = BuildGraphScheduleDescs(systemsForGraph);
-		_compiledGraphSchedule = _scheduler.Compile(descs);
+		Entity rootEntity = Entity::Null();
+		if (!_transferBinding->TryResolveRootEntity(connectionId, rootEntity) ||
+			rootEntity.IsNull() ||
+			!sourceView.IsAlive(rootEntity))
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::TransferBuildFailed,
+				"BuildTransferContext failed to resolve a live root entity.");
+			return false;
+		}
+
+		TransferEntitySnapshot entitySnapshot;
+		entitySnapshot.connectionId = connectionId;
+		entitySnapshot.sourceEntity = rootEntity;
+
+		for (const IWorldTransferSerializer* serializer : _transferProfile->Serializers())
+		{
+			if (serializer == nullptr)
+			{
+				MarkFault(
+					WorldRuntimeFaultCode::TransferBuildFailed,
+					"BuildTransferContext encountered a null transfer serializer.");
+				return false;
+			}
+
+			TransferComponentSnapshot componentSnapshot;
+			componentSnapshot.typeId = serializer->GetComponentTypeId();
+
+			if (!serializer->Export(sourceView, rootEntity, componentSnapshot.bytes))
+			{
+				MarkFault(
+					WorldRuntimeFaultCode::TransferBuildFailed,
+					"BuildTransferContext failed while exporting a transfer component snapshot.");
+				return false;
+			}
+
+			entitySnapshot.components.push_back(std::move(componentSnapshot));
+		}
+
+		contextConnectionIds.push_back(connectionId);
+		entities.push_back(std::move(entitySnapshot));
 	}
 
-	/*_graph.AutoDependencyBuild(systemsForGraph, &_deltaTime);
-	_graph.Build();*/
-
-	_graphBuilt = true;
+	outContext = std::move(context);
+	return true;
 }
 
-void WorldRuntime::Run(const double dT)
+bool WorldRuntime::ImportTransferContext(
+	const ITransferContext& context,
+	std::vector<uint32_t>& outImportedConnectionIds)
 {
-	assert(_graphBuilt && "WorldRuntime::GraphBuild must be called before Run.");
+	outImportedConnectionIds.clear();
 
-	_deltaTime = dT;
-
-	try
+	if (_lifecycleState != WorldRuntimeLifecycleState::Running || IsShutdown() || IsFaulted())
 	{
-		RunPre(dT);
-		RunGraph(dT);
-		RunPost(dT);
-
-		_commandBuffer.Commit(*this);
+		MarkFault(
+			WorldRuntimeFaultCode::TransferImportFailed,
+			"ImportTransferContext is not allowed in the current runtime state.");
+		return false;
 	}
-	catch (...)
+
+	if (_transferProfile == nullptr)
 	{
-		_commandBuffer.Clear();
-		throw;
+		MarkFault(
+			WorldRuntimeFaultCode::TransferImportFailed,
+			"ImportTransferContext requires a resolved WorldTransferProfile.");
+		return false;
+	}
+
+	const WorldTransferContext* concreteContext = TryGetConcreteTransferContext(context);
+	if (concreteContext == nullptr)
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::TransferImportFailed,
+			"ImportTransferContext requires a WorldTransferContext payload.");
+		return false;
+	}
+
+	const std::span<const uint32_t> connectionIds = concreteContext->ConnectionIds();
+	const std::span<const TransferEntitySnapshot> entities = concreteContext->Entities();
+
+	if (connectionIds.empty())
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::TransferImportFailed,
+			"ImportTransferContext requires at least one connectionId.");
+		return false;
+	}
+
+	if (connectionIds.size() != entities.size())
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::TransferImportFailed,
+			"ImportTransferContext requires matching connectionId and entity snapshot counts.");
+		return false;
+	}
+
+	std::unordered_set<uint32_t> seenConnectionIds;
+	seenConnectionIds.reserve(connectionIds.size());
+
+	for (size_t index = 0; index < entities.size(); ++index)
+	{
+		const uint32_t expectedConnectionId = connectionIds[index];
+		const TransferEntitySnapshot& entitySnapshot = entities[index];
+
+		if (entitySnapshot.connectionId != expectedConnectionId)
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::TransferImportFailed,
+				"ImportTransferContext requires ordered connectionId/entity snapshot alignment.");
+			return false;
+		}
+
+		if (!seenConnectionIds.insert(expectedConnectionId).second)
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::TransferImportFailed,
+				"ImportTransferContext received duplicate connectionId.");
+			return false;
+		}
+
+		std::unordered_set<ComponentTypeId> seenComponentTypeIds;
+		seenComponentTypeIds.reserve(entitySnapshot.components.size());
+
+		for (const TransferComponentSnapshot& componentSnapshot : entitySnapshot.components)
+		{
+			if (!seenComponentTypeIds.insert(componentSnapshot.typeId).second)
+			{
+				MarkFault(
+					WorldRuntimeFaultCode::TransferImportFailed,
+					"ImportTransferContext received duplicate component snapshots for one entity.");
+				return false;
+			}
+
+			if (_transferProfile->Find(componentSnapshot.typeId) == nullptr)
+			{
+				MarkFault(
+					WorldRuntimeFaultCode::TransferImportFailed,
+					"ImportTransferContext encountered an unknown transfer serializer type.");
+				return false;
+			}
+		}
+	}
+
+	outImportedConnectionIds.reserve(connectionIds.size());
+
+	for (const TransferEntitySnapshot& entitySnapshot : entities)
+	{
+		const uint32_t connectionId = entitySnapshot.connectionId;
+		Entity targetEntity = ReserveEntity();
+		if (targetEntity.IsNull() || IsFaulted())
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::TransferImportFailed,
+				"ImportTransferContext failed to reserve a target entity.");
+			return false;
+		}
+
+		for (const TransferComponentSnapshot& componentSnapshot : entitySnapshot.components)
+		{
+			const IWorldTransferSerializer* serializer =
+				_transferProfile->Find(componentSnapshot.typeId);
+			if (serializer == nullptr)
+			{
+				MarkFault(
+					WorldRuntimeFaultCode::TransferImportFailed,
+					"ImportTransferContext encountered an unknown transfer serializer type.");
+				return false;
+			}
+
+			if (!serializer->Import(*this, targetEntity, componentSnapshot.bytes) || IsFaulted())
+			{
+				MarkFault(
+					WorldRuntimeFaultCode::TransferImportFailed,
+					"ImportTransferContext failed while importing a transfer component snapshot.");
+				return false;
+			}
+		}
+
+		EnqueueLifecycle(WorldLifecycleCommand::TransferImported(connectionId, targetEntity));
+		if (IsFaulted())
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::TransferImportFailed,
+				"ImportTransferContext failed while enqueueing lifecycle signals.");
+			return false;
+		}
+
+		outImportedConnectionIds.push_back(connectionId);
+	}
+
+	return true;
+}
+
+bool WorldRuntime::ReleaseTransferContext(
+	const ITransferContext& context,
+	std::vector<uint32_t>& outReleasedConnectionIds)
+{
+	outReleasedConnectionIds.clear();
+
+	if (_lifecycleState != WorldRuntimeLifecycleState::Running || IsShutdown() || IsFaulted())
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::TransferReleaseFailed,
+			"ReleaseTransferContext is not allowed in the current runtime state.");
+		return false;
+	}
+
+	const WorldTransferContext* concreteContext = TryGetConcreteTransferContext(context);
+	if (concreteContext == nullptr)
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::TransferReleaseFailed,
+			"ReleaseTransferContext requires a WorldTransferContext payload.");
+		return false;
+	}
+
+	const std::span<const uint32_t> connectionIds = concreteContext->ConnectionIds();
+	const std::span<const TransferEntitySnapshot> entities = concreteContext->Entities();
+
+	if (connectionIds.empty() || connectionIds.size() != entities.size())
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::TransferReleaseFailed,
+			"ReleaseTransferContext requires matching connectionId and entity snapshot counts.");
+		return false;
+	}
+
+	ECSView sourceView = MakeView();
+	std::unordered_set<uint32_t> seenConnectionIds;
+	seenConnectionIds.reserve(connectionIds.size());
+	outReleasedConnectionIds.reserve(connectionIds.size());
+
+	for (size_t index = 0; index < entities.size(); ++index)
+	{
+		const uint32_t expectedConnectionId = connectionIds[index];
+		const TransferEntitySnapshot& entitySnapshot = entities[index];
+
+		if (entitySnapshot.connectionId != expectedConnectionId)
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::TransferReleaseFailed,
+				"ReleaseTransferContext requires ordered connectionId/entity snapshot alignment.");
+			return false;
+		}
+
+		if (!seenConnectionIds.insert(expectedConnectionId).second)
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::TransferReleaseFailed,
+				"ReleaseTransferContext received duplicate connectionId.");
+			return false;
+		}
+
+		if (entitySnapshot.sourceEntity.IsNull() || !sourceView.IsAlive(entitySnapshot.sourceEntity))
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::TransferReleaseFailed,
+				"ReleaseTransferContext requires a live source entity.");
+			return false;
+		}
+	}
+
+	for (const TransferEntitySnapshot& entitySnapshot : entities)
+	{
+		DeferredDestroyEntity(entitySnapshot.sourceEntity);
+		if (IsFaulted())
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::TransferReleaseFailed,
+				"ReleaseTransferContext failed while scheduling source cleanup.");
+			return false;
+		}
+
+		EnqueueLifecycle(
+			WorldLifecycleCommand::TransferReleased(
+				entitySnapshot.connectionId,
+				entitySnapshot.sourceEntity));
+		if (IsFaulted())
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::TransferReleaseFailed,
+				"ReleaseTransferContext failed while enqueueing lifecycle signals.");
+			return false;
+		}
+
+		outReleasedConnectionIds.push_back(entitySnapshot.connectionId);
+	}
+
+	return true;
+}
+
+bool WorldRuntime::RollbackImportedTransferContext(
+	const ITransferContext& context,
+	const std::vector<uint32_t>& importedConnectionIds)
+{
+	(void)context;
+	(void)importedConnectionIds;
+
+	MarkFault(
+		WorldRuntimeFaultCode::TransferRollbackFailed,
+		"RollbackImportedTransferContext is not implemented yet.");
+	return false;
+}
+
+void WorldRuntime::EnsureStorageRegistrationAllowed() const
+{
+	if (IsShutdown())
+		throw std::logic_error("WorldRuntime is shutdown.");
+
+	if (_storagesFixed)
+		throw std::logic_error("WorldRuntime storages are already fixed.");
+}
+
+void WorldRuntime::MarkFault(WorldRuntimeFaultCode code, const char* message)
+{
+	if (_fault.HasError())
+		return;
+
+	_fault.code = code;
+	if (message != nullptr)
+	{
+		_fault.message = message;
 	}
 }
-	
-void WorldRuntime::RunPre(const double dT)
+
+bool WorldRuntime::CanBeginFrame() const
 {
-	for (System* s : _systemMng.GetSystems(SystemPhase::Pre))
-		s->Execute(dT);
+	return
+		_lifecycleState == WorldRuntimeLifecycleState::Running &&
+		!IsFaulted() &&
+		!IsShutdown() &&
+		!_frameOpen;
 }
 
-void WorldRuntime::RunPost(const double dT)
+bool WorldRuntime::CanFlushFrameCommands() const
 {
-	for (System* s : _systemMng.GetSystems(SystemPhase::Post))
-		s->Execute(dT);
+	return
+		_lifecycleState == WorldRuntimeLifecycleState::Running &&
+		!IsFaulted() &&
+		!IsShutdown() &&
+		_frameOpen &&
+		_commitState == WorldRuntimeCommitState::NotCommitted;
 }
 
-void WorldRuntime::RunGraph(const double dT)
+bool WorldRuntime::CanFlushLifecycleCommands() const
 {
-	//_graph.Run();
-	_scheduler.Execute(_compiledGraphSchedule, _threadPool, dT);
+	return
+		_lifecycleState == WorldRuntimeLifecycleState::Running &&
+		!IsShutdown() &&
+		_frameOpen &&
+		_commitState != WorldRuntimeCommitState::NotCommitted &&
+		_lifecycleFlushState == WorldRuntimeLifecycleFlushState::NotFlushed;
+}
+
+bool WorldRuntime::CanAcceptStructuralMutation() const
+{
+	return
+		_lifecycleState == WorldRuntimeLifecycleState::Running &&
+		!IsFaulted() &&
+		!IsShutdown();
+}
+
+bool WorldRuntime::CanAcceptLifecycleSignal() const
+{
+	return
+		_lifecycleState == WorldRuntimeLifecycleState::Running &&
+		!IsFaulted() &&
+		!IsShutdown();
+}
+
+bool WorldRuntime::MaterializeReservedEntityImmediate(Entity reserved)
+{
+	if (!_ecs.MaterializeReservedEntityImmediate(reserved))
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::InvalidOperation,
+			"Failed to materialize reserved entity.");
+		return false;
+	}
+
+	if (g_activeLifecycleSignalStaging != nullptr)
+	{
+		g_activeLifecycleSignalStaging->push_back(
+			WorldLifecycleCommand::EntitySpawned(reserved));
+	}
+
+	return true;
+}
+
+bool WorldRuntime::DestroyEntityImmediate(Entity e)
+{
+	if (!_ecs.DestroyEntityImmediate(e))
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::InvalidOperation,
+			"Failed to destroy entity.");
+		return false;
+	}
+
+	if (g_activeLifecycleSignalStaging != nullptr)
+	{
+		g_activeLifecycleSignalStaging->push_back(
+			WorldLifecycleCommand::EntityDespawned(e));
+	}
+
+	return true;
+}
+
+Entity WorldRuntime::ReserveEntity()
+{
+	if (!CanAcceptStructuralMutation())
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::InvalidOperation,
+			"ReserveEntity is not allowed in the current runtime state.");
+		return Entity::Null();
+	}
+
+	Entity reserved = _ecs._entityMng.Reserve();
+	_frameCommands.Enqueue(
+		[entity = reserved](WorldRuntime& rt)
+		{
+			(void)rt.MaterializeReservedEntityImmediate(entity);
+		});
+
+	return reserved;
 }
