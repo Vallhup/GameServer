@@ -2,300 +2,380 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="EntityManager.cpp">
-      <Filter>ECS\Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS.cpp">
-      <Filter>ECS\Core</Filter>
+      <Filter>01_ECS\Entity</Filter>
     </ClCompile>
     <ClCompile Include="StorageRegistry.cpp">
-      <Filter>ECS\Utility</Filter>
+      <Filter>01_ECS\Utility</Filter>
     </ClCompile>
     <ClCompile Include="NetIdAllocator.cpp">
-      <Filter>Network</Filter>
+      <Filter>05_Network</Filter>
     </ClCompile>
     <ClCompile Include="NetIdRegistry.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="JobGraph.cpp">
-      <Filter>JobGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="ThreadPool.cpp">
-      <Filter>JobGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="Job.cpp">
-      <Filter>JobGraph</Filter>
+      <Filter>05_Network</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Utility</Filter>
+      <Filter>00_Utility</Filter>
     </ClCompile>
     <ClCompile Include="SystemManager.cpp">
-      <Filter>ECS\System\Core</Filter>
+      <Filter>01_ECS\System\Core</Filter>
     </ClCompile>
-    <ClCompile Include="SystemScheduler.cpp">
-      <Filter>ECS\System\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="CommandBuffer.cpp">
-      <Filter>ECS\Utility</Filter>
+    <ClCompile Include="WorldMutationBuffer.cpp">
+      <Filter>01_ECS\Utility</Filter>
     </ClCompile>
     <ClCompile Include="WorldRuntime.cpp">
-      <Filter>Game\World\02_Runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldBuilder.cpp">
-      <Filter>Game\World\02_Runtime</Filter>
+      <Filter>02_World\02_Runtime</Filter>
     </ClCompile>
     <ClCompile Include="WorldIdAllocator.cpp">
-      <Filter>Game\World\00_Common</Filter>
+      <Filter>02_World\00_Common</Filter>
     </ClCompile>
     <ClCompile Include="WorldManager.cpp">
-      <Filter>Game\World\04_Management</Filter>
+      <Filter>02_World\04_Management</Filter>
     </ClCompile>
     <ClCompile Include="WorldRegistry.cpp">
-      <Filter>Game\World\04_Management</Filter>
+      <Filter>02_World\04_Management</Filter>
     </ClCompile>
     <ClCompile Include="WorldInstance.cpp">
-      <Filter>Game\World\03_Instance</Filter>
+      <Filter>02_World\03_Instance</Filter>
     </ClCompile>
     <ClCompile Include="WorldAdmissionService.cpp">
-      <Filter>Game\World\05_Admission</Filter>
+      <Filter>02_World\05_Admission</Filter>
     </ClCompile>
     <ClCompile Include="WorldTransferService.cpp">
-      <Filter>Game\World\06_Transfer</Filter>
+      <Filter>02_World\06_Transfer</Filter>
     </ClCompile>
     <ClCompile Include="PresenceManager.cpp">
-      <Filter>Game\World\04_Management</Filter>
+      <Filter>02_World\04_Management</Filter>
+    </ClCompile>
+    <ClCompile Include="ExecutionGraphBuilder.cpp">
+      <Filter>03_Execution\04_GraphBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="ExecutionOps.cpp">
+      <Filter>03_Execution\03_Context / Ops</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskExecutor.cpp">
+      <Filter>03_Execution\05_TaskExecutor</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>03_Execution\05_TaskExecutor</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldLifecycleBuffer.cpp">
+      <Filter>02_World\02_Runtime</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTransferProfile.cpp">
+      <Filter>02_World\06_Transfer</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTransferProfileRegistry.cpp">
+      <Filter>02_World\06_Transfer</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldScheduler.cpp">
+      <Filter>02_World\07_Scheduling</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldDefinitionBootstrap.cpp">
+      <Filter>02_World\08_Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldExecutionModelTypes.cpp">
+      <Filter>03_Execution\04_GraphBuilder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
-      <Filter>ECS\Entity</Filter>
+      <Filter>01_ECS\Entity</Filter>
     </ClInclude>
     <ClInclude Include="EntityManager.h">
-      <Filter>ECS\Entity</Filter>
+      <Filter>01_ECS\Entity</Filter>
     </ClInclude>
     <ClInclude Include="Component.h">
-      <Filter>ECS\Component</Filter>
+      <Filter>01_ECS\Component</Filter>
     </ClInclude>
     <ClInclude Include="ComponentStorage.h">
-      <Filter>ECS\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS.h">
-      <Filter>ECS\Core</Filter>
+      <Filter>01_ECS\Component</Filter>
     </ClInclude>
     <ClInclude Include="BasicView.h">
-      <Filter>ECS\Utility</Filter>
+      <Filter>01_ECS\Utility</Filter>
     </ClInclude>
     <ClInclude Include="StorageRegistry.h">
-      <Filter>ECS\Utility</Filter>
+      <Filter>01_ECS\Utility</Filter>
     </ClInclude>
     <ClInclude Include="NetIdAllocator.h">
-      <Filter>Network</Filter>
+      <Filter>05_Network</Filter>
     </ClInclude>
     <ClInclude Include="NetIdRegistry.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="EventQueue.h">
-      <Filter>Game\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="EventRegistry.h">
-      <Filter>Game\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="Job.h">
-      <Filter>JobGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="JobGraph.h">
-      <Filter>JobGraph</Filter>
-    </ClInclude>
-    <ClInclude Include="ThreadPool.h">
-      <Filter>JobGraph</Filter>
+      <Filter>05_Network</Filter>
     </ClInclude>
     <ClInclude Include="RepComponent.h">
-      <Filter>ECS\Component</Filter>
+      <Filter>01_ECS\Component</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Utility</Filter>
+      <Filter>00_Utility</Filter>
     </ClInclude>
     <ClInclude Include="WITH_Server_Framework.h">
-      <Filter>Utility</Filter>
+      <Filter>00_Utility</Filter>
     </ClInclude>
     <ClInclude Include="SystemMeta.h">
-      <Filter>ECS\System\Metadata</Filter>
+      <Filter>01_ECS\System\Metadata</Filter>
     </ClInclude>
     <ClInclude Include="System.h">
-      <Filter>ECS\System\Core</Filter>
+      <Filter>01_ECS\System\Core</Filter>
     </ClInclude>
     <ClInclude Include="SystemManager.h">
-      <Filter>ECS\System\Core</Filter>
+      <Filter>01_ECS\System\Core</Filter>
     </ClInclude>
     <ClInclude Include="SystemMetaHelper.h">
-      <Filter>ECS\System\Metadata</Filter>
+      <Filter>01_ECS\System\Metadata</Filter>
     </ClInclude>
     <ClInclude Include="SystemMetaStorage.h">
-      <Filter>ECS\System\Metadata</Filter>
+      <Filter>01_ECS\System\Metadata</Filter>
     </ClInclude>
-    <ClInclude Include="SystemScheduler.h">
-      <Filter>ECS\System\Core</Filter>
+    <ClInclude Include="WorldMutationBuffer.h">
+      <Filter>01_ECS\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="CommandBuffer.h">
-      <Filter>ECS\Utility</Filter>
+    <ClInclude Include="WorldMutationCommand.h">
+      <Filter>01_ECS\Utility</Filter>
     </ClInclude>
     <ClInclude Include="ViewFwd.h">
-      <Filter>ECS\Utility</Filter>
+      <Filter>01_ECS\Utility</Filter>
     </ClInclude>
     <ClInclude Include="WorldLifecycleEnums.h">
-      <Filter>Game\World\00_Common</Filter>
+      <Filter>02_World\00_Common</Filter>
     </ClInclude>
     <ClInclude Include="WorldRuntime.h">
-      <Filter>Game\World\02_Runtime</Filter>
+      <Filter>02_World\02_Runtime</Filter>
     </ClInclude>
-    <ClInclude Include="WorldBuilder.h">
-      <Filter>Game\World\02_Runtime</Filter>
+    <ClInclude Include="WorldLifecycleBuffer.h">
+      <Filter>02_World\02_Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldLifecycleCommand.h">
+      <Filter>02_World\02_Runtime</Filter>
     </ClInclude>
     <ClInclude Include="WorldId.h">
-      <Filter>Game\World\00_Common</Filter>
+      <Filter>02_World\00_Common</Filter>
     </ClInclude>
     <ClInclude Include="WorldIdAllocator.h">
-      <Filter>Game\World\00_Common</Filter>
+      <Filter>02_World\00_Common</Filter>
     </ClInclude>
     <ClInclude Include="WorldInstanceRecord.h">
-      <Filter>Game\World\04_Management</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldDef.h">
-      <Filter>Game\World\00_Common</Filter>
+      <Filter>02_World\04_Management</Filter>
     </ClInclude>
     <ClInclude Include="AdmissionTypes.h">
-      <Filter>Game\World\05_Admission</Filter>
+      <Filter>02_World\05_Admission</Filter>
     </ClInclude>
     <ClInclude Include="WorldTargetSpec.h">
-      <Filter>Game\World\06_Transfer</Filter>
+      <Filter>02_World\06_Transfer</Filter>
     </ClInclude>
     <ClInclude Include="WorldTransferRequest.h">
-      <Filter>Game\World\06_Transfer</Filter>
+      <Filter>02_World\06_Transfer</Filter>
     </ClInclude>
     <ClInclude Include="WorldTransferTxn.h">
-      <Filter>Game\World\06_Transfer</Filter>
+      <Filter>02_World\06_Transfer</Filter>
     </ClInclude>
     <ClInclude Include="WorldManager.h">
-      <Filter>Game\World\04_Management</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldContentIds.h">
-      <Filter>Game\World\00_Common</Filter>
+      <Filter>02_World\04_Management</Filter>
     </ClInclude>
     <ClInclude Include="WorldResolveKey.h">
-      <Filter>Game\World\00_Common</Filter>
+      <Filter>02_World\00_Common</Filter>
     </ClInclude>
     <ClInclude Include="WorldResolveRules.h">
-      <Filter>Game\World\00_Common</Filter>
+      <Filter>02_World\00_Common</Filter>
     </ClInclude>
     <ClInclude Include="WorldRegistry.h">
-      <Filter>Game\World\04_Management</Filter>
+      <Filter>02_World\04_Management</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldScheduler.h">
+      <Filter>02_World\07_Scheduling</Filter>
     </ClInclude>
     <ClInclude Include="WorldInstance.h">
-      <Filter>Game\World\03_Instance</Filter>
+      <Filter>02_World\03_Instance</Filter>
     </ClInclude>
     <ClInclude Include="PresenceRecord.h">
-      <Filter>Game\World\04_Management</Filter>
+      <Filter>02_World\04_Management</Filter>
     </ClInclude>
     <ClInclude Include="WorldAdmissionService.h">
-      <Filter>Game\World\05_Admission</Filter>
+      <Filter>02_World\05_Admission</Filter>
     </ClInclude>
     <ClInclude Include="WorldTransferService.h">
-      <Filter>Game\World\06_Transfer</Filter>
+      <Filter>02_World\06_Transfer</Filter>
     </ClInclude>
     <ClInclude Include="WorldIds.h">
-      <Filter>Game\World\00_Common</Filter>
+      <Filter>02_World\00_Common</Filter>
     </ClInclude>
     <ClInclude Include="PresenceManager.h">
-      <Filter>Game\World\04_Management</Filter>
+      <Filter>02_World\04_Management</Filter>
     </ClInclude>
     <ClInclude Include="IWorldInstanceFactory.h">
-      <Filter>Game\World\08_Bootstrap</Filter>
-    </ClInclude>
-    <ClInclude Include="IWorldTransferRuntimeBridge.h">
-      <Filter>Game\World\06_Transfer</Filter>
+      <Filter>02_World\08_Bootstrap</Filter>
     </ClInclude>
     <ClInclude Include="ITransferContext.h">
-      <Filter>Game\World\06_Transfer</Filter>
+      <Filter>02_World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="IWorldDefinitionProvider.h">
+      <Filter>02_World\08_Bootstrap</Filter>
+    </ClInclude>
+    <ClInclude Include="IWorldTransferBinding.h">
+      <Filter>02_World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="IWorldTransferSerializer.h">
+      <Filter>02_World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="ECSCore.h">
+      <Filter>01_ECS\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ECSView.h">
+      <Filter>01_ECS\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecutionCoreTypes.h">
+      <Filter>03_Execution\00_Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecutionOps.h">
+      <Filter>03_Execution\03_Context / Ops</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecutionGraphBuilder.h">
+      <Filter>03_Execution\04_GraphBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecutionContextTypes.h">
+      <Filter>03_Execution\03_Context / Ops</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecutionGraphTypes.h">
+      <Filter>03_Execution\01_Immutable Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecutionRuntimeTypes.h">
+      <Filter>03_Execution\02_Runtime Mutable State</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldFrameSelectionTypes.h">
+      <Filter>03_Execution\04_GraphBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecutionSourceTypes.h">
+      <Filter>03_Execution\04_GraphBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldExecutionModelTypes.h">
+      <Filter>03_Execution\04_GraphBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldFragmentBuild.h">
+      <Filter>03_Execution\04_GraphBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecutionGraphBuildPolicy.h">
+      <Filter>03_Execution\04_GraphBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultWorldTransferSerializer.h">
+      <Filter>02_World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskExecutor.h">
+      <Filter>03_Execution\05_TaskExecutor</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>03_Execution\05_TaskExecutor</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTransferContext.h">
+      <Filter>02_World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTransferProfile.h">
+      <Filter>02_World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTransferProfileRegistry.h">
+      <Filter>02_World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTransferTypes.h">
+      <Filter>02_World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldRuntimeTypes.h">
+      <Filter>02_World\02_Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDefinitionBootstrap.h">
+      <Filter>02_World\08_Bootstrap</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDef.h">
+      <Filter>02_World\01_Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldContentIds.h">
+      <Filter>02_World\01_Definition</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="ECS">
+    <Filter Include="01_ECS">
       <UniqueIdentifier>{e0ee2551-186e-43f0-b511-389968092128}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\Entity">
+    <Filter Include="01_ECS\Entity">
       <UniqueIdentifier>{2e433175-59b9-42ea-ab13-5aada61ea10d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\Component">
+    <Filter Include="01_ECS\Component">
       <UniqueIdentifier>{81a775e9-c598-4f57-bf90-3ed16fa19e9d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\System">
+    <Filter Include="01_ECS\System">
       <UniqueIdentifier>{d16764a6-dfb5-40da-b480-641f5d7d9c80}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\Core">
-      <UniqueIdentifier>{371696c9-58d4-4dec-a169-0e96fffb7da6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\Utility">
-      <UniqueIdentifier>{9eb60b08-f38c-4149-863c-6dd836af2240}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Network">
-      <UniqueIdentifier>{7e7ec8d2-891a-47c5-83ee-fa96488183e3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game">
-      <UniqueIdentifier>{445d764b-606f-41a0-b75f-553ba3fd0767}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Event">
-      <UniqueIdentifier>{fa67a4c0-e67c-4f90-8196-5908953c743f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\World">
-      <UniqueIdentifier>{a81af5f6-72ae-4ae8-bc4b-aabbb8f04c52}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JobGraph">
-      <UniqueIdentifier>{20f28bfd-9995-4570-913a-aecb95f4fae9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utility">
-      <UniqueIdentifier>{6df8462f-88f4-4f0d-a3f4-882035ffcb3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Metadata">
+    <Filter Include="01_ECS\System\Metadata">
       <UniqueIdentifier>{18ee01d1-aa2b-48c2-a030-ceee4d9573cb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS\System\Core">
+    <Filter Include="01_ECS\System\Core">
       <UniqueIdentifier>{ddb1dc91-f93a-410b-a4ef-31216d9ef68c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\00_Common">
+    <Filter Include="01_ECS\Core">
+      <UniqueIdentifier>{371696c9-58d4-4dec-a169-0e96fffb7da6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01_ECS\Utility">
+      <UniqueIdentifier>{9eb60b08-f38c-4149-863c-6dd836af2240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_World">
+      <UniqueIdentifier>{a81af5f6-72ae-4ae8-bc4b-aabbb8f04c52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_World\00_Common">
       <UniqueIdentifier>{3336e0dc-12e7-4dd2-8e20-29a980beb473}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\01_Definition">
+    <Filter Include="02_World\01_Definition">
       <UniqueIdentifier>{0a228783-608a-4632-920e-79f94050df2a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\02_Runtime">
+    <Filter Include="02_World\02_Runtime">
       <UniqueIdentifier>{4bdbb86b-7547-44dd-9408-414946d005e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\03_Instance">
+    <Filter Include="02_World\03_Instance">
       <UniqueIdentifier>{8e70feda-924f-4c1a-8bbd-143ea2e21a36}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\04_Management">
+    <Filter Include="02_World\04_Management">
       <UniqueIdentifier>{f5475f71-2649-45e9-9b9f-814c03eebcad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\05_Admission">
+    <Filter Include="02_World\05_Admission">
       <UniqueIdentifier>{2fdf79ee-cffa-4522-b89e-68c275c65c26}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\06_Transfer">
+    <Filter Include="02_World\06_Transfer">
       <UniqueIdentifier>{63f3cbaf-f74b-4e5d-ba0a-7a0c1044fe09}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\07_Scheduling">
+    <Filter Include="02_World\07_Scheduling">
       <UniqueIdentifier>{fd4332c5-7cd4-4a19-ab9d-a2eb1a70739c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\World\08_Bootstrap">
+    <Filter Include="02_World\08_Bootstrap">
       <UniqueIdentifier>{b7305ae5-2079-44a5-bb70-5fc6375555cd}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="World 구조 재설계.txt">
-      <Filter>Game\World</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="world_redesign_policy_summary.md">
-      <Filter>Game\World</Filter>
-    </None>
+    <Filter Include="03_Execution">
+      <UniqueIdentifier>{20f28bfd-9995-4570-913a-aecb95f4fae9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03_Execution\00_Common">
+      <UniqueIdentifier>{3a595f0d-2eb8-403f-93a1-6d468b99d6aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03_Execution\01_Immutable Graph">
+      <UniqueIdentifier>{445b8a2e-f93a-4cb8-82d5-e4fcde643466}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03_Execution\02_Runtime Mutable State">
+      <UniqueIdentifier>{4d638475-f9a9-4430-b181-ef2008a560be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03_Execution\03_Context / Ops">
+      <UniqueIdentifier>{e9d60d73-b383-401a-b3b0-8621747d5777}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03_Execution\04_GraphBuilder">
+      <UniqueIdentifier>{1f5237dd-e96d-42a4-a323-c8a08b2d93b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03_Execution\05_TaskExecutor">
+      <UniqueIdentifier>{0a255fd5-eb3b-425f-b68a-4be7708db18d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03_Execution\06_Utility">
+      <UniqueIdentifier>{c1f3930c-b555-451e-88ba-16b53a44b0dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04_Event">
+      <UniqueIdentifier>{fa67a4c0-e67c-4f90-8196-5908953c743f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05_Network">
+      <UniqueIdentifier>{7e7ec8d2-891a-47c5-83ee-fa96488183e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00_Utility">
+      <UniqueIdentifier>{6df8462f-88f4-4f0d-a3f4-882035ffcb3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
