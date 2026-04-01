@@ -11,8 +11,6 @@
 #include "ViewFwd.h"
 
 class WorldRuntime;
-class WorldCommandBuffer;
-class LifecycleCommandBuffer;
 
 class ECSCore {
 public:
@@ -46,7 +44,7 @@ public:
 	void Clear()
 	{
 		_storageRegistry.Clear();
-		_entityMng = EntityManager{};
+		_entityMng.Clear();
 	}
 
 public:
@@ -128,9 +126,9 @@ public:
 	}
 
 private:
-	Entity CreateEntityImmediate()
+	bool MaterializeReservedEntityImmediate(Entity reserved)
 	{
-		return _entityMng.Create();
+		return _entityMng.MaterializeReserved(reserved);
 	}
 
 	bool DestroyEntityImmediate(Entity e)
@@ -166,8 +164,6 @@ private:
 
 private:
 	friend class WorldRuntime;
-	friend class WorldCommandBuffer;
-	friend class LifecycleCommandBuffer;
 
 	EntityManager _entityMng;
 	StorageRegistry _storageRegistry;
