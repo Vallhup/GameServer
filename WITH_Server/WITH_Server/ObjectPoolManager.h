@@ -2,7 +2,7 @@
 
 #include "ObjectPool.hpp"
 
-class SendBuffer;
+struct SendBuffer;
 
 class ObjectPoolManager {
 public:
