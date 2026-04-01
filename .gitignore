@@ -482,3 +482,6 @@ FodyWeavers.xsd
 MapDataSorting/DataSorting/SortedMapData.txt
 WITH_Server2/
 졸작/Assets/LUTs/
+/WITH_Server/WITH_Server_Framework/Markdown
+/WITH_Server/WITH_Server/Markdown
+/WITH_Server/WITH_Server/regacy
