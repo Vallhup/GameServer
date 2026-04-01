@@ -17,7 +17,7 @@ struct TransferComponentSnapshot
 
 struct TransferEntitySnapshot
 {
-	uint32_t connectionId{ 0 };
+	uint32_t sessionId{ 0 };
 	Entity sourceEntity{ Entity::Null() };
 	std::vector<TransferComponentSnapshot> components;
 };

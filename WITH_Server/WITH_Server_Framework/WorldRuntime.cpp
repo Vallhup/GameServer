@@ -175,7 +175,7 @@ bool WorldRuntime::FlushLifecycleCommands()
 }
 
 bool WorldRuntime::BuildTransferContext(
-	const std::vector<uint32_t>& connectionIds,
+	const std::vector<uint32_t>& sessionIds,
 	std::unique_ptr<ITransferContext>& outContext)
 {
 	outContext.reset();
@@ -204,37 +204,37 @@ bool WorldRuntime::BuildTransferContext(
 		return false;
 	}
 
-	if (connectionIds.empty())
+	if (sessionIds.empty())
 	{
 		MarkFault(
 			WorldRuntimeFaultCode::TransferBuildFailed,
-			"BuildTransferContext requires at least one connectionId.");
+			"BuildTransferContext requires at least one sessionId.");
 		return false;
 	}
 
 	ECSView sourceView = MakeView();
 	auto context = std::make_unique<WorldTransferContext>();
-	auto& contextConnectionIds = context->MutableConnectionIds();
+	auto& contextSessionIds = context->MutableSessionIds();
 	auto& entities = context->MutableEntities();
 
-	contextConnectionIds.reserve(connectionIds.size());
-	entities.reserve(connectionIds.size());
+	contextSessionIds.reserve(sessionIds.size());
+	entities.reserve(sessionIds.size());
 
-	std::unordered_set<uint32_t> seenConnectionIds;
-	seenConnectionIds.reserve(connectionIds.size());
+	std::unordered_set<uint32_t> seenSessionIds;
+	seenSessionIds.reserve(sessionIds.size());
 
-	for (uint32_t connectionId : connectionIds)
+	for (uint32_t sessionId : sessionIds)
 	{
-		if (!seenConnectionIds.insert(connectionId).second)
+		if (!seenSessionIds.insert(sessionId).second)
 		{
 			MarkFault(
 				WorldRuntimeFaultCode::TransferBuildFailed,
-				"BuildTransferContext received duplicate connectionId.");
+				"BuildTransferContext received duplicate sessionId.");
 			return false;
 		}
 
 		Entity rootEntity = Entity::Null();
-		if (!_transferBinding->TryResolveRootEntity(connectionId, rootEntity) ||
+		if (!_transferBinding->TryResolveRootEntity(sessionId, rootEntity) ||
 			rootEntity.IsNull() ||
 			!sourceView.IsAlive(rootEntity))
 		{
@@ -245,7 +245,7 @@ bool WorldRuntime::BuildTransferContext(
 		}
 
 		TransferEntitySnapshot entitySnapshot;
-		entitySnapshot.connectionId = connectionId;
+		entitySnapshot.sessionId = sessionId;
 		entitySnapshot.sourceEntity = rootEntity;
 
 		for (const IWorldTransferSerializer* serializer : _transferProfile->Serializers())
@@ -272,7 +272,7 @@ bool WorldRuntime::BuildTransferContext(
 			entitySnapshot.components.push_back(std::move(componentSnapshot));
 		}
 
-		contextConnectionIds.push_back(connectionId);
+		contextSessionIds.push_back(sessionId);
 		entities.push_back(std::move(entitySnapshot));
 	}
 
@@ -282,9 +282,9 @@ bool WorldRuntime::BuildTransferContext(
 
 bool WorldRuntime::ImportTransferContext(
 	const ITransferContext& context,
-	std::vector<uint32_t>& outImportedConnectionIds)
+	std::vector<uint32_t>& outImportedSessionIds)
 {
-	outImportedConnectionIds.clear();
+	outImportedSessionIds.clear();
 
 	if (_lifecycleState != WorldRuntimeLifecycleState::Running || IsShutdown() || IsFaulted())
 	{
@@ -311,46 +311,46 @@ bool WorldRuntime::ImportTransferContext(
 		return false;
 	}
 
-	const std::span<const uint32_t> connectionIds = concreteContext->ConnectionIds();
+	const std::span<const uint32_t> sessionIds = concreteContext->SessionIds();
 	const std::span<const TransferEntitySnapshot> entities = concreteContext->Entities();
 
-	if (connectionIds.empty())
+	if (sessionIds.empty())
 	{
 		MarkFault(
 			WorldRuntimeFaultCode::TransferImportFailed,
-			"ImportTransferContext requires at least one connectionId.");
+			"ImportTransferContext requires at least one sessionId.");
 		return false;
 	}
 
-	if (connectionIds.size() != entities.size())
+	if (sessionIds.size() != entities.size())
 	{
 		MarkFault(
 			WorldRuntimeFaultCode::TransferImportFailed,
-			"ImportTransferContext requires matching connectionId and entity snapshot counts.");
+			"ImportTransferContext requires matching sessionId and entity snapshot counts.");
 		return false;
 	}
 
-	std::unordered_set<uint32_t> seenConnectionIds;
-	seenConnectionIds.reserve(connectionIds.size());
+	std::unordered_set<uint32_t> seenSessionIds;
+	seenSessionIds.reserve(sessionIds.size());
 
 	for (size_t index = 0; index < entities.size(); ++index)
 	{
-		const uint32_t expectedConnectionId = connectionIds[index];
+		const uint32_t expectedSessionId = sessionIds[index];
 		const TransferEntitySnapshot& entitySnapshot = entities[index];
 
-		if (entitySnapshot.connectionId != expectedConnectionId)
+		if (entitySnapshot.sessionId != expectedSessionId)
 		{
 			MarkFault(
 				WorldRuntimeFaultCode::TransferImportFailed,
-				"ImportTransferContext requires ordered connectionId/entity snapshot alignment.");
+				"ImportTransferContext requires ordered sessionId/entity snapshot alignment.");
 			return false;
 		}
 
-		if (!seenConnectionIds.insert(expectedConnectionId).second)
+		if (!seenSessionIds.insert(expectedSessionId).second)
 		{
 			MarkFault(
 				WorldRuntimeFaultCode::TransferImportFailed,
-				"ImportTransferContext received duplicate connectionId.");
+				"ImportTransferContext received duplicate sessionId.");
 			return false;
 		}
 
@@ -377,11 +377,11 @@ bool WorldRuntime::ImportTransferContext(
 		}
 	}
 
-	outImportedConnectionIds.reserve(connectionIds.size());
+	outImportedSessionIds.reserve(sessionIds.size());
 
 	for (const TransferEntitySnapshot& entitySnapshot : entities)
 	{
-		const uint32_t connectionId = entitySnapshot.connectionId;
+		const uint32_t sessionId = entitySnapshot.sessionId;
 		Entity targetEntity = ReserveEntity();
 		if (targetEntity.IsNull() || IsFaulted())
 		{
@@ -412,7 +412,7 @@ bool WorldRuntime::ImportTransferContext(
 			}
 		}
 
-		EnqueueLifecycle(WorldLifecycleCommand::TransferImported(connectionId, targetEntity));
+		EnqueueLifecycle(WorldLifecycleCommand::TransferImported(sessionId, targetEntity));
 		if (IsFaulted())
 		{
 			MarkFault(
@@ -421,7 +421,7 @@ bool WorldRuntime::ImportTransferContext(
 			return false;
 		}
 
-		outImportedConnectionIds.push_back(connectionId);
+		outImportedSessionIds.push_back(sessionId);
 	}
 
 	return true;
@@ -429,9 +429,9 @@ bool WorldRuntime::ImportTransferContext(
 
 bool WorldRuntime::ReleaseTransferContext(
 	const ITransferContext& context,
-	std::vector<uint32_t>& outReleasedConnectionIds)
+	std::vector<uint32_t>& outReleasedSessionIds)
 {
-	outReleasedConnectionIds.clear();
+	outReleasedSessionIds.clear();
 
 	if (_lifecycleState != WorldRuntimeLifecycleState::Running || IsShutdown() || IsFaulted())
 	{
@@ -450,40 +450,40 @@ bool WorldRuntime::ReleaseTransferContext(
 		return false;
 	}
 
-	const std::span<const uint32_t> connectionIds = concreteContext->ConnectionIds();
+	const std::span<const uint32_t> sessionIds = concreteContext->SessionIds();
 	const std::span<const TransferEntitySnapshot> entities = concreteContext->Entities();
 
-	if (connectionIds.empty() || connectionIds.size() != entities.size())
+	if (sessionIds.empty() || sessionIds.size() != entities.size())
 	{
 		MarkFault(
 			WorldRuntimeFaultCode::TransferReleaseFailed,
-			"ReleaseTransferContext requires matching connectionId and entity snapshot counts.");
+			"ReleaseTransferContext requires matching sessionId and entity snapshot counts.");
 		return false;
 	}
 
 	ECSView sourceView = MakeView();
-	std::unordered_set<uint32_t> seenConnectionIds;
-	seenConnectionIds.reserve(connectionIds.size());
-	outReleasedConnectionIds.reserve(connectionIds.size());
+	std::unordered_set<uint32_t> seenSessionIds;
+	seenSessionIds.reserve(sessionIds.size());
+	outReleasedSessionIds.reserve(sessionIds.size());
 
 	for (size_t index = 0; index < entities.size(); ++index)
 	{
-		const uint32_t expectedConnectionId = connectionIds[index];
+		const uint32_t expectedSessionId = sessionIds[index];
 		const TransferEntitySnapshot& entitySnapshot = entities[index];
 
-		if (entitySnapshot.connectionId != expectedConnectionId)
+		if (entitySnapshot.sessionId != expectedSessionId)
 		{
 			MarkFault(
 				WorldRuntimeFaultCode::TransferReleaseFailed,
-				"ReleaseTransferContext requires ordered connectionId/entity snapshot alignment.");
+				"ReleaseTransferContext requires ordered sessionId/entity snapshot alignment.");
 			return false;
 		}
 
-		if (!seenConnectionIds.insert(expectedConnectionId).second)
+		if (!seenSessionIds.insert(expectedSessionId).second)
 		{
 			MarkFault(
 				WorldRuntimeFaultCode::TransferReleaseFailed,
-				"ReleaseTransferContext received duplicate connectionId.");
+				"ReleaseTransferContext received duplicate sessionId.");
 			return false;
 		}
 
@@ -509,7 +509,7 @@ bool WorldRuntime::ReleaseTransferContext(
 
 		EnqueueLifecycle(
 			WorldLifecycleCommand::TransferReleased(
-				entitySnapshot.connectionId,
+				entitySnapshot.sessionId,
 				entitySnapshot.sourceEntity));
 		if (IsFaulted())
 		{
@@ -519,7 +519,7 @@ bool WorldRuntime::ReleaseTransferContext(
 			return false;
 		}
 
-		outReleasedConnectionIds.push_back(entitySnapshot.connectionId);
+		outReleasedSessionIds.push_back(entitySnapshot.sessionId);
 	}
 
 	return true;
@@ -527,10 +527,10 @@ bool WorldRuntime::ReleaseTransferContext(
 
 bool WorldRuntime::RollbackImportedTransferContext(
 	const ITransferContext& context,
-	const std::vector<uint32_t>& importedConnectionIds)
+	const std::vector<uint32_t>& importedSessionIds)
 {
 	(void)context;
-	(void)importedConnectionIds;
+	(void)importedSessionIds;
 
 	MarkFault(
 		WorldRuntimeFaultCode::TransferRollbackFailed,

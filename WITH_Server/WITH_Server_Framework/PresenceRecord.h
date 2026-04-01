@@ -8,7 +8,7 @@ struct PresenceRecord
 {
 	PresenceId id{ 0 };
 
-	uint32_t connectionId{ 0 };
+	uint32_t sessionId{ 0 };
 
 	PresenceStage state{ PresenceStage::None };
 

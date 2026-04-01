@@ -9,7 +9,7 @@ struct WorldTransferRequest
 {
 	TransferId id{ 0 };
 
-	std::vector<uint32_t> connectionIds;
+	std::vector<uint32_t> sessionIds;
 	WorldId sourceWorldId{ WorldId::Invalid() };
 	WorldTargetSpec target;
 
@@ -21,13 +21,13 @@ struct WorldTransferRequest
 	inline bool IsValid() const
 	{
 		return
-			!connectionIds.empty() &&
+			!sessionIds.empty() &&
 			sourceWorldId.IsValid() &&
 			(target.explicitTargetId.has_value() || target.targetWorldDefId.has_value());
 	}
 
 	inline uint32_t PlayerCount() const
 	{
-		return static_cast<uint32_t>(connectionIds.size());
+		return static_cast<uint32_t>(sessionIds.size());
 	}
 };

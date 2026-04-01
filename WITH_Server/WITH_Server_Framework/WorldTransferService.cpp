@@ -36,7 +36,7 @@ TransferId WorldTransferService::EnqueueRequest(
 	txn.id = AllocateTransferId();
 	txn.stage = TransferStage::Requested;
 
-	txn.connectionIds = request.connectionIds;
+	txn.sessionIds = request.sessionIds;
 	txn.sourceWorldId = request.sourceWorldId;
 	txn.target = request.target;
 	txn.partyId = request.partyId;
@@ -161,9 +161,9 @@ bool WorldTransferService::StepValidateSource(WorldTransferTxn& txn)
 	if (!source->IsRunnable())
 		return false;
 
-	for (uint32_t connectionId : txn.connectionIds)
+	for (uint32_t sessionId : txn.sessionIds)
 	{
-		const PresenceRecord* presence = _presenceManager.FindByConnectionId(connectionId);
+		const PresenceRecord* presence = _presenceManager.FindBySessionId(sessionId);
 		if (presence == nullptr)
 			return false;
 
@@ -195,10 +195,10 @@ bool WorldTransferService::StepResolveTarget(WorldTransferTxn& txn)
 	if (!txn.resolvedTargetWorldId.IsValid())
 		return false;
 
-	for (uint32_t connectionId : txn.connectionIds)
+	for (uint32_t sessionId : txn.sessionIds)
 	{
 		if (!_presenceManager.BeginTransfer(
-			connectionId,
+			sessionId,
 			txn.id,
 			txn.sourceWorldId,
 			txn.resolvedTargetWorldId,
@@ -215,7 +215,7 @@ bool WorldTransferService::StepReserveAdmission(WorldTransferTxn& txn, const dou
 {
 	AdmissionRequest request;
 	request.targetWorldId = txn.resolvedTargetWorldId;
-	request.connectionIds = txn.connectionIds;
+	request.sessionIds = txn.sessionIds;
 	request.reason = AdmissionReason::Transfer;
 	request.partyId = txn.partyId;
 
@@ -238,7 +238,7 @@ bool WorldTransferService::StepBuildTransferContext(WorldTransferTxn& txn)
 
 	WorldRuntime& runtime = sourceWorld->GetRuntime();
 
-	if (!runtime.BuildTransferContext(txn.connectionIds, txn.context))
+	if (!runtime.BuildTransferContext(txn.sessionIds, txn.context))
 		return false;
 
 	if (!txn.context)
@@ -251,7 +251,7 @@ bool WorldTransferService::StepBuildTransferContext(WorldTransferTxn& txn)
 		return false;
 
 	// TODO : 더 엄격하게 검사한다면
-	//        txn.connectionIds == context 내부 connection 집합 일치 확인
+	//        txn.sessionIds == context 내부 connection 집합 일치 확인
 
 	return true;
 }
@@ -269,7 +269,7 @@ bool WorldTransferService::StepImportTarget(WorldTransferTxn& txn, const double 
 	if (targetWorld == nullptr)
 		return false;
 
-	txn.importedConnectionIds.clear();
+	txn.importedSessionIds.clear();
 
 	if (!_admissionService.ConsumeReservation(txn.reservation.ticket, nowSec))
 		return false;
@@ -283,18 +283,18 @@ bool WorldTransferService::StepImportTarget(WorldTransferTxn& txn, const double 
 
 	if (!targetWorld->GetRuntime().ImportTransferContext(
 		*txn.context,
-		txn.importedConnectionIds))
+		txn.importedSessionIds))
 	{
 		return false;
 	}
 
-	if (txn.importedConnectionIds.empty())
+	if (txn.importedSessionIds.empty())
 		return false;
 
-	for (uint32_t connectionId : txn.importedConnectionIds)
+	for (uint32_t sessionId : txn.importedSessionIds)
 	{
 		if (!_presenceManager.MarkTargetImported(
-			connectionId,
+			sessionId,
 			txn.id,
 			txn.resolvedTargetWorldId,
 			nowSec))
@@ -327,7 +327,7 @@ bool WorldTransferService::StepReleaseSource(WorldTransferTxn& txn, const double
 	if (sourceWorld == nullptr)
 		return false;
 
-	txn.releasedConnectionIds.clear();
+	txn.releasedSessionIds.clear();
 
 	if (!_worldManager.AddInflightTransferOut(source->id, txn.PlayerCount()))
 		return false;
@@ -336,18 +336,18 @@ bool WorldTransferService::StepReleaseSource(WorldTransferTxn& txn, const double
 
 	if (!sourceWorld->GetRuntime().ReleaseTransferContext(
 		*txn.context,
-		txn.releasedConnectionIds))
+		txn.releasedSessionIds))
 	{
 		return false;
 	}
 
-	if (txn.releasedConnectionIds.empty())
+	if (txn.releasedSessionIds.empty())
 		return false;
 
-	for (uint32_t connectionId : txn.releasedConnectionIds)
+	for (uint32_t sessionId : txn.releasedSessionIds)
 	{
 		if (!_presenceManager.CompleteTransfer(
-			connectionId,
+			sessionId,
 			txn.id,
 			txn.sourceWorldId,
 			txn.resolvedTargetWorldId,
@@ -418,9 +418,9 @@ void WorldTransferService::CleanupFailedTxn(WorldTransferTxn& txn, const double 
 
 void WorldTransferService::CleanupPresenceOnFailure(WorldTransferTxn& txn, const double nowSec)
 {
-	for (uint32_t connectionId : txn.connectionIds)
+	for (uint32_t sessionId : txn.sessionIds)
 	{
-		_presenceManager.FailTransfer(connectionId, txn.id, nowSec);
+		_presenceManager.FailTransfer(sessionId, txn.id, nowSec);
 	}
 }
 
@@ -437,7 +437,7 @@ void WorldTransferService::CleanupImportedTargetOnFailure(WorldTransferTxn& txn)
 	if (!txn.context)
 		return;
 
-	if (txn.importedConnectionIds.empty())
+	if (txn.importedSessionIds.empty())
 		return;
 
 	WorldInstance* targetWorld = _worldRegistry.FindWorld(txn.resolvedTargetWorldId);
@@ -446,7 +446,7 @@ void WorldTransferService::CleanupImportedTargetOnFailure(WorldTransferTxn& txn)
 
 	targetWorld->GetRuntime().RollbackImportedTransferContext(
 		*txn.context,
-		txn.importedConnectionIds);
+		txn.importedSessionIds);
 }
 
 void WorldTransferService::CleanupSourceInflightOnFailure(WorldTransferTxn& txn)
@@ -543,8 +543,8 @@ bool WorldTransferService::TryApplyFallback(
 	txn.sourceInflightAdded = false;
 	txn.targetActivePlayersAdded = false;
 	txn.sourceActivePlayersRemoved = false;
-	txn.importedConnectionIds.clear();
-	txn.releasedConnectionIds.clear();
+	txn.importedSessionIds.clear();
+	txn.releasedSessionIds.clear();
 
 	txn.updatedAtSec = nowSec;
 	txn.deadlineSec = nowSec + 10.0;

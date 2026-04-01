@@ -1,33 +1,33 @@
 #include "pch.h"
 #include "PresenceManager.h"
 
-PresenceRecord* PresenceManager::FindByConnectionId(uint32_t connectionId)
+PresenceRecord* PresenceManager::FindBySessionId(uint32_t sessionId)
 {
-	auto it = _records.find(connectionId);
+	auto it = _records.find(sessionId);
 	if (it == _records.end())
 		return nullptr;
 
 	return &it->second;
 }
 
-const PresenceRecord* PresenceManager::FindByConnectionId(uint32_t connectionId) const
+const PresenceRecord* PresenceManager::FindBySessionId(uint32_t sessionId) const
 {
-	auto it = _records.find(connectionId);
+	auto it = _records.find(sessionId);
 	if (it == _records.end())
 		return nullptr;
 
 	return &it->second;
 }
 
-PresenceRecord* PresenceManager::EnsurePresence(uint32_t connectionId)
+PresenceRecord* PresenceManager::EnsurePresence(uint32_t sessionId)
 {
-	auto [it, inserted] = _records.try_emplace(connectionId);
+	auto [it, inserted] = _records.try_emplace(sessionId);
 	PresenceRecord& record = it->second;
 
 	if (inserted)
 	{
 		record.id = _nextPresenceId++;
-		record.connectionId = connectionId;
+		record.sessionId = sessionId;
 		record.state = PresenceStage::None;
 	}
 
@@ -35,11 +35,11 @@ PresenceRecord* PresenceManager::EnsurePresence(uint32_t connectionId)
 }
 
 bool PresenceManager::AttachToWorld(
-	uint32_t connectionId, 
+	uint32_t sessionId, 
 	WorldId worldId, 
 	const double nowSec)
 {
-	PresenceRecord* record = EnsurePresence(connectionId);
+	PresenceRecord* record = EnsurePresence(sessionId);
 	if (record == nullptr)
 		return false;
 
@@ -53,13 +53,13 @@ bool PresenceManager::AttachToWorld(
 }
 
 bool PresenceManager::BeginTransfer(
-	uint32_t connectionId,
+	uint32_t sessionId,
 	TransferId transferId,
 	WorldId sourceWorldId,
 	WorldId targetWorldId,
 	const double nowSec)
 {
-	PresenceRecord* record = FindByConnectionId(connectionId);
+	PresenceRecord* record = FindBySessionId(sessionId);
 	if (record == nullptr)
 		return false;
 
@@ -81,12 +81,12 @@ bool PresenceManager::BeginTransfer(
 }
 
 bool PresenceManager::MarkTargetImported(
-	uint32_t connectionId,
+	uint32_t sessionId,
 	TransferId transferId,
 	WorldId targetWorldId,
 	const double nowSec)
 {
-	PresenceRecord* record = FindByConnectionId(connectionId);
+	PresenceRecord* record = FindBySessionId(sessionId);
 	if (record == nullptr)
 		return false;
 
@@ -102,13 +102,13 @@ bool PresenceManager::MarkTargetImported(
 }
 
 bool PresenceManager::CompleteTransfer(
-	uint32_t connectionId,
+	uint32_t sessionId,
 	TransferId transferId,
 	WorldId sourceWorldId,
 	WorldId targetWorldId,
 	const double nowSec)
 {
-	PresenceRecord* record = FindByConnectionId(connectionId);
+	PresenceRecord* record = FindBySessionId(sessionId);
 	if (record == nullptr)
 		return false;
 
@@ -131,11 +131,11 @@ bool PresenceManager::CompleteTransfer(
 }
 
 bool PresenceManager::FailTransfer(
-	uint32_t connectionId,
+	uint32_t sessionId,
 	TransferId transferId,
 	const double nowSec)
 {
-	PresenceRecord* record = FindByConnectionId(connectionId);
+	PresenceRecord* record = FindBySessionId(sessionId);
 	if (record == nullptr)
 		return false;
 
@@ -150,9 +150,9 @@ bool PresenceManager::FailTransfer(
 	return true;
 }
 
-bool PresenceManager::RemovePresence(uint32_t connectionId, const double nowSec)
+bool PresenceManager::RemovePresence(uint32_t sessionId, const double nowSec)
 {
-	PresenceRecord* record = FindByConnectionId(connectionId);
+	PresenceRecord* record = FindBySessionId(sessionId);
 	if (record == nullptr)
 		return false;
 
@@ -166,11 +166,11 @@ bool PresenceManager::RemovePresence(uint32_t connectionId, const double nowSec)
 }
 
 bool PresenceManager::SetDisconnected(
-	uint32_t connectionId, 
+	uint32_t sessionId, 
 	bool disconnected,
 	const double nowSec)
 {
-	PresenceRecord* record = EnsurePresence(connectionId);
+	PresenceRecord* record = EnsurePresence(sessionId);
 	if (record == nullptr)
 		return false;
 
@@ -180,9 +180,9 @@ bool PresenceManager::SetDisconnected(
 	return true;
 }
 
-bool PresenceManager::CanReEnterWorld(uint32_t connectionId, WorldId targetWorldId) const
+bool PresenceManager::CanReEnterWorld(uint32_t sessionId, WorldId targetWorldId) const
 {
-	const PresenceRecord* record = FindByConnectionId(connectionId);
+	const PresenceRecord* record = FindBySessionId(sessionId);
 	if (record == nullptr)
 		return false;
 

@@ -21,7 +21,7 @@ struct WorldLifecycleCommand
 {
 	WorldLifecycleCommandKind kind{ WorldLifecycleCommandKind::RequestClose };
 
-	uint32_t connectionId{ 0 };
+	uint32_t sessionId{ 0 };
 	Entity entity{};
 
 	[[nodiscard]]
@@ -38,36 +38,36 @@ struct WorldLifecycleCommand
 
 	[[nodiscard]]
 	static WorldLifecycleCommand ConnectionAttached(
-		uint32_t connectionId,
+		uint32_t sessionId,
 		Entity entity = Entity{}) noexcept
 	{
 		WorldLifecycleCommand cmd;
 		cmd.kind = WorldLifecycleCommandKind::ConnectionAttached;
-		cmd.connectionId = connectionId;
+		cmd.sessionId = sessionId;
 		cmd.entity = entity;
 		return cmd;
 	}
 
 	[[nodiscard]]
 	static WorldLifecycleCommand ConnectionDetached(
-		uint32_t connectionId,
+		uint32_t sessionId,
 		Entity entity = Entity{}) noexcept
 	{
 		WorldLifecycleCommand cmd;
 		cmd.kind = WorldLifecycleCommandKind::ConnectionDetached;
-		cmd.connectionId = connectionId;
+		cmd.sessionId = sessionId;
 		cmd.entity = entity;
 		return cmd;
 	}
 
 	[[nodiscard]]
 	static WorldLifecycleCommand ConnectionDisconnected(
-		uint32_t connectionId,
+		uint32_t sessionId,
 		Entity entity = Entity{}) noexcept
 	{
 		WorldLifecycleCommand cmd;
 		cmd.kind = WorldLifecycleCommandKind::ConnectionDisconnected;
-		cmd.connectionId = connectionId;
+		cmd.sessionId = sessionId;
 		cmd.entity = entity;
 		return cmd;
 	}
@@ -92,24 +92,24 @@ struct WorldLifecycleCommand
 
 	[[nodiscard]]
 	static WorldLifecycleCommand TransferImported(
-		uint32_t connectionId,
+		uint32_t sessionId,
 		Entity entity = Entity{}) noexcept
 	{
 		WorldLifecycleCommand cmd;
 		cmd.kind = WorldLifecycleCommandKind::TransferImported;
-		cmd.connectionId = connectionId;
+		cmd.sessionId = sessionId;
 		cmd.entity = entity;
 		return cmd;
 	}
 
 	[[nodiscard]]
 	static WorldLifecycleCommand TransferReleased(
-		uint32_t connectionId,
+		uint32_t sessionId,
 		Entity entity = Entity{}) noexcept
 	{
 		WorldLifecycleCommand cmd;
 		cmd.kind = WorldLifecycleCommandKind::TransferReleased;
-		cmd.connectionId = connectionId;
+		cmd.sessionId = sessionId;
 		cmd.entity = entity;
 		return cmd;
 	}

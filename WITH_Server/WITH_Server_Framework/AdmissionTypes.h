@@ -27,19 +27,19 @@ enum class AdmissionReservationStage : uint8_t
 struct AdmissionRequest
 {
 	WorldId targetWorldId{ WorldId::Invalid() };
-	std::vector<uint32_t> connectionIds;
+	std::vector<uint32_t> sessionIds;
 	AdmissionReason reason{ AdmissionReason::Transfer };
 
 	PartyId partyId{ 0 };
 
 	inline bool IsValid() const
 	{
-		return targetWorldId.IsValid() && !connectionIds.empty();
+		return targetWorldId.IsValid() && !sessionIds.empty();
 	}
 
 	inline uint32_t RequestedPlayerCount() const
 	{
-		return static_cast<uint32_t>(connectionIds.size());
+		return static_cast<uint32_t>(sessionIds.size());
 	}
 
 	inline bool HasPartyContext() const
@@ -60,7 +60,7 @@ struct AdmissionReservation
 	PartyId partyId{ 0 };
 
 	// 기본 정책
-	// reservedSlots == request.connectionIds.size()
+	// reservedSlots == request.sessionIds.size()
 	uint32_t reservedSlots{ 0 };
 
 	double createdAtSec{ 0.0 };

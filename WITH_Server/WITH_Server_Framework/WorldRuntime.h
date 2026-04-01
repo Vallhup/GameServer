@@ -41,20 +41,20 @@ public:
 	bool FlushLifecycleCommands();
 
 	bool BuildTransferContext(
-		const std::vector<uint32_t>& connectionIds,
+		const std::vector<uint32_t>& sessionIds,
 		std::unique_ptr<ITransferContext>& outContext);
 
 	bool ImportTransferContext(
 		const ITransferContext& context,
-		std::vector<uint32_t>& outImportedConnectionIds);
+		std::vector<uint32_t>& outImportedSessionIds);
 
 	bool ReleaseTransferContext(
 		const ITransferContext& context,
-		std::vector<uint32_t>& outReleasedConnectionIds);
+		std::vector<uint32_t>& outReleasedSessionIds);
 
 	bool RollbackImportedTransferContext(
 		const ITransferContext& context,
-		const std::vector<uint32_t>& importedConnectionIds);
+		const std::vector<uint32_t>& importedSessionIds);
 
 public:
 	const WorldDef* GetDef() const noexcept { return _def; }

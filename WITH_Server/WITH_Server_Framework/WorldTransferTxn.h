@@ -12,7 +12,7 @@ struct WorldTransferTxn
 	TransferId id{ 0 };
 	TransferStage stage{ TransferStage::Requested };
 
-	std::vector<uint32_t> connectionIds;
+	std::vector<uint32_t> sessionIds;
 	WorldId sourceWorldId{ WorldId::Invalid() };
 	WorldTargetSpec target;
 
@@ -36,8 +36,8 @@ struct WorldTransferTxn
 	bool targetActivePlayersAdded{ false };
 	bool sourceActivePlayersRemoved{ false };
 
-	std::vector<uint32_t> importedConnectionIds;
-	std::vector<uint32_t> releasedConnectionIds;
+	std::vector<uint32_t> importedSessionIds;
+	std::vector<uint32_t> releasedSessionIds;
 
 	double createdAtSec{ 0.0 };
 	double updatedAtSec{ 0.0 };
@@ -45,7 +45,7 @@ struct WorldTransferTxn
 
 	inline uint32_t PlayerCount() const
 	{
-		return static_cast<uint32_t>(connectionIds.size());
+		return static_cast<uint32_t>(sessionIds.size());
 	}
 
 	inline uint32_t ContextPlayerCount() const
@@ -55,12 +55,12 @@ struct WorldTransferTxn
 
 	inline uint32_t ImportedPlayerCount() const
 	{
-		return static_cast<uint32_t>(importedConnectionIds.size());
+		return static_cast<uint32_t>(importedSessionIds.size());
 	}
 
 	inline uint32_t ReleasedPlayerCount() const
 	{
-		return static_cast<uint32_t>(releasedConnectionIds.size());
+		return static_cast<uint32_t>(releasedSessionIds.size());
 	}
 
 	inline bool HasResolvedTarget() const

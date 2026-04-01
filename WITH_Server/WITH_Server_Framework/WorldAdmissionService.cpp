@@ -182,9 +182,9 @@ AdmissionDecision WorldAdmissionService::EvaluateRequest(
 
 bool WorldAdmissionService::ValidateReEntryRequest(const AdmissionRequest& request) const
 {
-	for (uint32_t connectionId : request.connectionIds)
+	for (uint32_t sessionId : request.sessionIds)
 	{
-		if (!_presenceMng.CanReEnterWorld(connectionId, request.targetWorldId))
+		if (!_presenceMng.CanReEnterWorld(sessionId, request.targetWorldId))
 			return false;
 	}
 
