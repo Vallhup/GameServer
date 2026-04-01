@@ -1,53 +1,77 @@
 #pragma once
 
-#include "WorldContentIds.h"
+#include <memory>
 
-class IWorldInstanceImpl {
+#include "WorldRuntime.h"
+#include "WorldContentIds.h"
+#include "WorldId.h"
+#include "WorldExecutionModelTypes.h"
+
+struct WorldDef;
+class IWorldTransferBinding;
+class WorldTransferProfile;
+
+class IWorldInstanceImpl
+{
 public:
 	virtual ~IWorldInstanceImpl() = default;
 
-	virtual void OnInit(WorldRuntime& rumtime) = 0;
-	virtual void OnShutdown(WorldRuntime& rumtime) = 0;
-	virtual void OnUpdate(WorldRuntime& rumtime, const double dT) = 0;
+	virtual bool OnCreate(WorldRuntime& runtime) = 0;
+	virtual bool OnStart(WorldRuntime& runtime) = 0;
+	virtual void OnStop(WorldRuntime& runtime) = 0;
 };
 
-struct WorldDef;
-
-struct WorldInstanceCreateParams
+struct WorldInstanceIdentity
 {
 	WorldId id{ WorldId::Invalid() };
 	WorldDefId defId{ WorldDefId::None };
 	uint64_t instanceKey{ 0 };
-
-	const WorldDef* def{ nullptr };
 };
 
-class WorldInstance {
+struct WorldInstanceCreateParams
+{
+	WorldInstanceIdentity identity;
+	const WorldDef* def{ nullptr };
+	WorldExecutionModel executionModel;
+	const WorldTransferProfile* transferProfile{ nullptr };
+	const IWorldTransferBinding* transferBinding{ nullptr };
+	std::unique_ptr<IWorldInstanceImpl> impl;
+};
+
+class WorldInstance final
+{
 public:
-	WorldInstance(
-		const WorldInstanceCreateParams& params,
-		std::unique_ptr<IWorldInstanceImpl> impl);
+	explicit WorldInstance(WorldInstanceCreateParams params);
 
-	void Init();
+	bool Initialize();
 	void Shutdown();
-	void Update(const double dT);
 
-	WorldId GetId() const { return _id; }
-	WorldDefId GetDefId() const { return _defId; }
-	uint64_t GetInstanceKey() const { return _instanceKey; }
+	const WorldInstanceIdentity& GetIdentity() const { return _identity; }
+
+	WorldId GetId() const { return _identity.id; }
+	WorldDefId GetDefId() const { return _identity.defId; }
+	uint64_t GetInstanceKey() const { return _identity.instanceKey; }
+
+	const WorldDef* GetDef() const { return _def; }
 
 	WorldRuntime& GetRuntime() { return _runtime; }
 	const WorldRuntime& GetRuntime() const { return _runtime; }
 
+	WorldExecutionModel& GetExecutionModel() { return _executionModel; }
+	const WorldExecutionModel& GetExecutionModel() const { return _executionModel; }
+
+	bool IsInitialized() const { return _initialized; }
+	bool IsShutdown() const { return _shutdown; }
+	bool IsFaulted() const { return _runtime.IsFaulted(); }
+
 private:
-	WorldId _id;
-	WorldDefId _defId;
-	uint64_t _instanceKey;
+	WorldInstanceIdentity _identity;
+	const WorldDef* _def{ nullptr };
+
+	WorldExecutionModel _executionModel;
+	WorldRuntime _runtime;
+	std::unique_ptr<IWorldInstanceImpl> _impl;
 
 	bool _initialized{ false };
 	bool _shutdown{ false };
-
-	WorldRuntime _runtime;
-	std::unique_ptr<IWorldInstanceImpl> _impl;
 };
-
