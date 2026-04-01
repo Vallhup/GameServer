@@ -4,12 +4,11 @@
 #include <vector>
 
 #include "ExecutionCoreTypes.h"
+#include "WorldContentIds.h"
 
 using WorldBinding = uint64_t;
-using WorldExecutionModelKey = uint32_t;
 
 constexpr WorldBinding InvalidWorldBinding = 0;
-constexpr WorldExecutionModelKey InvalidWorldExecutionModelKey = 0;
 
 struct WorldFrameSelection
 {

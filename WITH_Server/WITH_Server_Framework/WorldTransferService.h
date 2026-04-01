@@ -1,10 +1,12 @@
-#pragma once
+ï»¿#pragma once
 
 #include <optional>
+#include <unordered_map>
 
 #include "WorldIds.h"
 #include "WorldTargetSpec.h"
 #include "WorldLifecycleEnums.h"
+#include "WorldTransferTxn.h"
 
 class WorldManager;
 class WorldRegistry;
@@ -14,7 +16,6 @@ class PresenceManager;
 
 class IWorldTransferRuntimeBridge;
 
-struct WorldTransferTxn;
 struct WorldTransferRequest;
 
 class WorldTransferService {
@@ -73,10 +74,10 @@ private:
 	TransferId _nextTransferId{ 1 };
 };
 
-// explicitTargetId°¡ µé¾î¿Â ¿äÃ»Àº fallback X
+// explicitTargetIdê°€ ë“¤ì–´ì˜¨ ìš”ì²­ì€ fallback X
 // 
-// fallbackWorldDefId°¡ ¾ø´Â ¿ùµå´Â fallback X
+// fallbackWorldDefIdê°€ ì—†ëŠ” ì›”ë“œëŠ” fallback X
 // 
-// fallback instanceKey´Â 1Â÷ ±¸Çö¿¡¼­ 0À¸·Î °íÁ¤
+// fallback instanceKeyëŠ” 1ì°¨ êµ¬í˜„ì—ì„œ 0ìœ¼ë¡œ ê³ ì •
 // 
-// TransferContextBuilt ÀÌÈÄ ½ÇÆä¿¡´Â fallback Àû¿ë X
+// TransferContextBuilt ì´í›„ ì‹¤í˜ì—ëŠ” fallback ì ìš© X
