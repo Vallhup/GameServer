@@ -7,22 +7,15 @@
 #include "NetworkRuntime.h"
 #include "SessionBindingRegistry.h"
 
+class PlayerEntryService;
+
 class InboundMessageProcessor final {
 public:
-	struct PendingLoginSpawn
-	{
-		SessionId sessionId{ 0 };
-		WorldId worldId{ WorldId::Invalid() };
-		Entity entity{ Entity::Null() };
-	};
-
 	struct Dependencies
 	{
 		NetworkRuntime* network{ nullptr };
-		FrameworkRuntime* framework{ nullptr };
-		const WorldId* startupWorldId{ nullptr };
+		PlayerEntryService* playerEntryService{ nullptr };
 		SessionBindingRegistry* sessionBindings{ nullptr };
-		std::vector<PendingLoginSpawn>* pendingLoginSpawns{ nullptr };
 	};
 
 public:

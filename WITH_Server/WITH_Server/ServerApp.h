@@ -8,6 +8,7 @@
 #include "FrameworkRuntime.h"
 #include "InboundMessageProcessor.h"
 #include "NetworkRuntime.h"
+#include "PlayerEntryService.h"
 #include "SessionBindingRegistry.h"
 #include "ServerWorldBootstrap.h"
 
@@ -72,9 +73,9 @@ private:
 	NetworkRuntime _network;
 	WorldId _startupWorldId{};
 	SessionBindingRegistry _sessionBindings;
+	PlayerEntryService _playerEntryService;
 	InboundMessageProcessor _inboundProcessor;
 	std::vector<InboundMessage> _inboundMessages;
-	std::vector<InboundMessageProcessor::PendingLoginSpawn> _pendingLoginSpawns;
 
 	uint64_t _tickCount{ 0 };
 	uint64_t _frameIndex{ 0 };

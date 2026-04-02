@@ -1,10 +1,7 @@
 #include "pch.h"
 #include "InboundMessageProcessor.h"
 
-#include <algorithm>
-
-#include "RepComponent.h"
-#include "WorldInstance.h"
+#include "PlayerEntryService.h"
 
 InboundMessageProcessor::InboundMessageProcessor(Dependencies deps)
 	: _deps(deps)
@@ -84,18 +81,9 @@ bool InboundMessageProcessor::HandleDisconnected(const InboundMessage& message)
 		(void)_deps.sessionBindings->Unbind(message.sessionId);
 	}
 
-	if (_deps.pendingLoginSpawns != nullptr)
+	if (_deps.playerEntryService != nullptr)
 	{
-		auto& pending = *_deps.pendingLoginSpawns;
-		pending.erase(
-			std::remove_if(
-				pending.begin(),
-				pending.end(),
-				[&](const PendingLoginSpawn& spawn)
-				{
-					return spawn.sessionId == message.sessionId;
-				}),
-			pending.end());
+		(void)_deps.playerEntryService->CancelEntry(message.sessionId);
 	}
 
 	// Future work:
@@ -163,15 +151,10 @@ bool InboundMessageProcessor::ValidateLoginRequest(
 		return false;
 	}
 
-	if (_deps.pendingLoginSpawns != nullptr)
+	if (_deps.playerEntryService != nullptr &&
+		_deps.playerEntryService->FindContext(message.sessionId) != nullptr)
 	{
-		for (const PendingLoginSpawn& pending : *_deps.pendingLoginSpawns)
-		{
-			if (pending.sessionId == message.sessionId)
-			{
-				return false;
-			}
-		}
+		return false;
 	}
 
 	// Future work:
@@ -204,54 +187,35 @@ bool InboundMessageProcessor::HandleGameplayCommandMock(
 void InboundMessageProcessor::CompleteLogin(SessionId sessionId)
 {
 	if (_deps.network == nullptr ||
-		_deps.framework == nullptr ||
-		_deps.startupWorldId == nullptr ||
-		_deps.pendingLoginSpawns == nullptr)
+		_deps.playerEntryService == nullptr)
 	{
 		return;
 	}
-
-	const WorldId startupWorldId = *_deps.startupWorldId;
-	if (!startupWorldId.IsValid())
-	{
-		RejectLogin(sessionId);
-		return;
-	}
-
-	WorldInstance* world = _deps.framework->FindWorld(startupWorldId);
-	if (world == nullptr)
-	{
-		RejectLogin(sessionId);
-		return;
-	}
-
-	WorldRuntime& runtime = world->GetRuntime();
-	const Entity playerEntity = runtime.ReserveEntity();
-	if (playerEntity.IsNull())
-	{
-		RejectLogin(sessionId);
-		return;
-	}
-
-	runtime.DeferredAddComponent<ReplicatedTag>(playerEntity);
-
-	SpawnTypeComp typeComp =
-	{
-		.entityType = EntityType::Character,
-		.faction = Faction::Player,
-		.charType = CharacterType::Knight
-	};
-	runtime.DeferredUpsertComponent<SpawnTypeComp>(playerEntity, typeComp);
 
 	(void)_deps.network->RequestCompleteLogin(sessionId);
-	_deps.pendingLoginSpawns->push_back(
-		PendingLoginSpawn{
-			sessionId,
-			startupWorldId,
-			playerEntity
-		});
+
+	if (!_deps.playerEntryService->BeginAuthenticatedEntry(sessionId))
+	{
+		RejectLogin(sessionId);
+		return;
+	}
+
+	// Temporary bootstrap path:
+	// until CS_SELECT_CHARACTER is wired, automatically choose Knight so the
+	// end-to-end entry flow can run through PlayerEntryService.
+	const PlayerEntryResult selectResult =
+		_deps.playerEntryService->RequestCharacterSelect(
+			sessionId, 
+			CharacterId::Knight);
+	if (!selectResult.Succeeded())
+	{
+		(void)_deps.playerEntryService->CancelEntry(sessionId);
+		RejectLogin(sessionId);
+		return;
+	}
 
 	// Future work:
+	// - replace the temporary Knight auto-select path with CS_SELECT_CHARACTER
 	// - resolve exact entry point / spawn transform
 	// - attach gameplay-specific player components
 	// - stage nearby initial replication after spawn confirm

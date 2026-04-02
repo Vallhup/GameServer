@@ -37,11 +37,11 @@ namespace
 		NetworkRuntime& network,
 		SessionId sessionId,
 		NetId netId,
-		EntityType entityType)
+		CharacterId characterId)
 	{
 		Protocol::SC_ADD_PACKET add;
 		add.set_netid(netId.GetRaw());
-		add.set_typeid_(ToInt(entityType));
+		add.set_typeid_(static_cast<int>(characterId));
 		add.set_x(0.0f);
 		add.set_y(0.0f);
 		add.set_z(0.0f);
@@ -72,12 +72,14 @@ ServerApp::ServerApp(Config config)
 		.listenPort = _config.listenPort,
 		.maxSessions = _config.maxSessions
 	})
+	, _playerEntryService(PlayerEntryService::Dependencies{
+		&_framework,
+		&_startupWorldId
+	})
 	, _inboundProcessor(InboundMessageProcessor::Dependencies{
 		&_network,
-		&_framework,
-		&_startupWorldId,
+		&_playerEntryService,
 		&_sessionBindings,
-		&_pendingLoginSpawns
 	})
 {
 	if (_config.logicTickHz == 0)
@@ -100,7 +102,7 @@ bool ServerApp::Initialize()
 	_nowSec = 0.0;
 	_startupWorldId = WorldId::Invalid();
 	_sessionBindings.Clear();
-	_pendingLoginSpawns.clear();
+	_playerEntryService.Clear();
 	_lastTickTime = {};
 
 	if (!InitializeFrameworkRuntime() ||
@@ -151,7 +153,7 @@ void ServerApp::Shutdown() noexcept
 	_nowSec = 0.0;
 	_startupWorldId = WorldId::Invalid();
 	_sessionBindings.Clear();
-	_pendingLoginSpawns.clear();
+	_playerEntryService.Clear();
 	_lastTickTime = {};
 }
 
@@ -263,9 +265,7 @@ void ServerApp::DrainInboundCommands()
 
 void ServerApp::ProcessInboundMessages()
 {
-	std::vector<InboundMessage> remainingMessages;
-	_inboundProcessor.Process(_inboundMessages, remainingMessages);
-	_inboundMessages = std::move(remainingMessages);
+	_inboundProcessor.Process(_inboundMessages, _inboundMessages);
 }
 
 void ServerApp::RunWorldFrames(double dtSec)
@@ -307,47 +307,36 @@ void ServerApp::FinalizeFrameEvents(const FrameworkRuntime::FrameResult& frameRe
 {
 	for (const auto& spawnEvent : frameResult.events.spawns)
 	{
-		auto pendingIt = std::find_if(
-			_pendingLoginSpawns.begin(),
-			_pendingLoginSpawns.end(),
-			[&](const InboundMessageProcessor::PendingLoginSpawn& pending)
-			{
-				return
-					pending.worldId == spawnEvent.worldId &&
-					pending.entity == spawnEvent.entity;
-			});
-
-		if (pendingIt == _pendingLoginSpawns.end())
-		{
-			continue;
-		}
-
 		if (!spawnEvent.netId.IsValid())
 		{
 			continue;
 		}
 
-		WorldInstance* world = _framework.FindWorld(spawnEvent.worldId);
-		if (world == nullptr)
+		if (_playerEntryService.FindPendingSpawn(
+			spawnEvent.worldId,
+			spawnEvent.entity) == nullptr)
 		{
 			continue;
 		}
 
-		EntityType entityType = EntityType::Character;
-		const ECSView view = world->GetRuntime().MakeView();
-		if (const SpawnTypeComp* spawnType =
-			view.GetComponent<SpawnTypeComp>(spawnEvent.entity))
+		PendingCharacterSpawn pendingSpawn{};
+		if (!_playerEntryService.TryConsumeSpawnConfirmed(
+			spawnEvent.worldId,
+			spawnEvent.entity,
+			pendingSpawn))
 		{
-			entityType = spawnType->entityType;
+			continue;
 		}
 
-		const SessionId sessionId = pendingIt->sessionId;
+		const SessionId sessionId = pendingSpawn.sessionId;
 		(void)_sessionBindings.Bind(sessionId, spawnEvent.netId, spawnEvent.worldId);
 		(void)_network.RequestEnterInGame(sessionId, spawnEvent.netId);
 		(void)StageLoginResponse(_network, sessionId, spawnEvent.netId);
-		(void)StageSpawnAddPacket(_network, sessionId, spawnEvent.netId, entityType);
-
-		_pendingLoginSpawns.erase(pendingIt);
+		(void)StageSpawnAddPacket(
+			_network,
+			sessionId,
+			spawnEvent.netId,
+			pendingSpawn.characterId);
 	}
 }
 
