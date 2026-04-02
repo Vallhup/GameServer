@@ -3,7 +3,11 @@
 #include <cstdint>
 #include <string>
 #include <optional>
+#include <span>
+#include <vector>
 #include "IDs.h"
+
+enum class ActionKind : uint8_t;
 
 enum class BuffKind : uint8_t
 {
@@ -13,7 +17,35 @@ enum class BuffKind : uint8_t
 	Control
 };
 
-using StackGroupId = uint16_t;
+enum class BuffFamilyId : uint16_t
+{
+	None = 0,
+
+	HpBoost,
+	StaminaBoost,
+	AttackBoost,
+	AttackSpeedBoost,
+	DefenseBoost,
+	MoveSpeedBoost,
+
+	ParrySuccess
+};
+
+enum class BuffTier : uint8_t
+{
+	None = 0,
+	Low = 1,
+	Mid = 2,
+	High = 3
+};
+
+using StackGroupId = BuffFamilyId;
+
+enum class BuffFamilyStackPolicy : uint8_t
+{
+	Independent,
+	ReplaceWithHigherTier
+};
 
 struct BuffProfileDef
 {
@@ -21,7 +53,10 @@ struct BuffProfileDef
 	std::string name;
 
 	BuffKind kind;
+	BuffFamilyId familyId;
+	BuffTier tier;
 	StackGroupId groupId;
+	BuffFamilyStackPolicy familyStackPolicy;
 };
 
 enum class DurationPolicy : uint8_t
@@ -59,7 +94,7 @@ struct BuffLifetimeDef
 	ReapplyPolicy reapplyPolicy;
 };
 
-enum class BuffModifierKind : uint8_t
+enum class BuffEffectType : uint8_t
 {
 	None,
 	StatAdd,
@@ -91,23 +126,34 @@ enum class BuffModifierConditionType : uint8_t
 struct BuffModifierCondition
 {
 	BuffModifierConditionType type;
-	StateFlagType stateFlagType;
+	GameplayStateFlag stateFlag;
 };
 
-struct BuffModifierDef
+struct BuffStatEffectDef
 {
-	BuffModifierKind kind;
+	StatType statType;
+	float value;
+};
+
+struct BuffStateFlagEffectDef
+{
+	GameplayStateFlag flag;
+};
+
+struct BuffPeriodicEffectDef
+{
+	PeriodicEffectType type;
+	float value;
+};
+
+struct BuffEffectDef
+{
+	BuffEffectType type;
 	BuffModifierTiming timing;
 
-	// Kind = StatAdd / StatMul
-	float value;
-	StatType statType;
-
-	// Kind = StateFlag
-	StateFlagType stateFlagType;
-
-	// Kind = PeriodicEffect
-	PeriodicEffectType periodicEffectType;
+	std::optional<BuffStatEffectDef> stat;
+	std::optional<BuffStateFlagEffectDef> stateFlag;
+	std::optional<BuffPeriodicEffectDef> periodic;
 
 	std::optional<BuffModifierCondition> condition;
 };
@@ -121,13 +167,32 @@ enum class BuffApplyRequirementType : uint8_t
 	MissingStateFlag,
 	HpRatioAbove,
 	HpRatioBelow,
-	TargetFactionIsEnemy
+	TargetFactionIs
+};
+
+struct BuffApplyRequirementOperand
+{
+	std::optional<float> scalarCondition;
+	std::optional<GameplayStateFlag> stateFlagCondition;
+	std::optional<BuffFamilyId> buffFamilyIdCondition;
+	std::optional<Faction> factionCondition;
 };
 
 struct BuffApplyRequirementDef
 {
 	BuffApplyRequirementType type;
-	float parameter;
+	BuffApplyRequirementOperand operand;
+};
+
+enum class BuffCounterEventType : uint8_t
+{
+	None,
+	OwnerDeath,
+	OwnerKill,
+	OwnerDamaged,
+	ActionCommitted,
+	ParrySuccess,
+	GuardSuccess
 };
 
 enum class BuffRemoveRuleType : uint8_t
@@ -136,14 +201,27 @@ enum class BuffRemoveRuleType : uint8_t
 	OnDurationExpired,
 	OnOwnerDamaged,
 	OnOwnerActionCommitted,
+	OnSpecificActionCommitted,
 	OnStackDepleted,
-	OnStateFlagMissing
+	OnStateFlagMissing,
+	OnBuffFamilyApplied,
+	OnCounterReached
+};
+
+struct BuffRemoveRuleOperand
+{
+	std::optional<float> scalarCondition;
+	std::optional<GameplayStateFlag> stateFlagCondition;
+	std::optional<ActionId> actionIdCondition;
+	std::optional<ActionKind> actionKindCondition;
+	std::optional<BuffFamilyId> buffFamilyIdCondition;
+	std::optional<BuffCounterEventType> counterEventCondition;
 };
 
 struct BuffRemoveRuleDef
 {
 	BuffRemoveRuleType type;
-	float parameter;
+	BuffRemoveRuleOperand operand;
 };
 
 struct BuffDef
@@ -151,7 +229,11 @@ struct BuffDef
 	BuffProfileDef profile;
 	BuffLifetimeDef lifetime;
 
-	std::vector<BuffModifierDef> modifiers;
+	std::vector<BuffEffectDef> effects;
 	std::vector<BuffApplyRequirementDef> applyRequirements;
 	std::vector<BuffRemoveRuleDef> removeRules;
 };
+
+const BuffDef* FindBuffDef(BuffId id) noexcept;
+const BuffDef& GetBuffDef(BuffId id);
+std::span<const BuffDef> GetBuffDefs() noexcept;
