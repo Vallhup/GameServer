@@ -36,39 +36,34 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Utility\06. Import.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Cli\AnimationPipelineCli.cs" />
+    <Compile Include="Models\AnimationPipelineModels.cs" />
+    <Compile Include="Models\AnimationPipelinePreset.cs" />
+    <Compile Include="Readers\MeshReader.cs" />
+    <Compile Include="Readers\BoneAnimationReader.cs" />
+    <Compile Include="Builders\CapsuleTemplateBuilder.cs" />
+    <Compile Include="Builders\AnimationClipBuilder.cs" />
+    <Compile Include="Writers\CapsuleTemplateJsonStore.cs" />
+    <Compile Include="Writers\AnimationClipJsonWriterV2.cs" />
+    <Compile Include="Presets\PresetLoader.cs" />
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Definition\# Definition 체계 정의.txt" />
-    <Content Include="ID\# ID 체계 정의.txt" />
-    <Content Include="Action System 명세.txt" />
-    <Content Include="데이터 구조 검증용 기획 문서.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Definition\00. IDefinition.cs" />
-    <Compile Include="Definition\02. ActionDef.cs" />
-    <Compile Include="Definition\03. AnimationResourceDef.cs" />
-    <Compile Include="Definition\04. BuffDef.cs" />
-    <Compile Include="Definition\06. SpawnDef.cs" />
-    <Compile Include="Definition\05. WorldDef.cs" />
-    <Compile Include="Definition\01. CharacterDef.cs" />
-    <Compile Include="ID\01. IDs.cs" />
-    <Compile Include="Utility\02. Common.cs" />
-    <Compile Include="Utility\01. Utility.cs" />
-    <Compile Include="Utility\03. Validation.cs" />
-    <Compile Include="Utility\04. GameDataValidator.cs" />
-    <Compile Include="Utility\05. GameDataRegistry.cs" />
+    <Content Include="Presets\imp.json" />
+    <Content Include="Presets\knight.json" />
+    <Content Include="Presets\final_boss.json" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

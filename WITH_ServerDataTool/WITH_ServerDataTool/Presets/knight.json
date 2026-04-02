@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 2,
+  "objectName": "Knight",
+  "inputs": {
+    "meshDirectory": "../../Resource/Knight/Mesh",
+    "animationDirectory": "../../Resource/Knight/Animation"
+  },
+  "outputs": {
+    "capsuleTemplatePath": "../../Output/Capsule/knight_capsule_template.json",
+    "animationDirectory": "../../Output/Animation/Knight"
+  },
+  "capsuleRules": {
+    "defaultRoles": [ "hurt", "guard", "parry" ],
+    "weaponRoles": [ "hit", "guard", "parry" ],
+    "weaponBones": [ 45 ]
+  },
+  "clips": [
+    { "name": "attack", "source": "knight_animation_attack_baked.bone", "output": "knight_animation_attack.json", "loop": false },
+    { "name": "dodge", "source": "knight_animation_roll_baked.bone", "output": "knight_animation_dodge.json", "loop": false },
+    { "name": "guard", "source": "knight_animation_guard_baked.bone", "output": "knight_animation_guard.json", "loop": true },
+    { "name": "idle", "source": "knight_animation_idle_baked.bone", "output": "knight_animation_idle.json", "loop": true },
+    { "name": "parry", "source": "knight_animation_parry_baked.bone", "output": "knight_animation_parry.json", "loop": false },
+    { "name": "run", "source": "knight_animation_run_baked.bone", "output": "knight_animation_run.json", "loop": true },
+    { "name": "stun", "source": "knight_animation_stun_baked.bone", "output": "knight_animation_stun.json", "loop": false },
+    { "name": "walk", "source": "knight_animation_walk_baked.bone", "output": "knight_animation_walk.json", "loop": true }
+  ]
+}
