@@ -3,7 +3,7 @@
 #include "NetId.h"
 #include "WorldId.h"
 #include "Component.h"
-#include "EntityType.h"
+#include "EntityId.h"
 
 struct NetIdComp : Component
 {
@@ -17,14 +17,12 @@ struct WorldIdComp : Component
 
 struct SpawnTypeComp : Component
 {
-	EntityType entityType;
-	Faction faction;
-	CharacterType charType;
+	CharacterId characterId;
 };
 
 struct AITypeComp : Component
 {
-	AIArchetypeId aiType;
+	AIArchetype aiType;
 };
 
 struct ReplicatedTag : TagComponent { };

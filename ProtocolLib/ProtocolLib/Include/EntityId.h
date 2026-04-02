@@ -9,13 +9,13 @@ enum class CharacterId : uint8_t
 
 	Knight,
 	Lancer,
-	/* 3번째 캐릭터 */
+	Vanguard,
 
 	Imp,
-	/* 2번째 잡몹 */
-	/* 3번째 잡몹 */
+	DemonStriker,
+	DemonExecutioner,
 
-	DemonWarrior,
+	BigDemonWarrior,
 	Tank,
 	FinalBoss
 };
