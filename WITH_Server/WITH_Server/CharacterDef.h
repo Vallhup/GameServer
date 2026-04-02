@@ -1,8 +1,13 @@
 #pragma once
 
-#include "EntityId.h"
-#include <string>
+#include <cstdint>
 #include <optional>
+#include <span>
+#include <string>
+
+#include "EntityId.h"
+
+enum class CharacterId : uint8_t;
 
 struct CharacterProfileDef
 {
@@ -36,3 +41,7 @@ struct CharacterDef
 	CharacterStatDef stat;
 	std::optional<CharacterAIDef> ai;
 };
+
+const CharacterDef* FindCharacterDef(CharacterId id) noexcept;
+const CharacterDef& GetCharacterDef(CharacterId id);
+std::span<const CharacterDef> GetCharacterDefs() noexcept;
