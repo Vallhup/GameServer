@@ -90,13 +90,6 @@ void FirstBattleScene::CreateMap()
 #pragma endregion
 
 #pragma endregion
-
-
-// Castle 맵 전용
-#pragma region Initialize Castle Terrain
-	//terrain = make_shared<Terrain>();
-	//terrain->Initialize(*coreRef, L"textures/CastleFloor", L"../Assets/FBXModel/CastleMap/castleTerrain.raw", 513, 650.2402f, 79.28662f, 8.0f);
-#pragma endregion
 }
 
 void FirstBattleScene::CreateEffectSamples()
@@ -345,7 +338,7 @@ void FirstBattleScene::InitializeLogic()
 		_nManager->Send(data);
 	}
 
-	//IMGUI.SetWaterDebugTexture(coreRef->GetDevice(), water->GetReflectionRT());
+	IMGUI.SetWaterDebugTexture(coreRef->GetDevice(), water->GetReflectionRT());
 
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
@@ -443,17 +436,6 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 		if (!obj->IsStatic())
 			obj->Update(deltaTime);
 	}
-
-	// Update player heights based on terrain
-	/*for (const auto& [sessionId, player] : activeCharacters)
-	{
-		if (auto transform = player->GetComponent<Transform>())
-		{
-			const XMFLOAT3& pos = transform->GetPosition();
-			float terrainHeight = SampleHeightAt(pos.x, pos.z);
-			transform->SetHeightImmediate(terrainHeight);
-		}
-	}*/
 
 	if (cam)
 		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);

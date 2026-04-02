@@ -151,7 +151,7 @@ void LoadingScene::LoadFirstBattleSceneResources()
 void LoadingScene::LoadSecondBattleSceneResources()
 {
 	InstanceLoader mapLoader;
-	mapLoader.Load(L"../Assets/FBXModel/CastleMap/MapInstanceData.txt", L"../Assets/FBXModel/VillageMap/CullingData.txt");
+	mapLoader.Load(L"../Assets/FBXModel/CastleMap/MapInstanceData.txt", L"../Assets/FBXModel/CastleMap/CullingData.txt");
 
 	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
 		if (instanceData.empty()) continue;

@@ -33,14 +33,14 @@ bool Importer::LoadModel2(const wstring& basePath)
 {
     Release();
 
-    wstring meshPath = basePath + L"_0.mesh";
+    wstring meshPath = basePath + L"_2.mesh";
 
-    /*for (int i = 3; i >= 0; --i) {
+    for (int i = 1; i >= 0; --i) {
         if (!filesystem::exists(meshPath))
             meshPath = basePath + L"_" + to_wstring(i) + L".mesh";
         else
             break;
-    }*/
+    }
 
     if (!LoadMesh(meshPath)) {
         MASSERT(false, "Failed to load mesh file");
@@ -135,7 +135,7 @@ bool Importer::LoadMaterialOnly(const wstring& basePath)
 {
     wstring materialPath = basePath + L".mtl";
     if (!LoadMaterials(materialPath)) {
-        OutputDebugStringA("Failed to load material file");
+        OutputDebugStringA("Failed to load material file\n");
         return false;
     }
 

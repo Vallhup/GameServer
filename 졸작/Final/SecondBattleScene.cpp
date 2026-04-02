@@ -63,13 +63,11 @@ void SecondBattleScene::InitializeLogic()
 		OutputDebugStringA("SecondBattle: Boss loaded from shared!\n");
 	}
 
-	// SkyBox 초기화
 	skyBox = make_shared<SkyBox>();
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
 
-	// Castle Terrain 초기화
 #pragma region Initialize Castle Terrain
 	terrain = make_shared<Terrain>();
 	terrain->Initialize(*coreRef, L"textures/CastleFloor", L"../Assets/FBXModel/CastleMap/castleTerrain.raw", 513, 650.2402f, 79.28662f, 8.0f);
@@ -118,7 +116,6 @@ void SecondBattleScene::RenderSceneDeferred()
 
 	renderer->RenderDeferred(*coreRef, gameObjects, cam.get());
 
-	// Render terrain
 	if (terrain)
 		renderer->RenderTerrain(*coreRef, terrain.get());
 
