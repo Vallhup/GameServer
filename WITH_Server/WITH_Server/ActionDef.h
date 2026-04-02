@@ -2,7 +2,11 @@
 
 #include "AnimationId.h"
 #include "IDs.h"
+
+#include <optional>
 #include <string>
+#include <span>
+#include <vector>
 
 enum class ActionKind : uint8_t
 {
@@ -59,7 +63,8 @@ enum class ActionRequestRequirementType : uint8_t
 struct ActionRequestRequirementDef
 {
 	ActionRequestRequirementType type;
-	std::optional<float> parameter;
+	std::optional<float> scalar;
+	std::optional<GameplayStateFlag> stateFlag;
 };
 
 enum class ActionResourceType : uint8_t
@@ -109,8 +114,10 @@ enum class ActionCancelKind : uint8_t
 {
 	Combo,
 	HoldRelease,
+	LightAttackCancel,
+	HeavyAttackCancel,
 	DodgeCancel,
-	GuardCancel
+	ParryCancel
 };
 
 struct ActionCancelRule
@@ -154,7 +161,8 @@ enum class DirectionPolicy : uint8_t
 	ActionStartInput,
 	CurrentInput,
 	FacingDirection,
-	TargetDirection
+	TargetDirection,
+	LockedDirection
 };
 
 enum class DirectionSampleTiming : uint8_t
@@ -181,12 +189,11 @@ struct ActionMovementSegmentDef
 	DirectionSampleTiming dirSampleTiming;
 };
 
-using CombatProfileId = uint16_t;
-
 enum class CombatWindowType : uint8_t
 {
 	Attack,
 	Parry,
+	Guard,
 	Armor,
 	Invulnerability
 };
@@ -194,7 +201,76 @@ enum class CombatWindowType : uint8_t
 enum class ActionCombatApplyTo : uint8_t
 {
 	FrontPhysical,
-	ParryableAttack
+	ParryableAttack,
+	GuardableAttack
+};
+
+enum class CombatReferenceFrame : uint8_t
+{
+	OwnerFacing,
+	MoveDirection,
+	LockedActionDirection
+};
+
+struct ActionCombatSpatialFilterDef
+{
+	std::optional<float> facingHalfAngleDeg;
+	std::optional<float> minDistance;
+	std::optional<float> maxDistance;
+	std::optional<float> verticalTolerance;
+
+	CombatReferenceFrame referenceFrame = CombatReferenceFrame::OwnerFacing;
+};
+
+enum class CombatEffectType : uint8_t
+{
+	None,
+	AttackHit,
+	ParryResponse,
+	GuardResponse
+};
+
+struct AttackCombatEffectDef
+{
+	float damageScale;
+	float bonusDamage;
+
+	float staminaDamageScale;
+	float bonusStaminaDamage;
+
+	float poiseDamageScale;
+	float bonusPoiseDamage;
+
+	float knockbackDistance;
+	float hitStopSec;
+
+	bool parryable;
+	bool guardable;
+};
+
+struct ParryCombatEffectDef
+{
+	float stunSec;
+	float hitStopSec;
+
+	std::optional<BuffId> grantBuffId;
+};
+
+struct GuardCombatEffectDef
+{
+	float damageReductionRatio;
+	float chipDamageRatio;
+	float staminaDamageMultiplier;
+	float hitStopSec;
+};
+
+struct CombatEffectDef
+{
+	CombatEffectType type;
+
+	std::optional<AttackCombatEffectDef> attackHit;
+	std::optional<ParryCombatEffectDef> parryResponse;
+	std::optional<GuardCombatEffectDef> guardResponse;
 };
 
 struct ActionCombatWindowDef
@@ -203,8 +279,9 @@ struct ActionCombatWindowDef
 	float startNormalized;
 	float endNormalized;
 
-	CombatProfileId profileId;
 	std::optional<ActionCombatApplyTo> appliesTo;
+	std::optional<ActionCombatSpatialFilterDef> spatialFilter;
+	std::optional<CombatEffectDef> effect;
 };
 
 enum class EventType : uint8_t
@@ -254,3 +331,7 @@ struct ActionDef
 	std::vector<ActionEventDef> events;
 	std::vector<ActionMovementSegmentDef> moveSegments;
 };
+
+const ActionDef* FindActionDef(ActionId id) noexcept;
+const ActionDef& GetActionDef(ActionId id);
+std::span<const ActionDef> GetActionDefs() noexcept;
