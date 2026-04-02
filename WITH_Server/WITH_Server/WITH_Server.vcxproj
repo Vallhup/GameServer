@@ -161,7 +161,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ActionDef.cpp" />
+    <ClCompile Include="BuffDef.cpp" />
     <ClCompile Include="DBConn.cpp" />
+    <ClCompile Include="CharacterIdPolicy.cpp" />
+    <ClCompile Include="CharacterDef.cpp" />
     <ClCompile Include="DBData.cpp" />
     <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="FrameworkRuntime.cpp" />
@@ -170,6 +174,7 @@
     <ClCompile Include="InboundMessageProcessor.cpp" />
     <ClCompile Include="NetIdMap.cpp" />
     <ClCompile Include="NetworkRuntime.cpp" />
+    <ClCompile Include="PlayerEntryService.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -191,9 +196,12 @@
     <ClInclude Include="AnimationDef.h" />
     <ClInclude Include="BuffDef.h" />
     <ClInclude Include="CharacterDef.h" />
+    <ClInclude Include="CharacterIdPolicy.h" />
     <ClInclude Include="DBConn.h" />
     <ClInclude Include="DBData.h" />
     <ClInclude Include="DBManager.h" />
+    <ClInclude Include="DefFileFormat.h" />
+    <ClInclude Include="DefRegistry.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="FrameworkRuntime.h" />
     <ClInclude Include="InboundMessage.h" />
@@ -204,6 +212,7 @@
     <ClInclude Include="IDs.h" />
     <ClInclude Include="NetIdMap.h" />
     <ClInclude Include="NetworkRuntime.h" />
+    <ClInclude Include="PlayerEntryService.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ServerApp.h" />

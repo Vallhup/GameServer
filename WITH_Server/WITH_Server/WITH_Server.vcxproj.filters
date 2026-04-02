@@ -2,6 +2,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ActionDef.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="BuffDef.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
     <ClCompile Include="GameServerNetworkService.cpp">
       <Filter>Network</Filter>
     </ClCompile>
@@ -50,6 +56,15 @@
     <ClCompile Include="DBConn.cpp">
       <Filter>Database</Filter>
     </ClCompile>
+    <ClCompile Include="CharacterIdPolicy.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterDef.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerEntryService.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
     <ClCompile Include="ServerWorldBootstrap.cpp" />
     <ClCompile Include="FrameworkRuntime.cpp">
       <Filter>Framework</Filter>
@@ -76,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="NetworkRuntime.h">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerEntryService.h">
+      <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="GameServerNetworkListener.h">
       <Filter>Network</Filter>
@@ -113,7 +131,16 @@
     <ClInclude Include="DBConn.h">
       <Filter>Database</Filter>
     </ClInclude>
+    <ClInclude Include="DefFileFormat.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="DefRegistry.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
     <ClInclude Include="CharacterDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterIdPolicy.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
     <ClInclude Include="AnimationDef.h">
