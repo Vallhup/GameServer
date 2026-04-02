@@ -6,6 +6,7 @@ class VertexIndexBuffer;
 class SkyBox;
 class Terrain;
 class Water;
+class TrailRenderer;
 
 class FirstBattleScene final : public Scene
 {
@@ -70,4 +71,6 @@ private:
 	shared_ptr<Terrain> terrain;
 	shared_ptr<Terrain> oceanFloor;
 	shared_ptr<Water> water;
+
+	unique_ptr<TrailRenderer> trailRenderer;
 };

@@ -254,6 +254,7 @@ exit 0</Command>
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TrailRenderer.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -337,6 +338,7 @@ exit 0</Command>
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TrailRenderer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="GameObject.h" />
@@ -377,6 +379,7 @@ exit 0</Command>
     <None Include="..\Shaders\SsaoBlurPS.hlsli" />
     <None Include="..\Shaders\SsaoPS.hlsli" />
     <None Include="..\Shaders\ToneMapping.hlsli" />
+    <None Include="..\Shaders\Trail.hlsli" />
     <None Include="..\Shaders\VertexAnimation.hlsli" />
     <None Include="..\Shaders\VolumetricFog.hlsli" />
   </ItemGroup>

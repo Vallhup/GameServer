@@ -22,6 +22,7 @@
 #include "EffectManager.h"
 #include "UIManager.h"
 #include "GameSceneUIController.h"
+#include "TrailRenderer.h"
 
 #include "NetId.h"
 #include "NetHelper.h"
@@ -290,6 +291,9 @@ void FirstBattleScene::Reset()
 	bossObject = nullptr;
 	gameObjects.clear();
 
+	if (trailRenderer)
+		trailRenderer->Clear();
+
 	OutputDebugStringA("SoloGameScene Data has been deleted!! \n----------------------------------------\n");
 }
 
@@ -339,6 +343,12 @@ void FirstBattleScene::InitializeLogic()
 	}
 
 	IMGUI.SetWaterDebugTexture(coreRef->GetDevice(), water->GetReflectionRT());
+
+	// Trail Renderer 초기화
+	trailRenderer = make_unique<TrailRenderer>();
+	trailRenderer->Initialize(coreRef->GetDevice(), 32);
+	trailRenderer->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });	// 주황빛 검기
+	trailRenderer->SetLifetime(0.13f);
 
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
@@ -437,9 +447,71 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 			obj->Update(deltaTime);
 	}
 
+	// Trail 업데이트
+	if (trailRenderer && myPlayer)
+	{
+		auto animMachine = myPlayer->GetComponent<AnimationMachine>();
+		bool isAttacking = animMachine && animMachine->IsPlaying("Attack");
+
+		if (isAttacking && !trailRenderer->IsActive())
+		{
+			trailRenderer->SetActive(true);
+		}
+		else if (!isAttacking && trailRenderer->IsActive())
+		{
+			trailRenderer->SetActive(false);
+		}
+
+		// 공격 중이면 칼 위치 추적하여 트레일 포인트 추가
+		if (trailRenderer->IsActive())
+		{
+			auto animator = myPlayer->GetComponent<Animator>();
+			auto transform = myPlayer->GetComponent<Transform>();
+
+			if (animator && animator->IsInitialized())
+			{
+				// 본 45 = 무기/손 본
+				XMFLOAT3 bonePos = animator->GetBonePosition(45);
+				XMVECTOR boneRotQuat = animator->GetBoneRotation(45);
+
+				XMMATRIX worldMat = transform->GetWorldMatrix();
+				XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
+
+				// Z축 90도 오프셋 회전 (Effekseer와 동일)
+				XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
+
+				// 플레이어 회전
+				XMFLOAT3 playerRot = transform->GetRotation();
+				XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
+
+				// 회전 순서: 오프셋 → 뼈 회전 → 플레이어 회전
+				XMVECTOR finalRotQuat = XMQuaternionMultiply(offsetRot, boneRotQuat);
+				finalRotQuat = XMQuaternionMultiply(finalRotQuat, playerRotQuat);
+				XMMATRIX rotMat = XMMatrixRotationQuaternion(finalRotQuat);
+
+				// 칼 방향 벡터 (로컬 Y축)
+				XMVECTOR swordDir = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), rotMat);
+				swordDir = XMVector3Normalize(swordDir);
+
+				// 칼 끝과 손잡이 위치 계산
+				float bladeLength = 1.0f;
+				XMVECTOR topPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
+				XMVECTOR bottomPos = worldPos;
+
+				XMFLOAT3 top, bottom;
+				XMStoreFloat3(&top, topPos);
+				XMStoreFloat3(&bottom, bottomPos);
+
+				trailRenderer->AddPoint(top, bottom);
+			}
+		}
+
+		trailRenderer->Update(deltaTime);
+	}
+
 	if (cam)
 		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);
-	
+
 	BoundingFrustum frustum = cam->GetViewFrustum();
 	XMFLOAT3 camPos = cam->GetPosition();
 	XMVECTOR camPosVec = XMLoadFloat3(&camPos);
@@ -541,6 +613,10 @@ void FirstBattleScene::RenderSceneEffects()
 {
 	if (cam)
 		EFFECT_MANAGER->Render(*coreRef, cam.get());
+
+	// Trail 렌더링
+	if (trailRenderer)
+		trailRenderer->Render(*coreRef);
 }
 
 void FirstBattleScene::RequestSceneChange()

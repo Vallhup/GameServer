@@ -16,6 +16,7 @@
 #include "Material.h"
 #include "ResourceManager.h"
 #include "UIManager.h"
+#include "TrailRenderer.h"
 
 SceneManager::~SceneManager()
 {

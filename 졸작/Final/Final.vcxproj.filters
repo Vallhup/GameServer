@@ -223,6 +223,9 @@
     <ClCompile Include="FinalBattleScene.cpp">
       <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
     </ClCompile>
+    <ClCompile Include="TrailRenderer.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -448,6 +451,9 @@
     <ClInclude Include="FinalBattleScene.h">
       <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
     </ClInclude>
+    <ClInclude Include="TrailRenderer.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GBufferVS.hlsli">
@@ -524,6 +530,9 @@
     </None>
     <None Include="..\Shaders\ToneMapping.hlsli">
       <Filter>Shaders\Lighting</Filter>
+    </None>
+    <None Include="..\Shaders\Trail.hlsli">
+      <Filter>Shaders\Effects</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -652,6 +661,9 @@
     </Filter>
     <Filter Include="Scene\6. Final %28Boss &amp; PVP%29">
       <UniqueIdentifier>{c462c292-ea8d-4f4c-9687-a962f76608ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Effects">
+      <UniqueIdentifier>{07230c9b-ea0d-48e1-84b1-79d41a437363}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
