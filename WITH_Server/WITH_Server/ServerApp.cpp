@@ -8,9 +8,53 @@
 #include "Protocol.pb.h"
 #include "RepComponent.h"
 #include "WorldInstance.h"
+#include <filesystem>
 
 namespace
 {
+	std::filesystem::path GetDefaultAnimationOutputRoot()
+	{
+		return std::filesystem::current_path() /
+			"..\\WITH_ServerDataTool\\Output\\Animation";
+	}
+
+	std::vector<std::filesystem::path> GetBootAnimationCandidates(
+		const std::filesystem::path& root)
+	{
+		return
+		{
+			root / "Imp" / "imp_animation_melee_1.json",
+			root / "Imp" / "imp_animation_melee_2.json",
+			root / "Imp" / "imp_animation_melee_3.json",
+			root / "Imp" / "imp_animation_melee_4.json",
+			root / "Imp" / "imp_animation_melee_5.json",
+			root / "Imp" / "imp_animation_stun.json",
+
+			root / "Knight" / "knight_animation_attack.json",
+			root / "Knight" / "knight_animation_dodge.json",
+			root / "Knight" / "knight_animation_guard.json",
+			root / "Knight" / "knight_animation_idle.json",
+			root / "Knight" / "knight_animation_parry.json",
+			root / "Knight" / "knight_animation_run.json",
+			root / "Knight" / "knight_animation_stun.json",
+			root / "Knight" / "knight_animation_walk.json",
+			root / "Knight" / "knight_animation_hit.json",
+			root / "Knight" / "knight_animation_dead.json",
+			root / "Knight" / "knight_animation_drinking.json",
+
+			root / "Final_Boss" / "final_boss_animation_thrust.json",
+			root / "Final_Boss" / "final_boss_animation_slash.json",
+			root / "Final_Boss" / "final_boss_animation_dashslash.json",
+			root / "Final_Boss" / "final_boss_animation_jumpslash.json",
+			root / "Final_Boss" / "final_boss_animation_multislash.json",
+			root / "Final_Boss" / "final_boss_animation_stun.json",
+			root / "Final_Boss" / "final_boss_animation_hit.json",
+			root / "Final_Boss" / "final_boss_animation_dead.json",
+			root / "Final_Boss" / "final_boss_animation_idle.json",
+			root / "Final_Boss" / "final_boss_animation_walk.json",
+		};
+	}
+
 	bool StageLoginResponse(
 		NetworkRuntime& network,
 		SessionId sessionId,
@@ -103,6 +147,7 @@ bool ServerApp::Initialize()
 	_startupWorldId = WorldId::Invalid();
 	_sessionBindings.Clear();
 	_playerEntryService.Clear();
+	_animationRegistry.Clear();
 	_lastTickTime = {};
 
 	if (!InitializeFrameworkRuntime() ||
@@ -154,6 +199,7 @@ void ServerApp::Shutdown() noexcept
 	_startupWorldId = WorldId::Invalid();
 	_sessionBindings.Clear();
 	_playerEntryService.Clear();
+	_animationRegistry.Clear();
 	_lastTickTime = {};
 }
 
@@ -186,9 +232,51 @@ bool ServerApp::InitializeNetworkRuntime()
 
 bool ServerApp::InitializeGameplayContent()
 {
-	// Future work:
-	// - load animations / maps / gameplay data
-	// - register world factories and gameplay bindings
+	_animationRegistry.Clear();
+
+	const std::filesystem::path animationRoot = GetDefaultAnimationOutputRoot();
+	const std::vector<std::filesystem::path> candidates =
+		GetBootAnimationCandidates(animationRoot);
+
+	std::vector<AnimationClipDef> animationDefs;
+	for (const auto& path : candidates)
+	{
+		if (!std::filesystem::exists(path))
+		{
+			continue;
+		}
+
+		AnimationClipDef def;
+		const auto loadResult = _animationLoader.LoadFile(path, def);
+		if (!loadResult.succeeded)
+		{
+			std::cout << "[ServerApp] Animation load failed."
+				<< " path=" << path.string()
+				<< " error=" << loadResult.error << "\n";
+			return false;
+		}
+
+		animationDefs.push_back(std::move(def));
+	}
+
+	if (animationDefs.empty())
+	{
+		std::cout << "[ServerApp] No animation json files were loaded."
+			<< " root=" << animationRoot.string() << "\n";
+		return false;
+	}
+
+	const AnimationRegistry::BuildResult buildResult =
+		_animationRegistry.Rebuild(std::move(animationDefs));
+	if (!buildResult.succeeded)
+	{
+		std::cout << "[ServerApp] Animation registry build failed."
+			<< " error=" << buildResult.error << "\n";
+		return false;
+	}
+
+	std::cout << "[ServerApp] Animation content loaded."
+		<< " clips=" << buildResult.loadedCount << "\n";
 	return true;
 }
 

@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "FrameworkRuntime.h"
+#include "AnimationJsonLoader.h"
+#include "AnimationRegistry.h"
 #include "InboundMessageProcessor.h"
 #include "NetworkRuntime.h"
 #include "PlayerEntryService.h"
@@ -43,6 +45,7 @@ public:
 
 	const Config& GetConfig() const noexcept { return _config; }
 	uint64_t TickCount() const noexcept { return _tickCount; }
+	const AnimationRegistry& GetAnimationRegistry() const noexcept { return _animationRegistry; }
 
 private:
 	bool InitializeFrameworkRuntime();
@@ -70,6 +73,8 @@ private:
 	ServerWorldBootstrapFactory _bootstrapFactory;
 	ServerWorldBootstrapDefinitionProvider _bootstrapDefinitions;
 	FrameworkRuntime _framework;
+	AnimationJsonLoader _animationLoader;
+	AnimationRegistry _animationRegistry;
 	NetworkRuntime _network;
 	WorldId _startupWorldId{};
 	SessionBindingRegistry _sessionBindings;

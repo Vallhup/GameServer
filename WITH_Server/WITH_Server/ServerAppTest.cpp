@@ -12,6 +12,7 @@
 #include "CharacterIdPolicy.h"
 #include "DefFileFormat.h"
 #include "DefRegistry.h"
+#include "AnimationDef.h"
 #include "FrameworkRuntime.h"
 #include "PlayerEntryService.h"
 #include "RepComponent.h"
@@ -138,6 +139,21 @@ bool RunServerAppSmokeTest()
 	if (!app.Initialize())
 	{
 		std::cout << "[ServerAppTest] Initialize failed.\n";
+		return false;
+	}
+
+	const AnimationClipDef* const impMelee1 =
+		app.GetAnimationRegistry().Find(AnimationId::Imp_melee1);
+	if (impMelee1 == nullptr ||
+		impMelee1->clipId != "Imp_melee_1" ||
+		impMelee1->skeleton != "Imp" ||
+		impMelee1->fps <= 0.0f ||
+		impMelee1->numFrames == 0 ||
+		impMelee1->frames.empty() ||
+		impMelee1->capsuleDefs.empty())
+	{
+		std::cout << "[ServerAppTest] Animation registry did not load Imp_melee1.\n";
+		app.Shutdown();
 		return false;
 	}
 

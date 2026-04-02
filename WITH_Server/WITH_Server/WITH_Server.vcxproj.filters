@@ -5,6 +5,9 @@
     <ClCompile Include="ActionDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationJsonLoader.cpp">
+      <Filter>Data\Loader</Filter>
+    </ClCompile>
     <ClCompile Include="BuffDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
@@ -69,6 +72,9 @@
     <ClCompile Include="FrameworkRuntime.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationRegistry.cpp">
+      <Filter>Data\Registry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServerNetworkService.h">
@@ -131,12 +137,6 @@
     <ClInclude Include="DBConn.h">
       <Filter>Database</Filter>
     </ClInclude>
-    <ClInclude Include="DefFileFormat.h">
-      <Filter>Data\Definition</Filter>
-    </ClInclude>
-    <ClInclude Include="DefRegistry.h">
-      <Filter>Data\Definition</Filter>
-    </ClInclude>
     <ClInclude Include="CharacterDef.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
@@ -145,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="AnimationDef.h">
       <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationJsonLoader.h">
+      <Filter>Data\Loader</Filter>
     </ClInclude>
     <ClInclude Include="BuffDef.h">
       <Filter>Data\Definition</Filter>
@@ -167,6 +170,15 @@
     </ClInclude>
     <ClInclude Include="FrameworkRuntime.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="DefFileFormat.h">
+      <Filter>Data\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationRegistry.h">
+      <Filter>Data\Registry</Filter>
+    </ClInclude>
+    <ClInclude Include="DefRegistry.h">
+      <Filter>Data\Registry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -197,8 +209,14 @@
     <Filter Include="Data\Definition">
       <UniqueIdentifier>{79b63e12-648f-4eb8-a404-ed7b0c26470b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Loader">
+      <UniqueIdentifier>{2b6b1646-4151-4a89-90ae-d21c0131df8a}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Framework">
       <UniqueIdentifier>{04b8348f-b0f3-42b5-9f79-6ba7a45ae352}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Registry">
+      <UniqueIdentifier>{2459fc7c-d9a5-4d10-afc2-3ce932e1d3d9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

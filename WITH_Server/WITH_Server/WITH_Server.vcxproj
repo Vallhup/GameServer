@@ -162,6 +162,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ActionDef.cpp" />
+    <ClCompile Include="AnimationJsonLoader.cpp" />
+    <ClCompile Include="AnimationRegistry.cpp" />
     <ClCompile Include="BuffDef.cpp" />
     <ClCompile Include="DBConn.cpp" />
     <ClCompile Include="CharacterIdPolicy.cpp" />
@@ -194,6 +196,8 @@
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
     <ClInclude Include="ActionDef.h" />
     <ClInclude Include="AnimationDef.h" />
+    <ClInclude Include="AnimationJsonLoader.h" />
+    <ClInclude Include="AnimationRegistry.h" />
     <ClInclude Include="BuffDef.h" />
     <ClInclude Include="CharacterDef.h" />
     <ClInclude Include="CharacterIdPolicy.h" />
