@@ -3,6 +3,7 @@
 
 class Terrain;
 class SkyBox;
+class Water;
 
 class SecondBattleScene final : public Scene
 {
@@ -45,5 +46,6 @@ private:
 
 	shared_ptr<Terrain> terrain;
 	shared_ptr<SkyBox> skyBox;
+	shared_ptr<Water> water;
 };
 

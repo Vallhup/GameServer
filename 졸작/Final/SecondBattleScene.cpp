@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "Terrain.h"
 #include "SkyBox.h"
+#include "Water.h"
 #include "Input.h"
 #include "ImGuiManager.h"
 #include "SoundManager.h"
@@ -73,6 +74,15 @@ void SecondBattleScene::InitializeLogic()
 	terrain->Initialize(*coreRef, L"textures/CastleFloor", L"../Assets/FBXModel/CastleMap/castleTerrain.raw", 513, 650.2402f, 79.28662f, 8.0f);
 #pragma endregion
 
+#pragma region Initialize Water
+	water = make_shared<Water>();
+	water->Initialize(*coreRef);
+	water->SetPosition(378.874207f, 52.5f, 367.952576f);
+	water->SetScale(170.0f, 1.0f, 170.0f);
+	XMFLOAT4 color = { 0.0f, 0.6f, 0.85f, 0.7f };
+	water->SetColor(color);
+#pragma endregion
+
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
 
@@ -98,6 +108,9 @@ void SecondBattleScene::UpdateScene(const float deltaTime)
 		if (!obj->IsStatic())
 			obj->Update(deltaTime);
 	}
+
+	if (water)
+		water->Update(deltaTime);
 
 	if (cam)
 		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);
@@ -131,6 +144,9 @@ void SecondBattleScene::RenderSceneForward()
 
 	if (skyBox)
 		skyBox->RenderSkyBox(*coreRef, coreRef->GetGraphicsCmdList());
+
+	if (water)
+		renderer->RenderWater(*coreRef, water.get());
 
 	renderer->RenderForward(*coreRef, gameObjects, cam.get());
 }
