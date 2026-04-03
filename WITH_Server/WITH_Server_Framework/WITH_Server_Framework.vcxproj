@@ -163,6 +163,8 @@
     <ClInclude Include="ExecutionGraphBuildPolicy.h" />
     <ClInclude Include="DefaultWorldTransferSerializer.h" />
     <ClInclude Include="WorldContentIds.h" />
+    <ClInclude Include="WorldCommand.h" />
+    <ClInclude Include="WorldCommandQueue.h" />
     <ClInclude Include="WorldMutationBuffer.h" />
     <ClInclude Include="WorldMutationCommand.h" />
     <ClInclude Include="Component.h" />
@@ -231,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WorldExecutionModelTypes.cpp" />
+    <ClCompile Include="WorldCommandQueue.cpp" />
     <ClCompile Include="WorldMutationBuffer.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="ExecutionGraphBuilder.cpp" />

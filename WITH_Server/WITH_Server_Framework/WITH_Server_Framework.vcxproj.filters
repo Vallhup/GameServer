@@ -76,6 +76,9 @@
     <ClCompile Include="WorldExecutionModelTypes.cpp">
       <Filter>03_Execution\04_GraphBuilder</Filter>
     </ClCompile>
+    <ClCompile Include="WorldCommandQueue.cpp">
+      <Filter>02_World\02_Runtime</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -287,6 +290,12 @@
     </ClInclude>
     <ClInclude Include="WorldContentIds.h">
       <Filter>02_World\01_Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldCommand.h">
+      <Filter>02_World\02_Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldCommandQueue.h">
+      <Filter>02_World\02_Runtime</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

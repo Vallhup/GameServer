@@ -78,6 +78,8 @@ void WorldRuntime::Shutdown()
 		return;
 
 	_frameCommands.Clear();
+	_worldCommands.Clear();
+	_frameWorldCommands.clear();
 	_lifecycleCommands.Clear();
 	_lifecycleOutbox.clear();
 	_systems.Clear();
@@ -117,6 +119,7 @@ bool WorldRuntime::BeginFrame(uint64_t frameIndex, double nowSec, double dtSec)
 	_lastDtSec = dtSec;
 	_commitState = WorldRuntimeCommitState::NotCommitted;
 	_lifecycleFlushState = WorldRuntimeLifecycleFlushState::NotFlushed;
+	_worldCommands.DrainTo(_frameWorldCommands);
 	_hasBegunAnyFrame = true;
 	_frameOpen = true;
 	return true;
@@ -168,10 +171,21 @@ bool WorldRuntime::FlushLifecycleCommands()
 	}
 
 	_lifecycleOutbox.clear();
+	_frameWorldCommands.clear();
 	_lifecycleCommands.DrainTo(_lifecycleOutbox);
 	_lifecycleFlushState = WorldRuntimeLifecycleFlushState::Flushed;
 	_frameOpen = false;
 	return true;
+}
+
+bool WorldRuntime::EnqueueWorldCommand(WorldCommand command)
+{
+	if (!CanAcceptWorldCommand())
+	{
+		return false;
+	}
+
+	return _worldCommands.Enqueue(std::move(command));
 }
 
 bool WorldRuntime::BuildTransferContext(
@@ -597,6 +611,14 @@ bool WorldRuntime::CanAcceptStructuralMutation() const
 }
 
 bool WorldRuntime::CanAcceptLifecycleSignal() const
+{
+	return
+		_lifecycleState == WorldRuntimeLifecycleState::Running &&
+		!IsFaulted() &&
+		!IsShutdown();
+}
+
+bool WorldRuntime::CanAcceptWorldCommand() const
 {
 	return
 		_lifecycleState == WorldRuntimeLifecycleState::Running &&

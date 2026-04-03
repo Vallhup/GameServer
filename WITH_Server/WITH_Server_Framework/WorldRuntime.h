@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "WorldMutationBuffer.h"
+#include "WorldCommandQueue.h"
 #include "WorldRuntimeTypes.h"
 #include "ECSCore.h"
 #include "ECSView.h"
@@ -104,6 +105,20 @@ public:
 	void ClearLifecycleOutbox() noexcept
 	{
 		_lifecycleOutbox.clear();
+	}
+
+	bool EnqueueWorldCommand(WorldCommand command);
+
+	std::span<const WorldCommand> GetFrameWorldCommands() const noexcept
+	{
+		return std::span<const WorldCommand>(
+			_frameWorldCommands.data(),
+			_frameWorldCommands.size());
+	}
+
+	size_t GetPendingWorldCommandCount() const
+	{
+		return _worldCommands.GetPendingCommandCount();
 	}
 
 public:
@@ -244,6 +259,7 @@ private:
 	bool CanFlushLifecycleCommands() const;
 	bool CanAcceptStructuralMutation() const;
 	bool CanAcceptLifecycleSignal() const;
+	bool CanAcceptWorldCommand() const;
 
 	bool MaterializeReservedEntityImmediate(Entity reserved);
 	bool DestroyEntityImmediate(Entity e);
@@ -302,6 +318,8 @@ private:
 	WorldRuntimeLifecycleFlushState _lifecycleFlushState{ WorldRuntimeLifecycleFlushState::NotFlushed };
 
 	WorldMutationBuffer _frameCommands;
+	WorldCommandQueue _worldCommands;
+	std::vector<WorldCommand> _frameWorldCommands;
 	WorldLifecycleBuffer _lifecycleCommands;
 	std::vector<WorldLifecycleCommand> _lifecycleOutbox;
 	ECSCore _ecs;
