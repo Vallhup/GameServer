@@ -77,7 +77,7 @@ void SecondBattleScene::InitializeLogic()
 #pragma region Initialize Water
 	water = make_shared<Water>();
 	water->Initialize(*coreRef);
-	water->SetPosition(378.874207f, 52.5f, 367.952576f);
+	water->SetPosition(378.874207f, 53.3f, 367.952576f);
 	water->SetScale(170.0f, 1.0f, 170.0f);
 	XMFLOAT4 color = { 0.0f, 0.6f, 0.85f, 0.7f };
 	water->SetColor(color);
