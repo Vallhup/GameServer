@@ -112,7 +112,11 @@ cbuffer SkyboxCB : register(b9)
 
 cbuffer WaterCB : register(b10)
 {
-    float4 waterClipPlane;
+    float4 waterColor;
+    float waterTime;
+    float waveSpeed;
+    float waveStrength;
+    float waterPadding;
 };
 
 //-------------------------------------------------------
@@ -160,6 +164,6 @@ SamplerState lutLinearSampler : register(s2);
 
 static const uint IBL_IRRADIANCE_INDEX = 1;
 static const uint IBL_RADIANCE_INDEX = 2;
-static const uint BRDF_LUT_INDEX = 129;
+static const uint BRDF_LUT_INDEX = 128;
 
 #endif

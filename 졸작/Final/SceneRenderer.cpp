@@ -405,10 +405,11 @@ void SceneRenderer::RenderWater(DX12Core& core, Water* water)
     if (!water) return;
 
     auto cmdList = core.GetGraphicsCmdList();
-    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Opaque));
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Transparent));
     SetupRenderingState(core);
 
     cmdList->SetGraphicsRootConstantBufferView(1, water->GetCBAddress());
+    cmdList->SetGraphicsRootConstantBufferView(21, water->GetWaterCBAddress());
 
     water->Render(core, cmdList);
 }

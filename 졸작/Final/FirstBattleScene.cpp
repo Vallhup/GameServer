@@ -342,8 +342,6 @@ void FirstBattleScene::InitializeLogic()
 		_nManager->Send(data);
 	}
 
-	IMGUI.SetWaterDebugTexture(coreRef->GetDevice(), water->GetReflectionRT());
-
 	// Trail Renderer 초기화
 	trailRenderer = make_unique<TrailRenderer>();
 	trailRenderer->Initialize(coreRef->GetDevice(), 32);
@@ -447,6 +445,9 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 			obj->Update(deltaTime);
 	}
 
+	if (water)
+		water->Update(deltaTime);
+
 	// Trail 업데이트
 	if (trailRenderer && myPlayer)
 	{
@@ -527,12 +528,6 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 void FirstBattleScene::RenderSceneDeferred()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
-
-	if (water)
-	{
-		auto cmdList = coreRef->GetGraphicsCmdList();
-		cmdList->SetGraphicsRootConstantBufferView(21, water->GetWaterCBAddress());
-	}
 
 	renderer->RenderDeferred(*coreRef, gameObjects, cam.get());
 	//renderer->RenderCollisionMeshWireframe(*coreRef, gameObjects);

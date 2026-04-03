@@ -39,7 +39,6 @@ FORWARD_VS_OUT VSMain(FORWARD_VS_IN input, uint instanceID : SV_InstanceID)
     output.indices = input.indices;
     output.materialIndex = materialIndex;
     output.worldPos = worldPos.xyz;
-    output.clipDist = dot(worldPos, waterClipPlane);
     
     return output;
 }

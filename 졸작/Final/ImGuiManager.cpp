@@ -272,18 +272,6 @@ void ImGuiManager::DrawDebugUI()
         ImGui::End();
     }
 
-    if (hasWaterDebug)
-    {
-        ImGui::SetNextWindowPos(ImVec2(10, 400), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowSize(ImVec2(340, 200), ImGuiCond_FirstUseEver);
-
-        if (ImGui::Begin("Water Debug"))
-        {
-            ImGui::Image((ImTextureID)waterDebugSRV.ptr, ImVec2(320, 180));
-        }
-        ImGui::End();
-    }
-
     if (showDemoWindow)
     {
         ImGui::ShowDemoWindow(&showDemoWindow);
@@ -364,27 +352,4 @@ void ImGuiManager::DrawLoginUI()
     ImGui::End();
     ImGui::PopStyleColor(7);
     ImGui::PopStyleVar(4);
-}
-
-void ImGuiManager::SetWaterDebugTexture(ID3D12Device* device, ID3D12Resource* texture)
-{
-    if (!texture) return;
-
-    UINT srvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = srvHeap->GetCPUDescriptorHandleForHeapStart();
-    cpuHandle.ptr += srvSize;  // 두 번째 슬롯
-
-    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MipLevels = 1;
-    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-
-    device->CreateShaderResourceView(texture, &srvDesc, cpuHandle);
-
-    waterDebugSRV = srvHeap->GetGPUDescriptorHandleForHeapStart();
-    waterDebugSRV.ptr += srvSize;
-
-    hasWaterDebug = true;
 }
