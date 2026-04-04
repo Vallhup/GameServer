@@ -286,6 +286,8 @@ struct ActionCombatWindowDef
 
 enum class EventType : uint8_t
 {
+	ConsumeItem,
+	ApplyGameplayEffect,
 	SpawnProjectile,
 	PlayEffect
 };

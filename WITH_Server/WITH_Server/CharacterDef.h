@@ -18,6 +18,7 @@ struct CharacterStatDef
 {
 	uint32_t maxHp;
 	uint16_t maxStamina;
+	uint16_t maxPoise;
 	uint32_t attackPower;
 	uint16_t defense;
 	float moveSpeed;

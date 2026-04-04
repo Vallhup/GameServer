@@ -26,6 +26,7 @@ namespace
 			{
 				.maxHp = 100,
 				.maxStamina = 100,
+				.maxPoise = 100,
 				.attackPower = 10,
 				.defense = 10,
 				.moveSpeed = 2.5f,
@@ -46,6 +47,7 @@ namespace
 			{
 				.maxHp = 100,
 				.maxStamina = 100,
+				.maxPoise = 100,
 				.attackPower = 10,
 				.defense = 10,
 				.moveSpeed = 2.5f,
