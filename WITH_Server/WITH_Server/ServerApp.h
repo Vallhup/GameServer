@@ -81,6 +81,7 @@ private:
 	PlayerEntryService _playerEntryService;
 	InboundMessageProcessor _inboundProcessor;
 	std::vector<InboundMessage> _inboundMessages;
+	std::vector<InboundMessage> _remainingInboundMessages;
 
 	uint64_t _tickCount{ 0 };
 	uint64_t _frameIndex{ 0 };

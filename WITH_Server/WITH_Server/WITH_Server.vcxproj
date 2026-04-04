@@ -173,9 +173,11 @@
     <ClCompile Include="FrameworkRuntime.cpp" />
     <ClCompile Include="GameServerNetworkService.cpp" />
     <ClCompile Include="GameSendBufferManager.cpp" />
+    <ClCompile Include="InboundCommandStatsCollector.cpp" />
     <ClCompile Include="InboundMessageProcessor.cpp" />
     <ClCompile Include="NetIdMap.cpp" />
     <ClCompile Include="NetworkRuntime.cpp" />
+    <ClCompile Include="PlayerCommand.cpp" />
     <ClCompile Include="PlayerEntryService.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
@@ -208,6 +210,7 @@
     <ClInclude Include="DefRegistry.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="FrameworkRuntime.h" />
+    <ClInclude Include="InboundCommandStatsCollector.h" />
     <ClInclude Include="InboundMessage.h" />
     <ClInclude Include="InboundMessageProcessor.h" />
     <ClInclude Include="Constants.h" />
@@ -216,6 +219,7 @@
     <ClInclude Include="IDs.h" />
     <ClInclude Include="NetIdMap.h" />
     <ClInclude Include="NetworkRuntime.h" />
+    <ClInclude Include="PlayerCommand.h" />
     <ClInclude Include="PlayerEntryService.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="pch.h" />

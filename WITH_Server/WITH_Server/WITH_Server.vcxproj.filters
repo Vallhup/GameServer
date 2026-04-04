@@ -14,6 +14,9 @@
     <ClCompile Include="GameServerNetworkService.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="InboundCommandStatsCollector.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
     <ClCompile Include="GameSendBufferManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
@@ -68,6 +71,9 @@
     <ClCompile Include="PlayerEntryService.cpp">
       <Filter>App</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerCommand.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
     <ClCompile Include="ServerWorldBootstrap.cpp" />
     <ClCompile Include="FrameworkRuntime.cpp">
       <Filter>Framework</Filter>
@@ -92,6 +98,9 @@
     <ClInclude Include="InboundMessage.h">
       <Filter>Network</Filter>
     </ClInclude>
+    <ClInclude Include="InboundCommandStatsCollector.h">
+      <Filter>App</Filter>
+    </ClInclude>
     <ClInclude Include="InboundMessageProcessor.h">
       <Filter>App</Filter>
     </ClInclude>
@@ -99,6 +108,9 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="PlayerEntryService.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCommand.h">
       <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="GameServerNetworkListener.h">

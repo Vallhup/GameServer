@@ -121,6 +121,7 @@ ServerApp::ServerApp(Config config)
 		&_startupWorldId
 	})
 	, _inboundProcessor(InboundMessageProcessor::Dependencies{
+		&_framework,
 		&_network,
 		&_playerEntryService,
 		&_sessionBindings,
@@ -353,7 +354,8 @@ void ServerApp::DrainInboundCommands()
 
 void ServerApp::ProcessInboundMessages()
 {
-	_inboundProcessor.Process(_inboundMessages, _inboundMessages);
+	_inboundProcessor.Process(_inboundMessages, _remainingInboundMessages);
+	_inboundMessages.swap(_remainingInboundMessages);
 }
 
 void ServerApp::RunWorldFrames(double dtSec)
