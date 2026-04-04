@@ -226,6 +226,9 @@
     <ClCompile Include="TrailRenderer.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="FootDustEffect.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -452,6 +455,9 @@
       <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
     </ClInclude>
     <ClInclude Include="TrailRenderer.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="FootDustEffect.h">
       <Filter>Rendering</Filter>
     </ClInclude>
   </ItemGroup>

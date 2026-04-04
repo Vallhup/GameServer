@@ -32,7 +32,7 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 
 void ShadowMappingManager::SettingsForCSM()
 {
-	XMVECTOR lightDir = XMVectorSet(-45.0f, -40.0f, -60.0f, 0);
+	XMVECTOR lightDir = XMVectorSet(-0.74f, -0.40f, -1.0f, 0);
 	csmLightDir = XMVector3Normalize(lightDir);
 
 	csmConstants.cascadeSplit = { 20.0f, 80.0f, 0.0f, 0.0f };

@@ -100,6 +100,7 @@ void ImGuiManager::DrawDebugUI()
             ImGui::Checkbox("Light Editor", &showLightEditor);
             ImGui::Checkbox("SSAO Editor", &showSsaoEditor);
             ImGui::Checkbox("Skybox Editor", &showSkyboxEditor);
+            ImGui::Checkbox("Volumetric Fog Editor", &showVolumetricFogEditor);
             ImGui::Checkbox("LUT Presets", &showLutPresets);
             ImGui::Checkbox("Demo Window", &showDemoWindow);
         }
@@ -206,6 +207,67 @@ void ImGuiManager::DrawDebugUI()
             }
 
             coreRef->GetLightMgr()->UpdateLights();
+        }
+        ImGui::End();
+    }
+
+    if (showVolumetricFogEditor && coreRef)
+    {
+        ImGui::SetNextWindowPos(ImVec2(320, 140), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(320, 380), ImGuiCond_FirstUseEver);
+
+        if (ImGui::Begin("Volumetric Fog Editor", &showVolumetricFogEditor))
+        {
+            auto& vf = coreRef->GetVolumetricFogData();
+            bool changed = false;
+
+            if (ImGui::CollapsingHeader("Fog Properties", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                changed |= ImGui::SliderFloat("Density", &vf.density, 0.001f, 0.1f, "%.4f");
+                changed |= ImGui::SliderFloat("Scattering", &vf.scattering, 0.0f, 2.0f);
+                changed |= ImGui::SliderFloat("Absorption", &vf.absorption, 0.0f, 1.0f);
+            }
+
+            if (ImGui::CollapsingHeader("Ray Marching", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                changed |= ImGui::SliderInt("Max Steps", &vf.maxSteps, 8, 64);
+                changed |= ImGui::SliderFloat("Max Distance", &vf.maxDistance, 50.0f, 500.0f);
+                changed |= ImGui::SliderFloat("Jitter Strength", &vf.jitterStrength, 0.0f, 1.0f);
+            }
+
+            if (ImGui::CollapsingHeader("Height Fog", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                changed |= ImGui::SliderFloat("Height Falloff", &vf.heightFalloff, 0.0001f, 0.01f, "%.4f");
+                changed |= ImGui::SliderFloat("Ground Height", &vf.groundHeight, -10.0f, 50.0f);
+            }
+
+            if (ImGui::CollapsingHeader("Light Shaft", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                changed |= ImGui::SliderFloat("HG Anisotropy", &vf.hgAnisotropy, 0.0f, 0.99f);
+                changed |= ImGui::ColorEdit3("Light Color", &vf.lightColor.x);
+                changed |= ImGui::SliderFloat("Light Intensity", &vf.lightIntensity, 0.0f, 5.0f);
+            }
+
+            if (changed)
+            {
+                coreRef->UpdateVolumetricFog();
+            }
+
+            if (ImGui::Button("Reset to Default"))
+            {
+                vf.density = 0.02f;
+                vf.scattering = 0.8f;
+                vf.absorption = 0.1f;
+                vf.hgAnisotropy = 0.6f;
+                vf.maxSteps = 32;
+                vf.maxDistance = 160.0f;
+                vf.jitterStrength = 0.5f;
+                vf.heightFalloff = 0.001f;
+                vf.groundHeight = 3.0f;
+                vf.lightColor = { 1.0f, 1.0f, 1.0f };
+                vf.lightIntensity = 1.5f;
+                coreRef->UpdateVolumetricFog();
+            }
         }
         ImGui::End();
     }

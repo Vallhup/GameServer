@@ -27,6 +27,7 @@ void DX12Core::Initialize(HWND hwnd)
 	frameCB = make_unique<UploadBuffer>();
 	sceneCB = make_unique<UploadBuffer>();
 	fogCB = make_unique<UploadBuffer>();
+	volumetricFogCB = make_unique<UploadBuffer>();
 
 	shadowMgr = make_unique<ShadowMappingManager>();
 	rtMgr = make_unique<RenderTargets>();
@@ -40,6 +41,8 @@ void DX12Core::Initialize(HWND hwnd)
 	frameCB->Initialize(GetDevice(), sizeof(FrameConstants));
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
 	fogCB->Initialize(GetDevice(), sizeof(FogConstants));
+	volumetricFogCB->Initialize(GetDevice(), sizeof(VolumetricFogConstants));
+	volumetricFogCB->CopyData(&volumetricFogData, sizeof(VolumetricFogConstants));
 
 	shadowMgr->Initialize(GetDevice());
 	rtMgr->Initialize(GetDevice(), shadowMgr.get());
@@ -134,9 +137,15 @@ void DX12Core::BeginForwardPass()
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(4, lightMgr->GetForwardLightCB()->GetGPUVirtualAddress());
 
-	/*FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
-	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
-	cmdList->SetGraphicsRootConstantBufferView(14, GetFogCB()->GetGPUVirtualAddress());*/
+	// Volumetric Fog에 필요한 cbuffer 바인딩
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(22, GetVolumetricFogCB()->GetGPUVirtualAddress());
+
+	// Shadow Map SRV 바인딩 (t4-t9 테이블, Root Index 13)
+	ID3D12DescriptorHeap* heaps[] = { rtMgr->GetDeferredSRVHeap() };
+	deviceCtx->GetGraphicsCmdList()->SetDescriptorHeaps(1, heaps);
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootDescriptorTable(13, rtMgr->GetDeferredSRVHeap()->GetGPUDescriptorHandleForHeapStart());
 
 	//OutputDebugStringA("Forward pass started\n");
 }
@@ -348,9 +357,8 @@ void DX12Core::BeginLightingPass()
 
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootDescriptorTable(13, rtMgr->GetDeferredSRVHeap()->GetGPUDescriptorHandleForHeapStart());
 
-	/*FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
-	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
-	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(14, GetFogCB()->GetGPUVirtualAddress());*/
+	// Volumetric Fog CB 바인딩 (b11, Root Index 22)
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(22, GetVolumetricFogCB()->GetGPUVirtualAddress());
 
 	//OutputDebugStringA("Lighting Pass started\n");
 }
@@ -485,6 +493,16 @@ UploadBuffer* DX12Core::GetSceneCB() const
 UploadBuffer* DX12Core::GetFogCB() const
 {
 	return fogCB.get();
+}
+
+UploadBuffer* DX12Core::GetVolumetricFogCB() const
+{
+	return volumetricFogCB.get();
+}
+
+void DX12Core::UpdateVolumetricFog()
+{
+	volumetricFogCB->CopyData(&volumetricFogData, sizeof(VolumetricFogConstants));
 }
 
 void DX12Core::SetPlayerPosForShadow(const XMFLOAT3& pos)

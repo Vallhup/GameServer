@@ -113,8 +113,8 @@ void Engine::Render()
     graphics->RenderFullscreenQuad();
 
     graphics->BeginForwardPass();
-    sceneManager->RenderEffects();   
-    sceneManager->RenderForward();   
+    sceneManager->RenderForward();
+    sceneManager->RenderEffects();      
 
     uiManager->Render(graphics->GetGraphicsCmdList(), graphics->GetCmdQueue(), viewport);
 

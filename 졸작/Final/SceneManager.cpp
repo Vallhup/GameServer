@@ -17,6 +17,7 @@
 #include "ResourceManager.h"
 #include "UIManager.h"
 #include "TrailRenderer.h"
+#include "FootDustEffect.h"
 
 SceneManager::~SceneManager()
 {

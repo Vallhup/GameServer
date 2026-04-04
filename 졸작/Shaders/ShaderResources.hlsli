@@ -119,6 +119,25 @@ cbuffer WaterCB : register(b10)
     float waterPadding;
 };
 
+cbuffer VolumetricFogCB : register(b11)
+{
+    float vfDensity;
+    float vfScattering;
+    float vfAbsorption;
+    float vfHgAnisotropy;
+
+    int vfMaxSteps;
+    float vfMaxDistance;
+    float vfJitterStrength;
+    float vfHeightFalloff;
+
+    float vfGroundHeight;
+    float3 vfLightColor;
+
+    float vfLightIntensity;
+    float3 vfPadding;
+};
+
 //-------------------------------------------------------
 // VARIOUS TYPES OF SHADER RESOURCES
 //-------------------------------------------------------

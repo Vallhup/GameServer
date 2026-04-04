@@ -35,7 +35,7 @@ void LightManager::SetupLights()
 	deferredLightData.lightCount = 23;
 
 	deferredLightData.lights[0] = {
-		{-0.5, 0, -1}, 0,
+		{-0.74f, -0.40f, -1.0f}, 0,
 		{1, 1, 1}, 1.0f,
 		0,
 		{0, 0, 0}

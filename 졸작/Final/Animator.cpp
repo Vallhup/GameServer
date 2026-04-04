@@ -376,3 +376,10 @@ float Animator::GetAnimationProgress() const
 
     return mUpdateTime / clip.duration;     // 0.0 ~ 1.0
 }
+
+int Animator::GetFrameCount() const
+{
+    if (mAnimations.empty() || mClipIndex < 0 || mClipIndex >= mAnimations.size())
+        return 0;
+    return mAnimations[mClipIndex].frameCount;
+}

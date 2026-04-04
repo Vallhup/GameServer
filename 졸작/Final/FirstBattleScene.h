@@ -7,6 +7,7 @@ class SkyBox;
 class Terrain;
 class Water;
 class TrailRenderer;
+class FootDustEffect;
 
 class FirstBattleScene final : public Scene
 {
@@ -73,4 +74,9 @@ private:
 	shared_ptr<Water> water;
 
 	unique_ptr<TrailRenderer> trailRenderer;
+	unique_ptr<FootDustEffect> footDustEffect;
+
+	// 발 먼지 이펙트용 발 착지 감지
+	bool rightFootSpawned = false;
+	bool leftFootSpawned = false;
 };

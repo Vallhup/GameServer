@@ -23,6 +23,7 @@
 #include "UIManager.h"
 #include "GameSceneUIController.h"
 #include "TrailRenderer.h"
+#include "FootDustEffect.h"
 
 #include "NetId.h"
 #include "NetHelper.h"
@@ -294,6 +295,12 @@ void FirstBattleScene::Reset()
 	if (trailRenderer)
 		trailRenderer->Clear();
 
+	if (footDustEffect)
+		footDustEffect->Clear();
+
+	rightFootSpawned = false;
+	leftFootSpawned = false;
+
 	OutputDebugStringA("SoloGameScene Data has been deleted!! \n----------------------------------------\n");
 }
 
@@ -347,6 +354,13 @@ void FirstBattleScene::InitializeLogic()
 	trailRenderer->Initialize(coreRef->GetDevice(), 32);
 	trailRenderer->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });	// 주황빛 검기
 	trailRenderer->SetLifetime(0.13f);
+
+	// Foot Dust Effect 초기화
+	footDustEffect = make_unique<FootDustEffect>();
+	footDustEffect->Initialize(coreRef->GetDevice(), 32);
+	footDustEffect->SetColor({ 0.15f, 0.15f, 0.15f, 0.4f });  // 흙먼지 색상 (어둡게)
+	footDustEffect->SetLifetime(0.35f);
+	footDustEffect->SetParticleSize(0.1f);
 
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
@@ -510,6 +524,65 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 		trailRenderer->Update(deltaTime);
 	}
 
+	// Foot Dust Effect 업데이트
+	if (footDustEffect && myPlayer && cam)
+	{
+		auto animMachine = myPlayer->GetComponent<AnimationMachine>();
+		auto animator = myPlayer->GetComponent<Animator>();
+		auto transform = myPlayer->GetComponent<Transform>();
+
+		bool isWalking = animMachine && (animMachine->IsPlaying("Walk") || animMachine->IsPlaying("Run"));
+
+		if (isWalking && animator && animator->IsInitialized())
+		{
+			int currentFrame = animator->GetCurrentFrame();
+			XMMATRIX worldMat = transform->GetWorldMatrix();
+
+			// 오른발 착지: Frame 12~14 범위 (플래그로 한 번만 spawn)
+			if (currentFrame >= 24 && currentFrame <= 26)
+			{
+				if (!rightFootSpawned)
+				{
+					XMFLOAT3 rFootPos = animator->GetBonePosition(53);
+					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&rFootPos), worldMat);
+					XMFLOAT3 spawnPos;
+					XMStoreFloat3(&spawnPos, worldPos);
+					footDustEffect->Spawn(spawnPos, 5);
+					rightFootSpawned = true;
+				}
+			}
+			else
+			{
+				rightFootSpawned = false;
+			}
+
+			// 왼발 착지: Frame 27~29 범위
+			if (currentFrame >= 7 && currentFrame <= 9)
+			{
+				if (!leftFootSpawned)
+				{
+					XMFLOAT3 lFootPos = animator->GetBonePosition(49);
+					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&lFootPos), worldMat);
+					XMFLOAT3 spawnPos;
+					XMStoreFloat3(&spawnPos, worldPos);
+					footDustEffect->Spawn(spawnPos, 5);
+					leftFootSpawned = true;
+				}
+			}
+			else
+			{
+				leftFootSpawned = false;
+			}
+		}
+		else
+		{
+			rightFootSpawned = false;
+			leftFootSpawned = false;
+		}
+
+		footDustEffect->Update(deltaTime, cam->GetPosition());
+	}
+
 	if (cam)
 		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);
 
@@ -590,6 +663,15 @@ void FirstBattleScene::RenderSceneForward()
 	if (water)
 		renderer->RenderWater(*coreRef, water.get());
 
+	// 투명 객체 렌더링 순서 -> skybox -> water -> effects -> 캐릭터 머리카락
+	// Trail 렌더링
+	if (trailRenderer)
+		trailRenderer->Render(*coreRef);
+
+	// Foot Dust 렌더링
+	if (footDustEffect)
+		footDustEffect->Render(*coreRef);
+
 	renderer->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
@@ -608,10 +690,6 @@ void FirstBattleScene::RenderSceneEffects()
 {
 	if (cam)
 		EFFECT_MANAGER->Render(*coreRef, cam.get());
-
-	// Trail 렌더링
-	if (trailRenderer)
-		trailRenderer->Render(*coreRef);
 }
 
 void FirstBattleScene::RequestSceneChange()

@@ -46,6 +46,7 @@ private:
     bool showLightEditor = true;
     bool showSsaoEditor = true;
     bool showSkyboxEditor = true;
+    bool showVolumetricFogEditor = true;
 
     bool showAnimationEditor = true;
     bool showLutPresets = true;
