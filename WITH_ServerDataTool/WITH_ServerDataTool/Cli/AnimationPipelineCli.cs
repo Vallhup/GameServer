@@ -235,7 +235,8 @@ namespace WITH_ServerDataTool.Cli
 				normalizedObjectName + "_",
 				"boss_animation_",
 				"boss_",
-				"knight_animation_"
+				"knight_animation_",
+				"knight_"
 			};
 
 			foreach (var prefix in removablePrefixes)
