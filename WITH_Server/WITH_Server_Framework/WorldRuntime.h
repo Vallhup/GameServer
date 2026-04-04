@@ -141,6 +141,8 @@ public:
 		return _systems.RegisterSystem<T>(phase, std::forward<Args>(args)...);
 	}
 
+	bool ExecuteSystems(SystemPhase phase);
+
 public:
 	Entity ReserveEntity();
 

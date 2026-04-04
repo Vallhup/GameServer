@@ -188,6 +188,46 @@ bool WorldRuntime::EnqueueWorldCommand(WorldCommand command)
 	return _worldCommands.Enqueue(std::move(command));
 }
 
+bool WorldRuntime::ExecuteSystems(SystemPhase phase)
+{
+	if (_lifecycleState != WorldRuntimeLifecycleState::Running ||
+		IsShutdown() ||
+		IsFaulted() ||
+		!_frameOpen ||
+		_commitState != WorldRuntimeCommitState::NotCommitted)
+	{
+		MarkFault(
+			WorldRuntimeFaultCode::InvalidOperation,
+			"ExecuteSystems is not allowed in the current runtime state.");
+		return false;
+	}
+
+	SystemContext context{
+		*this,
+		MakeView(),
+		_lastDtSec
+	};
+
+	for (System* system : _systems.GetSystems(phase))
+	{
+		if (system == nullptr)
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::InvalidOperation,
+				"ExecuteSystems encountered a null system.");
+			return false;
+		}
+
+		system->Execute(context);
+		if (IsFaulted())
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool WorldRuntime::BuildTransferContext(
 	const std::vector<uint32_t>& sessionIds,
 	std::unique_ptr<ITransferContext>& outContext)
