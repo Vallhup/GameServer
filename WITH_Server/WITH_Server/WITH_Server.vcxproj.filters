@@ -81,6 +81,69 @@
     <ClCompile Include="AnimationRegistry.cpp">
       <Filter>Data\Registry</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\GameplaySystemRegistration.cpp">
+      <Filter>ECS\System</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase1\ApplyPlayerCommandSystem.cpp">
+      <Filter>ECS\System\Phase1</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase2\ResolveActionStateSystem.cpp">
+      <Filter>ECS\System\Phase2</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase2\ResolveLocomotionStateSystem.cpp">
+      <Filter>ECS\System\Phase2</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase3\FitSkeletalCombatColliderSystem.cpp">
+      <Filter>ECS\System\Phase3</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase3\ResolveAnimationPlaybackSystem.cpp">
+      <Filter>ECS\System\Phase3</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase3\SampleAnimationPoseSystem.cpp">
+      <Filter>ECS\System\Phase3</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase4\ApplyMovementDeltaSystem.cpp">
+      <Filter>ECS\System\Phase4</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase4\ComputeActionMoveDeltaSystem.cpp">
+      <Filter>ECS\System\Phase4</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.cpp">
+      <Filter>ECS\System\Phase4</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.cpp">
+      <Filter>ECS\System\Phase5</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.cpp">
+      <Filter>ECS\System\Phase5</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase6\MarkTransferPendingSystem.cpp">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase6\ResolvePortalTriggerSystem.cpp">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase7\ResolveCombatColliderActivationSystem.cpp">
+      <Filter>ECS\System\Phase7</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase7\ResolveCombatHitSystem.cpp">
+      <Filter>ECS\System\Phase7</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase8\CommitActionTimelineEventSystem.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase8\CommitCombatResultSystem.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase8\FinalizePostCommitStateSystem.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.cpp">
+      <Filter>ECS\System\Phase9</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServerNetworkService.h">
@@ -192,6 +255,75 @@
     <ClInclude Include="DefRegistry.h">
       <Filter>Data\Registry</Filter>
     </ClInclude>
+    <ClInclude Include="ECS\GameplayRuntimeComponents.h">
+      <Filter>ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\GameplaySystemRegistration.h">
+      <Filter>ECS\System</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\GameplaySystemUtil.h">
+      <Filter>ECS\System</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase1\ApplyPlayerCommandSystem.h">
+      <Filter>ECS\System\Phase1</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase2\ResolveActionStateSystem.h">
+      <Filter>ECS\System\Phase2</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase2\ResolveLocomotionStateSystem.h">
+      <Filter>ECS\System\Phase2</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase3\FitSkeletalCombatColliderSystem.h">
+      <Filter>ECS\System\Phase3</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase3\ResolveAnimationPlaybackSystem.h">
+      <Filter>ECS\System\Phase3</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase3\SampleAnimationPoseSystem.h">
+      <Filter>ECS\System\Phase3</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase4\ApplyMovementDeltaSystem.h">
+      <Filter>ECS\System\Phase4</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase4\ComputeActionMoveDeltaSystem.h">
+      <Filter>ECS\System\Phase4</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.h">
+      <Filter>ECS\System\Phase4</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.h">
+      <Filter>ECS\System\Phase5</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.h">
+      <Filter>ECS\System\Phase5</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase6\MarkTransferPendingSystem.h">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase6\ResolvePortalTriggerSystem.h">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase7\ResolveCombatColliderActivationSystem.h">
+      <Filter>ECS\System\Phase7</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase7\ResolveCombatHitSystem.h">
+      <Filter>ECS\System\Phase7</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase8\CommitActionTimelineEventSystem.h">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase8\CommitCombatResultSystem.h">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase8\FinalizePostCommitStateSystem.h">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.h">
+      <Filter>ECS\System\Phase9</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -229,6 +361,39 @@
     </Filter>
     <Filter Include="Data\Registry">
       <UniqueIdentifier>{2459fc7c-d9a5-4d10-afc2-3ce932e1d3d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS">
+      <UniqueIdentifier>{1c677717-17cc-4a7c-8ab7-5a5dba2f6815}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System">
+      <UniqueIdentifier>{217383dc-51d4-472f-8f59-1d2639794f4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Phase1">
+      <UniqueIdentifier>{dd7af8f7-45d3-42f0-8283-e4ee68eca11f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Phase2">
+      <UniqueIdentifier>{505ec749-66f3-46eb-b8fc-83c193fba019}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Phase3">
+      <UniqueIdentifier>{b7d00b4e-8c4a-46dd-94de-c5331924e11f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Phase4">
+      <UniqueIdentifier>{e9de4423-e9a0-4f4c-a410-8888950e4fb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Phase5">
+      <UniqueIdentifier>{4c78d67b-5c84-4aab-991d-df74af4419de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Phase6">
+      <UniqueIdentifier>{33ee51aa-dd65-4f0b-a65f-494612e232db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Phase7">
+      <UniqueIdentifier>{6fb67efe-0dab-481c-98c7-05c52d5634f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Phase8">
+      <UniqueIdentifier>{59e64247-b84b-481d-b0cc-23a3068830e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Phase9">
+      <UniqueIdentifier>{d61b144d-65d8-47f7-8ac4-665ebf48317b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -30,7 +30,3 @@
 #pragma comment(lib, "WITH_Server_Framework.lib")
 
 #include "DBManager.h"
-
-#include "NetHelper.h"
-#include "Collision.h"
-#include "Math.h"

@@ -71,22 +71,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\;$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDIr)..\ProtocolLib\Library\$(Configuration)\;$(SolutionDir)Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\;$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDIr)..\ProtocolLib\Library\$(Configuration)\;$(SolutionDir)Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\;$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDIr)..\ProtocolLib\Library\$(Configuration)\;$(SolutionDir)Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\;$(SolutionDir)WITH_Server_Framework\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Protocols\;$(SolutionDir)..\ProtocolLib\ProtocolLib\Include\;$(SolutionDir)..\Network_Library\Dependency\;$(SolutionDir)..\Network_Library\Include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDIr)..\ProtocolLib\Library\$(Configuration)\;$(SolutionDir)Library\$(Configuration)\;$(SolutionDir)..\Network_Library\Library\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -170,6 +170,27 @@
     <ClCompile Include="CharacterDef.cpp" />
     <ClCompile Include="DBData.cpp" />
     <ClCompile Include="DBManager.cpp" />
+    <ClCompile Include="ECS\System\GameplaySystemRegistration.cpp" />
+    <ClCompile Include="ECS\System\Phase1\ApplyPlayerCommandSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase2\ResolveActionStateSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase2\ResolveLocomotionStateSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase3\FitSkeletalCombatColliderSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase3\ResolveAnimationPlaybackSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase3\SampleAnimationPoseSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase4\ApplyMovementDeltaSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase4\ComputeActionMoveDeltaSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase6\MarkTransferPendingSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase6\ResolvePortalTriggerSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase7\ResolveCombatColliderActivationSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase7\ResolveCombatHitSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase8\CommitActionTimelineEventSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase8\CommitCombatResultSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase8\FinalizePostCommitStateSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.cpp" />
     <ClCompile Include="FrameworkRuntime.cpp" />
     <ClCompile Include="GameServerNetworkService.cpp" />
     <ClCompile Include="GameSendBufferManager.cpp" />
@@ -208,6 +229,29 @@
     <ClInclude Include="DBManager.h" />
     <ClInclude Include="DefFileFormat.h" />
     <ClInclude Include="DefRegistry.h" />
+    <ClInclude Include="ECS\GameplayRuntimeComponents.h" />
+    <ClInclude Include="ECS\System\GameplaySystemRegistration.h" />
+    <ClInclude Include="ECS\System\GameplaySystemUtil.h" />
+    <ClInclude Include="ECS\System\Phase1\ApplyPlayerCommandSystem.h" />
+    <ClInclude Include="ECS\System\Phase2\ResolveActionStateSystem.h" />
+    <ClInclude Include="ECS\System\Phase2\ResolveLocomotionStateSystem.h" />
+    <ClInclude Include="ECS\System\Phase3\FitSkeletalCombatColliderSystem.h" />
+    <ClInclude Include="ECS\System\Phase3\ResolveAnimationPlaybackSystem.h" />
+    <ClInclude Include="ECS\System\Phase3\SampleAnimationPoseSystem.h" />
+    <ClInclude Include="ECS\System\Phase4\ApplyMovementDeltaSystem.h" />
+    <ClInclude Include="ECS\System\Phase4\ComputeActionMoveDeltaSystem.h" />
+    <ClInclude Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.h" />
+    <ClInclude Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.h" />
+    <ClInclude Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.h" />
+    <ClInclude Include="ECS\System\Phase6\MarkTransferPendingSystem.h" />
+    <ClInclude Include="ECS\System\Phase6\ResolvePortalTriggerSystem.h" />
+    <ClInclude Include="ECS\System\Phase7\ResolveCombatColliderActivationSystem.h" />
+    <ClInclude Include="ECS\System\Phase7\ResolveCombatHitSystem.h" />
+    <ClInclude Include="ECS\System\Phase8\CommitActionTimelineEventSystem.h" />
+    <ClInclude Include="ECS\System\Phase8\CommitCombatResultSystem.h" />
+    <ClInclude Include="ECS\System\Phase8\FinalizePostCommitStateSystem.h" />
+    <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h" />
+    <ClInclude Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="FrameworkRuntime.h" />
     <ClInclude Include="InboundCommandStatsCollector.h" />

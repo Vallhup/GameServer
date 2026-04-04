@@ -85,7 +85,7 @@ namespace
         {
             int prev = maxParallelReads.load(std::memory_order_relaxed);
             while (prev < value &&
-                !maxParallelReads.compare_exchange_weak(
+                !maxParallelReads.compare_exchange_strong(
                     prev, value, std::memory_order_relaxed))
             {
             }
@@ -117,7 +117,7 @@ namespace
         {
             int prev = maxParallelRecorders.load(std::memory_order_relaxed);
             while (prev < value &&
-                !maxParallelRecorders.compare_exchange_weak(
+                !maxParallelRecorders.compare_exchange_strong(
                     prev, value, std::memory_order_relaxed))
             {
             }
@@ -144,7 +144,7 @@ namespace
         {
             int prev = maxParallel.load(std::memory_order_relaxed);
             while (prev < value &&
-                !maxParallel.compare_exchange_weak(
+                !maxParallel.compare_exchange_strong(
                     prev, value, std::memory_order_relaxed))
             {
             }
@@ -883,7 +883,7 @@ namespace
         {
             int prev = maxParallelGraph.load(std::memory_order_relaxed);
             while (prev < value &&
-                !maxParallelGraph.compare_exchange_weak(
+                !maxParallelGraph.compare_exchange_strong(
                     prev, value, std::memory_order_relaxed))
             {
             }

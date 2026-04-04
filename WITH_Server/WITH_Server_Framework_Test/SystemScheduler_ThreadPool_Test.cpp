@@ -55,7 +55,7 @@ namespace
         {
             int prev = maxParallelReads.load(std::memory_order_relaxed);
             while (prev < value &&
-                !maxParallelReads.compare_exchange_weak(
+                !maxParallelReads.compare_exchange_strong(
                     prev, value, std::memory_order_relaxed))
             {
             }
