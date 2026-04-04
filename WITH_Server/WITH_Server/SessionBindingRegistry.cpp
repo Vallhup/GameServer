@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "SessionBindingRegistry.h"
 
+#include <algorithm>
+
 bool SessionBindingRegistry::Bind(
 	SessionId sessionId,
 	NetId controlledNetId,
@@ -111,6 +113,27 @@ WorldId SessionBindingRegistry::FindCurrentWorldId(SessionId sessionId) const
 	}
 
 	return binding->currentWorldId;
+}
+
+void SessionBindingRegistry::CollectSessionsInWorld(
+	WorldId worldId,
+	std::vector<SessionId>& outSessionIds) const
+{
+	outSessionIds.clear();
+	if (!worldId.IsValid())
+	{
+		return;
+	}
+
+	for (const auto& [sessionId, binding] : _bindingBySession)
+	{
+		if (binding.currentWorldId == worldId && binding.IsValid())
+		{
+			outSessionIds.push_back(sessionId);
+		}
+	}
+
+	std::sort(outSessionIds.begin(), outSessionIds.end());
 }
 
 bool SessionBindingRegistry::UpdateWorld(SessionId sessionId, WorldId currentWorldId)

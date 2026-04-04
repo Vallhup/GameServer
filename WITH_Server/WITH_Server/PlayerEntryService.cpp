@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "CharacterIdPolicy.h"
+#include "ECS/GameplayRuntimeComponents.h"
 #include "RepComponent.h"
 #include "WorldInstance.h"
 
@@ -23,6 +24,66 @@ namespace
 		result.worldId = worldId;
 		result.entity = entity;
 		return result;
+	}
+
+	CombatStatStateComp MakeInitialCombatStats(const CharacterDef& characterDef)
+	{
+		CombatStatStateComp stats{};
+		stats.currentHp = static_cast<int32_t>(characterDef.stat.maxHp);
+		stats.maxHp = static_cast<int32_t>(characterDef.stat.maxHp);
+		stats.currentStamina =
+			static_cast<int32_t>(characterDef.stat.maxStamina);
+		stats.maxStamina = static_cast<int32_t>(characterDef.stat.maxStamina);
+		stats.currentPoise = static_cast<int32_t>(characterDef.stat.maxPoise);
+		stats.maxPoise = static_cast<int32_t>(characterDef.stat.maxPoise);
+		stats.attackPower =
+			static_cast<int32_t>(characterDef.stat.attackPower);
+		stats.defense = static_cast<int32_t>(characterDef.stat.defense);
+		stats.attackSpeed = characterDef.stat.attackSpeed;
+		stats.moveSpeed = characterDef.stat.moveSpeed;
+		return stats;
+	}
+
+	void AttachPlayerGameplayRuntimeComponents(
+		WorldRuntime& runtime,
+		Entity playerEntity,
+		SessionId sessionId,
+		const CharacterDef& characterDef)
+	{
+		runtime.DeferredUpsertComponent<PlayerControlIdentityComp>(
+			playerEntity,
+			PlayerControlIdentityComp{
+				.netId = NetId::Invalid(),
+				.ownerSessionId = sessionId
+			});
+		runtime.DeferredAddComponent<PlayerInputComp>(playerEntity);
+		runtime.DeferredAddComponent<ActionStateComp>(playerEntity);
+		runtime.DeferredAddComponent<LocomotionStateComp>(playerEntity);
+		runtime.DeferredAddComponent<ActionTimelineAdvanceComp>(playerEntity);
+		runtime.DeferredAddComponent<AnimationPlaybackStateComp>(playerEntity);
+		runtime.DeferredAddComponent<SampledAnimationPoseComp>(playerEntity);
+		runtime.DeferredAddComponent<SkeletalCombatColliderComp>(playerEntity);
+		runtime.DeferredAddComponent<WorldTransformComp>(playerEntity);
+		runtime.DeferredAddComponent<LocomotionMoveDeltaComp>(playerEntity);
+		runtime.DeferredAddComponent<ActionMoveDeltaComp>(playerEntity);
+		runtime.DeferredAddComponent<ActionMoveRuntimeComp>(playerEntity);
+		runtime.DeferredAddComponent<PreCollisionTransformComp>(playerEntity);
+		runtime.DeferredAddComponent<BodyCollisionShapeComp>(playerEntity);
+		runtime.DeferredAddComponent<NavMeshAgentStateComp>(playerEntity);
+		runtime.DeferredAddComponent<BodyCollisionResolveComp>(playerEntity);
+		runtime.DeferredAddComponent<PortalTriggerStateComp>(playerEntity);
+		runtime.DeferredAddComponent<CombatColliderActivationComp>(playerEntity);
+		runtime.DeferredAddComponent<CombatHitDedupStateComp>(playerEntity);
+		runtime.DeferredAddComponent<PendingCombatResultComp>(playerEntity);
+		runtime.DeferredUpsertComponent<CombatStatStateComp>(
+			playerEntity,
+			MakeInitialCombatStats(characterDef));
+		runtime.DeferredAddComponent<BuffRuntimeStateComp>(playerEntity);
+		runtime.DeferredAddComponent<PendingProjectileSpawnComp>(playerEntity);
+		runtime.DeferredAddComponent<PendingActionPresentationEventComp>(
+			playerEntity);
+		runtime.DeferredAddComponent<DirtyFlagsComp>(playerEntity);
+		runtime.DeferredAddComponent<ReplicationStatsComp>(playerEntity);
 	}
 }
 
@@ -194,6 +255,11 @@ PlayerEntryResult PlayerEntryService::RequestCharacterSelect(
 		SpawnTypeComp{
 			.characterId = characterDef->id
 		});
+	AttachPlayerGameplayRuntimeComponents(
+		runtime,
+		playerEntity,
+		sessionId,
+		*characterDef);
 
 	_pendingSpawns.push_back(
 		PendingCharacterSpawn{

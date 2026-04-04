@@ -143,7 +143,7 @@ bool RunServerAppSmokeTest()
 	}
 
 	const AnimationClipDef* const impMelee1 =
-		app.GetAnimationRegistry().Find(AnimationId::Imp_melee1);
+		app.GetAnimationRegistry().Find(AnimationId::Imp_Melee_1);
 	if (impMelee1 == nullptr ||
 		impMelee1->clipId != "Imp_melee_1" ||
 		impMelee1->skeleton != "Imp" ||

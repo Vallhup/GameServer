@@ -3,6 +3,7 @@
 
 #include "ExecutionContextTypes.h"
 #include "ExecutionSourceTypes.h"
+#include "ECS/System/GameplaySystemRegistration.h"
 #include "RepComponent.h"
 #include "WorldContentIds.h"
 #include "WorldDef.h"
@@ -14,19 +15,34 @@ namespace
 	constexpr ExecToken kSquareBootstrapExecToken = 1;
 	constexpr WorldExecutionModelKey kSquareBootstrapExecutionModelKey = 1;
 
-	ExecCallResult ExecuteSquareBootstrapNoOp(NodeExecContext& context)
+	ExecCallResult ExecuteSquareBootstrapGraphSystems(NodeExecContext& context)
 	{
-		return context.TryGetRuntime() != nullptr
+		WorldRuntime* const runtime = context.TryGetRuntime();
+		if (runtime == nullptr)
+		{
+			return ExecCallResult::Failed;
+		}
+
+		return runtime->ExecuteSystems(SystemPhase::Graph)
 			? ExecCallResult::Success
 			: ExecCallResult::Failed;
 	}
 
 	class SquareBootstrapWorldImpl final : public IWorldInstanceImpl {
 	public:
+		explicit SquareBootstrapWorldImpl(
+			const AnimationRegistry* animationRegistry)
+			: _animationRegistry(animationRegistry)
+		{
+		}
+
+	public:
 		bool OnCreate(WorldRuntime& runtime) override
 		{
 			runtime.RegisterStorage<ReplicatedTag>();
 			runtime.RegisterStorage<SpawnTypeComp>();
+			RegisterGameplayRuntimeStorages(runtime);
+			RegisterGameplayRuntimeSystems(runtime, _animationRegistry);
 			return true;
 		}
 
@@ -40,6 +56,9 @@ namespace
 		{
 			(void)runtime;
 		}
+
+	private:
+		const AnimationRegistry* _animationRegistry{ nullptr };
 	};
 
 	WorldDef MakeSquareWorldDef()
@@ -82,12 +101,18 @@ namespace
 	}
 }
 
+void ServerWorldBootstrapFactory::SetAnimationRegistry(
+	const AnimationRegistry* animationRegistry) noexcept
+{
+	_animationRegistry = animationRegistry;
+}
+
 std::unique_ptr<IWorldInstanceImpl> ServerWorldBootstrapFactory::Create(
 	const WorldDef& def)
 {
 	switch (def.id) {
 	case WorldDefId::Square:
-		return std::make_unique<SquareBootstrapWorldImpl>();
+		return std::make_unique<SquareBootstrapWorldImpl>(_animationRegistry);
 	default:
 		return nullptr;
 	}
@@ -104,8 +129,8 @@ bool ServerWorldBootstrapDefinitionProvider::RegisterExecutionSources(
 	desc.flags =
 		static_cast<uint32_t>(ExecNodeFlag_NoThrow) |
 		static_cast<uint32_t>(ExecNodeFlag_MainThreadOnly);
-	desc.fn = &ExecuteSquareBootstrapNoOp;
-	desc.debugName = "SquareBootstrap.NoOpSimulate";
+	desc.fn = &ExecuteSquareBootstrapGraphSystems;
+	desc.debugName = "SquareBootstrap.GraphSystems";
 	return sourceRegistry.Register(desc);
 }
 

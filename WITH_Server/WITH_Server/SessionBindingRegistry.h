@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <unordered_map>
 
 #include "NetId.h"
@@ -31,6 +32,9 @@ public:
 	NetId FindControlledNetId(SessionId sessionId) const;
 	SessionId FindOwnerSession(NetId controlledNetId) const;
 	WorldId FindCurrentWorldId(SessionId sessionId) const;
+	void CollectSessionsInWorld(
+		WorldId worldId,
+		std::vector<SessionId>& outSessionIds) const;
 
 	bool UpdateWorld(SessionId sessionId, WorldId currentWorldId);
 

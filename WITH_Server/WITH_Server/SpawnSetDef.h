@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EntityId.h"
+#include "WorldContentIds.h"
 #include "IDs.h"
 #include <string>
 #include <optional>

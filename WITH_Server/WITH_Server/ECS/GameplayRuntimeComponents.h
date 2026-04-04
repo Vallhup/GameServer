@@ -1,0 +1,417 @@
+#pragma once
+
+#include <cstdint>
+#include <optional>
+#include <vector>
+
+#include "ActionDef.h"
+#include "AnimationDef.h"
+#include "PlayerCommand.h"
+#include "RepComponent.h"
+#include "Session.h"
+#include "WorldContentIds.h"
+#include "WorldDef.h"
+
+enum class PlayerActionInputType : uint8_t
+{
+	None = 0,
+	LightAttack,
+	HeavyAttack,
+	Dodge,
+	Parry
+};
+
+struct PlayerControlIdentityComp : Component
+{
+	NetId netId{ NetId::Invalid() };
+	SessionId ownerSessionId{ 0 };
+};
+
+struct PlayerMoveInputState
+{
+	float inputX{ 0.0f };
+	float inputZ{ 0.0f };
+	float cameraYawRad{ 0.0f };
+	bool wantsRun{ false };
+	uint64_t lastUpdatedFrame{ 0 };
+};
+
+struct PlayerGuardInputState
+{
+	bool isPressed{ false };
+	uint64_t lastUpdatedFrame{ 0 };
+};
+
+struct PlayerActionInputEvent
+{
+	PlayerActionInputType type{ PlayerActionInputType::None };
+	float directionX{ 0.0f };
+	float directionZ{ 0.0f };
+	uint64_t requestedFrame{ 0 };
+};
+
+struct PlayerInputComp : Component
+{
+	PlayerMoveInputState move;
+	PlayerGuardInputState guard;
+	PlayerActionInputEvent action;
+};
+
+struct PendingDespawnTag : TagComponent
+{
+};
+
+struct PendingWorldTransferTag : TagComponent
+{
+};
+
+struct PendingWorldTransferComp : Component
+{
+	WorldDefId targetWorldDefId{ WorldDefId::None };
+	uint64_t instanceKey{ 0 };
+	SpawnPointId spawnPointId{ 0 };
+	bool hasSpawnPointId{ false };
+	bool allowFallback{ false };
+	uint16_t sourceTriggerId{ 0 };
+	uint64_t requestedFrameIndex{ 0 };
+};
+
+struct PendingReactionPayload
+{
+	ActionId reactionActionId{ ActionId::None };
+};
+
+struct PendingHitReactionComp : Component
+{
+	PendingReactionPayload payload;
+};
+
+struct PendingGuardBreakComp : Component
+{
+	PendingReactionPayload payload;
+};
+
+struct PendingKnockdownComp : Component
+{
+	PendingReactionPayload payload;
+};
+
+struct PendingBuffApplyComp : Component
+{
+	BuffId buffId{ BuffId::None };
+};
+
+struct PendingBuffRemoveComp : Component
+{
+	BuffId buffId{ BuffId::None };
+};
+
+enum class LocomotionMode : uint8_t
+{
+	Idle = 0,
+	Walk,
+	Run,
+	Turn
+};
+
+struct ActionStateComp : Component
+{
+	ActionId actionId{ ActionId::None };
+	float elapsedSec{ 0.0f };
+	uint32_t actionInstanceId{ 0 };
+	float directionX{ 0.0f };
+	float directionZ{ 0.0f };
+};
+
+struct LocomotionStateComp : Component
+{
+	LocomotionMode mode{ LocomotionMode::Idle };
+	float desiredMoveDirX{ 0.0f };
+	float desiredMoveDirZ{ 0.0f };
+	float desiredFacingYawRad{ 0.0f };
+	float facingYawRad{ 0.0f };
+	float currentSpeed{ 0.0f };
+	float locomotionAnimPhase01{ 0.0f };
+	bool wasLocomotionMoving{ false };
+};
+
+struct PendingActionTimelineEvent
+{
+	EventType eventType{ EventType::PlayEffect };
+	float timeNormalized{ 0.0f };
+	std::optional<EventPayloadId> payloadId;
+	TriggerConditionType conditionType{ TriggerConditionType::Always };
+	ActionId sourceActionId{ ActionId::None };
+	uint32_t sourceActionInstanceId{ 0 };
+};
+
+struct ActionTimelineAdvanceComp : Component
+{
+	ActionId actionId{ ActionId::None };
+	uint32_t actionInstanceId{ 0 };
+	float prevElapsedSec{ 0.0f };
+	float currElapsedSec{ 0.0f };
+	std::vector<PendingActionTimelineEvent> events;
+};
+
+enum class AnimationPlaybackSource : uint8_t
+{
+	None = 0,
+	Locomotion,
+	Action
+};
+
+struct AnimationPlaybackStateComp : Component
+{
+	AnimationPlaybackSource source{ AnimationPlaybackSource::None };
+	AnimationId animationId{ AnimationId::None };
+	uint32_t boundActionInstanceId{ 0 };
+	ActionId boundActionId{ ActionId::None };
+	LocomotionMode boundLocomotionMode{ LocomotionMode::Idle };
+	float playbackTimeSec{ 0.0f };
+	float normalizedTime{ 0.0f };
+	float playRate{ 1.0f };
+	bool loop{ false };
+	bool holdLastFrame{ false };
+};
+
+struct SampledAnimationPoseComp : Component
+{
+	AnimationId animationId{ AnimationId::None };
+	uint16_t sampleFrameIndex{ 0 };
+	std::vector<Capsule> localCapsules;
+};
+
+enum class SkeletalCombatColliderRoleMask : uint8_t
+{
+	None = 0,
+	Hit = 1 << 0,
+	Hurt = 1 << 1,
+	Guard = 1 << 2,
+	Parry = 1 << 3
+};
+
+struct SkeletalCombatCollider
+{
+	Capsule capsule;
+	float radius{ 0.0f };
+	uint8_t roleMask{ 0 };
+};
+
+struct SkeletalCombatColliderComp : Component
+{
+	std::vector<SkeletalCombatCollider> localColliders;
+};
+
+struct WorldTransformComp : Component
+{
+	XMFLOAT3 position{ 0.0f, 0.0f, 0.0f };
+	float yawRad{ 0.0f };
+};
+
+struct LocomotionMoveDeltaComp : Component
+{
+	XMFLOAT3 deltaPosition{ 0.0f, 0.0f, 0.0f };
+	float deltaYawRad{ 0.0f };
+	bool hasDelta{ false };
+};
+
+struct ActionMoveDeltaComp : Component
+{
+	XMFLOAT3 deltaPosition{ 0.0f, 0.0f, 0.0f };
+	float deltaYawRad{ 0.0f };
+	bool hasDelta{ false };
+};
+
+struct ActionMoveRuntimeComp : Component
+{
+	uint32_t boundActionInstanceId{ 0 };
+	float lockedDirX{ 0.0f };
+	float lockedDirZ{ 0.0f };
+	float lockedYawRad{ 0.0f };
+	bool hasLockedDirection{ false };
+};
+
+struct PreCollisionTransformComp : Component
+{
+	XMFLOAT3 prevPosition{ 0.0f, 0.0f, 0.0f };
+	float prevYawRad{ 0.0f };
+	XMFLOAT3 candidatePosition{ 0.0f, 0.0f, 0.0f };
+	float candidateYawRad{ 0.0f };
+	bool movedThisFrame{ false };
+	bool rotatedThisFrame{ false };
+};
+
+enum class BodyPushability : uint8_t
+{
+	None = 0,
+	Kinematic,
+	Dynamic
+};
+
+struct BodyCollisionShapeComp : Component
+{
+	float bodyRadiusXZ{ 0.5f };
+	float bodyHeight{ 1.8f };
+	bool blocksBodyOverlap{ true };
+	bool useNavMeshConstraint{ false };
+	BodyPushability pushability{ BodyPushability::Dynamic };
+};
+
+struct NavMeshAgentStateComp : Component
+{
+	uint64_t currentPolyRef{ 0 };
+};
+
+struct BodyCollisionResolveComp : Component
+{
+	XMFLOAT3 navResolvedPosition{ 0.0f, 0.0f, 0.0f };
+	bool navMeshAdjusted{ false };
+	bool navMeshFallbackNoProvider{ false };
+	bool rejectedByNavMesh{ false };
+	bool overlapAdjusted{ false };
+};
+
+struct PortalTriggerStateComp : Component
+{
+	uint16_t activeTriggerId{ 0 };
+	bool wasInsideTrigger{ false };
+};
+
+struct CombatColliderActivationComp : Component
+{
+	uint32_t boundActionInstanceId{ 0 };
+	ActionId boundActionId{ ActionId::None };
+	bool hasAttackWindow{ false };
+	bool hasParryWindow{ false };
+	bool hasGuardWindow{ false };
+	bool hasInvulnerabilityWindow{ false };
+};
+
+struct CombatHitDedupStateComp : Component
+{
+	uint32_t boundActionInstanceId{ 0 };
+	std::vector<Entity> resolvedVictims;
+};
+
+enum class CombatReactionKind : uint8_t
+{
+	None = 0,
+	HitReaction,
+	GuardBreak,
+	Knockdown
+};
+
+enum class CombatResolveResultType : uint8_t
+{
+	Hit = 0,
+	Guard,
+	Parry
+};
+
+struct PendingCombatInteractionRecord
+{
+	Entity sourceEntity{ Entity::Null() };
+	ActionId sourceActionId{ ActionId::None };
+	uint32_t sourceActionInstanceId{ 0 };
+	uint16_t sourceAttackWindowIndex{ 0 };
+	uint16_t sourceColliderIndex{ 0 };
+	uint16_t targetColliderIndex{ 0 };
+	CombatResolveResultType resultType{ CombatResolveResultType::Hit };
+	AttackCombatEffectDef attackEffect{};
+	std::optional<GuardCombatEffectDef> guardEffect;
+	std::optional<ParryCombatEffectDef> parryEffect;
+	float maxKnockbackDistance{ 0.0f };
+	float maxHitStopSec{ 0.0f };
+};
+
+struct PendingCombatResultComp : Component
+{
+	std::vector<PendingCombatInteractionRecord> receivedInteractions;
+	CombatReactionKind reactionKind{ CombatReactionKind::None };
+	Entity reactionSource{ Entity::Null() };
+	bool guardSucceededThisFrame{ false };
+	bool parrySucceededThisFrame{ false };
+	bool wasHitThisFrame{ false };
+	bool parriedByAnyVictimThisFrame{ false };
+	bool hitAnyVictimThisFrame{ false };
+	std::optional<BuffId> pendingParryBuffId;
+};
+
+struct CombatStatStateComp : Component
+{
+	int32_t currentHp{ 0 };
+	int32_t maxHp{ 0 };
+	int32_t currentStamina{ 0 };
+	int32_t maxStamina{ 0 };
+	int32_t currentPoise{ 0 };
+	int32_t maxPoise{ 0 };
+	int32_t attackPower{ 0 };
+	int32_t defense{ 0 };
+	float attackSpeed{ 1.0f };
+	float moveSpeed{ 2.5f };
+};
+
+struct ActiveBuffRuntimeEntry
+{
+	BuffId buffId{ BuffId::None };
+	float remainingDurationSec{ 0.0f };
+	uint32_t stackCount{ 0 };
+	uint64_t appliedOrder{ 0 };
+};
+
+struct BuffRuntimeStateComp : Component
+{
+	std::vector<ActiveBuffRuntimeEntry> activeBuffs;
+};
+
+struct PendingProjectileSpawnRequest
+{
+	Entity sourceEntity{ Entity::Null() };
+	ActionId sourceActionId{ ActionId::None };
+	uint32_t sourceActionInstanceId{ 0 };
+	std::optional<EventPayloadId> payloadId;
+};
+
+struct PendingProjectileSpawnComp : Component
+{
+	std::vector<PendingProjectileSpawnRequest> requests;
+};
+
+struct PendingActionPresentationEvent
+{
+	Entity sourceEntity{ Entity::Null() };
+	ActionId sourceActionId{ ActionId::None };
+	uint32_t sourceActionInstanceId{ 0 };
+	EventType eventType{ EventType::PlayEffect };
+	std::optional<EventPayloadId> payloadId;
+};
+
+struct PendingActionPresentationEventComp : Component
+{
+	std::vector<PendingActionPresentationEvent> events;
+};
+
+struct PortalTriggerDef
+{
+	uint16_t triggerId{ 0 };
+	XMFLOAT3 center{ 0.0f, 0.0f, 0.0f };
+	float radiusXZ{ 0.0f };
+	WorldDefId targetWorldDefId{ WorldDefId::None };
+	uint64_t instanceKey{ 0 };
+	SpawnPointId spawnPointId{ 0 };
+	bool hasSpawnPointId{ false };
+	bool allowFallback{ false };
+};
+
+struct ReplicationStatsComp : Component
+{
+	uint64_t droppedUnsupportedCommandTypeCount{ 0 };
+	uint64_t droppedInvalidPayloadCount{ 0 };
+	uint64_t droppedTargetMissingCount{ 0 };
+	uint64_t ownerMismatchCount{ 0 };
+	uint64_t deferredPotionEventCount{ 0 };
+	uint64_t missingAnimationRegistryCount{ 0 };
+	uint64_t missingWorldTransferPayloadCount{ 0 };
+	uint64_t replicationTodoSkippedCount{ 0 };
+};
