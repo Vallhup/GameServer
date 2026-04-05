@@ -28,6 +28,7 @@ enum class PlayerActionInput : uint8_t
 	HeavAttack,
 	Guard,
 	Parry,
+	Dodge,
 	UseItem
 };
 

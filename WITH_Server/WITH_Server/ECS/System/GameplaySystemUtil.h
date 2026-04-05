@@ -77,7 +77,7 @@ namespace GameplaySystemUtil
 			return fallbackYaw;
 		}
 
-		return std::atan2(x, z);
+		return std::atan2(-x, -z);
 	}
 
 	inline float ClampYawStep(float currentYaw, float targetYaw, float maxStep)
@@ -111,7 +111,7 @@ namespace GameplaySystemUtil
 		case PlayerActionInputType::HeavyAttack:
 			return PlayerActionInput::HeavAttack;
 		case PlayerActionInputType::Dodge:
-			return PlayerActionInput::None;
+			return PlayerActionInput::Dodge;
 		case PlayerActionInputType::Parry:
 			return PlayerActionInput::Parry;
 		case PlayerActionInputType::None:
@@ -207,14 +207,14 @@ namespace GameplaySystemUtil
 		switch (actionId) {
 		case ActionId::Knight_LightAttack1:
 			return AnimationId::Knight_LightAttack1;
-		case ActionId::Knight_LightAttack2:
+		/*case ActionId::Knight_LightAttack2:
 			return AnimationId::Knight_LightAttack2;
 		case ActionId::Knight_LightAttack3:
 			return AnimationId::Knight_LightAttack3;
 		case ActionId::Knight_HeavyAttack:
 			return AnimationId::Knight_HeavyAttack;
 		case ActionId::Knight_SpecialAttack:
-			return AnimationId::Knight_SpecialAttack;
+			return AnimationId::Knight_SpecialAttack;*/
 		case ActionId::Knight_Dodge:
 			return AnimationId::Knight_Dodge;
 		case ActionId::Knight_Parry:
@@ -230,7 +230,7 @@ namespace GameplaySystemUtil
 		case ActionId::Knight_Dead:
 			return AnimationId::Knight_Death;
 
-		case ActionId::Imp_melee1:
+		/*case ActionId::Imp_melee1:
 			return AnimationId::Imp_Melee_1;
 		case ActionId::Imp_melee2:
 			return AnimationId::Imp_Melee_2;
@@ -245,7 +245,7 @@ namespace GameplaySystemUtil
 		case ActionId::Imp_Hit:
 			return AnimationId::Imp_React_Front;
 		case ActionId::Imp_Dead:
-			return AnimationId::Imp_Death_1;
+			return AnimationId::Imp_Death_1;*/
 
 		case ActionId::FinalBoss_Thrust:
 			return AnimationId::FinalBoss_Thrust;
@@ -287,7 +287,7 @@ namespace GameplaySystemUtil
 				return AnimationId::Knight_Idle;
 			}
 
-		case CharacterId::Imp:
+		/*case CharacterId::Imp:
 			switch (mode) {
 			case LocomotionMode::Idle:
 				return AnimationId::Imp_Idle_1;
@@ -297,7 +297,7 @@ namespace GameplaySystemUtil
 				return AnimationId::Imp_Walk_Forward;
 			default:
 				return AnimationId::Imp_Idle_1;
-			}
+			}*/
 
 		case CharacterId::FinalBoss:
 			switch (mode) {

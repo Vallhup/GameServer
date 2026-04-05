@@ -49,6 +49,8 @@ namespace
 		bool OnStart(WorldRuntime& runtime) override
 		{
 			(void)runtime;
+			SpawnSetId spawnSetId = runtime.GetDef()->spawn.initialSpawnSetId;
+			// TODO: SpawnSet을 보관하는 Registry에서 Id로 찾아와서 초기 스폰
 			return true;
 		}
 

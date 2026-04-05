@@ -19,7 +19,7 @@ namespace
 			.playerInput = PlayerActionInput::LightAttack,
 			.comboGroupId = kKnightLightComboGroupId,
 			.comboIndex = 1,
-			.duration = 0.75f,
+			.duration = 1.16f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -31,7 +31,7 @@ namespace
 				ActionRequestRequirementDef                          
 				{
 					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 10.0f,
+					.scalar = 0,
 					.stateFlag = std::nullopt
 				},
 				ActionRequestRequirementDef
@@ -47,7 +47,7 @@ namespace
 				{
 					.type = ActionResourceType::Stamina,
 					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 10.0f
+					.amount = 0
 				}
 			},
 			.transitionRule = ActionTransitionRuleDef
@@ -109,8 +109,8 @@ namespace
 				ActionCombatWindowDef
 				{
 					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.28f,
-					.endNormalized = 0.48f,
+					.startNormalized = 0.3f,
+					.endNormalized = 1.0f,
 					.appliesTo = ActionCombatApplyTo::FrontPhysical,
 					.spatialFilter = std::nullopt,
 					.effect = CombatEffectDef
@@ -147,7 +147,7 @@ namespace
 			.playerInput = PlayerActionInput::LightAttack,
 			.comboGroupId = kKnightLightComboGroupId,
 			.comboIndex = 2,
-			.duration = 0.82f,
+			.duration = 1.06f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -159,7 +159,7 @@ namespace
 				ActionRequestRequirementDef
 				{
 					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 12.0f,
+					.scalar = 0,
 					.stateFlag = std::nullopt
 				},
 				ActionRequestRequirementDef
@@ -175,7 +175,7 @@ namespace
 				{
 					.type = ActionResourceType::Stamina,
 					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 12.0f
+					.amount = 0
 				}
 			},
 			.transitionRule = ActionTransitionRuleDef
@@ -237,8 +237,8 @@ namespace
 				ActionCombatWindowDef
 				{
 					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.32f,
-					.endNormalized = 0.55f,
+					.startNormalized = 0.3f,
+					.endNormalized = 1.0f,
 					.appliesTo = ActionCombatApplyTo::FrontPhysical,
 					.spatialFilter = std::nullopt,
 					.effect = CombatEffectDef
@@ -290,7 +290,7 @@ namespace
 			.playerInput = PlayerActionInput::LightAttack,
 			.comboGroupId = kKnightLightComboGroupId,
 			.comboIndex = 3,
-			.duration = 0.95f,
+			.duration = 1.53f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -371,8 +371,8 @@ namespace
 				ActionCombatWindowDef
 				{
 					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.36f,
-					.endNormalized = 0.62f,
+					.startNormalized = 0.3f,
+					.endNormalized = 1.0f,
 					.appliesTo = ActionCombatApplyTo::FrontPhysical,
 					.spatialFilter = std::nullopt,
 					.effect = CombatEffectDef
@@ -424,7 +424,7 @@ namespace
 			.playerInput = PlayerActionInput::HeavAttack,
 			.comboGroupId = std::nullopt,
 			.comboIndex = std::nullopt,
-			.duration = 1.20f,
+			.duration = 1.30f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -436,7 +436,7 @@ namespace
 				ActionRequestRequirementDef
 				{
 					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 25.0f,
+					.scalar = 0,
 					.stateFlag = std::nullopt
 				},
 				ActionRequestRequirementDef
@@ -452,7 +452,7 @@ namespace
 				{
 					.type = ActionResourceType::Stamina,
 					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 25.0f
+					.amount = 0
 				}
 			},
 			.transitionRule = ActionTransitionRuleDef
@@ -494,8 +494,8 @@ namespace
 				ActionCombatWindowDef
 				{
 					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.42f,
-					.endNormalized = 0.72f,
+					.startNormalized = 0.3f,
+					.endNormalized = 1.0f,
 					.appliesTo = ActionCombatApplyTo::FrontPhysical,
 					.spatialFilter = std::nullopt,
 					.effect = CombatEffectDef
@@ -532,7 +532,7 @@ namespace
 			.playerInput = PlayerActionInput::None,
 			.comboGroupId = std::nullopt,
 			.comboIndex = std::nullopt,
-			.duration = 1.40f,
+			.duration = 3.13f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -544,7 +544,7 @@ namespace
 				ActionRequestRequirementDef
 				{
 					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 35.0f,
+					.scalar = 0,
 					.stateFlag = std::nullopt
 				},
 				ActionRequestRequirementDef
@@ -566,7 +566,7 @@ namespace
 				{
 					.type = ActionResourceType::Stamina,
 					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 35.0f
+					.amount = 0
 				}
 			},
 			.transitionRule = ActionTransitionRuleDef
@@ -608,8 +608,8 @@ namespace
 				ActionCombatWindowDef
 				{
 					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.48f,
-					.endNormalized = 0.82f,
+					.startNormalized = 0.3f,
+					.endNormalized = 1.0f,
 					.appliesTo = ActionCombatApplyTo::FrontPhysical,
 					.spatialFilter = std::nullopt,
 					.effect = CombatEffectDef
@@ -646,7 +646,7 @@ namespace
 			.playerInput = PlayerActionInput::None,
 			.comboGroupId = std::nullopt,
 			.comboIndex = std::nullopt,
-			.duration = 0.70f,
+			.duration = 1.53f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -658,7 +658,7 @@ namespace
 				ActionRequestRequirementDef
 				{
 					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 20.0f,
+					.scalar = 0,
 					.stateFlag = std::nullopt
 				},
 				ActionRequestRequirementDef
@@ -674,7 +674,7 @@ namespace
 				{
 					.type = ActionResourceType::Stamina,
 					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 20.0f
+					.amount = 0
 				}
 			},
 			.transitionRule = ActionTransitionRuleDef
@@ -759,7 +759,7 @@ namespace
 			.playerInput = PlayerActionInput::Parry,
 			.comboGroupId = std::nullopt,
 			.comboIndex = std::nullopt,
-			.duration = 0.55f,
+			.duration = 1.00f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -771,7 +771,7 @@ namespace
 				ActionRequestRequirementDef
 				{
 					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 10.0f,
+					.scalar = 0,
 					.stateFlag = std::nullopt
 				},
 				ActionRequestRequirementDef
@@ -787,7 +787,7 @@ namespace
 				{
 					.type = ActionResourceType::Stamina,
 					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 10.0f
+					.amount = 0
 				}
 			},
 			.transitionRule = ActionTransitionRuleDef
@@ -820,8 +820,8 @@ namespace
 				ActionCombatWindowDef
 				{
 					.windowType = CombatWindowType::Parry,
-					.startNormalized = 0.12f,
-					.endNormalized = 0.28f,
+					.startNormalized = 0.3f,
+					.endNormalized = 1.0f,
 					.appliesTo = ActionCombatApplyTo::ParryableAttack,
 					.spatialFilter = ActionCombatSpatialFilterDef
 					{
@@ -858,7 +858,7 @@ namespace
 			.playerInput = PlayerActionInput::Guard,
 			.comboGroupId = std::nullopt,
 			.comboIndex = std::nullopt,
-			.duration = 1.0f,
+			.duration = (std::numeric_limits<float>::max)(),
 			.normalizedPolicy = ActionNormalizedPolicy::Holdable,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -870,7 +870,7 @@ namespace
 				ActionRequestRequirementDef
 				{
 					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 5.0f,
+					.scalar = 0,
 					.stateFlag = std::nullopt
 				},
 				ActionRequestRequirementDef
@@ -886,7 +886,7 @@ namespace
 				{
 					.type = ActionResourceType::Stamina,
 					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 5.0f
+					.amount = 0
 				}
 			},
 			.transitionRule = ActionTransitionRuleDef
@@ -1005,7 +1005,7 @@ namespace
 			.playerInput = PlayerActionInput::None,
 			.comboGroupId = std::nullopt,
 			.comboIndex = std::nullopt,
-			.duration = 0.85f,
+			.duration = 3.16f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -1044,7 +1044,7 @@ namespace
 			.playerInput = PlayerActionInput::None,
 			.comboGroupId = std::nullopt,
 			.comboIndex = std::nullopt,
-			.duration = 0.50f,
+			.duration = 1.63f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -1083,7 +1083,7 @@ namespace
 			.playerInput = PlayerActionInput::None,
 			.comboGroupId = std::nullopt,
 			.comboIndex = std::nullopt,
-			.duration = 1.20f,
+			.duration = 3.86f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{

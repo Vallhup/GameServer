@@ -96,41 +96,131 @@ namespace
 			return false;
 		}
 
-		const bool staged = network.StageUnicast(
-			sessionId,
-			std::span<const uint8_t>(buffer->data, buffer->size));
+		const bool staged = 
+			network.StageUnicast(sessionId, std::span<const uint8_t>(buffer->data, buffer->size));
+
 		SendBufferPool::Get().Release(buffer);
 		return staged;
 	}
 
-	bool StageSpawnAddPacket(
+	bool StageSpawnAddPacketToSession(
 		NetworkRuntime& network,
 		SessionId sessionId,
 		NetId netId,
-		CharacterId characterId)
+		CharacterId characterId,
+		const WorldTransformComp* transform = nullptr)
 	{
 		Protocol::SC_ADD_PACKET add;
 		add.set_netid(netId.GetRaw());
 		add.set_typeid_(static_cast<int>(characterId));
-		add.set_x(0.0f);
-		add.set_y(0.0f);
-		add.set_z(0.0f);
-		add.set_yaw(0.0f);
-
+		add.set_x(transform != nullptr ? transform->position.x : 0.0f);
+		add.set_y(transform != nullptr ? transform->position.y : 0.0f);
+		add.set_z(transform != nullptr ? transform->position.z : 0.0f);
+		add.set_yaw(transform != nullptr ? transform->yawRad : 0.0f);
 		SendBuffer* const buffer =
 			PacketFactory::Serialize(PacketType::SC_ADD, add);
 		if (buffer == nullptr)
 		{
 			return false;
 		}
+		const bool staged =
+			network.StageUnicast(sessionId, std::span<const uint8_t>(buffer->data, buffer->size));
+		SendBufferPool::Get().Release(buffer);
+		return staged;
+	}
 
-		const bool staged = network.StageUnicast(
-			sessionId,
+	bool StageSpawnAddPacketToSessions(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		NetId netId,
+		CharacterId characterId,
+		const WorldTransformComp* transform = nullptr)
+	{
+		if (sessionIds.empty())
+		{
+			return true;
+		}
+		Protocol::SC_ADD_PACKET add;
+		add.set_netid(netId.GetRaw());
+		add.set_typeid_(static_cast<int>(characterId));
+		add.set_x(transform != nullptr ? transform->position.x : 0.0f);
+		add.set_y(transform != nullptr ? transform->position.y : 0.0f);
+		add.set_z(transform != nullptr ? transform->position.z : 0.0f);
+		add.set_yaw(transform != nullptr ? transform->yawRad : 0.0f);
+		SendBuffer* const buffer =
+			PacketFactory::Serialize(PacketType::SC_ADD, add);
+		if (buffer == nullptr)
+		{
+			return false;
+		}
+		const bool staged = network.StageMulticast(
+			sessionIds,
 			std::span<const uint8_t>(buffer->data, buffer->size));
 		SendBufferPool::Get().Release(buffer);
 		return staged;
 	}
 
+	bool TryGetReplicatedSpawnState(
+		FrameworkRuntime& framework,
+		WorldId worldId,
+		Entity entity,
+		CharacterId& outCharacterId,
+		const WorldTransformComp*& outTransform)
+	{
+		WorldInstance* const world = framework.FindWorld(worldId);
+		if (world == nullptr)
+		{
+			return false;
+		}
+		ECSView view = world->GetRuntime().MakeView();
+		if (!view.HasComponent<ReplicatedTag>(entity))
+		{
+			return false;
+		}
+		const SpawnTypeComp* const spawnType = view.GetComponent<SpawnTypeComp>(entity);
+		if (spawnType == nullptr)
+		{
+			return false;
+		}
+		outCharacterId = spawnType->characterId;
+		outTransform = view.GetComponent<WorldTransformComp>(entity);
+		return true;
+	}
+
+	void StageExistingWorldEntitiesForSession(
+		FrameworkRuntime& framework,
+		NetworkRuntime& network,
+		WorldId worldId,
+		SessionId sessionId,
+		NetId excludedNetId = NetId::Invalid())
+	{
+		WorldInstance* const world = framework.FindWorld(worldId);
+		if (world == nullptr)
+		{
+			return;
+		}
+		ECSView view = world->GetRuntime().MakeView();
+		for (auto [entity, spawnType] : view.View<SpawnTypeComp>())
+		{
+			if (!view.HasComponent<ReplicatedTag>(entity))
+			{
+				continue;
+			}
+			const NetId entityNetId = framework.FindNetId(worldId, entity);
+			if (!entityNetId.IsValid() || entityNetId == excludedNetId)
+			{
+				continue;
+			}
+			const WorldTransformComp* const transform =
+				view.GetComponent<WorldTransformComp>(entity);
+			(void)StageSpawnAddPacketToSession(
+				network,
+				sessionId,
+				entityNetId,
+				spawnType.characterId,
+				transform);
+		}
+	}
 	bool AssignPlayerControlNetId(
 		FrameworkRuntime& framework,
 		WorldId worldId,
@@ -476,20 +566,38 @@ void ServerApp::RunWorldFrames(double dtSec)
 
 void ServerApp::FinalizeFrameEvents(const FrameworkRuntime::FrameResult& frameResult)
 {
+	std::vector<SessionId> worldSessionIds;
+	std::vector<SessionId> otherSessionIds;
 	for (const auto& spawnEvent : frameResult.events.spawns)
 	{
 		if (!spawnEvent.netId.IsValid())
 		{
 			continue;
 		}
-
-		if (_playerEntryService.FindPendingSpawn(
+		CharacterId characterId = CharacterId::None;
+		const WorldTransformComp* transform = nullptr;
+		if (!TryGetReplicatedSpawnState(
+			_framework,
 			spawnEvent.worldId,
-			spawnEvent.entity) == nullptr)
+			spawnEvent.entity,
+			characterId,
+			transform))
 		{
 			continue;
 		}
-
+		const PendingCharacterSpawn* pendingCharacterSpawn =
+			_playerEntryService.FindPendingSpawn(spawnEvent.worldId, spawnEvent.entity);
+		if (pendingCharacterSpawn == nullptr)
+		{
+			_sessionBindings.CollectSessionsInWorld(spawnEvent.worldId, worldSessionIds);
+			(void)StageSpawnAddPacketToSessions(
+				_network,
+				std::span<const SessionId>(worldSessionIds),
+				spawnEvent.netId,
+				characterId,
+				transform);
+			continue;
+		}
 		PendingCharacterSpawn pendingSpawn{};
 		if (!_playerEntryService.TryConsumeSpawnConfirmed(
 			spawnEvent.worldId,
@@ -498,7 +606,6 @@ void ServerApp::FinalizeFrameEvents(const FrameworkRuntime::FrameResult& frameRe
 		{
 			continue;
 		}
-
 		const SessionId sessionId = pendingSpawn.sessionId;
 		(void)AssignPlayerControlNetId(
 			_framework,
@@ -508,14 +615,35 @@ void ServerApp::FinalizeFrameEvents(const FrameworkRuntime::FrameResult& frameRe
 		(void)_sessionBindings.Bind(sessionId, spawnEvent.netId, spawnEvent.worldId);
 		(void)_network.RequestEnterInGame(sessionId, spawnEvent.netId);
 		(void)StageLoginResponse(_network, sessionId, spawnEvent.netId);
-		(void)StageSpawnAddPacket(
+		(void)StageSpawnAddPacketToSession(
 			_network,
 			sessionId,
 			spawnEvent.netId,
-			pendingSpawn.characterId);
+			characterId,
+			transform);
+		StageExistingWorldEntitiesForSession(
+			_framework,
+			_network,
+			spawnEvent.worldId,
+			sessionId,
+			spawnEvent.netId);
+		_sessionBindings.CollectSessionsInWorld(spawnEvent.worldId, worldSessionIds);
+		otherSessionIds.clear();
+		for (SessionId worldSessionId : worldSessionIds)
+		{
+			if (worldSessionId != sessionId)
+			{
+				otherSessionIds.push_back(worldSessionId);
+			}
+		}
+		(void)StageSpawnAddPacketToSessions(
+			_network,
+			std::span<const SessionId>(otherSessionIds),
+			spawnEvent.netId,
+			characterId,
+			transform);
 	}
 }
-
 void ServerApp::BuildReplication()
 {
 	std::vector<SessionId> worldSessionIds;

@@ -13,7 +13,7 @@ void ApplyPlayerCommandSystem::Execute(SystemContext& ctx)
 	for (const WorldCommand& command : ctx.runtime.GetFrameWorldCommands())
 	{
 		Entity targetEntity = Entity::Null();
-		for (auto [entity, identity] : ctx.ecs.View<PlayerControlIdentityComp>())
+		for (const auto& [entity, identity] : ctx.ecs.View<PlayerControlIdentityComp>())
 		{
 			if (identity.netId == command.targetNetId)
 			{
@@ -27,9 +27,7 @@ void ApplyPlayerCommandSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
-		auto* identity = MutableComponent<PlayerControlIdentityComp>(
-			ctx.ecs,
-			targetEntity);
+		auto* identity = MutableComponent<PlayerControlIdentityComp>(ctx.ecs, targetEntity);
 		auto* input = MutableComponent<PlayerInputComp>(ctx.ecs, targetEntity);
 		if (identity == nullptr || input == nullptr)
 		{
@@ -71,20 +69,30 @@ void ApplyPlayerCommandSystem::Execute(SystemContext& ctx)
 
 			switch (static_cast<PlayerCommandTypeKey>(command.typeKey)) {
 			case PlayerCommandTypeKey::LightAttack:
+			{
 				input->action.type = PlayerActionInputType::LightAttack;
 				break;
+			}
 			case PlayerCommandTypeKey::HeavyAttack:
+			{
 				input->action.type = PlayerActionInputType::HeavyAttack;
 				break;
+			}
 			case PlayerCommandTypeKey::Dodge:
+			{
 				input->action.type = PlayerActionInputType::Dodge;
 				break;
+			}
 			case PlayerCommandTypeKey::Parry:
+			{
 				input->action.type = PlayerActionInputType::Parry;
 				break;
+			}
 			default:
+			{
 				input->action.type = PlayerActionInputType::None;
 				break;
+			}
 			}
 			continue;
 		}
@@ -101,9 +109,4 @@ void ApplyPlayerCommandSystem::Execute(SystemContext& ctx)
 			input->guard.lastUpdatedFrame = ctx.runtime.FrameIndex();
 		}
 	}
-}
-
-const SystemMeta& ApplyPlayerCommandSystem::Meta() const
-{
-	return kMeta;
 }

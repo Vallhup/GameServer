@@ -155,9 +155,6 @@
     <ClInclude Include="ServerApp.h">
       <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="InboundMessage.h">
       <Filter>Network</Filter>
     </ClInclude>
@@ -193,9 +190,6 @@
     </ClInclude>
     <ClInclude Include="NetIdMap.h">
       <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Event.h">
-      <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="json.hpp">
       <Filter>Utility\Dependency</Filter>

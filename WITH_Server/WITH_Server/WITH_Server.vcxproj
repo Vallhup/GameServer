@@ -252,12 +252,10 @@
     <ClInclude Include="ECS\System\Phase8\FinalizePostCommitStateSystem.h" />
     <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h" />
     <ClInclude Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.h" />
-    <ClInclude Include="Event.h" />
     <ClInclude Include="FrameworkRuntime.h" />
     <ClInclude Include="InboundCommandStatsCollector.h" />
     <ClInclude Include="InboundMessage.h" />
     <ClInclude Include="InboundMessageProcessor.h" />
-    <ClInclude Include="Constants.h" />
     <ClInclude Include="GameServerNetworkService.h" />
     <ClInclude Include="GameSendBufferManager.h" />
     <ClInclude Include="IDs.h" />

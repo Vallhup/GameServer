@@ -66,30 +66,41 @@ void RegisterGameplayRuntimeSystems(
 	WorldRuntime& runtime,
 	const AnimationRegistry* animationRegistry)
 {
+	// Phase 1
 	runtime.RegisterSystem<ApplyPlayerCommandSystem>(SystemPhase::Graph);
+
+	// Phase 2
 	runtime.RegisterSystem<ResolveActionStateSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ResolveLocomotionStateSystem>(SystemPhase::Graph);
+
+	// Phase 3
 	runtime.RegisterSystem<ResolveAnimationPlaybackSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<SampleAnimationPoseSystem>(
-		SystemPhase::Graph,
-		animationRegistry);
+	runtime.RegisterSystem<SampleAnimationPoseSystem>(SystemPhase::Graph, animationRegistry);
 	runtime.RegisterSystem<FitSkeletalCombatColliderSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ComputeLocomotionMoveDeltaSystem>(
-		SystemPhase::Graph);
+
+	// Phase 4
+	runtime.RegisterSystem<ComputeLocomotionMoveDeltaSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ComputeActionMoveDeltaSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ApplyMovementDeltaSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ResolveNavMeshBodyConstraintSystem>(
-		SystemPhase::Graph);
+
+	// Phase 5
+	runtime.RegisterSystem<ResolveNavMeshBodyConstraintSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ResolveCharacterOverlapSystem>(SystemPhase::Graph);
+
+	// Phase 6
 	runtime.RegisterSystem<ResolvePortalTriggerSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<MarkTransferPendingSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ResolveCombatColliderActivationSystem>(
-		SystemPhase::Graph);
+
+	// Phase 7
+	runtime.RegisterSystem<ResolveCombatColliderActivationSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ResolveCombatHitSystem>(SystemPhase::Graph);
+
+	// Phase 8
 	runtime.RegisterSystem<CommitCombatResultSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<CommitActionTimelineEventSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ResolveDeathAndDespawnSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<FinalizePostCommitStateSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<CollectReplicationTodoSourceSystem>(
-		SystemPhase::Graph);
+
+	// Phase 9
+	runtime.RegisterSystem<CollectReplicationTodoSourceSystem>(SystemPhase::Graph);
 }

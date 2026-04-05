@@ -193,11 +193,11 @@ bool AnimationJsonLoader::ResolveAnimationId(
 		{ "Knight_idle", AnimationId::Knight_Idle },
 		{ "Knight_walk", AnimationId::Knight_Walk },
 		{ "Knight_run", AnimationId::Knight_Run },
-		{ "Knight_lightattack1", AnimationId::Knight_LightAttack1 },
+		{ "Knight_lightattack1", AnimationId::Knight_LightAttack1 },/*
 		{ "Knight_lightattack2", AnimationId::Knight_LightAttack2 },
 		{ "Knight_lightattack3", AnimationId::Knight_LightAttack3 },
 		{ "Knight_specialattack", AnimationId::Knight_SpecialAttack },
-		{ "Knight_heavyattack", AnimationId::Knight_HeavyAttack },
+		{ "Knight_heavyattack", AnimationId::Knight_HeavyAttack },*/
 		{ "Knight_dodge", AnimationId::Knight_Dodge },
 		{ "Knight_parry", AnimationId::Knight_Parry },
 		{ "Knight_stun", AnimationId::Knight_Stun },
@@ -206,7 +206,7 @@ bool AnimationJsonLoader::ResolveAnimationId(
 		{ "Knight_drinking", AnimationId::Knight_Drinking },
 		{ "Knight_death", AnimationId::Knight_Death },
 
-		{ "Imp_death_1", AnimationId::Imp_Death_1 },
+		/*{ "Imp_death_1", AnimationId::Imp_Death_1 },
 		{ "Imp_death_2", AnimationId::Imp_Death_2 },
 		{ "Imp_idle_1", AnimationId::Imp_Idle_1 },
 		{ "Imp_idle_2", AnimationId::Imp_Idle_2 },
@@ -229,7 +229,7 @@ bool AnimationJsonLoader::ResolveAnimationId(
 		{ "Imp_walk_back", AnimationId::Imp_Walk_Back },
 		{ "Imp_walk_forward", AnimationId::Imp_Walk_Forward },
 		{ "Imp_walk_left", AnimationId::Imp_Walk_Left },
-		{ "Imp_walk_right", AnimationId::Imp_Walk_Right },
+		{ "Imp_walk_right", AnimationId::Imp_Walk_Right },*/
 
 		{ "FinalBoss_idle", AnimationId::FinalBoss_Idle },
 		{ "FinalBoss_walk", AnimationId::FinalBoss_Walk },
