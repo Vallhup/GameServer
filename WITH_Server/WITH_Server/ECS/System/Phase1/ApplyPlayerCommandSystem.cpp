@@ -27,8 +27,10 @@ void ApplyPlayerCommandSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
-		auto* identity = MutableComponent<PlayerControlIdentityComp>(ctx.ecs, targetEntity);
-		auto* input = MutableComponent<PlayerInputComp>(ctx.ecs, targetEntity);
+		auto* identity = MutableComponent<PlayerControlIdentityComp>(
+			ctx.ecs,
+			targetEntity);
+		auto* input = MutableComponent<ActorInputComp>(ctx.ecs, targetEntity);
 		if (identity == nullptr || input == nullptr)
 		{
 			continue;

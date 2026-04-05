@@ -92,9 +92,7 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 	for (auto [entity, actionState, locomotionState, transform, input, advance] :
 		ctx.ecs.View<
 			ActionStateComp,
-			LocomotionStateComp,
-			WorldTransformComp,
-			PlayerInputComp,
+			ActorInputComp,
 			ActionTimelineAdvanceComp>())
 	{
 		ClearActionTimelineAdvance(advance);
@@ -103,7 +101,8 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 		{
 			actionState.actionId = ActionId::None;
 			actionState.elapsedSec = 0.0f;
-			ResetActionDirection(actionState);
+			actionState.directionX = 0.0f;
+			actionState.directionZ = 0.0f;
 			input.action = {};
 			continue;
 		}
@@ -116,7 +115,8 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 				++actionState.actionInstanceId;
 				actionState.actionId = pending->payload.reactionActionId;
 				actionState.elapsedSec = 0.0f;
-				ResetActionDirection(actionState);
+				actionState.directionX = 0.0f;
+				actionState.directionZ = 0.0f;
 			}
 			ctx.runtime.DeferredRemoveComponent<PendingKnockdownComp>(entity);
 			input.action = {};
@@ -168,7 +168,6 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 			advance.prevElapsedSec = actionState.elapsedSec;
 
 			actionState.elapsedSec += static_cast<float>(ctx.dtSec);
-			ClampHoldableElapsedSec(actionState, *actionDef);
 			advance.currElapsedSec = actionState.elapsedSec;
 
 			const float duration = std::max(0.001f, actionDef->duration);
@@ -191,39 +190,30 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 				});
 			}
 
-			if ((actionState.elapsedSec >= actionDef->duration &&
-				actionDef->normalizedPolicy == ActionNormalizedPolicy::FixedDuration) ||
-				IsHoldReleased(*actionDef, input))
+			if (actionState.elapsedSec >= actionDef->duration &&
+				actionDef->normalizedPolicy == ActionNormalizedPolicy::FixedDuration)
 			{
 				actionState.actionId = actionDef->endPolicy.defaultNextActionId;
 				actionState.elapsedSec = 0.0f;
-				ResetActionDirection(actionState);
+				actionState.directionX = 0.0f;
+				actionState.directionZ = 0.0f;
 			}
 
 			input.action = {};
 			continue;
 		}
 
-		const SpawnTypeComp* spawnType =
-			ctx.ecs.GetComponent<SpawnTypeComp>(entity);
-
-		if (input.guard.isPressed &&
-			input.action.type == PlayerActionInputType::None &&
-			spawnType != nullptr)
+		// AI 직접 지정 경로 (directActionId 우선)
+		if (input.action.directActionId != ActionId::None)
 		{
-			const ActionId guardActionId =
-				FindGuardAction(spawnType->characterId);
-			if (guardActionId != ActionId::None)
-			{
-				++actionState.actionInstanceId;
-				actionState.actionId = guardActionId;
-				actionState.elapsedSec = 0.0f;
-				SetActionDirectionFromInputOrFacing(
-					actionState,
-					input.action,
-					locomotionState,
-					transform);
-			}
+			++actionState.actionInstanceId;
+			actionState.actionId   = input.action.directActionId;
+			actionState.elapsedSec = 0.0f;
+			actionState.directionX = input.action.directionX;
+			actionState.directionZ = input.action.directionZ;
+			NormalizeXZ(actionState.directionX, actionState.directionZ);
+			input.action = {};
+			continue;
 		}
 
 		if (input.action.type == PlayerActionInputType::None)

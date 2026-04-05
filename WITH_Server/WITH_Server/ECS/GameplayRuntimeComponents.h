@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "ActionDef.h"
+#include "AICommand.h"
 #include "AnimationDef.h"
 #include "PlayerCommand.h"
 #include "RepComponent.h"
@@ -42,19 +43,22 @@ struct PlayerGuardInputState
 	uint64_t lastUpdatedFrame{ 0 };
 };
 
-struct PlayerActionInputEvent
+struct ActorActionInputEvent
 {
+	// 플레이어 경로: PlayerActionInputType → FindActionForInput → ActionId
 	PlayerActionInputType type{ PlayerActionInputType::None };
+	// AI 경로: ActionId 직접 지정 (type보다 우선 처리)
+	ActionId directActionId{ ActionId::None };
 	float directionX{ 0.0f };
 	float directionZ{ 0.0f };
 	uint64_t requestedFrame{ 0 };
 };
 
-struct PlayerInputComp : Component
+struct ActorInputComp : Component
 {
 	PlayerMoveInputState move;
 	PlayerGuardInputState guard;
-	PlayerActionInputEvent action;
+	ActorActionInputEvent action;
 };
 
 struct PendingDespawnTag : TagComponent
@@ -414,4 +418,124 @@ struct ReplicationStatsComp : Component
 	uint64_t missingAnimationRegistryCount{ 0 };
 	uint64_t missingWorldTransferPayloadCount{ 0 };
 	uint64_t replicationTodoSkippedCount{ 0 };
+};
+
+// ============================================================
+// AI 컴포넌트
+// ============================================================
+
+// AI 엔티티 식별 태그
+struct AIControlledTag : TagComponent {};
+
+// AI 인지 캐시 (매 프레임 재계산되는 read-only 스냅샷)
+struct AIPerceptionComp : Component
+{
+	Entity selectedTarget{ Entity::Null() };
+	double distanceToTarget{ std::numeric_limits<double>::max() };
+	double distanceToTargetSq{ std::numeric_limits<double>::max() };
+	double targetForwardDot{ std::numeric_limits<double>::lowest() };
+	bool hasTarget{ false };
+	bool targetVisible{ false };
+	bool targetInSightRange{ false };
+	bool targetInAttackRange{ false };
+	bool targetInFront{ false };
+	uint32_t hostileInSightCount{ 0 };
+	double timeSinceTargetLastSeen{ std::numeric_limits<double>::max() };
+};
+
+// AI 인지 튜닝 파라미터
+struct AIPerceptionTuningComp : Component
+{
+	double sightRange{ 12.0 };
+	double attackRange{ 2.5 };
+	double frontDotThreshold{ 0.2 };
+	double targetKeepBonus{ 4.0 };
+	double lastAttackerBonus{ 2.5 };
+	double frontBonus{ 1.0 };
+	double switchScoreMargin{ 3.0 };
+	double loseSightGraceTime{ 1.2 };
+	double leashRange{ 18.0 };
+};
+
+// AI 블랙보드 (AI 기억 공간)
+struct AIBlackboardComp : Component
+{
+	Entity currentTarget{ Entity::Null() };
+	Entity lastAttacker{ Entity::Null() };
+	double timeSinceCurrentTargetSeen{ std::numeric_limits<double>::max() };
+	bool forceRetarget{ false };
+	XMFLOAT3 lastKnownTargetPosition{ 0.0f, 0.0f, 0.0f };
+	bool hasLastKnownTargetPosition{ false };
+};
+
+enum class AIStateType : uint8_t
+{
+	Idle = 0,
+	Chase,
+	Combat,
+	Search,
+	React
+};
+
+// AI FSM 의사결정 상태
+struct AIDecisionComp : Component
+{
+	AIStateType curState{ AIStateType::Idle };
+	AIStateType prevState{ AIStateType::Idle };
+	bool transitionRequested{ false };
+	AIStateType requestedState{ AIStateType::Idle };
+	double stateTime{ 0.0 };
+	double globalDecisionAcc{ 0.0 };
+	double attackCooldownAcc{ 0.0 };
+	bool enteredThisFrame{ true };
+
+	void RequestTransition(AIStateType next) noexcept
+	{
+		transitionRequested = true;
+		requestedState = next;
+	}
+};
+
+// AI 의사결정 튜닝 파라미터
+struct AIDecisionTuningComp : Component
+{
+	double decisionInterval{ 0.2 };
+	double attackCooldown{ 1.2 };
+};
+
+// AI 반응 이벤트 캐시 (Phase 8에서 기록, AI Decision System에서 소비 후 초기화)
+struct AIReactionComp : Component
+{
+	Entity instigator{ Entity::Null() };
+	bool gotHitThisFrame{ false };
+	bool gotParriedThisFrame{ false };
+
+	bool GotReactionEvent() const noexcept
+	{
+		return gotHitThisFrame || gotParriedThisFrame;
+	}
+
+	void Clear() noexcept
+	{
+		instigator = Entity::Null();
+		gotHitThisFrame = false;
+		gotParriedThisFrame = false;
+	}
+};
+
+// AI 프레임 단위 명령 출력 (transient - 매 프레임 초기화)
+struct AICommandFrameComp : Component
+{
+	bool hasMove{ false };
+	float moveX{ 0.0f };
+	float moveZ{ 0.0f };
+	float moveYaw{ 0.0f };
+	bool wantsRun{ false };
+
+	bool hasAction{ false };
+	ActionId actionId{ ActionId::None };
+	float actionDirX{ 0.0f };
+	float actionDirZ{ 0.0f };
+
+	void Clear() noexcept { *this = {}; }
 };

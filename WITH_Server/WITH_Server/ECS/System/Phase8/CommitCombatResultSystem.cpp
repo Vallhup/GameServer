@@ -92,6 +92,32 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			dirty->MarkDirty(WorldDirtyType::Stat);
 		}
 
+		// AI 피격 반응 기록
+		if (result.wasHitThisFrame)
+		{
+			if (auto* aiReaction = MutableComponent<AIReactionComp>(ctx.ecs, entity))
+			{
+				aiReaction->gotHitThisFrame = true;
+				aiReaction->instigator = result.reactionSource;
+			}
+		}
+
+		// AI 패리 당함 반응 기록 (이 엔티티의 공격을 피격자가 패리한 경우)
+		for (const PendingCombatInteractionRecord& interaction :
+			result.receivedInteractions)
+		{
+			if (interaction.resultType != CombatResolveResultType::Parry)
+			{
+				continue;
+			}
+			if (auto* aiReaction = MutableComponent<AIReactionComp>(
+				ctx.ecs, interaction.sourceEntity))
+			{
+				aiReaction->gotParriedThisFrame = true;
+				aiReaction->instigator = entity;
+			}
+		}
+
 		if (stats.currentHp <= 0)
 		{
 			continue;
