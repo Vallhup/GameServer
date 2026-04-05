@@ -11,7 +11,7 @@ const SystemMeta ResolveLocomotionStateSystem::kMeta =
 void ResolveLocomotionStateSystem::Execute(SystemContext& ctx)
 {
 	for (auto [entity, locomotionState, actionState, input] :
-		ctx.ecs.View<LocomotionStateComp, ActionStateComp, PlayerInputComp>())
+		ctx.ecs.View<LocomotionStateComp, ActionStateComp, ActorInputComp>())
 	{
 		if (HasBlockingPendingState(ctx.ecs, entity) || IsActionActive(actionState))
 		{

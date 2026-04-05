@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "ServerWorldBootstrap.h"
 
+#include "CharacterIdPolicy.h"
+#include "ECS/GameplayRuntimeComponents.h"
+#include "ECS/System/GameplaySystemRegistration.h"
 #include "ExecutionContextTypes.h"
 #include "ExecutionSourceTypes.h"
-#include "ECS/System/GameplaySystemRegistration.h"
 #include "RepComponent.h"
 #include "WorldContentIds.h"
 #include "WorldDef.h"
@@ -12,6 +14,81 @@
 
 namespace
 {
+	void SpawnAIEntity(
+		WorldRuntime& runtime,
+		CharacterId characterId,
+		float spawnX,
+		float spawnZ)
+	{
+		const CharacterDef* characterDef = FindCharacterDef(characterId);
+		if (characterDef == nullptr)
+		{
+			return;
+		}
+
+		const Entity aiEntity = runtime.ReserveEntity();
+		if (aiEntity.IsNull())
+		{
+			return;
+		}
+
+		// 공통 컴포넌트 (플레이어와 동일)
+		runtime.DeferredAddComponent<ReplicatedTag>(aiEntity);
+		runtime.DeferredUpsertComponent<SpawnTypeComp>(
+			aiEntity,
+			SpawnTypeComp{ .characterId = characterId });
+		runtime.DeferredAddComponent<ActorInputComp>(aiEntity);
+		runtime.DeferredAddComponent<ActionStateComp>(aiEntity);
+		runtime.DeferredAddComponent<LocomotionStateComp>(aiEntity);
+		runtime.DeferredAddComponent<ActionTimelineAdvanceComp>(aiEntity);
+		runtime.DeferredAddComponent<AnimationPlaybackStateComp>(aiEntity);
+		runtime.DeferredAddComponent<SampledAnimationPoseComp>(aiEntity);
+		runtime.DeferredAddComponent<SkeletalCombatColliderComp>(aiEntity);
+		runtime.DeferredUpsertComponent<WorldTransformComp>(
+			aiEntity,
+			WorldTransformComp{ .position = { spawnX, 0.0f, spawnZ }, .yawRad = 0.0f });
+		runtime.DeferredAddComponent<LocomotionMoveDeltaComp>(aiEntity);
+		runtime.DeferredAddComponent<ActionMoveDeltaComp>(aiEntity);
+		runtime.DeferredAddComponent<ActionMoveRuntimeComp>(aiEntity);
+		runtime.DeferredAddComponent<PreCollisionTransformComp>(aiEntity);
+		runtime.DeferredAddComponent<BodyCollisionShapeComp>(aiEntity);
+		runtime.DeferredAddComponent<NavMeshAgentStateComp>(aiEntity);
+		runtime.DeferredAddComponent<BodyCollisionResolveComp>(aiEntity);
+		runtime.DeferredAddComponent<PortalTriggerStateComp>(aiEntity);
+		runtime.DeferredAddComponent<CombatColliderActivationComp>(aiEntity);
+		runtime.DeferredAddComponent<CombatHitDedupStateComp>(aiEntity);
+		runtime.DeferredAddComponent<PendingCombatResultComp>(aiEntity);
+
+		CombatStatStateComp stats{};
+		stats.currentHp      = static_cast<int32_t>(characterDef->stat.maxHp);
+		stats.maxHp          = static_cast<int32_t>(characterDef->stat.maxHp);
+		stats.currentStamina = static_cast<int32_t>(characterDef->stat.maxStamina);
+		stats.maxStamina     = static_cast<int32_t>(characterDef->stat.maxStamina);
+		stats.currentPoise   = static_cast<int32_t>(characterDef->stat.maxPoise);
+		stats.maxPoise       = static_cast<int32_t>(characterDef->stat.maxPoise);
+		stats.attackPower    = static_cast<int32_t>(characterDef->stat.attackPower);
+		stats.defense        = static_cast<int32_t>(characterDef->stat.defense);
+		stats.attackSpeed    = characterDef->stat.attackSpeed;
+		stats.moveSpeed      = characterDef->stat.moveSpeed;
+		runtime.DeferredUpsertComponent<CombatStatStateComp>(aiEntity, stats);
+
+		runtime.DeferredAddComponent<BuffRuntimeStateComp>(aiEntity);
+		runtime.DeferredAddComponent<PendingProjectileSpawnComp>(aiEntity);
+		runtime.DeferredAddComponent<PendingActionPresentationEventComp>(aiEntity);
+		runtime.DeferredAddComponent<DirtyFlagsComp>(aiEntity);
+		runtime.DeferredAddComponent<ReplicationStatsComp>(aiEntity);
+
+		// AI 전용 컴포넌트 (PlayerControlIdentityComp 없음)
+		runtime.DeferredAddComponent<AIControlledTag>(aiEntity);
+		runtime.DeferredAddComponent<AIPerceptionComp>(aiEntity);
+		runtime.DeferredAddComponent<AIPerceptionTuningComp>(aiEntity);
+		runtime.DeferredAddComponent<AIBlackboardComp>(aiEntity);
+		runtime.DeferredAddComponent<AIDecisionComp>(aiEntity);
+		runtime.DeferredAddComponent<AIDecisionTuningComp>(aiEntity);
+		runtime.DeferredAddComponent<AIReactionComp>(aiEntity);
+		runtime.DeferredAddComponent<AICommandFrameComp>(aiEntity);
+	}
+
 	constexpr ExecToken kSquareBootstrapExecToken = 1;
 	constexpr WorldExecutionModelKey kSquareBootstrapExecutionModelKey = 1;
 
@@ -48,7 +125,8 @@ namespace
 
 		bool OnStart(WorldRuntime& runtime) override
 		{
-			(void)runtime;
+			SpawnAIEntity(runtime, CharacterId::Imp,  3.0f, 5.0f);
+			SpawnAIEntity(runtime, CharacterId::Imp, -3.0f, 5.0f);
 			return true;
 		}
 

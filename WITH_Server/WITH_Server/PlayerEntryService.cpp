@@ -56,7 +56,7 @@ namespace
 				.netId = NetId::Invalid(),
 				.ownerSessionId = sessionId
 			});
-		runtime.DeferredAddComponent<PlayerInputComp>(playerEntity);
+		runtime.DeferredAddComponent<ActorInputComp>(playerEntity);
 		runtime.DeferredAddComponent<ActionStateComp>(playerEntity);
 		runtime.DeferredAddComponent<LocomotionStateComp>(playerEntity);
 		runtime.DeferredAddComponent<ActionTimelineAdvanceComp>(playerEntity);

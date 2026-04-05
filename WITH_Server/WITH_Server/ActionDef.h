@@ -128,6 +128,8 @@ struct ActionCancelRule
 	std::optional<float> windowStartNormalized;
 	std::optional<float> windowEndNormalized;
 	int priority;
+	// true이면 AI Decision System이 이 cancel window에서 새 action 발행 가능
+	bool aiInterruptible{ false };
 };
 
 struct ActionTransitionRuleDef

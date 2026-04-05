@@ -2,6 +2,9 @@
 #include "GameplaySystemRegistration.h"
 
 #include "../GameplayRuntimeComponents.h"
+#include "Phase0_AI/AIDecisionSystem.h"
+#include "Phase0_AI/AIPerceptionSystem.h"
+#include "Phase1/ApplyAICommandSystem.h"
 #include "Phase1/ApplyPlayerCommandSystem.h"
 #include "Phase2/ResolveActionStateSystem.h"
 #include "Phase2/ResolveLocomotionStateSystem.h"
@@ -27,7 +30,7 @@
 void RegisterGameplayRuntimeStorages(WorldRuntime& runtime)
 {
 	runtime.RegisterStorage<PlayerControlIdentityComp>();
-	runtime.RegisterStorage<PlayerInputComp>();
+	runtime.RegisterStorage<ActorInputComp>();
 	runtime.RegisterStorage<PendingDespawnTag>();
 	runtime.RegisterStorage<PendingWorldTransferTag>();
 	runtime.RegisterStorage<PendingWorldTransferComp>();
@@ -60,13 +63,29 @@ void RegisterGameplayRuntimeStorages(WorldRuntime& runtime)
 	runtime.RegisterStorage<PendingActionPresentationEventComp>();
 	runtime.RegisterStorage<DirtyFlagsComp>();
 	runtime.RegisterStorage<ReplicationStatsComp>();
+
+	// AI 전용 컴포넌트
+	runtime.RegisterStorage<AIControlledTag>();
+	runtime.RegisterStorage<AIPerceptionComp>();
+	runtime.RegisterStorage<AIPerceptionTuningComp>();
+	runtime.RegisterStorage<AIBlackboardComp>();
+	runtime.RegisterStorage<AIDecisionComp>();
+	runtime.RegisterStorage<AIDecisionTuningComp>();
+	runtime.RegisterStorage<AIReactionComp>();
+	runtime.RegisterStorage<AICommandFrameComp>();
 }
 
 void RegisterGameplayRuntimeSystems(
 	WorldRuntime& runtime,
 	const AnimationRegistry* animationRegistry)
 {
+	// Pre-Phase 1: AI 시스템
+	runtime.RegisterSystem<AIPerceptionSystem>(SystemPhase::Graph);
+	runtime.RegisterSystem<AIDecisionSystem>(SystemPhase::Graph);
+
+	// Phase 1: 명령 적용
 	runtime.RegisterSystem<ApplyPlayerCommandSystem>(SystemPhase::Graph);
+	runtime.RegisterSystem<ApplyAICommandSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ResolveActionStateSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ResolveLocomotionStateSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ResolveAnimationPlaybackSystem>(SystemPhase::Graph);

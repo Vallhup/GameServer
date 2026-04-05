@@ -13,7 +13,7 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 	for (auto [entity, actionState, input, advance] :
 		ctx.ecs.View<
 			ActionStateComp,
-			PlayerInputComp,
+			ActorInputComp,
 			ActionTimelineAdvanceComp>())
 	{
 		ClearActionTimelineAdvance(advance);
@@ -122,6 +122,19 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 				actionState.directionZ = 0.0f;
 			}
 
+			input.action = {};
+			continue;
+		}
+
+		// AI 직접 지정 경로 (directActionId 우선)
+		if (input.action.directActionId != ActionId::None)
+		{
+			++actionState.actionInstanceId;
+			actionState.actionId   = input.action.directActionId;
+			actionState.elapsedSec = 0.0f;
+			actionState.directionX = input.action.directionX;
+			actionState.directionZ = input.action.directionZ;
+			NormalizeXZ(actionState.directionX, actionState.directionZ);
 			input.action = {};
 			continue;
 		}
