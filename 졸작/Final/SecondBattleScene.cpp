@@ -147,8 +147,6 @@ void SecondBattleScene::RenderSceneForward()
 
 	if (water)
 		renderer->RenderWater(*coreRef, water.get());
-
-	renderer->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
 void SecondBattleScene::RenderSceneShadow()

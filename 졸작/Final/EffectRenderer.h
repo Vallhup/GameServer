@@ -8,7 +8,7 @@ public:
     EffectRenderer();
     virtual ~EffectRenderer();
 
-    void SetEffectName(const std::wstring& name);
+    void SetEffectName(const wstring& name);
     void SetWorldMatrix(const XMMATRIX& mat);
 
     void Update(float deltaTime) override;
@@ -18,8 +18,6 @@ public:
     bool IsPlaying() const { return handle != -1; }
 
 private:
-    std::wstring effectName;
+    wstring effectName;
     Effekseer::Handle handle = -1;
-
-    XMMATRIX worldMatrix = XMMatrixIdentity();
 };

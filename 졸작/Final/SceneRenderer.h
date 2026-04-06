@@ -17,7 +17,6 @@ public:
     void BeginFrame();
 
     void RenderDeferred(DX12Core& core, const vector<shared_ptr<GameObject>>& objects, const Camera* cam);
-    void RenderForward(DX12Core& core, const vector<shared_ptr<GameObject>>& objects, const Camera* cam);
     void RenderShadow(DX12Core& core, const vector<shared_ptr<GameObject>>& objects);
     void RenderTerrain(DX12Core& core, Terrain* terrain);
     void RenderWater(DX12Core& core, Water* water);

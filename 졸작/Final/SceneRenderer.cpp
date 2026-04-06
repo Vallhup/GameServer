@@ -85,9 +85,6 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
 
             for (size_t i = 0; i < subMeshes.size(); ++i)
             {
-                bool hasAlpha = !originalData[i].alphaTexPath.empty();
-                if (hasAlpha) continue;
-
                 auto objConst = MakeObjectConstants(world, 1, 0, materials[i]->GetMaterialIndex());
                 size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
                 objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
@@ -115,116 +112,6 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
         string msg = "[Deferred Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
             + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
         OutputDebugStringA(msg.c_str());
-    }
-}
-
-void SceneRenderer::RenderForward(DX12Core& core, const vector<shared_ptr<GameObject>>& objects, const Camera* cam)
-{
-    UINT startIndex = cbIndex;
-
-    auto cmdList = core.GetGraphicsCmdList();
-    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Transparent));
-    SetupRenderingState(core);
-
-    BoundingFrustum frustum;
-    XMFLOAT3 camPos = {};
-    if (cam) 
-    {
-        frustum = cam->GetViewFrustum();
-        camPos = cam->GetPosition();
-    }
-
-    XMVECTOR camPosVec = XMLoadFloat3(&camPos);
-
-    vector<pair<float, shared_ptr<GameObject>>> alphaObjects;
-
-    for (const auto& obj : objects)
-    {
-        if (obj->GetId() == -1) continue;
-        if (cam && !obj->IsVisible(frustum, camPosVec)) continue;
-
-        auto mesh = obj->GetComponent<Mesh>();
-        if (!mesh || !mesh->GetVertexIndexBuffer()) continue;
-
-        bool hasAlpha = false;
-        const auto& originalData = mesh->GetOriginalMaterialData();
-        for (const auto& mat : originalData) {
-            if (!mat.alphaTexPath.empty()) {
-                hasAlpha = true;
-                break;
-            }
-        }
-
-        if (hasAlpha) {
-            auto transform = obj->GetComponent<Transform>();
-            XMFLOAT3 objPos = transform->GetPosition();
-            XMVECTOR objPosVec = XMLoadFloat3(&objPos);
-            float dist = XMVectorGetX(XMVector3Length(XMVectorSubtract(objPosVec, camPosVec)));
-            alphaObjects.push_back({ dist, obj });
-        }
-    }
-
-    sort(alphaObjects.begin(), alphaObjects.end(), [](const auto& a, const auto& b) {
-        return a.first > b.first; });
-
-    for (const auto& [dist, obj] : alphaObjects)
-    {
-        if (cbIndex >= MAX_OBJECTS) {
-            OutputDebugStringA("cbIndex Overflowed!!\n");
-            break;
-        }
-
-        auto mesh = obj->GetComponent<Mesh>();
-        auto animator = obj->GetComponent<Animator>();
-        auto transform = obj->GetComponent<Transform>();
-
-        if (animator) {
-            cmdList->SetGraphicsRootShaderResourceView(10, animator->GetFinalBuffer()->GetGPUVirtualAddress());
-        }
-
-        XMMATRIX world = XMMatrixTranspose(transform->GetWorldMatrix());
-        mesh->GetVertexIndexBuffer()->Bind(cmdList);
-
-        if (mesh->HasMultiMaterial())
-        {
-            const auto& subMeshes = mesh->GetSubMeshes();
-            const auto& materials = mesh->GetMaterials();
-            const auto& originalData = mesh->GetOriginalMaterialData();
-
-            for (size_t i = 0; i < subMeshes.size(); ++i)
-            {
-                bool hasAlpha = !originalData[i].alphaTexPath.empty();
-                if (!hasAlpha) continue;
-
-                auto objConst = MakeObjectConstants(world, 1, 0, materials[i]->GetMaterialIndex());
-                size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
-                objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
-                cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
-                cbIndex++;
-
-                mesh->GetVertexIndexBuffer()->DrawIndexed(cmdList, subMeshes[i].indexCount, subMeshes[i].startIndex);
-            }
-        }
-        else
-        {
-            UINT matIndex = mesh->GetMaterial() ? mesh->GetMaterial()->GetMaterialIndex() : 0;
-            auto objConst = MakeObjectConstants(world, 1, 0, matIndex);
-            size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
-            objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
-            cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
-            cbIndex++;
-
-            mesh->GetVertexIndexBuffer()->Draw(cmdList);
-        }
-    }
-
-    if (GetAsyncKeyState('P') & 0x8000)
-    {
-        string msg = "[Forward Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
-            + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
-        string totalMsg = ">> Total CB Usage: " + to_string(cbIndex) + " / " + to_string(MAX_OBJECTS) + "\n\n";
-        OutputDebugStringA(msg.c_str());
-        OutputDebugStringA(totalMsg.c_str());
     }
 }
 

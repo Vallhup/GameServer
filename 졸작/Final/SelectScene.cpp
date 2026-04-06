@@ -265,7 +265,7 @@ void SelectScene::RenderSceneDeferred()
 
 void SelectScene::RenderSceneForward()
 {
-	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
+
 }
 
 void SelectScene::RenderSceneShadow()

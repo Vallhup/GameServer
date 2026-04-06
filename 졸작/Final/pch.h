@@ -23,6 +23,8 @@
 #include <queue>
 #include <utility>
 #include <fstream>
+#include <functional>
+#include <float.h>
 using namespace std;
 
 #include "d3dx12.h"

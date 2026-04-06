@@ -105,14 +105,14 @@ void FirstBattleScene::CreateEffectSamples()
 	};
 
 	vector<EffectInfo> info = {
-		{u"Fireworks", 1.f, 0.f, -10.5f},
+		{u"Fireworks", 162.f, 50.f, 650.0f},
 		{u"BloodLance", 1.f, 0.f, 0.5f},
 		{u"Aura01_HDR2", 1.f, 0.f, 0.5f},
 		{u"Benediction", 1.f, 10.f, -10.5f},
 		{u"Atmosphere", 1.f, 10.f, -10.5f},
 		{u"CandleFire5", 14.2448f, 14.5f, -43.6773f},
 		{u"CandleFire5", -14.1011f, 14.5f, -43.6773f},
-		{u"Dissolve", 2.f, 0.f, 0.f},
+		{u"Dissolve", 162.f, 50.f, 650.0f},
 		{u"SwordThunder", 0.0f, 0.0f, 0.0f}
 	};
 
@@ -128,6 +128,7 @@ void FirstBattleScene::CreateEffectSamples()
 		effectRenderer->SetEffectName(name);
 
 		transform->SetInitPosition(info[i].x, info[i].y, info[i].z);
+		transform->SetScale(1.f, 1.f, 1.f);
 		effectObjects.push_back(effectSample);
 		AddGameObject(effectSample);
 	}
@@ -374,11 +375,11 @@ void FirstBattleScene::InitializeLogic()
 
 void FirstBattleScene::UpdateScene(const float deltaTime)
 {
-	/*if (effectObjects.size() > 0 && INPUT.GetKeyDown('1'))
+	if (effectObjects.size() > 0 && INPUT.GetKeyDown('1'))
 		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects.size() > 1 && INPUT.GetKeyDown('2'))
-		effectObjects[1]->GetComponent<EffectRenderer>()->PlayEffect();*/
+		effectObjects[1]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects.size() > 2 && INPUT.GetKeyDown('3'))
 		effectObjects[2]->GetComponent<EffectRenderer>()->PlayEffect();
@@ -672,20 +673,6 @@ void FirstBattleScene::RenderSceneForward()
 
 	if (water)
 		renderer->RenderWater(*coreRef, water.get());
-
-	// 투명 객체 렌더링 순서 -> skybox -> water -> effects -> 캐릭터 머리카락
-	// Trail 렌더링
-	if (trailRenderer)
-		trailRenderer->Render(*coreRef);
-
-	// Foot Dust 렌더링
-	if (footDustEffect)
-		footDustEffect->Render(*coreRef);
-
-	if (flameEffect)
-		flameEffect->Render(*coreRef);
-
-	renderer->RenderForward(*coreRef, gameObjects, cam.get());
 }
 
 void FirstBattleScene::RenderSceneShadow()
@@ -701,6 +688,15 @@ void FirstBattleScene::RenderSceneShadow()
 
 void FirstBattleScene::RenderSceneEffects()
 {
+	if (trailRenderer)
+		trailRenderer->Render(*coreRef);
+
+	if (footDustEffect)
+		footDustEffect->Render(*coreRef);
+
+	if (flameEffect)
+		flameEffect->Render(*coreRef);
+
 	if (cam)
 		EFFECT_MANAGER->Render(*coreRef, cam.get());
 }

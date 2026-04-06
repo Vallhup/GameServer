@@ -62,7 +62,7 @@ void PlazaScene::RenderSceneDeferred()
 
 void PlazaScene::RenderSceneForward()
 {
-	sManagerRef->GetSceneRenderer()->RenderForward(*coreRef, gameObjects, cam.get());
+
 }
 
 void PlazaScene::RenderSceneShadow()

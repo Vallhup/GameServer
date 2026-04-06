@@ -15,22 +15,19 @@ EffectRenderer::~EffectRenderer()
     StopEffect();
 }
 
-void EffectRenderer::SetEffectName(const std::wstring& name)
+void EffectRenderer::SetEffectName(const wstring& name)
 {
     effectName = name;
 }
 
 void EffectRenderer::SetWorldMatrix(const XMMATRIX& mat)
 {
-    worldMatrix = mat;
+    if (handle != -1)
+        EFFECT_MANAGER->SetMatrix(handle, mat);
 }
 
 void EffectRenderer::Update(float deltaTime)
 {
-    if (handle != -1)
-    {
-        EFFECT_MANAGER->SetMatrix(handle, worldMatrix);
-    }
 }
 
 void EffectRenderer::PlayEffect()

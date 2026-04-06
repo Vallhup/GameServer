@@ -27,7 +27,15 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
             baseColor = bindlessTextures[NonUniformResourceIndex(material.baseColorTexIndex)].Sample(linearSampler, input.uv);
         
         float finalAlpha = baseColor.a;
-        clip(finalAlpha - 0.01f);
+        if (material.alphaTexIndex != 0xFFFFFFFF)
+        {
+            finalAlpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].Sample(linearSampler, input.uv).r;
+            clip(finalAlpha - 0.5f);
+        }
+        else
+        {
+            clip(finalAlpha - 0.01f);
+        }
         
         if (material.normalTexIndex != 0xFFFFFFFF)
         {
