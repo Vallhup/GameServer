@@ -13,7 +13,7 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 	XMVECTOR centerPos = XMLoadFloat3(&center);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	float shadowCasterDistance = 200.0f;
+	float shadowCasterDistance = 140.0f;
 
 	XMVECTOR lightPos = XMVectorSubtract(centerPos, XMVectorScale(csmLightDir, shadowCasterDistance));
 	XMMATRIX lightView = XMMatrixLookAtLH(lightPos, centerPos, up);
@@ -35,7 +35,7 @@ void ShadowMappingManager::SettingsForCSM()
 	XMVECTOR lightDir = XMVectorSet(-0.74f, -0.40f, -1.0f, 0);
 	csmLightDir = XMVector3Normalize(lightDir);
 
-	csmConstants.cascadeSplit = { 20.0f, 80.0f, 0.0f, 0.0f };
+	csmConstants.cascadeSplit = { 20.0f, 60.0f, 0.0f, 0.0f };
 }
 
 void ShadowMappingManager::CreateCSMResources(ID3D12Device* device)

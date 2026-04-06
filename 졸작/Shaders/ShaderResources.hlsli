@@ -183,6 +183,6 @@ SamplerState lutLinearSampler : register(s2);
 
 static const uint IBL_IRRADIANCE_INDEX = 1;
 static const uint IBL_RADIANCE_INDEX = 2;
-static const uint BRDF_LUT_INDEX = 128;
+static const uint BRDF_LUT_INDEX = 127;
 
 #endif
