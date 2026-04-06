@@ -1,6 +1,14 @@
 #pragma once
 
 #include "System.h"
+#include <DirectXMath.h>
+
+using namespace DirectX;
+
+struct AIPerceptionTuningComp;
+struct WorldTransformComp;
+struct AIBlackboardComp;
+struct AIPerceptionComp;
 
 class AIPerceptionSystem final : public System {
 public:

@@ -584,6 +584,8 @@ bool RunServerAppLoginSpawnFlowTest()
 
 	const WorldId startupWorldId =
 		framework.RegisterPreCreatedWorld(WorldDefId::Square, 0);
+	bootstrapFactory.SetFramework(&framework);
+	bootstrapFactory.SetBootstrapWorldId(&startupWorldId);
 	if (!startupWorldId.IsValid())
 	{
 		std::cout << "[ServerAppTest] Startup world registration failed.\n";

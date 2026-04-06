@@ -11,12 +11,54 @@
 #include "WorldDef.h"
 #include "WorldExecutionModelTypes.h"
 #include "WorldRegistry.h"
+#include "CharacterDef.h"
+#include "FrameworkRuntime.h"
+#include "ServerApp.h"
 
 namespace
 {
+	bool TryBindSpawnedEntityToNetId(
+		FrameworkRuntime* framework,
+		WorldId worldId,
+		Entity entity,
+		NetId* outNetId = nullptr)
+	{
+		if (framework == nullptr ||
+			!worldId.IsValid() ||
+			entity.IsNull())
+		{
+			return false;
+		}
+
+		NetId netId = framework->FindNetId(worldId, entity);
+		if (!netId.IsValid())
+		{
+			netId = framework->AllocateNetId();
+			if (!netId.IsValid())
+			{
+				return false;
+			}
+
+			if (!framework->BindNetEntity(netId, worldId, entity))
+			{
+				framework->FreeNetId(netId);
+				return false;
+			}
+		}
+
+		if (outNetId != nullptr)
+		{
+			*outNetId = netId;
+		}
+
+		return true;
+	}
+
 	void SpawnAIEntity(
+		FrameworkRuntime& framework,
 		WorldRuntime& runtime,
 		CharacterId characterId,
+		WorldId worldId,
 		float spawnX,
 		float spawnZ)
 	{
@@ -32,6 +74,8 @@ namespace
 			return;
 		}
 
+		(void)TryBindSpawnedEntityToNetId(&framework, worldId, aiEntity);
+
 		// 공통 컴포넌트 (플레이어와 동일)
 		runtime.DeferredAddComponent<ReplicatedTag>(aiEntity);
 		runtime.DeferredUpsertComponent<SpawnTypeComp>(
@@ -46,7 +90,7 @@ namespace
 		runtime.DeferredAddComponent<SkeletalCombatColliderComp>(aiEntity);
 		runtime.DeferredUpsertComponent<WorldTransformComp>(
 			aiEntity,
-			WorldTransformComp{ .position = { spawnX, 0.0f, spawnZ }, .yawRad = 0.0f });
+			WorldTransformComp{ .position = { spawnX, 10.0f, spawnZ }, .yawRad = 0.0f });
 		runtime.DeferredAddComponent<LocomotionMoveDeltaComp>(aiEntity);
 		runtime.DeferredAddComponent<ActionMoveDeltaComp>(aiEntity);
 		runtime.DeferredAddComponent<ActionMoveRuntimeComp>(aiEntity);
@@ -108,8 +152,12 @@ namespace
 	class SquareBootstrapWorldImpl final : public IWorldInstanceImpl {
 	public:
 		explicit SquareBootstrapWorldImpl(
-			const AnimationRegistry* animationRegistry)
+			const AnimationRegistry* animationRegistry,
+			FrameworkRuntime* framework,
+			const WorldId* bootstrapWorldId)
 			: _animationRegistry(animationRegistry)
+			, _framework(framework)
+			, _bootstrapWorldId(bootstrapWorldId)
 		{
 		}
 
@@ -125,8 +173,15 @@ namespace
 
 		bool OnStart(WorldRuntime& runtime) override
 		{
-			SpawnAIEntity(runtime, CharacterId::Imp,  3.0f, 5.0f);
-			SpawnAIEntity(runtime, CharacterId::Imp, -3.0f, 5.0f);
+			if (_framework == nullptr ||
+				_bootstrapWorldId == nullptr ||
+				!_bootstrapWorldId->IsValid())
+			{
+				return true;
+			}
+
+			SpawnAIEntity(*_framework, runtime, CharacterId::FinalBoss,
+				*_bootstrapWorldId, 10.0f, 10.0f);
 			return true;
 		}
 
@@ -137,6 +192,8 @@ namespace
 
 	private:
 		const AnimationRegistry* _animationRegistry{ nullptr };
+		FrameworkRuntime* _framework{ nullptr };
+		const WorldId* _bootstrapWorldId{ nullptr };
 	};
 
 	WorldDef MakeSquareWorldDef()
@@ -185,12 +242,27 @@ void ServerWorldBootstrapFactory::SetAnimationRegistry(
 	_animationRegistry = animationRegistry;
 }
 
+void ServerWorldBootstrapFactory::SetFramework(
+	FrameworkRuntime* framework) noexcept
+{
+	_framework = framework;
+}
+
+void ServerWorldBootstrapFactory::SetBootstrapWorldId(
+	const WorldId* worldId) noexcept
+{
+	_bootstrapWorldId = worldId;
+}
+
 std::unique_ptr<IWorldInstanceImpl> ServerWorldBootstrapFactory::Create(
 	const WorldDef& def)
 {
 	switch (def.id) {
 	case WorldDefId::Square:
-		return std::make_unique<SquareBootstrapWorldImpl>(_animationRegistry);
+		return std::make_unique<SquareBootstrapWorldImpl>(
+			_animationRegistry,
+			_framework,
+			_bootstrapWorldId);
 	default:
 		return nullptr;
 	}

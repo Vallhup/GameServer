@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "AIPerceptionSystem.h"
 
+#include "../../GameplayRuntimeComponents.h"
 #include "../GameplaySystemUtil.h"
 
 using namespace GameplaySystemUtil;
@@ -217,7 +218,7 @@ void AIPerceptionSystem::BuildPerception(
 
 void AIPerceptionSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, selfTr, tuning, blackboard, cache] :
+	for (auto [entity, _, selfTr, tuning, blackboard, cache] :
 		ctx.ecs.View<
 			AIControlledTag,
 			WorldTransformComp,

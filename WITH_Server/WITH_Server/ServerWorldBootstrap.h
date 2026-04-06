@@ -2,18 +2,25 @@
 
 #include "IWorldDefinitionProvider.h"
 #include "IWorldInstanceFactory.h"
+#include "WorldId.h"
 
 class AnimationRegistry;
+class FrameworkRuntime;
+class ServerApp;
 
 class ServerWorldBootstrapFactory final : public IWorldInstanceFactory {
 public:
 	void SetAnimationRegistry(
 		const AnimationRegistry* animationRegistry) noexcept;
+	void SetFramework(FrameworkRuntime* framework) noexcept;
+	void SetBootstrapWorldId(const WorldId* worldId) noexcept;
 
 	std::unique_ptr<IWorldInstanceImpl> Create(const WorldDef& def) override;
 
 private:
 	const AnimationRegistry* _animationRegistry{ nullptr };
+	FrameworkRuntime* _framework{ nullptr };
+	const WorldId* _bootstrapWorldId{ nullptr };
 };
 
 class ServerWorldBootstrapDefinitionProvider final

@@ -206,6 +206,7 @@ namespace
 			{
 				continue;
 			}
+			
 			const NetId entityNetId = framework.FindNetId(worldId, entity);
 			if (!entityNetId.IsValid() || entityNetId == excludedNetId)
 			{
@@ -376,6 +377,8 @@ void ServerApp::Shutdown() noexcept
 bool ServerApp::InitializeFrameworkRuntime()
 {
 	_bootstrapFactory.SetAnimationRegistry(&_animationRegistry);
+	_bootstrapFactory.SetFramework(&_framework);
+	_bootstrapFactory.SetBootstrapWorldId(&_startupWorldId);
 
 	FrameworkRuntime::BootstrapParams bootstrapParams{};
 	bootstrapParams.worldFactory = &_bootstrapFactory;

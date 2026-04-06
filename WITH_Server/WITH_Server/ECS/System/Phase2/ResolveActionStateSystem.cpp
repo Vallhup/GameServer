@@ -17,7 +17,7 @@ namespace
 
 	void SetActionDirectionFromInputOrFacing(
 		ActionStateComp& actionState,
-		const PlayerActionInputEvent& actionInput,
+		const ActorActionInputEvent& actionInput,
 		const LocomotionStateComp& locomotionState,
 		const WorldTransformComp& transform)
 	{
@@ -45,7 +45,7 @@ namespace
 
 	bool IsHoldReleased(
 		const ActionDef& actionDef,
-		const PlayerInputComp& input)
+		const ActorInputComp& input)
 	{
 		return
 			actionDef.normalizedPolicy == ActionNormalizedPolicy::Holdable &&
@@ -92,6 +92,8 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 	for (auto [entity, actionState, locomotionState, transform, input, advance] :
 		ctx.ecs.View<
 			ActionStateComp,
+			LocomotionStateComp,
+			WorldTransformComp,
 			ActorInputComp,
 			ActionTimelineAdvanceComp>())
 	{
@@ -221,6 +223,7 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
+		const SpawnTypeComp* spawnType = ctx.ecs.GetComponent<SpawnTypeComp>(entity);
 		if (spawnType != nullptr)
 		{
 			const ActionId actionId = FindActionForInput(

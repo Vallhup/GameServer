@@ -1,7 +1,11 @@
 #include "pch.h"
 #include "AIDecisionSystem.h"
 
+#include <DirectXMath.h>
+
+#include "../../GameplayRuntimeComponents.h"
 #include "../GameplaySystemUtil.h"
+#include "RepComponent.h"
 
 using namespace GameplaySystemUtil;
 
@@ -484,7 +488,7 @@ void AIDecisionSystem::RunFSM(
 // ============================================================
 void AIDecisionSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, selfTr, actionState, perception, perceptionTuning,
+	for (auto [entity, _, selfTr, actionState, perception, perceptionTuning,
 		blackboard, decision, decisionTuning, reaction, frame] :
 		ctx.ecs.View<
 			AIControlledTag,

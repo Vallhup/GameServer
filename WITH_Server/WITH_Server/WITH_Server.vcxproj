@@ -171,6 +171,9 @@
     <ClCompile Include="DBData.cpp" />
     <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="ECS\System\GameplaySystemRegistration.cpp" />
+    <ClCompile Include="ECS\System\Phase0_AI\AIDecisionSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase0_AI\AIPerceptionSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase1\ApplyAICommandSystem.cpp" />
     <ClCompile Include="ECS\System\Phase1\ApplyPlayerCommandSystem.cpp" />
     <ClCompile Include="ECS\System\Phase2\ResolveActionStateSystem.cpp" />
     <ClCompile Include="ECS\System\Phase2\ResolveLocomotionStateSystem.cpp" />
@@ -232,6 +235,9 @@
     <ClInclude Include="ECS\GameplayRuntimeComponents.h" />
     <ClInclude Include="ECS\System\GameplaySystemRegistration.h" />
     <ClInclude Include="ECS\System\GameplaySystemUtil.h" />
+    <ClInclude Include="ECS\System\Phase0_AI\AIDecisionSystem.h" />
+    <ClInclude Include="ECS\System\Phase0_AI\AIPerceptionSystem.h" />
+    <ClInclude Include="ECS\System\Phase1\ApplyAICommandSystem.h" />
     <ClInclude Include="ECS\System\Phase1\ApplyPlayerCommandSystem.h" />
     <ClInclude Include="ECS\System\Phase2\ResolveActionStateSystem.h" />
     <ClInclude Include="ECS\System\Phase2\ResolveLocomotionStateSystem.h" />

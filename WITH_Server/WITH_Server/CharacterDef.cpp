@@ -10,9 +10,11 @@ namespace
 	enum AITuning : uint16_t
 	{
 		ImpTuning = 1001,
+		
+		FinalBossTuning = 1005
 	};
 
-	const std::array<CharacterDef, 2> kCharacterDefs =
+	const std::array<CharacterDef, 3> kCharacterDefs =
 	{
 		CharacterDef
 		{
@@ -59,6 +61,31 @@ namespace
 				.aiTuningId = ImpTuning
 			}
 		},
+
+		CharacterDef
+		{
+			.id = CharacterId::FinalBoss,
+			.name = "FinalBoss",
+			.profile = CharacterProfileDef
+			{
+				.faction = Faction::Enemy
+			},
+			.stat = CharacterStatDef
+			{
+				.maxHp = 100,
+				.maxStamina = 100,
+				.maxPoise = 100,
+				.attackPower = 10,
+				.defense = 10,
+				.moveSpeed = 2.5f,
+				.attackSpeed = 1.0f
+			},
+			.ai = CharacterAIDef
+			{
+				.aiType = AIArchetype::FinalBossMonster,
+				.aiTuningId = FinalBossTuning
+			}
+		}
 	};
 }
 

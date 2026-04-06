@@ -144,6 +144,15 @@
     <ClCompile Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.cpp">
       <Filter>ECS\System\Phase9</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\Phase0_AI\AIDecisionSystem.cpp">
+      <Filter>ECS\System\Phase0</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase0_AI\AIPerceptionSystem.cpp">
+      <Filter>ECS\System\Phase0</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase1\ApplyAICommandSystem.cpp">
+      <Filter>ECS\System\Phase1</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServerNetworkService.h">
@@ -318,6 +327,15 @@
     <ClInclude Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.h">
       <Filter>ECS\System\Phase9</Filter>
     </ClInclude>
+    <ClInclude Include="ECS\System\Phase0_AI\AIDecisionSystem.h">
+      <Filter>ECS\System\Phase0</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase0_AI\AIPerceptionSystem.h">
+      <Filter>ECS\System\Phase0</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase1\ApplyAICommandSystem.h">
+      <Filter>ECS\System\Phase1</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -388,6 +406,9 @@
     </Filter>
     <Filter Include="ECS\System\Phase9">
       <UniqueIdentifier>{d61b144d-65d8-47f7-8ac4-665ebf48317b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ECS\System\Phase0">
+      <UniqueIdentifier>{e558c949-ee83-4ef8-ade1-a1658044f2bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

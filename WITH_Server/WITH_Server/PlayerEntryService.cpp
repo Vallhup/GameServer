@@ -44,16 +44,52 @@ namespace
 		return stats;
 	}
 
+	bool TryBindSpawnedEntityToNetId(
+		FrameworkRuntime* framework,
+		WorldId worldId,
+		Entity entity,
+		NetId& outNetId)
+	{
+		outNetId = NetId::Invalid();
+
+		if (framework == nullptr ||
+			!worldId.IsValid() ||
+			entity.IsNull())
+		{
+			return false;
+		}
+
+		NetId netId = framework->FindNetId(worldId, entity);
+		if (!netId.IsValid())
+		{
+			netId = framework->AllocateNetId();
+			if (!netId.IsValid())
+			{
+				return false;
+			}
+
+			if (!framework->BindNetEntity(netId, worldId, entity))
+			{
+				framework->FreeNetId(netId);
+				return false;
+			}
+		}
+
+		outNetId = netId;
+		return true;
+	}
+
 	void AttachPlayerGameplayRuntimeComponents(
 		WorldRuntime& runtime,
 		Entity playerEntity,
 		SessionId sessionId,
+		NetId netId,
 		const CharacterDef& characterDef)
 	{
 		runtime.DeferredUpsertComponent<PlayerControlIdentityComp>(
 			playerEntity,
 			PlayerControlIdentityComp{
-				.netId = NetId::Invalid(),
+				.netId = netId,
 				.ownerSessionId = sessionId
 			});
 		runtime.DeferredAddComponent<ActorInputComp>(playerEntity);
@@ -249,6 +285,21 @@ PlayerEntryResult PlayerEntryService::RequestCharacterSelect(
 			startupWorldId);
 	}
 
+	NetId playerNetId = NetId::Invalid();
+	if (!TryBindSpawnedEntityToNetId(
+		_deps.framework,
+		startupWorldId,
+		playerEntity,
+		playerNetId))
+	{
+		runtime.DeferredDestroyEntity(playerEntity);
+		return MakeResult(
+			PlayerEntryResultCode::EntityReserveFailed,
+			sessionId,
+			characterId,
+			startupWorldId);
+	}
+
 	runtime.DeferredAddComponent<ReplicatedTag>(playerEntity);
 	runtime.DeferredUpsertComponent<SpawnTypeComp>(
 		playerEntity,
@@ -259,6 +310,7 @@ PlayerEntryResult PlayerEntryService::RequestCharacterSelect(
 		runtime,
 		playerEntity,
 		sessionId,
+		playerNetId,
 		*characterDef);
 
 	_pendingSpawns.push_back(

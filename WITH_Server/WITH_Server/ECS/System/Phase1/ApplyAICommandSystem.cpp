@@ -10,7 +10,7 @@ const SystemMeta ApplyAICommandSystem::kMeta =
 
 void ApplyAICommandSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, frame, input] :
+	for (auto [entity, _, frame, input] :
 		ctx.ecs.View<AIControlledTag, AICommandFrameComp, ActorInputComp>())
 	{
 		auto* mutableInput = MutableComponent<ActorInputComp>(ctx.ecs, entity);

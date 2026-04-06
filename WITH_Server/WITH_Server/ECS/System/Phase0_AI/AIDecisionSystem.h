@@ -1,6 +1,21 @@
 #pragma once
 
 #include "System.h"
+#include "../../../IDs.h"
+#include <DirectXMath.h>
+
+using namespace DirectX;
+
+struct ActionStateComp;
+struct WorldTransformComp;
+struct AIPerceptionComp;
+struct AIPerceptionTuningComp;
+struct AIBlackboardComp;
+struct AIDecisionComp;
+struct AIDecisionTuningComp;
+struct AIReactionComp;
+struct AICommandFrameComp;
+struct SpawnTypeComp;
 
 // AI Decision System
 // - FSM (Idle/Chase/Combat/Search/React) 실행
