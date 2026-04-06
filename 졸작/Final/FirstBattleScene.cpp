@@ -81,7 +81,7 @@ void FirstBattleScene::CreateMap()
 
 #pragma region Initialize Ocean Floor
 	oceanFloor = make_shared<Terrain>();
-	oceanFloor->Initialize(*coreRef, L"textures/OceanFloor", L"../Assets/FBXModel/VillageMap/oceanFloorTerrain.raw", 513, 1946.701f, 170.3121f, 2.0f);
+	oceanFloor->Initialize(*coreRef, L"VillageMap/textures/OceanFloor", L"../Assets/FBXModel/VillageMap/oceanFloorTerrain.raw", 513, 1946.701f, 170.3121f, 2.0f);
 	oceanFloor->SetPosition(-903.851200f, 32.799990f, 160.528700f);
 #pragma endregion
 
@@ -303,7 +303,7 @@ void FirstBattleScene::Reset()
 	rightFootSpawned = false;
 	leftFootSpawned = false;
 
-	OutputDebugStringA("SoloGameScene Data has been deleted!! \n----------------------------------------\n");
+	OutputDebugStringA("FirstBattleScene Data has been deleted!! \n----------------------------------------\n");
 }
 
 void FirstBattleScene::AddGameObject(shared_ptr<GameObject> obj)
@@ -317,7 +317,7 @@ void FirstBattleScene::InitializeSceneObjectPools()
 
 void FirstBattleScene::InitializeLogic()
 {
-	OutputDebugStringA("----------------------------------------\nSoloGameScene Data has been created!! \n");
+	OutputDebugStringA("----------------------------------------\nFirstBattleScene Data has been created!! \n");
 
 	CreateKnightPool();
 

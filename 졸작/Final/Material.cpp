@@ -32,7 +32,7 @@ void Material::InitializeBindlessSystem(ID3D12Device* device)
 }
 
 void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
-    const MaterialData& matData)
+    const MaterialData& matData, const wstring& texBasePath)
 {
     MaterialGPUData gpuMaterial = {};
 
@@ -55,7 +55,7 @@ void Material::LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandL
     for (auto& infos : textureInfos)
     {
         *infos.texIndex = infos.path.empty() ? 0xFFFFFFFF :
-            RegisterTexture(device, cmdList, L"../Assets/FBXModel/" + wstring(infos.path.begin(), infos.path.end()));
+            RegisterTexture(device, cmdList, texBasePath + wstring(infos.path.begin(), infos.path.end()));
     }
 
     materials.push_back(gpuMaterial);

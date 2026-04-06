@@ -1,6 +1,8 @@
 #pragma once
 #include "Scene.h"
 
+class SkyBox;
+
 class FinalBattleScene final : public Scene
 {
 public:
@@ -22,5 +24,24 @@ protected:
 	void RenderSceneEffects() override;
 	void RequestSceneChange() override;
 
+private:
+	float SampleHeightAt(float worldX, float worldZ) const;
+
+	// Network Handler Function Override
+	void HandleLogin(const Protocol::SC_LOGIN_PACKET& login) override;
+	void HandleAdd(const Protocol::SC_ADD_PACKET& add) override;
+	void HandleMove(const Protocol::SC_MOVE_PACKET& move) override;
+	void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove) override;
+	void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim) override;
+	void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat) override;
+
+private:
+	vector<shared_ptr<GameObject>> gameObjects;
+	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
+
+	shared_ptr<MainCharacter> myPlayer;
+	shared_ptr<GameObject> bossObject;
+
+	shared_ptr<SkyBox> skyBox;
 };
 

@@ -171,4 +171,21 @@ void LoadingScene::LoadSecondBattleSceneResources()
 
 void LoadingScene::LoadFinalBattleSceneResources()
 {
+	InstanceLoader mapLoader;
+	mapLoader.Load(L"../Assets/FBXModel/GothicMap/MapInstanceData.txt", L"../Assets/FBXModel/CastleMap/CullingData.txt");
+
+	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
+		if (instanceData.empty()) continue;
+
+		wstring path = L"../Assets/FBXModel/GothicMap/" + wstring(modelName.begin(), modelName.end());
+		if (!filesystem::exists(path + L"_0.mesh")) continue;
+
+		loadTasks.push([this, path, instanceData]() {
+			CreateAndBatchObjects(path, instanceData, sceneBatches[SceneType::Final]);
+			});
+	}
+
+	totalTasks = loadTasks.size();
+
+	coreRef->SetLoadingMode(true);
 }

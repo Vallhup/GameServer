@@ -23,13 +23,15 @@ void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring&
 		indices
 	);
 
+	wstring texBasePath = basePath.substr(0, basePath.find_last_of(L"/\\") + 1);
+
 	Importer importer;
 
 	if (importer.LoadMaterialOnly(basePath)) {
 		const auto& mats = importer.GetMaterials();
 
 		material = make_shared<Material>();
-		material->LoadFromMaterialData(core.GetDevice(), core.GetGraphicsCmdList(), mats[0]);
+		material->LoadFromMaterialData(core.GetDevice(), core.GetGraphicsCmdList(), mats[0], texBasePath);
 	}
 	else
 	{

@@ -19,7 +19,7 @@ class Material
 {
 public:
     void LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
-        const MaterialData& matData);
+        const MaterialData& matData, const wstring& texBasePath = L"../Assets/FBXModel/");
 
     static UINT RegisterCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
     static UINT RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);

@@ -68,14 +68,16 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
         // Debug mesh and material info of model
         //DebugMaterialInfo(mesh, mats);
 
+        wstring texBasePath = path.substr(0, path.find_last_of(L"/\\") + 1);
+
         if (mesh.subMeshes.size() > 1)
         {
             subMeshes = mesh.subMeshes;
-            SetMultiMaterials(core, mats);
+            SetMultiMaterials(core, mats, texBasePath);
         }
         else
         {
-            SetSingleMaterial(core, mats);
+            SetSingleMaterial(core, mats, texBasePath);
         }
 
         auto animator = GetGameObject()->GetComponent<Animator>();
@@ -168,14 +170,16 @@ void Mesh::SetMesh2(DX12Core& core, const wstring& path)
         // Debug mesh and material info of model
         //DebugMaterialInfo(mesh, mats);
 
+        wstring texBasePath = path.substr(0, path.find_last_of(L"/\\") + 1);
+
         if (mesh.subMeshes.size() > 1)
         {
             subMeshes = mesh.subMeshes;
-            SetMultiMaterials(core, mats);
+            SetMultiMaterials(core, mats, texBasePath);
         }
         else
         {
-            SetSingleMaterial(core, mats);
+            SetSingleMaterial(core, mats, texBasePath);
         }
 
         auto animator = GetGameObject()->GetComponent<Animator>();
@@ -241,17 +245,18 @@ void Mesh::ReleaseUploadBuffers()
     }
 }
 
-void Mesh::SetSingleMaterial(DX12Core& core, const vector<MaterialData>& mats)
+void Mesh::SetSingleMaterial(DX12Core& core, const vector<MaterialData>& mats, const wstring& texBasePath)
 {
     material = make_shared<Material>();
     material->LoadFromMaterialData(
         core.GetDevice(),
         core.GetActiveCmdList(),
-        mats[0]
+        mats[0],
+        texBasePath
     );
 }
 
-void Mesh::SetMultiMaterials(DX12Core& core, const vector<MaterialData>& mats)
+void Mesh::SetMultiMaterials(DX12Core& core, const vector<MaterialData>& mats, const wstring& texBasePath)
 {
     originalMaterialData = mats;
 
@@ -261,7 +266,8 @@ void Mesh::SetMultiMaterials(DX12Core& core, const vector<MaterialData>& mats)
         mat->LoadFromMaterialData(
             core.GetDevice(),
             core.GetActiveCmdList(),
-            matData
+            matData,
+            texBasePath
         );
 
         materials.push_back(mat);

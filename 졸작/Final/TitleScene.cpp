@@ -26,9 +26,9 @@ void TitleScene::InitializeLogic()
 	auto knight = make_shared<GameObject>();
 	auto mesh = knight->AddComponent<Mesh>();
 	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
-	
-	auto dragon = make_shared<GameObject>();
-	auto mesh2 = dragon->AddComponent<Mesh>();
+
+	auto boss = make_shared<GameObject>();
+	auto mesh2 = boss->AddComponent<Mesh>();
 	mesh2->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
 
 	auto demonStriker = make_shared<GameObject>();

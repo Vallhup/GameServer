@@ -71,7 +71,7 @@ void SecondBattleScene::InitializeLogic()
 
 #pragma region Initialize Castle Terrain
 	terrain = make_shared<Terrain>();
-	terrain->Initialize(*coreRef, L"textures/CastleFloor", L"../Assets/FBXModel/CastleMap/castleTerrain.raw", 513, 650.2402f, 79.28662f, 8.0f);
+	terrain->Initialize(*coreRef, L"CastleMap/textures/CastleFloor", L"../Assets/FBXModel/CastleMap/castleTerrain.raw", 513, 650.2402f, 79.28662f, 8.0f);
 #pragma endregion
 
 #pragma region Initialize Water
@@ -168,6 +168,11 @@ void SecondBattleScene::RenderSceneEffects()
 
 void SecondBattleScene::RequestSceneChange()
 {
+	if (INPUT.GetKeyDown(VK_TAB))
+	{
+		if (sManagerRef)
+			sManagerRef->RequestLoadingScene(SceneType::Final);
+	}
 }
 
 float SecondBattleScene::SampleHeightAt(float worldX, float worldZ) const
