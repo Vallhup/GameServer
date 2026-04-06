@@ -195,7 +195,7 @@ void TrailRenderer::Render(DX12Core& core)
 	// FrameCB 바인딩 (b0 - View/Projection 행렬)
 	cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
 
-	// TrailCB 바인딩 (루트 파라미터 인덱스 23 = b13 TrailCB)
+	// TrailCB 바인딩 (루트 파라미터 인덱스 23 = b12 TrailCB)
 	cmdList->SetGraphicsRootConstantBufferView(23, trailCB->GetGPUVirtualAddress());
 
 	// 정점/인덱스 버퍼 바인딩

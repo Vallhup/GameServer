@@ -361,7 +361,8 @@ exit 0</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\animation.hlsli" />
-    <None Include="..\Shaders\Flame.hlsli" />
+    <None Include="..\Shaders\EffectVS.hlsli" />
+    <None Include="..\Shaders\FlamePS.hlsli" />
     <None Include="..\Shaders\Fog.hlsli" />
     <None Include="..\Shaders\ShaderResources.hlsli" />
     <None Include="..\Shaders\Constants.hlsli" />
@@ -384,7 +385,7 @@ exit 0</Command>
     <None Include="..\Shaders\SsaoBlurPS.hlsli" />
     <None Include="..\Shaders\SsaoPS.hlsli" />
     <None Include="..\Shaders\ToneMapping.hlsli" />
-    <None Include="..\Shaders\Trail.hlsli" />
+    <None Include="..\Shaders\TrailPS.hlsli" />
     <None Include="..\Shaders\VertexAnimation.hlsli" />
     <None Include="..\Shaders\VolumetricFog.hlsli" />
   </ItemGroup>

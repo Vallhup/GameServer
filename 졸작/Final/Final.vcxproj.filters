@@ -543,10 +543,13 @@
     <None Include="..\Shaders\ToneMapping.hlsli">
       <Filter>Shaders\Lighting</Filter>
     </None>
-    <None Include="..\Shaders\Trail.hlsli">
+    <None Include="..\Shaders\TrailPS.hlsli">
       <Filter>Shaders\Effects</Filter>
     </None>
-    <None Include="..\Shaders\Flame.hlsli">
+    <None Include="..\Shaders\FlamePS.hlsli">
+      <Filter>Shaders\Effects</Filter>
+    </None>
+    <None Include="..\Shaders\EffectVS.hlsli">
       <Filter>Shaders\Effects</Filter>
     </None>
   </ItemGroup>

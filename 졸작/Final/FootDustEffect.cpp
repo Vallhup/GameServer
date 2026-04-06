@@ -190,7 +190,7 @@ void FootDustEffect::Render(DX12Core& core)
 	// FrameCB (b0)
 	cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
 
-	// TrailCB (b13) - 색상용
+	// TrailCB (b12) - 색상용
 	cmdList->SetGraphicsRootConstantBufferView(23, dustCB->GetGPUVirtualAddress());
 
 	// 렌더링

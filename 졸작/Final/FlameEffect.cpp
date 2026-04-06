@@ -175,7 +175,7 @@ void FlameEffect::Render(DX12Core& core)
 	// FrameCB (b0)
 	cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
 
-	// FlameCB (b13)
+	// FlameCB (b12)
 	cmdList->SetGraphicsRootConstantBufferView(23, flameCB->GetGPUVirtualAddress());
 
 	// 렌더링

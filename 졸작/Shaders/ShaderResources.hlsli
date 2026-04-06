@@ -138,6 +138,13 @@ cbuffer VolumetricFogCB : register(b11)
     float3 vfPadding;
 };
 
+cbuffer EffectCB : register(b12)
+{
+    float4 effectColor;
+    uint textureIndex;
+    float3 padding;
+}
+
 //-------------------------------------------------------
 // VARIOUS TYPES OF SHADER RESOURCES
 //-------------------------------------------------------

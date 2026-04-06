@@ -82,7 +82,7 @@ void RootSignature::Initialize(ID3D12Device* device)
 
     AddCBV(11);             // [22] b11 - VolumetricFogCB
 
-    AddCBV(13);             // [23] b13 - TrailCB
+    AddCBV(12);             // [23] b12 - TrailCB
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[3];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,

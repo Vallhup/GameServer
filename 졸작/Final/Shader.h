@@ -27,8 +27,9 @@ enum class ShaderType {
 	ShadowVS, ShadowPS,
 	SkyboxVS, SkyboxPS,
 	SsaoPS, SsaoBlurPS,
-	TrailVS, TrailPS,
-	FlameVS, FlamePS,
+	EffectVS,
+	TrailPS,
+	FlamePS,
 	END
 };
 
@@ -49,8 +50,8 @@ private:
 	void InitializeSkyboxShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeSsaoShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeSsaoBlurShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
-	void InitializeTrailShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& shaderPath);
-	void InitializeFlameShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& shaderPath);
+	void InitializeEffectVS(ID3D12Device* device, const wstring& vsPath);
+	void CreateEffectPSO(ID3D12Device* device, ID3D12RootSignature* rootSig, ShaderType psType, PSOType psoType, const wstring& psPath);
 
 	void CompileShader(const wstring& path, const string& entry, const string& target, ComPtr<ID3DBlob>& blobOut);
 

@@ -12,8 +12,10 @@ void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* roo
     InitializeSkyboxShader(device, rootSig, L"../Shaders/SkyboxVS.hlsli", L"../Shaders/SkyboxPS.hlsli");
     InitializeSsaoShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/SsaoPS.hlsli");
     InitializeSsaoBlurShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/SsaoBlurPS.hlsli");
-    InitializeTrailShader(device, rootSig, L"../Shaders/Trail.hlsli");
-    InitializeFlameShader(device, rootSig, L"../Shaders/Flame.hlsli");
+
+    InitializeEffectVS(device, L"../Shaders/EffectVS.hlsli");
+    CreateEffectPSO(device, rootSig, ShaderType::TrailPS, PSOType::Trail, L"../Shaders/TrailPS.hlsli");
+    CreateEffectPSO(device, rootSig, ShaderType::FlamePS, PSOType::Flame, L"../Shaders/FlamePS.hlsli");
 }
 
 void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
@@ -348,67 +350,16 @@ void Shader::InitializeSsaoBlurShader(ID3D12Device* device, ID3D12RootSignature*
     OutputDebugStringA("Ssao Blur PSO created successfully!\n");
 }
 
-void Shader::InitializeTrailShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& shaderPath)
+void Shader::InitializeEffectVS(ID3D12Device* device, const wstring& vsPath)
 {
-    CompileShader(shaderPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::TrailVS)]);
-    CompileShader(shaderPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::TrailPS)]);
-
-    // Trail 전용 Input Layout (position, uv, alpha)
-    D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "ALPHA", 0, DXGI_FORMAT_R32_FLOAT, 0, 20, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-    };
-
-    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-    psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
-    psoDesc.pRootSignature = rootSig;
-    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::TrailVS)]->GetBufferPointer(),
-                   mShadersBlobs[static_cast<size_t>(ShaderType::TrailVS)]->GetBufferSize() };
-    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::TrailPS)]->GetBufferPointer(),
-                   mShadersBlobs[static_cast<size_t>(ShaderType::TrailPS)]->GetBufferSize() };
-
-    // Rasterizer: 양면 렌더링
-    D3D12_RASTERIZER_DESC rasterDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-    rasterDesc.CullMode = D3D12_CULL_MODE_NONE;
-    psoDesc.RasterizerState = rasterDesc;
-
-    psoDesc.SampleMask = UINT_MAX;
-    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    psoDesc.NumRenderTargets = 1;
-    psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
-    psoDesc.SampleDesc.Count = 1;
-
-    // Additive Blending (트레일 글로우 효과)
-    D3D12_BLEND_DESC blendDesc = {};
-    blendDesc.RenderTarget[0].BlendEnable = TRUE;
-    blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-    blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;  // Additive
-    blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-    blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
-    blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-    psoDesc.BlendState = blendDesc;
-
-    // Depth: 읽기만, 쓰기 안 함 (다른 오브젝트 위에 그려짐)
-    D3D12_DEPTH_STENCIL_DESC depthDesc = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-    depthDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
-    psoDesc.DepthStencilState = depthDesc;
-
-    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Trail)]));
-    MASSERT(SUCCEEDED(hr), "Failed to create Trail PSO");
-
-    OutputDebugStringA("Trail PSO created!\n");
+    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::EffectVS)]);
+    OutputDebugStringA("Effect VS compiled!\n");
 }
 
-void Shader::InitializeFlameShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& shaderPath)
+void Shader::CreateEffectPSO(ID3D12Device* device, ID3D12RootSignature* rootSig, ShaderType psType, PSOType psoType, const wstring& psPath)
 {
-    CompileShader(shaderPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::FlameVS)]);
-    CompileShader(shaderPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::FlamePS)]);
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(psType)]);
 
-    // Flame 전용 Input Layout (position, uv, alpha)
     D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -418,12 +369,11 @@ void Shader::InitializeFlameShader(ID3D12Device* device, ID3D12RootSignature* ro
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
     psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
     psoDesc.pRootSignature = rootSig;
-    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::FlameVS)]->GetBufferPointer(),
-                   mShadersBlobs[static_cast<size_t>(ShaderType::FlameVS)]->GetBufferSize() };
-    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::FlamePS)]->GetBufferPointer(),
-                   mShadersBlobs[static_cast<size_t>(ShaderType::FlamePS)]->GetBufferSize() };
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::EffectVS)]->GetBufferPointer(),
+                   mShadersBlobs[static_cast<size_t>(ShaderType::EffectVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(psType)]->GetBufferPointer(),
+                   mShadersBlobs[static_cast<size_t>(psType)]->GetBufferSize() };
 
-    // Rasterizer: 양면 렌더링
     D3D12_RASTERIZER_DESC rasterDesc = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
     rasterDesc.CullMode = D3D12_CULL_MODE_NONE;
     psoDesc.RasterizerState = rasterDesc;
@@ -435,11 +385,10 @@ void Shader::InitializeFlameShader(ID3D12Device* device, ID3D12RootSignature* ro
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     psoDesc.SampleDesc.Count = 1;
 
-    // Additive Blending (불꽃 효과)
     D3D12_BLEND_DESC blendDesc = {};
     blendDesc.RenderTarget[0].BlendEnable = TRUE;
     blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-    blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;  // Additive
+    blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
     blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
     blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
     blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
@@ -447,15 +396,14 @@ void Shader::InitializeFlameShader(ID3D12Device* device, ID3D12RootSignature* ro
     blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
     psoDesc.BlendState = blendDesc;
 
-    // Depth: 읽기만, 쓰기 안 함
     D3D12_DEPTH_STENCIL_DESC depthDesc = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
     depthDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
     psoDesc.DepthStencilState = depthDesc;
 
-    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Flame)]));
-    MASSERT(SUCCEEDED(hr), "Failed to create Flame PSO");
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(psoType)]));
+    MASSERT(SUCCEEDED(hr), "Failed to create Effect PSO");
 
-    OutputDebugStringA("Flame PSO created!\n");
+    OutputDebugStringA("Effect PSO created!\n");
 }
 
 ID3D12PipelineState* Shader::GetPSO(PSOType type) const
