@@ -229,6 +229,9 @@
     <ClCompile Include="FootDustEffect.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="FlameEffect.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -460,6 +463,9 @@
     <ClInclude Include="FootDustEffect.h">
       <Filter>Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="FlameEffect.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GBufferVS.hlsli">
@@ -538,6 +544,9 @@
       <Filter>Shaders\Lighting</Filter>
     </None>
     <None Include="..\Shaders\Trail.hlsli">
+      <Filter>Shaders\Effects</Filter>
+    </None>
+    <None Include="..\Shaders\Flame.hlsli">
       <Filter>Shaders\Effects</Filter>
     </None>
   </ItemGroup>

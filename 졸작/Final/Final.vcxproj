@@ -218,6 +218,7 @@ exit 0</Command>
     <ClCompile Include="EffectRenderer.cpp" />
     <ClCompile Include="FinalBattleScene.cpp" />
     <ClCompile Include="FootDustEffect.cpp" />
+    <ClCompile Include="FlameEffect.cpp" />
     <ClCompile Include="FroxelManager.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
@@ -301,6 +302,7 @@ exit 0</Command>
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EffectRenderer.h" />
     <ClInclude Include="FinalBattleScene.h" />
+    <ClInclude Include="FlameEffect.h" />
     <ClInclude Include="FootDustEffect.h" />
     <ClInclude Include="FroxelManager.h" />
     <ClInclude Include="LightManager.h" />
@@ -359,6 +361,7 @@ exit 0</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\animation.hlsli" />
+    <None Include="..\Shaders\Flame.hlsli" />
     <None Include="..\Shaders\Fog.hlsli" />
     <None Include="..\Shaders\ShaderResources.hlsli" />
     <None Include="..\Shaders\Constants.hlsli" />

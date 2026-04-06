@@ -24,6 +24,7 @@
 #include "GameSceneUIController.h"
 #include "TrailRenderer.h"
 #include "FootDustEffect.h"
+#include "FlameEffect.h"
 
 #include "NetId.h"
 #include "NetHelper.h"
@@ -362,6 +363,12 @@ void FirstBattleScene::InitializeLogic()
 	footDustEffect->SetLifetime(0.35f);
 	footDustEffect->SetParticleSize(0.1f);
 
+	flameEffect = make_unique<FlameEffect>();
+	flameEffect->Initialize(coreRef->GetDevice(), 32);
+	flameEffect->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
+	flameEffect->SetParticleSize(0.5f);     // 최대 크기 0.5
+	flameEffect->Spawn(XMFLOAT3(160.0f, 50.0f, 643.0f));
+
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
 
@@ -583,6 +590,9 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 		footDustEffect->Update(deltaTime, cam->GetPosition());
 	}
 
+	if (flameEffect)
+		flameEffect->Update(deltaTime, cam->GetPosition());
+
 	if (cam)
 		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);
 
@@ -671,6 +681,9 @@ void FirstBattleScene::RenderSceneForward()
 	// Foot Dust 렌더링
 	if (footDustEffect)
 		footDustEffect->Render(*coreRef);
+
+	if (flameEffect)
+		flameEffect->Render(*coreRef);
 
 	renderer->RenderForward(*coreRef, gameObjects, cam.get());
 }

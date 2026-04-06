@@ -18,6 +18,7 @@
 #include "UIManager.h"
 #include "TrailRenderer.h"
 #include "FootDustEffect.h"
+#include "FlameEffect.h"
 
 SceneManager::~SceneManager()
 {
