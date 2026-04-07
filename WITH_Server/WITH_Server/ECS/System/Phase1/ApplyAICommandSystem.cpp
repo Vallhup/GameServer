@@ -35,7 +35,6 @@ void ApplyAICommandSystem::Execute(SystemContext& ctx)
 			mutableInput->action.directionZ     = frame.actionDirZ;
 			mutableInput->action.requestedFrame = ctx.runtime.FrameIndex();
 		}
-		// AI는 guard 없음
 	}
 }
 

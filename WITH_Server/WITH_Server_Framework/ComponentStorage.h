@@ -17,8 +17,7 @@ class WorldRuntime;
 class WorldMutationBuffer;
 class WorldLifecycleBuffer;
 
-class IStorage
-{
+class IStorage {
 public:
 	virtual ~IStorage() = default;
 

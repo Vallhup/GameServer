@@ -80,8 +80,8 @@ void RegisterGameplayRuntimeSystems(
 	const AnimationRegistry* animationRegistry)
 {
 	// Pre-Phase 1: AI 시스템
-	runtime.RegisterSystem<AIPerceptionSystem>(SystemPhase::Pre);
-	runtime.RegisterSystem<AIDecisionSystem>(SystemPhase::Pre);
+	runtime.RegisterSystem<AIPerceptionSystem>(SystemPhase::Graph);
+	runtime.RegisterSystem<AIDecisionSystem>(SystemPhase::Graph);
 
 	// Phase 1: 명령 적용
 	runtime.RegisterSystem<ApplyPlayerCommandSystem>(SystemPhase::Graph);

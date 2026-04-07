@@ -1,0 +1,59 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+
+# 1. 기본 레이아웃 (General Layout)
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+ColumnLimit: 120
+AccessModifierOffset: -4 # public/private을 클래스 경계에 맞춤
+
+# 2. 중괄호 스타일 (Braces - Allman 스타일)
+BreakBeforeBraces: Allman
+AllowShortFunctionsOnASingleLine: None
+AllowShortBlocksOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+
+# 3. 공백 및 연산자 (Spacing & Operators)
+SpaceBeforeParens: ControlStatements # if, for, while 뒤에만 공백
+SpaceInEmptyParentheses: false
+SpacesInAngles: false # template<T> (공백 없음)
+SpaceAfterCStyleCast: false
+SpaceAroundPointerQualifiers: Default
+
+# 4. 포인터/참조자 정렬 (Alignment - 타입 중심)
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# 5. 헤더 관리 (Headers)
+IncludeBlocks: Preserve # 기존 헤더 그룹 유지
+SortIncludes: true
+
+# 6. 정렬 및 기타 (Alignment & Misc)
+AlignAfterOpenBracket: Align
+AlignOperands: true
+AlignTrailingComments: true
+
+# 7. 네이밍 컨벤션 (Claude Guide - Do not remove)
+# 이 섹션은 clang-format이 강제하지 않지만, LLLM이 인지하도록 돕습니다.
+# - Class/Struct/Function: PascalCase
+# - Variables/Parameters: camelCase
+# - Private Members: _underbarPrefix
+
+# Example Style:
+#  class MyClass {
+#  public:
+#      void SampleClassMethod() const noexcept;
+#
+#  private:
+#      int _memberVariable;
+#  }
+#
+#  struct MyStruct
+#  {
+#      int variable; 
+#
+#      void SampleStructMethod() const noexcept;
+#  }
+---

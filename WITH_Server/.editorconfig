@@ -1,0 +1,44 @@
+root = true
+
+# All files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+indent_size = 4
+tab_width = 4
+max_line_length = 120
+
+[*.{cpp,h,hpp,cc,cxx}]
+# --- [1] 중괄호 및 공백 스타일 (Braces & Spacing) ---
+# Brace style: Allman (다음 줄에 두기)
+cpp_brace_style = allman
+cpp_indent_braces = false
+
+# Control statements: 공백 넣기 (if (cond))
+cpp_space_before_control_statement_parentheses = true
+# Function spacing: 공백 안 넣기 (func())
+cpp_space_before_function_open_parenthesis = false
+# Binary operators: 공백 넣기 (a + b)
+cpp_space_around_binary_operator = true
+
+# --- [2] 포인터 및 참조자 위치 (Alignment) ---
+# Alignment: 타입 중심 (int* ptr)
+cpp_pointer_alignment = left
+cpp_reference_alignment = left
+
+# --- [3] 네이밍 컨벤션 (Naming - AI 참조용 가이드) ---
+# Classes/Structs: PascalCase
+# Functions/Methods: PascalCase
+# Variables: camelCase
+# Constants: kPascalCase
+# Private Members: Prefix underscore (e.g., _memberVariable)
+
+
+
+
+# --- [4] 전처리기 및 헤더 (Headers) ---
+cpp_sort_includes = true
+cpp_include_order_style = alpha_group_case_insensitive
