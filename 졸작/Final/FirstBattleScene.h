@@ -42,6 +42,7 @@ protected:
 private:
 	void CreateKnightPool();
 	void CreateBossObject();
+	void CreateImpObject();
 	void CreateMap();
 	void CreateEffectSamples();
 	
@@ -66,6 +67,7 @@ private:
 	shared_ptr<MainCharacter> myPlayer;
 
 	shared_ptr<GameObject> bossObject;
+	shared_ptr<GameObject> impObject;
 
 	vector<shared_ptr<GameObject>> effectObjects;
 

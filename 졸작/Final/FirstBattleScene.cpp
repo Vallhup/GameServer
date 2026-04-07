@@ -70,6 +70,23 @@ void FirstBattleScene::CreateBossObject()
 	AddGameObject(bossObject);
 }
 
+void FirstBattleScene::CreateImpObject()
+{
+	impObject = make_shared<GameObject>();
+	impObject->SetId(-1);
+	auto mesh = impObject->AddComponent<Mesh>();
+	auto transform = impObject->AddComponent<Transform>();
+	auto animator = impObject->AddComponent<Animator>();
+	auto animMachine = impObject->AddComponent<AnimationMachine>();
+	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Imp/monster_Imp");
+
+	animMachine->SetAnimationSet(AnimationSetFactory::CreateImpSet());
+	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
+	transform->SetRotation(0.f, 3.14f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+	AddGameObject(impObject);
+}
+
 void FirstBattleScene::CreateMap()
 {
 // Village 맵 전용
@@ -294,6 +311,7 @@ void FirstBattleScene::Reset()
 	activeCharacters.clear();
 	myPlayer = nullptr;
 	bossObject = nullptr;
+	impObject = nullptr;
 	gameObjects.clear();
 
 	if (trailRenderer)
@@ -330,6 +348,7 @@ void FirstBattleScene::InitializeLogic()
 
 	CreateMap();
 	CreateBossObject();
+	CreateImpObject();
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
