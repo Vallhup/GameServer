@@ -21,8 +21,8 @@ void ApplyAICommandSystem::Execute(SystemContext& ctx)
 
 		if (frame.hasMove)
 		{
-			mutableInput->move.inputX       = frame.moveX;
-			mutableInput->move.inputZ       = frame.moveZ;
+			mutableInput->move.inputX		= frame.moveDir.x;
+			mutableInput->move.inputZ       = frame.moveDir.z;
 			mutableInput->move.cameraYawRad = frame.moveYaw;
 			mutableInput->move.wantsRun     = frame.wantsRun;
 			mutableInput->move.lastUpdatedFrame = ctx.runtime.FrameIndex();

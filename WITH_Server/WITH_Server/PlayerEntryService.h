@@ -9,6 +9,8 @@
 #include "FrameworkRuntime.h"
 #include "Session.h"
 
+// TODO : 서버 -> 클라 -> title -> esc 끄기 -> 다시 클라 키면 터짐
+
 enum class EntryFlowStage : uint8_t
 {
 	None,

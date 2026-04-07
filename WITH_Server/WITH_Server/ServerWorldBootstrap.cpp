@@ -90,7 +90,11 @@ namespace
 		runtime.DeferredAddComponent<SkeletalCombatColliderComp>(aiEntity);
 		runtime.DeferredUpsertComponent<WorldTransformComp>(
 			aiEntity,
-			WorldTransformComp{ .position = { spawnX, 50.0f, spawnZ }, .yawRad = 0.0f });
+			WorldTransformComp
+			{
+				.position = { spawnX, 50.0f, spawnZ },
+				.rotation = {0.0f, 0.0f, 0.0f, 1.0f}
+			});
 		runtime.DeferredAddComponent<LocomotionMoveDeltaComp>(aiEntity);
 		runtime.DeferredAddComponent<ActionMoveDeltaComp>(aiEntity);
 		runtime.DeferredAddComponent<ActionMoveRuntimeComp>(aiEntity);

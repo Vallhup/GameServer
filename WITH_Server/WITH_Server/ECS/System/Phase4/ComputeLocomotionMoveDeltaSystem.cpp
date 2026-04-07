@@ -2,6 +2,7 @@
 #include "ComputeLocomotionMoveDeltaSystem.h"
 
 #include "../GameplaySystemUtil.h"
+#include "../../../TransformHelper.h"
 
 using namespace GameplaySystemUtil;
 
@@ -43,8 +44,10 @@ void ComputeLocomotionMoveDeltaSystem::Execute(SystemContext& ctx)
 		moveDelta.deltaPosition.y = 0.0f;
 		moveDelta.deltaPosition.z = dirZ * moveDist;
 	
+		const float currYaw = TransformHelper::QuaternionToYaw(transform.rotation);
+
 		moveDelta.deltaYawRad =
-			WrapYaw(locomotionState.facingYawRad - transform.yawRad);
+			TransformHelper::AngleDelta(currYaw, locomotionState.facingYawRad);
 
 		moveDelta.hasDelta = true;
 	}

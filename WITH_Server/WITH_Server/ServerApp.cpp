@@ -12,6 +12,8 @@
 #include "WorldInstance.h"
 #include <filesystem>
 
+#include "TransformHelper.h"
+
 namespace
 {
 	std::filesystem::path GetDefaultAnimationOutputRoot()
@@ -116,7 +118,8 @@ namespace
 		add.set_x(transform != nullptr ? transform->position.x : 0.0f);
 		add.set_y(transform != nullptr ? transform->position.y : 0.0f);
 		add.set_z(transform != nullptr ? transform->position.z : 0.0f);
-		add.set_yaw(transform != nullptr ? transform->yawRad : 0.0f);
+		add.set_yaw(transform != nullptr ? 
+			TransformHelper::QuaternionToYaw(transform->rotation) : 0.0f);
 		SendBuffer* const buffer =
 			PacketFactory::Serialize(PacketType::SC_ADD, add);
 		if (buffer == nullptr)
@@ -146,7 +149,8 @@ namespace
 		add.set_x(transform != nullptr ? transform->position.x : 0.0f);
 		add.set_y(transform != nullptr ? transform->position.y : 0.0f);
 		add.set_z(transform != nullptr ? transform->position.z : 0.0f);
-		add.set_yaw(transform != nullptr ? transform->yawRad : 0.0f);
+		add.set_yaw(transform != nullptr ?
+			TransformHelper::QuaternionToYaw(transform->rotation) : 0.0f);
 		SendBuffer* const buffer =
 			PacketFactory::Serialize(PacketType::SC_ADD, add);
 		if (buffer == nullptr)
@@ -690,7 +694,8 @@ void ServerApp::BuildReplication()
 					movePacket.set_x(transform->position.x);
 					movePacket.set_y(transform->position.y);
 					movePacket.set_z(transform->position.z);
-					movePacket.set_yaw(transform->yawRad);
+					movePacket.set_yaw(
+						TransformHelper::QuaternionToYaw(transform->rotation));
 					(void)StageReplicationPacket(
 						_network,
 						PacketType::SC_MOVE_OBJECT,

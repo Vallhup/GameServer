@@ -153,6 +153,27 @@
     <ClCompile Include="ECS\System\Phase1\ApplyAICommandSystem.cpp">
       <Filter>ECS\System\Phase1</Filter>
     </ClCompile>
+    <ClCompile Include="NormalAIChaseState.cpp">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAIMovementPolicy.cpp">
+      <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAICombatState.cpp">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAIIdleState.cpp">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAIReactState.cpp">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAISearchState.cpp">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="AIFSMRegistry.cpp">
+      <Filter>FSM\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServerNetworkService.h">
@@ -336,6 +357,36 @@
     <ClInclude Include="ECS\System\Phase1\ApplyAICommandSystem.h">
       <Filter>ECS\System\Phase1</Filter>
     </ClInclude>
+    <ClInclude Include="NormalAIChaseState.h">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAIMovementPolicy.h">
+      <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformHelper.h">
+      <Filter>Utility\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAICombatState.h">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAIIdleState.h">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAIReactState.h">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAISearchState.h">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClInclude>
+    <ClInclude Include="IAIMovementPolicy.h">
+      <Filter>FSM\Core\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IAIState.h">
+      <Filter>FSM\Core\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="AIFSMRegistry.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -409,6 +460,27 @@
     </Filter>
     <Filter Include="ECS\System\Phase0">
       <UniqueIdentifier>{e558c949-ee83-4ef8-ade1-a1658044f2bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM">
+      <UniqueIdentifier>{420e18ae-1394-4499-8bb4-93bfe0362fbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\NormalMonster">
+      <UniqueIdentifier>{602685d6-72ae-42f9-ae2b-a5793840a8dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\NormalMonster\State">
+      <UniqueIdentifier>{f7341ad7-a490-40e6-8b76-3f2892a7af0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\NormalMonster\Policy">
+      <UniqueIdentifier>{ab122974-f07a-4258-b24d-1cde3f957afa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Helpers">
+      <UniqueIdentifier>{de5a3890-4b1b-407d-a86f-7615415f6b82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\Core">
+      <UniqueIdentifier>{682f7aed-875f-4f39-9149-c2c5e9de07cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\Core\Interface">
+      <UniqueIdentifier>{5a9151d4-e48b-4c78-83f3-23f1e05e8f37}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 #include "ApplyMovementDeltaSystem.h"
 
 #include "../GameplaySystemUtil.h"
+#include "../../../TransformHelper.h"
 
 using namespace GameplaySystemUtil;
 
@@ -10,6 +11,21 @@ const SystemMeta ApplyMovementDeltaSystem::kMeta =
 
 void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 {
+	auto ApplyDeltaYaw =
+		[](WorldTransformComp& tr, float deltaYaw)
+		{
+			if (std::abs(deltaYaw) <= kOverlapEpsilon)
+				return;
+
+			XMVECTOR curRot = XMLoadFloat4(&tr.rotation);
+			XMVECTOR deltaRot = XMQuaternionRotationAxis(
+				XMVectorSet(0.f, 1.f, 0.f, 0.f),
+				deltaYaw);
+			XMVECTOR nextRot = XMQuaternionMultiply(deltaRot, curRot);
+			nextRot = XMQuaternionNormalize(nextRot);
+			XMStoreFloat4(&tr.rotation, nextRot);
+		};
+
 	for (auto [
 		entity,
 		transform,
@@ -25,9 +41,9 @@ void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 			ActionStateComp>())
 	{
 		preCollision.prevPosition = transform.position;
-		preCollision.prevYawRad = transform.yawRad;
+		preCollision.prevRotation = transform.rotation;
 		preCollision.candidatePosition = transform.position;
-		preCollision.candidateYawRad = transform.yawRad;
+		preCollision.candidateRotation = transform.rotation;
 		preCollision.movedThisFrame = false;
 		preCollision.rotatedThisFrame = false;
 
@@ -36,28 +52,29 @@ void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 			transform.position.x += actionDelta.deltaPosition.x;
 			transform.position.y += actionDelta.deltaPosition.y;
 			transform.position.z += actionDelta.deltaPosition.z;
-			transform.yawRad = WrapYaw(
-				transform.yawRad + actionDelta.deltaYawRad);
+			ApplyDeltaYaw(transform, actionDelta.deltaYawRad);
 		}
 		else if (!IsActionActive(actionState) && locomotionDelta.hasDelta)
 		{
 			transform.position.x += locomotionDelta.deltaPosition.x;
 			transform.position.y += locomotionDelta.deltaPosition.y;
 			transform.position.z += locomotionDelta.deltaPosition.z;
-			transform.yawRad = WrapYaw(
-				transform.yawRad + locomotionDelta.deltaYawRad);
+			ApplyDeltaYaw(transform, locomotionDelta.deltaYawRad);
 		}
 
 		preCollision.candidatePosition = transform.position;
-		preCollision.candidateYawRad = transform.yawRad;
+		preCollision.candidateRotation = transform.rotation;
 		preCollision.movedThisFrame =
 			LengthXZ(
 				transform.position.x - preCollision.prevPosition.x,
 				transform.position.z - preCollision.prevPosition.z) >
 			kOverlapEpsilon;
+
+		const float prevYaw = TransformHelper::QuaternionToYaw(preCollision.prevRotation);
+		const float currYaw = TransformHelper::QuaternionToYaw(transform.rotation);
+
 		preCollision.rotatedThisFrame =
-			std::abs(WrapYaw(transform.yawRad - preCollision.prevYawRad)) >
-			kOverlapEpsilon;
+			std::abs(TransformHelper::AngleDelta(prevYaw, currYaw)) > kOverlapEpsilon;
 
 		actionDelta = {};
 		locomotionDelta = {};

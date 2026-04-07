@@ -125,6 +125,54 @@ struct ActionStateComp : Component
 	uint32_t actionInstanceId{ 0 };
 	float directionX{ 0.0f };
 	float directionZ{ 0.0f };
+
+	bool CanIssueAction() const noexcept
+	{
+		if (actionId == ActionId::None)
+		{
+			return true;
+		}
+
+		const ActionDef* def = FindActionDef(actionId);
+		if (nullptr == def)
+		{
+			return true;
+		}
+
+		const float progress =
+			(def->duration > 0.0f) ?
+			std::clamp(elapsedSec / def->duration, 0.0f, 1.0f) :
+			1.0f;
+
+		// 1. 액션 자연 종료
+		if (progress >= 1.0f)
+		{
+			return true;
+		}
+
+		// 2. AI Interruptible cancel window 진입 여부
+		for (const ActionCancelRule& cancel : def->transitionRule.cancelRules)
+		{
+			if (!cancel.aiInterruptible)
+			{
+				continue;
+			}
+
+			if (cancel.windowPolicy == ActionWindowPolicy::Always)
+			{
+				return true;
+			}
+
+			const float windowStart = cancel.windowEndNormalized.value_or(0.0f);
+			const float windowEnd	= cancel.windowEndNormalized.value_or(1.0f);
+			if (progress >= windowStart && progress <= windowEnd)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 };
 
 struct LocomotionStateComp : Component
@@ -210,7 +258,8 @@ struct SkeletalCombatColliderComp : Component
 struct WorldTransformComp : Component
 {
 	XMFLOAT3 position{ 156.0f, 50.0f, 650.0f };
-	float yawRad{ 0.0f };
+	XMFLOAT4 rotation{ 0, 0, 0, 1 };
+	XMFLOAT3 scale{ 1, 1, 1 };
 };
 
 struct LocomotionMoveDeltaComp : Component
@@ -239,9 +288,11 @@ struct ActionMoveRuntimeComp : Component
 struct PreCollisionTransformComp : Component
 {
 	XMFLOAT3 prevPosition{ 0.0f, 0.0f, 0.0f };
-	float prevYawRad{ 0.0f };
+	XMFLOAT4 prevRotation{ 0.0f, 0.0f, 0.0f, 1.0f };
+
 	XMFLOAT3 candidatePosition{ 0.0f, 0.0f, 0.0f };
-	float candidateYawRad{ 0.0f };
+	XMFLOAT4 candidateRotation{ 0.0f, 0.0f, 0.0f, 1.0f };
+
 	bool movedThisFrame{ false };
 	bool rotatedThisFrame{ false };
 };
@@ -431,30 +482,41 @@ struct AIControlledTag : TagComponent {};
 struct AIPerceptionComp : Component
 {
 	Entity selectedTarget{ Entity::Null() };
+
 	double distanceToTarget{ std::numeric_limits<double>::max() };
 	double distanceToTargetSq{ std::numeric_limits<double>::max() };
 	double targetForwardDot{ std::numeric_limits<double>::lowest() };
+
 	bool hasTarget{ false };
 	bool targetVisible{ false };
 	bool targetInSightRange{ false };
 	bool targetInAttackRange{ false };
 	bool targetInFront{ false };
+
 	uint32_t hostileInSightCount{ 0 };
+
 	double timeSinceTargetLastSeen{ std::numeric_limits<double>::max() };
+
+	uint64_t builtFrame{ 0 };
 };
 
 // AI 인지 튜닝 파라미터
+// TEMP : Arcetype이 같은 모든 Entity가 동일한 설정값을 들고 있는 것은 비효율적
+//		  추후 Arcetype과 유사한 식별 System의 구현에 따라 Tuning Table 참조로 이전
 struct AIPerceptionTuningComp : Component
 {
 	double sightRange{ 12.0 };
 	double attackRange{ 2.5 };
 	double frontDotThreshold{ 0.2 };
+	
 	double targetKeepBonus{ 4.0 };
 	double lastAttackerBonus{ 2.5 };
 	double frontBonus{ 1.0 };
 	double switchScoreMargin{ 3.0 };
+	
 	double loseSightGraceTime{ 1.2 };
 	double leashRange{ 18.0 };
+	double assistRange{ 6.0 };
 };
 
 // AI 블랙보드 (AI 기억 공간)
@@ -462,19 +524,22 @@ struct AIBlackboardComp : Component
 {
 	Entity currentTarget{ Entity::Null() };
 	Entity lastAttacker{ Entity::Null() };
+
 	double timeSinceCurrentTargetSeen{ std::numeric_limits<double>::max() };
+
 	bool forceRetarget{ false };
+
 	XMFLOAT3 lastKnownTargetPosition{ 0.0f, 0.0f, 0.0f };
 	bool hasLastKnownTargetPosition{ false };
 };
 
 enum class AIStateType : uint8_t
 {
-	Idle = 0,
-	Chase,
-	Combat,
-	Search,
-	React
+	Idle,	// 유효 타겟이 없을 때
+	Chase,	// 타겟은 있지만 아직 공격 상태가 아닐 때
+	Combat,	// 공격 사거리 진입 후 공격 / 회피 등 판단할 때
+	Search,	// 타겟을 잃었지만 grace time 내에서 탐색할 때
+	React	// 피격, 스턴 등 외부 이벤트 처리 상태
 };
 
 // AI FSM 의사결정 상태
@@ -482,11 +547,16 @@ struct AIDecisionComp : Component
 {
 	AIStateType curState{ AIStateType::Idle };
 	AIStateType prevState{ AIStateType::Idle };
+
 	bool transitionRequested{ false };
 	AIStateType requestedState{ AIStateType::Idle };
+
 	double stateTime{ 0.0 };
 	double globalDecisionAcc{ 0.0 };
+
 	double attackCooldownAcc{ 0.0 };
+	double repathCooldownAcc{ 0.0 };
+
 	bool enteredThisFrame{ true };
 
 	void RequestTransition(AIStateType next) noexcept
@@ -527,15 +597,31 @@ struct AIReactionComp : Component
 struct AICommandFrameComp : Component
 {
 	bool hasMove{ false };
-	float moveX{ 0.0f };
-	float moveZ{ 0.0f };
-	float moveYaw{ 0.0f };
 	bool wantsRun{ false };
+	XMFLOAT3 moveDir{ 0, 0, 0 };
+
+	bool hasLook{ false };
+	float moveYaw{ 0.0f };
+	Entity target{ Entity::Null() };
 
 	bool hasAction{ false };
 	ActionId actionId{ ActionId::None };
 	float actionDirX{ 0.0f };
 	float actionDirZ{ 0.0f };
 
-	void Clear() noexcept { *this = {}; }
+	uint32_t sequence{ 0 };
+
+	inline void ClearFrameTransient()
+	{
+		hasAction = false;
+		actionId = ActionId::None;
+		actionDirX = 0.0f;
+		actionDirZ = 0.0f;
+		sequence = 0;
+	}
+
+	inline void ClearAll()
+	{
+		*this = {};
+	}
 };

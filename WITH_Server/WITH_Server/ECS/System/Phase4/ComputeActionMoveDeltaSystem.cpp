@@ -2,15 +2,20 @@
 #include "ComputeActionMoveDeltaSystem.h"
 
 #include "../GameplaySystemUtil.h"
+#include "../../../TransformHelper.h"
 
 using namespace GameplaySystemUtil;
 
 namespace
 {
-	void DirectionFromYaw(float yawRad, float& outDirX, float& outDirZ)
+	void DirectionFromTransform(
+		const WorldTransformComp& transform,
+		float& outDirX, 
+		float& outDirZ)
 	{
-		outDirX = -std::sin(yawRad);
-		outDirZ = -std::cos(yawRad);
+		XMVECTOR fwd = TransformHelper::Forward(transform);
+		outDirX = XMVectorGetX(fwd);
+		outDirZ = XMVectorGetZ(fwd);
 		NormalizeXZ(outDirX, outDirZ);
 	}
 
@@ -48,7 +53,7 @@ namespace
 			NormalizeXZ(outDirX, outDirZ);
 			break;
 		case DirectionPolicy::FacingDirection:
-			DirectionFromYaw(transform.yawRad, outDirX, outDirZ);
+			DirectionFromTransform(transform, outDirX, outDirZ);
 			break;
 		case DirectionPolicy::LockedDirection:
 			if (moveRuntime.hasLockedDirection)
@@ -71,7 +76,7 @@ namespace
 
 		if (!HasDirection(outDirX, outDirZ))
 		{
-			DirectionFromYaw(transform.yawRad, outDirX, outDirZ);
+			DirectionFromTransform(transform, outDirX, outDirZ);
 		}
 	}
 
@@ -108,10 +113,12 @@ namespace
 			return;
 		}
 
+		const float currYaw =
+			TransformHelper::QuaternionToYaw(transform.rotation);
+
 		moveRuntime.lockedDirX = dirX;
 		moveRuntime.lockedDirZ = dirZ;
-		moveRuntime.lockedYawRad =
-			DirToYaw(dirX, dirZ, transform.yawRad);
+		moveRuntime.lockedYawRad = DirToYaw(dirX, dirZ, currYaw);
 		moveRuntime.hasLockedDirection = true;
 	}
 
@@ -121,14 +128,14 @@ namespace
 		float targetYaw,
 		float maxStep)
 	{
-		const float currentYaw =
-			WrapYaw(transform.yawRad + moveDelta.deltaYawRad);
+		const float currYaw =
+			TransformHelper::QuaternionToYaw(transform.rotation);
 		const float nextYaw = (maxStep > kOverlapEpsilon)
-			? ClampYawStep(currentYaw, targetYaw, maxStep)
+			? ClampYawStep(currYaw, targetYaw, maxStep)
 			: targetYaw;
 
 		moveDelta.deltaYawRad =
-			WrapYaw(moveDelta.deltaYawRad + WrapYaw(nextYaw - currentYaw));
+			WrapYaw(moveDelta.deltaYawRad + WrapYaw(nextYaw - currYaw));
 		moveDelta.hasDelta = true;
 	}
 }
@@ -222,38 +229,33 @@ void ComputeActionMoveDeltaSystem::Execute(SystemContext& ctx)
 			if (segment.rotationMode == RotationMode::FaceMoveDirection &&
 				HasDirection(segmentDelta.x, segmentDelta.z))
 			{
+				const float currYaw =
+					TransformHelper::QuaternionToYaw(transform.rotation);
+
 				const float targetYaw =
-					DirToYaw(
-						segmentDelta.x,
-						segmentDelta.z,
-						transform.yawRad);
-				const float maxStep = segment.rotationRate.has_value()
-					? segment.rotationRate.value() *
-						(overlapEnd - overlapStart)
+					DirToYaw(segmentDelta.x, segmentDelta.z, currYaw);
+
+				const float maxStep = 
+					segment.rotationRate.has_value()
+					? segment.rotationRate.value() * (overlapEnd - overlapStart)
 					: 0.0f;
-				ApplyRotationTowardYaw(
-					moveDelta,
-					transform,
-					targetYaw,
-					maxStep);
+
+				ApplyRotationTowardYaw(moveDelta, transform, targetYaw, maxStep);
 			}
 			else if (segment.rotationMode == RotationMode::FaceTarget &&
 				moveRuntime.hasLockedDirection)
 			{
+				const float currYaw =
+					TransformHelper::QuaternionToYaw(transform.rotation);
+
 				const float targetYaw =
-					DirToYaw(
-						moveRuntime.lockedDirX,
-						moveRuntime.lockedDirZ,
-						transform.yawRad);
-				const float maxStep = segment.rotationRate.has_value()
-					? segment.rotationRate.value() *
-						(overlapEnd - overlapStart)
+					DirToYaw( moveRuntime.lockedDirX, moveRuntime.lockedDirZ, currYaw);
+				const float maxStep = 
+					segment.rotationRate.has_value()
+					? segment.rotationRate.value() * (overlapEnd - overlapStart)
 					: 0.0f;
-				ApplyRotationTowardYaw(
-					moveDelta,
-					transform,
-					targetYaw,
-					maxStep);
+
+				ApplyRotationTowardYaw(moveDelta, transform, targetYaw, maxStep);
 			}
 		}
 	}

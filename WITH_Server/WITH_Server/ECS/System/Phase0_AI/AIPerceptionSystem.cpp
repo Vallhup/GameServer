@@ -3,6 +3,7 @@
 
 #include "../../GameplayRuntimeComponents.h"
 #include "../GameplaySystemUtil.h"
+#include "../../../TransformHelper.h"
 
 using namespace GameplaySystemUtil;
 
@@ -82,13 +83,15 @@ AIPerceptionSystem::PerceptionCandidate AIPerceptionSystem::EvaluateCandidate(
 	out.inAttackRange = (distSq <= attackSq);
 
 	// 전방 벡터: yawRad 기준 (sin(yaw), cos(yaw))가 XZ forward
-	const double fwdX = std::sin(static_cast<double>(selfTr.yawRad));
-	const double fwdZ = std::cos(static_cast<double>(selfTr.yawRad));
+	const XMVECTOR forward = TransformHelper::Forward(selfTr);
+
+	XMFLOAT3 fwd;
+	XMStoreFloat3(&fwd, forward);
 
 	double toX = 0.0, toZ = 0.0;
 	DirectionXZ(selfTr.position, otherTr.position, toX, toZ);
 
-	out.forwardDot = fwdX * toX + fwdZ * toZ;
+	out.forwardDot = fwd.x * toX + fwd.z * toZ;
 	out.inFront    = (out.forwardDot >= tuning.frontDotThreshold);
 
 	// 시야 차단 없음 (TODO: 나중에 raycast 추가 가능)

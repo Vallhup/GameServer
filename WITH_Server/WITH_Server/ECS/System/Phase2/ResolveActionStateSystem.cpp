@@ -2,6 +2,7 @@
 #include "ResolveActionStateSystem.h"
 
 #include "../GameplaySystemUtil.h"
+#include "../../../TransformHelper.h"
 
 using namespace GameplaySystemUtil;
 
@@ -34,8 +35,13 @@ namespace
 
 		if (LengthXZ(dirX, dirZ) <= kOverlapEpsilon)
 		{
-			dirX = -std::sin(transform.yawRad);
-			dirZ = -std::cos(transform.yawRad);
+			const XMVECTOR d = TransformHelper::Forward(transform);
+
+			XMFLOAT3 dir;
+			XMStoreFloat3(&dir, d);
+
+			dirX = dir.x;
+			dirZ = dir.z;
 			NormalizeXZ(dirX, dirZ);
 		}
 
