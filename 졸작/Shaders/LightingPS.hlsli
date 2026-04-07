@@ -92,7 +92,7 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     
     float3 finalColor = directLight + iblAmbient + emission;
 
-    finalColor = ApplyVolumetricFog(finalColor, worldPos, input.uv, cameraPosition);
+    //finalColor = ApplyVolumetricFog(finalColor, worldPos, input.uv, cameraPosition);
 
     finalColor = DarkFantasyToneMapping(finalColor, saturationFactor);
     

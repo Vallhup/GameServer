@@ -28,6 +28,7 @@
 #include "ParrySparkEffect.h"
 
 #include "NetId.h"
+#include "EntityId.h"
 #include "NetHelper.h"
 
 void FirstBattleScene::CreateKnightPool()
@@ -156,7 +157,7 @@ void FirstBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 	int id = nid.GetId();
 	int type = add.typeid_();
 
-	if (type == 5) // Final_Boss
+	if (type == static_cast<int>(CharacterId::FinalBoss)) // Final_Boss
 	{
 		if (bossObject)
 		{
@@ -167,7 +168,7 @@ void FirstBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			activeCharacters[id] = bossObject;
 		}
 	}
-	else if (type == 1) // Knight
+	else if (type == static_cast<int>(CharacterId::Knight)) // Knight
 	{
 		auto player = GetAvailableKnight();
 		if (player)
@@ -243,7 +244,7 @@ void FirstBattleScene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& s
 
 	const int power = stat.power();
 	const int defense = stat.defense();
-	const int mSpeed = stat.movespeed();
+	const double mSpeed = stat.movespeed();
 	const double aSpeed = stat.attackspeed();
 
 	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Village);

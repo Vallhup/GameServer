@@ -2,19 +2,25 @@
 
 #include <array>
 
-#include "ECS.h"
+#include "ECSCore.h"
 #include "Entity.h"
 #include "Component.h"
 #include "ComponentStorage.h"
+#include "ViewFwd.h"
 
-template<bool IsConst, typename GetTuple, typename ExTuple>
-class BasicView;
+// NOTE:
+//  1. Iteration order is not stable.
+//  2. Required storage missing -> empty view.
+//  3. Missing exclude storage is treated as empty exclude set.
+//  4. View creation never creates storages.
+//  5. References returned by iteration are valid only until structural mutation.
+//  6. Structural mutation during iteration is forbidden.
 
 template<bool IsConst, CompT... Get, CompT... Ex>
 class BasicView<IsConst, std::tuple<Get...>, std::tuple<Ex...>> {
 	static_assert(sizeof...(Get) > 0, "BasicView must have at least one component to get.");
 
-	using ECS_ref = std::conditional_t<IsConst, const ECS&, ECS&>;
+	using ECS_ref = std::conditional_t<IsConst, const ECSCore&, ECSCore&>;
 
 	template<CompT T>
 	using storage_ptr = std::conditional_t<IsConst, const ComponentStorage<T>*, ComponentStorage<T>*>;
@@ -26,22 +32,13 @@ class BasicView<IsConst, std::tuple<Get...>, std::tuple<Ex...>> {
 	using comp_ref = std::conditional_t<IsConst, const T&, T&>;
 
 public:
-	explicit BasicView(ECS_ref ecs) : _ecs(ecs), _base(0)
-	{
-		_getStores = std::tuple{ &(_ecs.GetStorage<Get>())... };
-		if constexpr (sizeof...(Ex) > 0)
-			_exStores = std::tuple{ &(_ecs.GetStorage<Ex>())... };
-
-		_pools = { static_cast<const IStorage*>(& _ecs.GetStorage<Get>())... };
-		for (size_t i = 1; i < _pools.size(); ++i)
-		{
-			if (_pools[i]->Size() < _pools[_base]->Size())
-				_base = i;
-		}
-	}
+	explicit BasicView(ECS_ref ecs) { Init(ecs); }
 
 	class BasicViewIterator {
 	public:
+		using iterator_category = std::forward_iterator_tag;
+		using difference_type = std::ptrdiff_t;
+
 		BasicViewIterator(const BasicView* v, size_t i) : _view(v), _i(i) { Skip(); }
 
 		BasicViewIterator& operator++() { ++_i; Skip(); return *this; }
@@ -49,20 +46,14 @@ public:
 		bool operator==(const BasicViewIterator& rhs) const { return _view == rhs._view && _i == rhs._i; }
 		bool operator!=(const BasicViewIterator& rhs) const { return !(*this == rhs); }
 
-		auto operator*() const
-		{
-			return MakeTuple(_entity);
-		}
+		auto operator*() const { return MakeTuple(_entity); }
 
 	private:
-		const BasicView* _view;
-		size_t _i;
-
-		Entity _entity;
-		std::tuple<comp_ptr<Get>...> _ptrs;
-
 		void Skip()
 		{
+			if (_view == nullptr || _view->_empty)
+				return;
+
 			const IStorage& base = _view->Base();
 			const size_t n = base.Size();
 
@@ -74,7 +65,7 @@ public:
 					[&](auto*... s)
 					{
 						return std::tuple<comp_ptr<Get>...>{ s->GetComponent(_entity)... };
-					}, _view->_getStores);
+					}, _view->_getStorages);
 
 				const bool getCheck = std::apply(
 					[&](auto*... p)
@@ -89,8 +80,8 @@ public:
 					const bool exCheck = std::apply(
 						[&](auto*... s)
 						{
-							return ((s->GetComponent(_entity) != nullptr) || ...);
-						}, _view->_exStores);
+							return (((s != nullptr) && (s->GetComponent(_entity) != nullptr)) || ...);
+						}, _view->_exStorages);
 
 					if (exCheck) continue;
 				}
@@ -107,25 +98,63 @@ public:
 					return std::tuple<Entity, comp_ref<Get>...>(e, (*p)...);
 				}, _ptrs);
 		}
+
+		const BasicView* _view;
+		size_t _i;
+		Entity _entity;
+		std::tuple<comp_ptr<Get>...> _ptrs;
 	};
 
 	using iterator = BasicViewIterator;
 
 	iterator begin() const { return iterator(this, 0); }
-	iterator end()	 const { return iterator(this, Base().Size()); }
+	iterator end()	 const { return iterator(this, BaseSize()); }
+
+	bool Empty() const noexcept { return _empty; }
+	size_t BaseSize() const noexcept { return _empty ? 0 : Base().Size(); }
 
 private:
+	void Init(ECS_ref ecs)
+	{
+		_getStorages = std::tuple{ ecs.TryGetStorage<Get>()... };
+
+		const bool getCheck = std::apply(
+			[](auto*... s)
+			{
+				return ((s != nullptr) && ...);
+			}, _getStorages);
+
+		if (!getCheck)
+		{
+			_empty = true;
+			return;
+		}
+
+		if constexpr (sizeof...(Ex) > 0)
+			_exStorages = std::tuple{ ecs.TryGetStorage<Ex>()... };
+
+		FillPools(std::index_sequence_for<Get...>{});
+		
+		_base = 0;
+		for (size_t i = 1; i < _pools.size(); ++i)
+		{
+			if (_pools[i]->Size() < _pools[_base]->Size())
+				_base = i;
+		}
+	}
+
+	template<size_t... I>
+	void FillPools(std::index_sequence<I...>)
+	{
+		_pools = { static_cast<const IStorage*>(std::get<I>(_getStorages))... };
+	}
 
 	const IStorage& Base() const { return *_pools[_base]; }
 
-	ECS_ref _ecs;
+	bool _empty{ false };
+	size_t _base{ 0 };
 
-	size_t _base;
 	std::array<const IStorage*, sizeof...(Get)> _pools{};
-
-	std::tuple<storage_ptr<Get>...> _getStores;
-	std::tuple<storage_ptr<Ex>...> _exStores;
+	std::tuple<storage_ptr<Get>...> _getStorages;
+	std::tuple<storage_ptr<Ex>...> _exStorages;
 };
-
-// 1. foreach형태 지원? -> 고민 중
-// 2. RuntimeView 지원? -> 아마 안 할듯

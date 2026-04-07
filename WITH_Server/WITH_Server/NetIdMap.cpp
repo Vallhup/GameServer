@@ -1,24 +1,6 @@
 #include "pch.h"
 #include "NetIdMap.h"
 
-bool NetIdMap::TryGetWorld(uint32 connId, WorldId& out) const 
-{
-	auto it = _bindMap.find(connId);
-	if (it == _bindMap.end()) return false;
-
-	out = it->second.world;
-	return true;
-}
-
-bool NetIdMap::TryGetOwnerPlayer(uint32 connId, NetId& out) const
-{
-	auto it = _bindMap.find(connId);
-	if (it == _bindMap.end()) return false;
-
-	out = it->second.player;
-	return true;
-}
-
 void NetIdMap::OnConnected(uint32 connId)
 {
 	_bindMap.try_emplace(connId,

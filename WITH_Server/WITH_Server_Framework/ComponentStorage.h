@@ -2,13 +2,23 @@
 
 #include <vector>
 #include <cassert>
+#include <compare>
+#include <iterator>
+#include <type_traits>
+#include <utility>
 
 #include "Entity.h"
 #include "Component.h"
 
 using TypeId = int;
 
-class IStorage {
+class ECSCore;
+class WorldRuntime;
+class WorldMutationBuffer;
+class WorldLifecycleBuffer;
+
+class IStorage
+{
 public:
 	virtual ~IStorage() = default;
 
@@ -25,12 +35,13 @@ class ComponentStorage final : public IStorage {
 
 public:
 	template<bool IsConst>
-	struct ItemRef {
+	struct ItemRef
+	{
 		using entity_ref = std::conditional_t<IsConst, const Entity&, Entity&>;
-		using comp_ref	 = std::conditional_t<IsConst, const T&, T&>;
+		using comp_ref = std::conditional_t<IsConst, const T&, T&>;
 
 		entity_ref entity;
-		comp_ref   component;
+		comp_ref component;
 
 		operator std::pair<entity_ref, comp_ref>() const
 		{
@@ -39,12 +50,13 @@ public:
 	};
 
 	template<bool IsConst>
-	struct ItemPtr {
+	struct ItemPtr
+	{
 		using entity_ptr = std::conditional_t<IsConst, const Entity*, Entity*>;
-		using comp_ptr	 = std::conditional_t<IsConst, const T*, T*>;
+		using comp_ptr = std::conditional_t<IsConst, const T*, T*>;
 
 		entity_ptr entity;
-		comp_ptr   component;
+		comp_ptr component;
 	};
 
 	template<bool IsConst>
@@ -53,41 +65,62 @@ public:
 
 	public:
 		using iterator_category = std::random_access_iterator_tag;
-		using difference_type	= std::ptrdiff_t;
-		using value_type		= ItemRef<IsConst>;
-		using reference			= ItemRef<IsConst>;
-		using pointer			= ItemPtr<IsConst>*;
+		using difference_type = std::ptrdiff_t;
+		using value_type = ItemRef<IsConst>;
+		using reference = ItemRef<IsConst>;
+		using pointer = ItemPtr<IsConst>*;
 
-		// 생성자
 		BasicIterator() = default;
-		BasicIterator(storage_t* s, size_t i) : _s(s), _i(i), _cache(nullptr) {}
+		BasicIterator(storage_t* s, size_t i)
+			: _s(s), _i(i), _cache{}
+		{
+		}
 
-		// 증감연산자
 		BasicIterator& operator++() { ++_i; return *this; }
 		BasicIterator& operator--() { --_i; return *this; }
 
 		BasicIterator operator++(int) { auto t = *this; ++(*this); return t; }
 		BasicIterator operator--(int) { auto t = *this; --(*this); return t; }
 
-		// 관계연산자
-		std::strong_ordering operator<=>(const BasicIterator& rhs) const { assert(_s == rhs._s); return _i <=> rhs._i; }
-		bool operator==(const BasicIterator& rhs) const { return _s == rhs._s && _i == rhs._i; }
-		bool operator!=(const BasicIterator& rhs) const { return !(*this == rhs); }
-
-		// 산술연산자
-		BasicIterator& operator+=(difference_type n) { _i = size_t(difference_type(_i) + n); return*this; }
-		BasicIterator& operator-=(difference_type n) { _i = size_t(difference_type(_i) - n); return*this; }
-
-		BasicIterator operator+(difference_type n) const { return BasicIterator(_s, _i + n); }
-		BasicIterator operator-(difference_type n) const { return BasicIterator(_s, _i - n); }
-
-		difference_type operator-(const BasicIterator& rhs) const 
+		std::strong_ordering operator<=>(const BasicIterator& rhs) const
 		{
 			assert(_s == rhs._s);
-			return difference_type(_i) - difference_type(rhs._i); 
+			return _i <=> rhs._i;
 		}
 
-		// 접근연산자
+		bool operator==(const BasicIterator& rhs) const
+		{
+			return _s == rhs._s && _i == rhs._i;
+		}
+
+		BasicIterator& operator+=(difference_type n)
+		{
+			_i = static_cast<size_t>(static_cast<difference_type>(_i) + n);
+			return *this;
+		}
+
+		BasicIterator& operator-=(difference_type n)
+		{
+			_i = static_cast<size_t>(static_cast<difference_type>(_i) - n);
+			return *this;
+		}
+
+		BasicIterator operator+(difference_type n) const
+		{
+			return BasicIterator(_s, _i + n);
+		}
+
+		BasicIterator operator-(difference_type n) const
+		{
+			return BasicIterator(_s, _i - n);
+		}
+
+		difference_type operator-(const BasicIterator& rhs) const
+		{
+			assert(_s == rhs._s);
+			return static_cast<difference_type>(_i) - static_cast<difference_type>(rhs._i);
+		}
+
 		reference operator*() const
 		{
 			assert(_s && _i < _s->Size());
@@ -108,14 +141,15 @@ public:
 		}
 
 	private:
-		storage_t* _s;
-		size_t     _i;
+		storage_t* _s{ nullptr };
+		size_t _i{ 0 };
 		mutable ItemPtr<IsConst> _cache;
 	};
 
 	using iterator = BasicIterator<false>;
 	using const_iterator = BasicIterator<true>;
 
+public:
 	iterator begin() { return iterator(this, 0); }
 	iterator end() { return iterator(this, Size()); }
 
@@ -126,129 +160,134 @@ public:
 	const_iterator cend() const { return const_iterator(this, Size()); }
 
 public:
-	const Entity& EntityAtDense(size_t i) const { return _entities[i]; }
+	const Entity& EntityAtDense(size_t i) const
+	{
+		assert(i < _entities.size());
+		return _entities[i];
+	}
 
 	int DenseIndex(Entity entity) const
 	{
-		if (entity.id >= _sparse.size()) return INVALID;
+		if (entity.id < 0 || static_cast<size_t>(entity.id) >= _sparse.size())
+			return INVALID;
 
 		const int di = _sparse[entity.id];
-		const bool invalidCheck =
-			(di == INVALID) ||
-			(_entities[di] != entity);
+		if (di == INVALID)
+			return INVALID;
 
-		if (invalidCheck) return INVALID;
-		else return di;
-	}
+		if (_entities[di] != entity)
+			return INVALID;
 
-public:
-	T* AddComponent(Entity entity)
-	{
-		if (entity.IsNull()) return nullptr;
-		if (entity.id >= _sparse.size())
-			_sparse.resize(entity.id + 1, INVALID);
-
-		int& di = _sparse[entity.id];
-		if (di != INVALID)
-		{
-			if (_entities[di] != entity)
-			{
-				assert(false && "AddComponent clled with stale Entity.");
-				return nullptr;
-			}
-
-			return &_dense[di];
-		}
-
-		di = static_cast<int>(_dense.size());
-		_entities.push_back(entity);
-		_dense.emplace_back();
-
-		return &_dense.back();
+		return di;
 	}
 
 	T* GetComponent(Entity entity)
 	{
-		if (entity.id >= _sparse.size()) return nullptr;
-
-		const int di = _sparse[entity.id];
-		const bool invalidCheck =
-			(di == INVALID) ||				 // valid check
-			(_entities[di] != entity);		 // generation check
-
-		if (invalidCheck) return nullptr;
-		else return &_dense[di];
+		const int di = DenseIndex(entity);
+		return (di == INVALID) ? nullptr : &_dense[di];
 	}
 
 	const T* GetComponent(Entity entity) const
 	{
-		if (entity.id >= _sparse.size()) return nullptr;
-
-		const int di = _sparse[entity.id];
-		const bool invalidCheck =
-			(di == INVALID) ||				 // valid check
-			(_entities[di] != entity);		 // generation check
-
-		if (invalidCheck) return nullptr;
-		else return &_dense[di];
-	}
-
-	void RemoveComponent(Entity entity)
-	{
-		if (entity.id >= _sparse.size() || _dense.empty()) return;
-		if (_sparse[entity.id] == INVALID) return;
-
-		int di = _sparse[entity.id];
-		int last = static_cast<int>(_dense.size()) - 1;
-
-		if (di != last)
-		{
-			std::swap(_dense[di], _dense[last]);
-			std::swap(_entities[di], _entities[last]);
-			_sparse[_entities[di].id] = di;
-		}
-
-		_dense.pop_back();
-		_entities.pop_back();
-		_sparse[entity.id] = INVALID;
+		const int di = DenseIndex(entity);
+		return (di == INVALID) ? nullptr : &_dense[di];
 	}
 
 	bool HasComponent(Entity entity) const
 	{
-		return GetComponent(entity) != nullptr;
+		return DenseIndex(entity) != INVALID;
 	}
 
 public:
-
-	virtual void OnEntityDestroyed(Entity e) override
+	void OnEntityDestroyed(Entity e) override
 	{
-		if (e.id < _sparse.size())
-		{
-			const int di = _sparse[e.id];
-			if (di != INVALID && _entities[di] == e)
-				RemoveComponent(e);
-		}
+		if (HasComponent(e))
+			RemoveComponentInternal(e);
 	}
 
-	virtual void Clear() override
+	void Clear() override
 	{
 		_dense.clear();
 		_entities.clear();
 		_sparse.clear();
 	}
 
-	virtual size_t Size() const override
+	size_t Size() const override
 	{
 		return _dense.size();
 	}
 
-	virtual Entity EntityAt(size_t i) const override
+	Entity EntityAt(size_t i) const override
 	{
 		assert(i < _entities.size());
 		return _entities[i];
 	}
 
 private:
+	template<typename... Args>
+	T* AddComponentInternal(Entity entity, Args&&... args)
+	{
+		if (entity.IsNull())
+			return nullptr;
+
+		if (static_cast<size_t>(entity.id) >= _sparse.size())
+			_sparse.resize(static_cast<size_t>(entity.id) + 1, INVALID);
+
+		int& di = _sparse[entity.id];
+		if (di != INVALID)
+		{
+			if (_entities[di] != entity)
+			{
+				assert(false && "AddComponentInternal called with stale Entity.");
+				return nullptr;
+			}
+
+			assert(false && "AddComponentInternal called for existing component.");
+			return nullptr;
+		}
+
+		di = static_cast<int>(_dense.size());
+		_entities.push_back(entity);
+		_dense.emplace_back(std::forward<Args>(args)...);
+		return &_dense.back();
+	}
+
+	T* AddOrAssignComponentInternal(Entity entity, T value)
+	{
+		const int di = DenseIndex(entity);
+		if (di == INVALID)
+			return AddComponentInternal(entity, std::move(value));
+
+		_dense[di] = std::move(value);
+		return &_dense[di];
+	}
+
+	bool RemoveComponentInternal(Entity entity)
+	{
+		const int di = DenseIndex(entity);
+		if (di == INVALID)
+			return false;
+
+		const int last = static_cast<int>(_dense.size() - 1);
+		if (di != last)
+		{
+			_dense[di] = std::move(_dense[last]);
+			_entities[di] = _entities[last];
+			_sparse[_entities[di].id] = di;
+		}
+
+		_dense.pop_back();
+		_entities.pop_back();
+		_sparse[entity.id] = INVALID;
+		return true;
+	}
+
+private:
+	friend class ECSCore;
+	friend class WorldRuntime;
+	friend class WorldMutationBuffer;
+	friend class WorldLifecycleBuffer;
+
 	std::vector<T> _dense;
 	std::vector<Entity> _entities;
 	std::vector<int> _sparse;

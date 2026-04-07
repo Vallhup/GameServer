@@ -33,6 +33,7 @@ struct PacketFactory {
 	template<ProtoT T>
 	static bool Deserialize(const PacketHeader& header, const BYTE* data, T* out)
 	{
+		if (data == nullptr) return false;
 		if (header.size < sizeof(PacketHeader)) return false;
 
 		const char* body = reinterpret_cast<const char*>(data) + sizeof(PacketHeader);
@@ -43,6 +44,7 @@ struct PacketFactory {
 
 	static bool PeekHeader(const BYTE* data, uint16 size, PacketHeader* out)
 	{
+		if (data == nullptr) return false;
 		if (size < sizeof(PacketHeader)) return false;
 
 		memcpy(out, data, sizeof(PacketHeader));

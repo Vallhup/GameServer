@@ -1,104 +1,167 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "WorldRegistry.h"
-#include "World.h"
-#include "ThreadPool.h"
-#include "WorldFactory.h"
 
-WorldRegistry::WorldRegistry(uint32 reserve, ThreadPool& pool, IWorldFactory& factory)
-	: _threadPool(pool), _worldFactory(factory)
+WorldRegistry::WorldRegistry(IWorldInstanceFactory& factory)
+	: _factory(factory)
 {
-	_worlds.reserve(reserve);
-	_worlds.push_back(WorldSlot{});
 }
 
-WorldId WorldRegistry::CreateWorld(const WorldDesc& desc)
+WorldRegistry::WorldRegistry(
+	IWorldInstanceFactory& factory,
+	WorldExecutionModelRegistry& executionModelRegistry)
+	: _factory(factory)
+	, _executionModelRegistry(&executionModelRegistry)
 {
-	WorldId wId = _allocator.Allocate();
-	const uint32 id = wId.GetId();
-	const uint32 gen = wId.GetGen();
-
-	EnsureSlotCapacity(id);
-
-	WorldSlot& slot = _worlds[id];
-	assert(slot.world == nullptr);
-
-	slot.gen = gen;
-
-	auto impl = _worldFactory.CreateImpl(desc);
-	slot.world = std::make_unique<World>(wId, desc, _threadPool, std::move(impl));
-	slot.world->Init();
-
-	return wId;
 }
 
-void WorldRegistry::DestroyWorld(WorldId worldId)
+WorldRegistry::WorldRegistry(
+	IWorldInstanceFactory& factory,
+	WorldExecutionModelRegistry& executionModelRegistry,
+	WorldTransferProfileRegistry& transferProfileRegistry)
+	: _factory(factory)
+	, _executionModelRegistry(&executionModelRegistry)
+	, _transferProfileRegistry(&transferProfileRegistry)
 {
-	if (!worldId.IsValid()) return;
+}
 
-	const uint32 id = worldId.GetId();
-	if (id == 0 || id >= _worlds.size()) return;
+WorldRegistry::WorldRegistry(
+	IWorldInstanceFactory& factory,
+	WorldTransferProfileRegistry& transferProfileRegistry)
+	: _factory(factory)
+	, _transferProfileRegistry(&transferProfileRegistry)
+{
+}
 
-	WorldSlot& slot = _worlds[id];
+const WorldDef* WorldRegistry::FindWorldDef(WorldDefId defId) const
+{
+	auto it = _defs.find(defId);
+	if (it == _defs.end())
+		return nullptr;
 
-	if (slot.gen != worldId.GetGen()) return;
+	return &it->second;
+}
 
-	if (slot.world)
+bool WorldRegistry::RegisterWorldDef(const WorldDef& def)
+{
+	if (def.id == WorldDefId::None)
+		return false;
+
+	if (def.executionModelKey == InvalidWorldExecutionModelKey)
+		return false;
+
+	if (_executionModelRegistry == nullptr)
+		return false;
+
+	if (!_executionModelRegistry->Has(def.executionModelKey))
+		return false;
+
+	if (def.transferProfileId != InvalidWorldTransferProfileId)
 	{
-		slot.world->Shutdown();
-		slot.world.reset();
+		if (_transferProfileRegistry == nullptr)
+			return false;
+
+		if (!_transferProfileRegistry->Has(def.transferProfileId))
+			return false;
 	}
 
-	_allocator.Free(worldId);
+	_defs[def.id] = def;
+	return true;
 }
 
-IWorld* WorldRegistry::GetWorld(WorldId worldId)
+WorldInstance* WorldRegistry::FindWorld(WorldId worldId)
 {
-	if (!worldId.IsValid()) return nullptr;
-
-	const uint32 id = worldId.GetId();
-	if (id == 0 || id >= _worlds.size())
+	auto it = _worlds.find(worldId);
+	if (it == _worlds.end())
 		return nullptr;
 
-	WorldSlot& slot = _worlds[id];
-	if (slot.gen != worldId.GetGen())
-		return nullptr;
-
-	return slot.world.get();
+	return it->second.get();
 }
 
-const IWorld* WorldRegistry::GetWorld(WorldId worldId) const
+const WorldInstance* WorldRegistry::FindWorld(WorldId worldId) const
 {
-	if (!worldId.IsValid()) return nullptr;
-
-	const uint32 id = worldId.GetId();
-	if (id == 0 || id >= _worlds.size())
+	auto it = _worlds.find(worldId);
+	if (it == _worlds.end())
 		return nullptr;
 
-	const WorldSlot& slot = _worlds[id];
-	if (slot.gen != worldId.GetGen())
+	return it->second.get();
+}
+
+WorldInstance* WorldRegistry::CreateWorld(const WorldDef& def, uint64_t instanceKey)
+{
+	auto impl = _factory.Create(def);
+	if (!impl)
 		return nullptr;
 
-	return slot.world.get();
+	if (def.executionModelKey == InvalidWorldExecutionModelKey)
+		return nullptr;
+
+	if (_executionModelRegistry == nullptr)
+		return nullptr;
+
+	const WorldExecutionModel* executionModel =
+		_executionModelRegistry->TryGet(def.executionModelKey);
+	if (executionModel == nullptr)
+		return nullptr;
+
+	const WorldTransferProfile* transferProfile = nullptr;
+	if (def.transferProfileId != InvalidWorldTransferProfileId)
+	{
+		if (_transferProfileRegistry == nullptr)
+			return nullptr;
+
+		transferProfile = _transferProfileRegistry->Find(def.transferProfileId);
+		if (transferProfile == nullptr)
+			return nullptr;
+	}
+
+	const WorldId worldId = _idAllocator.Allocate();
+	if (!worldId.IsValid())
+		return nullptr;
+
+	WorldInstanceCreateParams params;
+	params.identity.id = worldId;
+	params.identity.defId = def.id;
+	params.identity.instanceKey = instanceKey;
+	params.def = &def;
+	params.executionModel = *executionModel;
+	params.transferProfile = transferProfile;
+	params.impl = std::move(impl);
+
+	auto instance = std::make_unique<WorldInstance>(std::move(params));
+	WorldInstance* raw = instance.get();
+
+	_worlds.try_emplace(worldId, std::move(instance));
+	return raw;
+}
+
+bool WorldRegistry::DestroyWorld(WorldId worldId)
+{
+	auto it = _worlds.find(worldId);
+	if (it == _worlds.end())
+		return false;
+
+	it->second->Shutdown();
+	_worlds.erase(it);
+
+	_idAllocator.Free(worldId);
+	return true;
+}
+
+bool WorldRegistry::IsAlive(WorldId worldId) const
+{
+	return _idAllocator.IsAlive(worldId);
 }
 
 void WorldRegistry::Clear()
 {
-	for (WorldSlot& slot : _worlds)
+	for (auto& [_, world] : _worlds)
 	{
-		if (slot.world)
-		{
-			slot.world->Shutdown();
-			slot.world.reset();
-		}
+		if (world)
+			world->Shutdown();
 	}
 
 	_worlds.clear();
-	_allocator.Clear();
-}
-
-void WorldRegistry::EnsureSlotCapacity(uint32 id)
-{
-	if (id < _worlds.size()) return;
-	_worlds.resize(id + 1);
+	_defs.clear();
+	_idAllocator.Clear();
 }
 

@@ -30,9 +30,6 @@
     <ClInclude Include="Include\PacketType.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Include\AnimationType.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Include\EntityType.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -41,6 +38,12 @@
     </ClInclude>
     <ClInclude Include="Include\NetChannel.h">
       <Filter>NetChannel</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\EntityId.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\AnimationId.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

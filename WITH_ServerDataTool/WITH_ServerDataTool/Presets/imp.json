@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 2,
+  "objectName": "Imp",
+  "inputs": {
+    "meshDirectory": "../../Resource/Imp/Mesh",
+    "animationDirectory": "../../Resource/Imp/Animation"
+  },
+  "outputs": {
+    "capsuleTemplatePath": "../../Output/Capsule/imp_capsule_template.json",
+    "animationDirectory": "../../Output/Animation/Imp"
+  },
+  "capsuleRules": {
+    "defaultRoles": [ "hurt" ],
+    "weaponRoles": [ "hit" ],
+    "weaponBones": [ 45 ]
+  },
+  "clips": [
+    { "name": "melee_1", "source": "monster_Imp_melee_1_baked.bone", "output": "imp_animation_melee_1.json", "loop": false },
+    { "name": "melee_2", "source": "monster_Imp_melee_2_baked.bone", "output": "imp_animation_melee_2.json", "loop": false },
+    { "name": "melee_3", "source": "monster_Imp_melee_3_baked.bone", "output": "imp_animation_melee_3.json", "loop": false },
+    { "name": "melee_4", "source": "monster_Imp_melee_4_baked.bone", "output": "imp_animation_melee_4.json", "loop": false },
+    { "name": "melee_5", "source": "monster_Imp_melee_5_baked.bone", "output": "imp_animation_melee_5.json", "loop": false },
+    { "name": "stun", "source": "monster_Imp_stun_baked.bone", "output": "imp_animation_stun.json", "loop": false },
+    { "name": "walk_forward", "source": "monster_Imp_walk_forward_baked.bone", "output": "imp_animation_walk_forward.json", "loop": true },
+    { "name": "walk_left", "source": "monster_Imp_walk_left_baked.bone", "output": "imp_animation_walk_left.json", "loop": true },
+    { "name": "walk_right", "source": "monster_Imp_walk_right_baked.bone", "output": "imp_animation_walk_right.json", "loop": true }
+  ]
+}

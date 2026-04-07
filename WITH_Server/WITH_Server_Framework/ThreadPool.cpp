@@ -1,70 +1,148 @@
 #include "pch.h"
 #include "ThreadPool.h"
-#include "JobGraph.h"
 
-ThreadPool::ThreadPool(size_t size) : _running(true)
+#include <algorithm>
+#include <stdexcept>
+#include <string>
+
+ThreadPool::~ThreadPool()
 {
-	for (size_t i = 0; i < size; ++i)
-		_workers.emplace_back(&ThreadPool::WorkerLoop, this);
+	Stop();
 }
 
-void ThreadPool::Push(const JobData& job)
+bool ThreadPool::Start(uint32_t threadCnt, WorkerPumpFn pump, void* pumpCtx)
 {
+	if (pump == nullptr)
+		return false;
+
+	bool expected{ false };
+	if (!_running.compare_exchange_strong(expected, true))
 	{
-		std::lock_guard lock{ _mtx };
-		_jobQueue.push(job);
+		return false;
 	}
 
-	_cv.notify_one();
-}
+	if (threadCnt == 0)
+		threadCnt = std::max(1u, std::thread::hardware_concurrency());
 
-void ThreadPool::Stop()
-{
-	_running = false;
-	_cv.notify_all();
-	for (auto& w : _workers) {
-		if (w.joinable())
-			w.join();
-	}
-}
+	_stopping.store(false);
+	_pump = pump;
+	_pumpCtx = pumpCtx;
 
-void ThreadPool::ParallelFor(int count, int chunk, const std::function<void(int, int)>& func)
-{
-	int jobCount = (count + chunk - 1) / chunk;
+	_workers.clear();
+	_workers.reserve(threadCnt);
 
-	std::latch done(jobCount);
-	for (int i = 0; i < jobCount; ++i)
+	try
 	{
-		int begin = i * chunk;
-		int end = std::min(begin + chunk, count);
+		for (uint32_t i = 0; i < threadCnt; ++i)
+		{
+			_workers.emplace_back([this]() { WorkerLoop(); });
+		}
+	}
+	catch (...)
+	{
+		_stopping.store(true);
+		_cv.notify_all();
 
-		Job* job = new ParallelForJob{
-			begin, end,
-			func, &done
-		};
+		for (std::thread& worker : _workers)
+		{
+			if (worker.joinable())
+				worker.join();
+		}
+		_workers.clear();
 
-		JobData jd{ &ParallelForJob::Execute, job };
-		Push(jd);
+		_pump = nullptr;
+		_pumpCtx = nullptr;
+		_running.store(false);
+		throw;
 	}
 
-	done.wait();
+	return true;
+}
+
+void ThreadPool::Stop() noexcept
+{
+    bool expected = true;
+    if (!_running.compare_exchange_strong(expected, false))
+    {
+        return;
+    }
+
+    _stopping.store(true);
+    _cv.notify_all();
+
+    for (std::thread& worker : _workers)
+    {
+        if (worker.joinable())
+            worker.join();
+    }
+
+    _workers.clear();
+    _pump = nullptr;
+    _pumpCtx = nullptr;
+}
+
+void ThreadPool::WakeOne() noexcept
+{
+    if (!_running.load())
+        return;
+
+    _workEpoch.fetch_add(1);
+    _cv.notify_one();
+}
+
+void ThreadPool::WakeAll() noexcept
+{
+    if (!_running.load())
+        return;
+
+    _workEpoch.fetch_add(1);
+    _cv.notify_all();
 }
 
 void ThreadPool::WorkerLoop()
 {
-	JobData job;
-	while (_running) {
-		{
-			std::unique_lock lock{ _mtx };
-			_cv.wait(lock, 
-				[&]() { return not _jobQueue.empty() or not _running; });
+    uint64_t observedEpoch = _workEpoch.load();
 
-			if (not _running) break;
+    while (true)
+    {
+        // work가 있는 동안 최대한 drain
+        while (!_stopping.load())
+        {
+            WorkerPumpFn pump = _pump;
+            void* pumpCtx = _pumpCtx;
 
-			job = std::move(_jobQueue.front());
-			_jobQueue.pop();
-		}
+            if (pump == nullptr)
+                break;
 
-		job.func(job.context);
-	}
+            bool executed{ false };
+            try
+            {
+                executed = pump(pumpCtx);
+            }
+            catch (...)
+            {
+                // pool은 정책을 모른다.
+                // executor가 node state를 통해 실패를 정규화해야 하므로
+                // 여기서는 worker를 유지한다.
+                executed = false;
+            }
+
+            if (!executed)
+                break;
+        }
+
+        std::unique_lock lock{ _cvMtx };
+        _cv.wait(lock, 
+            [&]()
+            {
+                return 
+                    _stopping.load() ||
+                    _workEpoch.load() != observedEpoch;
+            });
+
+        if (_stopping.load())
+            return;
+
+        observedEpoch = _workEpoch.load();
+    }
 }

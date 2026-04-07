@@ -85,7 +85,7 @@ message SC_STAT_CHANGE_PACKET
 	uint32 power = 6;
 	float attackspeed = 7;
 	uint32 defense = 8;
-	uint32 movespeed = 9;
+	float movespeed = 9;
 }
 
 message SC_REPLICATION_FRAME_PACKET

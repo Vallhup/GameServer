@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -159,55 +159,88 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AdmissionTypes.h" />
+    <ClInclude Include="ExecutionGraphBuildPolicy.h" />
+    <ClInclude Include="DefaultWorldTransferSerializer.h" />
+    <ClInclude Include="WorldContentIds.h" />
+    <ClInclude Include="WorldCommand.h" />
+    <ClInclude Include="WorldCommandQueue.h" />
+    <ClInclude Include="WorldMutationBuffer.h" />
+    <ClInclude Include="WorldMutationCommand.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentStorage.h" />
-    <ClInclude Include="DirtyTracker.h" />
-    <ClInclude Include="ECS.h" />
+    <ClInclude Include="ECSCore.h" />
+    <ClInclude Include="ECSView.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="BasicView.h" />
-    <ClInclude Include="EventQueue.h" />
-    <ClInclude Include="EventRegistry.h" />
-    <ClInclude Include="IConnContext.h" />
-    <ClInclude Include="IInterestPolicy.h" />
-    <ClInclude Include="Job.h" />
-    <ClInclude Include="JobGraph.h" />
-    <ClInclude Include="PlayerSnapshot.h" />
+    <ClInclude Include="ExecutionContextTypes.h" />
+    <ClInclude Include="ExecutionCoreTypes.h" />
+    <ClInclude Include="ExecutionGraphBuilder.h" />
+    <ClInclude Include="ExecutionGraphTypes.h" />
+    <ClInclude Include="ExecutionOps.h" />
+    <ClInclude Include="ExecutionRuntimeTypes.h" />
+    <ClInclude Include="ExecutionSourceTypes.h" />
+    <ClInclude Include="ITransferContext.h" />
+    <ClInclude Include="IWorldDefinitionProvider.h" />
+    <ClInclude Include="IWorldTransferBinding.h" />
+    <ClInclude Include="IWorldTransferSerializer.h" />
+    <ClInclude Include="IWorldInstanceFactory.h" />
+    <ClInclude Include="PresenceManager.h" />
+    <ClInclude Include="PresenceRecord.h" />
+    <ClInclude Include="SystemMetaStorage.h" />
+    <ClInclude Include="SystemMeta.h" />
     <ClInclude Include="RepComponent.h" />
-    <ClInclude Include="ReplicationSystem.h" />
-    <ClInclude Include="RepRegistry.h" />
-    <ClInclude Include="ServerContext.h" />
-    <ClInclude Include="SessionRepState.h" />
+    <ClInclude Include="SystemMetaHelper.h" />
+    <ClInclude Include="TaskExecutor.h" />
     <ClInclude Include="ThreadPool.h" />
-    <ClInclude Include="World.h" />
+    <ClInclude Include="ViewFwd.h" />
     <ClInclude Include="NetIdAllocator.h" />
     <ClInclude Include="NetIdRegistry.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="StorageRegistry.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="WITH_Server_Framework.h" />
-    <ClInclude Include="WorldConfig.h" />
-    <ClInclude Include="WorldDesc.h" />
-    <ClInclude Include="WorldFactory.h" />
+    <ClInclude Include="WorldAdmissionService.h" />
+    <ClInclude Include="WorldDef.h" />
+    <ClInclude Include="WorldDefinitionBootstrap.h" />
+    <ClInclude Include="WorldExecutionModelTypes.h" />
+    <ClInclude Include="WorldFragmentBuild.h" />
+    <ClInclude Include="WorldFrameSelectionTypes.h" />
+    <ClInclude Include="WorldIds.h" />
+    <ClInclude Include="WorldInstance.h" />
+    <ClInclude Include="WorldLifecycleEnums.h" />
     <ClInclude Include="WorldId.h" />
     <ClInclude Include="WorldIdAllocator.h" />
-    <ClInclude Include="WorldLeapData.h" />
-    <ClInclude Include="WorldLeapManager.h" />
+    <ClInclude Include="WorldInstanceRecord.h" />
+    <ClInclude Include="WorldManager.h" />
     <ClInclude Include="WorldRegistry.h" />
-    <ClInclude Include="WorldRuntime.h" />
     <ClInclude Include="WorldScheduler.h" />
-    <ClInclude Include="WorldService.h" />
+    <ClInclude Include="WorldResolveKey.h" />
+    <ClInclude Include="WorldResolveRules.h" />
+    <ClInclude Include="WorldRuntime.h" />
+    <ClInclude Include="WorldLifecycleBuffer.h" />
+    <ClInclude Include="WorldLifecycleCommand.h" />
+    <ClInclude Include="WorldRuntimeTypes.h" />
+    <ClInclude Include="WorldTargetSpec.h" />
+    <ClInclude Include="WorldTransferContext.h" />
+    <ClInclude Include="WorldTransferProfile.h" />
+    <ClInclude Include="WorldTransferProfileRegistry.h" />
+    <ClInclude Include="WorldTransferRequest.h" />
+    <ClInclude Include="WorldTransferService.h" />
+    <ClInclude Include="WorldTransferTypes.h" />
+    <ClInclude Include="WorldTransferTxn.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DirtyTracker.cpp" />
-    <ClCompile Include="ECS.cpp" />
+    <ClCompile Include="WorldExecutionModelTypes.cpp" />
+    <ClCompile Include="WorldCommandQueue.cpp" />
+    <ClCompile Include="WorldMutationBuffer.cpp" />
     <ClCompile Include="EntityManager.cpp" />
-    <ClCompile Include="Job.cpp" />
-    <ClCompile Include="JobGraph.cpp" />
-    <ClCompile Include="ReplicationSystem.cpp" />
-    <ClCompile Include="RepRegistry.cpp" />
+    <ClCompile Include="ExecutionGraphBuilder.cpp" />
+    <ClCompile Include="ExecutionOps.cpp" />
+    <ClCompile Include="PresenceManager.cpp" />
+    <ClCompile Include="TaskExecutor.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
-    <ClCompile Include="World.cpp" />
     <ClCompile Include="NetIdAllocator.cpp" />
     <ClCompile Include="NetIdRegistry.cpp" />
     <ClCompile Include="pch.cpp">
@@ -217,12 +250,18 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="StorageRegistry.cpp" />
+    <ClCompile Include="WorldAdmissionService.cpp" />
+    <ClCompile Include="WorldDefinitionBootstrap.cpp" />
     <ClCompile Include="WorldIdAllocator.cpp" />
-    <ClCompile Include="WorldLeapManager.cpp" />
+    <ClCompile Include="WorldInstance.cpp" />
+    <ClCompile Include="WorldManager.cpp" />
     <ClCompile Include="WorldRegistry.cpp" />
-    <ClCompile Include="WorldRuntime.cpp" />
     <ClCompile Include="WorldScheduler.cpp" />
-    <ClCompile Include="WorldService.cpp" />
+    <ClCompile Include="WorldRuntime.cpp" />
+    <ClCompile Include="WorldLifecycleBuffer.cpp" />
+    <ClCompile Include="WorldTransferProfile.cpp" />
+    <ClCompile Include="WorldTransferProfileRegistry.cpp" />
+    <ClCompile Include="WorldTransferService.cpp" />
     <ClInclude Include="System.h" />
     <ClCompile Include="SystemManager.cpp" />
   </ItemGroup>

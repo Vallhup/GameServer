@@ -18,3 +18,15 @@ void StorageRegistry::Clear()
 			storage->Clear();
 	}
 }
+
+void StorageRegistry::EnsureNotFix() const
+{
+	if (_isFixed)
+		throw std::logic_error("StorageRegistry is Fixed.");
+}
+
+void StorageRegistry::EnsureSlot(TypeId id)
+{
+	if (_storages.size() <= static_cast<size_t>(id))
+		_storages.resize(static_cast<size_t>(id) + 1);
+}

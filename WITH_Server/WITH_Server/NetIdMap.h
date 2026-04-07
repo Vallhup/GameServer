@@ -2,7 +2,6 @@
 
 #include "NetId.h"
 #include "WorldId.h"
-#include "IConnContext.h"
 
 struct NetBinding
 {
@@ -11,12 +10,9 @@ struct NetBinding
 	bool inWorld;
 };
 
-class NetIdMap : public IConnContext {
+class NetIdMap {
 public:
 	virtual ~NetIdMap() = default;
-
-	virtual bool TryGetWorld(uint32 connId, WorldId& out) const override;
-	virtual bool TryGetOwnerPlayer(uint32 connId, NetId& out) const override;
 
 	void OnConnected(uint32 connId);
 	void OnDisconnected(uint32 connId);

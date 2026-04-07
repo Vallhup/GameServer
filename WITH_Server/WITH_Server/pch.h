@@ -29,11 +29,4 @@
 #pragma comment(lib, "Asio_Network_Library.lib")
 #pragma comment(lib, "WITH_Server_Framework.lib")
 
-#include "ActionManager.h"
-#include "AnimationManager.h"
 #include "DBManager.h"
-#include "MapCollisionManager.h"
-
-#include "NetHelper.h"
-#include "Collision.h"
-#include "Math.h"

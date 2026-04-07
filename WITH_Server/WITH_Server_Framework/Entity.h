@@ -16,18 +16,24 @@ struct Entity
 
 	bool operator==(const Entity& other) const noexcept
 	{
-		return (id == other.id) and (generation == other.generation);
+		return (id == other.id) && (generation == other.generation);
 	}
 
 	bool operator<(const Entity& other) const noexcept
 	{
-		return id < other.id;
+		if (id != other.id)
+			return id < other.id;
+
+		else
+			return generation < other.generation;
 	}
 };
 
-namespace std {
+namespace std 
+{
 	template<>
-	struct hash<Entity> {
+	struct hash<Entity> 
+	{
 		size_t operator()(const Entity& e) const noexcept
 		{
 			size_t h1 = std::hash<int>()(e.id);

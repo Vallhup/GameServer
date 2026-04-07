@@ -58,8 +58,8 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
     /*WinSize.x = GetSystemMetrics(SM_CXSCREEN);
     WinSize.y = GetSystemMetrics(SM_CYSCREEN);*/
 
-    WinSize.x = 1920;
-    WinSize.y = 1080;
+    WinSize.x = 800;
+    WinSize.y = 600;
 
     RECT rc = { 0, 0, WinSize.x, WinSize.y };
     AdjustWindowRect(&rc, WS_POPUP, FALSE);

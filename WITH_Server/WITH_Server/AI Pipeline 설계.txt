@@ -1,0 +1,51 @@
+--------------------------------------------------------------------
+
+1. Perception
+ - World 정보를 바탕으로 AI판단에 사용할 수 있도록 정리
+ - 타겟 설정 관련, 공격 설정 관련 등
+
+--------------------------------------------------------------------
+
+2. Decision
+ - FSM 등의 실행 모델로 실제 행동 평가 진행
+ 
+ # IAIState
+	- 상태 인터페이스
+
+ # IAIDecisionModel
+	- FSM 행동 평가 함수 정의 인터페이스
+
+ # ITargetResolver (Extension)
+	- AIPerceptionSnapshot을 입력으로 받아 
+	  Target를 결정하는 인터페이스
+
+ # IActionPlanner
+	- AIPerceptionSnapshot을 입력으로 받아 
+	  Action 요청을 결정하는 인터페이스
+
+ # IMovementPolicy
+	- AIPerceptionSnapshot을 입력으로 받아 
+	  Move 정책을 결정하는 인터페이스
+
+ # IAIReactionPolicy
+	- 외부 Event(피격, 패링 등)의 처리 정책을 결정하는 인터페이스
+
+--------------------------------------------------------------------
+
+3. Intent
+ - Decision의 행동 평가를 Command Data로 만듦
+ - 이동, 회전, 공격 요청 등
+
+ # IAIController
+	- 정책들을 호출해서 최종 Command Data를 만드는 인터페이스
+
+--------------------------------------------------------------------
+
+4. Execution
+ - ECS System이 Intent를 World 변경으로 번역
+
+--------------------------------------------------------------------
+
+ 
+ # Player의 입력과 AI의 판단 결과를 공통 ActorCommand로 수렴시키고
+   이후 처리를 공통화하는 방향

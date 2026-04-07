@@ -2,7 +2,7 @@
 #include "WorldIdAllocator.h"
 #include "WorldRegistry.h"
 
-WorldIdAllocator::WorldIdAllocator(uint32 reserve)
+WorldIdAllocator::WorldIdAllocator(uint32_t reserve)
 {
 	_gens.reserve(reserve);
 	_gens.push_back(0);
@@ -10,7 +10,7 @@ WorldIdAllocator::WorldIdAllocator(uint32 reserve)
 
 WorldId WorldIdAllocator::Allocate()
 {
-	uint32 id{ 0 };
+	uint32_t id{ 0 };
 
 	if (!_freeIds.empty())
 	{
@@ -27,7 +27,7 @@ WorldId WorldIdAllocator::Allocate()
 
 	else
 	{
-		id = static_cast<uint32>(_gens.size());
+		id = static_cast<uint32_t>(_gens.size());
 		_gens.push_back(1);
 
 		return WorldId::Create(id, 1);
@@ -38,13 +38,13 @@ void WorldIdAllocator::Free(WorldId worldId)
 {
 	if (!worldId.IsValid()) return;
 
-	const uint32 id = worldId.GetId();
-	const uint16 gen = worldId.GetGen();
+	const uint32_t id = worldId.GetId();
+	const uint32_t gen = worldId.GetGen();
 
 	if (id == 0 || id >= _gens.size()) return;
 	if (_gens[id] != gen) return;
 
-	uint16_t next = static_cast<uint16>(_gens[id] + 1);
+	uint32_t next = static_cast<uint32_t>(_gens[id] + 1);
 	assert(next != 0);
 
 	_gens[id] = next;
@@ -55,8 +55,8 @@ bool WorldIdAllocator::IsAlive(WorldId worldId) const
 {
 	if (!worldId.IsValid()) return false;
 
-	const uint32 id = worldId.GetId();
-	const uint16 gen = worldId.GetGen();
+	const uint32_t id = worldId.GetId();
+	const uint32_t gen = worldId.GetGen();
 
 	const bool isAlive =
 		(id != 0) &&

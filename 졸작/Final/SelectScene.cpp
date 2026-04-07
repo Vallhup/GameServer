@@ -65,7 +65,7 @@ void SelectScene::InitializeLogic()
 		mesh->ReleaseUploadBuffers();
 
 		OutputDebugStringA("Dragon created!!\n");
-	}
+	}*/
 }
 
 void SelectScene::UpdateScene(const float deltaTime)

@@ -1,39 +1,50 @@
-#pragma once
+﻿#pragma once
+#include <memory>
+#include <unordered_map>
 
+#include "WorldDef.h"
+#include "WorldId.h"
 #include "WorldIdAllocator.h"
+#include "WorldInstance.h"
+#include "IWorldInstanceFactory.h"
+#include "WorldExecutionModelTypes.h"
+#include "WorldTransferProfileRegistry.h"
 
-class IWorld;
-struct WorldDesc;
-class IWorldFactory;
-class ThreadPool;
-
-class WorldRegistry {
+class WorldRegistry final {
 public:
-	explicit WorldRegistry(uint32 reserve, ThreadPool& pool, IWorldFactory& factory);
+	WorldRegistry(IWorldInstanceFactory& factory);
+	WorldRegistry(
+		IWorldInstanceFactory& factory,
+		WorldExecutionModelRegistry& executionModelRegistry);
+	WorldRegistry(
+		IWorldInstanceFactory& factory,
+		WorldExecutionModelRegistry& executionModelRegistry,
+		WorldTransferProfileRegistry& transferProfileRegistry);
+	WorldRegistry(
+		IWorldInstanceFactory& factory,
+		WorldTransferProfileRegistry& transferProfileRegistry);
 
-	WorldId CreateWorld(const WorldDesc& desc);
-	void DestroyWorld(WorldId worldId);
+	const WorldDef* FindWorldDef(WorldDefId defId) const;
+	bool RegisterWorldDef(const WorldDef& def);
 
-	IWorld* GetWorld(WorldId worldId);
-	const IWorld* GetWorld(WorldId worldId) const;
+	WorldInstance* FindWorld(WorldId worldId);
+	const WorldInstance* FindWorld(WorldId worldId) const;
 
-	bool IsAlive(WorldId worldId) const { return _allocator.IsAlive(worldId); }
+	WorldInstance* CreateWorld(const WorldDef& def, uint64_t instanceKey);
+
+	bool DestroyWorld(WorldId worldId);
+
+	bool IsAlive(WorldId worldId) const;
 
 	void Clear();
 
 private:
-	struct WorldSlot
-	{
-		uint32 gen{ 0 };
-		std::unique_ptr<IWorld> world{ nullptr };
-	};
+	IWorldInstanceFactory& _factory;
+	WorldExecutionModelRegistry* _executionModelRegistry{ nullptr };
+	WorldTransferProfileRegistry* _transferProfileRegistry{ nullptr };
 
-	void EnsureSlotCapacity(uint32 id);
-
-	ThreadPool& _threadPool;
-	IWorldFactory& _worldFactory;
-
-	WorldIdAllocator _allocator;
-	std::vector<WorldSlot> _worlds;
+	WorldIdAllocator _idAllocator;
+	std::unordered_map<WorldDefId, WorldDef> _defs;
+	std::unordered_map<WorldId, std::unique_ptr<WorldInstance>> _worlds;
 };
 
