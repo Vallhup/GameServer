@@ -31,7 +31,7 @@ namespace
 				.maxPoise = 100,
 				.attackPower = 10,
 				.defense = 10,
-				.moveSpeed = 5.0f,
+				.moveSpeed = 2.5f,
 				.attackSpeed = 1.0f
 			},
 			.ai = std::nullopt

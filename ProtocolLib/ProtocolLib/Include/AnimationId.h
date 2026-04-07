@@ -22,6 +22,18 @@ enum class AnimationId : uint8 {
 	Knight_Death,
 
 
+	FinalBoss_Idle,
+	FinalBoss_Walk,
+	FinalBoss_Thrust,
+	FinalBoss_Slash,
+	FinalBoss_DashSlash,
+	FinalBoss_JumpSlash,
+	FinalBoss_MultiSlash,
+	FinalBoss_Stun,
+	FinalBoss_Hit,
+	FinalBoss_Death,
+
+
 	//Imp_Death_1,
 	//Imp_Death_2,
 	//Imp_Idle_1,
@@ -46,18 +58,6 @@ enum class AnimationId : uint8 {
 	//Imp_Walk_Forward,
 	//Imp_Walk_Left,
 	//Imp_Walk_Right,
-
-
-	FinalBoss_DashSlash,
-	FinalBoss_Death,
-	FinalBoss_Hit,
-	FinalBoss_Idle,
-	FinalBoss_JumpSlash,
-	FinalBoss_MultiSlash,
-	FinalBoss_Slash,
-	FinalBoss_Stun,
-	FinalBoss_Thrust,
-	FinalBoss_Walk,
 };
 
 inline uint32 ToInt(AnimationId type) { return static_cast<uint32>(type); }
