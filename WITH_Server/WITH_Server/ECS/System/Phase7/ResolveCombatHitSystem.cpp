@@ -32,13 +32,13 @@ void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 	for (Entity attacker : attackers)
 	{
 		auto* attackerAction =
-			MutableComponent<ActionStateComp>(ctx.ecs, attacker);
+			ctx.ecs.GetMutableComponent<ActionStateComp>(attacker);
 		auto* attackerTransform =
-			MutableComponent<WorldTransformComp>(ctx.ecs, attacker);
+			ctx.ecs.GetMutableComponent<WorldTransformComp>(attacker);
 		auto* attackerShape =
-			MutableComponent<BodyCollisionShapeComp>(ctx.ecs, attacker);
+			ctx.ecs.GetMutableComponent<BodyCollisionShapeComp>(attacker);
 		auto* attackerDedup =
-			MutableComponent<CombatHitDedupStateComp>(ctx.ecs, attacker);
+			ctx.ecs.GetMutableComponent<CombatHitDedupStateComp>(attacker);
 		if (attackerAction == nullptr || attackerTransform == nullptr ||
 			attackerShape == nullptr)
 		{
@@ -107,7 +107,7 @@ void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 			}
 
 			PendingCombatResultComp* victimResult =
-				MutableComponent<PendingCombatResultComp>(ctx.ecs, victim);
+				ctx.ecs.GetMutableComponent<PendingCombatResultComp>(victim);
 			if (victimResult == nullptr)
 			{
 				continue;

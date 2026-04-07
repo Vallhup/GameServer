@@ -82,7 +82,7 @@ void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 		if ((preCollision.movedThisFrame || preCollision.rotatedThisFrame) &&
 			ctx.ecs.HasComponent<DirtyFlagsComp>(entity))
 		{
-			MutableComponent<DirtyFlagsComp>(ctx.ecs, entity)
+			ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity)
 				->MarkDirty(WorldDirtyType::Transform);
 		}
 	}

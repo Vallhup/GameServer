@@ -34,7 +34,7 @@ void CommitActionTimelineEventSystem::Execute(SystemContext& ctx)
 			if (eventRecord.eventType == EventType::SpawnProjectile)
 			{
 				PendingProjectileSpawnComp* projectile =
-					MutableComponent<PendingProjectileSpawnComp>(ctx.ecs, entity);
+					ctx.ecs.GetMutableComponent<PendingProjectileSpawnComp>(entity);
 				if (projectile == nullptr)
 				{
 					continue;
@@ -50,9 +50,7 @@ void CommitActionTimelineEventSystem::Execute(SystemContext& ctx)
 			else if (eventRecord.eventType == EventType::PlayEffect)
 			{
 				PendingActionPresentationEventComp* presentation =
-					MutableComponent<PendingActionPresentationEventComp>(
-						ctx.ecs,
-						entity);
+					ctx.ecs.GetMutableComponent<PendingActionPresentationEventComp>(entity);
 				if (presentation == nullptr)
 				{
 					continue;
@@ -69,7 +67,7 @@ void CommitActionTimelineEventSystem::Execute(SystemContext& ctx)
 			else
 			{
 				ReplicationStatsComp* stats =
-					MutableComponent<ReplicationStatsComp>(ctx.ecs, entity);
+					ctx.ecs.GetMutableComponent<ReplicationStatsComp>(entity);
 				if (stats != nullptr)
 				{
 					++stats->deferredPotionEventCount;

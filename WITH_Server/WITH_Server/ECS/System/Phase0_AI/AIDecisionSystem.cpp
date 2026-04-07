@@ -7,18 +7,41 @@
 #include "../GameplaySystemUtil.h"
 #include "RepComponent.h"
 
+#include "AIPerceptionSystem.h"
+#include "../Phase1/ApplyAICommandSystem.h"
+
 using namespace GameplaySystemUtil;
 
-const SystemMeta AIDecisionSystem::kMeta =
-MakeSystemMeta<AIDecisionSystem>("AIDecisionSystem");
+const StaticSystemMetaStorage<10, 1, 1> AIDecisionSystem::kMetaStorage =
+MakeMetaStorage(
+	SysTag<AIDecisionSystem>(),
+	"AIDecisionSystem",
+	std::array<AccessSpec, 10>
+	{
+		ReadSnapshot(ComponentRes<WorldTransformComp>()),
+		ReadSnapshot(ComponentRes<ActionStateComp>()),
+		ReadSnapshot(ComponentRes<AIPerceptionComp>()),
+		ReadSnapshot(ComponentRes<AIPerceptionTuningComp>()),
+		ReadSnapshot(ComponentRes<AIDecisionTuningComp>()),
+		ReadSnapshot(ComponentRes<AITypeComp>()),
+		WriteImmediate(ComponentRes<AIBlackboardComp>()),
+		WriteImmediate(ComponentRes<AIDecisionComp>()),
+		WriteImmediate(ComponentRes<AICommandFrameComp>()),
+		WriteImmediate(ComponentRes<AIReactionComp>()),
+	},
+	std::array<SystemTag, 1>{ SysTag<ApplyAICommandSystem>() },
+	std::array<SystemTag, 1>{ SysTag<AIPerceptionSystem>() }
+);
 
 void AIDecisionSystem::Execute(SystemContext& ctx)
 {
 	for (const auto& [entity, selfTr, actionState, perception, perceptionTuning,
 		blackboard, decision, decisionTuning, command, reaction, aiType] :
-		ctx.ecs.View<WorldTransformComp, ActionStateComp, AIPerceptionComp,
-		AIPerceptionTuningComp, AIBlackboardComp, AIDecisionComp, AIDecisionTuningComp,
-		AICommandFrameComp, AIReactionComp, AITypeComp>())
+		ctx.ecs.View<
+		const WorldTransformComp, const ActionStateComp, 
+		const AIPerceptionComp, const AIPerceptionTuningComp, 
+		AIBlackboardComp, AIDecisionComp, const AIDecisionTuningComp,
+		AICommandFrameComp, AIReactionComp, const AITypeComp>())
 	{
 		command.ClearFrameTransient();
 

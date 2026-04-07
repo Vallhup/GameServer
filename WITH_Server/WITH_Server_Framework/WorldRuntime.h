@@ -90,11 +90,6 @@ public:
 		return ECSView(_ecs);
 	}
 
-	ECSView MakeView() const noexcept
-	{
-		return ECSView(_ecs);
-	}
-
 	std::span<const WorldLifecycleCommand> LifecycleOutbox() const noexcept
 	{
 		return std::span<const WorldLifecycleCommand>(

@@ -391,10 +391,4 @@ namespace GameplaySystemUtil
 		advance.currElapsedSec = 0.0f;
 		advance.events.clear();
 	}
-
-	template<typename T>
-	T* MutableComponent(ECSView& ecs, Entity entity)
-	{
-		return const_cast<T*>(ecs.GetComponent<T>(entity));
-	}
 }

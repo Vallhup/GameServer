@@ -12,11 +12,6 @@ public:
 	{
 	}
 
-	explicit ECSView(const ECSCore& core)
-		: _core(const_cast<ECSCore*>(&core))
-	{
-	}
-
 	bool IsAlive(Entity e) const
 	{
 		return _core->IsAlive(e);
@@ -40,6 +35,12 @@ public:
 	}
 
 	template<CompT T>
+	T* GetMutableComponent(Entity e)
+	{
+		return _core->GetComponent<T>(e);
+	}
+
+	template<CompT T>
 	const T* GetComponent(Entity e) const
 	{
 		return _core->GetComponent<T>(e);
@@ -49,6 +50,18 @@ public:
 	bool HasComponent(Entity e) const
 	{
 		return _core->HasComponent<T>(e);
+	}
+
+	template<CompT... Get>
+	auto MutableView()
+	{
+		return _core->View<Get...>();
+	}
+
+	template<CompT... Get, CompT... Ex>
+	auto MutableView(Exclude<Ex...>)
+	{
+		return _core->View<Get...>(Exclude<Ex...>{});
 	}
 
 	template<CompT... Get>

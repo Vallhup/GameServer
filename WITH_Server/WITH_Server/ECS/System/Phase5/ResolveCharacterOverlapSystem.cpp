@@ -36,13 +36,13 @@ void ResolveCharacterOverlapSystem::Execute(SystemContext& ctx)
 		for (size_t j = i + 1; j < entities.size(); ++j)
 		{
 			auto* lhsTransform =
-				MutableComponent<WorldTransformComp>(ctx.ecs, entities[i]);
+				ctx.ecs.GetMutableComponent<WorldTransformComp>(entities[i]);
 			auto* rhsTransform =
-				MutableComponent<WorldTransformComp>(ctx.ecs, entities[j]);
+				ctx.ecs.GetMutableComponent<WorldTransformComp>(entities[j]);
 			auto* lhsShape =
-				MutableComponent<BodyCollisionShapeComp>(ctx.ecs, entities[i]);
+				ctx.ecs.GetMutableComponent<BodyCollisionShapeComp>(entities[i]);
 			auto* rhsShape =
-				MutableComponent<BodyCollisionShapeComp>(ctx.ecs, entities[j]);
+				ctx.ecs.GetMutableComponent<BodyCollisionShapeComp>(entities[j]);
 			if (lhsTransform == nullptr || rhsTransform == nullptr ||
 				lhsShape == nullptr || rhsShape == nullptr)
 			{
@@ -80,16 +80,12 @@ void ResolveCharacterOverlapSystem::Execute(SystemContext& ctx)
 			}
 
 			if (BodyCollisionResolveComp* resolve =
-				MutableComponent<BodyCollisionResolveComp>(
-					ctx.ecs,
-					entities[i]))
+				ctx.ecs.GetMutableComponent<BodyCollisionResolveComp>(entities[i]))
 			{
 				resolve->overlapAdjusted = true;
 			}
 			if (BodyCollisionResolveComp* resolve =
-				MutableComponent<BodyCollisionResolveComp>(
-					ctx.ecs,
-					entities[j]))
+				ctx.ecs.GetMutableComponent<BodyCollisionResolveComp>(entities[j]))
 			{
 				resolve->overlapAdjusted = true;
 			}

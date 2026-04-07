@@ -60,7 +60,7 @@ void ResolveAnimationPlaybackSystem::Execute(SystemContext& ctx)
 		}
 
 		if (DirtyFlagsComp* dirty =
-			MutableComponent<DirtyFlagsComp>(ctx.ecs, entity))
+			ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
 		{
 			dirty->MarkDirty(WorldDirtyType::Animation);
 		}

@@ -87,7 +87,7 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			stats.maxPoise);
 
 		if (DirtyFlagsComp* dirty =
-			MutableComponent<DirtyFlagsComp>(ctx.ecs, entity))
+			ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
 		{
 			dirty->MarkDirty(WorldDirtyType::Stat);
 		}
@@ -95,7 +95,7 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		// AI 피격 반응 기록
 		if (result.wasHitThisFrame)
 		{
-			if (auto* aiReaction = MutableComponent<AIReactionComp>(ctx.ecs, entity))
+			if (auto* aiReaction = ctx.ecs.GetMutableComponent<AIReactionComp>(entity))
 			{
 				aiReaction->gotHitThisFrame = true;
 				aiReaction->instigator = result.reactionSource;
@@ -110,8 +110,7 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			{
 				continue;
 			}
-			if (auto* aiReaction = MutableComponent<AIReactionComp>(
-				ctx.ecs, interaction.sourceEntity))
+			if (auto* aiReaction = ctx.ecs.GetMutableComponent<AIReactionComp>(interaction.sourceEntity))
 			{
 				aiReaction->gotParriedThisFrame = true;
 				aiReaction->instigator = entity;

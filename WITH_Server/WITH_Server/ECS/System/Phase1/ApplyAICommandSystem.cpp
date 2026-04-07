@@ -10,30 +10,24 @@ const SystemMeta ApplyAICommandSystem::kMeta =
 
 void ApplyAICommandSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, _, frame, input] :
+	for (const auto& [entity, _, frame, input] :
 		ctx.ecs.View<AIControlledTag, AICommandFrameComp, ActorInputComp>())
 	{
-		auto* mutableInput = MutableComponent<ActorInputComp>(ctx.ecs, entity);
-		if (mutableInput == nullptr)
-		{
-			continue;
-		}
-
 		if (frame.hasMove)
 		{
-			mutableInput->move.inputX		= frame.moveDir.x;
-			mutableInput->move.inputZ       = frame.moveDir.z;
-			mutableInput->move.cameraYawRad = frame.moveYaw;
-			mutableInput->move.wantsRun     = frame.wantsRun;
-			mutableInput->move.lastUpdatedFrame = ctx.runtime.FrameIndex();
+			input.move.inputX		= frame.moveDir.x;
+			input.move.inputZ       = frame.moveDir.z;
+			input.move.cameraYawRad = frame.moveYaw;
+			input.move.wantsRun     = frame.wantsRun;
+			input.move.lastUpdatedFrame = ctx.runtime.FrameIndex();
 		}
 
 		if (frame.hasAction)
 		{
-			mutableInput->action.directActionId = frame.actionId;
-			mutableInput->action.directionX     = frame.actionDirX;
-			mutableInput->action.directionZ     = frame.actionDirZ;
-			mutableInput->action.requestedFrame = ctx.runtime.FrameIndex();
+			input.action.directActionId = frame.actionId;
+			input.action.directionX     = frame.actionDirX;
+			input.action.directionZ     = frame.actionDirZ;
+			input.action.requestedFrame = ctx.runtime.FrameIndex();
 		}
 	}
 }
