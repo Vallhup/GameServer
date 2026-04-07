@@ -19,6 +19,7 @@
 #include "TrailRenderer.h"
 #include "FootDustEffect.h"
 #include "FlameEffect.h"
+#include "ParrySparkEffect.h"
 
 SceneManager::~SceneManager()
 {

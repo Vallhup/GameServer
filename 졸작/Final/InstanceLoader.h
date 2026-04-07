@@ -9,6 +9,7 @@ struct InstanceData
 	float cullDistance = 60.0f;
 	bool castShadow = true;
 	bool twoSided = false;
+	bool vertexAnim = false;
 };
 
 class InstanceLoader {

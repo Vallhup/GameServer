@@ -31,6 +31,7 @@ public:
 	void SetCastShadow(bool in) { castShadow = in; }
 	void SetTwoSided(bool in) { twoSided = in; }
 	bool IsTwoSided() const { return twoSided; }
+	void SetVertexAnim(bool in) { vertAnimation = in; }
 
 private:
 	Mesh* mesh = nullptr;
@@ -44,6 +45,7 @@ private:
 	UINT shadowCount = 0;
 	bool castShadow = true;
 	bool twoSided = false;
+	bool vertAnimation = false;
 
 	XMFLOAT3 lastCamPos = { FLT_MAX, FLT_MAX, FLT_MAX };
 	static constexpr float UPDATE_THRESHOLD_SQ = 0.015625;  // 0.125^2

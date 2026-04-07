@@ -3,7 +3,6 @@
 
 float4 PSMain(EffectVertexOut input) : SV_TARGET
 {
-    // 텍스처 샘플링 (스크롤 제거: 텍스처가 화면 밖으로 벗어나지 않게 고정)
     float4 texColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
     if (textureIndex != 0xFFFFFFFF)
     {

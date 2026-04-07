@@ -9,6 +9,7 @@ class Water;
 class TrailRenderer;
 class FootDustEffect;
 class FlameEffect;
+class ParrySparkEffect;
 
 class FirstBattleScene final : public Scene
 {
@@ -77,8 +78,9 @@ private:
 	unique_ptr<TrailRenderer> trailRenderer;
 	unique_ptr<FootDustEffect> footDustEffect;
 	unique_ptr<FlameEffect> flameEffect;
+	unique_ptr<ParrySparkEffect> parryEffect;
 
-	// 발 먼지 이펙트용 발 착지 감지
 	bool rightFootSpawned = false;
 	bool leftFootSpawned = false;
+	bool parrySparkSpawned = false;
 };

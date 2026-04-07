@@ -28,18 +28,26 @@ void InstanceLoader::Load(const wstring& fileName, const wstring& cullingFileNam
 		data.distanceCull = false;
 		data.castShadow = true;
 		data.twoSided = false;
+		data.vertexAnim = false;
 
-		if (ContainsAny(modelName, {"Grass"}))
+		if (ContainsAny(modelName, { "Grass" }))
 		{
 			data.distanceCull = true;
 			data.cullDistance = 60.0f;
 			data.castShadow = false;
 			data.twoSided = true;
+			data.vertexAnim = true;
 		}
-		else if (ContainsAny(modelName, {"Tree", "SilverFir", "SM_EuropeanBeech_Dead_M_01", "SM_EuropeanBeech_Dead_XL_01",
+		else if (ContainsAny(modelName, { "Tree", "SilverFir", "SM_EuropeanBeech_Dead_M_01", "SM_EuropeanBeech_Dead_XL_01",
 			"SM_EuropeanBeech_L_01", "SM_EuropeanBeech_L_02", "SM_EuropeanBeech_L_03", "SM_EuropeanBeech_M_01", "SM_EuropeanBeech_S_01",
 			"SM_EuropeanBeech_S_02", "SM_EuropeanBeech_XL_01", "SM_EuropeanBeech_XL_02", "SM_EuropeanBeech_XL_03", "SM_EuropeanBeech_XS_01",
-			"SM_EuropeanBeech_XS_03", "Eagle", "WildCarrot", "Ivy"}))
+			"SM_EuropeanBeech_XS_03", "Eagle", "WildCarrot", "Ivy" }))
+		{
+			data.distanceCull = false;
+			data.twoSided = true;
+			data.vertexAnim = true;
+		}
+		else if (ContainsAny(modelName, { "SM_Cart_01" }))
 		{
 			data.distanceCull = false;
 			data.twoSided = true;
@@ -49,7 +57,7 @@ void InstanceLoader::Load(const wstring& fileName, const wstring& cullingFileNam
 			data.distanceCull = true;
 			data.cullDistance = 60.0f;
 		}
-		else if (ContainsAny(modelName, {"house"}))
+		else if (ContainsAny(modelName, { "house" }))
 		{
 			data.distanceCull = true;
 			data.cullDistance = 90.0f;

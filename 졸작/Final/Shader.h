@@ -16,6 +16,7 @@ enum class PSOType {
 	SsaoBlur,
 	Trail,
 	Flame,
+	Spark,
 	END
 };
 
@@ -30,6 +31,7 @@ enum class ShaderType {
 	EffectVS,
 	TrailPS,
 	FlamePS,
+	SparkPS,
 	END
 };
 

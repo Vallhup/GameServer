@@ -26,7 +26,7 @@ SHADOW_VS_OUT VSMain(SHADOW_VS_IN input, uint instanceID : SV_InstanceID)
     else
         worldMatrix = world;
     
-    if (useInstancing && input.color.r > 0.1f)
+    if (useVertexAnim && input.color.r > 0.1f)
     {
         VertexAnimation(modifiedPos, worldMatrix, input.color, time);
     }

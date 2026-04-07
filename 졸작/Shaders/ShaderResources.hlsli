@@ -26,7 +26,7 @@ cbuffer ObjectCB : register(b1)
     int useTexture;
     int useInstancing;
     uint materialIndex;
-    int objPadding;
+    int useVertexAnim;
 };
 
 cbuffer AnimationParams : register(b2)

@@ -1,32 +1,35 @@
 #include "pch.h"
-#include "FootDustEffect.h"
+#include "ParrySparkEffect.h"
 #include "DX12Core.h"
 #include "Shader.h"
 #include "RootSignature.h"
+#include "Material.h"
 
-struct DustConstants
+struct SparkConstants
 {
 	XMFLOAT4 color;
+	UINT textureIndex;
+	XMFLOAT3 padding;
 };
 
-void FootDustEffect::Initialize(ID3D12Device* device, UINT maxParts)
+void ParrySparkEffect::Initialize(ID3D12Device* device, UINT maxParts)
 {
 	maxParticles = maxParts;
 	particles.reserve(maxParticles);
-	vertices.reserve(maxParticles * 4);  
-	indices.reserve(maxParticles * 6);   
+	vertices.reserve(maxParticles * 4);
+	indices.reserve(maxParticles * 6);
 
 	vertexBuffer = make_unique<UploadBuffer>();
-	vertexBuffer->Initialize(device, maxParticles * 4 * sizeof(DustVertex));
+	vertexBuffer->Initialize(device, maxParticles * 4 * sizeof(SparkVertex));
 
 	indexBuffer = make_unique<UploadBuffer>();
 	indexBuffer->Initialize(device, maxParticles * 6 * sizeof(UINT16));
 
-	dustCB = make_unique<UploadBuffer>();
-	dustCB->Initialize(device, sizeof(DustConstants));
+	sparkCB = make_unique<UploadBuffer>();
+	sparkCB->Initialize(device, sizeof(SparkConstants));
 }
 
-void FootDustEffect::Update(float deltaTime, const XMFLOAT3& cameraPos)
+void ParrySparkEffect::Update(float deltaTime, const XMFLOAT3& cameraPos)
 {
 	if (particles.empty()) return;
 
@@ -35,18 +38,24 @@ void FootDustEffect::Update(float deltaTime, const XMFLOAT3& cameraPos)
 		p.age += deltaTime;
 
 		p.position.x += p.velocity.x * deltaTime;
+		p.position.y += p.velocity.y * deltaTime;
 		p.position.z += p.velocity.z * deltaTime;
 
-		float drag = powf(0.1f, deltaTime);  
+		p.velocity.y -= gravity * 0.5 * deltaTime;
+
+		float drag = powf(0.004f, deltaTime);  
 		p.velocity.x *= drag;
+		p.velocity.y *= drag;
 		p.velocity.z *= drag;
 
-		p.size += 0.02f * deltaTime;
+		float life = 1.0f - (p.age / maxLifetime);
+		if (life < 0.0f) life = 0.0f;
+		p.size = particleSize * life;
 	}
 
 	particles.erase(
 		std::remove_if(particles.begin(), particles.end(),
-			[this](const DustParticle& p) { return p.age >= maxLifetime; }),
+			[this](const SparkParticle& p) { return p.age >= maxLifetime; }),
 		particles.end()
 	);
 
@@ -56,40 +65,46 @@ void FootDustEffect::Update(float deltaTime, const XMFLOAT3& cameraPos)
 	}
 }
 
-void FootDustEffect::Clear()
+void ParrySparkEffect::SetTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path)
+{
+	if (device && cmdList) {
+		textureIndex = Material::RegisterTexture(device, cmdList, path);
+	}
+}
+
+void ParrySparkEffect::Clear()
 {
 	particles.clear();
 	vertices.clear();
 	indices.clear();
-	isDirty = false;
 }
 
-void FootDustEffect::Spawn(const XMFLOAT3& position, int count)
+void ParrySparkEffect::Spawn(const XMFLOAT3& position, int count)
 {
 	for (int i = 0; i < count; ++i)
 	{
 		if (particles.size() >= maxParticles)
 			break;
 
-		DustParticle p;
+		SparkParticle p;
 		p.position = position;
 
-		float angle = static_cast<float>(rand()) / RAND_MAX * XM_2PI;
-		float speed = 0.02f + static_cast<float>(rand()) / RAND_MAX * 0.03f;
-		p.velocity.x = cosf(angle) * speed;
-		p.velocity.y = -0.05f;
-		p.velocity.z = sinf(angle) * speed;
+		float theTa = static_cast<float>(rand()) / RAND_MAX * XM_2PI;
+		float phi = static_cast<float>(rand()) / RAND_MAX * XM_PI;  
+		float speed = sparkSpeed * (0.5f + static_cast<float>(rand()) / RAND_MAX * 0.5f);
+
+		p.velocity.x = sinf(phi) * cosf(theTa) * speed;
+		p.velocity.y = cosf(phi) * speed;
+		p.velocity.z = sinf(phi) * sinf(theTa) * speed;
 
 		p.age = 0.0f;
-		p.size = particleSize * (0.5f + static_cast<float>(rand()) / RAND_MAX * 0.5f);
+		p.size = particleSize * (0.7f + static_cast<float>(rand()) / RAND_MAX * 0.3f);
 
 		particles.push_back(p);
 	}
-
-	isDirty = true;
 }
 
-void FootDustEffect::BuildMesh(const XMFLOAT3& cameraPos)
+void ParrySparkEffect::BuildMesh(const XMFLOAT3& cameraPos)
 {
 	vertices.clear();
 	indices.clear();
@@ -100,15 +115,14 @@ void FootDustEffect::BuildMesh(const XMFLOAT3& cameraPos)
 	{
 		const auto& p = particles[i];
 
-		float alpha = 1.0f - (p.age / maxLifetime);
-		alpha = max(0.0f, alpha);
+		float lifeRatio = 1.0f - (p.age / maxLifetime);
+		float alpha = max(0.0f, lifeRatio);
 
 		XMVECTOR particlePos = XMLoadFloat3(&p.position);
 		XMVECTOR toCamera = XMVectorSubtract(camPosVec, particlePos);
 		toCamera = XMVector3Normalize(toCamera);
 
 		XMVECTOR worldUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
 		XMVECTOR right = XMVector3Cross(worldUp, toCamera);
 		right = XMVector3Normalize(right);
 		XMVECTOR up = XMVector3Cross(toCamera, right);
@@ -119,10 +133,10 @@ void FootDustEffect::BuildMesh(const XMFLOAT3& cameraPos)
 		XMVECTOR upScaled = XMVectorScale(up, halfSize);
 
 		XMFLOAT3 corners[4];
-		XMStoreFloat3(&corners[0], XMVectorSubtract(XMVectorSubtract(particlePos, rightScaled), upScaled)); 
-		XMStoreFloat3(&corners[1], XMVectorSubtract(XMVectorAdd(particlePos, rightScaled), upScaled));      
-		XMStoreFloat3(&corners[2], XMVectorAdd(XMVectorAdd(particlePos, rightScaled), upScaled));           
-		XMStoreFloat3(&corners[3], XMVectorAdd(XMVectorSubtract(particlePos, rightScaled), upScaled));      
+		XMStoreFloat3(&corners[0], XMVectorSubtract(XMVectorSubtract(particlePos, rightScaled), upScaled));
+		XMStoreFloat3(&corners[1], XMVectorSubtract(XMVectorAdd(particlePos, rightScaled), upScaled));
+		XMStoreFloat3(&corners[2], XMVectorAdd(XMVectorAdd(particlePos, rightScaled), upScaled));
+		XMStoreFloat3(&corners[3], XMVectorAdd(XMVectorSubtract(particlePos, rightScaled), upScaled));
 
 		UINT16 baseIdx = static_cast<UINT16>(vertices.size());
 
@@ -142,11 +156,11 @@ void FootDustEffect::BuildMesh(const XMFLOAT3& cameraPos)
 
 	if (!vertices.empty())
 	{
-		vertexBuffer->CopyData(vertices.data(), vertices.size() * sizeof(DustVertex));
+		vertexBuffer->CopyData(vertices.data(), vertices.size() * sizeof(SparkVertex));
 
 		vbView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
-		vbView.SizeInBytes = static_cast<UINT>(vertices.size() * sizeof(DustVertex));
-		vbView.StrideInBytes = sizeof(DustVertex);
+		vbView.SizeInBytes = static_cast<UINT>(vertices.size() * sizeof(SparkVertex));
+		vbView.StrideInBytes = sizeof(SparkVertex);
 	}
 
 	if (!indices.empty())
@@ -159,23 +173,24 @@ void FootDustEffect::BuildMesh(const XMFLOAT3& cameraPos)
 	}
 }
 
-void FootDustEffect::Render(DX12Core& core)
+void ParrySparkEffect::Render(DX12Core& core)
 {
 	if (particles.empty() || vertices.empty() || indices.empty())
 		return;
 
 	auto cmdList = core.GetGraphicsCmdList();
 
-	DustConstants constants;
-	constants.color = dustColor;
-	dustCB->CopyData(&constants, sizeof(DustConstants));
+	SparkConstants constants;
+	constants.color = sparkColor;
+	constants.textureIndex = textureIndex;
+	sparkCB->CopyData(&constants, sizeof(SparkConstants));
 
-	cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Trail));
+	cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Spark));
 	cmdList->SetGraphicsRootSignature(core.GetRootSig()->Get());
 
 	cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
 
-	cmdList->SetGraphicsRootConstantBufferView(23, dustCB->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(23, sparkCB->GetGPUVirtualAddress());
 
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	cmdList->IASetVertexBuffers(0, 1, &vbView);

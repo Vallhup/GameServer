@@ -25,6 +25,7 @@
 #include "TrailRenderer.h"
 #include "FootDustEffect.h"
 #include "FlameEffect.h"
+#include "ParrySparkEffect.h"
 
 #include "NetId.h"
 #include "NetHelper.h"
@@ -370,6 +371,24 @@ void FirstBattleScene::InitializeLogic()
 	flameEffect->SetParticleSize(0.5f);     // 최대 크기 0.5
 	flameEffect->Spawn(XMFLOAT3(160.0f, 50.0f, 643.0f));
 
+	// 세팅1
+	parryEffect = make_unique<ParrySparkEffect>();
+	parryEffect->Initialize(coreRef->GetDevice(), 128);
+	parryEffect->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
+	parryEffect->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
+	parryEffect->SetSpeed(20.0f);
+	parryEffect->SetParticleSize(0.1f);
+	parryEffect->SetLifetime(2.5f);
+
+	// 세팅2
+	//parryEffect = make_unique<ParrySparkEffect>();
+	//parryEffect->Initialize(coreRef->GetDevice(), 32);
+	//parryEffect->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
+	//parryEffect->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
+	//parryEffect->SetSpeed(5.0f);
+	//parryEffect->SetParticleSize(0.12f);
+	//parryEffect->SetLifetime(0.5f);
+
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
 
@@ -591,6 +610,61 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 		footDustEffect->Update(deltaTime, cam->GetPosition());
 	}
 
+	// Parry Spark Effect 업데이트
+	if (parryEffect && myPlayer && cam)
+	{
+		auto animMachine = myPlayer->GetComponent<AnimationMachine>();
+		auto animator = myPlayer->GetComponent<Animator>();
+		auto transform = myPlayer->GetComponent<Transform>();
+
+		bool isParrying = animMachine && animMachine->IsPlaying("Parry");
+
+		if (isParrying && animator && animator->IsInitialized())
+		{
+			int currentFrame = animator->GetCurrentFrame();
+
+			if (currentFrame >= 20 && currentFrame <= 22)
+			{
+				if (!parrySparkSpawned)
+				{
+					XMFLOAT3 bonePos = animator->GetBonePosition(45);
+					XMVECTOR boneRotQuat = animator->GetBoneRotation(45);
+					XMMATRIX worldMat = transform->GetWorldMatrix();
+					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
+
+					// 칼 끝 위치 계산 (TrailRenderer와 동일)
+					XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
+					XMFLOAT3 playerRot = transform->GetRotation();
+					XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
+					XMVECTOR finalRotQuat = XMQuaternionMultiply(offsetRot, boneRotQuat);
+					finalRotQuat = XMQuaternionMultiply(finalRotQuat, playerRotQuat);
+					XMMATRIX rotMat = XMMatrixRotationQuaternion(finalRotQuat);
+
+					XMVECTOR swordDir = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), rotMat);
+					swordDir = XMVector3Normalize(swordDir);
+
+					float bladeLength = 1.0f;
+					XMVECTOR tipPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
+
+					XMFLOAT3 spawnPos;
+					XMStoreFloat3(&spawnPos, tipPos);
+					parryEffect->Spawn(spawnPos, 32);
+					parrySparkSpawned = true;
+				}
+			}
+			else
+			{
+				parrySparkSpawned = false;
+			}
+		}
+		else
+		{
+			parrySparkSpawned = false;
+		}
+
+		parryEffect->Update(deltaTime, cam->GetPosition());
+	}
+
 	if (flameEffect)
 		flameEffect->Update(deltaTime, cam->GetPosition());
 
@@ -696,6 +770,9 @@ void FirstBattleScene::RenderSceneEffects()
 
 	if (flameEffect)
 		flameEffect->Render(*coreRef);
+
+	if (parryEffect)
+		parryEffect->Render(*coreRef);
 
 	if (cam)
 		EFFECT_MANAGER->Render(*coreRef, cam.get());

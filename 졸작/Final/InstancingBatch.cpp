@@ -69,6 +69,7 @@ void InstancingBatch::BuildBuffers(DX12Core& core)
             obj.useTexture = 1;
             obj.useInstancing = 1;
             obj.materialIndex = matIndex;
+            obj.useVertexAnim = vertAnimation ? 1 : 0;
             objectCBs[i]->CopyData(&obj, sizeof(ObjectConstants), 0);
         }
     }
@@ -84,6 +85,7 @@ void InstancingBatch::BuildBuffers(DX12Core& core)
         obj.useTexture = 1;
         obj.useInstancing = 1;
         obj.materialIndex = matIndex;
+        obj.useVertexAnim = vertAnimation ? 1 : 0;
         objectCBs[0]->CopyData(&obj, sizeof(ObjectConstants), 0);
     }
 }

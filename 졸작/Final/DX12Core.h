@@ -19,7 +19,7 @@ struct ObjectConstants
 	int useTexture;
 	int useInstancing;
 	UINT materialIndex;
-	int padding;
+	int useVertexAnim = 0;
 };
 
 struct FogConstants

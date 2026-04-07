@@ -224,6 +224,7 @@ exit 0</Command>
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingSceneUIController.cpp" />
     <ClCompile Include="LookUpTextures.cpp" />
+    <ClCompile Include="ParrySparkEffect.cpp" />
     <ClCompile Include="RenderTargets.cpp" />
     <ClCompile Include="SelectSceneUIController.cpp" />
     <ClCompile Include="ShadowMappingManager.cpp" />
@@ -310,6 +311,7 @@ exit 0</Command>
     <ClInclude Include="LoadingSceneUIController.h" />
     <ClInclude Include="LookUpTextures.h" />
     <ClInclude Include="NetHelper.h" />
+    <ClInclude Include="ParrySparkEffect.h" />
     <ClInclude Include="RenderTargets.h" />
     <ClInclude Include="SelectSceneUIController.h" />
     <ClInclude Include="ShadowMappingManager.h" />
@@ -382,6 +384,7 @@ exit 0</Command>
     <None Include="..\Shaders\ShadowVS.hlsli" />
     <None Include="..\Shaders\SkyboxPS.hlsli" />
     <None Include="..\Shaders\SkyboxVS.hlsli" />
+    <None Include="..\Shaders\SparkPS.hlsli" />
     <None Include="..\Shaders\SsaoBlurPS.hlsli" />
     <None Include="..\Shaders\SsaoPS.hlsli" />
     <None Include="..\Shaders\ToneMapping.hlsli" />

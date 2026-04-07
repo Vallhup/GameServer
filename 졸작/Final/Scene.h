@@ -88,6 +88,7 @@ void Scene::CreateAndBatchObjects(const wstring& path, const T(&data)[N], vector
 	auto batch = make_shared<InstancingBatch>();
 	batch->SetCastShadow(data[0].castShadow);
 	batch->SetTwoSided(data[0].twoSided);
+	batch->SetVertexAnim(data[0].vertexAnim);
 
 	for (int i = 0; i < N; ++i)
 	{
@@ -114,6 +115,7 @@ void Scene::CreateAndBatchObjects(const wstring& path, const vector<T>& data, ve
 	auto batch = make_shared<InstancingBatch>();
 	batch->SetCastShadow(data[0].castShadow);
 	batch->SetTwoSided(data[0].twoSided);
+	batch->SetVertexAnim(data[0].vertexAnim);
 
 	for (size_t i = 0; i < data.size(); ++i)
 	{
