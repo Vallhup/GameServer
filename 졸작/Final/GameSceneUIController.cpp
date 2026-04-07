@@ -39,6 +39,39 @@ void GameSceneUIController::Init(UIManager* manager)
 	tempStatusText->Init(uiManager);
 	tempStatusText->SetPosition(0.0f, 0.0f);
 	tempStatusText->SetText(L"TempText");
+
+	// 비율 상수 (BarBack 785x39, HpBar 692x18, 오프셋 47,11)
+	constexpr float BARBACK_ASPECT    = 39.0f / 785.0f;    // 0.0497
+	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;  // 0.8815
+	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;    // 0.4615
+	constexpr float HPBAR_OFFSET_X     = 49.0f / 785.0f;   // 0.0599
+	constexpr float HPBAR_OFFSET_Y     = 11.0f / 39.0f;    // 0.2821
+
+	// BarBack 기준 크기 설정 (가로 300px 테스트)
+	float backWidth = 300.0f;
+	float backHeight = backWidth * BARBACK_ASPECT;
+
+	// 화면 중앙 배치 (좌상단 기준이므로 절반 빼기)
+	float backPosX = WinSize.x * 0.5f - backWidth * 0.5f;
+	float backPosY = WinSize.y * 0.5f - backHeight * 0.5f;
+
+	charHPBarBack = make_shared<ImageUI>(L"BarBack", ImageUIState::Visible);
+	charHPBarBack->Init(uiManager);
+	charHPBarBack->SetPosition(backPosX, backPosY);
+	charHPBarBack->SetHoriLength(backWidth);
+	charHPBarBack->SetVertLength(backHeight);
+
+	// HpBar: BarBack 기준 비율로 계산
+	float hpBarWidth = backWidth * HPBAR_WIDTH_RATIO;
+	float hpBarHeight = backHeight * HPBAR_HEIGHT_RATIO;
+	float hpBarPosX = backPosX + backWidth * HPBAR_OFFSET_X;
+	float hpBarPosY = backPosY + backHeight * HPBAR_OFFSET_Y;
+
+	charHPBar = make_shared<ImageUI>(L"HpBar2", ImageUIState::Visible);
+	charHPBar->Init(uiManager);
+	charHPBar->SetPosition(hpBarPosX, hpBarPosY);
+	charHPBar->SetHoriLength(hpBarWidth);
+	charHPBar->SetVertLength(hpBarHeight);
 }
 
 void GameSceneUIController::Update(float deltaTime)
@@ -47,6 +80,9 @@ void GameSceneUIController::Update(float deltaTime)
 	if (localCharBarsBack) localCharBarsBack->Update(deltaTime);
 	if (localCharHpBar) localCharHpBar->Update(deltaTime);
 	if (localCharStaminaBar) localCharStaminaBar->Update(deltaTime);
+
+	if (charHPBarBack) charHPBarBack->Update(deltaTime);
+	if (charHPBar) charHPBar->Update(deltaTime);
 
 	if (INPUT.GetKeyDown('K'))
 	{
@@ -64,6 +100,8 @@ void GameSceneUIController::Render(SpriteBatch* batch)
 	if (localCharHpBar) localCharHpBar->Render(batch);
 	if (localCharStaminaBar) localCharStaminaBar->Render(batch);
 	if (tempStatusText) tempStatusText->Render(batch);
+	if (charHPBarBack) charHPBarBack->Render(batch);
+	if (charHPBar) charHPBar->Render(batch);
 }
 
 void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curStamina, int maxStamina)

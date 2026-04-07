@@ -47,6 +47,8 @@ public:
     void SetAnimationSpeed(float speed) { animationSpeed = speed; }
 
     float GetAnimationProgress() const;
+    int GetCurrentFrame() const { return mFrame; }
+    int GetFrameCount() const;
 
     XMMATRIX GetBoneMatrix(int boneIndex);
     XMFLOAT3 GetBonePosition(int boneIndex);

@@ -2,8 +2,8 @@
 #include "Camera.h"
 #include "SceneRenderer.h"
 #include "InstancingBatch.h"
-#include "GameObject.h"		// DX12Core.h Æ÷ÇÔ
-#include "Mesh.h"			// Component.h Æ÷ÇÔ
+#include "GameObject.h"		// DX12Core.h í¬í•¨
+#include "Mesh.h"			// Component.h í¬í•¨
 #include "Transform.h"		// Component.h
 
 class SceneManager;
@@ -26,6 +26,7 @@ public:
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
 	void HandlePacket(const PacketHeader& header, const BYTE* data);
+	void SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches);
 
 protected:
 	virtual void InitializeSceneObjectPools() = 0;
@@ -61,6 +62,8 @@ protected:
 	SceneManager* sManagerRef = nullptr;
 
 	unique_ptr<Camera> cam;
+
+	vector<shared_ptr<InstancingBatch>> instancingBatches;
 };
 
 template <typename T>
@@ -83,6 +86,9 @@ template <typename T, size_t N>
 void Scene::CreateAndBatchObjects(const wstring& path, const T(&data)[N], vector<shared_ptr<InstancingBatch>>& targetBatchList)
 {
 	auto batch = make_shared<InstancingBatch>();
+	batch->SetCastShadow(data[0].castShadow);
+	batch->SetTwoSided(data[0].twoSided);
+	batch->SetVertexAnim(data[0].vertexAnim);
 
 	for (int i = 0; i < N; ++i)
 	{
@@ -107,11 +113,11 @@ void Scene::CreateAndBatchObjects(const wstring& path, const vector<T>& data, ve
 	if (data.empty()) return;
 
 	auto batch = make_shared<InstancingBatch>();
+	batch->SetCastShadow(data[0].castShadow);
+	batch->SetTwoSided(data[0].twoSided);
+	batch->SetVertexAnim(data[0].vertexAnim);
 
-	if (data[0].distanceCull)
-		batch->SetCastShadow(false);
-
-	for (int i = 0; i < data.size(); ++i)
+	for (size_t i = 0; i < data.size(); ++i)
 	{
 		auto obj = CreateStaticMesh(path, data[i]);
 

@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "Camera.h"
-#include "DX12Core.h"
-#include "Input.h"
 #include "GameObject.h"
+#include "Input.h"
 #include "MainCharacter.h"
 #include "InstancingBatch.h"
 #include "Timer.h"
+#include "LookUpTextures.h"
 
 void Camera::Initialize(HWND hWnd)
 {
@@ -39,7 +39,7 @@ void Camera::Initialize(HWND hWnd)
 
 void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
 {
-    desiredTargetPos = { pos.x, pos.y + 1.0f, pos.z };
+    desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };
 
     desiredDistance = currentDistance = 4.5f;
     float radYaw = XMConvertToRadians(yaw);
@@ -56,15 +56,18 @@ void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
 
 void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const shared_ptr<MainCharacter>& myPlayer)
 {
-    UpdateInputtoCamLogic(deltaTime);
-    UpdatePosByObstruction(sceneObjects, instancingBatches, myPlayer);
+    UpdateInputtoCamLogic(core, deltaTime);
+    //UpdatePosByObstruction(sceneObjects, instancingBatches, myPlayer);
     UpdateSmoothFollow(deltaTime);
     UpdateCameraMatrices(core);
     SetCursor();
 }
 
-void Camera::UpdateInputtoCamLogic(float deltaTime)
+void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
 {
+    if (lutBlendFactor < 1.0f)
+        lutBlendFactor = min(lutBlendFactor + deltaTime * lutTransitionSpeed, 1.0f);
+
     if (!spacePressed)
         ChangeAngleByInput(deltaTime);
 
@@ -73,6 +76,64 @@ void Camera::UpdateInputtoCamLogic(float deltaTime)
         float steps = (float)wheel / (float)WHEEL_DELTA; 
         desiredDistance -= steps * zoomSpeedPerNotch;
         desiredDistance = std::clamp(desiredDistance, minDistance, maxDistance);
+    }
+
+    if (INPUT.GetKeyDown(VK_F3))
+    {
+        if (lutIndex == 0xFFFFFFFF)
+        {
+            prevLutIndex = 0;
+            lutIndex = 0;
+            lutBlendFactor = 1.0f;  // 즉시 적용
+        }
+        else if (lutIndex < 219)
+        {
+            prevLutIndex = lutIndex;
+            lutIndex += 1;
+            lutBlendFactor = 0.0f;  // 블렌딩 시작
+        }
+        OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+        OutputDebugStringW((L"lutPath: " + core.GetLUTMgr()->GetPathFromIndex(lutIndex) + L"\n").c_str());
+    }
+
+    if (INPUT.GetKeyDown(VK_F4))
+    {
+        if (lutIndex == 0xFFFFFFFF)
+        {
+            prevLutIndex = 0;
+            lutIndex = 0;
+            lutBlendFactor = 1.0f;  // 즉시 적용
+        }
+        else if (lutIndex > 0)
+        {
+            prevLutIndex = lutIndex;
+            lutIndex -= 1;
+            lutBlendFactor = 0.0f;  // 블렌딩 시작
+        }
+        OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+        OutputDebugStringW((L"lutPath: " + core.GetLUTMgr()->GetPathFromIndex(lutIndex) + L"\n").c_str());
+    }
+
+    if (INPUT.GetKeyDown(VK_F5))
+    {
+        prevLutIndex = lutIndex;
+        lutIndex = 0xFFFFFFFF;
+        lutBlendFactor = 1.0f;  // LUT 끄기는 즉시
+        OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
+    }
+
+    if (INPUT.GetKeyDown('9'))
+    {
+        if (toneSaturationFactor < 2.0f)
+            toneSaturationFactor += 0.1f;
+        OutputDebugStringA(("toneSaturationFactor: " + to_string(toneSaturationFactor) + "\n").c_str());
+    }
+
+    if (INPUT.GetKeyDown('0'))
+    {
+        if (toneSaturationFactor > 0.0f)
+            toneSaturationFactor -= 0.1f;
+        OutputDebugStringA(("toneSaturationFactor: " + to_string(toneSaturationFactor) + "\n").c_str());
     }
 }
 
@@ -120,7 +181,7 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     XMMATRIX view = XMMatrixLookAtLH(eyePos, lookAt, upDir);
 
     float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
-    XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 150.0f);
+    XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 1.0f, 3000.0f);
 
     BoundingFrustum::CreateFromMatrix(viewFrustum, proj);
 
@@ -143,6 +204,10 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     frameData.invViewProj = XMMatrixTranspose(invVp);
     frameData.cameraPosition = position;
     frameData.time = TIMER.GetTotalTime();
+    frameData.lutIndex = lutIndex;
+    frameData.prevLutIndex = prevLutIndex;
+    frameData.lutBlendFactor = lutBlendFactor;
+    frameData.saturationFactor = toneSaturationFactor;
 
     core.GetFrameCB()->CopyData(&frameData, sizeof(FrameConstants));
 }
@@ -310,9 +375,17 @@ XMMATRIX Camera::GetProjectionMatrix() const
     return XMLoadFloat4x4(&matProj);
 }
 
+void Camera::SetLutPreset(UINT idx, float saturation)
+{
+    prevLutIndex = lutIndex;
+    lutIndex = idx;
+    toneSaturationFactor = saturation;
+    lutBlendFactor = 0.0f;
+}
+
 void Camera::SetCameraPosition(const XMFLOAT3& pos)
 {
-    desiredTargetPos = { pos.x, pos.y + 1.0f, pos.z };
+    desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };
 }
 
 void Camera::SetCursor()

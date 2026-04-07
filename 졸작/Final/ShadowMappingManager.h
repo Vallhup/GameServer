@@ -2,7 +2,7 @@
 
 struct CascadeShadowConstants
 {
-	XMMATRIX lightVP[4];	// 4 cascade levels
+	XMMATRIX lightVP[2];	// 2 cascade levels
 	XMFLOAT4 cascadeSplit;	// 4 cascade ranges
 };
 
@@ -26,7 +26,7 @@ private:
 
 private:
 	// Cascade shadow mapping
-	static const int CASCADE_COUNT = 3;
+	static const int CASCADE_COUNT = 2;
 	static const UINT SHADOW_MAP_SIZE = 4096;
 
 	ComPtr<ID3D12Resource> csmTexture;

@@ -19,6 +19,7 @@
 #include "LightManager.h"
 #include "FroxelManager.h"
 #include "SSAO.h"
+#include "LookUpTextures.h"
 
 Engine& Engine::Get()
 {
@@ -112,8 +113,8 @@ void Engine::Render()
     graphics->RenderFullscreenQuad();
 
     graphics->BeginForwardPass();
-    sceneManager->RenderEffects();   
-    sceneManager->RenderForward();   
+    sceneManager->RenderForward();
+    sceneManager->RenderEffects();      
 
     uiManager->Render(graphics->GetGraphicsCmdList(), graphics->GetCmdQueue(), viewport);
 

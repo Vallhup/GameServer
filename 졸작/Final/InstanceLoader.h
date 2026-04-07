@@ -6,16 +6,20 @@ struct InstanceData
 	XMFLOAT3 rotation;
 	XMFLOAT3 scale;
 	bool distanceCull = false;
-	float cullDistance = 25.0f;
+	float cullDistance = 60.0f;
+	bool castShadow = true;
+	bool twoSided = false;
+	bool vertexAnim = false;
 };
 
 class InstanceLoader {
 public:
-	void Load(const wstring& filename);
+	void Load(const wstring& fileName, const wstring& cullingFileName);
 
 	const unordered_map<string, vector<InstanceData>>& GetAllData() const { return instanceData; }
 
 private:
+	bool ContainsAny(const string& str, const vector<string>& keywords);
 	bool ContainsAny(const string& str, initializer_list<string> keywords);
 
 private:

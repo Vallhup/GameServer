@@ -13,7 +13,7 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 	XMVECTOR centerPos = XMLoadFloat3(&center);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	float shadowCasterDistance = 80.0f;
+	float shadowCasterDistance = 140.0f;
 
 	XMVECTOR lightPos = XMVectorSubtract(centerPos, XMVectorScale(csmLightDir, shadowCasterDistance));
 	XMMATRIX lightView = XMMatrixLookAtLH(lightPos, centerPos, up);
@@ -22,7 +22,6 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 	{
 		float cascadeSize = (&csmConstants.cascadeSplit.x)[i];
 
-		// 광원 투영 = cascadeSize 기반
 		XMMATRIX lightProj = XMMatrixOrthographicLH(cascadeSize * 2.0f, cascadeSize * 2.0f, 0.1f, shadowCasterDistance * 2.0f);
 
 		csmConstants.lightVP[i] = XMMatrixTranspose(XMMatrixMultiply(lightView, lightProj));
@@ -33,10 +32,10 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 
 void ShadowMappingManager::SettingsForCSM()
 {
-	XMVECTOR lightDir = XMVectorSet(-45.0f, -40.0f, -60.0f, 0);
+	XMVECTOR lightDir = XMVectorSet(-0.74f, -0.40f, -1.0f, 0);
 	csmLightDir = XMVector3Normalize(lightDir);
 
-	csmConstants.cascadeSplit = { 10.0f, 30.0f, 80.0f, 0.0f };
+	csmConstants.cascadeSplit = { 20.0f, 60.0f, 0.0f, 0.0f };
 }
 
 void ShadowMappingManager::CreateCSMResources(ID3D12Device* device)

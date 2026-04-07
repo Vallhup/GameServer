@@ -216,21 +216,26 @@ exit 0</Command>
     <ClCompile Include="DX12Core.cpp" />
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EffectRenderer.cpp" />
+    <ClCompile Include="FinalBattleScene.cpp" />
+    <ClCompile Include="FootDustEffect.cpp" />
+    <ClCompile Include="FlameEffect.cpp" />
     <ClCompile Include="FroxelManager.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingSceneUIController.cpp" />
+    <ClCompile Include="LookUpTextures.cpp" />
+    <ClCompile Include="ParrySparkEffect.cpp" />
     <ClCompile Include="RenderTargets.cpp" />
     <ClCompile Include="SelectSceneUIController.cpp" />
     <ClCompile Include="ShadowMappingManager.cpp" />
-    <ClCompile Include="SoloGameScene.cpp" />
+    <ClCompile Include="FirstBattleScene.cpp" />
     <ClCompile Include="GameSceneUIController.cpp" />
     <ClCompile Include="GPUBuffer.cpp" />
     <ClCompile Include="ImGuiManager.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="InstanceLoader.cpp" />
     <ClCompile Include="InstancingBatch.cpp" />
-    <ClCompile Include="MultiGameScene.cpp" />
+    <ClCompile Include="SecondBattleScene.cpp" />
     <ClCompile Include="SelectScene.cpp" />
     <ClCompile Include="MainCharacter.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -242,7 +247,7 @@ exit 0</Command>
     <ClCompile Include="SceneRenderer.cpp" />
     <ClCompile Include="SSAO.cpp" />
     <ClCompile Include="SwapChain.cpp" />
-    <ClCompile Include="TownScene.cpp" />
+    <ClCompile Include="PlazaScene.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SoundManager.cpp" />
@@ -252,6 +257,7 @@ exit 0</Command>
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TrailRenderer.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -272,6 +278,7 @@ exit 0</Command>
     <ClCompile Include="UIController.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
+    <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
@@ -295,22 +302,27 @@ exit 0</Command>
     <ClInclude Include="DX12Core.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EffectRenderer.h" />
+    <ClInclude Include="FinalBattleScene.h" />
+    <ClInclude Include="FlameEffect.h" />
+    <ClInclude Include="FootDustEffect.h" />
     <ClInclude Include="FroxelManager.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LoadingSceneUIController.h" />
+    <ClInclude Include="LookUpTextures.h" />
     <ClInclude Include="NetHelper.h" />
+    <ClInclude Include="ParrySparkEffect.h" />
     <ClInclude Include="RenderTargets.h" />
     <ClInclude Include="SelectSceneUIController.h" />
     <ClInclude Include="ShadowMappingManager.h" />
-    <ClInclude Include="SoloGameScene.h" />
+    <ClInclude Include="FirstBattleScene.h" />
     <ClInclude Include="GameSceneUIController.h" />
     <ClInclude Include="GPUBuffer.h" />
     <ClInclude Include="ImGuiManager.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="InstanceLoader.h" />
     <ClInclude Include="InstancingBatch.h" />
-    <ClInclude Include="MultiGameScene.h" />
+    <ClInclude Include="SecondBattleScene.h" />
     <ClInclude Include="SelectScene.h" />
     <ClInclude Include="MainCharacter.h" />
     <ClInclude Include="Material.h" />
@@ -322,7 +334,7 @@ exit 0</Command>
     <ClInclude Include="SceneRenderer.h" />
     <ClInclude Include="SSAO.h" />
     <ClInclude Include="SwapChain.h" />
-    <ClInclude Include="TownScene.h" />
+    <ClInclude Include="PlazaScene.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SoundManager.h" />
@@ -332,6 +344,7 @@ exit 0</Command>
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TrailRenderer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="GameObject.h" />
@@ -346,9 +359,12 @@ exit 0</Command>
     <ClInclude Include="UIController.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="VertexIndexBuffer.h" />
+    <ClInclude Include="Water.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\animation.hlsli" />
+    <None Include="..\Shaders\EffectVS.hlsli" />
+    <None Include="..\Shaders\FlamePS.hlsli" />
     <None Include="..\Shaders\Fog.hlsli" />
     <None Include="..\Shaders\ShaderResources.hlsli" />
     <None Include="..\Shaders\Constants.hlsli" />
@@ -368,9 +384,11 @@ exit 0</Command>
     <None Include="..\Shaders\ShadowVS.hlsli" />
     <None Include="..\Shaders\SkyboxPS.hlsli" />
     <None Include="..\Shaders\SkyboxVS.hlsli" />
+    <None Include="..\Shaders\SparkPS.hlsli" />
     <None Include="..\Shaders\SsaoBlurPS.hlsli" />
     <None Include="..\Shaders\SsaoPS.hlsli" />
     <None Include="..\Shaders\ToneMapping.hlsli" />
+    <None Include="..\Shaders\TrailPS.hlsli" />
     <None Include="..\Shaders\VertexAnimation.hlsli" />
     <None Include="..\Shaders\VolumetricFog.hlsli" />
   </ItemGroup>

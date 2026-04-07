@@ -4,8 +4,10 @@
 enum class SceneType {
     Title,
     Select,
-    Town,
-    MainGame,
+    Plaza,
+    Village,
+    Castle,
+    Final,
     Loading,
     END
 };
@@ -30,11 +32,23 @@ public:
 public:
     void SceneStart(DX12Core& core);       
     void RequestSceneChange(SceneType type);
-    void ProcessPendingSceneChange(DX12Core& core);  
+    void RequestLoadingScene(SceneType targetSceneType);
+    void ProcessPendingSceneChange(DX12Core& core);
+
+    //----
+    // 임시 코드임, First->Second 연결 해보려고 시도하는 코드임
+    void SetSharedKnight(shared_ptr<MainCharacter> k) { sharedKnight = k; }
+    void SetSharedBoss(shared_ptr<GameObject> b) { sharedBoss = b; }
+
+    shared_ptr<MainCharacter> GetSharedKnight() { return sharedKnight; }
+    shared_ptr<GameObject> GetSharedBoss() { return sharedBoss; }
+    //----
 
 private:
     template <typename T>
     void RegisterScene(SceneType type);
+
+    void MoveInstancingBatches(SceneType type);
 
 private:
     HWND hwnd;
@@ -46,6 +60,13 @@ private:
     SceneType nextSceneType;
 
     unique_ptr<SceneRenderer> sceneRenderer;
+
+    //----
+    // 임시 코드임, First->Second 연결 해보려고 시도하는 코드임
+    shared_ptr<MainCharacter> sharedKnight;  // 내 캐릭터
+    shared_ptr<GameObject> sharedBoss;       // 보스
+    int myClientId = -1;
+    //----
 };
 
 template<typename T>

@@ -82,7 +82,7 @@ float3 Uncharted2ToneMapping(float3 color)
     return curr * whiteScale;
 }
 
-float3 DarkFantasyToneMapping(float3 color)
+float3 DarkFantasyToneMapping(float3 color, float saturationFactor)
 {
     // 1. ACES Filmic
     const float3x3 inputMat = float3x3(
@@ -106,7 +106,7 @@ float3 DarkFantasyToneMapping(float3 color)
 
     // 2. 다크 판타지 후보정
     float contrast = 1.2;
-    float saturation = 0.85; // 살짝 desaturate (0.85 / 0.95 / 1.15 / 1.35)
+    float saturation = saturationFactor; // 살짝 desaturate (0.85 / 0.95 / 1.15 / 1.35)
     float3 shadowTint = float3(0.9, 0.9, 1.1); // 그림자에 차가운 톤
 
     // 콘트라스트
@@ -121,6 +121,59 @@ float3 DarkFantasyToneMapping(float3 color)
     color *= lerp(float3(1, 1, 1), shadowTint, shadowMask * 0.3);
 
     return saturate(color);
+}
+
+float3 ApplyLUT(Texture3D lutTex, SamplerState samp, float3 color)
+{
+    const float LUT_SIZE = 32.0;
+    float scale = (LUT_SIZE - 1.0) / LUT_SIZE;
+    float offset = 0.5 / LUT_SIZE;
+
+    float3 lutCoord = saturate(color) * scale + offset;
+    return lutTex.Sample(samp, lutCoord).rgb;
+}
+
+float3 ApplyLUTWithTransition(Texture3D lutTex, Texture3D prevLutTex, SamplerState samp,
+                                float3 color, float blendFactor)
+{
+    float3 prevColor = ApplyLUT(prevLutTex, samp, color);
+    float3 newColor = ApplyLUT(lutTex, samp, color);
+
+    return lerp(prevColor, newColor, blendFactor);
+}
+
+float3 ApplyLUTWipe(Texture3D lutTex, Texture3D prevLutTex,
+      SamplerState samp, float3 color, float blendFactor, float2 uv)
+{
+    float3 prevColor = ApplyLUT(prevLutTex, samp, color);
+    float3 newColor = ApplyLUT(lutTex, samp, color);
+    
+    float edge = smoothstep(blendFactor - 0.05, blendFactor + 0.05, uv.x);
+    return lerp(newColor, prevColor, edge);
+}
+
+float3 ApplyLUTDiagonal(Texture3D lutTex, Texture3D prevLutTex,
+      SamplerState samp, float3 color, float blendFactor, float2 uv)
+{
+    float3 prevColor = ApplyLUT(prevLutTex, samp, color);
+    float3 newColor = ApplyLUT(lutTex, samp, color);
+    
+    float edge = smoothstep(blendFactor - 0.05, blendFactor + 0.05, (uv.x + uv.y) * 0.5);
+    return lerp(newColor, prevColor, edge);
+}
+
+float3 ApplyLUTCircle(Texture3D lutTex, Texture3D prevLutTex,
+      SamplerState samp, float3 color, float blendFactor, float2 uv)
+{
+    float3 prevColor = ApplyLUT(prevLutTex, samp, color);
+    float3 newColor = ApplyLUT(lutTex, samp, color);
+    
+    float dist = length(uv - 0.5);
+    float maxDist = 0.7071;
+    float normalizedDist = dist / maxDist;
+    
+    float edge = smoothstep(blendFactor - 0.05, blendFactor + 0.05, normalizedDist);
+    return lerp(newColor, prevColor, edge);
 }
 
 #endif

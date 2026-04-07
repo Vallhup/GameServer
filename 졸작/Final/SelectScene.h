@@ -7,7 +7,7 @@ public:
 	SelectScene() = default;
 	SelectScene(const SelectScene&) = delete;
 	SelectScene& operator=(const SelectScene&) = delete;
-	~SelectScene();
+	~SelectScene() = default;
 
 	void Release() override;
 	void Reset() override;
@@ -24,6 +24,6 @@ protected:
 
 private:
 	vector<shared_ptr<GameObject>> gameObjects;
-	shared_ptr<MainCharacter> knight;
-	shared_ptr<GameObject> dragon;
+	shared_ptr<MainCharacter> demonStriker;
+	shared_ptr<GameObject> imp;
 };

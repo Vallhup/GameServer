@@ -2,6 +2,7 @@
 #include "UIController.h"
 
 class ImageUI;
+enum class SceneType;
 
 class LoadingSceneUIController : public UIController
 {
@@ -11,6 +12,7 @@ public:
 	void Render(SpriteBatch* batch) override;
 
 	void SetProgress(float progress);
+	void SetTargetScene(SceneType type);
 
 private:
 	shared_ptr<ImageUI> mainImage;
@@ -20,5 +22,7 @@ private:
 
 	float loadProgress = 0.0f;
 	float loadBarMaxWidth = 0.0f;
+
+	SceneType targetScene;
 };
 

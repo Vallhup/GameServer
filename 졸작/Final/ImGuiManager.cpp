@@ -9,6 +9,8 @@
 #include "Animator.h"
 #include "LightManager.h"
 #include "SSAO.h"
+#include "SkyBox.h"
+#include "Camera.h"
 
 void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 {
@@ -16,7 +18,7 @@ void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    desc.NumDescriptors = 1;
+    desc.NumDescriptors = 2;
     desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
     HRESULT hr = core.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&srvHeap));
@@ -97,6 +99,9 @@ void ImGuiManager::DrawDebugUI()
             ImGui::Separator();
             ImGui::Checkbox("Light Editor", &showLightEditor);
             ImGui::Checkbox("SSAO Editor", &showSsaoEditor);
+            ImGui::Checkbox("Skybox Editor", &showSkyboxEditor);
+            ImGui::Checkbox("Volumetric Fog Editor", &showVolumetricFogEditor);
+            ImGui::Checkbox("LUT Presets", &showLutPresets);
             ImGui::Checkbox("Demo Window", &showDemoWindow);
         }
         ImGui::End();
@@ -125,6 +130,36 @@ void ImGuiManager::DrawDebugUI()
                     ssao->SetSsaoBias(bias);
                     ssao->UpdateConstants();
                 }
+            }
+        }
+        ImGui::End();
+    }
+
+    if (showSkyboxEditor && skyBox)
+    {
+        ImGui::SetNextWindowPos(ImVec2(560, 10), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(280, 150), ImGuiCond_FirstUseEver);
+
+        if (ImGui::Begin("Skybox Editor", &showSkyboxEditor))
+        {
+            auto& constants = skyBox->GetConstants();
+
+            bool changed = false;
+            changed |= ImGui::ColorEdit3("Tint Color", &constants.skyTintColor.x);
+            changed |= ImGui::SliderFloat("Exposure", &constants.skyExposure, 0.1f, 3.0f);
+            changed |= ImGui::SliderFloat("Saturation", &constants.skySaturation, 0.0f, 2.0f);
+
+            if (changed)
+            {
+                skyBox->UpdateConstants();
+            }
+
+            if (ImGui::Button("Reset"))
+            {
+                constants.skyTintColor = { 1.0f, 1.0f, 1.0f };
+                constants.skyExposure = 1.0f;
+                constants.skySaturation = 1.0f;
+                skyBox->UpdateConstants();
             }
         }
         ImGui::End();
@@ -176,6 +211,67 @@ void ImGuiManager::DrawDebugUI()
         ImGui::End();
     }
 
+    if (showVolumetricFogEditor && coreRef)
+    {
+        ImGui::SetNextWindowPos(ImVec2(320, 140), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(320, 380), ImGuiCond_FirstUseEver);
+
+        if (ImGui::Begin("Volumetric Fog Editor", &showVolumetricFogEditor))
+        {
+            auto& vf = coreRef->GetVolumetricFogData();
+            bool changed = false;
+
+            if (ImGui::CollapsingHeader("Fog Properties", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                changed |= ImGui::SliderFloat("Density", &vf.density, 0.001f, 0.1f, "%.4f");
+                changed |= ImGui::SliderFloat("Scattering", &vf.scattering, 0.0f, 2.0f);
+                changed |= ImGui::SliderFloat("Absorption", &vf.absorption, 0.0f, 1.0f);
+            }
+
+            if (ImGui::CollapsingHeader("Ray Marching", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                changed |= ImGui::SliderInt("Max Steps", &vf.maxSteps, 8, 64);
+                changed |= ImGui::SliderFloat("Max Distance", &vf.maxDistance, 50.0f, 500.0f);
+                changed |= ImGui::SliderFloat("Jitter Strength", &vf.jitterStrength, 0.0f, 1.0f);
+            }
+
+            if (ImGui::CollapsingHeader("Height Fog", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                changed |= ImGui::SliderFloat("Height Falloff", &vf.heightFalloff, 0.0001f, 0.01f, "%.4f");
+                changed |= ImGui::SliderFloat("Ground Height", &vf.groundHeight, -10.0f, 50.0f);
+            }
+
+            if (ImGui::CollapsingHeader("Light Shaft", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                changed |= ImGui::SliderFloat("HG Anisotropy", &vf.hgAnisotropy, 0.0f, 0.99f);
+                changed |= ImGui::ColorEdit3("Light Color", &vf.lightColor.x);
+                changed |= ImGui::SliderFloat("Light Intensity", &vf.lightIntensity, 0.0f, 5.0f);
+            }
+
+            if (changed)
+            {
+                coreRef->UpdateVolumetricFog();
+            }
+
+            if (ImGui::Button("Reset to Default"))
+            {
+                vf.density = 0.02f;
+                vf.scattering = 0.8f;
+                vf.absorption = 0.1f;
+                vf.hgAnisotropy = 0.6f;
+                vf.maxSteps = 32;
+                vf.maxDistance = 160.0f;
+                vf.jitterStrength = 0.5f;
+                vf.heightFalloff = 0.001f;
+                vf.groundHeight = 3.0f;
+                vf.lightColor = { 1.0f, 1.0f, 1.0f };
+                vf.lightIntensity = 1.5f;
+                coreRef->UpdateVolumetricFog();
+            }
+        }
+        ImGui::End();
+    }
+
     if (showAnimationEditor && myPlayer)
     {
         ImGui::SetNextWindowPos(ImVec2(10, 270), ImGuiCond_FirstUseEver);
@@ -193,6 +289,50 @@ void ImGuiManager::DrawDebugUI()
         ImGui::End();
     }
 
+    if (showLutPresets && camera)
+    {
+        ImGui::SetNextWindowPos(ImVec2(850, 10), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(300, 350), ImGuiCond_FirstUseEver);
+
+        if (ImGui::Begin("LUT Presets", &showLutPresets))
+        {
+            ImGui::Text("Current: LUT %d, Sat %.2f", camera->GetLutIndex(), camera->GetSaturation());
+            ImGui::Separator();
+
+            for (int i = 0; i < 8; ++i)
+            {
+                ImGui::PushID(i);
+
+                char label[16];
+                sprintf_s(label, "Preset %d", i + 1);
+
+                if (ImGui::CollapsingHeader(label))
+                {
+                    int lutIdx = static_cast<int>(lutPresets[i].lutIndex);
+                    if (ImGui::SliderInt("LUT Index", &lutIdx, 0, 219))
+                        lutPresets[i].lutIndex = static_cast<UINT>(lutIdx);
+
+                    ImGui::SliderFloat("Saturation", &lutPresets[i].saturation, 0.0f, 2.0f);
+
+                    if (ImGui::Button("Apply"))
+                    {
+                        camera->SetLutPreset(lutPresets[i].lutIndex, lutPresets[i].saturation);
+                    }
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Save Current"))
+                    {
+                        lutPresets[i].lutIndex = camera->GetLutIndex();
+                        lutPresets[i].saturation = camera->GetSaturation();
+                    }
+                }
+
+                ImGui::PopID();
+            }
+        }
+        ImGui::End();
+    }
 
     if (showDemoWindow)
     {

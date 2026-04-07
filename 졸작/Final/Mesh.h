@@ -32,8 +32,8 @@ public:
 	bool IsTwoSided() const { return twoSided; }
 
 private:
-	void SetSingleMaterial(DX12Core& core, const vector<MaterialData>& mats);
-	void SetMultiMaterials(DX12Core& core, const vector<MaterialData>& mats);
+	void SetSingleMaterial(DX12Core& core, const vector<MaterialData>& mats, const wstring& texBasePath = L"../Assets/FBXModel/");
+	void SetMultiMaterials(DX12Core& core, const vector<MaterialData>& mats, const wstring& texBasePath = L"../Assets/FBXModel/");
 	void DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData>& mats);
 
 private:

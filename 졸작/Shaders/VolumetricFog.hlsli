@@ -18,13 +18,11 @@ float BeerLambert(float density, float distance)
 
 float SampleShadowMap(float3 worldPos, float viewDepth)
 {
-    int cascade = 2;
+    int cascade;
     if (viewDepth < cascadeSplit.x)
         cascade = 0;
-    if (viewDepth < cascadeSplit.y)
+    else
         cascade = 1;
-    if (viewDepth < cascadeSplit.z)
-        cascade = 2;
     
     float4 lightSpacePos = mul(float4(worldPos, 1.0), lightVP[cascade]);
     
@@ -64,11 +62,11 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
     float jitter = GetJitter(screenUV);
     float currentDistance = jitter * stepSize;
     
-    // ´©Àû º¯¼ö
+    // ëˆ„ì  ë³€ìˆ˜
     float3 totalInScattering = float3(0.0, 0.0, 0.0);
     float transmittance = 1.0;
 
-    // ÁÖ ±¤¿ø ¹æÇâ (lights[0]°¡ Directional Light)
+    // ì£¼ ê´‘ì› ë°©í–¥ (lights[0]ê°€ Directional Light)
     float3 lightDir = normalize(-lights[0].position);
 
     // Ray Marching Loop
@@ -81,12 +79,12 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
 
         float3 samplePos = rayOrigin + rayDir * currentDistance;
 
-        // ÇöÀç À§Ä¡ÀÇ ¹Ğµµ
+        // í˜„ì¬ ìœ„ì¹˜ì˜ ë°€ë„
         float density = GetFogDensity(samplePos);
 
         if (density > 0.0001)
         {
-            // Shadow Ã¼Å© (Light Shaft È¿°ú)
+            // Shadow ì²´í¬ (Light Shaft íš¨ê³¼)
             float shadowFactor = SampleShadowMap(samplePos, currentDistance);
 
             // Phase function
@@ -94,14 +92,14 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
             float phase = HenyeyGreenstein(cosTheta, VF_HG_ANISOTROPY);
             phase = max(phase, 0.2);
             
-            // In-scattering °è»ê
+            // In-scattering ê³„ì‚°
             float3 lightContrib = VF_LIGHT_COLOR * VF_LIGHT_INTENSITY * lights[0].intensity;
             float3 scattering = lightContrib * phase * VF_SCATTERING * shadowFactor;
 
-            // Beer-Lambert Åõ°úÀ²
+            // Beer-Lambert íˆ¬ê³¼ìœ¨
             float stepTransmittance = BeerLambert(density, stepSize);
 
-            // ¿¡³ÊÁö º¸Á¸ ÀûºĞ
+            // ì—ë„ˆì§€ ë³´ì¡´ ì ë¶„
             float3 integScatter = scattering * (1.0 - stepTransmittance);
             totalInScattering += transmittance * integScatter;
 
@@ -111,7 +109,7 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
         currentDistance += stepSize;
     }
 
-    // Ambient »ê¶õ (fogColor »ç¿ë)
+    // Ambient ì‚°ë€ (fogColor ì‚¬ìš©)
     float3 ambientScatter = fogColor.rgb * (1.0 - transmittance) * 0.3;
     totalInScattering += ambientScatter;
 

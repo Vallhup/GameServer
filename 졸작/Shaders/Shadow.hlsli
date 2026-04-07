@@ -10,9 +10,7 @@ int SelectCascade(float viewDepth)
         return 0;
     if (viewDepth < cascadeSplit.y)
         return 1;
-    if (viewDepth < cascadeSplit.z)
-        return 2;
-    return 2;
+    return 1;
 }
 
 float CalculateShadow(float3 worldPos, float viewDepth)
@@ -48,7 +46,7 @@ float CalculateShadow(float3 worldPos, float viewDepth)
     }
 
     shadow /= 25.0;
-    return lerp(1.0, 0.6, shadow);
+    return 1.0 - shadow;
 }
 
 #endif

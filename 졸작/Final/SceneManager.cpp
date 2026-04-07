@@ -7,13 +7,19 @@
 #include "Texture.h"
 #include "TitleScene.h"
 #include "SelectScene.h"
-#include "TownScene.h"
-#include "SoloGameScene.h"
+#include "PlazaScene.h"
+#include "FirstBattleScene.h"
+#include "SecondBattleScene.h"
+#include "FinalBattleScene.h"
 #include "LoadingScene.h"
 #include "Camera.h"
 #include "Material.h"
 #include "ResourceManager.h"
 #include "UIManager.h"
+#include "TrailRenderer.h"
+#include "FootDustEffect.h"
+#include "FlameEffect.h"
+#include "ParrySparkEffect.h"
 
 SceneManager::~SceneManager()
 {
@@ -26,8 +32,10 @@ void SceneManager::Initialize(HWND hWnd, DX12Core& core)
 
     RegisterScene<TitleScene>(SceneType::Title);
     RegisterScene<SelectScene>(SceneType::Select);
-    RegisterScene<TownScene>(SceneType::Town);
-    RegisterScene<SoloGameScene>(SceneType::MainGame);
+    RegisterScene<PlazaScene>(SceneType::Plaza);
+    RegisterScene<FirstBattleScene>(SceneType::Village);
+    RegisterScene<SecondBattleScene>(SceneType::Castle);
+    RegisterScene<FinalBattleScene>(SceneType::Final);
 
     RegisterScene<LoadingScene>(SceneType::Loading);
 
@@ -133,7 +141,6 @@ void SceneManager::SceneStart(DX12Core& core)
 
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
-    Material::InitializeBindlessSystem(core.GetDevice());
     mCurrentScene->Initialize(hwnd, core);
     UI_MANAGER->SetCurrentScene(currSceneType);
 }
@@ -142,6 +149,13 @@ void SceneManager::RequestSceneChange(SceneType type)
 {
     pendingSceneChange = true;
     nextSceneType = type;
+}
+
+void SceneManager::RequestLoadingScene(SceneType targetSceneType)
+{
+    auto* loading = static_cast<LoadingScene*>(mScenes[(size_t)SceneType::Loading].get());
+    loading->SetTargetScene(targetSceneType);
+    RequestSceneChange(SceneType::Loading);
 }
 
 void SceneManager::ProcessPendingSceneChange(DX12Core& core)
@@ -160,9 +174,19 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
     size_t index = static_cast<size_t>(nextSceneType);
     mCurrentScene = mScenes[index].get();
     mCurrentScene->SetSceneManager(this);
+    
+    MoveInstancingBatches(nextSceneType);
+
     mCurrentScene->Initialize(hwnd, core);
     UI_MANAGER->SetCurrentScene(nextSceneType);
     currSceneType = nextSceneType;
 
     core.FlushCommandQueue();
+}
+
+void SceneManager::MoveInstancingBatches(SceneType type)
+{
+    auto* loading = static_cast<LoadingScene*>(mScenes[(size_t)SceneType::Loading].get());
+    auto batches = loading->TakeBatches(type);
+    mCurrentScene->SetInstancingBatches(move(batches));
 }

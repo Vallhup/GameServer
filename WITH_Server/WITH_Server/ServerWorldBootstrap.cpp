@@ -90,7 +90,7 @@ namespace
 		runtime.DeferredAddComponent<SkeletalCombatColliderComp>(aiEntity);
 		runtime.DeferredUpsertComponent<WorldTransformComp>(
 			aiEntity,
-			WorldTransformComp{ .position = { spawnX, 10.0f, spawnZ }, .yawRad = 0.0f });
+			WorldTransformComp{ .position = { spawnX, 50.0f, spawnZ }, .yawRad = 0.0f });
 		runtime.DeferredAddComponent<LocomotionMoveDeltaComp>(aiEntity);
 		runtime.DeferredAddComponent<ActionMoveDeltaComp>(aiEntity);
 		runtime.DeferredAddComponent<ActionMoveRuntimeComp>(aiEntity);
@@ -181,7 +181,7 @@ namespace
 			}
 
 			SpawnAIEntity(*_framework, runtime, CharacterId::FinalBoss,
-				*_bootstrapWorldId, 10.0f, 10.0f);
+				*_bootstrapWorldId, 156.0f, 650.0f);
 			return true;
 		}
 

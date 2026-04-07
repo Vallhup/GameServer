@@ -24,12 +24,17 @@ public:
 	XMMATRIX GetViewMatrix() const;
 	XMMATRIX GetProjectionMatrix() const;
 
+	// LUT - IMGUI 관련
+	UINT GetLutIndex() const { return lutIndex; }
+	float GetSaturation() const { return toneSaturationFactor; }
+	void SetLutPreset(UINT idx, float saturation);
+
 	void SetCameraPosition(const XMFLOAT3& pos);
 	void SetCursor();
 	void ReleaseMouse();
 
 private:
-	void UpdateInputtoCamLogic(float deltaTime);
+	void UpdateInputtoCamLogic(DX12Core& core, float deltaTime);
 	void UpdateSmoothFollow(float deltaTime);
 	void UpdateCameraMatrices(DX12Core& core);
 	void UpdateForwardAndRight();
@@ -75,4 +80,10 @@ private:
 
 	XMFLOAT4X4 matView;
 	XMFLOAT4X4 matProj;
+
+	UINT lutIndex = 0;
+	UINT prevLutIndex = 0;
+	float lutBlendFactor = 1.0f;
+	float lutTransitionSpeed = 2.0f;
+	float toneSaturationFactor = 0.85f;
 };

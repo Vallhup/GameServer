@@ -25,6 +25,8 @@ public:
 	void SetId(int id) { mId = id; }
 	void SetStatic(bool value) { isStatic = value; }
 	void SetDistanceCull(bool cull, float distance) { needDistanceCull = cull; cullDistance = distance; }
+	bool NeedDistanceCull() const { return needDistanceCull; }
+	float GetCullDistance() const { return cullDistance; }
 
 	const BoundingBox& GetLocalBoundingBox() const { return localBoundingBox; }
 	const BoundingBox& GetWorldBoundingBox() const { return worldBoundingBox; }
@@ -48,8 +50,8 @@ private:
 	int mId;
 	bool isStatic = false;
 
-	bool needDistanceCull = false;
-	float cullDistance = 25.0f;
+	bool needDistanceCull;
+	float cullDistance;
 };
 
 template<typename T>

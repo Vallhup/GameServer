@@ -10,7 +10,7 @@ public:
 	Terrain() = default;
 	~Terrain() = default;
 
-	void Initialize(DX12Core& core, const wstring& basePath, const wstring& heightmapPath, int gridSize, float worldSize, float heightScale);
+	void Initialize(DX12Core& core, const wstring& basePath, const wstring& heightmapPath, int gridSize, float worldSize, float heightScale, float tileSize);
 
 	void Render(ID3D12GraphicsCommandList* cmdList);
 
@@ -18,10 +18,15 @@ public:
 
 	VertexIndexBuffer* GetVertexIndexBuffer() const { return vertexIndexBuffer.get(); }
 	Material* GetMaterial() const { return material.get(); }
+	D3D12_GPU_VIRTUAL_ADDRESS GetCBAddress() const { return objectCB->GetGPUVirtualAddress(); }
+
+	void SetPosition(float x, float y, float z);
+	void SetRotation(float x, float y, float z);
+	void SetScale(float x, float y, float z);
 
 private:
 	void LoadHeightmap(const wstring& path);
-	void BuildVertices();
+	void BuildVertices(float tileSize);
 	void BuildIndices();
 
 private:
@@ -38,4 +43,10 @@ private:
 
 	vector<Vertex> vertices;
 	vector<UINT> indices;
+
+	unique_ptr<UploadBuffer> objectCB;
+
+	XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 rotation = { 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 scale = { 1.0f, 1.0f, 1.0f };
 };

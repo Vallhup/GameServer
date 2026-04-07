@@ -2,7 +2,7 @@
 #include "ClientConnectionListener.h"
 #include "Engine.h"
 #include "SceneManager.h"
-#include "SoloGameScene.h"
+#include "FirstBattleScene.h"
 
 void ClientConnectionListener::OnConnected(Connection& owner)
 {

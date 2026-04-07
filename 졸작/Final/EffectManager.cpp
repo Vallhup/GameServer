@@ -45,7 +45,7 @@ void EffectManager::Render(DX12Core& core, Camera* camera)
 
     Effekseer::Matrix44 projectionMatrix;
     float aspectRatio = static_cast<float>(WinSize.x) / static_cast<float>(WinSize.y);
-    projectionMatrix.PerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 1000.0f);
+    projectionMatrix.PerspectiveFovLH(XM_PIDIV4, aspectRatio, 1.0f, 3000.0f);
 
     Effekseer::Matrix44 cameraMatrix;
     cameraMatrix.LookAtLH(

@@ -5,14 +5,14 @@
 #include "Importer.h"
 #include "Material.h"
 
-void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring& heightmapPath, int inGridSize, float inWorldSize, float inHeightScale)
+void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring& heightmapPath, int inGridSize, float inWorldSize, float inHeightScale, float tileSize)
 {
 	gridSize = inGridSize;
 	worldSize = inWorldSize;
 	heightScale = inHeightScale;
 
 	LoadHeightmap(heightmapPath);
-	BuildVertices();
+	BuildVertices(tileSize);
 	BuildIndices();
 
 	vertexIndexBuffer = make_shared<VertexIndexBuffer>();
@@ -23,18 +23,39 @@ void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring&
 		indices
 	);
 
+	wstring texBasePath = basePath.substr(0, basePath.find_last_of(L"/\\") + 1);
+
 	Importer importer;
 
 	if (importer.LoadMaterialOnly(basePath)) {
 		const auto& mats = importer.GetMaterials();
 
 		material = make_shared<Material>();
-		material->LoadFromMaterialData(
-			core.GetDevice(),
-			core.GetGraphicsCmdList(),
-			mats[0]
-		);
+		material->LoadFromMaterialData(core.GetDevice(), core.GetGraphicsCmdList(), mats[0], texBasePath);
 	}
+	else
+	{
+		MaterialData matData = {};
+		string pathStr(basePath.begin(), basePath.end());
+		matData.baseColorTexPath = pathStr;
+
+		material = make_shared<Material>();
+		material->LoadFromMaterialData(core.GetDevice(), core.GetGraphicsCmdList(), matData);
+	}
+
+	objectCB = make_unique<UploadBuffer>();
+	objectCB->Initialize(core.GetDevice(), CONSTANT_BUFFER_ALIGNMENT);
+
+	int useTexture = material ? 1 : 0;
+	UINT matIndex = material ? material->GetMaterialIndex() : 0;
+
+	ObjectConstants obj = {};
+	obj.world = XMMatrixTranspose(XMMatrixIdentity());
+	obj.useTexture = useTexture;
+	obj.useInstancing = 0;
+	obj.materialIndex = matIndex;
+
+	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
 
 	char buf[256];
 	sprintf_s(buf, "Terrain created: gridSize=%d, worldSize=%.1f, vertices=%zu, indices=%zu\n",
@@ -49,6 +70,72 @@ void Terrain::Render(ID3D12GraphicsCommandList* cmdList)
 		vertexIndexBuffer->Bind(cmdList);
 		vertexIndexBuffer->Draw(cmdList);
 	}
+}
+
+void Terrain::SetPosition(float x, float y, float z)
+{
+	position = { x, y, z };
+
+	XMMATRIX scaleMat = XMMatrixScaling(scale.x, scale.y, scale.z);
+	XMMATRIX rotMat = XMMatrixRotationRollPitchYaw(
+		XMConvertToRadians(rotation.x),
+		XMConvertToRadians(rotation.y),
+		XMConvertToRadians(rotation.z)
+	);
+	XMMATRIX transMat = XMMatrixTranslation(x, y, z);
+	XMMATRIX world = XMMatrixTranspose(scaleMat * rotMat * transMat);
+
+	ObjectConstants obj = {};
+	obj.world = world;
+	obj.useTexture = material ? 1 : 0;
+	obj.useInstancing = 0;
+	obj.materialIndex = material ? material->GetMaterialIndex() : 0;
+
+	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
+}
+
+void Terrain::SetRotation(float x, float y, float z)
+{
+	rotation = { x, y, z };
+
+	XMMATRIX scaleMat = XMMatrixScaling(scale.x, scale.y, scale.z);
+	XMMATRIX rotMat = XMMatrixRotationRollPitchYaw(
+		XMConvertToRadians(x),
+		XMConvertToRadians(y),
+		XMConvertToRadians(z)
+	);
+	XMMATRIX transMat = XMMatrixTranslation(position.x, position.y, position.z);
+	XMMATRIX world = XMMatrixTranspose(scaleMat * rotMat * transMat);
+
+	ObjectConstants obj = {};
+	obj.world = world;
+	obj.useTexture = material ? 1 : 0;
+	obj.useInstancing = 0;
+	obj.materialIndex = material ? material->GetMaterialIndex() : 0;
+
+	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
+}
+
+void Terrain::SetScale(float x, float y, float z)
+{
+	scale = { x, y, z };
+
+	XMMATRIX scaleMat = XMMatrixScaling(x, y, z);
+	XMMATRIX rotMat = XMMatrixRotationRollPitchYaw(
+		XMConvertToRadians(rotation.x),
+		XMConvertToRadians(rotation.y),
+		XMConvertToRadians(rotation.z)
+	);
+	XMMATRIX transMat = XMMatrixTranslation(position.x, position.y, position.z);
+	XMMATRIX world = XMMatrixTranspose(scaleMat * rotMat * transMat);
+
+	ObjectConstants obj = {};
+	obj.world = world;
+	obj.useTexture = material ? 1 : 0;
+	obj.useInstancing = 0;
+	obj.materialIndex = material ? material->GetMaterialIndex() : 0;
+
+	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
 }
 
 void Terrain::LoadHeightmap(const wstring& path)
@@ -85,7 +172,7 @@ void Terrain::LoadHeightmap(const wstring& path)
 	OutputDebugStringA(buf);
 }
 
-void Terrain::BuildVertices()
+void Terrain::BuildVertices(float tileSize)
 {
 	vertices.clear();
 	vertices.reserve((gridSize + 1) * (gridSize + 1));
@@ -102,8 +189,8 @@ void Terrain::BuildVertices()
 			float normalizedU = (float)x / gridSize;
 			float normalizedV = (float)z / gridSize;
 
-			float tileSize = 2.0f;
-			float uvScale = worldSize / tileSize;
+			float tilingSize = tileSize;
+			float uvScale = worldSize / tilingSize;
 			float u = normalizedU * uvScale;
 			float v = normalizedV * uvScale;
 

@@ -14,6 +14,10 @@ cbuffer FrameCB : register(b0)
     matrix invViewProj;
     float3 cameraPosition;
     float time;
+    uint lutIndex;
+    uint prevLutIndex;
+    float lutBlendFactor;
+    float saturationFactor;
 };
 
 cbuffer ObjectCB : register(b1)
@@ -22,7 +26,7 @@ cbuffer ObjectCB : register(b1)
     int useTexture;
     int useInstancing;
     uint materialIndex;
-    int objPadding;
+    int useVertexAnim;
 };
 
 cbuffer AnimationParams : register(b2)
@@ -69,7 +73,7 @@ cbuffer ForwardLightCB : register(b4)
 
 cbuffer ShadowFrameCB : register(b5)
 {
-    matrix lightVP[4];
+    matrix lightVP[2];
     float4 cascadeSplit;
 };
 
@@ -98,6 +102,49 @@ cbuffer SsaoCB : register(b8)
     float ssaoBias;
 };
 
+cbuffer SkyboxCB : register(b9)
+{
+    float3 skyTintColor;
+    float skyExposure;
+    float skySaturation;
+    float3 skyPadding;
+};
+
+cbuffer WaterCB : register(b10)
+{
+    float4 waterColor;
+    float waterTime;
+    float waveSpeed;
+    float waveStrength;
+    float waterPadding;
+};
+
+cbuffer VolumetricFogCB : register(b11)
+{
+    float vfDensity;
+    float vfScattering;
+    float vfAbsorption;
+    float vfHgAnisotropy;
+
+    int vfMaxSteps;
+    float vfMaxDistance;
+    float vfJitterStrength;
+    float vfHeightFalloff;
+
+    float vfGroundHeight;
+    float3 vfLightColor;
+
+    float vfLightIntensity;
+    float3 vfPadding;
+};
+
+cbuffer EffectCB : register(b12)
+{
+    float4 effectColor;
+    uint textureIndex;
+    float3 padding;
+}
+
 //-------------------------------------------------------
 // VARIOUS TYPES OF SHADER RESOURCES
 //-------------------------------------------------------
@@ -113,10 +160,10 @@ RWStructuredBuffer<matrix> aFinal : register(u0);
 
 StructuredBuffer<matrix> instanceTransforms : register(t0, space2);
 
-Texture2D gBufferRT0 : register(t4); // BaseColor + Metallic
-Texture2D gBufferRT1 : register(t5); // Normal + Roughness
-Texture2D gBufferRT2 : register(t6); // Emission + AO
-Texture2D depthBuffer : register(t7); // Depth
+Texture2D gBufferRT0 : register(t4);    // BaseColor + Metallic
+Texture2D gBufferRT1 : register(t5);    // Normal + Roughness
+Texture2D gBufferRT2 : register(t6);    // Emission + AO
+Texture2D depthBuffer : register(t7);   // Depth
 Texture2DArray shadowMapArray : register(t8);
 Texture2D ssaoTexture : register(t9);
 
@@ -127,12 +174,15 @@ Texture2D ssaoDepth : register(t1, space4);
 Texture2D ssaoNoise : register(t2, space4);
 Texture2D ssaoResult : register(t3, space4);
 
+Texture3D bindlessTextures3D[] : register(t0, space5);
+
 //-------------------------------------------------------
 // SAMPLERS
 //-------------------------------------------------------
 
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
+SamplerState lutLinearSampler : register(s2);
 
 //-------------------------------------------------------
 // INDEXES

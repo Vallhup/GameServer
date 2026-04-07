@@ -23,6 +23,8 @@
 #include <queue>
 #include <utility>
 #include <fstream>
+#include <functional>
+#include <float.h>
 using namespace std;
 
 #include "d3dx12.h"
@@ -108,6 +110,7 @@ inline XMINT2 WinSize;
 constexpr int SWAP_CHAIN_BUFFER_COUNT = 2;
 constexpr float HEIGHTMAP_SCALE = 3.0f;
 constexpr float HEIGHT_OFFSET = 0.12f;
+constexpr size_t CONSTANT_BUFFER_ALIGNMENT = 256;
 
 struct Vertex
 {

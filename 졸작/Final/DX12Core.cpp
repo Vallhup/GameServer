@@ -11,6 +11,8 @@
 #include "LightManager.h"
 #include "FroxelManager.h"
 #include "SSAO.h"
+#include "LookUpTextures.h"
+#include "Material.h"
 
 void DX12Core::Initialize(HWND hwnd)
 {
@@ -25,18 +27,22 @@ void DX12Core::Initialize(HWND hwnd)
 	frameCB = make_unique<UploadBuffer>();
 	sceneCB = make_unique<UploadBuffer>();
 	fogCB = make_unique<UploadBuffer>();
+	volumetricFogCB = make_unique<UploadBuffer>();
 
 	shadowMgr = make_unique<ShadowMappingManager>();
 	rtMgr = make_unique<RenderTargets>();
 	lightMgr = make_unique<LightManager>();
 	froxelMgr = make_unique<FroxelManager>();
 	ssaoMgr = make_unique<SSAO>();
+	lutMgr = make_unique<LookUpTextures>();
 
 	rootSig->Initialize(GetDevice());
 	shader->InitializeAllShaders(GetDevice(), GetRootSig()->Get());
 	frameCB->Initialize(GetDevice(), sizeof(FrameConstants));
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
 	fogCB->Initialize(GetDevice(), sizeof(FogConstants));
+	volumetricFogCB->Initialize(GetDevice(), sizeof(VolumetricFogConstants));
+	volumetricFogCB->CopyData(&volumetricFogData, sizeof(VolumetricFogConstants));
 
 	shadowMgr->Initialize(GetDevice());
 	rtMgr->Initialize(GetDevice(), shadowMgr.get());
@@ -44,6 +50,9 @@ void DX12Core::Initialize(HWND hwnd)
 	froxelMgr->Initialize(GetDevice());
 	ssaoMgr->Initialize(GetDevice(), GetGraphicsCmdList(), GetRenderTargetMgr());
 	rtMgr->AddSsaoSRV(GetDevice(), ssaoMgr->GetSsaoBlurRT());
+
+	Material::InitializeBindlessSystem(GetDevice());
+	lutMgr->Initialize(GetDevice(), GetGraphicsCmdList());
 }
 
 void DX12Core::Update()
@@ -128,9 +137,15 @@ void DX12Core::BeginForwardPass()
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(4, lightMgr->GetForwardLightCB()->GetGPUVirtualAddress());
 
-	/*FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
-	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
-	cmdList->SetGraphicsRootConstantBufferView(14, GetFogCB()->GetGPUVirtualAddress());*/
+	// Volumetric Fogì— í•„ìš”í•œ cbuffer ë°”ì¸ë”©
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(22, GetVolumetricFogCB()->GetGPUVirtualAddress());
+
+	// Shadow Map SRV ë°”ì¸ë”© (t4-t9 í…Œì´ë¸”, Root Index 13)
+	ID3D12DescriptorHeap* heaps[] = { rtMgr->GetDeferredSRVHeap() };
+	deviceCtx->GetGraphicsCmdList()->SetDescriptorHeaps(1, heaps);
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootDescriptorTable(13, rtMgr->GetDeferredSRVHeap()->GetGPUDescriptorHandleForHeapStart());
 
 	//OutputDebugStringA("Forward pass started\n");
 }
@@ -201,7 +216,7 @@ void DX12Core::BeginSsaoPass()
 		firstFrame = false;
 	}
 
-	// AI ÄÚµåÀÓ ÀÌ ¾Æ·¡
+	// AI ì½”ë“œìž„ ì´ ì•„ëž˜
 	// Half resolution viewport
 	D3D12_VIEWPORT ssaoViewport = {};
 	ssaoViewport.Width = WinSize.x / 2.0f;
@@ -235,7 +250,7 @@ void DX12Core::BeginSsaoPass()
 	// Draw fullscreen quad
 	deviceCtx->GetGraphicsCmdList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceCtx->GetGraphicsCmdList()->DrawInstanced(6, 1, 0, 0);
-	// ¿©±â±îÁö
+	// ì—¬ê¸°ê¹Œì§€
 }
 
 void DX12Core::EndSsaoPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
@@ -342,9 +357,8 @@ void DX12Core::BeginLightingPass()
 
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootDescriptorTable(13, rtMgr->GetDeferredSRVHeap()->GetGPUDescriptorHandleForHeapStart());
 
-	/*FogConstants fog = { { 0.5f, 0.5f, 0.5f, 1.0f }, 2.0f, 3.5f, 0.0f, 20.0f, 6.0f, {0, 0, 0} };
-	GetFogCB()->CopyData(&fog, sizeof(FogConstants));
-	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(14, GetFogCB()->GetGPUVirtualAddress());*/
+	// Volumetric Fog CB ë°”ì¸ë”© (b11, Root Index 22)
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(22, GetVolumetricFogCB()->GetGPUVirtualAddress());
 
 	//OutputDebugStringA("Lighting Pass started\n");
 }
@@ -479,6 +493,16 @@ UploadBuffer* DX12Core::GetSceneCB() const
 UploadBuffer* DX12Core::GetFogCB() const
 {
 	return fogCB.get();
+}
+
+UploadBuffer* DX12Core::GetVolumetricFogCB() const
+{
+	return volumetricFogCB.get();
+}
+
+void DX12Core::UpdateVolumetricFog()
+{
+	volumetricFogCB->CopyData(&volumetricFogData, sizeof(VolumetricFogConstants));
 }
 
 void DX12Core::SetPlayerPosForShadow(const XMFLOAT3& pos)

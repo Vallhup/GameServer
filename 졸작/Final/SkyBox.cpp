@@ -9,6 +9,7 @@
 void SkyBox::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
 {
 	InitializeMesh(device, cmdList);
+	InitializeSkyBoxCB(device);
 
 	skyboxCubeMapIndex = Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox.dds");
 
@@ -25,6 +26,7 @@ void SkyBox::RenderSkyBox(DX12Core& core, ID3D12GraphicsCommandList* cmdList)
 	cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Skybox));
 	cmdList->SetGraphicsRootSignature(core.GetRootSig()->Get());
 	cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(20, skyboxCB->GetGPUVirtualAddress());
 
 	Material::BindBindlessResources(cmdList);
 
@@ -56,5 +58,22 @@ void SkyBox::InitializeMesh(ID3D12Device* device, ID3D12GraphicsCommandList* cmd
 
 	skyboxMesh = make_shared<VertexIndexBuffer>();
 	skyboxMesh->Initialize(device, cmdList, vertices, indices);
+}
+
+void SkyBox::InitializeSkyBoxCB(ID3D12Device* device)
+{
+	skyboxCB = make_unique<UploadBuffer>();
+	skyboxCB->Initialize(device, sizeof(SkyboxConstants));
+
+	skyboxData.skyTintColor = { 1.0f, 1.0f, 1.0f };
+	skyboxData.skyExposure = 1.0f;
+	skyboxData.skySaturation = 1.0f;
+
+	skyboxCB->CopyData(&skyboxData, sizeof(SkyboxConstants));
+}
+
+void SkyBox::UpdateConstants()
+{
+	skyboxCB->CopyData(&skyboxData, sizeof(SkyboxConstants));
 }
 

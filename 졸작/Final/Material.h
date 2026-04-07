@@ -19,10 +19,11 @@ class Material
 {
 public:
     void LoadFromMaterialData(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
-        const MaterialData& matData);
+        const MaterialData& matData, const wstring& texBasePath = L"../Assets/FBXModel/");
 
     static UINT RegisterCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
     static UINT RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);
+    static UINT RegisterLUT(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);
 
     UINT GetMaterialIndex() const { return materialIndex; }
 
@@ -40,8 +41,11 @@ private:
     static unique_ptr<UploadBuffer> materialBuffer;
     static vector<MaterialGPUData> materials;
     static vector<unique_ptr<Texture>> allTextures;  
+
     static UINT nextTextureIndex;
     static UINT nextCubeMapIndex;
+    static UINT nextTexture3DIndex;
+
     static UINT descriptorSize;
     static bool bufferDirty;
     static unordered_map<wstring, UINT> texturePathToIndex;

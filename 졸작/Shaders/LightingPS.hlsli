@@ -77,7 +77,8 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 
     float ssao = ssaoTexture.Sample(linearSampler, input.uv).r;
     ssao = lerp(1.0, ssao, 0.5);
-    float finalAO = ao * ssao;
+    
+    float finalAO = ao * ssao;  // 추후에 어떻게 진행할지 생각 필요, 다찬이와 논의
     
     float3 iblAmbient = CalculateIBL(
         N, V, baseColor, metallic, roughness, finalAO,
@@ -87,13 +88,24 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
         linearSampler
     );
 
-    iblAmbient *= shadow;
+    iblAmbient *= lerp(0.6, 1.0, shadow);
     
     float3 finalColor = directLight + iblAmbient + emission;
 
-    //finalColor = ApplyVolumetricFog(finalColor, worldPos, input.uv, cameraPosition);
+    finalColor = ApplyVolumetricFog(finalColor, worldPos, input.uv, cameraPosition);
 
-    finalColor = DarkFantasyToneMapping(finalColor);
+    finalColor = DarkFantasyToneMapping(finalColor, saturationFactor);
+    
+    if (lutIndex != 0xFFFFFFFF)
+    {
+        if (lutBlendFactor >= 1.0)
+            finalColor = ApplyLUT(bindlessTextures3D[lutIndex], lutLinearSampler, finalColor);
+        else
+            finalColor = ApplyLUTCircle(
+          bindlessTextures3D[lutIndex],
+          bindlessTextures3D[prevLutIndex],
+          lutLinearSampler, finalColor, lutBlendFactor, input.uv);
+    }
     
     // Don't need to apply gamma correction
     // R8G8B8A8_UNORM_SRGB automatically appies it.
