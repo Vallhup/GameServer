@@ -39,7 +39,7 @@ void Camera::Initialize(HWND hWnd)
 
 void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
 {
-    desiredTargetPos = { pos.x, pos.y + 1.0f, pos.z };
+    desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };
 
     desiredDistance = currentDistance = 4.5f;
     float radYaw = XMConvertToRadians(yaw);
@@ -385,7 +385,7 @@ void Camera::SetLutPreset(UINT idx, float saturation)
 
 void Camera::SetCameraPosition(const XMFLOAT3& pos)
 {
-    desiredTargetPos = { pos.x, pos.y + 1.0f, pos.z };
+    desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };
 }
 
 void Camera::SetCursor()
