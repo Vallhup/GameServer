@@ -279,6 +279,10 @@ exit 0</Command>
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
     <ClCompile Include="Water.cpp" />
+    <ClCompile Include="추후에PlazaScene에 들어갈 데이터.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />

@@ -15,7 +15,7 @@ void PlazaScene::Reset()
 	gameObjects.clear();
 	knight.reset();
 
-	OutputDebugStringA("TownScene Data has been deleted!! \n----------------------------------------\n");
+	OutputDebugStringA("PlazaScene Data has been deleted!! \n----------------------------------------\n");
 }
 
 void PlazaScene::InitializeSceneObjectPools()

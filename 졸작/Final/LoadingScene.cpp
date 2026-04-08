@@ -123,8 +123,22 @@ void LoadingScene::LoadSelectSceneResources()
 
 void LoadingScene::LoadPlazaSceneResources()
 {
-	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
-	if (controller) controller->SetProgress(1.0f);
+	InstanceLoader mapLoader;
+	mapLoader.Load(L"../Assets/FBXModel/PlazaMap/MapInstanceData.txt");
+
+	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
+		if (instanceData.empty()) continue;
+
+		wstring path = L"../Assets/FBXModel/PlazaMap/" + wstring(modelName.begin(), modelName.end());
+		if (!filesystem::exists(path + L"_0.mesh")) continue;
+
+		loadTasks.push([this, path, instanceData]() {
+			CreateAndBatchObjects(path, instanceData, sceneBatches[SceneType::Final]);
+			});
+	}
+
+	totalTasks = loadTasks.size();
+
 	coreRef->SetLoadingMode(true);
 }
 
@@ -173,7 +187,7 @@ void LoadingScene::LoadSecondBattleSceneResources()
 void LoadingScene::LoadFinalBattleSceneResources()
 {
 	InstanceLoader mapLoader;
-	mapLoader.Load(L"../Assets/FBXModel/GothicMap/MapInstanceData.txt", L"../Assets/FBXModel/CastleMap/CullingData.txt");
+	mapLoader.Load(L"../Assets/FBXModel/GothicMap/MapInstanceData.txt");
 
 	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
 		if (instanceData.empty()) continue;

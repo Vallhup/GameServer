@@ -235,6 +235,9 @@
     <ClCompile Include="ParrySparkEffect.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="추후에PlazaScene에 들어갈 데이터.cpp">
+      <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">

@@ -14,7 +14,7 @@ struct InstanceData
 
 class InstanceLoader {
 public:
-	void Load(const wstring& fileName, const wstring& cullingFileName);
+	void Load(const wstring& fileName, const wstring& cullingFileName = L"");
 
 	const unordered_map<string, vector<InstanceData>>& GetAllData() const { return instanceData; }
 
