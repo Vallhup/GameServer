@@ -11,6 +11,8 @@ public:
 	void Render(SpriteBatch* batch) override;
 
 private:
-	shared_ptr<ImageUI> backgroundImage;
+	shared_ptr<ImageUI> background;
+	shared_ptr<ImageUI> charImages[3];
+	shared_ptr<ImageUI> hoverOverlay;
 };
 

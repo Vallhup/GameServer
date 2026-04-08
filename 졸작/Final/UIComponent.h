@@ -15,6 +15,9 @@ public:
 	void SetPosition(float x, float y);
 	void SetScale(float scl);
 
+	float GetPosX() const { return posX; }
+	float GetPosY() const { return posY; }
+
 protected:
 	UIManager* uiManager = nullptr;
 

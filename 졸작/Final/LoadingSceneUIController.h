@@ -13,12 +13,14 @@ public:
 
 	void SetProgress(float progress);
 	void SetTargetScene(SceneType type);
+	void Reset();
 
 private:
 	shared_ptr<ImageUI> mainImage;
-	shared_ptr<ImageUI> loadBarBackImage;
+	shared_ptr<ImageUI> loadBarBack;
 	shared_ptr<ImageUI> loadBar;
 	shared_ptr<ImageUI> loadArrow;
+	shared_ptr<ImageUI> pab;
 
 	float loadProgress = 0.0f;
 	float loadBarMaxWidth = 0.0f;

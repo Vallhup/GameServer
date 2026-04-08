@@ -40,6 +40,7 @@ void LoadingScene::InitializeLogic()
 	OutputDebugStringA("----------------------------------------\nLoadingScene Data has been created!! \n");
 
 	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
+	controller->Reset();
 	controller->SetTargetScene(targetScene);
 
 	switch (targetScene)

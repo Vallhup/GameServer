@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "DX12Core.h"
 #include "StartSceneUIController.h"
+#include "SelectSceneUIController.h"
 #include "GameSceneUIController.h"
 #include "LoadingSceneUIController.h"
 
@@ -55,6 +56,13 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"HpBar", L"../Assets/UI/Textures/HpBar.png", core, resourceUpload);
 	RegisterUITexture(L"HpBar2", L"../Assets/UI/Textures/HpBar2.png", core, resourceUpload);
 	RegisterUITexture(L"StaminaBar", L"../Assets/UI/Textures/StaminaBar.png", core, resourceUpload);
+	RegisterUITexture(L"PressAnyButton", L"../Assets/UI/Textures/PRB.png", core, resourceUpload);
+
+	RegisterUITexture(L"CharBackground", L"../Assets/UI/Textures/charBackground.png", core, resourceUpload);
+	RegisterUITexture(L"CharA", L"../Assets/UI/Textures/charA.png", core, resourceUpload);
+	RegisterUITexture(L"CharB", L"../Assets/UI/Textures/charB.png", core, resourceUpload);
+	RegisterUITexture(L"CharC", L"../Assets/UI/Textures/charC.png", core, resourceUpload);
+	RegisterUITexture(L"CharHover", L"../Assets/UI/Textures/charHover.png", core, resourceUpload);
 
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);			
 
@@ -67,7 +75,7 @@ void UIManager::Initialize(DX12Core& core)
 void UIManager::Update(float deltaTime)
 {
 	auto it = controllers.find(currentScene);
-	if (it != controllers.end())
+	if (it != controllers.end()) 
 		it->second->Update(deltaTime);
 }
 
@@ -141,8 +149,17 @@ void UIManager::RegisterControllers()
 	controllers[SceneType::Title] = make_unique<StartSceneUIController>();
 	controllers[SceneType::Title]->Init(this);
 
+	controllers[SceneType::Select] = make_unique<SelectSceneUIController>();
+	controllers[SceneType::Select]->Init(this);
+
 	controllers[SceneType::Village] = make_unique<GameSceneUIController>();
 	controllers[SceneType::Village]->Init(this);
+
+	controllers[SceneType::Castle] = make_unique<GameSceneUIController>();
+	controllers[SceneType::Castle]->Init(this);
+
+	controllers[SceneType::Final] = make_unique<GameSceneUIController>();
+	controllers[SceneType::Final]->Init(this);
 
 	controllers[SceneType::Loading] = make_unique<LoadingSceneUIController>();
 	controllers[SceneType::Loading]->Init(this);
