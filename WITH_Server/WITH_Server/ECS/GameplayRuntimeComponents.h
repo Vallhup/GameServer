@@ -209,7 +209,7 @@ struct SkeletalCombatColliderComp : Component
 
 struct WorldTransformComp : Component
 {
-	XMFLOAT3 position{ 156.0f, 50.0f, 650.0f };
+	XMFLOAT3 position{ 508.167800f, 5.508454f, 481.655600f };
 	float yawRad{ 0.0f };
 };
 

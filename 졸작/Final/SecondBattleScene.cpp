@@ -49,10 +49,6 @@ void SecondBattleScene::InitializeLogic()
 		activeCharacters[myPlayer->GetId()] = myPlayer;
 		gameObjects.push_back(myPlayer);
 
-		// Castle 맵 초기 위치로 재설정
-		auto transform = myPlayer->GetComponent<Transform>();
-		transform->SetInitPosition(333.9609f, 67.95122f, 234.2314f);
-
 		IMGUI.SetMyPlayer(myPlayer.get());
 		OutputDebugStringA("SecondBattle: MyPlayer loaded from shared!\n");
 	}
@@ -233,9 +229,9 @@ void SecondBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 
 void SecondBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 {
-	// First -> Second 맵 오프셋 (임시)
-	constexpr float offsetX = 323.0f;
-	constexpr float offsetZ = 208.0f;
+	// 서버 -> Second 맵 오프셋 (임시)
+	constexpr float offsetX = -185.0f;
+	constexpr float offsetZ = -275.0f;
 
 	NetId nid{ move.netid() };
 	int id = nid.GetId();
@@ -244,8 +240,8 @@ void SecondBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 	{
 		auto transform = it->second->GetComponent<Transform>();
 
-		float worldX = move.x() + offsetX - 156.0f;	// move.x 대략 163	이거 뺀 값은 첫 씬 좌표 (서버에서 init하는)
-		float worldZ = move.z() + offsetZ - 650.0f;	// move.z 대략 643
+		float worldX = move.x() + offsetX;
+		float worldZ = move.z() + offsetZ;
 		transform->SetPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
 		transform->SetTargetRotation(move.yaw());
 	}

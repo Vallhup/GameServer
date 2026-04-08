@@ -181,7 +181,7 @@ namespace
 			}
 
 			SpawnAIEntity(*_framework, runtime, CharacterId::FinalBoss,
-				*_bootstrapWorldId, 156.0f, 650.0f);
+				*_bootstrapWorldId, 508.167800f, 481.655600f);
 			return true;
 		}
 

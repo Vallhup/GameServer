@@ -5,7 +5,6 @@
 #include "Engine.h"
 #include "UIManager.h"
 #include "LoadingSceneUIController.h"
-#include "DX12Core.h"
 #include "SceneManager.h"
 
 LoadingScene::~LoadingScene() = default;
@@ -45,9 +44,6 @@ void LoadingScene::InitializeLogic()
 
 	switch (targetScene)
 	{
-	case SceneType::Select:
-		LoadSelectSceneResources();
-		break;
 	case SceneType::Plaza:
 		LoadPlazaSceneResources();
 		break;
@@ -114,13 +110,6 @@ void LoadingScene::RequestSceneChange()
 {
 }
 
-void LoadingScene::LoadSelectSceneResources()
-{
-	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
-	if (controller) controller->SetProgress(1.0f);
-	coreRef->SetLoadingMode(true);
-}
-
 void LoadingScene::LoadPlazaSceneResources()
 {
 	InstanceLoader mapLoader;
@@ -133,7 +122,7 @@ void LoadingScene::LoadPlazaSceneResources()
 		if (!filesystem::exists(path + L"_0.mesh")) continue;
 
 		loadTasks.push([this, path, instanceData]() {
-			CreateAndBatchObjects(path, instanceData, sceneBatches[SceneType::Final]);
+			CreateAndBatchObjects(path, instanceData, sceneBatches[SceneType::Plaza]);
 			});
 	}
 

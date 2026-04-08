@@ -2,7 +2,6 @@
 #include "SelectScene.h"
 #include "SceneManager.h"
 #include "Input.h"
-#include "Material.h"
 #include "MainCharacter.h"
 #include "Animator.h"
 

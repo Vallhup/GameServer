@@ -152,6 +152,9 @@ void UIManager::RegisterControllers()
 	controllers[SceneType::Select] = make_unique<SelectSceneUIController>();
 	controllers[SceneType::Select]->Init(this);
 
+	controllers[SceneType::Plaza] = make_unique<GameSceneUIController>();
+	controllers[SceneType::Plaza]->Init(this);
+
 	controllers[SceneType::Village] = make_unique<GameSceneUIController>();
 	controllers[SceneType::Village]->Init(this);
 
