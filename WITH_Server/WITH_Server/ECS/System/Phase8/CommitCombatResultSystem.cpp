@@ -35,6 +35,9 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		int32_t hpDelta = 0;
 		int32_t staminaDelta = 0;
 		int32_t poiseDelta = 0;
+		bool guardResolved = false;
+		std::vector<Entity> parriedAttackers;
+		const CombatStatStateComp previousStats = stats;
 		for (const PendingCombatInteractionRecord& interaction :
 			result.receivedInteractions)
 		{
@@ -69,7 +72,45 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			}
 			else if (interaction.resultType == CombatResolveResultType::Guard)
 			{
-				staminaDelta -= std::max(0, staminaDamage);
+				guardResolved = true;
+				float chipDamage = static_cast<float>(damage);
+				float staminaDamageScale = 1.0f;
+				if (interaction.guardEffect.has_value())
+				{
+					chipDamage =
+						chipDamage *
+						interaction.guardEffect->chipDamageRatio *
+						std::max(
+							0.0f,
+							1.0f - interaction.guardEffect->damageReductionRatio);
+					staminaDamageScale =
+						interaction.guardEffect->staminaDamageMultiplier;
+				}
+
+				const int32_t guardedHpDamage = static_cast<int32_t>(std::lround(
+					chipDamage * 100.0f / std::max(1, 100 + stats.defense)));
+				const int32_t guardedStaminaDamage = static_cast<int32_t>(std::lround(
+					static_cast<float>(staminaDamage) * staminaDamageScale));
+				hpDelta -= std::max(0, guardedHpDamage);
+				staminaDelta -= std::max(0, guardedStaminaDamage);
+			}
+			else if (interaction.resultType == CombatResolveResultType::Parry)
+			{
+				if (std::find(
+					parriedAttackers.begin(),
+					parriedAttackers.end(),
+					interaction.sourceEntity) == parriedAttackers.end())
+				{
+					parriedAttackers.push_back(interaction.sourceEntity);
+				}
+
+				if (interaction.parryEffect.has_value() &&
+					interaction.parryEffect->grantBuffId.has_value() &&
+					!result.pendingParryBuffId.has_value())
+				{
+					result.pendingParryBuffId =
+						interaction.parryEffect->grantBuffId;
+				}
 			}
 		}
 
@@ -86,10 +127,20 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			0,
 			stats.maxPoise);
 
-		if (DirtyFlagsComp* dirty =
-			ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
+		if (guardResolved &&
+			stats.currentHp > 0 &&
+			stats.currentStamina <= 0)
 		{
-			dirty->MarkDirty(WorldDirtyType::Stat);
+			result.reactionKind = CombatReactionKind::GuardBreak;
+		}
+
+		if (DidStatsChange(previousStats, stats))
+		{
+			if (DirtyFlagsComp* dirty =
+				ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
+			{
+				dirty->MarkDirty(WorldDirtyType::Stat);
+			}
 		}
 
 		// AI 피격 반응 기록
@@ -117,16 +168,28 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			}
 		}
 
-		if (stats.currentHp <= 0)
+		const uint64_t frameIndex = ctx.runtime.FrameIndex();
+		for (Entity parriedAttacker : parriedAttackers)
 		{
-			continue;
-		}
+			if (HasBlockingPendingState(ctx.ecs, parriedAttacker))
+			{
+				continue;
+			}
 
-		const SpawnTypeComp* spawnType =
-			ctx.ecs.GetComponent<SpawnTypeComp>(entity);
-		if (spawnType == nullptr)
-		{
-			continue;
+			ActionInterruptQueueComp* parriedInterruptQueue =
+				ctx.ecs.GetMutableComponent<ActionInterruptQueueComp>(
+					parriedAttacker);
+			if (parriedInterruptQueue == nullptr)
+			{
+				continue;
+			}
+
+			parriedInterruptQueue->events.push_back(ActionInterruptEvent{
+				.causeType = ActionInterruptCauseType::OnParried,
+				.instigator = entity,
+				.frameIndex = frameIndex,
+				.priority = 500
+			});
 		}
 
 		ActionInterruptQueueComp* interruptQueue =
@@ -136,8 +199,16 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
-		const uint64_t frameIndex = ctx.runtime.FrameIndex();
-		if (stats.currentPoise <= 0)
+		if (stats.currentHp <= 0)
+		{
+			interruptQueue->events.push_back(ActionInterruptEvent{
+				.causeType = ActionInterruptCauseType::OnHpZero,
+				.instigator = result.reactionSource,
+				.frameIndex = frameIndex,
+				.priority = 1000
+			});
+		}
+		else if (stats.currentPoise <= 0)
 		{
 			interruptQueue->events.push_back(ActionInterruptEvent{
 				.causeType = ActionInterruptCauseType::OnParried,
@@ -180,4 +251,14 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 const SystemMeta& CommitCombatResultSystem::Meta() const
 {
 	return kMeta;
+}
+
+bool CommitCombatResultSystem::DidStatsChange(
+	const CombatStatStateComp& previousStats,
+	const CombatStatStateComp& currentStats) noexcept
+{
+	return
+		previousStats.currentHp != currentStats.currentHp ||
+		previousStats.currentStamina != currentStats.currentStamina ||
+		previousStats.currentPoise != currentStats.currentPoise;
 }

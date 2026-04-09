@@ -11,14 +11,25 @@ const SystemMeta ResolveDeathAndDespawnSystem::kMeta =
 
 void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, stats] : ctx.ecs.View<CombatStatStateComp>())
+	for (auto [entity, stats, actionState] :
+		ctx.ecs.View<CombatStatStateComp, ActionStateComp>())
 	{
 		if (stats.currentHp > 0)
 		{
 			continue;
 		}
 
-		if (!ctx.ecs.HasComponent<PendingDespawnTag>(entity))
+		const ActionDef* actionDef =
+			IsActionActive(actionState)
+			? FindActionDef(actionState.actionId)
+			: nullptr;
+		const bool deadActionFinished =
+			actionDef != nullptr &&
+			actionDef->kind == ActionKind::Dead &&
+			actionState.elapsedSec >= actionDef->duration;
+
+		if (deadActionFinished &&
+			!ctx.ecs.HasComponent<PendingDespawnTag>(entity))
 		{
 			ctx.runtime.DeferredAddComponent<PendingDespawnTag>(
 				entity,

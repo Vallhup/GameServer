@@ -177,6 +177,7 @@
     <ClCompile Include="ECS\System\Phase0_AI\AIPerceptionSystem.cpp" />
     <ClCompile Include="ECS\System\Phase1\ApplyAICommandSystem.cpp" />
     <ClCompile Include="ECS\System\Phase1\ApplyPlayerCommandSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase2\AdvanceActionTimelineSystem.cpp" />
     <ClCompile Include="ECS\System\Phase2\ResolveActionStateSystem.cpp" />
     <ClCompile Include="ECS\System\Phase2\ResolveLocomotionStateSystem.cpp" />
     <ClCompile Include="ECS\System\Phase3\FitSkeletalCombatColliderSystem.cpp" />
@@ -260,6 +261,7 @@
     <ClInclude Include="ECS\System\Phase0_AI\AIPerceptionSystem.h" />
     <ClInclude Include="ECS\System\Phase1\ApplyAICommandSystem.h" />
     <ClInclude Include="ECS\System\Phase1\ApplyPlayerCommandSystem.h" />
+    <ClInclude Include="ECS\System\Phase2\AdvanceActionTimelineSystem.h" />
     <ClInclude Include="ECS\System\Phase2\ResolveActionStateSystem.h" />
     <ClInclude Include="ECS\System\Phase2\ResolveLocomotionStateSystem.h" />
     <ClInclude Include="ECS\System\Phase3\FitSkeletalCombatColliderSystem.h" />

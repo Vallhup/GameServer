@@ -32,6 +32,7 @@ void ResolveCombatColliderActivationSystem::Execute(SystemContext& ctx)
 		activation.hasAttackWindow =
 			actionDef != nullptr &&
 			IsWindowActive(*actionDef, CombatWindowType::Attack, normalizedTime);
+		//printf("[ResolveCombatColliderActivationSystem] hasAttackWindow: %d\n", activation.hasAttackWindow);
 		activation.hasParryWindow =
 			actionDef != nullptr &&
 			IsWindowActive(*actionDef, CombatWindowType::Parry, normalizedTime);

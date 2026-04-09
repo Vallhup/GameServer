@@ -197,6 +197,7 @@ struct ActionTimelineAdvanceComp : Component
 	uint32_t actionInstanceId{ 0 };
 	float prevElapsedSec{ 0.0f };
 	float currElapsedSec{ 0.0f };
+	bool startedThisFrame{ false };
 	std::vector<PendingActionTimelineEvent> events;
 };
 

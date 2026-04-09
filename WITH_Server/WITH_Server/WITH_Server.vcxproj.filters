@@ -93,6 +93,9 @@
     <ClCompile Include="ECS\System\Phase2\ResolveActionStateSystem.cpp">
       <Filter>ECS\System\Phase2</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\Phase2\AdvanceActionTimelineSystem.cpp">
+      <Filter>ECS\System\Phase2</Filter>
+    </ClCompile>
     <ClCompile Include="ECS\System\Phase2\ResolveLocomotionStateSystem.cpp">
       <Filter>ECS\System\Phase2</Filter>
     </ClCompile>
@@ -328,6 +331,9 @@
       <Filter>ECS\System\Phase1</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase2\ResolveActionStateSystem.h">
+      <Filter>ECS\System\Phase2</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase2\AdvanceActionTimelineSystem.h">
       <Filter>ECS\System\Phase2</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase2\ResolveLocomotionStateSystem.h">

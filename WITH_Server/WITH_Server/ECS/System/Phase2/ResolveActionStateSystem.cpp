@@ -76,6 +76,11 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 				decision))
 		{
 			ApplyTransition(actionState, decision);
+			ConsumeOnRequestResourceCosts(ctx, entity, decision);
+			if (IsActionActive(actionState))
+			{
+				PrepareStartedActionAdvance(actionState, advance);
+			}
 			if (ActionInterruptQueueComp* mutableInterruptQueue =
 				ctx.ecs.GetMutableComponent<ActionInterruptQueueComp>(entity))
 			{
@@ -109,11 +114,16 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 				decision))
 			{
 				ApplyTransition(actionState, decision);
+				ConsumeOnRequestResourceCosts(ctx, entity, decision);
 				SetActionDirectionOnStart(
 					actionState,
 					decision,
 					locomotionState,
 					transform);
+				if (IsActionActive(actionState))
+				{
+					PrepareStartedActionAdvance(actionState, advance);
+				}
 				ClearActionInput(input);
 				continue;
 			}
@@ -128,6 +138,11 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 			if (decision.transition)
 			{
 				ApplyTransition(actionState, decision);
+				ConsumeOnRequestResourceCosts(ctx, entity, decision);
+				if (IsActionActive(actionState))
+				{
+					PrepareStartedActionAdvance(actionState, advance);
+				}
 			}
 
 			ClearActionInput(input);
@@ -145,11 +160,16 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 			decision))
 		{
 			ApplyTransition(actionState, decision);
+			ConsumeOnRequestResourceCosts(ctx, entity, decision);
 			SetActionDirectionOnStart(
 				actionState,
 				decision,
 				locomotionState,
 				transform);
+			if (IsActionActive(actionState))
+			{
+				PrepareStartedActionAdvance(actionState, advance);
+			}
 		}
 
 		ClearActionInput(input);
@@ -294,7 +314,11 @@ bool ResolveActionStateSystem::TryResolveCancelTransition(
 	TransitionDecision& outDecision)
 {
 	const std::vector<RequestCandidate> candidates =
-		BuildRequestCandidates(profileService, characterId, input);
+		BuildRequestCandidates(
+			profileService,
+			characterId,
+			input,
+			false);
 	if (candidates.empty())
 	{
 		return false;
@@ -338,6 +362,7 @@ bool ResolveActionStateSystem::TryResolveCancelTransition(
 
 	outDecision.transition = true;
 	outDecision.nextActionId = bestCandidate.actionId;
+	outDecision.consumeOnRequestCosts = true;
 	outDecision.preserveDirection = true;
 	outDecision.directionX = bestCandidate.directionX;
 	outDecision.directionZ = bestCandidate.directionZ;
@@ -357,7 +382,11 @@ bool ResolveActionStateSystem::TryResolveIdleRequestTransition(
 	TransitionDecision& outDecision)
 {
 	const std::vector<RequestCandidate> candidates =
-		BuildRequestCandidates(profileService, characterId, input);
+		BuildRequestCandidates(
+			profileService,
+			characterId,
+			input,
+			true);
 	for (const RequestCandidate& candidate : candidates)
 	{
 		if (candidate.actionId == ActionId::None ||
@@ -369,6 +398,7 @@ bool ResolveActionStateSystem::TryResolveIdleRequestTransition(
 
 		outDecision.transition = true;
 		outDecision.nextActionId = candidate.actionId;
+		outDecision.consumeOnRequestCosts = true;
 		outDecision.preserveDirection = true;
 		outDecision.directionX = candidate.directionX;
 		outDecision.directionZ = candidate.directionZ;
@@ -381,7 +411,7 @@ bool ResolveActionStateSystem::TryResolveIdleRequestTransition(
 }
 
 bool ResolveActionStateSystem::TryResolveEndPolicyTransition(
-	ActionStateComp& actionState,
+	const ActionStateComp& actionState,
 	const ActionDef& actionDef,
 	const ActorInputComp& input,
 	ActionTimelineAdvanceComp& advance,
@@ -396,8 +426,7 @@ bool ResolveActionStateSystem::TryResolveEndPolicyTransition(
 		return true;
 	}
 
-	AdvanceActiveAction(actionState, actionDef, advance, deltaTimeSec);
-	CollectTimelineEvents(actionDef, actionState, advance);
+	PrepareTimelineAdvance(actionState, actionDef, advance, deltaTimeSec);
 
 	if (actionDef.normalizedPolicy == ActionNormalizedPolicy::Holdable &&
 		actionDef.endPolicy.endType == ActionEndType::HoldRelease)
@@ -405,7 +434,12 @@ bool ResolveActionStateSystem::TryResolveEndPolicyTransition(
 		return false;
 	}
 
-	if (actionState.elapsedSec < actionDef.duration)
+	if (advance.currElapsedSec < actionDef.duration)
+	{
+		return false;
+	}
+
+	if (actionDef.kind == ActionKind::Dead)
 	{
 		return false;
 	}
@@ -431,6 +465,74 @@ void ResolveActionStateSystem::ApplyTransition(
 	ResetActionDirection(actionState);
 }
 
+void ResolveActionStateSystem::ConsumeOnRequestResourceCosts(
+	SystemContext& ctx,
+	Entity entity,
+	const TransitionDecision& decision)
+{
+	if (!decision.transition || !decision.consumeOnRequestCosts)
+	{
+		return;
+	}
+
+	const ActionDef* actionDef = FindActionDef(decision.nextActionId);
+	if (actionDef == nullptr)
+	{
+		return;
+	}
+
+	CombatStatStateComp* stats =
+		ctx.ecs.GetMutableComponent<CombatStatStateComp>(entity);
+	if (stats == nullptr)
+	{
+		return;
+	}
+
+	bool statDirty = false;
+	for (const ActionResourceCostDef& cost : actionDef->resourceCosts)
+	{
+		if (cost.consumeTiming != ActionResourceConsumeTiming::OnRequest)
+		{
+			continue;
+		}
+
+		const int32_t amount = static_cast<int32_t>(std::lround(cost.amount));
+		switch (cost.type) {
+		case ActionResourceType::Hp:
+		{
+			const int32_t previousHp = stats->currentHp;
+			stats->currentHp =
+				std::clamp(stats->currentHp - amount, 0, stats->maxHp);
+			statDirty = statDirty || previousHp != stats->currentHp;
+			break;
+		}
+
+		case ActionResourceType::Stamina:
+		{
+			const int32_t previousStamina = stats->currentStamina;
+			stats->currentStamina =
+				std::clamp(stats->currentStamina - amount, 0, stats->maxStamina);
+			statDirty =
+				statDirty || previousStamina != stats->currentStamina;
+			break;
+		}
+
+		default:
+			break;
+		}
+	}
+
+	if (!statDirty)
+	{
+		return;
+	}
+
+	if (DirtyFlagsComp* dirty = ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
+	{
+		dirty->MarkDirty(WorldDirtyType::Stat);
+	}
+}
+
 void ResolveActionStateSystem::ClearActionInput(ActorInputComp& input)
 {
 	input.action = {};
@@ -440,7 +542,8 @@ std::vector<ResolveActionStateSystem::RequestCandidate>
 ResolveActionStateSystem::BuildRequestCandidates(
 	const ActionProfileService& profileService,
 	CharacterId characterId,
-	const ActorInputComp& input)
+	const ActorInputComp& input,
+	bool includeHeldGuardRequest)
 {
 	std::vector<RequestCandidate> candidates;
 
@@ -456,30 +559,30 @@ ResolveActionStateSystem::BuildRequestCandidates(
 	}
 
 	ActionRequestSemantic semantic = ActionRequestSemantic::None;
-	if (input.guard.isPressed)
+	switch (input.action.type) {
+	case PlayerActionInputType::LightAttack:
+		semantic = ActionRequestSemantic::LightAttack;
+		break;
+	case PlayerActionInputType::HeavyAttack:
+		semantic = ActionRequestSemantic::HeavyAttack;
+		break;
+	case PlayerActionInputType::Dodge:
+		semantic = ActionRequestSemantic::Dodge;
+		break;
+	case PlayerActionInputType::Parry:
+		semantic = ActionRequestSemantic::Parry;
+		break;
+	case PlayerActionInputType::None:
+	default:
+		semantic = ActionRequestSemantic::None;
+		break;
+	}
+
+	if (semantic == ActionRequestSemantic::None &&
+		includeHeldGuardRequest &&
+		input.guard.isPressed)
 	{
 		semantic = ActionRequestSemantic::GuardStart;
-	}
-	else
-	{
-		switch (input.action.type) {
-		case PlayerActionInputType::LightAttack:
-			semantic = ActionRequestSemantic::LightAttack;
-			break;
-		case PlayerActionInputType::HeavyAttack:
-			semantic = ActionRequestSemantic::HeavyAttack;
-			break;
-		case PlayerActionInputType::Dodge:
-			semantic = ActionRequestSemantic::Dodge;
-			break;
-		case PlayerActionInputType::Parry:
-			semantic = ActionRequestSemantic::Parry;
-			break;
-		case PlayerActionInputType::None:
-		default:
-			semantic = ActionRequestSemantic::None;
-			break;
-		}
 	}
 
 	if (semantic == ActionRequestSemantic::None)
@@ -611,55 +714,54 @@ bool ResolveActionStateSystem::IsHoldReleased(
 		!input.guard.isPressed;
 }
 
-void ResolveActionStateSystem::AdvanceActiveAction(
-	ActionStateComp& actionState,
+float ResolveActionStateSystem::ComputeAdvancedElapsedSec(
+	const ActionStateComp& actionState,
 	const ActionDef& actionDef,
-	ActionTimelineAdvanceComp& advance,
 	double deltaTimeSec)
 {
 	constexpr float kHoldActionElapsedEpsilonSec = 1.0e-4f;
 
-	advance.actionId = actionState.actionId;
-	advance.actionInstanceId = actionState.actionInstanceId;
-	advance.prevElapsedSec = actionState.elapsedSec;
-
-	actionState.elapsedSec += static_cast<float>(deltaTimeSec);
+	float nextElapsedSec =
+		actionState.elapsedSec + static_cast<float>(deltaTimeSec);
 
 	if (actionDef.normalizedPolicy == ActionNormalizedPolicy::Holdable &&
 		actionDef.endPolicy.endType == ActionEndType::HoldRelease)
 	{
 		const float holdElapsedSec =
 			std::max(0.0f, actionDef.duration - kHoldActionElapsedEpsilonSec);
-		actionState.elapsedSec = std::min(actionState.elapsedSec, holdElapsedSec);
+		nextElapsedSec = std::min(nextElapsedSec, holdElapsedSec);
+	}
+	else if (actionDef.kind == ActionKind::Dead)
+	{
+		nextElapsedSec = std::min(nextElapsedSec, actionDef.duration);
 	}
 
-	advance.currElapsedSec = actionState.elapsedSec;
+	return nextElapsedSec;
 }
 
-void ResolveActionStateSystem::CollectTimelineEvents(
+void ResolveActionStateSystem::PrepareTimelineAdvance(
+	const ActionStateComp& actionState,
 	const ActionDef& actionDef,
+	ActionTimelineAdvanceComp& advance,
+	double deltaTimeSec)
+{
+	advance.actionId = actionState.actionId;
+	advance.actionInstanceId = actionState.actionInstanceId;
+	advance.prevElapsedSec = actionState.elapsedSec;
+	advance.currElapsedSec =
+		ComputeAdvancedElapsedSec(actionState, actionDef, deltaTimeSec);
+	advance.startedThisFrame = false;
+}
+
+void ResolveActionStateSystem::PrepareStartedActionAdvance(
 	const ActionStateComp& actionState,
 	ActionTimelineAdvanceComp& advance)
 {
-	const float duration = std::max(0.001f, actionDef.duration);
-	for (const ActionEventDef& eventDef : actionDef.events)
-	{
-		const float eventTimeSec = eventDef.timeNormalized * duration;
-		if (eventTimeSec < advance.prevElapsedSec ||
-			eventTimeSec >= advance.currElapsedSec)
-		{
-			continue;
-		}
-
-		advance.events.push_back(PendingActionTimelineEvent{
-			eventDef.type,
-			eventDef.timeNormalized,
-			eventDef.payloadId,
-			eventDef.conditionType,
-			actionState.actionId,
-			actionState.actionInstanceId
-		});
-	}
+	advance.actionId = actionState.actionId;
+	advance.actionInstanceId = actionState.actionInstanceId;
+	advance.prevElapsedSec = 0.0f;
+	advance.currElapsedSec = 0.0f;
+	advance.startedThisFrame = true;
 }
 
 void ResolveActionStateSystem::SetActionDirectionOnStart(

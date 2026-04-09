@@ -5,6 +5,7 @@
 #include "Phase0_AI/AIPerceptionSystem.h"
 #include "Phase1/ApplyAICommandSystem.h"
 #include "Phase1/ApplyPlayerCommandSystem.h"
+#include "Phase2/AdvanceActionTimelineSystem.h"
 #include "Phase2/ResolveActionStateSystem.h"
 #include "Phase2/ResolveLocomotionStateSystem.h"
 #include "Phase3/FitSkeletalCombatColliderSystem.h"
@@ -38,12 +39,15 @@ void RegisterGameplayRuntimeSystems(
 	runtime.RegisterSystem<ApplyPlayerCommandSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ApplyAICommandSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ResolveActionStateSystem>(SystemPhase::Graph);
+	runtime.RegisterSystem<AdvanceActionTimelineSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ResolveLocomotionStateSystem>(SystemPhase::Graph);
 
 	// Phase 3
 	runtime.RegisterSystem<ResolveAnimationPlaybackSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<SampleAnimationPoseSystem>(SystemPhase::Graph, animationRegistry);
-	runtime.RegisterSystem<FitSkeletalCombatColliderSystem>(SystemPhase::Graph);
+	runtime.RegisterSystem<FitSkeletalCombatColliderSystem>(
+		SystemPhase::Graph,
+		animationRegistry);
 
 	// Phase 4
 	runtime.RegisterSystem<ComputeLocomotionMoveDeltaSystem>(SystemPhase::Graph);

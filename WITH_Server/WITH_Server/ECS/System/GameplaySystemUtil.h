@@ -262,6 +262,7 @@ namespace GameplaySystemUtil
 		advance.actionInstanceId = 0;
 		advance.prevElapsedSec = 0.0f;
 		advance.currElapsedSec = 0.0f;
+		advance.startedThisFrame = false;
 		advance.events.clear();
 	}
 }

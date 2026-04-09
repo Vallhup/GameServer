@@ -727,7 +727,9 @@ void ServerApp::BuildReplication()
 			{
 				const CombatStatStateComp* stats =
 					view.GetComponent<CombatStatStateComp>(entity);
-				if (stats != nullptr)
+				const SessionId ownerSessionId =
+					_sessionBindings.FindOwnerSession(netId);
+				if (stats != nullptr && ownerSessionId != 0)
 				{
 					Protocol::SC_STAT_CHANGE_PACKET statPacket;
 					statPacket.set_netid(netId.GetRaw());
@@ -750,7 +752,7 @@ void ServerApp::BuildReplication()
 					(void)StageReplicationPacket(
 						_network,
 						PacketType::SC_STAT_CHANGE,
-						worldSessionIds,
+						std::span<const SessionId>(&ownerSessionId, 1),
 						statPacket);
 				}
 			}

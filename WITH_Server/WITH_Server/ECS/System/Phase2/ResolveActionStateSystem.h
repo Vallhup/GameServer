@@ -22,6 +22,7 @@ private:
 	{
 		ActionId nextActionId{ ActionId::None };
 		bool transition{ false };
+		bool consumeOnRequestCosts{ false };
 		bool preserveDirection{ false };
 		float directionX{ 0.0f };
 		float directionZ{ 0.0f };
@@ -67,7 +68,7 @@ private:
 		TransitionDecision& outDecision);
 
 	static bool TryResolveEndPolicyTransition(
-		ActionStateComp& actionState,
+		const ActionStateComp& actionState,
 		const ActionDef& actionDef,
 		const ActorInputComp& input,
 		ActionTimelineAdvanceComp& advance,
@@ -78,12 +79,18 @@ private:
 		ActionStateComp& actionState,
 		const TransitionDecision& decision);
 
+	static void ConsumeOnRequestResourceCosts(
+		SystemContext& ctx,
+		Entity entity,
+		const TransitionDecision& decision);
+
 	static void ClearActionInput(ActorInputComp& input);
 
 	static std::vector<RequestCandidate> BuildRequestCandidates(
 		const ActionProfileService& profileService,
 		CharacterId characterId,
-		const ActorInputComp& input);
+		const ActorInputComp& input,
+		bool includeHeldGuardRequest);
 
 	static bool IsActionRequestAllowed(
 		ActionId actionId,
@@ -99,14 +106,18 @@ private:
 		const ActionDef& actionDef,
 		const ActorInputComp& input);
 
-	static void AdvanceActiveAction(
-		ActionStateComp& actionState,
+	static float ComputeAdvancedElapsedSec(
+		const ActionStateComp& actionState,
+		const ActionDef& actionDef,
+		double deltaTimeSec);
+
+	static void PrepareTimelineAdvance(
+		const ActionStateComp& actionState,
 		const ActionDef& actionDef,
 		ActionTimelineAdvanceComp& advance,
 		double deltaTimeSec);
 
-	static void CollectTimelineEvents(
-		const ActionDef& actionDef,
+	static void PrepareStartedActionAdvance(
 		const ActionStateComp& actionState,
 		ActionTimelineAdvanceComp& advance);
 

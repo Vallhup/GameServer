@@ -23,6 +23,8 @@ void ResolveAnimationPlaybackSystem::Execute(SystemContext& ctx)
 			LocomotionStateComp,
 			SpawnTypeComp>())
 	{
+		const AnimationPlaybackStateComp previousState = playbackState;
+
 		if (IsActionActive(actionState))
 		{
 			const ActionDef* actionDef = FindActionDef(actionState.actionId);
@@ -61,12 +63,30 @@ void ResolveAnimationPlaybackSystem::Execute(SystemContext& ctx)
 				locomotionState.mode == LocomotionMode::Idle;
 		}
 
-		if (DirtyFlagsComp* dirty =
-			ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
+		if (RequiresAnimationDirty(previousState, playbackState))
 		{
-			dirty->MarkDirty(WorldDirtyType::Animation);
+			if (DirtyFlagsComp* dirty =
+				ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
+			{
+				dirty->MarkDirty(WorldDirtyType::Animation);
+			}
 		}
 	}
+}
+
+bool ResolveAnimationPlaybackSystem::RequiresAnimationDirty(
+	const AnimationPlaybackStateComp& previousState,
+	const AnimationPlaybackStateComp& nextState) noexcept
+{
+	return
+		previousState.source != nextState.source ||
+		previousState.animationId != nextState.animationId ||
+		previousState.boundActionInstanceId != nextState.boundActionInstanceId ||
+		previousState.boundActionId != nextState.boundActionId ||
+		previousState.boundLocomotionMode != nextState.boundLocomotionMode ||
+		std::abs(previousState.playRate - nextState.playRate) > kOverlapEpsilon ||
+		previousState.loop != nextState.loop ||
+		previousState.holdLastFrame != nextState.holdLastFrame;
 }
 
 const SystemMeta& ResolveAnimationPlaybackSystem::Meta() const
