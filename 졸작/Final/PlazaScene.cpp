@@ -709,6 +709,17 @@ void PlazaScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			OutputDebugStringA("My character activated!\n");
 		}
 	}
+	else if (type == static_cast<int>(CharacterId::Imp))
+	{
+		if (impObject)
+		{
+			impObject->SetId(id);
+			auto transform = impObject->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = impObject;
+		}
+	}
 }
 
 void PlazaScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
