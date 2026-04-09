@@ -152,15 +152,10 @@ namespace
 				return true;
 			}
 
-<<<<<<< HEAD
 			// FinalBoss 는 FinalBossMonster FSM bundle 이 아직 없어 스폰이 거부된다.
 			// 임시로 NormalMonster archetype 인 Imp 를 스폰한다.
 			SpawnAIEntity(*_framework, runtime, CharacterId::Imp,
 				*_bootstrapWorldId, 156.0f, 650.0f);
-=======
-			SpawnAIEntity(*_framework, runtime, CharacterId::FinalBoss,
-				*_bootstrapWorldId, 508.167800f, 481.655600f);
->>>>>>> 0f5d17ee9a637e1f24802479d22b3439e2fb5e80
 			return true;
 		}
 
