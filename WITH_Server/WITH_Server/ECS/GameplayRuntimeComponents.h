@@ -45,9 +45,9 @@ struct PlayerGuardInputState
 
 struct ActorActionInputEvent
 {
-	// 플레이어 경로: PlayerActionInputType → FindActionForInput → ActionId
+	// 플레이어 경로: PlayerActionInputType 를 request semantic 후보로 해석
 	PlayerActionInputType type{ PlayerActionInputType::None };
-	// AI 경로: ActionId 직접 지정 (type보다 우선 처리)
+	// AI 경로: ActionId 직접 지정 (즉시 전이가 아니라 request 후보로 처리)
 	ActionId directActionId{ ActionId::None };
 	float directionX{ 0.0f };
 	float directionZ{ 0.0f };
@@ -80,24 +80,18 @@ struct PendingWorldTransferComp : Component
 	uint64_t requestedFrameIndex{ 0 };
 };
 
-struct PendingReactionPayload
+struct ActionInterruptEvent
 {
-	ActionId reactionActionId{ ActionId::None };
+	ActionInterruptCauseType causeType{
+		ActionInterruptCauseType::OnHitReceived };
+	Entity instigator{ Entity::Null() };
+	uint64_t frameIndex{ 0 };
+	int priority{ 0 };
 };
 
-struct PendingHitReactionComp : Component
+struct ActionInterruptQueueComp : Component
 {
-	PendingReactionPayload payload;
-};
-
-struct PendingGuardBreakComp : Component
-{
-	PendingReactionPayload payload;
-};
-
-struct PendingKnockdownComp : Component
-{
-	PendingReactionPayload payload;
+	std::vector<ActionInterruptEvent> events;
 };
 
 struct PendingBuffApplyComp : Component
@@ -163,7 +157,7 @@ struct ActionStateComp : Component
 				return true;
 			}
 
-			const float windowStart = cancel.windowEndNormalized.value_or(0.0f);
+			const float windowStart = cancel.windowStartNormalized.value_or(0.0f);
 			const float windowEnd	= cancel.windowEndNormalized.value_or(1.0f);
 			if (progress >= windowStart && progress <= windowEnd)
 			{

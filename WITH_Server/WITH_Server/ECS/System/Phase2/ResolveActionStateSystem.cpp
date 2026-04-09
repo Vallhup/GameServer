@@ -4,255 +4,703 @@
 #include "../GameplaySystemUtil.h"
 #include "../../../TransformHelper.h"
 
+#include <limits>
+
 using namespace GameplaySystemUtil;
-
-namespace
-{
-	constexpr float kHoldActionElapsedEpsilonSec = 1.0e-4f;
-
-	void ResetActionDirection(ActionStateComp& actionState)
-	{
-		actionState.directionX = 0.0f;
-		actionState.directionZ = 0.0f;
-	}
-
-	void SetActionDirectionFromInputOrFacing(
-		ActionStateComp& actionState,
-		const ActorActionInputEvent& actionInput,
-		const LocomotionStateComp& locomotionState,
-		const WorldTransformComp& transform)
-	{
-		float dirX = actionInput.directionX;
-		float dirZ = actionInput.directionZ;
-		NormalizeXZ(dirX, dirZ);
-
-		if (LengthXZ(dirX, dirZ) <= kOverlapEpsilon)
-		{
-			dirX = locomotionState.desiredMoveDirX;
-			dirZ = locomotionState.desiredMoveDirZ;
-			NormalizeXZ(dirX, dirZ);
-		}
-
-		if (LengthXZ(dirX, dirZ) <= kOverlapEpsilon)
-		{
-			const XMVECTOR d = TransformHelper::Forward(transform);
-
-			XMFLOAT3 dir;
-			XMStoreFloat3(&dir, d);
-
-			dirX = dir.x;
-			dirZ = dir.z;
-			NormalizeXZ(dirX, dirZ);
-		}
-
-		actionState.directionX = dirX;
-		actionState.directionZ = dirZ;
-	}
-
-	bool IsHoldReleased(
-		const ActionDef& actionDef,
-		const ActorInputComp& input)
-	{
-		return
-			actionDef.normalizedPolicy == ActionNormalizedPolicy::Holdable &&
-			actionDef.endPolicy.endType == ActionEndType::HoldRelease &&
-			actionDef.kind == ActionKind::Guard &&
-			!input.guard.isPressed;
-	}
-
-	void ClampHoldableElapsedSec(ActionStateComp& actionState, const ActionDef& actionDef)
-	{
-		if (actionDef.normalizedPolicy != ActionNormalizedPolicy::Holdable)
-		{
-			return;
-		}
-
-		const float holdElapsedSec =
-			std::max(
-				0.0f,
-				actionDef.duration - kHoldActionElapsedEpsilonSec);
-		actionState.elapsedSec = std::min(actionState.elapsedSec, holdElapsedSec);
-	}
-
-	ActionId FindGuardAction(CharacterId characterId)
-	{
-		for (const ActionDef& def : GetActionDefs())
-		{
-			if (def.characterId == characterId &&
-				def.kind == ActionKind::Guard &&
-				def.playerInput == PlayerActionInput::Guard)
-			{
-				return def.id;
-			}
-		}
-
-		return ActionId::None;
-	}
-}
 
 const SystemMeta ResolveActionStateSystem::kMeta =
 	MakeSystemMeta<ResolveActionStateSystem>("ResolveActionStateSystem");
 
 void ResolveActionStateSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, actionState, locomotionState, transform, input, advance] :
+	const ActionProfileService profileService{};
+
+	for (auto [
+		entity,
+		actionState,
+		locomotionState,
+		transform,
+		input,
+		advance,
+		spawnType] :
 		ctx.ecs.View<
 			ActionStateComp,
 			LocomotionStateComp,
 			WorldTransformComp,
 			ActorInputComp,
-			ActionTimelineAdvanceComp>())
+			ActionTimelineAdvanceComp,
+			SpawnTypeComp>())
 	{
 		ClearActionTimelineAdvance(advance);
 
-		if (HasBlockingPendingState(ctx.ecs, entity))
+		if (TryHandleBlockingState(
+			ctx,
+			entity,
+			actionState,
+			input,
+			advance))
 		{
-			actionState.actionId = ActionId::None;
-			actionState.elapsedSec = 0.0f;
-			actionState.directionX = 0.0f;
-			actionState.directionZ = 0.0f;
-			input.action = {};
 			continue;
 		}
 
-		if (const auto* pending =
-			ctx.ecs.GetComponent<PendingKnockdownComp>(entity))
+		const CharacterId characterId = spawnType.characterId;
+		const CombatStatStateComp* stats =
+			ctx.ecs.GetComponent<CombatStatStateComp>(entity);
+		const AIPerceptionComp* perception =
+			ctx.ecs.GetComponent<AIPerceptionComp>(entity);
+		const ActionInterruptQueueComp* interruptQueue =
+			ctx.ecs.GetComponent<ActionInterruptQueueComp>(entity);
+
+		const ActionDef* currentActionDef =
+			IsActionActive(actionState)
+			? FindActionDef(actionState.actionId)
+			: nullptr;
+
+		if (IsActionActive(actionState) && currentActionDef == nullptr)
 		{
-			if (pending->payload.reactionActionId != ActionId::None)
+			actionState = {};
+			ClearActionInput(input);
+			continue;
+		}
+
+		TransitionDecision decision{};
+		const bool hadInterruptEvents =
+			interruptQueue != nullptr && !interruptQueue->events.empty();
+		if (hadInterruptEvents &&
+			TryResolveInterruptTransition(
+				profileService,
+				characterId,
+				actionState,
+				currentActionDef,
+				interruptQueue,
+				decision))
+		{
+			ApplyTransition(actionState, decision);
+			if (ActionInterruptQueueComp* mutableInterruptQueue =
+				ctx.ecs.GetMutableComponent<ActionInterruptQueueComp>(entity))
 			{
-				++actionState.actionInstanceId;
-				actionState.actionId = pending->payload.reactionActionId;
-				actionState.elapsedSec = 0.0f;
-				actionState.directionX = 0.0f;
-				actionState.directionZ = 0.0f;
+				mutableInterruptQueue->events.clear();
 			}
-			ctx.runtime.DeferredRemoveComponent<PendingKnockdownComp>(entity);
-			input.action = {};
+			ClearActionInput(input);
 			continue;
 		}
 
-		if (const auto* pending =
-			ctx.ecs.GetComponent<PendingGuardBreakComp>(entity))
+		if (hadInterruptEvents)
 		{
-			if (pending->payload.reactionActionId != ActionId::None)
+			if (ActionInterruptQueueComp* mutableInterruptQueue =
+				ctx.ecs.GetMutableComponent<ActionInterruptQueueComp>(entity))
 			{
-				++actionState.actionInstanceId;
-				actionState.actionId = pending->payload.reactionActionId;
-				actionState.elapsedSec = 0.0f;
-				ResetActionDirection(actionState);
+				mutableInterruptQueue->events.clear();
 			}
-			ctx.runtime.DeferredRemoveComponent<PendingGuardBreakComp>(entity);
-			input.action = {};
-			continue;
 		}
 
-		if (const auto* pending =
-			ctx.ecs.GetComponent<PendingHitReactionComp>(entity))
+		if (currentActionDef != nullptr)
 		{
-			if (pending->payload.reactionActionId != ActionId::None)
+			if (TryResolveCancelTransition(
+				profileService,
+				characterId,
+				actionState,
+				*currentActionDef,
+				locomotionState,
+				transform,
+				input,
+				stats,
+				perception,
+				decision))
 			{
-				++actionState.actionInstanceId;
-				actionState.actionId = pending->payload.reactionActionId;
-				actionState.elapsedSec = 0.0f;
-				ResetActionDirection(actionState);
-			}
-			ctx.runtime.DeferredRemoveComponent<PendingHitReactionComp>(entity);
-			input.action = {};
-			continue;
-		}
-
-		if (IsActionActive(actionState))
-		{
-			const ActionDef* actionDef = FindActionDef(actionState.actionId);
-			if (actionDef == nullptr)
-			{
-				actionState = {};
-				input.action = {};
+				ApplyTransition(actionState, decision);
+				SetActionDirectionOnStart(
+					actionState,
+					decision,
+					locomotionState,
+					transform);
+				ClearActionInput(input);
 				continue;
 			}
 
-			advance.actionId = actionState.actionId;
-			advance.actionInstanceId = actionState.actionInstanceId;
-			advance.prevElapsedSec = actionState.elapsedSec;
-
-			actionState.elapsedSec += static_cast<float>(ctx.dtSec);
-			advance.currElapsedSec = actionState.elapsedSec;
-
-			const float duration = std::max(0.001f, actionDef->duration);
-			for (const ActionEventDef& eventDef : actionDef->events)
+			(void)TryResolveEndPolicyTransition(
+				actionState,
+				*currentActionDef,
+				input,
+				advance,
+				ctx.dtSec,
+				decision);
+			if (decision.transition)
 			{
-				const float eventTimeSec = eventDef.timeNormalized * duration;
-				if (eventTimeSec < advance.prevElapsedSec ||
-					eventTimeSec >= advance.currElapsedSec)
-				{
-					continue;
-				}
-
-				advance.events.push_back(PendingActionTimelineEvent{
-					eventDef.type,
-					eventDef.timeNormalized,
-					eventDef.payloadId,
-					eventDef.conditionType,
-					actionState.actionId,
-					actionState.actionInstanceId
-				});
+				ApplyTransition(actionState, decision);
 			}
 
-			if (actionState.elapsedSec >= actionDef->duration &&
-				actionDef->normalizedPolicy == ActionNormalizedPolicy::FixedDuration)
-			{
-				actionState.actionId = actionDef->endPolicy.defaultNextActionId;
-				actionState.elapsedSec = 0.0f;
-				actionState.directionX = 0.0f;
-				actionState.directionZ = 0.0f;
-			}
-
-			input.action = {};
+			ClearActionInput(input);
 			continue;
 		}
 
-		// AI 직접 지정 경로 (directActionId 우선)
-		if (input.action.directActionId != ActionId::None)
+		if (TryResolveIdleRequestTransition(
+			profileService,
+			characterId,
+			locomotionState,
+			transform,
+			input,
+			stats,
+			perception,
+			decision))
 		{
-			++actionState.actionInstanceId;
-			actionState.actionId   = input.action.directActionId;
-			actionState.elapsedSec = 0.0f;
-			actionState.directionX = input.action.directionX;
-			actionState.directionZ = input.action.directionZ;
-			NormalizeXZ(actionState.directionX, actionState.directionZ);
-			input.action = {};
-			continue;
+			ApplyTransition(actionState, decision);
+			SetActionDirectionOnStart(
+				actionState,
+				decision,
+				locomotionState,
+				transform);
 		}
 
-		if (input.action.type == PlayerActionInputType::None)
-		{
-			continue;
-		}
-
-		const SpawnTypeComp* spawnType = ctx.ecs.GetComponent<SpawnTypeComp>(entity);
-		if (spawnType != nullptr)
-		{
-			const ActionId actionId = FindActionForInput(
-				spawnType->characterId,
-				input.action.type);
-			if (actionId != ActionId::None)
-			{
-				++actionState.actionInstanceId;
-				actionState.actionId = actionId;
-				actionState.elapsedSec = 0.0f;
-				SetActionDirectionFromInputOrFacing(
-					actionState,
-					input.action,
-					locomotionState,
-					transform);
-			}
-		}
-
-		input.action = {};
+		ClearActionInput(input);
 	}
 }
 
 const SystemMeta& ResolveActionStateSystem::Meta() const
 {
 	return kMeta;
+}
+
+bool ResolveActionStateSystem::TryHandleBlockingState(
+	SystemContext& ctx,
+	Entity entity,
+	ActionStateComp& actionState,
+	ActorInputComp& input,
+	ActionTimelineAdvanceComp& advance)
+{
+	if (!HasBlockingPendingState(ctx.ecs, entity))
+	{
+		return false;
+	}
+
+	ClearActionTimelineAdvance(advance);
+	actionState.actionId = ActionId::None;
+	actionState.elapsedSec = 0.0f;
+	ResetActionDirection(actionState);
+	ClearActionInput(input);
+	return true;
+}
+
+bool ResolveActionStateSystem::TryResolveInterruptTransition(
+	const ActionProfileService& profileService,
+	const CharacterId characterId,
+	const ActionStateComp& actionState,
+	const ActionDef* currentActionDef,
+	const ActionInterruptQueueComp* interruptQueue,
+	TransitionDecision& outDecision)
+{
+	if (interruptQueue == nullptr || interruptQueue->events.empty())
+	{
+		return false;
+	}
+
+	int bestPriority = std::numeric_limits<int>::min();
+	ActionId bestActionId = ActionId::None;
+
+	if (currentActionDef != nullptr)
+	{
+		const float progress =
+			(currentActionDef->duration > 0.0f)
+			? ClampFloat(actionState.elapsedSec / currentActionDef->duration, 0.0f, 1.0f)
+			: 1.0f;
+
+		for (const ActionInterruptEvent& event : interruptQueue->events)
+		{
+			for (const ActionInterruptRule& rule :
+				currentActionDef->transitionRule.interruptRules)
+			{
+				if (rule.causeType != event.causeType)
+				{
+					continue;
+				}
+
+				if (rule.windowPolicy == ActionWindowPolicy::Range)
+				{
+					const float windowStart = rule.windowStartNormalized.value_or(0.0f);
+					const float windowEnd = rule.windowEndNormalized.value_or(1.0f);
+					if (progress < windowStart || progress > windowEnd)
+					{
+						continue;
+					}
+				}
+
+				if (rule.priority > bestPriority)
+				{
+					if (!profileService.IsActionAvailable(characterId, rule.toActionId))
+					{
+						continue;
+					}
+
+					bestPriority = rule.priority;
+					bestActionId = rule.toActionId;
+				}
+			}
+		}
+	}
+	else
+	{
+		const ActionFallbackReactionProfileDef* fallbackProfile =
+			profileService.FindFallbackReactionProfile(characterId);
+		if (fallbackProfile == nullptr)
+		{
+			return false;
+		}
+
+		for (const ActionInterruptEvent& event : interruptQueue->events)
+		{
+			for (const ActionFallbackReactionEntryDef& entry :
+				fallbackProfile->entries)
+			{
+				if (entry.causeType != event.causeType)
+				{
+					continue;
+				}
+
+				if (entry.priority > bestPriority)
+				{
+					if (!profileService.IsActionAvailable(characterId, entry.toActionId))
+					{
+						continue;
+					}
+
+					bestPriority = entry.priority;
+					bestActionId = entry.toActionId;
+				}
+			}
+		}
+	}
+
+	if (bestActionId == ActionId::None)
+	{
+		return false;
+	}
+
+	outDecision.transition = true;
+	outDecision.nextActionId = bestActionId;
+	outDecision.preserveDirection = false;
+	return true;
+}
+
+bool ResolveActionStateSystem::TryResolveCancelTransition(
+	const ActionProfileService& profileService,
+	const CharacterId characterId,
+	const ActionStateComp& actionState,
+	const ActionDef& currentActionDef,
+	const LocomotionStateComp& locomotionState,
+	const WorldTransformComp& transform,
+	const ActorInputComp& input,
+	const CombatStatStateComp* stats,
+	const AIPerceptionComp* perception,
+	TransitionDecision& outDecision)
+{
+	const std::vector<RequestCandidate> candidates =
+		BuildRequestCandidates(profileService, characterId, input);
+	if (candidates.empty())
+	{
+		return false;
+	}
+
+	int bestPriority = std::numeric_limits<int>::min();
+	RequestCandidate bestCandidate{};
+	bool found = false;
+
+	for (const RequestCandidate& candidate : candidates)
+	{
+		if (candidate.actionId == ActionId::None ||
+			!profileService.IsActionAvailable(characterId, candidate.actionId) ||
+			!IsActionRequestAllowed(candidate.actionId, stats, perception))
+		{
+			continue;
+		}
+
+		for (const ActionCancelRule& cancelRule :
+			currentActionDef.transitionRule.cancelRules)
+		{
+			if (cancelRule.toActionId != candidate.actionId ||
+				!IsCancelRuleActive(cancelRule, currentActionDef, actionState))
+			{
+				continue;
+			}
+
+			if (!found || cancelRule.priority > bestPriority)
+			{
+				bestPriority = cancelRule.priority;
+				bestCandidate = candidate;
+				found = true;
+			}
+		}
+	}
+
+	if (!found)
+	{
+		return false;
+	}
+
+	outDecision.transition = true;
+	outDecision.nextActionId = bestCandidate.actionId;
+	outDecision.preserveDirection = true;
+	outDecision.directionX = bestCandidate.directionX;
+	outDecision.directionZ = bestCandidate.directionZ;
+	(void)locomotionState;
+	(void)transform;
+	return true;
+}
+
+bool ResolveActionStateSystem::TryResolveIdleRequestTransition(
+	const ActionProfileService& profileService,
+	const CharacterId characterId,
+	const LocomotionStateComp& locomotionState,
+	const WorldTransformComp& transform,
+	const ActorInputComp& input,
+	const CombatStatStateComp* stats,
+	const AIPerceptionComp* perception,
+	TransitionDecision& outDecision)
+{
+	const std::vector<RequestCandidate> candidates =
+		BuildRequestCandidates(profileService, characterId, input);
+	for (const RequestCandidate& candidate : candidates)
+	{
+		if (candidate.actionId == ActionId::None ||
+			!profileService.IsActionAvailable(characterId, candidate.actionId) ||
+			!IsActionRequestAllowed(candidate.actionId, stats, perception))
+		{
+			continue;
+		}
+
+		outDecision.transition = true;
+		outDecision.nextActionId = candidate.actionId;
+		outDecision.preserveDirection = true;
+		outDecision.directionX = candidate.directionX;
+		outDecision.directionZ = candidate.directionZ;
+		(void)locomotionState;
+		(void)transform;
+		return true;
+	}
+
+	return false;
+}
+
+bool ResolveActionStateSystem::TryResolveEndPolicyTransition(
+	ActionStateComp& actionState,
+	const ActionDef& actionDef,
+	const ActorInputComp& input,
+	ActionTimelineAdvanceComp& advance,
+	double deltaTimeSec,
+	TransitionDecision& outDecision)
+{
+	if (IsHoldReleased(actionDef, input))
+	{
+		outDecision.transition = true;
+		outDecision.nextActionId = actionDef.endPolicy.defaultNextActionId;
+		outDecision.preserveDirection = false;
+		return true;
+	}
+
+	AdvanceActiveAction(actionState, actionDef, advance, deltaTimeSec);
+	CollectTimelineEvents(actionDef, actionState, advance);
+
+	if (actionDef.normalizedPolicy == ActionNormalizedPolicy::Holdable &&
+		actionDef.endPolicy.endType == ActionEndType::HoldRelease)
+	{
+		return false;
+	}
+
+	if (actionState.elapsedSec < actionDef.duration)
+	{
+		return false;
+	}
+
+	outDecision.transition = true;
+	outDecision.nextActionId = actionDef.endPolicy.defaultNextActionId;
+	outDecision.preserveDirection = false;
+	return true;
+}
+
+void ResolveActionStateSystem::ApplyTransition(
+	ActionStateComp& actionState,
+	const TransitionDecision& decision)
+{
+	if (!decision.transition)
+	{
+		return;
+	}
+
+	++actionState.actionInstanceId;
+	actionState.actionId = decision.nextActionId;
+	actionState.elapsedSec = 0.0f;
+	ResetActionDirection(actionState);
+}
+
+void ResolveActionStateSystem::ClearActionInput(ActorInputComp& input)
+{
+	input.action = {};
+}
+
+std::vector<ResolveActionStateSystem::RequestCandidate>
+ResolveActionStateSystem::BuildRequestCandidates(
+	const ActionProfileService& profileService,
+	CharacterId characterId,
+	const ActorInputComp& input)
+{
+	std::vector<RequestCandidate> candidates;
+
+	if (input.action.directActionId != ActionId::None)
+	{
+		candidates.push_back(RequestCandidate{
+			input.action.directActionId,
+			input.action.directionX,
+			input.action.directionZ,
+			true
+		});
+		return candidates;
+	}
+
+	ActionRequestSemantic semantic = ActionRequestSemantic::None;
+	if (input.guard.isPressed)
+	{
+		semantic = ActionRequestSemantic::GuardStart;
+	}
+	else
+	{
+		switch (input.action.type) {
+		case PlayerActionInputType::LightAttack:
+			semantic = ActionRequestSemantic::LightAttack;
+			break;
+		case PlayerActionInputType::HeavyAttack:
+			semantic = ActionRequestSemantic::HeavyAttack;
+			break;
+		case PlayerActionInputType::Dodge:
+			semantic = ActionRequestSemantic::Dodge;
+			break;
+		case PlayerActionInputType::Parry:
+			semantic = ActionRequestSemantic::Parry;
+			break;
+		case PlayerActionInputType::None:
+		default:
+			semantic = ActionRequestSemantic::None;
+			break;
+		}
+	}
+
+	if (semantic == ActionRequestSemantic::None)
+	{
+		return candidates;
+	}
+
+	const ActionInputBindingProfileDef* bindingProfile =
+		profileService.FindInputBindingProfile(characterId);
+	if (bindingProfile == nullptr)
+	{
+		return candidates;
+	}
+
+	const ActionInputBindingEntryDef* selectedEntry = nullptr;
+	for (const ActionInputBindingEntryDef& entry : bindingProfile->entries)
+	{
+		if (entry.request != semantic || entry.candidateActions.empty())
+		{
+			continue;
+		}
+
+		if (selectedEntry == nullptr || entry.priority > selectedEntry->priority)
+		{
+			selectedEntry = &entry;
+		}
+	}
+
+	if (selectedEntry == nullptr)
+	{
+		return candidates;
+	}
+
+	candidates.reserve(selectedEntry->candidateActions.size());
+	for (ActionId actionId : selectedEntry->candidateActions)
+	{
+		candidates.push_back(RequestCandidate{
+			actionId,
+			input.action.directionX,
+			input.action.directionZ,
+			true
+		});
+	}
+
+	return candidates;
+}
+
+bool ResolveActionStateSystem::IsActionRequestAllowed(
+	ActionId actionId,
+	const CombatStatStateComp* stats,
+	const AIPerceptionComp* perception)
+{
+	const ActionDef* actionDef = FindActionDef(actionId);
+	if (actionDef == nullptr)
+	{
+		return false;
+	}
+
+	for (const ActionRequestRequirementDef& requirement :
+		actionDef->requestRequirements)
+	{
+		switch (requirement.type) {
+		case ActionRequestRequirementType::None:
+			break;
+
+		case ActionRequestRequirementType::HasEnoughStamina:
+			if (stats == nullptr ||
+				stats->currentStamina <
+					static_cast<int32_t>(requirement.scalar.value_or(0.0f)))
+			{
+				return false;
+			}
+			break;
+
+		case ActionRequestRequirementType::HasTarget:
+			if (perception == nullptr ||
+				!perception->hasTarget ||
+				perception->selectedTarget.IsNull())
+			{
+				return false;
+			}
+			break;
+
+		case ActionRequestRequirementType::IsGrounded:
+			// Grounding state is not modeled separately yet.
+			break;
+
+		case ActionRequestRequirementType::HasStateFlag:
+			return false;
+
+		case ActionRequestRequirementType::MissingStateFlag:
+			break;
+
+		default:
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool ResolveActionStateSystem::IsCancelRuleActive(
+	const ActionCancelRule& cancelRule,
+	const ActionDef& currentActionDef,
+	const ActionStateComp& actionState)
+{
+	if (cancelRule.windowPolicy == ActionWindowPolicy::Always)
+	{
+		return true;
+	}
+
+	const float progress =
+		(currentActionDef.duration > 0.0f)
+		? ClampFloat(actionState.elapsedSec / currentActionDef.duration, 0.0f, 1.0f)
+		: 1.0f;
+	const float windowStart = cancelRule.windowStartNormalized.value_or(0.0f);
+	const float windowEnd = cancelRule.windowEndNormalized.value_or(1.0f);
+	return progress >= windowStart && progress <= windowEnd;
+}
+
+bool ResolveActionStateSystem::IsHoldReleased(
+	const ActionDef& actionDef,
+	const ActorInputComp& input)
+{
+	return
+		actionDef.normalizedPolicy == ActionNormalizedPolicy::Holdable &&
+		actionDef.endPolicy.endType == ActionEndType::HoldRelease &&
+		actionDef.kind == ActionKind::Guard &&
+		!input.guard.isPressed;
+}
+
+void ResolveActionStateSystem::AdvanceActiveAction(
+	ActionStateComp& actionState,
+	const ActionDef& actionDef,
+	ActionTimelineAdvanceComp& advance,
+	double deltaTimeSec)
+{
+	constexpr float kHoldActionElapsedEpsilonSec = 1.0e-4f;
+
+	advance.actionId = actionState.actionId;
+	advance.actionInstanceId = actionState.actionInstanceId;
+	advance.prevElapsedSec = actionState.elapsedSec;
+
+	actionState.elapsedSec += static_cast<float>(deltaTimeSec);
+
+	if (actionDef.normalizedPolicy == ActionNormalizedPolicy::Holdable &&
+		actionDef.endPolicy.endType == ActionEndType::HoldRelease)
+	{
+		const float holdElapsedSec =
+			std::max(0.0f, actionDef.duration - kHoldActionElapsedEpsilonSec);
+		actionState.elapsedSec = std::min(actionState.elapsedSec, holdElapsedSec);
+	}
+
+	advance.currElapsedSec = actionState.elapsedSec;
+}
+
+void ResolveActionStateSystem::CollectTimelineEvents(
+	const ActionDef& actionDef,
+	const ActionStateComp& actionState,
+	ActionTimelineAdvanceComp& advance)
+{
+	const float duration = std::max(0.001f, actionDef.duration);
+	for (const ActionEventDef& eventDef : actionDef.events)
+	{
+		const float eventTimeSec = eventDef.timeNormalized * duration;
+		if (eventTimeSec < advance.prevElapsedSec ||
+			eventTimeSec >= advance.currElapsedSec)
+		{
+			continue;
+		}
+
+		advance.events.push_back(PendingActionTimelineEvent{
+			eventDef.type,
+			eventDef.timeNormalized,
+			eventDef.payloadId,
+			eventDef.conditionType,
+			actionState.actionId,
+			actionState.actionInstanceId
+		});
+	}
+}
+
+void ResolveActionStateSystem::SetActionDirectionOnStart(
+	ActionStateComp& actionState,
+	const TransitionDecision& decision,
+	const LocomotionStateComp& locomotionState,
+	const WorldTransformComp& transform)
+{
+	if (!decision.preserveDirection)
+	{
+		return;
+	}
+
+	float dirX = decision.directionX;
+	float dirZ = decision.directionZ;
+	NormalizeXZ(dirX, dirZ);
+
+	if (LengthXZ(dirX, dirZ) <= kOverlapEpsilon)
+	{
+		dirX = locomotionState.desiredMoveDirX;
+		dirZ = locomotionState.desiredMoveDirZ;
+		NormalizeXZ(dirX, dirZ);
+	}
+
+	if (LengthXZ(dirX, dirZ) <= kOverlapEpsilon)
+	{
+		const XMVECTOR forward = TransformHelper::Forward(transform);
+		XMFLOAT3 dir{};
+		XMStoreFloat3(&dir, forward);
+
+		dirX = dir.x;
+		dirZ = dir.z;
+		NormalizeXZ(dirX, dirZ);
+	}
+
+	actionState.directionX = dirX;
+	actionState.directionZ = dirZ;
+}
+
+void ResolveActionStateSystem::ResetActionDirection(ActionStateComp& actionState)
+{
+	actionState.directionX = 0.0f;
+	actionState.directionZ = 0.0f;
 }

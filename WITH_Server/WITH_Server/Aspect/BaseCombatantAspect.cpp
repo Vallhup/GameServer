@@ -44,10 +44,8 @@ void BaseCombatantAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<PendingActionPresentationEventComp>();
 
 	// 전투 시그널 (CommitCombatResultSystem 등이 런타임에 동적 부착).
-	// Combatant feature 가 있는 캐릭터만 반응/버프 이벤트의 대상이 된다.
-	runtime.RegisterStorage<PendingHitReactionComp>();
-	runtime.RegisterStorage<PendingGuardBreakComp>();
-	runtime.RegisterStorage<PendingKnockdownComp>();
+	// Combatant feature 가 있는 캐릭터만 interrupt/버프 이벤트의 대상이 된다.
+	runtime.RegisterStorage<ActionInterruptQueueComp>();
 	runtime.RegisterStorage<PendingBuffApplyComp>();
 	runtime.RegisterStorage<PendingBuffRemoveComp>();
 }
@@ -70,6 +68,7 @@ void BaseCombatantAspect::Attach(
 		entity,
 		MakeInitialCombatStats(def));
 	runtime.DeferredAddComponent<BuffRuntimeStateComp>(entity);
+	runtime.DeferredAddComponent<ActionInterruptQueueComp>(entity);
 	runtime.DeferredAddComponent<PendingProjectileSpawnComp>(entity);
 	runtime.DeferredAddComponent<PendingActionPresentationEventComp>(entity);
 }

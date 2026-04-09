@@ -172,6 +172,7 @@
     <ClCompile Include="DBData.cpp" />
     <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="ECS\System\GameplaySystemRegistration.cpp" />
+    <ClCompile Include="ECS\System\ActionProfileService.cpp" />
     <ClCompile Include="ECS\System\Phase0_AI\AIDecisionSystem.cpp" />
     <ClCompile Include="ECS\System\Phase0_AI\AIPerceptionSystem.cpp" />
     <ClCompile Include="ECS\System\Phase1\ApplyAICommandSystem.cpp" />
@@ -238,6 +239,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
     <ClInclude Include="ActionDef.h" />
+    <ClInclude Include="ActionProfileIds.h" />
     <ClInclude Include="AIFSMRegistry.h" />
     <ClInclude Include="AnimationDef.h" />
     <ClInclude Include="AnimationJsonLoader.h" />
@@ -251,6 +253,7 @@
     <ClInclude Include="DefFileFormat.h" />
     <ClInclude Include="DefRegistry.h" />
     <ClInclude Include="ECS\GameplayRuntimeComponents.h" />
+    <ClInclude Include="ECS\System\ActionProfileService.h" />
     <ClInclude Include="ECS\System\GameplaySystemRegistration.h" />
     <ClInclude Include="ECS\System\GameplaySystemUtil.h" />
     <ClInclude Include="ECS\System\Phase0_AI\AIDecisionSystem.h" />

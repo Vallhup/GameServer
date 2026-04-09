@@ -1781,7 +1781,12 @@ namespace
 				ActionInputBindingEntryDef
 				{
 					.request = ActionRequestSemantic::LightAttack,
-					.candidateActions = { ActionId::Knight_LightAttack1 },
+					.candidateActions =
+					{
+						ActionId::Knight_LightAttack1,
+						ActionId::Knight_LightAttack2,
+						ActionId::Knight_LightAttack3
+					},
 					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
 					.priority = 100
 				},
@@ -1803,6 +1808,13 @@ namespace
 				{
 					.request = ActionRequestSemantic::Parry,
 					.candidateActions = { ActionId::Knight_Parry },
+					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
+					.priority = 100
+				},
+				ActionInputBindingEntryDef
+				{
+					.request = ActionRequestSemantic::GuardStart,
+					.candidateActions = { ActionId::Knight_Guard },
 					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
 					.priority = 100
 				}

@@ -129,40 +129,40 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
-		const PendingReactionPayload payload{
-			FindReactionAction(spawnType->characterId, result.reactionKind)
-		};
-		if (payload.reactionActionId == ActionId::None)
+		ActionInterruptQueueComp* interruptQueue =
+			ctx.ecs.GetMutableComponent<ActionInterruptQueueComp>(entity);
+		if (interruptQueue == nullptr)
 		{
 			continue;
 		}
 
+		const uint64_t frameIndex = ctx.runtime.FrameIndex();
 		if (stats.currentPoise <= 0)
 		{
-			PendingKnockdownComp knockdownComp = 
-			{ 
-				.payload = payload 
-			};
-			ctx.runtime.DeferredUpsertComponent<PendingKnockdownComp>(
-				entity, knockdownComp);
+			interruptQueue->events.push_back(ActionInterruptEvent{
+				.causeType = ActionInterruptCauseType::OnParried,
+				.instigator = result.reactionSource,
+				.frameIndex = frameIndex,
+				.priority = 300
+			});
 		}
 		else if (result.reactionKind == CombatReactionKind::GuardBreak)
 		{
-			PendingGuardBreakComp guardBreakComp =
-			{
-				.payload = payload
-			};
-			ctx.runtime.DeferredUpsertComponent<PendingGuardBreakComp>(
-				entity, guardBreakComp);
+			interruptQueue->events.push_back(ActionInterruptEvent{
+				.causeType = ActionInterruptCauseType::OnParried,
+				.instigator = result.reactionSource,
+				.frameIndex = frameIndex,
+				.priority = 200
+			});
 		}
 		else if (result.reactionKind == CombatReactionKind::HitReaction)
 		{
-			PendingHitReactionComp hitReactionComp =
-			{
-				.payload = payload
-			};
-			ctx.runtime.DeferredUpsertComponent<PendingHitReactionComp>(
-				entity, hitReactionComp);
+			interruptQueue->events.push_back(ActionInterruptEvent{
+				.causeType = ActionInterruptCauseType::OnHitReceived,
+				.instigator = result.reactionSource,
+				.frameIndex = frameIndex,
+				.priority = 100
+			});
 		}
 
 		if (result.pendingParryBuffId.has_value())

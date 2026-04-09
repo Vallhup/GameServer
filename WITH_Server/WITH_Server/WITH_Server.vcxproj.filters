@@ -84,6 +84,9 @@
     <ClCompile Include="ECS\System\GameplaySystemRegistration.cpp">
       <Filter>ECS\System</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\ActionProfileService.cpp">
+      <Filter>ECS\System</Filter>
+    </ClCompile>
     <ClCompile Include="ECS\System\Phase1\ApplyPlayerCommandSystem.cpp">
       <Filter>ECS\System\Phase1</Filter>
     </ClCompile>
@@ -287,6 +290,9 @@
     <ClInclude Include="ActionDef.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
+    <ClInclude Include="ActionProfileIds.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
     <ClInclude Include="IDs.h">
       <Filter>Data</Filter>
     </ClInclude>
@@ -296,9 +302,6 @@
     </ClInclude>
     <ClInclude Include="SessionBindingRegistry.h">
       <Filter>App</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameworkRuntime.h">
-      <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="DefFileFormat.h">
       <Filter>Data\Loader</Filter>
@@ -313,6 +316,9 @@
       <Filter>ECS</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\GameplaySystemRegistration.h">
+      <Filter>ECS\System</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\ActionProfileService.h">
       <Filter>ECS\System</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\GameplaySystemUtil.h">
@@ -449,6 +455,9 @@
     </ClInclude>
     <ClInclude Include="Aspect\ReplicationAspect.h">
       <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameworkRuntime.h">
+      <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
