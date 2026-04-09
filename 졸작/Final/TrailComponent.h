@@ -29,5 +29,4 @@ private:
 	vector<TrailPoint> points;
 	float trailWidth = 1.0f;
 	bool isActive = false;
-	bool isDirty = false;
 };

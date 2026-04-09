@@ -1,11 +1,70 @@
 #include "pch.h"
 #include "FootDustComponent.h"
 #include "Shader.h"
+#include "GameObject.h"
+#include "AnimationMachine.h"
+#include "Animator.h"
+#include "Transform.h"
 
 PSOType FootDustComponent::GetPSOType() const { return PSOType::Trail; }
 
 void FootDustComponent::Update(float deltaTime)
 {
+	auto owner = GetGameObject();
+	if (owner)
+	{
+		auto animMachine = owner->GetComponent<AnimationMachine>();
+		auto animator = owner->GetComponent<Animator>();
+		auto transform = owner->GetComponent<Transform>();
+
+		bool isWalking = animMachine && (animMachine->IsPlaying("Walk") || animMachine->IsPlaying("Run"));
+
+		if (isWalking && animator && animator->IsInitialized() && transform)
+		{
+			int currentFrame = animator->GetCurrentFrame();
+			XMMATRIX worldMat = transform->GetWorldMatrix();
+
+			if (currentFrame >= 24 && currentFrame <= 26)
+			{
+				if (!rightFootSpawned)
+				{
+					XMFLOAT3 rFootPos = animator->GetBonePosition(53);
+					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&rFootPos), worldMat);
+					XMFLOAT3 spawnPos;
+					XMStoreFloat3(&spawnPos, worldPos);
+					Spawn(spawnPos, 5);
+					rightFootSpawned = true;
+				}
+			}
+			else
+			{
+				rightFootSpawned = false;
+			}
+
+			if (currentFrame >= 7 && currentFrame <= 9)
+			{
+				if (!leftFootSpawned)
+				{
+					XMFLOAT3 lFootPos = animator->GetBonePosition(49);
+					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&lFootPos), worldMat);
+					XMFLOAT3 spawnPos;
+					XMStoreFloat3(&spawnPos, worldPos);
+					Spawn(spawnPos, 5);
+					leftFootSpawned = true;
+				}
+			}
+			else
+			{
+				leftFootSpawned = false;
+			}
+		}
+		else
+		{
+			rightFootSpawned = false;
+			leftFootSpawned = false;
+		}
+	}
+
 	if (particles.empty()) return;
 
 	for (auto& p : particles)

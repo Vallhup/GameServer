@@ -223,18 +223,6 @@
     <ClCompile Include="FinalBattleScene.cpp">
       <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
     </ClCompile>
-    <ClCompile Include="TrailRenderer.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="FootDustEffect.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="FlameEffect.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="ParrySparkEffect.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="FootDustComponent.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
@@ -474,18 +462,6 @@
     </ClInclude>
     <ClInclude Include="FinalBattleScene.h">
       <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
-    </ClInclude>
-    <ClInclude Include="TrailRenderer.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="FootDustEffect.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="FlameEffect.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="ParrySparkEffect.h">
-      <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="FootDustComponent.h">
       <Filter>Effect</Filter>

@@ -10,6 +10,7 @@
 #include "ImGuiManager.h"
 #include "SoundManager.h"
 #include "EffectManager.h"
+#include "EffectComponent.h"
 #include "UIManager.h"
 #include "GameSceneUIController.h"
 #include "AnimationMachine.h"
@@ -159,7 +160,20 @@ void SecondBattleScene::RenderSceneShadow()
 void SecondBattleScene::RenderSceneEffects()
 {
 	if (cam)
+	{
+		const XMFLOAT3 camPos = cam->GetPosition();
+
+		for (const auto& obj : gameObjects)
+		{
+			for (auto& [type, comp] : obj->GetComponents())
+			{
+				if (auto effect = dynamic_cast<EffectComponent*>(comp.get()))
+					effect->Render(*coreRef, camPos);
+			}
+		}
+
 		EFFECT_MANAGER->Render(*coreRef, cam.get());
+	}
 }
 
 void SecondBattleScene::RequestSceneChange()

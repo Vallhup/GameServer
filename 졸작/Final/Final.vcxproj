@@ -220,15 +220,12 @@ exit 0</Command>
     <ClCompile Include="FinalBattleScene.cpp" />
     <ClCompile Include="FlameComponent.cpp" />
     <ClCompile Include="FootDustComponent.cpp" />
-    <ClCompile Include="FootDustEffect.cpp" />
-    <ClCompile Include="FlameEffect.cpp" />
     <ClCompile Include="FroxelManager.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingSceneUIController.cpp" />
     <ClCompile Include="LookUpTextures.cpp" />
     <ClCompile Include="ParrySparkComponent.cpp" />
-    <ClCompile Include="ParrySparkEffect.cpp" />
     <ClCompile Include="RenderTargets.cpp" />
     <ClCompile Include="SelectSceneUIController.cpp" />
     <ClCompile Include="ShadowMappingManager.cpp" />
@@ -262,7 +259,6 @@ exit 0</Command>
     <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TrailComponent.cpp" />
-    <ClCompile Include="TrailRenderer.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -310,9 +306,7 @@ exit 0</Command>
     <ClInclude Include="EffectRenderer.h" />
     <ClInclude Include="FinalBattleScene.h" />
     <ClInclude Include="FlameComponent.h" />
-    <ClInclude Include="FlameEffect.h" />
     <ClInclude Include="FootDustComponent.h" />
-    <ClInclude Include="FootDustEffect.h" />
     <ClInclude Include="FroxelManager.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="LoadingScene.h" />
@@ -320,7 +314,6 @@ exit 0</Command>
     <ClInclude Include="LookUpTextures.h" />
     <ClInclude Include="NetHelper.h" />
     <ClInclude Include="ParrySparkComponent.h" />
-    <ClInclude Include="ParrySparkEffect.h" />
     <ClInclude Include="RenderTargets.h" />
     <ClInclude Include="SelectSceneUIController.h" />
     <ClInclude Include="ShadowMappingManager.h" />
@@ -354,7 +347,6 @@ exit 0</Command>
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TrailComponent.h" />
-    <ClInclude Include="TrailRenderer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="GameObject.h" />

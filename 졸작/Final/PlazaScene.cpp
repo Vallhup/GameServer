@@ -66,9 +66,6 @@ void PlazaScene::Reset()
 	flameObject = nullptr;
 	gameObjects.clear();
 
-	rightFootSpawned = false;
-	leftFootSpawned = false;
-
 	OutputDebugStringA("PlazaScene Data has been deleted!! \n----------------------------------------\n");
 }
 
@@ -134,7 +131,7 @@ void PlazaScene::InitializeLogic()
 	flame->Initialize(coreRef->GetDevice(), 32);
 	flame->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
 	flame->SetParticleSize(0.5f);
-	flame->Spawn(XMFLOAT3(160.0f, 50.0f, 643.0f));
+	flame->Spawn(XMFLOAT3(484.607025f, 6.f, 481.862946f));
 	AddGameObject(flameObject);
 
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
@@ -234,172 +231,6 @@ void PlazaScene::UpdateScene(const float deltaTime)
 	{
 		if (!obj->IsStatic())
 			obj->Update(deltaTime);
-	}
-
-	// Trail 업데이트
-	if (myPlayer)
-	{
-		auto trail = myPlayer->GetComponent<TrailComponent>();
-		if (trail)
-		{
-			auto animMachine = myPlayer->GetComponent<AnimationMachine>();
-			bool isAttacking = animMachine && animMachine->IsPlaying("Attack");
-
-			if (isAttacking && !trail->IsActive())
-				trail->SetActive(true);
-			else if (!isAttacking && trail->IsActive())
-				trail->SetActive(false);
-
-			if (trail->IsActive())
-			{
-				auto animator = myPlayer->GetComponent<Animator>();
-				auto transform = myPlayer->GetComponent<Transform>();
-
-				if (animator && animator->IsInitialized())
-				{
-					XMFLOAT3 bonePos = animator->GetBonePosition(45);
-					XMVECTOR boneRotQuat = animator->GetBoneRotation(45);
-
-					XMMATRIX worldMat = transform->GetWorldMatrix();
-					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
-
-					XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
-					XMFLOAT3 playerRot = transform->GetRotation();
-					XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
-
-					XMVECTOR finalRotQuat = XMQuaternionMultiply(offsetRot, boneRotQuat);
-					finalRotQuat = XMQuaternionMultiply(finalRotQuat, playerRotQuat);
-					XMMATRIX rotMat = XMMatrixRotationQuaternion(finalRotQuat);
-
-					XMVECTOR swordDir = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), rotMat);
-					swordDir = XMVector3Normalize(swordDir);
-
-					float bladeLength = 1.0f;
-					XMVECTOR topPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
-
-					XMFLOAT3 top, bottom;
-					XMStoreFloat3(&top, topPos);
-					XMStoreFloat3(&bottom, worldPos);
-
-					trail->AddPoint(top, bottom);
-				}
-			}
-		}
-	}
-
-	// Foot Dust 업데이트
-	if (myPlayer)
-	{
-		auto dust = myPlayer->GetComponent<FootDustComponent>();
-		if (dust)
-		{
-			auto animMachine = myPlayer->GetComponent<AnimationMachine>();
-			auto animator = myPlayer->GetComponent<Animator>();
-			auto transform = myPlayer->GetComponent<Transform>();
-
-			bool isWalking = animMachine && (animMachine->IsPlaying("Walk") || animMachine->IsPlaying("Run"));
-
-			if (isWalking && animator && animator->IsInitialized())
-			{
-				int currentFrame = animator->GetCurrentFrame();
-				XMMATRIX worldMat = transform->GetWorldMatrix();
-
-				if (currentFrame >= 24 && currentFrame <= 26)
-				{
-					if (!rightFootSpawned)
-					{
-						XMFLOAT3 rFootPos = animator->GetBonePosition(53);
-						XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&rFootPos), worldMat);
-						XMFLOAT3 spawnPos;
-						XMStoreFloat3(&spawnPos, worldPos);
-						dust->Spawn(spawnPos, 5);
-						rightFootSpawned = true;
-					}
-				}
-				else
-				{
-					rightFootSpawned = false;
-				}
-
-				if (currentFrame >= 7 && currentFrame <= 9)
-				{
-					if (!leftFootSpawned)
-					{
-						XMFLOAT3 lFootPos = animator->GetBonePosition(49);
-						XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&lFootPos), worldMat);
-						XMFLOAT3 spawnPos;
-						XMStoreFloat3(&spawnPos, worldPos);
-						dust->Spawn(spawnPos, 5);
-						leftFootSpawned = true;
-					}
-				}
-				else
-				{
-					leftFootSpawned = false;
-				}
-			}
-			else
-			{
-				rightFootSpawned = false;
-				leftFootSpawned = false;
-			}
-		}
-	}
-
-	// Parry Spark 업데이트
-	if (myPlayer)
-	{
-		auto spark = myPlayer->GetComponent<ParrySparkComponent>();
-		if (spark)
-		{
-			auto animMachine = myPlayer->GetComponent<AnimationMachine>();
-			auto animator = myPlayer->GetComponent<Animator>();
-			auto transform = myPlayer->GetComponent<Transform>();
-
-			bool isParrying = animMachine && animMachine->IsPlaying("Parry");
-
-			if (isParrying && animator && animator->IsInitialized())
-			{
-				int currentFrame = animator->GetCurrentFrame();
-
-				if (currentFrame >= 20 && currentFrame <= 22)
-				{
-					if (!parrySparkSpawned)
-					{
-						XMFLOAT3 bonePos = animator->GetBonePosition(45);
-						XMVECTOR boneRotQuat = animator->GetBoneRotation(45);
-						XMMATRIX worldMat = transform->GetWorldMatrix();
-						XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
-
-						XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
-						XMFLOAT3 playerRot = transform->GetRotation();
-						XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
-						XMVECTOR finalRotQuat = XMQuaternionMultiply(offsetRot, boneRotQuat);
-						finalRotQuat = XMQuaternionMultiply(finalRotQuat, playerRotQuat);
-						XMMATRIX rotMat = XMMatrixRotationQuaternion(finalRotQuat);
-
-						XMVECTOR swordDir = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), rotMat);
-						swordDir = XMVector3Normalize(swordDir);
-
-						float bladeLength = 1.0f;
-						XMVECTOR tipPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
-
-						XMFLOAT3 spawnPos;
-						XMStoreFloat3(&spawnPos, tipPos);
-						spark->Spawn(spawnPos, 32);
-						parrySparkSpawned = true;
-					}
-				}
-				else
-				{
-					parrySparkSpawned = false;
-				}
-			}
-			else
-			{
-				parrySparkSpawned = false;
-			}
-		}
 	}
 
 	if (cam)
@@ -527,7 +358,7 @@ void PlazaScene::CreateKnightPool()
 		auto animator = knight->AddComponent<Animator>();
 		auto animMachine = knight->AddComponent<AnimationMachine>();
 		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
-		mesh->SetCollisionMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+		//mesh->SetCollisionMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
 
 		animMachine->SetAnimationSet(AnimationSetFactory::CreateKnightSet());
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
@@ -546,10 +377,10 @@ void PlazaScene::CreateKnightPool()
 		dust->SetParticleSize(0.1f);
 
 		auto spark = knight->AddComponent<ParrySparkComponent>();
-		spark->Initialize(coreRef->GetDevice(), 128);
+		spark->Initialize(coreRef->GetDevice(), 64);
 		spark->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
 		spark->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
-		spark->SetSpeed(10.0f);
+		spark->SetSpeed(20.0f);
 		spark->SetParticleSize(0.1f);
 		spark->SetLifetime(0.75f);
 

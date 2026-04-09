@@ -26,4 +26,6 @@ protected:
 private:
 	vector<DustParticle> particles;
 	float particleSize = 0.01f;
+	bool rightFootSpawned = false;
+	bool leftFootSpawned = false;
 };

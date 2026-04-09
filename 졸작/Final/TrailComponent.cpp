@@ -1,11 +1,58 @@
 #include "pch.h"
 #include "TrailComponent.h"
 #include "Shader.h"
+#include "GameObject.h"
+#include "AnimationMachine.h"
+#include "Animator.h"
+#include "Transform.h"
 
 PSOType TrailComponent::GetPSOType() const { return PSOType::Trail; }
 
 void TrailComponent::Update(float deltaTime)
 {
+	auto owner = GetGameObject();
+	if (owner)
+	{
+		auto animMachine = owner->GetComponent<AnimationMachine>();
+		bool isAttacking = animMachine && animMachine->IsPlaying("Attack");
+		SetActive(isAttacking);
+
+		if (isAttacking)
+		{
+			auto animator = owner->GetComponent<Animator>();
+			auto transform = owner->GetComponent<Transform>();
+
+			if (animator && animator->IsInitialized() && transform)
+			{
+				XMFLOAT3 bonePos = animator->GetBonePosition(45);
+				XMVECTOR boneRotQuat = animator->GetBoneRotation(45);
+
+				XMMATRIX worldMat = transform->GetWorldMatrix();
+				XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
+
+				XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
+				XMFLOAT3 playerRot = transform->GetRotation();
+				XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
+
+				XMVECTOR finalRotQuat = XMQuaternionMultiply(offsetRot, boneRotQuat);
+				finalRotQuat = XMQuaternionMultiply(finalRotQuat, playerRotQuat);
+				XMMATRIX rotMat = XMMatrixRotationQuaternion(finalRotQuat);
+
+				XMVECTOR swordDir = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), rotMat);
+				swordDir = XMVector3Normalize(swordDir);
+
+				float bladeLength = 1.0f;
+				XMVECTOR topPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
+
+				XMFLOAT3 top, bottom;
+				XMStoreFloat3(&top, topPos);
+				XMStoreFloat3(&bottom, worldPos);
+
+				AddPoint(top, bottom);
+			}
+		}
+	}
+
 	if (!isActive && points.empty()) return;
 
 	for (auto& pt : points)
@@ -16,7 +63,6 @@ void TrailComponent::Update(float deltaTime)
 	while (!points.empty() && points.front().age >= maxLifetime)
 	{
 		points.erase(points.begin());
-		isDirty = true;
 	}
 }
 
@@ -47,7 +93,6 @@ void TrailComponent::AddPoint(const XMFLOAT3& top, const XMFLOAT3& bottom)
 	}
 
 	points.push_back(newPoint);
-	isDirty = true;
 }
 
 void TrailComponent::SetActive(bool active)
@@ -60,13 +105,16 @@ void TrailComponent::Clear()
 	points.clear();
 	vertices.clear();
 	indices.clear();
-	isDirty = false;
 }
 
 void TrailComponent::BuildMesh(const XMFLOAT3& cameraPos)
 {
-	if (points.size() < 2) return;
-	if (!isDirty) return;
+	if (points.size() < 2)
+	{
+		vertices.clear();
+		indices.clear();
+		return;
+	}
 
 	vertices.clear();
 	indices.clear();
@@ -105,6 +153,4 @@ void TrailComponent::BuildMesh(const XMFLOAT3& cameraPos)
 		indices.push_back(topRight);
 		indices.push_back(bottomRight);
 	}
-
-	isDirty = false;
 }

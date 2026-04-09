@@ -69,9 +69,5 @@ private:
 	shared_ptr<Terrain> terrain;
 
 	shared_ptr<GameObject> flameObject;
-
-	bool rightFootSpawned = false;
-	bool leftFootSpawned = false;
-	bool parrySparkSpawned = false;
 };
 
