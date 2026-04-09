@@ -9,17 +9,20 @@
 #include "WorldTransferService.h"
 #include "WorldAdmissionService.h"
 #include "PresenceManager.h"
+#include "NetIdRegistry.h"
 
 ExecutionOps::ExecutionOps(
 	WorldManager*			worldManager,
 	WorldRegistry*			worldRegistry, 
 	WorldTransferService*	worldTransferService, 
 	WorldAdmissionService*	worldAdmissionService, 
+	NetIdRegistry*			netIdRegistry,
 	PresenceManager*		persenceManager) noexcept
 	: _worldManager(worldManager)
 	, _worldRegistry(worldRegistry)
 	, _worldTransferService(worldTransferService)
 	, _worldAdmissionService(worldAdmissionService)
+	, _netIdRegistry(netIdRegistry)
 	, _persenceManager(persenceManager)
 {
 }
@@ -35,6 +38,28 @@ WorldRuntime* ExecutionOps::GetRuntime(
 		return nullptr;
 
 	return runtimeByScope[scopeId];
+}
+
+bool ExecutionOps::TryResolveEntity(
+	WorldId worldId,
+	const NetId& netId,
+	Entity& outEntity) const noexcept
+{
+	outEntity = Entity::Null();
+
+	if (_netIdRegistry == nullptr || !worldId.IsValid() || !netId.IsValid())
+	{
+		return false;
+	}
+
+	const NetBindingLocation binding = _netIdRegistry->FindLocation(netId);
+	if (!binding.IsValid() || binding.worldId != worldId)
+	{
+		return false;
+	}
+
+	outEntity = binding.entity;
+	return true;
 }
 
 void ExecutionOps::CommitScope(

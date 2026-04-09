@@ -6,6 +6,7 @@
 #include "ExecutionCoreTypes.h"
 #include "ExecutionGraphTypes.h"
 #include "ExecutionOps.h"
+#include "WorldId.h"
 
 struct WorldFrameSelectionSet;
 struct ExecutionGraphBuildPolicy;
@@ -43,12 +44,14 @@ struct FrameExecContext
     const FrameTaskGraph* graph{ nullptr };
     ExecutionOps* ops{ nullptr };
     std::span<WorldRuntime*> runtimeByScope{};
+    std::span<const WorldId> worldIdByScope{};
 
     void Clear() noexcept
     {
         graph = nullptr;
         ops = nullptr;
         runtimeByScope = {};
+        worldIdByScope = {};
     }
 
     [[nodiscard]]
@@ -65,7 +68,8 @@ struct FrameExecContext
     {
         return 
             scopeId != InvalidExecScopeId &&
-            scopeId < static_cast<ExecScopeId>(runtimeByScope.size());
+            scopeId < static_cast<ExecScopeId>(runtimeByScope.size()) &&
+            scopeId < static_cast<ExecScopeId>(worldIdByScope.size());
     }
 
     [[nodiscard]]
@@ -74,6 +78,14 @@ struct FrameExecContext
         return (ops != nullptr)
             ? ops->GetRuntime(scopeId, runtimeByScope)
             : nullptr;
+    }
+
+    [[nodiscard]]
+    WorldId TryGetWorldId(ExecScopeId scopeId) const noexcept
+    {
+        return IsValidScopeId(scopeId)
+            ? worldIdByScope[scopeId]
+            : WorldId::Invalid();
     }
 };
 
@@ -99,6 +111,14 @@ struct NodeExecContext
     WorldRuntime* TryGetRuntime() const noexcept
     {
         return (frame != nullptr) ? frame->TryGetRuntime(scopeId) : nullptr;
+    }
+
+    [[nodiscard]]
+    WorldId TryGetWorldId() const noexcept
+    {
+        return (frame != nullptr)
+            ? frame->TryGetWorldId(scopeId)
+            : WorldId::Invalid();
     }
 
     [[nodiscard]]

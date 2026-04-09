@@ -74,7 +74,10 @@ bool WorldScheduler::RunFrame(
         return true;
     }
 
-    if (!ResolveSelectedRuntimes(_scratch.selections, _scratch.runtimeByScope))
+    if (!ResolveSelectedRuntimes(
+        _scratch.selections,
+        _scratch.runtimeByScope,
+        _scratch.worldIdByScope))
     {
         outResult.failureReason = WorldSchedulerFailureReason::RuntimeResolveFailed;
         return false;
@@ -104,6 +107,7 @@ bool WorldScheduler::RunFrame(
     if (!PrepareExecutionContexts(
         _scratch.buildResult.graph,
         _scratch.runtimeByScope,
+        _scratch.worldIdByScope,
         _scratch.frameExec,
         _scratch.execRuntime))
     {
@@ -147,6 +151,7 @@ void WorldScheduler::FrameScratch::Reset() noexcept
     buildResult = {};
 
     runtimeByScope.clear();
+    worldIdByScope.clear();
 
     nodeBacking.reset();
     scopeBacking.reset();
@@ -201,10 +206,13 @@ bool WorldScheduler::BuildSelectionSet(
 
 bool WorldScheduler::ResolveSelectedRuntimes(
     const WorldFrameSelectionSet& selections,
-    std::vector<WorldRuntime*>& outRuntimeByScope)
+    std::vector<WorldRuntime*>& outRuntimeByScope,
+    std::vector<WorldId>& outWorldIdByScope)
 {
     outRuntimeByScope.clear();
     outRuntimeByScope.resize(selections.GetCount(), nullptr);
+    outWorldIdByScope.clear();
+    outWorldIdByScope.resize(selections.GetCount(), WorldId::Invalid());
 
     for (const WorldFrameSelection& selection : selections.selections)
     {
@@ -223,6 +231,7 @@ bool WorldScheduler::ResolveSelectedRuntimes(
             return false;
 
         outRuntimeByScope[selection.scopeId] = &world->GetRuntime();
+        outWorldIdByScope[selection.scopeId] = worldId;
     }
 
     return true;
@@ -261,6 +270,7 @@ bool WorldScheduler::BuildFrameGraph(
 bool WorldScheduler::PrepareExecutionContexts(
     const FrameTaskGraph& graph,
     std::vector<WorldRuntime*>& runtimeByScope,
+    std::vector<WorldId>& worldIdByScope,
     FrameExecContext& outFrameExec,
     ExecRuntimeState& outExecRuntime)
 {
@@ -268,6 +278,9 @@ bool WorldScheduler::PrepareExecutionContexts(
         return false;
 
     if (graph.scopeCount != runtimeByScope.size())
+        return false;
+
+    if (graph.scopeCount != worldIdByScope.size())
         return false;
 
     if (!graph.nodes.empty())
@@ -286,6 +299,9 @@ bool WorldScheduler::PrepareExecutionContexts(
     outFrameExec.runtimeByScope = std::span<WorldRuntime*>(
         runtimeByScope.data(),
         runtimeByScope.size());
+    outFrameExec.worldIdByScope = std::span<const WorldId>(
+        worldIdByScope.data(),
+        worldIdByScope.size());
 
     outExecRuntime.BindViews(
         std::span<ExecNodeRuntime>(

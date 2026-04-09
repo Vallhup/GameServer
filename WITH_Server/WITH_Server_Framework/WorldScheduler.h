@@ -9,6 +9,7 @@
 #include "ExecutionGraphTypes.h"
 #include "ExecutionRuntimeTypes.h"
 #include "WorldFrameSelectionTypes.h"
+#include "WorldId.h"
 
 class WorldManager;
 class WorldRegistry;
@@ -83,6 +84,7 @@ private:
         BuildResult buildResult;
 
         std::vector<WorldRuntime*> runtimeByScope;
+        std::vector<WorldId> worldIdByScope;
 
         std::unique_ptr<ExecNodeRuntime[]> nodeBacking;
         std::unique_ptr<ExecScopeRuntime[]> scopeBacking;
@@ -100,7 +102,8 @@ private:
 
     bool ResolveSelectedRuntimes(
         const WorldFrameSelectionSet& selections,
-        std::vector<WorldRuntime*>& outRuntimeByScope);
+        std::vector<WorldRuntime*>& outRuntimeByScope,
+        std::vector<WorldId>& outWorldIdByScope);
 
     bool BeginSelectedFrames(
         const WorldSchedulerFrameParams& params,
@@ -113,6 +116,7 @@ private:
     bool PrepareExecutionContexts(
         const FrameTaskGraph& graph,
         std::vector<WorldRuntime*>& runtimeByScope,
+        std::vector<WorldId>& worldIdByScope,
         FrameExecContext& outFrameExec,
         ExecRuntimeState& outExecRuntime);
 

@@ -49,8 +49,7 @@ EntityHandleStatus EntityManager::GetHandleStatus(Entity e) const
 	if (!IsCurrentGeneration(e))
 		return EntityHandleStatus::Invalid;
 
-	switch (_states[e.id])
-	{
+	switch (_states[e.id]) {
 	case EntitySlotState::Free:
 		return EntityHandleStatus::Free;
 	case EntitySlotState::Reserved:

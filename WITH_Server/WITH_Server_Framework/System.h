@@ -4,12 +4,28 @@
 #include "ECSView.h"
 
 class WorldRuntime;
+class NetId;
+
+struct IWorldNetBindingResolver
+{
+	virtual ~IWorldNetBindingResolver() = default;
+
+	virtual bool TryResolveEntity(
+		const NetId& netId,
+		Entity& outEntity) const noexcept = 0;
+};
+
+struct WorldSystemServices
+{
+	const IWorldNetBindingResolver* netBindingResolver{ nullptr };
+};
 
 struct SystemContext
 {
 	WorldRuntime& runtime;
 	ECSView ecs;
 	double dtSec;
+	WorldSystemServices services;
 };
 
 class System {

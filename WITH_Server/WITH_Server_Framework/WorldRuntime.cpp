@@ -188,7 +188,9 @@ bool WorldRuntime::EnqueueWorldCommand(WorldCommand command)
 	return _worldCommands.Enqueue(std::move(command));
 }
 
-bool WorldRuntime::ExecuteSystems(SystemPhase phase)
+bool WorldRuntime::ExecuteSystems(
+	SystemPhase phase,
+	WorldSystemServices services)
 {
 	if (_lifecycleState != WorldRuntimeLifecycleState::Running ||
 		IsShutdown() ||
@@ -205,7 +207,8 @@ bool WorldRuntime::ExecuteSystems(SystemPhase phase)
 	SystemContext context{
 		*this,
 		MakeView(),
-		_lastDtSec
+		_lastDtSec,
+		services
 	};
 
 	for (System* system : _systems.GetSystems(phase))

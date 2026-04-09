@@ -3,8 +3,12 @@
 #include <span>
 
 #include "ExecutionCoreTypes.h"
+#include "Entity.h"
+#include "WorldId.h"
 
 class WorldRuntime;
+class NetIdRegistry;
+class NetId;
 
 class WorldManager;
 class WorldRegistry;
@@ -20,6 +24,7 @@ public:
 		WorldRegistry*			worldRegistry,
 		WorldTransferService*	worldTransferService,
 		WorldAdmissionService*	worldAdmissionService,
+		NetIdRegistry*			netIdRegistry,
 		PresenceManager*		persenceManager
 	) noexcept;
 
@@ -28,6 +33,13 @@ public:
 		ExecScopeId scopeId,
 		std::span<WorldRuntime*> runtimeByScope
 	) noexcept;
+
+	[[nodiscard]]
+	bool TryResolveEntity(
+		WorldId worldId,
+		const NetId& netId,
+		Entity& outEntity
+	) const noexcept;
 
 
 	void CommitScope(
@@ -53,6 +65,7 @@ public:
 			_worldRegistry			!= nullptr &&
 			_worldTransferService	!= nullptr &&
 			_worldAdmissionService	!= nullptr &&
+			_netIdRegistry			!= nullptr &&
 			_persenceManager		!= nullptr;
 	}
 
@@ -61,5 +74,6 @@ private:
 	WorldRegistry*			_worldRegistry{ nullptr };
 	WorldTransferService*	_worldTransferService{ nullptr };
 	WorldAdmissionService*	_worldAdmissionService{ nullptr };
+	NetIdRegistry*			_netIdRegistry{ nullptr };
 	PresenceManager*		_persenceManager{ nullptr };
 };
