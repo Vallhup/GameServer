@@ -103,65 +103,92 @@ namespace GameplaySystemUtil
 			ecs.HasComponent<PendingWorldTransferTag>(entity);
 	}
 
-	inline PlayerActionInput ToActionInput(PlayerActionInputType type)
+	inline ActionRequestSemantic ToActionRequestSemantic(PlayerActionInputType type)
 	{
 		switch (type) {
 		case PlayerActionInputType::LightAttack:
-			return PlayerActionInput::LightAttack;
+			return ActionRequestSemantic::LightAttack;
 		case PlayerActionInputType::HeavyAttack:
-			return PlayerActionInput::HeavAttack;
+			return ActionRequestSemantic::HeavyAttack;
 		case PlayerActionInputType::Dodge:
-			return PlayerActionInput::Dodge;
+			return ActionRequestSemantic::Dodge;
 		case PlayerActionInputType::Parry:
-			return PlayerActionInput::Parry;
+			return ActionRequestSemantic::Parry;
 		case PlayerActionInputType::None:
 		default:
-			return PlayerActionInput::None;
+			return ActionRequestSemantic::None;
 		}
 	}
 
-	inline ActionKind ToActionKind(PlayerActionInputType type)
+	inline const CharacterActionProfileDef* FindCharacterActionProfile(
+		CharacterId characterId)
 	{
-		switch (type) {
-		case PlayerActionInputType::LightAttack:
-		case PlayerActionInputType::HeavyAttack:
-			return ActionKind::Attack;
-		case PlayerActionInputType::Dodge:
-			return ActionKind::Dodge;
-		case PlayerActionInputType::Parry:
-			return ActionKind::Parry;
-		case PlayerActionInputType::None:
-		default:
-			return ActionKind::None;
+		const CharacterDef* characterDef = FindCharacterDef(characterId);
+		if (characterDef == nullptr || !characterDef->action.has_value())
+		{
+			return nullptr;
 		}
+
+		return FindCharacterActionProfileDef(
+			characterDef->action->actionProfileId);
 	}
 
 	inline ActionId FindActionForInput(
 		CharacterId characterId,
 		PlayerActionInputType inputType)
 	{
-		const PlayerActionInput expectedInput = ToActionInput(inputType);
-		const ActionKind expectedKind = ToActionKind(inputType);
-
-		for (const ActionDef& def : GetActionDefs())
+		const ActionRequestSemantic request = ToActionRequestSemantic(inputType);
+		if (request == ActionRequestSemantic::None)
 		{
-			if (def.characterId != characterId)
+			return ActionId::None;
+		}
+
+		const CharacterActionProfileDef* profile =
+			FindCharacterActionProfile(characterId);
+		if (profile == nullptr)
+		{
+			return ActionId::None;
+		}
+
+		const ActionInputBindingProfileDef* bindingProfile =
+			FindActionInputBindingProfileDef(profile->inputBindingProfileId);
+		if (bindingProfile == nullptr)
+		{
+			return ActionId::None;
+		}
+
+		const ActionInputBindingEntryDef* selectedEntry = nullptr;
+		for (const ActionInputBindingEntryDef& entry : bindingProfile->entries)
+		{
+			if (entry.request != request || entry.candidateActions.empty())
 			{
 				continue;
 			}
 
-			if (inputType == PlayerActionInputType::Dodge)
+			if (selectedEntry == nullptr || entry.priority > selectedEntry->priority)
 			{
-				if (def.kind == ActionKind::Dodge)
+				selectedEntry = &entry;
+				if (entry.selectionPolicy ==
+					ActionCandidateSelectionPolicy::OrderedFirstValid)
 				{
-					return def.id;
+					break;
 				}
-				continue;
 			}
+		}
 
-			if (def.playerInput == expectedInput && def.kind == expectedKind)
+		if (selectedEntry == nullptr)
+		{
+			return ActionId::None;
+		}
+
+		for (ActionId candidate : selectedEntry->candidateActions)
+		{
+			if (std::find(
+				profile->availableActions.begin(),
+				profile->availableActions.end(),
+				candidate) != profile->availableActions.end())
 			{
-				return def.id;
+				return candidate;
 			}
 		}
 
@@ -172,20 +199,51 @@ namespace GameplaySystemUtil
 		CharacterId characterId,
 		CombatReactionKind reactionKind)
 	{
-		const ActionKind expectedKind =
-			(reactionKind == CombatReactionKind::HitReaction)
-			? ActionKind::Hit
-			: ActionKind::Stun;
+		ActionInterruptCauseType causeType = ActionInterruptCauseType::OnHitReceived;
+		switch (reactionKind) {
+		case CombatReactionKind::HitReaction:
+			causeType = ActionInterruptCauseType::OnHitReceived;
+			break;
+		case CombatReactionKind::GuardBreak:
+		case CombatReactionKind::Knockdown:
+			causeType = ActionInterruptCauseType::OnParried;
+			break;
+		case CombatReactionKind::None:
+		default:
+			return ActionId::None;
+		}
 
-		for (const ActionDef& def : GetActionDefs())
+		const CharacterActionProfileDef* profile =
+			FindCharacterActionProfile(characterId);
+		if (profile == nullptr)
 		{
-			if (def.characterId == characterId && def.kind == expectedKind)
+			return ActionId::None;
+		}
+
+		const ActionFallbackReactionProfileDef* fallbackProfile =
+			FindActionFallbackReactionProfileDef(profile->fallbackReactionProfileId);
+		if (fallbackProfile == nullptr)
+		{
+			return ActionId::None;
+		}
+
+		const ActionFallbackReactionEntryDef* selectedEntry = nullptr;
+		for (const ActionFallbackReactionEntryDef& entry : fallbackProfile->entries)
+		{
+			if (entry.causeType != causeType)
 			{
-				return def.id;
+				continue;
+			}
+
+			if (selectedEntry == nullptr || entry.priority > selectedEntry->priority)
+			{
+				selectedEntry = &entry;
 			}
 		}
 
-		return ActionId::None;
+		return (selectedEntry != nullptr)
+			? selectedEntry->toActionId
+			: ActionId::None;
 	}
 
 	inline const CharacterStatDef* FindCharacterStats(
@@ -202,118 +260,63 @@ namespace GameplaySystemUtil
 		return (def != nullptr) ? &def->stat : nullptr;
 	}
 
-	inline AnimationId ResolveActionAnimationId(ActionId actionId)
+	inline AnimationId ResolveActionAnimationId(
+		CharacterId characterId,
+		ActionId actionId)
 	{
-		switch (actionId) {
-		case ActionId::Knight_LightAttack1:
-			return AnimationId::Knight_LightAttack1;
-		/*case ActionId::Knight_LightAttack2:
-			return AnimationId::Knight_LightAttack2;
-		case ActionId::Knight_LightAttack3:
-			return AnimationId::Knight_LightAttack3;
-		case ActionId::Knight_HeavyAttack:
-			return AnimationId::Knight_HeavyAttack;
-		case ActionId::Knight_SpecialAttack:
-			return AnimationId::Knight_SpecialAttack;*/
-		case ActionId::Knight_Dodge:
-			return AnimationId::Knight_Dodge;
-		case ActionId::Knight_Parry:
-			return AnimationId::Knight_Parry;
-		case ActionId::Knight_Stun:
-			return AnimationId::Knight_Stun;
-		case ActionId::Knight_Hit:
-			return AnimationId::Knight_Hit;
-		case ActionId::Knight_Guard:
-			return AnimationId::Knight_Guard;
-		case ActionId::Knight_UseHpPotion:
-			return AnimationId::Knight_Drinking;
-		case ActionId::Knight_Dead:
-			return AnimationId::Knight_Death;
-
-		/*case ActionId::Imp_melee1:
-			return AnimationId::Imp_Melee_1;
-		case ActionId::Imp_melee2:
-			return AnimationId::Imp_Melee_2;
-		case ActionId::Imp_melee3:
-			return AnimationId::Imp_Melee_3;
-		case ActionId::Imp_melee4:
-			return AnimationId::Imp_Melee_4;
-		case ActionId::Imp_melee5:
-			return AnimationId::Imp_Melee_5;
-		case ActionId::Imp_Stun:
-			return AnimationId::Imp_Stun;
-		case ActionId::Imp_Hit:
-			return AnimationId::Imp_React_Front;
-		case ActionId::Imp_Dead:
-			return AnimationId::Imp_Death_1;*/
-
-		case ActionId::FinalBoss_Thrust:
-			return AnimationId::FinalBoss_Thrust;
-		case ActionId::FinalBoss_Slash:
-			return AnimationId::FinalBoss_Slash;
-		case ActionId::FinalBoss_DashSlash:
-			return AnimationId::FinalBoss_DashSlash;
-		case ActionId::FinalBoss_JumpSlash:
-			return AnimationId::FinalBoss_JumpSlash;
-		case ActionId::FinalBoss_MultiSlash:
-			return AnimationId::FinalBoss_MultiSlash;
-		case ActionId::FinalBoss_Stun:
-			return AnimationId::FinalBoss_Stun;
-		case ActionId::FinalBoss_Hit:
-			return AnimationId::FinalBoss_Hit;
-		case ActionId::FinalBoss_Dead:
-			return AnimationId::FinalBoss_Death;
-
-		default:
+		const CharacterActionProfileDef* profile =
+			FindCharacterActionProfile(characterId);
+		if (profile == nullptr)
+		{
 			return AnimationId::None;
 		}
+
+		const AnimationBindingProfileDef* bindingProfile =
+			FindAnimationBindingProfileDef(profile->animationBindingProfileId);
+		if (bindingProfile == nullptr)
+		{
+			return AnimationId::None;
+		}
+
+		for (const ActionAnimationBindingDef& binding : bindingProfile->actionBindings)
+		{
+			if (binding.actionId == actionId)
+			{
+				return binding.animationId;
+			}
+		}
+
+		return AnimationId::None;
 	}
 
 	inline AnimationId ResolveLocomotionAnimationId(
 		CharacterId characterId,
 		LocomotionMode mode)
 	{
-		switch (characterId) {
-		case CharacterId::Knight:
-			switch (mode) {
-			case LocomotionMode::Idle:
-				return AnimationId::Knight_Idle;
-			case LocomotionMode::Walk:
-			case LocomotionMode::Turn:
-				return AnimationId::Knight_Walk;
-			case LocomotionMode::Run:
-				return AnimationId::Knight_Run;
-			default:
-				return AnimationId::Knight_Idle;
-			}
-
-		/*case CharacterId::Imp:
-			switch (mode) {
-			case LocomotionMode::Idle:
-				return AnimationId::Imp_Idle_1;
-			case LocomotionMode::Walk:
-			case LocomotionMode::Run:
-			case LocomotionMode::Turn:
-				return AnimationId::Imp_Walk_Forward;
-			default:
-				return AnimationId::Imp_Idle_1;
-			}*/
-
-		case CharacterId::FinalBoss:
-			switch (mode) {
-			case LocomotionMode::Idle:
-				return AnimationId::FinalBoss_Idle;
-			case LocomotionMode::Walk:
-			case LocomotionMode::Run:
-			case LocomotionMode::Turn:
-				return AnimationId::FinalBoss_Walk;
-			default:
-				return AnimationId::FinalBoss_Idle;
-			}
-
-		default:
+		const CharacterActionProfileDef* profile =
+			FindCharacterActionProfile(characterId);
+		if (profile == nullptr)
+		{
 			return AnimationId::None;
 		}
+
+		const AnimationBindingProfileDef* bindingProfile =
+			FindAnimationBindingProfileDef(profile->animationBindingProfileId);
+		if (bindingProfile == nullptr)
+		{
+			return AnimationId::None;
+		}
+
+		for (const LocomotionAnimationBindingDef& binding :
+			bindingProfile->locomotionBindings)
+		{
+			if (binding.mode == mode)
+			{
+				return binding.animationId;
+			}
+		}
+
+		return AnimationId::None;
 	}
 
 	inline bool IsWindowActive(

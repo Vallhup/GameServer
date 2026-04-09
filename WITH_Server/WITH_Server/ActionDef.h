@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AnimationId.h"
+#include "ActionProfileIds.h"
 #include "IDs.h"
 
 #include <optional>
@@ -21,14 +22,14 @@ enum class ActionKind : uint8_t
 	Dead
 };
 
-enum class PlayerActionInput : uint8_t
+enum class ActionRequestSemantic : uint8_t
 {
 	None,
 	LightAttack,
-	HeavAttack,
-	Guard,
-	Parry,
+	HeavyAttack,
 	Dodge,
+	Parry,
+	GuardStart,
 	UseItem
 };
 
@@ -311,19 +312,81 @@ struct ActionEventDef
 	TriggerConditionType conditionType;
 };
 
-using ComboGroupId = uint16_t;
+enum class ActionCandidateSelectionPolicy : uint8_t
+{
+	OrderedFirstValid,
+	HighestPriorityValid
+};
+
+struct ActionInputBindingEntryDef
+{
+	ActionRequestSemantic request{ ActionRequestSemantic::None };
+	std::vector<ActionId> candidateActions;
+	ActionCandidateSelectionPolicy selectionPolicy{
+		ActionCandidateSelectionPolicy::OrderedFirstValid };
+	int priority{ 0 };
+};
+
+struct ActionInputBindingProfileDef
+{
+	ActionInputBindingProfileId id{ 0 };
+	std::vector<ActionInputBindingEntryDef> entries;
+};
+
+struct ActionFallbackReactionEntryDef
+{
+	ActionInterruptCauseType causeType{ ActionInterruptCauseType::OnHitReceived };
+	ActionId toActionId{ ActionId::None };
+	int priority{ 0 };
+};
+
+struct ActionFallbackReactionProfileDef
+{
+	ActionFallbackReactionProfileId id{ 0 };
+	std::vector<ActionFallbackReactionEntryDef> entries;
+};
+
+enum class LocomotionMode : uint8_t;
+
+struct ActionAnimationBindingDef
+{
+	ActionId actionId{ ActionId::None };
+	AnimationId animationId{ AnimationId::None };
+	float playRate{ 1.0f };
+	float startNormalizedTime{ 0.0f };
+};
+
+struct LocomotionAnimationBindingDef
+{
+	LocomotionMode mode;
+	AnimationId animationId{ AnimationId::None };
+	float playRate{ 1.0f };
+	bool holdLastFrame{ false };
+};
+
+struct AnimationBindingProfileDef
+{
+	AnimationBindingProfileId id{ 0 };
+	std::vector<ActionAnimationBindingDef> actionBindings;
+	std::vector<LocomotionAnimationBindingDef> locomotionBindings;
+};
+
+struct CharacterActionProfileDef
+{
+	CharacterActionProfileId id{ 0 };
+	CharacterId characterId;
+	std::vector<ActionId> availableActions;
+	ActionInputBindingProfileId inputBindingProfileId{ 0 };
+	ActionFallbackReactionProfileId fallbackReactionProfileId{ 0 };
+	AnimationBindingProfileId animationBindingProfileId{ 0 };
+};
 
 struct ActionDef
 {
 	ActionId id;
 	std::string name;
-	
-	CharacterId characterId;
 	ActionKind kind;
-	PlayerActionInput playerInput;
-
-	std::optional<ComboGroupId> comboGroupId;
-	std::optional<uint8_t> comboIndex;
+	uint32_t tags{ 0 };
 
 	float duration;
 	ActionNormalizedPolicy normalizedPolicy;
@@ -340,3 +403,29 @@ struct ActionDef
 const ActionDef* FindActionDef(ActionId id) noexcept;
 const ActionDef& GetActionDef(ActionId id);
 std::span<const ActionDef> GetActionDefs() noexcept;
+
+const CharacterActionProfileDef* FindCharacterActionProfileDef(
+	CharacterActionProfileId id) noexcept;
+const CharacterActionProfileDef& GetCharacterActionProfileDef(
+	CharacterActionProfileId id);
+const CharacterActionProfileDef* FindCharacterActionProfileDefByCharacter(
+	CharacterId characterId) noexcept;
+std::span<const CharacterActionProfileDef> GetCharacterActionProfileDefs() noexcept;
+
+const ActionInputBindingProfileDef* FindActionInputBindingProfileDef(
+	ActionInputBindingProfileId id) noexcept;
+const ActionInputBindingProfileDef& GetActionInputBindingProfileDef(
+	ActionInputBindingProfileId id);
+std::span<const ActionInputBindingProfileDef> GetActionInputBindingProfileDefs() noexcept;
+
+const ActionFallbackReactionProfileDef* FindActionFallbackReactionProfileDef(
+	ActionFallbackReactionProfileId id) noexcept;
+const ActionFallbackReactionProfileDef& GetActionFallbackReactionProfileDef(
+	ActionFallbackReactionProfileId id);
+std::span<const ActionFallbackReactionProfileDef> GetActionFallbackReactionProfileDefs() noexcept;
+
+const AnimationBindingProfileDef* FindAnimationBindingProfileDef(
+	AnimationBindingProfileId id) noexcept;
+const AnimationBindingProfileDef& GetAnimationBindingProfileDef(
+	AnimationBindingProfileId id);
+std::span<const AnimationBindingProfileDef> GetAnimationBindingProfileDefs() noexcept;

@@ -1,31 +1,27 @@
 #include "pch.h"
 #include "CharacterIdPolicy.h"
+#include "CharacterDef.h"
 
 bool IsPlayableCharacterId(CharacterId id) noexcept
 {
-	switch (id) {
-	case CharacterId::Knight:
-	case CharacterId::Lancer:
-	case CharacterId::Vanguard:
-		return true;
-
-	default:
+	const CharacterDef* const def = FindCharacterDef(id);
+	if (def == nullptr)
+	{
 		return false;
 	}
+
+	return def->IsPlayable();
 }
 
 bool IsMonsterCharacterId(CharacterId id) noexcept
 {
-	switch (id) {
-	case CharacterId::Imp:
-	case CharacterId::DemonStriker:
-	case CharacterId::DemonExecutioner:
-	case CharacterId::BigDemonWarrior:
-	case CharacterId::Tank:
-	case CharacterId::FinalBoss:
-		return true;
-
-	default:
+	const CharacterDef* const def = FindCharacterDef(id);
+	if (def == nullptr)
+	{
 		return false;
 	}
+
+	return
+		def->role == CharacterRole::Monster ||
+		def->role == CharacterRole::Boss;
 }

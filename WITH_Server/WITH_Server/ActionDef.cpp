@@ -1,24 +1,19 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "ActionDef.h"
+#include "ECS/GameplayRuntimeComponents.h"
 
 #include <array>
 #include <stdexcept>
 
 namespace
 {
-	constexpr ComboGroupId kKnightLightComboGroupId = 1;
-
 	const std::array<ActionDef, 19> kActionDefs =
 	{
 		ActionDef
 		{
 			.id = ActionId::Knight_LightAttack1,
 			.name = "Knight.LightAttack1",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Attack,
-			.playerInput = PlayerActionInput::LightAttack,
-			.comboGroupId = kKnightLightComboGroupId,
-			.comboIndex = 1,
 			.duration = 1.16f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -142,11 +137,7 @@ namespace
 		{
 			.id = ActionId::Knight_LightAttack2,
 			.name = "Knight.LightAttack2",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Attack,
-			.playerInput = PlayerActionInput::LightAttack,
-			.comboGroupId = kKnightLightComboGroupId,
-			.comboIndex = 2,
 			.duration = 1.06f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -285,11 +276,7 @@ namespace
 		{
 			.id = ActionId::Knight_LightAttack3,
 			.name = "Knight.LightAttack3",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Attack,
-			.playerInput = PlayerActionInput::LightAttack,
-			.comboGroupId = kKnightLightComboGroupId,
-			.comboIndex = 3,
 			.duration = 1.53f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -419,11 +406,7 @@ namespace
 		{
 			.id = ActionId::Knight_HeavyAttack,
 			.name = "Knight.HeavyAttack",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Attack,
-			.playerInput = PlayerActionInput::HeavAttack,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 1.30f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -527,11 +510,7 @@ namespace
 		{
 			.id = ActionId::Knight_SpecialAttack,
 			.name = "Knight.SpecialAttack",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Attack,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 3.13f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -641,11 +620,7 @@ namespace
 		{
 			.id = ActionId::Knight_Dodge,
 			.name = "Knight.Dodge",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Dodge,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 1.53f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -754,11 +729,7 @@ namespace
 		{
 			.id = ActionId::Knight_Parry,
 			.name = "Knight.Parry",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Parry,
-			.playerInput = PlayerActionInput::Parry,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 1.00f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -853,11 +824,7 @@ namespace
 		{
 			.id = ActionId::Knight_Guard,
 			.name = "Knight.Guard",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Guard,
-			.playerInput = PlayerActionInput::Guard,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = (std::numeric_limits<float>::max)(),
 			.normalizedPolicy = ActionNormalizedPolicy::Holdable,
 			.endPolicy = ActionEndPolicyDef
@@ -1000,11 +967,7 @@ namespace
 		{
 			.id = ActionId::Knight_Stun,
 			.name = "Knight.Stun",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Stun,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 3.16f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1039,11 +1002,7 @@ namespace
 		{
 			.id = ActionId::Knight_Hit,
 			.name = "Knight.Hit",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Hit,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 1.63f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1078,11 +1037,7 @@ namespace
 		{
 			.id = ActionId::Knight_Dead,
 			.name = "Knight.Dead",
-			.characterId = CharacterId::Knight,
 			.kind = ActionKind::Dead,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 3.86f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1106,11 +1061,7 @@ namespace
 		{
 			.id = ActionId::Imp_melee1,
 			.name = "Imp.Melee1",
-			.characterId = CharacterId::Imp,
 			.kind = ActionKind::Attack,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 0.82f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1221,11 +1172,7 @@ namespace
 		{
 			.id = ActionId::Imp_melee2,
 			.name = "Imp.Melee2",
-			.characterId = CharacterId::Imp,
 			.kind = ActionKind::Attack,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 0.88f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1336,11 +1283,7 @@ namespace
 		{
 			.id = ActionId::Imp_melee3,
 			.name = "Imp.Melee3",
-			.characterId = CharacterId::Imp,
 			.kind = ActionKind::Attack,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 0.94f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1451,11 +1394,7 @@ namespace
 		{
 			.id = ActionId::Imp_melee4,
 			.name = "Imp.Melee4",
-			.characterId = CharacterId::Imp,
 			.kind = ActionKind::Attack,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 1.02f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1566,11 +1505,7 @@ namespace
 		{
 			.id = ActionId::Imp_melee5,
 			.name = "Imp.Melee5",
-			.characterId = CharacterId::Imp,
 			.kind = ActionKind::Attack,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 1.10f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1681,11 +1616,7 @@ namespace
 		{
 			.id = ActionId::Imp_Stun,
 			.name = "Imp.Stun",
-			.characterId = CharacterId::Imp,
 			.kind = ActionKind::Stun,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 1.00f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1720,11 +1651,7 @@ namespace
 		{
 			.id = ActionId::Imp_Hit,
 			.name = "Imp.Hit",
-			.characterId = CharacterId::Imp,
 			.kind = ActionKind::Hit,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 0.58f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1759,11 +1686,7 @@ namespace
 		{
 			.id = ActionId::Imp_Dead,
 			.name = "Imp.Dead",
-			.characterId = CharacterId::Imp,
 			.kind = ActionKind::Dead,
-			.playerInput = PlayerActionInput::None,
-			.comboGroupId = std::nullopt,
-			.comboIndex = std::nullopt,
 			.duration = 1.10f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
@@ -1784,6 +1707,349 @@ namespace
 		}
 	};
 
+	const std::array<CharacterActionProfileDef, 3> kCharacterActionProfiles =
+	{
+		CharacterActionProfileDef
+		{
+			.id = CharacterActionProfileIds::Knight,
+			.characterId = CharacterId::Knight,
+			.availableActions =
+			{
+				ActionId::Knight_LightAttack1,
+				ActionId::Knight_LightAttack2,
+				ActionId::Knight_LightAttack3,
+				ActionId::Knight_HeavyAttack,
+				ActionId::Knight_Dodge,
+				ActionId::Knight_Parry,
+				ActionId::Knight_Stun,
+				ActionId::Knight_Hit,
+				ActionId::Knight_Guard,
+				ActionId::Knight_UseHpPotion,
+				ActionId::Knight_Dead
+			},
+			.inputBindingProfileId = ActionInputBindingProfileIds::Knight,
+			.fallbackReactionProfileId = ActionFallbackReactionProfileIds::Knight,
+			.animationBindingProfileId = AnimationBindingProfileIds::Knight
+		},
+		CharacterActionProfileDef
+		{
+			.id = CharacterActionProfileIds::Imp,
+			.characterId = CharacterId::Imp,
+			.availableActions =
+			{
+				ActionId::Imp_melee1,
+				ActionId::Imp_melee2,
+				ActionId::Imp_melee3,
+				ActionId::Imp_melee4,
+				ActionId::Imp_melee5,
+				ActionId::Imp_Stun,
+				ActionId::Imp_Hit,
+				ActionId::Imp_Dead
+			},
+			.inputBindingProfileId = ActionInputBindingProfileIds::Imp,
+			.fallbackReactionProfileId = ActionFallbackReactionProfileIds::Imp,
+			.animationBindingProfileId = AnimationBindingProfileIds::Imp
+		},
+		CharacterActionProfileDef
+		{
+			.id = CharacterActionProfileIds::FinalBoss,
+			.characterId = CharacterId::FinalBoss,
+			.availableActions =
+			{
+				ActionId::FinalBoss_Thrust,
+				ActionId::FinalBoss_Slash,
+				ActionId::FinalBoss_DashSlash,
+				ActionId::FinalBoss_JumpSlash,
+				ActionId::FinalBoss_MultiSlash,
+				ActionId::FinalBoss_Stun,
+				ActionId::FinalBoss_Hit,
+				ActionId::FinalBoss_Dead
+			},
+			.inputBindingProfileId = ActionInputBindingProfileIds::FinalBoss,
+			.fallbackReactionProfileId = ActionFallbackReactionProfileIds::FinalBoss,
+			.animationBindingProfileId = AnimationBindingProfileIds::FinalBoss
+		}
+	};
+
+	const std::array<ActionInputBindingProfileDef, 3> kActionInputBindingProfiles =
+	{
+		ActionInputBindingProfileDef
+		{
+			.id = ActionInputBindingProfileIds::Knight,
+			.entries =
+			{
+				ActionInputBindingEntryDef
+				{
+					.request = ActionRequestSemantic::LightAttack,
+					.candidateActions = { ActionId::Knight_LightAttack1 },
+					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
+					.priority = 100
+				},
+				ActionInputBindingEntryDef
+				{
+					.request = ActionRequestSemantic::HeavyAttack,
+					.candidateActions = { ActionId::Knight_HeavyAttack },
+					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
+					.priority = 100
+				},
+				ActionInputBindingEntryDef
+				{
+					.request = ActionRequestSemantic::Dodge,
+					.candidateActions = { ActionId::Knight_Dodge },
+					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
+					.priority = 100
+				},
+				ActionInputBindingEntryDef
+				{
+					.request = ActionRequestSemantic::Parry,
+					.candidateActions = { ActionId::Knight_Parry },
+					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
+					.priority = 100
+				}
+			}
+		},
+		ActionInputBindingProfileDef
+		{
+			.id = ActionInputBindingProfileIds::Imp,
+			.entries = {}
+		},
+		ActionInputBindingProfileDef
+		{
+			.id = ActionInputBindingProfileIds::FinalBoss,
+			.entries = {}
+		}
+	};
+
+	const std::array<ActionFallbackReactionProfileDef, 3> kActionFallbackReactionProfiles =
+	{
+		ActionFallbackReactionProfileDef
+		{
+			.id = ActionFallbackReactionProfileIds::Knight,
+			.entries =
+			{
+				ActionFallbackReactionEntryDef
+				{
+					.causeType = ActionInterruptCauseType::OnHitReceived,
+					.toActionId = ActionId::Knight_Hit,
+					.priority = 100
+				},
+				ActionFallbackReactionEntryDef
+				{
+					.causeType = ActionInterruptCauseType::OnParried,
+					.toActionId = ActionId::Knight_Stun,
+					.priority = 200
+				},
+				ActionFallbackReactionEntryDef
+				{
+					.causeType = ActionInterruptCauseType::OnHpZero,
+					.toActionId = ActionId::Knight_Dead,
+					.priority = 1000
+				}
+			}
+		},
+		ActionFallbackReactionProfileDef
+		{
+			.id = ActionFallbackReactionProfileIds::Imp,
+			.entries =
+			{
+				ActionFallbackReactionEntryDef
+				{
+					.causeType = ActionInterruptCauseType::OnHitReceived,
+					.toActionId = ActionId::Imp_Hit,
+					.priority = 100
+				},
+				ActionFallbackReactionEntryDef
+				{
+					.causeType = ActionInterruptCauseType::OnParried,
+					.toActionId = ActionId::Imp_Stun,
+					.priority = 200
+				},
+				ActionFallbackReactionEntryDef
+				{
+					.causeType = ActionInterruptCauseType::OnHpZero,
+					.toActionId = ActionId::Imp_Dead,
+					.priority = 1000
+				}
+			}
+		},
+		ActionFallbackReactionProfileDef
+		{
+			.id = ActionFallbackReactionProfileIds::FinalBoss,
+			.entries =
+			{
+				ActionFallbackReactionEntryDef
+				{
+					.causeType = ActionInterruptCauseType::OnHitReceived,
+					.toActionId = ActionId::FinalBoss_Hit,
+					.priority = 100
+				},
+				ActionFallbackReactionEntryDef
+				{
+					.causeType = ActionInterruptCauseType::OnParried,
+					.toActionId = ActionId::FinalBoss_Stun,
+					.priority = 200
+				},
+				ActionFallbackReactionEntryDef
+				{
+					.causeType = ActionInterruptCauseType::OnHpZero,
+					.toActionId = ActionId::FinalBoss_Dead,
+					.priority = 1000
+				}
+			}
+		}
+	};
+
+	const std::array<AnimationBindingProfileDef, 3> kAnimationBindingProfiles =
+	{
+		AnimationBindingProfileDef
+		{
+			.id = AnimationBindingProfileIds::Knight,
+			.actionBindings =
+			{
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Knight_LightAttack1,
+					.animationId = AnimationId::Knight_LightAttack1
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Knight_Dodge,
+					.animationId = AnimationId::Knight_Dodge
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Knight_Parry,
+					.animationId = AnimationId::Knight_Parry
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Knight_Stun,
+					.animationId = AnimationId::Knight_Stun
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Knight_Hit,
+					.animationId = AnimationId::Knight_Hit
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Knight_Guard,
+					.animationId = AnimationId::Knight_Guard
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Knight_UseHpPotion,
+					.animationId = AnimationId::Knight_Drinking
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Knight_Dead,
+					.animationId = AnimationId::Knight_Death
+				}
+			},
+			.locomotionBindings =
+			{
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Idle,
+					.animationId = AnimationId::Knight_Idle,
+					.holdLastFrame = true
+				},
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Walk,
+					.animationId = AnimationId::Knight_Walk
+				},
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Run,
+					.animationId = AnimationId::Knight_Run
+				},
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Turn,
+					.animationId = AnimationId::Knight_Walk
+				}
+			}
+		},
+		AnimationBindingProfileDef
+		{
+			.id = AnimationBindingProfileIds::Imp,
+			.actionBindings = {},
+			.locomotionBindings = {}
+		},
+		AnimationBindingProfileDef
+		{
+			.id = AnimationBindingProfileIds::FinalBoss,
+			.actionBindings =
+			{
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::FinalBoss_Thrust,
+					.animationId = AnimationId::FinalBoss_Thrust
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::FinalBoss_Slash,
+					.animationId = AnimationId::FinalBoss_Slash
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::FinalBoss_DashSlash,
+					.animationId = AnimationId::FinalBoss_DashSlash
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::FinalBoss_JumpSlash,
+					.animationId = AnimationId::FinalBoss_JumpSlash
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::FinalBoss_MultiSlash,
+					.animationId = AnimationId::FinalBoss_MultiSlash
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::FinalBoss_Stun,
+					.animationId = AnimationId::FinalBoss_Stun
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::FinalBoss_Hit,
+					.animationId = AnimationId::FinalBoss_Hit
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::FinalBoss_Dead,
+					.animationId = AnimationId::FinalBoss_Death
+				}
+			},
+			.locomotionBindings =
+			{
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Idle,
+					.animationId = AnimationId::FinalBoss_Idle,
+					.holdLastFrame = true
+				},
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Walk,
+					.animationId = AnimationId::FinalBoss_Walk
+				},
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Run,
+					.animationId = AnimationId::FinalBoss_Walk
+				},
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Turn,
+					.animationId = AnimationId::FinalBoss_Walk
+				}
+			}
+		}
+	};
 
 }
 
@@ -1814,4 +2080,147 @@ const ActionDef& GetActionDef(ActionId id)
 std::span<const ActionDef> GetActionDefs() noexcept
 {
 	return std::span<const ActionDef>(kActionDefs);
+}
+
+const CharacterActionProfileDef* FindCharacterActionProfileDef(
+	CharacterActionProfileId id) noexcept
+{
+	for (const CharacterActionProfileDef& def : kCharacterActionProfiles)
+	{
+		if (def.id == id)
+		{
+			return &def;
+		}
+	}
+
+	return nullptr;
+}
+
+const CharacterActionProfileDef& GetCharacterActionProfileDef(
+	CharacterActionProfileId id)
+{
+	const CharacterActionProfileDef* const def = FindCharacterActionProfileDef(id);
+	if (def == nullptr)
+	{
+		throw std::out_of_range("CharacterActionProfileDef was not found.");
+	}
+
+	return *def;
+}
+
+const CharacterActionProfileDef* FindCharacterActionProfileDefByCharacter(
+	CharacterId characterId) noexcept
+{
+	for (const CharacterActionProfileDef& def : kCharacterActionProfiles)
+	{
+		if (def.characterId == characterId)
+		{
+			return &def;
+		}
+	}
+
+	return nullptr;
+}
+
+std::span<const CharacterActionProfileDef> GetCharacterActionProfileDefs() noexcept
+{
+	return std::span<const CharacterActionProfileDef>(kCharacterActionProfiles);
+}
+
+const ActionInputBindingProfileDef* FindActionInputBindingProfileDef(
+	ActionInputBindingProfileId id) noexcept
+{
+	for (const ActionInputBindingProfileDef& def : kActionInputBindingProfiles)
+	{
+		if (def.id == id)
+		{
+			return &def;
+		}
+	}
+
+	return nullptr;
+}
+
+const ActionInputBindingProfileDef& GetActionInputBindingProfileDef(
+	ActionInputBindingProfileId id)
+{
+	const ActionInputBindingProfileDef* const def =
+		FindActionInputBindingProfileDef(id);
+	if (def == nullptr)
+	{
+		throw std::out_of_range("ActionInputBindingProfileDef was not found.");
+	}
+
+	return *def;
+}
+
+std::span<const ActionInputBindingProfileDef> GetActionInputBindingProfileDefs() noexcept
+{
+	return std::span<const ActionInputBindingProfileDef>(kActionInputBindingProfiles);
+}
+
+const ActionFallbackReactionProfileDef* FindActionFallbackReactionProfileDef(
+	ActionFallbackReactionProfileId id) noexcept
+{
+	for (const ActionFallbackReactionProfileDef& def :
+		kActionFallbackReactionProfiles)
+	{
+		if (def.id == id)
+		{
+			return &def;
+		}
+	}
+
+	return nullptr;
+}
+
+const ActionFallbackReactionProfileDef& GetActionFallbackReactionProfileDef(
+	ActionFallbackReactionProfileId id)
+{
+	const ActionFallbackReactionProfileDef* const def =
+		FindActionFallbackReactionProfileDef(id);
+	if (def == nullptr)
+	{
+		throw std::out_of_range("ActionFallbackReactionProfileDef was not found.");
+	}
+
+	return *def;
+}
+
+std::span<const ActionFallbackReactionProfileDef> GetActionFallbackReactionProfileDefs() noexcept
+{
+	return std::span<const ActionFallbackReactionProfileDef>(
+		kActionFallbackReactionProfiles);
+}
+
+const AnimationBindingProfileDef* FindAnimationBindingProfileDef(
+	AnimationBindingProfileId id) noexcept
+{
+	for (const AnimationBindingProfileDef& def : kAnimationBindingProfiles)
+	{
+		if (def.id == id)
+		{
+			return &def;
+		}
+	}
+
+	return nullptr;
+}
+
+const AnimationBindingProfileDef& GetAnimationBindingProfileDef(
+	AnimationBindingProfileId id)
+{
+	const AnimationBindingProfileDef* const def =
+		FindAnimationBindingProfileDef(id);
+	if (def == nullptr)
+	{
+		throw std::out_of_range("AnimationBindingProfileDef was not found.");
+	}
+
+	return *def;
+}
+
+std::span<const AnimationBindingProfileDef> GetAnimationBindingProfileDefs() noexcept
+{
+	return std::span<const AnimationBindingProfileDef>(kAnimationBindingProfiles);
 }

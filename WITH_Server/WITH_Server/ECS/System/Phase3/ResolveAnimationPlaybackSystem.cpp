@@ -28,7 +28,9 @@ void ResolveAnimationPlaybackSystem::Execute(SystemContext& ctx)
 			const ActionDef* actionDef = FindActionDef(actionState.actionId);
 			playbackState.source = AnimationPlaybackSource::Action;
 			playbackState.animationId =
-				ResolveActionAnimationId(actionState.actionId);
+				ResolveActionAnimationId(
+					spawnType.characterId,
+					actionState.actionId);
 			playbackState.boundActionInstanceId = actionState.actionInstanceId;
 			playbackState.boundActionId = actionState.actionId;
 			playbackState.boundLocomotionMode = LocomotionMode::Idle;

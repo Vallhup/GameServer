@@ -10,24 +10,12 @@ void NormalAIMovementPolicy::BuildChaseIntent(AIContext& ctx)
 	if (!TryGetCurrentTargetPosition(ctx, targetPos))
 		return;
 
-	ctx.command->hasMove = true;
-	ctx.command->wantsRun = true;
-
-	const XMVECTOR vFrom = XMLoadFloat3(&ctx.selfTr->position);
-	const XMVECTOR vTo = XMLoadFloat3(&targetPos);
-
-	XMVECTOR dir = XMVectorSubtract(vTo, vFrom);
-	if (XMVectorGetX(XMVector3LengthSq(dir)) > 1e-12f)
-	{
-		dir = XMVector3Normalize(dir);
-	}
-
-	else
-	{
-		dir = XMVectorZero();
-	}
-
+	XMVECTOR dir = TransformHelper::Direction(ctx.selfTr->position, targetPos);
 	XMStoreFloat3(&ctx.command->moveDir, dir);
+
+	const bool hasMove = XMVector3Equal(dir, XMVectorZero());
+	ctx.command->hasMove = hasMove;
+	ctx.command->wantsRun = hasMove;
 }
 
 void NormalAIMovementPolicy::BuildCombatIntent(AIContext& ctx)

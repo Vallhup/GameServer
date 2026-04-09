@@ -210,6 +210,16 @@
     <ClCompile Include="NormalAISearchState.cpp" />
     <ClCompile Include="PlayerCommand.cpp" />
     <ClCompile Include="PlayerEntryService.cpp" />
+    <ClCompile Include="Aspect\AIControlAspect.cpp" />
+    <ClCompile Include="Aspect\BaseCombatantAspect.cpp" />
+    <ClCompile Include="Aspect\BossPhaseAspect.cpp" />
+    <ClCompile Include="Aspect\CharacterAspectRegistry.cpp" />
+    <ClCompile Include="Aspect\CombatHitAspect.cpp" />
+    <ClCompile Include="Aspect\IdentityAspect.cpp" />
+    <ClCompile Include="Aspect\LocomotionPhysicsAspect.cpp" />
+    <ClCompile Include="Aspect\PlayerControlAspect.cpp" />
+    <ClCompile Include="Aspect\PortalAspect.cpp" />
+    <ClCompile Include="Aspect\ReplicationAspect.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -285,6 +295,17 @@
     <ClInclude Include="NormalAISearchState.h" />
     <ClInclude Include="PlayerCommand.h" />
     <ClInclude Include="PlayerEntryService.h" />
+    <ClInclude Include="Aspect\AIControlAspect.h" />
+    <ClInclude Include="Aspect\BaseCombatantAspect.h" />
+    <ClInclude Include="Aspect\BossPhaseAspect.h" />
+    <ClInclude Include="Aspect\CharacterAspectRegistry.h" />
+    <ClInclude Include="Aspect\CombatHitAspect.h" />
+    <ClInclude Include="Aspect\ICharacterAspect.h" />
+    <ClInclude Include="Aspect\IdentityAspect.h" />
+    <ClInclude Include="Aspect\LocomotionPhysicsAspect.h" />
+    <ClInclude Include="Aspect\PlayerControlAspect.h" />
+    <ClInclude Include="Aspect\PortalAspect.h" />
+    <ClInclude Include="Aspect\ReplicationAspect.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ServerApp.h" />

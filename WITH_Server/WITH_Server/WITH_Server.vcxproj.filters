@@ -174,6 +174,36 @@
     <ClCompile Include="AIFSMRegistry.cpp">
       <Filter>FSM\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Aspect\AIControlAspect.cpp">
+      <Filter>Aspect</Filter>
+    </ClCompile>
+    <ClCompile Include="Aspect\BaseCombatantAspect.cpp">
+      <Filter>Aspect</Filter>
+    </ClCompile>
+    <ClCompile Include="Aspect\BossPhaseAspect.cpp">
+      <Filter>Aspect</Filter>
+    </ClCompile>
+    <ClCompile Include="Aspect\CharacterAspectRegistry.cpp">
+      <Filter>Aspect</Filter>
+    </ClCompile>
+    <ClCompile Include="Aspect\CombatHitAspect.cpp">
+      <Filter>Aspect</Filter>
+    </ClCompile>
+    <ClCompile Include="Aspect\IdentityAspect.cpp">
+      <Filter>Aspect</Filter>
+    </ClCompile>
+    <ClCompile Include="Aspect\LocomotionPhysicsAspect.cpp">
+      <Filter>Aspect</Filter>
+    </ClCompile>
+    <ClCompile Include="Aspect\PlayerControlAspect.cpp">
+      <Filter>Aspect</Filter>
+    </ClCompile>
+    <ClCompile Include="Aspect\PortalAspect.cpp">
+      <Filter>Aspect</Filter>
+    </ClCompile>
+    <ClCompile Include="Aspect\ReplicationAspect.cpp">
+      <Filter>Aspect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServerNetworkService.h">
@@ -387,6 +417,39 @@
     <ClInclude Include="AIFSMRegistry.h">
       <Filter>FSM\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Aspect\AIControlAspect.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect\BaseCombatantAspect.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect\BossPhaseAspect.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect\CharacterAspectRegistry.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect\CombatHitAspect.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect\ICharacterAspect.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect\IdentityAspect.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect\LocomotionPhysicsAspect.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect\PlayerControlAspect.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect\PortalAspect.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
+    <ClInclude Include="Aspect\ReplicationAspect.h">
+      <Filter>Aspect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -481,6 +544,9 @@
     </Filter>
     <Filter Include="FSM\Core\Interface">
       <UniqueIdentifier>{5a9151d4-e48b-4c78-83f3-23f1e05e8f37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Aspect">
+      <UniqueIdentifier>{8dedabbf-65b2-4559-ba66-b92e25f1e608}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -14,6 +14,8 @@ namespace
 		FinalBossTuning = 1005
 	};
 
+	using CFF = CharacterFeatureFlags;
+
 	const std::array<CharacterDef, 3> kCharacterDefs =
 	{
 		CharacterDef
@@ -34,7 +36,18 @@ namespace
 				.moveSpeed = 2.5f,
 				.attackSpeed = 1.0f
 			},
-			.ai = std::nullopt
+			.role = CharacterRole::Player,
+			.features =
+				CFF::Replicated |
+				CFF::Combatant |
+				CFF::Playable |
+				CFF::PortalAware |
+				CFF::BuffUser,
+			.ai = std::nullopt,
+			.action = CharacterActionDefRef
+			{
+				.actionProfileId = CharacterActionProfileIds::Knight
+			}
 		},
 
 		CharacterDef
@@ -55,10 +68,19 @@ namespace
 				.moveSpeed = 2.5f,
 				.attackSpeed = 1.0f
 			},
+			.role = CharacterRole::Monster,
+			.features =
+				CFF::Replicated |
+				CFF::Combatant |
+				CFF::AIControlled,
 			.ai = CharacterAIDef
 			{
 				.aiType = AIArchetype::NormalMonster,
 				.aiTuningId = ImpTuning
+			},
+			.action = CharacterActionDefRef
+			{
+				.actionProfileId = CharacterActionProfileIds::Imp
 			}
 		},
 
@@ -80,10 +102,20 @@ namespace
 				.moveSpeed = 2.5f,
 				.attackSpeed = 1.0f
 			},
+			.role = CharacterRole::Boss,
+			.features =
+				CFF::Replicated |
+				CFF::Combatant |
+				CFF::AIControlled |
+				CFF::BossPhase,
 			.ai = CharacterAIDef
 			{
 				.aiType = AIArchetype::FinalBossMonster,
 				.aiTuningId = FinalBossTuning
+			},
+			.action = CharacterActionDefRef
+			{
+				.actionProfileId = CharacterActionProfileIds::FinalBoss
 			}
 		}
 	};
