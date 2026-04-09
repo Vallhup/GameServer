@@ -5,7 +5,6 @@
 #include "Engine.h"
 #include "UIManager.h"
 #include "LoadingSceneUIController.h"
-#include "DX12Core.h"
 #include "SceneManager.h"
 
 LoadingScene::~LoadingScene() = default;
@@ -40,13 +39,11 @@ void LoadingScene::InitializeLogic()
 	OutputDebugStringA("----------------------------------------\nLoadingScene Data has been created!! \n");
 
 	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
+	controller->Reset();
 	controller->SetTargetScene(targetScene);
 
 	switch (targetScene)
 	{
-	case SceneType::Select:
-		LoadSelectSceneResources();
-		break;
 	case SceneType::Plaza:
 		LoadPlazaSceneResources();
 		break;
@@ -113,17 +110,24 @@ void LoadingScene::RequestSceneChange()
 {
 }
 
-void LoadingScene::LoadSelectSceneResources()
-{
-	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
-	if (controller) controller->SetProgress(1.0f);
-	coreRef->SetLoadingMode(true);
-}
-
 void LoadingScene::LoadPlazaSceneResources()
 {
-	auto controller = ENGINE.GetUIManager()->GetController<LoadingSceneUIController>(SceneType::Loading);
-	if (controller) controller->SetProgress(1.0f);
+	InstanceLoader mapLoader;
+	mapLoader.Load(L"../Assets/FBXModel/PlazaMap/MapInstanceData.txt");
+
+	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
+		if (instanceData.empty()) continue;
+
+		wstring path = L"../Assets/FBXModel/PlazaMap/" + wstring(modelName.begin(), modelName.end());
+		if (!filesystem::exists(path + L"_0.mesh")) continue;
+
+		loadTasks.push([this, path, instanceData]() {
+			CreateAndBatchObjects(path, instanceData, sceneBatches[SceneType::Plaza]);
+			});
+	}
+
+	totalTasks = loadTasks.size();
+
 	coreRef->SetLoadingMode(true);
 }
 
@@ -172,7 +176,7 @@ void LoadingScene::LoadSecondBattleSceneResources()
 void LoadingScene::LoadFinalBattleSceneResources()
 {
 	InstanceLoader mapLoader;
-	mapLoader.Load(L"../Assets/FBXModel/GothicMap/MapInstanceData.txt", L"../Assets/FBXModel/CastleMap/CullingData.txt");
+	mapLoader.Load(L"../Assets/FBXModel/GothicMap/MapInstanceData.txt");
 
 	for (const auto& [modelName, instanceData] : mapLoader.GetAllData()) {
 		if (instanceData.empty()) continue;

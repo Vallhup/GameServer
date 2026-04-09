@@ -92,7 +92,7 @@ void StartSceneUIController::Update(float deltaTime)
 	if (IMGUI.IsLoginSuccess())
 	{
 		IMGUI.ResetLoginSuccess();
-		SCENE_MANAGER->RequestLoadingScene(SceneType::Select);
+		SCENE_MANAGER->RequestSceneChange(SceneType::Select);
 		OutputDebugStringA("Login success! Moving to Select scene.\n");
 	}
 

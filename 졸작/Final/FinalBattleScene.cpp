@@ -186,9 +186,9 @@ void FinalBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 
 void FinalBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 {
-	// First -> Second 맵 오프셋 (임시)
-	constexpr float offsetX = -153.0f;
-	constexpr float offsetZ = -648.0f;
+	// 서버 -> Final 맵 오프셋 (임시)
+	constexpr float offsetX = -506.0f;
+	constexpr float offsetZ = -481.0f;
 
 	NetId nid{ move.netid() };
 	int id = nid.GetId();

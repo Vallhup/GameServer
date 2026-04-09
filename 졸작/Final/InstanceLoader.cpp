@@ -4,7 +4,8 @@
 void InstanceLoader::Load(const wstring& fileName, const wstring& cullingFileName)
 {
 	ifstream cullingFile(cullingFileName);
-	if (!cullingFile.is_open()) return;
+	if (!cullingFile.is_open()) 
+		OutputDebugStringA("No culling file has detected!!\n");
 
 	string name;
 	vector<string> cullingDatas;

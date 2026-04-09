@@ -4,7 +4,7 @@
 AnimationSet::AnimationSet(const string& setName, uint32_t animStartIdx)
     : name(setName), startIdx(animStartIdx)
 {
-    clipNames.reserve(20);
+    clipNames.reserve(30);
 }
 
 void AnimationSet::RegisterClip(const string& clipName, int index,
