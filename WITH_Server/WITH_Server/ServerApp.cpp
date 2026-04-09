@@ -112,6 +112,7 @@ namespace
 		CharacterId characterId,
 		const WorldTransformComp* transform = nullptr)
 	{
+		if (characterId == CharacterId::Imp) printf("tlqkf");
 		Protocol::SC_ADD_PACKET add;
 		add.set_netid(netId.GetRaw());
 		add.set_typeid_(static_cast<int>(characterId));
@@ -143,6 +144,7 @@ namespace
 		{
 			return true;
 		}
+		if (characterId == CharacterId::Imp) printf("tlqkf");
 		Protocol::SC_ADD_PACKET add;
 		add.set_netid(netId.GetRaw());
 		add.set_typeid_(static_cast<int>(characterId));

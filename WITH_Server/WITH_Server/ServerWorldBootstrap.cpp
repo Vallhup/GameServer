@@ -81,7 +81,7 @@ namespace
 		const NetId netId = framework.BindEntityToNet(worldId, aiEntity);
 
 		AssembleParams params{};
-		params.position = { spawnX, 50.0f, spawnZ };
+		params.position = { spawnX, 5.508454f, spawnZ };
 		params.rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
 		params.netId = netId;
 
@@ -152,10 +152,9 @@ namespace
 				return true;
 			}
 
-			// FinalBoss 는 FinalBossMonster FSM bundle 이 아직 없어 스폰이 거부된다.
-			// 임시로 NormalMonster archetype 인 Imp 를 스폰한다.
+
 			SpawnAIEntity(*_framework, runtime, CharacterId::Imp,
-				*_bootstrapWorldId, 156.0f, 650.0f);
+				*_bootstrapWorldId, 508.167800f, 481.655600f);
 			return true;
 		}
 
