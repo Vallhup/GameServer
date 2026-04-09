@@ -16,10 +16,11 @@
 #include "EffectManager.h"
 #include "UIManager.h"
 #include "GameSceneUIController.h"
-#include "TrailRenderer.h"
-#include "FootDustEffect.h"
-#include "FlameEffect.h"
-#include "ParrySparkEffect.h"
+#include "EffectComponent.h"
+#include "TrailComponent.h"
+#include "FootDustComponent.h"
+#include "FlameComponent.h"
+#include "ParrySparkComponent.h"
 
 #include "NetId.h"
 #include "EntityId.h"
@@ -62,13 +63,8 @@ void PlazaScene::Reset()
 	myPlayer = nullptr;
 	bossObject = nullptr;
 	impObject = nullptr;
+	flameObject = nullptr;
 	gameObjects.clear();
-
-	if (trailRenderer)
-		trailRenderer->Clear();
-
-	if (footDustEffect)
-		footDustEffect->Clear();
 
 	rightFootSpawned = false;
 	leftFootSpawned = false;
@@ -132,42 +128,14 @@ void PlazaScene::InitializeLogic()
 		_nManager->Send(data);
 	}
 
-	// Trail Renderer 초기화
-	trailRenderer = make_unique<TrailRenderer>();
-	trailRenderer->Initialize(coreRef->GetDevice(), 32);
-	trailRenderer->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });	// 주황빛 검기
-	trailRenderer->SetLifetime(0.13f);
-
-	// Foot Dust Effect 초기화
-	footDustEffect = make_unique<FootDustEffect>();
-	footDustEffect->Initialize(coreRef->GetDevice(), 32);
-	footDustEffect->SetColor({ 0.15f, 0.15f, 0.15f, 0.4f });  // 흙먼지 색상 (어둡게)
-	footDustEffect->SetLifetime(0.35f);
-	footDustEffect->SetParticleSize(0.1f);
-
-	flameEffect = make_unique<FlameEffect>();
-	flameEffect->Initialize(coreRef->GetDevice(), 32);
-	flameEffect->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
-	flameEffect->SetParticleSize(0.5f);     // 최대 크기 0.5
-	flameEffect->Spawn(XMFLOAT3(160.0f, 50.0f, 643.0f));
-
-	// 세팅1
-	parryEffect = make_unique<ParrySparkEffect>();
-	parryEffect->Initialize(coreRef->GetDevice(), 128);
-	parryEffect->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
-	parryEffect->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
-	parryEffect->SetSpeed(20.0f);
-	parryEffect->SetParticleSize(0.1f);
-	parryEffect->SetLifetime(2.5f);
-
-	// 세팅2
-	//parryEffect = make_unique<ParrySparkEffect>();
-	//parryEffect->Initialize(coreRef->GetDevice(), 32);
-	//parryEffect->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
-	//parryEffect->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
-	//parryEffect->SetSpeed(5.0f);
-	//parryEffect->SetParticleSize(0.12f);
-	//parryEffect->SetLifetime(0.5f);
+	flameObject = make_shared<GameObject>();
+	flameObject->SetId(-1);
+	auto flame = flameObject->AddComponent<FlameComponent>();
+	flame->Initialize(coreRef->GetDevice(), 32);
+	flame->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
+	flame->SetParticleSize(0.5f);
+	flame->Spawn(XMFLOAT3(160.0f, 50.0f, 643.0f));
+	AddGameObject(flameObject);
 
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
@@ -269,152 +237,36 @@ void PlazaScene::UpdateScene(const float deltaTime)
 	}
 
 	// Trail 업데이트
-	if (trailRenderer && myPlayer)
+	if (myPlayer)
 	{
-		auto animMachine = myPlayer->GetComponent<AnimationMachine>();
-		bool isAttacking = animMachine && animMachine->IsPlaying("Attack");
-
-		if (isAttacking && !trailRenderer->IsActive())
+		auto trail = myPlayer->GetComponent<TrailComponent>();
+		if (trail)
 		{
-			trailRenderer->SetActive(true);
-		}
-		else if (!isAttacking && trailRenderer->IsActive())
-		{
-			trailRenderer->SetActive(false);
-		}
+			auto animMachine = myPlayer->GetComponent<AnimationMachine>();
+			bool isAttacking = animMachine && animMachine->IsPlaying("Attack");
 
-		// 공격 중이면 칼 위치 추적하여 트레일 포인트 추가
-		if (trailRenderer->IsActive())
-		{
-			auto animator = myPlayer->GetComponent<Animator>();
-			auto transform = myPlayer->GetComponent<Transform>();
+			if (isAttacking && !trail->IsActive())
+				trail->SetActive(true);
+			else if (!isAttacking && trail->IsActive())
+				trail->SetActive(false);
 
-			if (animator && animator->IsInitialized())
+			if (trail->IsActive())
 			{
-				// 본 45 = 무기/손 본
-				XMFLOAT3 bonePos = animator->GetBonePosition(45);
-				XMVECTOR boneRotQuat = animator->GetBoneRotation(45);
+				auto animator = myPlayer->GetComponent<Animator>();
+				auto transform = myPlayer->GetComponent<Transform>();
 
-				XMMATRIX worldMat = transform->GetWorldMatrix();
-				XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
-
-				// Z축 90도 오프셋 회전 (Effekseer와 동일)
-				XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
-
-				// 플레이어 회전
-				XMFLOAT3 playerRot = transform->GetRotation();
-				XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
-
-				// 회전 순서: 오프셋 → 뼈 회전 → 플레이어 회전
-				XMVECTOR finalRotQuat = XMQuaternionMultiply(offsetRot, boneRotQuat);
-				finalRotQuat = XMQuaternionMultiply(finalRotQuat, playerRotQuat);
-				XMMATRIX rotMat = XMMatrixRotationQuaternion(finalRotQuat);
-
-				// 칼 방향 벡터 (로컬 Y축)
-				XMVECTOR swordDir = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), rotMat);
-				swordDir = XMVector3Normalize(swordDir);
-
-				// 칼 끝과 손잡이 위치 계산
-				float bladeLength = 1.0f;
-				XMVECTOR topPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
-				XMVECTOR bottomPos = worldPos;
-
-				XMFLOAT3 top, bottom;
-				XMStoreFloat3(&top, topPos);
-				XMStoreFloat3(&bottom, bottomPos);
-
-				trailRenderer->AddPoint(top, bottom);
-			}
-		}
-
-		trailRenderer->Update(deltaTime);
-	}
-
-	// Foot Dust Effect 업데이트
-	if (footDustEffect && myPlayer && cam)
-	{
-		auto animMachine = myPlayer->GetComponent<AnimationMachine>();
-		auto animator = myPlayer->GetComponent<Animator>();
-		auto transform = myPlayer->GetComponent<Transform>();
-
-		bool isWalking = animMachine && (animMachine->IsPlaying("Walk") || animMachine->IsPlaying("Run"));
-
-		if (isWalking && animator && animator->IsInitialized())
-		{
-			int currentFrame = animator->GetCurrentFrame();
-			XMMATRIX worldMat = transform->GetWorldMatrix();
-
-			// 오른발 착지: Frame 12~14 범위 (플래그로 한 번만 spawn)
-			if (currentFrame >= 24 && currentFrame <= 26)
-			{
-				if (!rightFootSpawned)
-				{
-					XMFLOAT3 rFootPos = animator->GetBonePosition(53);
-					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&rFootPos), worldMat);
-					XMFLOAT3 spawnPos;
-					XMStoreFloat3(&spawnPos, worldPos);
-					footDustEffect->Spawn(spawnPos, 5);
-					rightFootSpawned = true;
-				}
-			}
-			else
-			{
-				rightFootSpawned = false;
-			}
-
-			// 왼발 착지: Frame 27~29 범위
-			if (currentFrame >= 7 && currentFrame <= 9)
-			{
-				if (!leftFootSpawned)
-				{
-					XMFLOAT3 lFootPos = animator->GetBonePosition(49);
-					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&lFootPos), worldMat);
-					XMFLOAT3 spawnPos;
-					XMStoreFloat3(&spawnPos, worldPos);
-					footDustEffect->Spawn(spawnPos, 5);
-					leftFootSpawned = true;
-				}
-			}
-			else
-			{
-				leftFootSpawned = false;
-			}
-		}
-		else
-		{
-			rightFootSpawned = false;
-			leftFootSpawned = false;
-		}
-
-		footDustEffect->Update(deltaTime, cam->GetPosition());
-	}
-
-	// Parry Spark Effect 업데이트
-	if (parryEffect && myPlayer && cam)
-	{
-		auto animMachine = myPlayer->GetComponent<AnimationMachine>();
-		auto animator = myPlayer->GetComponent<Animator>();
-		auto transform = myPlayer->GetComponent<Transform>();
-
-		bool isParrying = animMachine && animMachine->IsPlaying("Parry");
-
-		if (isParrying && animator && animator->IsInitialized())
-		{
-			int currentFrame = animator->GetCurrentFrame();
-
-			if (currentFrame >= 20 && currentFrame <= 22)
-			{
-				if (!parrySparkSpawned)
+				if (animator && animator->IsInitialized())
 				{
 					XMFLOAT3 bonePos = animator->GetBonePosition(45);
 					XMVECTOR boneRotQuat = animator->GetBoneRotation(45);
+
 					XMMATRIX worldMat = transform->GetWorldMatrix();
 					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
 
-					// 칼 끝 위치 계산 (TrailRenderer와 동일)
 					XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
 					XMFLOAT3 playerRot = transform->GetRotation();
 					XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
+
 					XMVECTOR finalRotQuat = XMQuaternionMultiply(offsetRot, boneRotQuat);
 					finalRotQuat = XMQuaternionMultiply(finalRotQuat, playerRotQuat);
 					XMMATRIX rotMat = XMMatrixRotationQuaternion(finalRotQuat);
@@ -423,12 +275,124 @@ void PlazaScene::UpdateScene(const float deltaTime)
 					swordDir = XMVector3Normalize(swordDir);
 
 					float bladeLength = 1.0f;
-					XMVECTOR tipPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
+					XMVECTOR topPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
 
-					XMFLOAT3 spawnPos;
-					XMStoreFloat3(&spawnPos, tipPos);
-					parryEffect->Spawn(spawnPos, 32);
-					parrySparkSpawned = true;
+					XMFLOAT3 top, bottom;
+					XMStoreFloat3(&top, topPos);
+					XMStoreFloat3(&bottom, worldPos);
+
+					trail->AddPoint(top, bottom);
+				}
+			}
+		}
+	}
+
+	// Foot Dust 업데이트
+	if (myPlayer)
+	{
+		auto dust = myPlayer->GetComponent<FootDustComponent>();
+		if (dust)
+		{
+			auto animMachine = myPlayer->GetComponent<AnimationMachine>();
+			auto animator = myPlayer->GetComponent<Animator>();
+			auto transform = myPlayer->GetComponent<Transform>();
+
+			bool isWalking = animMachine && (animMachine->IsPlaying("Walk") || animMachine->IsPlaying("Run"));
+
+			if (isWalking && animator && animator->IsInitialized())
+			{
+				int currentFrame = animator->GetCurrentFrame();
+				XMMATRIX worldMat = transform->GetWorldMatrix();
+
+				if (currentFrame >= 24 && currentFrame <= 26)
+				{
+					if (!rightFootSpawned)
+					{
+						XMFLOAT3 rFootPos = animator->GetBonePosition(53);
+						XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&rFootPos), worldMat);
+						XMFLOAT3 spawnPos;
+						XMStoreFloat3(&spawnPos, worldPos);
+						dust->Spawn(spawnPos, 5);
+						rightFootSpawned = true;
+					}
+				}
+				else
+				{
+					rightFootSpawned = false;
+				}
+
+				if (currentFrame >= 7 && currentFrame <= 9)
+				{
+					if (!leftFootSpawned)
+					{
+						XMFLOAT3 lFootPos = animator->GetBonePosition(49);
+						XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&lFootPos), worldMat);
+						XMFLOAT3 spawnPos;
+						XMStoreFloat3(&spawnPos, worldPos);
+						dust->Spawn(spawnPos, 5);
+						leftFootSpawned = true;
+					}
+				}
+				else
+				{
+					leftFootSpawned = false;
+				}
+			}
+			else
+			{
+				rightFootSpawned = false;
+				leftFootSpawned = false;
+			}
+		}
+	}
+
+	// Parry Spark 업데이트
+	if (myPlayer)
+	{
+		auto spark = myPlayer->GetComponent<ParrySparkComponent>();
+		if (spark)
+		{
+			auto animMachine = myPlayer->GetComponent<AnimationMachine>();
+			auto animator = myPlayer->GetComponent<Animator>();
+			auto transform = myPlayer->GetComponent<Transform>();
+
+			bool isParrying = animMachine && animMachine->IsPlaying("Parry");
+
+			if (isParrying && animator && animator->IsInitialized())
+			{
+				int currentFrame = animator->GetCurrentFrame();
+
+				if (currentFrame >= 20 && currentFrame <= 22)
+				{
+					if (!parrySparkSpawned)
+					{
+						XMFLOAT3 bonePos = animator->GetBonePosition(45);
+						XMVECTOR boneRotQuat = animator->GetBoneRotation(45);
+						XMMATRIX worldMat = transform->GetWorldMatrix();
+						XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
+
+						XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
+						XMFLOAT3 playerRot = transform->GetRotation();
+						XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
+						XMVECTOR finalRotQuat = XMQuaternionMultiply(offsetRot, boneRotQuat);
+						finalRotQuat = XMQuaternionMultiply(finalRotQuat, playerRotQuat);
+						XMMATRIX rotMat = XMMatrixRotationQuaternion(finalRotQuat);
+
+						XMVECTOR swordDir = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), rotMat);
+						swordDir = XMVector3Normalize(swordDir);
+
+						float bladeLength = 1.0f;
+						XMVECTOR tipPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
+
+						XMFLOAT3 spawnPos;
+						XMStoreFloat3(&spawnPos, tipPos);
+						spark->Spawn(spawnPos, 32);
+						parrySparkSpawned = true;
+					}
+				}
+				else
+				{
+					parrySparkSpawned = false;
 				}
 			}
 			else
@@ -436,16 +400,7 @@ void PlazaScene::UpdateScene(const float deltaTime)
 				parrySparkSpawned = false;
 			}
 		}
-		else
-		{
-			parrySparkSpawned = false;
-		}
-
-		parryEffect->Update(deltaTime, cam->GetPosition());
 	}
-
-	if (flameEffect)
-		flameEffect->Update(deltaTime, cam->GetPosition());
 
 	if (cam)
 		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);
@@ -535,20 +490,21 @@ void PlazaScene::RenderSceneShadow()
 
 void PlazaScene::RenderSceneEffects()
 {
-	if (trailRenderer)
-		trailRenderer->Render(*coreRef);
-
-	if (footDustEffect)
-		footDustEffect->Render(*coreRef);
-
-	if (flameEffect)
-		flameEffect->Render(*coreRef);
-
-	if (parryEffect)
-		parryEffect->Render(*coreRef);
-
 	if (cam)
+	{
+		const XMFLOAT3 camPos = cam->GetPosition();
+
+		for (const auto& obj : gameObjects)
+		{
+			for (auto& [type, comp] : obj->GetComponents())
+			{
+				if (auto effect = dynamic_cast<EffectComponent*>(comp.get()))
+					effect->Render(*coreRef, camPos);
+			}
+		}
+
 		EFFECT_MANAGER->Render(*coreRef, cam.get());
+	}
 }
 
 void PlazaScene::RequestSceneChange()
@@ -577,6 +533,26 @@ void PlazaScene::CreateKnightPool()
 		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
+
+		auto trail = knight->AddComponent<TrailComponent>();
+		trail->Initialize(coreRef->GetDevice(), 32);
+		trail->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });
+		trail->SetLifetime(0.13f);
+
+		auto dust = knight->AddComponent<FootDustComponent>();
+		dust->Initialize(coreRef->GetDevice(), 32);
+		dust->SetColor({ 0.15f, 0.15f, 0.15f, 0.4f });
+		dust->SetLifetime(0.35f);
+		dust->SetParticleSize(0.1f);
+
+		auto spark = knight->AddComponent<ParrySparkComponent>();
+		spark->Initialize(coreRef->GetDevice(), 128);
+		spark->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
+		spark->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
+		spark->SetSpeed(10.0f);
+		spark->SetParticleSize(0.1f);
+		spark->SetLifetime(0.75f);
+
 		knightPool.push_back(knight);
 		AddGameObject(knight);
 	}
