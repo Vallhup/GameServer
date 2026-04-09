@@ -50,6 +50,7 @@ public:
 	AIFSMRegistry& operator=(AIFSMRegistry&&) = default;
 
 	const AIFSMBundle* TryGetBundle(AIArchetype type) const;
+	static bool IsArchetypeSupported(AIArchetype type) noexcept;
 
 private:
 	AIFSMBundle _normal;

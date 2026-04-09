@@ -70,3 +70,13 @@ const AIFSMBundle* AIFSMRegistry::TryGetBundle(AIArchetype type) const
 	}
 }
 
+bool AIFSMRegistry::IsArchetypeSupported(AIArchetype type) noexcept
+{
+	switch (type) {
+	case AIArchetype::NormalMonster:
+		return true;
+	default:
+		return false;
+	}
+}
+

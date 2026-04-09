@@ -3,9 +3,8 @@
 
 #include <algorithm>
 
-#include "CharacterIdPolicy.h"
-#include "ECS/GameplayRuntimeComponents.h"
-#include "RepComponent.h"
+#include "Aspect/CharacterAspectRegistry.h"
+#include "Aspect/ICharacterAspect.h"
 #include "WorldInstance.h"
 
 namespace
@@ -26,101 +25,6 @@ namespace
 		return result;
 	}
 
-	CombatStatStateComp MakeInitialCombatStats(const CharacterDef& characterDef)
-	{
-		CombatStatStateComp stats{};
-		stats.currentHp = static_cast<int32_t>(characterDef.stat.maxHp);
-		stats.maxHp = static_cast<int32_t>(characterDef.stat.maxHp);
-		stats.currentStamina =
-			static_cast<int32_t>(characterDef.stat.maxStamina);
-		stats.maxStamina = static_cast<int32_t>(characterDef.stat.maxStamina);
-		stats.currentPoise = static_cast<int32_t>(characterDef.stat.maxPoise);
-		stats.maxPoise = static_cast<int32_t>(characterDef.stat.maxPoise);
-		stats.attackPower =
-			static_cast<int32_t>(characterDef.stat.attackPower);
-		stats.defense = static_cast<int32_t>(characterDef.stat.defense);
-		stats.attackSpeed = characterDef.stat.attackSpeed;
-		stats.moveSpeed = characterDef.stat.moveSpeed;
-		return stats;
-	}
-
-	bool TryBindSpawnedEntityToNetId(
-		FrameworkRuntime* framework,
-		WorldId worldId,
-		Entity entity,
-		NetId& outNetId)
-	{
-		outNetId = NetId::Invalid();
-
-		if (framework == nullptr ||
-			!worldId.IsValid() ||
-			entity.IsNull())
-		{
-			return false;
-		}
-
-		NetId netId = framework->FindNetId(worldId, entity);
-		if (!netId.IsValid())
-		{
-			netId = framework->AllocateNetId();
-			if (!netId.IsValid())
-			{
-				return false;
-			}
-
-			if (!framework->BindNetEntity(netId, worldId, entity))
-			{
-				framework->FreeNetId(netId);
-				return false;
-			}
-		}
-
-		outNetId = netId;
-		return true;
-	}
-
-	void AttachPlayerGameplayRuntimeComponents(
-		WorldRuntime& runtime,
-		Entity playerEntity,
-		SessionId sessionId,
-		NetId netId,
-		const CharacterDef& characterDef)
-	{
-		runtime.DeferredUpsertComponent<PlayerControlIdentityComp>(
-			playerEntity,
-			PlayerControlIdentityComp{
-				.netId = netId,
-				.ownerSessionId = sessionId
-			});
-		runtime.DeferredAddComponent<ActorInputComp>(playerEntity);
-		runtime.DeferredAddComponent<ActionStateComp>(playerEntity);
-		runtime.DeferredAddComponent<LocomotionStateComp>(playerEntity);
-		runtime.DeferredAddComponent<ActionTimelineAdvanceComp>(playerEntity);
-		runtime.DeferredAddComponent<AnimationPlaybackStateComp>(playerEntity);
-		runtime.DeferredAddComponent<SampledAnimationPoseComp>(playerEntity);
-		runtime.DeferredAddComponent<SkeletalCombatColliderComp>(playerEntity);
-		runtime.DeferredAddComponent<WorldTransformComp>(playerEntity);
-		runtime.DeferredAddComponent<LocomotionMoveDeltaComp>(playerEntity);
-		runtime.DeferredAddComponent<ActionMoveDeltaComp>(playerEntity);
-		runtime.DeferredAddComponent<ActionMoveRuntimeComp>(playerEntity);
-		runtime.DeferredAddComponent<PreCollisionTransformComp>(playerEntity);
-		runtime.DeferredAddComponent<BodyCollisionShapeComp>(playerEntity);
-		runtime.DeferredAddComponent<NavMeshAgentStateComp>(playerEntity);
-		runtime.DeferredAddComponent<BodyCollisionResolveComp>(playerEntity);
-		runtime.DeferredAddComponent<PortalTriggerStateComp>(playerEntity);
-		runtime.DeferredAddComponent<CombatColliderActivationComp>(playerEntity);
-		runtime.DeferredAddComponent<CombatHitDedupStateComp>(playerEntity);
-		runtime.DeferredAddComponent<PendingCombatResultComp>(playerEntity);
-		runtime.DeferredUpsertComponent<CombatStatStateComp>(
-			playerEntity,
-			MakeInitialCombatStats(characterDef));
-		runtime.DeferredAddComponent<BuffRuntimeStateComp>(playerEntity);
-		runtime.DeferredAddComponent<PendingProjectileSpawnComp>(playerEntity);
-		runtime.DeferredAddComponent<PendingActionPresentationEventComp>(
-			playerEntity);
-		runtime.DeferredAddComponent<DirtyFlagsComp>(playerEntity);
-		runtime.DeferredAddComponent<ReplicationStatsComp>(playerEntity);
-	}
 }
 
 PlayerEntryService::PlayerEntryService(Dependencies deps)
@@ -249,15 +153,15 @@ PlayerEntryResult PlayerEntryService::RequestCharacterSelect(
 		return MakeResult(PlayerEntryResultCode::DuplicatePendingSpawn, sessionId, characterId);
 	}
 
-	if (!IsPlayableCharacterId(characterId))
-	{
-		return MakeResult(PlayerEntryResultCode::CharacterIdNotPlayable, sessionId, characterId);
-	}
-
 	const CharacterDef* const characterDef = FindCharacterDef(characterId);
 	if (characterDef == nullptr)
 	{
 		return MakeResult(PlayerEntryResultCode::CharacterDefNotFound, sessionId, characterId);
+	}
+
+	if (!characterDef->IsPlayable())
+	{
+		return MakeResult(PlayerEntryResultCode::CharacterIdNotPlayable, sessionId, characterId);
 	}
 
 	if (_deps.framework == nullptr ||
@@ -285,12 +189,10 @@ PlayerEntryResult PlayerEntryService::RequestCharacterSelect(
 			startupWorldId);
 	}
 
-	NetId playerNetId = NetId::Invalid();
-	if (!TryBindSpawnedEntityToNetId(
-		_deps.framework,
-		startupWorldId,
-		playerEntity,
-		playerNetId))
+	NetId playerNetId = (_deps.framework != nullptr)
+		? _deps.framework->BindEntityToNet(startupWorldId, playerEntity)
+		: NetId::Invalid();
+	if (!playerNetId.IsValid())
 	{
 		runtime.DeferredDestroyEntity(playerEntity);
 		return MakeResult(
@@ -300,18 +202,16 @@ PlayerEntryResult PlayerEntryService::RequestCharacterSelect(
 			startupWorldId);
 	}
 
-	runtime.DeferredAddComponent<ReplicatedTag>(playerEntity);
-	runtime.DeferredUpsertComponent<SpawnTypeComp>(
-		playerEntity,
-		SpawnTypeComp{
-			.characterId = characterDef->id
-		});
-	AttachPlayerGameplayRuntimeComponents(
-		runtime,
-		playerEntity,
-		sessionId,
-		playerNetId,
-		*characterDef);
+	// 초기 스폰 위치/회전: 아직 world spawn point API 가 없으므로 origin 으로
+	// 부착한다 (legacy AttachPlayerGameplayRuntimeComponents 의 동작과 동일).
+	AssembleParams params{};
+	params.position = { 156.0f, 50.0f, 650.0f };
+	params.rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
+	params.netId = playerNetId;
+	params.sessionId = sessionId;
+
+	GetGlobalCharacterAspectRegistry().Assemble(
+		runtime, playerEntity, *characterDef, params);
 
 	_pendingSpawns.push_back(
 		PendingCharacterSpawn{

@@ -1,12 +1,14 @@
 #include "pch.h"
 #include "ServerWorldBootstrap.h"
 
+#include <string>
+
+#include "Aspect/CharacterAspectRegistry.h"
+#include "Aspect/ICharacterAspect.h"
 #include "CharacterIdPolicy.h"
-#include "ECS/GameplayRuntimeComponents.h"
 #include "ECS/System/GameplaySystemRegistration.h"
 #include "ExecutionContextTypes.h"
 #include "ExecutionSourceTypes.h"
-#include "RepComponent.h"
 #include "WorldContentIds.h"
 #include "WorldDef.h"
 #include "WorldExecutionModelTypes.h"
@@ -14,45 +16,37 @@
 #include "CharacterDef.h"
 #include "FrameworkRuntime.h"
 #include "ServerApp.h"
+#include "AIFSMRegistry.h"
 
 namespace
 {
-	bool TryBindSpawnedEntityToNetId(
-		FrameworkRuntime* framework,
-		WorldId worldId,
-		Entity entity,
-		NetId* outNetId = nullptr)
-	{
-		if (framework == nullptr ||
-			!worldId.IsValid() ||
-			entity.IsNull())
+	class ExecScopeNetBindingResolver final : public IWorldNetBindingResolver {
+	public:
+		explicit ExecScopeNetBindingResolver(
+			const NodeExecContext& context) noexcept
+			: _context(context)
 		{
-			return false;
 		}
 
-		NetId netId = framework->FindNetId(worldId, entity);
-		if (!netId.IsValid())
+		bool TryResolveEntity(
+			const NetId& netId,
+			Entity& outEntity) const noexcept override
 		{
-			netId = framework->AllocateNetId();
-			if (!netId.IsValid())
+			outEntity = Entity::Null();
+
+			ExecutionOps* const ops = _context.TryGetOps();
+			const WorldId worldId = _context.TryGetWorldId();
+			if (ops == nullptr || !worldId.IsValid())
 			{
 				return false;
 			}
 
-			if (!framework->BindNetEntity(netId, worldId, entity))
-			{
-				framework->FreeNetId(netId);
-				return false;
-			}
+			return ops->TryResolveEntity(worldId, netId, outEntity);
 		}
 
-		if (outNetId != nullptr)
-		{
-			*outNetId = netId;
-		}
-
-		return true;
-	}
+	private:
+		const NodeExecContext& _context;
+	};
 
 	void SpawnAIEntity(
 		FrameworkRuntime& framework,
@@ -68,73 +62,31 @@ namespace
 			return;
 		}
 
+		// AI 정의가 없거나, 정의된 archetype 의 FSM bundle 이 아직 구현되지 않았다면
+		// 스폰을 거부한다. 정의는 있지만 동작하지 않는 "frozen AI" 를 막기 위함.
+		// (동일 체크가 AIControlAspect::Validate 에서 부팅 시에도 수행되지만,
+		//  런타임 스폰 경로에서도 방어적으로 한 번 더 확인한다.)
+		if (!characterDef->ai.has_value() ||
+			!AIFSMRegistry::IsArchetypeSupported(characterDef->ai->aiType))
+		{
+			return;
+		}
+
 		const Entity aiEntity = runtime.ReserveEntity();
 		if (aiEntity.IsNull())
 		{
 			return;
 		}
 
-		(void)TryBindSpawnedEntityToNetId(&framework, worldId, aiEntity);
+		const NetId netId = framework.BindEntityToNet(worldId, aiEntity);
 
-		// 공통 컴포넌트 (플레이어와 동일)
-		runtime.DeferredAddComponent<ReplicatedTag>(aiEntity);
-		runtime.DeferredUpsertComponent<SpawnTypeComp>(
-			aiEntity,
-			SpawnTypeComp{ .characterId = characterId });
-		runtime.DeferredAddComponent<ActorInputComp>(aiEntity);
-		runtime.DeferredAddComponent<ActionStateComp>(aiEntity);
-		runtime.DeferredAddComponent<LocomotionStateComp>(aiEntity);
-		runtime.DeferredAddComponent<ActionTimelineAdvanceComp>(aiEntity);
-		runtime.DeferredAddComponent<AnimationPlaybackStateComp>(aiEntity);
-		runtime.DeferredAddComponent<SampledAnimationPoseComp>(aiEntity);
-		runtime.DeferredAddComponent<SkeletalCombatColliderComp>(aiEntity);
-		runtime.DeferredUpsertComponent<WorldTransformComp>(
-			aiEntity,
-			WorldTransformComp
-			{
-				.position = { spawnX, 50.0f, spawnZ },
-				.rotation = {0.0f, 0.0f, 0.0f, 1.0f}
-			});
-		runtime.DeferredAddComponent<LocomotionMoveDeltaComp>(aiEntity);
-		runtime.DeferredAddComponent<ActionMoveDeltaComp>(aiEntity);
-		runtime.DeferredAddComponent<ActionMoveRuntimeComp>(aiEntity);
-		runtime.DeferredAddComponent<PreCollisionTransformComp>(aiEntity);
-		runtime.DeferredAddComponent<BodyCollisionShapeComp>(aiEntity);
-		runtime.DeferredAddComponent<NavMeshAgentStateComp>(aiEntity);
-		runtime.DeferredAddComponent<BodyCollisionResolveComp>(aiEntity);
-		runtime.DeferredAddComponent<PortalTriggerStateComp>(aiEntity);
-		runtime.DeferredAddComponent<CombatColliderActivationComp>(aiEntity);
-		runtime.DeferredAddComponent<CombatHitDedupStateComp>(aiEntity);
-		runtime.DeferredAddComponent<PendingCombatResultComp>(aiEntity);
+		AssembleParams params{};
+		params.position = { spawnX, 50.0f, spawnZ };
+		params.rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
+		params.netId = netId;
 
-		CombatStatStateComp stats{};
-		stats.currentHp      = static_cast<int32_t>(characterDef->stat.maxHp);
-		stats.maxHp          = static_cast<int32_t>(characterDef->stat.maxHp);
-		stats.currentStamina = static_cast<int32_t>(characterDef->stat.maxStamina);
-		stats.maxStamina     = static_cast<int32_t>(characterDef->stat.maxStamina);
-		stats.currentPoise   = static_cast<int32_t>(characterDef->stat.maxPoise);
-		stats.maxPoise       = static_cast<int32_t>(characterDef->stat.maxPoise);
-		stats.attackPower    = static_cast<int32_t>(characterDef->stat.attackPower);
-		stats.defense        = static_cast<int32_t>(characterDef->stat.defense);
-		stats.attackSpeed    = characterDef->stat.attackSpeed;
-		stats.moveSpeed      = characterDef->stat.moveSpeed;
-		runtime.DeferredUpsertComponent<CombatStatStateComp>(aiEntity, stats);
-
-		runtime.DeferredAddComponent<BuffRuntimeStateComp>(aiEntity);
-		runtime.DeferredAddComponent<PendingProjectileSpawnComp>(aiEntity);
-		runtime.DeferredAddComponent<PendingActionPresentationEventComp>(aiEntity);
-		runtime.DeferredAddComponent<DirtyFlagsComp>(aiEntity);
-		runtime.DeferredAddComponent<ReplicationStatsComp>(aiEntity);
-
-		// AI 전용 컴포넌트 (PlayerControlIdentityComp 없음)
-		runtime.DeferredAddComponent<AIControlledTag>(aiEntity);
-		runtime.DeferredAddComponent<AIPerceptionComp>(aiEntity);
-		runtime.DeferredAddComponent<AIPerceptionTuningComp>(aiEntity);
-		runtime.DeferredAddComponent<AIBlackboardComp>(aiEntity);
-		runtime.DeferredAddComponent<AIDecisionComp>(aiEntity);
-		runtime.DeferredAddComponent<AIDecisionTuningComp>(aiEntity);
-		runtime.DeferredAddComponent<AIReactionComp>(aiEntity);
-		runtime.DeferredAddComponent<AICommandFrameComp>(aiEntity);
+		GetGlobalCharacterAspectRegistry().Assemble(
+			runtime, aiEntity, *characterDef, params);
 	}
 
 	constexpr ExecToken kSquareBootstrapExecToken = 1;
@@ -148,7 +100,12 @@ namespace
 			return ExecCallResult::Failed;
 		}
 
-		return runtime->ExecuteSystems(SystemPhase::Graph)
+		const ExecScopeNetBindingResolver netBindingResolver(context);
+		const WorldSystemServices services{
+			.netBindingResolver = &netBindingResolver
+		};
+
+		return runtime->ExecuteSystems(SystemPhase::Graph, services)
 			? ExecCallResult::Success
 			: ExecCallResult::Failed;
 	}
@@ -168,10 +125,21 @@ namespace
 	public:
 		bool OnCreate(WorldRuntime& runtime) override
 		{
-			runtime.RegisterStorage<ReplicatedTag>();
-			runtime.RegisterStorage<SpawnTypeComp>();
-			RegisterGameplayRuntimeStorages(runtime);
+			const CharacterAspectRegistry& aspects =
+				GetGlobalCharacterAspectRegistry();
+
+			aspects.RegisterStoragesAll(runtime);
 			RegisterGameplayRuntimeSystems(runtime, _animationRegistry);
+
+			// 부팅 검증: 모든 캐릭터 Def 가 필요한 전제 조건을 만족하는지 확인한다.
+			// 현재는 실패 시 boot 를 중단하지 않는다 (예: FinalBoss 의 FSM bundle 미지원은
+			// 의도된 상태이며 OnStart 가 해당 캐릭터 스폰을 우회한다).
+			// TODO: 로깅 인프라가 준비되면 실패 내역을 기록한다.
+			for (const CharacterDef& def : GetCharacterDefs())
+			{
+				std::string validationError;
+				(void)aspects.ValidateAll(def, validationError);
+			}
 			return true;
 		}
 
@@ -184,7 +152,9 @@ namespace
 				return true;
 			}
 
-			SpawnAIEntity(*_framework, runtime, CharacterId::FinalBoss,
+			// FinalBoss 는 FinalBossMonster FSM bundle 이 아직 없어 스폰이 거부된다.
+			// 임시로 NormalMonster archetype 인 Imp 를 스폰한다.
+			SpawnAIEntity(*_framework, runtime, CharacterId::Imp,
 				*_bootstrapWorldId, 156.0f, 650.0f);
 			return true;
 		}

@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "GameplaySystemRegistration.h"
 
-#include "../GameplayRuntimeComponents.h"
 #include "Phase0_AI/AIDecisionSystem.h"
 #include "Phase0_AI/AIPerceptionSystem.h"
 #include "Phase1/ApplyAICommandSystem.h"
@@ -26,54 +25,6 @@
 #include "Phase8/ResolveDeathAndDespawnSystem.h"
 #include "Phase9/CollectReplicationTodoSourceSystem.h"
 #include "WorldRuntime.h"
-
-void RegisterGameplayRuntimeStorages(WorldRuntime& runtime)
-{
-	runtime.RegisterStorage<PlayerControlIdentityComp>();
-	runtime.RegisterStorage<ActorInputComp>();
-	runtime.RegisterStorage<PendingDespawnTag>();
-	runtime.RegisterStorage<PendingWorldTransferTag>();
-	runtime.RegisterStorage<PendingWorldTransferComp>();
-	runtime.RegisterStorage<PendingHitReactionComp>();
-	runtime.RegisterStorage<PendingGuardBreakComp>();
-	runtime.RegisterStorage<PendingKnockdownComp>();
-	runtime.RegisterStorage<PendingBuffApplyComp>();
-	runtime.RegisterStorage<PendingBuffRemoveComp>();
-	runtime.RegisterStorage<ActionStateComp>();
-	runtime.RegisterStorage<LocomotionStateComp>();
-	runtime.RegisterStorage<ActionTimelineAdvanceComp>();
-	runtime.RegisterStorage<AnimationPlaybackStateComp>();
-	runtime.RegisterStorage<SampledAnimationPoseComp>();
-	runtime.RegisterStorage<SkeletalCombatColliderComp>();
-	runtime.RegisterStorage<WorldTransformComp>();
-	runtime.RegisterStorage<LocomotionMoveDeltaComp>();
-	runtime.RegisterStorage<ActionMoveDeltaComp>();
-	runtime.RegisterStorage<ActionMoveRuntimeComp>();
-	runtime.RegisterStorage<PreCollisionTransformComp>();
-	runtime.RegisterStorage<BodyCollisionShapeComp>();
-	runtime.RegisterStorage<NavMeshAgentStateComp>();
-	runtime.RegisterStorage<BodyCollisionResolveComp>();
-	runtime.RegisterStorage<PortalTriggerStateComp>();
-	runtime.RegisterStorage<CombatColliderActivationComp>();
-	runtime.RegisterStorage<CombatHitDedupStateComp>();
-	runtime.RegisterStorage<PendingCombatResultComp>();
-	runtime.RegisterStorage<CombatStatStateComp>();
-	runtime.RegisterStorage<BuffRuntimeStateComp>();
-	runtime.RegisterStorage<PendingProjectileSpawnComp>();
-	runtime.RegisterStorage<PendingActionPresentationEventComp>();
-	runtime.RegisterStorage<DirtyFlagsComp>();
-	runtime.RegisterStorage<ReplicationStatsComp>();
-
-	// AI 전용 컴포넌트
-	runtime.RegisterStorage<AIControlledTag>();
-	runtime.RegisterStorage<AIPerceptionComp>();
-	runtime.RegisterStorage<AIPerceptionTuningComp>();
-	runtime.RegisterStorage<AIBlackboardComp>();
-	runtime.RegisterStorage<AIDecisionComp>();
-	runtime.RegisterStorage<AIDecisionTuningComp>();
-	runtime.RegisterStorage<AIReactionComp>();
-	runtime.RegisterStorage<AICommandFrameComp>();
-}
 
 void RegisterGameplayRuntimeSystems(
 	WorldRuntime& runtime,

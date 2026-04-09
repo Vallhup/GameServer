@@ -98,6 +98,11 @@ public:
 
 	NetBindingLocation FindNetBinding(NetId netId) const;
 	NetId FindNetId(WorldId worldId, Entity entity) const;
+
+	// Allocate + Bind 를 atomic 하게 수행. 실패 시 자동 free.
+	// 이미 같은 (worldId, entity) 로 bound 된 NetId 가 있으면 그것을 반환.
+	// 실패 시 NetId::Invalid() 반환.
+	NetId BindEntityToNet(WorldId worldId, Entity entity);
 	bool IsNetIdAlive(NetId netId) const;
 
 	WorldId ResolveOrCreateWorld(WorldDefId defId, uint64_t instanceKey);

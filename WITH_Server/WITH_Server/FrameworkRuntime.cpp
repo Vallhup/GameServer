@@ -42,6 +42,7 @@ struct FrameworkRuntime::Impl
 			&worldRegistry,
 			&transferService,
 			&admissionService,
+			&netIdRegistry,
 			&presenceManager)
 		, worldScheduler(
 			worldManager,
@@ -235,6 +236,34 @@ NetId FrameworkRuntime::FindNetId(WorldId worldId, Entity entity) const
 	}
 
 	return _impl->netIdRegistry.FindNetId(worldId, entity);
+}
+
+NetId FrameworkRuntime::BindEntityToNet(WorldId worldId, Entity entity)
+{
+	if (!_impl || !worldId.IsValid() || entity.IsNull())
+	{
+		return NetId::Invalid();
+	}
+
+	NetId netId = _impl->netIdRegistry.FindNetId(worldId, entity);
+	if (netId.IsValid())
+	{
+		return netId;
+	}
+
+	netId = _impl->netIdRegistry.Allocate();
+	if (!netId.IsValid())
+	{
+		return NetId::Invalid();
+	}
+
+	if (!_impl->netIdRegistry.BindEntity(netId, worldId, entity))
+	{
+		_impl->netIdRegistry.Free(netId);
+		return NetId::Invalid();
+	}
+
+	return netId;
 }
 
 bool FrameworkRuntime::IsNetIdAlive(NetId netId) const

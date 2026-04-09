@@ -1,0 +1,87 @@
+#include "pch.h"
+#include "BaseCombatantAspect.h"
+
+#include "../ECS/GameplayRuntimeComponents.h"
+#include "WorldRuntime.h"
+
+namespace
+{
+	CombatStatStateComp MakeInitialCombatStats(
+		const CharacterDef& def) noexcept
+	{
+		CombatStatStateComp stats{};
+		stats.currentHp      = static_cast<int32_t>(def.stat.maxHp);
+		stats.maxHp          = static_cast<int32_t>(def.stat.maxHp);
+		stats.currentStamina = static_cast<int32_t>(def.stat.maxStamina);
+		stats.maxStamina     = static_cast<int32_t>(def.stat.maxStamina);
+		stats.currentPoise   = static_cast<int32_t>(def.stat.maxPoise);
+		stats.maxPoise       = static_cast<int32_t>(def.stat.maxPoise);
+		stats.attackPower    = static_cast<int32_t>(def.stat.attackPower);
+		stats.defense        = static_cast<int32_t>(def.stat.defense);
+		stats.attackSpeed    = def.stat.attackSpeed;
+		stats.moveSpeed      = def.stat.moveSpeed;
+		return stats;
+	}
+}
+
+CharacterFeatureFlags BaseCombatantAspect::RequiredFeature() const noexcept
+{
+	return CharacterFeatureFlags::Combatant;
+}
+
+void BaseCombatantAspect::RegisterStorages(WorldRuntime& runtime) const
+{
+	runtime.RegisterStorage<ActorInputComp>();
+	runtime.RegisterStorage<ActionStateComp>();
+	runtime.RegisterStorage<LocomotionStateComp>();
+	runtime.RegisterStorage<ActionTimelineAdvanceComp>();
+	runtime.RegisterStorage<AnimationPlaybackStateComp>();
+	runtime.RegisterStorage<SampledAnimationPoseComp>();
+	runtime.RegisterStorage<SkeletalCombatColliderComp>();
+	runtime.RegisterStorage<CombatStatStateComp>();
+	runtime.RegisterStorage<BuffRuntimeStateComp>();
+	runtime.RegisterStorage<PendingProjectileSpawnComp>();
+	runtime.RegisterStorage<PendingActionPresentationEventComp>();
+
+	// 전투 시그널 (CommitCombatResultSystem 등이 런타임에 동적 부착).
+	// Combatant feature 가 있는 캐릭터만 반응/버프 이벤트의 대상이 된다.
+	runtime.RegisterStorage<PendingHitReactionComp>();
+	runtime.RegisterStorage<PendingGuardBreakComp>();
+	runtime.RegisterStorage<PendingKnockdownComp>();
+	runtime.RegisterStorage<PendingBuffApplyComp>();
+	runtime.RegisterStorage<PendingBuffRemoveComp>();
+}
+
+void BaseCombatantAspect::Attach(
+	WorldRuntime& runtime,
+	Entity entity,
+	const CharacterDef& def,
+	const AssembleParams& params) const
+{
+	(void)params;
+	runtime.DeferredAddComponent<ActorInputComp>(entity);
+	runtime.DeferredAddComponent<ActionStateComp>(entity);
+	runtime.DeferredAddComponent<LocomotionStateComp>(entity);
+	runtime.DeferredAddComponent<ActionTimelineAdvanceComp>(entity);
+	runtime.DeferredAddComponent<AnimationPlaybackStateComp>(entity);
+	runtime.DeferredAddComponent<SampledAnimationPoseComp>(entity);
+	runtime.DeferredAddComponent<SkeletalCombatColliderComp>(entity);
+	runtime.DeferredUpsertComponent<CombatStatStateComp>(
+		entity,
+		MakeInitialCombatStats(def));
+	runtime.DeferredAddComponent<BuffRuntimeStateComp>(entity);
+	runtime.DeferredAddComponent<PendingProjectileSpawnComp>(entity);
+	runtime.DeferredAddComponent<PendingActionPresentationEventComp>(entity);
+}
+
+bool BaseCombatantAspect::Validate(
+	const CharacterDef& def,
+	std::string& outError) const
+{
+	if (def.stat.maxHp == 0)
+	{
+		outError = "Combatant requires stat.maxHp > 0";
+		return false;
+	}
+	return true;
+}

@@ -38,10 +38,10 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 	for (const auto& [entity, selfTr, actionState, perception, perceptionTuning,
 		blackboard, decision, decisionTuning, command, reaction, aiType] :
 		ctx.ecs.View<
-		const WorldTransformComp, const ActionStateComp, 
-		const AIPerceptionComp, const AIPerceptionTuningComp, 
-		AIBlackboardComp, AIDecisionComp, const AIDecisionTuningComp,
-		AICommandFrameComp, AIReactionComp, const AITypeComp>())
+		WorldTransformComp, ActionStateComp, 
+		AIPerceptionComp, AIPerceptionTuningComp, 
+		AIBlackboardComp, AIDecisionComp, AIDecisionTuningComp,
+		AICommandFrameComp, AIReactionComp, AITypeComp>())
 	{
 		command.ClearFrameTransient();
 

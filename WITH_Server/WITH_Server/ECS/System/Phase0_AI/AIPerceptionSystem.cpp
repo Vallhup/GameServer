@@ -108,11 +108,13 @@ void AIPerceptionSystem::BuildPerception(
 	bool foundAny = false;
 	bool hasCurrentTargetCandidate = false;
 
-	// 타겟 후보: PlayerControlIdentityComp 보유 엔티티
-	for (const auto& [other, otherTr, _] :
-		ecs.View<WorldTransformComp, PlayerControlIdentityComp>())
+	// 타겟 후보: SpawnTypeComp 보유 엔티티 중 다른 faction.
+	// (AI 끼리도 서로 다른 faction 이면 적대할 수 있도록 일반화)
+	for (const auto& [other, otherTr, __] :
+		ecs.View<WorldTransformComp, SpawnTypeComp>())
 	{
 		if (other == self) continue;
+		if (IsSameFaction(ecs, self, other)) continue;
 
 		const double distSq = TransformHelper::DistanceSq(selfTr.position, otherTr.position);
 		const double leashSq = tuning.leashRange * tuning.leashRange;
