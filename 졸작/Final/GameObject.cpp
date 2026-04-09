@@ -7,7 +7,7 @@
 
 void GameObject::Update(float deltaTime)
 {
-	for (auto& comp : components) {
+	for (auto& [type, comp] : components) {
 		comp->Update(deltaTime);
 	}
 }

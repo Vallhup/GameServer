@@ -90,11 +90,11 @@ void PlazaScene::InitializeLogic()
 	OutputDebugStringA("----------------------------------------\nPlazaScene Data has been created!! \n");
 
 	{
-	auto _t0 = chrono::high_resolution_clock::now();
-	CreateKnightPool();
-	auto _t1 = chrono::high_resolution_clock::now();
-	auto _ms = chrono::duration_cast<chrono::microseconds>(_t1 - _t0).count();
-	OutputDebugStringA(("[Plaza] CreateKnightPool: " + to_string(_ms) + " us\n").c_str());
+		auto _t0 = chrono::high_resolution_clock::now();
+		CreateKnightPool();
+		auto _t1 = chrono::high_resolution_clock::now();
+		auto _ms = chrono::duration_cast<chrono::microseconds>(_t1 - _t0).count();
+		OutputDebugStringA(("[Plaza] CreateKnightPool: " + to_string(_ms) + " us\n").c_str());
 	}
 
 	skyBox = make_shared<SkyBox>();
@@ -707,6 +707,17 @@ void PlazaScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			IMGUI.SetMyPlayer(myPlayer.get());
 
 			OutputDebugStringA("My character activated!\n");
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::Imp))
+	{
+		if (impObject)
+		{
+			impObject->SetId(id);
+			auto transform = impObject->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = impObject;
 		}
 	}
 }

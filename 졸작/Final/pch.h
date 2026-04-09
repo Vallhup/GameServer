@@ -25,6 +25,7 @@
 #include <fstream>
 #include <functional>
 #include <float.h>
+#include <typeindex>
 using namespace std;
 
 #include "d3dx12.h"
