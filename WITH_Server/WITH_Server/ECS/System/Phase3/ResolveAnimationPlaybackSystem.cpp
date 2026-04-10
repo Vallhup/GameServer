@@ -2,12 +2,24 @@
 #include "ResolveAnimationPlaybackSystem.h"
 
 #include "../GameplaySystemUtil.h"
+#include "../Phase2/ResolveActionStateSystem.h"
 
 using namespace GameplaySystemUtil;
 
-const SystemMeta ResolveAnimationPlaybackSystem::kMeta =
-	MakeSystemMeta<ResolveAnimationPlaybackSystem>(
-		"ResolveAnimationPlaybackSystem");
+const StaticSystemMetaStorage<5, 0, 1> ResolveAnimationPlaybackSystem::kMetaStorage =
+    MakeMetaStorage(
+        SysTag<ResolveAnimationPlaybackSystem>(),
+        "ResolveAnimationPlaybackSystem",
+        std::array<AccessSpec, 5>
+        {
+            WriteImmediate(ComponentRes<AnimationPlaybackStateComp>()),
+            ReadSnapshot(ComponentRes<ActionStateComp>()),
+            ReadSnapshot(ComponentRes<LocomotionStateComp>()),
+            ReadSnapshot(ComponentRes<SpawnTypeComp>()),
+            WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+        },
+        std::array<SystemTag, 0>{},
+        std::array<SystemTag, 1>{ SysTag<ResolveActionStateSystem>() });
 
 void ResolveAnimationPlaybackSystem::Execute(SystemContext& ctx)
 {
@@ -89,7 +101,3 @@ bool ResolveAnimationPlaybackSystem::RequiresAnimationDirty(
 		previousState.holdLastFrame != nextState.holdLastFrame;
 }
 
-const SystemMeta& ResolveAnimationPlaybackSystem::Meta() const
-{
-	return kMeta;
-}

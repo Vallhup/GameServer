@@ -1,13 +1,15 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaStorage.h"
 #include "../../GameplayRuntimeComponents.h"
 #include "../ActionProfileService.h"
 
-class ResolveActionStateSystem final : public System {
+class ResolveActionStateSystem final : public System
+{
 public:
-	void Execute(SystemContext& ctx) override;
-	const SystemMeta& Meta() const override;
+    void Execute(SystemContext& ctx) override;
+    const SystemMeta& Meta() const override { return kMetaStorage.meta; }
 
 private:
 	struct RequestCandidate
@@ -28,7 +30,7 @@ private:
 		float directionZ{ 0.0f };
 	};
 
-	static const SystemMeta kMeta;
+    static const StaticSystemMetaStorage<12, 0, 2> kMetaStorage;
 
 	static bool TryHandleBlockingState(
 		SystemContext& ctx,

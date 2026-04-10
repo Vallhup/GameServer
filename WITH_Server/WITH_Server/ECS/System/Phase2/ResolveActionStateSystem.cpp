@@ -3,13 +3,38 @@
 
 #include "../GameplaySystemUtil.h"
 #include "../../../TransformHelper.h"
+#include "../Phase1/ApplyAICommandSystem.h"
+#include "../Phase1/ApplyPlayerCommandSystem.h"
 
 #include <limits>
 
 using namespace GameplaySystemUtil;
 
-const SystemMeta ResolveActionStateSystem::kMeta =
-	MakeSystemMeta<ResolveActionStateSystem>("ResolveActionStateSystem");
+const StaticSystemMetaStorage<12, 0, 2> ResolveActionStateSystem::kMetaStorage =
+    MakeMetaStorage(
+        SysTag<ResolveActionStateSystem>(),
+        "ResolveActionStateSystem",
+        std::array<AccessSpec, 12>
+        {
+            WriteImmediate(ComponentRes<ActionStateComp>()),
+            ReadSnapshot(ComponentRes<LocomotionStateComp>()),
+            ReadSnapshot(ComponentRes<WorldTransformComp>()),
+            WriteImmediate(ComponentRes<ActorInputComp>()),
+            WriteImmediate(ComponentRes<ActionTimelineAdvanceComp>()),
+            ReadSnapshot(ComponentRes<SpawnTypeComp>()),
+            WriteImmediate(ComponentRes<CombatStatStateComp>()),
+            WriteImmediate(ComponentRes<ActionInterruptQueueComp>()),
+            WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+            ReadImmediate(ComponentRes<AIPerceptionComp>()),
+            ReadSnapshot(ComponentRes<PendingDespawnTag>()),
+            ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+        },
+        std::array<SystemTag, 0>{},
+        std::array<SystemTag, 2>
+        {
+            SysTag<ApplyAICommandSystem>(),
+            SysTag<ApplyPlayerCommandSystem>(),
+        });
 
 void ResolveActionStateSystem::Execute(SystemContext& ctx)
 {
@@ -174,11 +199,6 @@ void ResolveActionStateSystem::Execute(SystemContext& ctx)
 
 		ClearActionInput(input);
 	}
-}
-
-const SystemMeta& ResolveActionStateSystem::Meta() const
-{
-	return kMeta;
 }
 
 bool ResolveActionStateSystem::TryHandleBlockingState(
