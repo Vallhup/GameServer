@@ -46,18 +46,17 @@ private:
 		const AttackCombatEffectDef& attackEffect) noexcept;
 	static bool BuildReferenceDirection(
 		const ECSView& ecs,
-		Entity victim,
-		const ActionStateComp& victimAction,
-		const WorldTransformComp& victimTransform,
+		Entity owner,
+		const ActionStateComp& ownerAction,
+		const WorldTransformComp& ownerTransform,
 		CombatReferenceFrame referenceFrame,
 		DirectX::XMFLOAT3& outDirection) noexcept;
 	static bool PassesSpatialFilter(
 		const ECSView& ecs,
-		Entity attacker,
-		const WorldTransformComp& attackerTransform,
-		Entity victim,
-		const ActionStateComp& victimAction,
-		const WorldTransformComp& victimTransform,
+		Entity source,
+		const ActionStateComp& sourceAction,
+		const WorldTransformComp& sourceTransform,
+		const WorldTransformComp& targetTransform,
 		const ActionCombatSpatialFilterDef& spatialFilter) noexcept;
 	static bool TryBuildInteractionRecord(
 		const ECSView& ecs,
