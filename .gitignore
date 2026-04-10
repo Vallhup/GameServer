@@ -487,3 +487,5 @@ WITH_Server2/
 /WITH_Server/WITH_Server/legacy
 *.docx
 /WITH_Server/.claude
+/NavMesh
+/WITH_Server/.dotnet
