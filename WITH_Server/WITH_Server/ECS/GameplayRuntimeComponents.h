@@ -7,6 +7,7 @@
 #include "ActionDef.h"
 #include "AICommand.h"
 #include "AnimationDef.h"
+#include "BodyCollisionTypes.h"
 #include "PlayerCommand.h"
 #include "RepComponent.h"
 #include "Session.h"
@@ -252,7 +253,7 @@ struct SkeletalCombatColliderComp : Component
 
 struct WorldTransformComp : Component
 {
-	XMFLOAT3 position{ 508.167800f, 5.508454f, 481.655600f };
+	XMFLOAT3 position{ 161.352478f, 48.737797f, 644.831543f };
 	XMFLOAT4 rotation{ 0, 0, 0, 1 };
 	XMFLOAT3 scale{ 1, 1, 1 };
 };
@@ -292,20 +293,15 @@ struct PreCollisionTransformComp : Component
 	bool rotatedThisFrame{ false };
 };
 
-enum class BodyPushability : uint8_t
-{
-	None = 0,
-	Kinematic,
-	Dynamic
-};
-
 struct BodyCollisionShapeComp : Component
 {
 	float bodyRadiusXZ{ 0.5f };
 	float bodyHeight{ 1.8f };
 	bool blocksBodyOverlap{ true };
-	bool useNavMeshConstraint{ false };
+	bool useNavMeshConstraint{ true };
 	BodyPushability pushability{ BodyPushability::Dynamic };
+	float overlapYieldWeight{ 1.0f };
+	float maxOverlapCorrectionPerFrameXZ{ 0.12f };
 };
 
 struct NavMeshAgentStateComp : Component
@@ -501,7 +497,7 @@ struct AIPerceptionComp : Component
 struct AIPerceptionTuningComp : Component
 {
 	double sightRange{ 12.0 };
-	double attackRange{ 2.5 };
+	double attackRange{ 2.0 };
 	double frontDotThreshold{ 0.2 };
 	
 	double targetKeepBonus{ 4.0 };
@@ -526,6 +522,9 @@ struct AIBlackboardComp : Component
 
 	XMFLOAT3 lastKnownTargetPosition{ 0.0f, 0.0f, 0.0f };
 	bool hasLastKnownTargetPosition{ false };
+
+	// 마지막으로 실행한 액션 (IAICombatActionPolicy 에서 콤보 다양성 판단에 활용)
+	ActionId lastUsedActionId{ ActionId::None };
 };
 
 enum class AIStateType : uint8_t
@@ -565,26 +564,83 @@ struct AIDecisionComp : Component
 struct AIDecisionTuningComp : Component
 {
 	double decisionInterval{ 0.2 };
-	double attackCooldown{ 1.2 };
+	double attackCooldown{ 1.8 };
+
+	// React 상태 최소 체류 시간. IAIReactionPolicy 가 결과를 반환한 후
+	// 이 시간이 지나야 다음 상태로 전환 시도한다.
+	double reactDuration{ 0.5 };
 };
 
-// AI 반응 이벤트 캐시 (Phase 8에서 기록, AI Decision System에서 소비 후 초기화)
+// AI 반응 이벤트 타입
+// 우선순위는 숫자가 클수록 높다 (AIReactionEvent::priority 필드로 별도 관리)
+enum class AIReactionEventType : uint8_t
+{
+	OnHitReceived = 0, // 일반 피격
+	OnParried     = 1, // 공격이 패리됨
+	OnGuardBroken = 2, // 가드 브레이크
+	OnHpThreshold = 3, // HP 임계값 도달 (보스 기믹용)
+};
+
+// AI 반응 이벤트 (Phase 8에서 PostEvent, AIDecisionSystem에서 소비 후 Clear)
+struct AIReactionEvent
+{
+	AIReactionEventType type{};
+	Entity              instigator{ Entity::Null() };
+	int                 priority{ 0 };
+	float               floatPayload{ 0.0f }; // OnHpThreshold 시 HP 비율 등 부가 데이터
+};
+
+// AI 반응 이벤트 큐 (고정 크기 배열 — heap 할당 없음)
 struct AIReactionComp : Component
 {
-	Entity instigator{ Entity::Null() };
-	bool gotHitThisFrame{ false };
-	bool gotParriedThisFrame{ false };
+	static constexpr int kMaxEventsPerFrame{ 4 };
 
-	bool GotReactionEvent() const noexcept
+	std::array<AIReactionEvent, kMaxEventsPerFrame> events{};
+	int eventCount{ 0 };
+
+	bool HasAnyEvent() const noexcept
 	{
-		return gotHitThisFrame || gotParriedThisFrame;
+		return eventCount > 0;
+	}
+
+	// 우선순위가 가장 높은 이벤트를 반환 (없으면 nullptr)
+	const AIReactionEvent* TopPriorityEvent() const noexcept
+	{
+		if (eventCount == 0)
+			return nullptr;
+
+		const AIReactionEvent* top = &events[0];
+		for (int i = 1; i < eventCount; ++i)
+		{
+			if (events[i].priority > top->priority)
+				top = &events[i];
+		}
+		return top;
+	}
+
+	// 이벤트 등록 (큐가 가득 찼으면 우선순위가 낮은 이벤트와 교체)
+	void PostEvent(AIReactionEvent evt) noexcept
+	{
+		if (eventCount < kMaxEventsPerFrame)
+		{
+			events[eventCount++] = evt;
+			return;
+		}
+
+		// 큐 포화 시 우선순위가 가장 낮은 슬롯과 교체
+		int lowestIdx = 0;
+		for (int i = 1; i < eventCount; ++i)
+		{
+			if (events[i].priority < events[lowestIdx].priority)
+				lowestIdx = i;
+		}
+		if (evt.priority > events[lowestIdx].priority)
+			events[lowestIdx] = evt;
 	}
 
 	void Clear() noexcept
 	{
-		instigator = Entity::Null();
-		gotHitThisFrame = false;
-		gotParriedThisFrame = false;
+		eventCount = 0;
 	}
 };
 

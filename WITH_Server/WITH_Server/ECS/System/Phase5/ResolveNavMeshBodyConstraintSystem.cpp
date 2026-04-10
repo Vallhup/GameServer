@@ -1,16 +1,110 @@
 #include "pch.h"
 #include "ResolveNavMeshBodyConstraintSystem.h"
 
+#include "../../../Library/Recast/Recast.h"
+#include "../../../Library/Detour/DetourNavMesh.h"
+#include "../../../Library/Detour/DetourNavMeshQuery.h"
+
+#include "../../GameplayRuntimeComponents.h"
 #include "../GameplaySystemUtil.h"
+
+#include "NavMeshRuntime.h"
+#include "WorldDef.h"
 
 using namespace GameplaySystemUtil;
 
+static dtQueryFilter BuildQueryFilter(const NavigationProfileDef* profile)
+{
+	dtQueryFilter filter;
+	if (profile)
+	{
+		filter.setIncludeFlags(profile->queryFilter.includeFlags);
+		filter.setExcludeFlags(profile->queryFilter.excludeFlags);
+		filter.setAreaCost(RC_WALKABLE_AREA, profile->queryFilter.walkableAreaCost);
+	}
+	return filter;
+}
+
+static bool TryFindNearestPolyPoint(
+	dtNavMeshQuery* query,
+	const float* center,
+	const float* extents,
+	const dtQueryFilter& filter,
+	dtPolyRef& outRef,
+	float* outPoint)
+{
+	outRef = 0;
+	const dtStatus status =
+		query->findNearestPoly(center, extents, &filter, &outRef, outPoint);
+	return !dtStatusFailed(status) && outRef != 0;
+}
+
+static bool TryResolveStartPoly(
+	dtNavMeshQuery* query,
+	const dtQueryFilter& filter,
+	const float* extents,
+	const float* prevPos,
+	const float* candidatePos,
+	dtPolyRef cachedRef,
+	dtPolyRef& outRef,
+	float* outStartPos)
+{
+	outRef = 0;
+
+	if (cachedRef != 0 && query->isValidPolyRef(cachedRef, &filter))
+	{
+		bool prevPosOverPoly = false;
+		float projectedPrevPos[3] = {};
+		const dtStatus closestStatus = query->closestPointOnPoly(
+			cachedRef,
+			prevPos,
+			projectedPrevPos,
+			&prevPosOverPoly);
+
+		if (!dtStatusFailed(closestStatus) && prevPosOverPoly)
+		{
+			outRef = cachedRef;
+			outStartPos[0] = projectedPrevPos[0];
+			outStartPos[1] = projectedPrevPos[1];
+			outStartPos[2] = projectedPrevPos[2];
+			return true;
+		}
+	}
+
+	if (TryFindNearestPolyPoint(
+		query,
+		prevPos,
+		extents,
+		filter,
+		outRef,
+		outStartPos))
+	{
+		return true;
+	}
+
+	return TryFindNearestPolyPoint(
+		query,
+		candidatePos,
+		extents,
+		filter,
+		outRef,
+		outStartPos);
+}
+
 const SystemMeta ResolveNavMeshBodyConstraintSystem::kMeta =
-	MakeSystemMeta<ResolveNavMeshBodyConstraintSystem>(
-		"ResolveNavMeshBodyConstraintSystem");
+MakeSystemMeta<ResolveNavMeshBodyConstraintSystem>(
+	"ResolveNavMeshBodyConstraintSystem");
 
 void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 {
+	const INavMeshProvider* navProvider = ctx.services.navMeshProvider;
+	const NavMeshRuntime* navMesh =
+		navProvider ? navProvider->GetNavMeshRuntime() : nullptr;
+	const NavigationProfileDef* profile =
+		navProvider ? navProvider->GetNavigationProfile() : nullptr;
+
+	const bool hasValidNavMesh = (navMesh != nullptr && navMesh->IsReady());
+
 	for (auto [entity,
 		transform,
 		preCollision,
@@ -24,19 +118,153 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 			NavMeshAgentStateComp,
 			BodyCollisionResolveComp>())
 	{
-		(void)entity;
-		(void)navAgent;
 		resolveState = {};
 		resolveState.navResolvedPosition = transform.position;
 
+		auto MarkTransformDirtyIfPresent =
+			[&ctx, entity]()
+			{
+				if (DirtyFlagsComp* dirty =
+					ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
+				{
+					dirty->MarkDirty(WorldDirtyType::Transform);
+				}
+			};
+
+		auto RejectToPreviousPosition =
+			[&]()
+			{
+				resolveState.rejectedByNavMesh = true;
+				transform.position = preCollision.prevPosition;
+				resolveState.navResolvedPosition = transform.position;
+				navAgent.currentPolyRef = 0;
+				MarkTransformDirtyIfPresent();
+			};
+
 		if (!bodyShape.useNavMeshConstraint)
+			continue;
+
+		if (!hasValidNavMesh)
 		{
+			resolveState.navMeshFallbackNoProvider = true;
+			resolveState.navResolvedPosition = transform.position;
 			continue;
 		}
 
-		// v0.1 fallback: Recast/Detour query provider is not wired yet.
-		resolveState.navMeshFallbackNoProvider = true;
-		resolveState.navResolvedPosition = preCollision.candidatePosition;
+		dtNavMeshQuery* query = navMesh->GetQuery();
+		dtQueryFilter filter = BuildQueryFilter(profile);
+
+		const float extentXZ = profile ? profile->nearestPolyExtentXZ : 2.0f;
+		const float extentY = profile ? profile->nearestPolyExtentY : 4.0f;
+		const float extents[3] = { extentXZ, extentY, extentXZ };
+
+		const float prevPos[3] = {
+			preCollision.prevPosition.x,
+			preCollision.prevPosition.y,
+			preCollision.prevPosition.z,
+		};
+		const float candidatePos[3] = {
+			transform.position.x,
+			transform.position.y,
+			transform.position.z,
+		};
+
+		dtPolyRef startRef = 0;
+		float startPos[3] = {};
+		if (!TryResolveStartPoly(
+			query,
+			filter,
+			extents,
+			prevPos,
+			candidatePos,
+			static_cast<dtPolyRef>(navAgent.currentPolyRef),
+			startRef,
+			startPos))
+		{
+			RejectToPreviousPosition();
+			continue;
+		}
+
+		float resultPos[3] = {};
+		static constexpr int kMaxVisited = 16;
+		dtPolyRef visited[kMaxVisited] = {};
+		int visitedCount = 0;
+
+		const dtStatus moveStatus = query->moveAlongSurface(
+			startRef,
+			startPos,
+			candidatePos,
+			&filter,
+			resultPos,
+			visited,
+			&visitedCount,
+			kMaxVisited);
+
+		if (dtStatusFailed(moveStatus))
+		{
+			RejectToPreviousPosition();
+			continue;
+		}
+
+		dtPolyRef resultRef =
+			(visitedCount > 0) ? visited[visitedCount - 1] : startRef;
+
+		float surfaceHeight = resultPos[1];
+		dtStatus heightStatus =
+			query->getPolyHeight(resultRef, resultPos, &surfaceHeight);
+		if (dtStatusFailed(heightStatus))
+		{
+			float nearestPt[3] = {};
+			dtPolyRef nearestRef = 0;
+			if (!TryFindNearestPolyPoint(
+				query,
+				resultPos,
+				extents,
+				filter,
+				nearestRef,
+				nearestPt))
+			{
+				RejectToPreviousPosition();
+				continue;
+			}
+
+			resultRef = nearestRef;
+			resultPos[0] = nearestPt[0];
+			resultPos[1] = nearestPt[1];
+			resultPos[2] = nearestPt[2];
+			surfaceHeight = resultPos[1];
+			heightStatus = query->getPolyHeight(resultRef, resultPos, &surfaceHeight);
+			if (dtStatusFailed(heightStatus))
+			{
+				RejectToPreviousPosition();
+				continue;
+			}
+		}
+		resultPos[1] = surfaceHeight;
+
+		navAgent.currentPolyRef = static_cast<uint64_t>(resultRef);
+
+		const XMFLOAT3 resolvedPosition =
+		{
+			resultPos[0], resultPos[1], resultPos[2],
+		};
+		const bool positionChanged =
+			std::abs(transform.position.x - resolvedPosition.x) > kOverlapEpsilon ||
+			std::abs(transform.position.y - resolvedPosition.y) > kOverlapEpsilon ||
+			std::abs(transform.position.z - resolvedPosition.z) > kOverlapEpsilon;
+
+		transform.position = resolvedPosition;
+		resolveState.navMeshAdjusted = positionChanged;
+		resolveState.navResolvedPosition = transform.position;
+
+		if (positionChanged)
+		{
+			MarkTransformDirtyIfPresent();
+		}
+
+		const auto* typeComp = ctx.ecs.GetComponent<SpawnTypeComp>(entity);
+		if (typeComp && typeComp->characterId == CharacterId::Knight)
+			printf("[Pos] (%.5f, %.5f, %.5f)\n", resultPos[0], resultPos[1], resultPos[2]);
 	}
 }
 

@@ -26,13 +26,23 @@ void LocomotionPhysicsAspect::Attach(
 	const CharacterDef& def,
 	const AssembleParams& params) const
 {
-	(void)def;
 	(void)params;
 	runtime.DeferredAddComponent<LocomotionMoveDeltaComp>(entity);
 	runtime.DeferredAddComponent<ActionMoveDeltaComp>(entity);
 	runtime.DeferredAddComponent<ActionMoveRuntimeComp>(entity);
 	runtime.DeferredAddComponent<PreCollisionTransformComp>(entity);
-	runtime.DeferredAddComponent<BodyCollisionShapeComp>(entity);
+
+	BodyCollisionShapeComp shape{};
+	shape.bodyRadiusXZ = def.bodyCollision.footprintRadiusXZ;
+	shape.bodyHeight = def.bodyCollision.bodyHeight;
+	shape.blocksBodyOverlap = def.bodyCollision.blocksBodyOverlap;
+	shape.useNavMeshConstraint = def.bodyCollision.useNavMeshConstraint;
+	shape.pushability = def.bodyCollision.pushability;
+	shape.overlapYieldWeight = def.bodyCollision.overlapYieldWeight;
+	shape.maxOverlapCorrectionPerFrameXZ =
+		def.bodyCollision.maxOverlapCorrectionPerFrameXZ;
+	runtime.DeferredUpsertComponent<BodyCollisionShapeComp>(entity, shape);
+
 	runtime.DeferredAddComponent<NavMeshAgentStateComp>(entity);
 	runtime.DeferredAddComponent<BodyCollisionResolveComp>(entity);
 }
