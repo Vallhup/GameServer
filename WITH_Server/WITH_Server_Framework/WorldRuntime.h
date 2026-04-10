@@ -16,10 +16,12 @@
 #include "SystemManager.h"
 #include "Entity.h"
 #include "Component.h"
+#include "NavMeshRuntime.h"
 
 class ITransferContext;
 class IWorldTransferBinding;
 class WorldTransferProfile;
+struct NavigationProfileDef;
 
 class WorldRuntime final {
 public:
@@ -311,6 +313,10 @@ private:
 	const WorldExecutionModel* _executionModel{ nullptr };
 	const IWorldTransferBinding* _transferBinding{ nullptr };
 	const WorldTransferProfile* _transferProfile{ nullptr };
+
+	// NavMesh — WorldDef.map.navMesh 설정 시 Initialize()에서 로딩
+	std::unique_ptr<NavMeshRuntime>  _navMeshRuntime;
+	const NavigationProfileDef*      _navProfile{ nullptr }; // MapDef.navigationProfile 소유권 없음 (캐시)
 
 	WorldRuntimeLifecycleState _lifecycleState{ WorldRuntimeLifecycleState::Constructed };
 	WorldRuntimeCommitState _commitState{ WorldRuntimeCommitState::NotCommitted };

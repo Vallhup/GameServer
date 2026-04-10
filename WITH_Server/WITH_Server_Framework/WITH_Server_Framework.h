@@ -18,3 +18,5 @@
 #include "ProtocolLib.h"
 
 #pragma comment(lib, "ProtocolLib.lib")
+#pragma comment(lib, "Detour.lib")
+#pragma comment(lib, "Recast.lib")

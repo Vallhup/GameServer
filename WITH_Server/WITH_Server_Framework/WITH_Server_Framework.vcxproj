@@ -94,7 +94,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>
+      </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -112,7 +113,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>
+      </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -128,7 +130,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>
+      </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -146,7 +149,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>
+      </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -162,6 +166,19 @@
     <ClInclude Include="AdmissionTypes.h" />
     <ClInclude Include="ExecutionGraphBuildPolicy.h" />
     <ClInclude Include="DefaultWorldTransferSerializer.h" />
+    <ClInclude Include="Library\Detour\DetourAlloc.h" />
+    <ClInclude Include="Library\Detour\DetourAssert.h" />
+    <ClInclude Include="Library\Detour\DetourCommon.h" />
+    <ClInclude Include="Library\Detour\DetourMath.h" />
+    <ClInclude Include="Library\Detour\DetourNavMesh.h" />
+    <ClInclude Include="Library\Detour\DetourNavMeshBuilder.h" />
+    <ClInclude Include="Library\Detour\DetourNavMeshQuery.h" />
+    <ClInclude Include="Library\Detour\DetourNode.h" />
+    <ClInclude Include="Library\Detour\DetourStatus.h" />
+    <ClInclude Include="Library\Recast\Recast.h" />
+    <ClInclude Include="Library\Recast\RecastAlloc.h" />
+    <ClInclude Include="Library\Recast\RecastAssert.h" />
+    <ClInclude Include="NavMeshRuntime.h" />
     <ClInclude Include="WorldContentIds.h" />
     <ClInclude Include="WorldCommand.h" />
     <ClInclude Include="WorldCommandQueue.h" />
@@ -232,6 +249,8 @@
     <ClInclude Include="WorldTransferTxn.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="NavMeshRuntime.cpp" />
+    <ClCompile Include="WorldDef.cpp" />
     <ClCompile Include="WorldExecutionModelTypes.cpp" />
     <ClCompile Include="WorldCommandQueue.cpp" />
     <ClCompile Include="WorldMutationBuffer.cpp" />

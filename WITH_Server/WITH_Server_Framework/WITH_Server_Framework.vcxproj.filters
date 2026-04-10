@@ -79,6 +79,10 @@
     <ClCompile Include="WorldCommandQueue.cpp">
       <Filter>02_World\02_Runtime</Filter>
     </ClCompile>
+    <ClCompile Include="WorldDef.cpp">
+      <Filter>02_World\01_Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMeshRuntime.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -297,6 +301,43 @@
     <ClInclude Include="WorldCommandQueue.h">
       <Filter>02_World\02_Runtime</Filter>
     </ClInclude>
+    <ClInclude Include="NavMeshRuntime.h" />
+    <ClInclude Include="Library\Detour\DetourMath.h">
+      <Filter>00_Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourNavMesh.h">
+      <Filter>00_Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourNavMeshBuilder.h">
+      <Filter>00_Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourNavMeshQuery.h">
+      <Filter>00_Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourNode.h">
+      <Filter>00_Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourStatus.h">
+      <Filter>00_Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourAlloc.h">
+      <Filter>00_Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourAssert.h">
+      <Filter>00_Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourCommon.h">
+      <Filter>00_Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Recast\RecastAssert.h">
+      <Filter>00_Utility\Dependency\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Recast\Recast.h">
+      <Filter>00_Utility\Dependency\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Recast\RecastAlloc.h">
+      <Filter>00_Utility\Dependency\Recast</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="01_ECS">
@@ -385,6 +426,15 @@
     </Filter>
     <Filter Include="00_Utility">
       <UniqueIdentifier>{6df8462f-88f4-4f0d-a3f4-882035ffcb3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00_Utility\Dependency">
+      <UniqueIdentifier>{1f403ec9-23b1-4bfb-8d9f-d6accbc47f2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00_Utility\Dependency\Detour">
+      <UniqueIdentifier>{17028d94-6ae8-462a-8b4a-35d6857fcc0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00_Utility\Dependency\Recast">
+      <UniqueIdentifier>{9d34aca9-de86-489f-bd70-71e32c7b70b2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

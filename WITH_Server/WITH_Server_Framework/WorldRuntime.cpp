@@ -6,6 +6,7 @@
 #include "IWorldTransferBinding.h"
 #include "WorldTransferContext.h"
 #include "WorldTransferProfile.h"
+#include "WorldDef.h"
 
 namespace
 {
@@ -69,6 +70,26 @@ bool WorldRuntime::Initialize()
 	_frameIndex = 0;
 	_lastNowSec = 0.0;
 	_lastDtSec = 0.0;
+
+	// NavMesh 로딩 — WorldDef.map.navMesh가 설정된 경우에만 수행
+	// 실패해도 초기화를 중단하지 않는다. 해당 월드는 fallback 경로로 동작한다.
+	_navMeshRuntime.reset();
+	_navProfile = nullptr;
+
+	if (_def->map.navMesh.has_value())
+	{
+		_navMeshRuntime = std::make_unique<NavMeshRuntime>();
+		if (!_navMeshRuntime->LoadFromFile(_def->map.navMesh->navMeshBinPath))
+		{
+			// 로딩 실패 — NavMesh 없이 계속 실행
+			// TODO: 로깅 인프라 연결 후 경고 기록
+			_navMeshRuntime.reset();
+		}
+	}
+
+	if (_navMeshRuntime && _def->map.navigationProfile.has_value())
+		_navProfile = &(*_def->map.navigationProfile);
+
 	return true;
 }
 
@@ -188,6 +209,25 @@ bool WorldRuntime::EnqueueWorldCommand(WorldCommand command)
 	return _worldCommands.Enqueue(std::move(command));
 }
 
+// WorldNavMeshServiceAdapter: WorldRuntime이 소유한 NavMeshRuntime을
+// INavMeshProvider 인터페이스로 노출하는 경량 어댑터.
+// ExecuteSystems() 스택 내에서만 생존하므로 포인터 수명이 안전하다.
+struct WorldNavMeshServiceAdapter final : INavMeshProvider
+{
+	const NavMeshRuntime*       runtime{ nullptr };
+	const NavigationProfileDef* profile{ nullptr };
+
+	const NavMeshRuntime* GetNavMeshRuntime() const noexcept override
+	{
+		return runtime;
+	}
+
+	const NavigationProfileDef* GetNavigationProfile() const noexcept override
+	{
+		return profile;
+	}
+};
+
 bool WorldRuntime::ExecuteSystems(
 	SystemPhase phase,
 	WorldSystemServices services)
@@ -202,6 +242,15 @@ bool WorldRuntime::ExecuteSystems(
 			WorldRuntimeFaultCode::InvalidOperation,
 			"ExecuteSystems is not allowed in the current runtime state.");
 		return false;
+	}
+
+	// 호출자가 navMeshProvider를 설정하지 않은 경우 WorldRuntime 소유 NavMesh를 자동 주입
+	WorldNavMeshServiceAdapter navAdapter;
+	if (!services.navMeshProvider && _navMeshRuntime && _navMeshRuntime->IsReady())
+	{
+		navAdapter.runtime = _navMeshRuntime.get();
+		navAdapter.profile = _navProfile;
+		services.navMeshProvider = &navAdapter;
 	}
 
 	SystemContext context{

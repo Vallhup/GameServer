@@ -60,13 +60,44 @@ struct NamedSpawnPointDef
 	std::string name;
 };
 
+// NavMesh 파일 및 에이전트 물리 속성.
+// agent* 값은 Recast 오프라인 빌드 시 사용한 파라미터와 반드시 일치해야 한다.
+struct MapNavMeshDef
+{
+	std::string navMeshBinPath;
+	float       agentRadius{ 0.35f };
+	float       agentHeight{ 2.0f };
+	float       agentMaxClimb{ 0.4f };
+	float       agentMaxSlope{ 45.0f };
+};
+
+// Detour 쿼리 필터 파라미터
+struct NavigationQueryFilterDef
+{
+	float          walkableAreaCost{ 1.0f };
+	unsigned short includeFlags{ 0xFFFF };
+	unsigned short excludeFlags{ 0 };
+};
+
+// NavMesh 쿼리 프로파일.
+// nearestPolyExtent*: findNearestPoly/moveAlongSurface 검색 반경.
+struct NavigationProfileDef
+{
+	NavigationProfileId      id{ 0 };
+	float                    nearestPolyExtentXZ{ 2.0f };
+	float                    nearestPolyExtentY{ 4.0f };
+	NavigationQueryFilterDef queryFilter;
+};
+
 struct MapDef
 {
-	MapResourceId resourceId;
-	SpawnPointId defaultPlayerSpawnPointId;
-	std::vector<NamedSpawnPointDef> namedSpawnPoints;
-	std::optional<NavigationProfileId> navigationProfileId;
-	std::vector<EnvironmentTagId> environmentTags;
+	MapResourceId                       resourceId;
+	SpawnPointId                        defaultPlayerSpawnPointId;
+	std::vector<NamedSpawnPointDef>     namedSpawnPoints;
+	std::optional<MapNavMeshDef>        navMesh;            // NavMesh 파일 정보 (없으면 NavMesh 미사용)
+	std::optional<NavigationProfileDef> navigationProfile;  // 쿼리 파라미터 (navMesh 설정 시 함께 지정)
+	std::optional<NavigationProfileId>  navigationProfileId; // 레거시 ID 필드 — 향후 제거 예정
+	std::vector<EnvironmentTagId>       environmentTags;
 };
 
 struct WorldSpawnDef
@@ -149,3 +180,7 @@ struct WorldDef
 	WorldExecutionModelKey executionModelKey{ InvalidWorldExecutionModelKey };
 	WorldTransferProfileId transferProfileId{ InvalidWorldTransferProfileId };
 };
+
+// Framework 내장 월드 정의 팩토리.
+// 실행 모델 키는 호출 측(서버/bootstrap)이 주입한다.
+WorldDef CreateSquareWorldDef(WorldExecutionModelKey executionModelKey);
