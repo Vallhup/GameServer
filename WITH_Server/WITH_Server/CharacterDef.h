@@ -6,6 +6,7 @@
 #include <string>
 
 #include "ActionProfileIds.h"
+#include "BodyCollisionTypes.h"
 #include "EntityId.h"
 
 enum class CharacterId : uint8_t;
@@ -63,6 +64,17 @@ struct CharacterStatDef
 	float attackSpeed;
 };
 
+struct CharacterBodyCollisionDef
+{
+	float footprintRadiusXZ{ 0.5f };
+	float bodyHeight{ 1.8f };
+	bool blocksBodyOverlap{ true };
+	bool useNavMeshConstraint{ true };
+	BodyPushability pushability{ BodyPushability::Dynamic };
+	float overlapYieldWeight{ 1.0f };
+	float maxOverlapCorrectionPerFrameXZ{ 0.12f };
+};
+
 using AITuningId = uint16_t;
 
 struct CharacterAIDef
@@ -78,6 +90,7 @@ struct CharacterDef
 
 	CharacterProfileDef profile;
 	CharacterStatDef stat;
+	CharacterBodyCollisionDef bodyCollision;
 	CharacterRole role{ CharacterRole::NPC };
 	CharacterFeatureFlags features{ CharacterFeatureFlags::None };
 	std::optional<CharacterAIDef> ai;

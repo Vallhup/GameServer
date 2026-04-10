@@ -80,10 +80,9 @@ void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 				SkeletalCombatColliderComp,
 				CombatColliderActivationComp>())
 		{
-			// TEMP: 충돌 테스트 위해 Faction 검사 off
 			if (victim == attacker ||
 				HasBlockingPendingState(ctx.ecs, victim) ||
-				/*IsSameFaction(ctx.ecs, attacker, victim) ||*/
+				IsSameFaction(ctx.ecs, attacker, victim) ||
 				victimActivation.hasInvulnerabilityWindow)
 			{
 				continue;
@@ -311,8 +310,9 @@ bool ResolveCombatHitSystem::CapsulesOverlap(
 	const Capsule& rhs,
 	float rhsRadius) noexcept
 {
+	const float distanceSq = SegmentSegmentDistanceSq(lhs, rhs);
 	const float sumRadius = lhsRadius + rhsRadius;
-	return SegmentSegmentDistanceSq(lhs, rhs) <= sumRadius * sumRadius;
+	return distanceSq <= (sumRadius * sumRadius);
 }
 
 int ResolveCombatHitSystem::GetResultPriority(
@@ -446,9 +446,9 @@ bool ResolveCombatHitSystem::DoesWindowApplyToAttack(
 
 bool ResolveCombatHitSystem::BuildReferenceDirection(
 	const ECSView& ecs,
-	Entity victim,
-	const ActionStateComp& victimAction,
-	const WorldTransformComp& victimTransform,
+	Entity owner,
+	const ActionStateComp& ownerAction,
+	const WorldTransformComp& ownerTransform,
 	CombatReferenceFrame referenceFrame,
 	XMFLOAT3& outDirection) noexcept
 {
@@ -475,15 +475,15 @@ bool ResolveCombatHitSystem::BuildReferenceDirection(
 	{
 	case CombatReferenceFrame::MoveDirection:
 		if (const auto* locomotion =
-			ecs.GetComponent<LocomotionStateComp>(victim))
+			ecs.GetComponent<LocomotionStateComp>(owner))
 		{
 			dirX = locomotion->desiredMoveDirX;
 			dirZ = locomotion->desiredMoveDirZ;
 		}
 		break;
 	case CombatReferenceFrame::LockedActionDirection:
-		dirX = victimAction.directionX;
-		dirZ = victimAction.directionZ;
+		dirX = ownerAction.directionX;
+		dirZ = ownerAction.directionZ;
 		break;
 	case CombatReferenceFrame::OwnerFacing:
 	default:
@@ -495,7 +495,7 @@ bool ResolveCombatHitSystem::BuildReferenceDirection(
 		const XMVECTOR facing =
 			XMVector3TransformNormal(
 				XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f),
-				BuildWorldMatrix(victimTransform));
+				BuildWorldMatrix(ownerTransform));
 		dirX = XMVectorGetX(facing);
 		dirZ = XMVectorGetZ(facing);
 		if (!normalizeXZ(dirX, dirZ))
@@ -510,17 +510,14 @@ bool ResolveCombatHitSystem::BuildReferenceDirection(
 
 bool ResolveCombatHitSystem::PassesSpatialFilter(
 	const ECSView& ecs,
-	Entity attacker,
-	const WorldTransformComp& attackerTransform,
-	Entity victim,
-	const ActionStateComp& victimAction,
-	const WorldTransformComp& victimTransform,
+	Entity source,
+	const ActionStateComp& sourceAction,
+	const WorldTransformComp& sourceTransform,
+	const WorldTransformComp& targetTransform,
 	const ActionCombatSpatialFilterDef& spatialFilter) noexcept
 {
-	(void)attacker;
-
-	const float dx = attackerTransform.position.x - victimTransform.position.x;
-	const float dz = attackerTransform.position.z - victimTransform.position.z;
+	const float dx = targetTransform.position.x - sourceTransform.position.x;
+	const float dz = targetTransform.position.z - sourceTransform.position.z;
 	const float distanceSqXZ = dx * dx + dz * dz;
 	const float distanceXZ = std::sqrt(distanceSqXZ);
 
@@ -539,7 +536,7 @@ bool ResolveCombatHitSystem::PassesSpatialFilter(
 	if (spatialFilter.verticalTolerance.has_value())
 	{
 		const float verticalDelta = std::abs(
-			attackerTransform.position.y - victimTransform.position.y);
+			sourceTransform.position.y - targetTransform.position.y);
 		if (verticalDelta > *spatialFilter.verticalTolerance)
 		{
 			return false;
@@ -566,9 +563,9 @@ bool ResolveCombatHitSystem::PassesSpatialFilter(
 	XMFLOAT3 referenceDirection{};
 	if (!BuildReferenceDirection(
 		ecs,
-		victim,
-		victimAction,
-		victimTransform,
+		source,
+		sourceAction,
+		sourceTransform,
 		spatialFilter.referenceFrame,
 		referenceDirection))
 	{
@@ -600,6 +597,32 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 {
 	if (attackerColliders.localColliders.empty() ||
 		victimColliders.localColliders.empty())
+	{
+		return false;
+	}
+
+	const ActionDef* attackerActionDef = FindActionDef(attackerAction.actionId);
+	if (attackerActionDef == nullptr ||
+		attackWindowIndex >= attackerActionDef->combatWindows.size())
+	{
+		return false;
+	}
+
+	const ActionCombatWindowDef& attackWindow =
+		attackerActionDef->combatWindows[attackWindowIndex];
+	if (attackWindow.windowType != CombatWindowType::Attack)
+	{
+		return false;
+	}
+
+	if (attackWindow.spatialFilter.has_value() &&
+		!PassesSpatialFilter(
+			ecs,
+			attacker,
+			attackerAction,
+			attackerTransform,
+			victimTransform,
+			*attackWindow.spatialFilter))
 	{
 		return false;
 	}
@@ -652,11 +675,10 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 					(!parryWindow->spatialFilter.has_value() ||
 						PassesSpatialFilter(
 							ecs,
-							attacker,
-							attackerTransform,
 							victim,
 							victimAction,
 							victimTransform,
+							attackerTransform,
 							*parryWindow->spatialFilter)))
 				{
 					candidateResultType = CombatResolveResultType::Parry;
@@ -675,11 +697,10 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 					(!guardWindow->spatialFilter.has_value() ||
 						PassesSpatialFilter(
 							ecs,
-							attacker,
-							attackerTransform,
 							victim,
 							victimAction,
 							victimTransform,
+							attackerTransform,
 							*guardWindow->spatialFilter)))
 				{
 					candidateResultType = CombatResolveResultType::Guard;

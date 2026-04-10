@@ -55,8 +55,8 @@ void RegisterGameplayRuntimeSystems(
 	runtime.RegisterSystem<ApplyMovementDeltaSystem>(SystemPhase::Graph);
 
 	// Phase 5
-	runtime.RegisterSystem<ResolveNavMeshBodyConstraintSystem>(SystemPhase::Graph);
 	runtime.RegisterSystem<ResolveCharacterOverlapSystem>(SystemPhase::Graph);
+	runtime.RegisterSystem<ResolveNavMeshBodyConstraintSystem>(SystemPhase::Graph);
 
 	// Phase 6
 	runtime.RegisterSystem<ResolvePortalTriggerSystem>(SystemPhase::Graph);

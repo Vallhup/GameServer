@@ -33,8 +33,18 @@ namespace
 				.maxPoise = 100,
 				.attackPower = 10,
 				.defense = 10,
-				.moveSpeed = 2.5f,
+				.moveSpeed = 3.0f,
 				.attackSpeed = 1.0f
+			},
+			.bodyCollision = CharacterBodyCollisionDef
+			{
+				.footprintRadiusXZ = 0.42f,
+				.bodyHeight = 1.8f,
+				.blocksBodyOverlap = true,
+				.useNavMeshConstraint = true,
+				.pushability = BodyPushability::Dynamic,
+				.overlapYieldWeight = 0.35f,
+				.maxOverlapCorrectionPerFrameXZ = 0.10f
 			},
 			.role = CharacterRole::Player,
 			.features =
@@ -65,8 +75,18 @@ namespace
 				.maxPoise = 100,
 				.attackPower = 10,
 				.defense = 10,
-				.moveSpeed = 2.5f,
+				.moveSpeed = 3.0f,
 				.attackSpeed = 1.0f
+			},
+			.bodyCollision = CharacterBodyCollisionDef
+			{
+				.footprintRadiusXZ = 0.46f,
+				.bodyHeight = 1.6f,
+				.blocksBodyOverlap = true,
+				.useNavMeshConstraint = true,
+				.pushability = BodyPushability::Dynamic,
+				.overlapYieldWeight = 0.85f,
+				.maxOverlapCorrectionPerFrameXZ = 0.16f
 			},
 			.role = CharacterRole::Monster,
 			.features =
@@ -99,8 +119,18 @@ namespace
 				.maxPoise = 100,
 				.attackPower = 10,
 				.defense = 10,
-				.moveSpeed = 2.5f,
+				.moveSpeed = 3.0f,
 				.attackSpeed = 1.0f
+			},
+			.bodyCollision = CharacterBodyCollisionDef
+			{
+				.footprintRadiusXZ = 0.65f,
+				.bodyHeight = 2.4f,
+				.blocksBodyOverlap = true,
+				.useNavMeshConstraint = true,
+				.pushability = BodyPushability::Dynamic,
+				.overlapYieldWeight = 0.20f,
+				.maxOverlapCorrectionPerFrameXZ = 0.08f
 			},
 			.role = CharacterRole::Boss,
 			.features =
