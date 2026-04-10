@@ -1,8 +1,10 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "NormalAIMovementPolicy.h"
 
 #include "IAIState.h"
 #include "TransformHelper.h"
+
+#include <cmath>
 
 void NormalAIMovementPolicy::BuildChaseIntent(AIContext& ctx)
 {
@@ -13,7 +15,7 @@ void NormalAIMovementPolicy::BuildChaseIntent(AIContext& ctx)
 	XMVECTOR dir = TransformHelper::Direction(ctx.selfTr->position, targetPos);
 	XMStoreFloat3(&ctx.command->moveDir, dir);
 
-	const bool hasMove = XMVector3Equal(dir, XMVectorZero());
+	const bool hasMove = !XMVector3Equal(dir, XMVectorZero());
 	ctx.command->hasMove = hasMove;
 	ctx.command->wantsRun = hasMove;
 }
@@ -21,38 +23,52 @@ void NormalAIMovementPolicy::BuildChaseIntent(AIContext& ctx)
 void NormalAIMovementPolicy::BuildCombatIntent(AIContext& ctx)
 {
 	XMFLOAT3 targetPos;
-	if (!TryGetCurrentTargetPosition(ctx, targetPos))
+	if (!TryGetCurrentTargetPosition(ctx, targetPos) ||
+		ctx.command == nullptr ||
+		ctx.selfTr == nullptr ||
+		ctx.perception == nullptr ||
+		ctx.perceptionTuning == nullptr)
+	{
 		return;
+	}
 
-	XMFLOAT3 toTarget{ 0, 0, 0 };
-	XMVECTOR toTargetV = TransformHelper::Direction(ctx.selfTr->position, targetPos);
+	XMFLOAT3 toTarget{ 0.0f, 0.0f, 0.0f };
+	const XMVECTOR toTargetV =
+		TransformHelper::Direction(ctx.selfTr->position, targetPos);
 	XMStoreFloat3(&toTarget, toTargetV);
 
-	const double dist = ctx.perception->distanceToTarget;
-	const double desired = ctx.perceptionTuning->attackRange * 0.9;
-	const double tooClose = desired * 0.65;
-	const double tooFar = desired * 1.10;
+	const float dirLengthSq =
+		toTarget.x * toTarget.x +
+		toTarget.z * toTarget.z;
+	if (dirLengthSq <= 1.0e-6f)
+	{
+		ctx.command->hasMove = false;
+		ctx.command->wantsRun = false;
+		ctx.command->moveDir = { 0.0f, 0.0f, 0.0f };
+		return;
+	}
 
-	ctx.command->hasMove = true;
+	const double dist = ctx.perception->distanceToTarget;
+	const double desired = ctx.perceptionTuning->attackRange * 0.72;
+	const double tooClose = desired * 0.35;
+	const double tooFar = desired * 1.01;
+
+	ctx.command->hasMove = false;
 	ctx.command->wantsRun = false;
+	ctx.command->moveDir = { 0.0f, 0.0f, 0.0f };
 
 	if (dist > tooFar)
 	{
-		// Á¢±Ù
+		ctx.command->hasMove = true;
 		ctx.command->moveDir = toTarget;
+		return;
 	}
 
-	else if (dist < tooClose)
+	if (dist < tooClose)
 	{
-		// ÈÄÅð
+		ctx.command->hasMove = true;
 		ctx.command->moveDir = { -toTarget.x, 0.0f, -toTarget.z };
-	}
-
-	else
-	{
-		// °£°Ý À¯Áö
-		ctx.command->hasMove = false;
-		ctx.command->moveDir = { 0, 0, 0 };
+		return;
 	}
 }
 

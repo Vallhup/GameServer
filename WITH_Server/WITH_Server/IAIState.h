@@ -5,6 +5,8 @@
 
 struct SystemContext;
 class IAIMovementPolicy;
+class IAICombatActionPolicy;
+class IAIReactionPolicy;
 
 struct AIContext
 {
@@ -24,6 +26,10 @@ struct AIContext
 	AICommandFrameComp* command{ nullptr };
 
 	IAIMovementPolicy* movementPolicy{ nullptr };
+
+	// archetype ë³„ êµì²´ ê°€ëŠ¥í•œ ì •ì±… (AIFSMBundle ì—ì„œ ì£¼ì…)
+	const IAICombatActionPolicy* combatActionPolicy{ nullptr };
+	const IAIReactionPolicy*     reactionPolicy{ nullptr };
 };
 
 class IAIState {
@@ -35,9 +41,9 @@ public:
 	virtual void Enter(AIContext& ctx) const {}
 	virtual void Exit(AIContext& ctx) const {}
 
-	// Decision Tick¸¶´Ù È£Ãâ
+	// Decision Tickë§ˆë‹¤ í˜¸ì¶œ
 	virtual void DecisionUpdate(AIContext& ctx, const double decisionDT) const = 0;
 
-	// ¸Å ÇÁ·¹ÀÓ È£Ãâ
+	// ë§¤ í”„ë ˆì„ í˜¸ì¶œ
 	virtual void FrameUpdate(AIContext& ctx, const double frameDT) const = 0;
 };

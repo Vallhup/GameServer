@@ -206,7 +206,7 @@ bool AnimationJsonLoader::ResolveAnimationId(
 		{ "Knight_drinking", AnimationId::Knight_Drinking },
 		{ "Knight_death", AnimationId::Knight_Death },
 
-		/*{ "Imp_death_1", AnimationId::Imp_Death_1 },
+		{ "Imp_death_1", AnimationId::Imp_Death_1 },
 		{ "Imp_death_2", AnimationId::Imp_Death_2 },
 		{ "Imp_idle_1", AnimationId::Imp_Idle_1 },
 		{ "Imp_idle_2", AnimationId::Imp_Idle_2 },
@@ -229,7 +229,7 @@ bool AnimationJsonLoader::ResolveAnimationId(
 		{ "Imp_walk_back", AnimationId::Imp_Walk_Back },
 		{ "Imp_walk_forward", AnimationId::Imp_Walk_Forward },
 		{ "Imp_walk_left", AnimationId::Imp_Walk_Left },
-		{ "Imp_walk_right", AnimationId::Imp_Walk_Right },*/
+		{ "Imp_walk_right", AnimationId::Imp_Walk_Right },
 
 		{ "FinalBoss_idle", AnimationId::FinalBoss_Idle },
 		{ "FinalBoss_walk", AnimationId::FinalBoss_Walk },

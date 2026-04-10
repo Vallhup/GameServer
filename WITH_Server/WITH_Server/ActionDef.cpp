@@ -862,15 +862,6 @@ namespace
 				{
 					ActionInterruptRule
 					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Knight_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
 						.causeType = ActionInterruptCauseType::OnHpZero,
 						.toActionId = ActionId::Knight_Dead,
 						.windowPolicy = ActionWindowPolicy::Always,
@@ -1062,7 +1053,7 @@ namespace
 			.id = ActionId::Imp_melee1,
 			.name = "Imp.Melee1",
 			.kind = ActionKind::Attack,
-			.duration = 0.82f,
+			.duration = 1.06f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -1125,9 +1116,16 @@ namespace
 				{
 					.windowType = CombatWindowType::Attack,
 					.startNormalized = 0.30f,
-					.endNormalized = 0.52f,
+					.endNormalized = 0.74f,
 					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = std::nullopt,
+					.spatialFilter = ActionCombatSpatialFilterDef
+					{
+						.facingHalfAngleDeg = 52.0f,
+						.minDistance = std::nullopt,
+						.maxDistance = 2.20f,
+						.verticalTolerance = 1.20f,
+						.referenceFrame = CombatReferenceFrame::LockedActionDirection
+					},
 					.effect = CombatEffectDef
 					{
 						.type = CombatEffectType::AttackHit,
@@ -1156,10 +1154,10 @@ namespace
 				{
 					.startNormalized = 0.10f,
 					.endNormalized = 0.36f,
-					.horizontalMoveMode = HorizontalMovementMode::ForwardFixedDistance,
-					.moveDistance = 0.55f,
+					.horizontalMoveMode = HorizontalMovementMode::None,
+					.moveDistance = std::nullopt,
 					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = std::nullopt,
+					.rotationRate = 5.5f,
 					.verticalMoveMode = VerticalMovementMode::None,
 					.verticalAmount = std::nullopt,
 					.dirPolicy = DirectionPolicy::TargetDirection,
@@ -1173,340 +1171,7 @@ namespace
 			.id = ActionId::Imp_melee2,
 			.name = "Imp.Melee2",
 			.kind = ActionKind::Attack,
-			.duration = 0.88f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Imp_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Imp_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.34f,
-					.endNormalized = 0.58f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = std::nullopt,
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 0.7f,
-							.bonusDamage = 3.0f,
-							.staminaDamageScale = 0.5f,
-							.bonusStaminaDamage = 2.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.25f,
-							.hitStopSec = 0.04f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.12f,
-					.endNormalized = 0.38f,
-					.horizontalMoveMode = HorizontalMovementMode::ForwardFixedDistance,
-					.moveDistance = 0.65f,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = std::nullopt,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_melee3,
-			.name = "Imp.Melee3",
-			.kind = ActionKind::Attack,
-			.duration = 0.94f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Imp_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Imp_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.38f,
-					.endNormalized = 0.62f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = std::nullopt,
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 0.8f,
-							.bonusDamage = 4.0f,
-							.staminaDamageScale = 0.6f,
-							.bonusStaminaDamage = 2.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.30f,
-							.hitStopSec = 0.05f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.14f,
-					.endNormalized = 0.40f,
-					.horizontalMoveMode = HorizontalMovementMode::ForwardFixedDistance,
-					.moveDistance = 0.72f,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = std::nullopt,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_melee4,
-			.name = "Imp.Melee4",
-			.kind = ActionKind::Attack,
-			.duration = 1.02f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Imp_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Imp_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.42f,
-					.endNormalized = 0.68f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = std::nullopt,
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 0.9f,
-							.bonusDamage = 5.0f,
-							.staminaDamageScale = 0.8f,
-							.bonusStaminaDamage = 2.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.38f,
-							.hitStopSec = 0.05f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.16f,
-					.endNormalized = 0.42f,
-					.horizontalMoveMode = HorizontalMovementMode::ForwardFixedDistance,
-					.moveDistance = 0.85f,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = std::nullopt,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_melee5,
-			.name = "Imp.Melee5",
-			.kind = ActionKind::Attack,
-			.duration = 1.10f,
+			.duration = 2.63f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -1569,9 +1234,370 @@ namespace
 				{
 					.windowType = CombatWindowType::Attack,
 					.startNormalized = 0.46f,
-					.endNormalized = 0.74f,
+					.endNormalized = 0.68f,
 					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = std::nullopt,
+					.spatialFilter = ActionCombatSpatialFilterDef
+					{
+						.facingHalfAngleDeg = 62.0f,
+						.minDistance = std::nullopt,
+						.maxDistance = 2.35f,
+						.verticalTolerance = 1.20f,
+						.referenceFrame = CombatReferenceFrame::LockedActionDirection
+					},
+					.effect = CombatEffectDef
+					{
+						.type = CombatEffectType::AttackHit,
+						.attackHit = AttackCombatEffectDef
+						{
+							.damageScale = 0.7f,
+							.bonusDamage = 3.0f,
+							.staminaDamageScale = 0.5f,
+							.bonusStaminaDamage = 2.0f,
+							.poiseDamageScale = 0.0f,
+							.bonusPoiseDamage = 0.0f,
+							.knockbackDistance = 0.25f,
+							.hitStopSec = 0.04f,
+							.parryable = true,
+							.guardable = true
+						},
+						.parryResponse = std::nullopt,
+						.guardResponse = std::nullopt
+					}
+				}
+			},
+			.events = {},
+			.moveSegments =
+			{
+				ActionMovementSegmentDef
+				{
+					.startNormalized = 0.12f,
+					.endNormalized = 0.38f,
+					.horizontalMoveMode = HorizontalMovementMode::None,
+					.moveDistance = std::nullopt,
+					.rotationMode = RotationMode::FaceTarget,
+					.rotationRate = 4.5f,
+					.verticalMoveMode = VerticalMovementMode::None,
+					.verticalAmount = std::nullopt,
+					.dirPolicy = DirectionPolicy::TargetDirection,
+					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
+				}
+			}
+		},
+
+		ActionDef
+		{
+			.id = ActionId::Imp_melee3,
+			.name = "Imp.Melee3",
+			.kind = ActionKind::Attack,
+			.duration = 2.23f,
+			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
+			.endPolicy = ActionEndPolicyDef
+			{
+				.endType = ActionEndType::NaturalEnd,
+				.defaultNextActionId = ActionId::None
+			},
+			.requestRequirements =
+			{
+				ActionRequestRequirementDef
+				{
+					.type = ActionRequestRequirementType::HasTarget,
+					.scalar = std::nullopt,
+					.stateFlag = std::nullopt
+				},
+				ActionRequestRequirementDef
+				{
+					.type = ActionRequestRequirementType::IsGrounded,
+					.scalar = std::nullopt,
+					.stateFlag = std::nullopt
+				}
+			},
+			.resourceCosts = {},
+			.transitionRule = ActionTransitionRuleDef
+			{
+				.interruptRules =
+				{
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnHitReceived,
+						.toActionId = ActionId::Imp_Hit,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 100
+					},
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnParried,
+						.toActionId = ActionId::Imp_Stun,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 200
+					},
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnHpZero,
+						.toActionId = ActionId::Imp_Dead,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 1000
+					}
+				},
+				.cancelRules = {}
+			},
+			.combatWindows =
+			{
+				ActionCombatWindowDef
+				{
+					.windowType = CombatWindowType::Attack,
+					.startNormalized = 0.26f,
+					.endNormalized = 0.46f,
+					.appliesTo = ActionCombatApplyTo::FrontPhysical,
+					.spatialFilter = ActionCombatSpatialFilterDef
+					{
+						.facingHalfAngleDeg = 58.0f,
+						.minDistance = std::nullopt,
+						.maxDistance = 2.30f,
+						.verticalTolerance = 1.20f,
+						.referenceFrame = CombatReferenceFrame::LockedActionDirection
+					},
+					.effect = CombatEffectDef
+					{
+						.type = CombatEffectType::AttackHit,
+						.attackHit = AttackCombatEffectDef
+						{
+							.damageScale = 0.8f,
+							.bonusDamage = 4.0f,
+							.staminaDamageScale = 0.6f,
+							.bonusStaminaDamage = 2.0f,
+							.poiseDamageScale = 0.0f,
+							.bonusPoiseDamage = 0.0f,
+							.knockbackDistance = 0.30f,
+							.hitStopSec = 0.05f,
+							.parryable = true,
+							.guardable = true
+						},
+						.parryResponse = std::nullopt,
+						.guardResponse = std::nullopt
+					}
+				}
+			},
+			.events = {},
+			.moveSegments =
+			{
+				ActionMovementSegmentDef
+				{
+					.startNormalized = 0.14f,
+					.endNormalized = 0.40f,
+					.horizontalMoveMode = HorizontalMovementMode::None,
+					.moveDistance = std::nullopt,
+					.rotationMode = RotationMode::FaceTarget,
+					.rotationRate = 5.0f,
+					.verticalMoveMode = VerticalMovementMode::None,
+					.verticalAmount = std::nullopt,
+					.dirPolicy = DirectionPolicy::TargetDirection,
+					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
+				}
+			}
+		},
+
+		ActionDef
+		{
+			.id = ActionId::Imp_melee4,
+			.name = "Imp.Melee4",
+			.kind = ActionKind::Attack,
+			.duration = 2.36f,
+			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
+			.endPolicy = ActionEndPolicyDef
+			{
+				.endType = ActionEndType::NaturalEnd,
+				.defaultNextActionId = ActionId::None
+			},
+			.requestRequirements =
+			{
+				ActionRequestRequirementDef
+				{
+					.type = ActionRequestRequirementType::HasTarget,
+					.scalar = std::nullopt,
+					.stateFlag = std::nullopt
+				},
+				ActionRequestRequirementDef
+				{
+					.type = ActionRequestRequirementType::IsGrounded,
+					.scalar = std::nullopt,
+					.stateFlag = std::nullopt
+				}
+			},
+			.resourceCosts = {},
+			.transitionRule = ActionTransitionRuleDef
+			{
+				.interruptRules =
+				{
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnHitReceived,
+						.toActionId = ActionId::Imp_Hit,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 100
+					},
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnParried,
+						.toActionId = ActionId::Imp_Stun,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 200
+					},
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnHpZero,
+						.toActionId = ActionId::Imp_Dead,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 1000
+					}
+				},
+				.cancelRules = {}
+			},
+			.combatWindows =
+			{
+				ActionCombatWindowDef
+				{
+					.windowType = CombatWindowType::Attack,
+					.startNormalized = 0.22f,
+					.endNormalized = 0.84f,
+					.appliesTo = ActionCombatApplyTo::FrontPhysical,
+					.spatialFilter = ActionCombatSpatialFilterDef
+					{
+						.facingHalfAngleDeg = 72.0f,
+						.minDistance = std::nullopt,
+						.maxDistance = 2.50f,
+						.verticalTolerance = 1.20f,
+						.referenceFrame = CombatReferenceFrame::LockedActionDirection
+					},
+					.effect = CombatEffectDef
+					{
+						.type = CombatEffectType::AttackHit,
+						.attackHit = AttackCombatEffectDef
+						{
+							.damageScale = 0.9f,
+							.bonusDamage = 5.0f,
+							.staminaDamageScale = 0.8f,
+							.bonusStaminaDamage = 2.0f,
+							.poiseDamageScale = 0.0f,
+							.bonusPoiseDamage = 0.0f,
+							.knockbackDistance = 0.38f,
+							.hitStopSec = 0.05f,
+							.parryable = true,
+							.guardable = true
+						},
+						.parryResponse = std::nullopt,
+						.guardResponse = std::nullopt
+					}
+				}
+			},
+			.events = {},
+			.moveSegments =
+			{
+				ActionMovementSegmentDef
+				{
+					.startNormalized = 0.16f,
+					.endNormalized = 0.42f,
+					.horizontalMoveMode = HorizontalMovementMode::None,
+					.moveDistance = std::nullopt,
+					.rotationMode = RotationMode::FaceTarget,
+					.rotationRate = 4.0f,
+					.verticalMoveMode = VerticalMovementMode::None,
+					.verticalAmount = std::nullopt,
+					.dirPolicy = DirectionPolicy::TargetDirection,
+					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
+				}
+			}
+		},
+
+		ActionDef
+		{
+			.id = ActionId::Imp_melee5,
+			.name = "Imp.Melee5",
+			.kind = ActionKind::Attack,
+			.duration = 2.60f,
+			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
+			.endPolicy = ActionEndPolicyDef
+			{
+				.endType = ActionEndType::NaturalEnd,
+				.defaultNextActionId = ActionId::None
+			},
+			.requestRequirements =
+			{
+				ActionRequestRequirementDef
+				{
+					.type = ActionRequestRequirementType::HasTarget,
+					.scalar = std::nullopt,
+					.stateFlag = std::nullopt
+				},
+				ActionRequestRequirementDef
+				{
+					.type = ActionRequestRequirementType::IsGrounded,
+					.scalar = std::nullopt,
+					.stateFlag = std::nullopt
+				}
+			},
+			.resourceCosts = {},
+			.transitionRule = ActionTransitionRuleDef
+			{
+				.interruptRules =
+				{
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnHitReceived,
+						.toActionId = ActionId::Imp_Hit,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 100
+					},
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnParried,
+						.toActionId = ActionId::Imp_Stun,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 200
+					},
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnHpZero,
+						.toActionId = ActionId::Imp_Dead,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 1000
+					}
+				},
+				.cancelRules = {}
+			},
+			.combatWindows =
+			{
+				ActionCombatWindowDef
+				{
+					.windowType = CombatWindowType::Attack,
+					.startNormalized = 0.28f,
+					.endNormalized = 0.66f,
+					.appliesTo = ActionCombatApplyTo::FrontPhysical,
+					.spatialFilter = ActionCombatSpatialFilterDef
+					{
+						.facingHalfAngleDeg = 68.0f,
+						.minDistance = std::nullopt,
+						.maxDistance = 2.60f,
+						.verticalTolerance = 1.20f,
+						.referenceFrame = CombatReferenceFrame::LockedActionDirection
+					},
 					.effect = CombatEffectDef
 					{
 						.type = CombatEffectType::AttackHit,
@@ -1600,10 +1626,10 @@ namespace
 				{
 					.startNormalized = 0.18f,
 					.endNormalized = 0.46f,
-					.horizontalMoveMode = HorizontalMovementMode::ForwardFixedDistance,
-					.moveDistance = 0.95f,
+					.horizontalMoveMode = HorizontalMovementMode::None,
+					.moveDistance = std::nullopt,
 					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = std::nullopt,
+					.rotationRate = 3.5f,
 					.verticalMoveMode = VerticalMovementMode::None,
 					.verticalAmount = std::nullopt,
 					.dirPolicy = DirectionPolicy::TargetDirection,
@@ -1617,7 +1643,7 @@ namespace
 			.id = ActionId::Imp_Stun,
 			.name = "Imp.Stun",
 			.kind = ActionKind::Stun,
-			.duration = 1.00f,
+			.duration = 2.0f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -1652,7 +1678,7 @@ namespace
 			.id = ActionId::Imp_Hit,
 			.name = "Imp.Hit",
 			.kind = ActionKind::Hit,
-			.duration = 0.58f,
+			.duration = 1.16f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -1687,7 +1713,7 @@ namespace
 			.id = ActionId::Imp_Dead,
 			.name = "Imp.Dead",
 			.kind = ActionKind::Dead,
-			.duration = 1.10f,
+			.duration = 2.33f,
 			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
 			.endPolicy = ActionEndPolicyDef
 			{
@@ -1987,8 +2013,73 @@ namespace
 		AnimationBindingProfileDef
 		{
 			.id = AnimationBindingProfileIds::Imp,
-			.actionBindings = {},
-			.locomotionBindings = {}
+			.actionBindings =
+			{
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Imp_melee1,
+					.animationId = AnimationId::Imp_Melee_1
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Imp_melee2,
+					.animationId = AnimationId::Imp_Melee_2
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Imp_melee3,
+					.animationId = AnimationId::Imp_Melee_3
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Imp_melee4,
+					.animationId = AnimationId::Imp_Melee_4
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Imp_melee5,
+					.animationId = AnimationId::Imp_Melee_5
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Imp_Hit,
+					.animationId = AnimationId::Imp_React_Front
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Imp_Stun,
+					.animationId = AnimationId::Imp_Stun
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Imp_Dead,
+					.animationId = AnimationId::Imp_Death_1
+				}
+			},
+			.locomotionBindings =
+			{
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Idle,
+					.animationId = AnimationId::Imp_Idle_1,
+					.holdLastFrame = true
+				},
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Walk,
+					.animationId = AnimationId::Imp_Walk_Forward
+				},
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Run,
+					.animationId = AnimationId::Imp_Walk_Forward
+				},
+				LocomotionAnimationBindingDef
+				{
+					.mode = LocomotionMode::Turn,
+					.animationId = AnimationId::Imp_Walk_Forward
+				}
+			}
 		},
 		AnimationBindingProfileDef
 		{

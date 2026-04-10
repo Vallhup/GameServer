@@ -3,6 +3,7 @@
 
 #include "ECS/GameplayRuntimeComponents.h"
 #include "IAIMovementPolicy.h"
+#include "IAICombatActionPolicy.h"
 
 void NormalAICombatState::Enter(AIContext& ctx) const
 {
@@ -24,26 +25,31 @@ void NormalAICombatState::DecisionUpdate(AIContext& ctx, const double decisionDT
 		return;
 	}
 
-	if (!ctx.actionState->CanIssueAction()) return;
-
-	if (ctx.decision->attackCooldownAcc >= ctx.decisionTuning->attackCooldown)
-	{
-		// TEMP : AttackType 결정 별도 인터페이스 훅으로 주입
-		ctx.command->hasAction = true;
-		ctx.command->actionId = ActionId::Imp_melee1;
-		ctx.command->actionDirX = ctx.selfTr->rotation.x;
-		ctx.command->actionDirZ = ctx.selfTr->rotation.z;
-		ctx.command->sequence++;
-
-		ctx.decision->attackCooldownAcc = 0.0;
+	if (!ctx.actionState->CanIssueAction())
 		return;
-	}
+
+	if (!ctx.combatActionPolicy)
+		return;
+
+	const CombatActionSelection selection = ctx.combatActionPolicy->SelectAction(ctx);
+
+	if (!selection.shouldAttack)
+		return;
+
+	ctx.command->hasAction  = true;
+	ctx.command->actionId   = selection.selectedActionId;
+	ctx.command->actionDirX = selection.directionX;
+	ctx.command->actionDirZ = selection.directionZ;
+	ctx.command->sequence++;
+
+	ctx.blackboard->lastUsedActionId = selection.selectedActionId;
+	ctx.decision->attackCooldownAcc  = 0.0;
 }
 
 void NormalAICombatState::FrameUpdate(AIContext& ctx, const double dT) const
 {
 	ctx.command->hasLook = true;
-	ctx.command->target = ctx.blackboard->currentTarget;
+	ctx.command->target  = ctx.blackboard->currentTarget;
 
 	ctx.movementPolicy->BuildCombatIntent(ctx);
 }

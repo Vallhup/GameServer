@@ -10,6 +10,8 @@
 #include "AIPerceptionSystem.h"
 #include "../Phase1/ApplyAICommandSystem.h"
 
+#include "IAIReactionPolicy.h"
+
 using namespace GameplaySystemUtil;
 
 const StaticSystemMetaStorage<10, 1, 1> AIDecisionSystem::kMetaStorage =
@@ -38,33 +40,35 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 	for (const auto& [entity, selfTr, actionState, perception, perceptionTuning,
 		blackboard, decision, decisionTuning, command, reaction, aiType] :
 		ctx.ecs.View<
-		WorldTransformComp, ActionStateComp, 
-		AIPerceptionComp, AIPerceptionTuningComp, 
+		WorldTransformComp, ActionStateComp,
+		AIPerceptionComp, AIPerceptionTuningComp,
 		AIBlackboardComp, AIDecisionComp, AIDecisionTuningComp,
 		AICommandFrameComp, AIReactionComp, AITypeComp>())
 	{
 		command.ClearFrameTransient();
 
-		decision.stateTime += ctx.dtSec;
-		decision.globalDecisionAcc += ctx.dtSec;
-		decision.attackCooldownAcc += ctx.dtSec;
+		decision.stateTime          += ctx.dtSec;
+		decision.globalDecisionAcc  += ctx.dtSec;
+		decision.attackCooldownAcc  += ctx.dtSec;
 
 		AIContext aiCtx;
-		aiCtx.self = entity;
-		aiCtx.sysCtx = &ctx;
-		aiCtx.selfTr = &selfTr;
-		aiCtx.actionState = &actionState;
-		aiCtx.perception = &perception;
+		aiCtx.self            = entity;
+		aiCtx.sysCtx          = &ctx;
+		aiCtx.selfTr          = &selfTr;
+		aiCtx.actionState     = &actionState;
+		aiCtx.perception      = &perception;
 		aiCtx.perceptionTuning = &perceptionTuning;
-		aiCtx.blackboard = &blackboard;
-		aiCtx.decision = &decision;
-		aiCtx.decisionTuning = &decisionTuning;
-		aiCtx.command = &command;
-		aiCtx.reaction = &reaction;
+		aiCtx.blackboard      = &blackboard;
+		aiCtx.decision        = &decision;
+		aiCtx.decisionTuning  = &decisionTuning;
+		aiCtx.command         = &command;
+		aiCtx.reaction        = &reaction;
 
 		if (const AIFSMBundle* bundle = _fsmRegistry.TryGetBundle(aiType.aiType))
 		{
-			aiCtx.movementPolicy = bundle->movementPolicy.get();
+			aiCtx.movementPolicy     = bundle->movementPolicy.get();
+			aiCtx.combatActionPolicy = bundle->combatActionPolicy.get();
+			aiCtx.reactionPolicy     = bundle->reactionPolicy.get();
 			RunFSM(aiCtx, *bundle);
 		}
 
@@ -73,7 +77,7 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 }
 
 void AIDecisionSystem::RunFSM(
-	AIContext& ctx,
+	AIContext&        ctx,
 	const AIFSMBundle& bundle)
 {
 	const AIStateRegistry& states = bundle.stateRegistry;
@@ -86,19 +90,46 @@ void AIDecisionSystem::RunFSM(
 		ctx.decision->enteredThisFrame = false;
 	}
 
-	// 1. Reaction은 즉시 실행
-	if (ctx.reaction->GotReactionEvent())
+	// 1. 반응 이벤트 처리 — policy 가 결과를 결정
+	if (ctx.reaction->HasAnyEvent())
 	{
-		ctx.decision->RequestTransition(AIStateType::React);
-		ApplyPendingTransition(ctx, bundle);
-		return;
+		const AIReactionEvent* topEvent = ctx.reaction->TopPriorityEvent();
+
+		if (topEvent && ctx.reactionPolicy)
+		{
+			const ReactionDecision reactionDecision =
+				ctx.reactionPolicy->Evaluate(*topEvent, ctx);
+
+			// 타겟 재지정
+			if (reactionDecision.retargetAttacker && !topEvent->instigator.IsNull())
+			{
+				ctx.blackboard->lastAttacker   = topEvent->instigator;
+				ctx.blackboard->forceRetarget  = true;
+			}
+
+			// 전술 결과에 따른 상태 전환
+			switch (reactionDecision.outcome) {
+			case ReactionTacticalOutcome::EnterReact:
+				ctx.decision->RequestTransition(AIStateType::React);
+				ApplyPendingTransition(ctx, bundle);
+				return;
+
+			case ReactionTacticalOutcome::ForceRetarget:
+				// 상태 전환 없이 blackboard 갱신만 — 이미 위에서 처리됨
+				break;
+
+			case ReactionTacticalOutcome::Ignore:
+			default:
+				break;
+			}
+		}
 	}
 
 	// 2. 매 프레임 motion/look 갱신
 	if (const IAIState* current = states.TryGetState(ctx.decision->curState))
 		current->FrameUpdate(ctx, ctx.sysCtx->dtSec);
 
-	// 3. decision tick마다 판단 수행
+	// 3. decision tick 마다 판단 수행
 	int steps{ 0 };
 	while (ctx.decision->globalDecisionAcc >= ctx.decisionTuning->decisionInterval &&
 		steps < kMaxDecisionStepsPerFrame)
@@ -114,13 +145,13 @@ void AIDecisionSystem::RunFSM(
 }
 
 void AIDecisionSystem::ApplyPendingTransition(
-	AIContext& ctx,
+	AIContext&         ctx,
 	const AIFSMBundle& bundle)
 {
 	if (!ctx.decision || !ctx.decision->transitionRequested)
 		return;
 
-	const AIStateType cur = ctx.decision->curState;
+	const AIStateType cur  = ctx.decision->curState;
 	const AIStateType next = ctx.decision->requestedState;
 
 	if (cur == next)
@@ -134,9 +165,9 @@ void AIDecisionSystem::ApplyPendingTransition(
 	if (const IAIState* curState = states.TryGetState(cur))
 		curState->Exit(ctx);
 
-	ctx.decision->prevState = cur;
-	ctx.decision->curState = next;
-	ctx.decision->stateTime = 0.0;
+	ctx.decision->prevState           = cur;
+	ctx.decision->curState            = next;
+	ctx.decision->stateTime           = 0.0;
 	ctx.decision->transitionRequested = false;
 
 	if (const IAIState* nextState = states.TryGetState(next))

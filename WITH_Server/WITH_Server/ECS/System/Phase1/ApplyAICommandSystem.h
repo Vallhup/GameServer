@@ -1,12 +1,14 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaStorage.h"
 
-class ApplyAICommandSystem final : public System {
+class ApplyAICommandSystem final : public System
+{
 public:
-	void Execute(SystemContext& ctx) override;
-	const SystemMeta& Meta() const override;
+    void Execute(SystemContext& ctx) override;
+    const SystemMeta& Meta() const override { return kMetaStorage.meta; }
 
 private:
-	static const SystemMeta kMeta;
+    static const StaticSystemMetaStorage<3> kMetaStorage;
 };

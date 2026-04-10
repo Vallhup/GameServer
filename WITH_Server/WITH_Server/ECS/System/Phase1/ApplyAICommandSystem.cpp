@@ -5,8 +5,16 @@
 
 using namespace GameplaySystemUtil;
 
-const SystemMeta ApplyAICommandSystem::kMeta =
-	MakeSystemMeta<ApplyAICommandSystem>("ApplyAICommandSystem");
+const StaticSystemMetaStorage<3> ApplyAICommandSystem::kMetaStorage =
+    MakeMetaStorage(
+        SysTag<ApplyAICommandSystem>(),
+        "ApplyAICommandSystem",
+        std::array<AccessSpec, 3>
+        {
+            ReadSnapshot(ComponentRes<AIControlledTag>()),
+            ReadSnapshot(ComponentRes<AICommandFrameComp>()),
+            WriteImmediate(ComponentRes<ActorInputComp>()),
+        });
 
 void ApplyAICommandSystem::Execute(SystemContext& ctx)
 {
@@ -21,6 +29,14 @@ void ApplyAICommandSystem::Execute(SystemContext& ctx)
 			input.move.wantsRun     = frame.wantsRun;
 			input.move.lastUpdatedFrame = ctx.runtime.FrameIndex();
 		}
+		else
+		{
+			input.move.inputX = 0.0f;
+			input.move.inputZ = 0.0f;
+			input.move.cameraYawRad = 0.0f;
+			input.move.wantsRun = false;
+			input.move.lastUpdatedFrame = ctx.runtime.FrameIndex();
+		}
 
 		if (frame.hasAction)
 		{
@@ -32,7 +48,3 @@ void ApplyAICommandSystem::Execute(SystemContext& ctx)
 	}
 }
 
-const SystemMeta& ApplyAICommandSystem::Meta() const
-{
-	return kMeta;
-}
