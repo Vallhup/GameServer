@@ -10,6 +10,7 @@
 #include "ImGuiManager.h"
 #include "SoundManager.h"
 #include "EffectManager.h"
+#include "EffectComponent.h"
 #include "UIManager.h"
 #include "GameSceneUIController.h"
 #include "AnimationMachine.h"
@@ -99,6 +100,17 @@ void SecondBattleScene::UpdateScene(const float deltaTime)
 		}
 	}
 
+	if (myPlayer)
+	{
+		auto& pos = myPlayer->GetComponent<Transform>()->GetPosition();
+		if (pos.x < 325.8f && pos.x > 322.5f && pos.z > 220.1f && pos.z < 221.2f)
+		{
+			auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Castle);
+			if (controller)
+				controller->ShowMapName();
+		}
+	}
+
 	for (const auto& obj : gameObjects)
 	{
 		if (!obj->IsStatic())
@@ -159,7 +171,20 @@ void SecondBattleScene::RenderSceneShadow()
 void SecondBattleScene::RenderSceneEffects()
 {
 	if (cam)
+	{
+		const XMFLOAT3 camPos = cam->GetPosition();
+
+		for (const auto& obj : gameObjects)
+		{
+			for (auto& [type, comp] : obj->GetComponents())
+			{
+				if (auto effect = dynamic_cast<EffectComponent*>(comp.get()))
+					effect->Render(*coreRef, camPos);
+			}
+		}
+
 		EFFECT_MANAGER->Render(*coreRef, cam.get());
+	}
 }
 
 void SecondBattleScene::RequestSceneChange()

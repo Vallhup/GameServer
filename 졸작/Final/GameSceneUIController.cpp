@@ -5,6 +5,8 @@
 #include "Input.h"
 #include "TextUI.h"
 
+GameSceneUIController::GameSceneUIController(SceneType type) : sceneType(type) {}
+
 void GameSceneUIController::Init(UIManager* manager)
 {
 	uiManager = manager;
@@ -39,6 +41,21 @@ void GameSceneUIController::Init(UIManager* manager)
 	tempStatusText->Init(uiManager);
 	tempStatusText->SetPosition(0.0f, 0.0f);
 	tempStatusText->SetText(L"TempText");
+
+	// 맵 이름 이미지
+	wstring texName;
+	switch (sceneType)
+	{
+	case SceneType::Plaza:   texName = L"PlazaName";   break;
+	case SceneType::Village: texName = L"VillageName";  break;
+	case SceneType::Castle:  texName = L"CastleName";   break;
+	case SceneType::Final:   texName = L"FinalName";    break;
+	}
+	mapNameImage = make_shared<ImageUI>(texName, ImageUIState::Hidden);
+	mapNameImage->Init(uiManager);
+	mapNameImage->SetPosition(WinSize.x * 0.3f, WinSize.y * 0.1f);
+	mapNameImage->SetHoriLength(WinSize.x * 0.4f);
+	mapNameImage->SetVertLength(WinSize.y * 0.1f);
 
 	// 비율 상수 (BarBack 785x39, HpBar 692x18, 오프셋 47,11)
 	constexpr float BARBACK_ASPECT    = 39.0f / 785.0f;    // 0.0497
@@ -83,6 +100,7 @@ void GameSceneUIController::Update(float deltaTime)
 
 	if (charHPBarBack) charHPBarBack->Update(deltaTime);
 	if (charHPBar) charHPBar->Update(deltaTime);
+	if (mapNameImage) mapNameImage->Update(deltaTime);
 
 	if (INPUT.GetKeyDown('K'))
 	{
@@ -102,6 +120,7 @@ void GameSceneUIController::Render(SpriteBatch* batch)
 	if (tempStatusText) tempStatusText->Render(batch);
 	if (charHPBarBack) charHPBarBack->Render(batch);
 	if (charHPBar) charHPBar->Render(batch);
+	if (mapNameImage) mapNameImage->Render(batch);
 }
 
 void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curStamina, int maxStamina)
@@ -130,6 +149,12 @@ void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curS
 
 	if (tempStatusText)
 		tempStatusText->SetText(text);
+}
+
+void GameSceneUIController::ShowMapName()
+{
+	if (mapNameImage)
+		mapNameImage->ChangeState(ImageUIState::PulseOnce);
 }
 
 bool GameSceneUIController::IsStatWindowOn() const

@@ -15,6 +15,8 @@ public:
 	template<typename T>
 	const T* GetComponent() const;
 
+	auto& GetComponents() { return components; }
+
 	virtual void Update(float deltaTime);
 	void RenderDebugBoundingBox(DX12Core& core, const XMFLOAT4& color);
 
@@ -40,7 +42,7 @@ private:
 	bool IsInRange(const XMVECTOR& camPos) const;
 
 private:
-	vector<unique_ptr<Component>> components;
+	unordered_map<type_index, unique_ptr<Component>> components;
 	
 	BoundingBox localBoundingBox;
 	BoundingBox worldBoundingBox;
@@ -57,14 +59,11 @@ private:
 template<typename T>
 inline T* GameObject::AddComponent()
 {
-	if (GetComponent<T>())
-		return nullptr;
-
 	auto component = make_unique<T>();
 	T* rawPtr = component.get();
 	component->owner = this;
 	component->Init();
-	components.push_back(std::move(component));
+	components[typeid(T)] = move(component);
 
 	return rawPtr;
 }
@@ -72,23 +71,15 @@ inline T* GameObject::AddComponent()
 template<typename T>
 inline T* GameObject::GetComponent()
 {
-	for (auto& comp : components)
-	{
-		if (T* casted = dynamic_cast<T*>(comp.get()))
-			return casted;
-	}
-
-	return nullptr;
+	auto it = components.find(typeid(T));
+	if (it == components.end()) return nullptr;
+	return static_cast<T*>(it->second.get());
 }
 
 template<typename T>
 inline const T* GameObject::GetComponent() const
 {
-	for (const auto& comp : components)
-	{
-		if (const T* casted = dynamic_cast<const T*>(comp.get()))
-			return casted;
-	}
-
-	return nullptr;
+	auto it = components.find(typeid(T));
+	if (it == components.end()) return nullptr;
+	return static_cast<const T*>(it->second.get());
 }

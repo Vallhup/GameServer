@@ -1,36 +1,68 @@
 #include "pch.h"
-#include "ParrySparkEffect.h"
-#include "DX12Core.h"
+#include "ParrySparkComponent.h"
 #include "Shader.h"
-#include "RootSignature.h"
 #include "Material.h"
+#include "GameObject.h"
+#include "AnimationMachine.h"
+#include "Animator.h"
+#include "Transform.h"
 
-struct SparkConstants
+PSOType ParrySparkComponent::GetPSOType() const { return PSOType::Spark; }
+
+void ParrySparkComponent::Update(float deltaTime)
 {
-	XMFLOAT4 color;
-	UINT textureIndex;
-	XMFLOAT3 padding;
-};
+	auto owner = GetGameObject();
+	if (owner)
+	{
+		auto animMachine = owner->GetComponent<AnimationMachine>();
+		auto animator = owner->GetComponent<Animator>();
+		auto transform = owner->GetComponent<Transform>();
 
-void ParrySparkEffect::Initialize(ID3D12Device* device, UINT maxParts)
-{
-	maxParticles = maxParts;
-	particles.reserve(maxParticles);
-	vertices.reserve(maxParticles * 4);
-	indices.reserve(maxParticles * 6);
+		bool isParrying = animMachine && animMachine->IsPlaying("Parry");
 
-	vertexBuffer = make_unique<UploadBuffer>();
-	vertexBuffer->Initialize(device, maxParticles * 4 * sizeof(SparkVertex));
+		if (isParrying && animator && animator->IsInitialized() && transform)
+		{
+			int currentFrame = animator->GetCurrentFrame();
 
-	indexBuffer = make_unique<UploadBuffer>();
-	indexBuffer->Initialize(device, maxParticles * 6 * sizeof(UINT16));
+			if (currentFrame >= 20 && currentFrame <= 22)
+			{
+				if (!sparkSpawned)
+				{
+					XMFLOAT3 bonePos = animator->GetBonePosition(45);
+					XMVECTOR boneRotQuat = animator->GetBoneRotation(45);
+					XMMATRIX worldMat = transform->GetWorldMatrix();
+					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
 
-	sparkCB = make_unique<UploadBuffer>();
-	sparkCB->Initialize(device, sizeof(SparkConstants));
-}
+					XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
+					XMFLOAT3 playerRot = transform->GetRotation();
+					XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
+					XMVECTOR finalRotQuat = XMQuaternionMultiply(offsetRot, boneRotQuat);
+					finalRotQuat = XMQuaternionMultiply(finalRotQuat, playerRotQuat);
+					XMMATRIX rotMat = XMMatrixRotationQuaternion(finalRotQuat);
 
-void ParrySparkEffect::Update(float deltaTime, const XMFLOAT3& cameraPos)
-{
+					XMVECTOR swordDir = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), rotMat);
+					swordDir = XMVector3Normalize(swordDir);
+
+					float bladeLength = 1.0f;
+					XMVECTOR tipPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
+
+					XMFLOAT3 spawnPos;
+					XMStoreFloat3(&spawnPos, tipPos);
+					Spawn(spawnPos, 32);
+					sparkSpawned = true;
+				}
+			}
+			else
+			{
+				sparkSpawned = false;
+			}
+		}
+		else
+		{
+			sparkSpawned = false;
+		}
+	}
+
 	if (particles.empty()) return;
 
 	for (auto& p : particles)
@@ -43,7 +75,7 @@ void ParrySparkEffect::Update(float deltaTime, const XMFLOAT3& cameraPos)
 
 		p.velocity.y -= gravity * 0.5 * deltaTime;
 
-		float drag = powf(0.004f, deltaTime);  
+		float drag = powf(0.004f, deltaTime);
 		p.velocity.x *= drag;
 		p.velocity.y *= drag;
 		p.velocity.z *= drag;
@@ -58,39 +90,20 @@ void ParrySparkEffect::Update(float deltaTime, const XMFLOAT3& cameraPos)
 			[this](const SparkParticle& p) { return p.age >= maxLifetime; }),
 		particles.end()
 	);
-
-	if (!particles.empty())
-	{
-		BuildMesh(cameraPos);
-	}
 }
 
-void ParrySparkEffect::SetTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path)
-{
-	if (device && cmdList) {
-		textureIndex = Material::RegisterTexture(device, cmdList, path);
-	}
-}
-
-void ParrySparkEffect::Clear()
-{
-	particles.clear();
-	vertices.clear();
-	indices.clear();
-}
-
-void ParrySparkEffect::Spawn(const XMFLOAT3& position, int count)
+void ParrySparkComponent::Spawn(const XMFLOAT3& position, int count)
 {
 	for (int i = 0; i < count; ++i)
 	{
-		if (particles.size() >= maxParticles)
+		if (particles.size() >= maxElements)
 			break;
 
 		SparkParticle p;
 		p.position = position;
 
 		float theTa = static_cast<float>(rand()) / RAND_MAX * XM_2PI;
-		float phi = static_cast<float>(rand()) / RAND_MAX * XM_PI;  
+		float phi = static_cast<float>(rand()) / RAND_MAX * XM_PI;
 		float speed = sparkSpeed * (0.5f + static_cast<float>(rand()) / RAND_MAX * 0.5f);
 
 		p.velocity.x = sinf(phi) * cosf(theTa) * speed;
@@ -104,10 +117,25 @@ void ParrySparkEffect::Spawn(const XMFLOAT3& position, int count)
 	}
 }
 
-void ParrySparkEffect::BuildMesh(const XMFLOAT3& cameraPos)
+void ParrySparkComponent::Clear()
+{
+	particles.clear();
+	vertices.clear();
+	indices.clear();
+}
+
+void ParrySparkComponent::SetTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path)
+{
+	if (device && cmdList)
+		textureIndex = Material::RegisterTexture(device, cmdList, path);
+}
+
+void ParrySparkComponent::BuildMesh(const XMFLOAT3& cameraPos)
 {
 	vertices.clear();
 	indices.clear();
+
+	if (particles.empty()) return;
 
 	XMVECTOR camPosVec = XMLoadFloat3(&cameraPos);
 
@@ -148,53 +176,8 @@ void ParrySparkEffect::BuildMesh(const XMFLOAT3& cameraPos)
 		indices.push_back(baseIdx + 0);
 		indices.push_back(baseIdx + 2);
 		indices.push_back(baseIdx + 1);
-
 		indices.push_back(baseIdx + 0);
 		indices.push_back(baseIdx + 3);
 		indices.push_back(baseIdx + 2);
 	}
-
-	if (!vertices.empty())
-	{
-		vertexBuffer->CopyData(vertices.data(), vertices.size() * sizeof(SparkVertex));
-
-		vbView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
-		vbView.SizeInBytes = static_cast<UINT>(vertices.size() * sizeof(SparkVertex));
-		vbView.StrideInBytes = sizeof(SparkVertex);
-	}
-
-	if (!indices.empty())
-	{
-		indexBuffer->CopyData(indices.data(), indices.size() * sizeof(UINT16));
-
-		ibView.BufferLocation = indexBuffer->GetGPUVirtualAddress();
-		ibView.SizeInBytes = static_cast<UINT>(indices.size() * sizeof(UINT16));
-		ibView.Format = DXGI_FORMAT_R16_UINT;
-	}
-}
-
-void ParrySparkEffect::Render(DX12Core& core)
-{
-	if (particles.empty() || vertices.empty() || indices.empty())
-		return;
-
-	auto cmdList = core.GetGraphicsCmdList();
-
-	SparkConstants constants;
-	constants.color = sparkColor;
-	constants.textureIndex = textureIndex;
-	sparkCB->CopyData(&constants, sizeof(SparkConstants));
-
-	cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Spark));
-	cmdList->SetGraphicsRootSignature(core.GetRootSig()->Get());
-
-	cmdList->SetGraphicsRootConstantBufferView(0, core.GetFrameCB()->GetGPUVirtualAddress());
-
-	cmdList->SetGraphicsRootConstantBufferView(23, sparkCB->GetGPUVirtualAddress());
-
-	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	cmdList->IASetVertexBuffers(0, 1, &vbView);
-	cmdList->IASetIndexBuffer(&ibView);
-
-	cmdList->DrawIndexedInstanced(static_cast<UINT>(indices.size()), 1, 0, 0, 0);
 }

@@ -6,6 +6,7 @@ enum class ImageUIState {
 	FadingIn,
 	Visible,
 	Pulsing,
+	PulseOnce,
 	FadingOut,
 };
 
@@ -45,6 +46,7 @@ private:
 
 	float pulseSpeed = 2.0f;
 	float pulseTime = 0.0f;
+	float holdTime = 0.0f;
 
 	bool isHovered = false;
 	float hoverScale = 1.15f;

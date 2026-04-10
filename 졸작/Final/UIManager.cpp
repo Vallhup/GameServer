@@ -64,6 +64,11 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"CharC", L"../Assets/UI/Textures/charC.png", core, resourceUpload);
 	RegisterUITexture(L"CharHover", L"../Assets/UI/Textures/charHover.png", core, resourceUpload);
 
+	RegisterUITexture(L"PlazaName", L"../Assets/UI/Textures/PlazaName.png", core, resourceUpload);
+	RegisterUITexture(L"VillageName", L"../Assets/UI/Textures/VillageName.png", core, resourceUpload);
+	RegisterUITexture(L"CastleName", L"../Assets/UI/Textures/CastleName.png", core, resourceUpload);
+	RegisterUITexture(L"FinalName", L"../Assets/UI/Textures/FinalName.png", core, resourceUpload);
+
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);			
 
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
@@ -152,16 +157,16 @@ void UIManager::RegisterControllers()
 	controllers[SceneType::Select] = make_unique<SelectSceneUIController>();
 	controllers[SceneType::Select]->Init(this);
 
-	controllers[SceneType::Plaza] = make_unique<GameSceneUIController>();
+	controllers[SceneType::Plaza] = make_unique<GameSceneUIController>(SceneType::Plaza);
 	controllers[SceneType::Plaza]->Init(this);
 
-	controllers[SceneType::Village] = make_unique<GameSceneUIController>();
+	controllers[SceneType::Village] = make_unique<GameSceneUIController>(SceneType::Village);
 	controllers[SceneType::Village]->Init(this);
 
-	controllers[SceneType::Castle] = make_unique<GameSceneUIController>();
+	controllers[SceneType::Castle] = make_unique<GameSceneUIController>(SceneType::Castle);
 	controllers[SceneType::Castle]->Init(this);
 
-	controllers[SceneType::Final] = make_unique<GameSceneUIController>();
+	controllers[SceneType::Final] = make_unique<GameSceneUIController>(SceneType::Final);
 	controllers[SceneType::Final]->Init(this);
 
 	controllers[SceneType::Loading] = make_unique<LoadingSceneUIController>();

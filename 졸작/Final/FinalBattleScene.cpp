@@ -9,6 +9,8 @@
 #include "UIManager.h"
 #include "GameSceneUIController.h"
 #include "AnimationMachine.h"
+#include "EffectManager.h"
+#include "EffectComponent.h"
 #include "NetId.h"
 #include "NetHelper.h"
 
@@ -81,6 +83,17 @@ void FinalBattleScene::UpdateScene(const float deltaTime)
 		}
 	}
 
+	if (myPlayer)
+	{
+		auto& pos = myPlayer->GetComponent<Transform>()->GetPosition();
+		if (pos.x > -6.3f && pos.x < 6.01f && pos.z > -55.0f)
+		{
+			auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Final);
+			if (controller)
+				controller->ShowMapName();
+		}
+	}
+
 	for (const auto& obj : gameObjects)
 	{
 		if (!obj->IsStatic())
@@ -124,6 +137,21 @@ void FinalBattleScene::RenderSceneShadow()
 
 void FinalBattleScene::RenderSceneEffects()
 {
+	if (cam)
+	{
+		const XMFLOAT3 camPos = cam->GetPosition();
+
+		for (const auto& obj : gameObjects)
+		{
+			for (auto& [type, comp] : obj->GetComponents())
+			{
+				if (auto effect = dynamic_cast<EffectComponent*>(comp.get()))
+					effect->Render(*coreRef, camPos);
+			}
+		}
+
+		EFFECT_MANAGER->Render(*coreRef, cam.get());
+	}
 }
 
 void FinalBattleScene::RequestSceneChange()
@@ -187,8 +215,8 @@ void FinalBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 void FinalBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 {
 	// 서버 -> Final 맵 오프셋 (임시)
-	constexpr float offsetX = -506.0f;
-	constexpr float offsetZ = -481.0f;
+	constexpr float offsetX = -508.263f;
+	constexpr float offsetZ = -577.849f;
 
 	NetId nid{ move.netid() };
 	int id = nid.GetId();

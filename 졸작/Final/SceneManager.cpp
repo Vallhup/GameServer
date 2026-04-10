@@ -16,10 +16,6 @@
 #include "Material.h"
 #include "ResourceManager.h"
 #include "UIManager.h"
-#include "TrailRenderer.h"
-#include "FootDustEffect.h"
-#include "FlameEffect.h"
-#include "ParrySparkEffect.h"
 
 SceneManager::~SceneManager()
 {

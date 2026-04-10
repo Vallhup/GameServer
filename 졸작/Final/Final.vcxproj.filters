@@ -223,17 +223,20 @@
     <ClCompile Include="FinalBattleScene.cpp">
       <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
     </ClCompile>
-    <ClCompile Include="TrailRenderer.cpp">
-      <Filter>Rendering</Filter>
+    <ClCompile Include="FootDustComponent.cpp">
+      <Filter>Effect</Filter>
     </ClCompile>
-    <ClCompile Include="FootDustEffect.cpp">
-      <Filter>Rendering</Filter>
+    <ClCompile Include="FlameComponent.cpp">
+      <Filter>Effect</Filter>
     </ClCompile>
-    <ClCompile Include="FlameEffect.cpp">
-      <Filter>Rendering</Filter>
+    <ClCompile Include="ParrySparkComponent.cpp">
+      <Filter>Effect</Filter>
     </ClCompile>
-    <ClCompile Include="ParrySparkEffect.cpp">
-      <Filter>Rendering</Filter>
+    <ClCompile Include="TrailComponent.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectComponent.cpp">
+      <Filter>Effect\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -460,17 +463,20 @@
     <ClInclude Include="FinalBattleScene.h">
       <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
     </ClInclude>
-    <ClInclude Include="TrailRenderer.h">
-      <Filter>Rendering</Filter>
+    <ClInclude Include="FootDustComponent.h">
+      <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="FootDustEffect.h">
-      <Filter>Rendering</Filter>
+    <ClInclude Include="FlameComponent.h">
+      <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="FlameEffect.h">
-      <Filter>Rendering</Filter>
+    <ClInclude Include="ParrySparkComponent.h">
+      <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="ParrySparkEffect.h">
-      <Filter>Rendering</Filter>
+    <ClInclude Include="TrailComponent.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectComponent.h">
+      <Filter>Effect\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -691,6 +697,12 @@
     </Filter>
     <Filter Include="Shaders\Effects">
       <UniqueIdentifier>{07230c9b-ea0d-48e1-84b1-79d41a437363}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect">
+      <UniqueIdentifier>{d28ddf8b-93ea-4049-8237-c109f62b1a22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Base">
+      <UniqueIdentifier>{312e4599-3da0-47e1-bcc1-ae2f36904399}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

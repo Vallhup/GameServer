@@ -34,6 +34,31 @@ void ImageUI::Update(float deltaTime)
 		fadeAlpha = 0.01f + ((sin(pulseTime) + 1.0f) / 2.0f) * 0.99f;
 		break;
 
+	case ImageUIState::PulseOnce:
+		if (pulseTime < XM_PIDIV2 && holdTime <= 0.0f)
+		{
+			pulseTime += deltaTime * pulseSpeed;
+			fadeAlpha = 0.01f + ((sin(pulseTime) + 1.0f) / 2.0f) * 0.99f;
+			if (pulseTime >= XM_PIDIV2)
+			{
+				fadeAlpha = 1.0f;
+				holdTime = 1.0f;
+			}
+		}
+		else if (holdTime > 0.0f)
+		{
+			holdTime -= deltaTime;
+			fadeAlpha = 1.0f;
+		}
+		else if (pulseTime < XM_PIDIV2 * 3.0f)
+		{
+			pulseTime += deltaTime * pulseSpeed;
+			fadeAlpha = 0.01f + ((sin(pulseTime) + 1.0f) / 2.0f) * 0.99f;
+			if (pulseTime >= XM_PIDIV2 * 3.0f)
+				fadeAlpha = 0.0f;
+		}
+		break;
+
 	case ImageUIState::FadingOut:
 		fadeElapsed += deltaTime;
 		fadeAlpha = 1.0f - clamp(fadeElapsed / fadeDuration, 0.0f, 1.0f);
@@ -121,6 +146,11 @@ void ImageUI::EnterState(ImageUIState newState)
 
 	case ImageUIState::Pulsing:
 		pulseTime = -XM_PIDIV2;
+		break;
+
+	case ImageUIState::PulseOnce:
+		pulseTime = -XM_PIDIV2;
+		holdTime = 0.0f;
 		break;
 
 	case ImageUIState::FadingOut:

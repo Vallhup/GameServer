@@ -4,10 +4,6 @@
 class NetworkManager;
 class SkyBox;
 class Terrain;
-class TrailRenderer;
-class FootDustEffect;
-class FlameEffect;
-class ParrySparkEffect;
 
 class PlazaScene final : public Scene
 {
@@ -72,13 +68,6 @@ private:
 	shared_ptr<SkyBox> skyBox;
 	shared_ptr<Terrain> terrain;
 
-	unique_ptr<TrailRenderer> trailRenderer;
-	unique_ptr<FootDustEffect> footDustEffect;
-	unique_ptr<FlameEffect> flameEffect;
-	unique_ptr<ParrySparkEffect> parryEffect;
-
-	bool rightFootSpawned = false;
-	bool leftFootSpawned = false;
-	bool parrySparkSpawned = false;
+	shared_ptr<GameObject> flameObject;
 };
 
