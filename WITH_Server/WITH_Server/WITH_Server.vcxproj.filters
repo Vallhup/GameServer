@@ -50,9 +50,6 @@
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
-    <ClCompile Include="NetIdMap.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="DBManager.cpp">
       <Filter>Database</Filter>
     </ClCompile>
@@ -210,6 +207,12 @@
     <ClCompile Include="Aspect\ReplicationAspect.cpp">
       <Filter>Aspect</Filter>
     </ClCompile>
+    <ClCompile Include="NormalReactionPolicy.cpp">
+      <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClCompile>
+    <ClCompile Include="ImpCombatActionPolicy.cpp">
+      <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServerNetworkService.h">
@@ -254,9 +257,6 @@
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
-    <ClInclude Include="NetIdMap.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="json.hpp">
       <Filter>Utility\Dependency</Filter>
     </ClInclude>
@@ -283,6 +283,9 @@
     </ClInclude>
     <ClInclude Include="AnimationJsonLoader.h">
       <Filter>Data\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="BodyCollisionTypes.h">
+      <Filter>Data\Definition</Filter>
     </ClInclude>
     <ClInclude Include="BuffDef.h">
       <Filter>Data\Definition</Filter>
@@ -465,6 +468,54 @@
     <ClInclude Include="FrameworkRuntime.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="Library\Detour\DetourMath.h">
+      <Filter>Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourNavMesh.h">
+      <Filter>Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourNavMeshBuilder.h">
+      <Filter>Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourNavMeshQuery.h">
+      <Filter>Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourNode.h">
+      <Filter>Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourStatus.h">
+      <Filter>Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourAlloc.h">
+      <Filter>Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourAssert.h">
+      <Filter>Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Detour\DetourCommon.h">
+      <Filter>Utility\Dependency\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Recast\RecastAssert.h">
+      <Filter>Utility\Dependency\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Recast\Recast.h">
+      <Filter>Utility\Dependency\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\Recast\RecastAlloc.h">
+      <Filter>Utility\Dependency\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="IAICombatActionPolicy.h">
+      <Filter>FSM\Core\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="IAIReactionPolicy.h">
+      <Filter>FSM\Core\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalReactionPolicy.h">
+      <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClInclude>
+    <ClInclude Include="ImpCombatActionPolicy.h">
+      <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -562,6 +613,12 @@
     </Filter>
     <Filter Include="Aspect">
       <UniqueIdentifier>{8dedabbf-65b2-4559-ba66-b92e25f1e608}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Dependency\Detour">
+      <UniqueIdentifier>{870f4e94-27fa-474f-b724-a57f9a96e364}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Dependency\Recast">
+      <UniqueIdentifier>{146c5074-34e6-40d4-978d-aa5b1c40eff9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

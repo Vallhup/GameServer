@@ -19,12 +19,57 @@ void ComputeLocomotionMoveDeltaSystem::Execute(SystemContext& ctx)
 			ActionStateComp,
 			LocomotionMoveDeltaComp>())
 	{
-		(void)entity;
 		moveDelta = {};
 
-		if (IsActionActive(actionState) ||
-			locomotionState.mode == LocomotionMode::Idle)
+		if (IsActionActive(actionState))
 		{
+			continue;
+		}
+
+		if (locomotionState.mode == LocomotionMode::Idle)
+		{
+			const AICommandFrameComp* aiCommand =
+				ctx.ecs.GetComponent<AICommandFrameComp>(entity);
+			if (aiCommand == nullptr ||
+				!aiCommand->hasLook ||
+				aiCommand->target.IsNull())
+			{
+				continue;
+			}
+
+			const WorldTransformComp* targetTransform =
+				ctx.ecs.GetComponent<WorldTransformComp>(aiCommand->target);
+			if (targetTransform == nullptr)
+			{
+				continue;
+			}
+
+			float lookDirX = targetTransform->position.x - transform.position.x;
+			float lookDirZ = targetTransform->position.z - transform.position.z;
+			NormalizeXZ(lookDirX, lookDirZ);
+
+			if (LengthXZ(lookDirX, lookDirZ) <= kOverlapEpsilon)
+			{
+				continue;
+			}
+
+			const float currYaw =
+				TransformHelper::QuaternionToYaw(transform.rotation);
+			const float targetYaw =
+				DirToYaw(lookDirX, lookDirZ, currYaw);
+			const float nextYaw =
+				ClampYawStep(
+					currYaw,
+					targetYaw,
+					kYawTurnSpeedRad * static_cast<float>(ctx.dtSec));
+
+			locomotionState.desiredFacingYawRad = nextYaw;
+			locomotionState.facingYawRad = nextYaw;
+
+			moveDelta.deltaYawRad =
+				TransformHelper::AngleDelta(currYaw, nextYaw);
+			moveDelta.hasDelta =
+				std::abs(moveDelta.deltaYawRad) > kOverlapEpsilon;
 			continue;
 		}
 

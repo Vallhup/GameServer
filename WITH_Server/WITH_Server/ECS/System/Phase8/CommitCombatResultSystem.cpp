@@ -143,28 +143,33 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			}
 		}
 
-		// AI 피격 반응 기록
+		// AI 피격 반응 이벤트 등록
 		if (result.wasHitThisFrame)
 		{
 			if (auto* aiReaction = ctx.ecs.GetMutableComponent<AIReactionComp>(entity))
 			{
-				aiReaction->gotHitThisFrame = true;
-				aiReaction->instigator = result.reactionSource;
+				aiReaction->PostEvent(AIReactionEvent{
+					.type       = AIReactionEventType::OnHitReceived,
+					.instigator = result.reactionSource,
+					.priority   = 100,
+				});
 			}
 		}
 
-		// AI 패리 당함 반응 기록 (이 엔티티의 공격을 피격자가 패리한 경우)
+		// AI 패리 당함 반응 이벤트 등록 (공격자에게)
 		for (const PendingCombatInteractionRecord& interaction :
 			result.receivedInteractions)
 		{
 			if (interaction.resultType != CombatResolveResultType::Parry)
-			{
 				continue;
-			}
+
 			if (auto* aiReaction = ctx.ecs.GetMutableComponent<AIReactionComp>(interaction.sourceEntity))
 			{
-				aiReaction->gotParriedThisFrame = true;
-				aiReaction->instigator = entity;
+				aiReaction->PostEvent(AIReactionEvent{
+					.type       = AIReactionEventType::OnParried,
+					.instigator = entity,
+					.priority   = 200,
+				});
 			}
 		}
 
