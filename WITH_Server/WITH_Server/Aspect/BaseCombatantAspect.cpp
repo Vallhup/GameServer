@@ -10,8 +10,8 @@ namespace
 		const CharacterDef& def) noexcept
 	{
 		CombatStatStateComp stats{};
-		stats.currentHp      = static_cast<int32_t>(def.stat.maxHp);
-		stats.maxHp          = static_cast<int32_t>(def.stat.maxHp);
+		stats.currentHp		 = static_cast<int32_t>(def.stat.maxHp);
+		stats.maxHp			 = static_cast<int32_t>(def.stat.maxHp);
 		stats.currentStamina = static_cast<int32_t>(def.stat.maxStamina);
 		stats.maxStamina     = static_cast<int32_t>(def.stat.maxStamina);
 		stats.currentPoise   = static_cast<int32_t>(def.stat.maxPoise);

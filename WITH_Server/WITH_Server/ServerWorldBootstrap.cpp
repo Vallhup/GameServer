@@ -168,45 +168,6 @@ namespace
 		FrameworkRuntime* _framework{ nullptr };
 		const WorldId* _bootstrapWorldId{ nullptr };
 	};
-
-	WorldDef MakeSquareWorldDef()
-	{
-		WorldDef def{};
-		def.id = WorldDefId::Square;
-		def.name = "Square_0";
-
-		def.topology.kind = WorldKind::Hub;
-		def.topology.instanceType = WorldInstanceType::Persistent;
-
-		def.entryPolicy.creationPolicy = CreationPolicy::PreCreated;
-		def.entryPolicy.joinPolicy = JoinPolicy::FreeJoin;
-		def.entryPolicy.maxPlayerCount = 5000;
-		def.entryPolicy.allowReEntry = true;
-		def.entryPolicy.destroyWhenEmpty = false;
-		def.entryPolicy.emptyDestroyDelaySec = std::nullopt;
-		def.entryPolicy.fallbackWorldDefId = std::nullopt;
-
-		// Map/spawn resources are not specified yet, so keep the typed fields at zero.
-		def.map.resourceId = 0;
-		def.map.defaultPlayerSpawnPointId = 0;
-		def.map.namedSpawnPoints.clear();
-		def.map.navigationProfileId = std::nullopt;
-		def.map.environmentTags.clear();
-
-		def.spawn.initialSpawnSetId = SpawnSetId::None;
-		def.spawn.respawnSpawnSetId = std::nullopt;
-
-		def.progressRule.clearType = WorldClearConditionType::None;
-		def.progressRule.failType = WorldFailConditionType::None;
-		def.progressRule.completionType = WorldCompletionActionType::None;
-		def.progressRule.completionDelaySec = std::nullopt;
-		def.progressRule.autoCloseOnComplete = false;
-
-		def.linkRules.clear();
-		def.executionModelKey = kSquareBootstrapExecutionModelKey;
-		def.transferProfileId = InvalidWorldTransferProfileId;
-		return def;
-	}
 }
 
 void ServerWorldBootstrapFactory::SetAnimationRegistry(
@@ -270,5 +231,6 @@ bool ServerWorldBootstrapDefinitionProvider::RegisterExecutionModels(
 bool ServerWorldBootstrapDefinitionProvider::RegisterWorldDefs(
 	WorldRegistry& worldRegistry) const
 {
-	return worldRegistry.RegisterWorldDef(MakeSquareWorldDef());
+	return worldRegistry.RegisterWorldDef(
+		CreateSquareWorldDef(kSquareBootstrapExecutionModelKey));
 }

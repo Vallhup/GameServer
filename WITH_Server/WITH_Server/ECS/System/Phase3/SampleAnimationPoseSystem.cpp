@@ -41,14 +41,16 @@ void SampleAnimationPoseSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
+		const size_t frameCount = clip->frames.size();
 		const float normalized = playbackState.loop
 			? std::fmod(
 				std::max(0.0f, playbackState.normalizedTime),
 				1.0f)
 			: ClampFloat(playbackState.normalizedTime, 0.0f, 1.0f);
+		const float sampleFrame = normalized * static_cast<float>(frameCount);
 		const size_t frameIndex = std::min(
-			clip->frames.size() - 1,
-			static_cast<size_t>(normalized * clip->frames.size()));
+			frameCount - 1,
+			static_cast<size_t>(sampleFrame));
 
 		pose.sampleFrameIndex = static_cast<uint16_t>(frameIndex);
 		pose.localCapsules = clip->frames[frameIndex].capsules;
