@@ -456,22 +456,22 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId)
 
     if (callResult == ExecCallResult::Success)
     {
-        const bool ok = 
+        const bool ok =
             TryTransitionNode(*nodeRt, ExecNodeState::Running, ExecNodeState::Succeeded);
         assert(ok);
 
-        CompleteNodeTerminal(nodeId, ExecNodeState::Succeeded);
         ResolveSuccessors(nodeId);
+        CompleteNodeTerminal(nodeId, ExecNodeState::Succeeded);
     }
     else
     {
-        const bool ok = 
+        const bool ok =
             TryTransitionNode(*nodeRt, ExecNodeState::Running, ExecNodeState::Failed);
         assert(ok);
 
         MarkScopeFailedAndCancelRequested(node.scopeId);
-        CompleteNodeTerminal(nodeId, ExecNodeState::Failed);
         ResolveSuccessors(nodeId);
+        CompleteNodeTerminal(nodeId, ExecNodeState::Failed);
     }
 }
 
