@@ -12,12 +12,17 @@ namespace WITH_ServerDataTool.Builders
 	{
 		private readonly MeshReader _meshReader = new MeshReader();
 
-		public CapsuleTemplateDocument Build(string objectName, string meshDirectory)
+		public CapsuleTemplateDocument Build(
+			string objectName,
+			string meshDirectory,
+			float extremeTrimFraction = 0.0f)
 		{
 			if (!Directory.Exists(meshDirectory))
 			{
 				throw new DirectoryNotFoundException("Mesh directory was not found: " + meshDirectory);
 			}
+
+			extremeTrimFraction = ClampTrimFraction(extremeTrimFraction);
 
 			var groupedByBone = new Dictionary<int, List<Vector3>>();
 			foreach (string meshPath in Directory.GetFiles(meshDirectory, "*.mesh"))
@@ -49,11 +54,24 @@ namespace WITH_ServerDataTool.Builders
 				}
 
 				ComputePrincipalAxis(pair.Value, out Vector3 mean, out Vector3 axis);
-				ComputeEndpoints(pair.Value, mean, axis, out Vector3 p0, out Vector3 p1);
+				var fitPoints = TrimPointsAlongAxis(pair.Value, mean, axis, extremeTrimFraction);
+				if (fitPoints.Count >= 5)
+				{
+					ComputePrincipalAxis(fitPoints, out mean, out axis);
+					fitPoints = TrimPointsAlongAxis(pair.Value, mean, axis, extremeTrimFraction);
+				}
+				else
+				{
+					fitPoints = pair.Value;
+				}
 
-				float radius = ComputeRadius(pair.Value, p0, p1);
+				ComputeEndpoints(fitPoints, mean, axis, out Vector3 p0, out Vector3 p1);
+				float radius = ComputeRadius(fitPoints, p0, p1, extremeTrimFraction);
 				Vector3 center = (p0 + p1) * 0.5f;
-				Vector3 direction = Vector3.Normalize(p1 - p0);
+				Vector3 segment = p1 - p0;
+				Vector3 direction = segment.LengthSquared() <= float.Epsilon
+					? Vector3.UnitY
+					: Vector3.Normalize(segment);
 				float halfHeight = Vector3.Distance(p0, p1) * 0.5f;
 
 				entries.Add(new CapsuleTemplateEntry
@@ -71,6 +89,16 @@ namespace WITH_ServerDataTool.Builders
 				ObjectName = objectName,
 				Capsules = entries
 			};
+		}
+
+		private static float ClampTrimFraction(float trimFraction)
+		{
+			if (float.IsNaN(trimFraction) || float.IsInfinity(trimFraction))
+			{
+				return 0.0f;
+			}
+
+			return Math.Max(0.0f, Math.Min(0.49f, trimFraction));
 		}
 
 		private static int SelectDominantBone(int[] boneIndices, float[] boneWeights)
@@ -134,7 +162,43 @@ namespace WITH_ServerDataTool.Builders
 				vector = Vector3.Normalize(next);
 			}
 
-			axis = vector;
+			axis = vector.LengthSquared() <= float.Epsilon
+				? Vector3.UnitY
+				: vector;
+		}
+
+		private static List<Vector3> TrimPointsAlongAxis(
+			IReadOnlyList<Vector3> points,
+			Vector3 mean,
+			Vector3 axis,
+			float trimFraction)
+		{
+			int trimCount = ComputeTrimCount(points.Count, trimFraction);
+			if (trimCount <= 0)
+			{
+				return points.ToList();
+			}
+
+			var ordered = points
+				.Select(point => new
+				{
+					Point = point,
+					Projection = Vector3.Dot(point - mean, axis)
+				})
+				.OrderBy(entry => entry.Projection)
+				.ToList();
+
+			int keptCount = ordered.Count - trimCount * 2;
+			if (keptCount < 5)
+			{
+				return points.ToList();
+			}
+
+			return ordered
+				.Skip(trimCount)
+				.Take(keptCount)
+				.Select(entry => entry.Point)
+				.ToList();
 		}
 
 		private static void ComputeEndpoints(
@@ -158,15 +222,36 @@ namespace WITH_ServerDataTool.Builders
 			p1 = mean + axis * maxProjection;
 		}
 
-		private static float ComputeRadius(IReadOnlyList<Vector3> points, Vector3 p0, Vector3 p1)
+		private static float ComputeRadius(
+			IReadOnlyList<Vector3> points,
+			Vector3 p0,
+			Vector3 p1,
+			float trimFraction)
 		{
-			float radius = 0.0f;
-			foreach (var point in points)
+			var distances = points
+				.Select(point => PointSegmentDistance(point, p0, p1))
+				.OrderBy(distance => distance)
+				.ToList();
+			if (distances.Count == 0)
 			{
-				radius = Math.Max(radius, PointSegmentDistance(point, p0, p1));
+				return 0.0f;
 			}
 
-			return radius;
+			int trimCount = ComputeTrimCount(distances.Count, trimFraction);
+			int radiusIndex = Math.Max(0, distances.Count - 1 - trimCount);
+			return distances[radiusIndex];
+		}
+
+		private static int ComputeTrimCount(int pointCount, float trimFraction)
+		{
+			if (pointCount < 5 || trimFraction <= 0.0f)
+			{
+				return 0;
+			}
+
+			int trimCount = (int)Math.Floor(pointCount * trimFraction);
+			int maxTrimCount = Math.Max(0, (pointCount - 5) / 2);
+			return Math.Min(trimCount, maxTrimCount);
 		}
 
 		private static float PointSegmentDistance(Vector3 point, Vector3 p0, Vector3 p1)

@@ -36,6 +36,7 @@ namespace WITH_ServerDataTool.Presets
 				DefaultRoles = dto.CapsuleRules.DefaultRoles.Select(ParseRole).ToList(),
 				WeaponRoles = dto.CapsuleRules.WeaponRoles.Select(ParseRole).ToList(),
 				WeaponBones = dto.CapsuleRules.WeaponBones ?? new List<int>(),
+				ExtremeTrimFraction = ClampTrimFraction(dto.CapsuleRules.ExtremeTrimFraction),
 				Clips = dto.Clips ?? new List<AnimationClipPreset>()
 			};
 		}
@@ -78,6 +79,16 @@ namespace WITH_ServerDataTool.Presets
 				default:
 					throw new InvalidDataException("Unsupported capsule role: " + role);
 			}
+		}
+
+		private static float ClampTrimFraction(float trimFraction)
+		{
+			if (float.IsNaN(trimFraction) || float.IsInfinity(trimFraction))
+			{
+				return 0.0f;
+			}
+
+			return Math.Max(0.0f, Math.Min(0.49f, trimFraction));
 		}
 	}
 }

@@ -27,6 +27,7 @@ namespace WITH_ServerDataTool.Models
 		public List<string> DefaultRoles { get; set; } = new List<string>();
 		public List<string> WeaponRoles { get; set; } = new List<string>();
 		public List<int> WeaponBones { get; set; } = new List<int>();
+		public float ExtremeTrimFraction { get; set; }
 	}
 
 	internal sealed class AnimationPipelinePreset
@@ -40,6 +41,7 @@ namespace WITH_ServerDataTool.Models
 		public List<CapsuleRole> DefaultRoles { get; set; } = new List<CapsuleRole>();
 		public List<CapsuleRole> WeaponRoles { get; set; } = new List<CapsuleRole>();
 		public List<int> WeaponBones { get; set; } = new List<int>();
+		public float ExtremeTrimFraction { get; set; }
 		public List<AnimationClipPreset> Clips { get; set; } = new List<AnimationClipPreset>();
 	}
 

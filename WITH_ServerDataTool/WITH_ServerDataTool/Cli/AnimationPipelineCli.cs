@@ -49,7 +49,10 @@ namespace WITH_ServerDataTool.Cli
 			var builder = new CapsuleTemplateBuilder();
 			var writer = new CapsuleTemplateJsonStore();
 
-			CapsuleTemplateDocument template = builder.Build(preset.ObjectName, preset.MeshDirectory);
+			CapsuleTemplateDocument template = builder.Build(
+				preset.ObjectName,
+				preset.MeshDirectory,
+				preset.ExtremeTrimFraction);
 			writer.Save(preset.CapsuleTemplateOutputPath, template);
 
 			Console.WriteLine("Capsule template written: " + preset.CapsuleTemplateOutputPath);
@@ -107,7 +110,10 @@ namespace WITH_ServerDataTool.Cli
 
 			var builder = new CapsuleTemplateBuilder();
 			var writer = new CapsuleTemplateJsonStore();
-			CapsuleTemplateDocument template = builder.Build(preset.ObjectName, preset.MeshDirectory);
+			CapsuleTemplateDocument template = builder.Build(
+				preset.ObjectName,
+				preset.MeshDirectory,
+				preset.ExtremeTrimFraction);
 			writer.Save(preset.CapsuleTemplateOutputPath, template);
 		}
 

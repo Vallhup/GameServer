@@ -12,7 +12,8 @@
   "capsuleRules": {
     "defaultRoles": [ "hurt", "guard", "parry" ],
     "weaponRoles": [ "hit", "guard", "parry" ],
-    "weaponBones": [ 45 ]
+    "weaponBones": [ 45 ],
+    "extremeTrimFraction": 0.03
   },
   "clips": [
     { "name": "heavyattack", "source": "knight_animation_attack_baked.bone", "output": "knight_animation_heavyattack.json", "loop": false },

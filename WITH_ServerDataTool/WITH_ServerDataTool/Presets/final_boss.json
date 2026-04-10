@@ -12,7 +12,8 @@
   "capsuleRules": {
     "defaultRoles": [ "hurt" ],
     "weaponRoles": [ "hit" ],
-    "weaponBones": [ 45 ]
+    "weaponBones": [ 45 ],
+    "extremeTrimFraction": 0.02
   },
   "clips": [
     { "name": "dashslash", "source": "boss_animation_attack_dashslash_baked.bone", "output": "final_boss_animation_dashslash.json", "loop": false },
