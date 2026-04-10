@@ -100,6 +100,17 @@ void SecondBattleScene::UpdateScene(const float deltaTime)
 		}
 	}
 
+	if (myPlayer)
+	{
+		auto& pos = myPlayer->GetComponent<Transform>()->GetPosition();
+		if (pos.x < 325.8f && pos.x > 322.5f && pos.z > 220.1f && pos.z < 221.2f)
+		{
+			auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Castle);
+			if (controller)
+				controller->ShowMapName();
+		}
+	}
+
 	for (const auto& obj : gameObjects)
 	{
 		if (!obj->IsStatic())

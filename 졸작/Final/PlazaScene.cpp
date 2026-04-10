@@ -227,6 +227,17 @@ void PlazaScene::UpdateScene(const float deltaTime)
 		}
 	}
 
+	if (myPlayer)
+	{
+		auto& pos = myPlayer->GetComponent<Transform>()->GetPosition();
+		if (pos.x < 502.0f)
+		{
+		    auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Plaza);
+		    if (controller)
+		        controller->ShowMapName();
+		}
+	}
+
 	for (const auto& obj : gameObjects)
 	{
 		if (!obj->IsStatic())
