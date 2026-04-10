@@ -6,6 +6,37 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	float GetAnimationUnitScale(const AnimationClipDef& clip) noexcept
+	{
+		if (clip.units == "cm")
+		{
+			return 0.01f;
+		}
+
+		// TODO: If additional animation export units are introduced,
+		// normalize them here instead of assuming world-space meters.
+		return 1.0f;
+	}
+
+	Capsule ScaleCapsule(const Capsule& capsule, float scale) noexcept
+	{
+		return Capsule{
+			XMFLOAT3{
+				capsule.p0.x * scale,
+				capsule.p0.y * scale,
+				capsule.p0.z * scale,
+			},
+			XMFLOAT3{
+				capsule.p1.x * scale,
+				capsule.p1.y * scale,
+				capsule.p1.z * scale,
+			},
+		};
+	}
+}
+
 const SystemMeta FitSkeletalCombatColliderSystem::kMeta =
 	MakeSystemMeta<FitSkeletalCombatColliderSystem>(
 		"FitSkeletalCombatColliderSystem");
@@ -38,6 +69,8 @@ void FitSkeletalCombatColliderSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
+		const float unitScale = GetAnimationUnitScale(*clip);
+
 		for (size_t colliderIndex = 0;
 			colliderIndex < pose.localCapsules.size();
 			++colliderIndex)
@@ -45,8 +78,8 @@ void FitSkeletalCombatColliderSystem::Execute(SystemContext& ctx)
 			const Capsule& capsule = pose.localCapsules[colliderIndex];
 			const AnimationCapsuleDef& capsuleDef = clip->capsuleDefs[colliderIndex];
 			colliderState.localColliders.push_back(SkeletalCombatCollider{
-				capsule,
-				capsuleDef.radius,
+				ScaleCapsule(capsule, unitScale),
+				capsuleDef.radius * unitScale,
 				BuildRoleMask(*clip, colliderIndex)
 			});
 		}
