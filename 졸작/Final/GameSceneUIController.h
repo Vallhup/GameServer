@@ -36,5 +36,7 @@ private:
 	shared_ptr<ImageUI> charHPBar;
 
 	shared_ptr<ImageUI> mapNameImage;
+
+	shared_ptr<ImageUI> statBackground;
 };
 

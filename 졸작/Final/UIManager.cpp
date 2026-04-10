@@ -15,11 +15,7 @@ void UIManager::Initialize(DX12Core& core)
 {
 	graphicsMemory = make_unique<GraphicsMemory>(core.GetDevice());
 
-	uiSrvHeap = make_unique<DescriptorHeap>(
-		core.GetDevice(),
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
-		32);
+	uiSrvHeap = make_unique<DescriptorHeap>(core.GetDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_RESOURCE_COUNT);
 
 	RenderTargetState rtState(
 		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
@@ -68,6 +64,8 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"VillageName", L"../Assets/UI/Textures/VillageName.png", core, resourceUpload);
 	RegisterUITexture(L"CastleName", L"../Assets/UI/Textures/CastleName.png", core, resourceUpload);
 	RegisterUITexture(L"FinalName", L"../Assets/UI/Textures/FinalName.png", core, resourceUpload);
+
+	RegisterUITexture(L"StatBackground", L"../Assets/UI/Textures/StatBackground.png", core, resourceUpload);
 
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);			
 
@@ -124,7 +122,7 @@ UIFontData* UIManager::GetFont(const wstring& name)
 
 void UIManager::RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload)
 {
-	if (nextIndex >= 31) return;
+	if (nextIndex >= MAX_RESOURCE_COUNT - 1) return;
 	if (uiFontMap.find(name) != uiFontMap.end()) return;
 
 	auto& font = uiFontMap[name];
@@ -137,7 +135,7 @@ void UIManager::RegisterFont(const wstring& name, const wchar_t* path, DX12Core&
 
 void UIManager::RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload)
 {
-	if (nextIndex >= 31) return;
+	if (nextIndex >= MAX_RESOURCE_COUNT - 1) return;
 	if (uiTextureMap.find(name) != uiTextureMap.end()) return;
 
 	auto& tex = uiTextureMap[name];

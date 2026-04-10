@@ -196,7 +196,7 @@ void FirstBattleScene::RenderSceneEffects()
 
 void FirstBattleScene::RequestSceneChange()
 {
-	if (INPUT.GetKeyDown(VK_TAB))
+	if (INPUT.GetKeyDown(VK_CAPITAL))
 	{
 		if (sManagerRef)
 			sManagerRef->RequestLoadingScene(SceneType::Castle);

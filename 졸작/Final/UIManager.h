@@ -51,6 +51,8 @@ private:
 
 	SceneType currentScene;
 
+	static constexpr int MAX_RESOURCE_COUNT = 64;
+
 	static UINT nextIndex;
 };
 

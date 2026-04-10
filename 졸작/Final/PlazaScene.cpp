@@ -351,7 +351,7 @@ void PlazaScene::RenderSceneEffects()
 
 void PlazaScene::RequestSceneChange()
 {
-	if (INPUT.GetKeyDown(VK_TAB))
+	if (INPUT.GetKeyDown(VK_CAPITAL))
 	{
 		if (sManagerRef)
 			sManagerRef->RequestLoadingScene(SceneType::Village);

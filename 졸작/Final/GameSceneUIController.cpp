@@ -57,6 +57,11 @@ void GameSceneUIController::Init(UIManager* manager)
 	mapNameImage->SetHoriLength(WinSize.x * 0.4f);
 	mapNameImage->SetVertLength(WinSize.y * 0.1f);
 
+	statBackground = make_shared<ImageUI>(L"StatBackground", ImageUIState::Hidden);
+	statBackground->Init(uiManager);
+	statBackground->SetHoriLength(WinSize.x);
+	statBackground->SetVertLength(WinSize.y);
+
 	// 비율 상수 (BarBack 785x39, HpBar 692x18, 오프셋 47,11)
 	constexpr float BARBACK_ASPECT    = 39.0f / 785.0f;    // 0.0497
 	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;  // 0.8815
@@ -102,12 +107,22 @@ void GameSceneUIController::Update(float deltaTime)
 	if (charHPBar) charHPBar->Update(deltaTime);
 	if (mapNameImage) mapNameImage->Update(deltaTime);
 
+	if (statBackground) statBackground->Update(deltaTime);
+
 	if (INPUT.GetKeyDown('K'))
 	{
 		if (statusImage->GetState() == ImageUIState::Hidden)
 			statusImage->ChangeState(ImageUIState::FadingIn);
 		else if (statusImage->GetState() == ImageUIState::FadingIn || statusImage->GetState() == ImageUIState::Visible)
 			statusImage->ChangeState(ImageUIState::Hidden);
+	}
+
+	if (INPUT.GetKeyDown(VK_TAB))
+	{
+		if (statBackground->GetState() == ImageUIState::Hidden)
+			statBackground->ChangeState(ImageUIState::Visible);
+		else
+			statBackground->ChangeState(ImageUIState::Hidden);
 	}
 }
 
@@ -121,6 +136,7 @@ void GameSceneUIController::Render(SpriteBatch* batch)
 	if (charHPBarBack) charHPBarBack->Render(batch);
 	if (charHPBar) charHPBar->Render(batch);
 	if (mapNameImage) mapNameImage->Render(batch);
+	if (statBackground) statBackground->Render(batch);
 }
 
 void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curStamina, int maxStamina)
