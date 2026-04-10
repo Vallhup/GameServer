@@ -14,6 +14,7 @@ public:
 
 	WorldCommandQueue(const WorldCommandQueue&) = delete;
 	WorldCommandQueue& operator=(const WorldCommandQueue&) = delete;
+
 	WorldCommandQueue(WorldCommandQueue&&) = delete;
 	WorldCommandQueue& operator=(WorldCommandQueue&&) = delete;
 

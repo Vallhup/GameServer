@@ -28,5 +28,7 @@
 
 #pragma comment(lib, "Asio_Network_Library.lib")
 #pragma comment(lib, "WITH_Server_Framework.lib")
+#pragma comment(lib, "Detour.lib")
+#pragma comment(lib, "Recast.lib")
 
 #include "DBManager.h"
