@@ -87,7 +87,7 @@ public:
 	void ClearSsaoRT();
 
 	void BeginFogPass();
-	void EndFogPass();
+	void EndFogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 
 	void BeginLightingPass();
 	void RenderFullscreenQuad();

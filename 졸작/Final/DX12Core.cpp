@@ -351,6 +351,16 @@ void DX12Core::BeginFogPass()
 	);
 	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
 
+	D3D12_VIEWPORT fogViewport = {};
+	fogViewport.Width = WinSize.x / 2.0f;
+	fogViewport.Height = WinSize.y / 2.0f;
+	fogViewport.MinDepth = 0.0f;
+	fogViewport.MaxDepth = 1.0f;
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &fogViewport);
+
+	D3D12_RECT fogRect = { 0, 0, static_cast<LONG>(WinSize.x / 2), static_cast<LONG>(WinSize.y / 2) };
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &fogRect);
+
 	D3D12_CPU_DESCRIPTOR_HANDLE fogRTV = rtMgr->GetFogRTV();
 	float clearValue[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	deviceCtx->GetGraphicsCmdList()->ClearRenderTargetView(fogRTV, clearValue, 0, nullptr);
@@ -372,7 +382,7 @@ void DX12Core::BeginFogPass()
 	deviceCtx->GetGraphicsCmdList()->DrawInstanced(6, 1, 0, 0);
 }
 
-void DX12Core::EndFogPass()
+void DX12Core::EndFogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 {
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		rtMgr->GetFogRT(),
@@ -380,6 +390,9 @@ void DX12Core::EndFogPass()
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
 	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
 }
 
 void DX12Core::BeginLightingPass()
