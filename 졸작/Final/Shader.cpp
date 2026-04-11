@@ -12,6 +12,7 @@ void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* roo
     InitializeSkyboxShader(device, rootSig, L"../Shaders/SkyboxVS.hlsli", L"../Shaders/SkyboxPS.hlsli");
     InitializeSsaoShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/SsaoPS.hlsli");
     InitializeSsaoBlurShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/SsaoBlurPS.hlsli");
+    InitializeVolumetricFogPassShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/VolumetricFogPassPS.hlsli");
 
     InitializeEffectVS(device, L"../Shaders/EffectVS.hlsli");
     CreateEffectPSO(device, rootSig, ShaderType::TrailPS, PSOType::Trail, L"../Shaders/TrailPS.hlsli");
@@ -349,6 +350,35 @@ void Shader::InitializeSsaoBlurShader(ID3D12Device* device, ID3D12RootSignature*
     MASSERT(SUCCEEDED(hr), "Failed to create Ssao Blur PSO");
 
     OutputDebugStringA("Ssao Blur PSO created successfully!\n");
+}
+
+void Shader::InitializeVolumetricFogPassShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
+{
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::VolumetricFogPassPS)]);
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { nullptr, 0 };
+    psoDesc.pRootSignature = rootSig;
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::VolumetricFogPassPS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::VolumetricFogPassPS)]->GetBufferSize() };
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
+    D3D12_DEPTH_STENCIL_DESC depthDesc = {};
+    depthDesc.DepthEnable = FALSE;
+    depthDesc.StencilEnable = FALSE;
+    psoDesc.DepthStencilState = depthDesc;
+
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::VolumetricFogPass)]));
+    MASSERT(SUCCEEDED(hr), "Failed to create VolumetricFogPass PSO");
+
+    OutputDebugStringA("VolumetricFogPass PSO created successfully!\n");
 }
 
 void Shader::InitializeEffectVS(ID3D12Device* device, const wstring& vsPath)

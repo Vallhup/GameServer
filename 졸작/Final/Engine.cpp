@@ -108,6 +108,9 @@ void Engine::Render()
     else
         graphics->ClearSsaoRT();
     
+    // Fog Pass 들어갈 자리
+    graphics->BeginFogPass();
+    graphics->EndFogPass();
 
     graphics->BeginLightingPass();
     graphics->RenderFullscreenQuad();

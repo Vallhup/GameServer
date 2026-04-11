@@ -393,6 +393,7 @@ exit 0</Command>
     <None Include="..\Shaders\TrailPS.hlsli" />
     <None Include="..\Shaders\VertexAnimation.hlsli" />
     <None Include="..\Shaders\VolumetricFog.hlsli" />
+    <None Include="..\Shaders\VolumetricFogPassPS.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

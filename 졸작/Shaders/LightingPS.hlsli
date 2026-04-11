@@ -2,7 +2,6 @@
 #include "InOutFormats.hlsli"
 #include "PBR.hlsli"
 #include "Fog.hlsli"
-#include "VolumetricFog.hlsli"
 #include "ToneMapping.hlsli"
 
 float4 PSMain(LIGHTING_PS_IN input) : SV_Target
@@ -92,7 +91,8 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     
     float3 finalColor = directLight + iblAmbient + emission;
 
-    finalColor = ApplyVolumetricFog(finalColor, worldPos, input.uv, cameraPosition);
+    float4 fog = fogTexture.Sample(linearSampler, input.uv);
+    finalColor = finalColor * fog.a + fog.rgb;
 
     finalColor = DarkFantasyToneMapping(finalColor, saturationFactor);
     

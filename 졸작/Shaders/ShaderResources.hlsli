@@ -135,7 +135,8 @@ cbuffer VolumetricFogCB : register(b11)
     float3 vfLightColor;
 
     float vfLightIntensity;
-    float3 vfPadding;
+    float2 vfTexelSize;
+    float vfPadding;
 };
 
 cbuffer EffectCB : register(b12)
@@ -166,6 +167,7 @@ Texture2D gBufferRT2 : register(t6);    // Emission + AO
 Texture2D depthBuffer : register(t7);   // Depth
 Texture2DArray shadowMapArray : register(t8);
 Texture2D ssaoTexture : register(t9);
+Texture2D fogTexture : register(t10);
 
 TextureCube bindlessCubeMaps[] : register(t0, space3);
 
@@ -190,6 +192,6 @@ SamplerState lutLinearSampler : register(s2);
 
 static const uint IBL_IRRADIANCE_INDEX = 1;
 static const uint IBL_RADIANCE_INDEX = 2;
-static const uint BRDF_LUT_INDEX = 103;
+static const uint BRDF_LUT_INDEX = 109;
 
 #endif
