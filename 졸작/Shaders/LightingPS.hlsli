@@ -45,7 +45,7 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
             float3 L = normalize(-lights[i].position);
             float3 radiance = lights[i].color * lights[i].intensity;
 
-            lightContribution = CalculatePBR(N, V, L, baseColor, metallic, roughness, radiance);
+            lightContribution = CalculateCurrentPBR(N, V, L, baseColor, metallic, roughness, radiance);
 
             if (i == 0)
             {
@@ -67,7 +67,7 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 
                 float3 radiance = lights[i].color * lights[i].intensity * attenuation;
 
-                lightContribution = CalculatePBR(N, V, L, baseColor, metallic, roughness, radiance);
+                lightContribution = CalculateCurrentPBR(N, V, L, baseColor, metallic, roughness, radiance);
             }
         }
 
@@ -87,7 +87,7 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
         linearSampler
     );
 
-    iblAmbient *= lerp(0.8, 1.0, shadow);
+    //iblAmbient *= lerp(0.8, 1.0, shadow);
     
     float3 finalColor = directLight + iblAmbient + emission;
 

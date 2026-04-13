@@ -29,6 +29,10 @@ float DistributionGGX(float3 N, float3 H, float roughness)
     return num / max(denom, 0.0001);
 }
 
+//--------------------------------------------------------------------------------------
+// 2013 Brian Karis - SIGGRAPH -> "Real Shading in Unreal Engine 4"
+//--------------------------------------------------------------------------------------
+
 // Schlick's approximation of Smith GSF
 // Epic Games tuning formula (roughness + 1)^2 / 8
 float G1_Schlick_Epic(float NdotX, float roughness)
@@ -51,7 +55,7 @@ float SmithSchlickGSF(float3 N, float3 V, float3 L, float roughness)
 }
 
 // Cook-Torrance BRDF
-float3 CalculatePBR(float3 N, float3 V, float3 L, float3 baseColor,
+float3 CalculatePBR2013(float3 N, float3 V, float3 L, float3 baseColor,
                     float metallic, float roughness, float3 radiance)
 {
     float3 H = normalize(V + L);
@@ -67,7 +71,7 @@ float3 CalculatePBR(float3 N, float3 V, float3 L, float3 baseColor,
     
     float3 kS = F;
     float3 kD = float3(1.0, 1.0, 1.0) - kS;
-    kD *= 1.0 - metallic;   
+    kD *= 1.0 - metallic;
 
     float3 numerator = NDF * G * F;
     float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
@@ -77,6 +81,57 @@ float3 CalculatePBR(float3 N, float3 V, float3 L, float3 baseColor,
     return (kD * baseColor / PI + specular) * radiance * NdotL;
 }
 
+//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
+
+
+//--------------------------------------------------------------------------------------
+// 최신 PBR: [Heitz 2014] Exact Height-Correlated Smith GGX
+//--------------------------------------------------------------------------------------
+
+float Vis_SmithJointGGX_Exact(float NdotV, float NdotL, float roughness)
+{
+    // 1. 디즈니 원칙: alpha = roughness^2
+    float a = roughness * roughness;
+    
+    // 2. 공식에 들어가는 alpha^2 = roughness^4
+    float a2 = a * a;
+    
+    // 3. 정확한 물리 연산 (sqrt 포함)
+    float GGXV = NdotL * sqrt(NdotV * NdotV * (1.0 - a2) + a2);
+    float GGXL = NdotV * sqrt(NdotL * NdotL * (1.0 - a2) + a2);
+    
+    return 0.5 / max(GGXV + GGXL, 0.0001);
+}
+
+// Cook-Torrance BRDF
+float3 CalculateCurrentPBR(float3 N, float3 V, float3 L, float3 baseColor,
+                    float metallic, float roughness, float3 radiance)
+{
+    float3 H = normalize(V + L);
+    
+    float3 F0 = float3(0.04, 0.04, 0.04);
+    F0 = lerp(F0, baseColor, metallic);
+    
+    float NdotV = max(dot(N, V), 0.0001);
+    float NdotL = max(dot(N, L), 0.0);
+   
+    float NDF = DistributionGGX(N, H, roughness);
+    float Vis = Vis_SmithJointGGX_Exact(NdotV, NdotL, roughness);
+    float3 F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+    
+    float3 kS = F;
+    float3 kD = float3(1.0, 1.0, 1.0) - kS;
+    kD *= 1.0 - metallic;
+    
+    float3 specular = NDF * Vis * F;
+    
+    return (kD * baseColor / PI + specular) * radiance * NdotL;
+}
+
+//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
+
 float3 CalculateIBL(float3 N, float3 V, float3 baseColor, float metallic,
     float roughness, float ao, TextureCube irradianceMap, TextureCube radianceMap,
     Texture2D brdfLUT, SamplerState samp)
@@ -85,8 +140,8 @@ float3 CalculateIBL(float3 N, float3 V, float3 baseColor, float metallic,
     metallic *= 0.25;
     F0 = lerp(F0, baseColor, metallic);
     
-    float NdotV = max(dot(N, V), 0.0);
-    
+    float NdotV = max(dot(N, V), 0.001);
+
     float3 F = FresnelSchlickRoughness(NdotV, F0, roughness);
     
     float3 kS = F;
@@ -99,10 +154,11 @@ float3 CalculateIBL(float3 N, float3 V, float3 baseColor, float metallic,
     float3 R = reflect(-V, N);
     const float MAX_REFLECTION_LOD = 7.0;
     float3 prefilteredColor = radianceMap.SampleLevel(samp, float3(R.x, -R.y, R.z), roughness * MAX_REFLECTION_LOD).rgb;
-    
+    prefilteredColor = min(prefilteredColor, 10.0);
+
     float2 brdfUV = float2(NdotV, roughness);
     float2 brdf = brdfLUT.Sample(samp, brdfUV).rg;
-    
+
     float3 specularIBL = prefilteredColor * (F * brdf.x + brdf.y);
     
     float diffuseIntensity = 1.0f; 

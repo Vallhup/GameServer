@@ -96,7 +96,7 @@ cbuffer CascadeShadowIndex : register(b7)
 
 cbuffer SsaoCB : register(b8)
 {
-    float4 ssaoSamples[16];
+    float4 ssaoSamples[32];
     float2 noiseScale;
     float samplingRadius;
     float ssaoBias;
@@ -192,6 +192,6 @@ SamplerState lutLinearSampler : register(s2);
 
 static const uint IBL_IRRADIANCE_INDEX = 1;
 static const uint IBL_RADIANCE_INDEX = 2;
-static const uint BRDF_LUT_INDEX = 109;
+static const uint BRDF_LUT_INDEX = 147;
 
 #endif

@@ -46,7 +46,7 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         
         float3 radiance = lightColor * lightIntensity;
         
-        float3 finalColor = CalculatePBR(N, V, L, baseColor.rgb, metallic, roughness, radiance);
+        float3 finalColor = CalculateCurrentPBR(N, V, L, baseColor.rgb, metallic, roughness, radiance);
         
         float3 ambient = baseColor.rgb * 0.15;
         finalColor += ambient;
@@ -97,7 +97,7 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         float roughness = 0.05f; // 물 표면을 더 매끄럽게 해서 반사를 날카롭게 만듦
         float metallic = 0.2f;
         
-        float3 finalColor = CalculatePBR(N, V, L, waterColor.rgb, metallic, roughness, radiance);
+        float3 finalColor = CalculateCurrentPBR(N, V, L, waterColor.rgb, metallic, roughness, radiance);
         
         float3 ambient = waterColor.rgb * 0.35f; // 기본 밝기(Ambient)를 크게 올려 호수를 밝게 만듦
         finalColor += ambient;

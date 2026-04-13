@@ -33,6 +33,6 @@ const static float cascadeBias[4] = { 0.0002f, 0.0006f, 0.0000f, 0.0000f };
 // Ssao Constants
 //-------------------------------------------------------
 
-static const int KERNEL_SIZE = 16;
+static const int KERNEL_SIZE = 32;
 
 #endif
