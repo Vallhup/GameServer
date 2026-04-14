@@ -5,6 +5,13 @@
 #include <cassert>
 #include <thread>
 
+#include "FrameworkLog.h"
+
+namespace
+{
+    constexpr const char* kLogCategory = "Executor";
+}
+
 TaskExecutor::TaskExecutor(uint32_t workerCount)
 {
     if (workerCount > 0)
@@ -21,6 +28,7 @@ bool TaskExecutor::Initialize(uint32_t workerCount)
     bool expected{ false };
     if (!_initialized.compare_exchange_strong(expected, true))
     {
+        FWLOG_WARN(kLogCategory, "Initialize called but already initialized");
         return true;
     }
 
@@ -28,16 +36,19 @@ bool TaskExecutor::Initialize(uint32_t workerCount)
     {
         if (!_pool.Start(workerCount, &TaskExecutor::WorkerPumpEntry, this))
         {
+            FWLOG_ERROR(kLogCategory, "ThreadPool::Start failed (workerCount=%u)", workerCount);
             _initialized.store(false);
             return false;
         }
     }
     catch (...)
     {
+        FWLOG_FATAL(kLogCategory, "ThreadPool::Start threw exception (workerCount=%u)", workerCount);
         _initialized.store(false);
         throw;
     }
 
+    FWLOG_INFO(kLogCategory, "Initialized with %u workers", _pool.WorkerCount());
     return true;
 }
 
@@ -49,10 +60,14 @@ void TaskExecutor::Shutdown() noexcept
         return;
     }
 
+    FWLOG_INFO(kLogCategory, "Shutdown begin");
+
     _frameBound.store(false);
     _pool.Stop();
 
     UnbindFrame();
+
+    FWLOG_INFO(kLogCategory, "Shutdown complete");
 }
 
 bool TaskExecutor::ExecuteFrame(
@@ -61,17 +76,31 @@ bool TaskExecutor::ExecuteFrame(
     const ExecutionSourceRegistry& sourceRegistry)
 {
     if (!IsInitialized())
+    {
+        FWLOG_ERROR(kLogCategory, "ExecuteFrame called but executor is not initialized");
         return false;
+    }
 
     if (!ValidateFrameInputs(frameCtx, runtime))
+    {
+        FWLOG_ERROR(kLogCategory, "ExecuteFrame - ValidateFrameInputs failed (nodes=%zu, scopes=%zu)",
+            runtime.nodes.size(), runtime.scopes.size());
         return false;
+    }
+
+    FWLOG_DEBUG(kLogCategory, "ExecuteFrame begin (nodes=%zu, simulateNodes=%u, scopes=%u)",
+        frameCtx.graph->nodes.size(),
+        frameCtx.graph->simulateNodeCount,
+        frameCtx.graph->scopeCount);
 
     BindFrame(frameCtx, runtime, sourceRegistry);
     InitializeRuntimeForFrame();
-    
+
     SeedInitialSimulateNodes();
     NotifyAllWorkers();
     WaitForSimulateDone();
+
+    FWLOG_TRACE(kLogCategory, "Simulate phase done, entering serial phases");
 
     const FrameTaskGraph& graph = Graph();
 
@@ -88,6 +117,8 @@ bool TaskExecutor::ExecuteFrame(
     FinalizeScopeClosures();
 
     UnbindFrame();
+
+    FWLOG_DEBUG(kLogCategory, "ExecuteFrame complete");
     return true;
 }
 
@@ -204,7 +235,12 @@ void TaskExecutor::SeedInitialSimulateNodes()
         ExecNodeRuntime* nodeRt = runtime.TryGetNode(nodeId);
         ExecScopeRuntime* scopeRt = runtime.TryGetScope(node.scopeId);
         if (nodeRt == nullptr || scopeRt == nullptr)
+        {
+            FWLOG_ERROR(kLogCategory,
+                "SeedInitialSimulateNodes - nullptr runtime (nodeId=%u, scopeId=%u)",
+                nodeId, node.scopeId);
             continue;
+        }
 
         if (nodeRt->remainingDeps.load() != 0)
             continue;
@@ -409,13 +445,22 @@ void TaskExecutor::DispatchNode(ExecNodeId nodeId)
     ExecRuntimeState& runtime = Runtime();
     ExecNodeRuntime* nodeRt = runtime.TryGetNode(nodeId);
     if (nodeRt == nullptr)
+    {
+        FWLOG_ERROR(kLogCategory,
+            "DispatchNode - TryGetNode returned null (nodeId=%u)", nodeId);
         return;
+    }
 
-    const bool ok = 
+    const bool ok =
         TryTransitionNode(*nodeRt, ExecNodeState::Ready, ExecNodeState::Queued);
 
     if (!ok)
+    {
+        FWLOG_WARN(kLogCategory,
+            "DispatchNode - state transition Ready->Queued failed (nodeId=%u, currentState=%u)",
+            nodeId, static_cast<uint32_t>(nodeRt->state.load()));
         return;
+    }
 
     EnqueueReadyNode(nodeId);
 }
@@ -434,13 +479,19 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId)
     assert(nodeRt != nullptr);
     assert(scopeRt != nullptr);
 
+    FWLOG_TRACE(kLogCategory, "ExecuteNode begin (nodeId=%u, scopeId=%u, token=%u)",
+        nodeId, node.scopeId, node.sourceToken);
+
     const ExecScopePhase scopePhase = scopeRt->phase.load();
 
     if (!IsExecutableScopePhase(scopePhase))
     {
         const ExecNodeState terminal = SelectCancelTerminalState(node);
 
-        const bool ok = 
+        FWLOG_DEBUG(kLogCategory, "ExecuteNode canceled (nodeId=%u, scopePhase=%u, terminal=%u)",
+            nodeId, static_cast<uint32_t>(scopePhase), static_cast<uint32_t>(terminal));
+
+        const bool ok =
             TryTransitionNode(*nodeRt, ExecNodeState::Queued, terminal);
         assert(ok);
 
@@ -448,7 +499,7 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId)
         return;
     }
 
-    const bool canRun = 
+    const bool canRun =
         TryTransitionNode(*nodeRt, ExecNodeState::Queued, ExecNodeState::Running);
     assert(canRun);
 
@@ -460,6 +511,8 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId)
             TryTransitionNode(*nodeRt, ExecNodeState::Running, ExecNodeState::Succeeded);
         assert(ok);
 
+        FWLOG_TRACE(kLogCategory, "ExecuteNode succeeded (nodeId=%u)", nodeId);
+
         ResolveSuccessors(nodeId);
         CompleteNodeTerminal(nodeId, ExecNodeState::Succeeded);
     }
@@ -468,6 +521,9 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId)
         const bool ok =
             TryTransitionNode(*nodeRt, ExecNodeState::Running, ExecNodeState::Failed);
         assert(ok);
+
+        FWLOG_WARN(kLogCategory, "ExecuteNode failed (nodeId=%u, scopeId=%u, token=%u)",
+            nodeId, node.scopeId, node.sourceToken);
 
         MarkScopeFailedAndCancelRequested(node.scopeId);
         ResolveSuccessors(nodeId);
@@ -483,10 +539,20 @@ ExecCallResult TaskExecutor::InvokeNode(
         Sources().TryGet(node.sourceToken);
 
     if (desc == nullptr)
+    {
+        FWLOG_ERROR(kLogCategory,
+            "InvokeNode - source descriptor not found (nodeId=%u, token=%u)",
+            nodeId, node.sourceToken);
         return ExecCallResult::Failed;
+    }
 
     if (desc->fn == nullptr)
+    {
+        FWLOG_ERROR(kLogCategory,
+            "InvokeNode - fn is null (nodeId=%u, token=%u, name=%s)",
+            nodeId, node.sourceToken, desc->debugName.c_str());
         return ExecCallResult::Failed;
+    }
 
     NodeScratch scratch{};
     NodeExecContext ctx{};
@@ -502,6 +568,10 @@ ExecCallResult TaskExecutor::InvokeNode(
     }
     catch (...)
     {
+        FWLOG_ERROR(kLogCategory,
+            "InvokeNode - exception caught (nodeId=%u, token=%u, name=%s)",
+            nodeId, node.sourceToken, desc->debugName.c_str());
+
         if (HasAnyNodeFlag(node.flags, ExecNodeFlag_NoThrow))
             std::terminate();
 
@@ -518,15 +588,28 @@ void TaskExecutor::ResolveSuccessors(ExecNodeId completedNodeId)
     if (!graph.IsValidSuccRange(node))
         return;
 
+    FWLOG_TRACE(kLogCategory, "ResolveSuccessors (completedNodeId=%u, succCount=%u)",
+        completedNodeId, node.succCount);
+
     for (uint32_t i = 0; i < node.succCount; ++i)
     {
         const uint32_t edgeIndex = node.succBegin + i;
         if (edgeIndex >= graph.edges.size())
+        {
+            FWLOG_ERROR(kLogCategory,
+                "ResolveSuccessors - edgeIndex out of bounds (nodeId=%u, edgeIndex=%u, edgePoolSize=%zu)",
+                completedNodeId, edgeIndex, graph.edges.size());
             break;
+        }
 
         const ExecNodeId succId = graph.edges[edgeIndex];
         if (!graph.IsValidNodeId(succId))
+        {
+            FWLOG_WARN(kLogCategory,
+                "ResolveSuccessors - invalid successor nodeId (completedNodeId=%u, succId=%u)",
+                completedNodeId, succId);
             continue;
+        }
 
         const ExecNodeRecord& succNode = graph.nodes[succId];
         if (succNode.phase != ExecPhase::Simulate)
@@ -535,7 +618,14 @@ void TaskExecutor::ResolveSuccessors(ExecNodeId completedNodeId)
         ExecNodeRuntime* succRt = runtime.TryGetNode(succId);
         ExecScopeRuntime* succScopeRt = runtime.TryGetScope(succNode.scopeId);
         if (succRt == nullptr || succScopeRt == nullptr)
+        {
+            FWLOG_ERROR(kLogCategory,
+                "ResolveSuccessors - nullptr runtime (succId=%u, succRt=%s, succScopeRt=%s)",
+                succId,
+                succRt == nullptr ? "null" : "ok",
+                succScopeRt == nullptr ? "null" : "ok");
             continue;
+        }
 
         const uint32_t prev =
             succRt->remainingDeps.fetch_sub(1);
@@ -611,7 +701,14 @@ void TaskExecutor::MarkScopeFailedAndCancelRequested(
     ExecRuntimeState& runtime = Runtime();
     ExecScopeRuntime* scopeRt = runtime.TryGetScope(scopeId);
     if (scopeRt == nullptr)
+    {
+        FWLOG_ERROR(kLogCategory,
+            "MarkScopeFailedAndCancelRequested - scope runtime null (scopeId=%u)", scopeId);
         return;
+    }
+
+    FWLOG_WARN(kLogCategory,
+        "Scope marked failed + cancel requested (scopeId=%u)", scopeId);
 
     scopeRt->flags.fetch_or(
         static_cast<uint8_t>(ExecScopeFlag_HasFailure) |

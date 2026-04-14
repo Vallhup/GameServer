@@ -23,6 +23,7 @@ struct SpawnTypeComp : Component
 struct AITypeComp : Component
 {
 	AIArchetype aiType;
+	uint16_t aiTuningId{ 0 };
 };
 
 struct ReplicatedTag : TagComponent { };
