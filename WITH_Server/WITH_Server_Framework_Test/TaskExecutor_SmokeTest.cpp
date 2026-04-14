@@ -840,7 +840,7 @@ namespace
     static WorldDef MakeMinimalWorldDef()
     {
         WorldDef def{};
-        def.id = WorldDefId::Square;
+        def.id = WorldDefId::Plaza;
         def.name = "ExecutionOpsSmoke";
         def.topology = { WorldKind::Hub, WorldInstanceType::Instanced };
         def.entryPolicy = {

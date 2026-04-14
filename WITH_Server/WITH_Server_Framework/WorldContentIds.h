@@ -5,9 +5,9 @@
 enum class WorldDefId : uint8_t
 {
 	None	= 0,
-	Square	= 1,
-	Start	= 2,
-	Middle	= 3,
+	Plaza	= 1,
+	Village	= 2,
+	Castle	= 3,
 	Final	= 4,
 	Pvp		= 5
 };
@@ -15,9 +15,9 @@ enum class WorldDefId : uint8_t
 enum class SpawnSetId : uint8_t
 {
 	None			= 0,
-	SquareDefault	= 1,
-	StartDefault	= 2,
-	MiddleDefault	= 3,
+	PlazaDefault	= 1,
+	VillageDefault	= 2,
+	CastleDefault	= 3,
 	FinalDefault	= 4,
 	PvpDefault		= 5,
 };

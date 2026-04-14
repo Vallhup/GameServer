@@ -89,10 +89,10 @@ namespace
 			runtime, aiEntity, *characterDef, params);
 	}
 
-	constexpr ExecToken kSquareBootstrapExecToken = 1;
-	constexpr WorldExecutionModelKey kSquareBootstrapExecutionModelKey = 1;
+	constexpr ExecToken kPlazaBootstrapExecToken = 1;
+	constexpr WorldExecutionModelKey kPlazaBootstrapExecutionModelKey = 1;
 
-	ExecCallResult ExecuteSquareBootstrapGraphSystems(NodeExecContext& context)
+	ExecCallResult ExecutePlazaBootstrapGraphSystems(NodeExecContext& context)
 	{
 		WorldRuntime* const runtime = context.TryGetRuntime();
 		if (runtime == nullptr)
@@ -110,9 +110,9 @@ namespace
 			: ExecCallResult::Failed;
 	}
 
-	class SquareBootstrapWorldImpl final : public IWorldInstanceImpl {
+	class PlazaBootstrapWorldImpl final : public IWorldInstanceImpl {
 	public:
-		explicit SquareBootstrapWorldImpl(
+		explicit PlazaBootstrapWorldImpl(
 			const AnimationRegistry* animationRegistry,
 			FrameworkRuntime* framework,
 			const WorldId* bootstrapWorldId)
@@ -192,8 +192,8 @@ std::unique_ptr<IWorldInstanceImpl> ServerWorldBootstrapFactory::Create(
 	const WorldDef& def)
 {
 	switch (def.id) {
-	case WorldDefId::Square:
-		return std::make_unique<SquareBootstrapWorldImpl>(
+	case WorldDefId::Plaza:
+		return std::make_unique<PlazaBootstrapWorldImpl>(
 			_animationRegistry,
 			_framework,
 			_bootstrapWorldId);
@@ -206,15 +206,15 @@ bool ServerWorldBootstrapDefinitionProvider::RegisterExecutionSources(
 	ExecutionSourceRegistry& sourceRegistry) const
 {
 	ExecutionSourceDesc desc{};
-	desc.token = kSquareBootstrapExecToken;
+	desc.token = kPlazaBootstrapExecToken;
 	desc.phase = ExecPhase::Simulate;
 	desc.lane = ExecLane::Main;
 	desc.kind = ExecNodeKind::StaticSystem;
 	desc.flags =
 		static_cast<uint32_t>(ExecNodeFlag_NoThrow) |
 		static_cast<uint32_t>(ExecNodeFlag_MainThreadOnly);
-	desc.fn = &ExecuteSquareBootstrapGraphSystems;
-	desc.debugName = "SquareBootstrap.GraphSystems";
+	desc.fn = &ExecutePlazaBootstrapGraphSystems;
+	desc.debugName = "PlazaBootstrap.GraphSystems";
 	return sourceRegistry.Register(desc);
 }
 
@@ -223,8 +223,8 @@ bool ServerWorldBootstrapDefinitionProvider::RegisterExecutionModels(
 	WorldExecutionModelRegistry& executionModelRegistry) const
 {
 	WorldExecutionModel model{};
-	model.key = kSquareBootstrapExecutionModelKey;
-	model.simulateSources.push_back(kSquareBootstrapExecToken);
+	model.key = kPlazaBootstrapExecutionModelKey;
+	model.simulateSources.push_back(kPlazaBootstrapExecToken);
 	return executionModelRegistry.Register(model, sourceRegistry);
 }
 
@@ -232,5 +232,5 @@ bool ServerWorldBootstrapDefinitionProvider::RegisterWorldDefs(
 	WorldRegistry& worldRegistry) const
 {
 	return worldRegistry.RegisterWorldDef(
-		CreateSquareWorldDef(kSquareBootstrapExecutionModelKey));
+		CreatePlazaWorldDef(kPlazaBootstrapExecutionModelKey));
 }

@@ -562,7 +562,9 @@ enum class AIStateType : uint8_t
 	Combat,		// 공격 사거리 진입 후 공격 / 회피 등 판단할 때
 	Search,		// 타겟을 잃었지만 grace time 내에서 탐색할 때
 	React,		// 피격, 스턴 등 외부 이벤트 처리 상태
-	ReturnHome	// 리쉬 게이지가 떨어진 경우 귀환 상태
+	ReturnHome,	// 리쉬 게이지가 떨어진 경우 귀환 상태
+
+	Count
 };
 
 // AI FSM 의사결정 상태

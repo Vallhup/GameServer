@@ -518,8 +518,8 @@ bool ServerApp::InitializeGameplayContent()
 
 bool ServerApp::InitializeStartupWorld()
 {
-	// Square is currently modeled as a pre-created persistent hub world.
-	constexpr WorldDefId startupWorldDefId = WorldDefId::Square;
+	// Plaza is currently modeled as a pre-created persistent hub world.
+	constexpr WorldDefId startupWorldDefId = WorldDefId::Plaza;
 	constexpr uint64_t startupInstanceKey = 0;
 
 	_startupWorldId = _framework.RegisterPreCreatedWorld(

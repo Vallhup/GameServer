@@ -97,6 +97,7 @@ MakeSystemMeta<ResolveNavMeshBodyConstraintSystem>(
 
 void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 {
+	return;
 	const INavMeshProvider* navProvider = ctx.services.navMeshProvider;
 	const NavMeshRuntime* navMesh =
 		navProvider ? navProvider->GetNavMeshRuntime() : nullptr;
@@ -166,12 +167,14 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 		const float surfaceYOffset = profile ? profile->navMeshSurfaceYOffset : 0.0f;
 		const float extents[3] = { extentXZ, extentY, extentXZ };
 
-		const float prevPos[3] = {
+		const float prevPos[3] = 
+		{
 			preCollision.prevPosition.x,
 			preCollision.prevPosition.y,
 			preCollision.prevPosition.z,
 		};
-		const float candidatePos[3] = {
+		const float candidatePos[3] = 
+		{
 			transform.position.x,
 			transform.position.y,
 			transform.position.z,
@@ -269,7 +272,6 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 		{
 			MarkTransformDirtyIfPresent();
 		}
-
 	}
 }
 

@@ -86,6 +86,7 @@ struct NavigationProfileDef
 	NavigationProfileId      id{ 0 };
 	float                    nearestPolyExtentXZ{ 2.0f };
 	float                    nearestPolyExtentY{ 4.0f };
+	float                    navMeshSurfaceYOffset{ 0.0f };
 	NavigationQueryFilterDef queryFilter;
 };
 
@@ -183,4 +184,4 @@ struct WorldDef
 
 // Framework 내장 월드 정의 팩토리.
 // 실행 모델 키는 호출 측(서버/bootstrap)이 주입한다.
-WorldDef CreateSquareWorldDef(WorldExecutionModelKey executionModelKey);
+WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey);
