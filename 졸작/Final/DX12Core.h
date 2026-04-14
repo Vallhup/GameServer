@@ -20,6 +20,8 @@ struct ObjectConstants
 	int useInstancing;
 	UINT materialIndex;
 	int useVertexAnim = 0;
+	int useTerrainBlend = 0;
+	int objPadding[3];
 };
 
 struct FogConstants

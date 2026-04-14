@@ -90,6 +90,11 @@ void Scene::CreateAndBatchObjects(const wstring& path, const T(&data)[N], vector
 	batch->SetTwoSided(data[0].twoSided);
 	batch->SetVertexAnim(data[0].vertexAnim);
 
+	if (path.find(L"SM_Mountain_A") != wstring::npos ||
+		path.find(L"SM_Mountain_B") != wstring::npos ||
+		path.find(L"SM_Mountain_C") != wstring::npos)
+		batch->SetTerrainBlend(true);
+
 	for (int i = 0; i < N; ++i)
 	{
 		auto obj = CreateStaticMesh(path, data[i]);
@@ -116,6 +121,11 @@ void Scene::CreateAndBatchObjects(const wstring& path, const vector<T>& data, ve
 	batch->SetCastShadow(data[0].castShadow);
 	batch->SetTwoSided(data[0].twoSided);
 	batch->SetVertexAnim(data[0].vertexAnim);
+
+	if (path.find(L"SM_Mountain_A") != wstring::npos ||
+		path.find(L"SM_Mountain_B") != wstring::npos ||
+		path.find(L"SM_Mountain_C") != wstring::npos)
+		batch->SetTerrainBlend(true);
 
 	for (size_t i = 0; i < data.size(); ++i)
 	{

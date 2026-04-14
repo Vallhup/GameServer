@@ -32,6 +32,7 @@ public:
 	void SetTwoSided(bool in) { twoSided = in; }
 	bool IsTwoSided() const { return twoSided; }
 	void SetVertexAnim(bool in) { vertAnimation = in; }
+	void SetTerrainBlend(bool in) { terrainBlend = in; }
 
 private:
 	Mesh* mesh = nullptr;
@@ -46,6 +47,7 @@ private:
 	bool castShadow = true;
 	bool twoSided = false;
 	bool vertAnimation = false;
+	bool terrainBlend = false;
 
 	XMFLOAT3 lastCamPos = { FLT_MAX, FLT_MAX, FLT_MAX };
 	static constexpr float UPDATE_THRESHOLD_SQ = 0.015625;  // 0.125^2
