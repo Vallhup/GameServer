@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <thread>
+#include <stdlib.h>
 
 #include "PacketFactory.h"
 #include "Protocol.pb.h"
@@ -16,10 +17,63 @@
 
 namespace
 {
+	std::filesystem::path NormalizePath(const std::filesystem::path& path)
+	{
+		std::error_code ec;
+		std::filesystem::path normalized = std::filesystem::absolute(path, ec);
+		if (ec)
+		{
+			normalized = path;
+		}
+		return normalized.lexically_normal();
+	}
+
+	bool IsDirectory(const std::filesystem::path& path)
+	{
+		std::error_code ec;
+		return std::filesystem::exists(path, ec) &&
+			std::filesystem::is_directory(path, ec);
+	}
+
+	std::filesystem::path GetExecutableDirectory()
+	{
+//#if defined(_WIN32)
+//		wchar_t* programPath = nullptr;
+//		if (_get_wpgmptr(&programPath) == 0 &&
+//			programPath != nullptr &&
+//			programPath[0] != L'\0')
+//		{
+//			return NormalizePath(std::filesystem::path(programPath).parent_path());
+//		}
+//#endif
+
+		return NormalizePath(std::filesystem::current_path());
+	}
+
 	std::filesystem::path GetDefaultAnimationOutputRoot()
 	{
-		return std::filesystem::current_path() /
-			"..\\Animation";
+		const std::filesystem::path exeDir = GetExecutableDirectory();
+		const std::filesystem::path currentDir =
+			NormalizePath(std::filesystem::current_path());
+
+		const std::vector<std::filesystem::path> candidates =
+		{
+			exeDir / ".." / ".." / "Animation",
+			exeDir / "Animation",
+			currentDir / "Animation",
+			currentDir / ".." / "Animation",
+			currentDir / ".." / ".." / "Animation",
+		};
+
+		for (const std::filesystem::path& candidate : candidates)
+		{
+			if (IsDirectory(candidate))
+			{
+				return NormalizePath(candidate);
+			}
+		}
+
+		return NormalizePath(exeDir / ".." / ".." / "Animation");
 	}
 
 	std::vector<std::filesystem::path> GetBootAnimationCandidates(
@@ -414,6 +468,9 @@ bool ServerApp::InitializeGameplayContent()
 	_animationRegistry.Clear();
 
 	const std::filesystem::path animationRoot = GetDefaultAnimationOutputRoot();
+	std::cout << "[ServerApp] Animation content root="
+		<< animationRoot.string() << std::endl;
+
 	const std::vector<std::filesystem::path> candidates =
 		GetBootAnimationCandidates(animationRoot);
 

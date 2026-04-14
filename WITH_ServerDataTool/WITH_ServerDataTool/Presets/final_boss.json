@@ -13,7 +13,7 @@
     "defaultRoles": [ "hurt" ],
     "weaponRoles": [ "hit" ],
     "weaponBones": [ 45 ],
-    "extremeTrimFraction": 0.02
+    "extremeTrimFraction": 0
   },
   "clips": [
     { "name": "dashslash", "source": "boss_animation_attack_dashslash_baked.bone", "output": "final_boss_animation_dashslash.json", "loop": false },

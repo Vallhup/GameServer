@@ -13,7 +13,7 @@
     "defaultRoles": [ "hurt" ],
     "weaponRoles": [ "hit" ],
     "weaponBones": [ 45 ],
-    "extremeTrimFraction": 0.02
+    "extremeTrimFraction": 0
   },
   "clips": [
     { "name": "melee_1", "source": "monster_Imp_melee_1_baked.bone", "output": "imp_animation_melee_1.json", "loop": false },

@@ -205,7 +205,7 @@ PlayerEntryResult PlayerEntryService::RequestCharacterSelect(
 	// 초기 스폰 위치/회전: 아직 world spawn point API 가 없으므로 origin 으로
 	// 부착한다 (legacy AttachPlayerGameplayRuntimeComponents 의 동작과 동일).
 	AssembleParams params{};
-	params.position = { 508.167800f, 5.508454f, 481.655600f };
+	params.position = { 508.167800f, 5.508454f, 481.655600f }; // 161.352478f, 48.737797f, 644.831543f / 508.167800f, 5.508454f, 481.655600f
 	params.rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
 	params.netId = playerNetId;
 	params.sessionId = sessionId;
@@ -214,7 +214,8 @@ PlayerEntryResult PlayerEntryService::RequestCharacterSelect(
 		runtime, playerEntity, *characterDef, params);
 
 	_pendingSpawns.push_back(
-		PendingCharacterSpawn{
+		PendingCharacterSpawn
+		{
 			.sessionId = sessionId,
 			.worldId = startupWorldId,
 			.entity = playerEntity,

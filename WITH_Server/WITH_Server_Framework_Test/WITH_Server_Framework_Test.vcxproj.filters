@@ -14,15 +14,6 @@
     <ClCompile Include="WorldPipeline_Test.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-    <ClCompile Include="SystemScheduler_ThreadPool_Test.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
-    <ClCompile Include="SystemScheduler_ThreadPool_CommandBuffer_Test.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
-    <ClCompile Include="TaskExecutor_SmokeTest.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

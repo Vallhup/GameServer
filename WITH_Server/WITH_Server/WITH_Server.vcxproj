@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -209,6 +209,7 @@
     <ClCompile Include="NormalAIIdleState.cpp" />
     <ClCompile Include="NormalAIMovementPolicy.cpp" />
     <ClCompile Include="NormalAIReactState.cpp" />
+    <ClCompile Include="NormalAIReturnHomeState.cpp" />
     <ClCompile Include="NormalAISearchState.cpp" />
     <ClCompile Include="NormalReactionPolicy.cpp" />
     <ClCompile Include="PlayerCommand.cpp" />
@@ -313,6 +314,7 @@
     <ClInclude Include="NormalAIIdleState.h" />
     <ClInclude Include="NormalAIMovementPolicy.h" />
     <ClInclude Include="NormalAIReactState.h" />
+    <ClInclude Include="NormalAIReturnHomeState.h" />
     <ClInclude Include="NormalAISearchState.h" />
     <ClInclude Include="NormalReactionPolicy.h" />
     <ClInclude Include="PlayerCommand.h" />

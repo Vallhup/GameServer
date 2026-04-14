@@ -171,6 +171,9 @@
     <ClCompile Include="NormalAIReactState.cpp">
       <Filter>FSM\NormalMonster\State</Filter>
     </ClCompile>
+    <ClCompile Include="NormalAIReturnHomeState.cpp">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClCompile>
     <ClCompile Include="NormalAISearchState.cpp">
       <Filter>FSM\NormalMonster\State</Filter>
     </ClCompile>
@@ -418,6 +421,9 @@
       <Filter>FSM\NormalMonster\State</Filter>
     </ClInclude>
     <ClInclude Include="NormalAIReactState.h">
+      <Filter>FSM\NormalMonster\State</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAIReturnHomeState.h">
       <Filter>FSM\NormalMonster\State</Filter>
     </ClInclude>
     <ClInclude Include="NormalAISearchState.h">
