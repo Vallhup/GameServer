@@ -97,7 +97,6 @@ MakeSystemMeta<ResolveNavMeshBodyConstraintSystem>(
 
 void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 {
-	return;
 	const INavMeshProvider* navProvider = ctx.services.navMeshProvider;
 	const NavMeshRuntime* navMesh =
 		navProvider ? navProvider->GetNavMeshRuntime() : nullptr;

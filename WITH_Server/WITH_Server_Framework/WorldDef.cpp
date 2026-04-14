@@ -33,7 +33,7 @@ WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey)
 	// TODO: 실제 Plaza NavMesh export 결과에 맞춰 경로와 agent 파라미터를 검증한다.
 	def.map.navMesh = MapNavMeshDef
 	{
-		.navMeshBinPath = "../Map/Village_NavMesh_v3.bin",
+		.navMeshBinPath = "../Map/Village_NavMesh_v7.bin",
 		.agentRadius = 0.35f,
 		.agentHeight = 2.0f,
 		.agentMaxClimb = 0.4f,

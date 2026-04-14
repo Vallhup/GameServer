@@ -36,7 +36,7 @@ namespace
 			.perceptionTuning = AIPerceptionTuningComp
 			{
 				.sightRange = 12.0,
-				.attackRange = 2.0,
+				.attackRange = 1.85,
 				.frontDotThreshold = 0.2,
 				.targetKeepBonus = 4.0,
 				.lastAttackerBonus = 2.5,
