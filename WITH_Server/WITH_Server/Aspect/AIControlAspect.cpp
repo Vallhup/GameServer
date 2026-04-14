@@ -34,12 +34,38 @@ void AIControlAspect::Attach(
 	runtime.DeferredAddComponent<AIControlledTag>(entity);
 	runtime.DeferredUpsertComponent<AITypeComp>(
 		entity,
-		AITypeComp{ .aiType = def.ai->aiType });
+		AITypeComp
+		{
+			.aiType = def.ai->aiType,
+			.aiTuningId = def.ai->aiTuningId.value_or(AITuningIds::None)
+		});
 	runtime.DeferredAddComponent<AIPerceptionComp>(entity);
-	runtime.DeferredAddComponent<AIPerceptionTuningComp>(entity);
-	runtime.DeferredAddComponent<AIBlackboardComp>(entity);
+	const AIBehaviorProfileDef* profile = AIFSMRegistry::FindBehaviorProfile(
+		def.ai->aiType,
+		def.ai->aiTuningId.value_or(AITuningIds::None));
+	if (profile != nullptr)
+	{
+		runtime.DeferredUpsertComponent<AIPerceptionTuningComp>(
+			entity,
+			profile->perceptionTuning);
+		runtime.DeferredUpsertComponent<AIDecisionTuningComp>(
+			entity,
+			profile->decisionTuning);
+	}
+	else
+	{
+		runtime.DeferredAddComponent<AIPerceptionTuningComp>(entity);
+		runtime.DeferredAddComponent<AIDecisionTuningComp>(entity);
+	}
+
+	AIBlackboardComp blackboard{};
+	blackboard.homePosition = params.position;
+	blackboard.hasHomePosition = true;
+	blackboard.leashGauge = (profile != nullptr)
+		? profile->perceptionTuning.leashGaugeMax
+		: AIPerceptionTuningComp{}.leashGaugeMax;
+	runtime.DeferredUpsertComponent<AIBlackboardComp>(entity, blackboard);
 	runtime.DeferredAddComponent<AIDecisionComp>(entity);
-	runtime.DeferredAddComponent<AIDecisionTuningComp>(entity);
 	runtime.DeferredAddComponent<AIReactionComp>(entity);
 	runtime.DeferredAddComponent<AICommandFrameComp>(entity);
 }
@@ -57,6 +83,14 @@ bool AIControlAspect::Validate(
 	{
 		outError =
 			"AIControlled archetype has no FSM bundle in AIFSMRegistry";
+		return false;
+	}
+	if (!AIFSMRegistry::IsBehaviorSupported(
+		def.ai->aiType,
+		def.ai->aiTuningId.value_or(AITuningIds::None)))
+	{
+		outError =
+			"AIControlled tuning has no behavior profile in AIFSMRegistry";
 		return false;
 	}
 	return true;

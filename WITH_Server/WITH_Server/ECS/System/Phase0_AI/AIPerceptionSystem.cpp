@@ -7,6 +7,46 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	static double ClampDouble(double value, double minValue, double maxValue) noexcept
+	{
+		return std::clamp(value, minValue, maxValue);
+	}
+
+	static double DistanceSqXZ(const XMFLOAT3& lhs, const XMFLOAT3& rhs) noexcept
+	{
+		const double dx = lhs.x - rhs.x;
+		const double dz = lhs.z - rhs.z;
+		return dx * dx + dz * dz;
+	}
+
+	static void ClearPerceptionTarget(AIPerceptionComp& perception)
+	{
+		perception.hasTarget = false;
+		perception.selectedTarget = Entity::Null();
+		perception.distanceToTarget = std::numeric_limits<double>::max();
+		perception.distanceToTargetSq = std::numeric_limits<double>::max();
+		perception.targetForwardDot = std::numeric_limits<double>::lowest();
+		perception.targetVisible = false;
+		perception.targetInSightRange = false;
+		perception.targetInAttackRange = false;
+		perception.targetInFront = false;
+	}
+
+	static void EnterReturnHome(
+		AIBlackboardComp& blackboard,
+		AIPerceptionComp& perception)
+	{
+		blackboard.currentTarget = Entity::Null();
+		blackboard.forceRetarget = false;
+		blackboard.returningHome = true;
+		blackboard.returnHomeLockoutAcc = 0.0;
+		blackboard.leashGauge = 0.0;
+		ClearPerceptionTarget(perception);
+	}
+}
+
 const SystemMeta AIPerceptionSystem::kMeta =
 	MakeSystemMeta<AIPerceptionSystem>("AIPerceptionSystem");
 
@@ -25,14 +65,11 @@ double AIPerceptionSystem::ComputeScore(
 	const PerceptionCandidate& candidate,
 	const AIPerceptionTuningComp& tuning) const noexcept
 {
-	// 보이지 않는 거리면 최하점
-	if (!candidate.inSightRange)
+	if (!candidate.inSightRange && !candidate.isCurrentTarget)
 	{
 		return std::numeric_limits<double>::lowest();
 	}
 
-	// 자신의 시야 범위를 기준으로 현재 거리를 정규화하고
-	// 0 ~ 10점 사이로 반영
 	const double sightSq = tuning.sightRange * tuning.sightRange;
 	const double safeSightSq = std::max(0.001, sightSq);
 
@@ -40,17 +77,11 @@ double AIPerceptionSystem::ComputeScore(
 	distanceScore = std::clamp(distanceScore, 0.0, 1.0);
 
 	double score{ distanceScore * 10.0 };
-
-	// 현재 Target 유지 보너스
-	if (candidate.isCurrentTarget)  
+	if (candidate.isCurrentTarget)
 		score += tuning.targetKeepBonus;
-
-	// 마지막 공격자 보너스
-	if (candidate.isLastAttacker)   
+	if (candidate.isLastAttacker)
 		score += tuning.lastAttackerBonus;
-
-	// 정면 보너스
-	if (candidate.inFront)         
+	if (candidate.inFront)
 		score += tuning.frontBonus;
 
 	return score;
@@ -66,15 +97,15 @@ AIPerceptionSystem::PerceptionCandidate AIPerceptionSystem::EvaluateCandidate(
 	PerceptionCandidate out;
 	out.entity = other;
 	out.isCurrentTarget = (blackboard.currentTarget == other);
-	out.isLastAttacker  = (blackboard.lastAttacker  == other);
+	out.isLastAttacker = (blackboard.lastAttacker == other);
 
 	const double distSq = TransformHelper::DistanceSq(selfTr, otherTr);
 	out.distSq = distSq;
 
-	const double sightSq  = tuning.sightRange  * tuning.sightRange;
+	const double sightSq = tuning.sightRange * tuning.sightRange;
 	const double attackSq = tuning.attackRange * tuning.attackRange;
 
-	out.inSightRange  = (distSq <= sightSq);
+	out.inSightRange = (distSq <= sightSq);
 	out.inAttackRange = (distSq <= attackSq);
 
 	const XMVECTOR selfForward = TransformHelper::Forward(selfTr);
@@ -82,20 +113,17 @@ AIPerceptionSystem::PerceptionCandidate AIPerceptionSystem::EvaluateCandidate(
 
 	out.forwardDot = TransformHelper::Dot(selfForward, toTarget);
 	out.inFront = (out.forwardDot >= tuning.frontDotThreshold);
-
-	// TEMP : 추후 벽 뒤 감지 못함 같은 별도 정책 추가 가능
 	out.visible = out.inSightRange;
-
 	out.score = ComputeScore(out, tuning);
 	return out;
 }
 
 void AIPerceptionSystem::BuildPerception(
-	Entity self, 
-	const WorldTransformComp& selfTr, 
-	const AIPerceptionTuningComp& tuning, 
-	AIBlackboardComp& blackboard, 
-	AIPerceptionComp& perception, 
+	Entity self,
+	const WorldTransformComp& selfTr,
+	const AIPerceptionTuningComp& tuning,
+	AIBlackboardComp& blackboard,
+	AIPerceptionComp& perception,
 	SystemContext& sysCtx)
 {
 	ECSView& ecs = sysCtx.ecs;
@@ -103,29 +131,56 @@ void AIPerceptionSystem::BuildPerception(
 	perception = {};
 	perception.timeSinceTargetLastSeen = blackboard.timeSinceCurrentTargetSeen;
 
+	if (!blackboard.hasHomePosition)
+	{
+		blackboard.homePosition = selfTr.position;
+		blackboard.hasHomePosition = true;
+	}
+
+	if (blackboard.returnHomeLockoutAcc < tuning.returnHomeReaggroLockSec)
+	{
+		blackboard.returnHomeLockoutAcc += sysCtx.dtSec;
+	}
+
 	PerceptionCandidate best;
 	PerceptionCandidate currentCand;
 	bool foundAny = false;
 	bool hasCurrentTargetCandidate = false;
 
-	// 타겟 후보: SpawnTypeComp 보유 엔티티 중 다른 faction.
-	// (AI 끼리도 서로 다른 faction 이면 적대할 수 있도록 일반화)
+	const bool reaggroLocked =
+		blackboard.returningHome ||
+		blackboard.returnHomeLockoutAcc < tuning.returnHomeReaggroLockSec;
+	const double aggroSq = tuning.sightRange * tuning.sightRange;
+	const double softLeashSq = tuning.leashRange * tuning.leashRange;
+	const double hardLeashSq = tuning.hardLeashRange * tuning.hardLeashRange;
+
 	for (const auto& [other, otherTr, __] :
 		ecs.View<WorldTransformComp, SpawnTypeComp>())
 	{
-		if (other == self) continue;
-		if (IsSameFaction(ecs, self, other)) continue;
+		if (other == self)
+			continue;
+		if (IsSameFaction(ecs, self, other))
+			continue;
 
-		const double distSq = TransformHelper::DistanceSq(selfTr.position, otherTr.position);
-		const double leashSq = tuning.leashRange * tuning.leashRange;
-		if (distSq > leashSq) continue;
+		const double homeDistSq =
+			DistanceSqXZ(blackboard.homePosition, otherTr.position);
+		const bool isCurrentTarget = (blackboard.currentTarget == other);
+		const bool inAggroRange = homeDistSq <= aggroSq;
+		const bool inHardLeashRange = homeDistSq <= hardLeashSq;
+		const bool canAcquire = !reaggroLocked && inAggroRange;
+		const bool canKeepCurrent = isCurrentTarget;
+
+		if (!canAcquire && !canKeepCurrent)
+			continue;
 
 		PerceptionCandidate cand =
 			EvaluateCandidate(selfTr, otherTr, tuning, blackboard, other);
+		cand.inSightRange = inAggroRange;
+		cand.visible = isCurrentTarget ? inHardLeashRange : inAggroRange;
+		cand.score = ComputeScore(cand, tuning);
 
-		if (!cand.inSightRange) continue;
-
-		++perception.hostileInSightCount;
+		if (inAggroRange)
+			++perception.hostileInSightCount;
 
 		if (cand.isCurrentTarget)
 		{
@@ -140,22 +195,29 @@ void AIPerceptionSystem::BuildPerception(
 		}
 	}
 
-	// 후보 없음 → graceTime 후 타겟 초기화
 	if (!foundAny)
 	{
 		blackboard.timeSinceCurrentTargetSeen += sysCtx.dtSec;
 		if (blackboard.timeSinceCurrentTargetSeen > tuning.loseSightGraceTime)
 		{
-			blackboard.currentTarget = Entity::Null();
+			if (!blackboard.currentTarget.IsNull())
+			{
+				EnterReturnHome(blackboard, perception);
+			}
+			else if (!blackboard.returningHome)
+			{
+				blackboard.leashGauge = ClampDouble(
+					blackboard.leashGauge + tuning.leashRecoverPerSec * sysCtx.dtSec,
+					0.0,
+					tuning.leashGaugeMax);
+			}
 		}
 
-		perception.hasTarget = false;
-		perception.selectedTarget = Entity::Null();
+		ClearPerceptionTarget(perception);
 		perception.timeSinceTargetLastSeen = blackboard.timeSinceCurrentTargetSeen;
 		return;
 	}
 
-	// 타겟 선택
 	PerceptionCandidate finalCand;
 	if (blackboard.forceRetarget || blackboard.currentTarget.IsNull())
 	{
@@ -178,7 +240,6 @@ void AIPerceptionSystem::BuildPerception(
 		}
 	}
 
-	// 블랙보드 갱신
 	blackboard.forceRetarget = false;
 	blackboard.currentTarget = finalCand.entity;
 
@@ -198,7 +259,43 @@ void AIPerceptionSystem::BuildPerception(
 		blackboard.timeSinceCurrentTargetSeen += sysCtx.dtSec;
 	}
 
-	// 캐시 갱신
+	const WorldTransformComp* finalTargetTr =
+		ecs.GetComponent<WorldTransformComp>(finalCand.entity);
+	if (finalTargetTr != nullptr)
+	{
+		const double selfHomeDistSq =
+			DistanceSqXZ(blackboard.homePosition, selfTr.position);
+		const double targetHomeDistSq =
+			DistanceSqXZ(blackboard.homePosition, finalTargetTr->position);
+		const double leashDistSq = std::max(selfHomeDistSq, targetHomeDistSq);
+
+		if (leashDistSq > hardLeashSq)
+		{
+			blackboard.leashGauge -= tuning.hardLeashDrainPerSec * sysCtx.dtSec;
+		}
+		else if (leashDistSq > softLeashSq)
+		{
+			blackboard.leashGauge -= tuning.leashDrainPerSec * sysCtx.dtSec;
+		}
+		else
+		{
+			blackboard.leashGauge += tuning.leashRecoverPerSec * sysCtx.dtSec;
+		}
+
+		blackboard.leashGauge = ClampDouble(
+			blackboard.leashGauge,
+			0.0,
+			tuning.leashGaugeMax);
+
+		if (blackboard.leashGauge <= 0.0)
+		{
+			EnterReturnHome(blackboard, perception);
+			perception.timeSinceTargetLastSeen =
+				blackboard.timeSinceCurrentTargetSeen;
+			return;
+		}
+	}
+
 	perception.hasTarget = true;
 	perception.selectedTarget = finalCand.entity;
 	perception.distanceToTargetSq = finalCand.distSq;

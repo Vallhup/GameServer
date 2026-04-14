@@ -77,6 +77,13 @@ struct CharacterBodyCollisionDef
 
 using AITuningId = uint16_t;
 
+namespace AITuningIds
+{
+	inline constexpr AITuningId None = 0;
+	inline constexpr AITuningId Imp = 1001;
+	inline constexpr AITuningId FinalBoss = 1005;
+}
+
 struct CharacterAIDef
 {
 	AIArchetype aiType;

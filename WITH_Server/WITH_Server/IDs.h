@@ -91,6 +91,7 @@ enum class ActionId : uint16_t
     Imp_melee3,
     Imp_melee4,
     Imp_melee5,
+    Imp_Jump,
     Imp_Stun,
     Imp_Hit,
     Imp_Dead,

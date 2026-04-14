@@ -7,7 +7,7 @@
 
 namespace
 {
-	const std::array<ActionDef, 19> kActionDefs =
+	const std::array<ActionDef, 20> kActionDefs =
 	{
 		ActionDef
 		{
@@ -1640,6 +1640,58 @@ namespace
 
 		ActionDef
 		{
+			.id = ActionId::Imp_Jump,
+			.name = "Imp.Jump",
+			.kind = ActionKind::NonCombat,
+			.duration = 2.333331f,
+			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
+			.endPolicy = ActionEndPolicyDef
+			{
+				.endType = ActionEndType::NaturalEnd,
+				.defaultNextActionId = ActionId::None
+			},
+			.requestRequirements =
+			{
+				ActionRequestRequirementDef
+				{
+					.type = ActionRequestRequirementType::IsGrounded,
+					.scalar = std::nullopt,
+					.stateFlag = std::nullopt
+				}
+			},
+			.resourceCosts = {},
+			.transitionRule = ActionTransitionRuleDef
+			{
+				.interruptRules =
+				{
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnHitReceived,
+						.toActionId = ActionId::Imp_Hit,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 100
+					},
+					ActionInterruptRule
+					{
+						.causeType = ActionInterruptCauseType::OnHpZero,
+						.toActionId = ActionId::Imp_Dead,
+						.windowPolicy = ActionWindowPolicy::Always,
+						.windowStartNormalized = std::nullopt,
+						.windowEndNormalized = std::nullopt,
+						.priority = 1000
+					}
+				},
+				.cancelRules = {}
+			},
+			.combatWindows = {},
+			.events = {},
+			.moveSegments = {}
+		},
+
+		ActionDef
+		{
 			.id = ActionId::Imp_Stun,
 			.name = "Imp.Stun",
 			.kind = ActionKind::Stun,
@@ -1764,10 +1816,10 @@ namespace
 			.availableActions =
 			{
 				ActionId::Imp_melee1,
-				ActionId::Imp_melee2,
 				ActionId::Imp_melee3,
 				ActionId::Imp_melee4,
 				ActionId::Imp_melee5,
+				ActionId::Imp_Jump,
 				ActionId::Imp_Stun,
 				ActionId::Imp_Hit,
 				ActionId::Imp_Dead
@@ -2039,6 +2091,11 @@ namespace
 				{
 					.actionId = ActionId::Imp_melee5,
 					.animationId = AnimationId::Imp_Melee_5
+				},
+				ActionAnimationBindingDef
+				{
+					.actionId = ActionId::Imp_Jump,
+					.animationId = AnimationId::Imp_Jump_1
 				},
 				ActionAnimationBindingDef
 				{

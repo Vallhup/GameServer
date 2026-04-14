@@ -1,0 +1,144 @@
+#include "pch.h"
+#include "NormalAIReturnHomeState.h"
+
+#include "IAIMovementPolicy.h"
+#include "RepComponent.h"
+
+#include <algorithm>
+#include <cmath>
+
+namespace
+{
+	static double DistanceSqXZ(
+		const DirectX::XMFLOAT3& a,
+		const DirectX::XMFLOAT3& b) noexcept
+	{
+		const double dx = static_cast<double>(a.x) - static_cast<double>(b.x);
+		const double dz = static_cast<double>(a.z) - static_cast<double>(b.z);
+		return dx * dx + dz * dz;
+	}
+
+	static bool HasArrivedHome(const AIContext& ctx) noexcept
+	{
+		if (ctx.selfTr == nullptr ||
+			ctx.blackboard == nullptr ||
+			ctx.perceptionTuning == nullptr ||
+			!ctx.blackboard->hasHomePosition)
+		{
+			return true;
+		}
+
+		const double arriveRange = ctx.perceptionTuning->returnHomeArriveRange;
+		return DistanceSqXZ(ctx.selfTr->position, ctx.blackboard->homePosition) <=
+			arriveRange * arriveRange;
+	}
+
+	static void MarkStatDirty(AIContext& ctx)
+	{
+		if (ctx.sysCtx == nullptr)
+			return;
+
+		if (DirtyFlagsComp* dirty =
+			ctx.sysCtx->ecs.GetMutableComponent<DirtyFlagsComp>(ctx.self))
+		{
+			dirty->MarkDirty(WorldDirtyType::Stat);
+		}
+	}
+
+	static void RecoverHp(AIContext& ctx, const double dT)
+	{
+		if (ctx.stats == nullptr ||
+			ctx.blackboard == nullptr ||
+			ctx.perceptionTuning == nullptr ||
+			ctx.stats->maxHp <= 0 ||
+			ctx.stats->currentHp <= 0 ||
+			ctx.stats->currentHp >= ctx.stats->maxHp)
+		{
+			return;
+		}
+
+		ctx.blackboard->returnHpRegenAcc +=
+			static_cast<double>(ctx.stats->maxHp) *
+			ctx.perceptionTuning->returnHpRegenPerSecRatio *
+			dT;
+
+		const int32_t recoverAmount =
+			static_cast<int32_t>(std::floor(ctx.blackboard->returnHpRegenAcc));
+		if (recoverAmount <= 0)
+			return;
+
+		ctx.blackboard->returnHpRegenAcc -= static_cast<double>(recoverAmount);
+
+		const int32_t oldHp = ctx.stats->currentHp;
+		ctx.stats->currentHp = std::clamp(
+			ctx.stats->currentHp + recoverAmount,
+			0,
+			ctx.stats->maxHp);
+
+		if (ctx.stats->currentHp != oldHp)
+			MarkStatDirty(ctx);
+	}
+
+	static void ClearReturnTarget(AIContext& ctx)
+	{
+		if (ctx.blackboard)
+		{
+			ctx.blackboard->currentTarget = Entity::Null();
+			ctx.blackboard->hasLastKnownTargetPosition = false;
+		}
+
+		if (ctx.command)
+		{
+			ctx.command->target = Entity::Null();
+			ctx.command->hasLook = false;
+			ctx.command->hasAction = false;
+			ctx.command->actionId = ActionId::None;
+		}
+	}
+}
+
+void NormalAIReturnHomeState::Enter(AIContext& ctx) const
+{
+	if (ctx.command)
+		ctx.command->ClearAll();
+
+	if (ctx.blackboard)
+	{
+		ctx.blackboard->returningHome = true;
+		ctx.blackboard->returnHpRegenAcc = 0.0;
+	}
+
+	ClearReturnTarget(ctx);
+}
+
+void NormalAIReturnHomeState::DecisionUpdate(
+	AIContext& ctx,
+	const double decisionDT) const
+{
+	(void)decisionDT;
+
+	if (!HasArrivedHome(ctx))
+		return;
+
+	if (ctx.blackboard)
+	{
+		ctx.blackboard->returningHome = false;
+		ctx.blackboard->returnHomeLockoutAcc = 0.0;
+		ctx.blackboard->leashGauge =
+			ctx.perceptionTuning ? ctx.perceptionTuning->leashGaugeMax : ctx.blackboard->leashGauge;
+		ctx.blackboard->hasPathCorner = false;
+		ctx.blackboard->pathRecomputeAcc = 0.0;
+	}
+
+	ClearReturnTarget(ctx);
+	ctx.decision->RequestTransition(AIStateType::Idle);
+}
+
+void NormalAIReturnHomeState::FrameUpdate(AIContext& ctx, const double dT) const
+{
+	ClearReturnTarget(ctx);
+	RecoverHp(ctx, dT);
+
+	if (ctx.movementPolicy)
+		ctx.movementPolicy->BuildReturnHomeIntent(ctx);
+}

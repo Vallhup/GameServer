@@ -7,12 +7,13 @@ struct SystemContext;
 class IAIMovementPolicy;
 class IAICombatActionPolicy;
 class IAIReactionPolicy;
+struct AIBehaviorProfileDef;
 
 struct AIContext
 {
 	Entity self{ Entity::Null() };
 
-	const SystemContext* sysCtx{ nullptr };
+	SystemContext* sysCtx{ nullptr };
 
 	const WorldTransformComp* selfTr{ nullptr };
 	const ActionStateComp* actionState{ nullptr };
@@ -24,12 +25,14 @@ struct AIContext
 	AIDecisionComp* decision{ nullptr };
 	AIReactionComp* reaction{ nullptr };
 	AICommandFrameComp* command{ nullptr };
+	CombatStatStateComp* stats{ nullptr };
 
 	IAIMovementPolicy* movementPolicy{ nullptr };
 
 	// archetype 별 교체 가능한 정책 (AIFSMBundle 에서 주입)
 	const IAICombatActionPolicy* combatActionPolicy{ nullptr };
 	const IAIReactionPolicy*     reactionPolicy{ nullptr };
+	const AIBehaviorProfileDef*  behaviorProfile{ nullptr };
 };
 
 class IAIState {

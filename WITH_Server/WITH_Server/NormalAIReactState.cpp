@@ -19,6 +19,12 @@ void NormalAIReactState::DecisionUpdate(AIContext& ctx, const double decisionDT)
 	if (ctx.decision->stateTime < reactDuration)
 		return;
 
+	if (ctx.blackboard->returningHome)
+	{
+		ctx.decision->RequestTransition(AIStateType::ReturnHome);
+		return;
+	}
+
 	if (ctx.perception->hasTarget)
 		ctx.decision->RequestTransition(AIStateType::Chase);
 	else

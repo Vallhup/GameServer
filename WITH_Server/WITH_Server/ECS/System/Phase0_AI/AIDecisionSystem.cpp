@@ -14,11 +14,11 @@
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<10, 1, 1> AIDecisionSystem::kMetaStorage =
+const StaticSystemMetaStorage<11, 1, 1> AIDecisionSystem::kMetaStorage =
 MakeMetaStorage(
 	SysTag<AIDecisionSystem>(),
 	"AIDecisionSystem",
-	std::array<AccessSpec, 10>
+	std::array<AccessSpec, 11>
 	{
 		ReadSnapshot(ComponentRes<WorldTransformComp>()),
 		ReadSnapshot(ComponentRes<ActionStateComp>()),
@@ -30,6 +30,7 @@ MakeMetaStorage(
 		WriteImmediate(ComponentRes<AIDecisionComp>()),
 		WriteImmediate(ComponentRes<AICommandFrameComp>()),
 		WriteImmediate(ComponentRes<AIReactionComp>()),
+		WriteImmediate(ComponentRes<CombatStatStateComp>()),
 	},
 	std::array<SystemTag, 1>{ SysTag<ApplyAICommandSystem>() },
 	std::array<SystemTag, 1>{ SysTag<AIPerceptionSystem>() }
@@ -38,18 +39,19 @@ MakeMetaStorage(
 void AIDecisionSystem::Execute(SystemContext& ctx)
 {
 	for (const auto& [entity, selfTr, actionState, perception, perceptionTuning,
-		blackboard, decision, decisionTuning, command, reaction, aiType] :
+		blackboard, decision, decisionTuning, command, reaction, aiType, stats] :
 		ctx.ecs.View<
 		WorldTransformComp, ActionStateComp,
 		AIPerceptionComp, AIPerceptionTuningComp,
 		AIBlackboardComp, AIDecisionComp, AIDecisionTuningComp,
-		AICommandFrameComp, AIReactionComp, AITypeComp>())
+		AICommandFrameComp, AIReactionComp, AITypeComp, CombatStatStateComp>())
 	{
 		command.ClearFrameTransient();
 
 		decision.stateTime          += ctx.dtSec;
 		decision.globalDecisionAcc  += ctx.dtSec;
 		decision.attackCooldownAcc  += ctx.dtSec;
+		blackboard.idleActionCooldownAcc += ctx.dtSec;
 
 		AIContext aiCtx;
 		aiCtx.self            = entity;
@@ -63,13 +65,21 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 		aiCtx.decisionTuning  = &decisionTuning;
 		aiCtx.command         = &command;
 		aiCtx.reaction        = &reaction;
+		aiCtx.stats           = &stats;
 
-		if (const AIFSMBundle* bundle = _fsmRegistry.TryGetBundle(aiType.aiType))
+		const AIFSMBundle* fsmBundle = _fsmRegistry.TryGetBundle(aiType.aiType);
+		const AIBehaviorBundle* behaviorBundle =
+			_fsmRegistry.TryGetBehavior(
+				aiType.aiType,
+				static_cast<AITuningId>(aiType.aiTuningId));
+
+		if (fsmBundle != nullptr && behaviorBundle != nullptr)
 		{
-			aiCtx.movementPolicy     = bundle->movementPolicy.get();
-			aiCtx.combatActionPolicy = bundle->combatActionPolicy.get();
-			aiCtx.reactionPolicy     = bundle->reactionPolicy.get();
-			RunFSM(aiCtx, *bundle);
+			aiCtx.movementPolicy     = behaviorBundle->movementPolicy.get();
+			aiCtx.combatActionPolicy = behaviorBundle->combatActionPolicy.get();
+			aiCtx.reactionPolicy     = behaviorBundle->reactionPolicy.get();
+			aiCtx.behaviorProfile    = behaviorBundle->profile;
+			RunFSM(aiCtx, *fsmBundle);
 		}
 
 		reaction.Clear();

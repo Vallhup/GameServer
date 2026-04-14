@@ -19,6 +19,7 @@ enum class ActionKind : uint8_t
 	Hit,
 	Guard,
 	UseItem,
+	NonCombat,
 	Dead
 };
 

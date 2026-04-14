@@ -507,6 +507,16 @@ struct AIPerceptionTuningComp : Component
 	
 	double loseSightGraceTime{ 1.2 };
 	double leashRange{ 18.0 };
+	double hardLeashRange{ 24.0 };
+	double leashGaugeMax{ 100.0 };
+	double leashDrainPerSec{ 20.0 };
+	double hardLeashDrainPerSec{ 60.0 };
+	double leashRecoverPerSec{ 35.0 };
+	double returnHomeArriveRange{ 0.8 };
+	double returnHomeReaggroLockSec{ 1.5 };
+	double returnHpRegenPerSecRatio{ 0.08 };
+	double idleActionCooldownSec{ 6.0 };
+	int idleActionChancePercent{ 25 };
 	double assistRange{ 6.0 };
 };
 
@@ -520,20 +530,39 @@ struct AIBlackboardComp : Component
 
 	bool forceRetarget{ false };
 
+	XMFLOAT3 homePosition{ 0.0f, 0.0f, 0.0f };
+	bool hasHomePosition{ false };
+	bool returningHome{ false };
+	double returnHomeLockoutAcc{ std::numeric_limits<double>::max() };
+	double leashGauge{ 100.0 };
+	double returnHpRegenAcc{ 0.0 };
+
 	XMFLOAT3 lastKnownTargetPosition{ 0.0f, 0.0f, 0.0f };
 	bool hasLastKnownTargetPosition{ false };
 
 	// 마지막으로 실행한 액션 (IAICombatActionPolicy 에서 콤보 다양성 판단에 활용)
 	ActionId lastUsedActionId{ ActionId::None };
+
+	// Combat action selection counter used to vary AI attack picks over time.
+	uint32_t combatActionSequence{ 0 };
+
+	double idleActionCooldownAcc{ 0.0 };
+	uint32_t idleActionSequence{ 0 };
+
+	XMFLOAT3 pathDestination{ 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 nextPathCorner{ 0.0f, 0.0f, 0.0f };
+	bool hasPathCorner{ false };
+	double pathRecomputeAcc{ 0.0 };
 };
 
 enum class AIStateType : uint8_t
 {
-	Idle,	// 유효 타겟이 없을 때
-	Chase,	// 타겟은 있지만 아직 공격 상태가 아닐 때
-	Combat,	// 공격 사거리 진입 후 공격 / 회피 등 판단할 때
-	Search,	// 타겟을 잃었지만 grace time 내에서 탐색할 때
-	React	// 피격, 스턴 등 외부 이벤트 처리 상태
+	Idle,		// 유효 타겟이 없을 때
+	Chase,		// 타겟은 있지만 아직 공격 상태가 아닐 때
+	Combat,		// 공격 사거리 진입 후 공격 / 회피 등 판단할 때
+	Search,		// 타겟을 잃었지만 grace time 내에서 탐색할 때
+	React,		// 피격, 스턴 등 외부 이벤트 처리 상태
+	ReturnHome	// 리쉬 게이지가 떨어진 경우 귀환 상태
 };
 
 // AI FSM 의사결정 상태

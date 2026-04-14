@@ -7,13 +7,6 @@
 
 namespace
 {
-	enum AITuning : uint16_t
-	{
-		ImpTuning = 1001,
-		
-		FinalBossTuning = 1005
-	};
-
 	using CFF = CharacterFeatureFlags;
 
 	const std::array<CharacterDef, 3> kCharacterDefs =
@@ -96,7 +89,7 @@ namespace
 			.ai = CharacterAIDef
 			{
 				.aiType = AIArchetype::NormalMonster,
-				.aiTuningId = ImpTuning
+				.aiTuningId = AITuningIds::Imp
 			},
 			.action = CharacterActionDefRef
 			{
@@ -141,7 +134,7 @@ namespace
 			.ai = CharacterAIDef
 			{
 				.aiType = AIArchetype::FinalBossMonster,
-				.aiTuningId = FinalBossTuning
+				.aiTuningId = AITuningIds::FinalBoss
 			},
 			.action = CharacterActionDefRef
 			{

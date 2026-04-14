@@ -13,6 +13,14 @@ void NormalAICombatState::Enter(AIContext& ctx) const
 
 void NormalAICombatState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
 {
+	(void)decisionDT;
+
+	if (ctx.blackboard->returningHome)
+	{
+		ctx.decision->RequestTransition(AIStateType::ReturnHome);
+		return;
+	}
+
 	if (!ctx.perception->hasTarget)
 	{
 		ctx.decision->RequestTransition(AIStateType::Search);
@@ -43,11 +51,14 @@ void NormalAICombatState::DecisionUpdate(AIContext& ctx, const double decisionDT
 	ctx.command->sequence++;
 
 	ctx.blackboard->lastUsedActionId = selection.selectedActionId;
+	ctx.blackboard->combatActionSequence++;
 	ctx.decision->attackCooldownAcc  = 0.0;
 }
 
 void NormalAICombatState::FrameUpdate(AIContext& ctx, const double dT) const
 {
+	(void)dT;
+
 	ctx.command->hasLook = true;
 	ctx.command->target  = ctx.blackboard->currentTarget;
 
