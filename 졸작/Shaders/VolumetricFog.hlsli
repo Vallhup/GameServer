@@ -109,10 +109,6 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
         currentDistance += stepSize;
     }
 
-    // Ambient 산란 (fogColor 사용)
-    float3 ambientScatter = fogColor.rgb * (1.0 - transmittance) * 0.3;
-    totalInScattering += ambientScatter;
-
     return float4(totalInScattering, transmittance);
 }
 

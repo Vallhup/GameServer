@@ -42,6 +42,7 @@ void DX12Core::Initialize(HWND hwnd)
 	sceneCB->Initialize(GetDevice(), 256 * 1000);
 	fogCB->Initialize(GetDevice(), sizeof(FogConstants));
 	volumetricFogCB->Initialize(GetDevice(), sizeof(VolumetricFogConstants));
+	volumetricFogData.texelSize = { 1.0f / WinSize.x, 1.0f / WinSize.y };
 	volumetricFogCB->CopyData(&volumetricFogData, sizeof(VolumetricFogConstants));
 
 	shadowMgr->Initialize(GetDevice());
@@ -339,6 +340,59 @@ void DX12Core::ClearSsaoRT()
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
 	);
 	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+}
+
+void DX12Core::BeginFogPass()
+{
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		rtMgr->GetFogRT(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+
+	D3D12_VIEWPORT fogViewport = {};
+	fogViewport.Width = WinSize.x / 2.0f;
+	fogViewport.Height = WinSize.y / 2.0f;
+	fogViewport.MinDepth = 0.0f;
+	fogViewport.MaxDepth = 1.0f;
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &fogViewport);
+
+	D3D12_RECT fogRect = { 0, 0, static_cast<LONG>(WinSize.x / 2), static_cast<LONG>(WinSize.y / 2) };
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &fogRect);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE fogRTV = rtMgr->GetFogRTV();
+	float clearValue[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	deviceCtx->GetGraphicsCmdList()->ClearRenderTargetView(fogRTV, clearValue, 0, nullptr);
+	deviceCtx->GetGraphicsCmdList()->OMSetRenderTargets(1, &fogRTV, FALSE, nullptr);
+
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootSignature(GetRootSig()->Get());
+	deviceCtx->GetGraphicsCmdList()->SetPipelineState(shader->GetPSO(PSOType::VolumetricFogPass));
+
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(22, GetVolumetricFogCB()->GetGPUVirtualAddress());
+
+	ID3D12DescriptorHeap* heaps[] = { rtMgr->GetDeferredSRVHeap() };
+	deviceCtx->GetGraphicsCmdList()->SetDescriptorHeaps(1, heaps);
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootDescriptorTable(13, rtMgr->GetDeferredSRVHeap()->GetGPUDescriptorHandleForHeapStart());
+
+	deviceCtx->GetGraphicsCmdList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceCtx->GetGraphicsCmdList()->DrawInstanced(6, 1, 0, 0);
+}
+
+void DX12Core::EndFogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
+{
+	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		rtMgr->GetFogRT(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+	);
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
 }
 
 void DX12Core::BeginLightingPass()

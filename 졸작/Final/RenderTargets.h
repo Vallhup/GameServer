@@ -11,16 +11,19 @@ public:
 
 	ID3D12Resource* GetDepthBuffer() const { return dsvBuffer.Get(); }
 	ID3D12Resource* GetGBuffer(int index) const { return gBufferRT[index].Get(); }
+	ID3D12Resource* GetFogRT() const { return fogRT.Get(); }
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return dsvHandle; }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetGBufferRTV(int index) const { return gBufferRTVHandles[index]; }
 	D3D12_CPU_DESCRIPTOR_HANDLE* GetGBufferRTVArray() { return gBufferRTVHandles; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetFogRTV() const { return fogRTVHandle; }
 
 	ID3D12DescriptorHeap* GetDeferredSRVHeap() const { return deferredSRVHeap.Get(); }
 
 private:
 	void CreateDepthStencilBuffer(ID3D12Device* device);
 	void CreateGBuffer(ID3D12Device* device);
+	void CreateFogRenderTarget(ID3D12Device* device);
 	void CreateDeferredRenderingDescriptors(ID3D12Device* device, ShadowMappingManager* shadowMgr);
 
 private:
@@ -35,6 +38,11 @@ private:
 	ComPtr<ID3D12DescriptorHeap> gBufferRTVHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE gBufferRTVHandles[3];
 	D3D12_GPU_DESCRIPTOR_HANDLE gBufferSRVHandles[3];
+
+	// Fog
+	ComPtr<ID3D12Resource> fogRT;
+	ComPtr<ID3D12DescriptorHeap> fogRTVHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE fogRTVHandle = {};
 
 	// Deferred SRV Heap
 	ComPtr<ID3D12DescriptorHeap> deferredSRVHeap;

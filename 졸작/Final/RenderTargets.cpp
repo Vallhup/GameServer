@@ -6,6 +6,7 @@ void RenderTargets::Initialize(ID3D12Device* device, ShadowMappingManager* shado
 {
 	CreateDepthStencilBuffer(device);
 	CreateGBuffer(device);
+	CreateFogRenderTarget(device);
 	CreateDeferredRenderingDescriptors(device, shadowMgr);
 }
 
@@ -116,11 +117,55 @@ void RenderTargets::CreateGBuffer(ID3D12Device* device)
 	OutputDebugStringA("G-Buffer created successfully!\n");
 }
 
+void RenderTargets::CreateFogRenderTarget(ID3D12Device* device)
+{
+	OutputDebugStringA("Create Fog Render Target\n");
+
+	D3D12_RESOURCE_DESC rtDesc = {};
+	rtDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	rtDesc.Width = WinSize.x / 2;
+	rtDesc.Height = WinSize.y / 2;
+	rtDesc.DepthOrArraySize = 1;
+	rtDesc.MipLevels = 1;
+	rtDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	rtDesc.SampleDesc.Count = 1;
+	rtDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	rtDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	clearValue.Color[0] = 0.0f;
+	clearValue.Color[1] = 0.0f;
+	clearValue.Color[2] = 0.0f;
+	clearValue.Color[3] = 1.0f;
+
+	HRESULT hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
+		&rtDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, &clearValue,
+		IID_PPV_ARGS(&fogRT));
+	MASSERT(SUCCEEDED(hr), "Failed to create Fog RT");
+
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	rtvHeapDesc.NumDescriptors = 1;
+	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	hr = device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&fogRTVHeap));
+	MASSERT(SUCCEEDED(hr), "Failed to create Fog RTV Heap");
+
+	UINT rtvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = fogRTVHeap->GetCPUDescriptorHandleForHeapStart();
+
+	fogRTVHandle = rtvHandle;
+	device->CreateRenderTargetView(fogRT.Get(), nullptr, fogRTVHandle);
+
+	OutputDebugStringA("Fog Render Target created successfully!\n");
+}
+
 void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, ShadowMappingManager* shadowMgr)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.NumDescriptors = 6; // Gbuffer(3) + depth(1) + shadow(1) + Ssao(1, 이건 AddSsaoSRV 함수로 추가)
+	srvHeapDesc.NumDescriptors = 7; // Gbuffer(3) + depth(1) + shadow(1) + Ssao(1) + FogRT(1)
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	HRESULT hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&deferredSRVHeap));
 	MASSERT(SUCCEEDED(hr), "Failed to create Deferred SRV Heap");
@@ -129,6 +174,7 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = deferredSRVHeap->GetCPUDescriptorHandleForHeapStart();
 	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = deferredSRVHeap->GetGPUDescriptorHandleForHeapStart();
 
+	// 0번 ~ 2번 slot (GBuffer)
 	for (int i = 0; i < 3; ++i) {
 		gBufferSRVHandles[i] = srvGpuHandle;
 		device->CreateShaderResourceView(gBufferRT[i].Get(), nullptr, srvCpuHandle);
@@ -139,6 +185,7 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 		OutputDebugStringA(("G-Buffer RT" + to_string(i) + " SRV created\n").c_str());
 	}
 
+	// 3번 slot (Depth)
 	D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
 	depthSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -148,6 +195,7 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 	srvCpuHandle.ptr += srvSize;
 	srvGpuHandle.ptr += srvSize;
 
+	// 4번 slot (shadow)
 	D3D12_SHADER_RESOURCE_VIEW_DESC shadowSrvDesc = {};
 	shadowSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
@@ -157,8 +205,18 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 	shadowSrvDesc.Texture2DArray.ArraySize = shadowMgr->GetCascadeCount();
 	shadowSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	device->CreateShaderResourceView(shadowMgr->GetCsmResource(), &shadowSrvDesc, srvCpuHandle);
+	srvCpuHandle.ptr += srvSize;
+	srvGpuHandle.ptr += srvSize;
 
 	OutputDebugStringA("Shadow Map SRV Created\n");
+
+	// 5번 slot (SSAO) - 이거 스킵해야됨 (SSAO는 역으로 받아옴)
+	srvCpuHandle.ptr += srvSize;
+	srvGpuHandle.ptr += srvSize;
+
+	// 6번 slot (FogRT)
+	device->CreateShaderResourceView(fogRT.Get(), nullptr, srvCpuHandle);
+	OutputDebugStringA("Fog RT SRV Created\n");
 
 	OutputDebugStringA("Deferred Rendering Descriptors created successfully!!\n");
 }

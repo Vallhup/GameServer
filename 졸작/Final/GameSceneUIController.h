@@ -38,5 +38,8 @@ private:
 	shared_ptr<ImageUI> mapNameImage;
 
 	shared_ptr<ImageUI> statBackground;
+	shared_ptr<ImageUI> charImageBox;   
+	shared_ptr<ImageUI> styleBar;       
+	shared_ptr<ImageUI> statBox;          
 };
 

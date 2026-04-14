@@ -42,7 +42,6 @@ void GameSceneUIController::Init(UIManager* manager)
 	tempStatusText->SetPosition(0.0f, 0.0f);
 	tempStatusText->SetText(L"TempText");
 
-	// 맵 이름 이미지
 	wstring texName;
 	switch (sceneType)
 	{
@@ -62,18 +61,33 @@ void GameSceneUIController::Init(UIManager* manager)
 	statBackground->SetHoriLength(WinSize.x);
 	statBackground->SetVertLength(WinSize.y);
 
-	// 비율 상수 (BarBack 785x39, HpBar 692x18, 오프셋 47,11)
-	constexpr float BARBACK_ASPECT    = 39.0f / 785.0f;    // 0.0497
-	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;  // 0.8815
-	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;    // 0.4615
-	constexpr float HPBAR_OFFSET_X     = 49.0f / 785.0f;   // 0.0599
-	constexpr float HPBAR_OFFSET_Y     = 11.0f / 39.0f;    // 0.2821
+	charImageBox = make_shared<ImageUI>(L"CharImageBox", ImageUIState::Hidden);
+	charImageBox->Init(uiManager);
+	charImageBox->SetPosition(WinSize.x * 0.09375f, WinSize.y * 0.1296f);
+	charImageBox->SetHoriLength(WinSize.x * 0.2917f);
+	charImageBox->SetVertLength(WinSize.y * 0.5926f);
 
-	// BarBack 기준 크기 설정 (가로 300px 테스트)
+	styleBar = make_shared<ImageUI>(L"StyleBar", ImageUIState::Hidden);
+	styleBar->Init(uiManager);
+	styleBar->SetPosition(WinSize.x * 0.09375f, WinSize.y * 0.75f);
+	styleBar->SetHoriLength(WinSize.x * 0.2917f);
+	styleBar->SetVertLength(WinSize.y * 0.1204f);
+
+	statBox = make_shared<ImageUI>(L"StatBox", ImageUIState::Hidden);
+	statBox->Init(uiManager);
+	statBox->SetPosition(WinSize.x * 0.4375f, WinSize.y * 0.1296f);
+	statBox->SetHoriLength(WinSize.x * 0.4688f);
+	statBox->SetVertLength(WinSize.y * 0.7407f);
+
+	constexpr float BARBACK_ASPECT    = 39.0f / 785.0f;    
+	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;  
+	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;    
+	constexpr float HPBAR_OFFSET_X     = 49.0f / 785.0f;   
+	constexpr float HPBAR_OFFSET_Y     = 11.0f / 39.0f;    
+
 	float backWidth = 300.0f;
 	float backHeight = backWidth * BARBACK_ASPECT;
 
-	// 화면 중앙 배치 (좌상단 기준이므로 절반 빼기)
 	float backPosX = WinSize.x * 0.5f - backWidth * 0.5f;
 	float backPosY = WinSize.y * 0.5f - backHeight * 0.5f;
 
@@ -83,7 +97,6 @@ void GameSceneUIController::Init(UIManager* manager)
 	charHPBarBack->SetHoriLength(backWidth);
 	charHPBarBack->SetVertLength(backHeight);
 
-	// HpBar: BarBack 기준 비율로 계산
 	float hpBarWidth = backWidth * HPBAR_WIDTH_RATIO;
 	float hpBarHeight = backHeight * HPBAR_HEIGHT_RATIO;
 	float hpBarPosX = backPosX + backWidth * HPBAR_OFFSET_X;
@@ -108,6 +121,9 @@ void GameSceneUIController::Update(float deltaTime)
 	if (mapNameImage) mapNameImage->Update(deltaTime);
 
 	if (statBackground) statBackground->Update(deltaTime);
+	if (charImageBox) charImageBox->Update(deltaTime);
+	if (styleBar) styleBar->Update(deltaTime);
+	if (statBox) statBox->Update(deltaTime);
 
 	if (INPUT.GetKeyDown('K'))
 	{
@@ -119,10 +135,13 @@ void GameSceneUIController::Update(float deltaTime)
 
 	if (INPUT.GetKeyDown(VK_TAB))
 	{
-		if (statBackground->GetState() == ImageUIState::Hidden)
-			statBackground->ChangeState(ImageUIState::Visible);
-		else
-			statBackground->ChangeState(ImageUIState::Hidden);
+		ImageUIState next = (statBackground->GetState() == ImageUIState::Hidden)
+			? ImageUIState::Visible : ImageUIState::Hidden;
+
+		statBackground->ChangeState(next);
+		if (charImageBox) charImageBox->ChangeState(next);
+		if (styleBar) styleBar->ChangeState(next);
+		if (statBox) statBox->ChangeState(next);
 	}
 }
 
@@ -137,6 +156,9 @@ void GameSceneUIController::Render(SpriteBatch* batch)
 	if (charHPBar) charHPBar->Render(batch);
 	if (mapNameImage) mapNameImage->Render(batch);
 	if (statBackground) statBackground->Render(batch);
+	if (charImageBox) charImageBox->Render(batch);
+	if (styleBar) styleBar->Render(batch);
+	if (statBox) statBox->Render(batch);
 }
 
 void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curStamina, int maxStamina)
@@ -152,7 +174,6 @@ void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curSta
 
 void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curStamina, int maxStamina, int power, double aSpeed, int defense, double mSpeed)
 {
-	// TODO : StatusText 변경
 	std::wstring text =
 		L"curHp: " + to_wstring(curHp) + L"\n" +
 		L"maxHp: " + to_wstring(maxHp) + L"\n" +

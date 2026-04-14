@@ -49,7 +49,8 @@ struct VolumetricFogConstants
 	XMFLOAT3 lightColor;     // 안개 속 빛 색상
 
 	float lightIntensity;    // 빛 강도
-	XMFLOAT3 vfPadding;
+	XMFLOAT2 texelSize;
+	float vfPadding;
 };
 
 class DeviceContext;
@@ -84,6 +85,9 @@ public:
 	void BeginSsaoBlurPass();
 	void EndSsaoBlurPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 	void ClearSsaoRT();
+
+	void BeginFogPass();
+	void EndFogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 
 	void BeginLightingPass();
 	void RenderFullscreenQuad();
@@ -157,7 +161,8 @@ private:
 		3.0f,                   // groundHeight
 		{ 1.0f, 1.0f, 1.0f },   // lightColor
 		1.5f,                   // lightIntensity
-		{ 0.0f, 0.0f, 0.0f }    // padding
+		{ 0.0f, 0.0f },
+		0.0f    // padding
 	};
 
 	XMFLOAT3 playerCurrentPos = { 0, 0, 0 };

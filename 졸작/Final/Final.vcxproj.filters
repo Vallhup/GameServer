@@ -567,6 +567,9 @@
     <None Include="..\Shaders\SparkPS.hlsli">
       <Filter>Shaders\Effects</Filter>
     </None>
+    <None Include="..\Shaders\VolumetricFogPassPS.hlsli">
+      <Filter>Shaders\Volumetric</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">

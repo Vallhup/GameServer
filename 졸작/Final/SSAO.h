@@ -2,7 +2,7 @@
 
 struct SSAOConstants
 {
-	XMFLOAT4 samples[16];
+	XMFLOAT4 samples[32];
 	XMFLOAT2 noiseScale;
 	float samplingRadius;
 	float ssaoBias;				// Imgui 위한 bias 인자, 원래는 padding

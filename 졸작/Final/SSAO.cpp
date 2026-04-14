@@ -62,14 +62,14 @@ void SSAO::GenerateSampleKernel(ID3D12Device* device)
 	mt19937 gen(rd());
 	uniform_real_distribution<float> dist(0.0f, 1.0f);
 	
-	for (int i = 0; i < 16; ++i)
+	for (int i = 0; i < 32; ++i)
 	{
 		XMFLOAT3 sample = { dist(gen) * 2.0f - 1.0f, dist(gen) * 2.0f - 1.0f , dist(gen) };
 
 		XMVECTOR v = XMLoadFloat3(&sample);
 		v = XMVector3Normalize(v);
 
-		float scale = (float)i / 16.0f;
+		float scale = (float)i / 32.0f;
 		scale = 0.1f + scale * scale * 0.9f;  // 중심에 더 밀집
 		v = XMVectorScale(v, scale);
 
