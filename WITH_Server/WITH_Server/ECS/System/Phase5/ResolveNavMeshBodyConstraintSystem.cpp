@@ -151,11 +151,19 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
+		const bool needsInitialProjection = navAgent.currentPolyRef == 0;
+		if (!preCollision.movedThisFrame && !needsInitialProjection)
+		{
+			resolveState.navResolvedPosition = transform.position;
+			continue;
+		}
+
 		dtNavMeshQuery* query = navMesh->GetQuery();
 		dtQueryFilter filter = BuildQueryFilter(profile);
 
 		const float extentXZ = profile ? profile->nearestPolyExtentXZ : 2.0f;
 		const float extentY = profile ? profile->nearestPolyExtentY : 4.0f;
+		const float surfaceYOffset = profile ? profile->navMeshSurfaceYOffset : 0.0f;
 		const float extents[3] = { extentXZ, extentY, extentXZ };
 
 		const float prevPos[3] = {
@@ -240,7 +248,7 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 				continue;
 			}
 		}
-		resultPos[1] = surfaceHeight;
+		resultPos[1] = surfaceHeight + surfaceYOffset;
 
 		navAgent.currentPolyRef = static_cast<uint64_t>(resultRef);
 
@@ -262,9 +270,6 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 			MarkTransformDirtyIfPresent();
 		}
 
-		const auto* typeComp = ctx.ecs.GetComponent<SpawnTypeComp>(entity);
-		if (typeComp && typeComp->characterId == CharacterId::Knight)
-			printf("[Pos] (%.5f, %.5f, %.5f)\n", resultPos[0], resultPos[1], resultPos[2]);
 	}
 }
 
