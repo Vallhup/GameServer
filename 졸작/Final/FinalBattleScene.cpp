@@ -4,6 +4,8 @@
 #include "MainCharacter.h"
 #include "Engine.h"
 #include "SkyBox.h"
+#include "LightManager.h"
+#include "ShadowMappingManager.h"
 #include "Input.h"
 #include "ImGuiManager.h"
 #include "UIManager.h"
@@ -62,6 +64,9 @@ void FinalBattleScene::InitializeLogic()
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
+	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetShadowMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetLightMgr()->UpdateLights();
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
@@ -106,9 +111,11 @@ void FinalBattleScene::UpdateScene(const float deltaTime)
 	BoundingFrustum frustum = cam->GetViewFrustum();
 	XMFLOAT3 camPos = cam->GetPosition();
 	XMVECTOR camPosVec = XMLoadFloat3(&camPos);
+	XMFLOAT3 playerPos = cam->GetTargetPosition();
+	XMVECTOR playerPosVec = XMLoadFloat3(&playerPos);
 
 	for (auto& batch : instancingBatches)
-		batch->Update(frustum, camPosVec);
+		batch->Update(frustum, camPosVec, playerPosVec);
 }
 
 void FinalBattleScene::RenderSceneDeferred()

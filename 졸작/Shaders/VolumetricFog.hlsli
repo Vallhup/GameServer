@@ -21,8 +21,10 @@ float SampleShadowMap(float3 worldPos, float viewDepth)
     int cascade;
     if (viewDepth < cascadeSplit.x)
         cascade = 0;
-    else
+    else if (viewDepth < cascadeSplit.y)
         cascade = 1;
+    else
+        cascade = 2;
     
     float4 lightSpacePos = mul(float4(worldPos, 1.0), lightVP[cascade]);
     
@@ -93,7 +95,7 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
             phase = max(phase, 0.2);
             
             // In-scattering 계산
-            float3 lightContrib = VF_LIGHT_COLOR * VF_LIGHT_INTENSITY * lights[0].intensity;
+            float3 lightContrib = VF_LIGHT_COLOR * VF_LIGHT_INTENSITY/* * lights[0].intensity*/;
             float3 scattering = lightContrib * phase * VF_SCATTERING * shadowFactor;
 
             // Beer-Lambert 투과율

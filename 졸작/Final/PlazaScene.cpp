@@ -9,6 +9,8 @@
 #include "SoundManager.h"
 #include "ImGuiManager.h"
 #include "SkyBox.h"
+#include "LightManager.h"
+#include "ShadowMappingManager.h"
 #include "AnimationMachine.h"
 #include "AnimationSetFactory.h"
 #include "Terrain.h"
@@ -94,6 +96,9 @@ void PlazaScene::InitializeLogic()
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
+	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetShadowMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetLightMgr()->UpdateLights();
 
 #pragma region Initialize Plaza Terrain
 	terrain = make_shared<Terrain>();
@@ -250,10 +255,12 @@ void PlazaScene::UpdateScene(const float deltaTime)
 	BoundingFrustum frustum = cam->GetViewFrustum();
 	XMFLOAT3 camPos = cam->GetPosition();
 	XMVECTOR camPosVec = XMLoadFloat3(&camPos);
+	XMFLOAT3 playerPos = cam->GetTargetPosition();
+	XMVECTOR playerPosVec = XMLoadFloat3(&playerPos);
 
 	/*auto start = chrono::high_resolution_clock::now();*/
 	for (auto& batch : instancingBatches)
-		batch->Update(frustum, camPosVec);
+		batch->Update(frustum, camPosVec, playerPosVec);
 	//auto end = chrono::high_resolution_clock::now();
 	//auto ms = chrono::duration_cast<chrono::microseconds>(end - start).count();
 	//OutputDebugStringA(("Update: " + to_string(ms) + "us\n").c_str());

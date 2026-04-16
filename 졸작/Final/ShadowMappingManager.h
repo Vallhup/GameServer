@@ -1,8 +1,10 @@
 #pragma once
 
+class SkyBox;
+
 struct CascadeShadowConstants
 {
-	XMMATRIX lightVP[2];	// 2 cascade levels
+	XMMATRIX lightVP[3];	// 3 cascade levels
 	XMFLOAT4 cascadeSplit;	// 4 cascade ranges
 };
 
@@ -11,6 +13,7 @@ class ShadowMappingManager
 public:
 	void Initialize(ID3D12Device* device);
 	void UpdateCascadeShadow(const XMFLOAT3& center);
+	void SetSkyBox(SkyBox* sky) { skyBox = sky; }
 
 	ID3D12Resource* GetCsmResource() const { return csmTexture.Get(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCsmDSV(int index) const { return csmDSVHandle[index]; }
@@ -26,7 +29,7 @@ private:
 
 private:
 	// Cascade shadow mapping
-	static const int CASCADE_COUNT = 2;
+	static const int CASCADE_COUNT = 3;
 	static const UINT SHADOW_MAP_SIZE = 4096;
 
 	ComPtr<ID3D12Resource> csmTexture;
@@ -37,10 +40,5 @@ private:
 	CascadeShadowConstants csmConstants;
 	XMVECTOR csmLightDir;
 
-	// Shadow Atlas (����)
-
+	SkyBox* skyBox = nullptr;
 };
-
-// Cascade shadow mapping�� Shadow Atlas �Ѵ� �����ϴ� �Ŵ���
-// ����, shadow�� ǥ���ϱ� ���� ������ ��� ������ ���ΰ�? - ������
-// �ϴ�, CSM�� ���� �ϳ��� �ۿ��ϴϱ� ���� ��ġ �����ؼ� ����

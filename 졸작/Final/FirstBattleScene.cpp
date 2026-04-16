@@ -6,6 +6,8 @@
 #include "Terrain.h"
 #include "Water.h"
 #include "SkyBox.h"
+#include "LightManager.h"
+#include "ShadowMappingManager.h"
 #include "Input.h"
 #include "ImGuiManager.h"
 #include "SoundManager.h"
@@ -65,6 +67,9 @@ void FirstBattleScene::InitializeLogic()
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
+	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetShadowMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetLightMgr()->UpdateLights();
 
 #pragma region Initialize Terrain
 	terrain = make_shared<Terrain>();
@@ -130,9 +135,11 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 	BoundingFrustum frustum = cam->GetViewFrustum();
 	XMFLOAT3 camPos = cam->GetPosition();
 	XMVECTOR camPosVec = XMLoadFloat3(&camPos);
+	XMFLOAT3 playerPos = cam->GetTargetPosition();
+	XMVECTOR playerPosVec = XMLoadFloat3(&playerPos);
 
 	for (auto& batch : instancingBatches)
-		batch->Update(frustum, camPosVec);
+		batch->Update(frustum, camPosVec, playerPosVec);
 }
 
 void FirstBattleScene::RenderSceneDeferred()

@@ -75,7 +75,7 @@ cbuffer ForwardLightCB : register(b4)
 
 cbuffer ShadowFrameCB : register(b5)
 {
-    matrix lightVP[2];
+    matrix lightVP[3];
     float4 cascadeSplit;
 };
 

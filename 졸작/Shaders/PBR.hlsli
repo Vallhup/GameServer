@@ -148,12 +148,12 @@ float3 CalculateIBL(float3 N, float3 V, float3 baseColor, float metallic,
     float3 kD = 1.0 - kS;
     kD *= 1.0 - metallic;
     
-    float3 irradiance = irradianceMap.Sample(samp, float3(N.x, -N.y, N.z)).rgb;
+    float3 irradiance = irradianceMap.Sample(samp, N).rgb;
     float3 diffuseIBL = irradiance * baseColor;
     
     float3 R = reflect(-V, N);
     const float MAX_REFLECTION_LOD = 7.0;
-    float3 prefilteredColor = radianceMap.SampleLevel(samp, float3(R.x, -R.y, R.z), roughness * MAX_REFLECTION_LOD).rgb;
+    float3 prefilteredColor = radianceMap.SampleLevel(samp, R, roughness * MAX_REFLECTION_LOD).rgb;
     prefilteredColor = min(prefilteredColor, 10.0);
 
     float2 brdfUV = float2(NdotV, roughness);
@@ -161,8 +161,8 @@ float3 CalculateIBL(float3 N, float3 V, float3 baseColor, float metallic,
 
     float3 specularIBL = prefilteredColor * (F * brdf.x + brdf.y);
     
-    float diffuseIntensity = 1.0f; 
-    float specularIntensity = 0.1f;
+    float diffuseIntensity = 1.0f;
+    float specularIntensity = 1.0f;
     
     float3 ambient = (kD * diffuseIBL * diffuseIntensity + specularIBL * specularIntensity) * ao;
     

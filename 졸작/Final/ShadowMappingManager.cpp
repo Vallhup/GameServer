@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ShadowMappingManager.h"
+#include "SkyBox.h"
 
 void ShadowMappingManager::Initialize(ID3D12Device* device)
 {
@@ -10,6 +11,12 @@ void ShadowMappingManager::Initialize(ID3D12Device* device)
 
 void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 {
+	if (skyBox)
+	{
+		XMFLOAT3 dir = skyBox->GetSun().direction;
+		csmLightDir = XMVector3Normalize(XMLoadFloat3(&dir));
+	}
+
 	XMVECTOR centerPos = XMLoadFloat3(&center);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -35,7 +42,7 @@ void ShadowMappingManager::SettingsForCSM()
 	XMVECTOR lightDir = XMVectorSet(-0.74f, -0.40f, -1.0f, 0);
 	csmLightDir = XMVector3Normalize(lightDir);
 
-	csmConstants.cascadeSplit = { 20.0f, 90.0f, 0.0f, 0.0f };
+	csmConstants.cascadeSplit = { 15.0f, 40.0f, 100.0f, 0.0f };
 }
 
 void ShadowMappingManager::CreateCSMResources(ID3D12Device* device)

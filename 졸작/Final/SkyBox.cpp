@@ -11,10 +11,10 @@ void SkyBox::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList
 	InitializeMesh(device, cmdList);
 	InitializeSkyBoxCB(device);
 
-	skyboxCubeMapIndex = Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox.dds");
+	skyboxCubeMapIndex = Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox7.dds");
 
-	Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox_irradiance.dds");
-	Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox_radiance.dds");
+	Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox7_irradiance.dds");
+	Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox7_radiance.dds");
 
 	Material::RegisterTexture(device, cmdList, L"../Assets/Skybox/brdf_lut.png");
 }

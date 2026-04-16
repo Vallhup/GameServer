@@ -1,8 +1,10 @@
 #pragma once
 
+class SkyBox;
+
 struct LightData {
-	XMFLOAT3 position;    // Point light용 (directional일 때는 direction)
-	float range;          // Point light 범위
+	XMFLOAT3 position;    
+	float range;          
 	XMFLOAT3 color;
 	float intensity;
 	int type;             // 0=directional, 1=point
@@ -12,7 +14,7 @@ struct LightData {
 struct DeferredLightConstants {
 	int lightCount;
 	XMFLOAT3 padding;
-	LightData lights[23]; // 조명 60개부터 렉걸린다 이유 해결 안됨
+	LightData lights[23]; 
 };
 
 struct ForwardLightConstants {
@@ -27,6 +29,7 @@ class LightManager
 public:
 	void Initialize(ID3D12Device* device);
 	void UpdateLights();
+	void SetSkyBox(SkyBox* sky) { skyBox = sky; }
 
 	UploadBuffer* GetDeferredLightCB() const;
 	UploadBuffer* GetForwardLightCB() const;
@@ -44,5 +47,7 @@ private:
 
 	unique_ptr<UploadBuffer> deferredLightCB;
 	unique_ptr<UploadBuffer> forwardLightCB;
+
+	SkyBox* skyBox = nullptr;
 };
 
