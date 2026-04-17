@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "WorldTransferService.h"
 
+#include <utility>
+
 #include "WorldRegistry.h"
 
 #include "WorldManager.h"
@@ -87,6 +89,13 @@ const WorldTransferTxn* WorldTransferService::FindTxn(TransferId id) const
 	return &it->second;
 }
 
+void WorldTransferService::DrainEvents(WorldTransferEventBatch& outEvents)
+{
+	outEvents.completed = std::move(_events.completed);
+	outEvents.failed = std::move(_events.failed);
+	_events.Clear();
+}
+
 void WorldTransferService::ProgressTxn(WorldTransferTxn& txn, const double nowSec)
 {
 	switch (txn.stage) {
@@ -133,14 +142,17 @@ void WorldTransferService::ProgressTxn(WorldTransferTxn& txn, const double nowSe
 	case TransferStage::TargetImported:
 	{
 		if (StepReleaseSource(txn, nowSec))
+		{
 			txn.stage = TransferStage::SourceReleased;
+			CompleteTxn(txn, nowSec);
+		}
 		else
 			FailTxn(txn, TransferFailureReason::SourceReleaseFailed, nowSec);
 		break;
 	}
 	case TransferStage::SourceReleased:
 	{
-		CompleteTxn(txn);
+		CompleteTxn(txn, nowSec);
 		break;
 	}
 	case TransferStage::Completed:
@@ -193,6 +205,9 @@ bool WorldTransferService::StepResolveTarget(WorldTransferTxn& txn)
 	}
 
 	if (!txn.resolvedTargetWorldId.IsValid())
+		return false;
+
+	if (!_worldManager.EnsureWorldReadyForTransfer(txn.resolvedTargetWorldId))
 		return false;
 
 	for (uint32_t sessionId : txn.sessionIds)
@@ -250,8 +265,8 @@ bool WorldTransferService::StepBuildTransferContext(WorldTransferTxn& txn)
 	if (txn.context->PlayerCount() != txn.PlayerCount())
 		return false;
 
-	// TODO : ´õ ¾ö°ÝÇÏ°Ô °Ë»çÇÑ´Ù¸é
-	//        txn.sessionIds == context ³»ºÎ connection ÁýÇÕ ÀÏÄ¡ È®ÀÎ
+	// TODO : ë” ì—„ê²©í•˜ê²Œ ê²€ì‚¬í•œë‹¤ë©´
+	//        txn.sessionIds == context ë‚´ë¶€ connection ì§‘í•© ì¼ì¹˜ í™•ì¸
 
 	return true;
 }
@@ -269,7 +284,7 @@ bool WorldTransferService::StepImportTarget(WorldTransferTxn& txn, const double 
 	if (targetWorld == nullptr)
 		return false;
 
-	txn.importedSessionIds.clear();
+	txn.importedEntities.clear();
 
 	if (!_admissionService.ConsumeReservation(txn.reservation.ticket, nowSec))
 		return false;
@@ -283,18 +298,18 @@ bool WorldTransferService::StepImportTarget(WorldTransferTxn& txn, const double 
 
 	if (!targetWorld->GetRuntime().ImportTransferContext(
 		*txn.context,
-		txn.importedSessionIds))
+		txn.importedEntities))
 	{
 		return false;
 	}
 
-	if (txn.importedSessionIds.empty())
+	if (txn.importedEntities.empty())
 		return false;
 
-	for (uint32_t sessionId : txn.importedSessionIds)
+	for (const ImportedTransferEntity& imported : txn.importedEntities)
 	{
 		if (!_presenceManager.MarkTargetImported(
-			sessionId,
+			imported.sessionId,
 			txn.id,
 			txn.resolvedTargetWorldId,
 			nowSec))
@@ -437,7 +452,7 @@ void WorldTransferService::CleanupImportedTargetOnFailure(WorldTransferTxn& txn)
 	if (!txn.context)
 		return;
 
-	if (txn.importedSessionIds.empty())
+	if (txn.importedEntities.empty())
 		return;
 
 	WorldInstance* targetWorld = _worldRegistry.FindWorld(txn.resolvedTargetWorldId);
@@ -446,7 +461,7 @@ void WorldTransferService::CleanupImportedTargetOnFailure(WorldTransferTxn& txn)
 
 	targetWorld->GetRuntime().RollbackImportedTransferContext(
 		*txn.context,
-		txn.importedSessionIds);
+		txn.importedEntities);
 }
 
 void WorldTransferService::CleanupSourceInflightOnFailure(WorldTransferTxn& txn)
@@ -483,12 +498,54 @@ void WorldTransferService::FailTxn(
 		return;
 	}
 
+	_events.failed.push_back(BuildFailedEvent(txn, reason, nowSec));
 	txn.stage = TransferStage::Failed;
 }
 
-void WorldTransferService::CompleteTxn(WorldTransferTxn& txn)
+void WorldTransferService::CompleteTxn(WorldTransferTxn& txn, const double nowSec)
 {
+	_events.completed.push_back(BuildCompletedEvent(txn, nowSec));
 	txn.stage = TransferStage::Completed;
+}
+
+WorldTransferCompletedEvent WorldTransferService::BuildCompletedEvent(
+	const WorldTransferTxn& txn,
+	const double nowSec)
+{
+	WorldTransferCompletedEvent event{};
+	event.transferId = txn.id;
+	event.sourceWorldId = txn.sourceWorldId;
+	event.targetWorldId = txn.resolvedTargetWorldId;
+	event.requestedTarget = txn.target;
+	event.partyId = txn.partyId;
+	event.sessionIds = txn.sessionIds;
+	event.importedEntities = txn.importedEntities;
+	event.releasedSessionIds = txn.releasedSessionIds;
+	event.retryCount = txn.retryCount;
+	event.usedFallback = txn.fallbackApplied;
+	event.completedAtSec = nowSec;
+	return event;
+}
+
+WorldTransferFailedEvent WorldTransferService::BuildFailedEvent(
+	const WorldTransferTxn& txn,
+	TransferFailureReason reason,
+	const double nowSec)
+{
+	WorldTransferFailedEvent event{};
+	event.transferId = txn.id;
+	event.sourceWorldId = txn.sourceWorldId;
+	event.resolvedTargetWorldId = txn.resolvedTargetWorldId;
+	event.requestedTarget = txn.target;
+	event.partyId = txn.partyId;
+	event.sessionIds = txn.sessionIds;
+	event.failedStage = txn.stage;
+	event.reason = reason;
+	event.importedEntities = txn.importedEntities;
+	event.retryCount = txn.retryCount;
+	event.rollbackRequired = txn.rollbackRequired;
+	event.failedAtSec = nowSec;
+	return event;
 }
 
 bool WorldTransferService::CanFallback(
@@ -537,13 +594,14 @@ bool WorldTransferService::TryApplyFallback(
 	txn.context.reset();
 	txn.failReason = TransferFailureReason::None;
 	txn.rollbackRequired = false;
+	txn.fallbackApplied = true;
 
 	txn.reservationConsumed = false;
 	txn.targetInflightAdded = false;
 	txn.sourceInflightAdded = false;
 	txn.targetActivePlayersAdded = false;
 	txn.sourceActivePlayersRemoved = false;
-	txn.importedSessionIds.clear();
+	txn.importedEntities.clear();
 	txn.releasedSessionIds.clear();
 
 	txn.updatedAtSec = nowSec;

@@ -17,6 +17,7 @@ public:
 
 	WorldId ResolveOrCreate(WorldDefId worldDefId, uint64_t instanceKey);
 	WorldId RegisterPreCreatedWorld(WorldDefId worldDefId, uint64_t instanceKey);
+	bool EnsureWorldReadyForTransfer(WorldId worldId);
 
 	WorldInstanceRecord* FindRecord(WorldId worldId);
 	const WorldInstanceRecord* FindRecord(WorldId worldId) const;

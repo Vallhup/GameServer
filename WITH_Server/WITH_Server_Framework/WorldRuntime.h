@@ -17,6 +17,7 @@
 #include "Entity.h"
 #include "Component.h"
 #include "NavMeshRuntime.h"
+#include "WorldTransferTypes.h"
 
 class ITransferContext;
 class IWorldTransferBinding;
@@ -49,7 +50,7 @@ public:
 
 	bool ImportTransferContext(
 		const ITransferContext& context,
-		std::vector<uint32_t>& outImportedSessionIds);
+		std::vector<ImportedTransferEntity>& outImportedEntities);
 
 	bool ReleaseTransferContext(
 		const ITransferContext& context,
@@ -57,7 +58,7 @@ public:
 
 	bool RollbackImportedTransferContext(
 		const ITransferContext& context,
-		const std::vector<uint32_t>& importedSessionIds);
+		const std::vector<ImportedTransferEntity>& importedEntities);
 
 public:
 	const WorldDef* GetDef() const noexcept { return _def; }

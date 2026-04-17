@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "Entity.h"
+#include "NetId.h"
 
 class IWorldTransferBinding {
 public:
@@ -10,5 +11,6 @@ public:
 
 	virtual bool TryResolveRootEntity(
 		uint32_t sessionId,
-		Entity& outEntity) const = 0;
+		Entity& outEntity,
+		NetId& outNetId) const = 0;
 };

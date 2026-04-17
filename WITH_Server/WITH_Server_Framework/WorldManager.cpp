@@ -57,6 +57,33 @@ WorldId WorldManager::RegisterPreCreatedWorld(WorldDefId worldDefId, uint64_t in
 	return CreateAndRegisterWorld(*def, key.instanceKey, key);
 }
 
+bool WorldManager::EnsureWorldReadyForTransfer(WorldId worldId)
+{
+	WorldInstanceRecord* record = FindRecord(worldId);
+	if (record == nullptr || record->IsClosingLike())
+		return false;
+
+	WorldInstance* world = _registry.FindWorld(worldId);
+	if (world == nullptr)
+		return false;
+
+	if (!world->IsInitialized() && !world->Initialize())
+	{
+		record->stage = WorldStage::Faulted;
+		MarkRunnableWorldIdsDirty();
+		return false;
+	}
+
+	if (record->stage == WorldStage::Allocated ||
+		record->stage == WorldStage::Bootstrapping)
+	{
+		record->stage = WorldStage::Running;
+		MarkRunnableWorldIdsDirty();
+	}
+
+	return record->IsRunnable();
+}
+
 WorldInstanceRecord* WorldManager::FindRecord(WorldId worldId)
 {
 	auto it = _records.find(worldId);
@@ -112,7 +139,14 @@ void WorldManager::FlushLifecycle(double dtSec)
 		}
 		case WorldStage::Running:
 		{
-			ResetLifecycleAccumulatorsOnActivity(record);
+			if (record.HasNoOccupantsOrPendingWork())
+			{
+				UpdateEmptyElapsed(record, dtSec);
+			}
+			else
+			{
+				ResetLifecycleAccumulatorsOnActivity(record);
+			}
 
 			if (ShouldStartClosing(record))
 			{
@@ -377,7 +411,13 @@ bool WorldManager::ShouldStartClosing(const WorldInstanceRecord& record)
 	if (record.instanceType == WorldInstanceType::Persistent)
 		return false;
 
-	return IsDestroySafe(record);
+	if (!IsDestroySafe(record))
+		return false;
+
+	if (record.emptyDestroyDelaySec <= 0.0)
+		return true;
+
+	return record.emptyElapsedSec >= record.emptyDestroyDelaySec;
 }
 
 bool WorldManager::ShouldEnterDestroyPending(const WorldInstanceRecord& record)

@@ -4,14 +4,15 @@
 #include <cstdint>
 #include <vector>
 
-#include "ComponentStorage.h"
 #include "Entity.h"
+#include "NetId.h"
 
-using ComponentTypeId = TypeId;
+using WorldTransferSerializerId = uint32_t;
+constexpr WorldTransferSerializerId InvalidWorldTransferSerializerId = 0;
 
-struct TransferComponentSnapshot
+struct TransferPayloadSnapshot
 {
-	ComponentTypeId typeId{};
+	WorldTransferSerializerId serializerId{ InvalidWorldTransferSerializerId };
 	std::vector<std::byte> bytes;
 };
 
@@ -19,5 +20,14 @@ struct TransferEntitySnapshot
 {
 	uint32_t sessionId{ 0 };
 	Entity sourceEntity{ Entity::Null() };
-	std::vector<TransferComponentSnapshot> components;
+	NetId netId{ NetId::Invalid() };
+	std::vector<TransferPayloadSnapshot> payloads;
+};
+
+struct ImportedTransferEntity
+{
+	uint32_t sessionId{ 0 };
+	Entity sourceEntity{ Entity::Null() };
+	Entity targetEntity{ Entity::Null() };
+	NetId netId{ NetId::Invalid() };
 };

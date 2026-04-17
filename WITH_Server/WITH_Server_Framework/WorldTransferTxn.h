@@ -6,6 +6,7 @@
 #include "AdmissionTypes.h"
 #include "ITransferContext.h"
 #include "WorldTransferRequest.h"
+#include "WorldTransferTypes.h"
 
 struct WorldTransferTxn
 {
@@ -28,6 +29,7 @@ struct WorldTransferTxn
 
 	uint32_t retryCount{ 0 };
 	bool rollbackRequired{ false };
+	bool fallbackApplied{ false };
 
 	// [ side-effect tracking ]
 	bool reservationConsumed{ false };
@@ -36,7 +38,7 @@ struct WorldTransferTxn
 	bool targetActivePlayersAdded{ false };
 	bool sourceActivePlayersRemoved{ false };
 
-	std::vector<uint32_t> importedSessionIds;
+	std::vector<ImportedTransferEntity> importedEntities;
 	std::vector<uint32_t> releasedSessionIds;
 
 	double createdAtSec{ 0.0 };
@@ -55,7 +57,7 @@ struct WorldTransferTxn
 
 	inline uint32_t ImportedPlayerCount() const
 	{
-		return static_cast<uint32_t>(importedSessionIds.size());
+		return static_cast<uint32_t>(importedEntities.size());
 	}
 
 	inline uint32_t ReleasedPlayerCount() const

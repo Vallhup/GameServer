@@ -6,6 +6,7 @@
 #include "WorldIds.h"
 #include "WorldTargetSpec.h"
 #include "WorldLifecycleEnums.h"
+#include "WorldTransferEvents.h"
 #include "WorldTransferTxn.h"
 
 class WorldManager;
@@ -33,6 +34,8 @@ public:
 	WorldTransferTxn* FindTxn(TransferId id);
 	const WorldTransferTxn* FindTxn(TransferId id) const;
 
+	void DrainEvents(WorldTransferEventBatch& outEvents);
+
 private:
 	void ProgressTxn(WorldTransferTxn& txn, const double nowSec);
 
@@ -56,7 +59,15 @@ private:
 		TransferFailureReason reason,
 		const double nowSec
 	);
-	void CompleteTxn(WorldTransferTxn& txn);
+	void CompleteTxn(WorldTransferTxn& txn, const double nowSec);
+
+	static WorldTransferCompletedEvent BuildCompletedEvent(
+		const WorldTransferTxn& txn,
+		const double nowSec);
+	static WorldTransferFailedEvent BuildFailedEvent(
+		const WorldTransferTxn& txn,
+		TransferFailureReason reason,
+		const double nowSec);
 
 	bool CanFallback(const WorldTransferTxn& txn, TransferFailureReason reason) const;
 	bool TryApplyFallback(WorldTransferTxn& txn, TransferFailureReason reason, const double nowSec);
@@ -71,6 +82,7 @@ private:
 	PresenceManager& _presenceManager;
 
 	std::unordered_map<TransferId, WorldTransferTxn> _txns;
+	WorldTransferEventBatch _events;
 	TransferId _nextTransferId{ 1 };
 };
 

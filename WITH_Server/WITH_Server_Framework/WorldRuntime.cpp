@@ -340,8 +340,10 @@ bool WorldRuntime::BuildTransferContext(
 		}
 
 		Entity rootEntity = Entity::Null();
-		if (!_transferBinding->TryResolveRootEntity(sessionId, rootEntity) ||
+		NetId rootNetId = NetId::Invalid();
+		if (!_transferBinding->TryResolveRootEntity(sessionId, rootEntity, rootNetId) ||
 			rootEntity.IsNull() ||
+			!rootNetId.IsValid() ||
 			!sourceView.IsAlive(rootEntity))
 		{
 			MarkFault(
@@ -353,6 +355,7 @@ bool WorldRuntime::BuildTransferContext(
 		TransferEntitySnapshot entitySnapshot;
 		entitySnapshot.sessionId = sessionId;
 		entitySnapshot.sourceEntity = rootEntity;
+		entitySnapshot.netId = rootNetId;
 
 		for (const IWorldTransferSerializer* serializer : _transferProfile->Serializers())
 		{
@@ -364,18 +367,24 @@ bool WorldRuntime::BuildTransferContext(
 				return false;
 			}
 
-			TransferComponentSnapshot componentSnapshot;
-			componentSnapshot.typeId = serializer->GetComponentTypeId();
+			TransferPayloadSnapshot payloadSnapshot;
+			payloadSnapshot.serializerId = serializer->GetSerializerId();
 
-			if (!serializer->Export(sourceView, rootEntity, componentSnapshot.bytes))
+			const WorldTransferExportContext exportContext{
+				.sourceView = sourceView,
+				.sessionId = sessionId,
+				.sourceEntity = rootEntity,
+				.netId = rootNetId
+			};
+			if (!serializer->Export(exportContext, payloadSnapshot.bytes))
 			{
 				MarkFault(
 					WorldRuntimeFaultCode::TransferBuildFailed,
-					"BuildTransferContext failed while exporting a transfer component snapshot.");
+					"BuildTransferContext failed while exporting a transfer payload snapshot.");
 				return false;
 			}
 
-			entitySnapshot.components.push_back(std::move(componentSnapshot));
+			entitySnapshot.payloads.push_back(std::move(payloadSnapshot));
 		}
 
 		contextSessionIds.push_back(sessionId);
@@ -388,9 +397,9 @@ bool WorldRuntime::BuildTransferContext(
 
 bool WorldRuntime::ImportTransferContext(
 	const ITransferContext& context,
-	std::vector<uint32_t>& outImportedSessionIds)
+	std::vector<ImportedTransferEntity>& outImportedEntities)
 {
-	outImportedSessionIds.clear();
+	outImportedEntities.clear();
 
 	if (_lifecycleState != WorldRuntimeLifecycleState::Running || IsShutdown() || IsFaulted())
 	{
@@ -460,20 +469,28 @@ bool WorldRuntime::ImportTransferContext(
 			return false;
 		}
 
-		std::unordered_set<ComponentTypeId> seenComponentTypeIds;
-		seenComponentTypeIds.reserve(entitySnapshot.components.size());
-
-		for (const TransferComponentSnapshot& componentSnapshot : entitySnapshot.components)
+		if (!entitySnapshot.netId.IsValid())
 		{
-			if (!seenComponentTypeIds.insert(componentSnapshot.typeId).second)
+			MarkFault(
+				WorldRuntimeFaultCode::TransferImportFailed,
+				"ImportTransferContext requires a valid transfer net id.");
+			return false;
+		}
+
+		std::unordered_set<WorldTransferSerializerId> seenSerializerIds;
+		seenSerializerIds.reserve(entitySnapshot.payloads.size());
+
+		for (const TransferPayloadSnapshot& payloadSnapshot : entitySnapshot.payloads)
+		{
+			if (!seenSerializerIds.insert(payloadSnapshot.serializerId).second)
 			{
 				MarkFault(
 					WorldRuntimeFaultCode::TransferImportFailed,
-					"ImportTransferContext received duplicate component snapshots for one entity.");
+					"ImportTransferContext received duplicate payload snapshots for one entity.");
 				return false;
 			}
 
-			if (_transferProfile->Find(componentSnapshot.typeId) == nullptr)
+			if (_transferProfile->Find(payloadSnapshot.serializerId) == nullptr)
 			{
 				MarkFault(
 					WorldRuntimeFaultCode::TransferImportFailed,
@@ -483,7 +500,7 @@ bool WorldRuntime::ImportTransferContext(
 		}
 	}
 
-	outImportedSessionIds.reserve(sessionIds.size());
+	outImportedEntities.reserve(sessionIds.size());
 
 	for (const TransferEntitySnapshot& entitySnapshot : entities)
 	{
@@ -497,10 +514,10 @@ bool WorldRuntime::ImportTransferContext(
 			return false;
 		}
 
-		for (const TransferComponentSnapshot& componentSnapshot : entitySnapshot.components)
+		for (const TransferPayloadSnapshot& payloadSnapshot : entitySnapshot.payloads)
 		{
 			const IWorldTransferSerializer* serializer =
-				_transferProfile->Find(componentSnapshot.typeId);
+				_transferProfile->Find(payloadSnapshot.serializerId);
 			if (serializer == nullptr)
 			{
 				MarkFault(
@@ -509,11 +526,18 @@ bool WorldRuntime::ImportTransferContext(
 				return false;
 			}
 
-			if (!serializer->Import(*this, targetEntity, componentSnapshot.bytes) || IsFaulted())
+			const WorldTransferImportContext importContext{
+				.targetRuntime = *this,
+				.sessionId = sessionId,
+				.sourceEntity = entitySnapshot.sourceEntity,
+				.targetEntity = targetEntity,
+				.netId = entitySnapshot.netId
+			};
+			if (!serializer->Import(importContext, payloadSnapshot.bytes) || IsFaulted())
 			{
 				MarkFault(
 					WorldRuntimeFaultCode::TransferImportFailed,
-					"ImportTransferContext failed while importing a transfer component snapshot.");
+					"ImportTransferContext failed while importing a transfer payload snapshot.");
 				return false;
 			}
 		}
@@ -527,7 +551,12 @@ bool WorldRuntime::ImportTransferContext(
 			return false;
 		}
 
-		outImportedSessionIds.push_back(sessionId);
+		ImportedTransferEntity imported{};
+		imported.sessionId = sessionId;
+		imported.sourceEntity = entitySnapshot.sourceEntity;
+		imported.targetEntity = targetEntity;
+		imported.netId = entitySnapshot.netId;
+		outImportedEntities.push_back(imported);
 	}
 
 	return true;
@@ -633,10 +662,10 @@ bool WorldRuntime::ReleaseTransferContext(
 
 bool WorldRuntime::RollbackImportedTransferContext(
 	const ITransferContext& context,
-	const std::vector<uint32_t>& importedSessionIds)
+	const std::vector<ImportedTransferEntity>& importedEntities)
 {
 	(void)context;
-	(void)importedSessionIds;
+	(void)importedEntities;
 
 	MarkFault(
 		WorldRuntimeFaultCode::TransferRollbackFailed,

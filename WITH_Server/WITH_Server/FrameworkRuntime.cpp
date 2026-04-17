@@ -5,11 +5,11 @@
 #include "ExecutionGraphBuilder.h"
 #include "ExecutionOps.h"
 #include "ExecutionSourceTypes.h"
+#include "FrameworkFrameEventHarvester.h"
 #include "IWorldDefinitionProvider.h"
 #include "IWorldInstanceFactory.h"
 #include "NetIdRegistry.h"
 #include "PresenceManager.h"
-#include "RepComponent.h"
 #include "TaskExecutor.h"
 #include "WorldAdmissionService.h"
 #include "WorldDefinitionBootstrap.h"
@@ -18,6 +18,7 @@
 #include "WorldInstanceRecord.h"
 #include "WorldManager.h"
 #include "WorldRegistry.h"
+#include "WorldTransferRequest.h"
 #include "WorldTransferProfileRegistry.h"
 #include "WorldTransferService.h"
 
@@ -25,10 +26,15 @@ struct FrameworkRuntime::Impl
 {
 	explicit Impl(
 		IWorldInstanceFactory& factory,
-		const Config& config)
+		const Config& config,
+		const IWorldTransferBinding* transferBinding)
 		: transferProfileRegistry()
 		, executionModelRegistry()
-		, worldRegistry(factory, executionModelRegistry, transferProfileRegistry)
+		, worldRegistry(
+			factory,
+			executionModelRegistry,
+			transferProfileRegistry,
+			transferBinding)
 		, worldManager(worldRegistry)
 		, presenceManager()
 		, admissionService(worldManager, presenceManager)
@@ -98,7 +104,10 @@ bool FrameworkRuntime::Initialize(const BootstrapParams& params)
 		return false;
 	}
 
-	_impl = std::make_unique<Impl>(*params.worldFactory, _config);
+	_impl = std::make_unique<Impl>(
+		*params.worldFactory,
+		_config,
+		params.transferBinding);
 
 	if (!_impl->taskExecutor.Initialize(_config.executorWorkerCount))
 	{
@@ -174,8 +183,153 @@ bool FrameworkRuntime::RunFrame(const FrameParams& params, FrameResult& outResul
 	outResult.executed = schedulerResult.executed;
 	outResult.selectedWorldCount = schedulerResult.selectedWorldCount;
 	outResult.failureReason = schedulerResult.failureReason;
-	HarvestFrameEvents(outResult.events);
+	FrameworkFrameEventHarvester::Harvest(
+		_impl->worldManager,
+		_impl->worldRegistry,
+		_impl->netIdRegistry,
+		outResult.events);
 	return outResult.success;
+}
+
+void FrameworkRuntime::DrainWorldTransferEvents(WorldTransferEventBatch& outEvents)
+{
+	outEvents.Clear();
+
+	if (!_impl)
+	{
+		return;
+	}
+
+	_impl->transferService.DrainEvents(outEvents);
+}
+
+bool FrameworkRuntime::AttachPresenceToWorld(
+	SessionId sessionId,
+	WorldId worldId,
+	double nowSec)
+{
+	if (!_impl || sessionId == 0 || !worldId.IsValid())
+	{
+		return false;
+	}
+
+	WorldInstanceRecord* targetRecord =
+		_impl->worldManager.FindRecord(worldId);
+	if (targetRecord == nullptr)
+	{
+		return false;
+	}
+
+	const PresenceRecord* existing =
+		_impl->presenceManager.FindBySessionId(sessionId);
+	if (existing != nullptr && existing->IsTransfering())
+	{
+		return false;
+	}
+
+	const bool alreadyActiveInTarget =
+		existing != nullptr &&
+		existing->IsActiveInWorld(worldId);
+	const bool moveFromActiveWorld =
+		existing != nullptr &&
+		existing->state == PresenceStage::Active &&
+		existing->currentWorldId.IsValid() &&
+		existing->currentWorldId != worldId;
+
+	WorldInstanceRecord* previousRecord = nullptr;
+	if (moveFromActiveWorld)
+	{
+		previousRecord =
+			_impl->worldManager.FindRecord(existing->currentWorldId);
+		if (previousRecord == nullptr || previousRecord->activePlayers == 0)
+		{
+			return false;
+		}
+	}
+
+	if (!_impl->presenceManager.AttachToWorld(sessionId, worldId, nowSec))
+	{
+		return false;
+	}
+
+	if (moveFromActiveWorld)
+	{
+		--previousRecord->activePlayers;
+	}
+
+	if (!alreadyActiveInTarget)
+	{
+		++targetRecord->activePlayers;
+	}
+
+	return true;
+}
+
+bool FrameworkRuntime::RemovePresence(SessionId sessionId, double nowSec)
+{
+	if (!_impl || sessionId == 0)
+	{
+		return false;
+	}
+
+	const PresenceRecord* existing =
+		_impl->presenceManager.FindBySessionId(sessionId);
+	const bool wasActive =
+		existing != nullptr &&
+		existing->state == PresenceStage::Active &&
+		existing->currentWorldId.IsValid();
+
+	WorldInstanceRecord* previousRecord = nullptr;
+	if (wasActive)
+	{
+		previousRecord =
+			_impl->worldManager.FindRecord(existing->currentWorldId);
+		if (previousRecord == nullptr || previousRecord->activePlayers == 0)
+		{
+			return false;
+		}
+	}
+
+	if (!_impl->presenceManager.RemovePresence(sessionId, nowSec))
+	{
+		return false;
+	}
+
+	if (previousRecord != nullptr)
+	{
+		--previousRecord->activePlayers;
+	}
+
+	return true;
+}
+
+TransferId FrameworkRuntime::RequestWorldTransfer(
+	std::span<const SessionId> sessionIds,
+	WorldId sourceWorldId,
+	WorldDefId targetWorldDefId,
+	uint64_t instanceKey,
+	PartyId partyId,
+	bool allowFallback,
+	double nowSec)
+{
+	if (!_impl ||
+		sessionIds.empty() ||
+		!sourceWorldId.IsValid() ||
+		targetWorldDefId == WorldDefId::None)
+	{
+		return 0;
+	}
+
+	WorldTransferRequest request{};
+	request.sessionIds.assign(sessionIds.begin(), sessionIds.end());
+	request.sourceWorldId = sourceWorldId;
+	request.target.targetWorldDefId = targetWorldDefId;
+	request.target.instanceKey = instanceKey;
+	request.partyId = partyId;
+	request.allowFallback = allowFallback;
+	request.createdAtSec = nowSec;
+
+	return _impl->transferService.EnqueueRequest(request, nowSec);
 }
 
 NetId FrameworkRuntime::AllocateNetId()
@@ -388,88 +542,6 @@ bool FrameworkRuntime::BootstrapDefinitions(const BootstrapParams& params)
 		*params.definitionProvider,
 		_impl->executionSourceRegistry,
 		_impl->executionModelRegistry,
+		_impl->transferProfileRegistry,
 		_impl->worldRegistry);
-}
-
-void FrameworkRuntime::HarvestFrameEvents(FrameResult::FrameEvents& outEvents)
-{
-	outEvents.Clear();
-
-	if (!_impl)
-	{
-		return;
-	}
-
-	for (WorldId worldId : _impl->worldManager.GetRunnableWorldIds())
-	{
-		WorldInstance* world = _impl->worldRegistry.FindWorld(worldId);
-		if (world == nullptr)
-		{
-			continue;
-		}
-
-		WorldRuntime& runtime = world->GetRuntime();
-		const ECSView view = runtime.MakeView();
-		for (const WorldLifecycleCommand& command : runtime.LifecycleOutbox())
-		{
-			switch (command.kind) {
-			case WorldLifecycleCommandKind::EntitySpawned:
-			{
-				if (!view.HasComponent<ReplicatedTag>(command.entity))
-				{
-					break;
-				}
-
-				NetId netId = _impl->netIdRegistry.FindNetId(worldId, command.entity);
-				if (!netId.IsValid())
-				{
-					netId = _impl->netIdRegistry.Allocate();
-					if (!netId.IsValid())
-					{
-						break;
-					}
-
-					if (!_impl->netIdRegistry.BindEntity(netId, worldId, command.entity))
-					{
-						_impl->netIdRegistry.Free(netId);
-						break;
-					}
-				}
-
-				outEvents.spawns.push_back(
-					FrameResult::EntitySpawnEvent{
-						worldId,
-						command.entity,
-						netId
-					});
-				break;
-			}
-
-			case WorldLifecycleCommandKind::EntityDespawned:
-			{
-				const NetId netId = _impl->netIdRegistry.FindNetId(worldId, command.entity);
-				if (!netId.IsValid())
-				{
-					break;
-				}
-
-				outEvents.despawns.push_back(
-					FrameResult::EntityDespawnEvent{
-						worldId,
-						command.entity,
-						netId
-					});
-
-				(void)_impl->netIdRegistry.UnbindEntity(netId);
-				_impl->netIdRegistry.Free(netId);
-				break;
-			}
-
-			default:
-				break;
-			}
-		}
-
-		runtime.ClearLifecycleOutbox();
-	}
 }

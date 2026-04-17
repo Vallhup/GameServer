@@ -7,12 +7,16 @@
 
 #include "Entity.h"
 #include "NetIdRegistry.h"
+#include "Session.h"
 #include "WorldId.h"
 #include "WorldContentIds.h"
+#include "WorldIds.h"
 #include "WorldScheduler.h"
+#include "WorldTransferEvents.h"
 
 class IWorldInstanceFactory;
 class IWorldDefinitionProvider;
+class IWorldTransferBinding;
 class WorldInstance;
 struct WorldInstanceRecord;
 
@@ -28,6 +32,7 @@ public:
 	{
 		IWorldInstanceFactory* worldFactory{ nullptr };
 		const IWorldDefinitionProvider* definitionProvider{ nullptr };
+		const IWorldTransferBinding* transferBinding{ nullptr };
 	};
 
 	struct FrameParams
@@ -89,6 +94,22 @@ public:
 
 	bool TickServices(double nowSec, double dtSec);
 	bool RunFrame(const FrameParams& params, FrameResult& outResult);
+	void DrainWorldTransferEvents(WorldTransferEventBatch& outEvents);
+
+	bool AttachPresenceToWorld(
+		SessionId sessionId,
+		WorldId worldId,
+		double nowSec);
+	bool RemovePresence(SessionId sessionId, double nowSec);
+
+	TransferId RequestWorldTransfer(
+		std::span<const SessionId> sessionIds,
+		WorldId sourceWorldId,
+		WorldDefId targetWorldDefId,
+		uint64_t instanceKey,
+		PartyId partyId,
+		bool allowFallback,
+		double nowSec);
 
 	NetId AllocateNetId();
 	void FreeNetId(NetId netId);
@@ -124,7 +145,6 @@ private:
 	struct Impl;
 
 	bool BootstrapDefinitions(const BootstrapParams& params);
-	void HarvestFrameEvents(FrameResult::FrameEvents& outEvents);
 
 private:
 	Config _config;
