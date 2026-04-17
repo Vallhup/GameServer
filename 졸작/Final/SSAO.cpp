@@ -78,8 +78,8 @@ void SSAO::GenerateSampleKernel(ID3D12Device* device)
 	}
 
 	ssaoConstant.noiseScale = XMFLOAT2(WinSize.x / 2.0f / 4.0f, WinSize.y / 2.0f / 4.0f);
-	ssaoConstant.samplingRadius = 0.5f;
-	ssaoConstant.ssaoBias = 0.025f;
+	ssaoConstant.samplingRadius = 0.3f;
+	ssaoConstant.ssaoBias = 0.03f;
 
 	ssaoCB = make_unique<UploadBuffer>();
 	ssaoCB->Initialize(device, sizeof(SSAOConstants));
