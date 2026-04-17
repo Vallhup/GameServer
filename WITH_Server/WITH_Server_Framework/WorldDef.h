@@ -185,3 +185,7 @@ struct WorldDef
 // Framework 내장 월드 정의 팩토리.
 // 실행 모델 키는 호출 측(서버/bootstrap)이 주입한다.
 WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey);
+WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey);
+WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey);
+WorldDef CreateFinalWorldDef(WorldExecutionModelKey executionModelKey);
+WorldDef CreatePvpWorldDef(WorldExecutionModelKey executionModelKey);

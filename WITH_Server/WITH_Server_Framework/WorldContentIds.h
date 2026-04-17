@@ -24,6 +24,7 @@ enum class SpawnSetId : uint8_t
 
 using WorldTransferProfileId = uint16_t;
 constexpr WorldTransferProfileId InvalidWorldTransferProfileId = 0;
+constexpr WorldTransferProfileId PlayerCharacterWorldTransferProfileId = 1;
 
 using WorldExecutionModelKey = uint32_t;
 constexpr WorldExecutionModelKey InvalidWorldExecutionModelKey = 0;
