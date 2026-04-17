@@ -1,4 +1,4 @@
 #pragma once
 
 bool RunServerAppSmokeTest();
-bool RunServerAppLoginSpawnFlowTest();
+bool RunWorldTransitionDebugSmokeTest();

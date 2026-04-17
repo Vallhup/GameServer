@@ -9,7 +9,7 @@
 #include "FrameworkRuntime.h"
 #include "Session.h"
 
-// TODO : ¼­¹ö -> Å¬¶ó -> title -> esc ²ô±â -> ´Ù½Ã Å¬¶ó Å°¸é ÅÍÁü
+// TODO : ì„œë²„ -> í´ë¼ -> title -> esc ë„ê¸° -> ë‹¤ì‹œ í´ë¼ í‚¤ë©´ í„°ì§
 
 enum class EntryFlowStage : uint8_t
 {

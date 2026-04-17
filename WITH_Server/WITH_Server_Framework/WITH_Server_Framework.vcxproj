@@ -165,7 +165,6 @@
   <ItemGroup>
     <ClInclude Include="AdmissionTypes.h" />
     <ClInclude Include="ExecutionGraphBuildPolicy.h" />
-    <ClInclude Include="DefaultWorldTransferSerializer.h" />
     <ClInclude Include="FrameworkLog.h" />
     <ClInclude Include="Library\Detour\DetourAlloc.h" />
     <ClInclude Include="Library\Detour\DetourAssert.h" />
@@ -242,6 +241,7 @@
     <ClInclude Include="WorldRuntimeTypes.h" />
     <ClInclude Include="WorldTargetSpec.h" />
     <ClInclude Include="WorldTransferContext.h" />
+    <ClInclude Include="WorldTransferEvents.h" />
     <ClInclude Include="WorldTransferProfile.h" />
     <ClInclude Include="WorldTransferProfileRegistry.h" />
     <ClInclude Include="WorldTransferRequest.h" />

@@ -197,6 +197,7 @@
     <ClCompile Include="ECS\System\Phase8\FinalizePostCommitStateSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.cpp" />
     <ClCompile Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.cpp" />
+    <ClCompile Include="FrameworkFrameEventHarvester.cpp" />
     <ClCompile Include="FrameworkRuntime.cpp" />
     <ClCompile Include="GameServerNetworkService.cpp" />
     <ClCompile Include="GameSendBufferManager.cpp" />
@@ -214,6 +215,7 @@
     <ClCompile Include="NormalReactionPolicy.cpp" />
     <ClCompile Include="PlayerCommand.cpp" />
     <ClCompile Include="PlayerEntryService.cpp" />
+    <ClCompile Include="PlayerCharacterTransferSerializer.cpp" />
     <ClCompile Include="Aspect\AIControlAspect.cpp" />
     <ClCompile Include="Aspect\BaseCombatantAspect.cpp" />
     <ClCompile Include="Aspect\BossPhaseAspect.cpp" />
@@ -233,7 +235,15 @@
     </ClCompile>
     <ClCompile Include="ServerApp.cpp" />
     <ClCompile Include="ServerAppTest.cpp" />
+    <ClCompile Include="ServerDirtyReplicationService.cpp" />
+    <ClCompile Include="ServerFrameEventDispatcher.cpp" />
+    <ClCompile Include="ServerPacketStager.cpp" />
+    <ClCompile Include="ServerPathResolver.cpp" />
+    <ClCompile Include="ServerPlayerControlBinding.cpp" />
+    <ClCompile Include="ServerReplicationSnapshot.cpp" />
     <ClCompile Include="ServerWorldBootstrap.cpp" />
+    <ClCompile Include="ServerWorldTransferCommitter.cpp" />
+    <ClCompile Include="ServerWorldTransferBinding.cpp" />
     <ClCompile Include="SessionBindingRegistry.cpp" />
     <ClCompile Include="GameServerNetworkListener.cpp" />
     <ClCompile Include="Session.cpp" />
@@ -284,6 +294,7 @@
     <ClInclude Include="ECS\System\Phase8\FinalizePostCommitStateSystem.h" />
     <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h" />
     <ClInclude Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.h" />
+    <ClInclude Include="FrameworkFrameEventHarvester.h" />
     <ClInclude Include="FrameworkRuntime.h" />
     <ClInclude Include="IAICombatActionPolicy.h" />
     <ClInclude Include="IAIMovementPolicy.h" />
@@ -319,6 +330,7 @@
     <ClInclude Include="NormalReactionPolicy.h" />
     <ClInclude Include="PlayerCommand.h" />
     <ClInclude Include="PlayerEntryService.h" />
+    <ClInclude Include="PlayerCharacterTransferSerializer.h" />
     <ClInclude Include="Aspect\AIControlAspect.h" />
     <ClInclude Include="Aspect\BaseCombatantAspect.h" />
     <ClInclude Include="Aspect\BossPhaseAspect.h" />
@@ -334,7 +346,15 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="ServerApp.h" />
     <ClInclude Include="ServerAppTest.h" />
+    <ClInclude Include="ServerDirtyReplicationService.h" />
+    <ClInclude Include="ServerFrameEventDispatcher.h" />
+    <ClInclude Include="ServerPacketStager.h" />
+    <ClInclude Include="ServerPathResolver.h" />
+    <ClInclude Include="ServerPlayerControlBinding.h" />
+    <ClInclude Include="ServerReplicationSnapshot.h" />
     <ClInclude Include="ServerWorldBootstrap.h" />
+    <ClInclude Include="ServerWorldTransferCommitter.h" />
+    <ClInclude Include="ServerWorldTransferBinding.h" />
     <ClInclude Include="SessionBindingRegistry.h" />
     <ClInclude Include="GameServerNetworkListener.h" />
     <ClInclude Include="Session.h" />

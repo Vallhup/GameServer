@@ -13,6 +13,7 @@
 #include "PlayerEntryService.h"
 #include "SessionBindingRegistry.h"
 #include "ServerWorldBootstrap.h"
+#include "ServerWorldTransferBinding.h"
 
 class ServerApp final {
 public:
@@ -47,6 +48,19 @@ public:
 	uint64_t TickCount() const noexcept { return _tickCount; }
 	const AnimationRegistry& GetAnimationRegistry() const noexcept { return _animationRegistry; }
 
+	TransferId RequestSessionWorldTransfer(
+		SessionId sessionId,
+		WorldDefId targetWorldDefId,
+		uint64_t instanceKey,
+		PartyId partyId,
+		bool allowFallback);
+	TransferId RequestDebugWorldTransfer(
+		SessionId sessionId,
+		WorldDefId targetWorldDefId,
+		uint64_t instanceKey = 0,
+		bool allowFallback = true);
+	TransferId RequestDebugTransferToVillage(SessionId sessionId);
+
 private:
 	bool InitializeFrameworkRuntime();
 	bool InitializeNetworkRuntime();
@@ -59,8 +73,6 @@ private:
 	void DrainInboundCommands();
 	void ProcessInboundMessages();
 	void RunWorldFrames(double dtSec);
-	void FinalizeFrameEvents(const FrameworkRuntime::FrameResult& frameResult);
-	void BuildReplication();
 	void FlushOutbound();
 
 private:
@@ -78,6 +90,7 @@ private:
 	NetworkRuntime _network;
 	WorldId _startupWorldId{};
 	SessionBindingRegistry _sessionBindings;
+	ServerWorldTransferBinding _transferBinding;
 	PlayerEntryService _playerEntryService;
 	InboundMessageProcessor _inboundProcessor;
 	std::vector<InboundMessage> _inboundMessages;

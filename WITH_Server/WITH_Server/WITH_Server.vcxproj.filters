@@ -68,6 +68,9 @@
     <ClCompile Include="PlayerEntryService.cpp">
       <Filter>App</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerCharacterTransferSerializer.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
     <ClCompile Include="PlayerCommand.cpp">
       <Filter>App</Filter>
     </ClCompile>
@@ -216,6 +219,33 @@
     <ClCompile Include="ImpCombatActionPolicy.cpp">
       <Filter>FSM\NormalMonster\Policy</Filter>
     </ClCompile>
+    <ClCompile Include="ServerPacketStager.cpp">
+      <Filter>Utility\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerPathResolver.cpp">
+      <Filter>Utility\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerPlayerControlBinding.cpp">
+      <Filter>Utility\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerReplicationSnapshot.cpp">
+      <Filter>Utility\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerDirtyReplicationService.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerFrameEventDispatcher.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerWorldTransferCommitter.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerWorldTransferBinding.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameworkFrameEventHarvester.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServerNetworkService.h">
@@ -240,6 +270,9 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="PlayerEntryService.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCharacterTransferSerializer.h">
       <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="PlayerCommand.h">
@@ -521,6 +554,33 @@
     </ClInclude>
     <ClInclude Include="ImpCombatActionPolicy.h">
       <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerPacketStager.h">
+      <Filter>Utility\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerPathResolver.h">
+      <Filter>Utility\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerPlayerControlBinding.h">
+      <Filter>Utility\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerReplicationSnapshot.h">
+      <Filter>Utility\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerDirtyReplicationService.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerFrameEventDispatcher.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerWorldTransferCommitter.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerWorldTransferBinding.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameworkFrameEventHarvester.h">
+      <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

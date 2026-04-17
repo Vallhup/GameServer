@@ -262,9 +262,6 @@
     <ClInclude Include="ExecutionGraphBuildPolicy.h">
       <Filter>03_Execution\04_GraphBuilder</Filter>
     </ClInclude>
-    <ClInclude Include="DefaultWorldTransferSerializer.h">
-      <Filter>02_World\06_Transfer</Filter>
-    </ClInclude>
     <ClInclude Include="TaskExecutor.h">
       <Filter>03_Execution\05_TaskExecutor</Filter>
     </ClInclude>
@@ -272,6 +269,9 @@
       <Filter>03_Execution\05_TaskExecutor</Filter>
     </ClInclude>
     <ClInclude Include="WorldTransferContext.h">
+      <Filter>02_World\06_Transfer</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldTransferEvents.h">
       <Filter>02_World\06_Transfer</Filter>
     </ClInclude>
     <ClInclude Include="WorldTransferProfile.h">
