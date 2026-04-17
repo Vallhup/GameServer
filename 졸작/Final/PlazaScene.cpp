@@ -441,6 +441,40 @@ void PlazaScene::CreateImpObject()
 	AddGameObject(impObject);
 }
 
+void PlazaScene::CreateDemonStrikerObject()
+{
+	demonStrikerObject = make_shared<GameObject>();
+	demonStrikerObject->SetId(-1);
+	auto mesh = demonStrikerObject->AddComponent<Mesh>();
+	auto transform = demonStrikerObject->AddComponent<Transform>();
+	auto animator = demonStrikerObject->AddComponent<Animator>();
+	auto animMachine = demonStrikerObject->AddComponent<AnimationMachine>();
+	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker");
+
+	animMachine->SetAnimationSet(AnimationSetFactory::CreateDemonStrikerSet());
+	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
+	transform->SetRotation(0.f, 3.14f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+	AddGameObject(demonStrikerObject);
+}
+
+void PlazaScene::CreateDemonExecutionerObject()
+{
+	demonExecutionerObject = make_shared<GameObject>();
+	demonExecutionerObject->SetId(-1);
+	auto mesh = demonExecutionerObject->AddComponent<Mesh>();
+	auto transform = demonExecutionerObject->AddComponent<Transform>();
+	auto animator = demonExecutionerObject->AddComponent<Animator>();
+	auto animMachine = demonExecutionerObject->AddComponent<AnimationMachine>();
+	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");
+
+	animMachine->SetAnimationSet(AnimationSetFactory::CreateDemonExecutionerSet());
+	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
+	transform->SetRotation(0.f, 3.14f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+	AddGameObject(demonExecutionerObject);
+}
+
 void PlazaScene::CreateEffectSamples()
 {
 	struct EffectInfo {

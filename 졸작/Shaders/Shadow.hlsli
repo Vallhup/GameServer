@@ -17,24 +17,27 @@ float SampleCascadeShadow(float3 worldPos, int cascade)
         return 1.0;
 
     float currentDepth = lightSpacePos.z;
+    float refDepth = currentDepth - cascadeBias[cascade];
 
-    float shadow = 0.0f;
     float2 texelSize = 1.0 / 4096.0;
 
+    float lit = 0.0f;
+
+    [unroll]
     for (int x = -2; x <= 2; ++x)
     {
+        [unroll]
         for (int y = -2; y <= 2; ++y)
         {
             float2 offset = float2(x, y) * texelSize;
-            float shadowMapDepth = shadowMapArray.Sample(linearSampler, float3(shadowUV + offset, cascade)).r;
-
-            if ((currentDepth - cascadeBias[cascade]) > shadowMapDepth)
-                shadow += 1.0f;
+            lit += shadowMapArray.SampleCmpLevelZero(
+                shadowCmpSampler,
+                float3(shadowUV + offset, cascade),
+                refDepth);
         }
     }
 
-    shadow /= 25.0;
-    return 1.0 - shadow;
+    return lit / 25.0;
 }
 
 float CalculateShadow(float3 worldPos, float viewDepth)

@@ -34,10 +34,17 @@ protected:
 	void RequestSceneChange() override;
 
 private:
+	// ---------------------------------------------------------
+	// Temporary functions for rendering Characters and monsters
+	// ---------------------------------------------------------
 	void CreateKnightPool();
 	void CreateBossObject();
 	void CreateImpObject();
+	void CreateDemonStrikerObject();
+	void CreateDemonExecutionerObject();
 	void CreateEffectSamples();
+	// ---------------------------------------------------------
+	// ---------------------------------------------------------
 
 	float SampleHeightAt(float worldX, float worldZ) const;
 
@@ -62,6 +69,8 @@ private:
 	shared_ptr<MainCharacter> myPlayer;
 	shared_ptr<GameObject> bossObject;
 	shared_ptr<GameObject> impObject;
+	shared_ptr<GameObject> demonStrikerObject;
+	shared_ptr<GameObject> demonExecutionerObject;
 
 	vector<shared_ptr<GameObject>> effectObjects;
 
