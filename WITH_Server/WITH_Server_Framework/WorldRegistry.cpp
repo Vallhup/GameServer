@@ -1,34 +1,43 @@
 ﻿#include "pch.h"
 #include "WorldRegistry.h"
 
-WorldRegistry::WorldRegistry(IWorldInstanceFactory& factory)
-	: _factory(factory)
-{
-}
-
 WorldRegistry::WorldRegistry(
 	IWorldInstanceFactory& factory,
-	WorldExecutionModelRegistry& executionModelRegistry)
+	const IWorldTransferBinding* transferBinding)
 	: _factory(factory)
-	, _executionModelRegistry(&executionModelRegistry)
+	, _transferBinding(transferBinding)
 {
 }
 
 WorldRegistry::WorldRegistry(
 	IWorldInstanceFactory& factory,
 	WorldExecutionModelRegistry& executionModelRegistry,
-	WorldTransferProfileRegistry& transferProfileRegistry)
+	const IWorldTransferBinding* transferBinding)
 	: _factory(factory)
 	, _executionModelRegistry(&executionModelRegistry)
-	, _transferProfileRegistry(&transferProfileRegistry)
+	, _transferBinding(transferBinding)
 {
 }
 
 WorldRegistry::WorldRegistry(
 	IWorldInstanceFactory& factory,
-	WorldTransferProfileRegistry& transferProfileRegistry)
+	WorldExecutionModelRegistry& executionModelRegistry,
+	WorldTransferProfileRegistry& transferProfileRegistry,
+	const IWorldTransferBinding* transferBinding)
+	: _factory(factory)
+	, _executionModelRegistry(&executionModelRegistry)
+	, _transferProfileRegistry(&transferProfileRegistry)
+	, _transferBinding(transferBinding)
+{
+}
+
+WorldRegistry::WorldRegistry(
+	IWorldInstanceFactory& factory,
+	WorldTransferProfileRegistry& transferProfileRegistry,
+	const IWorldTransferBinding* transferBinding)
 	: _factory(factory)
 	, _transferProfileRegistry(&transferProfileRegistry)
+	, _transferBinding(transferBinding)
 {
 }
 
@@ -125,6 +134,7 @@ WorldInstance* WorldRegistry::CreateWorld(const WorldDef& def, uint64_t instance
 	params.def = &def;
 	params.executionModel = *executionModel;
 	params.transferProfile = transferProfile;
+	params.transferBinding = _transferBinding;
 	params.impl = std::move(impl);
 
 	auto instance = std::make_unique<WorldInstance>(std::move(params));

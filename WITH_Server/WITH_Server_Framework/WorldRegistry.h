@@ -10,19 +10,26 @@
 #include "WorldExecutionModelTypes.h"
 #include "WorldTransferProfileRegistry.h"
 
+class IWorldTransferBinding;
+
 class WorldRegistry final {
 public:
-	WorldRegistry(IWorldInstanceFactory& factory);
 	WorldRegistry(
 		IWorldInstanceFactory& factory,
-		WorldExecutionModelRegistry& executionModelRegistry);
+		const IWorldTransferBinding* transferBinding = nullptr);
 	WorldRegistry(
 		IWorldInstanceFactory& factory,
 		WorldExecutionModelRegistry& executionModelRegistry,
-		WorldTransferProfileRegistry& transferProfileRegistry);
+		const IWorldTransferBinding* transferBinding = nullptr);
 	WorldRegistry(
 		IWorldInstanceFactory& factory,
-		WorldTransferProfileRegistry& transferProfileRegistry);
+		WorldExecutionModelRegistry& executionModelRegistry,
+		WorldTransferProfileRegistry& transferProfileRegistry,
+		const IWorldTransferBinding* transferBinding = nullptr);
+	WorldRegistry(
+		IWorldInstanceFactory& factory,
+		WorldTransferProfileRegistry& transferProfileRegistry,
+		const IWorldTransferBinding* transferBinding = nullptr);
 
 	const WorldDef* FindWorldDef(WorldDefId defId) const;
 	bool RegisterWorldDef(const WorldDef& def);
@@ -42,6 +49,7 @@ private:
 	IWorldInstanceFactory& _factory;
 	WorldExecutionModelRegistry* _executionModelRegistry{ nullptr };
 	WorldTransferProfileRegistry* _transferProfileRegistry{ nullptr };
+	const IWorldTransferBinding* _transferBinding{ nullptr };
 
 	WorldIdAllocator _idAllocator;
 	std::unordered_map<WorldDefId, WorldDef> _defs;

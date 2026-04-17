@@ -1,17 +1,42 @@
 #include "pch.h"
 #include "WorldTransferProfile.h"
 
-bool WorldTransferProfile::Has(ComponentTypeId typeId) const noexcept
+bool WorldTransferProfile::Add(std::unique_ptr<IWorldTransferSerializer> serializer)
 {
-	return Find(typeId) != nullptr;
+	if (!serializer)
+		return false;
+
+	const IWorldTransferSerializer* const raw = serializer.get();
+	const WorldTransferSerializerId serializerId = raw->GetSerializerId();
+	return AddSerializerInternal(serializerId, std::move(serializer));
 }
 
-const IWorldTransferSerializer* WorldTransferProfile::Find(ComponentTypeId typeId) const noexcept
+bool WorldTransferProfile::Add(
+	WorldTransferSerializerId serializerId,
+	std::unique_ptr<IWorldTransferSerializer> serializer)
+{
+	if (!serializer)
+		return false;
+
+	return AddSerializerInternal(serializerId, std::move(serializer));
+}
+
+bool WorldTransferProfile::Has(
+	WorldTransferSerializerId serializerId) const noexcept
+{
+	return Find(serializerId) != nullptr;
+}
+
+const IWorldTransferSerializer* WorldTransferProfile::Find(
+	WorldTransferSerializerId serializerId) const noexcept
 {
 	for (const IWorldTransferSerializer* serializer : _orderedSerializers)
 	{
-		if (serializer != nullptr && serializer->GetComponentTypeId() == typeId)
+		if (serializer != nullptr &&
+			serializer->GetSerializerId() == serializerId)
+		{
 			return serializer;
+		}
 	}
 
 	return nullptr;
@@ -31,16 +56,19 @@ void WorldTransferProfile::Clear()
 }
 
 bool WorldTransferProfile::AddSerializerInternal(
-	ComponentTypeId typeId,
+	WorldTransferSerializerId serializerId,
 	std::unique_ptr<IWorldTransferSerializer> serializer)
 {
 	if (!serializer)
 		return false;
 
-	if (serializer->GetComponentTypeId() != typeId)
+	if (serializerId == InvalidWorldTransferSerializerId)
 		return false;
 
-	if (Has(typeId))
+	if (serializer->GetSerializerId() != serializerId)
+		return false;
+
+	if (Has(serializerId))
 		return false;
 
 	IWorldTransferSerializer* raw = serializer.get();
