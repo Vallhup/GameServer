@@ -6,8 +6,8 @@ class ApplyPlayerCommandSystem final : public System {
 	static const SystemMeta kMeta;
 
 public:
-	// ÇöÀç WorldCommand´Â »ç½Ç»ó PlayerCommand ¹Û¿¡ ¾øÀ½
-	// MonsterAICommand±îÁö WorldCommand¿¡ Æ÷ÇÔ½ÃÅ°°í ¸ÅÇÎ Å×ÀÌºí ¸¸µé¾î¼­ Phase 1¿¡¼­ Ã³¸®ÇÒ ¼ö ÀÖµµ·Ï
+	// í˜„ì¬ WorldCommandëŠ” ì‚¬ì‹¤ìƒ PlayerCommand ë°–ì— ì—†ìŒ
+	// MonsterAICommandê¹Œì§€ WorldCommandì— í¬í•¨ì‹œí‚¤ê³  ë§¤í•‘ í…Œì´ë¸” ë§Œë“¤ì–´ì„œ Phase 1ì—ì„œ ì²˜ë¦¬í•  ìˆ˜ ìˆë„ë¡
 	void Execute(SystemContext& ctx) override;
 	const SystemMeta& Meta() const override { return kMeta; }
 };

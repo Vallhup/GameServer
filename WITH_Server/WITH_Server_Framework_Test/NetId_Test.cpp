@@ -8,7 +8,7 @@
 #pragma comment(lib, "Asio_Network_Library.lib")
 
 // ------------------------
-// Å×½ºÆ® À¯Æ¿
+// í…ŒìŠ¤íŠ¸ ìœ í‹¸
 // ------------------------
 static void ExpectTrue(bool v) { assert(v); }
 static void ExpectFalse(bool v) { assert(!v); }
@@ -17,30 +17,30 @@ static void ExpectNull(Entity e) { assert(e.IsNull()); }
 static void ExpectEq(Entity a, Entity b) { assert(a == b); }
 
 // ------------------------
-// Å×½ºÆ® 1) Invalid Ã³¸®
+// í…ŒìŠ¤íŠ¸ 1) Invalid ì²˜ë¦¬
 // ------------------------
 static void Test_InvalidHandling(NetIdRegistry& reg)
 {
     ExpectNull(reg.FindEntity(NetId::Invalid()));
 
-    // Invalid¸¦ Free/UnbindÇØµµ Å©·¡½Ã/»óÅÂ¿À¿° ¾ø¾î¾ß ÇÔ
+    // Invalidë¥¼ Free/Unbindí•´ë„ í¬ë˜ì‹œ/ìƒíƒœì˜¤ì—¼ ì—†ì–´ì•¼ í•¨
     reg.Free(NetId::Invalid());
     ExpectFalse(reg.UnbindEntity(NetId::Invalid()));
 }
 
 // ------------------------
-// Å×½ºÆ® 2) Allocate -> Bind -> Find -> Unbind -> Free ±âº»
+// í…ŒìŠ¤íŠ¸ 2) Allocate -> Bind -> Find -> Unbind -> Free ê¸°ë³¸
 // ------------------------
 static void Test_BasicFlow(NetIdRegistry& reg)
 {
     NetId id = reg.Allocate();
     ExpectTrue(id.IsValid());
 
-    // IsAlive°¡ Á¤»ó returnÇÏ´ÂÁö °ËÁõ (±¸Çö ´©¶ôÀÌ¸é ¿©±â¼­ UB/·£´ı)
+    // IsAliveê°€ ì •ìƒ returní•˜ëŠ”ì§€ ê²€ì¦ (êµ¬í˜„ ëˆ„ë½ì´ë©´ ì—¬ê¸°ì„œ UB/ëœë¤)
     ExpectTrue(reg.IsAlive(id));
 
-    Entity e = Entity{ 1234 }; // ÇÁ·ÎÁ§Æ®¿¡ ¸Â°Ô ¼öÁ¤ (¾øÀ¸¸é ¾Æ·¡ ´ëÃ¼)
-    // ---- ´ëÃ¼(FromÀÌ ¾ø´Ù¸é):
+    Entity e = Entity{ 1234 }; // í”„ë¡œì íŠ¸ì— ë§ê²Œ ìˆ˜ì • (ì—†ìœ¼ë©´ ì•„ë˜ ëŒ€ì²´)
+    // ---- ëŒ€ì²´(Fromì´ ì—†ë‹¤ë©´):
     // Entity e{1234};
 
     ExpectTrue(reg.BindEntity(id, e));
@@ -51,12 +51,12 @@ static void Test_BasicFlow(NetIdRegistry& reg)
 
     reg.Free(id);
     ExpectFalse(reg.IsAlive(id));
-    ExpectNull(reg.FindEntity(id)); // Free ÀÌÈÄ¿¡µµ NullÀÌ¾î¾ß ¾ÈÀü
+    ExpectNull(reg.FindEntity(id)); // Free ì´í›„ì—ë„ Nullì´ì–´ì•¼ ì•ˆì „
 }
 
 // ------------------------
-// Å×½ºÆ® 3) Àç»ç¿ë + generation mismatch ¹æ¾î
-// - old netId·Î FindÇÏ¸é NullÀÌ¾î¾ß ÇÔ (´ÊÀº ÆĞÅ¶ ¹æ¾î)
+// í…ŒìŠ¤íŠ¸ 3) ì¬ì‚¬ìš© + generation mismatch ë°©ì–´
+// - old netIdë¡œ Findí•˜ë©´ Nullì´ì–´ì•¼ í•¨ (ëŠ¦ì€ íŒ¨í‚· ë°©ì–´)
 // ------------------------
 static void Test_RecycleAndGenerationMismatch(NetIdRegistry& reg)
 {
@@ -78,15 +78,15 @@ static void Test_RecycleAndGenerationMismatch(NetIdRegistry& reg)
     ExpectTrue(reg.BindEntity(id2, e2));
     ExpectEq(reg.FindEntity(id2), e2);
 
-    // ÇÙ½É: old id1´Â ¹İµå½Ã ¹«È¿·Î Ã³¸®µÇ¾î¾ß ÇÔ
+    // í•µì‹¬: old id1ëŠ” ë°˜ë“œì‹œ ë¬´íš¨ë¡œ ì²˜ë¦¬ë˜ì–´ì•¼ í•¨
     ExpectNull(reg.FindEntity(id1));
 
     reg.Free(id2);
 }
 
 // ------------------------
-// Å×½ºÆ® 4) Double Free ¹æ¾î
-// - µÎ ¹øÂ° Free°¡ free-list¸¦ ¸Á°¡¶ß¸®¸é ÀÌÈÄ Allocate¿¡¼­ Áßº¹/¿À¿°ÀÌ ¹ß»ı
+// í…ŒìŠ¤íŠ¸ 4) Double Free ë°©ì–´
+// - ë‘ ë²ˆì§¸ Freeê°€ free-listë¥¼ ë§ê°€ëœ¨ë¦¬ë©´ ì´í›„ Allocateì—ì„œ ì¤‘ë³µ/ì˜¤ì—¼ì´ ë°œìƒ
 // ------------------------
 static void Test_DoubleFree(NetIdRegistry& reg)
 {
@@ -96,10 +96,10 @@ static void Test_DoubleFree(NetIdRegistry& reg)
     reg.Free(id);
     ExpectFalse(reg.IsAlive(id));
 
-    // µÎ ¹øÂ° Free´Â ¹«½ÃµÇ¾î¾ß ÇÔ
+    // ë‘ ë²ˆì§¸ FreeëŠ” ë¬´ì‹œë˜ì–´ì•¼ í•¨
     reg.Free(id);
 
-    // ÀÌÈÄ Allocate°¡ Á¤»óÀûÀ¸·Î µ¿ÀÛÇØ¾ß ÇÔ
+    // ì´í›„ Allocateê°€ ì •ìƒì ìœ¼ë¡œ ë™ì‘í•´ì•¼ í•¨
     NetId next = reg.Allocate();
     ExpectTrue(next.IsValid());
     ExpectTrue(reg.IsAlive(next));
@@ -107,9 +107,9 @@ static void Test_DoubleFree(NetIdRegistry& reg)
 }
 
 // ------------------------
-// Å×½ºÆ® 5) Bind Á¤Ã¥ È®ÀÎ(Áßº¹ Bind¸¦ Çã¿ëÇÒÁö ¿©ºÎ)
-// ´ç½Å ±¸ÇöÀº ±×³É µ¤¾î¾²¹Ç·Î "Çã¿ë"ÀÔ´Ï´Ù.
-// - ±×·¯¸é ÃÖ¼ÒÇÑ: µ¤¾î¾´ ÈÄ Find°¡ ¸¶Áö¸· entity¸¦ ¹İÈ¯ÇØ¾ß ÇÔ
+// í…ŒìŠ¤íŠ¸ 5) Bind ì •ì±… í™•ì¸(ì¤‘ë³µ Bindë¥¼ í—ˆìš©í• ì§€ ì—¬ë¶€)
+// ë‹¹ì‹  êµ¬í˜„ì€ ê·¸ëƒ¥ ë®ì–´ì“°ë¯€ë¡œ "í—ˆìš©"ì…ë‹ˆë‹¤.
+// - ê·¸ëŸ¬ë©´ ìµœì†Œí•œ: ë®ì–´ì“´ í›„ Findê°€ ë§ˆì§€ë§‰ entityë¥¼ ë°˜í™˜í•´ì•¼ í•¨
 // ------------------------
 static void Test_DoubleBindOverwritePolicy(NetIdRegistry& reg)
 {
@@ -122,7 +122,7 @@ static void Test_DoubleBindOverwritePolicy(NetIdRegistry& reg)
     ExpectTrue(reg.BindEntity(id, a));
     ExpectEq(reg.FindEntity(id), a);
 
-    // ÇöÀç ±¸ÇöÀº overwrite
+    // í˜„ì¬ êµ¬í˜„ì€ overwrite
     ExpectTrue(reg.BindEntity(id, b));
     ExpectEq(reg.FindEntity(id), b);
 

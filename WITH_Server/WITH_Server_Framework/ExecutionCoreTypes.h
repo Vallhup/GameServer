@@ -32,16 +32,16 @@ enum class ExecNodeKind : uint8_t
 {
     None,
 
-    // simulate �迭
+    // simulate 계열
     StaticSystem,
     DynamicTask,
 
-    // commit �迭
+    // commit 계열
     StructuralApply,
     DeferredStateApply,
     PostCommitFinalize,
 
-    // post-frame �迭
+    // post-frame 계열
     LifecycleFlush,
     Reconcile,
 };

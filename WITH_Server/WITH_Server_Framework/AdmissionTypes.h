@@ -56,10 +56,10 @@ struct AdmissionReservation
 
 	WorldId targetWorldId{ WorldId::Invalid() };
 
-	// PartyOnly world¿¡¼­ ¹ß±ŞµÈ reservationÀÌ¸é 0ÀÌ ¾Æ´Ï¾î¾ß ÇÔ
+	// PartyOnly worldì—ì„œ ë°œê¸‰ëœ reservationì´ë©´ 0ì´ ì•„ë‹ˆì–´ì•¼ í•¨
 	PartyId partyId{ 0 };
 
-	// ±âº» Á¤Ã¥
+	// ê¸°ë³¸ ì •ì±…
 	// reservedSlots == request.sessionIds.size()
 	uint32_t reservedSlots{ 0 };
 
@@ -87,9 +87,9 @@ struct AdmissionReservation
 
 struct AdmissionResult
 {
-	// decision == Accepted ÀÎ °æ¿ì¿¡¸¸ reservationÀ» ½Å·ÚÇÑ´Ù.
-	// rejected¸é reservationÀº ±âº»°ª »óÅÂ¿©¾ß ÇÑ´Ù.
-	// IsAccepted() ¾øÀÌ reservationÀ» ¹Ù·Î ¾²Áö ¾Ê´Â´Ù.
+	// decision == Accepted ì¸ ê²½ìš°ì—ë§Œ reservationì„ ì‹ ë¢°í•œë‹¤.
+	// rejectedë©´ reservationì€ ê¸°ë³¸ê°’ ìƒíƒœì—¬ì•¼ í•œë‹¤.
+	// IsAccepted() ì—†ì´ reservationì„ ë°”ë¡œ ì“°ì§€ ì•ŠëŠ”ë‹¤.
 	AdmissionDecision decision{ AdmissionDecision::RejectedStage };
 	AdmissionReservation reservation;
 

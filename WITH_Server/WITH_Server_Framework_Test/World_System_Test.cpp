@@ -9,8 +9,8 @@ struct WorldDebugState {
     uint64_t postTicks = 0;
 };
 
-// ¿ùµå/·±Å¸ÀÓÀÇ ¸®¼Ò½º¿¡ WorldDebugState °°Àº °É ³Ö¾îµÎ°í ÂüÁ¶ÇÑ´Ù°í °¡Á¤
-// ¸¸¾à ResourceRegistry°¡ ¾ÆÁ÷ ¾øÀ¸¸é, ECS¿¡ ÀÓ½Ã·Î public ¸â¹ö·Î µÖµµ µË´Ï´Ù.
+// ì›”ë“œ/ëŸ°íƒ€ì„ì˜ ë¦¬ì†ŒìŠ¤ì— WorldDebugState ê°™ì€ ê±¸ ë„£ì–´ë‘ê³  ì°¸ì¡°í•œë‹¤ê³  ê°€ì •
+// ë§Œì•½ ResourceRegistryê°€ ì•„ì§ ì—†ìœ¼ë©´, ECSì— ì„ì‹œë¡œ public ë©¤ë²„ë¡œ ë‘¬ë„ ë©ë‹ˆë‹¤.
 class DebugPreSystem final : public System {
 public:
     explicit DebugPreSystem(WorldDebugState& s, ECS& e, int p = 0) : System(e, p), _s(s) {}
@@ -56,7 +56,7 @@ public:
     void Execute(const float) override
     {
         ++_s.postTicks;
-        // Ãâ·ÂÀº ³Ê¹« ¸¹ÀÌ ÇÏ¸é ¼¯ÀÌ´Ï, ¾ÆÁÖ µå¹°°Ô¸¸ ÂïÀ¸½Ê½Ã¿À.
+        // ì¶œë ¥ì€ ë„ˆë¬´ ë§ì´ í•˜ë©´ ì„ì´ë‹ˆ, ì•„ì£¼ ë“œë¬¼ê²Œë§Œ ì°ìœ¼ì‹­ì‹œì˜¤.
         if ((_s.postTicks % 300) == 0) { 
             std::cout << "[" << _name << "] pre=" << _s.preTicks
                 << " graph=" << _s.graphTicks
@@ -88,17 +88,17 @@ public:
 
     void Build(WorldRuntime& rt) override
     {
-        // ¿ùµåº° »óÅÂ
-        // (ResourceRegistry°¡ ÀÖÀ¸¸é °Å±â¿¡ ³Ö´Â °Ô ¸Â°í, ¾øÀ¸¸é Impl ¸â¹ö ÂüÁ¶·Îµµ ÃæºĞ)
+        // ì›”ë“œë³„ ìƒíƒœ
+        // (ResourceRegistryê°€ ìˆìœ¼ë©´ ê±°ê¸°ì— ë„£ëŠ” ê²Œ ë§ê³ , ì—†ìœ¼ë©´ Impl ë©¤ë²„ ì°¸ì¡°ë¡œë„ ì¶©ë¶„)
         auto& ecs = rt.GetECS();
 
-        // Pre/Graph/Post ½Ã½ºÅÛ µî·Ï
+        // Pre/Graph/Post ì‹œìŠ¤í…œ ë“±ë¡
         ecs.AddSystem<DebugPreSystem>(SystemPhase::Pre, _state, ecs, 0);
         ecs.AddSystem<DebugGraphSystem>(SystemPhase::Graph, _state, ecs, 0);
         ecs.AddSystem<DebugPostSystem>(SystemPhase::Post, _state, _name, ecs, 0);
 
-        // ¼öµ¿ ÀÇÁ¸¼º Å×½ºÆ®µµ ÇÏ°í ½ÍÀ¸¸é Graph ½Ã½ºÅÛ 2°³¸¦ ´õ ¸¸µé°í
-        // rt.AddManualDependency<A, B>(); ³ÖÀ¸¸é µË´Ï´Ù.
+        // ìˆ˜ë™ ì˜ì¡´ì„± í…ŒìŠ¤íŠ¸ë„ í•˜ê³  ì‹¶ìœ¼ë©´ Graph ì‹œìŠ¤í…œ 2ê°œë¥¼ ë” ë§Œë“¤ê³ 
+        // rt.AddManualDependency<A, B>(); ë„£ìœ¼ë©´ ë©ë‹ˆë‹¤.
     }
 
     void Execute(WorldRuntime& rt, float dt) override

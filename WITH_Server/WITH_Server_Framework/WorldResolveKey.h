@@ -24,7 +24,7 @@ namespace std
 			size_t h1 = std::hash<uint64_t>()(static_cast<uint64_t>(key.defId));
 			size_t h2 = std::hash<uint64_t>()(key.instanceKey);
 
-			// boost::hash_combine ¹æ½Ä
+			// boost::hash_combine ë°©ì‹
 			return h1 ^ (h2 + 0x9e3779b97f4a7c15ull + (h1 << 6) + (h1 >> 2));
 		}
 	};

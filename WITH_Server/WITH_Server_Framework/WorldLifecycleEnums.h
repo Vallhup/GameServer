@@ -4,38 +4,38 @@
 
 enum class WorldStage : uint8_t
 {
-	Allocated,			// registry¿¡´Â »ı¼ºµÇ¾úÁö¸¸ ¾ÆÁ÷ runtime ½ÃÀÛ Àü
-	Bootstrapping,		// init / startup Áß
-	Running,			// admission / transfer ´ë»ó °¡´É
-	Closing,			// ½Å±Ô admission ±İÁö, ±âÁ¸ ÇÃ·¹ÀÌ¾î / ÀüÀÌ Á¤¸® ´ë±â
-	DestroyPending,		// destroy Á÷Àü, »õ ÀÛ¾÷ ±İÁö
-	Destroyed,			// record´Â ³²¾Æ ÀÖ¾îµµ registry¿¡´Â ½ÇÃ¼ ¾øÀ½
-	Faulted				// ¿î¿µ ½ÇÆĞ »óÅÂ
+	Allocated,			// registryì—ëŠ” ìƒì„±ë˜ì—ˆì§€ë§Œ ì•„ì§ runtime ì‹œì‘ ì „
+	Bootstrapping,		// init / startup ì¤‘
+	Running,			// admission / transfer ëŒ€ìƒ ê°€ëŠ¥
+	Closing,			// ì‹ ê·œ admission ê¸ˆì§€, ê¸°ì¡´ í”Œë ˆì´ì–´ / ì „ì´ ì •ë¦¬ ëŒ€ê¸°
+	DestroyPending,		// destroy ì§ì „, ìƒˆ ì‘ì—… ê¸ˆì§€
+	Destroyed,			// recordëŠ” ë‚¨ì•„ ìˆì–´ë„ registryì—ëŠ” ì‹¤ì²´ ì—†ìŒ
+	Faulted				// ìš´ì˜ ì‹¤íŒ¨ ìƒíƒœ
 };
 
 enum class PresenceStage : uint8_t
 {
 	None,
-	Idle,				// ¾î¶² ¿ùµå¿¡µµ ¾ÆÁ÷ È®Á¤ ±Í¼ÓµÇÁö ¾ÊÀ½
-	Active,				// source world¿¡ Á¤»óÀûÀ¸·Î Á¸Àç Áß
-	TransferPending,	// source -> target ÀüÀÌ Áß
-	ImportedToTarget,	// target import´Â µÇ¾úÀ¸³ª source release Àü
-	Disconnected,		// ¿¬°á ²÷±èÀ¸·Î presence À¯Áö Áß
-	Removed,			// ¿ÏÀüÈ÷ Á¦°ÅµÊ
-	Failed				// º¹±¸ ºÒ°¡ ¿À·ù »óÅÂ
+	Idle,				// ì–´ë–¤ ì›”ë“œì—ë„ ì•„ì§ í™•ì • ê·€ì†ë˜ì§€ ì•ŠìŒ
+	Active,				// source worldì— ì •ìƒì ìœ¼ë¡œ ì¡´ì¬ ì¤‘
+	TransferPending,	// source -> target ì „ì´ ì¤‘
+	ImportedToTarget,	// target importëŠ” ë˜ì—ˆìœ¼ë‚˜ source release ì „
+	Disconnected,		// ì—°ê²° ëŠê¹€ìœ¼ë¡œ presence ìœ ì§€ ì¤‘
+	Removed,			// ì™„ì „íˆ ì œê±°ë¨
+	Failed				// ë³µêµ¬ ë¶ˆê°€ ì˜¤ë¥˜ ìƒíƒœ
 };
 
 enum class TransferStage : uint8_t
 {
-	Requested,				// request¸¸ Á¢¼öµÊ
-	SourceValidated,		// source world / source membership °ËÁõ ¿Ï·á
-	TargetResolved,			// target world È®Á¤
-	AdmissionReserved,		// target slot reservation ¿Ï·á
-	TransferContextBuilt,   // source snapshot È®º¸ ¿Ï·á
-	TargetImported,			// target ÂÊ import/spawn ¿Ï·á
-	SourceReleased,			// source ÂÊ release/despawn ¿Ï·á
-	Completed,				// ÀüÀÌ ¿Ï·á
-	Failed					// ½ÇÆĞ Á¾·á
+	Requested,				// requestë§Œ ì ‘ìˆ˜ë¨
+	SourceValidated,		// source world / source membership ê²€ì¦ ì™„ë£Œ
+	TargetResolved,			// target world í™•ì •
+	AdmissionReserved,		// target slot reservation ì™„ë£Œ
+	TransferContextBuilt,   // source snapshot í™•ë³´ ì™„ë£Œ
+	TargetImported,			// target ìª½ import/spawn ì™„ë£Œ
+	SourceReleased,			// source ìª½ release/despawn ì™„ë£Œ
+	Completed,				// ì „ì´ ì™„ë£Œ
+	Failed					// ì‹¤íŒ¨ ì¢…ë£Œ
 };
 
 enum class AdmissionDecision : uint8_t

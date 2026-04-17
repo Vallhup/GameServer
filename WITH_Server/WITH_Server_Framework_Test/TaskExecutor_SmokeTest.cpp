@@ -29,6 +29,7 @@
 #include "WorldManager.h"
 #include "WorldRegistry.h"
 #include "WorldScheduler.h"
+#include "WorldTransferProfileRegistry.h"
 
 namespace
 {
@@ -1311,10 +1312,12 @@ namespace
         provider.defs.push_back(def);
 
         ExecutionSourceRegistry sourceRegistry{};
+        WorldTransferProfileRegistry transferProfileRegistry{};
         const bool bootstrapOk = BootstrapWorldDefinitions(
             provider,
             sourceRegistry,
             executionModelRegistry,
+            transferProfileRegistry,
             worldRegistry);
         assert(bootstrapOk);
 

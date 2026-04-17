@@ -1,4 +1,4 @@
-#include "pch.h" // PCH ¾È ¾²¸é »èÁ¦
+#include "pch.h" // PCH ì•ˆ ì“°ë©´ ì‚­ì œ
 #include <chrono>
 #include <cstdint>
 #include <iostream>
@@ -16,7 +16,7 @@ using bench_clock = std::chrono::steady_clock;
 template<typename F>
 double BenchMs(const char* name, int iters, F&& fn)
 {
-    // ¿ö¹Ö¾÷
+    // ì›Œë°ì—…
     for (int i = 0; i < 3; ++i) fn();
 
     auto t0 = bench_clock::now();
@@ -32,38 +32,38 @@ int main()
 {
     ECS ecs;
 
-    constexpr int N = 2'000'000;   // ¿£Æ¼Æ¼ ¼ö
-    constexpr int NB = 200'000;    // B º¸À¯ ¼ö (10%)
-    constexpr int NDead = 50'000;  // Dead º¸À¯ ¼ö
+    constexpr int N = 2'000'000;   // ì—”í‹°í‹° ìˆ˜
+    constexpr int NB = 200'000;    // B ë³´ìœ  ìˆ˜ (10%)
+    constexpr int NDead = 50'000;  // Dead ë³´ìœ  ìˆ˜
 
     std::vector<Entity> es;
     es.reserve(N);
     for (int i = 0; i < N; ++i)
         es.push_back(ecs.CreateEntity());
 
-    // A´Â ÀüºÎ
+    // AëŠ” ì „ë¶€
     auto& Astore = ecs.GetStorage<A>();
     for (int i = 0; i < N; ++i) {
         Astore.AddComponent(es[i])->v = i;
     }
 
-    // B´Â ÀÏºÎ¸¸
+    // BëŠ” ì¼ë¶€ë§Œ
     auto& Bstore = ecs.GetStorage<B>();
     for (int i = 0; i < NB; ++i) {
         Bstore.AddComponent(es[i])->v = i * 3;
     }
 
-    // Dead´Â ÀÏºÎ
+    // DeadëŠ” ì¼ë¶€
     auto& Dstore = ecs.GetStorage<Dead>();
     for (int i = 0; i < NDead; ++i) {
-        Dstore.AddComponent(es[i * 2]); // ±¸Çö¿¡ ¸Â°Ô (Æ÷ÀÎÅÍ/·¹ÆÛ·±½º) ¼öÁ¤
+        Dstore.AddComponent(es[i * 2]); // êµ¬í˜„ì— ë§ê²Œ (í¬ì¸í„°/ë ˆí¼ëŸ°ìŠ¤) ìˆ˜ì •
     }
 
-    // --------- ºñ±³±º: ¼öµ¿ ·çÇÁ (B ±âÁØ) ----------
+    // --------- ë¹„êµêµ°: ìˆ˜ë™ ë£¨í”„ (B ê¸°ì¤€) ----------
     auto manual_join = [&]() {
         std::uint64_t local = 0;
-        // B°¡ ÀûÀ¸´Ï±î B dense¸¦ Á÷Á¢ µ·´Ù°í °¡Á¤(´ç½Å ComponentStorage°¡ DenseEntityAt Áö¿øÇÏ¸é ´õ ÁÁÀ½)
-        // ¿©±â¼± ViewÀÇ smallest-first¿Í µ¿ÀÏÇÑ Ã¶ÇĞ: "ÀÛÀº Ç® ±âÁØ"
+        // Bê°€ ì ìœ¼ë‹ˆê¹Œ B denseë¥¼ ì§ì ‘ ëˆë‹¤ê³  ê°€ì •(ë‹¹ì‹  ComponentStorageê°€ DenseEntityAt ì§€ì›í•˜ë©´ ë” ì¢‹ìŒ)
+        // ì—¬ê¸°ì„  Viewì˜ smallest-firstì™€ ë™ì¼í•œ ì² í•™: "ì‘ì€ í’€ ê¸°ì¤€"
         const IStorage& base = static_cast<const IStorage&>(Bstore);
         const size_t n = base.Size();
 
@@ -73,14 +73,14 @@ int main()
 
             auto* a = Astore.GetComponent(e);
             auto* b = Bstore.GetComponent(e);
-            if (!a || !b) continue; // ¹æ¾î
+            if (!a || !b) continue; // ë°©ì–´
 
             local += (std::uint64_t)a->v + (std::uint64_t)b->v;
         }
         g_sink += local;
         };
 
-    // --------- ´ë»ó: View<A,B> ----------
+    // --------- ëŒ€ìƒ: View<A,B> ----------
     auto view_join = [&]() {
         std::uint64_t local = 0;
         for (auto [e, a, b] : ecs.View<A, B>()) {
@@ -90,7 +90,7 @@ int main()
         g_sink += local;
         };
 
-    // --------- ´ë»ó: View<A,B> Exclude<Dead> ----------
+    // --------- ëŒ€ìƒ: View<A,B> Exclude<Dead> ----------
     auto view_join_ex = [&]() {
         std::uint64_t local = 0;
         for (auto [e, a, b] : ecs.View<A, B>(Exclude<Dead>{})) {
@@ -100,7 +100,7 @@ int main()
         g_sink += local;
         };
 
-    // ¹İº¹ È½¼ö: NÀÌ Å©¸é 3~10È¸¸é ÃæºĞ
+    // ë°˜ë³µ íšŸìˆ˜: Nì´ í¬ë©´ 3~10íšŒë©´ ì¶©ë¶„
     BenchMs("manual_join(B base)", 5, manual_join);
     BenchMs("view_join", 5, view_join);
     BenchMs("view_join_ex", 5, view_join_ex);

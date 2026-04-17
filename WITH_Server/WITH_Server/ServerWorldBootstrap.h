@@ -33,6 +33,9 @@ public:
 		const ExecutionSourceRegistry& sourceRegistry,
 		WorldExecutionModelRegistry& executionModelRegistry) const override;
 
+	bool RegisterTransferProfiles(
+		WorldTransferProfileRegistry& transferProfileRegistry) const override;
+
 	bool RegisterWorldDefs(
 		WorldRegistry& worldRegistry) const override;
 };

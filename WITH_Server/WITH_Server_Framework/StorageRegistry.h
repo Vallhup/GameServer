@@ -88,7 +88,7 @@ private:
 	void EnsureSlot(TypeId id);
 
 
-	// Storage »ý¼ºÀº ÃÊ±âÈ­ ´Ü°è¿¡¼­¸¸ ¼öÇà -> Data Race ¹æÁö
+	// Storage ìƒì„±ì€ ì´ˆê¸°í™” ë‹¨ê³„ì—ì„œë§Œ ìˆ˜í–‰ -> Data Race ë°©ì§€
 	bool _isFixed{ false };
 	std::vector<std::unique_ptr<IStorage>> _storages;
 };

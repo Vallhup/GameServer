@@ -816,8 +816,8 @@ namespace
         tr.Check(state.applied.load(std::memory_order_acquire) == 0,
             "command is not applied during failing execute");
 
-        // ÀÌ °Ë»ç´Â ÀÇµµÀûÀ¸·Î ¾ö°İÇÕ´Ï´Ù.
-        // ¿©±â¼­ FAILÀÌ ³ª¿À¸é '½ÇÆĞÇÑ ÇÁ·¹ÀÓÀÇ pending command°¡ ³ªÁß flush¿¡ ´©¼öµÊ'À» ¶æÇÕ´Ï´Ù.
+        // ì´ ê²€ì‚¬ëŠ” ì˜ë„ì ìœ¼ë¡œ ì—„ê²©í•©ë‹ˆë‹¤.
+        // ì—¬ê¸°ì„œ FAILì´ ë‚˜ì˜¤ë©´ 'ì‹¤íŒ¨í•œ í”„ë ˆì„ì˜ pending commandê°€ ë‚˜ì¤‘ flushì— ëˆ„ìˆ˜ë¨'ì„ ëœ»í•©ë‹ˆë‹¤.
         rt.Commands().Commit(rt);
 
         tr.Check(state.applied.load(std::memory_order_acquire) == 0,
@@ -1101,9 +1101,9 @@ namespace
         RuntimeFailState& _state;
     };
 
-    // ·ÎÄÃ ECS µî·Ï API¿¡ ¸ÂÃç ÀÌ ÇÑ ÁÙ¸¸ ¹Ù²Ù¸é µË´Ï´Ù.
-    // ¿¹: ecs.AddSystem<T>(SystemPhase::Graph, rt, args...)
-    // È¤Àº ecs.Systems().RegisterSystem<T>(...)
+    // ë¡œì»¬ ECS ë“±ë¡ APIì— ë§ì¶° ì´ í•œ ì¤„ë§Œ ë°”ê¾¸ë©´ ë©ë‹ˆë‹¤.
+    // ì˜ˆ: ecs.AddSystem<T>(SystemPhase::Graph, rt, args...)
+    // í˜¹ì€ ecs.Systems().RegisterSystem<T>(...)
     template<typename T, typename... Args>
     T* RegisterGraph(WorldRuntime& rt, Args&&... args)
     {

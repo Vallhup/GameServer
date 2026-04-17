@@ -105,7 +105,7 @@ void ThreadPool::WorkerLoop()
 
     while (true)
     {
-        // work°¡ ÀÖ´Â µ¿¾È ÃÖ´ëÇÑ drain
+        // workê°€ ìˆëŠ” ë™ì•ˆ ìµœëŒ€í•œ drain
         while (!_stopping.load())
         {
             WorkerPumpFn pump = _pump;
@@ -121,9 +121,9 @@ void ThreadPool::WorkerLoop()
             }
             catch (...)
             {
-                // poolÀº Á¤Ã¥À» ¸ğ¸¥´Ù.
-                // executor°¡ node state¸¦ ÅëÇØ ½ÇÆĞ¸¦ Á¤±ÔÈ­ÇØ¾ß ÇÏ¹Ç·Î
-                // ¿©±â¼­´Â worker¸¦ À¯ÁöÇÑ´Ù.
+                // poolì€ ì •ì±…ì„ ëª¨ë¥¸ë‹¤.
+                // executorê°€ node stateë¥¼ í†µí•´ ì‹¤íŒ¨ë¥¼ ì •ê·œí™”í•´ì•¼ í•˜ë¯€ë¡œ
+                // ì—¬ê¸°ì„œëŠ” workerë¥¼ ìœ ì§€í•œë‹¤.
                 executed = false;
             }
 

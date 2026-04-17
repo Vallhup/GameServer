@@ -12,7 +12,7 @@ public:
 		return instance;
 	}
 
-	// TODO : ObjectPool Ãß°¡
+	// TODO : ObjectPool ì¶”ê°€
 	ObjectPool<SendBuffer, 8192> sendBuffers;
 
 private:

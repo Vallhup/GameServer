@@ -42,17 +42,17 @@ private:
 	uint64_t _nextTicket{ 1 };
 	std::unordered_map<uint64_t, AdmissionReservation> _reservations;
 
-	// Á¤Ã¥°ª : ³ªÁß¿¡ config·Î ºĞ¸® °¡´É
+	// ì •ì±…ê°’ : ë‚˜ì¤‘ì— configë¡œ ë¶„ë¦¬ ê°€ëŠ¥
 	uint32_t _maxInflightTransferInPerWorld{ 1024 };
 	double _defaultReservationTtlSec{ 5.0 };
 };
 
-// reEntryEligible¸¦ ¾ğÁ¦ true/false·Î ¼¼ÆÃÇÒÁö¿¡ ´ëÇÑ ¿î¿µ Á¤Ã¥
+// reEntryEligibleë¥¼ ì–¸ì œ true/falseë¡œ ì„¸íŒ…í• ì§€ì— ëŒ€í•œ ìš´ì˜ ì •ì±…
 // 
-// Disconnected »óÅÂ¸¦ ´Ù½Ã Active·Î µÇµ¹¸®´Â ÃÖÁ¾ È®Á¤Àº
-// attach / login flow¿Í ºÙ¿©¾ß ¿Ï¼ºµÊ
+// Disconnected ìƒíƒœë¥¼ ë‹¤ì‹œ Activeë¡œ ë˜ëŒë¦¬ëŠ” ìµœì¢… í™•ì •ì€
+// attach / login flowì™€ ë¶™ì—¬ì•¼ ì™„ì„±ë¨
 // 
-// ÆÄÆ¼ ´ÜÀ§ reEntry´Â ´Ù·çÁö ¾ÊÀ½
+// íŒŒí‹° ë‹¨ìœ„ reEntryëŠ” ë‹¤ë£¨ì§€ ì•ŠìŒ
 // 
-// AdmissionReason::Login, Respawn¿¡ ´ëÇÑ presence °ËÁõ ¾øÀ½
+// AdmissionReason::Login, Respawnì— ëŒ€í•œ presence ê²€ì¦ ì—†ìŒ
 

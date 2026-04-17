@@ -6,7 +6,7 @@ enum class BuildDecision : uint8_t { Allow, Warn, Error };
 
 struct ExecutionGraphBuildPolicy
 {
-    // 1. ÀÔ·Â/±¸¼º Á¤Ã¥
+    // 1. ìž…ë ¥/êµ¬ì„± ì •ì±…
     BuildDecision emptyFrameSelection               = BuildDecision::Warn;
     BuildDecision invalidSelection                  = BuildDecision::Error;
     BuildDecision missingExecutionModel             = BuildDecision::Error;
@@ -15,7 +15,7 @@ struct ExecutionGraphBuildPolicy
     BuildDecision invalidExecutionSource            = BuildDecision::Error;
     BuildDecision sourcePhaseMismatch               = BuildDecision::Error;
 
-    // 2. dependency / graph validation Á¤Ã¥
+    // 2. dependency / graph validation ì •ì±…
     BuildDecision duplicateSourceTokenInModel       = BuildDecision::Error;
     BuildDecision invalidDependencyEdge             = BuildDecision::Error;
     BuildDecision selfDependencyEdge                = BuildDecision::Error;
@@ -24,14 +24,14 @@ struct ExecutionGraphBuildPolicy
     BuildDecision crossPhaseExplicitEdgeDisallowed  = BuildDecision::Error;
     BuildDecision samePhaseCycle                    = BuildDecision::Error;
 
-    // 3. graph shaping Á¤Ã¥
+    // 3. graph shaping ì •ì±…
     bool requireDenseScopeIds                   = true;
     bool deduplicateSamePhaseEdges              = true;
     bool allowCrossPhaseExplicitEdges           = true;
     bool materializeCrossPhaseRuntimeDeps       = false;
     // bool deduplicateCrossPhaseEdges
 
-    // 4. serial plan Á¤Ã¥
+    // 4. serial plan ì •ì±…
     bool requireContiguousSerialPlans           = true;
     bool requireSerialPhaseBucketConsistency    = true;
     bool requireSerialTopoValidity              = true;

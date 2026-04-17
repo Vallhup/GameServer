@@ -32,7 +32,7 @@ struct DBResult
 	bool ok{ false };
 	DBError error{ DBError::None };
 
-	// �α׿�
+	// 로그용
 	std::wstring msg;
 
 	/*union {

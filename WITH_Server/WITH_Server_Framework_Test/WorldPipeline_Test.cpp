@@ -23,7 +23,7 @@ public:
         _back.push_back(m);
     }
 
-    // tick boundary¿¡¼­ WorldThread°¡ È£Ãâ (Back->Front È®Á¤)
+    // tick boundaryì—ì„œ WorldThreadê°€ í˜¸ì¶œ (Back->Front í™•ì •)
     void Swap() {
         std::lock_guard<std::mutex> lock{ _mtx };
         _front.clear();
@@ -92,11 +92,11 @@ public:
     void Execute(const double) override {
         _p.steps.push_back({ _p.tick, "Graph" });
 
-        // Start´Â °°Àº tick¿¡ ¹İµå½Ã º¸ÀÓ
+        // StartëŠ” ê°™ì€ tickì— ë°˜ë“œì‹œ ë³´ì„
         assert(_frame.hasStart);
         assert(_frame.startTick == _p.tick);
 
-        // Late´Â "ÀÌÀü tick" °Í¸¸ º¸ÀÓ (tick==0ÀÌ¸é ¾øÀ½)
+        // LateëŠ” "ì´ì „ tick" ê²ƒë§Œ ë³´ì„ (tick==0ì´ë©´ ì—†ìŒ)
         if (_p.tick == 0) {
             assert(!_frame.hasLate);
         }
@@ -122,7 +122,7 @@ public:
 
     void Execute(const double) override {
         _p.steps.push_back({ _p.tick, "Post" });
-        // Æ½ µµÁß µµÂøÇÑ ÀÔ·ÂÀº Back¿¡¸¸ µé¾î°¡¾ß ÇÔ(´ÙÀ½ tickÀ¸·Î ÀÌ¿ù)
+        // í‹± ë„ì¤‘ ë„ì°©í•œ ì…ë ¥ì€ Backì—ë§Œ ë“¤ì–´ê°€ì•¼ í•¨(ë‹¤ìŒ tickìœ¼ë¡œ ì´ì›”)
         _inbox.PushBack(InboxMsg{ _p.tick, InboxKind::Late });
     }
 
@@ -177,9 +177,9 @@ int main() {
     for (uint32 t = 0; t < ticks; ++t) {
         probe.tick = t;
 
-        // tick ½ÃÀÛ Àü¿¡ µµÂøÇÑ ÀÔ·ÂÀº Back¿¡ ³Ö°í, boundary¿¡¼­ SwapÀ¸·Î È®Á¤
+        // tick ì‹œì‘ ì „ì— ë„ì°©í•œ ì…ë ¥ì€ Backì— ë„£ê³ , boundaryì—ì„œ Swapìœ¼ë¡œ í™•ì •
         inbox.PushBack(InboxMsg{ t, InboxKind::Start });
-        inbox.Swap(); // <-- ÀÌ°Ô ÇÙ½É(Æ½ °æ°è)
+        inbox.Swap(); // <-- ì´ê²Œ í•µì‹¬(í‹± ê²½ê³„)
 
         world.Update(dt);
     }

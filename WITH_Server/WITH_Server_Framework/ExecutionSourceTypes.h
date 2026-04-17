@@ -67,6 +67,6 @@ public:
     }
 
 private:
-    // TODO: ¼±Çü Å½»ö º´¸ñ ½Ã unordered_map ±â¹İÀ¸·Î ¼öÁ¤
+    // TODO: ì„ í˜• íƒìƒ‰ ë³‘ëª© ì‹œ unordered_map ê¸°ë°˜ìœ¼ë¡œ ìˆ˜ì •
     std::vector<ExecutionSourceDesc> _sources;
 };

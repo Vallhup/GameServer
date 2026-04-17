@@ -63,7 +63,7 @@ namespace TransformHelper
 		XMVECTOR dir = XMVectorSubtract(aPos, vPos);
 		dir = XMVectorSetY(dir, 0.0f);
 
-		// À§Ä¡°¡ ³Ê¹« °¡±î¿ì¸é ÆÇÁ¤¿¡¼­ Á¦¿Ü
+		// ìœ„ì¹˜ê°€ ë„ˆë¬´ ê°€ê¹Œìš°ë©´ íŒì •ì—ì„œ ì œì™¸
 		float lenSq = XMVectorGetX(XMVector3LengthSq(dir));
 		if (lenSq < 1e-6f) return false;
 
@@ -73,7 +73,7 @@ namespace TransformHelper
 
 		const XMVECTOR baseForward = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 
-		// vForward = victimÀÇ Àü¹æ º¤ÅÍ
+		// vForward = victimì˜ ì „ë°© ë²¡í„°
 		XMVECTOR vForward = XMVector3Rotate(baseForward, vRot);
 		vForward = XMVectorSetY(vForward, 0.0f);
 		vForward = XMVector3Normalize(vForward);

@@ -3,12 +3,12 @@
 #include "SendBuffer.h"
 #include "LF_Stack.h"
 
-// °³¼±Á¡
+// ê°œì„ ì 
 //
-// 1. Free Index ±¸Á¶¿¡¼­ Object ÀÚÃ¼¸¦ Node·Î ÇÏ´Â Stack ±¸Á¶·Î º¯È¯
-// 2. LF_StackÀÇ ¼º´É °³¼±
+// 1. Free Index êµ¬ì¡°ì—ì„œ Object ìì²´ë¥¼ Nodeë¡œ í•˜ëŠ” Stack êµ¬ì¡°ë¡œ ë³€í™˜
+// 2. LF_Stackì˜ ì„±ëŠ¥ ê°œì„ 
 //
-// 3. (Ãß°¡) µ¿Àû ¹è¿­ PoolingÀ» À§ÇØ Memory Pool ±¸Çö
+// 3. (ì¶”ê°€) ë™ì  ë°°ì—´ Poolingì„ ìœ„í•´ Memory Pool êµ¬í˜„
 
 template<typename T, size_t Size>
 class ObjectPool {
