@@ -93,7 +93,7 @@ void PlazaScene::InitializeLogic()
 	}
 
 	skyBox = make_shared<SkyBox>();
-	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
+	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"plaza");
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
 	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());

@@ -4,7 +4,7 @@
 float4 PSMain(SKYBOX_PS_IN input) : SV_Target
 {
     float3 direction = normalize(input.localPos);
-    float3 color = bindlessCubeMaps[NonUniformResourceIndex(0)].Sample(linearSampler, direction).rgb;
+    float3 color = bindlessCubeMaps[NonUniformResourceIndex(skyIdx)].Sample(linearSampler, direction).rgb;
     
     color *= skyExposure;
     color *= skyTintColor;

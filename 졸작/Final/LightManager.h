@@ -30,6 +30,7 @@ public:
 	void Initialize(ID3D12Device* device);
 	void UpdateLights();
 	void SetSkyBox(SkyBox* sky) { skyBox = sky; }
+	SkyBox* GetSkyBox() const { return skyBox; }
 
 	UploadBuffer* GetDeferredLightCB() const;
 	UploadBuffer* GetForwardLightCB() const;

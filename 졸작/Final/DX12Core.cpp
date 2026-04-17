@@ -9,6 +9,7 @@
 #include "ShadowMappingManager.h"
 #include "RenderTargets.h"
 #include "LightManager.h"
+#include "SkyBox.h"
 #include "FroxelManager.h"
 #include "SSAO.h"
 #include "LookUpTextures.h"
@@ -405,6 +406,9 @@ void DX12Core::BeginLightingPass()
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
+
+	if (auto* sky = lightMgr->GetSkyBox())
+		deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(20, sky->GetCBAddress());
 
 	ID3D12DescriptorHeap* heaps[] = { rtMgr->GetDeferredSRVHeap() };
 	deviceCtx->GetGraphicsCmdList()->SetDescriptorHeaps(1, heaps);

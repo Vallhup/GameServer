@@ -109,7 +109,9 @@ cbuffer SkyboxCB : register(b9)
     float3 skyTintColor;
     float skyExposure;
     float skySaturation;
-    float3 skyPadding;
+    uint skyIdx;
+    uint skyIrrIdx;
+    uint skyRadIdx;
 };
 
 cbuffer WaterCB : register(b10)
@@ -193,8 +195,6 @@ SamplerComparisonState shadowCmpSampler : register(s3);
 // INDEXES
 //-------------------------------------------------------
 
-static const uint IBL_IRRADIANCE_INDEX = 1;
-static const uint IBL_RADIANCE_INDEX = 2;
-static const uint BRDF_LUT_INDEX = 157;
+static const uint BRDF_LUT_INDEX = 0;
 
 #endif

@@ -23,6 +23,19 @@ void TitleScene::InitializeLogic()
 	// TODO
 	// 여기에서, 모든 캐릭터와 모든 몬스터의 MESH 미리 캐싱
 	
+	ID3D12Device* device = coreRef->GetDevice();
+	ID3D12GraphicsCommandList* cmdList = coreRef->GetGraphicsCmdList();
+
+	const wchar_t* skyboxNames[] = { L"plaza", L"skybox1", L"skybox2" };
+	for (auto name : skyboxNames)
+	{
+		wstring base = wstring(L"../Assets/Skybox/") + name;
+		Material::RegisterCubeMap(device, cmdList, base + L".dds");
+		Material::RegisterCubeMap(device, cmdList, base + L"_irradiance.dds");
+		Material::RegisterCubeMap(device, cmdList, base + L"_radiance.dds");
+	}
+	Material::RegisterTexture(device, cmdList, L"../Assets/Skybox/brdf_lut.png");
+
 	auto knight = make_shared<GameObject>();
 	auto mesh = knight->AddComponent<Mesh>();
 	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
@@ -49,7 +62,7 @@ void TitleScene::InitializeLogic()
 
 	auto demonExecutioner = make_shared<GameObject>();
 	auto mesh6 = demonExecutioner->AddComponent<Mesh>();
-	mesh6->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");
+	mesh6->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");	
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();

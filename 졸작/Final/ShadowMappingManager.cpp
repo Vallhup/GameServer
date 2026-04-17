@@ -20,15 +20,34 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 	XMVECTOR centerPos = XMLoadFloat3(&center);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	float shadowCasterDistance = 200.0f;
+	const float shadowCasterDistance = 200.0f;
 
-	XMVECTOR lightPos = XMVectorSubtract(centerPos, XMVectorScale(csmLightDir, shadowCasterDistance));
-	XMMATRIX lightView = XMMatrixLookAtLH(lightPos, centerPos, up);
+	// centerPos에 의존하지 않는 라이트 공간 축 (shadow swimming 방지용)
+	XMVECTOR forward = XMVector3Normalize(csmLightDir);
+	XMVECTOR right = XMVector3Normalize(XMVector3Cross(up, forward));
+	XMVECTOR trueUp = XMVector3Normalize(XMVector3Cross(forward, right));
+
+	float cx = XMVectorGetX(XMVector3Dot(centerPos, right));
+	float cy = XMVectorGetX(XMVector3Dot(centerPos, trueUp));
+	float cz = XMVectorGetX(XMVector3Dot(centerPos, forward));
 
 	for (int i = 0; i < CASCADE_COUNT; ++i)
 	{
 		float cascadeSize = (&csmConstants.cascadeSplit.x)[i];
+		float texelSize = (cascadeSize * 2.0f) / static_cast<float>(SHADOW_MAP_SIZE);
 
+		// texel 경계로 스냅
+		float snapX = floorf(cx / texelSize) * texelSize;
+		float snapY = floorf(cy / texelSize) * texelSize;
+
+		// 스냅된 월드 타겟 복원
+		XMVECTOR snappedTarget =
+			XMVectorAdd(
+				XMVectorAdd(XMVectorScale(right, snapX), XMVectorScale(trueUp, snapY)),
+				XMVectorScale(forward, cz));
+		XMVECTOR lightPos = XMVectorSubtract(snappedTarget, XMVectorScale(forward, shadowCasterDistance));
+
+		XMMATRIX lightView = XMMatrixLookAtLH(lightPos, snappedTarget, up);
 		XMMATRIX lightProj = XMMatrixOrthographicLH(cascadeSize * 2.0f, cascadeSize * 2.0f, 0.1f, shadowCasterDistance * 2.0f);
 
 		csmConstants.lightVP[i] = XMMatrixTranspose(XMMatrixMultiply(lightView, lightProj));
