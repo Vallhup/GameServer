@@ -39,9 +39,6 @@ public:
 		const CharacterDef& def,
 		std::string& outError) const;
 
-	// 등록된 모든 aspect 의 transfer serializer 를 수집.
-	void CollectTransferProfile(WorldTransferProfile& profile) const;
-
 	size_t Size() const noexcept { return _aspects.size(); }
 
 private:

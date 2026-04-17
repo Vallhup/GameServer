@@ -91,15 +91,6 @@ bool CharacterAspectRegistry::ValidateAll(
 	return true;
 }
 
-void CharacterAspectRegistry::CollectTransferProfile(
-	WorldTransferProfile& profile) const
-{
-	for (const auto& aspect : _aspects)
-	{
-		aspect->CollectTransferSerializers(profile);
-	}
-}
-
 const CharacterAspectRegistry& GetGlobalCharacterAspectRegistry()
 {
 	static const CharacterAspectRegistry instance =

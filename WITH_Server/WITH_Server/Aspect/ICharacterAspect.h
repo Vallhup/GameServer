@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <optional>
 #include <string>
 
@@ -11,7 +12,20 @@
 #include "Session.h"
 
 class WorldRuntime;
-class WorldTransferProfile;
+
+struct CombatStatInitialState
+{
+	int32_t currentHp{ 0 };
+	int32_t maxHp{ 0 };
+	int32_t currentStamina{ 0 };
+	int32_t maxStamina{ 0 };
+	int32_t currentPoise{ 0 };
+	int32_t maxPoise{ 0 };
+	int32_t attackPower{ 0 };
+	int32_t defense{ 0 };
+	float attackSpeed{ 1.0f };
+	float moveSpeed{ 2.5f };
+};
 
 // 캐릭터 조립 시 호출자가 제공하는 외부 입력값.
 // (CharacterDef 에는 없는, 인스턴스마다 달라지는 값들)
@@ -23,6 +37,8 @@ struct AssembleParams
 
 	// Playable 캐릭터 전용
 	std::optional<SessionId> sessionId;
+
+	std::optional<CombatStatInitialState> combatStatsOverride;
 };
 
 // 캐릭터 런타임의 한 가지 기능 단위(수직 슬라이스).
@@ -58,12 +74,5 @@ public:
 		(void)def;
 		(void)outError;
 		return true;
-	}
-
-	// 월드 전이 활성화 시점에 사용. 현재는 no-op 가능.
-	virtual void CollectTransferSerializers(
-		WorldTransferProfile& profile) const
-	{
-		(void)profile;
 	}
 };

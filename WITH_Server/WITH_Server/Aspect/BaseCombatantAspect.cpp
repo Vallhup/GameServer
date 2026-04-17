@@ -22,6 +22,23 @@ namespace
 		stats.moveSpeed      = def.stat.moveSpeed;
 		return stats;
 	}
+
+	CombatStatStateComp ToCombatStatState(
+		const CombatStatInitialState& initial) noexcept
+	{
+		CombatStatStateComp stats{};
+		stats.currentHp = initial.currentHp;
+		stats.maxHp = initial.maxHp;
+		stats.currentStamina = initial.currentStamina;
+		stats.maxStamina = initial.maxStamina;
+		stats.currentPoise = initial.currentPoise;
+		stats.maxPoise = initial.maxPoise;
+		stats.attackPower = initial.attackPower;
+		stats.defense = initial.defense;
+		stats.attackSpeed = initial.attackSpeed;
+		stats.moveSpeed = initial.moveSpeed;
+		return stats;
+	}
 }
 
 CharacterFeatureFlags BaseCombatantAspect::RequiredFeature() const noexcept
@@ -56,7 +73,6 @@ void BaseCombatantAspect::Attach(
 	const CharacterDef& def,
 	const AssembleParams& params) const
 {
-	(void)params;
 	runtime.DeferredAddComponent<ActorInputComp>(entity);
 	runtime.DeferredAddComponent<ActionStateComp>(entity);
 	runtime.DeferredAddComponent<LocomotionStateComp>(entity);
@@ -66,7 +82,9 @@ void BaseCombatantAspect::Attach(
 	runtime.DeferredAddComponent<SkeletalCombatColliderComp>(entity);
 	runtime.DeferredUpsertComponent<CombatStatStateComp>(
 		entity,
-		MakeInitialCombatStats(def));
+		params.combatStatsOverride.has_value()
+			? ToCombatStatState(*params.combatStatsOverride)
+			: MakeInitialCombatStats(def));
 	runtime.DeferredAddComponent<BuffRuntimeStateComp>(entity);
 	runtime.DeferredAddComponent<ActionInterruptQueueComp>(entity);
 	runtime.DeferredAddComponent<PendingProjectileSpawnComp>(entity);
