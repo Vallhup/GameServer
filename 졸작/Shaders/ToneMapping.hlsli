@@ -105,7 +105,7 @@ float3 DarkFantasyToneMapping(float3 color, float saturationFactor)
     color = saturate(color);
 
     // 2. 다크 판타지 후보정
-    float contrast = 1.2;
+    float contrast = 1.0;
     float saturation = saturationFactor; // 살짝 desaturate (0.85 / 0.95 / 1.15 / 1.35)
     float3 shadowTint = float3(0.9, 0.9, 1.1); // 그림자에 차가운 톤
 

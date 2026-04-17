@@ -39,13 +39,17 @@ void TitleScene::InitializeLogic()
 	auto mesh3 = boss->AddComponent<Mesh>();
 	mesh3->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
 
-	auto demonStriker = make_shared<GameObject>();
-	auto mesh4 = demonStriker->AddComponent<Mesh>();
-	mesh4->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker");
-
 	auto imp = make_shared<GameObject>();
-	auto mesh5 = imp->AddComponent<Mesh>();
-	mesh5->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Imp/monster_Imp");
+	auto mesh4 = imp->AddComponent<Mesh>();
+	mesh4->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Imp/monster_Imp");
+
+	auto demonStriker = make_shared<GameObject>();
+	auto mesh5 = demonStriker->AddComponent<Mesh>();
+	mesh5->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker");
+
+	auto demonExecutioner = make_shared<GameObject>();
+	auto mesh6 = demonExecutioner->AddComponent<Mesh>();
+	mesh6->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
@@ -56,6 +60,7 @@ void TitleScene::InitializeLogic()
 	mesh3->ReleaseUploadBuffers();
 	mesh4->ReleaseUploadBuffers();
 	mesh5->ReleaseUploadBuffers();
+	mesh6->ReleaseUploadBuffers();
 
 	OutputDebugStringA("Data cached created!!\n");
 	

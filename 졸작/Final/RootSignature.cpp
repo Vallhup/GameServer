@@ -84,12 +84,12 @@ void RootSignature::Initialize(ID3D12Device* device)
 
     AddCBV(12);             // [23] b12 - TrailCB
 
-    CD3DX12_STATIC_SAMPLER_DESC samplerDesc[3];
+    CD3DX12_STATIC_SAMPLER_DESC samplerDesc[4];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,
         D3D12_TEXTURE_ADDRESS_MODE_WRAP,
         D3D12_TEXTURE_ADDRESS_MODE_WRAP);
 
-    samplerDesc[1].Init(1, D3D12_FILTER_MIN_MAG_MIP_POINT,         
+    samplerDesc[1].Init(1, D3D12_FILTER_MIN_MAG_MIP_POINT,
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
 
@@ -97,9 +97,17 @@ void RootSignature::Initialize(ID3D12Device* device)
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP);
 
+    samplerDesc[3].Init(3, D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT,
+        D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+        D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+        D3D12_TEXTURE_ADDRESS_MODE_BORDER,
+        0.0f, 16,
+        D3D12_COMPARISON_FUNC_LESS_EQUAL,
+        D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE);
+
     CD3DX12_ROOT_SIGNATURE_DESC desc{};
     desc.Init(static_cast<UINT>(rootParams.size()), rootParams.data(),
-        3, samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+        4, samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
     ComPtr<ID3DBlob> serializedRootSig = nullptr;
     ComPtr<ID3DBlob> errorBlob = nullptr;

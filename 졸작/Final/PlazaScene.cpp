@@ -9,6 +9,8 @@
 #include "SoundManager.h"
 #include "ImGuiManager.h"
 #include "SkyBox.h"
+#include "LightManager.h"
+#include "ShadowMappingManager.h"
 #include "AnimationMachine.h"
 #include "AnimationSetFactory.h"
 #include "Terrain.h"
@@ -94,6 +96,9 @@ void PlazaScene::InitializeLogic()
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
+	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetShadowMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetLightMgr()->UpdateLights();
 
 #pragma region Initialize Plaza Terrain
 	terrain = make_shared<Terrain>();
@@ -250,10 +255,12 @@ void PlazaScene::UpdateScene(const float deltaTime)
 	BoundingFrustum frustum = cam->GetViewFrustum();
 	XMFLOAT3 camPos = cam->GetPosition();
 	XMVECTOR camPosVec = XMLoadFloat3(&camPos);
+	XMFLOAT3 playerPos = cam->GetTargetPosition();
+	XMVECTOR playerPosVec = XMLoadFloat3(&playerPos);
 
 	/*auto start = chrono::high_resolution_clock::now();*/
 	for (auto& batch : instancingBatches)
-		batch->Update(frustum, camPosVec);
+		batch->Update(frustum, camPosVec, playerPosVec);
 	//auto end = chrono::high_resolution_clock::now();
 	//auto ms = chrono::duration_cast<chrono::microseconds>(end - start).count();
 	//OutputDebugStringA(("Update: " + to_string(ms) + "us\n").c_str());
@@ -432,6 +439,40 @@ void PlazaScene::CreateImpObject()
 	transform->SetRotation(0.f, 3.14f, 0.f);
 	transform->SetScale(0.01f, 0.01f, 0.01f);
 	AddGameObject(impObject);
+}
+
+void PlazaScene::CreateDemonStrikerObject()
+{
+	demonStrikerObject = make_shared<GameObject>();
+	demonStrikerObject->SetId(-1);
+	auto mesh = demonStrikerObject->AddComponent<Mesh>();
+	auto transform = demonStrikerObject->AddComponent<Transform>();
+	auto animator = demonStrikerObject->AddComponent<Animator>();
+	auto animMachine = demonStrikerObject->AddComponent<AnimationMachine>();
+	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker");
+
+	animMachine->SetAnimationSet(AnimationSetFactory::CreateDemonStrikerSet());
+	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
+	transform->SetRotation(0.f, 3.14f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+	AddGameObject(demonStrikerObject);
+}
+
+void PlazaScene::CreateDemonExecutionerObject()
+{
+	demonExecutionerObject = make_shared<GameObject>();
+	demonExecutionerObject->SetId(-1);
+	auto mesh = demonExecutionerObject->AddComponent<Mesh>();
+	auto transform = demonExecutionerObject->AddComponent<Transform>();
+	auto animator = demonExecutionerObject->AddComponent<Animator>();
+	auto animMachine = demonExecutionerObject->AddComponent<AnimationMachine>();
+	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");
+
+	animMachine->SetAnimationSet(AnimationSetFactory::CreateDemonExecutionerSet());
+	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
+	transform->SetRotation(0.f, 3.14f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+	AddGameObject(demonExecutionerObject);
 }
 
 void PlazaScene::CreateEffectSamples()

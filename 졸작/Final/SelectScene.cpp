@@ -52,7 +52,7 @@ void SelectScene::InitializeLogic()
 		auto transform = imp->AddComponent<Transform>();
 		auto animator = imp->AddComponent<Animator>();
 
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Imp/monster_Imp");
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");
 		transform->SetInitPosition(2.f, 0.f, 0.5f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);

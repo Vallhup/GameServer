@@ -11,6 +11,13 @@ struct SkyboxConstants
 	XMFLOAT3 skyPadding;
 };
 
+struct SkySun
+{
+	XMFLOAT3 direction = { -0.73f, -1.39f, -1.0f };
+	XMFLOAT3 color = { 1.0f, 1.0f, 1.0f };
+	float intensity = 0.0f;
+};
+
 class SkyBox
 {
 public:
@@ -19,6 +26,8 @@ public:
 	void UpdateConstants();
 
 	SkyboxConstants& GetConstants() { return skyboxData; }
+	SkySun& GetSun() { return sun; }
+	const SkySun& GetSun() const { return sun; }
 
 private:
 	void InitializeMesh(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
@@ -30,5 +39,7 @@ private:
 
 	unique_ptr<UploadBuffer> skyboxCB;
 	SkyboxConstants skyboxData = {};
+
+	SkySun sun;
 };
 

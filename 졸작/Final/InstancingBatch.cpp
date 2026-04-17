@@ -70,6 +70,7 @@ void InstancingBatch::BuildBuffers(DX12Core& core)
             obj.useInstancing = 1;
             obj.materialIndex = matIndex;
             obj.useVertexAnim = vertAnimation ? 1 : 0;
+            obj.useTerrainBlend = terrainBlend ? 1 : 0;
             objectCBs[i]->CopyData(&obj, sizeof(ObjectConstants), 0);
         }
     }
@@ -86,11 +87,12 @@ void InstancingBatch::BuildBuffers(DX12Core& core)
         obj.useInstancing = 1;
         obj.materialIndex = matIndex;
         obj.useVertexAnim = vertAnimation ? 1 : 0;
+        obj.useTerrainBlend = terrainBlend ? 1 : 0;
         objectCBs[0]->CopyData(&obj, sizeof(ObjectConstants), 0);
     }
 }
 
-void InstancingBatch::Update(const BoundingFrustum& frustum, const XMVECTOR& camPos)
+void InstancingBatch::Update(const BoundingFrustum& frustum, const XMVECTOR& camPos, const XMVECTOR& playerPos)
 {
     if (cachedData.empty()) return;
 
@@ -113,7 +115,12 @@ void InstancingBatch::Update(const BoundingFrustum& frustum, const XMVECTOR& cam
 
     float camX = currentCamPos.x;
     float camZ = currentCamPos.z;
-    constexpr float shadowRange = 90.0f;
+
+    XMFLOAT3 currentPlayerPos;
+    XMStoreFloat3(&currentPlayerPos, playerPos);
+    float playerX = currentPlayerPos.x;
+    float playerZ = currentPlayerPos.z;
+    constexpr float shadowRange = 100.0f;
 
     for (const auto& data : cachedData) {
         // Frustum culling (캐싱된 bounding box 사용)
@@ -130,9 +137,9 @@ void InstancingBatch::Update(const BoundingFrustum& frustum, const XMVECTOR& cam
                 isVisible = false;
         }
 
-        // Shadow range 체크
-        bool isNearPlayer = (abs(data.position.x - camX) <= shadowRange) &&
-                            (abs(data.position.z - camZ) <= shadowRange);
+        // Shadow range 체크 (플레이어 기준)
+        bool isNearPlayer = (abs(data.position.x - playerX) <= shadowRange) &&
+                            (abs(data.position.z - playerZ) <= shadowRange);
 
         if (isVisible) {
             visibleTransforms.push_back(data.worldMatrix);

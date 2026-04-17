@@ -59,7 +59,7 @@ void DX12Core::Initialize(HWND hwnd)
 void DX12Core::Update()
 {
 	// CSM Update
-	shadowMgr->UpdateCascadeShadow(SCENE_MANAGER->GetCurrentScene()->GetCamera()->GetPosition());
+	shadowMgr->UpdateCascadeShadow(SCENE_MANAGER->GetCurrentScene()->GetCamera()->GetTargetPosition());
 }
 
 void DX12Core::BeginShadowPass(int cascadeIdx)

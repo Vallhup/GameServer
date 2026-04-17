@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "LightManager.h"
+#include "SkyBox.h"
 
 void LightManager::Initialize(ID3D12Device* device)
 {
@@ -14,6 +15,19 @@ void LightManager::Initialize(ID3D12Device* device)
 
 void LightManager::UpdateLights()
 {
+	if (skyBox)
+	{
+		const SkySun& sun = skyBox->GetSun();
+		deferredLightData.lights[0].position = sun.direction;
+		deferredLightData.lights[0].color = sun.color;
+		deferredLightData.lights[0].intensity = sun.intensity;
+		deferredLightData.lights[0].type = 0;
+
+		forwardLightData.direction = sun.direction;
+		forwardLightData.color = sun.color;
+		forwardLightData.intensity = sun.intensity;
+	}
+
 	deferredLightCB->CopyData(&deferredLightData, sizeof(DeferredLightConstants));
 	forwardLightCB->CopyData(&forwardLightData, sizeof(ForwardLightConstants));
 }
@@ -35,21 +49,21 @@ void LightManager::SetupLights()
 	deferredLightData.lightCount = 23;
 
 	deferredLightData.lights[0] = {
-		{-0.74f, -0.40f, -1.0f}, 0,
+		{-0.73f, -1.39f, -1.0f}, 0,
 		{1, 1, 1}, 1.0f,
 		0,
 		{0, 0, 0}
 	};
 	deferredLightData.lights[1] = {
 		{0, 0, 1}, 0,
-		{1, 1, 1}, 1.0f,
+		{1, 1, 1}, 0.0f,
 		0,
 		{0, 0, 0}
 	};
 
 	deferredLightData.lights[2] = {
 		{-27.f, 29.f, -70.0f}, 2000.0f,
-		{0.074f, 0, 1}, 0.15f,
+		{0.074f, 0, 1}, 0.0f,
 		1,
 		{0, 0, 0}
 	};

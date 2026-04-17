@@ -27,6 +27,8 @@ cbuffer ObjectCB : register(b1)
     int useInstancing;
     uint materialIndex;
     int useVertexAnim;
+    int useTerrainBlend;
+    int3 objPadding;
 };
 
 cbuffer AnimationParams : register(b2)
@@ -73,7 +75,7 @@ cbuffer ForwardLightCB : register(b4)
 
 cbuffer ShadowFrameCB : register(b5)
 {
-    matrix lightVP[2];
+    matrix lightVP[3];
     float4 cascadeSplit;
 };
 
@@ -185,6 +187,7 @@ Texture3D bindlessTextures3D[] : register(t0, space5);
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 SamplerState lutLinearSampler : register(s2);
+SamplerComparisonState shadowCmpSampler : register(s3);
 
 //-------------------------------------------------------
 // INDEXES
@@ -192,6 +195,6 @@ SamplerState lutLinearSampler : register(s2);
 
 static const uint IBL_IRRADIANCE_INDEX = 1;
 static const uint IBL_RADIANCE_INDEX = 2;
-static const uint BRDF_LUT_INDEX = 147;
+static const uint BRDF_LUT_INDEX = 157;
 
 #endif

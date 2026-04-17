@@ -172,23 +172,15 @@ void ImGuiManager::DrawDebugUI()
 
         if (ImGui::Begin("Light Editor", &showLightEditor))
         {
-            auto& forward = coreRef->GetLightMgr()->GetForwardLightData();
             auto& deferred = coreRef->GetLightMgr()->GetDeferredLightData();
 
-            // Forward Light
-            if (ImGui::CollapsingHeader("Forward Light", ImGuiTreeNodeFlags_DefaultOpen))
+            // Sun (skybox) - drives Main Directional 1, Forward light, CSM direction
+            if (skyBox && ImGui::CollapsingHeader("Sun (Skybox)", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                ImGui::SliderFloat3("Direction##For", &forward.direction.x, -1.0f, 1.0f);
-                ImGui::ColorEdit3("Color##For", &forward.color.x);
-                ImGui::SliderFloat("Intensity##For", &forward.intensity, 0.0f, 2.0f);
-            }
-
-            // Main Directional Light (Deferred)
-            if (ImGui::CollapsingHeader("Main Directional 1", ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                ImGui::SliderFloat3("Direction##Dir1", &deferred.lights[0].position.x, -1.0f, 1.0f);
-                ImGui::ColorEdit3("Color##Dir1", &deferred.lights[0].color.x);
-                ImGui::SliderFloat("Intensity##Dir1", &deferred.lights[0].intensity, 0.0f, 2.0f);
+                auto& sun = skyBox->GetSun();
+                ImGui::SliderFloat3("Direction##Sun", &sun.direction.x, -1.0f, 1.0f);
+                ImGui::ColorEdit3("Color##Sun", &sun.color.x);
+                ImGui::SliderFloat("Intensity##Sun", &sun.intensity, 0.0f, 5.0f);
             }
 
             if (ImGui::CollapsingHeader("Main Directional 2", ImGuiTreeNodeFlags_DefaultOpen))

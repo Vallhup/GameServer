@@ -87,7 +87,7 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
         linearSampler
     );
 
-    //iblAmbient *= lerp(0.8, 1.0, shadow);
+    iblAmbient *= lerp(0.6, 1.0, shadow);
     
     float3 finalColor = directLight + iblAmbient + emission;
 
