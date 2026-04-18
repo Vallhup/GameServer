@@ -4,9 +4,10 @@
 #include "ShaderResources.hlsli"
 #include "Constants.hlsli"
 
-float SampleCascadeShadow(float3 worldPos, int cascade)
+float SampleCascadeShadow(float3 worldPos, float3 N, int cascade)
 {
-    float4 lightSpacePos = mul(float4(worldPos, 1.0), lightVP[cascade]);
+    float3 biasedPos = worldPos + N * cascadeNormalOffset[cascade];
+    float4 lightSpacePos = mul(float4(biasedPos, 1.0), lightVP[cascade]);
     lightSpacePos.xyz /= lightSpacePos.w;
 
     float2 shadowUV = lightSpacePos.xy * 0.5 + 0.5;
@@ -40,18 +41,18 @@ float SampleCascadeShadow(float3 worldPos, int cascade)
     return lit / 25.0;
 }
 
-float CalculateShadow(float3 worldPos, float viewDepth)
+float CalculateShadow(float3 worldPos, float3 N, float viewDepth)
 {
     float splits[3] = { cascadeSplit.x, cascadeSplit.y, cascadeSplit.z };
-    
+
     int cascade = 2;
     if (viewDepth < splits[0])
         cascade = 0;
     else if (viewDepth < splits[1])
         cascade = 1;
 
-    float shadow = SampleCascadeShadow(worldPos, cascade);
-    
+    float shadow = SampleCascadeShadow(worldPos, N, cascade);
+
     if (cascade < 2)
     {
         float splitEnd = splits[cascade];
@@ -60,7 +61,7 @@ float CalculateShadow(float3 worldPos, float viewDepth)
         if (viewDepth > blendStart)
         {
             float blendFactor = (viewDepth - blendStart) / (splitEnd - blendStart);
-            float nextShadow = SampleCascadeShadow(worldPos, cascade + 1);
+            float nextShadow = SampleCascadeShadow(worldPos, N, cascade + 1);
             shadow = lerp(shadow, nextShadow, blendFactor);
         }
     }

@@ -257,7 +257,7 @@ void ImGuiManager::DrawDebugUI()
                 vf.heightFalloff = 0.001f;
                 vf.groundHeight = 3.0f;
                 vf.lightColor = { 1.0f, 1.0f, 1.0f };
-                vf.lightIntensity = 1.5f;
+                vf.lightIntensity = 1.0f;
                 coreRef->UpdateVolumetricFog();
             }
         }

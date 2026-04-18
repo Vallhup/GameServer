@@ -162,7 +162,7 @@ private:
 		0.001f,                 // heightFalloff
 		3.0f,                   // groundHeight
 		{ 1.0f, 1.0f, 1.0f },   // lightColor
-		1.5f,                   // lightIntensity
+		1.0f,                   // lightIntensity
 		{ 0.0f, 0.0f },
 		0.0f    // padding
 	};

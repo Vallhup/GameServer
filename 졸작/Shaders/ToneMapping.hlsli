@@ -118,6 +118,7 @@ float3 DarkFantasyToneMapping(float3 color, float saturationFactor)
 
     // 어두운 부분에 차가운 틴트
     float shadowMask = 1.0 - luma;
+ 
     color *= lerp(float3(1, 1, 1), shadowTint, shadowMask * 0.3);
 
     return saturate(color);

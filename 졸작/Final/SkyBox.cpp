@@ -6,22 +6,22 @@
 #include "Shader.h"
 #include "RootSignature.h"
 
-void SkyBox::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
+void SkyBox::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& baseName)
 {
 	InitializeMesh(device, cmdList);
 	InitializeSkyBoxCB(device);
 
-	skyboxCubeMapIndex = Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox7.dds");
+	const wstring base = L"../Assets/Skybox/" + baseName;
+	skyboxData.skyIdx    = Material::RegisterCubeMap(device, cmdList, base + L".dds");
+	skyboxData.skyIrrIdx = Material::RegisterCubeMap(device, cmdList, base + L"_irradiance.dds");
+	skyboxData.skyRadIdx = Material::RegisterCubeMap(device, cmdList, base + L"_radiance.dds");
 
-	Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox7_irradiance.dds");
-	Material::RegisterCubeMap(device, cmdList, L"../Assets/Skybox/skybox7_radiance.dds");
-
-	Material::RegisterTexture(device, cmdList, L"../Assets/Skybox/brdf_lut.png");
+	skyboxCB->CopyData(&skyboxData, sizeof(SkyboxConstants));
 }
 
 void SkyBox::RenderSkyBox(DX12Core& core, ID3D12GraphicsCommandList* cmdList)
 {
-	if (!skyboxMesh || skyboxCubeMapIndex == 0xFFFFFFFF) return;
+	if (!skyboxMesh || skyboxData.skyIdx == 0xFFFFFFFF) return;
 
 	cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Skybox));
 	cmdList->SetGraphicsRootSignature(core.GetRootSig()->Get());

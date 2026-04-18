@@ -50,7 +50,7 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
             if (i == 0)
             {
                 float viewDepth = length(worldPos - cameraPosition);
-                shadow = CalculateShadow(worldPos, viewDepth);
+                shadow = CalculateShadow(worldPos, N, viewDepth);
                 lightContribution *= shadow;
             }
         }
@@ -81,13 +81,13 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     
     float3 iblAmbient = CalculateIBL(
         N, V, baseColor, metallic, roughness, finalAO,
-        bindlessCubeMaps[NonUniformResourceIndex(IBL_IRRADIANCE_INDEX)],    // irradiance
-        bindlessCubeMaps[NonUniformResourceIndex(IBL_RADIANCE_INDEX)],      // radiance
+        bindlessCubeMaps[NonUniformResourceIndex(skyIrrIdx)],    // irradiance
+        bindlessCubeMaps[NonUniformResourceIndex(skyRadIdx)],    // radiance
         bindlessTextures[NonUniformResourceIndex(BRDF_LUT_INDEX)],          // BRDF LUT
         linearSampler
     );
 
-    iblAmbient *= lerp(0.6, 1.0, shadow);
+    iblAmbient *= lerp(0.8, 1.0, shadow);
     
     float3 finalColor = directLight + iblAmbient + emission;
 

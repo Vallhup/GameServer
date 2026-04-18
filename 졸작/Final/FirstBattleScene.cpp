@@ -64,7 +64,7 @@ void FirstBattleScene::InitializeLogic()
 	}
 
 	skyBox = make_shared<SkyBox>();
-	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList());
+	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"skybox1");
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
 	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());

@@ -12,7 +12,8 @@ static const float PI = 3.14159265359;
 //-------------------------------------------------------
 
 static const float cascadeBias[4] = { 0.0002f, 0.0005f, 0.0012f, 0.0000f };
-static const float CASCADE_BLEND_RANGE = 0.15; 
+static const float cascadeNormalOffset[4] = { 0.015f, 0.05f, 0.15f, 0.0f };
+static const float CASCADE_BLEND_RANGE = 0.15;
 
 //-------------------------------------------------------
 // Volumetric Fog Constants (cbuffer에서 참조)
@@ -41,10 +42,10 @@ static const int KERNEL_SIZE = 32;
 // Mountain Texture tiling Constants
 //-------------------------------------------------------
 
-static const int ROCK_DIFFUSE_IDX = 231;
-static const int ROCK_NORMAL_IDX = 232;
-static const int GRASS_IDX = 233;
-static const int GRASS_VARIANT_IDX = 234;
+static const int ROCK_DIFFUSE_IDX = 241;
+static const int ROCK_NORMAL_IDX = 242;
+static const int GRASS_IDX = 243;
+static const int GRASS_VARIANT_IDX = 244;
 static const float2 ROCK_TILING = float2(10.0, 12.56);
 static const float GRASS_TILING = 150.0;
 static const float SLOPE_THRESHOLD = 0.65;
