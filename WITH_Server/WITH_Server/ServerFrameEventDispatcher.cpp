@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ServerFrameEventDispatcher.h"
 
+#include <algorithm>
 #include <iostream>
 #include <span>
 #include <vector>
@@ -9,13 +10,40 @@
 #include "ServerPlayerControlBinding.h"
 #include "ServerReplicationSnapshot.h"
 
+namespace
+{
+	void RemoveExcludedSessions(
+		std::vector<SessionId>& sessionIds,
+		std::span<const SessionId> excludedSessionIds)
+	{
+		if (excludedSessionIds.empty())
+		{
+			return;
+		}
+
+		sessionIds.erase(
+			std::remove_if(
+				sessionIds.begin(),
+				sessionIds.end(),
+				[excludedSessionIds](SessionId sessionId)
+				{
+					return std::find(
+						excludedSessionIds.begin(),
+						excludedSessionIds.end(),
+						sessionId) != excludedSessionIds.end();
+				}),
+			sessionIds.end());
+	}
+}
+
 bool ServerFrameEventDispatcher::Dispatch(
 	const FrameworkRuntime::FrameResult& frameResult,
 	FrameworkRuntime& framework,
 	NetworkRuntime& network,
 	SessionBindingRegistry& sessionBindings,
 	PlayerEntryService& playerEntryService,
-	double nowSec)
+	double nowSec,
+	std::span<const SessionId> excludedSessionIds)
 {
 	std::vector<SessionId> worldSessionIds;
 	std::vector<SessionId> otherSessionIds;
@@ -41,6 +69,7 @@ bool ServerFrameEventDispatcher::Dispatch(
 		if (pendingCharacterSpawn == nullptr)
 		{
 			sessionBindings.CollectSessionsInWorld(spawnEvent.worldId, worldSessionIds);
+			RemoveExcludedSessions(worldSessionIds, excludedSessionIds);
 			(void)ServerPacketStager::StageSpawnAddPacketToSessions(
 				network,
 				std::span<const SessionId>(worldSessionIds),
@@ -113,7 +142,11 @@ bool ServerFrameEventDispatcher::Dispatch(
 		otherSessionIds.clear();
 		for (SessionId worldSessionId : worldSessionIds)
 		{
-			if (worldSessionId != sessionId)
+			if (worldSessionId != sessionId &&
+				std::find(
+					excludedSessionIds.begin(),
+					excludedSessionIds.end(),
+					worldSessionId) == excludedSessionIds.end())
 			{
 				otherSessionIds.push_back(worldSessionId);
 			}
@@ -136,6 +169,7 @@ bool ServerFrameEventDispatcher::Dispatch(
 		sessionBindings.CollectSessionsInWorld(
 			despawnEvent.worldId,
 			worldSessionIds);
+		RemoveExcludedSessions(worldSessionIds, excludedSessionIds);
 		(void)ServerPacketStager::StageSpawnRemovePacketToSessions(
 			network,
 			std::span<const SessionId>(worldSessionIds),

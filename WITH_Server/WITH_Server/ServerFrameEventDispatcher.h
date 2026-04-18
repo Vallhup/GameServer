@@ -5,6 +5,8 @@
 #include "PlayerEntryService.h"
 #include "SessionBindingRegistry.h"
 
+#include <span>
+
 class ServerFrameEventDispatcher final {
 public:
 	static bool Dispatch(
@@ -13,5 +15,6 @@ public:
 		NetworkRuntime& network,
 		SessionBindingRegistry& sessionBindings,
 		PlayerEntryService& playerEntryService,
-		double nowSec);
+		double nowSec,
+		std::span<const SessionId> excludedSessionIds = {});
 };

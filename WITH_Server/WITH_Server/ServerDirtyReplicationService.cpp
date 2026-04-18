@@ -15,7 +15,8 @@
 void ServerDirtyReplicationService::BuildAndStage(
 	FrameworkRuntime& framework,
 	NetworkRuntime& network,
-	SessionBindingRegistry& sessionBindings)
+	SessionBindingRegistry& sessionBindings,
+	std::span<const SessionId> excludedSessionIds)
 {
 	std::vector<SessionId> worldSessionIds;
 	for (WorldId worldId : framework.GetRunnableWorldIds())
@@ -27,6 +28,21 @@ void ServerDirtyReplicationService::BuildAndStage(
 		}
 
 		sessionBindings.CollectSessionsInWorld(worldId, worldSessionIds);
+		if (!excludedSessionIds.empty())
+		{
+			worldSessionIds.erase(
+				std::remove_if(
+					worldSessionIds.begin(),
+					worldSessionIds.end(),
+					[excludedSessionIds](SessionId sessionId)
+					{
+						return std::find(
+							excludedSessionIds.begin(),
+							excludedSessionIds.end(),
+							sessionId) != excludedSessionIds.end();
+					}),
+				worldSessionIds.end());
+		}
 		if (worldSessionIds.empty())
 		{
 			continue;
@@ -93,7 +109,14 @@ void ServerDirtyReplicationService::BuildAndStage(
 					view.GetComponent<CombatStatStateComp>(entity);
 				const SessionId ownerSessionId =
 					sessionBindings.FindOwnerSession(netId);
-				if (stats != nullptr && ownerSessionId != 0)
+				const bool ownerSessionExcluded =
+					std::find(
+						excludedSessionIds.begin(),
+						excludedSessionIds.end(),
+						ownerSessionId) != excludedSessionIds.end();
+				if (stats != nullptr &&
+					ownerSessionId != 0 &&
+					!ownerSessionExcluded)
 				{
 					Protocol::SC_STAT_CHANGE_PACKET statPacket;
 					statPacket.set_netid(netId.GetRaw());
