@@ -10,6 +10,11 @@ public:
 		FrameworkRuntime& framework,
 		SessionBindingRegistry& sessionBindings);
 
+	static bool Commit(
+		FrameworkRuntime& framework,
+		SessionBindingRegistry& sessionBindings,
+		const WorldTransferEventBatch& events);
+
 private:
 	static bool CommitCompleted(
 		FrameworkRuntime& framework,

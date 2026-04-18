@@ -11,6 +11,14 @@ bool ServerWorldTransferCommitter::Commit(
 	WorldTransferEventBatch events{};
 	framework.DrainWorldTransferEvents(events);
 
+	return Commit(framework, sessionBindings, events);
+}
+
+bool ServerWorldTransferCommitter::Commit(
+	FrameworkRuntime& framework,
+	SessionBindingRegistry& sessionBindings,
+	const WorldTransferEventBatch& events)
+{
 	for (const WorldTransferFailedEvent& failed : events.failed)
 	{
 		HandleFailed(failed);
