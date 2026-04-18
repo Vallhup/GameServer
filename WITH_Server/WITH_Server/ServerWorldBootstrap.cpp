@@ -86,7 +86,9 @@ namespace
 	{
 		static constexpr std::array<DemoAISpawn, 1> plazaSpawns
 		{
-			DemoAISpawn{ CharacterId::Imp, 480.167800f, 481.655600f }
+			//DemoAISpawn{ CharacterId::Imp, 480.167800f, 481.655600f }
+			//DemoAISpawn{ CharacterId::DemonStriker, 480.167800f, 481.655600f }
+			DemoAISpawn{ CharacterId::DemonExecutioner, 480.167800f, 481.655600f }
 		};
 		static constexpr std::array<DemoAISpawn, 2> villageSpawns{
 			DemoAISpawn{ CharacterId::Imp, 478.0f, 482.0f },

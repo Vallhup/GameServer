@@ -12,7 +12,7 @@
     "capsuleRules": {
         "defaultRoles": [ "hurt" ],
         "weaponRoles": [ "hit" ],
-        "weaponBones": [ 45 ],
+        "weaponBones": [ 30, 31 ],
         "extremeTrimFraction": 0
     },
     "clips": [

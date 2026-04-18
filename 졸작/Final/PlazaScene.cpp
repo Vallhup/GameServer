@@ -107,6 +107,8 @@ void PlazaScene::InitializeLogic()
 
 	CreateBossObject();
 	CreateImpObject();
+	CreateDemonStrikerObject();
+	CreateDemonExecutionerObject();
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
@@ -577,6 +579,28 @@ void PlazaScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
 			activeCharacters[id] = impObject;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::DemonStriker))
+	{
+		if (demonStrikerObject)
+		{
+			demonStrikerObject->SetId(id);
+			auto transform = demonStrikerObject->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = demonStrikerObject;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::DemonExecutioner))
+	{
+		if (demonExecutionerObject)
+		{
+			demonExecutionerObject->SetId(id);
+			auto transform = demonExecutionerObject->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = demonExecutionerObject;
 		}
 	}
 }
