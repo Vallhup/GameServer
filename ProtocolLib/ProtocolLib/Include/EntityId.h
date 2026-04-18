@@ -9,7 +9,7 @@ enum class CharacterId : uint8_t
 
 	Knight,
 	Lancer,
-	Vanguard,
+	Paladin,
 
 	Imp,
 	DemonStriker,

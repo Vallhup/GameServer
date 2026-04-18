@@ -71,19 +71,19 @@ enum class ActionId : uint16_t
     Lancer_UseHpPotion,
     Lancer_Dead,
 
-    /* [ Vanguard ] */
-    Vanguard_LightAttack1,
-    Vanguard_LightAttack2,
-    Vanguard_LightAttack3,
-    Vanguard_HeavyAttack,
-    Vanguard_SpecialAttack,
-    Vanguard_Dodge,
-    Vanguard_Parry,
-    Vanguard_Stun,
-    Vanguard_Hit,
-    Vanguard_Guard,
-    Vanguard_UseHpPotion,
-    Vanguard_Dead,
+    /* [ Paladin ] */
+    Paladin_LightAttack1,
+    Paladin_LightAttack2,
+    Paladin_LightAttack3,
+    Paladin_HeavyAttack,
+    Paladin_SpecialAttack,
+    Paladin_Dodge,
+    Paladin_Parry,
+    Paladin_Stun,
+    Paladin_Hit,
+    Paladin_Guard,
+    Paladin_UseHpPotion,
+    Paladin_Dead,
 
     /* [ Imp ] */
     Imp_melee1,
@@ -96,9 +96,34 @@ enum class ActionId : uint16_t
     Imp_Hit,
     Imp_Dead,
 
-    /* Second Normal Monster */
+    /* [ Demon Striker ] */
+    DemonStriker_Melee_1,
+    DemonStriker_Melee_2,
+    DemonStriker_Melee_3,
+    DemonStriker_Melee_4,
+    DemonStriker_Gun_Shoot_1,
+    DemonStriker_Gun_Shoot_2,
+    DemonStriker_Gun_Shoot_3,
+    DemonStriker_Gun_Shoot_4,
+    DemonStriker_Jump_1,
+    DemonStriker_Jump_2,
+    DemonStriker_Stun,
+    DemonStriker_Hit,
+    DemonStriker_Dead,
 
-    /* Third Normal Monster */
+    /* [ Demon Executioner ] */
+    DemonExecutioner_Melee_1,
+    DemonExecutioner_Melee_2,
+    DemonExecutioner_Melee_3,
+    DemonExecutioner_Melee_4,
+    DemonExecutioner_Melee_5,
+    DemonExecutioner_Melee_6,
+    DemonExecutioner_Jump_1,
+    DemonExecutioner_Jump_2,
+    DemonExecutioner_Stun,
+    DemonExecutioner_Hit,
+    DemonExecutioner_Dead,
+
 
     /* [ DemonWarrior ] */
 

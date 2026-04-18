@@ -19,7 +19,7 @@ AnimationRegistry::BuildResult AnimationRegistry::Rebuild(std::vector<AnimationC
 			return result;
 		}
 
-		const auto [clipIt, clipInserted] = _clipIdToId.emplace(def.clipId, def.id);
+		const auto [clipIt, clipInserted] = _clipIdToId.try_emplace(def.clipId, def.id);
 		(void)clipIt;
 		if (!clipInserted)
 		{

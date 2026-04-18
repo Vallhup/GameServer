@@ -1,0 +1,188 @@
+{
+    "schemaVersion": 2,
+    "objectName": "DemonExecutioner",
+    "inputs": {
+        "meshDirectory": "../../Resource/DemonExecutioner/Mesh",
+        "animationDirectory": "../../Resource/DemonExecutioner/Animation"
+    },
+    "outputs": {
+        "capsuleTemplatePath": "../../Output/Capsule/demonexecutioner_capsule_template.json",
+        "animationDirectory": "../../Output/Animation/DemonExecutioner"
+    },
+    "capsuleRules": {
+        "defaultRoles": [ "hurt" ],
+        "weaponRoles": [ "hit" ],
+        "weaponBones": [ 45 ],
+        "extremeTrimFraction": 0
+    },
+    "clips": [
+        {
+            "name": "block_1",
+            "source": "monster_Demon_Executioner_Block_1_baked.bone",
+            "output": "demonexecutioner_animation_block_1.json",
+            "loop": false
+        },
+        {
+            "name": "block_2",
+            "source": "monster_Demon_Executioner_Block_2_baked.bone",
+            "output": "demonexecutioner_animation_block_2.json",
+            "loop": false
+        },
+        {
+            "name": "charge",
+            "source": "monster_Demon_Executioner_Charge_baked.bone",
+            "output": "demonexecutioner_animation_charge.json",
+            "loop": false
+        },
+        {
+            "name": "death",
+            "source": "monster_Demon_Executioner_Death_baked.bone",
+            "output": "demonexecutioner_animation_death.json",
+            "loop": false
+        },
+        {
+            "name": "get_hit_1",
+            "source": "monster_Demon_Executioner_GetHit_1_baked.bone",
+            "output": "demonexecutioner_animation_get_hit_1.json",
+            "loop": false
+        },
+        {
+            "name": "get_hit_2",
+            "source": "monster_Demon_Executioner_GetHit_2_baked.bone",
+            "output": "demonexecutioner_animation_get_hit_2.json",
+            "loop": false
+        },
+        {
+            "name": "get_hit_3",
+            "source": "monster_Demon_Executioner_GetHit_3_baked.bone",
+            "output": "demonexecutioner_animation_get_hit_3.json",
+            "loop": false
+        },
+        {
+            "name": "idle_1",
+            "source": "monster_Demon_Executioner_Idle_1_baked.bone",
+            "output": "demonexecutioner_animation_idle_1.json",
+            "loop": true
+        },
+        {
+            "name": "idle_2",
+            "source": "monster_Demon_Executioner_Idle_2_baked.bone",
+            "output": "demonexecutioner_animation_idle_2.json",
+            "loop": true
+        },
+        {
+            "name": "idle_3",
+            "source": "monster_Demon_Executioner_Idle_3_baked.bone",
+            "output": "demonexecutioner_animation_idle_3.json",
+            "loop": true
+        },
+        {
+            "name": "idle_4",
+            "source": "monster_Demon_Executioner_Idle_4_baked.bone",
+            "output": "demonexecutioner_animation_idle_4.json",
+            "loop": true
+        },
+        {
+            "name": "jump_1",
+            "source": "monster_Demon_Executioner_Jump_1_baked.bone",
+            "output": "demonexecutioner_animation_jump_1.json",
+            "loop": false
+        },
+        {
+            "name": "jump_2",
+            "source": "monster_Demon_Executioner_Jump_2_baked.bone",
+            "output": "demonexecutioner_animation_jump_2.json",
+            "loop": false
+        },
+        {
+            "name": "melee_1",
+            "source": "monster_Demon_Executioner_Melee_1_baked.bone",
+            "output": "demonexecutioner_animation_melee_1.json",
+            "loop": false
+        },
+        {
+            "name": "melee_2",
+            "source": "monster_Demon_Executioner_Melee_2_baked.bone",
+            "output": "demonexecutioner_animation_melee_2.json",
+            "loop": false
+        },
+        {
+            "name": "melee_3",
+            "source": "monster_Demon_Executioner_Melee_3_baked.bone",
+            "output": "demonexecutioner_animation_melee_3.json",
+            "loop": false
+        },
+        {
+            "name": "melee_4",
+            "source": "monster_Demon_Executioner_Melee_4_baked.bone",
+            "output": "demonexecutioner_animation_melee_4.json",
+            "loop": false
+        },
+        {
+            "name": "melee_5",
+            "source": "monster_Demon_Executioner_Melee_5_baked.bone",
+            "output": "demonexecutioner_animation_melee_5.json",
+            "loop": false
+        },
+        {
+            "name": "melee_6",
+            "source": "monster_Demon_Executioner_Melee_6_baked.bone",
+            "output": "demonexecutioner_animation_melee_6.json",
+            "loop": false
+        },
+        {
+            "name": "roar_1",
+            "source": "monster_Demon_Executioner_Roar_baked.bone",
+            "output": "demonexecutioner_animation_roar_1.json",
+            "loop": false
+        },
+        {
+            "name": "roar_2",
+            "source": "monster_Demon_Executioner_Roar_2_baked.bone",
+            "output": "demonexecutioner_animation_roar_2.json",
+            "loop": false
+        },
+        {
+            "name": "run",
+            "source": "monster_Demon_Executioner_Run_baked.bone",
+            "output": "demonexecutioner_animation_run.json",
+            "loop": true
+        },
+        {
+            "name": "stun",
+            "source": "monster_Demon_Executioner_stun_baked.bone",
+            "output": "demonexecutioner_animation_stun.json",
+            "loop": false
+        },
+        {
+            "name": "walk_back",
+            "source": "monster_Demon_Executioner_Walk_Back_baked.bone",
+            "output": "demonexecutioner_animation_walk_back.json",
+            "loop": true
+        },
+        {
+            "name": "walk_forward",
+            "source": "monster_Demon_Executioner_Walk_Forward_baked.bone",
+            "output": "demonexecutioner_animation_walk_forward.json",
+            "loop": true
+        },
+        {
+            "name": "walk_forward_slow",
+            "source": "monster_Demon_Executioner_Walk_Forward_Slow_baked.bone",
+            "output": "demonexecutioner_animation_walk_forward_slow.json",
+            "loop": true
+        },
+        {
+            "name": "walk_left",
+            "source": "monster_Demon_Executioner_Walk_Left_baked.bone",
+            "output": "demonexecutioner_animation_walk_left.json",
+            "loop": true
+        },
+        {
+            "name": "walk_right",
+            "source": "monster_Demon_Executioner_Walk_Right_baked.bone",
+            "output": "demonexecutioner_animation_walk_right.json",
+            "loop": true
+        }
+    ]
+}

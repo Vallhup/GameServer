@@ -1,0 +1,236 @@
+{
+    "schemaVersion": 2,
+    "objectName": "DemonStriker",
+    "inputs": {
+        "meshDirectory": "../../Resource/DemonStriker/Mesh",
+        "animationDirectory": "../../Resource/DemonStriker/Animation"
+    },
+    "outputs": {
+        "capsuleTemplatePath": "../../Output/Capsule/demonstriker_capsule_template.json",
+        "animationDirectory": "../../Output/Animation/DemonStriker"
+    },
+    "capsuleRules": {
+        "defaultRoles": [ "hurt" ],
+        "weaponRoles": [ "hit" ],
+        "weaponBones": [ 45 ],
+        "extremeTrimFraction": 0
+    },
+    "clips": [
+        {
+            "name": "death_1",
+            "source": "monster_DemonStriker_death_1_baked.bone",
+            "output": "demonstriker_animation_death_1.json",
+            "loop": false
+        },
+        {
+            "name": "death_2",
+            "source": "monster_DemonStriker_death_2_baked.bone",
+            "output": "demonstriker_animation_death_2.json",
+            "loop": false
+        },
+        {
+            "name": "gun_shoot_1",
+            "source": "monster_DemonStriker_gun_shoot_1_baked.bone",
+            "output": "demonstriker_animation_gun_shoot_1.json",
+            "loop": false
+        },
+        {
+            "name": "gun_shoot_2",
+            "source": "monster_DemonStriker_gun_shoot_2_baked.bone",
+            "output": "demonstriker_animation_gun_shoot_2.json",
+            "loop": false
+        },
+        {
+            "name": "gun_shoot_3",
+            "source": "monster_DemonStriker_gun_shoot_3_baked.bone",
+            "output": "demonstriker_animation_gun_shoot_3.json",
+            "loop": false
+        },
+        {
+            "name": "gun_shoot_4",
+            "source": "monster_DemonStriker_gun_shoot_4_baked.bone",
+            "output": "demonstriker_animation_gun_shoot_4.json",
+            "loop": false
+        },
+        {
+            "name": "idle_1",
+            "source": "monster_DemonStriker_idle_1_baked.bone",
+            "output": "demonstriker_animation_idle_1.json",
+            "loop": true
+        },
+        {
+            "name": "idle_2",
+            "source": "monster_DemonStriker_idle_2_baked.bone",
+            "output": "demonstriker_animation_idle_2.json",
+            "loop": true
+        },
+        {
+            "name": "idle_3",
+            "source": "monster_DemonStriker_idle_3_baked.bone",
+            "output": "demonstriker_animation_idle_3.json",
+            "loop": true
+        },
+        {
+            "name": "idle_4",
+            "source": "monster_DemonStriker_idle_4_baked.bone",
+            "output": "demonstriker_animation_idle_4.json",
+            "loop": true
+        },
+        {
+            "name": "idle_5",
+            "source": "monster_DemonStriker_idle_5_baked.bone",
+            "output": "demonstriker_animation_idle_5.json",
+            "loop": true
+        },
+        {
+            "name": "idle_6",
+            "source": "monster_DemonStriker_idle_6_block_baked.bone",
+            "output": "demonstriker_animation_idle_6.json",
+            "loop": true
+        },
+        {
+            "name": "jump_1",
+            "source": "monster_DemonStriker_jump_1_baked.bone",
+            "output": "demonstriker_animation_jump_1.json",
+            "loop": false
+        },
+        {
+            "name": "jump_2",
+            "source": "monster_DemonStriker_jump_2_baked.bone",
+            "output": "demonstriker_animation_jump_2.json",
+            "loop": false
+        },
+        {
+            "name": "melee_1",
+            "source": "monster_DemonStriker_melee_1_baked.bone",
+            "output": "demonstriker_animation_melee_1.json",
+            "loop": false
+        },
+        {
+            "name": "melee_2",
+            "source": "monster_DemonStriker_melee_2_baked.bone",
+            "output": "demonstriker_animation_melee_2.json",
+            "loop": false
+        },
+        {
+            "name": "melee_3",
+            "source": "monster_DemonStriker_melee_3_baked.bone",
+            "output": "demonstriker_animation_melee_3.json",
+            "loop": false
+        },
+        {
+            "name": "melee_4",
+            "source": "monster_DemonStriker_melee_4_baked.bone",
+            "output": "demonstriker_animation_melee_4.json",
+            "loop": false
+        },
+        {
+            "name": "react_1",
+            "source": "monster_DemonStriker_react_1_block_baked.bone",
+            "output": "demonstriker_animation_react_1.json",
+            "loop": false
+        },
+        {
+            "name": "react_2",
+            "source": "monster_DemonStriker_react_2_headshot_baked.bone",
+            "output": "demonstriker_animation_react_2.json",
+            "loop": false
+        },
+        {
+            "name": "react_3",
+            "source": "monster_DemonStriker_react_3_left_baked.bone",
+            "output": "demonstriker_animation_react_3.json",
+            "loop": false
+        },
+        {
+            "name": "react_4",
+            "source": "monster_DemonStriker_react_4_right_baked.bone",
+            "output": "demonstriker_animation_react_4.json",
+            "loop": false
+        },
+        {
+            "name": "running_1",
+            "source": "monster_DemonStriker_running_1_baked.bone",
+            "output": "demonstriker_animation_running_1.json",
+            "loop": true
+        },
+        {
+            "name": "running_2",
+            "source": "monster_DemonStriker_running_2_baked.bone",
+            "output": "demonstriker_animation_running_2.json",
+            "loop": true
+        },
+        {
+            "name": "stun",
+            "source": "monster_DemonStriker_stun_baked.bone",
+            "output": "demonstriker_animation_stun.json",
+            "loop": false
+        },
+        {
+            "name": "turn_left",
+            "source": "monster_DemonStriker_turn_left_baked.bone",
+            "output": "demonstriker_animation_turn_left.json",
+            "loop": false
+        },
+        {
+            "name": "turn_right",
+            "source": "monster_DemonStriker_turn_right_baked.bone",
+            "output": "demonstriker_animation_turn_right.json",
+            "loop": false
+        },
+        {
+            "name": "walking_1",
+            "source": "monster_DemonStriker_walking_1_baked.bone",
+            "output": "demonstriker_animation_walking_1.json",
+            "loop": true
+        },
+        {
+            "name": "walking_2",
+            "source": "monster_DemonStriker_walking_2_baked.bone",
+            "output": "demonstriker_animation_walking_2.json",
+            "loop": true
+        },
+        {
+            "name": "walking_3",
+            "source": "monster_DemonStriker_walking_3_baked.bone",
+            "output": "demonstriker_animation_walking_3.json",
+            "loop": true
+        },
+        {
+            "name": "walking_4",
+            "source": "monster_DemonStriker_walking_4_gun_baked.bone",
+            "output": "demonstriker_animation_walking_4.json",
+            "loop": true
+        },
+        {
+            "name": "walking_5",
+            "source": "monster_DemonStriker_walking_5_gun_baked.bone",
+            "output": "demonstriker_animation_walking_5.json",
+            "loop": true
+        },
+        {
+            "name": "walking_6",
+            "source": "monster_DemonStriker_walking_6_block_baked.bone",
+            "output": "demonstriker_animation_walking_6.json",
+            "loop": true
+        },
+        {
+            "name": "walking_back",
+            "source": "monster_DemonStriker_walking_back_baked.bone",
+            "output": "demonstriker_animation_walking_back.json",
+            "loop": true
+        },
+        {
+            "name": "walking_left",
+            "source": "monster_DemonStriker_walking_left_baked.bone",
+            "output": "demonstriker_animation_walking_left.json",
+            "loop": true
+        },
+        {
+            "name": "walking_right",
+            "source": "monster_DemonStriker_walking_right_baked.bone",
+            "output": "demonstriker_animation_walking_right.json",
+            "loop": true
+        }
+    ]
+}
