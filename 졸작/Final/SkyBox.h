@@ -15,7 +15,7 @@ struct SkyboxConstants
 
 struct SkySun
 {
-	XMFLOAT3 direction = { -0.73f, -1.39f, -1.0f };
+	XMFLOAT3 direction = { -0.75f, -1.07f, -1.0f };
 	XMFLOAT3 color = { 1.0f, 1.0f, 1.0f };
 	float intensity = 1.0f;
 };

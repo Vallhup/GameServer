@@ -26,7 +26,7 @@ void TitleScene::InitializeLogic()
 	ID3D12Device* device = coreRef->GetDevice();
 	ID3D12GraphicsCommandList* cmdList = coreRef->GetGraphicsCmdList();
 
-	const wchar_t* skyboxNames[] = { L"plaza", L"skybox1", L"skybox2" };
+	const wchar_t* skyboxNames[] = { L"skybox", L"skybox1", L"skybox2", L"skybox3" };
 	for (auto name : skyboxNames)
 	{
 		wstring base = wstring(L"../Assets/Skybox/") + name;
