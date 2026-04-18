@@ -9,5 +9,7 @@ class IWorldInstanceFactory {
 public:
 	virtual ~IWorldInstanceFactory() = default;
 
-	virtual std::unique_ptr<IWorldInstanceImpl> Create(const WorldDef& def) = 0;
+	virtual std::unique_ptr<IWorldInstanceImpl> Create(
+		const WorldDef& def,
+		WorldId worldId) = 0;
 };

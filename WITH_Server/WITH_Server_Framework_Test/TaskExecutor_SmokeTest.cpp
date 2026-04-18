@@ -93,9 +93,12 @@ namespace
     class TestWorldInstanceFactory final : public IWorldInstanceFactory
     {
     public:
-        std::unique_ptr<IWorldInstanceImpl> Create(const WorldDef& def) override
+        std::unique_ptr<IWorldInstanceImpl> Create(
+            const WorldDef& def,
+            WorldId worldId) override
         {
             (void)def;
+            (void)worldId;
             return std::make_unique<NoopWorldInstanceImpl>();
         }
     };

@@ -15,7 +15,9 @@ public:
 	void SetFramework(FrameworkRuntime* framework) noexcept;
 	void SetBootstrapWorldId(const WorldId* worldId) noexcept;
 
-	std::unique_ptr<IWorldInstanceImpl> Create(const WorldDef& def) override;
+	std::unique_ptr<IWorldInstanceImpl> Create(
+		const WorldDef& def,
+		WorldId worldId) override;
 
 private:
 	const AnimationRegistry* _animationRegistry{ nullptr };

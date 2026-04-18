@@ -7,6 +7,12 @@ namespace
 	constexpr uint16_t kPartyMaxPlayers = 3;
 	constexpr float kCombatEmptyDestroyDelaySec = 5.0f;
 
+	constexpr MapResourceId kPlazaMapResourceId = 1;
+	constexpr MapResourceId kVillageMapResourceId = 2;
+	constexpr MapResourceId kCastleMapResourceId = 3;
+	constexpr MapResourceId kFinalMapResourceId = 4;
+	constexpr MapResourceId kPvpMapResourceId = 5;
+
 	class WorldDefBuilder final {
 	public:
 		static WorldDef CreateBase(
@@ -74,13 +80,31 @@ namespace
 		{
 			// TODO: Fill actual map resource, spawn points, named spawn points,
 			// navmesh path, navigation profile, and environment tags per world.
-			def.map.resourceId = 0;
+			def.map.resourceId = ResolveMapResourceId(def.id);
 			def.map.defaultPlayerSpawnPointId = 0;
 			def.map.namedSpawnPoints.clear();
 			def.map.navMesh = std::nullopt;
 			def.map.navigationProfile = std::nullopt;
 			def.map.navigationProfileId = std::nullopt;
 			def.map.environmentTags.clear();
+		}
+
+		static MapResourceId ResolveMapResourceId(WorldDefId worldDefId) noexcept
+		{
+			switch (worldDefId) {
+			case WorldDefId::Plaza:
+				return kPlazaMapResourceId;
+			case WorldDefId::Village:
+				return kVillageMapResourceId;
+			case WorldDefId::Castle:
+				return kCastleMapResourceId;
+			case WorldDefId::Final:
+				return kFinalMapResourceId;
+			case WorldDefId::Pvp:
+				return kPvpMapResourceId;
+			default:
+				return 0;
+			}
 		}
 	};
 }

@@ -162,6 +162,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ActionDef.cpp" />
+    <ClCompile Include="AICombatActionPolicyUtil.cpp" />
     <ClCompile Include="AIFSMRegistry.cpp" />
     <ClCompile Include="AnimationJsonLoader.cpp" />
     <ClCompile Include="AnimationRegistry.cpp" />
@@ -213,6 +214,7 @@
     <ClCompile Include="NormalAIReturnHomeState.cpp" />
     <ClCompile Include="NormalAISearchState.cpp" />
     <ClCompile Include="NormalReactionPolicy.cpp" />
+    <ClCompile Include="WeightedCombatActionPolicy.cpp" />
     <ClCompile Include="PlayerCommand.cpp" />
     <ClCompile Include="PlayerEntryService.cpp" />
     <ClCompile Include="PlayerCharacterTransferSerializer.cpp" />
@@ -253,6 +255,7 @@
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
     <ClInclude Include="ActionDef.h" />
     <ClInclude Include="ActionProfileIds.h" />
+    <ClInclude Include="AICombatActionPolicyUtil.h" />
     <ClInclude Include="AIFSMRegistry.h" />
     <ClInclude Include="AnimationDef.h" />
     <ClInclude Include="AnimationJsonLoader.h" />
@@ -328,6 +331,7 @@
     <ClInclude Include="NormalAIReturnHomeState.h" />
     <ClInclude Include="NormalAISearchState.h" />
     <ClInclude Include="NormalReactionPolicy.h" />
+    <ClInclude Include="WeightedCombatActionPolicy.h" />
     <ClInclude Include="PlayerCommand.h" />
     <ClInclude Include="PlayerEntryService.h" />
     <ClInclude Include="PlayerCharacterTransferSerializer.h" />

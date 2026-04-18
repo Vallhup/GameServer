@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "ServerWorldBootstrap.h"
 
+#include <array>
+#include <span>
 #include <string>
 
 #include "AIFSMRegistry.h"
@@ -69,9 +71,108 @@ namespace
 
 			return runtime->ExecuteSystems(SystemPhase::Graph, services)
 				? ExecCallResult::Success
-				: ExecCallResult::Failed;
+			: ExecCallResult::Failed;
 		}
 	};
+
+	struct DemoAISpawn
+	{
+		CharacterId characterId{ CharacterId::Imp };
+		float x{ 0.0f };
+		float z{ 0.0f };
+	};
+
+	std::span<const DemoAISpawn> ResolveDemoAISpawns(WorldDefId worldDefId)
+	{
+		static constexpr std::array<DemoAISpawn, 1> plazaSpawns
+		{
+			DemoAISpawn{ CharacterId::Imp, 480.167800f, 481.655600f }
+		};
+		static constexpr std::array<DemoAISpawn, 2> villageSpawns{
+			DemoAISpawn{ CharacterId::Imp, 478.0f, 482.0f },
+			DemoAISpawn{ CharacterId::Imp, 484.0f, 478.0f }
+		};
+		static constexpr std::array<DemoAISpawn, 3> castleSpawns{
+			DemoAISpawn{ CharacterId::Imp, 476.0f, 484.0f },
+			DemoAISpawn{ CharacterId::Imp, 482.0f, 480.0f },
+			DemoAISpawn{ CharacterId::Imp, 488.0f, 476.0f }
+		};
+		static constexpr std::array<DemoAISpawn, 1> finalSpawns{
+			DemoAISpawn{ CharacterId::Imp, 482.0f, 482.0f }
+		};
+
+		switch (worldDefId) {
+		case WorldDefId::Plaza:
+			return plazaSpawns;
+		case WorldDefId::Village:
+			return villageSpawns;
+		case WorldDefId::Castle:
+			return castleSpawns;
+		case WorldDefId::Final:
+			return finalSpawns;
+		default:
+			return {};
+		}
+	}
+
+	void SpawnAIEntity(
+		FrameworkRuntime& framework,
+		WorldRuntime& runtime,
+		CharacterId characterId,
+		WorldId worldId,
+		float spawnX,
+		float spawnZ)
+	{
+		const CharacterDef* characterDef = FindCharacterDef(characterId);
+		if (characterDef == nullptr ||
+			!characterDef->ai.has_value() ||
+			!AIFSMRegistry::IsArchetypeSupported(characterDef->ai->aiType))
+		{
+			return;
+		}
+
+		const Entity aiEntity = runtime.ReserveEntity();
+		if (aiEntity.IsNull())
+		{
+			return;
+		}
+
+		const NetId netId = framework.BindEntityToNet(worldId, aiEntity);
+
+		AssembleParams params{};
+		params.position = { spawnX, 5.508454f, spawnZ };
+		params.rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
+		params.netId = netId;
+
+		GetGlobalCharacterAspectRegistry().Assemble(
+			runtime,
+			aiEntity,
+			*characterDef,
+			params);
+	}
+
+	void SpawnDemoWorldEntities(
+		FrameworkRuntime* framework,
+		WorldRuntime& runtime,
+		WorldId worldId,
+		WorldDefId worldDefId)
+	{
+		if (framework == nullptr || !worldId.IsValid())
+		{
+			return;
+		}
+
+		for (const DemoAISpawn& spawn : ResolveDemoAISpawns(worldDefId))
+		{
+			SpawnAIEntity(
+				*framework,
+				runtime,
+				spawn.characterId,
+				worldId,
+				spawn.x,
+				spawn.z);
+		}
+	}
 
 	class ServerGameplayRuntimeBootstrap final {
 	public:
@@ -102,9 +203,15 @@ namespace
 
 	class ServerGameplayWorldImpl final : public IWorldInstanceImpl {
 	public:
-		explicit ServerGameplayWorldImpl(
-			const AnimationRegistry* animationRegistry)
+		ServerGameplayWorldImpl(
+			const AnimationRegistry* animationRegistry,
+			FrameworkRuntime* framework,
+			WorldId worldId,
+			WorldDefId worldDefId)
 			: _animationRegistry(animationRegistry)
+			, _framework(framework)
+			, _worldId(worldId)
+			, _worldDefId(worldDefId)
 		{
 		}
 
@@ -117,8 +224,11 @@ namespace
 
 		bool OnStart(WorldRuntime& runtime) override
 		{
-			(void)runtime;
-			// TODO: Dispatch initial SpawnSetDef once map/spawn content is defined.
+			SpawnDemoWorldEntities(
+				_framework,
+				runtime,
+				_worldId,
+				_worldDefId);
 			return true;
 		}
 
@@ -129,6 +239,9 @@ namespace
 
 	private:
 		const AnimationRegistry* _animationRegistry{ nullptr };
+		FrameworkRuntime* _framework{ nullptr };
+		WorldId _worldId{ WorldId::Invalid() };
+		WorldDefId _worldDefId{ WorldDefId::None };
 	};
 
 	class PlazaBootstrapWorldImpl final : public IWorldInstanceImpl {
@@ -136,10 +249,10 @@ namespace
 		PlazaBootstrapWorldImpl(
 			const AnimationRegistry* animationRegistry,
 			FrameworkRuntime* framework,
-			const WorldId* bootstrapWorldId)
+			WorldId worldId)
 			: _animationRegistry(animationRegistry)
 			, _framework(framework)
-			, _bootstrapWorldId(bootstrapWorldId)
+			, _worldId(worldId)
 		{
 		}
 
@@ -152,20 +265,11 @@ namespace
 
 		bool OnStart(WorldRuntime& runtime) override
 		{
-			if (_framework == nullptr ||
-				_bootstrapWorldId == nullptr ||
-				!_bootstrapWorldId->IsValid())
-			{
-				return true;
-			}
-
-			SpawnAIEntity(
-				*_framework,
+			SpawnDemoWorldEntities(
+				_framework,
 				runtime,
-				CharacterId::Imp,
-				*_bootstrapWorldId,
-				480.167800f,
-				481.655600f);
+				_worldId,
+				WorldDefId::Plaza);
 			return true;
 		}
 
@@ -175,45 +279,9 @@ namespace
 		}
 
 	private:
-		static void SpawnAIEntity(
-			FrameworkRuntime& framework,
-			WorldRuntime& runtime,
-			CharacterId characterId,
-			WorldId worldId,
-			float spawnX,
-			float spawnZ)
-		{
-			const CharacterDef* characterDef = FindCharacterDef(characterId);
-			if (characterDef == nullptr ||
-				!characterDef->ai.has_value() ||
-				!AIFSMRegistry::IsArchetypeSupported(characterDef->ai->aiType))
-			{
-				return;
-			}
-
-			const Entity aiEntity = runtime.ReserveEntity();
-			if (aiEntity.IsNull())
-			{
-				return;
-			}
-
-			const NetId netId = framework.BindEntityToNet(worldId, aiEntity);
-
-			AssembleParams params{};
-			params.position = { spawnX, 5.508454f, spawnZ };
-			params.rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
-			params.netId = netId;
-
-			GetGlobalCharacterAspectRegistry().Assemble(
-				runtime,
-				aiEntity,
-				*characterDef,
-				params);
-		}
-
 		const AnimationRegistry* _animationRegistry{ nullptr };
 		FrameworkRuntime* _framework{ nullptr };
-		const WorldId* _bootstrapWorldId{ nullptr };
+		WorldId _worldId{ WorldId::Invalid() };
 	};
 }
 
@@ -236,20 +304,24 @@ void ServerWorldBootstrapFactory::SetBootstrapWorldId(
 }
 
 std::unique_ptr<IWorldInstanceImpl> ServerWorldBootstrapFactory::Create(
-	const WorldDef& def)
+	const WorldDef& def,
+	WorldId worldId)
 {
 	switch (def.id) {
 	case WorldDefId::Plaza:
 		return std::make_unique<PlazaBootstrapWorldImpl>(
 			_animationRegistry,
 			_framework,
-			_bootstrapWorldId);
+			worldId);
 	case WorldDefId::Village:
 	case WorldDefId::Castle:
 	case WorldDefId::Final:
 	case WorldDefId::Pvp:
 		return std::make_unique<ServerGameplayWorldImpl>(
-			_animationRegistry);
+			_animationRegistry,
+			_framework,
+			worldId,
+			def.id);
 	default:
 		return nullptr;
 	}

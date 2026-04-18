@@ -183,6 +183,9 @@
     <ClCompile Include="AIFSMRegistry.cpp">
       <Filter>FSM\Core</Filter>
     </ClCompile>
+    <ClCompile Include="AICombatActionPolicyUtil.cpp">
+      <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClCompile>
     <ClCompile Include="Aspect\AIControlAspect.cpp">
       <Filter>Aspect</Filter>
     </ClCompile>
@@ -217,6 +220,9 @@
       <Filter>FSM\NormalMonster\Policy</Filter>
     </ClCompile>
     <ClCompile Include="ImpCombatActionPolicy.cpp">
+      <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClCompile>
+    <ClCompile Include="WeightedCombatActionPolicy.cpp">
       <Filter>FSM\NormalMonster\Policy</Filter>
     </ClCompile>
     <ClCompile Include="ServerPacketStager.cpp">
@@ -471,6 +477,9 @@
     <ClInclude Include="AIFSMRegistry.h">
       <Filter>FSM\Core</Filter>
     </ClInclude>
+    <ClInclude Include="AICombatActionPolicyUtil.h">
+      <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClInclude>
     <ClInclude Include="Aspect\AIControlAspect.h">
       <Filter>Aspect</Filter>
     </ClInclude>
@@ -553,6 +562,9 @@
       <Filter>FSM\NormalMonster\Policy</Filter>
     </ClInclude>
     <ClInclude Include="ImpCombatActionPolicy.h">
+      <Filter>FSM\NormalMonster\Policy</Filter>
+    </ClInclude>
+    <ClInclude Include="WeightedCombatActionPolicy.h">
       <Filter>FSM\NormalMonster\Policy</Filter>
     </ClInclude>
     <ClInclude Include="ServerPacketStager.h">

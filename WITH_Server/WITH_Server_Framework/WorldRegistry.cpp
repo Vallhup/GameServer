@@ -97,10 +97,6 @@ const WorldInstance* WorldRegistry::FindWorld(WorldId worldId) const
 
 WorldInstance* WorldRegistry::CreateWorld(const WorldDef& def, uint64_t instanceKey)
 {
-	auto impl = _factory.Create(def);
-	if (!impl)
-		return nullptr;
-
 	if (def.executionModelKey == InvalidWorldExecutionModelKey)
 		return nullptr;
 
@@ -126,6 +122,13 @@ WorldInstance* WorldRegistry::CreateWorld(const WorldDef& def, uint64_t instance
 	const WorldId worldId = _idAllocator.Allocate();
 	if (!worldId.IsValid())
 		return nullptr;
+
+	auto impl = _factory.Create(def, worldId);
+	if (!impl)
+	{
+		_idAllocator.Free(worldId);
+		return nullptr;
+	}
 
 	WorldInstanceCreateParams params;
 	params.identity.id = worldId;
