@@ -7,11 +7,14 @@
 #include <vector>
 
 #include "PlayerEntryService.h"
+#include "ServerPacketStager.h"
 #include "WorldInstance.h"
 
 namespace
 {
 	constexpr uint32_t kDefaultCommandSequence = 0;
+	constexpr uint32_t kWorldTransitionRejectReasonServerUnavailable = 1;
+	constexpr uint32_t kWorldTransitionRejectReasonRequestRejected = 2;
 
 	PlayerMoveCommandPayload MakeMovePayload(const InboundMoveData& moveData) noexcept
 	{
@@ -115,6 +118,12 @@ bool InboundMessageProcessor::TryHandleMessage(const InboundMessage& message)
 	case InboundMessageKind::LoginPacket:
 		return HandleLoginPacket(message);
 
+	case InboundMessageKind::WorldTransitionRequestPacket:
+		return HandleWorldTransitionRequestPacket(message);
+
+	case InboundMessageKind::WorldTransitionReadyPacket:
+		return HandleWorldTransitionReadyPacket(message);
+
 	case InboundMessageKind::ProtocolError:
 		return HandleProtocolError(message);
 
@@ -160,6 +169,56 @@ bool InboundMessageProcessor::HandleLoginPacket(const InboundMessage& message)
 	}
 
 	CompleteLogin(message.sessionId);
+	return true;
+}
+
+bool InboundMessageProcessor::HandleWorldTransitionRequestPacket(
+	const InboundMessage& message)
+{
+	if (_deps.worldTransitionSink == nullptr)
+	{
+		if (_deps.network != nullptr)
+		{
+			(void)ServerPacketStager::StageWorldTransitionRejectedPacket(
+				*_deps.network,
+				message.sessionId,
+				message.payload.worldTransitionRequest.requestId,
+				kWorldTransitionRejectReasonServerUnavailable);
+		}
+		return true;
+	}
+
+	const TransferId transferId =
+		_deps.worldTransitionSink->RequestDemoWorldTransition(
+			message.sessionId,
+			message.payload.worldTransitionRequest.requestId);
+	if (transferId == 0)
+	{
+		std::cout << "[InboundMessageProcessor] WorldTransition request rejected."
+			<< " sessionId=" << message.sessionId
+			<< " requestId=" << message.payload.worldTransitionRequest.requestId
+			<< "\n";
+		if (_deps.network != nullptr)
+		{
+			(void)ServerPacketStager::StageWorldTransitionRejectedPacket(
+				*_deps.network,
+				message.sessionId,
+				message.payload.worldTransitionRequest.requestId,
+				kWorldTransitionRejectReasonRequestRejected);
+		}
+	}
+	return true;
+}
+
+bool InboundMessageProcessor::HandleWorldTransitionReadyPacket(
+	const InboundMessage& message)
+{
+	if (_deps.worldTransitionSink != nullptr)
+	{
+		(void)_deps.worldTransitionSink->MarkClientWorldTransitionReady(
+			message.sessionId,
+			message.payload.worldTransitionReady.transferId);
+	}
 	return true;
 }
 

@@ -16,6 +16,8 @@ enum class InboundMessageKind : uint8_t
 	DodgePacket,
 	GuardPacket,
 	ParryPacket,
+	WorldTransitionRequestPacket,
+	WorldTransitionReadyPacket,
 
 	ProtocolError,
 };
@@ -45,6 +47,16 @@ struct InboundGuardData
 	uint8_t reserved[3]{};
 };
 
+struct InboundWorldTransitionRequestData
+{
+	uint32_t requestId{ 0 };
+};
+
+struct InboundWorldTransitionReadyData
+{
+	uint64_t transferId{ 0 };
+};
+
 struct InboundProtocolErrorData
 {
 	uint16_t packetId{ 0 };
@@ -57,6 +69,8 @@ union InboundMessagePayload
 	InboundMoveData move;
 	InboundDirectionData direction;
 	InboundGuardData guard;
+	InboundWorldTransitionRequestData worldTransitionRequest;
+	InboundWorldTransitionReadyData worldTransitionReady;
 	InboundProtocolErrorData error;
 
 	constexpr InboundMessagePayload()

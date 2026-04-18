@@ -117,3 +117,62 @@ bool ServerPacketStager::StageSpawnRemovePacketToSessions(
 	SendBufferPool::Get().Release(buffer);
 	return staged;
 }
+
+bool ServerPacketStager::StageWorldTransitionBeginPacket(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	const ServerWorldTransitionBeginPacket& transition)
+{
+	Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET packet;
+	packet.set_transferid(transition.transferId);
+	packet.set_requestid(transition.requestId);
+	packet.set_sourceworlddefid(transition.sourceWorldDefId);
+	packet.set_sourceworldid(transition.sourceWorldId);
+	packet.set_targetworlddefid(transition.targetWorldDefId);
+	packet.set_targetworldid(transition.targetWorldId);
+	packet.set_mapresourceid(transition.mapResourceId);
+	packet.set_playernetid(transition.playerNetId);
+	packet.set_clearexistingobjects(transition.clearExistingObjects);
+	packet.set_waitclientready(transition.waitClientReady);
+	packet.set_usedfallback(transition.usedFallback);
+	packet.set_reason(transition.reason);
+
+	SendBuffer* const buffer =
+		PacketFactory::Serialize(PacketType::SC_WORLD_TRANSITION_BEGIN, packet);
+	if (buffer == nullptr)
+	{
+		return false;
+	}
+
+	const bool staged =
+		network.StageUnicast(
+			sessionId,
+			std::span<const uint8_t>(buffer->data, buffer->size));
+	SendBufferPool::Get().Release(buffer);
+	return staged;
+}
+
+bool ServerPacketStager::StageWorldTransitionRejectedPacket(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	uint32_t requestId,
+	uint32_t reason)
+{
+	Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET packet;
+	packet.set_requestid(requestId);
+	packet.set_reason(reason);
+
+	SendBuffer* const buffer =
+		PacketFactory::Serialize(PacketType::SC_WORLD_TRANSITION_REJECTED, packet);
+	if (buffer == nullptr)
+	{
+		return false;
+	}
+
+	const bool staged =
+		network.StageUnicast(
+			sessionId,
+			std::span<const uint8_t>(buffer->data, buffer->size));
+	SendBufferPool::Get().Release(buffer);
+	return staged;
+}

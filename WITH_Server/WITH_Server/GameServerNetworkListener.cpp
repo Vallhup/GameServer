@@ -181,6 +181,44 @@ void GameServerNetworkListener::OnPacketReceived(
 		return;
 	}
 
+	case PacketType::CS_WORLD_TRANSITION_REQUEST:
+	{
+		Protocol::CS_WORLD_TRANSITION_REQUEST_PACKET packet;
+		if (!PacketFactory::Deserialize(header, data, &packet))
+		{
+			PublishProtocolError(
+				_sink,
+				sessionId,
+				header.type,
+				kProtocolErrorDecodeFailed);
+			return;
+		}
+
+		message.kind = InboundMessageKind::WorldTransitionRequestPacket;
+		message.payload.worldTransitionRequest.requestId = packet.requestid();
+		_sink.OnInboundMessage(std::move(message));
+		return;
+	}
+
+	case PacketType::CS_WORLD_TRANSITION_READY:
+	{
+		Protocol::CS_WORLD_TRANSITION_READY_PACKET packet;
+		if (!PacketFactory::Deserialize(header, data, &packet))
+		{
+			PublishProtocolError(
+				_sink,
+				sessionId,
+				header.type,
+				kProtocolErrorDecodeFailed);
+			return;
+		}
+
+		message.kind = InboundMessageKind::WorldTransitionReadyPacket;
+		message.payload.worldTransitionReady.transferId = packet.transferid();
+		_sink.OnInboundMessage(std::move(message));
+		return;
+	}
+
 	default:
 		PublishProtocolError(
 			_sink,

@@ -7,6 +7,7 @@
 #include "FrameworkRuntime.h"
 #include "InboundCommandStatsCollector.h"
 #include "InboundMessage.h"
+#include "IWorldTransitionRequestSink.h"
 #include "NetworkRuntime.h"
 #include "PlayerCommand.h"
 #include "SessionBindingRegistry.h"
@@ -22,6 +23,7 @@ public:
 		NetworkRuntime* network{ nullptr };
 		PlayerEntryService* playerEntryService{ nullptr };
 		SessionBindingRegistry* sessionBindings{ nullptr };
+		IWorldTransitionRequestSink* worldTransitionSink{ nullptr };
 	};
 
 private:
@@ -84,6 +86,8 @@ private:
 	bool HandleConnected(const InboundMessage& message);
 	bool HandleDisconnected(const InboundMessage& message);
 	bool HandleLoginPacket(const InboundMessage& message);
+	bool HandleWorldTransitionRequestPacket(const InboundMessage& message);
+	bool HandleWorldTransitionReadyPacket(const InboundMessage& message);
 	bool HandleProtocolError(const InboundMessage& message);
 
 	bool ValidateLoginRequest(const InboundMessage& message) const noexcept;
