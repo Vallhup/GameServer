@@ -3,19 +3,22 @@
 #include <atomic>
 #include <chrono>
 #include <cstdint>
+#include <span>
+#include <unordered_map>
 #include <vector>
 
 #include "FrameworkRuntime.h"
 #include "AnimationJsonLoader.h"
 #include "AnimationRegistry.h"
 #include "InboundMessageProcessor.h"
+#include "IWorldTransitionRequestSink.h"
 #include "NetworkRuntime.h"
 #include "PlayerEntryService.h"
 #include "SessionBindingRegistry.h"
 #include "ServerWorldBootstrap.h"
 #include "ServerWorldTransferBinding.h"
 
-class ServerApp final {
+class ServerApp final : public IWorldTransitionRequestSink {
 public:
 	struct Config
 	{
@@ -61,6 +64,23 @@ public:
 		bool allowFallback = true);
 	TransferId RequestDebugTransferToVillage(SessionId sessionId);
 
+	TransferId RequestDemoWorldTransition(
+		SessionId sessionId,
+		uint32_t requestId) override;
+	bool MarkClientWorldTransitionReady(
+		SessionId sessionId,
+		TransferId transferId) override;
+
+private:
+	struct PendingClientTransition
+	{
+		TransferId transferId{ 0 };
+		SessionId sessionId{ 0 };
+		WorldId targetWorldId{ WorldId::Invalid() };
+		NetId playerNetId{ NetId::Invalid() };
+		uint32_t mapResourceId{ 0 };
+	};
+
 private:
 	bool InitializeFrameworkRuntime();
 	bool InitializeNetworkRuntime();
@@ -74,6 +94,8 @@ private:
 	void ProcessInboundMessages();
 	void RunWorldFrames(double dtSec);
 	void FlushOutbound();
+	bool StageWorldTransitionBeginPackets(
+		const WorldTransferEventBatch& transferEvents);
 
 private:
 	Config _config;
@@ -95,6 +117,9 @@ private:
 	InboundMessageProcessor _inboundProcessor;
 	std::vector<InboundMessage> _inboundMessages;
 	std::vector<InboundMessage> _remainingInboundMessages;
+	std::unordered_map<TransferId, std::unordered_map<SessionId, uint32_t>>
+		_worldTransitionRequestIds;
+	std::unordered_map<SessionId, PendingClientTransition> _pendingClientTransitions;
 
 	uint64_t _tickCount{ 0 };
 	uint64_t _frameIndex{ 0 };
