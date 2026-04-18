@@ -81,6 +81,8 @@ namespace AITuningIds
 {
 	inline constexpr AITuningId None = 0;
 	inline constexpr AITuningId Imp = 1001;
+	inline constexpr AITuningId DemonStriker = 1002;
+	inline constexpr AITuningId DemonExecutioner = 1003;
 	inline constexpr AITuningId FinalBoss = 1005;
 }
 

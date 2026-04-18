@@ -20,7 +20,8 @@ enum class AIMovementPolicyKind : uint8_t
 enum class AICombatActionPolicyKind : uint8_t
 {
 	None,
-	Imp
+	Imp,
+	Weighted
 };
 
 enum class AIReactionPolicyKind : uint8_t
@@ -58,8 +59,10 @@ struct AIBehaviorProfileDef
 	std::span<const WeightedActionEntry> idleActions{};
 };
 
-class AIStateRegistry final
-{
+class AIStateRegistry final {
+	static constexpr size_t kAIStateCount = 
+		static_cast<size_t>(AIStateType::Count);
+
 public:
 	AIStateRegistry() = delete;
 	AIStateRegistry(AIArchetype type);
@@ -73,7 +76,7 @@ public:
 	const IAIState* TryGetState(AIStateType type) const;
 
 private:
-	std::array<std::unique_ptr<IAIState>, static_cast<size_t>(AIStateType::Count)> _states;
+	std::array<std::unique_ptr<IAIState>, kAIStateCount> _states;
 };
 
 struct AIFSMBundle
@@ -109,8 +112,7 @@ struct AIBehaviorBundle
 	AIBehaviorBundle& operator=(AIBehaviorBundle&&) = default;
 };
 
-class AIFSMRegistry final
-{
+class AIFSMRegistry final {
 public:
 	AIFSMRegistry();
 
@@ -136,4 +138,6 @@ public:
 private:
 	AIFSMBundle _normal;
 	AIBehaviorBundle _impBehavior;
+	AIBehaviorBundle _demonStrikerBehavior;
+	AIBehaviorBundle _demonExecutionerBehavior;
 };

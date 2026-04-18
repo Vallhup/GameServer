@@ -6,6 +6,7 @@
 #include <span>
 #include <vector>
 #include "IDs.h"
+#include "EntityId.h"
 
 enum class ActionKind : uint8_t;
 

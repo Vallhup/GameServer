@@ -9,7 +9,7 @@ namespace
 {
 	using CFF = CharacterFeatureFlags;
 
-	const std::array<CharacterDef, 3> kCharacterDefs =
+	const std::array<CharacterDef, 5> kCharacterDefs =
 	{
 		CharacterDef
 		{
@@ -96,7 +96,92 @@ namespace
 				.actionProfileId = CharacterActionProfileIds::Imp
 			}
 		},
-
+		CharacterDef
+		{
+			.id = CharacterId::DemonStriker,
+			.name = "DemonStriker",
+			.profile = CharacterProfileDef
+			{
+				.faction = Faction::Enemy
+			},
+			.stat = CharacterStatDef
+			{
+				.maxHp = 100,
+				.maxStamina = 100,
+				.maxPoise = 100,
+				.attackPower = 10,
+				.defense = 10,
+				.moveSpeed = 3.0f,
+				.attackSpeed = 1.0f
+			},
+			.bodyCollision = CharacterBodyCollisionDef
+			{
+				.footprintRadiusXZ = 0.46f,
+				.bodyHeight = 1.6f,
+				.blocksBodyOverlap = true,
+				.useNavMeshConstraint = true,
+				.pushability = BodyPushability::Dynamic,
+				.overlapYieldWeight = 0.85f,
+				.maxOverlapCorrectionPerFrameXZ = 0.16f
+			},
+			.role = CharacterRole::Monster,
+			.features =
+				CFF::Replicated |
+				CFF::Combatant |
+				CFF::AIControlled,
+			.ai = CharacterAIDef
+			{
+				.aiType = AIArchetype::NormalMonster,
+				.aiTuningId = AITuningIds::DemonStriker
+			},
+			.action = CharacterActionDefRef
+			{
+				.actionProfileId = CharacterActionProfileIds::DemonStriker
+			}
+		},
+		CharacterDef
+		{
+			.id = CharacterId::DemonExecutioner,
+			.name = "DemonExecutioner",
+			.profile = CharacterProfileDef
+			{
+				.faction = Faction::Enemy
+			},
+			.stat = CharacterStatDef
+			{
+				.maxHp = 100,
+				.maxStamina = 100,
+				.maxPoise = 100,
+				.attackPower = 10,
+				.defense = 10,
+				.moveSpeed = 3.0f,
+				.attackSpeed = 1.0f
+			},
+			.bodyCollision = CharacterBodyCollisionDef
+			{
+				.footprintRadiusXZ = 0.46f,
+				.bodyHeight = 1.6f,
+				.blocksBodyOverlap = true,
+				.useNavMeshConstraint = true,
+				.pushability = BodyPushability::Dynamic,
+				.overlapYieldWeight = 0.85f,
+				.maxOverlapCorrectionPerFrameXZ = 0.16f
+			},
+			.role = CharacterRole::Monster,
+			.features =
+				CFF::Replicated |
+				CFF::Combatant |
+				CFF::AIControlled,
+			.ai = CharacterAIDef
+			{
+				.aiType = AIArchetype::NormalMonster,
+				.aiTuningId = AITuningIds::DemonExecutioner
+			},
+			.action = CharacterActionDefRef
+			{
+				.actionProfileId = CharacterActionProfileIds::DemonExecutioner
+			}
+		},
 		CharacterDef
 		{
 			.id = CharacterId::FinalBoss,

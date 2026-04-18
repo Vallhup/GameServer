@@ -10,6 +10,7 @@
 
 #include "NormalAIMovementPolicy.h"
 #include "ImpCombatActionPolicy.h"
+#include "WeightedCombatActionPolicy.h"
 #include "NormalReactionPolicy.h"
 
 namespace
@@ -27,7 +28,37 @@ namespace
 		WeightedActionEntry{ ActionId::Imp_Jump, 100 }
 	};
 
-	const std::array<AIBehaviorProfileDef, 1> kAIBehaviorProfiles =
+	// Ranged DemonStriker actions stay out until projectile handling is wired.
+	const std::array<WeightedActionEntry, 4> kDemonStrikerCombatActions =
+	{
+		WeightedActionEntry{ ActionId::DemonStriker_Melee_1, 20 },
+		WeightedActionEntry{ ActionId::DemonStriker_Melee_2, 20 },
+		WeightedActionEntry{ ActionId::DemonStriker_Melee_3, 25 },
+		WeightedActionEntry{ ActionId::DemonStriker_Melee_4, 25 }
+	};
+
+	const std::array<WeightedActionEntry, 6> kDemonExecutionerCombatActions =
+	{
+		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_1, 20 },
+		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_2, 20 },
+		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_3, 20 },
+		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_4, 15 },
+		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_5, 15 },
+		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_6, 10 }
+	};
+
+	const std::array<WeightedActionEntry, 1> kDemonStrikerIdleActions =
+	{
+		WeightedActionEntry{ ActionId::DemonStriker_Jump_1, 100 }
+	};
+
+	const std::array<WeightedActionEntry, 2> kDemonExecutionerIdleActions =
+	{
+		WeightedActionEntry{ ActionId::DemonExecutioner_Jump_1, 50 },
+		WeightedActionEntry{ ActionId::DemonExecutioner_Jump_2, 50 }
+	};
+
+	const std::array<AIBehaviorProfileDef, 3> kAIBehaviorProfiles =
 	{
 		AIBehaviorProfileDef
 		{
@@ -68,6 +99,86 @@ namespace
 			.reactionPolicyKind = AIReactionPolicyKind::Normal,
 			.combatActions = kImpCombatActions,
 			.idleActions = kImpIdleActions
+		},
+		AIBehaviorProfileDef
+		{
+			.id = AITuningIds::DemonStriker,
+			.aiType = AIArchetype::NormalMonster,
+			.perceptionTuning = AIPerceptionTuningComp
+			{
+				.sightRange = 14.0,
+				.attackRange = 2.0,
+				.frontDotThreshold = 0.2,
+				.targetKeepBonus = 4.0,
+				.lastAttackerBonus = 2.5,
+				.frontBonus = 1.0,
+				.switchScoreMargin = 3.0,
+				.loseSightGraceTime = 1.2,
+				.leashRange = 20.0,
+				.hardLeashRange = 28.0,
+				.leashGaugeMax = 100.0,
+				.leashDrainPerSec = 20.0,
+				.hardLeashDrainPerSec = 60.0,
+				.leashRecoverPerSec = 35.0,
+				.returnHomeArriveRange = 0.8,
+				.returnHomeReaggroLockSec = 1.5,
+				.returnHpRegenPerSecRatio = 0.08,
+				.idleActionCooldownSec = 7.0,
+				.idleActionChancePercent = 20,
+				.assistRange = 7.0
+			},
+			.decisionTuning = AIDecisionTuningComp
+			{
+				.decisionInterval = 0.2,
+				.attackCooldown = 2.0,
+				.reactDuration = 0.5
+			},
+			.movementPolicyKind = AIMovementPolicyKind::Normal,
+			.combatActionPolicyKind = AICombatActionPolicyKind::Weighted,
+			.idleActionPolicyKind = AIIdleActionPolicyKind::Weighted,
+			.reactionPolicyKind = AIReactionPolicyKind::Normal,
+			.combatActions = kDemonStrikerCombatActions,
+			.idleActions = kDemonStrikerIdleActions
+		},
+		AIBehaviorProfileDef
+		{
+			.id = AITuningIds::DemonExecutioner,
+			.aiType = AIArchetype::NormalMonster,
+			.perceptionTuning = AIPerceptionTuningComp
+			{
+				.sightRange = 12.0,
+				.attackRange = 2.2,
+				.frontDotThreshold = 0.2,
+				.targetKeepBonus = 4.0,
+				.lastAttackerBonus = 2.5,
+				.frontBonus = 1.0,
+				.switchScoreMargin = 3.0,
+				.loseSightGraceTime = 1.2,
+				.leashRange = 18.0,
+				.hardLeashRange = 26.0,
+				.leashGaugeMax = 100.0,
+				.leashDrainPerSec = 20.0,
+				.hardLeashDrainPerSec = 60.0,
+				.leashRecoverPerSec = 35.0,
+				.returnHomeArriveRange = 0.8,
+				.returnHomeReaggroLockSec = 1.5,
+				.returnHpRegenPerSecRatio = 0.08,
+				.idleActionCooldownSec = 8.0,
+				.idleActionChancePercent = 15,
+				.assistRange = 6.0
+			},
+			.decisionTuning = AIDecisionTuningComp
+			{
+				.decisionInterval = 0.2,
+				.attackCooldown = 2.3,
+				.reactDuration = 0.6
+			},
+			.movementPolicyKind = AIMovementPolicyKind::Normal,
+			.combatActionPolicyKind = AICombatActionPolicyKind::Weighted,
+			.idleActionPolicyKind = AIIdleActionPolicyKind::Weighted,
+			.reactionPolicyKind = AIReactionPolicyKind::Normal,
+			.combatActions = kDemonExecutionerCombatActions,
+			.idleActions = kDemonExecutionerIdleActions
 		}
 	};
 
@@ -135,31 +246,45 @@ AIFSMBundle::AIFSMBundle(AIArchetype type)
 AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 	: profile(&profileDef)
 {
-	switch (profileDef.movementPolicyKind)
-	{
+	switch (profileDef.movementPolicyKind) {
 	case AIMovementPolicyKind::Normal:
+	{
 		movementPolicy = std::make_unique<NormalAIMovementPolicy>();
 		break;
+	}
 	default:
+	{
 		break;
 	}
+	}
 
-	switch (profileDef.combatActionPolicyKind)
-	{
+	switch (profileDef.combatActionPolicyKind) {
 	case AICombatActionPolicyKind::Imp:
+	{
 		combatActionPolicy = std::make_unique<ImpCombatActionPolicy>();
 		break;
-	default:
+	}
+	case AICombatActionPolicyKind::Weighted:
+	{
+		combatActionPolicy = std::make_unique<WeightedCombatActionPolicy>();
 		break;
 	}
-
-	switch (profileDef.reactionPolicyKind)
+	default:
 	{
+		break;
+	}
+	}
+
+	switch (profileDef.reactionPolicyKind) {
 	case AIReactionPolicyKind::Normal:
+	{
 		reactionPolicy = std::make_unique<NormalReactionPolicy>();
 		break;
+	}
 	default:
+	{
 		break;
+	}
 	}
 }
 
@@ -168,17 +293,22 @@ AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 AIFSMRegistry::AIFSMRegistry()
 	: _normal(AIFSMBundle(AIArchetype::NormalMonster))
 	, _impBehavior(GetRequiredProfile(AIArchetype::NormalMonster, AITuningIds::Imp))
+	, _demonStrikerBehavior(GetRequiredProfile(AIArchetype::NormalMonster, AITuningIds::DemonStriker))
+	, _demonExecutionerBehavior(GetRequiredProfile(AIArchetype::NormalMonster, AITuningIds::DemonExecutioner))
 {
 }
 
 const AIFSMBundle* AIFSMRegistry::TryGetBundle(AIArchetype type) const
 {
-	switch (type)
-	{
+	switch (type) {
 	case AIArchetype::NormalMonster:
+	{
 		return &_normal;
+	}
 	default:
+	{
 		return nullptr;
+	}
 	}
 }
 
@@ -186,25 +316,38 @@ const AIBehaviorBundle* AIFSMRegistry::TryGetBehavior(
 	AIArchetype aiType,
 	AITuningId aiTuningId) const
 {
-	switch (aiType)
-	{
+	switch (aiType){
 	case AIArchetype::NormalMonster:
+	{
 		if (aiTuningId == AITuningIds::Imp)
 			return &_impBehavior;
+
+		else if (aiTuningId == AITuningIds::DemonStriker)
+			return &_demonStrikerBehavior;
+
+		else if (aiTuningId == AITuningIds::DemonExecutioner)
+			return &_demonExecutionerBehavior;
+
 		return nullptr;
+	}
 	default:
+	{
 		return nullptr;
+	}
 	}
 }
 
 bool AIFSMRegistry::IsArchetypeSupported(AIArchetype type) noexcept
 {
-	switch (type)
-	{
+	switch (type) {
 	case AIArchetype::NormalMonster:
+	{
 		return true;
+	}
 	default:
+	{
 		return false;
+	}
 	}
 }
 

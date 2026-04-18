@@ -9,6 +9,8 @@
 #include <span>
 #include <vector>
 
+enum class CharacterId : uint8_t;
+
 enum class ActionKind : uint8_t
 {
 	None,

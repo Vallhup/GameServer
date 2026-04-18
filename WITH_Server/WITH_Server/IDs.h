@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include "EntityId.h"
 
 enum class BuffId : uint8_t
 {
