@@ -56,6 +56,9 @@ namespace Protocol {
 class CS_ATTACK_PACKET;
 struct CS_ATTACK_PACKETDefaultTypeInternal;
 extern CS_ATTACK_PACKETDefaultTypeInternal _CS_ATTACK_PACKET_default_instance_;
+class CS_CHARACTER_SELECT_PACKET;
+struct CS_CHARACTER_SELECT_PACKETDefaultTypeInternal;
+extern CS_CHARACTER_SELECT_PACKETDefaultTypeInternal _CS_CHARACTER_SELECT_PACKET_default_instance_;
 class CS_DODGE_PACKET;
 struct CS_DODGE_PACKETDefaultTypeInternal;
 extern CS_DODGE_PACKETDefaultTypeInternal _CS_DODGE_PACKET_default_instance_;
@@ -71,6 +74,12 @@ extern CS_MOVE_PACKETDefaultTypeInternal _CS_MOVE_PACKET_default_instance_;
 class CS_PARRY_PACKET;
 struct CS_PARRY_PACKETDefaultTypeInternal;
 extern CS_PARRY_PACKETDefaultTypeInternal _CS_PARRY_PACKET_default_instance_;
+class CS_WORLD_TRANSITION_READY_PACKET;
+struct CS_WORLD_TRANSITION_READY_PACKETDefaultTypeInternal;
+extern CS_WORLD_TRANSITION_READY_PACKETDefaultTypeInternal _CS_WORLD_TRANSITION_READY_PACKET_default_instance_;
+class CS_WORLD_TRANSITION_REQUEST_PACKET;
+struct CS_WORLD_TRANSITION_REQUEST_PACKETDefaultTypeInternal;
+extern CS_WORLD_TRANSITION_REQUEST_PACKETDefaultTypeInternal _CS_WORLD_TRANSITION_REQUEST_PACKET_default_instance_;
 class SC_ADD_PACKET;
 struct SC_ADD_PACKETDefaultTypeInternal;
 extern SC_ADD_PACKETDefaultTypeInternal _SC_ADD_PACKET_default_instance_;
@@ -92,6 +101,12 @@ extern SC_REPLICATION_FRAME_PACKETDefaultTypeInternal _SC_REPLICATION_FRAME_PACK
 class SC_STAT_CHANGE_PACKET;
 struct SC_STAT_CHANGE_PACKETDefaultTypeInternal;
 extern SC_STAT_CHANGE_PACKETDefaultTypeInternal _SC_STAT_CHANGE_PACKET_default_instance_;
+class SC_WORLD_TRANSITION_BEGIN_PACKET;
+struct SC_WORLD_TRANSITION_BEGIN_PACKETDefaultTypeInternal;
+extern SC_WORLD_TRANSITION_BEGIN_PACKETDefaultTypeInternal _SC_WORLD_TRANSITION_BEGIN_PACKET_default_instance_;
+class SC_WORLD_TRANSITION_REJECTED_PACKET;
+struct SC_WORLD_TRANSITION_REJECTED_PACKETDefaultTypeInternal;
+extern SC_WORLD_TRANSITION_REJECTED_PACKETDefaultTypeInternal _SC_WORLD_TRANSITION_REJECTED_PACKET_default_instance_;
 }  // namespace Protocol
 namespace google {
 namespace protobuf {
@@ -103,6 +118,530 @@ namespace Protocol {
 // ===================================================================
 
 
+// -------------------------------------------------------------------
+
+class SC_WORLD_TRANSITION_REJECTED_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_WORLD_TRANSITION_REJECTED_PACKET) */ {
+ public:
+  inline SC_WORLD_TRANSITION_REJECTED_PACKET() : SC_WORLD_TRANSITION_REJECTED_PACKET(nullptr) {}
+  ~SC_WORLD_TRANSITION_REJECTED_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_WORLD_TRANSITION_REJECTED_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_WORLD_TRANSITION_REJECTED_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_WORLD_TRANSITION_REJECTED_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_WORLD_TRANSITION_REJECTED_PACKET(const SC_WORLD_TRANSITION_REJECTED_PACKET& from) : SC_WORLD_TRANSITION_REJECTED_PACKET(nullptr, from) {}
+  inline SC_WORLD_TRANSITION_REJECTED_PACKET(SC_WORLD_TRANSITION_REJECTED_PACKET&& from) noexcept
+      : SC_WORLD_TRANSITION_REJECTED_PACKET(nullptr, std::move(from)) {}
+  inline SC_WORLD_TRANSITION_REJECTED_PACKET& operator=(const SC_WORLD_TRANSITION_REJECTED_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_WORLD_TRANSITION_REJECTED_PACKET& operator=(SC_WORLD_TRANSITION_REJECTED_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_WORLD_TRANSITION_REJECTED_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_WORLD_TRANSITION_REJECTED_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_WORLD_TRANSITION_REJECTED_PACKET*>(
+        &_SC_WORLD_TRANSITION_REJECTED_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 16;
+  friend void swap(SC_WORLD_TRANSITION_REJECTED_PACKET& a, SC_WORLD_TRANSITION_REJECTED_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_WORLD_TRANSITION_REJECTED_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_WORLD_TRANSITION_REJECTED_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_WORLD_TRANSITION_REJECTED_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_WORLD_TRANSITION_REJECTED_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_WORLD_TRANSITION_REJECTED_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_WORLD_TRANSITION_REJECTED_PACKET& from) { SC_WORLD_TRANSITION_REJECTED_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_WORLD_TRANSITION_REJECTED_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_WORLD_TRANSITION_REJECTED_PACKET"; }
+
+ protected:
+  explicit SC_WORLD_TRANSITION_REJECTED_PACKET(::google::protobuf::Arena* arena);
+  SC_WORLD_TRANSITION_REJECTED_PACKET(::google::protobuf::Arena* arena, const SC_WORLD_TRANSITION_REJECTED_PACKET& from);
+  SC_WORLD_TRANSITION_REJECTED_PACKET(::google::protobuf::Arena* arena, SC_WORLD_TRANSITION_REJECTED_PACKET&& from) noexcept
+      : SC_WORLD_TRANSITION_REJECTED_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kRequestIdFieldNumber = 1,
+    kReasonFieldNumber = 2,
+  };
+  // uint32 requestId = 1;
+  void clear_requestid() ;
+  ::uint32_t requestid() const;
+  void set_requestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_requestid() const;
+  void _internal_set_requestid(::uint32_t value);
+
+  public:
+  // uint32 reason = 2;
+  void clear_reason() ;
+  ::uint32_t reason() const;
+  void set_reason(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_reason() const;
+  void _internal_set_reason(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_WORLD_TRANSITION_REJECTED_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      1, 2, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_WORLD_TRANSITION_REJECTED_PACKET& from_msg);
+    ::uint32_t requestid_;
+    ::uint32_t reason_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_WORLD_TRANSITION_BEGIN_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET) */ {
+ public:
+  inline SC_WORLD_TRANSITION_BEGIN_PACKET() : SC_WORLD_TRANSITION_BEGIN_PACKET(nullptr) {}
+  ~SC_WORLD_TRANSITION_BEGIN_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_WORLD_TRANSITION_BEGIN_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_WORLD_TRANSITION_BEGIN_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_WORLD_TRANSITION_BEGIN_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_WORLD_TRANSITION_BEGIN_PACKET(const SC_WORLD_TRANSITION_BEGIN_PACKET& from) : SC_WORLD_TRANSITION_BEGIN_PACKET(nullptr, from) {}
+  inline SC_WORLD_TRANSITION_BEGIN_PACKET(SC_WORLD_TRANSITION_BEGIN_PACKET&& from) noexcept
+      : SC_WORLD_TRANSITION_BEGIN_PACKET(nullptr, std::move(from)) {}
+  inline SC_WORLD_TRANSITION_BEGIN_PACKET& operator=(const SC_WORLD_TRANSITION_BEGIN_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_WORLD_TRANSITION_BEGIN_PACKET& operator=(SC_WORLD_TRANSITION_BEGIN_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_WORLD_TRANSITION_BEGIN_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_WORLD_TRANSITION_BEGIN_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_WORLD_TRANSITION_BEGIN_PACKET*>(
+        &_SC_WORLD_TRANSITION_BEGIN_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 15;
+  friend void swap(SC_WORLD_TRANSITION_BEGIN_PACKET& a, SC_WORLD_TRANSITION_BEGIN_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_WORLD_TRANSITION_BEGIN_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_WORLD_TRANSITION_BEGIN_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_WORLD_TRANSITION_BEGIN_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_WORLD_TRANSITION_BEGIN_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_WORLD_TRANSITION_BEGIN_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_WORLD_TRANSITION_BEGIN_PACKET& from) { SC_WORLD_TRANSITION_BEGIN_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_WORLD_TRANSITION_BEGIN_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET"; }
+
+ protected:
+  explicit SC_WORLD_TRANSITION_BEGIN_PACKET(::google::protobuf::Arena* arena);
+  SC_WORLD_TRANSITION_BEGIN_PACKET(::google::protobuf::Arena* arena, const SC_WORLD_TRANSITION_BEGIN_PACKET& from);
+  SC_WORLD_TRANSITION_BEGIN_PACKET(::google::protobuf::Arena* arena, SC_WORLD_TRANSITION_BEGIN_PACKET&& from) noexcept
+      : SC_WORLD_TRANSITION_BEGIN_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTransferIdFieldNumber = 1,
+    kRequestIdFieldNumber = 2,
+    kSourceWorldDefIdFieldNumber = 3,
+    kSourceWorldIdFieldNumber = 4,
+    kTargetWorldIdFieldNumber = 6,
+    kTargetWorldDefIdFieldNumber = 5,
+    kMapResourceIdFieldNumber = 7,
+    kPlayerNetIdFieldNumber = 8,
+    kClearExistingObjectsFieldNumber = 9,
+    kWaitClientReadyFieldNumber = 10,
+    kUsedFallbackFieldNumber = 11,
+    kReasonFieldNumber = 12,
+  };
+  // uint64 transferId = 1;
+  void clear_transferid() ;
+  ::uint64_t transferid() const;
+  void set_transferid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_transferid() const;
+  void _internal_set_transferid(::uint64_t value);
+
+  public:
+  // uint32 requestId = 2;
+  void clear_requestid() ;
+  ::uint32_t requestid() const;
+  void set_requestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_requestid() const;
+  void _internal_set_requestid(::uint32_t value);
+
+  public:
+  // uint32 sourceWorldDefId = 3;
+  void clear_sourceworlddefid() ;
+  ::uint32_t sourceworlddefid() const;
+  void set_sourceworlddefid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_sourceworlddefid() const;
+  void _internal_set_sourceworlddefid(::uint32_t value);
+
+  public:
+  // uint64 sourceWorldId = 4;
+  void clear_sourceworldid() ;
+  ::uint64_t sourceworldid() const;
+  void set_sourceworldid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_sourceworldid() const;
+  void _internal_set_sourceworldid(::uint64_t value);
+
+  public:
+  // uint64 targetWorldId = 6;
+  void clear_targetworldid() ;
+  ::uint64_t targetworldid() const;
+  void set_targetworldid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_targetworldid() const;
+  void _internal_set_targetworldid(::uint64_t value);
+
+  public:
+  // uint32 targetWorldDefId = 5;
+  void clear_targetworlddefid() ;
+  ::uint32_t targetworlddefid() const;
+  void set_targetworlddefid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_targetworlddefid() const;
+  void _internal_set_targetworlddefid(::uint32_t value);
+
+  public:
+  // uint32 mapResourceId = 7;
+  void clear_mapresourceid() ;
+  ::uint32_t mapresourceid() const;
+  void set_mapresourceid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_mapresourceid() const;
+  void _internal_set_mapresourceid(::uint32_t value);
+
+  public:
+  // uint64 playerNetId = 8;
+  void clear_playernetid() ;
+  ::uint64_t playernetid() const;
+  void set_playernetid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_playernetid() const;
+  void _internal_set_playernetid(::uint64_t value);
+
+  public:
+  // bool clearExistingObjects = 9;
+  void clear_clearexistingobjects() ;
+  bool clearexistingobjects() const;
+  void set_clearexistingobjects(bool value);
+
+  private:
+  bool _internal_clearexistingobjects() const;
+  void _internal_set_clearexistingobjects(bool value);
+
+  public:
+  // bool waitClientReady = 10;
+  void clear_waitclientready() ;
+  bool waitclientready() const;
+  void set_waitclientready(bool value);
+
+  private:
+  bool _internal_waitclientready() const;
+  void _internal_set_waitclientready(bool value);
+
+  public:
+  // bool usedFallback = 11;
+  void clear_usedfallback() ;
+  bool usedfallback() const;
+  void set_usedfallback(bool value);
+
+  private:
+  bool _internal_usedfallback() const;
+  void _internal_set_usedfallback(bool value);
+
+  public:
+  // uint32 reason = 12;
+  void clear_reason() ;
+  ::uint32_t reason() const;
+  void set_reason(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_reason() const;
+  void _internal_set_reason(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      4, 12, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_WORLD_TRANSITION_BEGIN_PACKET& from_msg);
+    ::uint64_t transferid_;
+    ::uint32_t requestid_;
+    ::uint32_t sourceworlddefid_;
+    ::uint64_t sourceworldid_;
+    ::uint64_t targetworldid_;
+    ::uint32_t targetworlddefid_;
+    ::uint32_t mapresourceid_;
+    ::uint64_t playernetid_;
+    bool clearexistingobjects_;
+    bool waitclientready_;
+    bool usedfallback_;
+    ::uint32_t reason_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
 // -------------------------------------------------------------------
 
 class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
@@ -164,7 +703,7 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_STAT_CHANGE_PACKET*>(
         &_SC_STAT_CHANGE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 11;
+  static constexpr int kIndexInFileMessages = 14;
   friend void swap(SC_STAT_CHANGE_PACKET& a, SC_STAT_CHANGE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_STAT_CHANGE_PACKET* other) {
     if (other == this) return;
@@ -341,14 +880,14 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
   void _internal_set_defense(::uint32_t value);
 
   public:
-  // uint32 movespeed = 9;
+  // float movespeed = 9;
   void clear_movespeed() ;
-  ::uint32_t movespeed() const;
-  void set_movespeed(::uint32_t value);
+  float movespeed() const;
+  void set_movespeed(float value);
 
   private:
-  ::uint32_t _internal_movespeed() const;
-  void _internal_set_movespeed(::uint32_t value);
+  float _internal_movespeed() const;
+  void _internal_set_movespeed(float value);
 
   public:
   // @@protoc_insertion_point(class_scope:Protocol.SC_STAT_CHANGE_PACKET)
@@ -382,7 +921,7 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
     ::uint32_t power_;
     float attackspeed_;
     ::uint32_t defense_;
-    ::uint32_t movespeed_;
+    float movespeed_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -450,7 +989,7 @@ class SC_REMOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_REMOVE_PACKET*>(
         &_SC_REMOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 9;
+  static constexpr int kIndexInFileMessages = 12;
   friend void swap(SC_REMOVE_PACKET& a, SC_REMOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REMOVE_PACKET* other) {
     if (other == this) return;
@@ -640,7 +1179,7 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_MOVE_PACKET*>(
         &_SC_MOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 8;
+  static constexpr int kIndexInFileMessages = 11;
   friend void swap(SC_MOVE_PACKET& a, SC_MOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_MOVE_PACKET* other) {
     if (other == this) return;
@@ -878,7 +1417,7 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_LOGIN_PACKET*>(
         &_SC_LOGIN_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 6;
+  static constexpr int kIndexInFileMessages = 9;
   friend void swap(SC_LOGIN_PACKET& a, SC_LOGIN_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_LOGIN_PACKET* other) {
     if (other == this) return;
@@ -1068,7 +1607,7 @@ class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ANIMATION_TRANSITION_PACKET*>(
         &_SC_ANIMATION_TRANSITION_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 10;
+  static constexpr int kIndexInFileMessages = 13;
   friend void swap(SC_ANIMATION_TRANSITION_PACKET& a, SC_ANIMATION_TRANSITION_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ANIMATION_TRANSITION_PACKET* other) {
     if (other == this) return;
@@ -1270,7 +1809,7 @@ class SC_ADD_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ADD_PACKET*>(
         &_SC_ADD_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 7;
+  static constexpr int kIndexInFileMessages = 10;
   friend void swap(SC_ADD_PACKET& a, SC_ADD_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ADD_PACKET* other) {
     if (other == this) return;
@@ -1461,6 +2000,386 @@ class SC_ADD_PACKET final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
+class CS_WORLD_TRANSITION_REQUEST_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_WORLD_TRANSITION_REQUEST_PACKET) */ {
+ public:
+  inline CS_WORLD_TRANSITION_REQUEST_PACKET() : CS_WORLD_TRANSITION_REQUEST_PACKET(nullptr) {}
+  ~CS_WORLD_TRANSITION_REQUEST_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_WORLD_TRANSITION_REQUEST_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_WORLD_TRANSITION_REQUEST_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_WORLD_TRANSITION_REQUEST_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_WORLD_TRANSITION_REQUEST_PACKET(const CS_WORLD_TRANSITION_REQUEST_PACKET& from) : CS_WORLD_TRANSITION_REQUEST_PACKET(nullptr, from) {}
+  inline CS_WORLD_TRANSITION_REQUEST_PACKET(CS_WORLD_TRANSITION_REQUEST_PACKET&& from) noexcept
+      : CS_WORLD_TRANSITION_REQUEST_PACKET(nullptr, std::move(from)) {}
+  inline CS_WORLD_TRANSITION_REQUEST_PACKET& operator=(const CS_WORLD_TRANSITION_REQUEST_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_WORLD_TRANSITION_REQUEST_PACKET& operator=(CS_WORLD_TRANSITION_REQUEST_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_WORLD_TRANSITION_REQUEST_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_WORLD_TRANSITION_REQUEST_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_WORLD_TRANSITION_REQUEST_PACKET*>(
+        &_CS_WORLD_TRANSITION_REQUEST_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 7;
+  friend void swap(CS_WORLD_TRANSITION_REQUEST_PACKET& a, CS_WORLD_TRANSITION_REQUEST_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_WORLD_TRANSITION_REQUEST_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_WORLD_TRANSITION_REQUEST_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_WORLD_TRANSITION_REQUEST_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_WORLD_TRANSITION_REQUEST_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_WORLD_TRANSITION_REQUEST_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_WORLD_TRANSITION_REQUEST_PACKET& from) { CS_WORLD_TRANSITION_REQUEST_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_WORLD_TRANSITION_REQUEST_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_WORLD_TRANSITION_REQUEST_PACKET"; }
+
+ protected:
+  explicit CS_WORLD_TRANSITION_REQUEST_PACKET(::google::protobuf::Arena* arena);
+  CS_WORLD_TRANSITION_REQUEST_PACKET(::google::protobuf::Arena* arena, const CS_WORLD_TRANSITION_REQUEST_PACKET& from);
+  CS_WORLD_TRANSITION_REQUEST_PACKET(::google::protobuf::Arena* arena, CS_WORLD_TRANSITION_REQUEST_PACKET&& from) noexcept
+      : CS_WORLD_TRANSITION_REQUEST_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kRequestIdFieldNumber = 1,
+  };
+  // uint32 requestId = 1;
+  void clear_requestid() ;
+  ::uint32_t requestid() const;
+  void set_requestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_requestid() const;
+  void _internal_set_requestid(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_WORLD_TRANSITION_REQUEST_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_WORLD_TRANSITION_REQUEST_PACKET& from_msg);
+    ::uint32_t requestid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CS_WORLD_TRANSITION_READY_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_WORLD_TRANSITION_READY_PACKET) */ {
+ public:
+  inline CS_WORLD_TRANSITION_READY_PACKET() : CS_WORLD_TRANSITION_READY_PACKET(nullptr) {}
+  ~CS_WORLD_TRANSITION_READY_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_WORLD_TRANSITION_READY_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_WORLD_TRANSITION_READY_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_WORLD_TRANSITION_READY_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_WORLD_TRANSITION_READY_PACKET(const CS_WORLD_TRANSITION_READY_PACKET& from) : CS_WORLD_TRANSITION_READY_PACKET(nullptr, from) {}
+  inline CS_WORLD_TRANSITION_READY_PACKET(CS_WORLD_TRANSITION_READY_PACKET&& from) noexcept
+      : CS_WORLD_TRANSITION_READY_PACKET(nullptr, std::move(from)) {}
+  inline CS_WORLD_TRANSITION_READY_PACKET& operator=(const CS_WORLD_TRANSITION_READY_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_WORLD_TRANSITION_READY_PACKET& operator=(CS_WORLD_TRANSITION_READY_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_WORLD_TRANSITION_READY_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_WORLD_TRANSITION_READY_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_WORLD_TRANSITION_READY_PACKET*>(
+        &_CS_WORLD_TRANSITION_READY_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 8;
+  friend void swap(CS_WORLD_TRANSITION_READY_PACKET& a, CS_WORLD_TRANSITION_READY_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_WORLD_TRANSITION_READY_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_WORLD_TRANSITION_READY_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_WORLD_TRANSITION_READY_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_WORLD_TRANSITION_READY_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_WORLD_TRANSITION_READY_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_WORLD_TRANSITION_READY_PACKET& from) { CS_WORLD_TRANSITION_READY_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_WORLD_TRANSITION_READY_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_WORLD_TRANSITION_READY_PACKET"; }
+
+ protected:
+  explicit CS_WORLD_TRANSITION_READY_PACKET(::google::protobuf::Arena* arena);
+  CS_WORLD_TRANSITION_READY_PACKET(::google::protobuf::Arena* arena, const CS_WORLD_TRANSITION_READY_PACKET& from);
+  CS_WORLD_TRANSITION_READY_PACKET(::google::protobuf::Arena* arena, CS_WORLD_TRANSITION_READY_PACKET&& from) noexcept
+      : CS_WORLD_TRANSITION_READY_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTransferIdFieldNumber = 1,
+  };
+  // uint64 transferId = 1;
+  void clear_transferid() ;
+  ::uint64_t transferid() const;
+  void set_transferid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_transferid() const;
+  void _internal_set_transferid(::uint64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_WORLD_TRANSITION_READY_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_WORLD_TRANSITION_READY_PACKET& from_msg);
+    ::uint64_t transferid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
 class CS_PARRY_PACKET final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Protocol.CS_PARRY_PACKET) */ {
  public:
@@ -1520,7 +2439,7 @@ class CS_PARRY_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const CS_PARRY_PACKET*>(
         &_CS_PARRY_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages = 6;
   friend void swap(CS_PARRY_PACKET& a, CS_PARRY_PACKET& b) { a.Swap(&b); }
   inline void Swap(CS_PARRY_PACKET* other) {
     if (other == this) return;
@@ -1722,7 +2641,7 @@ class CS_MOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const CS_MOVE_PACKET*>(
         &_CS_MOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 1;
+  static constexpr int kIndexInFileMessages = 2;
   friend void swap(CS_MOVE_PACKET& a, CS_MOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(CS_MOVE_PACKET* other) {
     if (other == this) return;
@@ -2093,7 +3012,7 @@ class CS_GUARD_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const CS_GUARD_PACKET*>(
         &_CS_GUARD_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 4;
+  static constexpr int kIndexInFileMessages = 5;
   friend void swap(CS_GUARD_PACKET& a, CS_GUARD_PACKET& b) { a.Swap(&b); }
   inline void Swap(CS_GUARD_PACKET* other) {
     if (other == this) return;
@@ -2283,7 +3202,7 @@ class CS_DODGE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const CS_DODGE_PACKET*>(
         &_CS_DODGE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 3;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(CS_DODGE_PACKET& a, CS_DODGE_PACKET& b) { a.Swap(&b); }
   inline void Swap(CS_DODGE_PACKET* other) {
     if (other == this) return;
@@ -2426,6 +3345,196 @@ class CS_DODGE_PACKET final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
+class CS_CHARACTER_SELECT_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_CHARACTER_SELECT_PACKET) */ {
+ public:
+  inline CS_CHARACTER_SELECT_PACKET() : CS_CHARACTER_SELECT_PACKET(nullptr) {}
+  ~CS_CHARACTER_SELECT_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_CHARACTER_SELECT_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_CHARACTER_SELECT_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_CHARACTER_SELECT_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_CHARACTER_SELECT_PACKET(const CS_CHARACTER_SELECT_PACKET& from) : CS_CHARACTER_SELECT_PACKET(nullptr, from) {}
+  inline CS_CHARACTER_SELECT_PACKET(CS_CHARACTER_SELECT_PACKET&& from) noexcept
+      : CS_CHARACTER_SELECT_PACKET(nullptr, std::move(from)) {}
+  inline CS_CHARACTER_SELECT_PACKET& operator=(const CS_CHARACTER_SELECT_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_CHARACTER_SELECT_PACKET& operator=(CS_CHARACTER_SELECT_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_CHARACTER_SELECT_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_CHARACTER_SELECT_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_CHARACTER_SELECT_PACKET*>(
+        &_CS_CHARACTER_SELECT_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 1;
+  friend void swap(CS_CHARACTER_SELECT_PACKET& a, CS_CHARACTER_SELECT_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_CHARACTER_SELECT_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_CHARACTER_SELECT_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_CHARACTER_SELECT_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_CHARACTER_SELECT_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_CHARACTER_SELECT_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_CHARACTER_SELECT_PACKET& from) { CS_CHARACTER_SELECT_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_CHARACTER_SELECT_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_CHARACTER_SELECT_PACKET"; }
+
+ protected:
+  explicit CS_CHARACTER_SELECT_PACKET(::google::protobuf::Arena* arena);
+  CS_CHARACTER_SELECT_PACKET(::google::protobuf::Arena* arena, const CS_CHARACTER_SELECT_PACKET& from);
+  CS_CHARACTER_SELECT_PACKET(::google::protobuf::Arena* arena, CS_CHARACTER_SELECT_PACKET&& from) noexcept
+      : CS_CHARACTER_SELECT_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kCharacterIdFieldNumber = 1,
+  };
+  // uint32 characterId = 1;
+  void clear_characterid() ;
+  ::uint32_t characterid() const;
+  void set_characterid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_characterid() const;
+  void _internal_set_characterid(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_CHARACTER_SELECT_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_CHARACTER_SELECT_PACKET& from_msg);
+    ::uint32_t characterid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
 class CS_ATTACK_PACKET final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Protocol.CS_ATTACK_PACKET) */ {
  public:
@@ -2485,7 +3594,7 @@ class CS_ATTACK_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const CS_ATTACK_PACKET*>(
         &_CS_ATTACK_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 2;
+  static constexpr int kIndexInFileMessages = 3;
   friend void swap(CS_ATTACK_PACKET& a, CS_ATTACK_PACKET& b) { a.Swap(&b); }
   inline void Swap(CS_ATTACK_PACKET* other) {
     if (other == this) return;
@@ -2687,7 +3796,7 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_REPLICATION_FRAME_PACKET*>(
         &_SC_REPLICATION_FRAME_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 12;
+  static constexpr int kIndexInFileMessages = 17;
   friend void swap(SC_REPLICATION_FRAME_PACKET& a, SC_REPLICATION_FRAME_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REPLICATION_FRAME_PACKET* other) {
     if (other == this) return;
@@ -2920,6 +4029,32 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
 // -------------------------------------------------------------------
 
 // CS_LOGIN_PACKET
+
+// -------------------------------------------------------------------
+
+// CS_CHARACTER_SELECT_PACKET
+
+// uint32 characterId = 1;
+inline void CS_CHARACTER_SELECT_PACKET::clear_characterid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.characterid_ = 0u;
+}
+inline ::uint32_t CS_CHARACTER_SELECT_PACKET::characterid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_CHARACTER_SELECT_PACKET.characterId)
+  return _internal_characterid();
+}
+inline void CS_CHARACTER_SELECT_PACKET::set_characterid(::uint32_t value) {
+  _internal_set_characterid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_CHARACTER_SELECT_PACKET.characterId)
+}
+inline ::uint32_t CS_CHARACTER_SELECT_PACKET::_internal_characterid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.characterid_;
+}
+inline void CS_CHARACTER_SELECT_PACKET::_internal_set_characterid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.characterid_ = value;
+}
 
 // -------------------------------------------------------------------
 
@@ -3181,6 +4316,58 @@ inline float CS_PARRY_PACKET::_internal_dirz() const {
 inline void CS_PARRY_PACKET::_internal_set_dirz(float value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.dirz_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_WORLD_TRANSITION_REQUEST_PACKET
+
+// uint32 requestId = 1;
+inline void CS_WORLD_TRANSITION_REQUEST_PACKET::clear_requestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.requestid_ = 0u;
+}
+inline ::uint32_t CS_WORLD_TRANSITION_REQUEST_PACKET::requestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_WORLD_TRANSITION_REQUEST_PACKET.requestId)
+  return _internal_requestid();
+}
+inline void CS_WORLD_TRANSITION_REQUEST_PACKET::set_requestid(::uint32_t value) {
+  _internal_set_requestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_WORLD_TRANSITION_REQUEST_PACKET.requestId)
+}
+inline ::uint32_t CS_WORLD_TRANSITION_REQUEST_PACKET::_internal_requestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.requestid_;
+}
+inline void CS_WORLD_TRANSITION_REQUEST_PACKET::_internal_set_requestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.requestid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_WORLD_TRANSITION_READY_PACKET
+
+// uint64 transferId = 1;
+inline void CS_WORLD_TRANSITION_READY_PACKET::clear_transferid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.transferid_ = ::uint64_t{0u};
+}
+inline ::uint64_t CS_WORLD_TRANSITION_READY_PACKET::transferid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_WORLD_TRANSITION_READY_PACKET.transferId)
+  return _internal_transferid();
+}
+inline void CS_WORLD_TRANSITION_READY_PACKET::set_transferid(::uint64_t value) {
+  _internal_set_transferid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_WORLD_TRANSITION_READY_PACKET.transferId)
+}
+inline ::uint64_t CS_WORLD_TRANSITION_READY_PACKET::_internal_transferid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.transferid_;
+}
+inline void CS_WORLD_TRANSITION_READY_PACKET::_internal_set_transferid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.transferid_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -3713,26 +4900,342 @@ inline void SC_STAT_CHANGE_PACKET::_internal_set_defense(::uint32_t value) {
   _impl_.defense_ = value;
 }
 
-// uint32 movespeed = 9;
+// float movespeed = 9;
 inline void SC_STAT_CHANGE_PACKET::clear_movespeed() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.movespeed_ = 0u;
+  _impl_.movespeed_ = 0;
 }
-inline ::uint32_t SC_STAT_CHANGE_PACKET::movespeed() const {
+inline float SC_STAT_CHANGE_PACKET::movespeed() const {
   // @@protoc_insertion_point(field_get:Protocol.SC_STAT_CHANGE_PACKET.movespeed)
   return _internal_movespeed();
 }
-inline void SC_STAT_CHANGE_PACKET::set_movespeed(::uint32_t value) {
+inline void SC_STAT_CHANGE_PACKET::set_movespeed(float value) {
   _internal_set_movespeed(value);
   // @@protoc_insertion_point(field_set:Protocol.SC_STAT_CHANGE_PACKET.movespeed)
 }
-inline ::uint32_t SC_STAT_CHANGE_PACKET::_internal_movespeed() const {
+inline float SC_STAT_CHANGE_PACKET::_internal_movespeed() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.movespeed_;
 }
-inline void SC_STAT_CHANGE_PACKET::_internal_set_movespeed(::uint32_t value) {
+inline void SC_STAT_CHANGE_PACKET::_internal_set_movespeed(float value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.movespeed_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_WORLD_TRANSITION_BEGIN_PACKET
+
+// uint64 transferId = 1;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_transferid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.transferid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_WORLD_TRANSITION_BEGIN_PACKET::transferid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.transferId)
+  return _internal_transferid();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_transferid(::uint64_t value) {
+  _internal_set_transferid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.transferId)
+}
+inline ::uint64_t SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_transferid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.transferid_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_transferid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.transferid_ = value;
+}
+
+// uint32 requestId = 2;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_requestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.requestid_ = 0u;
+}
+inline ::uint32_t SC_WORLD_TRANSITION_BEGIN_PACKET::requestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.requestId)
+  return _internal_requestid();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_requestid(::uint32_t value) {
+  _internal_set_requestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.requestId)
+}
+inline ::uint32_t SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_requestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.requestid_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_requestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.requestid_ = value;
+}
+
+// uint32 sourceWorldDefId = 3;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_sourceworlddefid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.sourceworlddefid_ = 0u;
+}
+inline ::uint32_t SC_WORLD_TRANSITION_BEGIN_PACKET::sourceworlddefid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.sourceWorldDefId)
+  return _internal_sourceworlddefid();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_sourceworlddefid(::uint32_t value) {
+  _internal_set_sourceworlddefid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.sourceWorldDefId)
+}
+inline ::uint32_t SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_sourceworlddefid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.sourceworlddefid_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_sourceworlddefid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.sourceworlddefid_ = value;
+}
+
+// uint64 sourceWorldId = 4;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_sourceworldid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.sourceworldid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_WORLD_TRANSITION_BEGIN_PACKET::sourceworldid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.sourceWorldId)
+  return _internal_sourceworldid();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_sourceworldid(::uint64_t value) {
+  _internal_set_sourceworldid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.sourceWorldId)
+}
+inline ::uint64_t SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_sourceworldid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.sourceworldid_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_sourceworldid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.sourceworldid_ = value;
+}
+
+// uint32 targetWorldDefId = 5;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_targetworlddefid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.targetworlddefid_ = 0u;
+}
+inline ::uint32_t SC_WORLD_TRANSITION_BEGIN_PACKET::targetworlddefid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.targetWorldDefId)
+  return _internal_targetworlddefid();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_targetworlddefid(::uint32_t value) {
+  _internal_set_targetworlddefid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.targetWorldDefId)
+}
+inline ::uint32_t SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_targetworlddefid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.targetworlddefid_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_targetworlddefid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.targetworlddefid_ = value;
+}
+
+// uint64 targetWorldId = 6;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_targetworldid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.targetworldid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_WORLD_TRANSITION_BEGIN_PACKET::targetworldid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.targetWorldId)
+  return _internal_targetworldid();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_targetworldid(::uint64_t value) {
+  _internal_set_targetworldid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.targetWorldId)
+}
+inline ::uint64_t SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_targetworldid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.targetworldid_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_targetworldid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.targetworldid_ = value;
+}
+
+// uint32 mapResourceId = 7;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_mapresourceid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.mapresourceid_ = 0u;
+}
+inline ::uint32_t SC_WORLD_TRANSITION_BEGIN_PACKET::mapresourceid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.mapResourceId)
+  return _internal_mapresourceid();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_mapresourceid(::uint32_t value) {
+  _internal_set_mapresourceid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.mapResourceId)
+}
+inline ::uint32_t SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_mapresourceid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.mapresourceid_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_mapresourceid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.mapresourceid_ = value;
+}
+
+// uint64 playerNetId = 8;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_playernetid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.playernetid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_WORLD_TRANSITION_BEGIN_PACKET::playernetid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.playerNetId)
+  return _internal_playernetid();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_playernetid(::uint64_t value) {
+  _internal_set_playernetid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.playerNetId)
+}
+inline ::uint64_t SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_playernetid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.playernetid_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_playernetid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.playernetid_ = value;
+}
+
+// bool clearExistingObjects = 9;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_clearexistingobjects() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clearexistingobjects_ = false;
+}
+inline bool SC_WORLD_TRANSITION_BEGIN_PACKET::clearexistingobjects() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.clearExistingObjects)
+  return _internal_clearexistingobjects();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_clearexistingobjects(bool value) {
+  _internal_set_clearexistingobjects(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.clearExistingObjects)
+}
+inline bool SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_clearexistingobjects() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.clearexistingobjects_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_clearexistingobjects(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clearexistingobjects_ = value;
+}
+
+// bool waitClientReady = 10;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_waitclientready() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.waitclientready_ = false;
+}
+inline bool SC_WORLD_TRANSITION_BEGIN_PACKET::waitclientready() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.waitClientReady)
+  return _internal_waitclientready();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_waitclientready(bool value) {
+  _internal_set_waitclientready(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.waitClientReady)
+}
+inline bool SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_waitclientready() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.waitclientready_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_waitclientready(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.waitclientready_ = value;
+}
+
+// bool usedFallback = 11;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_usedfallback() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.usedfallback_ = false;
+}
+inline bool SC_WORLD_TRANSITION_BEGIN_PACKET::usedfallback() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.usedFallback)
+  return _internal_usedfallback();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_usedfallback(bool value) {
+  _internal_set_usedfallback(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.usedFallback)
+}
+inline bool SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_usedfallback() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.usedfallback_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_usedfallback(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.usedfallback_ = value;
+}
+
+// uint32 reason = 12;
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::clear_reason() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reason_ = 0u;
+}
+inline ::uint32_t SC_WORLD_TRANSITION_BEGIN_PACKET::reason() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.reason)
+  return _internal_reason();
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::set_reason(::uint32_t value) {
+  _internal_set_reason(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_BEGIN_PACKET.reason)
+}
+inline ::uint32_t SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_reason() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.reason_;
+}
+inline void SC_WORLD_TRANSITION_BEGIN_PACKET::_internal_set_reason(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reason_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_WORLD_TRANSITION_REJECTED_PACKET
+
+// uint32 requestId = 1;
+inline void SC_WORLD_TRANSITION_REJECTED_PACKET::clear_requestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.requestid_ = 0u;
+}
+inline ::uint32_t SC_WORLD_TRANSITION_REJECTED_PACKET::requestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_REJECTED_PACKET.requestId)
+  return _internal_requestid();
+}
+inline void SC_WORLD_TRANSITION_REJECTED_PACKET::set_requestid(::uint32_t value) {
+  _internal_set_requestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_REJECTED_PACKET.requestId)
+}
+inline ::uint32_t SC_WORLD_TRANSITION_REJECTED_PACKET::_internal_requestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.requestid_;
+}
+inline void SC_WORLD_TRANSITION_REJECTED_PACKET::_internal_set_requestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.requestid_ = value;
+}
+
+// uint32 reason = 2;
+inline void SC_WORLD_TRANSITION_REJECTED_PACKET::clear_reason() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reason_ = 0u;
+}
+inline ::uint32_t SC_WORLD_TRANSITION_REJECTED_PACKET::reason() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_WORLD_TRANSITION_REJECTED_PACKET.reason)
+  return _internal_reason();
+}
+inline void SC_WORLD_TRANSITION_REJECTED_PACKET::set_reason(::uint32_t value) {
+  _internal_set_reason(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_WORLD_TRANSITION_REJECTED_PACKET.reason)
+}
+inline ::uint32_t SC_WORLD_TRANSITION_REJECTED_PACKET::_internal_reason() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.reason_;
+}
+inline void SC_WORLD_TRANSITION_REJECTED_PACKET::_internal_set_reason(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reason_ = value;
 }
 
 // -------------------------------------------------------------------

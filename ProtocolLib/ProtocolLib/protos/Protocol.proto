@@ -7,6 +7,11 @@ message CS_LOGIN_PACKET
 {
 }
 
+message CS_CHARACTER_SELECT_PACKET
+{
+	uint32 characterId = 1;
+}
+
 message CS_MOVE_PACKET
 {
 	int32 inputX = 1;
@@ -36,6 +41,16 @@ message CS_PARRY_PACKET
 {
 	float dirX = 1;
 	float dirZ = 2;
+}
+
+message CS_WORLD_TRANSITION_REQUEST_PACKET
+{
+	uint32 requestId = 1;
+}
+
+message CS_WORLD_TRANSITION_READY_PACKET
+{
+	uint64 transferId = 1;
 }
 
 /* ------------------------------ [ Server -> Client ]  ------------------------------ */
@@ -86,6 +101,33 @@ message SC_STAT_CHANGE_PACKET
 	float attackspeed = 7;
 	uint32 defense = 8;
 	float movespeed = 9;
+}
+
+message SC_WORLD_TRANSITION_BEGIN_PACKET
+{
+	uint64 transferId = 1;
+    uint32 requestId = 2;
+
+    uint32 sourceWorldDefId = 3;
+    uint64 sourceWorldId = 4;
+
+    uint32 targetWorldDefId = 5;
+    uint64 targetWorldId = 6;
+
+    uint32 mapResourceId = 7;
+    uint64 playerNetId = 8;
+
+    bool clearExistingObjects = 9;
+    bool waitClientReady = 10;
+    bool usedFallback = 11;
+
+    uint32 reason = 12;
+}
+
+message SC_WORLD_TRANSITION_REJECTED_PACKET
+{
+	uint32 requestId = 1;
+	uint32 reason = 2;
 }
 
 message SC_REPLICATION_FRAME_PACKET
