@@ -26,8 +26,6 @@ public:
     static UINT RegisterLUT(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);
     static void RegisterHDRSceneSRV(ID3D12Device* device, ID3D12Resource* hdrSceneRT);
 
-    static const UINT HDR_SCENE_BINDLESS_INDEX = 9000;
-
     UINT GetMaterialIndex() const { return materialIndex; }
 
     static void InitializeBindlessSystem(ID3D12Device* device);
@@ -52,4 +50,11 @@ private:
     static UINT descriptorSize;
     static bool bufferDirty;
     static unordered_map<wstring, UINT> texturePathToIndex;
+
+    static constexpr UINT TEXTURE_2D_BASE = 0;              // [0,    3000)  2D 텍스처
+    static constexpr UINT CUBE_MAP_BASE = 3000;             // [3000, 6000)  큐브맵
+    static constexpr UINT TEXTURE_3D_BASE = 6000;           // [6000, 9000)  3D 텍스처 (LUT)
+    static constexpr UINT HDR_SCENE_BINDLESS_INDEX = 9000;  // 9000          HDR Scene (단일 슬롯)
+    static constexpr UINT BINDLESS_HEAP_SIZE = 10000;
+    static constexpr UINT MATERIAL_CAPACITY = 5000;
 };
