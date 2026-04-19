@@ -24,6 +24,9 @@ public:
     static UINT RegisterCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
     static UINT RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);
     static UINT RegisterLUT(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);
+    static void RegisterHDRSceneSRV(ID3D12Device* device, ID3D12Resource* hdrSceneRT);
+
+    static const UINT HDR_SCENE_BINDLESS_INDEX = 9000;
 
     UINT GetMaterialIndex() const { return materialIndex; }
 

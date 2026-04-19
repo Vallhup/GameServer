@@ -100,24 +100,21 @@ void Engine::Render()
     
     if (ssaoOn)
     {
-        graphics->BeginSsaoPass();
-        graphics->EndSsaoPass(viewport, scissorRect);
-        graphics->BeginSsaoBlurPass();
-        graphics->EndSsaoBlurPass(viewport, scissorRect);
+        graphics->SsaoPass();
+        graphics->SsaoBlurPass(viewport, scissorRect);
     }
     else
         graphics->ClearSsaoRT();
     
-    // Fog Pass 들어갈 자리
-    graphics->BeginFogPass();
-    graphics->EndFogPass(viewport, scissorRect);
+    graphics->FogPass(viewport, scissorRect);
 
-    graphics->BeginLightingPass();
-    graphics->RenderFullscreenQuad();
+    graphics->LightingPass();
 
-    graphics->BeginForwardPass();
+    graphics->ForwardPass();
     sceneManager->RenderForward();
-    sceneManager->RenderEffects();      
+    sceneManager->RenderEffects();   
+
+    graphics->BlitPass();
 
     uiManager->Render(graphics->GetGraphicsCmdList(), graphics->GetCmdQueue(), viewport);
 
@@ -141,7 +138,7 @@ void Engine::Shutdown()
         if (camera)
         {
             camera->ReleaseMouse();
-            OutputDebugStringA("Mouse Released!! \n");
+            OutputDebugStringA("Mouse Released!!\n");
         }
     }
 

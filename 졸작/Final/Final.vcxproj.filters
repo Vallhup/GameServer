@@ -570,6 +570,9 @@
     <None Include="..\Shaders\VolumetricFogPassPS.hlsli">
       <Filter>Shaders\Volumetric</Filter>
     </None>
+    <None Include="..\Shaders\BlitPS.hlsli">
+      <Filter>Shaders\Bloom</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">
@@ -706,6 +709,9 @@
     </Filter>
     <Filter Include="Effect\Base">
       <UniqueIdentifier>{312e4599-3da0-47e1-bcc1-ae2f36904399}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Bloom">
+      <UniqueIdentifier>{bd586a08-36ca-4310-a622-41eb7a0f8fb7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

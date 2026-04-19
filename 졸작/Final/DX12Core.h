@@ -82,19 +82,17 @@ public:
 	void BeginGBufferPass();
 	void EndGBufferPass();
 
-	void BeginSsaoPass();
-	void EndSsaoPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
-	void BeginSsaoBlurPass();
-	void EndSsaoBlurPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+	void SsaoPass();
+	void SsaoBlurPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 	void ClearSsaoRT();
 
-	void BeginFogPass();
-	void EndFogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+	void FogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 
-	void BeginLightingPass();
-	void RenderFullscreenQuad();
+	void LightingPass();
+	void ForwardPass();
 
-	void BeginForwardPass();
+	void BlitPass();
+
 	void RenderEnd();
 	//-------------------------------------------------------
 

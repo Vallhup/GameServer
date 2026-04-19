@@ -365,6 +365,7 @@ exit 0</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\animation.hlsli" />
+    <None Include="..\Shaders\BlitPS.hlsli" />
     <None Include="..\Shaders\EffectVS.hlsli" />
     <None Include="..\Shaders\FlamePS.hlsli" />
     <None Include="..\Shaders\Fog.hlsli" />

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "RenderTargets.h"
 #include "ShadowMappingManager.h"
+#include "Material.h"
 
 void RenderTargets::Initialize(ID3D12Device* device, ShadowMappingManager* shadowMgr)
 {
@@ -8,6 +9,7 @@ void RenderTargets::Initialize(ID3D12Device* device, ShadowMappingManager* shado
 	CreateGBuffer(device);
 	CreateFogRenderTarget(device);
 	CreateDeferredRenderingDescriptors(device, shadowMgr);
+	CreateHDRSceneRenderTarget(device);
 }
 
 void RenderTargets::AddSsaoSRV(ID3D12Device* device, ID3D12Resource* ssaoBlurRT)
@@ -174,7 +176,6 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = deferredSRVHeap->GetCPUDescriptorHandleForHeapStart();
 	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = deferredSRVHeap->GetGPUDescriptorHandleForHeapStart();
 
-	// 0번 ~ 2번 slot (GBuffer)
 	for (int i = 0; i < 3; ++i) {
 		gBufferSRVHandles[i] = srvGpuHandle;
 		device->CreateShaderResourceView(gBufferRT[i].Get(), nullptr, srvCpuHandle);
@@ -185,7 +186,6 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 		OutputDebugStringA(("G-Buffer RT" + to_string(i) + " SRV created\n").c_str());
 	}
 
-	// 3번 slot (Depth)
 	D3D12_SHADER_RESOURCE_VIEW_DESC depthSrvDesc = {};
 	depthSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	depthSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -195,7 +195,6 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 	srvCpuHandle.ptr += srvSize;
 	srvGpuHandle.ptr += srvSize;
 
-	// 4번 slot (shadow)
 	D3D12_SHADER_RESOURCE_VIEW_DESC shadowSrvDesc = {};
 	shadowSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	shadowSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
@@ -210,13 +209,75 @@ void RenderTargets::CreateDeferredRenderingDescriptors(ID3D12Device* device, Sha
 
 	OutputDebugStringA("Shadow Map SRV Created\n");
 
-	// 5번 slot (SSAO) - 이거 스킵해야됨 (SSAO는 역으로 받아옴)
 	srvCpuHandle.ptr += srvSize;
 	srvGpuHandle.ptr += srvSize;
 
-	// 6번 slot (FogRT)
 	device->CreateShaderResourceView(fogRT.Get(), nullptr, srvCpuHandle);
 	OutputDebugStringA("Fog RT SRV Created\n");
 
 	OutputDebugStringA("Deferred Rendering Descriptors created successfully!!\n");
+}
+
+void RenderTargets::CreateHDRSceneRenderTarget(ID3D12Device* device)
+{
+	OutputDebugStringA("Create HDR Scene Render Target\n");
+
+	D3D12_RESOURCE_DESC rtDesc = {};
+	rtDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	rtDesc.Width = WinSize.x;
+	rtDesc.Height = WinSize.y;
+	rtDesc.DepthOrArraySize = 1;
+	rtDesc.MipLevels = 1;
+	rtDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	rtDesc.SampleDesc.Count = 1;
+	rtDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	rtDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	clearValue.Color[0] = 0.0f;
+	clearValue.Color[1] = 0.0f;
+	clearValue.Color[2] = 0.0f;
+	clearValue.Color[3] = 1.0f;
+
+	HRESULT hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
+		&rtDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
+		IID_PPV_ARGS(&HDRSceneRT));
+	MASSERT(SUCCEEDED(hr), "Failed to create HDR Scene RT");
+
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	rtvHeapDesc.NumDescriptors = 1;
+	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	hr = device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&HDRSceneRTVHeap));
+	MASSERT(SUCCEEDED(hr), "Failed to create HDR Scene RTV Heap");
+
+	UINT rtvSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = HDRSceneRTVHeap->GetCPUDescriptorHandleForHeapStart();
+
+	HDRSceneRTVHandle = rtvHandle;
+	device->CreateRenderTargetView(HDRSceneRT.Get(), nullptr, HDRSceneRTVHandle);
+
+	OutputDebugStringA("HDR Scene Render Target created successfully!\n");
+
+	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	srvHeapDesc.NumDescriptors = 1;
+	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&HDRSceneSRVHeap));
+	MASSERT(SUCCEEDED(hr), "Failed to create HDR Scene SRV Heap");
+
+	D3D12_CPU_DESCRIPTOR_HANDLE srvCpuHandle = HDRSceneSRVHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = HDRSceneSRVHeap->GetGPUDescriptorHandleForHeapStart();
+
+	HDRSceneSRVHandle = srvGpuHandle;
+	device->CreateShaderResourceView(HDRSceneRT.Get(), nullptr, srvCpuHandle);
+
+	OutputDebugStringA("HDR Scene RT SRV created\n");
+}
+
+void RenderTargets::RegisterHDRSceneToBindless(ID3D12Device* device)
+{
+	Material::RegisterHDRSceneSRV(device, HDRSceneRT.Get());
 }

@@ -77,11 +77,8 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddBindlessTable(5);    // [19] t0, space5 - Bindless 3D Textures For LUT
 
     AddCBV(9);              // [20] b9 - SkyboxCB
-
     AddCBV(10);             // [21] b10 - WaterCB
-
     AddCBV(11);             // [22] b11 - VolumetricFogCB
-
     AddCBV(12);             // [23] b12 - TrailCB
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[4];

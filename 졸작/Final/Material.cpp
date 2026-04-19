@@ -17,7 +17,7 @@ void Material::InitializeBindlessSystem(ID3D12Device* device)
 {
     D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
     heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    heapDesc.NumDescriptors = 9000;
+    heapDesc.NumDescriptors = 10000;
     heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
     HRESULT hr = device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&bindlessHeap));
@@ -177,6 +177,28 @@ UINT Material::RegisterLUT(ID3D12Device* device, ID3D12GraphicsCommandList* cmdL
     texturePathToIndex[path] = index;
     OutputDebugStringA(("3D LUT registered at index: " + to_string(index) + "\n").c_str());
     return index;
+}
+
+void Material::RegisterHDRSceneSRV(ID3D12Device* device, ID3D12Resource* hdrSceneRT)
+{
+    if (!bindlessHeap) {
+        OutputDebugStringA("Bindless system not initialized! Cannot register HDR Scene SRV.\n");
+        return;
+    }
+
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = bindlessHeap->GetCPUDescriptorHandleForHeapStart();
+    cpuHandle.ptr += HDR_SCENE_BINDLESS_INDEX * descriptorSize;
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.Texture2D.MipLevels = 1;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+
+    device->CreateShaderResourceView(hdrSceneRT, &srvDesc, cpuHandle);
+
+    OutputDebugStringA("HDR Scene SRV registered in bindless heap at index 9000\n");
 }
 
 void Material::BindBindlessResources(ID3D12GraphicsCommandList* cmdList)

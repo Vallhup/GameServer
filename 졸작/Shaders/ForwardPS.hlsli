@@ -2,7 +2,6 @@
 #include "InOutFormats.hlsli"
 #include "PBR.hlsli"
 #include "Fog.hlsli"
-#include "ToneMapping.hlsli"
 
 float4 PSMain(FORWARD_PS_IN input) : SV_Target
 {
@@ -54,20 +53,7 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         float2 screenUV = input.pos.xy * vfTexelSize;
         float4 fog = fogTexture.Sample(linearSampler, screenUV);
         finalColor = finalColor * fog.a + fog.rgb;
-        
-        finalColor = DarkFantasyToneMapping(finalColor, saturationFactor);
-        
-        if (lutIndex != 0xFFFFFFFF)
-        {
-            if (lutBlendFactor >= 1.0)
-                finalColor = ApplyLUT(bindlessTextures3D[lutIndex], lutLinearSampler, finalColor);
-            else
-                finalColor = ApplyLUTCircle(
-                    bindlessTextures3D[lutIndex],
-                    bindlessTextures3D[prevLutIndex],
-                    lutLinearSampler, finalColor, lutBlendFactor, input.uv);
-        }
-        
+
         return float4(finalColor, finalAlpha);
     }
     else if (useTexture == 2)
@@ -106,19 +92,6 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         float4 fog = fogTexture.Sample(linearSampler, screenUV);
         finalColor = finalColor * fog.a + fog.rgb;
 
-        finalColor = DarkFantasyToneMapping(finalColor, saturationFactor);
-        
-        if (lutIndex != 0xFFFFFFFF)
-        {
-            if (lutBlendFactor >= 1.0)
-                finalColor = ApplyLUT(bindlessTextures3D[lutIndex], lutLinearSampler, finalColor);
-            else
-                finalColor = ApplyLUTCircle(
-                    bindlessTextures3D[lutIndex],
-                    bindlessTextures3D[prevLutIndex],
-                    lutLinearSampler, finalColor, lutBlendFactor, input.uv);
-        }
-        
         return float4(finalColor, waterColor.a);
     }
     else

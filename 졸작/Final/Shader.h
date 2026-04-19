@@ -18,6 +18,7 @@ enum class PSOType {
 	Trail,
 	Flame,
 	Spark,
+	Blit,
 	END
 };
 
@@ -34,6 +35,7 @@ enum class ShaderType {
 	TrailPS,
 	FlamePS,
 	SparkPS,
+	BlitPS,
 	END
 };
 
@@ -55,6 +57,7 @@ private:
 	void InitializeSsaoShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeSsaoBlurShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeVolumetricFogPassShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
+	void InitializeBlitShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeEffectVS(ID3D12Device* device, const wstring& vsPath);
 	void CreateEffectPSO(ID3D12Device* device, ID3D12RootSignature* rootSig, ShaderType psType, PSOType psoType, const wstring& psPath);
 

@@ -2,7 +2,6 @@
 #include "InOutFormats.hlsli"
 #include "PBR.hlsli"
 #include "Fog.hlsli"
-#include "ToneMapping.hlsli"
 
 float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 {
@@ -94,23 +93,5 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     float4 fog = fogTexture.Sample(linearSampler, input.uv);
     finalColor = finalColor * fog.a + fog.rgb;
 
-    finalColor = DarkFantasyToneMapping(finalColor, saturationFactor);
-    
-    if (lutIndex != 0xFFFFFFFF)
-    {
-        if (lutBlendFactor >= 1.0)
-            finalColor = ApplyLUT(bindlessTextures3D[lutIndex], lutLinearSampler, finalColor);
-        else
-            finalColor = ApplyLUTCircle(
-          bindlessTextures3D[lutIndex],
-          bindlessTextures3D[prevLutIndex],
-          lutLinearSampler, finalColor, lutBlendFactor, input.uv);
-    }
-    
-    // Don't need to apply gamma correction
-    // R8G8B8A8_UNORM_SRGB automatically appies it.
-    //const float GAMMA = 2.2;
-    //finalColor = pow(finalColor, 1.0 / GAMMA);
-    
     return float4(finalColor, 1.0);
 }
