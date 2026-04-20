@@ -297,7 +297,8 @@ void SecondBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 
 		float worldX = move.x() + offsetX;
 		float worldZ = move.z() + offsetZ;
-		transform->SetPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
+		//transform->SetPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
+		transform->SetPosition(move.x(), SampleHeightAt(move.x(), move.z()), move.z());
 		transform->SetTargetRotation(move.yaw());
 	}
 }

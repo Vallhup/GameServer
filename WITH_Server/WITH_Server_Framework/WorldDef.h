@@ -50,14 +50,30 @@ struct WorldEntryPolicyDef
 };
 
 using MapResourceId = uint16_t;
-using SpawnPointId = uint16_t;
 using NavigationProfileId = uint16_t;
 using EnvironmentTagId = uint16_t;
 
-struct NamedSpawnPointDef
+struct WorldVec3Def
 {
-	SpawnPointId id;
+	float x{ 0.0f };
+	float y{ 0.0f };
+	float z{ 0.0f };
+};
+
+struct WorldQuatDef
+{
+	float x{ 0.0f };
+	float y{ 0.0f };
+	float z{ 0.0f };
+	float w{ 1.0f };
+};
+
+struct SpawnPointDef
+{
+	SpawnPointId id{ SpawnPointIds::None };
 	std::string name;
+	WorldVec3Def position;
+	WorldQuatDef rotation;
 };
 
 // NavMesh 파일 및 에이전트 물리 속성.
@@ -94,7 +110,7 @@ struct MapDef
 {
 	MapResourceId                       resourceId;
 	SpawnPointId                        defaultPlayerSpawnPointId;
-	std::vector<NamedSpawnPointDef>     namedSpawnPoints;
+	std::vector<SpawnPointDef>          spawnPoints;
 	std::optional<MapNavMeshDef>        navMesh;            // NavMesh 파일 정보 (없으면 NavMesh 미사용)
 	std::optional<NavigationProfileDef> navigationProfile;  // 쿼리 파라미터 (navMesh 설정 시 함께 지정)
 	std::optional<NavigationProfileId>  navigationProfileId; // 레거시 ID 필드 — 향후 제거 예정

@@ -65,6 +65,9 @@
     <ClCompile Include="CharacterDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
+    <ClCompile Include="SpawnSetDef.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
     <ClCompile Include="PlayerEntryService.cpp">
       <Filter>App</Filter>
     </ClCompile>

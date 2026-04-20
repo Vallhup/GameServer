@@ -5,8 +5,7 @@
 #include "IDs.h"
 #include <string>
 #include <optional>
-
-using SpawnPointId = uint16_t;
+#include <vector>
 
 enum class SpawnConditionType : uint8_t
 {
@@ -40,3 +39,5 @@ struct SpawnSetDef
 
 	std::vector<SpawnEntryDef> entries;
 };
+
+const SpawnSetDef* FindSpawnSetDef(SpawnSetId id) noexcept;

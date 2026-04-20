@@ -101,8 +101,12 @@ namespace
 			}
 
 			AssembleParams params{};
-			params.position = payload.position;
-			params.rotation = payload.rotation;
+			params.position = context.hasSpawnTransformOverride
+				? context.spawnPositionOverride
+				: payload.position;
+			params.rotation = context.hasSpawnTransformOverride
+				? context.spawnRotationOverride
+				: payload.rotation;
 			params.netId = context.netId;
 			params.sessionId = context.sessionId;
 			if (payload.hasCombatStats)

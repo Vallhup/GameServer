@@ -502,6 +502,33 @@ bool WorldRuntime::ImportTransferContext(
 
 	outImportedEntities.reserve(sessionIds.size());
 
+	bool hasSpawnTransformOverride = false;
+	DirectX::XMFLOAT3 spawnPositionOverride{ 0.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT4 spawnRotationOverride{ 0.0f, 0.0f, 0.0f, 1.0f };
+	if (_def != nullptr &&
+		_def->map.defaultPlayerSpawnPointId != SpawnPointIds::None)
+	{
+		for (const SpawnPointDef& spawnPoint : _def->map.spawnPoints)
+		{
+			if (spawnPoint.id == _def->map.defaultPlayerSpawnPointId)
+			{
+				hasSpawnTransformOverride = true;
+				spawnPositionOverride = DirectX::XMFLOAT3{
+					spawnPoint.position.x,
+					spawnPoint.position.y,
+					spawnPoint.position.z
+				};
+				spawnRotationOverride = DirectX::XMFLOAT4{
+					spawnPoint.rotation.x,
+					spawnPoint.rotation.y,
+					spawnPoint.rotation.z,
+					spawnPoint.rotation.w
+				};
+				break;
+			}
+		}
+	}
+
 	for (const TransferEntitySnapshot& entitySnapshot : entities)
 	{
 		const uint32_t sessionId = entitySnapshot.sessionId;
@@ -531,7 +558,10 @@ bool WorldRuntime::ImportTransferContext(
 				.sessionId = sessionId,
 				.sourceEntity = entitySnapshot.sourceEntity,
 				.targetEntity = targetEntity,
-				.netId = entitySnapshot.netId
+				.netId = entitySnapshot.netId,
+				.hasSpawnTransformOverride = hasSpawnTransformOverride,
+				.spawnPositionOverride = spawnPositionOverride,
+				.spawnRotationOverride = spawnRotationOverride
 			};
 			if (!serializer->Import(importContext, payloadSnapshot.bytes) || IsFaulted())
 			{

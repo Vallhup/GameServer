@@ -26,7 +26,7 @@ namespace
 				.maxPoise = 100,
 				.attackPower = 10,
 				.defense = 10,
-				.moveSpeed = 3.0f,
+				.moveSpeed = 4.0f,
 				.attackSpeed = 1.0f
 			},
 			.bodyCollision = CharacterBodyCollisionDef

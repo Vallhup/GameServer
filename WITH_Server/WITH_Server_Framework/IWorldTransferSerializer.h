@@ -4,6 +4,8 @@
 #include <span>
 #include <vector>
 
+#include <DirectXMath.h>
+
 #include "ECSView.h"
 #include "WorldTransferTypes.h"
 
@@ -24,6 +26,9 @@ struct WorldTransferImportContext
 	Entity sourceEntity{ Entity::Null() };
 	Entity targetEntity{ Entity::Null() };
 	NetId netId{ NetId::Invalid() };
+	bool hasSpawnTransformOverride{ false };
+	DirectX::XMFLOAT3 spawnPositionOverride{ 0.0f, 0.0f, 0.0f };
+	DirectX::XMFLOAT4 spawnRotationOverride{ 0.0f, 0.0f, 0.0f, 1.0f };
 };
 
 class IWorldTransferSerializer
