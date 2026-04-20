@@ -4381,7 +4381,7 @@ namespace
 				LocomotionAnimationBindingDef
 				{
 					.mode = LocomotionMode::Idle,
-					.animationId = AnimationId::DemonExecutioner_Idle_1,
+					.animationId = AnimationId::DemonExecutioner_Idle_2,
 					.holdLastFrame = true
 				},
 				LocomotionAnimationBindingDef

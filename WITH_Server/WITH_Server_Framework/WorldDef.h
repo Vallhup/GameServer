@@ -65,9 +65,9 @@ struct NamedSpawnPointDef
 struct MapNavMeshDef
 {
 	std::string navMeshBinPath;
-	float       agentRadius{ 0.35f };
+	float       agentRadius{ 0.35f }; // 0.6f
 	float       agentHeight{ 2.0f };
-	float       agentMaxClimb{ 0.4f };
+	float       agentMaxClimb{ 0.4f }; // 0.9f
 	float       agentMaxSlope{ 45.0f };
 };
 

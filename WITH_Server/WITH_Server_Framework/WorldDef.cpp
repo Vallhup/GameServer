@@ -118,6 +118,26 @@ WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey)
 		WorldInstanceType::Persistent,
 		executionModelKey);
 
+	// TEMP
+	def.map.navMesh = MapNavMeshDef
+	{ 
+		.navMeshBinPath = "../Map/Cathedral_NavMesh_v2.bin" 
+	};
+
+	def.map.navigationProfile = NavigationProfileDef
+	{
+		.id = 1,
+		.nearestPolyExtentXZ = 2.0f,
+		.nearestPolyExtentY = 4.0f,
+		.navMeshSurfaceYOffset = 0.0f,
+		.queryFilter = NavigationQueryFilterDef
+		{
+			.walkableAreaCost = 1.0f,
+			.includeFlags = 0xFFFF,
+			.excludeFlags = 0,
+		},
+	};
+
 	def.entryPolicy.creationPolicy = CreationPolicy::PreCreated;
 	def.entryPolicy.joinPolicy = JoinPolicy::FreeJoin;
 	def.entryPolicy.maxPlayerCount = kPlazaMaxPlayers;

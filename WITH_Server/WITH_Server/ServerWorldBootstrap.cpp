@@ -88,11 +88,11 @@ namespace
 		{
 			//DemoAISpawn{ CharacterId::Imp, 480.167800f, 481.655600f }
 			//DemoAISpawn{ CharacterId::DemonStriker, 480.167800f, 481.655600f }
-			DemoAISpawn{ CharacterId::DemonExecutioner, 480.167800f, 481.655600f }
+			DemoAISpawn{ CharacterId::DemonExecutioner, 500.167800f, 481.655600f }
 		};
-		static constexpr std::array<DemoAISpawn, 2> villageSpawns{
-			DemoAISpawn{ CharacterId::Imp, 478.0f, 482.0f },
-			DemoAISpawn{ CharacterId::Imp, 484.0f, 478.0f }
+		static constexpr std::array<DemoAISpawn, 1> villageSpawns{
+			DemoAISpawn{ CharacterId::DemonExecutioner, 500.167800f, 481.655600f },
+			//DemoAISpawn{ CharacterId::Imp, 484.0f, 478.0f }
 		};
 		static constexpr std::array<DemoAISpawn, 3> castleSpawns{
 			DemoAISpawn{ CharacterId::Imp, 476.0f, 484.0f },
@@ -142,7 +142,7 @@ namespace
 		const NetId netId = framework.BindEntityToNet(worldId, aiEntity);
 
 		AssembleParams params{};
-		params.position = { spawnX, 5.508454f, spawnZ };
+		params.position = { spawnX, 48.737797f, spawnZ };
 		params.rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
 		params.netId = netId;
 
