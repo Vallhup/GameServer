@@ -34,6 +34,17 @@ void FirstBattleScene::Reset()
 	OutputDebugStringA("FirstBattleScene Data has been deleted!! \n----------------------------------------\n");
 }
 
+SceneSettings FirstBattleScene::GetSceneSettings() const
+{
+	return {
+		  .light = { .sunIntensity = 1.0f },
+		  .lut = { .lutIndex = 14, .saturation = 1.0f },
+		  .fog = { .density = 0.03f, .maxSteps = 32, .maxDistance = 110.0f,
+					  .jitterStrength = 1.0f, .groundHeight = 48.0f, .lightIntensity = 1.0f },
+		  .skybox = { .tintColor = { 1.0f, 1.0f, 1.0f }, .saturation = 1.0f },
+	};
+}
+
 void FirstBattleScene::InitializeSceneObjectPools()
 {
 }

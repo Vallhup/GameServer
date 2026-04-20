@@ -199,6 +199,28 @@ void Material::RegisterHDRSceneSRV(ID3D12Device* device, ID3D12Resource* hdrScen
     OutputDebugStringA(("HDR Scene SRV registered in bindless heap at index " + to_string(HDR_SCENE_BINDLESS_INDEX) + "\n").c_str());
 }
 
+void Material::RegisterBloomMipSRV(ID3D12Device* device, ID3D12Resource* bloomTex, UINT mipLevel, UINT slotOffset)
+{
+    if (!bindlessHeap) {
+        OutputDebugStringA("Bindless system not initialized! Cannot register Bloom mip SRV.\n");
+        return;
+    }
+
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = bindlessHeap->GetCPUDescriptorHandleForHeapStart();
+    cpuHandle.ptr += (BLOOM_MIP_BASE + slotOffset) * descriptorSize;
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.Texture2D.MipLevels = 1;
+    srvDesc.Texture2D.MostDetailedMip = mipLevel;
+
+    device->CreateShaderResourceView(bloomTex, &srvDesc, cpuHandle);
+
+    OutputDebugStringA(("Bloom mip " + to_string(mipLevel) + " SRV registered at bindless index " + to_string(BLOOM_MIP_BASE + slotOffset) + "\n").c_str());
+}
+
 void Material::BindBindlessResources(ID3D12GraphicsCommandList* cmdList)
 {
     if (bindlessHeap && materialBuffer) {

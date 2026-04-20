@@ -50,6 +50,8 @@ private:
 
     void MoveInstancingBatches(SceneType type);
 
+    void ApplySceneSettings(DX12Core& core);
+
 private:
     HWND hwnd;
     Scene* mCurrentScene = nullptr;

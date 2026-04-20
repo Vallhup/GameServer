@@ -13,6 +13,8 @@ void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* roo
     InitializeSsaoShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/SsaoPS.hlsli");
     InitializeSsaoBlurShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/SsaoBlurPS.hlsli");
     InitializeVolumetricFogPassShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/VolumetricFogPassPS.hlsli");
+    InitializeBloomDownsampleShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/BloomDownsamplePS.hlsli");
+    InitializeBloomUpsampleShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/BloomUpsamplePS.hlsli");
     InitializeBlitShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/BlitPS.hlsli");
 
     InitializeEffectVS(device, L"../Shaders/EffectVS.hlsli");
@@ -412,6 +414,77 @@ void Shader::InitializeBlitShader(ID3D12Device* device, ID3D12RootSignature* roo
     MASSERT(SUCCEEDED(hr), "Failed to create Blit PSO");
 
     OutputDebugStringA("Blit PSO created successfully!\n");
+}
+
+void Shader::InitializeBloomDownsampleShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
+{
+    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]);
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::BloomDownsamplePS)]);
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { nullptr, 0 };
+    psoDesc.pRootSignature = rootSig;
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::BloomDownsamplePS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::BloomDownsamplePS)]->GetBufferSize() };
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
+    psoDesc.SampleDesc.Count = 1;
+    psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
+    D3D12_DEPTH_STENCIL_DESC depthDesc = {};
+    depthDesc.DepthEnable = FALSE;
+    depthDesc.StencilEnable = FALSE;
+    psoDesc.DepthStencilState = depthDesc;
+
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::BloomDownsample)]));
+    MASSERT(SUCCEEDED(hr), "Failed to create BloomDownsample PSO");
+
+    OutputDebugStringA("BloomDownsample PSO created successfully!\n");
+}
+
+void Shader::InitializeBloomUpsampleShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
+{
+    CompileShader(vsPath, "VSMain", "vs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]);
+    CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::BloomUpsamplePS)]);
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+    psoDesc.InputLayout = { nullptr, 0 };
+    psoDesc.pRootSignature = rootSig;
+    psoDesc.VS = { mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::FullscreenVS)]->GetBufferSize() };
+    psoDesc.PS = { mShadersBlobs[static_cast<size_t>(ShaderType::BloomUpsamplePS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::BloomUpsamplePS)]->GetBufferSize() };
+    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.SampleMask = UINT_MAX;
+    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    psoDesc.NumRenderTargets = 1;
+    psoDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    psoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
+    psoDesc.SampleDesc.Count = 1;
+
+    // Additive blend: dst = src * 1 + dst * 1
+    D3D12_BLEND_DESC additiveBlend = {};
+    additiveBlend.RenderTarget[0].BlendEnable = TRUE;
+    additiveBlend.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+    additiveBlend.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+    additiveBlend.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+    additiveBlend.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+    additiveBlend.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ONE;
+    additiveBlend.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+    additiveBlend.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+    psoDesc.BlendState = additiveBlend;
+
+    D3D12_DEPTH_STENCIL_DESC depthDesc = {};
+    depthDesc.DepthEnable = FALSE;
+    depthDesc.StencilEnable = FALSE;
+    psoDesc.DepthStencilState = depthDesc;
+
+    HRESULT hr = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::BloomUpsample)]));
+    MASSERT(SUCCEEDED(hr), "Failed to create BloomUpsample PSO");
+
+    OutputDebugStringA("BloomUpsample PSO created successfully!\n");
 }
 
 void Shader::InitializeEffectVS(ID3D12Device* device, const wstring& vsPath)

@@ -80,6 +80,7 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddCBV(10);             // [21] b10 - WaterCB
     AddCBV(11);             // [22] b11 - VolumetricFogCB
     AddCBV(12);             // [23] b12 - TrailCB
+    AddConstant(8, 13);     // [24] b13 - BloomConstants (8x32bit)
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[4];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,

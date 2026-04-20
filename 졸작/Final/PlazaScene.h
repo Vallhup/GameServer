@@ -23,6 +23,8 @@ public:
 
 	void AddGameObject(shared_ptr<GameObject> obj);
 
+	SceneSettings GetSceneSettings() const override;
+
 protected:
 	void InitializeSceneObjectPools() override;
 	void InitializeLogic() override;
@@ -76,7 +78,5 @@ private:
 
 	shared_ptr<SkyBox> skyBox;
 	shared_ptr<Terrain> terrain;
-
-	shared_ptr<GameObject> flameObject;
 };
 

@@ -20,6 +20,7 @@
 #include "FroxelManager.h"
 #include "SSAO.h"
 #include "LookUpTextures.h"
+#include "BloomManager.h"
 
 Engine& Engine::Get()
 {
@@ -112,7 +113,9 @@ void Engine::Render()
 
     graphics->ForwardPass();
     sceneManager->RenderForward();
-    sceneManager->RenderEffects();   
+    sceneManager->RenderEffects();
+
+    graphics->BloomPass();
 
     graphics->BlitPass();
 

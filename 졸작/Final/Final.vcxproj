@@ -209,6 +209,7 @@ exit 0</Command>
     <ClCompile Include="AnimationSetFactory.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="BarUI.cpp" />
+    <ClCompile Include="BloomManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ClientConnectionListener.cpp" />
     <ClCompile Include="Component.cpp" />
@@ -227,6 +228,7 @@ exit 0</Command>
     <ClCompile Include="LookUpTextures.cpp" />
     <ClCompile Include="ParrySparkComponent.cpp" />
     <ClCompile Include="RenderTargets.cpp" />
+    <ClCompile Include="SceneSetting.cpp" />
     <ClCompile Include="SelectSceneUIController.cpp" />
     <ClCompile Include="ShadowMappingManager.cpp" />
     <ClCompile Include="FirstBattleScene.cpp" />
@@ -296,6 +298,7 @@ exit 0</Command>
     <ClInclude Include="AnimationSetFactory.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="BarUI.h" />
+    <ClInclude Include="BloomManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ClientConnectionListener.h" />
     <ClInclude Include="Component.h" />
@@ -315,6 +318,7 @@ exit 0</Command>
     <ClInclude Include="NetHelper.h" />
     <ClInclude Include="ParrySparkComponent.h" />
     <ClInclude Include="RenderTargets.h" />
+    <ClInclude Include="SceneSetting.h" />
     <ClInclude Include="SelectSceneUIController.h" />
     <ClInclude Include="ShadowMappingManager.h" />
     <ClInclude Include="FirstBattleScene.h" />
@@ -366,6 +370,8 @@ exit 0</Command>
   <ItemGroup>
     <None Include="..\Shaders\animation.hlsli" />
     <None Include="..\Shaders\BlitPS.hlsli" />
+    <None Include="..\Shaders\BloomDownsamplePS.hlsli" />
+    <None Include="..\Shaders\BloomUpsamplePS.hlsli" />
     <None Include="..\Shaders\EffectVS.hlsli" />
     <None Include="..\Shaders\FlamePS.hlsli" />
     <None Include="..\Shaders\Fog.hlsli" />

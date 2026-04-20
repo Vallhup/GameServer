@@ -65,6 +65,7 @@ class SSAO;
 class LookUpTextures;
 class RootSignature;
 class Shader;
+class BloomManager;
 
 class DX12Core
 {
@@ -90,6 +91,8 @@ public:
 
 	void LightingPass();
 	void ForwardPass();
+
+	void BloomPass();
 
 	void BlitPass();
 
@@ -117,6 +120,7 @@ public:
 	SSAO* GetSsaoMgr() { return ssaoMgr.get(); }
 	LookUpTextures* GetLUTMgr() { return lutMgr.get(); }
 	SwapChain* GetSwapChainMgr() { return swapChainMgr.get(); }
+	BloomManager* GetBloomMgr() { return bloomMgr.get(); }
 
 	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;
@@ -141,6 +145,8 @@ private:
 	unique_ptr<FroxelManager> froxelMgr;
 	unique_ptr<SSAO> ssaoMgr;
 	unique_ptr<LookUpTextures> lutMgr;
+
+	unique_ptr<BloomManager> bloomMgr;
 
 	unique_ptr<RootSignature> rootSig;
 	unique_ptr<Shader> shader;

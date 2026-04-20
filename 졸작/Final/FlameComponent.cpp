@@ -57,7 +57,7 @@ void FlameComponent::BuildMesh(const XMFLOAT3& cameraPos)
 		float ageRatio = min(1.0f, p.age / fadeInTime);
 		float alpha = ageRatio;
 
-		auto randJitter = []() { return (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * 0.001f; };
+		auto randJitter = []() { return (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * 0.0025f; };
 
 		XMFLOAT3 jitteredPos = p.position;
 		jitteredPos.x += randJitter();

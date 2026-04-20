@@ -20,7 +20,7 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 	XMVECTOR centerPos = XMLoadFloat3(&center);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	const float shadowCasterDistance = 200.0f;
+	const float shadowCasterDistance = 120.0f;
 
 	// centerPos에 의존하지 않는 라이트 공간 축 (shadow swimming 방지용)
 	XMVECTOR forward = XMVector3Normalize(csmLightDir);

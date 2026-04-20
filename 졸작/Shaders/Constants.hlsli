@@ -7,6 +7,7 @@
 
 static const float PI = 3.14159265359;
 #define HDR_SCENE_BINDLESS_INDEX 9000
+#define BLOOM_MIP_BASE           9001
 
 //-------------------------------------------------------
 // CSM Constants
@@ -43,10 +44,10 @@ static const int KERNEL_SIZE = 32;
 // Mountain Texture tiling Constants
 //-------------------------------------------------------
 
-static const int ROCK_DIFFUSE_IDX = 241;
-static const int ROCK_NORMAL_IDX = 242;
-static const int GRASS_IDX = 243;
-static const int GRASS_VARIANT_IDX = 244;
+static const int ROCK_DIFFUSE_IDX = 240;
+static const int ROCK_NORMAL_IDX = 241;
+static const int GRASS_IDX = 242;
+static const int GRASS_VARIANT_IDX = 243;
 static const float2 ROCK_TILING = float2(10.0, 12.56);
 static const float GRASS_TILING = 150.0;
 static const float SLOPE_THRESHOLD = 0.65;

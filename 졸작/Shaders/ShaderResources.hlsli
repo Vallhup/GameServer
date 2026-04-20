@@ -150,6 +150,17 @@ cbuffer EffectCB : register(b12)
     float3 padding;
 }
 
+cbuffer BloomCB : register(b13)
+{
+    uint bloomSrcMipIndex;
+    float bloomFilterRadius;
+    float2 bloomSrcTexelSize;
+    float bloomIntensity;
+    float bloomThreshold;
+    float bloomKnee;
+    uint bloomIsFirstPass;
+};
+
 //-------------------------------------------------------
 // VARIOUS TYPES OF SHADER RESOURCES
 //-------------------------------------------------------
@@ -188,7 +199,7 @@ Texture3D bindlessTextures3D[] : register(t0, space5);
 
 SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
-SamplerState lutLinearSampler : register(s2);
+SamplerState linearClampSampler : register(s2);
 SamplerComparisonState shadowCmpSampler : register(s3);
 
 //-------------------------------------------------------

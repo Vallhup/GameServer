@@ -125,8 +125,8 @@ void RenderTargets::CreateFogRenderTarget(ID3D12Device* device)
 
 	D3D12_RESOURCE_DESC rtDesc = {};
 	rtDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	rtDesc.Width = WinSize.x / 2;
-	rtDesc.Height = WinSize.y / 2;
+	rtDesc.Width = WinSize.x;
+	rtDesc.Height = WinSize.y;
 	rtDesc.DepthOrArraySize = 1;
 	rtDesc.MipLevels = 1;
 	rtDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;

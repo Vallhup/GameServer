@@ -14,6 +14,7 @@
 #include "SSAO.h"
 #include "LookUpTextures.h"
 #include "Material.h"
+#include "BloomManager.h"
 
 void DX12Core::Initialize(HWND hwnd)
 {
@@ -55,6 +56,11 @@ void DX12Core::Initialize(HWND hwnd)
 
 	Material::InitializeBindlessSystem(GetDevice());
 	rtMgr->RegisterHDRSceneToBindless(GetDevice());
+
+	bloomMgr = make_unique<BloomManager>();
+	bloomMgr->Initialize(GetDevice());
+	bloomMgr->RegisterMipsToBindless(GetDevice());
+
 	lutMgr->Initialize(GetDevice(), GetGraphicsCmdList());
 }
 
@@ -153,6 +159,134 @@ void DX12Core::ForwardPass()
 	//OutputDebugStringA("Forward pass started\n");
 }
 
+void DX12Core::BloomPass()
+{
+	auto* cmd = deviceCtx->GetGraphicsCmdList();
+	auto* bloomTex = bloomMgr->GetBloomTexture();
+
+	// HDR Scene : RENDER_TARGET -> PIXEL_SHADER_RESOURCE (source for downsample[0])
+	{
+		D3D12_RESOURCE_BARRIER b = CD3DX12_RESOURCE_BARRIER::Transition(
+			rtMgr->GetHDRSceneRT(),
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		cmd->ResourceBarrier(1, &b);
+	}
+
+	cmd->SetGraphicsRootSignature(GetRootSig()->Get());
+	Material::BindBindlessResources(cmd);
+	cmd->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// ===== Downsample : HDR -> mip0, mip0 -> mip1, ... =====
+	cmd->SetPipelineState(shader->GetPSO(PSOType::BloomDownsample));
+
+	for (UINT i = 0; i < BloomManager::CHAIN_LENGTH; ++i)
+	{
+		D3D12_RESOURCE_BARRIER toRT = CD3DX12_RESOURCE_BARRIER::Transition(
+			bloomTex,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_RENDER_TARGET, i);
+		cmd->ResourceBarrier(1, &toRT);
+
+		UINT srcIdx = (i == 0) ? Material::HDR_SCENE_BINDLESS_INDEX : (Material::BLOOM_MIP_BASE + (i - 1));
+		UINT srcW = (i == 0) ? static_cast<UINT>(WinSize.x) : bloomMgr->GetMipWidth(i - 1);
+		UINT srcH = (i == 0) ? static_cast<UINT>(WinSize.y) : bloomMgr->GetMipHeight(i - 1);
+
+		BloomRootConstants rc = {};
+		rc.srcMipIndex = srcIdx;
+		rc.filterRadius = 0.0f;
+		rc.texelSizeX = 1.0f / static_cast<float>(srcW);
+		rc.texelSizeY = 1.0f / static_cast<float>(srcH);
+		rc.intensity = 1.0f;
+		rc.threshold = 1.0f;
+		rc.knee = 0.1f;
+		rc.isFirstPass = (i == 0) ? 1u : 0u;
+		cmd->SetGraphicsRoot32BitConstants(24, 8, &rc, 0);
+
+		D3D12_VIEWPORT vp = {};
+		vp.Width = static_cast<FLOAT>(bloomMgr->GetMipWidth(i));
+		vp.Height = static_cast<FLOAT>(bloomMgr->GetMipHeight(i));
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+		cmd->RSSetViewports(1, &vp);
+
+		D3D12_RECT sc = { 0, 0,
+			static_cast<LONG>(bloomMgr->GetMipWidth(i)),
+			static_cast<LONG>(bloomMgr->GetMipHeight(i)) };
+		cmd->RSSetScissorRects(1, &sc);
+
+		D3D12_CPU_DESCRIPTOR_HANDLE rtv = bloomMgr->GetMipRTV(i);
+		cmd->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
+
+		cmd->DrawInstanced(6, 1, 0, 0);
+
+		D3D12_RESOURCE_BARRIER toSRV = CD3DX12_RESOURCE_BARRIER::Transition(
+			bloomTex,
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, i);
+		cmd->ResourceBarrier(1, &toSRV);
+	}
+
+	// ===== Upsample (additive) : mip5 -> mip4, mip4 -> mip3, ..., mip1 -> mip0 =====
+	cmd->SetPipelineState(shader->GetPSO(PSOType::BloomUpsample));
+
+	for (int i = static_cast<int>(BloomManager::CHAIN_LENGTH) - 1; i > 0; --i)
+	{
+		UINT dstMip = static_cast<UINT>(i - 1);
+
+		D3D12_RESOURCE_BARRIER toRT = CD3DX12_RESOURCE_BARRIER::Transition(
+			bloomTex,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_RENDER_TARGET, dstMip);
+		cmd->ResourceBarrier(1, &toRT);
+
+		BloomRootConstants rc = {};
+		rc.srcMipIndex = Material::BLOOM_MIP_BASE + static_cast<UINT>(i);
+		rc.filterRadius = 0.005f;
+		rc.texelSizeX = 1.0f / static_cast<float>(bloomMgr->GetMipWidth(i));
+		rc.texelSizeY = 1.0f / static_cast<float>(bloomMgr->GetMipHeight(i));
+		rc.intensity = 1.0f;
+		cmd->SetGraphicsRoot32BitConstants(24, 8, &rc, 0);
+
+		D3D12_VIEWPORT vp = {};
+		vp.Width = static_cast<FLOAT>(bloomMgr->GetMipWidth(dstMip));
+		vp.Height = static_cast<FLOAT>(bloomMgr->GetMipHeight(dstMip));
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+		cmd->RSSetViewports(1, &vp);
+
+		D3D12_RECT sc = { 0, 0,
+			static_cast<LONG>(bloomMgr->GetMipWidth(dstMip)),
+			static_cast<LONG>(bloomMgr->GetMipHeight(dstMip)) };
+		cmd->RSSetScissorRects(1, &sc);
+
+		D3D12_CPU_DESCRIPTOR_HANDLE rtv = bloomMgr->GetMipRTV(dstMip);
+		cmd->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
+
+		cmd->DrawInstanced(6, 1, 0, 0);
+
+		D3D12_RESOURCE_BARRIER toSRV = CD3DX12_RESOURCE_BARRIER::Transition(
+			bloomTex,
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, dstMip);
+		cmd->ResourceBarrier(1, &toSRV);
+	}
+
+	// HDR Scene back to RENDER_TARGET so BlitPass's standard RT->SRV transition stays consistent.
+	{
+		D3D12_RESOURCE_BARRIER b = CD3DX12_RESOURCE_BARRIER::Transition(
+			rtMgr->GetHDRSceneRT(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_RENDER_TARGET);
+		cmd->ResourceBarrier(1, &b);
+	}
+
+	D3D12_VIEWPORT fullVP = { 0, 0, static_cast<FLOAT>(WinSize.x), static_cast<FLOAT>(WinSize.y), 0.0f, 1.0f };
+	cmd->RSSetViewports(1, &fullVP);
+	D3D12_RECT fullSC = { 0, 0, static_cast<LONG>(WinSize.x), static_cast<LONG>(WinSize.y) };
+	cmd->RSSetScissorRects(1, &fullSC);
+}
+
 void DX12Core::BlitPass()
 {
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -170,6 +304,15 @@ void DX12Core::BlitPass()
 
 	Material::BindBindlessResources(deviceCtx->GetGraphicsCmdList());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
+
+	// Bind bloom intensity (other BloomCB fields unused by Blit)
+	BloomRootConstants blitRC = {};
+	blitRC.srcMipIndex = Material::BLOOM_MIP_BASE;
+	blitRC.filterRadius = 0.0f;
+	blitRC.texelSizeX = 0.0f;
+	blitRC.texelSizeY = 0.0f;
+	blitRC.intensity = 1.5f;
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRoot32BitConstants(24, 8, &blitRC, 0);
 
 	deviceCtx->GetGraphicsCmdList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceCtx->GetGraphicsCmdList()->DrawInstanced(6, 1, 0, 0);
@@ -350,13 +493,13 @@ void DX12Core::FogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
 
 	D3D12_VIEWPORT fogViewport = {};
-	fogViewport.Width = WinSize.x / 2.0f;
-	fogViewport.Height = WinSize.y / 2.0f;
+	fogViewport.Width = WinSize.x;
+	fogViewport.Height = WinSize.y;
 	fogViewport.MinDepth = 0.0f;
 	fogViewport.MaxDepth = 1.0f;
 	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &fogViewport);
 
-	D3D12_RECT fogRect = { 0, 0, static_cast<LONG>(WinSize.x / 2), static_cast<LONG>(WinSize.y / 2) };
+	D3D12_RECT fogRect = { 0, 0, static_cast<LONG>(WinSize.x), static_cast<LONG>(WinSize.y) };
 	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &fogRect);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE fogRTV = rtMgr->GetFogRTV();
