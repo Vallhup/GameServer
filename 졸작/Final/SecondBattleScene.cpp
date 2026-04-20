@@ -209,8 +209,20 @@ void SecondBattleScene::RequestSceneChange()
 {
 	if (INPUT.GetKeyDown(VK_CAPITAL))
 	{
-		if (sManagerRef)
-			sManagerRef->RequestLoadingScene(SceneType::Final);
+		// TODO: 서버 검증 이후 LoadingScene 입장하도록 변경 예정
+		//if (sManagerRef)
+		//	sManagerRef->RequestLoadingScene(SceneType::Village);
+
+		auto& transition = ENGINE.GetWorldTransitionController();
+		const uint32_t requestId = transition.CreateRequestId();
+
+		if (transition.BeginRequest(requestId))
+		{
+			if (!NETWORK_MANAGER->SendWorldTransitionRequestPacket(requestId))
+			{
+				transition.Reset();
+			}
+		}
 	}
 }
 

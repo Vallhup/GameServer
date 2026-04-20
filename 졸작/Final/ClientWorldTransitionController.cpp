@@ -82,6 +82,14 @@ void ClientWorldTransitionController::MarkReadySent()
 	}
 }
 
+void ClientWorldTransitionController::Complete()
+{
+	if (phase == ClientWorldTransitionPhase::ReadySent)
+	{
+		Reset();
+	}
+}
+
 void ClientWorldTransitionController::Reset()
 {
 	context = {};

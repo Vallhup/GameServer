@@ -192,6 +192,7 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
                 NETWORK_MANAGER->SendWorldTransitionReadyPacket(transferId))
             {
                 transition.MarkReadySent();
+                transition.Complete();
             }
             else
             {

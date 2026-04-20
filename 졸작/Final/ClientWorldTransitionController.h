@@ -43,6 +43,7 @@ public:
 
 	void MarkLoadingStarted();
 	void MarkReadySent();
+	void Complete();
 	void Reset();
 
 	bool HasBeginContext() const;
