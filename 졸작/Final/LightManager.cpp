@@ -62,8 +62,8 @@ void LightManager::SetupLights()
 	};
 
 	deferredLightData.lights[2] = {
-		{-27.f, 29.f, -70.0f}, 2000.0f,
-		{0.074f, 0, 1}, 0.0f,
+		{481.f, 25.f, 482.0f}, 50.0f,
+		{1, 1, 1}, 0.0f,
 		1,
 		{0, 0, 0}
 	};

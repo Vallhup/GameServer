@@ -13,6 +13,7 @@
 #include "AnimationMachine.h"
 #include "EffectManager.h"
 #include "EffectComponent.h"
+#include "FlameComponent.h"
 #include "NetId.h"
 #include "NetHelper.h"
 
@@ -29,6 +30,17 @@ void FinalBattleScene::Reset()
 	bossObject = nullptr;
 
 	OutputDebugStringA("FinalBattleScene Data has been deleted!! \n----------------------------------------\n");
+}
+
+SceneSettings FinalBattleScene::GetSceneSettings() const
+{
+	return {
+		  .light = { .sunDirection = { 0.0f, -0.75f, -1.0f }, .sunIntensity = 0.0f},
+		  .lut = { .lutIndex = 1, .saturation = 1.0f },
+		  .fog = { .density = 0.0f, .maxSteps = 32, .maxDistance = 110.0f,
+					  .jitterStrength = 1.0f, .groundHeight = 2.0f, .lightIntensity = 0.0f },
+		  .skybox = { .tintColor = { 1.0f, 1.0f, 1.0f }, .saturation = 1.0f },
+	};
 }
 
 void FinalBattleScene::InitializeSceneObjectPools()
@@ -70,6 +82,19 @@ void FinalBattleScene::InitializeLogic()
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
+
+	const XMFLOAT3 candlePositions[] = { {2.824002f, 3.450002f, -57.236343f}, {7.456354f, 3.450002f, -45.545242f}, {6.765375f, 2.900002f, -39.137711f},
+		{6.805631f, 2.300002f, -31.051842f}, {7.515741f, 3.450002f, -1.208803f}, {-7.392492f, 3.450002f, -0.762147f}, {-6.920892f, 2.300002f, -31.079567f},
+		{-6.946253f, 2.900002f, -39.099716f}, {-7.372187f, 3.450002f, -45.562912f}, {-2.856723f, 3.450002f, -57.070786f} };
+	auto flameObject = make_shared<GameObject>();
+	flameObject->SetId(-1);
+	auto flame = flameObject->AddComponent<FlameComponent>();
+	flame->Initialize(coreRef->GetDevice(), 32);
+	flame->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
+	flame->SetParticleSize(1.0f);
+	for (auto& pos : candlePositions)
+		flame->Spawn(pos);
+	gameObjects.push_back(flameObject);
 
 	OutputDebugStringA("FinalBattleScene initialized!\n");
 }
@@ -234,7 +259,7 @@ void FinalBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 
 		float worldX = move.x() + offsetX;		// 임시 예측 좌표임 (맵 기반)
 		float worldZ = move.z() + offsetZ;	
-		transform->SetPosition(worldX, 4.0f, worldZ);
+		transform->SetPosition(worldX, 2.0f, worldZ);
 		transform->SetTargetRotation(move.yaw());
 	}
 }

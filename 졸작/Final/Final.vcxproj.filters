@@ -238,15 +238,6 @@
     <ClCompile Include="EffectComponent.cpp">
       <Filter>Effect\Base</Filter>
     </ClCompile>
-    <ClCompile Include="ClientInboundPacketQueue.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientWorldTransitionController.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientPacketRouter.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -487,14 +478,11 @@
     <ClInclude Include="EffectComponent.h">
       <Filter>Effect\Base</Filter>
     </ClInclude>
-    <ClInclude Include="ClientInboundPacketQueue.h">
-      <Filter>Network</Filter>
+    <ClInclude Include="BloomManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="ClientWorldTransitionController.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientPacketRouter.h">
-      <Filter>Network</Filter>
+    <ClInclude Include="SceneSetting.h">
+      <Filter>Scene\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -587,6 +575,15 @@
     </None>
     <None Include="..\Shaders\VolumetricFogPassPS.hlsli">
       <Filter>Shaders\Volumetric</Filter>
+    </None>
+    <None Include="..\Shaders\BlitPS.hlsli">
+      <Filter>Shaders\Bloom</Filter>
+    </None>
+    <None Include="..\Shaders\BloomDownsamplePS.hlsli">
+      <Filter>Shaders\Bloom</Filter>
+    </None>
+    <None Include="..\Shaders\BloomUpsamplePS.hlsli">
+      <Filter>Shaders\Bloom</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -724,6 +721,9 @@
     </Filter>
     <Filter Include="Effect\Base">
       <UniqueIdentifier>{312e4599-3da0-47e1-bcc1-ae2f36904399}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Bloom">
+      <UniqueIdentifier>{bd586a08-36ca-4310-a622-41eb7a0f8fb7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

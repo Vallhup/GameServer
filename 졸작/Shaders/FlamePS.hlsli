@@ -17,7 +17,7 @@ float4 PSMain(EffectVertexOut input) : SV_TARGET
 
     // Y 위치에 따라 가로 폭 조절 (위/아래 얇게, 중간 넓게)
     float widthScale = smoothstep(0.0f, 0.3f, input.uv.y) * smoothstep(1.0f, 0.3f, input.uv.y);
-    centerGlow = pow(centerGlow, lerp(7.0f, 1.5f, widthScale));  // 위아래는 pow 높게(좁게), 중간은 낮게(넓게)
+    centerGlow = pow(max(centerGlow, 0.0), lerp(7.0f, 1.5f, widthScale));
 
     // 최종 알파 계산: 파티클 고유의 알파(수명 주기 페이드) * 텍스처 강도 * 보정값
     float finalAlpha = input.alpha * flameIntensity * centerGlow;

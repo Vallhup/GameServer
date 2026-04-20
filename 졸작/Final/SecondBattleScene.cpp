@@ -34,6 +34,17 @@ void SecondBattleScene::Reset()
 	OutputDebugStringA("SecondBattleScene Data has been deleted!! \n----------------------------------------\n");
 }
 
+SceneSettings SecondBattleScene::GetSceneSettings() const
+{
+	return {
+		  .light = { .sunIntensity = 0.2f },
+		  .lut = { .lutIndex = 14, .saturation = 1.0f },
+		  .fog = { .density = 0.02f, .maxSteps = 32, .maxDistance = 90.0f,
+					  .jitterStrength = 1.0f, .groundHeight = 66.0f, .lightIntensity = 0.8f },
+		  .skybox = { .tintColor = { 1.0f, 1.0f, 1.0f }, .exposure = 0.6f, .saturation = 1.0f },
+	};
+}
+
 void SecondBattleScene::InitializeSceneObjectPools()
 {
 }

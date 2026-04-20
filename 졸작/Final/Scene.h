@@ -5,6 +5,7 @@
 #include "GameObject.h"		// DX12Core.h 포함
 #include "Mesh.h"			// Component.h 포함
 #include "Transform.h"		// Component.h
+#include "SceneSetting.h"
 
 class SceneManager;
 enum class SceneType;
@@ -27,6 +28,8 @@ public:
 	void SetSceneManager(SceneManager* manager);
 	void HandlePacket(const PacketHeader& header, const BYTE* data);
 	void SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches);
+
+	virtual SceneSettings GetSceneSettings() const { return {}; }
 
 protected:
 	virtual void InitializeSceneObjectPools() = 0;

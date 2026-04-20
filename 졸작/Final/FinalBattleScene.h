@@ -14,6 +14,8 @@ public:
 	void Release() override;
 	void Reset() override;
 
+	SceneSettings GetSceneSettings() const override;
+
 protected:
 	void InitializeSceneObjectPools() override;
 	void InitializeLogic() override;

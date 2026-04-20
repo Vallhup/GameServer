@@ -65,6 +65,7 @@ class SSAO;
 class LookUpTextures;
 class RootSignature;
 class Shader;
+class BloomManager;
 
 class DX12Core
 {
@@ -82,19 +83,19 @@ public:
 	void BeginGBufferPass();
 	void EndGBufferPass();
 
-	void BeginSsaoPass();
-	void EndSsaoPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
-	void BeginSsaoBlurPass();
-	void EndSsaoBlurPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+	void SsaoPass();
+	void SsaoBlurPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 	void ClearSsaoRT();
 
-	void BeginFogPass();
-	void EndFogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+	void FogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 
-	void BeginLightingPass();
-	void RenderFullscreenQuad();
+	void LightingPass();
+	void ForwardPass();
 
-	void BeginForwardPass();
+	void BloomPass();
+
+	void BlitPass();
+
 	void RenderEnd();
 	//-------------------------------------------------------
 
@@ -119,6 +120,7 @@ public:
 	SSAO* GetSsaoMgr() { return ssaoMgr.get(); }
 	LookUpTextures* GetLUTMgr() { return lutMgr.get(); }
 	SwapChain* GetSwapChainMgr() { return swapChainMgr.get(); }
+	BloomManager* GetBloomMgr() { return bloomMgr.get(); }
 
 	IDXGISwapChain4* GetSwapChain() const;
 	RootSignature* GetRootSig() const;
@@ -143,6 +145,8 @@ private:
 	unique_ptr<FroxelManager> froxelMgr;
 	unique_ptr<SSAO> ssaoMgr;
 	unique_ptr<LookUpTextures> lutMgr;
+
+	unique_ptr<BloomManager> bloomMgr;
 
 	unique_ptr<RootSignature> rootSig;
 	unique_ptr<Shader> shader;

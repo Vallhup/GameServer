@@ -21,7 +21,6 @@
 #include "EffectComponent.h"
 #include "TrailComponent.h"
 #include "FootDustComponent.h"
-#include "FlameComponent.h"
 #include "ParrySparkComponent.h"
 
 #include "NetId.h"
@@ -65,7 +64,6 @@ void PlazaScene::Reset()
 	myPlayer = nullptr;
 	bossObject = nullptr;
 	impObject = nullptr;
-	flameObject = nullptr;
 	gameObjects.clear();
 
 	OutputDebugStringA("PlazaScene Data has been deleted!! \n----------------------------------------\n");
@@ -74,6 +72,17 @@ void PlazaScene::Reset()
 void PlazaScene::AddGameObject(shared_ptr<GameObject> obj)
 {
 	gameObjects.push_back(obj);
+}
+
+SceneSettings PlazaScene::GetSceneSettings() const
+{
+	return {
+		  .light = { .sunIntensity = 1.0f },
+		  .lut = { .lutIndex = 105, .saturation = 1.0f },
+		  .fog = { .density = 0.015f, .maxSteps = 32, .maxDistance = 90.0f,
+					  .jitterStrength = 1.0f, .groundHeight = 5.0f, .lightIntensity = 1.5f },
+		  .skybox = { .tintColor = { 1.0f, 1.0f, 1.0f }, .saturation = 2.0f},
+	};
 }
 
 void PlazaScene::InitializeSceneObjectPools()
@@ -128,15 +137,6 @@ void PlazaScene::InitializeLogic()
 	{
 		_nManager->SendLoginPacket();
 	}
-
-	flameObject = make_shared<GameObject>();
-	flameObject->SetId(-1);
-	auto flame = flameObject->AddComponent<FlameComponent>();
-	flame->Initialize(coreRef->GetDevice(), 32);
-	flame->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
-	flame->SetParticleSize(0.5f);
-	flame->Spawn(XMFLOAT3(484.607025f, 6.f, 481.862946f));
-	AddGameObject(flameObject);
 
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
