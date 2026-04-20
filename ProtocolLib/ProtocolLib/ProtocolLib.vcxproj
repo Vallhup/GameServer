@@ -161,7 +161,6 @@
   <ItemGroup>
     <ClInclude Include="Include\AnimationId.h" />
     <ClInclude Include="Include\EntityId.h" />
-    <ClInclude Include="Include\EntityType.h" />
     <ClInclude Include="Include\NetChannel.h" />
     <ClInclude Include="Include\NetId.h" />
     <ClInclude Include="Include\PacketFactory.h" />

@@ -30,9 +30,6 @@
     <ClInclude Include="Include\PacketType.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Include\EntityType.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Include\NetId.h">
       <Filter>Utility</Filter>
     </ClInclude>

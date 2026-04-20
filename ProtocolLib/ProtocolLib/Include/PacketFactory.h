@@ -16,8 +16,7 @@ struct PacketFactory {
 		uint16 bodySize = data.ByteSizeLong();
 		uint16 packetSize = sizeof(PacketHeader) + bodySize;
 
-		SendBuffer* buffer = SendBufferPool::Get().
-			Acquire(bodySize + packetSize);
+		SendBuffer* buffer = SendBufferPool::Get().Acquire(packetSize);
 		buffer->size = packetSize;
 
 		PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer->data);
