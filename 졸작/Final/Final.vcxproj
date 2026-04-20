@@ -211,6 +211,9 @@ exit 0</Command>
     <ClCompile Include="BarUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ClientConnectionListener.cpp" />
+    <ClCompile Include="ClientInboundPacketQueue.cpp" />
+    <ClCompile Include="ClientPacketRouter.cpp" />
+    <ClCompile Include="ClientWorldTransitionController.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
     <ClCompile Include="DX12Core.cpp" />
@@ -298,6 +301,9 @@ exit 0</Command>
     <ClInclude Include="BarUI.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ClientConnectionListener.h" />
+    <ClInclude Include="ClientInboundPacketQueue.h" />
+    <ClInclude Include="ClientPacketRouter.h" />
+    <ClInclude Include="ClientWorldTransitionController.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DeviceContext.h" />
     <ClInclude Include="DX12Core.h" />

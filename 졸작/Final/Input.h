@@ -16,8 +16,6 @@ class Input : public Singleton<Input>
 	Input() = default;
 
 public:
-	void Initialize(NetworkManager* net) { network = net; }
-
 	void Renew();
 
 	bool GetKey(const size_t key) const;
@@ -36,15 +34,7 @@ public:
 	void SetMouseWheelDelta(int d);
 	void SetClientID(int id);
 
-	NetworkManager* GetNetworkManager() const { return network; }
 	int GetClientID() const { return clientID; }
-
-public:
-	void SendMovePacket(int inputX, int intputZ, float yaw, bool isRun);
-	void SendAttackPacket();
-	void SendDodgePacket();
-	void SendGuardPacket(bool in);
-	void SendParryPacket(bool in);
 
 private:
 	bitset<256> mPressedKeys = {};
@@ -54,8 +44,6 @@ private:
 	bool mPressedMouseButtons[static_cast<size_t>(MouseButton::END)] = {};
 	bool mChangeMouseButtonState[static_cast<size_t>(MouseButton::END)] = {};
 	int mMouseWheelDelta = 0;
-
-	NetworkManager* network{ nullptr };
 
 	int clientID = -1;
 };

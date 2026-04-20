@@ -45,6 +45,8 @@ void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListe
     sceneManager = make_unique<SceneManager>();
     sceneManager->Initialize(mHwnd, *graphics);
 
+    inboundQueue = make_unique<ClientInboundPacketQueue>();
+
     networkManager = make_unique<NetworkManager>();
     networkManager->Initialize(1, ip, port, listener);
 
@@ -55,12 +57,18 @@ void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListe
     effectManager->Initialize(*graphics);
 
     graphics->FlushCommandQueue();
-
-    INPUT.Initialize(networkManager.get());
 }
 
 void Engine::Update(const float deltaTime)
 {
+    inboundQueue->Drain(inboundPackets);
+    for (auto& packet : inboundPackets)
+    {
+        packetRouter.Route(packet);
+    }
+
+    ProcessWorldTransitionState();
+
     sceneManager->ProcessPendingSceneChange(*graphics);
     sceneManager->Update(deltaTime);
 
@@ -160,4 +168,28 @@ void Engine::ShowFps()
     WCHAR text[100] = L"";
     wsprintf(text, L"Final      FPS: %d", fps);
     SetWindowText(mHwnd, text);
+}
+
+void Engine::ProcessWorldTransitionState()
+{
+    auto& transition = worldTransitionController;
+
+    if (transition.GetPhase() != ClientWorldTransitionPhase::BeginReceived)
+    {
+        return;
+    }
+
+    const uint32_t targetWorldDefId = transition.GetTargetWorldDefId();
+
+    SceneType targetScene;
+    switch (targetWorldDefId) {
+    case 1:     targetScene = SceneType::Plaza;   break;
+    case 2:     targetScene = SceneType::Village; break;
+    case 3:     targetScene = SceneType::Castle;  break;
+    case 4:     targetScene = SceneType::Final;   break;
+    default:    targetScene = SceneType::Plaza;   break;
+    }
+
+    sceneManager->RequestLoadingScene(targetScene);
+    transition.MarkLoadingStarted();
 }

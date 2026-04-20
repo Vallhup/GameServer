@@ -126,10 +126,7 @@ void PlazaScene::InitializeLogic()
 	SetNetworkManager(NETWORK_MANAGER);
 
 	{
-		Protocol::CS_LOGIN_PACKET login;
-		SendBuffer* data = PacketFactory::Serialize<Protocol::CS_LOGIN_PACKET>(
-			PacketType::CS_LOGIN, login);
-		_nManager->Send(data);
+		_nManager->SendLoginPacket();
 	}
 
 	flameObject = make_shared<GameObject>();
@@ -362,8 +359,20 @@ void PlazaScene::RequestSceneChange()
 {
 	if (INPUT.GetKeyDown(VK_CAPITAL))
 	{
-		if (sManagerRef)
-			sManagerRef->RequestLoadingScene(SceneType::Village);
+		// TODO: 서버 검증 이후 LoadingScene 입장하도록 변경 예정
+		//if (sManagerRef)
+		//	sManagerRef->RequestLoadingScene(SceneType::Village);
+
+		auto& transition = ENGINE.GetWorldTransitionController();
+		const uint32_t requestId = transition.CreateRequestId();
+
+		if (transition.BeginRequest(requestId))
+		{
+			if (!NETWORK_MANAGER->SendWorldTransitionRequestPacket(requestId))
+			{
+				transition.Reset();
+			}
+		}
 	}
 }
 

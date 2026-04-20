@@ -56,7 +56,9 @@ void LoadingSceneUIController::Update(float deltaTime)
 			pab->ChangeState(ImageUIState::Pulsing);
 
 		if (INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		{
 			SCENE_MANAGER->RequestSceneChange(targetScene);
+		}
 	}
 }
 

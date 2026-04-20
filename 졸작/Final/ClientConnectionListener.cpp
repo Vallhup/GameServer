@@ -2,7 +2,7 @@
 #include "ClientConnectionListener.h"
 #include "Engine.h"
 #include "SceneManager.h"
-#include "FirstBattleScene.h"
+#include "ClientInboundPacketQueue.h"
 
 void ClientConnectionListener::OnConnected(Connection& owner)
 {
@@ -14,11 +14,13 @@ void ClientConnectionListener::OnDisconnected(Connection& owner)
 	OutputDebugStringA("OnDisconnected\n");
 }
 
-void ClientConnectionListener::OnPacketReceived(Connection& owner, const PacketHeader& header, const BYTE* data)
+void ClientConnectionListener::OnPacketReceived(
+	Connection& owner, 
+	const PacketHeader& header, 
+	const BYTE* data)
 {
-	if (SceneManager* sManager = SCENE_MANAGER)
+	if (ClientInboundPacketQueue* inboundQueue = ENGINE.GetInboundQueue())
 	{
-		if (Scene* scene = sManager->GetCurrentScene())
-			scene->HandlePacket(header, data);
+		inboundQueue->Push(header, data);
 	}
 }

@@ -177,6 +177,25 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
     UI_MANAGER->SetCurrentScene(nextSceneType);
     currSceneType = nextSceneType;
 
+    if (nextSceneType != SceneType::Loading)
+    {
+        auto& transition = ENGINE.GetWorldTransitionController();
+        if (transition.HasPendingReady())
+        {
+            const uint64_t transferId = transition.GetTransferId();
+
+            if (NETWORK_MANAGER &&
+                NETWORK_MANAGER->SendWorldTransitionReadyPacket(transferId))
+            {
+                transition.MarkReadySent();
+            }
+            else
+            {
+                transition.Reset();
+            }
+        }
+    }
+
     core.FlushCommandQueue();
 }
 

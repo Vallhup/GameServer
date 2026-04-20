@@ -18,6 +18,9 @@
 #include "EffectComponent.h"
 #include "NetId.h"
 #include "NetHelper.h"
+#include "EntityId.h"
+#include "AnimationSetFactory.h"
+#include "Animator.h"
 
 void FirstBattleScene::Release()
 {
@@ -44,7 +47,7 @@ void FirstBattleScene::InitializeLogic()
 
 	// SceneManager에서 공유 캐릭터 받아오기
 	myPlayer = sManagerRef->GetSharedKnight();
-	bossObject = sManagerRef->GetSharedBoss();
+	//bossObject = sManagerRef->GetSharedBoss();
 
 	if (myPlayer)
 	{
@@ -88,6 +91,8 @@ void FirstBattleScene::InitializeLogic()
 	water->SetPosition(144.0472f, 46.79999f, 939.9999f);
 	water->SetScale(1500.0f, 1.0f, 2546.25f);
 #pragma endregion
+
+	CreateBossObject();
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
@@ -205,9 +210,38 @@ void FirstBattleScene::RequestSceneChange()
 {
 	if (INPUT.GetKeyDown(VK_CAPITAL))
 	{
-		if (sManagerRef)
-			sManagerRef->RequestLoadingScene(SceneType::Castle);
+		// TODO: 서버 검증 이후 LoadingScene 입장하도록 변경 예정
+		//if (sManagerRef)
+		//	sManagerRef->RequestLoadingScene(SceneType::Castle);
+
+		auto& transition = ENGINE.GetWorldTransitionController();
+		const uint32_t requestId = transition.CreateRequestId();
+
+		if (transition.BeginRequest(requestId))
+		{
+			if (!NETWORK_MANAGER->SendWorldTransitionRequestPacket(requestId))
+			{
+				transition.Reset();
+			}
+		}
 	}
+}
+
+void FirstBattleScene::CreateBossObject()
+{
+	bossObject = make_shared<GameObject>();
+	bossObject->SetId(-1);
+	auto mesh = bossObject->AddComponent<Mesh>();
+	auto transform = bossObject->AddComponent<Transform>();
+	auto animator = bossObject->AddComponent<Animator>();
+	auto animMachine = bossObject->AddComponent<AnimationMachine>();
+	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");
+
+	animMachine->SetAnimationSet(AnimationSetFactory::CreateDemonExecutionerSet());
+	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
+	transform->SetRotation(0.f, 3.14f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+	gameObjects.push_back(bossObject);
 }
 
 float FirstBattleScene::SampleHeightAt(float worldX, float worldZ) const
@@ -227,43 +261,49 @@ void FirstBattleScene::HandleLogin(const Protocol::SC_LOGIN_PACKET& login)
 
 void FirstBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 {
-	//NetId nid{ add.netid() };
-	//int id = nid.GetId();
-	//int type = add.typeid_();
+	NetId nid{ add.netid() };
+	int id = nid.GetId();
+	int type = add.typeid_();
 
-	//if (type == static_cast<int>(CharacterId::FinalBoss)) // Final_Boss
-	//{
-	//	if (bossObject)
-	//	{
-	//		bossObject->SetId(id);
-	//		auto transform = bossObject->GetComponent<Transform>();
-	//		transform->SetInitPosition(add.x(), add.y(), add.z());
-	//		transform->SetTargetRotation(add.yaw());
-	//		activeCharacters[id] = bossObject;
-	//	}
-	//}
-	//else if (type == static_cast<int>(CharacterId::Knight)) // Knight
-	//{
-	//	auto player = GetAvailableKnight();
-	//	if (player)
-	//	{
-	//		player->SetId(id);
-	//		auto transform = player->GetComponent<Transform>();
-	//		transform->SetInitPosition(add.x(), add.y(), add.z());
-	//		transform->SetTargetRotation(add.yaw());
-	//		activeCharacters[id] = player;
-	//	}
+	constexpr float offsetX = -352.0f;
+	constexpr float offsetZ = 168.0f;
 
-	//	if (id == INPUT.GetClientID())
-	//	{
-	//		myPlayer = player;
-	//		myPlayer->SetAsLocalPlayer(cam.get());
+	float worldX = add.x() + offsetX;		// 임시 예측 좌표임 (맵 기반)
+	float worldZ = add.z() + offsetZ;
 
-	//		IMGUI.SetMyPlayer(myPlayer.get());
+	if (type == static_cast<int>(CharacterId::DemonExecutioner)) // Final_Boss
+	{
+		if (bossObject)
+		{
+			bossObject->SetId(id);
+			auto transform = bossObject->GetComponent<Transform>();
+			transform->SetInitPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = bossObject;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::Knight)) // Knight
+	{
+		auto player = myPlayer;
+		if (player)
+		{
+			player->SetId(id);
+			auto transform = player->GetComponent<Transform>();
+			transform->SetInitPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = player;
+		}
 
-	//		OutputDebugStringA("My character activated!\n");
-	//	}
-	//}
+		if (id == INPUT.GetClientID())
+		{
+			myPlayer = player;
+			myPlayer->SetAsLocalPlayer(cam.get());
+
+			IMGUI.SetMyPlayer(myPlayer.get());
+
+			OutputDebugStringA("My character activated!\n");
+		}
+	}
 }
 
 void FirstBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
@@ -282,6 +322,7 @@ void FirstBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 		float worldX = move.x() + offsetX;		// 임시 예측 좌표임 (맵 기반)
 		float worldZ = move.z() + offsetZ;
 		transform->SetPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
+		//transform->SetPosition(move.x(), move.y(), move.z());
 		transform->SetTargetRotation(move.yaw());
 	}
 }

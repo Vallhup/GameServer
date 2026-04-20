@@ -8,6 +8,10 @@ class EffectManager;
 class UIManager;
 class IConnectionListener;
 
+#include "ClientPacketRouter.h"
+#include "ClientInboundPacketQueue.h"
+#include "ClientWorldTransitionController.h"
+
 class Engine
 {
 public:
@@ -26,8 +30,16 @@ public:
     SoundManager* GetSoundManager() const { return soundManager.get(); }
     EffectManager* GetEffectManager() const { return effectManager.get(); }
     UIManager* GetUIManager() const { return uiManager.get(); }
+    ClientInboundPacketQueue* GetInboundQueue() const { return inboundQueue.get(); }
+
+    ClientWorldTransitionController& GetWorldTransitionController() 
+    {
+        return worldTransitionController; 
+    }
 
 private:
+    void ProcessWorldTransitionState();
+
     HWND mHwnd = nullptr;
 
     D3D12_VIEWPORT	viewport = {};
@@ -39,4 +51,10 @@ private:
     unique_ptr<SoundManager> soundManager;
     unique_ptr<EffectManager> effectManager;
     unique_ptr<UIManager> uiManager;
+
+    unique_ptr<ClientInboundPacketQueue> inboundQueue;
+    vector<ClientInboundPacket> inboundPackets;
+
+    ClientPacketRouter packetRouter;
+    ClientWorldTransitionController worldTransitionController;
 };

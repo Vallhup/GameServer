@@ -238,6 +238,15 @@
     <ClCompile Include="EffectComponent.cpp">
       <Filter>Effect\Base</Filter>
     </ClCompile>
+    <ClCompile Include="ClientInboundPacketQueue.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientWorldTransitionController.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientPacketRouter.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -477,6 +486,15 @@
     </ClInclude>
     <ClInclude Include="EffectComponent.h">
       <Filter>Effect\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientInboundPacketQueue.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientWorldTransitionController.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientPacketRouter.h">
+      <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

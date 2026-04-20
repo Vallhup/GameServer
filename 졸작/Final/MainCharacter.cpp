@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Camera.h"
 #include "AnimationMachine.h"
+#include "Engine.h"
 
 void MainCharacter::Update(float deltaTime)
 {
@@ -43,7 +44,11 @@ void MainCharacter::BasicMove()
 	if (input.GetKey('A')) inputX += 1;
 
 	float yaw = camera->GetRadianYaw();
-	input.SendMovePacket(inputX, inputZ, yaw, isRunning);
+
+	if (auto* network = NETWORK_MANAGER)
+	{
+		network->SendMovePacket(inputX, inputZ, yaw, isRunning);
+	}
 
 	auto animMachine = GetComponent<AnimationMachine>();
 	if (animMachine) {
@@ -68,8 +73,12 @@ void MainCharacter::BasicAttack()
 
 	bool currentAttack = input.GetMouseButton(MouseButton::LEFT);
 
-	if (currentAttack && !prevAttack) {
-		input.SendAttackPacket();
+	if (currentAttack && !prevAttack) 
+	{
+		if (auto* network = NETWORK_MANAGER)
+		{
+			network->SendAttackPacket(0.0f, 0.0f);
+		}
 
 		auto animMachine = GetComponent<AnimationMachine>();
 		if (animMachine)
@@ -85,8 +94,12 @@ void MainCharacter::BasicDodge()
 {
 	auto& input = INPUT;
 
-	if (input.GetKeyDown('C')) {
-		input.SendDodgePacket();
+	if (input.GetKeyDown('C')) 
+	{
+		if (auto* network = NETWORK_MANAGER)
+		{
+			network->SendDodgePacket(0.0f, 0.0f);
+		}
 
 		auto animMachine = GetComponent<AnimationMachine>();
 		if (animMachine)
@@ -108,13 +121,19 @@ void MainCharacter::BasicGuard()
 		{
 			if (animMachine->TryPlayClip("Guard"))
 			{
-				input.SendGuardPacket(true);
+				if (auto* network = NETWORK_MANAGER)
+				{
+					network->SendGuardPacket(true);
+				}
 				wasGuarding = true;
 			}
 		}
 		else if (wasGuarding && !isGuarding)
 		{
-			input.SendGuardPacket(false);
+			if (auto* network = NETWORK_MANAGER)
+			{
+				network->SendGuardPacket(false);
+			}
 
 			if (animMachine->IsPlaying("Guard"))
 			{
@@ -132,7 +151,10 @@ void MainCharacter::BasicParry()
 	bool currentParry = input.GetMouseButton(MouseButton::RIGHT);
 
 	if (currentParry && !prevParry) {
-		input.SendParryPacket(true);
+		if (auto* network = NETWORK_MANAGER)
+		{
+			network->SendParryPacket(0.0f, 0.0f);
+		}
 
 		auto animMachine = GetComponent<AnimationMachine>();
 		if (animMachine)
@@ -152,24 +174,40 @@ void MainCharacter::RegisterAnimationCallback()
 	animMachine->onActionEnd = [this]() -> string {
 		auto& input = INPUT;
 
-		if (input.GetKey('Q')) {
-			input.SendGuardPacket(true);
+		if (input.GetKey('Q')) 
+		{
+			if (auto* network = NETWORK_MANAGER)
+			{
+				network->SendGuardPacket(true);
+			}
 			wasGuarding = true;
 			return "Guard";
 		}
 
-		if (input.GetMouseButton(MouseButton::RIGHT)) {
-			input.SendParryPacket(true);
+		if (input.GetMouseButton(MouseButton::RIGHT)) 
+		{
+			if (auto* network = NETWORK_MANAGER)
+			{
+				network->SendParryPacket(0.0f, 0.0f);
+			}
 			return "Parry";
 		}
 
-		if (input.GetKey('C')) {
-			input.SendDodgePacket();
+		if (input.GetKey('C')) 
+		{
+			if (auto* network = NETWORK_MANAGER)
+			{
+				network->SendDodgePacket(0.0f, 0.0f);
+			}
 			return "Dodge";
 		}
 
-		if (input.GetMouseButton(MouseButton::LEFT)) {
-			input.SendAttackPacket();
+		if (input.GetMouseButton(MouseButton::LEFT)) 
+		{
+			if (auto* network = NETWORK_MANAGER)
+			{
+				network->SendAttackPacket(0.0f, 0.0f);
+			}
 			return "Attack";
 		}
 

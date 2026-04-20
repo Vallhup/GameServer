@@ -8,7 +8,9 @@ public:
 
 	virtual void OnConnected(Connection& owner) override;
 	virtual void OnDisconnected(Connection& owner) override;
-	virtual void OnPacketReceived(Connection& owner,
-		const PacketHeader& header, const BYTE* data) override;
+	virtual void OnPacketReceived(
+		Connection& owner,
+		const PacketHeader& header, 
+		const BYTE* data) override;
 };
 

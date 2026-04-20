@@ -27,6 +27,8 @@ protected:
 	void RequestSceneChange() override;
 
 private:
+	void CreateBossObject();
+
 	float SampleHeightAt(float worldX, float worldZ) const;
 
 	// Network Handler Function Override
@@ -39,7 +41,7 @@ private:
 
 private:
 	vector<shared_ptr<GameObject>> gameObjects;
-	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
+	unordered_map<int, shared_ptr<GameObject>> activeCharacters;	
 
 	shared_ptr<MainCharacter> myPlayer;
 	shared_ptr<GameObject> bossObject;
