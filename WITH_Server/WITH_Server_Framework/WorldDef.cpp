@@ -275,7 +275,7 @@ WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey)
 			// TODO(content): fill Castle navmesh, navigation profile, and environment tags.
 			.navMesh = MapNavMeshDef
 			{
-				.navMeshBinPath = "../Map/Castle_NavMesh_v2.bin",
+				.navMeshBinPath = "../Map/Castle_NavMesh_v3.bin",
 				.agentRadius = 0.35f,
 				.agentHeight = 2.0f,
 				.agentMaxClimb = 0.4f,
@@ -367,7 +367,7 @@ WorldDef CreateFinalWorldDef(WorldExecutionModelKey executionModelKey)
 			// TODO(content): fill Final navmesh, navigation profile, and environment tags.
 			.navMesh = MapNavMeshDef
 			{
-				.navMeshBinPath = "../Map/Cathedral_NavMesh_v2.bin",
+				.navMeshBinPath = "../Map/Cathedral_NavMesh_v3.bin",
 				.agentRadius = 0.35f,
 				.agentHeight = 2.0f,
 				.agentMaxClimb = 0.4f,
