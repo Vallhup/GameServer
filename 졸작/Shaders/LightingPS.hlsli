@@ -37,6 +37,9 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 
     for (int i = 0; i < lightCount; ++i)
     {
+        if (lights[i].intensity <= 0.0)
+            continue;
+
         float3 lightContribution = float3(0, 0, 0);
 
         if (lights[i].type == 0) // Directional Light

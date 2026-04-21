@@ -100,7 +100,7 @@ void Engine::Render()
     sceneManager->RenderDeferred();  
     graphics->EndGBufferPass();
 
-    static bool ssaoOn = false;
+    static bool ssaoOn = true;
 
     if (INPUT.GetKeyDown('L'))
     {

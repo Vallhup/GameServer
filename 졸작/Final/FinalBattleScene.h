@@ -30,6 +30,8 @@ protected:
 
 private:
 	void CreateKnightPool();
+	void CreateBossCharacter();
+
 	float SampleHeightAt(float worldX, float worldZ) const;
 
 	// Network Handler Function Override

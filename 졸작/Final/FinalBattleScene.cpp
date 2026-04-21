@@ -70,6 +70,12 @@ void FinalBattleScene::InitializeLogic()
 
 	CreateKnightPool();
 
+	// ----------------------------------
+	// 다찬이가 만든 보스 띄우는 임시 함수 - 중간발표용
+	// ----------------------------------
+	CreateBossCharacter();
+	// ----------------------------------
+
 	if (myPlayer)
 	{
 		myPlayer->SetAsLocalPlayer(cam.get());
@@ -238,6 +244,21 @@ void FinalBattleScene::CreateKnightPool()
 		knightPool.push_back(knight);
 		AddGameObject(knight);
 	}
+}
+
+void FinalBattleScene::CreateBossCharacter()
+{
+	auto first = make_shared<GameObject>();
+	first->SetId(0);
+	auto mesh = first->AddComponent<Mesh>();
+	auto transform = first->AddComponent<Transform>();
+	auto animator = first->AddComponent<Animator>();
+	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
+
+	transform->SetInitPosition(0.084400f, 2.06280f, 2.891023f);
+	transform->SetRotation(0.f, 0.f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
+	AddGameObject(first);
 }
 
 float FinalBattleScene::SampleHeightAt(float worldX, float worldZ) const
