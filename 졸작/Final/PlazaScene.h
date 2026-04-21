@@ -37,6 +37,7 @@ private:
 	// Temporary functions for rendering Characters and monsters
 	// ---------------------------------------------------------
 	void CreateKnightPool();
+	void CreateNextTwoCharacters();
 	void CreateEffectSamples();
 	// ---------------------------------------------------------
 	// ---------------------------------------------------------

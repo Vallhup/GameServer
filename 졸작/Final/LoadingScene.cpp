@@ -159,7 +159,7 @@ void LoadingScene::LoadSecondBattleSceneResources()
 	loadTasks.push([this]() {
 		auto device = coreRef->GetDevice();
 		auto cmdList = coreRef->GetActiveCmdList();
-		Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/rdiffuse.png");		// 240 ~ 243
+		Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/rdiffuse.png");		// 237 ~ 240
 		Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/rnormal.png");
 		Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/grass.png");
 		Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/terrainTexture.png");
