@@ -14,14 +14,11 @@ public:
 	~PlazaScene() = default;
 
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
-	shared_ptr<MainCharacter> GetMyPlayer() const;
 
 	void SetNetworkManager(NetworkManager* nManager) { _nManager = nManager; }
 
 	void Release() override;
 	void Reset() override;
-
-	void AddGameObject(shared_ptr<GameObject> obj);
 
 	SceneSettings GetSceneSettings() const override;
 
@@ -40,10 +37,6 @@ private:
 	// Temporary functions for rendering Characters and monsters
 	// ---------------------------------------------------------
 	void CreateKnightPool();
-	void CreateBossObject();
-	void CreateImpObject();
-	void CreateDemonStrikerObject();
-	void CreateDemonExecutionerObject();
 	void CreateEffectSamples();
 	// ---------------------------------------------------------
 	// ---------------------------------------------------------
@@ -61,21 +54,13 @@ private:
 private:
 	NetworkManager* _nManager{ nullptr };
 
-	vector<shared_ptr<GameObject>> gameObjects;
-
 	vector<shared_ptr<MainCharacter>> knightPool;
 	static constexpr int MAX_KNIGHT_COUNT = 10;
 
 	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
-
 	shared_ptr<MainCharacter> myPlayer;
-	shared_ptr<GameObject> bossObject;
-	shared_ptr<GameObject> impObject;
-	shared_ptr<GameObject> demonStrikerObject;
-	shared_ptr<GameObject> demonExecutionerObject;
 
 	vector<shared_ptr<GameObject>> effectObjects;
-
 	shared_ptr<SkyBox> skyBox;
 	shared_ptr<Terrain> terrain;
 };

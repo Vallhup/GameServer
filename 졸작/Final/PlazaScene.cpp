@@ -38,40 +38,20 @@ shared_ptr<MainCharacter> PlazaScene::GetAvailableKnight() const
 	return nullptr;
 }
 
-shared_ptr<MainCharacter> PlazaScene::GetMyPlayer() const
-{
-	if (myPlayer)
-		return myPlayer;
-
-	return nullptr;
-}
-
 void PlazaScene::Release()
 {
 }
 
 void PlazaScene::Reset()
 {
-	//----
-	// 임시 코드임, First->Second 연결 해보려고 시도하는 코드임
-	sManagerRef->SetSharedKnight(myPlayer);
-	sManagerRef->SetSharedBoss(bossObject);
-	//----
-
 	instancingBatches.clear();
 	knightPool.clear();
+	monsterPools.clear();
 	activeCharacters.clear();
 	myPlayer = nullptr;
-	bossObject = nullptr;
-	impObject = nullptr;
 	gameObjects.clear();
 
 	OutputDebugStringA("PlazaScene Data has been deleted!! \n----------------------------------------\n");
-}
-
-void PlazaScene::AddGameObject(shared_ptr<GameObject> obj)
-{
-	gameObjects.push_back(obj);
 }
 
 SceneSettings PlazaScene::GetSceneSettings() const
@@ -93,13 +73,7 @@ void PlazaScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nPlazaScene Data has been created!! \n");
 
-	{
-		auto _t0 = chrono::high_resolution_clock::now();
-		CreateKnightPool();
-		auto _t1 = chrono::high_resolution_clock::now();
-		auto _ms = chrono::duration_cast<chrono::microseconds>(_t1 - _t0).count();
-		OutputDebugStringA(("[Plaza] CreateKnightPool: " + to_string(_ms) + " us\n").c_str());
-	}
+	CreateKnightPool();
 
 	skyBox = make_shared<SkyBox>();
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"skybox");
@@ -114,10 +88,6 @@ void PlazaScene::InitializeLogic()
 	terrain->Initialize(*coreRef, L"PlazaMap/textures/plazaFloor", L"../Assets/FBXModel/PlazaMap/plazaTerrain.raw", 513, 1016.0f, 27.01563f, 1.0f);
 #pragma endregion
 
-	CreateBossObject();
-	CreateImpObject();
-	CreateDemonStrikerObject();
-	CreateDemonExecutionerObject();
 	CreateEffectSamples();
 
 	OutputDebugStringA("Before FlushCommandQueue - uploadBuffers exist\n");
@@ -418,74 +388,6 @@ void PlazaScene::CreateKnightPool()
 	}
 }
 
-void PlazaScene::CreateBossObject()
-{
-	bossObject = make_shared<GameObject>();
-	bossObject->SetId(-1);
-	auto mesh = bossObject->AddComponent<Mesh>();
-	auto transform = bossObject->AddComponent<Transform>();
-	auto animator = bossObject->AddComponent<Animator>();
-	auto animMachine = bossObject->AddComponent<AnimationMachine>();
-	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
-
-	animMachine->SetAnimationSet(AnimationSetFactory::CreateFinalBossSet());
-	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
-	transform->SetRotation(0.f, 3.14f, 0.f);
-	transform->SetScale(0.01f, 0.01f, 0.01f);
-	AddGameObject(bossObject);
-}
-
-void PlazaScene::CreateImpObject()
-{
-	impObject = make_shared<GameObject>();
-	impObject->SetId(-1);
-	auto mesh = impObject->AddComponent<Mesh>();
-	auto transform = impObject->AddComponent<Transform>();
-	auto animator = impObject->AddComponent<Animator>();
-	auto animMachine = impObject->AddComponent<AnimationMachine>();
-	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Imp/monster_Imp");
-
-	animMachine->SetAnimationSet(AnimationSetFactory::CreateImpSet());
-	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
-	transform->SetRotation(0.f, 3.14f, 0.f);
-	transform->SetScale(0.01f, 0.01f, 0.01f);
-	AddGameObject(impObject);
-}
-
-void PlazaScene::CreateDemonStrikerObject()
-{
-	demonStrikerObject = make_shared<GameObject>();
-	demonStrikerObject->SetId(-1);
-	auto mesh = demonStrikerObject->AddComponent<Mesh>();
-	auto transform = demonStrikerObject->AddComponent<Transform>();
-	auto animator = demonStrikerObject->AddComponent<Animator>();
-	auto animMachine = demonStrikerObject->AddComponent<AnimationMachine>();
-	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker");
-
-	animMachine->SetAnimationSet(AnimationSetFactory::CreateDemonStrikerSet());
-	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
-	transform->SetRotation(0.f, 3.14f, 0.f);
-	transform->SetScale(0.01f, 0.01f, 0.01f);
-	AddGameObject(demonStrikerObject);
-}
-
-void PlazaScene::CreateDemonExecutionerObject()
-{
-	demonExecutionerObject = make_shared<GameObject>();
-	demonExecutionerObject->SetId(-1);
-	auto mesh = demonExecutionerObject->AddComponent<Mesh>();
-	auto transform = demonExecutionerObject->AddComponent<Transform>();
-	auto animator = demonExecutionerObject->AddComponent<Animator>();
-	auto animMachine = demonExecutionerObject->AddComponent<AnimationMachine>();
-	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");
-
-	animMachine->SetAnimationSet(AnimationSetFactory::CreateDemonExecutionerSet());
-	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
-	transform->SetRotation(0.f, 3.14f, 0.f);
-	transform->SetScale(0.01f, 0.01f, 0.01f);
-	AddGameObject(demonExecutionerObject);
-}
-
 void PlazaScene::CreateEffectSamples()
 {
 	struct EffectInfo {
@@ -548,13 +450,14 @@ void PlazaScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 
 	if (type == static_cast<int>(CharacterId::FinalBoss)) // Final_Boss
 	{
-		if (bossObject)
+		auto boss = GetAvailableMonster(MonsterType::Boss);
+		if (boss)
 		{
-			bossObject->SetId(id);
-			auto transform = bossObject->GetComponent<Transform>();
+			boss->SetId(id);
+			auto transform = boss->GetComponent<Transform>();
 			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
-			activeCharacters[id] = bossObject;
+			activeCharacters[id] = boss;
 		}
 	}
 	else if (type == static_cast<int>(CharacterId::Knight)) // Knight
@@ -567,42 +470,45 @@ void PlazaScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
 			activeCharacters[id] = player;
-		}
 
-		if (id == INPUT.GetClientID())
-		{
-			myPlayer = player;
-			myPlayer->SetAsLocalPlayer(cam.get());
+			if (id == INPUT.GetClientID())
+			{
+				myPlayer = player;
+				myPlayer->SetAsLocalPlayer(cam.get());
 
-			IMGUI.SetMyPlayer(myPlayer.get());
+				IMGUI.SetMyPlayer(myPlayer.get());
 
-			OutputDebugStringA("My character activated!\n");
+				OutputDebugStringA("My character activated!\n");
+			}
 		}
 	}
 	else if (type == static_cast<int>(CharacterId::Imp))
 	{
-		if (impObject)
+		auto imp = GetAvailableMonster(MonsterType::Imp);
+		if (imp)
 		{
-			impObject->SetId(id);
-			auto transform = impObject->GetComponent<Transform>();
+			imp->SetId(id);
+			auto transform = imp->GetComponent<Transform>();
 			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
-			activeCharacters[id] = impObject;
+			activeCharacters[id] = imp;
 		}
 	}
 	else if (type == static_cast<int>(CharacterId::DemonStriker))
 	{
-		if (demonStrikerObject)
+		auto striker = GetAvailableMonster(MonsterType::DemonStriker);
+		if (striker)
 		{
-			demonStrikerObject->SetId(id);
-			auto transform = demonStrikerObject->GetComponent<Transform>();
+			striker->SetId(id);
+			auto transform = striker->GetComponent<Transform>();
 			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
-			activeCharacters[id] = demonStrikerObject;
+			activeCharacters[id] = striker;
 		}
 	}
 	else if (type == static_cast<int>(CharacterId::DemonExecutioner))
 	{
+		auto demonExecutionerObject = GetAvailableMonster(MonsterType::DemonExecutioner);
 		if (demonExecutionerObject)
 		{
 			demonExecutionerObject->SetId(id);
@@ -622,7 +528,6 @@ void PlazaScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 	if (it != activeCharacters.end())
 	{
 		auto transform = it->second->GetComponent<Transform>();
-		const XMFLOAT3& pos = transform->GetPosition();
 
 		transform->SetPosition(move.x(), move.y(), move.z());
 		transform->SetTargetRotation(move.yaw());

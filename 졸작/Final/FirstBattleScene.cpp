@@ -16,11 +16,25 @@
 #include "GameSceneUIController.h"
 #include "AnimationMachine.h"
 #include "EffectComponent.h"
+#include "TrailComponent.h"
+#include "FootDustComponent.h"
+#include "ParrySparkComponent.h"
+#include "AnimationSetFactory.h"
+#include "Animator.h"
 #include "NetId.h"
 #include "NetHelper.h"
 #include "EntityId.h"
-#include "AnimationSetFactory.h"
-#include "Animator.h"
+
+shared_ptr<MainCharacter> FirstBattleScene::GetAvailableKnight() const
+{
+	for (auto& knight : knightPool)
+	{
+		if (knight->GetId() == -1)
+			return knight;
+	}
+
+	return nullptr;
+}
 
 void FirstBattleScene::Release()
 {
@@ -29,10 +43,10 @@ void FirstBattleScene::Release()
 void FirstBattleScene::Reset()
 {
 	instancingBatches.clear();
+	monsterPools.clear();
 	activeCharacters.clear();
 	gameObjects.clear();
 	myPlayer = nullptr;
-	bossObject = nullptr;
 
 	OutputDebugStringA("FirstBattleScene Data has been deleted!! \n----------------------------------------\n");
 }
@@ -56,25 +70,16 @@ void FirstBattleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nFirstBattleScene Data has been created!! \n");
 
-	// SceneManager에서 공유 캐릭터 받아오기
-	myPlayer = sManagerRef->GetSharedKnight();
-	//bossObject = sManagerRef->GetSharedBoss();
+	CreateKnightPool();
 
 	if (myPlayer)
 	{
 		myPlayer->SetAsLocalPlayer(cam.get());
 		activeCharacters[myPlayer->GetId()] = myPlayer;
-		gameObjects.push_back(myPlayer);
+		AddGameObject(myPlayer);
 
 		IMGUI.SetMyPlayer(myPlayer.get());
 		OutputDebugStringA("FirstBattle: MyPlayer loaded from shared!\n");
-	}
-
-	if (bossObject)
-	{
-		activeCharacters[bossObject->GetId()] = bossObject;
-		gameObjects.push_back(bossObject);
-		OutputDebugStringA("FirstBattle: Boss loaded from shared!\n");
 	}
 
 	skyBox = make_shared<SkyBox>();
@@ -103,7 +108,10 @@ void FirstBattleScene::InitializeLogic()
 	water->SetScale(1500.0f, 1.0f, 2546.25f);
 #pragma endregion
 
-	CreateBossObject();
+	const XMFLOAT3 monsterSpawn = { 22.f, SampleHeightAt(22.f, 22.f), 22.f };
+	CreateImpObject(monsterSpawn, 5);
+	CreateDemonStrikerObject(monsterSpawn, 5);
+	CreateDemonExecutionerObject(monsterSpawn, 5);
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
@@ -238,21 +246,46 @@ void FirstBattleScene::RequestSceneChange()
 	}
 }
 
-void FirstBattleScene::CreateBossObject()
+void FirstBattleScene::CreateKnightPool()
 {
-	bossObject = make_shared<GameObject>();
-	bossObject->SetId(-1);
-	auto mesh = bossObject->AddComponent<Mesh>();
-	auto transform = bossObject->AddComponent<Transform>();
-	auto animator = bossObject->AddComponent<Animator>();
-	auto animMachine = bossObject->AddComponent<AnimationMachine>();
-	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");
+	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
+	{
+		auto knight = make_shared<MainCharacter>();
+		knight->SetId(-1);
+		auto mesh = knight->AddComponent<Mesh>();
+		auto transform = knight->AddComponent<Transform>();
+		auto animator = knight->AddComponent<Animator>();
+		auto animMachine = knight->AddComponent<AnimationMachine>();
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+		//mesh->SetCollisionMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
 
-	animMachine->SetAnimationSet(AnimationSetFactory::CreateDemonExecutionerSet());
-	transform->SetInitPosition(22.f, SampleHeightAt(22.0f, 22.0f), 22.f);
-	transform->SetRotation(0.f, 3.14f, 0.f);
-	transform->SetScale(0.01f, 0.01f, 0.01f);
-	gameObjects.push_back(bossObject);
+		animMachine->SetAnimationSet(AnimationSetFactory::CreateKnightSet());
+		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
+		transform->SetRotation(0.f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+
+		auto trail = knight->AddComponent<TrailComponent>();
+		trail->Initialize(coreRef->GetDevice(), 32);
+		trail->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });
+		trail->SetLifetime(0.13f);
+
+		auto dust = knight->AddComponent<FootDustComponent>();
+		dust->Initialize(coreRef->GetDevice(), 32);
+		dust->SetColor({ 0.15f, 0.15f, 0.15f, 0.4f });
+		dust->SetLifetime(0.35f);
+		dust->SetParticleSize(0.1f);
+
+		auto spark = knight->AddComponent<ParrySparkComponent>();
+		spark->Initialize(coreRef->GetDevice(), 64);
+		spark->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
+		spark->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
+		spark->SetSpeed(20.0f);
+		spark->SetParticleSize(0.1f);
+		spark->SetLifetime(0.75f);
+
+		knightPool.push_back(knight);
+		AddGameObject(knight);
+	}
 }
 
 float FirstBattleScene::SampleHeightAt(float worldX, float worldZ) const
@@ -276,53 +309,80 @@ void FirstBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 	int id = nid.GetId();
 	int type = add.typeid_();
 
-	constexpr float offsetX = -352.0f;
-	constexpr float offsetZ = 168.0f;
-
-	float worldX = add.x() + offsetX;		// 임시 예측 좌표임 (맵 기반)
-	float worldZ = add.z() + offsetZ;
-
-	if (type == static_cast<int>(CharacterId::DemonExecutioner)) // Final_Boss
+	if (type == static_cast<int>(CharacterId::FinalBoss)) // Final_Boss
 	{
-		if (bossObject)
+		auto boss = GetAvailableMonster(MonsterType::Boss);
+		if (boss)
 		{
-			bossObject->SetId(id);
-			auto transform = bossObject->GetComponent<Transform>();
-			transform->SetInitPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
+			boss->SetId(id);
+			auto transform = boss->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
-			activeCharacters[id] = bossObject;
+			activeCharacters[id] = boss;
 		}
 	}
 	else if (type == static_cast<int>(CharacterId::Knight)) // Knight
 	{
-		auto player = myPlayer;
+		auto player = GetAvailableKnight();
 		if (player)
 		{
 			player->SetId(id);
 			auto transform = player->GetComponent<Transform>();
-			transform->SetInitPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
+			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
 			activeCharacters[id] = player;
+
+			if (id == INPUT.GetClientID())
+			{
+				myPlayer = player;
+				myPlayer->SetAsLocalPlayer(cam.get());
+
+				IMGUI.SetMyPlayer(myPlayer.get());
+
+				OutputDebugStringA("My character activated!\n");
+			}
 		}
-
-		if (id == INPUT.GetClientID())
+	}
+	else if (type == static_cast<int>(CharacterId::Imp))
+	{
+		auto imp = GetAvailableMonster(MonsterType::Imp);
+		if (imp)
 		{
-			myPlayer = player;
-			myPlayer->SetAsLocalPlayer(cam.get());
-
-			IMGUI.SetMyPlayer(myPlayer.get());
-
-			OutputDebugStringA("My character activated!\n");
+			imp->SetId(id);
+			auto transform = imp->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = imp;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::DemonStriker))
+	{
+		auto striker = GetAvailableMonster(MonsterType::DemonStriker);
+		if (striker)
+		{
+			striker->SetId(id);
+			auto transform = striker->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = striker;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::DemonExecutioner))
+	{
+		auto demonExecutionerObject = GetAvailableMonster(MonsterType::DemonExecutioner);
+		if (demonExecutionerObject)
+		{
+			demonExecutionerObject->SetId(id);
+			auto transform = demonExecutionerObject->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = demonExecutionerObject;
 		}
 	}
 }
 
 void FirstBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 {
-	// 서버 -> First 맵 오프셋 (임시)
-	//constexpr float offsetX = -352.0f;
-	//constexpr float offsetZ = 168.0f;
-
 	NetId nid{ move.netid() };
 	int id = nid.GetId();
 	auto it = activeCharacters.find(id);
@@ -330,9 +390,6 @@ void FirstBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 	{
 		auto transform = it->second->GetComponent<Transform>();
 
-		//float worldX = move.x() + offsetX;		// 임시 예측 좌표임 (맵 기반)
-		//float worldZ = move.z() + offsetZ;
-		//transform->SetPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
 		transform->SetPosition(move.x(), move.y(), move.z());
 		transform->SetTargetRotation(move.yaw());
 	}

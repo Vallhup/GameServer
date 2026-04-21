@@ -10,6 +10,9 @@
 class SceneManager;
 enum class SceneType;
 class MainCharacter;
+class AnimationSet;
+
+enum class MonsterType { Boss, Imp, DemonStriker, DemonExecutioner };
 
 class Scene
 {
@@ -28,6 +31,20 @@ public:
 	void SetSceneManager(SceneManager* manager);
 	void HandlePacket(const PacketHeader& header, const BYTE* data);
 	void SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches);
+
+	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
+
+	shared_ptr<GameObject> CreateMonsterObject(
+		const wstring& meshPath,
+		shared_ptr<AnimationSet> (*animFactory)(),
+		bool twoSided = true);
+
+	void CreateBossObject(const XMFLOAT3& position, int count = 1);
+	void CreateImpObject(const XMFLOAT3& position, int count = 1);
+	void CreateDemonStrikerObject(const XMFLOAT3& position, int count = 1);
+	void CreateDemonExecutionerObject(const XMFLOAT3& position, int count = 1);
+
+	void AddGameObject(shared_ptr<GameObject> obj);
 
 	virtual SceneSettings GetSceneSettings() const { return {}; }
 
@@ -67,6 +84,9 @@ protected:
 	unique_ptr<Camera> cam;
 
 	vector<shared_ptr<InstancingBatch>> instancingBatches;
+
+	vector<shared_ptr<GameObject>> gameObjects;
+	unordered_map<MonsterType, vector<shared_ptr<GameObject>>> monsterPools;
 };
 
 template <typename T>
