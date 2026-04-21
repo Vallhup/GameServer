@@ -35,15 +35,6 @@ public:
     void RequestLoadingScene(SceneType targetSceneType);
     void ProcessPendingSceneChange(DX12Core& core);
 
-    //----
-    // 임시 코드임, First->Second 연결 해보려고 시도하는 코드임
-    void SetSharedKnight(shared_ptr<MainCharacter> k) { sharedKnight = k; }
-    void SetSharedBoss(shared_ptr<GameObject> b) { sharedBoss = b; }
-
-    shared_ptr<MainCharacter> GetSharedKnight() { return sharedKnight; }
-    shared_ptr<GameObject> GetSharedBoss() { return sharedBoss; }
-    //----
-
 private:
     template <typename T>
     void RegisterScene(SceneType type);

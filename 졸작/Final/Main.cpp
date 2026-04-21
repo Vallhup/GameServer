@@ -19,8 +19,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
     ClientConnectionListener listener;
 
+    AllocConsole();
+    string ip;
+
+    {
+        ofstream console_out("CONOUT$");
+        ifstream console_in("CONIN$");
+        console_out << "Server IP: " << flush;
+        getline(console_in, ip);
+    }
+
+    FreeConsole();
+
     Engine& game = ENGINE;
-    game.Initialize(hwnd, "127.0.0.1", 7000, listener);
+    game.Initialize(hwnd, ip.c_str(), 7000, listener);
 
     TIMER.Reset();
 

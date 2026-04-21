@@ -36,6 +36,12 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
             animator->ExecuteComputeShader(core);
     }
 
+    D3D12_RESOURCE_BARRIER skinningBarrier = {};
+    skinningBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+    skinningBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+    skinningBarrier.UAV.pResource = nullptr;
+    cmdList->ResourceBarrier(1, &skinningBarrier);
+
     SetupRenderingState(core);
 
     BoundingFrustum frustum;

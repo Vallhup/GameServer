@@ -12,12 +12,29 @@
 #include "ImGuiManager.h"
 #include "SoundManager.h"
 #include "EffectManager.h"
-#include "EffectComponent.h"
 #include "UIManager.h"
 #include "GameSceneUIController.h"
 #include "AnimationMachine.h"
+#include "EffectComponent.h"
+#include "TrailComponent.h"
+#include "FootDustComponent.h"
+#include "ParrySparkComponent.h"
+#include "AnimationSetFactory.h"
+#include "Animator.h"
 #include "NetId.h"
 #include "NetHelper.h"
+#include "EntityId.h"
+
+shared_ptr<MainCharacter> SecondBattleScene::GetAvailableKnight() const
+{
+	for (auto& knight : knightPool)
+	{
+		if (knight->GetId() == -1)
+			return knight;
+	}
+
+	return nullptr;
+}
 
 void SecondBattleScene::Release()
 {
@@ -26,10 +43,10 @@ void SecondBattleScene::Release()
 void SecondBattleScene::Reset()
 {
 	instancingBatches.clear();
+	monsterPools.clear();
 	activeCharacters.clear();
 	gameObjects.clear();
 	myPlayer = nullptr;
-	bossObject = nullptr;
 
 	OutputDebugStringA("SecondBattleScene Data has been deleted!! \n----------------------------------------\n");
 }
@@ -53,25 +70,16 @@ void SecondBattleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nSecondBattleScene Data has been created!! \n");
 
-	// SceneManager에서 공유 캐릭터 받아오기
-	myPlayer = sManagerRef->GetSharedKnight();
-	bossObject = sManagerRef->GetSharedBoss();
+	CreateKnightPool();
 
 	if (myPlayer)
 	{
 		myPlayer->SetAsLocalPlayer(cam.get());
 		activeCharacters[myPlayer->GetId()] = myPlayer;
-		gameObjects.push_back(myPlayer);
+		AddGameObject(myPlayer);
 
 		IMGUI.SetMyPlayer(myPlayer.get());
 		OutputDebugStringA("SecondBattle: MyPlayer loaded from shared!\n");
-	}
-
-	if (bossObject)
-	{
-		activeCharacters[bossObject->GetId()] = bossObject;
-		gameObjects.push_back(bossObject);
-		OutputDebugStringA("SecondBattle: Boss loaded from shared!\n");
 	}
 
 	skyBox = make_shared<SkyBox>();
@@ -95,6 +103,11 @@ void SecondBattleScene::InitializeLogic()
 	XMFLOAT4 color = { 0.0f, 0.6f, 0.85f, 0.7f };
 	water->SetColor(color);
 #pragma endregion
+
+	const XMFLOAT3 monsterSpawn = { 22.f, SampleHeightAt(22.f, 22.f), 22.f };
+	CreateImpObject(monsterSpawn, 5);
+	CreateDemonStrikerObject(monsterSpawn, 5);
+	CreateDemonExecutionerObject(monsterSpawn, 5);
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
@@ -226,6 +239,48 @@ void SecondBattleScene::RequestSceneChange()
 	}
 }
 
+void SecondBattleScene::CreateKnightPool()
+{
+	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
+	{
+		auto knight = make_shared<MainCharacter>();
+		knight->SetId(-1);
+		auto mesh = knight->AddComponent<Mesh>();
+		auto transform = knight->AddComponent<Transform>();
+		auto animator = knight->AddComponent<Animator>();
+		auto animMachine = knight->AddComponent<AnimationMachine>();
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+		//mesh->SetCollisionMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+
+		animMachine->SetAnimationSet(AnimationSetFactory::CreateKnightSet());
+		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
+		transform->SetRotation(0.f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+
+		auto trail = knight->AddComponent<TrailComponent>();
+		trail->Initialize(coreRef->GetDevice(), 32);
+		trail->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });
+		trail->SetLifetime(0.13f);
+
+		auto dust = knight->AddComponent<FootDustComponent>();
+		dust->Initialize(coreRef->GetDevice(), 32);
+		dust->SetColor({ 0.15f, 0.15f, 0.15f, 0.4f });
+		dust->SetLifetime(0.35f);
+		dust->SetParticleSize(0.1f);
+
+		auto spark = knight->AddComponent<ParrySparkComponent>();
+		spark->Initialize(coreRef->GetDevice(), 64);
+		spark->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
+		spark->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
+		spark->SetSpeed(20.0f);
+		spark->SetParticleSize(0.1f);
+		spark->SetLifetime(0.75f);
+
+		knightPool.push_back(knight);
+		AddGameObject(knight);
+	}
+}
+
 float SecondBattleScene::SampleHeightAt(float worldX, float worldZ) const
 {
 	if (terrain)
@@ -243,51 +298,84 @@ void SecondBattleScene::HandleLogin(const Protocol::SC_LOGIN_PACKET& login)
 
 void SecondBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 {
-	//NetId nid{ add.netid() };
-	//int id = nid.GetId();
-	//int type = add.typeid_();
+	NetId nid{ add.netid() };
+	int id = nid.GetId();
+	int type = add.typeid_();
 
-	//if (type == 5) // Final_Boss
-	//{
-	//	if (bossObject)
-	//	{
-	//		bossObject->SetId(id);
-	//		auto transform = bossObject->GetComponent<Transform>();
-	//		transform->SetInitPosition(add.x(), add.y(), add.z());
-	//		transform->SetTargetRotation(add.yaw());
-	//		activeCharacters[id] = bossObject;
-	//	}
-	//}
-	//else if (type == 1) // Knight
-	//{
-	//	auto player = GetAvailableKnight();
-	//	if (player)
-	//	{
-	//		player->SetId(id);
-	//		auto transform = player->GetComponent<Transform>();
-	//		transform->SetInitPosition(add.x(), add.y(), add.z());
-	//		transform->SetTargetRotation(add.yaw());
-	//		activeCharacters[id] = player;
-	//	}
+	if (type == static_cast<int>(CharacterId::FinalBoss)) // Final_Boss
+	{
+		auto boss = GetAvailableMonster(MonsterType::Boss);
+		if (boss)
+		{
+			boss->SetId(id);
+			auto transform = boss->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = boss;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::Knight)) // Knight
+	{
+		auto player = GetAvailableKnight();
+		if (player)
+		{
+			player->SetId(id);
+			auto transform = player->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = player;
 
-	//	if (id == INPUT.GetClientID())
-	//	{
-	//		myPlayer = player;
-	//		myPlayer->SetAsLocalPlayer(cam.get());
+			if (id == INPUT.GetClientID())
+			{
+				myPlayer = player;
+				myPlayer->SetAsLocalPlayer(cam.get());
 
-	//		IMGUI.SetMyPlayer(myPlayer.get());
+				IMGUI.SetMyPlayer(myPlayer.get());
 
-	//		OutputDebugStringA("My character activated!\n");
-	//	}
-	//}
+				OutputDebugStringA("My character activated!\n");
+			}
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::Imp))
+	{
+		auto imp = GetAvailableMonster(MonsterType::Imp);
+		if (imp)
+		{
+			imp->SetId(id);
+			auto transform = imp->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = imp;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::DemonStriker))
+	{
+		auto striker = GetAvailableMonster(MonsterType::DemonStriker);
+		if (striker)
+		{
+			striker->SetId(id);
+			auto transform = striker->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = striker;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::DemonExecutioner))
+	{
+		auto demonExecutionerObject = GetAvailableMonster(MonsterType::DemonExecutioner);
+		if (demonExecutionerObject)
+		{
+			demonExecutionerObject->SetId(id);
+			auto transform = demonExecutionerObject->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = demonExecutionerObject;
+		}
+	}
 }
 
 void SecondBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 {
-	// 서버 -> Second 맵 오프셋 (임시)
-	//constexpr float offsetX = -185.0f;
-	//constexpr float offsetZ = -275.0f;
-
 	NetId nid{ move.netid() };
 	int id = nid.GetId();
 	auto it = activeCharacters.find(id);
@@ -295,9 +383,6 @@ void SecondBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 	{
 		auto transform = it->second->GetComponent<Transform>();
 
-		//float worldX = move.x() + offsetX;
-		//float worldZ = move.z() + offsetZ;
-		//transform->SetPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
 		transform->SetPosition(move.x(), move.y(), move.z());
 		transform->SetTargetRotation(move.yaw());
 	}
