@@ -285,8 +285,8 @@ void SecondBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 void SecondBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 {
 	// 서버 -> Second 맵 오프셋 (임시)
-	constexpr float offsetX = -185.0f;
-	constexpr float offsetZ = -275.0f;
+	//constexpr float offsetX = -185.0f;
+	//constexpr float offsetZ = -275.0f;
 
 	NetId nid{ move.netid() };
 	int id = nid.GetId();
@@ -295,10 +295,10 @@ void SecondBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 	{
 		auto transform = it->second->GetComponent<Transform>();
 
-		float worldX = move.x() + offsetX;
-		float worldZ = move.z() + offsetZ;
+		//float worldX = move.x() + offsetX;
+		//float worldZ = move.z() + offsetZ;
 		//transform->SetPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
-		transform->SetPosition(move.x(), SampleHeightAt(move.x(), move.z()), move.z());
+		transform->SetPosition(move.x(), move.y(), move.z());
 		transform->SetTargetRotation(move.yaw());
 	}
 }

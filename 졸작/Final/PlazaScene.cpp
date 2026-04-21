@@ -624,7 +624,7 @@ void PlazaScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 		auto transform = it->second->GetComponent<Transform>();
 		const XMFLOAT3& pos = transform->GetPosition();
 
-		transform->SetPosition(move.x(), SampleHeightAt(move.x(), move.z())/*move.y()*/, move.z());
+		transform->SetPosition(move.x(), move.y(), move.z());
 		transform->SetTargetRotation(move.yaw());
 	}
 }

@@ -3,6 +3,7 @@
 #include "ServerApp.h"
 
 #include <chrono>
+#include <cmath>
 #include <iostream>
 #include <span>
 #include <thread>
@@ -14,6 +15,7 @@
 #include "DefFileFormat.h"
 #include "DefRegistry.h"
 #include "AnimationDef.h"
+#include "ECS/GameplayRuntimeComponents.h"
 #include "FrameworkRuntime.h"
 #include "NetworkRuntime.h"
 #include "PlayerEntryService.h"
@@ -23,6 +25,7 @@
 #include "ServerWorldTransferBinding.h"
 #include "ServerWorldTransferCommitter.h"
 #include "SessionBindingRegistry.h"
+#include "WorldDef.h"
 #include "WorldInstance.h"
 #include "WorldInstanceRecord.h"
 
@@ -50,6 +53,38 @@ namespace
 			return def.id;
 		}
 	};
+
+	bool NearlyEqual(float lhs, float rhs) noexcept
+	{
+		return std::abs(lhs - rhs) <= 0.001f;
+	}
+
+	bool TryGetDefaultPlayerSpawnPosition(
+		const WorldDef& worldDef,
+		DirectX::XMFLOAT3& outPosition) noexcept
+	{
+		if (worldDef.map.defaultPlayerSpawnPointId == SpawnPointIds::None)
+		{
+			return false;
+		}
+
+		for (const SpawnPointDef& spawnPoint : worldDef.map.spawnPoints)
+		{
+			if (spawnPoint.id != worldDef.map.defaultPlayerSpawnPointId)
+			{
+				continue;
+			}
+
+			outPosition = DirectX::XMFLOAT3{
+				spawnPoint.position.x,
+				spawnPoint.position.y,
+				spawnPoint.position.z
+			};
+			return true;
+		}
+
+		return false;
+	}
 
 	bool WaitUntilRunning(const ServerApp& app, std::chrono::milliseconds timeout)
 	{
@@ -395,6 +430,55 @@ bool RunWorldTransitionDebugSmokeTest()
 	if (!sourceLocation.IsValid() || sourceLocation.worldId != startupWorldId)
 	{
 		std::cout << "[WorldTransitionSmoke] source net binding invalid after login.\n";
+		network.Shutdown();
+		framework.Shutdown();
+		return false;
+	}
+
+	WorldInstance* const startupWorld = framework.FindWorld(startupWorldId);
+	if (startupWorld == nullptr || startupWorld->GetDef() == nullptr)
+	{
+		std::cout << "[WorldTransitionSmoke] startup world definition unavailable.\n";
+		network.Shutdown();
+		framework.Shutdown();
+		return false;
+	}
+
+	DirectX::XMFLOAT3 expectedSpawnPosition{};
+	if (!TryGetDefaultPlayerSpawnPosition(
+		*startupWorld->GetDef(),
+		expectedSpawnPosition))
+	{
+		std::cout << "[WorldTransitionSmoke] startup world player spawn point missing.\n";
+		network.Shutdown();
+		framework.Shutdown();
+		return false;
+	}
+
+	const WorldTransformComp* const playerTransform =
+		startupWorld->GetRuntime().MakeView().GetComponent<WorldTransformComp>(
+			sourceLocation.entity);
+	if (playerTransform == nullptr)
+	{
+		std::cout << "[WorldTransitionSmoke] player transform missing after login.\n";
+		network.Shutdown();
+		framework.Shutdown();
+		return false;
+	}
+
+	if (!NearlyEqual(playerTransform->position.x, expectedSpawnPosition.x) ||
+		!NearlyEqual(playerTransform->position.y, expectedSpawnPosition.y) ||
+		!NearlyEqual(playerTransform->position.z, expectedSpawnPosition.z))
+	{
+		std::cout << "[WorldTransitionSmoke] player did not spawn at default world spawn point."
+			<< " actual=("
+			<< playerTransform->position.x << ", "
+			<< playerTransform->position.y << ", "
+			<< playerTransform->position.z << ")"
+			<< " expected=("
+			<< expectedSpawnPosition.x << ", "
+			<< expectedSpawnPosition.y << ", "
+			<< expectedSpawnPosition.z << ")\n";
 		network.Shutdown();
 		framework.Shutdown();
 		return false;

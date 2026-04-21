@@ -29,30 +29,37 @@ WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey)
 				SpawnPointDef{
 					.id = SpawnPointIds::PlazaPlayerStart,
 					.name = "Plaza.PlayerStart",
-					.position = WorldVec3Def{ 508.167800f, 5.508454f, 481.655600f },
+					.position = WorldVec3Def{ 480.167800f, 5.508454f, 481.655600f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
 					.id = SpawnPointIds::PlazaMonster01,
 					.name = "Plaza.DemonExecutioner.01",
-					.position = WorldVec3Def{ 500.167800f, 48.737797f, 481.655600f },
+					.position = WorldVec3Def{ 460.167800f, 5.508454f, 481.655600f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 			},
 			// TODO(content): replace temporary navmesh path with Plaza map data.
-			.navMesh = MapNavMeshDef{
-				.navMeshBinPath = "../Map/Cathedral_NavMesh_v2.bin",
+			.navMesh = MapNavMeshDef
+			{
+				.navMeshBinPath = "../Map/Plaza_NavMesh_v1.bin",
+				.agentRadius = 0.35f,
+				.agentHeight = 2.0f,
+				.agentMaxClimb = 0.4f,
+				.agentMaxSlope = 45.0f
 			},
-			.navigationProfile = NavigationProfileDef{
-				.id = 1,
+			.navigationProfile = NavigationProfileDef
+			{
+				.id = 0,
 				.nearestPolyExtentXZ = 2.0f,
 				.nearestPolyExtentY = 4.0f,
 				.navMeshSurfaceYOffset = 0.0f,
-				.queryFilter = NavigationQueryFilterDef{
+				.queryFilter = NavigationQueryFilterDef
+				{
 					.walkableAreaCost = 1.0f,
 					.includeFlags = 0xFFFF,
-					.excludeFlags = 0,
-				},
+					.excludeFlags = 0
+				}
 			},
 			.navigationProfileId = std::nullopt,
 			.environmentTags = {},
@@ -224,7 +231,7 @@ WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey)
 				SpawnPointDef{
 					.id = SpawnPointIds::CastlePlayerStart,
 					.name = "Castle.PlayerStart",
-					.position = WorldVec3Def{ 323.167800f, 50.0f, 203.655600f },
+					.position = WorldVec3Def{ 327.722809, 67.219727, 226.415680 },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
@@ -265,8 +272,27 @@ WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey)
 				},
 			},
 			// TODO(content): fill Castle navmesh, navigation profile, and environment tags.
-			.navMesh = std::nullopt,
-			.navigationProfile = std::nullopt,
+			.navMesh = MapNavMeshDef
+			{
+				.navMeshBinPath = "../Map/Castle_NavMesh_v2.bin",
+				.agentRadius = 0.35f,
+				.agentHeight = 2.0f,
+				.agentMaxClimb = 0.4f,
+				.agentMaxSlope = 45.0f
+			},
+			.navigationProfile = NavigationProfileDef
+			{
+				.id = 0,
+				.nearestPolyExtentXZ = 2.0f,
+				.nearestPolyExtentY = 4.0f,
+				.navMeshSurfaceYOffset = 0.0f,
+				.queryFilter = NavigationQueryFilterDef
+				{
+					.walkableAreaCost = 1.0f,
+					.includeFlags = 0xFFFF,
+					.excludeFlags = 0
+				}
+			},
 			.navigationProfileId = std::nullopt,
 			.environmentTags = {},
 		},
@@ -338,8 +364,27 @@ WorldDef CreateFinalWorldDef(WorldExecutionModelKey executionModelKey)
 				},
 			},
 			// TODO(content): fill Final navmesh, navigation profile, and environment tags.
-			.navMesh = std::nullopt,
-			.navigationProfile = std::nullopt,
+			.navMesh = MapNavMeshDef
+			{
+				.navMeshBinPath = "../Map/Cathedral_NavMesh_v2.bin",
+				.agentRadius = 0.35f,
+				.agentHeight = 2.0f,
+				.agentMaxClimb = 0.4f,
+				.agentMaxSlope = 45.0f
+			},
+			.navigationProfile = NavigationProfileDef
+			{
+				.id = 0,
+				.nearestPolyExtentXZ = 2.0f,
+				.nearestPolyExtentY = 4.0f,
+				.navMeshSurfaceYOffset = 0.0f,
+				.queryFilter = NavigationQueryFilterDef
+				{
+					.walkableAreaCost = 1.0f,
+					.includeFlags = 0xFFFF,
+					.excludeFlags = 0
+				}
+			},
 			.navigationProfileId = std::nullopt,
 			.environmentTags = {},
 		},

@@ -5,6 +5,7 @@
 
 #include "Aspect/CharacterAspectRegistry.h"
 #include "Aspect/ICharacterAspect.h"
+#include "WorldDef.h"
 #include "WorldInstance.h"
 
 namespace
@@ -23,6 +24,40 @@ namespace
 		result.worldId = worldId;
 		result.entity = entity;
 		return result;
+	}
+
+	bool TryResolveDefaultPlayerSpawnTransform(
+		const WorldDef& worldDef,
+		DirectX::XMFLOAT3& outPosition,
+		DirectX::XMFLOAT4& outRotation) noexcept
+	{
+		if (worldDef.map.defaultPlayerSpawnPointId == SpawnPointIds::None)
+		{
+			return false;
+		}
+
+		for (const SpawnPointDef& spawnPoint : worldDef.map.spawnPoints)
+		{
+			if (spawnPoint.id != worldDef.map.defaultPlayerSpawnPointId)
+			{
+				continue;
+			}
+
+			outPosition = DirectX::XMFLOAT3{
+				spawnPoint.position.x,
+				spawnPoint.position.y,
+				spawnPoint.position.z
+			};
+			outRotation = DirectX::XMFLOAT4{
+				spawnPoint.rotation.x,
+				spawnPoint.rotation.y,
+				spawnPoint.rotation.z,
+				spawnPoint.rotation.w
+			};
+			return true;
+		}
+
+		return false;
 	}
 
 }
@@ -204,13 +239,18 @@ PlayerEntryResult PlayerEntryService::RequestCharacterSelect(
 
 	// 초기 스폰 위치/회전: 아직 world spawn point API 가 없으므로 origin 으로
 	// 부착한다 (legacy AttachPlayerGameplayRuntimeComponents 의 동작과 동일).
+	// Initial login spawn uses the world's configured default player spawn point
+	// when available, and otherwise falls back to origin + identity rotation.
 	AssembleParams params{};
-	// Plaza: 508.167800f, 5.508454f, 481.655600f
-	// Village: 161.352478f, 48.737797f, 644.831543f
-	// Castle: 323.167800f, 50.0f, 203.655600f
-	// Cathedral: 0.0f, 5.0f, -96.1934f
-	params.position = { 508.167800f, 5.508454f, 481.655600f };
+	params.position = { 0.0f, 0.0f, 0.0f };
 	params.rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
+	if (const WorldDef* const worldDef = world->GetDef(); worldDef != nullptr)
+	{
+		(void)TryResolveDefaultPlayerSpawnTransform(
+			*worldDef,
+			params.position,
+			params.rotation);
+	}
 	params.netId = playerNetId;
 	params.sessionId = sessionId;
 

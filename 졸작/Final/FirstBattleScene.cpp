@@ -320,8 +320,8 @@ void FirstBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 void FirstBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 {
 	// 서버 -> First 맵 오프셋 (임시)
-	constexpr float offsetX = -352.0f;
-	constexpr float offsetZ = 168.0f;
+	//constexpr float offsetX = -352.0f;
+	//constexpr float offsetZ = 168.0f;
 
 	NetId nid{ move.netid() };
 	int id = nid.GetId();
@@ -330,8 +330,8 @@ void FirstBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 	{
 		auto transform = it->second->GetComponent<Transform>();
 
-		float worldX = move.x() + offsetX;		// 임시 예측 좌표임 (맵 기반)
-		float worldZ = move.z() + offsetZ;
+		//float worldX = move.x() + offsetX;		// 임시 예측 좌표임 (맵 기반)
+		//float worldZ = move.z() + offsetZ;
 		//transform->SetPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
 		transform->SetPosition(move.x(), move.y(), move.z());
 		transform->SetTargetRotation(move.yaw());

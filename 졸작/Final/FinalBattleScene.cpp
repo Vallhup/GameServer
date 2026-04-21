@@ -247,8 +247,8 @@ void FinalBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 void FinalBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 {
 	// 서버 -> Final 맵 오프셋 (임시)
-	constexpr float offsetX = -508.263f;
-	constexpr float offsetZ = -577.849f;
+	//constexpr float offsetX = -508.263f;
+	//constexpr float offsetZ = -577.849f;
 
 	NetId nid{ move.netid() };
 	int id = nid.GetId();
@@ -257,9 +257,9 @@ void FinalBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 	{
 		auto transform = it->second->GetComponent<Transform>();
 
-		float worldX = move.x() + offsetX;		// 임시 예측 좌표임 (맵 기반)
-		float worldZ = move.z() + offsetZ;	
-		transform->SetPosition(worldX, 2.0f, worldZ);
+		//float worldX = move.x() + offsetX;		// 임시 예측 좌표임 (맵 기반)
+		//float worldZ = move.z() + offsetZ;	
+		transform->SetPosition(move.x(), move.y(), move.z());
 		transform->SetTargetRotation(move.yaw());
 	}
 }
