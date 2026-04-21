@@ -12,11 +12,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-    HWND hwnd = nullptr;
-    InitWindow(hInstance, nCmdShow, &hwnd);
-
     TIMER.Initialize();
-
     ClientConnectionListener listener;
 
     AllocConsole();
@@ -30,6 +26,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     }
 
     FreeConsole();
+
+    HWND hwnd = nullptr;
+    InitWindow(hInstance, nCmdShow, &hwnd);
 
     Engine& game = ENGINE;
     game.Initialize(hwnd, ip.c_str(), 7000, listener);
