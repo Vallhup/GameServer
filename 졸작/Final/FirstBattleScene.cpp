@@ -333,7 +333,7 @@ void FirstBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 		float worldX = move.x() + offsetX;		// 임시 예측 좌표임 (맵 기반)
 		float worldZ = move.z() + offsetZ;
 		//transform->SetPosition(worldX, SampleHeightAt(worldX, worldZ), worldZ);
-		transform->SetPosition(move.x(), SampleHeightAt(move.x(), move.z()), move.z());
+		transform->SetPosition(move.x(), move.y(), move.z());
 		transform->SetTargetRotation(move.yaw());
 	}
 }

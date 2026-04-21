@@ -83,12 +83,14 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 		.id = WorldDefId::Village,
 		.name = "Village",
 
-		.topology = WorldTopologyDef{
+		.topology = WorldTopologyDef
+		{
 			.kind = WorldKind::Dungeon,
 			.instanceType = WorldInstanceType::Instanced,
 		},
 
-		.entryPolicy = WorldEntryPolicyDef{
+		.entryPolicy = WorldEntryPolicyDef
+		{
 			.creationPolicy = CreationPolicy::CreateOnDemand,
 			.joinPolicy = JoinPolicy::PartyOnly,
 			.maxPlayerCount = 3,
@@ -98,7 +100,8 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 			.fallbackWorldDefId = WorldDefId::Plaza,
 		},
 
-		.map = MapDef{
+		.map = MapDef
+		{
 			.resourceId = 2,
 			.defaultPlayerSpawnPointId = SpawnPointIds::VillagePlayerStart,
 			.spawnPoints = {
@@ -140,8 +143,27 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 				},
 			},
 			// TODO(content): fill Village navmesh, navigation profile, and environment tags.
-			.navMesh = std::nullopt,
-			.navigationProfile = std::nullopt,
+			.navMesh = MapNavMeshDef
+			{
+				.navMeshBinPath = "../Map/Village_NavMesh_v10.bin",
+				.agentRadius = 0.35f,
+				.agentHeight = 2.0f,
+				.agentMaxClimb = 0.4f,
+				.agentMaxSlope = 45.0f
+			},
+			.navigationProfile = NavigationProfileDef
+			{
+				.id = 0,
+				.nearestPolyExtentXZ = 2.0f,
+				.nearestPolyExtentY = 4.0f,
+				.navMeshSurfaceYOffset = 0.0f,
+				.queryFilter = NavigationQueryFilterDef
+				{
+					.walkableAreaCost = 1.0f,
+					.includeFlags = 0xFFFF,
+					.excludeFlags = 0
+				}
+			},
 			.navigationProfileId = std::nullopt,
 			.environmentTags = {},
 		},
