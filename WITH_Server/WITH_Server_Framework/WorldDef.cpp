@@ -3,7 +3,8 @@
 
 WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey)
 {
-	return WorldDef{
+	return WorldDef
+	{
 		.id = WorldDefId::Plaza,
 		.name = "Plaza",
 
@@ -32,12 +33,12 @@ WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey)
 					.position = WorldVec3Def{ 480.167800f, 5.508454f, 481.655600f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
-				SpawnPointDef{
-					.id = SpawnPointIds::PlazaMonster01,
-					.name = "Plaza.DemonExecutioner.01",
-					.position = WorldVec3Def{ 460.167800f, 5.508454f, 481.655600f },
-					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
-				},
+				//SpawnPointDef{
+				//	.id = SpawnPointIds::PlazaMonster01,
+				//	.name = "Plaza.DemonExecutioner.01",
+				//	.position = WorldVec3Def{ 460.167800f, 5.508454f, 481.655600f },
+				//	.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				//},
 			},
 			// TODO(content): replace temporary navmesh path with Plaza map data.
 			.navMesh = MapNavMeshDef

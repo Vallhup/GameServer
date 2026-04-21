@@ -10,16 +10,7 @@ namespace
 		SpawnSetDef{
 			.id = SpawnSetId::PlazaDefault,
 			.name = "PlazaDefault",
-			.entries = {
-				SpawnEntryDef{
-					.characterId = CharacterId::DemonExecutioner,
-					.spawnPointId = SpawnPointIds::PlazaMonster01,
-					.count = 1,
-					.type = SpawnConditionType::OnWorldStart,
-					.respawnPolicy = RespawnPolicy::None,
-					.respawnDelaySec = std::nullopt,
-				},
-			},
+			.entries = {}
 		},
 		SpawnSetDef{
 			.id = SpawnSetId::VillageDefault,
