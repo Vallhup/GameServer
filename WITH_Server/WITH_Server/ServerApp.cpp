@@ -342,6 +342,51 @@ bool ServerApp::MarkClientWorldTransitionReady(
 		sessionId,
 		NetId::Invalid());
 
+	// Transfer-imported players skip the normal EntitySpawned broadcast path,
+	// so notify already-ready sessions in the target world explicitly here.
+	const NetBindingLocation playerBinding =
+		_framework.FindNetBinding(pending.playerNetId);
+	if (playerBinding.IsValid() &&
+		playerBinding.worldId == pending.targetWorldId)
+	{
+		CharacterId characterId = CharacterId::None;
+		const WorldTransformComp* transform = nullptr;
+		if (ServerReplicationSnapshot::TryGetReplicatedSpawnState(
+			_framework,
+			pending.targetWorldId,
+			playerBinding.entity,
+			characterId,
+			transform))
+		{
+			std::vector<SessionId> worldSessionIds;
+			std::vector<SessionId> otherReadySessionIds;
+			_sessionBindings.CollectSessionsInWorld(
+				pending.targetWorldId,
+				worldSessionIds);
+
+			otherReadySessionIds.reserve(worldSessionIds.size());
+			for (SessionId worldSessionId : worldSessionIds)
+			{
+				if (worldSessionId == sessionId ||
+					_pendingClientTransitions.contains(worldSessionId))
+				{
+					continue;
+				}
+
+				otherReadySessionIds.push_back(worldSessionId);
+			}
+
+			(void)ServerPacketStager::StageSpawnAddPacketToSessions(
+				_network,
+				std::span<const SessionId>(
+					otherReadySessionIds.data(),
+					otherReadySessionIds.size()),
+				pending.playerNetId,
+				characterId,
+				transform);
+		}
+	}
+
 	_pendingClientTransitions.erase(it);
 	return true;
 }
