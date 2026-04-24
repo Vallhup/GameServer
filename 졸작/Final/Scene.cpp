@@ -8,6 +8,9 @@
 #include "Animator.h"
 #include "AnimationMachine.h"
 #include "AnimationSetFactory.h"
+#include "TrailComponent.h"
+#include "FootDustComponent.h"
+#include "ParrySparkComponent.h"
 
 #include "NetHelper.h"
 
@@ -120,6 +123,58 @@ shared_ptr<GameObject> Scene::GetAvailableMonster(MonsterType type) const
 	for (auto& m : it->second)
 		if (m->GetId() == -1) return m;
 	return nullptr;
+}
+
+shared_ptr<MainCharacter> Scene::GetAvailableKnight() const
+{
+	for (auto& knight : knightPool)
+	{
+		if (knight->GetId() == -1)
+			return knight;
+	}
+	return nullptr;
+}
+
+void Scene::CreateKnightPool()
+{
+	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
+	{
+		auto knight = make_shared<MainCharacter>();
+		knight->SetId(-1);
+		auto mesh = knight->AddComponent<Mesh>();
+		auto transform = knight->AddComponent<Transform>();
+		auto animator = knight->AddComponent<Animator>();
+		auto animMachine = knight->AddComponent<AnimationMachine>();
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+		//mesh->SetCollisionMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+
+		animMachine->SetAnimationSet(AnimationSetFactory::CreateKnightSet());
+		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
+		transform->SetRotation(0.f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+
+		auto trail = knight->AddComponent<TrailComponent>();
+		trail->Initialize(coreRef->GetDevice(), 32);
+		trail->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });
+		trail->SetLifetime(0.13f);
+
+		auto dust = knight->AddComponent<FootDustComponent>();
+		dust->Initialize(coreRef->GetDevice(), 32);
+		dust->SetColor({ 0.15f, 0.15f, 0.15f, 0.4f });
+		dust->SetLifetime(0.35f);
+		dust->SetParticleSize(0.1f);
+
+		auto spark = knight->AddComponent<ParrySparkComponent>();
+		spark->Initialize(coreRef->GetDevice(), 64);
+		spark->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
+		spark->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
+		spark->SetSpeed(20.0f);
+		spark->SetParticleSize(0.1f);
+		spark->SetLifetime(0.75f);
+
+		knightPool.push_back(knight);
+		AddGameObject(knight);
+	}
 }
 
 shared_ptr<GameObject> Scene::CreateMonsterObject(

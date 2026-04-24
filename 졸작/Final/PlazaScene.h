@@ -13,8 +13,6 @@ public:
 	PlazaScene& operator=(const PlazaScene&) = delete;
 	~PlazaScene() = default;
 
-	shared_ptr<MainCharacter> GetAvailableKnight() const;
-
 	void SetNetworkManager(NetworkManager* nManager) { _nManager = nManager; }
 
 	void Release() override;
@@ -36,7 +34,6 @@ private:
 	// ---------------------------------------------------------
 	// Temporary functions for rendering Characters and monsters
 	// ---------------------------------------------------------
-	void CreateKnightPool();
 	void CreateNextTwoCharacters();
 	void CreateEffectSamples();
 	// ---------------------------------------------------------
@@ -54,12 +51,6 @@ private:
 
 private:
 	NetworkManager* _nManager{ nullptr };
-
-	vector<shared_ptr<MainCharacter>> knightPool;
-	static constexpr int MAX_KNIGHT_COUNT = 10;
-
-	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
-	shared_ptr<MainCharacter> myPlayer;
 
 	vector<shared_ptr<GameObject>> effectObjects;
 	shared_ptr<SkyBox> skyBox;

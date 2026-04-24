@@ -33,6 +33,7 @@ public:
 	void SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches);
 
 	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
+	shared_ptr<MainCharacter> GetAvailableKnight() const;
 
 	shared_ptr<GameObject> CreateMonsterObject(
 		const wstring& meshPath,
@@ -74,6 +75,8 @@ protected:
 	template<typename T>
 	void CreateAndBatchObjects(const wstring& path, const vector<T>& data, vector<shared_ptr<InstancingBatch>>& targetBatchList);
 
+	void CreateKnightPool();
+
 protected:
 	XMFLOAT4X4 mView = {};
 	XMFLOAT4X4 mProjection = {};
@@ -87,6 +90,12 @@ protected:
 
 	vector<shared_ptr<GameObject>> gameObjects;
 	unordered_map<MonsterType, vector<shared_ptr<GameObject>>> monsterPools;
+
+	vector<shared_ptr<MainCharacter>> knightPool;
+	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
+	shared_ptr<MainCharacter> myPlayer;
+
+	static constexpr int MAX_KNIGHT_COUNT = 10;
 };
 
 template <typename T>
