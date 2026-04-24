@@ -12,7 +12,7 @@ enum class SceneType;
 class MainCharacter;
 class AnimationSet;
 
-enum class MonsterType { Boss, Imp, DemonStriker, DemonExecutioner };
+enum class MonsterType { Boss, Imp, DemonStriker, DemonExecutioner, Tank };
 
 class Scene
 {

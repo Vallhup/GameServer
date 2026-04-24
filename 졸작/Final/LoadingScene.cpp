@@ -156,15 +156,6 @@ void LoadingScene::LoadSecondBattleSceneResources()
 {
 	OutputDebugStringA("SecondBattleSceneResources loading start!!\n");
 
-	loadTasks.push([this]() {
-		auto device = coreRef->GetDevice();
-		auto cmdList = coreRef->GetActiveCmdList();
-		Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/rdiffuse.png");		// 237 ~ 240
-		Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/rnormal.png");
-		Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/grass.png");
-		Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/terrainTexture.png");
-		});
-
 	InstanceLoader mapLoader;
 	mapLoader.Load(L"../Assets/FBXModel/CastleMap/MapInstanceData.txt", L"../Assets/FBXModel/CastleMap/CullingData.txt");
 

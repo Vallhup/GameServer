@@ -61,10 +61,10 @@ void SelectSceneUIController::Update(float deltaTime)
 
 void SelectSceneUIController::Render(SpriteBatch* batch)
 {
-	if (background) background->Render(batch);
+	/*if (background) background->Render(batch);
 
 	for (auto& img : charImages)
 		if (img) img->Render(batch);
 
-	if (hoverOverlay) hoverOverlay->Render(batch);
+	if (hoverOverlay) hoverOverlay->Render(batch);*/
 }

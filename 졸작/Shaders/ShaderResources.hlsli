@@ -202,10 +202,4 @@ SamplerState pointSampler : register(s1);
 SamplerState linearClampSampler : register(s2);
 SamplerComparisonState shadowCmpSampler : register(s3);
 
-//-------------------------------------------------------
-// INDEXES
-//-------------------------------------------------------
-
-static const uint BRDF_LUT_INDEX = 0;
-
 #endif
