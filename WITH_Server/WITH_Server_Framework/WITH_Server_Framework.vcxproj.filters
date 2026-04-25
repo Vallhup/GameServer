@@ -25,6 +25,9 @@
     <ClCompile Include="WorldRuntime.cpp">
       <Filter>02_World\02_Runtime</Filter>
     </ClCompile>
+    <ClCompile Include="WorldSystemServiceScope.cpp">
+      <Filter>02_World\02_Runtime</Filter>
+    </ClCompile>
     <ClCompile Include="WorldIdAllocator.cpp">
       <Filter>02_World\00_Common</Filter>
     </ClCompile>
@@ -55,6 +58,9 @@
     <ClCompile Include="TaskExecutor.cpp">
       <Filter>03_Execution\05_TaskExecutor</Filter>
     </ClCompile>
+    <ClCompile Include="TaskExecutorDiagnostics.cpp">
+      <Filter>03_Execution\05_TaskExecutor</Filter>
+    </ClCompile>
     <ClCompile Include="ThreadPool.cpp">
       <Filter>03_Execution\05_TaskExecutor</Filter>
     </ClCompile>
@@ -83,6 +89,9 @@
       <Filter>02_World\01_Definition</Filter>
     </ClCompile>
     <ClCompile Include="NavMeshRuntime.cpp" />
+    <ClCompile Include="AutoSystemBridge.cpp">
+      <Filter>03_Execution\06_Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h">
@@ -146,6 +155,9 @@
       <Filter>02_World\00_Common</Filter>
     </ClInclude>
     <ClInclude Include="WorldRuntime.h">
+      <Filter>02_World\02_Runtime</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldSystemServiceScope.h">
       <Filter>02_World\02_Runtime</Filter>
     </ClInclude>
     <ClInclude Include="WorldLifecycleBuffer.h">
@@ -265,6 +277,9 @@
     <ClInclude Include="TaskExecutor.h">
       <Filter>03_Execution\05_TaskExecutor</Filter>
     </ClInclude>
+    <ClInclude Include="TaskExecutorDiagnostics.h">
+      <Filter>03_Execution\05_TaskExecutor</Filter>
+    </ClInclude>
     <ClInclude Include="ThreadPool.h">
       <Filter>03_Execution\05_TaskExecutor</Filter>
     </ClInclude>
@@ -340,6 +355,12 @@
     </ClInclude>
     <ClInclude Include="FrameworkLog.h">
       <Filter>00_Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoSystemBridge.h">
+      <Filter>03_Execution\06_Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ConflictDetection.h">
+      <Filter>03_Execution\06_Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

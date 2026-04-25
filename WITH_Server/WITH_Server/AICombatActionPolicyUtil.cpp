@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "AICombatActionPolicyUtil.h"
 
+#include "IAICombatActionPolicy.h"
 #include "IAIState.h"
 #include "System.h"
 #include "TransformHelper.h"

@@ -1,8 +1,11 @@
 #pragma once
 
-#include "AIFSMRegistry.h"
+#include "AIBehaviorDef.h"
 
 #include <span>
+
+struct AIContext;
+struct CombatActionSelection;
 
 namespace AICombatActionPolicyUtil
 {

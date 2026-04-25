@@ -20,7 +20,22 @@
 
 #include "asio.hpp"
 
+#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable: 2451 4244 4251 4267 4996)
+#elif defined(__GNUC__) || defined(__clang__)
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #include "Protocol.pb.h"
+
+#ifdef _MSC_VER
+	#pragma warning(pop)
+#elif defined(__GNUC__) || defined(__clang__)
+	#pragma GCC diagnostic pop
+#endif
 
 #include "Asio_Network_Library.h"
 #include "ProtocolLib.h"
