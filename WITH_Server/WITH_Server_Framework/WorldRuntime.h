@@ -4,6 +4,7 @@
 #include <span>
 #include <tuple>
 #include <type_traits>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -18,6 +19,7 @@
 #include "Component.h"
 #include "NavMeshRuntime.h"
 #include "WorldTransferTypes.h"
+#include "ExecutionCoreTypes.h"
 
 class ITransferContext;
 class IWorldTransferBinding;
@@ -65,6 +67,8 @@ public:
 	const WorldExecutionModel* GetExecutionModel() const noexcept { return _executionModel; }
 	const IWorldTransferBinding* GetTransferBinding() const noexcept { return _transferBinding; }
 	const WorldTransferProfile* GetTransferProfile() const noexcept { return _transferProfile; }
+	const NavMeshRuntime* GetNavMeshRuntime() const noexcept { return _navMeshRuntime.get(); }
+	const NavigationProfileDef* GetNavigationProfile() const noexcept { return _navProfile; }
 
 	WorldRuntimeLifecycleState GetLifecycleState() const noexcept { return _lifecycleState; }
 	WorldRuntimeCommitState GetCommitState() const noexcept { return _commitState; }
@@ -85,6 +89,18 @@ public:
 	uint64_t FrameIndex() const noexcept { return _frameIndex; }
 	double LastNowSec() const noexcept { return _lastNowSec; }
 	double LastDtSec() const noexcept { return _lastDtSec; }
+
+	// ---------------------------------------------------------------------------
+	// ExecToken → System* 디스패치 테이블 (AutoSystemBridge / BridgeDispatchFn 전용)
+	//
+	// RegisterSystemDispatch: AutoSystemBridge가 시스템 등록 시 호출한다.
+	// GetSystemByToken:        BridgeDispatchFn이 NodeExecContext.sourceToken으로
+	//                          O(1) 조회하여 System::Execute를 호출한다.
+	// ---------------------------------------------------------------------------
+	void RegisterSystemDispatch(ExecToken token, System* system);
+
+	[[nodiscard]]
+	System* GetSystemByToken(ExecToken token) const noexcept;
 
 	const WorldRuntimeFault& GetFault() const noexcept { return _fault; }
 
@@ -138,6 +154,9 @@ public:
 	{
 		return _systems.RegisterSystem<T>(phase, std::forward<Args>(args)...);
 	}
+
+	SystemManager& GetSystemManager() noexcept { return _systems; }
+	const SystemManager& GetSystemManager() const noexcept { return _systems; }
 
 	bool ExecuteSystems(
 		SystemPhase phase,
@@ -340,4 +359,9 @@ private:
 	double _lastDtSec{ 0.0 };
 
 	WorldRuntimeFault _fault;
+
+	// ExecToken → System* 디스패치 테이블
+	// AutoSystemBridge가 등록하고, BridgeDispatchFn이 조회한다.
+	// 월드 생명주기와 동일한 수명을 가진다.
+	std::unordered_map<ExecToken, System*> _systemDispatchTable;
 };
