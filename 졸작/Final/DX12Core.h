@@ -61,6 +61,7 @@ class ShadowMappingManager;
 class RenderTargets;
 class LightManager;
 class FroxelManager;
+class ClusterLightManager;
 class SSAO;
 class LookUpTextures;
 class RootSignature;
@@ -117,6 +118,7 @@ public:
 	RenderTargets* GetRenderTargetMgr() { return rtMgr.get(); }
 	LightManager* GetLightMgr() { return lightMgr.get(); }
 	FroxelManager* GetFroxelMgr() { return froxelMgr.get(); }
+	ClusterLightManager* GetClusterLightMgr() { return clusterLightMgr.get(); }
 	SSAO* GetSsaoMgr() { return ssaoMgr.get(); }
 	LookUpTextures* GetLUTMgr() { return lutMgr.get(); }
 	SwapChain* GetSwapChainMgr() { return swapChainMgr.get(); }
@@ -143,6 +145,7 @@ private:
 	unique_ptr<RenderTargets> rtMgr;
 	unique_ptr<LightManager> lightMgr;
 	unique_ptr<FroxelManager> froxelMgr;
+	unique_ptr<ClusterLightManager> clusterLightMgr;
 	unique_ptr<SSAO> ssaoMgr;
 	unique_ptr<LookUpTextures> lutMgr;
 

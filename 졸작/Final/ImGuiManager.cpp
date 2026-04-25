@@ -172,7 +172,7 @@ void ImGuiManager::DrawDebugUI()
 
         if (ImGui::Begin("Light Editor", &showLightEditor))
         {
-            auto& deferred = coreRef->GetLightMgr()->GetDeferredLightData();
+            auto* lts = coreRef->GetLightMgr()->GetLights();
 
             // Sun (skybox) - drives Main Directional 1, Forward light, CSM direction
             if (skyBox && ImGui::CollapsingHeader("Sun (Skybox)", ImGuiTreeNodeFlags_DefaultOpen))
@@ -185,17 +185,17 @@ void ImGuiManager::DrawDebugUI()
 
             if (ImGui::CollapsingHeader("Main Directional 2", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                ImGui::SliderFloat3("Direction##Dir2", &deferred.lights[1].position.x, -1.0f, 1.0f);
-                ImGui::ColorEdit3("Color##Dir2", &deferred.lights[1].color.x);
-                ImGui::SliderFloat("Intensity##Dir2", &deferred.lights[1].intensity, 0.0f, 2.0f);
+                ImGui::SliderFloat3("Direction##Dir2", &lts[1].position.x, -1.0f, 1.0f);
+                ImGui::ColorEdit3("Color##Dir2", &lts[1].color.x);
+                ImGui::SliderFloat("Intensity##Dir2", &lts[1].intensity, 0.0f, 2.0f);
             }
 
             if (ImGui::CollapsingHeader("Point Light 1", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                ImGui::SliderFloat3("Position##Po1", &deferred.lights[2].position.x, -100.0f, 100.0f);
-                ImGui::SliderFloat("Range##Po1", &deferred.lights[2].range, 1.0f, 3000.0f);
-                ImGui::ColorEdit3("Color##Po1", &deferred.lights[2].color.x);
-                ImGui::SliderFloat("Intensity##Po1", &deferred.lights[2].intensity, 0.0f, 2.0f);
+                ImGui::SliderFloat3("Position##Po1", &lts[2].position.x, -100.0f, 100.0f);
+                ImGui::SliderFloat("Range##Po1", &lts[2].range, 1.0f, 3000.0f);
+                ImGui::ColorEdit3("Color##Po1", &lts[2].color.x);
+                ImGui::SliderFloat("Intensity##Po1", &lts[2].intensity, 0.0f, 2.0f);
             }
 
             coreRef->GetLightMgr()->UpdateLights();

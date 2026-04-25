@@ -221,19 +221,19 @@ void SceneManager::ApplySceneSettings(DX12Core& core)
 
     const SceneSettings s = mCurrentScene->GetSceneSettings();
 
-    auto& dl = core.GetLightMgr()->GetDeferredLightData();
-    dl.lights[0].position = s.light.sunDirection;
-    dl.lights[0].color = s.light.sunColor;
-    dl.lights[0].intensity = s.light.sunIntensity;
+    auto* lts = core.GetLightMgr()->GetLights();
+    lts[0].position = s.light.sunDirection;
+    lts[0].color = s.light.sunColor;
+    lts[0].intensity = s.light.sunIntensity;
 
-    dl.lights[1].position = s.light.dir2Direction;
-    dl.lights[1].color = s.light.dir2Color;
-    dl.lights[1].intensity = s.light.dir2Intensity;
+    lts[1].position = s.light.dir2Direction;
+    lts[1].color = s.light.dir2Color;
+    lts[1].intensity = s.light.dir2Intensity;
 
-    dl.lights[2].position = s.light.pointPosition;
-    dl.lights[2].range = s.light.pointRange;
-    dl.lights[2].color = s.light.pointColor;
-    dl.lights[2].intensity = s.light.pointIntensity;
+    lts[2].position = s.light.pointPosition;
+    lts[2].range = s.light.pointRange;
+    lts[2].color = s.light.pointColor;
+    lts[2].intensity = s.light.pointIntensity;
 
     auto& fl = core.GetLightMgr()->GetForwardLightData();
     fl.direction = s.light.sunDirection;

@@ -253,6 +253,9 @@
     <ClCompile Include="BloomManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="ClusterLightManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -507,6 +510,9 @@
     </ClInclude>
     <ClInclude Include="ClientWorldTransitionController.h">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ClusterLightManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

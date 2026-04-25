@@ -6,9 +6,13 @@ void LightManager::Initialize(ID3D12Device* device)
 {
 	deferredLightCB = make_unique<UploadBuffer>();
 	forwardLightCB = make_unique<UploadBuffer>();
+	deferredLightSB = make_unique<UploadBuffer>();
 
 	deferredLightCB->Initialize(device, sizeof(DeferredLightConstants));
 	forwardLightCB->Initialize(device, sizeof(ForwardLightConstants));
+	deferredLightSB->Initialize(device, sizeof(LightData) * MAX_LIGHTS);
+
+	lights.resize(MAX_LIGHTS);
 
 	SetupLights();
 }
@@ -18,10 +22,10 @@ void LightManager::UpdateLights()
 	if (skyBox)
 	{
 		const SkySun& sun = skyBox->GetSun();
-		deferredLightData.lights[0].position = sun.direction;
-		deferredLightData.lights[0].color = sun.color;
-		deferredLightData.lights[0].intensity = sun.intensity;
-		deferredLightData.lights[0].type = 0;
+		lights[0].position = sun.direction;
+		lights[0].color = sun.color;
+		lights[0].intensity = sun.intensity;
+		lights[0].type = 0;
 
 		forwardLightData.direction = sun.direction;
 		forwardLightData.color = sun.color;
@@ -30,6 +34,7 @@ void LightManager::UpdateLights()
 
 	deferredLightCB->CopyData(&deferredLightData, sizeof(DeferredLightConstants));
 	forwardLightCB->CopyData(&forwardLightData, sizeof(ForwardLightConstants));
+	deferredLightSB->CopyData(lights.data(), sizeof(LightData) * MAX_LIGHTS);
 }
 
 UploadBuffer* LightManager::GetDeferredLightCB() const
@@ -42,26 +47,31 @@ UploadBuffer* LightManager::GetForwardLightCB() const
 	return forwardLightCB.get();
 }
 
+UploadBuffer* LightManager::GetDeferredLightSB() const
+{
+	return deferredLightSB.get();
+}
+
 void LightManager::SetupLights()
 {
 	forwardLightData = { {0, 0, -1}, 0, {1, 1, 1}, 0.25f };
 
 	deferredLightData.lightCount = 23;
 
-	deferredLightData.lights[0] = {
+	lights[0] = {
 		{-0.75f, -1.07f, -1.0f}, 0,
 		{1, 1, 1}, 1.0f,
 		0,
 		{0, 0, 0}
 	};
-	deferredLightData.lights[1] = {
+	lights[1] = {
 		{0, 0, 1}, 0,
 		{1, 1, 1}, 0.0f,
 		0,
 		{0, 0, 0}
 	};
 
-	deferredLightData.lights[2] = {
+	lights[2] = {
 		{481.f, 25.f, 482.0f}, 50.0f,
 		{1, 1, 1}, 0.0f,
 		1,
@@ -84,7 +94,7 @@ void LightManager::SetupLights()
 
 		XMFLOAT3 color = { 1.0f, 0.25f, 0.0f };
 
-		deferredLightData.lights[i] = {
+		lights[i] = {
 			{x, height, z + 70.0f}, 10.0f,
 			color, 0.0f,
 			1,

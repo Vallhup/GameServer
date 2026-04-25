@@ -11,6 +11,7 @@
 #include "LightManager.h"
 #include "SkyBox.h"
 #include "FroxelManager.h"
+#include "ClusterLightManager.h"
 #include "SSAO.h"
 #include "LookUpTextures.h"
 #include "Material.h"
@@ -35,6 +36,7 @@ void DX12Core::Initialize(HWND hwnd)
 	rtMgr = make_unique<RenderTargets>();
 	lightMgr = make_unique<LightManager>();
 	froxelMgr = make_unique<FroxelManager>();
+	clusterLightMgr = make_unique<ClusterLightManager>();
 	ssaoMgr = make_unique<SSAO>();
 	lutMgr = make_unique<LookUpTextures>();
 
@@ -51,6 +53,7 @@ void DX12Core::Initialize(HWND hwnd)
 	rtMgr->Initialize(GetDevice(), shadowMgr.get());
 	lightMgr->Initialize(GetDevice());
 	froxelMgr->Initialize(GetDevice());
+	clusterLightMgr->Initialize(GetDevice());
 	ssaoMgr->Initialize(GetDevice(), GetGraphicsCmdList(), GetRenderTargetMgr());
 	rtMgr->AddSsaoSRV(GetDevice(), ssaoMgr->GetSsaoBlurRT());
 
@@ -146,8 +149,6 @@ void DX12Core::ForwardPass()
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(4, lightMgr->GetForwardLightCB()->GetGPUVirtualAddress());
 
-	// Volumetric Fog에 필요한 cbuffer 바인딩
-	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(22, GetVolumetricFogCB()->GetGPUVirtualAddress());
 
@@ -511,7 +512,7 @@ void DX12Core::FogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 	deviceCtx->GetGraphicsCmdList()->SetPipelineState(shader->GetPSO(PSOType::VolumetricFogPass));
 
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
-	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(4, lightMgr->GetForwardLightCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(22, GetVolumetricFogCB()->GetGPUVirtualAddress());
 
@@ -545,6 +546,7 @@ void DX12Core::LightingPass()
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootShaderResourceView(25, lightMgr->GetDeferredLightSB()->GetGPUVirtualAddress());
 
 	if (auto* sky = lightMgr->GetSkyBox())
 		deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(20, sky->GetCBAddress());
