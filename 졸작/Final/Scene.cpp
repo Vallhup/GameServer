@@ -250,6 +250,32 @@ void Scene::CreateDemonExecutionerObject(const XMFLOAT3& position, int count)
 	}
 }
 
+void Scene::CreateBigDemonWarriorObject(const XMFLOAT3& position, int count)
+{
+	for (int i = 0; i < count; ++i)
+	{
+		auto bigDemonWarrior = CreateMonsterObject(
+			L"../Assets/FBXModel/Monster/BigDemonWarrior/monster_BigDemonWarrior",
+			&AnimationSetFactory::CreateBigDemonWarriorSet);
+		bigDemonWarrior->GetComponent<Transform>()->SetInitPosition(position);
+		monsterPools[MonsterType::BigDemonWarrior].push_back(bigDemonWarrior);
+		AddGameObject(bigDemonWarrior);
+	}
+}
+
+void Scene::CreateTankObject(const XMFLOAT3& position, int count)
+{
+	for (int i = 0; i < count; ++i)
+	{
+		auto tank = CreateMonsterObject(
+			L"../Assets/FBXModel/Monster/Tank/monster_Tank",
+			&AnimationSetFactory::CreateTankSet);
+		tank->GetComponent<Transform>()->SetInitPosition(position);
+		monsterPools[MonsterType::Tank].push_back(tank);
+		AddGameObject(tank);
+	}
+}
+
 void Scene::AddGameObject(shared_ptr<GameObject> obj)
 {
 	gameObjects.push_back(obj);

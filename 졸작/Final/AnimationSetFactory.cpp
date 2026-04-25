@@ -184,9 +184,52 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateDemonExecutionerSet()
 	return set;
 }
 
+shared_ptr<AnimationSet> AnimationSetFactory::CreateBigDemonWarriorSet()
+{
+	auto set = make_shared<AnimationSet>("BigDemonWarrior", 110);
+
+	set->RegisterClip("Idle1", 0, AnimCategory::Base);
+	set->RegisterClip("Idle2", 1, AnimCategory::Base);
+	set->RegisterClip("Idle3", 2, AnimCategory::Base);
+	set->RegisterClip("Idle4", 3, AnimCategory::Base);
+	set->RegisterClip("BattleCry", 4, AnimCategory::Base);
+	set->RegisterClip("Roaring", 5, AnimCategory::Base);
+
+	set->RegisterClip("Melee1", 6, AnimCategory::Action);
+	set->RegisterClip("Melee2", 7, AnimCategory::Action);
+	set->RegisterClip("Melee3", 8, AnimCategory::Action);
+	set->RegisterClip("Melee4", 9, AnimCategory::Action);
+	set->RegisterClip("Melee5", 10, AnimCategory::Action);
+	set->RegisterClip("Melee6", 11, AnimCategory::Action);
+	set->RegisterClip("Melee7", 12, AnimCategory::Action);
+	set->RegisterClip("Melee8", 13, AnimCategory::Action);
+
+	set->RegisterClip("WalkBack", 14, AnimCategory::Action);
+	set->RegisterClip("WalkForward", 15, AnimCategory::Action);
+	set->RegisterClip("WalkRightBack", 16, AnimCategory::Action);
+	set->RegisterClip("WalkRight", 17, AnimCategory::Action);
+
+	set->RegisterClip("RunForward", 18, AnimCategory::Action);
+
+	set->RegisterClip("TurnLeft", 19, AnimCategory::Action);
+	set->RegisterClip("TurnRight", 20, AnimCategory::Action);
+
+	set->RegisterClip("Jump", 21, AnimCategory::Action);
+
+	set->RegisterClip("Stun", 22, AnimCategory::Action);
+
+	set->RegisterClip("ReactFromLeft", 23, AnimCategory::Action);
+	set->RegisterClip("ReactFromRight", 24, AnimCategory::Action);
+	set->RegisterClip("ReactGut", 25, AnimCategory::Action);
+
+	set->RegisterClip("Death", 26, AnimCategory::Die);
+
+	return set;
+}
+
 shared_ptr<AnimationSet> AnimationSetFactory::CreateTankSet()
 {
-	auto set = make_shared<AnimationSet>("Tank", 110);
+	auto set = make_shared<AnimationSet>("Tank", 137);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -230,7 +273,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateTankSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 {
-	auto set = make_shared<AnimationSet>("Lancer", 139);
+	auto set = make_shared<AnimationSet>("Lancer", 166);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);
@@ -250,9 +293,9 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 	return set;
 }
 
-shared_ptr<AnimationSet> AnimationSetFactory::CreateTankerSet()
+shared_ptr<AnimationSet> AnimationSetFactory::CreatePaladinSet()
 {
-	auto set = make_shared<AnimationSet>("Tanker", 150);
+	auto set = make_shared<AnimationSet>("Paladin", 177);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);

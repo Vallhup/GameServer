@@ -12,7 +12,7 @@ void SelectScene::Release()
 void SelectScene::Reset()
 {
 	gameObjects.clear();
-	tank.reset();
+	bigDemonWarrior.reset();
 
 	OutputDebugStringA("SelectScene Data has been deleted!! \n----------------------------------------\n");
 }
@@ -26,37 +26,37 @@ void SelectScene::InitializeLogic()
 	OutputDebugStringA("----------------------------------------\nSelectScene Data has been created!! \n");
 
 	{
-		tank = make_shared<MainCharacter>();
-		auto mesh = tank->AddComponent<Mesh>();
+		bigDemonWarrior = make_shared<MainCharacter>();
+		auto mesh = bigDemonWarrior->AddComponent<Mesh>();
 		mesh->SetTwoSided(true);
-		auto transform = tank->AddComponent<Transform>();
-		auto animator = tank->AddComponent<Animator>();
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Tank/monster_Tank");
+		auto transform = bigDemonWarrior->AddComponent<Transform>();
+		auto animator = bigDemonWarrior->AddComponent<Animator>();
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/BigDemonWarrior/monster_BigDemonWarrior");
 		transform->SetInitPosition(0.f, 0.f, 0.f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
-		gameObjects.push_back(tank);
+		gameObjects.push_back(bigDemonWarrior);
 
 		coreRef->FlushCommandQueue();
 		coreRef->ResetCommandQueue();
 
 		mesh->ReleaseUploadBuffers();
 
-		tank->SetAsLocalPlayer(cam.get());
+		bigDemonWarrior->SetAsLocalPlayer(cam.get());
 	}
 
 	{
-		imp = make_shared<GameObject>();
-		auto mesh = imp->AddComponent<Mesh>();
+		tank = make_shared<GameObject>();
+		auto mesh = tank->AddComponent<Mesh>();
 		mesh->SetTwoSided(true);
-		auto transform = imp->AddComponent<Transform>();
-		auto animator = imp->AddComponent<Animator>();
+		auto transform = tank->AddComponent<Transform>();
+		auto animator = tank->AddComponent<Animator>();
 
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");
-		transform->SetInitPosition(4.f, 0.f, 0.5f);
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Tank/monster_Tank");
+		transform->SetInitPosition(5.f, 0.f, 0.5f);
 		transform->SetRotation(0.f, 0.f, 0.f);
 		transform->SetScale(0.01f, 0.01f, 0.01f);
-		gameObjects.push_back(imp);
+		gameObjects.push_back(tank);
 
 		coreRef->FlushCommandQueue();
 		coreRef->ResetCommandQueue();
@@ -69,8 +69,8 @@ void SelectScene::InitializeLogic()
 
 void SelectScene::UpdateScene(const float deltaTime)
 {
-	auto animator = tank->GetComponent<Animator>();
-	auto animator2 = imp->GetComponent<Animator>();
+	auto animator = bigDemonWarrior->GetComponent<Animator>();
+	auto animator2 = tank->GetComponent<Animator>();
 	if (animator && animator2) {
 		if (INPUT.GetKeyDown('1')) 
 		{
@@ -254,7 +254,7 @@ void SelectScene::UpdateScene(const float deltaTime)
 		obj->Update(deltaTime);
 
 	if (cam)
-		cam->Update(*coreRef, deltaTime, gameObjects, {}, tank);
+		cam->Update(*coreRef, deltaTime, gameObjects, {}, bigDemonWarrior);
 }
 
 void SelectScene::RenderSceneDeferred()

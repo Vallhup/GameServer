@@ -98,6 +98,7 @@ void FirstBattleScene::InitializeLogic()
 	CreateImpObject(monsterSpawn, 5);
 	CreateDemonStrikerObject(monsterSpawn, 5);
 	CreateDemonExecutionerObject(monsterSpawn, 5);
+	CreateBigDemonWarriorObject(monsterSpawn, 1);
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();

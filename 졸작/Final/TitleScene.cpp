@@ -48,6 +48,7 @@ void TitleScene::InitializeLogic()
 	  L"../Assets/FBXModel/Monster/Imp/monster_Imp",
 	  L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker",
 	  L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner",
+	  L"../Assets/FBXModel/Monster/BigDemonWarrior/monster_BigDemonWarrior",
 	  L"../Assets/FBXModel/Monster/Tank/monster_Tank",
 	};
 

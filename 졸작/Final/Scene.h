@@ -12,7 +12,7 @@ enum class SceneType;
 class MainCharacter;
 class AnimationSet;
 
-enum class MonsterType { Boss, Imp, DemonStriker, DemonExecutioner, Tank };
+enum class MonsterType { Boss, Imp, DemonStriker, DemonExecutioner, BigDemonWarrior, Tank };
 
 class Scene
 {
@@ -44,6 +44,8 @@ public:
 	void CreateImpObject(const XMFLOAT3& position, int count = 1);
 	void CreateDemonStrikerObject(const XMFLOAT3& position, int count = 1);
 	void CreateDemonExecutionerObject(const XMFLOAT3& position, int count = 1);
+	void CreateBigDemonWarriorObject(const XMFLOAT3& position, int count = 1);
+	void CreateTankObject(const XMFLOAT3& position, int count = 1);
 
 	void AddGameObject(shared_ptr<GameObject> obj);
 

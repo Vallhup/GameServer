@@ -24,6 +24,6 @@ protected:
 
 private:
 	vector<shared_ptr<GameObject>> gameObjects;
-	shared_ptr<MainCharacter> tank;
-	shared_ptr<GameObject> imp;
+	shared_ptr<MainCharacter> bigDemonWarrior;
+	shared_ptr<GameObject> tank;
 };
