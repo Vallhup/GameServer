@@ -51,10 +51,6 @@ SceneSettings PlazaScene::GetSceneSettings() const
 	};
 }
 
-void PlazaScene::InitializeSceneObjectPools()
-{
-}
-
 void PlazaScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nPlazaScene Data has been created!! \n");
@@ -101,6 +97,10 @@ void PlazaScene::InitializeLogic()
 	}
 
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
+}
+
+void PlazaScene::InitializeSceneMonsters()
+{
 }
 
 void PlazaScene::UpdateScene(const float deltaTime)

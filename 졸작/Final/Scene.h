@@ -35,25 +35,16 @@ public:
 	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
 
-	shared_ptr<GameObject> CreateMonsterObject(
-		const wstring& meshPath,
-		shared_ptr<AnimationSet> (*animFactory)(),
-		bool twoSided = true);
-
-	void CreateBossObject(const XMFLOAT3& position, int count = 1);
-	void CreateImpObject(const XMFLOAT3& position, int count = 1);
-	void CreateDemonStrikerObject(const XMFLOAT3& position, int count = 1);
-	void CreateDemonExecutionerObject(const XMFLOAT3& position, int count = 1);
-	void CreateBigDemonWarriorObject(const XMFLOAT3& position, int count = 1);
-	void CreateTankObject(const XMFLOAT3& position, int count = 1);
+	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet> (*animFactory)(), bool twoSided = true);
+	void CreateMonsters(MonsterType type, const XMFLOAT3& position, int count = 1);
 
 	void AddGameObject(shared_ptr<GameObject> obj);
 
 	virtual SceneSettings GetSceneSettings() const { return {}; }
 
 protected:
-	virtual void InitializeSceneObjectPools() = 0;
 	virtual void InitializeLogic() = 0;
+	virtual void InitializeSceneMonsters() = 0;
 	virtual void UpdateScene(const float deltaTime) = 0;
 	virtual void RenderSceneDeferred() = 0;
 	virtual void RenderSceneForward() = 0;

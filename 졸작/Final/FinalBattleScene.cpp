@@ -46,10 +46,6 @@ SceneSettings FinalBattleScene::GetSceneSettings() const
 	};
 }
 
-void FinalBattleScene::InitializeSceneObjectPools()
-{
-}
-
 void FinalBattleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nFinalBattleScene Data has been created!! \n");
@@ -97,6 +93,10 @@ void FinalBattleScene::InitializeLogic()
 	AddGameObject(flameObject);
 
 	OutputDebugStringA("FinalBattleScene initialized!\n");
+}
+
+void FinalBattleScene::InitializeSceneMonsters()
+{
 }
 
 void FinalBattleScene::UpdateScene(const float deltaTime)

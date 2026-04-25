@@ -12,10 +12,6 @@ void TitleScene::Reset()
 	OutputDebugStringA("TitleScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-void TitleScene::InitializeSceneObjectPools()
-{
-}
-
 void TitleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nTitleScene Data has been created!! \n");
@@ -69,6 +65,10 @@ void TitleScene::InitializeLogic()
 		obj->GetComponent<Mesh>()->ReleaseUploadBuffers();
 
 	OutputDebugStringA("Data cached created!!\n");
+}
+
+void TitleScene::InitializeSceneMonsters()
+{
 }
 
 void TitleScene::UpdateScene(const float deltaTime)

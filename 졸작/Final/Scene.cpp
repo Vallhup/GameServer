@@ -177,10 +177,7 @@ void Scene::CreateKnightPool()
 	}
 }
 
-shared_ptr<GameObject> Scene::CreateMonsterObject(
-	const wstring& meshPath,
-	shared_ptr<AnimationSet> (*animFactory)(),
-	bool twoSided)
+shared_ptr<GameObject> Scene::CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet> (*animFactory)(), bool twoSided)
 {
 	auto obj = make_shared<GameObject>();
 	obj->SetId(-1);
@@ -197,82 +194,31 @@ shared_ptr<GameObject> Scene::CreateMonsterObject(
 	return obj;
 }
 
-void Scene::CreateBossObject(const XMFLOAT3& position, int count)
+void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count)
 {
-	for (int i = 0; i < count; ++i)
+	struct MonsterDesc
 	{
-		auto boss = CreateMonsterObject(
-			L"../Assets/FBXModel/Boss/boss",
-			&AnimationSetFactory::CreateFinalBossSet,
-			false);
-		boss->GetComponent<Transform>()->SetInitPosition(position);
-		monsterPools[MonsterType::Boss].push_back(boss);
-		AddGameObject(boss);
-	}
-}
+		const wchar_t* meshPath;
+		shared_ptr<AnimationSet>(*animFactory)();
+		bool twoSided;
+	};
 
-void Scene::CreateImpObject(const XMFLOAT3& position, int count)
-{
-	for (int i = 0; i < count; ++i)
-	{
-		auto imp = CreateMonsterObject(
-			L"../Assets/FBXModel/Monster/Imp/monster_Imp",
-			&AnimationSetFactory::CreateImpSet);
-		imp->GetComponent<Transform>()->SetInitPosition(position);
-		monsterPools[MonsterType::Imp].push_back(imp);
-		AddGameObject(imp);
-	}
-}
+	static const unordered_map<MonsterType, MonsterDesc> descs = {
+		{ MonsterType::Boss, { L"../Assets/FBXModel/Boss/boss", &AnimationSetFactory::CreateFinalBossSet, false } },
+		{ MonsterType::Imp, { L"../Assets/FBXModel/Monster/Imp/monster_Imp", &AnimationSetFactory::CreateImpSet, true  } },
+		{ MonsterType::DemonStriker, { L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker", &AnimationSetFactory::CreateDemonStrikerSet, true  } },
+		{ MonsterType::DemonExecutioner, { L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner", &AnimationSetFactory::CreateDemonExecutionerSet, true  } },
+		{ MonsterType::BigDemonWarrior, { L"../Assets/FBXModel/Monster/BigDemonWarrior/monster_BigDemonWarrior",&AnimationSetFactory::CreateBigDemonWarriorSet, true  } },
+		{ MonsterType::Tank, { L"../Assets/FBXModel/Monster/Tank/monster_Tank", &AnimationSetFactory::CreateTankSet, true  } },
+	};
 
-void Scene::CreateDemonStrikerObject(const XMFLOAT3& position, int count)
-{
+	const auto& desc = descs.at(type);
 	for (int i = 0; i < count; ++i)
 	{
-		auto striker = CreateMonsterObject(
-			L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker",
-			&AnimationSetFactory::CreateDemonStrikerSet);
-		striker->GetComponent<Transform>()->SetInitPosition(position);
-		monsterPools[MonsterType::DemonStriker].push_back(striker);
-		AddGameObject(striker);
-	}
-}
-
-void Scene::CreateDemonExecutionerObject(const XMFLOAT3& position, int count)
-{
-	for (int i = 0; i < count; ++i)
-	{
-		auto executioner = CreateMonsterObject(
-			L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner",
-			&AnimationSetFactory::CreateDemonExecutionerSet);
-		executioner->GetComponent<Transform>()->SetInitPosition(position);
-		monsterPools[MonsterType::DemonExecutioner].push_back(executioner);
-		AddGameObject(executioner);
-	}
-}
-
-void Scene::CreateBigDemonWarriorObject(const XMFLOAT3& position, int count)
-{
-	for (int i = 0; i < count; ++i)
-	{
-		auto bigDemonWarrior = CreateMonsterObject(
-			L"../Assets/FBXModel/Monster/BigDemonWarrior/monster_BigDemonWarrior",
-			&AnimationSetFactory::CreateBigDemonWarriorSet);
-		bigDemonWarrior->GetComponent<Transform>()->SetInitPosition(position);
-		monsterPools[MonsterType::BigDemonWarrior].push_back(bigDemonWarrior);
-		AddGameObject(bigDemonWarrior);
-	}
-}
-
-void Scene::CreateTankObject(const XMFLOAT3& position, int count)
-{
-	for (int i = 0; i < count; ++i)
-	{
-		auto tank = CreateMonsterObject(
-			L"../Assets/FBXModel/Monster/Tank/monster_Tank",
-			&AnimationSetFactory::CreateTankSet);
-		tank->GetComponent<Transform>()->SetInitPosition(position);
-		monsterPools[MonsterType::Tank].push_back(tank);
-		AddGameObject(tank);
+		auto monster = CreateMonsterObject(desc.meshPath, desc.animFactory, desc.twoSided);
+		monster->GetComponent<Transform>()->SetInitPosition(position);
+		monsterPools[type].push_back(monster);
+		AddGameObject(monster);
 	}
 }
 

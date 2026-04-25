@@ -17,10 +17,6 @@ void SelectScene::Reset()
 	OutputDebugStringA("SelectScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-void SelectScene::InitializeSceneObjectPools()
-{
-}
-
 void SelectScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nSelectScene Data has been created!! \n");
@@ -65,6 +61,10 @@ void SelectScene::InitializeLogic()
 
 		OutputDebugStringA("Dragon created!!\n");
 	}
+}
+
+void SelectScene::InitializeSceneMonsters()
+{
 }
 
 void SelectScene::UpdateScene(const float deltaTime)

@@ -48,10 +48,6 @@ SceneSettings FirstBattleScene::GetSceneSettings() const
 	};
 }
 
-void FirstBattleScene::InitializeSceneObjectPools()
-{
-}
-
 void FirstBattleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nFirstBattleScene Data has been created!! \n");
@@ -94,16 +90,21 @@ void FirstBattleScene::InitializeLogic()
 	water->SetScale(1500.0f, 1.0f, 2546.25f);
 #pragma endregion
 
-	const XMFLOAT3 monsterSpawn = { 22.f, SampleHeightAt(22.f, 22.f), 22.f };
-	CreateImpObject(monsterSpawn, 5);
-	CreateDemonStrikerObject(monsterSpawn, 5);
-	CreateDemonExecutionerObject(monsterSpawn, 5);
-	CreateBigDemonWarriorObject(monsterSpawn, 1);
+	InitializeSceneMonsters();
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
 
 	OutputDebugStringA("FirstBattleScene initialized!\n");
+}
+
+void FirstBattleScene::InitializeSceneMonsters()
+{
+	const XMFLOAT3 monsterSpawn = { 22.f, SampleHeightAt(22.f, 22.f), 22.f };
+	CreateMonsters(MonsterType::Imp, monsterSpawn, 5);
+	CreateMonsters(MonsterType::DemonStriker, monsterSpawn, 5);
+	CreateMonsters(MonsterType::DemonExecutioner, monsterSpawn, 5);
+	CreateMonsters(MonsterType::BigDemonWarrior, monsterSpawn, 1);
 }
 
 void FirstBattleScene::UpdateScene(const float deltaTime)

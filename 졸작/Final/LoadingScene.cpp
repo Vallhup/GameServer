@@ -30,10 +30,6 @@ vector<shared_ptr<InstancingBatch>> LoadingScene::TakeBatches(SceneType type)
 	return {};
 }
 
-void LoadingScene::InitializeSceneObjectPools()
-{
-}
-
 void LoadingScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nLoadingScene Data has been created!! \n");
@@ -57,6 +53,10 @@ void LoadingScene::InitializeLogic()
 		LoadFinalBattleSceneResources();
 		break;
 	}
+}
+
+void LoadingScene::InitializeSceneMonsters()
+{
 }
 
 void LoadingScene::UpdateScene(const float deltaTime)

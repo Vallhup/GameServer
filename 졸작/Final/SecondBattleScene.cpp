@@ -48,10 +48,6 @@ SceneSettings SecondBattleScene::GetSceneSettings() const
 	};
 }
 
-void SecondBattleScene::InitializeSceneObjectPools()
-{
-}
-
 void SecondBattleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nSecondBattleScene Data has been created!! \n");
@@ -90,16 +86,21 @@ void SecondBattleScene::InitializeLogic()
 	water->SetColor(color);
 #pragma endregion
 
-	const XMFLOAT3 monsterSpawn = { 22.f, SampleHeightAt(22.f, 22.f), 22.f };
-	CreateImpObject(monsterSpawn, 5);
-	CreateDemonStrikerObject(monsterSpawn, 5);
-	CreateDemonExecutionerObject(monsterSpawn, 5);
-	CreateTankObject(monsterSpawn, 1);
+	InitializeSceneMonsters();
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
 
 	OutputDebugStringA("SecondBattleScene initialized!\n");
+}
+
+void SecondBattleScene::InitializeSceneMonsters()
+{
+	const XMFLOAT3 monsterSpawn = { 22.f, SampleHeightAt(22.f, 22.f), 22.f };
+	CreateMonsters(MonsterType::Imp, monsterSpawn, 5);
+	CreateMonsters(MonsterType::DemonStriker, monsterSpawn, 5);
+	CreateMonsters(MonsterType::DemonExecutioner, monsterSpawn, 5);
+	CreateMonsters(MonsterType::Tank, monsterSpawn, 1);
 }
 
 void SecondBattleScene::UpdateScene(const float deltaTime)
