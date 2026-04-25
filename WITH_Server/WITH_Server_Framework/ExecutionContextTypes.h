@@ -14,6 +14,7 @@ struct ExecutionGraphBuildPolicy;
 class WorldRuntime;
 class ExecutionSourceRegistry;
 class WorldExecutionModelRegistry;
+class ConflictRegistry;
 
 struct NodeScratch
 {
@@ -23,19 +24,24 @@ struct NodeScratch
 
 struct FrameBuildContext
 {
-    const WorldFrameSelectionSet* frameSelectionSet{ nullptr };
+    const WorldFrameSelectionSet*      frameSelectionSet{ nullptr };
     const WorldExecutionModelRegistry* executionModelRegistry{ nullptr };
-    const ExecutionSourceRegistry* executionSourceRegistry{ nullptr };
-    const ExecutionGraphBuildPolicy* buildPolicy{ nullptr };
+    const ExecutionSourceRegistry*     executionSourceRegistry{ nullptr };
+    const ExecutionGraphBuildPolicy*   buildPolicy{ nullptr };
+
+    // 사용자 정의 ResourceKind 충돌 정책 (optional).
+    // nullptr 이면 빌트인 5-rule 알고리즘(ConflictDetection.h)만 사용한다.
+    const ConflictRegistry*            conflictRegistry{ nullptr };
 
     [[nodiscard]]
     bool IsValid() const noexcept
     {
-        return 
+        return
             frameSelectionSet != nullptr &&
             executionModelRegistry != nullptr &&
             executionSourceRegistry != nullptr &&
             buildPolicy != nullptr;
+        // conflictRegistry는 optional이므로 유효성 검사에서 제외한다.
     }
 };
 

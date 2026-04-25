@@ -29,6 +29,12 @@ struct ExecutionGraphBuildPolicy
     bool deduplicateSamePhaseEdges              = true;
     bool allowCrossPhaseExplicitEdges           = true;
     bool materializeCrossPhaseRuntimeDeps       = false;
+
+    // Transitive Reduction [spec 5.3절 단계 5]:
+    // 중간 노드를 경유해도 도달 가능한 직접 엣지를 제거한다.
+    // 병렬 스케줄러의 false dependency를 줄여 동시 실행 기회를 최대화한다.
+    // 비용: O(Phase 노드 수²) — 수백 개 System 수준에서는 무시할 수 있다.
+    bool applyTransitiveReduction               = true;
     // bool deduplicateCrossPhaseEdges
 
     // 4. serial plan 정책
