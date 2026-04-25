@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "FrameworkRuntime.h"
 
+#include "AutoSystemBridge.h"
 #include "ExecutionGraphBuildPolicy.h"
 #include "ExecutionGraphBuilder.h"
 #include "ExecutionOps.h"
@@ -18,6 +19,7 @@
 #include "WorldInstanceRecord.h"
 #include "WorldManager.h"
 #include "WorldRegistry.h"
+#include "WorldRuntime.h"
 #include "WorldTransferRequest.h"
 #include "WorldTransferProfileRegistry.h"
 #include "WorldTransferService.h"
@@ -114,6 +116,7 @@ bool FrameworkRuntime::Initialize(const BootstrapParams& params)
 		_impl.reset();
 		return false;
 	}
+	_impl->taskExecutor.SetDiagnosticsConfig(_config.executorDiagnostics);
 
 	if (!BootstrapDefinitions(params))
 	{
@@ -183,6 +186,11 @@ bool FrameworkRuntime::RunFrame(const FrameParams& params, FrameResult& outResul
 	outResult.executed = schedulerResult.executed;
 	outResult.selectedWorldCount = schedulerResult.selectedWorldCount;
 	outResult.failureReason = schedulerResult.failureReason;
+	if (schedulerResult.executed)
+	{
+		outResult.executorDiagnostics =
+			_impl->taskExecutor.GetLastFrameDiagnostics();
+	}
 	FrameworkFrameEventHarvester::Harvest(
 		_impl->worldManager,
 		_impl->worldRegistry,
@@ -479,6 +487,28 @@ void FrameworkRuntime::CollectDestroyableWorlds()
 	}
 
 	_impl->worldManager.CollectDestroyable();
+}
+
+bool FrameworkRuntime::BindRuntimeSystems(
+	WorldRuntime& runtime,
+	SystemPhase systemPhase,
+	ExecPhase execPhase)
+{
+	if (!_impl)
+	{
+		return false;
+	}
+
+	AutoSystemBridge bridge;
+	const AutoSystemBridge::BridgeResult result =
+		bridge.BindRuntimeDispatch(
+			systemPhase,
+			execPhase,
+			runtime.GetSystemManager(),
+			_impl->executionSourceRegistry,
+			runtime);
+
+	return result.success;
 }
 
 WorldInstance* FrameworkRuntime::FindWorld(WorldId worldId)

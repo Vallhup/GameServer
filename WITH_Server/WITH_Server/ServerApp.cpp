@@ -14,6 +14,8 @@
 #include "ServerPathResolver.h"
 #include "ServerReplicationSnapshot.h"
 #include "ServerWorldTransferCommitter.h"
+#include "AIBehaviorDef.h"
+#include "CharacterDef.h"
 #include "WorldInstanceRecord.h"
 
 namespace
@@ -53,7 +55,16 @@ namespace
 ServerApp::ServerApp(Config config)
 	: _config(config)
 	, _framework(FrameworkRuntime::Config{
-		.executorWorkerCount = _config.executorWorkerCount
+		.executorWorkerCount = _config.executorWorkerCount,
+		.executorDiagnostics = TaskExecutorDiagnosticsConfig{
+			.enabled = true,
+			.collectNodeTimings = true,
+			.logFrameSummary = true,
+			.writeCsv = true,
+			.sampleEveryNFrames = 60,
+			.summaryCsvPath = "Log/WITH_Server_ExecPerfSummary.csv",
+			.nodeCsvPath = "Log/WITH_Server_ExecPerfNodes.csv"
+		}
 	})
 	, _network(NetworkRuntime::Config{
 		.workerThreadCount = _config.networkThreadCount,
@@ -426,6 +437,38 @@ bool ServerApp::InitializeNetworkRuntime()
 bool ServerApp::InitializeGameplayContent()
 {
 	_animationRegistry.Clear();
+
+	const std::filesystem::path characterRoot =
+		ServerPathResolver::GetDefaultCharacterDefRoot();
+	const CharacterDefLoadResult characterLoadResult =
+		LoadCharacterDefsFromJsonDirectory(characterRoot);
+	if (!characterLoadResult.succeeded)
+	{
+		std::cout << "[ServerApp] Character defs load failed."
+			<< " root=" << characterRoot.string()
+			<< " error=" << characterLoadResult.error << "\n";
+		return false;
+	}
+
+	std::cout << "[ServerApp] Character defs loaded."
+		<< " root=" << characterRoot.string()
+		<< " count=" << characterLoadResult.loadedCount << "\n";
+
+	const std::filesystem::path aiBehaviorRoot =
+		ServerPathResolver::GetDefaultAIBehaviorDefRoot();
+	const AIBehaviorDefLoadResult aiBehaviorLoadResult =
+		LoadAIBehaviorProfileDefsFromJsonDirectory(aiBehaviorRoot);
+	if (!aiBehaviorLoadResult.succeeded)
+	{
+		std::cout << "[ServerApp] AI behavior def load failed."
+			<< " root=" << aiBehaviorRoot.string()
+			<< " error=" << aiBehaviorLoadResult.error << "\n";
+		return false;
+	}
+
+	std::cout << "[ServerApp] AI behavior defs loaded."
+		<< " root=" << aiBehaviorRoot.string()
+		<< " count=" << aiBehaviorLoadResult.loadedCount << "\n";
 
 	const std::filesystem::path animationRoot =
 		ServerPathResolver::GetDefaultAnimationOutputRoot();

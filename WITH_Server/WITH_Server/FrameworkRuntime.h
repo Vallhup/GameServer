@@ -8,6 +8,7 @@
 #include "Entity.h"
 #include "NetIdRegistry.h"
 #include "Session.h"
+#include "TaskExecutorDiagnostics.h"
 #include "WorldId.h"
 #include "WorldContentIds.h"
 #include "WorldIds.h"
@@ -17,8 +18,11 @@
 class IWorldInstanceFactory;
 class IWorldDefinitionProvider;
 class IWorldTransferBinding;
+class WorldRuntime;
 class WorldInstance;
 struct WorldInstanceRecord;
+enum class SystemPhase : uint8_t;
+enum class ExecPhase : uint8_t;
 
 class FrameworkRuntime final {
 public:
@@ -26,6 +30,7 @@ public:
 	{
 		uint32_t executorWorkerCount{ 4 };
 		uint32_t maxSelectedWorldsPerFrame{ 0 };
+		TaskExecutorDiagnosticsConfig executorDiagnostics{};
 	};
 
 	struct BootstrapParams
@@ -77,6 +82,7 @@ public:
 		WorldSchedulerFailureReason failureReason{
 			WorldSchedulerFailureReason::None
 		};
+		TaskExecutorFrameDiagnostics executorDiagnostics;
 		FrameEvents events;
 	};
 
@@ -132,6 +138,11 @@ public:
 	bool InitializeWorld(WorldId worldId);
 	void RequestCloseWorld(WorldId worldId);
 	void CollectDestroyableWorlds();
+
+	bool BindRuntimeSystems(
+		WorldRuntime& runtime,
+		SystemPhase systemPhase,
+		ExecPhase execPhase);
 
 	WorldInstance* FindWorld(WorldId worldId);
 	const WorldInstance* FindWorld(WorldId worldId) const;
