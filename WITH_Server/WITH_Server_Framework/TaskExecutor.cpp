@@ -3,7 +3,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <chrono>
 #include <thread>
+#include <utility>
 
 #include "FrameworkLog.h"
 
@@ -95,6 +97,10 @@ bool TaskExecutor::ExecuteFrame(
 
     BindFrame(frameCtx, runtime, sourceRegistry);
     InitializeRuntimeForFrame();
+    _diagnostics.BeginFrame(
+        *frameCtx.graph,
+        _pool.WorkerCount(),
+        _diagnosticsFrameOrdinal++);
 
     SeedInitialSimulateNodes();
     NotifyAllWorkers();
@@ -116,10 +122,22 @@ bool TaskExecutor::ExecuteFrame(
     RunScopeSerialPhase(graph.reconcileScopePlan, ExecPhase::Reconcile);
     FinalizeScopeClosures();
 
+    _diagnostics.EndFrame(graph, sourceRegistry);
+
     UnbindFrame();
 
     FWLOG_DEBUG(kLogCategory, "ExecuteFrame complete");
     return true;
+}
+
+void TaskExecutor::SetDiagnosticsConfig(TaskExecutorDiagnosticsConfig config)
+{
+    _diagnostics.Configure(std::move(config));
+}
+
+const TaskExecutorFrameDiagnostics& TaskExecutor::GetLastFrameDiagnostics() const noexcept
+{
+    return _diagnostics.GetLastFrame();
 }
 
 bool TaskExecutor::WorkerPumpEntry(void* ctx)
@@ -176,6 +194,7 @@ void TaskExecutor::BindFrame(
     {
         std::lock_guard lock{ _readyMtx };
         _readyQueue.clear();
+        _mainThreadReadyQueue.clear();
     }
 
     _frameBound.store(true);
@@ -188,6 +207,7 @@ void TaskExecutor::UnbindFrame() noexcept
     {
         std::lock_guard lock{ _readyMtx };
         _readyQueue.clear();
+        _mainThreadReadyQueue.clear();
     }
 
     _binding = {};
@@ -314,7 +334,9 @@ void TaskExecutor::RunSerialPhase(
             TryTransitionNode(*nodeRt, ExecNodeState::NotReady, ExecNodeState::Running);
         assert(entered);
 
+        _diagnostics.BeginNode(node, nodeId);
         const ExecCallResult callResult = InvokeNode(node, nodeId);
+        _diagnostics.EndNode(node, nodeId, callResult);
 
         if (callResult == ExecCallResult::Success)
         {
@@ -406,16 +428,47 @@ void TaskExecutor::FinalizeScopeClosures() noexcept
     }
 }
 
+void TaskExecutor::DrainMainThreadQueue()
+{
+    while (true)
+    {
+        ExecNodeId nodeId = InvalidExecNodeId;
+
+        {
+            std::lock_guard lock{ _readyMtx };
+            if (_mainThreadReadyQueue.empty())
+                break;
+
+            nodeId = _mainThreadReadyQueue.front();
+            _mainThreadReadyQueue.pop_front();
+        }
+
+        ExecuteNode(nodeId);
+    }
+}
+
 void TaskExecutor::WaitForSimulateDone()
 {
     ExecRuntimeState& runtime = Runtime();
 
-    std::unique_lock lock{ _progressMtx };
-    _progressCv.wait(lock, 
-        [&]()
-        {
-            return runtime.signals.simulatePhaseDone.load();
-        });
+    while (!runtime.signals.simulatePhaseDone.load(std::memory_order_acquire))
+    {
+        // 메인 스레드 전용 노드를 먼저 소진한다.
+        DrainMainThreadQueue();
+
+        if (runtime.signals.simulatePhaseDone.load(std::memory_order_acquire))
+            break;
+
+        // 워커 진행 또는 500µs 타임아웃 후 재확인한다.
+        // 타임아웃은 MainThreadOnly 노드가 삽입됐을 때 즉시 반응하기 위함이다.
+        std::unique_lock lock{ _progressMtx };
+        _progressCv.wait_for(
+            lock, std::chrono::microseconds(500),
+            [&]() { return runtime.signals.simulatePhaseDone.load(); });
+    }
+
+    // simulatePhaseDone 직전에 삽입된 잔여 메인 스레드 노드를 정리한다.
+    DrainMainThreadQueue();
 }
 
 bool TaskExecutor::TryDequeueReadyNode(ExecNodeId& outNodeId)
@@ -462,7 +515,24 @@ void TaskExecutor::DispatchNode(ExecNodeId nodeId)
         return;
     }
 
-    EnqueueReadyNode(nodeId);
+    // MainThreadOnly 노드는 전용 큐에 삽입하고 메인 스레드를 깨운다.
+    // 워커 스레드가 이 큐에 접근하는 경로는 없다.
+    const FrameTaskGraph& graph = Graph();
+    assert(graph.IsValidNodeId(nodeId));
+    const ExecNodeRecord& node = graph.nodes[nodeId];
+
+    if (HasAnyNodeFlag(node.flags, ExecNodeFlag_MainThreadOnly))
+    {
+        {
+            std::lock_guard lock{ _readyMtx };
+            _mainThreadReadyQueue.push_back(nodeId);
+        }
+        NotifyProgress();
+    }
+    else
+    {
+        EnqueueReadyNode(nodeId);
+    }
 }
 
 void TaskExecutor::ExecuteNode(ExecNodeId nodeId)
@@ -503,7 +573,9 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId)
         TryTransitionNode(*nodeRt, ExecNodeState::Queued, ExecNodeState::Running);
     assert(canRun);
 
+    _diagnostics.BeginNode(node, nodeId);
     const ExecCallResult callResult = InvokeNode(node, nodeId);
+    _diagnostics.EndNode(node, nodeId, callResult);
 
     if (callResult == ExecCallResult::Success)
     {
@@ -677,7 +749,47 @@ void TaskExecutor::CompleteNodeTerminal(
 
     if (prevScope == 1)
     {
-        scopeRt->closeCandidate.store(true);
+        // 명세 4.5 경로 1:
+        // Simulate Phase 노드의 마지막 완료 시 스코프를 인라인으로 Closed까지 전환한다.
+        // Open 또는 CancelRequested → Draining → Closed (2-step CAS).
+        // 이 경로는 Phase 1에서는 비동기 Suspend 노드가 없으므로
+        // Draining은 순간 경유 상태이며 즉시 Closed로 진입한다.
+        //
+        // 직렬 Phase(Commit/LifecycleFlush/Reconcile)는 단일 스레드에서 실행하므로
+        // closeCandidate 마킹 후 FinalizeScopeClosures에서 처리한다.
+        if (node.phase == ExecPhase::Simulate)
+        {
+            ExecScopePhase current = scopeRt->phase.load(std::memory_order_acquire);
+
+            // Step 1: Open / CancelRequested → Draining
+            while (current != ExecScopePhase::Draining &&
+                   current != ExecScopePhase::Closed)
+            {
+                if (scopeRt->phase.compare_exchange_strong(
+                        current, ExecScopePhase::Draining,
+                        std::memory_order_acq_rel,
+                        std::memory_order_acquire))
+                {
+                    current = ExecScopePhase::Draining;
+                    break;
+                }
+            }
+
+            // Step 2: Draining → Closed
+            if (current == ExecScopePhase::Draining)
+            {
+                ExecScopePhase draining = ExecScopePhase::Draining;
+                scopeRt->phase.compare_exchange_strong(
+                    draining, ExecScopePhase::Closed,
+                    std::memory_order_acq_rel,
+                    std::memory_order_acquire);
+            }
+        }
+        else
+        {
+            // 직렬 Phase: FinalizeScopeClosures가 처리한다.
+            scopeRt->closeCandidate.store(true, std::memory_order_release);
+        }
     }
 
     if (node.phase == ExecPhase::Simulate)
@@ -688,7 +800,7 @@ void TaskExecutor::CompleteNodeTerminal(
 
         if (prevSim == 1)
         {
-            runtime.signals.simulatePhaseDone.store(true);
+            runtime.signals.simulatePhaseDone.store(true, std::memory_order_release);
         }
     }
 

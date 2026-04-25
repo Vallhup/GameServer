@@ -10,6 +10,7 @@
 #include "ExecutionContextTypes.h"
 #include "ExecutionRuntimeTypes.h"
 #include "ExecutionSourceTypes.h"
+#include "TaskExecutorDiagnostics.h"
 #include "ThreadPool.h"
 
 class TaskExecutor final {
@@ -37,6 +38,11 @@ public:
         ExecRuntimeState& runtime,
         const ExecutionSourceRegistry& sourceRegistry
     );
+
+    void SetDiagnosticsConfig(TaskExecutorDiagnosticsConfig config);
+
+    [[nodiscard]]
+    const TaskExecutorFrameDiagnostics& GetLastFrameDiagnostics() const noexcept;
 
 private:
     struct FrameBinding
@@ -83,6 +89,10 @@ private:
     void FinalizeScopeClosures() noexcept;
 
     void WaitForSimulateDone();
+
+    // 메인 스레드 전용 큐에 있는 노드를 모두 실행한다.
+    // WaitForSimulateDone 루프 내부와 그 직후에 호출된다.
+    void DrainMainThreadQueue();
 
     [[nodiscard]]
     bool TryDequeueReadyNode(ExecNodeId& outNodeId);
@@ -153,11 +163,15 @@ private:
 private:
     ThreadPool _pool;
     std::atomic<bool> _initialized{ false };
+    TaskExecutorDiagnosticsRecorder _diagnostics;
+    uint64_t _diagnosticsFrameOrdinal{ 0 };
 
     FrameBinding _binding{};
 
+    // _readyMtx 하나로 두 큐를 보호한다.
     std::mutex _readyMtx;
-    std::deque<ExecNodeId> _readyQueue;
+    std::deque<ExecNodeId> _readyQueue;           // 워커 스레드 소비
+    std::deque<ExecNodeId> _mainThreadReadyQueue; // 메인 스레드 전용 소비
 
     std::mutex _progressMtx;
     std::condition_variable _progressCv;
