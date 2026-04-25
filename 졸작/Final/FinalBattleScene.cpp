@@ -58,16 +58,16 @@ void FinalBattleScene::InitializeLogic()
 	CreateBossCharacter();
 	// ----------------------------------
 
-	if (myPlayer)
-	{
-		myPlayer->SetAsLocalPlayer(cam.get());
-		activeCharacters[myPlayer->GetId()] = myPlayer;
-		AddGameObject(myPlayer);
+	InitializeSceneEnvironments();
 
-		IMGUI.SetMyPlayer(myPlayer.get());
-		OutputDebugStringA("FinalBattle: MyPlayer loaded from shared!\n");
-	}
+	coreRef->FlushCommandQueue();
+	coreRef->ResetCommandQueue();
 
+	OutputDebugStringA("FinalBattleScene initialized!\n");
+}
+
+void FinalBattleScene::InitializeSceneEnvironments()
+{
 	skyBox = make_shared<SkyBox>();
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"skybox3");
 	IMGUI.SetSkyBox(skyBox.get());
@@ -75,9 +75,6 @@ void FinalBattleScene::InitializeLogic()
 	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
 	coreRef->GetShadowMgr()->SetSkyBox(skyBox.get());
 	coreRef->GetLightMgr()->UpdateLights();
-
-	coreRef->FlushCommandQueue();
-	coreRef->ResetCommandQueue();
 
 	const XMFLOAT3 candlePositions[] = { {2.824002f, 3.450002f, -57.236343f}, {7.456354f, 3.450002f, -45.545242f}, {6.765375f, 2.900002f, -39.137711f},
 		{6.805631f, 2.300002f, -31.051842f}, {7.515741f, 3.450002f, -1.208803f}, {-7.392492f, 3.450002f, -0.762147f}, {-6.920892f, 2.300002f, -31.079567f},
@@ -91,8 +88,6 @@ void FinalBattleScene::InitializeLogic()
 	for (auto& pos : candlePositions)
 		flame->Spawn(pos);
 	AddGameObject(flameObject);
-
-	OutputDebugStringA("FinalBattleScene initialized!\n");
 }
 
 void FinalBattleScene::InitializeSceneMonsters()

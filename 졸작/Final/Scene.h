@@ -44,6 +44,7 @@ public:
 
 protected:
 	virtual void InitializeLogic() = 0;
+	virtual void InitializeSceneEnvironments() = 0;
 	virtual void InitializeSceneMonsters() = 0;
 	virtual void UpdateScene(const float deltaTime) = 0;
 	virtual void RenderSceneDeferred() = 0;

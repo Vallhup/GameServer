@@ -63,18 +63,7 @@ void PlazaScene::InitializeLogic()
 	CreateNextTwoCharacters();
 	// ----------------------------------
 
-	skyBox = make_shared<SkyBox>();
-	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"skybox");
-	IMGUI.SetSkyBox(skyBox.get());
-	IMGUI.SetCamera(GetCamera());
-	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
-	coreRef->GetShadowMgr()->SetSkyBox(skyBox.get());
-	coreRef->GetLightMgr()->UpdateLights();
-
-#pragma region Initialize Plaza Terrain
-	terrain = make_shared<Terrain>();
-	terrain->Initialize(*coreRef, L"PlazaMap/textures/plazaFloor", L"../Assets/FBXModel/PlazaMap/plazaTerrain.raw", 513, 1016.0f, 27.01563f, 1.0f);
-#pragma endregion
+	InitializeSceneEnvironments();
 
 	CreateEffectSamples();
 
@@ -97,6 +86,22 @@ void PlazaScene::InitializeLogic()
 	}
 
 	OutputDebugStringA("CSLoginPacket has sent!!\n");
+}
+
+void PlazaScene::InitializeSceneEnvironments()
+{
+	skyBox = make_shared<SkyBox>();
+	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"skybox");
+	IMGUI.SetSkyBox(skyBox.get());
+	IMGUI.SetCamera(GetCamera());
+	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetShadowMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetLightMgr()->UpdateLights();
+
+#pragma region Initialize Plaza Terrain
+	terrain = make_shared<Terrain>();
+	terrain->Initialize(*coreRef, L"PlazaMap/textures/plazaFloor", L"../Assets/FBXModel/PlazaMap/plazaTerrain.raw", 513, 1016.0f, 27.01563f, 1.0f);
+#pragma endregion
 }
 
 void PlazaScene::InitializeSceneMonsters()

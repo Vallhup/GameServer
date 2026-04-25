@@ -63,6 +63,10 @@ void SelectScene::InitializeLogic()
 	}
 }
 
+void SelectScene::InitializeSceneEnvironments()
+{
+}
+
 void SelectScene::InitializeSceneMonsters()
 {
 }

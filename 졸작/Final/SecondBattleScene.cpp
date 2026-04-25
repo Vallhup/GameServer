@@ -54,16 +54,17 @@ void SecondBattleScene::InitializeLogic()
 
 	CreateKnightPool();
 
-	if (myPlayer)
-	{
-		myPlayer->SetAsLocalPlayer(cam.get());
-		activeCharacters[myPlayer->GetId()] = myPlayer;
-		AddGameObject(myPlayer);
+	InitializeSceneEnvironments();
+	InitializeSceneMonsters();
 
-		IMGUI.SetMyPlayer(myPlayer.get());
-		OutputDebugStringA("SecondBattle: MyPlayer loaded from shared!\n");
-	}
+	coreRef->FlushCommandQueue();
+	coreRef->ResetCommandQueue();
 
+	OutputDebugStringA("SecondBattleScene initialized!\n");
+}
+
+void SecondBattleScene::InitializeSceneEnvironments()
+{
 	skyBox = make_shared<SkyBox>();
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"skybox2");
 	IMGUI.SetSkyBox(skyBox.get());
@@ -85,13 +86,6 @@ void SecondBattleScene::InitializeLogic()
 	XMFLOAT4 color = { 0.0f, 0.6f, 0.85f, 0.7f };
 	water->SetColor(color);
 #pragma endregion
-
-	InitializeSceneMonsters();
-
-	coreRef->FlushCommandQueue();
-	coreRef->ResetCommandQueue();
-
-	OutputDebugStringA("SecondBattleScene initialized!\n");
 }
 
 void SecondBattleScene::InitializeSceneMonsters()

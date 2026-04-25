@@ -67,6 +67,10 @@ void TitleScene::InitializeLogic()
 	OutputDebugStringA("Data cached created!!\n");
 }
 
+void TitleScene::InitializeSceneEnvironments()
+{
+}
+
 void TitleScene::InitializeSceneMonsters()
 {
 }

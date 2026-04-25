@@ -55,6 +55,10 @@ void LoadingScene::InitializeLogic()
 	}
 }
 
+void LoadingScene::InitializeSceneEnvironments()
+{
+}
+
 void LoadingScene::InitializeSceneMonsters()
 {
 }
