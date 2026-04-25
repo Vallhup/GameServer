@@ -147,7 +147,7 @@ void DX12Core::ForwardPass()
 
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootSignature(GetRootSig()->Get());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
-	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(4, lightMgr->GetForwardLightCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootShaderResourceView(25, lightMgr->GetDeferredLightSB()->GetGPUVirtualAddress());
 
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(22, GetVolumetricFogCB()->GetGPUVirtualAddress());
@@ -512,7 +512,7 @@ void DX12Core::FogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 	deviceCtx->GetGraphicsCmdList()->SetPipelineState(shader->GetPSO(PSOType::VolumetricFogPass));
 
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
-	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(4, lightMgr->GetForwardLightCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootShaderResourceView(25, lightMgr->GetDeferredLightSB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(22, GetVolumetricFogCB()->GetGPUVirtualAddress());
 
@@ -534,6 +534,43 @@ void DX12Core::FogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
 }
 
+void DX12Core::ClusterLightCullPass()
+{
+	auto* cmd = deviceCtx->GetGraphicsCmdList();
+
+	// 1. globalCounter 0 클리어 (자체 디스크립터 힙 set)
+	clusterLightMgr->ClearCounter(cmd);
+
+	// 2. compute pipeline + root signature
+	cmd->SetComputeRootSignature(GetRootSig()->Get());
+	cmd->SetPipelineState(shader->GetPSO(PSOType::ClusterLightCull));
+
+	// 3. root parameter 바인딩 (compute 슬롯)
+	cmd->SetComputeRootConstantBufferView(0, GetFrameCB()->GetGPUVirtualAddress());
+	cmd->SetComputeRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
+	cmd->SetComputeRootShaderResourceView(25, lightMgr->GetDeferredLightSB()->GetGPUVirtualAddress());
+	cmd->SetComputeRootConstantBufferView(26, clusterLightMgr->GetParamsCB()->GetGPUVirtualAddress());
+	cmd->SetComputeRootUnorderedAccessView(29, clusterLightMgr->GetLightIndexList()->GetGPUVirtualAddress());
+	cmd->SetComputeRootUnorderedAccessView(30, clusterLightMgr->GetLightGrid()->GetGPUVirtualAddress());
+	cmd->SetComputeRootUnorderedAccessView(31, clusterLightMgr->GetGlobalCounter()->GetGPUVirtualAddress());
+
+	// 4. dispatch — thread group 1개 = cluster 1개
+	cmd->Dispatch(ClusterLightManager::GRID_X, ClusterLightManager::GRID_Y, ClusterLightManager::GRID_Z);
+
+	// 5. UAV → SRV (LightingPass 의 PS read 준비)
+	D3D12_RESOURCE_BARRIER toSRV[] = {
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			clusterLightMgr->GetLightIndexList()->GetResource(),
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE),
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			clusterLightMgr->GetLightGrid()->GetResource(),
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE),
+	};
+	cmd->ResourceBarrier(_countof(toSRV), toSRV);
+}
+
 void DX12Core::LightingPass()
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = rtMgr->GetHDRSceneRTV();
@@ -547,6 +584,11 @@ void DX12Core::LightingPass()
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(3, lightMgr->GetDeferredLightCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootShaderResourceView(25, lightMgr->GetDeferredLightSB()->GetGPUVirtualAddress());
+
+	// Clustered Shading — PS lookup
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(26, clusterLightMgr->GetParamsCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootShaderResourceView(27, clusterLightMgr->GetLightIndexList()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootShaderResourceView(28, clusterLightMgr->GetLightGrid()->GetGPUVirtualAddress());
 
 	if (auto* sky = lightMgr->GetSkyBox())
 		deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(20, sky->GetCBAddress());
@@ -591,6 +633,19 @@ void DX12Core::RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
 
 void DX12Core::RenderEnd()
 {
+	// cluster UAV 복원 (다음 프레임 cull dispatch 위해 SRV → UAV)
+	D3D12_RESOURCE_BARRIER clusterToUAV[] = {
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			clusterLightMgr->GetLightIndexList()->GetResource(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS),
+		CD3DX12_RESOURCE_BARRIER::Transition(
+			clusterLightMgr->GetLightGrid()->GetResource(),
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_UNORDERED_ACCESS),
+	};
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(_countof(clusterToUAV), clusterToUAV);
+
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
 		swapChainMgr->GetCurrentBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET,

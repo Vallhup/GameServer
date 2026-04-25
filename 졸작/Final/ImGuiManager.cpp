@@ -183,21 +183,6 @@ void ImGuiManager::DrawDebugUI()
                 ImGui::SliderFloat("Intensity##Sun", &sun.intensity, 0.0f, 5.0f);
             }
 
-            if (ImGui::CollapsingHeader("Main Directional 2", ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                ImGui::SliderFloat3("Direction##Dir2", &lts[1].position.x, -1.0f, 1.0f);
-                ImGui::ColorEdit3("Color##Dir2", &lts[1].color.x);
-                ImGui::SliderFloat("Intensity##Dir2", &lts[1].intensity, 0.0f, 2.0f);
-            }
-
-            if (ImGui::CollapsingHeader("Point Light 1", ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                ImGui::SliderFloat3("Position##Po1", &lts[2].position.x, -100.0f, 100.0f);
-                ImGui::SliderFloat("Range##Po1", &lts[2].range, 1.0f, 3000.0f);
-                ImGui::ColorEdit3("Color##Po1", &lts[2].color.x);
-                ImGui::SliderFloat("Intensity##Po1", &lts[2].intensity, 0.0f, 2.0f);
-            }
-
             coreRef->GetLightMgr()->UpdateLights();
         }
         ImGui::End();

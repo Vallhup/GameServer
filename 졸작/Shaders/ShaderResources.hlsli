@@ -65,13 +65,7 @@ cbuffer DeferredLightCB : register(b3)
     float3 deferredLightPadding;
 };
 
-cbuffer ForwardLightCB : register(b4)
-{
-    float3 lightDirection;
-    float forwardLightPadding;
-    float3 lightColor;
-    float lightIntensity;
-};
+// b4 reserved (legacy SunCB removed; sun is now lights[0] from t11)
 
 cbuffer ShadowFrameCB : register(b5)
 {
@@ -169,8 +163,6 @@ cbuffer ClusterParamsCB : register(b14)
     float clusterSliceScale;
     float clusterSliceBias;
     float clusterPad0;
-    float2 clusterScreenSize;
-    float2 clusterPad1;
 };
 
 //-------------------------------------------------------

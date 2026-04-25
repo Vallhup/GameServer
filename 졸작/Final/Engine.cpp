@@ -118,6 +118,8 @@ void Engine::Render()
     
     graphics->FogPass(viewport, scissorRect);
 
+    graphics->ClusterLightCullPass();
+
     graphics->LightingPass();
 
     graphics->ForwardPass();

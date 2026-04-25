@@ -41,12 +41,12 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
             N = ApplyNormalMap(input.normal, input.tangent, normalMap);
         
         float3 V = normalize(cameraPosition - input.worldPos);
-        float3 L = normalize(-lightDirection);
-        
-        float3 radiance = lightColor * lightIntensity;
-        
+        float3 L = normalize(-lights[0].position);
+
+        float3 radiance = lights[0].color * lights[0].intensity;
+
         float3 finalColor = CalculateCurrentPBR(N, V, L, baseColor.rgb, metallic, roughness, radiance);
-        
+
         float3 ambient = baseColor.rgb * 0.15;
         finalColor += ambient;
         
@@ -77,9 +77,9 @@ float4 PSMain(FORWARD_PS_IN input) : SV_Target
         N = normalize(mul(normalMap, float3x3(tangent, bitangent, N)));
         
         float3 V = normalize(cameraPosition - input.worldPos);
-        float3 L = normalize(-lightDirection);
-        float3 radiance = lightColor * lightIntensity;
-        
+        float3 L = normalize(-lights[0].position);
+        float3 radiance = lights[0].color * lights[0].intensity;
+
         float roughness = 0.05f; // 물 표면을 더 매끄럽게 해서 반사를 날카롭게 만듦
         float metallic = 0.2f;
         

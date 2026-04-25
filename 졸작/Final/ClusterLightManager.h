@@ -8,8 +8,6 @@ struct ClusterParamsConstants
 	float sliceScale;       // numSlices / log(far/near)
 	float sliceBias;        // -numSlices * log(near) / log(far/near)
 	float pad0;
-	XMFLOAT2 screenSize;
-	XMFLOAT2 pad1;
 };
 
 class ClusterLightManager

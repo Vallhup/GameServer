@@ -90,6 +90,7 @@ public:
 
 	void FogPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 
+	void ClusterLightCullPass();
 	void LightingPass();
 	void ForwardPass();
 

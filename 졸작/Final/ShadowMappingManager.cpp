@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ShadowMappingManager.h"
-#include "SkyBox.h"
+#include "LightManager.h"
 
 void ShadowMappingManager::Initialize(ID3D12Device* device)
 {
@@ -11,9 +11,10 @@ void ShadowMappingManager::Initialize(ID3D12Device* device)
 
 void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 {
-	if (skyBox)
+	if (lightMgr)
 	{
-		XMFLOAT3 dir = skyBox->GetSun().direction;
+		// lights[0] = sun (directional). position 필드가 direction 역할.
+		XMFLOAT3 dir = lightMgr->GetLights()[0].position;
 		csmLightDir = XMVector3Normalize(XMLoadFloat3(&dir));
 	}
 

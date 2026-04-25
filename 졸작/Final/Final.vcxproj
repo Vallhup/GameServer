@@ -382,6 +382,7 @@ exit 0</Command>
     <None Include="..\Shaders\BlitPS.hlsli" />
     <None Include="..\Shaders\BloomDownsamplePS.hlsli" />
     <None Include="..\Shaders\BloomUpsamplePS.hlsli" />
+    <None Include="..\Shaders\ClusterCullCS.hlsli" />
     <None Include="..\Shaders\EffectVS.hlsli" />
     <None Include="..\Shaders\FlamePS.hlsli" />
     <None Include="..\Shaders\Fog.hlsli" />

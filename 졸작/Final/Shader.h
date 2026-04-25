@@ -9,6 +9,7 @@ enum class PSOType {
 	GBufferWireframe,
 	Lighting,
 	Compute,
+	ClusterLightCull,
 	Shadow,
 	DebugLine,
 	Skybox,
@@ -29,6 +30,7 @@ enum class ShaderType {
 	GBufferVS, GBufferPS,
 	FullscreenVS, LightingPS,
 	AnimationCS,
+	ClusterLightCullCS,
 	ShadowVS, ShadowPS,
 	SkyboxVS, SkyboxPS,
 	SsaoPS, SsaoBlurPS,
@@ -54,7 +56,8 @@ private:
 	void InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeGBufferShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
-	void InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath);
+	void InitializeComputeAnimationShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath);
+	void InitializeClusterLightCullShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath);
 	void InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeDebugLinePSO(ID3D12Device* device, ID3D12RootSignature* rootSig);
 	void InitializeSkyboxShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);

@@ -70,7 +70,7 @@ void SecondBattleScene::InitializeSceneEnvironments()
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
 	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
-	coreRef->GetShadowMgr()->SetSkyBox(skyBox.get());
+	coreRef->GetShadowMgr()->SetLightMgr(coreRef->GetLightMgr());
 	coreRef->GetLightMgr()->UpdateLights();
 
 #pragma region Initialize Castle Terrain

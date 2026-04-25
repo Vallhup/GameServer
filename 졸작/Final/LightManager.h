@@ -16,13 +16,6 @@ struct DeferredLightConstants {
 	XMFLOAT3 padding;
 };
 
-struct ForwardLightConstants {
-	XMFLOAT3 direction;
-	float padding;
-	XMFLOAT3 color;
-	float intensity;
-};
-
 class LightManager
 {
 public:
@@ -30,16 +23,16 @@ public:
 
 	void Initialize(ID3D12Device* device);
 	void UpdateLights();
+
+	bool LoadFromFile(const wstring& path, int startSlot = 1);
 	void SetSkyBox(SkyBox* sky) { skyBox = sky; }
 	SkyBox* GetSkyBox() const { return skyBox; }
 
 	UploadBuffer* GetDeferredLightCB() const;
-	UploadBuffer* GetForwardLightCB() const;
 	UploadBuffer* GetDeferredLightSB() const;
 
 	// For Imgui
 	DeferredLightConstants& GetDeferredLightData() { return deferredLightData; }
-	ForwardLightConstants& GetForwardLightData() { return forwardLightData; }
 	LightData* GetLights() { return lights.data(); }
 
 private:
@@ -47,11 +40,9 @@ private:
 
 private:
 	DeferredLightConstants deferredLightData = {};
-	ForwardLightConstants forwardLightData = {};
-	std::vector<LightData> lights;
+	vector<LightData> lights;
 
 	unique_ptr<UploadBuffer> deferredLightCB;
-	unique_ptr<UploadBuffer> forwardLightCB;
 	unique_ptr<UploadBuffer> deferredLightSB;
 
 	SkyBox* skyBox = nullptr;

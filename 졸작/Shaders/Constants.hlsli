@@ -59,4 +59,12 @@ static const float GRASS_TILING = 150.0;
 static const float SLOPE_THRESHOLD = 0.65;
 static const float SLOPE_SMOOTH = 0.1;
 
+//-------------------------------------------------------
+// Clustered Constants
+//-------------------------------------------------------
+
+#define THREADS_PER_GROUP        64
+#define LIGHTS_PER_THREAD        4
+#define MAX_LIGHTS_PER_CLUSTER   128
+
 #endif

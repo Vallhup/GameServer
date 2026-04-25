@@ -68,8 +68,8 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
     float3 totalInScattering = float3(0.0, 0.0, 0.0);
     float transmittance = 1.0;
 
-    // 주 광원 방향 (b4 ForwardLightCB의 sun direction)
-    float3 lightDir = normalize(-lightDirection);
+    // 주 광원 방향 (lights[0] from DeferredLightSB t11 — directional 광원은 position 필드에 dir 저장)
+    float3 lightDir = normalize(-lights[0].position);
 
     // Ray Marching Loop
     [loop]

@@ -29,11 +29,13 @@ void ClusterLightManager::Initialize(ID3D12Device* device)
 	hr = device->CreateDescriptorHeap(&nonVisDesc, IID_PPV_ARGS(&clearHeapNonVisible));
 	MASSERT(SUCCEEDED(hr), "Failed to create cluster counter clear heap (non-visible)");
 
+	// ClearUnorderedAccessViewUint 는 structured buffer 에 호출 불가 → typed (R32_UINT) view 로 분리.
+	// Root binding 은 GPU virtual address 만 쓰므로 셰이더 측 RWStructuredBuffer<uint> 선언과 무관.
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.Format = DXGI_FORMAT_R32_UINT;
 	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
 	uavDesc.Buffer.NumElements = 1;
-	uavDesc.Buffer.StructureByteStride = sizeof(UINT);
+	uavDesc.Buffer.StructureByteStride = 0;
 	uavDesc.Buffer.CounterOffsetInBytes = 0;
 	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
 
@@ -56,9 +58,7 @@ void ClusterLightManager::UpdateParams(float zNear, float zFar, float screenW, f
 	paramsData.sliceScale = static_cast<float>(GRID_Z) / logRatio;
 	paramsData.sliceBias = -static_cast<float>(GRID_Z) * logf(zNear) / logRatio;
 
-	paramsData.screenSize = { screenW, screenH };
 	paramsData.pad0 = 0.0f;
-	paramsData.pad1 = { 0.0f, 0.0f };
 
 	paramsCB->CopyData(&paramsData, sizeof(ClusterParamsConstants));
 }

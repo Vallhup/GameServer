@@ -54,7 +54,7 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddCBV(1);              // [1]  b1 - ObjectCB
     AddCBV(2);              // [2]  b2 - AnimationParams
     AddCBV(3);              // [3]  b3 - DeferredLight
-    AddCBV(4);              // [4]  b4 - ForwardLight
+    AddCBV(4);              // [4]  b4 - reserved (legacy SunCB; sun moved to lights[0] via t11)
     AddCBV(5);              // [5]  b5 - ShadowFrameCB
 
     AddBindlessTable(1);    // [6]  t0, space1 - Bindless
