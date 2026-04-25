@@ -9,6 +9,15 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
+	const std::array<AccessSpec, 6> kAIPerceptionAccesses{
+		ReadSnapshot(ComponentRes<AIControlledTag>()),
+		ReadSnapshot(ComponentRes<WorldTransformComp>()),
+		ReadSnapshot(ComponentRes<AIPerceptionTuningComp>()),
+		ReadSnapshot(ComponentRes<SpawnTypeComp>()),
+		WriteImmediate(ComponentRes<AIBlackboardComp>()),
+		WriteImmediate(ComponentRes<AIPerceptionComp>()),
+	};
+
 	static double ClampDouble(double value, double minValue, double maxValue) noexcept
 	{
 		return std::clamp(value, minValue, maxValue);
@@ -48,7 +57,13 @@ namespace
 }
 
 const SystemMeta AIPerceptionSystem::kMeta =
-	MakeSystemMeta<AIPerceptionSystem>("AIPerceptionSystem");
+	SystemMeta{
+		SysTag<AIPerceptionSystem>(),
+		"AIPerceptionSystem",
+		kAIPerceptionAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void AIPerceptionSystem::Execute(SystemContext& ctx)
 {

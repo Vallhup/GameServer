@@ -6,9 +6,25 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 5> kComputeLocomotionMoveDeltaAccesses{
+		ReadSnapshot(ComponentRes<WorldTransformComp>()),
+		WriteImmediate(ComponentRes<LocomotionStateComp>()),
+		ReadSnapshot(ComponentRes<ActionStateComp>()),
+		ReadSnapshot(ComponentRes<AICommandFrameComp>()),
+		WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()),
+	};
+}
+
 const SystemMeta ComputeLocomotionMoveDeltaSystem::kMeta =
-	MakeSystemMeta<ComputeLocomotionMoveDeltaSystem>(
-		"ComputeLocomotionMoveDeltaSystem");
+	SystemMeta{
+		SysTag<ComputeLocomotionMoveDeltaSystem>(),
+		"ComputeLocomotionMoveDeltaSystem",
+		kComputeLocomotionMoveDeltaAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void ComputeLocomotionMoveDeltaSystem::Execute(SystemContext& ctx)
 {

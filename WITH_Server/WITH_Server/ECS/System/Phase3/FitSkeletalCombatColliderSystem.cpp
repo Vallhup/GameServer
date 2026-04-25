@@ -8,6 +8,12 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
+	const std::array<AccessSpec, 3> kFitSkeletalCombatColliderAccesses{
+		ReadSnapshot(ComponentRes<SampledAnimationPoseComp>()),
+		WriteImmediate(ComponentRes<SkeletalCombatColliderComp>()),
+		ReadSnapshot(ExternalRes<AnimationRegistry>()),
+	};
+
 	float GetAnimationUnitScale(const AnimationClipDef& clip) noexcept
 	{
 		if (clip.units == "cm")
@@ -38,8 +44,13 @@ namespace
 }
 
 const SystemMeta FitSkeletalCombatColliderSystem::kMeta =
-	MakeSystemMeta<FitSkeletalCombatColliderSystem>(
-		"FitSkeletalCombatColliderSystem");
+	SystemMeta{
+		SysTag<FitSkeletalCombatColliderSystem>(),
+		"FitSkeletalCombatColliderSystem",
+		kFitSkeletalCombatColliderAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 FitSkeletalCombatColliderSystem::FitSkeletalCombatColliderSystem(
 	const AnimationRegistry* animationRegistry)

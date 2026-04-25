@@ -5,9 +5,24 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 4> kAdvanceActionTimelineAccesses{
+		WriteImmediate(ComponentRes<ActionStateComp>()),
+		WriteImmediate(ComponentRes<ActionTimelineAdvanceComp>()),
+		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
+		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+	};
+}
+
 const SystemMeta AdvanceActionTimelineSystem::kMeta =
-	MakeSystemMeta<AdvanceActionTimelineSystem>(
-		"AdvanceActionTimelineSystem");
+	SystemMeta{
+		SysTag<AdvanceActionTimelineSystem>(),
+		"AdvanceActionTimelineSystem",
+		kAdvanceActionTimelineAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void AdvanceActionTimelineSystem::Execute(SystemContext& ctx)
 {

@@ -8,6 +8,14 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
+	const std::array<AccessSpec, 5> kComputeActionMoveDeltaAccesses{
+		ReadSnapshot(ComponentRes<ActionStateComp>()),
+		ReadSnapshot(ComponentRes<WorldTransformComp>()),
+		WriteImmediate(ComponentRes<ActionMoveDeltaComp>()),
+		WriteImmediate(ComponentRes<ActionMoveRuntimeComp>()),
+		ReadSnapshot(ComponentRes<ActionTimelineAdvanceComp>()),
+	};
+
 	void DirectionFromTransform(
 		const WorldTransformComp& transform,
 		float& outDirX, 
@@ -141,8 +149,13 @@ namespace
 }
 
 const SystemMeta ComputeActionMoveDeltaSystem::kMeta =
-	MakeSystemMeta<ComputeActionMoveDeltaSystem>(
-		"ComputeActionMoveDeltaSystem");
+	SystemMeta{
+		SysTag<ComputeActionMoveDeltaSystem>(),
+		"ComputeActionMoveDeltaSystem",
+		kComputeActionMoveDeltaAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void ComputeActionMoveDeltaSystem::Execute(SystemContext& ctx)
 {

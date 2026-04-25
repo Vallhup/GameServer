@@ -5,8 +5,22 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 2> kMarkTransferPendingAccesses{
+		WriteImmediate(ComponentRes<PendingWorldTransferComp>()),
+		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+	};
+}
+
 const SystemMeta MarkTransferPendingSystem::kMeta =
-	MakeSystemMeta<MarkTransferPendingSystem>("MarkTransferPendingSystem");
+	SystemMeta{
+		SysTag<MarkTransferPendingSystem>(),
+		"MarkTransferPendingSystem",
+		kMarkTransferPendingAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void MarkTransferPendingSystem::Execute(SystemContext& ctx)
 {

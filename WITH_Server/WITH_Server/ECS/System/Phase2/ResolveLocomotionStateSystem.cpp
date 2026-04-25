@@ -5,8 +5,26 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 6> kResolveLocomotionAccesses{
+		WriteImmediate(ComponentRes<LocomotionStateComp>()),
+		ReadSnapshot(ComponentRes<ActionStateComp>()),
+		ReadSnapshot(ComponentRes<ActorInputComp>()),
+		ReadSnapshot(ComponentRes<SpawnTypeComp>()),
+		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
+		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+	};
+}
+
 const SystemMeta ResolveLocomotionStateSystem::kMeta =
-	MakeSystemMeta<ResolveLocomotionStateSystem>("ResolveLocomotionStateSystem");
+	SystemMeta{
+		SysTag<ResolveLocomotionStateSystem>(),
+		"ResolveLocomotionStateSystem",
+		kResolveLocomotionAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void ResolveLocomotionStateSystem::Execute(SystemContext& ctx)
 {

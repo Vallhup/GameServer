@@ -5,9 +5,21 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 1> kFinalizePostCommitStateAccesses{
+		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
+	};
+}
+
 const SystemMeta FinalizePostCommitStateSystem::kMeta =
-	MakeSystemMeta<FinalizePostCommitStateSystem>(
-		"FinalizePostCommitStateSystem");
+	SystemMeta{
+		SysTag<FinalizePostCommitStateSystem>(),
+		"FinalizePostCommitStateSystem",
+		kFinalizePostCommitStateAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void FinalizePostCommitStateSystem::Execute(SystemContext& ctx)
 {

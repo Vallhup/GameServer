@@ -6,8 +6,31 @@
 using namespace GameplaySystemUtil;
 using namespace DirectX;
 
+namespace
+{
+	const std::array<AccessSpec, 11> kResolveCombatHitAccesses{
+		ReadSnapshot(ComponentRes<CombatColliderActivationComp>()),
+		ReadSnapshot(ComponentRes<ActionStateComp>()),
+		ReadSnapshot(ComponentRes<WorldTransformComp>()),
+		ReadSnapshot(ComponentRes<SkeletalCombatColliderComp>()),
+		WriteImmediate(ComponentRes<CombatHitDedupStateComp>()),
+		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
+		ReadSnapshot(ComponentRes<LocomotionStateComp>()),
+		ReadSnapshot(ComponentRes<SpawnTypeComp>()),
+		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
+		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+		ReadSnapshot(ExternalRes<ActionDef>()),
+	};
+}
+
 const SystemMeta ResolveCombatHitSystem::kMeta =
-	MakeSystemMeta<ResolveCombatHitSystem>("ResolveCombatHitSystem");
+	SystemMeta{
+		SysTag<ResolveCombatHitSystem>(),
+		"ResolveCombatHitSystem",
+		kResolveCombatHitAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 {

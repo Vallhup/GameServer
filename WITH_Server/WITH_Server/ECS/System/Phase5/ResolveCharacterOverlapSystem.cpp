@@ -9,6 +9,16 @@ namespace
 {
 	inline constexpr float kHeightEpsilon = 0.1f;
 
+	const std::array<AccessSpec, 7> kResolveCharacterOverlapAccesses{
+		WriteImmediate(ComponentRes<WorldTransformComp>()),
+		ReadSnapshot(ComponentRes<PreCollisionTransformComp>()),
+		ReadSnapshot(ComponentRes<BodyCollisionShapeComp>()),
+		WriteImmediate(ComponentRes<BodyCollisionResolveComp>()),
+		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
+		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+	};
+
 	struct OverlapEntry
 	{
 		Entity entity{ Entity::Null() };
@@ -78,8 +88,13 @@ namespace
 }
 
 const SystemMeta ResolveCharacterOverlapSystem::kMeta =
-	MakeSystemMeta<ResolveCharacterOverlapSystem>(
-		"ResolveCharacterOverlapSystem");
+	SystemMeta{
+		SysTag<ResolveCharacterOverlapSystem>(),
+		"ResolveCharacterOverlapSystem",
+		kResolveCharacterOverlapAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void ResolveCharacterOverlapSystem::Execute(SystemContext& ctx)
 {

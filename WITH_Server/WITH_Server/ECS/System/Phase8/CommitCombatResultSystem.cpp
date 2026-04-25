@@ -5,8 +5,31 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 9> kCommitCombatResultAccesses{
+		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
+		WriteImmediate(ComponentRes<CombatStatStateComp>()),
+		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+		WriteImmediate(ComponentRes<AIReactionComp>()),
+		WriteImmediate(ComponentRes<ActionInterruptQueueComp>()),
+		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
+		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+		WriteDeferred(CommandBufferRes()),
+		WriteDeferred(ComponentRes<PendingBuffApplyComp>()),
+	};
+}
+
 const SystemMeta CommitCombatResultSystem::kMeta =
-	MakeSystemMeta<CommitCombatResultSystem>("CommitCombatResultSystem");
+	SystemMeta{
+		SysTag<CommitCombatResultSystem>(),
+		"CommitCombatResultSystem",
+		kCommitCombatResultAccesses,
+		kNoDeps,
+		kNoDeps,
+		true,
+		false
+	};
 
 void CommitCombatResultSystem::Execute(SystemContext& ctx)
 {
