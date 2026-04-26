@@ -896,13 +896,15 @@ namespace
 }
 
 void RunTaskExecutorPerfDiagnostics();
+void RunLFWSDequeBenchmark();
 
 int main()
 {
     try
     {
-        RunPhase1AutoSystemBridgeSmokeTest();
-        RunTaskExecutorPerfDiagnostics();
+       // RunPhase1AutoSystemBridgeSmokeTest();
+       // RunTaskExecutorPerfDiagnostics();
+        RunLFWSDequeBenchmark();
         return 0;
     }
     catch (const std::exception& ex)
