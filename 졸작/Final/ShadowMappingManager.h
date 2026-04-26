@@ -1,6 +1,6 @@
 #pragma once
 
-class SkyBox;
+class LightManager;
 
 struct CascadeShadowConstants
 {
@@ -13,7 +13,7 @@ class ShadowMappingManager
 public:
 	void Initialize(ID3D12Device* device);
 	void UpdateCascadeShadow(const XMFLOAT3& center);
-	void SetSkyBox(SkyBox* sky) { skyBox = sky; }
+	void SetLightMgr(LightManager* lm) { lightMgr = lm; }
 
 	ID3D12Resource* GetCsmResource() const { return csmTexture.Get(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCsmDSV(int index) const { return csmDSVHandle[index]; }
@@ -40,5 +40,5 @@ private:
 	CascadeShadowConstants csmConstants;
 	XMVECTOR csmLightDir;
 
-	SkyBox* skyBox = nullptr;
+	LightManager* lightMgr = nullptr;
 };

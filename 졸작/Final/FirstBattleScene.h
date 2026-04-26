@@ -13,16 +13,15 @@ public:
 	FirstBattleScene& operator=(const FirstBattleScene&) = delete;
 	~FirstBattleScene() = default;
 
-	shared_ptr<MainCharacter> GetAvailableKnight() const;
-
 	void Release() override;
 	void Reset() override;
 
 	SceneSettings GetSceneSettings() const override;
 
 protected:
-	void InitializeSceneObjectPools() override;
 	void InitializeLogic() override;
+	void InitializeSceneEnvironments() override;
+	void InitializeSceneMonsters() override;
 	void UpdateScene(const float deltaTime) override;
 	void RenderSceneDeferred() override;
 	void RenderSceneForward() override;
@@ -31,7 +30,6 @@ protected:
 	void RequestSceneChange() override;
 
 private:
-	void CreateKnightPool();
 	float SampleHeightAt(float worldX, float worldZ) const;
 
 	// Network Handler Function Override
@@ -43,13 +41,6 @@ private:
 	void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat) override;
 
 private:
-	vector<shared_ptr<MainCharacter>> knightPool;
-	static constexpr int MAX_KNIGHT_COUNT = 10;
-
-	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
-
-	shared_ptr<MainCharacter> myPlayer;
-
 	shared_ptr<SkyBox> skyBox;
 	shared_ptr<Terrain> terrain;
 	shared_ptr<Terrain> oceanFloor;

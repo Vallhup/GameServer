@@ -4,15 +4,6 @@ struct SceneLightSettings {
     XMFLOAT3 sunDirection = { -0.43f, -0.62f, -0.58f };
     XMFLOAT3 sunColor = { 1.0f, 1.0f, 1.0f };
     float    sunIntensity = 1.0f;
-
-    XMFLOAT3 dir2Direction = { 0.0f, 0.0f, 1.0f };
-    XMFLOAT3 dir2Color = { 1.0f, 1.0f, 1.0f };
-    float    dir2Intensity = 0.0f;
-
-    XMFLOAT3 pointPosition = { 481.f, 25.f, 482.0f };
-    float    pointRange = 50.0f;
-    XMFLOAT3 pointColor = { 1.0f, 1.0f, 1.0f };
-    float    pointIntensity = 0.0f;
 };
 
 struct SceneLUTSettings {

@@ -12,10 +12,6 @@ void TitleScene::Reset()
 	OutputDebugStringA("TitleScene Data has been deleted!! \n----------------------------------------\n");
 }
 
-void TitleScene::InitializeSceneObjectPools()
-{
-}
-
 void TitleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nTitleScene Data has been created!! \n");
@@ -35,48 +31,48 @@ void TitleScene::InitializeLogic()
 		Material::RegisterCubeMap(device, cmdList, base + L"_radiance.dds");
 	}
 	Material::RegisterTexture(device, cmdList, L"../Assets/Skybox/brdf_lut.png");
+	Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/rdiffuse.png");
+	Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/rnormal.png");
+	Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/grass.png");
+	Material::RegisterTexture(device, cmdList, L"../Assets/FBXModel/CastleMap/textures/terrainTexture.png");
 
-	auto knight = make_shared<GameObject>();
-	auto mesh = knight->AddComponent<Mesh>();
-	mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+	const wchar_t* paths[] = {
+	  L"../Assets/FBXModel/Knight/knight6",
+	  L"../Assets/FBXModel/Lancer/lancer",
+	  L"../Assets/FBXModel/Paladin/paladin",
+	  L"../Assets/FBXModel/Boss/boss",
+	  L"../Assets/FBXModel/Monster/Imp/monster_Imp",
+	  L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker",
+	  L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner",
+	  L"../Assets/FBXModel/Monster/BigDemonWarrior/monster_BigDemonWarrior",
+	  L"../Assets/FBXModel/Monster/Tank/monster_Tank",
+	};
 
-	auto lancer = make_shared<GameObject>();
-	auto mesh1 = lancer->AddComponent<Mesh>();
-	mesh1->SetMesh(*coreRef, L"../Assets/FBXModel/Lancer/lancer");
+	vector<shared_ptr<GameObject>> objs;
+	objs.reserve(_countof(paths));
 
-	auto paladin = make_shared<GameObject>();
-	auto mesh2 = paladin->AddComponent<Mesh>();
-	mesh2->SetMesh(*coreRef, L"../Assets/FBXModel/Paladin/paladin");
-
-	auto boss = make_shared<GameObject>();
-	auto mesh3 = boss->AddComponent<Mesh>();
-	mesh3->SetMesh(*coreRef, L"../Assets/FBXModel/Boss/boss");
-
-	auto imp = make_shared<GameObject>();
-	auto mesh4 = imp->AddComponent<Mesh>();
-	mesh4->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/Imp/monster_Imp");
-
-	auto demonStriker = make_shared<GameObject>();
-	auto mesh5 = demonStriker->AddComponent<Mesh>();
-	mesh5->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker");
-
-	auto demonExecutioner = make_shared<GameObject>();
-	auto mesh6 = demonExecutioner->AddComponent<Mesh>();
-	mesh6->SetMesh(*coreRef, L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner");	
+	for (auto p : paths) {
+		auto obj = make_shared<GameObject>();
+		auto m = obj->AddComponent<Mesh>();
+		m->SetMesh(*coreRef, p);
+		objs.push_back(obj);
+	}
 
 	coreRef->FlushCommandQueue();
 	coreRef->ResetCommandQueue();
 
-	mesh->ReleaseUploadBuffers();
-	mesh1->ReleaseUploadBuffers();
-	mesh2->ReleaseUploadBuffers();
-	mesh3->ReleaseUploadBuffers();
-	mesh4->ReleaseUploadBuffers();
-	mesh5->ReleaseUploadBuffers();
-	mesh6->ReleaseUploadBuffers();
+	for (auto& obj : objs)
+		obj->GetComponent<Mesh>()->ReleaseUploadBuffers();
 
 	OutputDebugStringA("Data cached created!!\n");
-	
+}
+
+void TitleScene::InitializeSceneEnvironments()
+{
+}
+
+void TitleScene::InitializeSceneMonsters()
+{
 }
 
 void TitleScene::UpdateScene(const float deltaTime)

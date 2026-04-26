@@ -49,29 +49,23 @@ cbuffer AnimationParams : register(b2)
     float animationPadding;
 };
 
+struct LightData
+{
+    float3 position;
+    float range;
+    float3 color;
+    float intensity;
+    int type;
+    float3 lightPadding;
+};
+
 cbuffer DeferredLightCB : register(b3)
 {
     int lightCount;
     float3 deferredLightPadding;
-    
-    struct LightData
-    {
-        float3 position;
-        float range;
-        float3 color;
-        float intensity;
-        int type;
-        float3 lightPadding;
-    } lights[23];
 };
 
-cbuffer ForwardLightCB : register(b4)
-{
-    float3 lightDirection;
-    float forwardLightPadding;
-    float3 lightColor;
-    float lightIntensity;
-};
+// b4 reserved (legacy SunCB removed; sun is now lights[0] from t11)
 
 cbuffer ShadowFrameCB : register(b5)
 {
@@ -161,6 +155,16 @@ cbuffer BloomCB : register(b13)
     uint bloomIsFirstPass;
 };
 
+cbuffer ClusterParamsCB : register(b14)
+{
+    uint3 clusterGridDims;
+    float clusterZNear;
+    float clusterZFar;
+    float clusterSliceScale;
+    float clusterSliceBias;
+    float clusterPad0;
+};
+
 //-------------------------------------------------------
 // VARIOUS TYPES OF SHADER RESOURCES
 //-------------------------------------------------------
@@ -184,6 +188,17 @@ Texture2DArray shadowMapArray : register(t8);
 Texture2D ssaoTexture : register(t9);
 Texture2D fogTexture : register(t10);
 
+StructuredBuffer<LightData> lights : register(t11);
+
+// Clustered Shading — PS read view
+StructuredBuffer<uint>  clusterLightIndices : register(t12);
+StructuredBuffer<uint2> clusterLightGrid    : register(t13);
+
+// Clustered Shading — CS write view (same resources as t12/t13/counter)
+RWStructuredBuffer<uint>  clusterLightIndicesRW : register(u1);
+RWStructuredBuffer<uint2> clusterLightGridRW    : register(u2);
+RWStructuredBuffer<uint>  clusterCounterRW      : register(u3);
+
 TextureCube bindlessCubeMaps[] : register(t0, space3);
 
 Texture2D ssaoNormal : register(t0, space4);
@@ -201,11 +216,5 @@ SamplerState linearSampler : register(s0);
 SamplerState pointSampler : register(s1);
 SamplerState linearClampSampler : register(s2);
 SamplerComparisonState shadowCmpSampler : register(s3);
-
-//-------------------------------------------------------
-// INDEXES
-//-------------------------------------------------------
-
-static const uint BRDF_LUT_INDEX = 0;
 
 #endif

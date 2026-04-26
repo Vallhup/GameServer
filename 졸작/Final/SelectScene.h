@@ -13,8 +13,9 @@ public:
 	void Reset() override;
 
 protected:
-	void InitializeSceneObjectPools() override;
 	void InitializeLogic() override;
+	void InitializeSceneEnvironments() override;
+	void InitializeSceneMonsters() override;
 	void UpdateScene(const float deltaTime) override;
 	void RenderSceneDeferred() override;
 	void RenderSceneForward() override;
@@ -24,6 +25,6 @@ protected:
 
 private:
 	vector<shared_ptr<GameObject>> gameObjects;
-	shared_ptr<MainCharacter> demonStriker;
-	shared_ptr<GameObject> imp;
+	shared_ptr<MainCharacter> bigDemonWarrior;
+	shared_ptr<GameObject> tank;
 };

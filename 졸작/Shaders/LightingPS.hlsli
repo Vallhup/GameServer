@@ -3,6 +3,12 @@
 #include "PBR.hlsli"
 #include "Fog.hlsli"
 
+// D3D12 standard projection (LH, NDC z 0~1) 의 ndcZ → viewZ 역산
+float LinearizeDepth(float ndcZ, float zNear, float zFar)
+{
+    return (zFar * zNear) / (zFar - ndcZ * (zFar - zNear));
+}
+
 float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 {
     float4 rt0 = gBufferRT0.Sample(pointSampler, input.uv);
@@ -25,18 +31,37 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     float4 clipPos = float4(ndc, depth, 1.0);
     float4 wp = mul(clipPos, invViewProj);
     float3 worldPos = wp.xyz / wp.w;
-    
+
     float3 emission = rt2.rgb;
     float ao = rt2.a;
-    
+
     float3 N = worldNormal;
     float3 V = normalize(cameraPosition - worldPos);
 
-    float3 directLight = float3(0, 0, 0);
-    float shadow = 1.0;
+    // ----- cluster lookup (4단계 CS 의 clusterIdx 산식과 정확히 일치해야 함) -----
+    float linearD    = LinearizeDepth(depth, clusterZNear, clusterZFar);
+    float sliceFloat = log(linearD) * clusterSliceScale + clusterSliceBias;
+    uint  sliceIdx   = uint(max(0.0, sliceFloat));
+    sliceIdx = min(sliceIdx, clusterGridDims.z - 1u);
 
-    for (int i = 0; i < lightCount; ++i)
+    uint2 tile = uint2(input.uv * float2(clusterGridDims.xy));
+    tile = min(tile, clusterGridDims.xy - uint2(1, 1));
+
+    uint clusterIdx = sliceIdx * clusterGridDims.x * clusterGridDims.y
+                    + tile.y  * clusterGridDims.x
+                    + tile.x;
+
+    uint2 listEntry = clusterLightGrid[clusterIdx];
+    uint  offset    = listEntry.x;
+    uint  count     = listEntry.y;
+
+    float3 directLight = float3(0, 0, 0);
+    float  shadow      = 1.0;
+
+    for (uint n = 0; n < count; ++n)
     {
+        uint i = clusterLightIndices[offset + n];
+
         if (lights[i].intensity <= 0.0)
             continue;
 

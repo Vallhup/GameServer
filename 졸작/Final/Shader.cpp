@@ -6,7 +6,8 @@ void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* roo
     InitializeForwardShader(device, rootSig, L"../Shaders/ForwardVS.hlsli", L"../Shaders/ForwardPS.hlsli");
     InitializeGBufferShader(device, rootSig, L"../Shaders/GBufferVS.hlsli", L"../Shaders/GBufferPS.hlsli");
     InitializeLightingShader(device, rootSig, L"../Shaders/FullscreenVS.hlsli", L"../Shaders/LightingPS.hlsli");
-    InitializeComputeShader(device, rootSig, L"../Shaders/Animation.hlsli");
+    InitializeComputeAnimationShader(device, rootSig, L"../Shaders/Animation.hlsli");
+    InitializeClusterLightCullShader(device, rootSig, L"../Shaders/ClusterCullCS.hlsli");
     InitializeShadowShader(device, rootSig, L"../Shaders/ShadowVS.hlsli", L"../Shaders/ShadowPS.hlsli");
     InitializeDebugLinePSO(device, rootSig);
     InitializeSkyboxShader(device, rootSig, L"../Shaders/SkyboxVS.hlsli", L"../Shaders/SkyboxPS.hlsli");
@@ -164,7 +165,7 @@ void Shader::InitializeLightingShader(ID3D12Device* device, ID3D12RootSignature*
     OutputDebugStringA("Lighting PSO created successfully!\n");
 }
 
-void Shader::InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath)
+void Shader::InitializeComputeAnimationShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath)
 {
     CompileShader(csPath, "CSMain", "cs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::AnimationCS)]);
 
@@ -174,6 +175,20 @@ void Shader::InitializeComputeShader(ID3D12Device* device, ID3D12RootSignature* 
 
     HRESULT hr = device->CreateComputePipelineState(&computePsoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::Compute)]));
     MASSERT(SUCCEEDED(hr), "Failed to create Compute PSO");
+}
+
+void Shader::InitializeClusterLightCullShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& csPath)
+{
+    CompileShader(csPath, "CSMain", "cs_5_1", mShadersBlobs[static_cast<size_t>(ShaderType::ClusterLightCullCS)]);
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC computePsoDesc = {};
+    computePsoDesc.pRootSignature = rootSig;
+    computePsoDesc.CS = { mShadersBlobs[static_cast<size_t>(ShaderType::ClusterLightCullCS)]->GetBufferPointer(), mShadersBlobs[static_cast<size_t>(ShaderType::ClusterLightCullCS)]->GetBufferSize() };
+
+    HRESULT hr = device->CreateComputePipelineState(&computePsoDesc, IID_PPV_ARGS(&mPSOs[static_cast<size_t>(PSOType::ClusterLightCull)]));
+    MASSERT(SUCCEEDED(hr), "Failed to create ClusterLightCull PSO");
+
+    OutputDebugStringA("ClusterLightCull PSO created successfully!\n");
 }
 
 void Shader::InitializeShadowShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)

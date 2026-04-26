@@ -18,6 +18,7 @@
 #include "LightManager.h"
 #include "SkyBox.h"
 #include "Camera.h"
+#include "ImGuiManager.h"
 
 SceneManager::~SceneManager()
 {
@@ -165,6 +166,12 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
 
     if (mCurrentScene)
     {
+        // 씬 소유 객체(MainCharacter / SkyBox / Camera)가 Reset()에서 release되므로
+        // ImGui 가 들고 있던 raw pointer 캐시를 먼저 끊어야 dangling 접근을 막음.
+        IMGUI.SetMyPlayer(nullptr);
+        IMGUI.SetSkyBox(nullptr);
+        IMGUI.SetCamera(nullptr);
+
         mCurrentScene->Reset();
     }
 
@@ -221,29 +228,12 @@ void SceneManager::ApplySceneSettings(DX12Core& core)
 
     const SceneSettings s = mCurrentScene->GetSceneSettings();
 
-    auto& dl = core.GetLightMgr()->GetDeferredLightData();
-    dl.lights[0].position = s.light.sunDirection;
-    dl.lights[0].color = s.light.sunColor;
-    dl.lights[0].intensity = s.light.sunIntensity;
-
-    dl.lights[1].position = s.light.dir2Direction;
-    dl.lights[1].color = s.light.dir2Color;
-    dl.lights[1].intensity = s.light.dir2Intensity;
-
-    dl.lights[2].position = s.light.pointPosition;
-    dl.lights[2].range = s.light.pointRange;
-    dl.lights[2].color = s.light.pointColor;
-    dl.lights[2].intensity = s.light.pointIntensity;
-
-    auto& fl = core.GetLightMgr()->GetForwardLightData();
-    fl.direction = s.light.sunDirection;
-    fl.color = s.light.sunColor;
-    fl.intensity = s.light.sunIntensity;
-
-    if (auto* sky = core.GetLightMgr()->GetSkyBox()) {
-        sky->GetSun().direction = s.light.sunDirection;
-        sky->GetSun().color = s.light.sunColor;
-        sky->GetSun().intensity = s.light.sunIntensity;
+    if (auto* sky = core.GetLightMgr()->GetSkyBox())
+    {
+        auto& sun = sky->GetSun();
+        sun.direction = s.light.sunDirection;
+        sun.color = s.light.sunColor;
+        sun.intensity = s.light.sunIntensity;
     }
 
     core.GetLightMgr()->UpdateLights();

@@ -54,7 +54,7 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddCBV(1);              // [1]  b1 - ObjectCB
     AddCBV(2);              // [2]  b2 - AnimationParams
     AddCBV(3);              // [3]  b3 - DeferredLight
-    AddCBV(4);              // [4]  b4 - ForwardLight
+    AddCBV(4);              // [4]  b4 - reserved (legacy SunCB; sun moved to lights[0] via t11)
     AddCBV(5);              // [5]  b5 - ShadowFrameCB
 
     AddBindlessTable(1);    // [6]  t0, space1 - Bindless
@@ -81,6 +81,15 @@ void RootSignature::Initialize(ID3D12Device* device)
     AddCBV(11);             // [22] b11 - VolumetricFogCB
     AddCBV(12);             // [23] b12 - TrailCB
     AddConstant(8, 13);     // [24] b13 - BloomConstants (8x32bit)
+    AddSRV(11, 0);          // [25] t11 - DeferredLight Array (SRV, 1단계 SRV 전환)
+
+    // Clustered Shading
+    AddCBV(14);             // [26] b14 - ClusterParamsCB
+    AddSRV(12, 0);          // [27] t12 - clusterLightIndices SRV (PS)
+    AddSRV(13, 0);          // [28] t13 - clusterLightGrid SRV (PS)
+    AddUAV(1, 0);           // [29] u1  - clusterLightIndicesRW UAV (CS)
+    AddUAV(2, 0);           // [30] u2  - clusterLightGridRW UAV (CS)
+    AddUAV(3, 0);           // [31] u3  - clusterCounterRW UAV (CS atomic)
 
     CD3DX12_STATIC_SAMPLER_DESC samplerDesc[4];
     samplerDesc[0].Init(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR,

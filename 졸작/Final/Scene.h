@@ -12,7 +12,7 @@ enum class SceneType;
 class MainCharacter;
 class AnimationSet;
 
-enum class MonsterType { Boss, Imp, DemonStriker, DemonExecutioner };
+enum class MonsterType { Boss, Imp, DemonStriker, DemonExecutioner, BigDemonWarrior, Tank };
 
 class Scene
 {
@@ -33,24 +33,19 @@ public:
 	void SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches);
 
 	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
+	shared_ptr<MainCharacter> GetAvailableKnight() const;
 
-	shared_ptr<GameObject> CreateMonsterObject(
-		const wstring& meshPath,
-		shared_ptr<AnimationSet> (*animFactory)(),
-		bool twoSided = true);
-
-	void CreateBossObject(const XMFLOAT3& position, int count = 1);
-	void CreateImpObject(const XMFLOAT3& position, int count = 1);
-	void CreateDemonStrikerObject(const XMFLOAT3& position, int count = 1);
-	void CreateDemonExecutionerObject(const XMFLOAT3& position, int count = 1);
+	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet> (*animFactory)(), bool twoSided = true);
+	void CreateMonsters(MonsterType type, const XMFLOAT3& position, int count = 1);
 
 	void AddGameObject(shared_ptr<GameObject> obj);
 
 	virtual SceneSettings GetSceneSettings() const { return {}; }
 
 protected:
-	virtual void InitializeSceneObjectPools() = 0;
 	virtual void InitializeLogic() = 0;
+	virtual void InitializeSceneEnvironments() = 0;
+	virtual void InitializeSceneMonsters() = 0;
 	virtual void UpdateScene(const float deltaTime) = 0;
 	virtual void RenderSceneDeferred() = 0;
 	virtual void RenderSceneForward() = 0;
@@ -74,6 +69,8 @@ protected:
 	template<typename T>
 	void CreateAndBatchObjects(const wstring& path, const vector<T>& data, vector<shared_ptr<InstancingBatch>>& targetBatchList);
 
+	void CreateKnightPool();
+
 protected:
 	XMFLOAT4X4 mView = {};
 	XMFLOAT4X4 mProjection = {};
@@ -87,6 +84,12 @@ protected:
 
 	vector<shared_ptr<GameObject>> gameObjects;
 	unordered_map<MonsterType, vector<shared_ptr<GameObject>>> monsterPools;
+
+	vector<shared_ptr<MainCharacter>> knightPool;
+	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
+	shared_ptr<MainCharacter> myPlayer;
+
+	static constexpr int MAX_KNIGHT_COUNT = 10;
 };
 
 template <typename T>

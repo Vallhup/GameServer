@@ -8,6 +8,9 @@
 #include "Animator.h"
 #include "AnimationMachine.h"
 #include "AnimationSetFactory.h"
+#include "TrailComponent.h"
+#include "FootDustComponent.h"
+#include "ParrySparkComponent.h"
 
 #include "NetHelper.h"
 
@@ -122,10 +125,59 @@ shared_ptr<GameObject> Scene::GetAvailableMonster(MonsterType type) const
 	return nullptr;
 }
 
-shared_ptr<GameObject> Scene::CreateMonsterObject(
-	const wstring& meshPath,
-	shared_ptr<AnimationSet> (*animFactory)(),
-	bool twoSided)
+shared_ptr<MainCharacter> Scene::GetAvailableKnight() const
+{
+	for (auto& knight : knightPool)
+	{
+		if (knight->GetId() == -1)
+			return knight;
+	}
+	return nullptr;
+}
+
+void Scene::CreateKnightPool()
+{
+	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
+	{
+		auto knight = make_shared<MainCharacter>();
+		knight->SetId(-1);
+		auto mesh = knight->AddComponent<Mesh>();
+		auto transform = knight->AddComponent<Transform>();
+		auto animator = knight->AddComponent<Animator>();
+		auto animMachine = knight->AddComponent<AnimationMachine>();
+		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+		//mesh->SetCollisionMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+
+		animMachine->SetAnimationSet(AnimationSetFactory::CreateKnightSet());
+		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
+		transform->SetRotation(0.f, 0.f, 0.f);
+		transform->SetScale(0.01f, 0.01f, 0.01f);
+
+		auto trail = knight->AddComponent<TrailComponent>();
+		trail->Initialize(coreRef->GetDevice(), 32);
+		trail->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });
+		trail->SetLifetime(0.13f);
+
+		auto dust = knight->AddComponent<FootDustComponent>();
+		dust->Initialize(coreRef->GetDevice(), 32);
+		dust->SetColor({ 0.15f, 0.15f, 0.15f, 0.4f });
+		dust->SetLifetime(0.35f);
+		dust->SetParticleSize(0.1f);
+
+		auto spark = knight->AddComponent<ParrySparkComponent>();
+		spark->Initialize(coreRef->GetDevice(), 64);
+		spark->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
+		spark->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
+		spark->SetSpeed(20.0f);
+		spark->SetParticleSize(0.1f);
+		spark->SetLifetime(0.75f);
+
+		knightPool.push_back(knight);
+		AddGameObject(knight);
+	}
+}
+
+shared_ptr<GameObject> Scene::CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet> (*animFactory)(), bool twoSided)
 {
 	auto obj = make_shared<GameObject>();
 	obj->SetId(-1);
@@ -142,56 +194,31 @@ shared_ptr<GameObject> Scene::CreateMonsterObject(
 	return obj;
 }
 
-void Scene::CreateBossObject(const XMFLOAT3& position, int count)
+void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count)
 {
-	for (int i = 0; i < count; ++i)
+	struct MonsterDesc
 	{
-		auto boss = CreateMonsterObject(
-			L"../Assets/FBXModel/Boss/boss",
-			&AnimationSetFactory::CreateFinalBossSet,
-			false);
-		boss->GetComponent<Transform>()->SetInitPosition(position);
-		monsterPools[MonsterType::Boss].push_back(boss);
-		AddGameObject(boss);
-	}
-}
+		const wchar_t* meshPath;
+		shared_ptr<AnimationSet>(*animFactory)();
+		bool twoSided;
+	};
 
-void Scene::CreateImpObject(const XMFLOAT3& position, int count)
-{
-	for (int i = 0; i < count; ++i)
-	{
-		auto imp = CreateMonsterObject(
-			L"../Assets/FBXModel/Monster/Imp/monster_Imp",
-			&AnimationSetFactory::CreateImpSet);
-		imp->GetComponent<Transform>()->SetInitPosition(position);
-		monsterPools[MonsterType::Imp].push_back(imp);
-		AddGameObject(imp);
-	}
-}
+	static const unordered_map<MonsterType, MonsterDesc> descs = {
+		{ MonsterType::Boss, { L"../Assets/FBXModel/Boss/boss", &AnimationSetFactory::CreateFinalBossSet, false } },
+		{ MonsterType::Imp, { L"../Assets/FBXModel/Monster/Imp/monster_Imp", &AnimationSetFactory::CreateImpSet, true  } },
+		{ MonsterType::DemonStriker, { L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker", &AnimationSetFactory::CreateDemonStrikerSet, true  } },
+		{ MonsterType::DemonExecutioner, { L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner", &AnimationSetFactory::CreateDemonExecutionerSet, true  } },
+		{ MonsterType::BigDemonWarrior, { L"../Assets/FBXModel/Monster/BigDemonWarrior/monster_BigDemonWarrior",&AnimationSetFactory::CreateBigDemonWarriorSet, true  } },
+		{ MonsterType::Tank, { L"../Assets/FBXModel/Monster/Tank/monster_Tank", &AnimationSetFactory::CreateTankSet, true  } },
+	};
 
-void Scene::CreateDemonStrikerObject(const XMFLOAT3& position, int count)
-{
+	const auto& desc = descs.at(type);
 	for (int i = 0; i < count; ++i)
 	{
-		auto striker = CreateMonsterObject(
-			L"../Assets/FBXModel/Monster/DemonStriker/monster_DemonStriker",
-			&AnimationSetFactory::CreateDemonStrikerSet);
-		striker->GetComponent<Transform>()->SetInitPosition(position);
-		monsterPools[MonsterType::DemonStriker].push_back(striker);
-		AddGameObject(striker);
-	}
-}
-
-void Scene::CreateDemonExecutionerObject(const XMFLOAT3& position, int count)
-{
-	for (int i = 0; i < count; ++i)
-	{
-		auto executioner = CreateMonsterObject(
-			L"../Assets/FBXModel/Monster/DemonExecutioner/monster_DemonExecutioner",
-			&AnimationSetFactory::CreateDemonExecutionerSet);
-		executioner->GetComponent<Transform>()->SetInitPosition(position);
-		monsterPools[MonsterType::DemonExecutioner].push_back(executioner);
-		AddGameObject(executioner);
+		auto monster = CreateMonsterObject(desc.meshPath, desc.animFactory, desc.twoSided);
+		monster->GetComponent<Transform>()->SetInitPosition(position);
+		monsterPools[type].push_back(monster);
+		AddGameObject(monster);
 	}
 }
 

@@ -18,6 +18,7 @@
 #include "RenderTargets.h"
 #include "LightManager.h"
 #include "FroxelManager.h"
+#include "ClusterLightManager.h"
 #include "SSAO.h"
 #include "LookUpTextures.h"
 #include "BloomManager.h"
@@ -116,6 +117,8 @@ void Engine::Render()
         graphics->ClearSsaoRT();
     
     graphics->FogPass(viewport, scissorRect);
+
+    graphics->ClusterLightCullPass();
 
     graphics->LightingPass();
 

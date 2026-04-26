@@ -253,6 +253,10 @@
     <ClCompile Include="BloomManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="ClusterLightManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ClusterLightManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -508,6 +512,10 @@
     <ClInclude Include="ClientWorldTransitionController.h">
       <Filter>Network</Filter>
     </ClInclude>
+    <ClInclude Include="ClusterLightManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ClusterLightManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GBufferVS.hlsli">
@@ -608,6 +616,9 @@
     </None>
     <None Include="..\Shaders\BloomUpsamplePS.hlsli">
       <Filter>Shaders\Bloom</Filter>
+    </None>
+    <None Include="..\Shaders\ClusterCullCS.hlsli">
+      <Filter>Shaders\Clustered</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -748,6 +759,9 @@
     </Filter>
     <Filter Include="Shaders\Bloom">
       <UniqueIdentifier>{bd586a08-36ca-4310-a622-41eb7a0f8fb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Clustered">
+      <UniqueIdentifier>{6ed658f7-4ce7-4085-94d0-0e7f00c9f132}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

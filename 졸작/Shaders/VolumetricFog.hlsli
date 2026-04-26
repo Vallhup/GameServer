@@ -68,7 +68,7 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
     float3 totalInScattering = float3(0.0, 0.0, 0.0);
     float transmittance = 1.0;
 
-    // 주 광원 방향 (lights[0]가 Directional Light)
+    // 주 광원 방향 (lights[0] from DeferredLightSB t11 — directional 광원은 position 필드에 dir 저장)
     float3 lightDir = normalize(-lights[0].position);
 
     // Ray Marching Loop
@@ -95,7 +95,7 @@ float4 RayMarchingVolumetricFog(float3 rayOrigin, float3 rayDir, float sceneDept
             phase = max(phase, 0.2);
             
             // In-scattering 계산
-            float3 lightContrib = VF_LIGHT_COLOR * VF_LIGHT_INTENSITY/* * lights[0].intensity*/;
+            float3 lightContrib = VF_LIGHT_COLOR * VF_LIGHT_INTENSITY;
             float3 scattering = lightContrib * phase * VF_SCATTERING * shadowFactor;
 
             // Beer-Lambert 투과율

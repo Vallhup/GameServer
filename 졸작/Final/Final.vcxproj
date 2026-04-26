@@ -215,6 +215,7 @@ exit 0</Command>
     <ClCompile Include="ClientInboundPacketQueue.cpp" />
     <ClCompile Include="ClientPacketRouter.cpp" />
     <ClCompile Include="ClientWorldTransitionController.cpp" />
+    <ClCompile Include="ClusterLightManager.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
     <ClCompile Include="DX12Core.cpp" />
@@ -226,6 +227,7 @@ exit 0</Command>
     <ClCompile Include="FootDustComponent.cpp" />
     <ClCompile Include="FroxelManager.cpp" />
     <ClCompile Include="LightManager.cpp" />
+    <ClCompile Include="ClusterLightManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingSceneUIController.cpp" />
     <ClCompile Include="LookUpTextures.cpp" />
@@ -307,6 +309,7 @@ exit 0</Command>
     <ClInclude Include="ClientInboundPacketQueue.h" />
     <ClInclude Include="ClientPacketRouter.h" />
     <ClInclude Include="ClientWorldTransitionController.h" />
+    <ClInclude Include="ClusterLightManager.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DeviceContext.h" />
     <ClInclude Include="DX12Core.h" />
@@ -318,6 +321,7 @@ exit 0</Command>
     <ClInclude Include="FootDustComponent.h" />
     <ClInclude Include="FroxelManager.h" />
     <ClInclude Include="LightManager.h" />
+    <ClInclude Include="ClusterLightManager.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LoadingSceneUIController.h" />
     <ClInclude Include="LookUpTextures.h" />
@@ -378,6 +382,7 @@ exit 0</Command>
     <None Include="..\Shaders\BlitPS.hlsli" />
     <None Include="..\Shaders\BloomDownsamplePS.hlsli" />
     <None Include="..\Shaders\BloomUpsamplePS.hlsli" />
+    <None Include="..\Shaders\ClusterCullCS.hlsli" />
     <None Include="..\Shaders\EffectVS.hlsli" />
     <None Include="..\Shaders\FlamePS.hlsli" />
     <None Include="..\Shaders\Fog.hlsli" />
