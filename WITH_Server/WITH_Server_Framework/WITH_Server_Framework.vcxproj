@@ -172,6 +172,7 @@
     <ClInclude Include="ConflictDetection.h" />
     <ClInclude Include="ExecutionGraphBuildPolicy.h" />
     <ClInclude Include="FrameworkLog.h" />
+    <ClInclude Include="LFWSDeque.h" />
     <ClInclude Include="Library\Detour\DetourAlloc.h" />
     <ClInclude Include="Library\Detour\DetourAssert.h" />
     <ClInclude Include="Library\Detour\DetourCommon.h" />

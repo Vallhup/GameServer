@@ -362,6 +362,10 @@
     <ClInclude Include="ConflictDetection.h">
       <Filter>03_Execution\06_Utility</Filter>
     </ClInclude>
+    <ClInclude Include="ExecMetaHelper.h" />
+    <ClInclude Include="LFWSDeque.h">
+      <Filter>00_Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="01_ECS">

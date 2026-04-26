@@ -35,7 +35,7 @@ bool ThreadPool::Start(uint32_t threadCnt, WorkerPumpFn pump, void* pumpCtx)
 	{
 		for (uint32_t i = 0; i < threadCnt; ++i)
 		{
-			_workers.emplace_back([this]() { WorkerLoop(); });
+			_workers.emplace_back([this, i]() { WorkerLoop(i); });
 		}
 	}
 	catch (...)
@@ -99,7 +99,7 @@ void ThreadPool::WakeAll() noexcept
     _cv.notify_all();
 }
 
-void ThreadPool::WorkerLoop()
+void ThreadPool::WorkerLoop(uint32_t workerIdx)
 {
     uint64_t observedEpoch = _workEpoch.load();
 
@@ -117,7 +117,7 @@ void ThreadPool::WorkerLoop()
             bool executed{ false };
             try
             {
-                executed = pump(pumpCtx);
+                executed = pump(pumpCtx, workerIdx);
             }
             catch (...)
             {

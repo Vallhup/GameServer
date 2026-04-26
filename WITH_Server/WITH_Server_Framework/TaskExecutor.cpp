@@ -50,7 +50,17 @@ bool TaskExecutor::Initialize(uint32_t workerCount)
         throw;
     }
 
-    FWLOG_INFO(kLogCategory, "Initialized with %u workers", _pool.WorkerCount());
+    // 풀이 확정한 실제 워커 수에 맞춰 per-worker deque를 할당한다.
+    // WorkerPump가 _workerDeques에 접근하는 시점은 _frameBound가 true가 된 이후이므로,
+    // Start 반환 후 할당해도 race 없이 안전하다.
+    const uint32_t actualWorkerCount = _pool.WorkerCount();
+    _workerDeques.clear();
+    _workerDeques.reserve(actualWorkerCount);
+    for (uint32_t i = 0; i < actualWorkerCount; ++i)
+        _workerDeques.push_back(
+            std::make_unique<LFWSDeque<ExecNodeId, kWorkerDequeCapacity>>());
+
+    FWLOG_INFO(kLogCategory, "Initialized with %u workers", actualWorkerCount);
     return true;
 }
 
@@ -140,25 +150,55 @@ const TaskExecutorFrameDiagnostics& TaskExecutor::GetLastFrameDiagnostics() cons
     return _diagnostics.GetLastFrame();
 }
 
-bool TaskExecutor::WorkerPumpEntry(void* ctx)
+bool TaskExecutor::WorkerPumpEntry(void* ctx, uint32_t workerIdx)
 {
     if (ctx == nullptr)
         return false;
 
-    return static_cast<TaskExecutor*>(ctx)->WorkerPump();
+    return static_cast<TaskExecutor*>(ctx)->WorkerPump(workerIdx);
 }
 
-bool TaskExecutor::WorkerPump()
+bool TaskExecutor::WorkerPump(uint32_t workerIdx)
 {
-    if (!_frameBound.load())
+    if (!_frameBound.load(std::memory_order_acquire))
         return false;
 
-    ExecNodeId nodeId = InvalidExecNodeId;
-    if (!TryDequeueReadyNode(nodeId))
-        return false;
+    // Phase 1: 자신의 deque에서 TryPop (lock 없음, CAS 없음 — 가장 빠른 경로)
+    {
+        std::optional<ExecNodeId> opt = _workerDeques[workerIdx]->TryPop();
+        if (opt.has_value())
+        {
+            ExecuteNode(*opt, workerIdx);
+            return true;
+        }
+    }
 
-    ExecuteNode(nodeId);
-    return true;
+    // Phase 2: 다른 워커 deque에서 TrySteal (CAS만 사용, lock 없음)
+    {
+        const uint32_t workerCount = static_cast<uint32_t>(_workerDeques.size());
+        for (uint32_t v = 1; v < workerCount; ++v)
+        {
+            const uint32_t victimIdx = (workerIdx + v) % workerCount;
+            std::optional<ExecNodeId> opt = _workerDeques[victimIdx]->TrySteal();
+            if (opt.has_value())
+            {
+                ExecuteNode(*opt, workerIdx);
+                return true;
+            }
+        }
+    }
+
+    // Phase 3: lock-free injection 큐에서 try_pop (초기 시드 / deque overflow fallback)
+    {
+        ExecNodeId nodeId = InvalidExecNodeId;
+        if (_injectQueue.try_pop(nodeId))
+        {
+            ExecuteNode(nodeId, workerIdx);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool TaskExecutor::ValidateFrameInputs(
@@ -191,22 +231,33 @@ void TaskExecutor::BindFrame(
     _binding.runtime = &runtime;
     _binding.sources = &sourceRegistry;
 
+    // 워커가 아직 깨어있지 않은 상태(BindFrame 호출 시점은 항상 직전 프레임 완료 후)이므로
+    // 경쟁 없이 Reset을 호출할 수 있다.
+    for (auto& deque : _workerDeques)
+        deque->Reset();
+
+    _injectQueue.clear();
+
     {
-        std::lock_guard lock{ _readyMtx };
-        _readyQueue.clear();
+        std::lock_guard lock{ _mainQueueMtx };
         _mainThreadReadyQueue.clear();
     }
 
-    _frameBound.store(true);
+    _frameBound.store(true, std::memory_order_release);
 }
 
 void TaskExecutor::UnbindFrame() noexcept
 {
-    _frameBound.store(false);
+    _frameBound.store(false, std::memory_order_release);
+
+    // _pool.Stop() 또는 프레임 완료 후 호출되므로 워커는 이미 idle 또는 종료 상태이다.
+    for (auto& deque : _workerDeques)
+        deque->Reset();
+
+    _injectQueue.clear();
 
     {
-        std::lock_guard lock{ _readyMtx };
-        _readyQueue.clear();
+        std::lock_guard lock{ _mainQueueMtx };
         _mainThreadReadyQueue.clear();
     }
 
@@ -271,7 +322,9 @@ void TaskExecutor::SeedInitialSimulateNodes()
         {
             if (TryTransitionNode(*nodeRt, ExecNodeState::NotReady, ExecNodeState::Ready))
             {
-                DispatchNode(nodeId);
+                // 초기 시드는 메인 스레드에서 수행하므로 kNoWorkerIdx를 전달한다.
+                // EnqueueReadyNode가 공유 큐에 삽입하고, 워커들이 steal해 간다.
+                DispatchNode(nodeId, kNoWorkerIdx);
             }
         }
         else
@@ -435,7 +488,7 @@ void TaskExecutor::DrainMainThreadQueue()
         ExecNodeId nodeId = InvalidExecNodeId;
 
         {
-            std::lock_guard lock{ _readyMtx };
+            std::lock_guard lock{ _mainQueueMtx };
             if (_mainThreadReadyQueue.empty())
                 break;
 
@@ -443,7 +496,9 @@ void TaskExecutor::DrainMainThreadQueue()
             _mainThreadReadyQueue.pop_front();
         }
 
-        ExecuteNode(nodeId);
+        // 메인 스레드 컨텍스트이므로 kNoWorkerIdx 전달.
+        // 후계자는 공유 큐에 삽입되어 워커들이 steal한다.
+        ExecuteNode(nodeId, kNoWorkerIdx);
     }
 }
 
@@ -471,29 +526,32 @@ void TaskExecutor::WaitForSimulateDone()
     DrainMainThreadQueue();
 }
 
-bool TaskExecutor::TryDequeueReadyNode(ExecNodeId& outNodeId)
+void TaskExecutor::EnqueueReadyNode(ExecNodeId nodeId, uint32_t workerIdx)
 {
-    std::lock_guard lock{ _readyMtx };
-
-    if (_readyQueue.empty())
-        return false;
-
-    outNodeId = _readyQueue.front();
-    _readyQueue.pop_front();
-    return true;
-}
-
-void TaskExecutor::EnqueueReadyNode(ExecNodeId nodeId)
-{
+    // 유효한 워커 인덱스이면 해당 워커의 deque에 직접 Push하여
+    // 캐시 지역성을 유지한다 (lock 없음, CAS 없음).
+    if (workerIdx != kNoWorkerIdx)
     {
-        std::lock_guard lock{ _readyMtx };
-        _readyQueue.push_back(nodeId);
+        if (_workerDeques[workerIdx]->TryPush(nodeId))
+        {
+            NotifyWork();
+            return;
+        }
+
+        // deque 가득 참 → _injectQueue로 fallback (PPL concurrent_queue, lock-free unbounded)
+        FWLOG_WARN(kLogCategory,
+            "EnqueueReadyNode - worker deque full, falling back to injectQueue (workerIdx=%u, nodeId=%u)",
+            workerIdx, nodeId);
     }
+
+    // 메인 스레드 컨텍스트(kNoWorkerIdx) 또는 deque overflow 경로.
+    // concurrent_queue::push는 항상 성공한다 (unbounded).
+    _injectQueue.push(nodeId);
 
     NotifyWork();
 }
 
-void TaskExecutor::DispatchNode(ExecNodeId nodeId)
+void TaskExecutor::DispatchNode(ExecNodeId nodeId, uint32_t workerIdx)
 {
     ExecRuntimeState& runtime = Runtime();
     ExecNodeRuntime* nodeRt = runtime.TryGetNode(nodeId);
@@ -524,18 +582,18 @@ void TaskExecutor::DispatchNode(ExecNodeId nodeId)
     if (HasAnyNodeFlag(node.flags, ExecNodeFlag_MainThreadOnly))
     {
         {
-            std::lock_guard lock{ _readyMtx };
+            std::lock_guard lock{ _mainQueueMtx };
             _mainThreadReadyQueue.push_back(nodeId);
         }
         NotifyProgress();
     }
     else
     {
-        EnqueueReadyNode(nodeId);
+        EnqueueReadyNode(nodeId, workerIdx);
     }
 }
 
-void TaskExecutor::ExecuteNode(ExecNodeId nodeId)
+void TaskExecutor::ExecuteNode(ExecNodeId nodeId, uint32_t workerIdx)
 {
     const FrameTaskGraph& graph = Graph();
     ExecRuntimeState& runtime = Runtime();
@@ -585,7 +643,7 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId)
 
         FWLOG_TRACE(kLogCategory, "ExecuteNode succeeded (nodeId=%u)", nodeId);
 
-        ResolveSuccessors(nodeId);
+        ResolveSuccessors(nodeId, workerIdx);
         CompleteNodeTerminal(nodeId, ExecNodeState::Succeeded);
     }
     else
@@ -598,7 +656,7 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId)
             nodeId, node.scopeId, node.sourceToken);
 
         MarkScopeFailedAndCancelRequested(node.scopeId);
-        ResolveSuccessors(nodeId);
+        ResolveSuccessors(nodeId, workerIdx);
         CompleteNodeTerminal(nodeId, ExecNodeState::Failed);
     }
 }
@@ -651,7 +709,7 @@ ExecCallResult TaskExecutor::InvokeNode(
     }
 }
 
-void TaskExecutor::ResolveSuccessors(ExecNodeId completedNodeId)
+void TaskExecutor::ResolveSuccessors(ExecNodeId completedNodeId, uint32_t workerIdx)
 {
     const FrameTaskGraph& graph = Graph();
     ExecRuntimeState& runtime = Runtime();
@@ -699,30 +757,24 @@ void TaskExecutor::ResolveSuccessors(ExecNodeId completedNodeId)
             continue;
         }
 
-        const uint32_t prev =
-            succRt->remainingDeps.fetch_sub(1);
+        const uint32_t prev = succRt->remainingDeps.fetch_sub(1);
+        if (prev != 1) continue;
 
-        assert(prev > 0);
-
-        if (prev != 1)
-            continue;
-
-        const ExecScopePhase scopePhase =
-            succScopeRt->phase.load();
-
+        const ExecScopePhase scopePhase = succScopeRt->phase.load();
         if (IsExecutableScopePhase(scopePhase))
         {
-            const bool ok = 
+            const bool ok =
                 TryTransitionNode(*succRt, ExecNodeState::NotReady, ExecNodeState::Ready);
             assert(ok);
-            DispatchNode(succId);
+            // workerIdx를 전달해 후계자를 현재 워커의 deque에 삽입한다 (캐시 지역성).
+            DispatchNode(succId, workerIdx);
         }
         else
         {
             const ExecNodeState terminal =
                 SelectCancelTerminalState(succNode);
 
-            const bool ok = 
+            const bool ok =
                 TryTransitionNode(*succRt, ExecNodeState::NotReady, terminal);
             assert(ok);
             CompleteNodeTerminal(succId, terminal);

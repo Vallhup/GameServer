@@ -6,7 +6,7 @@
 #include <mutex>
 #include <condition_variable>
 
-using WorkerPumpFn = bool(*)(void*);
+using WorkerPumpFn = bool(*)(void*, uint32_t workerIdx);
 
 class ThreadPool final {
 public:
@@ -36,7 +36,7 @@ public:
 	}
 
 private:
-	void WorkerLoop();
+	void WorkerLoop(uint32_t workerIdx);
 
 private:
 	std::vector<std::thread> _workers;
