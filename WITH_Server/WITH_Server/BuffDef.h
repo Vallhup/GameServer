@@ -5,6 +5,8 @@
 #include <optional>
 #include <span>
 #include <vector>
+#include <filesystem>
+#include "DefLoadResult.h"
 #include "IDs.h"
 #include "EntityId.h"
 
@@ -238,3 +240,7 @@ struct BuffDef
 const BuffDef* FindBuffDef(BuffId id) noexcept;
 const BuffDef& GetBuffDef(BuffId id);
 std::span<const BuffDef> GetBuffDefs() noexcept;
+
+using BuffDefLoadResult = DefLoadResult;
+BuffDefLoadResult LoadBuffDefsFromJsonDirectory(
+	const std::filesystem::path& directory);

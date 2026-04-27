@@ -1,0 +1,54 @@
+{
+  "id": "VillageDefault",
+  "name": "VillageDefault",
+  "entries": [
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster01",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster02",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "DemonStriker",
+      "spawnPointId": "VillageMonster03",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "DemonExecutioner",
+      "spawnPointId": "VillageMonster04",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster05",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "BigDemonWarrior",
+      "spawnPointId": "VillageBossMonster01",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    }
+  ]
+}

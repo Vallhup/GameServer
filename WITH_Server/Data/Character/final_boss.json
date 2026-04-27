@@ -1,0 +1,32 @@
+{
+  "id": "FinalBoss",
+  "name": "FinalBoss",
+  "profile": {
+    "faction": "Enemy"
+  },
+  "stat": {
+    "maxHp": 100,
+    "maxStamina": 100,
+    "maxPoise": 100,
+    "attackPower": 10,
+    "defense": 10,
+    "moveSpeed": 3.0,
+    "attackSpeed": 1.0
+  },
+  "bodyCollision": {
+    "footprintRadiusXZ": 0.65,
+    "bodyHeight": 2.4,
+    "blocksBodyOverlap": true,
+    "useNavMeshConstraint": true,
+    "pushability": "Dynamic",
+    "overlapYieldWeight": 0.20,
+    "maxOverlapCorrectionPerFrameXZ": 0.08
+  },
+  "role": "Boss",
+  "features": [
+    "Replicated",
+    "BossPhase"
+  ],
+  "ai": null,
+  "action": null
+}

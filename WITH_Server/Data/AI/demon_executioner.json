@@ -1,0 +1,47 @@
+{
+  "id": "DemonExecutioner",
+  "aiType": "NormalMonster",
+  "perceptionTuning": {
+    "sightRange": 12.0,
+    "attackRange": 2.2,
+    "frontDotThreshold": 0.2,
+    "targetKeepBonus": 4.0,
+    "lastAttackerBonus": 2.5,
+    "frontBonus": 1.0,
+    "switchScoreMargin": 3.0,
+    "loseSightGraceTime": 1.2,
+    "leashRange": 18.0,
+    "hardLeashRange": 26.0,
+    "leashGaugeMax": 100.0,
+    "leashDrainPerSec": 20.0,
+    "hardLeashDrainPerSec": 60.0,
+    "leashRecoverPerSec": 35.0,
+    "returnHomeArriveRange": 0.8,
+    "returnHomeReaggroLockSec": 1.5,
+    "returnHpRegenPerSecRatio": 0.08,
+    "idleActionCooldownSec": 8.0,
+    "idleActionChancePercent": 15,
+    "assistRange": 6.0
+  },
+  "decisionTuning": {
+    "decisionInterval": 0.2,
+    "attackCooldown": 2.3,
+    "reactDuration": 0.6
+  },
+  "movementPolicyKind": "Normal",
+  "combatActionPolicyKind": "Weighted",
+  "idleActionPolicyKind": "Weighted",
+  "reactionPolicyKind": "Normal",
+  "combatActions": [
+    { "actionId": "DemonExecutioner_Melee_1", "weight": 20 },
+    { "actionId": "DemonExecutioner_Melee_2", "weight": 20 },
+    { "actionId": "DemonExecutioner_Melee_3", "weight": 20 },
+    { "actionId": "DemonExecutioner_Melee_4", "weight": 15 },
+    { "actionId": "DemonExecutioner_Melee_5", "weight": 15 },
+    { "actionId": "DemonExecutioner_Melee_6", "weight": 10 }
+  ],
+  "idleActions": [
+    { "actionId": "DemonExecutioner_Jump_1", "weight": 50 },
+    { "actionId": "DemonExecutioner_Jump_2", "weight": 50 }
+  ]
+}

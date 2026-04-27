@@ -1,0 +1,34 @@
+{
+  "profile": {
+    "id": "HpBoost_High",
+    "name": "HpBoost.High",
+    "kind": "Positive",
+    "familyId": "HpBoost",
+    "tier": "High",
+    "groupId": "HpBoost",
+    "familyStackPolicy": "ReplaceWithHigherTier"
+  },
+  "lifetime": {
+    "durationPolicy": "Infinite",
+    "defaultDurationSec": 0.0,
+    "tickIntervalSec": null,
+    "maxStackCount": 1,
+    "overlappingPolicy": "Reject",
+    "reapplyPolicy": "None"
+  },
+  "effects": [
+    {
+      "type": "StatAdd",
+      "timing": "Always",
+      "stat": {
+        "statType": "MaxHp",
+        "value": 30.0
+      },
+      "stateFlag": null,
+      "periodic": null,
+      "condition": null
+    }
+  ],
+  "applyRequirements": [],
+  "removeRules": []
+}

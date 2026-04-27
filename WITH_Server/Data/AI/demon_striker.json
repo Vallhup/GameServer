@@ -1,0 +1,44 @@
+{
+  "id": "DemonStriker",
+  "aiType": "NormalMonster",
+  "perceptionTuning": {
+    "sightRange": 14.0,
+    "attackRange": 2.0,
+    "frontDotThreshold": 0.2,
+    "targetKeepBonus": 4.0,
+    "lastAttackerBonus": 2.5,
+    "frontBonus": 1.0,
+    "switchScoreMargin": 3.0,
+    "loseSightGraceTime": 1.2,
+    "leashRange": 20.0,
+    "hardLeashRange": 28.0,
+    "leashGaugeMax": 100.0,
+    "leashDrainPerSec": 20.0,
+    "hardLeashDrainPerSec": 60.0,
+    "leashRecoverPerSec": 35.0,
+    "returnHomeArriveRange": 0.8,
+    "returnHomeReaggroLockSec": 1.5,
+    "returnHpRegenPerSecRatio": 0.08,
+    "idleActionCooldownSec": 7.0,
+    "idleActionChancePercent": 20,
+    "assistRange": 7.0
+  },
+  "decisionTuning": {
+    "decisionInterval": 0.2,
+    "attackCooldown": 2.0,
+    "reactDuration": 0.5
+  },
+  "movementPolicyKind": "Normal",
+  "combatActionPolicyKind": "Weighted",
+  "idleActionPolicyKind": "Weighted",
+  "reactionPolicyKind": "Normal",
+  "combatActions": [
+    { "actionId": "DemonStriker_Melee_1", "weight": 20 },
+    { "actionId": "DemonStriker_Melee_2", "weight": 20 },
+    { "actionId": "DemonStriker_Melee_3", "weight": 25 },
+    { "actionId": "DemonStriker_Melee_4", "weight": 25 }
+  ],
+  "idleActions": [
+    { "actionId": "DemonStriker_Jump_1", "weight": 100 }
+  ]
+}

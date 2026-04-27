@@ -1,12 +1,14 @@
 #pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <optional>
 #include <span>
 #include <string>
 
 #include "ActionProfileIds.h"
 #include "BodyCollisionTypes.h"
+#include "DefLoadResult.h"
 #include "EntityId.h"
 
 enum class CharacterId : uint8_t;
@@ -83,6 +85,7 @@ namespace AITuningIds
 	inline constexpr AITuningId Imp = 1001;
 	inline constexpr AITuningId DemonStriker = 1002;
 	inline constexpr AITuningId DemonExecutioner = 1003;
+	inline constexpr AITuningId BigDemonWarrior = 1004;
 	inline constexpr AITuningId FinalBoss = 1005;
 }
 
@@ -126,6 +129,11 @@ struct CharacterDef
 	}
 };
 
+using CharacterDefLoadResult = DefLoadResult;
+
 const CharacterDef* FindCharacterDef(CharacterId id) noexcept;
 const CharacterDef& GetCharacterDef(CharacterId id);
 std::span<const CharacterDef> GetCharacterDefs() noexcept;
+
+CharacterDefLoadResult LoadCharacterDefsFromJsonDirectory(
+	const std::filesystem::path& directory);

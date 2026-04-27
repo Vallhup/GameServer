@@ -3,6 +3,9 @@
 #include "EntityId.h"
 #include "WorldContentIds.h"
 #include "IDs.h"
+#include "DefLoadResult.h"
+#include <filesystem>
+#include <span>
 #include <string>
 #include <optional>
 #include <vector>
@@ -41,3 +44,9 @@ struct SpawnSetDef
 };
 
 const SpawnSetDef* FindSpawnSetDef(SpawnSetId id) noexcept;
+const SpawnSetDef& GetSpawnSetDef(SpawnSetId id);
+std::span<const SpawnSetDef> GetSpawnSetDefs() noexcept;
+
+using SpawnSetDefLoadResult = DefLoadResult;
+SpawnSetDefLoadResult LoadSpawnSetDefsFromJsonDirectory(
+	const std::filesystem::path& directory);

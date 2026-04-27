@@ -1,0 +1,44 @@
+{
+  "id": "Imp",
+  "aiType": "NormalMonster",
+  "perceptionTuning": {
+    "sightRange": 12.0,
+    "attackRange": 1.5,
+    "frontDotThreshold": 0.2,
+    "targetKeepBonus": 4.0,
+    "lastAttackerBonus": 2.5,
+    "frontBonus": 1.0,
+    "switchScoreMargin": 3.0,
+    "loseSightGraceTime": 1.2,
+    "leashRange": 18.0,
+    "hardLeashRange": 24.0,
+    "leashGaugeMax": 100.0,
+    "leashDrainPerSec": 20.0,
+    "hardLeashDrainPerSec": 60.0,
+    "leashRecoverPerSec": 35.0,
+    "returnHomeArriveRange": 0.8,
+    "returnHomeReaggroLockSec": 1.5,
+    "returnHpRegenPerSecRatio": 0.08,
+    "idleActionCooldownSec": 6.0,
+    "idleActionChancePercent": 25,
+    "assistRange": 6.0
+  },
+  "decisionTuning": {
+    "decisionInterval": 0.2,
+    "attackCooldown": 1.8,
+    "reactDuration": 0.5
+  },
+  "movementPolicyKind": "Normal",
+  "combatActionPolicyKind": "Imp",
+  "idleActionPolicyKind": "Weighted",
+  "reactionPolicyKind": "Normal",
+  "combatActions": [
+    { "actionId": "Imp_melee1", "weight": 10 },
+    { "actionId": "Imp_melee3", "weight": 35 },
+    { "actionId": "Imp_melee4", "weight": 30 },
+    { "actionId": "Imp_melee5", "weight": 25 }
+  ],
+  "idleActions": [
+    { "actionId": "Imp_Jump", "weight": 100 }
+  ]
+}

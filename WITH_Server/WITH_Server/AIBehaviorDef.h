@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <filesystem>
 #include <span>
-#include <string>
 
+#include "DefLoadResult.h"
 #include "CharacterDef.h"
 #include "ECS/GameplayRuntimeComponents.h"
 #include "IDs.h"
@@ -12,20 +12,23 @@
 enum class AIMovementPolicyKind : uint8_t
 {
 	None,
-	Normal
+	Normal,
+	BossPattern
 };
 
 enum class AICombatActionPolicyKind : uint8_t
 {
 	None,
 	Imp,
-	Weighted
+	Weighted,
+	BossPattern
 };
 
 enum class AIReactionPolicyKind : uint8_t
 {
 	None,
-	Normal
+	Normal,
+	BossPattern
 };
 
 enum class AIIdleActionPolicyKind : uint8_t
@@ -57,12 +60,7 @@ struct AIBehaviorProfileDef
 	std::span<const WeightedActionEntry> idleActions{};
 };
 
-struct AIBehaviorDefLoadResult
-{
-	bool succeeded{ false };
-	size_t loadedCount{ 0 };
-	std::string error;
-};
+using AIBehaviorDefLoadResult = DefLoadResult;
 
 const AIBehaviorProfileDef* FindAIBehaviorProfileDef(
 	AIArchetype aiType,

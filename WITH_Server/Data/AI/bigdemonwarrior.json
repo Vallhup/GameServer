@@ -1,0 +1,45 @@
+{
+  "id": "BigDemonWarrior",
+  "aiType": "FirstBossMonster",
+  "perceptionTuning": {
+    "sightRange": 18.0,
+    "attackRange": 8.0,
+    "frontDotThreshold": 0.15,
+    "targetKeepBonus": 5.0,
+    "lastAttackerBonus": 3.0,
+    "frontBonus": 1.0,
+    "switchScoreMargin": 4.0,
+    "loseSightGraceTime": 1.5,
+    "leashRange": 24.0,
+    "hardLeashRange": 34.0,
+    "leashGaugeMax": 100.0,
+    "leashDrainPerSec": 18.0,
+    "hardLeashDrainPerSec": 55.0,
+    "leashRecoverPerSec": 30.0,
+    "returnHomeArriveRange": 1.0,
+    "returnHomeReaggroLockSec": 1.8,
+    "returnHpRegenPerSecRatio": 0.08,
+    "idleActionCooldownSec": 8.0,
+    "idleActionChancePercent": 15,
+    "assistRange": 0.0
+  },
+  "decisionTuning": {
+    "decisionInterval": 0.2,
+    "attackCooldown": 2.6,
+    "reactDuration": 0.7
+  },
+  "movementPolicyKind": "BossPattern",
+  "combatActionPolicyKind": "BossPattern",
+  "idleActionPolicyKind": "Weighted",
+  "reactionPolicyKind": "BossPattern",
+  "combatActions": [
+    { "actionId": "BigDemonWarrior_Melee_6", "weight": 20 },
+    { "actionId": "BigDemonWarrior_Melee_8", "weight": 35 },
+    { "actionId": "BigDemonWarrior_Melee_7", "weight": 25 },
+    { "actionId": "BigDemonWarrior_Melee_3", "weight": 20 },
+    { "actionId": "BigDemonWarrior_Melee_4", "weight": 20 }
+  ],
+  "idleActions": [
+    { "actionId": "BigDemonWarrior_Jump", "weight": 100 }
+  ]
+}

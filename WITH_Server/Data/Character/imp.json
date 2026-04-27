@@ -1,0 +1,38 @@
+{
+  "id": "Imp",
+  "name": "Imp",
+  "profile": {
+    "faction": "Enemy"
+  },
+  "stat": {
+    "maxHp": 100,
+    "maxStamina": 100,
+    "maxPoise": 100,
+    "attackPower": 10,
+    "defense": 10,
+    "moveSpeed": 3.0,
+    "attackSpeed": 1.0
+  },
+  "bodyCollision": {
+    "footprintRadiusXZ": 0.46,
+    "bodyHeight": 1.6,
+    "blocksBodyOverlap": true,
+    "useNavMeshConstraint": true,
+    "pushability": "Dynamic",
+    "overlapYieldWeight": 0.85,
+    "maxOverlapCorrectionPerFrameXZ": 0.16
+  },
+  "role": "Monster",
+  "features": [
+    "Replicated",
+    "Combatant",
+    "AIControlled"
+  ],
+  "ai": {
+    "aiType": "NormalMonster",
+    "aiTuningId": "Imp"
+  },
+  "action": {
+    "actionProfileId": "Imp"
+  }
+}

@@ -1,4577 +1,973 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "ActionDef.h"
-#include "ECS/GameplayRuntimeComponents.h"
 
-#include <array>
+#include "DefEnumString.h"
+#include "DefJsonFileLoader.h"
+#include "DefJsonReader.h"
+#include "DefRegistry.h"
+
 #include <stdexcept>
+#include <unordered_map>
+#include <vector>
+
+using json = nlohmann::json;
 
 namespace
 {
-	const std::array<ActionDef, 44> kActionDefs =
+	struct ActionDefTraits
 	{
-		ActionDef
+		static ActionId GetId(const ActionDef& def) noexcept
 		{
-			.id = ActionId::Knight_LightAttack1,
-			.name = "Knight.LightAttack1",
-			.kind = ActionKind::Attack,
-			.duration = 1.16f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef                          
-				{
-					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 0,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts =
-			{
-				ActionResourceCostDef
-				{
-					.type = ActionResourceType::Stamina,
-					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 0
-				}
-			},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Knight_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Knight_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Knight_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules =
-				{
-					ActionCancelRule
-					{
-						.cancelKind = ActionCancelKind::Combo,
-						.toActionId = ActionId::Knight_LightAttack2,
-						.windowPolicy = ActionWindowPolicy::Range,
-						.windowStartNormalized = 0.45f,
-						.windowEndNormalized = 0.75f,
-						.priority = 100
-					},
-					ActionCancelRule
-					{
-						.cancelKind = ActionCancelKind::DodgeCancel,
-						.toActionId = ActionId::Knight_Dodge,
-						.windowPolicy = ActionWindowPolicy::Range,
-						.windowStartNormalized = 0.50f,
-						.windowEndNormalized = 0.80f,
-						.priority = 90
-					}
-				}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.3f,
-					.endNormalized = 1.0f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = std::nullopt,
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.0f,
-							.bonusDamage = 2.0f,
-							.staminaDamageScale = 0.5f,
-							.bonusStaminaDamage = 3.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.35f,
-							.hitStopSec = 0.05f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Knight_LightAttack2,
-			.name = "Knight.LightAttack2",
-			.kind = ActionKind::Attack,
-			.duration = 1.06f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 0,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts =
-			{
-				ActionResourceCostDef
-				{
-					.type = ActionResourceType::Stamina,
-					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 0
-				}
-			},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Knight_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Knight_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Knight_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules =
-				{
-					ActionCancelRule
-					{
-						.cancelKind = ActionCancelKind::Combo,
-						.toActionId = ActionId::Knight_LightAttack3,
-						.windowPolicy = ActionWindowPolicy::Range,
-						.windowStartNormalized = 0.48f,
-						.windowEndNormalized = 0.78f,
-						.priority = 100
-					},
-					ActionCancelRule
-					{
-						.cancelKind = ActionCancelKind::DodgeCancel,
-						.toActionId = ActionId::Knight_Dodge,
-						.windowPolicy = ActionWindowPolicy::Range,
-						.windowStartNormalized = 0.55f,
-						.windowEndNormalized = 0.85f,
-						.priority = 90
-					}
-				}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.3f,
-					.endNormalized = 1.0f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = std::nullopt,
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.2f,
-							.bonusDamage = 4.0f,
-							.staminaDamageScale = 0.7f,
-							.bonusStaminaDamage = 3.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.45f,
-							.hitStopSec = 0.06f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0 / 47.0f,
-					.endNormalized = 19 / 47.0f,
-					.horizontalMoveMode = HorizontalMovementMode::ForwardFixedDistance,
-					.moveDistance = 54.0f / 100.0f,
-					.rotationMode = RotationMode::None,
-					.rotationRate = std::nullopt,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::ActionStartInput,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Knight_LightAttack3,
-			.name = "Knight.LightAttack3",
-			.kind = ActionKind::Attack,
-			.duration = 1.53f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 15.0f,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts =
-			{
-				ActionResourceCostDef
-				{
-					.type = ActionResourceType::Stamina,
-					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 15.0f
-				}
-			},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Knight_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Knight_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Knight_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules =
-				{
-					ActionCancelRule
-					{
-						.cancelKind = ActionCancelKind::DodgeCancel,
-						.toActionId = ActionId::Knight_Dodge,
-						.windowPolicy = ActionWindowPolicy::Range,
-						.windowStartNormalized = 0.62f,
-						.windowEndNormalized = 0.88f,
-						.priority = 90
-					}
-				}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.3f,
-					.endNormalized = 1.0f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = std::nullopt,
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.5f,
-							.bonusDamage = 7.0f,
-							.staminaDamageScale = 1.0f,
-							.bonusStaminaDamage = 4.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.70f,
-							.hitStopSec = 0.07f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					},
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0 / 47.0f,
-					.endNormalized = 19 / 47.0f,
-					.horizontalMoveMode = HorizontalMovementMode::ForwardFixedDistance,
-					.moveDistance = 74 / 100.0f,
-					.rotationMode = RotationMode::None,
-					.rotationRate = std::nullopt,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::ActionStartInput,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Knight_HeavyAttack,
-			.name = "Knight.HeavyAttack",
-			.kind = ActionKind::Attack,
-			.duration = 1.30f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 0,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts =
-			{
-				ActionResourceCostDef
-				{
-					.type = ActionResourceType::Stamina,
-					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 0
-				}
-			},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Knight_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Knight_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Knight_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.3f,
-					.endNormalized = 1.0f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = std::nullopt,
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 2.5f,
-							.bonusDamage = 9.0f,
-							.staminaDamageScale = 1.5f,
-							.bonusStaminaDamage = 5.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 1.10f,
-							.hitStopSec = 0.09f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Knight_SpecialAttack,
-			.name = "Knight.SpecialAttack",
-			.kind = ActionKind::Attack,
-			.duration = 3.13f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 0,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasStateFlag,
-					.scalar = std::nullopt,
-					.stateFlag = GameplayStateFlag::ParrySuccessReady
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts =
-			{
-				ActionResourceCostDef
-				{
-					.type = ActionResourceType::Stamina,
-					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 0
-				}
-			},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Knight_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Knight_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Knight_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.3f,
-					.endNormalized = 1.0f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = std::nullopt,
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 3.5f,
-							.bonusDamage = 13.0f,
-							.staminaDamageScale = 2.2f,
-							.bonusStaminaDamage = 6.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 1.40f,
-							.hitStopSec = 0.11f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Knight_Dodge,
-			.name = "Knight.Dodge",
-			.kind = ActionKind::Dodge,
-			.duration = 1.53f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 0,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts =
-			{
-				ActionResourceCostDef
-				{
-					.type = ActionResourceType::Stamina,
-					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 0
-				}
-			},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Knight_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Invulnerability,
-					.startNormalized = 0.08f,
-					.endNormalized = 0.92f,
-					.appliesTo = std::nullopt,
-					.spatialFilter = std::nullopt,
-					.effect = std::nullopt,
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0 / 50.f,
-					.endNormalized = 7 / 50.f,
-					.horizontalMoveMode = HorizontalMovementMode::InputDirectionDistance,
-					.moveDistance = 22.796f / 100.0f,
-					.rotationMode = RotationMode::None,
-					.rotationRate = std::nullopt,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::ActionStartInput,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				},
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 7 / 50.f,
-					.endNormalized = 40 / 50.f,
-					.horizontalMoveMode = HorizontalMovementMode::InputDirectionDistance,
-					.moveDistance = 319.144 / 100.0f,
-					.rotationMode = RotationMode::None,
-					.rotationRate = std::nullopt,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::LockedDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				},
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 40 / 50.f,
-					.endNormalized = 50 / 50.f,
-					.horizontalMoveMode = HorizontalMovementMode::InputDirectionDistance,
-					.moveDistance = 6.03 / 100.f,
-					.rotationMode = RotationMode::None,
-					.rotationRate = std::nullopt,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::LockedDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Knight_Parry,
-			.name = "Knight.Parry",
-			.kind = ActionKind::Parry,
-			.duration = 1.00f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 0,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts =
-			{
-				ActionResourceCostDef
-				{
-					.type = ActionResourceType::Stamina,
-					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 0
-				}
-			},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Knight_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Knight_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Parry,
-					.startNormalized = 0.3f,
-					.endNormalized = 1.0f,
-					.appliesTo = ActionCombatApplyTo::ParryableAttack,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 45.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 2.0f,
-						.verticalTolerance = 1.0f,
-						.referenceFrame = CombatReferenceFrame::OwnerFacing
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::ParryResponse,
-						.attackHit = std::nullopt,
-						.parryResponse = ParryCombatEffectDef
-						{
-							.stunSec = 0.85f,
-							.hitStopSec = 0.08f,
-							.grantBuffId = BuffId::ParrySuccess
-						},
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Knight_Guard,
-			.name = "Knight.Guard",
-			.kind = ActionKind::Guard,
-			.duration = (std::numeric_limits<float>::max)(),
-			.normalizedPolicy = ActionNormalizedPolicy::Holdable,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::HoldRelease,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasEnoughStamina,
-					.scalar = 0,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts =
-			{
-				ActionResourceCostDef
-				{
-					.type = ActionResourceType::Stamina,
-					.consumeTiming = ActionResourceConsumeTiming::OnRequest,
-					.amount = 0
-				}
-			},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Knight_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = 
-				{
-					ActionCancelRule
-					{
-						.cancelKind = ActionCancelKind::HoldRelease,
-						.toActionId = ActionId::None,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 10
-					},
-					ActionCancelRule
-					{
-						.cancelKind = ActionCancelKind::LightAttackCancel,
-						.toActionId = ActionId::Knight_LightAttack1,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionCancelRule
-					{
-						.cancelKind = ActionCancelKind::HeavyAttackCancel,
-						.toActionId = ActionId::Knight_HeavyAttack,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 110
-					},
-					ActionCancelRule
-					{
-						.cancelKind = ActionCancelKind::DodgeCancel,
-						.toActionId = ActionId::Knight_Dodge,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionCancelRule
-					{
-						.cancelKind = ActionCancelKind::ParryCancel,
-						.toActionId = ActionId::Knight_Parry,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 300
-					}
-				}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Guard,
-					.startNormalized = 0.05f,
-					.endNormalized = 1.0f,
-					.appliesTo = ActionCombatApplyTo::GuardableAttack,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 60.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = std::nullopt,
-						.verticalTolerance = std::nullopt,
-						.referenceFrame = CombatReferenceFrame::OwnerFacing
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::GuardResponse,
-						.attackHit = std::nullopt,
-						.parryResponse = std::nullopt,
-						.guardResponse = GuardCombatEffectDef
-						{
-							.damageReductionRatio = 0.85f,
-							.chipDamageRatio = 0.10f,
-							.staminaDamageMultiplier = 1.20f,
-							.hitStopSec = 0.04f
-						}
-					}
-				}
-			},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Knight_Stun,
-			.name = "Knight.Stun",
-			.kind = ActionKind::Stun,
-			.duration = 3.16f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Knight_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Knight_Hit,
-			.name = "Knight.Hit",
-			.kind = ActionKind::Hit,
-			.duration = 1.63f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Knight_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Knight_Dead,
-			.name = "Knight.Dead",
-			.kind = ActionKind::Dead,
-			.duration = 3.86f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules = {},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_melee1,
-			.name = "Imp.Melee1",
-			.kind = ActionKind::Attack,
-			.duration = 1.06f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Imp_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Imp_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.30f,
-					.endNormalized = 0.74f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 52.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 2.20f,
-						.verticalTolerance = 1.20f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 0.6f,
-							.bonusDamage = 2.0f,
-							.staminaDamageScale = 0.4f,
-							.bonusStaminaDamage = 2.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.20f,
-							.hitStopSec = 0.04f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.10f,
-					.endNormalized = 0.36f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 5.5f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_melee2,
-			.name = "Imp.Melee2",
-			.kind = ActionKind::Attack,
-			.duration = 2.63f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Imp_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Imp_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.46f,
-					.endNormalized = 0.68f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 62.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 2.35f,
-						.verticalTolerance = 1.20f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 0.7f,
-							.bonusDamage = 3.0f,
-							.staminaDamageScale = 0.5f,
-							.bonusStaminaDamage = 2.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.25f,
-							.hitStopSec = 0.04f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.12f,
-					.endNormalized = 0.38f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 4.5f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_melee3,
-			.name = "Imp.Melee3",
-			.kind = ActionKind::Attack,
-			.duration = 2.23f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Imp_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Imp_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.26f,
-					.endNormalized = 0.46f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 58.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 2.30f,
-						.verticalTolerance = 1.20f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 0.8f,
-							.bonusDamage = 4.0f,
-							.staminaDamageScale = 0.6f,
-							.bonusStaminaDamage = 2.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.30f,
-							.hitStopSec = 0.05f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.14f,
-					.endNormalized = 0.40f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 5.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_melee4,
-			.name = "Imp.Melee4",
-			.kind = ActionKind::Attack,
-			.duration = 2.36f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Imp_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Imp_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.22f,
-					.endNormalized = 0.84f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 72.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 2.50f,
-						.verticalTolerance = 1.20f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 0.9f,
-							.bonusDamage = 5.0f,
-							.staminaDamageScale = 0.8f,
-							.bonusStaminaDamage = 2.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.38f,
-							.hitStopSec = 0.05f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.16f,
-					.endNormalized = 0.42f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 4.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_melee5,
-			.name = "Imp.Melee5",
-			.kind = ActionKind::Attack,
-			.duration = 2.60f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Imp_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::Imp_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.28f,
-					.endNormalized = 0.66f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 68.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 2.60f,
-						.verticalTolerance = 1.20f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.1f,
-							.bonusDamage = 7.0f,
-							.staminaDamageScale = 1.0f,
-							.bonusStaminaDamage = 2.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.55f,
-							.hitStopSec = 0.06f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.18f,
-					.endNormalized = 0.46f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 3.5f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_Jump,
-			.name = "Imp.Jump",
-			.kind = ActionKind::NonCombat,
-			.duration = 2.333331f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::Imp_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_Stun,
-			.name = "Imp.Stun",
-			.kind = ActionKind::Stun,
-			.duration = 2.0f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_Hit,
-			.name = "Imp.Hit",
-			.kind = ActionKind::Hit,
-			.duration = 1.16f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::Imp_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::Imp_Dead,
-			.name = "Imp.Dead",
-			.kind = ActionKind::Dead,
-			.duration = 2.33f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules = {},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Melee_1,
-			.name = "DemonStriker.Melee1",
-			.kind = ActionKind::Attack,
-			.duration = 2.46666718f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonStriker_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::DemonStriker_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.30f,
-					.endNormalized = 0.58f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 56.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 2.80f,
-						.verticalTolerance = 1.50f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 0.9f,
-							.bonusDamage = 4.0f,
-							.staminaDamageScale = 0.6f,
-							.bonusStaminaDamage = 2.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.35f,
-							.hitStopSec = 0.05f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.30f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 4.5f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Melee_2,
-			.name = "DemonStriker.Melee2",
-			.kind = ActionKind::Attack,
-			.duration = 3.9666667f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonStriker_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::DemonStriker_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.42f,
-					.endNormalized = 0.70f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 68.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 3.20f,
-						.verticalTolerance = 1.50f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.1f,
-							.bonusDamage = 6.0f,
-							.staminaDamageScale = 0.8f,
-							.bonusStaminaDamage = 3.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.45f,
-							.hitStopSec = 0.06f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.42f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 4.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Melee_3,
-			.name = "DemonStriker.Melee3",
-			.kind = ActionKind::Attack,
-			.duration = 2.13333678f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonStriker_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::DemonStriker_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.24f,
-					.endNormalized = 0.48f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 60.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 2.90f,
-						.verticalTolerance = 1.50f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.0f,
-							.bonusDamage = 5.0f,
-							.staminaDamageScale = 0.7f,
-							.bonusStaminaDamage = 2.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.40f,
-							.hitStopSec = 0.05f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.24f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 5.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Melee_4,
-			.name = "DemonStriker.Melee4",
-			.kind = ActionKind::Attack,
-			.duration = 2.29999876f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonStriker_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::DemonStriker_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.30f,
-					.endNormalized = 0.76f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 74.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 3.40f,
-						.verticalTolerance = 1.50f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.25f,
-							.bonusDamage = 8.0f,
-							.staminaDamageScale = 1.0f,
-							.bonusStaminaDamage = 3.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.60f,
-							.hitStopSec = 0.07f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.30f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 4.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Gun_Shoot_1,
-			.name = "DemonStriker.GunShoot1",
-			.kind = ActionKind::Attack,
-			.duration = 6.300006f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonStriker_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events =
-			{
-				ActionEventDef
-				{
-					.type = EventType::SpawnProjectile,
-					.timeNormalized = 0.52f,
-					.payloadId = std::nullopt,
-					.conditionType = TriggerConditionType::Always
-				}
-			},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.52f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 4.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Gun_Shoot_2,
-			.name = "DemonStriker.GunShoot2",
-			.kind = ActionKind::Attack,
-			.duration = 2.46666718f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonStriker_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events =
-			{
-				ActionEventDef
-				{
-					.type = EventType::SpawnProjectile,
-					.timeNormalized = 0.45f,
-					.payloadId = std::nullopt,
-					.conditionType = TriggerConditionType::Always
-				}
-			},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.45f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 4.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Gun_Shoot_3,
-			.name = "DemonStriker.GunShoot3",
-			.kind = ActionKind::Attack,
-			.duration = 0.6333343f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonStriker_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events =
-			{
-				ActionEventDef
-				{
-					.type = EventType::SpawnProjectile,
-					.timeNormalized = 0.35f,
-					.payloadId = std::nullopt,
-					.conditionType = TriggerConditionType::Always
-				}
-			},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.35f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 4.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Gun_Shoot_4,
-			.name = "DemonStriker.GunShoot4",
-			.kind = ActionKind::Attack,
-			.duration = 1.63333571f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonStriker_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events =
-			{
-				ActionEventDef
-				{
-					.type = EventType::SpawnProjectile,
-					.timeNormalized = 0.42f,
-					.payloadId = std::nullopt,
-					.conditionType = TriggerConditionType::Always
-				}
-			},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.42f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 4.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Jump_1,
-			.name = "DemonStriker.Jump1",
-			.kind = ActionKind::NonCombat,
-			.duration = 3.63333678f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonStriker_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Jump_2,
-			.name = "DemonStriker.Jump2",
-			.kind = ActionKind::NonCombat,
-			.duration = 2.96666455f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonStriker_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Stun,
-			.name = "DemonStriker.Stun",
-			.kind = ActionKind::Stun,
-			.duration = 1.43333209f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Hit,
-			.name = "DemonStriker.Hit",
-			.kind = ActionKind::Hit,
-			.duration = 0.8f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonStriker_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonStriker_Dead,
-			.name = "DemonStriker.Dead",
-			.kind = ActionKind::Dead,
-			.duration = 4.633338f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules = {},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Melee_1,
-			.name = "DemonExecutioner.Melee1",
-			.kind = ActionKind::Attack,
-			.duration = 2.6333375f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonExecutioner_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::DemonExecutioner_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonExecutioner_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.34f,
-					.endNormalized = 0.62f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 62.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 3.60f,
-						.verticalTolerance = 1.50f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.2f,
-							.bonusDamage = 8.0f,
-							.staminaDamageScale = 0.9f,
-							.bonusStaminaDamage = 3.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.55f,
-							.hitStopSec = 0.06f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.34f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 3.8f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Melee_2,
-			.name = "DemonExecutioner.Melee2",
-			.kind = ActionKind::Attack,
-			.duration = 3.9666667f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonExecutioner_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::DemonExecutioner_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonExecutioner_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.46f,
-					.endNormalized = 0.76f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 76.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 4.20f,
-						.verticalTolerance = 1.50f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.45f,
-							.bonusDamage = 10.0f,
-							.staminaDamageScale = 1.1f,
-							.bonusStaminaDamage = 4.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.70f,
-							.hitStopSec = 0.07f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.46f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 3.2f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Melee_3,
-			.name = "DemonExecutioner.Melee3",
-			.kind = ActionKind::Attack,
-			.duration = 2.96666455f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonExecutioner_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::DemonExecutioner_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonExecutioner_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.30f,
-					.endNormalized = 0.56f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 68.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 3.80f,
-						.verticalTolerance = 1.50f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.35f,
-							.bonusDamage = 9.0f,
-							.staminaDamageScale = 1.0f,
-							.bonusStaminaDamage = 3.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.65f,
-							.hitStopSec = 0.06f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.30f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 3.6f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Melee_4,
-			.name = "DemonExecutioner.Melee4",
-			.kind = ActionKind::Attack,
-			.duration = 2.96666455f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonExecutioner_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::DemonExecutioner_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonExecutioner_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.38f,
-					.endNormalized = 0.70f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 74.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 4.00f,
-						.verticalTolerance = 1.50f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.5f,
-							.bonusDamage = 11.0f,
-							.staminaDamageScale = 1.2f,
-							.bonusStaminaDamage = 4.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.75f,
-							.hitStopSec = 0.07f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.38f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 3.4f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Melee_5,
-			.name = "DemonExecutioner.Melee5",
-			.kind = ActionKind::Attack,
-			.duration = 2.96666455f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonExecutioner_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::DemonExecutioner_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonExecutioner_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.26f,
-					.endNormalized = 0.64f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 80.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 4.40f,
-						.verticalTolerance = 1.50f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.6f,
-							.bonusDamage = 12.0f,
-							.staminaDamageScale = 1.3f,
-							.bonusStaminaDamage = 5.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.85f,
-							.hitStopSec = 0.08f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.26f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 3.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Melee_6,
-			.name = "DemonExecutioner.Melee6",
-			.kind = ActionKind::Attack,
-			.duration = 0.9666661f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::HasTarget,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				},
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonExecutioner_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnParried,
-						.toActionId = ActionId::DemonExecutioner_Stun,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 200
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonExecutioner_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows =
-			{
-				ActionCombatWindowDef
-				{
-					.windowType = CombatWindowType::Attack,
-					.startNormalized = 0.22f,
-					.endNormalized = 0.58f,
-					.appliesTo = ActionCombatApplyTo::FrontPhysical,
-					.spatialFilter = ActionCombatSpatialFilterDef
-					{
-						.facingHalfAngleDeg = 58.0f,
-						.minDistance = std::nullopt,
-						.maxDistance = 3.50f,
-						.verticalTolerance = 1.50f,
-						.referenceFrame = CombatReferenceFrame::LockedActionDirection
-					},
-					.effect = CombatEffectDef
-					{
-						.type = CombatEffectType::AttackHit,
-						.attackHit = AttackCombatEffectDef
-						{
-							.damageScale = 1.0f,
-							.bonusDamage = 6.0f,
-							.staminaDamageScale = 0.8f,
-							.bonusStaminaDamage = 3.0f,
-							.poiseDamageScale = 0.0f,
-							.bonusPoiseDamage = 0.0f,
-							.knockbackDistance = 0.50f,
-							.hitStopSec = 0.05f,
-							.parryable = true,
-							.guardable = true
-						},
-						.parryResponse = std::nullopt,
-						.guardResponse = std::nullopt
-					}
-				}
-			},
-			.events = {},
-			.moveSegments =
-			{
-				ActionMovementSegmentDef
-				{
-					.startNormalized = 0.08f,
-					.endNormalized = 0.22f,
-					.horizontalMoveMode = HorizontalMovementMode::None,
-					.moveDistance = std::nullopt,
-					.rotationMode = RotationMode::FaceTarget,
-					.rotationRate = 5.0f,
-					.verticalMoveMode = VerticalMovementMode::None,
-					.verticalAmount = std::nullopt,
-					.dirPolicy = DirectionPolicy::TargetDirection,
-					.dirSampleTiming = DirectionSampleTiming::OnSegmentStart
-				}
-			}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Jump_1,
-			.name = "DemonExecutioner.Jump1",
-			.kind = ActionKind::NonCombat,
-			.duration = 1.966665f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonExecutioner_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonExecutioner_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Jump_2,
-			.name = "DemonExecutioner.Jump2",
-			.kind = ActionKind::NonCombat,
-			.duration = 2.96666455f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements =
-			{
-				ActionRequestRequirementDef
-				{
-					.type = ActionRequestRequirementType::IsGrounded,
-					.scalar = std::nullopt,
-					.stateFlag = std::nullopt
-				}
-			},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHitReceived,
-						.toActionId = ActionId::DemonExecutioner_Hit,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 100
-					},
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonExecutioner_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Stun,
-			.name = "DemonExecutioner.Stun",
-			.kind = ActionKind::Stun,
-			.duration = 2.0f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonExecutioner_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Hit,
-			.name = "DemonExecutioner.Hit",
-			.kind = ActionKind::Hit,
-			.duration = 0.6333343f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules =
-				{
-					ActionInterruptRule
-					{
-						.causeType = ActionInterruptCauseType::OnHpZero,
-						.toActionId = ActionId::DemonExecutioner_Dead,
-						.windowPolicy = ActionWindowPolicy::Always,
-						.windowStartNormalized = std::nullopt,
-						.windowEndNormalized = std::nullopt,
-						.priority = 1000
-					}
-				},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
-		},
-
-		ActionDef
-		{
-			.id = ActionId::DemonExecutioner_Dead,
-			.name = "DemonExecutioner.Dead",
-			.kind = ActionKind::Dead,
-			.duration = 3.46666217f,
-			.normalizedPolicy = ActionNormalizedPolicy::FixedDuration,
-			.endPolicy = ActionEndPolicyDef
-			{
-				.endType = ActionEndType::NaturalEnd,
-				.defaultNextActionId = ActionId::None
-			},
-			.requestRequirements = {},
-			.resourceCosts = {},
-			.transitionRule = ActionTransitionRuleDef
-			{
-				.interruptRules = {},
-				.cancelRules = {}
-			},
-			.combatWindows = {},
-			.events = {},
-			.moveSegments = {}
+			return def.id;
 		}
 	};
 
-	const std::array<CharacterActionProfileDef, 5> kCharacterActionProfiles =
+	struct CharacterActionProfileDefTraits
 	{
-		CharacterActionProfileDef
+		static CharacterActionProfileId GetId(
+			const CharacterActionProfileDef& def) noexcept
 		{
-			.id = CharacterActionProfileIds::Knight,
-			.characterId = CharacterId::Knight,
-			.availableActions =
-			{
-				ActionId::Knight_LightAttack1,
-				ActionId::Knight_LightAttack2,
-				ActionId::Knight_LightAttack3,
-				ActionId::Knight_HeavyAttack,
-				ActionId::Knight_Dodge,
-				ActionId::Knight_Parry,
-				ActionId::Knight_Stun,
-				ActionId::Knight_Hit,
-				ActionId::Knight_Guard,
-				ActionId::Knight_UseHpPotion,
-				ActionId::Knight_Dead
-			},
-			.inputBindingProfileId = ActionInputBindingProfileIds::Knight,
-			.fallbackReactionProfileId = ActionFallbackReactionProfileIds::Knight,
-			.animationBindingProfileId = AnimationBindingProfileIds::Knight
-		},
-		CharacterActionProfileDef
-		{
-			.id = CharacterActionProfileIds::Imp,
-			.characterId = CharacterId::Imp,
-			.availableActions =
-			{
-				ActionId::Imp_melee1,
-				ActionId::Imp_melee3,
-				ActionId::Imp_melee4,
-				ActionId::Imp_melee5,
-				ActionId::Imp_Jump,
-				ActionId::Imp_Stun,
-				ActionId::Imp_Hit,
-				ActionId::Imp_Dead
-			},
-			.inputBindingProfileId = ActionInputBindingProfileIds::Imp,
-			.fallbackReactionProfileId = ActionFallbackReactionProfileIds::Imp,
-			.animationBindingProfileId = AnimationBindingProfileIds::Imp
-		},
-		CharacterActionProfileDef
-		{
-			.id = CharacterActionProfileIds::FinalBoss,
-			.characterId = CharacterId::FinalBoss,
-			.availableActions =
-			{
-				ActionId::FinalBoss_Thrust,
-				ActionId::FinalBoss_Slash,
-				ActionId::FinalBoss_DashSlash,
-				ActionId::FinalBoss_JumpSlash,
-				ActionId::FinalBoss_MultiSlash,
-				ActionId::FinalBoss_Stun,
-				ActionId::FinalBoss_Hit,
-				ActionId::FinalBoss_Dead
-			},
-			.inputBindingProfileId = ActionInputBindingProfileIds::FinalBoss,
-			.fallbackReactionProfileId = ActionFallbackReactionProfileIds::FinalBoss,
-			.animationBindingProfileId = AnimationBindingProfileIds::FinalBoss
-		},
-		CharacterActionProfileDef
-		{
-			.id = CharacterActionProfileIds::DemonStriker,
-			.characterId = CharacterId::DemonStriker,
-			.availableActions =
-			{
-				ActionId::DemonStriker_Melee_1,
-				ActionId::DemonStriker_Melee_2,
-				ActionId::DemonStriker_Melee_3,
-				ActionId::DemonStriker_Melee_4,
-				ActionId::DemonStriker_Gun_Shoot_1,
-				ActionId::DemonStriker_Gun_Shoot_2,
-				ActionId::DemonStriker_Gun_Shoot_3,
-				ActionId::DemonStriker_Gun_Shoot_4,
-				ActionId::DemonStriker_Jump_1,
-				ActionId::DemonStriker_Jump_2,
-				ActionId::DemonStriker_Stun,
-				ActionId::DemonStriker_Hit,
-				ActionId::DemonStriker_Dead
-			},
-			.inputBindingProfileId = ActionInputBindingProfileIds::DemonStriker,
-			.fallbackReactionProfileId = ActionFallbackReactionProfileIds::DemonStriker,
-			.animationBindingProfileId = AnimationBindingProfileIds::DemonStriker
-		},
-		CharacterActionProfileDef
-		{
-			.id = CharacterActionProfileIds::DemonExecutioner,
-			.characterId = CharacterId::DemonExecutioner,
-			.availableActions =
-			{
-				ActionId::DemonExecutioner_Melee_1,
-				ActionId::DemonExecutioner_Melee_2,
-				ActionId::DemonExecutioner_Melee_3,
-				ActionId::DemonExecutioner_Melee_4,
-				ActionId::DemonExecutioner_Melee_5,
-				ActionId::DemonExecutioner_Melee_6,
-				ActionId::DemonExecutioner_Jump_1,
-				ActionId::DemonExecutioner_Jump_2,
-				ActionId::DemonExecutioner_Stun,
-				ActionId::DemonExecutioner_Hit,
-				ActionId::DemonExecutioner_Dead
-			},
-			.inputBindingProfileId = ActionInputBindingProfileIds::DemonExecutioner,
-			.fallbackReactionProfileId = ActionFallbackReactionProfileIds::DemonExecutioner,
-			.animationBindingProfileId = AnimationBindingProfileIds::DemonExecutioner
+			return def.id;
 		}
 	};
 
-	const std::array<ActionInputBindingProfileDef, 5> kActionInputBindingProfiles =
+	struct ActionInputBindingProfileDefTraits
 	{
-		ActionInputBindingProfileDef
+		static ActionInputBindingProfileId GetId(
+			const ActionInputBindingProfileDef& def) noexcept
 		{
-			.id = ActionInputBindingProfileIds::Knight,
-			.entries =
-			{
-				ActionInputBindingEntryDef
-				{
-					.request = ActionRequestSemantic::LightAttack,
-					.candidateActions =
-					{
-						ActionId::Knight_LightAttack1,
-						ActionId::Knight_LightAttack2,
-						ActionId::Knight_LightAttack3
-					},
-					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
-					.priority = 100
-				},
-				ActionInputBindingEntryDef
-				{
-					.request = ActionRequestSemantic::HeavyAttack,
-					.candidateActions = { ActionId::Knight_HeavyAttack },
-					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
-					.priority = 100
-				},
-				ActionInputBindingEntryDef
-				{
-					.request = ActionRequestSemantic::Dodge,
-					.candidateActions = { ActionId::Knight_Dodge },
-					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
-					.priority = 100
-				},
-				ActionInputBindingEntryDef
-				{
-					.request = ActionRequestSemantic::Parry,
-					.candidateActions = { ActionId::Knight_Parry },
-					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
-					.priority = 100
-				},
-				ActionInputBindingEntryDef
-				{
-					.request = ActionRequestSemantic::GuardStart,
-					.candidateActions = { ActionId::Knight_Guard },
-					.selectionPolicy = ActionCandidateSelectionPolicy::OrderedFirstValid,
-					.priority = 100
-				}
-			}
-		},
-		ActionInputBindingProfileDef
-		{
-			.id = ActionInputBindingProfileIds::Imp,
-			.entries = {}
-		},
-		ActionInputBindingProfileDef
-		{
-			.id = ActionInputBindingProfileIds::FinalBoss,
-			.entries = {}
-		},
-		ActionInputBindingProfileDef
-		{
-			.id = ActionInputBindingProfileIds::DemonStriker,
-			.entries = {}
-		},
-		ActionInputBindingProfileDef
-		{
-			.id = ActionInputBindingProfileIds::DemonExecutioner,
-			.entries = {}
+			return def.id;
 		}
 	};
 
-	const std::array<ActionFallbackReactionProfileDef, 5> kActionFallbackReactionProfiles =
+	struct ActionFallbackReactionProfileDefTraits
 	{
-		ActionFallbackReactionProfileDef
+		static ActionFallbackReactionProfileId GetId(
+			const ActionFallbackReactionProfileDef& def) noexcept
 		{
-			.id = ActionFallbackReactionProfileIds::Knight,
-			.entries =
-			{
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnHitReceived,
-					.toActionId = ActionId::Knight_Hit,
-					.priority = 100
-				},
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnParried,
-					.toActionId = ActionId::Knight_Stun,
-					.priority = 200
-				},
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnHpZero,
-					.toActionId = ActionId::Knight_Dead,
-					.priority = 1000
-				}
-			}
-		},
-		ActionFallbackReactionProfileDef
-		{
-			.id = ActionFallbackReactionProfileIds::Imp,
-			.entries =
-			{
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnHitReceived,
-					.toActionId = ActionId::Imp_Hit,
-					.priority = 100
-				},
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnParried,
-					.toActionId = ActionId::Imp_Stun,
-					.priority = 200
-				},
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnHpZero,
-					.toActionId = ActionId::Imp_Dead,
-					.priority = 1000
-				}
-			}
-		},
-		ActionFallbackReactionProfileDef
-		{
-			.id = ActionFallbackReactionProfileIds::FinalBoss,
-			.entries =
-			{
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnHitReceived,
-					.toActionId = ActionId::FinalBoss_Hit,
-					.priority = 100
-				},
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnParried,
-					.toActionId = ActionId::FinalBoss_Stun,
-					.priority = 200
-				},
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnHpZero,
-					.toActionId = ActionId::FinalBoss_Dead,
-					.priority = 1000
-				}
-			}
-		},
-		ActionFallbackReactionProfileDef
-		{
-			.id = ActionFallbackReactionProfileIds::DemonStriker,
-			.entries =
-			{
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnHitReceived,
-					.toActionId = ActionId::DemonStriker_Hit,
-					.priority = 100
-				},
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnParried,
-					.toActionId = ActionId::DemonStriker_Stun,
-					.priority = 200
-				},
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnHpZero,
-					.toActionId = ActionId::DemonStriker_Dead,
-					.priority = 1000
-				}
-			}
-		},
-		ActionFallbackReactionProfileDef
-		{
-			.id = ActionFallbackReactionProfileIds::DemonExecutioner,
-			.entries =
-			{
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnHitReceived,
-					.toActionId = ActionId::DemonExecutioner_Hit,
-					.priority = 100
-				},
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnParried,
-					.toActionId = ActionId::DemonExecutioner_Stun,
-					.priority = 200
-				},
-				ActionFallbackReactionEntryDef
-				{
-					.causeType = ActionInterruptCauseType::OnHpZero,
-					.toActionId = ActionId::DemonExecutioner_Dead,
-					.priority = 1000
-				}
-			}
+			return def.id;
 		}
 	};
 
-	const std::array<AnimationBindingProfileDef, 5> kAnimationBindingProfiles =
+	struct AnimationBindingProfileDefTraits
 	{
-		AnimationBindingProfileDef
+		static AnimationBindingProfileId GetId(
+			const AnimationBindingProfileDef& def) noexcept
 		{
-			.id = AnimationBindingProfileIds::Knight,
-			.actionBindings =
-			{
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Knight_LightAttack1,
-					.animationId = AnimationId::Knight_LightAttack1
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Knight_Dodge,
-					.animationId = AnimationId::Knight_Dodge
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Knight_Parry,
-					.animationId = AnimationId::Knight_Parry
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Knight_Stun,
-					.animationId = AnimationId::Knight_Stun
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Knight_Hit,
-					.animationId = AnimationId::Knight_Hit
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Knight_Guard,
-					.animationId = AnimationId::Knight_Guard
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Knight_UseHpPotion,
-					.animationId = AnimationId::Knight_Drinking
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Knight_Dead,
-					.animationId = AnimationId::Knight_Death
-				}
-			},
-			.locomotionBindings =
-			{
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Idle,
-					.animationId = AnimationId::Knight_Idle,
-					.holdLastFrame = true
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Walk,
-					.animationId = AnimationId::Knight_Walk
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Run,
-					.animationId = AnimationId::Knight_Run
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Turn,
-					.animationId = AnimationId::Knight_Walk
-				}
-			}
-		},
-		AnimationBindingProfileDef
-		{
-			.id = AnimationBindingProfileIds::Imp,
-			.actionBindings =
-			{
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Imp_melee1,
-					.animationId = AnimationId::Imp_Melee_1
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Imp_melee2,
-					.animationId = AnimationId::Imp_Melee_2
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Imp_melee3,
-					.animationId = AnimationId::Imp_Melee_3
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Imp_melee4,
-					.animationId = AnimationId::Imp_Melee_4
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Imp_melee5,
-					.animationId = AnimationId::Imp_Melee_5
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Imp_Jump,
-					.animationId = AnimationId::Imp_Jump_1
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Imp_Hit,
-					.animationId = AnimationId::Imp_React_Front
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Imp_Stun,
-					.animationId = AnimationId::Imp_Stun
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::Imp_Dead,
-					.animationId = AnimationId::Imp_Death_1
-				}
-			},
-			.locomotionBindings =
-			{
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Idle,
-					.animationId = AnimationId::Imp_Idle_1,
-					.holdLastFrame = true
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Walk,
-					.animationId = AnimationId::Imp_Walk_Forward
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Run,
-					.animationId = AnimationId::Imp_Walk_Forward
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Turn,
-					.animationId = AnimationId::Imp_Walk_Forward
-				}
-			}
-		},
-		AnimationBindingProfileDef
-		{
-			.id = AnimationBindingProfileIds::FinalBoss,
-			.actionBindings =
-			{
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::FinalBoss_Thrust,
-					.animationId = AnimationId::FinalBoss_Thrust
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::FinalBoss_Slash,
-					.animationId = AnimationId::FinalBoss_Slash
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::FinalBoss_DashSlash,
-					.animationId = AnimationId::FinalBoss_DashSlash
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::FinalBoss_JumpSlash,
-					.animationId = AnimationId::FinalBoss_JumpSlash
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::FinalBoss_MultiSlash,
-					.animationId = AnimationId::FinalBoss_MultiSlash
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::FinalBoss_Stun,
-					.animationId = AnimationId::FinalBoss_Stun
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::FinalBoss_Hit,
-					.animationId = AnimationId::FinalBoss_Hit
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::FinalBoss_Dead,
-					.animationId = AnimationId::FinalBoss_Death
-				}
-			},
-			.locomotionBindings =
-			{
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Idle,
-					.animationId = AnimationId::FinalBoss_Idle,
-					.holdLastFrame = true
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Walk,
-					.animationId = AnimationId::FinalBoss_Walk
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Run,
-					.animationId = AnimationId::FinalBoss_Walk
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Turn,
-					.animationId = AnimationId::FinalBoss_Walk
-				}
-			}
-		},
-		AnimationBindingProfileDef
-		{
-			.id = AnimationBindingProfileIds::DemonStriker,
-			.actionBindings =
-			{
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Melee_1,
-					.animationId = AnimationId::DemonStriker_Melee_1
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Melee_2,
-					.animationId = AnimationId::DemonStriker_Melee_2
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Melee_3,
-					.animationId = AnimationId::DemonStriker_Melee_3
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Melee_4,
-					.animationId = AnimationId::DemonStriker_Melee_4
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Gun_Shoot_1,
-					.animationId = AnimationId::DemonStriker_Gun_Shoot_1
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Gun_Shoot_2,
-					.animationId = AnimationId::DemonStriker_Gun_Shoot_2
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Gun_Shoot_3,
-					.animationId = AnimationId::DemonStriker_Gun_Shoot_3
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Gun_Shoot_4,
-					.animationId = AnimationId::DemonStriker_Gun_Shoot_4
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Jump_1,
-					.animationId = AnimationId::DemonStriker_Jump_1
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Jump_2,
-					.animationId = AnimationId::DemonStriker_Jump_2
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Stun,
-					.animationId = AnimationId::DemonStriker_Stun
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Hit,
-					.animationId = AnimationId::DemonStriker_React_1_Block
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonStriker_Dead,
-					.animationId = AnimationId::DemonStriker_Death_1
-				}
-			},
-			.locomotionBindings =
-			{
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Idle,
-					.animationId = AnimationId::DemonStriker_Idle_1,
-					.holdLastFrame = true
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Walk,
-					.animationId = AnimationId::DemonStriker_Walking_1
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Run,
-					.animationId = AnimationId::DemonStriker_Running_1
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Turn,
-					.animationId = AnimationId::DemonStriker_Walking_1
-				}
-			}
-		},
-		AnimationBindingProfileDef
-		{
-			.id = AnimationBindingProfileIds::DemonExecutioner,
-			.actionBindings =
-			{
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Melee_1,
-					.animationId = AnimationId::DemonExecutioner_Melee_1
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Melee_2,
-					.animationId = AnimationId::DemonExecutioner_Melee_2
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Melee_3,
-					.animationId = AnimationId::DemonExecutioner_Melee_3
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Melee_4,
-					.animationId = AnimationId::DemonExecutioner_Melee_4
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Melee_5,
-					.animationId = AnimationId::DemonExecutioner_Melee_5
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Melee_6,
-					.animationId = AnimationId::DemonExecutioner_Melee_6
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Jump_1,
-					.animationId = AnimationId::DemonExecutioner_Jump_1
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Jump_2,
-					.animationId = AnimationId::DemonExecutioner_Jump_2
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Stun,
-					.animationId = AnimationId::DemonExecutioner_Stun
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Hit,
-					.animationId = AnimationId::DemonExecutioner_GetHit_1
-				},
-				ActionAnimationBindingDef
-				{
-					.actionId = ActionId::DemonExecutioner_Dead,
-					.animationId = AnimationId::DemonExecutioner_Death
-				}
-			},
-			.locomotionBindings =
-			{
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Idle,
-					.animationId = AnimationId::DemonExecutioner_Idle_2,
-					.holdLastFrame = true
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Walk,
-					.animationId = AnimationId::DemonExecutioner_Walk_Forward
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Run,
-					.animationId = AnimationId::DemonExecutioner_Run
-				},
-				LocomotionAnimationBindingDef
-				{
-					.mode = LocomotionMode::Turn,
-					.animationId = AnimationId::DemonExecutioner_Walk_Forward
-				}
-			}
+			return def.id;
 		}
 	};
+
+	using ActionDefRegistry =
+		DefRegistry<ActionDef, ActionId, ActionDefTraits>;
+	using CharacterActionProfileDefRegistry = DefRegistry<
+		CharacterActionProfileDef,
+		CharacterActionProfileId,
+		CharacterActionProfileDefTraits>;
+	using ActionInputBindingProfileDefRegistry = DefRegistry<
+		ActionInputBindingProfileDef,
+		ActionInputBindingProfileId,
+		ActionInputBindingProfileDefTraits>;
+	using ActionFallbackReactionProfileDefRegistry = DefRegistry<
+		ActionFallbackReactionProfileDef,
+		ActionFallbackReactionProfileId,
+		ActionFallbackReactionProfileDefTraits>;
+	using AnimationBindingProfileDefRegistry = DefRegistry<
+		AnimationBindingProfileDef,
+		AnimationBindingProfileId,
+		AnimationBindingProfileDefTraits>;
+
+	struct ActionDefinitionRegistries
+	{
+		ActionDefRegistry actions;
+		CharacterActionProfileDefRegistry characterActionProfiles;
+		ActionInputBindingProfileDefRegistry inputBindingProfiles;
+		ActionFallbackReactionProfileDefRegistry fallbackReactionProfiles;
+		AnimationBindingProfileDefRegistry animationBindingProfiles;
+		std::unordered_map<
+			CharacterId,
+			CharacterActionProfileId,
+			DefRegistryIdHash<CharacterId>> characterProfileByCharacter;
+	};
+
+	struct ParsedActionDefinitions
+	{
+		std::vector<ActionDef> actions;
+		std::vector<CharacterActionProfileDef> characterActionProfiles;
+		std::vector<ActionInputBindingProfileDef> inputBindingProfiles;
+		std::vector<ActionFallbackReactionProfileDef> fallbackReactionProfiles;
+		std::vector<AnimationBindingProfileDef> animationBindingProfiles;
+	};
+
+	ActionDefinitionRegistries& GetActionDefinitionRegistries() noexcept
+	{
+		static ActionDefinitionRegistries registries;
+		return registries;
+	}
+
+	template<typename TEnum>
+	bool ReadEnum(
+		const json& node,
+		const char* field,
+		TEnum& outValue,
+		const char* typeName,
+		std::string& outError)
+	{
+		std::string text;
+		if (!ReadRequiredString(node, field, text, outError))
+			return false;
+
+		if (!ParseDefString(text, outValue))
+		{
+			outError = std::string("Unknown ") + typeName + ": " + text;
+			return false;
+		}
+
+		return true;
+	}
+
+	template<typename TEnum>
+	bool ReadNullableEnum(
+		const json& node,
+		const char* field,
+		std::optional<TEnum>& outValue,
+		const char* typeName,
+		std::string& outError)
+	{
+		if (!node.contains(field) || node.at(field).is_null())
+		{
+			outValue = std::nullopt;
+			return true;
+		}
+
+		TEnum value{};
+		if (!ReadEnum(node, field, value, typeName, outError))
+			return false;
+
+		outValue = value;
+		return true;
+	}
+
+	template<typename TValue>
+	bool ReadNullableNumber(
+		const json& node,
+		const char* field,
+		std::optional<TValue>& outValue,
+		std::string& outError)
+	{
+		if (!node.contains(field) || node.at(field).is_null())
+		{
+			outValue = std::nullopt;
+			return true;
+		}
+
+		if (!node.at(field).is_number())
+		{
+			outError = std::string("Invalid numeric field: ") + field;
+			return false;
+		}
+
+		outValue = node.at(field).get<TValue>();
+		return true;
+	}
+
+	template<typename TId, typename TParser>
+	bool ReadNamedId(
+		const json& node,
+		const char* field,
+		TId& outValue,
+		const char* typeName,
+		TParser parser,
+		std::string& outError)
+	{
+		std::string text;
+		if (!ReadRequiredString(node, field, text, outError))
+			return false;
+
+		if (!parser(text, outValue))
+		{
+			outError = std::string("Unknown ") + typeName + ": " + text;
+			return false;
+		}
+
+		return true;
+	}
+
+	template<typename TDef, typename TParser>
+	bool ParseRequiredArray(
+		const json& node,
+		const char* field,
+		std::vector<TDef>& outValues,
+		TParser parser,
+		std::string& outError)
+	{
+		if (!node.contains(field) || !node.at(field).is_array())
+		{
+			outError = std::string("Missing or invalid array field: ") + field;
+			return false;
+		}
+
+		const json& arrayNode = node.at(field);
+		outValues.clear();
+		outValues.reserve(arrayNode.size());
+		for (const json& item : arrayNode)
+		{
+			TDef value{};
+			if (!parser(item, value, outError))
+				return false;
+
+			outValues.push_back(std::move(value));
+		}
+
+		return true;
+	}
+
+	bool ParseActionIdArray(
+		const json& node,
+		const char* field,
+		std::vector<ActionId>& outValues,
+		std::string& outError)
+	{
+		if (!node.contains(field) || !node.at(field).is_array())
+		{
+			outError = std::string("Missing or invalid array field: ") + field;
+			return false;
+		}
+
+		const json& arrayNode = node.at(field);
+		outValues.clear();
+		outValues.reserve(arrayNode.size());
+		for (const json& item : arrayNode)
+		{
+			if (!item.is_string())
+			{
+				outError = std::string(field) + " entry must be a string.";
+				return false;
+			}
+
+			ActionId id{};
+			const std::string text = item.get<std::string>();
+			if (!ParseDefString(text, id))
+			{
+				outError = "Unknown ActionId: " + text;
+				return false;
+			}
+
+			outValues.push_back(id);
+		}
+
+		return true;
+	}
+
+	bool ParseEndPolicy(
+		const json& node,
+		ActionEndPolicyDef& outPolicy,
+		std::string& outError)
+	{
+		return
+			ReadEnum(node, "endType", outPolicy.endType, "ActionEndType", outError) &&
+			ReadEnum(node, "defaultNextActionId", outPolicy.defaultNextActionId, "ActionId", outError);
+	}
+
+	bool ParseRequestRequirement(
+		const json& node,
+		ActionRequestRequirementDef& outRequirement,
+		std::string& outError)
+	{
+		return
+			ReadEnum(node, "type", outRequirement.type, "ActionRequestRequirementType", outError) &&
+			ReadNullableNumber(node, "scalar", outRequirement.scalar, outError) &&
+			ReadNullableEnum(node, "stateFlag", outRequirement.stateFlag, "GameplayStateFlag", outError);
+	}
+
+	bool ParseResourceCost(
+		const json& node,
+		ActionResourceCostDef& outCost,
+		std::string& outError)
+	{
+		return
+			ReadEnum(node, "type", outCost.type, "ActionResourceType", outError) &&
+			ReadEnum(node, "consumeTiming", outCost.consumeTiming, "ActionResourceConsumeTiming", outError) &&
+			ReadRequiredNumber(node, "amount", outCost.amount, outError);
+	}
+
+	bool ParseInterruptRule(
+		const json& node,
+		ActionInterruptRule& outRule,
+		std::string& outError)
+	{
+		return
+			ReadEnum(node, "causeType", outRule.causeType, "ActionInterruptCauseType", outError) &&
+			ReadEnum(node, "toActionId", outRule.toActionId, "ActionId", outError) &&
+			ReadEnum(node, "windowPolicy", outRule.windowPolicy, "ActionWindowPolicy", outError) &&
+			ReadNullableNumber(node, "windowStartNormalized", outRule.windowStartNormalized, outError) &&
+			ReadNullableNumber(node, "windowEndNormalized", outRule.windowEndNormalized, outError) &&
+			ReadRequiredNumber(node, "priority", outRule.priority, outError);
+	}
+
+	bool ParseCancelRule(
+		const json& node,
+		ActionCancelRule& outRule,
+		std::string& outError)
+	{
+		if (!ReadEnum(node, "cancelKind", outRule.cancelKind, "ActionCancelKind", outError) ||
+			!ReadEnum(node, "toActionId", outRule.toActionId, "ActionId", outError) ||
+			!ReadEnum(node, "windowPolicy", outRule.windowPolicy, "ActionWindowPolicy", outError) ||
+			!ReadNullableNumber(node, "windowStartNormalized", outRule.windowStartNormalized, outError) ||
+			!ReadNullableNumber(node, "windowEndNormalized", outRule.windowEndNormalized, outError) ||
+			!ReadRequiredNumber(node, "priority", outRule.priority, outError))
+		{
+			return false;
+		}
+
+		if (node.contains("aiInterruptible") &&
+			!ReadRequiredBool(node, "aiInterruptible", outRule.aiInterruptible, outError))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool ParseTransitionRule(
+		const json& node,
+		ActionTransitionRuleDef& outRule,
+		std::string& outError)
+	{
+		return
+			ParseRequiredArray<ActionInterruptRule>(
+				node,
+				"interruptRules",
+				outRule.interruptRules,
+				ParseInterruptRule,
+				outError) &&
+			ParseRequiredArray<ActionCancelRule>(
+				node,
+				"cancelRules",
+				outRule.cancelRules,
+				ParseCancelRule,
+				outError);
+	}
+
+	bool ParseSpatialFilter(
+		const json& node,
+		std::optional<ActionCombatSpatialFilterDef>& outFilter,
+		std::string& outError)
+	{
+		if (node.is_null())
+		{
+			outFilter = std::nullopt;
+			return true;
+		}
+
+		ActionCombatSpatialFilterDef filter{};
+		if (!ReadNullableNumber(node, "facingHalfAngleDeg", filter.facingHalfAngleDeg, outError) ||
+			!ReadNullableNumber(node, "minDistance", filter.minDistance, outError) ||
+			!ReadNullableNumber(node, "maxDistance", filter.maxDistance, outError) ||
+			!ReadNullableNumber(node, "verticalTolerance", filter.verticalTolerance, outError))
+		{
+			return false;
+		}
+
+		if (node.contains("referenceFrame") &&
+			!ReadEnum(node, "referenceFrame", filter.referenceFrame, "CombatReferenceFrame", outError))
+		{
+			return false;
+		}
+
+		outFilter = filter;
+		return true;
+	}
+
+	bool ParseCombatEffect(
+		const json& node,
+		std::optional<CombatEffectDef>& outEffect,
+		std::string& outError)
+	{
+		if (node.is_null())
+		{
+			outEffect = std::nullopt;
+			return true;
+		}
+
+		CombatEffectDef effect{};
+		if (!ReadEnum(node, "type", effect.type, "CombatEffectType", outError))
+			return false;
+
+		if (node.contains("attackHit") && !node.at("attackHit").is_null())
+		{
+			const json& attackNode = node.at("attackHit");
+			AttackCombatEffectDef attack{};
+			if (!ReadRequiredNumber(attackNode, "damageScale", attack.damageScale, outError) ||
+				!ReadRequiredNumber(attackNode, "bonusDamage", attack.bonusDamage, outError) ||
+				!ReadRequiredNumber(attackNode, "staminaDamageScale", attack.staminaDamageScale, outError) ||
+				!ReadRequiredNumber(attackNode, "bonusStaminaDamage", attack.bonusStaminaDamage, outError) ||
+				!ReadRequiredNumber(attackNode, "poiseDamageScale", attack.poiseDamageScale, outError) ||
+				!ReadRequiredNumber(attackNode, "bonusPoiseDamage", attack.bonusPoiseDamage, outError) ||
+				!ReadRequiredNumber(attackNode, "knockbackDistance", attack.knockbackDistance, outError) ||
+				!ReadRequiredNumber(attackNode, "hitStopSec", attack.hitStopSec, outError) ||
+				!ReadRequiredBool(attackNode, "parryable", attack.parryable, outError) ||
+				!ReadRequiredBool(attackNode, "guardable", attack.guardable, outError))
+			{
+				return false;
+			}
+			effect.attackHit = attack;
+		}
+
+		if (node.contains("parryResponse") && !node.at("parryResponse").is_null())
+		{
+			const json& parryNode = node.at("parryResponse");
+			ParryCombatEffectDef parry{};
+			if (!ReadRequiredNumber(parryNode, "stunSec", parry.stunSec, outError) ||
+				!ReadRequiredNumber(parryNode, "hitStopSec", parry.hitStopSec, outError) ||
+				!ReadNullableEnum(parryNode, "grantBuffId", parry.grantBuffId, "BuffId", outError))
+			{
+				return false;
+			}
+			effect.parryResponse = parry;
+		}
+
+		if (node.contains("guardResponse") && !node.at("guardResponse").is_null())
+		{
+			const json& guardNode = node.at("guardResponse");
+			GuardCombatEffectDef guard{};
+			if (!ReadRequiredNumber(guardNode, "damageReductionRatio", guard.damageReductionRatio, outError) ||
+				!ReadRequiredNumber(guardNode, "chipDamageRatio", guard.chipDamageRatio, outError) ||
+				!ReadRequiredNumber(guardNode, "staminaDamageMultiplier", guard.staminaDamageMultiplier, outError) ||
+				!ReadRequiredNumber(guardNode, "hitStopSec", guard.hitStopSec, outError))
+			{
+				return false;
+			}
+			effect.guardResponse = guard;
+		}
+
+		outEffect = effect;
+		return true;
+	}
+
+	bool ParseCombatWindow(
+		const json& node,
+		ActionCombatWindowDef& outWindow,
+		std::string& outError)
+	{
+		if (!ReadEnum(node, "windowType", outWindow.windowType, "CombatWindowType", outError) ||
+			!ReadRequiredNumber(node, "startNormalized", outWindow.startNormalized, outError) ||
+			!ReadRequiredNumber(node, "endNormalized", outWindow.endNormalized, outError) ||
+			!ReadNullableEnum(node, "appliesTo", outWindow.appliesTo, "ActionCombatApplyTo", outError))
+		{
+			return false;
+		}
+
+		if (!node.contains("spatialFilter") ||
+			!ParseSpatialFilter(node.at("spatialFilter"), outWindow.spatialFilter, outError))
+		{
+			return false;
+		}
+
+		return node.contains("effect") &&
+			ParseCombatEffect(node.at("effect"), outWindow.effect, outError);
+	}
+
+	bool ParseEvent(
+		const json& node,
+		ActionEventDef& outEvent,
+		std::string& outError)
+	{
+		return
+			ReadEnum(node, "type", outEvent.type, "EventType", outError) &&
+			ReadRequiredNumber(node, "timeNormalized", outEvent.timeNormalized, outError) &&
+			ReadNullableNumber(node, "payloadId", outEvent.payloadId, outError) &&
+			ReadEnum(node, "conditionType", outEvent.conditionType, "TriggerConditionType", outError);
+	}
+
+	bool ParseMoveSegment(
+		const json& node,
+		ActionMovementSegmentDef& outSegment,
+		std::string& outError)
+	{
+		return
+			ReadRequiredNumber(node, "startNormalized", outSegment.startNormalized, outError) &&
+			ReadRequiredNumber(node, "endNormalized", outSegment.endNormalized, outError) &&
+			ReadEnum(node, "horizontalMoveMode", outSegment.horizontalMoveMode, "HorizontalMovementMode", outError) &&
+			ReadNullableNumber(node, "moveDistance", outSegment.moveDistance, outError) &&
+			ReadEnum(node, "rotationMode", outSegment.rotationMode, "RotationMode", outError) &&
+			ReadNullableNumber(node, "rotationRate", outSegment.rotationRate, outError) &&
+			ReadEnum(node, "verticalMoveMode", outSegment.verticalMoveMode, "VerticalMovementMode", outError) &&
+			ReadNullableNumber(node, "verticalAmount", outSegment.verticalAmount, outError) &&
+			ReadEnum(node, "dirPolicy", outSegment.dirPolicy, "DirectionPolicy", outError) &&
+			ReadEnum(node, "dirSampleTiming", outSegment.dirSampleTiming, "DirectionSampleTiming", outError);
+	}
+
+	bool ParseAction(
+		const json& node,
+		ActionDef& outDef,
+		std::string& outError)
+	{
+		if (!ReadEnum(node, "id", outDef.id, "ActionId", outError) ||
+			!ReadRequiredString(node, "name", outDef.name, outError) ||
+			!ReadEnum(node, "kind", outDef.kind, "ActionKind", outError) ||
+			!ReadRequiredNumber(node, "duration", outDef.duration, outError) ||
+			!ReadEnum(node, "normalizedPolicy", outDef.normalizedPolicy, "ActionNormalizedPolicy", outError))
+		{
+			return false;
+		}
+
+		if (node.contains("tags") &&
+			!ReadRequiredNumber(node, "tags", outDef.tags, outError))
+		{
+			return false;
+		}
+
+		if (!node.contains("endPolicy") ||
+			!ParseEndPolicy(node.at("endPolicy"), outDef.endPolicy, outError))
+		{
+			return false;
+		}
+
+		if (!ParseRequiredArray<ActionRequestRequirementDef>(
+				node,
+				"requestRequirements",
+				outDef.requestRequirements,
+				ParseRequestRequirement,
+				outError) ||
+			!ParseRequiredArray<ActionResourceCostDef>(
+				node,
+				"resourceCosts",
+				outDef.resourceCosts,
+				ParseResourceCost,
+				outError))
+		{
+			return false;
+		}
+
+		if (!node.contains("transitionRule") ||
+			!ParseTransitionRule(node.at("transitionRule"), outDef.transitionRule, outError))
+		{
+			return false;
+		}
+
+		return
+			ParseRequiredArray<ActionCombatWindowDef>(
+				node,
+				"combatWindows",
+				outDef.combatWindows,
+				ParseCombatWindow,
+				outError) &&
+			ParseRequiredArray<ActionEventDef>(
+				node,
+				"events",
+				outDef.events,
+				ParseEvent,
+				outError) &&
+			ParseRequiredArray<ActionMovementSegmentDef>(
+				node,
+				"moveSegments",
+				outDef.moveSegments,
+				ParseMoveSegment,
+				outError);
+	}
+
+	bool ParseInputBindingEntry(
+		const json& node,
+		ActionInputBindingEntryDef& outEntry,
+		std::string& outError)
+	{
+		return
+			ReadEnum(node, "request", outEntry.request, "ActionRequestSemantic", outError) &&
+			ParseActionIdArray(node, "candidateActions", outEntry.candidateActions, outError) &&
+			ReadEnum(node, "selectionPolicy", outEntry.selectionPolicy, "ActionCandidateSelectionPolicy", outError) &&
+			ReadRequiredNumber(node, "priority", outEntry.priority, outError);
+	}
+
+	bool ParseInputBindingProfile(
+		const json& node,
+		ActionInputBindingProfileDef& outProfile,
+		std::string& outError)
+	{
+		return
+			ReadNamedId(
+				node,
+				"id",
+				outProfile.id,
+				"ActionInputBindingProfileId",
+				ParseActionInputBindingProfileIdString,
+				outError) &&
+			ParseRequiredArray<ActionInputBindingEntryDef>(
+				node,
+				"entries",
+				outProfile.entries,
+				ParseInputBindingEntry,
+				outError);
+	}
+
+	bool ParseFallbackReactionEntry(
+		const json& node,
+		ActionFallbackReactionEntryDef& outEntry,
+		std::string& outError)
+	{
+		return
+			ReadEnum(node, "causeType", outEntry.causeType, "ActionInterruptCauseType", outError) &&
+			ReadEnum(node, "toActionId", outEntry.toActionId, "ActionId", outError) &&
+			ReadRequiredNumber(node, "priority", outEntry.priority, outError);
+	}
+
+	bool ParseFallbackReactionProfile(
+		const json& node,
+		ActionFallbackReactionProfileDef& outProfile,
+		std::string& outError)
+	{
+		return
+			ReadNamedId(
+				node,
+				"id",
+				outProfile.id,
+				"ActionFallbackReactionProfileId",
+				ParseActionFallbackReactionProfileIdString,
+				outError) &&
+			ParseRequiredArray<ActionFallbackReactionEntryDef>(
+				node,
+				"entries",
+				outProfile.entries,
+				ParseFallbackReactionEntry,
+				outError);
+	}
+
+	bool ParseCharacterActionProfile(
+		const json& node,
+		CharacterActionProfileDef& outProfile,
+		std::string& outError)
+	{
+		return
+			ReadNamedId(
+				node,
+				"id",
+				outProfile.id,
+				"CharacterActionProfileId",
+				ParseCharacterActionProfileIdString,
+				outError) &&
+			ReadEnum(node, "characterId", outProfile.characterId, "CharacterId", outError) &&
+			ParseActionIdArray(node, "availableActions", outProfile.availableActions, outError) &&
+			ReadNamedId(
+				node,
+				"inputBindingProfileId",
+				outProfile.inputBindingProfileId,
+				"ActionInputBindingProfileId",
+				ParseActionInputBindingProfileIdString,
+				outError) &&
+			ReadNamedId(
+				node,
+				"fallbackReactionProfileId",
+				outProfile.fallbackReactionProfileId,
+				"ActionFallbackReactionProfileId",
+				ParseActionFallbackReactionProfileIdString,
+				outError) &&
+			ReadNamedId(
+				node,
+				"animationBindingProfileId",
+				outProfile.animationBindingProfileId,
+				"AnimationBindingProfileId",
+				ParseAnimationBindingProfileIdString,
+				outError);
+	}
+
+	bool ParseActionAnimationBinding(
+		const json& node,
+		ActionAnimationBindingDef& outBinding,
+		std::string& outError)
+	{
+		if (!ReadEnum(node, "actionId", outBinding.actionId, "ActionId", outError) ||
+			!ReadNamedId(node, "animationId", outBinding.animationId, "AnimationId", ParseAnimationIdString, outError))
+		{
+			return false;
+		}
+
+		if (node.contains("playRate") &&
+			!ReadRequiredNumber(node, "playRate", outBinding.playRate, outError))
+		{
+			return false;
+		}
+
+		if (node.contains("startNormalizedTime") &&
+			!ReadRequiredNumber(node, "startNormalizedTime", outBinding.startNormalizedTime, outError))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool ParseLocomotionAnimationBinding(
+		const json& node,
+		LocomotionAnimationBindingDef& outBinding,
+		std::string& outError)
+	{
+		if (!ReadEnum(node, "mode", outBinding.mode, "LocomotionMode", outError) ||
+			!ReadNamedId(node, "animationId", outBinding.animationId, "AnimationId", ParseAnimationIdString, outError))
+		{
+			return false;
+		}
+
+		if (node.contains("playRate") &&
+			!ReadRequiredNumber(node, "playRate", outBinding.playRate, outError))
+		{
+			return false;
+		}
+
+		if (node.contains("holdLastFrame") &&
+			!ReadRequiredBool(node, "holdLastFrame", outBinding.holdLastFrame, outError))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool ParseAnimationBindingProfile(
+		const json& node,
+		AnimationBindingProfileDef& outProfile,
+		std::string& outError)
+	{
+		return
+			ReadNamedId(
+				node,
+				"id",
+				outProfile.id,
+				"AnimationBindingProfileId",
+				ParseAnimationBindingProfileIdString,
+				outError) &&
+			ParseRequiredArray<ActionAnimationBindingDef>(
+				node,
+				"actionBindings",
+				outProfile.actionBindings,
+				ParseActionAnimationBinding,
+				outError) &&
+			ParseRequiredArray<LocomotionAnimationBindingDef>(
+				node,
+				"locomotionBindings",
+				outProfile.locomotionBindings,
+				ParseLocomotionAnimationBinding,
+				outError);
+	}
+
+	bool ParseActionDocument(
+		const json& root,
+		ParsedActionDefinitions& outDefs,
+		std::string& outError)
+	{
+		return
+			ParseRequiredArray<ActionDef>(
+				root,
+				"actions",
+				outDefs.actions,
+				ParseAction,
+				outError) &&
+			ParseRequiredArray<CharacterActionProfileDef>(
+				root,
+				"characterActionProfiles",
+				outDefs.characterActionProfiles,
+				ParseCharacterActionProfile,
+				outError) &&
+			ParseRequiredArray<ActionInputBindingProfileDef>(
+				root,
+				"inputBindingProfiles",
+				outDefs.inputBindingProfiles,
+				ParseInputBindingProfile,
+				outError) &&
+			ParseRequiredArray<ActionFallbackReactionProfileDef>(
+				root,
+				"fallbackReactionProfiles",
+				outDefs.fallbackReactionProfiles,
+				ParseFallbackReactionProfile,
+				outError) &&
+			ParseRequiredArray<AnimationBindingProfileDef>(
+				root,
+				"animationBindingProfiles",
+				outDefs.animationBindingProfiles,
+				ParseAnimationBindingProfile,
+				outError);
+	}
+
+	bool BuildRegistries(
+		ParsedActionDefinitions defs,
+		ActionDefinitionRegistries& outRegistries,
+		std::string& outError)
+	{
+		if (!outRegistries.actions.Build(std::move(defs.actions), &outError) ||
+			!outRegistries.characterActionProfiles.Build(
+				std::move(defs.characterActionProfiles),
+				&outError) ||
+			!outRegistries.inputBindingProfiles.Build(
+				std::move(defs.inputBindingProfiles),
+				&outError) ||
+			!outRegistries.fallbackReactionProfiles.Build(
+				std::move(defs.fallbackReactionProfiles),
+				&outError) ||
+			!outRegistries.animationBindingProfiles.Build(
+				std::move(defs.animationBindingProfiles),
+				&outError))
+		{
+			return false;
+		}
+
+		outRegistries.characterProfileByCharacter.clear();
+		outRegistries.characterProfileByCharacter.reserve(
+			outRegistries.characterActionProfiles.Size());
+		for (const CharacterActionProfileDef& def :
+			outRegistries.characterActionProfiles.GetAll())
+		{
+			const auto [it, inserted] =
+				outRegistries.characterProfileByCharacter.try_emplace(
+					def.characterId,
+					def.id);
+			(void)it;
+			if (!inserted)
+			{
+				outError = "Duplicate CharacterActionProfileDef characterId detected.";
+				return false;
+			}
+		}
+
+		return true;
+	}
 }
 
 const ActionDef* FindActionDef(ActionId id) noexcept
 {
-	for (const ActionDef& def : kActionDefs)
-	{
-		if (def.id == id)
-		{
-			return &def;
-		}
-	}
-
-	return nullptr;
+	return GetActionDefinitionRegistries().actions.Find(id);
 }
 
 const ActionDef& GetActionDef(ActionId id)
 {
-	const ActionDef* const def = FindActionDef(id);
-	if (def == nullptr)
-	{
-		throw std::out_of_range("ActionDef was not found.");
-	}
-
-	return *def;
+	return GetActionDefinitionRegistries().actions.Get(id);
 }
 
 std::span<const ActionDef> GetActionDefs() noexcept
 {
-	return std::span<const ActionDef>(kActionDefs);
+	return GetActionDefinitionRegistries().actions.GetAll();
 }
 
 const CharacterActionProfileDef* FindCharacterActionProfileDef(
 	CharacterActionProfileId id) noexcept
 {
-	for (const CharacterActionProfileDef& def : kCharacterActionProfiles)
-	{
-		if (def.id == id)
-		{
-			return &def;
-		}
-	}
-
-	return nullptr;
+	return GetActionDefinitionRegistries().characterActionProfiles.Find(id);
 }
 
 const CharacterActionProfileDef& GetCharacterActionProfileDef(
 	CharacterActionProfileId id)
 {
-	const CharacterActionProfileDef* const def = FindCharacterActionProfileDef(id);
-	if (def == nullptr)
-	{
-		throw std::out_of_range("CharacterActionProfileDef was not found.");
-	}
-
-	return *def;
+	return GetActionDefinitionRegistries().characterActionProfiles.Get(id);
 }
 
 const CharacterActionProfileDef* FindCharacterActionProfileDefByCharacter(
 	CharacterId characterId) noexcept
 {
-	for (const CharacterActionProfileDef& def : kCharacterActionProfiles)
+	const ActionDefinitionRegistries& registries = GetActionDefinitionRegistries();
+	const auto it = registries.characterProfileByCharacter.find(characterId);
+	if (it == registries.characterProfileByCharacter.end())
 	{
-		if (def.characterId == characterId)
-		{
-			return &def;
-		}
+		return nullptr;
 	}
 
-	return nullptr;
+	return registries.characterActionProfiles.Find(it->second);
 }
 
 std::span<const CharacterActionProfileDef> GetCharacterActionProfileDefs() noexcept
 {
-	return std::span<const CharacterActionProfileDef>(kCharacterActionProfiles);
+	return GetActionDefinitionRegistries().characterActionProfiles.GetAll();
 }
 
 const ActionInputBindingProfileDef* FindActionInputBindingProfileDef(
 	ActionInputBindingProfileId id) noexcept
 {
-	for (const ActionInputBindingProfileDef& def : kActionInputBindingProfiles)
-	{
-		if (def.id == id)
-		{
-			return &def;
-		}
-	}
-
-	return nullptr;
+	return GetActionDefinitionRegistries().inputBindingProfiles.Find(id);
 }
 
 const ActionInputBindingProfileDef& GetActionInputBindingProfileDef(
 	ActionInputBindingProfileId id)
 {
-	const ActionInputBindingProfileDef* const def =
-		FindActionInputBindingProfileDef(id);
-	if (def == nullptr)
-	{
-		throw std::out_of_range("ActionInputBindingProfileDef was not found.");
-	}
-
-	return *def;
+	return GetActionDefinitionRegistries().inputBindingProfiles.Get(id);
 }
 
 std::span<const ActionInputBindingProfileDef> GetActionInputBindingProfileDefs() noexcept
 {
-	return std::span<const ActionInputBindingProfileDef>(kActionInputBindingProfiles);
+	return GetActionDefinitionRegistries().inputBindingProfiles.GetAll();
 }
 
 const ActionFallbackReactionProfileDef* FindActionFallbackReactionProfileDef(
 	ActionFallbackReactionProfileId id) noexcept
 {
-	for (const ActionFallbackReactionProfileDef& def :
-		kActionFallbackReactionProfiles)
-	{
-		if (def.id == id)
-		{
-			return &def;
-		}
-	}
-
-	return nullptr;
+	return GetActionDefinitionRegistries().fallbackReactionProfiles.Find(id);
 }
 
 const ActionFallbackReactionProfileDef& GetActionFallbackReactionProfileDef(
 	ActionFallbackReactionProfileId id)
 {
-	const ActionFallbackReactionProfileDef* const def =
-		FindActionFallbackReactionProfileDef(id);
-	if (def == nullptr)
-	{
-		throw std::out_of_range("ActionFallbackReactionProfileDef was not found.");
-	}
-
-	return *def;
+	return GetActionDefinitionRegistries().fallbackReactionProfiles.Get(id);
 }
 
 std::span<const ActionFallbackReactionProfileDef> GetActionFallbackReactionProfileDefs() noexcept
 {
-	return std::span<const ActionFallbackReactionProfileDef>(
-		kActionFallbackReactionProfiles);
+	return GetActionDefinitionRegistries().fallbackReactionProfiles.GetAll();
 }
 
 const AnimationBindingProfileDef* FindAnimationBindingProfileDef(
 	AnimationBindingProfileId id) noexcept
 {
-	for (const AnimationBindingProfileDef& def : kAnimationBindingProfiles)
-	{
-		if (def.id == id)
-		{
-			return &def;
-		}
-	}
-
-	return nullptr;
+	return GetActionDefinitionRegistries().animationBindingProfiles.Find(id);
 }
 
 const AnimationBindingProfileDef& GetAnimationBindingProfileDef(
 	AnimationBindingProfileId id)
 {
-	const AnimationBindingProfileDef* const def =
-		FindAnimationBindingProfileDef(id);
-	if (def == nullptr)
-	{
-		throw std::out_of_range("AnimationBindingProfileDef was not found.");
-	}
-
-	return *def;
+	return GetActionDefinitionRegistries().animationBindingProfiles.Get(id);
 }
 
 std::span<const AnimationBindingProfileDef> GetAnimationBindingProfileDefs() noexcept
 {
-	return std::span<const AnimationBindingProfileDef>(kAnimationBindingProfiles);
+	return GetActionDefinitionRegistries().animationBindingProfiles.GetAll();
+}
+
+ActionDefLoadResult LoadActionDefsFromJsonDirectory(
+	const std::filesystem::path& directory)
+{
+	std::vector<DefJsonDocument> documents;
+	ActionDefLoadResult result =
+		LoadDefJsonDocumentsFromDirectory(directory, documents, "Action");
+	if (!result.succeeded)
+		return result;
+
+	ParsedActionDefinitions defs;
+	for (const DefJsonDocument& document : documents)
+	{
+		try
+		{
+			if (!ParseActionDocument(document.root, defs, result.error))
+			{
+				result.error = document.path.string() + ": " + result.error;
+				result.succeeded = false;
+				return result;
+			}
+		}
+		catch (const std::exception& ex)
+		{
+			result.error = document.path.string() +
+				": Invalid action json field: " + std::string(ex.what());
+			result.succeeded = false;
+			return result;
+		}
+	}
+
+	ActionDefinitionRegistries registries;
+	if (!BuildRegistries(std::move(defs), registries, result.error))
+	{
+		result.succeeded = false;
+		return result;
+	}
+
+	ActionDefinitionRegistries& activeRegistries = GetActionDefinitionRegistries();
+	activeRegistries = std::move(registries);
+	result.succeeded = true;
+	result.loadedCount = activeRegistries.actions.Size();
+	result.error.clear();
+	return result;
 }

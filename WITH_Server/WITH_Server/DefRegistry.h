@@ -4,8 +4,10 @@
 #include <span>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 template<typename TId>
@@ -103,3 +105,21 @@ private:
 	std::vector<TDef> _defs;
 	std::unordered_map<TId, size_t, THash> _indexById;
 };
+
+template<typename TDef, typename TId, typename TTraits, typename THash = DefRegistryIdHash<TId>>
+DefRegistry<TDef, TId, TTraits, THash> MakeDefRegistry(
+	std::span<const TDef> defs,
+	std::string_view registryName)
+{
+	DefRegistry<TDef, TId, TTraits, THash> registry;
+	std::vector<TDef> copiedDefs(defs.begin(), defs.end());
+
+	std::string error;
+	if (!registry.Build(std::move(copiedDefs), &error))
+	{
+		throw std::runtime_error(
+			std::string(registryName) + " registry build failed: " + error);
+	}
+
+	return registry;
+}

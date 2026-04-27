@@ -1,14 +1,12 @@
 #include "pch.h"
 #include "AIBehaviorDef.h"
 
+#include "DefEnumString.h"
+#include "DefJsonFileLoader.h"
+#include "DefJsonReader.h"
 #include "DefRegistry.h"
 #include "json.hpp"
 
-#include <algorithm>
-#include <filesystem>
-#include <fstream>
-#include <sstream>
-#include <unordered_map>
 #include <vector>
 
 using json = nlohmann::json;
@@ -71,153 +69,43 @@ namespace
 		return defs;
 	}
 
-	bool ReadFileText(
-		const std::filesystem::path& path,
-		std::string& outText,
-		std::string& outError)
-	{
-		std::ifstream input(path);
-		if (!input.is_open())
-		{
-			outError = "Failed to open AI behavior json file: " + path.string();
-			return false;
-		}
-
-		std::stringstream buffer;
-		buffer << input.rdbuf();
-		outText = buffer.str();
-		return true;
-	}
-
-	bool ReadString(
+	template<typename TEnum>
+	bool ReadEnum(
 		const json& node,
 		const char* field,
-		std::string& outValue,
+		TEnum& outValue,
+		const char* typeName,
 		std::string& outError)
 	{
-		if (!node.contains(field) || !node.at(field).is_string())
+		std::string text;
+		if (!ReadRequiredString(node, field, text, outError))
+			return false;
+
+		if (!ParseDefString(text, outValue))
 		{
-			outError = std::string("Missing or invalid string field: ") + field;
+			outError = std::string("Unknown ") + typeName + ": " + text;
 			return false;
 		}
 
-		outValue = node.at(field).get<std::string>();
 		return true;
 	}
 
-	template<typename TValue>
-	bool ReadOptionalNumber(
+	bool ReadAITuningId(
 		const json& node,
 		const char* field,
-		TValue& outValue,
+		AITuningId& outValue,
 		std::string& outError)
 	{
-		if (!node.contains(field))
-			return true;
+		std::string text;
+		if (!ReadRequiredString(node, field, text, outError))
+			return false;
 
-		if (!node.at(field).is_number())
+		if (!ParseAITuningIdString(text, outValue))
 		{
-			outError = std::string("Invalid numeric field: ") + field;
+			outError = "Unknown AI tuning id: " + text;
 			return false;
 		}
 
-		outValue = node.at(field).get<TValue>();
-		return true;
-	}
-
-	bool ParseAITuningId(
-		std::string_view text,
-		AITuningId& outValue) noexcept
-	{
-		if (text == "None") { outValue = AITuningIds::None; return true; }
-		if (text == "Imp") { outValue = AITuningIds::Imp; return true; }
-		if (text == "DemonStriker") { outValue = AITuningIds::DemonStriker; return true; }
-		if (text == "DemonExecutioner") { outValue = AITuningIds::DemonExecutioner; return true; }
-		if (text == "FinalBoss") { outValue = AITuningIds::FinalBoss; return true; }
-		return false;
-	}
-
-	bool ParseAIArchetype(
-		std::string_view text,
-		AIArchetype& outValue) noexcept
-	{
-		if (text == "None") { outValue = AIArchetype::None; return true; }
-		if (text == "NormalMonster") { outValue = AIArchetype::NormalMonster; return true; }
-		if (text == "FinalBossMonster") { outValue = AIArchetype::FinalBossMonster; return true; }
-		return false;
-	}
-
-	bool ParseMovementPolicyKind(
-		std::string_view text,
-		AIMovementPolicyKind& outValue) noexcept
-	{
-		if (text == "None") { outValue = AIMovementPolicyKind::None; return true; }
-		if (text == "Normal") { outValue = AIMovementPolicyKind::Normal; return true; }
-		return false;
-	}
-
-	bool ParseCombatActionPolicyKind(
-		std::string_view text,
-		AICombatActionPolicyKind& outValue) noexcept
-	{
-		if (text == "None") { outValue = AICombatActionPolicyKind::None; return true; }
-		if (text == "Imp") { outValue = AICombatActionPolicyKind::Imp; return true; }
-		if (text == "Weighted") { outValue = AICombatActionPolicyKind::Weighted; return true; }
-		return false;
-	}
-
-	bool ParseIdleActionPolicyKind(
-		std::string_view text,
-		AIIdleActionPolicyKind& outValue) noexcept
-	{
-		if (text == "None") { outValue = AIIdleActionPolicyKind::None; return true; }
-		if (text == "Weighted") { outValue = AIIdleActionPolicyKind::Weighted; return true; }
-		return false;
-	}
-
-	bool ParseReactionPolicyKind(
-		std::string_view text,
-		AIReactionPolicyKind& outValue) noexcept
-	{
-		if (text == "None") { outValue = AIReactionPolicyKind::None; return true; }
-		if (text == "Normal") { outValue = AIReactionPolicyKind::Normal; return true; }
-		return false;
-	}
-
-	bool ParseActionId(
-		std::string_view text,
-		ActionId& outValue) noexcept
-	{
-		static const std::unordered_map<std::string_view, ActionId> kActionIds =
-		{
-			{ "None", ActionId::None },
-			{ "Imp_melee1", ActionId::Imp_melee1 },
-			{ "Imp_melee2", ActionId::Imp_melee2 },
-			{ "Imp_melee3", ActionId::Imp_melee3 },
-			{ "Imp_melee4", ActionId::Imp_melee4 },
-			{ "Imp_melee5", ActionId::Imp_melee5 },
-			{ "Imp_Jump", ActionId::Imp_Jump },
-			{ "DemonStriker_Melee_1", ActionId::DemonStriker_Melee_1 },
-			{ "DemonStriker_Melee_2", ActionId::DemonStriker_Melee_2 },
-			{ "DemonStriker_Melee_3", ActionId::DemonStriker_Melee_3 },
-			{ "DemonStriker_Melee_4", ActionId::DemonStriker_Melee_4 },
-			{ "DemonStriker_Jump_1", ActionId::DemonStriker_Jump_1 },
-			{ "DemonStriker_Jump_2", ActionId::DemonStriker_Jump_2 },
-			{ "DemonExecutioner_Melee_1", ActionId::DemonExecutioner_Melee_1 },
-			{ "DemonExecutioner_Melee_2", ActionId::DemonExecutioner_Melee_2 },
-			{ "DemonExecutioner_Melee_3", ActionId::DemonExecutioner_Melee_3 },
-			{ "DemonExecutioner_Melee_4", ActionId::DemonExecutioner_Melee_4 },
-			{ "DemonExecutioner_Melee_5", ActionId::DemonExecutioner_Melee_5 },
-			{ "DemonExecutioner_Melee_6", ActionId::DemonExecutioner_Melee_6 },
-			{ "DemonExecutioner_Jump_1", ActionId::DemonExecutioner_Jump_1 },
-			{ "DemonExecutioner_Jump_2", ActionId::DemonExecutioner_Jump_2 }
-		};
-
-		const auto it = kActionIds.find(text);
-		if (it == kActionIds.end())
-			return false;
-
-		outValue = it->second;
 		return true;
 	}
 
@@ -275,14 +163,14 @@ namespace
 		outActions.reserve(node.size());
 		for (const json& actionNode : node)
 		{
-			std::string actionText;
-			if (!ReadString(actionNode, "actionId", actionText, outError))
-				return false;
-
 			WeightedActionEntry entry{};
-			if (!ParseActionId(actionText, entry.actionId))
+			if (!ReadEnum(
+				actionNode,
+				"actionId",
+				entry.actionId,
+				"ActionId",
+				outError))
 			{
-				outError = "Unknown ActionId: " + actionText;
 				return false;
 			}
 
@@ -295,15 +183,6 @@ namespace
 		return true;
 	}
 
-	bool ReadEnumString(
-		const json& node,
-		const char* field,
-		std::string& outText,
-		std::string& outError)
-	{
-		return ReadString(node, field, outText, outError);
-	}
-
 	bool ParseProfileDocument(
 		const json& root,
 		AIBehaviorProfileDef& outProfile,
@@ -311,64 +190,55 @@ namespace
 		std::vector<WeightedActionEntry>& outIdleActions,
 		std::string& outError)
 	{
-		std::string text;
-		if (!ReadEnumString(root, "id", text, outError))
-			return false;
-		if (!ParseAITuningId(text, outProfile.id))
+		if (!ReadAITuningId(root, "id", outProfile.id, outError) ||
+			!ReadEnum(root, "aiType", outProfile.aiType, "AI archetype", outError))
 		{
-			outError = "Unknown AI tuning id: " + text;
-			return false;
-		}
-
-		if (!ReadEnumString(root, "aiType", text, outError))
-			return false;
-		if (!ParseAIArchetype(text, outProfile.aiType))
-		{
-			outError = "Unknown AI archetype: " + text;
 			return false;
 		}
 
 		if (root.contains("perceptionTuning") &&
-			!ParsePerceptionTuning(root.at("perceptionTuning"), outProfile.perceptionTuning, outError))
+			!ParsePerceptionTuning(
+				root.at("perceptionTuning"),
+				outProfile.perceptionTuning,
+				outError))
 		{
 			return false;
 		}
 
 		if (root.contains("decisionTuning") &&
-			!ParseDecisionTuning(root.at("decisionTuning"), outProfile.decisionTuning, outError))
+			!ParseDecisionTuning(
+				root.at("decisionTuning"),
+				outProfile.decisionTuning,
+				outError))
 		{
 			return false;
 		}
 
-		if (!ReadEnumString(root, "movementPolicyKind", text, outError))
-			return false;
-		if (!ParseMovementPolicyKind(text, outProfile.movementPolicyKind))
+		if (!ReadEnum(
+				root,
+				"movementPolicyKind",
+				outProfile.movementPolicyKind,
+				"AI movement policy kind",
+				outError) ||
+			!ReadEnum(
+				root,
+				"combatActionPolicyKind",
+				outProfile.combatActionPolicyKind,
+				"AI combat action policy kind",
+				outError) ||
+			!ReadEnum(
+				root,
+				"idleActionPolicyKind",
+				outProfile.idleActionPolicyKind,
+				"AI idle action policy kind",
+				outError) ||
+			!ReadEnum(
+				root,
+				"reactionPolicyKind",
+				outProfile.reactionPolicyKind,
+				"AI reaction policy kind",
+				outError))
 		{
-			outError = "Unknown AI movement policy kind: " + text;
-			return false;
-		}
-
-		if (!ReadEnumString(root, "combatActionPolicyKind", text, outError))
-			return false;
-		if (!ParseCombatActionPolicyKind(text, outProfile.combatActionPolicyKind))
-		{
-			outError = "Unknown AI combat action policy kind: " + text;
-			return false;
-		}
-
-		if (!ReadEnumString(root, "idleActionPolicyKind", text, outError))
-			return false;
-		if (!ParseIdleActionPolicyKind(text, outProfile.idleActionPolicyKind))
-		{
-			outError = "Unknown AI idle action policy kind: " + text;
-			return false;
-		}
-
-		if (!ReadEnumString(root, "reactionPolicyKind", text, outError))
-			return false;
-		if (!ParseReactionPolicyKind(text, outProfile.reactionPolicyKind))
-		{
-			outError = "Unknown AI reaction policy kind: " + text;
 			return false;
 		}
 
@@ -385,44 +255,6 @@ namespace
 		}
 
 		return true;
-	}
-
-	bool LoadProfileFile(
-		const std::filesystem::path& path,
-		AIBehaviorProfileDef& outProfile,
-		std::vector<WeightedActionEntry>& outCombatActions,
-		std::vector<WeightedActionEntry>& outIdleActions,
-		std::string& outError)
-	{
-		std::string jsonText;
-		if (!ReadFileText(path, jsonText, outError))
-			return false;
-
-		json root;
-		try
-		{
-			root = json::parse(jsonText);
-		}
-		catch (const std::exception& ex)
-		{
-			outError = "Failed to parse AI behavior json: " + std::string(ex.what());
-			return false;
-		}
-
-		try
-		{
-			return ParseProfileDocument(
-				root,
-				outProfile,
-				outCombatActions,
-				outIdleActions,
-				outError);
-		}
-		catch (const std::exception& ex)
-		{
-			outError = "Invalid AI behavior json field: " + std::string(ex.what());
-			return false;
-		}
 	}
 
 	bool ValidateLoadedProfiles(
@@ -488,47 +320,38 @@ std::span<const AIBehaviorProfileDef> GetAIBehaviorProfileDefs() noexcept
 AIBehaviorDefLoadResult LoadAIBehaviorProfileDefsFromJsonDirectory(
 	const std::filesystem::path& directory)
 {
-	AIBehaviorDefLoadResult result{};
-	GetAIBehaviorDefs() = {};
-
-	std::error_code ec;
-	if (!std::filesystem::exists(directory, ec) ||
-		!std::filesystem::is_directory(directory, ec))
-	{
-		result.error = "AI behavior json directory was not found: " + directory.string();
+	std::vector<DefJsonDocument> documents;
+	AIBehaviorDefLoadResult result =
+		LoadDefJsonDocumentsFromDirectory(directory, documents, "AI behavior");
+	if (!result.succeeded)
 		return result;
-	}
-
-	std::vector<std::filesystem::path> files;
-	for (const std::filesystem::directory_entry& entry :
-		std::filesystem::directory_iterator(directory, ec))
-	{
-		if (entry.is_regular_file() && entry.path().extension() == ".json")
-			files.push_back(entry.path());
-	}
-
-	std::sort(files.begin(), files.end());
-	if (files.empty())
-	{
-		result.error = "AI behavior json directory has no json files: " + directory.string();
-		return result;
-	}
 
 	AIBehaviorDefinitionSet loaded{};
-	std::vector<AIBehaviorProfileDef> profiles(files.size());
-	loaded.combatActionStorage.resize(files.size());
-	loaded.idleActionStorage.resize(files.size());
+	std::vector<AIBehaviorProfileDef> profiles(documents.size());
+	loaded.combatActionStorage.resize(documents.size());
+	loaded.idleActionStorage.resize(documents.size());
 
-	for (size_t i = 0; i < files.size(); ++i)
+	for (size_t i = 0; i < documents.size(); ++i)
 	{
-		if (!LoadProfileFile(
-			files[i],
-			profiles[i],
-			loaded.combatActionStorage[i],
-			loaded.idleActionStorage[i],
-			result.error))
+		try
 		{
-			result.error = files[i].string() + ": " + result.error;
+			if (!ParseProfileDocument(
+				documents[i].root,
+				profiles[i],
+				loaded.combatActionStorage[i],
+				loaded.idleActionStorage[i],
+				result.error))
+			{
+				result.error = documents[i].path.string() + ": " + result.error;
+				result.succeeded = false;
+				return result;
+			}
+		}
+		catch (const std::exception& ex)
+		{
+			result.error = documents[i].path.string() +
+				": Invalid AI behavior json field: " + std::string(ex.what());
+			result.succeeded = false;
 			return result;
 		}
 	}
@@ -542,11 +365,15 @@ AIBehaviorDefLoadResult LoadAIBehaviorProfileDefsFromJsonDirectory(
 	}
 
 	if (!ValidateLoadedProfiles(profiles, result.error))
+	{
+		result.succeeded = false;
 		return result;
+	}
 
 	std::string registryError;
 	if (!loaded.profiles.Build(std::move(profiles), &registryError))
 	{
+		result.succeeded = false;
 		result.error = registryError;
 		return result;
 	}
@@ -555,5 +382,6 @@ AIBehaviorDefLoadResult LoadAIBehaviorProfileDefsFromJsonDirectory(
 	activeDefs = std::move(loaded);
 	result.succeeded = true;
 	result.loadedCount = activeDefs.profiles.Size();
+	result.error.clear();
 	return result;
 }
