@@ -12,6 +12,36 @@
 namespace
 {
     constexpr const char* kLogCategory = "Executor";
+
+    // TEMP_TASKEXECUTOR_DEBUG: readable state names for temporary executor race diagnostics.
+    const char* DebugNodeStateName(ExecNodeState state) noexcept
+    {
+        switch (state)
+        {
+        case ExecNodeState::NotReady: return "NotReady";
+        case ExecNodeState::Ready: return "Ready";
+        case ExecNodeState::Queued: return "Queued";
+        case ExecNodeState::Running: return "Running";
+        case ExecNodeState::Succeeded: return "Succeeded";
+        case ExecNodeState::Failed: return "Failed";
+        case ExecNodeState::Canceled: return "Canceled";
+        case ExecNodeState::Skipped: return "Skipped";
+        default: return "Unknown";
+        }
+    }
+
+    // TEMP_TASKEXECUTOR_DEBUG: readable scope phase names for temporary executor race diagnostics.
+    const char* DebugScopePhaseName(ExecScopePhase phase) noexcept
+    {
+        switch (phase)
+        {
+        case ExecScopePhase::Open: return "Open";
+        case ExecScopePhase::CancelRequested: return "CancelRequested";
+        case ExecScopePhase::Draining: return "Draining";
+        case ExecScopePhase::Closed: return "Closed";
+        default: return "Unknown";
+        }
+    }
 }
 
 TaskExecutor::TaskExecutor(uint32_t workerCount)
@@ -87,6 +117,11 @@ bool TaskExecutor::ExecuteFrame(
     ExecRuntimeState& runtime,
     const ExecutionSourceRegistry& sourceRegistry)
 {
+    // TEMP_TASKEXECUTOR_DEBUG: correlate all queue/state logs for one ExecuteFrame call.
+    const uint64_t debugFrameId =
+        _debugNextFrameId.fetch_add(1, std::memory_order_relaxed);
+    _debugCurrentFrameId.store(debugFrameId, std::memory_order_release);
+
     if (!IsInitialized())
     {
         FWLOG_ERROR(kLogCategory, "ExecuteFrame called but executor is not initialized");
@@ -104,6 +139,16 @@ bool TaskExecutor::ExecuteFrame(
         frameCtx.graph->nodes.size(),
         frameCtx.graph->simulateNodeCount,
         frameCtx.graph->scopeCount);
+
+    // TEMP_TASKEXECUTOR_DEBUG: frame lifecycle breadcrumb.
+    FWLOG_INFO(kLogCategory,
+        "TEMP_TASKEXECUTOR_DEBUG ExecuteFrame begin (frameId=%llu, nodes=%zu, simulateNodes=%u, scopes=%u, activePumps=%u, activeNodes=%u)",
+        static_cast<unsigned long long>(debugFrameId),
+        frameCtx.graph->nodes.size(),
+        frameCtx.graph->simulateNodeCount,
+        frameCtx.graph->scopeCount,
+        _debugActiveWorkerPumps.load(std::memory_order_acquire),
+        _debugActiveExecutingNodes.load(std::memory_order_acquire));
 
     BindFrame(frameCtx, runtime, sourceRegistry);
     InitializeRuntimeForFrame();
@@ -137,6 +182,12 @@ bool TaskExecutor::ExecuteFrame(
     UnbindFrame();
 
     FWLOG_DEBUG(kLogCategory, "ExecuteFrame complete");
+    // TEMP_TASKEXECUTOR_DEBUG: frame lifecycle breadcrumb.
+    FWLOG_INFO(kLogCategory,
+        "TEMP_TASKEXECUTOR_DEBUG ExecuteFrame complete (frameId=%llu, activePumps=%u, activeNodes=%u)",
+        static_cast<unsigned long long>(debugFrameId),
+        _debugActiveWorkerPumps.load(std::memory_order_acquire),
+        _debugActiveExecutingNodes.load(std::memory_order_acquire));
     return true;
 }
 
@@ -160,6 +211,19 @@ bool TaskExecutor::WorkerPumpEntry(void* ctx, uint32_t workerIdx)
 
 bool TaskExecutor::WorkerPump(uint32_t workerIdx)
 {
+    // TEMP_TASKEXECUTOR_DEBUG: detect workers still inside a frame while queues/binding are reset.
+    struct DebugPumpGuard
+    {
+        std::atomic<uint32_t>& counter;
+        ~DebugPumpGuard()
+        {
+            counter.fetch_sub(1, std::memory_order_acq_rel);
+        }
+    };
+
+    _debugActiveWorkerPumps.fetch_add(1, std::memory_order_acq_rel);
+    DebugPumpGuard debugPumpGuard{ _debugActiveWorkerPumps };
+
     if (!_frameBound.load(std::memory_order_acquire))
         return false;
 
@@ -168,6 +232,17 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
         std::optional<ExecNodeId> opt = _workerDeques[workerIdx]->TryPop();
         if (opt.has_value())
         {
+            // TEMP_TASKEXECUTOR_DEBUG: queue-consume breadcrumb.
+            if (const ExecNodeRuntime* nodeRt = Runtime().TryGetNode(*opt))
+            {
+                FWLOG_INFO(kLogCategory,
+                    "TEMP_TASKEXECUTOR_DEBUG QueueConsume (frameId=%llu, source=ownerDeque, worker=%u, nodeId=%u, nodeState=%s, frameBound=%u)",
+                    static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                    workerIdx,
+                    *opt,
+                    DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)),
+                    _frameBound.load(std::memory_order_acquire) ? 1u : 0u);
+            }
             ExecuteNode(*opt, workerIdx);
             return true;
         }
@@ -182,6 +257,18 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
             std::optional<ExecNodeId> opt = _workerDeques[victimIdx]->TrySteal();
             if (opt.has_value())
             {
+                // TEMP_TASKEXECUTOR_DEBUG: queue-consume breadcrumb.
+                if (const ExecNodeRuntime* nodeRt = Runtime().TryGetNode(*opt))
+                {
+                    FWLOG_INFO(kLogCategory,
+                        "TEMP_TASKEXECUTOR_DEBUG QueueConsume (frameId=%llu, source=steal, worker=%u, victim=%u, nodeId=%u, nodeState=%s, frameBound=%u)",
+                        static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                        workerIdx,
+                        victimIdx,
+                        *opt,
+                        DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)),
+                        _frameBound.load(std::memory_order_acquire) ? 1u : 0u);
+                }
                 ExecuteNode(*opt, workerIdx);
                 return true;
             }
@@ -193,6 +280,17 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
         ExecNodeId nodeId = InvalidExecNodeId;
         if (_injectQueue.try_pop(nodeId))
         {
+            // TEMP_TASKEXECUTOR_DEBUG: queue-consume breadcrumb.
+            if (const ExecNodeRuntime* nodeRt = Runtime().TryGetNode(nodeId))
+            {
+                FWLOG_INFO(kLogCategory,
+                    "TEMP_TASKEXECUTOR_DEBUG QueueConsume (frameId=%llu, source=injectQueue, worker=%u, nodeId=%u, nodeState=%s, frameBound=%u)",
+                    static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                    workerIdx,
+                    nodeId,
+                    DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)),
+                    _frameBound.load(std::memory_order_acquire) ? 1u : 0u);
+            }
             ExecuteNode(nodeId, workerIdx);
             return true;
         }
@@ -244,11 +342,35 @@ void TaskExecutor::BindFrame(
     }
 
     _frameBound.store(true, std::memory_order_release);
+
+    // TEMP_TASKEXECUTOR_DEBUG: frame binding breadcrumb.
+    FWLOG_INFO(kLogCategory,
+        "TEMP_TASKEXECUTOR_DEBUG BindFrame (frameId=%llu, nodes=%zu, scopes=%zu, workerDeques=%zu, activePumps=%u, activeNodes=%u)",
+        static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+        frameCtx.graph != nullptr ? frameCtx.graph->nodes.size() : 0,
+        runtime.scopes.size(),
+        _workerDeques.size(),
+        _debugActiveWorkerPumps.load(std::memory_order_acquire),
+        _debugActiveExecutingNodes.load(std::memory_order_acquire));
 }
 
 void TaskExecutor::UnbindFrame() noexcept
 {
+    // TEMP_TASKEXECUTOR_DEBUG: frame unbinding breadcrumb before queue/binding reset.
+    FWLOG_INFO(kLogCategory,
+        "TEMP_TASKEXECUTOR_DEBUG UnbindFrame begin (frameId=%llu, activePumps=%u, activeNodes=%u, frameBound=%u)",
+        static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+        _debugActiveWorkerPumps.load(std::memory_order_acquire),
+        _debugActiveExecutingNodes.load(std::memory_order_acquire),
+        _frameBound.load(std::memory_order_acquire) ? 1u : 0u);
+
     _frameBound.store(false, std::memory_order_release);
+
+    while (_debugActiveWorkerPumps.load(std::memory_order_acquire) != 0 ||
+        _debugActiveExecutingNodes.load(std::memory_order_acquire) != 0)
+    {
+        std::this_thread::yield();
+    }
 
     // _pool.Stop() 또는 프레임 완료 후 호출되므로 워커는 이미 idle 또는 종료 상태이다.
     for (auto& deque : _workerDeques)
@@ -262,6 +384,14 @@ void TaskExecutor::UnbindFrame() noexcept
     }
 
     _binding = {};
+
+    // TEMP_TASKEXECUTOR_DEBUG: frame unbinding breadcrumb after queue/binding reset.
+    FWLOG_INFO(kLogCategory,
+        "TEMP_TASKEXECUTOR_DEBUG UnbindFrame end (frameId=%llu, activePumps=%u, activeNodes=%u)",
+        static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+        _debugActiveWorkerPumps.load(std::memory_order_acquire),
+        _debugActiveExecutingNodes.load(std::memory_order_acquire));
+    _debugCurrentFrameId.store(0, std::memory_order_release);
 }
 
 void TaskExecutor::InitializeRuntimeForFrame()
@@ -534,6 +664,12 @@ void TaskExecutor::EnqueueReadyNode(ExecNodeId nodeId, uint32_t workerIdx)
     {
         if (_workerDeques[workerIdx]->TryPush(nodeId))
         {
+            // TEMP_TASKEXECUTOR_DEBUG: queue-insert breadcrumb.
+            FWLOG_INFO(kLogCategory,
+                "TEMP_TASKEXECUTOR_DEBUG QueueInsert (frameId=%llu, target=workerDeque, worker=%u, nodeId=%u)",
+                static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                workerIdx,
+                nodeId);
             NotifyWork();
             return;
         }
@@ -547,6 +683,13 @@ void TaskExecutor::EnqueueReadyNode(ExecNodeId nodeId, uint32_t workerIdx)
     // 메인 스레드 컨텍스트(kNoWorkerIdx) 또는 deque overflow 경로.
     // concurrent_queue::push는 항상 성공한다 (unbounded).
     _injectQueue.push(nodeId);
+
+    // TEMP_TASKEXECUTOR_DEBUG: queue-insert breadcrumb.
+    FWLOG_INFO(kLogCategory,
+        "TEMP_TASKEXECUTOR_DEBUG QueueInsert (frameId=%llu, target=injectQueue, worker=%u, nodeId=%u)",
+        static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+        workerIdx,
+        nodeId);
 
     NotifyWork();
 }
@@ -567,9 +710,16 @@ void TaskExecutor::DispatchNode(ExecNodeId nodeId, uint32_t workerIdx)
 
     if (!ok)
     {
+        // SPEC-EXEC-QUEUE-001 §개선방향 §1: dispatchReadyToQueuedFailed 카운터 증가.
+        _diagnostics.RecordDispatchReadyToQueuedFailed();
         FWLOG_WARN(kLogCategory,
-            "DispatchNode - state transition Ready->Queued failed (nodeId=%u, currentState=%u)",
-            nodeId, static_cast<uint32_t>(nodeRt->state.load()));
+            "DispatchNode Ready->Queued failed "
+            "(frameId=%llu, nodeId=%u, worker=%u, currentState=%s, remainingDeps=%u)",
+            static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+            nodeId,
+            workerIdx,
+            DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)),
+            nodeRt->remainingDeps.load(std::memory_order_acquire));
         return;
     }
 
@@ -585,6 +735,13 @@ void TaskExecutor::DispatchNode(ExecNodeId nodeId, uint32_t workerIdx)
             std::lock_guard lock{ _mainQueueMtx };
             _mainThreadReadyQueue.push_back(nodeId);
         }
+        // TEMP_TASKEXECUTOR_DEBUG: queue-insert breadcrumb.
+        FWLOG_INFO(kLogCategory,
+            "TEMP_TASKEXECUTOR_DEBUG QueueInsert (frameId=%llu, target=mainThreadQueue, worker=%u, nodeId=%u, state=%s)",
+            static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+            workerIdx,
+            nodeId,
+            DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)));
         NotifyProgress();
     }
     else
@@ -607,6 +764,19 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId, uint32_t workerIdx)
     assert(nodeRt != nullptr);
     assert(scopeRt != nullptr);
 
+    // TEMP_TASKEXECUTOR_DEBUG: detect nodes executing across frame unbind/reset windows.
+    struct DebugExecuteGuard
+    {
+        std::atomic<uint32_t>& counter;
+        ~DebugExecuteGuard()
+        {
+            counter.fetch_sub(1, std::memory_order_acq_rel);
+        }
+    };
+
+    _debugActiveExecutingNodes.fetch_add(1, std::memory_order_acq_rel);
+    DebugExecuteGuard debugExecuteGuard{ _debugActiveExecutingNodes };
+
     FWLOG_TRACE(kLogCategory, "ExecuteNode begin (nodeId=%u, scopeId=%u, token=%u)",
         nodeId, node.scopeId, node.sourceToken);
 
@@ -621,7 +791,22 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId, uint32_t workerIdx)
 
         const bool ok =
             TryTransitionNode(*nodeRt, ExecNodeState::Queued, terminal);
-        assert(ok);
+        if (!ok)
+        {
+            // SPEC-EXEC-QUEUE-001 §필수불변식 4:
+            // Queued→Cancel CAS 실패 = stale/duplicate queue entry. discard하고 반환.
+            // remainingNodes / remainingSimulateNodes 를 감소시키면 안 된다.
+            _diagnostics.RecordStaleQueuedEntry();
+            FWLOG_DEBUG(kLogCategory,
+                "ExecuteNode stale entry discarded (cancel path) "
+                "(frameId=%llu, nodeId=%u, worker=%u, token=%u, currentState=%s)",
+                static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                nodeId,
+                workerIdx,
+                node.sourceToken,
+                DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)));
+            return;
+        }
 
         CompleteNodeTerminal(nodeId, terminal);
         return;
@@ -629,7 +814,22 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId, uint32_t workerIdx)
 
     const bool canRun =
         TryTransitionNode(*nodeRt, ExecNodeState::Queued, ExecNodeState::Running);
-    assert(canRun);
+    if (!canRun)
+    {
+        // SPEC-EXEC-QUEUE-001 §필수불변식 3, 4:
+        // Queued→Running CAS 실패 = stale/duplicate queue entry. discard하고 반환.
+        // 이는 executor 내부 assert 조건이 아니며, remainingNodes 를 감소시키면 안 된다.
+        _diagnostics.RecordStaleQueuedEntry();
+        FWLOG_DEBUG(kLogCategory,
+            "ExecuteNode stale entry discarded (run path) "
+            "(frameId=%llu, nodeId=%u, worker=%u, token=%u, currentState=%s)",
+            static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+            nodeId,
+            workerIdx,
+            node.sourceToken,
+            DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)));
+        return;
+    }
 
     _diagnostics.BeginNode(node, nodeId);
     const ExecCallResult callResult = InvokeNode(node, nodeId);
@@ -639,7 +839,22 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId, uint32_t workerIdx)
     {
         const bool ok =
             TryTransitionNode(*nodeRt, ExecNodeState::Running, ExecNodeState::Succeeded);
-        assert(ok);
+        if (!ok)
+        {
+            // SPEC-EXEC-QUEUE-001 §개선방향 §5:
+            // Running→Succeeded CAS 실패 = 같은 node가 두 번 terminal 처리 시도.
+            // executor invariant 위반 — 카운터를 기록하고 scope 조작 없이 반환.
+            _diagnostics.RecordDuplicateCompletion();
+            FWLOG_ERROR(kLogCategory,
+                "ExecuteNode duplicate completion attempt (Success path) "
+                "(frameId=%llu, nodeId=%u, worker=%u, token=%u, currentState=%s)",
+                static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                nodeId,
+                workerIdx,
+                node.sourceToken,
+                DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)));
+            return;
+        }
 
         FWLOG_TRACE(kLogCategory, "ExecuteNode succeeded (nodeId=%u)", nodeId);
 
@@ -650,7 +865,21 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId, uint32_t workerIdx)
     {
         const bool ok =
             TryTransitionNode(*nodeRt, ExecNodeState::Running, ExecNodeState::Failed);
-        assert(ok);
+        if (!ok)
+        {
+            // SPEC-EXEC-QUEUE-001 §개선방향 §5:
+            // Running→Failed CAS 실패 = 같은 node가 두 번 terminal 처리 시도.
+            _diagnostics.RecordDuplicateCompletion();
+            FWLOG_ERROR(kLogCategory,
+                "ExecuteNode duplicate completion attempt (Failed path) "
+                "(frameId=%llu, nodeId=%u, worker=%u, token=%u, currentState=%s)",
+                static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                nodeId,
+                workerIdx,
+                node.sourceToken,
+                DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)));
+            return;
+        }
 
         FWLOG_WARN(kLogCategory, "ExecuteNode failed (nodeId=%u, scopeId=%u, token=%u)",
             nodeId, node.scopeId, node.sourceToken);
@@ -757,15 +986,57 @@ void TaskExecutor::ResolveSuccessors(ExecNodeId completedNodeId, uint32_t worker
             continue;
         }
 
-        const uint32_t prev = succRt->remainingDeps.fetch_sub(1);
-        if (prev != 1) continue;
+        uint32_t prev = succRt->remainingDeps.load(std::memory_order_acquire);
+        while (prev != 0)
+        {
+            if (succRt->remainingDeps.compare_exchange_weak(
+                prev,
+                prev - 1,
+                std::memory_order_acq_rel,
+                std::memory_order_acquire))
+            {
+                break;
+            }
+        }
+
+        if (prev == 0)
+        {
+            // SPEC-EXEC-QUEUE-001 §개선방향 §4 규칙 4:
+            // remainingDeps == 0 에서 추가 predecessor completion 관측.
+            _diagnostics.RecordRemainingDepsUnderflow();
+            FWLOG_ERROR(kLogCategory,
+                "ResolveSuccessors remainingDeps underflow avoided "
+                "(frameId=%llu, completedNodeId=%u, succId=%u, succState=%s)",
+                static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                completedNodeId,
+                succId,
+                DebugNodeStateName(succRt->state.load(std::memory_order_acquire)));
+            continue;
+        }
+
+        if (prev != 1)
+            continue;
 
         const ExecScopePhase scopePhase = succScopeRt->phase.load();
         if (IsExecutableScopePhase(scopePhase))
         {
             const bool ok =
                 TryTransitionNode(*succRt, ExecNodeState::NotReady, ExecNodeState::Ready);
-            assert(ok);
+            if (!ok)
+            {
+                // SPEC-EXEC-QUEUE-001 §개선방향 §1: successorReadyTransitionSkipped 카운터.
+                _diagnostics.RecordSuccessorReadyTransitionSkipped();
+                FWLOG_ERROR(kLogCategory,
+                    "ResolveSuccessors successor ready transition skipped "
+                    "(frameId=%llu, completedNodeId=%u, succId=%u, succState=%s, scopePhase=%s, remainingDeps=%u)",
+                    static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                    completedNodeId,
+                    succId,
+                    DebugNodeStateName(succRt->state.load(std::memory_order_acquire)),
+                    DebugScopePhaseName(succScopeRt->phase.load(std::memory_order_acquire)),
+                    succRt->remainingDeps.load(std::memory_order_acquire));
+                continue;
+            }
             // workerIdx를 전달해 후계자를 현재 워커의 deque에 삽입한다 (캐시 지역성).
             DispatchNode(succId, workerIdx);
         }
@@ -776,7 +1047,21 @@ void TaskExecutor::ResolveSuccessors(ExecNodeId completedNodeId, uint32_t worker
 
             const bool ok =
                 TryTransitionNode(*succRt, ExecNodeState::NotReady, terminal);
-            assert(ok);
+            if (!ok)
+            {
+                // SPEC-EXEC-QUEUE-001 §개선방향 §1: successorCancelTransitionSkipped 카운터.
+                _diagnostics.RecordSuccessorCancelTransitionSkipped();
+                FWLOG_ERROR(kLogCategory,
+                    "ResolveSuccessors successor cancel transition skipped "
+                    "(frameId=%llu, completedNodeId=%u, succId=%u, succState=%s, scopePhase=%s, remainingDeps=%u)",
+                    static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                    completedNodeId,
+                    succId,
+                    DebugNodeStateName(succRt->state.load(std::memory_order_acquire)),
+                    DebugScopePhaseName(succScopeRt->phase.load(std::memory_order_acquire)),
+                    succRt->remainingDeps.load(std::memory_order_acquire));
+                continue;
+            }
             CompleteNodeTerminal(succId, terminal);
         }
     }
@@ -795,9 +1080,47 @@ void TaskExecutor::CompleteNodeTerminal(
     ExecScopeRuntime* scopeRt = runtime.TryGetScope(node.scopeId);
     assert(scopeRt != nullptr);
 
-    const uint32_t prevScope =
-        scopeRt->remainingNodes.fetch_sub(1);
-    assert(prevScope > 0);
+    // TEMP_TASKEXECUTOR_DEBUG: terminal completion breadcrumb.
+    if (const ExecNodeRuntime* nodeRt = runtime.TryGetNode(nodeId))
+    {
+        FWLOG_INFO(kLogCategory,
+            "TEMP_TASKEXECUTOR_DEBUG CompleteNodeTerminal (frameId=%llu, nodeId=%u, terminal=%s, nodeState=%s, scopePhase=%s, scopeRemainingBefore=%u, remainingSimBefore=%u)",
+            static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+            nodeId,
+            DebugNodeStateName(terminalState),
+            DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)),
+            DebugScopePhaseName(scopeRt->phase.load(std::memory_order_acquire)),
+            scopeRt->remainingNodes.load(std::memory_order_acquire),
+            runtime.signals.remainingSimulateNodes.load(std::memory_order_acquire));
+    }
+
+    // SPEC-EXEC-QUEUE-001 §개선방향 §5:
+    // blind fetch_sub(1) 대신 CAS 루프로 0 이하 underflow를 방지한다.
+    // underflow 시도 시 scopeRemainingUnderflowAttempt 를 증가시키고 반환.
+    uint32_t prevScope = scopeRt->remainingNodes.load(std::memory_order_acquire);
+    while (true)
+    {
+        if (prevScope == 0)
+        {
+            _diagnostics.RecordScopeRemainingUnderflow();
+            FWLOG_ERROR(kLogCategory,
+                "CompleteNodeTerminal scope remainingNodes underflow avoided "
+                "(frameId=%llu, nodeId=%u, scopeId=%u, terminal=%s)",
+                static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                nodeId,
+                node.scopeId,
+                DebugNodeStateName(terminalState));
+            return;
+        }
+        if (scopeRt->remainingNodes.compare_exchange_weak(
+                prevScope,
+                prevScope - 1,
+                std::memory_order_acq_rel,
+                std::memory_order_acquire))
+        {
+            break;
+        }
+    }
 
     if (prevScope == 1)
     {
@@ -846,9 +1169,33 @@ void TaskExecutor::CompleteNodeTerminal(
 
     if (node.phase == ExecPhase::Simulate)
     {
-        const uint32_t prevSim =
-            runtime.signals.remainingSimulateNodes.fetch_sub(1);
-        assert(prevSim > 0);
+        // SPEC-EXEC-QUEUE-001 §개선방향 §5:
+        // blind fetch_sub(1) 대신 CAS 루프로 0 이하 underflow를 방지한다.
+        uint32_t prevSim =
+            runtime.signals.remainingSimulateNodes.load(std::memory_order_acquire);
+        while (true)
+        {
+            if (prevSim == 0)
+            {
+                _diagnostics.RecordSimulateRemainingUnderflow();
+                FWLOG_ERROR(kLogCategory,
+                    "CompleteNodeTerminal remainingSimulateNodes underflow avoided "
+                    "(frameId=%llu, nodeId=%u, terminal=%s)",
+                    static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                    nodeId,
+                    DebugNodeStateName(terminalState));
+                NotifyProgress();
+                return;
+            }
+            if (runtime.signals.remainingSimulateNodes.compare_exchange_weak(
+                    prevSim,
+                    prevSim - 1,
+                    std::memory_order_acq_rel,
+                    std::memory_order_acquire))
+            {
+                break;
+            }
+        }
 
         if (prevSim == 1)
         {

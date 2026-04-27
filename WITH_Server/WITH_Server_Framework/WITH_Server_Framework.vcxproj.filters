@@ -465,4 +465,9 @@
       <UniqueIdentifier>{9d34aca9-de86-489f-bd70-71e32c7b70b2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="TaskExecutor_QueueState_Spec.md">
+      <Filter>03_Execution\05_TaskExecutor</Filter>
+    </None>
+  </ItemGroup>
 </Project>

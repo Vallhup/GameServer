@@ -199,4 +199,10 @@ private:
     std::condition_variable _progressCv;
 
     std::atomic<bool> _frameBound{ false };
+
+    // TEMP_TASKEXECUTOR_DEBUG: frame-boundary/queue race diagnostics. Remove after root cause is fixed.
+    std::atomic<uint64_t> _debugNextFrameId{ 1 };
+    std::atomic<uint64_t> _debugCurrentFrameId{ 0 };
+    std::atomic<uint32_t> _debugActiveWorkerPumps{ 0 };
+    std::atomic<uint32_t> _debugActiveExecutingNodes{ 0 };
 };

@@ -11,6 +11,9 @@
     <ClCompile Include="LFWSDeque_BenchMark.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="TaskExecutor_RaceStressTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

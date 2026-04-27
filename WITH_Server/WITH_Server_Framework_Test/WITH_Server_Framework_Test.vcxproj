@@ -159,6 +159,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="LFWSDeque_BenchMark.cpp" />
+    <ClCompile Include="TaskExecutor_RaceStressTest.cpp" />
     <ClCompile Include="TaskExecutor_PerfDiagnostics.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

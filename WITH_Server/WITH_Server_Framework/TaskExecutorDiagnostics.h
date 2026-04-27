@@ -10,6 +10,65 @@
 #include "ExecutionGraphTypes.h"
 #include "ExecutionSourceTypes.h"
 
+// ---------------------------------------------------------------------------
+// TaskExecutorInvariantCounters
+//
+// SPEC-EXEC-QUEUE-001 §개선방향 §1 — frame 단위 invariant diagnostics.
+// 이 값들은 단순 로그가 아니라 테스트가 읽을 수 있는 diagnostics로 노출된다.
+// strict stress mode 에서는 AnyNonZero() == true 이면 테스트를 즉시 실패 처리한다.
+// ---------------------------------------------------------------------------
+struct TaskExecutorInvariantCounters
+{
+    // queue에서 꺼낸 entry의 Queued→Running / Queued→Cancel CAS가 실패한 횟수.
+    // stale/duplicate queue entry가 discard된 정상 경로.
+    uint32_t staleQueuedEntryDiscarded{ 0 };
+
+    // successor의 remainingDeps 가 1→0 전이 후 NotReady→Ready CAS 가 실패한 횟수.
+    uint32_t successorReadyTransitionSkipped{ 0 };
+
+    // successor의 remainingDeps 가 1→0 전이 후 NotReady→Cancel CAS 가 실패한 횟수.
+    uint32_t successorCancelTransitionSkipped{ 0 };
+
+    // successor의 remainingDeps 가 이미 0인데 추가 predecessor completion이 관측된 횟수.
+    uint32_t remainingDepsUnderflowAttempt{ 0 };
+
+    // Ready→Queued CAS 가 실패한 횟수 (DispatchNode 내부).
+    uint32_t dispatchReadyToQueuedFailed{ 0 };
+
+    // Running→terminal CAS 가 실패한 횟수 (같은 node가 두 번 terminal 처리 시도).
+    uint32_t duplicateCompletionAttempt{ 0 };
+
+    // scopeRt->remainingNodes 가 이미 0인데 감소를 시도한 횟수.
+    uint32_t scopeRemainingUnderflowAttempt{ 0 };
+
+    // remainingSimulateNodes 가 이미 0인데 감소를 시도한 횟수.
+    uint32_t simulateRemainingUnderflowAttempt{ 0 };
+
+    [[nodiscard]] bool AnyNonZero() const noexcept
+    {
+        return staleQueuedEntryDiscarded != 0
+            || successorReadyTransitionSkipped != 0
+            || successorCancelTransitionSkipped != 0
+            || remainingDepsUnderflowAttempt != 0
+            || dispatchReadyToQueuedFailed != 0
+            || duplicateCompletionAttempt != 0
+            || scopeRemainingUnderflowAttempt != 0
+            || simulateRemainingUnderflowAttempt != 0;
+    }
+
+    void Clear() noexcept
+    {
+        staleQueuedEntryDiscarded = 0;
+        successorReadyTransitionSkipped = 0;
+        successorCancelTransitionSkipped = 0;
+        remainingDepsUnderflowAttempt = 0;
+        dispatchReadyToQueuedFailed = 0;
+        duplicateCompletionAttempt = 0;
+        scopeRemainingUnderflowAttempt = 0;
+        simulateRemainingUnderflowAttempt = 0;
+    }
+};
+
 struct TaskExecutorDiagnosticsConfig
 {
     bool enabled{ false };
@@ -58,6 +117,10 @@ struct TaskExecutorFrameDiagnostics
     double workerEfficiency{ 0.0 };
     std::vector<TaskExecutorNodeDiagnostic> nodes;
 
+    // SPEC-EXEC-QUEUE-001 invariant counters — always populated, regardless of
+    // whether performance recording is enabled.
+    TaskExecutorInvariantCounters invariants;
+
     void Clear() noexcept;
 };
 
@@ -86,6 +149,19 @@ public:
         const ExecNodeRecord& node,
         ExecNodeId nodeId,
         ExecCallResult result) noexcept;
+
+    // ---------------------------------------------------------------------------
+    // Invariant counter record methods — thread-safe, always active.
+    // SPEC-EXEC-QUEUE-001 §개선방향 §1
+    // ---------------------------------------------------------------------------
+    void RecordStaleQueuedEntry() noexcept;
+    void RecordSuccessorReadyTransitionSkipped() noexcept;
+    void RecordSuccessorCancelTransitionSkipped() noexcept;
+    void RecordRemainingDepsUnderflow() noexcept;
+    void RecordDispatchReadyToQueuedFailed() noexcept;
+    void RecordDuplicateCompletion() noexcept;
+    void RecordScopeRemainingUnderflow() noexcept;
+    void RecordSimulateRemainingUnderflow() noexcept;
 
     [[nodiscard]]
     const TaskExecutorDiagnosticsConfig& GetConfig() const noexcept
@@ -145,4 +221,14 @@ private:
     std::atomic<uint32_t> _activeNodes{ 0 };
     std::atomic<uint32_t> _maxActiveNodes{ 0 };
     std::atomic<uint32_t> _executedNodes{ 0 };
+
+    // Invariant counters — always tracked regardless of _recording.
+    std::atomic<uint32_t> _staleQueuedEntryDiscarded{ 0 };
+    std::atomic<uint32_t> _successorReadyTransitionSkipped{ 0 };
+    std::atomic<uint32_t> _successorCancelTransitionSkipped{ 0 };
+    std::atomic<uint32_t> _remainingDepsUnderflowAttempt{ 0 };
+    std::atomic<uint32_t> _dispatchReadyToQueuedFailed{ 0 };
+    std::atomic<uint32_t> _duplicateCompletionAttempt{ 0 };
+    std::atomic<uint32_t> _scopeRemainingUnderflowAttempt{ 0 };
+    std::atomic<uint32_t> _simulateRemainingUnderflowAttempt{ 0 };
 };

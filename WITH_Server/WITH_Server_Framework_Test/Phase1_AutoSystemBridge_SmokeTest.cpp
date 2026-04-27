@@ -9,8 +9,13 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <vector>
+
+#ifdef _MSC_VER
+#include <crtdbg.h>
+#endif
 
 #include "AutoSystemBridge.h"
 #include "ExecutionContextTypes.h"
@@ -897,14 +902,46 @@ namespace
 
 void RunTaskExecutorPerfDiagnostics();
 void RunLFWSDequeBenchmark();
+void RunTaskExecutorRaceStressTest(int argc, char** argv);
 
-int main()
+namespace
+{
+    bool HasArg(int argc, char** argv, const char* expected)
+    {
+        for (int i = 1; i < argc; ++i)
+        {
+            if (std::string_view{ argv[i] } == expected)
+                return true;
+        }
+        return false;
+    }
+}
+
+int main(int argc, char** argv)
 {
     try
     {
-       // RunPhase1AutoSystemBridgeSmokeTest();
-       // RunTaskExecutorPerfDiagnostics();
-        RunLFWSDequeBenchmark();
+#ifdef _MSC_VER
+        _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+        _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
+#endif
+
+        if (HasArg(argc, argv, "--lfws-bench"))
+        {
+            RunLFWSDequeBenchmark();
+        }
+        else if (HasArg(argc, argv, "--phase1-smoke"))
+        {
+            RunPhase1AutoSystemBridgeSmokeTest();
+        }
+        else if (HasArg(argc, argv, "--perf-diagnostics"))
+        {
+            RunTaskExecutorPerfDiagnostics();
+        }
+        else
+        {
+            RunTaskExecutorRaceStressTest(argc, argv);
+        }
         return 0;
     }
     catch (const std::exception& ex)

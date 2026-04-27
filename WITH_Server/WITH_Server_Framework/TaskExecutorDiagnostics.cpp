@@ -41,10 +41,55 @@ void TaskExecutorFrameDiagnostics::Clear() noexcept
     overheadVsIdealNs = 0;
     workerEfficiency = 0.0;
     nodes.clear();
+    invariants.Clear();
 }
 
 TaskExecutorDiagnosticsRecorder::TaskExecutorDiagnosticsRecorder() = default;
 TaskExecutorDiagnosticsRecorder::~TaskExecutorDiagnosticsRecorder() = default;
+
+// ---------------------------------------------------------------------------
+// Invariant counter record methods
+// ---------------------------------------------------------------------------
+
+void TaskExecutorDiagnosticsRecorder::RecordStaleQueuedEntry() noexcept
+{
+    _staleQueuedEntryDiscarded.fetch_add(1, std::memory_order_relaxed);
+}
+
+void TaskExecutorDiagnosticsRecorder::RecordSuccessorReadyTransitionSkipped() noexcept
+{
+    _successorReadyTransitionSkipped.fetch_add(1, std::memory_order_relaxed);
+}
+
+void TaskExecutorDiagnosticsRecorder::RecordSuccessorCancelTransitionSkipped() noexcept
+{
+    _successorCancelTransitionSkipped.fetch_add(1, std::memory_order_relaxed);
+}
+
+void TaskExecutorDiagnosticsRecorder::RecordRemainingDepsUnderflow() noexcept
+{
+    _remainingDepsUnderflowAttempt.fetch_add(1, std::memory_order_relaxed);
+}
+
+void TaskExecutorDiagnosticsRecorder::RecordDispatchReadyToQueuedFailed() noexcept
+{
+    _dispatchReadyToQueuedFailed.fetch_add(1, std::memory_order_relaxed);
+}
+
+void TaskExecutorDiagnosticsRecorder::RecordDuplicateCompletion() noexcept
+{
+    _duplicateCompletionAttempt.fetch_add(1, std::memory_order_relaxed);
+}
+
+void TaskExecutorDiagnosticsRecorder::RecordScopeRemainingUnderflow() noexcept
+{
+    _scopeRemainingUnderflowAttempt.fetch_add(1, std::memory_order_relaxed);
+}
+
+void TaskExecutorDiagnosticsRecorder::RecordSimulateRemainingUnderflow() noexcept
+{
+    _simulateRemainingUnderflowAttempt.fetch_add(1, std::memory_order_relaxed);
+}
 
 void TaskExecutorDiagnosticsRecorder::Configure(TaskExecutorDiagnosticsConfig config)
 {
@@ -71,6 +116,16 @@ void TaskExecutorDiagnosticsRecorder::BeginFrame(
         (_config.sampleEveryNFrames == 0 ||
          frameOrdinal % _config.sampleEveryNFrames == 0);
 
+    // Invariant counters are always reset, regardless of _recording.
+    _staleQueuedEntryDiscarded.store(0, std::memory_order_release);
+    _successorReadyTransitionSkipped.store(0, std::memory_order_release);
+    _successorCancelTransitionSkipped.store(0, std::memory_order_release);
+    _remainingDepsUnderflowAttempt.store(0, std::memory_order_release);
+    _dispatchReadyToQueuedFailed.store(0, std::memory_order_release);
+    _duplicateCompletionAttempt.store(0, std::memory_order_release);
+    _scopeRemainingUnderflowAttempt.store(0, std::memory_order_release);
+    _simulateRemainingUnderflowAttempt.store(0, std::memory_order_release);
+
     if (!_recording)
     {
         return;
@@ -88,6 +143,25 @@ void TaskExecutorDiagnosticsRecorder::EndFrame(
     const FrameTaskGraph& graph,
     const ExecutionSourceRegistry& sourceRegistry)
 {
+    // Invariant counters are always snapshotted, even when performance
+    // recording is disabled. This allows tests to read them via GetLastFrame().
+    _lastFrame.invariants.staleQueuedEntryDiscarded =
+        _staleQueuedEntryDiscarded.load(std::memory_order_acquire);
+    _lastFrame.invariants.successorReadyTransitionSkipped =
+        _successorReadyTransitionSkipped.load(std::memory_order_acquire);
+    _lastFrame.invariants.successorCancelTransitionSkipped =
+        _successorCancelTransitionSkipped.load(std::memory_order_acquire);
+    _lastFrame.invariants.remainingDepsUnderflowAttempt =
+        _remainingDepsUnderflowAttempt.load(std::memory_order_acquire);
+    _lastFrame.invariants.dispatchReadyToQueuedFailed =
+        _dispatchReadyToQueuedFailed.load(std::memory_order_acquire);
+    _lastFrame.invariants.duplicateCompletionAttempt =
+        _duplicateCompletionAttempt.load(std::memory_order_acquire);
+    _lastFrame.invariants.scopeRemainingUnderflowAttempt =
+        _scopeRemainingUnderflowAttempt.load(std::memory_order_acquire);
+    _lastFrame.invariants.simulateRemainingUnderflowAttempt =
+        _simulateRemainingUnderflowAttempt.load(std::memory_order_acquire);
+
     if (!_recording)
     {
         return;

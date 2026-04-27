@@ -90,6 +90,20 @@ namespace
         std::mutex     _mtx;
     };
 
+    template<typename TDeque>
+    void PushDeque(TDeque& deque, ItemType item)
+    {
+        if constexpr (requires(TDeque& d, ItemType value) { d.TryPush(value); })
+        {
+            while (!deque.TryPush(item))
+                std::this_thread::yield();
+        }
+        else
+        {
+            deque.Push(item);
+        }
+    }
+
     // -----------------------------------------------------------------------
     // 유틸리티
     // -----------------------------------------------------------------------
@@ -150,7 +164,7 @@ namespace
         for (uint32_t round = 0; round < kSeqRounds; ++round)
         {
             for (uint32_t i = 0; i < kSeqBatch; ++i)
-                deque.Push(static_cast<ItemType>(i + 1));
+                PushDeque(deque, static_cast<ItemType>(i + 1));
 
             for (uint32_t i = 0; i < kSeqBatch; ++i)
                 (void)deque.TryPop();
@@ -200,7 +214,7 @@ namespace
         for (uint32_t round = 0; round < kDrainRounds; ++round)
         {
             for (uint32_t i = 0; i < kDrainBatch; ++i)
-                deque.Push(static_cast<ItemType>(i + 1));
+                PushDeque(deque, static_cast<ItemType>(i + 1));
 
             // 이번 라운드 누적 소비 목표
             const uint64_t targetConsumed =
@@ -279,7 +293,7 @@ namespace
                 {
                     // 자신의 deque에 Push (owner 연산 → 안전)
                     for (uint32_t i = 0; i < kItemsPerWorkerPerRound; ++i)
-                        dequePtr[myIdx]->Push(static_cast<ItemType>(i + 1));
+                        PushDeque(*dequePtr[myIdx], static_cast<ItemType>(i + 1));
 
                     // 모든 워커 Push 완료 대기 후 drain 시작
                     roundBarrier.arrive_and_wait();
