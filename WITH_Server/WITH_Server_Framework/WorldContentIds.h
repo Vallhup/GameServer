@@ -37,6 +37,7 @@ namespace SpawnPointIds
 	inline constexpr SpawnPointId VillageMonster03 = 203;
 	inline constexpr SpawnPointId VillageMonster04 = 204;
 	inline constexpr SpawnPointId VillageMonster05 = 205;
+	inline constexpr SpawnPointId VillageBossMonster01 = 206;
 
 	inline constexpr SpawnPointId CastlePlayerStart = 300;
 	inline constexpr SpawnPointId CastleMonster01 = 301;

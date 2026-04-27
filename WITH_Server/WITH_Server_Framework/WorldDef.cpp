@@ -146,6 +146,12 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 					.position = WorldVec3Def{ 240.033142f, 57.021049f, 606.717407f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
+				SpawnPointDef{
+					.id = SpawnPointIds::VillageBossMonster01,
+					.name = "Village.Boss.01",
+					.position = WorldVec3Def{ 345.541107f, 75.819321f, 587.426025f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
 			},
 			// TODO(content): fill Village navmesh, navigation profile, and environment tags.
 			.navMesh = MapNavMeshDef
