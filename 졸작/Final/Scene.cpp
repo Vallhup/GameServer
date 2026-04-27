@@ -2,9 +2,13 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "MainCharacter.h"
+#include "Engine.h"
+#include "UIManager.h"
+#include "GameSceneUIController.h"
 #include "Material.h"
 #include "Camera.h"
 #include "Input.h"
+#include "ImGuiManager.h"
 #include "Animator.h"
 #include "AnimationMachine.h"
 #include "AnimationSetFactory.h"
@@ -12,7 +16,9 @@
 #include "FootDustComponent.h"
 #include "ParrySparkComponent.h"
 
+#include "NetId.h"
 #include "NetHelper.h"
+#include "EntityId.h"
 
 void Scene::Initialize(HWND hWnd, DX12Core& core)
 {
@@ -41,31 +47,6 @@ void Scene::Update(const float deltaTime)
     //    cam->Update(*coreRef, deltaTime, );
     
     RequestSceneChange();
-}
-
-void Scene::RenderDeferred()
-{
-    RenderSceneDeferred();
-}
-
-void Scene::RenderForward()
-{
-    RenderSceneForward();
-}
-
-void Scene::RenderShadowStatic()
-{
-    RenderSceneShadowStatic();
-}
-
-void Scene::RenderShadowDynamic()
-{
-    RenderSceneShadowDynamic();
-}
-
-void Scene::RenderEffects()
-{
-    RenderSceneEffects();
 }
 
 Camera* Scene::GetCamera() const
@@ -230,4 +211,155 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 void Scene::AddGameObject(shared_ptr<GameObject> obj)
 {
 	gameObjects.push_back(obj);
+}
+
+void Scene::HandleLogin(const Protocol::SC_LOGIN_PACKET& login)
+{
+	NetId nid{ login.netid() };
+	int id = nid.GetId();
+	INPUT.SetClientID(id);
+	OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
+}
+
+void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
+{
+	NetId nid{ add.netid() };
+	int id = nid.GetId();
+	int type = add.typeid_();
+
+	if (type == static_cast<int>(CharacterId::FinalBoss)) // Final_Boss
+	{
+		auto boss = GetAvailableMonster(MonsterType::Boss);
+		if (boss)
+		{
+			boss->SetId(id);
+			auto transform = boss->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = boss;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::Knight)) // Knight
+	{
+		auto player = GetAvailableKnight();
+		if (player)
+		{
+			player->SetId(id);
+			auto transform = player->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = player;
+
+			if (id == INPUT.GetClientID())
+			{
+				myPlayer = player;
+				myPlayer->SetAsLocalPlayer(cam.get());
+
+				IMGUI.SetMyPlayer(myPlayer.get());
+
+				OutputDebugStringA("My character activated!\n");
+			}
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::Imp))
+	{
+		auto imp = GetAvailableMonster(MonsterType::Imp);
+		if (imp)
+		{
+			imp->SetId(id);
+			auto transform = imp->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = imp;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::DemonStriker))
+	{
+		auto striker = GetAvailableMonster(MonsterType::DemonStriker);
+		if (striker)
+		{
+			striker->SetId(id);
+			auto transform = striker->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = striker;
+		}
+	}
+	else if (type == static_cast<int>(CharacterId::DemonExecutioner))
+	{
+		auto demonExecutionerObject = GetAvailableMonster(MonsterType::DemonExecutioner);
+		if (demonExecutionerObject)
+		{
+			demonExecutionerObject->SetId(id);
+			auto transform = demonExecutionerObject->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = demonExecutionerObject;
+		}
+	}
+}
+
+void Scene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
+{
+	NetId nid{ move.netid() };
+	int id = nid.GetId();
+	auto it = activeCharacters.find(id);
+	if (it != activeCharacters.end())
+	{
+		auto transform = it->second->GetComponent<Transform>();
+
+		transform->SetPosition(move.x(), move.y(), move.z());
+		transform->SetTargetRotation(move.yaw());
+	}
+}
+
+void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
+{
+	OutputDebugStringA("SC_REMOVE packet received\n");
+}
+
+void Scene::HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim)
+{
+	NetId nid{ anim.netid() };
+	int id = nid.GetId();
+
+	auto it = activeCharacters.find(id);
+	if (it != activeCharacters.end())
+	{
+		if (auto animMachine = it->second->GetComponent<AnimationMachine>())
+		{
+			uint32 serverAnimIdx = anim.curranim();
+			uint32 startIdx = animMachine->GetAnimationSet()->GetStartIndex();
+			string animName = animMachine->GetAnimationSet()->GetClipNameByIndex(serverAnimIdx - startIdx);
+
+			animMachine->OnServerClipConfirm(animName);
+		}
+	}
+}
+
+void Scene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
+{
+	const NetId nid{ stat.netid() };
+	const int id = nid.GetId();
+
+	const int curHp = stat.curhp();
+	const int curStamina = stat.curstamina();
+
+	const int maxHp = stat.maxhp();
+	const int maxStamina = stat.maxstamina();
+
+	const int power = stat.power();
+	const int defense = stat.defense();
+	const double mSpeed = stat.movespeed();
+	const double aSpeed = stat.attackspeed();
+
+	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>();
+	if (controller)
+	{
+		controller->HandleStatBarChange(curHp, maxHp, curStamina, maxStamina);
+		if (controller->IsStatWindowOn())
+			controller->HandleStatImageChange(
+				curHp, maxHp, curStamina, maxStamina,
+				power, aSpeed, defense, mSpeed);
+	}
 }

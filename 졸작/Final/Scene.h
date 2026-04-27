@@ -20,23 +20,17 @@ public:
 	virtual ~Scene() {}
 	virtual void Initialize(HWND hWnd, DX12Core& core);
 	virtual void Update(const float deltaTime);
-	virtual void RenderDeferred();
-	virtual void RenderForward();
-	virtual void RenderShadowStatic();
-	virtual void RenderShadowDynamic();
-	virtual void RenderEffects();
+	virtual void RenderSceneDeferred() {}
+	virtual void RenderSceneForward() {}
+	virtual void RenderSceneShadowStatic() {}
+	virtual void RenderSceneShadowDynamic() {}
+	virtual void RenderSceneEffects() {}
 	virtual void Release() = 0;
 
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
 	void HandlePacket(const PacketHeader& header, const BYTE* data);
 	void SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches);
-
-	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
-	shared_ptr<MainCharacter> GetAvailableKnight() const;
-
-	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)(), bool twoSided = true);
-	void CreateMonsters(MonsterType type, const XMFLOAT3& position, int count = 1);
 
 	void AddGameObject(shared_ptr<GameObject> obj);
 
@@ -47,20 +41,7 @@ protected:
 	virtual void InitializeSceneEnvironments() {}
 	virtual void InitializeSceneMonsters() {}
 	virtual void UpdateScene(const float deltaTime) {}
-	virtual void RenderSceneDeferred() {}
-	virtual void RenderSceneForward() {}
-	virtual void RenderSceneShadowStatic() {}
-	virtual void RenderSceneShadowDynamic() {}
-	virtual void RenderSceneEffects() {}
 	virtual void RequestSceneChange() {}
-
-	// Network Handler Function Interface
-	virtual void HandleLogin(const Protocol::SC_LOGIN_PACKET& login) {}
-	virtual void HandleAdd(const Protocol::SC_ADD_PACKET& add) {}
-	virtual void HandleMove(const Protocol::SC_MOVE_PACKET& move) {}
-	virtual void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove) {}
-	virtual void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim) {}
-	virtual void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat) {}
 
 	template<typename T>
 	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const T& data);
@@ -71,6 +52,21 @@ protected:
 	void CreateAndBatchObjects(const wstring& path, const vector<T>& data, vector<shared_ptr<InstancingBatch>>& targetBatchList);
 
 	void CreateKnightPool();
+	void CreateMonsters(MonsterType type, const XMFLOAT3& position, int count = 1);
+
+private:
+	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
+	shared_ptr<MainCharacter> GetAvailableKnight() const;
+
+	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)(), bool twoSided = true);
+
+	// Network Handler Function Interface
+	void HandleLogin(const Protocol::SC_LOGIN_PACKET& login);
+	void HandleAdd(const Protocol::SC_ADD_PACKET& add);
+	void HandleMove(const Protocol::SC_MOVE_PACKET& move);
+	void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove);
+	void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim);
+	void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat);
 
 protected:
 	XMFLOAT4X4 mView = {};

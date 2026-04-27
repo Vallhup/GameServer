@@ -34,6 +34,9 @@ public:
 	template<typename T>
 	T* GetController(SceneType type);
 
+	template<typename T>
+	T* GetController() { return GetController<T>(currentScene); }
+
 private:
 	void RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
 	void RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
