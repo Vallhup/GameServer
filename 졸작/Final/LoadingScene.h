@@ -12,21 +12,13 @@ public:
 	~LoadingScene();
 
 	void Release() override;
-	void Reset() override;
 
 	vector<shared_ptr<InstancingBatch>> TakeBatches(SceneType type);
 	void SetTargetScene(SceneType type) { targetScene = type; }
 
 protected:
 	void InitializeLogic() override;
-	void InitializeSceneEnvironments() override;
-	void InitializeSceneMonsters() override;
 	void UpdateScene(const float deltaTime) override;
-	void RenderSceneDeferred() override;
-	void RenderSceneForward() override;
-	void RenderSceneShadow() override;
-	void RenderSceneEffects() override;
-	void RequestSceneChange() override;
 
 private:
 	void LoadPlazaSceneResources();

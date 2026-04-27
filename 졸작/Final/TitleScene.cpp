@@ -4,11 +4,6 @@
 
 void TitleScene::Release()
 {
-
-}
-
-void TitleScene::Reset()
-{
 	OutputDebugStringA("TitleScene Data has been deleted!! \n----------------------------------------\n");
 }
 
@@ -65,36 +60,4 @@ void TitleScene::InitializeLogic()
 		obj->GetComponent<Mesh>()->ReleaseUploadBuffers();
 
 	OutputDebugStringA("Data cached created!!\n");
-}
-
-void TitleScene::InitializeSceneEnvironments()
-{
-}
-
-void TitleScene::InitializeSceneMonsters()
-{
-}
-
-void TitleScene::UpdateScene(const float deltaTime)
-{	
-}
-
-void TitleScene::RenderSceneDeferred()
-{
-}
-
-void TitleScene::RenderSceneForward()
-{
-}
-
-void TitleScene::RenderSceneShadow()
-{
-}
-
-void TitleScene::RenderSceneEffects()
-{
-}
-
-void TitleScene::RequestSceneChange()
-{
 }

@@ -74,11 +74,19 @@ void SceneManager::RenderForward()
     }
 }
 
-void SceneManager::RenderShadow()
+void SceneManager::RenderShadowStatic()
 {
     if (mCurrentScene)
     {
-        mCurrentScene->RenderShadow();
+        mCurrentScene->RenderShadowStatic();
+    }
+}
+
+void SceneManager::RenderShadowDynamic()
+{
+    if (mCurrentScene)
+    {
+        mCurrentScene->RenderShadowDynamic();
     }
 }
 
@@ -93,7 +101,7 @@ void SceneManager::RenderEffects()
 void SceneManager::Release()
 {
     if (mCurrentScene)
-        mCurrentScene->Reset();
+        mCurrentScene->Release();
 
     mCurrentScene = nullptr;
 
@@ -172,7 +180,7 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
         IMGUI.SetSkyBox(nullptr);
         IMGUI.SetCamera(nullptr);
 
-        mCurrentScene->Reset();
+        mCurrentScene->Release();
     }
 
     core.ResetCommandQueue();

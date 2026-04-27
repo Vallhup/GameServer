@@ -169,7 +169,7 @@ void InstancingBatch::Render(DX12Core& core, SceneRenderer* renderer)
     renderer->RenderInstanced(core, mesh, visibleCount, instanceBuffer.get(), this);
 }
 
-void InstancingBatch::RenderShadow(DX12Core& core, SceneRenderer* renderer)
+void InstancingBatch::RenderShadowStatic(DX12Core& core, SceneRenderer* renderer)
 {
     if (!castShadow) return;
     if (shadowCount == 0 || !mesh || !fullInstanceBuffer) return;

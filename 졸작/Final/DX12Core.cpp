@@ -75,16 +75,24 @@ void DX12Core::Update()
 
 void DX12Core::BeginShadowPass(int cascadeIdx)
 {
+	// cascade 0 진입 시: 슬라이스 0,1만 PSR→DW (슬라이스 2는 새 흐름이 별도 관리)
 	if (cascadeIdx == 0) {
 		static bool firstShadowPass = true;
 
 		if (!firstShadowPass) {
-			D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-				shadowMgr->GetCsmResource(),
-				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-				D3D12_RESOURCE_STATE_DEPTH_WRITE
-			);
-			deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+			D3D12_RESOURCE_BARRIER barriers[2] = {
+				CD3DX12_RESOURCE_BARRIER::Transition(
+					shadowMgr->GetCsmResource(),
+					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+					D3D12_RESOURCE_STATE_DEPTH_WRITE,
+					0),
+				CD3DX12_RESOURCE_BARRIER::Transition(
+					shadowMgr->GetCsmResource(),
+					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+					D3D12_RESOURCE_STATE_DEPTH_WRITE,
+					1),
+			};
+			deviceCtx->GetGraphicsCmdList()->ResourceBarrier(2, barriers);
 		}
 		else {
 			firstShadowPass = false;
@@ -116,20 +124,138 @@ void DX12Core::BeginShadowPass(int cascadeIdx)
 
 void DX12Core::EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect, int cascadeIdx)
 {
-	if (cascadeIdx == shadowMgr->GetCascadeCount() - 1)
+	// cascade 1 종료 시: 슬라이스 0,1만 DW→PSR (cascade 2는 새 흐름이 마무리)
+	if (cascadeIdx == 1)
 	{
-		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			shadowMgr->GetCsmResource(),
-			D3D12_RESOURCE_STATE_DEPTH_WRITE,
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
-		);
-		deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &barrier);
+		D3D12_RESOURCE_BARRIER barriers[2] = {
+			CD3DX12_RESOURCE_BARRIER::Transition(
+				shadowMgr->GetCsmResource(),
+				D3D12_RESOURCE_STATE_DEPTH_WRITE,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				0),
+			CD3DX12_RESOURCE_BARRIER::Transition(
+				shadowMgr->GetCsmResource(),
+				D3D12_RESOURCE_STATE_DEPTH_WRITE,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				1),
+		};
+		deviceCtx->GetGraphicsCmdList()->ResourceBarrier(2, barriers);
 	}
 
 	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
 	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
 
 	//OutputDebugStringA("Shadow Pass ended!!\n");
+}
+
+void DX12Core::BeginStaticShadowPass()
+{
+	// staticCsm: 첫 프레임은 DW로 생성됨, 이후엔 COPY_SOURCE 상태
+	static bool firstStaticPass = true;
+	if (!firstStaticPass)
+	{
+		D3D12_RESOURCE_BARRIER toDw = CD3DX12_RESOURCE_BARRIER::Transition(
+			shadowMgr->GetStaticCsmResource(),
+			D3D12_RESOURCE_STATE_COPY_SOURCE,
+			D3D12_RESOURCE_STATE_DEPTH_WRITE);
+		deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &toDw);
+	}
+	else firstStaticPass = false;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE dsv = shadowMgr->GetStaticCsmDSV();
+	deviceCtx->GetGraphicsCmdList()->OMSetRenderTargets(0, nullptr, FALSE, &dsv);
+	deviceCtx->GetGraphicsCmdList()->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+	UINT mapSize = shadowMgr->GetShadowMapSize();
+	D3D12_VIEWPORT vp = { 0, 0, (float)mapSize, (float)mapSize, 0.0f, 1.0f };
+	D3D12_RECT rect = { 0, 0, (LONG)mapSize, (LONG)mapSize };
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
+
+	int cascadeIdx = shadowMgr->GetStaticCacheCascadeIndex();
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootSignature(GetRootSig()->Get());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRoot32BitConstant(16, cascadeIdx, 0);
+}
+
+void DX12Core::EndStaticShadowPass()
+{
+	D3D12_RESOURCE_BARRIER toCopySrc = CD3DX12_RESOURCE_BARRIER::Transition(
+		shadowMgr->GetStaticCsmResource(),
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_COPY_SOURCE);
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &toCopySrc);
+}
+
+void DX12Core::CopyStaticToCsmCascade2()
+{
+	int cascadeIdx = shadowMgr->GetStaticCacheCascadeIndex();
+	auto* cmd = deviceCtx->GetGraphicsCmdList();
+
+	// csm 슬라이스 2: 첫 프레임은 DW(생성 시), 이후엔 PSR
+	static bool firstCopy = true;
+	D3D12_RESOURCE_STATES srcState = firstCopy
+		? D3D12_RESOURCE_STATE_DEPTH_WRITE
+		: D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	firstCopy = false;
+
+	D3D12_RESOURCE_BARRIER toCopyDst = CD3DX12_RESOURCE_BARRIER::Transition(
+		shadowMgr->GetCsmResource(),
+		srcState,
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		cascadeIdx);
+	cmd->ResourceBarrier(1, &toCopyDst);
+
+	D3D12_TEXTURE_COPY_LOCATION src = {};
+	src.pResource = shadowMgr->GetStaticCsmResource();
+	src.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+	src.SubresourceIndex = 0;
+
+	D3D12_TEXTURE_COPY_LOCATION dst = {};
+	dst.pResource = shadowMgr->GetCsmResource();
+	dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+	dst.SubresourceIndex = cascadeIdx;
+
+	cmd->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+
+	D3D12_RESOURCE_BARRIER toDw = CD3DX12_RESOURCE_BARRIER::Transition(
+		shadowMgr->GetCsmResource(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		cascadeIdx);
+	cmd->ResourceBarrier(1, &toDw);
+}
+
+void DX12Core::BeginDynamicShadowPass()
+{
+	// CopyStaticToCsmCascade2가 이미 슬라이스 2를 DW로 만들어놨음. clear는 안 함.
+	int cascadeIdx = shadowMgr->GetStaticCacheCascadeIndex();
+	D3D12_CPU_DESCRIPTOR_HANDLE shadowDSV = shadowMgr->GetCsmDSV(cascadeIdx);
+	deviceCtx->GetGraphicsCmdList()->OMSetRenderTargets(0, nullptr, FALSE, &shadowDSV);
+
+	UINT mapSize = shadowMgr->GetShadowMapSize();
+	D3D12_VIEWPORT vp = { 0, 0, (float)mapSize, (float)mapSize, 0.0f, 1.0f };
+	D3D12_RECT rect = { 0, 0, (LONG)mapSize, (LONG)mapSize };
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
+
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootSignature(GetRootSig()->Get());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRoot32BitConstant(16, cascadeIdx, 0);
+}
+
+void DX12Core::EndDynamicShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
+{
+	int cascadeIdx = shadowMgr->GetStaticCacheCascadeIndex();
+	D3D12_RESOURCE_BARRIER toPsr = CD3DX12_RESOURCE_BARRIER::Transition(
+		shadowMgr->GetCsmResource(),
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		cascadeIdx);
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &toPsr);
+
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
 }
 
 void DX12Core::ForwardPass()

@@ -26,10 +26,6 @@
 
 void PlazaScene::Release()
 {
-}
-
-void PlazaScene::Reset()
-{
 	instancingBatches.clear();
 	knightPool.clear();
 	monsterPools.clear();
@@ -292,15 +288,21 @@ void PlazaScene::RenderSceneForward()
 		skyBox->RenderSkyBox(*coreRef, coreRef->GetGraphicsCmdList());
 }
 
-void PlazaScene::RenderSceneShadow()
+void PlazaScene::RenderSceneShadowStatic()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
-	renderer->RenderShadow(*coreRef, gameObjects);
+	renderer->RenderShadowStatic(*coreRef, gameObjects);
 
 	for (const auto& batch : instancingBatches)
 	{
-		batch->RenderShadow(*coreRef, renderer);
+		batch->RenderShadowStatic(*coreRef, renderer);
 	}
+}
+
+void PlazaScene::RenderSceneShadowDynamic()
+{
+	auto renderer = sManagerRef->GetSceneRenderer();
+	renderer->RenderShadowDynamic(*coreRef, gameObjects);
 }
 
 void PlazaScene::RenderSceneEffects()

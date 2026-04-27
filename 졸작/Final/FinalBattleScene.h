@@ -12,7 +12,6 @@ public:
 	~FinalBattleScene() = default;
 
 	void Release() override;
-	void Reset() override;
 
 	SceneSettings GetSceneSettings() const override;
 
@@ -23,7 +22,8 @@ protected:
 	void UpdateScene(const float deltaTime) override;
 	void RenderSceneDeferred() override;
 	void RenderSceneForward() override;
-	void RenderSceneShadow() override;
+	void RenderSceneShadowStatic() override;
+	void RenderSceneShadowDynamic() override;
 	void RenderSceneEffects() override;
 	void RequestSceneChange() override;
 

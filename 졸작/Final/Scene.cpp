@@ -53,9 +53,14 @@ void Scene::RenderForward()
     RenderSceneForward();
 }
 
-void Scene::RenderShadow()
+void Scene::RenderShadowStatic()
 {
-    RenderSceneShadow();
+    RenderSceneShadowStatic();
+}
+
+void Scene::RenderShadowDynamic()
+{
+    RenderSceneShadowDynamic();
 }
 
 void Scene::RenderEffects()

@@ -21,7 +21,8 @@ public:
     void BeginRender();
     void RenderDeferred();
     void RenderForward();
-    void RenderShadow();
+    void RenderShadowStatic();
+    void RenderShadowDynamic();
     void RenderEffects();
     void Release();
 

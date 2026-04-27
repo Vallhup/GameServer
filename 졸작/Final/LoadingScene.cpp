@@ -11,10 +11,6 @@ LoadingScene::~LoadingScene() = default;
 
 void LoadingScene::Release()
 {
-}
-
-void LoadingScene::Reset()
-{
 	Material::ReleaseUploadBuffers();
 	while (!loadTasks.empty()) loadTasks.pop();
 	totalTasks = 0;
@@ -55,14 +51,6 @@ void LoadingScene::InitializeLogic()
 	}
 }
 
-void LoadingScene::InitializeSceneEnvironments()
-{
-}
-
-void LoadingScene::InitializeSceneMonsters()
-{
-}
-
 void LoadingScene::UpdateScene(const float deltaTime)
 {
 	if (!loadTasks.empty()) {
@@ -92,26 +80,6 @@ void LoadingScene::UpdateScene(const float deltaTime)
 	{
 		coreRef->SetLoadingMode(false);
 	}
-}
-
-void LoadingScene::RenderSceneDeferred()
-{
-}
-
-void LoadingScene::RenderSceneForward()
-{
-}
-
-void LoadingScene::RenderSceneShadow()
-{
-}
-
-void LoadingScene::RenderSceneEffects()
-{
-}
-
-void LoadingScene::RequestSceneChange()
-{
 }
 
 void LoadingScene::LoadPlazaSceneResources()

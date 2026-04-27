@@ -10,16 +10,7 @@ public:
 	~TitleScene() = default;
 
 	void Release() override;
-	void Reset() override;
 
 protected:
-	void InitializeLogic() override;
-	void InitializeSceneEnvironments() override;
-	void InitializeSceneMonsters() override;
-	void UpdateScene(const float deltaTime) override;
-	void RenderSceneDeferred() override;
-	void RenderSceneForward() override;
-	void RenderSceneShadow() override;
-	void RenderSceneEffects() override;
-	void RequestSceneChange() override;
+	void InitializeLogic() override;					
 };

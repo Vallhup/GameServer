@@ -22,7 +22,7 @@ public:
 	void BuildBuffers(DX12Core& core);
 	void Update(const BoundingFrustum& frustum, const XMVECTOR& camPos, const XMVECTOR& playerPos);
 	void Render(DX12Core& core, SceneRenderer* renderer);
-	void RenderShadow(DX12Core& core, SceneRenderer* renderer);
+	void RenderShadowStatic(DX12Core& core, SceneRenderer* renderer);
 	void Clear();
 
 	const vector<shared_ptr<GameObject>>& GetObjects() const { return objects; }

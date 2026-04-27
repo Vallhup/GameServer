@@ -24,10 +24,6 @@
 
 void SecondBattleScene::Release()
 {
-}
-
-void SecondBattleScene::Reset()
-{
 	instancingBatches.clear();
 	monsterPools.clear();
 	activeCharacters.clear();
@@ -170,15 +166,21 @@ void SecondBattleScene::RenderSceneForward()
 		renderer->RenderWater(*coreRef, water.get());
 }
 
-void SecondBattleScene::RenderSceneShadow()
+void SecondBattleScene::RenderSceneShadowStatic()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
-	renderer->RenderShadow(*coreRef, gameObjects);
+	renderer->RenderShadowStatic(*coreRef, gameObjects);
 
 	for (const auto& batch : instancingBatches)
 	{
-		batch->RenderShadow(*coreRef, renderer);
+		batch->RenderShadowStatic(*coreRef, renderer);
 	}
+}
+
+void SecondBattleScene::RenderSceneShadowDynamic()
+{
+	auto renderer = sManagerRef->GetSceneRenderer();
+	renderer->RenderShadowDynamic(*coreRef, gameObjects);
 }
 
 void SecondBattleScene::RenderSceneEffects()
