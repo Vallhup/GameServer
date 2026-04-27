@@ -84,7 +84,9 @@ public:
 
 private:
 	AIFSMBundle _normal;
+	AIFSMBundle _firstBoss;
 	AIBehaviorBundle _impBehavior;
 	AIBehaviorBundle _demonStrikerBehavior;
 	AIBehaviorBundle _demonExecutionerBehavior;
+	AIBehaviorBundle _bigDemonWarriorBehavior;
 };

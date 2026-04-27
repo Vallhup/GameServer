@@ -201,6 +201,27 @@ struct AIReactionComp : Component
 	}
 };
 
+struct BossPhaseStateComp : Component
+{
+	uint8_t currentPhase{ 1 };
+	float phase2ThresholdRatio{ 0.55f };
+	uint32_t crossedThresholdMask{ 0 };
+	bool transitionRequested{ false };
+};
+
+struct BossPatternRuntimeComp : Component
+{
+	static constexpr size_t kPatternCooldownSlotCount{ 5 };
+
+	std::array<float, kPatternCooldownSlotCount> patternCooldownSec{};
+
+	float phaseTransitionLockSec{ 0.0f };
+	bool phaseTransitionActionPending{ false };
+
+	float strafeTimeLeftSec{ 0.0f };
+	int strafeSign{ 1 };
+};
+
 struct AICommandFrameComp : Component
 {
 	bool hasMove{ false };
@@ -208,6 +229,7 @@ struct AICommandFrameComp : Component
 	XMFLOAT3 moveDir{ 0, 0, 0 };
 
 	bool hasLook{ false };
+	bool lockFacingToLookTarget{ false };
 	float moveYaw{ 0.0f };
 	Entity target{ Entity::Null() };
 
@@ -224,6 +246,7 @@ struct AICommandFrameComp : Component
 		actionId = ActionId::None;
 		actionDirX = 0.0f;
 		actionDirZ = 0.0f;
+		lockFacingToLookTarget = false;
 		sequence = 0;
 	}
 

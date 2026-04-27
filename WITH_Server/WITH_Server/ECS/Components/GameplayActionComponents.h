@@ -31,7 +31,12 @@ enum class LocomotionMode : uint8_t
 	Idle = 0,
 	Walk,
 	Run,
-	Turn
+	Turn,
+	WalkBack,
+	WalkLeft,
+	WalkRight,
+	TurnLeft,
+	TurnRight
 };
 
 struct ActionStateComp : Component

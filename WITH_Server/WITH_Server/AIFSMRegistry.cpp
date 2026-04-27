@@ -9,15 +9,20 @@
 #include "NormalAIReactState.h"
 
 #include "NormalAIMovementPolicy.h"
+#include "BossAIMovementPolicy.h"
+#include "BossCombatActionPolicy.h"
 #include "ImpCombatActionPolicy.h"
 #include "WeightedCombatActionPolicy.h"
 #include "NormalReactionPolicy.h"
+#include "BossReactionPolicy.h"
+
+#include <stdexcept>
 
 namespace
 {
 	static const AIBehaviorProfileDef& GetRequiredProfile(
 		AIArchetype aiType,
-		AITuningId aiTuningId) noexcept
+		AITuningId aiTuningId)
 	{
 		if (const AIBehaviorProfileDef* profile =
 			FindAIBehaviorProfileDef(aiType, aiTuningId))
@@ -25,7 +30,7 @@ namespace
 			return *profile;
 		}
 
-		return GetAIBehaviorProfileDefs().front();
+		throw std::runtime_error("Required AI behavior profile was not loaded.");
 	}
 }
 
@@ -72,6 +77,11 @@ AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 		movementPolicy = std::make_unique<NormalAIMovementPolicy>();
 		break;
 	}
+	case AIMovementPolicyKind::BossPattern:
+	{
+		movementPolicy = std::make_unique<BossAIMovementPolicy>();
+		break;
+	}
 	default:
 	{
 		break;
@@ -89,6 +99,11 @@ AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 		combatActionPolicy = std::make_unique<WeightedCombatActionPolicy>();
 		break;
 	}
+	case AICombatActionPolicyKind::BossPattern:
+	{
+		combatActionPolicy = std::make_unique<BossCombatActionPolicy>();
+		break;
+	}
 	default:
 	{
 		break;
@@ -99,6 +114,11 @@ AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 	case AIReactionPolicyKind::Normal:
 	{
 		reactionPolicy = std::make_unique<NormalReactionPolicy>();
+		break;
+	}
+	case AIReactionPolicyKind::BossPattern:
+	{
+		reactionPolicy = std::make_unique<BossReactionPolicy>();
 		break;
 	}
 	default:
@@ -112,9 +132,11 @@ AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 
 AIFSMRegistry::AIFSMRegistry()
 	: _normal(AIFSMBundle(AIArchetype::NormalMonster))
+	, _firstBoss(AIFSMBundle(AIArchetype::FirstBossMonster))
 	, _impBehavior(GetRequiredProfile(AIArchetype::NormalMonster, AITuningIds::Imp))
 	, _demonStrikerBehavior(GetRequiredProfile(AIArchetype::NormalMonster, AITuningIds::DemonStriker))
 	, _demonExecutionerBehavior(GetRequiredProfile(AIArchetype::NormalMonster, AITuningIds::DemonExecutioner))
+	, _bigDemonWarriorBehavior(GetRequiredProfile(AIArchetype::FirstBossMonster, AITuningIds::BigDemonWarrior))
 {
 }
 
@@ -124,6 +146,10 @@ const AIFSMBundle* AIFSMRegistry::TryGetBundle(AIArchetype type) const
 	case AIArchetype::NormalMonster:
 	{
 		return &_normal;
+	}
+	case AIArchetype::FirstBossMonster:
+	{
+		return &_firstBoss;
 	}
 	default:
 	{
@@ -150,6 +176,13 @@ const AIBehaviorBundle* AIFSMRegistry::TryGetBehavior(
 
 		return nullptr;
 	}
+	case AIArchetype::FirstBossMonster:
+	{
+		if (aiTuningId == AITuningIds::BigDemonWarrior)
+			return &_bigDemonWarriorBehavior;
+
+		return nullptr;
+	}
 	default:
 	{
 		return nullptr;
@@ -161,6 +194,7 @@ bool AIFSMRegistry::IsArchetypeSupported(AIArchetype type) noexcept
 {
 	switch (type) {
 	case AIArchetype::NormalMonster:
+	case AIArchetype::FirstBossMonster:
 	{
 		return true;
 	}
@@ -175,5 +209,15 @@ bool AIFSMRegistry::IsBehaviorSupported(
 	AIArchetype aiType,
 	AITuningId aiTuningId) noexcept
 {
-	return FindAIBehaviorProfileDef(aiType, aiTuningId) != nullptr;
+	if (aiType != AIArchetype::NormalMonster)
+	{
+		return
+			aiType == AIArchetype::FirstBossMonster &&
+			aiTuningId == AITuningIds::BigDemonWarrior;
+	}
+
+	return
+		aiTuningId == AITuningIds::Imp ||
+		aiTuningId == AITuningIds::DemonStriker ||
+		aiTuningId == AITuningIds::DemonExecutioner;
 }

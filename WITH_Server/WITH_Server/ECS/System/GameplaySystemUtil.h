@@ -175,6 +175,34 @@ namespace GameplaySystemUtil
 			}
 		}
 
+		const auto FindFallback =
+			[bindingProfile](LocomotionMode fallbackMode) noexcept
+			{
+				for (const LocomotionAnimationBindingDef& binding :
+					bindingProfile->locomotionBindings)
+				{
+					if (binding.mode == fallbackMode)
+					{
+						return binding.animationId;
+					}
+				}
+
+				return AnimationId::None;
+			};
+
+		switch (mode)
+		{
+		case LocomotionMode::WalkBack:
+		case LocomotionMode::WalkLeft:
+		case LocomotionMode::WalkRight:
+			return FindFallback(LocomotionMode::Walk);
+		case LocomotionMode::TurnLeft:
+		case LocomotionMode::TurnRight:
+			return FindFallback(LocomotionMode::Turn);
+		default:
+			break;
+		}
+
 		return AnimationId::None;
 	}
 

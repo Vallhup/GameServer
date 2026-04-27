@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "AIControlAspect.h"
 
+#include "../AIBehaviorDef.h"
 #include "../AIFSMRegistry.h"
 #include "../ECS/GameplayRuntimeComponents.h"
 #include "RepComponent.h"
@@ -40,7 +41,7 @@ void AIControlAspect::Attach(
 			.aiTuningId = def.ai->aiTuningId.value_or(AITuningIds::None)
 		});
 	runtime.DeferredAddComponent<AIPerceptionComp>(entity);
-	const AIBehaviorProfileDef* profile = AIFSMRegistry::FindBehaviorProfile(
+	const AIBehaviorProfileDef* profile = FindAIBehaviorProfileDef(
 		def.ai->aiType,
 		def.ai->aiTuningId.value_or(AITuningIds::None));
 	if (profile != nullptr)
