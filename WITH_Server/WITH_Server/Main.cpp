@@ -9,11 +9,11 @@ int main()
 {
 	std::filesystem::create_directories("Log");
 
-	ConsoleLogSink consoleSink;
+	//ConsoleLogSink consoleSink;
 	FileLogSink fileSink("Log/WITH_Server_Log.txt");
 
 	FrameworkLog::Instance().SetRuntimeLevel(LogLevel::Info);
-	FrameworkLog::Instance().AddSink(&consoleSink);
+	//FrameworkLog::Instance().AddSink(&consoleSink);
 	if (fileSink.IsOpen())
 	{
 		FrameworkLog::Instance().AddSink(&fileSink);

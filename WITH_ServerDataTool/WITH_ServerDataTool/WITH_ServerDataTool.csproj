@@ -49,6 +49,7 @@
     <Compile Include="Presets\PresetLoader.cs" />
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Presets\bigdemonwarrior.json" />
     <None Include="Presets\demonexecutioner.json" />
     <None Include="Presets\demonstriker.json" />
   </ItemGroup>

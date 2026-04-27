@@ -1,10 +1,22 @@
 #pragma once
 
 class AnimationRegistry;
+class SystemManager;
 class WorldRuntime;
 
-// Note: 컴포넌트 storage 등록은 CharacterAspectRegistry::RegisterStoragesAll 로 이관됨.
-// 이 함수는 시스템 등록만 담당한다.
-void RegisterGameplayRuntimeSystems(
-	WorldRuntime& runtime,
-	const AnimationRegistry* animationRegistry);
+class GameplaySystemRegistrar final
+{
+public:
+	explicit GameplaySystemRegistrar(
+		const AnimationRegistry* animationRegistry) noexcept;
+
+	void Register(WorldRuntime& runtime) const;
+	void Register(SystemManager& systemManager) const;
+
+private:
+	template<typename TargetT>
+	void RegisterSystems(TargetT& target) const;
+
+private:
+	const AnimationRegistry* _animationRegistry{ nullptr };
+};

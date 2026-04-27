@@ -1,0 +1,182 @@
+{
+    "schemaVersion": 2,
+    "objectName": "BigDemonWarrior",
+    "inputs": {
+        "meshDirectory": "../../Resource/BigDemonWarrior/Mesh",
+        "animationDirectory": "../../Resource/BigDemonWarrior/Animation"
+    },
+    "outputs": {
+        "capsuleTemplatePath": "../../Output/Capsule/bigdemonwarrior_capsule_template.json",
+        "animationDirectory": "../../Output/Animation/BigDemonWarrior"
+    },
+    "capsuleRules": {
+        "defaultRoles": [ "hurt" ],
+        "weaponRoles": [ "hit" ],
+        "weaponBones": [ 6, 28 ], // 6: 왼쪽 손 / 28: 오른쪽 손
+        "extremeTrimFraction": 0
+    },
+    "clips": [
+        {
+            "name": "battlecry",
+            "source": "monster_BigDemonWarrior_battlecry_baked.bone",
+            "output": "bigdemonwarrior_animation_battlecry.json",
+            "loop": false
+        },
+        {
+            "name": "death",
+            "source": "monster_BigDemonWarrior_death_baked.bone",
+            "output": "bigdemonwarrior_animation_death.json",
+            "loop": false
+        },
+        {
+            "name": "idle_1",
+            "source": "monster_BigDemonWarrior_idle_1_baked.bone",
+            "output": "bigdemonwarrior_animation_idle_1.json",
+            "loop": true
+        },
+        {
+            "name": "idle_2",
+            "source": "monster_BigDemonWarrior_idle_2_baked.bone",
+            "output": "bigdemonwarrior_animation_idle_2.json",
+            "loop": true
+        },
+        {
+            "name": "idle_3",
+            "source": "monster_BigDemonWarrior_idle_3_baked.bone",
+            "output": "bigdemonwarrior_animation_idle_3.json",
+            "loop": true
+        },
+        {
+            "name": "idle_4",
+            "source": "monster_BigDemonWarrior_idle_4_baked.bone",
+            "output": "bigdemonwarrior_animation_idle_4.json",
+            "loop": true
+        },
+        {
+            "name": "jump",
+            "source": "monster_BigDemonWarrior_jump_baked.bone",
+            "output": "bigdemonwarrior_animation_jump.json",
+            "loop": false
+        },
+        {
+            "name": "melee_1",
+            "source": "monster_BigDemonWarrior_melee_1_baked.bone",
+            "output": "bigdemonwarrior_animation_melee_1.json",
+            "loop": false
+        },
+        {
+            "name": "melee_2",
+            "source": "monster_BigDemonWarrior_melee_2_baked.bone",
+            "output": "bigdemonwarrior_animation_melee_2.json",
+            "loop": false
+        },
+        {
+            "name": "melee_3",
+            "source": "monster_BigDemonWarrior_melee_3_baked.bone",
+            "output": "bigdemonwarrior_animation_melee_3.json",
+            "loop": false
+        },
+        {
+            "name": "melee_4",
+            "source": "monster_BigDemonWarrior_melee_4_baked.bone",
+            "output": "bigdemonwarrior_animation_melee_4.json",
+            "loop": false
+        },
+        {
+            "name": "melee_5",
+            "source": "monster_BigDemonWarrior_melee_5_baked.bone",
+            "output": "bigdemonwarrior_animation_melee_5.json",
+            "loop": false
+        },
+        {
+            "name": "melee_6",
+            "source": "monster_BigDemonWarrior_melee_6_baked.bone",
+            "output": "bigdemonwarrior_animation_melee_6.json",
+            "loop": false
+        },
+        {
+            "name": "melee_7",
+            "source": "monster_BigDemonWarrior_melee_7_baked.bone",
+            "output": "bigdemonwarrior_animation_melee_7.json",
+            "loop": false
+        },
+        {
+            "name": "melee_8",
+            "source": "monster_BigDemonWarrior_melee_8_baked.bone",
+            "output": "bigdemonwarrior_animation_melee_8.json",
+            "loop": false
+        },
+        {
+            "name": "react_left",
+            "source": "monster_BigDemonWarrior_react_from_left_baked.bone",
+            "output": "bigdemonwarrior_animation_react_left.json",
+            "loop": false
+        },
+        {
+            "name": "react_right",
+            "source": "monster_BigDemonWarrior_react_from_right_baked.bone",
+            "output": "bigdemonwarrior_animation_react_right.json",
+            "loop": false
+        },
+        {
+            "name": "react_gut",
+            "source": "monster_BigDemonWarrior_react_gut_baked.bone",
+            "output": "bigdemonwarrior_animation_react_gut.json",
+            "loop": false
+        },
+        {
+            "name": "roaring",
+            "source": "monster_BigDemonWarrior_roaring_baked.bone",
+            "output": "bigdemonwarrior_animation_roaring.json",
+            "loop": false
+        },
+        {
+            "name": "run",
+            "source": "monster_BigDemonWarrior_run_forward_baked.bone",
+            "output": "bigdemonwarrior_animation_run.json",
+            "loop": true
+        },
+        {
+            "name": "stun",
+            "source": "monster_BigDemonWarrior_stun_baked.bone",
+            "output": "bigdemonwarrior_animation_stun.json",
+            "loop": false
+        },
+        {
+            "name": "turn_left",
+            "source": "monster_BigDemonWarrior_turn_left_90_baked.bone",
+            "output": "bigdemonwarrior_animation_turn_left.json",
+            "loop": false
+        },
+        {
+            "name": "turn_right",
+            "source": "monster_BigDemonWarrior_turn_right_90_baked.bone",
+            "output": "bigdemonwarrior_animation_turn_right.json",
+            "loop": false
+        },
+        {
+            "name": "walk_back",
+            "source": "monster_BigDemonWarrior_walk_back_baked.bone",
+            "output": "bigdemonwarrior_animation_walk_back.json",
+            "loop": true
+        },
+        {
+            "name": "walk_forward",
+            "source": "monster_BigDemonWarrior_walk_forward_baked.bone",
+            "output": "bigdemonwarrior_animation_walk_forward.json",
+            "loop": true
+        },
+        {
+            "name": "walk_left",
+            "source": "monster_BigDemonWarrior_walk_left_baked.bone",
+            "output": "bigdemonwarrior_animation_walk_left.json",
+            "loop": true
+        },
+        {
+            "name": "walk_right",
+            "source": "monster_BigDemonWarrior_walk_right_baked.bone",
+            "output": "bigdemonwarrior_animation_walk_right.json",
+            "loop": true
+        }
+    ]
+}
