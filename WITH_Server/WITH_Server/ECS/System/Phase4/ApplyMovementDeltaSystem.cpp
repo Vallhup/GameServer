@@ -13,7 +13,7 @@ namespace
 		WriteImmediate(ComponentRes<PreCollisionTransformComp>()),
 		WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()),
 		WriteImmediate(ComponentRes<ActionMoveDeltaComp>()),
-		ReadSnapshot(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 	};
 }

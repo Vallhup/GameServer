@@ -9,11 +9,11 @@ using namespace GameplaySystemUtil;
 namespace
 {
 	const std::array<AccessSpec, 5> kComputeActionMoveDeltaAccesses{
-		ReadSnapshot(ComponentRes<ActionStateComp>()),
-		ReadSnapshot(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
 		WriteImmediate(ComponentRes<ActionMoveDeltaComp>()),
 		WriteImmediate(ComponentRes<ActionMoveRuntimeComp>()),
-		ReadSnapshot(ComponentRes<ActionTimelineAdvanceComp>()),
+		ReadImmediate(ComponentRes<ActionTimelineAdvanceComp>()),
 	};
 
 	void DirectionFromTransform(

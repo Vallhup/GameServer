@@ -7,14 +7,16 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
-	const std::array<AccessSpec, 9> kCommitCombatResultAccesses{
+	const std::array<AccessSpec, 11> kCommitCombatResultAccesses{
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 		WriteImmediate(ComponentRes<AIReactionComp>()),
+		WriteImmediate(ComponentRes<BossPhaseStateComp>()),
+		WriteImmediate(ComponentRes<BossPatternRuntimeComp>()),
 		WriteImmediate(ComponentRes<ActionInterruptQueueComp>()),
-		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
-		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
 		WriteDeferred(CommandBufferRes()),
 		WriteDeferred(ComponentRes<PendingBuffApplyComp>()),
 	};
@@ -166,7 +168,52 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			}
 		}
 
-		// AI 피격 반응 이벤트 등록
+		// Boss phase threshold reaction event.
+		if (stats.maxHp > 0 && previousStats.currentHp > stats.currentHp)
+		{
+			if (BossPhaseStateComp* bossPhase =
+				ctx.ecs.GetMutableComponent<BossPhaseStateComp>(entity))
+			{
+				constexpr uint32_t kPhase2ThresholdMask = 1u << 0;
+				const float previousHpRatio =
+					static_cast<float>(previousStats.currentHp) /
+					static_cast<float>(stats.maxHp);
+				const float currentHpRatio =
+					static_cast<float>(stats.currentHp) /
+					static_cast<float>(stats.maxHp);
+				const float threshold = bossPhase->phase2ThresholdRatio;
+
+				if ((bossPhase->crossedThresholdMask & kPhase2ThresholdMask) == 0 &&
+					previousHpRatio > threshold &&
+					currentHpRatio <= threshold)
+				{
+					bossPhase->crossedThresholdMask |= kPhase2ThresholdMask;
+					bossPhase->currentPhase = 2;
+					bossPhase->transitionRequested = true;
+
+					if (BossPatternRuntimeComp* bossRuntime =
+						ctx.ecs.GetMutableComponent<BossPatternRuntimeComp>(entity))
+					{
+						bossRuntime->phaseTransitionLockSec = 3.6f;
+						bossRuntime->phaseTransitionActionPending = true;
+						bossRuntime->strafeTimeLeftSec = 0.0f;
+					}
+
+					if (auto* aiReaction =
+						ctx.ecs.GetMutableComponent<AIReactionComp>(entity))
+					{
+						aiReaction->PostEvent(AIReactionEvent{
+							.type = AIReactionEventType::OnHpThreshold,
+							.instigator = result.reactionSource,
+							.priority = 300,
+							.floatPayload = threshold,
+						});
+					}
+				}
+			}
+		}
+
+		// AI hit reaction event.
 		if (result.wasHitThisFrame)
 		{
 			if (auto* aiReaction = ctx.ecs.GetMutableComponent<AIReactionComp>(entity))

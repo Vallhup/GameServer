@@ -10,8 +10,8 @@ namespace
 	const std::array<AccessSpec, 4> kAdvanceActionTimelineAccesses{
 		WriteImmediate(ComponentRes<ActionStateComp>()),
 		WriteImmediate(ComponentRes<ActionTimelineAdvanceComp>()),
-		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
-		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
 	};
 }
 

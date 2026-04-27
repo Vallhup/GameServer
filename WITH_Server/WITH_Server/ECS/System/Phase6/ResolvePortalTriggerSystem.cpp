@@ -9,12 +9,12 @@ namespace
 {
 	const std::array<AccessSpec, 7> kResolvePortalTriggerAccesses{
 		WriteImmediate(ComponentRes<PortalTriggerStateComp>()),
-		ReadSnapshot(ComponentRes<WorldTransformComp>()),
-		ReadSnapshot(ComponentRes<ActionStateComp>()),
-		ReadSnapshot(ComponentRes<PlayerControlIdentityComp>()),
-		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
-		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
-		ReadSnapshot(ExternalRes<PortalTriggerDef>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<PlayerControlIdentityComp>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
+		ReadImmediate(ExternalRes<PortalTriggerDef>()),
 	};
 }
 

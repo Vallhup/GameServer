@@ -8,7 +8,7 @@ using namespace GameplaySystemUtil;
 namespace
 {
 	const std::array<AccessSpec, 2> kResolveCombatColliderActivationAccesses{
-		ReadSnapshot(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
 		WriteImmediate(ComponentRes<CombatColliderActivationComp>()),
 	};
 }

@@ -8,11 +8,11 @@ using namespace GameplaySystemUtil;
 namespace
 {
 	const std::array<AccessSpec, 6> kResolveDeathAndDespawnAccesses{
-		ReadSnapshot(ComponentRes<CombatStatStateComp>()),
-		ReadSnapshot(ComponentRes<ActionStateComp>()),
-		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
-		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
-		ReadSnapshot(ComponentRes<PendingWorldTransferComp>()),
+		ReadImmediate(ComponentRes<CombatStatStateComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferComp>()),
 		WriteDeferred(CommandBufferRes()),
 	};
 }

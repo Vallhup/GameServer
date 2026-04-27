@@ -9,17 +9,17 @@ using namespace DirectX;
 namespace
 {
 	const std::array<AccessSpec, 11> kResolveCombatHitAccesses{
-		ReadSnapshot(ComponentRes<CombatColliderActivationComp>()),
-		ReadSnapshot(ComponentRes<ActionStateComp>()),
-		ReadSnapshot(ComponentRes<WorldTransformComp>()),
-		ReadSnapshot(ComponentRes<SkeletalCombatColliderComp>()),
+		ReadImmediate(ComponentRes<CombatColliderActivationComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<SkeletalCombatColliderComp>()),
 		WriteImmediate(ComponentRes<CombatHitDedupStateComp>()),
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
-		ReadSnapshot(ComponentRes<LocomotionStateComp>()),
-		ReadSnapshot(ComponentRes<SpawnTypeComp>()),
-		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
-		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
-		ReadSnapshot(ExternalRes<ActionDef>()),
+		ReadImmediate(ComponentRes<LocomotionStateComp>()),
+		ReadImmediate(ComponentRes<SpawnTypeComp>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
+		ReadImmediate(ExternalRes<ActionDef>()),
 	};
 }
 

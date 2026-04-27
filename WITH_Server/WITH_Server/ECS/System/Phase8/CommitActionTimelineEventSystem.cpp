@@ -8,8 +8,8 @@ using namespace GameplaySystemUtil;
 namespace
 {
 	const std::array<AccessSpec, 5> kCommitActionTimelineEventAccesses{
-		ReadSnapshot(ComponentRes<ActionTimelineAdvanceComp>()),
-		ReadSnapshot(ComponentRes<PendingCombatResultComp>()),
+		ReadImmediate(ComponentRes<ActionTimelineAdvanceComp>()),
+		ReadImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<PendingProjectileSpawnComp>()),
 		WriteImmediate(ComponentRes<PendingActionPresentationEventComp>()),
 		WriteImmediate(ComponentRes<ReplicationStatsComp>()),

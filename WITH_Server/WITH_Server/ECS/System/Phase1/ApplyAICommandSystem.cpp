@@ -11,8 +11,8 @@ const StaticSystemMetaStorage<3> ApplyAICommandSystem::kMetaStorage =
         "ApplyAICommandSystem",
         std::array<AccessSpec, 3>
         {
-            ReadSnapshot(ComponentRes<AIControlledTag>()),
-            ReadSnapshot(ComponentRes<AICommandFrameComp>()),
+            ReadImmediate(ComponentRes<AIControlledTag>()),
+            ReadImmediate(ComponentRes<AICommandFrameComp>()),
             WriteImmediate(ComponentRes<ActorInputComp>()),
         });
 

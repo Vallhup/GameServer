@@ -8,9 +8,9 @@ using namespace GameplaySystemUtil;
 namespace
 {
 	const std::array<AccessSpec, 4> kApplyPlayerCommandAccesses{
-		ReadSnapshot(ExternalRes<WorldCommand>()),
-		ReadSnapshot(ExternalRes<IWorldNetBindingResolver>()),
-		ReadSnapshot(ComponentRes<PlayerControlIdentityComp>()),
+		ReadImmediate(ExternalRes<WorldCommand>()),
+		ReadImmediate(ExternalRes<IWorldNetBindingResolver>()),
+		ReadImmediate(ComponentRes<PlayerControlIdentityComp>()),
 		WriteImmediate(ComponentRes<ActorInputComp>()),
 	};
 

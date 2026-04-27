@@ -9,7 +9,7 @@ namespace
 {
 	const std::array<AccessSpec, 2> kMarkTransferPendingAccesses{
 		WriteImmediate(ComponentRes<PendingWorldTransferComp>()),
-		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
 	};
 }
 

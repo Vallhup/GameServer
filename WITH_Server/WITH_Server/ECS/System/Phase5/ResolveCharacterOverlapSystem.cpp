@@ -11,12 +11,12 @@ namespace
 
 	const std::array<AccessSpec, 7> kResolveCharacterOverlapAccesses{
 		WriteImmediate(ComponentRes<WorldTransformComp>()),
-		ReadSnapshot(ComponentRes<PreCollisionTransformComp>()),
-		ReadSnapshot(ComponentRes<BodyCollisionShapeComp>()),
+		ReadImmediate(ComponentRes<PreCollisionTransformComp>()),
+		ReadImmediate(ComponentRes<BodyCollisionShapeComp>()),
 		WriteImmediate(ComponentRes<BodyCollisionResolveComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
-		ReadSnapshot(ComponentRes<PendingDespawnTag>()),
-		ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
 	};
 
 	struct OverlapEntry

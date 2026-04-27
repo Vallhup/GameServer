@@ -14,10 +14,10 @@
 using namespace GameplaySystemUtil;
 
 static const std::array<AccessSpec, 7> kResolveNavMeshBodyConstraintAccesses{
-	ReadSnapshot(ExternalRes<INavMeshProvider>()),
+	ReadImmediate(ExternalRes<INavMeshProvider>()),
 	WriteImmediate(ComponentRes<WorldTransformComp>()),
-	ReadSnapshot(ComponentRes<PreCollisionTransformComp>()),
-	ReadSnapshot(ComponentRes<BodyCollisionShapeComp>()),
+	ReadImmediate(ComponentRes<PreCollisionTransformComp>()),
+	ReadImmediate(ComponentRes<BodyCollisionShapeComp>()),
 	WriteImmediate(ComponentRes<NavMeshAgentStateComp>()),
 	WriteImmediate(ComponentRes<BodyCollisionResolveComp>()),
 	WriteImmediate(ComponentRes<DirtyFlagsComp>()),

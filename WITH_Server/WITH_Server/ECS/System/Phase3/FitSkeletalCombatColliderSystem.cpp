@@ -9,9 +9,9 @@ using namespace GameplaySystemUtil;
 namespace
 {
 	const std::array<AccessSpec, 3> kFitSkeletalCombatColliderAccesses{
-		ReadSnapshot(ComponentRes<SampledAnimationPoseComp>()),
+		ReadImmediate(ComponentRes<SampledAnimationPoseComp>()),
 		WriteImmediate(ComponentRes<SkeletalCombatColliderComp>()),
-		ReadSnapshot(ExternalRes<AnimationRegistry>()),
+		ReadImmediate(ExternalRes<AnimationRegistry>()),
 	};
 
 	float GetAnimationUnitScale(const AnimationClipDef& clip) noexcept

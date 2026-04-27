@@ -12,9 +12,9 @@ using namespace GameplaySystemUtil;
 namespace
 {
 	const std::array<AccessSpec, 3> kSampleAnimationPoseAccesses{
-		ReadSnapshot(ComponentRes<AnimationPlaybackStateComp>()),
+		ReadImmediate(ComponentRes<AnimationPlaybackStateComp>()),
 		WriteImmediate(ComponentRes<SampledAnimationPoseComp>()),
-		ReadSnapshot(ExternalRes<AnimationRegistry>()),
+		ReadImmediate(ExternalRes<AnimationRegistry>()),
 	};
 }
 

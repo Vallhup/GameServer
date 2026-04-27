@@ -10,10 +10,10 @@ using namespace GameplaySystemUtil;
 namespace
 {
 	const std::array<AccessSpec, 6> kAIPerceptionAccesses{
-		ReadSnapshot(ComponentRes<AIControlledTag>()),
-		ReadSnapshot(ComponentRes<WorldTransformComp>()),
-		ReadSnapshot(ComponentRes<AIPerceptionTuningComp>()),
-		ReadSnapshot(ComponentRes<SpawnTypeComp>()),
+		ReadImmediate(ComponentRes<AIControlledTag>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<AIPerceptionTuningComp>()),
+		ReadImmediate(ComponentRes<SpawnTypeComp>()),
 		WriteImmediate(ComponentRes<AIBlackboardComp>()),
 		WriteImmediate(ComponentRes<AIPerceptionComp>()),
 	};
