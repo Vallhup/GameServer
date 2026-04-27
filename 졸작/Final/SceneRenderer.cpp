@@ -121,10 +121,8 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
     }
 }
 
-void SceneRenderer::RenderShadow(DX12Core& core, const vector<shared_ptr<GameObject>>& objects)
+void SceneRenderer::RenderShadowStatic(DX12Core& core, const vector<shared_ptr<GameObject>>& objects)
 {
-    UINT startIndex = cbIndex;
-
     auto cmdList = core.GetGraphicsCmdList();
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Shadow));
     SetupRenderingState(core);
@@ -132,6 +130,61 @@ void SceneRenderer::RenderShadow(DX12Core& core, const vector<shared_ptr<GameObj
     for (const auto& obj : objects)
     {
         if (obj->GetId() == -1) continue;
+        if (!obj->IsStatic()) continue;
+
+        auto mesh = obj->GetComponent<Mesh>();
+        if (!mesh || !mesh->GetVertexIndexBuffer()) continue;
+
+        if (cbIndex >= MAX_OBJECTS) {
+            OutputDebugStringA("cbIndex Overflowed!!\n");
+            break;
+        }
+
+        auto transform = obj->GetComponent<Transform>();
+        XMMATRIX world = XMMatrixTranspose(transform->GetWorldMatrix());
+
+        mesh->GetVertexIndexBuffer()->Bind(cmdList);
+
+        if (mesh->HasMultiMaterial())
+        {
+            const auto& subMeshes = mesh->GetSubMeshes();
+            const auto& materials = mesh->GetMaterials();
+
+            for (size_t i = 0; i < subMeshes.size(); ++i)
+            {
+                auto objConst = MakeObjectConstants(world, 0, 0, materials[i]->GetMaterialIndex());
+                size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
+                objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
+                cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
+                cbIndex++;
+
+                mesh->GetVertexIndexBuffer()->DrawIndexed(cmdList, subMeshes[i].indexCount, subMeshes[i].startIndex);
+            }
+        }
+        else
+        {
+            UINT matIndex = mesh->GetMaterial() ? mesh->GetMaterial()->GetMaterialIndex() : 0;
+            auto objConst = MakeObjectConstants(world, 0, 0, matIndex);
+            size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
+            objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
+            cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
+            cbIndex++;
+
+            mesh->GetVertexIndexBuffer()->Draw(cmdList);
+        }
+    }
+}
+
+void SceneRenderer::RenderShadowDynamic(DX12Core& core, const vector<shared_ptr<GameObject>>& objects)
+{
+    auto cmdList = core.GetGraphicsCmdList();
+    cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Shadow));
+    SetupRenderingState(core);
+
+    for (const auto& obj : objects)
+    {
+        if (obj->GetId() == -1) continue;
+        if (obj->IsStatic()) continue;
 
         auto mesh = obj->GetComponent<Mesh>();
         if (!mesh || !mesh->GetVertexIndexBuffer()) continue;
@@ -178,13 +231,6 @@ void SceneRenderer::RenderShadow(DX12Core& core, const vector<shared_ptr<GameObj
 
             mesh->GetVertexIndexBuffer()->Draw(cmdList);
         }
-    }
-
-    if (GetAsyncKeyState('P') & 0x8000)
-    {
-        string msg = "[Shadow Pass] Index: " + to_string(startIndex) + " ~ " + to_string(cbIndex)
-            + " (Count: " + to_string(cbIndex - startIndex) + ")\n";
-        OutputDebugStringA(msg.c_str());
     }
 }
 

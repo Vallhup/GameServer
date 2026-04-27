@@ -91,11 +91,27 @@ void Engine::Render()
 
     sceneManager->BeginRender();
 
-    for (int i = 0; i < graphics->GetShadowMgr()->GetCascadeCount(); ++i) {
+    auto* shadowMgr = graphics->GetShadowMgr();
+    const int staticCascadeIdx = shadowMgr->GetStaticCacheCascadeIndex();
+
+    // Cascade 0, 1: 전 객체 그리기 (Static + Dynamic 분리 호출)
+    for (int i = 0; i < staticCascadeIdx; ++i) {
         graphics->BeginShadowPass(i);
-        sceneManager->RenderShadow();
+        sceneManager->RenderShadowStatic();
+        sceneManager->RenderShadowDynamic();
         graphics->EndShadowPass(viewport, scissorRect, i);
     }
+
+    // Cascade 2: static caster cache는 dirty일 때만 재생성, dynamic은 매 프레임 overlay
+    if (shadowMgr->IsCascadeDirty(staticCascadeIdx)) {
+        graphics->BeginStaticShadowPass();
+        sceneManager->RenderShadowStatic();
+        graphics->EndStaticShadowPass();
+    }
+    graphics->CopyStaticToCsmCascade2();
+    graphics->BeginDynamicShadowPass();
+    sceneManager->RenderShadowDynamic();
+    graphics->EndDynamicShadowPass(viewport, scissorRect);
 
     graphics->BeginGBufferPass();
     sceneManager->RenderDeferred();  

@@ -4,19 +4,28 @@
 
 void ShadowMappingManager::Initialize(ID3D12Device* device)
 {
+	Invalidate();
 	SettingsForCSM();
 	CreateCSMResources(device);
+	CreateStaticCSMResources(device);
 	CreateAtlasResources();
 }
 
 void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 {
+	XMFLOAT3 currentSunDir = {};
 	if (lightMgr)
 	{
 		// lights[0] = sun (directional). position 필드가 direction 역할.
 		XMFLOAT3 dir = lightMgr->GetLights()[0].position;
 		csmLightDir = XMVector3Normalize(XMLoadFloat3(&dir));
+		XMStoreFloat3(&currentSunDir, csmLightDir);
 	}
+
+	bool sunChanged =
+		(currentSunDir.x != lastSunDir.x) ||
+		(currentSunDir.y != lastSunDir.y) ||
+		(currentSunDir.z != lastSunDir.z);
 
 	XMVECTOR centerPos = XMLoadFloat3(&center);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -37,9 +46,19 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 		float cascadeSize = (&csmConstants.cascadeSplit.x)[i];
 		float texelSize = (cascadeSize * 2.0f) / static_cast<float>(SHADOW_MAP_SIZE);
 
-		// texel 경계로 스냅
-		float snapX = floorf(cx / texelSize) * texelSize;
-		float snapY = floorf(cy / texelSize) * texelSize;
+		// texel 경계 인덱스 — 정수 비교로 freeze 판단
+		int snapXIdx = static_cast<int>(floorf(cx / texelSize));
+		int snapYIdx = static_cast<int>(floorf(cy / texelSize));
+
+		bool snapChanged = (snapXIdx != lastSnap[i].x) || (snapYIdx != lastSnap[i].y);
+		cascadeDirty[i] = sunChanged || snapChanged;
+
+		// freeze: snap도 sun도 그대로면 lightVP 그대로 둔다 (cz drift 무시 → cascadeBias로 흡수)
+		if (!cascadeDirty[i])
+			continue;
+
+		float snapX = snapXIdx * texelSize;
+		float snapY = snapYIdx * texelSize;
 
 		// 스냅된 월드 타겟 복원
 		XMVECTOR snappedTarget =
@@ -52,9 +71,23 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 		XMMATRIX lightProj = XMMatrixOrthographicLH(cascadeSize * 2.0f, cascadeSize * 2.0f, 0.1f, shadowCasterDistance * 2.0f);
 
 		csmConstants.lightVP[i] = XMMatrixTranspose(XMMatrixMultiply(lightView, lightProj));
+
+		lastSnap[i] = { snapXIdx, snapYIdx };
 	}
 
+	lastSunDir = currentSunDir;
+
 	csmConstantBuffer->CopyData(&csmConstants, sizeof(CascadeShadowConstants));
+}
+
+void ShadowMappingManager::Invalidate()
+{
+	for (int i = 0; i < CASCADE_COUNT; ++i)
+	{
+		lastSnap[i] = { INT_MIN, INT_MIN };
+		cascadeDirty[i] = true;
+	}
+	lastSunDir = { FLT_MAX, FLT_MAX, FLT_MAX };
 }
 
 void ShadowMappingManager::SettingsForCSM()
@@ -118,6 +151,48 @@ void ShadowMappingManager::CreateCSMResources(ID3D12Device* device)
 	}
 
 	OutputDebugStringA("Shadow Map creation succeed!!\n");
+}
+
+void ShadowMappingManager::CreateStaticCSMResources(ID3D12Device* device)
+{
+	D3D12_RESOURCE_DESC desc = {};
+	desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	desc.Width = SHADOW_MAP_SIZE;
+	desc.Height = SHADOW_MAP_SIZE;
+	desc.DepthOrArraySize = 1;
+	desc.MipLevels = 1;
+	desc.Format = DXGI_FORMAT_R32_TYPELESS;
+	desc.SampleDesc.Count = 1;
+	desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = DXGI_FORMAT_D32_FLOAT;
+	clearValue.DepthStencil.Depth = 1.0f;
+
+	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+
+	HRESULT hr = device->CreateCommittedResource(
+		&heapProps, D3D12_HEAP_FLAG_NONE, &desc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue,
+		IID_PPV_ARGS(&staticCsmTexture));
+	MASSERT(SUCCEEDED(hr), "Failed to create static shadowMap Texture!!\n");
+
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	dsvHeapDesc.NumDescriptors = 1;
+	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	hr = device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&staticCsmDSVHeap));
+	MASSERT(SUCCEEDED(hr), "Failed to create static shadowMap DSV Heap!!\n");
+
+	staticCsmDSVHandle = staticCsmDSVHeap->GetCPUDescriptorHandleForHeapStart();
+
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Texture2D.MipSlice = 0;
+	device->CreateDepthStencilView(staticCsmTexture.Get(), &dsvDesc, staticCsmDSVHandle);
+
+	OutputDebugStringA("Static Shadow Map cache (cascade 2) created!!\n");
 }
 
 void ShadowMappingManager::CreateAtlasResources()

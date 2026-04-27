@@ -78,8 +78,14 @@ public:
 	//-------------------------------------------------------
 	// Render line
 	void RenderBegin(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+
 	void BeginShadowPass(int cascadeIdx);
 	void EndShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect, int cascadeIdx);
+	void BeginStaticShadowPass();
+	void EndStaticShadowPass();
+	void CopyStaticToCsmCascade2();
+	void BeginDynamicShadowPass();
+	void EndDynamicShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 
 	void BeginGBufferPass();
 	void EndGBufferPass();

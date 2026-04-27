@@ -7,10 +7,6 @@
 
 void SelectScene::Release()
 {
-}
-
-void SelectScene::Reset()
-{
 	gameObjects.clear();
 	bigDemonWarrior.reset();
 
@@ -61,10 +57,6 @@ void SelectScene::InitializeLogic()
 
 		OutputDebugStringA("Dragon created!!\n");
 	}
-}
-
-void SelectScene::InitializeSceneEnvironments()
-{
 }
 
 void SelectScene::InitializeSceneMonsters()
@@ -264,20 +256,6 @@ void SelectScene::UpdateScene(const float deltaTime)
 void SelectScene::RenderSceneDeferred()
 {
 	sManagerRef->GetSceneRenderer()->RenderDeferred(*coreRef, gameObjects, cam.get());
-}
-
-void SelectScene::RenderSceneForward()
-{
-
-}
-
-void SelectScene::RenderSceneShadow()
-{
-	sManagerRef->GetSceneRenderer()->RenderShadow(*coreRef, gameObjects);
-}
-
-void SelectScene::RenderSceneEffects()
-{
 }
 
 void SelectScene::RequestSceneChange()

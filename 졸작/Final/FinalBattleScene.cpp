@@ -22,10 +22,6 @@
 
 void FinalBattleScene::Release()
 {
-}
-
-void FinalBattleScene::Reset()
-{
 	instancingBatches.clear();
 	monsterPools.clear();
 	activeCharacters.clear();
@@ -158,8 +154,21 @@ void FinalBattleScene::RenderSceneForward()
 		skyBox->RenderSkyBox(*coreRef, coreRef->GetGraphicsCmdList());
 }
 
-void FinalBattleScene::RenderSceneShadow()
+void FinalBattleScene::RenderSceneShadowStatic()
 {
+	auto renderer = sManagerRef->GetSceneRenderer();
+	renderer->RenderShadowStatic(*coreRef, gameObjects);
+
+	for (const auto& batch : instancingBatches)
+	{
+		batch->RenderShadowStatic(*coreRef, renderer);
+	}
+}
+
+void FinalBattleScene::RenderSceneShadowDynamic()
+{
+	auto renderer = sManagerRef->GetSceneRenderer();
+	renderer->RenderShadowDynamic(*coreRef, gameObjects);
 }
 
 void FinalBattleScene::RenderSceneEffects()

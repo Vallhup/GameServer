@@ -18,14 +18,14 @@ class Scene
 {
 public:
 	virtual ~Scene() {}
-    virtual void Initialize(HWND hWnd, DX12Core& core);
-    virtual void Update(const float deltaTime);
-    virtual void RenderDeferred();
+	virtual void Initialize(HWND hWnd, DX12Core& core);
+	virtual void Update(const float deltaTime);
+	virtual void RenderDeferred();
 	virtual void RenderForward();
-	virtual void RenderShadow();
+	virtual void RenderShadowStatic();
+	virtual void RenderShadowDynamic();
 	virtual void RenderEffects();
-    virtual void Release() = 0;
-    virtual void Reset() = 0;
+	virtual void Release() = 0;
 
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
@@ -35,7 +35,7 @@ public:
 	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
 	shared_ptr<MainCharacter> GetAvailableKnight() const;
 
-	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet> (*animFactory)(), bool twoSided = true);
+	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)(), bool twoSided = true);
 	void CreateMonsters(MonsterType type, const XMFLOAT3& position, int count = 1);
 
 	void AddGameObject(shared_ptr<GameObject> obj);
@@ -44,14 +44,15 @@ public:
 
 protected:
 	virtual void InitializeLogic() = 0;
-	virtual void InitializeSceneEnvironments() = 0;
-	virtual void InitializeSceneMonsters() = 0;
-	virtual void UpdateScene(const float deltaTime) = 0;
-	virtual void RenderSceneDeferred() = 0;
-	virtual void RenderSceneForward() = 0;
-	virtual void RenderSceneShadow() = 0;
-	virtual void RenderSceneEffects() = 0;
-	virtual void RequestSceneChange() = 0;
+	virtual void InitializeSceneEnvironments() {}
+	virtual void InitializeSceneMonsters() {}
+	virtual void UpdateScene(const float deltaTime) {}
+	virtual void RenderSceneDeferred() {}
+	virtual void RenderSceneForward() {}
+	virtual void RenderSceneShadowStatic() {}
+	virtual void RenderSceneShadowDynamic() {}
+	virtual void RenderSceneEffects() {}
+	virtual void RequestSceneChange() {}
 
 	// Network Handler Function Interface
 	virtual void HandleLogin(const Protocol::SC_LOGIN_PACKET& login) {}
