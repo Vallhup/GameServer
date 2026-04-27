@@ -319,6 +319,18 @@ void FirstBattleScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			activeCharacters[id] = demonExecutionerObject;
 		}
 	}
+	else if (type == static_cast<int>(CharacterId::BigDemonWarrior))
+	{
+		auto bigDemonWarriorObject = GetAvailableMonster(MonsterType::BigDemonWarrior);
+		if (bigDemonWarriorObject)
+		{
+			bigDemonWarriorObject->SetId(id);
+			auto transform = bigDemonWarriorObject->GetComponent<Transform>();
+			transform->SetInitPosition(add.x(), add.y(), add.z());
+			transform->SetTargetRotation(add.yaw());
+			activeCharacters[id] = bigDemonWarriorObject;
+		}
+	}
 }
 
 void FirstBattleScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
