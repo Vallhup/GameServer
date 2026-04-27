@@ -139,7 +139,7 @@ enum class AnimationId : uint8 {
 	BigDemonWarrior_Melee_8,
 	BigDemonWarrior_WalkBack,
 	BigDemonWarrior_WalkForward,
-	BigDemonWarrior_WalkRightBack,
+	BigDemonWarrior_WalkLeft,
 	BigDemonWarrior_WalkRight,
 	BigDemonWarrior_RunForward,
 	BigDemonWarrior_TurnLeft,

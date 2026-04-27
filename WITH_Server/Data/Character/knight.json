@@ -1,0 +1,37 @@
+{
+  "id": "Knight",
+  "name": "Knight",
+  "profile": {
+    "faction": "Player"
+  },
+  "stat": {
+    "maxHp": 100,
+    "maxStamina": 100,
+    "maxPoise": 100,
+    "attackPower": 10,
+    "defense": 10,
+    "moveSpeed": 4.0,
+    "attackSpeed": 1.0
+  },
+  "bodyCollision": {
+    "footprintRadiusXZ": 0.42,
+    "bodyHeight": 1.8,
+    "blocksBodyOverlap": true,
+    "useNavMeshConstraint": true,
+    "pushability": "Dynamic",
+    "overlapYieldWeight": 0.35,
+    "maxOverlapCorrectionPerFrameXZ": 0.10
+  },
+  "role": "Player",
+  "features": [
+    "Replicated",
+    "Combatant",
+    "Playable",
+    "PortalAware",
+    "BuffUser"
+  ],
+  "ai": null,
+  "action": {
+    "actionProfileId": "Knight"
+  }
+}

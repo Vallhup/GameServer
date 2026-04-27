@@ -25,6 +25,126 @@ std::filesystem::path ServerPathResolver::GetExecutableDirectory()
 	return NormalizePath(std::filesystem::current_path());
 }
 
+std::filesystem::path ServerPathResolver::GetDefaultActionDefRoot()
+{
+	const std::filesystem::path exeDir = GetExecutableDirectory();
+	const std::filesystem::path currentDir =
+		NormalizePath(std::filesystem::current_path());
+
+	const std::vector<std::filesystem::path> candidates =
+	{
+		currentDir / "WITH_Server" / "Data" / "Action",
+		currentDir / "Data" / "Action",
+		currentDir / ".." / "Data" / "Action",
+		exeDir / ".." / ".." / "Data" / "Action",
+		exeDir / ".." / ".." / "WITH_Server" / "Data" / "Action"
+	};
+
+	for (const std::filesystem::path& candidate : candidates)
+	{
+		if (IsDirectory(candidate))
+			return NormalizePath(candidate);
+	}
+
+	return NormalizePath(currentDir / "WITH_Server" / "Data" / "Action");
+}
+
+std::filesystem::path ServerPathResolver::GetDefaultCharacterDefRoot()
+{
+	const std::filesystem::path exeDir = GetExecutableDirectory();
+	const std::filesystem::path currentDir =
+		NormalizePath(std::filesystem::current_path());
+
+	const std::vector<std::filesystem::path> candidates =
+	{
+		currentDir / "WITH_Server" / "Data" / "Character",
+		currentDir / "Data" / "Character",
+		currentDir / ".." / "Data" / "Character",
+		exeDir / ".." / ".." / "Data" / "Character",
+		exeDir / ".." / ".." / "WITH_Server" / "Data" / "Character"
+	};
+
+	for (const std::filesystem::path& candidate : candidates)
+	{
+		if (IsDirectory(candidate))
+			return NormalizePath(candidate);
+	}
+
+	return NormalizePath(currentDir / "WITH_Server" / "Data" / "Character");
+}
+
+std::filesystem::path ServerPathResolver::GetDefaultAIBehaviorDefRoot()
+{
+	const std::filesystem::path exeDir = GetExecutableDirectory();
+	const std::filesystem::path currentDir =
+		NormalizePath(std::filesystem::current_path());
+
+	const std::vector<std::filesystem::path> candidates =
+	{
+		currentDir / "WITH_Server" / "Data" / "AI",
+		currentDir / "Data" / "AI",
+		currentDir / ".." / "Data" / "AI",
+		exeDir / ".." / ".." / "Data" / "AI",
+		exeDir / ".." / ".." / "WITH_Server" / "Data" / "AI"
+	};
+
+	for (const std::filesystem::path& candidate : candidates)
+	{
+		if (IsDirectory(candidate))
+			return NormalizePath(candidate);
+	}
+
+	return NormalizePath(currentDir / "WITH_Server" / "Data" / "AI");
+}
+
+std::filesystem::path ServerPathResolver::GetDefaultBuffDefRoot()
+{
+	const std::filesystem::path exeDir = GetExecutableDirectory();
+	const std::filesystem::path currentDir =
+		NormalizePath(std::filesystem::current_path());
+
+	const std::vector<std::filesystem::path> candidates =
+	{
+		currentDir / "WITH_Server" / "Data" / "Buff",
+		currentDir / "Data" / "Buff",
+		currentDir / ".." / "Data" / "Buff",
+		exeDir / ".." / ".." / "Data" / "Buff",
+		exeDir / ".." / ".." / "WITH_Server" / "Data" / "Buff"
+	};
+
+	for (const std::filesystem::path& candidate : candidates)
+	{
+		if (IsDirectory(candidate))
+			return NormalizePath(candidate);
+	}
+
+	return NormalizePath(currentDir / "WITH_Server" / "Data" / "Buff");
+}
+
+std::filesystem::path ServerPathResolver::GetDefaultSpawnSetDefRoot()
+{
+	const std::filesystem::path exeDir = GetExecutableDirectory();
+	const std::filesystem::path currentDir =
+		NormalizePath(std::filesystem::current_path());
+
+	const std::vector<std::filesystem::path> candidates =
+	{
+		currentDir / "WITH_Server" / "Data" / "SpawnSet",
+		currentDir / "Data" / "SpawnSet",
+		currentDir / ".." / "Data" / "SpawnSet",
+		exeDir / ".." / ".." / "Data" / "SpawnSet",
+		exeDir / ".." / ".." / "WITH_Server" / "Data" / "SpawnSet"
+	};
+
+	for (const std::filesystem::path& candidate : candidates)
+	{
+		if (IsDirectory(candidate))
+			return NormalizePath(candidate);
+	}
+
+	return NormalizePath(currentDir / "WITH_Server" / "Data" / "SpawnSet");
+}
+
 std::filesystem::path ServerPathResolver::GetDefaultAnimationOutputRoot()
 {
 	const std::filesystem::path exeDir = GetExecutableDirectory();
@@ -172,6 +292,34 @@ std::vector<std::filesystem::path> ServerPathResolver::GetBootAnimationCandidate
 		root / "DemonExecutioner" / "demonexecutioner_animation_walk_forward.json",
 		root / "DemonExecutioner" / "demonexecutioner_animation_walk_forward_slow.json",
 		root / "DemonExecutioner" / "demonexecutioner_animation_walk_left.json",
-		root / "DemonExecutioner" / "demonexecutioner_animation_walk_right.json"
+		root / "DemonExecutioner" / "demonexecutioner_animation_walk_right.json",
+
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_battlecry.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_death.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_idle_1.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_idle_2.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_idle_3.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_idle_4.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_jump.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_melee_1.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_melee_2.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_melee_3.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_melee_4.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_melee_5.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_melee_6.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_melee_7.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_melee_8.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_react_gut.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_react_left.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_react_right.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_roaring.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_run.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_stun.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_turn_left.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_turn_right.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_walk_back.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_walk_forward.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_walk_left.json",
+		root / "BigDemonWarrior" / "bigdemonwarrior_animation_walk_right.json",
 	};
 }

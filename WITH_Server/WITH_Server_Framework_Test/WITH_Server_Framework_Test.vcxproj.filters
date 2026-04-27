@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="Phase1_AutoSystemBridge_SmokeTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskExecutor_PerfDiagnostics.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="BasicView_BenchMark.cpp">
+    <ClCompile Include="LFWSDeque_BenchMark.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-    <ClCompile Include="NetId_Test.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
-    <ClCompile Include="World_System_Test.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
-    <ClCompile Include="WorldPipeline_Test.cpp">
+    <ClCompile Include="TaskExecutor_RaceStressTest.cpp">
       <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>

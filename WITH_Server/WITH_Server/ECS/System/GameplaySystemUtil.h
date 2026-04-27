@@ -1,10 +1,12 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <optional>
 #include <span>
 
+#include "SystemMetaHelper.h"
 #include "../../CharacterDef.h"
 #include "WorldRuntime.h"
 #include "../GameplayRuntimeComponents.h"
@@ -17,20 +19,7 @@ namespace GameplaySystemUtil
 	inline constexpr float kDefaultColliderRadius = 0.25f;
 	inline constexpr float kPi = 3.14159265358979323846f;
 
-	inline constexpr std::span<const AccessSpec> kNoAccesses{};
 	inline constexpr std::span<const SystemTag> kNoDeps{};
-
-	template<typename T>
-	SystemMeta MakeSystemMeta(const char* name)
-	{
-		return SystemMeta{
-			SystemTag(typeid(T)),
-			name,
-			kNoAccesses,
-			kNoDeps,
-			kNoDeps
-		};
-	}
 
 	inline float ClampFloat(float value, float minValue, float maxValue)
 	{
@@ -184,6 +173,34 @@ namespace GameplaySystemUtil
 			{
 				return binding.animationId;
 			}
+		}
+
+		const auto FindFallback =
+			[bindingProfile](LocomotionMode fallbackMode) noexcept
+			{
+				for (const LocomotionAnimationBindingDef& binding :
+					bindingProfile->locomotionBindings)
+				{
+					if (binding.mode == fallbackMode)
+					{
+						return binding.animationId;
+					}
+				}
+
+				return AnimationId::None;
+			};
+
+		switch (mode)
+		{
+		case LocomotionMode::WalkBack:
+		case LocomotionMode::WalkLeft:
+		case LocomotionMode::WalkRight:
+			return FindFallback(LocomotionMode::Walk);
+		case LocomotionMode::TurnLeft:
+		case LocomotionMode::TurnRight:
+			return FindFallback(LocomotionMode::Turn);
+		default:
+			break;
 		}
 
 		return AnimationId::None;

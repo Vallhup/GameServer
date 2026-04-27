@@ -100,6 +100,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -119,6 +120,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -136,6 +138,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -155,6 +158,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -164,8 +168,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AdmissionTypes.h" />
+    <ClInclude Include="AutoSystemBridge.h" />
+    <ClInclude Include="ConflictDetection.h" />
     <ClInclude Include="ExecutionGraphBuildPolicy.h" />
     <ClInclude Include="FrameworkLog.h" />
+    <ClInclude Include="LFWSDeque.h" />
     <ClInclude Include="Library\Detour\DetourAlloc.h" />
     <ClInclude Include="Library\Detour\DetourAssert.h" />
     <ClInclude Include="Library\Detour\DetourCommon.h" />
@@ -208,7 +215,9 @@
     <ClInclude Include="SystemMetaStorage.h" />
     <ClInclude Include="SystemMeta.h" />
     <ClInclude Include="RepComponent.h" />
+    <ClInclude Include="ExecMetaHelper.h" />
     <ClInclude Include="SystemMetaHelper.h" />
+    <ClInclude Include="TaskExecutorDiagnostics.h" />
     <ClInclude Include="TaskExecutor.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="ViewFwd.h" />
@@ -236,6 +245,7 @@
     <ClInclude Include="WorldResolveKey.h" />
     <ClInclude Include="WorldResolveRules.h" />
     <ClInclude Include="WorldRuntime.h" />
+    <ClInclude Include="WorldSystemServiceScope.h" />
     <ClInclude Include="WorldLifecycleBuffer.h" />
     <ClInclude Include="WorldLifecycleCommand.h" />
     <ClInclude Include="WorldRuntimeTypes.h" />
@@ -250,6 +260,7 @@
     <ClInclude Include="WorldTransferTxn.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AutoSystemBridge.cpp" />
     <ClCompile Include="NavMeshRuntime.cpp" />
     <ClCompile Include="WorldDef.cpp" />
     <ClCompile Include="WorldExecutionModelTypes.cpp" />
@@ -260,6 +271,7 @@
     <ClCompile Include="ExecutionOps.cpp" />
     <ClCompile Include="PresenceManager.cpp" />
     <ClCompile Include="TaskExecutor.cpp" />
+    <ClCompile Include="TaskExecutorDiagnostics.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="NetIdAllocator.cpp" />
     <ClCompile Include="NetIdRegistry.cpp" />
@@ -278,12 +290,16 @@
     <ClCompile Include="WorldRegistry.cpp" />
     <ClCompile Include="WorldScheduler.cpp" />
     <ClCompile Include="WorldRuntime.cpp" />
+    <ClCompile Include="WorldSystemServiceScope.cpp" />
     <ClCompile Include="WorldLifecycleBuffer.cpp" />
     <ClCompile Include="WorldTransferProfile.cpp" />
     <ClCompile Include="WorldTransferProfileRegistry.cpp" />
     <ClCompile Include="WorldTransferService.cpp" />
     <ClInclude Include="System.h" />
     <ClCompile Include="SystemManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TaskExecutor_QueueState_Spec.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

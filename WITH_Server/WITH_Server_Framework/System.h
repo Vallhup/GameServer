@@ -47,7 +47,7 @@ public:
 	virtual ~System() = default;
 
 	virtual void Execute(SystemContext& ctx) = 0;
-	virtual const SystemMeta& Meta() const = 0;
+	virtual const ExecMeta& Meta() const = 0;
 };
 
 template<typename T>

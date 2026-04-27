@@ -7,6 +7,7 @@
 #include "WorldTransferContext.h"
 #include "WorldTransferProfile.h"
 #include "WorldDef.h"
+#include "WorldSystemServiceScope.h"
 
 namespace
 {
@@ -209,25 +210,6 @@ bool WorldRuntime::EnqueueWorldCommand(WorldCommand command)
 	return _worldCommands.Enqueue(std::move(command));
 }
 
-// WorldNavMeshServiceAdapter: WorldRuntime이 소유한 NavMeshRuntime을
-// INavMeshProvider 인터페이스로 노출하는 경량 어댑터.
-// ExecuteSystems() 스택 내에서만 생존하므로 포인터 수명이 안전하다.
-struct WorldNavMeshServiceAdapter final : INavMeshProvider
-{
-	const NavMeshRuntime*       runtime{ nullptr };
-	const NavigationProfileDef* profile{ nullptr };
-
-	const NavMeshRuntime* GetNavMeshRuntime() const noexcept override
-	{
-		return runtime;
-	}
-
-	const NavigationProfileDef* GetNavigationProfile() const noexcept override
-	{
-		return profile;
-	}
-};
-
 bool WorldRuntime::ExecuteSystems(
 	SystemPhase phase,
 	WorldSystemServices services)
@@ -245,19 +227,13 @@ bool WorldRuntime::ExecuteSystems(
 	}
 
 	// 호출자가 navMeshProvider를 설정하지 않은 경우 WorldRuntime 소유 NavMesh를 자동 주입
-	WorldNavMeshServiceAdapter navAdapter;
-	if (!services.navMeshProvider && _navMeshRuntime && _navMeshRuntime->IsReady())
-	{
-		navAdapter.runtime = _navMeshRuntime.get();
-		navAdapter.profile = _navProfile;
-		services.navMeshProvider = &navAdapter;
-	}
+	WorldSystemServiceScope serviceScope(*this, services);
 
 	SystemContext context{
 		*this,
 		MakeView(),
 		_lastDtSec,
-		services
+		serviceScope.Services()
 	};
 
 	for (System* system : _systems.GetSystems(phase))
@@ -833,4 +809,22 @@ Entity WorldRuntime::ReserveEntity()
 		});
 
 	return reserved;
+}
+
+// ---------------------------------------------------------------------------
+// ExecToken → System* 디스패치 테이블
+// ---------------------------------------------------------------------------
+
+void WorldRuntime::RegisterSystemDispatch(ExecToken token, System* system)
+{
+	_systemDispatchTable[token] = system;
+}
+
+System* WorldRuntime::GetSystemByToken(ExecToken token) const noexcept
+{
+	const auto it = _systemDispatchTable.find(token);
+	if (it == _systemDispatchTable.end())
+		return nullptr;
+
+	return it->second;
 }

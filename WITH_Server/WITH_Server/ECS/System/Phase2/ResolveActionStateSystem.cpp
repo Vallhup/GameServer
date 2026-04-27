@@ -17,17 +17,17 @@ const StaticSystemMetaStorage<12, 0, 2> ResolveActionStateSystem::kMetaStorage =
         std::array<AccessSpec, 12>
         {
             WriteImmediate(ComponentRes<ActionStateComp>()),
-            ReadSnapshot(ComponentRes<LocomotionStateComp>()),
-            ReadSnapshot(ComponentRes<WorldTransformComp>()),
+            ReadImmediate(ComponentRes<LocomotionStateComp>()),
+            ReadImmediate(ComponentRes<WorldTransformComp>()),
             WriteImmediate(ComponentRes<ActorInputComp>()),
             WriteImmediate(ComponentRes<ActionTimelineAdvanceComp>()),
-            ReadSnapshot(ComponentRes<SpawnTypeComp>()),
+            ReadImmediate(ComponentRes<SpawnTypeComp>()),
             WriteImmediate(ComponentRes<CombatStatStateComp>()),
             WriteImmediate(ComponentRes<ActionInterruptQueueComp>()),
             WriteImmediate(ComponentRes<DirtyFlagsComp>()),
             ReadImmediate(ComponentRes<AIPerceptionComp>()),
-            ReadSnapshot(ComponentRes<PendingDespawnTag>()),
-            ReadSnapshot(ComponentRes<PendingWorldTransferTag>()),
+            ReadImmediate(ComponentRes<PendingDespawnTag>()),
+            ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
         },
         std::array<SystemTag, 0>{},
         std::array<SystemTag, 2>

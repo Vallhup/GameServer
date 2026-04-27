@@ -2,8 +2,10 @@
 
 #include "AnimationId.h"
 #include "ActionProfileIds.h"
+#include "DefLoadResult.h"
 #include "IDs.h"
 
+#include <filesystem>
 #include <optional>
 #include <string>
 #include <span>
@@ -432,3 +434,7 @@ const AnimationBindingProfileDef* FindAnimationBindingProfileDef(
 const AnimationBindingProfileDef& GetAnimationBindingProfileDef(
 	AnimationBindingProfileId id);
 std::span<const AnimationBindingProfileDef> GetAnimationBindingProfileDefs() noexcept;
+
+using ActionDefLoadResult = DefLoadResult;
+ActionDefLoadResult LoadActionDefsFromJsonDirectory(
+	const std::filesystem::path& directory);

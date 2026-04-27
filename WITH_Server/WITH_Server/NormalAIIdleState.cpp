@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "NormalAIIdleState.h"
 
-#include "AIFSMRegistry.h"
+#include "AIBehaviorDef.h"
 
 namespace
 {

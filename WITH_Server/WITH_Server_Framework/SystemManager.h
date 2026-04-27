@@ -12,14 +12,13 @@
 #include "System.h"
 
 class ECS;
-struct SystemMeta;
 
 enum class SystemPhase : uint8_t { Pre, Graph, Post, Count };
 
 struct SystemScheduleDesc
 {
 	System* system{ nullptr };
-	const SystemMeta* meta{ nullptr };
+	const ExecMeta* meta{ nullptr };
 	int registrationOrder{ -1 };
 };
 

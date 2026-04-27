@@ -14,6 +14,12 @@
 #include "ServerPathResolver.h"
 #include "ServerReplicationSnapshot.h"
 #include "ServerWorldTransferCommitter.h"
+#include "ActionDef.h"
+#include "AIBehaviorDef.h"
+#include "BuffDef.h"
+#include "CharacterDef.h"
+#include "GameplayDefValidator.h"
+#include "SpawnSetDef.h"
 #include "WorldInstanceRecord.h"
 
 namespace
@@ -53,7 +59,16 @@ namespace
 ServerApp::ServerApp(Config config)
 	: _config(config)
 	, _framework(FrameworkRuntime::Config{
-		.executorWorkerCount = _config.executorWorkerCount
+		.executorWorkerCount = _config.executorWorkerCount,
+		.executorDiagnostics = TaskExecutorDiagnosticsConfig{
+			.enabled = true,
+			.collectNodeTimings = true,
+			.logFrameSummary = true,
+			.writeCsv = true,
+			.sampleEveryNFrames = 60,
+			.summaryCsvPath = "Log/WITH_Server_ExecPerfSummary.csv",
+			.nodeCsvPath = "Log/WITH_Server_ExecPerfNodes.csv"
+		}
 	})
 	, _network(NetworkRuntime::Config{
 		.workerThreadCount = _config.networkThreadCount,
@@ -426,6 +441,97 @@ bool ServerApp::InitializeNetworkRuntime()
 bool ServerApp::InitializeGameplayContent()
 {
 	_animationRegistry.Clear();
+
+	const std::filesystem::path actionRoot =
+		ServerPathResolver::GetDefaultActionDefRoot();
+	const ActionDefLoadResult actionLoadResult =
+		LoadActionDefsFromJsonDirectory(actionRoot);
+	if (!actionLoadResult.succeeded)
+	{
+		std::cout << "[ServerApp] Action defs load failed."
+			<< " root=" << actionRoot.string()
+			<< " error=" << actionLoadResult.error << "\n";
+		return false;
+	}
+
+	std::cout << "[ServerApp] Action defs loaded."
+		<< " root=" << actionRoot.string()
+		<< " count=" << actionLoadResult.loadedCount << "\n";
+
+	const std::filesystem::path characterRoot =
+		ServerPathResolver::GetDefaultCharacterDefRoot();
+	const CharacterDefLoadResult characterLoadResult =
+		LoadCharacterDefsFromJsonDirectory(characterRoot);
+	if (!characterLoadResult.succeeded)
+	{
+		std::cout << "[ServerApp] Character defs load failed."
+			<< " root=" << characterRoot.string()
+			<< " error=" << characterLoadResult.error << "\n";
+		return false;
+	}
+
+	std::cout << "[ServerApp] Character defs loaded."
+		<< " root=" << characterRoot.string()
+		<< " count=" << characterLoadResult.loadedCount << "\n";
+
+	const std::filesystem::path aiBehaviorRoot =
+		ServerPathResolver::GetDefaultAIBehaviorDefRoot();
+	const AIBehaviorDefLoadResult aiBehaviorLoadResult =
+		LoadAIBehaviorProfileDefsFromJsonDirectory(aiBehaviorRoot);
+	if (!aiBehaviorLoadResult.succeeded)
+	{
+		std::cout << "[ServerApp] AI behavior def load failed."
+			<< " root=" << aiBehaviorRoot.string()
+			<< " error=" << aiBehaviorLoadResult.error << "\n";
+		return false;
+	}
+
+	std::cout << "[ServerApp] AI behavior defs loaded."
+		<< " root=" << aiBehaviorRoot.string()
+		<< " count=" << aiBehaviorLoadResult.loadedCount << "\n";
+
+	const std::filesystem::path buffRoot =
+		ServerPathResolver::GetDefaultBuffDefRoot();
+	const BuffDefLoadResult buffLoadResult =
+		LoadBuffDefsFromJsonDirectory(buffRoot);
+	if (!buffLoadResult.succeeded)
+	{
+		std::cout << "[ServerApp] Buff defs load failed."
+			<< " root=" << buffRoot.string()
+			<< " error=" << buffLoadResult.error << "\n";
+		return false;
+	}
+
+	std::cout << "[ServerApp] Buff defs loaded."
+		<< " root=" << buffRoot.string()
+		<< " count=" << buffLoadResult.loadedCount << "\n";
+
+	const std::filesystem::path spawnSetRoot =
+		ServerPathResolver::GetDefaultSpawnSetDefRoot();
+	const SpawnSetDefLoadResult spawnSetLoadResult =
+		LoadSpawnSetDefsFromJsonDirectory(spawnSetRoot);
+	if (!spawnSetLoadResult.succeeded)
+	{
+		std::cout << "[ServerApp] SpawnSet defs load failed."
+			<< " root=" << spawnSetRoot.string()
+			<< " error=" << spawnSetLoadResult.error << "\n";
+		return false;
+	}
+
+	std::cout << "[ServerApp] SpawnSet defs loaded."
+		<< " root=" << spawnSetRoot.string()
+		<< " count=" << spawnSetLoadResult.loadedCount << "\n";
+
+	const DefLoadResult validationResult = GamePlayDefValidator::ValidateGameplayDefs();
+	if (!validationResult.succeeded)
+	{
+		std::cout << "[ServerApp] Gameplay defs validation failed."
+			<< " error=" << validationResult.error << "\n";
+		return false;
+	}
+
+	std::cout << "[ServerApp] Gameplay defs validated."
+		<< " count=" << validationResult.loadedCount << "\n";
 
 	const std::filesystem::path animationRoot =
 		ServerPathResolver::GetDefaultAnimationOutputRoot();

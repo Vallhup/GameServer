@@ -5,9 +5,22 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 2> kResolveCombatColliderActivationAccesses{
+		ReadImmediate(ComponentRes<ActionStateComp>()),
+		WriteImmediate(ComponentRes<CombatColliderActivationComp>()),
+	};
+}
+
 const SystemMeta ResolveCombatColliderActivationSystem::kMeta =
-	MakeSystemMeta<ResolveCombatColliderActivationSystem>(
-		"ResolveCombatColliderActivationSystem");
+	SystemMeta{
+		SysTag<ResolveCombatColliderActivationSystem>(),
+		"ResolveCombatColliderActivationSystem",
+		kResolveCombatColliderActivationAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void ResolveCombatColliderActivationSystem::Execute(SystemContext& ctx)
 {

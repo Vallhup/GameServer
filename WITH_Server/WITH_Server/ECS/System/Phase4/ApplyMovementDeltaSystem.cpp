@@ -6,8 +6,26 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 6> kApplyMovementDeltaAccesses{
+		WriteImmediate(ComponentRes<WorldTransformComp>()),
+		WriteImmediate(ComponentRes<PreCollisionTransformComp>()),
+		WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()),
+		WriteImmediate(ComponentRes<ActionMoveDeltaComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
+		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+	};
+}
+
 const SystemMeta ApplyMovementDeltaSystem::kMeta =
-	MakeSystemMeta<ApplyMovementDeltaSystem>("ApplyMovementDeltaSystem");
+	SystemMeta{
+		SysTag<ApplyMovementDeltaSystem>(),
+		"ApplyMovementDeltaSystem",
+		kApplyMovementDeltaAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 {

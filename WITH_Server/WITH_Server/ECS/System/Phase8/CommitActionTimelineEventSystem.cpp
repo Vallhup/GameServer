@@ -5,9 +5,25 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 5> kCommitActionTimelineEventAccesses{
+		ReadImmediate(ComponentRes<ActionTimelineAdvanceComp>()),
+		ReadImmediate(ComponentRes<PendingCombatResultComp>()),
+		WriteImmediate(ComponentRes<PendingProjectileSpawnComp>()),
+		WriteImmediate(ComponentRes<PendingActionPresentationEventComp>()),
+		WriteImmediate(ComponentRes<ReplicationStatsComp>()),
+	};
+}
+
 const SystemMeta CommitActionTimelineEventSystem::kMeta =
-	MakeSystemMeta<CommitActionTimelineEventSystem>(
-		"CommitActionTimelineEventSystem");
+	SystemMeta{
+		SysTag<CommitActionTimelineEventSystem>(),
+		"CommitActionTimelineEventSystem",
+		kCommitActionTimelineEventAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void CommitActionTimelineEventSystem::Execute(SystemContext& ctx)
 {

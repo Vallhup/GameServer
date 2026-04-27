@@ -42,6 +42,11 @@ struct ExecNodeRecord
 
     uint32_t debugNameOffset{ 0 };
     ExecToken sourceToken{ InvalidExecToken };
+
+    // SchedulingHint.priorityBias 전사값.
+    // Ready 노드가 복수일 때 스케줄러가 실행 순서를 조정하는 힌트로 사용한다.
+    // 양수: 조기 스케줄 선호. 음수: 지연 허용. 0: 기본값.
+    int32_t priorityBias{ 0 };
 };
 
 struct BuildDiagnostic

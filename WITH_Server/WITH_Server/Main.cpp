@@ -1,17 +1,28 @@
 #include "pch.h"
 #include "ServerApp.h"
 
-#include "FrameworkLog.h"
+#include <filesystem>
 
-static ConsoleLogSink g_consoleSink;
-static FileLogSink g_fileSink("Log/WITH_Server_Log.txt");
+#include "FrameworkLog.h"
 
 int main()
 {
-	//FrameworkLog::Instance().AddSink(&g_consoleSink);
-	//FrameworkLog::Instance().AddSink(&g_fileSink);
+	std::filesystem::create_directories("Log");
+
+	//ConsoleLogSink consoleSink;
+	FileLogSink fileSink("Log/WITH_Server_Log.txt");
+
+	FrameworkLog::Instance().SetRuntimeLevel(LogLevel::Info);
+	//FrameworkLog::Instance().AddSink(&consoleSink);
+	if (fileSink.IsOpen())
+	{
+		FrameworkLog::Instance().AddSink(&fileSink);
+	}
 
 	ServerApp app;
 	app.Run();
 	app.Shutdown();
+
+	FrameworkLog::Instance().FlushAll();
+	FrameworkLog::Instance().ClearSinks();
 }

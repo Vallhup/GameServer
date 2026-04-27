@@ -1,0 +1,66 @@
+{
+  "profile": {
+    "id": "ParrySuccess",
+    "name": "ParrySuccess",
+    "kind": "Positive",
+    "familyId": "ParrySuccess",
+    "tier": "None",
+    "groupId": "ParrySuccess",
+    "familyStackPolicy": "Independent"
+  },
+  "lifetime": {
+    "durationPolicy": "Timed",
+    "defaultDurationSec": 3.0,
+    "tickIntervalSec": null,
+    "maxStackCount": 1,
+    "overlappingPolicy": "Refresh",
+    "reapplyPolicy": "RefreshDuration"
+  },
+  "effects": [
+    {
+      "type": "StateFlag",
+      "timing": "Always",
+      "stat": null,
+      "stateFlag": {
+        "flag": "ParrySuccessReady"
+      },
+      "periodic": null,
+      "condition": null
+    }
+  ],
+  "applyRequirements": [
+    {
+      "type": "MissingStateFlag",
+      "operand": {
+        "scalarCondition": null,
+        "stateFlagCondition": "ParrySuccessReady",
+        "buffFamilyIdCondition": null,
+        "factionCondition": null
+      }
+    }
+  ],
+  "removeRules": [
+    {
+      "type": "OnCounterReached",
+      "operand": {
+        "scalarCondition": 1.0,
+        "stateFlagCondition": null,
+        "actionIdCondition": null,
+        "actionKindCondition": "Attack",
+        "buffFamilyIdCondition": null,
+        "counterEventCondition": "ActionCommitted"
+      }
+    },
+    {
+      "type": "OnDurationExpired",
+      "operand": {
+        "scalarCondition": null,
+        "stateFlagCondition": null,
+        "actionIdCondition": null,
+        "actionKindCondition": null,
+        "buffFamilyIdCondition": null,
+        "counterEventCondition": null
+      }
+    }
+  ]
+}

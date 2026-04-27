@@ -5,8 +5,27 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 7> kResolvePortalTriggerAccesses{
+		WriteImmediate(ComponentRes<PortalTriggerStateComp>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<PlayerControlIdentityComp>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
+		ReadImmediate(ExternalRes<PortalTriggerDef>()),
+	};
+}
+
 const SystemMeta ResolvePortalTriggerSystem::kMeta =
-	MakeSystemMeta<ResolvePortalTriggerSystem>("ResolvePortalTriggerSystem");
+	SystemMeta{
+		SysTag<ResolvePortalTriggerSystem>(),
+		"ResolvePortalTriggerSystem",
+		kResolvePortalTriggerAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void ResolvePortalTriggerSystem::Execute(SystemContext& ctx)
 {

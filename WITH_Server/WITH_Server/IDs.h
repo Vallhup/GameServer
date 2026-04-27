@@ -125,6 +125,19 @@ enum class ActionId : uint16_t
 
 
     /* [ DemonWarrior ] */
+    BigDemonWarrior_Melee_1,
+    BigDemonWarrior_Melee_2,
+    BigDemonWarrior_Melee_3,
+    BigDemonWarrior_Melee_4,
+    BigDemonWarrior_Melee_5,
+    BigDemonWarrior_Melee_6,
+    BigDemonWarrior_Melee_7,
+    BigDemonWarrior_Melee_8,
+    BigDemonWarrior_Jump,
+    BigDemonWarrior_BattleCry,
+    BigDemonWarrior_Stun,
+    BigDemonWarrior_Hit,
+    BigDemonWarrior_Dead,
 
     /* [ Tank ] */
 

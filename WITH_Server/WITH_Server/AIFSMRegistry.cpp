@@ -9,204 +9,29 @@
 #include "NormalAIReactState.h"
 
 #include "NormalAIMovementPolicy.h"
+#include "BossAIMovementPolicy.h"
+#include "BossCombatActionPolicy.h"
 #include "ImpCombatActionPolicy.h"
 #include "WeightedCombatActionPolicy.h"
 #include "NormalReactionPolicy.h"
+#include "BossReactionPolicy.h"
+
+#include <stdexcept>
 
 namespace
 {
-	const std::array<WeightedActionEntry, 4> kImpCombatActions =
-	{
-		WeightedActionEntry{ ActionId::Imp_melee1, 10 },
-		WeightedActionEntry{ ActionId::Imp_melee3, 35 },
-		WeightedActionEntry{ ActionId::Imp_melee4, 30 },
-		WeightedActionEntry{ ActionId::Imp_melee5, 25 }
-	};
-
-	const std::array<WeightedActionEntry, 1> kImpIdleActions =
-	{
-		WeightedActionEntry{ ActionId::Imp_Jump, 100 }
-	};
-
-	// Ranged DemonStriker actions stay out until projectile handling is wired.
-	const std::array<WeightedActionEntry, 4> kDemonStrikerCombatActions =
-	{
-		WeightedActionEntry{ ActionId::DemonStriker_Melee_1, 20 },
-		WeightedActionEntry{ ActionId::DemonStriker_Melee_2, 20 },
-		WeightedActionEntry{ ActionId::DemonStriker_Melee_3, 25 },
-		WeightedActionEntry{ ActionId::DemonStriker_Melee_4, 25 }
-	};
-
-	const std::array<WeightedActionEntry, 6> kDemonExecutionerCombatActions =
-	{
-		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_1, 20 },
-		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_2, 20 },
-		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_3, 20 },
-		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_4, 15 },
-		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_5, 15 },
-		WeightedActionEntry{ ActionId::DemonExecutioner_Melee_6, 10 }
-	};
-
-	const std::array<WeightedActionEntry, 1> kDemonStrikerIdleActions =
-	{
-		WeightedActionEntry{ ActionId::DemonStriker_Jump_1, 100 }
-	};
-
-	const std::array<WeightedActionEntry, 2> kDemonExecutionerIdleActions =
-	{
-		WeightedActionEntry{ ActionId::DemonExecutioner_Jump_1, 50 },
-		WeightedActionEntry{ ActionId::DemonExecutioner_Jump_2, 50 }
-	};
-
-	const std::array<AIBehaviorProfileDef, 3> kAIBehaviorProfiles =
-	{
-		AIBehaviorProfileDef
-		{
-			.id = AITuningIds::Imp,
-			.aiType = AIArchetype::NormalMonster,
-			.perceptionTuning = AIPerceptionTuningComp
-			{
-				.sightRange = 12.0,
-				.attackRange = 1.50,
-				.frontDotThreshold = 0.2,
-				.targetKeepBonus = 4.0,
-				.lastAttackerBonus = 2.5,
-				.frontBonus = 1.0,
-				.switchScoreMargin = 3.0,
-				.loseSightGraceTime = 1.2,
-				.leashRange = 18.0,
-				.hardLeashRange = 24.0,
-				.leashGaugeMax = 100.0,
-				.leashDrainPerSec = 20.0,
-				.hardLeashDrainPerSec = 60.0,
-				.leashRecoverPerSec = 35.0,
-				.returnHomeArriveRange = 0.8,
-				.returnHomeReaggroLockSec = 1.5,
-				.returnHpRegenPerSecRatio = 0.08,
-				.idleActionCooldownSec = 6.0,
-				.idleActionChancePercent = 25,
-				.assistRange = 6.0
-			},
-			.decisionTuning = AIDecisionTuningComp
-			{
-				.decisionInterval = 0.2,
-				.attackCooldown = 1.8,
-				.reactDuration = 0.5
-			},
-			.movementPolicyKind = AIMovementPolicyKind::Normal,
-			.combatActionPolicyKind = AICombatActionPolicyKind::Imp,
-			.idleActionPolicyKind = AIIdleActionPolicyKind::Weighted,
-			.reactionPolicyKind = AIReactionPolicyKind::Normal,
-			.combatActions = kImpCombatActions,
-			.idleActions = kImpIdleActions
-		},
-		AIBehaviorProfileDef
-		{
-			.id = AITuningIds::DemonStriker,
-			.aiType = AIArchetype::NormalMonster,
-			.perceptionTuning = AIPerceptionTuningComp
-			{
-				.sightRange = 14.0,
-				.attackRange = 2.0,
-				.frontDotThreshold = 0.2,
-				.targetKeepBonus = 4.0,
-				.lastAttackerBonus = 2.5,
-				.frontBonus = 1.0,
-				.switchScoreMargin = 3.0,
-				.loseSightGraceTime = 1.2,
-				.leashRange = 20.0,
-				.hardLeashRange = 28.0,
-				.leashGaugeMax = 100.0,
-				.leashDrainPerSec = 20.0,
-				.hardLeashDrainPerSec = 60.0,
-				.leashRecoverPerSec = 35.0,
-				.returnHomeArriveRange = 0.8,
-				.returnHomeReaggroLockSec = 1.5,
-				.returnHpRegenPerSecRatio = 0.08,
-				.idleActionCooldownSec = 7.0,
-				.idleActionChancePercent = 20,
-				.assistRange = 7.0
-			},
-			.decisionTuning = AIDecisionTuningComp
-			{
-				.decisionInterval = 0.2,
-				.attackCooldown = 2.0,
-				.reactDuration = 0.5
-			},
-			.movementPolicyKind = AIMovementPolicyKind::Normal,
-			.combatActionPolicyKind = AICombatActionPolicyKind::Weighted,
-			.idleActionPolicyKind = AIIdleActionPolicyKind::Weighted,
-			.reactionPolicyKind = AIReactionPolicyKind::Normal,
-			.combatActions = kDemonStrikerCombatActions,
-			.idleActions = kDemonStrikerIdleActions
-		},
-		AIBehaviorProfileDef
-		{
-			.id = AITuningIds::DemonExecutioner,
-			.aiType = AIArchetype::NormalMonster,
-			.perceptionTuning = AIPerceptionTuningComp
-			{
-				.sightRange = 12.0,
-				.attackRange = 2.2,
-				.frontDotThreshold = 0.2,
-				.targetKeepBonus = 4.0,
-				.lastAttackerBonus = 2.5,
-				.frontBonus = 1.0,
-				.switchScoreMargin = 3.0,
-				.loseSightGraceTime = 1.2,
-				.leashRange = 18.0,
-				.hardLeashRange = 26.0,
-				.leashGaugeMax = 100.0,
-				.leashDrainPerSec = 20.0,
-				.hardLeashDrainPerSec = 60.0,
-				.leashRecoverPerSec = 35.0,
-				.returnHomeArriveRange = 0.8,
-				.returnHomeReaggroLockSec = 1.5,
-				.returnHpRegenPerSecRatio = 0.08,
-				.idleActionCooldownSec = 8.0,
-				.idleActionChancePercent = 15,
-				.assistRange = 6.0
-			},
-			.decisionTuning = AIDecisionTuningComp
-			{
-				.decisionInterval = 0.2,
-				.attackCooldown = 2.3,
-				.reactDuration = 0.6
-			},
-			.movementPolicyKind = AIMovementPolicyKind::Normal,
-			.combatActionPolicyKind = AICombatActionPolicyKind::Weighted,
-			.idleActionPolicyKind = AIIdleActionPolicyKind::Weighted,
-			.reactionPolicyKind = AIReactionPolicyKind::Normal,
-			.combatActions = kDemonExecutionerCombatActions,
-			.idleActions = kDemonExecutionerIdleActions
-		}
-	};
-
 	static const AIBehaviorProfileDef& GetRequiredProfile(
 		AIArchetype aiType,
-		AITuningId aiTuningId) noexcept
+		AITuningId aiTuningId)
 	{
 		if (const AIBehaviorProfileDef* profile =
-			AIFSMRegistry::FindBehaviorProfile(aiType, aiTuningId))
+			FindAIBehaviorProfileDef(aiType, aiTuningId))
 		{
 			return *profile;
 		}
 
-		return kAIBehaviorProfiles[0];
+		throw std::runtime_error("Required AI behavior profile was not loaded.");
 	}
-}
-
-const AIBehaviorProfileDef* AIFSMRegistry::FindBehaviorProfile(
-	AIArchetype aiType,
-	AITuningId aiTuningId) noexcept
-{
-	for (const AIBehaviorProfileDef& profile : kAIBehaviorProfiles)
-	{
-		if (profile.aiType == aiType && profile.id == aiTuningId)
-			return &profile;
-	}
-
-	return nullptr;
 }
 
 /* --------------[ AIStateRegistry ]-------------- */
@@ -252,6 +77,11 @@ AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 		movementPolicy = std::make_unique<NormalAIMovementPolicy>();
 		break;
 	}
+	case AIMovementPolicyKind::BossPattern:
+	{
+		movementPolicy = std::make_unique<BossAIMovementPolicy>();
+		break;
+	}
 	default:
 	{
 		break;
@@ -269,6 +99,11 @@ AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 		combatActionPolicy = std::make_unique<WeightedCombatActionPolicy>();
 		break;
 	}
+	case AICombatActionPolicyKind::BossPattern:
+	{
+		combatActionPolicy = std::make_unique<BossCombatActionPolicy>();
+		break;
+	}
 	default:
 	{
 		break;
@@ -279,6 +114,11 @@ AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 	case AIReactionPolicyKind::Normal:
 	{
 		reactionPolicy = std::make_unique<NormalReactionPolicy>();
+		break;
+	}
+	case AIReactionPolicyKind::BossPattern:
+	{
+		reactionPolicy = std::make_unique<BossReactionPolicy>();
 		break;
 	}
 	default:
@@ -292,9 +132,11 @@ AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 
 AIFSMRegistry::AIFSMRegistry()
 	: _normal(AIFSMBundle(AIArchetype::NormalMonster))
+	, _firstBoss(AIFSMBundle(AIArchetype::FirstBossMonster))
 	, _impBehavior(GetRequiredProfile(AIArchetype::NormalMonster, AITuningIds::Imp))
 	, _demonStrikerBehavior(GetRequiredProfile(AIArchetype::NormalMonster, AITuningIds::DemonStriker))
 	, _demonExecutionerBehavior(GetRequiredProfile(AIArchetype::NormalMonster, AITuningIds::DemonExecutioner))
+	, _bigDemonWarriorBehavior(GetRequiredProfile(AIArchetype::FirstBossMonster, AITuningIds::BigDemonWarrior))
 {
 }
 
@@ -304,6 +146,10 @@ const AIFSMBundle* AIFSMRegistry::TryGetBundle(AIArchetype type) const
 	case AIArchetype::NormalMonster:
 	{
 		return &_normal;
+	}
+	case AIArchetype::FirstBossMonster:
+	{
+		return &_firstBoss;
 	}
 	default:
 	{
@@ -330,6 +176,13 @@ const AIBehaviorBundle* AIFSMRegistry::TryGetBehavior(
 
 		return nullptr;
 	}
+	case AIArchetype::FirstBossMonster:
+	{
+		if (aiTuningId == AITuningIds::BigDemonWarrior)
+			return &_bigDemonWarriorBehavior;
+
+		return nullptr;
+	}
 	default:
 	{
 		return nullptr;
@@ -341,6 +194,7 @@ bool AIFSMRegistry::IsArchetypeSupported(AIArchetype type) noexcept
 {
 	switch (type) {
 	case AIArchetype::NormalMonster:
+	case AIArchetype::FirstBossMonster:
 	{
 		return true;
 	}
@@ -355,5 +209,15 @@ bool AIFSMRegistry::IsBehaviorSupported(
 	AIArchetype aiType,
 	AITuningId aiTuningId) noexcept
 {
-	return FindBehaviorProfile(aiType, aiTuningId) != nullptr;
+	if (aiType != AIArchetype::NormalMonster)
+	{
+		return
+			aiType == AIArchetype::FirstBossMonster &&
+			aiTuningId == AITuningIds::BigDemonWarrior;
+	}
+
+	return
+		aiTuningId == AITuningIds::Imp ||
+		aiTuningId == AITuningIds::DemonStriker ||
+		aiTuningId == AITuningIds::DemonExecutioner;
 }

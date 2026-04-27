@@ -25,53 +25,67 @@
 #include "Phase8/FinalizePostCommitStateSystem.h"
 #include "Phase8/ResolveDeathAndDespawnSystem.h"
 #include "Phase9/CollectReplicationTodoSourceSystem.h"
+#include "SystemManager.h"
 #include "WorldRuntime.h"
 
-void RegisterGameplayRuntimeSystems(
-	WorldRuntime& runtime,
-	const AnimationRegistry* animationRegistry)
+GameplaySystemRegistrar::GameplaySystemRegistrar(
+	const AnimationRegistry* animationRegistry) noexcept
+	: _animationRegistry(animationRegistry)
 {
-	// Pre-Phase 1: AI 시스템
-	runtime.RegisterSystem<AIPerceptionSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<AIDecisionSystem>(SystemPhase::Graph);
-
-	// Phase 1: 명령 적용
-	runtime.RegisterSystem<ApplyPlayerCommandSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ApplyAICommandSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ResolveActionStateSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<AdvanceActionTimelineSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ResolveLocomotionStateSystem>(SystemPhase::Graph);
-
-	// Phase 3
-	runtime.RegisterSystem<ResolveAnimationPlaybackSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<SampleAnimationPoseSystem>(SystemPhase::Graph, animationRegistry);
-	runtime.RegisterSystem<FitSkeletalCombatColliderSystem>(
-		SystemPhase::Graph,
-		animationRegistry);
-
-	// Phase 4
-	runtime.RegisterSystem<ComputeLocomotionMoveDeltaSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ComputeActionMoveDeltaSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ApplyMovementDeltaSystem>(SystemPhase::Graph);
-
-	// Phase 5
-	runtime.RegisterSystem<ResolveCharacterOverlapSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ResolveNavMeshBodyConstraintSystem>(SystemPhase::Graph);
-
-	// Phase 6
-	runtime.RegisterSystem<ResolvePortalTriggerSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<MarkTransferPendingSystem>(SystemPhase::Graph);
-
-	// Phase 7
-	runtime.RegisterSystem<ResolveCombatColliderActivationSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ResolveCombatHitSystem>(SystemPhase::Graph);
-
-	// Phase 8
-	runtime.RegisterSystem<CommitCombatResultSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<CommitActionTimelineEventSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<ResolveDeathAndDespawnSystem>(SystemPhase::Graph);
-	runtime.RegisterSystem<FinalizePostCommitStateSystem>(SystemPhase::Graph);
-
-	// Phase 9
-	runtime.RegisterSystem<CollectReplicationTodoSourceSystem>(SystemPhase::Graph);
 }
+
+void GameplaySystemRegistrar::Register(WorldRuntime& runtime) const
+{
+	RegisterSystems(runtime);
+}
+
+void GameplaySystemRegistrar::Register(SystemManager& systemManager) const
+{
+	RegisterSystems(systemManager);
+}
+
+template<typename TargetT>
+void GameplaySystemRegistrar::RegisterSystems(TargetT& target) const
+{
+	target.RegisterSystem<AIPerceptionSystem>(SystemPhase::Graph);
+	target.RegisterSystem<AIDecisionSystem>(SystemPhase::Graph);
+
+	target.RegisterSystem<ApplyPlayerCommandSystem>(SystemPhase::Graph);
+	target.RegisterSystem<ApplyAICommandSystem>(SystemPhase::Graph);
+	target.RegisterSystem<ResolveActionStateSystem>(SystemPhase::Graph);
+	target.RegisterSystem<AdvanceActionTimelineSystem>(SystemPhase::Graph);
+	target.RegisterSystem<ResolveLocomotionStateSystem>(SystemPhase::Graph);
+
+	target.RegisterSystem<ResolveAnimationPlaybackSystem>(SystemPhase::Graph);
+	target.RegisterSystem<SampleAnimationPoseSystem>(
+		SystemPhase::Graph,
+		_animationRegistry);
+	target.RegisterSystem<FitSkeletalCombatColliderSystem>(
+		SystemPhase::Graph,
+		_animationRegistry);
+
+	target.RegisterSystem<ComputeLocomotionMoveDeltaSystem>(SystemPhase::Graph);
+	target.RegisterSystem<ComputeActionMoveDeltaSystem>(SystemPhase::Graph);
+	target.RegisterSystem<ApplyMovementDeltaSystem>(SystemPhase::Graph);
+
+	target.RegisterSystem<ResolveCharacterOverlapSystem>(SystemPhase::Graph);
+	target.RegisterSystem<ResolveNavMeshBodyConstraintSystem>(SystemPhase::Graph);
+
+	target.RegisterSystem<ResolvePortalTriggerSystem>(SystemPhase::Graph);
+	target.RegisterSystem<MarkTransferPendingSystem>(SystemPhase::Graph);
+
+	target.RegisterSystem<ResolveCombatColliderActivationSystem>(SystemPhase::Graph);
+	target.RegisterSystem<ResolveCombatHitSystem>(SystemPhase::Graph);
+
+	target.RegisterSystem<CommitCombatResultSystem>(SystemPhase::Graph);
+	target.RegisterSystem<CommitActionTimelineEventSystem>(SystemPhase::Graph);
+	target.RegisterSystem<ResolveDeathAndDespawnSystem>(SystemPhase::Graph);
+	target.RegisterSystem<FinalizePostCommitStateSystem>(SystemPhase::Graph);
+
+	target.RegisterSystem<CollectReplicationTodoSourceSystem>(SystemPhase::Graph);
+}
+
+template void GameplaySystemRegistrar::RegisterSystems<WorldRuntime>(
+	WorldRuntime& target) const;
+template void GameplaySystemRegistrar::RegisterSystems<SystemManager>(
+	SystemManager& target) const;

@@ -1,0 +1,14 @@
+{
+  "id": "FinalDefault",
+  "name": "FinalDefault",
+  "entries": [
+    {
+      "characterId": "Imp",
+      "spawnPointId": "FinalMonster01",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "BigDemonWarrior",
+  "name": "BigDemonWarrior",
+  "profile": {
+    "faction": "Enemy"
+  },
+  "stat": {
+    "maxHp": 650,
+    "maxStamina": 160,
+    "maxPoise": 220,
+    "attackPower": 18,
+    "defense": 14,
+    "moveSpeed": 2.4,
+    "attackSpeed": 1.0
+  },
+  "bodyCollision": {
+    "footprintRadiusXZ": 0.85,
+    "bodyHeight": 2.7,
+    "blocksBodyOverlap": true,
+    "useNavMeshConstraint": true,
+    "pushability": "Dynamic",
+    "overlapYieldWeight": 1.2,
+    "maxOverlapCorrectionPerFrameXZ": 0.2
+  },
+  "role": "Boss",
+  "features": [
+    "Replicated",
+    "Combatant",
+    "AIControlled",
+    "BossPhase"
+  ],
+  "ai": {
+    "aiType": "FirstBossMonster",
+    "aiTuningId": "BigDemonWarrior"
+  },
+  "action": {
+    "actionProfileId": "BigDemonWarrior"
+  }
+}

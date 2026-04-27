@@ -5,9 +5,22 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 2> kCollectReplicationTodoSourceAccesses{
+		WriteImmediate(ComponentRes<PendingProjectileSpawnComp>()),
+		WriteImmediate(ComponentRes<PendingActionPresentationEventComp>()),
+	};
+}
+
 const SystemMeta CollectReplicationTodoSourceSystem::kMeta =
-	MakeSystemMeta<CollectReplicationTodoSourceSystem>(
-		"CollectReplicationTodoSourceSystem");
+	SystemMeta{
+		SysTag<CollectReplicationTodoSourceSystem>(),
+		"CollectReplicationTodoSourceSystem",
+		kCollectReplicationTodoSourceAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void CollectReplicationTodoSourceSystem::Execute(SystemContext& ctx)
 {

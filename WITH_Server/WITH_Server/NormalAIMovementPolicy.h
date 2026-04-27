@@ -11,7 +11,7 @@ public:
 	virtual void BuildSearchIntent(AIContext& ctx) override;
 	virtual void BuildReturnHomeIntent(AIContext& ctx) override;
 
-private:
+protected:
 	void BuildDestinationIntent(
 		AIContext& ctx,
 		const DirectX::XMFLOAT3& destination,

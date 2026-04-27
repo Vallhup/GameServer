@@ -12,4 +12,7 @@ public:
 		Entity entity,
 		const CharacterDef& def,
 		const AssembleParams& params) const override;
+	bool Validate(
+		const CharacterDef& def,
+		std::string& outError) const override;
 };

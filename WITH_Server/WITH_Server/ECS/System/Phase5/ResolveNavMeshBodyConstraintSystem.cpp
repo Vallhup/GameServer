@@ -13,6 +13,16 @@
 
 using namespace GameplaySystemUtil;
 
+static const std::array<AccessSpec, 7> kResolveNavMeshBodyConstraintAccesses{
+	ReadImmediate(ExternalRes<INavMeshProvider>()),
+	WriteImmediate(ComponentRes<WorldTransformComp>()),
+	ReadImmediate(ComponentRes<PreCollisionTransformComp>()),
+	ReadImmediate(ComponentRes<BodyCollisionShapeComp>()),
+	WriteImmediate(ComponentRes<NavMeshAgentStateComp>()),
+	WriteImmediate(ComponentRes<BodyCollisionResolveComp>()),
+	WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+};
+
 static dtQueryFilter BuildQueryFilter(const NavigationProfileDef* profile)
 {
 	dtQueryFilter filter;
@@ -92,8 +102,13 @@ static bool TryResolveStartPoly(
 }
 
 const SystemMeta ResolveNavMeshBodyConstraintSystem::kMeta =
-MakeSystemMeta<ResolveNavMeshBodyConstraintSystem>(
-	"ResolveNavMeshBodyConstraintSystem");
+	SystemMeta{
+		SysTag<ResolveNavMeshBodyConstraintSystem>(),
+		"ResolveNavMeshBodyConstraintSystem",
+		kResolveNavMeshBodyConstraintAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 {

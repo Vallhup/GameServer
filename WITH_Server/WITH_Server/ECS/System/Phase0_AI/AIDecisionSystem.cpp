@@ -14,23 +14,108 @@
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<11, 1, 1> AIDecisionSystem::kMetaStorage =
+namespace
+{
+	void TickBossPatternRuntime(
+		BossPatternRuntimeComp& runtime,
+		double dtSec) noexcept
+	{
+		const float dt = static_cast<float>(dtSec);
+		for (float& cooldown : runtime.patternCooldownSec)
+		{
+			cooldown = std::max(0.0f, cooldown - dt);
+		}
+
+		runtime.phaseTransitionLockSec =
+			std::max(0.0f, runtime.phaseTransitionLockSec - dt);
+		runtime.strafeTimeLeftSec =
+			std::max(0.0f, runtime.strafeTimeLeftSec - dt);
+	}
+
+	bool TryFillDirectionToCurrentTarget(AIContext& ctx, float& outX, float& outZ)
+	{
+		outX = 0.0f;
+		outZ = 0.0f;
+
+		if (ctx.sysCtx == nullptr ||
+			ctx.blackboard == nullptr ||
+			ctx.blackboard->currentTarget.IsNull() ||
+			ctx.selfTr == nullptr)
+		{
+			return false;
+		}
+
+		const WorldTransformComp* targetTr =
+			ctx.sysCtx->ecs.GetComponent<WorldTransformComp>(
+				ctx.blackboard->currentTarget);
+		if (targetTr == nullptr)
+		{
+			return false;
+		}
+
+		outX = targetTr->position.x - ctx.selfTr->position.x;
+		outZ = targetTr->position.z - ctx.selfTr->position.z;
+		NormalizeXZ(outX, outZ);
+		return LengthXZ(outX, outZ) > kOverlapEpsilon;
+	}
+
+	bool TryIssuePendingBossTransitionAction(AIContext& ctx)
+	{
+		if (ctx.sysCtx == nullptr ||
+			ctx.command == nullptr ||
+			ctx.actionState == nullptr ||
+			!ctx.actionState->CanIssueAction())
+		{
+			return false;
+		}
+
+		BossPatternRuntimeComp* runtime =
+			ctx.sysCtx->ecs.GetMutableComponent<BossPatternRuntimeComp>(ctx.self);
+		if (runtime == nullptr || !runtime->phaseTransitionActionPending)
+		{
+			return false;
+		}
+
+		float dirX = 0.0f;
+		float dirZ = 0.0f;
+		(void)TryFillDirectionToCurrentTarget(ctx, dirX, dirZ);
+
+		ctx.command->ClearAll();
+		ctx.command->hasLook = true;
+		ctx.command->target = ctx.blackboard
+			? ctx.blackboard->currentTarget
+			: Entity::Null();
+		ctx.command->hasAction = true;
+		ctx.command->actionId = ActionId::BigDemonWarrior_BattleCry;
+		ctx.command->actionDirX = dirX;
+		ctx.command->actionDirZ = dirZ;
+		ctx.command->sequence++;
+
+		runtime->phaseTransitionActionPending = false;
+		runtime->phaseTransitionLockSec =
+			std::max(runtime->phaseTransitionLockSec, 3.6f);
+		return true;
+	}
+}
+
+const StaticSystemMetaStorage<12, 1, 1> AIDecisionSystem::kMetaStorage =
 MakeMetaStorage(
 	SysTag<AIDecisionSystem>(),
 	"AIDecisionSystem",
-	std::array<AccessSpec, 11>
+	std::array<AccessSpec, 12>
 	{
-		ReadSnapshot(ComponentRes<WorldTransformComp>()),
-		ReadSnapshot(ComponentRes<ActionStateComp>()),
-		ReadSnapshot(ComponentRes<AIPerceptionComp>()),
-		ReadSnapshot(ComponentRes<AIPerceptionTuningComp>()),
-		ReadSnapshot(ComponentRes<AIDecisionTuningComp>()),
-		ReadSnapshot(ComponentRes<AITypeComp>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<AIPerceptionComp>()),
+		ReadImmediate(ComponentRes<AIPerceptionTuningComp>()),
+		ReadImmediate(ComponentRes<AIDecisionTuningComp>()),
+		ReadImmediate(ComponentRes<AITypeComp>()),
 		WriteImmediate(ComponentRes<AIBlackboardComp>()),
 		WriteImmediate(ComponentRes<AIDecisionComp>()),
 		WriteImmediate(ComponentRes<AICommandFrameComp>()),
 		WriteImmediate(ComponentRes<AIReactionComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
+		WriteImmediate(ComponentRes<BossPatternRuntimeComp>()),
 	},
 	std::array<SystemTag, 1>{ SysTag<ApplyAICommandSystem>() },
 	std::array<SystemTag, 1>{ SysTag<AIPerceptionSystem>() }
@@ -67,6 +152,12 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 		aiCtx.reaction        = &reaction;
 		aiCtx.stats           = &stats;
 
+		if (BossPatternRuntimeComp* bossRuntime =
+			ctx.ecs.GetMutableComponent<BossPatternRuntimeComp>(entity))
+		{
+			TickBossPatternRuntime(*bossRuntime, ctx.dtSec);
+		}
+
 		const AIFSMBundle* fsmBundle = _fsmRegistry.TryGetBundle(aiType.aiType);
 		const AIBehaviorBundle* behaviorBundle =
 			_fsmRegistry.TryGetBehavior(
@@ -79,6 +170,11 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 			aiCtx.combatActionPolicy = behaviorBundle->combatActionPolicy.get();
 			aiCtx.reactionPolicy     = behaviorBundle->reactionPolicy.get();
 			aiCtx.behaviorProfile    = behaviorBundle->profile;
+			if (TryIssuePendingBossTransitionAction(aiCtx))
+			{
+				reaction.Clear();
+				continue;
+			}
 			RunFSM(aiCtx, *fsmBundle);
 		}
 

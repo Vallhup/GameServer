@@ -493,3 +493,5 @@ WITH_Server2/
 /WITH_ServerDataTool/Output
 /WITH_Server/Markdown
 졸작/Assets/Skybox/
+*.csv
+*.dot

@@ -99,6 +99,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +117,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,6 +133,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +151,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,16 +166,22 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ActionDef.cpp" />
+    <ClCompile Include="AIBehaviorDef.cpp" />
     <ClCompile Include="AICombatActionPolicyUtil.cpp" />
     <ClCompile Include="AIFSMRegistry.cpp" />
     <ClCompile Include="AnimationJsonLoader.cpp" />
     <ClCompile Include="AnimationRegistry.cpp" />
+    <ClCompile Include="BossAIMovementPolicy.cpp" />
+    <ClCompile Include="BossCombatActionPolicy.cpp" />
+    <ClCompile Include="BossReactionPolicy.cpp" />
     <ClCompile Include="BuffDef.cpp" />
     <ClCompile Include="DBConn.cpp" />
     <ClCompile Include="CharacterIdPolicy.cpp" />
     <ClCompile Include="CharacterDef.cpp" />
     <ClCompile Include="DBData.cpp" />
     <ClCompile Include="DBManager.cpp" />
+    <ClCompile Include="DefEnumString.cpp" />
+    <ClCompile Include="DefJsonFileLoader.cpp" />
     <ClCompile Include="ECS\System\GameplaySystemRegistration.cpp" />
     <ClCompile Include="ECS\System\ActionProfileService.cpp" />
     <ClCompile Include="ECS\System\Phase0_AI\AIDecisionSystem.cpp" />
@@ -202,6 +212,7 @@
     <ClCompile Include="FrameworkRuntime.cpp" />
     <ClCompile Include="GameServerNetworkService.cpp" />
     <ClCompile Include="GameSendBufferManager.cpp" />
+    <ClCompile Include="GameplayDefValidator.cpp" />
     <ClCompile Include="ImpCombatActionPolicy.cpp" />
     <ClCompile Include="InboundCommandStatsCollector.cpp" />
     <ClCompile Include="InboundMessageProcessor.cpp" />
@@ -256,19 +267,27 @@
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
     <ClInclude Include="ActionDef.h" />
     <ClInclude Include="ActionProfileIds.h" />
+    <ClInclude Include="AIBehaviorDef.h" />
     <ClInclude Include="AICombatActionPolicyUtil.h" />
     <ClInclude Include="AIFSMRegistry.h" />
     <ClInclude Include="AnimationDef.h" />
     <ClInclude Include="AnimationJsonLoader.h" />
     <ClInclude Include="AnimationRegistry.h" />
     <ClInclude Include="BodyCollisionTypes.h" />
+    <ClInclude Include="BossAIMovementPolicy.h" />
+    <ClInclude Include="BossCombatActionPolicy.h" />
+    <ClInclude Include="BossReactionPolicy.h" />
     <ClInclude Include="BuffDef.h" />
     <ClInclude Include="CharacterDef.h" />
     <ClInclude Include="CharacterIdPolicy.h" />
     <ClInclude Include="DBConn.h" />
     <ClInclude Include="DBData.h" />
     <ClInclude Include="DBManager.h" />
+    <ClInclude Include="DefEnumString.h" />
     <ClInclude Include="DefFileFormat.h" />
+    <ClInclude Include="DefJsonFileLoader.h" />
+    <ClInclude Include="DefJsonReader.h" />
+    <ClInclude Include="DefLoadResult.h" />
     <ClInclude Include="DefRegistry.h" />
     <ClInclude Include="ECS\GameplayRuntimeComponents.h" />
     <ClInclude Include="ECS\System\ActionProfileService.h" />
@@ -310,6 +329,7 @@
     <ClInclude Include="InboundMessageProcessor.h" />
     <ClInclude Include="GameServerNetworkService.h" />
     <ClInclude Include="GameSendBufferManager.h" />
+    <ClInclude Include="GameplayDefValidator.h" />
     <ClInclude Include="IDs.h" />
     <ClInclude Include="Library\Detour\DetourAlloc.h" />
     <ClInclude Include="Library\Detour\DetourAssert.h" />

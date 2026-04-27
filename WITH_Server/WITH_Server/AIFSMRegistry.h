@@ -2,62 +2,12 @@
 
 #include <array>
 #include <memory>
-#include <span>
 
-#include "CharacterDef.h"
-#include "EntityId.h"
+#include "AIBehaviorDef.h"
 #include "IAIState.h"
 #include "IAIMovementPolicy.h"
 #include "IAICombatActionPolicy.h"
 #include "IAIReactionPolicy.h"
-
-enum class AIMovementPolicyKind : uint8_t
-{
-	None,
-	Normal
-};
-
-enum class AICombatActionPolicyKind : uint8_t
-{
-	None,
-	Imp,
-	Weighted
-};
-
-enum class AIReactionPolicyKind : uint8_t
-{
-	None,
-	Normal
-};
-
-enum class AIIdleActionPolicyKind : uint8_t
-{
-	None,
-	Weighted
-};
-
-struct WeightedActionEntry
-{
-	ActionId actionId{ ActionId::None };
-	uint16_t weight{ 0 };
-};
-
-struct AIBehaviorProfileDef
-{
-	AITuningId id{ AITuningIds::None };
-	AIArchetype aiType{ AIArchetype::None };
-
-	AIPerceptionTuningComp perceptionTuning{};
-	AIDecisionTuningComp decisionTuning{};
-
-	AIMovementPolicyKind movementPolicyKind{ AIMovementPolicyKind::None };
-	AICombatActionPolicyKind combatActionPolicyKind{ AICombatActionPolicyKind::None };
-	AIIdleActionPolicyKind idleActionPolicyKind{ AIIdleActionPolicyKind::None };
-	AIReactionPolicyKind reactionPolicyKind{ AIReactionPolicyKind::None };
-
-	std::span<const WeightedActionEntry> combatActions{};
-	std::span<const WeightedActionEntry> idleActions{};
-};
 
 class AIStateRegistry final {
 	static constexpr size_t kAIStateCount = 
@@ -131,13 +81,12 @@ public:
 	static bool        IsBehaviorSupported(
 		AIArchetype aiType,
 		AITuningId aiTuningId) noexcept;
-	static const AIBehaviorProfileDef* FindBehaviorProfile(
-		AIArchetype aiType,
-		AITuningId aiTuningId) noexcept;
 
 private:
 	AIFSMBundle _normal;
+	AIFSMBundle _firstBoss;
 	AIBehaviorBundle _impBehavior;
 	AIBehaviorBundle _demonStrikerBehavior;
 	AIBehaviorBundle _demonExecutionerBehavior;
+	AIBehaviorBundle _bigDemonWarriorBehavior;
 };

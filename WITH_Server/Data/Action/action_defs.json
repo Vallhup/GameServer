@@ -1,0 +1,4657 @@
+{
+  "actions": [
+    {
+      "id": "Knight_LightAttack1",
+      "name": "Knight.LightAttack1",
+      "kind": "Attack",
+      "duration": 1.16,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasEnoughStamina",
+          "scalar": 0.0,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [
+        {
+          "type": "Stamina",
+          "consumeTiming": "OnRequest",
+          "amount": 0
+        }
+      ],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Knight_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "Knight_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": [
+          {
+            "cancelKind": "Combo",
+            "toActionId": "Knight_LightAttack2",
+            "windowPolicy": "Range",
+            "windowStartNormalized": 0.45,
+            "windowEndNormalized": 0.75,
+            "priority": 100
+          },
+          {
+            "cancelKind": "DodgeCancel",
+            "toActionId": "Knight_Dodge",
+            "windowPolicy": "Range",
+            "windowStartNormalized": 0.5,
+            "windowEndNormalized": 0.8,
+            "priority": 90
+          }
+        ]
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.3,
+          "endNormalized": 1.0,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": null,
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.0,
+              "bonusDamage": 2.0,
+              "staminaDamageScale": 0.5,
+              "bonusStaminaDamage": 3.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.35,
+              "hitStopSec": 0.05,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Knight_LightAttack2",
+      "name": "Knight.LightAttack2",
+      "kind": "Attack",
+      "duration": 1.06,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasEnoughStamina",
+          "scalar": 0.0,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [
+        {
+          "type": "Stamina",
+          "consumeTiming": "OnRequest",
+          "amount": 0
+        }
+      ],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Knight_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "Knight_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": [
+          {
+            "cancelKind": "Combo",
+            "toActionId": "Knight_LightAttack3",
+            "windowPolicy": "Range",
+            "windowStartNormalized": 0.48,
+            "windowEndNormalized": 0.78,
+            "priority": 100
+          },
+          {
+            "cancelKind": "DodgeCancel",
+            "toActionId": "Knight_Dodge",
+            "windowPolicy": "Range",
+            "windowStartNormalized": 0.55,
+            "windowEndNormalized": 0.85,
+            "priority": 90
+          }
+        ]
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.3,
+          "endNormalized": 1.0,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": null,
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.2,
+              "bonusDamage": 4.0,
+              "staminaDamageScale": 0.7,
+              "bonusStaminaDamage": 3.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.45,
+              "hitStopSec": 0.06,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.0,
+          "endNormalized": 0.40425531914893614,
+          "horizontalMoveMode": "ForwardFixedDistance",
+          "moveDistance": 0.54,
+          "rotationMode": "None",
+          "rotationRate": null,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "ActionStartInput",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "Knight_LightAttack3",
+      "name": "Knight.LightAttack3",
+      "kind": "Attack",
+      "duration": 1.53,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasEnoughStamina",
+          "scalar": 15.0,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [
+        {
+          "type": "Stamina",
+          "consumeTiming": "OnRequest",
+          "amount": 15.0
+        }
+      ],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Knight_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "Knight_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": [
+          {
+            "cancelKind": "DodgeCancel",
+            "toActionId": "Knight_Dodge",
+            "windowPolicy": "Range",
+            "windowStartNormalized": 0.62,
+            "windowEndNormalized": 0.88,
+            "priority": 90
+          }
+        ]
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.3,
+          "endNormalized": 1.0,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": null,
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.5,
+              "bonusDamage": 7.0,
+              "staminaDamageScale": 1.0,
+              "bonusStaminaDamage": 4.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.7,
+              "hitStopSec": 0.07,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.0,
+          "endNormalized": 0.40425531914893614,
+          "horizontalMoveMode": "ForwardFixedDistance",
+          "moveDistance": 0.74,
+          "rotationMode": "None",
+          "rotationRate": null,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "ActionStartInput",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "Knight_HeavyAttack",
+      "name": "Knight.HeavyAttack",
+      "kind": "Attack",
+      "duration": 1.3,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasEnoughStamina",
+          "scalar": 0.0,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [
+        {
+          "type": "Stamina",
+          "consumeTiming": "OnRequest",
+          "amount": 0
+        }
+      ],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Knight_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "Knight_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.3,
+          "endNormalized": 1.0,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": null,
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 2.5,
+              "bonusDamage": 9.0,
+              "staminaDamageScale": 1.5,
+              "bonusStaminaDamage": 5.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 1.1,
+              "hitStopSec": 0.09,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Knight_SpecialAttack",
+      "name": "Knight.SpecialAttack",
+      "kind": "Attack",
+      "duration": 3.13,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasEnoughStamina",
+          "scalar": 0.0,
+          "stateFlag": null
+        },
+        {
+          "type": "HasStateFlag",
+          "scalar": null,
+          "stateFlag": "ParrySuccessReady"
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [
+        {
+          "type": "Stamina",
+          "consumeTiming": "OnRequest",
+          "amount": 0
+        }
+      ],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Knight_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "Knight_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.3,
+          "endNormalized": 1.0,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": null,
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 3.5,
+              "bonusDamage": 13.0,
+              "staminaDamageScale": 2.2,
+              "bonusStaminaDamage": 6.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 1.4,
+              "hitStopSec": 0.11,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Knight_Dodge",
+      "name": "Knight.Dodge",
+      "kind": "Dodge",
+      "duration": 1.53,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasEnoughStamina",
+          "scalar": 0.0,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [
+        {
+          "type": "Stamina",
+          "consumeTiming": "OnRequest",
+          "amount": 0
+        }
+      ],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Invulnerability",
+          "startNormalized": 0.08,
+          "endNormalized": 0.92,
+          "appliesTo": null,
+          "spatialFilter": null,
+          "effect": null
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.0,
+          "endNormalized": 0.14,
+          "horizontalMoveMode": "InputDirectionDistance",
+          "moveDistance": 0.22796,
+          "rotationMode": "None",
+          "rotationRate": null,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "ActionStartInput",
+          "dirSampleTiming": "OnSegmentStart"
+        },
+        {
+          "startNormalized": 0.14,
+          "endNormalized": 0.8,
+          "horizontalMoveMode": "InputDirectionDistance",
+          "moveDistance": 3.19144,
+          "rotationMode": "None",
+          "rotationRate": null,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "LockedDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        },
+        {
+          "startNormalized": 0.8,
+          "endNormalized": 1.0,
+          "horizontalMoveMode": "InputDirectionDistance",
+          "moveDistance": 0.0603,
+          "rotationMode": "None",
+          "rotationRate": null,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "LockedDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "Knight_Parry",
+      "name": "Knight.Parry",
+      "kind": "Parry",
+      "duration": 1.0,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasEnoughStamina",
+          "scalar": 0.0,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [
+        {
+          "type": "Stamina",
+          "consumeTiming": "OnRequest",
+          "amount": 0
+        }
+      ],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Knight_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Parry",
+          "startNormalized": 0.3,
+          "endNormalized": 1.0,
+          "appliesTo": "ParryableAttack",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 45.0,
+            "minDistance": null,
+            "maxDistance": 2.0,
+            "verticalTolerance": 1.0,
+            "referenceFrame": "OwnerFacing"
+          },
+          "effect": {
+            "type": "ParryResponse",
+            "attackHit": null,
+            "parryResponse": {
+              "stunSec": 0.85,
+              "hitStopSec": 0.08,
+              "grantBuffId": "ParrySuccess"
+            },
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Knight_Guard",
+      "name": "Knight.Guard",
+      "kind": "Guard",
+      "duration": 3.4028234663852886e+38,
+      "normalizedPolicy": "Holdable",
+      "endPolicy": {
+        "endType": "HoldRelease",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasEnoughStamina",
+          "scalar": 0.0,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [
+        {
+          "type": "Stamina",
+          "consumeTiming": "OnRequest",
+          "amount": 0
+        }
+      ],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": [
+          {
+            "cancelKind": "HoldRelease",
+            "toActionId": "None",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 10
+          },
+          {
+            "cancelKind": "LightAttackCancel",
+            "toActionId": "Knight_LightAttack1",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "cancelKind": "HeavyAttackCancel",
+            "toActionId": "Knight_HeavyAttack",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 110
+          },
+          {
+            "cancelKind": "DodgeCancel",
+            "toActionId": "Knight_Dodge",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "cancelKind": "ParryCancel",
+            "toActionId": "Knight_Parry",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 300
+          }
+        ]
+      },
+      "combatWindows": [
+        {
+          "windowType": "Guard",
+          "startNormalized": 0.05,
+          "endNormalized": 1.0,
+          "appliesTo": "GuardableAttack",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 60.0,
+            "minDistance": null,
+            "maxDistance": null,
+            "verticalTolerance": null,
+            "referenceFrame": "OwnerFacing"
+          },
+          "effect": {
+            "type": "GuardResponse",
+            "attackHit": null,
+            "parryResponse": null,
+            "guardResponse": {
+              "damageReductionRatio": 0.85,
+              "chipDamageRatio": 0.1,
+              "staminaDamageMultiplier": 1.2,
+              "hitStopSec": 0.04
+            }
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Knight_Stun",
+      "name": "Knight.Stun",
+      "kind": "Stun",
+      "duration": 3.16,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Knight_Hit",
+      "name": "Knight.Hit",
+      "kind": "Hit",
+      "duration": 1.63,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Knight_Dead",
+      "name": "Knight.Dead",
+      "kind": "Dead",
+      "duration": 3.86,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Imp_melee1",
+      "name": "Imp.Melee1",
+      "kind": "Attack",
+      "duration": 1.06,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Imp_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "Imp_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Imp_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.3,
+          "endNormalized": 0.74,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 52.0,
+            "minDistance": null,
+            "maxDistance": 2.2,
+            "verticalTolerance": 1.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 0.6,
+              "bonusDamage": 2.0,
+              "staminaDamageScale": 0.4,
+              "bonusStaminaDamage": 2.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.2,
+              "hitStopSec": 0.04,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.1,
+          "endNormalized": 0.36,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 5.5,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "Imp_melee2",
+      "name": "Imp.Melee2",
+      "kind": "Attack",
+      "duration": 2.63,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Imp_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "Imp_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Imp_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.46,
+          "endNormalized": 0.68,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 62.0,
+            "minDistance": null,
+            "maxDistance": 2.35,
+            "verticalTolerance": 1.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 0.7,
+              "bonusDamage": 3.0,
+              "staminaDamageScale": 0.5,
+              "bonusStaminaDamage": 2.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.25,
+              "hitStopSec": 0.04,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.12,
+          "endNormalized": 0.38,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 4.5,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "Imp_melee3",
+      "name": "Imp.Melee3",
+      "kind": "Attack",
+      "duration": 2.23,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Imp_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "Imp_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Imp_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.26,
+          "endNormalized": 0.46,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 58.0,
+            "minDistance": null,
+            "maxDistance": 2.3,
+            "verticalTolerance": 1.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 0.8,
+              "bonusDamage": 4.0,
+              "staminaDamageScale": 0.6,
+              "bonusStaminaDamage": 2.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.3,
+              "hitStopSec": 0.05,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.14,
+          "endNormalized": 0.4,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 5.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "Imp_melee4",
+      "name": "Imp.Melee4",
+      "kind": "Attack",
+      "duration": 2.36,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Imp_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "Imp_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Imp_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.22,
+          "endNormalized": 0.84,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 72.0,
+            "minDistance": null,
+            "maxDistance": 2.5,
+            "verticalTolerance": 1.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 0.9,
+              "bonusDamage": 5.0,
+              "staminaDamageScale": 0.8,
+              "bonusStaminaDamage": 2.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.38,
+              "hitStopSec": 0.05,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.16,
+          "endNormalized": 0.42,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 4.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "Imp_melee5",
+      "name": "Imp.Melee5",
+      "kind": "Attack",
+      "duration": 2.6,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Imp_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "Imp_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Imp_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.28,
+          "endNormalized": 0.66,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 68.0,
+            "minDistance": null,
+            "maxDistance": 2.6,
+            "verticalTolerance": 1.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.1,
+              "bonusDamage": 7.0,
+              "staminaDamageScale": 1.0,
+              "bonusStaminaDamage": 2.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.55,
+              "hitStopSec": 0.06,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.18,
+          "endNormalized": 0.46,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 3.5,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "Imp_Jump",
+      "name": "Imp.Jump",
+      "kind": "NonCombat",
+      "duration": 2.333331,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "Imp_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Imp_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Imp_Stun",
+      "name": "Imp.Stun",
+      "kind": "Stun",
+      "duration": 2.0,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Imp_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Imp_Hit",
+      "name": "Imp.Hit",
+      "kind": "Hit",
+      "duration": 1.16,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "Imp_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "Imp_Dead",
+      "name": "Imp.Dead",
+      "kind": "Dead",
+      "duration": 2.33,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "DemonStriker_Melee_1",
+      "name": "DemonStriker.Melee1",
+      "kind": "Attack",
+      "duration": 2.46666718,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "DemonStriker_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.3,
+          "endNormalized": 0.58,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 56.0,
+            "minDistance": null,
+            "maxDistance": 2.8,
+            "verticalTolerance": 1.5,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 0.9,
+              "bonusDamage": 4.0,
+              "staminaDamageScale": 0.6,
+              "bonusStaminaDamage": 2.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.35,
+              "hitStopSec": 0.05,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.3,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 4.5,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonStriker_Melee_2",
+      "name": "DemonStriker.Melee2",
+      "kind": "Attack",
+      "duration": 3.9666667,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "DemonStriker_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.42,
+          "endNormalized": 0.7,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 68.0,
+            "minDistance": null,
+            "maxDistance": 3.2,
+            "verticalTolerance": 1.5,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.1,
+              "bonusDamage": 6.0,
+              "staminaDamageScale": 0.8,
+              "bonusStaminaDamage": 3.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.45,
+              "hitStopSec": 0.06,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.42,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 4.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonStriker_Melee_3",
+      "name": "DemonStriker.Melee3",
+      "kind": "Attack",
+      "duration": 2.13333678,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "DemonStriker_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.24,
+          "endNormalized": 0.48,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 60.0,
+            "minDistance": null,
+            "maxDistance": 2.9,
+            "verticalTolerance": 1.5,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.0,
+              "bonusDamage": 5.0,
+              "staminaDamageScale": 0.7,
+              "bonusStaminaDamage": 2.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.4,
+              "hitStopSec": 0.05,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.24,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 5.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonStriker_Melee_4",
+      "name": "DemonStriker.Melee4",
+      "kind": "Attack",
+      "duration": 2.29999876,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "DemonStriker_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.3,
+          "endNormalized": 0.76,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 74.0,
+            "minDistance": null,
+            "maxDistance": 3.4,
+            "verticalTolerance": 1.5,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.25,
+              "bonusDamage": 8.0,
+              "staminaDamageScale": 1.0,
+              "bonusStaminaDamage": 3.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.6,
+              "hitStopSec": 0.07,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.3,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 4.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonStriker_Gun_Shoot_1",
+      "name": "DemonStriker.GunShoot1",
+      "kind": "Attack",
+      "duration": 6.300006,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [
+        {
+          "type": "SpawnProjectile",
+          "timeNormalized": 0.52,
+          "payloadId": null,
+          "conditionType": "Always"
+        }
+      ],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.52,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 4.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonStriker_Gun_Shoot_2",
+      "name": "DemonStriker.GunShoot2",
+      "kind": "Attack",
+      "duration": 2.46666718,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [
+        {
+          "type": "SpawnProjectile",
+          "timeNormalized": 0.45,
+          "payloadId": null,
+          "conditionType": "Always"
+        }
+      ],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.45,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 4.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonStriker_Gun_Shoot_3",
+      "name": "DemonStriker.GunShoot3",
+      "kind": "Attack",
+      "duration": 0.6333343,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [
+        {
+          "type": "SpawnProjectile",
+          "timeNormalized": 0.35,
+          "payloadId": null,
+          "conditionType": "Always"
+        }
+      ],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.35,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 4.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonStriker_Gun_Shoot_4",
+      "name": "DemonStriker.GunShoot4",
+      "kind": "Attack",
+      "duration": 1.63333571,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [
+        {
+          "type": "SpawnProjectile",
+          "timeNormalized": 0.42,
+          "payloadId": null,
+          "conditionType": "Always"
+        }
+      ],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.42,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 4.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonStriker_Jump_1",
+      "name": "DemonStriker.Jump1",
+      "kind": "NonCombat",
+      "duration": 3.63333678,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "DemonStriker_Jump_2",
+      "name": "DemonStriker.Jump2",
+      "kind": "NonCombat",
+      "duration": 2.96666455,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "DemonStriker_Stun",
+      "name": "DemonStriker.Stun",
+      "kind": "Stun",
+      "duration": 1.43333209,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "DemonStriker_Hit",
+      "name": "DemonStriker.Hit",
+      "kind": "Hit",
+      "duration": 0.8,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "DemonStriker_Dead",
+      "name": "DemonStriker.Dead",
+      "kind": "Dead",
+      "duration": 4.633338,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "DemonExecutioner_Melee_1",
+      "name": "DemonExecutioner.Melee1",
+      "kind": "Attack",
+      "duration": 2.6333375,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonExecutioner_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "DemonExecutioner_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonExecutioner_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.34,
+          "endNormalized": 0.62,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 62.0,
+            "minDistance": null,
+            "maxDistance": 3.6,
+            "verticalTolerance": 1.5,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.2,
+              "bonusDamage": 8.0,
+              "staminaDamageScale": 0.9,
+              "bonusStaminaDamage": 3.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.55,
+              "hitStopSec": 0.06,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.34,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 3.8,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonExecutioner_Melee_2",
+      "name": "DemonExecutioner.Melee2",
+      "kind": "Attack",
+      "duration": 3.9666667,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonExecutioner_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "DemonExecutioner_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonExecutioner_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.46,
+          "endNormalized": 0.76,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 76.0,
+            "minDistance": null,
+            "maxDistance": 4.2,
+            "verticalTolerance": 1.5,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.45,
+              "bonusDamage": 10.0,
+              "staminaDamageScale": 1.1,
+              "bonusStaminaDamage": 4.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.7,
+              "hitStopSec": 0.07,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.46,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 3.2,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonExecutioner_Melee_3",
+      "name": "DemonExecutioner.Melee3",
+      "kind": "Attack",
+      "duration": 2.96666455,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonExecutioner_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "DemonExecutioner_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonExecutioner_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.3,
+          "endNormalized": 0.56,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 68.0,
+            "minDistance": null,
+            "maxDistance": 3.8,
+            "verticalTolerance": 1.5,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.35,
+              "bonusDamage": 9.0,
+              "staminaDamageScale": 1.0,
+              "bonusStaminaDamage": 3.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.65,
+              "hitStopSec": 0.06,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.3,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 3.6,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonExecutioner_Melee_4",
+      "name": "DemonExecutioner.Melee4",
+      "kind": "Attack",
+      "duration": 2.96666455,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonExecutioner_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "DemonExecutioner_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonExecutioner_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.38,
+          "endNormalized": 0.7,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 74.0,
+            "minDistance": null,
+            "maxDistance": 4.0,
+            "verticalTolerance": 1.5,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.5,
+              "bonusDamage": 11.0,
+              "staminaDamageScale": 1.2,
+              "bonusStaminaDamage": 4.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.75,
+              "hitStopSec": 0.07,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.38,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 3.4,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonExecutioner_Melee_5",
+      "name": "DemonExecutioner.Melee5",
+      "kind": "Attack",
+      "duration": 2.96666455,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonExecutioner_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "DemonExecutioner_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonExecutioner_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.26,
+          "endNormalized": 0.64,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 80.0,
+            "minDistance": null,
+            "maxDistance": 4.4,
+            "verticalTolerance": 1.5,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.6,
+              "bonusDamage": 12.0,
+              "staminaDamageScale": 1.3,
+              "bonusStaminaDamage": 5.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.85,
+              "hitStopSec": 0.08,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.26,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 3.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonExecutioner_Melee_6",
+      "name": "DemonExecutioner.Melee6",
+      "kind": "Attack",
+      "duration": 0.9666661,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonExecutioner_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnParried",
+            "toActionId": "DemonExecutioner_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonExecutioner_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.22,
+          "endNormalized": 0.58,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 58.0,
+            "minDistance": null,
+            "maxDistance": 3.5,
+            "verticalTolerance": 1.5,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.0,
+              "bonusDamage": 6.0,
+              "staminaDamageScale": 0.8,
+              "bonusStaminaDamage": 3.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.5,
+              "hitStopSec": 0.05,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.22,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 5.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "DemonExecutioner_Jump_1",
+      "name": "DemonExecutioner.Jump1",
+      "kind": "NonCombat",
+      "duration": 1.966665,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonExecutioner_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonExecutioner_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "DemonExecutioner_Jump_2",
+      "name": "DemonExecutioner.Jump2",
+      "kind": "NonCombat",
+      "duration": 2.96666455,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "DemonExecutioner_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonExecutioner_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "DemonExecutioner_Stun",
+      "name": "DemonExecutioner.Stun",
+      "kind": "Stun",
+      "duration": 2.0,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonExecutioner_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "DemonExecutioner_Hit",
+      "name": "DemonExecutioner.Hit",
+      "kind": "Hit",
+      "duration": 0.6333343,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "DemonExecutioner_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "DemonExecutioner_Dead",
+      "name": "DemonExecutioner.Dead",
+      "kind": "Dead",
+      "duration": 3.46666217,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "BigDemonWarrior_Melee_1",
+      "name": "BigDemonWarrior.Melee1",
+      "kind": "Attack",
+      "duration": 4.50000334,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnParried",
+            "toActionId": "BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.42,
+          "endNormalized": 0.68,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 76.0,
+            "minDistance": null,
+            "maxDistance": 5.2,
+            "verticalTolerance": 2.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.6,
+              "bonusDamage": 10.0,
+              "staminaDamageScale": 1.2,
+              "bonusStaminaDamage": 4.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.8,
+              "hitStopSec": 0.08,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.42,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 2.8,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "BigDemonWarrior_Melee_2",
+      "name": "BigDemonWarrior.Melee2",
+      "kind": "Attack",
+      "duration": 3.53333545,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnParried",
+            "toActionId": "BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.35,
+          "endNormalized": 0.62,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 84.0,
+            "minDistance": null,
+            "maxDistance": 5.6,
+            "verticalTolerance": 2.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.8,
+              "bonusDamage": 12.0,
+              "staminaDamageScale": 1.35,
+              "bonusStaminaDamage": 5.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.95,
+              "hitStopSec": 0.09,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.35,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 3.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "BigDemonWarrior_Melee_3",
+      "name": "BigDemonWarrior.Melee3",
+      "kind": "Attack",
+      "duration": 3.86666918,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnParried",
+            "toActionId": "BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.4,
+          "endNormalized": 0.68,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 72.0,
+            "minDistance": null,
+            "maxDistance": 5.0,
+            "verticalTolerance": 2.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.7,
+              "bonusDamage": 11.0,
+              "staminaDamageScale": 1.25,
+              "bonusStaminaDamage": 4.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.85,
+              "hitStopSec": 0.08,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.4,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 3.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        },
+        {
+          "startNormalized": 0.16,
+          "endNormalized": 0.38,
+          "horizontalMoveMode": "ForwardFixedDistance",
+          "moveDistance": 0.8,
+          "rotationMode": "None",
+          "rotationRate": null,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "BigDemonWarrior_Melee_4",
+      "name": "BigDemonWarrior.Melee4",
+      "kind": "Attack",
+      "duration": 4.50000334,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnParried",
+            "toActionId": "BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.3,
+          "endNormalized": 0.72,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 92.0,
+            "minDistance": null,
+            "maxDistance": 6.0,
+            "verticalTolerance": 2.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 2.1,
+              "bonusDamage": 14.0,
+              "staminaDamageScale": 1.5,
+              "bonusStaminaDamage": 6.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 1.1,
+              "hitStopSec": 0.1,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.3,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 2.6,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        },
+        {
+          "startNormalized": 0.18,
+          "endNormalized": 0.42,
+          "horizontalMoveMode": "ForwardFixedDistance",
+          "moveDistance": 3.5,
+          "rotationMode": "None",
+          "rotationRate": null,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "BigDemonWarrior_Melee_5",
+      "name": "BigDemonWarrior.Melee5",
+      "kind": "Attack",
+      "duration": 3.400002,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnParried",
+            "toActionId": "BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.34,
+          "endNormalized": 0.68,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 88.0,
+            "minDistance": null,
+            "maxDistance": 5.8,
+            "verticalTolerance": 2.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 2.0,
+              "bonusDamage": 13.0,
+              "staminaDamageScale": 1.45,
+              "bonusStaminaDamage": 5.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 1.0,
+              "hitStopSec": 0.09,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.34,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 2.8,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "BigDemonWarrior_Melee_6",
+      "name": "BigDemonWarrior.Melee6",
+      "kind": "Attack",
+      "duration": 1.36666691,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnParried",
+            "toActionId": "BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.18,
+          "endNormalized": 0.48,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 64.0,
+            "minDistance": null,
+            "maxDistance": 4.6,
+            "verticalTolerance": 2.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.3,
+              "bonusDamage": 8.0,
+              "staminaDamageScale": 1.0,
+              "bonusStaminaDamage": 3.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.65,
+              "hitStopSec": 0.06,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.04,
+          "endNormalized": 0.18,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 4.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "BigDemonWarrior_Melee_7",
+      "name": "BigDemonWarrior.Melee7",
+      "kind": "Attack",
+      "duration": 3.30000329,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnParried",
+            "toActionId": "BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.38,
+          "endNormalized": 0.74,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 96.0,
+            "minDistance": null,
+            "maxDistance": 6.2,
+            "verticalTolerance": 2.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 2.2,
+              "bonusDamage": 15.0,
+              "staminaDamageScale": 1.6,
+              "bonusStaminaDamage": 6.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 1.2,
+              "hitStopSec": 0.1,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.38,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 2.6,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        },
+        {
+          "startNormalized": 0.14,
+          "endNormalized": 0.34,
+          "horizontalMoveMode": "ForwardFixedDistance",
+          "moveDistance": 0.35,
+          "rotationMode": "None",
+          "rotationRate": null,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "BigDemonWarrior_Melee_8",
+      "name": "BigDemonWarrior.Melee8",
+      "kind": "Attack",
+      "duration": 3.2,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "HasTarget",
+          "scalar": null,
+          "stateFlag": null
+        },
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnParried",
+            "toActionId": "BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [
+        {
+          "windowType": "Attack",
+          "startNormalized": 0.32,
+          "endNormalized": 0.66,
+          "appliesTo": "FrontPhysical",
+          "spatialFilter": {
+            "facingHalfAngleDeg": 80.0,
+            "minDistance": null,
+            "maxDistance": 5.4,
+            "verticalTolerance": 2.2,
+            "referenceFrame": "LockedActionDirection"
+          },
+          "effect": {
+            "type": "AttackHit",
+            "attackHit": {
+              "damageScale": 1.9,
+              "bonusDamage": 12.0,
+              "staminaDamageScale": 1.4,
+              "bonusStaminaDamage": 5.0,
+              "poiseDamageScale": 0.0,
+              "bonusPoiseDamage": 0.0,
+              "knockbackDistance": 0.9,
+              "hitStopSec": 0.09,
+              "parryable": true,
+              "guardable": true
+            },
+            "parryResponse": null,
+            "guardResponse": null
+          }
+        }
+      ],
+      "events": [],
+      "moveSegments": [
+        {
+          "startNormalized": 0.08,
+          "endNormalized": 0.32,
+          "horizontalMoveMode": "None",
+          "moveDistance": null,
+          "rotationMode": "FaceTarget",
+          "rotationRate": 3.0,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        },
+        {
+          "startNormalized": 0.12,
+          "endNormalized": 0.32,
+          "horizontalMoveMode": "ForwardFixedDistance",
+          "moveDistance": 0.7,
+          "rotationMode": "None",
+          "rotationRate": null,
+          "verticalMoveMode": "None",
+          "verticalAmount": null,
+          "dirPolicy": "TargetDirection",
+          "dirSampleTiming": "OnSegmentStart"
+        }
+      ]
+    },
+    {
+      "id": "BigDemonWarrior_Jump",
+      "name": "BigDemonWarrior.Jump",
+      "kind": "NonCombat",
+      "duration": 3.30000329,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHitReceived",
+            "toActionId": "BigDemonWarrior_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100
+          },
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "BigDemonWarrior_BattleCry",
+      "name": "BigDemonWarrior.BattleCry",
+      "kind": "NonCombat",
+      "duration": 3.53333545,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [
+        {
+          "type": "IsGrounded",
+          "scalar": null,
+          "stateFlag": null
+        }
+      ],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "BigDemonWarrior_Stun",
+      "name": "BigDemonWarrior.Stun",
+      "kind": "Stun",
+      "duration": 1.83333063,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "BigDemonWarrior_Hit",
+      "name": "BigDemonWarrior.Hit",
+      "kind": "Hit",
+      "duration": 2.23333049,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [
+          {
+            "causeType": "OnHpZero",
+            "toActionId": "BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000
+          }
+        ],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    },
+    {
+      "id": "BigDemonWarrior_Dead",
+      "name": "BigDemonWarrior.Dead",
+      "kind": "Dead",
+      "duration": 3.13333845,
+      "normalizedPolicy": "FixedDuration",
+      "endPolicy": {
+        "endType": "NaturalEnd",
+        "defaultNextActionId": "None"
+      },
+      "requestRequirements": [],
+      "resourceCosts": [],
+      "transitionRule": {
+        "interruptRules": [],
+        "cancelRules": []
+      },
+      "combatWindows": [],
+      "events": [],
+      "moveSegments": []
+    }
+  ],
+  "characterActionProfiles": [
+    {
+      "id": "Knight",
+      "characterId": "Knight",
+      "availableActions": [
+        "Knight_LightAttack1",
+        "Knight_LightAttack2",
+        "Knight_LightAttack3",
+        "Knight_HeavyAttack",
+        "Knight_Dodge",
+        "Knight_Parry",
+        "Knight_Stun",
+        "Knight_Hit",
+        "Knight_Guard",
+        "Knight_Dead"
+      ],
+      "inputBindingProfileId": "Knight",
+      "fallbackReactionProfileId": "Knight",
+      "animationBindingProfileId": "Knight"
+    },
+    {
+      "id": "Imp",
+      "characterId": "Imp",
+      "availableActions": [
+        "Imp_melee1",
+        "Imp_melee3",
+        "Imp_melee4",
+        "Imp_melee5",
+        "Imp_Jump",
+        "Imp_Stun",
+        "Imp_Hit",
+        "Imp_Dead"
+      ],
+      "inputBindingProfileId": "Imp",
+      "fallbackReactionProfileId": "Imp",
+      "animationBindingProfileId": "Imp"
+    },
+    {
+      "id": "DemonStriker",
+      "characterId": "DemonStriker",
+      "availableActions": [
+        "DemonStriker_Melee_1",
+        "DemonStriker_Melee_2",
+        "DemonStriker_Melee_3",
+        "DemonStriker_Melee_4",
+        "DemonStriker_Gun_Shoot_1",
+        "DemonStriker_Gun_Shoot_2",
+        "DemonStriker_Gun_Shoot_3",
+        "DemonStriker_Gun_Shoot_4",
+        "DemonStriker_Jump_1",
+        "DemonStriker_Jump_2",
+        "DemonStriker_Stun",
+        "DemonStriker_Hit",
+        "DemonStriker_Dead"
+      ],
+      "inputBindingProfileId": "DemonStriker",
+      "fallbackReactionProfileId": "DemonStriker",
+      "animationBindingProfileId": "DemonStriker"
+    },
+    {
+      "id": "DemonExecutioner",
+      "characterId": "DemonExecutioner",
+      "availableActions": [
+        "DemonExecutioner_Melee_1",
+        "DemonExecutioner_Melee_2",
+        "DemonExecutioner_Melee_3",
+        "DemonExecutioner_Melee_4",
+        "DemonExecutioner_Melee_5",
+        "DemonExecutioner_Melee_6",
+        "DemonExecutioner_Jump_1",
+        "DemonExecutioner_Jump_2",
+        "DemonExecutioner_Stun",
+        "DemonExecutioner_Hit",
+        "DemonExecutioner_Dead"
+      ],
+      "inputBindingProfileId": "DemonExecutioner",
+      "fallbackReactionProfileId": "DemonExecutioner",
+      "animationBindingProfileId": "DemonExecutioner"
+    },
+    {
+      "id": "BigDemonWarrior",
+      "characterId": "BigDemonWarrior",
+      "availableActions": [
+        "BigDemonWarrior_Melee_1",
+        "BigDemonWarrior_Melee_2",
+        "BigDemonWarrior_Melee_3",
+        "BigDemonWarrior_Melee_4",
+        "BigDemonWarrior_Melee_5",
+        "BigDemonWarrior_Melee_6",
+        "BigDemonWarrior_Melee_7",
+        "BigDemonWarrior_Melee_8",
+        "BigDemonWarrior_Jump",
+        "BigDemonWarrior_BattleCry",
+        "BigDemonWarrior_Stun",
+        "BigDemonWarrior_Hit",
+        "BigDemonWarrior_Dead"
+      ],
+      "inputBindingProfileId": "BigDemonWarrior",
+      "fallbackReactionProfileId": "BigDemonWarrior",
+      "animationBindingProfileId": "BigDemonWarrior"
+    }
+  ],
+  "inputBindingProfiles": [
+    {
+      "id": "Knight",
+      "entries": [
+        {
+          "request": "LightAttack",
+          "candidateActions": [
+            "Knight_LightAttack1",
+            "Knight_LightAttack2",
+            "Knight_LightAttack3"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "HeavyAttack",
+          "candidateActions": [
+            "Knight_HeavyAttack"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Dodge",
+          "candidateActions": [
+            "Knight_Dodge"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Parry",
+          "candidateActions": [
+            "Knight_Parry"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "GuardStart",
+          "candidateActions": [
+            "Knight_Guard"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        }
+      ]
+    },
+    {
+      "id": "Imp",
+      "entries": []
+    },
+    {
+      "id": "DemonStriker",
+      "entries": []
+    },
+    {
+      "id": "DemonExecutioner",
+      "entries": []
+    },
+    {
+      "id": "BigDemonWarrior",
+      "entries": []
+    }
+  ],
+  "fallbackReactionProfiles": [
+    {
+      "id": "Knight",
+      "entries": [
+        {
+          "causeType": "OnHitReceived",
+          "toActionId": "Knight_Hit",
+          "priority": 100
+        },
+        {
+          "causeType": "OnParried",
+          "toActionId": "Knight_Stun",
+          "priority": 200
+        },
+        {
+          "causeType": "OnHpZero",
+          "toActionId": "Knight_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "id": "Imp",
+      "entries": [
+        {
+          "causeType": "OnHitReceived",
+          "toActionId": "Imp_Hit",
+          "priority": 100
+        },
+        {
+          "causeType": "OnParried",
+          "toActionId": "Imp_Stun",
+          "priority": 200
+        },
+        {
+          "causeType": "OnHpZero",
+          "toActionId": "Imp_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "id": "DemonStriker",
+      "entries": [
+        {
+          "causeType": "OnHitReceived",
+          "toActionId": "DemonStriker_Hit",
+          "priority": 100
+        },
+        {
+          "causeType": "OnParried",
+          "toActionId": "DemonStriker_Stun",
+          "priority": 200
+        },
+        {
+          "causeType": "OnHpZero",
+          "toActionId": "DemonStriker_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "id": "DemonExecutioner",
+      "entries": [
+        {
+          "causeType": "OnHitReceived",
+          "toActionId": "DemonExecutioner_Hit",
+          "priority": 100
+        },
+        {
+          "causeType": "OnParried",
+          "toActionId": "DemonExecutioner_Stun",
+          "priority": 200
+        },
+        {
+          "causeType": "OnHpZero",
+          "toActionId": "DemonExecutioner_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "id": "BigDemonWarrior",
+      "entries": [
+        {
+          "causeType": "OnHitReceived",
+          "toActionId": "BigDemonWarrior_Hit",
+          "priority": 100
+        },
+        {
+          "causeType": "OnParried",
+          "toActionId": "BigDemonWarrior_Stun",
+          "priority": 200
+        },
+        {
+          "causeType": "OnHpZero",
+          "toActionId": "BigDemonWarrior_Dead",
+          "priority": 1000
+        }
+      ]
+    }
+  ],
+  "animationBindingProfiles": [
+    {
+      "id": "Knight",
+      "actionBindings": [
+        {
+          "actionId": "Knight_LightAttack1",
+          "animationId": "Knight_LightAttack1"
+        },
+        {
+          "actionId": "Knight_Dodge",
+          "animationId": "Knight_Dodge"
+        },
+        {
+          "actionId": "Knight_Parry",
+          "animationId": "Knight_Parry"
+        },
+        {
+          "actionId": "Knight_Stun",
+          "animationId": "Knight_Stun"
+        },
+        {
+          "actionId": "Knight_Hit",
+          "animationId": "Knight_Hit"
+        },
+        {
+          "actionId": "Knight_Guard",
+          "animationId": "Knight_Guard"
+        },
+        {
+          "actionId": "Knight_Dead",
+          "animationId": "Knight_Death"
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationId": "Knight_Idle",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationId": "Knight_Walk"
+        },
+        {
+          "mode": "Run",
+          "animationId": "Knight_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationId": "Knight_Walk"
+        }
+      ]
+    },
+    {
+      "id": "Imp",
+      "actionBindings": [
+        {
+          "actionId": "Imp_melee1",
+          "animationId": "Imp_Melee_1"
+        },
+        {
+          "actionId": "Imp_melee2",
+          "animationId": "Imp_Melee_2"
+        },
+        {
+          "actionId": "Imp_melee3",
+          "animationId": "Imp_Melee_3"
+        },
+        {
+          "actionId": "Imp_melee4",
+          "animationId": "Imp_Melee_4"
+        },
+        {
+          "actionId": "Imp_melee5",
+          "animationId": "Imp_Melee_5"
+        },
+        {
+          "actionId": "Imp_Jump",
+          "animationId": "Imp_Jump_1"
+        },
+        {
+          "actionId": "Imp_Hit",
+          "animationId": "Imp_React_Front"
+        },
+        {
+          "actionId": "Imp_Stun",
+          "animationId": "Imp_Stun"
+        },
+        {
+          "actionId": "Imp_Dead",
+          "animationId": "Imp_Death_1"
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationId": "Imp_Idle_1",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationId": "Imp_Walk_Forward"
+        },
+        {
+          "mode": "Run",
+          "animationId": "Imp_Walk_Forward"
+        },
+        {
+          "mode": "Turn",
+          "animationId": "Imp_Walk_Forward"
+        }
+      ]
+    },
+    {
+      "id": "DemonStriker",
+      "actionBindings": [
+        {
+          "actionId": "DemonStriker_Melee_1",
+          "animationId": "DemonStriker_Melee_1"
+        },
+        {
+          "actionId": "DemonStriker_Melee_2",
+          "animationId": "DemonStriker_Melee_2"
+        },
+        {
+          "actionId": "DemonStriker_Melee_3",
+          "animationId": "DemonStriker_Melee_3"
+        },
+        {
+          "actionId": "DemonStriker_Melee_4",
+          "animationId": "DemonStriker_Melee_4"
+        },
+        {
+          "actionId": "DemonStriker_Gun_Shoot_1",
+          "animationId": "DemonStriker_Gun_Shoot_1"
+        },
+        {
+          "actionId": "DemonStriker_Gun_Shoot_2",
+          "animationId": "DemonStriker_Gun_Shoot_2"
+        },
+        {
+          "actionId": "DemonStriker_Gun_Shoot_3",
+          "animationId": "DemonStriker_Gun_Shoot_3"
+        },
+        {
+          "actionId": "DemonStriker_Gun_Shoot_4",
+          "animationId": "DemonStriker_Gun_Shoot_4"
+        },
+        {
+          "actionId": "DemonStriker_Jump_1",
+          "animationId": "DemonStriker_Jump_1"
+        },
+        {
+          "actionId": "DemonStriker_Jump_2",
+          "animationId": "DemonStriker_Jump_2"
+        },
+        {
+          "actionId": "DemonStriker_Stun",
+          "animationId": "DemonStriker_Stun"
+        },
+        {
+          "actionId": "DemonStriker_Hit",
+          "animationId": "DemonStriker_React_1_Block"
+        },
+        {
+          "actionId": "DemonStriker_Dead",
+          "animationId": "DemonStriker_Death_1"
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationId": "DemonStriker_Idle_1",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationId": "DemonStriker_Walking_1"
+        },
+        {
+          "mode": "Run",
+          "animationId": "DemonStriker_Running_1"
+        },
+        {
+          "mode": "Turn",
+          "animationId": "DemonStriker_Walking_1"
+        }
+      ]
+    },
+    {
+      "id": "DemonExecutioner",
+      "actionBindings": [
+        {
+          "actionId": "DemonExecutioner_Melee_1",
+          "animationId": "DemonExecutioner_Melee_1"
+        },
+        {
+          "actionId": "DemonExecutioner_Melee_2",
+          "animationId": "DemonExecutioner_Melee_2"
+        },
+        {
+          "actionId": "DemonExecutioner_Melee_3",
+          "animationId": "DemonExecutioner_Melee_3"
+        },
+        {
+          "actionId": "DemonExecutioner_Melee_4",
+          "animationId": "DemonExecutioner_Melee_4"
+        },
+        {
+          "actionId": "DemonExecutioner_Melee_5",
+          "animationId": "DemonExecutioner_Melee_5"
+        },
+        {
+          "actionId": "DemonExecutioner_Melee_6",
+          "animationId": "DemonExecutioner_Melee_6"
+        },
+        {
+          "actionId": "DemonExecutioner_Jump_1",
+          "animationId": "DemonExecutioner_Jump_1"
+        },
+        {
+          "actionId": "DemonExecutioner_Jump_2",
+          "animationId": "DemonExecutioner_Jump_2"
+        },
+        {
+          "actionId": "DemonExecutioner_Stun",
+          "animationId": "DemonExecutioner_Stun"
+        },
+        {
+          "actionId": "DemonExecutioner_Hit",
+          "animationId": "DemonExecutioner_GetHit_1"
+        },
+        {
+          "actionId": "DemonExecutioner_Dead",
+          "animationId": "DemonExecutioner_Death"
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationId": "DemonExecutioner_Idle_2",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationId": "DemonExecutioner_Walk_Forward"
+        },
+        {
+          "mode": "Run",
+          "animationId": "DemonExecutioner_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationId": "DemonExecutioner_Walk_Forward"
+        }
+      ]
+    },
+    {
+      "id": "BigDemonWarrior",
+      "actionBindings": [
+        {
+          "actionId": "BigDemonWarrior_Melee_1",
+          "animationId": "BigDemonWarrior_Melee_1"
+        },
+        {
+          "actionId": "BigDemonWarrior_Melee_2",
+          "animationId": "BigDemonWarrior_Melee_2"
+        },
+        {
+          "actionId": "BigDemonWarrior_Melee_3",
+          "animationId": "BigDemonWarrior_Melee_3"
+        },
+        {
+          "actionId": "BigDemonWarrior_Melee_4",
+          "animationId": "BigDemonWarrior_Melee_4"
+        },
+        {
+          "actionId": "BigDemonWarrior_Melee_5",
+          "animationId": "BigDemonWarrior_Melee_5"
+        },
+        {
+          "actionId": "BigDemonWarrior_Melee_6",
+          "animationId": "BigDemonWarrior_Melee_6"
+        },
+        {
+          "actionId": "BigDemonWarrior_Melee_7",
+          "animationId": "BigDemonWarrior_Melee_7"
+        },
+        {
+          "actionId": "BigDemonWarrior_Melee_8",
+          "animationId": "BigDemonWarrior_Melee_8"
+        },
+        {
+          "actionId": "BigDemonWarrior_Jump",
+          "animationId": "BigDemonWarrior_Jump"
+        },
+        {
+          "actionId": "BigDemonWarrior_BattleCry",
+          "animationId": "BigDemonWarrior_BattleCry"
+        },
+        {
+          "actionId": "BigDemonWarrior_Stun",
+          "animationId": "BigDemonWarrior_Stun"
+        },
+        {
+          "actionId": "BigDemonWarrior_Hit",
+          "animationId": "BigDemonWarrior_React_Gut"
+        },
+        {
+          "actionId": "BigDemonWarrior_Dead",
+          "animationId": "BigDemonWarrior_Death"
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationId": "BigDemonWarrior_Idle_1",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationId": "BigDemonWarrior_Walk_Forward"
+        },
+        {
+          "mode": "WalkBack",
+          "animationId": "BigDemonWarrior_Walk_Back"
+        },
+        {
+          "mode": "WalkLeft",
+          "animationId": "BigDemonWarrior_Walk_Left"
+        },
+        {
+          "mode": "WalkRight",
+          "animationId": "BigDemonWarrior_Walk_Right"
+        },
+        {
+          "mode": "Run",
+          "animationId": "BigDemonWarrior_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationId": "BigDemonWarrior_Walk_Forward"
+        },
+        {
+          "mode": "TurnLeft",
+          "animationId": "BigDemonWarrior_Turn_Left"
+        },
+        {
+          "mode": "TurnRight",
+          "animationId": "BigDemonWarrior_Turn_Right"
+        }
+      ]
+    }
+  ]
+}

@@ -6,13 +6,14 @@
 #include "AIFSMRegistry.h"
 #include "Aspect/CharacterAspectRegistry.h"
 #include "Aspect/ICharacterAspect.h"
+#include "AutoSystemBridge.h"
 #include "CharacterDef.h"
 #include "ECS/System/GameplaySystemRegistration.h"
-#include "ExecutionContextTypes.h"
 #include "ExecutionSourceTypes.h"
 #include "FrameworkRuntime.h"
 #include "PlayerCharacterTransferSerializer.h"
 #include "SpawnSetDef.h"
+#include "SystemManager.h"
 #include "WorldContentIds.h"
 #include "WorldDef.h"
 #include "WorldExecutionModelTypes.h"
@@ -22,57 +23,7 @@
 
 namespace
 {
-	constexpr ExecToken kGameplayBootstrapExecToken = 1;
 	constexpr WorldExecutionModelKey kGameplayBootstrapExecutionModelKey = 1;
-
-	class ExecScopeNetBindingResolver final : public IWorldNetBindingResolver {
-	public:
-		explicit ExecScopeNetBindingResolver(
-			const NodeExecContext& context) noexcept
-			: _context(context)
-		{
-		}
-
-		bool TryResolveEntity(
-			const NetId& netId,
-			Entity& outEntity) const noexcept override
-		{
-			outEntity = Entity::Null();
-
-			ExecutionOps* const ops = _context.TryGetOps();
-			const WorldId worldId = _context.TryGetWorldId();
-			if (ops == nullptr || !worldId.IsValid())
-			{
-				return false;
-			}
-
-			return ops->TryResolveEntity(worldId, netId, outEntity);
-		}
-
-	private:
-		const NodeExecContext& _context;
-	};
-
-	class GameplayBootstrapExecution final {
-	public:
-		static ExecCallResult ExecuteGraphSystems(NodeExecContext& context)
-		{
-			WorldRuntime* const runtime = context.TryGetRuntime();
-			if (runtime == nullptr)
-			{
-				return ExecCallResult::Failed;
-			}
-
-			const ExecScopeNetBindingResolver netBindingResolver(context);
-			const WorldSystemServices services{
-				.netBindingResolver = &netBindingResolver
-			};
-
-			return runtime->ExecuteSystems(SystemPhase::Graph, services)
-				? ExecCallResult::Success
-			: ExecCallResult::Failed;
-		}
-	};
 
 	class ServerGameplayRuntimeBootstrap final {
 	public:
@@ -84,7 +35,8 @@ namespace
 				GetGlobalCharacterAspectRegistry();
 
 			aspects.RegisterStoragesAll(runtime);
-			RegisterGameplayRuntimeSystems(runtime, animationRegistry);
+			GameplaySystemRegistrar registrar(animationRegistry);
+			registrar.Register(runtime);
 			ValidateCharacterDefs(aspects);
 			return true;
 		}
@@ -117,9 +69,22 @@ namespace
 
 		bool OnCreate(WorldRuntime& runtime) override
 		{
-			return ServerGameplayRuntimeBootstrap::RegisterRuntime(
+			if (!ServerGameplayRuntimeBootstrap::RegisterRuntime(
 				runtime,
-				_animationRegistry);
+				_animationRegistry))
+			{
+				return false;
+			}
+
+			if (_framework == nullptr)
+			{
+				return false;
+			}
+
+			return _framework->BindRuntimeSystems(
+				runtime,
+				SystemPhase::Graph,
+				ExecPhase::Simulate);
 		}
 
 		bool OnStart(WorldRuntime& runtime) override
@@ -265,26 +230,45 @@ std::unique_ptr<IWorldInstanceImpl> ServerWorldBootstrapFactory::Create(
 bool ServerWorldBootstrapDefinitionProvider::RegisterExecutionSources(
 	ExecutionSourceRegistry& sourceRegistry) const
 {
-	ExecutionSourceDesc desc{};
-	desc.token = kGameplayBootstrapExecToken;
-	desc.phase = ExecPhase::Simulate;
-	desc.lane = ExecLane::Main;
-	desc.kind = ExecNodeKind::StaticSystem;
-	desc.flags =
-		static_cast<uint32_t>(ExecNodeFlag_NoThrow) |
-		static_cast<uint32_t>(ExecNodeFlag_MainThreadOnly);
-	desc.fn = &GameplayBootstrapExecution::ExecuteGraphSystems;
-	desc.debugName = "GameplayBootstrap.GraphSystems";
-	return sourceRegistry.Register(desc);
+	SystemManager systemManager;
+	GameplaySystemRegistrar registrar(nullptr);
+	registrar.Register(systemManager);
+
+	AutoSystemBridge bridge;
+	const AutoSystemBridge::BridgeResult result =
+		bridge.RegisterSources(
+			SystemPhase::Graph,
+			ExecPhase::Simulate,
+			systemManager,
+			sourceRegistry);
+
+	return result.success;
 }
 
 bool ServerWorldBootstrapDefinitionProvider::RegisterExecutionModels(
 	const ExecutionSourceRegistry& sourceRegistry,
 	WorldExecutionModelRegistry& executionModelRegistry) const
 {
+	SystemManager systemManager;
+	GameplaySystemRegistrar registrar(nullptr);
+	registrar.Register(systemManager);
+
 	WorldExecutionModel model{};
 	model.key = kGameplayBootstrapExecutionModelKey;
-	model.simulateSources.push_back(kGameplayBootstrapExecToken);
+
+	AutoSystemBridge bridge;
+	const AutoSystemBridge::BridgeResult result =
+		bridge.BuildModelFromRegisteredSources(
+			SystemPhase::Graph,
+			ExecPhase::Simulate,
+			systemManager,
+			sourceRegistry,
+			model);
+	if (!result.success)
+	{
+		return false;
+	}
+
 	return executionModelRegistry.Register(model, sourceRegistry);
 }
 

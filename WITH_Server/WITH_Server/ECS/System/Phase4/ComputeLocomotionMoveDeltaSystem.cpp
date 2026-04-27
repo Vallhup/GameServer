@@ -6,9 +6,33 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 5> kComputeLocomotionMoveDeltaAccesses{
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		WriteImmediate(ComponentRes<LocomotionStateComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<AICommandFrameComp>()),
+		WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()),
+	};
+
+	bool IsLookOnlyLocomotionMode(LocomotionMode mode) noexcept
+	{
+		return
+			mode == LocomotionMode::Idle ||
+			mode == LocomotionMode::TurnLeft ||
+			mode == LocomotionMode::TurnRight;
+	}
+}
+
 const SystemMeta ComputeLocomotionMoveDeltaSystem::kMeta =
-	MakeSystemMeta<ComputeLocomotionMoveDeltaSystem>(
-		"ComputeLocomotionMoveDeltaSystem");
+	SystemMeta{
+		SysTag<ComputeLocomotionMoveDeltaSystem>(),
+		"ComputeLocomotionMoveDeltaSystem",
+		kComputeLocomotionMoveDeltaAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 void ComputeLocomotionMoveDeltaSystem::Execute(SystemContext& ctx)
 {
@@ -26,7 +50,7 @@ void ComputeLocomotionMoveDeltaSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
-		if (locomotionState.mode == LocomotionMode::Idle)
+		if (IsLookOnlyLocomotionMode(locomotionState.mode))
 		{
 			const AICommandFrameComp* aiCommand =
 				ctx.ecs.GetComponent<AICommandFrameComp>(entity);

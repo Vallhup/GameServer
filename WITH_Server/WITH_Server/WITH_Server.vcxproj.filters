@@ -5,6 +5,9 @@
     <ClCompile Include="ActionDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
+    <ClCompile Include="AIBehaviorDef.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
     <ClCompile Include="AnimationJsonLoader.cpp">
       <Filter>Data\Loader</Filter>
     </ClCompile>
@@ -63,6 +66,15 @@
       <Filter>Data\Definition</Filter>
     </ClCompile>
     <ClCompile Include="CharacterDef.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="DefEnumString.cpp">
+      <Filter>Data\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="DefJsonFileLoader.cpp">
+      <Filter>Data\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="GameplayDefValidator.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
     <ClCompile Include="SpawnSetDef.cpp">
@@ -255,6 +267,15 @@
     <ClCompile Include="FrameworkFrameEventHarvester.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="BossAIMovementPolicy.cpp">
+      <Filter>FSM\FirstBoss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossCombatActionPolicy.cpp">
+      <Filter>FSM\FirstBoss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossReactionPolicy.cpp">
+      <Filter>FSM\FirstBoss</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServerNetworkService.h">
@@ -344,6 +365,9 @@
     <ClInclude Include="ActionProfileIds.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
+    <ClInclude Include="AIBehaviorDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
     <ClInclude Include="IDs.h">
       <Filter>Data</Filter>
     </ClInclude>
@@ -356,6 +380,21 @@
     </ClInclude>
     <ClInclude Include="DefFileFormat.h">
       <Filter>Data\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="DefEnumString.h">
+      <Filter>Data\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="DefJsonFileLoader.h">
+      <Filter>Data\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="DefJsonReader.h">
+      <Filter>Data\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="DefLoadResult.h">
+      <Filter>Data\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="GameplayDefValidator.h">
+      <Filter>Data\Definition</Filter>
     </ClInclude>
     <ClInclude Include="AnimationRegistry.h">
       <Filter>Data\Registry</Filter>
@@ -597,6 +636,15 @@
     <ClInclude Include="FrameworkFrameEventHarvester.h">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="BossAIMovementPolicy.h">
+      <Filter>FSM\FirstBoss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossCombatActionPolicy.h">
+      <Filter>FSM\FirstBoss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossReactionPolicy.h">
+      <Filter>FSM\FirstBoss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -700,6 +748,9 @@
     </Filter>
     <Filter Include="Utility\Dependency\Recast">
       <UniqueIdentifier>{146c5074-34e6-40d4-978d-aa5b1c40eff9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\FirstBoss">
+      <UniqueIdentifier>{122ce378-4386-401d-87b4-a800941b81cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

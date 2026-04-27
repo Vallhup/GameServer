@@ -5,9 +5,28 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 6> kResolveDeathAndDespawnAccesses{
+		ReadImmediate(ComponentRes<CombatStatStateComp>()),
+		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferComp>()),
+		WriteDeferred(CommandBufferRes()),
+	};
+}
+
 const SystemMeta ResolveDeathAndDespawnSystem::kMeta =
-	MakeSystemMeta<ResolveDeathAndDespawnSystem>(
-		"ResolveDeathAndDespawnSystem");
+	SystemMeta{
+		SysTag<ResolveDeathAndDespawnSystem>(),
+		"ResolveDeathAndDespawnSystem",
+		kResolveDeathAndDespawnAccesses,
+		kNoDeps,
+		kNoDeps,
+		true,
+		false
+	};
 
 void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 {

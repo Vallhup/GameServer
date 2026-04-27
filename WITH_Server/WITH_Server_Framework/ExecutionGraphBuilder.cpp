@@ -8,8 +8,14 @@
 #include <deque>
 #include <unordered_map>
 
+#ifdef _DEBUG
+#include <fstream>
+#include <sstream>
+#endif
+
 #include "ExecutionCoreTypes.h"
 #include "ExecutionSourceTypes.h"
+#include "ConflictDetection.h"
 
 #include "WorldFragmentBuild.h"
 #include "WorldExecutionModelTypes.h"
@@ -37,6 +43,10 @@ BuildResult ExecutionGraphBuilder::Build(const FrameBuildContext& context)
     const ExecutionGraphBuildPolicy& policy = *context.buildPolicy;
 
     AssembleFrameGraph(fragments, result.graph, policy);
+
+    if (policy.applyTransitiveReduction)
+        ApplyTransitiveReduction(result.graph);
+
     BuildSerialExecutionPlan(result.graph, policy);
 
     if (!ValidateGraph(result.graph, policy, result))
@@ -46,6 +56,12 @@ BuildResult ExecutionGraphBuilder::Build(const FrameBuildContext& context)
     }
 
     result.success = !result.HasError();
+
+#if defined(_DEBUG)
+    if (result.success && context.executionSourceRegistry != nullptr)
+        WriteDebugGraph(result.graph, *context.executionSourceRegistry);
+#endif
+
     return result;
 }
 
@@ -160,7 +176,9 @@ bool ExecutionGraphBuilder::BuildWorldFragments(
         }
 
         WorldFragmentBuild fragment{};
-        if (!BuildSingleWorldFragment(selection, *model, sourceRegistry, policy, fragment, result))
+        if (!BuildSingleWorldFragment(
+                selection, *model, sourceRegistry, policy,
+                context.conflictRegistry, fragment, result))
             return false;
 
         outFragments.push_back(std::move(fragment));
@@ -173,6 +191,7 @@ bool ExecutionGraphBuilder::BuildSingleWorldFragment(
     const WorldExecutionModel& model,
     const ExecutionSourceRegistry& sourceRegistry,
     const ExecutionGraphBuildPolicy& policy,
+    const ConflictRegistry* conflictRegistry,
     WorldFragmentBuild& outFragment,
     BuildResult& result) const
 {
@@ -266,6 +285,7 @@ bool ExecutionGraphBuilder::BuildSingleWorldFragment(
         node.succCount = 0;
         node.debugNameOffset = 0;
         node.sourceToken = desc->token;
+        node.priorityBias = desc->schedulingHint.priorityBias;
 
         const uint32_t localIndex =
             static_cast<uint32_t>(outFragment.localNodes.size());
@@ -274,7 +294,9 @@ bool ExecutionGraphBuilder::BuildSingleWorldFragment(
         tokenToLocalIndex.try_emplace(desc->token, localIndex);
     }
 
-    if (!BuildFragmentEdges(model, tokenToLocalIndex, policy, outFragment, result))
+    if (!BuildFragmentEdges(
+            model, sourceRegistry, tokenToLocalIndex,
+            policy, conflictRegistry, outFragment, result))
         return false;
 
     if (!ValidateFragmentAcyclicPerPhase(outFragment, policy, result))
@@ -285,8 +307,10 @@ bool ExecutionGraphBuilder::BuildSingleWorldFragment(
 
 bool ExecutionGraphBuilder::BuildFragmentEdges(
     const WorldExecutionModel& model,
+    const ExecutionSourceRegistry& sourceRegistry,
     const std::unordered_map<ExecToken, uint32_t>& tokenToLocalIndex,
     const ExecutionGraphBuildPolicy& policy,
+    const ConflictRegistry* conflictRegistry,
     WorldFragmentBuild& outFragment,
     BuildResult& result) const
 {
@@ -368,6 +392,72 @@ bool ExecutionGraphBuilder::BuildFragmentEdges(
         localEdge.fromLocalIndex = fromIt->second;
         localEdge.toLocalIndex = toIt->second;
         outFragment.localEdges.push_back(localEdge);
+    }
+
+    // -----------------------------------------------------------------------
+    // Accesses 기반 자동 의존성 엣지 추론
+    //
+    // 동일 Phase의 노드 쌍을 순회하며 AccessSpec 충돌이 감지되면 엣지를 삽입한다.
+    // 결정성을 위해 localIndex 오름차순(i < j) 방향으로만 엣지를 추가한다.
+    // 이미 존재하는 explicit edge와 중복되는 경우 삽입하지 않는다.
+    // -----------------------------------------------------------------------
+    const uint32_t nodeCount = static_cast<uint32_t>(outFragment.localNodes.size());
+
+    // 기존 엣지 집합을 빠른 중복 검사를 위해 인덱싱한다.
+    // key: (fromLocalIndex << 32) | toLocalIndex — uint64_t 상위/하위 32비트에 각각 배치.
+    // 노드 인덱스는 uint32_t이므로 최대 ~43억 노드까지 충돌 없이 안전하다.
+    auto makeEdgeKey = [](uint32_t from, uint32_t to) -> uint64_t
+    {
+        return (static_cast<uint64_t>(from) << 32) | static_cast<uint64_t>(to);
+    };
+
+    std::unordered_map<uint64_t, bool> existingEdgeSet;
+    existingEdgeSet.reserve(outFragment.localEdges.size() * 2);
+
+    for (const LocalFragmentEdge& e : outFragment.localEdges)
+    {
+        existingEdgeSet.emplace(makeEdgeKey(e.fromLocalIndex, e.toLocalIndex), true);
+        existingEdgeSet.emplace(makeEdgeKey(e.toLocalIndex, e.fromLocalIndex), true);
+    }
+
+    for (uint32_t i = 0; i < nodeCount; ++i)
+    {
+        const ExecNodeRecord& nodeI = outFragment.localNodes[i];
+        const ExecutionSourceDesc* descI = sourceRegistry.TryGet(nodeI.sourceToken);
+
+        if (descI == nullptr || descI->accesses.empty())
+            continue;
+
+        for (uint32_t j = i + 1; j < nodeCount; ++j)
+        {
+            const ExecNodeRecord& nodeJ = outFragment.localNodes[j];
+
+            // 서로 다른 Phase 간 자동 엣지는 생성하지 않는다.
+            // 크로스 Phase 의존성은 Phase 순서 자체가 보장한다.
+            if (nodeI.phase != nodeJ.phase)
+                continue;
+
+            const ExecutionSourceDesc* descJ = sourceRegistry.TryGet(nodeJ.sourceToken);
+
+            if (descJ == nullptr || descJ->accesses.empty())
+                continue;
+
+            if (!HasAnyConflict(descI->accesses, descJ->accesses, conflictRegistry))
+                continue;
+
+            // i → j 방향 엣지가 아직 없으면 삽입한다.
+            const uint64_t keyIJ = makeEdgeKey(i, j);
+            if (existingEdgeSet.find(keyIJ) == existingEdgeSet.end())
+            {
+                LocalFragmentEdge autoEdge{};
+                autoEdge.fromLocalIndex = i;
+                autoEdge.toLocalIndex = j;
+                outFragment.localEdges.push_back(autoEdge);
+
+                existingEdgeSet.emplace(keyIJ, true);
+                existingEdgeSet.emplace(makeEdgeKey(j, i), true);
+            }
+        }
     }
 
     return true;
@@ -1125,6 +1215,362 @@ bool ExecutionGraphBuilder::ValidateGraph(
 
     return ok;
 }
+
+void ExecutionGraphBuilder::ApplyTransitiveReduction(FrameTaskGraph& graph) const
+{
+    // -----------------------------------------------------------------------
+    // Transitive Reduction [spec 5.3절 단계 5]
+    //
+    // 각 Phase 내에서 "중간 노드를 경유해도 도달 가능한 직접 엣지"를 제거한다.
+    // A → B, A → C, B → C 가 존재할 때 A → C 는 B를 거치면 도달 가능하므로 제거된다.
+    //
+    // 알고리즘:
+    //   1) Phase별 compact 인덱스 + 위상 정렬(Kahn's)
+    //   2) 역위상 순으로 reachable[u] = u에서 도달 가능한 모든 노드 집합 계산
+    //   3) 엣지 u→v: u의 다른 후계자 w를 통해 v에 도달 가능하면 redundant 마킹
+    //   4) 전체 edge pool 재구성 (redundant 엣지 제외)
+    //
+    // 비용: O(N²) — Phase당 수백 노드 이하에서 무시할 수 있는 수준이다.
+    // -----------------------------------------------------------------------
+
+    const uint32_t nodeCount = static_cast<uint32_t>(graph.nodes.size());
+    if (nodeCount < 3)
+        return; // 노드 3개 미만이면 transitive edge 불가
+
+    // (fromGlobalId << 32) | toGlobalId 형식의 redundant edge 집합
+    std::unordered_map<uint64_t, bool> redundantEdges;
+
+    auto makeEdgeKey = [](ExecNodeId from, ExecNodeId to) -> uint64_t
+    {
+        return (static_cast<uint64_t>(from) << 32) | static_cast<uint64_t>(to);
+    };
+
+    constexpr ExecPhase kPhases[] = {
+        ExecPhase::Simulate,
+        ExecPhase::Commit,
+        ExecPhase::LifecycleFlush,
+        ExecPhase::Reconcile
+    };
+
+    for (ExecPhase phase : kPhases)
+    {
+        // 1) 해당 Phase의 노드 수집
+        std::vector<ExecNodeId> phaseNodes;
+        for (ExecNodeId id = 0; id < nodeCount; ++id)
+        {
+            if (graph.nodes[id].phase == phase)
+                phaseNodes.push_back(id);
+        }
+
+        const uint32_t n = static_cast<uint32_t>(phaseNodes.size());
+        if (n < 3)
+            continue; // 3개 미만이면 transitive edge 불가
+
+        // globalId → compact index
+        std::unordered_map<ExecNodeId, uint32_t> globalToCompact;
+        globalToCompact.reserve(n);
+        for (uint32_t ci = 0; ci < n; ++ci)
+            globalToCompact.emplace(phaseNodes[ci], ci);
+
+        // 2) same-phase 인접 리스트(후계자) 구성 — compact index 기준
+        std::vector<std::vector<uint32_t>> adj(n);
+        for (uint32_t ci = 0; ci < n; ++ci)
+        {
+            const ExecNodeRecord& node = graph.nodes[phaseNodes[ci]];
+            for (uint32_t i = 0; i < node.succCount; ++i)
+            {
+                const uint32_t edgeIdx = node.succBegin + i;
+                if (edgeIdx >= graph.edges.size())
+                    continue;
+
+                const ExecNodeId succId = graph.edges[edgeIdx];
+                const auto it = globalToCompact.find(succId);
+                if (it == globalToCompact.end())
+                    continue; // cross-phase 엣지 제외
+
+                adj[ci].push_back(it->second);
+            }
+        }
+
+        // 3) Kahn's 위상 정렬
+        std::vector<uint32_t> indegree(n, 0);
+        for (uint32_t ci = 0; ci < n; ++ci)
+            for (uint32_t s : adj[ci])
+                ++indegree[s];
+
+        std::queue<uint32_t> ready;
+        for (uint32_t ci = 0; ci < n; ++ci)
+            if (indegree[ci] == 0)
+                ready.push(ci);
+
+        std::vector<uint32_t> topoOrder;
+        topoOrder.reserve(n);
+        while (!ready.empty())
+        {
+            const uint32_t cur = ready.front();
+            ready.pop();
+            topoOrder.push_back(cur);
+            for (uint32_t s : adj[cur])
+                if (--indegree[s] == 0)
+                    ready.push(s);
+        }
+
+        // 위상 정렬이 완성되지 않으면 사이클 — 이미 ValidateFragmentAcyclicPerPhase가
+        // 걸러야 하므로 여기서는 안전하게 건너뛴다.
+        if (topoOrder.size() != n)
+            continue;
+
+        // 4) 역위상 순으로 reachable 집합 계산
+        // reachable[ci] = ci에서 직/간접적으로 도달 가능한 compact index 집합
+        // unordered_set 대신 vector<bool>(bitset) 사용 — 캐시 효율 + 작은 n에 최적
+        std::vector<std::vector<bool>> reachable(n, std::vector<bool>(n, false));
+        for (int32_t ti = static_cast<int32_t>(topoOrder.size()) - 1; ti >= 0; --ti)
+        {
+            const uint32_t ci = topoOrder[ti];
+            for (uint32_t s : adj[ci])
+            {
+                reachable[ci][s] = true;
+                // s에서 도달 가능한 노드를 ci에도 전파
+                for (uint32_t k = 0; k < n; ++k)
+                {
+                    if (reachable[s][k])
+                        reachable[ci][k] = true;
+                }
+            }
+        }
+
+        // 5) 각 엣지 ci→v 검사: ci의 다른 후계자 w를 통해 v에 도달 가능하면 redundant
+        for (uint32_t ci = 0; ci < n; ++ci)
+        {
+            for (uint32_t v : adj[ci])
+            {
+                // ci의 다른 후계자 w를 통해 v에 도달 가능한지 확인
+                for (uint32_t w : adj[ci])
+                {
+                    if (w == v)
+                        continue;
+
+                    if (reachable[w][v])
+                    {
+                        // ci → v 는 transitive — redundant 마킹
+                        redundantEdges.emplace(
+                            makeEdgeKey(phaseNodes[ci], phaseNodes[v]), true);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if (redundantEdges.empty())
+        return;
+
+    // 6) 전체 edge pool 재구성
+    // 모든 노드의 pred/succ 목록을 vector<vector>로 추출 후 redundant 제거
+    std::vector<std::vector<ExecNodeId>> newPreds(nodeCount);
+    std::vector<std::vector<ExecNodeId>> newSuccs(nodeCount);
+
+    for (ExecNodeId id = 0; id < nodeCount; ++id)
+    {
+        const ExecNodeRecord& node = graph.nodes[id];
+
+        for (uint32_t i = 0; i < node.predCount; ++i)
+        {
+            const uint32_t edgeIdx = node.predBegin + i;
+            if (edgeIdx >= graph.edges.size())
+                continue;
+
+            const ExecNodeId predId = graph.edges[edgeIdx];
+            // predId → id 방향 키
+            if (redundantEdges.count(makeEdgeKey(predId, id)) == 0)
+                newPreds[id].push_back(predId);
+        }
+
+        for (uint32_t i = 0; i < node.succCount; ++i)
+        {
+            const uint32_t edgeIdx = node.succBegin + i;
+            if (edgeIdx >= graph.edges.size())
+                continue;
+
+            const ExecNodeId succId = graph.edges[edgeIdx];
+            // id → succId 방향 키
+            if (redundantEdges.count(makeEdgeKey(id, succId)) == 0)
+                newSuccs[id].push_back(succId);
+        }
+    }
+
+    // edge pool 전체 교체
+    graph.edges.clear();
+    for (ExecNodeId id = 0; id < nodeCount; ++id)
+    {
+        ExecNodeRecord& node = graph.nodes[id];
+
+        node.predBegin = static_cast<uint32_t>(graph.edges.size());
+        node.predCount = static_cast<uint32_t>(newPreds[id].size());
+        for (ExecNodeId pred : newPreds[id])
+            graph.edges.push_back(pred);
+
+        node.succBegin = static_cast<uint32_t>(graph.edges.size());
+        node.succCount = static_cast<uint32_t>(newSuccs[id].size());
+        for (ExecNodeId succ : newSuccs[id])
+            graph.edges.push_back(succ);
+    }
+}
+
+#if defined(_DEBUG)
+void ExecutionGraphBuilder::WriteDebugGraph(
+    const FrameTaskGraph& graph,
+    const ExecutionSourceRegistry& sourceRegistry) const
+{
+    auto phaseName = [](ExecPhase phase) -> const char*
+        {
+            switch (phase)
+            {
+            case ExecPhase::Simulate: return "Simulate";
+            case ExecPhase::Commit: return "Commit";
+            case ExecPhase::LifecycleFlush: return "LifecycleFlush";
+            case ExecPhase::Reconcile: return "Reconcile";
+            default: return "None";
+            }
+        };
+
+    auto laneName = [](ExecLane lane) -> const char*
+        {
+            switch (lane)
+            {
+            case ExecLane::Parallel: return "Parallel";
+            case ExecLane::Serial: return "Serial";
+            case ExecLane::Main: return "Main";
+            default: return "None";
+            }
+        };
+
+    auto kindName = [](ExecNodeKind kind) -> const char*
+        {
+            switch (kind)
+            {
+            case ExecNodeKind::StaticSystem: return "StaticSystem";
+            case ExecNodeKind::DynamicTask: return "DynamicTask";
+            case ExecNodeKind::StructuralApply: return "StructuralApply";
+            case ExecNodeKind::DeferredStateApply: return "DeferredStateApply";
+            case ExecNodeKind::PostCommitFinalize: return "PostCommitFinalize";
+            case ExecNodeKind::LifecycleFlush: return "LifecycleFlush";
+            case ExecNodeKind::Reconcile: return "Reconcile";
+            default: return "None";
+            }
+        };
+
+    auto escapeDot = [](const std::string& value) -> std::string
+        {
+            std::string escaped;
+            escaped.reserve(value.size());
+
+            for (const char ch : value)
+            {
+                switch (ch)
+                {
+                case '\\':
+                    escaped += "\\\\";
+                    break;
+                case '"':
+                    escaped += "\\\"";
+                    break;
+                case '\n':
+                    escaped += "\\n";
+                    break;
+                case '\r':
+                    break;
+                default:
+                    escaped += ch;
+                    break;
+                }
+            }
+
+            return escaped;
+        };
+
+    auto sourceName = [&](ExecToken token) -> std::string
+        {
+            const ExecutionSourceDesc* desc = sourceRegistry.TryGet(token);
+            if (desc == nullptr || desc->debugName.empty())
+                return "token_" + std::to_string(token);
+
+            return desc->debugName;
+        };
+
+    std::ofstream out{ "frame_graph_debug.dot", std::ios::out | std::ios::trunc };
+    if (!out.is_open())
+        return;
+
+    out << "digraph FrameTaskGraph {\n";
+    out << "  graph [rankdir=LR, labelloc=\"t\", label=\"FrameTaskGraph\"];\n";
+    out << "  node [shape=box, fontname=\"Consolas\", fontsize=10];\n";
+    out << "  edge [fontname=\"Consolas\", fontsize=9];\n\n";
+
+    out << "  // scopes=" << graph.scopeCount
+        << ", nodes=" << graph.nodes.size()
+        << ", simulateNodes=" << graph.simulateNodeCount
+        << ", edgePoolEntries=" << graph.edges.size() << "\n\n";
+
+    for (const ExecNodeRecord& node : graph.nodes)
+    {
+        std::ostringstream label;
+        label
+            << "#" << node.id
+            << "\\n" << sourceName(node.sourceToken)
+            << "\\nphase=" << phaseName(node.phase)
+            << "\\nlane=" << laneName(node.lane)
+            << "\\nkind=" << kindName(node.kind)
+            << "\\nscope=" << node.scopeId
+            << "\\ntoken=" << node.sourceToken
+            << "\\npred=" << node.predCount
+            << " succ=" << node.succCount;
+
+        out << "  n" << node.id
+            << " [label=\"" << escapeDot(label.str()) << "\"];\n";
+    }
+
+    out << "\n";
+
+    for (const ExecNodeRecord& node : graph.nodes)
+    {
+        for (uint32_t i = 0; i < node.succCount; ++i)
+        {
+            const uint32_t edgeIndex = node.succBegin + i;
+            if (edgeIndex >= graph.edges.size())
+                continue;
+
+            const ExecNodeId succId = graph.edges[edgeIndex];
+            if (!graph.IsValidNodeId(succId))
+                continue;
+
+            out << "  n" << node.id << " -> n" << succId << ";\n";
+        }
+    }
+
+    auto writePlan = [&](const char* name, const ExecRange& range)
+        {
+            out << "\n  // " << name << " begin=" << range.begin
+                << " count=" << range.count << "\n";
+
+            for (uint32_t i = 0; i < range.count; ++i)
+            {
+                const uint32_t orderIndex = range.begin + i;
+                if (orderIndex >= graph.serialExecutionOrder.size())
+                    break;
+
+                out << "  //   [" << i << "] node="
+                    << graph.serialExecutionOrder[orderIndex] << "\n";
+            }
+        };
+
+    writePlan("commitPlan", graph.commitPlan);
+    writePlan("lifecycleFlushPlan", graph.lifecycleFlushPlan);
+    writePlan("reconcilePlan", graph.reconcilePlan);
+
+    out << "}\n";
+}
+#endif
 
 void ExecutionGraphBuilder::ReportByPolicy(BuildResult& result, BuildDecision decision, const char* message) const
 {

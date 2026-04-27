@@ -13,9 +13,9 @@ const StaticSystemMetaStorage<5, 0, 1> ResolveAnimationPlaybackSystem::kMetaStor
         std::array<AccessSpec, 5>
         {
             WriteImmediate(ComponentRes<AnimationPlaybackStateComp>()),
-            ReadSnapshot(ComponentRes<ActionStateComp>()),
-            ReadSnapshot(ComponentRes<LocomotionStateComp>()),
-            ReadSnapshot(ComponentRes<SpawnTypeComp>()),
+            ReadImmediate(ComponentRes<ActionStateComp>()),
+            ReadImmediate(ComponentRes<LocomotionStateComp>()),
+            ReadImmediate(ComponentRes<SpawnTypeComp>()),
             WriteImmediate(ComponentRes<DirtyFlagsComp>()),
         },
         std::array<SystemTag, 0>{},

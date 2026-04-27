@@ -57,16 +57,19 @@ public:
 		uint64_t instanceKey,
 		PartyId partyId,
 		bool allowFallback);
+
 	TransferId RequestDebugWorldTransfer(
 		SessionId sessionId,
 		WorldDefId targetWorldDefId,
 		uint64_t instanceKey = 0,
 		bool allowFallback = true);
+
 	TransferId RequestDebugTransferToVillage(SessionId sessionId);
 
 	TransferId RequestDemoWorldTransition(
 		SessionId sessionId,
 		uint32_t requestId) override;
+
 	bool MarkClientWorldTransitionReady(
 		SessionId sessionId,
 		TransferId transferId) override;

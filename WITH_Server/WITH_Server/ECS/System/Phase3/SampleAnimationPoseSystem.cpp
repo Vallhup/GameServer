@@ -9,8 +9,23 @@
 
 using namespace GameplaySystemUtil;
 
+namespace
+{
+	const std::array<AccessSpec, 3> kSampleAnimationPoseAccesses{
+		ReadImmediate(ComponentRes<AnimationPlaybackStateComp>()),
+		WriteImmediate(ComponentRes<SampledAnimationPoseComp>()),
+		ReadImmediate(ExternalRes<AnimationRegistry>()),
+	};
+}
+
 const SystemMeta SampleAnimationPoseSystem::kMeta =
-	MakeSystemMeta<SampleAnimationPoseSystem>("SampleAnimationPoseSystem");
+	SystemMeta{
+		SysTag<SampleAnimationPoseSystem>(),
+		"SampleAnimationPoseSystem",
+		kSampleAnimationPoseAccesses,
+		kNoDeps,
+		kNoDeps
+	};
 
 SampleAnimationPoseSystem::SampleAnimationPoseSystem(
 	const AnimationRegistry* animationRegistry)
