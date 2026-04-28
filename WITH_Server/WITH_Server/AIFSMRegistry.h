@@ -77,8 +77,8 @@ public:
 		AIArchetype aiType,
 		AITuningId aiTuningId) const;
 
-	static bool        IsArchetypeSupported(AIArchetype type) noexcept;
-	static bool        IsBehaviorSupported(
+	static bool IsArchetypeSupported(AIArchetype type) noexcept;
+	static bool IsBehaviorSupported(
 		AIArchetype aiType,
 		AITuningId aiTuningId) noexcept;
 
