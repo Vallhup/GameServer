@@ -13,7 +13,7 @@ static const float PI = 3.14159265359;
 // CSM Constants
 //-------------------------------------------------------
 
-static const float cascadeBias[4] = { 0.0002f, 0.0005f, 0.0012f, 0.0000f };
+static const float cascadeBias[4] = { 0.0002f, 0.0005f, 0.0011f, 0.0000f };
 static const float cascadeNormalOffset[4] = { 0.015f, 0.05f, 0.15f, 0.0f };
 static const float CASCADE_BLEND_RANGE = 0.15;
 

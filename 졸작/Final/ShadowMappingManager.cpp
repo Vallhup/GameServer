@@ -30,7 +30,7 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 	XMVECTOR centerPos = XMLoadFloat3(&center);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	const float shadowCasterDistance = 120.0f;
+	const float shadowCasterDistance = 110.0f;
 
 	// centerPos에 의존하지 않는 라이트 공간 축 (shadow swimming 방지용)
 	XMVECTOR forward = XMVector3Normalize(csmLightDir);
@@ -41,14 +41,18 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 	float cy = XMVectorGetX(XMVector3Dot(centerPos, trueUp));
 	float cz = XMVectorGetX(XMVector3Dot(centerPos, forward));
 
+	// cascade별 snap 단위 (texel 배수) — cascade 2는 원거리라 거칠게 잡아 갱신 빈도↓
+	static constexpr int SNAP_QUANT[CASCADE_COUNT] = { 1, 2, 4 };
+
 	for (int i = 0; i < CASCADE_COUNT; ++i)
 	{
 		float cascadeSize = (&csmConstants.cascadeSplit.x)[i];
 		float texelSize = (cascadeSize * 2.0f) / static_cast<float>(SHADOW_MAP_SIZE);
+		float snapUnit = texelSize * SNAP_QUANT[i];
 
-		// texel 경계 인덱스 — 정수 비교로 freeze 판단
-		int snapXIdx = static_cast<int>(floorf(cx / texelSize));
-		int snapYIdx = static_cast<int>(floorf(cy / texelSize));
+		// snap 경계 인덱스 — 정수 비교로 freeze 판단
+		int snapXIdx = static_cast<int>(floorf(cx / snapUnit));
+		int snapYIdx = static_cast<int>(floorf(cy / snapUnit));
 
 		bool snapChanged = (snapXIdx != lastSnap[i].x) || (snapYIdx != lastSnap[i].y);
 		cascadeDirty[i] = sunChanged || snapChanged;
@@ -57,8 +61,8 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 		if (!cascadeDirty[i])
 			continue;
 
-		float snapX = snapXIdx * texelSize;
-		float snapY = snapYIdx * texelSize;
+		float snapX = snapXIdx * snapUnit;
+		float snapY = snapYIdx * snapUnit;
 
 		// 스냅된 월드 타겟 복원
 		XMVECTOR snappedTarget =
@@ -95,7 +99,7 @@ void ShadowMappingManager::SettingsForCSM()
 	XMVECTOR lightDir = XMVectorSet(-0.74f, -0.40f, -1.0f, 0);
 	csmLightDir = XMVector3Normalize(lightDir);
 
-	csmConstants.cascadeSplit = { 15.0f, 40.0f, 100.0f, 0.0f };
+	csmConstants.cascadeSplit = { 15.0f, 40.0f, 90.0f, 0.0f };
 }
 
 void ShadowMappingManager::CreateCSMResources(ID3D12Device* device)
