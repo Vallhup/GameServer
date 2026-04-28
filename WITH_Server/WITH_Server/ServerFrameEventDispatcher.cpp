@@ -2,16 +2,18 @@
 #include "ServerFrameEventDispatcher.h"
 
 #include <algorithm>
-#include <iostream>
 #include <span>
 #include <vector>
 
+#include "FrameworkLog.h"
 #include "ServerPacketStager.h"
 #include "ServerPlayerControlBinding.h"
 #include "ServerReplicationSnapshot.h"
 
 namespace
 {
+	constexpr const char* kLogCategory = "FrameDispatcher";
+
 	void RemoveExcludedSessions(
 		std::vector<SessionId>& sessionIds,
 		std::span<const SessionId> excludedSessionIds)
@@ -93,31 +95,22 @@ bool ServerFrameEventDispatcher::Dispatch(
 			spawnEvent.entity,
 			spawnEvent.netId))
 		{
-			std::cout << "[ServerFrameEventDispatcher] player control bind failed."
-				<< " sessionId=" << sessionId
-				<< " worldId=" << spawnEvent.worldId.GetRaw()
-				<< " netId=" << spawnEvent.netId.GetRaw()
-				<< "\n";
+			FWLOG_ERROR(kLogCategory, "Player control bind failed (sid=%u, worldId=%u, netId=%u)",
+				sessionId, spawnEvent.worldId.GetRaw(), spawnEvent.netId.GetRaw());
 			return false;
 		}
 
 		if (!sessionBindings.Bind(sessionId, spawnEvent.netId, spawnEvent.worldId))
 		{
-			std::cout << "[ServerFrameEventDispatcher] session bind failed."
-				<< " sessionId=" << sessionId
-				<< " worldId=" << spawnEvent.worldId.GetRaw()
-				<< " netId=" << spawnEvent.netId.GetRaw()
-				<< "\n";
+			FWLOG_ERROR(kLogCategory, "Session bind failed (sid=%u, worldId=%u, netId=%u)",
+				sessionId, spawnEvent.worldId.GetRaw(), spawnEvent.netId.GetRaw());
 			return false;
 		}
 
 		if (!framework.AttachPresenceToWorld(sessionId, spawnEvent.worldId, nowSec))
 		{
-			std::cout << "[ServerFrameEventDispatcher] presence attach failed."
-				<< " sessionId=" << sessionId
-				<< " worldId=" << spawnEvent.worldId.GetRaw()
-				<< " netId=" << spawnEvent.netId.GetRaw()
-				<< "\n";
+			FWLOG_ERROR(kLogCategory, "Presence attach failed (sid=%u, worldId=%u, netId=%u)",
+				sessionId, spawnEvent.worldId.GetRaw(), spawnEvent.netId.GetRaw());
 			return false;
 		}
 

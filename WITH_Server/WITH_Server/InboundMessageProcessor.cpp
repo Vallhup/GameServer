@@ -6,12 +6,14 @@
 #include <functional>
 #include <vector>
 
+#include "FrameworkLog.h"
 #include "PlayerEntryService.h"
 #include "ServerPacketStager.h"
 #include "WorldInstance.h"
 
 namespace
 {
+	constexpr const char* kLogCategory = "InboundProcessor";
 	constexpr uint32_t kDefaultCommandSequence = 0;
 	constexpr uint32_t kWorldTransitionRejectReasonServerUnavailable = 1;
 	constexpr uint32_t kWorldTransitionRejectReasonRequestRejected = 2;
@@ -194,10 +196,8 @@ bool InboundMessageProcessor::HandleWorldTransitionRequestPacket(
 			message.payload.worldTransitionRequest.requestId);
 	if (transferId == 0)
 	{
-		std::cout << "[InboundMessageProcessor] WorldTransition request rejected."
-			<< " sessionId=" << message.sessionId
-			<< " requestId=" << message.payload.worldTransitionRequest.requestId
-			<< "\n";
+		FWLOG_WARN(kLogCategory, "WorldTransition request rejected (sid=%u, requestId=%u)",
+			message.sessionId, message.payload.worldTransitionRequest.requestId);
 		if (_deps.network != nullptr)
 		{
 			(void)ServerPacketStager::StageWorldTransitionRejectedPacket(

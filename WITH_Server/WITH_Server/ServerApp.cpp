@@ -8,6 +8,8 @@
 #include <thread>
 #include <stdlib.h>
 
+#include "FrameworkLog.h"
+
 #include "ServerDirtyReplicationService.h"
 #include "ServerFrameEventDispatcher.h"
 #include "ServerPacketStager.h"
@@ -24,6 +26,7 @@
 
 namespace
 {
+	constexpr const char* kLogCategory = "ServerApp";
 	constexpr uint32_t kWorldTransitionReasonDebug = 1;
 	constexpr size_t kDemoPartyMaxMembers = 3;
 
@@ -142,7 +145,7 @@ void ServerApp::Run()
 	_stopRequested.store(false);
 	_running.store(true);
 
-	std::cout << "[ServerApp] ServerApp Initialize Success.\n";
+	FWLOG_INFO(kLogCategory, "Initialize success");
 
 	RunLogicLoop();
 	_running.store(false);
@@ -188,10 +191,8 @@ TransferId ServerApp::RequestSessionWorldTransfer(
 		_sessionBindings.FindCurrentWorldId(sessionId);
 	if (!sourceWorldId.IsValid())
 	{
-		std::cout << "[ServerApp] world transfer rejected: no source binding."
-			<< " sessionId=" << sessionId
-			<< " targetDefId=" << static_cast<int>(targetWorldDefId)
-			<< "\n";
+		FWLOG_WARN(kLogCategory, "World transfer rejected: no source binding (sid=%u, targetDefId=%d)",
+			sessionId, static_cast<int>(targetWorldDefId));
 		return 0;
 	}
 
@@ -244,10 +245,8 @@ TransferId ServerApp::RequestDemoWorldTransition(
 		_framework.FindWorldRecord(sourceWorldId);
 	if (sourceRecord == nullptr)
 	{
-		std::cout << "[ServerApp] demo world transition rejected: source world not found."
-			<< " sessionId=" << sessionId
-			<< " requestId=" << requestId
-			<< "\n";
+		FWLOG_WARN(kLogCategory, "Demo world transition rejected: source world not found (sid=%u, requestId=%u)",
+			sessionId, requestId);
 		return 0;
 	}
 
@@ -255,20 +254,15 @@ TransferId ServerApp::RequestDemoWorldTransition(
 		ResolveDemoNextWorld(sourceRecord->defId);
 	if (targetWorldDefId == WorldDefId::None)
 	{
-		std::cout << "[ServerApp] demo world transition rejected: no next world."
-			<< " sessionId=" << sessionId
-			<< " requestId=" << requestId
-			<< " sourceDefId=" << static_cast<int>(sourceRecord->defId)
-			<< "\n";
+		FWLOG_WARN(kLogCategory, "Demo world transition rejected: no next world (sid=%u, requestId=%u, sourceDefId=%d)",
+			sessionId, requestId, static_cast<int>(sourceRecord->defId));
 		return 0;
 	}
 
 	if (_pendingClientTransitions.contains(sessionId))
 	{
-		std::cout << "[ServerApp] demo world transition rejected: client transition pending."
-			<< " sessionId=" << sessionId
-			<< " requestId=" << requestId
-			<< "\n";
+		FWLOG_WARN(kLogCategory, "Demo world transition rejected: client transition pending (sid=%u, requestId=%u)",
+			sessionId, requestId);
 		return 0;
 	}
 
@@ -277,10 +271,8 @@ TransferId ServerApp::RequestDemoWorldTransition(
 	if (std::find(sourceSessionIds.begin(), sourceSessionIds.end(), sessionId) ==
 		sourceSessionIds.end())
 	{
-		std::cout << "[ServerApp] demo world transition rejected: session not in source world."
-			<< " sessionId=" << sessionId
-			<< " requestId=" << requestId
-			<< "\n";
+		FWLOG_WARN(kLogCategory, "Demo world transition rejected: session not in source world (sid=%u, requestId=%u)",
+			sessionId, requestId);
 		return 0;
 	}
 
@@ -332,21 +324,16 @@ bool ServerApp::MarkClientWorldTransitionReady(
 	const auto it = _pendingClientTransitions.find(sessionId);
 	if (it == _pendingClientTransitions.end())
 	{
-		std::cout << "[ServerApp] client world transition ready rejected: no pending transition."
-			<< " sessionId=" << sessionId
-			<< " transferId=" << transferId
-			<< "\n";
+		FWLOG_WARN(kLogCategory, "Client world transition ready rejected: no pending transition (sid=%u, transferId=%u)",
+			sessionId, transferId);
 		return false;
 	}
 
 	const PendingClientTransition& pending = it->second;
 	if (pending.transferId != transferId)
 	{
-		std::cout << "[ServerApp] client world transition ready rejected: transfer mismatch."
-			<< " sessionId=" << sessionId
-			<< " expectedTransferId=" << pending.transferId
-			<< " actualTransferId=" << transferId
-			<< "\n";
+		FWLOG_WARN(kLogCategory, "Client world transition ready rejected: transfer mismatch (sid=%u, expected=%u, actual=%u)",
+			sessionId, pending.transferId, transferId);
 		return false;
 	}
 
@@ -419,7 +406,7 @@ bool ServerApp::InitializeFrameworkRuntime()
 
 	if (!_framework.Initialize(bootstrapParams))
 	{
-		std::cout << "[ServerApp] Framework bootstrap failed.\n";
+		FWLOG_FATAL(kLogCategory, "Framework bootstrap failed");
 		return false;
 	}
 
@@ -430,7 +417,7 @@ bool ServerApp::InitializeNetworkRuntime()
 {
 	if (!_network.Initialize())
 	{
-		std::cout << "[ServerApp] Network runtime initialize failed.\n";
+		FWLOG_FATAL(kLogCategory, "Network runtime initialize failed");
 		return false;
 	}
 
@@ -448,15 +435,13 @@ bool ServerApp::InitializeGameplayContent()
 		LoadActionDefsFromJsonDirectory(actionRoot);
 	if (!actionLoadResult.succeeded)
 	{
-		std::cout << "[ServerApp] Action defs load failed."
-			<< " root=" << actionRoot.string()
-			<< " error=" << actionLoadResult.error << "\n";
+		FWLOG_FATAL(kLogCategory, "Action defs load failed (root=%s, error=%s)",
+			actionRoot.string().c_str(), actionLoadResult.error.c_str());
 		return false;
 	}
 
-	std::cout << "[ServerApp] Action defs loaded."
-		<< " root=" << actionRoot.string()
-		<< " count=" << actionLoadResult.loadedCount << "\n";
+	FWLOG_INFO(kLogCategory, "Action defs loaded (root=%s, count=%zu)",
+		actionRoot.string().c_str(), actionLoadResult.loadedCount);
 
 	const std::filesystem::path characterRoot =
 		ServerPathResolver::GetDefaultCharacterDefRoot();
@@ -464,15 +449,13 @@ bool ServerApp::InitializeGameplayContent()
 		LoadCharacterDefsFromJsonDirectory(characterRoot);
 	if (!characterLoadResult.succeeded)
 	{
-		std::cout << "[ServerApp] Character defs load failed."
-			<< " root=" << characterRoot.string()
-			<< " error=" << characterLoadResult.error << "\n";
+		FWLOG_FATAL(kLogCategory, "Character defs load failed (root=%s, error=%s)",
+			characterRoot.string().c_str(), characterLoadResult.error.c_str());
 		return false;
 	}
 
-	std::cout << "[ServerApp] Character defs loaded."
-		<< " root=" << characterRoot.string()
-		<< " count=" << characterLoadResult.loadedCount << "\n";
+	FWLOG_INFO(kLogCategory, "Character defs loaded (root=%s, count=%zu)",
+		characterRoot.string().c_str(), characterLoadResult.loadedCount);
 
 	const std::filesystem::path aiBehaviorRoot =
 		ServerPathResolver::GetDefaultAIBehaviorDefRoot();
@@ -480,15 +463,13 @@ bool ServerApp::InitializeGameplayContent()
 		LoadAIBehaviorProfileDefsFromJsonDirectory(aiBehaviorRoot);
 	if (!aiBehaviorLoadResult.succeeded)
 	{
-		std::cout << "[ServerApp] AI behavior def load failed."
-			<< " root=" << aiBehaviorRoot.string()
-			<< " error=" << aiBehaviorLoadResult.error << "\n";
+		FWLOG_FATAL(kLogCategory, "AI behavior defs load failed (root=%s, error=%s)",
+			aiBehaviorRoot.string().c_str(), aiBehaviorLoadResult.error.c_str());
 		return false;
 	}
 
-	std::cout << "[ServerApp] AI behavior defs loaded."
-		<< " root=" << aiBehaviorRoot.string()
-		<< " count=" << aiBehaviorLoadResult.loadedCount << "\n";
+	FWLOG_INFO(kLogCategory, "AI behavior defs loaded (root=%s, count=%zu)",
+		aiBehaviorRoot.string().c_str(), aiBehaviorLoadResult.loadedCount);
 
 	const std::filesystem::path buffRoot =
 		ServerPathResolver::GetDefaultBuffDefRoot();
@@ -496,15 +477,13 @@ bool ServerApp::InitializeGameplayContent()
 		LoadBuffDefsFromJsonDirectory(buffRoot);
 	if (!buffLoadResult.succeeded)
 	{
-		std::cout << "[ServerApp] Buff defs load failed."
-			<< " root=" << buffRoot.string()
-			<< " error=" << buffLoadResult.error << "\n";
+		FWLOG_FATAL(kLogCategory, "Buff defs load failed (root=%s, error=%s)",
+			buffRoot.string().c_str(), buffLoadResult.error.c_str());
 		return false;
 	}
 
-	std::cout << "[ServerApp] Buff defs loaded."
-		<< " root=" << buffRoot.string()
-		<< " count=" << buffLoadResult.loadedCount << "\n";
+	FWLOG_INFO(kLogCategory, "Buff defs loaded (root=%s, count=%zu)",
+		buffRoot.string().c_str(), buffLoadResult.loadedCount);
 
 	const std::filesystem::path spawnSetRoot =
 		ServerPathResolver::GetDefaultSpawnSetDefRoot();
@@ -512,31 +491,27 @@ bool ServerApp::InitializeGameplayContent()
 		LoadSpawnSetDefsFromJsonDirectory(spawnSetRoot);
 	if (!spawnSetLoadResult.succeeded)
 	{
-		std::cout << "[ServerApp] SpawnSet defs load failed."
-			<< " root=" << spawnSetRoot.string()
-			<< " error=" << spawnSetLoadResult.error << "\n";
+		FWLOG_FATAL(kLogCategory, "SpawnSet defs load failed (root=%s, error=%s)",
+			spawnSetRoot.string().c_str(), spawnSetLoadResult.error.c_str());
 		return false;
 	}
 
-	std::cout << "[ServerApp] SpawnSet defs loaded."
-		<< " root=" << spawnSetRoot.string()
-		<< " count=" << spawnSetLoadResult.loadedCount << "\n";
+	FWLOG_INFO(kLogCategory, "SpawnSet defs loaded (root=%s, count=%zu)",
+		spawnSetRoot.string().c_str(), spawnSetLoadResult.loadedCount);
 
 	const DefLoadResult validationResult = GamePlayDefValidator::ValidateGameplayDefs();
 	if (!validationResult.succeeded)
 	{
-		std::cout << "[ServerApp] Gameplay defs validation failed."
-			<< " error=" << validationResult.error << "\n";
+		FWLOG_FATAL(kLogCategory, "Gameplay defs validation failed (error=%s)",
+			validationResult.error.c_str());
 		return false;
 	}
 
-	std::cout << "[ServerApp] Gameplay defs validated."
-		<< " count=" << validationResult.loadedCount << "\n";
+	FWLOG_INFO(kLogCategory, "Gameplay defs validated (count=%zu)", validationResult.loadedCount);
 
 	const std::filesystem::path animationRoot =
 		ServerPathResolver::GetDefaultAnimationOutputRoot();
-	std::cout << "[ServerApp] Animation content root="
-		<< animationRoot.string() << std::endl;
+	FWLOG_DEBUG(kLogCategory, "Animation content root=%s", animationRoot.string().c_str());
 
 	const std::vector<std::filesystem::path> candidates =
 		ServerPathResolver::GetBootAnimationCandidates(animationRoot);
@@ -553,9 +528,8 @@ bool ServerApp::InitializeGameplayContent()
 		const auto loadResult = _animationLoader.LoadFile(path, def);
 		if (!loadResult.succeeded)
 		{
-			std::cout << "[ServerApp] Animation load failed."
-				<< " path=" << path.string()
-				<< " error=" << loadResult.error << "\n";
+			FWLOG_FATAL(kLogCategory, "Animation load failed (path=%s, error=%s)",
+				path.string().c_str(), loadResult.error.c_str());
 			return false;
 		}
 
@@ -564,8 +538,8 @@ bool ServerApp::InitializeGameplayContent()
 
 	if (animationDefs.empty())
 	{
-		std::cout << "[ServerApp] No animation json files were loaded."
-			<< " root=" << animationRoot.string() << "\n";
+		FWLOG_FATAL(kLogCategory, "No animation json files were loaded (root=%s)",
+			animationRoot.string().c_str());
 		return false;
 	}
 
@@ -573,13 +547,12 @@ bool ServerApp::InitializeGameplayContent()
 		_animationRegistry.Rebuild(std::move(animationDefs));
 	if (!buildResult.succeeded)
 	{
-		std::cout << "[ServerApp] Animation registry build failed."
-			<< " error=" << buildResult.error << "\n";
+		FWLOG_FATAL(kLogCategory, "Animation registry build failed (error=%s)",
+			buildResult.error.c_str());
 		return false;
 	}
 
-	std::cout << "[ServerApp] Animation content loaded."
-		<< " clips=" << buildResult.loadedCount << "\n";
+	FWLOG_INFO(kLogCategory, "Animation content loaded (clips=%zu)", buildResult.loadedCount);
 	return true;
 }
 
@@ -595,16 +568,15 @@ bool ServerApp::InitializeStartupWorld()
 
 	if (!_startupWorldId.IsValid())
 	{
-		std::cout << "[ServerApp] Startup world creation failed."
-			<< " defId=" << static_cast<int>(startupWorldDefId)
-			<< " instanceKey=" << startupInstanceKey << "\n";
+		FWLOG_FATAL(kLogCategory, "Startup world creation failed (defId=%d, instanceKey=%llu)",
+			static_cast<int>(startupWorldDefId), startupInstanceKey);
 		return false;
 	}
 
 	if (!_framework.InitializeWorld(_startupWorldId))
 	{
-		std::cout << "[ServerApp] Startup world initialization failed."
-			<< " worldId=" << _startupWorldId.GetRaw() << "\n";
+		FWLOG_FATAL(kLogCategory, "Startup world initialization failed (worldId=%u)",
+			_startupWorldId.GetRaw());
 		return false;
 	}
 
@@ -681,7 +653,7 @@ void ServerApp::RunWorldFrames(double dtSec)
 
 	if (!_framework.TickServices(_nowSec, dtSec))
 	{
-		std::cout << "[ServerApp] Framework service tick failed.\n";
+		FWLOG_ERROR(kLogCategory, "Framework service tick failed");
 		Stop();
 		return;
 	}
@@ -694,14 +666,14 @@ void ServerApp::RunWorldFrames(double dtSec)
 		_sessionBindings,
 		transferEvents))
 	{
-		std::cout << "[ServerApp] World transfer commit failed.\n";
+		FWLOG_ERROR(kLogCategory, "World transfer commit failed");
 		Stop();
 		return;
 	}
 
 	if (!StageWorldTransitionBeginPackets(transferEvents))
 	{
-		std::cout << "[ServerApp] World transition begin staging failed.\n";
+		FWLOG_ERROR(kLogCategory, "World transition begin staging failed");
 		Stop();
 		return;
 	}
@@ -717,11 +689,8 @@ void ServerApp::RunWorldFrames(double dtSec)
 
 	if (!frameOk)
 	{
-		std::cout << "[ServerApp] Frame execution failed."
-			<< " frameIndex=" << _frameIndex
-			<< " reason=" << static_cast<int>(frameResult.failureReason)
-			<< " selectedWorlds=" << frameResult.selectedWorldCount
-			<< "\n";
+		FWLOG_ERROR(kLogCategory, "Frame execution failed (frameIndex=%llu, reason=%d, selectedWorlds=%u)",
+			_frameIndex, static_cast<int>(frameResult.failureReason), frameResult.selectedWorldCount);
 		Stop();
 		return;
 	}
@@ -745,7 +714,7 @@ void ServerApp::RunWorldFrames(double dtSec)
 			pendingTransitionSessions.data(),
 			pendingTransitionSessions.size())))
 	{
-		std::cout << "[ServerApp] Frame event dispatch failed.\n";
+		FWLOG_ERROR(kLogCategory, "Frame event dispatch failed");
 		Stop();
 		return;
 	}
@@ -772,11 +741,8 @@ bool ServerApp::StageWorldTransitionBeginPackets(
 			sourceWorld == nullptr ||
 			sourceWorld->GetDef() == nullptr)
 		{
-			std::cout << "[ServerApp] World transition begin failed: missing world def."
-				<< " transferId=" << completed.transferId
-				<< " sourceWorldId=" << completed.sourceWorldId.GetRaw()
-				<< " targetWorldId=" << completed.targetWorldId.GetRaw()
-				<< "\n";
+			FWLOG_ERROR(kLogCategory, "World transition begin failed: missing world def (transferId=%u, sourceWorldId=%u, targetWorldId=%u)",
+				completed.transferId, completed.sourceWorldId.GetRaw(), completed.targetWorldId.GetRaw());
 			return false;
 		}
 
@@ -817,10 +783,8 @@ bool ServerApp::StageWorldTransitionBeginPackets(
 				imported.sessionId,
 				transition))
 			{
-				std::cout << "[ServerApp] World transition begin packet stage failed."
-					<< " transferId=" << completed.transferId
-					<< " sessionId=" << imported.sessionId
-					<< "\n";
+				FWLOG_ERROR(kLogCategory, "World transition begin packet stage failed (transferId=%u, sid=%u)",
+					completed.transferId, imported.sessionId);
 				return false;
 			}
 
