@@ -13,8 +13,6 @@
 
 class ECS;
 
-enum class SystemPhase : uint8_t { Pre, Graph, Post, Count };
-
 struct SystemScheduleDesc
 {
 	System* system{ nullptr };
@@ -23,53 +21,57 @@ struct SystemScheduleDesc
 };
 
 class SystemManager {
-	static constexpr int kPhaseCnt{ static_cast<int>(SystemPhase::Count) };
-
 public:
-	SystemManager() { _rawSystemsDirty.fill(true); }
+	SystemManager() { _rawSystemsDirty = true; }
 
 	template<SysT T, typename... Args>
-	T* RegisterSystem(SystemPhase phase, Args&&... args)
+	T* RegisterSystem(Args&&... args)
 	{
 		static_assert(std::is_constructible_v<T, Args...>, 
 			"System T is not constructible from Args...");
-
-		const int index = static_cast<int>(phase);
-		assert(index >= 0 && index < kPhaseCnt);
 
 		auto sys = std::make_unique<T>(std::forward<Args>(args)...);
 		T* ptr = sys.get();
 
 		const auto key = std::type_index(typeid(T));
-		assert(_typeMap[index].find(key) == _typeMap[index].end());
+		assert(_typeMap.find(key) == _typeMap.end());
 
-		_systems[index].emplace_back(std::move(sys), _nextOrder++);
-		_typeMap[index][key] = ptr;
-		_rawSystemsDirty[index] = true;
+		_systems.emplace_back(std::move(sys), _nextOrder++);
+		_typeMap[key] = ptr;
+		_rawSystemsDirty = true;
 
 		return ptr;
 	}
 
 	template<SysT T>
-	T* GetSystem(SystemPhase phase)
+	T* GetSystem()
 	{
-		const int index = static_cast<int>(phase);
 		const auto key = std::type_index(typeid(T));
 
-		auto it = _typeMap[index].find(key);
-		if (it == _typeMap[index].end()) return nullptr;
+		auto it = _typeMap.find(key);
+		if (it == _typeMap.end()) return nullptr;
 		return static_cast<T*>(it->second);
 	}
 
-	std::span<System*> GetSystems(SystemPhase phase);
-	std::span<const System*> GetSystems(SystemPhase phase) const;
+	template<SysT T>
+	const T* GetSystem() const
+	{
+		const auto key = std::type_index(typeid(T));
 
-	std::vector<SystemScheduleDesc> BuildScheduleDescs(SystemPhase phase) const;
+		auto it = _typeMap.find(key);
+		if (it == _typeMap.end()) return nullptr;
+		return static_cast<const T*>(it->second);
+	}
+
+	std::span<System*> GetSystems();
+	std::span<const System*> GetSystems() const;
+
+	std::vector<SystemScheduleDesc> BuildScheduleDescs() const;
 
 	void Clear();
 
 private:
-	void RebuildRaw(int index) const;
+	void RebuildRaw() const;
 
 	struct SystemEntry
 	{
@@ -80,10 +82,10 @@ private:
 private:
 	int _nextOrder{ 0 };
 
-	std::array<std::vector<SystemEntry>, kPhaseCnt> _systems;
-	std::array<std::unordered_map<std::type_index, System*>, kPhaseCnt> _typeMap;
+	std::vector<SystemEntry> _systems;
+	std::unordered_map<std::type_index, System*> _typeMap;
 
-	mutable std::array<bool, kPhaseCnt> _rawSystemsDirty;
-	mutable std::array<std::vector<System*>, kPhaseCnt> _rawSystems;
-	mutable std::array<std::vector<const System*>, kPhaseCnt> _rawConstSystems;
+	mutable bool _rawSystemsDirty;
+	mutable std::vector<System*> _rawSystems;
+	mutable std::vector<const System*> _rawConstSystems;
 };

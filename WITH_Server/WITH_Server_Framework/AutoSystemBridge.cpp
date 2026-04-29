@@ -120,7 +120,6 @@ void AutoSystemBridge::ApplyOrderingHints(
 }
 
 AutoSystemBridge::BridgeResult AutoSystemBridge::RegisterSources(
-    SystemPhase systemPhase,
     ExecPhase execPhase,
     SystemManager& systemManager,
     ExecutionSourceRegistry& sourceRegistry)
@@ -135,8 +134,7 @@ AutoSystemBridge::BridgeResult AutoSystemBridge::RegisterSources(
         return result;
     }
 
-    const std::vector<SystemScheduleDesc> descs =
-        systemManager.BuildScheduleDescs(systemPhase);
+    const std::vector<SystemScheduleDesc> descs = systemManager.BuildScheduleDescs();
 
     for (const SystemScheduleDesc& schedDesc : descs)
     {
@@ -180,7 +178,6 @@ AutoSystemBridge::BridgeResult AutoSystemBridge::RegisterSources(
 }
 
 AutoSystemBridge::BridgeResult AutoSystemBridge::BuildModelFromRegisteredSources(
-    SystemPhase systemPhase,
     ExecPhase execPhase,
     SystemManager& systemManager,
     const ExecutionSourceRegistry& sourceRegistry,
@@ -216,8 +213,7 @@ AutoSystemBridge::BridgeResult AutoSystemBridge::BuildModelFromRegisteredSources
     }
     }
 
-    const std::vector<SystemScheduleDesc> descs =
-        systemManager.BuildScheduleDescs(systemPhase);
+    const std::vector<SystemScheduleDesc> descs = systemManager.BuildScheduleDescs();
 
     std::vector<ExecToken> tokens;
     tokens.reserve(descs.size());
@@ -252,7 +248,6 @@ AutoSystemBridge::BridgeResult AutoSystemBridge::BuildModelFromRegisteredSources
 }
 
 AutoSystemBridge::BridgeResult AutoSystemBridge::BindRuntimeDispatch(
-    SystemPhase systemPhase,
     ExecPhase execPhase,
     SystemManager& systemManager,
     const ExecutionSourceRegistry& sourceRegistry,
@@ -260,8 +255,7 @@ AutoSystemBridge::BridgeResult AutoSystemBridge::BindRuntimeDispatch(
 {
     BridgeResult result{};
 
-    const std::vector<SystemScheduleDesc> descs =
-        systemManager.BuildScheduleDescs(systemPhase);
+    const std::vector<SystemScheduleDesc> descs = systemManager.BuildScheduleDescs();
 
     for (const SystemScheduleDesc& schedDesc : descs)
     {
@@ -290,7 +284,6 @@ AutoSystemBridge::BridgeResult AutoSystemBridge::BindRuntimeDispatch(
 }
 
 AutoSystemBridge::BridgeResult AutoSystemBridge::Bridge(
-    SystemPhase systemPhase,
     ExecPhase execPhase,
     SystemManager& systemManager,
     ExecutionSourceRegistry& sourceRegistry,
@@ -298,13 +291,12 @@ AutoSystemBridge::BridgeResult AutoSystemBridge::Bridge(
     WorldExecutionModel& outModel)
 {
     BridgeResult result =
-        RegisterSources(systemPhase, execPhase, systemManager, sourceRegistry);
+        RegisterSources(execPhase, systemManager, sourceRegistry);
     if (!result.success)
         return result;
 
     result =
         BuildModelFromRegisteredSources(
-            systemPhase,
             execPhase,
             systemManager,
             sourceRegistry,
@@ -313,7 +305,6 @@ AutoSystemBridge::BridgeResult AutoSystemBridge::Bridge(
         return result;
 
     return BindRuntimeDispatch(
-        systemPhase,
         execPhase,
         systemManager,
         sourceRegistry,

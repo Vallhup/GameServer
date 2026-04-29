@@ -1,28 +1,24 @@
 #include "pch.h"
 #include "SystemManager.h"
 
-std::span<System*> SystemManager::GetSystems(SystemPhase phase)
+std::span<System*> SystemManager::GetSystems()
 {
-	const int index = static_cast<int>(phase);
-	RebuildRaw(index);
-	return _rawSystems[index];
+	RebuildRaw();
+	return _rawSystems;
 }
 
-std::span<const System*> SystemManager::GetSystems(SystemPhase phase) const
+std::span<const System*> SystemManager::GetSystems() const
 {
-	const int index = static_cast<int>(phase);
-	RebuildRaw(index);
-	return _rawConstSystems[index];
+	RebuildRaw();
+	return _rawConstSystems;
 }
 
-std::vector<SystemScheduleDesc> SystemManager::BuildScheduleDescs(SystemPhase phase) const
+std::vector<SystemScheduleDesc> SystemManager::BuildScheduleDescs() const
 {
-	const int index = static_cast<int>(phase);
-
 	std::vector<SystemScheduleDesc> out;
-	out.reserve(_systems[index].size());
+	out.reserve(_systems.size());
 
-	for (const SystemEntry& entry : _systems[index])
+	for (const SystemEntry& entry : _systems)
 	{
 		System* sys = entry.system.get();
 		out.emplace_back(sys, &sys->Meta(), entry.registrationOrder);
@@ -39,34 +35,31 @@ std::vector<SystemScheduleDesc> SystemManager::BuildScheduleDescs(SystemPhase ph
 
 void SystemManager::Clear()
 {
-	for (int i = 0; i < kPhaseCnt; ++i)
-	{
-		_systems[i].clear();
-		_typeMap[i].clear();
-		_rawSystems[i].clear();
-		_rawConstSystems[i].clear();
-		_rawSystemsDirty[i] = true;
-	}
-
+	
+	_systems.clear();
+	_typeMap.clear();
+	_rawSystems.clear();
+	_rawConstSystems.clear();
+	_rawSystemsDirty = true;
 	_nextOrder = 0;
 }
 
-void SystemManager::RebuildRaw(int index) const
+void SystemManager::RebuildRaw() const
 {
-	if (!_rawSystemsDirty[index]) return;
+	if (!_rawSystemsDirty) return;
 
-	_rawSystems[index].clear();
-	_rawConstSystems[index].clear();
+	_rawSystems.clear();
+	_rawConstSystems.clear();
 
-	_rawSystems[index].reserve(_systems[index].size());
-	_rawConstSystems[index].reserve(_systems[index].size());
+	_rawSystems.reserve(_systems.size());
+	_rawConstSystems.reserve(_systems.size());
 
-	for (const SystemEntry& entry : _systems[index])
+	for (const SystemEntry& entry : _systems)
 	{
 		System* sys = entry.system.get();
-		_rawSystems[index].push_back(sys);
-		_rawConstSystems[index].push_back(sys);
+		_rawSystems.push_back(sys);
+		_rawConstSystems.push_back(sys);
 	}
 
-	_rawSystemsDirty[index] = false;
+	_rawSystemsDirty = false;
 }

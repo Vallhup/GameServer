@@ -47,7 +47,6 @@ public:
     // systemPhase: SystemManager에서 꺼낼 Phase
     // execPhase  : WorldExecutionModel에 등록할 ExecPhase
     BridgeResult Bridge(
-        SystemPhase               systemPhase,
         ExecPhase                 execPhase,
         SystemManager&            systemManager,
         ExecutionSourceRegistry&  sourceRegistry,
@@ -55,20 +54,17 @@ public:
         WorldExecutionModel&      outModel);
 
     BridgeResult RegisterSources(
-        SystemPhase               systemPhase,
         ExecPhase                 execPhase,
         SystemManager&            systemManager,
         ExecutionSourceRegistry&  sourceRegistry);
 
     BridgeResult BuildModelFromRegisteredSources(
-        SystemPhase                    systemPhase,
         ExecPhase                      execPhase,
         SystemManager&                 systemManager,
         const ExecutionSourceRegistry& sourceRegistry,
         WorldExecutionModel&           outModel);
 
     BridgeResult BindRuntimeDispatch(
-        SystemPhase                    systemPhase,
         ExecPhase                      execPhase,
         SystemManager&                 systemManager,
         const ExecutionSourceRegistry& sourceRegistry,
