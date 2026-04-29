@@ -21,6 +21,7 @@ class LFWSDeque {
     static constexpr int64_t kMask{ Capacity - 1 };
     static_assert(Capacity > 1, "Capacity must be greater than 1");
     static_assert((Capacity & kMask) == 0, "Capacity must be power of 2");
+    static_assert(std::atomic<T>::is_always_lock_free, "LFWSDeque requires lock-free atomic task handles");
 
 public:
     [[nodiscard]] bool TryPush(const T& item);

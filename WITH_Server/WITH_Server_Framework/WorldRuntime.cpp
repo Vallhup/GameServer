@@ -210,9 +210,7 @@ bool WorldRuntime::EnqueueWorldCommand(WorldCommand command)
 	return _worldCommands.Enqueue(std::move(command));
 }
 
-bool WorldRuntime::ExecuteSystems(
-	SystemPhase phase,
-	WorldSystemServices services)
+bool WorldRuntime::ExecuteSystems(WorldSystemServices services)
 {
 	if (_lifecycleState != WorldRuntimeLifecycleState::Running ||
 		IsShutdown() ||
@@ -236,7 +234,7 @@ bool WorldRuntime::ExecuteSystems(
 		serviceScope.Services()
 	};
 
-	for (System* system : _systems.GetSystems(phase))
+	for (System* system : _systems.GetSystems())
 	{
 		if (system == nullptr)
 		{

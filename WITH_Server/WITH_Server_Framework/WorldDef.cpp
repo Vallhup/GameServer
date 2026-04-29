@@ -235,7 +235,7 @@ WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey)
 				SpawnPointDef{
 					.id = SpawnPointIds::CastlePlayerStart,
 					.name = "Castle.PlayerStart",
-					.position = WorldVec3Def{ 327.722809, 67.219727, 226.415680 },
+					.position = WorldVec3Def{ 327.722809f, 67.219727f, 226.415680f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{

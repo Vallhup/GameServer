@@ -15,11 +15,11 @@ enum class WorldDefId : uint8_t
 enum class SpawnSetId : uint8_t
 {
 	None			= 0,
-	PlazaDefault	= 1,
-	VillageDefault	= 2,
-	CastleDefault	= 3,
-	FinalDefault	= 4,
-	PvpDefault		= 5,
+	CastleDefault	= 1,
+	FinalDefault	= 2,
+	PlazaDefault	= 3,
+	PvpDefault		= 4,
+	VillageDefault	= 5,
 };
 
 using SpawnPointId = uint16_t;
