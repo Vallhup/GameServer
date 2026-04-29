@@ -1069,7 +1069,7 @@ namespace
         StressState& state,
         std::integer_sequence<int, Ids...>)
     {
-        (manager.RegisterSystem<SnapshotReaderSystem<Ids>>(SystemPhase::Graph, &state), ...);
+        (manager.RegisterSystem<SnapshotReaderSystem<Ids>>(&state), ...);
     }
 
     template<int... Ids>
@@ -1078,7 +1078,7 @@ namespace
         StressState& state,
         std::integer_sequence<int, Ids...>)
     {
-        (manager.RegisterSystem<ImmediateReaderSystem<Ids>>(SystemPhase::Graph, &state), ...);
+        (manager.RegisterSystem<ImmediateReaderSystem<Ids>>(&state), ...);
     }
 
     template<int... Ids>
@@ -1087,7 +1087,7 @@ namespace
         StressState& state,
         std::integer_sequence<int, Ids...>)
     {
-        (manager.RegisterSystem<ImmediateWriterSystem<Ids>>(SystemPhase::Graph, &state), ...);
+        (manager.RegisterSystem<ImmediateWriterSystem<Ids>>(&state), ...);
     }
 
     template<int... Ids>
@@ -1096,7 +1096,7 @@ namespace
         StressState& state,
         std::integer_sequence<int, Ids...>)
     {
-        (manager.RegisterSystem<SnapshotDeferredWriterSystem<Ids>>(SystemPhase::Graph, &state), ...);
+        (manager.RegisterSystem<SnapshotDeferredWriterSystem<Ids>>(&state), ...);
     }
 
     template<int... Ids>
@@ -1105,7 +1105,7 @@ namespace
         StressState& state,
         std::integer_sequence<int, Ids...>)
     {
-        (manager.RegisterSystem<ParallelDeferredRecorderSystem<Ids>>(SystemPhase::Graph, &state), ...);
+        (manager.RegisterSystem<ParallelDeferredRecorderSystem<Ids>>(&state), ...);
     }
 
     template<int... Ids>
@@ -1114,7 +1114,7 @@ namespace
         StressState& state,
         std::integer_sequence<int, Ids...>)
     {
-        (manager.RegisterSystem<SerializedCommandBufferRecorderSystem<Ids>>(SystemPhase::Graph, &state), ...);
+        (manager.RegisterSystem<SerializedCommandBufferRecorderSystem<Ids>>(&state), ...);
     }
 
     void RegisterStressSystems(SystemManager& manager, StressState& state)
@@ -1356,7 +1356,6 @@ void RunTaskExecutorRaceStressTest(int argc, char** argv)
     {
         AutoSystemBridge::BridgeResult result =
             bridge.RegisterSources(
-                SystemPhase::Graph,
                 ExecPhase::Simulate,
                 runtimes.front()->GetSystemManager(),
                 sourceRegistry);
@@ -1364,7 +1363,6 @@ void RunTaskExecutorRaceStressTest(int argc, char** argv)
             throw std::runtime_error(result.errorMessage);
 
         result = bridge.BuildModelFromRegisteredSources(
-            SystemPhase::Graph,
             ExecPhase::Simulate,
             runtimes.front()->GetSystemManager(),
             sourceRegistry,
@@ -1406,7 +1404,6 @@ void RunTaskExecutorRaceStressTest(int argc, char** argv)
     {
         AutoSystemBridge::BridgeResult result =
             bridge.BindRuntimeDispatch(
-                SystemPhase::Graph,
                 ExecPhase::Simulate,
                 runtime->GetSystemManager(),
                 sourceRegistry,

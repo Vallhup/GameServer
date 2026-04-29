@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "ExecutionGraphBuilder.h"
 
+#include "FrameworkLog.h"
+
 #include <algorithm>
 #include <queue>
 #include <string>
@@ -24,6 +26,7 @@ BuildResult ExecutionGraphBuilder::Build(const FrameBuildContext& context)
 {
     BuildResult result{};
     result.graph.Clear();
+    result.dynamicTaskFrameTable.Clear();
     result.diagnostics.clear();
     result.success = false;
 
@@ -42,7 +45,46 @@ BuildResult ExecutionGraphBuilder::Build(const FrameBuildContext& context)
 
     const ExecutionGraphBuildPolicy& policy = *context.buildPolicy;
 
-    AssembleFrameGraph(fragments, result.graph, policy);
+    const bool hasDynamicBatch =
+        context.dynamicBatch != nullptr &&
+        !context.dynamicBatch->IsEmpty() &&
+        context.dynamicTaskTypeRegistry != nullptr;
+
+    // dynamic batch 존재 시 일관성 경고
+    if ((context.dynamicBatch != nullptr) != (context.dynamicTaskTypeRegistry != nullptr))
+    {
+        AddWarning(result,
+            "Build - dynamicBatch and dynamicTaskTypeRegistry must both be set or both null");
+    }
+
+    if (hasDynamicBatch)
+    {
+        // [1] 정적 노드 배치 + edge 리스트 구성 (edge pool 미확정)
+        std::vector<std::vector<ExecNodeId>> predLists;
+        std::vector<std::vector<ExecNodeId>> succLists;
+
+        AssembleFrameGraphNodes(fragments, result.graph, policy, predLists, succLists);
+
+        // [2] 동적 노드 추가 (pred/succ 리스트 확장)
+        AppendDynamicNodes(
+            *context.dynamicBatch,
+            *context.dynamicTaskTypeRegistry,
+            *context.executionSourceRegistry,
+            context.conflictRegistry,
+            result.graph,
+            predLists,
+            succLists,
+            result.dynamicTaskFrameTable,
+            result);
+
+        // [3] edge pool 직렬화
+        FinalizeEdgePool(result.graph, predLists, succLists, policy);
+    }
+    else
+    {
+        // static-only fast path (기존 경로 유지)
+        AssembleFrameGraph(fragments, result.graph, policy);
+    }
 
     if (policy.applyTransitiveReduction)
         ApplyTransitiveReduction(result.graph);
@@ -601,12 +643,19 @@ bool ExecutionGraphBuilder::ValidateFragmentAcyclicPerPhase(
     return true;
 }
 
-void ExecutionGraphBuilder::AssembleFrameGraph(
+// ---------------------------------------------------------------------------
+// AssembleFrameGraphNodes [1/3]
+// ---------------------------------------------------------------------------
+void ExecutionGraphBuilder::AssembleFrameGraphNodes(
     const std::vector<WorldFragmentBuild>& fragments,
     FrameTaskGraph& outGraph,
-    const ExecutionGraphBuildPolicy& policy) const
+    const ExecutionGraphBuildPolicy& policy,
+    std::vector<std::vector<ExecNodeId>>& outPredLists,
+    std::vector<std::vector<ExecNodeId>>& outSuccLists) const
 {
     outGraph.Clear();
+    outPredLists.clear();
+    outSuccLists.clear();
 
     if (fragments.empty())
         return;
@@ -633,24 +682,17 @@ void ExecutionGraphBuilder::AssembleFrameGraph(
     }
 
     uint32_t totalNodeCount = 0;
-    uint32_t totalEdgeCount = 0;
-
     for (const WorldFragmentBuild& fragment : fragments)
-    {
         totalNodeCount += static_cast<uint32_t>(fragment.localNodes.size());
-        totalEdgeCount += static_cast<uint32_t>(fragment.localEdges.size());
-    }
 
     outGraph.nodes.reserve(totalNodeCount);
-    outGraph.edges.reserve(static_cast<size_t>(totalEdgeCount) * 2);
-
-    std::vector<std::vector<ExecNodeId>> predLists(totalNodeCount);
-    std::vector<std::vector<ExecNodeId>> succLists(totalNodeCount);
+    outPredLists.resize(totalNodeCount);
+    outSuccLists.resize(totalNodeCount);
 
     struct FragmentRemap
     {
         const WorldFragmentBuild* fragment{ nullptr };
-        std::vector<ExecNodeId> localToGlobal;
+        std::vector<ExecNodeId>   localToGlobal;
     };
 
     std::vector<FragmentRemap> remaps;
@@ -694,20 +736,19 @@ void ExecutionGraphBuilder::AssembleFrameGraph(
     }
 
     auto appendUnique = [&](std::vector<ExecNodeId>& list, ExecNodeId value)
+    {
+        if (!policy.deduplicateSamePhaseEdges)
         {
-            if (!policy.deduplicateSamePhaseEdges)
-            {
-                list.push_back(value);
-                return;
-            }
-
-            for (ExecNodeId existing : list)
-            {
-                if (existing == value)
-                    return;
-            }
             list.push_back(value);
-        };
+            return;
+        }
+        for (ExecNodeId existing : list)
+        {
+            if (existing == value)
+                return;
+        }
+        list.push_back(value);
+    };
 
     for (const FragmentRemap& remap : remaps)
     {
@@ -722,39 +763,194 @@ void ExecutionGraphBuilder::AssembleFrameGraph(
             }
 
             const ExecNodeId fromGlobal = remap.localToGlobal[edge.fromLocalIndex];
-            const ExecNodeId toGlobal = remap.localToGlobal[edge.toLocalIndex];
+            const ExecNodeId toGlobal   = remap.localToGlobal[edge.toLocalIndex];
 
             if (fromGlobal == InvalidExecNodeId || toGlobal == InvalidExecNodeId)
                 continue;
 
             const ExecPhase fromPhase = outGraph.nodes[fromGlobal].phase;
-            const ExecPhase toPhase = outGraph.nodes[toGlobal].phase;
+            const ExecPhase toPhase   = outGraph.nodes[toGlobal].phase;
 
             if (fromPhase != toPhase && !policy.materializeCrossPhaseRuntimeDeps)
                 continue;
 
-            appendUnique(succLists[fromGlobal], toGlobal);
-            appendUnique(predLists[toGlobal], fromGlobal);
+            appendUnique(outSuccLists[fromGlobal], toGlobal);
+            appendUnique(outPredLists[toGlobal], fromGlobal);
         }
     }
+}
 
-    for (ExecNodeId nodeId = 0;
-        nodeId < static_cast<ExecNodeId>(outGraph.nodes.size());
-        ++nodeId)
+// ---------------------------------------------------------------------------
+// AppendDynamicNodes [2/3]
+// ---------------------------------------------------------------------------
+void ExecutionGraphBuilder::AppendDynamicNodes(
+    const DynamicTaskFrozenBatch& batch,
+    const DynamicTaskTypeRegistry& typeRegistry,
+    const ExecutionSourceRegistry& sourceRegistry,
+    const ConflictRegistry* conflictRegistry,
+    FrameTaskGraph& outGraph,
+    std::vector<std::vector<ExecNodeId>>& predLists,
+    std::vector<std::vector<ExecNodeId>>& succLists,
+    DynamicTaskFrameTable& outFrameTable,
+    BuildResult& result) const
+{
+    if (batch.IsEmpty())
+        return;
+
+    for (const DynamicTaskRequest& request : batch.requests)
+    {
+        if (!request.IsValid())
+        {
+            AddWarning(result, "AppendDynamicNodes - invalid request (skipped)");
+            continue;
+        }
+
+        const DynamicTaskTypeDesc* typeDesc = typeRegistry.TryGet(request.typeId);
+        if (typeDesc == nullptr)
+        {
+            AddWarning(result, "AppendDynamicNodes - DynamicTaskTypeDesc not found (skipped)");
+            continue;
+        }
+
+        const ExecutionSourceDesc* sourceDesc = sourceRegistry.TryGet(typeDesc->sourceToken);
+        if (sourceDesc == nullptr)
+        {
+            AddError(result, "AppendDynamicNodes - ExecutionSourceDesc not found");
+            continue;
+        }
+
+        if (outGraph.scopeCount > 0 && request.scopeId >= outGraph.scopeCount)
+        {
+            AddWarning(result, "AppendDynamicNodes - scopeId out of range (skipped)");
+            continue;
+        }
+
+        const ExecNodeId newNodeId = static_cast<ExecNodeId>(outGraph.nodes.size());
+
+        ExecNodeRecord record{};
+        record.id           = newNodeId;
+        record.scopeId      = request.scopeId;
+        record.phase        = typeDesc->defaultPhase;
+        record.lane         = typeDesc->defaultLane;
+        record.kind         = ExecNodeKind::DynamicTask;
+        record.flags        = typeDesc->flags;
+        record.sourceToken  = typeDesc->sourceToken;
+        record.priorityBias = request.priorityBias + typeDesc->schedulingHint.priorityBias;
+
+        record.debugNameOffset = static_cast<uint32_t>(outGraph.debugNameBlob.size());
+        outGraph.debugNameBlob += typeDesc->debugName;
+        outGraph.debugNameBlob += '\0';
+
+        // pred/succ 리스트 공간 확보
+        predLists.emplace_back();
+        succLists.emplace_back();
+
+        // access 충돌 감지: 같은 scope + phase의 기존 노드 전체와 비교
+        const std::span<const AccessSpec> newAccesses{
+            typeDesc->accesses.data(), typeDesc->accesses.size() };
+
+        for (ExecNodeId existingId = 0; existingId < newNodeId; ++existingId)
+        {
+            const ExecNodeRecord& existing = outGraph.nodes[existingId];
+
+            if (existing.scopeId != request.scopeId)
+                continue;
+            if (existing.phase != typeDesc->defaultPhase)
+                continue;
+
+            const ExecutionSourceDesc* existingSource =
+                sourceRegistry.TryGet(existing.sourceToken);
+            if (existingSource == nullptr || existingSource->accesses.empty())
+                continue;
+            if (newAccesses.empty())
+                continue;
+
+            if (HasAnyConflict(newAccesses, existingSource->accesses, conflictRegistry))
+            {
+                predLists[newNodeId].push_back(existingId);
+                succLists[existingId].push_back(newNodeId);
+            }
+        }
+
+        outGraph.nodes.push_back(record);
+
+        if (record.phase == ExecPhase::Simulate)
+            ++outGraph.simulateNodeCount;
+
+        DynamicTaskInstance instance{};
+        instance.typeId      = request.typeId;
+        instance.scopeId     = request.scopeId;
+        instance.graphNodeId = newNodeId;
+        instance.payloadKey  = request.payloadKey;
+        outFrameTable.AddInstance(instance);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// FinalizeEdgePool [3/3]
+// ---------------------------------------------------------------------------
+void ExecutionGraphBuilder::FinalizeEdgePool(
+    FrameTaskGraph& outGraph,
+    const std::vector<std::vector<ExecNodeId>>& predLists,
+    const std::vector<std::vector<ExecNodeId>>& succLists,
+    const ExecutionGraphBuildPolicy& /*policy*/) const
+{
+    const uint32_t nodeCount = static_cast<uint32_t>(outGraph.nodes.size());
+    if (nodeCount == 0)
+        return;
+
+    size_t totalEdges = 0;
+    for (uint32_t i = 0; i < nodeCount; ++i)
+    {
+        if (i < predLists.size()) totalEdges += predLists[i].size();
+        if (i < succLists.size()) totalEdges += succLists[i].size();
+    }
+    outGraph.edges.reserve(totalEdges);
+
+    for (ExecNodeId nodeId = 0; nodeId < nodeCount; ++nodeId)
     {
         ExecNodeRecord& node = outGraph.nodes[nodeId];
 
         node.predBegin = static_cast<uint32_t>(outGraph.edges.size());
-        node.predCount = static_cast<uint32_t>(predLists[nodeId].size());
-        for (ExecNodeId pred : predLists[nodeId])
-            outGraph.edges.push_back(pred);
+        if (nodeId < static_cast<ExecNodeId>(predLists.size()))
+        {
+            node.predCount = static_cast<uint32_t>(predLists[nodeId].size());
+            for (ExecNodeId pred : predLists[nodeId])
+                outGraph.edges.push_back(pred);
+        }
+        else
+        {
+            node.predCount = 0;
+        }
 
         node.succBegin = static_cast<uint32_t>(outGraph.edges.size());
-        node.succCount = static_cast<uint32_t>(succLists[nodeId].size());
-        for (ExecNodeId succ : succLists[nodeId])
-            outGraph.edges.push_back(succ);
+        if (nodeId < static_cast<ExecNodeId>(succLists.size()))
+        {
+            node.succCount = static_cast<uint32_t>(succLists[nodeId].size());
+            for (ExecNodeId succ : succLists[nodeId])
+                outGraph.edges.push_back(succ);
+        }
+        else
+        {
+            node.succCount = 0;
+        }
     }
 }
+
+// ---------------------------------------------------------------------------
+// AssembleFrameGraph — 레거시 래퍼 (dynamic batch 없는 경로)
+// ---------------------------------------------------------------------------
+void ExecutionGraphBuilder::AssembleFrameGraph(
+    const std::vector<WorldFragmentBuild>& fragments,
+    FrameTaskGraph& outGraph,
+    const ExecutionGraphBuildPolicy& policy) const
+{
+    std::vector<std::vector<ExecNodeId>> predLists;
+    std::vector<std::vector<ExecNodeId>> succLists;
+    AssembleFrameGraphNodes(fragments, outGraph, policy, predLists, succLists);
+    FinalizeEdgePool(outGraph, predLists, succLists, policy);
+}
+
 void ExecutionGraphBuilder::BuildSerialExecutionPlan(
     FrameTaskGraph& graph,
     const ExecutionGraphBuildPolicy& policy) const

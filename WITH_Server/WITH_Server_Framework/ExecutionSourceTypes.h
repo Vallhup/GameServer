@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <deque>
 #include <span>
 #include <string>
 #include <vector>
@@ -26,6 +27,12 @@ struct ExecutionSourceDesc
     // ECS write/read footprint — AutoSystemBridge가 SystemMeta.accesses로부터 채운다.
     // span은 소유권을 가지지 않으며, 정적 System의 경우 System 서브클래스의
     // static constexpr 배열을 가리킨다 (수명 = 프로세스).
+    //
+    // DynamicTask 등록 경로 전용: accesses span이 이 vector를 가리킨다.
+    // Static System은 이 vector를 비워 둔다.
+    // DynamicTaskTypeRegistry::Register()가 _types deque 내부 vector 주소를
+    // span에 설정하므로, 이 필드는 사용되지 않는다. 단, 필요 시 직접 등록 경로에서
+    // owned storage로 활용할 수 있다.
     std::span<const AccessSpec> accesses{};
 
     // 스케줄링 품질 힌트 — AutoSystemBridge가 ExecMeta.schedulingHint로부터 복사한다.
@@ -86,10 +93,12 @@ public:
         return nullptr;
     }
 
+    // deque는 연속 메모리를 보장하지 않으므로 span 대신 range reference를 반환한다.
+    // 빌더 내부의 range-based for 루프에서 직접 사용한다.
     [[nodiscard]]
-    std::span<const ExecutionSourceDesc> GetSources() const noexcept
+    const std::deque<ExecutionSourceDesc>& GetSources() const noexcept
     {
-        return std::span<const ExecutionSourceDesc>(_sources.data(), _sources.size());
+        return _sources;
     }
 
     [[nodiscard]]
@@ -113,7 +122,13 @@ public:
 
 private:
     // TODO: 선형 탐색 병목 시 unordered_map 기반으로 수정
-    std::vector<ExecutionSourceDesc> _sources;
+    //
+    // deque 사용 이유:
+    //   DynamicTaskTypeRegistry::Register()는 _types deque 내부의 accesses vector를
+    //   가리키는 span을 ExecutionSourceDesc에 설정한 뒤 여기에 push_back한다.
+    //   std::deque는 push_back 시 기존 원소의 주소를 무효화하지 않으므로
+    //   이미 등록된 DynamicTask desc의 accesses span이 dangling되지 않는다.
+    std::deque<ExecutionSourceDesc> _sources;
 
     // 1부터 시작 (0 = InvalidExecToken 예약)
     std::atomic<ExecToken> _nextToken{ 1 };

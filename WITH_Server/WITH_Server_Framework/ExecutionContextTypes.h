@@ -4,17 +4,20 @@
 #include <span>
 
 #include "ExecutionCoreTypes.h"
-#include "ExecutionGraphTypes.h"
+#include "ExecutionGraphTypes.h"   // DynamicTaskFrameTable 포함
 #include "ExecutionOps.h"
 #include "WorldId.h"
 
 struct WorldFrameSelectionSet;
 struct ExecutionGraphBuildPolicy;
+struct DynamicTaskFrozenBatch;
 
 class WorldRuntime;
 class ExecutionSourceRegistry;
 class WorldExecutionModelRegistry;
 class ConflictRegistry;
+class DynamicTaskTypeRegistry;
+class DynamicTaskFrameTable;
 
 struct NodeScratch
 {
@@ -33,6 +36,12 @@ struct FrameBuildContext
     // nullptr 이면 빌트인 5-rule 알고리즘(ConflictDetection.h)만 사용한다.
     const ConflictRegistry*            conflictRegistry{ nullptr };
 
+    // Dynamic Task 확장 (optional).
+    // 두 포인터 모두 nullptr이면 이 프레임에서 동적 노드를 추가하지 않는다.
+    // 하나만 nullptr이면 빌더가 경고를 발생시킨다.
+    const DynamicTaskFrozenBatch*      dynamicBatch{ nullptr };
+    const DynamicTaskTypeRegistry*     dynamicTaskTypeRegistry{ nullptr };
+
     [[nodiscard]]
     bool IsValid() const noexcept
     {
@@ -41,7 +50,8 @@ struct FrameBuildContext
             executionModelRegistry != nullptr &&
             executionSourceRegistry != nullptr &&
             buildPolicy != nullptr;
-        // conflictRegistry는 optional이므로 유효성 검사에서 제외한다.
+        // conflictRegistry, dynamicBatch, dynamicTaskTypeRegistry는
+        // optional이므로 유효성 검사에서 제외한다.
     }
 };
 
@@ -52,12 +62,18 @@ struct FrameExecContext
     std::span<WorldRuntime*> runtimeByScope{};
     std::span<const WorldId> worldIdByScope{};
 
+    // Dynamic Task 확장 (optional).
+    // BuildResult::dynamicTaskFrameTable을 가리킨다.
+    // 동적 노드가 없는 프레임에서는 nullptr이다.
+    DynamicTaskFrameTable* dynamicTaskFrameTable{ nullptr };
+
     void Clear() noexcept
     {
         graph = nullptr;
         ops = nullptr;
         runtimeByScope = {};
         worldIdByScope = {};
+        dynamicTaskFrameTable = nullptr;
     }
 
     [[nodiscard]]

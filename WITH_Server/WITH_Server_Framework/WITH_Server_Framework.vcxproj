@@ -198,6 +198,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="BasicView.h" />
+    <ClInclude Include="DynamicTaskTypes.h" />
     <ClInclude Include="ExecutionContextTypes.h" />
     <ClInclude Include="ExecutionCoreTypes.h" />
     <ClInclude Include="ExecutionGraphBuilder.h" />
@@ -261,6 +262,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoSystemBridge.cpp" />
+    <ClCompile Include="DynamicTaskTypes.cpp" />
     <ClCompile Include="NavMeshRuntime.cpp" />
     <ClCompile Include="WorldDef.cpp" />
     <ClCompile Include="WorldExecutionModelTypes.cpp" />

@@ -894,8 +894,7 @@ ExecCallResult TaskExecutor::InvokeNode(
     const ExecNodeRecord& node,
     ExecNodeId nodeId) const
 {
-    const ExecutionSourceDesc* desc =
-        Sources().TryGet(node.sourceToken);
+    const ExecutionSourceDesc* desc = Sources().TryGet(node.sourceToken);
 
     if (desc == nullptr)
     {
@@ -913,13 +912,50 @@ ExecCallResult TaskExecutor::InvokeNode(
         return ExecCallResult::Failed;
     }
 
+    // DynamicTask: DynamicTaskFrameTable에서 인스턴스를 확인한다.
+    // dispatch fn 자체는 동일하게 desc->fn(ctx)로 호출되지만,
+    // 실제 payload는 ctx.frame->dynamicTaskFrameTable를 통해 resolve된다.
+    // dispatch fn은 ctx.nodeId로 테이블을 조회하여 payloadKey를 얻어야 한다.
+    if (node.kind == ExecNodeKind::DynamicTask)
+    {
+        const DynamicTaskFrameTable* frameTable =
+            _binding.frame ? _binding.frame->dynamicTaskFrameTable : nullptr;
+
+        if (frameTable == nullptr)
+        {
+            FWLOG_ERROR(kLogCategory,
+                "InvokeNode - DynamicTask node dispatched but dynamicTaskFrameTable is null "
+                "(nodeId=%u, token=%u)",
+                nodeId, node.sourceToken);
+            return ExecCallResult::Failed;
+        }
+
+        const DynamicTaskInstance* instance = frameTable->FindByNodeId(nodeId);
+        if (instance == nullptr)
+        {
+            FWLOG_ERROR(kLogCategory,
+                "InvokeNode - DynamicTaskInstance not found in frame table "
+                "(nodeId=%u, token=%u)",
+                nodeId, node.sourceToken);
+            return ExecCallResult::Failed;
+        }
+
+        // instance는 ctx를 통해 간접 접근:
+        //   ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId)
+        // dispatch fn 내에서 이 패턴으로 payloadKey를 꺼낸다.
+        FWLOG_TRACE(kLogCategory,
+            "InvokeNode - DynamicTask (nodeId=%u, typeId=%u, scopeId=%u, payloadKey=%llu)",
+            nodeId, instance->typeId, instance->scopeId,
+            static_cast<unsigned long long>(instance->payloadKey));
+    }
+
     NodeScratch scratch{};
     NodeExecContext ctx{};
-    ctx.frame = _binding.frame;
-    ctx.nodeId = nodeId;
-    ctx.scopeId = node.scopeId;
+    ctx.frame       = _binding.frame;
+    ctx.nodeId      = nodeId;
+    ctx.scopeId     = node.scopeId;
     ctx.sourceToken = node.sourceToken;
-    ctx.scratch = &scratch;
+    ctx.scratch     = &scratch;
 
     try
     {

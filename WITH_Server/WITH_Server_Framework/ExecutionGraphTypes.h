@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "ExecutionCoreTypes.h"
+#include "DynamicTaskTypes.h"
 
 struct ExecRange
 {
@@ -173,9 +174,16 @@ struct FrameTaskGraph
 struct BuildResult
 {
     FrameTaskGraph graph;
+
+    // 그래프 빌드 중 AppendDynamicNodes()가 채운다.
+    // FrameExecContext::dynamicTaskFrameTable이 이 객체를 가리킨다.
+    // BuildResult는 WorldScheduler::FrameScratch가 소유하므로
+    // 프레임 실행 내내 수명이 유지된다.
+    DynamicTaskFrameTable dynamicTaskFrameTable;
+
     std::vector<BuildDiagnostic> diagnostics;
 
-    // succcess == !HasError()
+    // success == !HasError()
     // builder가 마지막에 명시적으로 세팅
     bool success{ false };
 

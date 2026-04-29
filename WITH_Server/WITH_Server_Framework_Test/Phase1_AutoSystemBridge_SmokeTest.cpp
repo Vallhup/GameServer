@@ -742,22 +742,21 @@ namespace
         });
 
         SystemManager systemManager{};
-        systemManager.RegisterSystem<PerceptionReadASystem>(SystemPhase::Graph, &state);
-        systemManager.RegisterSystem<PerceptionReadBSystem>(SystemPhase::Graph, &state);
-        systemManager.RegisterSystem<AICommandSystem>(SystemPhase::Graph, &state);
-        systemManager.RegisterSystem<PlayerCommandSystem>(SystemPhase::Graph, &state);
-        systemManager.RegisterSystem<ResolveActionStateSystem>(SystemPhase::Graph, &state);
-        systemManager.RegisterSystem<ResolveLocomotionSystem>(SystemPhase::Graph, &state);
-        systemManager.RegisterSystem<ResolveAnimationSystem>(SystemPhase::Graph, &state);
-        systemManager.RegisterSystem<BossPhaseSystem>(SystemPhase::Graph, &state);
-        systemManager.RegisterSystem<SpawnRequestSystem>(SystemPhase::Graph, &state);
-        systemManager.RegisterSystem<OrderingHintTargetSystem>(SystemPhase::Graph, &state);
-        systemManager.RegisterSystem<OrderingHintSourceSystem>(SystemPhase::Graph, &state);
+        systemManager.RegisterSystem<PerceptionReadASystem>(&state);
+        systemManager.RegisterSystem<PerceptionReadBSystem>(&state);
+        systemManager.RegisterSystem<AICommandSystem>(&state);
+        systemManager.RegisterSystem<PlayerCommandSystem>(&state);
+        systemManager.RegisterSystem<ResolveActionStateSystem>(&state);
+        systemManager.RegisterSystem<ResolveLocomotionSystem>(&state);
+        systemManager.RegisterSystem<ResolveAnimationSystem>(&state);
+        systemManager.RegisterSystem<BossPhaseSystem>(&state);
+        systemManager.RegisterSystem<SpawnRequestSystem>(&state);
+        systemManager.RegisterSystem<OrderingHintTargetSystem>(&state);
+        systemManager.RegisterSystem<OrderingHintSourceSystem>(&state);
 
         ExecutionSourceRegistry sourceRegistry{};
         AutoSystemBridge bridge{};
         const AutoSystemBridge::BridgeResult bridgeResult = bridge.Bridge(
-            SystemPhase::Graph,
             ExecPhase::Simulate,
             systemManager,
             sourceRegistry,
@@ -903,6 +902,7 @@ namespace
 void RunTaskExecutorPerfDiagnostics();
 void RunLFWSDequeBenchmark();
 void RunTaskExecutorRaceStressTest(int argc, char** argv);
+void RunDynamicTaskSmokeTests();
 
 namespace
 {
@@ -937,6 +937,10 @@ int main(int argc, char** argv)
         else if (HasArg(argc, argv, "--perf-diagnostics"))
         {
             RunTaskExecutorPerfDiagnostics();
+        }
+        else if (HasArg(argc, argv, "--dynamic-task-smoke"))
+        {
+            RunDynamicTaskSmokeTests();
         }
         else
         {
