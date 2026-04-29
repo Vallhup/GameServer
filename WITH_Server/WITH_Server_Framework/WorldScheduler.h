@@ -8,6 +8,7 @@
 #include "ExecutionContextTypes.h"
 #include "ExecutionGraphTypes.h"
 #include "ExecutionRuntimeTypes.h"
+#include "DynamicTaskTypes.h"
 #include "WorldFrameSelectionTypes.h"
 #include "WorldId.h"
 
@@ -20,6 +21,7 @@ class ExecutionGraphBuilder;
 struct ExecutionGraphBuildPolicy;
 class TaskExecutor;
 class ExecutionOps;
+class DynamicTaskTypeRegistry;
 
 enum class WorldSchedulerFailureReason : uint8_t
 {
@@ -65,7 +67,8 @@ public:
         const ExecutionGraphBuildPolicy& buildPolicy,
         TaskExecutor& executor,
         ExecutionOps& executionOps,
-        WorldSchedulerConfig config = {}
+        WorldSchedulerConfig config = {},
+        DynamicTaskTypeRegistry* dynamicTaskTypeRegistry = nullptr
     );
 
     bool RunFrame(
@@ -89,6 +92,9 @@ private:
         std::unique_ptr<ExecNodeRuntime[]> nodeBacking;
         std::unique_ptr<ExecScopeRuntime[]> scopeBacking;
 
+        // dynamic task freeze: 프레임 경계에서 채워지고 Build()에 전달된다.
+        DynamicTaskFrozenBatch dynamicBatch;
+
         FrameExecContext frameExec{};
         ExecRuntimeState execRuntime{};
 
@@ -111,14 +117,23 @@ private:
 
     bool BuildFrameGraph(
         const WorldFrameSelectionSet& selections,
+        const DynamicTaskFrozenBatch& dynamicBatch,
         BuildResult& outBuildResult);
 
     bool PrepareExecutionContexts(
         const FrameTaskGraph& graph,
+        DynamicTaskFrameTable& dynamicTaskFrameTable,
         std::vector<WorldRuntime*>& runtimeByScope,
         std::vector<WorldId>& worldIdByScope,
         FrameExecContext& outFrameExec,
         ExecRuntimeState& outExecRuntime);
+
+    // 프레임 경계에서 모든 선택된 world의 pending queue를 drain하고
+    // 결정론적 정렬 후 outBatch에 채운다.
+    void FreezeDynamicTaskRequests(
+        std::span<WorldRuntime*> runtimeByScope,
+        uint64_t frameIndex,
+        DynamicTaskFrozenBatch& outBatch);
 
 private:
     WorldManager& _worldManager;
@@ -131,6 +146,9 @@ private:
 
     TaskExecutor& _executor;
     ExecutionOps& _executionOps;
+
+    // optional — nullptr이면 Dynamic Task 기능이 비활성화된다.
+    DynamicTaskTypeRegistry* _dynamicTaskTypeRegistry{ nullptr };
 
     WorldSchedulerConfig _config;
     FrameScratch _scratch;

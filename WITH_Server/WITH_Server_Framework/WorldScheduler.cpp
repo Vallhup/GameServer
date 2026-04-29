@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+#include "DynamicTaskTypes.h"
 #include "ExecutionGraphBuildPolicy.h"
 #include "ExecutionGraphBuilder.h"
 #include "ExecutionSourceTypes.h"
@@ -12,6 +13,7 @@
 #include "WorldInstance.h"
 #include "WorldManager.h"
 #include "WorldRegistry.h"
+#include "WorldRuntime.h"
 
 namespace
 {
@@ -35,7 +37,8 @@ WorldScheduler::WorldScheduler(
     const ExecutionGraphBuildPolicy& buildPolicy,
     TaskExecutor& executor,
     ExecutionOps& executionOps,
-    WorldSchedulerConfig config)
+    WorldSchedulerConfig config,
+    DynamicTaskTypeRegistry* dynamicTaskTypeRegistry)
     : _worldManager(worldManager)
     , _worldRegistry(worldRegistry)
     , _executionModelRegistry(executionModelRegistry)
@@ -44,6 +47,7 @@ WorldScheduler::WorldScheduler(
     , _buildPolicy(buildPolicy)
     , _executor(executor)
     , _executionOps(executionOps)
+    , _dynamicTaskTypeRegistry(dynamicTaskTypeRegistry)
     , _config(config)
 {
 }
@@ -83,7 +87,22 @@ bool WorldScheduler::RunFrame(
         return false;
     }
 
-    if (!BuildFrameGraph(_scratch.selections, _scratch.buildResult))
+    // -----------------------------------------------------------------------
+    // Dynamic Task freeze boundary
+    // 프레임 N 실행에서 누적된 pending 요청을 동결한다.
+    // 이 시점부터 _scratch.dynamicBatch는 변경되지 않는다.
+    // -----------------------------------------------------------------------
+    if (_dynamicTaskTypeRegistry != nullptr)
+    {
+        FreezeDynamicTaskRequests(
+            std::span<WorldRuntime*>(
+                _scratch.runtimeByScope.data(),
+                _scratch.runtimeByScope.size()),
+            params.frameIndex,
+            _scratch.dynamicBatch);
+    }
+
+    if (!BuildFrameGraph(_scratch.selections, _scratch.dynamicBatch, _scratch.buildResult))
     {
         outResult.failureReason = WorldSchedulerFailureReason::GraphBuildFailed;
         return false;
@@ -106,6 +125,7 @@ bool WorldScheduler::RunFrame(
 
     if (!PrepareExecutionContexts(
         _scratch.buildResult.graph,
+        _scratch.buildResult.dynamicTaskFrameTable,
         _scratch.runtimeByScope,
         _scratch.worldIdByScope,
         _scratch.frameExec,
@@ -155,6 +175,8 @@ void WorldScheduler::FrameScratch::Reset() noexcept
 
     nodeBacking.reset();
     scopeBacking.reset();
+
+    dynamicBatch.Clear();
 
     frameExec.Clear();
     execRuntime.ClearViews();
@@ -255,13 +277,21 @@ bool WorldScheduler::BeginSelectedFrames(
 
 bool WorldScheduler::BuildFrameGraph(
     const WorldFrameSelectionSet& selections,
+    const DynamicTaskFrozenBatch& dynamicBatch,
     BuildResult& outBuildResult)
 {
     FrameBuildContext buildContext{};
-    buildContext.frameSelectionSet = &selections;
-    buildContext.executionModelRegistry = &_executionModelRegistry;
+    buildContext.frameSelectionSet      = &selections;
+    buildContext.executionModelRegistry  = &_executionModelRegistry;
     buildContext.executionSourceRegistry = &_executionSourceRegistry;
-    buildContext.buildPolicy = &_buildPolicy;
+    buildContext.buildPolicy             = &_buildPolicy;
+
+    // Dynamic Task 확장 — registry가 있을 때만 batch를 전달한다.
+    if (_dynamicTaskTypeRegistry != nullptr && !dynamicBatch.IsEmpty())
+    {
+        buildContext.dynamicBatch              = &dynamicBatch;
+        buildContext.dynamicTaskTypeRegistry   = _dynamicTaskTypeRegistry;
+    }
 
     outBuildResult = _graphBuilder.Build(buildContext);
     return !outBuildResult.HasError();
@@ -269,6 +299,7 @@ bool WorldScheduler::BuildFrameGraph(
 
 bool WorldScheduler::PrepareExecutionContexts(
     const FrameTaskGraph& graph,
+    DynamicTaskFrameTable& dynamicTaskFrameTable,
     std::vector<WorldRuntime*>& runtimeByScope,
     std::vector<WorldId>& worldIdByScope,
     FrameExecContext& outFrameExec,
@@ -295,13 +326,17 @@ bool WorldScheduler::PrepareExecutionContexts(
 
     outFrameExec.Clear();
     outFrameExec.graph = &graph;
-    outFrameExec.ops = &_executionOps;
+    outFrameExec.ops   = &_executionOps;
     outFrameExec.runtimeByScope = std::span<WorldRuntime*>(
         runtimeByScope.data(),
         runtimeByScope.size());
     outFrameExec.worldIdByScope = std::span<const WorldId>(
         worldIdByScope.data(),
         worldIdByScope.size());
+
+    // dynamicTaskFrameTable은 buildResult 안에 있으며 FrameScratch와 수명이 같다.
+    if (!dynamicTaskFrameTable.IsEmpty())
+        outFrameExec.dynamicTaskFrameTable = &dynamicTaskFrameTable;
 
     outExecRuntime.BindViews(
         std::span<ExecNodeRuntime>(
@@ -312,4 +347,36 @@ bool WorldScheduler::PrepareExecutionContexts(
             graph.scopeCount));
 
     return true;
+}
+
+void WorldScheduler::FreezeDynamicTaskRequests(
+    std::span<WorldRuntime*> runtimeByScope,
+    uint64_t frameIndex,
+    DynamicTaskFrozenBatch& outBatch)
+{
+    outBatch.Clear();
+
+    for (ExecScopeId scopeId = 0;
+        scopeId < static_cast<ExecScopeId>(runtimeByScope.size());
+        ++scopeId)
+    {
+        WorldRuntime* runtime = runtimeByScope[scopeId];
+        if (runtime == nullptr)
+            continue;
+
+        // pending 요청을 batch에 drain한다.
+        // DrainDynamicTaskRequests는 이미 outBatch.requests에 append한다.
+        runtime->DrainDynamicTaskRequests(outBatch.requests);
+    }
+
+    // requestFrameIndex가 설정되지 않은 요청을 현재 프레임으로 보완한다.
+    // (Push 시 설정하지 않은 경우를 위한 safety net)
+    for (DynamicTaskRequest& req : outBatch.requests)
+    {
+        if (req.requestFrameIndex == 0)
+            req.requestFrameIndex = frameIndex;
+    }
+
+    // 결정론적 정렬: (scopeId ASC, priorityBias DESC, requestFrameIndex ASC)
+    outBatch.Sort();
 }

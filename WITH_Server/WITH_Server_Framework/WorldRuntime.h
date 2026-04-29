@@ -20,6 +20,7 @@
 #include "NavMeshRuntime.h"
 #include "WorldTransferTypes.h"
 #include "ExecutionCoreTypes.h"
+#include "DynamicTaskTypes.h"
 
 class ITransferContext;
 class IWorldTransferBinding;
@@ -91,6 +92,24 @@ public:
 	double LastDtSec() const noexcept { return _lastDtSec; }
 
 	// ---------------------------------------------------------------------------
+	// Dynamic Task pending queue
+	//
+	// 프레임 실행 중 시스템 / 네트워크 콜백이 다음 프레임 DynamicTaskRequest를
+	// Push한다. WorldScheduler가 프레임 경계에서 DrainDynamicTaskRequests()로
+	// 동결 배치를 수집한 뒤 그래프 빌드에 전달한다.
+	// ---------------------------------------------------------------------------
+	void PushDynamicTaskRequest(DynamicTaskRequest request)
+	{
+		_dynamicTaskQueue.Push(std::move(request));
+	}
+
+	// WorldScheduler 전용 — 프레임 경계(단일 스레드)에서만 호출한다.
+	void DrainDynamicTaskRequests(std::vector<DynamicTaskRequest>& out)
+	{
+		_dynamicTaskQueue.DrainInto(out);
+	}
+
+	// ---------------------------------------------------------------------------
 	// ExecToken → System* 디스패치 테이블 (AutoSystemBridge / BridgeDispatchFn 전용)
 	//
 	// RegisterSystemDispatch: AutoSystemBridge가 시스템 등록 시 호출한다.
@@ -150,17 +169,15 @@ public:
 	}
 
 	template<SysT T, typename... Args>
-	T* RegisterSystem(SystemPhase phase, Args&&... args)
+	T* RegisterSystem(Args&&... args)
 	{
-		return _systems.RegisterSystem<T>(phase, std::forward<Args>(args)...);
+		return _systems.RegisterSystem<T>(std::forward<Args>(args)...);
 	}
 
 	SystemManager& GetSystemManager() noexcept { return _systems; }
 	const SystemManager& GetSystemManager() const noexcept { return _systems; }
 
-	bool ExecuteSystems(
-		SystemPhase phase,
-		WorldSystemServices services = {});
+	bool ExecuteSystems(WorldSystemServices services = {});
 
 public:
 	Entity ReserveEntity();
@@ -364,4 +381,8 @@ private:
 	// AutoSystemBridge가 등록하고, BridgeDispatchFn이 조회한다.
 	// 월드 생명주기와 동일한 수명을 가진다.
 	std::unordered_map<ExecToken, System*> _systemDispatchTable;
+
+	// Dynamic Task pending queue.
+	// 프레임 N 실행 중 Push되고, 프레임 N+1 그래프 빌드 전에 Drain된다.
+	DynamicTaskPendingQueue _dynamicTaskQueue;
 };
