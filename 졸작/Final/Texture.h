@@ -8,6 +8,7 @@ public:
     void InitializeFromRAW(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath, UINT width, UINT height);
     void InitializeCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
     void InitializeLUT(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& filePath);
+    void InitializeFromMemory(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* data, UINT width, UINT height, DXGI_FORMAT format);
 
     ID3D12Resource* GetTexture() const { return texture.Get(); }
     D3D12_GPU_DESCRIPTOR_HANDLE GetSRV() const { return srvGpuHandle; }

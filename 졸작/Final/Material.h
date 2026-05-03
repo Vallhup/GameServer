@@ -24,6 +24,7 @@ public:
     static UINT RegisterCubeMap(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& ddsPath);
     static UINT RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);
     static UINT RegisterLUT(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);
+    static UINT RegisterTextureFromMemory(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* data, UINT width, UINT height, DXGI_FORMAT format);
     static void RegisterHDRSceneSRV(ID3D12Device* device, ID3D12Resource* hdrSceneRT);
     static void RegisterBloomMipSRV(ID3D12Device* device, ID3D12Resource* bloomTex, UINT mipLevel, UINT slotOffset);
 

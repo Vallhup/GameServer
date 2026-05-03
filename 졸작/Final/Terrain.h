@@ -11,6 +11,7 @@ public:
 	~Terrain() = default;
 
 	void Initialize(DX12Core& core, const wstring& basePath, const wstring& heightmapPath, int gridSize, float worldSize, float heightScale, float tileSize);
+	void LoadSplatmap(DX12Core& core, const wstring& binPath, const wstring& texBasePath);
 
 	void Render(ID3D12GraphicsCommandList* cmdList);
 
@@ -40,6 +41,7 @@ private:
 	int gridSize = 0;
 	float worldSize = 0.0f;
 	float heightScale = 0.0f;
+	float tilingSize = 1.0f;
 
 	vector<Vertex> vertices;
 	vector<UINT> indices;
@@ -49,4 +51,9 @@ private:
 	XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
 	XMFLOAT3 rotation = { 0.0f, 0.0f, 0.0f };
 	XMFLOAT3 scale = { 1.0f, 1.0f, 1.0f };
+
+	UINT splatmap1Index = 0xFFFFFFFF;
+	UINT splatmap2Index = 0xFFFFFFFF;
+	float splatUVScale = 0.0f;
+	int splatLayerCount = 0;
 };

@@ -10,6 +10,7 @@ void Terrain::Initialize(DX12Core& core, const wstring& basePath, const wstring&
 	gridSize = inGridSize;
 	worldSize = inWorldSize;
 	heightScale = inHeightScale;
+	tilingSize = tileSize;
 
 	LoadHeightmap(heightmapPath);
 	BuildVertices(tileSize);
@@ -90,6 +91,11 @@ void Terrain::SetPosition(float x, float y, float z)
 	obj.useTexture = material ? 1 : 0;
 	obj.useInstancing = 0;
 	obj.materialIndex = material ? material->GetMaterialIndex() : 0;
+	obj.useTerrainBlend = (splatmap1Index != 0xFFFFFFFF) ? 2 : 0;
+	obj.splatmap1Index  = splatmap1Index;
+	obj.splatmap2Index  = splatmap2Index;
+	obj.splatUVScale    = splatUVScale;
+	obj.splatLayerCount = splatLayerCount;
 
 	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
 }
@@ -112,6 +118,11 @@ void Terrain::SetRotation(float x, float y, float z)
 	obj.useTexture = material ? 1 : 0;
 	obj.useInstancing = 0;
 	obj.materialIndex = material ? material->GetMaterialIndex() : 0;
+	obj.useTerrainBlend = (splatmap1Index != 0xFFFFFFFF) ? 2 : 0;
+	obj.splatmap1Index  = splatmap1Index;
+	obj.splatmap2Index  = splatmap2Index;
+	obj.splatUVScale    = splatUVScale;
+	obj.splatLayerCount = splatLayerCount;
 
 	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
 }
@@ -134,8 +145,95 @@ void Terrain::SetScale(float x, float y, float z)
 	obj.useTexture = material ? 1 : 0;
 	obj.useInstancing = 0;
 	obj.materialIndex = material ? material->GetMaterialIndex() : 0;
+	obj.useTerrainBlend = (splatmap1Index != 0xFFFFFFFF) ? 2 : 0;
+	obj.splatmap1Index  = splatmap1Index;
+	obj.splatmap2Index  = splatmap2Index;
+	obj.splatUVScale    = splatUVScale;
+	obj.splatLayerCount = splatLayerCount;
 
 	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
+}
+
+void Terrain::LoadSplatmap(DX12Core& core, const wstring& binPath, const wstring& texBasePath)
+{
+	ifstream file(binPath, ios::binary);
+	if (!file.is_open())
+	{
+		OutputDebugStringA("Failed to open splatmap BIN\n");
+		return;
+	}
+
+	uint32_t W, H, C;
+	file.read(reinterpret_cast<char*>(&W), sizeof(W));
+	file.read(reinterpret_cast<char*>(&H), sizeof(H));
+	file.read(reinterpret_cast<char*>(&C), sizeof(C));
+
+	const int layerCount = static_cast<int>(C);
+	if (layerCount == 0) return;
+
+	vector<string> texNames(layerCount);
+	for (int i = 0; i < layerCount; ++i)
+	{
+		uint16_t len;
+		file.read(reinterpret_cast<char*>(&len), sizeof(len));
+		texNames[i].resize(len);
+		file.read(texNames[i].data(), len);
+	}
+
+	MaterialData matData = {};
+	string* matPtrs[] = {
+		&matData.baseColorTexPath, &matData.normalTexPath,
+		&matData.roughnessTexPath, &matData.metallicTexPath,
+		&matData.heightTexPath,    &matData.alphaTexPath,
+		&matData.emissionTexPath,  &matData.aoTexPath
+	};
+	for (int i = 0; i < layerCount && i < 8; ++i)
+		*matPtrs[i] = texNames[i] + ".dds";
+
+	material->LoadFromMaterialData(core.GetDevice(), core.GetGraphicsCmdList(), matData, texBasePath);
+
+	const size_t cellCount = static_cast<size_t>(W) * H;
+	vector<uint8_t> raw(cellCount * C);
+	file.read(reinterpret_cast<char*>(raw.data()), raw.size());
+
+	const int numSplatTex = (layerCount + 3) / 4; // 최대 2장
+	vector<uint8_t> tex0(cellCount * 4, 0);
+	vector<uint8_t> tex1(cellCount * 4, 0);
+
+	for (size_t idx = 0; idx < cellCount; ++idx)
+	{
+		for (int i = 0; i < layerCount && i < 4; ++i)
+			tex0[idx * 4 + i] = raw[idx * C + i];
+		for (int i = 4; i < layerCount && i < 8; ++i)
+			tex1[idx * 4 + (i - 4)] = raw[idx * C + i];
+	}
+
+	splatmap1Index = Material::RegisterTextureFromMemory(
+		core.GetDevice(), core.GetGraphicsCmdList(),
+		tex0.data(), static_cast<int>(W), static_cast<int>(H), DXGI_FORMAT_R8G8B8A8_UNORM);
+
+	if (numSplatTex > 1)
+		splatmap2Index = Material::RegisterTextureFromMemory(
+			core.GetDevice(), core.GetGraphicsCmdList(),
+			tex1.data(), static_cast<int>(W), static_cast<int>(H), DXGI_FORMAT_R8G8B8A8_UNORM);
+
+	splatUVScale = tilingSize / worldSize;
+	splatLayerCount = layerCount;
+
+	ObjectConstants obj = {};
+	obj.world           = XMMatrixTranspose(XMMatrixIdentity());
+	obj.useTexture      = 1;
+	obj.useInstancing   = 0;
+	obj.materialIndex   = material->GetMaterialIndex();
+	obj.useTerrainBlend = 2;
+	obj.splatmap1Index  = splatmap1Index;
+	obj.splatmap2Index  = splatmap2Index;
+	obj.splatUVScale    = splatUVScale;
+	obj.splatLayerCount = splatLayerCount;
+
+	objectCB->CopyData(&obj, sizeof(ObjectConstants), 0);
+
+	OutputDebugStringA("Splatmap (binary) loaded and registered\n");
 }
 
 void Terrain::LoadHeightmap(const wstring& path)

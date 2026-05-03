@@ -91,11 +91,8 @@ void PlazaScene::InitializeSceneEnvironments()
 #pragma region Initialize Plaza Terrain
 	terrain = make_shared<Terrain>();
 	terrain->Initialize(*coreRef, L"PlazaMap/textures/plazaFloor", L"../Assets/FBXModel/PlazaMap/plazaTerrain.raw", 513, 1016.0f, 27.01563f, 1.0f);
+	terrain->LoadSplatmap(*coreRef, L"../Assets/FBXModel/PlazaMap/terrainAtlas.bin", L"../Assets/FBXModel/PlazaMap/textures/");
 #pragma endregion
-}
-
-void PlazaScene::InitializeSceneMonsters()
-{
 }
 
 void PlazaScene::UpdateScene(const float deltaTime)

@@ -21,6 +21,10 @@ struct ObjectConstants
 	UINT materialIndex;
 	int useVertexAnim = 0;
 	int useTerrainBlend = 0;
+	UINT splatmap1Index = 0xFFFFFFFF;
+	UINT splatmap2Index = 0xFFFFFFFF;
+	float splatUVScale = 0.0f;
+	int splatLayerCount = 0;
 	int objPadding[3];
 };
 

@@ -143,6 +143,32 @@ UINT Material::RegisterTexture(ID3D12Device* device, ID3D12GraphicsCommandList* 
     return index;
 }
 
+UINT Material::RegisterTextureFromMemory(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* data, UINT width, UINT height, DXGI_FORMAT format)
+{
+    if (!bindlessHeap)
+        return 0xFFFFFFFF;
+
+    auto texture = make_unique<Texture>();
+    texture->InitializeFromMemory(device, cmdList, data, width, height, format);
+
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = bindlessHeap->GetCPUDescriptorHandleForHeapStart();
+    cpuHandle.ptr += nextTextureIndex * descriptorSize;
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format                  = format;
+    srvDesc.ViewDimension           = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.Texture2D.MipLevels     = 1;
+
+    device->CreateShaderResourceView(texture->GetTexture(), &srvDesc, cpuHandle);
+
+    UINT index = nextTextureIndex++;
+    allTextures.push_back(move(texture));
+
+    OutputDebugStringA(("Memory texture registered at index: " + to_string(index) + "\n").c_str());
+    return index;
+}
+
 UINT Material::RegisterLUT(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path)
 {
     if (!bindlessHeap) {
