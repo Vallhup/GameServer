@@ -14,23 +14,28 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateKnightSet()
 	set->RegisterClip("Walk",	1, AnimCategory::Base);
 	set->RegisterClip("Run",	2, AnimCategory::Base);
 
-	set->RegisterClip("Attack", 3, AnimCategory::Action);
-	set->RegisterClip("Dodge",	4, AnimCategory::Action);
-	set->RegisterClip("Parry",	5, AnimCategory::Action);
-	set->RegisterClip("Stun",	6, AnimCategory::Action);
-	set->RegisterClip("Hit",	7, AnimCategory::Action);
+	set->RegisterClip("AttackCombo1", 3, AnimCategory::Action);
+	set->RegisterClip("AttackCombo2", 4, AnimCategory::Action);
+	set->RegisterClip("AttackCombo3", 5, AnimCategory::Action);
+	set->RegisterClip("AttackStrong", 6, AnimCategory::Action);
+	set->RegisterClip("AttackSpecial", 7, AnimCategory::Action);
 
-	set->RegisterClip("Guard",	8, AnimCategory::Special);
-	set->RegisterClip("Drink",	9, AnimCategory::Special);
+	set->RegisterClip("Dodge",	8, AnimCategory::Action);
+	set->RegisterClip("Parry",	9, AnimCategory::Action);
+	set->RegisterClip("Stun",	10, AnimCategory::Action);
+	set->RegisterClip("Hit",	11, AnimCategory::Action);
 
-	set->RegisterClip("Death",	10, AnimCategory::Die);
+	set->RegisterClip("Guard",	12, AnimCategory::Special);
+	set->RegisterClip("Drink",	13, AnimCategory::Special);
+
+	set->RegisterClip("Death",	14, AnimCategory::Die);
 
 	return set;
 }
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateFinalBossSet()
 {
-	auto set = make_shared<AnimationSet>("FinalBoss", 12);
+	auto set = make_shared<AnimationSet>("FinalBoss", 16);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);
@@ -50,7 +55,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateFinalBossSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateImpSet()
 {
-	auto set = make_shared<AnimationSet>("Imp", 22);
+	auto set = make_shared<AnimationSet>("Imp", 26);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -88,7 +93,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateImpSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateDemonStrikerSet()
 {
-	auto set = make_shared<AnimationSet>("DemonStriker", 46);
+	auto set = make_shared<AnimationSet>("DemonStriker", 50);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -141,7 +146,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateDemonStrikerSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateDemonExecutionerSet()
 {
-	auto set = make_shared<AnimationSet>("DemonExecutioner", 82);
+	auto set = make_shared<AnimationSet>("DemonExecutioner", 86);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -186,7 +191,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateDemonExecutionerSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateBigDemonWarriorSet()
 {
-	auto set = make_shared<AnimationSet>("BigDemonWarrior", 110);
+	auto set = make_shared<AnimationSet>("BigDemonWarrior", 114);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -229,7 +234,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateBigDemonWarriorSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateTankSet()
 {
-	auto set = make_shared<AnimationSet>("Tank", 137);
+	auto set = make_shared<AnimationSet>("Tank", 141);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -273,44 +278,53 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateTankSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 {
-	auto set = make_shared<AnimationSet>("Lancer", 166);
+	auto set = make_shared<AnimationSet>("Lancer", 170);
 
-	set->RegisterClip("Idle", 0, AnimCategory::Base);
+	set->RegisterClip("Idle", 0, AnimCategory::Base, 0.05f);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);
 	set->RegisterClip("Run", 2, AnimCategory::Base);
 
-	set->RegisterClip("Attack", 3, AnimCategory::Action);
-	set->RegisterClip("Dodge", 4, AnimCategory::Action);
-	set->RegisterClip("Parry", 5, AnimCategory::Action);
-	set->RegisterClip("Stun", 6, AnimCategory::Action);
-	set->RegisterClip("Hit", 7, AnimCategory::Action);
+	set->RegisterClip("AttackCombo1", 3, AnimCategory::Action);
+	set->RegisterClip("AttackCombo2", 4, AnimCategory::Action);
+	set->RegisterClip("AttackCombo3", 5, AnimCategory::Action);
+	set->RegisterClip("AttackStrong", 6, AnimCategory::Action);
+	set->RegisterClip("AttackSpecial", 7, AnimCategory::Action);
+	set->RegisterClip("Dodge", 8, AnimCategory::Action);
+	set->RegisterClip("Parry", 9, AnimCategory::Action);
+	set->RegisterClip("StunLeft", 10, AnimCategory::Action);
+	set->RegisterClip("StunRight", 11, AnimCategory::Action);
+	set->RegisterClip("Hit", 12, AnimCategory::Action);
 
-	set->RegisterClip("Guard", 8, AnimCategory::Special);
-	set->RegisterClip("Drink", 9, AnimCategory::Special);
+	set->RegisterClip("Guard", 13, AnimCategory::Special);
+	set->RegisterClip("Drink", 14, AnimCategory::Special);
 
-	set->RegisterClip("Death", 10, AnimCategory::Die);
+	set->RegisterClip("Death", 15, AnimCategory::Die);
 
 	return set;
 }
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreatePaladinSet()
 {
-	auto set = make_shared<AnimationSet>("Paladin", 177);
+	auto set = make_shared<AnimationSet>("Paladin", 186);
 
-	set->RegisterClip("Idle", 0, AnimCategory::Base);
+	set->RegisterClip("Idle", 0, AnimCategory::Base, 0.05f);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);
 	set->RegisterClip("Run", 2, AnimCategory::Base);
 
-	set->RegisterClip("Attack", 3, AnimCategory::Action);
-	set->RegisterClip("Dodge", 4, AnimCategory::Action);
-	set->RegisterClip("Parry", 5, AnimCategory::Action);
-	set->RegisterClip("Stun", 6, AnimCategory::Action);
-	set->RegisterClip("Hit", 7, AnimCategory::Action);
+	set->RegisterClip("AttackCombo1", 3, AnimCategory::Action);
+	set->RegisterClip("AttackCombo2", 4, AnimCategory::Action);
+	set->RegisterClip("AttackCombo3", 5, AnimCategory::Action);
+	set->RegisterClip("AttackStrong", 6, AnimCategory::Action);
+	set->RegisterClip("AttackSpecial", 7, AnimCategory::Action);
+	set->RegisterClip("Dodge", 8, AnimCategory::Action);
+	set->RegisterClip("Parry", 9, AnimCategory::Action);
+	set->RegisterClip("Stun", 10, AnimCategory::Action);
+	set->RegisterClip("Hit", 11, AnimCategory::Action);
 
-	set->RegisterClip("Guard", 8, AnimCategory::Special);
-	set->RegisterClip("Drink", 9, AnimCategory::Special);
+	set->RegisterClip("Guard", 12, AnimCategory::Special);
+	set->RegisterClip("Drink", 13, AnimCategory::Special);
 
-	set->RegisterClip("Death", 10, AnimCategory::Die);
+	set->RegisterClip("Death", 14, AnimCategory::Die);
 
 	return set;
 }
