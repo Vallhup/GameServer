@@ -102,6 +102,15 @@ void Scene::SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches)
 	instancingBatches = move(batches);
 }
 
+shared_ptr<MainCharacter> Scene::GetAvailableCharacter(CharacterType type) const
+{
+	auto it = characterPools.find(type);
+	if (it == characterPools.end()) return nullptr;
+	for (auto& c : it->second)
+		if (c->GetId() == -1) return c;
+	return nullptr;
+}
+
 shared_ptr<GameObject> Scene::GetAvailableMonster(MonsterType type) const
 {
 	auto it = monsterPools.find(type);
@@ -111,56 +120,40 @@ shared_ptr<GameObject> Scene::GetAvailableMonster(MonsterType type) const
 	return nullptr;
 }
 
-shared_ptr<MainCharacter> Scene::GetAvailableKnight() const
+shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)())
 {
-	for (auto& knight : knightPool)
-	{
-		if (knight->GetId() == -1)
-			return knight;
-	}
-	return nullptr;
-}
+	auto character = make_shared<MainCharacter>();
+	character->SetId(-1);
+	auto mesh = character->AddComponent<Mesh>();
+	auto transform = character->AddComponent<Transform>();
+	character->AddComponent<Animator>();
+	auto animMachine = character->AddComponent<AnimationMachine>();
 
-void Scene::CreateKnightPool()
-{
-	for (int i = 0; i < MAX_KNIGHT_COUNT; ++i)
-	{
-		auto knight = make_shared<MainCharacter>();
-		knight->SetId(-1);
-		auto mesh = knight->AddComponent<Mesh>();
-		auto transform = knight->AddComponent<Transform>();
-		auto animator = knight->AddComponent<Animator>();
-		auto animMachine = knight->AddComponent<AnimationMachine>();
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
-		//mesh->SetCollisionMesh(*coreRef, L"../Assets/FBXModel/Knight/knight6");
+	mesh->SetMesh(*coreRef, meshPath);
+	animMachine->SetAnimationSet(animFactory());
+	transform->SetRotation(0.f, 0.f, 0.f);
+	transform->SetScale(0.01f, 0.01f, 0.01f);
 
-		animMachine->SetAnimationSet(AnimationSetFactory::CreateKnightSet());
-		transform->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
-		transform->SetRotation(0.f, 0.f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
+	auto trail = character->AddComponent<TrailComponent>();
+	trail->Initialize(coreRef->GetDevice(), 32);
+	trail->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });
+	trail->SetLifetime(0.13f);
 
-		auto trail = knight->AddComponent<TrailComponent>();
-		trail->Initialize(coreRef->GetDevice(), 32);
-		trail->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });
-		trail->SetLifetime(0.13f);
+	auto dust = character->AddComponent<FootDustComponent>();
+	dust->Initialize(coreRef->GetDevice(), 32);
+	dust->SetColor({ 0.15f, 0.15f, 0.15f, 0.4f });
+	dust->SetLifetime(0.35f);
+	dust->SetParticleSize(0.1f);
 
-		auto dust = knight->AddComponent<FootDustComponent>();
-		dust->Initialize(coreRef->GetDevice(), 32);
-		dust->SetColor({ 0.15f, 0.15f, 0.15f, 0.4f });
-		dust->SetLifetime(0.35f);
-		dust->SetParticleSize(0.1f);
+	auto spark = character->AddComponent<ParrySparkComponent>();
+	spark->Initialize(coreRef->GetDevice(), 64);
+	spark->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
+	spark->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
+	spark->SetSpeed(20.0f);
+	spark->SetParticleSize(0.1f);
+	spark->SetLifetime(0.75f);
 
-		auto spark = knight->AddComponent<ParrySparkComponent>();
-		spark->Initialize(coreRef->GetDevice(), 64);
-		spark->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
-		spark->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
-		spark->SetSpeed(20.0f);
-		spark->SetParticleSize(0.1f);
-		spark->SetLifetime(0.75f);
-
-		knightPool.push_back(knight);
-		AddGameObject(knight);
-	}
+	return character;
 }
 
 shared_ptr<GameObject> Scene::CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet> (*animFactory)(), bool twoSided)
@@ -178,6 +171,30 @@ shared_ptr<GameObject> Scene::CreateMonsterObject(const wstring& meshPath, share
 	transform->SetRotation(0.f, 0.f, 0.f);
 	transform->SetScale(0.01f, 0.01f, 0.01f);
 	return obj;
+}
+
+void Scene::CreateCharacterPool(CharacterType type, int count)
+{
+	struct CharacterDesc
+	{
+		const wchar_t* meshPath;
+		shared_ptr<AnimationSet>(*animFactory)();
+	};
+
+	static const unordered_map<CharacterType, CharacterDesc> descs = {
+		{ CharacterType::Knight,  { L"../Assets/FBXModel/Knight/knight6",  &AnimationSetFactory::CreateKnightSet  } },
+		{ CharacterType::Lancer,  { L"../Assets/FBXModel/Lancer/lancer",   &AnimationSetFactory::CreateLancerSet  } },
+		{ CharacterType::Paladin, { L"../Assets/FBXModel/Paladin/paladin", &AnimationSetFactory::CreatePaladinSet } },
+	};
+
+	const auto& desc = descs.at(type);
+	for (int i = 0; i < count; ++i)
+	{
+		auto character = CreateCharacterObject(desc.meshPath, desc.animFactory);
+		character->GetComponent<Transform>()->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
+		characterPools[type].push_back(character);
+		AddGameObject(character);
+	}
 }
 
 void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count)
@@ -227,22 +244,34 @@ void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 	int id = nid.GetId();
 	int type = add.typeid_();
 
-	if (type == static_cast<int>(CharacterId::FinalBoss)) // Final_Boss
+	static const unordered_map<int, MonsterType> monsterMap = {
+		{ static_cast<int>(CharacterId::FinalBoss),        MonsterType::Boss             },
+		{ static_cast<int>(CharacterId::Imp),              MonsterType::Imp              },
+		{ static_cast<int>(CharacterId::DemonStriker),     MonsterType::DemonStriker     },
+		{ static_cast<int>(CharacterId::DemonExecutioner), MonsterType::DemonExecutioner },
+		{ static_cast<int>(CharacterId::BigDemonWarrior),  MonsterType::BigDemonWarrior  },
+	};
+
+	static const unordered_map<int, CharacterType> characterMap = {
+		{ static_cast<int>(CharacterId::Knight),  CharacterType::Knight  },
+		{ static_cast<int>(CharacterId::Lancer),  CharacterType::Lancer  },
+		{ static_cast<int>(CharacterId::Paladin), CharacterType::Paladin },
+	};
+
+	if (auto monsterIter = monsterMap.find(type); monsterIter != monsterMap.end())
 	{
-		auto boss = GetAvailableMonster(MonsterType::Boss);
-		if (boss)
+		if (auto monster = GetAvailableMonster(monsterIter->second))
 		{
-			boss->SetId(id);
-			auto transform = boss->GetComponent<Transform>();
+			monster->SetId(id);
+			auto transform = monster->GetComponent<Transform>();
 			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
-			activeCharacters[id] = boss;
+			activeCharacters[id] = monster;
 		}
 	}
-	else if (type == static_cast<int>(CharacterId::Knight)) // Knight
+	else if (auto charcterIter = characterMap.find(type); charcterIter != characterMap.end())
 	{
-		auto player = GetAvailableKnight();
-		if (player)
+		if (auto player = GetAvailableCharacter(charcterIter->second))
 		{
 			player->SetId(id);
 			auto transform = player->GetComponent<Transform>();
@@ -254,59 +283,9 @@ void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			{
 				myPlayer = player;
 				myPlayer->SetAsLocalPlayer(cam.get());
-
 				IMGUI.SetMyPlayer(myPlayer.get());
-
 				OutputDebugStringA("My character activated!\n");
 			}
-		}
-	}
-	else if (type == static_cast<int>(CharacterId::Imp))
-	{
-		auto imp = GetAvailableMonster(MonsterType::Imp);
-		if (imp)
-		{
-			imp->SetId(id);
-			auto transform = imp->GetComponent<Transform>();
-			transform->SetInitPosition(add.x(), add.y(), add.z());
-			transform->SetTargetRotation(add.yaw());
-			activeCharacters[id] = imp;
-		}
-	}
-	else if (type == static_cast<int>(CharacterId::DemonStriker))
-	{
-		auto striker = GetAvailableMonster(MonsterType::DemonStriker);
-		if (striker)
-		{
-			striker->SetId(id);
-			auto transform = striker->GetComponent<Transform>();
-			transform->SetInitPosition(add.x(), add.y(), add.z());
-			transform->SetTargetRotation(add.yaw());
-			activeCharacters[id] = striker;
-		}
-	}
-	else if (type == static_cast<int>(CharacterId::DemonExecutioner))
-	{
-		auto demonExecutionerObject = GetAvailableMonster(MonsterType::DemonExecutioner);
-		if (demonExecutionerObject)
-		{
-			demonExecutionerObject->SetId(id);
-			auto transform = demonExecutionerObject->GetComponent<Transform>();
-			transform->SetInitPosition(add.x(), add.y(), add.z());
-			transform->SetTargetRotation(add.yaw());
-			activeCharacters[id] = demonExecutionerObject;
-		}
-	}
-	else if (type == static_cast<int>(CharacterId::BigDemonWarrior))
-	{
-		auto bigDemonWarriorObject = GetAvailableMonster(MonsterType::BigDemonWarrior);
-		if (bigDemonWarriorObject)
-		{
-			bigDemonWarriorObject->SetId(id);
-			auto transform = bigDemonWarriorObject->GetComponent<Transform>();
-			transform->SetInitPosition(add.x(), add.y(), add.z());
-			transform->SetTargetRotation(add.yaw());
-			activeCharacters[id] = bigDemonWarriorObject;
 		}
 	}
 }

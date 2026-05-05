@@ -12,6 +12,7 @@ enum class SceneType;
 class MainCharacter;
 class AnimationSet;
 
+enum class CharacterType { Knight, Lancer, Paladin };
 enum class MonsterType { Boss, Imp, DemonStriker, DemonExecutioner, BigDemonWarrior, Tank };
 
 class Scene
@@ -51,13 +52,14 @@ protected:
 	template<typename T>
 	void CreateAndBatchObjects(const wstring& path, const vector<T>& data, vector<shared_ptr<InstancingBatch>>& targetBatchList);
 
-	void CreateKnightPool();
+	void CreateCharacterPool(CharacterType type, int count = MAX_CHARACTER_COUNT);
 	void CreateMonsters(MonsterType type, const XMFLOAT3& position, int count = 1);
 
 private:
+	shared_ptr<MainCharacter> GetAvailableCharacter(CharacterType type) const;
 	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
-	shared_ptr<MainCharacter> GetAvailableKnight() const;
 
+	shared_ptr<MainCharacter> CreateCharacterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)());
 	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)(), bool twoSided = true);
 
 	// Network Handler Function Interface
@@ -81,12 +83,12 @@ protected:
 
 	vector<shared_ptr<GameObject>> gameObjects;
 	unordered_map<MonsterType, vector<shared_ptr<GameObject>>> monsterPools;
+	unordered_map<CharacterType, vector<shared_ptr<MainCharacter>>> characterPools;
 
-	vector<shared_ptr<MainCharacter>> knightPool;
 	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
 	shared_ptr<MainCharacter> myPlayer;
 
-	static constexpr int MAX_KNIGHT_COUNT = 10;
+	static constexpr int MAX_CHARACTER_COUNT = 5;
 };
 
 template <typename T>

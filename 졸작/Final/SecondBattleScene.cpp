@@ -19,10 +19,11 @@
 void SecondBattleScene::Release()
 {
 	instancingBatches.clear();
+	characterPools.clear();
 	monsterPools.clear();
 	activeCharacters.clear();
-	gameObjects.clear();
 	myPlayer = nullptr;
+	gameObjects.clear();
 
 	OutputDebugStringA("SecondBattleScene Data has been deleted!! \n----------------------------------------\n");
 }
@@ -42,7 +43,9 @@ void SecondBattleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nSecondBattleScene Data has been created!! \n");
 
-	CreateKnightPool();
+	CreateCharacterPool(CharacterType::Knight);
+	CreateCharacterPool(CharacterType::Lancer);
+	CreateCharacterPool(CharacterType::Paladin);
 
 	InitializeSceneEnvironments();
 	InitializeSceneMonsters();

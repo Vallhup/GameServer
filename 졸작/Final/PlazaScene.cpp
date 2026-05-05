@@ -21,7 +21,7 @@
 void PlazaScene::Release()
 {
 	instancingBatches.clear();
-	knightPool.clear();
+	characterPools.clear();
 	monsterPools.clear();
 	activeCharacters.clear();
 	myPlayer = nullptr;
@@ -45,7 +45,9 @@ void PlazaScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nPlazaScene Data has been created!! \n");
 
-	CreateKnightPool();
+	CreateCharacterPool(CharacterType::Knight);
+	CreateCharacterPool(CharacterType::Lancer);
+	CreateCharacterPool(CharacterType::Paladin);
 
 	// ----------------------------------
 	// 다찬이가 만든 두 캐릭터 띄우는 임시 함수 - 중간발표용

@@ -19,10 +19,11 @@
 void FirstBattleScene::Release()
 {
 	instancingBatches.clear();
+	characterPools.clear();
 	monsterPools.clear();
 	activeCharacters.clear();
-	gameObjects.clear();
 	myPlayer = nullptr;
+	gameObjects.clear();
 
 	OutputDebugStringA("FirstBattleScene Data has been deleted!! \n----------------------------------------\n");
 }
@@ -42,7 +43,9 @@ void FirstBattleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nFirstBattleScene Data has been created!! \n");
 
-	CreateKnightPool();
+	CreateCharacterPool(CharacterType::Knight);
+	CreateCharacterPool(CharacterType::Lancer);
+	CreateCharacterPool(CharacterType::Paladin);
 
 	InitializeSceneEnvironments();
 	InitializeSceneMonsters();
