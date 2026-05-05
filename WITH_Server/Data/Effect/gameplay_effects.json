@@ -1,0 +1,149 @@
+{
+  "effects": [
+    {
+      "key": "Effect.HpBoost_High",
+      "name": "HpBoost.High",
+      "kind": "Positive",
+      "tags": [],
+      "lifetime": {
+        "durationPolicy": "Infinite",
+        "defaultDurationSec": 0.0,
+        "tickIntervalSec": null
+      },
+      "stacking": {
+        "groupKey": "EffectGroup.HpBoost",
+        "maxStackCount": 1,
+        "stackPolicy": "Replace"
+      },
+      "attributeModifiers": [
+        {
+          "attributeKey": "Attribute.MaxHp",
+          "op": "Add",
+          "value": 30.0
+        }
+      ],
+      "tagModifiers": [],
+      "periodicEffects": [],
+      "applyRequirements": [],
+      "removeRules": []
+    },
+    {
+      "key": "Effect.HpBoost_Low",
+      "name": "HpBoost.Low",
+      "kind": "Positive",
+      "tags": [],
+      "lifetime": {
+        "durationPolicy": "Infinite",
+        "defaultDurationSec": 0.0,
+        "tickIntervalSec": null
+      },
+      "stacking": {
+        "groupKey": "EffectGroup.HpBoost",
+        "maxStackCount": 1,
+        "stackPolicy": "Replace"
+      },
+      "attributeModifiers": [
+        {
+          "attributeKey": "Attribute.MaxHp",
+          "op": "Add",
+          "value": 10.0
+        }
+      ],
+      "tagModifiers": [],
+      "periodicEffects": [],
+      "applyRequirements": [],
+      "removeRules": []
+    },
+    {
+      "key": "Effect.HpBoost_Mid",
+      "name": "HpBoost.Mid",
+      "kind": "Positive",
+      "tags": [],
+      "lifetime": {
+        "durationPolicy": "Infinite",
+        "defaultDurationSec": 0.0,
+        "tickIntervalSec": null
+      },
+      "stacking": {
+        "groupKey": "EffectGroup.HpBoost",
+        "maxStackCount": 1,
+        "stackPolicy": "Replace"
+      },
+      "attributeModifiers": [
+        {
+          "attributeKey": "Attribute.MaxHp",
+          "op": "Add",
+          "value": 20.0
+        }
+      ],
+      "tagModifiers": [],
+      "periodicEffects": [],
+      "applyRequirements": [],
+      "removeRules": []
+    },
+    {
+      "key": "Effect.ParrySuccess",
+      "name": "ParrySuccess",
+      "kind": "Positive",
+      "tags": [],
+      "lifetime": {
+        "durationPolicy": "Timed",
+        "defaultDurationSec": 3.0,
+        "tickIntervalSec": null
+      },
+      "stacking": {
+        "groupKey": "EffectGroup.ParrySuccess",
+        "maxStackCount": 1,
+        "stackPolicy": "Refresh"
+      },
+      "attributeModifiers": [],
+      "tagModifiers": [
+        {
+          "tagKey": "State.ParrySuccessReady",
+          "op": "Add"
+        }
+      ],
+      "periodicEffects": [],
+      "applyRequirements": [
+        {
+          "requiredTags": {
+            "op": "None",
+            "tags": [],
+            "children": []
+          },
+          "blockedTags": {
+            "op": "Any",
+            "tags": [
+              "State.ParrySuccessReady"
+            ],
+            "children": []
+          }
+        }
+      ],
+      "removeRules": [
+        {
+          "trigger": "CounterReached",
+          "removeWhenTagsMatch": {
+            "op": "None",
+            "tags": [],
+            "children": []
+          },
+          "counterThreshold": 1.0,
+          "abilityKind": "Attack",
+          "counterEvent": "AbilityCommitted"
+        },
+        {
+          "trigger": "DurationExpired",
+          "removeWhenTagsMatch": {
+            "op": "None",
+            "tags": [],
+            "children": []
+          },
+          "counterThreshold": null,
+          "abilityKind": null,
+          "counterEvent": "None"
+        }
+      ]
+    }
+  ]
+}

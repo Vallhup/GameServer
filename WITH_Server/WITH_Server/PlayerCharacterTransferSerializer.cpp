@@ -8,6 +8,7 @@
 #include "Aspect/ICharacterAspect.h"
 #include "CharacterDef.h"
 #include "ECS/GameplayRuntimeComponents.h"
+#include "GameDataCatalog.h"
 #include "IWorldTransferSerializer.h"
 #include "WorldRuntime.h"
 
@@ -94,7 +95,7 @@ namespace
 			std::memcpy(&payload, bytes.data(), sizeof(payload));
 
 			const CharacterDef* const characterDef =
-				FindCharacterDef(payload.characterId);
+				GameDataCatalog::Current().Characters().Find(payload.characterId);
 			if (characterDef == nullptr || !characterDef->IsPlayable())
 			{
 				return false;

@@ -55,7 +55,7 @@ bool IsPlayerMoveCommandType(WorldCommandTypeKey typeKey) noexcept
 		PlayerCommandTypeKey::Move);
 }
 
-bool IsPlayerActionEventCommandType(WorldCommandTypeKey typeKey) noexcept
+bool IsPlayerAbilityEventCommandType(WorldCommandTypeKey typeKey) noexcept
 {
 	return typeKey == static_cast<WorldCommandTypeKey>(
 		PlayerCommandTypeKey::LightAttack) ||
@@ -173,7 +173,7 @@ bool TryDecodePlayerDirectionCommandPayload(
 	const WorldCommand& command,
 	PlayerDirectionCommandPayload& outPayload) noexcept
 {
-	if (!IsPlayerActionEventCommandType(command.typeKey))
+	if (!IsPlayerAbilityEventCommandType(command.typeKey))
 	{
 		return false;
 	}

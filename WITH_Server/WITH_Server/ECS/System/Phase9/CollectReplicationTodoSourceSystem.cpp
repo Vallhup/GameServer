@@ -9,7 +9,7 @@ namespace
 {
 	const std::array<AccessSpec, 2> kCollectReplicationTodoSourceAccesses{
 		WriteImmediate(ComponentRes<PendingProjectileSpawnComp>()),
-		WriteImmediate(ComponentRes<PendingActionPresentationEventComp>()),
+		WriteImmediate(ComponentRes<PendingAbilityPresentationEventComp>()),
 	};
 }
 
@@ -32,7 +32,7 @@ void CollectReplicationTodoSourceSystem::Execute(SystemContext& ctx)
 	}
 
 	for (auto [entity, presentation] :
-		ctx.ecs.View<PendingActionPresentationEventComp>())
+		ctx.ecs.View<PendingAbilityPresentationEventComp>())
 	{
 		(void)entity;
 		presentation.events.clear();

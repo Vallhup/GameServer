@@ -8,6 +8,9 @@
 
 #include "SystemMetaHelper.h"
 #include "../../CharacterDef.h"
+#include "../../DefEnumString.h"
+#include "../../GameDataCatalog.h"
+#include "../../GameplayContentCatalog.h"
 #include "WorldRuntime.h"
 #include "../GameplayRuntimeComponents.h"
 
@@ -80,9 +83,9 @@ namespace GameplaySystemUtil
 		return WrapYaw(currentYaw + std::copysign(maxStep, delta));
 	}
 
-	inline bool IsActionActive(const ActionStateComp& actionState)
+	inline bool IsAbilityActive(const AbilityStateComp& abilityState)
 	{
-		return actionState.actionId != ActionId::None;
+		return abilityState.abilityId != InvalidAbilityId;
 	}
 
 	inline bool HasBlockingPendingState(const ECSView& ecs, Entity entity)
@@ -92,17 +95,21 @@ namespace GameplaySystemUtil
 			ecs.HasComponent<PendingWorldTransferTag>(entity);
 	}
 
-	inline const CharacterActionProfileDef* FindCharacterActionProfile(
+	inline const AbilitySetDef* FindCharacterAbilitySet(
 		CharacterId characterId)
 	{
-		const CharacterDef* characterDef = FindCharacterDef(characterId);
-		if (characterDef == nullptr || !characterDef->action.has_value())
+		const GameDataCatalog& gameDataCatalog = GameDataCatalog::Current();
+		const GameplayContentCatalogSnapshot& contentCatalog =
+			GameplayContentCatalogSnapshot::Current();
+		const CharacterDef* characterDef =
+			gameDataCatalog.Characters().Find(characterId);
+		if (characterDef == nullptr ||
+			!characterDef->abilitySetKey.has_value())
 		{
 			return nullptr;
 		}
 
-		return FindCharacterActionProfileDef(
-			characterDef->action->actionProfileId);
+		return contentCatalog.FindAbilitySetByKey(*characterDef->abilitySetKey);
 	}
 
 	inline const CharacterStatDef* FindCharacterStats(
@@ -115,33 +122,40 @@ namespace GameplaySystemUtil
 			return nullptr;
 		}
 
-		const CharacterDef* def = FindCharacterDef(spawnType->characterId);
+		const CharacterDef* def =
+			GameDataCatalog::Current().Characters().Find(spawnType->characterId);
 		return (def != nullptr) ? &def->stat : nullptr;
 	}
 
-	inline AnimationId ResolveActionAnimationId(
+	inline AnimationId ResolveAbilityAnimationId(
 		CharacterId characterId,
-		ActionId actionId)
+		AbilityId abilityId)
 	{
-		const CharacterActionProfileDef* profile =
-			FindCharacterActionProfile(characterId);
-		if (profile == nullptr)
+		const AbilitySetDef* set = FindCharacterAbilitySet(characterId);
+		if (set == nullptr || !set->animationBindingProfileId.has_value())
 		{
 			return AnimationId::None;
 		}
 
-		const AnimationBindingProfileDef* bindingProfile =
-			FindAnimationBindingProfileDef(profile->animationBindingProfileId);
+		const AbilityAnimationBindingProfileDef* bindingProfile =
+			GameplayContentCatalogSnapshot::Current()
+				.AbilitySets()
+				.animationBindingProfiles
+				.Find(*set->animationBindingProfileId);
 		if (bindingProfile == nullptr)
 		{
 			return AnimationId::None;
 		}
 
-		for (const ActionAnimationBindingDef& binding : bindingProfile->actionBindings)
+		for (const AbilityAnimationBindingDef& binding :
+			bindingProfile->abilityBindings)
 		{
-			if (binding.actionId == actionId)
+			if (binding.abilityId == abilityId)
 			{
-				return binding.animationId;
+				AnimationId animationId{ AnimationId::None };
+				return ParseAnimationIdString(binding.animationKey, animationId)
+					? animationId
+					: AnimationId::None;
 			}
 		}
 
@@ -152,68 +166,76 @@ namespace GameplaySystemUtil
 		CharacterId characterId,
 		LocomotionMode mode)
 	{
-		const CharacterActionProfileDef* profile =
-			FindCharacterActionProfile(characterId);
-		if (profile == nullptr)
+		const AbilitySetDef* set = FindCharacterAbilitySet(characterId);
+		if (set == nullptr || !set->animationBindingProfileId.has_value())
 		{
 			return AnimationId::None;
 		}
 
-		const AnimationBindingProfileDef* bindingProfile =
-			FindAnimationBindingProfileDef(profile->animationBindingProfileId);
+		const AbilityAnimationBindingProfileDef* bindingProfile =
+			GameplayContentCatalogSnapshot::Current()
+				.AbilitySets()
+				.animationBindingProfiles
+				.Find(*set->animationBindingProfileId);
 		if (bindingProfile == nullptr)
 		{
 			return AnimationId::None;
 		}
 
-		for (const LocomotionAnimationBindingDef& binding :
-			bindingProfile->locomotionBindings)
-		{
-			if (binding.mode == mode)
+		const auto FindBinding =
+			[bindingProfile](LocomotionMode targetMode) noexcept
 			{
-				return binding.animationId;
-			}
-		}
-
-		const auto FindFallback =
-			[bindingProfile](LocomotionMode fallbackMode) noexcept
-			{
-				for (const LocomotionAnimationBindingDef& binding :
+				for (const AbilityLocomotionAnimationBindingDef& binding :
 					bindingProfile->locomotionBindings)
 				{
-					if (binding.mode == fallbackMode)
+					if (binding.mode == targetMode)
 					{
-						return binding.animationId;
+						return &binding;
 					}
 				}
 
-				return AnimationId::None;
+				return static_cast<const AbilityLocomotionAnimationBindingDef*>(
+					nullptr);
 			};
 
-		switch (mode)
+		const AbilityLocomotionAnimationBindingDef* binding = FindBinding(mode);
+		if (binding == nullptr)
 		{
-		case LocomotionMode::WalkBack:
-		case LocomotionMode::WalkLeft:
-		case LocomotionMode::WalkRight:
-			return FindFallback(LocomotionMode::Walk);
-		case LocomotionMode::TurnLeft:
-		case LocomotionMode::TurnRight:
-			return FindFallback(LocomotionMode::Turn);
-		default:
-			break;
+			switch (mode)
+			{
+			case LocomotionMode::WalkBack:
+			case LocomotionMode::WalkLeft:
+			case LocomotionMode::WalkRight:
+				binding = FindBinding(LocomotionMode::Walk);
+				break;
+			case LocomotionMode::TurnLeft:
+			case LocomotionMode::TurnRight:
+				binding = FindBinding(LocomotionMode::Turn);
+				break;
+			default:
+				break;
+			}
 		}
 
-		return AnimationId::None;
+		if (binding == nullptr)
+		{
+			return AnimationId::None;
+		}
+
+		AnimationId animationId{ AnimationId::None };
+		return ParseAnimationIdString(binding->animationKey, animationId)
+			? animationId
+			: AnimationId::None;
 	}
 
 	inline bool IsWindowActive(
-		const ActionDef& actionDef,
-		CombatWindowType type,
+		const AbilityDef& abilityDef,
+		AbilityCombatWindowKind type,
 		float normalizedTime)
 	{
-		for (const ActionCombatWindowDef& window : actionDef.combatWindows)
+		for (const AbilityCombatWindowDef& window : abilityDef.timeline.combatWindows)
 		{
-			if (window.windowType != type)
+			if (window.kind != type)
 			{
 				continue;
 			}
@@ -228,17 +250,17 @@ namespace GameplaySystemUtil
 		return false;
 	}
 
-	inline std::optional<AttackCombatEffectDef> FindCurrentAttackEffect(
-		const ActionDef& actionDef,
+	inline std::optional<AbilityAttackHitDef> FindCurrentAttackEffect(
+		const AbilityDef& abilityDef,
 		float normalizedTime,
 		uint16_t& outWindowIndex)
 	{
 		for (uint16_t i = 0;
-			i < static_cast<uint16_t>(actionDef.combatWindows.size());
+			i < static_cast<uint16_t>(abilityDef.timeline.combatWindows.size());
 			++i)
 		{
-			const ActionCombatWindowDef& window = actionDef.combatWindows[i];
-			if (window.windowType != CombatWindowType::Attack ||
+			const AbilityCombatWindowDef& window = abilityDef.timeline.combatWindows[i];
+			if (window.kind != AbilityCombatWindowKind::Attack ||
 				normalizedTime < window.startNormalized ||
 				normalizedTime >= window.endNormalized ||
 				!window.effect.has_value() ||
@@ -263,8 +285,11 @@ namespace GameplaySystemUtil
 			return false;
 		}
 
-		const CharacterDef* lhsDef = FindCharacterDef(lhsSpawn->characterId);
-		const CharacterDef* rhsDef = FindCharacterDef(rhsSpawn->characterId);
+		const GameDataCatalog& catalog = GameDataCatalog::Current();
+		const CharacterDef* lhsDef =
+			catalog.Characters().Find(lhsSpawn->characterId);
+		const CharacterDef* rhsDef =
+			catalog.Characters().Find(rhsSpawn->characterId);
 		if (lhsDef == nullptr || rhsDef == nullptr)
 		{
 			return false;
@@ -273,10 +298,10 @@ namespace GameplaySystemUtil
 		return lhsDef->profile.faction == rhsDef->profile.faction;
 	}
 
-	inline void ClearActionTimelineAdvance(ActionTimelineAdvanceComp& advance)
+	inline void ClearAbilityTimelineAdvance(AbilityTimelineAdvanceComp& advance)
 	{
-		advance.actionId = ActionId::None;
-		advance.actionInstanceId = 0;
+		advance.abilityId = InvalidAbilityId;
+		advance.abilityInstanceId = 0;
 		advance.prevElapsedSec = 0.0f;
 		advance.currElapsedSec = 0.0f;
 		advance.startedThisFrame = false;

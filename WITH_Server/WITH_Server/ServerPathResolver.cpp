@@ -20,33 +20,64 @@ bool ServerPathResolver::IsDirectory(const std::filesystem::path& path)
 		std::filesystem::is_directory(path, ec);
 }
 
-std::filesystem::path ServerPathResolver::GetExecutableDirectory()
+std::filesystem::path ServerPathResolver::GetDefaultDataRoot(
+	const char* relativeDataDirectory)
 {
-	return NormalizePath(std::filesystem::current_path());
-}
-
-std::filesystem::path ServerPathResolver::GetDefaultActionDefRoot()
-{
-	const std::filesystem::path exeDir = GetExecutableDirectory();
+	const std::filesystem::path exeDir =
+		GetExecutableDirectory();
 	const std::filesystem::path currentDir =
 		NormalizePath(std::filesystem::current_path());
 
 	const std::vector<std::filesystem::path> candidates =
 	{
-		currentDir / "WITH_Server" / "Data" / "Action",
-		currentDir / "Data" / "Action",
-		currentDir / ".." / "Data" / "Action",
-		exeDir / ".." / ".." / "Data" / "Action",
-		exeDir / ".." / ".." / "WITH_Server" / "Data" / "Action"
+		currentDir / "WITH_Server" / "Data" / relativeDataDirectory,
+		currentDir / "Data" / relativeDataDirectory,
+		currentDir / ".." / "Data" / relativeDataDirectory,
+		exeDir / ".." / ".." / "Data" / relativeDataDirectory,
+		exeDir / ".." / ".." / "WITH_Server" / "Data" / relativeDataDirectory
 	};
 
 	for (const std::filesystem::path& candidate : candidates)
 	{
-		if (IsDirectory(candidate))
+		if (std::filesystem::exists(candidate) &&
+			std::filesystem::is_directory(candidate))
+		{
 			return NormalizePath(candidate);
+		}
 	}
 
-	return NormalizePath(currentDir / "WITH_Server" / "Data" / "Action");
+	return NormalizePath(
+		currentDir / "WITH_Server" / "Data" / relativeDataDirectory);
+}
+
+std::filesystem::path ServerPathResolver::GetExecutableDirectory()
+{
+	return NormalizePath(std::filesystem::current_path());
+}
+
+std::filesystem::path ServerPathResolver::GetDefaultAttributeDefRoot()
+{
+	return GetDefaultDataRoot("Attribute");
+}
+
+std::filesystem::path ServerPathResolver::GetDefaultGameplayTagDefRoot()
+{
+	return GetDefaultDataRoot("Tag");
+}
+
+std::filesystem::path ServerPathResolver::GetDefaultGameplayEffectDefRoot()
+{
+	return GetDefaultDataRoot("Effect");
+}
+
+std::filesystem::path ServerPathResolver::GetDefaultAbilityDefRoot()
+{
+	return GetDefaultDataRoot("Ability");
+}
+
+std::filesystem::path ServerPathResolver::GetDefaultAbilitySetDefRoot()
+{
+	return GetDefaultDataRoot("AbilitySet");
 }
 
 std::filesystem::path ServerPathResolver::GetDefaultCharacterDefRoot()
@@ -95,30 +126,6 @@ std::filesystem::path ServerPathResolver::GetDefaultAIBehaviorDefRoot()
 	}
 
 	return NormalizePath(currentDir / "WITH_Server" / "Data" / "AI");
-}
-
-std::filesystem::path ServerPathResolver::GetDefaultBuffDefRoot()
-{
-	const std::filesystem::path exeDir = GetExecutableDirectory();
-	const std::filesystem::path currentDir =
-		NormalizePath(std::filesystem::current_path());
-
-	const std::vector<std::filesystem::path> candidates =
-	{
-		currentDir / "WITH_Server" / "Data" / "Buff",
-		currentDir / "Data" / "Buff",
-		currentDir / ".." / "Data" / "Buff",
-		exeDir / ".." / ".." / "Data" / "Buff",
-		exeDir / ".." / ".." / "WITH_Server" / "Data" / "Buff"
-	};
-
-	for (const std::filesystem::path& candidate : candidates)
-	{
-		if (IsDirectory(candidate))
-			return NormalizePath(candidate);
-	}
-
-	return NormalizePath(currentDir / "WITH_Server" / "Data" / "Buff");
 }
 
 std::filesystem::path ServerPathResolver::GetDefaultSpawnSetDefRoot()

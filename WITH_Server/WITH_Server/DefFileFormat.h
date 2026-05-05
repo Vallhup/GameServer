@@ -23,10 +23,13 @@ enum class DefTypeTag : uint32_t
 {
 	Unknown = 0,
 	Animation = 1,
-	Action = 2,
-	Character = 3,
-	Buff = 4,
-	SpawnSet = 5
+	Character = 2,
+	SpawnSet = 3,
+	Ability = 4,
+	AbilitySet = 5,
+	Attribute = 6,
+	GameplayEffect = 7,
+	GameplayTag = 8
 };
 
 struct DefFileHeader

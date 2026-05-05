@@ -1,0 +1,94 @@
+{
+  "attributes": [
+    {
+      "key": "Attribute.Hp",
+      "name": "Hp",
+      "valueKind": "Resource",
+      "defaultValue": 0.0,
+      "minValue": 0.0,
+      "maxValue": 0.0,
+      "clampToRange": false
+    },
+    {
+      "key": "Attribute.MaxHp",
+      "name": "MaxHp",
+      "valueKind": "Resource",
+      "defaultValue": 0.0,
+      "minValue": 0.0,
+      "maxValue": 0.0,
+      "clampToRange": false
+    },
+    {
+      "key": "Attribute.Stamina",
+      "name": "Stamina",
+      "valueKind": "Resource",
+      "defaultValue": 0.0,
+      "minValue": 0.0,
+      "maxValue": 0.0,
+      "clampToRange": false
+    },
+    {
+      "key": "Attribute.MaxStamina",
+      "name": "MaxStamina",
+      "valueKind": "Resource",
+      "defaultValue": 0.0,
+      "minValue": 0.0,
+      "maxValue": 0.0,
+      "clampToRange": false
+    },
+    {
+      "key": "Attribute.Poise",
+      "name": "Poise",
+      "valueKind": "Resource",
+      "defaultValue": 0.0,
+      "minValue": 0.0,
+      "maxValue": 0.0,
+      "clampToRange": false
+    },
+    {
+      "key": "Attribute.MaxPoise",
+      "name": "MaxPoise",
+      "valueKind": "Resource",
+      "defaultValue": 0.0,
+      "minValue": 0.0,
+      "maxValue": 0.0,
+      "clampToRange": false
+    },
+    {
+      "key": "Attribute.AttackPower",
+      "name": "AttackPower",
+      "valueKind": "Scalar",
+      "defaultValue": 0.0,
+      "minValue": 0.0,
+      "maxValue": 0.0,
+      "clampToRange": false
+    },
+    {
+      "key": "Attribute.Defense",
+      "name": "Defense",
+      "valueKind": "Scalar",
+      "defaultValue": 0.0,
+      "minValue": 0.0,
+      "maxValue": 0.0,
+      "clampToRange": false
+    },
+    {
+      "key": "Attribute.MoveSpeed",
+      "name": "MoveSpeed",
+      "valueKind": "Scalar",
+      "defaultValue": 0.0,
+      "minValue": 0.0,
+      "maxValue": 0.0,
+      "clampToRange": false
+    },
+    {
+      "key": "Attribute.AttackSpeed",
+      "name": "AttackSpeed",
+      "valueKind": "Scalar",
+      "defaultValue": 0.0,
+      "minValue": 0.0,
+      "maxValue": 0.0,
+      "clampToRange": false
+    }
+  ]
+}

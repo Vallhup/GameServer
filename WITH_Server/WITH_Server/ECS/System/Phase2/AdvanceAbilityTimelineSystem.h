@@ -3,7 +3,7 @@
 #include "System.h"
 #include "../../GameplayRuntimeComponents.h"
 
-class AdvanceActionTimelineSystem final : public System {
+class AdvanceAbilityTimelineSystem final : public System {
 public:
 	void Execute(SystemContext& ctx) override;
 	const SystemMeta& Meta() const override;
@@ -11,11 +11,11 @@ public:
 private:
 	static const SystemMeta kMeta;
 
-	static void ApplyElapsedToActiveAction(
-		ActionStateComp& actionState,
-		const ActionTimelineAdvanceComp& advance);
+	static void ApplyElapsedToActiveAbility(
+		AbilityStateComp& abilityState,
+		const AbilityTimelineAdvanceComp& advance);
 
 	static void CollectTimelineEvents(
-		const ActionDef& actionDef,
-		ActionTimelineAdvanceComp& advance);
+		const AbilityDef& abilityDef,
+		AbilityTimelineAdvanceComp& advance);
 };

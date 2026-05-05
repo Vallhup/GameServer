@@ -8,7 +8,7 @@ using namespace GameplaySystemUtil;
 namespace
 {
 	const std::array<AccessSpec, 2> kResolveCombatColliderActivationAccesses{
-		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		WriteImmediate(ComponentRes<CombatColliderActivationComp>()),
 	};
 }
@@ -24,39 +24,40 @@ const SystemMeta ResolveCombatColliderActivationSystem::kMeta =
 
 void ResolveCombatColliderActivationSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, actionState, activation] :
-		ctx.ecs.View<ActionStateComp, CombatColliderActivationComp>())
+	for (auto [entity, abilityState, activation] :
+		ctx.ecs.View<AbilityStateComp, CombatColliderActivationComp>())
 	{
 		if (HasBlockingPendingState(ctx.ecs, entity) ||
-			!IsActionActive(actionState))
+			!IsAbilityActive(abilityState))
 		{
 			activation = {};
 			continue;
 		}
 
-		const ActionDef* actionDef = FindActionDef(actionState.actionId);
+		const AbilityDef* abilityDef =
+			GameplayContentCatalogSnapshot::Current().Abilities().Find(abilityState.abilityId);
 		const float normalizedTime =
-			(actionDef != nullptr && actionDef->duration > 0.0f)
-			? ClampFloat(actionState.elapsedSec / actionDef->duration, 0.0f, 1.0f)
+			(abilityDef != nullptr && abilityDef->timeline.durationSec > 0.0f)
+			? ClampFloat(abilityState.elapsedSec / abilityDef->timeline.durationSec, 0.0f, 1.0f)
 			: 0.0f;
 
-		activation.boundActionInstanceId = actionState.actionInstanceId;
-		activation.boundActionId = actionState.actionId;
+		activation.boundAbilityInstanceId = abilityState.abilityInstanceId;
+		activation.boundAbilityId = abilityState.abilityId;
 		activation.hasAttackWindow =
-			actionDef != nullptr &&
-			IsWindowActive(*actionDef, CombatWindowType::Attack, normalizedTime);
+			abilityDef != nullptr &&
+			IsWindowActive(*abilityDef, AbilityCombatWindowKind::Attack, normalizedTime);
 		//printf("[ResolveCombatColliderActivationSystem] hasAttackWindow: %d\n", activation.hasAttackWindow);
 		activation.hasParryWindow =
-			actionDef != nullptr &&
-			IsWindowActive(*actionDef, CombatWindowType::Parry, normalizedTime);
+			abilityDef != nullptr &&
+			IsWindowActive(*abilityDef, AbilityCombatWindowKind::Parry, normalizedTime);
 		activation.hasGuardWindow =
-			actionDef != nullptr &&
-			IsWindowActive(*actionDef, CombatWindowType::Guard, normalizedTime);
+			abilityDef != nullptr &&
+			IsWindowActive(*abilityDef, AbilityCombatWindowKind::Guard, normalizedTime);
 		activation.hasInvulnerabilityWindow =
-			actionDef != nullptr &&
+			abilityDef != nullptr &&
 			IsWindowActive(
-				*actionDef,
-				CombatWindowType::Invulnerability,
+				*abilityDef,
+				AbilityCombatWindowKind::Invulnerability,
 				normalizedTime);
 	}
 }

@@ -1,5 +1,5 @@
 {
-  "id": "BigDemonWarrior",
+  "key": "AI.BigDemonWarrior",
   "aiType": "FirstBossMonster",
   "perceptionTuning": {
     "sightRange": 18.0,
@@ -28,18 +28,61 @@
     "attackCooldown": 2.6,
     "reactDuration": 0.7
   },
-  "movementPolicyKind": "BossPattern",
-  "combatActionPolicyKind": "BossPattern",
-  "idleActionPolicyKind": "Weighted",
-  "reactionPolicyKind": "BossPattern",
   "combatActions": [
-    { "actionId": "BigDemonWarrior_Melee_6", "weight": 20 },
-    { "actionId": "BigDemonWarrior_Melee_8", "weight": 35 },
-    { "actionId": "BigDemonWarrior_Melee_7", "weight": 25 },
-    { "actionId": "BigDemonWarrior_Melee_3", "weight": 20 },
-    { "actionId": "BigDemonWarrior_Melee_4", "weight": 20 }
+    {
+      "abilityKey": "Ability.BigDemonWarrior_Melee_6",
+      "weight": 20,
+      "distanceBucket": "VeryClose",
+      "aiCooldownSec": 1.0
+    },
+    {
+      "abilityKey": "Ability.BigDemonWarrior_Melee_8",
+      "weight": 35,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 1.5
+    },
+    {
+      "abilityKey": "Ability.BigDemonWarrior_Melee_7",
+      "weight": 25,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 2.5,
+      "forbidImmediateRepeat": true
+    },
+    {
+      "abilityKey": "Ability.BigDemonWarrior_Melee_3",
+      "weight": 20,
+      "distanceBucket": "Mid",
+      "aiCooldownSec": 4.0,
+      "forbidImmediateRepeat": true
+    },
+    {
+      "abilityKey": "Ability.BigDemonWarrior_Melee_4",
+      "weight": 20,
+      "distanceBucket": "Far",
+      "aiCooldownSec": 6.0,
+      "forbidImmediateRepeat": true
+    }
   ],
   "idleActions": [
-    { "actionId": "BigDemonWarrior_Jump", "weight": 100 }
-  ]
+    { "abilityKey": "Ability.BigDemonWarrior_Jump", "weight": 100 }
+  ],
+  "bossPattern": {
+    "movement": {
+      "veryCloseDistance": 2.0,
+      "closeDistance": 5.8,
+      "midDistance": 7.5,
+      "preferredMinDistance": 3.2,
+      "preferredMaxDistance": 6.8,
+      "strafeMinSec": 0.7,
+      "strafeMaxSec": 1.5
+    },
+    "phaseTransitions": [
+      {
+        "phase": 2,
+        "hpRatio": 0.55,
+        "transitionAbilityKey": "Ability.BigDemonWarrior_BattleCry",
+        "transitionLockSec": 3.6
+      }
+    ]
+  }
 }

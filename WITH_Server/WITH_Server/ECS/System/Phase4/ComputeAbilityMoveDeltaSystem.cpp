@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ComputeActionMoveDeltaSystem.h"
+#include "ComputeAbilityMoveDeltaSystem.h"
 
 #include "../GameplaySystemUtil.h"
 #include "../../../TransformHelper.h"
@@ -8,12 +8,12 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
-	const std::array<AccessSpec, 5> kComputeActionMoveDeltaAccesses{
-		ReadImmediate(ComponentRes<ActionStateComp>()),
+	const std::array<AccessSpec, 5> kComputeAbilityMoveDeltaAccesses{
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
-		WriteImmediate(ComponentRes<ActionMoveDeltaComp>()),
-		WriteImmediate(ComponentRes<ActionMoveRuntimeComp>()),
-		ReadImmediate(ComponentRes<ActionTimelineAdvanceComp>()),
+		WriteImmediate(ComponentRes<AbilityMoveDeltaComp>()),
+		WriteImmediate(ComponentRes<AbilityMoveRuntimeComp>()),
+		ReadImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
 	};
 
 	void DirectionFromTransform(
@@ -33,7 +33,7 @@ namespace
 	}
 
 	bool EnteredSegmentThisFrame(
-		const ActionTimelineAdvanceComp& advance,
+		const AbilityTimelineAdvanceComp& advance,
 		float segmentStartSec)
 	{
 		return
@@ -42,28 +42,28 @@ namespace
 	}
 
 	void ResolvePolicyDirection(
-		const ActionMovementSegmentDef& segment,
-		const ActionStateComp& actionState,
+		const AbilityMovementSegmentDef& segment,
+		const AbilityStateComp& abilityState,
 		const WorldTransformComp& transform,
-		const ActionMoveRuntimeComp& moveRuntime,
+		const AbilityMoveRuntimeComp& moveRuntime,
 		float& outDirX,
 		float& outDirZ)
 	{
 		outDirX = 0.0f;
 		outDirZ = 0.0f;
 
-		switch (segment.dirPolicy) {
-		case DirectionPolicy::ActionStartInput:
-		case DirectionPolicy::CurrentInput:
-		case DirectionPolicy::TargetDirection:
-			outDirX = actionState.directionX;
-			outDirZ = actionState.directionZ;
+		switch (segment.directionPolicy) {
+		case AbilityDirectionPolicy::ActionStartInput:
+		case AbilityDirectionPolicy::CurrentInput:
+		case AbilityDirectionPolicy::TargetDirection:
+			outDirX = abilityState.directionX;
+			outDirZ = abilityState.directionZ;
 			NormalizeXZ(outDirX, outDirZ);
 			break;
-		case DirectionPolicy::FacingDirection:
+		case AbilityDirectionPolicy::FacingDirection:
 			DirectionFromTransform(transform, outDirX, outDirZ);
 			break;
-		case DirectionPolicy::LockedDirection:
+		case AbilityDirectionPolicy::LockedDirection:
 			if (moveRuntime.hasLockedDirection)
 			{
 				outDirX = moveRuntime.lockedDirX;
@@ -89,17 +89,17 @@ namespace
 	}
 
 	void SampleSegmentDirection(
-		const ActionMovementSegmentDef& segment,
-		const ActionTimelineAdvanceComp& advance,
-		const ActionStateComp& actionState,
+		const AbilityMovementSegmentDef& segment,
+		const AbilityTimelineAdvanceComp& advance,
+		const AbilityStateComp& abilityState,
 		const WorldTransformComp& transform,
-		ActionMoveRuntimeComp& moveRuntime,
+		AbilityMoveRuntimeComp& moveRuntime,
 		float segmentStartSec)
 	{
 		const bool shouldSample =
 			!moveRuntime.hasLockedDirection ||
-			segment.dirSampleTiming == DirectionSampleTiming::Continuous ||
-			(segment.dirPolicy != DirectionPolicy::LockedDirection &&
+			segment.directionSampleTiming == AbilityDirectionSampleTiming::Continuous ||
+			(segment.directionPolicy != AbilityDirectionPolicy::LockedDirection &&
 				EnteredSegmentThisFrame(advance, segmentStartSec));
 		if (!shouldSample)
 		{
@@ -110,7 +110,7 @@ namespace
 		float dirZ = 0.0f;
 		ResolvePolicyDirection(
 			segment,
-			actionState,
+			abilityState,
 			transform,
 			moveRuntime,
 			dirX,
@@ -131,7 +131,7 @@ namespace
 	}
 
 	void ApplyRotationTowardYaw(
-		ActionMoveDeltaComp& moveDelta,
+		AbilityMoveDeltaComp& moveDelta,
 		const WorldTransformComp& transform,
 		float targetYaw,
 		float maxStep)
@@ -148,53 +148,54 @@ namespace
 	}
 }
 
-const SystemMeta ComputeActionMoveDeltaSystem::kMeta =
+const SystemMeta ComputeAbilityMoveDeltaSystem::kMeta =
 	SystemMeta{
-		SysTag<ComputeActionMoveDeltaSystem>(),
-		"ComputeActionMoveDeltaSystem",
-		kComputeActionMoveDeltaAccesses,
+		SysTag<ComputeAbilityMoveDeltaSystem>(),
+		"ComputeAbilityMoveDeltaSystem",
+		kComputeAbilityMoveDeltaAccesses,
 		kNoDeps,
 		kNoDeps
 	};
 
-void ComputeActionMoveDeltaSystem::Execute(SystemContext& ctx)
+void ComputeAbilityMoveDeltaSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, actionState, transform, moveDelta, moveRuntime, advance] :
+	for (auto [entity, abilityState, transform, moveDelta, moveRuntime, advance] :
 		ctx.ecs.View<
-			ActionStateComp,
+			AbilityStateComp,
 			WorldTransformComp,
-			ActionMoveDeltaComp,
-			ActionMoveRuntimeComp,
-			ActionTimelineAdvanceComp>())
+			AbilityMoveDeltaComp,
+			AbilityMoveRuntimeComp,
+			AbilityTimelineAdvanceComp>())
 	{
 		(void)entity;
 		moveDelta = {};
 
-		if (!IsActionActive(actionState) ||
-			advance.actionId != actionState.actionId ||
-			advance.actionInstanceId != actionState.actionInstanceId)
+		if (!IsAbilityActive(abilityState) ||
+			advance.abilityId != abilityState.abilityId ||
+			advance.abilityInstanceId != abilityState.abilityInstanceId)
 		{
 			moveRuntime = {};
 			continue;
 		}
 
-		const ActionDef* actionDef = FindActionDef(actionState.actionId);
-		if (actionDef == nullptr)
+		const AbilityDef* abilityDef =
+			GameplayContentCatalogSnapshot::Current().Abilities().Find(abilityState.abilityId);
+		if (abilityDef == nullptr)
 		{
 			continue;
 		}
 
-		if (moveRuntime.boundActionInstanceId !=
-			actionState.actionInstanceId)
+		if (moveRuntime.boundAbilityInstanceId !=
+			abilityState.abilityInstanceId)
 		{
 			moveRuntime = {};
-			moveRuntime.boundActionInstanceId = actionState.actionInstanceId;
+			moveRuntime.boundAbilityInstanceId = abilityState.abilityInstanceId;
 		}
 
-		for (const ActionMovementSegmentDef& segment : actionDef->moveSegments)
+		for (const AbilityMovementSegmentDef& segment : abilityDef->timeline.movementSegments)
 		{
-			const float startSec = segment.startNormalized * actionDef->duration;
-			const float endSec = segment.endNormalized * actionDef->duration;
+			const float startSec = segment.startNormalized * abilityDef->timeline.durationSec;
+			const float endSec = segment.endNormalized * abilityDef->timeline.durationSec;
 			if (endSec <= startSec)
 			{
 				continue;
@@ -210,7 +211,7 @@ void ComputeActionMoveDeltaSystem::Execute(SystemContext& ctx)
 			SampleSegmentDirection(
 				segment,
 				advance,
-				actionState,
+				abilityState,
 				transform,
 				moveRuntime,
 				startSec);
@@ -219,7 +220,7 @@ void ComputeActionMoveDeltaSystem::Execute(SystemContext& ctx)
 				(overlapEnd - overlapStart) / (endSec - startSec);
 
 			XMFLOAT3 segmentDelta{ 0.0f, 0.0f, 0.0f };
-			if (segment.horizontalMoveMode != HorizontalMovementMode::None &&
+			if (segment.movementMode != AbilityMovementMode::None &&
 				segment.moveDistance.has_value() &&
 				moveRuntime.hasLockedDirection)
 			{
@@ -231,7 +232,7 @@ void ComputeActionMoveDeltaSystem::Execute(SystemContext& ctx)
 				moveDelta.hasDelta = true;
 			}
 
-			if (segment.verticalMoveMode == VerticalMovementMode::FixedOffset &&
+			if (segment.verticalMovementMode == AbilityVerticalMovementMode::FixedOffset &&
 				segment.verticalAmount.has_value())
 			{
 				segmentDelta.y = segment.verticalAmount.value() * alpha;
@@ -239,7 +240,7 @@ void ComputeActionMoveDeltaSystem::Execute(SystemContext& ctx)
 				moveDelta.hasDelta = true;
 			}
 
-			if (segment.rotationMode == RotationMode::FaceMoveDirection &&
+			if (segment.rotationMode == AbilityRotationMode::FaceMoveDirection &&
 				HasDirection(segmentDelta.x, segmentDelta.z))
 			{
 				const float currYaw =
@@ -255,7 +256,7 @@ void ComputeActionMoveDeltaSystem::Execute(SystemContext& ctx)
 
 				ApplyRotationTowardYaw(moveDelta, transform, targetYaw, maxStep);
 			}
-			else if (segment.rotationMode == RotationMode::FaceTarget &&
+			else if (segment.rotationMode == AbilityRotationMode::FaceTarget &&
 				moveRuntime.hasLockedDirection)
 			{
 				const float currYaw =
@@ -274,7 +275,7 @@ void ComputeActionMoveDeltaSystem::Execute(SystemContext& ctx)
 	}
 }
 
-const SystemMeta& ComputeActionMoveDeltaSystem::Meta() const
+const SystemMeta& ComputeAbilityMoveDeltaSystem::Meta() const
 {
 	return kMeta;
 }

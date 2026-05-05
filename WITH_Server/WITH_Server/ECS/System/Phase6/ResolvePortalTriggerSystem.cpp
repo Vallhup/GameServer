@@ -10,7 +10,7 @@ namespace
 	const std::array<AccessSpec, 7> kResolvePortalTriggerAccesses{
 		WriteImmediate(ComponentRes<PortalTriggerStateComp>()),
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
-		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<PlayerControlIdentityComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
@@ -29,11 +29,11 @@ const SystemMeta ResolvePortalTriggerSystem::kMeta =
 
 void ResolvePortalTriggerSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, triggerState, transform, actionState, identity] :
+	for (auto [entity, triggerState, transform, abilityState, identity] :
 		ctx.ecs.View<
 			PortalTriggerStateComp,
 			WorldTransformComp,
-			ActionStateComp,
+			AbilityStateComp,
 			PlayerControlIdentityComp>())
 	{
 		(void)transform;
@@ -44,7 +44,7 @@ void ResolvePortalTriggerSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
-		if (IsActionActive(actionState))
+		if (IsAbilityActive(abilityState))
 		{
 			continue;
 		}

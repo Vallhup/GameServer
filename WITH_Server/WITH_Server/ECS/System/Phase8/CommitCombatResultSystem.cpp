@@ -1,24 +1,28 @@
 #include "pch.h"
 #include "CommitCombatResultSystem.h"
 
+#include "../../../AIBehaviorDef.h"
+#include "../../../GameDataCatalog.h"
 #include "../GameplaySystemUtil.h"
+#include "RepComponent.h"
 
 using namespace GameplaySystemUtil;
 
 namespace
 {
-	const std::array<AccessSpec, 11> kCommitCombatResultAccesses{
+	const std::array<AccessSpec, 12> kCommitCombatResultAccesses{
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 		WriteImmediate(ComponentRes<AIReactionComp>()),
 		WriteImmediate(ComponentRes<BossPhaseStateComp>()),
 		WriteImmediate(ComponentRes<BossPatternRuntimeComp>()),
-		WriteImmediate(ComponentRes<ActionInterruptQueueComp>()),
+		WriteImmediate(ComponentRes<AbilityInterruptQueueComp>()),
+		ReadImmediate(ComponentRes<AITypeComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
 		WriteDeferred(CommandBufferRes()),
-		WriteDeferred(ComponentRes<PendingBuffApplyComp>()),
+		WriteDeferred(ComponentRes<PendingGameplayEffectApplyComp>()),
 	};
 }
 
@@ -53,8 +57,8 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 				{
 					return lhs.sourceEntity.id < rhs.sourceEntity.id;
 				}
-				return lhs.sourceActionInstanceId <
-					rhs.sourceActionInstanceId;
+				return lhs.sourceAbilityInstanceId <
+					rhs.sourceAbilityInstanceId;
 			});
 
 		int32_t hpDelta = 0;
@@ -130,11 +134,11 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 				}
 
 				if (interaction.parryEffect.has_value() &&
-					interaction.parryEffect->grantBuffId.has_value() &&
-					!result.pendingParryBuffId.has_value())
+					interaction.parryEffect->grantEffectId.has_value() &&
+					!result.pendingParryEffectId.has_value())
 				{
-					result.pendingParryBuffId =
-						interaction.parryEffect->grantBuffId;
+					result.pendingParryEffectId =
+						interaction.parryEffect->grantEffectId;
 				}
 			}
 		}
@@ -171,30 +175,47 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		// Boss phase threshold reaction event.
 		if (stats.maxHp > 0 && previousStats.currentHp > stats.currentHp)
 		{
-			if (BossPhaseStateComp* bossPhase =
-				ctx.ecs.GetMutableComponent<BossPhaseStateComp>(entity))
+			BossPhaseStateComp* bossPhase =
+				ctx.ecs.GetMutableComponent<BossPhaseStateComp>(entity);
+			const AITypeComp* aiType = ctx.ecs.GetComponent<AITypeComp>(entity);
+			const AIBehaviorProfileDef* profile =
+				aiType != nullptr
+					? GameDataCatalog::Current().AIBehaviors().Find(
+						aiType->aiProfileId)
+					: nullptr;
+			if (bossPhase != nullptr && profile != nullptr)
 			{
-				constexpr uint32_t kPhase2ThresholdMask = 1u << 0;
 				const float previousHpRatio =
 					static_cast<float>(previousStats.currentHp) /
 					static_cast<float>(stats.maxHp);
 				const float currentHpRatio =
 					static_cast<float>(stats.currentHp) /
 					static_cast<float>(stats.maxHp);
-				const float threshold = bossPhase->phase2ThresholdRatio;
 
-				if ((bossPhase->crossedThresholdMask & kPhase2ThresholdMask) == 0 &&
-					previousHpRatio > threshold &&
-					currentHpRatio <= threshold)
+				for (size_t transitionIndex = 0;
+					transitionIndex < profile->bossPattern.phaseTransitions.size();
+					++transitionIndex)
 				{
-					bossPhase->crossedThresholdMask |= kPhase2ThresholdMask;
-					bossPhase->currentPhase = 2;
+					const AIBossPhaseTransitionDef& transition =
+						profile->bossPattern.phaseTransitions[transitionIndex];
+					const uint32_t thresholdMask =
+						1u << static_cast<uint32_t>(transitionIndex);
+					if ((bossPhase->crossedThresholdMask & thresholdMask) != 0 ||
+						previousHpRatio <= transition.hpRatio ||
+						currentHpRatio > transition.hpRatio)
+					{
+						continue;
+					}
+
+					bossPhase->crossedThresholdMask |= thresholdMask;
+					bossPhase->currentPhase = transition.phase;
 					bossPhase->transitionRequested = true;
 
 					if (BossPatternRuntimeComp* bossRuntime =
 						ctx.ecs.GetMutableComponent<BossPatternRuntimeComp>(entity))
 					{
-						bossRuntime->phaseTransitionLockSec = 3.6f;
+						bossRuntime->phaseTransitionLockSec =
+							transition.transitionLockSec;
 						bossRuntime->phaseTransitionActionPending = true;
 						bossRuntime->strafeTimeLeftSec = 0.0f;
 					}
@@ -206,9 +227,11 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 							.type = AIReactionEventType::OnHpThreshold,
 							.instigator = result.reactionSource,
 							.priority = 300,
-							.floatPayload = threshold,
+							.floatPayload = transition.hpRatio,
 						});
 					}
+
+					break;
 				}
 			}
 		}
@@ -251,24 +274,24 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 				continue;
 			}
 
-			ActionInterruptQueueComp* parriedInterruptQueue =
-				ctx.ecs.GetMutableComponent<ActionInterruptQueueComp>(
+			AbilityInterruptQueueComp* parriedInterruptQueue =
+				ctx.ecs.GetMutableComponent<AbilityInterruptQueueComp>(
 					parriedAttacker);
 			if (parriedInterruptQueue == nullptr)
 			{
 				continue;
 			}
 
-			parriedInterruptQueue->events.push_back(ActionInterruptEvent{
-				.causeType = ActionInterruptCauseType::OnParried,
+			parriedInterruptQueue->events.push_back(AbilityInterruptEvent{
+				.cause = AbilityTransitionCause::OnParried,
 				.instigator = entity,
 				.frameIndex = frameIndex,
 				.priority = 500
 			});
 		}
 
-		ActionInterruptQueueComp* interruptQueue =
-			ctx.ecs.GetMutableComponent<ActionInterruptQueueComp>(entity);
+		AbilityInterruptQueueComp* interruptQueue =
+			ctx.ecs.GetMutableComponent<AbilityInterruptQueueComp>(entity);
 		if (interruptQueue == nullptr)
 		{
 			continue;
@@ -276,8 +299,8 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 
 		if (stats.currentHp <= 0)
 		{
-			interruptQueue->events.push_back(ActionInterruptEvent{
-				.causeType = ActionInterruptCauseType::OnHpZero,
+			interruptQueue->events.push_back(AbilityInterruptEvent{
+				.cause = AbilityTransitionCause::OnAttributeZero,
 				.instigator = result.reactionSource,
 				.frameIndex = frameIndex,
 				.priority = 1000
@@ -285,8 +308,8 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		}
 		else if (stats.currentPoise <= 0)
 		{
-			interruptQueue->events.push_back(ActionInterruptEvent{
-				.causeType = ActionInterruptCauseType::OnParried,
+			interruptQueue->events.push_back(AbilityInterruptEvent{
+				.cause = AbilityTransitionCause::OnParried,
 				.instigator = result.reactionSource,
 				.frameIndex = frameIndex,
 				.priority = 300
@@ -294,8 +317,8 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		}
 		else if (result.reactionKind == CombatReactionKind::GuardBreak)
 		{
-			interruptQueue->events.push_back(ActionInterruptEvent{
-				.causeType = ActionInterruptCauseType::OnParried,
+			interruptQueue->events.push_back(AbilityInterruptEvent{
+				.cause = AbilityTransitionCause::OnParried,
 				.instigator = result.reactionSource,
 				.frameIndex = frameIndex,
 				.priority = 200
@@ -303,22 +326,22 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		}
 		else if (result.reactionKind == CombatReactionKind::HitReaction)
 		{
-			interruptQueue->events.push_back(ActionInterruptEvent{
-				.causeType = ActionInterruptCauseType::OnHitReceived,
+			interruptQueue->events.push_back(AbilityInterruptEvent{
+				.cause = AbilityTransitionCause::OnHitReceived,
 				.instigator = result.reactionSource,
 				.frameIndex = frameIndex,
 				.priority = 100
 			});
 		}
 
-		if (result.pendingParryBuffId.has_value())
+		if (result.pendingParryEffectId.has_value())
 		{
-			PendingBuffApplyComp buffApplyComp =
+			PendingGameplayEffectApplyComp effectApplyComp =
 			{
-				.buffId = *result.pendingParryBuffId
+				.effectId = *result.pendingParryEffectId
 			};
-			ctx.runtime.DeferredUpsertComponent<PendingBuffApplyComp>(
-				entity, buffApplyComp);
+			ctx.runtime.DeferredUpsertComponent<PendingGameplayEffectApplyComp>(
+				entity, effectApplyComp);
 		}
 	}
 }

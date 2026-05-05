@@ -5,10 +5,12 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <vector>
 
-#include "ActionProfileIds.h"
 #include "BodyCollisionTypes.h"
+#include "DefHash.h"
 #include "DefLoadResult.h"
+#include "DefRegistry.h"
 #include "EntityId.h"
 
 enum class CharacterId : uint8_t;
@@ -29,7 +31,7 @@ enum class CharacterFeatureFlags : uint32_t
 	Playable     = 1 << 2,
 	AIControlled = 1 << 3,
 	PortalAware  = 1 << 4,
-	BuffUser     = 1 << 5,
+	EffectUser   = 1 << 5,
 	BossPhase    = 1 << 6
 };
 
@@ -66,6 +68,13 @@ struct CharacterStatDef
 	float attackSpeed;
 };
 
+struct CharacterAttributeInitialValueDef
+{
+	std::string attributeKey;
+	float baseValue{ 0.0f };
+	float currentValue{ 0.0f };
+};
+
 struct CharacterBodyCollisionDef
 {
 	float footprintRadiusXZ{ 0.5f };
@@ -77,22 +86,11 @@ struct CharacterBodyCollisionDef
 	float maxOverlapCorrectionPerFrameXZ{ 0.12f };
 };
 
-using AITuningId = uint16_t;
-
-namespace AITuningIds
-{
-	inline constexpr AITuningId None = 0;
-	inline constexpr AITuningId Imp = 1001;
-	inline constexpr AITuningId DemonStriker = 1002;
-	inline constexpr AITuningId DemonExecutioner = 1003;
-	inline constexpr AITuningId BigDemonWarrior = 1004;
-	inline constexpr AITuningId FinalBoss = 1005;
-}
-
 struct CharacterAIDef
 {
 	AIArchetype aiType;
-	std::optional<AITuningId> aiTuningId;
+	std::string aiProfileKey;
+	AIBehaviorProfileId aiProfileId{ InvalidAIBehaviorProfileId };
 };
 
 struct CharacterDef
@@ -102,11 +100,12 @@ struct CharacterDef
 
 	CharacterProfileDef profile;
 	CharacterStatDef stat;
+	std::vector<CharacterAttributeInitialValueDef> attributes;
 	CharacterBodyCollisionDef bodyCollision;
 	CharacterRole role{ CharacterRole::NPC };
 	CharacterFeatureFlags features{ CharacterFeatureFlags::None };
 	std::optional<CharacterAIDef> ai;
-	std::optional<CharacterActionDefRef> action;
+	std::optional<std::string> abilitySetKey;
 
 	bool HasFeature(CharacterFeatureFlags flag) const noexcept
 	{
@@ -129,11 +128,19 @@ struct CharacterDef
 	}
 };
 
+struct CharacterDefTraits
+{
+	static CharacterId GetId(const CharacterDef& def) noexcept
+	{
+		return def.id;
+	}
+};
+
+using CharacterDefRegistry =
+	DefRegistry<CharacterDef, CharacterId, CharacterDefTraits>;
+
 using CharacterDefLoadResult = DefLoadResult;
 
-const CharacterDef* FindCharacterDef(CharacterId id) noexcept;
-const CharacterDef& GetCharacterDef(CharacterId id);
-std::span<const CharacterDef> GetCharacterDefs() noexcept;
-
 CharacterDefLoadResult LoadCharacterDefsFromJsonDirectory(
-	const std::filesystem::path& directory);
+	const std::filesystem::path& directory,
+	CharacterDefRegistry& outRegistry);

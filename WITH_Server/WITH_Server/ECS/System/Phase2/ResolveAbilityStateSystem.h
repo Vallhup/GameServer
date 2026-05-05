@@ -3,9 +3,9 @@
 #include "System.h"
 #include "SystemMetaStorage.h"
 #include "../../GameplayRuntimeComponents.h"
-#include "../ActionProfileService.h"
+#include "../AbilityProfileService.h"
 
-class ResolveActionStateSystem final : public System
+class ResolveAbilityStateSystem final : public System
 {
 public:
     void Execute(SystemContext& ctx) override;
@@ -14,7 +14,7 @@ public:
 private:
 	struct RequestCandidate
 	{
-		ActionId actionId{ ActionId::None };
+		AbilityId abilityId{ InvalidAbilityId };
 		float directionX{ 0.0f };
 		float directionZ{ 0.0f };
 		bool useInputDirection{ false };
@@ -22,7 +22,7 @@ private:
 
 	struct TransitionDecision
 	{
-		ActionId nextActionId{ ActionId::None };
+		AbilityId nextAbilityId{ InvalidAbilityId };
 		bool transition{ false };
 		bool consumeOnRequestCosts{ false };
 		bool preserveDirection{ false };
@@ -35,23 +35,23 @@ private:
 	static bool TryHandleBlockingState(
 		SystemContext& ctx,
 		Entity entity,
-		ActionStateComp& actionState,
+		AbilityStateComp& abilityState,
 		ActorInputComp& input,
-		ActionTimelineAdvanceComp& advance);
+		AbilityTimelineAdvanceComp& advance);
 
 	static bool TryResolveInterruptTransition(
-		const ActionProfileService& profileService,
+		const AbilityProfileService& profileService,
 		const CharacterId characterId,
-		const ActionStateComp& actionState,
-		const ActionDef* currentActionDef,
-		const ActionInterruptQueueComp* interruptQueue,
+		const AbilityStateComp& abilityState,
+		const AbilityDef* currentAbilityDef,
+		const AbilityInterruptQueueComp* interruptQueue,
 		TransitionDecision& outDecision);
 
 	static bool TryResolveCancelTransition(
-		const ActionProfileService& profileService,
+		const AbilityProfileService& profileService,
 		const CharacterId characterId,
-		const ActionStateComp& actionState,
-		const ActionDef& currentActionDef,
+		const AbilityStateComp& abilityState,
+		const AbilityDef& currentAbilityDef,
 		const LocomotionStateComp& locomotionState,
 		const WorldTransformComp& transform,
 		const ActorInputComp& input,
@@ -60,7 +60,7 @@ private:
 		TransitionDecision& outDecision);
 
 	static bool TryResolveIdleRequestTransition(
-		const ActionProfileService& profileService,
+		const AbilityProfileService& profileService,
 		const CharacterId characterId,
 		const LocomotionStateComp& locomotionState,
 		const WorldTransformComp& transform,
@@ -70,15 +70,15 @@ private:
 		TransitionDecision& outDecision);
 
 	static bool TryResolveEndPolicyTransition(
-		const ActionStateComp& actionState,
-		const ActionDef& actionDef,
+		const AbilityStateComp& abilityState,
+		const AbilityDef& abilityDef,
 		const ActorInputComp& input,
-		ActionTimelineAdvanceComp& advance,
+		AbilityTimelineAdvanceComp& advance,
 		double deltaTimeSec,
 		TransitionDecision& outDecision);
 
 	static void ApplyTransition(
-		ActionStateComp& actionState,
+		AbilityStateComp& abilityState,
 		const TransitionDecision& decision);
 
 	static void ConsumeOnRequestResourceCosts(
@@ -86,48 +86,48 @@ private:
 		Entity entity,
 		const TransitionDecision& decision);
 
-	static void ClearActionInput(ActorInputComp& input);
+	static void ClearAbilityInput(ActorInputComp& input);
 
 	static std::vector<RequestCandidate> BuildRequestCandidates(
-		const ActionProfileService& profileService,
+		const AbilityProfileService& profileService,
 		CharacterId characterId,
 		const ActorInputComp& input,
 		bool includeHeldGuardRequest);
 
-	static bool IsActionRequestAllowed(
-		ActionId actionId,
+	static bool IsAbilityRequestAllowed(
+		AbilityId abilityId,
 		const CombatStatStateComp* stats,
 		const AIPerceptionComp* perception);
 
 	static bool IsCancelRuleActive(
-		const ActionCancelRule& cancelRule,
-		const ActionDef& currentActionDef,
-		const ActionStateComp& actionState);
+		const AbilityTransitionRuleDef& cancelRule,
+		const AbilityDef& currentAbilityDef,
+		const AbilityStateComp& abilityState);
 
 	static bool IsHoldReleased(
-		const ActionDef& actionDef,
+		const AbilityDef& abilityDef,
 		const ActorInputComp& input);
 
 	static float ComputeAdvancedElapsedSec(
-		const ActionStateComp& actionState,
-		const ActionDef& actionDef,
+		const AbilityStateComp& abilityState,
+		const AbilityDef& abilityDef,
 		double deltaTimeSec);
 
 	static void PrepareTimelineAdvance(
-		const ActionStateComp& actionState,
-		const ActionDef& actionDef,
-		ActionTimelineAdvanceComp& advance,
+		const AbilityStateComp& abilityState,
+		const AbilityDef& abilityDef,
+		AbilityTimelineAdvanceComp& advance,
 		double deltaTimeSec);
 
-	static void PrepareStartedActionAdvance(
-		const ActionStateComp& actionState,
-		ActionTimelineAdvanceComp& advance);
+	static void PrepareStartedAbilityAdvance(
+		const AbilityStateComp& abilityState,
+		AbilityTimelineAdvanceComp& advance);
 
-	static void SetActionDirectionOnStart(
-		ActionStateComp& actionState,
+	static void SetAbilityDirectionOnStart(
+		AbilityStateComp& abilityState,
 		const TransitionDecision& decision,
 		const LocomotionStateComp& locomotionState,
 		const WorldTransformComp& transform);
 
-	static void ResetActionDirection(ActionStateComp& actionState);
+	static void ResetAbilityDirection(AbilityStateComp& abilityState);
 };

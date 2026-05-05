@@ -33,41 +33,41 @@ private:
 	static int GetResultPriority(
 		CombatResolveResultType resultType) noexcept;
 	static bool TryResolveDefensiveEffects(
-		const ActionStateComp& victimAction,
+		const AbilityStateComp& victimAbility,
 		CombatResolveResultType resultType,
-		std::optional<GuardCombatEffectDef>& outGuardEffect,
-		std::optional<ParryCombatEffectDef>& outParryEffect,
+		std::optional<AbilityGuardResponseDef>& outGuardEffect,
+		std::optional<AbilityParryResponseDef>& outParryEffect,
 		float& outMaxHitStopSec);
-	static const ActionCombatWindowDef* FindActiveCombatWindow(
-		const ActionStateComp& actionState,
-		CombatWindowType windowType);
+	static const AbilityCombatWindowDef* FindActiveCombatWindow(
+		const AbilityStateComp& abilityState,
+		AbilityCombatWindowKind windowType);
 	static bool DoesWindowApplyToAttack(
-		const ActionCombatWindowDef& window,
-		const AttackCombatEffectDef& attackEffect) noexcept;
+		const AbilityCombatWindowDef& window,
+		const AbilityAttackHitDef& attackEffect) noexcept;
 	static bool BuildReferenceDirection(
 		const ECSView& ecs,
 		Entity owner,
-		const ActionStateComp& ownerAction,
+		const AbilityStateComp& ownerAbility,
 		const WorldTransformComp& ownerTransform,
-		CombatReferenceFrame referenceFrame,
+		AbilityCombatReferenceFrame referenceFrame,
 		DirectX::XMFLOAT3& outDirection) noexcept;
 	static bool PassesSpatialFilter(
 		const ECSView& ecs,
 		Entity source,
-		const ActionStateComp& sourceAction,
+		const AbilityStateComp& sourceAbility,
 		const WorldTransformComp& sourceTransform,
 		const WorldTransformComp& targetTransform,
-		const ActionCombatSpatialFilterDef& spatialFilter) noexcept;
+		const AbilityCombatSpatialFilterDef& spatialFilter) noexcept;
 	static bool TryBuildInteractionRecord(
 		const ECSView& ecs,
 		Entity attacker,
-		const ActionStateComp& attackerAction,
+		const AbilityStateComp& attackerAbility,
 		const WorldTransformComp& attackerTransform,
 		const SkeletalCombatColliderComp& attackerColliders,
-		const AttackCombatEffectDef& attackEffect,
+		const AbilityAttackHitDef& attackEffect,
 		uint16_t attackWindowIndex,
 		Entity victim,
-		const ActionStateComp& victimAction,
+		const AbilityStateComp& victimAbility,
 		const WorldTransformComp& victimTransform,
 		const SkeletalCombatColliderComp& victimColliders,
 		const CombatColliderActivationComp& victimActivation,

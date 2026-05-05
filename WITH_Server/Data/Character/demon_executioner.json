@@ -1,38 +1,88 @@
 {
-  "id": "DemonExecutioner",
-  "name": "DemonExecutioner",
-  "profile": {
-    "faction": "Enemy"
-  },
-  "stat": {
-    "maxHp": 100,
-    "maxStamina": 100,
-    "maxPoise": 100,
-    "attackPower": 10,
-    "defense": 10,
-    "moveSpeed": 3.0,
-    "attackSpeed": 1.0
-  },
-  "bodyCollision": {
-    "footprintRadiusXZ": 0.46,
-    "bodyHeight": 1.6,
-    "blocksBodyOverlap": true,
-    "useNavMeshConstraint": true,
-    "pushability": "Dynamic",
-    "overlapYieldWeight": 0.85,
-    "maxOverlapCorrectionPerFrameXZ": 0.16
-  },
-  "role": "Monster",
-  "features": [
-    "Replicated",
-    "Combatant",
-    "AIControlled"
-  ],
-  "ai": {
-    "aiType": "NormalMonster",
-    "aiTuningId": "DemonExecutioner"
-  },
-  "action": {
-    "actionProfileId": "DemonExecutioner"
-  }
+    "id":  "DemonExecutioner",
+    "name":  "DemonExecutioner",
+    "profile":  {
+                    "faction":  "Enemy"
+                },
+    "stat":  {
+                 "maxHp":  100,
+                 "maxStamina":  100,
+                 "maxPoise":  100,
+                 "attackPower":  10,
+                 "defense":  10,
+                 "moveSpeed":  3.0,
+                 "attackSpeed":  1.0
+             },
+    "bodyCollision":  {
+                          "footprintRadiusXZ":  0.46,
+                          "bodyHeight":  1.6,
+                          "blocksBodyOverlap":  true,
+                          "useNavMeshConstraint":  true,
+                          "pushability":  "Dynamic",
+                          "overlapYieldWeight":  0.85,
+                          "maxOverlapCorrectionPerFrameXZ":  0.16
+                      },
+    "role":  "Monster",
+    "features":  [
+                     "Replicated",
+                     "Combatant",
+                     "AIControlled"
+                 ],
+    "ai":  {
+               "aiType":  "NormalMonster",
+               "aiProfileKey":  "AI.DemonExecutioner"
+           },
+    "attributes":  [
+                       {
+                           "attributeKey":  "Attribute.Hp",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.MaxHp",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.Stamina",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.MaxStamina",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.Poise",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.MaxPoise",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.AttackPower",
+                           "baseValue":  10,
+                           "currentValue":  10
+                       },
+                       {
+                           "attributeKey":  "Attribute.Defense",
+                           "baseValue":  10,
+                           "currentValue":  10
+                       },
+                       {
+                           "attributeKey":  "Attribute.MoveSpeed",
+                           "baseValue":  3.0,
+                           "currentValue":  3.0
+                       },
+                       {
+                           "attributeKey":  "Attribute.AttackSpeed",
+                           "baseValue":  1.0,
+                           "currentValue":  1.0
+                       }
+                   ],
+    "abilitySetKey":  "AbilitySet.DemonExecutioner"
 }

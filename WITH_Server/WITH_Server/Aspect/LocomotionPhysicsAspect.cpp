@@ -12,8 +12,8 @@ CharacterFeatureFlags LocomotionPhysicsAspect::RequiredFeature() const noexcept
 void LocomotionPhysicsAspect::RegisterStorages(WorldRuntime& runtime) const
 {
 	runtime.RegisterStorage<LocomotionMoveDeltaComp>();
-	runtime.RegisterStorage<ActionMoveDeltaComp>();
-	runtime.RegisterStorage<ActionMoveRuntimeComp>();
+	runtime.RegisterStorage<AbilityMoveDeltaComp>();
+	runtime.RegisterStorage<AbilityMoveRuntimeComp>();
 	runtime.RegisterStorage<PreCollisionTransformComp>();
 	runtime.RegisterStorage<BodyCollisionShapeComp>();
 	runtime.RegisterStorage<NavMeshAgentStateComp>();
@@ -28,8 +28,8 @@ void LocomotionPhysicsAspect::Attach(
 {
 	(void)params;
 	runtime.DeferredAddComponent<LocomotionMoveDeltaComp>(entity);
-	runtime.DeferredAddComponent<ActionMoveDeltaComp>(entity);
-	runtime.DeferredAddComponent<ActionMoveRuntimeComp>(entity);
+	runtime.DeferredAddComponent<AbilityMoveDeltaComp>(entity);
+	runtime.DeferredAddComponent<AbilityMoveRuntimeComp>(entity);
 	runtime.DeferredAddComponent<PreCollisionTransformComp>(entity);
 
 	BodyCollisionShapeComp shape{};

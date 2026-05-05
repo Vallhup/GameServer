@@ -38,12 +38,12 @@ void ApplyAICommandSystem::Execute(SystemContext& ctx)
 			input.move.lastUpdatedFrame = ctx.runtime.FrameIndex();
 		}
 
-		if (frame.hasAction)
+		if (frame.hasAbility)
 		{
-			input.action.directActionId = frame.actionId;
-			input.action.directionX     = frame.actionDirX;
-			input.action.directionZ     = frame.actionDirZ;
-			input.action.requestedFrame = ctx.runtime.FrameIndex();
+			input.ability.directAbilityId = frame.abilityId;
+			input.ability.directionX     = frame.abilityDirX;
+			input.ability.directionZ     = frame.abilityDirZ;
+			input.ability.requestedFrame = ctx.runtime.FrameIndex();
 		}
 	}
 }

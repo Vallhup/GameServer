@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "CharacterDef.h"
 
+#include "DefCompilePipeline.h"
 #include "DefEnumString.h"
-#include "DefJsonFileLoader.h"
 #include "DefJsonReader.h"
 #include "DefRegistry.h"
 #include "json.hpp"
@@ -13,23 +13,6 @@ using json = nlohmann::json;
 
 namespace
 {
-	struct CharacterDefTraits
-	{
-		static CharacterId GetId(const CharacterDef& def) noexcept
-		{
-			return def.id;
-		}
-	};
-
-	using CharacterDefRegistry =
-		DefRegistry<CharacterDef, CharacterId, CharacterDefTraits>;
-
-	CharacterDefRegistry& GetCharacterDefRegistry() noexcept
-	{
-		static CharacterDefRegistry registry;
-		return registry;
-	}
-
 	template<typename TEnum>
 	bool ReadEnum(
 		const json& node,
@@ -45,25 +28,6 @@ namespace
 		if (!ParseDefString(text, outValue))
 		{
 			outError = std::string("Unknown ") + typeName + ": " + text;
-			return false;
-		}
-
-		return true;
-	}
-
-	bool ReadCharacterActionProfileId(
-		const json& node,
-		const char* field,
-		CharacterActionProfileId& outValue,
-		std::string& outError)
-	{
-		std::string text;
-		if (!ReadRequiredString(node, field, text, outError))
-			return false;
-
-		if (!ParseCharacterActionProfileIdString(text, outValue))
-		{
-			outError = "Unknown character action profile id: " + text;
 			return false;
 		}
 
@@ -96,6 +60,47 @@ namespace
 			ReadRequiredNumber(node, "defense", outStat.defense, outError) &&
 			ReadRequiredNumber(node, "moveSpeed", outStat.moveSpeed, outError) &&
 			ReadRequiredNumber(node, "attackSpeed", outStat.attackSpeed, outError);
+	}
+
+	bool ParseAttributes(
+		const json& node,
+		std::vector<CharacterAttributeInitialValueDef>& outAttributes,
+		std::string& outError)
+	{
+		if (!node.is_array())
+		{
+			outError = "Character attributes must be an array.";
+			return false;
+		}
+
+		outAttributes.clear();
+		outAttributes.reserve(node.size());
+		for (const json& attributeNode : node)
+		{
+			CharacterAttributeInitialValueDef attribute{};
+			if (!ReadRequiredString(
+					attributeNode,
+					"attributeKey",
+					attribute.attributeKey,
+					outError) ||
+				!ReadRequiredNumber(
+					attributeNode,
+					"baseValue",
+					attribute.baseValue,
+					outError) ||
+				!ReadRequiredNumber(
+					attributeNode,
+					"currentValue",
+					attribute.currentValue,
+					outError))
+			{
+				return false;
+			}
+
+			outAttributes.push_back(std::move(attribute));
+		}
+
+		return true;
 	}
 
 	bool ParseBodyCollision(
@@ -175,55 +180,50 @@ namespace
 		if (!ReadEnum(node, "aiType", ai.aiType, "AI archetype", outError))
 			return false;
 
-		if (node.contains("aiTuningId") && !node.at("aiTuningId").is_null())
+		if (node.contains("aiProfileKey") && !node.at("aiProfileKey").is_null())
 		{
-			if (!node.at("aiTuningId").is_string())
+			if (!node.at("aiProfileKey").is_string())
 			{
-				outError = "aiTuningId must be a string or null.";
+				outError = "aiProfileKey must be a string or null.";
 				return false;
 			}
 
-			const std::string text = node.at("aiTuningId").get<std::string>();
-			AITuningId tuningId{};
-			if (!ParseAITuningIdString(text, tuningId))
+			ai.aiProfileKey = node.at("aiProfileKey").get<std::string>();
+			ai.aiProfileId = HashDefKey(ai.aiProfileKey);
+			if (ai.aiProfileId == InvalidAIBehaviorProfileId)
 			{
-				outError = "Unknown AI tuning id: " + text;
+				outError = "Invalid AI profile key: " + ai.aiProfileKey;
 				return false;
 			}
-
-			ai.aiTuningId = tuningId;
 		}
 		else
 		{
-			ai.aiTuningId = std::nullopt;
+			ai.aiProfileKey.clear();
+			ai.aiProfileId = InvalidAIBehaviorProfileId;
 		}
 
 		outAI = ai;
 		return true;
 	}
 
-	bool ParseAction(
+	bool ParseAbilitySetKey(
 		const json& node,
-		std::optional<CharacterActionDefRef>& outAction,
+		std::optional<std::string>& outAbilitySetKey,
 		std::string& outError)
 	{
 		if (node.is_null())
 		{
-			outAction = std::nullopt;
+			outAbilitySetKey = std::nullopt;
 			return true;
 		}
 
-		CharacterActionProfileId profileId{};
-		if (!ReadCharacterActionProfileId(
-			node,
-			"actionProfileId",
-			profileId,
-			outError))
+		if (!node.is_string())
 		{
+			outError = "abilitySetKey must be a string or null.";
 			return false;
 		}
 
-		outAction = CharacterActionDefRef{ .actionProfileId = profileId };
+		outAbilitySetKey = node.get<std::string>();
 		return true;
 	}
 
@@ -246,6 +246,12 @@ namespace
 
 		if (!root.contains("stat") ||
 			!ParseStat(root.at("stat"), outDef.stat, outError))
+		{
+			return false;
+		}
+
+		if (root.contains("attributes") &&
+			!ParseAttributes(root.at("attributes"), outDef.attributes, outError))
 		{
 			return false;
 		}
@@ -274,8 +280,11 @@ namespace
 			return false;
 		}
 
-		if (root.contains("action") &&
-			!ParseAction(root.at("action"), outDef.action, outError))
+		if (root.contains("abilitySetKey") &&
+			!ParseAbilitySetKey(
+				root.at("abilitySetKey"),
+				outDef.abilitySetKey,
+				outError))
 		{
 			return false;
 		}
@@ -310,75 +319,40 @@ namespace
 
 		return true;
 	}
-}
 
-const CharacterDef* FindCharacterDef(CharacterId id) noexcept
-{
-	return GetCharacterDefRegistry().Find(id);
-}
+	bool AppendCharacterDocumentDtos(
+		const json& root,
+		std::vector<CharacterDef>& outDtos,
+		std::string& outError)
+	{
+		CharacterDef def{};
+		if (!ParseCharacterDocument(root, def, outError))
+			return false;
 
-const CharacterDef& GetCharacterDef(CharacterId id)
-{
-	return GetCharacterDefRegistry().Get(id);
-}
+		outDtos.push_back(std::move(def));
+		return true;
+	}
 
-std::span<const CharacterDef> GetCharacterDefs() noexcept
-{
-	return GetCharacterDefRegistry().GetAll();
+	bool CompileCharacterDef(
+		const CharacterDef& dto,
+		CharacterDef& outDef,
+		std::string& outError)
+	{
+		(void)outError;
+		outDef = dto;
+		return true;
+	}
 }
 
 CharacterDefLoadResult LoadCharacterDefsFromJsonDirectory(
-	const std::filesystem::path& directory)
+	const std::filesystem::path& directory,
+	CharacterDefRegistry& outRegistry)
 {
-	std::vector<DefJsonDocument> documents;
-	CharacterDefLoadResult result =
-		LoadDefJsonDocumentsFromDirectory(directory, documents, "Character");
-	if (!result.succeeded)
-		return result;
-
-	std::vector<CharacterDef> defs(documents.size());
-	for (size_t i = 0; i < documents.size(); ++i)
-	{
-		try
-		{
-			if (!ParseCharacterDocument(
-				documents[i].root,
-				defs[i],
-				result.error))
-			{
-				result.error = documents[i].path.string() + ": " + result.error;
-				result.succeeded = false;
-				return result;
-			}
-		}
-		catch (const std::exception& ex)
-		{
-			result.error = documents[i].path.string() +
-				": Invalid character json field: " + std::string(ex.what());
-			result.succeeded = false;
-			return result;
-		}
-	}
-
-	if (!ValidateCharacterDefs(defs, result.error))
-	{
-		result.succeeded = false;
-		return result;
-	}
-
-	CharacterDefRegistry registry;
-	std::string registryError;
-	if (!registry.Build(std::move(defs), &registryError))
-	{
-		result.succeeded = false;
-		result.error = registryError;
-		return result;
-	}
-
-	CharacterDefRegistry& activeRegistry = GetCharacterDefRegistry();
-	activeRegistry = std::move(registry);
-	result.succeeded = true;
-	result.loadedCount = activeRegistry.Size();
-	result.error.clear();
-	return result;
+	return LoadCompiledDefsFromJsonDirectory<CharacterDef, CharacterDef>(
+		directory,
+		"Character",
+		AppendCharacterDocumentDtos,
+		CompileCharacterDef,
+		ValidateCharacterDefs,
+		outRegistry);
 }

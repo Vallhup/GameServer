@@ -11,6 +11,7 @@
 #include "ECS/System/GameplaySystemRegistration.h"
 #include "ExecutionSourceTypes.h"
 #include "FrameworkRuntime.h"
+#include "GameDataCatalog.h"
 #include "PlayerCharacterTransferSerializer.h"
 #include "SpawnSetDef.h"
 #include "SystemManager.h"
@@ -29,7 +30,8 @@ namespace
 	public:
 		static bool RegisterRuntime(
 			WorldRuntime& runtime,
-			const AnimationRegistry* animationRegistry)
+			const AnimationRegistry* animationRegistry,
+			const GameDataCatalog& catalog)
 		{
 			const CharacterAspectRegistry& aspects =
 				GetGlobalCharacterAspectRegistry();
@@ -37,15 +39,16 @@ namespace
 			aspects.RegisterStoragesAll(runtime);
 			GameplaySystemRegistrar registrar(animationRegistry);
 			registrar.Register(runtime);
-			ValidateCharacterDefs(aspects);
+			ValidateCharacterDefs(aspects, catalog);
 			return true;
 		}
 
 	private:
 		static void ValidateCharacterDefs(
-			const CharacterAspectRegistry& aspects)
+			const CharacterAspectRegistry& aspects,
+			const GameDataCatalog& catalog)
 		{
-			for (const CharacterDef& def : GetCharacterDefs())
+			for (const CharacterDef& def : catalog.Characters().GetAll())
 			{
 				std::string validationError;
 				(void)aspects.ValidateAll(def, validationError);
@@ -58,10 +61,12 @@ namespace
 		ServerGameplayWorldImpl(
 			const AnimationRegistry* animationRegistry,
 			FrameworkRuntime* framework,
+			const GameDataCatalog& catalog,
 			WorldId worldId,
 			const WorldDef& worldDef)
 			: _animationRegistry(animationRegistry)
 			, _framework(framework)
+			, _catalog(&catalog)
 			, _worldId(worldId)
 			, _worldDef(&worldDef)
 		{
@@ -71,7 +76,8 @@ namespace
 		{
 			if (!ServerGameplayRuntimeBootstrap::RegisterRuntime(
 				runtime,
-				_animationRegistry))
+				_animationRegistry,
+				*_catalog))
 			{
 				return false;
 			}
@@ -81,10 +87,7 @@ namespace
 				return false;
 			}
 
-			return _framework->BindRuntimeSystems(
-				runtime,
-				SystemPhase::Graph,
-				ExecPhase::Simulate);
+			return _framework->BindRuntimeSystems(runtime, ExecPhase::Simulate);
 		}
 
 		bool OnStart(WorldRuntime& runtime) override
@@ -97,7 +100,7 @@ namespace
 			}
 
 			const SpawnSetDef* const spawnSet =
-				FindSpawnSetDef(_worldDef->spawn.initialSpawnSetId);
+				_catalog->SpawnSets().Find(_worldDef->spawn.initialSpawnSetId);
 			if (spawnSet == nullptr)
 			{
 				return true;
@@ -127,7 +130,7 @@ namespace
 				}
 
 				const CharacterDef* characterDef =
-					FindCharacterDef(entry.characterId);
+					_catalog->Characters().Find(entry.characterId);
 				if (characterDef == nullptr ||
 					!characterDef->ai.has_value() ||
 					!AIFSMRegistry::IsArchetypeSupported(characterDef->ai->aiType))
@@ -184,6 +187,7 @@ namespace
 	private:
 		const AnimationRegistry* _animationRegistry{ nullptr };
 		FrameworkRuntime* _framework{ nullptr };
+		const GameDataCatalog* _catalog{ nullptr };
 		WorldId _worldId{ WorldId::Invalid() };
 		const WorldDef* _worldDef{ nullptr };
 	};
@@ -207,10 +211,19 @@ void ServerWorldBootstrapFactory::SetBootstrapWorldId(
 	_bootstrapWorldId = worldId;
 }
 
+void ServerWorldBootstrapFactory::SetGameDataCatalog(
+	const GameDataCatalog* catalog) noexcept
+{
+	_gameDataCatalog = catalog;
+}
+
 std::unique_ptr<IWorldInstanceImpl> ServerWorldBootstrapFactory::Create(
 	const WorldDef& def,
 	WorldId worldId)
 {
+	if (_gameDataCatalog == nullptr)
+		return nullptr;
+
 	switch (def.id) {
 	case WorldDefId::Plaza:
 	case WorldDefId::Village:
@@ -220,6 +233,7 @@ std::unique_ptr<IWorldInstanceImpl> ServerWorldBootstrapFactory::Create(
 		return std::make_unique<ServerGameplayWorldImpl>(
 			_animationRegistry,
 			_framework,
+			*_gameDataCatalog,
 			worldId,
 			def);
 	default:
@@ -237,7 +251,6 @@ bool ServerWorldBootstrapDefinitionProvider::RegisterExecutionSources(
 	AutoSystemBridge bridge;
 	const AutoSystemBridge::BridgeResult result =
 		bridge.RegisterSources(
-			SystemPhase::Graph,
 			ExecPhase::Simulate,
 			systemManager,
 			sourceRegistry);
@@ -259,7 +272,6 @@ bool ServerWorldBootstrapDefinitionProvider::RegisterExecutionModels(
 	AutoSystemBridge bridge;
 	const AutoSystemBridge::BridgeResult result =
 		bridge.BuildModelFromRegisteredSources(
-			SystemPhase::Graph,
 			ExecPhase::Simulate,
 			systemManager,
 			sourceRegistry,

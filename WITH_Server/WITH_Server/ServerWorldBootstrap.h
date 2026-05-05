@@ -6,6 +6,7 @@
 
 class AnimationRegistry;
 class FrameworkRuntime;
+class GameDataCatalog;
 class ServerApp;
 
 class ServerWorldBootstrapFactory final : public IWorldInstanceFactory {
@@ -14,6 +15,7 @@ public:
 		const AnimationRegistry* animationRegistry) noexcept;
 	void SetFramework(FrameworkRuntime* framework) noexcept;
 	void SetBootstrapWorldId(const WorldId* worldId) noexcept;
+	void SetGameDataCatalog(const GameDataCatalog* catalog) noexcept;
 
 	std::unique_ptr<IWorldInstanceImpl> Create(
 		const WorldDef& def,
@@ -23,6 +25,7 @@ private:
 	const AnimationRegistry* _animationRegistry{ nullptr };
 	FrameworkRuntime* _framework{ nullptr };
 	const WorldId* _bootstrapWorldId{ nullptr };
+	const GameDataCatalog* _gameDataCatalog{ nullptr };
 };
 
 class ServerWorldBootstrapDefinitionProvider final

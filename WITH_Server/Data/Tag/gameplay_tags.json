@@ -1,0 +1,34 @@
+{
+  "tags": [
+    {
+      "key": "State.SuperArmor",
+      "name": "SuperArmor",
+      "path": "State.SuperArmor",
+      "parents": []
+    },
+    {
+      "key": "State.Invulnerable",
+      "name": "Invulnerable",
+      "path": "State.Invulnerable",
+      "parents": []
+    },
+    {
+      "key": "State.CannotMove",
+      "name": "CannotMove",
+      "path": "State.CannotMove",
+      "parents": []
+    },
+    {
+      "key": "State.CannotAct",
+      "name": "CannotAct",
+      "path": "State.CannotAct",
+      "parents": []
+    },
+    {
+      "key": "State.ParrySuccessReady",
+      "name": "ParrySuccessReady",
+      "path": "State.ParrySuccessReady",
+      "parents": []
+    }
+  ]
+}

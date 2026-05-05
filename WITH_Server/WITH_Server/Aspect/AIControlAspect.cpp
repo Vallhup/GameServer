@@ -4,6 +4,7 @@
 #include "../AIBehaviorDef.h"
 #include "../AIFSMRegistry.h"
 #include "../ECS/GameplayRuntimeComponents.h"
+#include "../GameDataCatalog.h"
 #include "RepComponent.h"
 #include "WorldRuntime.h"
 
@@ -17,10 +18,8 @@ void AIControlAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<AIControlledTag>();
 	runtime.RegisterStorage<AITypeComp>();
 	runtime.RegisterStorage<AIPerceptionComp>();
-	runtime.RegisterStorage<AIPerceptionTuningComp>();
 	runtime.RegisterStorage<AIBlackboardComp>();
 	runtime.RegisterStorage<AIDecisionComp>();
-	runtime.RegisterStorage<AIDecisionTuningComp>();
 	runtime.RegisterStorage<AIReactionComp>();
 	runtime.RegisterStorage<AICommandFrameComp>();
 }
@@ -38,33 +37,19 @@ void AIControlAspect::Attach(
 		AITypeComp
 		{
 			.aiType = def.ai->aiType,
-			.aiTuningId = def.ai->aiTuningId.value_or(AITuningIds::None)
+			.aiProfileId = def.ai->aiProfileId
 		});
 	runtime.DeferredAddComponent<AIPerceptionComp>(entity);
-	const AIBehaviorProfileDef* profile = FindAIBehaviorProfileDef(
-		def.ai->aiType,
-		def.ai->aiTuningId.value_or(AITuningIds::None));
-	if (profile != nullptr)
-	{
-		runtime.DeferredUpsertComponent<AIPerceptionTuningComp>(
-			entity,
-			profile->perceptionTuning);
-		runtime.DeferredUpsertComponent<AIDecisionTuningComp>(
-			entity,
-			profile->decisionTuning);
-	}
-	else
-	{
-		runtime.DeferredAddComponent<AIPerceptionTuningComp>(entity);
-		runtime.DeferredAddComponent<AIDecisionTuningComp>(entity);
-	}
+
+	const AIBehaviorProfileDef* profile =
+		GameDataCatalog::Current().AIBehaviors().Find(def.ai->aiProfileId);
 
 	AIBlackboardComp blackboard{};
 	blackboard.homePosition = params.position;
 	blackboard.hasHomePosition = true;
 	blackboard.leashGauge = (profile != nullptr)
-		? profile->perceptionTuning.leashGaugeMax
-		: AIPerceptionTuningComp{}.leashGaugeMax;
+		? profile->perception.leashGaugeMax
+		: AIPerceptionTuningDef{}.leashGaugeMax;
 	runtime.DeferredUpsertComponent<AIBlackboardComp>(entity, blackboard);
 	runtime.DeferredAddComponent<AIDecisionComp>(entity);
 	runtime.DeferredAddComponent<AIReactionComp>(entity);
@@ -87,8 +72,7 @@ bool AIControlAspect::Validate(
 		return false;
 	}
 	if (!AIFSMRegistry::IsBehaviorSupported(
-		def.ai->aiType,
-		def.ai->aiTuningId.value_or(AITuningIds::None)))
+		def.ai->aiProfileId))
 	{
 		outError =
 			"AIControlled tuning has no behavior profile in AIFSMRegistry";

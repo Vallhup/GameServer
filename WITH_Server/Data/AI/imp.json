@@ -1,5 +1,5 @@
 {
-  "id": "Imp",
+  "key": "AI.Imp",
   "aiType": "NormalMonster",
   "perceptionTuning": {
     "sightRange": 12.0,
@@ -28,17 +28,13 @@
     "attackCooldown": 1.8,
     "reactDuration": 0.5
   },
-  "movementPolicyKind": "Normal",
-  "combatActionPolicyKind": "Imp",
-  "idleActionPolicyKind": "Weighted",
-  "reactionPolicyKind": "Normal",
   "combatActions": [
-    { "actionId": "Imp_melee1", "weight": 10 },
-    { "actionId": "Imp_melee3", "weight": 35 },
-    { "actionId": "Imp_melee4", "weight": 30 },
-    { "actionId": "Imp_melee5", "weight": 25 }
+    { "abilityKey": "Ability.Imp_melee1", "weight": 10 },
+    { "abilityKey": "Ability.Imp_melee3", "weight": 35 },
+    { "abilityKey": "Ability.Imp_melee4", "weight": 30 },
+    { "abilityKey": "Ability.Imp_melee5", "weight": 25 }
   ],
   "idleActions": [
-    { "actionId": "Imp_Jump", "weight": 100 }
+    { "abilityKey": "Ability.Imp_Jump", "weight": 100 }
   ]
 }

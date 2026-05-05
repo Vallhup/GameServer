@@ -5,9 +5,9 @@
 struct PendingProjectileSpawnRequest
 {
 	Entity sourceEntity{ Entity::Null() };
-	ActionId sourceActionId{ ActionId::None };
-	uint32_t sourceActionInstanceId{ 0 };
-	std::optional<EventPayloadId> payloadId;
+	AbilityId sourceAbilityId{ InvalidAbilityId };
+	uint32_t sourceAbilityInstanceId{ 0 };
+	std::optional<uint16_t> payloadId;
 };
 
 struct PendingProjectileSpawnComp : Component
@@ -15,16 +15,16 @@ struct PendingProjectileSpawnComp : Component
 	std::vector<PendingProjectileSpawnRequest> requests;
 };
 
-struct PendingActionPresentationEvent
+struct PendingAbilityPresentationEvent
 {
 	Entity sourceEntity{ Entity::Null() };
-	ActionId sourceActionId{ ActionId::None };
-	uint32_t sourceActionInstanceId{ 0 };
-	EventType eventType{ EventType::PlayEffect };
-	std::optional<EventPayloadId> payloadId;
+	AbilityId sourceAbilityId{ InvalidAbilityId };
+	uint32_t sourceAbilityInstanceId{ 0 };
+	AbilityEventKind eventKind{ AbilityEventKind::PlayCue };
+	std::optional<uint16_t> payloadId;
 };
 
-struct PendingActionPresentationEventComp : Component
+struct PendingAbilityPresentationEventComp : Component
 {
-	std::vector<PendingActionPresentationEvent> events;
+	std::vector<PendingAbilityPresentationEvent> events;
 };

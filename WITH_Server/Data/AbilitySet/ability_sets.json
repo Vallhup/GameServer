@@ -1,0 +1,896 @@
+{
+  "abilitySets": [
+    {
+      "key": "AbilitySet.Knight",
+      "name": "Knight",
+      "grants": [
+        {
+          "abilityKey": "Ability.Knight_LightAttack1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_LightAttack2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_LightAttack3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_HeavyAttack",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Dodge",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Parry",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Guard",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.Knight",
+      "animationBindingProfileKey": "AbilityAnimation.Knight",
+      "fallbackReactionProfileKey": "AbilityFallback.Knight"
+    },
+    {
+      "key": "AbilitySet.Imp",
+      "name": "Imp",
+      "grants": [
+        {
+          "abilityKey": "Ability.Imp_melee1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Imp_melee3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Imp_melee4",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Imp_melee5",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Imp_Jump",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Imp_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Imp_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Imp_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.Imp",
+      "animationBindingProfileKey": "AbilityAnimation.Imp",
+      "fallbackReactionProfileKey": "AbilityFallback.Imp"
+    },
+    {
+      "key": "AbilitySet.DemonStriker",
+      "name": "DemonStriker",
+      "grants": [
+        {
+          "abilityKey": "Ability.DemonStriker_Melee_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Melee_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Melee_3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Melee_4",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Gun_Shoot_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Gun_Shoot_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Gun_Shoot_3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Gun_Shoot_4",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Jump_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Jump_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.DemonStriker",
+      "animationBindingProfileKey": "AbilityAnimation.DemonStriker",
+      "fallbackReactionProfileKey": "AbilityFallback.DemonStriker"
+    },
+    {
+      "key": "AbilitySet.DemonExecutioner",
+      "name": "DemonExecutioner",
+      "grants": [
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_4",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_5",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_6",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Jump_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Jump_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.DemonExecutioner",
+      "animationBindingProfileKey": "AbilityAnimation.DemonExecutioner",
+      "fallbackReactionProfileKey": "AbilityFallback.DemonExecutioner"
+    },
+    {
+      "key": "AbilitySet.BigDemonWarrior",
+      "name": "BigDemonWarrior",
+      "grants": [
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_4",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_5",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_6",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_7",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_8",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Jump",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_BattleCry",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.BigDemonWarrior",
+      "animationBindingProfileKey": "AbilityAnimation.BigDemonWarrior",
+      "fallbackReactionProfileKey": "AbilityFallback.BigDemonWarrior"
+    }
+  ],
+  "inputBindingProfiles": [
+    {
+      "key": "AbilityInput.Knight",
+      "entries": [
+        {
+          "request": "LightAttack",
+          "candidateAbilityKeys": [
+            "Ability.Knight_LightAttack1",
+            "Ability.Knight_LightAttack2",
+            "Ability.Knight_LightAttack3"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "HeavyAttack",
+          "candidateAbilityKeys": [
+            "Ability.Knight_HeavyAttack"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Dodge",
+          "candidateAbilityKeys": [
+            "Ability.Knight_Dodge"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Parry",
+          "candidateAbilityKeys": [
+            "Ability.Knight_Parry"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "GuardStart",
+          "candidateAbilityKeys": [
+            "Ability.Knight_Guard"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        }
+      ]
+    },
+    {
+      "key": "AbilityInput.Imp",
+      "entries": []
+    },
+    {
+      "key": "AbilityInput.DemonStriker",
+      "entries": []
+    },
+    {
+      "key": "AbilityInput.DemonExecutioner",
+      "entries": []
+    },
+    {
+      "key": "AbilityInput.BigDemonWarrior",
+      "entries": []
+    }
+  ],
+  "animationBindingProfiles": [
+    {
+      "key": "AbilityAnimation.Knight",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.Knight_LightAttack1",
+          "animationKey": "Knight_LightAttack1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Knight_Dodge",
+          "animationKey": "Knight_Dodge",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Knight_Parry",
+          "animationKey": "Knight_Parry",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Knight_Stun",
+          "animationKey": "Knight_Stun",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Knight_Hit",
+          "animationKey": "Knight_Hit",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Knight_Guard",
+          "animationKey": "Knight_Guard",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Knight_Dead",
+          "animationKey": "Knight_Death",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "Knight_Idle",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "Knight_Walk"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "Knight_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "Knight_Walk"
+        }
+      ]
+    },
+    {
+      "key": "AbilityAnimation.Imp",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.Imp_melee1",
+          "animationKey": "Imp_Melee_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Imp_melee2",
+          "animationKey": "Imp_Melee_2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Imp_melee3",
+          "animationKey": "Imp_Melee_3",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Imp_melee4",
+          "animationKey": "Imp_Melee_4",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Imp_melee5",
+          "animationKey": "Imp_Melee_5",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Imp_Jump",
+          "animationKey": "Imp_Jump_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Imp_Hit",
+          "animationKey": "Imp_React_Front",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Imp_Stun",
+          "animationKey": "Imp_Stun",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Imp_Dead",
+          "animationKey": "Imp_Death_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "Imp_Idle_1",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "Imp_Walk_Forward"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "Imp_Walk_Forward"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "Imp_Walk_Forward"
+        }
+      ]
+    },
+    {
+      "key": "AbilityAnimation.DemonStriker",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.DemonStriker_Melee_1",
+          "animationKey": "DemonStriker_Melee_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Melee_2",
+          "animationKey": "DemonStriker_Melee_2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Melee_3",
+          "animationKey": "DemonStriker_Melee_3",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Melee_4",
+          "animationKey": "DemonStriker_Melee_4",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Gun_Shoot_1",
+          "animationKey": "DemonStriker_Gun_Shoot_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Gun_Shoot_2",
+          "animationKey": "DemonStriker_Gun_Shoot_2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Gun_Shoot_3",
+          "animationKey": "DemonStriker_Gun_Shoot_3",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Gun_Shoot_4",
+          "animationKey": "DemonStriker_Gun_Shoot_4",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Jump_1",
+          "animationKey": "DemonStriker_Jump_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Jump_2",
+          "animationKey": "DemonStriker_Jump_2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Stun",
+          "animationKey": "DemonStriker_Stun",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Hit",
+          "animationKey": "DemonStriker_React_1_Block",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonStriker_Dead",
+          "animationKey": "DemonStriker_Death_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "DemonStriker_Idle_1",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "DemonStriker_Walking_1"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "DemonStriker_Running_1"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "DemonStriker_Walking_1"
+        }
+      ]
+    },
+    {
+      "key": "AbilityAnimation.DemonExecutioner",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_1",
+          "animationKey": "DemonExecutioner_Melee_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_2",
+          "animationKey": "DemonExecutioner_Melee_2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_3",
+          "animationKey": "DemonExecutioner_Melee_3",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_4",
+          "animationKey": "DemonExecutioner_Melee_4",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_5",
+          "animationKey": "DemonExecutioner_Melee_5",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_6",
+          "animationKey": "DemonExecutioner_Melee_6",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Jump_1",
+          "animationKey": "DemonExecutioner_Jump_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Jump_2",
+          "animationKey": "DemonExecutioner_Jump_2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Stun",
+          "animationKey": "DemonExecutioner_Stun",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Hit",
+          "animationKey": "DemonExecutioner_GetHit_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Dead",
+          "animationKey": "DemonExecutioner_Death",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "DemonExecutioner_Idle_2",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "DemonExecutioner_Walk_Forward"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "DemonExecutioner_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "DemonExecutioner_Walk_Forward"
+        }
+      ]
+    },
+    {
+      "key": "AbilityAnimation.BigDemonWarrior",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_1",
+          "animationKey": "BigDemonWarrior_Melee_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_2",
+          "animationKey": "BigDemonWarrior_Melee_2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_3",
+          "animationKey": "BigDemonWarrior_Melee_3",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_4",
+          "animationKey": "BigDemonWarrior_Melee_4",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_5",
+          "animationKey": "BigDemonWarrior_Melee_5",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_6",
+          "animationKey": "BigDemonWarrior_Melee_6",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_7",
+          "animationKey": "BigDemonWarrior_Melee_7",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_8",
+          "animationKey": "BigDemonWarrior_Melee_8",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Jump",
+          "animationKey": "BigDemonWarrior_Jump",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_BattleCry",
+          "animationKey": "BigDemonWarrior_BattleCry",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Stun",
+          "animationKey": "BigDemonWarrior_Stun",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Hit",
+          "animationKey": "BigDemonWarrior_React_Gut",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Dead",
+          "animationKey": "BigDemonWarrior_Death",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "BigDemonWarrior_Idle_1",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "BigDemonWarrior_Walk_Forward"
+        },
+        {
+          "mode": "WalkBack",
+          "animationKey": "BigDemonWarrior_Walk_Back"
+        },
+        {
+          "mode": "WalkLeft",
+          "animationKey": "BigDemonWarrior_Walk_Left"
+        },
+        {
+          "mode": "WalkRight",
+          "animationKey": "BigDemonWarrior_Walk_Right"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "BigDemonWarrior_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "BigDemonWarrior_Walk_Forward"
+        },
+        {
+          "mode": "TurnLeft",
+          "animationKey": "BigDemonWarrior_Turn_Left"
+        },
+        {
+          "mode": "TurnRight",
+          "animationKey": "BigDemonWarrior_Turn_Right"
+        }
+      ]
+    }
+  ],
+  "fallbackReactionProfiles": [
+    {
+      "key": "AbilityFallback.Knight",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.Knight_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.Knight_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.Knight_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "key": "AbilityFallback.Imp",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.Imp_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.Imp_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.Imp_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "key": "AbilityFallback.DemonStriker",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.DemonStriker_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.DemonStriker_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.DemonStriker_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "key": "AbilityFallback.DemonExecutioner",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.DemonExecutioner_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.DemonExecutioner_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.DemonExecutioner_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "key": "AbilityFallback.BigDemonWarrior",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.BigDemonWarrior_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.BigDemonWarrior_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+          "priority": 1000
+        }
+      ]
+    }
+  ]
+}

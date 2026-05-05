@@ -5,6 +5,7 @@
 
 #include "Aspect/CharacterAspectRegistry.h"
 #include "Aspect/ICharacterAspect.h"
+#include "GameDataCatalog.h"
 #include "WorldDef.h"
 #include "WorldInstance.h"
 
@@ -188,7 +189,8 @@ PlayerEntryResult PlayerEntryService::RequestCharacterSelect(
 		return MakeResult(PlayerEntryResultCode::DuplicatePendingSpawn, sessionId, characterId);
 	}
 
-	const CharacterDef* const characterDef = FindCharacterDef(characterId);
+	const CharacterDef* const characterDef =
+		GameDataCatalog::Current().Characters().Find(characterId);
 	if (characterDef == nullptr)
 	{
 		return MakeResult(PlayerEntryResultCode::CharacterDefNotFound, sessionId, characterId);

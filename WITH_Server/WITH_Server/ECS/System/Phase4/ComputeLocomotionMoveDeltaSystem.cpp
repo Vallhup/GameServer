@@ -11,7 +11,7 @@ namespace
 	const std::array<AccessSpec, 5> kComputeLocomotionMoveDeltaAccesses{
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
 		WriteImmediate(ComponentRes<LocomotionStateComp>()),
-		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<AICommandFrameComp>()),
 		WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()),
 	};
@@ -36,16 +36,16 @@ const SystemMeta ComputeLocomotionMoveDeltaSystem::kMeta =
 
 void ComputeLocomotionMoveDeltaSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, transform, locomotionState, actionState, moveDelta] :
+	for (auto [entity, transform, locomotionState, abilityState, moveDelta] :
 		ctx.ecs.View<
 			WorldTransformComp,
 			LocomotionStateComp,
-			ActionStateComp,
+			AbilityStateComp,
 			LocomotionMoveDeltaComp>())
 	{
 		moveDelta = {};
 
-		if (IsActionActive(actionState))
+		if (IsAbilityActive(abilityState))
 		{
 			continue;
 		}

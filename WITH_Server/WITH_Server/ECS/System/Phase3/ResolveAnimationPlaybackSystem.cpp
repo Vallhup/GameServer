@@ -2,7 +2,7 @@
 #include "ResolveAnimationPlaybackSystem.h"
 
 #include "../GameplaySystemUtil.h"
-#include "../Phase2/ResolveActionStateSystem.h"
+#include "../Phase2/ResolveAbilityStateSystem.h"
 
 using namespace GameplaySystemUtil;
 
@@ -13,45 +13,46 @@ const StaticSystemMetaStorage<5, 0, 1> ResolveAnimationPlaybackSystem::kMetaStor
         std::array<AccessSpec, 5>
         {
             WriteImmediate(ComponentRes<AnimationPlaybackStateComp>()),
-            ReadImmediate(ComponentRes<ActionStateComp>()),
+            ReadImmediate(ComponentRes<AbilityStateComp>()),
             ReadImmediate(ComponentRes<LocomotionStateComp>()),
             ReadImmediate(ComponentRes<SpawnTypeComp>()),
             WriteImmediate(ComponentRes<DirtyFlagsComp>()),
         },
         std::array<SystemTag, 0>{},
-        std::array<SystemTag, 1>{ SysTag<ResolveActionStateSystem>() });
+        std::array<SystemTag, 1>{ SysTag<ResolveAbilityStateSystem>() });
 
 void ResolveAnimationPlaybackSystem::Execute(SystemContext& ctx)
 {
 	for (auto [
 		entity,
 		playbackState,
-		actionState,
+		abilityState,
 		locomotionState,
 		spawnType] :
 		ctx.ecs.View<
 			AnimationPlaybackStateComp,
-			ActionStateComp,
+			AbilityStateComp,
 			LocomotionStateComp,
 			SpawnTypeComp>())
 	{
 		const AnimationPlaybackStateComp previousState = playbackState;
 
-		if (IsActionActive(actionState))
+		if (IsAbilityActive(abilityState))
 		{
-			const ActionDef* actionDef = FindActionDef(actionState.actionId);
-			playbackState.source = AnimationPlaybackSource::Action;
+			const AbilityDef* abilityDef =
+				GameplayContentCatalogSnapshot::Current().Abilities().Find(abilityState.abilityId);
+			playbackState.source = AnimationPlaybackSource::Ability;
 			playbackState.animationId =
-				ResolveActionAnimationId(
+				ResolveAbilityAnimationId(
 					spawnType.characterId,
-					actionState.actionId);
-			playbackState.boundActionInstanceId = actionState.actionInstanceId;
-			playbackState.boundActionId = actionState.actionId;
+					abilityState.abilityId);
+			playbackState.boundAbilityInstanceId = abilityState.abilityInstanceId;
+			playbackState.boundAbilityId = abilityState.abilityId;
 			playbackState.boundLocomotionMode = LocomotionMode::Idle;
-			playbackState.playbackTimeSec = actionState.elapsedSec;
+			playbackState.playbackTimeSec = abilityState.elapsedSec;
 			playbackState.normalizedTime =
-				(actionDef != nullptr && actionDef->duration > 0.0f)
-				? ClampFloat(actionState.elapsedSec / actionDef->duration, 0.0f, 1.0f)
+				(abilityDef != nullptr && abilityDef->timeline.durationSec > 0.0f)
+				? ClampFloat(abilityState.elapsedSec / abilityDef->timeline.durationSec, 0.0f, 1.0f)
 				: 0.0f;
 			playbackState.playRate = 1.0f;
 			playbackState.loop = false;
@@ -64,8 +65,8 @@ void ResolveAnimationPlaybackSystem::Execute(SystemContext& ctx)
 				ResolveLocomotionAnimationId(
 					spawnType.characterId,
 					locomotionState.mode);
-			playbackState.boundActionInstanceId = 0;
-			playbackState.boundActionId = ActionId::None;
+			playbackState.boundAbilityInstanceId = 0;
+			playbackState.boundAbilityId = InvalidAbilityId;
 			playbackState.boundLocomotionMode = locomotionState.mode;
 			playbackState.normalizedTime = locomotionState.locomotionAnimPhase01;
 			playbackState.playbackTimeSec = locomotionState.locomotionAnimPhase01;
@@ -93,11 +94,10 @@ bool ResolveAnimationPlaybackSystem::RequiresAnimationDirty(
 	return
 		previousState.source != nextState.source ||
 		previousState.animationId != nextState.animationId ||
-		previousState.boundActionInstanceId != nextState.boundActionInstanceId ||
-		previousState.boundActionId != nextState.boundActionId ||
+		previousState.boundAbilityInstanceId != nextState.boundAbilityInstanceId ||
+		previousState.boundAbilityId != nextState.boundAbilityId ||
 		previousState.boundLocomotionMode != nextState.boundLocomotionMode ||
 		std::abs(previousState.playRate - nextState.playRate) > kOverlapEpsilon ||
 		previousState.loop != nextState.loop ||
 		previousState.holdLastFrame != nextState.holdLastFrame;
 }
-

@@ -35,9 +35,7 @@ struct AssembleParams
 	DirectX::XMFLOAT4 rotation{ 0.0f, 0.0f, 0.0f, 1.0f };
 	NetId netId;
 
-	// Playable 캐릭터 전용
 	std::optional<SessionId> sessionId;
-
 	std::optional<CombatStatInitialState> combatStatsOverride;
 };
 

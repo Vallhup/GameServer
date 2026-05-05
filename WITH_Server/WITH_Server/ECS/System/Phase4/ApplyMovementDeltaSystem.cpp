@@ -12,8 +12,8 @@ namespace
 		WriteImmediate(ComponentRes<WorldTransformComp>()),
 		WriteImmediate(ComponentRes<PreCollisionTransformComp>()),
 		WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()),
-		WriteImmediate(ComponentRes<ActionMoveDeltaComp>()),
-		ReadImmediate(ComponentRes<ActionStateComp>()),
+		WriteImmediate(ComponentRes<AbilityMoveDeltaComp>()),
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 	};
 }
@@ -49,14 +49,14 @@ void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 		transform,
 		preCollision,
 		locomotionDelta,
-		actionDelta,
-		actionState] :
+		abilityDelta,
+		abilityState] :
 		ctx.ecs.View<
 			WorldTransformComp,
 			PreCollisionTransformComp,
 			LocomotionMoveDeltaComp,
-			ActionMoveDeltaComp,
-			ActionStateComp>())
+			AbilityMoveDeltaComp,
+			AbilityStateComp>())
 	{
 		preCollision.prevPosition = transform.position;
 		preCollision.prevRotation = transform.rotation;
@@ -65,14 +65,14 @@ void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 		preCollision.movedThisFrame = false;
 		preCollision.rotatedThisFrame = false;
 
-		if (actionDelta.hasDelta)
+		if (abilityDelta.hasDelta)
 		{
-			transform.position.x += actionDelta.deltaPosition.x;
-			transform.position.y += actionDelta.deltaPosition.y;
-			transform.position.z += actionDelta.deltaPosition.z;
-			ApplyDeltaYaw(transform, actionDelta.deltaYawRad);
+			transform.position.x += abilityDelta.deltaPosition.x;
+			transform.position.y += abilityDelta.deltaPosition.y;
+			transform.position.z += abilityDelta.deltaPosition.z;
+			ApplyDeltaYaw(transform, abilityDelta.deltaYawRad);
 		}
-		else if (!IsActionActive(actionState) && locomotionDelta.hasDelta)
+		else if (!IsAbilityActive(abilityState) && locomotionDelta.hasDelta)
 		{
 			transform.position.x += locomotionDelta.deltaPosition.x;
 			transform.position.y += locomotionDelta.deltaPosition.y;
@@ -94,7 +94,7 @@ void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 		preCollision.rotatedThisFrame =
 			std::abs(TransformHelper::AngleDelta(prevYaw, currYaw)) > kOverlapEpsilon;
 
-		actionDelta = {};
+		abilityDelta = {};
 		locomotionDelta = {};
 
 		if ((preCollision.movedThisFrame || preCollision.rotatedThisFrame) &&

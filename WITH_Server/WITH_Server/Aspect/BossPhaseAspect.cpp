@@ -26,13 +26,11 @@ void BossPhaseAspect::Attach(
 
 	BossPhaseStateComp phase{};
 	phase.currentPhase = 1;
-	phase.phase2ThresholdRatio = 0.55f;
 	phase.crossedThresholdMask = 0;
 	phase.transitionRequested = false;
 	runtime.DeferredUpsertComponent<BossPhaseStateComp>(entity, phase);
 
 	BossPatternRuntimeComp patternRuntime{};
-	patternRuntime.patternCooldownSec.fill(0.0f);
 	patternRuntime.phaseTransitionLockSec = 0.0f;
 	patternRuntime.phaseTransitionActionPending = false;
 	patternRuntime.strafeTimeLeftSec = 0.0f;

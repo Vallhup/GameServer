@@ -1,33 +1,35 @@
 #include "pch.h"
 #include "SpawnSetDef.h"
 
+#include "DefCompilePipeline.h"
 #include "DefEnumString.h"
-#include "DefJsonFileLoader.h"
 #include "DefJsonReader.h"
+#include "DefKeyIndex.h"
 #include "DefRegistry.h"
 
+#include <algorithm>
 #include <vector>
 
 using json = nlohmann::json;
 
 namespace
 {
-	struct SpawnSetDefTraits
+	struct SpawnEntryDefDto
 	{
-		static SpawnSetId GetId(const SpawnSetDef& def) noexcept
-		{
-			return def.id;
-		}
+		CharacterId characterId{ CharacterId::None };
+		SpawnPointId spawnPointId{ SpawnPointIds::None };
+		uint8_t count{ 0 };
+		SpawnConditionType type{ SpawnConditionType::Always };
+		RespawnPolicy respawnPolicy{ RespawnPolicy::None };
+		std::optional<float> respawnDelaySec;
 	};
 
-	using SpawnSetDefRegistry =
-		DefRegistry<SpawnSetDef, SpawnSetId, SpawnSetDefTraits>;
-
-	SpawnSetDefRegistry& GetSpawnSetDefRegistry() noexcept
+	struct SpawnSetDefDto
 	{
-		static SpawnSetDefRegistry registry;
-		return registry;
-	}
+		std::string key;
+		std::string name;
+		std::vector<SpawnEntryDefDto> entries;
+	};
 
 	template<typename TEnum>
 	bool ReadEnum(
@@ -93,7 +95,7 @@ namespace
 
 	bool ParseEntry(
 		const json& node,
-		SpawnEntryDef& outEntry,
+		SpawnEntryDefDto& outEntry,
 		std::string& outError)
 	{
 		return
@@ -107,11 +109,11 @@ namespace
 
 	bool ParseSpawnSetDocument(
 		const json& root,
-		SpawnSetDef& outDef,
+		SpawnSetDefDto& outDto,
 		std::string& outError)
 	{
-		if (!ReadEnum(root, "id", outDef.id, "SpawnSetId", outError) ||
-			!ReadRequiredString(root, "name", outDef.name, outError))
+		if (!ReadRequiredString(root, "key", outDto.key, outError) ||
+			!ReadRequiredString(root, "name", outDto.name, outError))
 		{
 			return false;
 		}
@@ -123,18 +125,35 @@ namespace
 		}
 
 		const json& entries = root.at("entries");
-		outDef.entries.clear();
-		outDef.entries.reserve(entries.size());
+		outDto.entries.clear();
+		outDto.entries.reserve(entries.size());
 		for (const json& entryNode : entries)
 		{
-			SpawnEntryDef entry{};
+			SpawnEntryDefDto entry{};
 			if (!ParseEntry(entryNode, entry, outError))
 				return false;
 
-			outDef.entries.push_back(entry);
+			outDto.entries.push_back(entry);
 		}
 
 		return true;
+	}
+
+	bool BuildSpawnSetKeyIndex(
+		std::span<const DefParsedDto<SpawnSetDefDto>> dtos,
+		DefKeyIndex<SpawnSetId>& outIndex,
+		std::string& outError)
+	{
+		std::vector<std::string> keys;
+		keys.reserve(dtos.size());
+		for (const DefParsedDto<SpawnSetDefDto>& parsedDto : dtos)
+			keys.push_back(parsedDto.dto.key);
+
+		return BuildDeterministicDefKeyIndex(
+			std::span<const std::string>(keys.data(), keys.size()),
+			static_cast<SpawnSetId>(1),
+			outIndex,
+			outError);
 	}
 
 	bool ValidateSpawnSetDefs(
@@ -146,6 +165,12 @@ namespace
 			if (def.id == SpawnSetId::None)
 			{
 				outError = "SpawnSet id must not be None.";
+				return false;
+			}
+
+			if (def.key.empty())
+			{
+				outError = "SpawnSet key must not be empty.";
 				return false;
 			}
 
@@ -179,54 +204,117 @@ namespace
 
 		return true;
 	}
-}
 
-const SpawnSetDef* FindSpawnSetDef(SpawnSetId id) noexcept
-{
-	return GetSpawnSetDefRegistry().Find(id);
-}
+	bool AppendSpawnSetDocumentDtos(
+		const json& root,
+		std::vector<SpawnSetDefDto>& outDtos,
+		std::string& outError)
+	{
+		SpawnSetDefDto dto{};
+		if (!ParseSpawnSetDocument(root, dto, outError))
+			return false;
 
-const SpawnSetDef& GetSpawnSetDef(SpawnSetId id)
-{
-	return GetSpawnSetDefRegistry().Get(id);
-}
+		outDtos.push_back(std::move(dto));
+		return true;
+	}
 
-std::span<const SpawnSetDef> GetSpawnSetDefs() noexcept
-{
-	return GetSpawnSetDefRegistry().GetAll();
+	bool CompileSpawnSetDef(
+		const SpawnSetDefDto& dto,
+		const DefKeyIndex<SpawnSetId>& keyIndex,
+		SpawnSetDef& outDef,
+		std::string& outError)
+	{
+		SpawnSetId id{ SpawnSetId::None };
+		if (!keyIndex.FindId(dto.key, id))
+		{
+			outError = "Unknown SpawnSet key: " + dto.key;
+			return false;
+		}
+
+		outDef.id = id;
+		outDef.key = dto.key;
+		outDef.name = dto.name;
+		outDef.entries.clear();
+		outDef.entries.reserve(dto.entries.size());
+
+		for (const SpawnEntryDefDto& entryDto : dto.entries)
+		{
+			outDef.entries.push_back(SpawnEntryDef{
+				.characterId = entryDto.characterId,
+				.spawnPointId = entryDto.spawnPointId,
+				.count = entryDto.count,
+				.type = entryDto.type,
+				.respawnPolicy = entryDto.respawnPolicy,
+				.respawnDelaySec = entryDto.respawnDelaySec
+			});
+		}
+
+		return true;
+	}
 }
 
 SpawnSetDefLoadResult LoadSpawnSetDefsFromJsonDirectory(
-	const std::filesystem::path& directory)
+	const std::filesystem::path& directory,
+	SpawnSetDefRegistry& outRegistry)
 {
+	DefLoadResult result{};
 	std::vector<DefJsonDocument> documents;
-	SpawnSetDefLoadResult result =
-		LoadDefJsonDocumentsFromDirectory(directory, documents, "SpawnSet");
+	result = LoadDefJsonDocumentsFromDirectory(
+		directory,
+		documents,
+		"SpawnSet");
 	if (!result.succeeded)
 		return result;
 
-	std::vector<SpawnSetDef> defs(documents.size());
-	for (size_t i = 0; i < documents.size(); ++i)
+	DefParsedDtoList<SpawnSetDefDto> dtos;
+	if (!ParseDefDtosFromJsonDocuments(
+			std::span<const DefJsonDocument>(documents.data(), documents.size()),
+			AppendSpawnSetDocumentDtos,
+			dtos,
+			result.error))
 	{
-		try
-		{
-			if (!ParseSpawnSetDocument(documents[i].root, defs[i], result.error))
-			{
-				result.error = documents[i].path.string() + ": " + result.error;
-				result.succeeded = false;
-				return result;
-			}
-		}
-		catch (const std::exception& ex)
-		{
-			result.error = documents[i].path.string() +
-				": Invalid spawn set json field: " + std::string(ex.what());
-			result.succeeded = false;
-			return result;
-		}
+		result.succeeded = false;
+		return result;
 	}
 
-	if (!ValidateSpawnSetDefs(defs, result.error))
+	DefKeyIndex<SpawnSetId> keyIndex;
+	if (!BuildSpawnSetKeyIndex(
+			std::span<const DefParsedDto<SpawnSetDefDto>>(dtos.data(), dtos.size()),
+			keyIndex,
+			result.error))
+	{
+		result.succeeded = false;
+		return result;
+	}
+
+	std::vector<SpawnSetDef> defs;
+	if (!CompileRuntimeDefs<SpawnSetDefDto, SpawnSetDef>(
+			std::span<const DefParsedDto<SpawnSetDefDto>>(dtos.data(), dtos.size()),
+			[&keyIndex](
+				const SpawnSetDefDto& dto,
+				SpawnSetDef& outDef,
+				std::string& outError)
+			{
+				return CompileSpawnSetDef(dto, keyIndex, outDef, outError);
+			},
+			defs,
+			result.error))
+	{
+		result.succeeded = false;
+		return result;
+	}
+
+	std::sort(
+		defs.begin(),
+		defs.end(),
+		[](const SpawnSetDef& lhs, const SpawnSetDef& rhs)
+		{
+			return lhs.id < rhs.id;
+		});
+
+	if (!ValidateSpawnSetDefs(
+			std::span<const SpawnSetDef>(defs.data(), defs.size()),
+			result.error))
 	{
 		result.succeeded = false;
 		return result;
@@ -241,10 +329,9 @@ SpawnSetDefLoadResult LoadSpawnSetDefsFromJsonDirectory(
 		return result;
 	}
 
-	SpawnSetDefRegistry& activeRegistry = GetSpawnSetDefRegistry();
-	activeRegistry = std::move(registry);
+	outRegistry = std::move(registry);
 	result.succeeded = true;
-	result.loadedCount = activeRegistry.Size();
+	result.loadedCount = outRegistry.Size();
 	result.error.clear();
 	return result;
 }

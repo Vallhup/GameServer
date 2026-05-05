@@ -1,5 +1,5 @@
 {
-  "id": "DemonExecutioner",
+  "key": "AI.DemonExecutioner",
   "aiType": "NormalMonster",
   "perceptionTuning": {
     "sightRange": 12.0,
@@ -28,20 +28,16 @@
     "attackCooldown": 2.3,
     "reactDuration": 0.6
   },
-  "movementPolicyKind": "Normal",
-  "combatActionPolicyKind": "Weighted",
-  "idleActionPolicyKind": "Weighted",
-  "reactionPolicyKind": "Normal",
   "combatActions": [
-    { "actionId": "DemonExecutioner_Melee_1", "weight": 20 },
-    { "actionId": "DemonExecutioner_Melee_2", "weight": 20 },
-    { "actionId": "DemonExecutioner_Melee_3", "weight": 20 },
-    { "actionId": "DemonExecutioner_Melee_4", "weight": 15 },
-    { "actionId": "DemonExecutioner_Melee_5", "weight": 15 },
-    { "actionId": "DemonExecutioner_Melee_6", "weight": 10 }
+    { "abilityKey": "Ability.DemonExecutioner_Melee_1", "weight": 20 },
+    { "abilityKey": "Ability.DemonExecutioner_Melee_2", "weight": 20 },
+    { "abilityKey": "Ability.DemonExecutioner_Melee_3", "weight": 20 },
+    { "abilityKey": "Ability.DemonExecutioner_Melee_4", "weight": 15 },
+    { "abilityKey": "Ability.DemonExecutioner_Melee_5", "weight": 15 },
+    { "abilityKey": "Ability.DemonExecutioner_Melee_6", "weight": 10 }
   ],
   "idleActions": [
-    { "actionId": "DemonExecutioner_Jump_1", "weight": 50 },
-    { "actionId": "DemonExecutioner_Jump_2", "weight": 50 }
+    { "abilityKey": "Ability.DemonExecutioner_Jump_1", "weight": 50 },
+    { "abilityKey": "Ability.DemonExecutioner_Jump_2", "weight": 50 }
   ]
 }

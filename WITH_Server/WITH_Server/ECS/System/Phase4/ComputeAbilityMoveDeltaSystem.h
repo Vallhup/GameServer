@@ -2,7 +2,7 @@
 
 #include "System.h"
 
-class CommitActionTimelineEventSystem final : public System {
+class ComputeAbilityMoveDeltaSystem final : public System {
 public:
 	void Execute(SystemContext& ctx) override;
 	const SystemMeta& Meta() const override;

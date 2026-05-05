@@ -1,8 +1,9 @@
 #pragma once
 
 #include "GameplayComponentPrerequisites.h"
+#include "../../GameplayContentIds.h"
 
-enum class PlayerActionInputType : uint8_t
+enum class PlayerAbilityInputType : uint8_t
 {
 	None = 0,
 	LightAttack,
@@ -32,10 +33,10 @@ struct PlayerGuardInputState
 	uint64_t lastUpdatedFrame{ 0 };
 };
 
-struct ActorActionInputEvent
+struct ActorAbilityInputEvent
 {
-	PlayerActionInputType type{ PlayerActionInputType::None };
-	ActionId directActionId{ ActionId::None };
+	PlayerAbilityInputType type{ PlayerAbilityInputType::None };
+	AbilityId directAbilityId{ InvalidAbilityId };
 	float directionX{ 0.0f };
 	float directionZ{ 0.0f };
 	uint64_t requestedFrame{ 0 };
@@ -45,5 +46,5 @@ struct ActorInputComp : Component
 {
 	PlayerMoveInputState move;
 	PlayerGuardInputState guard;
-	ActorActionInputEvent action;
+	ActorAbilityInputEvent ability;
 };

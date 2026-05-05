@@ -9,7 +9,7 @@ namespace
 {
 	const std::array<AccessSpec, 6> kResolveDeathAndDespawnAccesses{
 		ReadImmediate(ComponentRes<CombatStatStateComp>()),
-		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferComp>()),
@@ -30,24 +30,24 @@ const SystemMeta ResolveDeathAndDespawnSystem::kMeta =
 
 void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, stats, actionState] :
-		ctx.ecs.View<CombatStatStateComp, ActionStateComp>())
+	for (auto [entity, stats, abilityState] :
+		ctx.ecs.View<CombatStatStateComp, AbilityStateComp>())
 	{
 		if (stats.currentHp > 0)
 		{
 			continue;
 		}
 
-		const ActionDef* actionDef =
-			IsActionActive(actionState)
-			? FindActionDef(actionState.actionId)
+		const AbilityDef* abilityDef =
+			IsAbilityActive(abilityState)
+			? GameplayContentCatalogSnapshot::Current().Abilities().Find(abilityState.abilityId)
 			: nullptr;
-		const bool deadActionFinished =
-			actionDef != nullptr &&
-			actionDef->kind == ActionKind::Dead &&
-			actionState.elapsedSec >= actionDef->duration;
+		const bool deadAbilityFinished =
+			abilityDef != nullptr &&
+			abilityDef->kind == AbilityKind::Dead &&
+			abilityState.elapsedSec >= abilityDef->timeline.durationSec;
 
-		if (deadActionFinished &&
+		if (deadAbilityFinished &&
 			!ctx.ecs.HasComponent<PendingDespawnTag>(entity))
 		{
 			ctx.runtime.DeferredAddComponent<PendingDespawnTag>(

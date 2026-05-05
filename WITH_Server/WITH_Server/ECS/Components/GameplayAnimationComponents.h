@@ -1,20 +1,20 @@
 #pragma once
 
-#include "GameplayActionComponents.h"
+#include "GameplayAbilityComponents.h"
 
 enum class AnimationPlaybackSource : uint8_t
 {
 	None = 0,
 	Locomotion,
-	Action
+	Ability
 };
 
 struct AnimationPlaybackStateComp : Component
 {
 	AnimationPlaybackSource source{ AnimationPlaybackSource::None };
 	AnimationId animationId{ AnimationId::None };
-	uint32_t boundActionInstanceId{ 0 };
-	ActionId boundActionId{ ActionId::None };
+	uint32_t boundAbilityInstanceId{ 0 };
+	AbilityId boundAbilityId{ InvalidAbilityId };
 	LocomotionMode boundLocomotionMode{ LocomotionMode::Idle };
 	float playbackTimeSec{ 0.0f };
 	float normalizedTime{ 0.0f };

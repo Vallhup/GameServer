@@ -1,5 +1,5 @@
 {
-  "id": "DemonStriker",
+  "key": "AI.DemonStriker",
   "aiType": "NormalMonster",
   "perceptionTuning": {
     "sightRange": 14.0,
@@ -28,17 +28,13 @@
     "attackCooldown": 2.0,
     "reactDuration": 0.5
   },
-  "movementPolicyKind": "Normal",
-  "combatActionPolicyKind": "Weighted",
-  "idleActionPolicyKind": "Weighted",
-  "reactionPolicyKind": "Normal",
   "combatActions": [
-    { "actionId": "DemonStriker_Melee_1", "weight": 20 },
-    { "actionId": "DemonStriker_Melee_2", "weight": 20 },
-    { "actionId": "DemonStriker_Melee_3", "weight": 25 },
-    { "actionId": "DemonStriker_Melee_4", "weight": 25 }
+    { "abilityKey": "Ability.DemonStriker_Melee_1", "weight": 20 },
+    { "abilityKey": "Ability.DemonStriker_Melee_2", "weight": 20 },
+    { "abilityKey": "Ability.DemonStriker_Melee_3", "weight": 25 },
+    { "abilityKey": "Ability.DemonStriker_Melee_4", "weight": 25 }
   ],
   "idleActions": [
-    { "actionId": "DemonStriker_Jump_1", "weight": 100 }
+    { "abilityKey": "Ability.DemonStriker_Jump_1", "weight": 100 }
   ]
 }

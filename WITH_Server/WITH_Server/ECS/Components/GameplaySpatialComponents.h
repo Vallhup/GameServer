@@ -16,16 +16,16 @@ struct LocomotionMoveDeltaComp : Component
 	bool hasDelta{ false };
 };
 
-struct ActionMoveDeltaComp : Component
+struct AbilityMoveDeltaComp : Component
 {
 	XMFLOAT3 deltaPosition{ 0.0f, 0.0f, 0.0f };
 	float deltaYawRad{ 0.0f };
 	bool hasDelta{ false };
 };
 
-struct ActionMoveRuntimeComp : Component
+struct AbilityMoveRuntimeComp : Component
 {
-	uint32_t boundActionInstanceId{ 0 };
+	uint32_t boundAbilityInstanceId{ 0 };
 	float lockedDirX{ 0.0f };
 	float lockedDirZ{ 0.0f };
 	float lockedYawRad{ 0.0f };

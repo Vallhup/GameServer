@@ -49,22 +49,22 @@ CharacterFeatureFlags BaseCombatantAspect::RequiredFeature() const noexcept
 void BaseCombatantAspect::RegisterStorages(WorldRuntime& runtime) const
 {
 	runtime.RegisterStorage<ActorInputComp>();
-	runtime.RegisterStorage<ActionStateComp>();
+	runtime.RegisterStorage<AbilityStateComp>();
 	runtime.RegisterStorage<LocomotionStateComp>();
-	runtime.RegisterStorage<ActionTimelineAdvanceComp>();
+	runtime.RegisterStorage<AbilityTimelineAdvanceComp>();
 	runtime.RegisterStorage<AnimationPlaybackStateComp>();
 	runtime.RegisterStorage<SampledAnimationPoseComp>();
 	runtime.RegisterStorage<SkeletalCombatColliderComp>();
 	runtime.RegisterStorage<CombatStatStateComp>();
-	runtime.RegisterStorage<BuffRuntimeStateComp>();
+	runtime.RegisterStorage<GameplayEffectStateComp>();
 	runtime.RegisterStorage<PendingProjectileSpawnComp>();
-	runtime.RegisterStorage<PendingActionPresentationEventComp>();
+	runtime.RegisterStorage<PendingAbilityPresentationEventComp>();
 
 	// 전투 시그널 (CommitCombatResultSystem 등이 런타임에 동적 부착).
 	// Combatant feature 가 있는 캐릭터만 interrupt/버프 이벤트의 대상이 된다.
-	runtime.RegisterStorage<ActionInterruptQueueComp>();
-	runtime.RegisterStorage<PendingBuffApplyComp>();
-	runtime.RegisterStorage<PendingBuffRemoveComp>();
+	runtime.RegisterStorage<AbilityInterruptQueueComp>();
+	runtime.RegisterStorage<PendingGameplayEffectApplyComp>();
+	runtime.RegisterStorage<PendingGameplayEffectRemoveComp>();
 }
 
 void BaseCombatantAspect::Attach(
@@ -74,9 +74,9 @@ void BaseCombatantAspect::Attach(
 	const AssembleParams& params) const
 {
 	runtime.DeferredAddComponent<ActorInputComp>(entity);
-	runtime.DeferredAddComponent<ActionStateComp>(entity);
+	runtime.DeferredAddComponent<AbilityStateComp>(entity);
 	runtime.DeferredAddComponent<LocomotionStateComp>(entity);
-	runtime.DeferredAddComponent<ActionTimelineAdvanceComp>(entity);
+	runtime.DeferredAddComponent<AbilityTimelineAdvanceComp>(entity);
 	runtime.DeferredAddComponent<AnimationPlaybackStateComp>(entity);
 	runtime.DeferredAddComponent<SampledAnimationPoseComp>(entity);
 	runtime.DeferredAddComponent<SkeletalCombatColliderComp>(entity);
@@ -85,10 +85,10 @@ void BaseCombatantAspect::Attach(
 		params.combatStatsOverride.has_value()
 			? ToCombatStatState(*params.combatStatsOverride)
 			: MakeInitialCombatStats(def));
-	runtime.DeferredAddComponent<BuffRuntimeStateComp>(entity);
-	runtime.DeferredAddComponent<ActionInterruptQueueComp>(entity);
+	runtime.DeferredAddComponent<GameplayEffectStateComp>(entity);
+	runtime.DeferredAddComponent<AbilityInterruptQueueComp>(entity);
 	runtime.DeferredAddComponent<PendingProjectileSpawnComp>(entity);
-	runtime.DeferredAddComponent<PendingActionPresentationEventComp>(entity);
+	runtime.DeferredAddComponent<PendingAbilityPresentationEventComp>(entity);
 }
 
 bool BaseCombatantAspect::Validate(

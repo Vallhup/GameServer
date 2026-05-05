@@ -2,8 +2,8 @@
 
 #include "EntityId.h"
 #include "WorldContentIds.h"
-#include "IDs.h"
 #include "DefLoadResult.h"
+#include "DefRegistry.h"
 #include <filesystem>
 #include <span>
 #include <string>
@@ -37,16 +37,25 @@ struct SpawnEntryDef
 
 struct SpawnSetDef
 {
-	SpawnSetId id;
+	SpawnSetId id{ SpawnSetId::None };
+	std::string key;
 	std::string name;
 
 	std::vector<SpawnEntryDef> entries;
 };
 
-const SpawnSetDef* FindSpawnSetDef(SpawnSetId id) noexcept;
-const SpawnSetDef& GetSpawnSetDef(SpawnSetId id);
-std::span<const SpawnSetDef> GetSpawnSetDefs() noexcept;
+struct SpawnSetDefTraits
+{
+	static SpawnSetId GetId(const SpawnSetDef& def) noexcept
+	{
+		return def.id;
+	}
+};
+
+using SpawnSetDefRegistry =
+	DefRegistry<SpawnSetDef, SpawnSetId, SpawnSetDefTraits>;
 
 using SpawnSetDefLoadResult = DefLoadResult;
 SpawnSetDefLoadResult LoadSpawnSetDefsFromJsonDirectory(
-	const std::filesystem::path& directory);
+	const std::filesystem::path& directory,
+	SpawnSetDefRegistry& outRegistry);

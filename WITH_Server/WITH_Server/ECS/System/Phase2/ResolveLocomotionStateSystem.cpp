@@ -9,7 +9,7 @@ namespace
 {
 	const std::array<AccessSpec, 8> kResolveLocomotionAccesses{
 		WriteImmediate(ComponentRes<LocomotionStateComp>()),
-		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<ActorInputComp>()),
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
 		ReadImmediate(ComponentRes<AICommandFrameComp>()),
@@ -102,14 +102,15 @@ const SystemMeta ResolveLocomotionStateSystem::kMeta =
 
 void ResolveLocomotionStateSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, locomotionState, actionState, input, transform] :
+	for (auto [entity, locomotionState, abilityState, input, transform] :
 		ctx.ecs.View<
 			LocomotionStateComp,
-			ActionStateComp,
+			AbilityStateComp,
 			ActorInputComp,
 			WorldTransformComp>())
 	{
-		if (HasBlockingPendingState(ctx.ecs, entity) || IsActionActive(actionState))
+		if (HasBlockingPendingState(ctx.ecs, entity) ||
+			IsAbilityActive(abilityState))
 		{
 			locomotionState.mode = LocomotionMode::Idle;
 			locomotionState.desiredMoveDirX = 0.0f;

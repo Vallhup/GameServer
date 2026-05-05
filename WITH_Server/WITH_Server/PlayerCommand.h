@@ -36,7 +36,7 @@ struct PlayerGuardCommandPayload
 };
 
 bool IsPlayerMoveCommandType(WorldCommandTypeKey typeKey) noexcept;
-bool IsPlayerActionEventCommandType(WorldCommandTypeKey typeKey) noexcept;
+bool IsPlayerAbilityEventCommandType(WorldCommandTypeKey typeKey) noexcept;
 bool IsPlayerGuardCommandType(WorldCommandTypeKey typeKey) noexcept;
 
 WorldCommand MakePlayerMoveCommand(

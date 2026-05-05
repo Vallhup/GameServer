@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameplayComponentPrerequisites.h"
+#include "../../GameplayContentIds.h"
 
 struct AIControlledTag : TagComponent
 {
@@ -27,32 +28,6 @@ struct AIPerceptionComp : Component
 	uint64_t builtFrame{ 0 };
 };
 
-struct AIPerceptionTuningComp : Component
-{
-	double sightRange{ 12.0 };
-	double attackRange{ 2.0 };
-	double frontDotThreshold{ 0.2 };
-
-	double targetKeepBonus{ 4.0 };
-	double lastAttackerBonus{ 2.5 };
-	double frontBonus{ 1.0 };
-	double switchScoreMargin{ 3.0 };
-
-	double loseSightGraceTime{ 1.2 };
-	double leashRange{ 18.0 };
-	double hardLeashRange{ 24.0 };
-	double leashGaugeMax{ 100.0 };
-	double leashDrainPerSec{ 20.0 };
-	double hardLeashDrainPerSec{ 60.0 };
-	double leashRecoverPerSec{ 35.0 };
-	double returnHomeArriveRange{ 0.8 };
-	double returnHomeReaggroLockSec{ 1.5 };
-	double returnHpRegenPerSecRatio{ 0.08 };
-	double idleActionCooldownSec{ 6.0 };
-	int idleActionChancePercent{ 25 };
-	double assistRange{ 6.0 };
-};
-
 struct AIBlackboardComp : Component
 {
 	Entity currentTarget{ Entity::Null() };
@@ -72,7 +47,7 @@ struct AIBlackboardComp : Component
 	XMFLOAT3 lastKnownTargetPosition{ 0.0f, 0.0f, 0.0f };
 	bool hasLastKnownTargetPosition{ false };
 
-	ActionId lastUsedActionId{ ActionId::None };
+	AbilityId lastUsedAbilityId{ InvalidAbilityId };
 
 	uint32_t combatActionSequence{ 0 };
 
@@ -118,13 +93,6 @@ struct AIDecisionComp : Component
 		transitionRequested = true;
 		requestedState = next;
 	}
-};
-
-struct AIDecisionTuningComp : Component
-{
-	double decisionInterval{ 0.2 };
-	double attackCooldown{ 1.8 };
-	double reactDuration{ 0.5 };
 };
 
 enum class AIReactionEventType : uint8_t
@@ -204,16 +172,13 @@ struct AIReactionComp : Component
 struct BossPhaseStateComp : Component
 {
 	uint8_t currentPhase{ 1 };
-	float phase2ThresholdRatio{ 0.55f };
 	uint32_t crossedThresholdMask{ 0 };
 	bool transitionRequested{ false };
 };
 
 struct BossPatternRuntimeComp : Component
 {
-	static constexpr size_t kPatternCooldownSlotCount{ 5 };
-
-	std::array<float, kPatternCooldownSlotCount> patternCooldownSec{};
+	std::vector<float> patternCooldownSec;
 
 	float phaseTransitionLockSec{ 0.0f };
 	bool phaseTransitionActionPending{ false };
@@ -233,19 +198,19 @@ struct AICommandFrameComp : Component
 	float moveYaw{ 0.0f };
 	Entity target{ Entity::Null() };
 
-	bool hasAction{ false };
-	ActionId actionId{ ActionId::None };
-	float actionDirX{ 0.0f };
-	float actionDirZ{ 0.0f };
+	bool hasAbility{ false };
+	AbilityId abilityId{ InvalidAbilityId };
+	float abilityDirX{ 0.0f };
+	float abilityDirZ{ 0.0f };
 
 	uint32_t sequence{ 0 };
 
 	inline void ClearFrameTransient()
 	{
-		hasAction = false;
-		actionId = ActionId::None;
-		actionDirX = 0.0f;
-		actionDirZ = 0.0f;
+		hasAbility = false;
+		abilityId = InvalidAbilityId;
+		abilityDirX = 0.0f;
+		abilityDirZ = 0.0f;
 		lockFacingToLookTarget = false;
 		sequence = 0;
 	}

@@ -14,24 +14,24 @@ namespace
 		WriteImmediate(ComponentRes<ActorInputComp>()),
 	};
 
-	PlayerActionInputType ResolveActionInputType(
+	PlayerAbilityInputType ResolveAbilityInputType(
 		WorldCommandTypeKey typeKey) noexcept
 	{
 		switch (static_cast<PlayerCommandTypeKey>(typeKey)) {
 		case PlayerCommandTypeKey::LightAttack:
-			return PlayerActionInputType::LightAttack;
+			return PlayerAbilityInputType::LightAttack;
 
 		case PlayerCommandTypeKey::HeavyAttack:
-			return PlayerActionInputType::HeavyAttack;
+			return PlayerAbilityInputType::HeavyAttack;
 
 		case PlayerCommandTypeKey::Dodge:
-			return PlayerActionInputType::Dodge;
+			return PlayerAbilityInputType::Dodge;
 
 		case PlayerCommandTypeKey::Parry:
-			return PlayerActionInputType::Parry;
+			return PlayerAbilityInputType::Parry;
 
 		default:
-			return PlayerActionInputType::None;
+			return PlayerAbilityInputType::None;
 		}
 	}
 
@@ -92,7 +92,7 @@ namespace
 		return true;
 	}
 
-	bool HandleActionCommand(
+	bool HandleAbilityCommand(
 		SystemContext& ctx,
 		const WorldCommand& command,
 		ActorInputComp& input)
@@ -103,11 +103,11 @@ namespace
 			return false;
 		}
 
-		input.action.directionX = payload.dirX;
-		input.action.directionZ = payload.dirZ;
-		input.action.requestedFrame = ctx.runtime.FrameIndex();
-		input.action.type = ResolveActionInputType(command.typeKey);
-		return input.action.type != PlayerActionInputType::None;
+		input.ability.directionX = payload.dirX;
+		input.ability.directionZ = payload.dirZ;
+		input.ability.requestedFrame = ctx.runtime.FrameIndex();
+		input.ability.type = ResolveAbilityInputType(command.typeKey);
+		return input.ability.type != PlayerAbilityInputType::None;
 	}
 
 	bool HandleGuardCommand(
@@ -158,9 +158,9 @@ void ApplyPlayerCommandSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
-		if (IsPlayerActionEventCommandType(command.typeKey))
+		if (IsPlayerAbilityEventCommandType(command.typeKey))
 		{
-			(void)HandleActionCommand(ctx, command, *input);
+			(void)HandleAbilityCommand(ctx, command, *input);
 			continue;
 		}
 

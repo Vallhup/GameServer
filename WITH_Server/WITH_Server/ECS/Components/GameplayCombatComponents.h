@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameplayActionComponents.h"
+#include "GameplayAbilityComponents.h"
 
 enum class SkeletalCombatColliderRoleMask : uint8_t
 {
@@ -25,8 +25,8 @@ struct SkeletalCombatColliderComp : Component
 
 struct CombatColliderActivationComp : Component
 {
-	uint32_t boundActionInstanceId{ 0 };
-	ActionId boundActionId{ ActionId::None };
+	uint32_t boundAbilityInstanceId{ 0 };
+	AbilityId boundAbilityId{ InvalidAbilityId };
 	bool hasAttackWindow{ false };
 	bool hasParryWindow{ false };
 	bool hasGuardWindow{ false };
@@ -35,7 +35,7 @@ struct CombatColliderActivationComp : Component
 
 struct CombatHitDedupStateComp : Component
 {
-	uint32_t boundActionInstanceId{ 0 };
+	uint32_t boundAbilityInstanceId{ 0 };
 	std::vector<Entity> resolvedVictims;
 };
 
@@ -57,15 +57,15 @@ enum class CombatResolveResultType : uint8_t
 struct PendingCombatInteractionRecord
 {
 	Entity sourceEntity{ Entity::Null() };
-	ActionId sourceActionId{ ActionId::None };
-	uint32_t sourceActionInstanceId{ 0 };
+	AbilityId sourceAbilityId{ InvalidAbilityId };
+	uint32_t sourceAbilityInstanceId{ 0 };
 	uint16_t sourceAttackWindowIndex{ 0 };
 	uint16_t sourceColliderIndex{ 0 };
 	uint16_t targetColliderIndex{ 0 };
 	CombatResolveResultType resultType{ CombatResolveResultType::Hit };
-	AttackCombatEffectDef attackEffect{};
-	std::optional<GuardCombatEffectDef> guardEffect;
-	std::optional<ParryCombatEffectDef> parryEffect;
+	AbilityAttackHitDef attackEffect{};
+	std::optional<AbilityGuardResponseDef> guardEffect;
+	std::optional<AbilityParryResponseDef> parryEffect;
 	float maxKnockbackDistance{ 0.0f };
 	float maxHitStopSec{ 0.0f };
 };
@@ -80,7 +80,7 @@ struct PendingCombatResultComp : Component
 	bool wasHitThisFrame{ false };
 	bool parriedByAnyVictimThisFrame{ false };
 	bool hitAnyVictimThisFrame{ false };
-	std::optional<BuffId> pendingParryBuffId;
+	std::optional<GameplayEffectId> pendingParryEffectId;
 };
 
 struct CombatStatStateComp : Component
@@ -95,17 +95,4 @@ struct CombatStatStateComp : Component
 	int32_t defense{ 0 };
 	float attackSpeed{ 1.0f };
 	float moveSpeed{ 2.5f };
-};
-
-struct ActiveBuffRuntimeEntry
-{
-	BuffId buffId{ BuffId::None };
-	float remainingDurationSec{ 0.0f };
-	uint32_t stackCount{ 0 };
-	uint64_t appliedOrder{ 0 };
-};
-
-struct BuffRuntimeStateComp : Component
-{
-	std::vector<ActiveBuffRuntimeEntry> activeBuffs;
 };

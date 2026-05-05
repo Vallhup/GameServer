@@ -10,7 +10,7 @@ namespace
 {
 	const std::array<AccessSpec, 11> kResolveCombatHitAccesses{
 		ReadImmediate(ComponentRes<CombatColliderActivationComp>()),
-		ReadImmediate(ComponentRes<ActionStateComp>()),
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
 		ReadImmediate(ComponentRes<SkeletalCombatColliderComp>()),
 		WriteImmediate(ComponentRes<CombatHitDedupStateComp>()),
@@ -19,7 +19,7 @@ namespace
 		ReadImmediate(ComponentRes<SpawnTypeComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
-		ReadImmediate(ExternalRes<ActionDef>()),
+		ReadImmediate(ExternalRes<AbilityDef>()),
 	};
 }
 
@@ -55,50 +55,51 @@ void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 
 	for (Entity attacker : attackers)
 	{
-		auto* attackerAction =
-			ctx.ecs.GetMutableComponent<ActionStateComp>(attacker);
+		auto* attackerAbility =
+			ctx.ecs.GetMutableComponent<AbilityStateComp>(attacker);
 		auto* attackerTransform =
 			ctx.ecs.GetMutableComponent<WorldTransformComp>(attacker);
 		auto* attackerColliders =
 			ctx.ecs.GetMutableComponent<SkeletalCombatColliderComp>(attacker);
 		auto* attackerDedup =
 			ctx.ecs.GetMutableComponent<CombatHitDedupStateComp>(attacker);
-		if (attackerAction == nullptr || attackerTransform == nullptr ||
+		if (attackerAbility == nullptr || attackerTransform == nullptr ||
 			attackerColliders == nullptr)
 		{
 			continue;
 		}
 
 		if (attackerDedup != nullptr &&
-			attackerDedup->boundActionInstanceId !=
-				attackerAction->actionInstanceId)
+			attackerDedup->boundAbilityInstanceId !=
+				attackerAbility->abilityInstanceId)
 		{
-			attackerDedup->boundActionInstanceId =
-				attackerAction->actionInstanceId;
+			attackerDedup->boundAbilityInstanceId =
+				attackerAbility->abilityInstanceId;
 			attackerDedup->resolvedVictims.clear();
 		}
 
-		const ActionDef* actionDef = FindActionDef(attackerAction->actionId);
-		if (actionDef == nullptr || actionDef->duration <= 0.0f)
+		const AbilityDef* abilityDef =
+			GameplayContentCatalogSnapshot::Current().Abilities().Find(attackerAbility->abilityId);
+		if (abilityDef == nullptr || abilityDef->timeline.durationSec <= 0.0f)
 		{
 			continue;
 		}
 
 		uint16_t windowIndex = 0;
 		const float normalizedTime = ClampFloat(
-			attackerAction->elapsedSec / actionDef->duration,
+			attackerAbility->elapsedSec / abilityDef->timeline.durationSec,
 			0.0f,
 			1.0f);
-		const std::optional<AttackCombatEffectDef> attackEffect =
-			FindCurrentAttackEffect(*actionDef, normalizedTime, windowIndex);
+		const std::optional<AbilityAttackHitDef> attackEffect =
+			FindCurrentAttackEffect(*abilityDef, normalizedTime, windowIndex);
 		if (!attackEffect.has_value())
 		{
 			continue;
 		}
 
-		for (auto [victim, victimAction, victimTransform, victimColliders, victimActivation] :
+		for (auto [victim, victimAbility, victimTransform, victimColliders, victimActivation] :
 			ctx.ecs.View<
-				ActionStateComp,
+				AbilityStateComp,
 				WorldTransformComp,
 				SkeletalCombatColliderComp,
 				CombatColliderActivationComp>())
@@ -134,13 +135,13 @@ void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 			if (!TryBuildInteractionRecord(
 				ctx.ecs,
 				attacker,
-				*attackerAction,
+				*attackerAbility,
 				*attackerTransform,
 				*attackerColliders,
 				*attackEffect,
 				windowIndex,
 				victim,
-				victimAction,
+				victimAbility,
 				victimTransform,
 				victimColliders,
 				victimActivation,
@@ -354,33 +355,34 @@ int ResolveCombatHitSystem::GetResultPriority(
 }
 
 bool ResolveCombatHitSystem::TryResolveDefensiveEffects(
-	const ActionStateComp& victimAction,
+	const AbilityStateComp& victimAbility,
 	CombatResolveResultType resultType,
-	std::optional<GuardCombatEffectDef>& outGuardEffect,
-	std::optional<ParryCombatEffectDef>& outParryEffect,
+	std::optional<AbilityGuardResponseDef>& outGuardEffect,
+	std::optional<AbilityParryResponseDef>& outParryEffect,
 	float& outMaxHitStopSec)
 {
 	outGuardEffect.reset();
 	outParryEffect.reset();
 	outMaxHitStopSec = 0.0f;
 
-	if (victimAction.actionId == ActionId::None)
+	if (victimAbility.abilityId == InvalidAbilityId)
 	{
 		return true;
 	}
 
-	const ActionDef* victimActionDef = FindActionDef(victimAction.actionId);
-	if (victimActionDef == nullptr || victimActionDef->duration <= 0.0f)
+	const AbilityDef* victimAbilityDef =
+		GameplayContentCatalogSnapshot::Current().Abilities().Find(victimAbility.abilityId);
+	if (victimAbilityDef == nullptr || victimAbilityDef->timeline.durationSec <= 0.0f)
 	{
 		return true;
 	}
 
 	const float normalizedTime = ClampFloat(
-		victimAction.elapsedSec / victimActionDef->duration,
+		victimAbility.elapsedSec / victimAbilityDef->timeline.durationSec,
 		0.0f,
 		1.0f);
 
-	for (const ActionCombatWindowDef& window : victimActionDef->combatWindows)
+	for (const AbilityCombatWindowDef& window : victimAbilityDef->timeline.combatWindows)
 	{
 		if (normalizedTime < window.startNormalized ||
 			normalizedTime >= window.endNormalized ||
@@ -390,7 +392,7 @@ bool ResolveCombatHitSystem::TryResolveDefensiveEffects(
 		}
 
 		if (resultType == CombatResolveResultType::Guard &&
-			window.windowType == CombatWindowType::Guard &&
+			window.kind == AbilityCombatWindowKind::Guard &&
 			window.effect->guardResponse.has_value())
 		{
 			outGuardEffect = window.effect->guardResponse;
@@ -399,7 +401,7 @@ bool ResolveCombatHitSystem::TryResolveDefensiveEffects(
 		}
 
 		if (resultType == CombatResolveResultType::Parry &&
-			window.windowType == CombatWindowType::Parry &&
+			window.kind == AbilityCombatWindowKind::Parry &&
 			window.effect->parryResponse.has_value())
 		{
 			outParryEffect = window.effect->parryResponse;
@@ -411,29 +413,30 @@ bool ResolveCombatHitSystem::TryResolveDefensiveEffects(
 	return true;
 }
 
-const ActionCombatWindowDef* ResolveCombatHitSystem::FindActiveCombatWindow(
-	const ActionStateComp& actionState,
-	CombatWindowType windowType)
+const AbilityCombatWindowDef* ResolveCombatHitSystem::FindActiveCombatWindow(
+	const AbilityStateComp& abilityState,
+	AbilityCombatWindowKind windowType)
 {
-	if (actionState.actionId == ActionId::None)
+	if (abilityState.abilityId == InvalidAbilityId)
 	{
 		return nullptr;
 	}
 
-	const ActionDef* actionDef = FindActionDef(actionState.actionId);
-	if (actionDef == nullptr || actionDef->duration <= 0.0f)
+	const AbilityDef* abilityDef =
+		GameplayContentCatalogSnapshot::Current().Abilities().Find(abilityState.abilityId);
+	if (abilityDef == nullptr || abilityDef->timeline.durationSec <= 0.0f)
 	{
 		return nullptr;
 	}
 
 	const float normalizedTime = ClampFloat(
-		actionState.elapsedSec / actionDef->duration,
+		abilityState.elapsedSec / abilityDef->timeline.durationSec,
 		0.0f,
 		1.0f);
 
-	for (const ActionCombatWindowDef& window : actionDef->combatWindows)
+	for (const AbilityCombatWindowDef& window : abilityDef->timeline.combatWindows)
 	{
-		if (window.windowType != windowType ||
+		if (window.kind != windowType ||
 			normalizedTime < window.startNormalized ||
 			normalizedTime >= window.endNormalized)
 		{
@@ -447,8 +450,8 @@ const ActionCombatWindowDef* ResolveCombatHitSystem::FindActiveCombatWindow(
 }
 
 bool ResolveCombatHitSystem::DoesWindowApplyToAttack(
-	const ActionCombatWindowDef& window,
-	const AttackCombatEffectDef& attackEffect) noexcept
+	const AbilityCombatWindowDef& window,
+	const AbilityAttackHitDef& attackEffect) noexcept
 {
 	if (!window.appliesTo.has_value())
 	{
@@ -457,11 +460,11 @@ bool ResolveCombatHitSystem::DoesWindowApplyToAttack(
 
 	switch (*window.appliesTo)
 	{
-	case ActionCombatApplyTo::ParryableAttack:
+	case AbilityCombatApplyTo::ParryableAttack:
 		return attackEffect.parryable;
-	case ActionCombatApplyTo::GuardableAttack:
+	case AbilityCombatApplyTo::GuardableAttack:
 		return attackEffect.guardable;
-	case ActionCombatApplyTo::FrontPhysical:
+	case AbilityCombatApplyTo::FrontPhysical:
 	default:
 		return true;
 	}
@@ -470,9 +473,9 @@ bool ResolveCombatHitSystem::DoesWindowApplyToAttack(
 bool ResolveCombatHitSystem::BuildReferenceDirection(
 	const ECSView& ecs,
 	Entity owner,
-	const ActionStateComp& ownerAction,
+	const AbilityStateComp& ownerAbility,
 	const WorldTransformComp& ownerTransform,
-	CombatReferenceFrame referenceFrame,
+	AbilityCombatReferenceFrame referenceFrame,
 	XMFLOAT3& outDirection) noexcept
 {
 	auto normalizeXZ =
@@ -496,7 +499,7 @@ bool ResolveCombatHitSystem::BuildReferenceDirection(
 	float dirZ = 0.0f;
 	switch (referenceFrame)
 	{
-	case CombatReferenceFrame::MoveDirection:
+	case AbilityCombatReferenceFrame::MoveDirection:
 		if (const auto* locomotion =
 			ecs.GetComponent<LocomotionStateComp>(owner))
 		{
@@ -504,11 +507,11 @@ bool ResolveCombatHitSystem::BuildReferenceDirection(
 			dirZ = locomotion->desiredMoveDirZ;
 		}
 		break;
-	case CombatReferenceFrame::LockedActionDirection:
-		dirX = ownerAction.directionX;
-		dirZ = ownerAction.directionZ;
+	case AbilityCombatReferenceFrame::LockedActionDirection:
+		dirX = ownerAbility.directionX;
+		dirZ = ownerAbility.directionZ;
 		break;
-	case CombatReferenceFrame::OwnerFacing:
+	case AbilityCombatReferenceFrame::OwnerFacing:
 	default:
 		break;
 	}
@@ -534,10 +537,10 @@ bool ResolveCombatHitSystem::BuildReferenceDirection(
 bool ResolveCombatHitSystem::PassesSpatialFilter(
 	const ECSView& ecs,
 	Entity source,
-	const ActionStateComp& sourceAction,
+	const AbilityStateComp& sourceAbility,
 	const WorldTransformComp& sourceTransform,
 	const WorldTransformComp& targetTransform,
-	const ActionCombatSpatialFilterDef& spatialFilter) noexcept
+	const AbilityCombatSpatialFilterDef& spatialFilter) noexcept
 {
 	const float dx = targetTransform.position.x - sourceTransform.position.x;
 	const float dz = targetTransform.position.z - sourceTransform.position.z;
@@ -587,7 +590,7 @@ bool ResolveCombatHitSystem::PassesSpatialFilter(
 	if (!BuildReferenceDirection(
 		ecs,
 		source,
-		sourceAction,
+		sourceAbility,
 		sourceTransform,
 		spatialFilter.referenceFrame,
 		referenceDirection))
@@ -606,13 +609,13 @@ bool ResolveCombatHitSystem::PassesSpatialFilter(
 bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 	const ECSView& ecs,
 	Entity attacker,
-	const ActionStateComp& attackerAction,
+	const AbilityStateComp& attackerAbility,
 	const WorldTransformComp& attackerTransform,
 	const SkeletalCombatColliderComp& attackerColliders,
-	const AttackCombatEffectDef& attackEffect,
+	const AbilityAttackHitDef& attackEffect,
 	uint16_t attackWindowIndex,
 	Entity victim,
-	const ActionStateComp& victimAction,
+	const AbilityStateComp& victimAbility,
 	const WorldTransformComp& victimTransform,
 	const SkeletalCombatColliderComp& victimColliders,
 	const CombatColliderActivationComp& victimActivation,
@@ -624,16 +627,17 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 		return false;
 	}
 
-	const ActionDef* attackerActionDef = FindActionDef(attackerAction.actionId);
-	if (attackerActionDef == nullptr ||
-		attackWindowIndex >= attackerActionDef->combatWindows.size())
+	const AbilityDef* attackerAbilityDef =
+		GameplayContentCatalogSnapshot::Current().Abilities().Find(attackerAbility.abilityId);
+	if (attackerAbilityDef == nullptr ||
+		attackWindowIndex >= attackerAbilityDef->timeline.combatWindows.size())
 	{
 		return false;
 	}
 
-	const ActionCombatWindowDef& attackWindow =
-		attackerActionDef->combatWindows[attackWindowIndex];
-	if (attackWindow.windowType != CombatWindowType::Attack)
+	const AbilityCombatWindowDef& attackWindow =
+		attackerAbilityDef->timeline.combatWindows[attackWindowIndex];
+	if (attackWindow.kind != AbilityCombatWindowKind::Attack)
 	{
 		return false;
 	}
@@ -642,7 +646,7 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 		!PassesSpatialFilter(
 			ecs,
 			attacker,
-			attackerAction,
+			attackerAbility,
 			attackerTransform,
 			victimTransform,
 			*attackWindow.spatialFilter))
@@ -691,15 +695,15 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 				attackEffect.parryable &&
 				HasRole(targetCollider.roleMask, SkeletalCombatColliderRoleMask::Parry))
 			{
-				const ActionCombatWindowDef* parryWindow =
-					FindActiveCombatWindow(victimAction, CombatWindowType::Parry);
+				const AbilityCombatWindowDef* parryWindow =
+					FindActiveCombatWindow(victimAbility, AbilityCombatWindowKind::Parry);
 				if (parryWindow != nullptr &&
 					DoesWindowApplyToAttack(*parryWindow, attackEffect) &&
 					(!parryWindow->spatialFilter.has_value() ||
 						PassesSpatialFilter(
 							ecs,
 							victim,
-							victimAction,
+							victimAbility,
 							victimTransform,
 							attackerTransform,
 							*parryWindow->spatialFilter)))
@@ -713,15 +717,15 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 				attackEffect.guardable &&
 				HasRole(targetCollider.roleMask, SkeletalCombatColliderRoleMask::Guard))
 			{
-				const ActionCombatWindowDef* guardWindow =
-					FindActiveCombatWindow(victimAction, CombatWindowType::Guard);
+				const AbilityCombatWindowDef* guardWindow =
+					FindActiveCombatWindow(victimAbility, AbilityCombatWindowKind::Guard);
 				if (guardWindow != nullptr &&
 					DoesWindowApplyToAttack(*guardWindow, attackEffect) &&
 					(!guardWindow->spatialFilter.has_value() ||
 						PassesSpatialFilter(
 							ecs,
 							victim,
-							victimAction,
+							victimAbility,
 							victimTransform,
 							attackerTransform,
 							*guardWindow->spatialFilter)))
@@ -785,11 +789,11 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 		return false;
 	}
 
-	std::optional<GuardCombatEffectDef> guardEffect;
-	std::optional<ParryCombatEffectDef> parryEffect;
+	std::optional<AbilityGuardResponseDef> guardEffect;
+	std::optional<AbilityParryResponseDef> parryEffect;
 	float maxHitStopSec = attackEffect.hitStopSec;
 	TryResolveDefensiveEffects(
-		victimAction,
+		victimAbility,
 		bestResultType,
 		guardEffect,
 		parryEffect,
@@ -798,8 +802,8 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 
 	outRecord = PendingCombatInteractionRecord{
 		.sourceEntity = attacker,
-		.sourceActionId = attackerAction.actionId,
-		.sourceActionInstanceId = attackerAction.actionInstanceId,
+		.sourceAbilityId = attackerAbility.abilityId,
+		.sourceAbilityInstanceId = attackerAbility.abilityInstanceId,
 		.sourceAttackWindowIndex = attackWindowIndex,
 		.sourceColliderIndex = bestSourceColliderIndex,
 		.targetColliderIndex = bestTargetColliderIndex,
