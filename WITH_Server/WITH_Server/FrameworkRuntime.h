@@ -21,6 +21,10 @@ class IWorldTransferBinding;
 class WorldRuntime;
 class WorldInstance;
 struct WorldInstanceRecord;
+struct IExecutorIOSink;
+struct INetworkBackend;
+class DynamicTaskTypeRegistry;
+class ExecutionSourceRegistry;
 enum class SystemPhase : uint8_t;
 enum class ExecPhase : uint8_t;
 
@@ -102,10 +106,19 @@ public:
 	bool RunFrame(const FrameParams& params, FrameResult& outResult);
 	void DrainWorldTransferEvents(WorldTransferEventBatch& outEvents);
 
+	// IOCP 네트워크 백엔드 연동 — TaskExecutor에 위임
+	IExecutorIOSink& GetIOSink() noexcept;
+	void SetNetworkBackend(INetworkBackend* backend) noexcept;
+
+	// DynamicTask 패킷 핸들러 등록용
+	DynamicTaskTypeRegistry& GetDynamicTaskTypeRegistry() noexcept;
+	ExecutionSourceRegistry& GetExecutionSourceRegistry() noexcept;
+
 	bool AttachPresenceToWorld(
 		SessionId sessionId,
 		WorldId worldId,
 		double nowSec);
+
 	bool RemovePresence(SessionId sessionId, double nowSec);
 
 	TransferId RequestWorldTransfer(
@@ -139,10 +152,7 @@ public:
 	void RequestCloseWorld(WorldId worldId);
 	void CollectDestroyableWorlds();
 
-	bool BindRuntimeSystems(
-		WorldRuntime& runtime,
-		SystemPhase systemPhase,
-		ExecPhase execPhase);
+	bool BindRuntimeSystems(WorldRuntime& runtime, ExecPhase execPhase);
 
 	WorldInstance* FindWorld(WorldId worldId);
 	const WorldInstance* FindWorld(WorldId worldId) const;

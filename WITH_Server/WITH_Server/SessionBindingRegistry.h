@@ -1,5 +1,6 @@
 #pragma once
 
+#include <shared_mutex>
 #include <vector>
 #include <unordered_map>
 
@@ -42,6 +43,10 @@ public:
 	void Clear();
 
 private:
+	const SessionBinding* FindBySessionNoLock(SessionId sessionId) const noexcept;
+	const SessionBinding* FindByNetIdNoLock(NetId controlledNetId) const noexcept;
+
+	mutable std::shared_mutex _mutex;
 	std::unordered_map<SessionId, SessionBinding> _bindingBySession;
 	std::unordered_map<NetId, SessionId> _sessionByNetId;
 };

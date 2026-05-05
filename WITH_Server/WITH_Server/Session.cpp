@@ -1,12 +1,10 @@
 #include "pch.h"
 #include "Session.h"
 
-#include "Connection.h"
+#include "IocpConnection.h"
 #include "SendBuffer.h"
 
-Session::Session(
-	SessionId sessionId,
-	const std::shared_ptr<Connection>& connection)
+Session::Session(SessionId sessionId, IocpConnection* connection)
 	: _sessionId(sessionId)
 	, _connection(connection)
 {
@@ -35,8 +33,7 @@ bool Session::Send(SendBuffer* buffer) noexcept
 		return false;
 	}
 
-	_connection->Send(buffer);
-	return true;
+	return _connection->RegisterSend(buffer);
 }
 
 bool Session::CompleteLogin() noexcept
@@ -62,7 +59,7 @@ bool Session::EnterInGame(NetId playerNetId) noexcept
 		_state = SessionState::InGame;
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -80,7 +77,7 @@ bool Session::LeaveGame() noexcept
 
 bool Session::BeginClose(SessionCloseReason reason) noexcept
 {
-	if (_state != SessionState::Connected && 
+	if (_state != SessionState::Connected &&
 		_state != SessionState::Authenticated &&
 		_state != SessionState::InGame)
 	{
@@ -92,7 +89,8 @@ bool Session::BeginClose(SessionCloseReason reason) noexcept
 
 	if (_connection != nullptr)
 	{
-		_connection->Stop();
+		_connection->Close();
+		_connection = nullptr;
 	}
 
 	return true;
@@ -102,5 +100,6 @@ void Session::MarkClosed(SessionCloseReason reason) noexcept
 {
 	_state = SessionState::Closed;
 	_closeReason = reason;
+	_connection = nullptr;
 	ClearPlayer();
 }

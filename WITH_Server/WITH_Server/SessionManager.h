@@ -8,7 +8,7 @@
 
 #include "Session.h"
 
-class Connection;
+class IocpConnection;
 
 class SessionManager final {
 public:
@@ -21,7 +21,7 @@ public:
 	SessionManager& operator=(SessionManager&&) = delete;
 
 public:
-	Session* CreateSession(const std::shared_ptr<Connection>& connection);
+	Session* CreateSession(IocpConnection* connection);
 
 	Session* FindSession(SessionId sessionId) noexcept;
 	const Session* FindSession(SessionId sessionId) const noexcept;

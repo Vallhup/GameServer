@@ -5,7 +5,7 @@
 
 #include "NetId.h"
 
-class Connection;
+class IocpConnection;
 struct SendBuffer;
 
 using SessionId = uint32_t;
@@ -31,7 +31,7 @@ enum class SessionCloseReason : uint8_t
 
 class Session final {
 public:
-	Session(SessionId sessionId, const std::shared_ptr<Connection>& connection);
+	Session(SessionId sessionId, IocpConnection* connection);
 	~Session() = default;
 
 	Session(const Session&) = delete;
@@ -53,6 +53,9 @@ public:
 	NetId GetPlayerNetId() const noexcept { return _playerNetId; }
 	bool HasBoundPlayer() const noexcept { return _playerNetId.IsValid(); }
 
+	void SetConnection(IocpConnection* conn) noexcept { _connection = conn; }
+	bool HasConnection() const noexcept { return _connection != nullptr; }
+
 	bool Send(SendBuffer* buffer) noexcept;
 
 	bool CompleteLogin() noexcept;
@@ -71,5 +74,5 @@ private:
 	SessionState _state{ SessionState::Connected };
 	SessionCloseReason _closeReason{ SessionCloseReason::None };
 	NetId _playerNetId{ NetId::Invalid() };
-	std::shared_ptr<Connection> _connection;
+	IocpConnection* _connection{ nullptr };
 };

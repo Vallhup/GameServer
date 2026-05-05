@@ -2,6 +2,8 @@
 #include "FrameworkRuntime.h"
 
 #include "AutoSystemBridge.h"
+#include "DynamicTaskScheduler.h"
+#include "DynamicTaskTypes.h"
 #include "ExecutionGraphBuildPolicy.h"
 #include "ExecutionGraphBuilder.h"
 #include "ExecutionOps.h"
@@ -42,6 +44,8 @@ struct FrameworkRuntime::Impl
 		, admissionService(worldManager, presenceManager)
 		, transferService(worldManager, worldRegistry, admissionService, presenceManager)
 		, executionSourceRegistry()
+		, dynamicTaskScheduler()
+		, dynamicTaskTypeRegistry()
 		, graphBuilder()
 		, buildPolicy()
 		, taskExecutor()
@@ -63,7 +67,9 @@ struct FrameworkRuntime::Impl
 			executionOps,
 			WorldSchedulerConfig{
 				config.maxSelectedWorldsPerFrame
-			})
+			},
+			&dynamicTaskTypeRegistry,
+			&dynamicTaskScheduler)
 	{
 	}
 
@@ -76,6 +82,8 @@ struct FrameworkRuntime::Impl
 	WorldAdmissionService admissionService;
 	WorldTransferService transferService;
 	ExecutionSourceRegistry executionSourceRegistry;
+	DynamicTaskScheduler dynamicTaskScheduler;
+	DynamicTaskTypeRegistry dynamicTaskTypeRegistry;
 	ExecutionGraphBuilder graphBuilder;
 	ExecutionGraphBuildPolicy buildPolicy;
 	TaskExecutor taskExecutor;
@@ -116,6 +124,7 @@ bool FrameworkRuntime::Initialize(const BootstrapParams& params)
 		_impl.reset();
 		return false;
 	}
+	_impl->taskExecutor.SetDynamicTaskScheduler(&_impl->dynamicTaskScheduler);
 	_impl->taskExecutor.SetDiagnosticsConfig(_config.executorDiagnostics);
 
 	if (!BootstrapDefinitions(params))
@@ -146,6 +155,27 @@ void FrameworkRuntime::Shutdown() noexcept
 bool FrameworkRuntime::IsInitialized() const noexcept
 {
 	return _impl != nullptr;
+}
+
+IExecutorIOSink& FrameworkRuntime::GetIOSink() noexcept
+{
+	return _impl->taskExecutor;
+}
+
+void FrameworkRuntime::SetNetworkBackend(INetworkBackend* backend) noexcept
+{
+	if (_impl)
+		_impl->taskExecutor.SetNetworkBackend(backend);
+}
+
+DynamicTaskTypeRegistry& FrameworkRuntime::GetDynamicTaskTypeRegistry() noexcept
+{
+	return _impl->dynamicTaskTypeRegistry;
+}
+
+ExecutionSourceRegistry& FrameworkRuntime::GetExecutionSourceRegistry() noexcept
+{
+	return _impl->executionSourceRegistry;
 }
 
 bool FrameworkRuntime::TickServices(double nowSec, double dtSec)
@@ -489,10 +519,7 @@ void FrameworkRuntime::CollectDestroyableWorlds()
 	_impl->worldManager.CollectDestroyable();
 }
 
-bool FrameworkRuntime::BindRuntimeSystems(
-	WorldRuntime& runtime,
-	SystemPhase systemPhase,
-	ExecPhase execPhase)
+bool FrameworkRuntime::BindRuntimeSystems(WorldRuntime& runtime, ExecPhase execPhase)
 {
 	if (!_impl)
 	{
@@ -502,7 +529,6 @@ bool FrameworkRuntime::BindRuntimeSystems(
 	AutoSystemBridge bridge;
 	const AutoSystemBridge::BridgeResult result =
 		bridge.BindRuntimeDispatch(
-			systemPhase,
 			execPhase,
 			runtime.GetSystemManager(),
 			_impl->executionSourceRegistry,

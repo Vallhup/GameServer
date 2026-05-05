@@ -78,9 +78,8 @@ void GameSendBufferManager::ReleaseSession(SessionId sessionId) noexcept
 
 void GameSendBufferManager::Reset() noexcept
 {
-	for (auto& [sessionId, queue] : _sessionQueues)
+	for (auto& [_, queue] : _sessionQueues)
 	{
-		(void)sessionId;
 		ReleaseQueue(queue);
 	}
 	_sessionQueues.clear();

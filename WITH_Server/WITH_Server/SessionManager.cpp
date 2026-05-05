@@ -1,18 +1,17 @@
 #include "pch.h"
 #include "SessionManager.h"
 
-#include "Connection.h"
+#include "IocpConnection.h"
 
-Session* SessionManager::CreateSession(
-	const std::shared_ptr<Connection>& connection)
+Session* SessionManager::CreateSession(IocpConnection* connection)
 {
 	if (connection == nullptr)
 	{
 		return nullptr;
 	}
 
-	const SessionId sessionId = AllocateSessionId();
-	connection->SetId(sessionId);
+	// Use the session ID assigned by IocpNetworkBackend at accept time
+	const SessionId sessionId = connection->GetSessionId();
 
 	std::unique_ptr<Session> session =
 		std::make_unique<Session>(sessionId, connection);
