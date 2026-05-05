@@ -170,8 +170,16 @@
     <ClInclude Include="AdmissionTypes.h" />
     <ClInclude Include="AutoSystemBridge.h" />
     <ClInclude Include="ConflictDetection.h" />
+    <ClInclude Include="DynamicTaskScheduler.h" />
     <ClInclude Include="ExecutionGraphBuildPolicy.h" />
     <ClInclude Include="FrameworkLog.h" />
+    <ClInclude Include="IExecutorIOSink.h" />
+    <ClInclude Include="INetworkBackend.h" />
+    <ClInclude Include="IocpAcceptor.h" />
+    <ClInclude Include="IocpConnection.h" />
+    <ClInclude Include="IocpHandle.h" />
+    <ClInclude Include="IocpNetworkBackend.h" />
+    <ClInclude Include="IocpOperation.h" />
     <ClInclude Include="LFWSDeque.h" />
     <ClInclude Include="Library\Detour\DetourAlloc.h" />
     <ClInclude Include="Library\Detour\DetourAssert.h" />
@@ -186,6 +194,9 @@
     <ClInclude Include="Library\Recast\RecastAlloc.h" />
     <ClInclude Include="Library\Recast\RecastAssert.h" />
     <ClInclude Include="NavMeshRuntime.h" />
+    <ClInclude Include="NetRecvBuffer.h" />
+    <ClInclude Include="ObjectPool.hpp" />
+    <ClInclude Include="PacketDispatchTable.h" />
     <ClInclude Include="WorldContentIds.h" />
     <ClInclude Include="WorldCommand.h" />
     <ClInclude Include="WorldCommandQueue.h" />
@@ -262,8 +273,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoSystemBridge.cpp" />
+    <ClCompile Include="DynamicTaskScheduler.cpp" />
     <ClCompile Include="DynamicTaskTypes.cpp" />
+    <ClCompile Include="IocpAcceptor.cpp" />
+    <ClCompile Include="IocpConnection.cpp" />
+    <ClCompile Include="IocpHandle.cpp" />
+    <ClCompile Include="IocpNetworkBackend.cpp" />
+    <ClCompile Include="IocpOperation.cpp" />
     <ClCompile Include="NavMeshRuntime.cpp" />
+    <ClCompile Include="NetRecvBuffer.cpp" />
     <ClCompile Include="WorldDef.cpp" />
     <ClCompile Include="WorldExecutionModelTypes.cpp" />
     <ClCompile Include="WorldCommandQueue.cpp" />

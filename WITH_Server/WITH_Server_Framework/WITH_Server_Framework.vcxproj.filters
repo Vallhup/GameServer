@@ -7,12 +7,6 @@
     <ClCompile Include="StorageRegistry.cpp">
       <Filter>01_ECS\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="NetIdAllocator.cpp">
-      <Filter>05_Network</Filter>
-    </ClCompile>
-    <ClCompile Include="NetIdRegistry.cpp">
-      <Filter>05_Network</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>00_Utility</Filter>
     </ClCompile>
@@ -90,7 +84,37 @@
     </ClCompile>
     <ClCompile Include="NavMeshRuntime.cpp" />
     <ClCompile Include="AutoSystemBridge.cpp">
-      <Filter>03_Execution\06_Utility</Filter>
+      <Filter>03_Execution\07_Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicTaskTypes.cpp">
+      <Filter>03_Execution\06_DynamicTask</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicTaskScheduler.cpp">
+      <Filter>03_Execution\06_DynamicTask</Filter>
+    </ClCompile>
+    <ClCompile Include="NetIdAllocator.cpp">
+      <Filter>05_Network\00_Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="NetIdRegistry.cpp">
+      <Filter>05_Network\00_Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpHandle.cpp">
+      <Filter>05_Network\01_IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpOperation.cpp">
+      <Filter>05_Network\01_IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="NetRecvBuffer.cpp">
+      <Filter>05_Network\02_Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpConnection.cpp">
+      <Filter>05_Network\01_IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpAcceptor.cpp">
+      <Filter>05_Network\01_IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpNetworkBackend.cpp">
+      <Filter>05_Network\01_IocpCore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -111,12 +135,6 @@
     </ClInclude>
     <ClInclude Include="StorageRegistry.h">
       <Filter>01_ECS\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="NetIdAllocator.h">
-      <Filter>05_Network</Filter>
-    </ClInclude>
-    <ClInclude Include="NetIdRegistry.h">
-      <Filter>05_Network</Filter>
     </ClInclude>
     <ClInclude Include="RepComponent.h">
       <Filter>01_ECS\Component</Filter>
@@ -357,14 +375,56 @@
       <Filter>00_Utility</Filter>
     </ClInclude>
     <ClInclude Include="AutoSystemBridge.h">
-      <Filter>03_Execution\06_Utility</Filter>
+      <Filter>03_Execution\07_Utility</Filter>
     </ClInclude>
     <ClInclude Include="ConflictDetection.h">
-      <Filter>03_Execution\06_Utility</Filter>
+      <Filter>03_Execution\07_Utility</Filter>
     </ClInclude>
     <ClInclude Include="ExecMetaHelper.h" />
     <ClInclude Include="LFWSDeque.h">
       <Filter>00_Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPool.hpp">
+      <Filter>00_Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicTaskTypes.h">
+      <Filter>03_Execution\06_DynamicTask</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicTaskScheduler.h">
+      <Filter>03_Execution\06_DynamicTask</Filter>
+    </ClInclude>
+    <ClInclude Include="IExecutorIOSink.h">
+      <Filter>03_Execution\07_Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="INetworkBackend.h">
+      <Filter>03_Execution\07_Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="NetIdAllocator.h">
+      <Filter>05_Network\00_Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="NetIdRegistry.h">
+      <Filter>05_Network\00_Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpHandle.h">
+      <Filter>05_Network\01_IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpOperation.h">
+      <Filter>05_Network\01_IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="NetRecvBuffer.h">
+      <Filter>05_Network\02_Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpConnection.h">
+      <Filter>05_Network\01_IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpAcceptor.h">
+      <Filter>05_Network\01_IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketDispatchTable.h">
+      <Filter>05_Network\00_Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpNetworkBackend.h">
+      <Filter>05_Network\01_IocpCore</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -443,9 +503,6 @@
     <Filter Include="03_Execution\05_TaskExecutor">
       <UniqueIdentifier>{0a255fd5-eb3b-425f-b68a-4be7708db18d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03_Execution\06_Utility">
-      <UniqueIdentifier>{c1f3930c-b555-451e-88ba-16b53a44b0dc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04_Event">
       <UniqueIdentifier>{fa67a4c0-e67c-4f90-8196-5908953c743f}</UniqueIdentifier>
     </Filter>
@@ -463,6 +520,21 @@
     </Filter>
     <Filter Include="00_Utility\Dependency\Recast">
       <UniqueIdentifier>{9d34aca9-de86-489f-bd70-71e32c7b70b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03_Execution\07_Utility">
+      <UniqueIdentifier>{c1f3930c-b555-451e-88ba-16b53a44b0dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03_Execution\06_DynamicTask">
+      <UniqueIdentifier>{ee5bca5c-56e4-47a7-8f1a-72cee450ee95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05_Network\01_IocpCore">
+      <UniqueIdentifier>{a01f82ea-66cd-41a7-81ce-b33f80910564}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05_Network\02_Buffer">
+      <UniqueIdentifier>{2ee3bc81-1793-435d-a25a-8835325cdd58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05_Network\00_Utility">
+      <UniqueIdentifier>{9efd10cf-d7d0-4c99-a21b-52c289c959fe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
