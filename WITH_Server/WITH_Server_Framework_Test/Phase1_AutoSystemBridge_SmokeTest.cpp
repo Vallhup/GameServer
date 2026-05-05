@@ -903,6 +903,7 @@ void RunTaskExecutorPerfDiagnostics();
 void RunLFWSDequeBenchmark();
 void RunTaskExecutorRaceStressTest(int argc, char** argv);
 void RunDynamicTaskSmokeTests();
+void RunAsyncIOSmokeTests();
 
 namespace
 {
@@ -941,6 +942,10 @@ int main(int argc, char** argv)
         else if (HasArg(argc, argv, "--dynamic-task-smoke"))
         {
             RunDynamicTaskSmokeTests();
+        }
+        else if (HasArg(argc, argv, "--async-io-smoke"))
+        {
+            RunAsyncIOSmokeTests();
         }
         else
         {
