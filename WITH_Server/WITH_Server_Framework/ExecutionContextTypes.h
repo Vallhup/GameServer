@@ -7,6 +7,7 @@
 #include "ExecutionGraphTypes.h"   // DynamicTaskFrameTable 포함
 #include "ExecutionOps.h"
 #include "WorldId.h"
+#include "AsyncIOTypes.h"          // IoHandle
 
 struct WorldFrameSelectionSet;
 struct ExecutionGraphBuildPolicy;
@@ -23,6 +24,16 @@ struct NodeScratch
 {
     void* memory{ nullptr };
     uint32_t size{ 0 };
+};
+
+// IoHandle 풀 획득 인터페이스. TaskExecutor가 구현.
+// InvokeNode() 직전에 NodeExecContext::ioProvider로 주입된다.
+struct IIoHandleProvider
+{
+    // 풀에서 IoHandle 획득. nodeId·epoch 설정, refCount = 2 초기화.
+    // nullptr 반환 시 풀 고갈 → 호출부에서 ExecCallResult::Failed 처리.
+    virtual IoHandle* Acquire(ExecNodeId nodeId, uint32_t epoch) noexcept = 0;
+    virtual ~IIoHandleProvider() = default;
 };
 
 struct FrameBuildContext
@@ -113,20 +124,33 @@ struct FrameExecContext
 
 struct NodeExecContext
 {
-    FrameExecContext* frame{ nullptr };
-    ExecNodeId nodeId{ InvalidExecNodeId };
-    ExecScopeId scopeId{ InvalidExecScopeId };
-    ExecToken sourceToken{ InvalidExecToken };
-    NodeScratch* scratch{ nullptr };
+    FrameExecContext*  frame{ nullptr };
+    ExecNodeId         nodeId{ InvalidExecNodeId };
+    ExecScopeId        scopeId{ InvalidExecScopeId };
+    ExecToken          sourceToken{ InvalidExecToken };
+    NodeScratch*       scratch{ nullptr };
+
+    // AsyncIO 확장 — InvokeNode() 직전에 TaskExecutor가 설정.
+    uint32_t           frameEpoch{ 0 };
+    IIoHandleProvider* ioProvider{ nullptr };
 
     [[nodiscard]]
     bool IsValid() const noexcept
     {
-        return 
+        return
             frame != nullptr &&
             frame->IsValid() &&
             nodeId != InvalidExecNodeId &&
             scopeId != InvalidExecScopeId;
+    }
+
+    // ExecFn 내부에서 호출. IoHandle 획득 후 async 작업 제출, Suspend 반환.
+    // nullptr 반환 시 ioProvider 미설정 또는 풀 고갈 → 호출부에서 Failed 처리.
+    [[nodiscard]]
+    IoHandle* RequestSuspend() noexcept
+    {
+        if (!ioProvider) return nullptr;
+        return ioProvider->Acquire(nodeId, frameEpoch);
     }
 
     [[nodiscard]]

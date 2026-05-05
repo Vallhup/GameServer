@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <cstdint>
 #include <span>
 #include <vector>
@@ -129,5 +130,53 @@ struct ExecRuntimeState
         }
 
         signals.Reset(simulateNodeCount);
+    }
+};
+
+// 프레임 단위 비동기 IO 상태.
+// TaskExecutor가 소유. 프레임 시작 시 Reset() 호출.
+struct FrameState
+{
+    using TimePoint = std::chrono::steady_clock::time_point;
+
+    // 스윕 식별자. TriggerSweep 시 1 증가. ProcessCompletions에서 epoch 불일치 시 무시.
+    std::atomic<uint32_t> epoch{ 0 };
+
+    TimePoint simulateDeadline{};
+
+    // Suspended 노드 ID 배열. 프레임당 최대 kMaxSuspendedPerFrame개.
+    // pre-allocated — 동적 할당 없음.
+    static constexpr uint32_t kMaxSuspendedPerFrame = 4096;
+    ExecNodeId suspendedBuffer[kMaxSuspendedPerFrame]{};
+    std::atomic<uint32_t> suspendedTail{ 0 };
+
+    // TriggerSweep의 단일 실행 보장 (CAS 기반).
+    std::atomic<bool> sweepTriggered{ false };
+
+    void Reset(TimePoint deadline) noexcept
+    {
+        epoch.fetch_add(1, std::memory_order_relaxed);
+        simulateDeadline = deadline;
+        suspendedTail.store(0, std::memory_order_relaxed);
+        sweepTriggered.store(false, std::memory_order_relaxed);
+    }
+
+    // IO 대기 노드 등록. 배열 초과 시 false 반환 (호출부에서 직접 Canceled 처리).
+    bool TryPushSuspended(ExecNodeId nodeId) noexcept
+    {
+        const uint32_t idx = suspendedTail.fetch_add(1, std::memory_order_relaxed);
+        if (idx >= kMaxSuspendedPerFrame)
+        {
+            suspendedTail.fetch_sub(1, std::memory_order_relaxed);
+            return false;
+        }
+        suspendedBuffer[idx] = nodeId;
+        return true;
+    }
+
+    [[nodiscard]]
+    bool IsDeadlineExceeded() const noexcept
+    {
+        return std::chrono::steady_clock::now() >= simulateDeadline;
     }
 };

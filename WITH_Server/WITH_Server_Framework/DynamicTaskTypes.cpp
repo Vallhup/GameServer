@@ -29,14 +29,14 @@ DynamicTaskTypeId DynamicTaskTypeRegistry::Register(
     // accesses span은 _types deque 내부의 vector를 가리키게 된다.
     // deque는 push_back 시 기존 원소 주소를 보존하므로 안전하다.
     ExecutionSourceDesc sourceDesc;
-    sourceDesc.token         = desc.sourceToken;
-    sourceDesc.phase         = desc.defaultPhase;
-    sourceDesc.lane          = desc.defaultLane;
-    sourceDesc.kind          = ExecNodeKind::DynamicTask;
-    sourceDesc.flags         = desc.flags;
-    sourceDesc.fn            = desc.dispatchFn;
-    sourceDesc.debugName     = desc.debugName;
-    sourceDesc.schedulingHint = desc.schedulingHint;
+    sourceDesc.token            = desc.sourceToken;
+    sourceDesc.phase            = desc.defaultPhase;
+    sourceDesc.lane             = desc.defaultLane;
+    sourceDesc.kind             = ExecNodeKind::DynamicTask;
+    sourceDesc.flags            = desc.flags;
+    sourceDesc.fn               = desc.dispatchFn;
+    sourceDesc.debugName        = desc.debugName;
+    sourceDesc.schedulingHint   = desc.schedulingHint;
     // accesses는 _types에 push 후 원소 주소가 확정되므로 여기서 span을 설정하면 안 된다.
     // → _types에 push한 뒤 sourceDesc.accesses를 채운다.
 

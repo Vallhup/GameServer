@@ -53,6 +53,7 @@ enum class ExecNodeState : uint8_t
     Ready,
     Queued,
     Running,
+    Suspended,  // 아웃바운드 IO 대기 중. Terminal 아님 — 같은 프레임 내 재개 가능.
 
     Succeeded,
     Failed,
@@ -72,6 +73,7 @@ enum class ExecCallResult : uint8_t
 {
     Success,
     Failed,
+    Suspend,    // IO 대기. 같은 프레임 내 CompletionQueue 경유 재개 시도.
 };
 
 enum class ExecFailureClass : uint8_t
@@ -119,6 +121,8 @@ constexpr bool IsTerminalNodeState(ExecNodeState state) noexcept
     case ExecNodeState::Canceled:
     case ExecNodeState::Skipped:
         return true;
+    case ExecNodeState::Suspended:  // IO 대기 중 — Terminal 아님
+        return false;
     default:
         return false;
     }

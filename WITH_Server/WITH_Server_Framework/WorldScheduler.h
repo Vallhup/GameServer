@@ -22,6 +22,7 @@ struct ExecutionGraphBuildPolicy;
 class TaskExecutor;
 class ExecutionOps;
 class DynamicTaskTypeRegistry;
+class DynamicTaskScheduler;
 
 enum class WorldSchedulerFailureReason : uint8_t
 {
@@ -68,7 +69,8 @@ public:
         TaskExecutor& executor,
         ExecutionOps& executionOps,
         WorldSchedulerConfig config = {},
-        DynamicTaskTypeRegistry* dynamicTaskTypeRegistry = nullptr
+        DynamicTaskTypeRegistry* dynamicTaskTypeRegistry = nullptr,
+        DynamicTaskScheduler* dynamicTaskScheduler = nullptr
     );
 
     bool RunFrame(
@@ -128,7 +130,7 @@ private:
         FrameExecContext& outFrameExec,
         ExecRuntimeState& outExecRuntime);
 
-    // 프레임 경계에서 모든 선택된 world의 pending queue를 drain하고
+    // 프레임 경계에서 모든 선택된 world의 pending queue와 Network Inbound 요청을 drain하고
     // 결정론적 정렬 후 outBatch에 채운다.
     void FreezeDynamicTaskRequests(
         std::span<WorldRuntime*> runtimeByScope,
@@ -149,6 +151,7 @@ private:
 
     // optional — nullptr이면 Dynamic Task 기능이 비활성화된다.
     DynamicTaskTypeRegistry* _dynamicTaskTypeRegistry{ nullptr };
+    DynamicTaskScheduler* _dynamicTaskScheduler{ nullptr };
 
     WorldSchedulerConfig _config;
     FrameScratch _scratch;

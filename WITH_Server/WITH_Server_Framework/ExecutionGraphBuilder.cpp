@@ -821,7 +821,17 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
 
         if (outGraph.scopeCount > 0 && request.scopeId >= outGraph.scopeCount)
         {
-            AddWarning(result, "AppendDynamicNodes - scopeId out of range (skipped)");
+            const std::string message =
+                "AppendDynamicNodes - scopeId out of range (skipped: typeId=" +
+                std::to_string(request.typeId) +
+                ", scopeId=" +
+                std::to_string(request.scopeId) +
+                ", sessionId=" +
+                std::to_string(request.sessionId) +
+                ", scopeCount=" +
+                std::to_string(outGraph.scopeCount) +
+                ")";
+            AddWarning(result, message.c_str());
             continue;
         }
 
@@ -880,6 +890,7 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
         DynamicTaskInstance instance{};
         instance.typeId      = request.typeId;
         instance.scopeId     = request.scopeId;
+        instance.sessionId   = request.sessionId;
         instance.graphNodeId = newNodeId;
         instance.payloadKey  = request.payloadKey;
         outFrameTable.AddInstance(instance);

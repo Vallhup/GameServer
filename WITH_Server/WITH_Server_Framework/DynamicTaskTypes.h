@@ -78,6 +78,7 @@ struct DynamicTaskRequest
 
     // 요청이 발행된 프레임 인덱스 (디버그 / 진단 / 결정론적 정렬 tie-break).
     uint64_t requestFrameIndex{ 0 };
+    uint32_t sessionId{ 0 };
 
     [[nodiscard]]
     bool IsValid() const noexcept
@@ -128,6 +129,7 @@ struct DynamicTaskInstance
 {
     DynamicTaskTypeId typeId{ InvalidDynamicTaskTypeId };
     ExecScopeId       scopeId{ InvalidExecScopeId };
+    uint32_t          sessionId{ 0 };
     ExecNodeId        graphNodeId{ InvalidExecNodeId };
     uint64_t          payloadKey{ 0 };
 };
