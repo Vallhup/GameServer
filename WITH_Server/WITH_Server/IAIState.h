@@ -7,32 +7,36 @@ struct SystemContext;
 class IAIMovementPolicy;
 class IAICombatActionPolicy;
 class IAIReactionPolicy;
+class IAISpecialActionPolicy;
 struct AIBehaviorProfileDef;
+struct AIPerceptionTuningDef;
+struct AIDecisionTuningDef;
 
 struct AIContext
 {
-	Entity self{ Entity::Null() };
+	Entity							self{ Entity::Null() };
 
-	SystemContext* sysCtx{ nullptr };
+	SystemContext*					sysCtx{ nullptr };
 
-	const WorldTransformComp* selfTr{ nullptr };
-	const ActionStateComp* actionState{ nullptr };
-	const AIPerceptionComp* perception{ nullptr };
-	const AIPerceptionTuningComp* perceptionTuning{ nullptr };
-	const AIDecisionTuningComp* decisionTuning{ nullptr };
+	AIBlackboardComp*				blackboard{ nullptr };
+	AIDecisionComp*					decision{ nullptr };
+	AIReactionComp*					reaction{ nullptr };
+	AICommandFrameComp*				command{ nullptr };
+	CombatStatStateComp*			stats{ nullptr };
+	BossPatternRuntimeComp*			bossPatternRuntime{ nullptr };
 
-	AIBlackboardComp* blackboard{ nullptr };
-	AIDecisionComp* decision{ nullptr };
-	AIReactionComp* reaction{ nullptr };
-	AICommandFrameComp* command{ nullptr };
-	CombatStatStateComp* stats{ nullptr };
+	const WorldTransformComp*		selfTr{ nullptr };
+	const AbilityStateComp*			abilityState{ nullptr };
+	const AIPerceptionComp*			perception{ nullptr };
+	const AIPerceptionTuningDef*	perceptionTuning{ nullptr };
+	const AIDecisionTuningDef*		decisionTuning{ nullptr };
 
-	IAIMovementPolicy* movementPolicy{ nullptr };
+	const IAIMovementPolicy*		movementPolicy{ nullptr };
+	const IAICombatActionPolicy*	combatActionPolicy{ nullptr };
+	const IAIReactionPolicy*		reactionPolicy{ nullptr };
+	const IAISpecialActionPolicy*	specialActionPolicy{ nullptr };
 
-	// archetype 별 교체 가능한 정책 (AIFSMBundle 에서 주입)
-	const IAICombatActionPolicy* combatActionPolicy{ nullptr };
-	const IAIReactionPolicy*     reactionPolicy{ nullptr };
-	const AIBehaviorProfileDef*  behaviorProfile{ nullptr };
+	const AIBehaviorProfileDef*		behaviorProfile{ nullptr };
 };
 
 class IAIState {
@@ -44,9 +48,9 @@ public:
 	virtual void Enter(AIContext& ctx) const {}
 	virtual void Exit(AIContext& ctx) const {}
 
-	// Decision Tick마다 호출
+	// Called on each decision tick.
 	virtual void DecisionUpdate(AIContext& ctx, const double decisionDT) const = 0;
 
-	// 매 프레임 호출
+	// Called on each frame.
 	virtual void FrameUpdate(AIContext& ctx, const double frameDT) const = 0;
 };

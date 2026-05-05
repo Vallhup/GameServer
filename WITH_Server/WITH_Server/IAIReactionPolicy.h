@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IDs.h"
 #include "ECS/GameplayRuntimeComponents.h"
+#include "GameplayContentIds.h"
 
 struct AIContext;
 
@@ -22,7 +22,7 @@ struct ReactionDecision
 	bool retargetAttacker{ false };
 
 	// None 이 아니면 Enter 시 이 액션을 즉시 발행 (현재 미사용, 확장용)
-	ActionId reactActionOverride{ ActionId::None };
+	AbilityId reactAbilityOverride{ InvalidAbilityId };
 };
 
 // ── IAIReactionPolicy ─────────────────────────────────────────────────────────

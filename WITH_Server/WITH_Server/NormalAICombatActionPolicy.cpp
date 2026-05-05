@@ -1,10 +1,11 @@
 #include "pch.h"
-#include "WeightedCombatActionPolicy.h"
+#include "NormalAICombatActionPolicy.h"
 
 #include "AICombatActionPolicyUtil.h"
+#include "AIBehaviorDef.h"
 #include "IAIState.h"
 
-CombatActionSelection WeightedCombatActionPolicy::SelectAction(
+CombatActionSelection NormalAICombatActionPolicy::SelectAction(
 	const AIContext& ctx) const
 {
 	CombatActionSelection result{};
@@ -20,20 +21,20 @@ CombatActionSelection WeightedCombatActionPolicy::SelectAction(
 	}
 
 	const int roll = AICombatActionPolicyUtil::PseudoRand(
-		ctx.self.id,
-		ctx.blackboard->combatActionSequence,
-		10000);
-	const ActionId selectedActionId =
-		AICombatActionPolicyUtil::PickWeightedAction(
+			ctx.self.id, 
+			ctx.blackboard->combatActionSequence, 
+			10000);
+	const AbilityId selectedAbilityId =
+		AICombatActionPolicyUtil::PickWeightedAbility(
 			ctx.behaviorProfile->combatActions,
-			ctx.blackboard->lastUsedActionId,
+			ctx.blackboard->lastUsedAbilityId,
 			roll);
 
-	if (selectedActionId == ActionId::None)
+	if (selectedAbilityId == InvalidAbilityId)
 		return result;
 
 	result.shouldAttack = true;
-	result.selectedActionId = selectedActionId;
+	result.selectedAbilityId = selectedAbilityId;
 	AICombatActionPolicyUtil::FillAttackDirectionTowardTarget(ctx, result);
 	return result;
 }

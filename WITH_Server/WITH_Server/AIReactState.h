@@ -2,11 +2,11 @@
 
 #include "IAIState.h"
 
-class NormalAICombatState : public IAIState {
+class AIReactState : public IAIState {
 public:
-	virtual ~NormalAICombatState() = default;
+	virtual ~AIReactState() = default;
 
-	virtual AIStateType Type() const override { return AIStateType::Combat; }
+	virtual AIStateType Type() const override { return AIStateType::React; }
 
 	virtual void Enter(AIContext& ctx) const override;
 

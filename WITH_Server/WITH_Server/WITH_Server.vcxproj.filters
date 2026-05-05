@@ -1,8 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ActionDef.cpp">
+    <ClCompile Include="AbilityDef.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="AbilitySetDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
     <ClCompile Include="AIBehaviorDef.cpp">
@@ -11,20 +14,20 @@
     <ClCompile Include="AnimationJsonLoader.cpp">
       <Filter>Data\Loader</Filter>
     </ClCompile>
-    <ClCompile Include="BuffDef.cpp">
+    <ClCompile Include="AttributeDef.cpp">
       <Filter>Data\Definition</Filter>
-    </ClCompile>
-    <ClCompile Include="GameServerNetworkService.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="InboundCommandStatsCollector.cpp">
-      <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="GameSendBufferManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="InboundMessageProcessor.cpp">
-      <Filter>App</Filter>
+    <ClCompile Include="PacketHandlerContext.cpp">
+      <Filter>Network\PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketHandlerRegistrar.cpp">
+      <Filter>Network\PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketHandlers.cpp">
+      <Filter>Network\PacketHandler</Filter>
     </ClCompile>
     <ClCompile Include="ServerApp.cpp">
       <Filter>App</Filter>
@@ -36,9 +39,6 @@
       <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="NetworkRuntime.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
-    <ClCompile Include="GameServerNetworkListener.cpp">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="Session.cpp">
@@ -68,6 +68,9 @@
     <ClCompile Include="CharacterDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
+    <ClCompile Include="DefCompilePipeline.cpp">
+      <Filter>Data\Loader</Filter>
+    </ClCompile>
     <ClCompile Include="DefEnumString.cpp">
       <Filter>Data\Loader</Filter>
     </ClCompile>
@@ -75,6 +78,18 @@
       <Filter>Data\Loader</Filter>
     </ClCompile>
     <ClCompile Include="GameplayDefValidator.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="GameplayContentValidation.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="GameplayContentCatalog.cpp">
+      <Filter>Data\Catalog</Filter>
+    </ClCompile>
+    <ClCompile Include="GameplayEffectDef.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="GameplayTagDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
     <ClCompile Include="SpawnSetDef.cpp">
@@ -99,16 +114,16 @@
     <ClCompile Include="ECS\System\GameplaySystemRegistration.cpp">
       <Filter>ECS\System</Filter>
     </ClCompile>
-    <ClCompile Include="ECS\System\ActionProfileService.cpp">
+    <ClCompile Include="ECS\System\AbilityProfileService.cpp">
       <Filter>ECS\System</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase1\ApplyPlayerCommandSystem.cpp">
       <Filter>ECS\System\Phase1</Filter>
     </ClCompile>
-    <ClCompile Include="ECS\System\Phase2\ResolveActionStateSystem.cpp">
+    <ClCompile Include="ECS\System\Phase2\ResolveAbilityStateSystem.cpp">
       <Filter>ECS\System\Phase2</Filter>
     </ClCompile>
-    <ClCompile Include="ECS\System\Phase2\AdvanceActionTimelineSystem.cpp">
+    <ClCompile Include="ECS\System\Phase2\AdvanceAbilityTimelineSystem.cpp">
       <Filter>ECS\System\Phase2</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase2\ResolveLocomotionStateSystem.cpp">
@@ -126,7 +141,7 @@
     <ClCompile Include="ECS\System\Phase4\ApplyMovementDeltaSystem.cpp">
       <Filter>ECS\System\Phase4</Filter>
     </ClCompile>
-    <ClCompile Include="ECS\System\Phase4\ComputeActionMoveDeltaSystem.cpp">
+    <ClCompile Include="ECS\System\Phase4\ComputeAbilityMoveDeltaSystem.cpp">
       <Filter>ECS\System\Phase4</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.cpp">
@@ -150,7 +165,7 @@
     <ClCompile Include="ECS\System\Phase7\ResolveCombatHitSystem.cpp">
       <Filter>ECS\System\Phase7</Filter>
     </ClCompile>
-    <ClCompile Include="ECS\System\Phase8\CommitActionTimelineEventSystem.cpp">
+    <ClCompile Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.cpp">
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase8\CommitCombatResultSystem.cpp">
@@ -174,32 +189,26 @@
     <ClCompile Include="ECS\System\Phase1\ApplyAICommandSystem.cpp">
       <Filter>ECS\System\Phase1</Filter>
     </ClCompile>
-    <ClCompile Include="NormalAIChaseState.cpp">
-      <Filter>FSM\NormalMonster\State</Filter>
+    <ClCompile Include="AIChaseState.cpp">
+      <Filter>FSM\State</Filter>
     </ClCompile>
-    <ClCompile Include="NormalAIMovementPolicy.cpp">
-      <Filter>FSM\NormalMonster\Policy</Filter>
+    <ClCompile Include="AICombatState.cpp">
+      <Filter>FSM\State</Filter>
     </ClCompile>
-    <ClCompile Include="NormalAICombatState.cpp">
-      <Filter>FSM\NormalMonster\State</Filter>
+    <ClCompile Include="AIIdleState.cpp">
+      <Filter>FSM\State</Filter>
     </ClCompile>
-    <ClCompile Include="NormalAIIdleState.cpp">
-      <Filter>FSM\NormalMonster\State</Filter>
+    <ClCompile Include="AIReactState.cpp">
+      <Filter>FSM\State</Filter>
     </ClCompile>
-    <ClCompile Include="NormalAIReactState.cpp">
-      <Filter>FSM\NormalMonster\State</Filter>
+    <ClCompile Include="AIReturnHomeState.cpp">
+      <Filter>FSM\State</Filter>
     </ClCompile>
-    <ClCompile Include="NormalAIReturnHomeState.cpp">
-      <Filter>FSM\NormalMonster\State</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalAISearchState.cpp">
-      <Filter>FSM\NormalMonster\State</Filter>
+    <ClCompile Include="AISearchState.cpp">
+      <Filter>FSM\State</Filter>
     </ClCompile>
     <ClCompile Include="AIFSMRegistry.cpp">
       <Filter>FSM\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="AICombatActionPolicyUtil.cpp">
-      <Filter>FSM\NormalMonster\Policy</Filter>
     </ClCompile>
     <ClCompile Include="Aspect\AIControlAspect.cpp">
       <Filter>Aspect</Filter>
@@ -231,15 +240,6 @@
     <ClCompile Include="Aspect\ReplicationAspect.cpp">
       <Filter>Aspect</Filter>
     </ClCompile>
-    <ClCompile Include="NormalReactionPolicy.cpp">
-      <Filter>FSM\NormalMonster\Policy</Filter>
-    </ClCompile>
-    <ClCompile Include="ImpCombatActionPolicy.cpp">
-      <Filter>FSM\NormalMonster\Policy</Filter>
-    </ClCompile>
-    <ClCompile Include="WeightedCombatActionPolicy.cpp">
-      <Filter>FSM\NormalMonster\Policy</Filter>
-    </ClCompile>
     <ClCompile Include="ServerPacketStager.cpp">
       <Filter>Utility\Helpers</Filter>
     </ClCompile>
@@ -268,36 +268,51 @@
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="BossAIMovementPolicy.cpp">
-      <Filter>FSM\FirstBoss</Filter>
+      <Filter>FSM\Policy\BossMonster</Filter>
     </ClCompile>
-    <ClCompile Include="BossCombatActionPolicy.cpp">
-      <Filter>FSM\FirstBoss</Filter>
+    <ClCompile Include="BossAICombatActionPolicy.cpp">
+      <Filter>FSM\Policy\BossMonster</Filter>
     </ClCompile>
-    <ClCompile Include="BossReactionPolicy.cpp">
-      <Filter>FSM\FirstBoss</Filter>
+    <ClCompile Include="BossAIReactionPolicy.cpp">
+      <Filter>FSM\Policy\BossMonster</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAIMovementPolicy.cpp">
+      <Filter>FSM\Policy\NormalMonster</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAIReactionPolicy.cpp">
+      <Filter>FSM\Policy\NormalMonster</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAICombatActionPolicy.cpp">
+      <Filter>FSM\Policy\NormalMonster</Filter>
+    </ClCompile>
+    <ClCompile Include="AICombatActionPolicyUtil.cpp">
+      <Filter>FSM\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalAISpecialActionPolicy.cpp">
+      <Filter>FSM\Policy\NormalMonster</Filter>
+    </ClCompile>
+    <ClCompile Include="BossAISpecialActionPolicy.cpp">
+      <Filter>FSM\Policy\BossMonster</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameServerNetworkService.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="GameSendBufferManager.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="ServerApp.h">
       <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="InboundMessage.h">
-      <Filter>Network</Filter>
-    </ClInclude>
-    <ClInclude Include="InboundCommandStatsCollector.h">
-      <Filter>App</Filter>
-    </ClInclude>
-    <ClInclude Include="InboundMessageProcessor.h">
-      <Filter>App</Filter>
-    </ClInclude>
     <ClInclude Include="NetworkRuntime.h">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHandlerContext.h">
+      <Filter>Network\PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHandlerRegistrar.h">
+      <Filter>Network\PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHandlers.h">
+      <Filter>Network\PacketHandler</Filter>
     </ClInclude>
     <ClInclude Include="PlayerEntryService.h">
       <Filter>App</Filter>
@@ -307,9 +322,6 @@
     </ClInclude>
     <ClInclude Include="PlayerCommand.h">
       <Filter>App</Filter>
-    </ClInclude>
-    <ClInclude Include="GameServerNetworkListener.h">
-      <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="Session.h">
       <Filter>Network</Filter>
@@ -353,23 +365,20 @@
     <ClInclude Include="BodyCollisionTypes.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
-    <ClInclude Include="BuffDef.h">
+    <ClInclude Include="AttributeDef.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
     <ClInclude Include="SpawnSetDef.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
-    <ClInclude Include="ActionDef.h">
+    <ClInclude Include="AbilityDef.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
-    <ClInclude Include="ActionProfileIds.h">
+    <ClInclude Include="AbilitySetDef.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
     <ClInclude Include="AIBehaviorDef.h">
       <Filter>Data\Definition</Filter>
-    </ClInclude>
-    <ClInclude Include="IDs.h">
-      <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="ServerWorldBootstrap.h" />
     <ClInclude Include="ServerAppTest.h">
@@ -379,6 +388,15 @@
       <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="DefFileFormat.h">
+      <Filter>Data\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="DefHash.h">
+      <Filter>Data\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="DefCompilePipeline.h">
+      <Filter>Data\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="DefKeyIndex.h">
       <Filter>Data\Loader</Filter>
     </ClInclude>
     <ClInclude Include="DefEnumString.h">
@@ -396,6 +414,18 @@
     <ClInclude Include="GameplayDefValidator.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
+    <ClInclude Include="GameplayEffectDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="GameplayTagDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="GameplayContentIds.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="GameplayContentCatalog.h">
+      <Filter>Data\Catalog</Filter>
+    </ClInclude>
     <ClInclude Include="AnimationRegistry.h">
       <Filter>Data\Registry</Filter>
     </ClInclude>
@@ -405,10 +435,13 @@
     <ClInclude Include="ECS\GameplayRuntimeComponents.h">
       <Filter>ECS</Filter>
     </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayContentComponents.h">
+      <Filter>ECS</Filter>
+    </ClInclude>
     <ClInclude Include="ECS\System\GameplaySystemRegistration.h">
       <Filter>ECS\System</Filter>
     </ClInclude>
-    <ClInclude Include="ECS\System\ActionProfileService.h">
+    <ClInclude Include="ECS\System\AbilityProfileService.h">
       <Filter>ECS\System</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\GameplaySystemUtil.h">
@@ -417,10 +450,10 @@
     <ClInclude Include="ECS\System\Phase1\ApplyPlayerCommandSystem.h">
       <Filter>ECS\System\Phase1</Filter>
     </ClInclude>
-    <ClInclude Include="ECS\System\Phase2\ResolveActionStateSystem.h">
+    <ClInclude Include="ECS\System\Phase2\ResolveAbilityStateSystem.h">
       <Filter>ECS\System\Phase2</Filter>
     </ClInclude>
-    <ClInclude Include="ECS\System\Phase2\AdvanceActionTimelineSystem.h">
+    <ClInclude Include="ECS\System\Phase2\AdvanceAbilityTimelineSystem.h">
       <Filter>ECS\System\Phase2</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase2\ResolveLocomotionStateSystem.h">
@@ -438,7 +471,7 @@
     <ClInclude Include="ECS\System\Phase4\ApplyMovementDeltaSystem.h">
       <Filter>ECS\System\Phase4</Filter>
     </ClInclude>
-    <ClInclude Include="ECS\System\Phase4\ComputeActionMoveDeltaSystem.h">
+    <ClInclude Include="ECS\System\Phase4\ComputeAbilityMoveDeltaSystem.h">
       <Filter>ECS\System\Phase4</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.h">
@@ -462,7 +495,7 @@
     <ClInclude Include="ECS\System\Phase7\ResolveCombatHitSystem.h">
       <Filter>ECS\System\Phase7</Filter>
     </ClInclude>
-    <ClInclude Include="ECS\System\Phase8\CommitActionTimelineEventSystem.h">
+    <ClInclude Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.h">
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\CommitCombatResultSystem.h">
@@ -486,29 +519,26 @@
     <ClInclude Include="ECS\System\Phase1\ApplyAICommandSystem.h">
       <Filter>ECS\System\Phase1</Filter>
     </ClInclude>
-    <ClInclude Include="NormalAIChaseState.h">
-      <Filter>FSM\NormalMonster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalAIMovementPolicy.h">
-      <Filter>FSM\NormalMonster\Policy</Filter>
+    <ClInclude Include="AIChaseState.h">
+      <Filter>FSM\State</Filter>
     </ClInclude>
     <ClInclude Include="TransformHelper.h">
       <Filter>Utility\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="NormalAICombatState.h">
-      <Filter>FSM\NormalMonster\State</Filter>
+    <ClInclude Include="AICombatState.h">
+      <Filter>FSM\State</Filter>
     </ClInclude>
-    <ClInclude Include="NormalAIIdleState.h">
-      <Filter>FSM\NormalMonster\State</Filter>
+    <ClInclude Include="AIIdleState.h">
+      <Filter>FSM\State</Filter>
     </ClInclude>
-    <ClInclude Include="NormalAIReactState.h">
-      <Filter>FSM\NormalMonster\State</Filter>
+    <ClInclude Include="AIReactState.h">
+      <Filter>FSM\State</Filter>
     </ClInclude>
-    <ClInclude Include="NormalAIReturnHomeState.h">
-      <Filter>FSM\NormalMonster\State</Filter>
+    <ClInclude Include="AIReturnHomeState.h">
+      <Filter>FSM\State</Filter>
     </ClInclude>
-    <ClInclude Include="NormalAISearchState.h">
-      <Filter>FSM\NormalMonster\State</Filter>
+    <ClInclude Include="AISearchState.h">
+      <Filter>FSM\State</Filter>
     </ClInclude>
     <ClInclude Include="IAIMovementPolicy.h">
       <Filter>FSM\Core\Interface</Filter>
@@ -518,9 +548,6 @@
     </ClInclude>
     <ClInclude Include="AIFSMRegistry.h">
       <Filter>FSM\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="AICombatActionPolicyUtil.h">
-      <Filter>FSM\NormalMonster\Policy</Filter>
     </ClInclude>
     <ClInclude Include="Aspect\AIControlAspect.h">
       <Filter>Aspect</Filter>
@@ -557,6 +584,9 @@
     </ClInclude>
     <ClInclude Include="FrameworkRuntime.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="GameDataCatalog.h">
+      <Filter>Data\Definition</Filter>
     </ClInclude>
     <ClInclude Include="Library\Detour\DetourMath.h">
       <Filter>Utility\Dependency\Detour</Filter>
@@ -600,15 +630,6 @@
     <ClInclude Include="IAIReactionPolicy.h">
       <Filter>FSM\Core\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="NormalReactionPolicy.h">
-      <Filter>FSM\NormalMonster\Policy</Filter>
-    </ClInclude>
-    <ClInclude Include="ImpCombatActionPolicy.h">
-      <Filter>FSM\NormalMonster\Policy</Filter>
-    </ClInclude>
-    <ClInclude Include="WeightedCombatActionPolicy.h">
-      <Filter>FSM\NormalMonster\Policy</Filter>
-    </ClInclude>
     <ClInclude Include="ServerPacketStager.h">
       <Filter>Utility\Helpers</Filter>
     </ClInclude>
@@ -637,13 +658,34 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="BossAIMovementPolicy.h">
-      <Filter>FSM\FirstBoss</Filter>
+      <Filter>FSM\Policy\BossMonster</Filter>
     </ClInclude>
-    <ClInclude Include="BossCombatActionPolicy.h">
-      <Filter>FSM\FirstBoss</Filter>
+    <ClInclude Include="BossAICombatActionPolicy.h">
+      <Filter>FSM\Policy\BossMonster</Filter>
     </ClInclude>
-    <ClInclude Include="BossReactionPolicy.h">
-      <Filter>FSM\FirstBoss</Filter>
+    <ClInclude Include="BossAIReactionPolicy.h">
+      <Filter>FSM\Policy\BossMonster</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAIMovementPolicy.h">
+      <Filter>FSM\Policy\NormalMonster</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAIReactionPolicy.h">
+      <Filter>FSM\Policy\NormalMonster</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAICombatActionPolicy.h">
+      <Filter>FSM\Policy\NormalMonster</Filter>
+    </ClInclude>
+    <ClInclude Include="IAISpecialActionPolicy.h">
+      <Filter>FSM\Core\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="AICombatActionPolicyUtil.h">
+      <Filter>FSM\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalAISpecialActionPolicy.h">
+      <Filter>FSM\Policy\NormalMonster</Filter>
+    </ClInclude>
+    <ClInclude Include="BossAISpecialActionPolicy.h">
+      <Filter>FSM\Policy\BossMonster</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -658,6 +700,9 @@
     </Filter>
     <Filter Include="Network\Protocol">
       <UniqueIdentifier>{78581224-a1e5-4384-a9ce-7b4fcf1f3138}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\PacketHandler">
+      <UniqueIdentifier>{c3a1f2e4-9b8d-4c6a-8f7e-2d1b3e5a4c9f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Network\Protocol\pb.%2a">
       <UniqueIdentifier>{e52e4be1-914a-4013-a884-38fb5e18bc64}</UniqueIdentifier>
@@ -682,6 +727,9 @@
     </Filter>
     <Filter Include="Data\Registry">
       <UniqueIdentifier>{2459fc7c-d9a5-4d10-afc2-3ce932e1d3d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Catalog">
+      <UniqueIdentifier>{a6fd3c43-2f07-41d7-a2d1-b333d0d05001}</UniqueIdentifier>
     </Filter>
     <Filter Include="ECS">
       <UniqueIdentifier>{1c677717-17cc-4a7c-8ab7-5a5dba2f6815}</UniqueIdentifier>
@@ -722,15 +770,6 @@
     <Filter Include="FSM">
       <UniqueIdentifier>{420e18ae-1394-4499-8bb4-93bfe0362fbd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FSM\NormalMonster">
-      <UniqueIdentifier>{602685d6-72ae-42f9-ae2b-a5793840a8dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FSM\NormalMonster\State">
-      <UniqueIdentifier>{f7341ad7-a490-40e6-8b76-3f2892a7af0e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FSM\NormalMonster\Policy">
-      <UniqueIdentifier>{ab122974-f07a-4258-b24d-1cde3f957afa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utility\Helpers">
       <UniqueIdentifier>{de5a3890-4b1b-407d-a86f-7615415f6b82}</UniqueIdentifier>
     </Filter>
@@ -749,7 +788,16 @@
     <Filter Include="Utility\Dependency\Recast">
       <UniqueIdentifier>{146c5074-34e6-40d4-978d-aa5b1c40eff9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FSM\FirstBoss">
+    <Filter Include="FSM\State">
+      <UniqueIdentifier>{f7341ad7-a490-40e6-8b76-3f2892a7af0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\Policy">
+      <UniqueIdentifier>{ebda843a-d248-4679-9885-004f36b217c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\Policy\NormalMonster">
+      <UniqueIdentifier>{602685d6-72ae-42f9-ae2b-a5793840a8dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FSM\Policy\BossMonster">
       <UniqueIdentifier>{122ce378-4386-401d-87b4-a800941b81cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

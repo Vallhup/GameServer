@@ -1,18 +1,17 @@
 #include "pch.h"
-#include "NormalAISearchState.h"
+#include "AISearchState.h"
 
+#include "AIBehaviorDef.h"
 #include "IAIMovementPolicy.h"
 
-void NormalAISearchState::Enter(AIContext& ctx) const
+void AISearchState::Enter(AIContext& ctx) const
 {
 	if (ctx.command)
 		ctx.command->ClearAll();
 }
 
-void NormalAISearchState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
+void AISearchState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
 {
-	(void)decisionDT;
-
 	if (ctx.blackboard->returningHome)
 	{
 		ctx.decision->RequestTransition(AIStateType::ReturnHome);
@@ -31,13 +30,10 @@ void NormalAISearchState::DecisionUpdate(AIContext& ctx, const double decisionDT
 		ctx.blackboard->returningHome = true;
 		ctx.blackboard->returnHomeLockoutAcc = 0.0;
 		ctx.decision->RequestTransition(AIStateType::ReturnHome);
-		return;
 	}
 }
 
-void NormalAISearchState::FrameUpdate(AIContext& ctx, const double dT) const
+void AISearchState::FrameUpdate(AIContext& ctx, const double dT) const
 {
-	(void)dT;
-
 	ctx.movementPolicy->BuildSearchIntent(ctx);
 }

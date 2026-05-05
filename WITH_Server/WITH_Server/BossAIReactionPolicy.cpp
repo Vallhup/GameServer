@@ -1,14 +1,12 @@
 #include "pch.h"
-#include "BossReactionPolicy.h"
+#include "BossAIReactionPolicy.h"
 
 #include "IAIState.h"
 
-ReactionDecision BossReactionPolicy::Evaluate(
+ReactionDecision BossAIReactionPolicy::Evaluate(
 	const AIReactionEvent& topEvent,
 	const AIContext& ctx) const
 {
-	(void)ctx;
-
 	ReactionDecision decision{};
 
 	switch (topEvent.type) {

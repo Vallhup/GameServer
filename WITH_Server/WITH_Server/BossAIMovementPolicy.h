@@ -2,10 +2,9 @@
 
 #include "NormalAIMovementPolicy.h"
 
-class BossAIMovementPolicy final : public NormalAIMovementPolicy
-{
+class BossAIMovementPolicy final : public NormalAIMovementPolicy {
 public:
 	virtual ~BossAIMovementPolicy() = default;
 
-	virtual void BuildCombatIntent(AIContext& ctx) override;
+	virtual void BuildCombatIntent(AIContext& ctx) const override;
 };

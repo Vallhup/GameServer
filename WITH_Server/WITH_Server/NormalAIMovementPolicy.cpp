@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "NormalAIMovementPolicy.h"
 
+#include "AIBehaviorDef.h"
 #include "IAIState.h"
 #include "NavMeshRuntime.h"
 #include "System.h"
@@ -179,7 +180,7 @@ namespace
 	}
 }
 
-void NormalAIMovementPolicy::BuildChaseIntent(AIContext& ctx)
+void NormalAIMovementPolicy::BuildChaseIntent(AIContext& ctx) const
 {
 	XMFLOAT3 targetPos;
 	if (!TryGetCurrentTargetPosition(ctx, targetPos))
@@ -188,7 +189,7 @@ void NormalAIMovementPolicy::BuildChaseIntent(AIContext& ctx)
 	BuildDestinationIntent(ctx, targetPos, true);
 }
 
-void NormalAIMovementPolicy::BuildCombatIntent(AIContext& ctx)
+void NormalAIMovementPolicy::BuildCombatIntent(AIContext& ctx) const
 {
 	XMFLOAT3 targetPos;
 	if (!TryGetCurrentTargetPosition(ctx, targetPos) ||
@@ -240,14 +241,14 @@ void NormalAIMovementPolicy::BuildCombatIntent(AIContext& ctx)
 	}
 }
 
-void NormalAIMovementPolicy::BuildSearchIntent(AIContext& ctx)
+void NormalAIMovementPolicy::BuildSearchIntent(AIContext& ctx) const
 {
 	if (!ctx.blackboard->hasLastKnownTargetPosition) return;
 
 	BuildDestinationIntent(ctx, ctx.blackboard->lastKnownTargetPosition, false);
 }
 
-void NormalAIMovementPolicy::BuildReturnHomeIntent(AIContext& ctx)
+void NormalAIMovementPolicy::BuildReturnHomeIntent(AIContext& ctx) const
 {
 	if (ctx.blackboard == nullptr || !ctx.blackboard->hasHomePosition)
 		return;

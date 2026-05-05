@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "NormalAIIdleState.h"
+#include "AIIdleState.h"
 
 #include "AIBehaviorDef.h"
 
@@ -21,7 +21,7 @@ namespace
 		return static_cast<int>(x % static_cast<uint64_t>(range));
 	}
 
-	static ActionId SelectWeightedAction(
+	static AbilityId SelectWeightedAbility(
 		std::span<const WeightedActionEntry> actions,
 		int roll)
 	{
@@ -30,7 +30,7 @@ namespace
 			totalWeight += entry.weight;
 
 		if (totalWeight == 0)
-			return ActionId::None;
+			return InvalidAbilityId;
 
 		uint32_t cursor = static_cast<uint32_t>(roll) % totalWeight;
 		for (const WeightedActionEntry& entry : actions)
@@ -39,24 +39,23 @@ namespace
 				continue;
 
 			if (cursor < entry.weight)
-				return entry.actionId;
+				return entry.abilityId;
 
 			cursor -= entry.weight;
 		}
 
-		return ActionId::None;
+		return InvalidAbilityId;
 	}
 
-	static void TryIssueIdleAction(AIContext& ctx)
+	static void TryIssueIdleAbility(AIContext& ctx)
 	{
 		if (ctx.behaviorProfile == nullptr ||
 			ctx.blackboard == nullptr ||
 			ctx.command == nullptr ||
-			ctx.actionState == nullptr ||
+			ctx.abilityState == nullptr ||
 			ctx.perceptionTuning == nullptr ||
-			ctx.behaviorProfile->idleActionPolicyKind == AIIdleActionPolicyKind::None ||
 			ctx.behaviorProfile->idleActions.empty() ||
-			!ctx.actionState->CanIssueAction())
+			!ctx.abilityState->CanIssueAbility())
 		{
 			return;
 		}
@@ -74,28 +73,28 @@ namespace
 		if (chanceRoll >= ctx.perceptionTuning->idleActionChancePercent)
 			return;
 
-		const int actionRoll =
+		const int abilityRoll =
 			PseudoRand(ctx.self.id, sequence + 0x85ebca6bu, 10000);
-		const ActionId actionId =
-			SelectWeightedAction(ctx.behaviorProfile->idleActions, actionRoll);
-		if (actionId == ActionId::None)
+		const AbilityId abilityId =
+			SelectWeightedAbility(ctx.behaviorProfile->idleActions, abilityRoll);
+		if (abilityId == InvalidAbilityId)
 			return;
 
-		ctx.command->hasAction = true;
-		ctx.command->actionId = actionId;
-		ctx.command->actionDirX = 0.0f;
-		ctx.command->actionDirZ = 0.0f;
+		ctx.command->hasAbility = true;
+		ctx.command->abilityId = abilityId;
+		ctx.command->abilityDirX = 0.0f;
+		ctx.command->abilityDirZ = 0.0f;
 		ctx.command->sequence++;
 	}
 }
 
-void NormalAIIdleState::Enter(AIContext& ctx) const
+void AIIdleState::Enter(AIContext& ctx) const
 {
 	if (ctx.command)
 		ctx.command->ClearAll();
 }
 
-void NormalAIIdleState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
+void AIIdleState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
 {
 	(void)decisionDT;
 
@@ -111,11 +110,9 @@ void NormalAIIdleState::DecisionUpdate(AIContext& ctx, const double decisionDT) 
 		return;
 	}
 
-	TryIssueIdleAction(ctx);
+	TryIssueIdleAbility(ctx);
 }
 
-void NormalAIIdleState::FrameUpdate(AIContext& ctx, const double dT) const
+void AIIdleState::FrameUpdate(AIContext& ctx, const double dT) const
 {
-	(void)ctx;
-	(void)dT;
 }

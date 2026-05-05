@@ -72,15 +72,6 @@
     <ClCompile Include="OutputEventSystem.cpp">
       <Filter>ECS\System\Event</Filter>
     </ClCompile>
-    <ClCompile Include="ActionStateSystem.cpp">
-      <Filter>ECS\System\Logic\Action</Filter>
-    </ClCompile>
-    <ClCompile Include="ActionTimeSystem.cpp">
-      <Filter>ECS\System\Logic\Action</Filter>
-    </ClCompile>
-    <ClCompile Include="ActionTransitionSystem.cpp">
-      <Filter>ECS\System\Logic\Action</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Utillity</Filter>
     </ClCompile>
@@ -108,7 +99,6 @@
     <ClCompile Include="HitResolveSystem.cpp">
       <Filter>ECS\System\Logic\Hit</Filter>
     </ClCompile>
-    <ClCompile Include="ActionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Job.h">
@@ -202,15 +192,6 @@
     <ClInclude Include="OutputEventSystem.h">
       <Filter>ECS\System\Event</Filter>
     </ClInclude>
-    <ClInclude Include="ActionStateSystem.h">
-      <Filter>ECS\System\Logic\Action</Filter>
-    </ClInclude>
-    <ClInclude Include="ActionTimeSystem.h">
-      <Filter>ECS\System\Logic\Action</Filter>
-    </ClInclude>
-    <ClInclude Include="ActionTransitionSystem.h">
-      <Filter>ECS\System\Logic\Action</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Utillity</Filter>
     </ClInclude>
@@ -241,7 +222,6 @@
     <ClInclude Include="HitResolveSystem.h">
       <Filter>ECS\System\Logic\Hit</Filter>
     </ClInclude>
-    <ClInclude Include="ActionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="JobGraph">
@@ -303,9 +283,6 @@
     </Filter>
     <Filter Include="ECS\System\Logic\Animation">
       <UniqueIdentifier>{c5c80a94-223b-4142-aa43-9394638577e5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ECS\System\Logic\Action">
-      <UniqueIdentifier>{d5cd995d-5b7c-4624-bbf2-fd1f8040e3f2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Network\Protocol\Event">
       <UniqueIdentifier>{f49921b0-d0b4-4d52-8b4f-df8aa9fbc82e}</UniqueIdentifier>

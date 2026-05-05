@@ -2,10 +2,9 @@
 
 #include "IAIReactionPolicy.h"
 
-class BossReactionPolicy final : public IAIReactionPolicy
-{
+class BossAIReactionPolicy final : public IAIReactionPolicy {
 public:
-	virtual ~BossReactionPolicy() = default;
+	virtual ~BossAIReactionPolicy() = default;
 
 	virtual ReactionDecision Evaluate(
 		const AIReactionEvent& topEvent,

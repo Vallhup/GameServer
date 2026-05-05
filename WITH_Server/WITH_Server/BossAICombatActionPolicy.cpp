@@ -1,12 +1,15 @@
 #include "pch.h"
-#include "BossCombatActionPolicy.h"
+#include "BossAICombatActionPolicy.h"
 
 #include "AICombatActionPolicyUtil.h"
+#include "AIBehaviorDef.h"
+#include "GameplayContentCatalog.h"
 #include "IAIState.h"
 #include "System.h"
 
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <span>
 
 namespace
@@ -23,74 +26,81 @@ namespace
 	constexpr double kCloseDistance = 5.8;
 	constexpr double kMidDistance = 7.5;
 
-	size_t PatternCooldownIndex(ActionId actionId) noexcept
+	AbilityId FindAbilityId(std::string_view key) noexcept
 	{
-		switch (actionId) {
-		case ActionId::BigDemonWarrior_Melee_6:
-			return 0;
-		case ActionId::BigDemonWarrior_Melee_8:
-			return 1;
-		case ActionId::BigDemonWarrior_Melee_7:
-			return 2;
-		case ActionId::BigDemonWarrior_Melee_3:
-			return 3;
-		case ActionId::BigDemonWarrior_Melee_4:
-			return 4;
-		default:
-			return BossPatternRuntimeComp::kPatternCooldownSlotCount;
-		}
+		const GameplayContentCatalogSnapshot* catalog =
+			GameplayContentCatalogSnapshot::TryCurrent();
+		const AbilityDef* ability =
+			catalog != nullptr ? catalog->FindAbilityByKey(key) : nullptr;
+		return ability != nullptr ? ability->id : InvalidAbilityId;
 	}
 
-	float PatternCooldownDuration(ActionId actionId) noexcept
+	size_t PatternCooldownIndex(AbilityId abilityId) noexcept
 	{
-		switch (actionId) {
-		case ActionId::BigDemonWarrior_Melee_6:
+		if (abilityId == FindAbilityId("Ability.BigDemonWarrior_Melee_6"))
+			return 0;
+		if (abilityId == FindAbilityId("Ability.BigDemonWarrior_Melee_8"))
+			return 1;
+		if (abilityId == FindAbilityId("Ability.BigDemonWarrior_Melee_7"))
+			return 2;
+		if (abilityId == FindAbilityId("Ability.BigDemonWarrior_Melee_3"))
+			return 3;
+		if (abilityId == FindAbilityId("Ability.BigDemonWarrior_Melee_4"))
+			return 4;
+		return std::numeric_limits<size_t>::max();
+	}
+
+	float PatternCooldownDuration(AbilityId abilityId) noexcept
+	{
+		if (abilityId == FindAbilityId("Ability.BigDemonWarrior_Melee_6"))
 			return 1.0f;
-		case ActionId::BigDemonWarrior_Melee_8:
+		if (abilityId == FindAbilityId("Ability.BigDemonWarrior_Melee_8"))
 			return 1.5f;
-		case ActionId::BigDemonWarrior_Melee_7:
+		if (abilityId == FindAbilityId("Ability.BigDemonWarrior_Melee_7"))
 			return 2.5f;
-		case ActionId::BigDemonWarrior_Melee_3:
+		if (abilityId == FindAbilityId("Ability.BigDemonWarrior_Melee_3"))
 			return 4.0f;
-		case ActionId::BigDemonWarrior_Melee_4:
+		if (abilityId == FindAbilityId("Ability.BigDemonWarrior_Melee_4"))
 			return 6.0f;
-		default:
-			return 0.0f;
-		}
+		return 0.0f;
 	}
 
 	bool IsPatternCooldownReady(
 		const BossPatternRuntimeComp* runtime,
-		ActionId actionId) noexcept
+		AbilityId abilityId) noexcept
 	{
 		if (runtime == nullptr)
 		{
 			return true;
 		}
 
-		const size_t index = PatternCooldownIndex(actionId);
+		const size_t index = PatternCooldownIndex(abilityId);
 		return
-			index >= BossPatternRuntimeComp::kPatternCooldownSlotCount ||
+			index >= runtime->patternCooldownSec.size() ||
 			runtime->patternCooldownSec[index] <= 0.0f;
 	}
 
 	void ReservePatternCooldown(
 		BossPatternRuntimeComp* runtime,
-		ActionId actionId) noexcept
+		AbilityId abilityId) noexcept
 	{
 		if (runtime == nullptr)
 		{
 			return;
 		}
 
-		const size_t index = PatternCooldownIndex(actionId);
-		if (index >= BossPatternRuntimeComp::kPatternCooldownSlotCount)
+		const size_t index = PatternCooldownIndex(abilityId);
+		if (index == std::numeric_limits<size_t>::max())
 		{
 			return;
 		}
+		if (index >= runtime->patternCooldownSec.size())
+		{
+			runtime->patternCooldownSec.resize(index + 1, 0.0f);
+		}
 
 		runtime->patternCooldownSec[index] =
-			PatternCooldownDuration(actionId);
+			PatternCooldownDuration(abilityId);
 	}
 
 	BossDistanceBucket ResolveDistanceBucket(double distance) noexcept
@@ -117,23 +127,23 @@ namespace
 	void AddCandidate(
 		std::array<WeightedActionEntry, 5>& candidates,
 		size_t& count,
-		ActionId actionId,
+		AbilityId abilityId,
 		uint16_t weight,
-		ActionId lastUsed,
+		AbilityId lastUsed,
 		const BossPatternRuntimeComp* runtime,
 		bool forbidImmediateRepeat = false) noexcept
 	{
 		if (count >= candidates.size())
 			return;
 
-		if (forbidImmediateRepeat && actionId == lastUsed)
+		if (forbidImmediateRepeat && abilityId == lastUsed)
 			return;
 
-		if (!IsPatternCooldownReady(runtime, actionId))
+		if (!IsPatternCooldownReady(runtime, abilityId))
 			return;
 
 		candidates[count++] = WeightedActionEntry{
-			.actionId = actionId,
+			.abilityId = abilityId,
 			.weight = weight
 		};
 	}
@@ -148,9 +158,9 @@ namespace
 	{
 		count = 0;
 
-		const ActionId lastUsed = ctx.blackboard
-			? ctx.blackboard->lastUsedActionId
-			: ActionId::None;
+		const AbilityId lastUsed = ctx.blackboard
+			? ctx.blackboard->lastUsedAbilityId
+			: InvalidAbilityId;
 
 		if (phase <= 1)
 		{
@@ -159,7 +169,7 @@ namespace
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_6,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_6"),
 					100,
 					lastUsed,
 					runtime);
@@ -168,14 +178,14 @@ namespace
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_8,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_8"),
 					70,
 					lastUsed,
 					runtime);
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_7,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_7"),
 					30,
 					lastUsed,
 					runtime,
@@ -192,14 +202,14 @@ namespace
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_6,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_6"),
 					55,
 					lastUsed,
 					runtime);
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_7,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_7"),
 					45,
 					lastUsed,
 					runtime,
@@ -209,14 +219,14 @@ namespace
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_8,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_8"),
 					45,
 					lastUsed,
 					runtime);
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_7,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_7"),
 					30,
 					lastUsed,
 					runtime,
@@ -224,7 +234,7 @@ namespace
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_3,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_3"),
 					25,
 					lastUsed,
 					runtime,
@@ -234,7 +244,7 @@ namespace
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_3,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_3"),
 					45,
 					lastUsed,
 					runtime,
@@ -242,7 +252,7 @@ namespace
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_4,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_4"),
 					55,
 					lastUsed,
 					runtime,
@@ -252,7 +262,7 @@ namespace
 				AddCandidate(
 					candidates,
 					count,
-					ActionId::BigDemonWarrior_Melee_4,
+					FindAbilityId("Ability.BigDemonWarrior_Melee_4"),
 					100,
 					lastUsed,
 					runtime,
@@ -267,7 +277,7 @@ namespace
 	}
 }
 
-CombatActionSelection BossCombatActionPolicy::SelectAction(
+CombatActionSelection BossAICombatActionPolicy::SelectAction(
 	const AIContext& ctx) const
 {
 	CombatActionSelection result{};
@@ -305,19 +315,19 @@ CombatActionSelection BossCombatActionPolicy::SelectAction(
 		ctx.self.id,
 		ctx.blackboard->combatActionSequence,
 		10000);
-	const ActionId selectedActionId =
-		AICombatActionPolicyUtil::PickWeightedAction(
+	const AbilityId selectedAbilityId =
+		AICombatActionPolicyUtil::PickWeightedAbility(
 			candidateSpan,
-			ctx.blackboard->lastUsedActionId,
+			ctx.blackboard->lastUsedAbilityId,
 			roll,
 			35);
 
-	if (selectedActionId == ActionId::None)
+	if (selectedAbilityId == InvalidAbilityId)
 		return result;
 
 	result.shouldAttack = true;
-	result.selectedActionId = selectedActionId;
-	ReservePatternCooldown(runtime, selectedActionId);
+	result.selectedAbilityId = selectedAbilityId;
+	ReservePatternCooldown(runtime, selectedAbilityId);
 	AICombatActionPolicyUtil::FillAttackDirectionTowardTarget(ctx, result);
 	return result;
 }

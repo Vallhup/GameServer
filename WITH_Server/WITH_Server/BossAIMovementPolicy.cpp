@@ -140,7 +140,7 @@ namespace
 	}
 }
 
-void BossAIMovementPolicy::BuildCombatIntent(AIContext& ctx)
+void BossAIMovementPolicy::BuildCombatIntent(AIContext& ctx) const
 {
 	if (ctx.command == nullptr ||
 		ctx.selfTr == nullptr ||

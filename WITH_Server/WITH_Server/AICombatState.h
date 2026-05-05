@@ -2,15 +2,20 @@
 
 #include "IAIState.h"
 
-class NormalAIChaseState : public IAIState {
+class AICombatState : public IAIState {
 public:
-	virtual ~NormalAIChaseState() = default;
+	virtual ~AICombatState() = default;
 
-	virtual AIStateType Type() const override { return AIStateType::Chase; }
+	virtual AIStateType Type() const override { return AIStateType::Combat; }
 
 	virtual void Enter(AIContext& ctx) const override;
 
 	virtual void DecisionUpdate(AIContext& ctx, const double decisionDT) const override;
 	virtual void FrameUpdate(AIContext& ctx, const double dT) const override;
+
+private:
+	static bool IsAbilityAvailableForSelf(
+		const AIContext& ctx,
+		AbilityId abilityId) noexcept;
 };
 

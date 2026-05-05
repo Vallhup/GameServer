@@ -12,10 +12,11 @@
 //   OnGuardBroken → EnterReact
 //   OnHpThreshold → Ignore (보스 전용 이벤트, 잡몹은 무시)
 
-class NormalReactionPolicy final : public IAIReactionPolicy
-{
+class NormalAIReactionPolicy final : public IAIReactionPolicy {
 public:
-	ReactionDecision Evaluate(
+	virtual ~NormalAIReactionPolicy() = default;
+
+	virtual ReactionDecision Evaluate(
 		const AIReactionEvent& topEvent,
 		const AIContext&       ctx) const override;
 };

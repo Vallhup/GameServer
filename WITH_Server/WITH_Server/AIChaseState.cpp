@@ -1,18 +1,16 @@
 #include "pch.h"
-#include "NormalAIChaseState.h"
+#include "AIChaseState.h"
 
 #include "IAIMovementPolicy.h"
 
-void NormalAIChaseState::Enter(AIContext& ctx) const
+void AIChaseState::Enter(AIContext& ctx) const
 {
 	if (ctx.command)
 		ctx.command->ClearAll();
 }
 
-void NormalAIChaseState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
+void AIChaseState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
 {
-	(void)decisionDT;
-
 	if (ctx.blackboard->returningHome)
 	{
 		ctx.decision->RequestTransition(AIStateType::ReturnHome);
@@ -32,10 +30,8 @@ void NormalAIChaseState::DecisionUpdate(AIContext& ctx, const double decisionDT)
 	}
 }
 
-void NormalAIChaseState::FrameUpdate(AIContext& ctx, const double dT) const
+void AIChaseState::FrameUpdate(AIContext& ctx, const double dT) const
 {
-	(void)dT;
-
 	ctx.command->hasLook = true;
 	ctx.command->target = ctx.blackboard->currentTarget;
 

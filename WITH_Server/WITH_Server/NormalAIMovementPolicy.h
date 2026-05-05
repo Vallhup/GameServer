@@ -6,10 +6,10 @@ class NormalAIMovementPolicy : public IAIMovementPolicy {
 public:
 	virtual ~NormalAIMovementPolicy() = default;
 
-	virtual void BuildChaseIntent(AIContext& ctx) override;
-	virtual void BuildCombatIntent(AIContext& ctx) override;
-	virtual void BuildSearchIntent(AIContext& ctx) override;
-	virtual void BuildReturnHomeIntent(AIContext& ctx) override;
+	virtual void BuildChaseIntent(AIContext& ctx) const override;
+	virtual void BuildCombatIntent(AIContext& ctx) const override;
+	virtual void BuildSearchIntent(AIContext& ctx) const override;
+	virtual void BuildReturnHomeIntent(AIContext& ctx) const override;
 
 protected:
 	void BuildDestinationIntent(
@@ -19,6 +19,5 @@ protected:
 
 	bool TryGetCurrentTargetPosition(
 		AIContext& ctx,
-		DirectX::XMFLOAT3& outTargetPos
-	) const;
+		DirectX::XMFLOAT3& outTargetPos) const;
 };

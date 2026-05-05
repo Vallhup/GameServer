@@ -1,6 +1,7 @@
 #include "pch.h"
-#include "NormalAIReturnHomeState.h"
+#include "AIReturnHomeState.h"
 
+#include "AIBehaviorDef.h"
 #include "IAIMovementPolicy.h"
 #include "RepComponent.h"
 
@@ -91,13 +92,13 @@ namespace
 		{
 			ctx.command->target = Entity::Null();
 			ctx.command->hasLook = false;
-			ctx.command->hasAction = false;
-			ctx.command->actionId = ActionId::None;
+			ctx.command->hasAbility = false;
+			ctx.command->abilityId = InvalidAbilityId;
 		}
 	}
 }
 
-void NormalAIReturnHomeState::Enter(AIContext& ctx) const
+void AIReturnHomeState::Enter(AIContext& ctx) const
 {
 	if (ctx.command)
 		ctx.command->ClearAll();
@@ -111,7 +112,7 @@ void NormalAIReturnHomeState::Enter(AIContext& ctx) const
 	ClearReturnTarget(ctx);
 }
 
-void NormalAIReturnHomeState::DecisionUpdate(
+void AIReturnHomeState::DecisionUpdate(
 	AIContext& ctx,
 	const double decisionDT) const
 {
@@ -134,7 +135,7 @@ void NormalAIReturnHomeState::DecisionUpdate(
 	ctx.decision->RequestTransition(AIStateType::Idle);
 }
 
-void NormalAIReturnHomeState::FrameUpdate(AIContext& ctx, const double dT) const
+void AIReturnHomeState::FrameUpdate(AIContext& ctx, const double dT) const
 {
 	ClearReturnTarget(ctx);
 	RecoverHp(ctx, dT);
