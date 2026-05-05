@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <concurrent_queue.h>
 
 struct SendBuffer {
@@ -36,6 +37,20 @@ private:
 	SendBuffer* AllocateNew(uint32 capacity);
 	void Destroy(SendBuffer* buf);
 
-	std::array<concurrency::concurrent_queue<SendBuffer*>, 
+	std::array<concurrency::concurrent_queue<SendBuffer*>,
 		kCapacityList.size()> _free;
 };
+
+// SendBuffer RAII 소유권 래퍼.
+// 소멸 시 SendBufferPool::Get().Release() 를 자동 호출한다.
+// payloadKey 로 소유권을 이전할 때는 release() 를 사용하고,
+// 재획득 시에는 SendBufferPtr(raw_ptr) 로 래핑한다.
+struct SendBufferDeleter
+{
+    void operator()(SendBuffer* buf) const noexcept
+    {
+        if (buf)
+            SendBufferPool::Get().Release(buf);
+    }
+};
+using SendBufferPtr = std::unique_ptr<SendBuffer, SendBufferDeleter>;
