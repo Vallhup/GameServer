@@ -7,6 +7,7 @@
 #include <thread>
 #include <utility>
 
+#include "DynamicTaskScheduler.h"
 #include "FrameworkLog.h"
 
 namespace
@@ -42,6 +43,19 @@ namespace
         default: return "Unknown";
         }
     }
+}
+
+TaskExecutor::ExecutingNodeGuard::ExecutingNodeGuard(TaskExecutor& inExecutor) noexcept
+    : executor(inExecutor)
+{
+    executor._activeExecutingNodes.fetch_add(1, std::memory_order_acq_rel);
+}
+
+TaskExecutor::ExecutingNodeGuard::~ExecutingNodeGuard()
+{
+    executor._activeExecutingNodes.fetch_sub(1, std::memory_order_acq_rel);
+    executor.TryPublishSimulateDone();
+    executor.NotifyProgress();
 }
 
 TaskExecutor::TaskExecutor(uint32_t workerCount)
@@ -148,7 +162,7 @@ bool TaskExecutor::ExecuteFrame(
         frameCtx.graph->simulateNodeCount,
         frameCtx.graph->scopeCount,
         _debugActiveWorkerPumps.load(std::memory_order_acquire),
-        _debugActiveExecutingNodes.load(std::memory_order_acquire));
+        _activeExecutingNodes.load(std::memory_order_acquire));
 
     BindFrame(frameCtx, runtime, sourceRegistry);
     InitializeRuntimeForFrame();
@@ -158,7 +172,16 @@ bool TaskExecutor::ExecuteFrame(
         _diagnosticsFrameOrdinal++);
 
     SeedInitialSimulateNodes();
-    NotifyAllWorkers();
+    if (!runtime.signals.simulatePhaseDone.load(std::memory_order_acquire))
+    {
+        _frameBound.store(true, std::memory_order_release);
+        FWLOG_INFO(kLogCategory,
+            "TEMP_TASKEXECUTOR_DEBUG FrameExecutionEnabled (frameId=%llu, activePumps=%u, activeNodes=%u, frameBound=1)",
+            static_cast<unsigned long long>(debugFrameId),
+            _debugActiveWorkerPumps.load(std::memory_order_acquire),
+            _activeExecutingNodes.load(std::memory_order_acquire));
+        NotifyAllWorkers();
+    }
     WaitForSimulateDone();
 
     FWLOG_TRACE(kLogCategory, "Simulate phase done, entering serial phases");
@@ -187,7 +210,7 @@ bool TaskExecutor::ExecuteFrame(
         "TEMP_TASKEXECUTOR_DEBUG ExecuteFrame complete (frameId=%llu, activePumps=%u, activeNodes=%u)",
         static_cast<unsigned long long>(debugFrameId),
         _debugActiveWorkerPumps.load(std::memory_order_acquire),
-        _debugActiveExecutingNodes.load(std::memory_order_acquire));
+        _activeExecutingNodes.load(std::memory_order_acquire));
     return true;
 }
 
@@ -296,6 +319,21 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
         }
     }
 
+    // Phase 4: CompletionQueue 전체 드레인 — Suspended 노드 재개
+    ProcessCompletions(workerIdx);
+
+    // Simulate deadline 초과 시 단일 워커가 Sweep 트리거
+    if (_frameState.IsDeadlineExceeded())
+    {
+        bool expected = false;
+        if (_frameState.sweepTriggered.compare_exchange_strong(
+            expected, true,
+            std::memory_order_acq_rel))
+        {
+            TriggerSweep();
+        }
+    }
+
     return false;
 }
 
@@ -325,6 +363,8 @@ void TaskExecutor::BindFrame(
     ExecRuntimeState& runtime,
     const ExecutionSourceRegistry& sourceRegistry) noexcept
 {
+    _frameBound.store(false, std::memory_order_release);
+
     _binding.frame = &frameCtx;
     _binding.runtime = &runtime;
     _binding.sources = &sourceRegistry;
@@ -341,33 +381,43 @@ void TaskExecutor::BindFrame(
         _mainThreadReadyQueue.clear();
     }
 
-    _frameBound.store(true, std::memory_order_release);
-
     // TEMP_TASKEXECUTOR_DEBUG: frame binding breadcrumb.
     FWLOG_INFO(kLogCategory,
-        "TEMP_TASKEXECUTOR_DEBUG BindFrame (frameId=%llu, nodes=%zu, scopes=%zu, workerDeques=%zu, activePumps=%u, activeNodes=%u)",
+        "TEMP_TASKEXECUTOR_DEBUG BindFrame prepared (frameId=%llu, nodes=%zu, scopes=%zu, workerDeques=%zu, activePumps=%u, activeNodes=%u)",
         static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
         frameCtx.graph != nullptr ? frameCtx.graph->nodes.size() : 0,
         runtime.scopes.size(),
         _workerDeques.size(),
         _debugActiveWorkerPumps.load(std::memory_order_acquire),
-        _debugActiveExecutingNodes.load(std::memory_order_acquire));
+        _activeExecutingNodes.load(std::memory_order_acquire));
 }
 
 void TaskExecutor::UnbindFrame() noexcept
 {
+    const uint32_t activeNodesAtBegin =
+        _activeExecutingNodes.load(std::memory_order_acquire);
+
     // TEMP_TASKEXECUTOR_DEBUG: frame unbinding breadcrumb before queue/binding reset.
     FWLOG_INFO(kLogCategory,
         "TEMP_TASKEXECUTOR_DEBUG UnbindFrame begin (frameId=%llu, activePumps=%u, activeNodes=%u, frameBound=%u)",
         static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
         _debugActiveWorkerPumps.load(std::memory_order_acquire),
-        _debugActiveExecutingNodes.load(std::memory_order_acquire),
+        activeNodesAtBegin,
         _frameBound.load(std::memory_order_acquire) ? 1u : 0u);
+
+    if (activeNodesAtBegin != 0)
+    {
+        FWLOG_ERROR(kLogCategory,
+            "TaskExecutor frame quiescence invariant violated before unbind "
+            "(frameId=%llu, activeNodes=%u)",
+            static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+            activeNodesAtBegin);
+    }
 
     _frameBound.store(false, std::memory_order_release);
 
     while (_debugActiveWorkerPumps.load(std::memory_order_acquire) != 0 ||
-        _debugActiveExecutingNodes.load(std::memory_order_acquire) != 0)
+        _activeExecutingNodes.load(std::memory_order_acquire) != 0)
     {
         std::this_thread::yield();
     }
@@ -390,7 +440,7 @@ void TaskExecutor::UnbindFrame() noexcept
         "TEMP_TASKEXECUTOR_DEBUG UnbindFrame end (frameId=%llu, activePumps=%u, activeNodes=%u)",
         static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
         _debugActiveWorkerPumps.load(std::memory_order_acquire),
-        _debugActiveExecutingNodes.load(std::memory_order_acquire));
+        _activeExecutingNodes.load(std::memory_order_acquire));
     _debugCurrentFrameId.store(0, std::memory_order_release);
 }
 
@@ -418,6 +468,10 @@ void TaskExecutor::InitializeRuntimeForFrame()
     }
 
     runtime.ResetAll(nodeDepCounts, scopeNodeCounts, graph.simulateNodeCount);
+
+    using Clock = std::chrono::steady_clock;
+    static constexpr std::chrono::milliseconds kSimulateFrameBudget{ 16 };
+    _frameState.Reset(Clock::now() + kSimulateFrameBudget * 70 / 100);
 }
 
 void TaskExecutor::SeedInitialSimulateNodes()
@@ -469,8 +523,7 @@ void TaskExecutor::SeedInitialSimulateNodes()
 
     if (graph.simulateNodeCount == 0)
     {
-        runtime.signals.simulatePhaseDone.store(true);
-        NotifyProgress();
+        TryPublishSimulateDone();
     }
 }
 
@@ -650,9 +703,20 @@ void TaskExecutor::WaitForSimulateDone()
         _progressCv.wait_for(
             lock, std::chrono::microseconds(500),
             [&]() { return runtime.signals.simulatePhaseDone.load(); });
+
+        // Suspended 노드가 있을 때 워커가 CompletionQueue 및 deadline을
+        // 주기적으로 확인할 수 있도록 깨운다 (워커가 idle cv.wait 중일 때).
+        NotifyWork();
     }
 
     // simulatePhaseDone 직전에 삽입된 잔여 메인 스레드 노드를 정리한다.
+    while (_debugActiveWorkerPumps.load(std::memory_order_acquire) != 0 ||
+        _activeExecutingNodes.load(std::memory_order_acquire) != 0)
+    {
+        DrainMainThreadQueue();
+        std::this_thread::yield();
+    }
+
     DrainMainThreadQueue();
 }
 
@@ -764,18 +828,7 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId, uint32_t workerIdx)
     assert(nodeRt != nullptr);
     assert(scopeRt != nullptr);
 
-    // TEMP_TASKEXECUTOR_DEBUG: detect nodes executing across frame unbind/reset windows.
-    struct DebugExecuteGuard
-    {
-        std::atomic<uint32_t>& counter;
-        ~DebugExecuteGuard()
-        {
-            counter.fetch_sub(1, std::memory_order_acq_rel);
-        }
-    };
-
-    _debugActiveExecutingNodes.fetch_add(1, std::memory_order_acq_rel);
-    DebugExecuteGuard debugExecuteGuard{ _debugActiveExecutingNodes };
+    ExecutingNodeGuard executingNodeGuard{ *this };
 
     FWLOG_TRACE(kLogCategory, "ExecuteNode begin (nodeId=%u, scopeId=%u, token=%u)",
         nodeId, node.scopeId, node.sourceToken);
@@ -835,6 +888,36 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId, uint32_t workerIdx)
     const ExecCallResult callResult = InvokeNode(node, nodeId);
     _diagnostics.EndNode(node, nodeId, callResult);
 
+    if (callResult == ExecCallResult::Suspend)
+    {
+        // Running → Suspended. remainingSimulateNodes 감소 안 함 — 완료가 아님.
+        const bool ok =
+            TryTransitionNode(*nodeRt, ExecNodeState::Running, ExecNodeState::Suspended);
+        if (!ok)
+        {
+            _diagnostics.RecordDuplicateCompletion();
+            FWLOG_ERROR(kLogCategory,
+                "ExecuteNode duplicate completion attempt (Suspend path) "
+                "(frameId=%llu, nodeId=%u, worker=%u, token=%u, currentState=%s)",
+                static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+                nodeId,
+                workerIdx,
+                node.sourceToken,
+                DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)));
+            return;
+        }
+
+        if (!_frameState.TryPushSuspended(nodeId))
+        {
+            // suspendedBuffer 초과 — 즉시 Canceled 처리
+            FWLOG_WARN(kLogCategory,
+                "ExecuteNode suspended buffer overflow, canceling node (nodeId=%u)", nodeId);
+            (void)TryTransitionNode(*nodeRt, ExecNodeState::Suspended, ExecNodeState::Canceled);
+            CompleteNodeTerminal(nodeId, ExecNodeState::Canceled);
+        }
+        return;
+    }
+
     if (callResult == ExecCallResult::Success)
     {
         const bool ok =
@@ -892,7 +975,7 @@ void TaskExecutor::ExecuteNode(ExecNodeId nodeId, uint32_t workerIdx)
 
 ExecCallResult TaskExecutor::InvokeNode(
     const ExecNodeRecord& node,
-    ExecNodeId nodeId) const
+    ExecNodeId nodeId)
 {
     const ExecutionSourceDesc* desc = Sources().TryGet(node.sourceToken);
 
@@ -944,8 +1027,8 @@ ExecCallResult TaskExecutor::InvokeNode(
         //   ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId)
         // dispatch fn 내에서 이 패턴으로 payloadKey를 꺼낸다.
         FWLOG_TRACE(kLogCategory,
-            "InvokeNode - DynamicTask (nodeId=%u, typeId=%u, scopeId=%u, payloadKey=%llu)",
-            nodeId, instance->typeId, instance->scopeId,
+            "InvokeNode - DynamicTask (nodeId=%u, typeId=%u, scopeId=%u, sessionId=%u, payloadKey=%llu)",
+            nodeId, instance->typeId, instance->scopeId, instance->sessionId,
             static_cast<unsigned long long>(instance->payloadKey));
     }
 
@@ -956,6 +1039,8 @@ ExecCallResult TaskExecutor::InvokeNode(
     ctx.scopeId     = node.scopeId;
     ctx.sourceToken = node.sourceToken;
     ctx.scratch     = &scratch;
+    ctx.frameEpoch  = _frameState.epoch.load(std::memory_order_acquire);
+    ctx.ioProvider  = this;
 
     try
     {
@@ -1234,12 +1319,46 @@ void TaskExecutor::CompleteNodeTerminal(
         }
 
         if (prevSim == 1)
-        {
-            runtime.signals.simulatePhaseDone.store(true, std::memory_order_release);
-        }
+            TryPublishSimulateDone();
     }
 
     NotifyProgress();
+}
+
+void TaskExecutor::TryPublishSimulateDone() noexcept
+{
+    ExecRuntimeState* runtime = _binding.runtime;
+    if (runtime == nullptr)
+        return;
+
+    if (runtime->signals.simulatePhaseDone.load(std::memory_order_acquire))
+        return;
+
+    const uint32_t remainingSimulateNodes =
+        runtime->signals.remainingSimulateNodes.load(std::memory_order_acquire);
+    const uint32_t activeExecutingNodes =
+        _activeExecutingNodes.load(std::memory_order_acquire);
+
+    if (remainingSimulateNodes != 0 || activeExecutingNodes != 0)
+        return;
+
+    _frameBound.store(false, std::memory_order_release);
+
+    bool expected = false;
+    if (runtime->signals.simulatePhaseDone.compare_exchange_strong(
+            expected,
+            true,
+            std::memory_order_acq_rel,
+            std::memory_order_acquire))
+    {
+        FWLOG_INFO(kLogCategory,
+            "TEMP_TASKEXECUTOR_DEBUG SimulateQuiesced "
+            "(frameId=%llu, remainingSim=%u, activeNodes=%u, frameBound=0)",
+            static_cast<unsigned long long>(_debugCurrentFrameId.load(std::memory_order_acquire)),
+            remainingSimulateNodes,
+            activeExecutingNodes);
+        NotifyProgress();
+    }
 }
 
 void TaskExecutor::MarkScopeFailedAndCancelRequested(
@@ -1312,4 +1431,160 @@ void TaskExecutor::NotifyProgress() noexcept
 {
     std::lock_guard lock{ _progressMtx };
     _progressCv.notify_all();
+}
+
+// ---------------------------------------------------------------------------
+// AsyncIO — IIoHandleProvider 구현
+// ---------------------------------------------------------------------------
+
+void TaskExecutor::SetNetworkBackend(INetworkBackend* backend) noexcept
+{
+    _networkBackend = backend;
+}
+
+void TaskExecutor::SetDynamicTaskScheduler(DynamicTaskScheduler* scheduler) noexcept
+{
+    _dynamicTaskScheduler = scheduler;
+}
+
+IoHandle* TaskExecutor::Acquire(ExecNodeId nodeId, uint32_t epoch) noexcept
+{
+    IoHandle* handle = _ioHandlePool.Acquire();
+    if (handle == nullptr)
+    {
+        FWLOG_ERROR(kLogCategory,
+            "Acquire - IoHandle pool exhausted (nodeId=%u)", nodeId);
+        return nullptr;
+    }
+
+    handle->epoch.store(epoch, std::memory_order_relaxed);
+    handle->activeNode.store(nodeId, std::memory_order_relaxed);
+    handle->refCount.store(2, std::memory_order_release); // 노드 ref + callback ref
+    handle->continuationFn = nullptr;
+    return handle;
+}
+
+// ---------------------------------------------------------------------------
+// AsyncIO — IExecutorIOSink 구현
+// ---------------------------------------------------------------------------
+
+void TaskExecutor::SubmitDynamicTask(DynamicTaskRequest request) noexcept
+{
+    if (_dynamicTaskScheduler == nullptr)
+    {
+        FWLOG_WARN(kLogCategory,
+            "SubmitDynamicTask called but DynamicTaskScheduler is not set — request dropped "
+            "(typeId=%u, scopeId=%u, sessionId=%u)",
+            request.typeId, request.scopeId, request.sessionId);
+        return;
+    }
+    _dynamicTaskScheduler->Submit(std::move(request));
+}
+
+void TaskExecutor::PushCompletion(CompletionEntry entry) noexcept
+{
+    _completionQueue.push(entry);
+    // 백엔드 설정 여부와 무관하게 ThreadPool 워커를 즉시 깨워 ProcessCompletions를 실행한다.
+    // 백엔드가 WaitForWork 기반으로 동작하는 경우 WakeWorker()도 함께 호출한다.
+    NotifyWork();
+    if (_networkBackend != nullptr)
+        _networkBackend->WakeWorker();
+}
+
+// ---------------------------------------------------------------------------
+// AsyncIO — 내부 구현
+// ---------------------------------------------------------------------------
+
+void TaskExecutor::ProcessCompletions(uint32_t workerIdx)
+{
+    const uint32_t currentEpoch = _frameState.epoch.load(std::memory_order_acquire);
+
+    CompletionEntry entry;
+    while (_completionQueue.try_pop(entry))
+    {
+        IoHandle* handle = entry.handle;
+        if (handle == nullptr)
+            continue;
+
+        if (handle->epoch.load(std::memory_order_acquire) == currentEpoch)
+        {
+            handle->pendingResult = entry.result;
+            ResumeNode(handle->activeNode.load(std::memory_order_acquire), workerIdx);
+        }
+        // epoch 불일치: TriggerSweep 이후 도착. continuation은 다음 프레임 DynamicTask로 처리됨.
+
+        const uint32_t prev = handle->refCount.fetch_sub(1, std::memory_order_acq_rel);
+        if (prev == 1)
+            _ioHandlePool.Release(handle);
+    }
+}
+
+void TaskExecutor::TriggerSweep() noexcept
+{
+    ExecRuntimeState& runtime = Runtime();
+    const uint32_t tail = _frameState.suspendedTail.load(std::memory_order_acquire);
+
+    // epoch 증가: 이후 PushCompletion이 도착해도 ProcessCompletions가 무시한다.
+    _frameState.epoch.fetch_add(1, std::memory_order_release);
+
+    for (uint32_t i = 0; i < tail; ++i)
+    {
+        const ExecNodeId nodeId = _frameState.suspendedBuffer[i];
+        ExecNodeRuntime* nodeRt = runtime.TryGetNode(nodeId);
+        if (nodeRt == nullptr)
+            continue;
+
+        const bool ok =
+            TryTransitionNode(*nodeRt, ExecNodeState::Suspended, ExecNodeState::Canceled);
+        if (!ok)
+            continue;
+
+        FWLOG_DEBUG(kLogCategory,
+            "TriggerSweep - Suspended→Canceled (nodeId=%u)", nodeId);
+        CompleteNodeTerminal(nodeId, ExecNodeState::Canceled);
+    }
+}
+
+void TaskExecutor::ResumeNode(ExecNodeId nodeId, uint32_t workerIdx)
+{
+    const FrameTaskGraph& graph = Graph();
+    ExecRuntimeState& runtime = Runtime();
+
+    if (!graph.IsValidNodeId(nodeId))
+    {
+        FWLOG_ERROR(kLogCategory,
+            "ResumeNode - invalid nodeId (%u)", nodeId);
+        return;
+    }
+
+    ExecNodeRuntime* nodeRt = runtime.TryGetNode(nodeId);
+    if (nodeRt == nullptr)
+    {
+        FWLOG_ERROR(kLogCategory,
+            "ResumeNode - TryGetNode returned null (nodeId=%u)", nodeId);
+        return;
+    }
+
+    const bool ok =
+        TryTransitionNode(*nodeRt, ExecNodeState::Suspended, ExecNodeState::Queued);
+    if (!ok)
+    {
+        FWLOG_WARN(kLogCategory,
+            "ResumeNode - Suspended→Queued CAS failed (nodeId=%u, state=%s)",
+            nodeId,
+            DebugNodeStateName(nodeRt->state.load(std::memory_order_acquire)));
+        return;
+    }
+
+    const ExecNodeRecord& node = graph.nodes[nodeId];
+    if (HasAnyNodeFlag(node.flags, ExecNodeFlag_MainThreadOnly))
+    {
+        std::lock_guard lock{ _mainQueueMtx };
+        _mainThreadReadyQueue.push_back(nodeId);
+        NotifyProgress();
+    }
+    else
+    {
+        EnqueueReadyNode(nodeId, workerIdx);
+    }
 }

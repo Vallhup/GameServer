@@ -11,13 +11,22 @@
 #include "ExecutionContextTypes.h"
 #include "ExecutionRuntimeTypes.h"
 #include "ExecutionSourceTypes.h"
+#include "AsyncIOTypes.h"
+#include "INetworkBackend.h"
+#include "IExecutorIOSink.h"
+#include "ObjectPool.hpp"
 #include <concurrent_queue.h>
 
 #include "LFWSDeque.h"
 #include "TaskExecutorDiagnostics.h"
 #include "ThreadPool.h"
 
-class TaskExecutor final {
+class DynamicTaskScheduler;
+
+class TaskExecutor final
+    : public IIoHandleProvider
+    , public IExecutorIOSink
+{
 public:
     explicit TaskExecutor(uint32_t workerCount = 0);
     ~TaskExecutor();
@@ -29,6 +38,14 @@ public:
     bool Initialize(uint32_t workerCount = 0);
 
     void Shutdown() noexcept;
+
+    // 네트워크 백엔드 등록. PushCompletion → WakeWorker 경로에 사용.
+    // ExecuteFrame 호출 전에 설정해야 한다.
+    void SetNetworkBackend(INetworkBackend* backend) noexcept;
+
+    // 인바운드 DynamicTask 스케줄러 등록.
+    // SubmitDynamicTask() 호출 전에 설정해야 한다.
+    void SetDynamicTaskScheduler(DynamicTaskScheduler* scheduler) noexcept;
 
     [[nodiscard]]
     bool IsInitialized() const noexcept
@@ -61,6 +78,17 @@ private:
         FrameExecContext* frame{ nullptr };
         ExecRuntimeState* runtime{ nullptr };
         const ExecutionSourceRegistry* sources{ nullptr };
+    };
+
+    struct ExecutingNodeGuard
+    {
+        explicit ExecutingNodeGuard(TaskExecutor& executor) noexcept;
+        ~ExecutingNodeGuard();
+
+        ExecutingNodeGuard(const ExecutingNodeGuard&) = delete;
+        ExecutingNodeGuard& operator=(const ExecutingNodeGuard&) = delete;
+
+        TaskExecutor& executor;
     };
 
 private:
@@ -118,7 +146,7 @@ private:
     ExecCallResult InvokeNode(
         const ExecNodeRecord& node,
         ExecNodeId nodeId
-    ) const;
+    );
 
     void ResolveSuccessors(ExecNodeId completedNodeId, uint32_t workerIdx);
 
@@ -126,6 +154,8 @@ private:
         ExecNodeId nodeId,
         ExecNodeState terminalState
     ) noexcept;
+
+    void TryPublishSimulateDone() noexcept;
 
     void MarkScopeFailedAndCancelRequested(ExecScopeId scopeId) noexcept;
 
@@ -146,6 +176,18 @@ private:
     void NotifyWork() noexcept;
     void NotifyAllWorkers() noexcept;
     void NotifyProgress() noexcept;
+
+    // IIoHandleProvider 구현
+    IoHandle* Acquire(ExecNodeId nodeId, uint32_t epoch) noexcept override;
+
+    // IExecutorIOSink 구현
+    void SubmitDynamicTask(DynamicTaskRequest request) noexcept override;
+    void PushCompletion(CompletionEntry entry) noexcept override;
+
+    // AsyncIO 내부
+    void ProcessCompletions(uint32_t workerIdx);
+    void TriggerSweep() noexcept;
+    void ResumeNode(ExecNodeId nodeId, uint32_t workerIdx);
 
     [[nodiscard]]
     const FrameTaskGraph& Graph() const noexcept
@@ -204,5 +246,12 @@ private:
     std::atomic<uint64_t> _debugNextFrameId{ 1 };
     std::atomic<uint64_t> _debugCurrentFrameId{ 0 };
     std::atomic<uint32_t> _debugActiveWorkerPumps{ 0 };
-    std::atomic<uint32_t> _debugActiveExecutingNodes{ 0 };
+    std::atomic<uint32_t> _activeExecutingNodes{ 0 };
+
+    // AsyncIO
+    FrameState _frameState;
+    concurrency::concurrent_queue<CompletionEntry> _completionQueue;
+    ObjectPool<IoHandle, 1024, OverflowPolicy_Nullptr<IoHandle>> _ioHandlePool;
+    INetworkBackend* _networkBackend{ nullptr };
+    DynamicTaskScheduler* _dynamicTaskScheduler{ nullptr };
 };
