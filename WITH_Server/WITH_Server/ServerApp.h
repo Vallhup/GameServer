@@ -8,11 +8,13 @@
 #include <vector>
 
 #include "FrameworkRuntime.h"
+#include "GameDataCatalog.h"
+#include "GameplayContentCatalog.h"
 #include "AnimationJsonLoader.h"
 #include "AnimationRegistry.h"
-#include "InboundMessageProcessor.h"
 #include "IWorldTransitionRequestSink.h"
 #include "NetworkRuntime.h"
+#include "PacketHandlerContext.h"
 #include "PlayerEntryService.h"
 #include "SessionBindingRegistry.h"
 #include "ServerWorldBootstrap.h"
@@ -93,8 +95,6 @@ private:
 	void RunLogicLoop();
 	void TickOnce(double dtSec);
 
-	void DrainInboundCommands();
-	void ProcessInboundMessages();
 	void RunWorldFrames(double dtSec);
 	void FlushOutbound();
 	bool StageWorldTransitionBeginPackets(
@@ -112,14 +112,14 @@ private:
 	FrameworkRuntime _framework;
 	AnimationJsonLoader _animationLoader;
 	AnimationRegistry _animationRegistry;
+	GameDataCatalog _gameDataCatalog;
+	GameplayContentCatalogSnapshot _gameplayContentCatalog;
 	NetworkRuntime _network;
 	WorldId _startupWorldId{};
 	SessionBindingRegistry _sessionBindings;
 	ServerWorldTransferBinding _transferBinding;
 	PlayerEntryService _playerEntryService;
-	InboundMessageProcessor _inboundProcessor;
-	std::vector<InboundMessage> _inboundMessages;
-	std::vector<InboundMessage> _remainingInboundMessages;
+	PacketHandlerContext _packetHandlerCtx;
 	std::unordered_map<TransferId, std::unordered_map<SessionId, uint32_t>>
 		_worldTransitionRequestIds;
 	std::unordered_map<SessionId, PendingClientTransition> _pendingClientTransitions;

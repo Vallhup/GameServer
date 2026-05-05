@@ -10,16 +10,17 @@
 
 #include "FrameworkLog.h"
 
+#include "DynamicTaskTypes.h"
+#include "PacketHandlerRegistrar.h"
 #include "ServerDirtyReplicationService.h"
 #include "ServerFrameEventDispatcher.h"
 #include "ServerPacketStager.h"
 #include "ServerPathResolver.h"
 #include "ServerReplicationSnapshot.h"
 #include "ServerWorldTransferCommitter.h"
-#include "ActionDef.h"
 #include "AIBehaviorDef.h"
-#include "BuffDef.h"
 #include "CharacterDef.h"
+#include "GameDataCatalog.h"
 #include "GameplayDefValidator.h"
 #include "SpawnSetDef.h"
 #include "WorldInstanceRecord.h"
@@ -82,13 +83,6 @@ ServerApp::ServerApp(Config config)
 	, _playerEntryService(PlayerEntryService::Dependencies{
 		&_framework,
 		&_startupWorldId
-	})
-	, _inboundProcessor(InboundMessageProcessor::Dependencies{
-		&_framework,
-		&_network,
-		&_playerEntryService,
-		&_sessionBindings,
-		this,
 	})
 {
 	if (_config.logicTickHz == 0)
@@ -398,6 +392,7 @@ bool ServerApp::InitializeFrameworkRuntime()
 	_bootstrapFactory.SetAnimationRegistry(&_animationRegistry);
 	_bootstrapFactory.SetFramework(&_framework);
 	_bootstrapFactory.SetBootstrapWorldId(&_startupWorldId);
+	_bootstrapFactory.SetGameDataCatalog(&_gameDataCatalog);
 
 	FrameworkRuntime::BootstrapParams bootstrapParams{};
 	bootstrapParams.worldFactory = &_bootstrapFactory;
@@ -415,11 +410,32 @@ bool ServerApp::InitializeFrameworkRuntime()
 
 bool ServerApp::InitializeNetworkRuntime()
 {
+	_packetHandlerCtx = PacketHandlerContext
+	{
+		.network             = &_network,
+		.sessionBindings     = &_sessionBindings,
+		.playerEntryService  = &_playerEntryService,
+		.worldTransitionSink = this
+	};
+	PacketHandlerContext::Initialize(_packetHandlerCtx);
+
+	_network.SetIOSink(_framework.GetIOSink());
+
 	if (!_network.Initialize())
 	{
 		FWLOG_FATAL(kLogCategory, "Network runtime initialize failed");
 		return false;
 	}
+
+	DynamicTaskTypeId disconnectedTypeId{ InvalidDynamicTaskTypeId };
+	PacketHandlerRegistrar::Register(
+		_framework.GetDynamicTaskTypeRegistry(),
+		_framework.GetExecutionSourceRegistry(),
+		_network,
+		disconnectedTypeId);
+
+	_framework.SetNetworkBackend(&_network.GetNetworkBackend());
+	_network.GetIocpBackend().SetDisconnectedTaskTypeId(disconnectedTypeId);
 
 	_network.Start();
 	return true;
@@ -429,77 +445,48 @@ bool ServerApp::InitializeGameplayContent()
 {
 	_animationRegistry.Clear();
 
-	const std::filesystem::path actionRoot =
-		ServerPathResolver::GetDefaultActionDefRoot();
-	const ActionDefLoadResult actionLoadResult =
-		LoadActionDefsFromJsonDirectory(actionRoot);
-	if (!actionLoadResult.succeeded)
+	const GameplayContentCatalogRoots gameplayContentRoots
 	{
-		FWLOG_FATAL(kLogCategory, "Action defs load failed (root=%s, error=%s)",
-			actionRoot.string().c_str(), actionLoadResult.error.c_str());
+		.attributeRoot = ServerPathResolver::GetDefaultAttributeDefRoot(),
+		.tagRoot = ServerPathResolver::GetDefaultGameplayTagDefRoot(),
+		.effectRoot = ServerPathResolver::GetDefaultGameplayEffectDefRoot(),
+		.abilityRoot = ServerPathResolver::GetDefaultAbilityDefRoot(),
+		.abilitySetRoot = ServerPathResolver::GetDefaultAbilitySetDefRoot()
+	};
+	const DefLoadResult gameplayContentLoadResult =
+		_gameplayContentCatalog.LoadFromRoots(gameplayContentRoots);
+	if (!gameplayContentLoadResult.succeeded)
+	{
+		FWLOG_FATAL(kLogCategory, "Gameplay content catalog load failed (error=%s)",
+			gameplayContentLoadResult.error.c_str());
 		return false;
 	}
 
-	FWLOG_INFO(kLogCategory, "Action defs loaded (root=%s, count=%zu)",
-		actionRoot.string().c_str(), actionLoadResult.loadedCount);
+	FWLOG_INFO(kLogCategory, "Gameplay content catalog loaded (count=%zu)",
+		gameplayContentLoadResult.loadedCount);
+	GameplayContentCatalogSnapshot::Publish(_gameplayContentCatalog);
 
-	const std::filesystem::path characterRoot =
-		ServerPathResolver::GetDefaultCharacterDefRoot();
-	const CharacterDefLoadResult characterLoadResult =
-		LoadCharacterDefsFromJsonDirectory(characterRoot);
-	if (!characterLoadResult.succeeded)
+	const GameDataCatalogRoots gameDataRoots
 	{
-		FWLOG_FATAL(kLogCategory, "Character defs load failed (root=%s, error=%s)",
-			characterRoot.string().c_str(), characterLoadResult.error.c_str());
+		.characterRoot = ServerPathResolver::GetDefaultCharacterDefRoot(),
+		.aiBehaviorRoot = ServerPathResolver::GetDefaultAIBehaviorDefRoot(),
+		.spawnSetRoot = ServerPathResolver::GetDefaultSpawnSetDefRoot()
+	};
+	const DefLoadResult gameDataLoadResult =
+		_gameDataCatalog.LoadFromRoots(gameDataRoots);
+	if (!gameDataLoadResult.succeeded)
+	{
+		FWLOG_FATAL(kLogCategory, "Game data catalog load failed (error=%s)",
+			gameDataLoadResult.error.c_str());
 		return false;
 	}
 
-	FWLOG_INFO(kLogCategory, "Character defs loaded (root=%s, count=%zu)",
-		characterRoot.string().c_str(), characterLoadResult.loadedCount);
+	FWLOG_INFO(kLogCategory, "Game data catalog loaded (count=%zu)",
+		gameDataLoadResult.loadedCount);
+	GameDataCatalog::Publish(_gameDataCatalog);
 
-	const std::filesystem::path aiBehaviorRoot =
-		ServerPathResolver::GetDefaultAIBehaviorDefRoot();
-	const AIBehaviorDefLoadResult aiBehaviorLoadResult =
-		LoadAIBehaviorProfileDefsFromJsonDirectory(aiBehaviorRoot);
-	if (!aiBehaviorLoadResult.succeeded)
-	{
-		FWLOG_FATAL(kLogCategory, "AI behavior defs load failed (root=%s, error=%s)",
-			aiBehaviorRoot.string().c_str(), aiBehaviorLoadResult.error.c_str());
-		return false;
-	}
-
-	FWLOG_INFO(kLogCategory, "AI behavior defs loaded (root=%s, count=%zu)",
-		aiBehaviorRoot.string().c_str(), aiBehaviorLoadResult.loadedCount);
-
-	const std::filesystem::path buffRoot =
-		ServerPathResolver::GetDefaultBuffDefRoot();
-	const BuffDefLoadResult buffLoadResult =
-		LoadBuffDefsFromJsonDirectory(buffRoot);
-	if (!buffLoadResult.succeeded)
-	{
-		FWLOG_FATAL(kLogCategory, "Buff defs load failed (root=%s, error=%s)",
-			buffRoot.string().c_str(), buffLoadResult.error.c_str());
-		return false;
-	}
-
-	FWLOG_INFO(kLogCategory, "Buff defs loaded (root=%s, count=%zu)",
-		buffRoot.string().c_str(), buffLoadResult.loadedCount);
-
-	const std::filesystem::path spawnSetRoot =
-		ServerPathResolver::GetDefaultSpawnSetDefRoot();
-	const SpawnSetDefLoadResult spawnSetLoadResult =
-		LoadSpawnSetDefsFromJsonDirectory(spawnSetRoot);
-	if (!spawnSetLoadResult.succeeded)
-	{
-		FWLOG_FATAL(kLogCategory, "SpawnSet defs load failed (root=%s, error=%s)",
-			spawnSetRoot.string().c_str(), spawnSetLoadResult.error.c_str());
-		return false;
-	}
-
-	FWLOG_INFO(kLogCategory, "SpawnSet defs loaded (root=%s, count=%zu)",
-		spawnSetRoot.string().c_str(), spawnSetLoadResult.loadedCount);
-
-	const DefLoadResult validationResult = GamePlayDefValidator::ValidateGameplayDefs();
+	const DefLoadResult validationResult =
+		GamePlayDefValidator::ValidateGameplayDefs(_gameDataCatalog);
 	if (!validationResult.succeeded)
 	{
 		FWLOG_FATAL(kLogCategory, "Gameplay defs validation failed (error=%s)",
@@ -611,9 +598,7 @@ void ServerApp::TickOnce(double dtSec)
 {
 	_lastTickTime = std::chrono::steady_clock::now();
 
-	DrainInboundCommands();
 	_network.BeginSendStage();
-	ProcessInboundMessages();
 	RunWorldFrames(dtSec);
 
 	std::vector<SessionId> pendingTransitionSessions;
@@ -634,17 +619,6 @@ void ServerApp::TickOnce(double dtSec)
 	FlushOutbound();
 
 	++_tickCount;
-}
-
-void ServerApp::DrainInboundCommands()
-{
-	_network.DrainInboundMessages(_inboundMessages);
-}
-
-void ServerApp::ProcessInboundMessages()
-{
-	_inboundProcessor.Process(_inboundMessages, _remainingInboundMessages);
-	_inboundMessages.swap(_remainingInboundMessages);
 }
 
 void ServerApp::RunWorldFrames(double dtSec)
@@ -789,7 +763,8 @@ bool ServerApp::StageWorldTransitionBeginPackets(
 			}
 
 			_pendingClientTransitions[imported.sessionId] =
-				PendingClientTransition{
+				PendingClientTransition
+				{
 					.transferId = completed.transferId,
 					.sessionId = imported.sessionId,
 					.targetWorldId = completed.targetWorldId,
