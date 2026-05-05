@@ -37,9 +37,9 @@ struct PoolStats
 // ---------------------------------------------------------------------------
 // ObjectPool
 // ---------------------------------------------------------------------------
-template<typename T, size_t Capacity, typename OverflowPolicy = OverflowPolicy_Nullptr<T >>
+template<typename T, size_t PoolCapacity, typename OverflowPolicy = OverflowPolicy_Nullptr<T >>
 class ObjectPool {
-    static constexpr uint32_t kInvalidIndex = static_cast<uint32_t>(Capacity);
+    static constexpr uint32_t kInvalidIndex = static_cast<uint32_t>(PoolCapacity);
 
     // 비사용 슬롯: nextFreeIdx 활성
     // 사용 중 슬롯: data 활성
@@ -87,34 +87,34 @@ public:
     void Release(T* obj) noexcept;
 
     const PoolStats& Stats() const noexcept { return _stats; }
-    uint32_t         Capacity() const noexcept { return static_cast<uint32_t>(Capacity); }
+    uint32_t         Capacity() const noexcept { return static_cast<uint32_t>(PoolCapacity); }
 
 private:
     bool IsFromPool(T* obj) const noexcept 
     {
         auto* p = reinterpret_cast<ObjectSlot*>(obj);
-        return p >= &_slots[0] && p < &_slots[Capacity];
+        return p >= &_slots[0] && p < &_slots[PoolCapacity];
     }
 
 private:
-    std::array<ObjectSlot, Capacity> _slots;
+    std::array<ObjectSlot, PoolCapacity> _slots;
     std::atomic<uint64_t>            _freeHead;
     PoolStats                        _stats;
 };
 
-template<typename T, size_t Capacity, typename OverflowPolicy>
-inline ObjectPool<T, Capacity, OverflowPolicy>::ObjectPool()
+template<typename T, size_t PoolCapacity, typename OverflowPolicy>
+inline ObjectPool<T, PoolCapacity, OverflowPolicy>::ObjectPool()
 {
-    for (uint32_t i = 0; i < Capacity; ++i)
+    for (uint32_t i = 0; i < PoolCapacity; ++i)
         _slots[i].nextFreeIdx = i + 1;
 
     TaggedIdx head(0, 0);
     _freeHead.store(head.raw, std::memory_order_relaxed);
 }
 
-template<typename T, size_t Capacity, typename OverflowPolicy>
+template<typename T, size_t PoolCapacity, typename OverflowPolicy>
 template<typename ...Args>
-inline T* ObjectPool<T, Capacity, OverflowPolicy>::Acquire(Args && ...args)
+inline T* ObjectPool<T, PoolCapacity, OverflowPolicy>::Acquire(Args && ...args)
 {
     BackOff backoff;
     TaggedIdx cur, next;
@@ -152,8 +152,8 @@ inline T* ObjectPool<T, Capacity, OverflowPolicy>::Acquire(Args && ...args)
     return obj;
 }
 
-template<typename T, size_t Capacity, typename OverflowPolicy>
-inline void ObjectPool<T, Capacity, OverflowPolicy>::Release(T* obj) noexcept
+template<typename T, size_t PoolCapacity, typename OverflowPolicy>
+inline void ObjectPool<T, PoolCapacity, OverflowPolicy>::Release(T* obj) noexcept
 {
     if (obj == nullptr) return;
 
