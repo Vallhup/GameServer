@@ -1,9 +1,12 @@
 #include "pch.h"
 #include "AIPerceptionSystem.h"
 
+#include "../../../AIBehaviorDef.h"
+#include "../../../GameDataCatalog.h"
 #include "../../GameplayRuntimeComponents.h"
 #include "../GameplaySystemUtil.h"
 #include "../../../TransformHelper.h"
+#include "RepComponent.h"
 
 using namespace GameplaySystemUtil;
 
@@ -12,7 +15,7 @@ namespace
 	const std::array<AccessSpec, 6> kAIPerceptionAccesses{
 		ReadImmediate(ComponentRes<AIControlledTag>()),
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
-		ReadImmediate(ComponentRes<AIPerceptionTuningComp>()),
+		ReadImmediate(ComponentRes<AITypeComp>()),
 		ReadImmediate(ComponentRes<SpawnTypeComp>()),
 		WriteImmediate(ComponentRes<AIBlackboardComp>()),
 		WriteImmediate(ComponentRes<AIPerceptionComp>()),
@@ -67,18 +70,22 @@ const SystemMeta AIPerceptionSystem::kMeta =
 
 void AIPerceptionSystem::Execute(SystemContext& ctx)
 {
-	for (auto [entity, _, selfTr, tuning, blackboard, perception] :
+	for (auto [entity, _, selfTr, aiType, blackboard, perception] :
 		ctx.ecs.View<
-		AIControlledTag, WorldTransformComp, AIPerceptionTuningComp,
+		AIControlledTag, WorldTransformComp, AITypeComp,
 		AIBlackboardComp, AIPerceptionComp>())
 	{
+		const AIBehaviorProfileDef* profile =
+			GameDataCatalog::Current().AIBehaviors().Find(aiType.aiProfileId);
+		const AIPerceptionTuningDef tuning =
+			profile != nullptr ? profile->perception : AIPerceptionTuningDef{};
 		BuildPerception(entity, selfTr, tuning, blackboard, perception, ctx);
 	}
 }
 
 double AIPerceptionSystem::ComputeScore(
 	const PerceptionCandidate& candidate,
-	const AIPerceptionTuningComp& tuning) const noexcept
+	const AIPerceptionTuningDef& tuning) const noexcept
 {
 	if (!candidate.inSightRange && !candidate.isCurrentTarget)
 	{
@@ -105,7 +112,7 @@ double AIPerceptionSystem::ComputeScore(
 AIPerceptionSystem::PerceptionCandidate AIPerceptionSystem::EvaluateCandidate(
 	const WorldTransformComp& selfTr,
 	const WorldTransformComp& otherTr,
-	const AIPerceptionTuningComp& tuning,
+	const AIPerceptionTuningDef& tuning,
 	const AIBlackboardComp& blackboard,
 	Entity other) const noexcept
 {
@@ -136,7 +143,7 @@ AIPerceptionSystem::PerceptionCandidate AIPerceptionSystem::EvaluateCandidate(
 void AIPerceptionSystem::BuildPerception(
 	Entity self,
 	const WorldTransformComp& selfTr,
-	const AIPerceptionTuningComp& tuning,
+	const AIPerceptionTuningDef& tuning,
 	AIBlackboardComp& blackboard,
 	AIPerceptionComp& perception,
 	SystemContext& sysCtx)

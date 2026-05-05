@@ -15,9 +15,9 @@ namespace AICombatActionPolicyUtil
 		const AIContext& ctx,
 		CombatActionSelection& out);
 
-	ActionId PickWeightedAction(
+	AbilityId PickWeightedAbility(
 		std::span<const WeightedActionEntry> actions,
-		ActionId lastUsed,
+		AbilityId lastUsed,
 		int roll,
 		uint16_t repeatWeightPercent = 25);
 }

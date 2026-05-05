@@ -77,9 +77,9 @@ void AICombatActionPolicyUtil::FillAttackDirectionTowardTarget(
 	}
 }
 
-ActionId AICombatActionPolicyUtil::PickWeightedAction(
+AbilityId AICombatActionPolicyUtil::PickWeightedAbility(
 	std::span<const WeightedActionEntry> actions,
-	ActionId lastUsed,
+	AbilityId lastUsed,
 	int roll,
 	uint16_t repeatWeightPercent)
 {
@@ -87,7 +87,7 @@ ActionId AICombatActionPolicyUtil::PickWeightedAction(
 	for (const WeightedActionEntry& entry : actions)
 	{
 		uint32_t weight = entry.weight;
-		if (entry.actionId == lastUsed && actions.size() > 1)
+		if (entry.abilityId == lastUsed && actions.size() > 1)
 		{
 			weight =
 				(weight * static_cast<uint32_t>(repeatWeightPercent)) / 100u;
@@ -96,14 +96,14 @@ ActionId AICombatActionPolicyUtil::PickWeightedAction(
 	}
 
 	if (totalWeight == 0)
-		return ActionId::None;
+		return InvalidAbilityId;
 
 	uint32_t cursor =
 		static_cast<uint32_t>(std::max(0, roll)) % totalWeight;
 	for (const WeightedActionEntry& entry : actions)
 	{
 		uint32_t weight = entry.weight;
-		if (entry.actionId == lastUsed && actions.size() > 1)
+		if (entry.abilityId == lastUsed && actions.size() > 1)
 		{
 			weight =
 				(weight * static_cast<uint32_t>(repeatWeightPercent)) / 100u;
@@ -113,10 +113,10 @@ ActionId AICombatActionPolicyUtil::PickWeightedAction(
 			continue;
 
 		if (cursor < weight)
-			return entry.actionId;
+			return entry.abilityId;
 
 		cursor -= weight;
 	}
 
-	return ActionId::None;
+	return InvalidAbilityId;
 }
