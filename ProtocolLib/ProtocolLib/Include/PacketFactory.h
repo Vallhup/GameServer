@@ -13,7 +13,7 @@ struct PacketFactory {
 	template<ProtoT T>
 	static SendBuffer* Serialize(PacketType type, const T& data)
 	{
-		uint16 bodySize = data.ByteSizeLong();
+		uint16 bodySize = static_cast<uint16_t>(data.ByteSizeLong());
 		uint16 packetSize = sizeof(PacketHeader) + bodySize;
 
 		SendBuffer* buffer = SendBufferPool::Get().Acquire(packetSize);

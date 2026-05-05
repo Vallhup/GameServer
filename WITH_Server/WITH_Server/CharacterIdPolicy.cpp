@@ -1,10 +1,18 @@
 #include "pch.h"
 #include "CharacterIdPolicy.h"
 #include "CharacterDef.h"
+#include "GameDataCatalog.h"
 
 bool IsPlayableCharacterId(CharacterId id) noexcept
 {
-	const CharacterDef* const def = FindCharacterDef(id);
+	const GameDataCatalog* catalog = GameDataCatalog::TryCurrent();
+	if (catalog == nullptr)
+	{
+		return false;
+	}
+
+	const CharacterDef* const def =
+		catalog->Characters().Find(id);
 	if (def == nullptr)
 	{
 		return false;
@@ -15,7 +23,14 @@ bool IsPlayableCharacterId(CharacterId id) noexcept
 
 bool IsMonsterCharacterId(CharacterId id) noexcept
 {
-	const CharacterDef* const def = FindCharacterDef(id);
+	const GameDataCatalog* catalog = GameDataCatalog::TryCurrent();
+	if (catalog == nullptr)
+	{
+		return false;
+	}
+
+	const CharacterDef* const def =
+		catalog->Characters().Find(id);
 	if (def == nullptr)
 	{
 		return false;

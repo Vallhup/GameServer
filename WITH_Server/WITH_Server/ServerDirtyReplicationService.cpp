@@ -133,9 +133,7 @@ void ServerDirtyReplicationService::BuildAndStage(
 					statPacket.set_attackspeed(stats->attackSpeed);
 					statPacket.set_defense(
 						static_cast<uint32_t>(std::max(0, stats->defense)));
-					statPacket.set_movespeed(
-						static_cast<uint32_t>(
-							std::max(0.0f, stats->moveSpeed)));
+					statPacket.set_movespeed(std::max(0.0f, stats->moveSpeed));
 					(void)ServerPacketStager::StageReplicationPacket(
 						network,
 						PacketType::SC_STAT_CHANGE,

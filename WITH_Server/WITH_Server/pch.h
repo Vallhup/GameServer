@@ -22,7 +22,7 @@
 
 #ifdef _MSC_VER
 	#pragma warning(push)
-	#pragma warning(disable: 2451 4244 4251 4267 4996)
+	#pragma warning(disable: 4244 4251 4267 4996)
 #elif defined(__GNUC__) || defined(__clang__)
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -30,6 +30,7 @@
 #endif
 
 #include "Protocol.pb.h"
+#include "ProtocolLib.h"
 
 #ifdef _MSC_VER
 	#pragma warning(pop)
@@ -38,7 +39,6 @@
 #endif
 
 #include "Asio_Network_Library.h"
-#include "ProtocolLib.h"
 #include "WITH_Server_Framework.h"
 
 #pragma comment(lib, "Asio_Network_Library.lib")

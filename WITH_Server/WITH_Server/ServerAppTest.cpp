@@ -8,8 +8,6 @@
 #include <span>
 #include <thread>
 
-#include "ActionDef.h"
-#include "BuffDef.h"
 #include "CharacterDef.h"
 #include "CharacterIdPolicy.h"
 #include "DefFileFormat.h"

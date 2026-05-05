@@ -74,12 +74,13 @@ void FrameworkFrameEventHarvester::Harvest(
 					}
 				}
 
-				outEvents.spawns.push_back(
-					FrameworkRuntime::FrameResult::EntitySpawnEvent{
-						worldId,
-						command.entity,
-						netId
-					});
+				FrameworkRuntime::FrameResult::EntitySpawnEvent entitySpawnEvent =
+				{
+					.worldId = worldId,
+					.entity = command.entity,
+					.netId = netId
+				};
+				outEvents.spawns.push_back(entitySpawnEvent);
 				break;
 			}
 
@@ -92,15 +93,16 @@ void FrameworkFrameEventHarvester::Harvest(
 					// binding to the target entity during the server commit step.
 					break;
 				}
+				
+				FrameworkRuntime::FrameResult::EntityDespawnEvent entityDespawnEvent =
+				{
+					.worldId = worldId,
+					.entity = command.entity,
+					.netId = netId
+				};
+				outEvents.despawns.push_back(entityDespawnEvent);
 
-				outEvents.despawns.push_back(
-					FrameworkRuntime::FrameResult::EntityDespawnEvent{
-						worldId,
-						command.entity,
-						netId
-					});
-
-				(void)netIdRegistry.UnbindEntity(netId);
+				netIdRegistry.UnbindEntity(netId);
 				netIdRegistry.Free(netId);
 				break;
 			}

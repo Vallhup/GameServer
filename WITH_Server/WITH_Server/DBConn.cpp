@@ -166,10 +166,12 @@ bool DBConn::ConnectInternal(std::wstring_view connStrOrDsn, bool useDsn, std::w
 	SQLRETURN rc{ SQL_ERROR };
 	if (useDsn)
 	{
+		SQLSMALLINT connStrOrDsnSize = static_cast<SQLSMALLINT>(connStrOrDsn.size());
+
 		rc = SQLConnectW(_hDbc,
-			(SQLWCHAR*)connStrOrDsn.data(), connStrOrDsn.size(),
-			(SQLWCHAR*)user.data(), connStrOrDsn.size(),
-			(SQLWCHAR*)password.data(), connStrOrDsn.size()
+			(SQLWCHAR*)connStrOrDsn.data(), connStrOrDsnSize,
+			(SQLWCHAR*)user.data(), connStrOrDsnSize,
+			(SQLWCHAR*)password.data(), connStrOrDsnSize
 		);
 	}
 
@@ -180,7 +182,7 @@ bool DBConn::ConnectInternal(std::wstring_view connStrOrDsn, bool useDsn, std::w
 
 		rc = SQLDriverConnectW(
 			_hDbc, nullptr,
-			(SQLWCHAR*)connStrOrDsn.data(), connStrOrDsn.size(),
+			(SQLWCHAR*)connStrOrDsn.data(), (SQLSMALLINT)connStrOrDsn.size(),
 			outConn, 2048,
 			&outLen, SQL_DRIVER_NOPROMPT
 		);
