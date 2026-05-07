@@ -9,13 +9,14 @@ public:
 	SelectScene& operator=(const SelectScene&) = delete;
 	~SelectScene() = default;
 
+	void RenderSceneDeferred() override;
+
 	void Release() override;
 
 protected:
 	void InitializeLogic() override;
 	void InitializeSceneMonsters() override;
 	void UpdateScene(const float deltaTime) override;
-	void RenderSceneDeferred() override;
 	void RequestSceneChange() override;
 
 

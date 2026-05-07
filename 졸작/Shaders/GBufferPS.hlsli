@@ -24,7 +24,7 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
         float3 emission = float3(0, 0, 0);
         float height = 0.0f;
         
-        if (useTerrainBlend)
+        if (useTerrainBlend == 1)
         {
             float s = saturate(dot(normalize(input.normal), float3(0, 1, 0)));
             float t = smoothstep(SLOPE_THRESHOLD - SLOPE_SMOOTH, SLOPE_THRESHOLD + SLOPE_SMOOTH, s);
@@ -39,6 +39,34 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
             normalMap = lerp(rockNormal, float3(0, 0, 1), t);
             
             roughness = lerp(0.85, 0.6, t);
+        }
+        else if (useTerrainBlend == 2)
+        {
+            float2 splatUV = input.uv * splatUVScale;
+
+            float4 wArr[2];
+            wArr[0] = bindlessTextures[NonUniformResourceIndex(splatmap1Index)].Sample(linearClampSampler, splatUV);
+            wArr[1] = (splatmap2Index != 0xFFFFFFFF)
+                ? bindlessTextures[NonUniformResourceIndex(splatmap2Index)].Sample(linearClampSampler, splatUV)
+                : float4(0, 0, 0, 0);
+
+            uint layerTex[8] = {
+                material.baseColorTexIndex, material.normalTexIndex,
+                material.roughnessTexIndex, material.metallicTexIndex,
+                material.heightTexIndex,    material.alphaTexIndex,
+                material.emissionTexIndex,  material.aoTexIndex
+            };
+
+            float3 col = float3(0, 0, 0);
+            for (int i = 0; i < splatLayerCount; ++i)
+            {
+                float w = wArr[i / 4][i % 4];
+                if (layerTex[i] != 0xFFFFFFFF)
+                    col += w * bindlessTextures[NonUniformResourceIndex(layerTex[i])].Sample(linearSampler, input.uv).rgb;
+            }
+
+            baseColor = float4(col, 1.0);
+            roughness = 0.7;
         }
         else
         {

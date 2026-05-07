@@ -193,11 +193,11 @@ bool AnimationJsonLoader::ResolveAnimationId(
 		{ "Knight_idle", AnimationId::Knight_Idle },
 		{ "Knight_walk", AnimationId::Knight_Walk },
 		{ "Knight_run", AnimationId::Knight_Run },
-		{ "Knight_lightattack1", AnimationId::Knight_LightAttack1 },/*
-		{ "Knight_lightattack2", AnimationId::Knight_LightAttack2 },
-		{ "Knight_lightattack3", AnimationId::Knight_LightAttack3 },
-		{ "Knight_specialattack", AnimationId::Knight_SpecialAttack },
-		{ "Knight_heavyattack", AnimationId::Knight_HeavyAttack },*/
+		{ "Knight_lightattack1", AnimationId::Knight_AttackCombo1 },
+		//{ "Knight_lightattack2", AnimationId::Knight_AttackCombo2 },
+		//{ "Knight_lightattack3", AnimationId::Knight_AttackCombo3 },
+		//{ "Knight_heavyattack", AnimationId::Knight_AttackStrong },
+		//{ "Knight_specialattack", AnimationId::Knight_AttackSpecial },
 		{ "Knight_dodge", AnimationId::Knight_Dodge },
 		{ "Knight_parry", AnimationId::Knight_Parry },
 		{ "Knight_stun", AnimationId::Knight_Stun },

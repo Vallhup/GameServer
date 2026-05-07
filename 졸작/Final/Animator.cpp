@@ -256,6 +256,13 @@ void Animator::CreateBuffers(DX12Core& core)
     }
 
     mBoneFrameBuffer->CopyData(allFrameData.data(), allFrameData.size() * sizeof(AnimFrameParams));
+
+    auto initBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+        mFinalBuffer->GetResource(),
+        D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+        D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+    core.GetGraphicsCmdList()->ResourceBarrier(1, &initBarrier);
+
     mIsInitialized = true;
 }
 
@@ -326,17 +333,29 @@ void Animator::ExecuteComputeShader(DX12Core& core)
 
     mAnimationCB->CopyData(&animData, sizeof(AnimationConstants));
 
+    auto toUav = CD3DX12_RESOURCE_BARRIER::Transition(
+        mFinalBuffer->GetResource(),
+        D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+        D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+    cmdList->ResourceBarrier(1, &toUav);
+
     cmdList->SetPipelineState(core.GetShader()->GetPSO(PSOType::Compute));
     cmdList->SetComputeRootSignature(core.GetRootSig()->Get());
     cmdList->SetComputeRootConstantBufferView(2, mAnimationCB->GetGPUVirtualAddress());
 
-    cmdList->SetComputeRootShaderResourceView(8, GetBoneFrameBuffer()->GetGPUVirtualAddress());  
-    cmdList->SetComputeRootShaderResourceView(9, GetOffsetBuffer()->GetGPUVirtualAddress());     
+    cmdList->SetComputeRootShaderResourceView(8, GetBoneFrameBuffer()->GetGPUVirtualAddress());
+    cmdList->SetComputeRootShaderResourceView(9, GetOffsetBuffer()->GetGPUVirtualAddress());
 
-    cmdList->SetComputeRootUnorderedAccessView(11, GetFinalBuffer()->GetGPUVirtualAddress());     
+    cmdList->SetComputeRootUnorderedAccessView(11, GetFinalBuffer()->GetGPUVirtualAddress());
 
-    UINT groupCount = (animData.boneCount + 255) / 256;  
+    UINT groupCount = (animData.boneCount + 255) / 256;
     cmdList->Dispatch(groupCount, 1, 1);
+
+    auto toSrv = CD3DX12_RESOURCE_BARRIER::Transition(
+        mFinalBuffer->GetResource(),
+        D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+        D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+    cmdList->ResourceBarrier(1, &toSrv);
 }
 
 void Animator::LoadAnimationFromImporter(DX12Core& core, const Importer& importer)

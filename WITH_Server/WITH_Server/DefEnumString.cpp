@@ -80,7 +80,7 @@ bool ParseAnimationIdString(std::string_view text, AnimationId& outValue) noexce
 		{ "Knight_Idle", AnimationId::Knight_Idle },
 		{ "Knight_Walk", AnimationId::Knight_Walk },
 		{ "Knight_Run", AnimationId::Knight_Run },
-		{ "Knight_LightAttack1", AnimationId::Knight_LightAttack1 },
+		{ "Knight_LightAttack1", AnimationId::Knight_AttackCombo1 },
 		{ "Knight_Dodge", AnimationId::Knight_Dodge },
 		{ "Knight_Parry", AnimationId::Knight_Parry },
 		{ "Knight_Stun", AnimationId::Knight_Stun },

@@ -9,7 +9,7 @@ void Texture::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdLis
 
     const Image* img = image.GetImage(0, 0, 0);
 
-    // µð¹ö±ë ·Î±× Ãß°¡
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î±ï¿½ ï¿½ß°ï¿½
     OutputDebugStringA(("Texture size: " + to_string(img->width) + "x" + to_string(img->height) + "\n").c_str());
     OutputDebugStringA(("Texture memory: " + to_string(img->slicePitch) + " bytes\n").c_str());
 
@@ -275,4 +275,43 @@ void Texture::InitializeLUT(ID3D12Device* device, ID3D12GraphicsCommandList* cmd
     cmdList->ResourceBarrier(1, &barrier);
 
     OutputDebugStringA("LUT based texture loaded!\n");
+}
+
+void Texture::InitializeFromMemory(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* data, UINT width, UINT height, DXGI_FORMAT format)
+{
+    D3D12_RESOURCE_DESC desc = {};
+    desc.Dimension        = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+    desc.Width            = width;
+    desc.Height           = height;
+    desc.DepthOrArraySize = 1;
+    desc.MipLevels        = 1;
+    desc.Format           = format;
+    desc.SampleDesc.Count = 1;
+    desc.Layout           = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+    desc.Flags            = D3D12_RESOURCE_FLAG_NONE;
+
+    CD3DX12_HEAP_PROPERTIES defaultHeap(D3D12_HEAP_TYPE_DEFAULT);
+    HRESULT hr = device->CreateCommittedResource(&defaultHeap, D3D12_HEAP_FLAG_NONE,
+        &desc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&texture));
+    MASSERT(SUCCEEDED(hr), "Failed to create texture from memory");
+
+    UINT64 uploadSize = GetRequiredIntermediateSize(texture.Get(), 0, 1);
+    CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
+    CD3DX12_RESOURCE_DESC bufDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadSize);
+    hr = device->CreateCommittedResource(&uploadHeap, D3D12_HEAP_FLAG_NONE,
+        &bufDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&uploadBuffer));
+    MASSERT(SUCCEEDED(hr), "Failed to create upload buffer for memory texture");
+
+    D3D12_SUBRESOURCE_DATA texData = {};
+    texData.pData      = data;
+    texData.RowPitch   = width * 4; // R8G8B8A8
+    texData.SlicePitch = texData.RowPitch * height;
+
+    UpdateSubresources(cmdList, texture.Get(), uploadBuffer.Get(), 0, 0, 1, &texData);
+
+    CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+        texture.Get(),
+        D3D12_RESOURCE_STATE_COPY_DEST,
+        D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    cmdList->ResourceBarrier(1, &barrier);
 }

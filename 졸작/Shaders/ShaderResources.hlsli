@@ -28,6 +28,10 @@ cbuffer ObjectCB : register(b1)
     uint materialIndex;
     int useVertexAnim;
     int useTerrainBlend;
+    uint splatmap1Index;
+    uint splatmap2Index;
+    float splatUVScale;
+    int splatLayerCount;
     int3 objPadding;
 };
 

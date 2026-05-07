@@ -1,10 +1,7 @@
 #include "pch.h"
 #include "SceneManager.h"
 #include "Engine.h"
-#include "Importer.h"
 #include "Input.h"
-#include "Timer.h"
-#include "Texture.h"
 #include "TitleScene.h"
 #include "SelectScene.h"
 #include "PlazaScene.h"
@@ -62,7 +59,7 @@ void SceneManager::RenderDeferred()
 {
     if (mCurrentScene)
     {
-        mCurrentScene->RenderDeferred();
+        mCurrentScene->RenderSceneDeferred();
     }
 }
 
@@ -70,7 +67,7 @@ void SceneManager::RenderForward()
 {
     if (mCurrentScene)
     {
-        mCurrentScene->RenderForward();
+        mCurrentScene->RenderSceneForward();
     }
 }
 
@@ -78,7 +75,7 @@ void SceneManager::RenderShadowStatic()
 {
     if (mCurrentScene)
     {
-        mCurrentScene->RenderShadowStatic();
+        mCurrentScene->RenderSceneShadowStatic();
     }
 }
 
@@ -86,7 +83,7 @@ void SceneManager::RenderShadowDynamic()
 {
     if (mCurrentScene)
     {
-        mCurrentScene->RenderShadowDynamic();
+        mCurrentScene->RenderSceneShadowDynamic();
     }
 }
 
@@ -94,7 +91,7 @@ void SceneManager::RenderEffects()
 {
     if (mCurrentScene)
     {
-        mCurrentScene->RenderEffects();
+        mCurrentScene->RenderSceneEffects();
     }
 }
 

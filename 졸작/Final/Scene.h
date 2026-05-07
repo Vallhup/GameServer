@@ -12,6 +12,7 @@ enum class SceneType;
 class MainCharacter;
 class AnimationSet;
 
+enum class CharacterType { Knight, Lancer, Paladin };
 enum class MonsterType { Boss, Imp, DemonStriker, DemonExecutioner, BigDemonWarrior, Tank };
 
 class Scene
@@ -20,23 +21,17 @@ public:
 	virtual ~Scene() {}
 	virtual void Initialize(HWND hWnd, DX12Core& core);
 	virtual void Update(const float deltaTime);
-	virtual void RenderDeferred();
-	virtual void RenderForward();
-	virtual void RenderShadowStatic();
-	virtual void RenderShadowDynamic();
-	virtual void RenderEffects();
+	virtual void RenderSceneDeferred() {}
+	virtual void RenderSceneForward() {}
+	virtual void RenderSceneShadowStatic() {}
+	virtual void RenderSceneShadowDynamic() {}
+	virtual void RenderSceneEffects() {}
 	virtual void Release() = 0;
 
 	Camera* GetCamera() const;
 	void SetSceneManager(SceneManager* manager);
 	void HandlePacket(const PacketHeader& header, const BYTE* data);
 	void SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches);
-
-	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
-	shared_ptr<MainCharacter> GetAvailableKnight() const;
-
-	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)(), bool twoSided = true);
-	void CreateMonsters(MonsterType type, const XMFLOAT3& position, int count = 1);
 
 	void AddGameObject(shared_ptr<GameObject> obj);
 
@@ -47,20 +42,7 @@ protected:
 	virtual void InitializeSceneEnvironments() {}
 	virtual void InitializeSceneMonsters() {}
 	virtual void UpdateScene(const float deltaTime) {}
-	virtual void RenderSceneDeferred() {}
-	virtual void RenderSceneForward() {}
-	virtual void RenderSceneShadowStatic() {}
-	virtual void RenderSceneShadowDynamic() {}
-	virtual void RenderSceneEffects() {}
 	virtual void RequestSceneChange() {}
-
-	// Network Handler Function Interface
-	virtual void HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login) {}
-	virtual void HandleAdd(const Protocol::SC_ADD_PACKET& add) {}
-	virtual void HandleMove(const Protocol::SC_MOVE_PACKET& move) {}
-	virtual void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove) {}
-	virtual void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim) {}
-	virtual void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat) {}
 
 	template<typename T>
 	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const T& data);
@@ -70,7 +52,23 @@ protected:
 	template<typename T>
 	void CreateAndBatchObjects(const wstring& path, const vector<T>& data, vector<shared_ptr<InstancingBatch>>& targetBatchList);
 
-	void CreateKnightPool();
+	void CreateCharacterPool(CharacterType type, int count = MAX_CHARACTER_COUNT);
+	void CreateMonsters(MonsterType type, const XMFLOAT3& position, int count = 1);
+
+private:
+	shared_ptr<MainCharacter> GetAvailableCharacter(CharacterType type) const;
+	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
+
+	shared_ptr<MainCharacter> CreateCharacterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)());
+	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)(), bool twoSided = true);
+
+	// Network Handler Function Interface
+	void HandleLogin(const Protocol::SC_LOGIN_PACKET& login);
+	void HandleAdd(const Protocol::SC_ADD_PACKET& add);
+	void HandleMove(const Protocol::SC_MOVE_PACKET& move);
+	void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove);
+	void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim);
+	void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat);
 
 protected:
 	XMFLOAT4X4 mView = {};
@@ -85,12 +83,12 @@ protected:
 
 	vector<shared_ptr<GameObject>> gameObjects;
 	unordered_map<MonsterType, vector<shared_ptr<GameObject>>> monsterPools;
+	unordered_map<CharacterType, vector<shared_ptr<MainCharacter>>> characterPools;
 
-	vector<shared_ptr<MainCharacter>> knightPool;
 	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
 	shared_ptr<MainCharacter> myPlayer;
 
-	static constexpr int MAX_KNIGHT_COUNT = 10;
+	static constexpr int MAX_CHARACTER_COUNT = 5;
 };
 
 template <typename T>
