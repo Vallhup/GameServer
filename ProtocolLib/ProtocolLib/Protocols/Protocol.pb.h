@@ -86,9 +86,12 @@ extern SC_ADD_PACKETDefaultTypeInternal _SC_ADD_PACKET_default_instance_;
 class SC_ANIMATION_TRANSITION_PACKET;
 struct SC_ANIMATION_TRANSITION_PACKETDefaultTypeInternal;
 extern SC_ANIMATION_TRANSITION_PACKETDefaultTypeInternal _SC_ANIMATION_TRANSITION_PACKET_default_instance_;
-class SC_LOGIN_PACKET;
-struct SC_LOGIN_PACKETDefaultTypeInternal;
-extern SC_LOGIN_PACKETDefaultTypeInternal _SC_LOGIN_PACKET_default_instance_;
+class SC_LOGIN_FAIL_PACKET;
+struct SC_LOGIN_FAIL_PACKETDefaultTypeInternal;
+extern SC_LOGIN_FAIL_PACKETDefaultTypeInternal _SC_LOGIN_FAIL_PACKET_default_instance_;
+class SC_LOGIN_SUCCESS_PACKET;
+struct SC_LOGIN_SUCCESS_PACKETDefaultTypeInternal;
+extern SC_LOGIN_SUCCESS_PACKETDefaultTypeInternal _SC_LOGIN_SUCCESS_PACKET_default_instance_;
 class SC_MOVE_PACKET;
 struct SC_MOVE_PACKETDefaultTypeInternal;
 extern SC_MOVE_PACKETDefaultTypeInternal _SC_MOVE_PACKET_default_instance_;
@@ -179,7 +182,7 @@ class SC_WORLD_TRANSITION_REJECTED_PACKET final : public ::google::protobuf::Mes
     return reinterpret_cast<const SC_WORLD_TRANSITION_REJECTED_PACKET*>(
         &_SC_WORLD_TRANSITION_REJECTED_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 16;
+  static constexpr int kIndexInFileMessages = 17;
   friend void swap(SC_WORLD_TRANSITION_REJECTED_PACKET& a, SC_WORLD_TRANSITION_REJECTED_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_WORLD_TRANSITION_REJECTED_PACKET* other) {
     if (other == this) return;
@@ -381,7 +384,7 @@ class SC_WORLD_TRANSITION_BEGIN_PACKET final : public ::google::protobuf::Messag
     return reinterpret_cast<const SC_WORLD_TRANSITION_BEGIN_PACKET*>(
         &_SC_WORLD_TRANSITION_BEGIN_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 15;
+  static constexpr int kIndexInFileMessages = 16;
   friend void swap(SC_WORLD_TRANSITION_BEGIN_PACKET& a, SC_WORLD_TRANSITION_BEGIN_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_WORLD_TRANSITION_BEGIN_PACKET* other) {
     if (other == this) return;
@@ -703,7 +706,7 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_STAT_CHANGE_PACKET*>(
         &_SC_STAT_CHANGE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 14;
+  static constexpr int kIndexInFileMessages = 15;
   friend void swap(SC_STAT_CHANGE_PACKET& a, SC_STAT_CHANGE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_STAT_CHANGE_PACKET* other) {
     if (other == this) return;
@@ -989,7 +992,7 @@ class SC_REMOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_REMOVE_PACKET*>(
         &_SC_REMOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 12;
+  static constexpr int kIndexInFileMessages = 13;
   friend void swap(SC_REMOVE_PACKET& a, SC_REMOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REMOVE_PACKET* other) {
     if (other == this) return;
@@ -1179,7 +1182,7 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_MOVE_PACKET*>(
         &_SC_MOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 11;
+  static constexpr int kIndexInFileMessages = 12;
   friend void swap(SC_MOVE_PACKET& a, SC_MOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_MOVE_PACKET* other) {
     if (other == this) return;
@@ -1358,31 +1361,31 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
-class SC_LOGIN_PACKET final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:Protocol.SC_LOGIN_PACKET) */ {
+class SC_LOGIN_SUCCESS_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_LOGIN_SUCCESS_PACKET) */ {
  public:
-  inline SC_LOGIN_PACKET() : SC_LOGIN_PACKET(nullptr) {}
-  ~SC_LOGIN_PACKET() PROTOBUF_FINAL;
+  inline SC_LOGIN_SUCCESS_PACKET() : SC_LOGIN_SUCCESS_PACKET(nullptr) {}
+  ~SC_LOGIN_SUCCESS_PACKET() PROTOBUF_FINAL;
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(SC_LOGIN_PACKET* msg, std::destroying_delete_t) {
+  void operator delete(SC_LOGIN_SUCCESS_PACKET* msg, std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_LOGIN_PACKET));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_LOGIN_SUCCESS_PACKET));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR SC_LOGIN_PACKET(
+  explicit PROTOBUF_CONSTEXPR SC_LOGIN_SUCCESS_PACKET(
       ::google::protobuf::internal::ConstantInitialized);
 
-  inline SC_LOGIN_PACKET(const SC_LOGIN_PACKET& from) : SC_LOGIN_PACKET(nullptr, from) {}
-  inline SC_LOGIN_PACKET(SC_LOGIN_PACKET&& from) noexcept
-      : SC_LOGIN_PACKET(nullptr, std::move(from)) {}
-  inline SC_LOGIN_PACKET& operator=(const SC_LOGIN_PACKET& from) {
+  inline SC_LOGIN_SUCCESS_PACKET(const SC_LOGIN_SUCCESS_PACKET& from) : SC_LOGIN_SUCCESS_PACKET(nullptr, from) {}
+  inline SC_LOGIN_SUCCESS_PACKET(SC_LOGIN_SUCCESS_PACKET&& from) noexcept
+      : SC_LOGIN_SUCCESS_PACKET(nullptr, std::move(from)) {}
+  inline SC_LOGIN_SUCCESS_PACKET& operator=(const SC_LOGIN_SUCCESS_PACKET& from) {
     CopyFrom(from);
     return *this;
   }
-  inline SC_LOGIN_PACKET& operator=(SC_LOGIN_PACKET&& from) noexcept {
+  inline SC_LOGIN_SUCCESS_PACKET& operator=(SC_LOGIN_SUCCESS_PACKET&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -1410,16 +1413,16 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::Message
   static const ::google::protobuf::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const SC_LOGIN_PACKET& default_instance() {
+  static const SC_LOGIN_SUCCESS_PACKET& default_instance() {
     return *internal_default_instance();
   }
-  static inline const SC_LOGIN_PACKET* internal_default_instance() {
-    return reinterpret_cast<const SC_LOGIN_PACKET*>(
-        &_SC_LOGIN_PACKET_default_instance_);
+  static inline const SC_LOGIN_SUCCESS_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_LOGIN_SUCCESS_PACKET*>(
+        &_SC_LOGIN_SUCCESS_PACKET_default_instance_);
   }
   static constexpr int kIndexInFileMessages = 9;
-  friend void swap(SC_LOGIN_PACKET& a, SC_LOGIN_PACKET& b) { a.Swap(&b); }
-  inline void Swap(SC_LOGIN_PACKET* other) {
+  friend void swap(SC_LOGIN_SUCCESS_PACKET& a, SC_LOGIN_SUCCESS_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_LOGIN_SUCCESS_PACKET* other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -1427,7 +1430,7 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::Message
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(SC_LOGIN_PACKET* other) {
+  void UnsafeArenaSwap(SC_LOGIN_SUCCESS_PACKET* other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -1435,13 +1438,13 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::Message
 
   // implements Message ----------------------------------------------
 
-  SC_LOGIN_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<SC_LOGIN_PACKET>(arena);
+  SC_LOGIN_SUCCESS_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_LOGIN_SUCCESS_PACKET>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const SC_LOGIN_PACKET& from);
+  void CopyFrom(const SC_LOGIN_SUCCESS_PACKET& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const SC_LOGIN_PACKET& from) { SC_LOGIN_PACKET::MergeImpl(*this, from); }
+  void MergeFrom(const SC_LOGIN_SUCCESS_PACKET& from) { SC_LOGIN_SUCCESS_PACKET::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(
@@ -1478,18 +1481,18 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::Message
   private:
   void SharedCtor(::google::protobuf::Arena* arena);
   static void SharedDtor(MessageLite& self);
-  void InternalSwap(SC_LOGIN_PACKET* other);
+  void InternalSwap(SC_LOGIN_SUCCESS_PACKET* other);
  private:
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "Protocol.SC_LOGIN_PACKET"; }
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_LOGIN_SUCCESS_PACKET"; }
 
  protected:
-  explicit SC_LOGIN_PACKET(::google::protobuf::Arena* arena);
-  SC_LOGIN_PACKET(::google::protobuf::Arena* arena, const SC_LOGIN_PACKET& from);
-  SC_LOGIN_PACKET(::google::protobuf::Arena* arena, SC_LOGIN_PACKET&& from) noexcept
-      : SC_LOGIN_PACKET(arena) {
+  explicit SC_LOGIN_SUCCESS_PACKET(::google::protobuf::Arena* arena);
+  SC_LOGIN_SUCCESS_PACKET(::google::protobuf::Arena* arena, const SC_LOGIN_SUCCESS_PACKET& from);
+  SC_LOGIN_SUCCESS_PACKET(::google::protobuf::Arena* arena, SC_LOGIN_SUCCESS_PACKET&& from) noexcept
+      : SC_LOGIN_SUCCESS_PACKET(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
@@ -1516,7 +1519,7 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::Message
   void _internal_set_netid(::uint64_t value);
 
   public:
-  // @@protoc_insertion_point(class_scope:Protocol.SC_LOGIN_PACKET)
+  // @@protoc_insertion_point(class_scope:Protocol.SC_LOGIN_SUCCESS_PACKET)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
@@ -1538,8 +1541,198 @@ class SC_LOGIN_PACKET final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena);
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
-                          const SC_LOGIN_PACKET& from_msg);
+                          const SC_LOGIN_SUCCESS_PACKET& from_msg);
     ::uint64_t netid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_LOGIN_FAIL_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_LOGIN_FAIL_PACKET) */ {
+ public:
+  inline SC_LOGIN_FAIL_PACKET() : SC_LOGIN_FAIL_PACKET(nullptr) {}
+  ~SC_LOGIN_FAIL_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_LOGIN_FAIL_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_LOGIN_FAIL_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_LOGIN_FAIL_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_LOGIN_FAIL_PACKET(const SC_LOGIN_FAIL_PACKET& from) : SC_LOGIN_FAIL_PACKET(nullptr, from) {}
+  inline SC_LOGIN_FAIL_PACKET(SC_LOGIN_FAIL_PACKET&& from) noexcept
+      : SC_LOGIN_FAIL_PACKET(nullptr, std::move(from)) {}
+  inline SC_LOGIN_FAIL_PACKET& operator=(const SC_LOGIN_FAIL_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_LOGIN_FAIL_PACKET& operator=(SC_LOGIN_FAIL_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_LOGIN_FAIL_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_LOGIN_FAIL_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_LOGIN_FAIL_PACKET*>(
+        &_SC_LOGIN_FAIL_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 10;
+  friend void swap(SC_LOGIN_FAIL_PACKET& a, SC_LOGIN_FAIL_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_LOGIN_FAIL_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_LOGIN_FAIL_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_LOGIN_FAIL_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_LOGIN_FAIL_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_LOGIN_FAIL_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_LOGIN_FAIL_PACKET& from) { SC_LOGIN_FAIL_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_LOGIN_FAIL_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_LOGIN_FAIL_PACKET"; }
+
+ protected:
+  explicit SC_LOGIN_FAIL_PACKET(::google::protobuf::Arena* arena);
+  SC_LOGIN_FAIL_PACKET(::google::protobuf::Arena* arena, const SC_LOGIN_FAIL_PACKET& from);
+  SC_LOGIN_FAIL_PACKET(::google::protobuf::Arena* arena, SC_LOGIN_FAIL_PACKET&& from) noexcept
+      : SC_LOGIN_FAIL_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kReasonFieldNumber = 1,
+  };
+  // uint32 reason = 1;
+  void clear_reason() ;
+  ::uint32_t reason() const;
+  void set_reason(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_reason() const;
+  void _internal_set_reason(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_LOGIN_FAIL_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_LOGIN_FAIL_PACKET& from_msg);
+    ::uint32_t reason_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -1607,7 +1800,7 @@ class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ANIMATION_TRANSITION_PACKET*>(
         &_SC_ANIMATION_TRANSITION_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 13;
+  static constexpr int kIndexInFileMessages = 14;
   friend void swap(SC_ANIMATION_TRANSITION_PACKET& a, SC_ANIMATION_TRANSITION_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ANIMATION_TRANSITION_PACKET* other) {
     if (other == this) return;
@@ -1809,7 +2002,7 @@ class SC_ADD_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ADD_PACKET*>(
         &_SC_ADD_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 10;
+  static constexpr int kIndexInFileMessages = 11;
   friend void swap(SC_ADD_PACKET& a, SC_ADD_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ADD_PACKET* other) {
     if (other == this) return;
@@ -3796,7 +3989,7 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_REPLICATION_FRAME_PACKET*>(
         &_SC_REPLICATION_FRAME_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 17;
+  static constexpr int kIndexInFileMessages = 18;
   friend void swap(SC_REPLICATION_FRAME_PACKET& a, SC_REPLICATION_FRAME_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REPLICATION_FRAME_PACKET* other) {
     if (other == this) return;
@@ -4372,28 +4565,54 @@ inline void CS_WORLD_TRANSITION_READY_PACKET::_internal_set_transferid(::uint64_
 
 // -------------------------------------------------------------------
 
-// SC_LOGIN_PACKET
+// SC_LOGIN_SUCCESS_PACKET
 
 // uint64 netid = 1;
-inline void SC_LOGIN_PACKET::clear_netid() {
+inline void SC_LOGIN_SUCCESS_PACKET::clear_netid() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.netid_ = ::uint64_t{0u};
 }
-inline ::uint64_t SC_LOGIN_PACKET::netid() const {
-  // @@protoc_insertion_point(field_get:Protocol.SC_LOGIN_PACKET.netid)
+inline ::uint64_t SC_LOGIN_SUCCESS_PACKET::netid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_LOGIN_SUCCESS_PACKET.netid)
   return _internal_netid();
 }
-inline void SC_LOGIN_PACKET::set_netid(::uint64_t value) {
+inline void SC_LOGIN_SUCCESS_PACKET::set_netid(::uint64_t value) {
   _internal_set_netid(value);
-  // @@protoc_insertion_point(field_set:Protocol.SC_LOGIN_PACKET.netid)
+  // @@protoc_insertion_point(field_set:Protocol.SC_LOGIN_SUCCESS_PACKET.netid)
 }
-inline ::uint64_t SC_LOGIN_PACKET::_internal_netid() const {
+inline ::uint64_t SC_LOGIN_SUCCESS_PACKET::_internal_netid() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.netid_;
 }
-inline void SC_LOGIN_PACKET::_internal_set_netid(::uint64_t value) {
+inline void SC_LOGIN_SUCCESS_PACKET::_internal_set_netid(::uint64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.netid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_LOGIN_FAIL_PACKET
+
+// uint32 reason = 1;
+inline void SC_LOGIN_FAIL_PACKET::clear_reason() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reason_ = 0u;
+}
+inline ::uint32_t SC_LOGIN_FAIL_PACKET::reason() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_LOGIN_FAIL_PACKET.reason)
+  return _internal_reason();
+}
+inline void SC_LOGIN_FAIL_PACKET::set_reason(::uint32_t value) {
+  _internal_set_reason(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_LOGIN_FAIL_PACKET.reason)
+}
+inline ::uint32_t SC_LOGIN_FAIL_PACKET::_internal_reason() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.reason_;
+}
+inline void SC_LOGIN_FAIL_PACKET::_internal_set_reason(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reason_ = value;
 }
 
 // -------------------------------------------------------------------

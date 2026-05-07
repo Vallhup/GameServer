@@ -18,6 +18,9 @@ protected:
 	void RenderSceneDeferred() override;
 	void RequestSceneChange() override;
 
+
+	void HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login) override;
+
 private:
 	vector<shared_ptr<GameObject>> gameObjects;
 	shared_ptr<MainCharacter> bigDemonWarrior;

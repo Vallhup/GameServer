@@ -91,6 +91,11 @@ void StartSceneUIController::Update(float deltaTime)
 	// 5. 로그인 성공 시 Select 씬으로 이동
 	if (IMGUI.IsLoginSuccess())
 	{
+		{
+			NETWORK_MANAGER->SendLoginPacket();
+			OutputDebugStringA("CSLoginPacket has sent!!\n");
+		}
+
 		IMGUI.ResetLoginSuccess();
 		SCENE_MANAGER->RequestSceneChange(SceneType::Select);
 		OutputDebugStringA("Login success! Moving to Select scene.\n");

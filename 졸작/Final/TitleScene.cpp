@@ -2,6 +2,9 @@
 #include "TitleScene.h"
 #include "Material.h"
 
+#include "Input.h"
+#include "NetId.h"
+
 void TitleScene::Release()
 {
 	OutputDebugStringA("TitleScene Data has been deleted!! \n----------------------------------------\n");
@@ -60,4 +63,12 @@ void TitleScene::InitializeLogic()
 		obj->GetComponent<Mesh>()->ReleaseUploadBuffers();
 
 	OutputDebugStringA("Data cached created!!\n");
+}
+
+void TitleScene::HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login)
+{
+	NetId nid{ login.netid() };
+	int id = nid.GetId();
+	INPUT.SetClientID(id);
+	OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
 }

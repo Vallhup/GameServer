@@ -175,13 +175,13 @@ struct SC_MOVE_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_MOVE_PACKETDefaultTypeInternal _SC_MOVE_PACKET_default_instance_;
 
-inline constexpr SC_LOGIN_PACKET::Impl_::Impl_(
+inline constexpr SC_LOGIN_SUCCESS_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : netid_{::uint64_t{0u}},
         _cached_size_{0} {}
 
 template <typename>
-PROTOBUF_CONSTEXPR SC_LOGIN_PACKET::SC_LOGIN_PACKET(::_pbi::ConstantInitialized)
+PROTOBUF_CONSTEXPR SC_LOGIN_SUCCESS_PACKET::SC_LOGIN_SUCCESS_PACKET(::_pbi::ConstantInitialized)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(_class_data_.base()),
 #else   // PROTOBUF_CUSTOM_VTABLE
@@ -189,16 +189,41 @@ PROTOBUF_CONSTEXPR SC_LOGIN_PACKET::SC_LOGIN_PACKET(::_pbi::ConstantInitialized)
 #endif  // PROTOBUF_CUSTOM_VTABLE
       _impl_(::_pbi::ConstantInitialized()) {
 }
-struct SC_LOGIN_PACKETDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR SC_LOGIN_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
-  ~SC_LOGIN_PACKETDefaultTypeInternal() {}
+struct SC_LOGIN_SUCCESS_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_LOGIN_SUCCESS_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_LOGIN_SUCCESS_PACKETDefaultTypeInternal() {}
   union {
-    SC_LOGIN_PACKET _instance;
+    SC_LOGIN_SUCCESS_PACKET _instance;
   };
 };
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_LOGIN_PACKETDefaultTypeInternal _SC_LOGIN_PACKET_default_instance_;
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_LOGIN_SUCCESS_PACKETDefaultTypeInternal _SC_LOGIN_SUCCESS_PACKET_default_instance_;
+
+inline constexpr SC_LOGIN_FAIL_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : reason_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_LOGIN_FAIL_PACKET::SC_LOGIN_FAIL_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_LOGIN_FAIL_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_LOGIN_FAIL_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_LOGIN_FAIL_PACKETDefaultTypeInternal() {}
+  union {
+    SC_LOGIN_FAIL_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_LOGIN_FAIL_PACKETDefaultTypeInternal _SC_LOGIN_FAIL_PACKET_default_instance_;
 
 inline constexpr SC_ANIMATION_TRANSITION_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -604,14 +629,23 @@ const ::uint32_t
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_WORLD_TRANSITION_READY_PACKET, _impl_.transferid_),
         ~0u,  // no _has_bits_
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_PACKET, _internal_metadata_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_SUCCESS_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
         ~0u,  // no _weak_field_map_
         ~0u,  // no _inlined_string_donated_
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_PACKET, _impl_.netid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_SUCCESS_PACKET, _impl_.netid_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_FAIL_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_LOGIN_FAIL_PACKET, _impl_.reason_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ADD_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -732,15 +766,16 @@ static const ::_pbi::MigrationSchema
         {58, -1, -1, sizeof(::Protocol::CS_PARRY_PACKET)},
         {68, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_REQUEST_PACKET)},
         {77, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_READY_PACKET)},
-        {86, -1, -1, sizeof(::Protocol::SC_LOGIN_PACKET)},
-        {95, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {109, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {122, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
-        {131, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
-        {141, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
-        {158, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
-        {178, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
-        {188, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
+        {86, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
+        {95, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
+        {104, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
+        {118, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {131, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {140, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
+        {150, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
+        {167, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
+        {187, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
+        {197, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -752,7 +787,8 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_PARRY_PACKET_default_instance_._instance,
     &::Protocol::_CS_WORLD_TRANSITION_REQUEST_PACKET_default_instance_._instance,
     &::Protocol::_CS_WORLD_TRANSITION_READY_PACKET_default_instance_._instance,
-    &::Protocol::_SC_LOGIN_PACKET_default_instance_._instance,
+    &::Protocol::_SC_LOGIN_SUCCESS_PACKET_default_instance_._instance,
+    &::Protocol::_SC_LOGIN_FAIL_PACKET_default_instance_._instance,
     &::Protocol::_SC_ADD_PACKET_default_instance_._instance,
     &::Protocol::_SC_MOVE_PACKET_default_instance_._instance,
     &::Protocol::_SC_REMOVE_PACKET_default_instance_._instance,
@@ -775,48 +811,49 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "ET\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"7\n\"CS_WOR"
     "LD_TRANSITION_REQUEST_PACKET\022\021\n\trequestI"
     "d\030\001 \001(\r\"6\n CS_WORLD_TRANSITION_READY_PAC"
-    "KET\022\022\n\ntransferId\030\001 \001(\004\" \n\017SC_LOGIN_PACK"
-    "ET\022\r\n\005netid\030\001 \001(\004\"\\\n\rSC_ADD_PACKET\022\r\n\005ne"
-    "tid\030\001 \001(\004\022\016\n\006typeid\030\002 \001(\r\022\t\n\001x\030\003 \001(\002\022\t\n\001"
-    "y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\"M\n\016SC_MO"
-    "VE_PACKET\022\r\n\005netid\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y"
-    "\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"!\n\020SC_REM"
-    "OVE_PACKET\022\r\n\005netid\030\001 \001(\004\"A\n\036SC_ANIMATIO"
-    "N_TRANSITION_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010cu"
-    "rrAnim\030\002 \001(\005\"\264\001\n\025SC_STAT_CHANGE_PACKET\022\r"
-    "\n\005netid\030\001 \001(\004\022\r\n\005curhp\030\002 \001(\r\022\r\n\005maxhp\030\003 "
-    "\001(\r\022\022\n\ncurstamina\030\004 \001(\r\022\022\n\nmaxstamina\030\005 "
-    "\001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013attackspeed\030\007 \001(\002\022"
-    "\017\n\007defense\030\010 \001(\r\022\021\n\tmovespeed\030\t \001(\002\"\264\002\n "
-    "SC_WORLD_TRANSITION_BEGIN_PACKET\022\022\n\ntran"
-    "sferId\030\001 \001(\004\022\021\n\trequestId\030\002 \001(\r\022\030\n\020sourc"
-    "eWorldDefId\030\003 \001(\r\022\025\n\rsourceWorldId\030\004 \001(\004"
-    "\022\030\n\020targetWorldDefId\030\005 \001(\r\022\025\n\rtargetWorl"
-    "dId\030\006 \001(\004\022\025\n\rmapResourceId\030\007 \001(\r\022\023\n\013play"
-    "erNetId\030\010 \001(\004\022\034\n\024clearExistingObjects\030\t "
-    "\001(\010\022\027\n\017waitClientReady\030\n \001(\010\022\024\n\014usedFall"
-    "back\030\013 \001(\010\022\016\n\006reason\030\014 \001(\r\"H\n#SC_WORLD_T"
-    "RANSITION_REJECTED_PACKET\022\021\n\trequestId\030\001"
-    " \001(\r\022\016\n\006reason\030\002 \001(\r\"\374\001\n\033SC_REPLICATION_"
-    "FRAME_PACKET\022\020\n\010frameSeq\030\001 \001(\r\022\022\n\nserver"
-    "Tick\030\002 \001(\r\022\'\n\006spawns\030\003 \003(\0132\027.Protocol.SC"
-    "_ADD_PACKET\022,\n\010despawns\030\004 \003(\0132\032.Protocol"
-    ".SC_REMOVE_PACKET\022\'\n\005moves\030\005 \003(\0132\030.Proto"
-    "col.SC_MOVE_PACKET\0227\n\005anims\030\006 \003(\0132(.Prot"
-    "ocol.SC_ANIMATION_TRANSITION_PACKETb\006pro"
-    "to3"
+    "KET\022\022\n\ntransferId\030\001 \001(\004\"(\n\027SC_LOGIN_SUCC"
+    "ESS_PACKET\022\r\n\005netid\030\001 \001(\004\"&\n\024SC_LOGIN_FA"
+    "IL_PACKET\022\016\n\006reason\030\001 \001(\r\"\\\n\rSC_ADD_PACK"
+    "ET\022\r\n\005netid\030\001 \001(\004\022\016\n\006typeid\030\002 \001(\r\022\t\n\001x\030\003"
+    " \001(\002\022\t\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\""
+    "M\n\016SC_MOVE_PACKET\022\r\n\005netid\030\001 \001(\004\022\t\n\001x\030\002 "
+    "\001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"!"
+    "\n\020SC_REMOVE_PACKET\022\r\n\005netid\030\001 \001(\004\"A\n\036SC_"
+    "ANIMATION_TRANSITION_PACKET\022\r\n\005netid\030\001 \001"
+    "(\004\022\020\n\010currAnim\030\002 \001(\005\"\264\001\n\025SC_STAT_CHANGE_"
+    "PACKET\022\r\n\005netid\030\001 \001(\004\022\r\n\005curhp\030\002 \001(\r\022\r\n\005"
+    "maxhp\030\003 \001(\r\022\022\n\ncurstamina\030\004 \001(\r\022\022\n\nmaxst"
+    "amina\030\005 \001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013attackspee"
+    "d\030\007 \001(\002\022\017\n\007defense\030\010 \001(\r\022\021\n\tmovespeed\030\t "
+    "\001(\002\"\264\002\n SC_WORLD_TRANSITION_BEGIN_PACKET"
+    "\022\022\n\ntransferId\030\001 \001(\004\022\021\n\trequestId\030\002 \001(\r\022"
+    "\030\n\020sourceWorldDefId\030\003 \001(\r\022\025\n\rsourceWorld"
+    "Id\030\004 \001(\004\022\030\n\020targetWorldDefId\030\005 \001(\r\022\025\n\rta"
+    "rgetWorldId\030\006 \001(\004\022\025\n\rmapResourceId\030\007 \001(\r"
+    "\022\023\n\013playerNetId\030\010 \001(\004\022\034\n\024clearExistingOb"
+    "jects\030\t \001(\010\022\027\n\017waitClientReady\030\n \001(\010\022\024\n\014"
+    "usedFallback\030\013 \001(\010\022\016\n\006reason\030\014 \001(\r\"H\n#SC"
+    "_WORLD_TRANSITION_REJECTED_PACKET\022\021\n\treq"
+    "uestId\030\001 \001(\r\022\016\n\006reason\030\002 \001(\r\"\374\001\n\033SC_REPL"
+    "ICATION_FRAME_PACKET\022\020\n\010frameSeq\030\001 \001(\r\022\022"
+    "\n\nserverTick\030\002 \001(\r\022\'\n\006spawns\030\003 \003(\0132\027.Pro"
+    "tocol.SC_ADD_PACKET\022,\n\010despawns\030\004 \003(\0132\032."
+    "Protocol.SC_REMOVE_PACKET\022\'\n\005moves\030\005 \003(\013"
+    "2\030.Protocol.SC_MOVE_PACKET\0227\n\005anims\030\006 \003("
+    "\0132(.Protocol.SC_ANIMATION_TRANSITION_PAC"
+    "KETb\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    1603,
+    1651,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     nullptr,
     0,
-    18,
+    19,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -2754,81 +2791,81 @@ void CS_WORLD_TRANSITION_READY_PACKET::InternalSwap(CS_WORLD_TRANSITION_READY_PA
 }
 // ===================================================================
 
-class SC_LOGIN_PACKET::_Internal {
+class SC_LOGIN_SUCCESS_PACKET::_Internal {
  public:
 };
 
-SC_LOGIN_PACKET::SC_LOGIN_PACKET(::google::protobuf::Arena* arena)
+SC_LOGIN_SUCCESS_PACKET::SC_LOGIN_SUCCESS_PACKET(::google::protobuf::Arena* arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(arena, _class_data_.base()) {
 #else   // PROTOBUF_CUSTOM_VTABLE
     : ::google::protobuf::Message(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
   SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:Protocol.SC_LOGIN_PACKET)
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_LOGIN_SUCCESS_PACKET)
 }
-SC_LOGIN_PACKET::SC_LOGIN_PACKET(
-    ::google::protobuf::Arena* arena, const SC_LOGIN_PACKET& from)
-    : SC_LOGIN_PACKET(arena) {
+SC_LOGIN_SUCCESS_PACKET::SC_LOGIN_SUCCESS_PACKET(
+    ::google::protobuf::Arena* arena, const SC_LOGIN_SUCCESS_PACKET& from)
+    : SC_LOGIN_SUCCESS_PACKET(arena) {
   MergeFrom(from);
 }
-inline PROTOBUF_NDEBUG_INLINE SC_LOGIN_PACKET::Impl_::Impl_(
+inline PROTOBUF_NDEBUG_INLINE SC_LOGIN_SUCCESS_PACKET::Impl_::Impl_(
     ::google::protobuf::internal::InternalVisibility visibility,
     ::google::protobuf::Arena* arena)
       : _cached_size_{0} {}
 
-inline void SC_LOGIN_PACKET::SharedCtor(::_pb::Arena* arena) {
+inline void SC_LOGIN_SUCCESS_PACKET::SharedCtor(::_pb::Arena* arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   _impl_.netid_ = {};
 }
-SC_LOGIN_PACKET::~SC_LOGIN_PACKET() {
-  // @@protoc_insertion_point(destructor:Protocol.SC_LOGIN_PACKET)
+SC_LOGIN_SUCCESS_PACKET::~SC_LOGIN_SUCCESS_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_LOGIN_SUCCESS_PACKET)
   SharedDtor(*this);
 }
-inline void SC_LOGIN_PACKET::SharedDtor(MessageLite& self) {
-  SC_LOGIN_PACKET& this_ = static_cast<SC_LOGIN_PACKET&>(self);
+inline void SC_LOGIN_SUCCESS_PACKET::SharedDtor(MessageLite& self) {
+  SC_LOGIN_SUCCESS_PACKET& this_ = static_cast<SC_LOGIN_SUCCESS_PACKET&>(self);
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
   this_._impl_.~Impl_();
 }
 
-inline void* SC_LOGIN_PACKET::PlacementNew_(const void*, void* mem,
+inline void* SC_LOGIN_SUCCESS_PACKET::PlacementNew_(const void*, void* mem,
                                         ::google::protobuf::Arena* arena) {
-  return ::new (mem) SC_LOGIN_PACKET(arena);
+  return ::new (mem) SC_LOGIN_SUCCESS_PACKET(arena);
 }
-constexpr auto SC_LOGIN_PACKET::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_LOGIN_PACKET),
-                                            alignof(SC_LOGIN_PACKET));
+constexpr auto SC_LOGIN_SUCCESS_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_LOGIN_SUCCESS_PACKET),
+                                            alignof(SC_LOGIN_SUCCESS_PACKET));
 }
 PROTOBUF_CONSTINIT
 PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::google::protobuf::internal::ClassDataFull SC_LOGIN_PACKET::_class_data_ = {
+const ::google::protobuf::internal::ClassDataFull SC_LOGIN_SUCCESS_PACKET::_class_data_ = {
     ::google::protobuf::internal::ClassData{
-        &_SC_LOGIN_PACKET_default_instance_._instance,
+        &_SC_LOGIN_SUCCESS_PACKET_default_instance_._instance,
         &_table_.header,
         nullptr,  // OnDemandRegisterArenaDtor
         nullptr,  // IsInitialized
-        &SC_LOGIN_PACKET::MergeImpl,
-        ::google::protobuf::Message::GetNewImpl<SC_LOGIN_PACKET>(),
+        &SC_LOGIN_SUCCESS_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_LOGIN_SUCCESS_PACKET>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-        &SC_LOGIN_PACKET::SharedDtor,
-        ::google::protobuf::Message::GetClearImpl<SC_LOGIN_PACKET>(), &SC_LOGIN_PACKET::ByteSizeLong,
-            &SC_LOGIN_PACKET::_InternalSerialize,
+        &SC_LOGIN_SUCCESS_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_LOGIN_SUCCESS_PACKET>(), &SC_LOGIN_SUCCESS_PACKET::ByteSizeLong,
+            &SC_LOGIN_SUCCESS_PACKET::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
-        PROTOBUF_FIELD_OFFSET(SC_LOGIN_PACKET, _impl_._cached_size_),
+        PROTOBUF_FIELD_OFFSET(SC_LOGIN_SUCCESS_PACKET, _impl_._cached_size_),
         false,
     },
-    &SC_LOGIN_PACKET::kDescriptorMethods,
+    &SC_LOGIN_SUCCESS_PACKET::kDescriptorMethods,
     &descriptor_table_Protocol_2eproto,
     nullptr,  // tracker
 };
-const ::google::protobuf::internal::ClassData* SC_LOGIN_PACKET::GetClassData() const {
+const ::google::protobuf::internal::ClassData* SC_LOGIN_SUCCESS_PACKET::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 0, 0, 2> SC_LOGIN_PACKET::_table_ = {
+const ::_pbi::TcParseTable<0, 1, 0, 0, 2> SC_LOGIN_SUCCESS_PACKET::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
@@ -2843,17 +2880,17 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> SC_LOGIN_PACKET::_table_ = {
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
     #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::Protocol::SC_LOGIN_PACKET>(),  // to_prefetch
+    ::_pbi::TcParser::GetTable<::Protocol::SC_LOGIN_SUCCESS_PACKET>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     // uint64 netid = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_LOGIN_PACKET, _impl_.netid_), 63>(),
-     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_LOGIN_PACKET, _impl_.netid_)}},
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_LOGIN_SUCCESS_PACKET, _impl_.netid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_LOGIN_SUCCESS_PACKET, _impl_.netid_)}},
   }}, {{
     65535, 65535
   }}, {{
     // uint64 netid = 1;
-    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_PACKET, _impl_.netid_), 0, 0,
+    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_SUCCESS_PACKET, _impl_.netid_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
   }},
   // no aux_entries
@@ -2861,8 +2898,8 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> SC_LOGIN_PACKET::_table_ = {
   }},
 };
 
-PROTOBUF_NOINLINE void SC_LOGIN_PACKET::Clear() {
-// @@protoc_insertion_point(message_clear_start:Protocol.SC_LOGIN_PACKET)
+PROTOBUF_NOINLINE void SC_LOGIN_SUCCESS_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_LOGIN_SUCCESS_PACKET)
   ::google::protobuf::internal::TSanWrite(&_impl_);
   ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
@@ -2873,17 +2910,17 @@ PROTOBUF_NOINLINE void SC_LOGIN_PACKET::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-        ::uint8_t* SC_LOGIN_PACKET::_InternalSerialize(
+        ::uint8_t* SC_LOGIN_SUCCESS_PACKET::_InternalSerialize(
             const MessageLite& base, ::uint8_t* target,
             ::google::protobuf::io::EpsCopyOutputStream* stream) {
-          const SC_LOGIN_PACKET& this_ = static_cast<const SC_LOGIN_PACKET&>(base);
+          const SC_LOGIN_SUCCESS_PACKET& this_ = static_cast<const SC_LOGIN_SUCCESS_PACKET&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
-        ::uint8_t* SC_LOGIN_PACKET::_InternalSerialize(
+        ::uint8_t* SC_LOGIN_SUCCESS_PACKET::_InternalSerialize(
             ::uint8_t* target,
             ::google::protobuf::io::EpsCopyOutputStream* stream) const {
-          const SC_LOGIN_PACKET& this_ = *this;
+          const SC_LOGIN_SUCCESS_PACKET& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
-          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_LOGIN_PACKET)
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_LOGIN_SUCCESS_PACKET)
           ::uint32_t cached_has_bits = 0;
           (void)cached_has_bits;
 
@@ -2899,18 +2936,18 @@ PROTOBUF_NOINLINE void SC_LOGIN_PACKET::Clear() {
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
                     this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
           }
-          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_LOGIN_PACKET)
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_LOGIN_SUCCESS_PACKET)
           return target;
         }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-        ::size_t SC_LOGIN_PACKET::ByteSizeLong(const MessageLite& base) {
-          const SC_LOGIN_PACKET& this_ = static_cast<const SC_LOGIN_PACKET&>(base);
+        ::size_t SC_LOGIN_SUCCESS_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_LOGIN_SUCCESS_PACKET& this_ = static_cast<const SC_LOGIN_SUCCESS_PACKET&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
-        ::size_t SC_LOGIN_PACKET::ByteSizeLong() const {
-          const SC_LOGIN_PACKET& this_ = *this;
+        ::size_t SC_LOGIN_SUCCESS_PACKET::ByteSizeLong() const {
+          const SC_LOGIN_SUCCESS_PACKET& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
-          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_LOGIN_PACKET)
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_LOGIN_SUCCESS_PACKET)
           ::size_t total_size = 0;
 
           ::uint32_t cached_has_bits = 0;
@@ -2928,10 +2965,10 @@ PROTOBUF_NOINLINE void SC_LOGIN_PACKET::Clear() {
                                                      &this_._impl_._cached_size_);
         }
 
-void SC_LOGIN_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
-  auto* const _this = static_cast<SC_LOGIN_PACKET*>(&to_msg);
-  auto& from = static_cast<const SC_LOGIN_PACKET&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_LOGIN_PACKET)
+void SC_LOGIN_SUCCESS_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_LOGIN_SUCCESS_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_LOGIN_SUCCESS_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_LOGIN_SUCCESS_PACKET)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -2942,21 +2979,228 @@ void SC_LOGIN_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const :
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
-void SC_LOGIN_PACKET::CopyFrom(const SC_LOGIN_PACKET& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_LOGIN_PACKET)
+void SC_LOGIN_SUCCESS_PACKET::CopyFrom(const SC_LOGIN_SUCCESS_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_LOGIN_SUCCESS_PACKET)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 
-void SC_LOGIN_PACKET::InternalSwap(SC_LOGIN_PACKET* PROTOBUF_RESTRICT other) {
+void SC_LOGIN_SUCCESS_PACKET::InternalSwap(SC_LOGIN_SUCCESS_PACKET* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
         swap(_impl_.netid_, other->_impl_.netid_);
 }
 
-::google::protobuf::Metadata SC_LOGIN_PACKET::GetMetadata() const {
+::google::protobuf::Metadata SC_LOGIN_SUCCESS_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_LOGIN_FAIL_PACKET::_Internal {
+ public:
+};
+
+SC_LOGIN_FAIL_PACKET::SC_LOGIN_FAIL_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_LOGIN_FAIL_PACKET)
+}
+SC_LOGIN_FAIL_PACKET::SC_LOGIN_FAIL_PACKET(
+    ::google::protobuf::Arena* arena, const SC_LOGIN_FAIL_PACKET& from)
+    : SC_LOGIN_FAIL_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_LOGIN_FAIL_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_LOGIN_FAIL_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.reason_ = {};
+}
+SC_LOGIN_FAIL_PACKET::~SC_LOGIN_FAIL_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_LOGIN_FAIL_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_LOGIN_FAIL_PACKET::SharedDtor(MessageLite& self) {
+  SC_LOGIN_FAIL_PACKET& this_ = static_cast<SC_LOGIN_FAIL_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_LOGIN_FAIL_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_LOGIN_FAIL_PACKET(arena);
+}
+constexpr auto SC_LOGIN_FAIL_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_LOGIN_FAIL_PACKET),
+                                            alignof(SC_LOGIN_FAIL_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_LOGIN_FAIL_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_LOGIN_FAIL_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_LOGIN_FAIL_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_LOGIN_FAIL_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_LOGIN_FAIL_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_LOGIN_FAIL_PACKET>(), &SC_LOGIN_FAIL_PACKET::ByteSizeLong,
+            &SC_LOGIN_FAIL_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_LOGIN_FAIL_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_LOGIN_FAIL_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_LOGIN_FAIL_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 0, 2> SC_LOGIN_FAIL_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_LOGIN_FAIL_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // uint32 reason = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_LOGIN_FAIL_PACKET, _impl_.reason_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_LOGIN_FAIL_PACKET, _impl_.reason_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 reason = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_LOGIN_FAIL_PACKET, _impl_.reason_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_LOGIN_FAIL_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_LOGIN_FAIL_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.reason_ = 0u;
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_LOGIN_FAIL_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_LOGIN_FAIL_PACKET& this_ = static_cast<const SC_LOGIN_FAIL_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_LOGIN_FAIL_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_LOGIN_FAIL_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_LOGIN_FAIL_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint32 reason = 1;
+          if (this_._internal_reason() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                1, this_._internal_reason(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_LOGIN_FAIL_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_LOGIN_FAIL_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_LOGIN_FAIL_PACKET& this_ = static_cast<const SC_LOGIN_FAIL_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_LOGIN_FAIL_PACKET::ByteSizeLong() const {
+          const SC_LOGIN_FAIL_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_LOGIN_FAIL_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+           {
+            // uint32 reason = 1;
+            if (this_._internal_reason() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_reason());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_LOGIN_FAIL_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_LOGIN_FAIL_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_LOGIN_FAIL_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_LOGIN_FAIL_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_reason() != 0) {
+    _this->_impl_.reason_ = from._impl_.reason_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_LOGIN_FAIL_PACKET::CopyFrom(const SC_LOGIN_FAIL_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_LOGIN_FAIL_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_LOGIN_FAIL_PACKET::InternalSwap(SC_LOGIN_FAIL_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+        swap(_impl_.reason_, other->_impl_.reason_);
+}
+
+::google::protobuf::Metadata SC_LOGIN_FAIL_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================

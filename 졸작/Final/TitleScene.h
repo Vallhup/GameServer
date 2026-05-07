@@ -12,5 +12,7 @@ public:
 	void Release() override;
 
 protected:
+	void HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login) override;
+
 	void InitializeLogic() override;					
 };

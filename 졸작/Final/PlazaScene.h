@@ -43,7 +43,7 @@ private:
 	float SampleHeightAt(float worldX, float worldZ) const;
 
 	// Network Handler Function Override
-	void HandleLogin(const Protocol::SC_LOGIN_PACKET& login) override;
+	void HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login) override;
 	void HandleAdd(const Protocol::SC_ADD_PACKET& add) override;
 	void HandleMove(const Protocol::SC_MOVE_PACKET& move) override;
 	void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove) override;

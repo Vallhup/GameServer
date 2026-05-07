@@ -4,6 +4,10 @@
 #include "Input.h"
 #include "MainCharacter.h"
 #include "Animator.h"
+#include "Engine.h"
+#include "NetworkManager.h"
+
+#include "NetId.h"
 
 void SelectScene::Release()
 {
@@ -262,7 +266,17 @@ void SelectScene::RequestSceneChange()
 {
 	if (INPUT.GetKeyDown(VK_CAPITAL))
 	{
+		NETWORK_MANAGER->SendCharacterSelectPacket(CharacterId::Knight);
+
 		if (sManagerRef)
 			sManagerRef->RequestLoadingScene(SceneType::Plaza);
 	}
+}
+
+void SelectScene::HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login)
+{
+	NetId nid{ login.netid() };
+	int id = nid.GetId();
+	INPUT.SetClientID(id);
+	OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
 }

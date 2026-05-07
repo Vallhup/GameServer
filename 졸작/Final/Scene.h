@@ -55,7 +55,7 @@ protected:
 	virtual void RequestSceneChange() {}
 
 	// Network Handler Function Interface
-	virtual void HandleLogin(const Protocol::SC_LOGIN_PACKET& login) {}
+	virtual void HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login) {}
 	virtual void HandleAdd(const Protocol::SC_ADD_PACKET& add) {}
 	virtual void HandleMove(const Protocol::SC_MOVE_PACKET& move) {}
 	virtual void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove) {}

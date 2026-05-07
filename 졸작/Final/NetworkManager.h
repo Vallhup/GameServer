@@ -1,5 +1,6 @@
 #pragma once
 
+#include "EntityId.h"
 #include "ClientService.h"
 
 class NetworkManager {
@@ -15,6 +16,7 @@ public:
 	void Release();
 
 	bool SendLoginPacket();
+	bool SendCharacterSelectPacket(CharacterId id);
 	bool SendMovePacket(int inputX, int inputZ, float yaw, bool isRun);
 	bool SendAttackPacket(float dirX, float dirZ);
 	bool SendDodgePacket(float dirX, float dirZ);

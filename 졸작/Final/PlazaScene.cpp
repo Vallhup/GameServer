@@ -74,14 +74,6 @@ void PlazaScene::InitializeLogic()
 	}
 
 	OutputDebugStringA("After ReleaseUploadBuffers - uploadBuffers released\n");
-
-	SetNetworkManager(NETWORK_MANAGER);
-
-	{
-		_nManager->SendLoginPacket();
-	}
-
-	OutputDebugStringA("CSLoginPacket has sent!!\n");
 }
 
 void PlazaScene::InitializeSceneEnvironments()
@@ -422,7 +414,7 @@ float PlazaScene::SampleHeightAt(float worldX, float worldZ) const
 	return 0.0f;
 }
 
-void PlazaScene::HandleLogin(const Protocol::SC_LOGIN_PACKET& login)
+void PlazaScene::HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login)
 {
 	NetId nid{ login.netid() };
 	int id = nid.GetId();
@@ -506,6 +498,8 @@ void PlazaScene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			activeCharacters[id] = demonExecutionerObject;
 		}
 	}
+
+	OutputDebugStringA("HandleAdd recived\n");
 }
 
 void PlazaScene::HandleMove(const Protocol::SC_MOVE_PACKET& move)

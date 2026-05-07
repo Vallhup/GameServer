@@ -44,6 +44,30 @@ bool NetworkManager::SendLoginPacket()
 	}
 }
 
+bool NetworkManager::SendCharacterSelectPacket(CharacterId id)
+{
+	if (_service == nullptr)
+	{
+		return false;
+	}
+
+	Protocol::CS_CHARACTER_SELECT_PACKET characterSelect;
+	characterSelect.set_characterid(static_cast<uint32_t>(id));
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_CHARACTER_SELECT_PACKET>(
+		PacketType::CS_CHARACTER_SELECT, characterSelect);
+
+	if (data != nullptr)
+	{
+		_service->Send(data);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 bool NetworkManager::SendMovePacket(int inputX, int inputZ, float yaw, bool isRun)
 {
 	if (_service == nullptr)

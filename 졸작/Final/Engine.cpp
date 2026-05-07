@@ -44,13 +44,13 @@ void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListe
 
     IMGUI.Initialize(mHwnd, *graphics);
 
+    networkManager = make_unique<NetworkManager>();
+    networkManager->Initialize(1, ip, port, listener);
+
     sceneManager = make_unique<SceneManager>();
     sceneManager->Initialize(mHwnd, *graphics);
 
     inboundQueue = make_unique<ClientInboundPacketQueue>();
-
-    networkManager = make_unique<NetworkManager>();
-    networkManager->Initialize(1, ip, port, listener);
 
     soundManager = make_unique<SoundManager>();
     soundManager->Initialize();

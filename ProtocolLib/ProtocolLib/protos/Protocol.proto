@@ -55,9 +55,14 @@ message CS_WORLD_TRANSITION_READY_PACKET
 
 /* ------------------------------ [ Server -> Client ]  ------------------------------ */
 
-message SC_LOGIN_PACKET
+message SC_LOGIN_SUCCESS_PACKET
 {
 	uint64 netid = 1;
+}
+
+message SC_LOGIN_FAIL_PACKET
+{
+	uint32 reason = 1;
 }
 
 message SC_ADD_PACKET

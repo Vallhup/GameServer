@@ -230,7 +230,7 @@ float SecondBattleScene::SampleHeightAt(float worldX, float worldZ) const
 	return 0.0f;
 }
 
-void SecondBattleScene::HandleLogin(const Protocol::SC_LOGIN_PACKET& login)
+void SecondBattleScene::HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login)
 {
 	NetId nid{ login.netid() };
 	int id = nid.GetId();

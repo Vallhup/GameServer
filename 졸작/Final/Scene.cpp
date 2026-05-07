@@ -83,9 +83,9 @@ void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
 	PacketType type = static_cast<PacketType>(header.type);
 
 	switch (type) {
-		case PacketType::SC_LOGIN:
+		case PacketType::SC_LOGIN_SUCCESS:
 		{
-			return NetHelper::DispatchPacket<Protocol::SC_LOGIN_PACKET>(header, data,
+			return NetHelper::DispatchPacket<Protocol::SC_LOGIN_SUCCESS_PACKET>(header, data,
 				[this](const auto& packet) { HandleLogin(packet); });
 		}
 		case PacketType::SC_ADD:
