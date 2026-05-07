@@ -45,7 +45,7 @@ DefLoadResult LoadDefJsonDocumentsFromDirectory(
 
 	std::vector<std::filesystem::path> files;
 	for (const std::filesystem::directory_entry& entry :
-		std::filesystem::directory_iterator(directory, ec))
+		std::filesystem::recursive_directory_iterator(directory, ec))
 	{
 		if (entry.is_regular_file() && entry.path().extension() == ".json")
 			files.push_back(entry.path());

@@ -1,0 +1,155 @@
+﻿{
+    "abilitySets":  [
+                        {
+                            "key":  "AbilitySet.Imp",
+                            "name":  "Imp",
+                            "grants":  [
+                                           {
+                                               "abilityKey":  "Ability.Imp_melee1",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.Imp_melee3",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.Imp_melee4",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.Imp_melee5",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.Imp_Jump",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.Imp_Stun",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.Imp_Hit",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.Imp_Dead",
+                                               "level":  1
+                                           }
+                                       ],
+                            "inputBindingProfileKey":  "AbilityInput.Imp",
+                            "animationBindingProfileKey":  "AbilityAnimation.Imp",
+                            "fallbackReactionProfileKey":  "AbilityFallback.Imp"
+                        }
+                    ],
+    "inputBindingProfiles":  [
+                                 {
+                                     "key":  "AbilityInput.Imp",
+                                     "entries":  [
+
+                                                 ]
+                                 }
+                             ],
+    "animationBindingProfiles":  [
+                                     {
+                                         "key":  "AbilityAnimation.Imp",
+                                         "abilityBindings":  [
+                                                                 {
+                                                                     "abilityKey":  "Ability.Imp_melee1",
+                                                                     "animationKey":  "Imp_Melee_1",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.Imp_melee2",
+                                                                     "animationKey":  "Imp_Melee_2",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.Imp_melee3",
+                                                                     "animationKey":  "Imp_Melee_3",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.Imp_melee4",
+                                                                     "animationKey":  "Imp_Melee_4",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.Imp_melee5",
+                                                                     "animationKey":  "Imp_Melee_5",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.Imp_Jump",
+                                                                     "animationKey":  "Imp_Jump_1",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.Imp_Hit",
+                                                                     "animationKey":  "Imp_React_Front",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.Imp_Stun",
+                                                                     "animationKey":  "Imp_Stun",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.Imp_Dead",
+                                                                     "animationKey":  "Imp_Death_1",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 }
+                                                             ],
+                                         "locomotionBindings":  [
+                                                                    {
+                                                                        "mode":  "Idle",
+                                                                        "animationKey":  "Imp_Idle_1",
+                                                                        "holdLastFrame":  true
+                                                                    },
+                                                                    {
+                                                                        "mode":  "Walk",
+                                                                        "animationKey":  "Imp_Walk_Forward"
+                                                                    },
+                                                                    {
+                                                                        "mode":  "Run",
+                                                                        "animationKey":  "Imp_Walk_Forward"
+                                                                    },
+                                                                    {
+                                                                        "mode":  "Turn",
+                                                                        "animationKey":  "Imp_Walk_Forward"
+                                                                    }
+                                                                ]
+                                     }
+                                 ],
+    "fallbackReactionProfiles":  [
+                                     {
+                                         "key":  "AbilityFallback.Imp",
+                                         "entries":  [
+                                                         {
+                                                             "cause":  "OnHitReceived",
+                                                             "toAbilityKey":  "Ability.Imp_Hit",
+                                                             "priority":  100
+                                                         },
+                                                         {
+                                                             "cause":  "OnParried",
+                                                             "toAbilityKey":  "Ability.Imp_Stun",
+                                                             "priority":  200
+                                                         },
+                                                         {
+                                                             "cause":  "OnAttributeZero",
+                                                             "toAbilityKey":  "Ability.Imp_Dead",
+                                                             "priority":  1000
+                                                         }
+                                                     ]
+                                     }
+                                 ]
+}

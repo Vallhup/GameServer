@@ -1,0 +1,199 @@
+﻿{
+    "abilitySets":  [
+                        {
+                            "key":  "AbilitySet.DemonStriker",
+                            "name":  "DemonStriker",
+                            "grants":  [
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Melee_1",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Melee_2",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Melee_3",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Melee_4",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Gun_Shoot_1",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Gun_Shoot_2",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Gun_Shoot_3",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Gun_Shoot_4",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Jump_1",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Jump_2",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Stun",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Hit",
+                                               "level":  1
+                                           },
+                                           {
+                                               "abilityKey":  "Ability.DemonStriker_Dead",
+                                               "level":  1
+                                           }
+                                       ],
+                            "inputBindingProfileKey":  "AbilityInput.DemonStriker",
+                            "animationBindingProfileKey":  "AbilityAnimation.DemonStriker",
+                            "fallbackReactionProfileKey":  "AbilityFallback.DemonStriker"
+                        }
+                    ],
+    "inputBindingProfiles":  [
+                                 {
+                                     "key":  "AbilityInput.DemonStriker",
+                                     "entries":  [
+
+                                                 ]
+                                 }
+                             ],
+    "animationBindingProfiles":  [
+                                     {
+                                         "key":  "AbilityAnimation.DemonStriker",
+                                         "abilityBindings":  [
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Melee_1",
+                                                                     "animationKey":  "DemonStriker_Melee_1",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Melee_2",
+                                                                     "animationKey":  "DemonStriker_Melee_2",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Melee_3",
+                                                                     "animationKey":  "DemonStriker_Melee_3",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Melee_4",
+                                                                     "animationKey":  "DemonStriker_Melee_4",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Gun_Shoot_1",
+                                                                     "animationKey":  "DemonStriker_Gun_Shoot_1",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Gun_Shoot_2",
+                                                                     "animationKey":  "DemonStriker_Gun_Shoot_2",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Gun_Shoot_3",
+                                                                     "animationKey":  "DemonStriker_Gun_Shoot_3",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Gun_Shoot_4",
+                                                                     "animationKey":  "DemonStriker_Gun_Shoot_4",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Jump_1",
+                                                                     "animationKey":  "DemonStriker_Jump_1",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Jump_2",
+                                                                     "animationKey":  "DemonStriker_Jump_2",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Stun",
+                                                                     "animationKey":  "DemonStriker_Stun",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Hit",
+                                                                     "animationKey":  "DemonStriker_React_1_Block",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 },
+                                                                 {
+                                                                     "abilityKey":  "Ability.DemonStriker_Dead",
+                                                                     "animationKey":  "DemonStriker_Death_1",
+                                                                     "playRate":  1.0,
+                                                                     "startNormalizedTime":  0.0
+                                                                 }
+                                                             ],
+                                         "locomotionBindings":  [
+                                                                    {
+                                                                        "mode":  "Idle",
+                                                                        "animationKey":  "DemonStriker_Idle_1",
+                                                                        "holdLastFrame":  true
+                                                                    },
+                                                                    {
+                                                                        "mode":  "Walk",
+                                                                        "animationKey":  "DemonStriker_Walking_1"
+                                                                    },
+                                                                    {
+                                                                        "mode":  "Run",
+                                                                        "animationKey":  "DemonStriker_Running_1"
+                                                                    },
+                                                                    {
+                                                                        "mode":  "Turn",
+                                                                        "animationKey":  "DemonStriker_Walking_1"
+                                                                    }
+                                                                ]
+                                     }
+                                 ],
+    "fallbackReactionProfiles":  [
+                                     {
+                                         "key":  "AbilityFallback.DemonStriker",
+                                         "entries":  [
+                                                         {
+                                                             "cause":  "OnHitReceived",
+                                                             "toAbilityKey":  "Ability.DemonStriker_Hit",
+                                                             "priority":  100
+                                                         },
+                                                         {
+                                                             "cause":  "OnParried",
+                                                             "toAbilityKey":  "Ability.DemonStriker_Stun",
+                                                             "priority":  200
+                                                         },
+                                                         {
+                                                             "cause":  "OnAttributeZero",
+                                                             "toAbilityKey":  "Ability.DemonStriker_Dead",
+                                                             "priority":  1000
+                                                         }
+                                                     ]
+                                     }
+                                 ]
+}

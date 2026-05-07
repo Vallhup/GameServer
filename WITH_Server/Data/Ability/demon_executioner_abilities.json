@@ -1,0 +1,1105 @@
+﻿{
+    "abilities":  [
+                      {
+                          "key":  "Ability.DemonExecutioner_Melee_1",
+                          "name":  "DemonExecutioner.Melee1",
+                          "kind":  "Attack",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  true,
+                                             "requiresGrounded":  true
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  2.6333375,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+                                                                 {
+                                                                     "kind":  "Attack",
+                                                                     "startNormalized":  0.34,
+                                                                     "endNormalized":  0.62,
+                                                                     "applyEffectKey":  null,
+                                                                     "appliesTo":  "FrontPhysical",
+                                                                     "spatialFilter":  {
+                                                                                           "facingHalfAngleDeg":  62.0,
+                                                                                           "minDistance":  null,
+                                                                                           "maxDistance":  3.6,
+                                                                                           "verticalTolerance":  1.5,
+                                                                                           "referenceFrame":  "LockedActionDirection"
+                                                                                       },
+                                                                     "effect":  {
+                                                                                    "type":  "AttackHit",
+                                                                                    "attackHit":  {
+                                                                                                      "damageScale":  1.2,
+                                                                                                      "bonusDamage":  8.0,
+                                                                                                      "staminaDamageScale":  0.9,
+                                                                                                      "bonusStaminaDamage":  3.0,
+                                                                                                      "poiseDamageScale":  0.0,
+                                                                                                      "bonusPoiseDamage":  0.0,
+                                                                                                      "knockbackDistance":  0.55,
+                                                                                                      "hitStopSec":  0.06,
+                                                                                                      "parryable":  true,
+                                                                                                      "guardable":  true
+                                                                                                  },
+                                                                                    "parryResponse":  null,
+                                                                                    "guardResponse":  null
+                                                                                }
+                                                                 }
+                                                             ],
+                                           "movementSegments":  [
+                                                                    {
+                                                                        "startNormalized":  0.08,
+                                                                        "endNormalized":  0.34,
+                                                                        "movementMode":  "None",
+                                                                        "moveDistance":  null,
+                                                                        "rotationMode":  "FaceTarget",
+                                                                        "rotationRate":  3.8,
+                                                                        "verticalMovementMode":  "None",
+                                                                        "verticalAmount":  null,
+                                                                        "directionPolicy":  "TargetDirection",
+                                                                        "directionSampleTiming":  "OnSegmentStart"
+                                                                    }
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+                                                                    {
+                                                                        "cause":  "OnHitReceived",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Hit",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  100,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnParried",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Stun",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  200,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnAttributeZero",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Dead",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  1000,
+                                                                        "aiInterruptible":  false
+                                                                    }
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      },
+                      {
+                          "key":  "Ability.DemonExecutioner_Melee_2",
+                          "name":  "DemonExecutioner.Melee2",
+                          "kind":  "Attack",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  true,
+                                             "requiresGrounded":  true
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  3.9666667,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+                                                                 {
+                                                                     "kind":  "Attack",
+                                                                     "startNormalized":  0.46,
+                                                                     "endNormalized":  0.76,
+                                                                     "applyEffectKey":  null,
+                                                                     "appliesTo":  "FrontPhysical",
+                                                                     "spatialFilter":  {
+                                                                                           "facingHalfAngleDeg":  76.0,
+                                                                                           "minDistance":  null,
+                                                                                           "maxDistance":  4.2,
+                                                                                           "verticalTolerance":  1.5,
+                                                                                           "referenceFrame":  "LockedActionDirection"
+                                                                                       },
+                                                                     "effect":  {
+                                                                                    "type":  "AttackHit",
+                                                                                    "attackHit":  {
+                                                                                                      "damageScale":  1.45,
+                                                                                                      "bonusDamage":  10.0,
+                                                                                                      "staminaDamageScale":  1.1,
+                                                                                                      "bonusStaminaDamage":  4.0,
+                                                                                                      "poiseDamageScale":  0.0,
+                                                                                                      "bonusPoiseDamage":  0.0,
+                                                                                                      "knockbackDistance":  0.7,
+                                                                                                      "hitStopSec":  0.07,
+                                                                                                      "parryable":  true,
+                                                                                                      "guardable":  true
+                                                                                                  },
+                                                                                    "parryResponse":  null,
+                                                                                    "guardResponse":  null
+                                                                                }
+                                                                 }
+                                                             ],
+                                           "movementSegments":  [
+                                                                    {
+                                                                        "startNormalized":  0.08,
+                                                                        "endNormalized":  0.46,
+                                                                        "movementMode":  "None",
+                                                                        "moveDistance":  null,
+                                                                        "rotationMode":  "FaceTarget",
+                                                                        "rotationRate":  3.2,
+                                                                        "verticalMovementMode":  "None",
+                                                                        "verticalAmount":  null,
+                                                                        "directionPolicy":  "TargetDirection",
+                                                                        "directionSampleTiming":  "OnSegmentStart"
+                                                                    }
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+                                                                    {
+                                                                        "cause":  "OnHitReceived",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Hit",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  100,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnParried",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Stun",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  200,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnAttributeZero",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Dead",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  1000,
+                                                                        "aiInterruptible":  false
+                                                                    }
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      },
+                      {
+                          "key":  "Ability.DemonExecutioner_Melee_3",
+                          "name":  "DemonExecutioner.Melee3",
+                          "kind":  "Attack",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  true,
+                                             "requiresGrounded":  true
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  2.96666455,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+                                                                 {
+                                                                     "kind":  "Attack",
+                                                                     "startNormalized":  0.3,
+                                                                     "endNormalized":  0.56,
+                                                                     "applyEffectKey":  null,
+                                                                     "appliesTo":  "FrontPhysical",
+                                                                     "spatialFilter":  {
+                                                                                           "facingHalfAngleDeg":  68.0,
+                                                                                           "minDistance":  null,
+                                                                                           "maxDistance":  3.8,
+                                                                                           "verticalTolerance":  1.5,
+                                                                                           "referenceFrame":  "LockedActionDirection"
+                                                                                       },
+                                                                     "effect":  {
+                                                                                    "type":  "AttackHit",
+                                                                                    "attackHit":  {
+                                                                                                      "damageScale":  1.35,
+                                                                                                      "bonusDamage":  9.0,
+                                                                                                      "staminaDamageScale":  1.0,
+                                                                                                      "bonusStaminaDamage":  3.0,
+                                                                                                      "poiseDamageScale":  0.0,
+                                                                                                      "bonusPoiseDamage":  0.0,
+                                                                                                      "knockbackDistance":  0.65,
+                                                                                                      "hitStopSec":  0.06,
+                                                                                                      "parryable":  true,
+                                                                                                      "guardable":  true
+                                                                                                  },
+                                                                                    "parryResponse":  null,
+                                                                                    "guardResponse":  null
+                                                                                }
+                                                                 }
+                                                             ],
+                                           "movementSegments":  [
+                                                                    {
+                                                                        "startNormalized":  0.08,
+                                                                        "endNormalized":  0.3,
+                                                                        "movementMode":  "None",
+                                                                        "moveDistance":  null,
+                                                                        "rotationMode":  "FaceTarget",
+                                                                        "rotationRate":  3.6,
+                                                                        "verticalMovementMode":  "None",
+                                                                        "verticalAmount":  null,
+                                                                        "directionPolicy":  "TargetDirection",
+                                                                        "directionSampleTiming":  "OnSegmentStart"
+                                                                    }
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+                                                                    {
+                                                                        "cause":  "OnHitReceived",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Hit",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  100,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnParried",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Stun",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  200,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnAttributeZero",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Dead",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  1000,
+                                                                        "aiInterruptible":  false
+                                                                    }
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      },
+                      {
+                          "key":  "Ability.DemonExecutioner_Melee_4",
+                          "name":  "DemonExecutioner.Melee4",
+                          "kind":  "Attack",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  true,
+                                             "requiresGrounded":  true
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  2.96666455,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+                                                                 {
+                                                                     "kind":  "Attack",
+                                                                     "startNormalized":  0.38,
+                                                                     "endNormalized":  0.7,
+                                                                     "applyEffectKey":  null,
+                                                                     "appliesTo":  "FrontPhysical",
+                                                                     "spatialFilter":  {
+                                                                                           "facingHalfAngleDeg":  74.0,
+                                                                                           "minDistance":  null,
+                                                                                           "maxDistance":  4.0,
+                                                                                           "verticalTolerance":  1.5,
+                                                                                           "referenceFrame":  "LockedActionDirection"
+                                                                                       },
+                                                                     "effect":  {
+                                                                                    "type":  "AttackHit",
+                                                                                    "attackHit":  {
+                                                                                                      "damageScale":  1.5,
+                                                                                                      "bonusDamage":  11.0,
+                                                                                                      "staminaDamageScale":  1.2,
+                                                                                                      "bonusStaminaDamage":  4.0,
+                                                                                                      "poiseDamageScale":  0.0,
+                                                                                                      "bonusPoiseDamage":  0.0,
+                                                                                                      "knockbackDistance":  0.75,
+                                                                                                      "hitStopSec":  0.07,
+                                                                                                      "parryable":  true,
+                                                                                                      "guardable":  true
+                                                                                                  },
+                                                                                    "parryResponse":  null,
+                                                                                    "guardResponse":  null
+                                                                                }
+                                                                 }
+                                                             ],
+                                           "movementSegments":  [
+                                                                    {
+                                                                        "startNormalized":  0.08,
+                                                                        "endNormalized":  0.38,
+                                                                        "movementMode":  "None",
+                                                                        "moveDistance":  null,
+                                                                        "rotationMode":  "FaceTarget",
+                                                                        "rotationRate":  3.4,
+                                                                        "verticalMovementMode":  "None",
+                                                                        "verticalAmount":  null,
+                                                                        "directionPolicy":  "TargetDirection",
+                                                                        "directionSampleTiming":  "OnSegmentStart"
+                                                                    }
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+                                                                    {
+                                                                        "cause":  "OnHitReceived",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Hit",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  100,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnParried",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Stun",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  200,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnAttributeZero",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Dead",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  1000,
+                                                                        "aiInterruptible":  false
+                                                                    }
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      },
+                      {
+                          "key":  "Ability.DemonExecutioner_Melee_5",
+                          "name":  "DemonExecutioner.Melee5",
+                          "kind":  "Attack",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  true,
+                                             "requiresGrounded":  true
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  2.96666455,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+                                                                 {
+                                                                     "kind":  "Attack",
+                                                                     "startNormalized":  0.26,
+                                                                     "endNormalized":  0.64,
+                                                                     "applyEffectKey":  null,
+                                                                     "appliesTo":  "FrontPhysical",
+                                                                     "spatialFilter":  {
+                                                                                           "facingHalfAngleDeg":  80.0,
+                                                                                           "minDistance":  null,
+                                                                                           "maxDistance":  4.4,
+                                                                                           "verticalTolerance":  1.5,
+                                                                                           "referenceFrame":  "LockedActionDirection"
+                                                                                       },
+                                                                     "effect":  {
+                                                                                    "type":  "AttackHit",
+                                                                                    "attackHit":  {
+                                                                                                      "damageScale":  1.6,
+                                                                                                      "bonusDamage":  12.0,
+                                                                                                      "staminaDamageScale":  1.3,
+                                                                                                      "bonusStaminaDamage":  5.0,
+                                                                                                      "poiseDamageScale":  0.0,
+                                                                                                      "bonusPoiseDamage":  0.0,
+                                                                                                      "knockbackDistance":  0.85,
+                                                                                                      "hitStopSec":  0.08,
+                                                                                                      "parryable":  true,
+                                                                                                      "guardable":  true
+                                                                                                  },
+                                                                                    "parryResponse":  null,
+                                                                                    "guardResponse":  null
+                                                                                }
+                                                                 }
+                                                             ],
+                                           "movementSegments":  [
+                                                                    {
+                                                                        "startNormalized":  0.08,
+                                                                        "endNormalized":  0.26,
+                                                                        "movementMode":  "None",
+                                                                        "moveDistance":  null,
+                                                                        "rotationMode":  "FaceTarget",
+                                                                        "rotationRate":  3.0,
+                                                                        "verticalMovementMode":  "None",
+                                                                        "verticalAmount":  null,
+                                                                        "directionPolicy":  "TargetDirection",
+                                                                        "directionSampleTiming":  "OnSegmentStart"
+                                                                    }
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+                                                                    {
+                                                                        "cause":  "OnHitReceived",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Hit",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  100,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnParried",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Stun",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  200,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnAttributeZero",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Dead",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  1000,
+                                                                        "aiInterruptible":  false
+                                                                    }
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      },
+                      {
+                          "key":  "Ability.DemonExecutioner_Melee_6",
+                          "name":  "DemonExecutioner.Melee6",
+                          "kind":  "Attack",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  true,
+                                             "requiresGrounded":  true
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  0.9666661,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+                                                                 {
+                                                                     "kind":  "Attack",
+                                                                     "startNormalized":  0.22,
+                                                                     "endNormalized":  0.58,
+                                                                     "applyEffectKey":  null,
+                                                                     "appliesTo":  "FrontPhysical",
+                                                                     "spatialFilter":  {
+                                                                                           "facingHalfAngleDeg":  58.0,
+                                                                                           "minDistance":  null,
+                                                                                           "maxDistance":  3.5,
+                                                                                           "verticalTolerance":  1.5,
+                                                                                           "referenceFrame":  "LockedActionDirection"
+                                                                                       },
+                                                                     "effect":  {
+                                                                                    "type":  "AttackHit",
+                                                                                    "attackHit":  {
+                                                                                                      "damageScale":  1.0,
+                                                                                                      "bonusDamage":  6.0,
+                                                                                                      "staminaDamageScale":  0.8,
+                                                                                                      "bonusStaminaDamage":  3.0,
+                                                                                                      "poiseDamageScale":  0.0,
+                                                                                                      "bonusPoiseDamage":  0.0,
+                                                                                                      "knockbackDistance":  0.5,
+                                                                                                      "hitStopSec":  0.05,
+                                                                                                      "parryable":  true,
+                                                                                                      "guardable":  true
+                                                                                                  },
+                                                                                    "parryResponse":  null,
+                                                                                    "guardResponse":  null
+                                                                                }
+                                                                 }
+                                                             ],
+                                           "movementSegments":  [
+                                                                    {
+                                                                        "startNormalized":  0.08,
+                                                                        "endNormalized":  0.22,
+                                                                        "movementMode":  "None",
+                                                                        "moveDistance":  null,
+                                                                        "rotationMode":  "FaceTarget",
+                                                                        "rotationRate":  5.0,
+                                                                        "verticalMovementMode":  "None",
+                                                                        "verticalAmount":  null,
+                                                                        "directionPolicy":  "TargetDirection",
+                                                                        "directionSampleTiming":  "OnSegmentStart"
+                                                                    }
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+                                                                    {
+                                                                        "cause":  "OnHitReceived",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Hit",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  100,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnParried",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Stun",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  200,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnAttributeZero",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Dead",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  1000,
+                                                                        "aiInterruptible":  false
+                                                                    }
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      },
+                      {
+                          "key":  "Ability.DemonExecutioner_Jump_1",
+                          "name":  "DemonExecutioner.Jump1",
+                          "kind":  "NonCombat",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  false,
+                                             "requiresGrounded":  true
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  1.966665,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+
+                                                             ],
+                                           "movementSegments":  [
+
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+                                                                    {
+                                                                        "cause":  "OnHitReceived",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Hit",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  100,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnAttributeZero",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Dead",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  1000,
+                                                                        "aiInterruptible":  false
+                                                                    }
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      },
+                      {
+                          "key":  "Ability.DemonExecutioner_Jump_2",
+                          "name":  "DemonExecutioner.Jump2",
+                          "kind":  "NonCombat",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  false,
+                                             "requiresGrounded":  true
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  2.96666455,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+
+                                                             ],
+                                           "movementSegments":  [
+
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+                                                                    {
+                                                                        "cause":  "OnHitReceived",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Hit",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  100,
+                                                                        "aiInterruptible":  false
+                                                                    },
+                                                                    {
+                                                                        "cause":  "OnAttributeZero",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Dead",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  1000,
+                                                                        "aiInterruptible":  false
+                                                                    }
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      },
+                      {
+                          "key":  "Ability.DemonExecutioner_Stun",
+                          "name":  "DemonExecutioner.Stun",
+                          "kind":  "Reaction",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  false,
+                                             "requiresGrounded":  false
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  2.0,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+
+                                                             ],
+                                           "movementSegments":  [
+
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+                                                                    {
+                                                                        "cause":  "OnAttributeZero",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Dead",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  1000,
+                                                                        "aiInterruptible":  false
+                                                                    }
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      },
+                      {
+                          "key":  "Ability.DemonExecutioner_Hit",
+                          "name":  "DemonExecutioner.Hit",
+                          "kind":  "Reaction",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  false,
+                                             "requiresGrounded":  false
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  0.6333343,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+
+                                                             ],
+                                           "movementSegments":  [
+
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+                                                                    {
+                                                                        "cause":  "OnAttributeZero",
+                                                                        "toAbilityKey":  "Ability.DemonExecutioner_Dead",
+                                                                        "windowPolicy":  "Always",
+                                                                        "windowStartNormalized":  null,
+                                                                        "windowEndNormalized":  null,
+                                                                        "priority":  1000,
+                                                                        "aiInterruptible":  false
+                                                                    }
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      },
+                      {
+                          "key":  "Ability.DemonExecutioner_Dead",
+                          "name":  "DemonExecutioner.Dead",
+                          "kind":  "Dead",
+                          "tags":  [
+
+                                   ],
+                          "activation":  {
+                                             "requiredOwnerTags":  {
+                                                                       "op":  "None",
+                                                                       "tags":  [
+
+                                                                                ],
+                                                                       "children":  [
+
+                                                                                    ]
+                                                                   },
+                                             "blockedOwnerTags":  {
+                                                                      "op":  "None",
+                                                                      "tags":  [
+
+                                                                               ],
+                                                                      "children":  [
+
+                                                                                   ]
+                                                                  },
+                                             "requiresTarget":  false,
+                                             "requiresGrounded":  false
+                                         },
+                          "costs":  [
+
+                                    ],
+                          "timeline":  {
+                                           "durationSec":  3.46666217,
+                                           "policy":  "FixedDuration",
+                                           "combatWindows":  [
+
+                                                             ],
+                                           "movementSegments":  [
+
+                                                                ],
+                                           "events":  [
+
+                                                      ]
+                                       },
+                          "transition":  {
+                                             "endPolicy":  {
+                                                               "endType":  "NaturalEnd",
+                                                               "defaultNextAbilityKey":  null
+                                                           },
+                                             "defaultNextAbilityKey":  null,
+                                             "interruptRules":  [
+
+                                                                ],
+                                             "cancelRules":  [
+
+                                                             ]
+                                         }
+                      }
+                  ]
+}
