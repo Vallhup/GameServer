@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -21,13 +21,25 @@
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="PacketHandlerContext.cpp">
-      <Filter>Network\PacketHandler</Filter>
+      <Filter>SessionSystem\Packets</Filter>
     </ClCompile>
     <ClCompile Include="PacketHandlerRegistrar.cpp">
-      <Filter>Network\PacketHandler</Filter>
+      <Filter>SessionSystem\Packets</Filter>
     </ClCompile>
     <ClCompile Include="PacketHandlers.cpp">
-      <Filter>Network\PacketHandler</Filter>
+      <Filter>SessionSystem\Packets</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionFlowContext.cpp">
+      <Filter>SessionSystem\Flow</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionFlowController.cpp">
+      <Filter>SessionSystem\Flow</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionFlowTransitionTable.cpp">
+      <Filter>SessionSystem\Flow</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionState.cpp">
+      <Filter>SessionSystem\Flow</Filter>
     </ClCompile>
     <ClCompile Include="ServerApp.cpp">
       <Filter>App</Filter>
@@ -36,7 +48,7 @@
       <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="SessionBindingRegistry.cpp">
-      <Filter>App</Filter>
+      <Filter>SessionSystem</Filter>
     </ClCompile>
     <ClCompile Include="NetworkRuntime.cpp">
       <Filter>Network</Filter>
@@ -65,8 +77,14 @@
     <ClCompile Include="CharacterIdPolicy.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
+    <ClCompile Include="CharacterDataService.cpp">
+      <Filter>SessionSystem\Entry</Filter>
+    </ClCompile>
     <ClCompile Include="CharacterDef.cpp">
       <Filter>Data\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterSpawnService.cpp">
+      <Filter>SessionSystem\Entry</Filter>
     </ClCompile>
     <ClCompile Include="DefCompilePipeline.cpp">
       <Filter>Data\Loader</Filter>
@@ -95,16 +113,18 @@
     <ClCompile Include="SpawnSetDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerEntryService.cpp">
-      <Filter>App</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerCharacterTransferSerializer.cpp">
-      <Filter>App</Filter>
+      <Filter>GameWorlds\Transfer</Filter>
     </ClCompile>
     <ClCompile Include="PlayerCommand.cpp">
-      <Filter>App</Filter>
+      <Filter>GameWorlds</Filter>
     </ClCompile>
-    <ClCompile Include="ServerWorldBootstrap.cpp" />
+    <ClCompile Include="ServerWorldBootstrap.cpp">
+      <Filter>GameWorlds\Bootstrap</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerSessionSystem.cpp">
+      <Filter>SessionSystem</Filter>
+    </ClCompile>
     <ClCompile Include="FrameworkRuntime.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -241,58 +261,52 @@
       <Filter>Aspect</Filter>
     </ClCompile>
     <ClCompile Include="ServerPacketStager.cpp">
-      <Filter>Utility\Helpers</Filter>
+      <Filter>SessionSystem\Packets</Filter>
     </ClCompile>
     <ClCompile Include="ServerPathResolver.cpp">
       <Filter>Utility\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="ServerPlayerControlBinding.cpp">
-      <Filter>Utility\Helpers</Filter>
+      <Filter>GameWorlds</Filter>
     </ClCompile>
     <ClCompile Include="ServerReplicationSnapshot.cpp">
-      <Filter>Utility\Helpers</Filter>
+      <Filter>SessionSystem\Replication</Filter>
     </ClCompile>
     <ClCompile Include="ServerDirtyReplicationService.cpp">
-      <Filter>App</Filter>
+      <Filter>SessionSystem\Replication</Filter>
     </ClCompile>
     <ClCompile Include="ServerFrameEventDispatcher.cpp">
-      <Filter>App</Filter>
+      <Filter>GameWorlds</Filter>
     </ClCompile>
     <ClCompile Include="ServerWorldTransferCommitter.cpp">
-      <Filter>App</Filter>
+      <Filter>GameWorlds\Transfer</Filter>
     </ClCompile>
     <ClCompile Include="ServerWorldTransferBinding.cpp">
-      <Filter>App</Filter>
+      <Filter>GameWorlds\Transfer</Filter>
     </ClCompile>
     <ClCompile Include="FrameworkFrameEventHarvester.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="BossAIMovementPolicy.cpp">
-      <Filter>FSM\Policy\BossMonster</Filter>
-    </ClCompile>
-    <ClCompile Include="BossAICombatActionPolicy.cpp">
-      <Filter>FSM\Policy\BossMonster</Filter>
-    </ClCompile>
-    <ClCompile Include="BossAIReactionPolicy.cpp">
-      <Filter>FSM\Policy\BossMonster</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalAIMovementPolicy.cpp">
-      <Filter>FSM\Policy\NormalMonster</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalAIReactionPolicy.cpp">
-      <Filter>FSM\Policy\NormalMonster</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalAICombatActionPolicy.cpp">
-      <Filter>FSM\Policy\NormalMonster</Filter>
-    </ClCompile>
     <ClCompile Include="AICombatActionPolicyUtil.cpp">
       <Filter>FSM\Core</Filter>
     </ClCompile>
-    <ClCompile Include="NormalAISpecialActionPolicy.cpp">
-      <Filter>FSM\Policy\NormalMonster</Filter>
+    <ClCompile Include="AIMovementPolicyUtil.cpp">
+      <Filter>FSM\Core</Filter>
     </ClCompile>
-    <ClCompile Include="BossAISpecialActionPolicy.cpp">
-      <Filter>FSM\Policy\BossMonster</Filter>
+    <ClCompile Include="DataDrivenAICombatActionPolicy.cpp">
+      <Filter>FSM\Policy</Filter>
+    </ClCompile>
+    <ClCompile Include="DataDrivenAIMovementPolicy.cpp">
+      <Filter>FSM\Policy</Filter>
+    </ClCompile>
+    <ClCompile Include="DataDrivenAIReactionPolicy.cpp">
+      <Filter>FSM\Policy</Filter>
+    </ClCompile>
+    <ClCompile Include="DataDrivenAISpecialActionPolicy.cpp">
+      <Filter>FSM\Policy</Filter>
+    </ClCompile>
+    <ClCompile Include="DataDrivenAIIdleActionPolicy.cpp">
+      <Filter>FSM\Policy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -306,22 +320,40 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="PacketHandlerContext.h">
-      <Filter>Network\PacketHandler</Filter>
+      <Filter>SessionSystem\Packets</Filter>
     </ClInclude>
     <ClInclude Include="PacketHandlerRegistrar.h">
-      <Filter>Network\PacketHandler</Filter>
+      <Filter>SessionSystem\Packets</Filter>
     </ClInclude>
     <ClInclude Include="PacketHandlers.h">
-      <Filter>Network\PacketHandler</Filter>
+      <Filter>SessionSystem\Packets</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerEntryService.h">
-      <Filter>App</Filter>
+    <ClInclude Include="SessionFlowCommands.h">
+      <Filter>SessionSystem\Flow</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionFlowContext.h">
+      <Filter>SessionSystem\Flow</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionFlowController.h">
+      <Filter>SessionSystem\Flow</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionFlowResults.h">
+      <Filter>SessionSystem\Flow</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionFlowTransitionTable.h">
+      <Filter>SessionSystem\Flow</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionFlowTypes.h">
+      <Filter>SessionSystem\Flow</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionState.h">
+      <Filter>SessionSystem\Flow</Filter>
     </ClInclude>
     <ClInclude Include="PlayerCharacterTransferSerializer.h">
-      <Filter>App</Filter>
+      <Filter>GameWorlds\Transfer</Filter>
     </ClInclude>
     <ClInclude Include="PlayerCommand.h">
-      <Filter>App</Filter>
+      <Filter>GameWorlds</Filter>
     </ClInclude>
     <ClInclude Include="Session.h">
       <Filter>Network</Filter>
@@ -334,6 +366,12 @@
     </ClInclude>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterDataService.h">
+      <Filter>SessionSystem\Entry</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterSpawnService.h">
+      <Filter>SessionSystem\Entry</Filter>
     </ClInclude>
     <ClInclude Include="json.hpp">
       <Filter>Utility\Dependency</Filter>
@@ -380,12 +418,17 @@
     <ClInclude Include="AIBehaviorDef.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
-    <ClInclude Include="ServerWorldBootstrap.h" />
+    <ClInclude Include="ServerWorldBootstrap.h">
+      <Filter>GameWorlds\Bootstrap</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerSessionSystem.h">
+      <Filter>SessionSystem</Filter>
+    </ClInclude>
     <ClInclude Include="ServerAppTest.h">
       <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="SessionBindingRegistry.h">
-      <Filter>App</Filter>
+      <Filter>SessionSystem</Filter>
     </ClInclude>
     <ClInclude Include="DefFileFormat.h">
       <Filter>Data\Loader</Filter>
@@ -431,12 +474,6 @@
     </ClInclude>
     <ClInclude Include="DefRegistry.h">
       <Filter>Data\Registry</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\GameplayRuntimeComponents.h">
-      <Filter>ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\Components\GameplayContentComponents.h">
-      <Filter>ECS</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\GameplaySystemRegistration.h">
       <Filter>ECS\System</Filter>
@@ -631,49 +668,43 @@
       <Filter>FSM\Core\Interface</Filter>
     </ClInclude>
     <ClInclude Include="ServerPacketStager.h">
-      <Filter>Utility\Helpers</Filter>
+      <Filter>SessionSystem\Packets</Filter>
     </ClInclude>
     <ClInclude Include="ServerPathResolver.h">
       <Filter>Utility\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="ServerPlayerControlBinding.h">
-      <Filter>Utility\Helpers</Filter>
+      <Filter>GameWorlds</Filter>
     </ClInclude>
     <ClInclude Include="ServerReplicationSnapshot.h">
-      <Filter>Utility\Helpers</Filter>
+      <Filter>SessionSystem\Replication</Filter>
     </ClInclude>
     <ClInclude Include="ServerDirtyReplicationService.h">
-      <Filter>App</Filter>
+      <Filter>SessionSystem\Replication</Filter>
     </ClInclude>
     <ClInclude Include="ServerFrameEventDispatcher.h">
-      <Filter>App</Filter>
+      <Filter>GameWorlds</Filter>
     </ClInclude>
     <ClInclude Include="ServerWorldTransferCommitter.h">
-      <Filter>App</Filter>
+      <Filter>GameWorlds\Transfer</Filter>
     </ClInclude>
     <ClInclude Include="ServerWorldTransferBinding.h">
-      <Filter>App</Filter>
+      <Filter>GameWorlds\Transfer</Filter>
     </ClInclude>
     <ClInclude Include="FrameworkFrameEventHarvester.h">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="BossAIMovementPolicy.h">
-      <Filter>FSM\Policy\BossMonster</Filter>
+    <ClInclude Include="DataDrivenAICombatActionPolicy.h">
+      <Filter>FSM\Policy</Filter>
     </ClInclude>
-    <ClInclude Include="BossAICombatActionPolicy.h">
-      <Filter>FSM\Policy\BossMonster</Filter>
+    <ClInclude Include="DataDrivenAIMovementPolicy.h">
+      <Filter>FSM\Policy</Filter>
     </ClInclude>
-    <ClInclude Include="BossAIReactionPolicy.h">
-      <Filter>FSM\Policy\BossMonster</Filter>
+    <ClInclude Include="DataDrivenAIReactionPolicy.h">
+      <Filter>FSM\Policy</Filter>
     </ClInclude>
-    <ClInclude Include="NormalAIMovementPolicy.h">
-      <Filter>FSM\Policy\NormalMonster</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalAIReactionPolicy.h">
-      <Filter>FSM\Policy\NormalMonster</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalAICombatActionPolicy.h">
-      <Filter>FSM\Policy\NormalMonster</Filter>
+    <ClInclude Include="DataDrivenAISpecialActionPolicy.h">
+      <Filter>FSM\Policy</Filter>
     </ClInclude>
     <ClInclude Include="IAISpecialActionPolicy.h">
       <Filter>FSM\Core\Interface</Filter>
@@ -681,11 +712,50 @@
     <ClInclude Include="AICombatActionPolicyUtil.h">
       <Filter>FSM\Core</Filter>
     </ClInclude>
-    <ClInclude Include="NormalAISpecialActionPolicy.h">
-      <Filter>FSM\Policy\NormalMonster</Filter>
+    <ClInclude Include="AIMovementPolicyUtil.h">
+      <Filter>FSM\Core</Filter>
     </ClInclude>
-    <ClInclude Include="BossAISpecialActionPolicy.h">
-      <Filter>FSM\Policy\BossMonster</Filter>
+    <ClInclude Include="ECS\Components\GameplayAbilityComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayAIComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayAnimationComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayCombatComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayComponentPrerequisites.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayContentComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\GameplayRuntimeComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayPresentationComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayReplicationComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplaySpatialComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayWorldLifecycleComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayInputComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="IAIIdleActionPolicy.h">
+      <Filter>FSM\Core\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="DataDrivenAIIdleActionPolicy.h">
+      <Filter>FSM\Policy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -794,11 +864,32 @@
     <Filter Include="FSM\Policy">
       <UniqueIdentifier>{ebda843a-d248-4679-9885-004f36b217c0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FSM\Policy\NormalMonster">
-      <UniqueIdentifier>{602685d6-72ae-42f9-ae2b-a5793840a8dc}</UniqueIdentifier>
+    <Filter Include="ECS\Component">
+      <UniqueIdentifier>{4a54cde9-6d10-4e89-b432-4b1f7c8e83e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FSM\Policy\BossMonster">
-      <UniqueIdentifier>{122ce378-4386-401d-87b4-a800941b81cc}</UniqueIdentifier>
+    <Filter Include="SessionSystem">
+      <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000101}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SessionSystem\Flow">
+      <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SessionSystem\Entry">
+      <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000103}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SessionSystem\Packets">
+      <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000104}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SessionSystem\Replication">
+      <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000105}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameWorlds">
+      <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000201}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameWorlds\Bootstrap">
+      <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000202}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameWorlds\Transfer">
+      <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000203}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

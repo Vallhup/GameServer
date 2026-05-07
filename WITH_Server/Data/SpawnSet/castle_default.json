@@ -35,16 +35,8 @@
       "respawnDelaySec": null
     },
     {
-      "characterId": "Imp",
+      "characterId": "Tank",
       "spawnPointId": "CastleMonster05",
-      "count": 1,
-      "type": "OnWorldStart",
-      "respawnPolicy": "None",
-      "respawnDelaySec": null
-    },
-    {
-      "characterId": "Imp",
-      "spawnPointId": "CastleMonster06",
       "count": 1,
       "type": "OnWorldStart",
       "respawnPolicy": "None",

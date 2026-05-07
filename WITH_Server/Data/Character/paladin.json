@@ -1,0 +1,87 @@
+{
+    "id":  "Paladin",
+    "name":  "Paladin",
+    "profile":  {
+                    "faction":  "Player"
+                },
+    "stat":  {
+                 "maxHp":  100,
+                 "maxStamina":  100,
+                 "maxPoise":  100,
+                 "attackPower":  10,
+                 "defense":  10,
+                 "moveSpeed":  4.0,
+                 "attackSpeed":  1.0
+             },
+    "bodyCollision":  {
+                          "footprintRadiusXZ":  0.42,
+                          "bodyHeight":  1.8,
+                          "blocksBodyOverlap":  true,
+                          "useNavMeshConstraint":  true,
+                          "pushability":  "Dynamic",
+                          "overlapYieldWeight":  0.35,
+                          "maxOverlapCorrectionPerFrameXZ":  0.1
+                      },
+    "role":  "Player",
+    "features":  [
+                     "Replicated",
+                     "Combatant",
+                     "Playable",
+                     "PortalAware",
+                     "EffectUser"
+                 ],
+    "ai":  null,
+    "attributes":  [
+                       {
+                           "attributeKey":  "Attribute.Hp",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.MaxHp",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.Stamina",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.MaxStamina",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.Poise",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.MaxPoise",
+                           "baseValue":  100,
+                           "currentValue":  100
+                       },
+                       {
+                           "attributeKey":  "Attribute.AttackPower",
+                           "baseValue":  10,
+                           "currentValue":  10
+                       },
+                       {
+                           "attributeKey":  "Attribute.Defense",
+                           "baseValue":  10,
+                           "currentValue":  10
+                       },
+                       {
+                           "attributeKey":  "Attribute.MoveSpeed",
+                           "baseValue":  4.0,
+                           "currentValue":  4.0
+                       },
+                       {
+                           "attributeKey":  "Attribute.AttackSpeed",
+                           "baseValue":  1.0,
+                           "currentValue":  1.0
+                       }
+                   ],
+    "abilitySetKey":  "AbilitySet.Paladin"
+}

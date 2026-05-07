@@ -23,41 +23,30 @@ struct AIPerceptionComp : Component
 
 	uint32_t hostileInSightCount{ 0 };
 
-	double timeSinceTargetLastSeen{ std::numeric_limits<double>::max() };
-
 	uint64_t builtFrame{ 0 };
 };
 
 struct AIBlackboardComp : Component
 {
+	// Target memory
 	Entity currentTarget{ Entity::Null() };
 	Entity lastAttacker{ Entity::Null() };
-
-	double timeSinceCurrentTargetSeen{ std::numeric_limits<double>::max() };
-
 	bool forceRetarget{ false };
 
-	XMFLOAT3 homePosition{ 0.0f, 0.0f, 0.0f };
-	bool hasHomePosition{ false };
-	bool returningHome{ false };
-	double returnHomeLockoutAcc{ std::numeric_limits<double>::max() };
-	double leashGauge{ 100.0 };
-	double returnHpRegenAcc{ 0.0 };
+	double timeSinceCurrentTargetSeen{ std::numeric_limits<double>::max() };
 
 	XMFLOAT3 lastKnownTargetPosition{ 0.0f, 0.0f, 0.0f };
 	bool hasLastKnownTargetPosition{ false };
 
-	AbilityId lastUsedAbilityId{ InvalidAbilityId };
+	// Home / leash / return-home
+	XMFLOAT3 homePosition{ 0.0f, 0.0f, 0.0f };
+	bool hasHomePosition{ false };
 
-	uint32_t combatActionSequence{ 0 };
+	bool returningHome{ false };
+	double returnHomeLockoutAcc{ std::numeric_limits<double>::max() };
 
-	double idleActionCooldownAcc{ 0.0 };
-	uint32_t idleActionSequence{ 0 };
-
-	XMFLOAT3 pathDestination{ 0.0f, 0.0f, 0.0f };
-	XMFLOAT3 nextPathCorner{ 0.0f, 0.0f, 0.0f };
-	bool hasPathCorner{ false };
-	double pathRecomputeAcc{ 0.0 };
+	double leashGauge{ 100.0 };
+	double returnHpRegenAcc{ 0.0 };
 };
 
 enum class AIStateType : uint8_t
@@ -83,8 +72,8 @@ struct AIDecisionComp : Component
 	double stateTime{ 0.0 };
 	double globalDecisionAcc{ 0.0 };
 
-	double attackCooldownAcc{ 0.0 };
-	double repathCooldownAcc{ 0.0 };
+	bool reactDurationOverrideActive{ false };
+	float reactDurationOverrideSec{ 0.0f };
 
 	bool enteredThisFrame{ true };
 
@@ -111,7 +100,7 @@ struct AIReactionEvent
 	float floatPayload{ 0.0f };
 };
 
-struct AIReactionComp : Component
+struct AIReactionEventQueueComp : Component
 {
 	static constexpr int kMaxEventsPerFrame{ 4 };
 
@@ -157,6 +146,7 @@ struct AIReactionComp : Component
 				lowestIdx = i;
 			}
 		}
+
 		if (evt.priority > events[lowestIdx].priority)
 		{
 			events[lowestIdx] = evt;
@@ -169,25 +159,46 @@ struct AIReactionComp : Component
 	}
 };
 
-struct BossPhaseStateComp : Component
+struct AIPhaseRuntimeComp : Component
 {
+	static constexpr uint16_t kInvalidTransitionIndex =
+		std::numeric_limits<uint16_t>::max();
+
 	uint8_t currentPhase{ 1 };
 	uint32_t crossedThresholdMask{ 0 };
+
 	bool transitionRequested{ false };
+	uint16_t pendingTransitionIndex{ kInvalidTransitionIndex };
 };
 
-struct BossPatternRuntimeComp : Component
+struct AIActionRuntimeComp : Component
 {
-	std::vector<float> patternCooldownSec;
+	std::vector<float> actionCooldownSec;
+	std::vector<float> groupCooldownSec;
 
-	float phaseTransitionLockSec{ 0.0f };
-	bool phaseTransitionActionPending{ false };
+	float globalActionCooldownSec{ 0.0f };
+	float movementLockSec{ 0.0f };
 
+	uint32_t actionSequence{ 0 };
+
+	uint32_t idleActionSequence{ 0 };
+	double idleActionCooldownAcc{ 0.0 };
+
+	AbilityId lastUsedAbilityId{ InvalidAbilityId };
+};
+
+struct AIMovementRuntimeComp : Component
+{
 	float strafeTimeLeftSec{ 0.0f };
 	int strafeSign{ 1 };
+
+	XMFLOAT3 pathDestination{ 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 nextPathCorner{ 0.0f, 0.0f, 0.0f };
+	bool hasPathCorner{ false };
+	double pathRecomputeAcc{ 0.0 };
 };
 
-struct AICommandFrameComp : Component
+struct AIIntentFrameComp : Component
 {
 	bool hasMove{ false };
 	bool wantsRun{ false };

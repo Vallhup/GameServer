@@ -50,6 +50,104 @@
       "fallbackReactionProfileKey": "AbilityFallback.Knight"
     },
     {
+      "key": "AbilitySet.Lancer",
+      "name": "Lancer",
+      "grants": [
+        {
+          "abilityKey": "Ability.Lancer_LightAttack1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_LightAttack2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_LightAttack3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_HeavyAttack",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Dodge",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Parry",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Guard",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.Lancer",
+      "animationBindingProfileKey": "AbilityAnimation.Lancer",
+      "fallbackReactionProfileKey": "AbilityFallback.Lancer"
+    },
+    {
+      "key": "AbilitySet.Paladin",
+      "name": "Paladin",
+      "grants": [
+        {
+          "abilityKey": "Ability.Paladin_LightAttack1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_LightAttack2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_LightAttack3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_HeavyAttack",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Dodge",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Parry",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Guard",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.Paladin",
+      "animationBindingProfileKey": "AbilityAnimation.Paladin",
+      "fallbackReactionProfileKey": "AbilityFallback.Paladin"
+    },
+    {
       "key": "AbilitySet.Imp",
       "name": "Imp",
       "grants": [
@@ -264,6 +362,67 @@
       "inputBindingProfileKey": "AbilityInput.BigDemonWarrior",
       "animationBindingProfileKey": "AbilityAnimation.BigDemonWarrior",
       "fallbackReactionProfileKey": "AbilityFallback.BigDemonWarrior"
+    },
+    {
+      "key": "AbilitySet.Tank",
+      "name": "Tank",
+      "grants": [
+        {
+          "abilityKey": "Ability.Tank_Melee_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_4",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_5",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_6",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_7",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_8",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Jump_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Jump_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.Tank",
+      "animationBindingProfileKey": "AbilityAnimation.Tank",
+      "fallbackReactionProfileKey": "AbilityFallback.Tank"
     }
   ],
   "inputBindingProfiles": [
@@ -315,6 +474,100 @@
       ]
     },
     {
+      "key": "AbilityInput.Lancer",
+      "entries": [
+        {
+          "request": "LightAttack",
+          "candidateAbilityKeys": [
+            "Ability.Lancer_LightAttack1",
+            "Ability.Lancer_LightAttack2",
+            "Ability.Lancer_LightAttack3"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "HeavyAttack",
+          "candidateAbilityKeys": [
+            "Ability.Lancer_HeavyAttack"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Dodge",
+          "candidateAbilityKeys": [
+            "Ability.Lancer_Dodge"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Parry",
+          "candidateAbilityKeys": [
+            "Ability.Lancer_Parry"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "GuardStart",
+          "candidateAbilityKeys": [
+            "Ability.Lancer_Guard"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        }
+      ]
+    },
+    {
+      "key": "AbilityInput.Paladin",
+      "entries": [
+        {
+          "request": "LightAttack",
+          "candidateAbilityKeys": [
+            "Ability.Paladin_LightAttack1",
+            "Ability.Paladin_LightAttack2",
+            "Ability.Paladin_LightAttack3"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "HeavyAttack",
+          "candidateAbilityKeys": [
+            "Ability.Paladin_HeavyAttack"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Dodge",
+          "candidateAbilityKeys": [
+            "Ability.Paladin_Dodge"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Parry",
+          "candidateAbilityKeys": [
+            "Ability.Paladin_Parry"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "GuardStart",
+          "candidateAbilityKeys": [
+            "Ability.Paladin_Guard"
+          ],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        }
+      ]
+    },
+    {
       "key": "AbilityInput.Imp",
       "entries": []
     },
@@ -328,6 +581,10 @@
     },
     {
       "key": "AbilityInput.BigDemonWarrior",
+      "entries": []
+    },
+    {
+      "key": "AbilityInput.Tank",
       "entries": []
     }
   ],
@@ -395,6 +652,186 @@
         {
           "mode": "Turn",
           "animationKey": "Knight_Walk"
+        }
+      ]
+    },
+    {
+      "key": "AbilityAnimation.Lancer",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.Lancer_LightAttack1",
+          "animationKey": "Lancer_LightAttack1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Lancer_LightAttack2",
+          "animationKey": "Lancer_LightAttack2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Lancer_LightAttack3",
+          "animationKey": "Lancer_LightAttack3",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Lancer_HeavyAttack",
+          "animationKey": "Lancer_HeavyAttack",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Lancer_SpecialAttack",
+          "animationKey": "Lancer_SpecialAttack",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Dodge",
+          "animationKey": "Lancer_Dodge",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Parry",
+          "animationKey": "Lancer_Parry",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Stun",
+          "animationKey": "Lancer_Stun_Left",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Hit",
+          "animationKey": "Lancer_Hit",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Guard",
+          "animationKey": "Lancer_Guard",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Dead",
+          "animationKey": "Lancer_Death",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "Lancer_Idle",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "Lancer_Walk"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "Lancer_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "Lancer_Walk"
+        }
+      ]
+    },
+    {
+      "key": "AbilityAnimation.Paladin",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.Paladin_LightAttack1",
+          "animationKey": "Paladin_LightAttack1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Paladin_LightAttack2",
+          "animationKey": "Paladin_LightAttack2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Paladin_LightAttack3",
+          "animationKey": "Paladin_LightAttack3",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Paladin_HeavyAttack",
+          "animationKey": "Paladin_HeavyAttack",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Paladin_SpecialAttack",
+          "animationKey": "Paladin_SpecialAttack",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Dodge",
+          "animationKey": "Paladin_Dodge",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Parry",
+          "animationKey": "Paladin_Parry",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Stun",
+          "animationKey": "Paladin_Stun",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Hit",
+          "animationKey": "Paladin_Hit",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Guard",
+          "animationKey": "Paladin_Guard",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Dead",
+          "animationKey": "Paladin_Death",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "Paladin_Idle",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "Paladin_Walk"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "Paladin_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "Paladin_Walk"
         }
       ]
     },
@@ -789,6 +1226,128 @@
           "animationKey": "BigDemonWarrior_Turn_Right"
         }
       ]
+    },
+    {
+      "key": "AbilityAnimation.Tank",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.Tank_Melee_1",
+          "animationKey": "Tank_Melee_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_2",
+          "animationKey": "Tank_Melee_2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_3",
+          "animationKey": "Tank_Melee_3",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_4",
+          "animationKey": "Tank_Melee_4",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_5",
+          "animationKey": "Tank_Melee_5",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_6",
+          "animationKey": "Tank_Melee_6",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_7",
+          "animationKey": "Tank_Melee_7",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_8",
+          "animationKey": "Tank_Melee_8",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Jump_1",
+          "animationKey": "Tank_Jump_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Jump_2",
+          "animationKey": "Tank_Jump_2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Stun",
+          "animationKey": "Tank_Stun",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Hit",
+          "animationKey": "Tank_Stun",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Tank_Dead",
+          "animationKey": "Tank_Death_1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "Tank_Idle_1",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "Tank_Walk_2"
+        },
+        {
+          "mode": "WalkBack",
+          "animationKey": "Tank_Walk_Back"
+        },
+        {
+          "mode": "WalkLeft",
+          "animationKey": "Tank_Walk_Left"
+        },
+        {
+          "mode": "WalkRight",
+          "animationKey": "Tank_Walk_Right"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "Tank_Run_1"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "Tank_Walk_2"
+        },
+        {
+          "mode": "TurnLeft",
+          "animationKey": "Tank_Turn_Left"
+        },
+        {
+          "mode": "TurnRight",
+          "animationKey": "Tank_Turn_Right"
+        }
+      ]
     }
   ],
   "fallbackReactionProfiles": [
@@ -808,6 +1367,46 @@
         {
           "cause": "OnAttributeZero",
           "toAbilityKey": "Ability.Knight_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "key": "AbilityFallback.Lancer",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.Lancer_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.Lancer_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.Lancer_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "key": "AbilityFallback.Paladin",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.Paladin_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.Paladin_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.Paladin_Dead",
           "priority": 1000
         }
       ]
@@ -888,6 +1487,26 @@
         {
           "cause": "OnAttributeZero",
           "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+          "priority": 1000
+        }
+      ]
+    },
+    {
+      "key": "AbilityFallback.Tank",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.Tank_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.Tank_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.Tank_Dead",
           "priority": 1000
         }
       ]

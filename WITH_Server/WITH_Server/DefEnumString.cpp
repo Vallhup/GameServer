@@ -3,6 +3,7 @@
 
 #include "AnimationId.h"
 #include "CharacterDef.h"
+#include "AIBehaviorDef.h"
 #include "SpawnSetDef.h"
 #include "ECS/Components/GameplayAbilityComponents.h"
 
@@ -27,6 +28,50 @@ bool ParseDefString(std::string_view text, BodyPushability& outValue) noexcept
 	return false;
 }
 
+bool ParseDefString(std::string_view text, AIActionDistanceBucket& outValue) noexcept
+{
+	if (text == "Any") { outValue = AIActionDistanceBucket::Any; return true; }
+	if (text == "VeryClose") { outValue = AIActionDistanceBucket::VeryClose; return true; }
+	if (text == "Close") { outValue = AIActionDistanceBucket::Close; return true; }
+	if (text == "Mid") { outValue = AIActionDistanceBucket::Mid; return true; }
+	if (text == "Far") { outValue = AIActionDistanceBucket::Far; return true; }
+	return false;
+}
+
+bool ParseDefString(std::string_view text, AIMovementBehavior& outValue) noexcept
+{
+	if (text == "None") { outValue = AIMovementBehavior::None; return true; }
+	if (text == "Hold") { outValue = AIMovementBehavior::Hold; return true; }
+	if (text == "Approach") { outValue = AIMovementBehavior::Approach; return true; }
+	if (text == "RunApproach") { outValue = AIMovementBehavior::RunApproach; return true; }
+	if (text == "Retreat") { outValue = AIMovementBehavior::Retreat; return true; }
+	if (text == "Strafe") { outValue = AIMovementBehavior::Strafe; return true; }
+	if (text == "CircleLeft") { outValue = AIMovementBehavior::CircleLeft; return true; }
+	if (text == "CircleRight") { outValue = AIMovementBehavior::CircleRight; return true; }
+	if (text == "SearchLastKnown") { outValue = AIMovementBehavior::SearchLastKnown; return true; }
+	if (text == "ReturnHome") { outValue = AIMovementBehavior::ReturnHome; return true; }
+	return false;
+}
+
+bool ParseDefString(std::string_view text, AIReactionRuleEvent& outValue) noexcept
+{
+	if (text == "OnHitReceived") { outValue = AIReactionRuleEvent::OnHitReceived; return true; }
+	if (text == "OnParried") { outValue = AIReactionRuleEvent::OnParried; return true; }
+	if (text == "OnGuardBroken") { outValue = AIReactionRuleEvent::OnGuardBroken; return true; }
+	if (text == "OnHpThreshold") { outValue = AIReactionRuleEvent::OnHpThreshold; return true; }
+	return false;
+}
+
+bool ParseDefString(std::string_view text, AIReactionRuleOutcome& outValue) noexcept
+{
+	if (text == "Ignore") { outValue = AIReactionRuleOutcome::Ignore; return true; }
+	if (text == "ForceRetarget") { outValue = AIReactionRuleOutcome::ForceRetarget; return true; }
+	if (text == "EnterReact") { outValue = AIReactionRuleOutcome::EnterReact; return true; }
+	if (text == "IssueAbility") { outValue = AIReactionRuleOutcome::IssueAbility; return true; }
+	if (text == "EnterReactAndIssueAbility") { outValue = AIReactionRuleOutcome::EnterReactAndIssueAbility; return true; }
+	return false;
+}
+
 bool ParseAnimationIdString(std::string_view text, AnimationId& outValue) noexcept
 {
 	static const std::unordered_map<std::string_view, AnimationId> kValues =
@@ -43,6 +88,37 @@ bool ParseAnimationIdString(std::string_view text, AnimationId& outValue) noexce
 		{ "Knight_Guard", AnimationId::Knight_Guard },
 		{ "Knight_Drinking", AnimationId::Knight_Drinking },
 		{ "Knight_Death", AnimationId::Knight_Death },
+		{ "Lancer_Idle", AnimationId::Lancer_Idle },
+		{ "Lancer_Walk", AnimationId::Lancer_Walk },
+		{ "Lancer_Run", AnimationId::Lancer_Run },
+		{ "Lancer_LightAttack1", AnimationId::Lancer_LightAttack1 },
+		{ "Lancer_LightAttack2", AnimationId::Lancer_LightAttack2 },
+		{ "Lancer_LightAttack3", AnimationId::Lancer_LightAttack3 },
+		{ "Lancer_HeavyAttack", AnimationId::Lancer_HeavyAttack },
+		{ "Lancer_SpecialAttack", AnimationId::Lancer_SpecialAttack },
+		{ "Lancer_Dodge", AnimationId::Lancer_Dodge },
+		{ "Lancer_Parry", AnimationId::Lancer_Parry },
+		{ "Lancer_Stun_Left", AnimationId::Lancer_StunLeft },
+		{ "Lancer_Stun_Right", AnimationId::Lancer_StunRight },
+		{ "Lancer_Hit", AnimationId::Lancer_Hit },
+		{ "Lancer_Guard", AnimationId::Lancer_Guard },
+		{ "Lancer_Drinking", AnimationId::Lancer_Drinking },
+		{ "Lancer_Death", AnimationId::Lancer_Death },
+		{ "Paladin_Idle", AnimationId::Paladin_Idle },
+		{ "Paladin_Walk", AnimationId::Paladin_Walk },
+		{ "Paladin_Run", AnimationId::Paladin_Run },
+		{ "Paladin_LightAttack1", AnimationId::Paladin_LightAttack1 },
+		{ "Paladin_LightAttack2", AnimationId::Paladin_LightAttack2 },
+		{ "Paladin_LightAttack3", AnimationId::Paladin_LightAttack3 },
+		{ "Paladin_HeavyAttack", AnimationId::Paladin_HeavyAttack },
+		{ "Paladin_SpecialAttack", AnimationId::Paladin_SpecialAttack },
+		{ "Paladin_Dodge", AnimationId::Paladin_Dodge },
+		{ "Paladin_Parry", AnimationId::Paladin_Parry },
+		{ "Paladin_Stun", AnimationId::Paladin_Stun },
+		{ "Paladin_Hit", AnimationId::Paladin_Hit },
+		{ "Paladin_Guard", AnimationId::Paladin_Guard },
+		{ "Paladin_Drinking", AnimationId::Paladin_Drinking },
+		{ "Paladin_Death", AnimationId::Paladin_Death },
 		{ "FinalBoss_Idle", AnimationId::FinalBoss_Idle },
 		{ "FinalBoss_Walk", AnimationId::FinalBoss_Walk },
 		{ "FinalBoss_Thrust", AnimationId::FinalBoss_Thrust },
@@ -121,6 +197,35 @@ bool ParseAnimationIdString(std::string_view text, AnimationId& outValue) noexce
 		{ "BigDemonWarrior_React_Right", AnimationId::BigDemonWarrior_ReactFromRight },
 		{ "BigDemonWarrior_React_Gut", AnimationId::BigDemonWarrior_ReactGut },
 		{ "BigDemonWarrior_Death", AnimationId::BigDemonWarrior_Death },
+		{ "Tank_Idle_1", AnimationId::Tank_Idle_1 },
+		{ "Tank_Idle_2", AnimationId::Tank_Idle_2 },
+		{ "Tank_Idle_3", AnimationId::Tank_Idle_3 },
+		{ "Tank_Idle_4", AnimationId::Tank_Idle_4 },
+		{ "Tank_Idle_5", AnimationId::Tank_Idle_5 },
+		{ "Tank_Melee_1", AnimationId::Tank_Melee_1 },
+		{ "Tank_Melee_2", AnimationId::Tank_Melee_2 },
+		{ "Tank_Melee_3", AnimationId::Tank_Melee_3 },
+		{ "Tank_Melee_4", AnimationId::Tank_Melee_4 },
+		{ "Tank_Melee_5", AnimationId::Tank_Melee_5 },
+		{ "Tank_Melee_6", AnimationId::Tank_Melee_6 },
+		{ "Tank_Melee_7", AnimationId::Tank_Melee_7 },
+		{ "Tank_Melee_8", AnimationId::Tank_Melee_8 },
+		{ "Tank_Walk_1", AnimationId::Tank_Walk_1 },
+		{ "Tank_Walk_2", AnimationId::Tank_Walk_2 },
+		{ "Tank_Walk_Back", AnimationId::Tank_WalkBack },
+		{ "Tank_Walk_Left_Back", AnimationId::Tank_WalkLeftBack },
+		{ "Tank_Walk_Left", AnimationId::Tank_WalkLeft },
+		{ "Tank_Walk_Right_Back", AnimationId::Tank_WalkRightBack },
+		{ "Tank_Walk_Right", AnimationId::Tank_WalkRight },
+		{ "Tank_Turn_Left", AnimationId::Tank_TurnLeft },
+		{ "Tank_Turn_Right", AnimationId::Tank_TurnRight },
+		{ "Tank_Run_1", AnimationId::Tank_Running1 },
+		{ "Tank_Run_2", AnimationId::Tank_Running2 },
+		{ "Tank_Jump_1", AnimationId::Tank_Jump1 },
+		{ "Tank_Jump_2", AnimationId::Tank_Jump2 },
+		{ "Tank_Stun", AnimationId::Tank_Stun },
+		{ "Tank_Death_1", AnimationId::Tank_Death1 },
+		{ "Tank_Death_2", AnimationId::Tank_Death2 },
 	};
 
 	const auto it = kValues.find(text);

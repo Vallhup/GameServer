@@ -1,0 +1,140 @@
+{
+  "key": "AI.Tank",
+  "aiType": "NormalMonster",
+  "perceptionTuning": {
+    "sightRange": 13.5,
+    "attackRange": 2.8,
+    "frontDotThreshold": 0.18,
+    "targetKeepBonus": 4.5,
+    "lastAttackerBonus": 3.0,
+    "frontBonus": 1.0,
+    "switchScoreMargin": 3.5,
+    "loseSightGraceTime": 1.4,
+    "leashRange": 20.0,
+    "hardLeashRange": 28.0,
+    "leashGaugeMax": 100.0,
+    "leashDrainPerSec": 18.0,
+    "hardLeashDrainPerSec": 55.0,
+    "leashRecoverPerSec": 32.0,
+    "returnHomeArriveRange": 0.9,
+    "returnHomeReaggroLockSec": 1.5,
+    "returnHpRegenPerSecRatio": 0.08,
+    "idleActionCooldownSec": 8.0,
+    "idleActionChancePercent": 16,
+    "assistRange": 6.5
+  },
+  "decisionTuning": {
+    "decisionInterval": 0.2,
+    "attackCooldown": 2.6,
+    "reactDuration": 0.7
+  },
+  "combatActions": [
+    {
+      "abilityKey": "Ability.Tank_Melee_7",
+      "weight": 18,
+      "distanceBucket": "VeryClose",
+      "aiCooldownSec": 1.6,
+      "globalCooldownSec": 1.8
+    },
+    {
+      "abilityKey": "Ability.Tank_Melee_1",
+      "weight": 18,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 2.2,
+      "globalCooldownSec": 2.3
+    },
+    {
+      "abilityKey": "Ability.Tank_Melee_2",
+      "weight": 14,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 3.0,
+      "globalCooldownSec": 2.8,
+      "forbidImmediateRepeat": true
+    },
+    {
+      "abilityKey": "Ability.Tank_Melee_3",
+      "weight": 14,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 3.0,
+      "globalCooldownSec": 2.8,
+      "forbidImmediateRepeat": true
+    },
+    {
+      "abilityKey": "Ability.Tank_Melee_8",
+      "weight": 16,
+      "distanceBucket": "Mid",
+      "aiCooldownSec": 3.2,
+      "globalCooldownSec": 2.8,
+      "forbidImmediateRepeat": true
+    },
+    {
+      "abilityKey": "Ability.Tank_Melee_4",
+      "weight": 10,
+      "distanceBucket": "Mid",
+      "aiCooldownSec": 4.0,
+      "globalCooldownSec": 3.0,
+      "forbidImmediateRepeat": true
+    },
+    {
+      "abilityKey": "Ability.Tank_Melee_6",
+      "weight": 7,
+      "distanceBucket": "Mid",
+      "aiCooldownSec": 4.4,
+      "globalCooldownSec": 3.2,
+      "forbidImmediateRepeat": true
+    },
+    {
+      "abilityKey": "Ability.Tank_Melee_5",
+      "weight": 3,
+      "distanceBucket": "Far",
+      "aiCooldownSec": 6.5,
+      "globalCooldownSec": 3.6,
+      "forbidImmediateRepeat": true
+    }
+  ],
+  "idleActions": [
+    { "abilityKey": "Ability.Tank_Jump_1", "weight": 60 },
+    { "abilityKey": "Ability.Tank_Jump_2", "weight": 40 }
+  ],
+  "movementProfiles": [
+    {
+      "name": "TankDefault",
+      "phaseMin": 1,
+      "phaseMax": 255,
+      "veryCloseDistance": 1.7,
+      "closeDistance": 2.8,
+      "midDistance": 4.4,
+      "farDistance": 12.0,
+      "preferredMinDistance": 2.1,
+      "preferredMaxDistance": 3.5,
+      "veryCloseBehavior": "Retreat",
+      "closeBehavior": "Hold",
+      "preferredBehavior": "Hold",
+      "midBehavior": "Approach",
+      "farBehavior": "RunApproach",
+      "strafeMinSec": 0.9,
+      "strafeMaxSec": 1.6,
+      "lockFacingToTarget": true
+    }
+  ],
+  "reactionRules": [
+    {
+      "event": "OnHitReceived",
+      "outcome": "ForceRetarget",
+      "retargetAttacker": true,
+      "priority": 100
+    },
+    {
+      "event": "OnParried",
+      "outcome": "EnterReact",
+      "retargetAttacker": true,
+      "priority": 200
+    },
+    {
+      "event": "OnGuardBroken",
+      "outcome": "EnterReact",
+      "retargetAttacker": false,
+      "priority": 200
+    }
+  ]
+}
