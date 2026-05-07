@@ -43,12 +43,27 @@ using namespace Microsoft::WRL;
 
 #include <fmod.hpp>
 
-#include "Protocol.pb.h"
-
 #include "asio.hpp"
 
-#include "Asio_Network_Library.h"
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4244 4251 4267 4996)
+#elif defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
+#include "Protocol.pb.h"
 #include "ProtocolLib.h"
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#elif defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
+#include "Asio_Network_Library.h"
 
 #include "GPUBuffer.h"
 

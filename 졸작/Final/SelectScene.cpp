@@ -272,11 +272,3 @@ void SelectScene::RequestSceneChange()
 			sManagerRef->RequestLoadingScene(SceneType::Plaza);
 	}
 }
-
-void SelectScene::HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login)
-{
-	NetId nid{ login.netid() };
-	int id = nid.GetId();
-	INPUT.SetClientID(id);
-	OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
-}

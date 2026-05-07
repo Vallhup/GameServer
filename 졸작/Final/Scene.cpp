@@ -230,7 +230,7 @@ void Scene::AddGameObject(shared_ptr<GameObject> obj)
 	gameObjects.push_back(obj);
 }
 
-void Scene::HandleLogin(const Protocol::SC_LOGIN_PACKET& login)
+void Scene::HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login)
 {
 	NetId nid{ login.netid() };
 	int id = nid.GetId();
