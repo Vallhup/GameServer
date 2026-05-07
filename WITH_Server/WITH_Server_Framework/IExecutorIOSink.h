@@ -16,5 +16,9 @@ struct IExecutorIOSink
     // 내부에서 INetworkBackend::WakeWorker()를 자동 호출하여 대기 워커를 깨운다.
     virtual void PushCompletion(CompletionEntry entry) noexcept = 0;
 
+    // Outbound IOCP work was posted by the network backend. Wake an executor
+    // worker so it can enter WaitForWork() even when the frame queues are idle.
+    virtual void WakeForNetworkIO() noexcept = 0;
+
     virtual ~IExecutorIOSink() = default;
 };

@@ -36,7 +36,7 @@ void IocpNetworkBackend::Stop() noexcept
 		conn->Close();
 }
 
-void IocpNetworkBackend::WaitForWork(
+bool IocpNetworkBackend::WaitForWork(
 	uint32_t, std::chrono::microseconds timeout) noexcept
 {
 	OVERLAPPED_ENTRY entries[32];
@@ -44,16 +44,22 @@ void IocpNetworkBackend::WaitForWork(
 	DWORD ms = static_cast<DWORD>(
 		std::clamp<int64_t>(timeout.count() / 1000, 0, INFINITE - 1));
 
-	::GetQueuedCompletionStatusEx(
-		_iocpHandle.GetHandle(), entries, 32, &count, ms, FALSE);
+	if (!::GetQueuedCompletionStatusEx(
+		_iocpHandle.GetHandle(), entries, 32, &count, ms, FALSE))
+	{
+		return false;
+	}
 
+	bool dispatched = false;
 	for (ULONG i = 0; i < count; ++i)
 	{
 		auto* op = reinterpret_cast<IocpOperation*>(entries[i].lpOverlapped);
 		if (op == nullptr) continue;
 		bool ok = !FAILED(static_cast<HRESULT>(entries[i].Internal));
 		op->dispatch(op, entries[i].dwNumberOfBytesTransferred, ok);
+		dispatched = true;
 	}
+	return dispatched;
 }
 
 void IocpNetworkBackend::WakeWorker() noexcept
@@ -76,7 +82,18 @@ bool IocpNetworkBackend::Send(SessionId id, std::span<const uint8_t> payload) no
 		return false;
 	}
 
-	return conn->RegisterSend(buf);
+	const bool registered = conn->RegisterSend(buf);
+	if (!registered)
+	{
+		SendBufferPool::Get().Release(buf);
+		return false;
+	}
+
+	// Outbound sends are staged from the main thread after frame execution too.
+	// Wake an executor worker so send completions can clear the connection's
+	// chain-flush state and post any buffers queued behind the first WSASend.
+	_sink.WakeForNetworkIO();
+	return true;
 }
 
 void IocpNetworkBackend::FlushSend() noexcept

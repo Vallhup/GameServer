@@ -14,7 +14,8 @@ struct INetworkBackend
     // WorkerPump에서 작업이 없을 때 호출.
     // Asio : cv.wait_for(timeout)  — IO 처리는 별도 IO 스레드에서 수행.
     // IOCP : GetQueuedCompletionStatusEx() + 완료 처리 후 반환.
-    virtual void WaitForWork(uint32_t workerIdx,
+    [[nodiscard]]
+    virtual bool WaitForWork(uint32_t workerIdx,
                               std::chrono::microseconds timeout) noexcept = 0;
 
     // TaskExecutor::PushCompletion()이 내부적으로 호출. 대기 워커 1개 깨우기.

@@ -183,6 +183,7 @@ private:
     // IExecutorIOSink 구현
     void SubmitDynamicTask(DynamicTaskRequest request) noexcept override;
     void PushCompletion(CompletionEntry entry) noexcept override;
+    void WakeForNetworkIO() noexcept override;
 
     // AsyncIO 내부
     void ProcessCompletions(uint32_t workerIdx);
@@ -241,6 +242,7 @@ private:
     std::condition_variable _progressCv;
 
     std::atomic<bool> _frameBound{ false };
+    std::atomic<uint64_t> _dynamicTaskSubmissionSequence{ 1 };
 
     // TEMP_TASKEXECUTOR_DEBUG: frame-boundary/queue race diagnostics. Remove after root cause is fixed.
     std::atomic<uint64_t> _debugNextFrameId{ 1 };

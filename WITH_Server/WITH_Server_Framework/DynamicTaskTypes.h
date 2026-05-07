@@ -79,6 +79,8 @@ struct DynamicTaskRequest
     // 요청이 발행된 프레임 인덱스 (디버그 / 진단 / 결정론적 정렬 tie-break).
     uint64_t requestFrameIndex{ 0 };
     uint32_t sessionId{ 0 };
+    // 동일 sessionId inbound DynamicTask의 TCP 수신 순서를 보존하기 위한 제출 순번.
+    uint64_t submissionSequence{ 0 };
 
     [[nodiscard]]
     bool IsValid() const noexcept
@@ -93,7 +95,7 @@ struct DynamicTaskRequest
 //
 // 한 프레임 그래프 빌드에 사용되는 동결 요청 집합.
 // 그래프 빌드 전에 결정론적 정렬이 완료된 상태여야 한다.
-// 정렬 기준: (scopeId ASC, priorityBias DESC, requestFrameIndex ASC)
+// 정렬 기준: (scopeId ASC, priorityBias DESC, requestFrameIndex ASC, sessionId ASC, submissionSequence ASC)
 // ---------------------------------------------------------------------------
 struct DynamicTaskFrozenBatch
 {
@@ -112,7 +114,11 @@ struct DynamicTaskFrozenBatch
                     return a.scopeId < b.scopeId;
                 if (a.priorityBias != b.priorityBias)
                     return a.priorityBias > b.priorityBias; // 높을수록 먼저
-                return a.requestFrameIndex < b.requestFrameIndex;
+                if (a.requestFrameIndex != b.requestFrameIndex)
+                    return a.requestFrameIndex < b.requestFrameIndex;
+                if (a.sessionId != b.sessionId)
+                    return a.sessionId < b.sessionId;
+                return a.submissionSequence < b.submissionSequence;
             });
     }
 

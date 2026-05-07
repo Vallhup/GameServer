@@ -40,7 +40,8 @@ public:
 	IocpNetworkBackend& operator=(const IocpNetworkBackend&)	= delete;
 
 public:
-	virtual void WaitForWork(uint32_t workerIdx, std::chrono::microseconds timeout) noexcept override;
+	[[nodiscard]]
+	virtual bool WaitForWork(uint32_t workerIdx, std::chrono::microseconds timeout) noexcept override;
 	virtual void WakeWorker() noexcept override;
 
 	virtual bool Send(SessionId id, std::span<const uint8_t> payload) noexcept override;

@@ -797,6 +797,26 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
     if (batch.IsEmpty())
         return;
 
+    std::unordered_map<uint64_t, ExecNodeId> lastDynamicNodeBySessionAndPhase;
+    const auto makeSessionPhaseKey =
+        [](uint32_t sessionId, ExecPhase phase) noexcept -> uint64_t
+        {
+            return (static_cast<uint64_t>(sessionId) << 32)
+                | static_cast<uint32_t>(phase);
+        };
+    const auto appendUniqueEdge =
+        [](std::vector<ExecNodeId>& preds,
+           std::vector<ExecNodeId>& succs,
+           ExecNodeId pred,
+           ExecNodeId succ)
+        {
+            if (std::find(preds.begin(), preds.end(), pred) == preds.end())
+            {
+                preds.push_back(pred);
+                succs.push_back(succ);
+            }
+        };
+
     for (const DynamicTaskRequest& request : batch.requests)
     {
         if (!request.IsValid())
@@ -859,6 +879,22 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
         const std::span<const AccessSpec> newAccesses{
             typeDesc->accesses.data(), typeDesc->accesses.size() };
 
+        if (request.sessionId != 0)
+        {
+            const uint64_t sessionPhaseKey =
+                makeSessionPhaseKey(request.sessionId, typeDesc->defaultPhase);
+            const auto prevIt =
+                lastDynamicNodeBySessionAndPhase.find(sessionPhaseKey);
+            if (prevIt != lastDynamicNodeBySessionAndPhase.end())
+            {
+                appendUniqueEdge(
+                    predLists[newNodeId],
+                    succLists[prevIt->second],
+                    prevIt->second,
+                    newNodeId);
+            }
+        }
+
         for (ExecNodeId existingId = 0; existingId < newNodeId; ++existingId)
         {
             const ExecNodeRecord& existing = outGraph.nodes[existingId];
@@ -877,12 +913,22 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
 
             if (HasAnyConflict(newAccesses, existingSource->accesses, conflictRegistry))
             {
-                predLists[newNodeId].push_back(existingId);
-                succLists[existingId].push_back(newNodeId);
+                appendUniqueEdge(
+                    predLists[newNodeId],
+                    succLists[existingId],
+                    existingId,
+                    newNodeId);
             }
         }
 
         outGraph.nodes.push_back(record);
+
+        if (request.sessionId != 0)
+        {
+            const uint64_t sessionPhaseKey =
+                makeSessionPhaseKey(request.sessionId, typeDesc->defaultPhase);
+            lastDynamicNodeBySessionAndPhase[sessionPhaseKey] = newNodeId;
+        }
 
         if (record.phase == ExecPhase::Simulate)
             ++outGraph.simulateNodeCount;

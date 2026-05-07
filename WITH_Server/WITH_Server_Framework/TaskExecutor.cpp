@@ -13,6 +13,8 @@
 namespace
 {
     constexpr const char* kLogCategory = "Executor";
+    constexpr std::chrono::microseconds kNetworkPrePollTimeout{ 0 };
+    constexpr std::chrono::microseconds kNetworkIdleWaitTimeout{ 1000 };
 
     // TEMP_TASKEXECUTOR_DEBUG: readable state names for temporary executor race diagnostics.
     const char* DebugNodeStateName(ExecNodeState state) noexcept
@@ -247,8 +249,35 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
     _debugActiveWorkerPumps.fetch_add(1, std::memory_order_acq_rel);
     DebugPumpGuard debugPumpGuard{ _debugActiveWorkerPumps };
 
+    const bool hasNetworkBackend = _networkBackend != nullptr;
+    bool handledNetworkIo = false;
+    if (hasNetworkBackend)
+    {
+        // Drain already-ready IOCP completions before static ECS work without
+        // blocking the worker. This keeps inbound DynamicTask injection from
+        // starving behind a long simulate queue.
+        handledNetworkIo =
+            _networkBackend->WaitForWork(workerIdx, kNetworkPrePollTimeout);
+    }
+
     if (!_frameBound.load(std::memory_order_acquire))
+    {
+        if (handledNetworkIo)
+            return true;
+
+        if (hasNetworkBackend && !handledNetworkIo)
+        {
+            // Short between-frame pump. ExecuteFrame wakes workers through the
+            // thread-pool CV, but a worker blocked in IOCP is only released by
+            // completion, WakeWorker(), or this timeout.
+            //
+            // TODO: Wake the IOCP side explicitly when a new frame is published,
+            // or reserve dedicated IO pump workers, so frame-start latency is not
+            // bounded by kNetworkIdleWaitTimeout.
+            (void)_networkBackend->WaitForWork(workerIdx, kNetworkIdleWaitTimeout);
+        }
         return false;
+    }
 
     // Phase 1: 자신의 deque에서 TryPop (lock 없음, CAS 없음 — 가장 빠른 경로)
     {
@@ -334,7 +363,14 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
         }
     }
 
-    return false;
+    if (hasNetworkBackend)
+    {
+        const bool handledIdleNetworkIo =
+            _networkBackend->WaitForWork(workerIdx, kNetworkIdleWaitTimeout);
+        return handledNetworkIo || handledIdleNetworkIo;
+    }
+
+    return handledNetworkIo;
 }
 
 bool TaskExecutor::ValidateFrameInputs(
@@ -1478,6 +1514,13 @@ void TaskExecutor::SubmitDynamicTask(DynamicTaskRequest request) noexcept
             request.typeId, request.scopeId, request.sessionId);
         return;
     }
+
+    if (request.submissionSequence == 0)
+    {
+        request.submissionSequence =
+            _dynamicTaskSubmissionSequence.fetch_add(1, std::memory_order_acq_rel);
+    }
+
     _dynamicTaskScheduler->Submit(std::move(request));
 }
 
@@ -1489,6 +1532,11 @@ void TaskExecutor::PushCompletion(CompletionEntry entry) noexcept
     NotifyWork();
     if (_networkBackend != nullptr)
         _networkBackend->WakeWorker();
+}
+
+void TaskExecutor::WakeForNetworkIO() noexcept
+{
+    NotifyWork();
 }
 
 // ---------------------------------------------------------------------------
