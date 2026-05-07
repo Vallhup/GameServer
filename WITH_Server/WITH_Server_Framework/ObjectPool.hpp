@@ -93,7 +93,7 @@ private:
     bool IsFromPool(T* obj) const noexcept 
     {
         auto* p = reinterpret_cast<ObjectSlot*>(obj);
-        return p >= &_slots[0] && p < &_slots[PoolCapacity];
+        return p >= _slots.data() && p < _slots.data() + PoolCapacity;
     }
 
 private:
