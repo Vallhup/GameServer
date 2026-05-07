@@ -29,8 +29,6 @@ protected:
 	void RequestSceneChange() override;
 
 private:
-	void CreateBossCharacter();
-
 	float SampleHeightAt(float worldX, float worldZ) const;
 
 private:
