@@ -21,6 +21,10 @@
           "level": 1
         },
         {
+          "abilityKey": "Ability.Knight_SpecialAttack",
+          "level": 1
+        },
+        {
           "abilityKey": "Ability.Knight_Dodge",
           "level": 1
         },
@@ -70,6 +74,10 @@
           "level": 1
         },
         {
+          "abilityKey": "Ability.Lancer_SpecialAttack",
+          "level": 1
+        },
+        {
           "abilityKey": "Ability.Lancer_Dodge",
           "level": 1
         },
@@ -116,6 +124,10 @@
         },
         {
           "abilityKey": "Ability.Paladin_HeavyAttack",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_SpecialAttack",
           "level": 1
         },
         {
@@ -442,6 +454,7 @@
         {
           "request": "HeavyAttack",
           "candidateAbilityKeys": [
+            "Ability.Knight_SpecialAttack",
             "Ability.Knight_HeavyAttack"
           ],
           "selectionPolicy": "OrderedFirstValid",
@@ -489,6 +502,7 @@
         {
           "request": "HeavyAttack",
           "candidateAbilityKeys": [
+            "Ability.Lancer_SpecialAttack",
             "Ability.Lancer_HeavyAttack"
           ],
           "selectionPolicy": "OrderedFirstValid",
@@ -536,6 +550,7 @@
         {
           "request": "HeavyAttack",
           "candidateAbilityKeys": [
+            "Ability.Paladin_SpecialAttack",
             "Ability.Paladin_HeavyAttack"
           ],
           "selectionPolicy": "OrderedFirstValid",
@@ -594,7 +609,31 @@
       "abilityBindings": [
         {
           "abilityKey": "Ability.Knight_LightAttack1",
-          "animationKey": "Knight_LightAttack1",
+          "animationKey": "Knight_AttackCombo1",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Knight_LightAttack2",
+          "animationKey": "Knight_AttackCombo2",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Knight_LightAttack3",
+          "animationKey": "Knight_AttackCombo3",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Knight_HeavyAttack",
+          "animationKey": "Knight_AttackStrong",
+          "playRate": 1.0,
+          "startNormalizedTime": 0.0
+        },
+        {
+          "abilityKey": "Ability.Knight_SpecialAttack",
+          "animationKey": "Knight_AttackSpecial",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
@@ -660,31 +699,31 @@
       "abilityBindings": [
         {
           "abilityKey": "Ability.Lancer_LightAttack1",
-          "animationKey": "Lancer_LightAttack1",
+          "animationKey": "Lancer_AttackCombo1",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
         {
           "abilityKey": "Ability.Lancer_LightAttack2",
-          "animationKey": "Lancer_LightAttack2",
+          "animationKey": "Lancer_AttackCombo2",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
         {
           "abilityKey": "Ability.Lancer_LightAttack3",
-          "animationKey": "Lancer_LightAttack3",
+          "animationKey": "Lancer_AttackCombo3",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
         {
           "abilityKey": "Ability.Lancer_HeavyAttack",
-          "animationKey": "Lancer_HeavyAttack",
+          "animationKey": "Lancer_AttackStrong",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
         {
           "abilityKey": "Ability.Lancer_SpecialAttack",
-          "animationKey": "Lancer_SpecialAttack",
+          "animationKey": "Lancer_AttackSpecial",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
@@ -750,31 +789,31 @@
       "abilityBindings": [
         {
           "abilityKey": "Ability.Paladin_LightAttack1",
-          "animationKey": "Paladin_LightAttack1",
+          "animationKey": "Paladin_AttackCombo1",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
         {
           "abilityKey": "Ability.Paladin_LightAttack2",
-          "animationKey": "Paladin_LightAttack2",
+          "animationKey": "Paladin_AttackCombo2",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
         {
           "abilityKey": "Ability.Paladin_LightAttack3",
-          "animationKey": "Paladin_LightAttack3",
+          "animationKey": "Paladin_AttackCombo3",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
         {
           "abilityKey": "Ability.Paladin_HeavyAttack",
-          "animationKey": "Paladin_HeavyAttack",
+          "animationKey": "Paladin_AttackStrong",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
         {
           "abilityKey": "Ability.Paladin_SpecialAttack",
-          "animationKey": "Paladin_SpecialAttack",
+          "animationKey": "Paladin_AttackSpecial",
           "playRate": 1.0,
           "startNormalizedTime": 0.0
         },
