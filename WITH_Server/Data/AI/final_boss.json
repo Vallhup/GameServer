@@ -1,0 +1,106 @@
+{
+  "key": "AI.FinalBoss",
+  "aiType": "FinalBossMonster",
+  "perceptionTuning": {
+    "sightRange": 24.0,
+    "attackRange": 12.0,
+    "frontDotThreshold": 0.12,
+    "targetKeepBonus": 5.5,
+    "lastAttackerBonus": 3.5,
+    "frontBonus": 1.0,
+    "switchScoreMargin": 4.5,
+    "loseSightGraceTime": 1.8,
+    "leashRange": 30.0,
+    "hardLeashRange": 42.0,
+    "leashGaugeMax": 100.0,
+    "leashDrainPerSec": 16.0,
+    "hardLeashDrainPerSec": 50.0,
+    "leashRecoverPerSec": 28.0,
+    "returnHomeArriveRange": 1.2,
+    "returnHomeReaggroLockSec": 2.0,
+    "returnHpRegenPerSecRatio": 0.08,
+    "idleActionCooldownSec": 8.0,
+    "idleActionChancePercent": 0,
+    "assistRange": 0.0
+  },
+  "decisionTuning": {
+    "decisionInterval": 0.18,
+    "attackCooldown": 2.1,
+    "reactDuration": 0.7
+  },
+  "combatActions": [
+    {
+      "abilityKey": "Ability.FinalBoss_Slash",
+      "weight": 35,
+      "distanceBucket": "VeryClose",
+      "aiCooldownSec": 1.6,
+      "globalCooldownSec": 2.0
+    },
+    {
+      "abilityKey": "Ability.FinalBoss_Thrust",
+      "weight": 35,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 1.8,
+      "globalCooldownSec": 2.0,
+      "forbidImmediateRepeat": true
+    },
+    {
+      "abilityKey": "Ability.FinalBoss_DashSlash",
+      "weight": 32,
+      "distanceBucket": "Mid",
+      "aiCooldownSec": 3.2,
+      "globalCooldownSec": 2.6,
+      "forbidImmediateRepeat": true
+    },
+    {
+      "abilityKey": "Ability.FinalBoss_JumpSlash",
+      "weight": 28,
+      "distanceBucket": "Far",
+      "aiCooldownSec": 4.6,
+      "globalCooldownSec": 3.0,
+      "forbidImmediateRepeat": true
+    }
+  ],
+  "idleActions": [],
+  "movementProfiles": [
+    {
+      "name": "FinalBossDefault",
+      "phaseMin": 1,
+      "phaseMax": 255,
+      "veryCloseDistance": 2.0,
+      "closeDistance": 4.2,
+      "midDistance": 8.0,
+      "farDistance": 16.0,
+      "preferredMinDistance": 3.2,
+      "preferredMaxDistance": 7.0,
+      "veryCloseBehavior": "Retreat",
+      "closeBehavior": "Hold",
+      "preferredBehavior": "Hold",
+      "midBehavior": "Approach",
+      "farBehavior": "RunApproach",
+      "strafeMinSec": 0.8,
+      "strafeMaxSec": 1.6,
+      "lockFacingToTarget": true
+    }
+  ],
+  "reactionRules": [
+    {
+      "event": "OnHitReceived",
+      "outcome": "ForceRetarget",
+      "retargetAttacker": true,
+      "priority": 100
+    },
+    {
+      "event": "OnParried",
+      "outcome": "EnterReact",
+      "retargetAttacker": true,
+      "priority": 200
+    },
+    {
+      "event": "OnGuardBroken",
+      "outcome": "EnterReact",
+      "retargetAttacker": true,
+      "priority": 200
+    }
+  ]
+}

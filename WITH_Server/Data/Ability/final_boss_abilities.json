@@ -1,0 +1,386 @@
+{
+  "abilities": [
+    {
+      "key": "Ability.FinalBoss_Thrust",
+      "name": "FinalBoss.Thrust",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "blockedOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 1.83333063,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.32,
+            "endNormalized": 0.62,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 42.0,
+              "minDistance": null,
+              "maxDistance": 4.1,
+              "verticalTolerance": 2.8,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 2.0,
+                "bonusDamage": 14.0,
+                "staminaDamageScale": 1.4,
+                "bonusStaminaDamage": 8.0,
+                "poiseDamageScale": 0.0,
+                "bonusPoiseDamage": 0.0,
+                "knockbackDistance": 1.2,
+                "hitStopSec": 0.09,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.1,
+            "endNormalized": 0.34,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 1.2,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 3.4,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": { "endType": "NaturalEnd", "defaultNextAbilityKey": null },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          { "cause": "OnHitReceived", "toAbilityKey": "Ability.FinalBoss_Hit", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 100, "aiInterruptible": false },
+          { "cause": "OnParried", "toAbilityKey": "Ability.FinalBoss_Stun", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 200, "aiInterruptible": false },
+          { "cause": "OnAttributeZero", "toAbilityKey": "Ability.FinalBoss_Dead", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 1000, "aiInterruptible": false }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.FinalBoss_Slash",
+      "name": "FinalBoss.Slash",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "blockedOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 1.533332,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.28,
+            "endNormalized": 0.58,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 92.0,
+              "minDistance": null,
+              "maxDistance": 3.7,
+              "verticalTolerance": 2.8,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1.8,
+                "bonusDamage": 12.0,
+                "staminaDamageScale": 1.2,
+                "bonusStaminaDamage": 7.0,
+                "poiseDamageScale": 0.0,
+                "bonusPoiseDamage": 0.0,
+                "knockbackDistance": 0.95,
+                "hitStopSec": 0.08,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.26,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 0.55,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 3.8,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": { "endType": "NaturalEnd", "defaultNextAbilityKey": null },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          { "cause": "OnHitReceived", "toAbilityKey": "Ability.FinalBoss_Hit", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 100, "aiInterruptible": false },
+          { "cause": "OnParried", "toAbilityKey": "Ability.FinalBoss_Stun", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 200, "aiInterruptible": false },
+          { "cause": "OnAttributeZero", "toAbilityKey": "Ability.FinalBoss_Dead", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 1000, "aiInterruptible": false }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.FinalBoss_DashSlash",
+      "name": "FinalBoss.DashSlash",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "blockedOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 1.83333063,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.24,
+            "endNormalized": 0.7,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 82.0,
+              "minDistance": 1.8,
+              "maxDistance": 7.2,
+              "verticalTolerance": 3.0,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 2.35,
+                "bonusDamage": 18.0,
+                "staminaDamageScale": 1.5,
+                "bonusStaminaDamage": 9.0,
+                "poiseDamageScale": 0.0,
+                "bonusPoiseDamage": 0.0,
+                "knockbackDistance": 1.45,
+                "hitStopSec": 0.1,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.46,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 4.6,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 4.2,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": { "endType": "NaturalEnd", "defaultNextAbilityKey": null },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          { "cause": "OnHitReceived", "toAbilityKey": "Ability.FinalBoss_Hit", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 100, "aiInterruptible": false },
+          { "cause": "OnParried", "toAbilityKey": "Ability.FinalBoss_Stun", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 200, "aiInterruptible": false },
+          { "cause": "OnAttributeZero", "toAbilityKey": "Ability.FinalBoss_Dead", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 1000, "aiInterruptible": false }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.FinalBoss_JumpSlash",
+      "name": "FinalBoss.JumpSlash",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "blockedOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 1.63333571,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.34,
+            "endNormalized": 0.78,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 68.0,
+              "minDistance": 4.0,
+              "maxDistance": 12.0,
+              "verticalTolerance": 3.4,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 2.75,
+                "bonusDamage": 22.0,
+                "staminaDamageScale": 1.8,
+                "bonusStaminaDamage": 11.0,
+                "poiseDamageScale": 0.0,
+                "bonusPoiseDamage": 0.0,
+                "knockbackDistance": 1.75,
+                "hitStopSec": 0.12,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.54,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 7.4,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 4.6,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": { "endType": "NaturalEnd", "defaultNextAbilityKey": null },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          { "cause": "OnHitReceived", "toAbilityKey": "Ability.FinalBoss_Hit", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 100, "aiInterruptible": false },
+          { "cause": "OnParried", "toAbilityKey": "Ability.FinalBoss_Stun", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 200, "aiInterruptible": false },
+          { "cause": "OnAttributeZero", "toAbilityKey": "Ability.FinalBoss_Dead", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 1000, "aiInterruptible": false }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.FinalBoss_Stun",
+      "name": "FinalBoss.Stun",
+      "kind": "Reaction",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "blockedOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "requiresTarget": false,
+        "requiresGrounded": false
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 6.666667,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": { "endType": "NaturalEnd", "defaultNextAbilityKey": null },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          { "cause": "OnAttributeZero", "toAbilityKey": "Ability.FinalBoss_Dead", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 1000, "aiInterruptible": false }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.FinalBoss_Hit",
+      "name": "FinalBoss.Hit",
+      "kind": "Reaction",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "blockedOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "requiresTarget": false,
+        "requiresGrounded": false
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 1.13333154,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": { "endType": "NaturalEnd", "defaultNextAbilityKey": null },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          { "cause": "OnAttributeZero", "toAbilityKey": "Ability.FinalBoss_Dead", "windowPolicy": "Always", "windowStartNormalized": null, "windowEndNormalized": null, "priority": 1000, "aiInterruptible": false }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.FinalBoss_Dead",
+      "name": "FinalBoss.Dead",
+      "kind": "Dead",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "blockedOwnerTags": { "op": "None", "tags": [], "children": [] },
+        "requiresTarget": false,
+        "requiresGrounded": false
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 5.50000334,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": { "endType": "NaturalEnd", "defaultNextAbilityKey": null },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [],
+        "cancelRules": []
+      }
+    }
+  ]
+}

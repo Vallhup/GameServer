@@ -362,8 +362,8 @@ WorldDef CreateFinalWorldDef(WorldExecutionModelKey executionModelKey)
 				},
 				SpawnPointDef{
 					.id = SpawnPointIds::FinalMonster01,
-					.name = "Final.Imp.01",
-					.position = WorldVec3Def{ 482.0f, 48.737797f, 482.0f },
+					.name = "Final.FinalBoss.01",
+					.position = WorldVec3Def{ 0.044109f, 2.180071f, 2.412330f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 			},

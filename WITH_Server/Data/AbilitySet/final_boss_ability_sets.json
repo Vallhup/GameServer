@@ -1,0 +1,56 @@
+{
+  "abilitySets": [
+    {
+      "key": "AbilitySet.FinalBoss",
+      "name": "FinalBoss",
+      "grants": [
+        { "abilityKey": "Ability.FinalBoss_Thrust", "level": 1 },
+        { "abilityKey": "Ability.FinalBoss_Slash", "level": 1 },
+        { "abilityKey": "Ability.FinalBoss_DashSlash", "level": 1 },
+        { "abilityKey": "Ability.FinalBoss_JumpSlash", "level": 1 },
+        { "abilityKey": "Ability.FinalBoss_Stun", "level": 1 },
+        { "abilityKey": "Ability.FinalBoss_Hit", "level": 1 },
+        { "abilityKey": "Ability.FinalBoss_Dead", "level": 1 }
+      ],
+      "inputBindingProfileKey": "AbilityInput.FinalBoss",
+      "animationBindingProfileKey": "AbilityAnimation.FinalBoss",
+      "fallbackReactionProfileKey": "AbilityFallback.FinalBoss"
+    }
+  ],
+  "inputBindingProfiles": [
+    {
+      "key": "AbilityInput.FinalBoss",
+      "entries": []
+    }
+  ],
+  "animationBindingProfiles": [
+    {
+      "key": "AbilityAnimation.FinalBoss",
+      "abilityBindings": [
+        { "abilityKey": "Ability.FinalBoss_Thrust", "animationKey": "FinalBoss_Thrust", "playRate": 1.0, "startNormalizedTime": 0.0 },
+        { "abilityKey": "Ability.FinalBoss_Slash", "animationKey": "FinalBoss_Slash", "playRate": 1.0, "startNormalizedTime": 0.0 },
+        { "abilityKey": "Ability.FinalBoss_DashSlash", "animationKey": "FinalBoss_DashSlash", "playRate": 1.0, "startNormalizedTime": 0.0 },
+        { "abilityKey": "Ability.FinalBoss_JumpSlash", "animationKey": "FinalBoss_JumpSlash", "playRate": 1.0, "startNormalizedTime": 0.0 },
+        { "abilityKey": "Ability.FinalBoss_Stun", "animationKey": "FinalBoss_Stun", "playRate": 1.0, "startNormalizedTime": 0.0 },
+        { "abilityKey": "Ability.FinalBoss_Hit", "animationKey": "FinalBoss_Hit", "playRate": 1.0, "startNormalizedTime": 0.0 },
+        { "abilityKey": "Ability.FinalBoss_Dead", "animationKey": "FinalBoss_Death", "playRate": 1.0, "startNormalizedTime": 0.0 }
+      ],
+      "locomotionBindings": [
+        { "mode": "Idle", "animationKey": "FinalBoss_Idle", "holdLastFrame": true },
+        { "mode": "Walk", "animationKey": "FinalBoss_Walk" },
+        { "mode": "Run", "animationKey": "FinalBoss_Walk" },
+        { "mode": "Turn", "animationKey": "FinalBoss_Walk" }
+      ]
+    }
+  ],
+  "fallbackReactionProfiles": [
+    {
+      "key": "AbilityFallback.FinalBoss",
+      "entries": [
+        { "cause": "OnHitReceived", "toAbilityKey": "Ability.FinalBoss_Hit", "priority": 100 },
+        { "cause": "OnParried", "toAbilityKey": "Ability.FinalBoss_Stun", "priority": 200 },
+        { "cause": "OnAttributeZero", "toAbilityKey": "Ability.FinalBoss_Dead", "priority": 1000 }
+      ]
+    }
+  ]
+}

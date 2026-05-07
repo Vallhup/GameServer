@@ -3,7 +3,7 @@
   "name": "FinalDefault",
   "entries": [
     {
-      "characterId": "Imp",
+      "characterId": "FinalBoss",
       "spawnPointId": "FinalMonster01",
       "count": 1,
       "type": "OnWorldStart",

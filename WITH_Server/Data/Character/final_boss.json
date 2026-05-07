@@ -25,9 +25,14 @@
     "role":  "Boss",
     "features":  [
                      "Replicated",
+                     "Combatant",
+                     "AIControlled",
                      "BossPhase"
                  ],
-    "ai":  null,
+    "ai":  {
+               "aiType":  "FinalBossMonster",
+               "aiProfileKey":  "AI.FinalBoss"
+           },
     "attributes":  [
                        {
                            "attributeKey":  "Attribute.Hp",
@@ -80,5 +85,5 @@
                            "currentValue":  1.0
                        }
                    ],
-    "abilitySetKey":  null
+    "abilitySetKey":  "AbilitySet.FinalBoss"
 }
