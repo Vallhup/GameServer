@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="AsyncIO_SmokeTest.cpp" />
     <ClCompile Include="DynamicTask_SmokeTest.cpp" />
+    <ClCompile Include="PaperEvaluation.cpp" />
     <ClCompile Include="Phase1_AutoSystemBridge_SmokeTest.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>

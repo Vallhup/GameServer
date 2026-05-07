@@ -55,11 +55,12 @@ namespace
         std::condition_variable       cv;
         std::atomic<uint32_t>         wakeCount{ 0 };
 
-        void WaitForWork(uint32_t /*workerIdx*/,
+        bool WaitForWork(uint32_t /*workerIdx*/,
                          std::chrono::microseconds timeout) noexcept override
         {
             std::unique_lock lock{ cvMtx };
             cv.wait_for(lock, timeout);
+            return false;
         }
 
         void WakeWorker() noexcept override

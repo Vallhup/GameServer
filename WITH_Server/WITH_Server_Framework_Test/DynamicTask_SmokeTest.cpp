@@ -593,6 +593,107 @@ namespace
     // ============================================================================
     // Test_DT_06 — Executor: DynamicTask dispatch → frameTable payload resolve
     // ============================================================================
+    // Test_DT_05B - Builder: same-session DynamicTask order edge
+    static void Test_DT_05B_Builder_AppendDynamic_SameSession_OrderEdge()
+    {
+        LogTestBanner(__FUNCTION__);
+
+        ExecutionSourceRegistry sourceRegistry{};
+        DynamicTaskTypeRegistry typeRegistry{};
+
+        DynamicTaskTypeDesc desc{};
+        desc.debugName    = "SessionOrderedTask";
+        desc.defaultPhase = ExecPhase::Simulate;
+        desc.defaultLane  = ExecLane::Parallel;
+        desc.dispatchFn   = &DynDispatch_RecordPayload;
+
+        const DynamicTaskTypeId typeId = typeRegistry.Register(
+            std::move(desc), sourceRegistry);
+        assert(typeId != InvalidDynamicTaskTypeId);
+
+        DynamicTaskRequest sessionFirst{};
+        sessionFirst.typeId = typeId;
+        sessionFirst.scopeId = 0;
+        sessionFirst.payloadKey = 101;
+        sessionFirst.requestFrameIndex = 1;
+        sessionFirst.sessionId = 7;
+        sessionFirst.submissionSequence = 1;
+
+        DynamicTaskRequest sessionSecond{};
+        sessionSecond.typeId = typeId;
+        sessionSecond.scopeId = 0;
+        sessionSecond.payloadKey = 102;
+        sessionSecond.requestFrameIndex = 1;
+        sessionSecond.sessionId = 7;
+        sessionSecond.submissionSequence = 2;
+
+        DynamicTaskRequest otherSession{};
+        otherSession.typeId = typeId;
+        otherSession.scopeId = 0;
+        otherSession.payloadKey = 201;
+        otherSession.requestFrameIndex = 1;
+        otherSession.sessionId = 8;
+        otherSession.submissionSequence = 1;
+
+        DynamicTaskFrozenBatch batch;
+        batch.requests.push_back(otherSession);
+        batch.requests.push_back(sessionSecond);
+        batch.requests.push_back(sessionFirst);
+        batch.Sort();
+
+        FrameTaskGraph graph;
+        graph.scopeCount = 1;
+        graph.scopeToWorld = { 9003 };
+
+        std::vector<std::vector<ExecNodeId>> predLists;
+        std::vector<std::vector<ExecNodeId>> succLists;
+        DynamicTaskFrameTable frameTable;
+        BuildResult result{};
+
+        ExecutionGraphBuilder builder{};
+        ExecutionGraphBuildPolicy policy{};
+        std::vector<WorldFragmentBuild> fragments;
+
+        ExecutionGraphBuilderTestHook::AssembleFrameGraphNodes(
+            builder, fragments, graph, policy, predLists, succLists);
+        graph.scopeCount = 1;
+        graph.scopeToWorld = { 9003 };
+
+        ExecutionGraphBuilderTestHook::AppendDynamicNodes(
+            builder, batch, typeRegistry, sourceRegistry,
+            nullptr, graph, predLists, succLists,
+            frameTable, result);
+
+        ExecutionGraphBuilderTestHook::FinalizeEdgePool(
+            builder, graph, predLists, succLists, policy);
+
+        assert(!result.HasError());
+        assert(graph.nodes.size() == 3);
+
+        const DynamicTaskInstance* inst0 = frameTable.FindByNodeId(0);
+        const DynamicTaskInstance* inst1 = frameTable.FindByNodeId(1);
+        const DynamicTaskInstance* inst2 = frameTable.FindByNodeId(2);
+        assert(inst0 != nullptr && inst0->payloadKey == 101);
+        assert(inst1 != nullptr && inst1->payloadKey == 102);
+        assert(inst2 != nullptr && inst2->payloadKey == 201);
+
+        const ExecNodeRecord& n0 = graph.nodes[0];
+        const ExecNodeRecord& n1 = graph.nodes[1];
+        const ExecNodeRecord& n2 = graph.nodes[2];
+
+        assert(n0.predCount == 0);
+        assert(n0.succCount == 1);
+        assert(graph.edges[n0.succBegin] == 1);
+
+        assert(n1.predCount == 1);
+        assert(graph.edges[n1.predBegin] == 0);
+        assert(n1.succCount == 0);
+
+        assert(n2.predCount == 0);
+        assert(n2.succCount == 0);
+    }
+
+    // Test_DT_06 - Executor: DynamicTask dispatch resolves frameTable payload
     static void Test_DT_06_Executor_Dispatches_DynamicTask_And_Resolves_Payload()
     {
         LogTestBanner(__FUNCTION__);
@@ -722,9 +823,6 @@ namespace
         LogTestBanner(__FUNCTION__);
 
         constexpr ExecToken kStaticToken  = 1;
-        constexpr ExecToken kCommitToken  = 2;
-        constexpr ExecToken kLifecycle    = 3;
-        constexpr ExecToken kReconcile    = 4;
         constexpr WorldExecutionModelKey kModelKey = 300;
 
         DynTestRecorder recorder{};
@@ -739,6 +837,8 @@ namespace
         ExecutionSourceRegistry sourceRegistry{};
         WorldTransferProfileRegistry transferProfileRegistry{};
 
+        assert(sourceRegistry.ReserveToken(kStaticToken));
+
         // Static System: 프레임 1에서 DynamicTaskRequest를 push
         ExecutionSourceDesc staticDesc{};
         staticDesc.token     = kStaticToken;
@@ -749,45 +849,9 @@ namespace
         staticDesc.debugName = "StaticPushSys";
         assert(sourceRegistry.Register(staticDesc));
 
-        ExecutionSourceDesc commitDesc{};
-        commitDesc.token = kCommitToken; commitDesc.phase = ExecPhase::Commit;
-        commitDesc.lane = ExecLane::Serial; commitDesc.kind = ExecNodeKind::StructuralApply;
-        commitDesc.fn = [](NodeExecContext& ctx) -> ExecCallResult {
-            auto* ops = ctx.TryGetOps();
-            if (ops) ops->CommitScope(ctx.scopeId, ctx.frame->runtimeByScope);
-            return ExecCallResult::Success;
-        };
-        commitDesc.debugName = "Commit";
-        assert(sourceRegistry.Register(commitDesc));
-
-        ExecutionSourceDesc lifecycleDesc{};
-        lifecycleDesc.token = kLifecycle; lifecycleDesc.phase = ExecPhase::LifecycleFlush;
-        lifecycleDesc.lane = ExecLane::Serial; lifecycleDesc.kind = ExecNodeKind::LifecycleFlush;
-        lifecycleDesc.fn = [](NodeExecContext& ctx) -> ExecCallResult {
-            auto* ops = ctx.TryGetOps();
-            if (ops) ops->FlushLifecycle(ctx.scopeId, ctx.frame->runtimeByScope);
-            return ExecCallResult::Success;
-        };
-        lifecycleDesc.debugName = "Lifecycle";
-        assert(sourceRegistry.Register(lifecycleDesc));
-
-        ExecutionSourceDesc reconcileDesc{};
-        reconcileDesc.token = kReconcile; reconcileDesc.phase = ExecPhase::Reconcile;
-        reconcileDesc.lane = ExecLane::Serial; reconcileDesc.kind = ExecNodeKind::Reconcile;
-        reconcileDesc.fn = [](NodeExecContext& ctx) -> ExecCallResult {
-            auto* ops = ctx.TryGetOps();
-            if (ops) ops->ReconcileScope(ctx.scopeId, ctx.frame->runtimeByScope);
-            return ExecCallResult::Success;
-        };
-        reconcileDesc.debugName = "Reconcile";
-        assert(sourceRegistry.Register(reconcileDesc));
-
         WorldExecutionModel model{};
         model.key = kModelKey;
         model.simulateSources   = { kStaticToken };
-        model.commitSources     = { kCommitToken };
-        model.lifecycleFlushSources = { kLifecycle };
-        model.reconcileSources  = { kReconcile };
         assert(executionModelRegistry.Register(model, sourceRegistry));
 
         WorldDef def = MakeMinimalWorldDef("FrameInvWorld");
@@ -977,6 +1041,9 @@ void RunDynamicTaskSmokeTests()
 
     Test_DT_05_Builder_AppendDynamic_Conflict_AutoEdge();
     std::cout << "[PASS] Test_DT_05_Builder_AppendDynamic_Conflict_AutoEdge\n";
+
+    Test_DT_05B_Builder_AppendDynamic_SameSession_OrderEdge();
+    std::cout << "[PASS] Test_DT_05B_Builder_AppendDynamic_SameSession_OrderEdge\n";
 
     Test_DT_06_Executor_Dispatches_DynamicTask_And_Resolves_Payload();
     std::cout << "[PASS] Test_DT_06_Executor_Dispatches_DynamicTask_And_Resolves_Payload\n";
