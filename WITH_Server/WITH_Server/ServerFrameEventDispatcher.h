@@ -1,9 +1,7 @@
 #pragma once
 
 #include "FrameworkRuntime.h"
-#include "NetworkRuntime.h"
-#include "PlayerEntryService.h"
-#include "SessionBindingRegistry.h"
+#include "ServerSessionSystem.h"
 
 #include <span>
 
@@ -12,9 +10,7 @@ public:
 	static bool Dispatch(
 		const FrameworkRuntime::FrameResult& frameResult,
 		FrameworkRuntime& framework,
-		NetworkRuntime& network,
-		SessionBindingRegistry& sessionBindings,
-		PlayerEntryService& playerEntryService,
+		ServerSessionSystem& sessionSystem,
 		double nowSec,
 		std::span<const SessionId> excludedSessionIds = {});
 };

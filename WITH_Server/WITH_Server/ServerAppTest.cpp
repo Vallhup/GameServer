@@ -9,20 +9,25 @@
 #include <thread>
 
 #include "CharacterDef.h"
+#include "CharacterDataService.h"
 #include "CharacterIdPolicy.h"
+#include "CharacterSpawnService.h"
 #include "DefFileFormat.h"
 #include "DefRegistry.h"
 #include "AnimationDef.h"
 #include "ECS/GameplayRuntimeComponents.h"
 #include "FrameworkRuntime.h"
+#include "IWorldTransitionRequestSink.h"
 #include "NetworkRuntime.h"
-#include "PlayerEntryService.h"
 #include "RepComponent.h"
 #include "ServerFrameEventDispatcher.h"
+#include "ServerSessionSystem.h"
 #include "ServerWorldBootstrap.h"
 #include "ServerWorldTransferBinding.h"
 #include "ServerWorldTransferCommitter.h"
 #include "SessionBindingRegistry.h"
+#include "SessionFlowCommands.h"
+#include "SessionFlowController.h"
 #include "WorldDef.h"
 #include "WorldInstance.h"
 #include "WorldInstanceRecord.h"
@@ -49,6 +54,28 @@ namespace
 		static TestDefId GetId(const TestDefEntry& def) noexcept
 		{
 			return def.id;
+		}
+	};
+
+	class NoopWorldTransitionRequestSink final : public IWorldTransitionRequestSink
+	{
+	public:
+		TransferId RequestDemoWorldTransition(
+			SessionId sessionId,
+			uint32_t requestId) override
+		{
+			(void)sessionId;
+			(void)requestId;
+			return 0;
+		}
+
+		bool MarkClientWorldTransitionReady(
+			SessionId sessionId,
+			TransferId transferId) override
+		{
+			(void)sessionId;
+			(void)transferId;
+			return false;
 		}
 	};
 
@@ -164,25 +191,19 @@ namespace
 	bool DispatchFrameEvents(
 		const FrameworkRuntime::FrameResult& frameResult,
 		FrameworkRuntime& framework,
-		NetworkRuntime& network,
-		SessionBindingRegistry& sessionBindings,
-		PlayerEntryService& playerEntryService,
+		ServerSessionSystem& sessionSystem,
 		double nowSec)
 	{
 		return ServerFrameEventDispatcher::Dispatch(
 			frameResult,
 			framework,
-			network,
-			sessionBindings,
-			playerEntryService,
+			sessionSystem,
 			nowSec);
 	}
 
 	bool RunAppLikeFrame(
 		FrameworkRuntime& framework,
-		NetworkRuntime& network,
-		SessionBindingRegistry& sessionBindings,
-		PlayerEntryService& playerEntryService,
+		ServerSessionSystem& sessionSystem,
 		uint64_t frameIndex,
 		double nowSec,
 		double dtSec,
@@ -194,7 +215,9 @@ namespace
 			return false;
 		}
 
-		if (!ServerWorldTransferCommitter::Commit(framework, sessionBindings))
+		if (!ServerWorldTransferCommitter::Commit(
+			framework,
+			sessionSystem.Bindings()))
 		{
 			std::cout << "[WorldTransitionSmoke] transfer commit failed.\n";
 			return false;
@@ -218,9 +241,7 @@ namespace
 		return DispatchFrameEvents(
 			outFrame,
 			framework,
-			network,
-			sessionBindings,
-			playerEntryService,
+			sessionSystem,
 			nowSec);
 	}
 }
@@ -315,11 +336,22 @@ bool RunWorldTransitionDebugSmokeTest()
 	FrameworkRuntime framework(FrameworkRuntime::Config{
 		.executorWorkerCount = 1
 	});
-	SessionBindingRegistry sessionBindings;
-	ServerWorldTransferBinding transferBinding(framework, sessionBindings);
+	NoopWorldTransitionRequestSink worldTransitionSink;
+	WorldId startupWorldId = WorldId::Invalid();
+	ServerSessionSystem sessionSystem(
+		ServerSessionSystem::Config{
+			.networkThreadCount = 1,
+			.listenPort = 7011,
+			.maxSessions = 8
+		},
+		framework,
+		startupWorldId,
+		worldTransitionSink);
+	ServerWorldTransferBinding transferBinding(
+		framework,
+		sessionSystem.Bindings());
 	ServerWorldBootstrapFactory bootstrapFactory;
 	ServerWorldBootstrapDefinitionProvider bootstrapDefinitions;
-	WorldId startupWorldId = WorldId::Invalid();
 
 	bootstrapFactory.SetAnimationRegistry(&animationRegistry);
 	bootstrapFactory.SetFramework(&framework);
@@ -352,39 +384,78 @@ bool RunWorldTransitionDebugSmokeTest()
 		return false;
 	}
 
-	NetworkRuntime network(NetworkRuntime::Config{
-		.workerThreadCount = 1,
-		.listenPort = 7011,
-		.maxSessions = 8
-	});
-	if (!network.Initialize())
+	if (!sessionSystem.Initialize())
 	{
-		std::cout << "[WorldTransitionSmoke] network initialize failed.\n";
+		std::cout << "[WorldTransitionSmoke] session system initialize failed.\n";
 		framework.Shutdown();
 		return false;
 	}
 
-	PlayerEntryService playerEntryService(PlayerEntryService::Dependencies{
-		.framework = &framework,
-		.startupWorldId = &startupWorldId
-	});
-
-	if (!playerEntryService.BeginAuthenticatedEntry(kSessionId))
+	SessionFlowResult flowResult =
+		sessionSystem.Flow().Dispatch(kSessionId, LoginRequested{});
+	if (!flowResult.Succeeded())
 	{
-		std::cout << "[WorldTransitionSmoke] entry begin failed.\n";
-		network.Shutdown();
+		std::cout << "[WorldTransitionSmoke] login request flow failed.\n";
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
 
-	const PlayerEntryResult entryResult =
-		playerEntryService.RequestCharacterSelect(kSessionId, CharacterId::Knight);
-	if (!entryResult.Succeeded())
+	const NetId reservedNetId = framework.AllocateNetId();
+	LoginSucceeded loginSucceeded{};
+	loginSucceeded.playerNetId = reservedNetId;
+	flowResult = sessionSystem.Flow().Dispatch(kSessionId, loginSucceeded);
+	if (!flowResult.Succeeded())
 	{
-		std::cout << "[WorldTransitionSmoke] character select failed."
-			<< " code=" << static_cast<int>(entryResult.code)
+		std::cout << "[WorldTransitionSmoke] login success flow failed.\n";
+		sessionSystem.Shutdown();
+		framework.Shutdown();
+		return false;
+	}
+
+	CharacterSelectRequested selectRequested{};
+	selectRequested.characterId = CharacterId::Knight;
+	flowResult = sessionSystem.Flow().Dispatch(kSessionId, selectRequested);
+	if (!flowResult.Succeeded())
+	{
+		std::cout << "[WorldTransitionSmoke] character select flow failed.\n";
+		sessionSystem.Shutdown();
+		framework.Shutdown();
+		return false;
+	}
+
+	const CharacterDataResult dataResult =
+		sessionSystem.CharacterData().ResolveCharacterSelect(kSessionId, CharacterId::Knight);
+	if (!dataResult.Succeeded())
+	{
+		std::cout << "[WorldTransitionSmoke] character data failed."
+			<< " code=" << static_cast<int>(dataResult.code)
 			<< "\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
+		framework.Shutdown();
+		return false;
+	}
+
+	CharacterDataLoaded dataLoaded{};
+	dataLoaded.characterId = dataResult.characterId;
+	dataLoaded.worldId = dataResult.worldId;
+	flowResult = sessionSystem.Flow().Dispatch(kSessionId, dataLoaded);
+	if (!flowResult.Succeeded())
+	{
+		std::cout << "[WorldTransitionSmoke] character data flow failed.\n";
+		sessionSystem.Shutdown();
+		framework.Shutdown();
+		return false;
+	}
+
+	const CharacterSpawnResult spawnResult =
+		sessionSystem.CharacterSpawn().RequestCharacterSpawn(dataResult, reservedNetId);
+	if (!spawnResult.Succeeded())
+	{
+		std::cout << "[WorldTransitionSmoke] character spawn failed."
+			<< " code=" << static_cast<int>(spawnResult.code)
+			<< "\n";
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -393,31 +464,40 @@ bool RunWorldTransitionDebugSmokeTest()
 	uint64_t frameIndex = 1;
 	FrameworkRuntime::FrameResult frameResult{};
 
-	network.BeginSendStage();
+	sessionSystem.BeginSendStage();
 	nowSec += kDtSec;
 	if (!RunAppLikeFrame(
 		framework,
-		network,
-		sessionBindings,
-		playerEntryService,
+		sessionSystem,
 		frameIndex++,
 		nowSec,
 		kDtSec,
 		frameResult))
 	{
-		network.Shutdown();
+		sessionSystem.Shutdown();
+		framework.Shutdown();
+		return false;
+	}
+
+	if (sessionSystem.MarkInitialWorldReady(
+			kSessionId,
+			1,
+			nowSec) != InitialWorldReadyResult::Accepted)
+	{
+		std::cout << "[WorldTransitionSmoke] initial world ready failed.\n";
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
 
 	const SessionBinding* loginBinding =
-		sessionBindings.FindBySession(kSessionId);
+		sessionSystem.Bindings().FindBySession(kSessionId);
 	if (loginBinding == nullptr ||
 		loginBinding->currentWorldId != startupWorldId ||
 		!loginBinding->controlledNetId.IsValid())
 	{
 		std::cout << "[WorldTransitionSmoke] login binding was not established.\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -428,7 +508,7 @@ bool RunWorldTransitionDebugSmokeTest()
 	if (!sourceLocation.IsValid() || sourceLocation.worldId != startupWorldId)
 	{
 		std::cout << "[WorldTransitionSmoke] source net binding invalid after login.\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -437,7 +517,7 @@ bool RunWorldTransitionDebugSmokeTest()
 	if (startupWorld == nullptr || startupWorld->GetDef() == nullptr)
 	{
 		std::cout << "[WorldTransitionSmoke] startup world definition unavailable.\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -448,7 +528,7 @@ bool RunWorldTransitionDebugSmokeTest()
 		expectedSpawnPosition))
 	{
 		std::cout << "[WorldTransitionSmoke] startup world player spawn point missing.\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -459,7 +539,7 @@ bool RunWorldTransitionDebugSmokeTest()
 	if (playerTransform == nullptr)
 	{
 		std::cout << "[WorldTransitionSmoke] player transform missing after login.\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -477,7 +557,7 @@ bool RunWorldTransitionDebugSmokeTest()
 			<< expectedSpawnPosition.x << ", "
 			<< expectedSpawnPosition.y << ", "
 			<< expectedSpawnPosition.z << ")\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -494,39 +574,37 @@ bool RunWorldTransitionDebugSmokeTest()
 	if (transferId == 0)
 	{
 		std::cout << "[WorldTransitionSmoke] transfer request was rejected.\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
 
 	for (uint32_t step = 0; step < 12; ++step)
 	{
-		network.BeginSendStage();
+		sessionSystem.BeginSendStage();
 		nowSec += kDtSec;
 		if (!RunAppLikeFrame(
 			framework,
-			network,
-			sessionBindings,
-			playerEntryService,
+			sessionSystem,
 			frameIndex++,
 			nowSec,
 			kDtSec,
 			frameResult))
 		{
-			network.Shutdown();
+			sessionSystem.Shutdown();
 			framework.Shutdown();
 			return false;
 		}
 	}
 
 	const SessionBinding* transferBindingResult =
-		sessionBindings.FindBySession(kSessionId);
+		sessionSystem.Bindings().FindBySession(kSessionId);
 	if (transferBindingResult == nullptr ||
 		transferBindingResult->controlledNetId != playerNetId ||
 		transferBindingResult->currentWorldId == startupWorldId)
 	{
 		std::cout << "[WorldTransitionSmoke] session binding did not move to target.\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -541,7 +619,7 @@ bool RunWorldTransitionDebugSmokeTest()
 		std::cout << "[WorldTransitionSmoke] target world record invalid."
 			<< " worldId=" << transferBindingResult->currentWorldId.GetRaw()
 			<< "\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -551,7 +629,7 @@ bool RunWorldTransitionDebugSmokeTest()
 	if (sourceRecord == nullptr || sourceRecord->activePlayers != 0)
 	{
 		std::cout << "[WorldTransitionSmoke] source active player count invalid.\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -563,7 +641,7 @@ bool RunWorldTransitionDebugSmokeTest()
 		framework.FindNetId(startupWorldId, sourceLocation.entity).IsValid())
 	{
 		std::cout << "[WorldTransitionSmoke] net binding did not move to target.\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -574,7 +652,7 @@ bool RunWorldTransitionDebugSmokeTest()
 		!targetWorld->GetRuntime().MakeView().IsAlive(targetLocation.entity))
 	{
 		std::cout << "[WorldTransitionSmoke] target entity is not alive.\n";
-		network.Shutdown();
+		sessionSystem.Shutdown();
 		framework.Shutdown();
 		return false;
 	}
@@ -586,7 +664,7 @@ bool RunWorldTransitionDebugSmokeTest()
 		<< " netId=" << playerNetId.GetRaw()
 		<< "\n";
 
-	network.Shutdown();
+	sessionSystem.Shutdown();
 	framework.Shutdown();
 	return true;
 }

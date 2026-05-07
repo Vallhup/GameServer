@@ -29,10 +29,15 @@ struct ServerWorldTransitionBeginPacket
 
 class ServerPacketStager final {
 public:
-	static bool StageLoginResponse(
+	static bool StageLoginSuccess(
 		NetworkRuntime& network,
 		SessionId sessionId,
 		NetId playerNetId);
+
+	static bool StageLoginFail(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		uint32_t reason);
 
 	static bool StageSpawnAddPacketToSession(
 		NetworkRuntime& network,

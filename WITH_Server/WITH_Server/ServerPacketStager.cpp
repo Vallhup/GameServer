@@ -1,16 +1,40 @@
 #include "pch.h"
 #include "ServerPacketStager.h"
 
-bool ServerPacketStager::StageLoginResponse(
+bool ServerPacketStager::StageLoginSuccess(
 	NetworkRuntime& network,
 	SessionId sessionId,
 	NetId playerNetId)
 {
-	Protocol::SC_LOGIN_PACKET loginAck;
+	Protocol::SC_LOGIN_SUCCESS_PACKET loginAck;
 	loginAck.set_netid(playerNetId.GetRaw());
 
 	SendBuffer* const buffer =
-		PacketFactory::Serialize(PacketType::SC_LOGIN, loginAck);
+		PacketFactory::Serialize(PacketType::SC_LOGIN_SUCCESS, loginAck);
+	if (buffer == nullptr)
+	{
+		return false;
+	}
+
+	const bool staged =
+		network.StageUnicast(
+			sessionId,
+			std::span<const uint8_t>(buffer->data, buffer->size));
+
+	SendBufferPool::Get().Release(buffer);
+	return staged;
+}
+
+bool ServerPacketStager::StageLoginFail(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	uint32_t reason)
+{
+	Protocol::SC_LOGIN_FAIL_PACKET loginFail;
+	loginFail.set_reason(reason);
+
+	SendBuffer* const buffer =
+		PacketFactory::Serialize(PacketType::SC_LOGIN_FAIL, loginFail);
 	if (buffer == nullptr)
 	{
 		return false;

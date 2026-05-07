@@ -43,6 +43,8 @@ void PacketHandlerRegistrar::Register(
 	RegisterHandler(taskRegistry, sourceRegistry, network,
 		PacketType::CS_LOGIN,                  &HandleLoginPacket,                  "Pkt_CS_LOGIN");
 	RegisterHandler(taskRegistry, sourceRegistry, network,
+		PacketType::CS_CHARACTER_SELECT,       &HandleCharacterSelectPacket,        "Pkt_CS_CHARACTER_SELECT");
+	RegisterHandler(taskRegistry, sourceRegistry, network,
 		PacketType::CS_MOVE,                   &HandleMovePacket,                   "Pkt_CS_MOVE");
 	RegisterHandler(taskRegistry, sourceRegistry, network,
 		PacketType::CS_ATTACK,                 &HandleAttackPacket,                 "Pkt_CS_ATTACK");

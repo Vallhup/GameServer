@@ -9,6 +9,7 @@
 // scopeId    = SessionId (IocpConnection::OnRecvComplete 제출 시 설정)
 
 ExecCallResult HandleLoginPacket(NodeExecContext& ctx);
+ExecCallResult HandleCharacterSelectPacket(NodeExecContext& ctx);
 ExecCallResult HandleMovePacket(NodeExecContext& ctx);
 ExecCallResult HandleAttackPacket(NodeExecContext& ctx);
 ExecCallResult HandleDodgePacket(NodeExecContext& ctx);

@@ -10,8 +10,6 @@
 
 #include "FrameworkLog.h"
 
-#include "DynamicTaskTypes.h"
-#include "PacketHandlerRegistrar.h"
 #include "ServerDirtyReplicationService.h"
 #include "ServerFrameEventDispatcher.h"
 #include "ServerPacketStager.h"
@@ -74,16 +72,12 @@ ServerApp::ServerApp(Config config)
 			.nodeCsvPath = "Log/WITH_Server_ExecPerfNodes.csv"
 		}
 	})
-	, _network(NetworkRuntime::Config{
-		.workerThreadCount = _config.networkThreadCount,
+	, _sessionSystem(ServerSessionSystem::Config{
+		.networkThreadCount = _config.networkThreadCount,
 		.listenPort = _config.listenPort,
 		.maxSessions = _config.maxSessions
-	})
-	, _transferBinding(_framework, _sessionBindings)
-	, _playerEntryService(PlayerEntryService::Dependencies{
-		&_framework,
-		&_startupWorldId
-	})
+	}, _framework, _startupWorldId, *this)
+	, _transferBinding(_framework, _sessionSystem.Bindings())
 {
 	if (_config.logicTickHz == 0)
 	{
@@ -104,18 +98,17 @@ bool ServerApp::Initialize()
 	_frameIndex = 1;
 	_nowSec = 0.0;
 	_startupWorldId = WorldId::Invalid();
-	_sessionBindings.Clear();
+	_sessionSystem.ClearSessionState();
 	_worldTransitionRequestIds.clear();
 	_pendingClientTransitions.clear();
-	_playerEntryService.Clear();
 	_animationRegistry.Clear();
 	_lastTickTime = {};
 
 	if (!InitializeGameplayContent() ||
 		!InitializeFrameworkRuntime() ||
-		!InitializeNetworkRuntime())
+		!InitializeSessionSystem())
 	{
-		_network.Shutdown();
+		_sessionSystem.Shutdown();
 		_framework.Shutdown();
 		_initialized.store(false);
 		return false;
@@ -154,17 +147,16 @@ void ServerApp::Shutdown() noexcept
 {
 	Stop();
 	_running.store(false);
-	_network.Shutdown();
+	_sessionSystem.Shutdown();
 	_framework.Shutdown();
 	_initialized.store(false);
 	_tickCount = 0;
 	_frameIndex = 1;
 	_nowSec = 0.0;
 	_startupWorldId = WorldId::Invalid();
-	_sessionBindings.Clear();
+	_sessionSystem.ClearSessionState();
 	_worldTransitionRequestIds.clear();
 	_pendingClientTransitions.clear();
-	_playerEntryService.Clear();
 	_animationRegistry.Clear();
 	_lastTickTime = {};
 }
@@ -182,7 +174,7 @@ TransferId ServerApp::RequestSessionWorldTransfer(
 	}
 
 	const WorldId sourceWorldId =
-		_sessionBindings.FindCurrentWorldId(sessionId);
+		_sessionSystem.Bindings().FindCurrentWorldId(sessionId);
 	if (!sourceWorldId.IsValid())
 	{
 		FWLOG_WARN(kLogCategory, "World transfer rejected: no source binding (sid=%u, targetDefId=%d)",
@@ -234,7 +226,7 @@ TransferId ServerApp::RequestDemoWorldTransition(
 	}
 
 	const WorldId sourceWorldId =
-		_sessionBindings.FindCurrentWorldId(sessionId);
+		_sessionSystem.Bindings().FindCurrentWorldId(sessionId);
 	const WorldInstanceRecord* const sourceRecord =
 		_framework.FindWorldRecord(sourceWorldId);
 	if (sourceRecord == nullptr)
@@ -261,7 +253,7 @@ TransferId ServerApp::RequestDemoWorldTransition(
 	}
 
 	std::vector<SessionId> sourceSessionIds;
-	_sessionBindings.CollectSessionsInWorld(sourceWorldId, sourceSessionIds);
+	_sessionSystem.Bindings().CollectSessionsInWorld(sourceWorldId, sourceSessionIds);
 	if (std::find(sourceSessionIds.begin(), sourceSessionIds.end(), sessionId) ==
 		sourceSessionIds.end())
 	{
@@ -315,6 +307,31 @@ bool ServerApp::MarkClientWorldTransitionReady(
 	SessionId sessionId,
 	TransferId transferId)
 {
+	std::vector<SessionId> pendingTransitionSessions;
+	pendingTransitionSessions.reserve(_pendingClientTransitions.size());
+	for (const auto& [pendingSessionId, pending] : _pendingClientTransitions)
+	{
+		(void)pending;
+		pendingTransitionSessions.push_back(pendingSessionId);
+	}
+
+	const InitialWorldReadyResult initialReadyResult =
+		_sessionSystem.MarkInitialWorldReady(
+			sessionId,
+			transferId,
+			_nowSec,
+			std::span<const SessionId>(
+				pendingTransitionSessions.data(),
+				pendingTransitionSessions.size()));
+	if (initialReadyResult == InitialWorldReadyResult::Accepted)
+	{
+		return true;
+	}
+	if (initialReadyResult == InitialWorldReadyResult::Rejected)
+	{
+		return false;
+	}
+
 	const auto it = _pendingClientTransitions.find(sessionId);
 	if (it == _pendingClientTransitions.end())
 	{
@@ -333,7 +350,7 @@ bool ServerApp::MarkClientWorldTransitionReady(
 
 	ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 		_framework,
-		_network,
+		_sessionSystem.Network(),
 		pending.targetWorldId,
 		sessionId,
 		NetId::Invalid());
@@ -356,15 +373,20 @@ bool ServerApp::MarkClientWorldTransitionReady(
 		{
 			std::vector<SessionId> worldSessionIds;
 			std::vector<SessionId> otherReadySessionIds;
-			_sessionBindings.CollectSessionsInWorld(
+			_sessionSystem.Bindings().CollectSessionsInWorld(
 				pending.targetWorldId,
 				worldSessionIds);
+			_sessionSystem.AppendPendingInitialEntrySessions(
+				pendingTransitionSessions);
 
 			otherReadySessionIds.reserve(worldSessionIds.size());
 			for (SessionId worldSessionId : worldSessionIds)
 			{
 				if (worldSessionId == sessionId ||
-					_pendingClientTransitions.contains(worldSessionId))
+					std::find(
+						pendingTransitionSessions.begin(),
+						pendingTransitionSessions.end(),
+						worldSessionId) != pendingTransitionSessions.end())
 				{
 					continue;
 				}
@@ -373,7 +395,7 @@ bool ServerApp::MarkClientWorldTransitionReady(
 			}
 
 			(void)ServerPacketStager::StageSpawnAddPacketToSessions(
-				_network,
+				_sessionSystem.Network(),
 				std::span<const SessionId>(
 					otherReadySessionIds.data(),
 					otherReadySessionIds.size()),
@@ -408,37 +430,9 @@ bool ServerApp::InitializeFrameworkRuntime()
 	return InitializeStartupWorld();
 }
 
-bool ServerApp::InitializeNetworkRuntime()
+bool ServerApp::InitializeSessionSystem()
 {
-	_packetHandlerCtx = PacketHandlerContext
-	{
-		.network             = &_network,
-		.sessionBindings     = &_sessionBindings,
-		.playerEntryService  = &_playerEntryService,
-		.worldTransitionSink = this
-	};
-	PacketHandlerContext::Initialize(_packetHandlerCtx);
-
-	_network.SetIOSink(_framework.GetIOSink());
-
-	if (!_network.Initialize())
-	{
-		FWLOG_FATAL(kLogCategory, "Network runtime initialize failed");
-		return false;
-	}
-
-	DynamicTaskTypeId disconnectedTypeId{ InvalidDynamicTaskTypeId };
-	PacketHandlerRegistrar::Register(
-		_framework.GetDynamicTaskTypeRegistry(),
-		_framework.GetExecutionSourceRegistry(),
-		_network,
-		disconnectedTypeId);
-
-	_framework.SetNetworkBackend(&_network.GetNetworkBackend());
-	_network.GetIocpBackend().SetDisconnectedTaskTypeId(disconnectedTypeId);
-
-	_network.Start();
-	return true;
+	return _sessionSystem.Initialize();
 }
 
 bool ServerApp::InitializeGameplayContent()
@@ -598,7 +592,7 @@ void ServerApp::TickOnce(double dtSec)
 {
 	_lastTickTime = std::chrono::steady_clock::now();
 
-	_network.BeginSendStage();
+	_sessionSystem.BeginSendStage();
 	RunWorldFrames(dtSec);
 
 	std::vector<SessionId> pendingTransitionSessions;
@@ -608,11 +602,12 @@ void ServerApp::TickOnce(double dtSec)
 		(void)pending;
 		pendingTransitionSessions.push_back(sessionId);
 	}
+	_sessionSystem.AppendPendingInitialEntrySessions(pendingTransitionSessions);
 
 	ServerDirtyReplicationService::BuildAndStage(
 		_framework,
-		_network,
-		_sessionBindings,
+		_sessionSystem.Network(),
+		_sessionSystem.Bindings(),
 		std::span<const SessionId>(
 			pendingTransitionSessions.data(),
 			pendingTransitionSessions.size()));
@@ -637,7 +632,7 @@ void ServerApp::RunWorldFrames(double dtSec)
 
 	if (!ServerWorldTransferCommitter::Commit(
 		_framework,
-		_sessionBindings,
+		_sessionSystem.Bindings(),
 		transferEvents))
 	{
 		FWLOG_ERROR(kLogCategory, "World transfer commit failed");
@@ -676,13 +671,12 @@ void ServerApp::RunWorldFrames(double dtSec)
 		(void)pending;
 		pendingTransitionSessions.push_back(sessionId);
 	}
+	_sessionSystem.AppendPendingInitialEntrySessions(pendingTransitionSessions);
 
 	if (!ServerFrameEventDispatcher::Dispatch(
 		frameResult,
 		_framework,
-		_network,
-		_sessionBindings,
-		_playerEntryService,
+		_sessionSystem,
 		_nowSec,
 		std::span<const SessionId>(
 			pendingTransitionSessions.data(),
@@ -698,7 +692,7 @@ void ServerApp::RunWorldFrames(double dtSec)
 
 void ServerApp::FlushOutbound()
 {
-	_network.FlushSendStage();
+	_sessionSystem.FlushOutbound();
 }
 
 bool ServerApp::StageWorldTransitionBeginPackets(
@@ -753,7 +747,7 @@ bool ServerApp::StageWorldTransitionBeginPackets(
 			transition.reason = kWorldTransitionReasonDebug;
 
 			if (!ServerPacketStager::StageWorldTransitionBeginPacket(
-				_network,
+				_sessionSystem.Network(),
 				imported.sessionId,
 				transition))
 			{

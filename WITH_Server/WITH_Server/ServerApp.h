@@ -13,10 +13,7 @@
 #include "AnimationJsonLoader.h"
 #include "AnimationRegistry.h"
 #include "IWorldTransitionRequestSink.h"
-#include "NetworkRuntime.h"
-#include "PacketHandlerContext.h"
-#include "PlayerEntryService.h"
-#include "SessionBindingRegistry.h"
+#include "ServerSessionSystem.h"
 #include "ServerWorldBootstrap.h"
 #include "ServerWorldTransferBinding.h"
 
@@ -88,7 +85,7 @@ private:
 
 private:
 	bool InitializeFrameworkRuntime();
-	bool InitializeNetworkRuntime();
+	bool InitializeSessionSystem();
 	bool InitializeGameplayContent();
 	bool InitializeStartupWorld();
 
@@ -114,12 +111,9 @@ private:
 	AnimationRegistry _animationRegistry;
 	GameDataCatalog _gameDataCatalog;
 	GameplayContentCatalogSnapshot _gameplayContentCatalog;
-	NetworkRuntime _network;
 	WorldId _startupWorldId{};
-	SessionBindingRegistry _sessionBindings;
+	ServerSessionSystem _sessionSystem;
 	ServerWorldTransferBinding _transferBinding;
-	PlayerEntryService _playerEntryService;
-	PacketHandlerContext _packetHandlerCtx;
 	std::unordered_map<TransferId, std::unordered_map<SessionId, uint32_t>>
 		_worldTransitionRequestIds;
 	std::unordered_map<SessionId, PendingClientTransition> _pendingClientTransitions;

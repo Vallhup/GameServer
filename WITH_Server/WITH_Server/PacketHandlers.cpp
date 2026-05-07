@@ -1,22 +1,29 @@
 #include "pch.h"
 #include "PacketHandlers.h"
 
+#include "CharacterDataService.h"
+#include "CharacterSpawnService.h"
 #include "DynamicTaskTypes.h"
 #include "ExecutionContextTypes.h"
 #include "ExecutionCoreTypes.h"
+#include "FrameworkRuntime.h"
 #include "FrameworkLog.h"
 #include "NetworkRuntime.h"
 #include "PacketFactory.h"
 #include "PacketHandlerContext.h"
 #include "PlayerCommand.h"
-#include "PlayerEntryService.h"
+#include "SessionFlowCommands.h"
+#include "SessionFlowController.h"
 #include "SessionBindingRegistry.h"
 #include "ServerPacketStager.h"
+#include "ServerSessionSystem.h"
 #include "WorldRuntime.h"
 #include "IWorldTransitionRequestSink.h"
 
 #include "Protocol.pb.h"
 #include "SendBuffer.h"
+
+#include <limits>
 
 namespace
 {
@@ -24,6 +31,16 @@ namespace
     constexpr uint32_t kDefaultCommandSequence = 0;
     constexpr uint32_t kWorldTransitionRejectReasonServerUnavailable = 1;
     constexpr uint32_t kWorldTransitionRejectReasonRequestRejected = 2;
+    constexpr uint32_t kLoginFailReasonMalformedPacket = 1;
+    constexpr uint32_t kLoginFailReasonDuplicateLogin = 2;
+    constexpr uint32_t kLoginFailReasonEntryStartFailed = 3;
+    constexpr uint32_t kLoginFailReasonAuthRejected = 4;
+
+    struct LoginAuthResult
+    {
+        bool accepted{ false };
+        uint32_t failReason{ kLoginFailReasonAuthRejected };
+    };
 
     // payloadKey = SendBuffer* 로 부터 RAII 소유권 획득
     SendBufferPtr AcquirePayload(const NodeExecContext& ctx) noexcept
@@ -88,13 +105,74 @@ namespace
     bool IsLoginDuplicate(
         SessionId sessionId,
         const SessionBindingRegistry& sessionBindings,
-        const PlayerEntryService& playerEntryService) noexcept
+        const SessionFlowController& sessionFlow) noexcept
     {
         if (sessionBindings.HasBinding(sessionId))
             return true;
-        if (playerEntryService.FindContext(sessionId) != nullptr)
+
+        const SessionFlow* const flow = sessionFlow.FindFlow(sessionId);
+        if (flow != nullptr &&
+            flow->stateId != SessionStateId::Connected &&
+            flow->stateId != SessionStateId::Closing)
+        {
             return true;
+        }
+
         return false;
+    }
+
+    LoginAuthResult AuthenticateLoginRequest(
+        const Protocol::CS_LOGIN_PACKET& /*packet*/) noexcept
+    {
+        // TODO: Replace this stub with the DB-backed authentication result.
+        // Keep HandleLoginPacket as the state-transition consumer so async DB
+        // completion can reuse the same success/fail path later.
+        return LoginAuthResult{ .accepted = true, .failReason = 0 };
+    }
+
+    const char* SessionFlowResultCodeName(SessionFlowResultCode code) noexcept
+    {
+        switch (code)
+        {
+        case SessionFlowResultCode::Accepted: return "Accepted";
+        case SessionFlowResultCode::InvalidSession: return "InvalidSession";
+        case SessionFlowResultCode::UnknownSession: return "UnknownSession";
+        case SessionFlowResultCode::InvalidFlowStage: return "InvalidFlowStage";
+        case SessionFlowResultCode::CommandTypeMismatch: return "CommandTypeMismatch";
+        case SessionFlowResultCode::CloseRequested: return "CloseRequested";
+        default: return "Unknown";
+        }
+    }
+
+    const char* CharacterDataResultCodeName(CharacterDataResultCode code) noexcept
+    {
+        switch (code)
+        {
+        case CharacterDataResultCode::Success: return "Success";
+        case CharacterDataResultCode::InvalidSession: return "InvalidSession";
+        case CharacterDataResultCode::InvalidCharacterId: return "InvalidCharacterId";
+        case CharacterDataResultCode::CharacterDefNotFound: return "CharacterDefNotFound";
+        case CharacterDataResultCode::CharacterIdNotPlayable: return "CharacterIdNotPlayable";
+        case CharacterDataResultCode::StartupWorldUnavailable: return "StartupWorldUnavailable";
+        case CharacterDataResultCode::WorldNotFound: return "WorldNotFound";
+        default: return "Unknown";
+        }
+    }
+
+    const char* CharacterSpawnResultCodeName(CharacterSpawnResultCode code) noexcept
+    {
+        switch (code)
+        {
+        case CharacterSpawnResultCode::Success: return "Success";
+        case CharacterSpawnResultCode::InvalidSession: return "InvalidSession";
+        case CharacterSpawnResultCode::InvalidCharacterData: return "InvalidCharacterData";
+        case CharacterSpawnResultCode::InvalidReservedNetId: return "InvalidReservedNetId";
+        case CharacterSpawnResultCode::WorldNotFound: return "WorldNotFound";
+        case CharacterSpawnResultCode::EntityReserveFailed: return "EntityReserveFailed";
+        case CharacterSpawnResultCode::NetBindFailed: return "NetBindFailed";
+        case CharacterSpawnResultCode::DuplicatePendingSpawn: return "DuplicatePendingSpawn";
+        default: return "Unknown";
+        }
     }
 }
 
@@ -107,23 +185,230 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
+    Protocol::CS_LOGIN_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+    {
+        FWLOG_WARN(kLogCategory, "Login rejected: malformed packet (sid=%u)", sessionId);
+        (void)ServerPacketStager::StageLoginFail(
+            *svc.network,
+            sessionId,
+            kLoginFailReasonMalformedPacket);
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    if (svc.sessionFlow == nullptr ||
+        svc.framework == nullptr ||
+        svc.network == nullptr ||
+        svc.sessionBindings == nullptr)
+    {
+        return ExecCallResult::Failed;
+    }
+
     if (IsLoginDuplicate(sessionId,
                          *svc.sessionBindings,
-                         *svc.playerEntryService))
+                         *svc.sessionFlow))
     {
         FWLOG_WARN(kLogCategory, "Duplicate login rejected (sid=%u)", sessionId);
-        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        (void)ServerPacketStager::StageLoginFail(
+            *svc.network,
+            sessionId,
+            kLoginFailReasonDuplicateLogin);
         return ExecCallResult::Success;
     }
 
-    if (!svc.playerEntryService->BeginAuthenticatedEntry(sessionId))
+    SessionFlowResult flowResult =
+        svc.sessionFlow->Dispatch(sessionId, LoginRequested{});
+    if (!flowResult.Succeeded())
     {
-        FWLOG_WARN(kLogCategory, "BeginAuthenticatedEntry failed (sid=%u)", sessionId);
+        FWLOG_WARN(kLogCategory,
+            "Login rejected: invalid flow (sid=%u, reason=%s)",
+            sessionId,
+            SessionFlowResultCodeName(flowResult.code));
+        (void)ServerPacketStager::StageLoginFail(
+            *svc.network,
+            sessionId,
+            kLoginFailReasonDuplicateLogin);
+        return ExecCallResult::Success;
+    }
+
+    const LoginAuthResult authResult = AuthenticateLoginRequest(pkt);
+    if (!authResult.accepted)
+    {
+        FWLOG_WARN(kLogCategory,
+            "Login rejected: auth failed (sid=%u, reason=%u)",
+            sessionId,
+            authResult.failReason);
+        (void)ServerPacketStager::StageLoginFail(
+            *svc.network,
+            sessionId,
+            authResult.failReason);
+        LoginFailed failedCommand{};
+        failedCommand.reason = authResult.failReason;
+        (void)svc.sessionFlow->Dispatch(sessionId, failedCommand);
         (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
         return ExecCallResult::Success;
     }
 
-    (void)svc.network->RequestCompleteLogin(sessionId);
+    const NetId playerNetId = svc.framework->AllocateNetId();
+    if (!playerNetId.IsValid())
+    {
+        FWLOG_WARN(kLogCategory, "Login rejected: netId allocation failed (sid=%u)", sessionId);
+        (void)ServerPacketStager::StageLoginFail(
+            *svc.network,
+            sessionId,
+            kLoginFailReasonEntryStartFailed);
+        LoginFailed failedCommand{};
+        failedCommand.reason = kLoginFailReasonEntryStartFailed;
+        (void)svc.sessionFlow->Dispatch(sessionId, failedCommand);
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    LoginSucceeded succeededCommand{};
+    succeededCommand.playerNetId = playerNetId;
+    flowResult = svc.sessionFlow->Dispatch(sessionId, succeededCommand);
+    if (!flowResult.Succeeded())
+    {
+        svc.framework->FreeNetId(playerNetId);
+        FWLOG_WARN(kLogCategory,
+            "Login success rejected by flow (sid=%u, reason=%s)",
+            sessionId,
+            SessionFlowResultCodeName(flowResult.code));
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    if (!ServerPacketStager::StageLoginSuccess(
+            *svc.network,
+            sessionId,
+            playerNetId))
+    {
+        svc.framework->FreeNetId(playerNetId);
+        FWLOG_WARN(kLogCategory,
+            "Login success packet stage failed (sid=%u, netId=%u)",
+            sessionId,
+            playerNetId.GetRaw());
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    if (!svc.network->RequestCompleteLogin(sessionId))
+    {
+        svc.framework->FreeNetId(playerNetId);
+        FWLOG_WARN(kLogCategory,
+            "Login completion failed after success stage (sid=%u, netId=%u)",
+            sessionId,
+            playerNetId.GetRaw());
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleCharacterSelectPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    auto& svc = PacketHandlerContext::Get();
+    const SessionId sessionId = ResolveSessionId(ctx);
+
+    if (svc.sessionFlow == nullptr ||
+        svc.characterData == nullptr ||
+        svc.characterSpawn == nullptr ||
+        svc.network == nullptr)
+    {
+        return ExecCallResult::Failed;
+    }
+
+    Protocol::CS_CHARACTER_SELECT_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    const uint32_t rawCharacterId = pkt.characterid();
+    if (rawCharacterId > std::numeric_limits<uint8_t>::max())
+    {
+        FWLOG_WARN(kLogCategory,
+            "CharacterSelect rejected: characterId out of range (sid=%u, characterId=%u)",
+            sessionId, rawCharacterId);
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    const CharacterId characterId = static_cast<CharacterId>(rawCharacterId);
+    CharacterSelectRequested selectCommand{};
+    selectCommand.characterId = characterId;
+    SessionFlowResult flowResult =
+        svc.sessionFlow->Dispatch(sessionId, selectCommand);
+    if (!flowResult.Succeeded())
+    {
+        FWLOG_WARN(kLogCategory,
+            "CharacterSelect rejected by flow (sid=%u, characterId=%u, reason=%s)",
+            sessionId,
+            rawCharacterId,
+            SessionFlowResultCodeName(flowResult.code));
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    const CharacterDataResult dataResult =
+        svc.characterData->ResolveCharacterSelect(sessionId, characterId);
+    if (!dataResult.Succeeded())
+    {
+        FWLOG_WARN(kLogCategory,
+            "CharacterSelect data rejected (sid=%u, characterId=%u, reason=%s)",
+            sessionId,
+            rawCharacterId,
+            CharacterDataResultCodeName(dataResult.code));
+        CharacterDataLoadFailed failedCommand{};
+        failedCommand.reason = static_cast<uint32_t>(dataResult.code);
+        (void)svc.sessionFlow->Dispatch(sessionId, failedCommand);
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    CharacterDataLoaded loadedCommand{};
+    loadedCommand.characterId = dataResult.characterId;
+    loadedCommand.worldId = dataResult.worldId;
+    flowResult = svc.sessionFlow->Dispatch(sessionId, loadedCommand);
+    if (!flowResult.Succeeded())
+    {
+        FWLOG_WARN(kLogCategory,
+            "CharacterDataLoaded rejected by flow (sid=%u, reason=%s)",
+            sessionId,
+            SessionFlowResultCodeName(flowResult.code));
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    const SessionFlow* const flow = svc.sessionFlow->FindFlow(sessionId);
+    const NetId playerNetId =
+        flow != nullptr ? flow->playerNetId : NetId::Invalid();
+    const CharacterSpawnResult spawnResult =
+        svc.characterSpawn->RequestCharacterSpawn(dataResult, playerNetId);
+    if (!spawnResult.Succeeded())
+    {
+        FWLOG_WARN(kLogCategory,
+            "CharacterSelect spawn rejected (sid=%u, characterId=%u, reason=%s)",
+            sessionId,
+            rawCharacterId,
+            CharacterSpawnResultCodeName(spawnResult.code));
+        CharacterSpawnFailed failedCommand{};
+        failedCommand.reason = static_cast<uint32_t>(spawnResult.code);
+        (void)svc.sessionFlow->Dispatch(sessionId, failedCommand);
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    FWLOG_DEBUG(kLogCategory,
+        "CharacterSelect accepted (sid=%u, characterId=%u, worldId=%u, netId=%u)",
+        sessionId,
+        rawCharacterId,
+        spawnResult.worldId.GetRaw(),
+        spawnResult.netId.GetRaw());
+
     return ExecCallResult::Success;
 }
 
@@ -150,7 +435,8 @@ ExecCallResult HandleMovePacket(NodeExecContext& ctx)
     if (!netId.IsValid())
         return ExecCallResult::Success;
 
-    const PlayerMoveCommandPayload payload{
+    const PlayerMoveCommandPayload payload
+    {
         .inputX = static_cast<float>(pkt.inputx()),
         .inputZ = static_cast<float>(pkt.inputz()),
         .yaw    = pkt.yaw(),
@@ -356,9 +642,13 @@ ExecCallResult HandleWorldTransitionReadyPacket(NodeExecContext& ctx)
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    (void)svc.worldTransitionSink->MarkClientWorldTransitionReady(
-        sessionId,
-        static_cast<TransferId>(pkt.transferid()));
+    if (!svc.worldTransitionSink->MarkClientWorldTransitionReady(
+            sessionId,
+            static_cast<TransferId>(pkt.transferid())) &&
+        svc.network != nullptr)
+    {
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+    }
     return ExecCallResult::Success;
 }
 
@@ -367,11 +657,27 @@ ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx)
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
+    if (svc.sessionSystem != nullptr)
+    {
+        svc.sessionSystem->HandleSessionDisconnected(
+            sessionId,
+            SessionCloseReason::RemoteClosed);
+        return ExecCallResult::Success;
+    }
+
     if (svc.sessionBindings != nullptr)
         (void)svc.sessionBindings->Unbind(sessionId);
 
-    if (svc.playerEntryService != nullptr)
-        (void)svc.playerEntryService->CancelEntry(sessionId);
+    if (svc.characterSpawn != nullptr)
+        (void)svc.characterSpawn->CancelPendingSpawn(sessionId);
+
+    if (svc.sessionFlow != nullptr)
+    {
+        DisconnectRequested command{};
+        command.reason = SessionCloseReason::RemoteClosed;
+        (void)svc.sessionFlow->Dispatch(sessionId, command);
+        svc.sessionFlow->OnSessionDisconnected(sessionId);
+    }
 
     return ExecCallResult::Success;
 }

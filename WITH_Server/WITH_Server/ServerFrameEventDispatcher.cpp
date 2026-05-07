@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "FrameworkLog.h"
+#include "SessionFlowCommands.h"
 #include "ServerPacketStager.h"
 #include "ServerPlayerControlBinding.h"
 #include "ServerReplicationSnapshot.h"
@@ -41,14 +42,12 @@ namespace
 bool ServerFrameEventDispatcher::Dispatch(
 	const FrameworkRuntime::FrameResult& frameResult,
 	FrameworkRuntime& framework,
-	NetworkRuntime& network,
-	SessionBindingRegistry& sessionBindings,
-	PlayerEntryService& playerEntryService,
+	ServerSessionSystem& sessionSystem,
 	double nowSec,
 	std::span<const SessionId> excludedSessionIds)
 {
 	std::vector<SessionId> worldSessionIds;
-	std::vector<SessionId> otherSessionIds;
+	(void)nowSec;
 	for (const auto& spawnEvent : frameResult.events.spawns)
 	{
 		if (!spawnEvent.netId.IsValid())
@@ -66,22 +65,22 @@ bool ServerFrameEventDispatcher::Dispatch(
 		{
 			continue;
 		}
-		const PendingCharacterSpawn* pendingCharacterSpawn =
-			playerEntryService.FindPendingSpawn(spawnEvent.worldId, spawnEvent.entity);
+		const PendingSessionCharacterSpawn* pendingCharacterSpawn =
+			sessionSystem.CharacterSpawn().FindPendingSpawn(spawnEvent.worldId, spawnEvent.entity);
 		if (pendingCharacterSpawn == nullptr)
 		{
-			sessionBindings.CollectSessionsInWorld(spawnEvent.worldId, worldSessionIds);
+			sessionSystem.Bindings().CollectSessionsInWorld(spawnEvent.worldId, worldSessionIds);
 			RemoveExcludedSessions(worldSessionIds, excludedSessionIds);
 			(void)ServerPacketStager::StageSpawnAddPacketToSessions(
-				network,
+				sessionSystem.Network(),
 				std::span<const SessionId>(worldSessionIds),
 				spawnEvent.netId,
 				characterId,
 				transform);
 			continue;
 		}
-		PendingCharacterSpawn pendingSpawn{};
-		if (!playerEntryService.TryConsumeSpawnConfirmed(
+		PendingSessionCharacterSpawn pendingSpawn{};
+		if (!sessionSystem.CharacterSpawn().TryConsumeSpawnConfirmed(
 			spawnEvent.worldId,
 			spawnEvent.entity,
 			pendingSpawn))
@@ -89,6 +88,20 @@ bool ServerFrameEventDispatcher::Dispatch(
 			continue;
 		}
 		const SessionId sessionId = pendingSpawn.sessionId;
+		CharacterSpawnConfirmed spawnConfirmed{};
+		spawnConfirmed.worldId = spawnEvent.worldId;
+		spawnConfirmed.entity = spawnEvent.entity;
+		spawnConfirmed.netId = spawnEvent.netId;
+		spawnConfirmed.characterId = characterId;
+		const SessionFlowResult flowResult =
+			sessionSystem.Flow().Dispatch(sessionId, spawnConfirmed);
+		if (!flowResult.Succeeded())
+		{
+			FWLOG_ERROR(kLogCategory, "Spawn confirmed rejected by session flow (sid=%u, worldId=%u, netId=%u)",
+				sessionId, spawnEvent.worldId.GetRaw(), spawnEvent.netId.GetRaw());
+			return false;
+		}
+
 		if (!ServerPlayerControlBinding::AssignPlayerControlNetId(
 			framework,
 			spawnEvent.worldId,
@@ -100,56 +113,17 @@ bool ServerFrameEventDispatcher::Dispatch(
 			return false;
 		}
 
-		if (!sessionBindings.Bind(sessionId, spawnEvent.netId, spawnEvent.worldId))
-		{
-			FWLOG_ERROR(kLogCategory, "Session bind failed (sid=%u, worldId=%u, netId=%u)",
-				sessionId, spawnEvent.worldId.GetRaw(), spawnEvent.netId.GetRaw());
-			return false;
-		}
-
-		if (!framework.AttachPresenceToWorld(sessionId, spawnEvent.worldId, nowSec))
-		{
-			FWLOG_ERROR(kLogCategory, "Presence attach failed (sid=%u, worldId=%u, netId=%u)",
-				sessionId, spawnEvent.worldId.GetRaw(), spawnEvent.netId.GetRaw());
-			return false;
-		}
-
-		(void)network.RequestEnterInGame(sessionId, spawnEvent.netId);
-		(void)ServerPacketStager::StageLoginResponse(
-			network,
+		if (!sessionSystem.BeginInitialWorldEntry(
 			sessionId,
-			spawnEvent.netId);
-		(void)ServerPacketStager::StageSpawnAddPacketToSession(
-			network,
-			sessionId,
-			spawnEvent.netId,
-			characterId,
-			transform);
-		ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
-			framework,
-			network,
 			spawnEvent.worldId,
-			sessionId,
-			spawnEvent.netId);
-		sessionBindings.CollectSessionsInWorld(spawnEvent.worldId, worldSessionIds);
-		otherSessionIds.clear();
-		for (SessionId worldSessionId : worldSessionIds)
-		{
-			if (worldSessionId != sessionId &&
-				std::find(
-					excludedSessionIds.begin(),
-					excludedSessionIds.end(),
-					worldSessionId) == excludedSessionIds.end())
-			{
-				otherSessionIds.push_back(worldSessionId);
-			}
-		}
-		(void)ServerPacketStager::StageSpawnAddPacketToSessions(
-			network,
-			std::span<const SessionId>(otherSessionIds),
+			spawnEvent.entity,
 			spawnEvent.netId,
-			characterId,
-			transform);
+			characterId))
+		{
+			FWLOG_ERROR(kLogCategory, "Initial world entry begin failed (sid=%u, worldId=%u, netId=%u)",
+				sessionId, spawnEvent.worldId.GetRaw(), spawnEvent.netId.GetRaw());
+			return false;
+		}
 	}
 
 	for (const auto& despawnEvent : frameResult.events.despawns)
@@ -159,12 +133,12 @@ bool ServerFrameEventDispatcher::Dispatch(
 			continue;
 		}
 
-		sessionBindings.CollectSessionsInWorld(
+		sessionSystem.Bindings().CollectSessionsInWorld(
 			despawnEvent.worldId,
 			worldSessionIds);
 		RemoveExcludedSessions(worldSessionIds, excludedSessionIds);
 		(void)ServerPacketStager::StageSpawnRemovePacketToSessions(
-			network,
+			sessionSystem.Network(),
 			std::span<const SessionId>(worldSessionIds),
 			despawnEvent.netId);
 	}
