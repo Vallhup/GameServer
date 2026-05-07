@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <optional>
 #include <span>
 #include <string>
 #include <vector>
@@ -22,12 +23,47 @@ enum class AIActionDistanceBucket : uint8_t
 	Far
 };
 
+enum class AIMovementBehavior : uint8_t
+{
+	None,
+	Hold,
+	Approach,
+	RunApproach,
+	Retreat,
+	Strafe,
+	CircleLeft,
+	CircleRight,
+	SearchLastKnown,
+	ReturnHome
+};
+
+enum class AIReactionRuleEvent : uint8_t
+{
+	OnHitReceived,
+	OnParried,
+	OnGuardBroken,
+	OnHpThreshold
+};
+
+enum class AIReactionRuleOutcome : uint8_t
+{
+	Ignore,
+	ForceRetarget,
+	EnterReact,
+	IssueAbility,
+	EnterReactAndIssueAbility
+};
+
+using AIActionGroupId = uint16_t;
+inline constexpr AIActionGroupId InvalidAIActionGroupId = 0;
+
 struct AIPerceptionTuningDef
 {
 	double sightRange{ 12.0 };
 	double attackRange{ 2.0 };
 	double frontDotThreshold{ 0.2 };
 
+	// Deprecated targeting fallback. Prefer AIBehaviorProfileDef::targeting.
 	double targetKeepBonus{ 4.0 };
 	double lastAttackerBonus{ 2.5 };
 	double frontBonus{ 1.0 };
@@ -48,6 +84,17 @@ struct AIPerceptionTuningDef
 	double assistRange{ 6.0 };
 };
 
+struct AITargetingTuningDef
+{
+	double targetKeepBonus{ 4.0 };
+	double lastAttackerBonus{ 2.5 };
+	double frontBonus{ 1.0 };
+	double switchScoreMargin{ 3.0 };
+	bool preferNearest{ true };
+	bool preferLowestHp{ false };
+	double assistRange{ 6.0 };
+};
+
 struct AIDecisionTuningDef
 {
 	double decisionInterval{ 0.2 };
@@ -55,38 +102,88 @@ struct AIDecisionTuningDef
 	double reactDuration{ 0.5 };
 };
 
-struct WeightedActionEntry
+struct AIActionConditionDef
+{
+	uint8_t phaseMin{ 1 };
+	uint8_t phaseMax{ 255 };
+	AIActionDistanceBucket distanceBucket{ AIActionDistanceBucket::Any };
+	std::optional<float> minDistance;
+	std::optional<float> maxDistance;
+	float selfHpRatioMin{ 0.0f };
+	float selfHpRatioMax{ 1.0f };
+	float targetHpRatioMin{ 0.0f };
+	float targetHpRatioMax{ 1.0f };
+	bool requiresTargetVisible{ true };
+	bool requiresTargetInFront{ false };
+	bool requiresAbilityAvailable{ true };
+};
+
+struct AIActionDef
 {
 	AbilityId abilityId{ InvalidAbilityId };
 	uint16_t weight{ 0 };
+	AIActionConditionDef condition{};
 	float aiCooldownSec{ 0.0f };
-	AIActionDistanceBucket distanceBucket{ AIActionDistanceBucket::Any };
+	float globalCooldownSec{ 0.0f };
+	AIActionGroupId groupId{ InvalidAIActionGroupId };
+	float groupCooldownSec{ 0.0f };
 	bool forbidImmediateRepeat{ false };
+	float repeatWeightMultiplier{ 0.35f };
+	float lockMovementSec{ 0.0f };
+	bool lockFacingToTarget{ false };
+	int chancePercent{ 100 };
 };
 
-struct AIBossPhaseTransitionDef
+struct AIPhaseTransitionDef
 {
-	uint8_t phase{ 1 };
+	std::optional<uint8_t> fromPhase;
+	uint8_t toPhase{ 1 };
 	float hpRatio{ 1.0f };
 	AbilityId transitionAbilityId{ InvalidAbilityId };
 	float transitionLockSec{ 0.0f };
+	bool clearActionCooldowns{ false };
+	bool clearGroupCooldowns{ false };
+	bool forceRetarget{ false };
 };
 
-struct AIBossMovementTuningDef
+struct AIMovementProfileDef
 {
-	double veryCloseDistance{ 2.0 };
-	double closeDistance{ 5.8 };
-	double midDistance{ 7.5 };
-	double preferredMinDistance{ 3.2 };
-	double preferredMaxDistance{ 6.8 };
+	std::string name;
+	uint8_t phaseMin{ 1 };
+	uint8_t phaseMax{ 255 };
+
+	double veryCloseDistance{ 0.0 };
+	double closeDistance{ 0.0 };
+	double midDistance{ 0.0 };
+	double farDistance{ 0.0 };
+	double preferredMinDistance{ 0.0 };
+	double preferredMaxDistance{ 0.0 };
+
+	AIMovementBehavior veryCloseBehavior{ AIMovementBehavior::Retreat };
+	AIMovementBehavior closeBehavior{ AIMovementBehavior::Hold };
+	AIMovementBehavior preferredBehavior{ AIMovementBehavior::Hold };
+	AIMovementBehavior midBehavior{ AIMovementBehavior::Approach };
+	AIMovementBehavior farBehavior{ AIMovementBehavior::RunApproach };
+
 	float strafeMinSec{ 0.7f };
 	float strafeMaxSec{ 1.5f };
+	int strafeChangeChancePercent{ 50 };
+	bool allowNavPathing{ true };
+	bool lockFacingToTarget{ false };
 };
 
-struct AIBossPatternProfileDef
+struct AIReactionRuleDef
 {
-	AIBossMovementTuningDef movement{};
-	std::span<const AIBossPhaseTransitionDef> phaseTransitions{};
+	AIReactionRuleEvent event{ AIReactionRuleEvent::OnHitReceived };
+	uint8_t phaseMin{ 1 };
+	uint8_t phaseMax{ 255 };
+	float selfHpRatioMin{ 0.0f };
+	float selfHpRatioMax{ 1.0f };
+	AIReactionRuleOutcome outcome{ AIReactionRuleOutcome::Ignore };
+	bool retargetAttacker{ false };
+	AbilityId reactAbilityId{ InvalidAbilityId };
+	float reactDurationSec{ 0.0f };
+	int priority{ 0 };
 };
 
 struct AIBehaviorProfileDef
@@ -96,12 +193,14 @@ struct AIBehaviorProfileDef
 	AIArchetype aiType{ AIArchetype::None };
 
 	AIPerceptionTuningDef perception{};
+	AITargetingTuningDef targeting{};
 	AIDecisionTuningDef decision{};
 
-	std::span<const WeightedActionEntry> combatActions{};
-	std::span<const WeightedActionEntry> idleActions{};
-
-	AIBossPatternProfileDef bossPattern{};
+	std::span<const AIActionDef> combatActionDefs{};
+	std::span<const AIActionDef> idleActionDefs{};
+	std::span<const AIMovementProfileDef> movementProfiles{};
+	std::span<const AIReactionRuleDef> reactionRules{};
+	std::span<const AIPhaseTransitionDef> phaseTransitions{};
 };
 
 struct AIBehaviorProfileTraits
@@ -121,16 +220,20 @@ using AIBehaviorProfileDefRegistry = DefRegistry<
 struct AIBehaviorDefinitionSet
 {
 	AIBehaviorProfileDefRegistry profiles;
-	std::vector<std::vector<WeightedActionEntry>> combatActionStorage;
-	std::vector<std::vector<WeightedActionEntry>> idleActionStorage;
-	std::vector<std::vector<AIBossPhaseTransitionDef>> bossPhaseTransitionStorage;
+	std::vector<std::vector<AIActionDef>> combatActionDefStorage;
+	std::vector<std::vector<AIActionDef>> idleActionDefStorage;
+	std::vector<std::vector<AIMovementProfileDef>> movementProfileStorage;
+	std::vector<std::vector<AIReactionRuleDef>> reactionRuleStorage;
+	std::vector<std::vector<AIPhaseTransitionDef>> phaseTransitionStorage;
 
 	void Clear() noexcept
 	{
 		profiles.Clear();
-		combatActionStorage.clear();
-		idleActionStorage.clear();
-		bossPhaseTransitionStorage.clear();
+		combatActionDefStorage.clear();
+		idleActionDefStorage.clear();
+		movementProfileStorage.clear();
+		reactionRuleStorage.clear();
+		phaseTransitionStorage.clear();
 	}
 
 	size_t Size() const noexcept

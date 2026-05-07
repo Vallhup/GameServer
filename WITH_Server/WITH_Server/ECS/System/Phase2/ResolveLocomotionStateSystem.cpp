@@ -12,7 +12,7 @@ namespace
 		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<ActorInputComp>()),
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
-		ReadImmediate(ComponentRes<AICommandFrameComp>()),
+		ReadImmediate(ComponentRes<AIIntentFrameComp>()),
 		ReadImmediate(ComponentRes<SpawnTypeComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
@@ -25,17 +25,17 @@ namespace
 		float fallbackYaw,
 		float& outYaw)
 	{
-		const AICommandFrameComp* aiCommand =
-			ctx.ecs.GetComponent<AICommandFrameComp>(entity);
-		if (aiCommand == nullptr ||
-			!aiCommand->hasLook ||
-			aiCommand->target.IsNull())
+		const AIIntentFrameComp* aiIntent =
+			ctx.ecs.GetComponent<AIIntentFrameComp>(entity);
+		if (aiIntent == nullptr ||
+			!aiIntent->hasLook ||
+			aiIntent->target.IsNull())
 		{
 			return false;
 		}
 
 		const WorldTransformComp* targetTransform =
-			ctx.ecs.GetComponent<WorldTransformComp>(aiCommand->target);
+			ctx.ecs.GetComponent<WorldTransformComp>(aiIntent->target);
 		if (targetTransform == nullptr)
 		{
 			return false;
@@ -174,10 +174,10 @@ void ResolveLocomotionStateSystem::Execute(SystemContext& ctx)
 		NormalizeXZ(moveDirX, moveDirZ);
 
 		float lookYaw = locomotionState.facingYawRad;
-		const AICommandFrameComp* aiCommand =
-			ctx.ecs.GetComponent<AICommandFrameComp>(entity);
+		const AIIntentFrameComp* aiIntent =
+			ctx.ecs.GetComponent<AIIntentFrameComp>(entity);
 		const bool useFacingRelativeLocomotion =
-			aiCommand != nullptr && aiCommand->lockFacingToLookTarget;
+			aiIntent != nullptr && aiIntent->lockFacingToLookTarget;
 		const bool hasLookYaw =
 			useFacingRelativeLocomotion &&
 			TryGetLookYaw(ctx, entity, transform, locomotionState.facingYawRad, lookYaw);

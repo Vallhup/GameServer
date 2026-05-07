@@ -12,7 +12,7 @@ namespace
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
 		WriteImmediate(ComponentRes<LocomotionStateComp>()),
 		ReadImmediate(ComponentRes<AbilityStateComp>()),
-		ReadImmediate(ComponentRes<AICommandFrameComp>()),
+		ReadImmediate(ComponentRes<AIIntentFrameComp>()),
 		WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()),
 	};
 
@@ -52,17 +52,17 @@ void ComputeLocomotionMoveDeltaSystem::Execute(SystemContext& ctx)
 
 		if (IsLookOnlyLocomotionMode(locomotionState.mode))
 		{
-			const AICommandFrameComp* aiCommand =
-				ctx.ecs.GetComponent<AICommandFrameComp>(entity);
-			if (aiCommand == nullptr ||
-				!aiCommand->hasLook ||
-				aiCommand->target.IsNull())
+			const AIIntentFrameComp* aiIntent =
+				ctx.ecs.GetComponent<AIIntentFrameComp>(entity);
+			if (aiIntent == nullptr ||
+				!aiIntent->hasLook ||
+				aiIntent->target.IsNull())
 			{
 				continue;
 			}
 
 			const WorldTransformComp* targetTransform =
-				ctx.ecs.GetComponent<WorldTransformComp>(aiCommand->target);
+				ctx.ecs.GetComponent<WorldTransformComp>(aiIntent->target);
 			if (targetTransform == nullptr)
 			{
 				continue;

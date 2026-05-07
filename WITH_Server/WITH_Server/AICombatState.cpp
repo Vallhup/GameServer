@@ -9,8 +9,8 @@
 
 void AICombatState::Enter(AIContext& ctx) const
 {
-	if (ctx.command)
-		ctx.command->ClearAll();
+	if (ctx.intent)
+		ctx.intent->ClearAll();
 }
 
 void AICombatState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
@@ -33,34 +33,31 @@ void AICombatState::DecisionUpdate(AIContext& ctx, const double decisionDT) cons
 		return;
 	}
 
-	if (ctx.abilityState == nullptr || !ctx.abilityState->CanIssueAbility())
-		return;
 
-	if (ctx.combatActionPolicy == nullptr)
-		return;
+	if (ctx.abilityState->CanIssueAbility())
+	{
+		const CombatActionSelection selection = ctx.combatActionPolicy->SelectAction(ctx);
+		if (selection.shouldAttack)
+		{
+			if (IsAbilityAvailableForSelf(ctx, selection.selectedAbilityId))
+			{
+				ctx.intent->hasAbility = true;
+				ctx.intent->abilityId = selection.selectedAbilityId;
+				ctx.intent->abilityDirX = selection.directionX;
+				ctx.intent->abilityDirZ = selection.directionZ;
+				ctx.intent->sequence++;
 
-	const CombatActionSelection selection = ctx.combatActionPolicy->SelectAction(ctx);
-	if (!selection.shouldAttack)
-		return;
-
-	if (!IsAbilityAvailableForSelf(ctx, selection.selectedAbilityId))
-		return;
-
-	ctx.command->hasAbility  = true;
-	ctx.command->abilityId   = selection.selectedAbilityId;
-	ctx.command->abilityDirX = selection.directionX;
-	ctx.command->abilityDirZ = selection.directionZ;
-	ctx.command->sequence++;
-
-	ctx.blackboard->lastUsedAbilityId = selection.selectedAbilityId;
-	ctx.blackboard->combatActionSequence++;
-	ctx.decision->attackCooldownAcc  = 0.0;
+				ctx.actionRuntime->lastUsedAbilityId = selection.selectedAbilityId;
+				ctx.actionRuntime->actionSequence++;
+			}
+		}
+	}
 }
 
 void AICombatState::FrameUpdate(AIContext& ctx, const double dT) const
 {
-	ctx.command->hasLook = true;
-	ctx.command->target  = ctx.blackboard->currentTarget;
+	ctx.intent->hasLook = true;
+	ctx.intent->target  = ctx.blackboard->currentTarget;
 
 	ctx.movementPolicy->BuildCombatIntent(ctx);
 }

@@ -6,8 +6,8 @@
 
 void AISearchState::Enter(AIContext& ctx) const
 {
-	if (ctx.command)
-		ctx.command->ClearAll();
+	if (ctx.intent)
+		ctx.intent->ClearAll();
 }
 
 void AISearchState::DecisionUpdate(AIContext& ctx, const double decisionDT) const

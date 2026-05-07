@@ -2,8 +2,6 @@
 
 #include "AIBehaviorDef.h"
 
-#include <span>
-
 struct AIContext;
 struct CombatActionSelection;
 
@@ -14,10 +12,4 @@ namespace AICombatActionPolicyUtil
 	void FillAttackDirectionTowardTarget(
 		const AIContext& ctx,
 		CombatActionSelection& out);
-
-	AbilityId PickWeightedAbility(
-		std::span<const WeightedActionEntry> actions,
-		AbilityId lastUsed,
-		int roll,
-		uint16_t repeatWeightPercent = 25);
 }

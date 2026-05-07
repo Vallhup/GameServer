@@ -12,14 +12,14 @@ const StaticSystemMetaStorage<3> ApplyAICommandSystem::kMetaStorage =
         std::array<AccessSpec, 3>
         {
             ReadImmediate(ComponentRes<AIControlledTag>()),
-            ReadImmediate(ComponentRes<AICommandFrameComp>()),
+            ReadImmediate(ComponentRes<AIIntentFrameComp>()),
             WriteImmediate(ComponentRes<ActorInputComp>()),
         });
 
 void ApplyAICommandSystem::Execute(SystemContext& ctx)
 {
 	for (const auto& [entity, _, frame, input] :
-		ctx.ecs.View<AIControlledTag, AICommandFrameComp, ActorInputComp>())
+		ctx.ecs.View<AIControlledTag, AIIntentFrameComp, ActorInputComp>())
 	{
 		if (frame.hasMove)
 		{

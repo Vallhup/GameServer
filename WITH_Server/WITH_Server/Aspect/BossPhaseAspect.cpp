@@ -11,8 +11,7 @@ CharacterFeatureFlags BossPhaseAspect::RequiredFeature() const noexcept
 
 void BossPhaseAspect::RegisterStorages(WorldRuntime& runtime) const
 {
-	runtime.RegisterStorage<BossPhaseStateComp>();
-	runtime.RegisterStorage<BossPatternRuntimeComp>();
+	runtime.RegisterStorage<AIPhaseRuntimeComp>();
 }
 
 void BossPhaseAspect::Attach(
@@ -24,20 +23,13 @@ void BossPhaseAspect::Attach(
 	(void)def;
 	(void)params;
 
-	BossPhaseStateComp phase{};
+	AIPhaseRuntimeComp phase{};
 	phase.currentPhase = 1;
 	phase.crossedThresholdMask = 0;
 	phase.transitionRequested = false;
-	runtime.DeferredUpsertComponent<BossPhaseStateComp>(entity, phase);
-
-	BossPatternRuntimeComp patternRuntime{};
-	patternRuntime.phaseTransitionLockSec = 0.0f;
-	patternRuntime.phaseTransitionActionPending = false;
-	patternRuntime.strafeTimeLeftSec = 0.0f;
-	patternRuntime.strafeSign = 1;
-	runtime.DeferredUpsertComponent<BossPatternRuntimeComp>(
-		entity,
-		patternRuntime);
+	phase.pendingTransitionIndex =
+		AIPhaseRuntimeComp::kInvalidTransitionIndex;
+	runtime.DeferredUpsertComponent<AIPhaseRuntimeComp>(entity, phase);
 }
 
 bool BossPhaseAspect::Validate(

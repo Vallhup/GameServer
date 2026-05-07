@@ -8,15 +8,11 @@
 #include "AIReturnHomeState.h"
 #include "AIReactState.h"
 
-#include "NormalAIMovementPolicy.h"
-#include "NormalAIReactionPolicy.h"
-#include "NormalAICombatActionPolicy.h"
-#include "NormalAISpecialActionPolicy.h"
-
-#include "BossAIMovementPolicy.h"
-#include "BossAIReactionPolicy.h"
-#include "BossAICombatActionPolicy.h"
-#include "BossAISpecialActionPolicy.h"
+#include "DataDrivenAIMovementPolicy.h"
+#include "DataDrivenAIIdleActionPolicy.h"
+#include "DataDrivenAICombatActionPolicy.h"
+#include "DataDrivenAIReactionPolicy.h"
+#include "DataDrivenAISpecialActionPolicy.h"
 
 #include "GameDataCatalog.h"
 
@@ -47,30 +43,11 @@ const IAIState* AIStateRegistry::TryGetState(AIStateType type) const
 AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 	: profile(&profileDef)
 {
-	switch (profileDef.aiType) {
-	case AIArchetype::NormalMonster:
-	{
-		movementPolicy = std::make_unique<NormalAIMovementPolicy>();
-		combatActionPolicy = std::make_unique<NormalAICombatActionPolicy>();
-		reactionPolicy = std::make_unique<NormalAIReactionPolicy>();
-		specialActionPolicy = std::make_unique<NormalAISpecialActionPolicy>();
-		break;
-	}
-	case AIArchetype::FirstBossMonster:
-	case AIArchetype::MidBossMonster:
-	case AIArchetype::FinalBossMonster:
-	{
-		movementPolicy = std::make_unique<BossAIMovementPolicy>();
-		combatActionPolicy = std::make_unique<BossAICombatActionPolicy>();
-		reactionPolicy = std::make_unique<BossAIReactionPolicy>();
-		specialActionPolicy = std::make_unique<BossAISpecialActionPolicy>();
-		break;
-	}
-	default:
-	{
-		break;
-	}
-	}
+	movementPolicy = std::make_unique<DataDrivenAIMovementPolicy>();
+	idleActionPolicy = std::make_unique<DataDrivenAIIdleActionPolicy>();
+	combatActionPolicy = std::make_unique<DataDrivenAICombatActionPolicy>();
+	reactionPolicy = std::make_unique<DataDrivenAIReactionPolicy>();
+	specialActionPolicy = std::make_unique<DataDrivenAISpecialActionPolicy>();
 }
 
 /* --------------[ AIFSMRegistry ]-------------- */

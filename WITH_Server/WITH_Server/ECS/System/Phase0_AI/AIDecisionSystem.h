@@ -6,7 +6,7 @@
 #include "../../../AIFSMRegistry.h"
 
 class AIDecisionSystem final : public System {
-	static const StaticSystemMetaStorage<10, 1, 1> kMetaStorage;
+	static const StaticSystemMetaStorage<11, 1, 1> kMetaStorage;
 	static constexpr int kMaxDecisionStepsPerFrame{ 4 };
 
 public:
@@ -16,14 +16,11 @@ public:
 private:
 	void RunFSM(
 		AIContext& ctx,
-		const AIFSMBundle& bundle
-	);
-
+		const AIFSMBundle& bundle);
 
 	bool ApplyPendingTransition(
 		AIContext& ctx,
-		const AIFSMBundle& bundle
-	);
+		const AIFSMBundle& bundle);
 
 	AIFSMRegistry _fsmRegistry;
 };

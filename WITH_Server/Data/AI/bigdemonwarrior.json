@@ -66,23 +66,73 @@
   "idleActions": [
     { "abilityKey": "Ability.BigDemonWarrior_Jump", "weight": 100 }
   ],
-  "bossPattern": {
-    "movement": {
+  "movementProfiles": [
+    {
+      "name": "Phase1Hold",
+      "phaseMin": 1,
+      "phaseMax": 1,
       "veryCloseDistance": 2.0,
       "closeDistance": 5.8,
       "midDistance": 7.5,
+      "farDistance": 13.5,
       "preferredMinDistance": 3.2,
       "preferredMaxDistance": 6.8,
+      "veryCloseBehavior": "Retreat",
+      "closeBehavior": "Hold",
+      "preferredBehavior": "Hold",
+      "midBehavior": "Approach",
+      "farBehavior": "RunApproach",
       "strafeMinSec": 0.7,
-      "strafeMaxSec": 1.5
+      "strafeMaxSec": 1.5,
+      "lockFacingToTarget": true
     },
-    "phaseTransitions": [
-      {
-        "phase": 2,
-        "hpRatio": 0.55,
-        "transitionAbilityKey": "Ability.BigDemonWarrior_BattleCry",
-        "transitionLockSec": 3.6
-      }
-    ]
-  }
+    {
+      "name": "Phase2Strafe",
+      "phaseMin": 2,
+      "phaseMax": 255,
+      "veryCloseDistance": 2.0,
+      "closeDistance": 5.8,
+      "midDistance": 7.5,
+      "farDistance": 13.5,
+      "preferredMinDistance": 3.2,
+      "preferredMaxDistance": 6.8,
+      "veryCloseBehavior": "Retreat",
+      "closeBehavior": "Approach",
+      "preferredBehavior": "Strafe",
+      "midBehavior": "Approach",
+      "farBehavior": "RunApproach",
+      "strafeMinSec": 0.7,
+      "strafeMaxSec": 1.5,
+      "lockFacingToTarget": true
+    }
+  ],
+  "reactionRules": [
+    {
+      "event": "OnHitReceived",
+      "outcome": "ForceRetarget",
+      "retargetAttacker": true,
+      "priority": 100
+    },
+    {
+      "event": "OnParried",
+      "outcome": "EnterReact",
+      "retargetAttacker": true,
+      "priority": 200
+    },
+    {
+      "event": "OnGuardBroken",
+      "outcome": "EnterReact",
+      "retargetAttacker": true,
+      "priority": 200
+    }
+  ],
+  "phaseTransitions": [
+    {
+      "fromPhase": 1,
+      "toPhase": 2,
+      "hpRatio": 0.55,
+      "transitionAbilityKey": "Ability.BigDemonWarrior_BattleCry",
+      "transitionLockSec": 3.6
+    }
+  ]
 }

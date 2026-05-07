@@ -6,6 +6,7 @@
 using namespace DirectX;
 
 struct AIPerceptionTuningDef;
+struct AITargetingTuningDef;
 struct WorldTransformComp;
 struct AIBlackboardComp;
 struct AIPerceptionComp;
@@ -41,7 +42,8 @@ private:
 
 	double ComputeScore(
 		const PerceptionCandidate& candidate,
-		const AIPerceptionTuningDef& tuning
+		const AIPerceptionTuningDef& perception,
+		const AITargetingTuningDef& targeting
 	) const noexcept;
 
 
@@ -49,6 +51,7 @@ private:
 		const WorldTransformComp& selfTr,
 		const WorldTransformComp& otherTr,
 		const AIPerceptionTuningDef& tuning,
+		const AITargetingTuningDef& targeting,
 		const AIBlackboardComp& blackboard,
 		Entity other
 	) const noexcept;
@@ -58,6 +61,7 @@ private:
 		Entity self,
 		const WorldTransformComp& selfTr,
 		const AIPerceptionTuningDef& tuning,
+		const AITargetingTuningDef& targeting,
 		AIBlackboardComp& blackboard,
 		AIPerceptionComp& perception,
 		SystemContext& sysCtx

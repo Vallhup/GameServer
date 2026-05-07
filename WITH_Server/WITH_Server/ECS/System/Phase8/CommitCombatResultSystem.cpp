@@ -10,13 +10,15 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
-	const std::array<AccessSpec, 12> kCommitCombatResultAccesses{
+	const std::array<AccessSpec, 14> kCommitCombatResultAccesses{
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
-		WriteImmediate(ComponentRes<AIReactionComp>()),
-		WriteImmediate(ComponentRes<BossPhaseStateComp>()),
-		WriteImmediate(ComponentRes<BossPatternRuntimeComp>()),
+		WriteImmediate(ComponentRes<AIReactionEventQueueComp>()),
+		WriteImmediate(ComponentRes<AIPhaseRuntimeComp>()),
+		WriteImmediate(ComponentRes<AIActionRuntimeComp>()),
+		WriteImmediate(ComponentRes<AIMovementRuntimeComp>()),
+		WriteImmediate(ComponentRes<AIBlackboardComp>()),
 		WriteImmediate(ComponentRes<AbilityInterruptQueueComp>()),
 		ReadImmediate(ComponentRes<AITypeComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
@@ -175,8 +177,8 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		// Boss phase threshold reaction event.
 		if (stats.maxHp > 0 && previousStats.currentHp > stats.currentHp)
 		{
-			BossPhaseStateComp* bossPhase =
-				ctx.ecs.GetMutableComponent<BossPhaseStateComp>(entity);
+			AIPhaseRuntimeComp* bossPhase =
+				ctx.ecs.GetMutableComponent<AIPhaseRuntimeComp>(entity);
 			const AITypeComp* aiType = ctx.ecs.GetComponent<AITypeComp>(entity);
 			const AIBehaviorProfileDef* profile =
 				aiType != nullptr
@@ -193,14 +195,17 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 					static_cast<float>(stats.maxHp);
 
 				for (size_t transitionIndex = 0;
-					transitionIndex < profile->bossPattern.phaseTransitions.size();
+					transitionIndex < profile->phaseTransitions.size() &&
+					transitionIndex < 32u;
 					++transitionIndex)
 				{
-					const AIBossPhaseTransitionDef& transition =
-						profile->bossPattern.phaseTransitions[transitionIndex];
+					const AIPhaseTransitionDef& transition =
+						profile->phaseTransitions[transitionIndex];
 					const uint32_t thresholdMask =
 						1u << static_cast<uint32_t>(transitionIndex);
 					if ((bossPhase->crossedThresholdMask & thresholdMask) != 0 ||
+						(transition.fromPhase.has_value() &&
+							*transition.fromPhase != bossPhase->currentPhase) ||
 						previousHpRatio <= transition.hpRatio ||
 						currentHpRatio > transition.hpRatio)
 					{
@@ -208,20 +213,60 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 					}
 
 					bossPhase->crossedThresholdMask |= thresholdMask;
-					bossPhase->currentPhase = transition.phase;
+					bossPhase->currentPhase = transition.toPhase;
 					bossPhase->transitionRequested = true;
+					bossPhase->pendingTransitionIndex =
+						static_cast<uint16_t>(transitionIndex);
 
-					if (BossPatternRuntimeComp* bossRuntime =
-						ctx.ecs.GetMutableComponent<BossPatternRuntimeComp>(entity))
+					if (AIActionRuntimeComp* actionRuntime =
+						ctx.ecs.GetMutableComponent<AIActionRuntimeComp>(entity))
 					{
-						bossRuntime->phaseTransitionLockSec =
-							transition.transitionLockSec;
-						bossRuntime->phaseTransitionActionPending = true;
-						bossRuntime->strafeTimeLeftSec = 0.0f;
+						if (transition.clearActionCooldowns)
+						{
+							std::fill(
+								actionRuntime->actionCooldownSec.begin(),
+								actionRuntime->actionCooldownSec.end(),
+								0.0f);
+						}
+						if (transition.clearGroupCooldowns)
+						{
+							std::fill(
+								actionRuntime->groupCooldownSec.begin(),
+								actionRuntime->groupCooldownSec.end(),
+								0.0f);
+						}
+						actionRuntime->globalActionCooldownSec =
+							std::max(
+								actionRuntime->globalActionCooldownSec,
+								transition.transitionLockSec);
+						actionRuntime->movementLockSec =
+							std::max(
+								actionRuntime->movementLockSec,
+								transition.transitionLockSec);
+					}
+
+					if (AIMovementRuntimeComp* movementRuntime =
+						ctx.ecs.GetMutableComponent<AIMovementRuntimeComp>(entity))
+					{
+						movementRuntime->strafeTimeLeftSec = 0.0f;
+					}
+
+					if (transition.forceRetarget)
+					{
+						if (AIBlackboardComp* blackboard =
+							ctx.ecs.GetMutableComponent<AIBlackboardComp>(entity))
+						{
+							if (!result.reactionSource.IsNull())
+							{
+								blackboard->lastAttacker = result.reactionSource;
+								blackboard->currentTarget = result.reactionSource;
+							}
+							blackboard->forceRetarget = true;
+						}
 					}
 
 					if (auto* aiReaction =
-						ctx.ecs.GetMutableComponent<AIReactionComp>(entity))
+						ctx.ecs.GetMutableComponent<AIReactionEventQueueComp>(entity))
 					{
 						aiReaction->PostEvent(AIReactionEvent{
 							.type = AIReactionEventType::OnHpThreshold,
@@ -239,7 +284,7 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		// AI hit reaction event.
 		if (result.wasHitThisFrame)
 		{
-			if (auto* aiReaction = ctx.ecs.GetMutableComponent<AIReactionComp>(entity))
+			if (auto* aiReaction = ctx.ecs.GetMutableComponent<AIReactionEventQueueComp>(entity))
 			{
 				aiReaction->PostEvent(AIReactionEvent{
 					.type       = AIReactionEventType::OnHitReceived,
@@ -256,7 +301,7 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			if (interaction.resultType != CombatResolveResultType::Parry)
 				continue;
 
-			if (auto* aiReaction = ctx.ecs.GetMutableComponent<AIReactionComp>(interaction.sourceEntity))
+			if (auto* aiReaction = ctx.ecs.GetMutableComponent<AIReactionEventQueueComp>(interaction.sourceEntity))
 			{
 				aiReaction->PostEvent(AIReactionEvent{
 					.type       = AIReactionEventType::OnParried,

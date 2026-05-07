@@ -36,5 +36,25 @@
   ],
   "idleActions": [
     { "abilityKey": "Ability.Imp_Jump", "weight": 100 }
+  ],
+  "reactionRules": [
+    {
+      "event": "OnHitReceived",
+      "outcome": "EnterReact",
+      "retargetAttacker": true,
+      "priority": 100
+    },
+    {
+      "event": "OnParried",
+      "outcome": "EnterReact",
+      "retargetAttacker": true,
+      "priority": 200
+    },
+    {
+      "event": "OnGuardBroken",
+      "outcome": "EnterReact",
+      "retargetAttacker": false,
+      "priority": 200
+    }
   ]
 }

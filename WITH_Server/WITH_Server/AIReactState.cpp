@@ -4,19 +4,30 @@
 #include "AIBehaviorDef.h"
 #include "IAIReactionPolicy.h"
 
-// AIDecisionSystem::RunFSM 에서 이미 policy 판정 후 Enter 가 호출된다.
-// Enter 에서는 blackboard 를 업데이트하고 command 를 초기화하는 것으로 충분하다.
-
 void AIReactState::Enter(AIContext& ctx) const
 {
-	if (ctx.command)
-		ctx.command->ClearAll();
+	if (ctx.intent != nullptr)
+		ctx.intent->ClearAll();
+}
+
+void AIReactState::Exit(AIContext& ctx) const
+{
+	if (ctx.decision != nullptr)
+	{
+		ctx.decision->reactDurationOverrideActive = false;
+		ctx.decision->reactDurationOverrideSec = 0.0f;
+	}
 }
 
 void AIReactState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
 {
-	// reactDuration 이 지난 후 다음 상태로 전환
-	const double reactDuration = ctx.decisionTuning->reactDuration;
+	(void)decisionDT;
+
+	const double reactDuration =
+		ctx.decision != nullptr &&
+		ctx.decision->reactDurationOverrideActive
+		? static_cast<double>(ctx.decision->reactDurationOverrideSec)
+		: ctx.decisionTuning->reactDuration;
 
 	if (ctx.decision->stateTime < reactDuration)
 		return;
@@ -39,5 +50,6 @@ void AIReactState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
 
 void AIReactState::FrameUpdate(AIContext& ctx, const double dT) const
 {
-	// React 상태에서는 움직임 없음 — 피격 애니메이션만 재생
+	(void)ctx;
+	(void)dT;
 }

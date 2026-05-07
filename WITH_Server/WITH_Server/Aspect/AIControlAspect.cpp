@@ -8,6 +8,31 @@
 #include "RepComponent.h"
 #include "WorldRuntime.h"
 
+#include <algorithm>
+#include <utility>
+
+namespace
+{
+	size_t ResolveGroupCooldownSlotCount(
+		const AIBehaviorProfileDef& profile) noexcept
+	{
+		AIActionGroupId maxGroupId{ InvalidAIActionGroupId };
+		for (const AIActionDef& action : profile.combatActionDefs)
+		{
+			maxGroupId = std::max(maxGroupId, action.groupId);
+		}
+		for (const AIActionDef& action : profile.idleActionDefs)
+		{
+			maxGroupId = std::max(maxGroupId, action.groupId);
+		}
+
+		return maxGroupId == InvalidAIActionGroupId
+			? 0u
+			: static_cast<size_t>(maxGroupId);
+	}
+
+}
+
 CharacterFeatureFlags AIControlAspect::RequiredFeature() const noexcept
 {
 	return CharacterFeatureFlags::AIControlled;
@@ -20,8 +45,10 @@ void AIControlAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<AIPerceptionComp>();
 	runtime.RegisterStorage<AIBlackboardComp>();
 	runtime.RegisterStorage<AIDecisionComp>();
-	runtime.RegisterStorage<AIReactionComp>();
-	runtime.RegisterStorage<AICommandFrameComp>();
+	runtime.RegisterStorage<AIReactionEventQueueComp>();
+	runtime.RegisterStorage<AIActionRuntimeComp>();
+	runtime.RegisterStorage<AIMovementRuntimeComp>();
+	runtime.RegisterStorage<AIIntentFrameComp>();
 }
 
 void AIControlAspect::Attach(
@@ -51,9 +78,26 @@ void AIControlAspect::Attach(
 		? profile->perception.leashGaugeMax
 		: AIPerceptionTuningDef{}.leashGaugeMax;
 	runtime.DeferredUpsertComponent<AIBlackboardComp>(entity, blackboard);
+	AIActionRuntimeComp actionRuntime{};
+	if (profile != nullptr)
+	{
+		actionRuntime.actionCooldownSec.resize(
+			profile->combatActionDefs.size() +
+				profile->idleActionDefs.size(),
+			0.0f);
+		actionRuntime.groupCooldownSec.resize(
+			ResolveGroupCooldownSlotCount(*profile),
+			0.0f);
+	}
+	runtime.DeferredUpsertComponent<AIActionRuntimeComp>(
+		entity,
+		std::move(actionRuntime));
+	runtime.DeferredUpsertComponent<AIMovementRuntimeComp>(
+		entity,
+		AIMovementRuntimeComp{});
 	runtime.DeferredAddComponent<AIDecisionComp>(entity);
-	runtime.DeferredAddComponent<AIReactionComp>(entity);
-	runtime.DeferredAddComponent<AICommandFrameComp>(entity);
+	runtime.DeferredAddComponent<AIReactionEventQueueComp>(entity);
+	runtime.DeferredAddComponent<AIIntentFrameComp>(entity);
 }
 
 bool AIControlAspect::Validate(

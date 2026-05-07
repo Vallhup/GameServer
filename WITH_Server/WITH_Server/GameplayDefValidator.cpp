@@ -33,10 +33,9 @@ DefLoadResult GamePlayDefValidator::ValidateGameplayDefs(
 }
 
 
-bool GamePlayDefValidator::ValidateWeightedAction(
-	const WeightedActionEntry& entry,
+bool GamePlayDefValidator::ValidateAIAction(
+	const AIActionDef& action,
 	const char* owner,
-	const GameDataCatalog&,
 	std::string& outError)
 {
 	const GameplayContentCatalogSnapshot* content =
@@ -47,19 +46,134 @@ bool GamePlayDefValidator::ValidateWeightedAction(
 		return false;
 	}
 
-	if (entry.abilityId == InvalidAbilityId ||
-		content->Abilities().Find(entry.abilityId) == nullptr)
+	if (action.abilityId == InvalidAbilityId ||
+		content->Abilities().Find(action.abilityId) == nullptr)
 	{
-		outError = std::string(owner) +
-			" references unknown weighted ability.";
+		outError = std::string(owner) + " references unknown ability.";
 		return false;
 	}
 
-	if (entry.weight == 0)
+	if (action.weight == 0)
 	{
-		outError = std::string(owner) +
-			" has weighted ability with zero weight.";
+		outError = std::string(owner) + " requires positive weight.";
 		return false;
+	}
+
+	if (action.condition.phaseMin > action.condition.phaseMax)
+	{
+		outError = std::string(owner) + " has invalid phase range.";
+		return false;
+	}
+
+	if (action.condition.selfHpRatioMin > action.condition.selfHpRatioMax ||
+		action.condition.targetHpRatioMin > action.condition.targetHpRatioMax)
+	{
+		outError = std::string(owner) + " has invalid hp ratio range.";
+		return false;
+	}
+
+	if (action.aiCooldownSec < 0.0f ||
+		action.globalCooldownSec < 0.0f ||
+		action.groupCooldownSec < 0.0f ||
+		action.lockMovementSec < 0.0f)
+	{
+		outError = std::string(owner) + " has negative cooldown or lock.";
+		return false;
+	}
+
+	return true;
+}
+
+bool GamePlayDefValidator::ValidateMovementProfile(
+	const AIMovementProfileDef& profile,
+	std::string& outError)
+{
+	if (profile.phaseMin > profile.phaseMax)
+	{
+		outError = "AI behavior movementProfiles has invalid phase range.";
+		return false;
+	}
+
+	if (profile.strafeMinSec < 0.0f ||
+		profile.strafeMaxSec < 0.0f ||
+		profile.strafeMinSec > profile.strafeMaxSec)
+	{
+		outError = "AI behavior movementProfiles has invalid strafe range.";
+		return false;
+	}
+
+	return true;
+}
+
+bool GamePlayDefValidator::ValidateReactionRule(
+	const AIReactionRuleDef& rule,
+	std::string& outError)
+{
+	if (rule.phaseMin > rule.phaseMax)
+	{
+		outError = "AI behavior reactionRules has invalid phase range.";
+		return false;
+	}
+
+	if (rule.selfHpRatioMin > rule.selfHpRatioMax)
+	{
+		outError = "AI behavior reactionRules has invalid hp ratio range.";
+		return false;
+	}
+
+	if (rule.reactDurationSec < 0.0f)
+	{
+		outError = "AI behavior reactionRules has negative reactDurationSec.";
+		return false;
+	}
+
+	if (rule.reactAbilityId != InvalidAbilityId)
+	{
+		const GameplayContentCatalogSnapshot* content =
+			GameplayContentCatalogSnapshot::TryCurrent();
+		if (content == nullptr ||
+			content->Abilities().Find(rule.reactAbilityId) == nullptr)
+		{
+			outError = "AI behavior reactionRules references unknown ability.";
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool GamePlayDefValidator::ValidatePhaseTransition(
+	const AIPhaseTransitionDef& transition,
+	std::string& outError)
+{
+	if (transition.toPhase < 1)
+	{
+		outError = "AI behavior phaseTransitions requires toPhase >= 1.";
+		return false;
+	}
+
+	if (transition.hpRatio < 0.0f || transition.hpRatio > 1.0f)
+	{
+		outError = "AI behavior phaseTransitions hpRatio must be 0..1.";
+		return false;
+	}
+
+	if (transition.transitionLockSec < 0.0f)
+	{
+		outError = "AI behavior phaseTransitions has negative transitionLockSec.";
+		return false;
+	}
+
+	if (transition.transitionAbilityId != InvalidAbilityId)
+	{
+		const GameplayContentCatalogSnapshot* content =
+			GameplayContentCatalogSnapshot::TryCurrent();
+		if (content == nullptr ||
+			content->Abilities().Find(transition.transitionAbilityId) == nullptr)
+		{
+			outError = "AI behavior phaseTransitions references unknown ability.";
+			return false;
+		}
 	}
 
 	return true;
@@ -90,28 +204,44 @@ bool GamePlayDefValidator::ValidateAIBehaviorProfiles(
 			return false;
 		}
 
-		for (const WeightedActionEntry& entry : profile.combatActions)
+		for (const AIActionDef& action : profile.combatActionDefs)
 		{
-			if (!ValidateWeightedAction(
-				entry,
-				"AI behavior combatActions",
-				catalog,
-				outError))
+			if (!ValidateAIAction(
+					action,
+					"AI behavior combatActions",
+					outError))
 			{
 				return false;
 			}
 		}
 
-		for (const WeightedActionEntry& entry : profile.idleActions)
+		for (const AIActionDef& action : profile.idleActionDefs)
 		{
-			if (!ValidateWeightedAction(
-				entry,
-				"AI behavior idleActions",
-				catalog,
-				outError))
+			if (!ValidateAIAction(
+					action,
+					"AI behavior idleActions",
+					outError))
 			{
 				return false;
 			}
+		}
+
+		for (const AIMovementProfileDef& movement : profile.movementProfiles)
+		{
+			if (!ValidateMovementProfile(movement, outError))
+				return false;
+		}
+
+		for (const AIReactionRuleDef& rule : profile.reactionRules)
+		{
+			if (!ValidateReactionRule(rule, outError))
+				return false;
+		}
+
+		for (const AIPhaseTransitionDef& transition : profile.phaseTransitions)
+		{
+			if (!ValidatePhaseTransition(transition, outError))
+				return false;
 		}
 	}
 

@@ -5,8 +5,8 @@
 
 void AIChaseState::Enter(AIContext& ctx) const
 {
-	if (ctx.command)
-		ctx.command->ClearAll();
+	if (ctx.intent)
+		ctx.intent->ClearAll();
 }
 
 void AIChaseState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
@@ -32,8 +32,8 @@ void AIChaseState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
 
 void AIChaseState::FrameUpdate(AIContext& ctx, const double dT) const
 {
-	ctx.command->hasLook = true;
-	ctx.command->target = ctx.blackboard->currentTarget;
+	ctx.intent->hasLook = true;
+	ctx.intent->target = ctx.blackboard->currentTarget;
 
 	ctx.movementPolicy->BuildChaseIntent(ctx);
 }

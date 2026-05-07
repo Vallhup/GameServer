@@ -39,5 +39,25 @@
   "idleActions": [
     { "abilityKey": "Ability.DemonExecutioner_Jump_1", "weight": 50 },
     { "abilityKey": "Ability.DemonExecutioner_Jump_2", "weight": 50 }
+  ],
+  "reactionRules": [
+    {
+      "event": "OnHitReceived",
+      "outcome": "EnterReact",
+      "retargetAttacker": true,
+      "priority": 100
+    },
+    {
+      "event": "OnParried",
+      "outcome": "EnterReact",
+      "retargetAttacker": true,
+      "priority": 200
+    },
+    {
+      "event": "OnGuardBroken",
+      "outcome": "EnterReact",
+      "retargetAttacker": false,
+      "priority": 200
+    }
   ]
 }

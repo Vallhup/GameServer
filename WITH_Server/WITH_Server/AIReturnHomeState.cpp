@@ -88,20 +88,20 @@ namespace
 			ctx.blackboard->hasLastKnownTargetPosition = false;
 		}
 
-		if (ctx.command)
+		if (ctx.intent)
 		{
-			ctx.command->target = Entity::Null();
-			ctx.command->hasLook = false;
-			ctx.command->hasAbility = false;
-			ctx.command->abilityId = InvalidAbilityId;
+			ctx.intent->target = Entity::Null();
+			ctx.intent->hasLook = false;
+			ctx.intent->hasAbility = false;
+			ctx.intent->abilityId = InvalidAbilityId;
 		}
 	}
 }
 
 void AIReturnHomeState::Enter(AIContext& ctx) const
 {
-	if (ctx.command)
-		ctx.command->ClearAll();
+	if (ctx.intent)
+		ctx.intent->ClearAll();
 
 	if (ctx.blackboard)
 	{
@@ -127,8 +127,12 @@ void AIReturnHomeState::DecisionUpdate(
 		ctx.blackboard->returnHomeLockoutAcc = 0.0;
 		ctx.blackboard->leashGauge =
 			ctx.perceptionTuning ? ctx.perceptionTuning->leashGaugeMax : ctx.blackboard->leashGauge;
-		ctx.blackboard->hasPathCorner = false;
-		ctx.blackboard->pathRecomputeAcc = 0.0;
+	}
+
+	if (ctx.movementRuntime)
+	{
+		ctx.movementRuntime->hasPathCorner = false;
+		ctx.movementRuntime->pathRecomputeAcc = 0.0;
 	}
 
 	ClearReturnTarget(ctx);

@@ -8,6 +8,7 @@
 #include "AIBehaviorDef.h"
 #include "IAIState.h"
 #include "IAIMovementPolicy.h"
+#include "IAIIdleActionPolicy.h"
 #include "IAICombatActionPolicy.h"
 #include "IAIReactionPolicy.h"
 #include "IAISpecialActionPolicy.h"
@@ -50,6 +51,7 @@ struct AIBehaviorBundle
 	const AIBehaviorProfileDef* profile{ nullptr };
 
 	std::unique_ptr<IAIMovementPolicy>			movementPolicy;
+	std::unique_ptr<IAIIdleActionPolicy>		idleActionPolicy;
 	std::unique_ptr<IAICombatActionPolicy>		combatActionPolicy;
 	std::unique_ptr<IAIReactionPolicy>			reactionPolicy;
 	std::unique_ptr<IAISpecialActionPolicy>     specialActionPolicy;

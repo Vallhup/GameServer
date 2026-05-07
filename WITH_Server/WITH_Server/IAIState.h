@@ -5,6 +5,7 @@
 
 struct SystemContext;
 class IAIMovementPolicy;
+class IAIIdleActionPolicy;
 class IAICombatActionPolicy;
 class IAIReactionPolicy;
 class IAISpecialActionPolicy;
@@ -20,10 +21,11 @@ struct AIContext
 
 	AIBlackboardComp*				blackboard{ nullptr };
 	AIDecisionComp*					decision{ nullptr };
-	AIReactionComp*					reaction{ nullptr };
-	AICommandFrameComp*				command{ nullptr };
+	AIReactionEventQueueComp*		reaction{ nullptr };
+	AIIntentFrameComp*				intent{ nullptr };
 	CombatStatStateComp*			stats{ nullptr };
-	BossPatternRuntimeComp*			bossPatternRuntime{ nullptr };
+	AIActionRuntimeComp*			actionRuntime{ nullptr };
+	AIMovementRuntimeComp*			movementRuntime{ nullptr };
 
 	const WorldTransformComp*		selfTr{ nullptr };
 	const AbilityStateComp*			abilityState{ nullptr };
@@ -32,6 +34,7 @@ struct AIContext
 	const AIDecisionTuningDef*		decisionTuning{ nullptr };
 
 	const IAIMovementPolicy*		movementPolicy{ nullptr };
+	const IAIIdleActionPolicy*		idleActionPolicy{ nullptr };
 	const IAICombatActionPolicy*	combatActionPolicy{ nullptr };
 	const IAIReactionPolicy*		reactionPolicy{ nullptr };
 	const IAISpecialActionPolicy*	specialActionPolicy{ nullptr };
