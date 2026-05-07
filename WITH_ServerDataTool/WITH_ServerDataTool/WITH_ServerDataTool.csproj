@@ -52,6 +52,9 @@
     <None Include="Presets\bigdemonwarrior.json" />
     <None Include="Presets\demonexecutioner.json" />
     <None Include="Presets\demonstriker.json" />
+    <None Include="Presets\lancer.json" />
+    <None Include="Presets\paladin.json" />
+    <None Include="Presets\tank.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Presets\imp.json" />

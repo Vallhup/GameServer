@@ -1,0 +1,116 @@
+{
+    "schemaVersion": 2,
+    "objectName": "Lancer",
+    "inputs": {
+        "meshDirectory": "../../Resource/Lancer/Mesh",
+        "animationDirectory": "../../Resource/Lancer/Animation"
+    },
+    "outputs": {
+        "capsuleTemplatePath": "../../Output/Capsule/lancer_capsule_template.json",
+        "animationDirectory": "../../Output/Animation/Lancer"
+    },
+    "capsuleRules": {
+        "defaultRoles": [ "hurt", "guard", "parry" ],
+        "weaponRoles": [ "hit", "guard", "parry" ],
+        "weaponBones": [ 25, 45 ],
+        "extremeTrimFraction": 0.03
+    },
+    "clips": [
+        {
+            "name": "heavyattack",
+            "source": "lancer_attack_strong_baked.bone",
+            "output": "lancer_animation_heavyattack.json",
+            "loop": false
+        },
+        {
+            "name": "lightattack1",
+            "source": "lancer_attack_combo01_baked.bone",
+            "output": "lancer_animation_lightattack1.json",
+            "loop": false
+        },
+        {
+            "name": "lightattack2",
+            "source": "lancer_attack_combo02_baked.bone",
+            "output": "lancer_animation_lightattack2.json",
+            "loop": false
+        },
+        {
+            "name": "lightattack3",
+            "source": "lancer_attack_combo03_baked.bone",
+            "output": "lancer_animation_lightattack3.json",
+            "loop": false
+        },
+        {
+            "name": "specialattack",
+            "source": "lancer_attack_special_baked.bone",
+            "output": "lancer_animation_specialattack.json",
+            "loop": false
+        },
+        {
+            "name": "death",
+            "source": "lancer_death_baked.bone",
+            "output": "lancer_animation_death.json",
+            "loop": false
+        },
+        {
+            "name": "drinking",
+            "source": "lancer_drinking_baked.bone",
+            "output": "lancer_animation_drinking.json",
+            "loop": false
+        },
+        {
+            "name": "guard",
+            "source": "lancer_guard_baked.bone",
+            "output": "lancer_animation_guard.json",
+            "loop": false
+        },
+        {
+            "name": "hit",
+            "source": "lancer_hit_baked.bone",
+            "output": "lancer_animation_hit.json",
+            "loop": false
+        },
+        {
+            "name": "idle",
+            "source": "lancer_idle_baked.bone",
+            "output": "lancer_animation_idle.json",
+            "loop": true
+        },
+        {
+            "name": "parry",
+            "source": "lancer_parry_baked.bone",
+            "output": "lancer_animation_parry.json",
+            "loop": false
+        },
+        {
+            "name": "dodge",
+            "source": "lancer_roll_baked.bone",
+            "output": "lancer_animation_dodge.json",
+            "loop": false
+        },
+        {
+            "name": "run",
+            "source": "lancer_run_baked.bone",
+            "output": "lancer_animation_run.json",
+            "loop": true
+        },
+        {
+            "name": "stun_left",
+            "source": "lancer_stun_left_baked.bone",
+            "output": "lancer_animation_stun_left.json",
+            "loop": false
+        },
+        {
+            "name": "stun_right",
+            "source": "lancer_stun_right_baked.bone",
+            "output": "lancer_animation_stun_right.json",
+            "loop": false
+        },
+        {
+            "name": "walk",
+            "source": "lancer_walk_baked.bone",
+            "output": "lancer_animation_walk.json",
+            "loop": true
+        }
+    ]
+}

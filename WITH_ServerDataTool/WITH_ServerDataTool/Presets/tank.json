@@ -1,0 +1,194 @@
+{
+    "schemaVersion": 2,
+    "objectName": "Tank",
+    "inputs": {
+        "meshDirectory": "../../Resource/Tank/Mesh",
+        "animationDirectory": "../../Resource/Tank/Animation"
+    },
+    "outputs": {
+        "capsuleTemplatePath": "../../Output/Capsule/tank_capsule_template.json",
+        "animationDirectory": "../../Output/Animation/Tank"
+    },
+    "capsuleRules": {
+        "defaultRoles": [ "hurt" ],
+        "weaponRoles": [ "hit" ],
+        "weaponBones": [ 6, 15 ],
+        "extremeTrimFraction": 0
+    },
+    "clips": [
+        {
+            "name": "death_1",
+            "source": "monster_Tank_Death_1_baked.bone",
+            "output": "tank_animation_death_1.json",
+            "loop": false
+        },
+        {
+            "name": "death_2",
+            "source": "monster_Tank_Death_2_baked.bone",
+            "output": "tank_animation_death_2.json",
+            "loop": false
+        },
+        {
+            "name": "idle_1",
+            "source": "monster_Tank_Idle_1_baked.bone",
+            "output": "tank_animation_idle_1.json",
+            "loop": true
+        },
+        {
+            "name": "idle_2",
+            "source": "monster_Tank_Idle_2_baked.bone",
+            "output": "tank_animation_idle_2.json",
+            "loop": true
+        },
+        {
+            "name": "idle_3",
+            "source": "monster_Tank_Idle_3_baked.bone",
+            "output": "tank_animation_idle_3.json",
+            "loop": true
+        },
+        {
+            "name": "idle_4",
+            "source": "monster_Tank_Idle_4_baked.bone",
+            "output": "tank_animation_idle_4.json",
+            "loop": true
+        },
+        {
+            "name": "idle_5",
+            "source": "monster_Tank_Idle_5_baked.bone",
+            "output": "tank_animation_idle_5.json",
+            "loop": true
+        },
+        {
+            "name": "jump_1",
+            "source": "monster_Tank_Jump_1_baked.bone",
+            "output": "tank_animation_jump_1.json",
+            "loop": false
+        },
+        {
+            "name": "jump_2",
+            "source": "monster_Tank_Jump_2_baked.bone",
+            "output": "tank_animation_jump_2.json",
+            "loop": false
+        },
+        {
+            "name": "melee_1",
+            "source": "monster_Tank_Melee_1_baked.bone",
+            "output": "tank_animation_melee_1.json",
+            "loop": false
+        },
+        {
+            "name": "melee_2",
+            "source": "monster_Tank_Melee_2_baked.bone",
+            "output": "tank_animation_melee_2.json",
+            "loop": false
+        },
+        {
+            "name": "melee_3",
+            "source": "monster_Tank_Melee_3_baked.bone",
+            "output": "tank_animation_melee_3.json",
+            "loop": false
+        },
+        {
+            "name": "melee_4",
+            "source": "monster_Tank_Melee_4_baked.bone",
+            "output": "tank_animation_melee_4.json",
+            "loop": false
+        },
+        {
+            "name": "melee_5",
+            "source": "monster_Tank_Melee_5_baked.bone",
+            "output": "tank_animation_melee_5.json",
+            "loop": false
+        },
+        {
+            "name": "melee_6",
+            "source": "monster_Tank_Melee_6_baked.bone",
+            "output": "tank_animation_melee_6.json",
+            "loop": false
+        },
+        {
+            "name": "melee_7",
+            "source": "monster_Tank_Melee_7_baked.bone",
+            "output": "tank_animation_melee_7.json",
+            "loop": false
+        },
+        {
+            "name": "melee_8",
+            "source": "monster_Tank_Melee_8_baked.bone",
+            "output": "tank_animation_melee_8.json",
+            "loop": false
+        },
+        {
+            "name": "run_1",
+            "source": "monster_Tank_Running_1_baked.bone",
+            "output": "tank_animation_run_1.json",
+            "loop": true
+        },
+        {
+            "name": "run_2",
+            "source": "monster_Tank_Running_2_baked.bone",
+            "output": "tank_animation_run_2.json",
+            "loop": true
+        },
+        {
+            "name": "stun",
+            "source": "monster_Tank_stun_baked.bone",
+            "output": "tank_animation_stun.json",
+            "loop": false
+        },
+        {
+            "name": "turn_left",
+            "source": "monster_Tank_Turn_Left_baked.bone",
+            "output": "tank_animation_turn_left.json",
+            "loop": false
+        },
+        {
+            "name": "turn_right",
+            "source": "monster_Tank_Turn_Right_baked.bone",
+            "output": "tank_animation_turn_right.json",
+            "loop": false
+        },
+        {
+            "name": "walk_1",
+            "source": "monster_Tank_Walk_1_baked.bone",
+            "output": "tank_animation_walk_1.json",
+            "loop": true
+        },
+        {
+            "name": "walk_2",
+            "source": "monster_Tank_Walk_2_baked.bone",
+            "output": "tank_animation_walk_2.json",
+            "loop": true
+        },
+        {
+            "name": "walk_back",
+            "source": "monster_Tank_Walk_Back_baked.bone",
+            "output": "tank_animation_walk_back.json",
+            "loop": true
+        },
+        {
+            "name": "walk_left_back",
+            "source": "monster_Tank_Walk_Left_Back_baked.bone",
+            "output": "tank_animation_walk_left_back.json",
+            "loop": true
+        },
+        {
+            "name": "walk_left",
+            "source": "monster_Tank_Walk_Left_baked.bone",
+            "output": "tank_animation_walk_left.json",
+            "loop": true
+        },
+        {
+            "name": "walk_right_back",
+            "source": "monster_Tank_Walk_Right_Back_baked.bone",
+            "output": "tank_animation_walk_1.json",
+            "loop": true
+        },
+        {
+            "name": "walk_right",
+            "source": "monster_Tank_Walk_Right_baked.bone",
+            "output": "tank_animation_walk_right.json",
+            "loop": true
+        }
+    ]
+}

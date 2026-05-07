@@ -1,0 +1,110 @@
+{
+    "schemaVersion": 2,
+    "objectName": "Paladin",
+    "inputs": {
+        "meshDirectory": "../../Resource/Paladin/Mesh",
+        "animationDirectory": "../../Resource/Paladin/Animation"
+    },
+    "outputs": {
+        "capsuleTemplatePath": "../../Output/Capsule/paladin_capsule_template.json",
+        "animationDirectory": "../../Output/Animation/Paladin"
+    },
+    "capsuleRules": {
+        "defaultRoles": [ "hurt", "guard", "parry" ],
+        "weaponRoles": [ "hit", "guard", "parry" ],
+        "weaponBones": [ 44 ],
+        "extremeTrimFraction": 0.03
+    },
+    "clips": [
+        {
+            "name": "heavyattack",
+            "source": "paladin_attack_strong_baked.bone",
+            "output": "paladin_animation_heavyattack.json",
+            "loop": false
+        },
+        {
+            "name": "lightattack1",
+            "source": "paladin_attack_combo01_baked.bone",
+            "output": "paladin_animation_lightattack1.json",
+            "loop": false
+        },
+        {
+            "name": "lightattack2",
+            "source": "paladin_attack_combo02_baked.bone",
+            "output": "paladin_animation_lightattack2.json",
+            "loop": false
+        },
+        {
+            "name": "lightattack3",
+            "source": "paladin_attack_combo03_baked.bone",
+            "output": "paladin_animation_lightattack3.json",
+            "loop": false
+        },
+        {
+            "name": "specialattack",
+            "source": "paladin_attack_special_baked.bone",
+            "output": "paladin_animation_specialattack.json",
+            "loop": false
+        },
+        {
+            "name": "death",
+            "source": "paladin_death_baked.bone",
+            "output": "paladin_animation_death.json",
+            "loop": false
+        },
+        {
+            "name": "drinking",
+            "source": "paladin_drinking_baked.bone",
+            "output": "paladin_animation_drinking.json",
+            "loop": false
+        },
+        {
+            "name": "guard",
+            "source": "paladin_guard_baked.bone",
+            "output": "paladin_animation_guard.json",
+            "loop": false
+        },
+        {
+            "name": "hit",
+            "source": "paladin_hit_baked.bone",
+            "output": "paladin_animation_hit.json",
+            "loop": false
+        },
+        {
+            "name": "idle",
+            "source": "paladin_idle_baked.bone",
+            "output": "paladin_animation_idle.json",
+            "loop": true
+        },
+        {
+            "name": "parry",
+            "source": "paladin_parry_baked.bone",
+            "output": "paladin_animation_parry.json",
+            "loop": false
+        },
+        {
+            "name": "dodge",
+            "source": "paladin_roll_baked.bone",
+            "output": "paladin_animation_dodge.json",
+            "loop": false
+        },
+        {
+            "name": "run",
+            "source": "paladin_run_baked.bone",
+            "output": "paladin_animation_run.json",
+            "loop": true
+        },
+        {
+            "name": "stun",
+            "source": "paladin_stun_baked.bone",
+            "output": "paladin_animation_stun.json",
+            "loop": false
+        },
+        {
+            "name": "walk",
+            "source": "paladin_walk_baked.bone",
+            "output": "paladin_animation_walk.json",
+            "loop": true
+        }
+    ]
+}
