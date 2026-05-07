@@ -250,6 +250,7 @@ void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 		{ static_cast<int>(CharacterId::DemonStriker),     MonsterType::DemonStriker     },
 		{ static_cast<int>(CharacterId::DemonExecutioner), MonsterType::DemonExecutioner },
 		{ static_cast<int>(CharacterId::BigDemonWarrior),  MonsterType::BigDemonWarrior  },
+		{ static_cast<int>(CharacterId::Tank),  MonsterType::Tank  },
 	};
 
 	static const unordered_map<int, CharacterType> characterMap = {
