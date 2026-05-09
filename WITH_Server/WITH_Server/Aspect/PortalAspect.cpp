@@ -20,7 +20,5 @@ void PortalAspect::Attach(
 	const CharacterDef& def,
 	const AssembleParams& params) const
 {
-	(void)def;
-	(void)params;
 	runtime.DeferredAddComponent<PortalTriggerStateComp>(entity);
 }

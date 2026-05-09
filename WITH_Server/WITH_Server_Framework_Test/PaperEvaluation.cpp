@@ -689,16 +689,25 @@ namespace
             }
         }
 
-        const int    removed      = serialBinary - serial5Rule;
-        const double reductionPct = static_cast<double>(removed) / static_cast<double>(totalPairs) * 100.0;
-        const int    parBinary    = totalPairs - serialBinary;
-        const int    par5Rule     = totalPairs - serial5Rule;
+        const int parBinary = totalPairs - serialBinary;
+        const int par5Rule = totalPairs - serial5Rule;
+
+        // Binary 모델에서 직렬화된 pair 중,
+        // 5-Rule 모델이 병렬 실행 후보로 복구한 pair 수
+        const int recovered = par5Rule - parBinary;
+
+        // FSR = (P_5 - P_B) / (N_pairs - P_B) * 100
+        //     = recovered / serialBinary * 100
+        const double fsrPct =
+            serialBinary > 0
+            ? static_cast<double>(recovered) / static_cast<double>(serialBinary) * 100.0
+            : 0.0;
 
         std::printf("  Total pairs       : %d\n", totalPairs);
         std::printf("  Binary  — serial  : %d  parallel: %d\n", serialBinary, parBinary);
         std::printf("  5-Rule  — serial  : %d  parallel: %d\n", serial5Rule,  par5Rule);
-        std::printf("  False serial removed: %d\n", removed);
-        std::printf("  Reduction rate    : %.2f%%\n", reductionPct);
+        std::printf("  False serial recovered: %d\n", recovered);
+        std::printf("  FSR over binary-serialized pairs: %.2f%%\n", fsrPct);
 
         if (!demoPairs.empty())
         {
@@ -1146,7 +1155,7 @@ void RunPaperEvaluation()
 {
     std::cout << "\n";
     std::cout << "====================================================\n";
-    std::cout << "  WITH Server — Paper Quantitative Evaluation\n";
+    std::cout << "          Paper Quantitative Evaluation\n";
     std::cout << "  ECS+TaskGraph Declarative Dependency Framework\n";
     std::cout << "====================================================\n";
 

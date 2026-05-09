@@ -4,43 +4,6 @@
 #include "../ECS/GameplayRuntimeComponents.h"
 #include "WorldRuntime.h"
 
-namespace
-{
-	CombatStatStateComp MakeInitialCombatStats(
-		const CharacterDef& def) noexcept
-	{
-		CombatStatStateComp stats{};
-		stats.currentHp		 = static_cast<int32_t>(def.stat.maxHp);
-		stats.maxHp			 = static_cast<int32_t>(def.stat.maxHp);
-		stats.currentStamina = static_cast<int32_t>(def.stat.maxStamina);
-		stats.maxStamina     = static_cast<int32_t>(def.stat.maxStamina);
-		stats.currentPoise   = static_cast<int32_t>(def.stat.maxPoise);
-		stats.maxPoise       = static_cast<int32_t>(def.stat.maxPoise);
-		stats.attackPower    = static_cast<int32_t>(def.stat.attackPower);
-		stats.defense        = static_cast<int32_t>(def.stat.defense);
-		stats.attackSpeed    = def.stat.attackSpeed;
-		stats.moveSpeed      = def.stat.moveSpeed;
-		return stats;
-	}
-
-	CombatStatStateComp ToCombatStatState(
-		const CombatStatInitialState& initial) noexcept
-	{
-		CombatStatStateComp stats{};
-		stats.currentHp = initial.currentHp;
-		stats.maxHp = initial.maxHp;
-		stats.currentStamina = initial.currentStamina;
-		stats.maxStamina = initial.maxStamina;
-		stats.currentPoise = initial.currentPoise;
-		stats.maxPoise = initial.maxPoise;
-		stats.attackPower = initial.attackPower;
-		stats.defense = initial.defense;
-		stats.attackSpeed = initial.attackSpeed;
-		stats.moveSpeed = initial.moveSpeed;
-		return stats;
-	}
-}
-
 CharacterFeatureFlags BaseCombatantAspect::RequiredFeature() const noexcept
 {
 	return CharacterFeatureFlags::Combatant;
@@ -80,11 +43,8 @@ void BaseCombatantAspect::Attach(
 	runtime.DeferredAddComponent<AnimationPlaybackStateComp>(entity);
 	runtime.DeferredAddComponent<SampledAnimationPoseComp>(entity);
 	runtime.DeferredAddComponent<SkeletalCombatColliderComp>(entity);
-	runtime.DeferredUpsertComponent<CombatStatStateComp>(
-		entity,
-		params.combatStatsOverride.has_value()
-			? ToCombatStatState(*params.combatStatsOverride)
-			: MakeInitialCombatStats(def));
+	runtime.DeferredUpsertComponent<CombatStatStateComp>(entity, 
+		BuildCombatStatState(def, params.combatStatsOverride));
 	runtime.DeferredAddComponent<GameplayEffectStateComp>(entity);
 	runtime.DeferredAddComponent<AbilityInterruptQueueComp>(entity);
 	runtime.DeferredAddComponent<PendingProjectileSpawnComp>(entity);
@@ -101,4 +61,43 @@ bool BaseCombatantAspect::Validate(
 		return false;
 	}
 	return true;
+}
+
+CombatStatStateComp BaseCombatantAspect::BuildCombatStatState(
+	const CharacterDef& def, 
+	const std::optional<CombatStatInitialState>& overrideStats) noexcept
+{
+	CombatStatStateComp stats{};
+
+	if (overrideStats.has_value())
+	{
+		CombatStatInitialState initState = overrideStats.value();
+
+		stats.currentHp		 = initState.currentHp;
+		stats.maxHp			 = initState.maxHp;
+		stats.currentStamina = initState.currentStamina;
+		stats.maxStamina	 = initState.maxStamina;
+		stats.currentPoise	 = initState.currentPoise;
+		stats.maxPoise		 = initState.maxPoise;
+		stats.attackPower	 = initState.attackPower;
+		stats.defense		 = initState.defense;
+		stats.attackSpeed	 = initState.attackSpeed;
+		stats.moveSpeed		 = initState.moveSpeed;
+	}
+
+	else
+	{
+		stats.currentHp		 = static_cast<int32_t>(def.stat.maxHp);
+		stats.maxHp			 = static_cast<int32_t>(def.stat.maxHp);
+		stats.currentStamina = static_cast<int32_t>(def.stat.maxStamina);
+		stats.maxStamina	 = static_cast<int32_t>(def.stat.maxStamina);
+		stats.currentPoise	 = static_cast<int32_t>(def.stat.maxPoise);
+		stats.maxPoise		 = static_cast<int32_t>(def.stat.maxPoise);
+		stats.attackPower	 = static_cast<int32_t>(def.stat.attackPower);
+		stats.defense		 = static_cast<int32_t>(def.stat.defense);
+		stats.attackSpeed	 = def.stat.attackSpeed;
+		stats.moveSpeed		 = def.stat.moveSpeed;
+	}
+
+	return stats;
 }

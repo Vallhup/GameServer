@@ -21,13 +21,12 @@ void PlayerControlAspect::Attach(
 	const CharacterDef& def,
 	const AssembleParams& params) const
 {
-	(void)def;
-
-	PlayerControlIdentityComp identity{};
-	identity.netId = params.netId;
-	identity.ownerSessionId = params.sessionId.value_or(0);
-	runtime.DeferredUpsertComponent<PlayerControlIdentityComp>(
-		entity, identity);
+	runtime.DeferredUpsertComponent<PlayerControlIdentityComp>(entity,
+		PlayerControlIdentityComp
+		{
+			.netId			= params.netId,
+			.ownerSessionId = params.sessionId.value_or(0)
+		});
 }
 
 bool PlayerControlAspect::Validate(

@@ -20,16 +20,14 @@ void BossPhaseAspect::Attach(
 	const CharacterDef& def,
 	const AssembleParams& params) const
 {
-	(void)def;
-	(void)params;
-
-	AIPhaseRuntimeComp phase{};
-	phase.currentPhase = 1;
-	phase.crossedThresholdMask = 0;
-	phase.transitionRequested = false;
-	phase.pendingTransitionIndex =
-		AIPhaseRuntimeComp::kInvalidTransitionIndex;
-	runtime.DeferredUpsertComponent<AIPhaseRuntimeComp>(entity, phase);
+	runtime.DeferredUpsertComponent<AIPhaseRuntimeComp>(entity,
+		AIPhaseRuntimeComp
+		{
+			.currentPhase = 1,
+			.crossedThresholdMask = 0,
+			.transitionRequested = false,
+			.pendingTransitionIndex = AIPhaseRuntimeComp::kInvalidTransitionIndex
+		});
 }
 
 bool BossPhaseAspect::Validate(

@@ -185,8 +185,7 @@ DataDrivenAIIdleActionPolicy::CollectCandidates(
 				}
 
 				const SpawnTypeComp* spawnType =
-					selection.aiCtx.sysCtx->ecs.GetComponent<SpawnTypeComp>(
-						selection.aiCtx.self);
+					selection.aiCtx.sysCtx->ecs.GetComponent<SpawnTypeComp>(selection.aiCtx.self);
 
 				if (spawnType == nullptr)
 					continue;

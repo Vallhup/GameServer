@@ -22,8 +22,6 @@ void CombatHitAspect::Attach(
 	const CharacterDef& def,
 	const AssembleParams& params) const
 {
-	(void)def;
-	(void)params;
 	runtime.DeferredAddComponent<CombatColliderActivationComp>(entity);
 	runtime.DeferredAddComponent<CombatHitDedupStateComp>(entity);
 	runtime.DeferredAddComponent<PendingCombatResultComp>(entity);

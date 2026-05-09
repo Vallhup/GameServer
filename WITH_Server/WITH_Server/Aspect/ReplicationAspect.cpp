@@ -23,8 +23,6 @@ void ReplicationAspect::Attach(
 	const CharacterDef& def,
 	const AssembleParams& params) const
 {
-	(void)def;
-	(void)params;
 	runtime.DeferredAddComponent<ReplicatedTag>(entity);
 	runtime.DeferredAddComponent<DirtyFlagsComp>(entity);
 	runtime.DeferredAddComponent<ReplicationStatsComp>(entity);

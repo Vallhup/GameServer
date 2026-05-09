@@ -26,22 +26,25 @@ void LocomotionPhysicsAspect::Attach(
 	const CharacterDef& def,
 	const AssembleParams& params) const
 {
-	(void)params;
 	runtime.DeferredAddComponent<LocomotionMoveDeltaComp>(entity);
 	runtime.DeferredAddComponent<AbilityMoveDeltaComp>(entity);
 	runtime.DeferredAddComponent<AbilityMoveRuntimeComp>(entity);
 	runtime.DeferredAddComponent<PreCollisionTransformComp>(entity);
 
-	BodyCollisionShapeComp shape{};
-	shape.bodyRadiusXZ = def.bodyCollision.footprintRadiusXZ;
-	shape.bodyHeight = def.bodyCollision.bodyHeight;
-	shape.blocksBodyOverlap = def.bodyCollision.blocksBodyOverlap;
-	shape.useNavMeshConstraint = def.bodyCollision.useNavMeshConstraint;
-	shape.pushability = def.bodyCollision.pushability;
-	shape.overlapYieldWeight = def.bodyCollision.overlapYieldWeight;
-	shape.maxOverlapCorrectionPerFrameXZ =
-		def.bodyCollision.maxOverlapCorrectionPerFrameXZ;
-	runtime.DeferredUpsertComponent<BodyCollisionShapeComp>(entity, shape);
+
+	CharacterBodyCollisionDef bodyCollision = def.bodyCollision;
+
+	runtime.DeferredUpsertComponent<BodyCollisionShapeComp>(entity, 
+		BodyCollisionShapeComp
+		{
+			.bodyRadiusXZ					= bodyCollision.footprintRadiusXZ,
+			.bodyHeight						= bodyCollision.bodyHeight,
+			.blocksBodyOverlap				= bodyCollision.blocksBodyOverlap,
+			.useNavMeshConstraint			= bodyCollision.useNavMeshConstraint,
+			.pushability					= bodyCollision.pushability,
+			.overlapYieldWeight				= bodyCollision.overlapYieldWeight,
+			.maxOverlapCorrectionPerFrameXZ = bodyCollision.maxOverlapCorrectionPerFrameXZ
+		});
 
 	runtime.DeferredAddComponent<NavMeshAgentStateComp>(entity);
 	runtime.DeferredAddComponent<BodyCollisionResolveComp>(entity);

@@ -891,5 +891,40 @@
     <Filter Include="GameWorlds\Transfer">
       <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000203}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\JSON">
+      <UniqueIdentifier>{bf0fc022-2036-4ac4-b32d-5181d96422d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\JSON\Ability">
+      <UniqueIdentifier>{ae563bac-f7b5-4911-ac5c-7cd6bd676463}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Data\Ability\demon_striker_abilities.json">
+      <Filter>Data\JSON\Ability</Filter>
+    </None>
+    <None Include="..\Data\Ability\final_boss_abilities.json">
+      <Filter>Data\JSON\Ability</Filter>
+    </None>
+    <None Include="..\Data\Ability\imp_abilities.json">
+      <Filter>Data\JSON\Ability</Filter>
+    </None>
+    <None Include="..\Data\Ability\knight_abilities.json">
+      <Filter>Data\JSON\Ability</Filter>
+    </None>
+    <None Include="..\Data\Ability\lancer_abilities.json">
+      <Filter>Data\JSON\Ability</Filter>
+    </None>
+    <None Include="..\Data\Ability\paladin_abilities.json">
+      <Filter>Data\JSON\Ability</Filter>
+    </None>
+    <None Include="..\Data\Ability\tank_abilities.json">
+      <Filter>Data\JSON\Ability</Filter>
+    </None>
+    <None Include="..\Data\Ability\bigdemonwarrior_abilities.json">
+      <Filter>Data\JSON\Ability</Filter>
+    </None>
+    <None Include="..\Data\Ability\demon_executioner_abilities.json">
+      <Filter>Data\JSON\Ability</Filter>
+    </None>
   </ItemGroup>
 </Project>

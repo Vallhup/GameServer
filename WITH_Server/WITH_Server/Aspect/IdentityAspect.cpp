@@ -28,12 +28,16 @@ void IdentityAspect::Attach(
 	const CharacterDef& def,
 	const AssembleParams& params) const
 {
-	runtime.DeferredUpsertComponent<SpawnTypeComp>(
-		entity,
-		SpawnTypeComp{ .characterId = def.id });
+	runtime.DeferredUpsertComponent<SpawnTypeComp>(entity,
+		SpawnTypeComp
+		{ 
+			.characterId = def.id 
+		});
 
-	WorldTransformComp transform{};
-	transform.position = params.position;
-	transform.rotation = params.rotation;
-	runtime.DeferredUpsertComponent<WorldTransformComp>(entity, transform);
+	runtime.DeferredUpsertComponent<WorldTransformComp>(entity, 
+		WorldTransformComp
+		{
+			.position = params.position,
+			.rotation = params.rotation
+		});
 }

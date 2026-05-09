@@ -1,6 +1,9 @@
 #pragma once
 
 #include "ICharacterAspect.h"
+#include "../ECS/Components/GameplayAIComponents.h"
+
+struct AIBehaviorProfileDef;
 
 class AIControlAspect final : public ICharacterAspect {
 public:
@@ -17,4 +20,12 @@ public:
 	bool Validate(
 		const CharacterDef& def,
 		std::string& outError) const override;
+
+private:
+	static AIBlackboardComp BuildAIBlackboardComp(
+		const AssembleParams& params,
+		const AIBehaviorProfileDef* profile) noexcept;
+
+	static AIActionRuntimeComp BuildAIActionRuntimeComp(
+		const AIBehaviorProfileDef* profile) noexcept;
 };

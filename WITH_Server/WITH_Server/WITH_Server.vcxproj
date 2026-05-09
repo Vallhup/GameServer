@@ -426,6 +426,17 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TransformHelper.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Data\Ability\bigdemonwarrior_abilities.json" />
+    <None Include="..\Data\Ability\demon_executioner_abilities.json" />
+    <None Include="..\Data\Ability\demon_striker_abilities.json" />
+    <None Include="..\Data\Ability\final_boss_abilities.json" />
+    <None Include="..\Data\Ability\imp_abilities.json" />
+    <None Include="..\Data\Ability\knight_abilities.json" />
+    <None Include="..\Data\Ability\lancer_abilities.json" />
+    <None Include="..\Data\Ability\paladin_abilities.json" />
+    <None Include="..\Data\Ability\tank_abilities.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
