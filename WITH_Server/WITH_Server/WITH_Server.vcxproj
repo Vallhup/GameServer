@@ -219,7 +219,6 @@
     <ClCompile Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.cpp" />
     <ClCompile Include="FrameworkFrameEventHarvester.cpp" />
     <ClCompile Include="FrameworkRuntime.cpp" />
-    <ClCompile Include="GameSendBufferManager.cpp" />
     <ClCompile Include="GameplayContentCatalog.cpp" />
     <ClCompile Include="GameplayContentValidation.cpp" />
     <ClCompile Include="GameplayEffectDef.cpp" />
@@ -259,7 +258,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ServerApp.cpp" />
-    <ClCompile Include="ServerAppTest.cpp" />
     <ClCompile Include="ServerDirtyReplicationService.cpp" />
     <ClCompile Include="ServerFrameEventDispatcher.cpp" />
     <ClCompile Include="ServerPacketStager.cpp" />
@@ -360,7 +358,6 @@
     <ClInclude Include="IAIReactionPolicy.h" />
     <ClInclude Include="IAISpecialActionPolicy.h" />
     <ClInclude Include="IAIState.h" />
-    <ClInclude Include="GameSendBufferManager.h" />
     <ClInclude Include="PacketHandlerContext.h" />
     <ClInclude Include="PacketHandlerRegistrar.h" />
     <ClInclude Include="PacketHandlers.h" />
@@ -408,7 +405,6 @@
     <ClInclude Include="json.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ServerApp.h" />
-    <ClInclude Include="ServerAppTest.h" />
     <ClInclude Include="ServerDirtyReplicationService.h" />
     <ClInclude Include="ServerFrameEventDispatcher.h" />
     <ClInclude Include="ServerPacketStager.h" />

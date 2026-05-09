@@ -8,12 +8,6 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
-	const std::array<AccessSpec, 3> kFitSkeletalCombatColliderAccesses{
-		ReadImmediate(ComponentRes<SampledAnimationPoseComp>()),
-		WriteImmediate(ComponentRes<SkeletalCombatColliderComp>()),
-		ReadImmediate(ExternalRes<AnimationRegistry>()),
-	};
-
 	float GetAnimationUnitScale(const AnimationClipDef& clip) noexcept
 	{
 		if (clip.units == "cm")
@@ -43,14 +37,16 @@ namespace
 	}
 }
 
-const SystemMeta FitSkeletalCombatColliderSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<3> FitSkeletalCombatColliderSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<FitSkeletalCombatColliderSystem>(),
 		"FitSkeletalCombatColliderSystem",
-		kFitSkeletalCombatColliderAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 3>
+	{
+		ReadImmediate(ComponentRes<SampledAnimationPoseComp>()),
+		WriteImmediate(ComponentRes<SkeletalCombatColliderComp>()),
+		ReadImmediate(ExternalRes<AnimationRegistry>()),
+	});
 
 FitSkeletalCombatColliderSystem::FitSkeletalCombatColliderSystem(
 	const AnimationRegistry* animationRegistry)
@@ -109,20 +105,27 @@ uint8_t FitSkeletalCombatColliderSystem::BuildRoleMask(
 	uint8_t roleMask = 0;
 	for (CapsuleRole role : clip.capsuleDefs[colliderIndex].roles)
 	{
-		switch (role)
-		{
+		switch (role) {
 		case CapsuleRole::Hit:
+		{
 			roleMask |= static_cast<uint8_t>(SkeletalCombatColliderRoleMask::Hit);
 			break;
+		}
 		case CapsuleRole::Hurt:
+		{
 			roleMask |= static_cast<uint8_t>(SkeletalCombatColliderRoleMask::Hurt);
 			break;
+		}
 		case CapsuleRole::Guard:
+		{
 			roleMask |= static_cast<uint8_t>(SkeletalCombatColliderRoleMask::Guard);
 			break;
+		}
 		case CapsuleRole::Parry:
+		{
 			roleMask |= static_cast<uint8_t>(SkeletalCombatColliderRoleMask::Parry);
 			break;
+		}
 		case CapsuleRole::None:
 		default:
 			break;
@@ -130,9 +133,4 @@ uint8_t FitSkeletalCombatColliderSystem::BuildRoleMask(
 	}
 
 	return roleMask;
-}
-
-const SystemMeta& FitSkeletalCombatColliderSystem::Meta() const
-{
-	return kMeta;
 }

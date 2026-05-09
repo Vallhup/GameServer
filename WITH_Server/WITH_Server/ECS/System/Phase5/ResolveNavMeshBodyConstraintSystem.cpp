@@ -101,14 +101,20 @@ static bool TryResolveStartPoly(
 		outStartPos);
 }
 
-const SystemMeta ResolveNavMeshBodyConstraintSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<7> ResolveNavMeshBodyConstraintSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<ResolveNavMeshBodyConstraintSystem>(),
 		"ResolveNavMeshBodyConstraintSystem",
-		kResolveNavMeshBodyConstraintAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 7>
+	{
+		ReadImmediate(ExternalRes<INavMeshProvider>()),
+		WriteImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<PreCollisionTransformComp>()),
+		ReadImmediate(ComponentRes<BodyCollisionShapeComp>()),
+		WriteImmediate(ComponentRes<NavMeshAgentStateComp>()),
+		WriteImmediate(ComponentRes<BodyCollisionResolveComp>()),
+		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+	});
 
 void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 {
@@ -287,9 +293,4 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 			MarkTransformDirtyIfPresent();
 		}
 	}
-}
-
-const SystemMeta& ResolveNavMeshBodyConstraintSystem::Meta() const
-{
-	return kMeta;
 }

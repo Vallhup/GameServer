@@ -59,14 +59,19 @@ namespace
 	}
 }
 
-const SystemMeta AIPerceptionSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<6> AIPerceptionSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<AIPerceptionSystem>(),
 		"AIPerceptionSystem",
-		kAIPerceptionAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 6>
+	{
+		ReadImmediate(ComponentRes<AIControlledTag>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<AITypeComp>()),
+		ReadImmediate(ComponentRes<SpawnTypeComp>()),
+		WriteImmediate(ComponentRes<AIBlackboardComp>()),
+		WriteImmediate(ComponentRes<AIPerceptionComp>()),
+	});
 
 void AIPerceptionSystem::Execute(SystemContext& ctx)
 {

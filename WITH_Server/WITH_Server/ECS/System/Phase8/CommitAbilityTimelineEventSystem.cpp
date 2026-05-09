@@ -5,26 +5,19 @@
 
 using namespace GameplaySystemUtil;
 
-namespace
-{
-	const std::array<AccessSpec, 6> kCommitAbilityTimelineEventAccesses{
+const StaticSystemMetaStorage<6> CommitAbilityTimelineEventSystem::kMetaStorage =
+	MakeMetaStorage(
+		SysTag<CommitAbilityTimelineEventSystem>(),
+		"CommitAbilityTimelineEventSystem",
+		std::array<AccessSpec, 6>
+	{
 		ReadImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
 		ReadImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<PendingProjectileSpawnComp>()),
 		WriteImmediate(ComponentRes<PendingAbilityPresentationEventComp>()),
 		WriteImmediate(ComponentRes<ReplicationStatsComp>()),
 		WriteDeferred(ComponentRes<PendingGameplayEffectApplyComp>()),
-	};
-}
-
-const SystemMeta CommitAbilityTimelineEventSystem::kMeta =
-	SystemMeta{
-		SysTag<CommitAbilityTimelineEventSystem>(),
-		"CommitAbilityTimelineEventSystem",
-		kCommitAbilityTimelineEventAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+	});
 
 void CommitAbilityTimelineEventSystem::Execute(SystemContext& ctx)
 {
@@ -101,9 +94,4 @@ void CommitAbilityTimelineEventSystem::Execute(SystemContext& ctx)
 			}
 		}
 	}
-}
-
-const SystemMeta& CommitAbilityTimelineEventSystem::Meta() const
-{
-	return kMeta;
 }

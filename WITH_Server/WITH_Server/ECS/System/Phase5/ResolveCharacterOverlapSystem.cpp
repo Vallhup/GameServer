@@ -87,14 +87,20 @@ namespace
 	}
 }
 
-const SystemMeta ResolveCharacterOverlapSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<7> ResolveCharacterOverlapSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<ResolveCharacterOverlapSystem>(),
 		"ResolveCharacterOverlapSystem",
-		kResolveCharacterOverlapAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 7>
+	{
+		WriteImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<PreCollisionTransformComp>()),
+		ReadImmediate(ComponentRes<BodyCollisionShapeComp>()),
+		WriteImmediate(ComponentRes<BodyCollisionResolveComp>()),
+		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
+	});
 
 void ResolveCharacterOverlapSystem::Execute(SystemContext& ctx)
 {
@@ -268,9 +274,4 @@ void ResolveCharacterOverlapSystem::Execute(SystemContext& ctx)
 		entry.resolve->overlapAdjusted = true;
 		MarkTransformDirtyIfPresent(entry.entity);
 	}
-}
-
-const SystemMeta& ResolveCharacterOverlapSystem::Meta() const
-{
-	return kMeta;
 }

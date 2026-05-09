@@ -148,14 +148,18 @@ namespace
 	}
 }
 
-const SystemMeta ComputeAbilityMoveDeltaSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<5> ComputeAbilityMoveDeltaSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<ComputeAbilityMoveDeltaSystem>(),
 		"ComputeAbilityMoveDeltaSystem",
-		kComputeAbilityMoveDeltaAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 5>
+	{
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		WriteImmediate(ComponentRes<AbilityMoveDeltaComp>()),
+		WriteImmediate(ComponentRes<AbilityMoveRuntimeComp>()),
+		ReadImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
+	});
 
 void ComputeAbilityMoveDeltaSystem::Execute(SystemContext& ctx)
 {
@@ -273,9 +277,4 @@ void ComputeAbilityMoveDeltaSystem::Execute(SystemContext& ctx)
 			}
 		}
 	}
-}
-
-const SystemMeta& ComputeAbilityMoveDeltaSystem::Meta() const
-{
-	return kMeta;
 }

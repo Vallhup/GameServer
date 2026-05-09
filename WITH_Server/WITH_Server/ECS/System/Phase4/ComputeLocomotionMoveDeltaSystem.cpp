@@ -8,14 +8,6 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
-	const std::array<AccessSpec, 5> kComputeLocomotionMoveDeltaAccesses{
-		ReadImmediate(ComponentRes<WorldTransformComp>()),
-		WriteImmediate(ComponentRes<LocomotionStateComp>()),
-		ReadImmediate(ComponentRes<AbilityStateComp>()),
-		ReadImmediate(ComponentRes<AIIntentFrameComp>()),
-		WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()),
-	};
-
 	bool IsLookOnlyLocomotionMode(LocomotionMode mode) noexcept
 	{
 		return
@@ -25,14 +17,18 @@ namespace
 	}
 }
 
-const SystemMeta ComputeLocomotionMoveDeltaSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<5> ComputeLocomotionMoveDeltaSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<ComputeLocomotionMoveDeltaSystem>(),
 		"ComputeLocomotionMoveDeltaSystem",
-		kComputeLocomotionMoveDeltaAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 5>
+	{
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		WriteImmediate(ComponentRes<LocomotionStateComp>()),
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
+		ReadImmediate(ComponentRes<AIIntentFrameComp>()),
+		WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()),
+	});
 
 void ComputeLocomotionMoveDeltaSystem::Execute(SystemContext& ctx)
 {
@@ -120,9 +116,4 @@ void ComputeLocomotionMoveDeltaSystem::Execute(SystemContext& ctx)
 
 		moveDelta.hasDelta = true;
 	}
-}
-
-const SystemMeta& ComputeLocomotionMoveDeltaSystem::Meta() const
-{
-	return kMeta;
 }

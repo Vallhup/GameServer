@@ -8,9 +8,12 @@
 
 using namespace GameplaySystemUtil;
 
-namespace
-{
-	const std::array<AccessSpec, 14> kCommitCombatResultAccesses{
+const StaticSystemMetaStorage<14> CommitCombatResultSystem::kMetaStorage =
+	MakeMetaStorage(
+		SysTag<CommitCombatResultSystem>(),
+		"CommitCombatResultSystem",
+		std::array<AccessSpec, 14>
+	{
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
@@ -25,19 +28,7 @@ namespace
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
 		WriteDeferred(CommandBufferRes()),
 		WriteDeferred(ComponentRes<PendingGameplayEffectApplyComp>()),
-	};
-}
-
-const SystemMeta CommitCombatResultSystem::kMeta =
-	SystemMeta{
-		SysTag<CommitCombatResultSystem>(),
-		"CommitCombatResultSystem",
-		kCommitCombatResultAccesses,
-		kNoDeps,
-		kNoDeps,
-		true,
-		false
-	};
+	});
 
 void CommitCombatResultSystem::Execute(SystemContext& ctx)
 {
@@ -389,11 +380,6 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 				entity, effectApplyComp);
 		}
 	}
-}
-
-const SystemMeta& CommitCombatResultSystem::Meta() const
-{
-	return kMeta;
 }
 
 bool CommitCombatResultSystem::DidStatsChange(

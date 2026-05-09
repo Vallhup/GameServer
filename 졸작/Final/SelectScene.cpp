@@ -266,6 +266,7 @@ void SelectScene::RequestSceneChange()
 {
 	if (INPUT.GetKeyDown(VK_CAPITAL))
 	{
+		// TODO: 캐릭터 선택 UI 만들어서 UI 클릭에 따라 다른 Character Packet 보내도록
 		NETWORK_MANAGER->SendCharacterSelectPacket(CharacterId::Knight);
 
 		if (sManagerRef)

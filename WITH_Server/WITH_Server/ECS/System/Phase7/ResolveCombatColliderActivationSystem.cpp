@@ -5,22 +5,15 @@
 
 using namespace GameplaySystemUtil;
 
-namespace
-{
-	const std::array<AccessSpec, 2> kResolveCombatColliderActivationAccesses{
-		ReadImmediate(ComponentRes<AbilityStateComp>()),
-		WriteImmediate(ComponentRes<CombatColliderActivationComp>()),
-	};
-}
-
-const SystemMeta ResolveCombatColliderActivationSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<2> ResolveCombatColliderActivationSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<ResolveCombatColliderActivationSystem>(),
 		"ResolveCombatColliderActivationSystem",
-		kResolveCombatColliderActivationAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 2>
+	{
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
+		WriteImmediate(ComponentRes<CombatColliderActivationComp>()),
+	});
 
 void ResolveCombatColliderActivationSystem::Execute(SystemContext& ctx)
 {
@@ -60,9 +53,4 @@ void ResolveCombatColliderActivationSystem::Execute(SystemContext& ctx)
 				AbilityCombatWindowKind::Invulnerability,
 				normalizedTime);
 	}
-}
-
-const SystemMeta& ResolveCombatColliderActivationSystem::Meta() const
-{
-	return kMeta;
 }

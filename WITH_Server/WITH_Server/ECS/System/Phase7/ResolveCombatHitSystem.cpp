@@ -1,14 +1,18 @@
 #include "pch.h"
 #include "ResolveCombatHitSystem.h"
 
+#include "../../GameplayRuntimeComponents.h"
 #include "../GameplaySystemUtil.h"
 
 using namespace GameplaySystemUtil;
 using namespace DirectX;
 
-namespace
-{
-	const std::array<AccessSpec, 11> kResolveCombatHitAccesses{
+const StaticSystemMetaStorage<11> ResolveCombatHitSystem::kMetaStorage =
+	MakeMetaStorage(
+		SysTag<ResolveCombatHitSystem>(),
+		"ResolveCombatHitSystem",
+		std::array<AccessSpec, 11>
+	{
 		ReadImmediate(ComponentRes<CombatColliderActivationComp>()),
 		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
@@ -20,17 +24,7 @@ namespace
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
 		ReadImmediate(ExternalRes<AbilityDef>()),
-	};
-}
-
-const SystemMeta ResolveCombatHitSystem::kMeta =
-	SystemMeta{
-		SysTag<ResolveCombatHitSystem>(),
-		"ResolveCombatHitSystem",
-		kResolveCombatHitAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+	});
 
 void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 {
@@ -815,9 +809,4 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 		.maxHitStopSec = maxHitStopSec
 	};
 	return true;
-}
-
-const SystemMeta& ResolveCombatHitSystem::Meta() const
-{
-	return kMeta;
 }

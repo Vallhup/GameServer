@@ -1,13 +1,12 @@
 #pragma once
 
 #include "System.h"
+#include "SystemMetaStorage.h"
 
 class ApplyPlayerCommandSystem final : public System {
-	static const SystemMeta kMeta;
+	static const StaticSystemMetaStorage<4> kMetaStorage;
 
 public:
-	// 현재 WorldCommand는 사실상 PlayerCommand 밖에 없음
-	// MonsterAICommand까지 WorldCommand에 포함시키고 매핑 테이블 만들어서 Phase 1에서 처리할 수 있도록
 	void Execute(SystemContext& ctx) override;
-	const SystemMeta& Meta() const override { return kMeta; }
+	const SystemMeta& Meta() const override { return kMetaStorage.meta; }
 };

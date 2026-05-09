@@ -1,9 +1,7 @@
 #pragma once
 
 #include "System.h"
-#include <DirectXMath.h>
-
-using namespace DirectX;
+#include "SystemMetaStorage.h"
 
 struct AIPerceptionTuningDef;
 struct AITargetingTuningDef;
@@ -12,11 +10,11 @@ struct AIBlackboardComp;
 struct AIPerceptionComp;
 
 class AIPerceptionSystem final : public System {
-	static const SystemMeta kMeta;
+	static const StaticSystemMetaStorage<6> kMetaStorage;
 
 public:
 	void Execute(SystemContext& ctx) override;
-	const SystemMeta& Meta() const override { return kMeta; }
+	const SystemMeta& Meta() const override { return kMetaStorage.meta; }
 
 private:
 	struct PerceptionCandidate

@@ -5,38 +5,24 @@
 
 using namespace GameplaySystemUtil;
 
-namespace
-{
-	const std::array<AccessSpec, 2> kMarkTransferPendingAccesses{
-		WriteImmediate(ComponentRes<PendingWorldTransferComp>()),
-		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
-	};
-}
-
-const SystemMeta MarkTransferPendingSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<2> MarkTransferPendingSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<MarkTransferPendingSystem>(),
 		"MarkTransferPendingSystem",
-		kMarkTransferPendingAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 2>
+	{
+		WriteImmediate(ComponentRes<PendingWorldTransferComp>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
+	});
 
 void MarkTransferPendingSystem::Execute(SystemContext& ctx)
 {
 	for (auto [entity, transfer, tag] :
 		ctx.ecs.View<PendingWorldTransferComp, PendingWorldTransferTag>())
 	{
-		(void)entity;
-		(void)tag;
 		if (transfer.requestedFrameIndex == 0)
 		{
 			transfer.requestedFrameIndex = ctx.runtime.FrameIndex();
 		}
 	}
-}
-
-const SystemMeta& MarkTransferPendingSystem::Meta() const
-{
-	return kMeta;
 }

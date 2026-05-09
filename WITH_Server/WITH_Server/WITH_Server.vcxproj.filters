@@ -17,9 +17,6 @@
     <ClCompile Include="AttributeDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
-    <ClCompile Include="GameSendBufferManager.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="PacketHandlerContext.cpp">
       <Filter>SessionSystem\Packets</Filter>
     </ClCompile>
@@ -42,9 +39,6 @@
       <Filter>SessionSystem\Flow</Filter>
     </ClCompile>
     <ClCompile Include="ServerApp.cpp">
-      <Filter>App</Filter>
-    </ClCompile>
-    <ClCompile Include="ServerAppTest.cpp">
       <Filter>App</Filter>
     </ClCompile>
     <ClCompile Include="SessionBindingRegistry.cpp">
@@ -310,9 +304,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameSendBufferManager.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="ServerApp.h">
       <Filter>App</Filter>
     </ClInclude>
@@ -423,9 +414,6 @@
     </ClInclude>
     <ClInclude Include="ServerSessionSystem.h">
       <Filter>SessionSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="ServerAppTest.h">
-      <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="SessionBindingRegistry.h">
       <Filter>SessionSystem</Filter>
@@ -770,9 +758,6 @@
     </Filter>
     <Filter Include="Network\Protocol">
       <UniqueIdentifier>{78581224-a1e5-4384-a9ce-7b4fcf1f3138}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Network\PacketHandler">
-      <UniqueIdentifier>{c3a1f2e4-9b8d-4c6a-8f7e-2d1b3e5a4c9f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Network\Protocol\pb.%2a">
       <UniqueIdentifier>{e52e4be1-914a-4013-a884-38fb5e18bc64}</UniqueIdentifier>

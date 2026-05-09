@@ -7,13 +7,6 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
-	const std::array<AccessSpec, 4> kApplyPlayerCommandAccesses{
-		ReadImmediate(ExternalRes<WorldCommand>()),
-		ReadImmediate(ExternalRes<IWorldNetBindingResolver>()),
-		ReadImmediate(ComponentRes<PlayerControlIdentityComp>()),
-		WriteImmediate(ComponentRes<ActorInputComp>()),
-	};
-
 	PlayerAbilityInputType ResolveAbilityInputType(
 		WorldCommandTypeKey typeKey) noexcept
 	{
@@ -127,14 +120,17 @@ namespace
 	}
 }
 
-const SystemMeta ApplyPlayerCommandSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<4> ApplyPlayerCommandSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<ApplyPlayerCommandSystem>(),
 		"ApplyPlayerCommandSystem",
-		kApplyPlayerCommandAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 4>
+	{
+		ReadImmediate(ExternalRes<WorldCommand>()),
+		ReadImmediate(ExternalRes<IWorldNetBindingResolver>()),
+		ReadImmediate(ComponentRes<PlayerControlIdentityComp>()),
+		WriteImmediate(ComponentRes<ActorInputComp>()),
+	});
 
 void ApplyPlayerCommandSystem::Execute(SystemContext& ctx)
 {

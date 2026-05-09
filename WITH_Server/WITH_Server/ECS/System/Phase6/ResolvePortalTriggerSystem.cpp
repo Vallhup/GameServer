@@ -18,14 +18,20 @@ namespace
 	};
 }
 
-const SystemMeta ResolvePortalTriggerSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<7> ResolvePortalTriggerSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<ResolvePortalTriggerSystem>(),
 		"ResolvePortalTriggerSystem",
-		kResolvePortalTriggerAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 7>
+	{
+		WriteImmediate(ComponentRes<PortalTriggerStateComp>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
+		ReadImmediate(ComponentRes<PlayerControlIdentityComp>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
+		ReadImmediate(ExternalRes<PortalTriggerDef>()),
+	});
 
 void ResolvePortalTriggerSystem::Execute(SystemContext& ctx)
 {
@@ -53,9 +59,4 @@ void ResolvePortalTriggerSystem::Execute(SystemContext& ctx)
 		triggerState.activeTriggerId = 0;
 		triggerState.wasInsideTrigger = false;
 	}
-}
-
-const SystemMeta& ResolvePortalTriggerSystem::Meta() const
-{
-	return kMeta;
 }

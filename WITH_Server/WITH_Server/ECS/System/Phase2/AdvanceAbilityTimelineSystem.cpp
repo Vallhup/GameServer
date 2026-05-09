@@ -5,24 +5,17 @@
 
 using namespace GameplaySystemUtil;
 
-namespace
-{
-	const std::array<AccessSpec, 4> kAdvanceAbilityTimelineAccesses{
+const StaticSystemMetaStorage<4> AdvanceAbilityTimelineSystem::kMetaStorage =
+	MakeMetaStorage(
+		SysTag<AdvanceAbilityTimelineSystem>(),
+		"AdvanceAbilityTimelineSystem",
+		std::array<AccessSpec, 4>
+	{
 		WriteImmediate(ComponentRes<AbilityStateComp>()),
 		WriteImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
-	};
-}
-
-const SystemMeta AdvanceAbilityTimelineSystem::kMeta =
-	SystemMeta{
-		SysTag<AdvanceAbilityTimelineSystem>(),
-		"AdvanceAbilityTimelineSystem",
-		kAdvanceAbilityTimelineAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+	});
 
 void AdvanceAbilityTimelineSystem::Execute(SystemContext& ctx)
 {
@@ -53,11 +46,6 @@ void AdvanceAbilityTimelineSystem::Execute(SystemContext& ctx)
 		ApplyElapsedToActiveAbility(abilityState, advance);
 		CollectTimelineEvents(*abilityDef, advance);
 	}
-}
-
-const SystemMeta& AdvanceAbilityTimelineSystem::Meta() const
-{
-	return kMeta;
 }
 
 void AdvanceAbilityTimelineSystem::ApplyElapsedToActiveAbility(

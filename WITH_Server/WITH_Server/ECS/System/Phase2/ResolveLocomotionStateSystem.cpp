@@ -91,14 +91,21 @@ namespace
 	}
 }
 
-const SystemMeta ResolveLocomotionStateSystem::kMeta =
-	SystemMeta{
+const StaticSystemMetaStorage<8> ResolveLocomotionStateSystem::kMetaStorage =
+	MakeMetaStorage(
 		SysTag<ResolveLocomotionStateSystem>(),
 		"ResolveLocomotionStateSystem",
-		kResolveLocomotionAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+		std::array<AccessSpec, 8>
+	{
+		WriteImmediate(ComponentRes<LocomotionStateComp>()),
+		ReadImmediate(ComponentRes<AbilityStateComp>()),
+		ReadImmediate(ComponentRes<ActorInputComp>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<AIIntentFrameComp>()),
+		ReadImmediate(ComponentRes<SpawnTypeComp>()),
+		ReadImmediate(ComponentRes<PendingDespawnTag>()),
+		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
+	});
 
 void ResolveLocomotionStateSystem::Execute(SystemContext& ctx)
 {
@@ -209,9 +216,4 @@ void ResolveLocomotionStateSystem::Execute(SystemContext& ctx)
 		}
 		locomotionState.wasLocomotionMoving = true;
 	}
-}
-
-const SystemMeta& ResolveLocomotionStateSystem::Meta() const
-{
-	return kMeta;
 }

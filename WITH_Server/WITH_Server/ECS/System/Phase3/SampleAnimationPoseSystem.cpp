@@ -9,23 +9,16 @@
 
 using namespace GameplaySystemUtil;
 
-namespace
-{
-	const std::array<AccessSpec, 3> kSampleAnimationPoseAccesses{
+const StaticSystemMetaStorage<3> SampleAnimationPoseSystem::kMetaStorage =
+	MakeMetaStorage(
+		SysTag<SampleAnimationPoseSystem>(),
+		"SampleAnimationPoseSystem",
+		std::array<AccessSpec, 3>
+	{
 		ReadImmediate(ComponentRes<AnimationPlaybackStateComp>()),
 		WriteImmediate(ComponentRes<SampledAnimationPoseComp>()),
 		ReadImmediate(ExternalRes<AnimationRegistry>()),
-	};
-}
-
-const SystemMeta SampleAnimationPoseSystem::kMeta =
-	SystemMeta{
-		SysTag<SampleAnimationPoseSystem>(),
-		"SampleAnimationPoseSystem",
-		kSampleAnimationPoseAccesses,
-		kNoDeps,
-		kNoDeps
-	};
+	});
 
 SampleAnimationPoseSystem::SampleAnimationPoseSystem(
 	const AnimationRegistry* animationRegistry)
@@ -70,9 +63,4 @@ void SampleAnimationPoseSystem::Execute(SystemContext& ctx)
 		pose.sampleFrameIndex = static_cast<uint16_t>(frameIndex);
 		pose.localCapsules = clip->frames[frameIndex].capsules;
 	}
-}
-
-const SystemMeta& SampleAnimationPoseSystem::Meta() const
-{
-	return kMeta;
 }
