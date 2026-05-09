@@ -1,219 +1,217 @@
-﻿{
-    "abilitySets":  [
-                        {
-                            "key":  "AbilitySet.Tank",
-                            "name":  "Tank",
-                            "grants":  [
-                                           {
-                                               "abilityKey":  "Ability.Tank_Melee_1",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Melee_2",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Melee_3",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Melee_4",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Melee_5",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Melee_6",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Melee_7",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Melee_8",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Jump_1",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Jump_2",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Stun",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Hit",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Tank_Dead",
-                                               "level":  1
-                                           }
-                                       ],
-                            "inputBindingProfileKey":  "AbilityInput.Tank",
-                            "animationBindingProfileKey":  "AbilityAnimation.Tank",
-                            "fallbackReactionProfileKey":  "AbilityFallback.Tank"
-                        }
-                    ],
-    "inputBindingProfiles":  [
-                                 {
-                                     "key":  "AbilityInput.Tank",
-                                     "entries":  [
-
-                                                 ]
-                                 }
-                             ],
-    "animationBindingProfiles":  [
-                                     {
-                                         "key":  "AbilityAnimation.Tank",
-                                         "abilityBindings":  [
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Melee_1",
-                                                                     "animationKey":  "Tank_Melee_1",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Melee_2",
-                                                                     "animationKey":  "Tank_Melee_2",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Melee_3",
-                                                                     "animationKey":  "Tank_Melee_3",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Melee_4",
-                                                                     "animationKey":  "Tank_Melee_4",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Melee_5",
-                                                                     "animationKey":  "Tank_Melee_5",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Melee_6",
-                                                                     "animationKey":  "Tank_Melee_6",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Melee_7",
-                                                                     "animationKey":  "Tank_Melee_7",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Melee_8",
-                                                                     "animationKey":  "Tank_Melee_8",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Jump_1",
-                                                                     "animationKey":  "Tank_Jump_1",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Jump_2",
-                                                                     "animationKey":  "Tank_Jump_2",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Stun",
-                                                                     "animationKey":  "Tank_Stun",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Hit",
-                                                                     "animationKey":  "Tank_Stun",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Tank_Dead",
-                                                                     "animationKey":  "Tank_Death_1",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 }
-                                                             ],
-                                         "locomotionBindings":  [
-                                                                    {
-                                                                        "mode":  "Idle",
-                                                                        "animationKey":  "Tank_Idle_1",
-                                                                        "holdLastFrame":  true
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Walk",
-                                                                        "animationKey":  "Tank_Walk_2"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "WalkBack",
-                                                                        "animationKey":  "Tank_Walk_Back"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "WalkLeft",
-                                                                        "animationKey":  "Tank_Walk_Left"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "WalkRight",
-                                                                        "animationKey":  "Tank_Walk_Right"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Run",
-                                                                        "animationKey":  "Tank_Run_1"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Turn",
-                                                                        "animationKey":  "Tank_Walk_2"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "TurnLeft",
-                                                                        "animationKey":  "Tank_Turn_Left"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "TurnRight",
-                                                                        "animationKey":  "Tank_Turn_Right"
-                                                                    }
-                                                                ]
-                                     }
-                                 ],
-    "fallbackReactionProfiles":  [
-                                     {
-                                         "key":  "AbilityFallback.Tank",
-                                         "entries":  [
-                                                         {
-                                                             "cause":  "OnHitReceived",
-                                                             "toAbilityKey":  "Ability.Tank_Hit",
-                                                             "priority":  100
-                                                         },
-                                                         {
-                                                             "cause":  "OnParried",
-                                                             "toAbilityKey":  "Ability.Tank_Stun",
-                                                             "priority":  200
-                                                         },
-                                                         {
-                                                             "cause":  "OnAttributeZero",
-                                                             "toAbilityKey":  "Ability.Tank_Dead",
-                                                             "priority":  1000
-                                                         }
-                                                     ]
-                                     }
-                                 ]
+{
+  "abilitySets": [
+    {
+      "key": "AbilitySet.Tank",
+      "name": "Tank",
+      "grants": [
+        {
+          "abilityKey": "Ability.Tank_Melee_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_4",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_5",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_6",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_7",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_8",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Jump_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Jump_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Tank_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.Tank",
+      "animationBindingProfileKey": "AbilityAnimation.Tank",
+      "fallbackReactionProfileKey": "AbilityFallback.Tank"
+    }
+  ],
+  "inputBindingProfiles": [
+    {
+      "key": "AbilityInput.Tank",
+      "entries": []
+    }
+  ],
+  "animationBindingProfiles": [
+    {
+      "key": "AbilityAnimation.Tank",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.Tank_Melee_1",
+          "animationKey": "Tank_Melee_1",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_2",
+          "animationKey": "Tank_Melee_2",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_3",
+          "animationKey": "Tank_Melee_3",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_4",
+          "animationKey": "Tank_Melee_4",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_5",
+          "animationKey": "Tank_Melee_5",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_6",
+          "animationKey": "Tank_Melee_6",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_7",
+          "animationKey": "Tank_Melee_7",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Melee_8",
+          "animationKey": "Tank_Melee_8",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Jump_1",
+          "animationKey": "Tank_Jump_1",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Jump_2",
+          "animationKey": "Tank_Jump_2",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Stun",
+          "animationKey": "Tank_Stun",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Hit",
+          "animationKey": "Tank_Stun",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Tank_Dead",
+          "animationKey": "Tank_Death_1",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "Tank_Idle_1",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "Tank_Walk_2"
+        },
+        {
+          "mode": "WalkBack",
+          "animationKey": "Tank_Walk_Back"
+        },
+        {
+          "mode": "WalkLeft",
+          "animationKey": "Tank_Walk_Left"
+        },
+        {
+          "mode": "WalkRight",
+          "animationKey": "Tank_Walk_Right"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "Tank_Run_1"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "Tank_Walk_2"
+        },
+        {
+          "mode": "TurnLeft",
+          "animationKey": "Tank_Turn_Left"
+        },
+        {
+          "mode": "TurnRight",
+          "animationKey": "Tank_Turn_Right"
+        }
+      ]
+    }
+  ],
+  "fallbackReactionProfiles": [
+    {
+      "key": "AbilityFallback.Tank",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.Tank_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.Tank_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.Tank_Dead",
+          "priority": 1000
+        }
+      ]
+    }
+  ]
 }

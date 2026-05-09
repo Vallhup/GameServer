@@ -1,219 +1,217 @@
-﻿{
-    "abilitySets":  [
-                        {
-                            "key":  "AbilitySet.BigDemonWarrior",
-                            "name":  "BigDemonWarrior",
-                            "grants":  [
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Melee_1",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Melee_2",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Melee_3",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Melee_4",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Melee_5",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Melee_6",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Melee_7",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Melee_8",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Jump",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_BattleCry",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Stun",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Hit",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.BigDemonWarrior_Dead",
-                                               "level":  1
-                                           }
-                                       ],
-                            "inputBindingProfileKey":  "AbilityInput.BigDemonWarrior",
-                            "animationBindingProfileKey":  "AbilityAnimation.BigDemonWarrior",
-                            "fallbackReactionProfileKey":  "AbilityFallback.BigDemonWarrior"
-                        }
-                    ],
-    "inputBindingProfiles":  [
-                                 {
-                                     "key":  "AbilityInput.BigDemonWarrior",
-                                     "entries":  [
-
-                                                 ]
-                                 }
-                             ],
-    "animationBindingProfiles":  [
-                                     {
-                                         "key":  "AbilityAnimation.BigDemonWarrior",
-                                         "abilityBindings":  [
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Melee_1",
-                                                                     "animationKey":  "BigDemonWarrior_Melee_1",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Melee_2",
-                                                                     "animationKey":  "BigDemonWarrior_Melee_2",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Melee_3",
-                                                                     "animationKey":  "BigDemonWarrior_Melee_3",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Melee_4",
-                                                                     "animationKey":  "BigDemonWarrior_Melee_4",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Melee_5",
-                                                                     "animationKey":  "BigDemonWarrior_Melee_5",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Melee_6",
-                                                                     "animationKey":  "BigDemonWarrior_Melee_6",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Melee_7",
-                                                                     "animationKey":  "BigDemonWarrior_Melee_7",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Melee_8",
-                                                                     "animationKey":  "BigDemonWarrior_Melee_8",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Jump",
-                                                                     "animationKey":  "BigDemonWarrior_Jump",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_BattleCry",
-                                                                     "animationKey":  "BigDemonWarrior_BattleCry",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Stun",
-                                                                     "animationKey":  "BigDemonWarrior_Stun",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Hit",
-                                                                     "animationKey":  "BigDemonWarrior_React_Gut",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                     "animationKey":  "BigDemonWarrior_Death",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 }
-                                                             ],
-                                         "locomotionBindings":  [
-                                                                    {
-                                                                        "mode":  "Idle",
-                                                                        "animationKey":  "BigDemonWarrior_Idle_1",
-                                                                        "holdLastFrame":  true
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Walk",
-                                                                        "animationKey":  "BigDemonWarrior_Walk_Forward"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "WalkBack",
-                                                                        "animationKey":  "BigDemonWarrior_Walk_Back"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "WalkLeft",
-                                                                        "animationKey":  "BigDemonWarrior_Walk_Left"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "WalkRight",
-                                                                        "animationKey":  "BigDemonWarrior_Walk_Right"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Run",
-                                                                        "animationKey":  "BigDemonWarrior_Run"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Turn",
-                                                                        "animationKey":  "BigDemonWarrior_Walk_Forward"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "TurnLeft",
-                                                                        "animationKey":  "BigDemonWarrior_Turn_Left"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "TurnRight",
-                                                                        "animationKey":  "BigDemonWarrior_Turn_Right"
-                                                                    }
-                                                                ]
-                                     }
-                                 ],
-    "fallbackReactionProfiles":  [
-                                     {
-                                         "key":  "AbilityFallback.BigDemonWarrior",
-                                         "entries":  [
-                                                         {
-                                                             "cause":  "OnHitReceived",
-                                                             "toAbilityKey":  "Ability.BigDemonWarrior_Hit",
-                                                             "priority":  100
-                                                         },
-                                                         {
-                                                             "cause":  "OnParried",
-                                                             "toAbilityKey":  "Ability.BigDemonWarrior_Stun",
-                                                             "priority":  200
-                                                         },
-                                                         {
-                                                             "cause":  "OnAttributeZero",
-                                                             "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                             "priority":  1000
-                                                         }
-                                                     ]
-                                     }
-                                 ]
+{
+  "abilitySets": [
+    {
+      "key": "AbilitySet.BigDemonWarrior",
+      "name": "BigDemonWarrior",
+      "grants": [
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_4",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_5",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_6",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_7",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_8",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Jump",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_BattleCry",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.BigDemonWarrior",
+      "animationBindingProfileKey": "AbilityAnimation.BigDemonWarrior",
+      "fallbackReactionProfileKey": "AbilityFallback.BigDemonWarrior"
+    }
+  ],
+  "inputBindingProfiles": [
+    {
+      "key": "AbilityInput.BigDemonWarrior",
+      "entries": []
+    }
+  ],
+  "animationBindingProfiles": [
+    {
+      "key": "AbilityAnimation.BigDemonWarrior",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_1",
+          "animationKey": "BigDemonWarrior_Melee_1",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_2",
+          "animationKey": "BigDemonWarrior_Melee_2",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_3",
+          "animationKey": "BigDemonWarrior_Melee_3",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_4",
+          "animationKey": "BigDemonWarrior_Melee_4",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_5",
+          "animationKey": "BigDemonWarrior_Melee_5",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_6",
+          "animationKey": "BigDemonWarrior_Melee_6",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_7",
+          "animationKey": "BigDemonWarrior_Melee_7",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Melee_8",
+          "animationKey": "BigDemonWarrior_Melee_8",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Jump",
+          "animationKey": "BigDemonWarrior_Jump",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_BattleCry",
+          "animationKey": "BigDemonWarrior_BattleCry",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Stun",
+          "animationKey": "BigDemonWarrior_Stun",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Hit",
+          "animationKey": "BigDemonWarrior_React_Gut",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.BigDemonWarrior_Dead",
+          "animationKey": "BigDemonWarrior_Death",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "BigDemonWarrior_Idle_1",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "BigDemonWarrior_Walk_Forward"
+        },
+        {
+          "mode": "WalkBack",
+          "animationKey": "BigDemonWarrior_Walk_Back"
+        },
+        {
+          "mode": "WalkLeft",
+          "animationKey": "BigDemonWarrior_Walk_Left"
+        },
+        {
+          "mode": "WalkRight",
+          "animationKey": "BigDemonWarrior_Walk_Right"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "BigDemonWarrior_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "BigDemonWarrior_Walk_Forward"
+        },
+        {
+          "mode": "TurnLeft",
+          "animationKey": "BigDemonWarrior_Turn_Left"
+        },
+        {
+          "mode": "TurnRight",
+          "animationKey": "BigDemonWarrior_Turn_Right"
+        }
+      ]
+    }
+  ],
+  "fallbackReactionProfiles": [
+    {
+      "key": "AbilityFallback.BigDemonWarrior",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.BigDemonWarrior_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.BigDemonWarrior_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+          "priority": 1000
+        }
+      ]
+    }
+  ]
 }

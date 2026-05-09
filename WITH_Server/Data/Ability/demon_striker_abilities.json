@@ -1,1229 +1,999 @@
-﻿{
-    "abilities":  [
-                      {
-                          "key":  "Ability.DemonStriker_Melee_1",
-                          "name":  "DemonStriker.Melee1",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  2.46666718,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.3,
-                                                                     "endNormalized":  0.58,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  56.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  2.8,
-                                                                                           "verticalTolerance":  1.5,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  0.9,
-                                                                                                      "bonusDamage":  4.0,
-                                                                                                      "staminaDamageScale":  0.6,
-                                                                                                      "bonusStaminaDamage":  2.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  0.35,
-                                                                                                      "hitStopSec":  0.05,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.3,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  4.5,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Melee_2",
-                          "name":  "DemonStriker.Melee2",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  3.9666667,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.42,
-                                                                     "endNormalized":  0.7,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  68.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  3.2,
-                                                                                           "verticalTolerance":  1.5,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  1.1,
-                                                                                                      "bonusDamage":  6.0,
-                                                                                                      "staminaDamageScale":  0.8,
-                                                                                                      "bonusStaminaDamage":  3.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  0.45,
-                                                                                                      "hitStopSec":  0.06,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.42,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  4.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Melee_3",
-                          "name":  "DemonStriker.Melee3",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  2.13333678,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.24,
-                                                                     "endNormalized":  0.48,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  60.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  2.9,
-                                                                                           "verticalTolerance":  1.5,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  1.0,
-                                                                                                      "bonusDamage":  5.0,
-                                                                                                      "staminaDamageScale":  0.7,
-                                                                                                      "bonusStaminaDamage":  2.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  0.4,
-                                                                                                      "hitStopSec":  0.05,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.24,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  5.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Melee_4",
-                          "name":  "DemonStriker.Melee4",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  2.29999876,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.3,
-                                                                     "endNormalized":  0.76,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  74.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  3.4,
-                                                                                           "verticalTolerance":  1.5,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  1.25,
-                                                                                                      "bonusDamage":  8.0,
-                                                                                                      "staminaDamageScale":  1.0,
-                                                                                                      "bonusStaminaDamage":  3.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  0.6,
-                                                                                                      "hitStopSec":  0.07,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.3,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  4.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Gun_Shoot_1",
-                          "name":  "DemonStriker.GunShoot1",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  6.300006,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.52,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  4.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-                                                          {
-                                                              "kind":  "SpawnProjectile",
-                                                              "timeNormalized":  0.52,
-                                                              "effectKey":  null,
-                                                              "cueTagKey":  null,
-                                                              "payloadId":  null,
-                                                              "condition":  "Always"
-                                                          }
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Gun_Shoot_2",
-                          "name":  "DemonStriker.GunShoot2",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  2.46666718,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.45,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  4.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-                                                          {
-                                                              "kind":  "SpawnProjectile",
-                                                              "timeNormalized":  0.45,
-                                                              "effectKey":  null,
-                                                              "cueTagKey":  null,
-                                                              "payloadId":  null,
-                                                              "condition":  "Always"
-                                                          }
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Gun_Shoot_3",
-                          "name":  "DemonStriker.GunShoot3",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  0.6333343,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.35,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  4.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-                                                          {
-                                                              "kind":  "SpawnProjectile",
-                                                              "timeNormalized":  0.35,
-                                                              "effectKey":  null,
-                                                              "cueTagKey":  null,
-                                                              "payloadId":  null,
-                                                              "condition":  "Always"
-                                                          }
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Gun_Shoot_4",
-                          "name":  "DemonStriker.GunShoot4",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  1.63333571,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.42,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  4.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-                                                          {
-                                                              "kind":  "SpawnProjectile",
-                                                              "timeNormalized":  0.42,
-                                                              "effectKey":  null,
-                                                              "cueTagKey":  null,
-                                                              "payloadId":  null,
-                                                              "condition":  "Always"
-                                                          }
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Jump_1",
-                          "name":  "DemonStriker.Jump1",
-                          "kind":  "NonCombat",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  false,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  3.63333678,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Jump_2",
-                          "name":  "DemonStriker.Jump2",
-                          "kind":  "NonCombat",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  false,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  2.96666455,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Stun",
-                          "name":  "DemonStriker.Stun",
-                          "kind":  "Reaction",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  false,
-                                             "requiresGrounded":  false
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  1.43333209,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Hit",
-                          "name":  "DemonStriker.Hit",
-                          "kind":  "Reaction",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  false,
-                                             "requiresGrounded":  false
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  0.8,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.DemonStriker_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.DemonStriker_Dead",
-                          "name":  "DemonStriker.Dead",
-                          "kind":  "Dead",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  false,
-                                             "requiresGrounded":  false
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  4.633338,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      }
-                  ]
+{
+  "abilities": [
+    {
+      "key": "Ability.DemonStriker_Melee_1",
+      "name": "DemonStriker.Melee1",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 2.46666718,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.3,
+            "endNormalized": 0.58,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 56,
+              "minDistance": null,
+              "maxDistance": 2.8,
+              "verticalTolerance": 1.5,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 0.9,
+                "bonusDamage": 4,
+                "staminaDamageScale": 0.6,
+                "bonusStaminaDamage": 2,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 0.35,
+                "hitStopSec": 0.05,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.3,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 4.5,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.DemonStriker_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Melee_2",
+      "name": "DemonStriker.Melee2",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.9666667,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.42,
+            "endNormalized": 0.6,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 68,
+              "minDistance": null,
+              "maxDistance": 3.2,
+              "verticalTolerance": 1.5,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1.1,
+                "bonusDamage": 6,
+                "staminaDamageScale": 0.8,
+                "bonusStaminaDamage": 3,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 0.45,
+                "hitStopSec": 0.06,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.42,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 4,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.DemonStriker_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Melee_3",
+      "name": "DemonStriker.Melee3",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 2.13333678,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.24,
+            "endNormalized": 0.48,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 60,
+              "minDistance": null,
+              "maxDistance": 2.9,
+              "verticalTolerance": 1.5,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1,
+                "bonusDamage": 5,
+                "staminaDamageScale": 0.7,
+                "bonusStaminaDamage": 2,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 0.4,
+                "hitStopSec": 0.05,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.24,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 5,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.DemonStriker_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Melee_4",
+      "name": "DemonStriker.Melee4",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 2.29999876,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.3,
+            "endNormalized": 0.6,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 74,
+              "minDistance": null,
+              "maxDistance": 3.4,
+              "verticalTolerance": 1.5,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1.25,
+                "bonusDamage": 8,
+                "staminaDamageScale": 1,
+                "bonusStaminaDamage": 3,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 0.6,
+                "hitStopSec": 0.07,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.3,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 4,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.DemonStriker_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Gun_Shoot_1",
+      "name": "DemonStriker.GunShoot1",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 6.300006,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.52,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 4,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": [
+          {
+            "kind": "SpawnProjectile",
+            "timeNormalized": 0.52,
+            "effectKey": null,
+            "cueTagKey": null,
+            "payloadId": null,
+            "condition": "Always"
+          }
+        ]
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Gun_Shoot_2",
+      "name": "DemonStriker.GunShoot2",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 2.46666718,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.45,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 4,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": [
+          {
+            "kind": "SpawnProjectile",
+            "timeNormalized": 0.45,
+            "effectKey": null,
+            "cueTagKey": null,
+            "payloadId": null,
+            "condition": "Always"
+          }
+        ]
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Gun_Shoot_3",
+      "name": "DemonStriker.GunShoot3",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 0.6333343,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.35,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 4,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": [
+          {
+            "kind": "SpawnProjectile",
+            "timeNormalized": 0.35,
+            "effectKey": null,
+            "cueTagKey": null,
+            "payloadId": null,
+            "condition": "Always"
+          }
+        ]
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Gun_Shoot_4",
+      "name": "DemonStriker.GunShoot4",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 1.63333571,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.42,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 4,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": [
+          {
+            "kind": "SpawnProjectile",
+            "timeNormalized": 0.42,
+            "effectKey": null,
+            "cueTagKey": null,
+            "payloadId": null,
+            "condition": "Always"
+          }
+        ]
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Jump_1",
+      "name": "DemonStriker.Jump1",
+      "kind": "NonCombat",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.63333678,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Jump_2",
+      "name": "DemonStriker.Jump2",
+      "kind": "NonCombat",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 2.96666455,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.DemonStriker_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Stun",
+      "name": "DemonStriker.Stun",
+      "kind": "Reaction",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": false
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 1.43333209,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Hit",
+      "name": "DemonStriker.Hit",
+      "kind": "Reaction",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": false
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 0.8,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.DemonStriker_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.DemonStriker_Dead",
+      "name": "DemonStriker.Dead",
+      "kind": "Dead",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": false
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 4.633338,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [],
+        "cancelRules": []
+      }
+    }
+  ]
 }

@@ -1,221 +1,208 @@
-﻿{
-    "abilitySets":  [
-                        {
-                            "key":  "AbilitySet.Knight",
-                            "name":  "Knight",
-                            "grants":  [
-                                           {
-                                               "abilityKey":  "Ability.Knight_LightAttack1",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Knight_LightAttack2",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Knight_LightAttack3",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Knight_HeavyAttack",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Knight_SpecialAttack",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Knight_Dodge",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Knight_Parry",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Knight_Stun",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Knight_Hit",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Knight_Guard",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Knight_Dead",
-                                               "level":  1
-                                           }
-                                       ],
-                            "inputBindingProfileKey":  "AbilityInput.Knight",
-                            "animationBindingProfileKey":  "AbilityAnimation.Knight",
-                            "fallbackReactionProfileKey":  "AbilityFallback.Knight"
-                        }
-                    ],
-    "inputBindingProfiles":  [
-                                 {
-                                     "key":  "AbilityInput.Knight",
-                                     "entries":  [
-                                                     {
-                                                         "request":  "LightAttack",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Knight_LightAttack1",
-                                                                                      "Ability.Knight_LightAttack2",
-                                                                                      "Ability.Knight_LightAttack3"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "HeavyAttack",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Knight_SpecialAttack",
-                                                                                      "Ability.Knight_HeavyAttack"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "Dodge",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Knight_Dodge"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "Parry",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Knight_Parry"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "GuardStart",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Knight_Guard"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     }
-                                                 ]
-                                 }
-                             ],
-    "animationBindingProfiles":  [
-                                     {
-                                         "key":  "AbilityAnimation.Knight",
-                                         "abilityBindings":  [
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_LightAttack1",
-                                                                     "animationKey":  "Knight_AttackCombo1",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_LightAttack2",
-                                                                     "animationKey":  "Knight_AttackCombo2",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_LightAttack3",
-                                                                     "animationKey":  "Knight_AttackCombo3",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_HeavyAttack",
-                                                                     "animationKey":  "Knight_AttackStrong",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_SpecialAttack",
-                                                                     "animationKey":  "Knight_AttackSpecial",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_Dodge",
-                                                                     "animationKey":  "Knight_Dodge",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_Parry",
-                                                                     "animationKey":  "Knight_Parry",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_Stun",
-                                                                     "animationKey":  "Knight_Stun",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_Hit",
-                                                                     "animationKey":  "Knight_Hit",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_Guard",
-                                                                     "animationKey":  "Knight_Guard",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Knight_Dead",
-                                                                     "animationKey":  "Knight_Death",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 }
-                                                             ],
-                                         "locomotionBindings":  [
-                                                                    {
-                                                                        "mode":  "Idle",
-                                                                        "animationKey":  "Knight_Idle",
-                                                                        "holdLastFrame":  true
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Walk",
-                                                                        "animationKey":  "Knight_Walk"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Run",
-                                                                        "animationKey":  "Knight_Run"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Turn",
-                                                                        "animationKey":  "Knight_Walk"
-                                                                    }
-                                                                ]
-                                     }
-                                 ],
-    "fallbackReactionProfiles":  [
-                                     {
-                                         "key":  "AbilityFallback.Knight",
-                                         "entries":  [
-                                                         {
-                                                             "cause":  "OnHitReceived",
-                                                             "toAbilityKey":  "Ability.Knight_Hit",
-                                                             "priority":  100
-                                                         },
-                                                         {
-                                                             "cause":  "OnParried",
-                                                             "toAbilityKey":  "Ability.Knight_Stun",
-                                                             "priority":  200
-                                                         },
-                                                         {
-                                                             "cause":  "OnAttributeZero",
-                                                             "toAbilityKey":  "Ability.Knight_Dead",
-                                                             "priority":  1000
-                                                         }
-                                                     ]
-                                     }
-                                 ]
+{
+  "abilitySets": [
+    {
+      "key": "AbilitySet.Knight",
+      "name": "Knight",
+      "grants": [
+        {
+          "abilityKey": "Ability.Knight_LightAttack1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_LightAttack2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_LightAttack3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_HeavyAttack",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_SpecialAttack",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Dodge",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Parry",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Guard",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Knight_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.Knight",
+      "animationBindingProfileKey": "AbilityAnimation.Knight",
+      "fallbackReactionProfileKey": "AbilityFallback.Knight"
+    }
+  ],
+  "inputBindingProfiles": [
+    {
+      "key": "AbilityInput.Knight",
+      "entries": [
+        {
+          "request": "LightAttack",
+          "candidateAbilityKeys": ["Ability.Knight_LightAttack1", "Ability.Knight_LightAttack2", "Ability.Knight_LightAttack3"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "HeavyAttack",
+          "candidateAbilityKeys": ["Ability.Knight_SpecialAttack", "Ability.Knight_HeavyAttack"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Dodge",
+          "candidateAbilityKeys": ["Ability.Knight_Dodge"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Parry",
+          "candidateAbilityKeys": ["Ability.Knight_Parry"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "GuardStart",
+          "candidateAbilityKeys": ["Ability.Knight_Guard"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        }
+      ]
+    }
+  ],
+  "animationBindingProfiles": [
+    {
+      "key": "AbilityAnimation.Knight",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.Knight_LightAttack1",
+          "animationKey": "Knight_AttackCombo1",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_LightAttack2",
+          "animationKey": "Knight_AttackCombo2",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_LightAttack3",
+          "animationKey": "Knight_AttackCombo3",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_HeavyAttack",
+          "animationKey": "Knight_AttackStrong",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_SpecialAttack",
+          "animationKey": "Knight_AttackSpecial",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_Dodge",
+          "animationKey": "Knight_Dodge",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_Parry",
+          "animationKey": "Knight_Parry",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_Stun",
+          "animationKey": "Knight_Stun",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_Hit",
+          "animationKey": "Knight_Hit",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_Guard",
+          "animationKey": "Knight_Guard",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_Dead",
+          "animationKey": "Knight_Death",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "Knight_Idle",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "Knight_Walk"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "Knight_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "Knight_Walk"
+        }
+      ]
+    }
+  ],
+  "fallbackReactionProfiles": [
+    {
+      "key": "AbilityFallback.Knight",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.Knight_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.Knight_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.Knight_Dead",
+          "priority": 1000
+        }
+      ]
+    }
+  ]
 }

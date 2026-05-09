@@ -1,1324 +1,1094 @@
-﻿{
-    "abilities":  [
-                      {
-                          "key":  "Ability.BigDemonWarrior_Melee_1",
-                          "name":  "BigDemonWarrior.Melee1",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  4.50000334,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.44,
-                                                                     "endNormalized":  0.64,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  76.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  5.2,
-                                                                                           "verticalTolerance":  2.2,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  1.5,
-                                                                                                      "bonusDamage":  9.0,
-                                                                                                      "staminaDamageScale":  1.1,
-                                                                                                      "bonusStaminaDamage":  3.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  0.8,
-                                                                                                      "hitStopSec":  0.08,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.42,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  2.8,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Melee_2",
-                          "name":  "BigDemonWarrior.Melee2",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  3.53333545,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.37,
-                                                                     "endNormalized":  0.59,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  84.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  5.6,
-                                                                                           "verticalTolerance":  2.2,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  1.7,
-                                                                                                      "bonusDamage":  11.0,
-                                                                                                      "staminaDamageScale":  1.25,
-                                                                                                      "bonusStaminaDamage":  4.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  0.95,
-                                                                                                      "hitStopSec":  0.09,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.35,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  3.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Melee_3",
-                          "name":  "BigDemonWarrior.Melee3",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  3.86666918,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.43,
-                                                                     "endNormalized":  0.64,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  72.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  5.0,
-                                                                                           "verticalTolerance":  2.2,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  1.6,
-                                                                                                      "bonusDamage":  10.0,
-                                                                                                      "staminaDamageScale":  1.15,
-                                                                                                      "bonusStaminaDamage":  3.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  0.85,
-                                                                                                      "hitStopSec":  0.08,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.4,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  3.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    },
-                                                                    {
-                                                                        "startNormalized":  0.16,
-                                                                        "endNormalized":  0.38,
-                                                                        "movementMode":  "ForwardFixedDistance",
-                                                                        "moveDistance":  0.8,
-                                                                        "rotationMode":  "None",
-                                                                        "rotationRate":  null,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Melee_4",
-                          "name":  "BigDemonWarrior.Melee4",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  4.50000334,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.34,
-                                                                     "endNormalized":  0.66,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  92.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  6.0,
-                                                                                           "verticalTolerance":  2.2,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  1.95,
-                                                                                                      "bonusDamage":  13.0,
-                                                                                                      "staminaDamageScale":  1.4,
-                                                                                                      "bonusStaminaDamage":  5.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  1.1,
-                                                                                                      "hitStopSec":  0.1,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.3,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  2.6,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    },
-                                                                    {
-                                                                        "startNormalized":  0.18,
-                                                                        "endNormalized":  0.42,
-                                                                        "movementMode":  "ForwardFixedDistance",
-                                                                        "moveDistance":  3.5,
-                                                                        "rotationMode":  "None",
-                                                                        "rotationRate":  null,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Melee_5",
-                          "name":  "BigDemonWarrior.Melee5",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  3.400002,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.37,
-                                                                     "endNormalized":  0.63,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  88.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  5.8,
-                                                                                           "verticalTolerance":  2.2,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  1.85,
-                                                                                                      "bonusDamage":  12.0,
-                                                                                                      "staminaDamageScale":  1.35,
-                                                                                                      "bonusStaminaDamage":  4.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  1.0,
-                                                                                                      "hitStopSec":  0.09,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.34,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  2.8,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Melee_6",
-                          "name":  "BigDemonWarrior.Melee6",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  1.36666691,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.2,
-                                                                     "endNormalized":  0.42,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  64.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  4.6,
-                                                                                           "verticalTolerance":  2.2,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  1.2,
-                                                                                                      "bonusDamage":  7.0,
-                                                                                                      "staminaDamageScale":  0.9,
-                                                                                                      "bonusStaminaDamage":  2.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  0.65,
-                                                                                                      "hitStopSec":  0.06,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.04,
-                                                                        "endNormalized":  0.18,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  4.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Melee_7",
-                          "name":  "BigDemonWarrior.Melee7",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  3.30000329,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.42,
-                                                                     "endNormalized":  0.68,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  96.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  6.2,
-                                                                                           "verticalTolerance":  2.2,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  2.05,
-                                                                                                      "bonusDamage":  14.0,
-                                                                                                      "staminaDamageScale":  1.5,
-                                                                                                      "bonusStaminaDamage":  5.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  1.2,
-                                                                                                      "hitStopSec":  0.1,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.38,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  2.6,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    },
-                                                                    {
-                                                                        "startNormalized":  0.14,
-                                                                        "endNormalized":  0.34,
-                                                                        "movementMode":  "ForwardFixedDistance",
-                                                                        "moveDistance":  0.35,
-                                                                        "rotationMode":  "None",
-                                                                        "rotationRate":  null,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Melee_8",
-                          "name":  "BigDemonWarrior.Melee8",
-                          "kind":  "Attack",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  true,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  3.2,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-                                                                 {
-                                                                     "kind":  "Attack",
-                                                                     "startNormalized":  0.35,
-                                                                     "endNormalized":  0.61,
-                                                                     "applyEffectKey":  null,
-                                                                     "appliesTo":  "FrontPhysical",
-                                                                     "spatialFilter":  {
-                                                                                           "facingHalfAngleDeg":  80.0,
-                                                                                           "minDistance":  null,
-                                                                                           "maxDistance":  5.4,
-                                                                                           "verticalTolerance":  2.2,
-                                                                                           "referenceFrame":  "LockedActionDirection"
-                                                                                       },
-                                                                     "effect":  {
-                                                                                    "type":  "AttackHit",
-                                                                                    "attackHit":  {
-                                                                                                      "damageScale":  1.75,
-                                                                                                      "bonusDamage":  11.0,
-                                                                                                      "staminaDamageScale":  1.3,
-                                                                                                      "bonusStaminaDamage":  4.0,
-                                                                                                      "poiseDamageScale":  0.0,
-                                                                                                      "bonusPoiseDamage":  0.0,
-                                                                                                      "knockbackDistance":  0.9,
-                                                                                                      "hitStopSec":  0.09,
-                                                                                                      "parryable":  true,
-                                                                                                      "guardable":  true
-                                                                                                  },
-                                                                                    "parryResponse":  null,
-                                                                                    "guardResponse":  null
-                                                                                }
-                                                                 }
-                                                             ],
-                                           "movementSegments":  [
-                                                                    {
-                                                                        "startNormalized":  0.08,
-                                                                        "endNormalized":  0.32,
-                                                                        "movementMode":  "None",
-                                                                        "moveDistance":  null,
-                                                                        "rotationMode":  "FaceTarget",
-                                                                        "rotationRate":  3.0,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    },
-                                                                    {
-                                                                        "startNormalized":  0.12,
-                                                                        "endNormalized":  0.32,
-                                                                        "movementMode":  "ForwardFixedDistance",
-                                                                        "moveDistance":  0.7,
-                                                                        "rotationMode":  "None",
-                                                                        "rotationRate":  null,
-                                                                        "verticalMovementMode":  "None",
-                                                                        "verticalAmount":  null,
-                                                                        "directionPolicy":  "TargetDirection",
-                                                                        "directionSampleTiming":  "OnSegmentStart"
-                                                                    }
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnParried",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Stun",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  200,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Jump",
-                          "name":  "BigDemonWarrior.Jump",
-                          "kind":  "NonCombat",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  false,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  3.30000329,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnHitReceived",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Hit",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  100,
-                                                                        "aiInterruptible":  false
-                                                                    },
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_BattleCry",
-                          "name":  "BigDemonWarrior.BattleCry",
-                          "kind":  "NonCombat",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  false,
-                                             "requiresGrounded":  true
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  3.53333545,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Stun",
-                          "name":  "BigDemonWarrior.Stun",
-                          "kind":  "Reaction",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  false,
-                                             "requiresGrounded":  false
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  1.83333063,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Hit",
-                          "name":  "BigDemonWarrior.Hit",
-                          "kind":  "Reaction",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  false,
-                                             "requiresGrounded":  false
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  2.23333049,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-                                                                    {
-                                                                        "cause":  "OnAttributeZero",
-                                                                        "toAbilityKey":  "Ability.BigDemonWarrior_Dead",
-                                                                        "windowPolicy":  "Always",
-                                                                        "windowStartNormalized":  null,
-                                                                        "windowEndNormalized":  null,
-                                                                        "priority":  1000,
-                                                                        "aiInterruptible":  false
-                                                                    }
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      },
-                      {
-                          "key":  "Ability.BigDemonWarrior_Dead",
-                          "name":  "BigDemonWarrior.Dead",
-                          "kind":  "Dead",
-                          "tags":  [
-
-                                   ],
-                          "activation":  {
-                                             "requiredOwnerTags":  {
-                                                                       "op":  "None",
-                                                                       "tags":  [
-
-                                                                                ],
-                                                                       "children":  [
-
-                                                                                    ]
-                                                                   },
-                                             "blockedOwnerTags":  {
-                                                                      "op":  "None",
-                                                                      "tags":  [
-
-                                                                               ],
-                                                                      "children":  [
-
-                                                                                   ]
-                                                                  },
-                                             "requiresTarget":  false,
-                                             "requiresGrounded":  false
-                                         },
-                          "costs":  [
-
-                                    ],
-                          "timeline":  {
-                                           "durationSec":  3.13333845,
-                                           "policy":  "FixedDuration",
-                                           "combatWindows":  [
-
-                                                             ],
-                                           "movementSegments":  [
-
-                                                                ],
-                                           "events":  [
-
-                                                      ]
-                                       },
-                          "transition":  {
-                                             "endPolicy":  {
-                                                               "endType":  "NaturalEnd",
-                                                               "defaultNextAbilityKey":  null
-                                                           },
-                                             "defaultNextAbilityKey":  null,
-                                             "interruptRules":  [
-
-                                                                ],
-                                             "cancelRules":  [
-
-                                                             ]
-                                         }
-                      }
-                  ]
+{
+  "abilities": [
+    {
+      "key": "Ability.BigDemonWarrior_Melee_1",
+      "name": "BigDemonWarrior.Melee1",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 4.50000334,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.44,
+            "endNormalized": 0.64,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 76,
+              "minDistance": null,
+              "maxDistance": 5.2,
+              "verticalTolerance": 2.2,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1.5,
+                "bonusDamage": 9,
+                "staminaDamageScale": 1.1,
+                "bonusStaminaDamage": 3,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 0.8,
+                "hitStopSec": 0.08,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.42,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 2.8,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Melee_2",
+      "name": "BigDemonWarrior.Melee2",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.53333545,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.37,
+            "endNormalized": 0.59,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 84,
+              "minDistance": null,
+              "maxDistance": 5.6,
+              "verticalTolerance": 2.2,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1.7,
+                "bonusDamage": 11,
+                "staminaDamageScale": 1.25,
+                "bonusStaminaDamage": 4,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 0.95,
+                "hitStopSec": 0.09,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.35,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 3,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Melee_3",
+      "name": "BigDemonWarrior.Melee3",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.86666918,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.43,
+            "endNormalized": 0.64,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 72,
+              "minDistance": null,
+              "maxDistance": 5,
+              "verticalTolerance": 2.2,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1.6,
+                "bonusDamage": 10,
+                "staminaDamageScale": 1.15,
+                "bonusStaminaDamage": 3,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 0.85,
+                "hitStopSec": 0.08,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.4,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 3,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          },
+          {
+            "startNormalized": 0.16,
+            "endNormalized": 0.38,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 0.8,
+            "rotationMode": "None",
+            "rotationRate": null,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Melee_4",
+      "name": "BigDemonWarrior.Melee4",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 4.50000334,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.34,
+            "endNormalized": 0.66,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 92,
+              "minDistance": null,
+              "maxDistance": 6,
+              "verticalTolerance": 2.2,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1.95,
+                "bonusDamage": 13,
+                "staminaDamageScale": 1.4,
+                "bonusStaminaDamage": 5,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 1.1,
+                "hitStopSec": 0.1,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.3,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 2.6,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          },
+          {
+            "startNormalized": 0.18,
+            "endNormalized": 0.42,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 3.5,
+            "rotationMode": "None",
+            "rotationRate": null,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Melee_5",
+      "name": "BigDemonWarrior.Melee5",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.400002,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.37,
+            "endNormalized": 0.63,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 88,
+              "minDistance": null,
+              "maxDistance": 5.8,
+              "verticalTolerance": 2.2,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1.85,
+                "bonusDamage": 12,
+                "staminaDamageScale": 1.35,
+                "bonusStaminaDamage": 4,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 1,
+                "hitStopSec": 0.09,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.34,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 2.8,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Melee_6",
+      "name": "BigDemonWarrior.Melee6",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 1.36666691,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.2,
+            "endNormalized": 0.42,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 64,
+              "minDistance": null,
+              "maxDistance": 4.6,
+              "verticalTolerance": 2.2,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1.2,
+                "bonusDamage": 7,
+                "staminaDamageScale": 0.9,
+                "bonusStaminaDamage": 2,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 0.65,
+                "hitStopSec": 0.06,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.04,
+            "endNormalized": 0.18,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 4,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Melee_7",
+      "name": "BigDemonWarrior.Melee7",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.30000329,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.42,
+            "endNormalized": 0.68,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 96,
+              "minDistance": null,
+              "maxDistance": 6.2,
+              "verticalTolerance": 2.2,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 2.05,
+                "bonusDamage": 14,
+                "staminaDamageScale": 1.5,
+                "bonusStaminaDamage": 5,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 1.2,
+                "hitStopSec": 0.1,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.38,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 2.6,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          },
+          {
+            "startNormalized": 0.14,
+            "endNormalized": 0.34,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 0.35,
+            "rotationMode": "None",
+            "rotationRate": null,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Melee_8",
+      "name": "BigDemonWarrior.Melee8",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.2,
+        "policy": "FixedDuration",
+        "combatWindows": [
+          {
+            "kind": "Attack",
+            "startNormalized": 0.35,
+            "endNormalized": 0.61,
+            "applyEffectKey": null,
+            "appliesTo": "FrontPhysical",
+            "spatialFilter": {
+              "facingHalfAngleDeg": 80,
+              "minDistance": null,
+              "maxDistance": 5.4,
+              "verticalTolerance": 2.2,
+              "referenceFrame": "LockedActionDirection"
+            },
+            "effect": {
+              "type": "AttackHit",
+              "attackHit": {
+                "damageScale": 1.75,
+                "bonusDamage": 11,
+                "staminaDamageScale": 1.3,
+                "bonusStaminaDamage": 4,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 0.9,
+                "hitStopSec": 0.09,
+                "parryable": true,
+                "guardable": true
+              },
+              "parryResponse": null,
+              "guardResponse": null
+            }
+          }
+        ],
+        "movementSegments": [
+          {
+            "startNormalized": 0.08,
+            "endNormalized": 0.32,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 3,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          },
+          {
+            "startNormalized": 0.12,
+            "endNormalized": 0.32,
+            "movementMode": "ForwardFixedDistance",
+            "moveDistance": 0.7,
+            "rotationMode": "None",
+            "rotationRate": null,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnParried",
+            "toAbilityKey": "Ability.BigDemonWarrior_Stun",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Jump",
+      "name": "BigDemonWarrior.Jump",
+      "kind": "NonCombat",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.30000329,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.BigDemonWarrior_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_BattleCry",
+      "name": "BigDemonWarrior.BattleCry",
+      "kind": "NonCombat",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.53333545,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Stun",
+      "name": "BigDemonWarrior.Stun",
+      "kind": "Reaction",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": false
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 1.83333063,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Hit",
+      "name": "BigDemonWarrior.Hit",
+      "kind": "Reaction",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": false
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 2.23333049,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.BigDemonWarrior_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.BigDemonWarrior_Dead",
+      "name": "BigDemonWarrior.Dead",
+      "kind": "Dead",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": false
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.13333845,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": []
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [],
+        "cancelRules": []
+      }
+    }
+  ]
 }

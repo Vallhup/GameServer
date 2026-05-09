@@ -1,221 +1,208 @@
-﻿{
-    "abilitySets":  [
-                        {
-                            "key":  "AbilitySet.Paladin",
-                            "name":  "Paladin",
-                            "grants":  [
-                                           {
-                                               "abilityKey":  "Ability.Paladin_LightAttack1",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Paladin_LightAttack2",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Paladin_LightAttack3",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Paladin_HeavyAttack",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Paladin_SpecialAttack",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Paladin_Dodge",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Paladin_Parry",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Paladin_Stun",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Paladin_Hit",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Paladin_Guard",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Paladin_Dead",
-                                               "level":  1
-                                           }
-                                       ],
-                            "inputBindingProfileKey":  "AbilityInput.Paladin",
-                            "animationBindingProfileKey":  "AbilityAnimation.Paladin",
-                            "fallbackReactionProfileKey":  "AbilityFallback.Paladin"
-                        }
-                    ],
-    "inputBindingProfiles":  [
-                                 {
-                                     "key":  "AbilityInput.Paladin",
-                                     "entries":  [
-                                                     {
-                                                         "request":  "LightAttack",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Paladin_LightAttack1",
-                                                                                      "Ability.Paladin_LightAttack2",
-                                                                                      "Ability.Paladin_LightAttack3"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "HeavyAttack",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Paladin_SpecialAttack",
-                                                                                      "Ability.Paladin_HeavyAttack"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "Dodge",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Paladin_Dodge"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "Parry",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Paladin_Parry"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "GuardStart",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Paladin_Guard"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     }
-                                                 ]
-                                 }
-                             ],
-    "animationBindingProfiles":  [
-                                     {
-                                         "key":  "AbilityAnimation.Paladin",
-                                         "abilityBindings":  [
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_LightAttack1",
-                                                                     "animationKey":  "Paladin_AttackCombo1",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_LightAttack2",
-                                                                     "animationKey":  "Paladin_AttackCombo2",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_LightAttack3",
-                                                                     "animationKey":  "Paladin_AttackCombo3",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_HeavyAttack",
-                                                                     "animationKey":  "Paladin_AttackStrong",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_SpecialAttack",
-                                                                     "animationKey":  "Paladin_AttackSpecial",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_Dodge",
-                                                                     "animationKey":  "Paladin_Dodge",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_Parry",
-                                                                     "animationKey":  "Paladin_Parry",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_Stun",
-                                                                     "animationKey":  "Paladin_Stun",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_Hit",
-                                                                     "animationKey":  "Paladin_Hit",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_Guard",
-                                                                     "animationKey":  "Paladin_Guard",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Paladin_Dead",
-                                                                     "animationKey":  "Paladin_Death",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 }
-                                                             ],
-                                         "locomotionBindings":  [
-                                                                    {
-                                                                        "mode":  "Idle",
-                                                                        "animationKey":  "Paladin_Idle",
-                                                                        "holdLastFrame":  true
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Walk",
-                                                                        "animationKey":  "Paladin_Walk"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Run",
-                                                                        "animationKey":  "Paladin_Run"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Turn",
-                                                                        "animationKey":  "Paladin_Walk"
-                                                                    }
-                                                                ]
-                                     }
-                                 ],
-    "fallbackReactionProfiles":  [
-                                     {
-                                         "key":  "AbilityFallback.Paladin",
-                                         "entries":  [
-                                                         {
-                                                             "cause":  "OnHitReceived",
-                                                             "toAbilityKey":  "Ability.Paladin_Hit",
-                                                             "priority":  100
-                                                         },
-                                                         {
-                                                             "cause":  "OnParried",
-                                                             "toAbilityKey":  "Ability.Paladin_Stun",
-                                                             "priority":  200
-                                                         },
-                                                         {
-                                                             "cause":  "OnAttributeZero",
-                                                             "toAbilityKey":  "Ability.Paladin_Dead",
-                                                             "priority":  1000
-                                                         }
-                                                     ]
-                                     }
-                                 ]
+{
+  "abilitySets": [
+    {
+      "key": "AbilitySet.Paladin",
+      "name": "Paladin",
+      "grants": [
+        {
+          "abilityKey": "Ability.Paladin_LightAttack1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_LightAttack2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_LightAttack3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_HeavyAttack",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_SpecialAttack",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Dodge",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Parry",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Guard",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Paladin_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.Paladin",
+      "animationBindingProfileKey": "AbilityAnimation.Paladin",
+      "fallbackReactionProfileKey": "AbilityFallback.Paladin"
+    }
+  ],
+  "inputBindingProfiles": [
+    {
+      "key": "AbilityInput.Paladin",
+      "entries": [
+        {
+          "request": "LightAttack",
+          "candidateAbilityKeys": ["Ability.Paladin_LightAttack1", "Ability.Paladin_LightAttack2", "Ability.Paladin_LightAttack3"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "HeavyAttack",
+          "candidateAbilityKeys": ["Ability.Paladin_SpecialAttack", "Ability.Paladin_HeavyAttack"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Dodge",
+          "candidateAbilityKeys": ["Ability.Paladin_Dodge"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Parry",
+          "candidateAbilityKeys": ["Ability.Paladin_Parry"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "GuardStart",
+          "candidateAbilityKeys": ["Ability.Paladin_Guard"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        }
+      ]
+    }
+  ],
+  "animationBindingProfiles": [
+    {
+      "key": "AbilityAnimation.Paladin",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.Paladin_LightAttack1",
+          "animationKey": "Paladin_AttackCombo1",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Paladin_LightAttack2",
+          "animationKey": "Paladin_AttackCombo2",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Paladin_LightAttack3",
+          "animationKey": "Paladin_AttackCombo3",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Paladin_HeavyAttack",
+          "animationKey": "Paladin_AttackStrong",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Paladin_SpecialAttack",
+          "animationKey": "Paladin_AttackSpecial",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Dodge",
+          "animationKey": "Paladin_Dodge",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Parry",
+          "animationKey": "Paladin_Parry",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Stun",
+          "animationKey": "Paladin_Stun",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Hit",
+          "animationKey": "Paladin_Hit",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Guard",
+          "animationKey": "Paladin_Guard",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Paladin_Dead",
+          "animationKey": "Paladin_Death",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "Paladin_Idle",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "Paladin_Walk"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "Paladin_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "Paladin_Walk"
+        }
+      ]
+    }
+  ],
+  "fallbackReactionProfiles": [
+    {
+      "key": "AbilityFallback.Paladin",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.Paladin_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.Paladin_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.Paladin_Dead",
+          "priority": 1000
+        }
+      ]
+    }
+  ]
 }

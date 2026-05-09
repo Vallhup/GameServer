@@ -1,221 +1,208 @@
-﻿{
-    "abilitySets":  [
-                        {
-                            "key":  "AbilitySet.Lancer",
-                            "name":  "Lancer",
-                            "grants":  [
-                                           {
-                                               "abilityKey":  "Ability.Lancer_LightAttack1",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Lancer_LightAttack2",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Lancer_LightAttack3",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Lancer_HeavyAttack",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Lancer_SpecialAttack",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Lancer_Dodge",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Lancer_Parry",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Lancer_Stun",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Lancer_Hit",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Lancer_Guard",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.Lancer_Dead",
-                                               "level":  1
-                                           }
-                                       ],
-                            "inputBindingProfileKey":  "AbilityInput.Lancer",
-                            "animationBindingProfileKey":  "AbilityAnimation.Lancer",
-                            "fallbackReactionProfileKey":  "AbilityFallback.Lancer"
-                        }
-                    ],
-    "inputBindingProfiles":  [
-                                 {
-                                     "key":  "AbilityInput.Lancer",
-                                     "entries":  [
-                                                     {
-                                                         "request":  "LightAttack",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Lancer_LightAttack1",
-                                                                                      "Ability.Lancer_LightAttack2",
-                                                                                      "Ability.Lancer_LightAttack3"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "HeavyAttack",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Lancer_SpecialAttack",
-                                                                                      "Ability.Lancer_HeavyAttack"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "Dodge",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Lancer_Dodge"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "Parry",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Lancer_Parry"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     },
-                                                     {
-                                                         "request":  "GuardStart",
-                                                         "candidateAbilityKeys":  [
-                                                                                      "Ability.Lancer_Guard"
-                                                                                  ],
-                                                         "selectionPolicy":  "OrderedFirstValid",
-                                                         "priority":  100
-                                                     }
-                                                 ]
-                                 }
-                             ],
-    "animationBindingProfiles":  [
-                                     {
-                                         "key":  "AbilityAnimation.Lancer",
-                                         "abilityBindings":  [
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_LightAttack1",
-                                                                     "animationKey":  "Lancer_AttackCombo1",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_LightAttack2",
-                                                                     "animationKey":  "Lancer_AttackCombo2",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_LightAttack3",
-                                                                     "animationKey":  "Lancer_AttackCombo3",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_HeavyAttack",
-                                                                     "animationKey":  "Lancer_AttackStrong",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_SpecialAttack",
-                                                                     "animationKey":  "Lancer_AttackSpecial",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_Dodge",
-                                                                     "animationKey":  "Lancer_Dodge",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_Parry",
-                                                                     "animationKey":  "Lancer_Parry",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_Stun",
-                                                                     "animationKey":  "Lancer_Stun_Left",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_Hit",
-                                                                     "animationKey":  "Lancer_Hit",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_Guard",
-                                                                     "animationKey":  "Lancer_Guard",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.Lancer_Dead",
-                                                                     "animationKey":  "Lancer_Death",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 }
-                                                             ],
-                                         "locomotionBindings":  [
-                                                                    {
-                                                                        "mode":  "Idle",
-                                                                        "animationKey":  "Lancer_Idle",
-                                                                        "holdLastFrame":  true
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Walk",
-                                                                        "animationKey":  "Lancer_Walk"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Run",
-                                                                        "animationKey":  "Lancer_Run"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Turn",
-                                                                        "animationKey":  "Lancer_Walk"
-                                                                    }
-                                                                ]
-                                     }
-                                 ],
-    "fallbackReactionProfiles":  [
-                                     {
-                                         "key":  "AbilityFallback.Lancer",
-                                         "entries":  [
-                                                         {
-                                                             "cause":  "OnHitReceived",
-                                                             "toAbilityKey":  "Ability.Lancer_Hit",
-                                                             "priority":  100
-                                                         },
-                                                         {
-                                                             "cause":  "OnParried",
-                                                             "toAbilityKey":  "Ability.Lancer_Stun",
-                                                             "priority":  200
-                                                         },
-                                                         {
-                                                             "cause":  "OnAttributeZero",
-                                                             "toAbilityKey":  "Ability.Lancer_Dead",
-                                                             "priority":  1000
-                                                         }
-                                                     ]
-                                     }
-                                 ]
+{
+  "abilitySets": [
+    {
+      "key": "AbilitySet.Lancer",
+      "name": "Lancer",
+      "grants": [
+        {
+          "abilityKey": "Ability.Lancer_LightAttack1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_LightAttack2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_LightAttack3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_HeavyAttack",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_SpecialAttack",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Dodge",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Parry",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Guard",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.Lancer_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.Lancer",
+      "animationBindingProfileKey": "AbilityAnimation.Lancer",
+      "fallbackReactionProfileKey": "AbilityFallback.Lancer"
+    }
+  ],
+  "inputBindingProfiles": [
+    {
+      "key": "AbilityInput.Lancer",
+      "entries": [
+        {
+          "request": "LightAttack",
+          "candidateAbilityKeys": ["Ability.Lancer_LightAttack1", "Ability.Lancer_LightAttack2", "Ability.Lancer_LightAttack3"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "HeavyAttack",
+          "candidateAbilityKeys": ["Ability.Lancer_SpecialAttack", "Ability.Lancer_HeavyAttack"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Dodge",
+          "candidateAbilityKeys": ["Ability.Lancer_Dodge"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "Parry",
+          "candidateAbilityKeys": ["Ability.Lancer_Parry"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "GuardStart",
+          "candidateAbilityKeys": ["Ability.Lancer_Guard"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        }
+      ]
+    }
+  ],
+  "animationBindingProfiles": [
+    {
+      "key": "AbilityAnimation.Lancer",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.Lancer_LightAttack1",
+          "animationKey": "Lancer_AttackCombo1",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_LightAttack2",
+          "animationKey": "Lancer_AttackCombo2",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_LightAttack3",
+          "animationKey": "Lancer_AttackCombo3",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_HeavyAttack",
+          "animationKey": "Lancer_AttackStrong",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_SpecialAttack",
+          "animationKey": "Lancer_AttackSpecial",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Dodge",
+          "animationKey": "Lancer_Dodge",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Parry",
+          "animationKey": "Lancer_Parry",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Stun",
+          "animationKey": "Lancer_Stun_Left",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Hit",
+          "animationKey": "Lancer_Hit",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Guard",
+          "animationKey": "Lancer_Guard",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_Dead",
+          "animationKey": "Lancer_Death",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "Lancer_Idle",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "Lancer_Walk"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "Lancer_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "Lancer_Walk"
+        }
+      ]
+    }
+  ],
+  "fallbackReactionProfiles": [
+    {
+      "key": "AbilityFallback.Lancer",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.Lancer_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.Lancer_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.Lancer_Dead",
+          "priority": 1000
+        }
+      ]
+    }
+  ]
 }

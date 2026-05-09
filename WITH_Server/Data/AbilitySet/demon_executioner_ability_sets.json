@@ -1,179 +1,177 @@
-﻿{
-    "abilitySets":  [
-                        {
-                            "key":  "AbilitySet.DemonExecutioner",
-                            "name":  "DemonExecutioner",
-                            "grants":  [
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Melee_1",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Melee_2",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Melee_3",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Melee_4",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Melee_5",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Melee_6",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Jump_1",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Jump_2",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Stun",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Hit",
-                                               "level":  1
-                                           },
-                                           {
-                                               "abilityKey":  "Ability.DemonExecutioner_Dead",
-                                               "level":  1
-                                           }
-                                       ],
-                            "inputBindingProfileKey":  "AbilityInput.DemonExecutioner",
-                            "animationBindingProfileKey":  "AbilityAnimation.DemonExecutioner",
-                            "fallbackReactionProfileKey":  "AbilityFallback.DemonExecutioner"
-                        }
-                    ],
-    "inputBindingProfiles":  [
-                                 {
-                                     "key":  "AbilityInput.DemonExecutioner",
-                                     "entries":  [
-
-                                                 ]
-                                 }
-                             ],
-    "animationBindingProfiles":  [
-                                     {
-                                         "key":  "AbilityAnimation.DemonExecutioner",
-                                         "abilityBindings":  [
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Melee_1",
-                                                                     "animationKey":  "DemonExecutioner_Melee_1",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Melee_2",
-                                                                     "animationKey":  "DemonExecutioner_Melee_2",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Melee_3",
-                                                                     "animationKey":  "DemonExecutioner_Melee_3",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Melee_4",
-                                                                     "animationKey":  "DemonExecutioner_Melee_4",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Melee_5",
-                                                                     "animationKey":  "DemonExecutioner_Melee_5",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Melee_6",
-                                                                     "animationKey":  "DemonExecutioner_Melee_6",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Jump_1",
-                                                                     "animationKey":  "DemonExecutioner_Jump_1",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Jump_2",
-                                                                     "animationKey":  "DemonExecutioner_Jump_2",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Stun",
-                                                                     "animationKey":  "DemonExecutioner_Stun",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Hit",
-                                                                     "animationKey":  "DemonExecutioner_GetHit_1",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 },
-                                                                 {
-                                                                     "abilityKey":  "Ability.DemonExecutioner_Dead",
-                                                                     "animationKey":  "DemonExecutioner_Death",
-                                                                     "playRate":  1.0,
-                                                                     "startNormalizedTime":  0.0
-                                                                 }
-                                                             ],
-                                         "locomotionBindings":  [
-                                                                    {
-                                                                        "mode":  "Idle",
-                                                                        "animationKey":  "DemonExecutioner_Idle_2",
-                                                                        "holdLastFrame":  true
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Walk",
-                                                                        "animationKey":  "DemonExecutioner_Walk_Forward"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Run",
-                                                                        "animationKey":  "DemonExecutioner_Run"
-                                                                    },
-                                                                    {
-                                                                        "mode":  "Turn",
-                                                                        "animationKey":  "DemonExecutioner_Walk_Forward"
-                                                                    }
-                                                                ]
-                                     }
-                                 ],
-    "fallbackReactionProfiles":  [
-                                     {
-                                         "key":  "AbilityFallback.DemonExecutioner",
-                                         "entries":  [
-                                                         {
-                                                             "cause":  "OnHitReceived",
-                                                             "toAbilityKey":  "Ability.DemonExecutioner_Hit",
-                                                             "priority":  100
-                                                         },
-                                                         {
-                                                             "cause":  "OnParried",
-                                                             "toAbilityKey":  "Ability.DemonExecutioner_Stun",
-                                                             "priority":  200
-                                                         },
-                                                         {
-                                                             "cause":  "OnAttributeZero",
-                                                             "toAbilityKey":  "Ability.DemonExecutioner_Dead",
-                                                             "priority":  1000
-                                                         }
-                                                     ]
-                                     }
-                                 ]
+{
+  "abilitySets": [
+    {
+      "key": "AbilitySet.DemonExecutioner",
+      "name": "DemonExecutioner",
+      "grants": [
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_3",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_4",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_5",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_6",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Jump_1",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Jump_2",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Stun",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Hit",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Dead",
+          "level": 1
+        }
+      ],
+      "inputBindingProfileKey": "AbilityInput.DemonExecutioner",
+      "animationBindingProfileKey": "AbilityAnimation.DemonExecutioner",
+      "fallbackReactionProfileKey": "AbilityFallback.DemonExecutioner"
+    }
+  ],
+  "inputBindingProfiles": [
+    {
+      "key": "AbilityInput.DemonExecutioner",
+      "entries": []
+    }
+  ],
+  "animationBindingProfiles": [
+    {
+      "key": "AbilityAnimation.DemonExecutioner",
+      "abilityBindings": [
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_1",
+          "animationKey": "DemonExecutioner_Melee_1",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_2",
+          "animationKey": "DemonExecutioner_Melee_2",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_3",
+          "animationKey": "DemonExecutioner_Melee_3",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_4",
+          "animationKey": "DemonExecutioner_Melee_4",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_5",
+          "animationKey": "DemonExecutioner_Melee_5",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Melee_6",
+          "animationKey": "DemonExecutioner_Melee_6",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Jump_1",
+          "animationKey": "DemonExecutioner_Jump_1",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Jump_2",
+          "animationKey": "DemonExecutioner_Jump_2",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Stun",
+          "animationKey": "DemonExecutioner_Stun",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Hit",
+          "animationKey": "DemonExecutioner_GetHit_1",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.DemonExecutioner_Dead",
+          "animationKey": "DemonExecutioner_Death",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        }
+      ],
+      "locomotionBindings": [
+        {
+          "mode": "Idle",
+          "animationKey": "DemonExecutioner_Idle_2",
+          "holdLastFrame": true
+        },
+        {
+          "mode": "Walk",
+          "animationKey": "DemonExecutioner_Walk_Forward"
+        },
+        {
+          "mode": "Run",
+          "animationKey": "DemonExecutioner_Run"
+        },
+        {
+          "mode": "Turn",
+          "animationKey": "DemonExecutioner_Walk_Forward"
+        }
+      ]
+    }
+  ],
+  "fallbackReactionProfiles": [
+    {
+      "key": "AbilityFallback.DemonExecutioner",
+      "entries": [
+        {
+          "cause": "OnHitReceived",
+          "toAbilityKey": "Ability.DemonExecutioner_Hit",
+          "priority": 100
+        },
+        {
+          "cause": "OnParried",
+          "toAbilityKey": "Ability.DemonExecutioner_Stun",
+          "priority": 200
+        },
+        {
+          "cause": "OnAttributeZero",
+          "toAbilityKey": "Ability.DemonExecutioner_Dead",
+          "priority": 1000
+        }
+      ]
+    }
+  ]
 }
