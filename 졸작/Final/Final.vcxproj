@@ -231,7 +231,9 @@ exit 0</Command>
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingSceneUIController.cpp" />
     <ClCompile Include="LookUpTextures.cpp" />
+    <ClCompile Include="ParryFlashComponent.cpp" />
     <ClCompile Include="ParrySparkComponent.cpp" />
+    <ClCompile Include="ParryStreakComponent.cpp" />
     <ClCompile Include="RenderTargets.cpp" />
     <ClCompile Include="SceneSetting.cpp" />
     <ClCompile Include="SelectSceneUIController.cpp" />
@@ -326,7 +328,9 @@ exit 0</Command>
     <ClInclude Include="LoadingSceneUIController.h" />
     <ClInclude Include="LookUpTextures.h" />
     <ClInclude Include="NetHelper.h" />
+    <ClInclude Include="ParryFlashComponent.h" />
     <ClInclude Include="ParrySparkComponent.h" />
+    <ClInclude Include="ParryStreakComponent.h" />
     <ClInclude Include="RenderTargets.h" />
     <ClInclude Include="SceneSetting.h" />
     <ClInclude Include="SelectSceneUIController.h" />
@@ -386,6 +390,7 @@ exit 0</Command>
     <None Include="..\Shaders\EffectVS.hlsli" />
     <None Include="..\Shaders\FlamePS.hlsli" />
     <None Include="..\Shaders\Fog.hlsli" />
+    <None Include="..\Shaders\GlowPS.hlsli" />
     <None Include="..\Shaders\ShaderResources.hlsli" />
     <None Include="..\Shaders\Constants.hlsli" />
     <None Include="..\Shaders\ForwardPS.hlsli" />

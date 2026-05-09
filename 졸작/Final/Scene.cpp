@@ -15,6 +15,8 @@
 #include "TrailComponent.h"
 #include "FootDustComponent.h"
 #include "ParrySparkComponent.h"
+#include "ParryFlashComponent.h"
+#include "ParryStreakComponent.h"
 
 #include "NetId.h"
 #include "NetHelper.h"
@@ -145,13 +147,28 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	dust->SetLifetime(0.35f);
 	dust->SetParticleSize(0.1f);
 
+	auto flash = character->AddComponent<ParryFlashComponent>();
+	flash->Initialize(coreRef->GetDevice(), 1);
+	flash->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/ParrySpark2.png");
+	flash->SetColor({ 6.0f, 1.8f, 0.15f, 0.5f });
+	flash->SetSize(1.0f);
+	flash->SetLifetime(0.10f);
+
 	auto spark = character->AddComponent<ParrySparkComponent>();
-	spark->Initialize(coreRef->GetDevice(), 64);
+	spark->Initialize(coreRef->GetDevice(), 128);
 	spark->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/Flash01.png");
 	spark->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
 	spark->SetSpeed(20.0f);
 	spark->SetParticleSize(0.1f);
 	spark->SetLifetime(0.75f);
+
+	auto streak = character->AddComponent<ParryStreakComponent>();
+	streak->Initialize(coreRef->GetDevice(), 1);
+	streak->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/ParryStar.png");
+	streak->SetColor({ 6.0f, 3.0f, 1.0f, 0.5f });
+	streak->SetWidth(15.0f);
+	streak->SetHeight(0.4f);
+	streak->SetLifetime(0.1f);
 
 	return character;
 }
