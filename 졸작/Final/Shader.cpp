@@ -22,6 +22,7 @@ void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* roo
     CreateEffectPSO(device, rootSig, ShaderType::TrailPS, PSOType::Trail, L"../Shaders/TrailPS.hlsli");
     CreateEffectPSO(device, rootSig, ShaderType::FlamePS, PSOType::Flame, L"../Shaders/FlamePS.hlsli");
     CreateEffectPSO(device, rootSig, ShaderType::SparkPS, PSOType::Spark, L"../Shaders/SparkPS.hlsli");
+    CreateEffectPSO(device, rootSig, ShaderType::GlowPS, PSOType::Glow, L"../Shaders/GlowPS.hlsli");
 }
 
 void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)

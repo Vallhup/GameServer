@@ -229,9 +229,6 @@
     <ClCompile Include="FlameComponent.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
-    <ClCompile Include="ParrySparkComponent.cpp">
-      <Filter>Effect</Filter>
-    </ClCompile>
     <ClCompile Include="TrailComponent.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
@@ -257,6 +254,16 @@
       <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="ClusterLightManager.cpp" />
+    <ClCompile Include="ClusterLightManager.cpp" />
+    <ClCompile Include="ParrySparkComponent.cpp">
+      <Filter>Effect\Parry</Filter>
+    </ClCompile>
+    <ClCompile Include="ParryFlashComponent.cpp">
+      <Filter>Effect\Parry</Filter>
+    </ClCompile>
+    <ClCompile Include="ParryStreakComponent.cpp">
+      <Filter>Effect\Parry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -488,9 +495,6 @@
     <ClInclude Include="FlameComponent.h">
       <Filter>Effect</Filter>
     </ClInclude>
-    <ClInclude Include="ParrySparkComponent.h">
-      <Filter>Effect</Filter>
-    </ClInclude>
     <ClInclude Include="TrailComponent.h">
       <Filter>Effect</Filter>
     </ClInclude>
@@ -516,6 +520,16 @@
       <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="ClusterLightManager.h" />
+    <ClInclude Include="ClusterLightManager.h" />
+    <ClInclude Include="ParrySparkComponent.h">
+      <Filter>Effect\Parry</Filter>
+    </ClInclude>
+    <ClInclude Include="ParryFlashComponent.h">
+      <Filter>Effect\Parry</Filter>
+    </ClInclude>
+    <ClInclude Include="ParryStreakComponent.h">
+      <Filter>Effect\Parry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GBufferVS.hlsli">
@@ -762,6 +776,9 @@
     </Filter>
     <Filter Include="Shaders\Clustered">
       <UniqueIdentifier>{6ed658f7-4ce7-4085-94d0-0e7f00c9f132}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect\Parry">
+      <UniqueIdentifier>{4fc5174f-8d59-400a-9a27-1cc9bc3a477b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

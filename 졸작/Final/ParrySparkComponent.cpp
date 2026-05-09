@@ -48,7 +48,7 @@ void ParrySparkComponent::Update(float deltaTime)
 
 					XMFLOAT3 spawnPos;
 					XMStoreFloat3(&spawnPos, tipPos);
-					Spawn(spawnPos, 32);
+					Spawn(spawnPos, 64);
 					sparkSpawned = true;
 				}
 			}
