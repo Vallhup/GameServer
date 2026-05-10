@@ -112,7 +112,8 @@ enum class AbilityMovementMode : uint8_t
 {
 	None,
 	ForwardFixedDistance,
-	InputDirectionDistance
+	InputDirectionDistance,
+	DashToTarget
 };
 
 enum class AbilityRotationMode : uint8_t

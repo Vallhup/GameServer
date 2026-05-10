@@ -116,8 +116,6 @@ void AIReturnHomeState::DecisionUpdate(
 	AIContext& ctx,
 	const double decisionDT) const
 {
-	(void)decisionDT;
-
 	if (!HasArrivedHome(ctx))
 		return;
 
@@ -126,7 +124,9 @@ void AIReturnHomeState::DecisionUpdate(
 		ctx.blackboard->returningHome = false;
 		ctx.blackboard->returnHomeLockoutAcc = 0.0;
 		ctx.blackboard->leashGauge =
-			ctx.perceptionTuning ? ctx.perceptionTuning->leashGaugeMax : ctx.blackboard->leashGauge;
+			ctx.perceptionTuning ? 
+			ctx.perceptionTuning->leashGaugeMax : 
+			ctx.blackboard->leashGauge;
 	}
 
 	if (ctx.movementRuntime)

@@ -17,8 +17,10 @@
     <ClCompile Include="TaskExecutor_RaceStressTest.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicTask_SmokeTest.cpp" />
     <ClCompile Include="PaperEvaluation.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicTask_SmokeTest.cpp">
       <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>

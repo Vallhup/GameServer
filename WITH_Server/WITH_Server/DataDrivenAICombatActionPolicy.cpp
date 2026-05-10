@@ -402,6 +402,7 @@ CombatActionSelection DataDrivenAICombatActionPolicy::SelectAction(
 
 	result.shouldAttack = true;
 	result.selectedAbilityId = selected->abilityId;
+	result.target = ctx.perception->selectedTarget;
 	AICombatActionPolicyUtil::FillAttackDirectionTowardTarget(ctx, result);
 	ApplyRuntimeSelection(ctx, *selected, selectedIndex);
 	return result;

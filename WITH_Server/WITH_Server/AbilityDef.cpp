@@ -347,6 +347,7 @@ namespace
 		if (text == "None") { outValue = AbilityMovementMode::None; return true; }
 		if (text == "ForwardFixedDistance") { outValue = AbilityMovementMode::ForwardFixedDistance; return true; }
 		if (text == "InputDirectionDistance") { outValue = AbilityMovementMode::InputDirectionDistance; return true; }
+		if (text == "DashToTarget") { outValue = AbilityMovementMode::DashToTarget; return true; }
 		return false;
 	}
 

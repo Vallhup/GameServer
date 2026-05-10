@@ -30,6 +30,13 @@ struct AbilityMoveRuntimeComp : Component
 	float lockedDirZ{ 0.0f };
 	float lockedYawRad{ 0.0f };
 	bool hasLockedDirection{ false };
+
+	float targetDashSegmentStartSec{ 0.0f };
+	float targetDashStartX{ 0.0f };
+	float targetDashStartZ{ 0.0f };
+	float targetDashTargetX{ 0.0f };
+	float targetDashTargetZ{ 0.0f };
+	bool hasLockedTargetDash{ false };
 };
 
 struct PreCollisionTransformComp : Component
@@ -42,6 +49,7 @@ struct PreCollisionTransformComp : Component
 
 	bool movedThisFrame{ false };
 	bool rotatedThisFrame{ false };
+	bool preserveAbilityVerticalAboveNavMesh{ false };
 };
 
 struct BodyCollisionShapeComp : Component

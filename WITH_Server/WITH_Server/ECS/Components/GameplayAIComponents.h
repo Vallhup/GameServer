@@ -73,7 +73,7 @@ struct AIDecisionComp : Component
 	double globalDecisionAcc{ 0.0 };
 
 	bool reactDurationOverrideActive{ false };
-	float reactDurationOverrideSec{ 0.0f };
+	double reactDurationOverrideSec{ 0.0f };
 
 	bool enteredThisFrame{ true };
 
@@ -211,6 +211,7 @@ struct AIIntentFrameComp : Component
 
 	bool hasAbility{ false };
 	AbilityId abilityId{ InvalidAbilityId };
+	Entity abilityTarget{ Entity::Null() };
 	float abilityDirX{ 0.0f };
 	float abilityDirZ{ 0.0f };
 
@@ -220,6 +221,7 @@ struct AIIntentFrameComp : Component
 	{
 		hasAbility = false;
 		abilityId = InvalidAbilityId;
+		abilityTarget = Entity::Null();
 		abilityDirX = 0.0f;
 		abilityDirZ = 0.0f;
 		lockFacingToLookTarget = false;

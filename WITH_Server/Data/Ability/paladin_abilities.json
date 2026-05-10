@@ -172,20 +172,7 @@
             }
           }
         ],
-        "movementSegments": [
-          {
-            "startNormalized": 0,
-            "endNormalized": 0.40425531914893614,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.54,
-            "rotationMode": "None",
-            "rotationRate": null,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "ActionStartInput",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
+        "movementSegments": [],
         "events": []
       },
       "transition": {
@@ -301,20 +288,7 @@
             }
           }
         ],
-        "movementSegments": [
-          {
-            "startNormalized": 0,
-            "endNormalized": 0.40425531914893614,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.74,
-            "rotationMode": "None",
-            "rotationRate": null,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "ActionStartInput",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
+        "movementSegments": [],
         "events": []
       },
       "transition": {
@@ -772,39 +746,52 @@
           "amount": 0
         }
       ],
-      "timeline": {
-        "durationSec": 3.4028234663852886e+38,
-        "policy": "Holdable",
-        "combatWindows": [
-          {
-            "kind": "Guard",
-            "startNormalized": 0.05,
-            "endNormalized": 1,
-            "applyEffectKey": null,
-            "appliesTo": "GuardableAttack",
-            "spatialFilter": {
-              "facingHalfAngleDeg": 60,
-              "minDistance": null,
-              "maxDistance": null,
-              "verticalTolerance": null,
-              "referenceFrame": "OwnerFacing"
-            },
-            "effect": {
-              "type": "GuardResponse",
-              "attackHit": null,
-              "parryResponse": null,
-              "guardResponse": {
-                "damageReductionRatio": 0.85,
-                "chipDamageRatio": 0.1,
-                "staminaDamageMultiplier": 1.2,
-                "hitStopSec": 0.04
-              }
-            }
-          }
-        ],
-        "movementSegments": [],
-        "events": []
-      },
+        "timeline": {
+            "durationSec": 3.4028234663852886e+38,
+            "policy": "Holdable",
+            "combatWindows": [
+                {
+                    "kind": "Guard",
+                    "startNormalized": 0.05,
+                    "endNormalized": 1,
+                    "applyEffectKey": null,
+                    "appliesTo": "GuardableAttack",
+                    "spatialFilter": {
+                        "facingHalfAngleDeg": 60,
+                        "minDistance": null,
+                        "maxDistance": null,
+                        "verticalTolerance": null,
+                        "referenceFrame": "OwnerFacing"
+                    },
+                    "effect": {
+                        "type": "GuardResponse",
+                        "attackHit": null,
+                        "parryResponse": null,
+                        "guardResponse": {
+                            "damageReductionRatio": 0.85,
+                            "chipDamageRatio": 0.1,
+                            "staminaDamageMultiplier": 1.2,
+                            "hitStopSec": 0.04
+                        }
+                    }
+                }
+            ],
+            "movementSegments": [
+                {
+                    "startNormalized": 0.0,
+                    "endNormalized": 1.0,
+                    "movementMode": "ForwardFixedDistance",
+                    "moveDistance": -1.47,
+                    "rotationMode": "None",
+                    "rotationRate": null,
+                    "verticalMovementMode": "None",
+                    "verticalAmount": null,
+                    "directionPolicy": "ActionStartInput",
+                    "directionSampleTiming": "OnSegmentStart"
+                }
+            ],
+            "events": []
+        },
       "transition": {
         "endPolicy": {
           "endType": "HoldRelease",

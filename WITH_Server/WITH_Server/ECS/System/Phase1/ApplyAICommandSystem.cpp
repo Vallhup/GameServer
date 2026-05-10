@@ -41,6 +41,7 @@ void ApplyAICommandSystem::Execute(SystemContext& ctx)
 		if (frame.hasAbility)
 		{
 			input.ability.directAbilityId = frame.abilityId;
+			input.ability.target          = frame.abilityTarget;
 			input.ability.directionX     = frame.abilityDirX;
 			input.ability.directionZ     = frame.abilityDirZ;
 			input.ability.requestedFrame = ctx.runtime.FrameIndex();

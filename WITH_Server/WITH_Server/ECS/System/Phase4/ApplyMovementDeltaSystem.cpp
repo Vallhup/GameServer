@@ -57,9 +57,12 @@ void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 		preCollision.candidateRotation = transform.rotation;
 		preCollision.movedThisFrame = false;
 		preCollision.rotatedThisFrame = false;
+		preCollision.preserveAbilityVerticalAboveNavMesh = false;
 
 		if (abilityDelta.hasDelta)
 		{
+			preCollision.preserveAbilityVerticalAboveNavMesh =
+				std::abs(abilityDelta.deltaPosition.y) > kOverlapEpsilon;
 			transform.position.x += abilityDelta.deltaPosition.x;
 			transform.position.y += abilityDelta.deltaPosition.y;
 			transform.position.z += abilityDelta.deltaPosition.z;
@@ -90,7 +93,9 @@ void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 		abilityDelta = {};
 		locomotionDelta = {};
 
-		if ((preCollision.movedThisFrame || preCollision.rotatedThisFrame) &&
+		if ((preCollision.movedThisFrame ||
+			preCollision.rotatedThisFrame ||
+			preCollision.preserveAbilityVerticalAboveNavMesh) &&
 			ctx.ecs.HasComponent<DirtyFlagsComp>(entity))
 		{
 			ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity)

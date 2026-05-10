@@ -173,7 +173,9 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 		}
 
 		const bool needsInitialProjection = navAgent.currentPolyRef == 0;
-		if (!preCollision.movedThisFrame && !needsInitialProjection)
+		if (!preCollision.movedThisFrame &&
+			!preCollision.preserveAbilityVerticalAboveNavMesh &&
+			!needsInitialProjection)
 		{
 			resolveState.navResolvedPosition = transform.position;
 			continue;
@@ -271,7 +273,10 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 				continue;
 			}
 		}
-		resultPos[1] = surfaceHeight + surfaceYOffset;
+		const float navMeshFloorY = surfaceHeight + surfaceYOffset;
+		resultPos[1] = preCollision.preserveAbilityVerticalAboveNavMesh
+			? std::max(transform.position.y, navMeshFloorY)
+			: navMeshFloorY;
 
 		navAgent.currentPolyRef = static_cast<uint64_t>(resultRef);
 

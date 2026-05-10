@@ -25,7 +25,7 @@
   },
   "decisionTuning": {
     "decisionInterval": 0.18,
-    "attackCooldown": 2.1,
+    "attackCooldown": 2.4,
     "reactDuration": 0.7
   },
   "combatActions": [
@@ -33,31 +33,31 @@
       "abilityKey": "Ability.FinalBoss_Slash",
       "weight": 35,
       "distanceBucket": "VeryClose",
-      "aiCooldownSec": 1.6,
-      "globalCooldownSec": 2.0
+      "aiCooldownSec": 1.8,
+      "globalCooldownSec": 2.3
     },
     {
       "abilityKey": "Ability.FinalBoss_Thrust",
       "weight": 35,
       "distanceBucket": "Close",
-      "aiCooldownSec": 1.8,
-      "globalCooldownSec": 2.0,
+      "aiCooldownSec": 2.0,
+      "globalCooldownSec": 2.3,
       "forbidImmediateRepeat": true
     },
     {
       "abilityKey": "Ability.FinalBoss_DashSlash",
       "weight": 32,
       "distanceBucket": "Mid",
-      "aiCooldownSec": 3.2,
-      "globalCooldownSec": 2.6,
+      "aiCooldownSec": 3.6,
+      "globalCooldownSec": 2.9,
       "forbidImmediateRepeat": true
     },
     {
       "abilityKey": "Ability.FinalBoss_JumpSlash",
       "weight": 28,
       "distanceBucket": "Far",
-      "aiCooldownSec": 4.6,
-      "globalCooldownSec": 3.0,
+      "aiCooldownSec": 5.1,
+      "globalCooldownSec": 3.4,
       "forbidImmediateRepeat": true
     }
   ],

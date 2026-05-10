@@ -385,6 +385,7 @@ bool ResolveAbilityStateSystem::TryResolveCancelTransition(
 	outDecision.nextAbilityId = bestCandidate.abilityId;
 	outDecision.consumeOnRequestCosts = true;
 	outDecision.preserveDirection = true;
+	outDecision.target = bestCandidate.target;
 	outDecision.directionX = bestCandidate.directionX;
 	outDecision.directionZ = bestCandidate.directionZ;
 	(void)locomotionState;
@@ -421,6 +422,7 @@ bool ResolveAbilityStateSystem::TryResolveIdleRequestTransition(
 		outDecision.nextAbilityId = candidate.abilityId;
 		outDecision.consumeOnRequestCosts = true;
 		outDecision.preserveDirection = true;
+		outDecision.target = candidate.target;
 		outDecision.directionX = candidate.directionX;
 		outDecision.directionZ = candidate.directionZ;
 		(void)locomotionState;
@@ -575,6 +577,7 @@ ResolveAbilityStateSystem::BuildRequestCandidates(
 	{
 		candidates.push_back(RequestCandidate{
 			input.ability.directAbilityId,
+			input.ability.target,
 			input.ability.directionX,
 			input.ability.directionZ,
 			true
@@ -645,6 +648,7 @@ ResolveAbilityStateSystem::BuildRequestCandidates(
 	{
 		candidates.push_back(RequestCandidate{
 			abilityId,
+			input.ability.target,
 			input.ability.directionX,
 			input.ability.directionZ,
 			true
@@ -811,10 +815,12 @@ void ResolveAbilityStateSystem::SetAbilityDirectionOnStart(
 
 	abilityState.directionX = dirX;
 	abilityState.directionZ = dirZ;
+	abilityState.target = decision.target;
 }
 
 void ResolveAbilityStateSystem::ResetAbilityDirection(AbilityStateComp& abilityState)
 {
 	abilityState.directionX = 0.0f;
 	abilityState.directionZ = 0.0f;
+	abilityState.target = Entity::Null();
 }

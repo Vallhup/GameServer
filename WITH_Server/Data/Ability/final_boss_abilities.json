@@ -57,18 +57,30 @@
           }
         ],
         "movementSegments": [
-          {
-            "startNormalized": 0.1,
-            "endNormalized": 0.34,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 1.2,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 3.4,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
+            {
+                "startNormalized": 0.375,
+                "endNormalized": 0.554,
+                "movementMode": "ForwardFixedDistance",
+                "moveDistance": 0.98108,
+                "rotationMode": "FaceTarget",
+                "rotationRate": 3.4,
+                "verticalMovementMode": "None",
+                "verticalAmount": null,
+                "directionPolicy": "TargetDirection",
+                "directionSampleTiming": "OnSegmentStart"
+            },
+            {
+                "startNormalized": 0.696,
+                "endNormalized": 1.0,
+                "movementMode": "ForwardFixedDistance",
+                "moveDistance": 0.4739,
+                "rotationMode": "FaceTarget",
+                "rotationRate": 3.4,
+                "verticalMovementMode": "None",
+                "verticalAmount": null,
+                "directionPolicy": "TargetDirection",
+                "directionSampleTiming": "OnSegmentStart"
+            }
         ],
         "events": []
       },
@@ -136,8 +148,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.28,
-            "endNormalized": 0.58,
+            "startNormalized": 0.5,
+            "endNormalized": 0.6,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -167,18 +179,30 @@
           }
         ],
         "movementSegments": [
-          {
-            "startNormalized": 0.08,
-            "endNormalized": 0.26,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.55,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 3.8,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
+            {
+                "startNormalized": 0.0,
+                "endNormalized": 0.553,
+                "movementMode": "ForwardFixedDistance",
+                "moveDistance": -0.08453,
+                "rotationMode": "FaceTarget",
+                "rotationRate": 3.8,
+                "verticalMovementMode": "None",
+                "verticalAmount": null,
+                "directionPolicy": "TargetDirection",
+                "directionSampleTiming": "OnSegmentStart"
+            },
+            {
+                "startNormalized": 0.553,
+                "endNormalized": 0.787,
+                "movementMode": "ForwardFixedDistance",
+                "moveDistance": 1.00467,
+                "rotationMode": "FaceTarget",
+                "rotationRate": 3.8,
+                "verticalMovementMode": "None",
+                "verticalAmount": null,
+                "directionPolicy": "TargetDirection",
+                "directionSampleTiming": "OnSegmentStart"
+            }
         ],
         "events": []
       },
@@ -278,10 +302,10 @@
         ],
         "movementSegments": [
           {
-            "startNormalized": 0.08,
-            "endNormalized": 0.46,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 4.6,
+            "startNormalized": 0.357,
+            "endNormalized": 0.446,
+            "movementMode": "DashToTarget",
+            "moveDistance": null,
             "rotationMode": "FaceTarget",
             "rotationRate": 4.2,
             "verticalMovementMode": "None",
@@ -356,8 +380,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.34,
-            "endNormalized": 0.78,
+            "startNormalized": 0.6,
+            "endNormalized": 0.85,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -387,18 +411,42 @@
           }
         ],
         "movementSegments": [
-          {
-            "startNormalized": 0.08,
-            "endNormalized": 0.54,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 7.4,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 4.6,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
+            {
+                "startNormalized": 0.195,
+                "endNormalized": 0.439,
+                "movementMode": "DashToTarget",
+                "moveDistance": null,
+                "rotationMode": "FaceTarget",
+                "rotationRate": 4.6,
+                "verticalMovementMode": "FixedOffset",
+                "verticalAmount": 3.473,
+                "directionPolicy": "TargetDirection",
+                "directionSampleTiming": "OnSegmentStart"
+            },
+            {
+                "startNormalized": 0.439,
+                "endNormalized": 0.634,
+                "movementMode": "DashToTarget",
+                "moveDistance": null,
+                "rotationMode": "FaceTarget",
+                "rotationRate": 4.6,
+                "verticalMovementMode": "FixedOffset",
+                "verticalAmount": -3.473,
+                "directionPolicy": "TargetDirection",
+                "directionSampleTiming": "OnSegmentStart"
+            },
+            {
+                "startNormalized": 0.634,
+                "endNormalized": 0.683,
+                "movementMode": "DashToTarget",
+                "moveDistance": null,
+                "rotationMode": "FaceTarget",
+                "rotationRate": 4.6,
+                "verticalMovementMode": "None",
+                "verticalAmount": null,
+                "directionPolicy": "TargetDirection",
+                "directionSampleTiming": "OnSegmentStart"
+            }
         ],
         "events": []
       },

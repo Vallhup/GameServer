@@ -26,39 +26,52 @@
           "amount": 0
         }
       ],
-      "timeline": {
-        "durationSec": 1.36666691,
-        "policy": "FixedDuration",
-        "combatWindows": [
-          {
-            "kind": "Attack",
-            "startNormalized": 0.3,
-            "endNormalized": 1,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": null,
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 1,
-                "bonusDamage": 2,
-                "staminaDamageScale": 0.5,
-                "bonusStaminaDamage": 3,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 0.35,
-                "hitStopSec": 0.05,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
-            }
-          }
-        ],
-        "movementSegments": [],
-        "events": []
-      },
+        "timeline": {
+            "durationSec": 1.36666691,
+            "policy": "FixedDuration",
+            "combatWindows": [
+                {
+                    "kind": "Attack",
+                    "startNormalized": 0.3,
+                    "endNormalized": 1,
+                    "applyEffectKey": null,
+                    "appliesTo": "FrontPhysical",
+                    "spatialFilter": null,
+                    "effect": {
+                        "type": "AttackHit",
+                        "attackHit": {
+                            "damageScale": 1,
+                            "bonusDamage": 2,
+                            "staminaDamageScale": 0.5,
+                            "bonusStaminaDamage": 3,
+                            "poiseDamageScale": 0,
+                            "bonusPoiseDamage": 0,
+                            "knockbackDistance": 0.35,
+                            "hitStopSec": 0.05,
+                            "parryable": true,
+                            "guardable": true
+                        },
+                        "parryResponse": null,
+                        "guardResponse": null
+                    }
+                }
+            ],
+            "movementSegments": [
+                {
+                    "startNormalized": 0.0,
+                    "endNormalized": 1.0,
+                    "movementMode": "ForwardFixedDistance",
+                    "moveDistance": 1.19,
+                    "rotationMode": "None",
+                    "rotationRate": null,
+                    "verticalMovementMode": "None",
+                    "verticalAmount": null,
+                    "directionPolicy": "ActionStartInput",
+                    "directionSampleTiming": "OnSegmentStart"
+                }
+            ],
+            "events": []
+        },
       "transition": {
         "endPolicy": {
           "endType": "NaturalEnd",
@@ -172,20 +185,7 @@
             }
           }
         ],
-        "movementSegments": [
-          {
-            "startNormalized": 0,
-            "endNormalized": 0.40425531914893614,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.54,
-            "rotationMode": "None",
-            "rotationRate": null,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "ActionStartInput",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
+        "movementSegments": [],
         "events": []
       },
       "transition": {
@@ -303,10 +303,10 @@
         ],
         "movementSegments": [
           {
-            "startNormalized": 0,
-            "endNormalized": 0.40425531914893614,
+            "startNormalized": 0.0,
+            "endNormalized": 1.0,
             "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.74,
+            "moveDistance": 0.4125,
             "rotationMode": "None",
             "rotationRate": null,
             "verticalMovementMode": "None",
@@ -488,39 +488,52 @@
           "amount": 0
         }
       ],
-      "timeline": {
-        "durationSec": 1.73333466,
-        "policy": "FixedDuration",
-        "combatWindows": [
-          {
-            "kind": "Attack",
-            "startNormalized": 0.3,
-            "endNormalized": 1,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": null,
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 3.5,
-                "bonusDamage": 13,
-                "staminaDamageScale": 2.2,
-                "bonusStaminaDamage": 6,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 1.4,
-                "hitStopSec": 0.11,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
-            }
-          }
-        ],
-        "movementSegments": [],
-        "events": []
-      },
+        "timeline": {
+            "durationSec": 1.73333466,
+            "policy": "FixedDuration",
+            "combatWindows": [
+                {
+                    "kind": "Attack",
+                    "startNormalized": 0.3,
+                    "endNormalized": 1,
+                    "applyEffectKey": null,
+                    "appliesTo": "FrontPhysical",
+                    "spatialFilter": null,
+                    "effect": {
+                        "type": "AttackHit",
+                        "attackHit": {
+                            "damageScale": 3.5,
+                            "bonusDamage": 13,
+                            "staminaDamageScale": 2.2,
+                            "bonusStaminaDamage": 6,
+                            "poiseDamageScale": 0,
+                            "bonusPoiseDamage": 0,
+                            "knockbackDistance": 1.4,
+                            "hitStopSec": 0.11,
+                            "parryable": true,
+                            "guardable": true
+                        },
+                        "parryResponse": null,
+                        "guardResponse": null
+                    }
+                }
+            ],
+            "movementSegments": [
+                {
+                    "startNormalized": 0.0,
+                    "endNormalized": 1.0,
+                    "movementMode": "ForwardFixedDistance",
+                    "moveDistance": 1.12363,
+                    "rotationMode": "None",
+                    "rotationRate": null,
+                    "verticalMovementMode": "None",
+                    "verticalAmount": null,
+                    "directionPolicy": "ActionStartInput",
+                    "directionSampleTiming": "OnSegmentStart"
+                }
+            ],
+            "events": []
+        },
       "transition": {
         "endPolicy": {
           "endType": "NaturalEnd",

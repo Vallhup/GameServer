@@ -37,6 +37,7 @@ struct ActorAbilityInputEvent
 {
 	PlayerAbilityInputType type{ PlayerAbilityInputType::None };
 	AbilityId directAbilityId{ InvalidAbilityId };
+	Entity target{ Entity::Null() };
 	float directionX{ 0.0f };
 	float directionZ{ 0.0f };
 	uint64_t requestedFrame{ 0 };

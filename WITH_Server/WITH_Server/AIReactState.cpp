@@ -21,13 +21,18 @@ void AIReactState::Exit(AIContext& ctx) const
 
 void AIReactState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
 {
-	(void)decisionDT;
+	if (ctx.decision		== nullptr ||
+		ctx.decisionTuning	== nullptr ||
+		ctx.perception		== nullptr ||
+		ctx.blackboard		== nullptr)
+	{
+		return;
+	}
 
-	const double reactDuration =
-		ctx.decision != nullptr &&
-		ctx.decision->reactDurationOverrideActive
-		? static_cast<double>(ctx.decision->reactDurationOverrideSec)
-		: ctx.decisionTuning->reactDuration;
+	const double reactDuration = 
+		ctx.decision->reactDurationOverrideActive ?
+		ctx.decision->reactDurationOverrideSec :
+		ctx.decisionTuning->reactDuration;
 
 	if (ctx.decision->stateTime < reactDuration)
 		return;
@@ -50,6 +55,4 @@ void AIReactState::DecisionUpdate(AIContext& ctx, const double decisionDT) const
 
 void AIReactState::FrameUpdate(AIContext& ctx, const double dT) const
 {
-	(void)ctx;
-	(void)dT;
 }

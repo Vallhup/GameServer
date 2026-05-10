@@ -15,6 +15,7 @@ private:
 	struct RequestCandidate
 	{
 		AbilityId abilityId{ InvalidAbilityId };
+		Entity target{ Entity::Null() };
 		float directionX{ 0.0f };
 		float directionZ{ 0.0f };
 		bool useInputDirection{ false };
@@ -26,6 +27,7 @@ private:
 		bool transition{ false };
 		bool consumeOnRequestCosts{ false };
 		bool preserveDirection{ false };
+		Entity target{ Entity::Null() };
 		float directionX{ 0.0f };
 		float directionZ{ 0.0f };
 	};

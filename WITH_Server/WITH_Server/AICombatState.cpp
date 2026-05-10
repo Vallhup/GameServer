@@ -43,6 +43,7 @@ void AICombatState::DecisionUpdate(AIContext& ctx, const double decisionDT) cons
 			{
 				ctx.intent->hasAbility = true;
 				ctx.intent->abilityId = selection.selectedAbilityId;
+				ctx.intent->abilityTarget = selection.target;
 				ctx.intent->abilityDirX = selection.directionX;
 				ctx.intent->abilityDirZ = selection.directionZ;
 				ctx.intent->sequence++;

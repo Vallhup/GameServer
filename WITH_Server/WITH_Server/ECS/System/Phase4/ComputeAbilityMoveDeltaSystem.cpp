@@ -4,6 +4,8 @@
 #include "../GameplaySystemUtil.h"
 #include "../../../TransformHelper.h"
 
+#include <cmath>
+
 using namespace GameplaySystemUtil;
 
 namespace
@@ -146,6 +148,100 @@ namespace
 			WrapYaw(moveDelta.deltaYawRad + WrapYaw(nextYaw - currYaw));
 		moveDelta.hasDelta = true;
 	}
+
+	bool EnsureTargetDashLock(
+		SystemContext& ctx,
+		const AbilityMovementSegmentDef& segment,
+		const AbilityStateComp& abilityState,
+		const WorldTransformComp& transform,
+		AbilityMoveRuntimeComp& moveRuntime,
+		float segmentStartSec)
+	{
+		const bool needsLock =
+			!moveRuntime.hasLockedTargetDash ||
+			std::fabs(moveRuntime.targetDashSegmentStartSec - segmentStartSec) >
+				kOverlapEpsilon;
+		if (!needsLock)
+		{
+			return true;
+		}
+
+		if (abilityState.target.IsNull())
+		{
+			return false;
+		}
+
+		const WorldTransformComp* targetTransform =
+			ctx.ecs.GetComponent<WorldTransformComp>(abilityState.target);
+		if (targetTransform == nullptr)
+		{
+			return false;
+		}
+
+		moveRuntime.targetDashSegmentStartSec = segmentStartSec;
+		moveRuntime.targetDashStartX = transform.position.x;
+		moveRuntime.targetDashStartZ = transform.position.z;
+		moveRuntime.targetDashTargetX = targetTransform->position.x;
+		moveRuntime.targetDashTargetZ = targetTransform->position.z;
+		moveRuntime.hasLockedTargetDash = true;
+
+		float dirX =
+			moveRuntime.targetDashTargetX - moveRuntime.targetDashStartX;
+		float dirZ =
+			moveRuntime.targetDashTargetZ - moveRuntime.targetDashStartZ;
+		if (HasDirection(dirX, dirZ))
+		{
+			NormalizeXZ(dirX, dirZ);
+			const float currYaw =
+				TransformHelper::QuaternionToYaw(transform.rotation);
+			moveRuntime.lockedDirX = dirX;
+			moveRuntime.lockedDirZ = dirZ;
+			moveRuntime.lockedYawRad = DirToYaw(dirX, dirZ, currYaw);
+			moveRuntime.hasLockedDirection = true;
+		}
+
+		(void)segment;
+		return true;
+	}
+
+	void ApplyTargetDashDelta(
+		AbilityMoveDeltaComp& moveDelta,
+		AbilityMoveRuntimeComp& moveRuntime,
+		float segmentStartSec,
+		float segmentEndSec,
+		float overlapStart,
+		float overlapEnd,
+		XMFLOAT3& outSegmentDelta)
+	{
+		const float segmentDuration = segmentEndSec - segmentStartSec;
+		if (segmentDuration <= kOverlapEpsilon)
+		{
+			return;
+		}
+
+		const float prevAlpha = ClampFloat(
+			(overlapStart - segmentStartSec) / segmentDuration,
+			0.0f,
+			1.0f);
+		const float currAlpha = ClampFloat(
+			(overlapEnd - segmentStartSec) / segmentDuration,
+			0.0f,
+			1.0f);
+
+		const float totalX =
+			moveRuntime.targetDashTargetX - moveRuntime.targetDashStartX;
+		const float totalZ =
+			moveRuntime.targetDashTargetZ - moveRuntime.targetDashStartZ;
+		outSegmentDelta.x = totalX * (currAlpha - prevAlpha);
+		outSegmentDelta.z = totalZ * (currAlpha - prevAlpha);
+
+		if (HasDirection(outSegmentDelta.x, outSegmentDelta.z))
+		{
+			moveDelta.deltaPosition.x += outSegmentDelta.x;
+			moveDelta.deltaPosition.z += outSegmentDelta.z;
+			moveDelta.hasDelta = true;
+		}
+	}
 }
 
 const StaticSystemMetaStorage<5> ComputeAbilityMoveDeltaSystem::kMetaStorage =
@@ -224,7 +320,27 @@ void ComputeAbilityMoveDeltaSystem::Execute(SystemContext& ctx)
 				(overlapEnd - overlapStart) / (endSec - startSec);
 
 			XMFLOAT3 segmentDelta{ 0.0f, 0.0f, 0.0f };
-			if (segment.movementMode != AbilityMovementMode::None &&
+			if (segment.movementMode == AbilityMovementMode::DashToTarget)
+			{
+				if (EnsureTargetDashLock(
+					ctx,
+					segment,
+					abilityState,
+					transform,
+					moveRuntime,
+					startSec))
+				{
+					ApplyTargetDashDelta(
+						moveDelta,
+						moveRuntime,
+						startSec,
+						endSec,
+						overlapStart,
+						overlapEnd,
+						segmentDelta);
+				}
+			}
+			else if (segment.movementMode != AbilityMovementMode::None &&
 				segment.moveDistance.has_value() &&
 				moveRuntime.hasLockedDirection)
 			{
