@@ -183,7 +183,7 @@ private:
     // IExecutorIOSink 구현
     void SubmitDynamicTask(DynamicTaskRequest request) noexcept override;
     void PushCompletion(CompletionEntry entry) noexcept override;
-    void WakeForNetworkIO() noexcept override;
+    void WakeForExternalIO() noexcept override;
 
     // AsyncIO 내부
     void ProcessCompletions(uint32_t workerIdx);

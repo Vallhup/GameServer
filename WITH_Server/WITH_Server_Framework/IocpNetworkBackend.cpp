@@ -36,9 +36,41 @@ void IocpNetworkBackend::Stop() noexcept
 		conn->Close();
 }
 
-bool IocpNetworkBackend::WaitForWork(
-	uint32_t, std::chrono::microseconds timeout) noexcept
+bool IocpNetworkBackend::DrainCompletions(uint32_t) noexcept
 {
+	// 이미 도착한 IOCP completion을 비차단으로 모두 빼낸다.
+	// timeout = 0 → GetQueuedCompletionStatusEx가 즉시 반환 (non-blocking).
+	// blocking sleep은 WaitForWork(호환용) 또는 ExecutorIdleCoordinator(Step 4)가 담당.
+	OVERLAPPED_ENTRY entries[32];
+	ULONG count = 0;
+
+	if (!::GetQueuedCompletionStatusEx(
+		_iocpHandle.GetHandle(), entries, 32, &count, 0, FALSE))
+	{
+		return false;
+	}
+
+	bool dispatched = false;
+	for (ULONG i = 0; i < count; ++i)
+	{
+		auto* op = reinterpret_cast<IocpOperation*>(entries[i].lpOverlapped);
+		if (op == nullptr) continue;
+		bool ok = !FAILED(static_cast<HRESULT>(entries[i].Internal));
+		op->dispatch(op, entries[i].dwNumberOfBytesTransferred, ok);
+		dispatched = true;
+	}
+	return dispatched;
+}
+
+bool IocpNetworkBackend::WaitForWork(
+	uint32_t workerIdx, std::chrono::microseconds timeout) noexcept
+{
+	// [Step 4 이전 호환용] 먼저 비차단으로 drain을 시도하고,
+	// 작업이 없으면 timeout만큼 blocking wait한다.
+	// Step 4(ExecutorIdleCoordinator 도입) 완료 후 이 메서드는 제거 예정.
+	if (DrainCompletions(workerIdx))
+		return true;
+
 	OVERLAPPED_ENTRY entries[32];
 	ULONG count = 0;
 	DWORD ms = static_cast<DWORD>(
@@ -92,7 +124,7 @@ bool IocpNetworkBackend::Send(SessionId id, std::span<const uint8_t> payload) no
 	// Outbound sends are staged from the main thread after frame execution too.
 	// Wake an executor worker so send completions can clear the connection's
 	// chain-flush state and post any buffers queued behind the first WSASend.
-	_sink.WakeForNetworkIO();
+	_sink.WakeForExternalIO();
 	return true;
 }
 

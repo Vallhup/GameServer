@@ -396,6 +396,9 @@
     <ClInclude Include="IExecutorIOSink.h">
       <Filter>03_Execution\07_Utility</Filter>
     </ClInclude>
+    <ClInclude Include="IIOBackend.h">
+      <Filter>03_Execution\07_Utility</Filter>
+    </ClInclude>
     <ClInclude Include="INetworkBackend.h">
       <Filter>03_Execution\07_Utility</Filter>
     </ClInclude>

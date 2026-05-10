@@ -78,8 +78,16 @@ struct DynamicTaskRequest
 
     // 요청이 발행된 프레임 인덱스 (디버그 / 진단 / 결정론적 정렬 tie-break).
     uint64_t requestFrameIndex{ 0 };
+
+    // Correlation key. IO 종류에 따라 다음 의미를 갖는다.
+    //   - 네트워크 인바운드 패킷: 송신한 클라이언트의 SessionId.
+    //     동일 세션의 TCP 수신 순서를 submissionSequence와 함께 보존한다.
+    //   - DB 응답 등 기타 외부 IO: 원래 요청을 발행한 논리적 흐름의 식별자
+    //     (보통 SessionId, 0이면 correlation 없음).
+    // 결정론적 정렬 키 중 하나로 사용된다. 타입과 정렬 키 역할은 유지.
     uint32_t sessionId{ 0 };
-    // 동일 sessionId inbound DynamicTask의 TCP 수신 순서를 보존하기 위한 제출 순번.
+
+    // 동일 correlation key(sessionId) 내에서 도착 순서를 보존하기 위한 제출 순번.
     uint64_t submissionSequence{ 0 };
 
     [[nodiscard]]

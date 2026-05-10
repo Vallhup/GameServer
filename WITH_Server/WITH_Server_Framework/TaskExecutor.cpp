@@ -1534,8 +1534,10 @@ void TaskExecutor::PushCompletion(CompletionEntry entry) noexcept
         _networkBackend->WakeWorker();
 }
 
-void TaskExecutor::WakeForNetworkIO() noexcept
+void TaskExecutor::WakeForExternalIO() noexcept
 {
+    // Step 4(ExecutorIdleCoordinator 도입) 이전까지는 ThreadPool CV로 worker를 깨운다.
+    // Step 4 완료 후 ExecutorIdleCoordinator::Wake()로 대체 예정.
     NotifyWork();
 }
 

@@ -40,10 +40,18 @@ public:
 	IocpNetworkBackend& operator=(const IocpNetworkBackend&)	= delete;
 
 public:
+	// IIOBackend
+	[[nodiscard]]
+	virtual bool DrainCompletions(uint32_t workerIdx) noexcept override;
+	[[nodiscard]]
+	virtual const char* DebugName() const noexcept override { return "Network"; }
+
+	// INetworkBackend (Step 4 이전 호환용)
 	[[nodiscard]]
 	virtual bool WaitForWork(uint32_t workerIdx, std::chrono::microseconds timeout) noexcept override;
 	virtual void WakeWorker() noexcept override;
 
+	// 네트워크 고유
 	virtual bool Send(SessionId id, std::span<const uint8_t> payload) noexcept override;
 	virtual void FlushSend() noexcept override;
 
