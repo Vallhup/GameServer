@@ -173,6 +173,7 @@
     <ClInclude Include="DynamicTaskScheduler.h" />
     <ClInclude Include="ExecutionGraphBuildPolicy.h" />
     <ClInclude Include="FrameworkLog.h" />
+    <ClInclude Include="ExecutorIdleCoordinator.h" />
     <ClInclude Include="IExecutorIOSink.h" />
     <ClInclude Include="IIOBackend.h" />
     <ClInclude Include="INetworkBackend.h" />
@@ -288,6 +289,7 @@
     <ClCompile Include="WorldCommandQueue.cpp" />
     <ClCompile Include="WorldMutationBuffer.cpp" />
     <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="ExecutorIdleCoordinator.cpp" />
     <ClCompile Include="ExecutionGraphBuilder.cpp" />
     <ClCompile Include="ExecutionOps.cpp" />
     <ClCompile Include="PresenceManager.cpp" />

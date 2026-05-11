@@ -13,7 +13,7 @@ struct IExecutorIOSink
     virtual void SubmitDynamicTask(DynamicTaskRequest request) noexcept = 0;
 
     // 아웃바운드 IO 완료 → Suspended 노드 재개 (thread-safe).
-    // 내부에서 WakeWorker()를 자동 호출하여 대기 워커를 깨운다.
+    // 내부에서 ExecutorIdleCoordinator::Wake()를 호출하여 대기 워커를 깨운다.
     virtual void PushCompletion(CompletionEntry entry) noexcept = 0;
 
     // 외부 IO backend가 작업을 게시했음을 알린다.

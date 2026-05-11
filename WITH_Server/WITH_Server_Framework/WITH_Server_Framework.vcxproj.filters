@@ -43,6 +43,9 @@
     <ClCompile Include="PresenceManager.cpp">
       <Filter>02_World\04_Management</Filter>
     </ClCompile>
+    <ClCompile Include="ExecutorIdleCoordinator.cpp">
+      <Filter>03_Execution\07_Utility</Filter>
+    </ClCompile>
     <ClCompile Include="ExecutionGraphBuilder.cpp">
       <Filter>03_Execution\04_GraphBuilder</Filter>
     </ClCompile>
@@ -392,6 +395,9 @@
     </ClInclude>
     <ClInclude Include="DynamicTaskScheduler.h">
       <Filter>03_Execution\06_DynamicTask</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecutorIdleCoordinator.h">
+      <Filter>03_Execution\07_Utility</Filter>
     </ClInclude>
     <ClInclude Include="IExecutorIOSink.h">
       <Filter>03_Execution\07_Utility</Filter>

@@ -17,7 +17,3 @@ bool IocpHandle::Register(HANDLE fileHandle, ULONG_PTR key) noexcept
 	return ::CreateIoCompletionPort(fileHandle, _handle, key, 0) == _handle;
 }
 
-void IocpHandle::WakeWorker() noexcept
-{
-	::PostQueuedCompletionStatus(_handle, 0, 0, nullptr);
-}

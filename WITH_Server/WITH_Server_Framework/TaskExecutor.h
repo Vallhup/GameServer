@@ -12,8 +12,10 @@
 #include "ExecutionRuntimeTypes.h"
 #include "ExecutionSourceTypes.h"
 #include "AsyncIOTypes.h"
+#include "IIOBackend.h"
 #include "INetworkBackend.h"
 #include "IExecutorIOSink.h"
+#include "ExecutorIdleCoordinator.h"
 #include "ObjectPool.hpp"
 #include <concurrent_queue.h>
 
@@ -39,9 +41,13 @@ public:
 
     void Shutdown() noexcept;
 
-    // 네트워크 백엔드 등록. PushCompletion → WakeWorker 경로에 사용.
+    // 네트워크 백엔드 등록 (호환 API). 내부적으로 RegisterIOBackend로 위임한다.
     // ExecuteFrame 호출 전에 설정해야 한다.
     void SetNetworkBackend(INetworkBackend* backend) noexcept;
+
+    // 임의의 IO backend 등록/해제. thread-safe하지 않음 — ExecuteFrame 호출 전에 완료해야 한다.
+    void RegisterIOBackend(IIOBackend* backend) noexcept;
+    void UnregisterIOBackend(IIOBackend* backend) noexcept;
 
     // 인바운드 DynamicTask 스케줄러 등록.
     // SubmitDynamicTask() 호출 전에 설정해야 한다.
@@ -254,6 +260,13 @@ private:
     FrameState _frameState;
     concurrency::concurrent_queue<CompletionEntry> _completionQueue;
     ObjectPool<IoHandle, 1024, OverflowPolicy_Nullptr<IoHandle>> _ioHandlePool;
-    INetworkBackend* _networkBackend{ nullptr };
+
+    // 등록된 IO backend 목록. 모든 IO 종류(네트워크, DB 등)를 IIOBackend로 통합 관리한다.
+    // ExecuteFrame 호출 전에 Register/Unregister를 완료해야 한다 (non-thread-safe).
+    std::vector<IIOBackend*> _ioBackends;
+
+    // 단일 idle sleep 지점. 모든 IO backend는 작업 도착 시 이 coordinator를 깨운다.
+    ExecutorIdleCoordinator _idleCoordinator;
+
     DynamicTaskScheduler* _dynamicTaskScheduler{ nullptr };
 };

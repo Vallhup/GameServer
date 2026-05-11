@@ -13,8 +13,7 @@
 namespace
 {
     constexpr const char* kLogCategory = "Executor";
-    constexpr std::chrono::microseconds kNetworkPrePollTimeout{ 0 };
-    constexpr std::chrono::microseconds kNetworkIdleWaitTimeout{ 1000 };
+    constexpr std::chrono::microseconds kIdleWaitTimeout{ 1000 };
 
     // TEMP_TASKEXECUTOR_DEBUG: readable state names for temporary executor race diagnostics.
     const char* DebugNodeStateName(ExecNodeState state) noexcept
@@ -121,6 +120,8 @@ void TaskExecutor::Shutdown() noexcept
     FWLOG_INFO(kLogCategory, "Shutdown begin");
 
     _frameBound.store(false);
+    // coordinator에서 대기 중인 worker가 있으면 모두 깨워 WaitForWakeup에서 빠져나오게 한다.
+    _idleCoordinator.WakeAllForShutdown();
     _pool.Stop();
 
     UnbindFrame();
@@ -249,33 +250,25 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
     _debugActiveWorkerPumps.fetch_add(1, std::memory_order_acq_rel);
     DebugPumpGuard debugPumpGuard{ _debugActiveWorkerPumps };
 
-    const bool hasNetworkBackend = _networkBackend != nullptr;
-    bool handledNetworkIo = false;
-    if (hasNetworkBackend)
-    {
-        // Drain already-ready IOCP completions before static ECS work without
-        // blocking the worker. This keeps inbound DynamicTask injection from
-        // starving behind a long simulate queue.
-        handledNetworkIo =
-            _networkBackend->WaitForWork(workerIdx, kNetworkPrePollTimeout);
-    }
+    // Pre-poll: 등록된 모든 IO backend의 이미 도착한 completion을 비차단으로 빼낸다.
+    // ECS 작업을 처리하기 전에 먼저 drain하여 inbound DynamicTask 주입이
+    // 긴 simulate 큐에 밀려 굶지 않도록 한다.
+    _idleCoordinator.EnterSearching(workerIdx);
+    bool drainedIO = false;
+    for (IIOBackend* backend : _ioBackends)
+        drainedIO |= backend->DrainCompletions(workerIdx);
 
     if (!_frameBound.load(std::memory_order_acquire))
     {
-        if (handledNetworkIo)
-            return true;
-
-        if (hasNetworkBackend && !handledNetworkIo)
+        if (drainedIO)
         {
-            // Short between-frame pump. ExecuteFrame wakes workers through the
-            // thread-pool CV, but a worker blocked in IOCP is only released by
-            // completion, WakeWorker(), or this timeout.
-            //
-            // TODO: Wake the IOCP side explicitly when a new frame is published,
-            // or reserve dedicated IO pump workers, so frame-start latency is not
-            // bounded by kNetworkIdleWaitTimeout.
-            (void)_networkBackend->WaitForWork(workerIdx, kNetworkIdleWaitTimeout);
+            _idleCoordinator.ExitSearching(workerIdx);
+            return true;
         }
+
+        // between-frame idle wait: 단일 coordinator가 모든 backend의 wake를 수신한다.
+        _idleCoordinator.ExitSearching(workerIdx);
+        (void)_idleCoordinator.WaitForWakeup(workerIdx, kIdleWaitTimeout);
         return false;
     }
 
@@ -284,6 +277,7 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
         std::optional<ExecNodeId> opt = _workerDeques[workerIdx]->TryPop();
         if (opt.has_value())
         {
+            _idleCoordinator.ExitSearching(workerIdx);
             // TEMP_TASKEXECUTOR_DEBUG: queue-consume breadcrumb.
             if (const ExecNodeRuntime* nodeRt = Runtime().TryGetNode(*opt))
             {
@@ -309,6 +303,7 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
             std::optional<ExecNodeId> opt = _workerDeques[victimIdx]->TrySteal();
             if (opt.has_value())
             {
+                _idleCoordinator.ExitSearching(workerIdx);
                 // TEMP_TASKEXECUTOR_DEBUG: queue-consume breadcrumb.
                 if (const ExecNodeRuntime* nodeRt = Runtime().TryGetNode(*opt))
                 {
@@ -332,6 +327,7 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
         ExecNodeId nodeId = InvalidExecNodeId;
         if (_injectQueue.try_pop(nodeId))
         {
+            _idleCoordinator.ExitSearching(workerIdx);
             // TEMP_TASKEXECUTOR_DEBUG: queue-consume breadcrumb.
             if (const ExecNodeRuntime* nodeRt = Runtime().TryGetNode(nodeId))
             {
@@ -363,14 +359,10 @@ bool TaskExecutor::WorkerPump(uint32_t workerIdx)
         }
     }
 
-    if (hasNetworkBackend)
-    {
-        const bool handledIdleNetworkIo =
-            _networkBackend->WaitForWork(workerIdx, kNetworkIdleWaitTimeout);
-        return handledNetworkIo || handledIdleNetworkIo;
-    }
-
-    return handledNetworkIo;
+    // frame-bound idle wait: 단일 coordinator가 모든 backend의 wake를 수신한다.
+    _idleCoordinator.ExitSearching(workerIdx);
+    const bool wokeFromIO = _idleCoordinator.WaitForWakeup(workerIdx, kIdleWaitTimeout);
+    return drainedIO || wokeFromIO;
 }
 
 bool TaskExecutor::ValidateFrameInputs(
@@ -1475,7 +1467,30 @@ void TaskExecutor::NotifyProgress() noexcept
 
 void TaskExecutor::SetNetworkBackend(INetworkBackend* backend) noexcept
 {
-    _networkBackend = backend;
+    // 호환 API. 내부적으로 RegisterIOBackend로 위임한다.
+    RegisterIOBackend(backend);
+}
+
+void TaskExecutor::RegisterIOBackend(IIOBackend* backend) noexcept
+{
+    if (backend == nullptr)
+        return;
+    // 중복 등록 방지
+    for (IIOBackend* existing : _ioBackends)
+    {
+        if (existing == backend)
+            return;
+    }
+    _ioBackends.push_back(backend);
+}
+
+void TaskExecutor::UnregisterIOBackend(IIOBackend* backend) noexcept
+{
+    if (backend == nullptr)
+        return;
+    auto it = std::find(_ioBackends.begin(), _ioBackends.end(), backend);
+    if (it != _ioBackends.end())
+        _ioBackends.erase(it);
 }
 
 void TaskExecutor::SetDynamicTaskScheduler(DynamicTaskScheduler* scheduler) noexcept
@@ -1527,18 +1542,15 @@ void TaskExecutor::SubmitDynamicTask(DynamicTaskRequest request) noexcept
 void TaskExecutor::PushCompletion(CompletionEntry entry) noexcept
 {
     _completionQueue.push(entry);
-    // 백엔드 설정 여부와 무관하게 ThreadPool 워커를 즉시 깨워 ProcessCompletions를 실행한다.
-    // 백엔드가 WaitForWork 기반으로 동작하는 경우 WakeWorker()도 함께 호출한다.
+    // ThreadPool CV로 ECS 작업 대기 worker를 깨우고,
+    // coordinator로 IO 대기 worker를 깨운다.
     NotifyWork();
-    if (_networkBackend != nullptr)
-        _networkBackend->WakeWorker();
+    _idleCoordinator.Wake();
 }
 
 void TaskExecutor::WakeForExternalIO() noexcept
 {
-    // Step 4(ExecutorIdleCoordinator 도입) 이전까지는 ThreadPool CV로 worker를 깨운다.
-    // Step 4 완료 후 ExecutorIdleCoordinator::Wake()로 대체 예정.
-    NotifyWork();
+    _idleCoordinator.Wake();
 }
 
 // ---------------------------------------------------------------------------

@@ -9,7 +9,6 @@ public:
 	IocpHandle& operator=(const IocpHandle&)	= delete;
 
 	bool Register(HANDLE handle, ULONG_PTR key) noexcept;
-	void WakeWorker() noexcept;
 
 	HANDLE GetHandle() const noexcept { return _handle; }
 
