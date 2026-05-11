@@ -56,13 +56,13 @@
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
-    <ClCompile Include="DBManager.cpp">
-      <Filter>Database</Filter>
-    </ClCompile>
     <ClCompile Include="DBData.cpp">
       <Filter>Database</Filter>
     </ClCompile>
     <ClCompile Include="DBConn.cpp">
+      <Filter>Database</Filter>
+    </ClCompile>
+    <ClCompile Include="ODBCDatabaseBackend.cpp">
       <Filter>Database</Filter>
     </ClCompile>
     <ClCompile Include="CharacterIdPolicy.cpp">
@@ -367,13 +367,13 @@
     <ClInclude Include="stb_image.h">
       <Filter>Utility\Dependency</Filter>
     </ClInclude>
-    <ClInclude Include="DBManager.h">
-      <Filter>Database</Filter>
-    </ClInclude>
     <ClInclude Include="DBData.h">
       <Filter>Database</Filter>
     </ClInclude>
     <ClInclude Include="DBConn.h">
+      <Filter>Database</Filter>
+    </ClInclude>
+    <ClInclude Include="ODBCDatabaseBackend.h">
       <Filter>Database</Filter>
     </ClInclude>
     <ClInclude Include="CharacterDef.h">

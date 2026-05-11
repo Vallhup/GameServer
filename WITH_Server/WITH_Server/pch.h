@@ -46,4 +46,3 @@
 #pragma comment(lib, "Detour.lib")
 #pragma comment(lib, "Recast.lib")
 
-#include "DBManager.h"

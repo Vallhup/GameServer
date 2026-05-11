@@ -168,6 +168,18 @@ void FrameworkRuntime::SetNetworkBackend(INetworkBackend* backend) noexcept
 		_impl->taskExecutor.SetNetworkBackend(backend);
 }
 
+void FrameworkRuntime::RegisterIOBackend(IIOBackend* backend) noexcept
+{
+	if (_impl)
+		_impl->taskExecutor.RegisterIOBackend(backend);
+}
+
+void FrameworkRuntime::UnregisterIOBackend(IIOBackend* backend) noexcept
+{
+	if (_impl)
+		_impl->taskExecutor.UnregisterIOBackend(backend);
+}
+
 DynamicTaskTypeRegistry& FrameworkRuntime::GetDynamicTaskTypeRegistry() noexcept
 {
 	return _impl->dynamicTaskTypeRegistry;

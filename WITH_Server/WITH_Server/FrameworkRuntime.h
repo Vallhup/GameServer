@@ -22,6 +22,7 @@ class WorldRuntime;
 class WorldInstance;
 struct WorldInstanceRecord;
 struct IExecutorIOSink;
+struct IIOBackend;
 struct INetworkBackend;
 class DynamicTaskTypeRegistry;
 class ExecutionSourceRegistry;
@@ -109,6 +110,8 @@ public:
 	// IOCP 네트워크 백엔드 연동 — TaskExecutor에 위임
 	IExecutorIOSink& GetIOSink() noexcept;
 	void SetNetworkBackend(INetworkBackend* backend) noexcept;
+	void RegisterIOBackend(IIOBackend* backend) noexcept;
+	void UnregisterIOBackend(IIOBackend* backend) noexcept;
 
 	// DynamicTask 패킷 핸들러 등록용
 	DynamicTaskTypeRegistry& GetDynamicTaskTypeRegistry() noexcept;
