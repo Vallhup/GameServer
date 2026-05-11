@@ -70,9 +70,6 @@ public:
 
 	void FlushSendStage();
 
-	bool RequestCompleteLogin(SessionId sessionId);
-	bool RequestEnterInGame(SessionId sessionId, NetId playerNetId);
-	bool RequestLeaveGame(SessionId sessionId);
 	bool RequestClose(SessionId sessionId, SessionCloseReason reason);
 
 	uint32_t GetApproxSessionCount() const noexcept;

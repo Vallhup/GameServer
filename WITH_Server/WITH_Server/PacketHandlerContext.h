@@ -2,7 +2,6 @@
 
 class NetworkRuntime;
 class FrameworkRuntime;
-class SessionBindingRegistry;
 class SessionFlowController;
 class CharacterDataService;
 class CharacterSpawnService;
@@ -16,7 +15,6 @@ struct PacketHandlerContext
 {
 	NetworkRuntime*              network{ nullptr };
 	FrameworkRuntime*            framework{ nullptr };
-	SessionBindingRegistry*      sessionBindings{ nullptr };
 	SessionFlowController*       sessionFlow{ nullptr };
 	CharacterDataService*        characterData{ nullptr };
 	CharacterSpawnService*       characterSpawn{ nullptr };

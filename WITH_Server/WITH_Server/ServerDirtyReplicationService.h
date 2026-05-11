@@ -2,7 +2,7 @@
 
 #include "FrameworkRuntime.h"
 #include "NetworkRuntime.h"
-#include "SessionBindingRegistry.h"
+#include "SessionFlowController.h"
 
 #include <span>
 
@@ -11,6 +11,6 @@ public:
 	static void BuildAndStage(
 		FrameworkRuntime& framework,
 		NetworkRuntime& network,
-		SessionBindingRegistry& sessionBindings,
+		SessionFlowController& sessionFlow,
 		std::span<const SessionId> excludedSessionIds = {});
 };

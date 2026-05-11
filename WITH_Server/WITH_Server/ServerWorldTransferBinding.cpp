@@ -2,13 +2,13 @@
 #include "ServerWorldTransferBinding.h"
 
 #include "FrameworkRuntime.h"
-#include "SessionBindingRegistry.h"
+#include "SessionFlowController.h"
 
 ServerWorldTransferBinding::ServerWorldTransferBinding(
 	const FrameworkRuntime& framework,
-	const SessionBindingRegistry& sessionBindings) noexcept
+	const SessionFlowController& sessionFlow) noexcept
 	: _framework(framework)
-	, _sessionBindings(sessionBindings)
+	, _sessionFlow(sessionFlow)
 {
 }
 
@@ -18,30 +18,29 @@ bool ServerWorldTransferBinding::TryResolveRootEntity(
 	NetId& outNetId) const
 {
 	outEntity = Entity::Null();
-	outNetId = NetId::Invalid();
+	outNetId  = NetId::Invalid();
 
-	const SessionBinding* const binding =
-		_sessionBindings.FindBySession(sessionId);
-	if (binding == nullptr ||
-		!binding->IsValid() ||
-		!binding->currentWorldId.IsValid())
+	const NetId  controlledNetId = _sessionFlow.FindControlledNetId(sessionId);
+	const WorldId currentWorldId = _sessionFlow.FindCurrentWorldId(sessionId);
+
+	if (!controlledNetId.IsValid() || !currentWorldId.IsValid())
 	{
 		return false;
 	}
 
 	const NetBindingLocation location =
-		_framework.FindNetBinding(binding->controlledNetId);
+		_framework.FindNetBinding(controlledNetId);
 	if (!location.IsValid())
 	{
 		return false;
 	}
 
-	if (location.worldId != binding->currentWorldId)
+	if (location.worldId != currentWorldId)
 	{
 		return false;
 	}
 
 	outEntity = location.entity;
-	outNetId = binding->controlledNetId;
+	outNetId  = controlledNetId;
 	return true;
 }

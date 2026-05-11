@@ -162,30 +162,12 @@ void NetworkRuntime::FlushSendStage()
 		_backend->FlushSend();
 }
 
-bool NetworkRuntime::RequestCompleteLogin(SessionId sessionId)
-{
-	Session* const session = _sessionManager.FindSession(sessionId);
-	if (session == nullptr) return false;
-	return session->CompleteLogin();
-}
-
-bool NetworkRuntime::RequestEnterInGame(SessionId sessionId, NetId playerNetId)
-{
-	Session* const session = _sessionManager.FindSession(sessionId);
-	if (session == nullptr) return false;
-	return session->EnterInGame(playerNetId);
-}
-
-bool NetworkRuntime::RequestLeaveGame(SessionId sessionId)
-{
-	Session* const session = _sessionManager.FindSession(sessionId);
-	if (session == nullptr) return false;
-	return session->LeaveGame();
-}
-
 bool NetworkRuntime::RequestClose(SessionId sessionId, SessionCloseReason reason)
 {
-	return _sessionManager.BeginClose(sessionId, reason);
+	(void)reason;
+	if (!_backend) return false;
+	_backend->Disconnect(sessionId);
+	return true;
 }
 
 uint32_t NetworkRuntime::GetApproxSessionCount() const noexcept

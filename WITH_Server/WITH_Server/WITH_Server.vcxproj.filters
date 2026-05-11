@@ -41,9 +41,6 @@
     <ClCompile Include="ServerApp.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="SessionBindingRegistry.cpp">
-      <Filter>SessionSystem</Filter>
-    </ClCompile>
     <ClCompile Include="NetworkRuntime.cpp">
       <Filter>Network</Filter>
     </ClCompile>
@@ -413,9 +410,6 @@
       <Filter>GameWorlds\Bootstrap</Filter>
     </ClInclude>
     <ClInclude Include="ServerSessionSystem.h">
-      <Filter>SessionSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="SessionBindingRegistry.h">
       <Filter>SessionSystem</Filter>
     </ClInclude>
     <ClInclude Include="DefFileFormat.h">

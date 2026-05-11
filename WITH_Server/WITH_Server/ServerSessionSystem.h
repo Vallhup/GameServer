@@ -10,7 +10,6 @@
 #include "ServerPacketStager.h"
 #include "NetworkRuntime.h"
 #include "PacketHandlerContext.h"
-#include "SessionBindingRegistry.h"
 #include "SessionFlowController.h"
 
 class FrameworkRuntime;
@@ -64,40 +63,36 @@ public:
 
 	void AppendPendingInitialEntrySessions(std::vector<SessionId>& outSessionIds) const;
 
-	NetworkRuntime& Network() noexcept { return _network; }
+	NetworkRuntime&       Network() noexcept       { return _network; }
 	const NetworkRuntime& Network() const noexcept { return _network; }
 
-	SessionBindingRegistry& Bindings() noexcept { return _sessionBindings; }
-	const SessionBindingRegistry& Bindings() const noexcept { return _sessionBindings; }
-
-	SessionFlowController& Flow() noexcept { return _sessionFlowController; }
+	SessionFlowController&       Flow() noexcept       { return _sessionFlowController; }
 	const SessionFlowController& Flow() const noexcept { return _sessionFlowController; }
 
-	CharacterDataService& CharacterData() noexcept { return _characterDataService; }
+	CharacterDataService&  CharacterData() noexcept  { return _characterDataService; }
 	CharacterSpawnService& CharacterSpawn() noexcept { return _characterSpawnService; }
 
 private:
 	struct PendingInitialEntry
 	{
-		TransferId transferId{ 0 };
-		SessionId sessionId{ 0 };
-		WorldId worldId{ WorldId::Invalid() };
-		Entity entity{ Entity::Null() };
-		NetId playerNetId{ NetId::Invalid() };
+		TransferId  transferId{ 0 };
+		SessionId   sessionId{ 0 };
+		WorldId     worldId{ WorldId::Invalid() };
+		Entity      entity{ Entity::Null() };
+		NetId       playerNetId{ NetId::Invalid() };
 		CharacterId characterId{ CharacterId::None };
 	};
 
 	Config _config;
 	FrameworkRuntime& _framework;
-	const WorldId& _startupWorldId;
+	const WorldId&    _startupWorldId;
 	IWorldTransitionRequestSink& _worldTransitionSink;
 
-	NetworkRuntime _network;
-	SessionBindingRegistry _sessionBindings;
-	CharacterDataService _characterDataService;
+	NetworkRuntime        _network;
+	CharacterDataService  _characterDataService;
 	CharacterSpawnService _characterSpawnService;
 	SessionFlowController _sessionFlowController;
-	PacketHandlerContext _packetHandlerCtx;
+	PacketHandlerContext  _packetHandlerCtx;
 	std::unordered_map<SessionId, PendingInitialEntry> _pendingInitialEntries;
 	TransferId _nextInitialEntryTransferId{ 1 };
 };

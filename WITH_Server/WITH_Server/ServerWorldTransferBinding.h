@@ -3,13 +3,13 @@
 #include "IWorldTransferBinding.h"
 
 class FrameworkRuntime;
-class SessionBindingRegistry;
+class SessionFlowController;
 
 class ServerWorldTransferBinding final : public IWorldTransferBinding {
 public:
 	ServerWorldTransferBinding(
 		const FrameworkRuntime& framework,
-		const SessionBindingRegistry& sessionBindings) noexcept;
+		const SessionFlowController& sessionFlow) noexcept;
 
 	bool TryResolveRootEntity(
 		uint32_t sessionId,
@@ -17,6 +17,6 @@ public:
 		NetId& outNetId) const override;
 
 private:
-	const FrameworkRuntime& _framework;
-	const SessionBindingRegistry& _sessionBindings;
+	const FrameworkRuntime&      _framework;
+	const SessionFlowController& _sessionFlow;
 };

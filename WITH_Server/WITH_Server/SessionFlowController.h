@@ -1,7 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <shared_mutex>
 #include <unordered_map>
+#include <vector>
 
 #include "SessionFlowCommands.h"
 #include "SessionFlowContext.h"
@@ -24,9 +26,37 @@ public:
 	bool CanAcceptGameplay(SessionId sessionId) const;
 	bool CanAcceptReplicationAck(SessionId sessionId) const;
 
-	SessionStateId GetState(SessionId sessionId) const;
-	SessionFlow* FindFlow(SessionId sessionId) noexcept;
+	SessionStateId     GetState(SessionId sessionId) const;
+	SessionFlow*       FindFlow(SessionId sessionId) noexcept;
 	const SessionFlow* FindFlow(SessionId sessionId) const noexcept;
+
+	// ---------------------------------------------------------------
+	// 바인딩 인덱스 조회 API (구 SessionBindingRegistry 공개 API 이식)
+	// ---------------------------------------------------------------
+	SessionId FindOwnerSession(NetId controlledNetId) const noexcept;
+	NetId     FindControlledNetId(SessionId sessionId) const noexcept;
+	WorldId   FindCurrentWorldId(SessionId sessionId) const noexcept;
+	bool      HasBinding(SessionId sessionId) const noexcept;
+	void      CollectSessionsInWorld(
+		WorldId worldId,
+		std::vector<SessionId>& outSessionIds) const;
+
+	// ---------------------------------------------------------------
+	// 바인딩 변경 API
+	// ---------------------------------------------------------------
+
+	// transition 핸들러 외부에서 바인딩이 필요한 경우 사용
+	// (예: ServerSessionSystem::MarkInitialWorldReady, ServerWorldTransferCommitter)
+	bool BindPlayer(
+		SessionId sessionId,
+		NetId controlledNetId,
+		WorldId currentWorldId) noexcept;
+
+	// disconnect / 세션 정리 시 사용
+	bool UnbindPlayer(SessionId sessionId) noexcept;
+
+	// WorldTransfer commit 시 world 갱신
+	bool UpdatePlayerWorld(SessionId sessionId, WorldId newWorldId) noexcept;
 
 private:
 	struct Entry
@@ -35,11 +65,25 @@ private:
 		std::unique_ptr<ISessionState> state;
 	};
 
-	Entry* EnsureEntry(SessionId sessionId);
-	void RegisterDefaultTransitions();
+	Entry*            EnsureEntry(SessionId sessionId);
+	void              RegisterDefaultTransitions();
 	SessionFlowResult ApplyTransition(Entry& entry, const TransitionResult& transition);
 
+	// 역인덱스 내부 갱신 헬퍼 (반드시 _indexMutex write lock 보유 상태에서 호출)
+	void IndexBind_Locked(
+		SessionId sessionId,
+		NetId controlledNetId,
+		WorldId currentWorldId);
+	void IndexUnbind_Locked(SessionId sessionId, NetId controlledNetId, WorldId currentWorldId) noexcept;
+	void IndexUpdateWorld_Locked(SessionId sessionId, WorldId oldWorldId, WorldId newWorldId) noexcept;
+
+	// 프레임 루프 단일 스레드 전용 — 무잠금
 	std::unordered_map<SessionId, Entry> _sessions;
-	SessionFlowTransitionTable _transitions;
-	SessionFlowDependencies _dependencies;
+	SessionFlowTransitionTable           _transitions;
+	SessionFlowDependencies              _dependencies;
+
+	// 멀티스레드 read 허용 역인덱스 — _indexMutex 보호
+	mutable std::shared_mutex                           _indexMutex;
+	std::unordered_map<NetId, SessionId>                _sessionByNetId;
+	std::unordered_map<WorldId, std::vector<SessionId>> _sessionsByWorld;
 };

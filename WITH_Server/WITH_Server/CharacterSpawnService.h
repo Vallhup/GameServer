@@ -8,6 +8,7 @@
 #include "Entity.h"
 #include "Session.h"
 #include "WorldId.h"
+#include "NetId.h"
 
 class FrameworkRuntime;
 

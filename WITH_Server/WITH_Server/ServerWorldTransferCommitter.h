@@ -1,30 +1,30 @@
 #pragma once
 
 #include "FrameworkRuntime.h"
-#include "SessionBindingRegistry.h"
+#include "SessionFlowController.h"
 #include "WorldTransferEvents.h"
 
 class ServerWorldTransferCommitter final {
 public:
 	static bool Commit(
 		FrameworkRuntime& framework,
-		SessionBindingRegistry& sessionBindings);
+		SessionFlowController& sessionFlow);
 
 	static bool Commit(
 		FrameworkRuntime& framework,
-		SessionBindingRegistry& sessionBindings,
+		SessionFlowController& sessionFlow,
 		const WorldTransferEventBatch& events);
 
 private:
 	static bool CommitCompleted(
 		FrameworkRuntime& framework,
-		SessionBindingRegistry& sessionBindings,
+		SessionFlowController& sessionFlow,
 		const WorldTransferCompletedEvent& event);
 
 	static void HandleFailed(const WorldTransferFailedEvent& event);
 
 	static bool ValidateCompleted(
 		const FrameworkRuntime& framework,
-		const SessionBindingRegistry& sessionBindings,
+		const SessionFlowController& sessionFlow,
 		const WorldTransferCompletedEvent& event);
 };

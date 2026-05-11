@@ -12,17 +12,17 @@ namespace
 
 bool ServerWorldTransferCommitter::Commit(
 	FrameworkRuntime& framework,
-	SessionBindingRegistry& sessionBindings)
+	SessionFlowController& sessionFlow)
 {
 	WorldTransferEventBatch events{};
 	framework.DrainWorldTransferEvents(events);
 
-	return Commit(framework, sessionBindings, events);
+	return Commit(framework, sessionFlow, events);
 }
 
 bool ServerWorldTransferCommitter::Commit(
 	FrameworkRuntime& framework,
-	SessionBindingRegistry& sessionBindings,
+	SessionFlowController& sessionFlow,
 	const WorldTransferEventBatch& events)
 {
 	for (const WorldTransferFailedEvent& failed : events.failed)
@@ -32,7 +32,7 @@ bool ServerWorldTransferCommitter::Commit(
 
 	for (const WorldTransferCompletedEvent& completed : events.completed)
 	{
-		if (!CommitCompleted(framework, sessionBindings, completed))
+		if (!CommitCompleted(framework, sessionFlow, completed))
 		{
 			return false;
 		}
@@ -43,10 +43,10 @@ bool ServerWorldTransferCommitter::Commit(
 
 bool ServerWorldTransferCommitter::CommitCompleted(
 	FrameworkRuntime& framework,
-	SessionBindingRegistry& sessionBindings,
+	SessionFlowController& sessionFlow,
 	const WorldTransferCompletedEvent& event)
 {
-	if (!ValidateCompleted(framework, sessionBindings, event))
+	if (!ValidateCompleted(framework, sessionFlow, event))
 	{
 		return false;
 	}
@@ -58,41 +58,37 @@ bool ServerWorldTransferCommitter::CommitCompleted(
 			event.targetWorldId,
 			imported.targetEntity))
 		{
-			FWLOG_ERROR(kLogCategory, "Commit failed: BindNetEntity (transferId=%u, sid=%u, netId=%u, targetWorldId=%u, targetEntity=%u.%u)",
+			FWLOG_ERROR(kLogCategory,
+				"Commit failed: BindNetEntity (transferId=%u, sid=%u, netId=%u, targetWorldId=%u, targetEntity=%u.%u)",
 				event.transferId, imported.sessionId, imported.netId.GetRaw(),
-				event.targetWorldId.GetRaw(), imported.targetEntity.id, imported.targetEntity.generation);
+				event.targetWorldId.GetRaw(),
+				imported.targetEntity.id, imported.targetEntity.generation);
 			return false;
 		}
 
-		if (!sessionBindings.Bind(
+		if (!sessionFlow.BindPlayer(
 			imported.sessionId,
 			imported.netId,
 			event.targetWorldId))
 		{
-			FWLOG_ERROR(kLogCategory, "Commit failed: session bind (transferId=%u, sid=%u, netId=%u, targetWorldId=%u)",
-				event.transferId, imported.sessionId, imported.netId.GetRaw(), event.targetWorldId.GetRaw());
+			FWLOG_ERROR(kLogCategory,
+				"Commit failed: session bind (transferId=%u, sid=%u, netId=%u, targetWorldId=%u)",
+				event.transferId, imported.sessionId,
+				imported.netId.GetRaw(), event.targetWorldId.GetRaw());
 			return false;
 		}
 
-		const SessionBinding* committedBinding =
-			sessionBindings.FindBySession(imported.sessionId);
-		if (committedBinding == nullptr ||
-			committedBinding->controlledNetId != imported.netId ||
-			committedBinding->currentWorldId != event.targetWorldId)
+		// 바인딩 검증: SessionFlow에서 직접 확인
+		const NetId  committedNetId   = sessionFlow.FindControlledNetId(imported.sessionId);
+		const WorldId committedWorldId = sessionFlow.FindCurrentWorldId(imported.sessionId);
+		if (committedNetId != imported.netId || committedWorldId != event.targetWorldId)
 		{
-			if (committedBinding != nullptr)
-			{
-				FWLOG_ERROR(kLogCategory, "Commit failed: session binding verification (transferId=%u, sid=%u, expectedNetId=%u, expectedWorldId=%u, actualNetId=%u, actualWorldId=%u)",
-					event.transferId, imported.sessionId,
-					imported.netId.GetRaw(), event.targetWorldId.GetRaw(),
-					committedBinding->controlledNetId.GetRaw(), committedBinding->currentWorldId.GetRaw());
-			}
-			else
-			{
-				FWLOG_ERROR(kLogCategory, "Commit failed: session binding verification (transferId=%u, sid=%u, expectedNetId=%u, expectedWorldId=%u, binding=null)",
-					event.transferId, imported.sessionId,
-					imported.netId.GetRaw(), event.targetWorldId.GetRaw());
-			}
+			FWLOG_ERROR(kLogCategory,
+				"Commit failed: session binding verification "
+				"(transferId=%u, sid=%u, expectedNetId=%u, expectedWorldId=%u, actualNetId=%u, actualWorldId=%u)",
+				event.transferId, imported.sessionId,
+				imported.netId.GetRaw(), event.targetWorldId.GetRaw(),
+				committedNetId.GetRaw(), committedWorldId.GetRaw());
 			return false;
 		}
 
@@ -102,7 +98,8 @@ bool ServerWorldTransferCommitter::CommitCompleted(
 			framework.FindNetId(event.targetWorldId, imported.targetEntity);
 		if (sourceNetId.IsValid() || targetNetId != imported.netId)
 		{
-			FWLOG_ERROR(kLogCategory, "Commit failed: net binding verification (transferId=%u, sid=%u, expectedNetId=%u, sourceNetId=%u, targetNetId=%u)",
+			FWLOG_ERROR(kLogCategory,
+				"Commit failed: net binding verification (transferId=%u, sid=%u, expectedNetId=%u, sourceNetId=%u, targetNetId=%u)",
 				event.transferId, imported.sessionId,
 				imported.netId.GetRaw(), sourceNetId.GetRaw(), targetNetId.GetRaw());
 			return false;
@@ -115,21 +112,30 @@ bool ServerWorldTransferCommitter::CommitCompleted(
 void ServerWorldTransferCommitter::HandleFailed(
 	const WorldTransferFailedEvent& event)
 {
-	FWLOG_WARN(kLogCategory, "Transfer failed (transferId=%u, sourceWorldId=%u, resolvedTargetWorldId=%u, failedStage=%d, reason=%d, rollbackRequired=%d, retryCount=%u)",
-		event.transferId, event.sourceWorldId.GetRaw(), event.resolvedTargetWorldId.GetRaw(),
-		static_cast<int>(event.failedStage), static_cast<int>(event.reason),
-		event.rollbackRequired ? 1 : 0, event.retryCount);
+	FWLOG_WARN(kLogCategory,
+		"Transfer failed (transferId=%u, sourceWorldId=%u, resolvedTargetWorldId=%u, "
+		"failedStage=%d, reason=%d, rollbackRequired=%d, retryCount=%u)",
+		event.transferId,
+		event.sourceWorldId.GetRaw(),
+		event.resolvedTargetWorldId.GetRaw(),
+		static_cast<int>(event.failedStage),
+		static_cast<int>(event.reason),
+		event.rollbackRequired ? 1 : 0,
+		event.retryCount);
 }
 
 bool ServerWorldTransferCommitter::ValidateCompleted(
 	const FrameworkRuntime& framework,
-	const SessionBindingRegistry& sessionBindings,
+	const SessionFlowController& sessionFlow,
 	const WorldTransferCompletedEvent& event)
 {
 	if (!event.sourceWorldId.IsValid() || !event.targetWorldId.IsValid())
 	{
-		FWLOG_ERROR(kLogCategory, "Validation failed: invalid world id (transferId=%u, sourceWorldId=%u, targetWorldId=%u)",
-			event.transferId, event.sourceWorldId.GetRaw(), event.targetWorldId.GetRaw());
+		FWLOG_ERROR(kLogCategory,
+			"Validation failed: invalid world id (transferId=%u, sourceWorldId=%u, targetWorldId=%u)",
+			event.transferId,
+			event.sourceWorldId.GetRaw(),
+			event.targetWorldId.GetRaw());
 		return false;
 	}
 
@@ -137,8 +143,12 @@ bool ServerWorldTransferCommitter::ValidateCompleted(
 		event.sessionIds.size() != event.importedEntities.size() ||
 		event.sessionIds.size() != event.releasedSessionIds.size())
 	{
-		FWLOG_ERROR(kLogCategory, "Validation failed: count mismatch (transferId=%u, sessions=%zu, imported=%zu, released=%zu)",
-			event.transferId, event.sessionIds.size(), event.importedEntities.size(), event.releasedSessionIds.size());
+		FWLOG_ERROR(kLogCategory,
+			"Validation failed: count mismatch (transferId=%u, sessions=%zu, imported=%zu, released=%zu)",
+			event.transferId,
+			event.sessionIds.size(),
+			event.importedEntities.size(),
+			event.releasedSessionIds.size());
 		return false;
 	}
 
@@ -149,7 +159,8 @@ bool ServerWorldTransferCommitter::ValidateCompleted(
 			imported.targetEntity.IsNull() ||
 			!imported.netId.IsValid())
 		{
-			FWLOG_ERROR(kLogCategory, "Validation failed: invalid imported entity (transferId=%u, sid=%u, netId=%u)",
+			FWLOG_ERROR(kLogCategory,
+				"Validation failed: invalid imported entity (transferId=%u, sid=%u, netId=%u)",
 				event.transferId, imported.sessionId, imported.netId.GetRaw());
 			return false;
 		}
@@ -159,7 +170,8 @@ bool ServerWorldTransferCommitter::ValidateCompleted(
 			event.sessionIds.end(),
 			imported.sessionId) == event.sessionIds.end())
 		{
-			FWLOG_ERROR(kLogCategory, "Validation failed: imported session missing (transferId=%u, sid=%u)",
+			FWLOG_ERROR(kLogCategory,
+				"Validation failed: imported session missing (transferId=%u, sid=%u)",
 				event.transferId, imported.sessionId);
 			return false;
 		}
@@ -169,27 +181,31 @@ bool ServerWorldTransferCommitter::ValidateCompleted(
 			event.releasedSessionIds.end(),
 			imported.sessionId) == event.releasedSessionIds.end())
 		{
-			FWLOG_ERROR(kLogCategory, "Validation failed: released session missing (transferId=%u, sid=%u)",
+			FWLOG_ERROR(kLogCategory,
+				"Validation failed: released session missing (transferId=%u, sid=%u)",
 				event.transferId, imported.sessionId);
 			return false;
 		}
 
-		const SessionBinding* binding =
-			sessionBindings.FindBySession(imported.sessionId);
-		if (binding == nullptr)
+		// SessionFlow에서 현재 바인딩 검증
+		const NetId  bindingNetId   = sessionFlow.FindControlledNetId(imported.sessionId);
+		const WorldId bindingWorldId = sessionFlow.FindCurrentWorldId(imported.sessionId);
+		if (!bindingNetId.IsValid())
 		{
-			FWLOG_ERROR(kLogCategory, "Validation failed: missing session binding (transferId=%u, sid=%u)",
+			FWLOG_ERROR(kLogCategory,
+				"Validation failed: missing session binding (transferId=%u, sid=%u)",
 				event.transferId, imported.sessionId);
 			return false;
 		}
 
-		if (binding->controlledNetId != imported.netId ||
-			binding->currentWorldId != event.sourceWorldId)
+		if (bindingNetId != imported.netId || bindingWorldId != event.sourceWorldId)
 		{
-			FWLOG_ERROR(kLogCategory, "Validation failed: stale session binding (transferId=%u, sid=%u, bindingNetId=%u, eventNetId=%u, bindingWorldId=%u, sourceWorldId=%u)",
+			FWLOG_ERROR(kLogCategory,
+				"Validation failed: stale session binding "
+				"(transferId=%u, sid=%u, bindingNetId=%u, eventNetId=%u, bindingWorldId=%u, sourceWorldId=%u)",
 				event.transferId, imported.sessionId,
-				binding->controlledNetId.GetRaw(), imported.netId.GetRaw(),
-				binding->currentWorldId.GetRaw(), event.sourceWorldId.GetRaw());
+				bindingNetId.GetRaw(), imported.netId.GetRaw(),
+				bindingWorldId.GetRaw(), event.sourceWorldId.GetRaw());
 			return false;
 		}
 
@@ -197,8 +213,10 @@ bool ServerWorldTransferCommitter::ValidateCompleted(
 			framework.FindNetId(event.targetWorldId, imported.targetEntity);
 		if (targetNetId.IsValid() && targetNetId != imported.netId)
 		{
-			FWLOG_ERROR(kLogCategory, "Validation failed: target already bound (transferId=%u, sid=%u, targetNetId=%u, eventNetId=%u)",
-				event.transferId, imported.sessionId, targetNetId.GetRaw(), imported.netId.GetRaw());
+			FWLOG_ERROR(kLogCategory,
+				"Validation failed: target already bound (transferId=%u, sid=%u, targetNetId=%u, eventNetId=%u)",
+				event.transferId, imported.sessionId,
+				targetNetId.GetRaw(), imported.netId.GetRaw());
 			return false;
 		}
 	}

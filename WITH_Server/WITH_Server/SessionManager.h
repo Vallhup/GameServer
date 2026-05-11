@@ -26,7 +26,6 @@ public:
 	Session* FindSession(SessionId sessionId) noexcept;
 	const Session* FindSession(SessionId sessionId) const noexcept;
 
-	bool BeginClose(SessionId sessionId, SessionCloseReason reason) noexcept;
 	bool MarkClosed(SessionId sessionId, SessionCloseReason reason) noexcept;
 	bool RemoveSession(SessionId sessionId) noexcept;
 

@@ -15,7 +15,7 @@
 void ServerDirtyReplicationService::BuildAndStage(
 	FrameworkRuntime& framework,
 	NetworkRuntime& network,
-	SessionBindingRegistry& sessionBindings,
+	SessionFlowController& sessionFlow,
 	std::span<const SessionId> excludedSessionIds)
 {
 	std::vector<SessionId> worldSessionIds;
@@ -27,7 +27,7 @@ void ServerDirtyReplicationService::BuildAndStage(
 			continue;
 		}
 
-		sessionBindings.CollectSessionsInWorld(worldId, worldSessionIds);
+		sessionFlow.CollectSessionsInWorld(worldId, worldSessionIds);
 		if (!excludedSessionIds.empty())
 		{
 			worldSessionIds.erase(
@@ -108,7 +108,7 @@ void ServerDirtyReplicationService::BuildAndStage(
 				const CombatStatStateComp* stats =
 					view.GetComponent<CombatStatStateComp>(entity);
 				const SessionId ownerSessionId =
-					sessionBindings.FindOwnerSession(netId);
+					sessionFlow.FindOwnerSession(netId);
 				const bool ownerSessionExcluded =
 					std::find(
 						excludedSessionIds.begin(),

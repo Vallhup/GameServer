@@ -69,7 +69,7 @@ bool ServerFrameEventDispatcher::Dispatch(
 			sessionSystem.CharacterSpawn().FindPendingSpawn(spawnEvent.worldId, spawnEvent.entity);
 		if (pendingCharacterSpawn == nullptr)
 		{
-			sessionSystem.Bindings().CollectSessionsInWorld(spawnEvent.worldId, worldSessionIds);
+			sessionSystem.Flow().CollectSessionsInWorld(spawnEvent.worldId, worldSessionIds);
 			RemoveExcludedSessions(worldSessionIds, excludedSessionIds);
 			(void)ServerPacketStager::StageSpawnAddPacketToSessions(
 				sessionSystem.Network(),
@@ -133,7 +133,7 @@ bool ServerFrameEventDispatcher::Dispatch(
 			continue;
 		}
 
-		sessionSystem.Bindings().CollectSessionsInWorld(
+		sessionSystem.Flow().CollectSessionsInWorld(
 			despawnEvent.worldId,
 			worldSessionIds);
 		RemoveExcludedSessions(worldSessionIds, excludedSessionIds);

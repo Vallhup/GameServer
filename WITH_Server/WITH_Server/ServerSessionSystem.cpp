@@ -29,22 +29,21 @@ ServerSessionSystem::ServerSessionSystem(
 	, _worldTransitionSink(worldTransitionSink)
 	, _network(NetworkRuntime::Config{
 		.workerThreadCount = _config.networkThreadCount,
-		.listenPort = _config.listenPort,
-		.maxSessions = _config.maxSessions
+		.listenPort        = _config.listenPort,
+		.maxSessions       = _config.maxSessions
 	})
 	, _characterDataService(CharacterDataService::Dependencies{
-		.framework = &_framework,
+		.framework      = &_framework,
 		.startupWorldId = &_startupWorldId
 	})
 	, _characterSpawnService(CharacterSpawnService::Dependencies{
 		.framework = &_framework
 	})
 	, _sessionFlowController(SessionFlowDependencies{
-		.network = &_network,
-		.framework = &_framework,
-		.sessionBindings = &_sessionBindings,
-		.characterData = &_characterDataService,
-		.characterSpawn = &_characterSpawnService,
+		.network            = &_network,
+		.framework          = &_framework,
+		.characterData      = &_characterDataService,
+		.characterSpawn     = &_characterSpawnService,
 		.worldTransitionSink = &_worldTransitionSink
 	})
 {
@@ -54,14 +53,13 @@ bool ServerSessionSystem::Initialize()
 {
 	_packetHandlerCtx = PacketHandlerContext
 	{
-		.network = &_network,
-		.framework = &_framework,
-		.sessionBindings = &_sessionBindings,
-		.sessionFlow = &_sessionFlowController,
-		.characterData = &_characterDataService,
-		.characterSpawn = &_characterSpawnService,
+		.network             = &_network,
+		.framework           = &_framework,
+		.sessionFlow         = &_sessionFlowController,
+		.characterData       = &_characterDataService,
+		.characterSpawn      = &_characterSpawnService,
 		.worldTransitionSink = &_worldTransitionSink,
-		.sessionSystem = this
+		.sessionSystem       = this
 	};
 	PacketHandlerContext::Initialize(_packetHandlerCtx);
 
@@ -95,7 +93,6 @@ void ServerSessionSystem::Shutdown() noexcept
 
 void ServerSessionSystem::ClearSessionState() noexcept
 {
-	_sessionBindings.Clear();
 	_characterSpawnService.Clear();
 	_sessionFlowController.Clear();
 	_pendingInitialEntries.clear();
@@ -106,7 +103,6 @@ void ServerSessionSystem::HandleSessionDisconnected(
 	SessionId sessionId,
 	SessionCloseReason reason) noexcept
 {
-	(void)_sessionBindings.Unbind(sessionId);
 	(void)_characterSpawnService.CancelPendingSpawn(sessionId);
 	(void)_framework.RemovePresence(sessionId, 0.0);
 	_pendingInitialEntries.erase(sessionId);
@@ -164,18 +160,18 @@ bool ServerSessionSystem::BeginInitialWorldEntry(
 	const TransferId transferId = _nextInitialEntryTransferId++;
 
 	ServerWorldTransitionBeginPacket transition{};
-	transition.transferId = transferId;
-	transition.requestId = 0;
-	transition.sourceWorldDefId = 0;
-	transition.sourceWorldId = 0;
-	transition.targetWorldDefId = static_cast<uint32_t>(worldDef->id);
-	transition.targetWorldId = worldId.GetRaw();
-	transition.mapResourceId = worldDef->map.resourceId;
-	transition.playerNetId = playerNetId.GetRaw();
-	transition.clearExistingObjects = true;
-	transition.waitClientReady = true;
-	transition.usedFallback = false;
-	transition.reason = 0;
+	transition.transferId            = transferId;
+	transition.requestId             = 0;
+	transition.sourceWorldDefId      = 0;
+	transition.sourceWorldId         = 0;
+	transition.targetWorldDefId      = static_cast<uint32_t>(worldDef->id);
+	transition.targetWorldId         = worldId.GetRaw();
+	transition.mapResourceId         = worldDef->map.resourceId;
+	transition.playerNetId           = playerNetId.GetRaw();
+	transition.clearExistingObjects  = true;
+	transition.waitClientReady       = true;
+	transition.usedFallback          = false;
+	transition.reason                = 0;
 
 	if (!ServerPacketStager::StageWorldTransitionBeginPacket(
 		_network,
@@ -189,17 +185,17 @@ bool ServerSessionSystem::BeginInitialWorldEntry(
 
 	if (SessionFlow* const flow = _sessionFlowController.FindFlow(sessionId))
 	{
-		flow->pendingTransferId = transferId;
+		flow->pendingTransferId    = transferId;
 		flow->pendingTargetWorldId = worldId;
 	}
 
 	_pendingInitialEntries[sessionId] =
 		PendingInitialEntry
 		{
-			.transferId = transferId,
-			.sessionId = sessionId,
-			.worldId = worldId,
-			.entity = entity,
+			.transferId  = transferId,
+			.sessionId   = sessionId,
+			.worldId     = worldId,
+			.entity      = entity,
 			.playerNetId = playerNetId,
 			.characterId = characterId
 		};
@@ -241,7 +237,7 @@ InitialWorldReadyResult ServerSessionSystem::MarkInitialWorldReady(
 		return InitialWorldReadyResult::Rejected;
 	}
 
-	if (!_sessionBindings.Bind(sessionId, pending.playerNetId, pending.worldId))
+	if (!_sessionFlowController.BindPlayer(sessionId, pending.playerNetId, pending.worldId))
 	{
 		FWLOG_ERROR(kLogCategory, "Initial world ready failed: session bind (sid=%u, worldId=%u, netId=%u)",
 			sessionId, pending.worldId.GetRaw(), pending.playerNetId.GetRaw());
@@ -266,8 +262,6 @@ InitialWorldReadyResult ServerSessionSystem::MarkInitialWorldReady(
 		return InitialWorldReadyResult::Rejected;
 	}
 
-	(void)_network.RequestEnterInGame(sessionId, pending.playerNetId);
-
 	(void)ServerPacketStager::StageSpawnAddPacketToSession(
 		_network,
 		sessionId,
@@ -284,7 +278,7 @@ InitialWorldReadyResult ServerSessionSystem::MarkInitialWorldReady(
 
 	std::vector<SessionId> worldSessionIds;
 	std::vector<SessionId> otherReadySessionIds;
-	_sessionBindings.CollectSessionsInWorld(pending.worldId, worldSessionIds);
+	_sessionFlowController.CollectSessionsInWorld(pending.worldId, worldSessionIds);
 	otherReadySessionIds.reserve(worldSessionIds.size());
 	for (SessionId worldSessionId : worldSessionIds)
 	{

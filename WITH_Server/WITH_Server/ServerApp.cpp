@@ -77,7 +77,7 @@ ServerApp::ServerApp(Config config)
 		.listenPort = _config.listenPort,
 		.maxSessions = _config.maxSessions
 	}, _framework, _startupWorldId, *this)
-	, _transferBinding(_framework, _sessionSystem.Bindings())
+	, _transferBinding(_framework, _sessionSystem.Flow())
 {
 	if (_config.logicTickHz == 0)
 	{
@@ -174,7 +174,7 @@ TransferId ServerApp::RequestSessionWorldTransfer(
 	}
 
 	const WorldId sourceWorldId =
-		_sessionSystem.Bindings().FindCurrentWorldId(sessionId);
+		_sessionSystem.Flow().FindCurrentWorldId(sessionId);
 	if (!sourceWorldId.IsValid())
 	{
 		FWLOG_WARN(kLogCategory, "World transfer rejected: no source binding (sid=%u, targetDefId=%d)",
@@ -226,7 +226,7 @@ TransferId ServerApp::RequestDemoWorldTransition(
 	}
 
 	const WorldId sourceWorldId =
-		_sessionSystem.Bindings().FindCurrentWorldId(sessionId);
+		_sessionSystem.Flow().FindCurrentWorldId(sessionId);
 	const WorldInstanceRecord* const sourceRecord =
 		_framework.FindWorldRecord(sourceWorldId);
 	if (sourceRecord == nullptr)
@@ -253,7 +253,7 @@ TransferId ServerApp::RequestDemoWorldTransition(
 	}
 
 	std::vector<SessionId> sourceSessionIds;
-	_sessionSystem.Bindings().CollectSessionsInWorld(sourceWorldId, sourceSessionIds);
+	_sessionSystem.Flow().CollectSessionsInWorld(sourceWorldId, sourceSessionIds);
 	if (std::find(sourceSessionIds.begin(), sourceSessionIds.end(), sessionId) ==
 		sourceSessionIds.end())
 	{
@@ -373,7 +373,7 @@ bool ServerApp::MarkClientWorldTransitionReady(
 		{
 			std::vector<SessionId> worldSessionIds;
 			std::vector<SessionId> otherReadySessionIds;
-			_sessionSystem.Bindings().CollectSessionsInWorld(
+			_sessionSystem.Flow().CollectSessionsInWorld(
 				pending.targetWorldId,
 				worldSessionIds);
 			_sessionSystem.AppendPendingInitialEntrySessions(
@@ -607,7 +607,7 @@ void ServerApp::TickOnce(double dtSec)
 	ServerDirtyReplicationService::BuildAndStage(
 		_framework,
 		_sessionSystem.Network(),
-		_sessionSystem.Bindings(),
+		_sessionSystem.Flow(),
 		std::span<const SessionId>(
 			pendingTransitionSessions.data(),
 			pendingTransitionSessions.size()));
@@ -632,7 +632,7 @@ void ServerApp::RunWorldFrames(double dtSec)
 
 	if (!ServerWorldTransferCommitter::Commit(
 		_framework,
-		_sessionSystem.Bindings(),
+		_sessionSystem.Flow(),
 		transferEvents))
 	{
 		FWLOG_ERROR(kLogCategory, "World transfer commit failed");

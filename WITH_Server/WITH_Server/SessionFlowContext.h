@@ -7,15 +7,13 @@ class IWorldTransitionRequestSink;
 class NetworkRuntime;
 class CharacterDataService;
 class CharacterSpawnService;
-class SessionBindingRegistry;
 
 struct SessionFlowDependencies
 {
-	NetworkRuntime* network{ nullptr };
-	FrameworkRuntime* framework{ nullptr };
-	SessionBindingRegistry* sessionBindings{ nullptr };
-	CharacterDataService* characterData{ nullptr };
-	CharacterSpawnService* characterSpawn{ nullptr };
+	NetworkRuntime*              network{ nullptr };
+	FrameworkRuntime*            framework{ nullptr };
+	CharacterDataService*        characterData{ nullptr };
+	CharacterSpawnService*       characterSpawn{ nullptr };
 	IWorldTransitionRequestSink* worldTransitionSink{ nullptr };
 };
 

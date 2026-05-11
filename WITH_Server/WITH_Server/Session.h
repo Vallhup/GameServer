@@ -1,23 +1,11 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
-
-#include "NetId.h"
 
 class IocpConnection;
 struct SendBuffer;
 
 using SessionId = uint32_t;
-
-enum class SessionState : uint8_t
-{
-	Connected,
-	Authenticated,
-	InGame,
-	Closing,
-	Closed,
-};
 
 enum class SessionCloseReason : uint8_t
 {
@@ -40,39 +28,19 @@ public:
 	Session& operator=(Session&&) = delete;
 
 public:
-	SessionId GetSessionId() const noexcept { return _sessionId; }
-	SessionState GetState() const noexcept { return _state; }
+	SessionId          GetSessionId()   const noexcept { return _sessionId; }
 	SessionCloseReason GetCloseReason() const noexcept { return _closeReason; }
-
-	bool IsConnected() const noexcept { return _state == SessionState::Connected; }
-	bool IsAuthenticated() const noexcept { return _state == SessionState::Authenticated; }
-	bool IsInGame() const noexcept { return _state == SessionState::InGame; }
-	bool IsClosing() const noexcept { return _state == SessionState::Closing; }
-	bool IsClosed() const noexcept { return _state == SessionState::Closed; }
-
-	NetId GetPlayerNetId() const noexcept { return _playerNetId; }
-	bool HasBoundPlayer() const noexcept { return _playerNetId.IsValid(); }
+	bool               IsClosed()       const noexcept { return _isClosed; }
 
 	void SetConnection(IocpConnection* conn) noexcept { _connection = conn; }
-	bool HasConnection() const noexcept { return _connection != nullptr; }
+	bool HasConnection()                    const noexcept { return _connection != nullptr; }
 
 	bool Send(SendBuffer* buffer) noexcept;
-
-	bool CompleteLogin() noexcept;
-	bool EnterInGame(NetId playerNetId) noexcept;
-	bool LeaveGame() noexcept;
-	bool BeginClose(SessionCloseReason reason) noexcept;
 	void MarkClosed(SessionCloseReason reason) noexcept;
 
 private:
-	bool CanSendState() const noexcept;
-
-	bool BindPlayer(NetId playerNetId) noexcept;
-	void ClearPlayer() noexcept { _playerNetId = NetId::Invalid(); }
-
-	SessionId _sessionId{ 0 };
-	SessionState _state{ SessionState::Connected };
+	SessionId          _sessionId{ 0 };
 	SessionCloseReason _closeReason{ SessionCloseReason::None };
-	NetId _playerNetId{ NetId::Invalid() };
-	IocpConnection* _connection{ nullptr };
+	bool               _isClosed{ false };
+	IocpConnection*    _connection{ nullptr };
 };

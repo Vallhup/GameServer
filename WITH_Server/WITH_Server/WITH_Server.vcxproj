@@ -268,7 +268,6 @@
     <ClCompile Include="ServerWorldBootstrap.cpp" />
     <ClCompile Include="ServerWorldTransferCommitter.cpp" />
     <ClCompile Include="ServerWorldTransferBinding.cpp" />
-    <ClCompile Include="SessionBindingRegistry.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="SpawnSetDef.cpp" />
@@ -415,7 +414,6 @@
     <ClInclude Include="ServerWorldBootstrap.h" />
     <ClInclude Include="ServerWorldTransferCommitter.h" />
     <ClInclude Include="ServerWorldTransferBinding.h" />
-    <ClInclude Include="SessionBindingRegistry.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="SessionManager.h" />
     <ClInclude Include="SpawnSetDef.h" />

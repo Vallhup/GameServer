@@ -14,7 +14,6 @@
 #include "PlayerCommand.h"
 #include "SessionFlowCommands.h"
 #include "SessionFlowController.h"
-#include "SessionBindingRegistry.h"
 #include "ServerPacketStager.h"
 #include "ServerSessionSystem.h"
 #include "WorldRuntime.h"
@@ -38,7 +37,7 @@ namespace
 
     struct LoginAuthResult
     {
-        bool accepted{ false };
+        bool     accepted{ false };
         uint32_t failReason{ kLoginFailReasonAuthRejected };
     };
 
@@ -77,10 +76,9 @@ namespace
     WorldRuntime* ResolveWorldRuntime(
         const NodeExecContext& ctx,
         SessionId sessionId,
-        const SessionBindingRegistry& sessionBindings) noexcept
+        const SessionFlowController& sessionFlow) noexcept
     {
-        const WorldId worldId =
-            sessionBindings.FindCurrentWorldId(sessionId);
+        const WorldId worldId = sessionFlow.FindCurrentWorldId(sessionId);
         if (!worldId.IsValid())
             return nullptr;
 
@@ -104,10 +102,9 @@ namespace
     // 세션이 이미 바인딩됐거나 진입 중이면 중복 로그인 거부
     bool IsLoginDuplicate(
         SessionId sessionId,
-        const SessionBindingRegistry& sessionBindings,
         const SessionFlowController& sessionFlow) noexcept
     {
-        if (sessionBindings.HasBinding(sessionId))
+        if (sessionFlow.HasBinding(sessionId))
             return true;
 
         const SessionFlow* const flow = sessionFlow.FindFlow(sessionId);
@@ -134,13 +131,13 @@ namespace
     {
         switch (code)
         {
-        case SessionFlowResultCode::Accepted: return "Accepted";
-        case SessionFlowResultCode::InvalidSession: return "InvalidSession";
-        case SessionFlowResultCode::UnknownSession: return "UnknownSession";
-        case SessionFlowResultCode::InvalidFlowStage: return "InvalidFlowStage";
+        case SessionFlowResultCode::Accepted:            return "Accepted";
+        case SessionFlowResultCode::InvalidSession:      return "InvalidSession";
+        case SessionFlowResultCode::UnknownSession:      return "UnknownSession";
+        case SessionFlowResultCode::InvalidFlowStage:    return "InvalidFlowStage";
         case SessionFlowResultCode::CommandTypeMismatch: return "CommandTypeMismatch";
-        case SessionFlowResultCode::CloseRequested: return "CloseRequested";
-        default: return "Unknown";
+        case SessionFlowResultCode::CloseRequested:      return "CloseRequested";
+        default:                                         return "Unknown";
         }
     }
 
@@ -148,14 +145,14 @@ namespace
     {
         switch (code)
         {
-        case CharacterDataResultCode::Success: return "Success";
-        case CharacterDataResultCode::InvalidSession: return "InvalidSession";
-        case CharacterDataResultCode::InvalidCharacterId: return "InvalidCharacterId";
-        case CharacterDataResultCode::CharacterDefNotFound: return "CharacterDefNotFound";
-        case CharacterDataResultCode::CharacterIdNotPlayable: return "CharacterIdNotPlayable";
-        case CharacterDataResultCode::StartupWorldUnavailable: return "StartupWorldUnavailable";
-        case CharacterDataResultCode::WorldNotFound: return "WorldNotFound";
-        default: return "Unknown";
+        case CharacterDataResultCode::Success:                  return "Success";
+        case CharacterDataResultCode::InvalidSession:           return "InvalidSession";
+        case CharacterDataResultCode::InvalidCharacterId:       return "InvalidCharacterId";
+        case CharacterDataResultCode::CharacterDefNotFound:     return "CharacterDefNotFound";
+        case CharacterDataResultCode::CharacterIdNotPlayable:   return "CharacterIdNotPlayable";
+        case CharacterDataResultCode::StartupWorldUnavailable:  return "StartupWorldUnavailable";
+        case CharacterDataResultCode::WorldNotFound:            return "WorldNotFound";
+        default:                                                return "Unknown";
         }
     }
 
@@ -163,15 +160,15 @@ namespace
     {
         switch (code)
         {
-        case CharacterSpawnResultCode::Success: return "Success";
-        case CharacterSpawnResultCode::InvalidSession: return "InvalidSession";
-        case CharacterSpawnResultCode::InvalidCharacterData: return "InvalidCharacterData";
-        case CharacterSpawnResultCode::InvalidReservedNetId: return "InvalidReservedNetId";
-        case CharacterSpawnResultCode::WorldNotFound: return "WorldNotFound";
-        case CharacterSpawnResultCode::EntityReserveFailed: return "EntityReserveFailed";
-        case CharacterSpawnResultCode::NetBindFailed: return "NetBindFailed";
-        case CharacterSpawnResultCode::DuplicatePendingSpawn: return "DuplicatePendingSpawn";
-        default: return "Unknown";
+        case CharacterSpawnResultCode::Success:                 return "Success";
+        case CharacterSpawnResultCode::InvalidSession:          return "InvalidSession";
+        case CharacterSpawnResultCode::InvalidCharacterData:    return "InvalidCharacterData";
+        case CharacterSpawnResultCode::InvalidReservedNetId:    return "InvalidReservedNetId";
+        case CharacterSpawnResultCode::WorldNotFound:           return "WorldNotFound";
+        case CharacterSpawnResultCode::EntityReserveFailed:     return "EntityReserveFailed";
+        case CharacterSpawnResultCode::NetBindFailed:           return "NetBindFailed";
+        case CharacterSpawnResultCode::DuplicatePendingSpawn:   return "DuplicatePendingSpawn";
+        default:                                                return "Unknown";
         }
     }
 }
@@ -198,16 +195,13 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
     }
 
     if (svc.sessionFlow == nullptr ||
-        svc.framework == nullptr ||
-        svc.network == nullptr ||
-        svc.sessionBindings == nullptr)
+        svc.framework  == nullptr ||
+        svc.network    == nullptr)
     {
         return ExecCallResult::Failed;
     }
 
-    if (IsLoginDuplicate(sessionId,
-                         *svc.sessionBindings,
-                         *svc.sessionFlow))
+    if (IsLoginDuplicate(sessionId, *svc.sessionFlow))
     {
         FWLOG_WARN(kLogCategory, "Duplicate login rejected (sid=%u)", sessionId);
         (void)ServerPacketStager::StageLoginFail(
@@ -293,16 +287,6 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
         return ExecCallResult::Success;
     }
 
-    if (!svc.network->RequestCompleteLogin(sessionId))
-    {
-        svc.framework->FreeNetId(playerNetId);
-        FWLOG_WARN(kLogCategory,
-            "Login completion failed after success stage (sid=%u, netId=%u)",
-            sessionId,
-            playerNetId.GetRaw());
-        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
-        return ExecCallResult::Success;
-    }
     return ExecCallResult::Success;
 }
 
@@ -315,10 +299,10 @@ ExecCallResult HandleCharacterSelectPacket(NodeExecContext& ctx)
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
-    if (svc.sessionFlow == nullptr ||
-        svc.characterData == nullptr ||
+    if (svc.sessionFlow    == nullptr ||
+        svc.characterData  == nullptr ||
         svc.characterSpawn == nullptr ||
-        svc.network == nullptr)
+        svc.network        == nullptr)
     {
         return ExecCallResult::Failed;
     }
@@ -371,7 +355,7 @@ ExecCallResult HandleCharacterSelectPacket(NodeExecContext& ctx)
 
     CharacterDataLoaded loadedCommand{};
     loadedCommand.characterId = dataResult.characterId;
-    loadedCommand.worldId = dataResult.worldId;
+    loadedCommand.worldId     = dataResult.worldId;
     flowResult = svc.sessionFlow->Dispatch(sessionId, loadedCommand);
     if (!flowResult.Succeeded())
     {
@@ -422,7 +406,7 @@ ExecCallResult HandleMovePacket(NodeExecContext& ctx)
     const SessionId sessionId = ResolveSessionId(ctx);
 
     WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionBindings);
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
     if (!world)
         return ExecCallResult::Success;
 
@@ -430,8 +414,7 @@ ExecCallResult HandleMovePacket(NodeExecContext& ctx)
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId =
-        svc.sessionBindings->FindControlledNetId(sessionId);
+    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
     if (!netId.IsValid())
         return ExecCallResult::Success;
 
@@ -457,7 +440,7 @@ ExecCallResult HandleAttackPacket(NodeExecContext& ctx)
     const SessionId sessionId = ResolveSessionId(ctx);
 
     WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionBindings);
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
     if (!world)
         return ExecCallResult::Success;
 
@@ -465,8 +448,7 @@ ExecCallResult HandleAttackPacket(NodeExecContext& ctx)
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId =
-        svc.sessionBindings->FindControlledNetId(sessionId);
+    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
     if (!netId.IsValid())
         return ExecCallResult::Success;
 
@@ -489,7 +471,7 @@ ExecCallResult HandleDodgePacket(NodeExecContext& ctx)
     const SessionId sessionId = ResolveSessionId(ctx);
 
     WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionBindings);
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
     if (!world)
         return ExecCallResult::Success;
 
@@ -497,8 +479,7 @@ ExecCallResult HandleDodgePacket(NodeExecContext& ctx)
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId =
-        svc.sessionBindings->FindControlledNetId(sessionId);
+    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
     if (!netId.IsValid())
         return ExecCallResult::Success;
 
@@ -521,7 +502,7 @@ ExecCallResult HandleGuardPacket(NodeExecContext& ctx)
     const SessionId sessionId = ResolveSessionId(ctx);
 
     WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionBindings);
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
     if (!world)
         return ExecCallResult::Success;
 
@@ -529,8 +510,7 @@ ExecCallResult HandleGuardPacket(NodeExecContext& ctx)
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId =
-        svc.sessionBindings->FindControlledNetId(sessionId);
+    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
     if (!netId.IsValid())
         return ExecCallResult::Success;
 
@@ -552,7 +532,7 @@ ExecCallResult HandleParryPacket(NodeExecContext& ctx)
     const SessionId sessionId = ResolveSessionId(ctx);
 
     WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionBindings);
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
     if (!world)
         return ExecCallResult::Success;
 
@@ -560,8 +540,7 @@ ExecCallResult HandleParryPacket(NodeExecContext& ctx)
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId =
-        svc.sessionBindings->FindControlledNetId(sessionId);
+    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
     if (!netId.IsValid())
         return ExecCallResult::Success;
 
@@ -665,9 +644,7 @@ ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx)
         return ExecCallResult::Success;
     }
 
-    if (svc.sessionBindings != nullptr)
-        (void)svc.sessionBindings->Unbind(sessionId);
-
+    // sessionSystem 없이 직접 정리하는 fallback 경로
     if (svc.characterSpawn != nullptr)
         (void)svc.characterSpawn->CancelPendingSpawn(sessionId);
 

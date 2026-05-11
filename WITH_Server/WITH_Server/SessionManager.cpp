@@ -44,19 +44,6 @@ const Session* SessionManager::FindSession(SessionId sessionId) const noexcept
 	return _sessions[*index].get();
 }
 
-bool SessionManager::BeginClose(
-	SessionId sessionId,
-	SessionCloseReason reason) noexcept
-{
-	Session* const session = FindSession(sessionId);
-	if (session == nullptr)
-	{
-		return false;
-	}
-
-	return session->BeginClose(reason);
-}
-
 bool SessionManager::MarkClosed(
 	SessionId sessionId,
 	SessionCloseReason reason) noexcept
