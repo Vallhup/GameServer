@@ -409,6 +409,11 @@ bool ServerApp::MarkClientWorldTransitionReady(
 	return true;
 }
 
+void ServerApp::OnSessionDisconnected(SessionId sessionId) noexcept
+{
+	_pendingClientTransitions.erase(sessionId);
+}
+
 bool ServerApp::InitializeFrameworkRuntime()
 {
 	_bootstrapFactory.SetAnimationRegistry(&_animationRegistry);

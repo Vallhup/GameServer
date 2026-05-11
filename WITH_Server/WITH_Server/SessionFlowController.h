@@ -47,10 +47,9 @@ public:
 
 	// transition 핸들러 외부에서 바인딩이 필요한 경우 사용
 	// (예: ServerSessionSystem::MarkInitialWorldReady, ServerWorldTransferCommitter)
-	bool BindPlayer(
-		SessionId sessionId,
-		NetId controlledNetId,
-		WorldId currentWorldId) noexcept;
+	// controlledNetId는 LoginSucceeded 시점에 이미 flow에 기록되어 있어야 한다.
+	// BindPlayer는 worldId를 받아 currentWorldId를 설정하고 역인덱스를 갱신한다.
+	bool BindPlayer(SessionId sessionId, WorldId currentWorldId) noexcept;
 
 	// disconnect / 세션 정리 시 사용
 	bool UnbindPlayer(SessionId sessionId) noexcept;

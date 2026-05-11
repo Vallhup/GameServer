@@ -16,4 +16,6 @@ public:
 	virtual bool MarkClientWorldTransitionReady(
 		SessionId sessionId,
 		TransferId transferId) = 0;
+
+	virtual void OnSessionDisconnected(SessionId sessionId) noexcept = 0;
 };

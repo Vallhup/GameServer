@@ -68,7 +68,6 @@ bool ServerWorldTransferCommitter::CommitCompleted(
 
 		if (!sessionFlow.BindPlayer(
 			imported.sessionId,
-			imported.netId,
 			event.targetWorldId))
 		{
 			FWLOG_ERROR(kLogCategory,

@@ -73,6 +73,8 @@ public:
 		SessionId sessionId,
 		TransferId transferId) override;
 
+	void OnSessionDisconnected(SessionId sessionId) noexcept override;
+
 private:
 	struct PendingClientTransition
 	{

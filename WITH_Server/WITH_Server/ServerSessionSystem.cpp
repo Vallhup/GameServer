@@ -106,6 +106,7 @@ void ServerSessionSystem::HandleSessionDisconnected(
 	(void)_characterSpawnService.CancelPendingSpawn(sessionId);
 	(void)_framework.RemovePresence(sessionId, 0.0);
 	_pendingInitialEntries.erase(sessionId);
+	_worldTransitionSink.OnSessionDisconnected(sessionId);
 
 	if (_sessionFlowController.FindFlow(sessionId) != nullptr)
 	{
@@ -237,7 +238,7 @@ InitialWorldReadyResult ServerSessionSystem::MarkInitialWorldReady(
 		return InitialWorldReadyResult::Rejected;
 	}
 
-	if (!_sessionFlowController.BindPlayer(sessionId, pending.playerNetId, pending.worldId))
+	if (!_sessionFlowController.BindPlayer(sessionId, pending.worldId))
 	{
 		FWLOG_ERROR(kLogCategory, "Initial world ready failed: session bind (sid=%u, worldId=%u, netId=%u)",
 			sessionId, pending.worldId.GetRaw(), pending.playerNetId.GetRaw());

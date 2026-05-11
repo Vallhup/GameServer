@@ -25,7 +25,7 @@ struct LoginRequested final : ISessionCommand
 
 struct LoginSucceeded final : ISessionCommand
 {
-	NetId playerNetId{ NetId::Invalid() };
+	NetId controlledNetId{ NetId::Invalid() };
 
 	SessionCommandId Id() const noexcept override
 	{

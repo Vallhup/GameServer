@@ -244,8 +244,8 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
         return ExecCallResult::Success;
     }
 
-    const NetId playerNetId = svc.framework->AllocateNetId();
-    if (!playerNetId.IsValid())
+    const NetId controlledNetId = svc.framework->AllocateNetId();
+    if (!controlledNetId.IsValid())
     {
         FWLOG_WARN(kLogCategory, "Login rejected: netId allocation failed (sid=%u)", sessionId);
         (void)ServerPacketStager::StageLoginFail(
@@ -260,11 +260,11 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
     }
 
     LoginSucceeded succeededCommand{};
-    succeededCommand.playerNetId = playerNetId;
+    succeededCommand.controlledNetId = controlledNetId;
     flowResult = svc.sessionFlow->Dispatch(sessionId, succeededCommand);
     if (!flowResult.Succeeded())
     {
-        svc.framework->FreeNetId(playerNetId);
+        svc.framework->FreeNetId(controlledNetId);
         FWLOG_WARN(kLogCategory,
             "Login success rejected by flow (sid=%u, reason=%s)",
             sessionId,
@@ -276,13 +276,13 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
     if (!ServerPacketStager::StageLoginSuccess(
             *svc.network,
             sessionId,
-            playerNetId))
+            controlledNetId))
     {
-        svc.framework->FreeNetId(playerNetId);
+        svc.framework->FreeNetId(controlledNetId);
         FWLOG_WARN(kLogCategory,
             "Login success packet stage failed (sid=%u, netId=%u)",
             sessionId,
-            playerNetId.GetRaw());
+            controlledNetId.GetRaw());
         (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
         return ExecCallResult::Success;
     }
@@ -368,10 +368,10 @@ ExecCallResult HandleCharacterSelectPacket(NodeExecContext& ctx)
     }
 
     const SessionFlow* const flow = svc.sessionFlow->FindFlow(sessionId);
-    const NetId playerNetId =
-        flow != nullptr ? flow->playerNetId : NetId::Invalid();
+    const NetId controlledNetId =
+        flow != nullptr ? flow->controlledNetId : NetId::Invalid();
     const CharacterSpawnResult spawnResult =
-        svc.characterSpawn->RequestCharacterSpawn(dataResult, playerNetId);
+        svc.characterSpawn->RequestCharacterSpawn(dataResult, controlledNetId);
     if (!spawnResult.Succeeded())
     {
         FWLOG_WARN(kLogCategory,
@@ -636,25 +636,11 @@ ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx)
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
-    if (svc.sessionSystem != nullptr)
-    {
-        svc.sessionSystem->HandleSessionDisconnected(
-            sessionId,
-            SessionCloseReason::RemoteClosed);
-        return ExecCallResult::Success;
-    }
+    if (svc.sessionSystem == nullptr)
+        return ExecCallResult::Failed;
 
-    // sessionSystem 없이 직접 정리하는 fallback 경로
-    if (svc.characterSpawn != nullptr)
-        (void)svc.characterSpawn->CancelPendingSpawn(sessionId);
-
-    if (svc.sessionFlow != nullptr)
-    {
-        DisconnectRequested command{};
-        command.reason = SessionCloseReason::RemoteClosed;
-        (void)svc.sessionFlow->Dispatch(sessionId, command);
-        svc.sessionFlow->OnSessionDisconnected(sessionId);
-    }
-
+    svc.sessionSystem->HandleSessionDisconnected(
+        sessionId,
+        SessionCloseReason::RemoteClosed);
     return ExecCallResult::Success;
 }

@@ -34,7 +34,7 @@ void SessionFlowController::OnSessionDisconnected(SessionId sessionId)
 	if (it != _sessions.end())
 	{
 		const SessionFlow& flow = it->second.flow;
-		if (flow.HasBinding())
+		if (flow.currentWorldId.IsValid())
 		{
 			std::unique_lock lock{ _indexMutex };
 			IndexUnbind_Locked(sessionId, flow.controlledNetId, flow.currentWorldId);
@@ -148,53 +148,49 @@ void SessionFlowController::CollectSessionsInWorld(
 
 bool SessionFlowController::BindPlayer(
 	SessionId sessionId,
-	NetId controlledNetId,
 	WorldId currentWorldId) noexcept
 {
-	if (sessionId == 0 || !controlledNetId.IsValid() || !currentWorldId.IsValid())
+	if (sessionId == 0 || !currentWorldId.IsValid())
 	{
 		return false;
 	}
 
 	SessionFlow* const flow = FindFlow(sessionId);
-	if (flow == nullptr)
+	if (flow == nullptr || !flow->controlledNetId.IsValid())
 	{
 		return false;
 	}
 
-	// 기존 바인딩이 있다면 역인덱스에서 먼저 제거
-	const bool hadBinding = flow->HasBinding();
-	const NetId oldNetId = flow->controlledNetId;
-	const WorldId oldWorldId = flow->currentWorldId;
+	// 기존 월드 바인딩이 있다면 역인덱스에서 먼저 제거
+	const bool hadWorldBinding = flow->currentWorldId.IsValid();
+	const WorldId oldWorldId   = flow->currentWorldId;
 
-	flow->controlledNetId = controlledNetId;
-	flow->currentWorldId  = currentWorldId;
+	flow->currentWorldId = currentWorldId;
 
 	std::unique_lock lock{ _indexMutex };
-	if (hadBinding)
+	if (hadWorldBinding)
 	{
-		IndexUnbind_Locked(sessionId, oldNetId, oldWorldId);
+		IndexUnbind_Locked(sessionId, flow->controlledNetId, oldWorldId);
 	}
-	IndexBind_Locked(sessionId, controlledNetId, currentWorldId);
+	IndexBind_Locked(sessionId, flow->controlledNetId, currentWorldId);
 	return true;
 }
 
 bool SessionFlowController::UnbindPlayer(SessionId sessionId) noexcept
 {
 	SessionFlow* const flow = FindFlow(sessionId);
-	if (flow == nullptr || !flow->HasBinding())
+	if (flow == nullptr || !flow->currentWorldId.IsValid())
 	{
 		return false;
 	}
 
-	const NetId oldNetId     = flow->controlledNetId;
+	const NetId   netId      = flow->controlledNetId;
 	const WorldId oldWorldId = flow->currentWorldId;
 
-	flow->controlledNetId = NetId::Invalid();
-	flow->currentWorldId  = WorldId::Invalid();
+	flow->currentWorldId = WorldId::Invalid();
 
 	std::unique_lock lock{ _indexMutex };
-	IndexUnbind_Locked(sessionId, oldNetId, oldWorldId);
+	IndexUnbind_Locked(sessionId, netId, oldWorldId);
 	return true;
 }
 
@@ -306,7 +302,7 @@ void SessionFlowController::RegisterDefaultTransitions()
 		SessionCommandId::LoginSucceeded,
 		[](SessionFlowContext& ctx, const LoginSucceeded& command)
 		{
-			ctx.Flow().playerNetId = command.playerNetId;
+			ctx.Flow().controlledNetId = command.controlledNetId;
 			return TransitionResult::To(SessionStateId::AwaitingCharacterSelect);
 		});
 
@@ -355,13 +351,9 @@ void SessionFlowController::RegisterDefaultTransitions()
 		SessionCommandId::CharacterSpawnConfirmed,
 		[](SessionFlowContext& ctx, const CharacterSpawnConfirmed& command)
 		{
-			SessionFlow& flow = ctx.Flow();
+			SessionFlow& flow  = ctx.Flow();
 			flow.playerWorldId = command.worldId;
 			flow.playerEntity  = command.entity;
-			if (!flow.playerNetId.IsValid())
-			{
-				flow.playerNetId = command.netId;
-			}
 			return TransitionResult::To(SessionStateId::AwaitingClientWorldReady);
 		});
 
@@ -385,16 +377,31 @@ void SessionFlowController::RegisterDefaultTransitions()
 			return TransitionResult::To(SessionStateId::InGame);
 		});
 
-	// DisconnectRequested: 현재는 Connected 상태에만 등록
-	// (Step 4 Hierarchical State Machine 도입 시 Live 슈퍼상태로 격상)
-	_transitions.Register<DisconnectRequested>(
+	// DisconnectRequested: 모든 활성 상태에 등록
+	// Step 4 HSM 도입 시 Live 슈퍼상태 단일 등록으로 교체 가능
+	auto disconnectHandler = [](SessionFlowContext& ctx, const DisconnectRequested& command)
+	{
+		(void)ctx;
+		return TransitionResult::Close(command.reason);
+	};
+
+	const SessionStateId disconnectableStates[] = {
 		SessionStateId::Connected,
-		SessionCommandId::DisconnectRequested,
-		[](SessionFlowContext& ctx, const DisconnectRequested& command)
-		{
-			(void)ctx;
-			return TransitionResult::Close(command.reason);
-		});
+		SessionStateId::Authenticating,
+		SessionStateId::AwaitingCharacterSelect,
+		SessionStateId::CharacterDataLoading,
+		SessionStateId::SpawningCharacter,
+		SessionStateId::AwaitingClientWorldReady,
+		SessionStateId::InGame,
+		SessionStateId::WorldTransitioning,
+	};
+	for (const SessionStateId stateId : disconnectableStates)
+	{
+		_transitions.Register<DisconnectRequested>(
+			stateId,
+			SessionCommandId::DisconnectRequested,
+			disconnectHandler);
+	}
 }
 
 SessionFlowResult SessionFlowController::ApplyTransition(
