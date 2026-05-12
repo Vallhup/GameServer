@@ -65,12 +65,17 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"CastleName", L"../Assets/UI/Textures/CastleName.png", core, resourceUpload);
 	RegisterUITexture(L"FinalName", L"../Assets/UI/Textures/FinalName.png", core, resourceUpload);
 
-	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);			
+	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);
+	RegisterUITexture(L"StatusRibbon",     L"../Assets/UI/Textures/StatusRibbon.png", core, resourceUpload);
+	RegisterUITexture(L"StatusArrowLeft",  L"../Assets/UI/Textures/StatusArrowLeft.png", core, resourceUpload);
+	RegisterUITexture(L"StatusArrowRight", L"../Assets/UI/Textures/StatusArrowRight.png", core, resourceUpload);
 
 	RegisterUITexture(L"Black", L"../Assets/UI/Textures/Black.png", core, resourceUpload);
 	RegisterUITexture(L"PlazaMap", L"../Assets/UI/Textures/PlazaMap.png", core, resourceUpload);
 	RegisterUITexture(L"VillageMap", L"../Assets/UI/Textures/VillageMap.png", core, resourceUpload);
 	RegisterUITexture(L"CastleMap", L"../Assets/UI/Textures/CastleMap.png", core, resourceUpload);
+
+	RegisterUITexture(L"PartyBook", L"../Assets/UI/Textures/PartyBook.png", core, resourceUpload);
 
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
 	uploadFinished.wait();

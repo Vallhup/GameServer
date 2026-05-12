@@ -16,6 +16,7 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitMapNameOverlay();
 	InitStatWindow();
 	InitMapWindow();
+	InitPartyWindow();
 }
 
 void GameSceneUIController::InitTargetHpBar()
@@ -26,7 +27,7 @@ void GameSceneUIController::InitTargetHpBar()
 	constexpr float HPBAR_OFFSET_X = 49.0f / 785.0f;
 	constexpr float HPBAR_OFFSET_Y = 11.0f / 39.0f;
 
-	float backWidth = 300.0f;
+	float backWidth = WinSize.x * 0.156f;
 	float backHeight = backWidth * BARBACK_ASPECT;
 
 	float backPosX = WinSize.x * 0.5f - backWidth * 0.5f;
@@ -102,6 +103,40 @@ void GameSceneUIController::InitStatWindow()
 	statusImage->SetVertLength(WinSize.y);
 	widgets.push_back(statusImage);
 
+	const float ribbonWidth  = WinSize.x * 0.21f;
+	const float ribbonHeight = WinSize.y * 0.105f;
+	const float leftPageCenterX = WinSize.x * 0.30f;
+	const float ribbonX = leftPageCenterX - ribbonWidth * 0.5f;
+	const float ribbonY = WinSize.y * 0.78f;
+
+	statusRibbon = make_shared<ImageUI>(L"StatusRibbon", ImageUIState::Hidden);
+	statusRibbon->Init(uiManager);
+	statusRibbon->SetPosition(ribbonX, ribbonY);
+	statusRibbon->SetHoriLength(ribbonWidth);
+	statusRibbon->SetVertLength(ribbonHeight);
+	widgets.push_back(statusRibbon);
+
+	const float arrowSizeX = WinSize.y * 0.07f;
+	const float arrowSizeY = WinSize.y * 0.09f;
+	const float arrowY = ribbonY + (ribbonHeight - arrowSizeY) * 0.5f;
+	const float arrowGap = WinSize.x * 0.005f;
+
+	statusArrowLeft = make_shared<ImageUI>(L"StatusArrowLeft", ImageUIState::Hidden);
+	statusArrowLeft->Init(uiManager);
+	statusArrowLeft->SetPosition(ribbonX - arrowSizeX - arrowGap, arrowY);
+	statusArrowLeft->SetHoriLength(arrowSizeX);
+	statusArrowLeft->SetVertLength(arrowSizeY);
+	statusArrowLeft->SetHoverScale(1.15f);
+	widgets.push_back(statusArrowLeft);
+
+	statusArrowRight = make_shared<ImageUI>(L"StatusArrowRight", ImageUIState::Hidden);
+	statusArrowRight->Init(uiManager);
+	statusArrowRight->SetPosition(ribbonX + ribbonWidth + arrowGap, arrowY);
+	statusArrowRight->SetHoriLength(arrowSizeX);
+	statusArrowRight->SetVertLength(arrowSizeY);
+	statusArrowRight->SetHoverScale(1.15f);
+	widgets.push_back(statusArrowRight);
+
 	tempStatusText = make_shared<TextUI>(L"Texture", L"MalgunGothic");
 	tempStatusText->Init(uiManager);
 	tempStatusText->SetPosition(0.0f, 0.0f);
@@ -117,6 +152,7 @@ void GameSceneUIController::InitMapWindow()
 	case SceneType::Plaza:   texName = L"PlazaMap";   break;
 	case SceneType::Village: texName = L"VillageMap";  break;
 	case SceneType::Castle:  texName = L"CastleMap";   break;
+	default: return;
 	}
 
 	mapBackImage = make_shared<ImageUI>(L"Black", ImageUIState::Hidden);
@@ -135,9 +171,26 @@ void GameSceneUIController::InitMapWindow()
 	widgets.push_back(mapImage);
 }
 
+void GameSceneUIController::InitPartyWindow()
+{
+	if (sceneType != SceneType::Plaza) return;
+
+	const float partyHeight = WinSize.y * 0.6f;
+	const float partyWidth  = partyHeight * (843.0f / 720.0f);
+	const float partyX = (WinSize.x - partyWidth) * 0.5f;
+	const float partyY = (WinSize.y - partyHeight) * 0.5f;
+
+	partyBook = make_shared<ImageUI>(L"PartyBook", ImageUIState::Hidden);
+	partyBook->Init(uiManager);
+	partyBook->SetPosition(partyX, partyY);
+	partyBook->SetHoriLength(partyWidth);
+	partyBook->SetVertLength(partyHeight);
+	widgets.push_back(partyBook);
+}
+
 void GameSceneUIController::Update(float deltaTime)
 {
-	for (auto& w : widgets) w->Update(deltaTime);
+	UIController::Update(deltaTime);
 
 	if (INPUT.GetKeyDown('K'))
 	{
@@ -145,25 +198,44 @@ void GameSceneUIController::Update(float deltaTime)
 			? ImageUIState::Visible : ImageUIState::Hidden;
 
 		statusImage->ChangeState(next);
+		statusRibbon->ChangeState(next);
+		statusArrowLeft->ChangeState(next);
+		statusArrowRight->ChangeState(next);
 	}
 
-	if (INPUT.GetKeyDown('M'))
+	if (INPUT.GetKeyDown('P') && partyBook)
 	{
-		if (sceneType >= SceneType::Plaza && sceneType <= SceneType::Castle)
-		{
-			ImageUIState next = (mapImage->GetState() == ImageUIState::Hidden)
-				? ImageUIState::Visible : ImageUIState::Hidden;
+		ImageUIState next = (partyBook->GetState() == ImageUIState::Hidden)
+			? ImageUIState::Visible : ImageUIState::Hidden;
 
-			mapBackImage->ChangeState(next);
-			mapImage->ChangeState(next);
+		partyBook->ChangeState(next);
+	}
+
+	if (statusImage->GetState() != ImageUIState::Hidden)
+	{
+		statusArrowLeft->SetHovered(statusArrowLeft->IsMouseInside());
+		statusArrowRight->SetHovered(statusArrowRight->IsMouseInside());
+
+		if (statusArrowLeft->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		{
+			OutputDebugStringA("[Stat] Left arrow clicked\n");
+		}
+		if (statusArrowRight->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		{
+			OutputDebugStringA("[Stat] Right arrow clicked\n");
 		}
 	}
+
+	if (INPUT.GetKeyDown('M') && mapImage && mapBackImage)
+	{
+		ImageUIState next = (mapImage->GetState() == ImageUIState::Hidden)
+			? ImageUIState::Visible : ImageUIState::Hidden;
+
+		mapBackImage->ChangeState(next);
+		mapImage->ChangeState(next);
+	}
 }
 
-void GameSceneUIController::Render(SpriteBatch* batch)
-{
-	for (auto& w : widgets) w->Render(batch);
-}
 
 void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curStamina, int maxStamina)
 {

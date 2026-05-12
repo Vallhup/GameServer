@@ -2,7 +2,6 @@
 #include "UIController.h"
 
 class ImageUI;
-class UIComponent;
 enum class SceneType;
 
 class LoadingSceneUIController : public UIController
@@ -10,7 +9,6 @@ class LoadingSceneUIController : public UIController
 public:
 	void Init(UIManager* manager) override;
 	void Update(float deltaTime) override;
-	void Render(SpriteBatch* batch) override;
 
 	void SetProgress(float progress);
 	void SetTargetScene(SceneType type);
@@ -20,8 +18,6 @@ private:
 	void InitBackground();
 	void InitLoadBar();
 	void InitPressAnyButton();
-
-	vector<shared_ptr<UIComponent>> widgets;
 
 	shared_ptr<ImageUI> mainImage;
 	shared_ptr<ImageUI> loadBarBack;

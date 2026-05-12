@@ -58,10 +58,8 @@ void StartSceneUIController::InitMenuButtons()
 
 void StartSceneUIController::Update(float deltaTime)
 {
-	for (auto& w : widgets) w->Update(deltaTime);
+	UIController::Update(deltaTime);
 
-	// 상태 전환 로직
-	// 1. mainImage FadeIn 완료 → pabImage Pulsing 시작
 	if (mainImage->GetState() == ImageUIState::Visible &&
 		pabImage->GetState() == ImageUIState::Hidden &&
 		loginImage->GetState() == ImageUIState::Hidden)
@@ -69,7 +67,6 @@ void StartSceneUIController::Update(float deltaTime)
 		pabImage->ChangeState(ImageUIState::Pulsing);
 	}
 
-	// 2. pabImage Pulsing 중 아무 키 입력 → LOGIN/EXIT 표시
 	if (pabImage->GetState() == ImageUIState::Pulsing && INPUT.GetAnyKeyDown())
 	{
 		pabImage->ChangeState(ImageUIState::Hidden);
@@ -77,7 +74,6 @@ void StartSceneUIController::Update(float deltaTime)
 		exitImage->ChangeState(ImageUIState::FadingIn);
 	}
 
-	// 3. loginImage 또는 exitImage Pulsing 중 마우스가 이미지 내부에 있으면 확대
 	if (loginImage->GetState() == ImageUIState::FadingIn ||
 		loginImage->GetState() == ImageUIState::Visible)
 	{
@@ -90,14 +86,12 @@ void StartSceneUIController::Update(float deltaTime)
 		exitImage->SetHovered(exitImage->IsMouseInside());
 	}
 
-	// 4. loginImage가 확대 된 상태일 때 클릭하면 로그인창 표시
 	if (loginImage->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 	{
 		IMGUI.ShowLoginWindow();
 		OutputDebugStringA("loginImage clicked!!\n");
 	}
 
-	// 5. 로그인 성공 시 Select 씬으로 이동
 	if (IMGUI.IsLoginSuccess())
 	{
 		{
@@ -110,7 +104,6 @@ void StartSceneUIController::Update(float deltaTime)
 		OutputDebugStringA("Login success! Moving to Select scene.\n");
 	}
 
-	// 6. exitImage가 확대 된 상태일 때 클릭하면 프로그램 종료
 	if (exitImage->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 	{
 		DestroyWindow(ENGINE.GetHwnd());
@@ -118,7 +111,3 @@ void StartSceneUIController::Update(float deltaTime)
 	}
 }
 
-void StartSceneUIController::Render(SpriteBatch* batch)
-{
-	for (auto& w : widgets) w->Render(batch);
-}

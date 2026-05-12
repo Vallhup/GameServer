@@ -58,7 +58,7 @@ void SelectSceneUIController::InitHoverOverlay(float charWidth, float charHeight
 
 void SelectSceneUIController::Update(float deltaTime)
 {
-	for (auto& w : widgets) w->Update(deltaTime);
+	UIController::Update(deltaTime);
 
 	bool anyHovered = false;
 	for (int i = 0; i < 3; i++)
@@ -77,7 +77,3 @@ void SelectSceneUIController::Update(float deltaTime)
 		hoverOverlay->ChangeState(ImageUIState::Hidden);
 }
 
-void SelectSceneUIController::Render(SpriteBatch* batch)
-{
-	for (auto& w : widgets) w->Render(batch);
-}

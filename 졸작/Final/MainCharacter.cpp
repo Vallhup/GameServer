@@ -94,7 +94,7 @@ void MainCharacter::BasicDodge()
 {
 	auto& input = INPUT;
 
-	if (input.GetKeyDown('C')) 
+	if (input.GetKeyDown(VK_SPACE))
 	{
 		if (auto* network = NETWORK_MANAGER)
 		{
@@ -193,7 +193,7 @@ void MainCharacter::RegisterAnimationCallback()
 			return "Parry";
 		}
 
-		if (input.GetKey('C')) 
+		if (input.GetKey(VK_SPACE)) 
 		{
 			if (auto* network = NETWORK_MANAGER)
 			{

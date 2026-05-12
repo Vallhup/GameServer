@@ -62,7 +62,7 @@ void LoadingSceneUIController::InitPressAnyButton()
 
 void LoadingSceneUIController::Update(float deltaTime)
 {
-	for (auto& w : widgets) w->Update(deltaTime);
+	UIController::Update(deltaTime);
 
 	if (loadProgress >= 1.0f)
 	{
@@ -76,10 +76,6 @@ void LoadingSceneUIController::Update(float deltaTime)
 	}
 }
 
-void LoadingSceneUIController::Render(SpriteBatch* batch)
-{
-	for (auto& w : widgets) w->Render(batch);
-}
 
 void LoadingSceneUIController::SetProgress(float progress)
 {

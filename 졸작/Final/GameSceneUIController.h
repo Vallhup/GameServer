@@ -4,7 +4,6 @@
 
 class ImageUI;
 class TextUI;
-class UIComponent;
 
 class GameSceneUIController : public UIController
 {
@@ -13,7 +12,6 @@ public:
 
 	void Init(UIManager* manager) override;
 	void Update(float deltaTime) override;
-	void Render(SpriteBatch* batch) override;
 
 	void HandleStatBarChange(int curHp, int maxHp, int curStamina, int maxStamina);
 	void HandleStatImageChange(
@@ -29,12 +27,14 @@ private:
 	void InitMapNameOverlay();
 	void InitStatWindow();
 	void InitMapWindow();
+	void InitPartyWindow();
 
 	SceneType sceneType;
 
-	vector<shared_ptr<UIComponent>> widgets;
-
 	shared_ptr<ImageUI> statusImage;
+	shared_ptr<ImageUI> statusRibbon;
+	shared_ptr<ImageUI> statusArrowLeft;
+	shared_ptr<ImageUI> statusArrowRight;
 	shared_ptr<ImageUI> localCharBarsBack;
 	shared_ptr<ImageUI> localCharHpBar;
 	shared_ptr<ImageUI> localCharStaminaBar;
@@ -48,4 +48,6 @@ private:
 
 	shared_ptr<ImageUI> mapBackImage;
 	shared_ptr<ImageUI> mapImage;
+
+	shared_ptr<ImageUI> partyBook;
 };
