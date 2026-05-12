@@ -34,14 +34,22 @@
       "weight": 18,
       "distanceBucket": "VeryClose",
       "aiCooldownSec": 1.6,
-      "globalCooldownSec": 1.8
+      "globalCooldownSec": 1.8,
+      "patternGroup": "Tank_Poke",
+      "groupCooldownSec": 1.4,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.25
     },
     {
       "abilityKey": "Ability.Tank_Melee_1",
       "weight": 18,
       "distanceBucket": "Close",
       "aiCooldownSec": 2.2,
-      "globalCooldownSec": 2.3
+      "globalCooldownSec": 2.3,
+      "patternGroup": "Tank_Poke",
+      "groupCooldownSec": 1.6,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.3
     },
     {
       "abilityKey": "Ability.Tank_Melee_2",
@@ -49,7 +57,10 @@
       "distanceBucket": "Close",
       "aiCooldownSec": 3.0,
       "globalCooldownSec": 2.8,
-      "forbidImmediateRepeat": true
+      "patternGroup": "Tank_Commit",
+      "groupCooldownSec": 4.2,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.45
     },
     {
       "abilityKey": "Ability.Tank_Melee_3",
@@ -57,39 +68,54 @@
       "distanceBucket": "Close",
       "aiCooldownSec": 3.0,
       "globalCooldownSec": 2.8,
-      "forbidImmediateRepeat": true
+      "patternGroup": "Tank_Commit",
+      "groupCooldownSec": 4.2,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.45
     },
     {
       "abilityKey": "Ability.Tank_Melee_8",
       "weight": 16,
-      "distanceBucket": "Mid",
+      "distanceBucket": "Close",
       "aiCooldownSec": 3.2,
       "globalCooldownSec": 2.8,
-      "forbidImmediateRepeat": true
+      "patternGroup": "Tank_Commit",
+      "groupCooldownSec": 4.2,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.45
     },
     {
       "abilityKey": "Ability.Tank_Melee_4",
       "weight": 10,
-      "distanceBucket": "Mid",
+      "distanceBucket": "Close",
       "aiCooldownSec": 4.0,
       "globalCooldownSec": 3.0,
-      "forbidImmediateRepeat": true
+      "patternGroup": "Tank_Commit",
+      "groupCooldownSec": 4.5,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.55
     },
     {
       "abilityKey": "Ability.Tank_Melee_6",
       "weight": 7,
-      "distanceBucket": "Mid",
+      "distanceBucket": "Close",
       "aiCooldownSec": 4.4,
       "globalCooldownSec": 3.2,
-      "forbidImmediateRepeat": true
+      "patternGroup": "Tank_Commit",
+      "groupCooldownSec": 5.0,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.6
     },
     {
       "abilityKey": "Ability.Tank_Melee_5",
       "weight": 3,
-      "distanceBucket": "Far",
+      "distanceBucket": "Close",
       "aiCooldownSec": 6.5,
       "globalCooldownSec": 3.6,
-      "forbidImmediateRepeat": true
+      "patternGroup": "Tank_Commit",
+      "groupCooldownSec": 6.0,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.7
     }
   ],
   "idleActions": [
@@ -107,7 +133,7 @@
       "farDistance": 12.0,
       "preferredMinDistance": 2.1,
       "preferredMaxDistance": 3.5,
-      "veryCloseBehavior": "Retreat",
+      "veryCloseBehavior": "Hold",
       "closeBehavior": "Hold",
       "preferredBehavior": "Hold",
       "midBehavior": "Approach",

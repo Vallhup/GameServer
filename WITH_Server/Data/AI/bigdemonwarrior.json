@@ -33,34 +33,56 @@
       "abilityKey": "Ability.BigDemonWarrior_Melee_6",
       "weight": 20,
       "distanceBucket": "VeryClose",
-      "aiCooldownSec": 1.0
+      "aiCooldownSec": 1.0,
+      "globalCooldownSec": 2.0,
+      "patternGroup": "BigDemon_Poke",
+      "groupCooldownSec": 1.6,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.25
     },
     {
       "abilityKey": "Ability.BigDemonWarrior_Melee_8",
       "weight": 35,
       "distanceBucket": "Close",
-      "aiCooldownSec": 1.5
+      "aiCooldownSec": 1.5,
+      "globalCooldownSec": 2.3,
+      "patternGroup": "BigDemon_Poke",
+      "groupCooldownSec": 1.8,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.3
     },
     {
       "abilityKey": "Ability.BigDemonWarrior_Melee_7",
       "weight": 25,
       "distanceBucket": "Close",
       "aiCooldownSec": 2.5,
-      "forbidImmediateRepeat": true
+      "globalCooldownSec": 2.8,
+      "patternGroup": "BigDemon_Commit",
+      "groupCooldownSec": 4.2,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.45
     },
     {
       "abilityKey": "Ability.BigDemonWarrior_Melee_3",
       "weight": 20,
       "distanceBucket": "Mid",
       "aiCooldownSec": 4.0,
-      "forbidImmediateRepeat": true
+      "globalCooldownSec": 3.0,
+      "patternGroup": "BigDemon_Catch",
+      "groupCooldownSec": 5.0,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.55
     },
     {
       "abilityKey": "Ability.BigDemonWarrior_Melee_4",
       "weight": 20,
       "distanceBucket": "Far",
       "aiCooldownSec": 6.0,
-      "forbidImmediateRepeat": true
+      "globalCooldownSec": 3.4,
+      "patternGroup": "BigDemon_Catch",
+      "groupCooldownSec": 6.0,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.7
     }
   ],
   "idleActions": [

@@ -33,7 +33,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 56,
               "minDistance": null,
-              "maxDistance": 2.8,
+              "maxDistance": 2.2,
               "verticalTolerance": 1.5,
               "referenceFrame": "LockedActionDirection"
             },
@@ -131,19 +131,19 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 3.9666667,
+        "durationSec": 3.9666667, 
         "policy": "FixedDuration",
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.42,
-            "endNormalized": 0.6,
+            "startNormalized": 0.2,
+            "endNormalized": 0.45,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
               "facingHalfAngleDeg": 68,
               "minDistance": null,
-              "maxDistance": 3.2,
+              "maxDistance": 2.1,
               "verticalTolerance": 1.5,
               "referenceFrame": "LockedActionDirection"
             },
@@ -253,7 +253,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 60,
               "minDistance": null,
-              "maxDistance": 2.9,
+              "maxDistance": 2.2,
               "verticalTolerance": 1.5,
               "referenceFrame": "LockedActionDirection"
             },
@@ -363,7 +363,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 74,
               "minDistance": null,
-              "maxDistance": 3.4,
+              "maxDistance": 2.4,
               "verticalTolerance": 1.5,
               "referenceFrame": "LockedActionDirection"
             },

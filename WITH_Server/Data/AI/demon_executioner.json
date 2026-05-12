@@ -29,16 +29,97 @@
     "reactDuration": 0.6
   },
   "combatActions": [
-    { "abilityKey": "Ability.DemonExecutioner_Melee_1", "weight": 20 },
-    { "abilityKey": "Ability.DemonExecutioner_Melee_2", "weight": 20 },
-    { "abilityKey": "Ability.DemonExecutioner_Melee_3", "weight": 20 },
-    { "abilityKey": "Ability.DemonExecutioner_Melee_4", "weight": 15 },
-    { "abilityKey": "Ability.DemonExecutioner_Melee_5", "weight": 15 },
-    { "abilityKey": "Ability.DemonExecutioner_Melee_6", "weight": 10 }
+    {
+      "abilityKey": "Ability.DemonExecutioner_Melee_1",
+      "weight": 18,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 2.0,
+      "globalCooldownSec": 2.2,
+      "patternGroup": "Executioner_Poke",
+      "groupCooldownSec": 1.8,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.25
+    },
+    {
+      "abilityKey": "Ability.DemonExecutioner_Melee_2",
+      "weight": 18,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 2.2,
+      "globalCooldownSec": 2.3,
+      "patternGroup": "Executioner_Poke",
+      "groupCooldownSec": 1.8,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.25
+    },
+    {
+      "abilityKey": "Ability.DemonExecutioner_Melee_3",
+      "weight": 20,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 3.2,
+      "globalCooldownSec": 2.8,
+      "patternGroup": "Executioner_Commit",
+      "groupCooldownSec": 4.0,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.4
+    },
+    {
+      "abilityKey": "Ability.DemonExecutioner_Melee_4",
+      "weight": 15,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 3.8,
+      "globalCooldownSec": 3.0,
+      "patternGroup": "Executioner_Commit",
+      "groupCooldownSec": 4.2,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.5
+    },
+    {
+      "abilityKey": "Ability.DemonExecutioner_Melee_5",
+      "weight": 15,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 4.2,
+      "globalCooldownSec": 2.8,
+      "patternGroup": "Executioner_Commit",
+      "groupCooldownSec": 4.0,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.5
+    },
+    {
+      "abilityKey": "Ability.DemonExecutioner_Melee_6",
+      "weight": 10,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 5.0,
+      "globalCooldownSec": 3.2,
+      "patternGroup": "Executioner_Commit",
+      "groupCooldownSec": 5.5,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.6
+    }
   ],
   "idleActions": [
     { "abilityKey": "Ability.DemonExecutioner_Jump_1", "weight": 50 },
     { "abilityKey": "Ability.DemonExecutioner_Jump_2", "weight": 50 }
+  ],
+  "movementProfiles": [
+    {
+      "name": "ExecutionerDefault",
+      "phaseMin": 1,
+      "phaseMax": 255,
+      "veryCloseDistance": 1.4,
+      "closeDistance": 2.8,
+      "midDistance": 5.2,
+      "farDistance": 11.0,
+      "preferredMinDistance": 1.8,
+      "preferredMaxDistance": 3.2,
+      "veryCloseBehavior": "Hold",
+      "closeBehavior": "Hold",
+      "preferredBehavior": "Hold",
+      "midBehavior": "Approach",
+      "farBehavior": "RunApproach",
+      "strafeMinSec": 0.8,
+      "strafeMaxSec": 1.4,
+      "lockFacingToTarget": true
+    }
   ],
   "reactionRules": [
     {

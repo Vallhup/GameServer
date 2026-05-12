@@ -21,22 +21,6 @@
           "level": 1
         },
         {
-          "abilityKey": "Ability.DemonStriker_Gun_Shoot_1",
-          "level": 1
-        },
-        {
-          "abilityKey": "Ability.DemonStriker_Gun_Shoot_2",
-          "level": 1
-        },
-        {
-          "abilityKey": "Ability.DemonStriker_Gun_Shoot_3",
-          "level": 1
-        },
-        {
-          "abilityKey": "Ability.DemonStriker_Gun_Shoot_4",
-          "level": 1
-        },
-        {
           "abilityKey": "Ability.DemonStriker_Jump_1",
           "level": 1
         },
@@ -93,30 +77,6 @@
         {
           "abilityKey": "Ability.DemonStriker_Melee_4",
           "animationKey": "DemonStriker_Melee_4",
-          "playRate": 1,
-          "startNormalizedTime": 0
-        },
-        {
-          "abilityKey": "Ability.DemonStriker_Gun_Shoot_1",
-          "animationKey": "DemonStriker_Gun_Shoot_1",
-          "playRate": 1,
-          "startNormalizedTime": 0
-        },
-        {
-          "abilityKey": "Ability.DemonStriker_Gun_Shoot_2",
-          "animationKey": "DemonStriker_Gun_Shoot_2",
-          "playRate": 1,
-          "startNormalizedTime": 0
-        },
-        {
-          "abilityKey": "Ability.DemonStriker_Gun_Shoot_3",
-          "animationKey": "DemonStriker_Gun_Shoot_3",
-          "playRate": 1,
-          "startNormalizedTime": 0
-        },
-        {
-          "abilityKey": "Ability.DemonStriker_Gun_Shoot_4",
-          "animationKey": "DemonStriker_Gun_Shoot_4",
           "playRate": 1,
           "startNormalizedTime": 0
         },

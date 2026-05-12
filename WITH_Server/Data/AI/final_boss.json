@@ -34,7 +34,11 @@
       "weight": 35,
       "distanceBucket": "VeryClose",
       "aiCooldownSec": 1.8,
-      "globalCooldownSec": 2.3
+      "globalCooldownSec": 2.3,
+      "patternGroup": "FinalBoss_Poke",
+      "groupCooldownSec": 1.8,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.25
     },
     {
       "abilityKey": "Ability.FinalBoss_Thrust",
@@ -42,7 +46,10 @@
       "distanceBucket": "Close",
       "aiCooldownSec": 2.0,
       "globalCooldownSec": 2.3,
-      "forbidImmediateRepeat": true
+      "patternGroup": "FinalBoss_Commit",
+      "groupCooldownSec": 3.2,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.4
     },
     {
       "abilityKey": "Ability.FinalBoss_DashSlash",
@@ -50,7 +57,10 @@
       "distanceBucket": "Mid",
       "aiCooldownSec": 3.6,
       "globalCooldownSec": 2.9,
-      "forbidImmediateRepeat": true
+      "patternGroup": "FinalBoss_Catch",
+      "groupCooldownSec": 5.0,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.6
     },
     {
       "abilityKey": "Ability.FinalBoss_JumpSlash",
@@ -58,7 +68,10 @@
       "distanceBucket": "Far",
       "aiCooldownSec": 5.1,
       "globalCooldownSec": 3.4,
-      "forbidImmediateRepeat": true
+      "patternGroup": "FinalBoss_Catch",
+      "groupCooldownSec": 6.0,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.8
     }
   ],
   "idleActions": [],

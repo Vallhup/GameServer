@@ -3,7 +3,7 @@
   "aiType": "NormalMonster",
   "perceptionTuning": {
     "sightRange": 14.0,
-    "attackRange": 2.0,
+    "attackRange": 2.4,
     "frontDotThreshold": 0.2,
     "targetKeepBonus": 4.0,
     "lastAttackerBonus": 2.5,
@@ -25,17 +25,78 @@
   },
   "decisionTuning": {
     "decisionInterval": 0.2,
-    "attackCooldown": 2.0,
+    "attackCooldown": 1.1,
     "reactDuration": 0.5
   },
   "combatActions": [
-    { "abilityKey": "Ability.DemonStriker_Melee_1", "weight": 20 },
-    { "abilityKey": "Ability.DemonStriker_Melee_2", "weight": 20 },
-    { "abilityKey": "Ability.DemonStriker_Melee_3", "weight": 25 },
-    { "abilityKey": "Ability.DemonStriker_Melee_4", "weight": 25 }
+    {
+      "abilityKey": "Ability.DemonStriker_Melee_1",
+      "weight": 20,
+      "distanceBucket": "VeryClose",
+      "aiCooldownSec": 0.9,
+      "globalCooldownSec": 0.9,
+      "patternGroup": "Striker_Poke",
+      "groupCooldownSec": 0.6,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.2
+    },
+    {
+      "abilityKey": "Ability.DemonStriker_Melee_2",
+      "weight": 20,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 1.0,
+      "globalCooldownSec": 1.0,
+      "patternGroup": "Striker_Poke",
+      "groupCooldownSec": 0.6,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.2
+    },
+    {
+      "abilityKey": "Ability.DemonStriker_Melee_3",
+      "weight": 8,
+      "distanceBucket": "VeryClose",
+      "aiCooldownSec": 3.0,
+      "globalCooldownSec": 1.4,
+      "patternGroup": "Striker_HeavyMelee",
+      "groupCooldownSec": 3.5,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.25
+    },
+    {
+      "abilityKey": "Ability.DemonStriker_Melee_4",
+      "weight": 25,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 2.0,
+      "globalCooldownSec": 1.4,
+      "patternGroup": "Striker_HeavyMelee",
+      "groupCooldownSec": 2.2,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.45
+    }
   ],
   "idleActions": [
     { "abilityKey": "Ability.DemonStriker_Jump_1", "weight": 100 }
+  ],
+  "movementProfiles": [
+    {
+      "name": "StrikerDefault",
+      "phaseMin": 1,
+      "phaseMax": 255,
+      "veryCloseDistance": 1.2,
+      "closeDistance": 2.4,
+      "midDistance": 6.0,
+      "farDistance": 12.0,
+      "preferredMinDistance": 2.8,
+      "preferredMaxDistance": 5.2,
+      "veryCloseBehavior": "Retreat",
+      "closeBehavior": "Hold",
+      "preferredBehavior": "Hold",
+      "midBehavior": "Approach",
+      "farBehavior": "RunApproach",
+      "strafeMinSec": 8.0,
+      "strafeMaxSec": 12.0,
+      "lockFacingToTarget": true
+    }
   ],
   "reactionRules": [
     {

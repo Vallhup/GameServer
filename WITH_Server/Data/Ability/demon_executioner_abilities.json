@@ -33,7 +33,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 62,
               "minDistance": null,
-              "maxDistance": 3.6,
+              "maxDistance": 2.8,
               "verticalTolerance": 1.5,
               "referenceFrame": "LockedActionDirection"
             },
@@ -143,7 +143,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 76,
               "minDistance": null,
-              "maxDistance": 4.2,
+              "maxDistance": 3.0,
               "verticalTolerance": 1.5,
               "referenceFrame": "LockedActionDirection"
             },
@@ -253,7 +253,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 68,
               "minDistance": null,
-              "maxDistance": 3.8,
+              "maxDistance": 2.9,
               "verticalTolerance": 1.5,
               "referenceFrame": "LockedActionDirection"
             },
@@ -363,7 +363,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 74,
               "minDistance": null,
-              "maxDistance": 4,
+              "maxDistance": 3.0,
               "verticalTolerance": 1.5,
               "referenceFrame": "LockedActionDirection"
             },
@@ -473,7 +473,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 80,
               "minDistance": null,
-              "maxDistance": 4.4,
+              "maxDistance": 3.1,
               "verticalTolerance": 1.5,
               "referenceFrame": "LockedActionDirection"
             },
@@ -583,7 +583,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 58,
               "minDistance": null,
-              "maxDistance": 3.5,
+              "maxDistance": 2.7,
               "verticalTolerance": 1.5,
               "referenceFrame": "LockedActionDirection"
             },

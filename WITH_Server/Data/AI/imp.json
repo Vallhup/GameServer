@@ -29,13 +29,74 @@
     "reactDuration": 0.5
   },
   "combatActions": [
-    { "abilityKey": "Ability.Imp_melee1", "weight": 10 },
-    { "abilityKey": "Ability.Imp_melee3", "weight": 35 },
-    { "abilityKey": "Ability.Imp_melee4", "weight": 30 },
-    { "abilityKey": "Ability.Imp_melee5", "weight": 25 }
+    {
+      "abilityKey": "Ability.Imp_melee1",
+      "weight": 15,
+      "distanceBucket": "VeryClose",
+      "aiCooldownSec": 1.0,
+      "globalCooldownSec": 1.2,
+      "patternGroup": "Imp_Poke",
+      "groupCooldownSec": 0.9,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.15
+    },
+    {
+      "abilityKey": "Ability.Imp_melee3",
+      "weight": 35,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 1.2,
+      "globalCooldownSec": 1.3,
+      "patternGroup": "Imp_Poke",
+      "groupCooldownSec": 1.0,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.15
+    },
+    {
+      "abilityKey": "Ability.Imp_melee4",
+      "weight": 30,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 1.8,
+      "globalCooldownSec": 1.6,
+      "patternGroup": "Imp_Poke",
+      "groupCooldownSec": 1.1,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.2
+    },
+    {
+      "abilityKey": "Ability.Imp_melee5",
+      "weight": 20,
+      "distanceBucket": "Close",
+      "aiCooldownSec": 3.0,
+      "globalCooldownSec": 2.0,
+      "patternGroup": "Imp_Poke",
+      "groupCooldownSec": 3.0,
+      "forbidImmediateRepeat": true,
+      "lockMovementSec": 0.3
+    }
   ],
   "idleActions": [
     { "abilityKey": "Ability.Imp_Jump", "weight": 100 }
+  ],
+  "movementProfiles": [
+    {
+      "name": "ImpSkirmisher",
+      "phaseMin": 1,
+      "phaseMax": 255,
+      "veryCloseDistance": 1.0,
+      "closeDistance": 2.0,
+      "midDistance": 5.0,
+      "farDistance": 9.0,
+      "preferredMinDistance": 1.6,
+      "preferredMaxDistance": 3.2,
+      "veryCloseBehavior": "Retreat",
+      "closeBehavior": "Strafe",
+      "preferredBehavior": "Strafe",
+      "midBehavior": "Approach",
+      "farBehavior": "RunApproach",
+      "strafeMinSec": 0.4,
+      "strafeMaxSec": 1.0,
+      "lockFacingToTarget": true
+    }
   ],
   "reactionRules": [
     {
