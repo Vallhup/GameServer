@@ -473,7 +473,6 @@
     <ClInclude Include="ShadowMappingManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="NetHelper.h" />
     <ClInclude Include="FroxelManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
@@ -529,6 +528,9 @@
     </ClInclude>
     <ClInclude Include="ClusterLightManager.h">
       <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="NetHelper.h">
+      <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -634,7 +636,9 @@
     <None Include="..\Shaders\ClusterCullCS.hlsli">
       <Filter>Shaders\Clustered</Filter>
     </None>
-    <None Include="..\Shaders\GlowPS.hlsli" />
+    <None Include="..\Shaders\GlowPS.hlsli">
+      <Filter>Shaders\Effects</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">
