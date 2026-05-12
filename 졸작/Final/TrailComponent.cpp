@@ -14,7 +14,7 @@ void TrailComponent::Update(float deltaTime)
 	if (owner)
 	{
 		auto animMachine = owner->GetComponent<AnimationMachine>();
-		bool isAttacking = animMachine && animMachine->IsPlaying("Attack");
+		bool isAttacking = animMachine && (animMachine->IsPlaying("AttackCombo1") || animMachine->IsPlaying("AttackCombo2") || animMachine->IsPlaying("AttackCombo3"));
 		SetActive(isAttacking);
 
 		if (isAttacking)

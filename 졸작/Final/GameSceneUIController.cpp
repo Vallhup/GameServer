@@ -11,37 +11,73 @@ void GameSceneUIController::Init(UIManager* manager)
 {
 	uiManager = manager;
 
-	// Status 패널
-	statusImage = make_shared<ImageUI>(L"Status", ImageUIState::Hidden);
-	statusImage->Init(uiManager);
-	statusImage->SetPosition(WinSize.x * 0.5f, WinSize.y * 0.25f);
-	statusImage->SetHoriLength(WinSize.x * 0.35f);
-	statusImage->SetVertLength(WinSize.y * 0.5f);
-	statusImage->SetFadeDuration(1.0f);
+	InitTargetHpBar();
+	InitLocalPlayerHUD();
+	InitMapNameOverlay();
+	InitStatWindow();
+	InitMapWindow();
+}
 
+void GameSceneUIController::InitTargetHpBar()
+{
+	constexpr float BARBACK_ASPECT = 39.0f / 785.0f;
+	constexpr float HPBAR_WIDTH_RATIO = 692.0f / 785.0f;
+	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;
+	constexpr float HPBAR_OFFSET_X = 49.0f / 785.0f;
+	constexpr float HPBAR_OFFSET_Y = 11.0f / 39.0f;
+
+	float backWidth = 300.0f;
+	float backHeight = backWidth * BARBACK_ASPECT;
+
+	float backPosX = WinSize.x * 0.5f - backWidth * 0.5f;
+	float backPosY = WinSize.y * 0.5f - backHeight * 0.5f;
+
+	charHPBarBack = make_shared<ImageUI>(L"BarBack", ImageUIState::Visible);
+	charHPBarBack->Init(uiManager);
+	charHPBarBack->SetPosition(backPosX, backPosY);
+	charHPBarBack->SetHoriLength(backWidth);
+	charHPBarBack->SetVertLength(backHeight);
+	widgets.push_back(charHPBarBack);
+
+	float hpBarWidth = backWidth * HPBAR_WIDTH_RATIO;
+	float hpBarHeight = backHeight * HPBAR_HEIGHT_RATIO;
+	float hpBarPosX = backPosX + backWidth * HPBAR_OFFSET_X;
+	float hpBarPosY = backPosY + backHeight * HPBAR_OFFSET_Y;
+
+	charHPBar = make_shared<ImageUI>(L"HpBar2", ImageUIState::Visible);
+	charHPBar->Init(uiManager);
+	charHPBar->SetPosition(hpBarPosX, hpBarPosY);
+	charHPBar->SetHoriLength(hpBarWidth);
+	charHPBar->SetVertLength(hpBarHeight);
+	widgets.push_back(charHPBar);
+}
+
+void GameSceneUIController::InitLocalPlayerHUD()
+{
 	localCharBarsBack = make_shared<ImageUI>(L"LocalCharBarsBack", ImageUIState::Visible);
 	localCharBarsBack->Init(uiManager);
 	localCharBarsBack->SetPosition(WinSize.x * 0.02f, WinSize.y * 0.03f);
 	localCharBarsBack->SetHoriLength(WinSize.y * 0.512);
 	localCharBarsBack->SetVertLength(WinSize.y * 0.1f);
+	widgets.push_back(localCharBarsBack);
 
 	localCharHpBar = make_shared<ImageUI>(L"HpBar", ImageUIState::Visible);
 	localCharHpBar->Init(uiManager);
 	localCharHpBar->SetPosition(WinSize.x * 0.0758f, WinSize.y * 0.0621f);
 	localCharHpBar->SetHoriLength(WinSize.y * 0.3457);
 	localCharHpBar->SetVertLength(WinSize.y * 0.0095);
+	widgets.push_back(localCharHpBar);
 
 	localCharStaminaBar = make_shared<ImageUI>(L"StaminaBar", ImageUIState::Visible);
 	localCharStaminaBar->Init(uiManager);
 	localCharStaminaBar->SetPosition(WinSize.x * 0.0767f, WinSize.y * 0.087499f);
 	localCharStaminaBar->SetHoriLength(WinSize.y * 0.2566);
 	localCharStaminaBar->SetVertLength(WinSize.y * 0.00626);
+	widgets.push_back(localCharStaminaBar);
+}
 
-	tempStatusText = make_shared<TextUI>(L"Texture", L"MalgunGothic");
-	tempStatusText->Init(uiManager);
-	tempStatusText->SetPosition(0.0f, 0.0f);
-	tempStatusText->SetText(L"TempText");
-
+void GameSceneUIController::InitMapNameOverlay()
+{
 	wstring texName;
 	switch (sceneType)
 	{
@@ -55,110 +91,78 @@ void GameSceneUIController::Init(UIManager* manager)
 	mapNameImage->SetPosition(WinSize.x * 0.3f, WinSize.y * 0.1f);
 	mapNameImage->SetHoriLength(WinSize.x * 0.4f);
 	mapNameImage->SetVertLength(WinSize.y * 0.1f);
+	widgets.push_back(mapNameImage);
+}
 
-	statBackground = make_shared<ImageUI>(L"StatBackground", ImageUIState::Hidden);
-	statBackground->Init(uiManager);
-	statBackground->SetHoriLength(WinSize.x);
-	statBackground->SetVertLength(WinSize.y);
+void GameSceneUIController::InitStatWindow()
+{
+	statusImage = make_shared<ImageUI>(L"Status", ImageUIState::Hidden);
+	statusImage->Init(uiManager);
+	statusImage->SetHoriLength(WinSize.x);
+	statusImage->SetVertLength(WinSize.y);
+	widgets.push_back(statusImage);
 
-	charImageBox = make_shared<ImageUI>(L"CharImageBox", ImageUIState::Hidden);
-	charImageBox->Init(uiManager);
-	charImageBox->SetPosition(WinSize.x * 0.09375f, WinSize.y * 0.1296f);
-	charImageBox->SetHoriLength(WinSize.x * 0.2917f);
-	charImageBox->SetVertLength(WinSize.y * 0.5926f);
+	tempStatusText = make_shared<TextUI>(L"Texture", L"MalgunGothic");
+	tempStatusText->Init(uiManager);
+	tempStatusText->SetPosition(0.0f, 0.0f);
+	tempStatusText->SetText(L"TempText");
+	widgets.push_back(tempStatusText);
+}
 
-	styleBar = make_shared<ImageUI>(L"StyleBar", ImageUIState::Hidden);
-	styleBar->Init(uiManager);
-	styleBar->SetPosition(WinSize.x * 0.09375f, WinSize.y * 0.75f);
-	styleBar->SetHoriLength(WinSize.x * 0.2917f);
-	styleBar->SetVertLength(WinSize.y * 0.1204f);
+void GameSceneUIController::InitMapWindow()
+{
+	wstring texName;
+	switch (sceneType)
+	{
+	case SceneType::Plaza:   texName = L"PlazaMap";   break;
+	case SceneType::Village: texName = L"VillageMap";  break;
+	case SceneType::Castle:  texName = L"CastleMap";   break;
+	}
 
-	statBox = make_shared<ImageUI>(L"StatBox", ImageUIState::Hidden);
-	statBox->Init(uiManager);
-	statBox->SetPosition(WinSize.x * 0.4375f, WinSize.y * 0.1296f);
-	statBox->SetHoriLength(WinSize.x * 0.4688f);
-	statBox->SetVertLength(WinSize.y * 0.7407f);
+	mapBackImage = make_shared<ImageUI>(L"Black", ImageUIState::Hidden);
+	mapBackImage->Init(uiManager);
+	mapBackImage->SetPosition(0.0f, 0.0f);
+	mapBackImage->SetHoriLength(WinSize.x);
+	mapBackImage->SetVertLength(WinSize.y);
+	mapBackImage->SetTintAlpha(0.98f);
+	widgets.push_back(mapBackImage);
 
-	constexpr float BARBACK_ASPECT    = 39.0f / 785.0f;    
-	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;  
-	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;    
-	constexpr float HPBAR_OFFSET_X     = 49.0f / 785.0f;   
-	constexpr float HPBAR_OFFSET_Y     = 11.0f / 39.0f;    
-
-	float backWidth = 300.0f;
-	float backHeight = backWidth * BARBACK_ASPECT;
-
-	float backPosX = WinSize.x * 0.5f - backWidth * 0.5f;
-	float backPosY = WinSize.y * 0.5f - backHeight * 0.5f;
-
-	charHPBarBack = make_shared<ImageUI>(L"BarBack", ImageUIState::Visible);
-	charHPBarBack->Init(uiManager);
-	charHPBarBack->SetPosition(backPosX, backPosY);
-	charHPBarBack->SetHoriLength(backWidth);
-	charHPBarBack->SetVertLength(backHeight);
-
-	float hpBarWidth = backWidth * HPBAR_WIDTH_RATIO;
-	float hpBarHeight = backHeight * HPBAR_HEIGHT_RATIO;
-	float hpBarPosX = backPosX + backWidth * HPBAR_OFFSET_X;
-	float hpBarPosY = backPosY + backHeight * HPBAR_OFFSET_Y;
-
-	charHPBar = make_shared<ImageUI>(L"HpBar2", ImageUIState::Visible);
-	charHPBar->Init(uiManager);
-	charHPBar->SetPosition(hpBarPosX, hpBarPosY);
-	charHPBar->SetHoriLength(hpBarWidth);
-	charHPBar->SetVertLength(hpBarHeight);
+	mapImage = make_shared<ImageUI>(texName, ImageUIState::Hidden);
+	mapImage->Init(uiManager);
+	mapImage->SetPosition(WinSize.x * 0.2031f, 0.0f);
+	mapImage->SetHoriLength(WinSize.y * (1140.0f/1080.0f));
+	mapImage->SetVertLength(WinSize.y);
+	widgets.push_back(mapImage);
 }
 
 void GameSceneUIController::Update(float deltaTime)
 {
-	if (statusImage) statusImage->Update(deltaTime);
-	if (localCharBarsBack) localCharBarsBack->Update(deltaTime);
-	if (localCharHpBar) localCharHpBar->Update(deltaTime);
-	if (localCharStaminaBar) localCharStaminaBar->Update(deltaTime);
-
-	if (charHPBarBack) charHPBarBack->Update(deltaTime);
-	if (charHPBar) charHPBar->Update(deltaTime);
-	if (mapNameImage) mapNameImage->Update(deltaTime);
-
-	if (statBackground) statBackground->Update(deltaTime);
-	if (charImageBox) charImageBox->Update(deltaTime);
-	if (styleBar) styleBar->Update(deltaTime);
-	if (statBox) statBox->Update(deltaTime);
+	for (auto& w : widgets) w->Update(deltaTime);
 
 	if (INPUT.GetKeyDown('K'))
 	{
-		if (statusImage->GetState() == ImageUIState::Hidden)
-			statusImage->ChangeState(ImageUIState::FadingIn);
-		else if (statusImage->GetState() == ImageUIState::FadingIn || statusImage->GetState() == ImageUIState::Visible)
-			statusImage->ChangeState(ImageUIState::Hidden);
-	}
-
-	if (INPUT.GetKeyDown(VK_TAB))
-	{
-		ImageUIState next = (statBackground->GetState() == ImageUIState::Hidden)
+		ImageUIState next = (statusImage->GetState() == ImageUIState::Hidden)
 			? ImageUIState::Visible : ImageUIState::Hidden;
 
-		statBackground->ChangeState(next);
-		if (charImageBox) charImageBox->ChangeState(next);
-		if (styleBar) styleBar->ChangeState(next);
-		if (statBox) statBox->ChangeState(next);
+		statusImage->ChangeState(next);
+	}
+
+	if (INPUT.GetKeyDown('M'))
+	{
+		if (sceneType >= SceneType::Plaza && sceneType <= SceneType::Castle)
+		{
+			ImageUIState next = (mapImage->GetState() == ImageUIState::Hidden)
+				? ImageUIState::Visible : ImageUIState::Hidden;
+
+			mapBackImage->ChangeState(next);
+			mapImage->ChangeState(next);
+		}
 	}
 }
 
 void GameSceneUIController::Render(SpriteBatch* batch)
 {
-	if (statusImage) statusImage->Render(batch);
-	if (localCharBarsBack) localCharBarsBack->Render(batch);
-	if (localCharHpBar) localCharHpBar->Render(batch);
-	if (localCharStaminaBar) localCharStaminaBar->Render(batch);
-	if (tempStatusText) tempStatusText->Render(batch);
-	if (charHPBarBack) charHPBarBack->Render(batch);
-	if (charHPBar) charHPBar->Render(batch);
-	if (mapNameImage) mapNameImage->Render(batch);
-	if (statBackground) statBackground->Render(batch);
-	if (charImageBox) charImageBox->Render(batch);
-	if (styleBar) styleBar->Render(batch);
-	if (statBox) statBox->Render(batch);
+	for (auto& w : widgets) w->Render(batch);
 }
 
 void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curStamina, int maxStamina)
@@ -196,6 +200,5 @@ void GameSceneUIController::ShowMapName()
 
 bool GameSceneUIController::IsStatWindowOn() const
 {
-	return statusImage ? 
-		(statusImage->GetState() == ImageUIState::FadingIn || statusImage->GetState() == ImageUIState::Visible) : false;
+	return statusImage ? (statusImage->GetState() == ImageUIState::Visible) : false;
 }

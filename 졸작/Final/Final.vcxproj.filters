@@ -250,9 +250,6 @@
     <ClCompile Include="BloomManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="ClusterLightManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
     <ClCompile Include="ClusterLightManager.cpp" />
     <ClCompile Include="ClusterLightManager.cpp" />
     <ClCompile Include="ParrySparkComponent.cpp">
@@ -263,6 +260,9 @@
     </ClCompile>
     <ClCompile Include="ParryStreakComponent.cpp">
       <Filter>Effect\Parry</Filter>
+    </ClCompile>
+    <ClCompile Include="ClusterLightManager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -516,9 +516,6 @@
     <ClInclude Include="ClientWorldTransitionController.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="ClusterLightManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
     <ClInclude Include="ClusterLightManager.h" />
     <ClInclude Include="ClusterLightManager.h" />
     <ClInclude Include="ParrySparkComponent.h">
@@ -529,6 +526,9 @@
     </ClInclude>
     <ClInclude Include="ParryStreakComponent.h">
       <Filter>Effect\Parry</Filter>
+    </ClInclude>
+    <ClInclude Include="ClusterLightManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -634,6 +634,7 @@
     <None Include="..\Shaders\ClusterCullCS.hlsli">
       <Filter>Shaders\Clustered</Filter>
     </None>
+    <None Include="..\Shaders\GlowPS.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">

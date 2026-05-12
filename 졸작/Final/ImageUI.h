@@ -23,6 +23,7 @@ public:
 	void SetVertLength(float length) { verticalLength = baseVertLength = length; }
 	void SetPulseSpeed(float speed) { pulseSpeed = speed; }
 	void SetHoverScale(float scale) { hoverScale = scale; }
+	void SetTintAlpha(float a) { tintAlpha = a; }
 
 	void ChangeState(ImageUIState newState);
 	ImageUIState GetState() const { return state; }
@@ -52,5 +53,7 @@ private:
 	float hoverScale = 1.15f;
 	float baseHoriLength = 0.0f;
 	float baseVertLength = 0.0f;
+
+	float tintAlpha = 1.0f;
 };
 

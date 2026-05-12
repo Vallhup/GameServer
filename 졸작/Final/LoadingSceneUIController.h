@@ -2,6 +2,7 @@
 #include "UIController.h"
 
 class ImageUI;
+class UIComponent;
 enum class SceneType;
 
 class LoadingSceneUIController : public UIController
@@ -16,6 +17,12 @@ public:
 	void Reset();
 
 private:
+	void InitBackground();
+	void InitLoadBar();
+	void InitPressAnyButton();
+
+	vector<shared_ptr<UIComponent>> widgets;
+
 	shared_ptr<ImageUI> mainImage;
 	shared_ptr<ImageUI> loadBarBack;
 	shared_ptr<ImageUI> loadBar;

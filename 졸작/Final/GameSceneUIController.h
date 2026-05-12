@@ -4,6 +4,7 @@
 
 class ImageUI;
 class TextUI;
+class UIComponent;
 
 class GameSceneUIController : public UIController
 {
@@ -23,7 +24,15 @@ public:
 	void ShowMapName();
 
 private:
+	void InitTargetHpBar();
+	void InitLocalPlayerHUD();
+	void InitMapNameOverlay();
+	void InitStatWindow();
+	void InitMapWindow();
+
 	SceneType sceneType;
+
+	vector<shared_ptr<UIComponent>> widgets;
 
 	shared_ptr<ImageUI> statusImage;
 	shared_ptr<ImageUI> localCharBarsBack;
@@ -35,11 +44,8 @@ private:
 	shared_ptr<ImageUI> charHPBarBack;
 	shared_ptr<ImageUI> charHPBar;
 
-	shared_ptr<ImageUI> mapNameImage;
+	shared_ptr<ImageUI> mapNameImage;  
 
-	shared_ptr<ImageUI> statBackground;
-	shared_ptr<ImageUI> charImageBox;   
-	shared_ptr<ImageUI> styleBar;       
-	shared_ptr<ImageUI> statBox;          
+	shared_ptr<ImageUI> mapBackImage;
+	shared_ptr<ImageUI> mapImage;
 };
-

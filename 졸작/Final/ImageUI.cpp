@@ -82,7 +82,7 @@ void ImageUI::Render(SpriteBatch* batch)
 	XMUINT2 texSize = GetTextureSize(tex->resource.Get());
 	RECT destRect = { static_cast<LONG>(posX), static_cast<LONG>(posY),
 		static_cast<LONG>(posX + horizontalLength), static_cast<LONG>(posY + verticalLength)};
-	XMVECTOR color = XMVectorSet(1.0f, 1.0f, 1.0f, fadeAlpha);
+	XMVECTOR color = XMVectorSet(1.0f, 1.0f, 1.0f, fadeAlpha * tintAlpha);
 	batch->Draw(heap->GetGpuHandle(tex->heapIndex), texSize, destRect, color);
 }
 
