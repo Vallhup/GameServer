@@ -43,6 +43,8 @@ void FirstBattleScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nFirstBattleScene Data has been created!! \n");
 
+	cam->SetCursor(false);
+
 	CreateCharacterPool(CharacterType::Knight);
 	CreateCharacterPool(CharacterType::Lancer);
 	CreateCharacterPool(CharacterType::Paladin);

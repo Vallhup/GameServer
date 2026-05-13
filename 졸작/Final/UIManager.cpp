@@ -76,6 +76,10 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"CastleMap", L"../Assets/UI/Textures/CastleMap.png", core, resourceUpload);
 
 	RegisterUITexture(L"PartyBook", L"../Assets/UI/Textures/PartyBook.png", core, resourceUpload);
+	RegisterUITexture(L"PartyBookButton", L"../Assets/UI/Textures/PartyBookButton.png", core, resourceUpload);
+	RegisterUITexture(L"PartyListBox", L"../Assets/UI/Textures/PartyListBox.png", core, resourceUpload);
+
+	RegisterUITexture(L"EscWindow", L"../Assets/UI/Textures/EscWindow.png", core, resourceUpload);
 
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
 	uploadFinished.wait();

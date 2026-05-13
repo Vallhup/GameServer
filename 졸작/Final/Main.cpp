@@ -127,10 +127,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
     case WM_KEYDOWN:
-        if (wParam == VK_ESCAPE) {
-            DestroyWindow(hWnd);
-            return 0;
-        }
         if (wParam == VK_F1 && ImGui::GetCurrentContext() != nullptr) {
             IMGUI.SetEnabled(!IMGUI.IsEnabled());
             return 0;

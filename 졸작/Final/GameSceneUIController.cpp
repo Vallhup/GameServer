@@ -4,6 +4,10 @@
 #include "UIManager.h"
 #include "Input.h"
 #include "TextUI.h"
+#include "Engine.h"
+#include "SceneManager.h"
+#include "Scene.h"
+#include "Camera.h"
 
 GameSceneUIController::GameSceneUIController(SceneType type) : sceneType(type) {}
 
@@ -14,9 +18,10 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitTargetHpBar();
 	InitLocalPlayerHUD();
 	InitMapNameOverlay();
+	InitPartyWindow();
 	InitStatWindow();
 	InitMapWindow();
-	InitPartyWindow();
+	InitEscWindow();
 }
 
 void GameSceneUIController::InitTargetHpBar()
@@ -95,6 +100,58 @@ void GameSceneUIController::InitMapNameOverlay()
 	widgets.push_back(mapNameImage);
 }
 
+void GameSceneUIController::InitPartyWindow()
+{
+	if (sceneType != SceneType::Plaza) return;
+
+	const float partyHeight = WinSize.y * 0.6f;
+	const float partyWidth = partyHeight * (843.0f / 720.0f);
+	const float partyX = (WinSize.x - partyWidth) * 0.5f;
+	const float partyY = (WinSize.y - partyHeight) * 0.5f;
+
+	partyBook = make_shared<ImageUI>(L"PartyBook", ImageUIState::Hidden);
+	partyBook->Init(uiManager);
+	partyBook->SetPosition(partyX, partyY);
+	partyBook->SetHoriLength(partyWidth);
+	partyBook->SetVertLength(partyHeight);
+	widgets.push_back(partyBook);
+
+	const float listBoxWidth = partyWidth * 0.3f;
+	const float listBoxHeight = listBoxWidth * (480.0f / 1980.0f);
+	const float listBoxX = partyX + partyWidth * 0.12f;
+	const float listBoxY = partyY + partyHeight * 0.11f;
+
+	partyListBox = make_shared<ImageUI>(L"PartyListBox", ImageUIState::Hidden);
+	partyListBox->Init(uiManager);
+	partyListBox->SetPosition(listBoxX, listBoxY);
+	partyListBox->SetHoriLength(listBoxWidth);
+	partyListBox->SetVertLength(listBoxHeight);
+	widgets.push_back(partyListBox);
+
+	const float buttonWidth = partyWidth * 0.35f;
+	const float buttonHeight = buttonWidth * (300.0f / 1860.0f);
+	const float buttonY = partyY + partyHeight - buttonHeight * 2.52f;
+	const float buttonGap = partyWidth * 0.08f;
+	const float buttonLeftX = partyX + (partyWidth - buttonWidth * 2.0f - buttonGap) * 0.5f;
+	const float buttonRightX = buttonLeftX + buttonWidth + buttonGap;
+
+	partyCreateButton = make_shared<ImageUI>(L"PartyBookButton", ImageUIState::Hidden);
+	partyCreateButton->Init(uiManager);
+	partyCreateButton->SetPosition(buttonLeftX, buttonY);
+	partyCreateButton->SetHoriLength(buttonWidth);
+	partyCreateButton->SetVertLength(buttonHeight);
+	partyCreateButton->SetHoverScale(1.05f);
+	widgets.push_back(partyCreateButton);
+
+	partyJoinButton = make_shared<ImageUI>(L"PartyBookButton", ImageUIState::Hidden);
+	partyJoinButton->Init(uiManager);
+	partyJoinButton->SetPosition(buttonRightX, buttonY);
+	partyJoinButton->SetHoriLength(buttonWidth);
+	partyJoinButton->SetVertLength(buttonHeight);
+	partyJoinButton->SetHoverScale(1.05f);
+	widgets.push_back(partyJoinButton);
+}
+
 void GameSceneUIController::InitStatWindow()
 {
 	statusImage = make_shared<ImageUI>(L"Status", ImageUIState::Hidden);
@@ -171,44 +228,138 @@ void GameSceneUIController::InitMapWindow()
 	widgets.push_back(mapImage);
 }
 
-void GameSceneUIController::InitPartyWindow()
+void GameSceneUIController::InitEscWindow()
 {
-	if (sceneType != SceneType::Plaza) return;
+	const float escSize = WinSize.y * 0.5f;
+	const float escX      = (WinSize.x - escSize) * 0.5f;
+	const float escY      = (WinSize.y - escSize) * 0.5f;
 
-	const float partyHeight = WinSize.y * 0.6f;
-	const float partyWidth  = partyHeight * (843.0f / 720.0f);
-	const float partyX = (WinSize.x - partyWidth) * 0.5f;
-	const float partyY = (WinSize.y - partyHeight) * 0.5f;
+	escWindow = make_shared<ImageUI>(L"EscWindow", ImageUIState::Hidden);
+	escWindow->Init(uiManager);
+	escWindow->SetPosition(escX, escY);
+	escWindow->SetHoriLength(escSize);
+	escWindow->SetVertLength(escSize);
+	widgets.push_back(escWindow);
 
-	partyBook = make_shared<ImageUI>(L"PartyBook", ImageUIState::Hidden);
-	partyBook->Init(uiManager);
-	partyBook->SetPosition(partyX, partyY);
-	partyBook->SetHoriLength(partyWidth);
-	partyBook->SetVertLength(partyHeight);
-	widgets.push_back(partyBook);
+	const float btnWidth  = escSize * 0.5f;
+	const float btnHeight = btnWidth * (480.0f / 1980.0f);
+	const float btnGap    = escSize * 0.03f;
+	const float btnTotalH = btnHeight * 3.0f + btnGap * 2.0f;
+	const float btnStartY = escY + (escSize - btnTotalH) * 0.55f;
+	const float btnX      = escX + (escSize - btnWidth) * 0.5f;
+
+	auto makeEscButton = [&](shared_ptr<ImageUI>& target, int slot) {
+		target = make_shared<ImageUI>(L"PartyListBox", ImageUIState::Hidden);
+		target->Init(uiManager);
+		target->SetPosition(btnX, btnStartY + (btnHeight + btnGap) * slot);
+		target->SetHoriLength(btnWidth);
+		target->SetVertLength(btnHeight);
+		target->SetHoverScale(1.05f);
+		widgets.push_back(target);
+	};
+
+	makeEscButton(escContinueButton, 0);
+	makeEscButton(escOptionsButton,  1);
+	makeEscButton(escExitButton,     2);
 }
 
 void GameSceneUIController::Update(float deltaTime)
 {
 	UIController::Update(deltaTime);
 
+	auto opened = [](const shared_ptr<ImageUI>& p) {
+		return p && p->GetState() != ImageUIState::Hidden;
+	};
+
 	if (INPUT.GetKeyDown('K'))
 	{
-		ImageUIState next = (statusImage->GetState() == ImageUIState::Hidden)
-			? ImageUIState::Visible : ImageUIState::Hidden;
+		bool selfOpen = opened(statusImage);
+		bool othersOpen = opened(escWindow) || opened(partyBook) || opened(mapImage);
+		if (selfOpen || !othersOpen)
+		{
+			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
 
-		statusImage->ChangeState(next);
-		statusRibbon->ChangeState(next);
-		statusArrowLeft->ChangeState(next);
-		statusArrowRight->ChangeState(next);
+			statusImage->ChangeState(next);
+			statusRibbon->ChangeState(next);
+			statusArrowLeft->ChangeState(next);
+			statusArrowRight->ChangeState(next);
+
+			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(next == ImageUIState::Visible);
+		}
+	}
+
+	if (INPUT.GetKeyDown(VK_ESCAPE) && escWindow)
+	{
+		bool selfOpen = opened(escWindow);
+		bool othersOpen = opened(statusImage) || opened(partyBook) || opened(mapImage);
+		if (selfOpen || !othersOpen)
+		{
+			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
+
+			escWindow->ChangeState(next);
+			escContinueButton->ChangeState(next);
+			escOptionsButton->ChangeState(next);
+			escExitButton->ChangeState(next);
+
+			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(next == ImageUIState::Visible);
+		}
+	}
+
+	if (escWindow && escWindow->GetState() != ImageUIState::Hidden)
+	{
+		escContinueButton->SetHovered(escContinueButton->IsMouseInside());
+		escOptionsButton->SetHovered(escOptionsButton->IsMouseInside());
+		escExitButton->SetHovered(escExitButton->IsMouseInside());
+
+		if (escContinueButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		{
+			escWindow->ChangeState(ImageUIState::Hidden);
+			escContinueButton->ChangeState(ImageUIState::Hidden);
+			escOptionsButton->ChangeState(ImageUIState::Hidden);
+			escExitButton->ChangeState(ImageUIState::Hidden);
+
+			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(false);
+		}
+		if (escOptionsButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		{
+			OutputDebugStringA("[Esc] Options button clicked\n");
+		}
+		if (escExitButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		{
+			PostQuitMessage(0);
+		}
 	}
 
 	if (INPUT.GetKeyDown('P') && partyBook)
 	{
-		ImageUIState next = (partyBook->GetState() == ImageUIState::Hidden)
-			? ImageUIState::Visible : ImageUIState::Hidden;
+		bool selfOpen = opened(partyBook);
+		bool othersOpen = opened(escWindow) || opened(statusImage) || opened(mapImage);
+		if (selfOpen || !othersOpen)
+		{
+			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
 
-		partyBook->ChangeState(next);
+			partyBook->ChangeState(next);
+			if (partyListBox)      partyListBox->ChangeState(next);
+			if (partyCreateButton) partyCreateButton->ChangeState(next);
+			if (partyJoinButton)   partyJoinButton->ChangeState(next);
+
+			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(next == ImageUIState::Visible);
+		}
+	}
+
+	if (partyBook && partyBook->GetState() != ImageUIState::Hidden)
+	{
+		partyCreateButton->SetHovered(partyCreateButton->IsMouseInside());
+		partyJoinButton->SetHovered(partyJoinButton->IsMouseInside());
+
+		if (partyCreateButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		{
+			OutputDebugStringA("[Party] Create button clicked\n");
+		}
+		if (partyJoinButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		{
+			OutputDebugStringA("[Party] Join button clicked\n");
+		}
 	}
 
 	if (statusImage->GetState() != ImageUIState::Hidden)
@@ -228,11 +379,17 @@ void GameSceneUIController::Update(float deltaTime)
 
 	if (INPUT.GetKeyDown('M') && mapImage && mapBackImage)
 	{
-		ImageUIState next = (mapImage->GetState() == ImageUIState::Hidden)
-			? ImageUIState::Visible : ImageUIState::Hidden;
+		bool selfOpen = opened(mapImage);
+		bool othersOpen = opened(escWindow) || opened(statusImage) || opened(partyBook);
+		if (selfOpen || !othersOpen)
+		{
+			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
 
-		mapBackImage->ChangeState(next);
-		mapImage->ChangeState(next);
+			mapBackImage->ChangeState(next);
+			mapImage->ChangeState(next);
+
+			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(next == ImageUIState::Visible);
+		}
 	}
 }
 

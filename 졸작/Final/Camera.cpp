@@ -60,7 +60,6 @@ void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<Gam
     //UpdatePosByObstruction(sceneObjects, instancingBatches, myPlayer);
     UpdateSmoothFollow(deltaTime);
     UpdateCameraMatrices(core);
-    SetCursor();
 }
 
 void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
@@ -388,17 +387,11 @@ void Camera::SetCameraPosition(const XMFLOAT3& pos)
     desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };
 }
 
-void Camera::SetCursor()
+void Camera::SetCursor(bool in)
 {
-    if (INPUT.GetKeyDown(VK_F2))
-    {
-        spacePressed = !spacePressed;
-        ShowCursor(spacePressed);
-
-        ChangeCursorInfo(spacePressed);
-
-        OutputDebugStringA("space changed!\n");
-    }
+    spacePressed = in;
+    ShowCursor(in);
+    ChangeCursorInfo(in);
 }
 
 void Camera::ChangeCursorInfo(bool in)

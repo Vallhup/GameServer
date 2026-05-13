@@ -25,9 +25,11 @@ private:
 	void InitTargetHpBar();
 	void InitLocalPlayerHUD();
 	void InitMapNameOverlay();
+	void InitPartyWindow();
 	void InitStatWindow();
 	void InitMapWindow();
-	void InitPartyWindow();
+
+	void InitEscWindow();
 
 	SceneType sceneType;
 
@@ -50,4 +52,12 @@ private:
 	shared_ptr<ImageUI> mapImage;
 
 	shared_ptr<ImageUI> partyBook;
+	shared_ptr<ImageUI> partyListBox;
+	shared_ptr<ImageUI> partyCreateButton;
+	shared_ptr<ImageUI> partyJoinButton;
+
+	shared_ptr<ImageUI> escWindow;
+	shared_ptr<ImageUI> escContinueButton;
+	shared_ptr<ImageUI> escOptionsButton;
+	shared_ptr<ImageUI> escExitButton;
 };

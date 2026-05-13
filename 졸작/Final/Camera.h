@@ -30,7 +30,7 @@ public:
 	void SetLutPreset(UINT idx, float saturation);
 
 	void SetCameraPosition(const XMFLOAT3& pos);
-	void SetCursor();
+	void SetCursor(bool in);
 	void ReleaseMouse();
 
 private:
