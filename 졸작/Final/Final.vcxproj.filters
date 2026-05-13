@@ -251,7 +251,6 @@
       <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="ClusterLightManager.cpp" />
-    <ClCompile Include="ClusterLightManager.cpp" />
     <ClCompile Include="ParrySparkComponent.cpp">
       <Filter>Effect\Parry</Filter>
     </ClCompile>
@@ -260,6 +259,9 @@
     </ClCompile>
     <ClCompile Include="ParryStreakComponent.cpp">
       <Filter>Effect\Parry</Filter>
+    </ClCompile>
+    <ClCompile Include="ClusterLightManager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="ClusterLightManager.cpp">
       <Filter>Manager</Filter>
@@ -516,7 +518,6 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="ClusterLightManager.h" />
-    <ClInclude Include="ClusterLightManager.h" />
     <ClInclude Include="ParrySparkComponent.h">
       <Filter>Effect\Parry</Filter>
     </ClInclude>
@@ -531,6 +532,9 @@
     </ClInclude>
     <ClInclude Include="NetHelper.h">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ClusterLightManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
