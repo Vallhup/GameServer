@@ -8,6 +8,8 @@ class InstancingBatch;
 class Camera
 {
 public:
+	~Camera();
+
 	void Initialize(HWND hWnd);
 	void InitCameraPositionFromCharacter(const XMFLOAT3& pos);
 

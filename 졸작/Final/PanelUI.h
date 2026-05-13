@@ -5,7 +5,7 @@
 class PanelUI : public UIComponent
 {
 public:
-	PanelUI(const wstring& name);
+	PanelUI(UIManager* manager, const wstring& name);
 
 	void Update(float deltaTime) override;
 	void Render(SpriteBatch* batch) override;

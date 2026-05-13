@@ -13,7 +13,7 @@ enum class ImageUIState {
 class ImageUI : public UIComponent
 {
 public:
-	ImageUI(const wstring& name, ImageUIState s);
+	ImageUI(UIManager* manager, const wstring& name, ImageUIState s);
 
 	void Update(float deltaTime) override;
 	void Render(SpriteBatch* batch) override;

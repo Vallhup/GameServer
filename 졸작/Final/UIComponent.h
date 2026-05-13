@@ -6,7 +6,9 @@ class UIManager;
 class UIComponent
 {
 public:
-	virtual void Init(UIManager* manager);
+	UIComponent(UIManager* manager) : uiManager(manager) {}
+	virtual ~UIComponent() = default;
+
 	virtual void Update(float deltaTime) = 0;
 	virtual void Render(SpriteBatch* batch) = 0;
 

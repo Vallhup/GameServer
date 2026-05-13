@@ -2,7 +2,8 @@
 #include "TextUI.h"
 #include "UIManager.h"
 
-TextUI::TextUI(const wstring& name, const wstring& font) : fontName(font)
+TextUI::TextUI(UIManager* manager, const wstring& name, const wstring& font)
+	: UIComponent(manager), fontName(font)
 {
 	uiName = name;
 }

@@ -16,8 +16,7 @@ void SelectSceneUIController::Init(UIManager* manager)
 
 void SelectSceneUIController::InitBackground()
 {
-	background = make_shared<ImageUI>(L"CharBackground", ImageUIState::Visible);
-	background->Init(uiManager);
+	background = make_shared<ImageUI>(uiManager, L"CharBackground", ImageUIState::Visible);
 	background->SetHoriLength(WinSize.x);
 	background->SetVertLength(WinSize.y);
 	widgets.push_back(background);
@@ -35,8 +34,7 @@ void SelectSceneUIController::InitCharImages(float& outCharWidth, float& outChar
 
 	for (int i = 0; i < 3; i++)
 	{
-		charImages[i] = make_shared<ImageUI>(charNames[i], ImageUIState::Visible);
-		charImages[i]->Init(uiManager);
+		charImages[i] = make_shared<ImageUI>(uiManager, charNames[i], ImageUIState::Visible);
 		charImages[i]->SetPosition(sectionWidth * i + padX, posY);
 		charImages[i]->SetHoriLength(charWidth);
 		charImages[i]->SetVertLength(charHeight);
@@ -49,8 +47,7 @@ void SelectSceneUIController::InitCharImages(float& outCharWidth, float& outChar
 
 void SelectSceneUIController::InitHoverOverlay(float charWidth, float charHeight)
 {
-	hoverOverlay = make_shared<ImageUI>(L"CharHover", ImageUIState::Hidden);
-	hoverOverlay->Init(uiManager);
+	hoverOverlay = make_shared<ImageUI>(uiManager, L"CharHover", ImageUIState::Hidden);
 	hoverOverlay->SetHoriLength(charWidth);
 	hoverOverlay->SetVertLength(charHeight);
 	widgets.push_back(hoverOverlay);

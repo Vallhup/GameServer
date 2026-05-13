@@ -7,6 +7,13 @@
 #include "Timer.h"
 #include "LookUpTextures.h"
 
+Camera::~Camera()
+{
+    while (ShowCursor(TRUE) < 0) {}    
+    while (ShowCursor(FALSE) >= 0) {}  
+    ShowCursor(TRUE);                  
+}
+
 void Camera::Initialize(HWND hWnd)
 {
     hwnd = hWnd;
@@ -83,13 +90,13 @@ void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
         {
             prevLutIndex = 0;
             lutIndex = 0;
-            lutBlendFactor = 1.0f;  // 즉시 적용
+            lutBlendFactor = 1.0f;  
         }
         else if (lutIndex < 219)
         {
             prevLutIndex = lutIndex;
             lutIndex += 1;
-            lutBlendFactor = 0.0f;  // 블렌딩 시작
+            lutBlendFactor = 0.0f;  
         }
         OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
         OutputDebugStringW((L"lutPath: " + core.GetLUTMgr()->GetPathFromIndex(lutIndex) + L"\n").c_str());
@@ -101,13 +108,13 @@ void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
         {
             prevLutIndex = 0;
             lutIndex = 0;
-            lutBlendFactor = 1.0f;  // 즉시 적용
+            lutBlendFactor = 1.0f;  
         }
         else if (lutIndex > 0)
         {
             prevLutIndex = lutIndex;
             lutIndex -= 1;
-            lutBlendFactor = 0.0f;  // 블렌딩 시작
+            lutBlendFactor = 0.0f;  
         }
         OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
         OutputDebugStringW((L"lutPath: " + core.GetLUTMgr()->GetPathFromIndex(lutIndex) + L"\n").c_str());
@@ -117,7 +124,7 @@ void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
     {
         prevLutIndex = lutIndex;
         lutIndex = 0xFFFFFFFF;
-        lutBlendFactor = 1.0f;  // LUT 끄기는 즉시
+        lutBlendFactor = 1.0f;  
         OutputDebugStringA(("lutIndex: " + to_string(lutIndex) + "\n").c_str());
     }
 

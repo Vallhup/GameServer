@@ -4,7 +4,8 @@
 #include "Input.h"
 #include <DirectXHelpers.h>
 
-ImageUI::ImageUI(const wstring& name, ImageUIState s) : textureName(name), state(s)
+ImageUI::ImageUI(UIManager* manager, const wstring& name, ImageUIState s)
+	: UIComponent(manager), textureName(name), state(s)
 {
 	uiName = name;
 	EnterState(state);
