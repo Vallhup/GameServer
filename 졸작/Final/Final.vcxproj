@@ -227,7 +227,6 @@ exit 0</Command>
     <ClCompile Include="FootDustComponent.cpp" />
     <ClCompile Include="FroxelManager.cpp" />
     <ClCompile Include="LightManager.cpp" />
-    <ClCompile Include="ClusterLightManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingSceneUIController.cpp" />
     <ClCompile Include="LookUpTextures.cpp" />
@@ -323,7 +322,6 @@ exit 0</Command>
     <ClInclude Include="FootDustComponent.h" />
     <ClInclude Include="FroxelManager.h" />
     <ClInclude Include="LightManager.h" />
-    <ClInclude Include="ClusterLightManager.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LoadingSceneUIController.h" />
     <ClInclude Include="LookUpTextures.h" />

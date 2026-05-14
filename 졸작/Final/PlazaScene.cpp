@@ -45,6 +45,8 @@ void PlazaScene::InitializeLogic()
 {
 	OutputDebugStringA("----------------------------------------\nPlazaScene Data has been created!! \n");
 
+	cam->SetCursor(false);
+
 	CreateCharacterPool(CharacterType::Knight);
 	CreateCharacterPool(CharacterType::Lancer);
 	CreateCharacterPool(CharacterType::Paladin);

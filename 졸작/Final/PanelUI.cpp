@@ -3,7 +3,8 @@
 #include "UIManager.h"
 #include <DirectXHelpers.h>
 
-PanelUI::PanelUI(const wstring& name) : textureName(name) 
+PanelUI::PanelUI(UIManager* manager, const wstring& name)
+	: UIComponent(manager), textureName(name)
 {
 	uiName = name;
 }

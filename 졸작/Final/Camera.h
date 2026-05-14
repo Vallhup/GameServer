@@ -8,6 +8,8 @@ class InstancingBatch;
 class Camera
 {
 public:
+	~Camera();
+
 	void Initialize(HWND hWnd);
 	void InitCameraPositionFromCharacter(const XMFLOAT3& pos);
 
@@ -30,7 +32,7 @@ public:
 	void SetLutPreset(UINT idx, float saturation);
 
 	void SetCameraPosition(const XMFLOAT3& pos);
-	void SetCursor();
+	void SetCursor(bool in);
 	void ReleaseMouse();
 
 private:

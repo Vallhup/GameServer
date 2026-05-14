@@ -4,7 +4,8 @@
 #include "Input.h"
 #include <DirectXHelpers.h>
 
-ImageUI::ImageUI(const wstring& name, ImageUIState s) : textureName(name), state(s)
+ImageUI::ImageUI(UIManager* manager, const wstring& name, ImageUIState s)
+	: UIComponent(manager), textureName(name), state(s)
 {
 	uiName = name;
 	EnterState(state);
@@ -82,7 +83,7 @@ void ImageUI::Render(SpriteBatch* batch)
 	XMUINT2 texSize = GetTextureSize(tex->resource.Get());
 	RECT destRect = { static_cast<LONG>(posX), static_cast<LONG>(posY),
 		static_cast<LONG>(posX + horizontalLength), static_cast<LONG>(posY + verticalLength)};
-	XMVECTOR color = XMVectorSet(1.0f, 1.0f, 1.0f, fadeAlpha);
+	XMVECTOR color = XMVectorSet(1.0f, 1.0f, 1.0f, fadeAlpha * tintAlpha);
 	batch->Draw(heap->GetGpuHandle(tex->heapIndex), texSize, destRect, color);
 }
 

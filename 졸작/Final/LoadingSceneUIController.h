@@ -9,13 +9,16 @@ class LoadingSceneUIController : public UIController
 public:
 	void Init(UIManager* manager) override;
 	void Update(float deltaTime) override;
-	void Render(SpriteBatch* batch) override;
 
 	void SetProgress(float progress);
 	void SetTargetScene(SceneType type);
 	void Reset();
 
 private:
+	void InitBackground();
+	void InitLoadBar();
+	void InitPressAnyButton();
+
 	shared_ptr<ImageUI> mainImage;
 	shared_ptr<ImageUI> loadBarBack;
 	shared_ptr<ImageUI> loadBar;

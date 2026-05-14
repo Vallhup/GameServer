@@ -12,7 +12,6 @@ public:
 
 	void Init(UIManager* manager) override;
 	void Update(float deltaTime) override;
-	void Render(SpriteBatch* batch) override;
 
 	void HandleStatBarChange(int curHp, int maxHp, int curStamina, int maxStamina);
 	void HandleStatImageChange(
@@ -23,9 +22,21 @@ public:
 	void ShowMapName();
 
 private:
+	void InitTargetHpBar();
+	void InitLocalPlayerHUD();
+	void InitMapNameOverlay();
+	void InitPartyWindow();
+	void InitStatWindow();
+	void InitMapWindow();
+
+	void InitEscWindow();
+
 	SceneType sceneType;
 
 	shared_ptr<ImageUI> statusImage;
+	shared_ptr<ImageUI> statusRibbon;
+	shared_ptr<ImageUI> statusArrowLeft;
+	shared_ptr<ImageUI> statusArrowRight;
 	shared_ptr<ImageUI> localCharBarsBack;
 	shared_ptr<ImageUI> localCharHpBar;
 	shared_ptr<ImageUI> localCharStaminaBar;
@@ -35,11 +46,18 @@ private:
 	shared_ptr<ImageUI> charHPBarBack;
 	shared_ptr<ImageUI> charHPBar;
 
-	shared_ptr<ImageUI> mapNameImage;
+	shared_ptr<ImageUI> mapNameImage;  
 
-	shared_ptr<ImageUI> statBackground;
-	shared_ptr<ImageUI> charImageBox;   
-	shared_ptr<ImageUI> styleBar;       
-	shared_ptr<ImageUI> statBox;          
+	shared_ptr<ImageUI> mapBackImage;
+	shared_ptr<ImageUI> mapImage;
+
+	shared_ptr<ImageUI> partyBook;
+	shared_ptr<ImageUI> partyListBox;
+	shared_ptr<ImageUI> partyCreateButton;
+	shared_ptr<ImageUI> partyJoinButton;
+
+	shared_ptr<ImageUI> escWindow;
+	shared_ptr<ImageUI> escContinueButton;
+	shared_ptr<ImageUI> escOptionsButton;
+	shared_ptr<ImageUI> escExitButton;
 };
-

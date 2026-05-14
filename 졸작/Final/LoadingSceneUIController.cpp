@@ -10,45 +10,54 @@ void LoadingSceneUIController::Init(UIManager* manager)
 {
 	uiManager = manager;
 
-	mainImage = make_shared<ImageUI>(L"LoadingPage", ImageUIState::Visible);
-	mainImage->Init(uiManager);
+	InitBackground();
+	InitLoadBar();
+	InitPressAnyButton();
+}
+
+void LoadingSceneUIController::InitBackground()
+{
+	mainImage = make_shared<ImageUI>(uiManager, L"LoadingPage", ImageUIState::Visible);
 	mainImage->SetHoriLength(WinSize.x);
 	mainImage->SetVertLength(WinSize.y);
+	widgets.push_back(mainImage);
+}
 
-	loadBarBack = make_shared<ImageUI>(L"LoadingBarBack", ImageUIState::Visible);
-	loadBarBack->Init(uiManager);
+void LoadingSceneUIController::InitLoadBar()
+{
+	loadBarBack = make_shared<ImageUI>(uiManager, L"LoadingBarBack", ImageUIState::Visible);
 	loadBarBack->SetPosition((WinSize.x * 0.4f) / 2.f, WinSize.y * 0.7f);
 	loadBarBack->SetHoriLength(WinSize.x * 0.6f);
 	loadBarBack->SetVertLength(WinSize.y * 0.16f);
+	widgets.push_back(loadBarBack);
 
-	loadBar = make_shared<ImageUI>(L"LoadingBar", ImageUIState::Visible);
-	loadBar->Init(uiManager);
+	loadBar = make_shared<ImageUI>(uiManager, L"LoadingBar", ImageUIState::Visible);
 	loadBar->SetPosition((WinSize.x * 0.5f) / 2.f, WinSize.y * 0.765f);
 	loadBar->SetHoriLength(0);  // 처음에는 0
 	loadBar->SetVertLength(WinSize.y * 0.03f);
+	widgets.push_back(loadBar);
 
 	loadBarMaxWidth = WinSize.x * 0.5f;
 
-	loadArrow = make_shared<ImageUI>(L"LoadingArrow", ImageUIState::Visible);
-	loadArrow->Init(uiManager);
+	loadArrow = make_shared<ImageUI>(uiManager, L"LoadingArrow", ImageUIState::Visible);
 	loadArrow->SetPosition((WinSize.x * 0.446f) / 2.f, WinSize.y * 0.73f);
 	loadArrow->SetHoriLength(WinSize.y * 0.1f);
 	loadArrow->SetVertLength(WinSize.y * 0.1f);
+	widgets.push_back(loadArrow);
+}
 
-	pab = make_shared<ImageUI>(L"PressAnyButton", ImageUIState::Hidden);
-	pab->Init(uiManager);
+void LoadingSceneUIController::InitPressAnyButton()
+{
+	pab = make_shared<ImageUI>(uiManager, L"PressAnyButton", ImageUIState::Hidden);
 	pab->SetPosition(WinSize.x * 0.4f, WinSize.y * 0.85f);
 	pab->SetHoriLength(WinSize.x * 0.2f);
 	pab->SetVertLength(WinSize.y * 0.04f);
+	widgets.push_back(pab);
 }
 
 void LoadingSceneUIController::Update(float deltaTime)
 {
-	if (mainImage) mainImage->Update(deltaTime);
-	if (loadBarBack) loadBarBack->Update(deltaTime);
-	if (loadBar) loadBar->Update(deltaTime);
-	if (loadArrow) loadArrow->Update(deltaTime);
-	if (pab) pab->Update(deltaTime);
+	UIController::Update(deltaTime);
 
 	if (loadProgress >= 1.0f)
 	{
@@ -62,14 +71,6 @@ void LoadingSceneUIController::Update(float deltaTime)
 	}
 }
 
-void LoadingSceneUIController::Render(SpriteBatch* batch)
-{
-	if (mainImage) mainImage->Render(batch);
-	if (loadBarBack) loadBarBack->Render(batch);
-	if (loadBar) loadBar->Render(batch);
-	if (loadArrow) loadArrow->Render(batch);
-	if (pab) pab->Render(batch);
-}
 
 void LoadingSceneUIController::SetProgress(float progress)
 {

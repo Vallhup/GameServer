@@ -250,11 +250,6 @@
     <ClCompile Include="BloomManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="ClusterLightManager.cpp">
-      <Filter>Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="ClusterLightManager.cpp" />
-    <ClCompile Include="ClusterLightManager.cpp" />
     <ClCompile Include="ParrySparkComponent.cpp">
       <Filter>Effect\Parry</Filter>
     </ClCompile>
@@ -263,6 +258,9 @@
     </ClCompile>
     <ClCompile Include="ParryStreakComponent.cpp">
       <Filter>Effect\Parry</Filter>
+    </ClCompile>
+    <ClCompile Include="ClusterLightManager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -473,7 +471,6 @@
     <ClInclude Include="ShadowMappingManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="NetHelper.h" />
     <ClInclude Include="FroxelManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
@@ -516,11 +513,6 @@
     <ClInclude Include="ClientWorldTransitionController.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="ClusterLightManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="ClusterLightManager.h" />
-    <ClInclude Include="ClusterLightManager.h" />
     <ClInclude Include="ParrySparkComponent.h">
       <Filter>Effect\Parry</Filter>
     </ClInclude>
@@ -529,6 +521,12 @@
     </ClInclude>
     <ClInclude Include="ParryStreakComponent.h">
       <Filter>Effect\Parry</Filter>
+    </ClInclude>
+    <ClInclude Include="ClusterLightManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="NetHelper.h">
+      <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -633,6 +631,9 @@
     </None>
     <None Include="..\Shaders\ClusterCullCS.hlsli">
       <Filter>Shaders\Clustered</Filter>
+    </None>
+    <None Include="..\Shaders\GlowPS.hlsli">
+      <Filter>Shaders\Effects</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

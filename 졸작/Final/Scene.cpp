@@ -137,9 +137,9 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	transform->SetScale(0.01f, 0.01f, 0.01f);
 
 	auto trail = character->AddComponent<TrailComponent>();
-	trail->Initialize(coreRef->GetDevice(), 32);
-	trail->SetColor({ 1.0f, 0.6f, 0.2f, 1.0f });
-	trail->SetLifetime(0.13f);
+	trail->Initialize(coreRef->GetDevice(), 64);
+	trail->SetColor({ 0.85f, 0.88f, 0.9f, 0.15f });
+	trail->SetLifetime(0.3f);
 
 	auto dust = character->AddComponent<FootDustComponent>();
 	dust->Initialize(coreRef->GetDevice(), 32);

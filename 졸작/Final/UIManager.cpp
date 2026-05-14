@@ -65,12 +65,21 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"CastleName", L"../Assets/UI/Textures/CastleName.png", core, resourceUpload);
 	RegisterUITexture(L"FinalName", L"../Assets/UI/Textures/FinalName.png", core, resourceUpload);
 
-	RegisterUITexture(L"StatBackground", L"../Assets/UI/Textures/StatBackground.png", core, resourceUpload);
-	RegisterUITexture(L"CharImageBox", L"../Assets/UI/Textures/CharImageBox.png", core, resourceUpload);
-	RegisterUITexture(L"StyleBar", L"../Assets/UI/Textures/StyleBar.png", core, resourceUpload);
-	RegisterUITexture(L"StatBox", L"../Assets/UI/Textures/StatBox.png", core, resourceUpload);
+	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);
+	RegisterUITexture(L"StatusRibbon",     L"../Assets/UI/Textures/StatusRibbon.png", core, resourceUpload);
+	RegisterUITexture(L"StatusArrowLeft",  L"../Assets/UI/Textures/StatusArrowLeft.png", core, resourceUpload);
+	RegisterUITexture(L"StatusArrowRight", L"../Assets/UI/Textures/StatusArrowRight.png", core, resourceUpload);
 
-	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);			
+	RegisterUITexture(L"Black", L"../Assets/UI/Textures/Black.png", core, resourceUpload);
+	RegisterUITexture(L"PlazaMap", L"../Assets/UI/Textures/PlazaMap.png", core, resourceUpload);
+	RegisterUITexture(L"VillageMap", L"../Assets/UI/Textures/VillageMap.png", core, resourceUpload);
+	RegisterUITexture(L"CastleMap", L"../Assets/UI/Textures/CastleMap.png", core, resourceUpload);
+
+	RegisterUITexture(L"PartyBook", L"../Assets/UI/Textures/PartyBook.png", core, resourceUpload);
+	RegisterUITexture(L"PartyBookButton", L"../Assets/UI/Textures/PartyBookButton.png", core, resourceUpload);
+	RegisterUITexture(L"PartyListBox", L"../Assets/UI/Textures/PartyListBox.png", core, resourceUpload);
+
+	RegisterUITexture(L"EscWindow", L"../Assets/UI/Textures/EscWindow.png", core, resourceUpload);
 
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
 	uploadFinished.wait();
@@ -144,7 +153,7 @@ void UIManager::RegisterUITexture(const wstring& name, const wchar_t* path, DX12
 	auto& tex = uiTextureMap[name];
 	tex.heapIndex = nextIndex;
 
-	CreateWICTextureFromFile(core.GetDevice(), upload, path, tex.resource.ReleaseAndGetAddressOf());
+	CreateWICTextureFromFileEx(core.GetDevice(), upload, path, 0, D3D12_RESOURCE_FLAG_NONE, WIC_LOADER_FORCE_SRGB, tex.resource.ReleaseAndGetAddressOf());
 	CreateShaderResourceView(core.GetDevice(), tex.resource.Get(), uiSrvHeap->GetCpuHandle(tex.heapIndex));
 	
 	nextIndex++;
