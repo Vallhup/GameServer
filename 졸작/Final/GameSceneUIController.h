@@ -31,8 +31,11 @@ private:
 
 	void InitEscWindow();
 
+	void InitKeyGuide();
+
 	SceneType sceneType;
 
+	shared_ptr<ImageUI> statusBackImage;
 	shared_ptr<ImageUI> statusImage;
 	shared_ptr<ImageUI> statusRibbon;
 	shared_ptr<ImageUI> statusArrowLeft;
@@ -60,4 +63,6 @@ private:
 	shared_ptr<ImageUI> escContinueButton;
 	shared_ptr<ImageUI> escOptionsButton;
 	shared_ptr<ImageUI> escExitButton;
+
+	shared_ptr<ImageUI> keyGuide;
 };

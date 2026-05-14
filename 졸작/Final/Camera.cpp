@@ -81,7 +81,7 @@ void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
     if (wheel != 0) {
         float steps = (float)wheel / (float)WHEEL_DELTA; 
         desiredDistance -= steps * zoomSpeedPerNotch;
-        desiredDistance = std::clamp(desiredDistance, minDistance, maxDistance);
+        desiredDistance = clamp(desiredDistance, minDistance, maxDistance);
     }
 
     if (INPUT.GetKeyDown(VK_F3))

@@ -66,6 +66,7 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"FinalName", L"../Assets/UI/Textures/FinalName.png", core, resourceUpload);
 
 	RegisterUITexture(L"Status", L"../Assets/UI/Textures/Status.png", core, resourceUpload);
+	RegisterUITexture(L"StatusBack", L"../Assets/UI/Textures/StatusBack.png", core, resourceUpload);
 	RegisterUITexture(L"StatusRibbon",     L"../Assets/UI/Textures/StatusRibbon.png", core, resourceUpload);
 	RegisterUITexture(L"StatusArrowLeft",  L"../Assets/UI/Textures/StatusArrowLeft.png", core, resourceUpload);
 	RegisterUITexture(L"StatusArrowRight", L"../Assets/UI/Textures/StatusArrowRight.png", core, resourceUpload);
@@ -77,9 +78,18 @@ void UIManager::Initialize(DX12Core& core)
 
 	RegisterUITexture(L"PartyBook", L"../Assets/UI/Textures/PartyBook.png", core, resourceUpload);
 	RegisterUITexture(L"PartyBookButton", L"../Assets/UI/Textures/PartyBookButton.png", core, resourceUpload);
-	RegisterUITexture(L"PartyListBox", L"../Assets/UI/Textures/PartyListBox.png", core, resourceUpload);
+	RegisterUITexture(L"PartyList", L"../Assets/UI/Textures/PartyList.png", core, resourceUpload);
+	RegisterUITexture(L"PartyCreate", L"../Assets/UI/Textures/PartyCreate.png", core, resourceUpload);
+	RegisterUITexture(L"PartyJoin", L"../Assets/UI/Textures/PartyJoin.png", core, resourceUpload);
+	RegisterUITexture(L"PartyMyParty", L"../Assets/UI/Textures/PartyMyParty.png", core, resourceUpload);
+	RegisterUITexture(L"PartyBack", L"../Assets/UI/Textures/PartyBack.png", core, resourceUpload);
 
 	RegisterUITexture(L"EscWindow", L"../Assets/UI/Textures/EscWindow.png", core, resourceUpload);
+	RegisterUITexture(L"ESCContinue", L"../Assets/UI/Textures/ESCContinue.png", core, resourceUpload);
+	RegisterUITexture(L"ESCSetting", L"../Assets/UI/Textures/ESCSetting.png", core, resourceUpload);
+	RegisterUITexture(L"ESCQuit", L"../Assets/UI/Textures/ESCQuit.png", core, resourceUpload);
+
+	RegisterUITexture(L"KeyGuide", L"../Assets/UI/Textures/KeyGuide.png", core, resourceUpload);
 
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
 	uploadFinished.wait();

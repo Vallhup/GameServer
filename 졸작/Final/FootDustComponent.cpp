@@ -82,7 +82,7 @@ void FootDustComponent::Update(float deltaTime)
 	}
 
 	particles.erase(
-		std::remove_if(particles.begin(), particles.end(),
+		remove_if(particles.begin(), particles.end(),
 			[this](const DustParticle& p) { return p.age >= maxLifetime; }),
 		particles.end()
 	);
