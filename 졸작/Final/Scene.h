@@ -67,6 +67,7 @@ private:
 	void HandleAdd(const Protocol::SC_ADD_PACKET& add);
 	void HandleMove(const Protocol::SC_MOVE_PACKET& move);
 	void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove);
+	void HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact);
 	void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim);
 	void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat);
 

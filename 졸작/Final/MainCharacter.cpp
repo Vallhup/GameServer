@@ -16,6 +16,20 @@ void MainCharacter::Update(float deltaTime)
 		BasicDodge();
 		BasicGuard();
 		BasicParry();
+
+		// TEMP: 서버 아이템 기능 체크용
+		// TODO: 현재 클라 예측 애니메이션이 없어서 아이템 사용 중
+		//       패링, 회피 시 애니메이션이 덮어 띄워지는 버그 있음
+		{
+			if (auto* network = NETWORK_MANAGER)
+			{
+				auto& input = INPUT;
+				if (input.GetKey('1'))
+				{
+					network->SendUseItemPacket(0, 0);
+				}
+			}
+		}
 	}
 
 	GameObject::Update(deltaTime);

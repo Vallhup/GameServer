@@ -5,11 +5,51 @@
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<6> CommitAbilityTimelineEventSystem::kMetaStorage =
+namespace
+{
+	bool TryConsumeHpPotion(SystemContext& ctx, Entity entity)
+	{
+		ConsumableInventoryComp* inventory =
+			ctx.ecs.GetMutableComponent<ConsumableInventoryComp>(entity);
+		CombatStatStateComp* stats =
+			ctx.ecs.GetMutableComponent<CombatStatStateComp>(entity);
+		if (inventory == nullptr ||
+			stats == nullptr ||
+			inventory->hpPotionCount == 0 ||
+			stats->currentHp <= 0 ||
+			stats->maxHp <= 0 ||
+			stats->currentHp >= stats->maxHp)
+		{
+			return false;
+		}
+
+		const HpPotionTuning tuning{};
+		--inventory->hpPotionCount;
+
+		const int32_t previousHp = stats->currentHp;
+		stats->currentHp = std::clamp(
+			stats->currentHp + tuning.healAmount,
+			0,
+			stats->maxHp);
+
+		if (previousHp != stats->currentHp)
+		{
+			if (DirtyFlagsComp* dirty =
+				ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
+			{
+				dirty->MarkDirty(WorldDirtyType::Stat);
+			}
+		}
+
+		return true;
+	}
+}
+
+const StaticSystemMetaStorage<9> CommitAbilityTimelineEventSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<CommitAbilityTimelineEventSystem>(),
 		"CommitAbilityTimelineEventSystem",
-		std::array<AccessSpec, 6>
+		std::array<AccessSpec, 9>
 	{
 		ReadImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
 		ReadImmediate(ComponentRes<PendingCombatResultComp>()),
@@ -17,6 +57,9 @@ const StaticSystemMetaStorage<6> CommitAbilityTimelineEventSystem::kMetaStorage 
 		WriteImmediate(ComponentRes<PendingAbilityPresentationEventComp>()),
 		WriteImmediate(ComponentRes<ReplicationStatsComp>()),
 		WriteDeferred(ComponentRes<PendingGameplayEffectApplyComp>()),
+		WriteImmediate(ComponentRes<ConsumableInventoryComp>()),
+		WriteImmediate(ComponentRes<CombatStatStateComp>()),
+		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 	});
 
 void CommitAbilityTimelineEventSystem::Execute(SystemContext& ctx)
@@ -82,6 +125,15 @@ void CommitAbilityTimelineEventSystem::Execute(SystemContext& ctx)
 					.eventKind = eventDef.kind,
 					.payloadId = eventDef.payloadId
 				});
+			}
+			else if (eventDef.kind == AbilityEventKind::ConsumeItem)
+			{
+				if (eventDef.payloadId.has_value() &&
+					*eventDef.payloadId ==
+						static_cast<uint16_t>(ConsumableItemId::HpPotion))
+				{
+					(void)TryConsumeHpPotion(ctx, entity);
+				}
 			}
 			else
 			{

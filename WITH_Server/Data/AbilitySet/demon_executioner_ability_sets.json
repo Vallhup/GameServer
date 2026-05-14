@@ -157,11 +157,6 @@
       "key": "AbilityFallback.DemonExecutioner",
       "entries": [
         {
-          "cause": "OnHitReceived",
-          "toAbilityKey": "Ability.DemonExecutioner_Hit",
-          "priority": 100
-        },
-        {
           "cause": "OnParried",
           "toAbilityKey": "Ability.DemonExecutioner_Stun",
           "priority": 200

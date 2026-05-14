@@ -55,6 +55,8 @@ void PacketHandlerRegistrar::Register(
 	RegisterHandler(taskRegistry, sourceRegistry, network,
 		PacketType::CS_PARRY,                  &HandleParryPacket,                  "Pkt_CS_PARRY");
 	RegisterHandler(taskRegistry, sourceRegistry, network,
+		PacketType::CS_USE_ITEM,               &HandleUseItemPacket,                "Pkt_CS_USE_ITEM");
+	RegisterHandler(taskRegistry, sourceRegistry, network,
 		PacketType::CS_WORLD_TRANSITION_REQUEST, &HandleWorldTransitionRequestPacket, "Pkt_CS_WORLD_TRANSITION_REQUEST");
 	RegisterHandler(taskRegistry, sourceRegistry, network,
 		PacketType::CS_WORLD_TRANSITION_READY, &HandleWorldTransitionReadyPacket,   "Pkt_CS_WORLD_TRANSITION_READY");

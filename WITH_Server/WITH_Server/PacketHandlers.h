@@ -15,6 +15,7 @@ ExecCallResult HandleAttackPacket(NodeExecContext& ctx);
 ExecCallResult HandleDodgePacket(NodeExecContext& ctx);
 ExecCallResult HandleGuardPacket(NodeExecContext& ctx);
 ExecCallResult HandleParryPacket(NodeExecContext& ctx);
+ExecCallResult HandleUseItemPacket(NodeExecContext& ctx);
 ExecCallResult HandleWorldTransitionRequestPacket(NodeExecContext& ctx);
 ExecCallResult HandleWorldTransitionReadyPacket(NodeExecContext& ctx);
 

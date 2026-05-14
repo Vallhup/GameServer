@@ -68,15 +68,31 @@ public:
 			NetId netId{ NetId::Invalid() };
 		};
 
+		struct CombatImpactEvent
+		{
+			WorldId worldId{ WorldId::Invalid() };
+			NetId attackerNetId{ NetId::Invalid() };
+			NetId victimNetId{ NetId::Invalid() };
+			uint32_t resultType{ 0 };
+			float impactX{ 0.0f };
+			float impactY{ 0.0f };
+			float impactZ{ 0.0f };
+			float dirX{ 0.0f };
+			float dirY{ 0.0f };
+			float dirZ{ -1.0f };
+		};
+
 		struct FrameEvents
 		{
 			std::vector<EntitySpawnEvent> spawns;
 			std::vector<EntityDespawnEvent> despawns;
+			std::vector<CombatImpactEvent> combatImpacts;
 
 			void Clear() noexcept
 			{
 				spawns.clear();
 				despawns.clear();
+				combatImpacts.clear();
 			}
 		};
 

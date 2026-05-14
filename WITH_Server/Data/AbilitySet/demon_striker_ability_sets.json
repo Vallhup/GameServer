@@ -137,11 +137,6 @@
       "key": "AbilityFallback.DemonStriker",
       "entries": [
         {
-          "cause": "OnHitReceived",
-          "toAbilityKey": "Ability.DemonStriker_Hit",
-          "priority": 100
-        },
-        {
           "cause": "OnParried",
           "toAbilityKey": "Ability.DemonStriker_Stun",
           "priority": 200

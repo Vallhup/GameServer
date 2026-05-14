@@ -23,7 +23,7 @@ struct CombatColliderActivationComp;
 struct PendingCombatInteractionRecord;
 
 class ResolveCombatHitSystem final : public System {
-	static const StaticSystemMetaStorage<11> kMetaStorage;
+	static const StaticSystemMetaStorage<12> kMetaStorage;
 
 public:
 	void Execute(SystemContext& ctx) override;

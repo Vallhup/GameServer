@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "FitSkeletalCombatColliderSystem.h"
 
+#include <span>
+
 #include "../../../AnimationRegistry.h"
 #include "../GameplaySystemUtil.h"
 
@@ -35,6 +37,29 @@ namespace
 			},
 		};
 	}
+
+	void BuildCollidersFromCapsules(
+		const AnimationClipDef& clip,
+		std::span<const Capsule> capsules,
+		float unitScale,
+		std::vector<SkeletalCombatCollider>& outColliders)
+	{
+		outColliders.clear();
+		outColliders.reserve(capsules.size());
+
+		for (size_t colliderIndex = 0;
+			colliderIndex < capsules.size();
+			++colliderIndex)
+		{
+			const Capsule& capsule = capsules[colliderIndex];
+			const AnimationCapsuleDef& capsuleDef = clip.capsuleDefs[colliderIndex];
+			outColliders.push_back(SkeletalCombatCollider{
+				ScaleCapsule(capsule, unitScale),
+				capsuleDef.radius * unitScale,
+				FitSkeletalCombatColliderSystem::BuildRoleMask(clip, colliderIndex)
+			});
+		}
+	}
 }
 
 const StaticSystemMetaStorage<3> FitSkeletalCombatColliderSystem::kMetaStorage =
@@ -61,7 +86,8 @@ void FitSkeletalCombatColliderSystem::Execute(SystemContext& ctx)
 	{
 		(void)entity;
 		colliderState.localColliders.clear();
-		colliderState.localColliders.reserve(pose.localCapsules.size());
+		colliderState.previousFrameLocalColliders.clear();
+		colliderState.hasPreviousFrameLocalColliders = false;
 
 		if (_animationRegistry == nullptr ||
 			pose.animationId == AnimationId::None)
@@ -78,17 +104,30 @@ void FitSkeletalCombatColliderSystem::Execute(SystemContext& ctx)
 
 		const float unitScale = GetAnimationUnitScale(*clip);
 
-		for (size_t colliderIndex = 0;
-			colliderIndex < pose.localCapsules.size();
-			++colliderIndex)
+		BuildCollidersFromCapsules(
+			*clip,
+			std::span<const Capsule>(
+				pose.localCapsules.data(),
+				pose.localCapsules.size()),
+			unitScale,
+			colliderState.localColliders);
+
+		if (pose.sampleFrameIndex > 0 &&
+			pose.sampleFrameIndex < clip->frames.size())
 		{
-			const Capsule& capsule = pose.localCapsules[colliderIndex];
-			const AnimationCapsuleDef& capsuleDef = clip->capsuleDefs[colliderIndex];
-			colliderState.localColliders.push_back(SkeletalCombatCollider{
-				ScaleCapsule(capsule, unitScale),
-				capsuleDef.radius * unitScale,
-				BuildRoleMask(*clip, colliderIndex)
-			});
+			const AnimationClipFrame& previousFrame =
+				clip->frames[pose.sampleFrameIndex - 1];
+			if (previousFrame.capsules.size() == clip->capsuleDefs.size())
+			{
+				BuildCollidersFromCapsules(
+					*clip,
+					std::span<const Capsule>(
+						previousFrame.capsules.data(),
+						previousFrame.capsules.size()),
+					unitScale,
+					colliderState.previousFrameLocalColliders);
+				colliderState.hasPreviousFrameLocalColliders = true;
+			}
 		}
 	}
 }

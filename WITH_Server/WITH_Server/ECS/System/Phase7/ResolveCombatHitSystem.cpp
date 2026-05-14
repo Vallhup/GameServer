@@ -7,11 +7,194 @@
 using namespace GameplaySystemUtil;
 using namespace DirectX;
 
-const StaticSystemMetaStorage<11> ResolveCombatHitSystem::kMetaStorage =
+namespace
+{
+	constexpr float kVectorEpsilonSq = 1.0e-6f;
+
+	struct SegmentClosestResult
+	{
+		float lhsT{ 0.0f };
+		float rhsT{ 0.0f };
+		XMFLOAT3 lhsPoint{ 0.0f, 0.0f, 0.0f };
+		XMFLOAT3 rhsPoint{ 0.0f, 0.0f, 0.0f };
+		float distanceSq{ 0.0f };
+	};
+
+	float Dot(const XMFLOAT3& lhs, const XMFLOAT3& rhs) noexcept
+	{
+		return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+	}
+
+	XMFLOAT3 Add(const XMFLOAT3& lhs, const XMFLOAT3& rhs) noexcept
+	{
+		return XMFLOAT3{
+			lhs.x + rhs.x,
+			lhs.y + rhs.y,
+			lhs.z + rhs.z
+		};
+	}
+
+	XMFLOAT3 Subtract(const XMFLOAT3& lhs, const XMFLOAT3& rhs) noexcept
+	{
+		return XMFLOAT3{
+			lhs.x - rhs.x,
+			lhs.y - rhs.y,
+			lhs.z - rhs.z
+		};
+	}
+
+	XMFLOAT3 Scale(const XMFLOAT3& value, float scale) noexcept
+	{
+		return XMFLOAT3{
+			value.x * scale,
+			value.y * scale,
+			value.z * scale
+		};
+	}
+
+	XMFLOAT3 PointOnSegment(const Capsule& capsule, float t) noexcept
+	{
+		return XMFLOAT3{
+			capsule.p0.x + (capsule.p1.x - capsule.p0.x) * t,
+			capsule.p0.y + (capsule.p1.y - capsule.p0.y) * t,
+			capsule.p0.z + (capsule.p1.z - capsule.p0.z) * t
+		};
+	}
+
+	bool TryNormalize(XMFLOAT3& value) noexcept
+	{
+		const float lengthSq = Dot(value, value);
+		if (lengthSq <= kVectorEpsilonSq)
+		{
+			value = XMFLOAT3{ 0.0f, 0.0f, 0.0f };
+			return false;
+		}
+
+		const float invLength = 1.0f / std::sqrt(lengthSq);
+		value.x *= invLength;
+		value.y *= invLength;
+		value.z *= invLength;
+		return true;
+	}
+
+	SegmentClosestResult ComputeSegmentClosestPoints(
+		const Capsule& lhs,
+		const Capsule& rhs) noexcept
+	{
+		const XMFLOAT3 u{
+			lhs.p1.x - lhs.p0.x,
+			lhs.p1.y - lhs.p0.y,
+			lhs.p1.z - lhs.p0.z
+		};
+		const XMFLOAT3 v{
+			rhs.p1.x - rhs.p0.x,
+			rhs.p1.y - rhs.p0.y,
+			rhs.p1.z - rhs.p0.z
+		};
+		const XMFLOAT3 w{
+			lhs.p0.x - rhs.p0.x,
+			lhs.p0.y - rhs.p0.y,
+			lhs.p0.z - rhs.p0.z
+		};
+
+		const float a = Dot(u, u);
+		const float b = Dot(u, v);
+		const float c = Dot(v, v);
+		const float d = Dot(u, w);
+		const float e = Dot(v, w);
+		const float determinant = a * c - b * b;
+		const float epsilon = 1.0e-6f;
+
+		float sNumerator = 0.0f;
+		float sDenominator = determinant;
+		float tNumerator = 0.0f;
+		float tDenominator = determinant;
+
+		if (determinant <= epsilon)
+		{
+			sNumerator = 0.0f;
+			sDenominator = 1.0f;
+			tNumerator = e;
+			tDenominator = c;
+		}
+		else
+		{
+			sNumerator = (b * e - c * d);
+			tNumerator = (a * e - b * d);
+
+			if (sNumerator < 0.0f)
+			{
+				sNumerator = 0.0f;
+				tNumerator = e;
+				tDenominator = c;
+			}
+			else if (sNumerator > sDenominator)
+			{
+				sNumerator = sDenominator;
+				tNumerator = e + b;
+				tDenominator = c;
+			}
+		}
+
+		if (tNumerator < 0.0f)
+		{
+			tNumerator = 0.0f;
+			if (-d < 0.0f)
+			{
+				sNumerator = 0.0f;
+			}
+			else if (-d > a)
+			{
+				sNumerator = sDenominator;
+			}
+			else
+			{
+				sNumerator = -d;
+				sDenominator = a;
+			}
+		}
+		else if (tNumerator > tDenominator)
+		{
+			tNumerator = tDenominator;
+			if ((-d + b) < 0.0f)
+			{
+				sNumerator = 0.0f;
+			}
+			else if ((-d + b) > a)
+			{
+				sNumerator = sDenominator;
+			}
+			else
+			{
+				sNumerator = (-d + b);
+				sDenominator = a;
+			}
+		}
+
+		const float s = (std::abs(sNumerator) <= epsilon)
+			? 0.0f
+			: sNumerator / std::max(sDenominator, epsilon);
+		const float t = (std::abs(tNumerator) <= epsilon)
+			? 0.0f
+			: tNumerator / std::max(tDenominator, epsilon);
+
+		SegmentClosestResult result{};
+		result.lhsT = s;
+		result.rhsT = t;
+		result.lhsPoint = PointOnSegment(lhs, s);
+		result.rhsPoint = PointOnSegment(rhs, t);
+		result.distanceSq = Dot(
+			Subtract(result.lhsPoint, result.rhsPoint),
+			Subtract(result.lhsPoint, result.rhsPoint));
+		return result;
+	}
+}
+
+const StaticSystemMetaStorage<12> ResolveCombatHitSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<ResolveCombatHitSystem>(),
 		"ResolveCombatHitSystem",
-		std::array<AccessSpec, 11>
+		std::array<AccessSpec, 12>
 	{
 		ReadImmediate(ComponentRes<CombatColliderActivationComp>()),
 		ReadImmediate(ComponentRes<AbilityStateComp>()),
@@ -19,6 +202,7 @@ const StaticSystemMetaStorage<11> ResolveCombatHitSystem::kMetaStorage =
 		ReadImmediate(ComponentRes<SkeletalCombatColliderComp>()),
 		WriteImmediate(ComponentRes<CombatHitDedupStateComp>()),
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
+		WriteImmediate(ComponentRes<PendingCombatImpactEventComp>()),
 		ReadImmediate(ComponentRes<LocomotionStateComp>()),
 		ReadImmediate(ComponentRes<SpawnTypeComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
@@ -145,6 +329,24 @@ void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 			}
 
 			victimResult->receivedInteractions.push_back(interaction);
+			if (PendingCombatImpactEventComp* impactEvents =
+				ctx.ecs.GetMutableComponent<PendingCombatImpactEventComp>(victim))
+			{
+				impactEvents->events.push_back(PendingCombatImpactEvent{
+					.sourceEntity = attacker,
+					.targetEntity = victim,
+					.sourceAbilityId = interaction.sourceAbilityId,
+					.sourceAbilityInstanceId =
+						interaction.sourceAbilityInstanceId,
+					.sourceAttackWindowIndex =
+						interaction.sourceAttackWindowIndex,
+					.sourceColliderIndex = interaction.sourceColliderIndex,
+					.targetColliderIndex = interaction.targetColliderIndex,
+					.resultType = interaction.resultType,
+					.impactPoint = interaction.impactPoint,
+					.swingDirection = interaction.swingDirection
+				});
+			}
 			victimResult->reactionSource = attacker;
 			victimResult->wasHitThisFrame |=
 				interaction.resultType == CombatResolveResultType::Hit;
@@ -212,114 +414,7 @@ float ResolveCombatHitSystem::SegmentSegmentDistanceSq(
 	const Capsule& lhs,
 	const Capsule& rhs) noexcept
 {
-	const XMFLOAT3 u{
-		lhs.p1.x - lhs.p0.x,
-		lhs.p1.y - lhs.p0.y,
-		lhs.p1.z - lhs.p0.z
-	};
-	const XMFLOAT3 v{
-		rhs.p1.x - rhs.p0.x,
-		rhs.p1.y - rhs.p0.y,
-		rhs.p1.z - rhs.p0.z
-	};
-	const XMFLOAT3 w{
-		lhs.p0.x - rhs.p0.x,
-		lhs.p0.y - rhs.p0.y,
-		lhs.p0.z - rhs.p0.z
-	};
-
-	const auto dot = [](const XMFLOAT3& a, const XMFLOAT3& b) noexcept
-	{
-		return a.x * b.x + a.y * b.y + a.z * b.z;
-	};
-
-	const float a = dot(u, u);
-	const float b = dot(u, v);
-	const float c = dot(v, v);
-	const float d = dot(u, w);
-	const float e = dot(v, w);
-	const float determinant = a * c - b * b;
-	const float epsilon = 1.0e-6f;
-
-	float sNumerator = 0.0f;
-	float sDenominator = determinant;
-	float tNumerator = 0.0f;
-	float tDenominator = determinant;
-
-	if (determinant <= epsilon)
-	{
-		sNumerator = 0.0f;
-		sDenominator = 1.0f;
-		tNumerator = e;
-		tDenominator = c;
-	}
-	else
-	{
-		sNumerator = (b * e - c * d);
-		tNumerator = (a * e - b * d);
-
-		if (sNumerator < 0.0f)
-		{
-			sNumerator = 0.0f;
-			tNumerator = e;
-			tDenominator = c;
-		}
-		else if (sNumerator > sDenominator)
-		{
-			sNumerator = sDenominator;
-			tNumerator = e + b;
-			tDenominator = c;
-		}
-	}
-
-	if (tNumerator < 0.0f)
-	{
-		tNumerator = 0.0f;
-		if (-d < 0.0f)
-		{
-			sNumerator = 0.0f;
-		}
-		else if (-d > a)
-		{
-			sNumerator = sDenominator;
-		}
-		else
-		{
-			sNumerator = -d;
-			sDenominator = a;
-		}
-	}
-	else if (tNumerator > tDenominator)
-	{
-		tNumerator = tDenominator;
-		if ((-d + b) < 0.0f)
-		{
-			sNumerator = 0.0f;
-		}
-		else if ((-d + b) > a)
-		{
-			sNumerator = sDenominator;
-		}
-		else
-		{
-			sNumerator = (-d + b);
-			sDenominator = a;
-		}
-	}
-
-	const float s = (std::abs(sNumerator) <= epsilon)
-		? 0.0f
-		: sNumerator / std::max(sDenominator, epsilon);
-	const float t = (std::abs(tNumerator) <= epsilon)
-		? 0.0f
-		: tNumerator / std::max(tDenominator, epsilon);
-
-	const XMFLOAT3 delta{
-		w.x + s * u.x - t * v.x,
-		w.y + s * u.y - t * v.y,
-		w.z + s * u.z - t * v.z
-	};
-	return dot(delta, delta);
+	return ComputeSegmentClosestPoints(lhs, rhs).distanceSq;
 }
 
 bool ResolveCombatHitSystem::CapsulesOverlap(
@@ -783,6 +878,87 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 		return false;
 	}
 
+	const SkeletalCombatCollider& bestSourceCollider =
+		attackerColliders.localColliders[bestSourceColliderIndex];
+	const SkeletalCombatCollider& bestTargetCollider =
+		victimColliders.localColliders[bestTargetColliderIndex];
+	const Capsule bestWorldSourceCapsule{
+		TransformPoint(attackerWorldMatrix, bestSourceCollider.capsule.p0),
+		TransformPoint(attackerWorldMatrix, bestSourceCollider.capsule.p1)
+	};
+	const Capsule bestWorldTargetCapsule{
+		TransformPoint(victimWorldMatrix, bestTargetCollider.capsule.p0),
+		TransformPoint(victimWorldMatrix, bestTargetCollider.capsule.p1)
+	};
+	const float bestWorldSourceRadius =
+		bestSourceCollider.radius * attackerRadiusScale;
+	const float bestWorldTargetRadius =
+		bestTargetCollider.radius * victimRadiusScale;
+	const SegmentClosestResult contact =
+		ComputeSegmentClosestPoints(
+			bestWorldSourceCapsule,
+			bestWorldTargetCapsule);
+
+	XMFLOAT3 contactNormal =
+		Subtract(contact.rhsPoint, contact.lhsPoint);
+	if (!TryNormalize(contactNormal))
+	{
+		contactNormal = Subtract(
+			victimTransform.position,
+			attackerTransform.position);
+		if (!TryNormalize(contactNormal) &&
+			!BuildReferenceDirection(
+				ecs,
+				attacker,
+				attackerAbility,
+				attackerTransform,
+				AbilityCombatReferenceFrame::LockedActionDirection,
+				contactNormal))
+		{
+			contactNormal = XMFLOAT3{ 0.0f, 0.0f, -1.0f };
+		}
+	}
+
+	const XMFLOAT3 sourceSurfacePoint =
+		Add(contact.lhsPoint, Scale(contactNormal, bestWorldSourceRadius));
+	const XMFLOAT3 targetSurfacePoint =
+		Subtract(contact.rhsPoint, Scale(contactNormal, bestWorldTargetRadius));
+	const XMFLOAT3 impactPoint =
+		Scale(Add(sourceSurfacePoint, targetSurfacePoint), 0.5f);
+
+	XMFLOAT3 swingDirection{ 0.0f, 0.0f, -1.0f };
+	bool hasSwingDirection = false;
+	if (attackerColliders.hasPreviousFrameLocalColliders &&
+		bestSourceColliderIndex <
+			attackerColliders.previousFrameLocalColliders.size())
+	{
+		const SkeletalCombatCollider& previousSourceCollider =
+			attackerColliders.previousFrameLocalColliders[bestSourceColliderIndex];
+		const Capsule previousWorldSourceCapsule{
+			TransformPoint(
+				attackerWorldMatrix,
+				previousSourceCollider.capsule.p0),
+			TransformPoint(
+				attackerWorldMatrix,
+				previousSourceCollider.capsule.p1)
+		};
+		swingDirection = Subtract(
+			contact.lhsPoint,
+			PointOnSegment(previousWorldSourceCapsule, contact.lhsT));
+		hasSwingDirection = TryNormalize(swingDirection);
+	}
+	if (!hasSwingDirection &&
+		!BuildReferenceDirection(
+			ecs,
+			attacker,
+			attackerAbility,
+			attackerTransform,
+			AbilityCombatReferenceFrame::LockedActionDirection,
+			swingDirection))
+	{
+		swingDirection = contactNormal;
+	}
+
 	std::optional<AbilityGuardResponseDef> guardEffect;
 	std::optional<AbilityParryResponseDef> parryEffect;
 	float maxHitStopSec = attackEffect.hitStopSec;
@@ -806,7 +982,9 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 		.guardEffect = guardEffect,
 		.parryEffect = parryEffect,
 		.maxKnockbackDistance = attackEffect.knockbackDistance,
-		.maxHitStopSec = maxHitStopSec
+		.maxHitStopSec = maxHitStopSec,
+		.impactPoint = impactPoint,
+		.swingDirection = swingDirection
 	};
 	return true;
 }

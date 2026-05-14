@@ -80,15 +80,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Tank_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnParried",
             "toAbilityKey": "Ability.Tank_Stun",
             "windowPolicy": "Always",
@@ -189,15 +180,6 @@
         },
         "defaultNextAbilityKey": null,
         "interruptRules": [
-          {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Tank_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
           {
             "cause": "OnParried",
             "toAbilityKey": "Ability.Tank_Stun",
@@ -300,15 +282,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Tank_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnParried",
             "toAbilityKey": "Ability.Tank_Stun",
             "windowPolicy": "Always",
@@ -409,15 +382,6 @@
         },
         "defaultNextAbilityKey": null,
         "interruptRules": [
-          {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Tank_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
           {
             "cause": "OnParried",
             "toAbilityKey": "Ability.Tank_Stun",
@@ -520,15 +484,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Tank_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnParried",
             "toAbilityKey": "Ability.Tank_Stun",
             "windowPolicy": "Always",
@@ -629,15 +584,6 @@
         },
         "defaultNextAbilityKey": null,
         "interruptRules": [
-          {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Tank_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
           {
             "cause": "OnParried",
             "toAbilityKey": "Ability.Tank_Stun",
@@ -740,15 +686,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Tank_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnParried",
             "toAbilityKey": "Ability.Tank_Stun",
             "windowPolicy": "Always",
@@ -850,15 +787,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Tank_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnParried",
             "toAbilityKey": "Ability.Tank_Stun",
             "windowPolicy": "Always",
@@ -915,15 +843,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Tank_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnAttributeZero",
             "toAbilityKey": "Ability.Tank_Dead",
             "windowPolicy": "Always",
@@ -970,15 +889,6 @@
         },
         "defaultNextAbilityKey": null,
         "interruptRules": [
-          {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Tank_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
           {
             "cause": "OnAttributeZero",
             "toAbilityKey": "Ability.Tank_Dead",

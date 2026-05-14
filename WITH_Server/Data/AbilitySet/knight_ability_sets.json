@@ -33,6 +33,10 @@
           "level": 1
         },
         {
+          "abilityKey": "Ability.Knight_HpPotion",
+          "level": 1
+        },
+        {
           "abilityKey": "Ability.Knight_Stun",
           "level": 1
         },
@@ -79,6 +83,12 @@
         {
           "request": "Parry",
           "candidateAbilityKeys": ["Ability.Knight_Parry"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "UseItem",
+          "candidateAbilityKeys": ["Ability.Knight_HpPotion"],
           "selectionPolicy": "OrderedFirstValid",
           "priority": 100
         },
@@ -134,6 +144,12 @@
         {
           "abilityKey": "Ability.Knight_Parry",
           "animationKey": "Knight_Parry",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Knight_HpPotion",
+          "animationKey": "Knight_Drinking",
           "playRate": 1,
           "startNormalizedTime": 0
         },

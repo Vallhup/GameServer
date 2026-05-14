@@ -133,11 +133,6 @@
       "key": "AbilityFallback.Imp",
       "entries": [
         {
-          "cause": "OnHitReceived",
-          "toAbilityKey": "Ability.Imp_Hit",
-          "priority": 100
-        },
-        {
           "cause": "OnParried",
           "toAbilityKey": "Ability.Imp_Stun",
           "priority": 200

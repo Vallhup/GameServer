@@ -4,7 +4,7 @@
 #include "SystemMetaStorage.h"
 
 class CommitAbilityTimelineEventSystem final : public System {
-	static const StaticSystemMetaStorage<6> kMetaStorage;
+	static const StaticSystemMetaStorage<9> kMetaStorage;
 
 public:
 	void Execute(SystemContext& ctx) override;

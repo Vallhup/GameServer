@@ -43,6 +43,12 @@ message CS_PARRY_PACKET
 	float dirZ = 2;
 }
 
+message CS_USE_ITEM_PACKET
+{
+	float dirX = 1;
+	float dirZ = 2;
+}
+
 message CS_WORLD_TRANSITION_REQUEST_PACKET
 {
 	uint32 requestId = 1;
@@ -87,6 +93,21 @@ message SC_MOVE_PACKET
 message SC_REMOVE_PACKET
 {
 	uint64 netid = 1;
+}
+
+message SC_COMBAT_IMPACT_PACKET
+{
+	uint64 attackerNetId = 1;
+	uint64 victimNetId = 2;
+	uint32 resultType = 3;
+
+	float impactX = 4;
+	float impactY = 5;
+	float impactZ = 6;
+
+	float dirX = 7;
+	float dirY = 8;
+	float dirZ = 9;
 }
 
 message SC_ANIMATION_TRANSITION_PACKET

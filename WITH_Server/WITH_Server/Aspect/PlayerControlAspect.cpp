@@ -13,6 +13,7 @@ CharacterFeatureFlags PlayerControlAspect::RequiredFeature() const noexcept
 void PlayerControlAspect::RegisterStorages(WorldRuntime& runtime) const
 {
 	runtime.RegisterStorage<PlayerControlIdentityComp>();
+	runtime.RegisterStorage<ConsumableInventoryComp>();
 }
 
 void PlayerControlAspect::Attach(
@@ -26,6 +27,13 @@ void PlayerControlAspect::Attach(
 		{
 			.netId			= params.netId,
 			.ownerSessionId = params.sessionId.value_or(0)
+		});
+
+	const HpPotionTuning potionTuning{};
+	runtime.DeferredUpsertComponent<ConsumableInventoryComp>(
+		entity,
+		ConsumableInventoryComp{
+			.hpPotionCount = potionTuning.defaultGrantCount
 		});
 }
 

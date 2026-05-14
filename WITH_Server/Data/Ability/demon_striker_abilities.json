@@ -80,15 +80,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.DemonStriker_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnParried",
             "toAbilityKey": "Ability.DemonStriker_Stun",
             "windowPolicy": "Always",
@@ -189,15 +180,6 @@
         },
         "defaultNextAbilityKey": null,
         "interruptRules": [
-          {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.DemonStriker_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
           {
             "cause": "OnParried",
             "toAbilityKey": "Ability.DemonStriker_Stun",
@@ -300,15 +282,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.DemonStriker_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnParried",
             "toAbilityKey": "Ability.DemonStriker_Stun",
             "windowPolicy": "Always",
@@ -410,15 +383,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.DemonStriker_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnParried",
             "toAbilityKey": "Ability.DemonStriker_Stun",
             "windowPolicy": "Always",
@@ -497,15 +461,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.DemonStriker_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnAttributeZero",
             "toAbilityKey": "Ability.DemonStriker_Dead",
             "windowPolicy": "Always",
@@ -574,15 +529,6 @@
         },
         "defaultNextAbilityKey": null,
         "interruptRules": [
-          {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.DemonStriker_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
           {
             "cause": "OnAttributeZero",
             "toAbilityKey": "Ability.DemonStriker_Dead",
@@ -653,15 +599,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.DemonStriker_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnAttributeZero",
             "toAbilityKey": "Ability.DemonStriker_Dead",
             "windowPolicy": "Always",
@@ -731,15 +668,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.DemonStriker_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnAttributeZero",
             "toAbilityKey": "Ability.DemonStriker_Dead",
             "windowPolicy": "Always",
@@ -787,15 +715,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.DemonStriker_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnAttributeZero",
             "toAbilityKey": "Ability.DemonStriker_Dead",
             "windowPolicy": "Always",
@@ -842,15 +761,6 @@
         },
         "defaultNextAbilityKey": null,
         "interruptRules": [
-          {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.DemonStriker_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
           {
             "cause": "OnAttributeZero",
             "toAbilityKey": "Ability.DemonStriker_Dead",
