@@ -194,6 +194,31 @@ bool NetworkManager::SendParryPacket(float dirX, float dirZ)
 	}
 }
 
+bool NetworkManager::SendUseItemPacket(float dirX, float dirZ)
+{
+	if (_service == nullptr)
+	{
+		return false;
+	}
+
+	Protocol::CS_USE_ITEM_PACKET useItem;
+	useItem.set_dirx(dirX);
+	useItem.set_dirz(dirZ);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_USE_ITEM_PACKET>(
+		PacketType::CS_USE_ITEM, useItem);
+
+	if (data != nullptr)
+	{
+		_service->Send(data);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 bool NetworkManager::SendWorldTransitionRequestPacket(uint32_t requestId)
 {
 	if (_service == nullptr)

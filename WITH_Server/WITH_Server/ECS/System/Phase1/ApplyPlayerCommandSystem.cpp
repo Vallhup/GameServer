@@ -23,6 +23,9 @@ namespace
 		case PlayerCommandTypeKey::Parry:
 			return PlayerAbilityInputType::Parry;
 
+		case PlayerCommandTypeKey::UseItem:
+			return PlayerAbilityInputType::UseItem;
+
 		default:
 			return PlayerAbilityInputType::None;
 		}

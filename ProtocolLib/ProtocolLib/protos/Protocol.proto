@@ -43,6 +43,12 @@ message CS_PARRY_PACKET
 	float dirZ = 2;
 }
 
+message CS_USE_ITEM_PACKET
+{
+	float dirX = 1;
+	float dirZ = 2;
+}
+
 message CS_WORLD_TRANSITION_REQUEST_PACKET
 {
 	uint32 requestId = 1;

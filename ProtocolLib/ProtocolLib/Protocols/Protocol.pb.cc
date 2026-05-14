@@ -331,6 +331,32 @@ struct CS_WORLD_TRANSITION_READY_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_WORLD_TRANSITION_READY_PACKETDefaultTypeInternal _CS_WORLD_TRANSITION_READY_PACKET_default_instance_;
 
+inline constexpr CS_USE_ITEM_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : dirx_{0},
+        dirz_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CS_USE_ITEM_PACKET::CS_USE_ITEM_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CS_USE_ITEM_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CS_USE_ITEM_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CS_USE_ITEM_PACKETDefaultTypeInternal() {}
+  union {
+    CS_USE_ITEM_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_USE_ITEM_PACKETDefaultTypeInternal _CS_USE_ITEM_PACKET_default_instance_;
+
 inline constexpr CS_PARRY_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : dirx_{0},
@@ -611,6 +637,16 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_PARRY_PACKET, _impl_.dirx_),
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_PARRY_PACKET, _impl_.dirz_),
         ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_USE_ITEM_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_USE_ITEM_PACKET, _impl_.dirx_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_USE_ITEM_PACKET, _impl_.dirz_),
+        ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_WORLD_TRANSITION_REQUEST_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -764,18 +800,19 @@ static const ::_pbi::MigrationSchema
         {39, -1, -1, sizeof(::Protocol::CS_DODGE_PACKET)},
         {49, -1, -1, sizeof(::Protocol::CS_GUARD_PACKET)},
         {58, -1, -1, sizeof(::Protocol::CS_PARRY_PACKET)},
-        {68, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_REQUEST_PACKET)},
-        {77, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_READY_PACKET)},
-        {86, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
-        {95, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
-        {104, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {118, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {131, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
-        {140, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
-        {150, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
-        {167, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
-        {187, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
-        {197, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
+        {68, -1, -1, sizeof(::Protocol::CS_USE_ITEM_PACKET)},
+        {78, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_REQUEST_PACKET)},
+        {87, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_READY_PACKET)},
+        {96, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
+        {105, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
+        {114, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
+        {128, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {141, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {150, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
+        {160, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
+        {177, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
+        {197, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
+        {207, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -785,6 +822,7 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_DODGE_PACKET_default_instance_._instance,
     &::Protocol::_CS_GUARD_PACKET_default_instance_._instance,
     &::Protocol::_CS_PARRY_PACKET_default_instance_._instance,
+    &::Protocol::_CS_USE_ITEM_PACKET_default_instance_._instance,
     &::Protocol::_CS_WORLD_TRANSITION_REQUEST_PACKET_default_instance_._instance,
     &::Protocol::_CS_WORLD_TRANSITION_READY_PACKET_default_instance_._instance,
     &::Protocol::_SC_LOGIN_SUCCESS_PACKET_default_instance_._instance,
@@ -808,52 +846,53 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "rX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"-\n\017CS_DODGE_PACKE"
     "T\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\" \n\017CS_GUAR"
     "D_PACKET\022\r\n\005input\030\001 \001(\010\"-\n\017CS_PARRY_PACK"
-    "ET\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"7\n\"CS_WOR"
-    "LD_TRANSITION_REQUEST_PACKET\022\021\n\trequestI"
-    "d\030\001 \001(\r\"6\n CS_WORLD_TRANSITION_READY_PAC"
-    "KET\022\022\n\ntransferId\030\001 \001(\004\"(\n\027SC_LOGIN_SUCC"
-    "ESS_PACKET\022\r\n\005netid\030\001 \001(\004\"&\n\024SC_LOGIN_FA"
-    "IL_PACKET\022\016\n\006reason\030\001 \001(\r\"\\\n\rSC_ADD_PACK"
-    "ET\022\r\n\005netid\030\001 \001(\004\022\016\n\006typeid\030\002 \001(\r\022\t\n\001x\030\003"
-    " \001(\002\022\t\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\""
-    "M\n\016SC_MOVE_PACKET\022\r\n\005netid\030\001 \001(\004\022\t\n\001x\030\002 "
-    "\001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"!"
-    "\n\020SC_REMOVE_PACKET\022\r\n\005netid\030\001 \001(\004\"A\n\036SC_"
-    "ANIMATION_TRANSITION_PACKET\022\r\n\005netid\030\001 \001"
-    "(\004\022\020\n\010currAnim\030\002 \001(\005\"\264\001\n\025SC_STAT_CHANGE_"
-    "PACKET\022\r\n\005netid\030\001 \001(\004\022\r\n\005curhp\030\002 \001(\r\022\r\n\005"
-    "maxhp\030\003 \001(\r\022\022\n\ncurstamina\030\004 \001(\r\022\022\n\nmaxst"
-    "amina\030\005 \001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013attackspee"
-    "d\030\007 \001(\002\022\017\n\007defense\030\010 \001(\r\022\021\n\tmovespeed\030\t "
-    "\001(\002\"\264\002\n SC_WORLD_TRANSITION_BEGIN_PACKET"
-    "\022\022\n\ntransferId\030\001 \001(\004\022\021\n\trequestId\030\002 \001(\r\022"
-    "\030\n\020sourceWorldDefId\030\003 \001(\r\022\025\n\rsourceWorld"
-    "Id\030\004 \001(\004\022\030\n\020targetWorldDefId\030\005 \001(\r\022\025\n\rta"
-    "rgetWorldId\030\006 \001(\004\022\025\n\rmapResourceId\030\007 \001(\r"
-    "\022\023\n\013playerNetId\030\010 \001(\004\022\034\n\024clearExistingOb"
-    "jects\030\t \001(\010\022\027\n\017waitClientReady\030\n \001(\010\022\024\n\014"
-    "usedFallback\030\013 \001(\010\022\016\n\006reason\030\014 \001(\r\"H\n#SC"
-    "_WORLD_TRANSITION_REJECTED_PACKET\022\021\n\treq"
-    "uestId\030\001 \001(\r\022\016\n\006reason\030\002 \001(\r\"\374\001\n\033SC_REPL"
-    "ICATION_FRAME_PACKET\022\020\n\010frameSeq\030\001 \001(\r\022\022"
-    "\n\nserverTick\030\002 \001(\r\022\'\n\006spawns\030\003 \003(\0132\027.Pro"
-    "tocol.SC_ADD_PACKET\022,\n\010despawns\030\004 \003(\0132\032."
-    "Protocol.SC_REMOVE_PACKET\022\'\n\005moves\030\005 \003(\013"
-    "2\030.Protocol.SC_MOVE_PACKET\0227\n\005anims\030\006 \003("
-    "\0132(.Protocol.SC_ANIMATION_TRANSITION_PAC"
-    "KETb\006proto3"
+    "ET\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"0\n\022CS_USE"
+    "_ITEM_PACKET\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002"
+    "\"7\n\"CS_WORLD_TRANSITION_REQUEST_PACKET\022\021"
+    "\n\trequestId\030\001 \001(\r\"6\n CS_WORLD_TRANSITION"
+    "_READY_PACKET\022\022\n\ntransferId\030\001 \001(\004\"(\n\027SC_"
+    "LOGIN_SUCCESS_PACKET\022\r\n\005netid\030\001 \001(\004\"&\n\024S"
+    "C_LOGIN_FAIL_PACKET\022\016\n\006reason\030\001 \001(\r\"\\\n\rS"
+    "C_ADD_PACKET\022\r\n\005netid\030\001 \001(\004\022\016\n\006typeid\030\002 "
+    "\001(\r\022\t\n\001x\030\003 \001(\002\022\t\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003"
+    "yaw\030\006 \001(\002\"M\n\016SC_MOVE_PACKET\022\r\n\005netid\030\001 \001"
+    "(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003y"
+    "aw\030\005 \001(\002\"!\n\020SC_REMOVE_PACKET\022\r\n\005netid\030\001 "
+    "\001(\004\"A\n\036SC_ANIMATION_TRANSITION_PACKET\022\r\n"
+    "\005netid\030\001 \001(\004\022\020\n\010currAnim\030\002 \001(\005\"\264\001\n\025SC_ST"
+    "AT_CHANGE_PACKET\022\r\n\005netid\030\001 \001(\004\022\r\n\005curhp"
+    "\030\002 \001(\r\022\r\n\005maxhp\030\003 \001(\r\022\022\n\ncurstamina\030\004 \001("
+    "\r\022\022\n\nmaxstamina\030\005 \001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013"
+    "attackspeed\030\007 \001(\002\022\017\n\007defense\030\010 \001(\r\022\021\n\tmo"
+    "vespeed\030\t \001(\002\"\264\002\n SC_WORLD_TRANSITION_BE"
+    "GIN_PACKET\022\022\n\ntransferId\030\001 \001(\004\022\021\n\treques"
+    "tId\030\002 \001(\r\022\030\n\020sourceWorldDefId\030\003 \001(\r\022\025\n\rs"
+    "ourceWorldId\030\004 \001(\004\022\030\n\020targetWorldDefId\030\005"
+    " \001(\r\022\025\n\rtargetWorldId\030\006 \001(\004\022\025\n\rmapResour"
+    "ceId\030\007 \001(\r\022\023\n\013playerNetId\030\010 \001(\004\022\034\n\024clear"
+    "ExistingObjects\030\t \001(\010\022\027\n\017waitClientReady"
+    "\030\n \001(\010\022\024\n\014usedFallback\030\013 \001(\010\022\016\n\006reason\030\014"
+    " \001(\r\"H\n#SC_WORLD_TRANSITION_REJECTED_PAC"
+    "KET\022\021\n\trequestId\030\001 \001(\r\022\016\n\006reason\030\002 \001(\r\"\374"
+    "\001\n\033SC_REPLICATION_FRAME_PACKET\022\020\n\010frameS"
+    "eq\030\001 \001(\r\022\022\n\nserverTick\030\002 \001(\r\022\'\n\006spawns\030\003"
+    " \003(\0132\027.Protocol.SC_ADD_PACKET\022,\n\010despawn"
+    "s\030\004 \003(\0132\032.Protocol.SC_REMOVE_PACKET\022\'\n\005m"
+    "oves\030\005 \003(\0132\030.Protocol.SC_MOVE_PACKET\0227\n\005"
+    "anims\030\006 \003(\0132(.Protocol.SC_ANIMATION_TRAN"
+    "SITION_PACKETb\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    1651,
+    1701,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     nullptr,
     0,
-    19,
+    20,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -2373,6 +2412,245 @@ void CS_PARRY_PACKET::InternalSwap(CS_PARRY_PACKET* PROTOBUF_RESTRICT other) {
 }
 
 ::google::protobuf::Metadata CS_PARRY_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CS_USE_ITEM_PACKET::_Internal {
+ public:
+};
+
+CS_USE_ITEM_PACKET::CS_USE_ITEM_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.CS_USE_ITEM_PACKET)
+}
+CS_USE_ITEM_PACKET::CS_USE_ITEM_PACKET(
+    ::google::protobuf::Arena* arena, const CS_USE_ITEM_PACKET& from)
+    : CS_USE_ITEM_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE CS_USE_ITEM_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void CS_USE_ITEM_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, dirx_),
+           0,
+           offsetof(Impl_, dirz_) -
+               offsetof(Impl_, dirx_) +
+               sizeof(Impl_::dirz_));
+}
+CS_USE_ITEM_PACKET::~CS_USE_ITEM_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.CS_USE_ITEM_PACKET)
+  SharedDtor(*this);
+}
+inline void CS_USE_ITEM_PACKET::SharedDtor(MessageLite& self) {
+  CS_USE_ITEM_PACKET& this_ = static_cast<CS_USE_ITEM_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* CS_USE_ITEM_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) CS_USE_ITEM_PACKET(arena);
+}
+constexpr auto CS_USE_ITEM_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(CS_USE_ITEM_PACKET),
+                                            alignof(CS_USE_ITEM_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull CS_USE_ITEM_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_CS_USE_ITEM_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &CS_USE_ITEM_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<CS_USE_ITEM_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &CS_USE_ITEM_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<CS_USE_ITEM_PACKET>(), &CS_USE_ITEM_PACKET::ByteSizeLong,
+            &CS_USE_ITEM_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(CS_USE_ITEM_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &CS_USE_ITEM_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* CS_USE_ITEM_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 0, 2> CS_USE_ITEM_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::CS_USE_ITEM_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // float dirZ = 2;
+    {::_pbi::TcParser::FastF32S1,
+     {21, 63, 0, PROTOBUF_FIELD_OFFSET(CS_USE_ITEM_PACKET, _impl_.dirz_)}},
+    // float dirX = 1;
+    {::_pbi::TcParser::FastF32S1,
+     {13, 63, 0, PROTOBUF_FIELD_OFFSET(CS_USE_ITEM_PACKET, _impl_.dirx_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // float dirX = 1;
+    {PROTOBUF_FIELD_OFFSET(CS_USE_ITEM_PACKET, _impl_.dirx_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float dirZ = 2;
+    {PROTOBUF_FIELD_OFFSET(CS_USE_ITEM_PACKET, _impl_.dirz_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void CS_USE_ITEM_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.CS_USE_ITEM_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.dirx_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.dirz_) -
+      reinterpret_cast<char*>(&_impl_.dirx_)) + sizeof(_impl_.dirz_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* CS_USE_ITEM_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const CS_USE_ITEM_PACKET& this_ = static_cast<const CS_USE_ITEM_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* CS_USE_ITEM_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const CS_USE_ITEM_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.CS_USE_ITEM_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // float dirX = 1;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_dirx()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                1, this_._internal_dirx(), target);
+          }
+
+          // float dirZ = 2;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_dirz()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                2, this_._internal_dirz(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.CS_USE_ITEM_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t CS_USE_ITEM_PACKET::ByteSizeLong(const MessageLite& base) {
+          const CS_USE_ITEM_PACKET& this_ = static_cast<const CS_USE_ITEM_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t CS_USE_ITEM_PACKET::ByteSizeLong() const {
+          const CS_USE_ITEM_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.CS_USE_ITEM_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // float dirX = 1;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_dirx()) != 0) {
+              total_size += 5;
+            }
+            // float dirZ = 2;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_dirz()) != 0) {
+              total_size += 5;
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void CS_USE_ITEM_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<CS_USE_ITEM_PACKET*>(&to_msg);
+  auto& from = static_cast<const CS_USE_ITEM_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.CS_USE_ITEM_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (::absl::bit_cast<::uint32_t>(from._internal_dirx()) != 0) {
+    _this->_impl_.dirx_ = from._impl_.dirx_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_dirz()) != 0) {
+    _this->_impl_.dirz_ = from._impl_.dirz_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CS_USE_ITEM_PACKET::CopyFrom(const CS_USE_ITEM_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.CS_USE_ITEM_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CS_USE_ITEM_PACKET::InternalSwap(CS_USE_ITEM_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(CS_USE_ITEM_PACKET, _impl_.dirz_)
+      + sizeof(CS_USE_ITEM_PACKET::_impl_.dirz_)
+      - PROTOBUF_FIELD_OFFSET(CS_USE_ITEM_PACKET, _impl_.dirx_)>(
+          reinterpret_cast<char*>(&_impl_.dirx_),
+          reinterpret_cast<char*>(&other->_impl_.dirx_));
+}
+
+::google::protobuf::Metadata CS_USE_ITEM_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================

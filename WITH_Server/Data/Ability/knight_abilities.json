@@ -747,6 +747,71 @@
       }
     },
     {
+      "key": "Ability.Knight_HpPotion",
+      "name": "Knight.HpPotion",
+      "kind": "UseItem",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": false,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 4.3,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [],
+        "events": [
+          {
+            "kind": "ConsumeItem",
+            "timeNormalized": 0.55,
+            "effectKey": null,
+            "cueTagKey": null,
+            "payloadId": 1,
+            "condition": "Always"
+          }
+        ]
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnHitReceived",
+            "toAbilityKey": "Ability.Knight_Hit",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 100,
+            "aiInterruptible": false
+          },
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.Knight_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
       "key": "Ability.Knight_Guard",
       "name": "Knight.Guard",
       "kind": "Guard",

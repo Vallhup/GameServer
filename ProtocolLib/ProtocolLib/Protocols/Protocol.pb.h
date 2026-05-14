@@ -74,6 +74,9 @@ extern CS_MOVE_PACKETDefaultTypeInternal _CS_MOVE_PACKET_default_instance_;
 class CS_PARRY_PACKET;
 struct CS_PARRY_PACKETDefaultTypeInternal;
 extern CS_PARRY_PACKETDefaultTypeInternal _CS_PARRY_PACKET_default_instance_;
+class CS_USE_ITEM_PACKET;
+struct CS_USE_ITEM_PACKETDefaultTypeInternal;
+extern CS_USE_ITEM_PACKETDefaultTypeInternal _CS_USE_ITEM_PACKET_default_instance_;
 class CS_WORLD_TRANSITION_READY_PACKET;
 struct CS_WORLD_TRANSITION_READY_PACKETDefaultTypeInternal;
 extern CS_WORLD_TRANSITION_READY_PACKETDefaultTypeInternal _CS_WORLD_TRANSITION_READY_PACKET_default_instance_;
@@ -182,7 +185,7 @@ class SC_WORLD_TRANSITION_REJECTED_PACKET final : public ::google::protobuf::Mes
     return reinterpret_cast<const SC_WORLD_TRANSITION_REJECTED_PACKET*>(
         &_SC_WORLD_TRANSITION_REJECTED_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 17;
+  static constexpr int kIndexInFileMessages = 18;
   friend void swap(SC_WORLD_TRANSITION_REJECTED_PACKET& a, SC_WORLD_TRANSITION_REJECTED_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_WORLD_TRANSITION_REJECTED_PACKET* other) {
     if (other == this) return;
@@ -384,7 +387,7 @@ class SC_WORLD_TRANSITION_BEGIN_PACKET final : public ::google::protobuf::Messag
     return reinterpret_cast<const SC_WORLD_TRANSITION_BEGIN_PACKET*>(
         &_SC_WORLD_TRANSITION_BEGIN_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 16;
+  static constexpr int kIndexInFileMessages = 17;
   friend void swap(SC_WORLD_TRANSITION_BEGIN_PACKET& a, SC_WORLD_TRANSITION_BEGIN_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_WORLD_TRANSITION_BEGIN_PACKET* other) {
     if (other == this) return;
@@ -706,7 +709,7 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_STAT_CHANGE_PACKET*>(
         &_SC_STAT_CHANGE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 15;
+  static constexpr int kIndexInFileMessages = 16;
   friend void swap(SC_STAT_CHANGE_PACKET& a, SC_STAT_CHANGE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_STAT_CHANGE_PACKET* other) {
     if (other == this) return;
@@ -992,7 +995,7 @@ class SC_REMOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_REMOVE_PACKET*>(
         &_SC_REMOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 13;
+  static constexpr int kIndexInFileMessages = 14;
   friend void swap(SC_REMOVE_PACKET& a, SC_REMOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REMOVE_PACKET* other) {
     if (other == this) return;
@@ -1182,7 +1185,7 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_MOVE_PACKET*>(
         &_SC_MOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 12;
+  static constexpr int kIndexInFileMessages = 13;
   friend void swap(SC_MOVE_PACKET& a, SC_MOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_MOVE_PACKET* other) {
     if (other == this) return;
@@ -1420,7 +1423,7 @@ class SC_LOGIN_SUCCESS_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_LOGIN_SUCCESS_PACKET*>(
         &_SC_LOGIN_SUCCESS_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 9;
+  static constexpr int kIndexInFileMessages = 10;
   friend void swap(SC_LOGIN_SUCCESS_PACKET& a, SC_LOGIN_SUCCESS_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_LOGIN_SUCCESS_PACKET* other) {
     if (other == this) return;
@@ -1610,7 +1613,7 @@ class SC_LOGIN_FAIL_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_LOGIN_FAIL_PACKET*>(
         &_SC_LOGIN_FAIL_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 10;
+  static constexpr int kIndexInFileMessages = 11;
   friend void swap(SC_LOGIN_FAIL_PACKET& a, SC_LOGIN_FAIL_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_LOGIN_FAIL_PACKET* other) {
     if (other == this) return;
@@ -1800,7 +1803,7 @@ class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ANIMATION_TRANSITION_PACKET*>(
         &_SC_ANIMATION_TRANSITION_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 14;
+  static constexpr int kIndexInFileMessages = 15;
   friend void swap(SC_ANIMATION_TRANSITION_PACKET& a, SC_ANIMATION_TRANSITION_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ANIMATION_TRANSITION_PACKET* other) {
     if (other == this) return;
@@ -2002,7 +2005,7 @@ class SC_ADD_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ADD_PACKET*>(
         &_SC_ADD_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 11;
+  static constexpr int kIndexInFileMessages = 12;
   friend void swap(SC_ADD_PACKET& a, SC_ADD_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ADD_PACKET* other) {
     if (other == this) return;
@@ -2252,7 +2255,7 @@ class CS_WORLD_TRANSITION_REQUEST_PACKET final : public ::google::protobuf::Mess
     return reinterpret_cast<const CS_WORLD_TRANSITION_REQUEST_PACKET*>(
         &_CS_WORLD_TRANSITION_REQUEST_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 7;
+  static constexpr int kIndexInFileMessages = 8;
   friend void swap(CS_WORLD_TRANSITION_REQUEST_PACKET& a, CS_WORLD_TRANSITION_REQUEST_PACKET& b) { a.Swap(&b); }
   inline void Swap(CS_WORLD_TRANSITION_REQUEST_PACKET* other) {
     if (other == this) return;
@@ -2442,7 +2445,7 @@ class CS_WORLD_TRANSITION_READY_PACKET final : public ::google::protobuf::Messag
     return reinterpret_cast<const CS_WORLD_TRANSITION_READY_PACKET*>(
         &_CS_WORLD_TRANSITION_READY_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 8;
+  static constexpr int kIndexInFileMessages = 9;
   friend void swap(CS_WORLD_TRANSITION_READY_PACKET& a, CS_WORLD_TRANSITION_READY_PACKET& b) { a.Swap(&b); }
   inline void Swap(CS_WORLD_TRANSITION_READY_PACKET* other) {
     if (other == this) return;
@@ -2565,6 +2568,208 @@ class CS_WORLD_TRANSITION_READY_PACKET final : public ::google::protobuf::Messag
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const CS_WORLD_TRANSITION_READY_PACKET& from_msg);
     ::uint64_t transferid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CS_USE_ITEM_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_USE_ITEM_PACKET) */ {
+ public:
+  inline CS_USE_ITEM_PACKET() : CS_USE_ITEM_PACKET(nullptr) {}
+  ~CS_USE_ITEM_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_USE_ITEM_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_USE_ITEM_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_USE_ITEM_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_USE_ITEM_PACKET(const CS_USE_ITEM_PACKET& from) : CS_USE_ITEM_PACKET(nullptr, from) {}
+  inline CS_USE_ITEM_PACKET(CS_USE_ITEM_PACKET&& from) noexcept
+      : CS_USE_ITEM_PACKET(nullptr, std::move(from)) {}
+  inline CS_USE_ITEM_PACKET& operator=(const CS_USE_ITEM_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_USE_ITEM_PACKET& operator=(CS_USE_ITEM_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_USE_ITEM_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_USE_ITEM_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_USE_ITEM_PACKET*>(
+        &_CS_USE_ITEM_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 7;
+  friend void swap(CS_USE_ITEM_PACKET& a, CS_USE_ITEM_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_USE_ITEM_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_USE_ITEM_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_USE_ITEM_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_USE_ITEM_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_USE_ITEM_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_USE_ITEM_PACKET& from) { CS_USE_ITEM_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_USE_ITEM_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_USE_ITEM_PACKET"; }
+
+ protected:
+  explicit CS_USE_ITEM_PACKET(::google::protobuf::Arena* arena);
+  CS_USE_ITEM_PACKET(::google::protobuf::Arena* arena, const CS_USE_ITEM_PACKET& from);
+  CS_USE_ITEM_PACKET(::google::protobuf::Arena* arena, CS_USE_ITEM_PACKET&& from) noexcept
+      : CS_USE_ITEM_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kDirXFieldNumber = 1,
+    kDirZFieldNumber = 2,
+  };
+  // float dirX = 1;
+  void clear_dirx() ;
+  float dirx() const;
+  void set_dirx(float value);
+
+  private:
+  float _internal_dirx() const;
+  void _internal_set_dirx(float value);
+
+  public:
+  // float dirZ = 2;
+  void clear_dirz() ;
+  float dirz() const;
+  void set_dirz(float value);
+
+  private:
+  float _internal_dirz() const;
+  void _internal_set_dirz(float value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_USE_ITEM_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      1, 2, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_USE_ITEM_PACKET& from_msg);
+    float dirx_;
+    float dirz_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -3989,7 +4194,7 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_REPLICATION_FRAME_PACKET*>(
         &_SC_REPLICATION_FRAME_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 18;
+  static constexpr int kIndexInFileMessages = 19;
   friend void swap(SC_REPLICATION_FRAME_PACKET& a, SC_REPLICATION_FRAME_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REPLICATION_FRAME_PACKET* other) {
     if (other == this) return;
@@ -4507,6 +4712,54 @@ inline float CS_PARRY_PACKET::_internal_dirz() const {
   return _impl_.dirz_;
 }
 inline void CS_PARRY_PACKET::_internal_set_dirz(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.dirz_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_USE_ITEM_PACKET
+
+// float dirX = 1;
+inline void CS_USE_ITEM_PACKET::clear_dirx() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.dirx_ = 0;
+}
+inline float CS_USE_ITEM_PACKET::dirx() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_USE_ITEM_PACKET.dirX)
+  return _internal_dirx();
+}
+inline void CS_USE_ITEM_PACKET::set_dirx(float value) {
+  _internal_set_dirx(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_USE_ITEM_PACKET.dirX)
+}
+inline float CS_USE_ITEM_PACKET::_internal_dirx() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.dirx_;
+}
+inline void CS_USE_ITEM_PACKET::_internal_set_dirx(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.dirx_ = value;
+}
+
+// float dirZ = 2;
+inline void CS_USE_ITEM_PACKET::clear_dirz() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.dirz_ = 0;
+}
+inline float CS_USE_ITEM_PACKET::dirz() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_USE_ITEM_PACKET.dirZ)
+  return _internal_dirz();
+}
+inline void CS_USE_ITEM_PACKET::set_dirz(float value) {
+  _internal_set_dirz(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_USE_ITEM_PACKET.dirZ)
+}
+inline float CS_USE_ITEM_PACKET::_internal_dirz() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.dirz_;
+}
+inline void CS_USE_ITEM_PACKET::_internal_set_dirz(float value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.dirz_ = value;
 }

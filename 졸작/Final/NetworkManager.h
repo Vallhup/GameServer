@@ -22,6 +22,7 @@ public:
 	bool SendDodgePacket(float dirX, float dirZ);
 	bool SendGuardPacket(bool pressed);
 	bool SendParryPacket(float dirX, float dirZ);
+	bool SendUseItemPacket(float dirX, float dirZ);
 
 	bool SendWorldTransitionRequestPacket(uint32_t requestId);
 	bool SendWorldTransitionReadyPacket(uint64_t transferId);

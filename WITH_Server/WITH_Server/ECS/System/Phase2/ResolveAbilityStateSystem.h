@@ -32,7 +32,7 @@ private:
 		float directionZ{ 0.0f };
 	};
 
-    static const StaticSystemMetaStorage<13, 0, 2> kMetaStorage;
+    static const StaticSystemMetaStorage<14, 0, 2> kMetaStorage;
 
 	static bool TryHandleBlockingState(
 		SystemContext& ctx,
@@ -58,6 +58,7 @@ private:
 		const WorldTransformComp& transform,
 		const ActorInputComp& input,
 		const CombatStatStateComp* stats,
+		const ConsumableInventoryComp* inventory,
 		const AIPerceptionComp* perception,
 		TransitionDecision& outDecision);
 
@@ -68,6 +69,7 @@ private:
 		const WorldTransformComp& transform,
 		const ActorInputComp& input,
 		const CombatStatStateComp* stats,
+		const ConsumableInventoryComp* inventory,
 		const AIPerceptionComp* perception,
 		TransitionDecision& outDecision);
 
@@ -99,7 +101,12 @@ private:
 	static bool IsAbilityRequestAllowed(
 		AbilityId abilityId,
 		const CombatStatStateComp* stats,
+		const ConsumableInventoryComp* inventory,
 		const AIPerceptionComp* perception);
+
+	static bool IsAbilityStartLocomotionAllowed(
+		AbilityId abilityId,
+		LocomotionMode locomotionMode);
 
 	static bool IsCancelRuleActive(
 		const AbilityTransitionRuleDef& cancelRule,

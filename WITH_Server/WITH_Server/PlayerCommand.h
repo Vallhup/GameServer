@@ -13,7 +13,8 @@ enum class PlayerCommandTypeKey : WorldCommandTypeKey
 	HeavyAttack = 3,
 	Dodge = 4,
 	Guard = 5,
-	Parry = 6
+	Parry = 6,
+	UseItem = 7
 };
 
 struct PlayerMoveCommandPayload
@@ -70,6 +71,12 @@ WorldCommand MakePlayerGuardCommand(
 	const PlayerGuardCommandPayload& payload);
 
 WorldCommand MakePlayerParryCommand(
+	SessionId sourceSessionId,
+	NetId targetNetId,
+	uint32_t sequence,
+	const PlayerDirectionCommandPayload& payload);
+
+WorldCommand MakePlayerUseItemCommand(
 	SessionId sourceSessionId,
 	NetId targetNetId,
 	uint32_t sequence,

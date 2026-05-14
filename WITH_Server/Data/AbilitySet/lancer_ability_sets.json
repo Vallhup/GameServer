@@ -33,6 +33,10 @@
           "level": 1
         },
         {
+          "abilityKey": "Ability.Lancer_HpPotion",
+          "level": 1
+        },
+        {
           "abilityKey": "Ability.Lancer_Stun",
           "level": 1
         },
@@ -79,6 +83,12 @@
         {
           "request": "Parry",
           "candidateAbilityKeys": ["Ability.Lancer_Parry"],
+          "selectionPolicy": "OrderedFirstValid",
+          "priority": 100
+        },
+        {
+          "request": "UseItem",
+          "candidateAbilityKeys": ["Ability.Lancer_HpPotion"],
           "selectionPolicy": "OrderedFirstValid",
           "priority": 100
         },
@@ -134,6 +144,12 @@
         {
           "abilityKey": "Ability.Lancer_Parry",
           "animationKey": "Lancer_Parry",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.Lancer_HpPotion",
+          "animationKey": "Lancer_Drinking",
           "playRate": 1,
           "startNormalizedTime": 0
         },

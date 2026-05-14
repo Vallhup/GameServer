@@ -64,7 +64,9 @@ bool IsPlayerAbilityEventCommandType(WorldCommandTypeKey typeKey) noexcept
 		typeKey == static_cast<WorldCommandTypeKey>(
 			PlayerCommandTypeKey::Dodge) ||
 		typeKey == static_cast<WorldCommandTypeKey>(
-			PlayerCommandTypeKey::Parry);
+			PlayerCommandTypeKey::Parry) ||
+		typeKey == static_cast<WorldCommandTypeKey>(
+			PlayerCommandTypeKey::UseItem);
 }
 
 bool IsPlayerGuardCommandType(WorldCommandTypeKey typeKey) noexcept
@@ -153,6 +155,20 @@ WorldCommand MakePlayerParryCommand(
 		sourceSessionId,
 		targetNetId,
 		PlayerCommandTypeKey::Parry,
+		sequence,
+		EncodePayload(payload));
+}
+
+WorldCommand MakePlayerUseItemCommand(
+	SessionId sourceSessionId,
+	NetId targetNetId,
+	uint32_t sequence,
+	const PlayerDirectionCommandPayload& payload)
+{
+	return MakePlayerCommand(
+		sourceSessionId,
+		targetNetId,
+		PlayerCommandTypeKey::UseItem,
 		sequence,
 		EncodePayload(payload));
 }

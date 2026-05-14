@@ -553,6 +553,37 @@ ExecCallResult HandleParryPacket(NodeExecContext& ctx)
     return ExecCallResult::Success;
 }
 
+ExecCallResult HandleUseItemPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    auto& svc = PacketHandlerContext::Get();
+    const SessionId sessionId = ResolveSessionId(ctx);
+
+    WorldRuntime* world =
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
+    if (!world)
+        return ExecCallResult::Success;
+
+    Protocol::CS_USE_ITEM_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
+    if (!netId.IsValid())
+        return ExecCallResult::Success;
+
+    const PlayerDirectionCommandPayload payload{
+        .dirX = pkt.dirx(),
+        .dirZ = pkt.dirz()
+    };
+    (void)world->EnqueueWorldCommand(
+        MakePlayerUseItemCommand(sessionId, netId, kDefaultCommandSequence, payload));
+    return ExecCallResult::Success;
+}
+
 ExecCallResult HandleWorldTransitionRequestPacket(NodeExecContext& ctx)
 {
     auto buf = AcquirePayload(ctx);

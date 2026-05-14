@@ -36,11 +36,11 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<13, 0, 2> ResolveAbilityStateSystem::kMetaStorage =
+const StaticSystemMetaStorage<14, 0, 2> ResolveAbilityStateSystem::kMetaStorage =
     MakeMetaStorage(
         SysTag<ResolveAbilityStateSystem>(),
         "ResolveAbilityStateSystem",
-        std::array<AccessSpec, 13>
+        std::array<AccessSpec, 14>
         {
             WriteImmediate(ComponentRes<AbilityStateComp>()),
             ReadImmediate(ComponentRes<LocomotionStateComp>()),
@@ -55,6 +55,7 @@ const StaticSystemMetaStorage<13, 0, 2> ResolveAbilityStateSystem::kMetaStorage 
             ReadImmediate(ComponentRes<AIPerceptionComp>()),
             ReadImmediate(ComponentRes<PendingDespawnTag>()),
             ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
+            ReadImmediate(ComponentRes<ConsumableInventoryComp>()),
         },
         std::array<SystemTag, 0>{},
         std::array<SystemTag, 2>
@@ -98,6 +99,8 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 		const CharacterId characterId = spawnType.characterId;
 		const CombatStatStateComp* stats =
 			ctx.ecs.GetComponent<CombatStatStateComp>(entity);
+		const ConsumableInventoryComp* inventory =
+			ctx.ecs.GetComponent<ConsumableInventoryComp>(entity);
 		const AIPerceptionComp* perception =
 			ctx.ecs.GetComponent<AIPerceptionComp>(entity);
 		const AbilityInterruptQueueComp* interruptQueue =
@@ -162,6 +165,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 				transform,
 				input,
 				stats,
+				inventory,
 				perception,
 				decision))
 			{
@@ -208,6 +212,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 			transform,
 			input,
 			stats,
+			inventory,
 			perception,
 			decision))
 		{
@@ -357,6 +362,7 @@ bool ResolveAbilityStateSystem::TryResolveCancelTransition(
 	const WorldTransformComp& transform,
 	const ActorInputComp& input,
 	const CombatStatStateComp* stats,
+	const ConsumableInventoryComp* inventory,
 	const AIPerceptionComp* perception,
 	TransitionDecision& outDecision)
 {
@@ -379,7 +385,8 @@ bool ResolveAbilityStateSystem::TryResolveCancelTransition(
 	{
 		if (candidate.abilityId == InvalidAbilityId ||
 			!profileService.IsAbilityAvailable(characterId, candidate.abilityId) ||
-			!IsAbilityRequestAllowed(candidate.abilityId, stats, perception))
+			!IsAbilityStartLocomotionAllowed(candidate.abilityId, locomotionState.mode) ||
+			!IsAbilityRequestAllowed(candidate.abilityId, stats, inventory, perception))
 		{
 			continue;
 		}
@@ -426,6 +433,7 @@ bool ResolveAbilityStateSystem::TryResolveIdleRequestTransition(
 	const WorldTransformComp& transform,
 	const ActorInputComp& input,
 	const CombatStatStateComp* stats,
+	const ConsumableInventoryComp* inventory,
 	const AIPerceptionComp* perception,
 	TransitionDecision& outDecision)
 {
@@ -439,7 +447,8 @@ bool ResolveAbilityStateSystem::TryResolveIdleRequestTransition(
 	{
 		if (candidate.abilityId == InvalidAbilityId ||
 			!profileService.IsAbilityAvailable(characterId, candidate.abilityId) ||
-			!IsAbilityRequestAllowed(candidate.abilityId, stats, perception))
+			!IsAbilityStartLocomotionAllowed(candidate.abilityId, locomotionState.mode) ||
+			!IsAbilityRequestAllowed(candidate.abilityId, stats, inventory, perception))
 		{
 			continue;
 		}
@@ -637,6 +646,9 @@ ResolveAbilityStateSystem::BuildRequestCandidates(
 	case PlayerAbilityInputType::Parry:
 		semantic = AbilityRequestSemantic::Parry;
 		break;
+	case PlayerAbilityInputType::UseItem:
+		semantic = AbilityRequestSemantic::UseItem;
+		break;
 	case PlayerAbilityInputType::None:
 	default:
 		semantic = AbilityRequestSemantic::None;
@@ -699,6 +711,7 @@ ResolveAbilityStateSystem::BuildRequestCandidates(
 bool ResolveAbilityStateSystem::IsAbilityRequestAllowed(
 	AbilityId abilityId,
 	const CombatStatStateComp* stats,
+	const ConsumableInventoryComp* inventory,
 	const AIPerceptionComp* perception)
 {
 	const AbilityDef* abilityDef =
@@ -706,6 +719,19 @@ bool ResolveAbilityStateSystem::IsAbilityRequestAllowed(
 	if (abilityDef == nullptr)
 	{
 		return false;
+	}
+
+	if (abilityDef->kind == AbilityKind::UseItem)
+	{
+		if (stats == nullptr ||
+			inventory == nullptr ||
+			inventory->hpPotionCount == 0 ||
+			stats->currentHp <= 0 ||
+			stats->maxHp <= 0 ||
+			stats->currentHp >= stats->maxHp)
+		{
+			return false;
+		}
 	}
 
 	const AttributeDef* staminaAttribute =
@@ -736,6 +762,28 @@ bool ResolveAbilityStateSystem::IsAbilityRequestAllowed(
 	}
 
 	return true;
+}
+
+bool ResolveAbilityStateSystem::IsAbilityStartLocomotionAllowed(
+	AbilityId abilityId,
+	LocomotionMode locomotionMode)
+{
+	const AbilityDef* abilityDef =
+		GameplayContentCatalogSnapshot::Current().Abilities().Find(abilityId);
+	if (abilityDef == nullptr)
+	{
+		return false;
+	}
+
+	if (abilityDef->kind != AbilityKind::UseItem)
+	{
+		return true;
+	}
+
+	return
+		locomotionMode == LocomotionMode::Idle ||
+		locomotionMode == LocomotionMode::Walk ||
+		locomotionMode == LocomotionMode::Run;
 }
 
 bool ResolveAbilityStateSystem::IsCancelRuleActive(

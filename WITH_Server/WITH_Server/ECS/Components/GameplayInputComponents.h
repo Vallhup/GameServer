@@ -9,7 +9,8 @@ enum class PlayerAbilityInputType : uint8_t
 	LightAttack,
 	HeavyAttack,
 	Dodge,
-	Parry
+	Parry,
+	UseItem
 };
 
 struct PlayerControlIdentityComp : Component

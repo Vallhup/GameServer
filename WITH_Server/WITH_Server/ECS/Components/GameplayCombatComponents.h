@@ -97,6 +97,23 @@ struct CombatStatStateComp : Component
 	float moveSpeed{ 2.5f };
 };
 
+enum class ConsumableItemId : uint16_t
+{
+	None = 0,
+	HpPotion = 1
+};
+
+struct HpPotionTuning
+{
+	uint16_t defaultGrantCount{ 3 };
+	int32_t healAmount{ 50 };
+};
+
+struct ConsumableInventoryComp : Component
+{
+	uint16_t hpPotionCount{ 0 };
+};
+
 struct StaminaRecoveryTuning
 {
 	float baseRegenPerSec{ 45.0f };
