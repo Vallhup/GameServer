@@ -185,6 +185,9 @@
     <ClCompile Include="ECS\System\Phase8\FinalizePostCommitStateSystem.cpp">
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\Phase8\RecoverStaminaSystem.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
     <ClCompile Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.cpp">
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
@@ -521,6 +524,9 @@
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\FinalizePostCommitStateSystem.h">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase8\RecoverStaminaSystem.h">
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h">

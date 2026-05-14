@@ -32,7 +32,7 @@ private:
 		float directionZ{ 0.0f };
 	};
 
-    static const StaticSystemMetaStorage<12, 0, 2> kMetaStorage;
+    static const StaticSystemMetaStorage<13, 0, 2> kMetaStorage;
 
 	static bool TryHandleBlockingState(
 		SystemContext& ctx,

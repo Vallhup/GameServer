@@ -8,14 +8,40 @@
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<14> CommitCombatResultSystem::kMetaStorage =
+namespace
+{
+	void ApplyStaminaRecoveryDelay(
+		SystemContext& ctx,
+		Entity entity,
+		const CombatStatStateComp& stats,
+		float delaySec)
+	{
+		StaminaRecoveryStateComp* recovery =
+			ctx.ecs.GetMutableComponent<StaminaRecoveryStateComp>(entity);
+		if (recovery == nullptr)
+		{
+			return;
+		}
+
+		if (stats.currentStamina <= 0)
+		{
+			delaySec = std::max(delaySec, recovery->tuning.exhaustedRegenDelaySec);
+		}
+
+		recovery->regenLockRemainingSec =
+			std::max(recovery->regenLockRemainingSec, delaySec);
+	}
+}
+
+const StaticSystemMetaStorage<15> CommitCombatResultSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<CommitCombatResultSystem>(),
 		"CommitCombatResultSystem",
-		std::array<AccessSpec, 14>
+		std::array<AccessSpec, 15>
 	{
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
+		WriteImmediate(ComponentRes<StaminaRecoveryStateComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 		WriteImmediate(ComponentRes<AIReactionEventQueueComp>()),
 		WriteImmediate(ComponentRes<AIPhaseRuntimeComp>()),
@@ -148,6 +174,19 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			stats.currentPoise + poiseDelta,
 			0,
 			stats.maxPoise);
+
+		if (previousStats.currentStamina > stats.currentStamina)
+		{
+			StaminaRecoveryStateComp* recovery =
+				ctx.ecs.GetMutableComponent<StaminaRecoveryStateComp>(entity);
+			ApplyStaminaRecoveryDelay(
+				ctx,
+				entity,
+				stats,
+				recovery != nullptr
+					? recovery->tuning.damageRegenDelaySec
+					: StaminaRecoveryTuning{}.damageRegenDelaySec);
+		}
 
 		if (guardResolved &&
 			stats.currentHp > 0 &&

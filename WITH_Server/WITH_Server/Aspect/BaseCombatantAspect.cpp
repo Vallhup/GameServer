@@ -19,6 +19,7 @@ void BaseCombatantAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<SampledAnimationPoseComp>();
 	runtime.RegisterStorage<SkeletalCombatColliderComp>();
 	runtime.RegisterStorage<CombatStatStateComp>();
+	runtime.RegisterStorage<StaminaRecoveryStateComp>();
 	runtime.RegisterStorage<GameplayEffectStateComp>();
 	runtime.RegisterStorage<PendingProjectileSpawnComp>();
 	runtime.RegisterStorage<PendingAbilityPresentationEventComp>();
@@ -45,6 +46,7 @@ void BaseCombatantAspect::Attach(
 	runtime.DeferredAddComponent<SkeletalCombatColliderComp>(entity);
 	runtime.DeferredUpsertComponent<CombatStatStateComp>(entity, 
 		BuildCombatStatState(def, params.combatStatsOverride));
+	runtime.DeferredAddComponent<StaminaRecoveryStateComp>(entity);
 	runtime.DeferredAddComponent<GameplayEffectStateComp>(entity);
 	runtime.DeferredAddComponent<AbilityInterruptQueueComp>(entity);
 	runtime.DeferredAddComponent<PendingProjectileSpawnComp>(entity);

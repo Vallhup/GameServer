@@ -96,3 +96,19 @@ struct CombatStatStateComp : Component
 	float attackSpeed{ 1.0f };
 	float moveSpeed{ 2.5f };
 };
+
+struct StaminaRecoveryTuning
+{
+	float baseRegenPerSec{ 45.0f };
+	float spendRegenDelaySec{ 0.55f };
+	float damageRegenDelaySec{ 0.75f };
+	float exhaustedRegenDelaySec{ 1.0f };
+	float guardRegenMultiplier{ 0.20f };
+};
+
+struct StaminaRecoveryStateComp : Component
+{
+	StaminaRecoveryTuning tuning;
+	float regenLockRemainingSec{ 0.0f };
+	float regenRemainder{ 0.0f };
+};

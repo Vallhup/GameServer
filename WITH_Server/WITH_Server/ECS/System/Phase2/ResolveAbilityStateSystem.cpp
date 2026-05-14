@@ -11,11 +11,36 @@
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<12, 0, 2> ResolveAbilityStateSystem::kMetaStorage =
+namespace
+{
+	void ApplyStaminaRecoveryDelay(
+		SystemContext& ctx,
+		Entity entity,
+		const CombatStatStateComp& stats,
+		float delaySec)
+	{
+		StaminaRecoveryStateComp* recovery =
+			ctx.ecs.GetMutableComponent<StaminaRecoveryStateComp>(entity);
+		if (recovery == nullptr)
+		{
+			return;
+		}
+
+		if (stats.currentStamina <= 0)
+		{
+			delaySec = std::max(delaySec, recovery->tuning.exhaustedRegenDelaySec);
+		}
+
+		recovery->regenLockRemainingSec =
+			std::max(recovery->regenLockRemainingSec, delaySec);
+	}
+}
+
+const StaticSystemMetaStorage<13, 0, 2> ResolveAbilityStateSystem::kMetaStorage =
     MakeMetaStorage(
         SysTag<ResolveAbilityStateSystem>(),
         "ResolveAbilityStateSystem",
-        std::array<AccessSpec, 12>
+        std::array<AccessSpec, 13>
         {
             WriteImmediate(ComponentRes<AbilityStateComp>()),
             ReadImmediate(ComponentRes<LocomotionStateComp>()),
@@ -24,6 +49,7 @@ const StaticSystemMetaStorage<12, 0, 2> ResolveAbilityStateSystem::kMetaStorage 
             WriteImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
             ReadImmediate(ComponentRes<SpawnTypeComp>()),
             WriteImmediate(ComponentRes<CombatStatStateComp>()),
+            WriteImmediate(ComponentRes<StaminaRecoveryStateComp>()),
             WriteImmediate(ComponentRes<AbilityInterruptQueueComp>()),
             WriteImmediate(ComponentRes<DirtyFlagsComp>()),
             ReadImmediate(ComponentRes<AIPerceptionComp>()),
@@ -545,6 +571,18 @@ void ResolveAbilityStateSystem::ConsumeOnRequestResourceCosts(
 				std::clamp(stats->currentStamina - amount, 0, stats->maxStamina);
 			statDirty =
 				statDirty || previousStamina != stats->currentStamina;
+			if (previousStamina > stats->currentStamina)
+			{
+				StaminaRecoveryStateComp* recovery =
+					ctx.ecs.GetMutableComponent<StaminaRecoveryStateComp>(entity);
+				ApplyStaminaRecoveryDelay(
+					ctx,
+					entity,
+					*stats,
+					recovery != nullptr
+						? recovery->tuning.spendRegenDelaySec
+						: StaminaRecoveryTuning{}.spendRegenDelaySec);
+			}
 		}
 	}
 
