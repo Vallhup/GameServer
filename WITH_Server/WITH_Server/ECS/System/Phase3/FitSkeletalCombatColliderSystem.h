@@ -16,8 +16,8 @@ public:
 	void Execute(SystemContext& ctx) override;
 	const SystemMeta& Meta() const override { return kMetaStorage.meta; }
 
-private:
 	static uint8_t BuildRoleMask(const AnimationClipDef& clip, size_t colliderIndex);
 
+private:
 	const AnimationRegistry* _animationRegistry{ nullptr };
 };

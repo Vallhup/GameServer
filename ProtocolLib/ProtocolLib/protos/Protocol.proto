@@ -95,6 +95,21 @@ message SC_REMOVE_PACKET
 	uint64 netid = 1;
 }
 
+message SC_COMBAT_IMPACT_PACKET
+{
+	uint64 attackerNetId = 1;
+	uint64 victimNetId = 2;
+	uint32 resultType = 3;
+
+	float impactX = 4;
+	float impactY = 5;
+	float impactZ = 6;
+
+	float dirX = 7;
+	float dirY = 8;
+	float dirZ = 9;
+}
+
 message SC_ANIMATION_TRANSITION_PACKET
 {
 	uint64 netid = 1;

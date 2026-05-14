@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "FrameworkFrameEventHarvester.h"
 
+#include <cmath>
 #include <unordered_set>
 
+#include "ECS/Components/GameplayCombatComponents.h"
 #include "NetIdRegistry.h"
 #include "RepComponent.h"
 #include "WorldInstance.h"
@@ -10,6 +12,35 @@
 #include "WorldManager.h"
 #include "WorldRegistry.h"
 #include "WorldRuntime.h"
+
+namespace
+{
+	float SafeFinite(float value) noexcept
+	{
+		return std::isfinite(value) ? value : 0.0f;
+	}
+
+	void SanitizeDirection(float& x, float& y, float& z) noexcept
+	{
+		x = SafeFinite(x);
+		y = SafeFinite(y);
+		z = SafeFinite(z);
+
+		const float lengthSq = x * x + y * y + z * z;
+		if (lengthSq <= 1.0e-6f || !std::isfinite(lengthSq))
+		{
+			x = 0.0f;
+			y = 0.0f;
+			z = -1.0f;
+			return;
+		}
+
+		const float invLength = 1.0f / std::sqrt(lengthSq);
+		x *= invLength;
+		y *= invLength;
+		z *= invLength;
+	}
+}
 
 void FrameworkFrameEventHarvester::Harvest(
 	WorldManager& worldManager,
@@ -28,7 +59,50 @@ void FrameworkFrameEventHarvester::Harvest(
 		}
 
 		WorldRuntime& runtime = world->GetRuntime();
-		const ECSView view = runtime.MakeView();
+		ECSView view = runtime.MakeView();
+
+		for (auto [entity, impactEvents] :
+			view.MutableView<PendingCombatImpactEventComp>())
+		{
+			(void)entity;
+
+			for (const PendingCombatImpactEvent& impactEvent :
+				impactEvents.events)
+			{
+				const NetId attackerNetId =
+					netIdRegistry.FindNetId(
+						worldId,
+						impactEvent.sourceEntity);
+				const NetId victimNetId =
+					netIdRegistry.FindNetId(
+						worldId,
+						impactEvent.targetEntity);
+				if (!attackerNetId.IsValid() || !victimNetId.IsValid())
+				{
+					continue;
+				}
+
+				FrameworkRuntime::FrameResult::CombatImpactEvent frameEvent{};
+				frameEvent.worldId = worldId;
+				frameEvent.attackerNetId = attackerNetId;
+				frameEvent.victimNetId = victimNetId;
+				frameEvent.resultType =
+					static_cast<uint32_t>(impactEvent.resultType);
+				frameEvent.impactX = SafeFinite(impactEvent.impactPoint.x);
+				frameEvent.impactY = SafeFinite(impactEvent.impactPoint.y);
+				frameEvent.impactZ = SafeFinite(impactEvent.impactPoint.z);
+				frameEvent.dirX = impactEvent.swingDirection.x;
+				frameEvent.dirY = impactEvent.swingDirection.y;
+				frameEvent.dirZ = impactEvent.swingDirection.z;
+				SanitizeDirection(
+					frameEvent.dirX,
+					frameEvent.dirY,
+					frameEvent.dirZ);
+				outEvents.combatImpacts.push_back(frameEvent);
+			}
+
+			impactEvents.events.clear();
+		}
 
 		// Transfer-imported entities keep the player's existing NetId. They must
 		// not pass through the normal spawn auto-allocation path before the server

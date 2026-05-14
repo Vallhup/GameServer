@@ -21,6 +21,8 @@ struct SkeletalCombatCollider
 struct SkeletalCombatColliderComp : Component
 {
 	std::vector<SkeletalCombatCollider> localColliders;
+	std::vector<SkeletalCombatCollider> previousFrameLocalColliders;
+	bool hasPreviousFrameLocalColliders{ false };
 };
 
 struct CombatColliderActivationComp : Component
@@ -68,6 +70,8 @@ struct PendingCombatInteractionRecord
 	std::optional<AbilityParryResponseDef> parryEffect;
 	float maxKnockbackDistance{ 0.0f };
 	float maxHitStopSec{ 0.0f };
+	XMFLOAT3 impactPoint{ 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 swingDirection{ 0.0f, 0.0f, -1.0f };
 };
 
 struct PendingCombatResultComp : Component
@@ -81,6 +85,25 @@ struct PendingCombatResultComp : Component
 	bool parriedByAnyVictimThisFrame{ false };
 	bool hitAnyVictimThisFrame{ false };
 	std::optional<GameplayEffectId> pendingParryEffectId;
+};
+
+struct PendingCombatImpactEvent
+{
+	Entity sourceEntity{ Entity::Null() };
+	Entity targetEntity{ Entity::Null() };
+	AbilityId sourceAbilityId{ InvalidAbilityId };
+	uint32_t sourceAbilityInstanceId{ 0 };
+	uint16_t sourceAttackWindowIndex{ 0 };
+	uint16_t sourceColliderIndex{ 0 };
+	uint16_t targetColliderIndex{ 0 };
+	CombatResolveResultType resultType{ CombatResolveResultType::Hit };
+	XMFLOAT3 impactPoint{ 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 swingDirection{ 0.0f, 0.0f, -1.0f };
+};
+
+struct PendingCombatImpactEventComp : Component
+{
+	std::vector<PendingCombatImpactEvent> events;
 };
 
 struct CombatStatStateComp : Component

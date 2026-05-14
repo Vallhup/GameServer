@@ -86,6 +86,11 @@ void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
 			return NetHelper::DispatchPacket<Protocol::SC_REMOVE_PACKET>(header, data,
 				[this](const auto& packet) { HandleRemove(packet); });
 		}
+		case PacketType::SC_COMBAT_IMPACT:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_COMBAT_IMPACT_PACKET>(header, data,
+				[this](const auto& packet) { HandleCombatImpact(packet); });
+		}
 		case PacketType::SC_ANIMATION_CHANGE:
 		{
 			return NetHelper::DispatchPacket<Protocol::SC_ANIMATION_TRANSITION_PACKET>(header, data,
@@ -325,6 +330,46 @@ void Scene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 {
 	OutputDebugStringA("SC_REMOVE packet received\n");
+}
+
+void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
+{
+	const NetId aNetId{ impact.attackernetid() };
+	const int aId = aNetId.GetId();
+
+	const NetId vNetId{ impact.victimnetid() };
+	const int vId = vNetId.GetId();
+
+	const bool canImpact =
+		activeCharacters.contains(aId) && activeCharacters.contains(vId);
+
+	if (canImpact)
+	{
+		const XMFLOAT3 impactPos{ impact.impactx(), impact.impacty(), impact.impactz() };
+		const XMFLOAT3 impactDir{ impact.dirx(), impact.diry(), impact.dirz() };
+
+		// resultType: 어떤 방식의 충돌인가 (Hit, Guard, Parry)
+		//             Type에 따라 다른 이펙트 출력?
+		// 0 : Hit / 1 : Guard / 2 : Parry
+		switch (impact.resulttype()) {
+		case 0:
+		{
+			break;
+		}
+		case 1:
+		{
+			break;
+		}
+		case 2:
+		{
+			break;
+		}
+		default:
+		{
+			break;
+		}
+		}
+	}
 }
 
 void Scene::HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim)

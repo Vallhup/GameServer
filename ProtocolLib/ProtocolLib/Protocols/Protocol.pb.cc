@@ -225,6 +225,39 @@ struct SC_LOGIN_FAIL_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_LOGIN_FAIL_PACKETDefaultTypeInternal _SC_LOGIN_FAIL_PACKET_default_instance_;
 
+inline constexpr SC_COMBAT_IMPACT_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : attackernetid_{::uint64_t{0u}},
+        victimnetid_{::uint64_t{0u}},
+        resulttype_{0u},
+        impactx_{0},
+        impacty_{0},
+        impactz_{0},
+        dirx_{0},
+        diry_{0},
+        dirz_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_COMBAT_IMPACT_PACKET::SC_COMBAT_IMPACT_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_COMBAT_IMPACT_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_COMBAT_IMPACT_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_COMBAT_IMPACT_PACKETDefaultTypeInternal() {}
+  union {
+    SC_COMBAT_IMPACT_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_COMBAT_IMPACT_PACKETDefaultTypeInternal _SC_COMBAT_IMPACT_PACKET_default_instance_;
+
 inline constexpr SC_ANIMATION_TRANSITION_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : netid_{::uint64_t{0u}},
@@ -719,6 +752,23 @@ const ::uint32_t
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_REMOVE_PACKET, _impl_.netid_),
         ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_COMBAT_IMPACT_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_COMBAT_IMPACT_PACKET, _impl_.attackernetid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_COMBAT_IMPACT_PACKET, _impl_.victimnetid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_COMBAT_IMPACT_PACKET, _impl_.resulttype_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_COMBAT_IMPACT_PACKET, _impl_.impactx_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_COMBAT_IMPACT_PACKET, _impl_.impacty_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_COMBAT_IMPACT_PACKET, _impl_.impactz_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_COMBAT_IMPACT_PACKET, _impl_.dirx_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_COMBAT_IMPACT_PACKET, _impl_.diry_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_COMBAT_IMPACT_PACKET, _impl_.dirz_),
+        ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_ANIMATION_TRANSITION_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -808,11 +858,12 @@ static const ::_pbi::MigrationSchema
         {114, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
         {128, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
         {141, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
-        {150, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
-        {160, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
-        {177, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
-        {197, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
-        {207, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
+        {150, -1, -1, sizeof(::Protocol::SC_COMBAT_IMPACT_PACKET)},
+        {167, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
+        {177, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
+        {194, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
+        {214, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
+        {224, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -830,6 +881,7 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_SC_ADD_PACKET_default_instance_._instance,
     &::Protocol::_SC_MOVE_PACKET_default_instance_._instance,
     &::Protocol::_SC_REMOVE_PACKET_default_instance_._instance,
+    &::Protocol::_SC_COMBAT_IMPACT_PACKET_default_instance_._instance,
     &::Protocol::_SC_ANIMATION_TRANSITION_PACKET_default_instance_._instance,
     &::Protocol::_SC_STAT_CHANGE_PACKET_default_instance_._instance,
     &::Protocol::_SC_WORLD_TRANSITION_BEGIN_PACKET_default_instance_._instance,
@@ -858,41 +910,46 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "yaw\030\006 \001(\002\"M\n\016SC_MOVE_PACKET\022\r\n\005netid\030\001 \001"
     "(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003y"
     "aw\030\005 \001(\002\"!\n\020SC_REMOVE_PACKET\022\r\n\005netid\030\001 "
-    "\001(\004\"A\n\036SC_ANIMATION_TRANSITION_PACKET\022\r\n"
-    "\005netid\030\001 \001(\004\022\020\n\010currAnim\030\002 \001(\005\"\264\001\n\025SC_ST"
-    "AT_CHANGE_PACKET\022\r\n\005netid\030\001 \001(\004\022\r\n\005curhp"
-    "\030\002 \001(\r\022\r\n\005maxhp\030\003 \001(\r\022\022\n\ncurstamina\030\004 \001("
-    "\r\022\022\n\nmaxstamina\030\005 \001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013"
-    "attackspeed\030\007 \001(\002\022\017\n\007defense\030\010 \001(\r\022\021\n\tmo"
-    "vespeed\030\t \001(\002\"\264\002\n SC_WORLD_TRANSITION_BE"
-    "GIN_PACKET\022\022\n\ntransferId\030\001 \001(\004\022\021\n\treques"
-    "tId\030\002 \001(\r\022\030\n\020sourceWorldDefId\030\003 \001(\r\022\025\n\rs"
-    "ourceWorldId\030\004 \001(\004\022\030\n\020targetWorldDefId\030\005"
-    " \001(\r\022\025\n\rtargetWorldId\030\006 \001(\004\022\025\n\rmapResour"
-    "ceId\030\007 \001(\r\022\023\n\013playerNetId\030\010 \001(\004\022\034\n\024clear"
-    "ExistingObjects\030\t \001(\010\022\027\n\017waitClientReady"
-    "\030\n \001(\010\022\024\n\014usedFallback\030\013 \001(\010\022\016\n\006reason\030\014"
-    " \001(\r\"H\n#SC_WORLD_TRANSITION_REJECTED_PAC"
-    "KET\022\021\n\trequestId\030\001 \001(\r\022\016\n\006reason\030\002 \001(\r\"\374"
-    "\001\n\033SC_REPLICATION_FRAME_PACKET\022\020\n\010frameS"
-    "eq\030\001 \001(\r\022\022\n\nserverTick\030\002 \001(\r\022\'\n\006spawns\030\003"
-    " \003(\0132\027.Protocol.SC_ADD_PACKET\022,\n\010despawn"
-    "s\030\004 \003(\0132\032.Protocol.SC_REMOVE_PACKET\022\'\n\005m"
-    "oves\030\005 \003(\0132\030.Protocol.SC_MOVE_PACKET\0227\n\005"
-    "anims\030\006 \003(\0132(.Protocol.SC_ANIMATION_TRAN"
-    "SITION_PACKETb\006proto3"
+    "\001(\004\"\266\001\n\027SC_COMBAT_IMPACT_PACKET\022\025\n\rattac"
+    "kerNetId\030\001 \001(\004\022\023\n\013victimNetId\030\002 \001(\004\022\022\n\nr"
+    "esultType\030\003 \001(\r\022\017\n\007impactX\030\004 \001(\002\022\017\n\007impa"
+    "ctY\030\005 \001(\002\022\017\n\007impactZ\030\006 \001(\002\022\014\n\004dirX\030\007 \001(\002"
+    "\022\014\n\004dirY\030\010 \001(\002\022\014\n\004dirZ\030\t \001(\002\"A\n\036SC_ANIMA"
+    "TION_TRANSITION_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n"
+    "\010currAnim\030\002 \001(\005\"\264\001\n\025SC_STAT_CHANGE_PACKE"
+    "T\022\r\n\005netid\030\001 \001(\004\022\r\n\005curhp\030\002 \001(\r\022\r\n\005maxhp"
+    "\030\003 \001(\r\022\022\n\ncurstamina\030\004 \001(\r\022\022\n\nmaxstamina"
+    "\030\005 \001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013attackspeed\030\007 \001"
+    "(\002\022\017\n\007defense\030\010 \001(\r\022\021\n\tmovespeed\030\t \001(\002\"\264"
+    "\002\n SC_WORLD_TRANSITION_BEGIN_PACKET\022\022\n\nt"
+    "ransferId\030\001 \001(\004\022\021\n\trequestId\030\002 \001(\r\022\030\n\020so"
+    "urceWorldDefId\030\003 \001(\r\022\025\n\rsourceWorldId\030\004 "
+    "\001(\004\022\030\n\020targetWorldDefId\030\005 \001(\r\022\025\n\rtargetW"
+    "orldId\030\006 \001(\004\022\025\n\rmapResourceId\030\007 \001(\r\022\023\n\013p"
+    "layerNetId\030\010 \001(\004\022\034\n\024clearExistingObjects"
+    "\030\t \001(\010\022\027\n\017waitClientReady\030\n \001(\010\022\024\n\014usedF"
+    "allback\030\013 \001(\010\022\016\n\006reason\030\014 \001(\r\"H\n#SC_WORL"
+    "D_TRANSITION_REJECTED_PACKET\022\021\n\trequestI"
+    "d\030\001 \001(\r\022\016\n\006reason\030\002 \001(\r\"\374\001\n\033SC_REPLICATI"
+    "ON_FRAME_PACKET\022\020\n\010frameSeq\030\001 \001(\r\022\022\n\nser"
+    "verTick\030\002 \001(\r\022\'\n\006spawns\030\003 \003(\0132\027.Protocol"
+    ".SC_ADD_PACKET\022,\n\010despawns\030\004 \003(\0132\032.Proto"
+    "col.SC_REMOVE_PACKET\022\'\n\005moves\030\005 \003(\0132\030.Pr"
+    "otocol.SC_MOVE_PACKET\0227\n\005anims\030\006 \003(\0132(.P"
+    "rotocol.SC_ANIMATION_TRANSITION_PACKETb\006"
+    "proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    1701,
+    1886,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     nullptr,
     0,
-    20,
+    21,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -4312,6 +4369,395 @@ void SC_REMOVE_PACKET::InternalSwap(SC_REMOVE_PACKET* PROTOBUF_RESTRICT other) {
 }
 
 ::google::protobuf::Metadata SC_REMOVE_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_COMBAT_IMPACT_PACKET::_Internal {
+ public:
+};
+
+SC_COMBAT_IMPACT_PACKET::SC_COMBAT_IMPACT_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_COMBAT_IMPACT_PACKET)
+}
+SC_COMBAT_IMPACT_PACKET::SC_COMBAT_IMPACT_PACKET(
+    ::google::protobuf::Arena* arena, const SC_COMBAT_IMPACT_PACKET& from)
+    : SC_COMBAT_IMPACT_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_COMBAT_IMPACT_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_COMBAT_IMPACT_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, attackernetid_),
+           0,
+           offsetof(Impl_, dirz_) -
+               offsetof(Impl_, attackernetid_) +
+               sizeof(Impl_::dirz_));
+}
+SC_COMBAT_IMPACT_PACKET::~SC_COMBAT_IMPACT_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_COMBAT_IMPACT_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_COMBAT_IMPACT_PACKET::SharedDtor(MessageLite& self) {
+  SC_COMBAT_IMPACT_PACKET& this_ = static_cast<SC_COMBAT_IMPACT_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_COMBAT_IMPACT_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_COMBAT_IMPACT_PACKET(arena);
+}
+constexpr auto SC_COMBAT_IMPACT_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_COMBAT_IMPACT_PACKET),
+                                            alignof(SC_COMBAT_IMPACT_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_COMBAT_IMPACT_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_COMBAT_IMPACT_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_COMBAT_IMPACT_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_COMBAT_IMPACT_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_COMBAT_IMPACT_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_COMBAT_IMPACT_PACKET>(), &SC_COMBAT_IMPACT_PACKET::ByteSizeLong,
+            &SC_COMBAT_IMPACT_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_COMBAT_IMPACT_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_COMBAT_IMPACT_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<4, 9, 0, 0, 2> SC_COMBAT_IMPACT_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    9, 120,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294966784,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    9,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_COMBAT_IMPACT_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint64 attackerNetId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_COMBAT_IMPACT_PACKET, _impl_.attackernetid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.attackernetid_)}},
+    // uint64 victimNetId = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_COMBAT_IMPACT_PACKET, _impl_.victimnetid_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.victimnetid_)}},
+    // uint32 resultType = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_COMBAT_IMPACT_PACKET, _impl_.resulttype_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.resulttype_)}},
+    // float impactX = 4;
+    {::_pbi::TcParser::FastF32S1,
+     {37, 63, 0, PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.impactx_)}},
+    // float impactY = 5;
+    {::_pbi::TcParser::FastF32S1,
+     {45, 63, 0, PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.impacty_)}},
+    // float impactZ = 6;
+    {::_pbi::TcParser::FastF32S1,
+     {53, 63, 0, PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.impactz_)}},
+    // float dirX = 7;
+    {::_pbi::TcParser::FastF32S1,
+     {61, 63, 0, PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.dirx_)}},
+    // float dirY = 8;
+    {::_pbi::TcParser::FastF32S1,
+     {69, 63, 0, PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.diry_)}},
+    // float dirZ = 9;
+    {::_pbi::TcParser::FastF32S1,
+     {77, 63, 0, PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.dirz_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 attackerNetId = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.attackernetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint64 victimNetId = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.victimnetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint32 resultType = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.resulttype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // float impactX = 4;
+    {PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.impactx_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float impactY = 5;
+    {PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.impacty_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float impactZ = 6;
+    {PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.impactz_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float dirX = 7;
+    {PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.dirx_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float dirY = 8;
+    {PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.diry_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float dirZ = 9;
+    {PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.dirz_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_COMBAT_IMPACT_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_COMBAT_IMPACT_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.attackernetid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.dirz_) -
+      reinterpret_cast<char*>(&_impl_.attackernetid_)) + sizeof(_impl_.dirz_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_COMBAT_IMPACT_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_COMBAT_IMPACT_PACKET& this_ = static_cast<const SC_COMBAT_IMPACT_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_COMBAT_IMPACT_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_COMBAT_IMPACT_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_COMBAT_IMPACT_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 attackerNetId = 1;
+          if (this_._internal_attackernetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_attackernetid(), target);
+          }
+
+          // uint64 victimNetId = 2;
+          if (this_._internal_victimnetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                2, this_._internal_victimnetid(), target);
+          }
+
+          // uint32 resultType = 3;
+          if (this_._internal_resulttype() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                3, this_._internal_resulttype(), target);
+          }
+
+          // float impactX = 4;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_impactx()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                4, this_._internal_impactx(), target);
+          }
+
+          // float impactY = 5;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_impacty()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                5, this_._internal_impacty(), target);
+          }
+
+          // float impactZ = 6;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_impactz()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                6, this_._internal_impactz(), target);
+          }
+
+          // float dirX = 7;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_dirx()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                7, this_._internal_dirx(), target);
+          }
+
+          // float dirY = 8;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_diry()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                8, this_._internal_diry(), target);
+          }
+
+          // float dirZ = 9;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_dirz()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                9, this_._internal_dirz(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_COMBAT_IMPACT_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_COMBAT_IMPACT_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_COMBAT_IMPACT_PACKET& this_ = static_cast<const SC_COMBAT_IMPACT_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_COMBAT_IMPACT_PACKET::ByteSizeLong() const {
+          const SC_COMBAT_IMPACT_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_COMBAT_IMPACT_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 attackerNetId = 1;
+            if (this_._internal_attackernetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_attackernetid());
+            }
+            // uint64 victimNetId = 2;
+            if (this_._internal_victimnetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_victimnetid());
+            }
+            // uint32 resultType = 3;
+            if (this_._internal_resulttype() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_resulttype());
+            }
+            // float impactX = 4;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_impactx()) != 0) {
+              total_size += 5;
+            }
+            // float impactY = 5;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_impacty()) != 0) {
+              total_size += 5;
+            }
+            // float impactZ = 6;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_impactz()) != 0) {
+              total_size += 5;
+            }
+            // float dirX = 7;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_dirx()) != 0) {
+              total_size += 5;
+            }
+            // float dirY = 8;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_diry()) != 0) {
+              total_size += 5;
+            }
+            // float dirZ = 9;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_dirz()) != 0) {
+              total_size += 5;
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_COMBAT_IMPACT_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_COMBAT_IMPACT_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_COMBAT_IMPACT_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_COMBAT_IMPACT_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_attackernetid() != 0) {
+    _this->_impl_.attackernetid_ = from._impl_.attackernetid_;
+  }
+  if (from._internal_victimnetid() != 0) {
+    _this->_impl_.victimnetid_ = from._impl_.victimnetid_;
+  }
+  if (from._internal_resulttype() != 0) {
+    _this->_impl_.resulttype_ = from._impl_.resulttype_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_impactx()) != 0) {
+    _this->_impl_.impactx_ = from._impl_.impactx_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_impacty()) != 0) {
+    _this->_impl_.impacty_ = from._impl_.impacty_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_impactz()) != 0) {
+    _this->_impl_.impactz_ = from._impl_.impactz_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_dirx()) != 0) {
+    _this->_impl_.dirx_ = from._impl_.dirx_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_diry()) != 0) {
+    _this->_impl_.diry_ = from._impl_.diry_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_dirz()) != 0) {
+    _this->_impl_.dirz_ = from._impl_.dirz_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_COMBAT_IMPACT_PACKET::CopyFrom(const SC_COMBAT_IMPACT_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_COMBAT_IMPACT_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_COMBAT_IMPACT_PACKET::InternalSwap(SC_COMBAT_IMPACT_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.dirz_)
+      + sizeof(SC_COMBAT_IMPACT_PACKET::_impl_.dirz_)
+      - PROTOBUF_FIELD_OFFSET(SC_COMBAT_IMPACT_PACKET, _impl_.attackernetid_)>(
+          reinterpret_cast<char*>(&_impl_.attackernetid_),
+          reinterpret_cast<char*>(&other->_impl_.attackernetid_));
+}
+
+::google::protobuf::Metadata SC_COMBAT_IMPACT_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================

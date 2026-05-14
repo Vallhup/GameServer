@@ -14,6 +14,7 @@ void CombatHitAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<CombatColliderActivationComp>();
 	runtime.RegisterStorage<CombatHitDedupStateComp>();
 	runtime.RegisterStorage<PendingCombatResultComp>();
+	runtime.RegisterStorage<PendingCombatImpactEventComp>();
 }
 
 void CombatHitAspect::Attach(
@@ -25,4 +26,5 @@ void CombatHitAspect::Attach(
 	runtime.DeferredAddComponent<CombatColliderActivationComp>(entity);
 	runtime.DeferredAddComponent<CombatHitDedupStateComp>(entity);
 	runtime.DeferredAddComponent<PendingCombatResultComp>(entity);
+	runtime.DeferredAddComponent<PendingCombatImpactEventComp>(entity);
 }

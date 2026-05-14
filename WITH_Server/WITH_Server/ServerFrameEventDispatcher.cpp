@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "FrameworkLog.h"
+#include "Protocol.pb.h"
 #include "SessionFlowCommands.h"
 #include "ServerPacketStager.h"
 #include "ServerPlayerControlBinding.h"
@@ -124,6 +125,39 @@ bool ServerFrameEventDispatcher::Dispatch(
 				sessionId, spawnEvent.worldId.GetRaw(), spawnEvent.netId.GetRaw());
 			return false;
 		}
+	}
+
+	for (const auto& combatImpactEvent : frameResult.events.combatImpacts)
+	{
+		if (!combatImpactEvent.attackerNetId.IsValid() ||
+			!combatImpactEvent.victimNetId.IsValid())
+		{
+			continue;
+		}
+
+		sessionSystem.Flow().CollectSessionsInWorld(
+			combatImpactEvent.worldId,
+			worldSessionIds);
+		RemoveExcludedSessions(worldSessionIds, excludedSessionIds);
+
+		Protocol::SC_COMBAT_IMPACT_PACKET impactPacket;
+		impactPacket.set_attackernetid(
+			combatImpactEvent.attackerNetId.GetRaw());
+		impactPacket.set_victimnetid(
+			combatImpactEvent.victimNetId.GetRaw());
+		impactPacket.set_resulttype(combatImpactEvent.resultType);
+		impactPacket.set_impactx(combatImpactEvent.impactX);
+		impactPacket.set_impacty(combatImpactEvent.impactY);
+		impactPacket.set_impactz(combatImpactEvent.impactZ);
+		impactPacket.set_dirx(combatImpactEvent.dirX);
+		impactPacket.set_diry(combatImpactEvent.dirY);
+		impactPacket.set_dirz(combatImpactEvent.dirZ);
+
+		(void)ServerPacketStager::StageReplicationPacket(
+			sessionSystem.Network(),
+			PacketType::SC_COMBAT_IMPACT,
+			std::span<const SessionId>(worldSessionIds),
+			impactPacket);
 	}
 
 	for (const auto& despawnEvent : frameResult.events.despawns)
