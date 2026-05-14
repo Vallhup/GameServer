@@ -23,7 +23,7 @@
         {
           "attributeKey": "Attribute.Stamina",
           "consumeTiming": "OnRequest",
-          "amount": 0
+          "amount": 14
         }
       ],
       "timeline": {
@@ -139,7 +139,7 @@
         {
           "attributeKey": "Attribute.Stamina",
           "consumeTiming": "OnRequest",
-          "amount": 0
+          "amount": 18
         }
       ],
       "timeline": {
@@ -268,7 +268,7 @@
         {
           "attributeKey": "Attribute.Stamina",
           "consumeTiming": "OnRequest",
-          "amount": 15
+          "amount": 22
         }
       ],
       "timeline": {
@@ -388,7 +388,7 @@
         {
           "attributeKey": "Attribute.Stamina",
           "consumeTiming": "OnRequest",
-          "amount": 0
+          "amount": 34
         }
       ],
       "timeline": {
@@ -485,7 +485,7 @@
         {
           "attributeKey": "Attribute.Stamina",
           "consumeTiming": "OnRequest",
-          "amount": 0
+          "amount": 45
         }
       ],
       "timeline": {
@@ -582,7 +582,7 @@
         {
           "attributeKey": "Attribute.Stamina",
           "consumeTiming": "OnRequest",
-          "amount": 0
+          "amount": 22
         }
       ],
       "timeline": {
@@ -682,7 +682,7 @@
         {
           "attributeKey": "Attribute.Stamina",
           "consumeTiming": "OnRequest",
-          "amount": 0
+          "amount": 14
         }
       ],
       "timeline": {
