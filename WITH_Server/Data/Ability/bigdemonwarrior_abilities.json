@@ -891,15 +891,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.BigDemonWarrior_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnAttributeZero",
             "toAbilityKey": "Ability.BigDemonWarrior_Dead",
             "windowPolicy": "Always",

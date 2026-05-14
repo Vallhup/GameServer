@@ -197,11 +197,6 @@
       "key": "AbilityFallback.Tank",
       "entries": [
         {
-          "cause": "OnHitReceived",
-          "toAbilityKey": "Ability.Tank_Hit",
-          "priority": 100
-        },
-        {
           "cause": "OnParried",
           "toAbilityKey": "Ability.Tank_Stun",
           "priority": 200

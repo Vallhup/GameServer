@@ -197,11 +197,6 @@
       "key": "AbilityFallback.BigDemonWarrior",
       "entries": [
         {
-          "cause": "OnHitReceived",
-          "toAbilityKey": "Ability.BigDemonWarrior_Hit",
-          "priority": 100
-        },
-        {
           "cause": "OnParried",
           "toAbilityKey": "Ability.BigDemonWarrior_Stun",
           "priority": 200

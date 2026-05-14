@@ -117,11 +117,6 @@
       "key": "AbilityFallback.FinalBoss",
       "entries": [
         {
-          "cause": "OnHitReceived",
-          "toAbilityKey": "Ability.FinalBoss_Hit",
-          "priority": 100
-        },
-        {
           "cause": "OnParried",
           "toAbilityKey": "Ability.FinalBoss_Stun",
           "priority": 200
