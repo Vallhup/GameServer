@@ -338,6 +338,12 @@ bool ParseSpawnPointIdString(std::string_view text, SpawnPointId& outValue) noex
 	if (text == "VillageMonster04") { outValue = SpawnPointIds::VillageMonster04; return true; }
 	if (text == "VillageMonster05") { outValue = SpawnPointIds::VillageMonster05; return true; }
 	if (text == "VillageBossMonster01") { outValue = SpawnPointIds::VillageBossMonster01; return true; }
+	if (text == "VillageMonster01A") { outValue = SpawnPointIds::VillageMonster01A; return true; }
+	if (text == "VillageMonster01B") { outValue = SpawnPointIds::VillageMonster01B; return true; }
+	if (text == "VillageMonster02A") { outValue = SpawnPointIds::VillageMonster02A; return true; }
+	if (text == "VillageMonster02B") { outValue = SpawnPointIds::VillageMonster02B; return true; }
+	if (text == "VillageMonster05A") { outValue = SpawnPointIds::VillageMonster05A; return true; }
+	if (text == "VillageMonster05B") { outValue = SpawnPointIds::VillageMonster05B; return true; }
 	if (text == "CastlePlayerStart") { outValue = SpawnPointIds::CastlePlayerStart; return true; }
 	if (text == "CastleMonster01") { outValue = SpawnPointIds::CastleMonster01; return true; }
 	if (text == "CastleMonster02") { outValue = SpawnPointIds::CastleMonster02; return true; }
@@ -345,6 +351,10 @@ bool ParseSpawnPointIdString(std::string_view text, SpawnPointId& outValue) noex
 	if (text == "CastleMonster04") { outValue = SpawnPointIds::CastleMonster04; return true; }
 	if (text == "CastleMonster05") { outValue = SpawnPointIds::CastleMonster05; return true; }
 	if (text == "CastleMonster06") { outValue = SpawnPointIds::CastleMonster06; return true; }
+	if (text == "CastleMonster01A") { outValue = SpawnPointIds::CastleMonster01A; return true; }
+	if (text == "CastleMonster01B") { outValue = SpawnPointIds::CastleMonster01B; return true; }
+	if (text == "CastleMonster03A") { outValue = SpawnPointIds::CastleMonster03A; return true; }
+	if (text == "CastleMonster03B") { outValue = SpawnPointIds::CastleMonster03B; return true; }
 	if (text == "FinalPlayerStart") { outValue = SpawnPointIds::FinalPlayerStart; return true; }
 	if (text == "FinalMonster01") { outValue = SpawnPointIds::FinalMonster01; return true; }
 	if (text == "PvpPlayerStartA") { outValue = SpawnPointIds::PvpPlayerStartA; return true; }

@@ -38,6 +38,12 @@ namespace SpawnPointIds
 	inline constexpr SpawnPointId VillageMonster04 = 204;
 	inline constexpr SpawnPointId VillageMonster05 = 205;
 	inline constexpr SpawnPointId VillageBossMonster01 = 206;
+	inline constexpr SpawnPointId VillageMonster01A = 211;
+	inline constexpr SpawnPointId VillageMonster01B = 212;
+	inline constexpr SpawnPointId VillageMonster02A = 213;
+	inline constexpr SpawnPointId VillageMonster02B = 214;
+	inline constexpr SpawnPointId VillageMonster05A = 215;
+	inline constexpr SpawnPointId VillageMonster05B = 216;
 
 	inline constexpr SpawnPointId CastlePlayerStart = 300;
 	inline constexpr SpawnPointId CastleMonster01 = 301;
@@ -46,6 +52,10 @@ namespace SpawnPointIds
 	inline constexpr SpawnPointId CastleMonster04 = 304;
 	inline constexpr SpawnPointId CastleMonster05 = 305;
 	inline constexpr SpawnPointId CastleMonster06 = 306;
+	inline constexpr SpawnPointId CastleMonster01A = 311;
+	inline constexpr SpawnPointId CastleMonster01B = 312;
+	inline constexpr SpawnPointId CastleMonster03A = 313;
+	inline constexpr SpawnPointId CastleMonster03B = 314;
 
 	inline constexpr SpawnPointId FinalPlayerStart = 400;
 	inline constexpr SpawnPointId FinalMonster01 = 401;

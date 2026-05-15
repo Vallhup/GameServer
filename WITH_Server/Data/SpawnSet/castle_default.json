@@ -11,6 +11,22 @@
       "respawnDelaySec": null
     },
     {
+      "characterId": "Imp",
+      "spawnPointId": "CastleMonster01A",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "CastleMonster01B",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
       "characterId": "DemonStriker",
       "spawnPointId": "CastleMonster02",
       "count": 1,
@@ -21,6 +37,22 @@
     {
       "characterId": "Imp",
       "spawnPointId": "CastleMonster03",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "CastleMonster03A",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "CastleMonster03B",
       "count": 1,
       "type": "OnWorldStart",
       "respawnPolicy": "None",

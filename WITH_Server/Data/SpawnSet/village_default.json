@@ -12,7 +12,39 @@
     },
     {
       "characterId": "Imp",
+      "spawnPointId": "VillageMonster01A",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster01B",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
       "spawnPointId": "VillageMonster02",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster02A",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster02B",
       "count": 1,
       "type": "OnWorldStart",
       "respawnPolicy": "None",
@@ -37,6 +69,22 @@
     {
       "characterId": "Imp",
       "spawnPointId": "VillageMonster05",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster05A",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster05B",
       "count": 1,
       "type": "OnWorldStart",
       "respawnPolicy": "None",

@@ -123,9 +123,33 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
+					.id = SpawnPointIds::VillageMonster01A,
+					.name = "Village.Imp.01A",
+					.position = WorldVec3Def{ 214.304108f, 56.205055f, 621.786926f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
+					.id = SpawnPointIds::VillageMonster01B,
+					.name = "Village.Imp.01B",
+					.position = WorldVec3Def{ 211.704117f, 56.205055f, 622.286926f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
 					.id = SpawnPointIds::VillageMonster02,
 					.name = "Village.Imp.02",
 					.position = WorldVec3Def{ 217.488998f, 56.171982f, 579.312317f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
+					.id = SpawnPointIds::VillageMonster02A,
+					.name = "Village.Imp.02A",
+					.position = WorldVec3Def{ 218.888992f, 56.171982f, 580.112305f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
+					.id = SpawnPointIds::VillageMonster02B,
+					.name = "Village.Imp.02B",
+					.position = WorldVec3Def{ 216.288994f, 56.171982f, 580.612305f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
@@ -144,6 +168,18 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 					.id = SpawnPointIds::VillageMonster05,
 					.name = "Village.Imp.03",
 					.position = WorldVec3Def{ 240.033142f, 57.021049f, 606.717407f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
+					.id = SpawnPointIds::VillageMonster05A,
+					.name = "Village.Imp.03A",
+					.position = WorldVec3Def{ 241.433136f, 57.021049f, 607.517395f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
+					.id = SpawnPointIds::VillageMonster05B,
+					.name = "Village.Imp.03B",
+					.position = WorldVec3Def{ 238.833145f, 57.021049f, 608.017395f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
@@ -245,6 +281,18 @@ WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey)
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
+					.id = SpawnPointIds::CastleMonster01A,
+					.name = "Castle.Imp.01A",
+					.position = WorldVec3Def{ 328.087036f, 69.436005f, 327.235626f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
+					.id = SpawnPointIds::CastleMonster01B,
+					.name = "Castle.Imp.01B",
+					.position = WorldVec3Def{ 325.487030f, 69.436005f, 327.735626f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
 					.id = SpawnPointIds::CastleMonster02,
 					.name = "Castle.DemonStriker.01",
 					.position = WorldVec3Def{ 317.817505f, 69.147423f, 350.333435f },
@@ -254,6 +302,18 @@ WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey)
 					.id = SpawnPointIds::CastleMonster03,
 					.name = "Castle.Imp.02",
 					.position = WorldVec3Def{ 372.233459f, 70.180191f, 359.069763f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
+					.id = SpawnPointIds::CastleMonster03A,
+					.name = "Castle.Imp.02A",
+					.position = WorldVec3Def{ 373.633453f, 70.180191f, 359.869751f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
+					.id = SpawnPointIds::CastleMonster03B,
+					.name = "Castle.Imp.02B",
+					.position = WorldVec3Def{ 371.033447f, 70.180191f, 360.369751f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
