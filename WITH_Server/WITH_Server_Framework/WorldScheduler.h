@@ -23,6 +23,7 @@ class TaskExecutor;
 class ExecutionOps;
 class DynamicTaskTypeRegistry;
 class DynamicTaskScheduler;
+class IDynamicTaskScopeResolver;
 
 enum class WorldSchedulerFailureReason : uint8_t
 {
@@ -80,6 +81,9 @@ public:
     const WorldFrameSelectionSet& GetLastSelectionSet() const noexcept;
     const BuildResult& GetLastBuildResult() const noexcept;
 
+    void SetDynamicTaskScopeResolver(
+        IDynamicTaskScopeResolver* resolver) noexcept;
+
     void Clear() noexcept;
 
 private:
@@ -134,6 +138,7 @@ private:
     // 결정론적 정렬 후 outBatch에 채운다.
     void FreezeDynamicTaskRequests(
         std::span<WorldRuntime*> runtimeByScope,
+        std::span<const WorldId> worldIdByScope,
         uint64_t frameIndex,
         DynamicTaskFrozenBatch& outBatch);
 
@@ -152,6 +157,7 @@ private:
     // optional — nullptr이면 Dynamic Task 기능이 비활성화된다.
     DynamicTaskTypeRegistry* _dynamicTaskTypeRegistry{ nullptr };
     DynamicTaskScheduler* _dynamicTaskScheduler{ nullptr };
+    IDynamicTaskScopeResolver* _dynamicTaskScopeResolver{ nullptr };
 
     WorldSchedulerConfig _config;
     FrameScratch _scratch;

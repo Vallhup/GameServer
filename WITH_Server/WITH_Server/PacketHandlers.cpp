@@ -4,6 +4,8 @@
 #include "CharacterDataService.h"
 #include "CharacterSpawnService.h"
 #include "DynamicTaskTypes.h"
+#include "ECS/System/Phase2/ResolveAbilityStateSystem.h"
+#include "ECS/System/Phase2/ResolveLocomotionStateSystem.h"
 #include "ExecutionContextTypes.h"
 #include "ExecutionCoreTypes.h"
 #include "FrameworkRuntime.h"
@@ -16,6 +18,7 @@
 #include "SessionFlowCommands.h"
 #include "SessionFlowController.h"
 #include "ServerPacketStager.h"
+#include "SystemMetaHelper.h"
 #include "ServerSessionSystem.h"
 #include "WorldRuntime.h"
 #include "IWorldTransitionRequestSink.h"
@@ -60,19 +63,6 @@ namespace
     }
 
     // sessionId → worldScopeId 역산 (worldIdByScope span 순회)
-    ExecScopeId ResolveWorldScopeId(
-        const FrameExecContext& frame,
-        WorldId worldId) noexcept
-    {
-        for (ExecScopeId i = 0;
-             i < static_cast<ExecScopeId>(frame.worldIdByScope.size()); ++i)
-        {
-            if (frame.worldIdByScope[i] == worldId)
-                return i;
-        }
-        return InvalidExecScopeId;
-    }
-
     // sessionId → WorldRuntime* (nullptr이면 미입장)
     WorldRuntime* ResolveWorldRuntime(
         const NodeExecContext& ctx,
@@ -83,12 +73,10 @@ namespace
         if (!worldId.IsValid())
             return nullptr;
 
-        const ExecScopeId worldScopeId =
-            ResolveWorldScopeId(*ctx.frame, worldId);
-        if (worldScopeId == InvalidExecScopeId)
+        if (ctx.TryGetWorldId() != worldId)
             return nullptr;
 
-        return ctx.frame->TryGetRuntime(worldScopeId);
+        return ctx.TryGetRuntime();
     }
 
     // 방향 패킷 파싱 헬퍼
@@ -173,19 +161,43 @@ namespace
         }
     }
 
+    void ReleaseSendBufferPayload(uint64_t payloadKey) noexcept
+    {
+        if (payloadKey != 0)
+        {
+            SendBufferPtr payload{
+                reinterpret_cast<SendBuffer*>(payloadKey)
+            };
+        }
+    }
+
+    void AddGameplayInputOrdering(DynamicTaskTypeDesc& desc)
+    {
+        desc.runsBefore.push_back(Tag<ResolveAbilityStateSystem>());
+        desc.runsBefore.push_back(Tag<ResolveLocomotionStateSystem>());
+    }
+
     DynamicTaskTypeId RegisterPacketDynamicTask(
         DynamicTaskTypeRegistry& taskRegistry,
         ExecutionSourceRegistry& sourceRegistry,
         NetworkRuntime& network,
         PacketType packetType,
         ExecFn dispatchFn,
-        const char* debugName)
+        const char* debugName,
+        DynamicTaskTargetKind targetKind = DynamicTaskTargetKind::ExplicitScope,
+        bool gameplayInput = false)
     {
         DynamicTaskTypeDesc desc{};
-        desc.debugName    = debugName;
-        desc.defaultPhase = ExecPhase::Simulate;
-        desc.defaultLane  = ExecLane::Serial;
-        desc.dispatchFn   = dispatchFn;
+        desc.tag               = InvalidExecTag;
+        desc.debugName         = debugName;
+        desc.defaultPhase      = ExecPhase::Simulate;
+        desc.defaultLane       = ExecLane::Serial;
+        desc.defaultTargetKind = targetKind;
+        desc.dispatchFn        = dispatchFn;
+        desc.payloadCleanupFn  = &ReleaseSendBufferPayload;
+
+        if (gameplayInput)
+            AddGameplayInputOrdering(desc);
 
         const DynamicTaskTypeId typeId =
             taskRegistry.Register(desc, sourceRegistry);
@@ -210,17 +222,23 @@ void RegisterServerPacketHandlers(
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_CHARACTER_SELECT,         &HandleCharacterSelectPacket,        "Pkt_CS_CHARACTER_SELECT");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_MOVE,                     &HandleMovePacket,                   "Pkt_CS_MOVE");
+        PacketType::CS_MOVE,                     &HandleMovePacket,                   "Pkt_CS_MOVE",
+        DynamicTaskTargetKind::SessionCurrentWorld, true);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_ATTACK,                   &HandleAttackPacket,                 "Pkt_CS_ATTACK");
+        PacketType::CS_ATTACK,                   &HandleAttackPacket,                 "Pkt_CS_ATTACK",
+        DynamicTaskTargetKind::SessionCurrentWorld, true);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_DODGE,                    &HandleDodgePacket,                  "Pkt_CS_DODGE");
+        PacketType::CS_DODGE,                    &HandleDodgePacket,                  "Pkt_CS_DODGE",
+        DynamicTaskTargetKind::SessionCurrentWorld, true);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_GUARD,                    &HandleGuardPacket,                  "Pkt_CS_GUARD");
+        PacketType::CS_GUARD,                    &HandleGuardPacket,                  "Pkt_CS_GUARD",
+        DynamicTaskTargetKind::SessionCurrentWorld, true);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_PARRY,                    &HandleParryPacket,                  "Pkt_CS_PARRY");
+        PacketType::CS_PARRY,                    &HandleParryPacket,                  "Pkt_CS_PARRY",
+        DynamicTaskTargetKind::SessionCurrentWorld, true);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_USE_ITEM,                 &HandleUseItemPacket,                "Pkt_CS_USE_ITEM");
+        PacketType::CS_USE_ITEM,                 &HandleUseItemPacket,                "Pkt_CS_USE_ITEM",
+        DynamicTaskTargetKind::SessionCurrentWorld, true);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_WORLD_TRANSITION_REQUEST, &HandleWorldTransitionRequestPacket, "Pkt_CS_WORLD_TRANSITION_REQUEST");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,

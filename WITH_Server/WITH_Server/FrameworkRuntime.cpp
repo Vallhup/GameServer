@@ -190,6 +190,15 @@ ExecutionSourceRegistry& FrameworkRuntime::GetExecutionSourceRegistry() noexcept
 	return _impl->executionSourceRegistry;
 }
 
+void FrameworkRuntime::SetDynamicTaskScopeResolver(
+	IDynamicTaskScopeResolver* resolver) noexcept
+{
+	if (_impl)
+	{
+		_impl->worldScheduler.SetDynamicTaskScopeResolver(resolver);
+	}
+}
+
 bool FrameworkRuntime::TickServices(double nowSec, double dtSec)
 {
 	if (!_impl)

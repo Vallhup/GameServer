@@ -155,6 +155,7 @@ void IocpConnection::OnRecvComplete(DWORD bytes, bool success) noexcept
 		DynamicTaskRequest request{};
 		request.typeId = typeId;
 		request.scopeId = 0;
+		request.targetKind = DynamicTaskTargetKind::TypeDefault;
 		request.payloadKey = reinterpret_cast<uint64_t>(buf.release());
 		request.sessionId = _sessionId;
 		_backend.GetIOSink().SubmitDynamicTask(request);

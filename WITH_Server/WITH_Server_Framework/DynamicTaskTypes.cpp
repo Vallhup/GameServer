@@ -33,6 +33,7 @@ DynamicTaskTypeId DynamicTaskTypeRegistry::Register(
     sourceDesc.phase            = desc.defaultPhase;
     sourceDesc.lane             = desc.defaultLane;
     sourceDesc.kind             = ExecNodeKind::DynamicTask;
+    sourceDesc.tag              = desc.tag;
     sourceDesc.flags            = desc.flags;
     sourceDesc.fn               = desc.dispatchFn;
     sourceDesc.debugName        = desc.debugName;
@@ -48,6 +49,12 @@ DynamicTaskTypeId DynamicTaskTypeRegistry::Register(
     sourceDesc.accesses = std::span<const AccessSpec>(
         stored.accesses.data(),
         stored.accesses.size());
+    sourceDesc.runsBefore = std::span<const ExecTag>(
+        stored.runsBefore.data(),
+        stored.runsBefore.size());
+    sourceDesc.runsAfter = std::span<const ExecTag>(
+        stored.runsAfter.data(),
+        stored.runsAfter.size());
 
     if (!sourceRegistry.Register(sourceDesc))
     {

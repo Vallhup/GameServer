@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <queue>
+#include <span>
 #include <string>
 #include <utility>
 #include <deque>
@@ -21,6 +22,34 @@
 
 #include "WorldFragmentBuild.h"
 #include "WorldExecutionModelTypes.h"
+
+namespace
+{
+    bool ContainsTag(std::span<const ExecTag> tags, ExecTag tag) noexcept
+    {
+        return std::find(tags.begin(), tags.end(), tag) != tags.end();
+    }
+
+    bool SourceRunsBefore(
+        const ExecutionSourceDesc& first,
+        const ExecutionSourceDesc& second) noexcept
+    {
+        return ContainsTag(first.runsBefore, second.tag) ||
+            ContainsTag(second.runsAfter, first.tag);
+    }
+
+    void CleanupDynamicTaskPayload(
+        const DynamicTaskTypeDesc* typeDesc,
+        const DynamicTaskRequest& request) noexcept
+    {
+        if (typeDesc != nullptr &&
+            typeDesc->payloadCleanupFn != nullptr &&
+            request.payloadKey != 0)
+        {
+            typeDesc->payloadCleanupFn(request.payloadKey);
+        }
+    }
+}
 
 BuildResult ExecutionGraphBuilder::Build(const FrameBuildContext& context)
 {
@@ -487,17 +516,25 @@ bool ExecutionGraphBuilder::BuildFragmentEdges(
             if (!HasAnyConflict(descI->accesses, descJ->accesses, conflictRegistry))
                 continue;
 
-            // i → j 방향 엣지가 아직 없으면 삽입한다.
-            const uint64_t keyIJ = makeEdgeKey(i, j);
-            if (existingEdgeSet.find(keyIJ) == existingEdgeSet.end())
+            uint32_t fromIndex = i;
+            uint32_t toIndex = j;
+            if (SourceRunsBefore(*descJ, *descI) &&
+                !SourceRunsBefore(*descI, *descJ))
+            {
+                fromIndex = j;
+                toIndex = i;
+            }
+
+            const uint64_t edgeKey = makeEdgeKey(fromIndex, toIndex);
+            if (existingEdgeSet.find(edgeKey) == existingEdgeSet.end())
             {
                 LocalFragmentEdge autoEdge{};
-                autoEdge.fromLocalIndex = i;
-                autoEdge.toLocalIndex = j;
+                autoEdge.fromLocalIndex = fromIndex;
+                autoEdge.toLocalIndex = toIndex;
                 outFragment.localEdges.push_back(autoEdge);
 
-                existingEdgeSet.emplace(keyIJ, true);
-                existingEdgeSet.emplace(makeEdgeKey(j, i), true);
+                existingEdgeSet.emplace(edgeKey, true);
+                existingEdgeSet.emplace(makeEdgeKey(toIndex, fromIndex), true);
             }
         }
     }
@@ -819,13 +856,15 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
 
     for (const DynamicTaskRequest& request : batch.requests)
     {
+        const DynamicTaskTypeDesc* typeDesc = typeRegistry.TryGet(request.typeId);
+
         if (!request.IsValid())
         {
+            CleanupDynamicTaskPayload(typeDesc, request);
             AddWarning(result, "AppendDynamicNodes - invalid request (skipped)");
             continue;
         }
 
-        const DynamicTaskTypeDesc* typeDesc = typeRegistry.TryGet(request.typeId);
         if (typeDesc == nullptr)
         {
             AddWarning(result, "AppendDynamicNodes - DynamicTaskTypeDesc not found (skipped)");
@@ -835,6 +874,7 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
         const ExecutionSourceDesc* sourceDesc = sourceRegistry.TryGet(typeDesc->sourceToken);
         if (sourceDesc == nullptr)
         {
+            CleanupDynamicTaskPayload(typeDesc, request);
             AddError(result, "AppendDynamicNodes - ExecutionSourceDesc not found");
             continue;
         }
@@ -851,6 +891,7 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
                 ", scopeCount=" +
                 std::to_string(outGraph.scopeCount) +
                 ")";
+            CleanupDynamicTaskPayload(typeDesc, request);
             AddWarning(result, message.c_str());
             continue;
         }
@@ -906,12 +947,27 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
 
             const ExecutionSourceDesc* existingSource =
                 sourceRegistry.TryGet(existing.sourceToken);
-            if (existingSource == nullptr || existingSource->accesses.empty())
-                continue;
-            if (newAccesses.empty())
+            if (existingSource == nullptr)
                 continue;
 
-            if (HasAnyConflict(newAccesses, existingSource->accesses, conflictRegistry))
+            const bool newBeforeExisting =
+                SourceRunsBefore(*sourceDesc, *existingSource);
+            const bool existingBeforeNew =
+                SourceRunsBefore(*existingSource, *sourceDesc);
+            const bool hasConflict =
+                !newAccesses.empty() &&
+                !existingSource->accesses.empty() &&
+                HasAnyConflict(newAccesses, existingSource->accesses, conflictRegistry);
+
+            if (newBeforeExisting && !existingBeforeNew)
+            {
+                appendUniqueEdge(
+                    predLists[existingId],
+                    succLists[newNodeId],
+                    newNodeId,
+                    existingId);
+            }
+            else if (existingBeforeNew || hasConflict)
             {
                 appendUniqueEdge(
                     predLists[newNodeId],

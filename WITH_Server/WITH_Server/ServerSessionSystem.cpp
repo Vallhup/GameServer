@@ -63,10 +63,12 @@ bool ServerSessionSystem::Initialize()
 	};
 	PacketHandlerContext::Initialize(_packetHandlerCtx);
 
+	_framework.SetDynamicTaskScopeResolver(this);
 	_network.SetIOSink(_framework.GetIOSink());
 
 	if (!_network.Initialize())
 	{
+		_framework.SetDynamicTaskScopeResolver(nullptr);
 		FWLOG_FATAL(kLogCategory, "Network runtime initialize failed");
 		return false;
 	}
@@ -87,6 +89,7 @@ bool ServerSessionSystem::Initialize()
 
 void ServerSessionSystem::Shutdown() noexcept
 {
+	_framework.SetDynamicTaskScopeResolver(nullptr);
 	_network.Shutdown();
 	ClearSessionState();
 }
@@ -318,4 +321,39 @@ void ServerSessionSystem::AppendPendingInitialEntrySessions(
 		(void)pending;
 		outSessionIds.push_back(sessionId);
 	}
+}
+
+bool ServerSessionSystem::TryResolveScope(
+	const DynamicTaskRequest& request,
+	std::span<const WorldId> worldIdByScope,
+	ExecScopeId& outScopeId) const noexcept
+{
+	outScopeId = InvalidExecScopeId;
+
+	if (request.targetKind != DynamicTaskTargetKind::SessionCurrentWorld &&
+		request.targetKind != DynamicTaskTargetKind::TypeDefault)
+	{
+		return false;
+	}
+
+	const WorldId currentWorldId =
+		_sessionFlowController.FindCurrentWorldId(
+			static_cast<SessionId>(request.sessionId));
+	if (!currentWorldId.IsValid())
+	{
+		return false;
+	}
+
+	for (ExecScopeId scopeId = 0;
+		scopeId < static_cast<ExecScopeId>(worldIdByScope.size());
+		++scopeId)
+	{
+		if (worldIdByScope[scopeId] == currentWorldId)
+		{
+			outScopeId = scopeId;
+			return true;
+		}
+	}
+
+	return false;
 }

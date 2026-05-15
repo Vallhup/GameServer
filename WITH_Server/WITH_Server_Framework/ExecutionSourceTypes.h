@@ -18,6 +18,7 @@ struct ExecutionSourceDesc
     ExecPhase phase{ ExecPhase::None };
     ExecLane lane{ ExecLane::None };
     ExecNodeKind kind{ ExecNodeKind::None };
+    ExecTag tag{ InvalidExecTag };
     uint32_t flags{ ExecNodeFlag_None };
 
     ExecFn fn{ nullptr };
@@ -34,6 +35,8 @@ struct ExecutionSourceDesc
     // span에 설정하므로, 이 필드는 사용되지 않는다. 단, 필요 시 직접 등록 경로에서
     // owned storage로 활용할 수 있다.
     std::span<const AccessSpec> accesses{};
+    std::span<const ExecTag> runsBefore{};
+    std::span<const ExecTag> runsAfter{};
 
     // 스케줄링 품질 힌트 — AutoSystemBridge가 ExecMeta.schedulingHint로부터 복사한다.
     // ExecNodeRecord.priorityBias 로 전파되어 executor에서 사용된다.

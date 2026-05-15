@@ -2,16 +2,20 @@
 
 #include <atomic>
 #include <cstdint>
+#include <deque>
 #include <mutex>
+#include <span>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "ExecutionCoreTypes.h"
 #include "SystemMeta.h"
+#include "WorldId.h"
 
 struct NodeExecContext;
 using ExecFn = ExecCallResult(*)(NodeExecContext&);
+using DynamicTaskPayloadCleanupFn = void(*)(uint64_t payloadKey) noexcept;
 
 // Forward declaration — ExecutionSourceTypes.h에서 완전 정의된다.
 struct ExecutionSourceDesc;
@@ -22,6 +26,26 @@ class ExecutionSourceRegistry;
 // ---------------------------------------------------------------------------
 using DynamicTaskTypeId = uint32_t;
 constexpr DynamicTaskTypeId InvalidDynamicTaskTypeId = 0;
+
+enum class DynamicTaskTargetKind : uint8_t
+{
+    TypeDefault,
+    ExplicitScope,
+    SessionCurrentWorld,
+};
+
+struct DynamicTaskRequest;
+
+class IDynamicTaskScopeResolver
+{
+public:
+    virtual bool TryResolveScope(
+        const DynamicTaskRequest& request,
+        std::span<const WorldId> worldIdByScope,
+        ExecScopeId& outScopeId) const noexcept = 0;
+
+    virtual ~IDynamicTaskScopeResolver() = default;
+};
 
 // ---------------------------------------------------------------------------
 // DynamicTaskTypeDesc
@@ -38,15 +62,20 @@ struct DynamicTaskTypeDesc
     DynamicTaskTypeId typeId{ InvalidDynamicTaskTypeId };   // 등록 후 채워진다
     ExecToken         sourceToken{ InvalidExecToken };      // 등록 후 채워진다
 
+    ExecTag        tag{ InvalidExecTag };
     ExecPhase      defaultPhase{ ExecPhase::Simulate };
     ExecLane       defaultLane{ ExecLane::Parallel };
+    DynamicTaskTargetKind defaultTargetKind{ DynamicTaskTargetKind::ExplicitScope };
     uint32_t       flags{ ExecNodeFlag_None };
 
     // 이 타입의 모든 인스턴스에 적용되는 resource access 선언.
     // DynamicTaskTypeRegistry가 소유 (수명 = 레지스트리).
     std::vector<AccessSpec> accesses;
+    std::vector<ExecTag> runsBefore;
+    std::vector<ExecTag> runsAfter;
 
     ExecFn         dispatchFn{ nullptr };
+    DynamicTaskPayloadCleanupFn payloadCleanupFn{ nullptr };
     SchedulingHint schedulingHint{};
     std::string    debugName;
 
@@ -68,6 +97,7 @@ struct DynamicTaskRequest
 {
     DynamicTaskTypeId typeId{ InvalidDynamicTaskTypeId };
     ExecScopeId       scopeId{ InvalidExecScopeId };
+    DynamicTaskTargetKind targetKind{ DynamicTaskTargetKind::TypeDefault };
 
     // payload 식별자: 해석은 dispatch 함수가 담당한다.
     // Phase 1에서는 game-side handle index 등 uint64 key로 충분하다.

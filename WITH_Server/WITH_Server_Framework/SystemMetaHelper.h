@@ -90,14 +90,20 @@ template<typename T>
 // ExecTag / SystemTag 생성 헬퍼 [v3 갱신: SysTag -> Tag, SysTag alias 유지]
 // ---------------------------------------------------------------------------
 template<typename T>
-[[nodiscard]] inline ExecTag Tag() noexcept
+[[nodiscard]] consteval ExecTag MakeExecTag() noexcept
 {
-    return ExecTag{ typeid(T) };
+    return TypeHash<T>();
+}
+
+template<typename T>
+[[nodiscard]] consteval ExecTag Tag() noexcept
+{
+    return MakeExecTag<T>();
 }
 
 // Backward compat alias -- 기존 게임 코드의 SysTag<T>() 참조를 유지한다.
 template<typename T>
-[[nodiscard]] inline ExecTag SysTag() noexcept
+[[nodiscard]] consteval ExecTag SysTag() noexcept
 {
     return Tag<T>();
 }

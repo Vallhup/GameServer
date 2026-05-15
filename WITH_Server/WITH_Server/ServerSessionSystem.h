@@ -7,6 +7,7 @@
 
 #include "CharacterDataService.h"
 #include "CharacterSpawnService.h"
+#include "DynamicTaskTypes.h"
 #include "ServerPacketStager.h"
 #include "NetworkRuntime.h"
 #include "PacketHandlerContext.h"
@@ -22,7 +23,7 @@ enum class InitialWorldReadyResult : uint8_t
 	Rejected,
 };
 
-class ServerSessionSystem final {
+class ServerSessionSystem final : public IDynamicTaskScopeResolver {
 public:
 	struct Config
 	{
@@ -62,6 +63,11 @@ public:
 		std::span<const SessionId> additionalExcludedSessions = {});
 
 	void AppendPendingInitialEntrySessions(std::vector<SessionId>& outSessionIds) const;
+
+	bool TryResolveScope(
+		const DynamicTaskRequest& request,
+		std::span<const WorldId> worldIdByScope,
+		ExecScopeId& outScopeId) const noexcept override;
 
 	NetworkRuntime&       Network() noexcept       { return _network; }
 	const NetworkRuntime& Network() const noexcept { return _network; }

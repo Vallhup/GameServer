@@ -26,6 +26,7 @@ struct IIOBackend;
 struct INetworkBackend;
 class DynamicTaskTypeRegistry;
 class ExecutionSourceRegistry;
+class IDynamicTaskScopeResolver;
 enum class SystemPhase : uint8_t;
 enum class ExecPhase : uint8_t;
 
@@ -132,6 +133,8 @@ public:
 	// DynamicTask 패킷 핸들러 등록용
 	DynamicTaskTypeRegistry& GetDynamicTaskTypeRegistry() noexcept;
 	ExecutionSourceRegistry& GetExecutionSourceRegistry() noexcept;
+	void SetDynamicTaskScopeResolver(
+		IDynamicTaskScopeResolver* resolver) noexcept;
 
 	bool AttachPresenceToWorld(
 		SessionId sessionId,

@@ -2,6 +2,7 @@
 #include "WorldScheduler.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "DynamicTaskTypes.h"
 #include "DynamicTaskScheduler.h"
@@ -99,6 +100,7 @@ bool WorldScheduler::RunFrame(
     {
         FreezeDynamicTaskRequests(
             std::span<WorldRuntime*>(_scratch.runtimeByScope.data(), _scratch.runtimeByScope.size()),
+            std::span<const WorldId>(_scratch.worldIdByScope.data(), _scratch.worldIdByScope.size()),
             params.frameIndex,
             _scratch.dynamicBatch);
     }
@@ -158,6 +160,12 @@ const WorldFrameSelectionSet& WorldScheduler::GetLastSelectionSet() const noexce
 const BuildResult& WorldScheduler::GetLastBuildResult() const noexcept
 {
     return _scratch.buildResult;
+}
+
+void WorldScheduler::SetDynamicTaskScopeResolver(
+    IDynamicTaskScopeResolver* resolver) noexcept
+{
+    _dynamicTaskScopeResolver = resolver;
 }
 
 void WorldScheduler::Clear() noexcept
@@ -344,6 +352,7 @@ bool WorldScheduler::PrepareExecutionContexts(
 
 void WorldScheduler::FreezeDynamicTaskRequests(
     std::span<WorldRuntime*> runtimeByScope,
+    std::span<const WorldId> worldIdByScope,
     uint64_t frameIndex,
     DynamicTaskFrozenBatch& outBatch)
 {
@@ -366,13 +375,67 @@ void WorldScheduler::FreezeDynamicTaskRequests(
     if (_dynamicTaskScheduler != nullptr)
         _dynamicTaskScheduler->DrainInto(outBatch.requests);
 
+    auto cleanupPayload =
+        [this](const DynamicTaskRequest& request)
+        {
+            if (request.payloadKey == 0 || _dynamicTaskTypeRegistry == nullptr)
+                return;
+
+            const DynamicTaskTypeDesc* typeDesc =
+                _dynamicTaskTypeRegistry->TryGet(request.typeId);
+            if (typeDesc != nullptr && typeDesc->payloadCleanupFn != nullptr)
+                typeDesc->payloadCleanupFn(request.payloadKey);
+        };
+
+    std::vector<DynamicTaskRequest> resolvedRequests;
+    resolvedRequests.reserve(outBatch.requests.size());
+
     // requestFrameIndex가 설정되지 않은 요청을 현재 프레임으로 보완한다.
     // (Push 시 설정하지 않은 경우를 위한 safety net)
     for (DynamicTaskRequest& req : outBatch.requests)
     {
         if (req.requestFrameIndex == 0)
             req.requestFrameIndex = frameIndex;
+
+        const DynamicTaskTypeDesc* typeDesc =
+            _dynamicTaskTypeRegistry != nullptr
+                ? _dynamicTaskTypeRegistry->TryGet(req.typeId)
+                : nullptr;
+
+        DynamicTaskTargetKind targetKind = req.targetKind;
+        if (targetKind == DynamicTaskTargetKind::TypeDefault)
+        {
+            targetKind = typeDesc != nullptr
+                ? typeDesc->defaultTargetKind
+                : DynamicTaskTargetKind::ExplicitScope;
+        }
+
+        if (targetKind == DynamicTaskTargetKind::SessionCurrentWorld)
+        {
+            ExecScopeId resolvedScopeId = InvalidExecScopeId;
+            const bool resolved =
+                _dynamicTaskScopeResolver != nullptr &&
+                _dynamicTaskScopeResolver->TryResolveScope(
+                    req,
+                    worldIdByScope,
+                    resolvedScopeId) &&
+                resolvedScopeId != InvalidExecScopeId &&
+                resolvedScopeId < static_cast<ExecScopeId>(runtimeByScope.size());
+
+            if (!resolved)
+            {
+                cleanupPayload(req);
+                continue;
+            }
+
+            req.scopeId = resolvedScopeId;
+            req.targetKind = DynamicTaskTargetKind::ExplicitScope;
+        }
+
+        resolvedRequests.push_back(std::move(req));
     }
+
+    outBatch.requests = std::move(resolvedRequests);
 
     // 결정론적 정렬: (scopeId ASC, priorityBias DESC, requestFrameIndex ASC)
     outBatch.Sort();

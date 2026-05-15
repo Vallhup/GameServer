@@ -3,7 +3,6 @@
 
 #include <cassert>
 #include <string>
-#include <typeindex>
 #include <unordered_map>
 
 #include "ExecutionContextTypes.h"
@@ -157,10 +156,13 @@ AutoSystemBridge::BridgeResult AutoSystemBridge::RegisterSources(
         sourceDesc.phase = execPhase;
         sourceDesc.lane = lane;
         sourceDesc.kind = nodeKind;
+        sourceDesc.tag = schedDesc.meta->tag;
         sourceDesc.flags = ExecNodeFlag_None;
         sourceDesc.fn = &AutoSystemBridge::BridgeDispatch;
         sourceDesc.debugName = std::string(schedDesc.meta->name);
         sourceDesc.accesses = schedDesc.meta->accesses;
+        sourceDesc.runsBefore = schedDesc.meta->runsBefore;
+        sourceDesc.runsAfter = schedDesc.meta->runsAfter;
         sourceDesc.schedulingHint = schedDesc.meta->schedulingHint;
 
         if (!sourceRegistry.Register(sourceDesc))

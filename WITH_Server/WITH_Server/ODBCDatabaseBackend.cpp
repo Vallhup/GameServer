@@ -150,6 +150,7 @@ bool ODBCDatabaseBackend::DrainCompletions(uint32_t) noexcept
 		DynamicTaskRequest request{};
 		request.typeId = routing.completionTaskTypeId;
 		request.scopeId = routing.scopeId;
+		request.targetKind = DynamicTaskTargetKind::ExplicitScope;
 		request.payloadKey = completionKey;
 		request.requestFrameIndex = routing.requestFrameIndex;
 		request.sessionId = routing.sessionId;

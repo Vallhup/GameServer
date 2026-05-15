@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <span>
 #include <string_view>
-#include <typeindex>
 
 #include "ExecutionCoreTypes.h" // TypeHash<T>
 
@@ -97,7 +96,8 @@ struct AccessSpec
 // ---------------------------------------------------------------------------
 // ExecTag -- 실행 단위 식별자 [v3 갱신: SystemTag -> ExecTag]
 // ---------------------------------------------------------------------------
-using ExecTag = std::type_index;
+using ExecTag = uint64_t;
+constexpr ExecTag InvalidExecTag = 0;
 
 // Backward compat: 기존 게임 코드의 SystemTag 참조를 유지한다.
 using SystemTag = ExecTag;
