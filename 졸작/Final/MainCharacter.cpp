@@ -4,7 +4,6 @@
 #include "Transform.h"
 #include "Input.h"
 #include "Camera.h"
-#include "AnimationMachine.h"
 #include "Engine.h"
 
 void MainCharacter::Update(float deltaTime)
@@ -16,20 +15,7 @@ void MainCharacter::Update(float deltaTime)
 		BasicDodge();
 		BasicGuard();
 		BasicParry();
-
-		// TEMP: 서버 아이템 기능 체크용
-		// TODO: 현재 클라 예측 애니메이션이 없어서 아이템 사용 중
-		//       패링, 회피 시 애니메이션이 덮어 띄워지는 버그 있음
-		{
-			if (auto* network = NETWORK_MANAGER)
-			{
-				auto& input = INPUT;
-				if (input.GetKey('1'))
-				{
-					network->SendUseItemPacket(0, 0);
-				}
-			}
-		}
+		BasicDrinking();
 	}
 
 	GameObject::Update(deltaTime);
@@ -63,22 +49,6 @@ void MainCharacter::BasicMove()
 	{
 		network->SendMovePacket(inputX, inputZ, yaw, isRunning);
 	}
-
-	auto animMachine = GetComponent<AnimationMachine>();
-	if (animMachine) {
-		if (!isMoving && wasMoving) {
-			animMachine->TryPlayClip("Idle");
-		}
-		else if (isMoving && !wasMoving) {
-			animMachine->TryPlayClip(isRunning ? "Run" : "Walk");
-		}
-		else if (isMoving && (isRunning != wasRunning)) {
-			animMachine->TryPlayClip(isRunning ? "Run" : "Walk");
-		}
-	}
-
-	wasMoving = isMoving;
-	wasRunning = isRunning;
 }
 
 void MainCharacter::BasicAttack()
@@ -87,17 +57,11 @@ void MainCharacter::BasicAttack()
 
 	bool currentAttack = input.GetMouseButton(MouseButton::LEFT);
 
-	if (currentAttack && !prevAttack) 
+	if (currentAttack && !prevAttack)
 	{
 		if (auto* network = NETWORK_MANAGER)
 		{
 			network->SendAttackPacket(0.0f, 0.0f);
-		}
-
-		auto animMachine = GetComponent<AnimationMachine>();
-		if (animMachine)
-		{
-			animMachine->TryPlayClip("Attack");
 		}
 	}
 
@@ -114,12 +78,6 @@ void MainCharacter::BasicDodge()
 		{
 			network->SendDodgePacket(0.0f, 0.0f);
 		}
-
-		auto animMachine = GetComponent<AnimationMachine>();
-		if (animMachine)
-		{
-			animMachine->TryPlayClip("Dodge");
-		}
 	}
 }
 
@@ -129,32 +87,21 @@ void MainCharacter::BasicGuard()
 
 	bool isGuarding = input.GetKey('Q');
 
-	auto animMachine = GetComponent<AnimationMachine>();
-	if (animMachine) {
-		if (!wasGuarding && isGuarding)
+	if (!wasGuarding && isGuarding)
+	{
+		if (auto* network = NETWORK_MANAGER)
 		{
-			if (animMachine->TryPlayClip("Guard"))
-			{
-				if (auto* network = NETWORK_MANAGER)
-				{
-					network->SendGuardPacket(true);
-				}
-				wasGuarding = true;
-			}
+			network->SendGuardPacket(true);
 		}
-		else if (wasGuarding && !isGuarding)
+		wasGuarding = true;
+	}
+	else if (wasGuarding && !isGuarding)
+	{
+		if (auto* network = NETWORK_MANAGER)
 		{
-			if (auto* network = NETWORK_MANAGER)
-			{
-				network->SendGuardPacket(false);
-			}
-
-			if (animMachine->IsPlaying("Guard"))
-			{
-				animMachine->EndCurrentClip();
-			}
-			wasGuarding = false;
+			network->SendGuardPacket(false);
 		}
+		wasGuarding = false;
 	}
 }
 
@@ -164,83 +111,33 @@ void MainCharacter::BasicParry()
 
 	bool currentParry = input.GetMouseButton(MouseButton::RIGHT);
 
-	if (currentParry && !prevParry) {
+	if (currentParry && !prevParry)
+	{
 		if (auto* network = NETWORK_MANAGER)
 		{
 			network->SendParryPacket(0.0f, 0.0f);
-		}
-
-		auto animMachine = GetComponent<AnimationMachine>();
-		if (animMachine)
-		{
-			animMachine->TryPlayClip("Parry");
 		}
 	}
 
 	prevParry = currentParry;
 }
 
-void MainCharacter::RegisterAnimationCallback()
+void MainCharacter::BasicDrinking()
 {
-	auto animMachine = GetComponent<AnimationMachine>();
-	if (!animMachine) return;
+	auto& input = INPUT;
 
-	animMachine->onActionEnd = [this]() -> string {
-		auto& input = INPUT;
-
-		if (input.GetKey('Q')) 
+	if (input.GetKeyDown('1'))
+	{
+		if (auto* network = NETWORK_MANAGER)
 		{
-			if (auto* network = NETWORK_MANAGER)
-			{
-				network->SendGuardPacket(true);
-			}
-			wasGuarding = true;
-			return "Guard";
+			network->SendUseItemPacket(0, 0);
 		}
-
-		if (input.GetMouseButton(MouseButton::RIGHT)) 
-		{
-			if (auto* network = NETWORK_MANAGER)
-			{
-				network->SendParryPacket(0.0f, 0.0f);
-			}
-			return "Parry";
-		}
-
-		if (input.GetKey(VK_SPACE)) 
-		{
-			if (auto* network = NETWORK_MANAGER)
-			{
-				network->SendDodgePacket(0.0f, 0.0f);
-			}
-			return "Dodge";
-		}
-
-		if (input.GetMouseButton(MouseButton::LEFT)) 
-		{
-			if (auto* network = NETWORK_MANAGER)
-			{
-				network->SendAttackPacket(0.0f, 0.0f);
-			}
-			return "Attack";
-		}
-
-		bool isMoving = input.GetKey('W') || input.GetKey('A') ||
-						input.GetKey('S') || input.GetKey('D');
-
-		bool isRunning = input.GetKey(VK_SHIFT) && isMoving;
-
-		if (isRunning) return "Run";
-		if (isMoving) return "Walk";
-		return "Idle";
-		};
+	}
 }
 
 void MainCharacter::SetAsLocalPlayer(Camera* cam)
 {
 	camera = cam;
 	camera->InitCameraPositionFromCharacter(GetComponent<Transform>()->GetPosition());
-
-	RegisterAnimationCallback();
 }
 

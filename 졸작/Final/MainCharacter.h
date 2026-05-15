@@ -16,8 +16,7 @@ private:
 	void BasicDodge();
 	void BasicGuard();
 	void BasicParry();
-
-	void RegisterAnimationCallback();
+	void BasicDrinking();
 
 private:
 	Camera* camera = nullptr;
@@ -29,8 +28,6 @@ private:
 	float targetYawAngle = 0.0f;
 	bool needsRotation = false;
 
-	bool wasMoving = false;
-	bool wasRunning = false;
 	bool prevAttack = false;
 	bool wasGuarding = false;
 	bool prevParry = false;

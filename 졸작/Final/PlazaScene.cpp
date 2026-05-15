@@ -93,8 +93,8 @@ void PlazaScene::InitializeSceneEnvironments()
 
 void PlazaScene::UpdateScene(const float deltaTime)
 {
-	if (effectObjects.size() > 0 && INPUT.GetKeyDown('1'))
-		effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
+	//if (effectObjects.size() > 0 && INPUT.GetKeyDown('1'))
+	//	effectObjects[0]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (effectObjects.size() > 1 && INPUT.GetKeyDown('2'))
 		effectObjects[1]->GetComponent<EffectRenderer>()->PlayEffect();
@@ -231,7 +231,7 @@ void PlazaScene::RenderSceneDeferred()
 		batch->Render(*coreRef, renderer);
 	}
 
-	static bool hitOn = false;
+	/*static bool hitOn = false;
 
 	if (INPUT.GetKeyDown('1'))
 		hitOn = !hitOn;
@@ -264,7 +264,7 @@ void PlazaScene::RenderSceneDeferred()
 					obj->RenderDebugBoundingBox(*coreRef, { 0, 1, 1, 1 });
 			}
 		}
-	}
+	}*/
 }
 
 void PlazaScene::RenderSceneForward()
