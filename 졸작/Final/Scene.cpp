@@ -178,7 +178,7 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 
 	auto blood = character->AddComponent<BloodImpactComponent>();
 	blood->InitializeBlood(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), 64);
-	blood->SetColor({ 0.55f, 0.55f, 0.55f, 1.0f });
+	blood->SetColor({ 0.35f, 0.35f, 0.35f, 1.0f });
 	blood->SetLifetime(1.2f);
 	blood->SetBaseSpeed(5.5f);
 	blood->SetBaseSize(1.2f);
@@ -206,7 +206,7 @@ shared_ptr<GameObject> Scene::CreateMonsterObject(const wstring& meshPath, share
 
 	auto blood = obj->AddComponent<BloodImpactComponent>();
 	blood->InitializeBlood(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), 64);
-	blood->SetColor({ 0.55f, 0.55f, 0.55f, 1.0f });
+	blood->SetColor({ 0.35f, 0.35f, 0.35f, 1.0f });
 	blood->SetLifetime(1.2f);
 	blood->SetBaseSpeed(5.5f);
 	blood->SetBaseSize(1.2f);
