@@ -8,19 +8,22 @@
 #include "ECS/System/Phase2/ResolveLocomotionStateSystem.h"
 #include "ExecutionContextTypes.h"
 #include "ExecutionCoreTypes.h"
+#include "ExecutionOps.h"
 #include "FrameworkRuntime.h"
 #include "FrameworkLog.h"
 #include "NetworkRuntime.h"
 #include "PacketFactory.h"
 #include "PacketHandlerContext.h"
 #include "PacketType.h"
-#include "PlayerCommand.h"
 #include "SessionFlowCommands.h"
 #include "SessionFlowController.h"
 #include "ServerPacketStager.h"
+#include "System.h"
 #include "SystemMetaHelper.h"
 #include "ServerSessionSystem.h"
 #include "WorldRuntime.h"
+#include "ECS/GameplayRuntimeComponents.h"
+#include "ECS/System/GameplaySystemUtil.h"
 #include "IWorldTransitionRequestSink.h"
 
 #include "Protocol.pb.h"
@@ -31,7 +34,6 @@
 namespace
 {
     constexpr const char* kLogCategory = "PacketHandlers";
-    constexpr uint32_t kDefaultCommandSequence = 0;
     constexpr uint32_t kWorldTransitionRejectReasonServerUnavailable = 1;
     constexpr uint32_t kWorldTransitionRejectReasonRequestRejected = 2;
     constexpr uint32_t kLoginFailReasonMalformedPacket = 1;
@@ -43,6 +45,14 @@ namespace
     {
         bool     accepted{ false };
         uint32_t failReason{ kLoginFailReasonAuthRejected };
+    };
+
+    struct PlayerInputTarget
+    {
+        Entity entity{ Entity::Null() };
+        PlayerControlIdentityComp* identity{ nullptr };
+        ActorInputComp* input{ nullptr };
+        WorldRuntime* runtime{ nullptr };
     };
 
     // payloadKey = SendBuffer* 로 부터 RAII 소유권 획득
@@ -77,6 +87,99 @@ namespace
             return nullptr;
 
         return ctx.TryGetRuntime();
+    }
+
+    bool TryResolvePlayerInputTarget(
+        NodeExecContext& ctx,
+        SessionId sessionId,
+        NetId netId,
+        PlayerInputTarget& out) noexcept
+    {
+        out = {};
+
+        WorldRuntime* runtime = ctx.TryGetRuntime();
+        ExecutionOps* ops = ctx.TryGetOps();
+        const WorldId worldId = ctx.TryGetWorldId();
+        if (runtime == nullptr || ops == nullptr || !worldId.IsValid() ||
+            sessionId == 0 || !netId.IsValid())
+        {
+            return false;
+        }
+
+        Entity entity = Entity::Null();
+        if (!ops->TryResolveEntity(worldId, netId, entity) ||
+            entity.IsNull())
+        {
+            return false;
+        }
+
+        ECSView ecs = runtime->MakeView();
+        PlayerControlIdentityComp* identity =
+            ecs.GetMutableComponent<PlayerControlIdentityComp>(entity);
+        ActorInputComp* input =
+            ecs.GetMutableComponent<ActorInputComp>(entity);
+        if (identity == nullptr || input == nullptr)
+        {
+            return false;
+        }
+
+        if (identity->ownerSessionId != sessionId ||
+            identity->netId != netId)
+        {
+            return false;
+        }
+
+        out.entity = entity;
+        out.identity = identity;
+        out.input = input;
+        out.runtime = runtime;
+        return true;
+    }
+
+    bool TryResolvePlayerInputTarget(
+        NodeExecContext& ctx,
+        SessionId sessionId,
+        const SessionFlowController& sessionFlow,
+        PlayerInputTarget& out) noexcept
+    {
+        const NetId netId = sessionFlow.FindControlledNetId(sessionId);
+        return TryResolvePlayerInputTarget(ctx, sessionId, netId, out);
+    }
+
+    void ApplyMoveInput(
+        WorldRuntime& runtime,
+        const Protocol::CS_MOVE_PACKET& packet,
+        ActorInputComp& input) noexcept
+    {
+        input.move.inputX = GameplaySystemUtil::ClampFloat(
+            static_cast<float>(packet.inputx()), -1.0f, 1.0f);
+        input.move.inputZ = GameplaySystemUtil::ClampFloat(
+            static_cast<float>(packet.inputz()), -1.0f, 1.0f);
+        input.move.cameraYawRad = GameplaySystemUtil::WrapYaw(packet.yaw());
+        input.move.wantsRun = packet.isrun();
+        input.move.lastUpdatedFrame = runtime.FrameIndex();
+    }
+
+    void ApplyAbilityInput(
+        WorldRuntime& runtime,
+        PlayerAbilityInputType type,
+        float directionX,
+        float directionZ,
+        ActorInputComp& input) noexcept
+    {
+        input.ability.directionX = directionX;
+        input.ability.directionZ = directionZ;
+        input.ability.requestedFrame = runtime.FrameIndex();
+        input.ability.type = type;
+    }
+
+    void ApplyGuardInput(
+        WorldRuntime& runtime,
+        const Protocol::CS_GUARD_PACKET& packet,
+        ActorInputComp& input) noexcept
+    {
+        input.guard.isPressed = packet.input();
+        input.guard.lastUpdatedFrame = runtime.FrameIndex();
     }
 
     // 방향 패킷 파싱 헬퍼
@@ -177,6 +280,18 @@ namespace
         desc.runsBefore.push_back(Tag<ResolveLocomotionStateSystem>());
     }
 
+    void AddGameplayInputAccesses(DynamicTaskTypeDesc& desc)
+    {
+        desc.accesses.push_back(
+            ReadImmediate(ExternalRes<SessionFlowController>()));
+        desc.accesses.push_back(
+            ReadImmediate(ExternalRes<IWorldNetBindingResolver>()));
+        desc.accesses.push_back(
+            ReadImmediate(ComponentRes<PlayerControlIdentityComp>()));
+        desc.accesses.push_back(
+            WriteImmediate(ComponentRes<ActorInputComp>()));
+    }
+
     DynamicTaskTypeId RegisterPacketDynamicTask(
         DynamicTaskTypeRegistry& taskRegistry,
         ExecutionSourceRegistry& sourceRegistry,
@@ -197,7 +312,10 @@ namespace
         desc.payloadCleanupFn  = &ReleaseSendBufferPayload;
 
         if (gameplayInput)
+        {
             AddGameplayInputOrdering(desc);
+            AddGameplayInputAccesses(desc);
+        }
 
         const DynamicTaskTypeId typeId =
             taskRegistry.Register(desc, sourceRegistry);
@@ -485,28 +603,23 @@ ExecCallResult HandleMovePacket(NodeExecContext& ctx)
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
-    WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
-    if (!world)
+    if (svc.sessionFlow == nullptr ||
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow) == nullptr)
+    {
         return ExecCallResult::Success;
+    }
 
     Protocol::CS_MOVE_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
-    if (!netId.IsValid())
-        return ExecCallResult::Success;
-
-    const PlayerMoveCommandPayload payload
+    PlayerInputTarget target{};
+    if (!TryResolvePlayerInputTarget(ctx, sessionId, *svc.sessionFlow, target))
     {
-        .inputX = static_cast<float>(pkt.inputx()),
-        .inputZ = static_cast<float>(pkt.inputz()),
-        .yaw    = pkt.yaw(),
-        .isRun  = pkt.isrun() ? uint8_t{ 1 } : uint8_t{ 0 }
-    };
-    (void)world->EnqueueWorldCommand(
-        MakePlayerMoveCommand(sessionId, netId, kDefaultCommandSequence, payload));
+        return ExecCallResult::Success;
+    }
+
+    ApplyMoveInput(*target.runtime, pkt, *target.input);
     return ExecCallResult::Success;
 }
 
@@ -519,25 +632,28 @@ ExecCallResult HandleAttackPacket(NodeExecContext& ctx)
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
-    WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
-    if (!world)
+    if (svc.sessionFlow == nullptr ||
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow) == nullptr)
+    {
         return ExecCallResult::Success;
+    }
 
     Protocol::CS_ATTACK_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
-    if (!netId.IsValid())
+    PlayerInputTarget target{};
+    if (!TryResolvePlayerInputTarget(ctx, sessionId, *svc.sessionFlow, target))
+    {
         return ExecCallResult::Success;
+    }
 
-    const PlayerDirectionCommandPayload payload{
-        .dirX = pkt.dirx(),
-        .dirZ = pkt.dirz()
-    };
-    (void)world->EnqueueWorldCommand(
-        MakePlayerLightAttackCommand(sessionId, netId, kDefaultCommandSequence, payload));
+    ApplyAbilityInput(
+        *target.runtime,
+        PlayerAbilityInputType::LightAttack,
+        pkt.dirx(),
+        pkt.dirz(),
+        *target.input);
     return ExecCallResult::Success;
 }
 
@@ -550,25 +666,28 @@ ExecCallResult HandleDodgePacket(NodeExecContext& ctx)
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
-    WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
-    if (!world)
+    if (svc.sessionFlow == nullptr ||
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow) == nullptr)
+    {
         return ExecCallResult::Success;
+    }
 
     Protocol::CS_DODGE_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
-    if (!netId.IsValid())
+    PlayerInputTarget target{};
+    if (!TryResolvePlayerInputTarget(ctx, sessionId, *svc.sessionFlow, target))
+    {
         return ExecCallResult::Success;
+    }
 
-    const PlayerDirectionCommandPayload payload{
-        .dirX = pkt.dirx(),
-        .dirZ = pkt.dirz()
-    };
-    (void)world->EnqueueWorldCommand(
-        MakePlayerDodgeCommand(sessionId, netId, kDefaultCommandSequence, payload));
+    ApplyAbilityInput(
+        *target.runtime,
+        PlayerAbilityInputType::Dodge,
+        pkt.dirx(),
+        pkt.dirz(),
+        *target.input);
     return ExecCallResult::Success;
 }
 
@@ -581,24 +700,23 @@ ExecCallResult HandleGuardPacket(NodeExecContext& ctx)
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
-    WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
-    if (!world)
+    if (svc.sessionFlow == nullptr ||
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow) == nullptr)
+    {
         return ExecCallResult::Success;
+    }
 
     Protocol::CS_GUARD_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
-    if (!netId.IsValid())
+    PlayerInputTarget target{};
+    if (!TryResolvePlayerInputTarget(ctx, sessionId, *svc.sessionFlow, target))
+    {
         return ExecCallResult::Success;
+    }
 
-    const PlayerGuardCommandPayload payload{
-        .pressed = pkt.input() ? uint8_t{ 1 } : uint8_t{ 0 }
-    };
-    (void)world->EnqueueWorldCommand(
-        MakePlayerGuardCommand(sessionId, netId, kDefaultCommandSequence, payload));
+    ApplyGuardInput(*target.runtime, pkt, *target.input);
     return ExecCallResult::Success;
 }
 
@@ -611,25 +729,28 @@ ExecCallResult HandleParryPacket(NodeExecContext& ctx)
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
-    WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
-    if (!world)
+    if (svc.sessionFlow == nullptr ||
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow) == nullptr)
+    {
         return ExecCallResult::Success;
+    }
 
     Protocol::CS_PARRY_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
-    if (!netId.IsValid())
+    PlayerInputTarget target{};
+    if (!TryResolvePlayerInputTarget(ctx, sessionId, *svc.sessionFlow, target))
+    {
         return ExecCallResult::Success;
+    }
 
-    const PlayerDirectionCommandPayload payload{
-        .dirX = pkt.dirx(),
-        .dirZ = pkt.dirz()
-    };
-    (void)world->EnqueueWorldCommand(
-        MakePlayerParryCommand(sessionId, netId, kDefaultCommandSequence, payload));
+    ApplyAbilityInput(
+        *target.runtime,
+        PlayerAbilityInputType::Parry,
+        pkt.dirx(),
+        pkt.dirz(),
+        *target.input);
     return ExecCallResult::Success;
 }
 
@@ -642,25 +763,28 @@ ExecCallResult HandleUseItemPacket(NodeExecContext& ctx)
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
-    WorldRuntime* world =
-        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow);
-    if (!world)
+    if (svc.sessionFlow == nullptr ||
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow) == nullptr)
+    {
         return ExecCallResult::Success;
+    }
 
     Protocol::CS_USE_ITEM_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
-    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
-    if (!netId.IsValid())
+    PlayerInputTarget target{};
+    if (!TryResolvePlayerInputTarget(ctx, sessionId, *svc.sessionFlow, target))
+    {
         return ExecCallResult::Success;
+    }
 
-    const PlayerDirectionCommandPayload payload{
-        .dirX = pkt.dirx(),
-        .dirZ = pkt.dirz()
-    };
-    (void)world->EnqueueWorldCommand(
-        MakePlayerUseItemCommand(sessionId, netId, kDefaultCommandSequence, payload));
+    ApplyAbilityInput(
+        *target.runtime,
+        PlayerAbilityInputType::UseItem,
+        pkt.dirx(),
+        pkt.dirz(),
+        *target.input);
     return ExecCallResult::Success;
 }
 
