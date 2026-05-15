@@ -23,6 +23,7 @@ void Shader::InitializeAllShaders(ID3D12Device* device, ID3D12RootSignature* roo
     CreateEffectPSO(device, rootSig, ShaderType::FlamePS, PSOType::Flame, L"../Shaders/FlamePS.hlsli");
     CreateEffectPSO(device, rootSig, ShaderType::SparkPS, PSOType::Spark, L"../Shaders/SparkPS.hlsli");
     CreateEffectPSO(device, rootSig, ShaderType::GlowPS, PSOType::Glow, L"../Shaders/GlowPS.hlsli");
+    CreateEffectPSO(device, rootSig, ShaderType::BloodPS, PSOType::Blood, L"../Shaders/BloodPS.hlsli", true);
 }
 
 void Shader::InitializeForwardShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath)
@@ -509,7 +510,7 @@ void Shader::InitializeEffectVS(ID3D12Device* device, const wstring& vsPath)
     OutputDebugStringA("Effect VS compiled!\n");
 }
 
-void Shader::CreateEffectPSO(ID3D12Device* device, ID3D12RootSignature* rootSig, ShaderType psType, PSOType psoType, const wstring& psPath)
+void Shader::CreateEffectPSO(ID3D12Device* device, ID3D12RootSignature* rootSig, ShaderType psType, PSOType psoType, const wstring& psPath, bool useAlphaBlend)
 {
     CompileShader(psPath, "PSMain", "ps_5_1", mShadersBlobs[static_cast<size_t>(psType)]);
 
@@ -541,7 +542,7 @@ void Shader::CreateEffectPSO(ID3D12Device* device, ID3D12RootSignature* rootSig,
     D3D12_BLEND_DESC blendDesc = {};
     blendDesc.RenderTarget[0].BlendEnable = TRUE;
     blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-    blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlend = useAlphaBlend ? D3D12_BLEND_INV_SRC_ALPHA : D3D12_BLEND_ONE;
     blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
     blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
     blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;

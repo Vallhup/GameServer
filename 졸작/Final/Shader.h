@@ -20,6 +20,7 @@ enum class PSOType {
 	Flame,
 	Spark,
 	Glow,
+	Blood,
 	Blit,
 	BloomDownsample,
 	BloomUpsample,
@@ -41,6 +42,7 @@ enum class ShaderType {
 	FlamePS,
 	SparkPS,
 	GlowPS,
+	BloodPS,
 	BlitPS,
 	BloomDownsamplePS,
 	BloomUpsamplePS,
@@ -70,7 +72,7 @@ private:
 	void InitializeBloomDownsampleShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeBloomUpsampleShader(ID3D12Device* device, ID3D12RootSignature* rootSig, const wstring& vsPath, const wstring& psPath);
 	void InitializeEffectVS(ID3D12Device* device, const wstring& vsPath);
-	void CreateEffectPSO(ID3D12Device* device, ID3D12RootSignature* rootSig, ShaderType psType, PSOType psoType, const wstring& psPath);
+	void CreateEffectPSO(ID3D12Device* device, ID3D12RootSignature* rootSig, ShaderType psType, PSOType psoType, const wstring& psPath, bool useAlphaBlend = false);
 
 	void CompileShader(const wstring& path, const string& entry, const string& target, ComPtr<ID3DBlob>& blobOut);
 

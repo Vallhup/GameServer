@@ -209,6 +209,7 @@ exit 0</Command>
     <ClCompile Include="AnimationSetFactory.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="BarUI.cpp" />
+    <ClCompile Include="BloodImpactComponent.cpp" />
     <ClCompile Include="BloomManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ClientConnectionListener.cpp" />
@@ -304,6 +305,7 @@ exit 0</Command>
     <ClInclude Include="AnimationSetFactory.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="BarUI.h" />
+    <ClInclude Include="BloodImpactComponent.h" />
     <ClInclude Include="BloomManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ClientConnectionListener.h" />
@@ -382,6 +384,7 @@ exit 0</Command>
   <ItemGroup>
     <None Include="..\Shaders\animation.hlsli" />
     <None Include="..\Shaders\BlitPS.hlsli" />
+    <None Include="..\Shaders\BloodPS.hlsli" />
     <None Include="..\Shaders\BloomDownsamplePS.hlsli" />
     <None Include="..\Shaders\BloomUpsamplePS.hlsli" />
     <None Include="..\Shaders\ClusterCullCS.hlsli" />
