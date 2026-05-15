@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <concurrent_queue.h>
 
@@ -7,15 +8,20 @@ struct SendBuffer {
 	uint32 size;
 	uint32 capacity;
 	BYTE* data{ nullptr };
+	std::atomic<uint32_t> refCount{ 1 };
 
-	SendBuffer* Clone() const;
+	void AddRef() noexcept
+	{
+		refCount.fetch_add(1, std::memory_order_acq_rel);
+	}
+
 	bool TryAppend(const void* src, uint32 len);
 	void Reset();
 };
 
 class SendBufferPool {
-	static constexpr std::array<uint32, 4> kCapacityList
-	{ 1024, 4096, 16384, 65536 };
+	static constexpr std::array<uint32, 8> kCapacityList
+	{ 1024, 4096, 16384, 65536, 131072, 262144, 524288, 1048576 };
 
 	static constexpr uint64 kCacheAlign{ 64 };
 	static constexpr uint32 kInvalidLevel
@@ -41,16 +47,11 @@ private:
 		kCapacityList.size()> _free;
 };
 
-// SendBuffer RAII 소유권 래퍼.
-// 소멸 시 SendBufferPool::Get().Release() 를 자동 호출한다.
-// payloadKey 로 소유권을 이전할 때는 release() 를 사용하고,
-// 재획득 시에는 SendBufferPtr(raw_ptr) 로 래핑한다.
-struct SendBufferDeleter
-{
-    void operator()(SendBuffer* buf) const noexcept
-    {
-        if (buf)
-            SendBufferPool::Get().Release(buf);
-    }
+struct SendBufferDeleter {
+	void operator()(SendBuffer* p) const noexcept
+	{
+		if (p) SendBufferPool::Get().Release(p);
+	}
 };
+
 using SendBufferPtr = std::unique_ptr<SendBuffer, SendBufferDeleter>;

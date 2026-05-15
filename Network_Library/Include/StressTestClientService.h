@@ -10,7 +10,7 @@ public:
 	virtual ~StressTestClientService() = default;
 
 	void Send(uint32 id, SendBuffer* data);
-	void Broadcast(SendBuffer* data, uint32 expected);
+	//void Broadcast(SendBuffer* data, uint32 expected);
 
 protected:
 	virtual void OnStart() = 0;

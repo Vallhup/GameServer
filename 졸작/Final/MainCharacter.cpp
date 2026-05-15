@@ -28,13 +28,6 @@ void MainCharacter::BasicMove()
 {
 	auto& input = INPUT;
 
-	bool isMoving = ranges::any_of(
-		initializer_list{ 'W', 'S', 'A', 'D' },
-		[&input](int k) { return input.GetKey(k); }
-	);
-
-	bool isRunning = input.GetKey(VK_SHIFT) && isMoving;
-
 	int inputX{ 0 };
 	int inputZ{ 0 };
 
@@ -43,7 +36,11 @@ void MainCharacter::BasicMove()
 	if (input.GetKey('D')) inputX -= 1;
 	if (input.GetKey('A')) inputX += 1;
 
-	float yaw = camera->GetRadianYaw();
+	const bool isRunning =
+		input.GetKey(VK_SHIFT) &&
+		(inputX != 0 || inputZ != 0);
+
+	const float yaw = camera->GetRadianYaw();
 
 	if (auto* network = NETWORK_MANAGER)
 	{
