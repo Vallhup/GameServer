@@ -106,9 +106,11 @@ bool ServerApp::Initialize()
 
 	if (!InitializeGameplayContent() ||
 		!InitializeFrameworkRuntime() ||
+		!InitializeDatabaseRuntime() ||
 		!InitializeSessionSystem())
 	{
 		_sessionSystem.Shutdown();
+		ShutdownDatabaseRuntime();
 		_framework.Shutdown();
 		_initialized.store(false);
 		return false;
@@ -148,6 +150,7 @@ void ServerApp::Shutdown() noexcept
 	Stop();
 	_running.store(false);
 	_sessionSystem.Shutdown();
+	ShutdownDatabaseRuntime();
 	_framework.Shutdown();
 	_initialized.store(false);
 	_tickCount = 0;
@@ -437,7 +440,46 @@ bool ServerApp::InitializeFrameworkRuntime()
 
 bool ServerApp::InitializeSessionSystem()
 {
+	_sessionSystem.SetDatabaseBackend(_databaseBackend.get());
 	return _sessionSystem.Initialize();
+}
+
+bool ServerApp::InitializeDatabaseRuntime()
+{
+	if (_databaseBackend != nullptr)
+	{
+		return true;
+	}
+
+	auto databaseBackend =
+		std::make_unique<ODBCDatabaseBackend>(
+			_config.database,
+			_framework.GetIOSink());
+
+	_framework.RegisterIOBackend(databaseBackend.get());
+	if (!databaseBackend->Start())
+	{
+		_framework.UnregisterIOBackend(databaseBackend.get());
+		FWLOG_FATAL(kLogCategory, "Database backend start failed");
+		return false;
+	}
+
+	_databaseBackend = std::move(databaseBackend);
+	return true;
+}
+
+void ServerApp::ShutdownDatabaseRuntime() noexcept
+{
+	_sessionSystem.SetDatabaseBackend(nullptr);
+
+	if (_databaseBackend == nullptr)
+	{
+		return;
+	}
+
+	_databaseBackend->Stop();
+	_framework.UnregisterIOBackend(_databaseBackend.get());
+	_databaseBackend.reset();
 }
 
 bool ServerApp::InitializeGameplayContent()

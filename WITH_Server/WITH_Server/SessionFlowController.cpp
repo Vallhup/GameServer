@@ -18,9 +18,11 @@ void SessionFlowController::Clear() noexcept
 {
 	_sessions.clear();
 
-	std::unique_lock lock{ _indexMutex };
-	_sessionByNetId.clear();
-	_sessionsByWorld.clear();
+	{
+		std::unique_lock lock{ _indexMutex };
+		_sessionByNetId.clear();
+		_sessionsByWorld.clear();
+	}
 }
 
 void SessionFlowController::OnSessionConnected(SessionId sessionId)

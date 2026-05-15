@@ -3,6 +3,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstdint>
+#include <memory>
 #include <span>
 #include <unordered_map>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "AnimationJsonLoader.h"
 #include "AnimationRegistry.h"
 #include "IWorldTransitionRequestSink.h"
+#include "ODBCDatabaseBackend.h"
 #include "ServerSessionSystem.h"
 #include "ServerWorldBootstrap.h"
 #include "ServerWorldTransferBinding.h"
@@ -29,6 +31,8 @@ public:
 
 		uint32_t maxSessions{ 1024 };
 		uint32_t maxWorlds{ 128 };
+
+		ODBCDatabaseBackend::Config database;
 	};
 
 public:
@@ -87,9 +91,11 @@ private:
 
 private:
 	bool InitializeFrameworkRuntime();
+	bool InitializeDatabaseRuntime();
 	bool InitializeSessionSystem();
 	bool InitializeGameplayContent();
 	bool InitializeStartupWorld();
+	void ShutdownDatabaseRuntime() noexcept;
 
 	void RunLogicLoop();
 	void TickOnce(double dtSec);
@@ -114,6 +120,7 @@ private:
 	GameDataCatalog _gameDataCatalog;
 	GameplayContentCatalogSnapshot _gameplayContentCatalog;
 	WorldId _startupWorldId{};
+	std::unique_ptr<ODBCDatabaseBackend> _databaseBackend;
 	ServerSessionSystem _sessionSystem;
 	ServerWorldTransferBinding _transferBinding;
 	std::unordered_map<TransferId, std::unordered_map<SessionId, uint32_t>>

@@ -59,7 +59,8 @@ bool ServerSessionSystem::Initialize()
 		.characterData       = &_characterDataService,
 		.characterSpawn      = &_characterSpawnService,
 		.worldTransitionSink = &_worldTransitionSink,
-		.sessionSystem       = this
+		.sessionSystem       = this,
+		.database            = _database
 	};
 	PacketHandlerContext::Initialize(_packetHandlerCtx);
 
@@ -92,6 +93,12 @@ void ServerSessionSystem::Shutdown() noexcept
 	_framework.SetDynamicTaskScopeResolver(nullptr);
 	_network.Shutdown();
 	ClearSessionState();
+}
+
+void ServerSessionSystem::SetDatabaseBackend(ODBCDatabaseBackend* database) noexcept
+{
+	_database = database;
+	_packetHandlerCtx.database = database;
 }
 
 void ServerSessionSystem::ClearSessionState() noexcept
