@@ -8,7 +8,7 @@
 #include "FrameworkLog.h"
 #include "FrameworkRuntime.h"
 #include "IWorldTransitionRequestSink.h"
-#include "PacketHandlerRegistrar.h"
+#include "PacketHandlers.h"
 #include "ServerReplicationSnapshot.h"
 #include "WorldDef.h"
 #include "WorldInstance.h"
@@ -72,7 +72,7 @@ bool ServerSessionSystem::Initialize()
 	}
 
 	DynamicTaskTypeId disconnectedTypeId{ InvalidDynamicTaskTypeId };
-	PacketHandlerRegistrar::Register(
+	RegisterServerPacketHandlers(
 		_framework.GetDynamicTaskTypeRegistry(),
 		_framework.GetExecutionSourceRegistry(),
 		_network,

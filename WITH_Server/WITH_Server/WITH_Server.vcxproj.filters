@@ -20,9 +20,6 @@
     <ClCompile Include="PacketHandlerContext.cpp">
       <Filter>SessionSystem\Packets</Filter>
     </ClCompile>
-    <ClCompile Include="PacketHandlerRegistrar.cpp">
-      <Filter>SessionSystem\Packets</Filter>
-    </ClCompile>
     <ClCompile Include="PacketHandlers.cpp">
       <Filter>SessionSystem\Packets</Filter>
     </ClCompile>
@@ -311,9 +308,6 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="PacketHandlerContext.h">
-      <Filter>SessionSystem\Packets</Filter>
-    </ClInclude>
-    <ClInclude Include="PacketHandlerRegistrar.h">
       <Filter>SessionSystem\Packets</Filter>
     </ClInclude>
     <ClInclude Include="PacketHandlers.h">

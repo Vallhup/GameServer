@@ -227,7 +227,6 @@
     <ClCompile Include="GameplayDefValidator.cpp" />
     <ClCompile Include="NetworkRuntime.cpp" />
     <ClCompile Include="PacketHandlerContext.cpp" />
-    <ClCompile Include="PacketHandlerRegistrar.cpp" />
     <ClCompile Include="PacketHandlers.cpp" />
     <ClCompile Include="SessionFlowContext.cpp" />
     <ClCompile Include="SessionFlowController.cpp" />
@@ -360,7 +359,6 @@
     <ClInclude Include="IAISpecialActionPolicy.h" />
     <ClInclude Include="IAIState.h" />
     <ClInclude Include="PacketHandlerContext.h" />
-    <ClInclude Include="PacketHandlerRegistrar.h" />
     <ClInclude Include="PacketHandlers.h" />
     <ClInclude Include="SessionFlowCommands.h" />
     <ClInclude Include="SessionFlowContext.h" />

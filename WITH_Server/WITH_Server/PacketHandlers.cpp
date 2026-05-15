@@ -11,6 +11,7 @@
 #include "NetworkRuntime.h"
 #include "PacketFactory.h"
 #include "PacketHandlerContext.h"
+#include "PacketType.h"
 #include "PlayerCommand.h"
 #include "SessionFlowCommands.h"
 #include "SessionFlowController.h"
@@ -171,6 +172,67 @@ namespace
         default:                                                return "Unknown";
         }
     }
+
+    DynamicTaskTypeId RegisterPacketDynamicTask(
+        DynamicTaskTypeRegistry& taskRegistry,
+        ExecutionSourceRegistry& sourceRegistry,
+        NetworkRuntime& network,
+        PacketType packetType,
+        ExecFn dispatchFn,
+        const char* debugName)
+    {
+        DynamicTaskTypeDesc desc{};
+        desc.debugName    = debugName;
+        desc.defaultPhase = ExecPhase::Simulate;
+        desc.defaultLane  = ExecLane::Serial;
+        desc.dispatchFn   = dispatchFn;
+
+        const DynamicTaskTypeId typeId =
+            taskRegistry.Register(desc, sourceRegistry);
+        if (typeId != InvalidDynamicTaskTypeId)
+        {
+            network.RegisterPacketHandler(
+                static_cast<uint16_t>(packetType),
+                typeId);
+        }
+        return typeId;
+    }
+}
+
+void RegisterServerPacketHandlers(
+    DynamicTaskTypeRegistry& taskRegistry,
+    ExecutionSourceRegistry& sourceRegistry,
+    NetworkRuntime& network,
+    DynamicTaskTypeId& outDisconnectedTypeId)
+{
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_LOGIN,                    &HandleLoginPacket,                  "Pkt_CS_LOGIN");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_CHARACTER_SELECT,         &HandleCharacterSelectPacket,        "Pkt_CS_CHARACTER_SELECT");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_MOVE,                     &HandleMovePacket,                   "Pkt_CS_MOVE");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_ATTACK,                   &HandleAttackPacket,                 "Pkt_CS_ATTACK");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_DODGE,                    &HandleDodgePacket,                  "Pkt_CS_DODGE");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_GUARD,                    &HandleGuardPacket,                  "Pkt_CS_GUARD");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_PARRY,                    &HandleParryPacket,                  "Pkt_CS_PARRY");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_USE_ITEM,                 &HandleUseItemPacket,                "Pkt_CS_USE_ITEM");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_WORLD_TRANSITION_REQUEST, &HandleWorldTransitionRequestPacket, "Pkt_CS_WORLD_TRANSITION_REQUEST");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_WORLD_TRANSITION_READY,   &HandleWorldTransitionReadyPacket,   "Pkt_CS_WORLD_TRANSITION_READY");
+
+    DynamicTaskTypeDesc desc{};
+    desc.debugName    = "Evt_Disconnected";
+    desc.defaultPhase = ExecPhase::Simulate;
+    desc.defaultLane  = ExecLane::Serial;
+    desc.dispatchFn   = &HandleDisconnectedEvent;
+
+    outDisconnectedTypeId = taskRegistry.Register(desc, sourceRegistry);
 }
 
 ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
