@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "FitSkeletalCombatColliderSystem.h"
 
+#include <algorithm>
 #include <span>
 
 #include "../../../AnimationRegistry.h"
@@ -10,6 +11,9 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
+	constexpr int kHitMotionLookAroundFrames = 2;
+	constexpr float kLinkedHitMotionRatio = 0.45f;
+
 	float GetAnimationUnitScale(const AnimationClipDef& clip) noexcept
 	{
 		if (clip.units == "cm")
@@ -38,10 +42,148 @@ namespace
 		};
 	}
 
+	bool ShouldFilterMonsterHitColliders(const AnimationClipDef& clip) noexcept
+	{
+		return clip.skeleton == "Imp" ||
+			clip.skeleton == "DemonStriker" ||
+			clip.skeleton == "DemonExecutioner" ||
+			clip.skeleton == "BigDemonWarrior" ||
+			clip.skeleton == "Tank" ||
+			clip.skeleton == "FinalBoss";
+	}
+
+	float DistanceSq(const XMFLOAT3& lhs, const XMFLOAT3& rhs) noexcept
+	{
+		const float dx = lhs.x - rhs.x;
+		const float dy = lhs.y - rhs.y;
+		const float dz = lhs.z - rhs.z;
+		return dx * dx + dy * dy + dz * dz;
+	}
+
+	XMFLOAT3 CapsuleCenter(const Capsule& capsule) noexcept
+	{
+		return XMFLOAT3{
+			(capsule.p0.x + capsule.p1.x) * 0.5f,
+			(capsule.p0.y + capsule.p1.y) * 0.5f,
+			(capsule.p0.z + capsule.p1.z) * 0.5f
+		};
+	}
+
+	float CapsuleMotionScore(const Capsule& previous, const Capsule& current) noexcept
+	{
+		return std::max(
+			DistanceSq(previous.p0, current.p0),
+			std::max(
+				DistanceSq(previous.p1, current.p1),
+				DistanceSq(CapsuleCenter(previous), CapsuleCenter(current))));
+	}
+
+	bool HasCapsuleRole(
+		const AnimationClipDef& clip,
+		size_t colliderIndex,
+		CapsuleRole role) noexcept
+	{
+		if (colliderIndex >= clip.capsuleDefs.size())
+		{
+			return false;
+		}
+
+		const auto& roles = clip.capsuleDefs[colliderIndex].roles;
+		return std::find(roles.begin(), roles.end(), role) != roles.end();
+	}
+
+	std::vector<bool> BuildActiveHitColliderMask(
+		const AnimationClipDef& clip,
+		uint16_t sampleFrameIndex)
+	{
+		if (!ShouldFilterMonsterHitColliders(clip))
+		{
+			return {};
+		}
+
+		std::vector<size_t> hitColliderIndices;
+		hitColliderIndices.reserve(clip.capsuleDefs.size());
+		for (size_t colliderIndex = 0;
+			colliderIndex < clip.capsuleDefs.size();
+			++colliderIndex)
+		{
+			if (HasCapsuleRole(clip, colliderIndex, CapsuleRole::Hit))
+			{
+				hitColliderIndices.push_back(colliderIndex);
+			}
+		}
+
+		if (hitColliderIndices.size() <= 1 || clip.frames.size() <= 1)
+		{
+			return {};
+		}
+
+		const size_t frameCount = clip.frames.size();
+		const size_t sampleIndex = std::min<size_t>(
+			sampleFrameIndex,
+			frameCount - 1);
+		const size_t startFrame = sampleIndex >
+			static_cast<size_t>(kHitMotionLookAroundFrames)
+			? sampleIndex - static_cast<size_t>(kHitMotionLookAroundFrames)
+			: 0;
+		const size_t endFrame = std::min(
+			frameCount - 1,
+			sampleIndex + static_cast<size_t>(kHitMotionLookAroundFrames));
+
+		std::vector<float> motionScores(clip.capsuleDefs.size(), 0.0f);
+		for (size_t frameIndex = startFrame + 1;
+			frameIndex <= endFrame;
+			++frameIndex)
+		{
+			const AnimationClipFrame& previousFrame =
+				clip.frames[frameIndex - 1];
+			const AnimationClipFrame& currentFrame =
+				clip.frames[frameIndex];
+			if (previousFrame.capsules.size() != clip.capsuleDefs.size() ||
+				currentFrame.capsules.size() != clip.capsuleDefs.size())
+			{
+				return {};
+			}
+
+			for (size_t colliderIndex : hitColliderIndices)
+			{
+				motionScores[colliderIndex] += CapsuleMotionScore(
+					previousFrame.capsules[colliderIndex],
+					currentFrame.capsules[colliderIndex]);
+			}
+		}
+
+		float maxScore = 0.0f;
+		for (size_t colliderIndex : hitColliderIndices)
+		{
+			maxScore = std::max(maxScore, motionScores[colliderIndex]);
+		}
+		if (maxScore <= 0.0f)
+		{
+			return {};
+		}
+
+		std::vector<bool> activeMask(clip.capsuleDefs.size(), false);
+		const float linkedThreshold = maxScore * kLinkedHitMotionRatio;
+		for (size_t colliderIndex : hitColliderIndices)
+		{
+			activeMask[colliderIndex] =
+				motionScores[colliderIndex] >= linkedThreshold;
+		}
+		return activeMask;
+	}
+
+	uint8_t RemoveRole(uint8_t roleMask, SkeletalCombatColliderRoleMask role) noexcept
+	{
+		return static_cast<uint8_t>(
+			roleMask & ~static_cast<uint8_t>(role));
+	}
+
 	void BuildCollidersFromCapsules(
 		const AnimationClipDef& clip,
 		std::span<const Capsule> capsules,
 		float unitScale,
+		const std::vector<bool>* activeHitColliderMask,
 		std::vector<SkeletalCombatCollider>& outColliders)
 	{
 		outColliders.clear();
@@ -53,10 +195,22 @@ namespace
 		{
 			const Capsule& capsule = capsules[colliderIndex];
 			const AnimationCapsuleDef& capsuleDef = clip.capsuleDefs[colliderIndex];
+			uint8_t roleMask =
+				FitSkeletalCombatColliderSystem::BuildRoleMask(clip, colliderIndex);
+			if (activeHitColliderMask != nullptr &&
+				!activeHitColliderMask->empty() &&
+				colliderIndex < activeHitColliderMask->size() &&
+				!(*activeHitColliderMask)[colliderIndex])
+			{
+				roleMask = RemoveRole(
+					roleMask,
+					SkeletalCombatColliderRoleMask::Hit);
+			}
+
 			outColliders.push_back(SkeletalCombatCollider{
 				ScaleCapsule(capsule, unitScale),
 				capsuleDef.radius * unitScale,
-				FitSkeletalCombatColliderSystem::BuildRoleMask(clip, colliderIndex)
+				roleMask
 			});
 		}
 	}
@@ -103,6 +257,8 @@ void FitSkeletalCombatColliderSystem::Execute(SystemContext& ctx)
 		}
 
 		const float unitScale = GetAnimationUnitScale(*clip);
+		const std::vector<bool> activeHitColliderMask =
+			BuildActiveHitColliderMask(*clip, pose.sampleFrameIndex);
 
 		BuildCollidersFromCapsules(
 			*clip,
@@ -110,6 +266,7 @@ void FitSkeletalCombatColliderSystem::Execute(SystemContext& ctx)
 				pose.localCapsules.data(),
 				pose.localCapsules.size()),
 			unitScale,
+			&activeHitColliderMask,
 			colliderState.localColliders);
 
 		if (pose.sampleFrameIndex > 0 &&
@@ -125,6 +282,7 @@ void FitSkeletalCombatColliderSystem::Execute(SystemContext& ctx)
 						previousFrame.capsules.data(),
 						previousFrame.capsules.size()),
 					unitScale,
+					&activeHitColliderMask,
 					colliderState.previousFrameLocalColliders);
 				colliderState.hasPreviousFrameLocalColliders = true;
 			}
