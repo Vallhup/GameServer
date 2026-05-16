@@ -66,6 +66,7 @@ void SecondBattleScene::InitializeSceneEnvironments()
 	IMGUI.SetCamera(GetCamera());
 	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
 	coreRef->GetShadowMgr()->SetLightMgr(coreRef->GetLightMgr());
+	coreRef->GetLightMgr()->LoadSceneLights(L"../Assets/FBXModel/CastleMap/CastleLightData.txt", true);
 	coreRef->GetLightMgr()->UpdateLights();
 
 #pragma region Initialize Castle Terrain

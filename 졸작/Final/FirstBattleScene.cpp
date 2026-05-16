@@ -15,6 +15,7 @@
 #include "UIManager.h"
 #include "GameSceneUIController.h"
 #include "EffectComponent.h"
+#include "FlameComponent.h"
 
 void FirstBattleScene::Release()
 {
@@ -66,7 +67,24 @@ void FirstBattleScene::InitializeSceneEnvironments()
 	IMGUI.SetCamera(GetCamera());
 	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
 	coreRef->GetShadowMgr()->SetLightMgr(coreRef->GetLightMgr());
+	coreRef->GetLightMgr()->LoadSceneLights(L"../Assets/FBXModel/VillageMap/VillageLightData.txt", true);
 	coreRef->GetLightMgr()->UpdateLights();
+
+#pragma region Intialize Candles
+	auto* lm = coreRef->GetLightMgr();
+	const LightData* lights = lm->GetLights();
+	int lcount = lm->GetDeferredLightData().lightCount;
+
+	auto flameObject = make_shared<GameObject>();
+	flameObject->SetId(-1);
+	auto flame = flameObject->AddComponent<FlameComponent>();
+	flame->Initialize(coreRef->GetDevice(), 58);
+	flame->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
+	flame->SetParticleSize(0.35f);
+	for (int i = 1; i < lcount; ++i)
+		flame->Spawn(lights[i].position);
+	AddGameObject(flameObject);
+#pragma endregion
 
 #pragma region Initialize Terrain
 	terrain = make_shared<Terrain>();

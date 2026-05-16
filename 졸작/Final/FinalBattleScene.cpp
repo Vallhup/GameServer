@@ -65,6 +65,7 @@ void FinalBattleScene::InitializeSceneEnvironments()
 	IMGUI.SetCamera(GetCamera());
 	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
 	coreRef->GetShadowMgr()->SetLightMgr(coreRef->GetLightMgr());
+	coreRef->GetLightMgr()->LoadSceneLights(L"../Assets/FBXModel/GothicMap/FinalMapLightData.txt", false);
 	coreRef->GetLightMgr()->UpdateLights();
 
 	const XMFLOAT3 candlePositions[] = { {2.824002f, 3.450002f, -57.236343f}, {7.456354f, 3.450002f, -45.545242f}, {6.765375f, 2.900002f, -39.137711f},

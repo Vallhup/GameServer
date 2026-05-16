@@ -76,6 +76,7 @@ void PlazaScene::InitializeSceneEnvironments()
 	IMGUI.SetCamera(GetCamera());
 	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
 	coreRef->GetShadowMgr()->SetLightMgr(coreRef->GetLightMgr());
+	coreRef->GetLightMgr()->LoadSceneLights(L"../Assets/FBXModel/PlazaMap/PlazaLightData.txt", true);
 	coreRef->GetLightMgr()->UpdateLights();
 
 #pragma region Initialize Plaza Terrain
