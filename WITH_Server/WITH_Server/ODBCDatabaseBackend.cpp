@@ -191,7 +191,8 @@ void ODBCDatabaseBackend::WorkerLoop() noexcept
 
 		try
 		{
-			DBCommandContext ctx{
+			DBCommandContext ctx
+			{
 				conn,
 				command.meta,
 				command.command->DebugTypeId(),
@@ -223,7 +224,8 @@ bool ODBCDatabaseBackend::PopCommand(DBCommandEnvelope& out) noexcept
 	std::unique_lock lock{ _commandMutex };
 	_commandCv.wait(lock, [this]()
 	{
-		return !_commandQueue.empty() ||
+		return 
+			!_commandQueue.empty() ||
 			!_running.load(std::memory_order_acquire);
 	});
 

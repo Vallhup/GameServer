@@ -446,6 +446,14 @@ bool ServerApp::InitializeSessionSystem()
 
 bool ServerApp::InitializeDatabaseRuntime()
 {
+	_sessionSystem.SetDatabaseBackend(nullptr);
+
+	if (!_config.database.enabled)
+	{
+		FWLOG_INFO(kLogCategory, "Database backend disabled");
+		return true;
+	}
+
 	if (_databaseBackend != nullptr)
 	{
 		return true;

@@ -20,6 +20,7 @@ class ODBCDatabaseBackend final
 public:
 	struct Config
 	{
+		bool enabled{ false };
 		std::wstring connectionString;
 		std::wstring dsn;
 		std::wstring user;
