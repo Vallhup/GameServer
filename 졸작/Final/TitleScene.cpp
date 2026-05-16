@@ -4,10 +4,19 @@
 
 #include "Input.h"
 #include "NetId.h"
+#include "Engine.h"
+#include "SoundManager.h"
 
 void TitleScene::Release()
 {
+	SOUND_MANAGER->StopBGM();
+
 	OutputDebugStringA("TitleScene Data has been deleted!! \n----------------------------------------\n");
+}
+
+const char* TitleScene::GetBGMPath() const
+{
+	return "../Assets/Music/BGM/LoginBGM.mp3";
 }
 
 void TitleScene::InitializeLogic()

@@ -12,5 +12,7 @@ public:
 	void Release() override;
 
 protected:
-	void InitializeLogic() override;					
+	void InitializeLogic() override;
+
+	const char* GetBGMPath() const override;
 };

@@ -78,7 +78,7 @@ void FirstBattleScene::InitializeSceneEnvironments()
 	auto flameObject = make_shared<GameObject>();
 	flameObject->SetId(-1);
 	auto flame = flameObject->AddComponent<FlameComponent>();
-	flame->Initialize(coreRef->GetDevice(), 58);
+	flame->Initialize(coreRef->GetDevice(), 96);
 	flame->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
 	flame->SetParticleSize(0.35f);
 	for (int i = 1; i < lcount; ++i)
@@ -109,9 +109,9 @@ void FirstBattleScene::InitializeSceneEnvironments()
 void FirstBattleScene::InitializeSceneMonsters()
 {
 	const XMFLOAT3 monsterSpawn = { 22.f, SampleHeightAt(22.f, 22.f), 22.f };
-	CreateMonsters(MonsterType::Imp, monsterSpawn, 5);
-	CreateMonsters(MonsterType::DemonStriker, monsterSpawn, 5);
-	CreateMonsters(MonsterType::DemonExecutioner, monsterSpawn, 5);
+	CreateMonsters(MonsterType::Imp, monsterSpawn, 9);
+	CreateMonsters(MonsterType::DemonStriker, monsterSpawn, 1);
+	CreateMonsters(MonsterType::DemonExecutioner, monsterSpawn, 1);
 	CreateMonsters(MonsterType::BigDemonWarrior, monsterSpawn, 1);
 }
 

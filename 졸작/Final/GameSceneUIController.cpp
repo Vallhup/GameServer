@@ -8,6 +8,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "SoundManager.h"
 
 GameSceneUIController::GameSceneUIController(SceneType type) : sceneType(type) {}
 
@@ -342,6 +343,7 @@ void GameSceneUIController::Update(float deltaTime)
 
 		if (escContinueButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
+			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 			escWindow->ChangeState(ImageUIState::Hidden);
 			escContinueButton->ChangeState(ImageUIState::Hidden);
 			escOptionsButton->ChangeState(ImageUIState::Hidden);
@@ -351,6 +353,7 @@ void GameSceneUIController::Update(float deltaTime)
 		}
 		if (escOptionsButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
+			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 			escWindow->ChangeState(ImageUIState::Hidden);
 			escContinueButton->ChangeState(ImageUIState::Hidden);
 			escOptionsButton->ChangeState(ImageUIState::Hidden);
@@ -361,6 +364,7 @@ void GameSceneUIController::Update(float deltaTime)
 		}
 		if (escExitButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
+			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 			PostQuitMessage(0);
 		}
 	}
@@ -371,6 +375,7 @@ void GameSceneUIController::Update(float deltaTime)
 
 		if (settingBackButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
+			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 			settingWindow->ChangeState(ImageUIState::Hidden);
 			settingBackButton->ChangeState(ImageUIState::Hidden);
 
@@ -405,10 +410,12 @@ void GameSceneUIController::Update(float deltaTime)
 
 		if (partyCreateButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
+			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 			OutputDebugStringA("[Party] Create button clicked\n");
 		}
 		if (partyJoinButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
+			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 			OutputDebugStringA("[Party] Join button clicked\n");
 		}
 	}
@@ -420,10 +427,12 @@ void GameSceneUIController::Update(float deltaTime)
 
 		if (statusArrowLeft->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
+			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 			OutputDebugStringA("[Stat] Left arrow clicked\n");
 		}
 		if (statusArrowRight->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
+			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 			OutputDebugStringA("[Stat] Right arrow clicked\n");
 		}
 	}

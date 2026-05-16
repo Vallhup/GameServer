@@ -22,6 +22,7 @@
 #include "NetId.h"
 #include "NetHelper.h"
 #include "EntityId.h"
+#include "SoundManager.h"
 
 void Scene::Initialize(HWND hWnd, DX12Core& core)
 {
@@ -43,6 +44,13 @@ void Scene::Initialize(HWND hWnd, DX12Core& core)
 
 void Scene::Update(const float deltaTime)
 {
+    if (!bgmStarted)
+    {
+        if (const char* bgm = GetBGMPath())
+            SOUND_MANAGER->PlayBGM(bgm);
+        bgmStarted = true;
+    }
+
     UpdateScene(deltaTime);
     
     // Temporarily test in GameScene Only

@@ -39,6 +39,9 @@ void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListe
     graphics = make_unique<DX12Core>();
     graphics->Initialize(mHwnd);
 
+    soundManager = make_unique<SoundManager>();
+    soundManager->Initialize();
+
     uiManager = make_unique<UIManager>();
     uiManager->Initialize(*graphics);
 
@@ -51,9 +54,6 @@ void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListe
     sceneManager->Initialize(mHwnd, *graphics);
 
     inboundQueue = make_unique<ClientInboundPacketQueue>();
-
-    soundManager = make_unique<SoundManager>();
-    soundManager->Initialize();
 
     effectManager = make_unique<EffectManager>();
     effectManager->Initialize(*graphics);

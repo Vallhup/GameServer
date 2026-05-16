@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "Input.h"
 #include "ImGuiManager.h"
+#include "SoundManager.h"
 
 void StartSceneUIController::Init(UIManager* manager)
 {
@@ -68,6 +69,7 @@ void StartSceneUIController::Update(float deltaTime)
 		pabImage->ChangeState(ImageUIState::Hidden);
 		loginImage->ChangeState(ImageUIState::FadingIn);
 		exitImage->ChangeState(ImageUIState::FadingIn);
+		return;
 	}
 
 	if (loginImage->GetState() == ImageUIState::FadingIn ||
@@ -84,6 +86,7 @@ void StartSceneUIController::Update(float deltaTime)
 
 	if (loginImage->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 	{
+		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 		IMGUI.ShowLoginWindow();
 		OutputDebugStringA("loginImage clicked!!\n");
 	}
@@ -102,6 +105,7 @@ void StartSceneUIController::Update(float deltaTime)
 
 	if (exitImage->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 	{
+		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 		DestroyWindow(ENGINE.GetHwnd());
 		OutputDebugStringA("exitImage clicked!!\n");
 	}

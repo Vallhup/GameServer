@@ -44,6 +44,8 @@ protected:
 	virtual void UpdateScene(const float deltaTime) {}
 	virtual void RequestSceneChange() {}
 
+	virtual const char* GetBGMPath() const { return nullptr; }
+
 	template<typename T>
 	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const T& data);
 
@@ -88,6 +90,8 @@ protected:
 
 	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
 	shared_ptr<MainCharacter> myPlayer;
+
+	bool bgmStarted = false;
 
 	static constexpr int MAX_CHARACTER_COUNT = 5;
 };

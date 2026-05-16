@@ -27,6 +27,8 @@ void PlazaScene::Release()
 	myPlayer = nullptr;
 	gameObjects.clear();
 
+	SOUND_MANAGER->StopBGM();
+
 	OutputDebugStringA("PlazaScene Data has been deleted!! \n----------------------------------------\n");
 }
 
@@ -325,6 +327,11 @@ void PlazaScene::RequestSceneChange()
 			}
 		}
 	}
+}
+
+const char* PlazaScene::GetBGMPath() const
+{
+	return "../Assets/Music/BGM/PlazaBGM.mp3";
 }
 
 void PlazaScene::CreateEffectSamples()
