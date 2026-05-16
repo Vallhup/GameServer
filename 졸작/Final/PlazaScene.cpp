@@ -51,12 +51,6 @@ void PlazaScene::InitializeLogic()
 	CreateCharacterPool(CharacterType::Lancer);
 	CreateCharacterPool(CharacterType::Paladin);
 
-	// ----------------------------------
-	// 다찬이가 만든 두 캐릭터 띄우는 임시 함수 - 중간발표용
-	// ----------------------------------
-	CreateNextTwoCharacters();
-	// ----------------------------------
-
 	InitializeSceneEnvironments();
 
 	CreateEffectSamples();
@@ -329,37 +323,6 @@ void PlazaScene::RequestSceneChange()
 				transition.Reset();
 			}
 		}
-	}
-}
-
-void PlazaScene::CreateNextTwoCharacters()
-{
-	{
-		auto first = make_shared<GameObject>();
-		first->SetId(0);
-		auto mesh = first->AddComponent<Mesh>();
-		auto transform = first->AddComponent<Transform>();
-		auto animator = first->AddComponent<Animator>();
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Lancer/lancer");
-
-		transform->SetInitPosition(443.933197f, 6.328398f, 487.570099f);
-		transform->SetRotation(0.f, -1.57f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(first);
-	}
-
-	{
-		auto second = make_shared<GameObject>();
-		second->SetId(0);
-		auto mesh = second->AddComponent<Mesh>();
-		auto transform = second->AddComponent<Transform>();
-		auto animator = second->AddComponent<Animator>();
-		mesh->SetMesh(*coreRef, L"../Assets/FBXModel/Paladin/paladin");
-
-		transform->SetInitPosition(443.933197f, 6.328398f, 490.265961f);
-		transform->SetRotation(0.f, -1.57f, 0.f);
-		transform->SetScale(0.01f, 0.01f, 0.01f);
-		AddGameObject(second);
 	}
 }
 

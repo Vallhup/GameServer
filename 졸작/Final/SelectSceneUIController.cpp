@@ -24,7 +24,7 @@ void SelectSceneUIController::InitBackground()
 
 void SelectSceneUIController::InitCharImages(float& outCharWidth, float& outCharHeight)
 {
-	const wstring charNames[3] = { L"CharA", L"CharB", L"CharC" };
+	const wstring charNames[3] = { L"CharKnight", L"CharLancer", L"CharPaladin" };
 
 	float sectionWidth = WinSize.x / 3.0f;
 	float charWidth = sectionWidth * 0.8f;
@@ -47,9 +47,21 @@ void SelectSceneUIController::InitCharImages(float& outCharWidth, float& outChar
 
 void SelectSceneUIController::InitHoverOverlay(float charWidth, float charHeight)
 {
+	constexpr float texW = 512.0f, texH = 756.0f;
+	constexpr float outL = 15.0f,  outR = 499.0f;   
+	constexpr float outT = 28.0f,  outB = 729.0f;   
+	constexpr float outW = outR - outL;             
+	constexpr float outH = outB - outT;             
+
+	const float drawW = charWidth  * (texW / outW);
+	const float drawH = charHeight * (texH / outH);
+
+	hoverOffsetX = -(outL / texW) * drawW;
+	hoverOffsetY = -(outT / texH) * drawH;
+
 	hoverOverlay = make_shared<ImageUI>(uiManager, L"CharHover", ImageUIState::Hidden);
-	hoverOverlay->SetHoriLength(charWidth);
-	hoverOverlay->SetVertLength(charHeight);
+	hoverOverlay->SetHoriLength(drawW);
+	hoverOverlay->SetVertLength(drawH);
 	widgets.push_back(hoverOverlay);
 }
 
@@ -63,9 +75,10 @@ void SelectSceneUIController::Update(float deltaTime)
 		if (!charImages[i]) continue;
 		if (charImages[i]->IsMouseInside())
 		{
-			hoverOverlay->SetPosition(charImages[i]->GetPosX(), charImages[i]->GetPosY());
+			hoverOverlay->SetPosition(charImages[i]->GetPosX() + hoverOffsetX,
+									  charImages[i]->GetPosY() + hoverOffsetY);
 			if (hoverOverlay->GetState() == ImageUIState::Hidden)
-				hoverOverlay->ChangeState(ImageUIState::Pulsing);
+				hoverOverlay->ChangeState(ImageUIState::FadingIn);
 			anyHovered = true;
 		}
 	}

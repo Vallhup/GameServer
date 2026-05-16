@@ -19,7 +19,7 @@ void ImageUI::Update(float deltaTime)
 		break;
 
 	case ImageUIState::FadingIn:
-		fadeElapsed += deltaTime;
+		fadeElapsed += deltaTime * pulseSpeed;
 		fadeAlpha = clamp(fadeElapsed / fadeDuration, 0.0f, 1.0f);
 		if (fadeAlpha >= 1.0f)
 		{

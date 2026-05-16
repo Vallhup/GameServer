@@ -32,13 +32,7 @@ protected:
 	void RequestSceneChange() override;
 
 private:
-	// ---------------------------------------------------------
-	// Temporary functions for rendering Characters and monsters
-	// ---------------------------------------------------------
-	void CreateNextTwoCharacters();
 	void CreateEffectSamples();
-	// ---------------------------------------------------------
-	// ---------------------------------------------------------
 
 	float SampleHeightAt(float worldX, float worldZ) const;
 

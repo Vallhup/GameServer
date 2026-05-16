@@ -25,6 +25,8 @@ public:
 	void SetHoverScale(float scale) { hoverScale = scale; }
 	void SetTintAlpha(float a) { tintAlpha = a; }
 
+	void SetTexture(const wstring& name) { textureName = name; }
+
 	void ChangeState(ImageUIState newState);
 	ImageUIState GetState() const { return state; }
 
