@@ -6,6 +6,8 @@ class ParryStreakComponent : public EffectComponent
 public:
 	void Update(float deltaTime) override;
 
+	void Spawn(const XMFLOAT3& position);
+
 	void SetWidth(float w) { streakWidth = w; }
 	void SetHeight(float h) { streakHeight = h; }
 	void SetTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);
@@ -22,5 +24,4 @@ private:
 	float streakWidth = 1.5f;
 	float streakHeight = 0.3f;
 	bool alive = false;
-	bool streakSpawned = false;
 };

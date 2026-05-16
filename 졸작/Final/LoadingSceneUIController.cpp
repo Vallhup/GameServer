@@ -93,7 +93,7 @@ void LoadingSceneUIController::SetTargetScene(SceneType type)
 	switch (targetScene)
 	{
 	case SceneType::Plaza:   texName = L"LoadingPlaza"; break;
-	case SceneType::Village: texName = L"LoadingPage";  break;
+	case SceneType::Village: texName = L"LoadingVillage";  break;
 	case SceneType::Castle:  texName = L"LoadingPage";  break;
 	case SceneType::Final:   texName = L"LoadingPage";  break;
 	}

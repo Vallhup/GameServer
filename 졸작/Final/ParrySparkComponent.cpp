@@ -11,58 +11,6 @@ PSOType ParrySparkComponent::GetPSOType() const { return PSOType::Spark; }
 
 void ParrySparkComponent::Update(float deltaTime)
 {
-	auto owner = GetGameObject();
-	if (owner)
-	{
-		auto animMachine = owner->GetComponent<AnimationMachine>();
-		auto animator = owner->GetComponent<Animator>();
-		auto transform = owner->GetComponent<Transform>();
-
-		bool isParrying = animMachine && animMachine->IsPlaying("Parry");
-
-		if (isParrying && animator && animator->IsInitialized() && transform)
-		{
-			int currentFrame = animator->GetCurrentFrame();
-
-			if (currentFrame >= 20 && currentFrame <= 22)
-			{
-				if (!sparkSpawned)
-				{
-					XMFLOAT3 bonePos = animator->GetBonePosition(45);
-					XMVECTOR boneRotQuat = animator->GetBoneRotation(45);
-					XMMATRIX worldMat = transform->GetWorldMatrix();
-					XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
-
-					XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
-					XMFLOAT3 playerRot = transform->GetRotation();
-					XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
-					XMVECTOR finalRotQuat = XMQuaternionMultiply(offsetRot, boneRotQuat);
-					finalRotQuat = XMQuaternionMultiply(finalRotQuat, playerRotQuat);
-					XMMATRIX rotMat = XMMatrixRotationQuaternion(finalRotQuat);
-
-					XMVECTOR swordDir = XMVector3TransformNormal(XMVectorSet(0, 1, 0, 0), rotMat);
-					swordDir = XMVector3Normalize(swordDir);
-
-					float bladeLength = 1.0f;
-					XMVECTOR tipPos = XMVectorAdd(worldPos, XMVectorScale(swordDir, bladeLength));
-
-					XMFLOAT3 spawnPos;
-					XMStoreFloat3(&spawnPos, tipPos);
-					Spawn(spawnPos, 64);
-					sparkSpawned = true;
-				}
-			}
-			else
-			{
-				sparkSpawned = false;
-			}
-		}
-		else
-		{
-			sparkSpawned = false;
-		}
-	}
-
 	if (particles.empty()) return;
 
 	for (auto& p : particles)

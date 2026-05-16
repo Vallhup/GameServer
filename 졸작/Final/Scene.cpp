@@ -396,6 +396,16 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 		}
 		case 2:
 		{
+			auto victim = activeCharacters[vId];
+			if (victim)
+			{
+				if (auto flash = victim->GetComponent<ParryFlashComponent>())
+					flash->Spawn(impactPos);
+				if (auto spark = victim->GetComponent<ParrySparkComponent>())
+					spark->Spawn(impactPos, 64);
+				if (auto streak = victim->GetComponent<ParryStreakComponent>())
+					streak->Spawn(impactPos);
+			}
 			break;
 		}
 		default:

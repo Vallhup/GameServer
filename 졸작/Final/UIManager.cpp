@@ -44,6 +44,7 @@ void UIManager::Initialize(DX12Core& core)
 
 	RegisterUITexture(L"LoadingPage", L"../Assets/UI/Textures/LoadingPage.png", core, resourceUpload);
 	RegisterUITexture(L"LoadingPlaza", L"../Assets/UI/Textures/LoadingPlaza.png", core, resourceUpload);
+	RegisterUITexture(L"LoadingVillage", L"../Assets/UI/Textures/LoadingVillage.png", core, resourceUpload);
 	RegisterUITexture(L"LoadingBarBack", L"../Assets/UI/Textures/LoadingBarBack.png", core, resourceUpload);
 	RegisterUITexture(L"LoadingBar", L"../Assets/UI/Textures/LoadingBar.png", core, resourceUpload);
 	RegisterUITexture(L"LoadingArrow", L"../Assets/UI/Textures/LoadingArrow.png", core, resourceUpload);
