@@ -33,5 +33,4 @@ private:
 	float particleSize = 0.02f;
 	float sparkSpeed = 3.0f;
 	float gravity = 9.8f;
-	bool sparkSpawned = false;
 };

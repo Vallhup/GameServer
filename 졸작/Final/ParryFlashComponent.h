@@ -6,6 +6,8 @@ class ParryFlashComponent : public EffectComponent
 public:
 	void Update(float deltaTime) override;
 
+	void Spawn(const XMFLOAT3& position);
+
 	void SetSize(float size) { flashSize = size; }
 	void SetTexture(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const wstring& path);
 
@@ -20,5 +22,4 @@ private:
 	float age = 0.0f;
 	float flashSize = 0.5f;
 	bool alive = false;
-	bool flashSpawned = false;
 };
