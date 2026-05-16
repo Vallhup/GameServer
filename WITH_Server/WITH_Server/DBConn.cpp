@@ -509,6 +509,82 @@ bool DBStatement::GetString(uint16_t col, std::wstring& out)
 	}
 }
 
+bool DBStatement::GetInt32(uint16_t col, int32_t& out)
+{
+	_lastError.Clear();
+	out = 0;
+
+	if (_stmt == SQL_NULL_HSTMT)
+	{
+		_lastError.records.push_back(
+			DBDiagRecord{ L"", 0, L"Statement is not prepared." });
+		return false;
+	}
+
+	SQLINTEGER value{ 0 };
+	SQLLEN indicator{ 0 };
+	const SQLRETURN rc = SQLGetData(
+		_stmt,
+		col,
+		SQL_C_SLONG,
+		&value,
+		sizeof(value),
+		&indicator);
+
+	if (!(IsSuccess(rc)))
+	{
+		CaptureDiag(SQL_HANDLE_STMT, _stmt);
+		return false;
+	}
+
+	if (indicator == SQL_NULL_DATA)
+	{
+		SetLocalError(L"Integer column is NULL.");
+		return false;
+	}
+
+	out = static_cast<int32_t>(value);
+	return true;
+}
+
+bool DBStatement::GetInt64(uint16_t col, int64_t& out)
+{
+	_lastError.Clear();
+	out = 0;
+
+	if (_stmt == SQL_NULL_HSTMT)
+	{
+		_lastError.records.push_back(
+			DBDiagRecord{ L"", 0, L"Statement is not prepared." });
+		return false;
+	}
+
+	SQLBIGINT value{ 0 };
+	SQLLEN indicator{ 0 };
+	const SQLRETURN rc = SQLGetData(
+		_stmt,
+		col,
+		SQL_C_SBIGINT,
+		&value,
+		sizeof(value),
+		&indicator);
+
+	if (!(IsSuccess(rc)))
+	{
+		CaptureDiag(SQL_HANDLE_STMT, _stmt);
+		return false;
+	}
+
+	if (indicator == SQL_NULL_DATA)
+	{
+		SetLocalError(L"Bigint column is NULL.");
+		return false;
+	}
+
+	out = static_cast<int64_t>(value);
+	return true;
+}
+
 void DBStatement::Release() noexcept
 {
 	if (_stmt != SQL_NULL_HSTMT)

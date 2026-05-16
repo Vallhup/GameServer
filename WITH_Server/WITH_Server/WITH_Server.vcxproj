@@ -183,6 +183,7 @@
     <ClCompile Include="CharacterDef.cpp" />
     <ClCompile Include="CharacterSpawnService.cpp" />
     <ClCompile Include="DBData.cpp" />
+    <ClCompile Include="LoginAuth.cpp" />
     <ClCompile Include="ODBCDatabaseBackend.cpp" />
     <ClCompile Include="DefCompilePipeline.cpp" />
     <ClCompile Include="DataDrivenAICombatActionPolicy.cpp" />
@@ -296,6 +297,7 @@
     <ClInclude Include="DataDrivenAISpecialActionPolicy.h" />
     <ClInclude Include="DBConn.h" />
     <ClInclude Include="DBData.h" />
+    <ClInclude Include="LoginAuth.h" />
     <ClInclude Include="ODBCDatabaseBackend.h" />
     <ClInclude Include="DefCompilePipeline.h" />
     <ClInclude Include="DefEnumString.h" />

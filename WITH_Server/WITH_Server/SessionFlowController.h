@@ -34,6 +34,8 @@ public:
 	// 바인딩 인덱스 조회 API (구 SessionBindingRegistry 공개 API 이식)
 	// ---------------------------------------------------------------
 	SessionId FindOwnerSession(NetId controlledNetId) const noexcept;
+	SessionId FindOwnerSessionByAccountId(uint64_t accountId) const noexcept;
+	bool      HasAccountLogin(uint64_t accountId) const noexcept;
 	NetId     FindControlledNetId(SessionId sessionId) const noexcept;
 	WorldId   FindCurrentWorldId(SessionId sessionId) const noexcept;
 	bool      HasBinding(SessionId sessionId) const noexcept;
@@ -73,6 +75,8 @@ private:
 		SessionId sessionId,
 		NetId controlledNetId,
 		WorldId currentWorldId);
+	void IndexAccountBind_Locked(SessionId sessionId, uint64_t accountId);
+	void IndexAccountUnbind_Locked(SessionId sessionId, uint64_t accountId) noexcept;
 	void IndexUnbind_Locked(SessionId sessionId, NetId controlledNetId, WorldId currentWorldId) noexcept;
 	void IndexUpdateWorld_Locked(SessionId sessionId, WorldId oldWorldId, WorldId newWorldId) noexcept;
 
@@ -84,5 +88,6 @@ private:
 	// 멀티스레드 read 허용 역인덱스 — _indexMutex 보호
 	mutable std::shared_mutex                           _indexMutex;
 	std::unordered_map<NetId, SessionId>                _sessionByNetId;
+	std::unordered_map<uint64_t, SessionId>             _sessionByAccountId;
 	std::unordered_map<WorldId, std::vector<SessionId>> _sessionsByWorld;
 };

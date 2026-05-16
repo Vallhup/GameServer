@@ -15,6 +15,7 @@ void RegisterServerPacketHandlers(
 	DynamicTaskTypeId& outDisconnectedTypeId);
 
 ExecCallResult HandleLoginPacket(NodeExecContext& ctx);
+ExecCallResult HandleLoginAuthResult(NodeExecContext& ctx);
 ExecCallResult HandleCharacterSelectPacket(NodeExecContext& ctx);
 ExecCallResult HandleMovePacket(NodeExecContext& ctx);
 ExecCallResult HandleAttackPacket(NodeExecContext& ctx);

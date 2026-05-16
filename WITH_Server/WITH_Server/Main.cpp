@@ -31,7 +31,17 @@ int main()
 	// 백그라운드 드레인 스레드 시작 (파일 I/O를 메인/워커 스레드에서 분리)
 	FrameworkLog::Instance().StartWorker();
 
-	ServerApp app;
+	ServerApp::Config config{};
+	config.database.enabled = false;
+	config.database.connectionString =
+		L"Driver={ODBC Driver 17 for SQL Server};"
+		L"Server=localhost\\SQLEXPRESS;"
+		L"Database=WITH_Server_DB;"
+		L"Trusted_Connection=yes;"
+		L"Encrypt=yes;"
+		L"TrustServerCertificate=yes;";
+
+	ServerApp app(config);
 	app.Run();
 	app.Shutdown();
 

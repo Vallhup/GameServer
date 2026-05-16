@@ -8,6 +8,20 @@ namespace
 {
 	constexpr const char* kLogCategory = "Database";
 
+	std::string NarrowForLog(std::wstring_view value)
+	{
+		std::string out;
+		out.reserve(value.size());
+		for (const wchar_t ch : value)
+		{
+			out.push_back(
+				ch >= 0 && ch <= 0x7f
+				? static_cast<char>(ch)
+				: '?');
+		}
+		return out;
+	}
+
 	DBRequestId NextRequestId(std::atomic<DBRequestId>& next) noexcept
 	{
 		DBRequestId id = next.fetch_add(1, std::memory_order_acq_rel);
@@ -171,14 +185,39 @@ void ODBCDatabaseBackend::PushDBCompletion(DBCompletion completion) noexcept
 void ODBCDatabaseBackend::WorkerLoop() noexcept
 {
 	DBConn conn;
+	bool connected = false;
+	std::wstring connectError;
 
-	// TODO(DB): Wire the actual MSSQL ODBC connection here.
-	// The backend thread/queue/IIOBackend integration is implemented, but
-	// SQLDriverConnectW/SQLConnectW should be enabled only after configuration,
-	// credential handling, and integration-test setup are finalized.
-	// Intended shape:
-	//   if (!_config.connectionString.empty()) conn.ConnectConnStr(...);
-	//   else conn.ConnectDSN(_config.dsn, _config.user, _config.password);
+	if (!_config.connectionString.empty())
+	{
+		connected = conn.ConnectConnStr(_config.connectionString);
+	}
+	else if (!_config.dsn.empty())
+	{
+		connected = conn.ConnectDSN(
+			_config.dsn,
+			_config.user,
+			_config.password);
+	}
+	else
+	{
+		connectError = L"DB connection string and DSN are empty.";
+	}
+
+	if (!connected)
+	{
+		if (connectError.empty())
+			connectError = conn.LastError();
+
+		const std::string errorText = NarrowForLog(connectError);
+		FWLOG_ERROR(kLogCategory,
+			"Database connect failed: %s",
+			errorText.c_str());
+	}
+	else
+	{
+		FWLOG_INFO(kLogCategory, "Database connected");
+	}
 
 	while (_running.load(std::memory_order_acquire))
 	{
@@ -188,6 +227,15 @@ void ODBCDatabaseBackend::WorkerLoop() noexcept
 
 		if (command.command == nullptr)
 			continue;
+
+		if (!connected)
+		{
+			PushRejectedCompletion(
+				command,
+				static_cast<uint32_t>(DBCommonErrorCode::ConnectFail),
+				connectError);
+			continue;
+		}
 
 		try
 		{
@@ -200,10 +248,6 @@ void ODBCDatabaseBackend::WorkerLoop() noexcept
 				*this
 			};
 
-			// TODO(DB): Real query objects are intentionally not implemented in
-			// this pass. Commands added later should prepare static SQL through
-			// ctx.Prepare(), bind parameters on DBStatement, and finish with
-			// CompleteOk/Error.
 			command.command->Execute(ctx);
 		}
 		catch (...)
@@ -215,8 +259,7 @@ void ODBCDatabaseBackend::WorkerLoop() noexcept
 		}
 	}
 
-	// TODO(DB): Disconnect the actual ODBC connection here after connection
-	// setup is enabled.
+	conn.Disconnect();
 }
 
 bool ODBCDatabaseBackend::PopCommand(DBCommandEnvelope& out) noexcept

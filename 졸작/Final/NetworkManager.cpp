@@ -29,6 +29,9 @@ bool NetworkManager::SendLoginPacket()
 	}
 
 	Protocol::CS_LOGIN_PACKET login;
+	login.set_loginid("test01");
+	login.set_password("12345678");
+	login.set_clientversion("1");
 
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_LOGIN_PACKET>(
 		PacketType::CS_LOGIN, login);

@@ -52,7 +52,6 @@ public:
 	{
 	}
 
-	DBQueryText(const wchar_t*) = delete;
 	DBQueryText(std::wstring_view) = delete;
 	DBQueryText(const std::wstring&) = delete;
 
@@ -147,6 +146,12 @@ public:
 
 	[[nodiscard]]
 	bool GetString(uint16_t col, std::wstring& out);
+
+	[[nodiscard]]
+	bool GetInt32(uint16_t col, int32_t& out);
+
+	[[nodiscard]]
+	bool GetInt64(uint16_t col, int64_t& out);
 
 	[[nodiscard]]
 	const DBErrorInfo& LastErrorInfo() const noexcept { return _lastError; }

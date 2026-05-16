@@ -21,6 +21,7 @@ void SessionFlowController::Clear() noexcept
 	{
 		std::unique_lock lock{ _indexMutex };
 		_sessionByNetId.clear();
+		_sessionByAccountId.clear();
 		_sessionsByWorld.clear();
 	}
 }
@@ -36,10 +37,12 @@ void SessionFlowController::OnSessionDisconnected(SessionId sessionId)
 	if (it != _sessions.end())
 	{
 		const SessionFlow& flow = it->second.flow;
-		if (flow.currentWorldId.IsValid())
 		{
 			std::unique_lock lock{ _indexMutex };
-			IndexUnbind_Locked(sessionId, flow.controlledNetId, flow.currentWorldId);
+			if (flow.accountId != 0)
+				IndexAccountUnbind_Locked(sessionId, flow.accountId);
+			if (flow.currentWorldId.IsValid())
+				IndexUnbind_Locked(sessionId, flow.controlledNetId, flow.currentWorldId);
 		}
 		_sessions.erase(it);
 	}
@@ -65,6 +68,18 @@ SessionFlowResult SessionFlowController::Dispatch(
 
 	SessionFlowResult result = ApplyTransition(*entry, transition);
 	result.previousState = previous;
+	if (result.Succeeded())
+	{
+		if (const auto* loginSucceeded =
+			dynamic_cast<const LoginSucceeded*>(&command))
+		{
+			if (loginSucceeded->accountId != 0)
+			{
+				std::unique_lock lock{ _indexMutex };
+				IndexAccountBind_Locked(sessionId, loginSucceeded->accountId);
+			}
+		}
+	}
 	return result;
 }
 
@@ -105,6 +120,21 @@ SessionId SessionFlowController::FindOwnerSession(NetId controlledNetId) const n
 	std::shared_lock lock{ _indexMutex };
 	const auto it = _sessionByNetId.find(controlledNetId);
 	return it != _sessionByNetId.end() ? it->second : 0;
+}
+
+SessionId SessionFlowController::FindOwnerSessionByAccountId(uint64_t accountId) const noexcept
+{
+	if (accountId == 0)
+		return 0;
+
+	std::shared_lock lock{ _indexMutex };
+	const auto it = _sessionByAccountId.find(accountId);
+	return it != _sessionByAccountId.end() ? it->second : 0;
+}
+
+bool SessionFlowController::HasAccountLogin(uint64_t accountId) const noexcept
+{
+	return FindOwnerSessionByAccountId(accountId) != 0;
 }
 
 NetId SessionFlowController::FindControlledNetId(SessionId sessionId) const noexcept
@@ -248,6 +278,22 @@ void SessionFlowController::IndexBind_Locked(
 	_sessionsByWorld[currentWorldId].push_back(sessionId);
 }
 
+void SessionFlowController::IndexAccountBind_Locked(
+	SessionId sessionId,
+	uint64_t accountId)
+{
+	_sessionByAccountId[accountId] = sessionId;
+}
+
+void SessionFlowController::IndexAccountUnbind_Locked(
+	SessionId sessionId,
+	uint64_t accountId) noexcept
+{
+	const auto it = _sessionByAccountId.find(accountId);
+	if (it != _sessionByAccountId.end() && it->second == sessionId)
+		_sessionByAccountId.erase(it);
+}
+
 void SessionFlowController::IndexUnbind_Locked(
 	SessionId sessionId,
 	NetId controlledNetId,
@@ -304,6 +350,7 @@ void SessionFlowController::RegisterDefaultTransitions()
 		SessionCommandId::LoginSucceeded,
 		[](SessionFlowContext& ctx, const LoginSucceeded& command)
 		{
+			ctx.Flow().accountId = command.accountId;
 			ctx.Flow().controlledNetId = command.controlledNetId;
 			return TransitionResult::To(SessionStateId::AwaitingCharacterSelect);
 		});

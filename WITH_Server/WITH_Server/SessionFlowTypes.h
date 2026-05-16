@@ -43,6 +43,7 @@ struct SessionFlow
 	SessionStateId stateId{ SessionStateId::Connected };
 	// controlledNetId: 로그인 성공 시 할당, 월드 바인딩 이후 역인덱스에도 등록됨
 	// HasBinding()은 월드 바인딩 완료(currentWorldId 유효) 여부를 의미한다
+	uint64_t       accountId{ 0 };
 	NetId          controlledNetId{ NetId::Invalid() };
 	CharacterId    selectedCharacterId{ CharacterId::None };
 	WorldId        playerWorldId{ WorldId::Invalid() };

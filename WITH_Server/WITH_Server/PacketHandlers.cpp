@@ -11,7 +11,9 @@
 #include "ExecutionOps.h"
 #include "FrameworkRuntime.h"
 #include "FrameworkLog.h"
+#include "LoginAuth.h"
 #include "NetworkRuntime.h"
+#include "ODBCDatabaseBackend.h"
 #include "PacketFactory.h"
 #include "PacketHandlerContext.h"
 #include "PacketType.h"
@@ -29,7 +31,12 @@
 #include "Protocol.pb.h"
 #include "SendBuffer.h"
 
+#include <algorithm>
+#include <cctype>
 #include <limits>
+#include <memory>
+#include <string>
+#include <string_view>
 
 namespace
 {
@@ -40,12 +47,13 @@ namespace
     constexpr uint32_t kLoginFailReasonDuplicateLogin = 2;
     constexpr uint32_t kLoginFailReasonEntryStartFailed = 3;
     constexpr uint32_t kLoginFailReasonAuthRejected = 4;
+    constexpr uint32_t kLoginFailReasonDatabaseUnavailable = 5;
+    constexpr uint32_t kLoginFailReasonDatabaseError = 6;
+    constexpr uint32_t kLoginFailReasonTimeout = 7;
 
-    struct LoginAuthResult
-    {
-        bool     accepted{ false };
-        uint32_t failReason{ kLoginFailReasonAuthRejected };
-    };
+    DynamicTaskTypeId g_loginAuthResultTaskTypeId{ InvalidDynamicTaskTypeId };
+
+    const char* SessionFlowResultCodeName(SessionFlowResultCode code) noexcept;
 
     struct PlayerInputTarget
     {
@@ -70,6 +78,12 @@ namespace
         const auto* inst =
             ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId);
         return inst != nullptr ? static_cast<SessionId>(inst->sessionId) : 0;
+    }
+
+    uint64_t ResolveRequestFrameIndex(const NodeExecContext& ctx) noexcept
+    {
+        (void)ctx;
+        return 0;
     }
 
     // sessionId → worldScopeId 역산 (worldIdByScope span 순회)
@@ -210,13 +224,182 @@ namespace
         return false;
     }
 
-    LoginAuthResult AuthenticateLoginRequest(
-        const Protocol::CS_LOGIN_PACKET& /*packet*/) noexcept
+    std::string_view TrimAscii(std::string_view value) noexcept
     {
-        // TODO: Replace this stub with the DB-backed authentication result.
-        // Keep HandleLoginPacket as the state-transition consumer so async DB
-        // completion can reuse the same success/fail path later.
-        return LoginAuthResult{ .accepted = true, .failReason = 0 };
+        while (!value.empty() &&
+            std::isspace(static_cast<unsigned char>(value.front())))
+        {
+            value.remove_prefix(1);
+        }
+
+        while (!value.empty() &&
+            std::isspace(static_cast<unsigned char>(value.back())))
+        {
+            value.remove_suffix(1);
+        }
+
+        return value;
+    }
+
+    bool IsAllowedLoginIdChar(unsigned char ch) noexcept
+    {
+        return
+            (ch >= 'a' && ch <= 'z') ||
+            (ch >= 'A' && ch <= 'Z') ||
+            (ch >= '0' && ch <= '9') ||
+            ch == '_' ||
+            ch == '.' ||
+            ch == '@' ||
+            ch == '-';
+    }
+
+    bool NormalizeLoginId(
+        std::string_view loginId,
+        std::wstring& outNormalized) noexcept
+    {
+        outNormalized.clear();
+
+        const std::string_view trimmed = TrimAscii(loginId);
+        if (trimmed.size() < 4 || trimmed.size() > 64)
+            return false;
+
+        outNormalized.reserve(trimmed.size());
+        for (const unsigned char ch : trimmed)
+        {
+            if (!IsAllowedLoginIdChar(ch))
+                return false;
+
+            const unsigned char lowered =
+                static_cast<unsigned char>(std::tolower(ch));
+            outNormalized.push_back(static_cast<wchar_t>(lowered));
+        }
+
+        return true;
+    }
+
+    bool ValidatePassword(std::string_view password) noexcept
+    {
+        if (password.size() < 8 || password.size() > 128)
+            return false;
+
+        return std::all_of(
+            password.begin(),
+            password.end(),
+            [](unsigned char ch)
+            {
+                return ch >= 0x20 && ch <= 0x7e;
+            });
+    }
+
+    uint32_t MapDBErrorToLoginFailReason(uint32_t errorCode) noexcept
+    {
+        switch (static_cast<DBCommonErrorCode>(errorCode))
+        {
+        case DBCommonErrorCode::Rejected:
+        case DBCommonErrorCode::ConnectFail:
+            return kLoginFailReasonDatabaseUnavailable;
+        case DBCommonErrorCode::Timeout:
+            return kLoginFailReasonTimeout;
+        case DBCommonErrorCode::None:
+            return kLoginFailReasonDatabaseError;
+        case DBCommonErrorCode::QueryFail:
+        case DBCommonErrorCode::Exception:
+        default:
+            return kLoginFailReasonDatabaseError;
+        }
+    }
+
+    void StageAndCloseLoginFailure(
+        PacketHandlerContext& svc,
+        SessionId sessionId,
+        uint32_t failReason) noexcept
+    {
+        if (svc.network != nullptr)
+        {
+            (void)ServerPacketStager::StageLoginFail(
+                *svc.network,
+                sessionId,
+                failReason);
+            (void)svc.network->RequestClose(
+                sessionId,
+                SessionCloseReason::ProtocolError);
+        }
+
+        if (svc.sessionFlow != nullptr)
+        {
+            LoginFailed failedCommand{};
+            failedCommand.reason = failReason;
+            (void)svc.sessionFlow->Dispatch(sessionId, failedCommand);
+        }
+    }
+
+    void ReleaseDBCompletionPayload(uint64_t payloadKey) noexcept
+    {
+        if (payloadKey == 0)
+            return;
+
+        auto& svc = PacketHandlerContext::Get();
+        if (svc.database != nullptr)
+            svc.database->ResultStore().Drop(payloadKey);
+    }
+
+    bool CompleteDevStubLogin(
+        PacketHandlerContext& svc,
+        SessionId sessionId) noexcept
+    {
+        if (svc.framework == nullptr ||
+            svc.sessionFlow == nullptr ||
+            svc.network == nullptr)
+        {
+            return false;
+        }
+
+        const NetId controlledNetId = svc.framework->AllocateNetId();
+        if (!controlledNetId.IsValid())
+        {
+            FWLOG_WARN(kLogCategory,
+                "Login rejected: dev stub netId allocation failed (sid=%u)",
+                sessionId);
+            StageAndCloseLoginFailure(
+                svc,
+                sessionId,
+                kLoginFailReasonEntryStartFailed);
+            return true;
+        }
+
+        LoginSucceeded succeededCommand{};
+        succeededCommand.controlledNetId = controlledNetId;
+        const SessionFlowResult flowResult =
+            svc.sessionFlow->Dispatch(sessionId, succeededCommand);
+        if (!flowResult.Succeeded())
+        {
+            svc.framework->FreeNetId(controlledNetId);
+            FWLOG_WARN(kLogCategory,
+                "Dev stub login success rejected by flow (sid=%u, reason=%s)",
+                sessionId,
+                SessionFlowResultCodeName(flowResult.code));
+            (void)svc.network->RequestClose(
+                sessionId,
+                SessionCloseReason::ProtocolError);
+            return true;
+        }
+
+        if (!ServerPacketStager::StageLoginSuccess(
+            *svc.network,
+            sessionId,
+            controlledNetId))
+        {
+            svc.framework->FreeNetId(controlledNetId);
+            FWLOG_WARN(kLogCategory,
+                "Dev stub login success packet stage failed (sid=%u, netId=%u)",
+                sessionId,
+                controlledNetId.GetRaw());
+            (void)svc.network->RequestClose(
+                sessionId,
+                SessionCloseReason::ProtocolError);
+        }
+
+        return true;
     }
 
     const char* SessionFlowResultCodeName(SessionFlowResultCode code) noexcept
@@ -362,6 +545,16 @@ void RegisterServerPacketHandlers(
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_WORLD_TRANSITION_READY,   &HandleWorldTransitionReadyPacket,   "Pkt_CS_WORLD_TRANSITION_READY");
 
+    DynamicTaskTypeDesc loginAuthResultDesc{};
+    loginAuthResultDesc.debugName = "DB_LoginAuthResult";
+    loginAuthResultDesc.defaultPhase = ExecPhase::Simulate;
+    loginAuthResultDesc.defaultLane = ExecLane::Serial;
+    loginAuthResultDesc.defaultTargetKind = DynamicTaskTargetKind::ExplicitScope;
+    loginAuthResultDesc.dispatchFn = &HandleLoginAuthResult;
+    loginAuthResultDesc.payloadCleanupFn = &ReleaseDBCompletionPayload;
+    g_loginAuthResultTaskTypeId =
+        taskRegistry.Register(loginAuthResultDesc, sourceRegistry);
+
     DynamicTaskTypeDesc desc{};
     desc.debugName    = "Evt_Disconnected";
     desc.defaultPhase = ExecPhase::Simulate;
@@ -424,21 +617,133 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
         return ExecCallResult::Success;
     }
 
-    const LoginAuthResult authResult = AuthenticateLoginRequest(pkt);
-    if (!authResult.accepted)
+    std::wstring loginIdNormalized;
+    if (!NormalizeLoginId(pkt.loginid(), loginIdNormalized) ||
+        !ValidatePassword(pkt.password()))
     {
+        FWLOG_WARN(kLogCategory,
+            "Login rejected: invalid credentials format (sid=%u)",
+            sessionId);
+        StageAndCloseLoginFailure(
+            svc,
+            sessionId,
+            kLoginFailReasonMalformedPacket);
+        return ExecCallResult::Success;
+    }
+
+    if (svc.database == nullptr ||
+        g_loginAuthResultTaskTypeId == InvalidDynamicTaskTypeId)
+    {
+        FWLOG_INFO(kLogCategory,
+            "Login accepted by dev stub: database disabled (sid=%u)",
+            sessionId);
+        if (!CompleteDevStubLogin(svc, sessionId))
+            return ExecCallResult::Failed;
+        return ExecCallResult::Success;
+    }
+
+    DBCommandEnvelope envelope{};
+    envelope.meta.sessionId = sessionId;
+    envelope.meta.scopeId = ctx.scopeId;
+    envelope.meta.requestFrameIndex = ResolveRequestFrameIndex(ctx);
+    envelope.meta.completionTaskTypeId = g_loginAuthResultTaskTypeId;
+    envelope.command = std::make_unique<LoginAuthCommand>(
+        std::move(loginIdNormalized),
+        pkt.password());
+
+    const DBRequestId requestId = svc.database->Submit(std::move(envelope));
+    if (requestId == InvalidDBRequestId)
+    {
+        FWLOG_WARN(kLogCategory,
+            "Login auth DB submit rejected (sid=%u)",
+            sessionId);
+    }
+
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleLoginAuthResult(NodeExecContext& ctx)
+{
+    auto& svc = PacketHandlerContext::Get();
+    const SessionId sessionId = ResolveSessionId(ctx);
+
+    if (svc.database == nullptr ||
+        svc.sessionFlow == nullptr ||
+        svc.framework == nullptr ||
+        svc.network == nullptr)
+    {
+        return ExecCallResult::Failed;
+    }
+
+    const auto* inst =
+        ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId);
+    if (inst == nullptr || inst->payloadKey == 0)
+        return ExecCallResult::Failed;
+
+    DBCompletion completion{};
+    if (!svc.database->ResultStore().TakeCompletion(
+        inst->payloadKey,
+        completion))
+    {
+        FWLOG_WARN(kLogCategory,
+            "Login auth result missing DB completion (sid=%u)",
+            sessionId);
+        return ExecCallResult::Success;
+    }
+
+    if (!completion.ok)
+    {
+        const uint32_t failReason =
+            MapDBErrorToLoginFailReason(completion.errorCode);
+        FWLOG_WARN(kLogCategory,
+            "Login rejected: DB command failed (sid=%u, reason=%u, dbError=%u)",
+            sessionId,
+            failReason,
+            completion.errorCode);
+        StageAndCloseLoginFailure(svc, sessionId, failReason);
+        return ExecCallResult::Success;
+    }
+
+    LoginAuthPayload payload{};
+    if (completion.payloadKey == InvalidDBPayloadKey ||
+        !svc.database->ResultStore().TakePayload(
+            completion.payloadKey,
+            payload))
+    {
+        FWLOG_WARN(kLogCategory,
+            "Login rejected: DB payload missing (sid=%u)",
+            sessionId);
+        StageAndCloseLoginFailure(
+            svc,
+            sessionId,
+            kLoginFailReasonDatabaseError);
+        return ExecCallResult::Success;
+    }
+
+    if (payload.failReason != 0 || payload.accountId == 0)
+    {
+        const uint32_t failReason =
+            payload.failReason != 0
+            ? payload.failReason
+            : kLoginFailReasonAuthRejected;
         FWLOG_WARN(kLogCategory,
             "Login rejected: auth failed (sid=%u, reason=%u)",
             sessionId,
-            authResult.failReason);
-        (void)ServerPacketStager::StageLoginFail(
-            *svc.network,
+            failReason);
+        StageAndCloseLoginFailure(svc, sessionId, failReason);
+        return ExecCallResult::Success;
+    }
+
+    if (svc.sessionFlow->HasAccountLogin(payload.accountId))
+    {
+        FWLOG_WARN(kLogCategory,
+            "Login rejected: duplicate account login (sid=%u, accountId=%llu)",
             sessionId,
-            authResult.failReason);
-        LoginFailed failedCommand{};
-        failedCommand.reason = authResult.failReason;
-        (void)svc.sessionFlow->Dispatch(sessionId, failedCommand);
-        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+            static_cast<unsigned long long>(payload.accountId));
+        StageAndCloseLoginFailure(
+            svc,
+            sessionId,
+            kLoginFailReasonDuplicateLogin);
         return ExecCallResult::Success;
     }
 
@@ -446,20 +751,18 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
     if (!controlledNetId.IsValid())
     {
         FWLOG_WARN(kLogCategory, "Login rejected: netId allocation failed (sid=%u)", sessionId);
-        (void)ServerPacketStager::StageLoginFail(
-            *svc.network,
+        StageAndCloseLoginFailure(
+            svc,
             sessionId,
             kLoginFailReasonEntryStartFailed);
-        LoginFailed failedCommand{};
-        failedCommand.reason = kLoginFailReasonEntryStartFailed;
-        (void)svc.sessionFlow->Dispatch(sessionId, failedCommand);
-        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
         return ExecCallResult::Success;
     }
 
     LoginSucceeded succeededCommand{};
+    succeededCommand.accountId = payload.accountId;
     succeededCommand.controlledNetId = controlledNetId;
-    flowResult = svc.sessionFlow->Dispatch(sessionId, succeededCommand);
+    const SessionFlowResult flowResult =
+        svc.sessionFlow->Dispatch(sessionId, succeededCommand);
     if (!flowResult.Succeeded())
     {
         svc.framework->FreeNetId(controlledNetId);
@@ -472,9 +775,9 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
     }
 
     if (!ServerPacketStager::StageLoginSuccess(
-            *svc.network,
-            sessionId,
-            controlledNetId))
+        *svc.network,
+        sessionId,
+        controlledNetId))
     {
         svc.framework->FreeNetId(controlledNetId);
         FWLOG_WARN(kLogCategory,

@@ -5,6 +5,9 @@ package Protocol;
 
 message CS_LOGIN_PACKET
 {
+	string loginId = 1;
+	string password = 2;
+	string clientVersion = 3;
 }
 
 message CS_CHARACTER_SELECT_PACKET
