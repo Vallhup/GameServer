@@ -11,13 +11,11 @@ void LightManager::Initialize(ID3D12Device* device)
 	deferredLightSB->Initialize(device, sizeof(LightData) * MAX_LIGHTS);
 
 	lights.resize(MAX_LIGHTS);
-
-	SetupLights();
 }
 
 void LightManager::UpdateLights()
 {
-	if (skyBox)
+	if (useDirectional && skyBox)
 	{
 		const SkySun& sun = skyBox->GetSun();
 		lights[0].position = sun.direction;
@@ -60,7 +58,7 @@ bool LightManager::LoadFromFile(const wstring& path, int startSlot)
 
 		lights[slot] = {
 			{ px, py, pz }, range,
-			{ r, g, b }, intensity * 0.5f,
+			{ r, g, b }, intensity * 0.25f,
 			1,
 			{ 0, 0, 0 }
 		};
@@ -71,15 +69,19 @@ bool LightManager::LoadFromFile(const wstring& path, int startSlot)
 	return true;
 }
 
-void LightManager::SetupLights()
+void LightManager::LoadSceneLights(const wstring& pointLightFile, bool enableDirectional)
 {
+	useDirectional = enableDirectional;
+
+	lights.assign(MAX_LIGHTS, {});
+
 	lights[0] = {
 		{ -0.43f, -0.62f, -0.58f }, 0,
-		{1, 1, 1}, 1.0f,
+		{ 1, 1, 1 }, enableDirectional ? 1.0f : 0.0f,
 		0,
-		{0, 0, 0}
+		{ 0, 0, 0 }
 	};
+	deferredLightData.lightCount = 1;
 
-	LoadFromFile(L"../Assets/FBXModel/GothicMap/FinalMapLightData.txt", 1);
-	UpdateLights();
+	LoadFromFile(pointLightFile, 1);
 }

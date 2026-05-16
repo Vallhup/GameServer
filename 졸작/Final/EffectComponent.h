@@ -24,7 +24,7 @@ public:
 	virtual ~EffectComponent() = default;
 
 	void Initialize(ID3D12Device* device, UINT maxElements);
-	void Render(DX12Core& core, const XMFLOAT3& cameraPos);
+	virtual void Render(DX12Core& core, const XMFLOAT3& cameraPos);
 
 	void SetColor(const XMFLOAT4& color) { effectColor = color; }
 	void SetLifetime(float lifetime) { maxLifetime = lifetime; }

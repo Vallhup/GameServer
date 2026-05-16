@@ -15,6 +15,7 @@
 #include "TrailComponent.h"
 #include "FootDustComponent.h"
 #include "ParrySparkComponent.h"
+#include "BloodImpactComponent.h"
 #include "ParryFlashComponent.h"
 #include "ParryStreakComponent.h"
 
@@ -175,6 +176,16 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	streak->SetHeight(0.4f);
 	streak->SetLifetime(0.1f);
 
+	auto blood = character->AddComponent<BloodImpactComponent>();
+	blood->InitializeBlood(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), 64);
+	blood->SetColor({ 0.35f, 0.35f, 0.35f, 1.0f });
+	blood->SetLifetime(1.2f);
+	blood->SetBaseSpeed(5.5f);
+	blood->SetBaseSize(1.2f);
+	blood->SetGravity(0.0f);
+	blood->SetDragHalfLife(0.5f);
+	blood->SetCountPerSlot(5);
+
 	return character;
 }
 
@@ -192,6 +203,17 @@ shared_ptr<GameObject> Scene::CreateMonsterObject(const wstring& meshPath, share
 	animMachine->SetAnimationSet(animFactory());
 	transform->SetRotation(0.f, 0.f, 0.f);
 	transform->SetScale(0.01f, 0.01f, 0.01f);
+
+	auto blood = obj->AddComponent<BloodImpactComponent>();
+	blood->InitializeBlood(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), 64);
+	blood->SetColor({ 0.35f, 0.35f, 0.35f, 1.0f });
+	blood->SetLifetime(1.2f);
+	blood->SetBaseSpeed(5.5f);
+	blood->SetBaseSize(1.2f);
+	blood->SetGravity(0.0f);
+	blood->SetDragHalfLife(0.5f);
+	blood->SetCountPerSlot(5);
+
 	return obj;
 }
 
@@ -348,12 +370,16 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 		const XMFLOAT3 impactPos{ impact.impactx(), impact.impacty(), impact.impactz() };
 		const XMFLOAT3 impactDir{ impact.dirx(), impact.diry(), impact.dirz() };
 
-		// resultType: 어떤 방식의 충돌인가 (Hit, Guard, Parry)
-		//             Type에 따라 다른 이펙트 출력?
 		// 0 : Hit / 1 : Guard / 2 : Parry
 		switch (impact.resulttype()) {
 		case 0:
 		{
+			auto victim = activeCharacters[vId];
+			if (victim)
+			{
+				if (auto blood = victim->GetComponent<BloodImpactComponent>())
+					blood->Spawn(impactPos, impactDir);
+			}
 			break;
 		}
 		case 1:

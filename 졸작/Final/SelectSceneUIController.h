@@ -17,5 +17,8 @@ private:
 	shared_ptr<ImageUI> background;
 	shared_ptr<ImageUI> charImages[3];
 	shared_ptr<ImageUI> hoverOverlay;
+
+	float hoverOffsetX = 0.0f;
+	float hoverOffsetY = 0.0f;
 };
 

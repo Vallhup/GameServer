@@ -262,6 +262,9 @@
     <ClCompile Include="ClusterLightManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="BloodImpactComponent.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -528,6 +531,9 @@
     <ClInclude Include="NetHelper.h">
       <Filter>Network</Filter>
     </ClInclude>
+    <ClInclude Include="BloodImpactComponent.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GBufferVS.hlsli">
@@ -633,6 +639,9 @@
       <Filter>Shaders\Clustered</Filter>
     </None>
     <None Include="..\Shaders\GlowPS.hlsli">
+      <Filter>Shaders\Effects</Filter>
+    </None>
+    <None Include="..\Shaders\BloodPS.hlsli">
       <Filter>Shaders\Effects</Filter>
     </None>
   </ItemGroup>

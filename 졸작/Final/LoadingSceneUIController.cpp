@@ -88,6 +88,17 @@ void LoadingSceneUIController::SetProgress(float progress)
 void LoadingSceneUIController::SetTargetScene(SceneType type)
 {
 	targetScene = type;
+
+	wstring texName = L"LoadingPage";
+	switch (targetScene)
+	{
+	case SceneType::Plaza:   texName = L"LoadingPlaza"; break;
+	case SceneType::Village: texName = L"LoadingPage";  break;
+	case SceneType::Castle:  texName = L"LoadingPage";  break;
+	case SceneType::Final:   texName = L"LoadingPage";  break;
+	}
+
+	if (mainImage) mainImage->SetTexture(texName);
 }
 
 void LoadingSceneUIController::Reset()

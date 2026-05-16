@@ -23,6 +23,7 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitMapWindow();
 	InitEscWindow();
 	InitKeyGuide();
+	InitSettingWindow();
 }
 
 void GameSceneUIController::InitTargetHpBar()
@@ -264,6 +265,32 @@ void GameSceneUIController::InitKeyGuide()
 	widgets.push_back(keyGuide);
 }
 
+void GameSceneUIController::InitSettingWindow()
+{
+	const float backSize = WinSize.y * 0.8f;
+	const float backX = (WinSize.x - backSize) * 0.5f;
+	const float backY = (WinSize.y - backSize) * 0.5f;
+
+	settingWindow = make_shared<ImageUI>(uiManager, L"SettingWindow", ImageUIState::Hidden);
+	settingWindow->SetPosition(backX, backY);
+	settingWindow->SetHoriLength(backSize);
+	settingWindow->SetVertLength(backSize);
+	widgets.push_back(settingWindow);
+
+	const float btnW   = backSize * 0.22f;
+	const float btnH   = btnW * (1056.0f / 4096.0f);
+	const float margin = backSize * 0.045f;
+	const float btnX   = backX + backSize - btnW - margin;
+	const float btnY   = backY + margin;
+
+	settingBackButton = make_shared<ImageUI>(uiManager, L"PartyBack", ImageUIState::Hidden);
+	settingBackButton->SetPosition(btnX, btnY);
+	settingBackButton->SetHoriLength(btnW);
+	settingBackButton->SetVertLength(btnH);
+	settingBackButton->SetHoverScale(1.05f);
+	widgets.push_back(settingBackButton);
+}
+
 void GameSceneUIController::Update(float deltaTime)
 {
 	UIController::Update(deltaTime);
@@ -275,7 +302,7 @@ void GameSceneUIController::Update(float deltaTime)
 	if (INPUT.GetKeyDown('K'))
 	{
 		bool selfOpen = opened(statusImage);
-		bool othersOpen = opened(escWindow) || opened(partyBook) || opened(mapImage) || opened(keyGuide);
+		bool othersOpen = opened(escWindow) || opened(partyBook) || opened(mapImage) || opened(keyGuide) || opened(settingWindow);
 		if (selfOpen || !othersOpen)
 		{
 			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
@@ -293,7 +320,7 @@ void GameSceneUIController::Update(float deltaTime)
 	if (INPUT.GetKeyDown(VK_ESCAPE) && escWindow)
 	{
 		bool selfOpen = opened(escWindow);
-		bool othersOpen = opened(statusImage) || opened(partyBook) || opened(mapImage) || opened(keyGuide);
+		bool othersOpen = opened(statusImage) || opened(partyBook) || opened(mapImage) || opened(keyGuide) || opened(settingWindow);
 		if (selfOpen || !othersOpen)
 		{
 			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
@@ -324,7 +351,13 @@ void GameSceneUIController::Update(float deltaTime)
 		}
 		if (escOptionsButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
-			OutputDebugStringA("[Esc] Options button clicked\n");
+			escWindow->ChangeState(ImageUIState::Hidden);
+			escContinueButton->ChangeState(ImageUIState::Hidden);
+			escOptionsButton->ChangeState(ImageUIState::Hidden);
+			escExitButton->ChangeState(ImageUIState::Hidden);
+
+			if (settingWindow)     settingWindow->ChangeState(ImageUIState::Visible);
+			if (settingBackButton) settingBackButton->ChangeState(ImageUIState::Visible);
 		}
 		if (escExitButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
@@ -332,10 +365,26 @@ void GameSceneUIController::Update(float deltaTime)
 		}
 	}
 
+	if (settingWindow && settingWindow->GetState() != ImageUIState::Hidden)
+	{
+		settingBackButton->SetHovered(settingBackButton->IsMouseInside());
+
+		if (settingBackButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		{
+			settingWindow->ChangeState(ImageUIState::Hidden);
+			settingBackButton->ChangeState(ImageUIState::Hidden);
+
+			escWindow->ChangeState(ImageUIState::Visible);
+			escContinueButton->ChangeState(ImageUIState::Visible);
+			escOptionsButton->ChangeState(ImageUIState::Visible);
+			escExitButton->ChangeState(ImageUIState::Visible);
+		}
+	}
+
 	if (INPUT.GetKeyDown('P') && partyBook)
 	{
 		bool selfOpen = opened(partyBook);
-		bool othersOpen = opened(escWindow) || opened(statusImage) || opened(mapImage) || opened(keyGuide);
+		bool othersOpen = opened(escWindow) || opened(statusImage) || opened(mapImage) || opened(keyGuide) || opened(settingWindow);
 		if (selfOpen || !othersOpen)
 		{
 			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
@@ -382,7 +431,7 @@ void GameSceneUIController::Update(float deltaTime)
 	if (INPUT.GetKeyDown('M') && mapImage && mapBackImage)
 	{
 		bool selfOpen = opened(mapImage);
-		bool othersOpen = opened(escWindow) || opened(statusImage) || opened(partyBook) || opened(keyGuide);
+		bool othersOpen = opened(escWindow) || opened(statusImage) || opened(partyBook) || opened(keyGuide) || opened(settingWindow);
 		if (selfOpen || !othersOpen)
 		{
 			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
@@ -397,7 +446,7 @@ void GameSceneUIController::Update(float deltaTime)
 	if (INPUT.GetKeyDown(VK_F2) && keyGuide)
 	{
 		bool selfOpen = opened(keyGuide);
-		bool othersOpen = opened(escWindow) || opened(statusImage) || opened(partyBook) || opened(mapImage);
+		bool othersOpen = opened(escWindow) || opened(statusImage) || opened(partyBook) || opened(mapImage) || opened(settingWindow);
 		if (selfOpen || !othersOpen)
 		{
 			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;

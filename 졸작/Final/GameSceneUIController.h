@@ -28,10 +28,9 @@ private:
 	void InitPartyWindow();
 	void InitStatWindow();
 	void InitMapWindow();
-
 	void InitEscWindow();
-
 	void InitKeyGuide();
+	void InitSettingWindow();
 
 	SceneType sceneType;
 
@@ -65,4 +64,7 @@ private:
 	shared_ptr<ImageUI> escExitButton;
 
 	shared_ptr<ImageUI> keyGuide;
+
+	shared_ptr<ImageUI> settingWindow;
+	shared_ptr<ImageUI> settingBackButton;
 };

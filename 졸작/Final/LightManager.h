@@ -24,6 +24,8 @@ public:
 	void Initialize(ID3D12Device* device);
 	void UpdateLights();
 
+	void LoadSceneLights(const wstring& pointLightFile, bool enableDirectional);
+
 	bool LoadFromFile(const wstring& path, int startSlot = 1);
 	void SetSkyBox(SkyBox* sky) { skyBox = sky; }
 	SkyBox* GetSkyBox() const { return skyBox; }
@@ -36,11 +38,10 @@ public:
 	LightData* GetLights() { return lights.data(); }
 
 private:
-	void SetupLights();
-
-private:
 	DeferredLightConstants deferredLightData = {};
 	vector<LightData> lights;
+
+	bool useDirectional = true;
 
 	unique_ptr<UploadBuffer> deferredLightCB;
 	unique_ptr<UploadBuffer> deferredLightSB;
