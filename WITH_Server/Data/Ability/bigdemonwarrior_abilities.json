@@ -33,7 +33,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 76,
               "minDistance": null,
-              "maxDistance": 5.2,
+              "maxDistance": 5.0,
               "verticalTolerance": 2.2,
               "referenceFrame": "LockedActionDirection"
             },
@@ -134,7 +134,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 84,
               "minDistance": null,
-              "maxDistance": 5.6,
+              "maxDistance": 5.3,
               "verticalTolerance": 2.2,
               "referenceFrame": "LockedActionDirection"
             },
@@ -235,7 +235,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 72,
               "minDistance": null,
-              "maxDistance": 5,
+              "maxDistance": 4.8,
               "verticalTolerance": 2.2,
               "referenceFrame": "LockedActionDirection"
             },
@@ -348,7 +348,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 92,
               "minDistance": null,
-              "maxDistance": 6,
+              "maxDistance": 5.7,
               "verticalTolerance": 2.2,
               "referenceFrame": "LockedActionDirection"
             },
@@ -461,7 +461,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 88,
               "minDistance": null,
-              "maxDistance": 5.8,
+              "maxDistance": 5.5,
               "verticalTolerance": 2.2,
               "referenceFrame": "LockedActionDirection"
             },
@@ -562,7 +562,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 64,
               "minDistance": null,
-              "maxDistance": 4.6,
+              "maxDistance": 4.4,
               "verticalTolerance": 2.2,
               "referenceFrame": "LockedActionDirection"
             },
@@ -663,7 +663,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 96,
               "minDistance": null,
-              "maxDistance": 6.2,
+              "maxDistance": 5.9,
               "verticalTolerance": 2.2,
               "referenceFrame": "LockedActionDirection"
             },
@@ -776,7 +776,7 @@
             "spatialFilter": {
               "facingHalfAngleDeg": 80,
               "minDistance": null,
-              "maxDistance": 5.4,
+              "maxDistance": 5.1,
               "verticalTolerance": 2.2,
               "referenceFrame": "LockedActionDirection"
             },
