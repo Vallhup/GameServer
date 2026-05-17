@@ -1218,12 +1218,25 @@ ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx)
 {
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
+    SessionCloseReason reason = SessionCloseReason::RemoteClosed;
+
+    if (const auto* inst =
+        ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId))
+    {
+        if (inst->payloadKey >
+            static_cast<uint64_t>(SessionCloseReason::None) &&
+            inst->payloadKey <=
+            static_cast<uint64_t>(SessionCloseReason::ServerShutdown))
+        {
+            reason = static_cast<SessionCloseReason>(inst->payloadKey);
+        }
+    }
 
     if (svc.sessionSystem == nullptr)
         return ExecCallResult::Failed;
 
     svc.sessionSystem->HandleSessionDisconnected(
         sessionId,
-        SessionCloseReason::RemoteClosed);
+        reason);
     return ExecCallResult::Success;
 }

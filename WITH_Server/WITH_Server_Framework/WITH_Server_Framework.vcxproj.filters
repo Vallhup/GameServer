@@ -414,6 +414,9 @@
     <ClInclude Include="NetIdRegistry.h">
       <Filter>05_Network\00_Utility</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkSessionTypes.h">
+      <Filter>05_Network\00_Utility</Filter>
+    </ClInclude>
     <ClInclude Include="IocpHandle.h">
       <Filter>05_Network\01_IocpCore</Filter>
     </ClInclude>

@@ -16,8 +16,6 @@ struct IConnectionAcceptSink;
 
 struct IExecutorIOSink;
 
-using SessionId = uint32_t;
-
 class IocpNetworkBackend final : public INetworkBackend {
 public:
 	struct Config
@@ -50,7 +48,9 @@ public:
 	virtual bool Send(SessionId id, std::span<const uint8_t> payload) noexcept override;
 	virtual void FlushSend() noexcept override;
 
-	virtual void Disconnect(SessionId id) noexcept override;
+	virtual void Disconnect(
+		SessionId id,
+		SessionCloseReason reason = SessionCloseReason::LocalRequested) noexcept override;
 
 	virtual uint32_t GetSessionCount() const noexcept override;
 

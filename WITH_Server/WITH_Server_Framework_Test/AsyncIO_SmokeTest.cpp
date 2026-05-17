@@ -77,7 +77,9 @@ namespace
 
         void FlushSend() noexcept override {}
 
-        void Disconnect(SessionId /*sessionId*/) noexcept override {}
+        void Disconnect(
+            SessionId /*sessionId*/,
+            SessionCloseReason /*reason*/ = SessionCloseReason::LocalRequested) noexcept override {}
 
         uint32_t GetSessionCount() const noexcept override { return 0; }
     };

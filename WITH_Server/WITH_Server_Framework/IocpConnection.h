@@ -3,12 +3,11 @@
 #include <atomic>
 
 #include "IocpOperation.h"
+#include "NetworkSessionTypes.h"
 #include "NetRecvBuffer.h"
 
 class IocpNetworkBackend;
 struct SendBuffer;
-
-using SessionId = uint32_t;
 
 class IocpConnection {
 public:
@@ -28,11 +27,12 @@ public:
 	void OnRecvComplete(DWORD bytes, bool success) noexcept;
 	void OnSendComplete(SendOp* op, bool success) noexcept;
 
-	void Close() noexcept;
+	void Close(SessionCloseReason reason = SessionCloseReason::RemoteClosed) noexcept;
 
 	bool		IsClosed()		const noexcept;
 	SOCKET		GetSocket()		const noexcept { return _socket; }
 	SessionId	GetSessionId()	const noexcept { return _sessionId; }
+	SessionCloseReason GetCloseReason() const noexcept;
 
 private:
 	void TryFlush() noexcept;
@@ -45,6 +45,7 @@ private:
 
 	std::atomic<uint32_t> _pendingIoCount{ 0 };
 	std::atomic<bool> _closed{ false };
+	std::atomic<SessionCloseReason> _closeReason{ SessionCloseReason::None };
 
 	IocpNetworkBackend& _backend;
 

@@ -4,9 +4,9 @@
 #include <span>
 
 #include "IIOBackend.h"
+#include "NetworkSessionTypes.h"
 
 // WITH_Server/Session.h의 SessionId와 동일한 타입.
-using SessionId = uint32_t;
 
 // Executor → 네트워크 모듈 인터페이스.
 // IIOBackend를 상속하여 IO 중립 책임(DrainCompletions, DebugName)을 공유하고,
@@ -25,7 +25,9 @@ struct INetworkBackend : IIOBackend
     virtual void FlushSend() noexcept = 0;
 
     // 세션 강제 종료 (인증 실패, 킥 등). DynamicTask 핸들러에서 호출.
-    virtual void Disconnect(SessionId sessionId) noexcept = 0;
+    virtual void Disconnect(
+        SessionId sessionId,
+        SessionCloseReason reason = SessionCloseReason::LocalRequested) noexcept = 0;
 
     virtual uint32_t GetSessionCount() const noexcept = 0;
 };

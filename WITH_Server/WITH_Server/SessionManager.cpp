@@ -92,7 +92,7 @@ void SessionManager::FillSessionIds(std::vector<SessionId>& outSessionIds) const
 
 	for (const std::unique_ptr<Session>& session : _sessions)
 	{
-		if (session == nullptr)
+		if (session == nullptr || session->IsClosed())
 		{
 			continue;
 		}

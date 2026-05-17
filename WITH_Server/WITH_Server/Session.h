@@ -2,20 +2,10 @@
 
 #include <cstdint>
 
+#include "NetworkSessionTypes.h"
+
 class IocpConnection;
 struct SendBuffer;
-
-using SessionId = uint32_t;
-
-enum class SessionCloseReason : uint8_t
-{
-	None,
-	RemoteClosed,
-	LocalRequested,
-	ProtocolError,
-	Timeout,
-	ServerShutdown,
-};
 
 class Session final {
 public:

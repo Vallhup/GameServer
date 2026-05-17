@@ -16,6 +16,55 @@
 namespace
 {
 	constexpr const char* kLogCategory = "SessionSystem";
+
+	bool QueuePlayerEntityDespawn(
+		FrameworkRuntime& framework,
+		const SessionFlow& flow) noexcept
+	{
+		WorldId worldId = flow.currentWorldId.IsValid()
+			? flow.currentWorldId
+			: flow.playerWorldId;
+		Entity entity = flow.playerEntity;
+
+		if ((entity.IsNull() || !worldId.IsValid()) &&
+			flow.controlledNetId.IsValid())
+		{
+			const NetBindingLocation binding =
+				framework.FindNetBinding(flow.controlledNetId);
+			if (binding.IsValid())
+			{
+				worldId = binding.worldId;
+				entity = binding.entity;
+			}
+		}
+
+		if (!worldId.IsValid() || entity.IsNull())
+		{
+			return false;
+		}
+
+		WorldInstance* const world = framework.FindWorld(worldId);
+		if (world == nullptr)
+		{
+			return false;
+		}
+
+		world->GetRuntime().DeferredDestroyEntity(entity);
+		return true;
+	}
+
+	void ReleaseUnboundPlayerNetId(
+		FrameworkRuntime& framework,
+		NetId netId) noexcept
+	{
+		if (!netId.IsValid() || !framework.IsNetIdAlive(netId))
+		{
+			return;
+		}
+
+		(void)framework.UnbindNetEntity(netId);
+		framework.FreeNetId(netId);
+	}
 }
 
 ServerSessionSystem::ServerSessionSystem(
@@ -113,7 +162,21 @@ void ServerSessionSystem::HandleSessionDisconnected(
 	SessionId sessionId,
 	SessionCloseReason reason) noexcept
 {
+	const SessionFlow* const existingFlow =
+		_sessionFlowController.FindFlow(sessionId);
+	const SessionFlow flowSnapshot =
+		existingFlow != nullptr ? *existingFlow : SessionFlow{};
+	const NetId controlledNetId = flowSnapshot.controlledNetId;
+
 	(void)_characterSpawnService.CancelPendingSpawn(sessionId);
+	const bool despawnQueued =
+		existingFlow != nullptr &&
+		QueuePlayerEntityDespawn(_framework, flowSnapshot);
+	if (!despawnQueued)
+	{
+		ReleaseUnboundPlayerNetId(_framework, controlledNetId);
+	}
+
 	(void)_framework.RemovePresence(sessionId, 0.0);
 	_pendingInitialEntries.erase(sessionId);
 	_worldTransitionSink.OnSessionDisconnected(sessionId);
@@ -125,6 +188,9 @@ void ServerSessionSystem::HandleSessionDisconnected(
 		(void)_sessionFlowController.Dispatch(sessionId, command);
 		_sessionFlowController.OnSessionDisconnected(sessionId);
 	}
+
+	(void)_network.GetSessionManager().MarkClosed(sessionId, reason);
+	(void)_network.GetSessionManager().RemoveSession(sessionId);
 }
 
 void ServerSessionSystem::BeginSendStage() noexcept

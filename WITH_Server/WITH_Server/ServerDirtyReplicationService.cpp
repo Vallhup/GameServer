@@ -99,8 +99,6 @@ void ServerDirtyReplicationService::BuildAndStage(
 						playback->boundAbilityInstanceId);
 					animationPacket.set_normalizedtime(
 						playback->normalizedTime);
-					std::cout << "AnimationId[" << static_cast<int32_t>(playback->animationId)
-						<< "]\n";
 					(void)ServerPacketStager::StageReplicationPacket(
 						network,
 						PacketType::SC_ANIMATION_CHANGE,

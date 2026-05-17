@@ -196,6 +196,7 @@
     <ClInclude Include="Library\Recast\RecastAlloc.h" />
     <ClInclude Include="Library\Recast\RecastAssert.h" />
     <ClInclude Include="NavMeshRuntime.h" />
+    <ClInclude Include="NetworkSessionTypes.h" />
     <ClInclude Include="NetRecvBuffer.h" />
     <ClInclude Include="ObjectPool.hpp" />
     <ClInclude Include="PacketDispatchTable.h" />

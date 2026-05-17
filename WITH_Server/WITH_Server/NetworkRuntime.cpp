@@ -164,9 +164,8 @@ void NetworkRuntime::FlushSendStage()
 
 bool NetworkRuntime::RequestClose(SessionId sessionId, SessionCloseReason reason)
 {
-	(void)reason;
 	if (!_backend) return false;
-	_backend->Disconnect(sessionId);
+	_backend->Disconnect(sessionId, reason);
 	return true;
 }
 

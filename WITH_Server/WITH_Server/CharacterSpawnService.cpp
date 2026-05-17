@@ -178,6 +178,7 @@ bool CharacterSpawnService::CancelPendingSpawn(SessionId sessionId) noexcept
 		{
 			world->GetRuntime().DeferredDestroyEntity(pending.entity);
 			(void)_deps.framework->UnbindNetEntity(pending.netId);
+			_deps.framework->FreeNetId(pending.netId);
 			canceled = true;
 		}
 	}

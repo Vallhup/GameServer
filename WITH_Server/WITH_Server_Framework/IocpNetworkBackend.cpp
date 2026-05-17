@@ -33,7 +33,7 @@ void IocpNetworkBackend::Stop() noexcept
 
 	std::unique_lock lock(_connectionMutex);
 	for (auto& [id, conn] : _connections)
-		conn->Close();
+		conn->Close(SessionCloseReason::ServerShutdown);
 }
 
 bool IocpNetworkBackend::DrainCompletions(uint32_t) noexcept
@@ -97,11 +97,11 @@ void IocpNetworkBackend::FlushSend() noexcept
 	// No additional per-frame work required.
 }
 
-void IocpNetworkBackend::Disconnect(SessionId id) noexcept
+void IocpNetworkBackend::Disconnect(SessionId id, SessionCloseReason reason) noexcept
 {
 	IocpConnection* conn = FindConnection(id);
 	if (conn)
-		conn->Close();
+		conn->Close(reason);
 }
 
 uint32_t IocpNetworkBackend::GetSessionCount() const noexcept
@@ -130,12 +130,14 @@ void IocpNetworkBackend::OnAccept(SOCKET socket) noexcept
 	}
 
 	_acceptSink.OnConnectionAccepted(rawConn);
-	rawConn->RegisterRecv();
+	if (!rawConn->RegisterRecv())
+		OnConnectionIdle(rawConn);
 }
 
 void IocpNetworkBackend::OnConnectionIdle(IocpConnection* conn) noexcept
 {
 	const SessionId id = conn->GetSessionId();
+	const SessionCloseReason reason = conn->GetCloseReason();
 
 	if (_disconnectedTaskTypeId != 0)
 	{
@@ -143,8 +145,10 @@ void IocpNetworkBackend::OnConnectionIdle(IocpConnection* conn) noexcept
 		request.typeId = _disconnectedTaskTypeId;
 		request.scopeId = 0;
 		request.targetKind = DynamicTaskTargetKind::ExplicitScope;
+		request.payloadKey = static_cast<uint64_t>(reason);
 		request.sessionId = id;
 		_sink.SubmitDynamicTask(request);
+		_sink.WakeForExternalIO();
 	}
 
 	std::unique_lock lock(_connectionMutex);

@@ -867,24 +867,6 @@ bool ResolveAbilityStateSystem::IsCancelRuleActive(
 			clientWindowMatches &&
 			driftMatches;
 
-		std::cout
-			<< "[CancelTiming] cause=" << TransitionCauseName(cancelRule.cause)
-			<< " currentAbility=" << abilityState.abilityId
-			<< " toAbility=" << cancelRule.toAbilityId
-			<< " serverInstance=" << abilityState.abilityInstanceId
-			<< " clientInstance=" << input.ability.clientAbilityInstanceId
-			<< " expectedAnim=" << static_cast<int32_t>(expectedAnimId)
-			<< " clientAnim=" << static_cast<int32_t>(input.ability.clientAnimId)
-			<< " serverProgress=" << serverProgress
-			<< " clientProgress=" << clientProgress
-			<< " window=[" << windowStart << "," << windowEnd << "]"
-			<< " instanceOk=" << instanceMatches
-			<< " animOk=" << animMatches
-			<< " clientWindowOk=" << clientWindowMatches
-			<< " driftOk=" << driftMatches
-			<< " accepted=" << accepted
-			<< "\n";
-
 		return accepted;
 	}
 
@@ -892,17 +874,6 @@ bool ResolveAbilityStateSystem::IsCancelRuleActive(
 	{
 		const bool accepted =
 			serverProgress >= windowStart && serverProgress <= windowEnd;
-		std::cout
-			<< "[CancelTiming] cause=" << TransitionCauseName(cancelRule.cause)
-			<< " currentAbility=" << abilityState.abilityId
-			<< " toAbility=" << cancelRule.toAbilityId
-			<< " serverInstance=" << abilityState.abilityInstanceId
-			<< " clientTiming=missing"
-			<< " serverProgress=" << serverProgress
-			<< " window=[" << windowStart << "," << windowEnd << "]"
-			<< " fallback=serverProgress"
-			<< " accepted=" << accepted
-			<< "\n";
 		return accepted;
 	}
 

@@ -32,7 +32,7 @@ bool IocpConnection::RegisterRecv() noexcept
 	if (count == 0)
 	{
 		_pendingIoCount.fetch_sub(1, std::memory_order_acq_rel);
-		Close();
+		Close(SessionCloseReason::RemoteClosed);
 		return false;
 	}
 
@@ -49,7 +49,7 @@ bool IocpConnection::RegisterRecv() noexcept
 	if (result == SOCKET_ERROR && ::WSAGetLastError() != WSA_IO_PENDING)
 	{
 		_pendingIoCount.fetch_sub(1, std::memory_order_acq_rel);
-		Close();
+		Close(SessionCloseReason::RemoteClosed);
 		return false;
 	}
 
@@ -109,7 +109,7 @@ void IocpConnection::TryFlush() noexcept
 		_pendingIoCount.fetch_sub(1, std::memory_order_acq_rel);
 		_backend.ReleaseSendOp(op);
 		_isFlushing.store(false, std::memory_order_release);
-		Close();
+		Close(SessionCloseReason::RemoteClosed);
 	}
 }
 
@@ -123,7 +123,7 @@ void IocpConnection::OnRecvComplete(DWORD bytes, bool success) noexcept
 
 	if (!success || bytes == 0 || !_recvBuffer.CommitWrite(bytes))
 	{
-		Close();
+		Close(SessionCloseReason::RemoteClosed);
 		done();
 		return;
 	}
@@ -138,7 +138,7 @@ void IocpConnection::OnRecvComplete(DWORD bytes, bool success) noexcept
 
 		if (typeId == InvalidDynamicTaskTypeId)
 		{
-			Close();
+			Close(SessionCloseReason::ProtocolError);
 			done();
 			return;
 		}
@@ -146,7 +146,7 @@ void IocpConnection::OnRecvComplete(DWORD bytes, bool success) noexcept
 		SendBufferPtr buf(SendBufferPool::Get().Acquire(header->size));
 		if (!buf)
 		{
-			Close();
+			Close(SessionCloseReason::RemoteClosed);
 			done();
 			return;
 		}
@@ -177,7 +177,7 @@ void IocpConnection::OnSendComplete(SendOp* op, bool success) noexcept
 	_backend.ReleaseSendOp(op);
 
 	if (!success)
-		Close();
+		Close(SessionCloseReason::RemoteClosed);
 
 	// seq_cst fence: ensures items pushed to _sendQueue before this point are visible
 	_isFlushing.store(false, std::memory_order_release);
@@ -195,18 +195,33 @@ void IocpConnection::OnSendComplete(SendOp* op, bool success) noexcept
 		_backend.OnConnectionIdle(this);
 }
 
-void IocpConnection::Close() noexcept
+void IocpConnection::Close(SessionCloseReason reason) noexcept
 {
 	bool expected = false;
 	if (!_closed.compare_exchange_strong(expected, true, std::memory_order_acq_rel))
 		return;
 
-	::shutdown(_socket, SD_BOTH);
-	::closesocket(_socket);
-	_socket = INVALID_SOCKET;
+	_closeReason.store(reason, std::memory_order_release);
+
+	const SOCKET socket = _socket;
+	if (socket != INVALID_SOCKET)
+	{
+		::shutdown(socket, SD_BOTH);
+		::closesocket(socket);
+		_socket = INVALID_SOCKET;
+	}
 }
 
 bool IocpConnection::IsClosed() const noexcept
 {
 	return _closed.load(std::memory_order_acquire);
+}
+
+SessionCloseReason IocpConnection::GetCloseReason() const noexcept
+{
+	const SessionCloseReason reason =
+		_closeReason.load(std::memory_order_acquire);
+	return reason != SessionCloseReason::None
+		? reason
+		: SessionCloseReason::RemoteClosed;
 }
