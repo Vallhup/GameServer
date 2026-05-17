@@ -1,10 +1,6 @@
 #pragma once
 #include "Component.h"
 #include "AnimationSet.h"
-#include <cstdint>
-#include <memory>
-#include <string>
-#include <functional>
 
 class Animator;
 

@@ -143,6 +143,36 @@ void GameSceneUIController::InitPartyWindow()
 	partyJoinButton->SetVertLength(buttonHeight);
 	partyJoinButton->SetHoverScale(1.05f);
 	widgets.push_back(partyJoinButton);
+
+	partyMyPartyBox = make_shared<ImageUI>(uiManager, L"PartyMyParty", ImageUIState::Hidden);
+	partyMyPartyBox->SetPosition(listBoxX, listBoxY);
+	partyMyPartyBox->SetHoriLength(listBoxWidth);
+	partyMyPartyBox->SetVertLength(listBoxHeight);
+	widgets.push_back(partyMyPartyBox);
+
+	const float backButtonHori = buttonWidth * 0.85f;
+	const float backButtonVert = buttonHeight * 1.1f;
+	const float backButtonX = partyX + (partyWidth - backButtonHori) * 0.5f;
+	const float backButtonY = buttonY - (backButtonVert - buttonHeight) * 0.5f;
+	partyBackButton = make_shared<ImageUI>(uiManager, L"PartyBack", ImageUIState::Hidden);
+	partyBackButton->SetPosition(backButtonX, backButtonY);
+	partyBackButton->SetHoriLength(backButtonHori);
+	partyBackButton->SetVertLength(backButtonVert);
+	partyBackButton->SetHoverScale(1.05f);
+	widgets.push_back(partyBackButton);
+}
+
+void GameSceneUIController::ShowPartyView(PartyView view)
+{
+	partyView = view;
+	const ImageUIState lobby   = (view == PartyView::Lobby)   ? ImageUIState::Visible : ImageUIState::Hidden;
+	const ImageUIState created = (view == PartyView::Created) ? ImageUIState::Visible : ImageUIState::Hidden;
+
+	if (partyListBox)      partyListBox->ChangeState(lobby);
+	if (partyCreateButton) partyCreateButton->ChangeState(lobby);
+	if (partyJoinButton)   partyJoinButton->ChangeState(lobby);
+	if (partyMyPartyBox)   partyMyPartyBox->ChangeState(created);
+	if (partyBackButton)   partyBackButton->ChangeState(created);
 }
 
 void GameSceneUIController::InitStatWindow()
@@ -392,31 +422,52 @@ void GameSceneUIController::Update(float deltaTime)
 		bool othersOpen = opened(escWindow) || opened(statusImage) || opened(mapImage) || opened(keyGuide) || opened(settingWindow);
 		if (selfOpen || !othersOpen)
 		{
-			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
+			if (selfOpen)
+			{
+				partyBook->ChangeState(ImageUIState::Hidden);
+				if (partyListBox)      partyListBox->ChangeState(ImageUIState::Hidden);
+				if (partyCreateButton) partyCreateButton->ChangeState(ImageUIState::Hidden);
+				if (partyJoinButton)   partyJoinButton->ChangeState(ImageUIState::Hidden);
+				if (partyMyPartyBox)   partyMyPartyBox->ChangeState(ImageUIState::Hidden);
+				if (partyBackButton)   partyBackButton->ChangeState(ImageUIState::Hidden);
+			}
+			else
+			{
+				partyBook->ChangeState(ImageUIState::Visible);
+				ShowPartyView(PartyView::Lobby);
+			}
 
-			partyBook->ChangeState(next);
-			if (partyListBox)      partyListBox->ChangeState(next);
-			if (partyCreateButton) partyCreateButton->ChangeState(next);
-			if (partyJoinButton)   partyJoinButton->ChangeState(next);
-
-			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(next == ImageUIState::Visible);
+			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(!selfOpen);
 		}
 	}
 
 	if (partyBook && partyBook->GetState() != ImageUIState::Hidden)
 	{
-		partyCreateButton->SetHovered(partyCreateButton->IsMouseInside());
-		partyJoinButton->SetHovered(partyJoinButton->IsMouseInside());
+		if (partyView == PartyView::Lobby)
+		{
+			partyCreateButton->SetHovered(partyCreateButton->IsMouseInside());
+			partyJoinButton->SetHovered(partyJoinButton->IsMouseInside());
 
-		if (partyCreateButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
-		{
-			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
-			OutputDebugStringA("[Party] Create button clicked\n");
+			if (partyCreateButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+			{
+				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+				ShowPartyView(PartyView::Created);
+			}
+			if (partyJoinButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+			{
+				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+				OutputDebugStringA("[Party] Join button clicked\n");
+			}
 		}
-		if (partyJoinButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		else
 		{
-			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
-			OutputDebugStringA("[Party] Join button clicked\n");
+			partyBackButton->SetHovered(partyBackButton->IsMouseInside());
+
+			if (partyBackButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+			{
+				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+				ShowPartyView(PartyView::Lobby);
+			}
 		}
 	}
 
