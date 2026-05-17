@@ -11,6 +11,8 @@
 #include "SSAO.h"
 #include "SkyBox.h"
 #include "Camera.h"
+#include "Engine.h"
+#include "NetworkManager.h"
 
 void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 {
@@ -372,10 +374,9 @@ void ImGuiManager::DrawLoginUI()
             OutputDebugStringA(("ID: " + string(loginId) + "\n").c_str());
             OutputDebugStringA(("Password: " + string(loginPw) + "\n").c_str());
 
-            submittedId = loginId;
-            submittedPw = loginPw;
+            NETWORK_MANAGER->SendLoginPacket(string(loginId), string(loginPw));
+            OutputDebugStringA("CSLoginPacket has sent!!\n");
 
-            loginSuccess = true;
             showLoginWindow = false;
 
             memset(loginId, 0, sizeof(loginId));

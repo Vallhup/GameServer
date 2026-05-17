@@ -78,7 +78,12 @@ void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
 		case PacketType::SC_LOGIN_SUCCESS:
 		{
 			return NetHelper::DispatchPacket<Protocol::SC_LOGIN_SUCCESS_PACKET>(header, data,
-				[this](const auto& packet) { HandleLogin(packet); });
+				[this](const auto& packet) { HandleLoginSuccess(packet); });
+		}
+		case PacketType::SC_LOGIN_FAIL:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_LOGIN_FAIL_PACKET>(header, data,
+				[this](const auto& packet) { HandleLoginFail(packet); });
 		}
 		case PacketType::SC_ADD:
 		{
@@ -282,12 +287,22 @@ void Scene::AddGameObject(shared_ptr<GameObject> obj)
 	gameObjects.push_back(obj);
 }
 
-void Scene::HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login)
+void Scene::HandleLoginSuccess(const Protocol::SC_LOGIN_SUCCESS_PACKET& success)
 {
-	NetId nid{ login.netid() };
+	NetId nid{ success.netid() };
 	int id = nid.GetId();
 	INPUT.SetClientID(id);
+	IMGUI.SetLoginSuccess(true);
 	OutputDebugStringA(("My Session ID: " + to_string(INPUT.GetClientID()) + "\n").c_str());
+}
+
+void Scene::HandleLoginFail(const Protocol::SC_LOGIN_FAIL_PACKET& fail)
+{
+	// TODO : 실패 이유에 따라서 Log 띄워주기? 그냥 Dialog 처리?
+	switch (fail.reason()) {
+	default:
+		OutputDebugStringA(("Login Fail, Reason : " + to_string(fail.reason())).c_str());
+	}
 }
 
 void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)

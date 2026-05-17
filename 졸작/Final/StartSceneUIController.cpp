@@ -93,11 +93,6 @@ void StartSceneUIController::Update(float deltaTime)
 
 	if (IMGUI.IsLoginSuccess())
 	{
-		{
-			NETWORK_MANAGER->SendLoginPacket(IMGUI.GetLoginId(), IMGUI.GetLoginPw());
-			OutputDebugStringA("CSLoginPacket has sent!!\n");
-		}
-
 		IMGUI.ResetLoginSuccess();
 		SCENE_MANAGER->RequestSceneChange(SceneType::Select);
 		OutputDebugStringA("Login success! Moving to Select scene.\n");
@@ -110,4 +105,3 @@ void StartSceneUIController::Update(float deltaTime)
 		OutputDebugStringA("exitImage clicked!!\n");
 	}
 }
-

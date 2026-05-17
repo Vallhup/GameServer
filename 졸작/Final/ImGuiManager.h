@@ -32,12 +32,11 @@ public:
     void SetMyPlayer(MainCharacter* player) { myPlayer = player; }
     void SetSkyBox(SkyBox* sky) { skyBox = sky; }
     void SetCamera(Camera* cam) { camera = cam; }
+    void SetLoginSuccess(bool canLogin) { loginSuccess = canLogin; }
 
     void ShowLoginWindow() { showLoginWindow = true; }
     bool IsLoginSuccess() const { return loginSuccess; }
     void ResetLoginSuccess() { loginSuccess = false; }
-    const string& GetLoginId() const { return submittedId; }
-    const string& GetLoginPw() const { return submittedPw; }
 
 private:
     ComPtr<ID3D12DescriptorHeap> srvHeap;
@@ -72,6 +71,4 @@ private:
     bool loginSuccess = false;
     char loginId[64] = "";
     char loginPw[64] = "";
-    string submittedId;
-    string submittedPw;
 };

@@ -65,7 +65,8 @@ private:
 	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)(), bool twoSided = true);
 
 	// Network Handler Function Interface
-	void HandleLogin(const Protocol::SC_LOGIN_SUCCESS_PACKET& login);
+	void HandleLoginSuccess(const Protocol::SC_LOGIN_SUCCESS_PACKET& success);
+	void HandleLoginFail(const Protocol::SC_LOGIN_FAIL_PACKET& fail);
 	void HandleAdd(const Protocol::SC_ADD_PACKET& add);
 	void HandleMove(const Protocol::SC_MOVE_PACKET& move);
 	void HandleRemove(const Protocol::SC_REMOVE_PACKET& remove);
