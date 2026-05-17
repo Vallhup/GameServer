@@ -99,8 +99,8 @@
             "cause": "Combo",
             "toAbilityKey": "Ability.Knight_LightAttack2",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.45,
-            "windowEndNormalized": 0.75,
+            "windowStartNormalized": 0.6,
+            "windowEndNormalized": 0.85,
             "priority": 100,
             "aiInterruptible": false
           },

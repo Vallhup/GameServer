@@ -33,6 +33,7 @@ public:
 
     void PlayAnimation(int animIndex);
     void TransitionToAnimation(int animIndex, float Duration);
+    void SetAnimationProgress(float normalizedTime);
 
     void ExecuteComputeShader(DX12Core& core);
     void LoadAnimationFromImporter(DX12Core& core, const Importer& importer);

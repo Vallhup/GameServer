@@ -8,12 +8,42 @@
 #include "../Phase1/ApplyPlayerCommandSystem.h"
 
 #include <cmath>
+#include <iostream>
 #include <limits>
 
 using namespace GameplaySystemUtil;
 
 namespace
 {
+	const char* TransitionCauseName(AbilityTransitionCause cause) noexcept
+	{
+		switch (cause)
+		{
+		case AbilityTransitionCause::Combo:
+			return "Combo";
+		case AbilityTransitionCause::LightAttackCancel:
+			return "LightAttackCancel";
+		case AbilityTransitionCause::HeavyAttackCancel:
+			return "HeavyAttackCancel";
+		case AbilityTransitionCause::DodgeCancel:
+			return "DodgeCancel";
+		case AbilityTransitionCause::ParryCancel:
+			return "ParryCancel";
+		case AbilityTransitionCause::ManualCancel:
+			return "ManualCancel";
+		case AbilityTransitionCause::HoldRelease:
+			return "HoldRelease";
+		case AbilityTransitionCause::OnHitReceived:
+			return "OnHitReceived";
+		case AbilityTransitionCause::OnParried:
+			return "OnParried";
+		case AbilityTransitionCause::OnAttributeZero:
+			return "OnAttributeZero";
+		default:
+			return "None";
+		}
+	}
+
 	void ApplyStaminaRecoveryDelay(
 		SystemContext& ctx,
 		Entity entity,
@@ -814,31 +844,66 @@ bool ResolveAbilityStateSystem::IsCancelRuleActive(
 	if (ShouldUseClientAnimationTiming(cancelRule.cause) &&
 		input.ability.hasClientAnimationTiming)
 	{
-		if (input.ability.clientAbilityInstanceId != abilityState.abilityInstanceId)
-		{
-			return false;
-		}
-
 		const AnimationId expectedAnimId =
 			ResolveAbilityAnimationId(characterId, abilityState.abilityId);
-		if (expectedAnimId != AnimationId::None &&
-			input.ability.clientAnimId != expectedAnimId)
-		{
-			return false;
-		}
-
+		constexpr float kClientComboTimingDriftTolerance = 0.25f;
 		const float clientProgress = ClampFloat(
 			input.ability.clientNormalizedTime,
 			0.0f,
 			1.0f);
-		if (clientProgress < windowStart || clientProgress > windowEnd)
-		{
-			return false;
-		}
-
-		constexpr float kClientComboTimingDriftTolerance = 0.25f;
-		return std::abs(clientProgress - serverProgress) <=
+		const bool instanceMatches =
+			input.ability.clientAbilityInstanceId == abilityState.abilityInstanceId;
+		const bool animMatches =
+			expectedAnimId == AnimationId::None ||
+			input.ability.clientAnimId == expectedAnimId;
+		const bool clientWindowMatches =
+			clientProgress >= windowStart && clientProgress <= windowEnd;
+		const bool driftMatches =
+			std::abs(clientProgress - serverProgress) <=
 			kClientComboTimingDriftTolerance;
+		const bool accepted =
+			instanceMatches &&
+			animMatches &&
+			clientWindowMatches &&
+			driftMatches;
+
+		std::cout
+			<< "[CancelTiming] cause=" << TransitionCauseName(cancelRule.cause)
+			<< " currentAbility=" << abilityState.abilityId
+			<< " toAbility=" << cancelRule.toAbilityId
+			<< " serverInstance=" << abilityState.abilityInstanceId
+			<< " clientInstance=" << input.ability.clientAbilityInstanceId
+			<< " expectedAnim=" << static_cast<int32_t>(expectedAnimId)
+			<< " clientAnim=" << static_cast<int32_t>(input.ability.clientAnimId)
+			<< " serverProgress=" << serverProgress
+			<< " clientProgress=" << clientProgress
+			<< " window=[" << windowStart << "," << windowEnd << "]"
+			<< " instanceOk=" << instanceMatches
+			<< " animOk=" << animMatches
+			<< " clientWindowOk=" << clientWindowMatches
+			<< " driftOk=" << driftMatches
+			<< " accepted=" << accepted
+			<< "\n";
+
+		return accepted;
+	}
+
+	if (ShouldUseClientAnimationTiming(cancelRule.cause))
+	{
+		const bool accepted =
+			serverProgress >= windowStart && serverProgress <= windowEnd;
+		std::cout
+			<< "[CancelTiming] cause=" << TransitionCauseName(cancelRule.cause)
+			<< " currentAbility=" << abilityState.abilityId
+			<< " toAbility=" << cancelRule.toAbilityId
+			<< " serverInstance=" << abilityState.abilityInstanceId
+			<< " clientTiming=missing"
+			<< " serverProgress=" << serverProgress
+			<< " window=[" << windowStart << "," << windowEnd << "]"
+			<< " fallback=serverProgress"
+			<< " accepted=" << accepted
+			<< "\n";
+		return accepted;
 	}
 
 	return serverProgress >= windowStart && serverProgress <= windowEnd;
@@ -895,11 +960,13 @@ void ResolveAbilityStateSystem::PrepareTimelineAdvance(
 	AbilityTimelineAdvanceComp& advance,
 	double deltaTimeSec)
 {
+	const float nextElapsedSec =
+		ComputeAdvancedElapsedSec(abilityState, abilityDef, deltaTimeSec);
+
 	advance.abilityId = abilityState.abilityId;
 	advance.abilityInstanceId = abilityState.abilityInstanceId;
 	advance.prevElapsedSec = abilityState.elapsedSec;
-	advance.currElapsedSec =
-		ComputeAdvancedElapsedSec(abilityState, abilityDef, deltaTimeSec);
+	advance.currElapsedSec = nextElapsedSec;
 	advance.startedThisFrame = false;
 }
 

@@ -4,6 +4,8 @@
 #include "Shader.h"
 #include "RootSignature.h"
 
+#include <algorithm>
+
 void Animator::Update(float deltaTime)
 {
     if (mAnimations.empty()) return;
@@ -312,6 +314,24 @@ void Animator::TransitionToAnimation(int animIndex, float Duration)
 
         mPrevFrameRatio = prevFrameFloat - mPrevFrame;
     }
+}
+
+void Animator::SetAnimationProgress(float normalizedTime)
+{
+    if (mAnimations.empty() || mClipIndex < 0 || mClipIndex >= mAnimations.size())
+    {
+        return;
+    }
+
+    const auto& clip = mAnimations[mClipIndex];
+    if (clip.duration <= 0.0f)
+    {
+        return;
+    }
+
+    const float clamped = std::clamp(normalizedTime, 0.0f, 0.999f);
+    mUpdateTime = clip.duration * clamped;
+    UpdateCurrentAnimation(0.0f);
 }
 
 void Animator::ExecuteComputeShader(DX12Core& core)

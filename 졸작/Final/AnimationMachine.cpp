@@ -67,6 +67,10 @@ void AnimationMachine::OnServerClipConfirm(
     if (currentClipName != clipName)
     {
         PlayClip(clipName);
+        if (animator)
+        {
+            animator->SetAnimationProgress(lastServerNormalizedTime);
+        }
     }
 }
 
