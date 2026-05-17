@@ -372,6 +372,9 @@ void ImGuiManager::DrawLoginUI()
             OutputDebugStringA(("ID: " + string(loginId) + "\n").c_str());
             OutputDebugStringA(("Password: " + string(loginPw) + "\n").c_str());
 
+            submittedId = loginId;
+            submittedPw = loginPw;
+
             loginSuccess = true;
             showLoginWindow = false;
 

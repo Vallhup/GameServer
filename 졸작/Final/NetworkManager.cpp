@@ -21,7 +21,7 @@ void NetworkManager::Release()
 	}
 }
 
-bool NetworkManager::SendLoginPacket()
+bool NetworkManager::SendLoginPacket(const std::string& id, const std::string& pw)
 {
 	if (_service == nullptr)
 	{
@@ -29,8 +29,8 @@ bool NetworkManager::SendLoginPacket()
 	}
 
 	Protocol::CS_LOGIN_PACKET login;
-	login.set_loginid("test01");
-	login.set_password("12345678");
+	login.set_loginid(id);
+	login.set_password(pw);
 	login.set_clientversion("1");
 
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_LOGIN_PACKET>(

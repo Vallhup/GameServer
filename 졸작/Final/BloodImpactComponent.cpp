@@ -53,7 +53,7 @@ void BloodImpactComponent::Update(float deltaTime)
 	}
 
 	instances.erase(
-		std::remove_if(instances.begin(), instances.end(),
+		remove_if(instances.begin(), instances.end(),
 			[this](const BloodInstance& i) { return i.age >= maxLifetime; }),
 		instances.end()
 	);

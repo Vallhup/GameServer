@@ -15,7 +15,7 @@ public:
 
 	void Release();
 
-	bool SendLoginPacket();
+	bool SendLoginPacket(const std::string& id, const std::string& pw);
 	bool SendCharacterSelectPacket(CharacterId id);
 	bool SendMovePacket(int inputX, int inputZ, float yaw, bool isRun);
 	bool SendAttackPacket(float dirX, float dirZ);

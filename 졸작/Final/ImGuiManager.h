@@ -36,6 +36,8 @@ public:
     void ShowLoginWindow() { showLoginWindow = true; }
     bool IsLoginSuccess() const { return loginSuccess; }
     void ResetLoginSuccess() { loginSuccess = false; }
+    const string& GetLoginId() const { return submittedId; }
+    const string& GetLoginPw() const { return submittedPw; }
 
 private:
     ComPtr<ID3D12DescriptorHeap> srvHeap;
@@ -70,4 +72,6 @@ private:
     bool loginSuccess = false;
     char loginId[64] = "";
     char loginPw[64] = "";
+    string submittedId;
+    string submittedPw;
 };

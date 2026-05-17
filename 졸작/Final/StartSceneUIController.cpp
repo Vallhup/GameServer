@@ -94,7 +94,7 @@ void StartSceneUIController::Update(float deltaTime)
 	if (IMGUI.IsLoginSuccess())
 	{
 		{
-			NETWORK_MANAGER->SendLoginPacket();
+			NETWORK_MANAGER->SendLoginPacket(IMGUI.GetLoginId(), IMGUI.GetLoginPw());
 			OutputDebugStringA("CSLoginPacket has sent!!\n");
 		}
 
