@@ -89,6 +89,7 @@ protected:
 	unordered_map<CharacterType, vector<shared_ptr<MainCharacter>>> characterPools;
 
 	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
+	unordered_map<int, MonsterType> activeMonsterTypes;
 	shared_ptr<MainCharacter> myPlayer;
 
 	bool bgmStarted = false;

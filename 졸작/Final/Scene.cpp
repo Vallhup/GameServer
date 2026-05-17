@@ -14,6 +14,7 @@
 #include "AnimationSetFactory.h"
 #include "TrailComponent.h"
 #include "FootDustComponent.h"
+#include "AnimationSfxComponent.h"
 #include "ParrySparkComponent.h"
 #include "BloodImpactComponent.h"
 #include "ParryFlashComponent.h"
@@ -157,7 +158,7 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 
 	auto dust = character->AddComponent<FootDustComponent>();
 	dust->Initialize(coreRef->GetDevice(), 32);
-	dust->SetColor({ 0.15f, 0.15f, 0.15f, 0.4f });
+	dust->SetColor({ 0.15f, 0.15f, 0.15f, 1.0f });
 	dust->SetLifetime(0.35f);
 	dust->SetParticleSize(0.1f);
 
@@ -244,6 +245,20 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 	{
 		auto character = CreateCharacterObject(desc.meshPath, desc.animFactory);
 		character->GetComponent<Transform>()->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
+
+		auto sfx = character->AddComponent<AnimationSfxComponent>();
+		switch (type)
+		{
+		case CharacterType::Knight:
+			sfx->AddTrigger("Walk", 5, 7, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Walk", 22, 24, "../Assets/Music/SFX/Foot.mp3");
+			break;
+		case CharacterType::Lancer:
+			break;
+		case CharacterType::Paladin:
+			break;
+		}
+
 		characterPools[type].push_back(character);
 		AddGameObject(character);
 	}
@@ -320,6 +335,7 @@ void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
 			activeCharacters[id] = monster;
+			activeMonsterTypes[id] = monsterIter->second;
 		}
 	}
 	else if (auto charcterIter = characterMap.find(type); charcterIter != characterMap.end())
@@ -387,6 +403,14 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 			{
 				if (auto blood = victim->GetComponent<BloodImpactComponent>())
 					blood->Spawn(impactPos, impactDir);
+
+				if (auto typeIt = activeMonsterTypes.find(vId); typeIt != activeMonsterTypes.end())
+				{
+					if (typeIt->second == MonsterType::Boss)
+						SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/CutFinalBoss.mp3");
+					else
+						SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/CutMonster.mp3");
+				}
 			}
 			break;
 		}
@@ -405,6 +429,8 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 					spark->Spawn(impactPos, 64);
 				if (auto streak = victim->GetComponent<ParryStreakComponent>())
 					streak->Spawn(impactPos);
+
+				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/Parry.mp3");
 			}
 			break;
 		}

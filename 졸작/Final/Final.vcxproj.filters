@@ -103,6 +103,9 @@
     <ClCompile Include="AnimationMachine.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationSfxComponent.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
     <ClCompile Include="Animator.cpp">
       <Filter>Component</Filter>
     </ClCompile>
@@ -367,6 +370,9 @@
       <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="AnimationMachine.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationSfxComponent.h">
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="Animator.h">
