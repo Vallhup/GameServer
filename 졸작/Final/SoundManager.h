@@ -13,6 +13,7 @@ public:
     void StopBGM();
     void SetBGMVolume(float volume);
 
+    void PreloadSFX(const char* path);
     void PlaySFX(const char* path);
     void SetSFXVolume(float volume);
 

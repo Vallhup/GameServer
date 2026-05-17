@@ -71,5 +71,11 @@ void TitleScene::InitializeLogic()
 	for (auto& obj : objs)
 		obj->GetComponent<Mesh>()->ReleaseUploadBuffers();
 
+	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/Parry.mp3");
+	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/ButtonPress.mp3");
+	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/CutMonster.mp3");
+	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/CutFinalBoss.mp3");
+	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/Foot.mp3");
+
 	OutputDebugStringA("Data cached created!!\n");
 }

@@ -21,6 +21,7 @@ void FinalBattleScene::Release()
 	characterPools.clear();
 	monsterPools.clear();
 	activeCharacters.clear();
+	activeMonsterTypes.clear();
 	myPlayer = nullptr;
 	gameObjects.clear();
 

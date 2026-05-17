@@ -74,6 +74,17 @@ void SoundManager::SetBGMVolume(float volume)
         bgmGroup->setVolume(clamp(volume, 0.0f, 1.0f));
 }
 
+void SoundManager::PreloadSFX(const char* path)
+{
+    string key(path);
+    if (sfxCache.find(key) != sfxCache.end())
+        return;
+
+    Sound* sound = nullptr;
+    system->createSound(path, FMOD_DEFAULT, nullptr, &sound);
+    sfxCache[key] = sound;
+}
+
 void SoundManager::PlaySFX(const char* path)
 {
     string key(path);
