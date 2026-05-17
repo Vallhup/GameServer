@@ -7,6 +7,7 @@
 #include "../Phase1/ApplyAICommandSystem.h"
 #include "../Phase1/ApplyPlayerCommandSystem.h"
 
+#include <cmath>
 #include <limits>
 
 using namespace GameplaySystemUtil;
@@ -395,7 +396,12 @@ bool ResolveAbilityStateSystem::TryResolveCancelTransition(
 			currentAbilityDef.transition.cancelRules)
 		{
 			if (cancelRule.toAbilityId != candidate.abilityId ||
-				!IsCancelRuleActive(cancelRule, currentAbilityDef, abilityState))
+				!IsCancelRuleActive(
+					cancelRule,
+					currentAbilityDef,
+					abilityState,
+					characterId,
+					input))
 			{
 				continue;
 			}
@@ -789,20 +795,62 @@ bool ResolveAbilityStateSystem::IsAbilityStartLocomotionAllowed(
 bool ResolveAbilityStateSystem::IsCancelRuleActive(
 	const AbilityTransitionRuleDef& cancelRule,
 	const AbilityDef& currentAbilityDef,
-	const AbilityStateComp& abilityState)
+	const AbilityStateComp& abilityState,
+	CharacterId characterId,
+	const ActorInputComp& input)
 {
 	if (cancelRule.windowPolicy == AbilityTransitionWindowPolicy::Always)
 	{
 		return true;
 	}
 
-	const float progress =
+	const float serverProgress =
 		(currentAbilityDef.timeline.durationSec > 0.0f)
 		? ClampFloat(abilityState.elapsedSec / currentAbilityDef.timeline.durationSec, 0.0f, 1.0f)
 		: 1.0f;
 	const float windowStart = cancelRule.windowStartNormalized.value_or(0.0f);
 	const float windowEnd = cancelRule.windowEndNormalized.value_or(1.0f);
-	return progress >= windowStart && progress <= windowEnd;
+
+	if (ShouldUseClientAnimationTiming(cancelRule.cause) &&
+		input.ability.hasClientAnimationTiming)
+	{
+		if (input.ability.clientAbilityInstanceId != abilityState.abilityInstanceId)
+		{
+			return false;
+		}
+
+		const AnimationId expectedAnimId =
+			ResolveAbilityAnimationId(characterId, abilityState.abilityId);
+		if (expectedAnimId != AnimationId::None &&
+			input.ability.clientAnimId != expectedAnimId)
+		{
+			return false;
+		}
+
+		const float clientProgress = ClampFloat(
+			input.ability.clientNormalizedTime,
+			0.0f,
+			1.0f);
+		if (clientProgress < windowStart || clientProgress > windowEnd)
+		{
+			return false;
+		}
+
+		constexpr float kClientComboTimingDriftTolerance = 0.25f;
+		return std::abs(clientProgress - serverProgress) <=
+			kClientComboTimingDriftTolerance;
+	}
+
+	return serverProgress >= windowStart && serverProgress <= windowEnd;
+}
+
+bool ResolveAbilityStateSystem::ShouldUseClientAnimationTiming(
+	AbilityTransitionCause cause) noexcept
+{
+	return
+		cause == AbilityTransitionCause::Combo ||
+		cause == AbilityTransitionCause::LightAttackCancel ||
+		cause == AbilityTransitionCause::HeavyAttackCancel;
 }
 
 bool ResolveAbilityStateSystem::IsHoldReleased(

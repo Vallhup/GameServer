@@ -27,6 +27,10 @@ message CS_ATTACK_PACKET
 {
 	float dirX = 1;
 	float dirZ = 2;
+
+	uint32 clientAnimId = 3;
+	float clientNormalizedTime = 4;
+	uint32 clientAbilityInstanceId = 5;
 }
 
 message CS_DODGE_PACKET
@@ -117,6 +121,9 @@ message SC_ANIMATION_TRANSITION_PACKET
 {
 	uint64 netid = 1;
     int32 currAnim = 2;
+
+	uint32 abilityInstanceId = 3;
+	float normalizedTime = 4;
 }
 
 message SC_STAT_CHANGE_PACKET

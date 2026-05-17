@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Camera.h"
 #include "Engine.h"
+#include "AnimationMachine.h"
 
 void MainCharacter::Update(float deltaTime)
 {
@@ -58,7 +59,26 @@ void MainCharacter::BasicAttack()
 	{
 		if (auto* network = NETWORK_MANAGER)
 		{
-			network->SendAttackPacket(0.0f, 0.0f);
+			uint32_t animId = 0;
+			uint32_t instanceId = 0;
+			float normalizedTime = 0.0f;
+
+			if (auto* animMachine = GetComponent<AnimationMachine>())
+			{
+				if (animMachine->HasServerAbilityTiming())
+				{
+					animId = animMachine->GetServerAnimId();
+					instanceId = animMachine->GetAbilityInstanceId();
+					normalizedTime = animMachine->GetCurrentNormalizedTime();
+				}
+			}
+
+			network->SendAttackPacket(
+				0.0f,
+				0.0f,
+				animId,
+				normalizedTime,
+				instanceId);
 		}
 	}
 

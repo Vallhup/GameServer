@@ -471,7 +471,11 @@ void Scene::HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET
 			uint32 startIdx = animMachine->GetAnimationSet()->GetStartIndex();
 			string animName = animMachine->GetAnimationSet()->GetClipNameByIndex(serverAnimIdx - startIdx);
 
-			animMachine->OnServerClipConfirm(animName);
+			animMachine->OnServerClipConfirm(
+				animName,
+				anim.curranim(),
+				anim.abilityinstanceid(),
+				anim.normalizedtime());
 		}
 	}
 }

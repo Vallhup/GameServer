@@ -33,6 +33,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <string>
@@ -185,6 +186,55 @@ namespace
         input.ability.directionZ = directionZ;
         input.ability.requestedFrame = runtime.FrameIndex();
         input.ability.type = type;
+        input.ability.clientAnimId = AnimationId::None;
+        input.ability.clientNormalizedTime = 0.0f;
+        input.ability.clientAbilityInstanceId = 0;
+        input.ability.hasClientAnimationTiming = false;
+    }
+
+    AnimationId DecodeClientAnimationId(uint32_t rawAnimId) noexcept
+    {
+        if (rawAnimId == static_cast<uint32_t>(AnimationId::None) ||
+            rawAnimId > static_cast<uint32_t>(AnimationId::Paladin_Death))
+        {
+            return AnimationId::None;
+        }
+
+        return static_cast<AnimationId>(rawAnimId);
+    }
+
+    void ApplyAttackInput(
+        WorldRuntime& runtime,
+        const Protocol::CS_ATTACK_PACKET& packet,
+        ActorInputComp& input) noexcept
+    {
+        ApplyAbilityInput(
+            runtime,
+            PlayerAbilityInputType::LightAttack,
+            packet.dirx(),
+            packet.dirz(),
+            input);
+
+        const AnimationId clientAnimId =
+            DecodeClientAnimationId(packet.clientanimid());
+        const float clientNormalizedTime = packet.clientnormalizedtime();
+        const uint32_t clientAbilityInstanceId =
+            packet.clientabilityinstanceid();
+
+        if (clientAnimId == AnimationId::None ||
+            clientAbilityInstanceId == 0 ||
+            !std::isfinite(clientNormalizedTime))
+        {
+            return;
+        }
+
+        input.ability.clientAnimId = clientAnimId;
+        input.ability.clientNormalizedTime = GameplaySystemUtil::ClampFloat(
+            clientNormalizedTime,
+            0.0f,
+            1.0f);
+        input.ability.clientAbilityInstanceId = clientAbilityInstanceId;
+        input.ability.hasClientAnimationTiming = true;
     }
 
     void ApplyGuardInput(
@@ -951,12 +1001,7 @@ ExecCallResult HandleAttackPacket(NodeExecContext& ctx)
         return ExecCallResult::Success;
     }
 
-    ApplyAbilityInput(
-        *target.runtime,
-        PlayerAbilityInputType::LightAttack,
-        pkt.dirx(),
-        pkt.dirz(),
-        *target.input);
+    ApplyAttackInput(*target.runtime, pkt, *target.input);
     return ExecCallResult::Success;
 }
 

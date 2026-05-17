@@ -3,6 +3,8 @@
 #include "Animator.h"
 #include "GameObject.h"
 
+#include <algorithm>
+
 void AnimationMachine::Init()
 {
     animator = GetGameObject()->GetComponent<Animator>();
@@ -52,8 +54,16 @@ void AnimationMachine::EndCurrentClip()
     PlayClip(nextClip);
 }
 
-void AnimationMachine::OnServerClipConfirm(const string& clipName)
+void AnimationMachine::OnServerClipConfirm(
+    const string& clipName,
+    uint32_t newServerAnimId,
+    uint32_t newAbilityInstanceId,
+    float newServerNormalizedTime)
 {
+    serverAnimId = newServerAnimId;
+    abilityInstanceId = newAbilityInstanceId;
+    lastServerNormalizedTime = newServerNormalizedTime;
+
     if (currentClipName != clipName)
     {
         PlayClip(clipName);
@@ -80,6 +90,35 @@ AnimCategory AnimationMachine::GetCurrentCategory() const
 shared_ptr<AnimationSet> AnimationMachine::GetAnimationSet() const
 {
     return animSet;
+}
+
+uint32_t AnimationMachine::GetServerAnimId() const
+{
+    return serverAnimId;
+}
+
+uint32_t AnimationMachine::GetAbilityInstanceId() const
+{
+    return abilityInstanceId;
+}
+
+float AnimationMachine::GetCurrentNormalizedTime() const
+{
+    if (!animator)
+    {
+        return 0.0f;
+    }
+
+    return std::clamp(animator->GetAnimationProgress(), 0.0f, 1.0f);
+}
+
+bool AnimationMachine::HasServerAbilityTiming() const
+{
+    return
+        currentClip != nullptr &&
+        currentClip->category == AnimCategory::Action &&
+        serverAnimId != 0 &&
+        abilityInstanceId != 0;
 }
 
 bool AnimationMachine::CanTransition(const ClipInfo* from, const ClipInfo* to) const

@@ -98,7 +98,7 @@ bool NetworkManager::SendMovePacket(int inputX, int inputZ, float yaw, bool isRu
 	}
 }
 
-bool NetworkManager::SendAttackPacket(float dirX, float dirZ)
+bool NetworkManager::SendAttackPacket(float dirX, float dirZ, uint32_t animId, float normTime, uint32_t instanceId)
 {
 	if (_service == nullptr)
 	{
@@ -108,10 +108,13 @@ bool NetworkManager::SendAttackPacket(float dirX, float dirZ)
 	Protocol::CS_ATTACK_PACKET attack;
 	attack.set_dirx(dirX);
 	attack.set_dirz(dirZ);
+	attack.set_clientanimid(animId);
+	attack.set_clientnormalizedtime(normTime);
+	attack.set_clientabilityinstanceid(instanceId);
 
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_ATTACK_PACKET>(
 		PacketType::CS_ATTACK, attack);
-	
+
 	if (data != nullptr)
 	{
 		_service->Send(data);

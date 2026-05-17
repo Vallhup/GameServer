@@ -42,6 +42,10 @@ struct ActorAbilityInputEvent
 	float directionX{ 0.0f };
 	float directionZ{ 0.0f };
 	uint64_t requestedFrame{ 0 };
+	AnimationId clientAnimId{ AnimationId::None };
+	float clientNormalizedTime{ 0.0f };
+	uint32_t clientAbilityInstanceId{ 0 };
+	bool hasClientAnimationTiming{ false };
 };
 
 struct ActorInputComp : Component

@@ -2180,6 +2180,8 @@ class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
   enum : int {
     kNetidFieldNumber = 1,
     kCurrAnimFieldNumber = 2,
+    kAbilityInstanceIdFieldNumber = 3,
+    kNormalizedTimeFieldNumber = 4,
   };
   // uint64 netid = 1;
   void clear_netid() ;
@@ -2201,12 +2203,32 @@ class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
   void _internal_set_curranim(::int32_t value);
 
   public:
+  // uint32 abilityInstanceId = 3;
+  void clear_abilityinstanceid() ;
+  ::uint32_t abilityinstanceid() const;
+  void set_abilityinstanceid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_abilityinstanceid() const;
+  void _internal_set_abilityinstanceid(::uint32_t value);
+
+  public:
+  // float normalizedTime = 4;
+  void clear_normalizedtime() ;
+  float normalizedtime() const;
+  void set_normalizedtime(float value);
+
+  private:
+  float _internal_normalizedtime() const;
+  void _internal_set_normalizedtime(float value);
+
+  public:
   // @@protoc_insertion_point(class_scope:Protocol.SC_ANIMATION_TRANSITION_PACKET)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      1, 2, 0,
+      2, 4, 0,
       0, 2>
       _table_;
 
@@ -2226,6 +2248,8 @@ class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
                           const SC_ANIMATION_TRANSITION_PACKET& from_msg);
     ::uint64_t netid_;
     ::int32_t curranim_;
+    ::uint32_t abilityinstanceid_;
+    float normalizedtime_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -4456,6 +4480,9 @@ class CS_ATTACK_PACKET final : public ::google::protobuf::Message
   enum : int {
     kDirXFieldNumber = 1,
     kDirZFieldNumber = 2,
+    kClientAnimIdFieldNumber = 3,
+    kClientNormalizedTimeFieldNumber = 4,
+    kClientAbilityInstanceIdFieldNumber = 5,
   };
   // float dirX = 1;
   void clear_dirx() ;
@@ -4477,12 +4504,42 @@ class CS_ATTACK_PACKET final : public ::google::protobuf::Message
   void _internal_set_dirz(float value);
 
   public:
+  // uint32 clientAnimId = 3;
+  void clear_clientanimid() ;
+  ::uint32_t clientanimid() const;
+  void set_clientanimid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_clientanimid() const;
+  void _internal_set_clientanimid(::uint32_t value);
+
+  public:
+  // float clientNormalizedTime = 4;
+  void clear_clientnormalizedtime() ;
+  float clientnormalizedtime() const;
+  void set_clientnormalizedtime(float value);
+
+  private:
+  float _internal_clientnormalizedtime() const;
+  void _internal_set_clientnormalizedtime(float value);
+
+  public:
+  // uint32 clientAbilityInstanceId = 5;
+  void clear_clientabilityinstanceid() ;
+  ::uint32_t clientabilityinstanceid() const;
+  void set_clientabilityinstanceid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_clientabilityinstanceid() const;
+  void _internal_set_clientabilityinstanceid(::uint32_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:Protocol.CS_ATTACK_PACKET)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      1, 2, 0,
+      3, 5, 0,
       0, 2>
       _table_;
 
@@ -4502,6 +4559,9 @@ class CS_ATTACK_PACKET final : public ::google::protobuf::Message
                           const CS_ATTACK_PACKET& from_msg);
     float dirx_;
     float dirz_;
+    ::uint32_t clientanimid_;
+    float clientnormalizedtime_;
+    ::uint32_t clientabilityinstanceid_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -5111,6 +5171,72 @@ inline float CS_ATTACK_PACKET::_internal_dirz() const {
 inline void CS_ATTACK_PACKET::_internal_set_dirz(float value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.dirz_ = value;
+}
+
+// uint32 clientAnimId = 3;
+inline void CS_ATTACK_PACKET::clear_clientanimid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientanimid_ = 0u;
+}
+inline ::uint32_t CS_ATTACK_PACKET::clientanimid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_ATTACK_PACKET.clientAnimId)
+  return _internal_clientanimid();
+}
+inline void CS_ATTACK_PACKET::set_clientanimid(::uint32_t value) {
+  _internal_set_clientanimid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_ATTACK_PACKET.clientAnimId)
+}
+inline ::uint32_t CS_ATTACK_PACKET::_internal_clientanimid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.clientanimid_;
+}
+inline void CS_ATTACK_PACKET::_internal_set_clientanimid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientanimid_ = value;
+}
+
+// float clientNormalizedTime = 4;
+inline void CS_ATTACK_PACKET::clear_clientnormalizedtime() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientnormalizedtime_ = 0;
+}
+inline float CS_ATTACK_PACKET::clientnormalizedtime() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_ATTACK_PACKET.clientNormalizedTime)
+  return _internal_clientnormalizedtime();
+}
+inline void CS_ATTACK_PACKET::set_clientnormalizedtime(float value) {
+  _internal_set_clientnormalizedtime(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_ATTACK_PACKET.clientNormalizedTime)
+}
+inline float CS_ATTACK_PACKET::_internal_clientnormalizedtime() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.clientnormalizedtime_;
+}
+inline void CS_ATTACK_PACKET::_internal_set_clientnormalizedtime(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientnormalizedtime_ = value;
+}
+
+// uint32 clientAbilityInstanceId = 5;
+inline void CS_ATTACK_PACKET::clear_clientabilityinstanceid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientabilityinstanceid_ = 0u;
+}
+inline ::uint32_t CS_ATTACK_PACKET::clientabilityinstanceid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_ATTACK_PACKET.clientAbilityInstanceId)
+  return _internal_clientabilityinstanceid();
+}
+inline void CS_ATTACK_PACKET::set_clientabilityinstanceid(::uint32_t value) {
+  _internal_set_clientabilityinstanceid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_ATTACK_PACKET.clientAbilityInstanceId)
+}
+inline ::uint32_t CS_ATTACK_PACKET::_internal_clientabilityinstanceid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.clientabilityinstanceid_;
+}
+inline void CS_ATTACK_PACKET::_internal_set_clientabilityinstanceid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientabilityinstanceid_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -5911,6 +6037,50 @@ inline ::int32_t SC_ANIMATION_TRANSITION_PACKET::_internal_curranim() const {
 inline void SC_ANIMATION_TRANSITION_PACKET::_internal_set_curranim(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.curranim_ = value;
+}
+
+// uint32 abilityInstanceId = 3;
+inline void SC_ANIMATION_TRANSITION_PACKET::clear_abilityinstanceid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.abilityinstanceid_ = 0u;
+}
+inline ::uint32_t SC_ANIMATION_TRANSITION_PACKET::abilityinstanceid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_ANIMATION_TRANSITION_PACKET.abilityInstanceId)
+  return _internal_abilityinstanceid();
+}
+inline void SC_ANIMATION_TRANSITION_PACKET::set_abilityinstanceid(::uint32_t value) {
+  _internal_set_abilityinstanceid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_ANIMATION_TRANSITION_PACKET.abilityInstanceId)
+}
+inline ::uint32_t SC_ANIMATION_TRANSITION_PACKET::_internal_abilityinstanceid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.abilityinstanceid_;
+}
+inline void SC_ANIMATION_TRANSITION_PACKET::_internal_set_abilityinstanceid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.abilityinstanceid_ = value;
+}
+
+// float normalizedTime = 4;
+inline void SC_ANIMATION_TRANSITION_PACKET::clear_normalizedtime() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.normalizedtime_ = 0;
+}
+inline float SC_ANIMATION_TRANSITION_PACKET::normalizedtime() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_ANIMATION_TRANSITION_PACKET.normalizedTime)
+  return _internal_normalizedtime();
+}
+inline void SC_ANIMATION_TRANSITION_PACKET::set_normalizedtime(float value) {
+  _internal_set_normalizedtime(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_ANIMATION_TRANSITION_PACKET.normalizedTime)
+}
+inline float SC_ANIMATION_TRANSITION_PACKET::_internal_normalizedtime() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.normalizedtime_;
+}
+inline void SC_ANIMATION_TRANSITION_PACKET::_internal_set_normalizedtime(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.normalizedtime_ = value;
 }
 
 // -------------------------------------------------------------------

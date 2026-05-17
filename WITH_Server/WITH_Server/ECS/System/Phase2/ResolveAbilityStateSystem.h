@@ -111,7 +111,12 @@ private:
 	static bool IsCancelRuleActive(
 		const AbilityTransitionRuleDef& cancelRule,
 		const AbilityDef& currentAbilityDef,
-		const AbilityStateComp& abilityState);
+		const AbilityStateComp& abilityState,
+		CharacterId characterId,
+		const ActorInputComp& input);
+
+	static bool ShouldUseClientAnimationTiming(
+		AbilityTransitionCause cause) noexcept;
 
 	static bool IsHoldReleased(
 		const AbilityDef& abilityDef,

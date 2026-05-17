@@ -95,6 +95,12 @@ void ServerDirtyReplicationService::BuildAndStage(
 					animationPacket.set_netid(netId.GetRaw());
 					animationPacket.set_curranim(
 						static_cast<int32_t>(playback->animationId));
+					animationPacket.set_abilityinstanceid(
+						playback->boundAbilityInstanceId);
+					animationPacket.set_normalizedtime(
+						playback->normalizedTime);
+					std::cout << "AnimationId[" << static_cast<int32_t>(playback->animationId)
+						<< "]\n";
 					(void)ServerPacketStager::StageReplicationPacket(
 						network,
 						PacketType::SC_ANIMATION_CHANGE,
