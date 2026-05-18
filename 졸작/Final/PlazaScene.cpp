@@ -133,7 +133,7 @@ void PlazaScene::UpdateScene(const float deltaTime)
 				XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
 
 				// z축 90도 초기 회전 - DirectX12와 effekseer 축 차이
-				XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, 0, XM_PIDIV2);
+				XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, XM_PIDIV2, 0);
 
 				// 뼈 회전 × 플레이어 회전
 				XMFLOAT3 playerRot = transform->GetRotation();
@@ -353,7 +353,7 @@ void PlazaScene::CreateEffectSamples()
 		{u"CandleFire5", 484.607025f, 6.f, 481.862946f},
 		{u"CandleFire5", 475.607025f, 6.f, 481.862946f},
 		{u"Dissolve", 484.607025f, 6.f, 481.862946f},
-		{u"SwordThunder", 484.607025f, 6.f, 481.862946f}
+		{u"test4", 484.607025f, 6.f, 481.862946f}
 	};
 
 	for (int i = 0; i < info.size(); ++i)
