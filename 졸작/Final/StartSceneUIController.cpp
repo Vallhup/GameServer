@@ -27,10 +27,10 @@ void StartSceneUIController::InitMainImage()
 
 void StartSceneUIController::InitPressAnyButton()
 {
-	pabImage = make_shared<ImageUI>(uiManager, L"PAB", ImageUIState::Hidden);
-	pabImage->SetPosition((WinSize.x * 0.727f) / 2.f, WinSize.y * 0.7f);
+	pabImage = make_shared<ImageUI>(uiManager, L"PressAnyButton", ImageUIState::Hidden);
+	pabImage->SetPosition((WinSize.x * 0.727f) / 2.f, WinSize.y * 0.75f);
 	pabImage->SetHoriLength(WinSize.x * 0.273f);
-	pabImage->SetVertLength(WinSize.y * 0.083f);
+	pabImage->SetVertLength(WinSize.y * 0.04f);
 	widgets.push_back(pabImage);
 }
 
