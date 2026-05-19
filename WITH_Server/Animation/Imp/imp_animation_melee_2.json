@@ -27,7 +27,7 @@
       "bone": 7,
       "radius": 9.980483,
       "roles": [
-        "hurt"
+        "hit"
       ]
     },
     {
@@ -41,7 +41,7 @@
       "bone": 34,
       "radius": 9.980483,
       "roles": [
-        "hurt"
+        "hit"
       ]
     },
     {
@@ -55,7 +55,6 @@
       "bone": 71,
       "radius": 8.920238,
       "roles": [
-        "hit",
         "hurt"
       ]
     },
@@ -63,7 +62,6 @@
       "bone": 72,
       "radius": 8.920221,
       "roles": [
-        "hit",
         "hurt"
       ]
     },
@@ -71,7 +69,6 @@
       "bone": 77,
       "radius": 8.920238,
       "roles": [
-        "hit",
         "hurt"
       ]
     },
@@ -79,7 +76,6 @@
       "bone": 78,
       "radius": 8.920225,
       "roles": [
-        "hit",
         "hurt"
       ]
     }

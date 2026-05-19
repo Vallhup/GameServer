@@ -157,7 +157,7 @@
       "bone": 53,
       "radius": 6.9851594,
       "roles": [
-        "hurt",
+        "hit",
         "guard",
         "parry"
       ]

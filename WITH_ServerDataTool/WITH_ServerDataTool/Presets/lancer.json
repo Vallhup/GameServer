@@ -12,7 +12,7 @@
     "capsuleRules": {
         "defaultRoles": [ "hurt", "guard", "parry" ],
         "weaponRoles": [ "hit", "guard", "parry" ],
-        "weaponBones": [ 25, 45 ],
+        "weaponBones": [ 25, 45, 53 ],
         "extremeTrimFraction": 0.03
     },
     "clips": [
