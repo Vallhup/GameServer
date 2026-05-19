@@ -41,6 +41,15 @@
     <ClCompile Include="NetworkRuntime.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="DemoPartyFormationPolicy.cpp">
+      <Filter>SessionSystem\Party</Filter>
+    </ClCompile>
+    <ClCompile Include="PartyService.cpp">
+      <Filter>SessionSystem\Party</Filter>
+    </ClCompile>
+    <ClCompile Include="PartySystem_SmokeTest.cpp">
+      <Filter>SessionSystem\Party</Filter>
+    </ClCompile>
     <ClCompile Include="Session.cpp">
       <Filter>Network</Filter>
     </ClCompile>
@@ -309,6 +318,15 @@
     </ClInclude>
     <ClInclude Include="NetworkRuntime.h">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoPartyFormationPolicy.h">
+      <Filter>SessionSystem\Party</Filter>
+    </ClInclude>
+    <ClInclude Include="PartyService.h">
+      <Filter>SessionSystem\Party</Filter>
+    </ClInclude>
+    <ClInclude Include="PartyTypes.h">
+      <Filter>SessionSystem\Party</Filter>
     </ClInclude>
     <ClInclude Include="PacketHandlerContext.h">
       <Filter>SessionSystem\Packets</Filter>
@@ -866,6 +884,9 @@
     </Filter>
     <Filter Include="SessionSystem\Replication">
       <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000105}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SessionSystem\Party">
+      <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000106}</UniqueIdentifier>
     </Filter>
     <Filter Include="GameWorlds">
       <UniqueIdentifier>{a9f9ac4d-a0e3-47f5-96e4-000000000201}</UniqueIdentifier>

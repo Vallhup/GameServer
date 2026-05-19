@@ -1,5 +1,7 @@
 #pragma once
 
+#include <span>
+
 #include "CharacterDef.h"
 #include "Entity.h"
 #include "FrameworkRuntime.h"
@@ -23,4 +25,11 @@ public:
 		WorldId worldId,
 		SessionId sessionId,
 		NetId excludedNetId = NetId::Invalid());
+
+	static void StageExistingWorldEntitiesForSession(
+		FrameworkRuntime& framework,
+		NetworkRuntime& network,
+		WorldId worldId,
+		SessionId sessionId,
+		std::span<const NetId> excludedNetIds);
 };

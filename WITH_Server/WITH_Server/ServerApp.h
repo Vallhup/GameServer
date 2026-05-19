@@ -13,13 +13,18 @@
 #include "GameplayContentCatalog.h"
 #include "AnimationJsonLoader.h"
 #include "AnimationRegistry.h"
+#include "DemoPartyFormationPolicy.h"
 #include "IWorldTransitionRequestSink.h"
 #include "ODBCDatabaseBackend.h"
+#include "PartyService.h"
 #include "ServerSessionSystem.h"
 #include "ServerWorldBootstrap.h"
 #include "ServerWorldTransferBinding.h"
 
-class ServerApp final : public IWorldTransitionRequestSink {
+class ServerApp final
+	: public IWorldTransitionRequestSink
+	, private IPartySessionQuery
+	, private IDemoPartyTransitionQuery {
 public:
 	struct Config
 	{
@@ -104,6 +109,18 @@ private:
 	void FlushOutbound();
 	bool StageWorldTransitionBeginPackets(
 		const WorldTransferEventBatch& transferEvents);
+	void ApplyPartyWorldTransferEvents(
+		const WorldTransferEventBatch& transferEvents);
+
+	bool IsPartyEligible(SessionId sessionId) const override;
+	uint64_t FindAccountId(SessionId sessionId) const override;
+	NetId FindControlledNetId(SessionId sessionId) const override;
+	WorldId FindCurrentWorldId(SessionId sessionId) const override;
+	void CollectSessionsInWorld(
+		WorldId worldId,
+		std::vector<SessionId>& outSessionIds) const override;
+	bool CanBeginWorldTransfer(SessionId sessionId) const override;
+	bool IsClientTransitionPending(SessionId sessionId) const override;
 
 private:
 	Config _config;
@@ -123,6 +140,8 @@ private:
 	std::unique_ptr<ODBCDatabaseBackend> _databaseBackend;
 	ServerSessionSystem _sessionSystem;
 	ServerWorldTransferBinding _transferBinding;
+	PartyService _partyService;
+	DemoPartyFormationPolicy _demoPartyPolicy;
 	std::unordered_map<TransferId, std::unordered_map<SessionId, uint32_t>>
 		_worldTransitionRequestIds;
 	std::unordered_map<SessionId, PendingClientTransition> _pendingClientTransitions;

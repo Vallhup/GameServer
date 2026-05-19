@@ -1,9 +1,24 @@
 #include "pch.h"
 #include "ServerReplicationSnapshot.h"
 
+#include <algorithm>
+
 #include "RepComponent.h"
 #include "ServerPacketStager.h"
 #include "WorldInstance.h"
+
+namespace
+{
+	bool IsExcludedNetId(
+		NetId netId,
+		std::span<const NetId> excludedNetIds) noexcept
+	{
+		return std::find(
+			excludedNetIds.begin(),
+			excludedNetIds.end(),
+			netId) != excludedNetIds.end();
+	}
+}
 
 bool ServerReplicationSnapshot::TryGetReplicatedSpawnState(
 	FrameworkRuntime& framework,
@@ -43,6 +58,33 @@ void ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 	SessionId sessionId,
 	NetId excludedNetId)
 {
+	if (!excludedNetId.IsValid())
+	{
+		StageExistingWorldEntitiesForSession(
+			framework,
+			network,
+			worldId,
+			sessionId,
+			std::span<const NetId>());
+		return;
+	}
+
+	const NetId excludedNetIds[] = { excludedNetId };
+	StageExistingWorldEntitiesForSession(
+		framework,
+		network,
+		worldId,
+		sessionId,
+		std::span<const NetId>(excludedNetIds, 1));
+}
+
+void ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
+	FrameworkRuntime& framework,
+	NetworkRuntime& network,
+	WorldId worldId,
+	SessionId sessionId,
+	std::span<const NetId> excludedNetIds)
+{
 	WorldInstance* const world = framework.FindWorld(worldId);
 	if (world == nullptr)
 	{
@@ -58,7 +100,8 @@ void ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 		}
 
 		const NetId entityNetId = framework.FindNetId(worldId, entity);
-		if (!entityNetId.IsValid() || entityNetId == excludedNetId)
+		if (!entityNetId.IsValid() ||
+			IsExcludedNetId(entityNetId, excludedNetIds))
 		{
 			continue;
 		}

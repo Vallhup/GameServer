@@ -2,11 +2,33 @@
 #include "ServerApp.h"
 
 #include <filesystem>
+#include <string_view>
 
 #include "FrameworkLog.h"
 
-int main()
+void RunPartySystemSmokeTests();
+
+namespace
 {
+	bool HasArg(int argc, char** argv, const char* expected)
+	{
+		for (int i = 1; i < argc; ++i)
+		{
+			if (std::string_view{ argv[i] } == expected)
+				return true;
+		}
+		return false;
+	}
+}
+
+int main(int argc, char** argv)
+{
+	if (HasArg(argc, argv, "--party-smoke"))
+	{
+		RunPartySystemSmokeTests();
+		return 0;
+	}
+
 	std::filesystem::create_directories("Log");
 
 	// 전체 로그 — 날짜별 로테이션, 7일 보관

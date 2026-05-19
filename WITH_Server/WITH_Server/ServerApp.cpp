@@ -27,7 +27,6 @@ namespace
 {
 	constexpr const char* kLogCategory = "ServerApp";
 	constexpr uint32_t kWorldTransitionReasonDebug = 1;
-	constexpr size_t kDemoPartyMaxMembers = 3;
 
 	WorldDefId ResolveDemoNextWorld(WorldDefId currentWorldDefId) noexcept
 	{
@@ -44,17 +43,6 @@ namespace
 		default:
 			return WorldDefId::None;
 		}
-	}
-
-	PartyId MakeDemoPartyId(std::span<const SessionId> sessionIds) noexcept
-	{
-		if (sessionIds.empty())
-		{
-			return 0;
-		}
-
-		const auto minIt = std::min_element(sessionIds.begin(), sessionIds.end());
-		return static_cast<PartyId>(*minIt);
 	}
 }
 
@@ -78,6 +66,8 @@ ServerApp::ServerApp(Config config)
 		.maxSessions = _config.maxSessions
 	}, _framework, _startupWorldId, *this)
 	, _transferBinding(_framework, _sessionSystem.Flow())
+	, _partyService(*this)
+	, _demoPartyPolicy(_partyService, *this, *this)
 {
 	if (_config.logicTickHz == 0)
 	{
@@ -99,6 +89,7 @@ bool ServerApp::Initialize()
 	_nowSec = 0.0;
 	_startupWorldId = WorldId::Invalid();
 	_sessionSystem.ClearSessionState();
+	_partyService.Clear();
 	_worldTransitionRequestIds.clear();
 	_pendingClientTransitions.clear();
 	_animationRegistry.Clear();
@@ -158,6 +149,7 @@ void ServerApp::Shutdown() noexcept
 	_nowSec = 0.0;
 	_startupWorldId = WorldId::Invalid();
 	_sessionSystem.ClearSessionState();
+	_partyService.Clear();
 	_worldTransitionRequestIds.clear();
 	_pendingClientTransitions.clear();
 	_animationRegistry.Clear();
@@ -255,43 +247,52 @@ TransferId ServerApp::RequestDemoWorldTransition(
 		return 0;
 	}
 
-	std::vector<SessionId> sourceSessionIds;
-	_sessionSystem.Flow().CollectSessionsInWorld(sourceWorldId, sourceSessionIds);
-	if (std::find(sourceSessionIds.begin(), sourceSessionIds.end(), sessionId) ==
-		sourceSessionIds.end())
+	const PartyResult partyResult =
+		_demoPartyPolicy.EnsurePartyForWorldTransition(
+			sessionId,
+			sourceWorldId,
+			_nowSec);
+	if (!partyResult.Succeeded())
 	{
-		FWLOG_WARN(kLogCategory, "Demo world transition rejected: session not in source world (sid=%u, requestId=%u)",
-			sessionId, requestId);
+		FWLOG_WARN(kLogCategory,
+			"Demo world transition rejected: party formation failed (sid=%u, requestId=%u, partyError=%d)",
+			sessionId,
+			requestId,
+			static_cast<int>(partyResult.error));
 		return 0;
 	}
 
-	std::vector<SessionId> transferSessionIds;
-	transferSessionIds.reserve(kDemoPartyMaxMembers);
-	transferSessionIds.push_back(sessionId);
-	for (SessionId candidateSessionId : sourceSessionIds)
-	{
-		if (candidateSessionId == sessionId ||
-			_pendingClientTransitions.contains(candidateSessionId))
-		{
-			continue;
-		}
-
-		transferSessionIds.push_back(candidateSessionId);
-		if (transferSessionIds.size() >= kDemoPartyMaxMembers)
-		{
-			break;
-		}
-	}
-
-	std::sort(transferSessionIds.begin(), transferSessionIds.end());
-
-	const PartyId partyId = MakeDemoPartyId(transferSessionIds);
+	const PartyId partyId = partyResult.partyId;
 	const uint64_t instanceKey =
 		targetWorldDefId == WorldDefId::Plaza ? 0 : static_cast<uint64_t>(partyId);
+
+	WorldTargetSpec target{};
+	target.targetWorldDefId = targetWorldDefId;
+	target.instanceKey = instanceKey;
+
+	const SessionId leaderSessionId =
+		_partyService.FindLeaderSession(partyId);
+	PartyWorldEntryResult entryResult =
+		_partyService.BeginWorldEntry(
+			leaderSessionId,
+			target,
+			_nowSec,
+			true);
+	if (!entryResult.Succeeded())
+	{
+		FWLOG_WARN(kLogCategory,
+			"Demo world transition rejected: party entry failed (sid=%u, requestId=%u, partyId=%llu, partyError=%d)",
+			sessionId,
+			requestId,
+			static_cast<unsigned long long>(partyId),
+			static_cast<int>(entryResult.error));
+		return 0;
+	}
+
 	const TransferId transferId = _framework.RequestWorldTransfer(
 		std::span<const SessionId>(
-			transferSessionIds.data(),
-			transferSessionIds.size()),
+			entryResult.request.sessionIds.data(),
+			entryResult.request.sessionIds.size()),
 		sourceWorldId,
 		targetWorldDefId,
 		instanceKey,
@@ -300,7 +301,15 @@ TransferId ServerApp::RequestDemoWorldTransition(
 		_nowSec);
 	if (transferId != 0)
 	{
+		(void)_partyService.MarkWorldEntryEnqueued(
+			partyId,
+			transferId,
+			_nowSec);
 		_worldTransitionRequestIds[transferId][sessionId] = requestId;
+	}
+	else
+	{
+		(void)_partyService.FailWorldEntry(partyId, 0, _nowSec);
 	}
 
 	return transferId;
@@ -351,12 +360,28 @@ bool ServerApp::MarkClientWorldTransitionReady(
 		return false;
 	}
 
+	std::vector<NetId> pendingSnapshotExcludedNetIds;
+	pendingSnapshotExcludedNetIds.reserve(_pendingClientTransitions.size());
+	for (const auto& [pendingSessionId, pendingTransition] : _pendingClientTransitions)
+	{
+		if (pendingSessionId == sessionId ||
+			pendingTransition.targetWorldId != pending.targetWorldId ||
+			!pendingTransition.playerNetId.IsValid())
+		{
+			continue;
+		}
+
+		pendingSnapshotExcludedNetIds.push_back(pendingTransition.playerNetId);
+	}
+
 	ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 		_framework,
 		_sessionSystem.Network(),
 		pending.targetWorldId,
 		sessionId,
-		NetId::Invalid());
+		std::span<const NetId>(
+			pendingSnapshotExcludedNetIds.data(),
+			pendingSnapshotExcludedNetIds.size()));
 
 	// Transfer-imported players skip the normal EntitySpawned broadcast path,
 	// so notify already-ready sessions in the target world explicitly here.
@@ -695,6 +720,8 @@ void ServerApp::RunWorldFrames(double dtSec)
 		return;
 	}
 
+	ApplyPartyWorldTransferEvents(transferEvents);
+
 	if (!StageWorldTransitionBeginPackets(transferEvents))
 	{
 		FWLOG_ERROR(kLogCategory, "World transition begin staging failed");
@@ -829,4 +856,79 @@ bool ServerApp::StageWorldTransitionBeginPackets(
 	}
 
 	return true;
+}
+
+void ServerApp::ApplyPartyWorldTransferEvents(
+	const WorldTransferEventBatch& transferEvents)
+{
+	for (const WorldTransferFailedEvent& failed : transferEvents.failed)
+	{
+		if (failed.partyId != 0)
+		{
+			(void)_partyService.FailWorldEntry(
+				failed.partyId,
+				failed.transferId,
+				_nowSec);
+		}
+	}
+
+	for (const WorldTransferCompletedEvent& completed : transferEvents.completed)
+	{
+		if (completed.partyId != 0)
+		{
+			(void)_partyService.CompleteWorldEntry(
+				completed.partyId,
+				completed.transferId,
+				completed.targetWorldId,
+				_nowSec);
+		}
+	}
+}
+
+bool ServerApp::IsPartyEligible(SessionId sessionId) const
+{
+	const SessionFlow* const flow =
+		_sessionSystem.Flow().FindFlow(sessionId);
+	return flow != nullptr &&
+		flow->HasBinding() &&
+		flow->stateId != SessionStateId::Closing;
+}
+
+uint64_t ServerApp::FindAccountId(SessionId sessionId) const
+{
+	const SessionFlow* const flow =
+		_sessionSystem.Flow().FindFlow(sessionId);
+	return flow != nullptr ? flow->accountId : 0;
+}
+
+NetId ServerApp::FindControlledNetId(SessionId sessionId) const
+{
+	return _sessionSystem.Flow().FindControlledNetId(sessionId);
+}
+
+WorldId ServerApp::FindCurrentWorldId(SessionId sessionId) const
+{
+	return _sessionSystem.Flow().FindCurrentWorldId(sessionId);
+}
+
+void ServerApp::CollectSessionsInWorld(
+	WorldId worldId,
+	std::vector<SessionId>& outSessionIds) const
+{
+	_sessionSystem.Flow().CollectSessionsInWorld(worldId, outSessionIds);
+}
+
+bool ServerApp::CanBeginWorldTransfer(SessionId sessionId) const
+{
+	const SessionFlow* const flow =
+		_sessionSystem.Flow().FindFlow(sessionId);
+	return flow != nullptr &&
+		flow->HasBinding() &&
+		!flow->HasPendingTransfer() &&
+		!_pendingClientTransitions.contains(sessionId);
+}
+
+bool ServerApp::IsClientTransitionPending(SessionId sessionId) const
+{
+	return _pendingClientTransitions.contains(sessionId);
 }

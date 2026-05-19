@@ -229,6 +229,9 @@
     <ClCompile Include="NetworkRuntime.cpp" />
     <ClCompile Include="PacketHandlerContext.cpp" />
     <ClCompile Include="PacketHandlers.cpp" />
+    <ClCompile Include="DemoPartyFormationPolicy.cpp" />
+    <ClCompile Include="PartyService.cpp" />
+    <ClCompile Include="PartySystem_SmokeTest.cpp" />
     <ClCompile Include="SessionFlowContext.cpp" />
     <ClCompile Include="SessionFlowController.cpp" />
     <ClCompile Include="SessionFlowTransitionTable.cpp" />
@@ -384,6 +387,9 @@
     <ClInclude Include="Library\Recast\RecastAlloc.h" />
     <ClInclude Include="Library\Recast\RecastAssert.h" />
     <ClInclude Include="NetworkRuntime.h" />
+    <ClInclude Include="DemoPartyFormationPolicy.h" />
+    <ClInclude Include="PartyService.h" />
+    <ClInclude Include="PartyTypes.h" />
     <ClInclude Include="AIChaseState.h" />
     <ClInclude Include="AICombatState.h" />
     <ClInclude Include="AIIdleState.h" />
