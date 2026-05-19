@@ -28,7 +28,7 @@ void StartSceneUIController::InitMainImage()
 void StartSceneUIController::InitPressAnyButton()
 {
 	pabImage = make_shared<ImageUI>(uiManager, L"PressAnyButton", ImageUIState::Hidden);
-	pabImage->SetPosition((WinSize.x * 0.727f) / 2.f, WinSize.y * 0.75f);
+	pabImage->SetPosition((WinSize.x * 0.727f) / 2.f, WinSize.y * 0.8f);
 	pabImage->SetHoriLength(WinSize.x * 0.273f);
 	pabImage->SetVertLength(WinSize.y * 0.04f);
 	widgets.push_back(pabImage);
@@ -37,17 +37,17 @@ void StartSceneUIController::InitPressAnyButton()
 void StartSceneUIController::InitMenuButtons()
 {
 	loginImage = make_shared<ImageUI>(uiManager, L"LOGIN", ImageUIState::Hidden);
-	loginImage->SetPosition(WinSize.x * 0.3215f, WinSize.y * 0.7f);
+	loginImage->SetPosition(WinSize.x * 0.3435f, WinSize.y * 0.8f);
 	loginImage->SetHoriLength(WinSize.x * 0.117f);
-	loginImage->SetVertLength(WinSize.y * 0.1f);
+	loginImage->SetVertLength(WinSize.y * 0.0742f);
 	loginImage->SetFadeDuration(2.0f);
 	loginImage->SetHoverScale(1.1f);
 	widgets.push_back(loginImage);
 
 	exitImage = make_shared<ImageUI>(uiManager, L"EXIT", ImageUIState::Hidden);
-	exitImage->SetPosition(WinSize.x * 0.5615f, WinSize.y * 0.7f);
+	exitImage->SetPosition(WinSize.x * 0.5395f, WinSize.y * 0.8f);
 	exitImage->SetHoriLength(WinSize.x * 0.117f);
-	exitImage->SetVertLength(WinSize.y * 0.1f);
+	exitImage->SetVertLength(WinSize.y * 0.0742f);
 	exitImage->SetFadeDuration(2.0f);
 	exitImage->SetHoverScale(1.1f);
 	widgets.push_back(exitImage);

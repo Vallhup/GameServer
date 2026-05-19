@@ -17,7 +17,6 @@ protected:
 	void InitializeLogic() override;
 	void InitializeSceneMonsters() override;
 	void UpdateScene(const float deltaTime) override;
-	void RequestSceneChange() override;
 
 private:
 	vector<shared_ptr<GameObject>> gameObjects;

@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "SelectSceneUIController.h"
 #include "ImageUI.h"
+#include "Input.h"
+#include "Engine.h"
+#include "NetworkManager.h"
+#include "SceneManager.h"
 
 void SelectSceneUIController::Init(UIManager* manager)
 {
@@ -12,6 +16,7 @@ void SelectSceneUIController::Init(UIManager* manager)
 	InitBackground();
 	InitCharImages(charWidth, charHeight);
 	InitHoverOverlay(charWidth, charHeight);
+	InitSelectWindow();
 }
 
 void SelectSceneUIController::InitBackground()
@@ -65,21 +70,91 @@ void SelectSceneUIController::InitHoverOverlay(float charWidth, float charHeight
 	widgets.push_back(hoverOverlay);
 }
 
+void SelectSceneUIController::InitSelectWindow()
+{
+	const float windowW = WinSize.x * 0.35f;
+	const float windowH = windowW / 1.75f;
+	const float windowX = (WinSize.x - windowW) / 2.0f;
+	const float windowY = (WinSize.y - windowH) / 2.0f;
+
+	selectWindow = make_shared<ImageUI>(uiManager, L"SelectWindow", ImageUIState::Hidden);
+	selectWindow->SetPosition(windowX, windowY);
+	selectWindow->SetHoriLength(windowW);
+	selectWindow->SetVertLength(windowH);
+	selectWindow->SetFadeDuration(0.8f);
+	widgets.push_back(selectWindow);
+
+	const float btnW = windowW * 0.38f;
+	const float btnH = btnW / 3.879f;
+	const float btnY = windowY + windowH * 0.60f;
+
+	okButton = make_shared<ImageUI>(uiManager, L"OK", ImageUIState::Hidden);
+	okButton->SetPosition(windowX + windowW * 0.08f, btnY);
+	okButton->SetHoriLength(btnW);
+	okButton->SetVertLength(btnH);
+	okButton->SetFadeDuration(0.8f);
+	okButton->SetHoverScale(1.1f);
+	widgets.push_back(okButton);
+
+	cancelButton = make_shared<ImageUI>(uiManager, L"CANCEL", ImageUIState::Hidden);
+	cancelButton->SetPosition(windowX + windowW * 0.54f, btnY);
+	cancelButton->SetHoriLength(btnW);
+	cancelButton->SetVertLength(btnH);
+	cancelButton->SetFadeDuration(0.8f);
+	cancelButton->SetHoverScale(1.1f);
+	widgets.push_back(cancelButton);
+}
+
 void SelectSceneUIController::Update(float deltaTime)
 {
 	UIController::Update(deltaTime);
+
+	if (windowOpen)
+	{
+		okButton->SetHovered(okButton->IsMouseInside());
+		cancelButton->SetHovered(cancelButton->IsMouseInside());
+
+		if (INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		{
+			if (cancelButton->IsMouseInside())
+			{
+				selectWindow->ChangeState(ImageUIState::Hidden);
+				okButton->ChangeState(ImageUIState::Hidden);
+				cancelButton->ChangeState(ImageUIState::Hidden);
+				hoverOverlay->ChangeState(ImageUIState::Hidden);
+				windowOpen = false;
+				selectedChar = -1;
+			}
+			else if (okButton->IsMouseInside() && selectedChar >= 0)
+			{
+				static constexpr CharacterId charIds[3] = { CharacterId::Knight, CharacterId::Lancer, CharacterId::Paladin };
+				NETWORK_MANAGER->SendCharacterSelectPacket(charIds[selectedChar]);
+				SCENE_MANAGER->RequestLoadingScene(SceneType::Plaza);
+			}
+		}
+		return;
+	}
 
 	bool anyHovered = false;
 	for (int i = 0; i < 3; i++)
 	{
 		if (!charImages[i]) continue;
-		if (charImages[i]->IsMouseInside())
+		if (!charImages[i]->IsMouseInside()) continue;
+
+		hoverOverlay->SetPosition(charImages[i]->GetPosX() + hoverOffsetX,
+								  charImages[i]->GetPosY() + hoverOffsetY);
+		if (hoverOverlay->GetState() == ImageUIState::Hidden)
+			hoverOverlay->ChangeState(ImageUIState::FadingIn);
+		anyHovered = true;
+
+		if (INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
-			hoverOverlay->SetPosition(charImages[i]->GetPosX() + hoverOffsetX,
-									  charImages[i]->GetPosY() + hoverOffsetY);
-			if (hoverOverlay->GetState() == ImageUIState::Hidden)
-				hoverOverlay->ChangeState(ImageUIState::FadingIn);
-			anyHovered = true;
+			selectedChar = i;
+			windowOpen = true;
+			hoverOverlay->ChangeState(ImageUIState::Visible);
+			selectWindow->ChangeState(ImageUIState::FadingIn);
+			okButton->ChangeState(ImageUIState::FadingIn);
+			cancelButton->ChangeState(ImageUIState::FadingIn);
 		}
 	}
 

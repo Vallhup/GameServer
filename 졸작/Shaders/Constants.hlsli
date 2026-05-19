@@ -64,7 +64,7 @@ static const float SLOPE_SMOOTH = 0.1;
 //-------------------------------------------------------
 
 #define THREADS_PER_GROUP        64
-#define LIGHTS_PER_THREAD        4
+#define LIGHTS_PER_THREAD        8
 #define MAX_LIGHTS_PER_CLUSTER   128
 
 #endif

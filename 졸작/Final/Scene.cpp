@@ -19,6 +19,8 @@
 #include "BloodImpactComponent.h"
 #include "ParryFlashComponent.h"
 #include "ParryStreakComponent.h"
+#include "EffectManager.h"
+#include "SwordSpecialEffectComponent.h"
 
 #include "NetId.h"
 #include "NetHelper.h"
@@ -200,6 +202,9 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	blood->SetDragHalfLife(0.5f);
 	blood->SetCountPerSlot(5);
 
+	// 검 본 추적 스페셜 이펙트 (쌍검 캐릭터는 본 2개 — CreateCharacterPool에서 설정)
+	character->AddComponent<SwordSpecialEffectComponent>();
+
 	return character;
 }
 
@@ -245,11 +250,24 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 		{ CharacterType::Paladin, { L"../Assets/FBXModel/Paladin/paladin", &AnimationSetFactory::CreatePaladinSet } },
 	};
 
+	// 클래스별 스워드 스페셜 이펙트 efk (임시 이름 — 추후 교체 예정)
+	static const unordered_map<CharacterType, const wchar_t*> swordEffectNames = {
+		{ CharacterType::Knight,  L"KnightSpecialAttack" },
+		{ CharacterType::Lancer,  L"LancerSpecialAttack" },
+		{ CharacterType::Paladin, L"PaladinSpecialAttack"  },
+	};
+
 	const auto& desc = descs.at(type);
+	const wstring swordEffectName = swordEffectNames.at(type);
+	EFFECT_MANAGER->PreLoad(swordEffectName);
+
 	for (int i = 0; i < count; ++i)
 	{
 		auto character = CreateCharacterObject(desc.meshPath, desc.animFactory);
 		character->GetComponent<Transform>()->SetInitPosition(-5.f + (1.f * (i % 10)), 0.f, 5.f);
+
+		auto swordEffect = character->GetComponent<SwordSpecialEffectComponent>();
+		swordEffect->SetEffectName(swordEffectName);
 
 		auto sfx = character->AddComponent<AnimationSfxComponent>();
 		switch (type)
@@ -257,10 +275,15 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 		case CharacterType::Knight:
 			sfx->AddTrigger("Walk", 5, 7, "../Assets/Music/SFX/Foot.mp3");
 			sfx->AddTrigger("Walk", 22, 24, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 6, 8, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 14, 16, "../Assets/Music/SFX/Foot.mp3");
+			swordEffect->SetBoneIndices({ 45 });
 			break;
 		case CharacterType::Lancer:
+			swordEffect->SetBoneIndices({ 25, 45 });
 			break;
 		case CharacterType::Paladin:
+			swordEffect->SetBoneIndices({ 44 });
 			break;
 		}
 

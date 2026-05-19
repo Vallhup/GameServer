@@ -264,6 +264,7 @@ exit 0</Command>
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="ImageUI.cpp" />
     <ClCompile Include="StartSceneUIController.cpp" />
+    <ClCompile Include="SwordSpecialEffectComponent.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="TextUI.cpp" />
@@ -362,6 +363,7 @@ exit 0</Command>
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="ImageUI.h" />
     <ClInclude Include="StartSceneUIController.h" />
+    <ClInclude Include="SwordSpecialEffectComponent.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="TextUI.h" />

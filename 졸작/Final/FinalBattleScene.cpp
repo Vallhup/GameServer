@@ -69,18 +69,21 @@ void FinalBattleScene::InitializeSceneEnvironments()
 	coreRef->GetLightMgr()->LoadSceneLights(L"../Assets/FBXModel/GothicMap/FinalMapLightData.txt", false);
 	coreRef->GetLightMgr()->UpdateLights();
 
-	const XMFLOAT3 candlePositions[] = { {2.824002f, 3.450002f, -57.236343f}, {7.456354f, 3.450002f, -45.545242f}, {6.765375f, 2.900002f, -39.137711f},
-		{6.805631f, 2.300002f, -31.051842f}, {7.515741f, 3.450002f, -1.208803f}, {-7.392492f, 3.450002f, -0.762147f}, {-6.920892f, 2.300002f, -31.079567f},
-		{-6.946253f, 2.900002f, -39.099716f}, {-7.372187f, 3.450002f, -45.562912f}, {-2.856723f, 3.450002f, -57.070786f} };
+#pragma region Intialize Candles
+	auto* lm = coreRef->GetLightMgr();
+	const LightData* lights = lm->GetLights();
+	int lcount = lm->GetDeferredLightData().lightCount;
+
 	auto flameObject = make_shared<GameObject>();
 	flameObject->SetId(-1);
 	auto flame = flameObject->AddComponent<FlameComponent>();
-	flame->Initialize(coreRef->GetDevice(), 32);
+	flame->Initialize(coreRef->GetDevice(), 368);
 	flame->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
-	flame->SetParticleSize(1.0f);
-	for (auto& pos : candlePositions)
-		flame->Spawn(pos);
+	flame->SetParticleSize(0.35f);
+	for (int i = 1; i < lcount; ++i)
+		flame->Spawn(lights[i].position);
 	AddGameObject(flameObject);
+#pragma endregion
 }
 
 void FinalBattleScene::InitializeSceneMonsters()

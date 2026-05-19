@@ -438,7 +438,7 @@ void DX12Core::BlitPass()
 	blitRC.filterRadius = 0.0f;
 	blitRC.texelSizeX = 0.0f;
 	blitRC.texelSizeY = 0.0f;
-	blitRC.intensity = 1.5f;
+	blitRC.intensity = 1.0f;
 	deviceCtx->GetGraphicsCmdList()->SetGraphicsRoot32BitConstants(24, 8, &blitRC, 0);
 
 	deviceCtx->GetGraphicsCmdList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
