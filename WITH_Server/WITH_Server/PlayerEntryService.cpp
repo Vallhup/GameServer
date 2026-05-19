@@ -118,7 +118,7 @@ bool PlayerEntryService::CancelEntry(SessionId sessionId) noexcept
 
 		if (WorldInstance* const world = _deps.framework->FindWorld(pending.worldId))
 		{
-			world->GetRuntime().DeferredDestroyEntity(pending.entity);
+			world->GetRuntime().DeferredDestroyEntityIfAlive(pending.entity);
 		}
 	}
 

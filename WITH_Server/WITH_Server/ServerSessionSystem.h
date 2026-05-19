@@ -46,7 +46,8 @@ public:
 	void SetDatabaseBackend(ODBCDatabaseBackend* database) noexcept;
 	void HandleSessionDisconnected(
 		SessionId sessionId,
-		SessionCloseReason reason) noexcept;
+		SessionCloseReason reason,
+		WorldId executionWorldId) noexcept;
 
 	void BeginSendStage() noexcept;
 	void FlushOutbound();

@@ -199,6 +199,26 @@ public:
 			});
 	}
 
+	void DeferredDestroyEntityIfAlive(Entity e)
+	{
+		if (!CanAcceptStructuralMutation())
+		{
+			MarkFault(
+				WorldRuntimeFaultCode::InvalidOperation,
+				"DeferredDestroyEntityIfAlive is not allowed in the current runtime state.");
+			return;
+		}
+
+		_frameCommands.Enqueue(
+			[entity = e](WorldRuntime& rt)
+			{
+				if (rt._ecs.IsAlive(entity))
+				{
+					(void)rt.DestroyEntityImmediate(entity);
+				}
+			});
+	}
+
 	template<CompT T, typename... Args>
 	void DeferredAddComponent(Entity e, Args&&... args)
 	{

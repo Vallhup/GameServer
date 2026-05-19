@@ -17,29 +17,54 @@ namespace
 {
 	constexpr const char* kLogCategory = "SessionSystem";
 
-	bool QueuePlayerEntityDespawn(
-		FrameworkRuntime& framework,
-		const SessionFlow& flow) noexcept
+	bool TryResolvePlayerEntityLocation(
+		const FrameworkRuntime& framework,
+		const SessionFlow& flow,
+		WorldId& outWorldId,
+		Entity& outEntity) noexcept
 	{
-		WorldId worldId = flow.currentWorldId.IsValid()
+		outWorldId = flow.currentWorldId.IsValid()
 			? flow.currentWorldId
 			: flow.playerWorldId;
-		Entity entity = flow.playerEntity;
+		outEntity = flow.playerEntity;
 
-		if ((entity.IsNull() || !worldId.IsValid()) &&
+		if ((outEntity.IsNull() || !outWorldId.IsValid()) &&
 			flow.controlledNetId.IsValid())
 		{
 			const NetBindingLocation binding =
 				framework.FindNetBinding(flow.controlledNetId);
 			if (binding.IsValid())
 			{
-				worldId = binding.worldId;
-				entity = binding.entity;
+				outWorldId = binding.worldId;
+				outEntity = binding.entity;
 			}
 		}
 
-		if (!worldId.IsValid() || entity.IsNull())
+		return outWorldId.IsValid() && !outEntity.IsNull();
+	}
+
+	bool QueuePlayerEntityDespawn(
+		FrameworkRuntime& framework,
+		const SessionFlow& flow,
+		WorldId executionWorldId) noexcept
+	{
+		WorldId worldId = WorldId::Invalid();
+		Entity entity = Entity::Null();
+		if (!TryResolvePlayerEntityLocation(framework, flow, worldId, entity))
 		{
+			return false;
+		}
+
+		if (executionWorldId.IsValid() && worldId != executionWorldId)
+		{
+			FWLOG_ERROR(
+				kLogCategory,
+				"Disconnect despawn scope mismatch (sid=%u, targetWorldId=%u, executionWorldId=%u, entity=%u.%u)",
+				flow.sessionId,
+				worldId.GetRaw(),
+				executionWorldId.GetRaw(),
+				entity.id,
+				entity.generation);
 			return false;
 		}
 
@@ -49,7 +74,7 @@ namespace
 			return false;
 		}
 
-		world->GetRuntime().DeferredDestroyEntity(entity);
+		world->GetRuntime().DeferredDestroyEntityIfAlive(entity);
 		return true;
 	}
 
@@ -160,7 +185,8 @@ void ServerSessionSystem::ClearSessionState() noexcept
 
 void ServerSessionSystem::HandleSessionDisconnected(
 	SessionId sessionId,
-	SessionCloseReason reason) noexcept
+	SessionCloseReason reason,
+	WorldId executionWorldId) noexcept
 {
 	const SessionFlow* const existingFlow =
 		_sessionFlowController.FindFlow(sessionId);
@@ -171,7 +197,7 @@ void ServerSessionSystem::HandleSessionDisconnected(
 	(void)_characterSpawnService.CancelPendingSpawn(sessionId);
 	const bool despawnQueued =
 		existingFlow != nullptr &&
-		QueuePlayerEntityDespawn(_framework, flowSnapshot);
+		QueuePlayerEntityDespawn(_framework, flowSnapshot, executionWorldId);
 	if (!despawnQueued)
 	{
 		ReleaseUnboundPlayerNetId(_framework, controlledNetId);
@@ -404,15 +430,39 @@ bool ServerSessionSystem::TryResolveScope(
 	outScopeId = InvalidExecScopeId;
 
 	if (request.targetKind != DynamicTaskTargetKind::SessionCurrentWorld &&
+		request.targetKind != DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope &&
 		request.targetKind != DynamicTaskTargetKind::TypeDefault)
 	{
 		return false;
 	}
 
-	const WorldId currentWorldId =
-		_sessionFlowController.FindCurrentWorldId(
-			static_cast<SessionId>(request.sessionId));
-	if (!currentWorldId.IsValid())
+	const SessionId sessionId = static_cast<SessionId>(request.sessionId);
+	WorldId targetWorldId =
+		_sessionFlowController.FindCurrentWorldId(sessionId);
+
+	if (!targetWorldId.IsValid())
+	{
+		if (const SessionFlow* const flow = _sessionFlowController.FindFlow(sessionId))
+		{
+			Entity entity = Entity::Null();
+			(void)TryResolvePlayerEntityLocation(
+				_framework,
+				*flow,
+				targetWorldId,
+				entity);
+		}
+	}
+
+	if (!targetWorldId.IsValid())
+	{
+		if (const PendingSessionCharacterSpawn* const pending =
+			_characterSpawnService.FindPendingSpawn(sessionId))
+		{
+			targetWorldId = pending->worldId;
+		}
+	}
+
+	if (!targetWorldId.IsValid())
 	{
 		return false;
 	}
@@ -421,7 +471,7 @@ bool ServerSessionSystem::TryResolveScope(
 		scopeId < static_cast<ExecScopeId>(worldIdByScope.size());
 		++scopeId)
 	{
-		if (worldIdByScope[scopeId] == currentWorldId)
+		if (worldIdByScope[scopeId] == targetWorldId)
 		{
 			outScopeId = scopeId;
 			return true;

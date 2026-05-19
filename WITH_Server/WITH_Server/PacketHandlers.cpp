@@ -614,6 +614,7 @@ void RegisterServerPacketHandlers(
     desc.debugName    = "Evt_Disconnected";
     desc.defaultPhase = ExecPhase::Simulate;
     desc.defaultLane  = ExecLane::Serial;
+    desc.defaultTargetKind = DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope;
     desc.dispatchFn   = &HandleDisconnectedEvent;
 
     outDisconnectedTypeId = taskRegistry.Register(desc, sourceRegistry);
@@ -1242,6 +1243,7 @@ ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx)
 
     svc.sessionSystem->HandleSessionDisconnected(
         sessionId,
-        reason);
+        reason,
+        ctx.TryGetWorldId());
     return ExecCallResult::Success;
 }

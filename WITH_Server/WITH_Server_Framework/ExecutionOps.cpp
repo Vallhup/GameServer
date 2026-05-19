@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 
+#include "FrameworkLog.h"
 #include "WorldRuntime.h"
 #include "WorldManager.h"
 #include "WorldRegistry.h"
@@ -10,6 +11,11 @@
 #include "WorldAdmissionService.h"
 #include "PresenceManager.h"
 #include "NetIdRegistry.h"
+
+namespace
+{
+	constexpr const char* kLogCategory = "ExecutionOps";
+}
 
 ExecutionOps::ExecutionOps(
 	WorldManager*			worldManager,
@@ -72,6 +78,13 @@ void ExecutionOps::CommitScope(
 
 	if (!runtime->FlushFrameCommands())
 	{
+		const WorldRuntimeFault& fault = runtime->GetFault();
+		FWLOG_ERROR(
+			kLogCategory,
+			"CommitScope failed while flushing frame commands (scopeId=%u, faultCode=%u, fault='%s')",
+			static_cast<unsigned>(scopeId),
+			static_cast<unsigned>(fault.code),
+			fault.message.c_str());
 		throw std::runtime_error("ExecutionOps::CommitScope - FlushFrameCommands failed");
 	}
 }

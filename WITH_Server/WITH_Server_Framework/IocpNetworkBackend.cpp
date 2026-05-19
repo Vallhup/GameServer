@@ -144,7 +144,7 @@ void IocpNetworkBackend::OnConnectionIdle(IocpConnection* conn) noexcept
 		DynamicTaskRequest request{};
 		request.typeId = _disconnectedTaskTypeId;
 		request.scopeId = 0;
-		request.targetKind = DynamicTaskTargetKind::ExplicitScope;
+		request.targetKind = DynamicTaskTargetKind::TypeDefault;
 		request.payloadKey = static_cast<uint64_t>(reason);
 		request.sessionId = id;
 		_sink.SubmitDynamicTask(request);

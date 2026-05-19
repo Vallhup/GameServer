@@ -32,6 +32,7 @@ enum class DynamicTaskTargetKind : uint8_t
     TypeDefault,
     ExplicitScope,
     SessionCurrentWorld,
+    SessionCurrentWorldOrExplicitScope,
 };
 
 struct DynamicTaskRequest;
@@ -95,6 +96,22 @@ struct DynamicTaskTypeDesc
 // ---------------------------------------------------------------------------
 struct DynamicTaskRequest
 {
+    DynamicTaskRequest() = default;
+
+    DynamicTaskRequest(
+        DynamicTaskTypeId inTypeId,
+        ExecScopeId inScopeId,
+        uint64_t inPayloadKey,
+        int32_t inPriorityBias,
+        uint64_t inRequestFrameIndex) noexcept
+        : typeId(inTypeId)
+        , scopeId(inScopeId)
+        , payloadKey(inPayloadKey)
+        , priorityBias(inPriorityBias)
+        , requestFrameIndex(inRequestFrameIndex)
+    {
+    }
+
     DynamicTaskTypeId typeId{ InvalidDynamicTaskTypeId };
     ExecScopeId       scopeId{ InvalidExecScopeId };
     DynamicTaskTargetKind targetKind{ DynamicTaskTargetKind::TypeDefault };

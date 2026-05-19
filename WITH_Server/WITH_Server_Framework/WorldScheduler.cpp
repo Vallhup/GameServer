@@ -410,7 +410,8 @@ void WorldScheduler::FreezeDynamicTaskRequests(
                 : DynamicTaskTargetKind::ExplicitScope;
         }
 
-        if (targetKind == DynamicTaskTargetKind::SessionCurrentWorld)
+        if (targetKind == DynamicTaskTargetKind::SessionCurrentWorld ||
+            targetKind == DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope)
         {
             ExecScopeId resolvedScopeId = InvalidExecScopeId;
             const bool resolved =
@@ -424,11 +425,23 @@ void WorldScheduler::FreezeDynamicTaskRequests(
 
             if (!resolved)
             {
-                cleanupPayload(req);
-                continue;
-            }
+                if (targetKind == DynamicTaskTargetKind::SessionCurrentWorld)
+                {
+                    cleanupPayload(req);
+                    continue;
+                }
 
-            req.scopeId = resolvedScopeId;
+                if (req.scopeId == InvalidExecScopeId ||
+                    req.scopeId >= static_cast<ExecScopeId>(runtimeByScope.size()))
+                {
+                    cleanupPayload(req);
+                    continue;
+                }
+            }
+            else
+            {
+                req.scopeId = resolvedScopeId;
+            }
             req.targetKind = DynamicTaskTargetKind::ExplicitScope;
         }
 
