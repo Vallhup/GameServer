@@ -38,13 +38,15 @@ void UIManager::Initialize(DX12Core& core)
 
 	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);	
 	RegisterUITexture(L"MainPage", L"../Assets/UI/Textures/MainPage.png", core, resourceUpload);
-	RegisterUITexture(L"PAB", L"../Assets/UI/Textures/PAB.png", core, resourceUpload);					
+	RegisterUITexture(L"PressAnyButton", L"../Assets/UI/Textures/PRB.png", core, resourceUpload);
 	RegisterUITexture(L"LOGIN", L"../Assets/UI/Textures/LOGIN.png", core, resourceUpload);
 	RegisterUITexture(L"EXIT", L"../Assets/UI/Textures/EXIT.png", core, resourceUpload);
 
 	RegisterUITexture(L"LoadingPage", L"../Assets/UI/Textures/LoadingPage.png", core, resourceUpload);
 	RegisterUITexture(L"LoadingPlaza", L"../Assets/UI/Textures/LoadingPlaza.png", core, resourceUpload);
 	RegisterUITexture(L"LoadingVillage", L"../Assets/UI/Textures/LoadingVillage.png", core, resourceUpload);
+	RegisterUITexture(L"LoadingCastle", L"../Assets/UI/Textures/LoadingCastle.png", core, resourceUpload);
+	RegisterUITexture(L"LoadingCathedral", L"../Assets/UI/Textures/LoadingCathedral.png", core, resourceUpload);
 	RegisterUITexture(L"LoadingBarBack", L"../Assets/UI/Textures/LoadingBarBack.png", core, resourceUpload);
 	RegisterUITexture(L"LoadingBar", L"../Assets/UI/Textures/LoadingBar.png", core, resourceUpload);
 	RegisterUITexture(L"LoadingArrow", L"../Assets/UI/Textures/LoadingArrow.png", core, resourceUpload);
@@ -54,7 +56,6 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"HpBar", L"../Assets/UI/Textures/HpBar.png", core, resourceUpload);
 	RegisterUITexture(L"HpBar2", L"../Assets/UI/Textures/HpBar2.png", core, resourceUpload);
 	RegisterUITexture(L"StaminaBar", L"../Assets/UI/Textures/StaminaBar.png", core, resourceUpload);
-	RegisterUITexture(L"PressAnyButton", L"../Assets/UI/Textures/PRB.png", core, resourceUpload);
 
 	RegisterUITexture(L"CharBackground", L"../Assets/UI/Textures/charBackground.png", core, resourceUpload);
 	RegisterUITexture(L"CharKnight", L"../Assets/UI/Textures/CharKnight.png", core, resourceUpload);

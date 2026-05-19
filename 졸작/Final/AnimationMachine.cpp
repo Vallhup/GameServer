@@ -3,8 +3,6 @@
 #include "Animator.h"
 #include "GameObject.h"
 
-#include <algorithm>
-
 void AnimationMachine::Init()
 {
     animator = GetGameObject()->GetComponent<Animator>();
@@ -67,6 +65,7 @@ void AnimationMachine::OnServerClipConfirm(
     if (currentClipName != clipName)
     {
         PlayClip(clipName);
+
         if (animator)
         {
             animator->SetAnimationProgress(lastServerNormalizedTime);

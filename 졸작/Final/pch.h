@@ -26,6 +26,8 @@
 #include <functional>
 #include <float.h>
 #include <typeindex>
+#include <cstdint>
+#include <algorithm>
 using namespace std;
 
 #include "d3dx12.h"

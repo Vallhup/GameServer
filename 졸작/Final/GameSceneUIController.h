@@ -5,6 +5,8 @@
 class ImageUI;
 class TextUI;
 
+enum class PartyView { Lobby, Created };
+
 class GameSceneUIController : public UIController
 {
 public:
@@ -32,6 +34,8 @@ private:
 	void InitKeyGuide();
 	void InitSettingWindow();
 
+	void ShowPartyView(PartyView view);
+
 	SceneType sceneType;
 
 	shared_ptr<ImageUI> statusBackImage;
@@ -57,6 +61,9 @@ private:
 	shared_ptr<ImageUI> partyListBox;
 	shared_ptr<ImageUI> partyCreateButton;
 	shared_ptr<ImageUI> partyJoinButton;
+	shared_ptr<ImageUI> partyMyPartyBox;
+	shared_ptr<ImageUI> partyBackButton;
+	PartyView partyView = PartyView::Lobby;
 
 	shared_ptr<ImageUI> escWindow;
 	shared_ptr<ImageUI> escContinueButton;

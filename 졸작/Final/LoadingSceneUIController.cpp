@@ -94,8 +94,8 @@ void LoadingSceneUIController::SetTargetScene(SceneType type)
 	{
 	case SceneType::Plaza:   texName = L"LoadingPlaza"; break;
 	case SceneType::Village: texName = L"LoadingVillage";  break;
-	case SceneType::Castle:  texName = L"LoadingPage";  break;
-	case SceneType::Final:   texName = L"LoadingPage";  break;
+	case SceneType::Castle:  texName = L"LoadingCastle";  break;
+	case SceneType::Final:   texName = L"LoadingCathedral";  break;
 	}
 
 	if (mainImage) mainImage->SetTexture(texName);

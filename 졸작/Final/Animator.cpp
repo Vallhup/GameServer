@@ -4,8 +4,6 @@
 #include "Shader.h"
 #include "RootSignature.h"
 
-#include <algorithm>
-
 void Animator::Update(float deltaTime)
 {
     if (mAnimations.empty()) return;
@@ -329,7 +327,7 @@ void Animator::SetAnimationProgress(float normalizedTime)
         return;
     }
 
-    const float clamped = std::clamp(normalizedTime, 0.0f, 0.999f);
+    const float clamped = clamp(normalizedTime, 0.0f, 0.999f);
     mUpdateTime = clip.duration * clamped;
     UpdateCurrentAnimation(0.0f);
 }
