@@ -111,38 +111,13 @@ void ServerDirtyReplicationService::BuildAndStage(
 			{
 				const CombatStatStateComp* stats =
 					view.GetComponent<CombatStatStateComp>(entity);
-				const SessionId ownerSessionId =
-					sessionFlow.FindOwnerSession(netId);
-				const bool ownerSessionExcluded =
-					std::find(
-						excludedSessionIds.begin(),
-						excludedSessionIds.end(),
-						ownerSessionId) != excludedSessionIds.end();
-				if (stats != nullptr &&
-					ownerSessionId != 0 &&
-					!ownerSessionExcluded)
+				if (stats != nullptr)
 				{
-					Protocol::SC_STAT_CHANGE_PACKET statPacket;
-					statPacket.set_netid(netId.GetRaw());
-					statPacket.set_curhp(
-						static_cast<uint32_t>(std::max(0, stats->currentHp)));
-					statPacket.set_maxhp(
-						static_cast<uint32_t>(std::max(0, stats->maxHp)));
-					statPacket.set_curstamina(
-						static_cast<uint32_t>(std::max(0, stats->currentStamina)));
-					statPacket.set_maxstamina(
-						static_cast<uint32_t>(std::max(0, stats->maxStamina)));
-					statPacket.set_power(
-						static_cast<uint32_t>(std::max(0, stats->attackPower)));
-					statPacket.set_attackspeed(stats->attackSpeed);
-					statPacket.set_defense(
-						static_cast<uint32_t>(std::max(0, stats->defense)));
-					statPacket.set_movespeed(std::max(0.0f, stats->moveSpeed));
-					(void)ServerPacketStager::StageReplicationPacket(
+					(void)ServerPacketStager::StageStatPacketToSessions(
 						network,
-						PacketType::SC_STAT_CHANGE,
-						std::span<const SessionId>(&ownerSessionId, 1),
-						statPacket);
+						worldSessionIds,
+						netId,
+						*stats);
 				}
 			}
 

@@ -69,6 +69,18 @@ public:
 		uint32_t requestId,
 		uint32_t reason);
 
+	static bool StageStatPacketToSession(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		NetId netId,
+		const CombatStatStateComp& stats);
+
+	static bool StageStatPacketToSessions(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		NetId netId,
+		const CombatStatStateComp& stats);
+
 	template<typename TPacket>
 	static bool StageReplicationPacket(
 		NetworkRuntime& network,

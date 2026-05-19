@@ -176,6 +176,86 @@ bool ServerPacketStager::StageWorldTransitionBeginPacket(
 	return staged;
 }
 
+bool ServerPacketStager::StageStatPacketToSession(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	NetId netId,
+	const CombatStatStateComp& stats)
+{
+	Protocol::SC_STAT_CHANGE_PACKET statPacket;
+	statPacket.set_netid(netId.GetRaw());
+	statPacket.set_curhp(
+		static_cast<uint32_t>(std::max(0, stats.currentHp)));
+	statPacket.set_maxhp(
+		static_cast<uint32_t>(std::max(0, stats.maxHp)));
+	statPacket.set_curstamina(
+		static_cast<uint32_t>(std::max(0, stats.currentStamina)));
+	statPacket.set_maxstamina(
+		static_cast<uint32_t>(std::max(0, stats.maxStamina)));
+	statPacket.set_power(
+		static_cast<uint32_t>(std::max(0, stats.attackPower)));
+	statPacket.set_attackspeed(stats.attackSpeed);
+	statPacket.set_defense(
+		static_cast<uint32_t>(std::max(0, stats.defense)));
+	statPacket.set_movespeed(std::max(0.0f, stats.moveSpeed));
+
+	SendBuffer* const buffer =
+		PacketFactory::Serialize(PacketType::SC_STAT_CHANGE, statPacket);
+	if (buffer == nullptr)
+	{
+		return false;
+	}
+
+	const bool staged =
+		network.StageUnicast(
+			sessionId,
+			std::span<const uint8_t>(buffer->data, buffer->size));
+	SendBufferPool::Get().Release(buffer);
+	return staged;
+}
+
+bool ServerPacketStager::StageStatPacketToSessions(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	NetId netId,
+	const CombatStatStateComp& stats)
+{
+	if (sessionIds.empty())
+	{
+		return true;
+	}
+
+	Protocol::SC_STAT_CHANGE_PACKET statPacket;
+	statPacket.set_netid(netId.GetRaw());
+	statPacket.set_curhp(
+		static_cast<uint32_t>(std::max(0, stats.currentHp)));
+	statPacket.set_maxhp(
+		static_cast<uint32_t>(std::max(0, stats.maxHp)));
+	statPacket.set_curstamina(
+		static_cast<uint32_t>(std::max(0, stats.currentStamina)));
+	statPacket.set_maxstamina(
+		static_cast<uint32_t>(std::max(0, stats.maxStamina)));
+	statPacket.set_power(
+		static_cast<uint32_t>(std::max(0, stats.attackPower)));
+	statPacket.set_attackspeed(stats.attackSpeed);
+	statPacket.set_defense(
+		static_cast<uint32_t>(std::max(0, stats.defense)));
+	statPacket.set_movespeed(std::max(0.0f, stats.moveSpeed));
+
+	SendBuffer* const buffer =
+		PacketFactory::Serialize(PacketType::SC_STAT_CHANGE, statPacket);
+	if (buffer == nullptr)
+	{
+		return false;
+	}
+
+	const bool staged = network.StageMulticast(
+		sessionIds,
+		std::span<const uint8_t>(buffer->data, buffer->size));
+	SendBufferPool::Get().Release(buffer);
+	return staged;
+}
+
 bool ServerPacketStager::StageWorldTransitionRejectedPacket(
 	NetworkRuntime& network,
 	SessionId sessionId,

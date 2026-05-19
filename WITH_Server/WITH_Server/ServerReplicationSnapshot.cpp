@@ -114,5 +114,16 @@ void ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 			entityNetId,
 			spawnType.characterId,
 			transform);
+
+		const CombatStatStateComp* const stats =
+			view.GetComponent<CombatStatStateComp>(entity);
+		if (stats != nullptr)
+		{
+			(void)ServerPacketStager::StageStatPacketToSession(
+				network,
+				sessionId,
+				entityNetId,
+				*stats);
+		}
 	}
 }
