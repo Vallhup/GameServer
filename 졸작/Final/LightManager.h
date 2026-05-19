@@ -19,7 +19,7 @@ struct DeferredLightConstants {
 class LightManager
 {
 public:
-	static constexpr UINT MAX_LIGHTS = 256;
+	static constexpr UINT MAX_LIGHTS = 512;
 
 	void Initialize(ID3D12Device* device);
 	void UpdateLights();

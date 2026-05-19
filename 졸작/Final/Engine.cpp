@@ -80,7 +80,7 @@ void Engine::Update(const float deltaTime)
 
     uiManager->Update(deltaTime);
 
-    soundManager->Update();
+    soundManager->Update(deltaTime);
 }
 
 void Engine::Render()

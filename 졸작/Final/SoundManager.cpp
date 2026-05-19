@@ -13,8 +13,22 @@ void SoundManager::Initialize()
     sfxGroup->setVolume(0.5f);
 }
 
-void SoundManager::Update()
+void SoundManager::Update(float deltaTime)
 {
+    if (fadeChannel)
+    {
+        fadeTimer -= deltaTime;
+        if (fadeTimer <= 0.0f)
+        {
+            fadeChannel->stop();
+            fadeChannel = nullptr;
+        }
+        else
+        {
+            fadeChannel->setVolume(fadeTimer / fadeDuration);
+        }
+    }
+
     if (system)
         system->update();
 }
@@ -57,11 +71,25 @@ void SoundManager::PlayBGM(const char* path)
     system->playSound(bgmCache[key], bgmGroup, false, &bgmChannel);
 }
 
-void SoundManager::StopBGM()
+void SoundManager::StopBGM(float fadeSeconds)
 {
     if (bgmChannel)
     {
-        bgmChannel->stop();
+        if (fadeSeconds > 0.0f)
+        {
+            // 이전에 페이드 중이던 채널이 남아 있으면 즉시 정리
+            if (fadeChannel)
+                fadeChannel->stop();
+
+            fadeChannel = bgmChannel;
+            fadeDuration = fadeSeconds;
+            fadeTimer = fadeSeconds;
+        }
+        else
+        {
+            bgmChannel->stop();
+        }
+
         bgmChannel = nullptr;
     }
 

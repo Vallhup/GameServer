@@ -9,7 +9,7 @@
 
 void TitleScene::Release()
 {
-	SOUND_MANAGER->StopBGM();
+	SOUND_MANAGER->StopBGM(1.5f);
 
 	OutputDebugStringA("TitleScene Data has been deleted!! \n----------------------------------------\n");
 }

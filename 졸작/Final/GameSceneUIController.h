@@ -46,6 +46,7 @@ private:
 	shared_ptr<ImageUI> localCharBarsBack;
 	shared_ptr<ImageUI> localCharHpBar;
 	shared_ptr<ImageUI> localCharStaminaBar;
+	shared_ptr<ImageUI> localCharPotion;
 
 	shared_ptr<TextUI>  tempStatusText;
 

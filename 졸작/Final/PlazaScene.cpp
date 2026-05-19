@@ -114,41 +114,6 @@ void PlazaScene::UpdateScene(const float deltaTime)
 	if (effectObjects.size() > 6 && INPUT.GetKeyDown('7'))
 		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectObjects.size() > 7 && INPUT.GetKeyDown('8'))
-		effectObjects[8]->GetComponent<EffectRenderer>()->PlayEffect();
-
-	// SwordThunder(8번 이펙트)는 매 프레임 플레이어 손 본을 추적해 위치/회전 갱신
-	if (effectObjects.size() > 8 && effectObjects[8] && myPlayer) {
-		if (auto effectRenderer = effectObjects[8]->GetComponent<EffectRenderer>())
-		{
-			auto animator = myPlayer->GetComponent<Animator>();
-			auto transform = myPlayer->GetComponent<Transform>();
-
-			if (animator && animator->IsInitialized())
-			{
-				XMFLOAT3 bonePos = animator->GetBonePosition(45);
-				XMVECTOR boneRot = animator->GetBoneRotation(45);
-
-				XMMATRIX worldMat = transform->GetWorldMatrix();
-				XMVECTOR worldPos = XMVector3TransformCoord(XMLoadFloat3(&bonePos), worldMat);
-
-				// z축 90도 초기 회전 - DirectX12와 effekseer 축 차이
-				XMVECTOR offsetRot = XMQuaternionRotationRollPitchYaw(0, XM_PIDIV2, 0);
-
-				// 뼈 회전 × 플레이어 회전
-				XMFLOAT3 playerRot = transform->GetRotation();
-				XMVECTOR playerRotQuat = XMQuaternionRotationRollPitchYaw(playerRot.x, playerRot.y, playerRot.z);
-
-				// 초기 회전 → 뼈 회전 → 플레이어 회전
-				XMVECTOR finalRot = XMQuaternionMultiply(offsetRot, boneRot);
-				finalRot = XMQuaternionMultiply(finalRot, playerRotQuat);
-
-				XMMATRIX finalMat = XMMatrixRotationQuaternion(finalRot) * XMMatrixTranslationFromVector(worldPos);
-				effectRenderer->SetWorldMatrix(finalMat);
-			}
-		}
-	}
-
 	if (myPlayer)	// Temporary Code for Player Centered Shadow Mapping
 	{
 		auto transform = myPlayer->GetComponent<Transform>();
@@ -352,8 +317,7 @@ void PlazaScene::CreateEffectSamples()
 		{u"Atmosphere", 484.607025f, 10.f, 481.862946f},
 		{u"CandleFire5", 484.607025f, 6.f, 481.862946f},
 		{u"CandleFire5", 475.607025f, 6.f, 481.862946f},
-		{u"Dissolve", 484.607025f, 6.f, 481.862946f},
-		{u"test4", 484.607025f, 6.f, 481.862946f}
+		{u"Dissolve", 484.607025f, 6.f, 481.862946f}
 	};
 
 	for (int i = 0; i < info.size(); ++i)

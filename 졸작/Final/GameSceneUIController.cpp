@@ -78,6 +78,12 @@ void GameSceneUIController::InitLocalPlayerHUD()
 	localCharStaminaBar->SetHoriLength(WinSize.y * 0.2566);
 	localCharStaminaBar->SetVertLength(WinSize.y * 0.00626);
 	widgets.push_back(localCharStaminaBar);
+
+	localCharPotion = make_shared<ImageUI>(uiManager, L"Potion", ImageUIState::Visible);
+	localCharPotion->SetPosition(WinSize.x * 0.023f, WinSize.y * 0.75f);
+	localCharPotion->SetHoriLength(WinSize.y * 0.2176f);
+	localCharPotion->SetVertLength(WinSize.y * 0.1952f);
+	widgets.push_back(localCharPotion);
 }
 
 void GameSceneUIController::InitMapNameOverlay()
@@ -218,7 +224,7 @@ void GameSceneUIController::InitStatWindow()
 	statusArrowRight->SetHoverScale(1.15f);
 	widgets.push_back(statusArrowRight);
 
-	tempStatusText = make_shared<TextUI>(uiManager, L"Texture", L"MalgunGothic");
+	tempStatusText = make_shared<TextUI>(uiManager, L"Texture", L"VerdanaBold");
 	tempStatusText->SetPosition(0.0f, 0.0f);
 	tempStatusText->SetText(L"TempText");
 	widgets.push_back(tempStatusText);
@@ -532,13 +538,13 @@ void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curSta
 void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curStamina, int maxStamina, int power, double aSpeed, int defense, double mSpeed)
 {
 	wstring text =
-		L"curHp: " + to_wstring(curHp) + L"\n" +
-		L"maxHp: " + to_wstring(maxHp) + L"\n" +
-		L"curStamina: " + to_wstring(curStamina) + L"\n" +
-		L"maxStamina: " + to_wstring(maxStamina) + L"\n" +
-		L"power: " + to_wstring(power) + L"\n" +
+		L"CurHp: " + to_wstring(curHp) + L"\n" +
+		L"MaxHp: " + to_wstring(maxHp) + L"\n" +
+		L"CurStamina: " + to_wstring(curStamina) + L"\n" +
+		L"MaxStamina: " + to_wstring(maxStamina) + L"\n" +
+		L"Power: " + to_wstring(power) + L"\n" +
 		L"aSpeed: " + to_wstring(aSpeed) + L"\n" +
-		L"defense" + to_wstring(defense) + L"\n" +
+		L"Defense: " + to_wstring(defense) + L"\n" +
 		L"mSpeed: " + to_wstring(mSpeed) + L"\n";
 
 	if (tempStatusText)

@@ -36,7 +36,9 @@ void UIManager::Initialize(DX12Core& core)
 
 	spriteBatch = make_unique<SpriteBatch>(core.GetDevice(), resourceUpload, pd, nullptr);
 
-	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);	
+	RegisterFont(L"MalgunGothic", L"../Assets/UI/Fonts/MalgunGothic.spritefont", core, resourceUpload);
+	RegisterFont(L"VerdanaBold", L"../Assets/UI/Fonts/VerdanaBold.spritefont", core, resourceUpload);
+
 	RegisterUITexture(L"MainPage", L"../Assets/UI/Textures/MainPage.png", core, resourceUpload);
 	RegisterUITexture(L"PressAnyButton", L"../Assets/UI/Textures/PRB.png", core, resourceUpload);
 	RegisterUITexture(L"LOGIN", L"../Assets/UI/Textures/LOGIN.png", core, resourceUpload);
@@ -56,12 +58,16 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"HpBar", L"../Assets/UI/Textures/HpBar.png", core, resourceUpload);
 	RegisterUITexture(L"HpBar2", L"../Assets/UI/Textures/HpBar2.png", core, resourceUpload);
 	RegisterUITexture(L"StaminaBar", L"../Assets/UI/Textures/StaminaBar.png", core, resourceUpload);
+	RegisterUITexture(L"Potion", L"../Assets/UI/Textures/Potion.png", core, resourceUpload);
 
-	RegisterUITexture(L"CharBackground", L"../Assets/UI/Textures/charBackground.png", core, resourceUpload);
+	RegisterUITexture(L"CharBackground", L"../Assets/UI/Textures/CharBackground.png", core, resourceUpload);
 	RegisterUITexture(L"CharKnight", L"../Assets/UI/Textures/CharKnight.png", core, resourceUpload);
 	RegisterUITexture(L"CharLancer", L"../Assets/UI/Textures/CharLancer.png", core, resourceUpload);
 	RegisterUITexture(L"CharPaladin", L"../Assets/UI/Textures/CharPaladin.png", core, resourceUpload);
 	RegisterUITexture(L"CharHover", L"../Assets/UI/Textures/CharHover.png", core, resourceUpload);
+	RegisterUITexture(L"SelectWindow", L"../Assets/UI/Textures/SelectWindow.png", core, resourceUpload);
+	RegisterUITexture(L"OK", L"../Assets/UI/Textures/OK.png", core, resourceUpload);
+	RegisterUITexture(L"CANCEL", L"../Assets/UI/Textures/CANCEL.png", core, resourceUpload);
 
 	RegisterUITexture(L"PlazaName", L"../Assets/UI/Textures/PlazaName.png", core, resourceUpload);
 	RegisterUITexture(L"VillageName", L"../Assets/UI/Textures/VillageName.png", core, resourceUpload);
@@ -85,6 +91,9 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"PartyJoin", L"../Assets/UI/Textures/PartyJoin.png", core, resourceUpload);
 	RegisterUITexture(L"PartyMyParty", L"../Assets/UI/Textures/PartyMyParty.png", core, resourceUpload);
 	RegisterUITexture(L"PartyBack", L"../Assets/UI/Textures/PartyBack.png", core, resourceUpload);
+	RegisterUITexture(L"PartyKnight", L"../Assets/UI/Textures/PartyKnight.png", core, resourceUpload);
+	RegisterUITexture(L"PartyLancer", L"../Assets/UI/Textures/PartyLancer.png", core, resourceUpload);
+	RegisterUITexture(L"PartyPaladin", L"../Assets/UI/Textures/PartyPaladin.png", core, resourceUpload);
 
 	RegisterUITexture(L"EscWindow", L"../Assets/UI/Textures/EscWindow.png", core, resourceUpload);
 	RegisterUITexture(L"ESCContinue", L"../Assets/UI/Textures/ESCContinue.png", core, resourceUpload);
@@ -94,6 +103,11 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"KeyGuide", L"../Assets/UI/Textures/KeyGuide.png", core, resourceUpload);
 
 	RegisterUITexture(L"SettingWindow", L"../Assets/UI/Textures/SettingWindow.png", core, resourceUpload);
+
+	RegisterUITexture(L"DeathCount", L"../Assets/UI/Textures/DeathCount.png", core, resourceUpload);
+
+	RegisterUITexture(L"VICTORY", L"../Assets/UI/Textures/VICTORY.png", core, resourceUpload);
+	RegisterUITexture(L"DEFEAT", L"../Assets/UI/Textures/DEFEAT.png", core, resourceUpload);
 
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
 	uploadFinished.wait();
