@@ -64,13 +64,13 @@
       "entries": [
         {
           "request": "LightAttack",
-          "candidateAbilityKeys": ["Ability.Paladin_LightAttack1", "Ability.Paladin_LightAttack2", "Ability.Paladin_LightAttack3"],
+          "candidateAbilityKeys": ["Ability.Paladin_SpecialAttack", "Ability.Paladin_LightAttack1", "Ability.Paladin_LightAttack2", "Ability.Paladin_LightAttack3"],
           "selectionPolicy": "OrderedFirstValid",
           "priority": 100
         },
         {
           "request": "HeavyAttack",
-          "candidateAbilityKeys": ["Ability.Paladin_SpecialAttack", "Ability.Paladin_HeavyAttack"],
+          "candidateAbilityKeys": ["Ability.Paladin_HeavyAttack"],
           "selectionPolicy": "OrderedFirstValid",
           "priority": 100
         },

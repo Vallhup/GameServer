@@ -197,6 +197,9 @@
     <ClCompile Include="ECS\System\Phase8\RecoverStaminaSystem.cpp">
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\Phase8\ResolveGameplayEffectStateSystem.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
     <ClCompile Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.cpp">
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
@@ -545,6 +548,9 @@
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\RecoverStaminaSystem.h">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase8\ResolveGameplayEffectStateSystem.h">
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h">

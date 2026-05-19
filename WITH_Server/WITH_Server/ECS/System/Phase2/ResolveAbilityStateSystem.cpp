@@ -67,11 +67,11 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<14, 0, 2> ResolveAbilityStateSystem::kMetaStorage =
+const StaticSystemMetaStorage<15, 0, 2> ResolveAbilityStateSystem::kMetaStorage =
     MakeMetaStorage(
         SysTag<ResolveAbilityStateSystem>(),
         "ResolveAbilityStateSystem",
-        std::array<AccessSpec, 14>
+        std::array<AccessSpec, 15>
         {
             WriteImmediate(ComponentRes<AbilityStateComp>()),
             ReadImmediate(ComponentRes<LocomotionStateComp>()),
@@ -87,6 +87,7 @@ const StaticSystemMetaStorage<14, 0, 2> ResolveAbilityStateSystem::kMetaStorage 
             ReadImmediate(ComponentRes<PendingDespawnTag>()),
             ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
             ReadImmediate(ComponentRes<ConsumableInventoryComp>()),
+            ReadImmediate(ComponentRes<GameplayTagStateComp>()),
         },
         std::array<SystemTag, 0>{},
         std::array<SystemTag, 2>
@@ -134,6 +135,8 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 			ctx.ecs.GetComponent<ConsumableInventoryComp>(entity);
 		const AIPerceptionComp* perception =
 			ctx.ecs.GetComponent<AIPerceptionComp>(entity);
+		const GameplayTagStateComp* tags =
+			ctx.ecs.GetComponent<GameplayTagStateComp>(entity);
 		const AbilityInterruptQueueComp* interruptQueue =
 			ctx.ecs.GetComponent<AbilityInterruptQueueComp>(entity);
 
@@ -198,6 +201,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 				stats,
 				inventory,
 				perception,
+				tags,
 				decision))
 			{
 				ApplyTransition(abilityState, decision);
@@ -245,6 +249,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 			stats,
 			inventory,
 			perception,
+			tags,
 			decision))
 		{
 			ApplyTransition(abilityState, decision);
@@ -395,6 +400,7 @@ bool ResolveAbilityStateSystem::TryResolveCancelTransition(
 	const CombatStatStateComp* stats,
 	const ConsumableInventoryComp* inventory,
 	const AIPerceptionComp* perception,
+	const GameplayTagStateComp* tags,
 	TransitionDecision& outDecision)
 {
 	const std::vector<RequestCandidate> candidates =
@@ -417,7 +423,7 @@ bool ResolveAbilityStateSystem::TryResolveCancelTransition(
 		if (candidate.abilityId == InvalidAbilityId ||
 			!profileService.IsAbilityAvailable(characterId, candidate.abilityId) ||
 			!IsAbilityStartLocomotionAllowed(candidate.abilityId, locomotionState.mode) ||
-			!IsAbilityRequestAllowed(candidate.abilityId, stats, inventory, perception))
+			!IsAbilityRequestAllowed(candidate.abilityId, stats, inventory, perception, tags))
 		{
 			continue;
 		}
@@ -471,6 +477,7 @@ bool ResolveAbilityStateSystem::TryResolveIdleRequestTransition(
 	const CombatStatStateComp* stats,
 	const ConsumableInventoryComp* inventory,
 	const AIPerceptionComp* perception,
+	const GameplayTagStateComp* tags,
 	TransitionDecision& outDecision)
 {
 	const std::vector<RequestCandidate> candidates =
@@ -484,7 +491,7 @@ bool ResolveAbilityStateSystem::TryResolveIdleRequestTransition(
 		if (candidate.abilityId == InvalidAbilityId ||
 			!profileService.IsAbilityAvailable(characterId, candidate.abilityId) ||
 			!IsAbilityStartLocomotionAllowed(candidate.abilityId, locomotionState.mode) ||
-			!IsAbilityRequestAllowed(candidate.abilityId, stats, inventory, perception))
+			!IsAbilityRequestAllowed(candidate.abilityId, stats, inventory, perception, tags))
 		{
 			continue;
 		}
@@ -748,11 +755,28 @@ bool ResolveAbilityStateSystem::IsAbilityRequestAllowed(
 	AbilityId abilityId,
 	const CombatStatStateComp* stats,
 	const ConsumableInventoryComp* inventory,
-	const AIPerceptionComp* perception)
+	const AIPerceptionComp* perception,
+	const GameplayTagStateComp* tags)
 {
 	const AbilityDef* abilityDef =
 		GameplayContentCatalogSnapshot::Current().Abilities().Find(abilityId);
 	if (abilityDef == nullptr)
+	{
+		return false;
+	}
+
+	const GameplayTagMask ownerTags = BuildGameplayTagMask(tags);
+	if (!EvaluateGameplayTagQuery(
+			abilityDef->activation.requiredOwnerTags,
+			ownerTags,
+			true))
+	{
+		return false;
+	}
+	if (EvaluateGameplayTagQuery(
+			abilityDef->activation.blockedOwnerTags,
+			ownerTags,
+			false))
 	{
 		return false;
 	}

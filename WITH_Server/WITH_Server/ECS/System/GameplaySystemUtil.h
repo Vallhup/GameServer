@@ -95,6 +95,104 @@ namespace GameplaySystemUtil
 			ecs.HasComponent<PendingWorldTransferTag>(entity);
 	}
 
+	inline GameplayTagMask GameplayTagBit(GameplayTagId tagId)
+	{
+		if (tagId == InvalidGameplayTagId || tagId > 64)
+		{
+			return 0;
+		}
+
+		return GameplayTagMask{ 1 } << (tagId - 1);
+	}
+
+	inline GameplayTagMask BuildGameplayTagMask(
+		const GameplayTagStateComp* tagState)
+	{
+		if (tagState == nullptr)
+		{
+			return 0;
+		}
+
+		GameplayTagMask mask = tagState->dynamicTags;
+		for (const GameplayTagCountEntry& entry : tagState->countedTags)
+		{
+			if (entry.count > 0)
+			{
+				mask |= GameplayTagBit(entry.tagId);
+			}
+		}
+
+		return mask;
+	}
+
+	inline bool HasGameplayTag(GameplayTagMask mask, GameplayTagId tagId)
+	{
+		const GameplayTagMask bit = GameplayTagBit(tagId);
+		return bit != 0 && (mask & bit) != 0;
+	}
+
+	inline bool EvaluateGameplayTagQuery(
+		const GameplayTagQueryDef& query,
+		GameplayTagMask mask,
+		bool noneResult)
+	{
+		switch (query.op)
+		{
+		case GameplayTagQueryOp::None:
+			return noneResult;
+		case GameplayTagQueryOp::All:
+			for (GameplayTagId tagId : query.tags)
+			{
+				if (!HasGameplayTag(mask, tagId))
+				{
+					return false;
+				}
+			}
+			for (const GameplayTagQueryDef& child : query.children)
+			{
+				if (!EvaluateGameplayTagQuery(child, mask, noneResult))
+				{
+					return false;
+				}
+			}
+			return true;
+		case GameplayTagQueryOp::Any:
+			for (GameplayTagId tagId : query.tags)
+			{
+				if (HasGameplayTag(mask, tagId))
+				{
+					return true;
+				}
+			}
+			for (const GameplayTagQueryDef& child : query.children)
+			{
+				if (EvaluateGameplayTagQuery(child, mask, noneResult))
+				{
+					return true;
+				}
+			}
+			return false;
+		case GameplayTagQueryOp::Not:
+			for (GameplayTagId tagId : query.tags)
+			{
+				if (HasGameplayTag(mask, tagId))
+				{
+					return false;
+				}
+			}
+			for (const GameplayTagQueryDef& child : query.children)
+			{
+				if (EvaluateGameplayTagQuery(child, mask, noneResult))
+				{
+					return false;
+				}
+			}
+			return true;
+		default:
+			return noneResult;
+		}
+	}
+
 	inline const AbilitySetDef* FindCharacterAbilitySet(
 		CharacterId characterId)
 	{

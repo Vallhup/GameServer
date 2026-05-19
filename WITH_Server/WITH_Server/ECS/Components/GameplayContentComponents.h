@@ -133,6 +133,7 @@ struct ActiveGameplayEffectEntry
 	uint32_t instanceId{ 0 };
 	Entity source{ Entity::Null() };
 	float remainingDurationSec{ 0.0f };
+	float counterValue{ 0.0f };
 	uint16_t stackCount{ 0 };
 	uint64_t appliedOrder{ 0 };
 };

@@ -717,7 +717,17 @@
             "aiInterruptible": false
           }
         ],
-        "cancelRules": []
+        "cancelRules": [
+          {
+            "cause": "LightAttackCancel",
+            "toAbilityKey": "Ability.Paladin_SpecialAttack",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 200,
+            "aiInterruptible": false
+          }
+        ]
       }
     },
     {

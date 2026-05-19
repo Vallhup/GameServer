@@ -32,7 +32,7 @@ private:
 		float directionZ{ 0.0f };
 	};
 
-    static const StaticSystemMetaStorage<14, 0, 2> kMetaStorage;
+    static const StaticSystemMetaStorage<15, 0, 2> kMetaStorage;
 
 	static bool TryHandleBlockingState(
 		SystemContext& ctx,
@@ -60,6 +60,7 @@ private:
 		const CombatStatStateComp* stats,
 		const ConsumableInventoryComp* inventory,
 		const AIPerceptionComp* perception,
+		const GameplayTagStateComp* tags,
 		TransitionDecision& outDecision);
 
 	static bool TryResolveIdleRequestTransition(
@@ -71,6 +72,7 @@ private:
 		const CombatStatStateComp* stats,
 		const ConsumableInventoryComp* inventory,
 		const AIPerceptionComp* perception,
+		const GameplayTagStateComp* tags,
 		TransitionDecision& outDecision);
 
 	static bool TryResolveEndPolicyTransition(
@@ -102,7 +104,8 @@ private:
 		AbilityId abilityId,
 		const CombatStatStateComp* stats,
 		const ConsumableInventoryComp* inventory,
-		const AIPerceptionComp* perception);
+		const AIPerceptionComp* perception,
+		const GameplayTagStateComp* tags);
 
 	static bool IsAbilityStartLocomotionAllowed(
 		AbilityId abilityId,

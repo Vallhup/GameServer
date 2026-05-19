@@ -217,6 +217,7 @@
     <ClCompile Include="ECS\System\Phase8\CommitCombatResultSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\FinalizePostCommitStateSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\RecoverStaminaSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase8\ResolveGameplayEffectStateSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.cpp" />
     <ClCompile Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.cpp" />
     <ClCompile Include="FrameworkFrameEventHarvester.cpp" />
@@ -348,6 +349,7 @@
     <ClInclude Include="ECS\System\Phase8\CommitCombatResultSystem.h" />
     <ClInclude Include="ECS\System\Phase8\FinalizePostCommitStateSystem.h" />
     <ClInclude Include="ECS\System\Phase8\RecoverStaminaSystem.h" />
+    <ClInclude Include="ECS\System\Phase8\ResolveGameplayEffectStateSystem.h" />
     <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h" />
     <ClInclude Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.h" />
     <ClInclude Include="ECS\Components\GameplayContentComponents.h" />

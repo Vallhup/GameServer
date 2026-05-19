@@ -64,13 +64,13 @@
       "entries": [
         {
           "request": "LightAttack",
-          "candidateAbilityKeys": ["Ability.Lancer_LightAttack1", "Ability.Lancer_LightAttack2", "Ability.Lancer_LightAttack3"],
+          "candidateAbilityKeys": ["Ability.Lancer_SpecialAttack", "Ability.Lancer_LightAttack1", "Ability.Lancer_LightAttack2", "Ability.Lancer_LightAttack3"],
           "selectionPolicy": "OrderedFirstValid",
           "priority": 100
         },
         {
           "request": "HeavyAttack",
-          "candidateAbilityKeys": ["Ability.Lancer_SpecialAttack", "Ability.Lancer_HeavyAttack"],
+          "candidateAbilityKeys": ["Ability.Lancer_HeavyAttack"],
           "selectionPolicy": "OrderedFirstValid",
           "priority": 100
         },

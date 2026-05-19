@@ -33,11 +33,11 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<15> CommitCombatResultSystem::kMetaStorage =
+const StaticSystemMetaStorage<14> CommitCombatResultSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<CommitCombatResultSystem>(),
 		"CommitCombatResultSystem",
-		std::array<AccessSpec, 15>
+		std::array<AccessSpec, 14>
 	{
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
@@ -52,8 +52,7 @@ const StaticSystemMetaStorage<15> CommitCombatResultSystem::kMetaStorage =
 		ReadImmediate(ComponentRes<AITypeComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
-		WriteDeferred(CommandBufferRes()),
-		WriteDeferred(ComponentRes<PendingGameplayEffectApplyComp>()),
+		WriteImmediate(ComponentRes<PendingGameplayEffectApplyComp>()),
 	});
 
 void CommitCombatResultSystem::Execute(SystemContext& ctx)
@@ -411,12 +410,12 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 
 		if (result.pendingParryEffectId.has_value())
 		{
-			PendingGameplayEffectApplyComp effectApplyComp =
+			if (PendingGameplayEffectApplyComp* effectApplyComp =
+				ctx.ecs.GetMutableComponent<PendingGameplayEffectApplyComp>(
+					entity))
 			{
-				.effectId = *result.pendingParryEffectId
-			};
-			ctx.runtime.DeferredUpsertComponent<PendingGameplayEffectApplyComp>(
-				entity, effectApplyComp);
+				effectApplyComp->effectId = *result.pendingParryEffectId;
+			}
 		}
 	}
 }

@@ -56,7 +56,7 @@ const StaticSystemMetaStorage<9> CommitAbilityTimelineEventSystem::kMetaStorage 
 		WriteImmediate(ComponentRes<PendingProjectileSpawnComp>()),
 		WriteImmediate(ComponentRes<PendingAbilityPresentationEventComp>()),
 		WriteImmediate(ComponentRes<ReplicationStatsComp>()),
-		WriteDeferred(ComponentRes<PendingGameplayEffectApplyComp>()),
+		WriteImmediate(ComponentRes<PendingGameplayEffectApplyComp>()),
 		WriteImmediate(ComponentRes<ConsumableInventoryComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
@@ -103,11 +103,12 @@ void CommitAbilityTimelineEventSystem::Execute(SystemContext& ctx)
 			else if (eventDef.kind == AbilityEventKind::ApplyGameplayEffect &&
 				eventDef.effectId.has_value())
 			{
-				ctx.runtime.DeferredUpsertComponent<PendingGameplayEffectApplyComp>(
-					entity,
-					PendingGameplayEffectApplyComp{
-						.effectId = *eventDef.effectId
-					});
+				if (PendingGameplayEffectApplyComp* effectApply =
+					ctx.ecs.GetMutableComponent<PendingGameplayEffectApplyComp>(
+						entity))
+				{
+					effectApply->effectId = *eventDef.effectId;
+				}
 			}
 			else if (eventDef.kind == AbilityEventKind::PlayCue)
 			{

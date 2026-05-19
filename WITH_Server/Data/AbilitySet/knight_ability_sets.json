@@ -64,13 +64,13 @@
       "entries": [
         {
           "request": "LightAttack",
-          "candidateAbilityKeys": ["Ability.Knight_LightAttack1", "Ability.Knight_LightAttack2", "Ability.Knight_LightAttack3"],
+          "candidateAbilityKeys": ["Ability.Knight_SpecialAttack", "Ability.Knight_LightAttack1", "Ability.Knight_LightAttack2", "Ability.Knight_LightAttack3"],
           "selectionPolicy": "OrderedFirstValid",
           "priority": 100
         },
         {
           "request": "HeavyAttack",
-          "candidateAbilityKeys": ["Ability.Knight_SpecialAttack", "Ability.Knight_HeavyAttack"],
+          "candidateAbilityKeys": ["Ability.Knight_HeavyAttack"],
           "selectionPolicy": "OrderedFirstValid",
           "priority": 100
         },
