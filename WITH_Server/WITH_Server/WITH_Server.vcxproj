@@ -233,6 +233,7 @@
     <ClCompile Include="DemoPartyFormationPolicy.cpp" />
     <ClCompile Include="PartyService.cpp" />
     <ClCompile Include="PartySystem_SmokeTest.cpp" />
+    <ClCompile Include="RegisterAccount.cpp" />
     <ClCompile Include="SessionFlowContext.cpp" />
     <ClCompile Include="SessionFlowController.cpp" />
     <ClCompile Include="SessionFlowTransitionTable.cpp" />
@@ -367,6 +368,7 @@
     <ClInclude Include="IAIState.h" />
     <ClInclude Include="PacketHandlerContext.h" />
     <ClInclude Include="PacketHandlers.h" />
+    <ClInclude Include="RegisterAccount.h" />
     <ClInclude Include="SessionFlowCommands.h" />
     <ClInclude Include="SessionFlowContext.h" />
     <ClInclude Include="SessionFlowController.h" />

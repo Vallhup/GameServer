@@ -12,6 +12,7 @@
 #include "FrameworkRuntime.h"
 #include "FrameworkLog.h"
 #include "LoginAuth.h"
+#include "RegisterAccount.h"
 #include "NetworkRuntime.h"
 #include "ODBCDatabaseBackend.h"
 #include "PacketFactory.h"
@@ -53,6 +54,7 @@ namespace
     constexpr uint32_t kLoginFailReasonTimeout = 7;
 
     DynamicTaskTypeId g_loginAuthResultTaskTypeId{ InvalidDynamicTaskTypeId };
+    DynamicTaskTypeId g_registerAccountResultTaskTypeId{ InvalidDynamicTaskTypeId };
 
     const char* SessionFlowResultCodeName(SessionFlowResultCode code) noexcept;
 
@@ -610,6 +612,16 @@ void RegisterServerPacketHandlers(
     g_loginAuthResultTaskTypeId =
         taskRegistry.Register(loginAuthResultDesc, sourceRegistry);
 
+    DynamicTaskTypeDesc registerAccountResultDesc{};
+    registerAccountResultDesc.debugName = "DB_RegisterAccountResult";
+    registerAccountResultDesc.defaultPhase = ExecPhase::Simulate;
+    registerAccountResultDesc.defaultLane = ExecLane::Serial;
+    registerAccountResultDesc.defaultTargetKind = DynamicTaskTargetKind::ExplicitScope;
+    registerAccountResultDesc.dispatchFn = &HandleRegisterAccountResult;
+    registerAccountResultDesc.payloadCleanupFn = &ReleaseDBCompletionPayload;
+    g_registerAccountResultTaskTypeId =
+        taskRegistry.Register(registerAccountResultDesc, sourceRegistry);
+
     DynamicTaskTypeDesc desc{};
     desc.debugName    = "Evt_Disconnected";
     desc.defaultPhase = ExecPhase::Simulate;
@@ -704,6 +716,7 @@ ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
     envelope.meta.requestFrameIndex = ResolveRequestFrameIndex(ctx);
     envelope.meta.completionTaskTypeId = g_loginAuthResultTaskTypeId;
     envelope.command = std::make_unique<LoginAuthCommand>(
+        pkt.loginid(),
         std::move(loginIdNormalized),
         pkt.password());
 
@@ -778,6 +791,50 @@ ExecCallResult HandleLoginAuthResult(NodeExecContext& ctx)
 
     if (payload.failReason != 0 || payload.accountId == 0)
     {
+        if (payload.failReason ==
+            static_cast<uint32_t>(LoginAuthFailReason::AccountNotFound))
+        {
+            if (svc.database == nullptr ||
+                g_registerAccountResultTaskTypeId == InvalidDynamicTaskTypeId)
+            {
+                FWLOG_WARN(kLogCategory,
+                    "Register rejected: database unavailable (sid=%u)",
+                    sessionId);
+                StageAndCloseLoginFailure(
+                    svc,
+                    sessionId,
+                    kLoginFailReasonDatabaseUnavailable);
+                return ExecCallResult::Success;
+            }
+
+            FWLOG_INFO(kLogCategory,
+                "Account not found, attempting registration (sid=%u)",
+                sessionId);
+
+            DBCommandEnvelope envelope{};
+            envelope.meta.sessionId            = sessionId;
+            envelope.meta.scopeId              = ctx.scopeId;
+            envelope.meta.requestFrameIndex    = ResolveRequestFrameIndex(ctx);
+            envelope.meta.completionTaskTypeId = g_registerAccountResultTaskTypeId;
+            envelope.command = std::make_unique<RegisterAccountCommand>(
+                std::move(payload.loginId),
+                std::move(payload.loginIdNormalized),
+                std::move(payload.password));
+
+            if (svc.database->Submit(std::move(envelope)) == InvalidDBRequestId)
+            {
+                FWLOG_WARN(kLogCategory,
+                    "Register account DB submit rejected (sid=%u)",
+                    sessionId);
+                StageAndCloseLoginFailure(
+                    svc,
+                    sessionId,
+                    kLoginFailReasonDatabaseUnavailable);
+            }
+
+            return ExecCallResult::Success;
+        }
+
         const uint32_t failReason =
             payload.failReason != 0
             ? payload.failReason
@@ -838,6 +895,136 @@ ExecCallResult HandleLoginAuthResult(NodeExecContext& ctx)
         svc.framework->FreeNetId(controlledNetId);
         FWLOG_WARN(kLogCategory,
             "Login success packet stage failed (sid=%u, netId=%u)",
+            sessionId,
+            controlledNetId.GetRaw());
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleRegisterAccountResult(NodeExecContext& ctx)
+{
+    auto& svc = PacketHandlerContext::Get();
+    const SessionId sessionId = ResolveSessionId(ctx);
+
+    if (svc.database   == nullptr ||
+        svc.sessionFlow == nullptr ||
+        svc.framework   == nullptr ||
+        svc.network     == nullptr)
+    {
+        return ExecCallResult::Failed;
+    }
+
+    const auto* inst =
+        ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId);
+    if (inst == nullptr || inst->payloadKey == 0)
+        return ExecCallResult::Failed;
+
+    DBCompletion completion{};
+    if (!svc.database->ResultStore().TakeCompletion(
+        inst->payloadKey,
+        completion))
+    {
+        FWLOG_WARN(kLogCategory,
+            "Register account result missing DB completion (sid=%u)",
+            sessionId);
+        return ExecCallResult::Success;
+    }
+
+    if (!completion.ok)
+    {
+        const uint32_t failReason =
+            MapDBErrorToLoginFailReason(completion.errorCode);
+        FWLOG_WARN(kLogCategory,
+            "Register rejected: DB command failed (sid=%u, reason=%u, dbError=%u)",
+            sessionId,
+            failReason,
+            completion.errorCode);
+        StageAndCloseLoginFailure(svc, sessionId, failReason);
+        return ExecCallResult::Success;
+    }
+
+    RegisterAccountPayload payload{};
+    if (completion.payloadKey == InvalidDBPayloadKey ||
+        !svc.database->ResultStore().TakePayload(
+            completion.payloadKey,
+            payload))
+    {
+        FWLOG_WARN(kLogCategory,
+            "Register rejected: DB payload missing (sid=%u)",
+            sessionId);
+        StageAndCloseLoginFailure(svc, sessionId, kLoginFailReasonDatabaseError);
+        return ExecCallResult::Success;
+    }
+
+    if (payload.failReason != 0 || payload.accountId == 0)
+    {
+        // DuplicateId: 동시 경쟁으로 이미 등록된 ID → AuthRejected로 응답 (재시도 유도)
+        FWLOG_WARN(kLogCategory,
+            "Register rejected: duplicate id or error (sid=%u, reason=%u)",
+            sessionId,
+            payload.failReason);
+        StageAndCloseLoginFailure(svc, sessionId, kLoginFailReasonAuthRejected);
+        return ExecCallResult::Success;
+    }
+
+    if (svc.sessionFlow->HasAccountLogin(payload.accountId))
+    {
+        FWLOG_WARN(kLogCategory,
+            "Register rejected: duplicate account login (sid=%u, accountId=%llu)",
+            sessionId,
+            static_cast<unsigned long long>(payload.accountId));
+        StageAndCloseLoginFailure(
+            svc,
+            sessionId,
+            kLoginFailReasonDuplicateLogin);
+        return ExecCallResult::Success;
+    }
+
+    FWLOG_INFO(kLogCategory,
+        "New account registered and logged in (sid=%u, accountId=%llu)",
+        sessionId,
+        static_cast<unsigned long long>(payload.accountId));
+
+    const NetId controlledNetId = svc.framework->AllocateNetId();
+    if (!controlledNetId.IsValid())
+    {
+        FWLOG_WARN(kLogCategory,
+            "Register login rejected: netId allocation failed (sid=%u)",
+            sessionId);
+        StageAndCloseLoginFailure(
+            svc,
+            sessionId,
+            kLoginFailReasonEntryStartFailed);
+        return ExecCallResult::Success;
+    }
+
+    LoginSucceeded succeededCommand{};
+    succeededCommand.accountId       = payload.accountId;
+    succeededCommand.controlledNetId = controlledNetId;
+    const SessionFlowResult flowResult =
+        svc.sessionFlow->Dispatch(sessionId, succeededCommand);
+    if (!flowResult.Succeeded())
+    {
+        svc.framework->FreeNetId(controlledNetId);
+        FWLOG_WARN(kLogCategory,
+            "Register login success rejected by flow (sid=%u, reason=%s)",
+            sessionId,
+            SessionFlowResultCodeName(flowResult.code));
+        (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
+        return ExecCallResult::Success;
+    }
+
+    if (!ServerPacketStager::StageLoginSuccess(
+        *svc.network,
+        sessionId,
+        controlledNetId))
+    {
+        svc.framework->FreeNetId(controlledNetId);
+        FWLOG_WARN(kLogCategory,
+            "Register login success packet stage failed (sid=%u, netId=%u)",
             sessionId,
             controlledNetId.GetRaw());
         (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "LoginAuth.h"
+#include "RegisterAccount.h"
 
 namespace
 {
@@ -22,21 +22,21 @@ namespace
 	}
 }
 
-LoginAuthCommand::LoginAuthCommand(
-	std::string  loginId,
+RegisterAccountCommand::RegisterAccountCommand(
+	std::wstring loginId,
 	std::wstring loginIdNormalized,
 	std::string  password)
-	: _loginId(WidenAscii(loginId))
+	: _loginId(std::move(loginId))
 	, _loginIdNormalized(std::move(loginIdNormalized))
 	, _password(std::move(password))
 {
 }
 
-void LoginAuthCommand::Execute(DBCommandContext& ctx) noexcept
+void RegisterAccountCommand::Execute(DBCommandContext& ctx) noexcept
 {
 	DBStatement stmt;
 	if (!ctx.Prepare(
-		DBQueryText{ L"{CALL dbo.sp_AccountLoginAuth(?, ?)}" },
+		DBQueryText{ L"{CALL dbo.sp_AccountRegister(?, ?, ?)}" },
 		stmt))
 	{
 		ctx.CompleteError(
@@ -45,8 +45,9 @@ void LoginAuthCommand::Execute(DBCommandContext& ctx) noexcept
 		return;
 	}
 
-	if (!stmt.BindString(1, _loginIdNormalized, 64) ||
-		!stmt.BindString(2, WidenAscii(_password), 255) ||
+	if (!stmt.BindString(1, _loginId,           64)  ||
+		!stmt.BindString(2, _loginIdNormalized,  64)  ||
+		!stmt.BindString(3, WidenAscii(_password), 255) ||
 		!stmt.Execute() ||
 		!stmt.Fetch())
 	{
@@ -61,33 +62,25 @@ void LoginAuthCommand::Execute(DBCommandContext& ctx) noexcept
 	{
 		ctx.CompleteError(
 			static_cast<uint32_t>(DBCommonErrorCode::QueryFail),
-			L"sp_AccountLoginAuth: failed to read result set.");
+			L"sp_AccountRegister: failed to read result set.");
 		return;
 	}
 
-	LoginAuthPayload payload{};
+	RegisterAccountPayload payload{};
 	switch (resultCode)
 	{
-	case 0: // 인증 성공
+	case 0: // 등록 성공
 		payload.accountId = static_cast<uint64_t>(accountIdRaw);
 		break;
 
-	case 1: // 비밀번호 불일치 또는 Status 비활성
+	case 3: // UNIQUE 제약 위반 — 동시 요청으로 이미 등록된 ID
 		payload.failReason =
-			static_cast<uint32_t>(LoginAuthFailReason::AuthRejected);
-		break;
-
-	case 2: // ID 미존재 → 상위에서 회원가입 진행
-		payload.failReason =
-			static_cast<uint32_t>(LoginAuthFailReason::AccountNotFound);
-		payload.loginId           = _loginId;
-		payload.loginIdNormalized = _loginIdNormalized;
-		payload.password          = _password;
+			static_cast<uint32_t>(RegisterAccountFailReason::DuplicateId);
 		break;
 
 	default:
 		payload.failReason =
-			static_cast<uint32_t>(LoginAuthFailReason::DatabaseError);
+			static_cast<uint32_t>(RegisterAccountFailReason::DatabaseError);
 		break;
 	}
 

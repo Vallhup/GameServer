@@ -71,9 +71,6 @@
     <ClCompile Include="ODBCDatabaseBackend.cpp">
       <Filter>Database</Filter>
     </ClCompile>
-    <ClCompile Include="LoginAuth.cpp">
-      <Filter>Database</Filter>
-    </ClCompile>
     <ClCompile Include="CharacterIdPolicy.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
@@ -314,6 +311,12 @@
     <ClCompile Include="DataDrivenAIIdleActionPolicy.cpp">
       <Filter>FSM\Policy</Filter>
     </ClCompile>
+    <ClCompile Include="LoginAuth.cpp">
+      <Filter>Database\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="RegisterAccount.cpp">
+      <Filter>Database\Query</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerApp.h">
@@ -395,9 +398,6 @@
       <Filter>Database</Filter>
     </ClInclude>
     <ClInclude Include="ODBCDatabaseBackend.h">
-      <Filter>Database</Filter>
-    </ClInclude>
-    <ClInclude Include="LoginAuth.h">
       <Filter>Database</Filter>
     </ClInclude>
     <ClInclude Include="CharacterDef.h">
@@ -769,6 +769,12 @@
     <ClInclude Include="DataDrivenAIIdleActionPolicy.h">
       <Filter>FSM\Policy</Filter>
     </ClInclude>
+    <ClInclude Include="LoginAuth.h">
+      <Filter>Database\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="RegisterAccount.h">
+      <Filter>Database\Query</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -908,6 +914,9 @@
     </Filter>
     <Filter Include="Data\JSON\Ability">
       <UniqueIdentifier>{ae563bac-f7b5-4911-ac5c-7cd6bd676463}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Database\Query">
+      <UniqueIdentifier>{d1ec35c3-e15e-4db3-9726-ef5a67d47e29}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
