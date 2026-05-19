@@ -26,8 +26,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.34,
-            "endNormalized": 0.62,
+            "startNormalized": 0.35,
+            "endNormalized": 0.40,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -127,8 +127,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.46,
-            "endNormalized": 0.76,
+            "startNormalized": 0.26,
+            "endNormalized": 0.31,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -228,8 +228,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.3,
-            "endNormalized": 0.56,
+            "startNormalized": 0.31,
+            "endNormalized": 0.36,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -329,8 +329,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.38,
-            "endNormalized": 0.7,
+            "startNormalized": 0.28,
+            "endNormalized": 0.33,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -430,8 +430,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.26,
-            "endNormalized": 0.64,
+            "startNormalized": 0.29,
+            "endNormalized": 0.34,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -531,8 +531,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.22,
-            "endNormalized": 0.58,
+            "startNormalized": 0.34,
+            "endNormalized": 0.42,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {

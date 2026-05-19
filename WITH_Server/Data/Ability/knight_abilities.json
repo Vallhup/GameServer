@@ -692,7 +692,7 @@
           {
             "kind": "Parry",
             "startNormalized": 0.3,
-            "endNormalized": 1,
+            "endNormalized": 0.45,
             "applyEffectKey": null,
             "appliesTo": "ParryableAttack",
             "spatialFilter": {

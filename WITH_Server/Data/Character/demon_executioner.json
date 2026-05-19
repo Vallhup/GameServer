@@ -5,12 +5,12 @@
                     "faction":  "Enemy"
                 },
     "stat":  {
-                 "maxHp":  100,
-                 "maxStamina":  100,
-                 "maxPoise":  100,
-                 "attackPower":  10,
-                 "defense":  10,
-                 "moveSpeed":  3.0,
+                 "maxHp":  190,
+                 "maxStamina":  120,
+                 "maxPoise":  120,
+                 "attackPower":  13,
+                 "defense":  12,
+                 "moveSpeed":  2.85,
                  "attackSpeed":  1.0
              },
     "bodyCollision":  {
@@ -35,48 +35,48 @@
     "attributes":  [
                        {
                            "attributeKey":  "Attribute.Hp",
-                           "baseValue":  100,
-                           "currentValue":  100
+                           "baseValue":  190,
+                           "currentValue":  190
                        },
                        {
                            "attributeKey":  "Attribute.MaxHp",
-                           "baseValue":  100,
-                           "currentValue":  100
+                           "baseValue":  190,
+                           "currentValue":  190
                        },
                        {
                            "attributeKey":  "Attribute.Stamina",
-                           "baseValue":  100,
-                           "currentValue":  100
+                           "baseValue":  120,
+                           "currentValue":  120
                        },
                        {
                            "attributeKey":  "Attribute.MaxStamina",
-                           "baseValue":  100,
-                           "currentValue":  100
+                           "baseValue":  120,
+                           "currentValue":  120
                        },
                        {
                            "attributeKey":  "Attribute.Poise",
-                           "baseValue":  100,
-                           "currentValue":  100
+                           "baseValue":  120,
+                           "currentValue":  120
                        },
                        {
                            "attributeKey":  "Attribute.MaxPoise",
-                           "baseValue":  100,
-                           "currentValue":  100
+                           "baseValue":  120,
+                           "currentValue":  120
                        },
                        {
                            "attributeKey":  "Attribute.AttackPower",
-                           "baseValue":  10,
-                           "currentValue":  10
+                           "baseValue":  13,
+                           "currentValue":  13
                        },
                        {
                            "attributeKey":  "Attribute.Defense",
-                           "baseValue":  10,
-                           "currentValue":  10
+                           "baseValue":  12,
+                           "currentValue":  12
                        },
                        {
                            "attributeKey":  "Attribute.MoveSpeed",
-                           "baseValue":  3.0,
-                           "currentValue":  3.0
+                           "baseValue":  2.85,
+                           "currentValue":  2.85
                        },
                        {
                            "attributeKey":  "Attribute.AttackSpeed",

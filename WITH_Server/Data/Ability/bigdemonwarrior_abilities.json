@@ -26,8 +26,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.44,
-            "endNormalized": 0.64,
+            "startNormalized": 0.31,
+            "endNormalized": 0.36,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -127,8 +127,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.37,
-            "endNormalized": 0.59,
+            "startNormalized": 0.35,
+            "endNormalized": 0.39,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -228,8 +228,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.43,
-            "endNormalized": 0.64,
+            "startNormalized": 0.63,
+            "endNormalized": 0.68,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -341,8 +341,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.34,
-            "endNormalized": 0.66,
+            "startNormalized": 0.31,
+            "endNormalized": 0.35,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -454,8 +454,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.37,
-            "endNormalized": 0.63,
+            "startNormalized": 0.43,
+            "endNormalized": 0.48,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -555,8 +555,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.2,
-            "endNormalized": 0.42,
+            "startNormalized": 0.31,
+            "endNormalized": 0.38,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -656,8 +656,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.42,
-            "endNormalized": 0.68,
+            "startNormalized": 0.44,
+            "endNormalized": 0.49,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -770,7 +770,7 @@
           {
             "kind": "Attack",
             "startNormalized": 0.35,
-            "endNormalized": 0.61,
+            "endNormalized": 0.40,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
