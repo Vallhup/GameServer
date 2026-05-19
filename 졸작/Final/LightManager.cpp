@@ -58,7 +58,7 @@ bool LightManager::LoadFromFile(const wstring& path, int startSlot)
 
 		lights[slot] = {
 			{ px, py, pz }, range,
-			{ r, g, b }, intensity * 0.25f,
+			{ r, g, b }, intensity * 1.0f,
 			1,
 			{ 0, 0, 0 }
 		};
