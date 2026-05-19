@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "WorldRuntime.h"
 
+#include <array>
+#include <filesystem>
 #include <unordered_set>
 
 #include "IWorldTransferBinding.h"
@@ -9,9 +11,116 @@
 #include "WorldDef.h"
 #include "WorldSystemServiceScope.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 namespace
 {
 	thread_local std::vector<WorldLifecycleCommand>* g_activeLifecycleSignalStaging{ nullptr };
+
+	std::filesystem::path NormalizePath(const std::filesystem::path& path)
+	{
+		std::error_code ec;
+		std::filesystem::path normalized = std::filesystem::absolute(path, ec);
+		if (ec)
+			normalized = path;
+
+		return normalized.lexically_normal();
+	}
+
+	bool IsRegularFile(const std::filesystem::path& path)
+	{
+		std::error_code ec;
+		return std::filesystem::exists(path, ec) &&
+			std::filesystem::is_regular_file(path, ec);
+	}
+
+	std::filesystem::path GetExecutableDirectory()
+	{
+#ifdef _WIN32
+		std::vector<wchar_t> buffer(MAX_PATH);
+
+		for (;;)
+		{
+			const DWORD length = GetModuleFileNameW(
+				nullptr,
+				buffer.data(),
+				static_cast<DWORD>(buffer.size()));
+
+			if (length == 0)
+				break;
+
+			if (length < buffer.size() - 1)
+				return NormalizePath(std::filesystem::path(buffer.data())).parent_path();
+
+			buffer.resize(buffer.size() * 2);
+		}
+#endif
+
+		return NormalizePath(std::filesystem::current_path());
+	}
+
+	std::filesystem::path StripLeadingParents(const std::filesystem::path& path)
+	{
+		if (path.is_absolute())
+			return path;
+
+		std::filesystem::path stripped;
+		bool consumedNonParent = false;
+
+		for (const std::filesystem::path& part : path)
+		{
+			if (!consumedNonParent && (part == ".." || part == "."))
+				continue;
+
+			consumedNonParent = true;
+			stripped /= part;
+		}
+
+		return stripped.empty() ? path : stripped;
+	}
+
+	std::filesystem::path ResolveRuntimeResourcePath(
+		const std::filesystem::path& path)
+	{
+		if (path.is_absolute())
+			return NormalizePath(path);
+
+		const std::filesystem::path exeDir = GetExecutableDirectory();
+		const std::filesystem::path currentDir =
+			NormalizePath(std::filesystem::current_path());
+		const std::filesystem::path stripped = StripLeadingParents(path);
+
+		const std::array<std::filesystem::path, 6> roots =
+		{
+			currentDir,
+			exeDir,
+			exeDir / "..",
+			exeDir / ".." / "..",
+			currentDir / "..",
+			currentDir / ".." / ".."
+		};
+
+		for (const std::filesystem::path& root : roots)
+		{
+			const std::filesystem::path candidate = root / path;
+			if (IsRegularFile(candidate))
+				return NormalizePath(candidate);
+		}
+
+		if (stripped != path)
+		{
+			for (const std::filesystem::path& root : roots)
+			{
+				const std::filesystem::path candidate = root / stripped;
+				if (IsRegularFile(candidate))
+					return NormalizePath(candidate);
+			}
+		}
+
+		return NormalizePath(path);
+	}
 
 	class ScopedLifecycleSignalStaging final {
 	public:
@@ -80,7 +189,9 @@ bool WorldRuntime::Initialize()
 	if (_def->map.navMesh.has_value())
 	{
 		_navMeshRuntime = std::make_unique<NavMeshRuntime>();
-		if (!_navMeshRuntime->LoadFromFile(_def->map.navMesh->navMeshBinPath))
+		const std::filesystem::path navMeshPath = ResolveRuntimeResourcePath(
+			_def->map.navMesh->navMeshBinPath);
+		if (!_navMeshRuntime->LoadFromFile(navMeshPath.string()))
 		{
 			// 로딩 실패 — NavMesh 없이 계속 실행
 			// TODO: 로깅 인프라 연결 후 경고 기록

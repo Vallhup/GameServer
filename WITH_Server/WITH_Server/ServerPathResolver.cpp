@@ -1,6 +1,38 @@
 #include "pch.h"
 #include "ServerPathResolver.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
+namespace
+{
+	std::filesystem::path GetProcessExecutablePath()
+	{
+#ifdef _WIN32
+		std::vector<wchar_t> buffer(MAX_PATH);
+
+		for (;;)
+		{
+			const DWORD length = GetModuleFileNameW(
+				nullptr,
+				buffer.data(),
+				static_cast<DWORD>(buffer.size()));
+
+			if (length == 0)
+				break;
+
+			if (length < buffer.size() - 1)
+				return std::filesystem::path(buffer.data());
+
+			buffer.resize(buffer.size() * 2);
+		}
+#endif
+
+		return std::filesystem::current_path();
+	}
+}
+
 std::filesystem::path ServerPathResolver::NormalizePath(
 	const std::filesystem::path& path)
 {
@@ -30,9 +62,11 @@ std::filesystem::path ServerPathResolver::GetDefaultDataRoot(
 
 	const std::vector<std::filesystem::path> candidates =
 	{
+		exeDir / ".." / "Data" / relativeDataDirectory,
 		currentDir / "WITH_Server" / "Data" / relativeDataDirectory,
 		currentDir / "Data" / relativeDataDirectory,
 		currentDir / ".." / "Data" / relativeDataDirectory,
+		exeDir / "Data" / relativeDataDirectory,
 		exeDir / ".." / ".." / "Data" / relativeDataDirectory,
 		exeDir / ".." / ".." / "WITH_Server" / "Data" / relativeDataDirectory
 	};
@@ -52,7 +86,7 @@ std::filesystem::path ServerPathResolver::GetDefaultDataRoot(
 
 std::filesystem::path ServerPathResolver::GetExecutableDirectory()
 {
-	return NormalizePath(std::filesystem::current_path());
+	return NormalizePath(GetProcessExecutablePath()).parent_path();
 }
 
 std::filesystem::path ServerPathResolver::GetDefaultAttributeDefRoot()
@@ -88,9 +122,11 @@ std::filesystem::path ServerPathResolver::GetDefaultCharacterDefRoot()
 
 	const std::vector<std::filesystem::path> candidates =
 	{
+		exeDir / ".." / "Data" / "Character",
 		currentDir / "WITH_Server" / "Data" / "Character",
 		currentDir / "Data" / "Character",
 		currentDir / ".." / "Data" / "Character",
+		exeDir / "Data" / "Character",
 		exeDir / ".." / ".." / "Data" / "Character",
 		exeDir / ".." / ".." / "WITH_Server" / "Data" / "Character"
 	};
@@ -112,9 +148,11 @@ std::filesystem::path ServerPathResolver::GetDefaultAIBehaviorDefRoot()
 
 	const std::vector<std::filesystem::path> candidates =
 	{
+		exeDir / ".." / "Data" / "AI",
 		currentDir / "WITH_Server" / "Data" / "AI",
 		currentDir / "Data" / "AI",
 		currentDir / ".." / "Data" / "AI",
+		exeDir / "Data" / "AI",
 		exeDir / ".." / ".." / "Data" / "AI",
 		exeDir / ".." / ".." / "WITH_Server" / "Data" / "AI"
 	};
@@ -136,9 +174,11 @@ std::filesystem::path ServerPathResolver::GetDefaultSpawnSetDefRoot()
 
 	const std::vector<std::filesystem::path> candidates =
 	{
+		exeDir / ".." / "Data" / "SpawnSet",
 		currentDir / "WITH_Server" / "Data" / "SpawnSet",
 		currentDir / "Data" / "SpawnSet",
 		currentDir / ".." / "Data" / "SpawnSet",
+		exeDir / "Data" / "SpawnSet",
 		exeDir / ".." / ".." / "Data" / "SpawnSet",
 		exeDir / ".." / ".." / "WITH_Server" / "Data" / "SpawnSet"
 	};
@@ -160,6 +200,7 @@ std::filesystem::path ServerPathResolver::GetDefaultAnimationOutputRoot()
 
 	const std::vector<std::filesystem::path> candidates =
 	{
+		exeDir / ".." / "Animation",
 		exeDir / ".." / ".." / "Animation",
 		exeDir / "Animation",
 		currentDir / "Animation",
