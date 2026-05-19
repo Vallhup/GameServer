@@ -691,8 +691,8 @@
         "combatWindows": [
           {
             "kind": "Parry",
-            "startNormalized": 0.3,
-            "endNormalized": 0.45,
+            "startNormalized": 0.19,
+            "endNormalized": 0.38,
             "applyEffectKey": null,
             "appliesTo": "ParryableAttack",
             "spatialFilter": {
