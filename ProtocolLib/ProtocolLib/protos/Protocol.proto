@@ -23,6 +23,12 @@ message CS_MOVE_PACKET
 	bool isRun = 4;
 }
 
+enum AttackInputType
+{
+	ATTACK_INPUT_LIGHT = 0;
+	ATTACK_INPUT_HEAVY = 1;
+}
+
 message CS_ATTACK_PACKET
 {
 	float dirX = 1;
@@ -31,6 +37,8 @@ message CS_ATTACK_PACKET
 	uint32 clientAnimId = 3;
 	float clientNormalizedTime = 4;
 	uint32 clientAbilityInstanceId = 5;
+
+	AttackInputType attackInputType = 6;
 }
 
 message CS_DODGE_PACKET

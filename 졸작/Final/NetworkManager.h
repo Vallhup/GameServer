@@ -18,7 +18,7 @@ public:
 	bool SendLoginPacket(const std::string& id, const std::string& pw);
 	bool SendCharacterSelectPacket(CharacterId id);
 	bool SendMovePacket(int inputX, int inputZ, float yaw, bool isRun);
-	bool SendAttackPacket(float dirX, float dirZ, uint32_t animId, float normTime, uint32_t instanceId);
+	bool SendAttackPacket(float dirX, float dirZ, uint32_t animId, float normTime, uint32_t instanceId, Protocol::AttackInputType type);
 	bool SendDodgePacket(float dirX, float dirZ);
 	bool SendGuardPacket(bool pressed);
 	bool SendParryPacket(float dirX, float dirZ);

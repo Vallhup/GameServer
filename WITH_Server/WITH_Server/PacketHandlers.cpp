@@ -208,9 +208,14 @@ namespace
         const Protocol::CS_ATTACK_PACKET& packet,
         ActorInputComp& input) noexcept
     {
+        const PlayerAbilityInputType inputType =
+            packet.attackinputtype() == Protocol::ATTACK_INPUT_HEAVY
+            ? PlayerAbilityInputType::HeavyAttack
+            : PlayerAbilityInputType::LightAttack;
+
         ApplyAbilityInput(
             runtime,
-            PlayerAbilityInputType::LightAttack,
+            inputType,
             packet.dirx(),
             packet.dirz(),
             input);

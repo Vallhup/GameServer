@@ -562,6 +562,7 @@ inline constexpr CS_ATTACK_PACKET::Impl_::Impl_(
         clientanimid_{0u},
         clientnormalizedtime_{0},
         clientabilityinstanceid_{0u},
+        attackinputtype_{static_cast< ::Protocol::AttackInputType >(0)},
         _cached_size_{0} {}
 
 template <typename>
@@ -614,8 +615,7 @@ struct SC_REPLICATION_FRAME_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_REPLICATION_FRAME_PACKETDefaultTypeInternal _SC_REPLICATION_FRAME_PACKET_default_instance_;
 }  // namespace Protocol
-static constexpr const ::_pb::EnumDescriptor**
-    file_level_enum_descriptors_Protocol_2eproto = nullptr;
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Protocol_2eproto[1];
 static constexpr const ::_pb::ServiceDescriptor**
     file_level_service_descriptors_Protocol_2eproto = nullptr;
 const ::uint32_t
@@ -666,6 +666,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_ATTACK_PACKET, _impl_.clientanimid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_ATTACK_PACKET, _impl_.clientnormalizedtime_),
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_ATTACK_PACKET, _impl_.clientabilityinstanceid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_ATTACK_PACKET, _impl_.attackinputtype_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_DODGE_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -875,23 +876,23 @@ static const ::_pbi::MigrationSchema
         {11, -1, -1, sizeof(::Protocol::CS_CHARACTER_SELECT_PACKET)},
         {20, -1, -1, sizeof(::Protocol::CS_MOVE_PACKET)},
         {32, -1, -1, sizeof(::Protocol::CS_ATTACK_PACKET)},
-        {45, -1, -1, sizeof(::Protocol::CS_DODGE_PACKET)},
-        {55, -1, -1, sizeof(::Protocol::CS_GUARD_PACKET)},
-        {64, -1, -1, sizeof(::Protocol::CS_PARRY_PACKET)},
-        {74, -1, -1, sizeof(::Protocol::CS_USE_ITEM_PACKET)},
-        {84, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_REQUEST_PACKET)},
-        {93, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_READY_PACKET)},
-        {102, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
-        {111, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
-        {120, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {134, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {147, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
-        {156, -1, -1, sizeof(::Protocol::SC_COMBAT_IMPACT_PACKET)},
-        {173, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
-        {185, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
-        {202, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
-        {222, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
-        {232, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
+        {46, -1, -1, sizeof(::Protocol::CS_DODGE_PACKET)},
+        {56, -1, -1, sizeof(::Protocol::CS_GUARD_PACKET)},
+        {65, -1, -1, sizeof(::Protocol::CS_PARRY_PACKET)},
+        {75, -1, -1, sizeof(::Protocol::CS_USE_ITEM_PACKET)},
+        {85, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_REQUEST_PACKET)},
+        {94, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_READY_PACKET)},
+        {103, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
+        {112, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
+        {121, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
+        {135, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {148, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {157, -1, -1, sizeof(::Protocol::SC_COMBAT_IMPACT_PACKET)},
+        {174, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
+        {186, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
+        {203, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
+        {223, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
+        {233, -1, -1, sizeof(::Protocol::SC_REPLICATION_FRAME_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -923,60 +924,62 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "\022\025\n\rclientVersion\030\003 \001(\t\"1\n\032CS_CHARACTER_"
     "SELECT_PACKET\022\023\n\013characterId\030\001 \001(\r\"L\n\016CS"
     "_MOVE_PACKET\022\016\n\006inputX\030\001 \001(\005\022\016\n\006inputZ\030\002"
-    " \001(\005\022\013\n\003yaw\030\003 \001(\002\022\r\n\005isRun\030\004 \001(\010\"\203\001\n\020CS_"
+    " \001(\005\022\013\n\003yaw\030\003 \001(\002\022\r\n\005isRun\030\004 \001(\010\"\267\001\n\020CS_"
     "ATTACK_PACKET\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001("
     "\002\022\024\n\014clientAnimId\030\003 \001(\r\022\034\n\024clientNormali"
     "zedTime\030\004 \001(\002\022\037\n\027clientAbilityInstanceId"
-    "\030\005 \001(\r\"-\n\017CS_DODGE_PACKET\022\014\n\004dirX\030\001 \001(\002\022"
-    "\014\n\004dirZ\030\002 \001(\002\" \n\017CS_GUARD_PACKET\022\r\n\005inpu"
-    "t\030\001 \001(\010\"-\n\017CS_PARRY_PACKET\022\014\n\004dirX\030\001 \001(\002"
-    "\022\014\n\004dirZ\030\002 \001(\002\"0\n\022CS_USE_ITEM_PACKET\022\014\n\004"
-    "dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"7\n\"CS_WORLD_TRA"
-    "NSITION_REQUEST_PACKET\022\021\n\trequestId\030\001 \001("
-    "\r\"6\n CS_WORLD_TRANSITION_READY_PACKET\022\022\n"
-    "\ntransferId\030\001 \001(\004\"(\n\027SC_LOGIN_SUCCESS_PA"
-    "CKET\022\r\n\005netid\030\001 \001(\004\"&\n\024SC_LOGIN_FAIL_PAC"
-    "KET\022\016\n\006reason\030\001 \001(\r\"\\\n\rSC_ADD_PACKET\022\r\n\005"
-    "netid\030\001 \001(\004\022\016\n\006typeid\030\002 \001(\r\022\t\n\001x\030\003 \001(\002\022\t"
-    "\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\"M\n\016SC_"
-    "MOVE_PACKET\022\r\n\005netid\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n"
-    "\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"!\n\020SC_R"
-    "EMOVE_PACKET\022\r\n\005netid\030\001 \001(\004\"\266\001\n\027SC_COMBA"
-    "T_IMPACT_PACKET\022\025\n\rattackerNetId\030\001 \001(\004\022\023"
-    "\n\013victimNetId\030\002 \001(\004\022\022\n\nresultType\030\003 \001(\r\022"
-    "\017\n\007impactX\030\004 \001(\002\022\017\n\007impactY\030\005 \001(\002\022\017\n\007imp"
-    "actZ\030\006 \001(\002\022\014\n\004dirX\030\007 \001(\002\022\014\n\004dirY\030\010 \001(\002\022\014"
-    "\n\004dirZ\030\t \001(\002\"t\n\036SC_ANIMATION_TRANSITION_"
-    "PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010currAnim\030\002 \001(\005\022"
-    "\031\n\021abilityInstanceId\030\003 \001(\r\022\026\n\016normalized"
-    "Time\030\004 \001(\002\"\264\001\n\025SC_STAT_CHANGE_PACKET\022\r\n\005"
-    "netid\030\001 \001(\004\022\r\n\005curhp\030\002 \001(\r\022\r\n\005maxhp\030\003 \001("
-    "\r\022\022\n\ncurstamina\030\004 \001(\r\022\022\n\nmaxstamina\030\005 \001("
-    "\r\022\r\n\005power\030\006 \001(\r\022\023\n\013attackspeed\030\007 \001(\002\022\017\n"
-    "\007defense\030\010 \001(\r\022\021\n\tmovespeed\030\t \001(\002\"\264\002\n SC"
-    "_WORLD_TRANSITION_BEGIN_PACKET\022\022\n\ntransf"
-    "erId\030\001 \001(\004\022\021\n\trequestId\030\002 \001(\r\022\030\n\020sourceW"
-    "orldDefId\030\003 \001(\r\022\025\n\rsourceWorldId\030\004 \001(\004\022\030"
-    "\n\020targetWorldDefId\030\005 \001(\r\022\025\n\rtargetWorldI"
-    "d\030\006 \001(\004\022\025\n\rmapResourceId\030\007 \001(\r\022\023\n\013player"
-    "NetId\030\010 \001(\004\022\034\n\024clearExistingObjects\030\t \001("
-    "\010\022\027\n\017waitClientReady\030\n \001(\010\022\024\n\014usedFallba"
-    "ck\030\013 \001(\010\022\016\n\006reason\030\014 \001(\r\"H\n#SC_WORLD_TRA"
-    "NSITION_REJECTED_PACKET\022\021\n\trequestId\030\001 \001"
-    "(\r\022\016\n\006reason\030\002 \001(\r\"\374\001\n\033SC_REPLICATION_FR"
-    "AME_PACKET\022\020\n\010frameSeq\030\001 \001(\r\022\022\n\nserverTi"
-    "ck\030\002 \001(\r\022\'\n\006spawns\030\003 \003(\0132\027.Protocol.SC_A"
-    "DD_PACKET\022,\n\010despawns\030\004 \003(\0132\032.Protocol.S"
-    "C_REMOVE_PACKET\022\'\n\005moves\030\005 \003(\0132\030.Protoco"
-    "l.SC_MOVE_PACKET\0227\n\005anims\030\006 \003(\0132(.Protoc"
-    "ol.SC_ANIMATION_TRANSITION_PACKETb\006proto"
-    "3"
+    "\030\005 \001(\r\0222\n\017attackInputType\030\006 \001(\0162\031.Protoc"
+    "ol.AttackInputType\"-\n\017CS_DODGE_PACKET\022\014\n"
+    "\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\" \n\017CS_GUARD_PA"
+    "CKET\022\r\n\005input\030\001 \001(\010\"-\n\017CS_PARRY_PACKET\022\014"
+    "\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"0\n\022CS_USE_ITE"
+    "M_PACKET\022\014\n\004dirX\030\001 \001(\002\022\014\n\004dirZ\030\002 \001(\002\"7\n\""
+    "CS_WORLD_TRANSITION_REQUEST_PACKET\022\021\n\tre"
+    "questId\030\001 \001(\r\"6\n CS_WORLD_TRANSITION_REA"
+    "DY_PACKET\022\022\n\ntransferId\030\001 \001(\004\"(\n\027SC_LOGI"
+    "N_SUCCESS_PACKET\022\r\n\005netid\030\001 \001(\004\"&\n\024SC_LO"
+    "GIN_FAIL_PACKET\022\016\n\006reason\030\001 \001(\r\"\\\n\rSC_AD"
+    "D_PACKET\022\r\n\005netid\030\001 \001(\004\022\016\n\006typeid\030\002 \001(\r\022"
+    "\t\n\001x\030\003 \001(\002\022\t\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030"
+    "\006 \001(\002\"M\n\016SC_MOVE_PACKET\022\r\n\005netid\030\001 \001(\004\022\t"
+    "\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005"
+    " \001(\002\"!\n\020SC_REMOVE_PACKET\022\r\n\005netid\030\001 \001(\004\""
+    "\266\001\n\027SC_COMBAT_IMPACT_PACKET\022\025\n\rattackerN"
+    "etId\030\001 \001(\004\022\023\n\013victimNetId\030\002 \001(\004\022\022\n\nresul"
+    "tType\030\003 \001(\r\022\017\n\007impactX\030\004 \001(\002\022\017\n\007impactY\030"
+    "\005 \001(\002\022\017\n\007impactZ\030\006 \001(\002\022\014\n\004dirX\030\007 \001(\002\022\014\n\004"
+    "dirY\030\010 \001(\002\022\014\n\004dirZ\030\t \001(\002\"t\n\036SC_ANIMATION"
+    "_TRANSITION_PACKET\022\r\n\005netid\030\001 \001(\004\022\020\n\010cur"
+    "rAnim\030\002 \001(\005\022\031\n\021abilityInstanceId\030\003 \001(\r\022\026"
+    "\n\016normalizedTime\030\004 \001(\002\"\264\001\n\025SC_STAT_CHANG"
+    "E_PACKET\022\r\n\005netid\030\001 \001(\004\022\r\n\005curhp\030\002 \001(\r\022\r"
+    "\n\005maxhp\030\003 \001(\r\022\022\n\ncurstamina\030\004 \001(\r\022\022\n\nmax"
+    "stamina\030\005 \001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013attacksp"
+    "eed\030\007 \001(\002\022\017\n\007defense\030\010 \001(\r\022\021\n\tmovespeed\030"
+    "\t \001(\002\"\264\002\n SC_WORLD_TRANSITION_BEGIN_PACK"
+    "ET\022\022\n\ntransferId\030\001 \001(\004\022\021\n\trequestId\030\002 \001("
+    "\r\022\030\n\020sourceWorldDefId\030\003 \001(\r\022\025\n\rsourceWor"
+    "ldId\030\004 \001(\004\022\030\n\020targetWorldDefId\030\005 \001(\r\022\025\n\r"
+    "targetWorldId\030\006 \001(\004\022\025\n\rmapResourceId\030\007 \001"
+    "(\r\022\023\n\013playerNetId\030\010 \001(\004\022\034\n\024clearExisting"
+    "Objects\030\t \001(\010\022\027\n\017waitClientReady\030\n \001(\010\022\024"
+    "\n\014usedFallback\030\013 \001(\010\022\016\n\006reason\030\014 \001(\r\"H\n#"
+    "SC_WORLD_TRANSITION_REJECTED_PACKET\022\021\n\tr"
+    "equestId\030\001 \001(\r\022\016\n\006reason\030\002 \001(\r\"\374\001\n\033SC_RE"
+    "PLICATION_FRAME_PACKET\022\020\n\010frameSeq\030\001 \001(\r"
+    "\022\022\n\nserverTick\030\002 \001(\r\022\'\n\006spawns\030\003 \003(\0132\027.P"
+    "rotocol.SC_ADD_PACKET\022,\n\010despawns\030\004 \003(\0132"
+    "\032.Protocol.SC_REMOVE_PACKET\022\'\n\005moves\030\005 \003"
+    "(\0132\030.Protocol.SC_MOVE_PACKET\0227\n\005anims\030\006 "
+    "\003(\0132(.Protocol.SC_ANIMATION_TRANSITION_P"
+    "ACKET*A\n\017AttackInputType\022\026\n\022ATTACK_INPUT"
+    "_LIGHT\020\000\022\026\n\022ATTACK_INPUT_HEAVY\020\001b\006proto3"
 };
 static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    2081,
+    2200,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -990,6 +993,15 @@ PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2epro
     file_level_service_descriptors_Protocol_2eproto,
 };
 namespace Protocol {
+const ::google::protobuf::EnumDescriptor* AttackInputType_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_Protocol_2eproto);
+  return file_level_enum_descriptors_Protocol_2eproto[0];
+}
+PROTOBUF_CONSTINIT const uint32_t AttackInputType_internal_data_[] = {
+    131072u, 0u, };
+bool AttackInputType_IsValid(int value) {
+  return 0 <= value && value <= 1;
+}
 // ===================================================================
 
 class CS_LOGIN_PACKET::_Internal {
@@ -1797,9 +1809,9 @@ inline void CS_ATTACK_PACKET::SharedCtor(::_pb::Arena* arena) {
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, dirx_),
            0,
-           offsetof(Impl_, clientabilityinstanceid_) -
+           offsetof(Impl_, attackinputtype_) -
                offsetof(Impl_, dirx_) +
-               sizeof(Impl_::clientabilityinstanceid_));
+               sizeof(Impl_::attackinputtype_));
 }
 CS_ATTACK_PACKET::~CS_ATTACK_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.CS_ATTACK_PACKET)
@@ -1848,15 +1860,15 @@ const ::google::protobuf::internal::ClassData* CS_ATTACK_PACKET::GetClassData() 
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<3, 5, 0, 0, 2> CS_ATTACK_PACKET::_table_ = {
+const ::_pbi::TcParseTable<3, 6, 0, 0, 2> CS_ATTACK_PACKET::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    5, 56,  // max_field_number, fast_idx_mask
+    6, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967264,  // skipmap
+    4294967232,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    5,  // num_field_entries
+    6,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -1882,7 +1894,9 @@ const ::_pbi::TcParseTable<3, 5, 0, 0, 2> CS_ATTACK_PACKET::_table_ = {
     // uint32 clientAbilityInstanceId = 5;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CS_ATTACK_PACKET, _impl_.clientabilityinstanceid_), 63>(),
      {40, 63, 0, PROTOBUF_FIELD_OFFSET(CS_ATTACK_PACKET, _impl_.clientabilityinstanceid_)}},
-    {::_pbi::TcParser::MiniParse, {}},
+    // .Protocol.AttackInputType attackInputType = 6;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CS_ATTACK_PACKET, _impl_.attackinputtype_), 63>(),
+     {48, 63, 0, PROTOBUF_FIELD_OFFSET(CS_ATTACK_PACKET, _impl_.attackinputtype_)}},
     {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
@@ -1902,6 +1916,9 @@ const ::_pbi::TcParseTable<3, 5, 0, 0, 2> CS_ATTACK_PACKET::_table_ = {
     // uint32 clientAbilityInstanceId = 5;
     {PROTOBUF_FIELD_OFFSET(CS_ATTACK_PACKET, _impl_.clientabilityinstanceid_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // .Protocol.AttackInputType attackInputType = 6;
+    {PROTOBUF_FIELD_OFFSET(CS_ATTACK_PACKET, _impl_.attackinputtype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
   }},
   // no aux_entries
   {{
@@ -1916,8 +1933,8 @@ PROTOBUF_NOINLINE void CS_ATTACK_PACKET::Clear() {
   (void) cached_has_bits;
 
   ::memset(&_impl_.dirx_, 0, static_cast<::size_t>(
-      reinterpret_cast<char*>(&_impl_.clientabilityinstanceid_) -
-      reinterpret_cast<char*>(&_impl_.dirx_)) + sizeof(_impl_.clientabilityinstanceid_));
+      reinterpret_cast<char*>(&_impl_.attackinputtype_) -
+      reinterpret_cast<char*>(&_impl_.dirx_)) + sizeof(_impl_.attackinputtype_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -1971,6 +1988,13 @@ PROTOBUF_NOINLINE void CS_ATTACK_PACKET::Clear() {
                 5, this_._internal_clientabilityinstanceid(), target);
           }
 
+          // .Protocol.AttackInputType attackInputType = 6;
+          if (this_._internal_attackinputtype() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteEnumToArray(
+                6, this_._internal_attackinputtype(), target);
+          }
+
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
             target =
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -2018,6 +2042,11 @@ PROTOBUF_NOINLINE void CS_ATTACK_PACKET::Clear() {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
                   this_._internal_clientabilityinstanceid());
             }
+            // .Protocol.AttackInputType attackInputType = 6;
+            if (this_._internal_attackinputtype() != 0) {
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_attackinputtype());
+            }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
                                                      &this_._impl_._cached_size_);
@@ -2046,6 +2075,9 @@ void CS_ATTACK_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const 
   if (from._internal_clientabilityinstanceid() != 0) {
     _this->_impl_.clientabilityinstanceid_ = from._impl_.clientabilityinstanceid_;
   }
+  if (from._internal_attackinputtype() != 0) {
+    _this->_impl_.attackinputtype_ = from._impl_.attackinputtype_;
+  }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -2061,8 +2093,8 @@ void CS_ATTACK_PACKET::InternalSwap(CS_ATTACK_PACKET* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(CS_ATTACK_PACKET, _impl_.clientabilityinstanceid_)
-      + sizeof(CS_ATTACK_PACKET::_impl_.clientabilityinstanceid_)
+      PROTOBUF_FIELD_OFFSET(CS_ATTACK_PACKET, _impl_.attackinputtype_)
+      + sizeof(CS_ATTACK_PACKET::_impl_.attackinputtype_)
       - PROTOBUF_FIELD_OFFSET(CS_ATTACK_PACKET, _impl_.dirx_)>(
           reinterpret_cast<char*>(&_impl_.dirx_),
           reinterpret_cast<char*>(&other->_impl_.dirx_));

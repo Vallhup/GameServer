@@ -28,6 +28,7 @@
 #include "google/protobuf/message_lite.h"
 #include "google/protobuf/repeated_field.h"  // IWYU pragma: export
 #include "google/protobuf/extension_set.h"  // IWYU pragma: export
+#include "google/protobuf/generated_enum_reflection.h"
 #include "google/protobuf/unknown_field_set.h"
 // @@protoc_insertion_point(includes)
 
@@ -122,6 +123,39 @@ namespace protobuf {
 }  // namespace google
 
 namespace Protocol {
+enum AttackInputType : int {
+  ATTACK_INPUT_LIGHT = 0,
+  ATTACK_INPUT_HEAVY = 1,
+  AttackInputType_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  AttackInputType_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool AttackInputType_IsValid(int value);
+extern const uint32_t AttackInputType_internal_data_[];
+constexpr AttackInputType AttackInputType_MIN = static_cast<AttackInputType>(0);
+constexpr AttackInputType AttackInputType_MAX = static_cast<AttackInputType>(1);
+constexpr int AttackInputType_ARRAYSIZE = 1 + 1;
+const ::google::protobuf::EnumDescriptor*
+AttackInputType_descriptor();
+template <typename T>
+const std::string& AttackInputType_Name(T value) {
+  static_assert(std::is_same<T, AttackInputType>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to AttackInputType_Name().");
+  return AttackInputType_Name(static_cast<AttackInputType>(value));
+}
+template <>
+inline const std::string& AttackInputType_Name(AttackInputType value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<AttackInputType_descriptor,
+                                                 0, 1>(
+      static_cast<int>(value));
+}
+inline bool AttackInputType_Parse(absl::string_view name, AttackInputType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<AttackInputType>(
+      AttackInputType_descriptor(), name, value);
+}
 
 // ===================================================================
 
@@ -4483,6 +4517,7 @@ class CS_ATTACK_PACKET final : public ::google::protobuf::Message
     kClientAnimIdFieldNumber = 3,
     kClientNormalizedTimeFieldNumber = 4,
     kClientAbilityInstanceIdFieldNumber = 5,
+    kAttackInputTypeFieldNumber = 6,
   };
   // float dirX = 1;
   void clear_dirx() ;
@@ -4534,12 +4569,22 @@ class CS_ATTACK_PACKET final : public ::google::protobuf::Message
   void _internal_set_clientabilityinstanceid(::uint32_t value);
 
   public:
+  // .Protocol.AttackInputType attackInputType = 6;
+  void clear_attackinputtype() ;
+  ::Protocol::AttackInputType attackinputtype() const;
+  void set_attackinputtype(::Protocol::AttackInputType value);
+
+  private:
+  ::Protocol::AttackInputType _internal_attackinputtype() const;
+  void _internal_set_attackinputtype(::Protocol::AttackInputType value);
+
+  public:
   // @@protoc_insertion_point(class_scope:Protocol.CS_ATTACK_PACKET)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      3, 5, 0,
+      3, 6, 0,
       0, 2>
       _table_;
 
@@ -4562,6 +4607,7 @@ class CS_ATTACK_PACKET final : public ::google::protobuf::Message
     ::uint32_t clientanimid_;
     float clientnormalizedtime_;
     ::uint32_t clientabilityinstanceid_;
+    int attackinputtype_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -5237,6 +5283,28 @@ inline ::uint32_t CS_ATTACK_PACKET::_internal_clientabilityinstanceid() const {
 inline void CS_ATTACK_PACKET::_internal_set_clientabilityinstanceid(::uint32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.clientabilityinstanceid_ = value;
+}
+
+// .Protocol.AttackInputType attackInputType = 6;
+inline void CS_ATTACK_PACKET::clear_attackinputtype() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.attackinputtype_ = 0;
+}
+inline ::Protocol::AttackInputType CS_ATTACK_PACKET::attackinputtype() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_ATTACK_PACKET.attackInputType)
+  return _internal_attackinputtype();
+}
+inline void CS_ATTACK_PACKET::set_attackinputtype(::Protocol::AttackInputType value) {
+  _internal_set_attackinputtype(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_ATTACK_PACKET.attackInputType)
+}
+inline ::Protocol::AttackInputType CS_ATTACK_PACKET::_internal_attackinputtype() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::Protocol::AttackInputType>(_impl_.attackinputtype_);
+}
+inline void CS_ATTACK_PACKET::_internal_set_attackinputtype(::Protocol::AttackInputType value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.attackinputtype_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -6852,6 +6920,19 @@ SC_REPLICATION_FRAME_PACKET::_internal_mutable_anims() {
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace Protocol
 
+
+namespace google {
+namespace protobuf {
+
+template <>
+struct is_proto_enum<::Protocol::AttackInputType> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::AttackInputType>() {
+  return ::Protocol::AttackInputType_descriptor();
+}
+
+}  // namespace protobuf
+}  // namespace google
 
 // @@protoc_insertion_point(global_scope)
 

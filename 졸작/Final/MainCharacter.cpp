@@ -53,9 +53,15 @@ void MainCharacter::BasicAttack()
 {
 	auto& input = INPUT;
 
-	bool currentAttack = input.GetMouseButton(MouseButton::LEFT);
+	const bool currentAttack = input.GetMouseButton(MouseButton::LEFT);
+	const bool currentHeavyAttack = input.GetKeyDown('C');
+	const bool shouldSendAttack = (currentAttack && !prevAttack) || currentHeavyAttack;
+	const Protocol::AttackInputType attackType = 
+		currentHeavyAttack ? 
+		Protocol::ATTACK_INPUT_HEAVY : 
+		Protocol::ATTACK_INPUT_LIGHT;
 
-	if (currentAttack && !prevAttack)
+	if (shouldSendAttack)
 	{
 		if (auto* network = NETWORK_MANAGER)
 		{
@@ -78,7 +84,8 @@ void MainCharacter::BasicAttack()
 				0.0f,
 				animId,
 				normalizedTime,
-				instanceId);
+				instanceId,
+				attackType);
 		}
 	}
 
