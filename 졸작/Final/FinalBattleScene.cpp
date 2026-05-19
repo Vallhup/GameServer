@@ -32,7 +32,7 @@ SceneSettings FinalBattleScene::GetSceneSettings() const
 {
 	return {
 		  .light = { .sunDirection = { 0.0f, -0.75f, -1.0f }, .sunIntensity = 0.0f},
-		  .lut = { .lutIndex = 1, .saturation = 1.0f },
+		  .lut = { .lutIndex = 104, .saturation = 1.05f },
 		  .fog = { .density = 0.0f, .maxSteps = 32, .maxDistance = 110.0f,
 					  .jitterStrength = 1.0f, .groundHeight = 2.0f, .lightIntensity = 0.0f },
 		  .skybox = { .tintColor = { 1.0f, 1.0f, 1.0f }, .saturation = 1.0f },

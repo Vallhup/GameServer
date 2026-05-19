@@ -269,6 +269,8 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 		auto swordEffect = character->GetComponent<SwordSpecialEffectComponent>();
 		swordEffect->SetEffectName(swordEffectName);
 
+		auto trail = character->GetComponent<TrailComponent>();
+
 		auto sfx = character->AddComponent<AnimationSfxComponent>();
 		switch (type)
 		{
@@ -278,12 +280,18 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 			sfx->AddTrigger("Run", 6, 8, "../Assets/Music/SFX/Foot.mp3");
 			sfx->AddTrigger("Run", 14, 16, "../Assets/Music/SFX/Foot.mp3");
 			swordEffect->SetBoneIndices({ 45 });
+			trail->SetBoneIndices({ 45 });
+			trail->SetBladeLength(1.02f);
 			break;
 		case CharacterType::Lancer:
 			swordEffect->SetBoneIndices({ 25, 45 });
+			trail->SetBoneIndices({ 25, 45 });
+			trail->SetBladeLength(0.81f);
 			break;
 		case CharacterType::Paladin:
 			swordEffect->SetBoneIndices({ 44 });
+			trail->SetBoneIndices({ 44 });
+			trail->SetBladeLength(0.95f);
 			break;
 		}
 
