@@ -134,7 +134,8 @@ bool ServerSessionSystem::Initialize()
 		.characterSpawn      = &_characterSpawnService,
 		.worldTransitionSink = &_worldTransitionSink,
 		.sessionSystem       = this,
-		.database            = _database
+		.database            = _database,
+		.partyCommandQueue   = _partyCommandQueue
 	};
 	PacketHandlerContext::Initialize(_packetHandlerCtx);
 
@@ -173,6 +174,13 @@ void ServerSessionSystem::SetDatabaseBackend(ODBCDatabaseBackend* database) noex
 {
 	_database = database;
 	_packetHandlerCtx.database = database;
+}
+
+void ServerSessionSystem::SetPartyCommandQueue(
+	PartyCommandQueue* partyCommandQueue) noexcept
+{
+	_partyCommandQueue = partyCommandQueue;
+	_packetHandlerCtx.partyCommandQueue = partyCommandQueue;
 }
 
 void ServerSessionSystem::ClearSessionState() noexcept

@@ -67,7 +67,11 @@ ServerApp::ServerApp(Config config)
 	}, _framework, _startupWorldId, *this)
 	, _transferBinding(_framework, _sessionSystem.Flow())
 	, _partyService(*this)
-	, _partyCommandPump(_partyCommandQueue, _partyService, _framework)
+	, _partyCommandPump(
+		_partyCommandQueue,
+		_partyService,
+		_framework,
+		_sessionSystem.Network())
 	, _demoPartyPolicy(_partyService, *this, *this)
 {
 	if (_config.logicTickHz == 0)
@@ -90,6 +94,7 @@ bool ServerApp::Initialize()
 	_nowSec = 0.0;
 	_startupWorldId = WorldId::Invalid();
 	_sessionSystem.ClearSessionState();
+	_sessionSystem.SetPartyCommandQueue(&_partyCommandQueue);
 	_partyService.Clear();
 	_partyCommandQueue.Clear();
 	_worldTransitionRequestIds.clear();
@@ -443,6 +448,11 @@ bool ServerApp::MarkClientWorldTransitionReady(
 void ServerApp::OnSessionDisconnected(SessionId sessionId) noexcept
 {
 	_pendingClientTransitions.erase(sessionId);
+	_partyCommandQueue.Submit(PartyCommand{
+		.kind = PartyCommandKind::MarkMemberOffline,
+		.actorSessionId = sessionId,
+		.submittedAtSec = _nowSec
+	});
 }
 
 bool ServerApp::InitializeFrameworkRuntime()

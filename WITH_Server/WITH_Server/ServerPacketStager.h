@@ -6,6 +6,7 @@
 #include "CharacterDef.h"
 #include "NetworkRuntime.h"
 #include "PacketFactory.h"
+#include "PartyTypes.h"
 #include "Protocol.pb.h"
 #include "Session.h"
 #include "ECS/GameplayRuntimeComponents.h"
@@ -68,6 +69,47 @@ public:
 		SessionId sessionId,
 		uint32_t requestId,
 		uint32_t reason);
+
+	static bool StagePartyUiBootstrapPacket(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		uint32_t clientRequestId,
+		const PartySnapshot* myParty,
+		std::span<const PartyListEntry> parties);
+
+	static bool StagePartyListSnapshotPacket(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		uint32_t clientRequestId,
+		std::span<const PartyListEntry> parties);
+
+	static bool StagePartyCommandResultPacket(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		uint32_t clientRequestId,
+		const PartyResult& result);
+
+	static bool StagePartySnapshotPacketToSession(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		const PartySnapshot& party);
+
+	static bool StagePartySnapshotPacketToSessions(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		const PartySnapshot& party);
+
+	static bool StagePartyJoinRequestReceivedPacket(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		PartyId partyId,
+		const PartyJoinRequestSnapshot& request);
+
+	static bool StagePartyJoinRequestClosedPacket(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		PartyId partyId,
+		const PartyJoinRequestSnapshot& request);
 
 	static bool StageStatPacketToSession(
 		NetworkRuntime& network,

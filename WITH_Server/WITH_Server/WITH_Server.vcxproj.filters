@@ -65,6 +65,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\DTO.pb.cc">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
@@ -387,6 +390,9 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\DTO.pb.h">
+      <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>

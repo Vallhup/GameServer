@@ -9,10 +9,13 @@
 
 enum class PartyCommandKind : uint8_t
 {
+	UiOpened,
+	ListRefresh,
 	CreateParty,
 	RequestJoin,
 	AcceptJoinRequest,
 	RejectJoinRequest,
+	MarkMemberOffline,
 	BeginWorldEntry,
 	TransferEnqueued,
 	TransferCompleted,
@@ -31,6 +34,7 @@ struct PartyCommand
 	WorldId targetWorldId{ WorldId::Invalid() };
 	WorldTargetSpec target;
 	bool allowFallback{ false };
+	uint32_t clientRequestId{ 0 };
 	double submittedAtSec{ 0.0 };
 	uint64_t correlationId{ 0 };
 };

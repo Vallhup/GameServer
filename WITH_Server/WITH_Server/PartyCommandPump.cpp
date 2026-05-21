@@ -1,13 +1,19 @@
 #include "pch.h"
 #include "PartyCommandPump.h"
 
+#include <algorithm>
+
+#include "ServerPacketStager.h"
+
 PartyCommandPump::PartyCommandPump(
 	PartyCommandQueue& queue,
 	PartyService& partyService,
-	FrameworkRuntime& framework)
+	FrameworkRuntime& framework,
+	NetworkRuntime& network)
 	: _queue(queue)
 	, _partyService(partyService)
 	, _framework(framework)
+	, _network(network)
 {
 }
 
@@ -30,26 +36,26 @@ void PartyCommandPump::ApplyCommand(
 {
 	switch (command.kind)
 	{
+	case PartyCommandKind::UiOpened:
+		SendUiBootstrap(command);
+		break;
+	case PartyCommandKind::ListRefresh:
+		SendListSnapshot(command);
+		break;
 	case PartyCommandKind::CreateParty:
-		(void)_partyService.CreateParty(command.actorSessionId, nowSec);
+		CreateParty(command, nowSec);
 		break;
 	case PartyCommandKind::RequestJoin:
-		(void)_partyService.RequestJoin(
-			command.actorSessionId,
-			command.partyId,
-			nowSec);
+		RequestJoin(command, nowSec);
 		break;
 	case PartyCommandKind::AcceptJoinRequest:
-		(void)_partyService.AcceptJoinRequest(
-			command.actorSessionId,
-			command.requestId,
-			nowSec);
+		AcceptJoinRequest(command, nowSec);
 		break;
 	case PartyCommandKind::RejectJoinRequest:
-		(void)_partyService.RejectJoinRequest(
-			command.actorSessionId,
-			command.requestId,
-			nowSec);
+		RejectJoinRequest(command, nowSec);
+		break;
+	case PartyCommandKind::MarkMemberOffline:
+		MarkMemberOffline(command, nowSec);
 		break;
 	case PartyCommandKind::BeginWorldEntry:
 		BeginWorldEntry(command, nowSec);
@@ -78,6 +84,219 @@ void PartyCommandPump::ApplyCommand(
 		break;
 	default:
 		break;
+	}
+}
+
+void PartyCommandPump::SendUiBootstrap(const PartyCommand& command)
+{
+	PartySnapshot snapshot =
+		_partyService.BuildPartySnapshotForSession(command.actorSessionId);
+	_listScratch.clear();
+	_partyService.CollectPublicPartyList(_listScratch);
+
+	const PartySnapshot* const myParty =
+		snapshot.partyId != 0 ? &snapshot : nullptr;
+	(void)ServerPacketStager::StagePartyUiBootstrapPacket(
+		_network,
+		command.actorSessionId,
+		command.clientRequestId,
+		myParty,
+		std::span<const PartyListEntry>(
+			_listScratch.data(),
+			_listScratch.size()));
+}
+
+void PartyCommandPump::SendListSnapshot(const PartyCommand& command)
+{
+	_listScratch.clear();
+	_partyService.CollectPublicPartyList(_listScratch);
+	(void)ServerPacketStager::StagePartyListSnapshotPacket(
+		_network,
+		command.actorSessionId,
+		command.clientRequestId,
+		std::span<const PartyListEntry>(
+			_listScratch.data(),
+			_listScratch.size()));
+}
+
+void PartyCommandPump::CreateParty(
+	const PartyCommand& command,
+	double nowSec)
+{
+	const PartyResult result =
+		_partyService.CreateParty(command.actorSessionId, nowSec);
+	(void)ServerPacketStager::StagePartyCommandResultPacket(
+		_network,
+		command.actorSessionId,
+		command.clientRequestId,
+		result);
+
+	if (result.Succeeded())
+	{
+		(void)ServerPacketStager::StagePartySnapshotPacketToSession(
+			_network,
+			command.actorSessionId,
+			_partyService.BuildPartySnapshot(result.partyId));
+	}
+}
+
+void PartyCommandPump::RequestJoin(
+	const PartyCommand& command,
+	double nowSec)
+{
+	const PartyResult result =
+		_partyService.RequestJoin(
+			command.actorSessionId,
+			command.partyId,
+			nowSec);
+	(void)ServerPacketStager::StagePartyCommandResultPacket(
+		_network,
+		command.actorSessionId,
+		command.clientRequestId,
+		result);
+
+	if (!result.Succeeded())
+	{
+		return;
+	}
+
+	const PartySnapshot snapshot =
+		_partyService.BuildPartySnapshot(result.partyId);
+	const auto requestIt = std::find_if(
+		snapshot.joinRequests.begin(),
+		snapshot.joinRequests.end(),
+		[&result](const PartyJoinRequestSnapshot& request)
+		{
+			return request.requestId == result.requestId;
+		});
+	if (requestIt == snapshot.joinRequests.end())
+	{
+		return;
+	}
+
+	(void)ServerPacketStager::StagePartyJoinRequestReceivedPacket(
+		_network,
+		snapshot.leaderSessionId,
+		result.partyId,
+		*requestIt);
+}
+
+void PartyCommandPump::AcceptJoinRequest(
+	const PartyCommand& command,
+	double nowSec)
+{
+	const PartyJoinRequest* const requestBefore =
+		_partyService.FindJoinRequest(command.requestId);
+	const SessionId requesterSessionId =
+		requestBefore != nullptr ? requestBefore->requesterSessionId : 0;
+
+	const PartyResult result =
+		_partyService.AcceptJoinRequest(
+			command.actorSessionId,
+			command.requestId,
+			nowSec);
+	(void)ServerPacketStager::StagePartyCommandResultPacket(
+		_network,
+		command.actorSessionId,
+		command.clientRequestId,
+		result);
+
+	if (!result.Succeeded())
+	{
+		return;
+	}
+
+	const PartySnapshot snapshot =
+		_partyService.BuildPartySnapshot(result.partyId);
+	const auto requestIt = std::find_if(
+		snapshot.joinRequests.begin(),
+		snapshot.joinRequests.end(),
+		[&result](const PartyJoinRequestSnapshot& request)
+		{
+			return request.requestId == result.requestId;
+		});
+	if (requesterSessionId != 0 && requestIt != snapshot.joinRequests.end())
+	{
+		(void)ServerPacketStager::StagePartyJoinRequestClosedPacket(
+			_network,
+			requesterSessionId,
+			result.partyId,
+			*requestIt);
+	}
+
+	StagePartySnapshotToMembers(snapshot);
+}
+
+void PartyCommandPump::RejectJoinRequest(
+	const PartyCommand& command,
+	double nowSec)
+{
+	const PartyJoinRequest* const requestBefore =
+		_partyService.FindJoinRequest(command.requestId);
+	const SessionId requesterSessionId =
+		requestBefore != nullptr ? requestBefore->requesterSessionId : 0;
+
+	const PartyResult result =
+		_partyService.RejectJoinRequest(
+			command.actorSessionId,
+			command.requestId,
+			nowSec);
+	(void)ServerPacketStager::StagePartyCommandResultPacket(
+		_network,
+		command.actorSessionId,
+		command.clientRequestId,
+		result);
+
+	if (!result.Succeeded())
+	{
+		return;
+	}
+
+	const PartySnapshot snapshot =
+		_partyService.BuildPartySnapshot(result.partyId);
+	const auto requestIt = std::find_if(
+		snapshot.joinRequests.begin(),
+		snapshot.joinRequests.end(),
+		[&result](const PartyJoinRequestSnapshot& request)
+		{
+			return request.requestId == result.requestId;
+		});
+	if (requesterSessionId != 0 && requestIt != snapshot.joinRequests.end())
+	{
+		(void)ServerPacketStager::StagePartyJoinRequestClosedPacket(
+			_network,
+			requesterSessionId,
+			result.partyId,
+			*requestIt);
+	}
+
+	(void)ServerPacketStager::StagePartySnapshotPacketToSession(
+		_network,
+		command.actorSessionId,
+		snapshot);
+}
+
+void PartyCommandPump::MarkMemberOffline(
+	const PartyCommand& command,
+	double nowSec)
+{
+	const PartyId partyId =
+		_partyService.FindPartyBySession(command.actorSessionId);
+	const PartyResult result =
+		_partyService.MarkMemberPresence(
+			command.actorSessionId,
+			PartyMemberPresence::Offline,
+			nowSec);
+	if (!result.Succeeded() || partyId == 0)
+	{
+		return;
+	}
+
+	const PartySnapshot snapshot =
+		_partyService.BuildPartySnapshot(partyId);
+	if (snapshot.partyId != 0)
+	{
+		StagePartySnapshotToMembers(snapshot);
 	}
 }
 
@@ -124,4 +343,23 @@ void PartyCommandPump::BeginWorldEntry(
 	{
 		(void)_partyService.FailWorldEntry(entry.partyId, 0, nowSec);
 	}
+}
+
+void PartyCommandPump::StagePartySnapshotToMembers(
+	const PartySnapshot& snapshot)
+{
+	std::vector<SessionId> sessionIds;
+	sessionIds.reserve(snapshot.members.size());
+	for (const PartyMemberSnapshot& member : snapshot.members)
+	{
+		if (member.presence == PartyMemberPresence::Online)
+		{
+			sessionIds.push_back(member.sessionId);
+		}
+	}
+
+	(void)ServerPacketStager::StagePartySnapshotPacketToSessions(
+		_network,
+		std::span<const SessionId>(sessionIds.data(), sessionIds.size()),
+		snapshot);
 }

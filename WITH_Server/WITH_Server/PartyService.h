@@ -73,6 +73,8 @@ public:
 	const PartyRecord* FindParty(PartyId partyId) const noexcept;
 	PartyRecord* FindParty(PartyId partyId) noexcept;
 	PartyId FindPartyBySession(SessionId sessionId) const noexcept;
+	PartyId FindPartyByRequest(PartyRequestId requestId) const noexcept;
+	const PartyJoinRequest* FindJoinRequest(PartyRequestId requestId) const noexcept;
 	SessionId FindLeaderSession(PartyId partyId) const noexcept;
 	PartySnapshot BuildPartySnapshot(PartyId partyId) const;
 	PartySnapshot BuildPartySnapshotForSession(SessionId sessionId) const;

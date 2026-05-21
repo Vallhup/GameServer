@@ -1,6 +1,171 @@
 #include "pch.h"
 #include "ServerPacketStager.h"
 
+namespace
+{
+	Protocol::PartyLifecycle ToProtoPartyLifecycle(
+		PartyLifecycleState lifecycle) noexcept
+	{
+		switch (lifecycle)
+		{
+		case PartyLifecycleState::WorldEntryPending:
+			return Protocol::PARTY_LIFECYCLE_WORLD_ENTRY_PENDING;
+		case PartyLifecycleState::InWorld:
+			return Protocol::PARTY_LIFECYCLE_IN_WORLD;
+		case PartyLifecycleState::Disbanded:
+			return Protocol::PARTY_LIFECYCLE_DISBANDED;
+		case PartyLifecycleState::Forming:
+		default:
+			return Protocol::PARTY_LIFECYCLE_FORMING;
+		}
+	}
+
+	Protocol::PartyMemberRole ToProtoPartyMemberRole(
+		PartyMemberRole role) noexcept
+	{
+		return role == PartyMemberRole::Leader
+			? Protocol::PARTY_MEMBER_ROLE_LEADER
+			: Protocol::PARTY_MEMBER_ROLE_MEMBER;
+	}
+
+	Protocol::PartyMemberPresence ToProtoPartyMemberPresence(
+		PartyMemberPresence presence) noexcept
+	{
+		return presence == PartyMemberPresence::Offline
+			? Protocol::PARTY_MEMBER_PRESENCE_OFFLINE
+			: Protocol::PARTY_MEMBER_PRESENCE_ONLINE;
+	}
+
+	Protocol::PartyJoinRequestState ToProtoPartyJoinRequestState(
+		PartyJoinRequestState state) noexcept
+	{
+		switch (state)
+		{
+		case PartyJoinRequestState::Accepted:
+			return Protocol::PARTY_JOIN_REQUEST_ACCEPTED;
+		case PartyJoinRequestState::Rejected:
+			return Protocol::PARTY_JOIN_REQUEST_REJECTED;
+		case PartyJoinRequestState::Cancelled:
+			return Protocol::PARTY_JOIN_REQUEST_CANCELLED;
+		case PartyJoinRequestState::Expired:
+			return Protocol::PARTY_JOIN_REQUEST_EXPIRED;
+		case PartyJoinRequestState::Pending:
+		default:
+			return Protocol::PARTY_JOIN_REQUEST_PENDING;
+		}
+	}
+
+	Protocol::PartyJoinRequestCloseReason ToProtoPartyJoinRequestCloseReason(
+		PartyJoinRequestCloseReason reason) noexcept
+	{
+		switch (reason)
+		{
+		case PartyJoinRequestCloseReason::Accepted:
+			return Protocol::PARTY_CLOSE_ACCEPTED;
+		case PartyJoinRequestCloseReason::RejectedByLeader:
+			return Protocol::PARTY_CLOSE_REJECTED_BY_LEADER;
+		case PartyJoinRequestCloseReason::CancelledByRequester:
+			return Protocol::PARTY_CLOSE_CANCELLED_BY_REQUESTER;
+		case PartyJoinRequestCloseReason::Expired:
+			return Protocol::PARTY_CLOSE_EXPIRED;
+		case PartyJoinRequestCloseReason::ClosedByPartyFull:
+			return Protocol::PARTY_CLOSE_PARTY_FULL;
+		case PartyJoinRequestCloseReason::ClosedByPartyEnteredWorld:
+			return Protocol::PARTY_CLOSE_PARTY_ENTERED_WORLD;
+		case PartyJoinRequestCloseReason::ClosedByRequesterJoinedOtherParty:
+			return Protocol::PARTY_CLOSE_REQUESTER_JOINED_OTHER_PARTY;
+		case PartyJoinRequestCloseReason::ClosedByPartyDisbanded:
+			return Protocol::PARTY_CLOSE_PARTY_DISBANDED;
+		case PartyJoinRequestCloseReason::None:
+		default:
+			return Protocol::PARTY_CLOSE_NONE;
+		}
+	}
+
+	void FillPartyMember(
+		Protocol::PartyMember& out,
+		const PartyMemberSnapshot& member)
+	{
+		out.set_sessionid(member.sessionId);
+		out.set_accountid(member.accountId);
+		out.set_netid(member.netId.GetRaw());
+		out.set_role(ToProtoPartyMemberRole(member.role));
+		out.set_presence(ToProtoPartyMemberPresence(member.presence));
+	}
+
+	void FillPartyJoinRequest(
+		Protocol::PartyJoinRequest& out,
+		const PartyJoinRequestSnapshot& request)
+	{
+		out.set_joinrequestid(request.requestId);
+		out.set_partyid(request.partyId);
+		out.set_requestersessionid(request.requesterSessionId);
+		out.set_requesteraccountid(request.requesterAccountId);
+		out.set_state(ToProtoPartyJoinRequestState(request.state));
+		out.set_closereason(
+			ToProtoPartyJoinRequestCloseReason(request.closeReason));
+		out.set_createdatsec(request.createdAtSec);
+		out.set_expiresatsec(request.expiresAtSec);
+		out.set_closedatsec(request.closedAtSec);
+	}
+
+	void FillPartySnapshot(
+		Protocol::PartySnapshot& out,
+		const PartySnapshot& party)
+	{
+		out.set_partyid(party.partyId);
+		out.set_lifecycle(ToProtoPartyLifecycle(party.lifecycle));
+		out.set_leadersessionid(party.leaderSessionId);
+		out.set_createdatsec(party.createdAtSec);
+		out.set_joinable(party.joinable);
+
+		for (const PartyMemberSnapshot& member : party.members)
+		{
+			FillPartyMember(*out.add_members(), member);
+		}
+
+		for (const PartyJoinRequestSnapshot& request : party.joinRequests)
+		{
+			FillPartyJoinRequest(*out.add_joinrequests(), request);
+		}
+	}
+
+	void FillPartyListEntry(
+		Protocol::PartyListEntry& out,
+		const PartyListEntry& entry)
+	{
+		out.set_partyid(entry.partyId);
+		out.set_leadersessionid(entry.leaderSessionId);
+		out.set_membercount(entry.memberCount);
+		out.set_capacity(entry.capacity);
+		out.set_lifecycle(ToProtoPartyLifecycle(entry.lifecycle));
+		out.set_createdatsec(entry.createdAtSec);
+		out.set_joinable(entry.joinable);
+	}
+
+	template<typename TPacket>
+	bool StageUnicastPacket(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		PacketType packetType,
+		const TPacket& packet)
+	{
+		SendBuffer* const buffer =
+			PacketFactory::Serialize(packetType, packet);
+		if (buffer == nullptr)
+		{
+			return false;
+		}
+
+		const bool staged =
+			network.StageUnicast(
+				sessionId,
+				std::span<const uint8_t>(buffer->data, buffer->size));
+		SendBufferPool::Get().Release(buffer);
+		return staged;
+	}
+}
+
 bool ServerPacketStager::StageLoginSuccess(
 	NetworkRuntime& network,
 	SessionId sessionId,
@@ -279,4 +444,137 @@ bool ServerPacketStager::StageWorldTransitionRejectedPacket(
 			std::span<const uint8_t>(buffer->data, buffer->size));
 	SendBufferPool::Get().Release(buffer);
 	return staged;
+}
+
+bool ServerPacketStager::StagePartyUiBootstrapPacket(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	uint32_t clientRequestId,
+	const PartySnapshot* myParty,
+	std::span<const PartyListEntry> parties)
+{
+	Protocol::SC_PARTY_UI_BOOTSTRAP_PACKET packet;
+	packet.set_clientrequestid(clientRequestId);
+	packet.set_hasmyparty(myParty != nullptr && myParty->partyId != 0);
+	if (myParty != nullptr && myParty->partyId != 0)
+	{
+		FillPartySnapshot(*packet.mutable_myparty(), *myParty);
+	}
+
+	for (const PartyListEntry& entry : parties)
+	{
+		FillPartyListEntry(*packet.add_parties(), entry);
+	}
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_PARTY_UI_BOOTSTRAP,
+		packet);
+}
+
+bool ServerPacketStager::StagePartyListSnapshotPacket(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	uint32_t clientRequestId,
+	std::span<const PartyListEntry> parties)
+{
+	Protocol::SC_PARTY_LIST_SNAPSHOT_PACKET packet;
+	packet.set_clientrequestid(clientRequestId);
+	for (const PartyListEntry& entry : parties)
+	{
+		FillPartyListEntry(*packet.add_parties(), entry);
+	}
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_PARTY_LIST_SNAPSHOT,
+		packet);
+}
+
+bool ServerPacketStager::StagePartyCommandResultPacket(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	uint32_t clientRequestId,
+	const PartyResult& result)
+{
+	Protocol::SC_PARTY_COMMAND_RESULT_PACKET packet;
+	packet.set_clientrequestid(clientRequestId);
+	packet.set_success(result.Succeeded());
+	packet.set_error(static_cast<uint32_t>(result.error));
+	packet.set_partyid(result.partyId);
+	packet.set_joinrequestid(result.requestId);
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_PARTY_COMMAND_RESULT,
+		packet);
+}
+
+bool ServerPacketStager::StagePartySnapshotPacketToSession(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	const PartySnapshot& party)
+{
+	Protocol::SC_PARTY_SNAPSHOT_PACKET packet;
+	FillPartySnapshot(*packet.mutable_party(), party);
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_PARTY_SNAPSHOT,
+		packet);
+}
+
+bool ServerPacketStager::StagePartySnapshotPacketToSessions(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	const PartySnapshot& party)
+{
+	Protocol::SC_PARTY_SNAPSHOT_PACKET packet;
+	FillPartySnapshot(*packet.mutable_party(), party);
+
+	return StageReplicationPacket(
+		network,
+		PacketType::SC_PARTY_SNAPSHOT,
+		sessionIds,
+		packet);
+}
+
+bool ServerPacketStager::StagePartyJoinRequestReceivedPacket(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	PartyId partyId,
+	const PartyJoinRequestSnapshot& request)
+{
+	Protocol::SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET packet;
+	packet.set_partyid(partyId);
+	FillPartyJoinRequest(*packet.mutable_request(), request);
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_PARTY_JOIN_REQUEST_RECEIVED,
+		packet);
+}
+
+bool ServerPacketStager::StagePartyJoinRequestClosedPacket(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	PartyId partyId,
+	const PartyJoinRequestSnapshot& request)
+{
+	Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET packet;
+	packet.set_partyid(partyId);
+	packet.set_joinrequestid(request.requestId);
+	packet.set_reason(ToProtoPartyJoinRequestCloseReason(request.closeReason));
+	packet.set_state(ToProtoPartyJoinRequestState(request.state));
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_PARTY_JOIN_REQUEST_CLOSED,
+		packet);
 }

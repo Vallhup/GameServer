@@ -16,6 +16,7 @@
 class FrameworkRuntime;
 class IWorldTransitionRequestSink;
 class ODBCDatabaseBackend;
+class PartyCommandQueue;
 
 enum class InitialWorldReadyResult : uint8_t
 {
@@ -44,6 +45,7 @@ public:
 	void Shutdown() noexcept;
 	void ClearSessionState() noexcept;
 	void SetDatabaseBackend(ODBCDatabaseBackend* database) noexcept;
+	void SetPartyCommandQueue(PartyCommandQueue* partyCommandQueue) noexcept;
 	void HandleSessionDisconnected(
 		SessionId sessionId,
 		SessionCloseReason reason,
@@ -103,6 +105,7 @@ private:
 	SessionFlowController _sessionFlowController;
 	PacketHandlerContext  _packetHandlerCtx;
 	ODBCDatabaseBackend*  _database{ nullptr };
+	PartyCommandQueue*    _partyCommandQueue{ nullptr };
 	std::unordered_map<SessionId, PendingInitialEntry> _pendingInitialEntries;
 	TransferId _nextInitialEntryTransferId{ 1 };
 };

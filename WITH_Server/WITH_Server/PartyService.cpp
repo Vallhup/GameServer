@@ -598,6 +598,31 @@ PartyId PartyService::FindPartyBySession(SessionId sessionId) const noexcept
 	return it != _partyBySession.end() ? it->second : 0;
 }
 
+PartyId PartyService::FindPartyByRequest(PartyRequestId requestId) const noexcept
+{
+	const auto it = _partyByRequest.find(requestId);
+	return it != _partyByRequest.end() ? it->second : 0;
+}
+
+const PartyJoinRequest* PartyService::FindJoinRequest(
+	PartyRequestId requestId) const noexcept
+{
+	const PartyRecord* const party = FindParty(FindPartyByRequest(requestId));
+	if (party == nullptr)
+	{
+		return nullptr;
+	}
+
+	const auto requestIt = std::find_if(
+		party->joinRequests.begin(),
+		party->joinRequests.end(),
+		[requestId](const PartyJoinRequest& request)
+		{
+			return request.requestId == requestId;
+		});
+	return requestIt != party->joinRequests.end() ? &*requestIt : nullptr;
+}
+
 SessionId PartyService::FindLeaderSession(PartyId partyId) const noexcept
 {
 	const PartyRecord* const party = FindParty(partyId);

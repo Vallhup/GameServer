@@ -18,6 +18,7 @@
 #include "PacketFactory.h"
 #include "PacketHandlerContext.h"
 #include "PacketType.h"
+#include "PartyCommandQueue.h"
 #include "SessionFlowCommands.h"
 #include "SessionFlowController.h"
 #include "ServerPacketStager.h"
@@ -459,6 +460,15 @@ namespace
         return true;
     }
 
+    void SubmitPartyCommand(PartyCommand command) noexcept
+    {
+        auto& svc = PacketHandlerContext::Get();
+        if (svc.partyCommandQueue != nullptr)
+        {
+            svc.partyCommandQueue->Submit(std::move(command));
+        }
+    }
+
     const char* SessionFlowResultCodeName(SessionFlowResultCode code) noexcept
     {
         switch (code)
@@ -601,6 +611,18 @@ void RegisterServerPacketHandlers(
         PacketType::CS_WORLD_TRANSITION_REQUEST, &HandleWorldTransitionRequestPacket, "Pkt_CS_WORLD_TRANSITION_REQUEST");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_WORLD_TRANSITION_READY,   &HandleWorldTransitionReadyPacket,   "Pkt_CS_WORLD_TRANSITION_READY");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_PARTY_UI_OPENED,          &HandlePartyUiOpenedPacket,          "Pkt_CS_PARTY_UI_OPENED");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_PARTY_LIST_REFRESH,       &HandlePartyListRefreshPacket,       "Pkt_CS_PARTY_LIST_REFRESH");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_PARTY_CREATE,             &HandlePartyCreatePacket,            "Pkt_CS_PARTY_CREATE");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_PARTY_JOIN_REQUEST,       &HandlePartyJoinRequestPacket,       "Pkt_CS_PARTY_JOIN_REQUEST");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_PARTY_JOIN_ACCEPT,        &HandlePartyJoinAcceptPacket,        "Pkt_CS_PARTY_JOIN_ACCEPT");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_PARTY_JOIN_REJECT,        &HandlePartyJoinRejectPacket,        "Pkt_CS_PARTY_JOIN_REJECT");
 
     DynamicTaskTypeDesc loginAuthResultDesc{};
     loginAuthResultDesc.debugName = "DB_LoginAuthResult";
@@ -1404,6 +1426,117 @@ ExecCallResult HandleWorldTransitionReadyPacket(NodeExecContext& ctx)
     {
         (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
     }
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandlePartyUiOpenedPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    Protocol::CS_PARTY_UI_OPENED_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    SubmitPartyCommand(PartyCommand{
+        .kind = PartyCommandKind::UiOpened,
+        .actorSessionId = ResolveSessionId(ctx),
+        .clientRequestId = pkt.clientrequestid()
+    });
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandlePartyListRefreshPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    Protocol::CS_PARTY_LIST_REFRESH_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    SubmitPartyCommand(PartyCommand{
+        .kind = PartyCommandKind::ListRefresh,
+        .actorSessionId = ResolveSessionId(ctx),
+        .clientRequestId = pkt.clientrequestid()
+    });
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandlePartyCreatePacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    Protocol::CS_PARTY_CREATE_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    SubmitPartyCommand(PartyCommand{
+        .kind = PartyCommandKind::CreateParty,
+        .actorSessionId = ResolveSessionId(ctx),
+        .clientRequestId = pkt.clientrequestid()
+    });
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandlePartyJoinRequestPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    Protocol::CS_PARTY_JOIN_REQUEST_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    SubmitPartyCommand(PartyCommand{
+        .kind = PartyCommandKind::RequestJoin,
+        .actorSessionId = ResolveSessionId(ctx),
+        .partyId = static_cast<PartyId>(pkt.partyid()),
+        .clientRequestId = pkt.clientrequestid()
+    });
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandlePartyJoinAcceptPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    Protocol::CS_PARTY_JOIN_ACCEPT_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    SubmitPartyCommand(PartyCommand{
+        .kind = PartyCommandKind::AcceptJoinRequest,
+        .actorSessionId = ResolveSessionId(ctx),
+        .requestId = static_cast<PartyRequestId>(pkt.joinrequestid()),
+        .clientRequestId = pkt.clientrequestid()
+    });
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandlePartyJoinRejectPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    Protocol::CS_PARTY_JOIN_REJECT_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    SubmitPartyCommand(PartyCommand{
+        .kind = PartyCommandKind::RejectJoinRequest,
+        .actorSessionId = ResolveSessionId(ctx),
+        .requestId = static_cast<PartyRequestId>(pkt.joinrequestid()),
+        .clientRequestId = pkt.clientrequestid()
+    });
     return ExecCallResult::Success;
 }
 
