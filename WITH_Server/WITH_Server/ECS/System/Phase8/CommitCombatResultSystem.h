@@ -6,7 +6,7 @@
 struct CombatStatStateComp;
 
 class CommitCombatResultSystem final : public System {
-	static const StaticSystemMetaStorage<14> kMetaStorage;
+	static const StaticSystemMetaStorage<16> kMetaStorage;
 
 public:
 	void Execute(SystemContext& ctx) override;

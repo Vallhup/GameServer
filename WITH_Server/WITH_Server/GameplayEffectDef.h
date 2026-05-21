@@ -87,6 +87,9 @@ struct PeriodicEffectDef
 	PeriodicEffectKind kind{ PeriodicEffectKind::None };
 	AttributeId attributeId{ InvalidAttributeId };
 	float value{ 0.0f };
+	// 설정 시 이 값(초)을 초과한 경과 시간 이후에는 틱이 발동되지 않는다.
+	// 이펙트 지속 시간보다 짧은 틱 윈도우가 필요한 복합 DoT 등에 사용한다.
+	std::optional<float> tickDurationSec;
 };
 
 struct GameplayEffectRequirementDef

@@ -84,5 +84,11 @@
                            "currentValue":  1.0
                        }
                    ],
-    "abilitySetKey":  "AbilitySet.Imp"
+    "abilitySetKey":  "AbilitySet.Imp",
+    "killBuffGrants": [
+        {
+            "effectKey": "Effect.KillBuff.LifeDrain",
+            "grantProbability": 1.0
+        }
+    ]
 }

@@ -134,6 +134,8 @@ struct ActiveGameplayEffectEntry
 	Entity source{ Entity::Null() };
 	float remainingDurationSec{ 0.0f };
 	float counterValue{ 0.0f };
+	// PeriodicEffect 틱 누산기. tickIntervalSec 을 초과할 때마다 틱 발동 후 감산된다.
+	float tickAccumulatorSec{ 0.0f };
 	uint16_t stackCount{ 0 };
 	uint64_t appliedOrder{ 0 };
 };
@@ -141,4 +143,12 @@ struct ActiveGameplayEffectEntry
 struct GameplayEffectStateComp : Component
 {
 	std::vector<ActiveGameplayEffectEntry> activeEffects;
+};
+
+// CommitCombatResultSystem 이 킬 판정 시 킬러 엔티티에 적재한다.
+// ResolveGameplayEffectStateSystem 이 동일 프레임 후반에 소비하여 버프를 실제 적용한다.
+// EffectUser 피처를 가진 캐릭터에만 부착된다.
+struct PendingKillBuffGrantComp : Component
+{
+	std::vector<GameplayEffectId> pendingBuffEffectIds;
 };

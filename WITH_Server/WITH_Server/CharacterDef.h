@@ -12,6 +12,7 @@
 #include "DefLoadResult.h"
 #include "DefRegistry.h"
 #include "EntityId.h"
+#include "GameplayContentIds.h"
 
 enum class CharacterId : uint8_t;
 
@@ -75,6 +76,12 @@ struct CharacterAttributeInitialValueDef
 	float currentValue{ 0.0f };
 };
 
+struct KillBuffGrantDef
+{
+	std::string buffEffectKey;
+	float grantProbability{ 1.0f };
+};
+
 struct CharacterBodyCollisionDef
 {
 	float footprintRadiusXZ{ 0.5f };
@@ -106,6 +113,7 @@ struct CharacterDef
 	CharacterFeatureFlags features{ CharacterFeatureFlags::None };
 	std::optional<CharacterAIDef> ai;
 	std::optional<std::string> abilitySetKey;
+	std::vector<KillBuffGrantDef> killBuffGrants;
 
 	bool HasFeature(CharacterFeatureFlags flag) const noexcept
 	{

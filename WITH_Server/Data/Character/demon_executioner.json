@@ -84,5 +84,15 @@
                            "currentValue":  1.0
                        }
                    ],
-    "abilitySetKey":  "AbilitySet.DemonExecutioner"
+    "abilitySetKey":  "AbilitySet.DemonExecutioner",
+    "killBuffGrants": [
+        {
+            "effectKey": "Effect.KillBuff.IronWill",
+            "grantProbability": 0.9
+        },
+        {
+            "effectKey": "Effect.KillBuff.SteelSkin",
+            "grantProbability": 0.6
+        }
+    ]
 }

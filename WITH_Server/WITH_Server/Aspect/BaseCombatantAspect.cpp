@@ -30,6 +30,9 @@ void BaseCombatantAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<AbilityInterruptQueueComp>();
 	runtime.RegisterStorage<PendingGameplayEffectApplyComp>();
 	runtime.RegisterStorage<PendingGameplayEffectRemoveComp>();
+
+	// 킬 버프 수신 슬롯. EffectUser feature 를 가진 캐릭터(플레이어)에게만 부착된다.
+	runtime.RegisterStorage<PendingKillBuffGrantComp>();
 }
 
 void BaseCombatantAspect::Attach(
@@ -55,6 +58,11 @@ void BaseCombatantAspect::Attach(
 	runtime.DeferredAddComponent<PendingGameplayEffectRemoveComp>(entity);
 	runtime.DeferredAddComponent<PendingProjectileSpawnComp>(entity);
 	runtime.DeferredAddComponent<PendingAbilityPresentationEventComp>(entity);
+
+	if (def.HasFeature(CharacterFeatureFlags::EffectUser))
+	{
+		runtime.DeferredAddComponent<PendingKillBuffGrantComp>(entity);
+	}
 }
 
 bool BaseCombatantAspect::Validate(

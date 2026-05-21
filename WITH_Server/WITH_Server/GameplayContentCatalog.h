@@ -78,6 +78,7 @@ public:
 	const AbilityDef* FindAbilityByKey(std::string_view key) const noexcept;
 	const AbilitySetDef* FindAbilitySetByKey(std::string_view key) const noexcept;
 	const AttributeDef* FindAttributeByKey(std::string_view key) const noexcept;
+	const GameplayEffectDef* FindEffectByKey(std::string_view key) const noexcept;
 
 	void Clear() noexcept;
 	size_t Size() const noexcept;

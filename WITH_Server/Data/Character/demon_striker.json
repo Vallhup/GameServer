@@ -84,5 +84,15 @@
                            "currentValue":  1.0
                        }
                    ],
-    "abilitySetKey":  "AbilitySet.DemonStriker"
+    "abilitySetKey":  "AbilitySet.DemonStriker",
+    "killBuffGrants": [
+        {
+            "effectKey": "Effect.KillBuff.PowerSurge",
+            "grantProbability": 0.8
+        },
+        {
+            "effectKey": "Effect.KillBuff.LifeDrain",
+            "grantProbability": 0.35
+        }
+    ]
 }

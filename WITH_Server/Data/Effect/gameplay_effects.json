@@ -144,6 +144,193 @@
           "counterEvent": "None"
         }
       ]
+    },
+    {
+      "key": "Effect.KillBuff.PowerSurge",
+      "name": "KillBuff.PowerSurge",
+      "kind": "Positive",
+      "tags": [],
+      "lifetime": {
+        "durationPolicy": "Infinite",
+        "defaultDurationSec": 0.0,
+        "tickIntervalSec": null
+      },
+      "stacking": {
+        "groupKey": "EffectGroup.KillBuff.PowerSurge",
+        "maxStackCount": 5,
+        "stackPolicy": "Stack"
+      },
+      "attributeModifiers": [
+        {
+          "attributeKey": "Attribute.AttackPower",
+          "op": "Add",
+          "value": 2.0
+        }
+      ],
+      "tagModifiers": [],
+      "periodicEffects": [],
+      "applyRequirements": [],
+      "removeRules": []
+    },
+    {
+      "key": "Effect.KillBuff.IronWill",
+      "name": "KillBuff.IronWill",
+      "kind": "Positive",
+      "tags": [],
+      "lifetime": {
+        "durationPolicy": "Infinite",
+        "defaultDurationSec": 0.0,
+        "tickIntervalSec": null
+      },
+      "stacking": {
+        "groupKey": "EffectGroup.KillBuff.IronWill",
+        "maxStackCount": 5,
+        "stackPolicy": "Stack"
+      },
+      "attributeModifiers": [
+        {
+          "attributeKey": "Attribute.MaxHp",
+          "op": "Add",
+          "value": 15.0
+        }
+      ],
+      "tagModifiers": [],
+      "periodicEffects": [],
+      "applyRequirements": [],
+      "removeRules": []
+    },
+    {
+      "key": "Effect.KillBuff.SteelSkin",
+      "name": "KillBuff.SteelSkin",
+      "kind": "Positive",
+      "tags": [],
+      "lifetime": {
+        "durationPolicy": "Infinite",
+        "defaultDurationSec": 0.0,
+        "tickIntervalSec": null
+      },
+      "stacking": {
+        "groupKey": "EffectGroup.KillBuff.SteelSkin",
+        "maxStackCount": 5,
+        "stackPolicy": "Stack"
+      },
+      "attributeModifiers": [
+        {
+          "attributeKey": "Attribute.Defense",
+          "op": "Add",
+          "value": 3.0
+        }
+      ],
+      "tagModifiers": [],
+      "periodicEffects": [],
+      "applyRequirements": [],
+      "removeRules": []
+    },
+    {
+      "key": "Effect.KillBuff.LifeDrain",
+      "name": "KillBuff.LifeDrain",
+      "kind": "Positive",
+      "tags": [],
+      "lifetime": {
+        "durationPolicy": "Instant",
+        "defaultDurationSec": 0.0,
+        "tickIntervalSec": null
+      },
+      "stacking": {
+        "groupKey": "EffectGroup.KillBuff.LifeDrain",
+        "maxStackCount": 1,
+        "stackPolicy": "Independent"
+      },
+      "attributeModifiers": [
+        {
+          "attributeKey": "Attribute.Hp",
+          "op": "Add",
+          "value": 12.0
+        }
+      ],
+      "tagModifiers": [],
+      "periodicEffects": [],
+      "applyRequirements": [],
+      "removeRules": []
+    },
+    {
+      "key": "Effect.KillBuff.BloodMending",
+      "name": "KillBuff.BloodMending",
+      "kind": "Positive",
+      "tags": [],
+      "lifetime": {
+        "durationPolicy": "Timed",
+        "defaultDurationSec": 6.0,
+        "tickIntervalSec": 1.0
+      },
+      "stacking": {
+        "groupKey": "EffectGroup.KillBuff.BloodMending",
+        "maxStackCount": 1,
+        "stackPolicy": "Refresh"
+      },
+      "attributeModifiers": [],
+      "tagModifiers": [],
+      "periodicEffects": [
+        {
+          "kind": "AttributeDelta",
+          "attributeKey": "Attribute.Hp",
+          "value": 3.0
+        }
+      ],
+      "applyRequirements": [],
+      "removeRules": [
+        {
+          "trigger": "DurationExpired",
+          "removeWhenTagsMatch": {
+            "op": "None",
+            "tags": [],
+            "children": []
+          },
+          "counterThreshold": null,
+          "abilityKind": null,
+          "counterEvent": "None"
+        }
+      ]
+    },
+    {
+      "key": "Effect.KillBuff.DemonicFrenzy",
+      "name": "KillBuff.DemonicFrenzy",
+      "kind": "Negative",
+      "tags": [],
+      "lifetime": {
+        "durationPolicy": "Timed",
+        "defaultDurationSec": 10.0,
+        "tickIntervalSec": 1.0
+      },
+      "stacking": {
+        "groupKey": "EffectGroup.KillBuff.DemonicFrenzy",
+        "maxStackCount": 1,
+        "stackPolicy": "Refresh"
+      },
+      "attributeModifiers": [],
+      "tagModifiers": [],
+      "periodicEffects": [
+        {
+          "kind": "AttributeDelta",
+          "attributeKey": "Attribute.Hp",
+          "value": -5.0,
+          "tickDurationSec": 5.0
+        }
+      ],
+      "applyRequirements": [],
+      "removeRules": [
+        {
+          "trigger": "DurationExpired",
+          "removeWhenTagsMatch": {
+            "op": "None",
+            "tags": [],
+            "children": []
+          },
+          "counterThreshold": null,
+          "abilityKind": null,
+          "counterEvent": "None"
+        }
+      ]
     }
   ]
 }

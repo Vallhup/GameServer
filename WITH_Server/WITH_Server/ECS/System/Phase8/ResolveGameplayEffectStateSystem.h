@@ -4,7 +4,7 @@
 #include "SystemMetaStorage.h"
 
 class ResolveGameplayEffectStateSystem final : public System {
-	static const StaticSystemMetaStorage<8, 0, 3> kMetaStorage;
+	static const StaticSystemMetaStorage<12, 0, 3> kMetaStorage;
 
 public:
 	void Execute(SystemContext& ctx) override;

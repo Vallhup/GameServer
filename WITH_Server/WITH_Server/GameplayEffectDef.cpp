@@ -36,6 +36,7 @@ namespace
 		PeriodicEffectKind kind{ PeriodicEffectKind::None };
 		std::string attributeKey;
 		float value{ 0.0f };
+		std::optional<float> tickDurationSec;
 	};
 
 	struct GameplayEffectRequirementDto
@@ -427,7 +428,8 @@ namespace
 				"attributeKey",
 				outEffect.attributeKey,
 				outError) &&
-			ReadRequiredNumber(node, "value", outEffect.value, outError);
+			ReadRequiredNumber(node, "value", outEffect.value, outError) &&
+			ReadNullableNumber(node, "tickDurationSec", outEffect.tickDurationSec, outError);
 	}
 
 	bool ParseRequirement(
@@ -784,6 +786,7 @@ namespace
 
 		outEffect.kind = dto.kind;
 		outEffect.value = dto.value;
+		outEffect.tickDurationSec = dto.tickDurationSec;
 		return true;
 	}
 

@@ -206,6 +206,43 @@ namespace
 		return true;
 	}
 
+	bool ParseKillBuffGrants(
+		const json& node,
+		std::vector<KillBuffGrantDef>& outGrants,
+		std::string& outError)
+	{
+		if (!node.is_array())
+		{
+			outError = "killBuffGrants must be an array.";
+			return false;
+		}
+
+		for (const json& grantNode : node)
+		{
+			KillBuffGrantDef grant{};
+			if (!ReadRequiredString(
+					grantNode,
+					"effectKey",
+					grant.buffEffectKey,
+					outError))
+			{
+				return false;
+			}
+			if (!ReadRequiredNumber(
+					grantNode,
+					"grantProbability",
+					grant.grantProbability,
+					outError))
+			{
+				return false;
+			}
+
+			outGrants.push_back(std::move(grant));
+		}
+
+		return true;
+	}
+
 	bool ParseAbilitySetKey(
 		const json& node,
 		std::optional<std::string>& outAbilitySetKey,
@@ -284,6 +321,15 @@ namespace
 			!ParseAbilitySetKey(
 				root.at("abilitySetKey"),
 				outDef.abilitySetKey,
+				outError))
+		{
+			return false;
+		}
+
+		if (root.contains("killBuffGrants") &&
+			!ParseKillBuffGrants(
+				root.at("killBuffGrants"),
+				outDef.killBuffGrants,
 				outError))
 		{
 			return false;

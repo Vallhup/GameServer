@@ -37,6 +37,18 @@ const AbilitySetDef* GameplayContentCatalogSnapshot::FindAbilitySetByKey(
 	return nullptr;
 }
 
+const GameplayEffectDef* GameplayContentCatalogSnapshot::FindEffectByKey(
+	std::string_view key) const noexcept
+{
+	for (const GameplayEffectDef& effect : _effects.GetAll())
+	{
+		if (effect.key == key)
+			return &effect;
+	}
+
+	return nullptr;
+}
+
 DefLoadResult GameplayContentCatalogSnapshot::LoadFromRoots(const GameplayContentCatalogRoots& roots)
 {
 	DefLoadResult result =
