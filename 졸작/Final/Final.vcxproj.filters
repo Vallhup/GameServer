@@ -271,6 +271,9 @@
     <ClCompile Include="SwordSpecialEffectComponent.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
+    <ClCompile Include="BeaconLightComponent.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -546,6 +549,9 @@
     <ClInclude Include="SwordSpecialEffectComponent.h">
       <Filter>Effect</Filter>
     </ClInclude>
+    <ClInclude Include="BeaconLightComponent.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GBufferVS.hlsli">
@@ -801,6 +807,9 @@
     </Filter>
     <Filter Include="Effect\Parry">
       <UniqueIdentifier>{4fc5174f-8d59-400a-9a27-1cc9bc3a477b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Party">
+      <UniqueIdentifier>{a626ce10-461d-43f3-a141-d25f9e9d3289}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
