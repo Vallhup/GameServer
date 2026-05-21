@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -11,6 +12,9 @@
 #include "WorldTransferRequest.h"
 
 inline constexpr uint32_t MaxPartyMembers = 3;
+inline constexpr double PartyJoinRequestTimeoutSec = 60.0;
+inline constexpr double PartyRejectCooldownSec = 15.0;
+inline constexpr size_t PartyListSnapshotLimit = 10;
 
 using PartyRequestId = uint64_t;
 
@@ -36,6 +40,12 @@ enum class PartyMemberRole : uint8_t
 	Member
 };
 
+enum class PartyMemberPresence : uint8_t
+{
+	Online,
+	Offline
+};
+
 enum class PartyJoinRequestState : uint8_t
 {
 	Pending,
@@ -43,6 +53,19 @@ enum class PartyJoinRequestState : uint8_t
 	Rejected,
 	Cancelled,
 	Expired
+};
+
+enum class PartyJoinRequestCloseReason : uint8_t
+{
+	None,
+	Accepted,
+	RejectedByLeader,
+	CancelledByRequester,
+	Expired,
+	ClosedByPartyFull,
+	ClosedByPartyEnteredWorld,
+	ClosedByRequesterJoinedOtherParty,
+	ClosedByPartyDisbanded
 };
 
 enum class PartyWorldEntryState : uint8_t
@@ -73,7 +96,8 @@ enum class PartyError : uint8_t
 	SourceWorldMismatch,
 	TransferRejected,
 	InvalidTarget,
-	DuplicateMember
+	DuplicateMember,
+	RequestCooldown
 };
 
 struct PartyMember
@@ -82,7 +106,9 @@ struct PartyMember
 	uint64_t accountId{ 0 };
 	NetId netId{ NetId::Invalid() };
 	PartyMemberRole role{ PartyMemberRole::Member };
+	PartyMemberPresence presence{ PartyMemberPresence::Online };
 	double joinedAtSec{ 0.0 };
+	double lastSeenAtSec{ 0.0 };
 };
 
 struct PartyJoinRequest
@@ -92,8 +118,10 @@ struct PartyJoinRequest
 	SessionId requesterSessionId{ 0 };
 	uint64_t requesterAccountId{ 0 };
 	PartyJoinRequestState state{ PartyJoinRequestState::Pending };
+	PartyJoinRequestCloseReason closeReason{ PartyJoinRequestCloseReason::None };
 	double createdAtSec{ 0.0 };
 	double expiresAtSec{ 0.0 };
+	double closedAtSec{ 0.0 };
 };
 
 struct PartyWorldEntry
@@ -129,6 +157,54 @@ struct PartyResult
 	{
 		return error == PartyError::None;
 	}
+};
+
+struct PartyMemberSnapshot
+{
+	SessionId sessionId{ 0 };
+	uint64_t accountId{ 0 };
+	NetId netId{ NetId::Invalid() };
+	PartyMemberRole role{ PartyMemberRole::Member };
+	PartyMemberPresence presence{ PartyMemberPresence::Online };
+	double joinedAtSec{ 0.0 };
+	double lastSeenAtSec{ 0.0 };
+};
+
+struct PartyJoinRequestSnapshot
+{
+	PartyRequestId requestId{ 0 };
+	PartyId partyId{ 0 };
+	SessionId requesterSessionId{ 0 };
+	uint64_t requesterAccountId{ 0 };
+	PartyJoinRequestState state{ PartyJoinRequestState::Pending };
+	PartyJoinRequestCloseReason closeReason{ PartyJoinRequestCloseReason::None };
+	double createdAtSec{ 0.0 };
+	double expiresAtSec{ 0.0 };
+	double closedAtSec{ 0.0 };
+};
+
+struct PartySnapshot
+{
+	PartyId partyId{ 0 };
+	PartyFormationSource formationSource{ PartyFormationSource::ExplicitCreate };
+	PartyLifecycleState lifecycle{ PartyLifecycleState::Forming };
+	SessionId leaderSessionId{ 0 };
+	std::vector<PartyMemberSnapshot> members;
+	std::vector<PartyJoinRequestSnapshot> joinRequests;
+	PartyWorldEntry worldEntry;
+	double createdAtSec{ 0.0 };
+	bool joinable{ false };
+};
+
+struct PartyListEntry
+{
+	PartyId partyId{ 0 };
+	SessionId leaderSessionId{ 0 };
+	uint32_t memberCount{ 0 };
+	uint32_t capacity{ MaxPartyMembers };
+	PartyLifecycleState lifecycle{ PartyLifecycleState::Forming };
+	double createdAtSec{ 0.0 };
+	bool joinable{ false };
 };
 
 struct PartyWorldEntryResult

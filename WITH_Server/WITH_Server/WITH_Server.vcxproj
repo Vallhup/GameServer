@@ -231,6 +231,8 @@
     <ClCompile Include="PacketHandlerContext.cpp" />
     <ClCompile Include="PacketHandlers.cpp" />
     <ClCompile Include="DemoPartyFormationPolicy.cpp" />
+    <ClCompile Include="PartyCommandPump.cpp" />
+    <ClCompile Include="PartyCommandQueue.cpp" />
     <ClCompile Include="PartyService.cpp" />
     <ClCompile Include="PartySystem_SmokeTest.cpp" />
     <ClCompile Include="RegisterAccount.cpp" />
@@ -392,6 +394,8 @@
     <ClInclude Include="Library\Recast\RecastAssert.h" />
     <ClInclude Include="NetworkRuntime.h" />
     <ClInclude Include="DemoPartyFormationPolicy.h" />
+    <ClInclude Include="PartyCommandPump.h" />
+    <ClInclude Include="PartyCommandQueue.h" />
     <ClInclude Include="PartyService.h" />
     <ClInclude Include="PartyTypes.h" />
     <ClInclude Include="AIChaseState.h" />

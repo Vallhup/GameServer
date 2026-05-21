@@ -3,11 +3,13 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <thread>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include "DemoPartyFormationPolicy.h"
+#include "PartyCommandQueue.h"
 #include "PartyService.h"
 
 namespace
@@ -281,6 +283,211 @@ namespace
 		assert(!fullRequest.Succeeded());
 		assert(fullRequest.error == PartyError::PartyFull);
 	}
+
+	void Test_Party_06_CommandQueue_DrainsMultiProducer()
+	{
+		PartyCommandQueue queue{};
+		constexpr uint32_t producerCount = 4;
+		constexpr uint32_t commandsPerProducer = 32;
+
+		std::vector<std::thread> producers;
+		producers.reserve(producerCount);
+		for (uint32_t producerIndex = 0; producerIndex < producerCount; ++producerIndex)
+		{
+			producers.emplace_back(
+				[&queue, producerIndex]()
+				{
+					for (uint32_t commandIndex = 0;
+						commandIndex < commandsPerProducer;
+						++commandIndex)
+					{
+						queue.Submit(PartyCommand{
+							.kind = PartyCommandKind::CreateParty,
+							.actorSessionId =
+								static_cast<SessionId>(
+									1 + producerIndex * commandsPerProducer + commandIndex),
+							.submittedAtSec = static_cast<double>(commandIndex),
+							.correlationId =
+								static_cast<uint64_t>(
+									producerIndex * commandsPerProducer + commandIndex)
+						});
+					}
+				});
+		}
+
+		for (std::thread& producer : producers)
+		{
+			producer.join();
+		}
+
+		std::vector<PartyCommand> drained;
+		queue.DrainInto(drained);
+		assert(drained.size() == producerCount * commandsPerProducer);
+		assert(queue.Empty());
+	}
+
+	void Test_Party_07_OwnerThreadGuard_AllowsBoundOwner()
+	{
+		const WorldId plaza = WorldId::Create(1, 1);
+		FakePartySessionQuery query{};
+		query.Add(20, plaza);
+
+		PartyService service{ query };
+		service.BindOwnerThreadForDebug();
+
+		const PartyResult create = service.CreateParty(20, 1.0);
+		assert(create.Succeeded());
+		assert(service.FindPartyBySession(20) == create.partyId);
+	}
+
+	void Test_Party_08_PendingCloseReasons_TimeoutAndCooldown()
+	{
+		const WorldId plaza = WorldId::Create(1, 1);
+		FakePartySessionQuery query{};
+		query.Add(30, plaza);
+		query.Add(40, plaza);
+		query.Add(50, plaza);
+		query.Add(51, plaza);
+		query.Add(52, plaza);
+		query.Add(53, plaza);
+
+		PartyService service{ query };
+		const PartyResult partyA = service.CreateParty(30, 1.0);
+		const PartyResult partyB = service.CreateParty(40, 1.1);
+		assert(partyA.Succeeded());
+		assert(partyB.Succeeded());
+
+		const PartyResult requestA = service.RequestJoin(50, partyA.partyId, 2.0);
+		const PartyResult requestB = service.RequestJoin(50, partyB.partyId, 2.1);
+		assert(requestA.Succeeded());
+		assert(requestB.Succeeded());
+
+		assert(service.AcceptJoinRequest(30, requestA.requestId, 3.0).Succeeded());
+		const PartyRecord* const partyBRecord = service.FindParty(partyB.partyId);
+		assert(partyBRecord != nullptr);
+		assert(partyBRecord->joinRequests[0].state == PartyJoinRequestState::Cancelled);
+		assert(
+			partyBRecord->joinRequests[0].closeReason ==
+			PartyJoinRequestCloseReason::ClosedByRequesterJoinedOtherParty);
+
+		const PartyResult request51 = service.RequestJoin(51, partyA.partyId, 4.0);
+		const PartyResult request52 = service.RequestJoin(52, partyA.partyId, 4.1);
+		assert(request51.Succeeded());
+		assert(request52.Succeeded());
+		assert(service.AcceptJoinRequest(30, request51.requestId, 4.2).Succeeded());
+		const PartyRecord* const partyARecord = service.FindParty(partyA.partyId);
+		assert(partyARecord != nullptr);
+		assert(partyARecord->members.size() == MaxPartyMembers);
+		const auto closedByFullIt = std::find_if(
+			partyARecord->joinRequests.begin(),
+			partyARecord->joinRequests.end(),
+			[&request52](const PartyJoinRequest& request)
+			{
+				return request.requestId == request52.requestId;
+			});
+		assert(closedByFullIt != partyARecord->joinRequests.end());
+		assert(closedByFullIt->state == PartyJoinRequestState::Cancelled);
+		assert(closedByFullIt->closeReason == PartyJoinRequestCloseReason::ClosedByPartyFull);
+
+		const PartyResult request53 = service.RequestJoin(53, partyB.partyId, 5.0);
+		assert(request53.Succeeded());
+		assert(service.RejectJoinRequest(40, request53.requestId, 6.0).Succeeded());
+		const PartyResult cooldown = service.RequestJoin(53, partyB.partyId, 10.0);
+		assert(!cooldown.Succeeded());
+		assert(cooldown.error == PartyError::RequestCooldown);
+
+		const PartyResult afterCooldown = service.RequestJoin(53, partyB.partyId, 22.0);
+		assert(afterCooldown.Succeeded());
+		service.ExpireJoinRequests(83.0);
+		const PartyRecord* const timeoutParty = service.FindParty(partyB.partyId);
+		assert(timeoutParty != nullptr);
+		const auto expiredIt = std::find_if(
+			timeoutParty->joinRequests.begin(),
+			timeoutParty->joinRequests.end(),
+			[&afterCooldown](const PartyJoinRequest& request)
+			{
+				return request.requestId == afterCooldown.requestId;
+			});
+		assert(expiredIt != timeoutParty->joinRequests.end());
+		assert(expiredIt->state == PartyJoinRequestState::Expired);
+		assert(expiredIt->closeReason == PartyJoinRequestCloseReason::Expired);
+	}
+
+	void Test_Party_09_PresenceLeaderHandoffAndDisband()
+	{
+		const WorldId plaza = WorldId::Create(1, 1);
+		FakePartySessionQuery query{};
+		query.Add(60, plaza);
+		query.Add(61, plaza);
+		query.Add(62, plaza);
+
+		PartyService service{ query };
+		const PartyResult partyResult = service.CreateParty(60, 1.0);
+		assert(partyResult.Succeeded());
+		const PartyResult request61 = service.RequestJoin(61, partyResult.partyId, 2.0);
+		const PartyResult request62 = service.RequestJoin(62, partyResult.partyId, 3.0);
+		assert(request61.Succeeded());
+		assert(request62.Succeeded());
+		assert(service.AcceptJoinRequest(60, request61.requestId, 4.0).Succeeded());
+		assert(service.AcceptJoinRequest(60, request62.requestId, 5.0).Succeeded());
+
+		assert(
+			service.MarkMemberPresence(
+				60,
+				PartyMemberPresence::Offline,
+				6.0).Succeeded());
+		const PartyRecord* const party = service.FindParty(partyResult.partyId);
+		assert(party != nullptr);
+		assert(party->leaderSessionId == 61);
+
+		assert(
+			service.MarkMemberPresence(
+				61,
+				PartyMemberPresence::Offline,
+				7.0).Succeeded());
+		assert(service.FindParty(partyResult.partyId)->leaderSessionId == 62);
+		assert(
+			service.MarkMemberPresence(
+				62,
+				PartyMemberPresence::Offline,
+				8.0).Succeeded());
+		assert(service.FindParty(partyResult.partyId)->lifecycle == PartyLifecycleState::Disbanded);
+		assert(service.FindPartyBySession(60) == 0);
+		assert(service.FindPartyBySession(61) == 0);
+		assert(service.FindPartyBySession(62) == 0);
+	}
+
+	void Test_Party_10_SnapshotAndPublicPartyList()
+	{
+		const WorldId plaza = WorldId::Create(1, 1);
+		FakePartySessionQuery query{};
+		for (SessionId sessionId = 100; sessionId < 114; ++sessionId)
+		{
+			query.Add(sessionId, plaza);
+		}
+
+		PartyService service{ query };
+		std::vector<PartyId> partyIds;
+		for (SessionId sessionId = 100; sessionId < 112; ++sessionId)
+		{
+			const PartyResult result =
+				service.CreateParty(sessionId, static_cast<double>(sessionId));
+			assert(result.Succeeded());
+			partyIds.push_back(result.partyId);
+		}
+
+		const PartySnapshot snapshot = service.BuildPartySnapshot(partyIds.front());
+		assert(snapshot.partyId == partyIds.front());
+		assert(snapshot.members.size() == 1);
+		assert(snapshot.joinable);
+
+		std::vector<PartyListEntry> list;
+		service.CollectPublicPartyList(list);
+		assert(list.size() == PartyListSnapshotLimit);
+		assert(list[0].leaderSessionId == 111);
+		assert(list[1].leaderSessionId == 110);
+		assert(list.back().leaderSessionId == 102);
+	}
 }
 
 void RunPartySystemSmokeTests()
@@ -299,4 +506,19 @@ void RunPartySystemSmokeTests()
 
 	Test_Party_05_JoinRequestFlow_RemainsAvailableForFormalParty();
 	std::cout << "[PASS] Test_Party_05_JoinRequestFlow_RemainsAvailableForFormalParty\n";
+
+	Test_Party_06_CommandQueue_DrainsMultiProducer();
+	std::cout << "[PASS] Test_Party_06_CommandQueue_DrainsMultiProducer\n";
+
+	Test_Party_07_OwnerThreadGuard_AllowsBoundOwner();
+	std::cout << "[PASS] Test_Party_07_OwnerThreadGuard_AllowsBoundOwner\n";
+
+	Test_Party_08_PendingCloseReasons_TimeoutAndCooldown();
+	std::cout << "[PASS] Test_Party_08_PendingCloseReasons_TimeoutAndCooldown\n";
+
+	Test_Party_09_PresenceLeaderHandoffAndDisband();
+	std::cout << "[PASS] Test_Party_09_PresenceLeaderHandoffAndDisband\n";
+
+	Test_Party_10_SnapshotAndPublicPartyList();
+	std::cout << "[PASS] Test_Party_10_SnapshotAndPublicPartyList\n";
 }

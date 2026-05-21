@@ -44,6 +44,12 @@
     <ClCompile Include="DemoPartyFormationPolicy.cpp">
       <Filter>SessionSystem\Party</Filter>
     </ClCompile>
+    <ClCompile Include="PartyCommandPump.cpp">
+      <Filter>SessionSystem\Party</Filter>
+    </ClCompile>
+    <ClCompile Include="PartyCommandQueue.cpp">
+      <Filter>SessionSystem\Party</Filter>
+    </ClCompile>
     <ClCompile Include="PartyService.cpp">
       <Filter>SessionSystem\Party</Filter>
     </ClCompile>
@@ -326,6 +332,12 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="DemoPartyFormationPolicy.h">
+      <Filter>SessionSystem\Party</Filter>
+    </ClInclude>
+    <ClInclude Include="PartyCommandPump.h">
+      <Filter>SessionSystem\Party</Filter>
+    </ClInclude>
+    <ClInclude Include="PartyCommandQueue.h">
       <Filter>SessionSystem\Party</Filter>
     </ClInclude>
     <ClInclude Include="PartyService.h">

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <span>
+#include <thread>
 #include <unordered_map>
 
 #include "PartyTypes.h"
@@ -29,6 +30,7 @@ public:
 	PartyService& operator=(const PartyService&) = delete;
 
 	void Clear() noexcept;
+	void BindOwnerThreadForDebug() noexcept;
 
 	PartyResult CreateParty(SessionId leaderSessionId, double nowSec);
 	PartyResult CreatePartyFromTrustedMembers(
@@ -40,6 +42,11 @@ public:
 	PartyResult RequestJoin(SessionId requesterSessionId, PartyId partyId, double nowSec);
 	PartyResult AcceptJoinRequest(SessionId leaderSessionId, PartyRequestId requestId, double nowSec);
 	PartyResult RejectJoinRequest(SessionId leaderSessionId, PartyRequestId requestId, double nowSec);
+	PartyResult MarkMemberPresence(
+		SessionId memberSessionId,
+		PartyMemberPresence presence,
+		double nowSec);
+	void ExpireJoinRequests(double nowSec);
 
 	PartyWorldEntryResult BeginWorldEntry(
 		SessionId leaderSessionId,
@@ -67,6 +74,11 @@ public:
 	PartyRecord* FindParty(PartyId partyId) noexcept;
 	PartyId FindPartyBySession(SessionId sessionId) const noexcept;
 	SessionId FindLeaderSession(PartyId partyId) const noexcept;
+	PartySnapshot BuildPartySnapshot(PartyId partyId) const;
+	PartySnapshot BuildPartySnapshotForSession(SessionId sessionId) const;
+	void CollectPublicPartyList(
+		std::vector<PartyListEntry>& outEntries,
+		size_t limit = PartyListSnapshotLimit) const;
 
 private:
 	PartyResult CreatePartyInternal(
@@ -77,10 +89,31 @@ private:
 
 	bool IsValidActiveParty(const PartyRecord& party) const noexcept;
 	bool HasPendingJoinRequest(const PartyRecord& party, SessionId requesterSessionId) const noexcept;
+	bool IsRejectCooldownActive(
+		const PartyRecord& party,
+		SessionId requesterSessionId,
+		double nowSec) const noexcept;
 	std::vector<SessionId> BuildMemberSessionSnapshot(const PartyRecord& party) const;
+	void CloseJoinRequest(
+		PartyJoinRequest& request,
+		PartyJoinRequestState state,
+		PartyJoinRequestCloseReason reason,
+		double nowSec) noexcept;
+	void ClosePendingRequestsForParty(
+		PartyRecord& party,
+		PartyJoinRequestCloseReason reason,
+		double nowSec) noexcept;
+	void ClosePendingRequestsByRequester(
+		SessionId requesterSessionId,
+		PartyId exceptPartyId,
+		PartyJoinRequestCloseReason reason,
+		double nowSec) noexcept;
+	void DisbandParty(PartyRecord& party, double nowSec) noexcept;
+	void ReassignLeaderAfterPresenceChange(PartyRecord& party) noexcept;
 
 	PartyId AllocatePartyId() noexcept;
 	PartyRequestId AllocateRequestId() noexcept;
+	void AssertOwnerThread() const noexcept;
 
 private:
 	IPartySessionQuery& _sessionQuery;
@@ -89,4 +122,5 @@ private:
 	std::unordered_map<PartyRequestId, PartyId> _partyByRequest;
 	PartyId _nextPartyId{ 1 };
 	PartyRequestId _nextRequestId{ 1 };
+	std::thread::id _ownerThreadId{};
 };

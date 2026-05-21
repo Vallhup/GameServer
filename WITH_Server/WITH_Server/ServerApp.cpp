@@ -67,6 +67,7 @@ ServerApp::ServerApp(Config config)
 	}, _framework, _startupWorldId, *this)
 	, _transferBinding(_framework, _sessionSystem.Flow())
 	, _partyService(*this)
+	, _partyCommandPump(_partyCommandQueue, _partyService, _framework)
 	, _demoPartyPolicy(_partyService, *this, *this)
 {
 	if (_config.logicTickHz == 0)
@@ -90,6 +91,7 @@ bool ServerApp::Initialize()
 	_startupWorldId = WorldId::Invalid();
 	_sessionSystem.ClearSessionState();
 	_partyService.Clear();
+	_partyCommandQueue.Clear();
 	_worldTransitionRequestIds.clear();
 	_pendingClientTransitions.clear();
 	_animationRegistry.Clear();
@@ -150,6 +152,7 @@ void ServerApp::Shutdown() noexcept
 	_startupWorldId = WorldId::Invalid();
 	_sessionSystem.ClearSessionState();
 	_partyService.Clear();
+	_partyCommandQueue.Clear();
 	_worldTransitionRequestIds.clear();
 	_pendingClientTransitions.clear();
 	_animationRegistry.Clear();
@@ -699,6 +702,8 @@ void ServerApp::TickOnce(double dtSec)
 void ServerApp::RunWorldFrames(double dtSec)
 {
 	_nowSec += dtSec;
+
+	_partyCommandPump.Pump(_nowSec);
 
 	if (!_framework.TickServices(_nowSec, dtSec))
 	{

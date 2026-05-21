@@ -2,6 +2,8 @@
 #include "PartyService.h"
 
 #include <algorithm>
+#include <cassert>
+#include <thread>
 
 PartyService::PartyService(IPartySessionQuery& sessionQuery)
 	: _sessionQuery(sessionQuery)
@@ -10,6 +12,8 @@ PartyService::PartyService(IPartySessionQuery& sessionQuery)
 
 void PartyService::Clear() noexcept
 {
+	AssertOwnerThread();
+
 	_parties.clear();
 	_partyBySession.clear();
 	_partyByRequest.clear();
@@ -17,10 +21,17 @@ void PartyService::Clear() noexcept
 	_nextRequestId = 1;
 }
 
+void PartyService::BindOwnerThreadForDebug() noexcept
+{
+	_ownerThreadId = std::this_thread::get_id();
+}
+
 PartyResult PartyService::CreateParty(
 	SessionId leaderSessionId,
 	double nowSec)
 {
+	AssertOwnerThread();
+
 	const SessionId members[] = { leaderSessionId };
 	return CreatePartyInternal(
 		leaderSessionId,
@@ -35,6 +46,8 @@ PartyResult PartyService::CreatePartyFromTrustedMembers(
 	PartyFormationSource source,
 	double nowSec)
 {
+	AssertOwnerThread();
+
 	if (source != PartyFormationSource::DemoAutoWorldTransition &&
 		source != PartyFormationSource::RestoredFromDB)
 	{
@@ -53,6 +66,9 @@ PartyResult PartyService::RequestJoin(
 	PartyId partyId,
 	double nowSec)
 {
+	AssertOwnerThread();
+	ExpireJoinRequests(nowSec);
+
 	if (requesterSessionId == 0 ||
 		!_sessionQuery.IsPartyEligible(requesterSessionId))
 	{
@@ -80,6 +96,11 @@ PartyResult PartyService::RequestJoin(
 		return PartyResult{ .error = PartyError::PartyFull, .partyId = partyId };
 	}
 
+	if (IsRejectCooldownActive(*party, requesterSessionId, nowSec))
+	{
+		return PartyResult{ .error = PartyError::RequestCooldown, .partyId = partyId };
+	}
+
 	if (HasPendingJoinRequest(*party, requesterSessionId))
 	{
 		return PartyResult{ .error = PartyError::AlreadyRequested, .partyId = partyId };
@@ -93,7 +114,7 @@ PartyResult PartyService::RequestJoin(
 		.requesterAccountId = _sessionQuery.FindAccountId(requesterSessionId),
 		.state = PartyJoinRequestState::Pending,
 		.createdAtSec = nowSec,
-		.expiresAtSec = 0.0
+		.expiresAtSec = nowSec + PartyJoinRequestTimeoutSec
 	});
 	_partyByRequest[requestId] = partyId;
 
@@ -109,6 +130,9 @@ PartyResult PartyService::AcceptJoinRequest(
 	PartyRequestId requestId,
 	double nowSec)
 {
+	AssertOwnerThread();
+	ExpireJoinRequests(nowSec);
+
 	const auto partyIt = _partyByRequest.find(requestId);
 	if (partyIt == _partyByRequest.end())
 	{
@@ -188,15 +212,33 @@ PartyResult PartyService::AcceptJoinRequest(
 		};
 	}
 
-	requestIt->state = PartyJoinRequestState::Accepted;
+	CloseJoinRequest(
+		*requestIt,
+		PartyJoinRequestState::Accepted,
+		PartyJoinRequestCloseReason::Accepted,
+		nowSec);
 	party->members.push_back(PartyMember{
 		.sessionId = requesterSessionId,
 		.accountId = _sessionQuery.FindAccountId(requesterSessionId),
 		.netId = _sessionQuery.FindControlledNetId(requesterSessionId),
 		.role = PartyMemberRole::Member,
-		.joinedAtSec = nowSec
+		.presence = PartyMemberPresence::Online,
+		.joinedAtSec = nowSec,
+		.lastSeenAtSec = nowSec
 	});
 	_partyBySession[requesterSessionId] = party->partyId;
+	ClosePendingRequestsByRequester(
+		requesterSessionId,
+		party->partyId,
+		PartyJoinRequestCloseReason::ClosedByRequesterJoinedOtherParty,
+		nowSec);
+	if (party->members.size() >= MaxPartyMembers)
+	{
+		ClosePendingRequestsForParty(
+			*party,
+			PartyJoinRequestCloseReason::ClosedByPartyFull,
+			nowSec);
+	}
 
 	return PartyResult{
 		.error = PartyError::None,
@@ -208,8 +250,11 @@ PartyResult PartyService::AcceptJoinRequest(
 PartyResult PartyService::RejectJoinRequest(
 	SessionId leaderSessionId,
 	PartyRequestId requestId,
-	double /*nowSec*/)
+	double nowSec)
 {
+	AssertOwnerThread();
+	ExpireJoinRequests(nowSec);
+
 	const auto partyIt = _partyByRequest.find(requestId);
 	if (partyIt == _partyByRequest.end())
 	{
@@ -260,12 +305,88 @@ PartyResult PartyService::RejectJoinRequest(
 		};
 	}
 
-	requestIt->state = PartyJoinRequestState::Rejected;
+	CloseJoinRequest(
+		*requestIt,
+		PartyJoinRequestState::Rejected,
+		PartyJoinRequestCloseReason::RejectedByLeader,
+		nowSec);
 	return PartyResult{
 		.error = PartyError::None,
 		.partyId = party->partyId,
 		.requestId = requestId
 	};
+}
+
+PartyResult PartyService::MarkMemberPresence(
+	SessionId memberSessionId,
+	PartyMemberPresence presence,
+	double nowSec)
+{
+	AssertOwnerThread();
+
+	const PartyId partyId = FindPartyBySession(memberSessionId);
+	PartyRecord* const party = FindParty(partyId);
+	if (party == nullptr)
+	{
+		return PartyResult{ .error = PartyError::PartyNotFound, .partyId = partyId };
+	}
+
+	auto memberIt = std::find_if(
+		party->members.begin(),
+		party->members.end(),
+		[memberSessionId](const PartyMember& member)
+		{
+			return member.sessionId == memberSessionId;
+		});
+	if (memberIt == party->members.end())
+	{
+		return PartyResult{ .error = PartyError::InvalidSession, .partyId = partyId };
+	}
+
+	memberIt->presence = presence;
+	if (presence == PartyMemberPresence::Online)
+	{
+		memberIt->lastSeenAtSec = nowSec;
+	}
+
+	ReassignLeaderAfterPresenceChange(*party);
+
+	const bool anyOnline = std::any_of(
+		party->members.begin(),
+		party->members.end(),
+		[](const PartyMember& member)
+		{
+			return member.presence == PartyMemberPresence::Online;
+		});
+	if (!anyOnline)
+	{
+		DisbandParty(*party, nowSec);
+	}
+
+	return PartyResult{ .error = PartyError::None, .partyId = partyId };
+}
+
+void PartyService::ExpireJoinRequests(double nowSec)
+{
+	AssertOwnerThread();
+
+	for (auto& [partyId, party] : _parties)
+	{
+		(void)partyId;
+		for (PartyJoinRequest& request : party.joinRequests)
+		{
+			if (request.state == PartyJoinRequestState::Pending &&
+				request.expiresAtSec > 0.0 &&
+				request.expiresAtSec <= nowSec)
+			{
+				CloseJoinRequest(
+					request,
+					PartyJoinRequestState::Expired,
+					PartyJoinRequestCloseReason::Expired,
+					nowSec);
+			}
+		}
+	}
 }
 
 PartyWorldEntryResult PartyService::BeginWorldEntry(
@@ -274,6 +395,9 @@ PartyWorldEntryResult PartyService::BeginWorldEntry(
 	double nowSec,
 	bool allowFallback)
 {
+	AssertOwnerThread();
+	ExpireJoinRequests(nowSec);
+
 	const PartyId partyId = FindPartyBySession(leaderSessionId);
 	PartyRecord* const party = FindParty(partyId);
 	if (party == nullptr)
@@ -317,6 +441,7 @@ PartyWorldEntryResult PartyService::BeginWorldEntry(
 	for (const PartyMember& member : party->members)
 	{
 		if (member.sessionId == 0 ||
+			member.presence != PartyMemberPresence::Online ||
 			!_sessionQuery.CanBeginWorldTransfer(member.sessionId))
 		{
 			return PartyWorldEntryResult{ .error = PartyError::MemberUnavailable, .partyId = partyId };
@@ -335,6 +460,10 @@ PartyWorldEntryResult PartyService::BeginWorldEntry(
 	}
 
 	party->lifecycle = PartyLifecycleState::WorldEntryPending;
+	ClosePendingRequestsForParty(
+		*party,
+		PartyJoinRequestCloseReason::ClosedByPartyEnteredWorld,
+		nowSec);
 	party->worldEntry = PartyWorldEntry{
 		.state = PartyWorldEntryState::Requested,
 		.transferId = 0,
@@ -365,6 +494,8 @@ PartyResult PartyService::MarkWorldEntryEnqueued(
 	TransferId transferId,
 	double /*nowSec*/)
 {
+	AssertOwnerThread();
+
 	PartyRecord* const party = FindParty(partyId);
 	if (party == nullptr)
 	{
@@ -394,6 +525,8 @@ PartyResult PartyService::CompleteWorldEntry(
 	WorldId targetWorldId,
 	double nowSec)
 {
+	AssertOwnerThread();
+
 	PartyRecord* const party = FindParty(partyId);
 	if (party == nullptr)
 	{
@@ -420,6 +553,8 @@ PartyResult PartyService::FailWorldEntry(
 	TransferId transferId,
 	double nowSec)
 {
+	AssertOwnerThread();
+
 	PartyRecord* const party = FindParty(partyId);
 	if (party == nullptr)
 	{
@@ -467,6 +602,105 @@ SessionId PartyService::FindLeaderSession(PartyId partyId) const noexcept
 {
 	const PartyRecord* const party = FindParty(partyId);
 	return party != nullptr ? party->leaderSessionId : 0;
+}
+
+PartySnapshot PartyService::BuildPartySnapshot(PartyId partyId) const
+{
+	PartySnapshot snapshot{};
+	const PartyRecord* const party = FindParty(partyId);
+	if (party == nullptr)
+	{
+		return snapshot;
+	}
+
+	snapshot.partyId = party->partyId;
+	snapshot.formationSource = party->formationSource;
+	snapshot.lifecycle = party->lifecycle;
+	snapshot.leaderSessionId = party->leaderSessionId;
+	snapshot.worldEntry = party->worldEntry;
+	snapshot.createdAtSec = party->createdAtSec;
+	snapshot.joinable =
+		party->lifecycle == PartyLifecycleState::Forming &&
+		party->members.size() < MaxPartyMembers;
+
+	snapshot.members.reserve(party->members.size());
+	for (const PartyMember& member : party->members)
+	{
+		snapshot.members.push_back(PartyMemberSnapshot{
+			.sessionId = member.sessionId,
+			.accountId = member.accountId,
+			.netId = member.netId,
+			.role = member.role,
+			.presence = member.presence,
+			.joinedAtSec = member.joinedAtSec,
+			.lastSeenAtSec = member.lastSeenAtSec
+		});
+	}
+
+	snapshot.joinRequests.reserve(party->joinRequests.size());
+	for (const PartyJoinRequest& request : party->joinRequests)
+	{
+		snapshot.joinRequests.push_back(PartyJoinRequestSnapshot{
+			.requestId = request.requestId,
+			.partyId = request.partyId,
+			.requesterSessionId = request.requesterSessionId,
+			.requesterAccountId = request.requesterAccountId,
+			.state = request.state,
+			.closeReason = request.closeReason,
+			.createdAtSec = request.createdAtSec,
+			.expiresAtSec = request.expiresAtSec,
+			.closedAtSec = request.closedAtSec
+		});
+	}
+
+	return snapshot;
+}
+
+PartySnapshot PartyService::BuildPartySnapshotForSession(SessionId sessionId) const
+{
+	return BuildPartySnapshot(FindPartyBySession(sessionId));
+}
+
+void PartyService::CollectPublicPartyList(
+	std::vector<PartyListEntry>& outEntries,
+	size_t limit) const
+{
+	outEntries.clear();
+	for (const auto& [partyId, party] : _parties)
+	{
+		(void)partyId;
+		if (party.lifecycle != PartyLifecycleState::Forming)
+		{
+			continue;
+		}
+
+		outEntries.push_back(PartyListEntry{
+			.partyId = party.partyId,
+			.leaderSessionId = party.leaderSessionId,
+			.memberCount = static_cast<uint32_t>(party.members.size()),
+			.capacity = MaxPartyMembers,
+			.lifecycle = party.lifecycle,
+			.createdAtSec = party.createdAtSec,
+			.joinable = party.members.size() < MaxPartyMembers
+		});
+	}
+
+	std::sort(
+		outEntries.begin(),
+		outEntries.end(),
+		[](const PartyListEntry& lhs, const PartyListEntry& rhs)
+		{
+			if (lhs.createdAtSec != rhs.createdAtSec)
+			{
+				return lhs.createdAtSec > rhs.createdAtSec;
+			}
+			return lhs.partyId > rhs.partyId;
+		});
+
+	if (outEntries.size() > limit)
+	{
+		outEntries.resize(limit);
+	}
 }
 
 PartyResult PartyService::CreatePartyInternal(
@@ -532,7 +766,9 @@ PartyResult PartyService::CreatePartyInternal(
 			.role = sessionId == leaderSessionId
 				? PartyMemberRole::Leader
 				: PartyMemberRole::Member,
-			.joinedAtSec = nowSec
+			.presence = PartyMemberPresence::Online,
+			.joinedAtSec = nowSec,
+			.lastSeenAtSec = nowSec
 		});
 		_partyBySession[sessionId] = partyId;
 	}
@@ -593,6 +829,24 @@ bool PartyService::HasPendingJoinRequest(
 		});
 }
 
+bool PartyService::IsRejectCooldownActive(
+	const PartyRecord& party,
+	SessionId requesterSessionId,
+	double nowSec) const noexcept
+{
+	return std::any_of(
+		party.joinRequests.begin(),
+		party.joinRequests.end(),
+		[requesterSessionId, nowSec](const PartyJoinRequest& request)
+		{
+			return request.requesterSessionId == requesterSessionId &&
+				request.state == PartyJoinRequestState::Rejected &&
+				request.closeReason == PartyJoinRequestCloseReason::RejectedByLeader &&
+				request.closedAtSec > 0.0 &&
+				nowSec < request.closedAtSec + PartyRejectCooldownSec;
+		});
+}
+
 std::vector<SessionId> PartyService::BuildMemberSessionSnapshot(
 	const PartyRecord& party) const
 {
@@ -606,6 +860,131 @@ std::vector<SessionId> PartyService::BuildMemberSessionSnapshot(
 	return sessionIds;
 }
 
+void PartyService::CloseJoinRequest(
+	PartyJoinRequest& request,
+	PartyJoinRequestState state,
+	PartyJoinRequestCloseReason reason,
+	double nowSec) noexcept
+{
+	if (request.state != PartyJoinRequestState::Pending)
+	{
+		return;
+	}
+
+	request.state = state;
+	request.closeReason = reason;
+	request.closedAtSec = nowSec;
+}
+
+void PartyService::ClosePendingRequestsForParty(
+	PartyRecord& party,
+	PartyJoinRequestCloseReason reason,
+	double nowSec) noexcept
+{
+	PartyJoinRequestState state = PartyJoinRequestState::Cancelled;
+	if (reason == PartyJoinRequestCloseReason::Expired)
+	{
+		state = PartyJoinRequestState::Expired;
+	}
+
+	for (PartyJoinRequest& request : party.joinRequests)
+	{
+		CloseJoinRequest(request, state, reason, nowSec);
+	}
+}
+
+void PartyService::ClosePendingRequestsByRequester(
+	SessionId requesterSessionId,
+	PartyId exceptPartyId,
+	PartyJoinRequestCloseReason reason,
+	double nowSec) noexcept
+{
+	for (auto& [partyId, party] : _parties)
+	{
+		if (partyId == exceptPartyId)
+		{
+			continue;
+		}
+
+		for (PartyJoinRequest& request : party.joinRequests)
+		{
+			if (request.requesterSessionId == requesterSessionId)
+			{
+				CloseJoinRequest(
+					request,
+					PartyJoinRequestState::Cancelled,
+					reason,
+					nowSec);
+			}
+		}
+	}
+}
+
+void PartyService::DisbandParty(PartyRecord& party, double nowSec) noexcept
+{
+	ClosePendingRequestsForParty(
+		party,
+		PartyJoinRequestCloseReason::ClosedByPartyDisbanded,
+		nowSec);
+
+	for (const PartyMember& member : party.members)
+	{
+		_partyBySession.erase(member.sessionId);
+	}
+
+	party.lifecycle = PartyLifecycleState::Disbanded;
+	party.leaderSessionId = 0;
+}
+
+void PartyService::ReassignLeaderAfterPresenceChange(PartyRecord& party) noexcept
+{
+	const auto currentLeaderIt = std::find_if(
+		party.members.begin(),
+		party.members.end(),
+		[&party](const PartyMember& member)
+		{
+			return member.sessionId == party.leaderSessionId;
+		});
+	if (currentLeaderIt != party.members.end() &&
+		currentLeaderIt->presence == PartyMemberPresence::Online)
+	{
+		return;
+	}
+
+	auto newLeaderIt = party.members.end();
+	for (auto it = party.members.begin(); it != party.members.end(); ++it)
+	{
+		if (it->presence != PartyMemberPresence::Online)
+		{
+			continue;
+		}
+
+		if (newLeaderIt == party.members.end() ||
+			it->joinedAtSec < newLeaderIt->joinedAtSec ||
+			(it->joinedAtSec == newLeaderIt->joinedAtSec &&
+				it->accountId < newLeaderIt->accountId) ||
+			(it->joinedAtSec == newLeaderIt->joinedAtSec &&
+				it->accountId == newLeaderIt->accountId &&
+				it->sessionId < newLeaderIt->sessionId))
+		{
+			newLeaderIt = it;
+		}
+	}
+
+	if (newLeaderIt == party.members.end())
+	{
+		return;
+	}
+
+	party.leaderSessionId = newLeaderIt->sessionId;
+	for (PartyMember& member : party.members)
+	{
+		member.role = member.sessionId == party.leaderSessionId
+			? PartyMemberRole::Leader
+			: PartyMemberRole::Member;
+	}
+}
+
 PartyId PartyService::AllocatePartyId() noexcept
 {
 	return _nextPartyId++;
@@ -614,4 +993,11 @@ PartyId PartyService::AllocatePartyId() noexcept
 PartyRequestId PartyService::AllocateRequestId() noexcept
 {
 	return _nextRequestId++;
+}
+
+void PartyService::AssertOwnerThread() const noexcept
+{
+	assert(
+		_ownerThreadId == std::thread::id{} ||
+		_ownerThreadId == std::this_thread::get_id());
 }

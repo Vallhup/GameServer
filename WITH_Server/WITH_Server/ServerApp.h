@@ -16,6 +16,8 @@
 #include "DemoPartyFormationPolicy.h"
 #include "IWorldTransitionRequestSink.h"
 #include "ODBCDatabaseBackend.h"
+#include "PartyCommandPump.h"
+#include "PartyCommandQueue.h"
 #include "PartyService.h"
 #include "ServerSessionSystem.h"
 #include "ServerWorldBootstrap.h"
@@ -141,6 +143,8 @@ private:
 	ServerSessionSystem _sessionSystem;
 	ServerWorldTransferBinding _transferBinding;
 	PartyService _partyService;
+	PartyCommandQueue _partyCommandQueue;
+	PartyCommandPump _partyCommandPump;
 	DemoPartyFormationPolicy _demoPartyPolicy;
 	std::unordered_map<TransferId, std::unordered_map<SessionId, uint32_t>>
 		_worldTransitionRequestIds;
