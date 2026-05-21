@@ -28,8 +28,8 @@
 #include "google/protobuf/message_lite.h"
 #include "google/protobuf/repeated_field.h"  // IWYU pragma: export
 #include "google/protobuf/extension_set.h"  // IWYU pragma: export
-#include "google/protobuf/generated_enum_reflection.h"
 #include "google/protobuf/unknown_field_set.h"
+#include "DTO.pb.h"
 // @@protoc_insertion_point(includes)
 
 // Must be included last.
@@ -74,6 +74,24 @@ extern CS_MOVE_PACKETDefaultTypeInternal _CS_MOVE_PACKET_default_instance_;
 class CS_PARRY_PACKET;
 struct CS_PARRY_PACKETDefaultTypeInternal;
 extern CS_PARRY_PACKETDefaultTypeInternal _CS_PARRY_PACKET_default_instance_;
+class CS_PARTY_CREATE_PACKET;
+struct CS_PARTY_CREATE_PACKETDefaultTypeInternal;
+extern CS_PARTY_CREATE_PACKETDefaultTypeInternal _CS_PARTY_CREATE_PACKET_default_instance_;
+class CS_PARTY_JOIN_ACCEPT_PACKET;
+struct CS_PARTY_JOIN_ACCEPT_PACKETDefaultTypeInternal;
+extern CS_PARTY_JOIN_ACCEPT_PACKETDefaultTypeInternal _CS_PARTY_JOIN_ACCEPT_PACKET_default_instance_;
+class CS_PARTY_JOIN_REJECT_PACKET;
+struct CS_PARTY_JOIN_REJECT_PACKETDefaultTypeInternal;
+extern CS_PARTY_JOIN_REJECT_PACKETDefaultTypeInternal _CS_PARTY_JOIN_REJECT_PACKET_default_instance_;
+class CS_PARTY_JOIN_REQUEST_PACKET;
+struct CS_PARTY_JOIN_REQUEST_PACKETDefaultTypeInternal;
+extern CS_PARTY_JOIN_REQUEST_PACKETDefaultTypeInternal _CS_PARTY_JOIN_REQUEST_PACKET_default_instance_;
+class CS_PARTY_LIST_REFRESH_PACKET;
+struct CS_PARTY_LIST_REFRESH_PACKETDefaultTypeInternal;
+extern CS_PARTY_LIST_REFRESH_PACKETDefaultTypeInternal _CS_PARTY_LIST_REFRESH_PACKET_default_instance_;
+class CS_PARTY_UI_OPENED_PACKET;
+struct CS_PARTY_UI_OPENED_PACKETDefaultTypeInternal;
+extern CS_PARTY_UI_OPENED_PACKETDefaultTypeInternal _CS_PARTY_UI_OPENED_PACKET_default_instance_;
 class CS_USE_ITEM_PACKET;
 struct CS_USE_ITEM_PACKETDefaultTypeInternal;
 extern CS_USE_ITEM_PACKETDefaultTypeInternal _CS_USE_ITEM_PACKET_default_instance_;
@@ -101,12 +119,27 @@ extern SC_LOGIN_SUCCESS_PACKETDefaultTypeInternal _SC_LOGIN_SUCCESS_PACKET_defau
 class SC_MOVE_PACKET;
 struct SC_MOVE_PACKETDefaultTypeInternal;
 extern SC_MOVE_PACKETDefaultTypeInternal _SC_MOVE_PACKET_default_instance_;
+class SC_PARTY_COMMAND_RESULT_PACKET;
+struct SC_PARTY_COMMAND_RESULT_PACKETDefaultTypeInternal;
+extern SC_PARTY_COMMAND_RESULT_PACKETDefaultTypeInternal _SC_PARTY_COMMAND_RESULT_PACKET_default_instance_;
+class SC_PARTY_JOIN_REQUEST_CLOSED_PACKET;
+struct SC_PARTY_JOIN_REQUEST_CLOSED_PACKETDefaultTypeInternal;
+extern SC_PARTY_JOIN_REQUEST_CLOSED_PACKETDefaultTypeInternal _SC_PARTY_JOIN_REQUEST_CLOSED_PACKET_default_instance_;
+class SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET;
+struct SC_PARTY_JOIN_REQUEST_RECEIVED_PACKETDefaultTypeInternal;
+extern SC_PARTY_JOIN_REQUEST_RECEIVED_PACKETDefaultTypeInternal _SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET_default_instance_;
+class SC_PARTY_LIST_SNAPSHOT_PACKET;
+struct SC_PARTY_LIST_SNAPSHOT_PACKETDefaultTypeInternal;
+extern SC_PARTY_LIST_SNAPSHOT_PACKETDefaultTypeInternal _SC_PARTY_LIST_SNAPSHOT_PACKET_default_instance_;
+class SC_PARTY_SNAPSHOT_PACKET;
+struct SC_PARTY_SNAPSHOT_PACKETDefaultTypeInternal;
+extern SC_PARTY_SNAPSHOT_PACKETDefaultTypeInternal _SC_PARTY_SNAPSHOT_PACKET_default_instance_;
+class SC_PARTY_UI_BOOTSTRAP_PACKET;
+struct SC_PARTY_UI_BOOTSTRAP_PACKETDefaultTypeInternal;
+extern SC_PARTY_UI_BOOTSTRAP_PACKETDefaultTypeInternal _SC_PARTY_UI_BOOTSTRAP_PACKET_default_instance_;
 class SC_REMOVE_PACKET;
 struct SC_REMOVE_PACKETDefaultTypeInternal;
 extern SC_REMOVE_PACKETDefaultTypeInternal _SC_REMOVE_PACKET_default_instance_;
-class SC_REPLICATION_FRAME_PACKET;
-struct SC_REPLICATION_FRAME_PACKETDefaultTypeInternal;
-extern SC_REPLICATION_FRAME_PACKETDefaultTypeInternal _SC_REPLICATION_FRAME_PACKET_default_instance_;
 class SC_STAT_CHANGE_PACKET;
 struct SC_STAT_CHANGE_PACKETDefaultTypeInternal;
 extern SC_STAT_CHANGE_PACKETDefaultTypeInternal _SC_STAT_CHANGE_PACKET_default_instance_;
@@ -123,39 +156,6 @@ namespace protobuf {
 }  // namespace google
 
 namespace Protocol {
-enum AttackInputType : int {
-  ATTACK_INPUT_LIGHT = 0,
-  ATTACK_INPUT_HEAVY = 1,
-  AttackInputType_INT_MIN_SENTINEL_DO_NOT_USE_ =
-      std::numeric_limits<::int32_t>::min(),
-  AttackInputType_INT_MAX_SENTINEL_DO_NOT_USE_ =
-      std::numeric_limits<::int32_t>::max(),
-};
-
-bool AttackInputType_IsValid(int value);
-extern const uint32_t AttackInputType_internal_data_[];
-constexpr AttackInputType AttackInputType_MIN = static_cast<AttackInputType>(0);
-constexpr AttackInputType AttackInputType_MAX = static_cast<AttackInputType>(1);
-constexpr int AttackInputType_ARRAYSIZE = 1 + 1;
-const ::google::protobuf::EnumDescriptor*
-AttackInputType_descriptor();
-template <typename T>
-const std::string& AttackInputType_Name(T value) {
-  static_assert(std::is_same<T, AttackInputType>::value ||
-                    std::is_integral<T>::value,
-                "Incorrect type passed to AttackInputType_Name().");
-  return AttackInputType_Name(static_cast<AttackInputType>(value));
-}
-template <>
-inline const std::string& AttackInputType_Name(AttackInputType value) {
-  return ::google::protobuf::internal::NameOfDenseEnum<AttackInputType_descriptor,
-                                                 0, 1>(
-      static_cast<int>(value));
-}
-inline bool AttackInputType_Parse(absl::string_view name, AttackInputType* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<AttackInputType>(
-      AttackInputType_descriptor(), name, value);
-}
 
 // ===================================================================
 
@@ -221,7 +221,7 @@ class SC_WORLD_TRANSITION_REJECTED_PACKET final : public ::google::protobuf::Mes
     return reinterpret_cast<const SC_WORLD_TRANSITION_REJECTED_PACKET*>(
         &_SC_WORLD_TRANSITION_REJECTED_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 19;
+  static constexpr int kIndexInFileMessages = 25;
   friend void swap(SC_WORLD_TRANSITION_REJECTED_PACKET& a, SC_WORLD_TRANSITION_REJECTED_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_WORLD_TRANSITION_REJECTED_PACKET* other) {
     if (other == this) return;
@@ -423,7 +423,7 @@ class SC_WORLD_TRANSITION_BEGIN_PACKET final : public ::google::protobuf::Messag
     return reinterpret_cast<const SC_WORLD_TRANSITION_BEGIN_PACKET*>(
         &_SC_WORLD_TRANSITION_BEGIN_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 18;
+  static constexpr int kIndexInFileMessages = 24;
   friend void swap(SC_WORLD_TRANSITION_BEGIN_PACKET& a, SC_WORLD_TRANSITION_BEGIN_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_WORLD_TRANSITION_BEGIN_PACKET* other) {
     if (other == this) return;
@@ -745,7 +745,7 @@ class SC_STAT_CHANGE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_STAT_CHANGE_PACKET*>(
         &_SC_STAT_CHANGE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 17;
+  static constexpr int kIndexInFileMessages = 23;
   friend void swap(SC_STAT_CHANGE_PACKET& a, SC_STAT_CHANGE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_STAT_CHANGE_PACKET* other) {
     if (other == this) return;
@@ -1031,7 +1031,7 @@ class SC_REMOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_REMOVE_PACKET*>(
         &_SC_REMOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 14;
+  static constexpr int kIndexInFileMessages = 20;
   friend void swap(SC_REMOVE_PACKET& a, SC_REMOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_REMOVE_PACKET* other) {
     if (other == this) return;
@@ -1162,6 +1162,470 @@ class SC_REMOVE_PACKET final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
+class SC_PARTY_JOIN_REQUEST_CLOSED_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET) */ {
+ public:
+  inline SC_PARTY_JOIN_REQUEST_CLOSED_PACKET() : SC_PARTY_JOIN_REQUEST_CLOSED_PACKET(nullptr) {}
+  ~SC_PARTY_JOIN_REQUEST_CLOSED_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_PARTY_JOIN_REQUEST_CLOSED_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_PARTY_JOIN_REQUEST_CLOSED_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_PARTY_JOIN_REQUEST_CLOSED_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_PARTY_JOIN_REQUEST_CLOSED_PACKET(const SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& from) : SC_PARTY_JOIN_REQUEST_CLOSED_PACKET(nullptr, from) {}
+  inline SC_PARTY_JOIN_REQUEST_CLOSED_PACKET(SC_PARTY_JOIN_REQUEST_CLOSED_PACKET&& from) noexcept
+      : SC_PARTY_JOIN_REQUEST_CLOSED_PACKET(nullptr, std::move(from)) {}
+  inline SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& operator=(const SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& operator=(SC_PARTY_JOIN_REQUEST_CLOSED_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_PARTY_JOIN_REQUEST_CLOSED_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_PARTY_JOIN_REQUEST_CLOSED_PACKET*>(
+        &_SC_PARTY_JOIN_REQUEST_CLOSED_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 31;
+  friend void swap(SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& a, SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_PARTY_JOIN_REQUEST_CLOSED_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_PARTY_JOIN_REQUEST_CLOSED_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_PARTY_JOIN_REQUEST_CLOSED_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_PARTY_JOIN_REQUEST_CLOSED_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& from) { SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_PARTY_JOIN_REQUEST_CLOSED_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET"; }
+
+ protected:
+  explicit SC_PARTY_JOIN_REQUEST_CLOSED_PACKET(::google::protobuf::Arena* arena);
+  SC_PARTY_JOIN_REQUEST_CLOSED_PACKET(::google::protobuf::Arena* arena, const SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& from);
+  SC_PARTY_JOIN_REQUEST_CLOSED_PACKET(::google::protobuf::Arena* arena, SC_PARTY_JOIN_REQUEST_CLOSED_PACKET&& from) noexcept
+      : SC_PARTY_JOIN_REQUEST_CLOSED_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kPartyIdFieldNumber = 1,
+    kJoinRequestIdFieldNumber = 2,
+    kReasonFieldNumber = 3,
+    kStateFieldNumber = 4,
+  };
+  // uint64 partyId = 1;
+  void clear_partyid() ;
+  ::uint64_t partyid() const;
+  void set_partyid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_partyid() const;
+  void _internal_set_partyid(::uint64_t value);
+
+  public:
+  // uint64 joinRequestId = 2;
+  void clear_joinrequestid() ;
+  ::uint64_t joinrequestid() const;
+  void set_joinrequestid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_joinrequestid() const;
+  void _internal_set_joinrequestid(::uint64_t value);
+
+  public:
+  // .Protocol.PartyJoinRequestCloseReason reason = 3;
+  void clear_reason() ;
+  ::Protocol::PartyJoinRequestCloseReason reason() const;
+  void set_reason(::Protocol::PartyJoinRequestCloseReason value);
+
+  private:
+  ::Protocol::PartyJoinRequestCloseReason _internal_reason() const;
+  void _internal_set_reason(::Protocol::PartyJoinRequestCloseReason value);
+
+  public:
+  // .Protocol.PartyJoinRequestState state = 4;
+  void clear_state() ;
+  ::Protocol::PartyJoinRequestState state() const;
+  void set_state(::Protocol::PartyJoinRequestState value);
+
+  private:
+  ::Protocol::PartyJoinRequestState _internal_state() const;
+  void _internal_set_state(::Protocol::PartyJoinRequestState value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      2, 4, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_PARTY_JOIN_REQUEST_CLOSED_PACKET& from_msg);
+    ::uint64_t partyid_;
+    ::uint64_t joinrequestid_;
+    int reason_;
+    int state_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_PARTY_COMMAND_RESULT_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_PARTY_COMMAND_RESULT_PACKET) */ {
+ public:
+  inline SC_PARTY_COMMAND_RESULT_PACKET() : SC_PARTY_COMMAND_RESULT_PACKET(nullptr) {}
+  ~SC_PARTY_COMMAND_RESULT_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_PARTY_COMMAND_RESULT_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_PARTY_COMMAND_RESULT_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_PARTY_COMMAND_RESULT_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_PARTY_COMMAND_RESULT_PACKET(const SC_PARTY_COMMAND_RESULT_PACKET& from) : SC_PARTY_COMMAND_RESULT_PACKET(nullptr, from) {}
+  inline SC_PARTY_COMMAND_RESULT_PACKET(SC_PARTY_COMMAND_RESULT_PACKET&& from) noexcept
+      : SC_PARTY_COMMAND_RESULT_PACKET(nullptr, std::move(from)) {}
+  inline SC_PARTY_COMMAND_RESULT_PACKET& operator=(const SC_PARTY_COMMAND_RESULT_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_PARTY_COMMAND_RESULT_PACKET& operator=(SC_PARTY_COMMAND_RESULT_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_PARTY_COMMAND_RESULT_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_PARTY_COMMAND_RESULT_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_PARTY_COMMAND_RESULT_PACKET*>(
+        &_SC_PARTY_COMMAND_RESULT_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 28;
+  friend void swap(SC_PARTY_COMMAND_RESULT_PACKET& a, SC_PARTY_COMMAND_RESULT_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_PARTY_COMMAND_RESULT_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_PARTY_COMMAND_RESULT_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_PARTY_COMMAND_RESULT_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_PARTY_COMMAND_RESULT_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_PARTY_COMMAND_RESULT_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_PARTY_COMMAND_RESULT_PACKET& from) { SC_PARTY_COMMAND_RESULT_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_PARTY_COMMAND_RESULT_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_PARTY_COMMAND_RESULT_PACKET"; }
+
+ protected:
+  explicit SC_PARTY_COMMAND_RESULT_PACKET(::google::protobuf::Arena* arena);
+  SC_PARTY_COMMAND_RESULT_PACKET(::google::protobuf::Arena* arena, const SC_PARTY_COMMAND_RESULT_PACKET& from);
+  SC_PARTY_COMMAND_RESULT_PACKET(::google::protobuf::Arena* arena, SC_PARTY_COMMAND_RESULT_PACKET&& from) noexcept
+      : SC_PARTY_COMMAND_RESULT_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kClientRequestIdFieldNumber = 1,
+    kSuccessFieldNumber = 2,
+    kPartyIdFieldNumber = 4,
+    kJoinRequestIdFieldNumber = 5,
+    kErrorFieldNumber = 3,
+  };
+  // uint32 clientRequestId = 1;
+  void clear_clientrequestid() ;
+  ::uint32_t clientrequestid() const;
+  void set_clientrequestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_clientrequestid() const;
+  void _internal_set_clientrequestid(::uint32_t value);
+
+  public:
+  // bool success = 2;
+  void clear_success() ;
+  bool success() const;
+  void set_success(bool value);
+
+  private:
+  bool _internal_success() const;
+  void _internal_set_success(bool value);
+
+  public:
+  // uint64 partyId = 4;
+  void clear_partyid() ;
+  ::uint64_t partyid() const;
+  void set_partyid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_partyid() const;
+  void _internal_set_partyid(::uint64_t value);
+
+  public:
+  // uint64 joinRequestId = 5;
+  void clear_joinrequestid() ;
+  ::uint64_t joinrequestid() const;
+  void set_joinrequestid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_joinrequestid() const;
+  void _internal_set_joinrequestid(::uint64_t value);
+
+  public:
+  // uint32 error = 3;
+  void clear_error() ;
+  ::uint32_t error() const;
+  void set_error(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_error() const;
+  void _internal_set_error(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_PARTY_COMMAND_RESULT_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      3, 5, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_PARTY_COMMAND_RESULT_PACKET& from_msg);
+    ::uint32_t clientrequestid_;
+    bool success_;
+    ::uint64_t partyid_;
+    ::uint64_t joinrequestid_;
+    ::uint32_t error_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
 class SC_MOVE_PACKET final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:Protocol.SC_MOVE_PACKET) */ {
  public:
@@ -1221,7 +1685,7 @@ class SC_MOVE_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_MOVE_PACKET*>(
         &_SC_MOVE_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 13;
+  static constexpr int kIndexInFileMessages = 19;
   friend void swap(SC_MOVE_PACKET& a, SC_MOVE_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_MOVE_PACKET* other) {
     if (other == this) return;
@@ -1459,7 +1923,7 @@ class SC_LOGIN_SUCCESS_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_LOGIN_SUCCESS_PACKET*>(
         &_SC_LOGIN_SUCCESS_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 10;
+  static constexpr int kIndexInFileMessages = 16;
   friend void swap(SC_LOGIN_SUCCESS_PACKET& a, SC_LOGIN_SUCCESS_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_LOGIN_SUCCESS_PACKET* other) {
     if (other == this) return;
@@ -1649,7 +2113,7 @@ class SC_LOGIN_FAIL_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_LOGIN_FAIL_PACKET*>(
         &_SC_LOGIN_FAIL_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 11;
+  static constexpr int kIndexInFileMessages = 17;
   friend void swap(SC_LOGIN_FAIL_PACKET& a, SC_LOGIN_FAIL_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_LOGIN_FAIL_PACKET* other) {
     if (other == this) return;
@@ -1839,7 +2303,7 @@ class SC_COMBAT_IMPACT_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_COMBAT_IMPACT_PACKET*>(
         &_SC_COMBAT_IMPACT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 15;
+  static constexpr int kIndexInFileMessages = 21;
   friend void swap(SC_COMBAT_IMPACT_PACKET& a, SC_COMBAT_IMPACT_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_COMBAT_IMPACT_PACKET* other) {
     if (other == this) return;
@@ -2125,7 +2589,7 @@ class SC_ANIMATION_TRANSITION_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ANIMATION_TRANSITION_PACKET*>(
         &_SC_ANIMATION_TRANSITION_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 16;
+  static constexpr int kIndexInFileMessages = 22;
   friend void swap(SC_ANIMATION_TRANSITION_PACKET& a, SC_ANIMATION_TRANSITION_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ANIMATION_TRANSITION_PACKET* other) {
     if (other == this) return;
@@ -2351,7 +2815,7 @@ class SC_ADD_PACKET final : public ::google::protobuf::Message
     return reinterpret_cast<const SC_ADD_PACKET*>(
         &_SC_ADD_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 12;
+  static constexpr int kIndexInFileMessages = 18;
   friend void swap(SC_ADD_PACKET& a, SC_ADD_PACKET& b) { a.Swap(&b); }
   inline void Swap(SC_ADD_PACKET* other) {
     if (other == this) return;
@@ -3116,6 +3580,1182 @@ class CS_USE_ITEM_PACKET final : public ::google::protobuf::Message
                           const CS_USE_ITEM_PACKET& from_msg);
     float dirx_;
     float dirz_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CS_PARTY_UI_OPENED_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_PARTY_UI_OPENED_PACKET) */ {
+ public:
+  inline CS_PARTY_UI_OPENED_PACKET() : CS_PARTY_UI_OPENED_PACKET(nullptr) {}
+  ~CS_PARTY_UI_OPENED_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_PARTY_UI_OPENED_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_PARTY_UI_OPENED_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_PARTY_UI_OPENED_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_PARTY_UI_OPENED_PACKET(const CS_PARTY_UI_OPENED_PACKET& from) : CS_PARTY_UI_OPENED_PACKET(nullptr, from) {}
+  inline CS_PARTY_UI_OPENED_PACKET(CS_PARTY_UI_OPENED_PACKET&& from) noexcept
+      : CS_PARTY_UI_OPENED_PACKET(nullptr, std::move(from)) {}
+  inline CS_PARTY_UI_OPENED_PACKET& operator=(const CS_PARTY_UI_OPENED_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_PARTY_UI_OPENED_PACKET& operator=(CS_PARTY_UI_OPENED_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_PARTY_UI_OPENED_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_PARTY_UI_OPENED_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_PARTY_UI_OPENED_PACKET*>(
+        &_CS_PARTY_UI_OPENED_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 10;
+  friend void swap(CS_PARTY_UI_OPENED_PACKET& a, CS_PARTY_UI_OPENED_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_PARTY_UI_OPENED_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_PARTY_UI_OPENED_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_PARTY_UI_OPENED_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_PARTY_UI_OPENED_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_PARTY_UI_OPENED_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_PARTY_UI_OPENED_PACKET& from) { CS_PARTY_UI_OPENED_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_PARTY_UI_OPENED_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_PARTY_UI_OPENED_PACKET"; }
+
+ protected:
+  explicit CS_PARTY_UI_OPENED_PACKET(::google::protobuf::Arena* arena);
+  CS_PARTY_UI_OPENED_PACKET(::google::protobuf::Arena* arena, const CS_PARTY_UI_OPENED_PACKET& from);
+  CS_PARTY_UI_OPENED_PACKET(::google::protobuf::Arena* arena, CS_PARTY_UI_OPENED_PACKET&& from) noexcept
+      : CS_PARTY_UI_OPENED_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kClientRequestIdFieldNumber = 1,
+  };
+  // uint32 clientRequestId = 1;
+  void clear_clientrequestid() ;
+  ::uint32_t clientrequestid() const;
+  void set_clientrequestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_clientrequestid() const;
+  void _internal_set_clientrequestid(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_PARTY_UI_OPENED_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_PARTY_UI_OPENED_PACKET& from_msg);
+    ::uint32_t clientrequestid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CS_PARTY_LIST_REFRESH_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_PARTY_LIST_REFRESH_PACKET) */ {
+ public:
+  inline CS_PARTY_LIST_REFRESH_PACKET() : CS_PARTY_LIST_REFRESH_PACKET(nullptr) {}
+  ~CS_PARTY_LIST_REFRESH_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_PARTY_LIST_REFRESH_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_PARTY_LIST_REFRESH_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_PARTY_LIST_REFRESH_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_PARTY_LIST_REFRESH_PACKET(const CS_PARTY_LIST_REFRESH_PACKET& from) : CS_PARTY_LIST_REFRESH_PACKET(nullptr, from) {}
+  inline CS_PARTY_LIST_REFRESH_PACKET(CS_PARTY_LIST_REFRESH_PACKET&& from) noexcept
+      : CS_PARTY_LIST_REFRESH_PACKET(nullptr, std::move(from)) {}
+  inline CS_PARTY_LIST_REFRESH_PACKET& operator=(const CS_PARTY_LIST_REFRESH_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_PARTY_LIST_REFRESH_PACKET& operator=(CS_PARTY_LIST_REFRESH_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_PARTY_LIST_REFRESH_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_PARTY_LIST_REFRESH_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_PARTY_LIST_REFRESH_PACKET*>(
+        &_CS_PARTY_LIST_REFRESH_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 11;
+  friend void swap(CS_PARTY_LIST_REFRESH_PACKET& a, CS_PARTY_LIST_REFRESH_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_PARTY_LIST_REFRESH_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_PARTY_LIST_REFRESH_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_PARTY_LIST_REFRESH_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_PARTY_LIST_REFRESH_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_PARTY_LIST_REFRESH_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_PARTY_LIST_REFRESH_PACKET& from) { CS_PARTY_LIST_REFRESH_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_PARTY_LIST_REFRESH_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_PARTY_LIST_REFRESH_PACKET"; }
+
+ protected:
+  explicit CS_PARTY_LIST_REFRESH_PACKET(::google::protobuf::Arena* arena);
+  CS_PARTY_LIST_REFRESH_PACKET(::google::protobuf::Arena* arena, const CS_PARTY_LIST_REFRESH_PACKET& from);
+  CS_PARTY_LIST_REFRESH_PACKET(::google::protobuf::Arena* arena, CS_PARTY_LIST_REFRESH_PACKET&& from) noexcept
+      : CS_PARTY_LIST_REFRESH_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kClientRequestIdFieldNumber = 1,
+  };
+  // uint32 clientRequestId = 1;
+  void clear_clientrequestid() ;
+  ::uint32_t clientrequestid() const;
+  void set_clientrequestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_clientrequestid() const;
+  void _internal_set_clientrequestid(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_PARTY_LIST_REFRESH_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_PARTY_LIST_REFRESH_PACKET& from_msg);
+    ::uint32_t clientrequestid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CS_PARTY_JOIN_REQUEST_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_PARTY_JOIN_REQUEST_PACKET) */ {
+ public:
+  inline CS_PARTY_JOIN_REQUEST_PACKET() : CS_PARTY_JOIN_REQUEST_PACKET(nullptr) {}
+  ~CS_PARTY_JOIN_REQUEST_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_PARTY_JOIN_REQUEST_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_PARTY_JOIN_REQUEST_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_PARTY_JOIN_REQUEST_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_PARTY_JOIN_REQUEST_PACKET(const CS_PARTY_JOIN_REQUEST_PACKET& from) : CS_PARTY_JOIN_REQUEST_PACKET(nullptr, from) {}
+  inline CS_PARTY_JOIN_REQUEST_PACKET(CS_PARTY_JOIN_REQUEST_PACKET&& from) noexcept
+      : CS_PARTY_JOIN_REQUEST_PACKET(nullptr, std::move(from)) {}
+  inline CS_PARTY_JOIN_REQUEST_PACKET& operator=(const CS_PARTY_JOIN_REQUEST_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_PARTY_JOIN_REQUEST_PACKET& operator=(CS_PARTY_JOIN_REQUEST_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_PARTY_JOIN_REQUEST_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_PARTY_JOIN_REQUEST_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_PARTY_JOIN_REQUEST_PACKET*>(
+        &_CS_PARTY_JOIN_REQUEST_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 13;
+  friend void swap(CS_PARTY_JOIN_REQUEST_PACKET& a, CS_PARTY_JOIN_REQUEST_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_PARTY_JOIN_REQUEST_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_PARTY_JOIN_REQUEST_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_PARTY_JOIN_REQUEST_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_PARTY_JOIN_REQUEST_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_PARTY_JOIN_REQUEST_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_PARTY_JOIN_REQUEST_PACKET& from) { CS_PARTY_JOIN_REQUEST_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_PARTY_JOIN_REQUEST_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_PARTY_JOIN_REQUEST_PACKET"; }
+
+ protected:
+  explicit CS_PARTY_JOIN_REQUEST_PACKET(::google::protobuf::Arena* arena);
+  CS_PARTY_JOIN_REQUEST_PACKET(::google::protobuf::Arena* arena, const CS_PARTY_JOIN_REQUEST_PACKET& from);
+  CS_PARTY_JOIN_REQUEST_PACKET(::google::protobuf::Arena* arena, CS_PARTY_JOIN_REQUEST_PACKET&& from) noexcept
+      : CS_PARTY_JOIN_REQUEST_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kPartyIdFieldNumber = 2,
+    kClientRequestIdFieldNumber = 1,
+  };
+  // uint64 partyId = 2;
+  void clear_partyid() ;
+  ::uint64_t partyid() const;
+  void set_partyid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_partyid() const;
+  void _internal_set_partyid(::uint64_t value);
+
+  public:
+  // uint32 clientRequestId = 1;
+  void clear_clientrequestid() ;
+  ::uint32_t clientrequestid() const;
+  void set_clientrequestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_clientrequestid() const;
+  void _internal_set_clientrequestid(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_PARTY_JOIN_REQUEST_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      1, 2, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_PARTY_JOIN_REQUEST_PACKET& from_msg);
+    ::uint64_t partyid_;
+    ::uint32_t clientrequestid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CS_PARTY_JOIN_REJECT_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_PARTY_JOIN_REJECT_PACKET) */ {
+ public:
+  inline CS_PARTY_JOIN_REJECT_PACKET() : CS_PARTY_JOIN_REJECT_PACKET(nullptr) {}
+  ~CS_PARTY_JOIN_REJECT_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_PARTY_JOIN_REJECT_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_PARTY_JOIN_REJECT_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_PARTY_JOIN_REJECT_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_PARTY_JOIN_REJECT_PACKET(const CS_PARTY_JOIN_REJECT_PACKET& from) : CS_PARTY_JOIN_REJECT_PACKET(nullptr, from) {}
+  inline CS_PARTY_JOIN_REJECT_PACKET(CS_PARTY_JOIN_REJECT_PACKET&& from) noexcept
+      : CS_PARTY_JOIN_REJECT_PACKET(nullptr, std::move(from)) {}
+  inline CS_PARTY_JOIN_REJECT_PACKET& operator=(const CS_PARTY_JOIN_REJECT_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_PARTY_JOIN_REJECT_PACKET& operator=(CS_PARTY_JOIN_REJECT_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_PARTY_JOIN_REJECT_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_PARTY_JOIN_REJECT_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_PARTY_JOIN_REJECT_PACKET*>(
+        &_CS_PARTY_JOIN_REJECT_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 15;
+  friend void swap(CS_PARTY_JOIN_REJECT_PACKET& a, CS_PARTY_JOIN_REJECT_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_PARTY_JOIN_REJECT_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_PARTY_JOIN_REJECT_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_PARTY_JOIN_REJECT_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_PARTY_JOIN_REJECT_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_PARTY_JOIN_REJECT_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_PARTY_JOIN_REJECT_PACKET& from) { CS_PARTY_JOIN_REJECT_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_PARTY_JOIN_REJECT_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_PARTY_JOIN_REJECT_PACKET"; }
+
+ protected:
+  explicit CS_PARTY_JOIN_REJECT_PACKET(::google::protobuf::Arena* arena);
+  CS_PARTY_JOIN_REJECT_PACKET(::google::protobuf::Arena* arena, const CS_PARTY_JOIN_REJECT_PACKET& from);
+  CS_PARTY_JOIN_REJECT_PACKET(::google::protobuf::Arena* arena, CS_PARTY_JOIN_REJECT_PACKET&& from) noexcept
+      : CS_PARTY_JOIN_REJECT_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kJoinRequestIdFieldNumber = 2,
+    kClientRequestIdFieldNumber = 1,
+  };
+  // uint64 joinRequestId = 2;
+  void clear_joinrequestid() ;
+  ::uint64_t joinrequestid() const;
+  void set_joinrequestid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_joinrequestid() const;
+  void _internal_set_joinrequestid(::uint64_t value);
+
+  public:
+  // uint32 clientRequestId = 1;
+  void clear_clientrequestid() ;
+  ::uint32_t clientrequestid() const;
+  void set_clientrequestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_clientrequestid() const;
+  void _internal_set_clientrequestid(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_PARTY_JOIN_REJECT_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      1, 2, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_PARTY_JOIN_REJECT_PACKET& from_msg);
+    ::uint64_t joinrequestid_;
+    ::uint32_t clientrequestid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CS_PARTY_JOIN_ACCEPT_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_PARTY_JOIN_ACCEPT_PACKET) */ {
+ public:
+  inline CS_PARTY_JOIN_ACCEPT_PACKET() : CS_PARTY_JOIN_ACCEPT_PACKET(nullptr) {}
+  ~CS_PARTY_JOIN_ACCEPT_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_PARTY_JOIN_ACCEPT_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_PARTY_JOIN_ACCEPT_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_PARTY_JOIN_ACCEPT_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_PARTY_JOIN_ACCEPT_PACKET(const CS_PARTY_JOIN_ACCEPT_PACKET& from) : CS_PARTY_JOIN_ACCEPT_PACKET(nullptr, from) {}
+  inline CS_PARTY_JOIN_ACCEPT_PACKET(CS_PARTY_JOIN_ACCEPT_PACKET&& from) noexcept
+      : CS_PARTY_JOIN_ACCEPT_PACKET(nullptr, std::move(from)) {}
+  inline CS_PARTY_JOIN_ACCEPT_PACKET& operator=(const CS_PARTY_JOIN_ACCEPT_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_PARTY_JOIN_ACCEPT_PACKET& operator=(CS_PARTY_JOIN_ACCEPT_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_PARTY_JOIN_ACCEPT_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_PARTY_JOIN_ACCEPT_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_PARTY_JOIN_ACCEPT_PACKET*>(
+        &_CS_PARTY_JOIN_ACCEPT_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 14;
+  friend void swap(CS_PARTY_JOIN_ACCEPT_PACKET& a, CS_PARTY_JOIN_ACCEPT_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_PARTY_JOIN_ACCEPT_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_PARTY_JOIN_ACCEPT_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_PARTY_JOIN_ACCEPT_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_PARTY_JOIN_ACCEPT_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_PARTY_JOIN_ACCEPT_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_PARTY_JOIN_ACCEPT_PACKET& from) { CS_PARTY_JOIN_ACCEPT_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_PARTY_JOIN_ACCEPT_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_PARTY_JOIN_ACCEPT_PACKET"; }
+
+ protected:
+  explicit CS_PARTY_JOIN_ACCEPT_PACKET(::google::protobuf::Arena* arena);
+  CS_PARTY_JOIN_ACCEPT_PACKET(::google::protobuf::Arena* arena, const CS_PARTY_JOIN_ACCEPT_PACKET& from);
+  CS_PARTY_JOIN_ACCEPT_PACKET(::google::protobuf::Arena* arena, CS_PARTY_JOIN_ACCEPT_PACKET&& from) noexcept
+      : CS_PARTY_JOIN_ACCEPT_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kJoinRequestIdFieldNumber = 2,
+    kClientRequestIdFieldNumber = 1,
+  };
+  // uint64 joinRequestId = 2;
+  void clear_joinrequestid() ;
+  ::uint64_t joinrequestid() const;
+  void set_joinrequestid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_joinrequestid() const;
+  void _internal_set_joinrequestid(::uint64_t value);
+
+  public:
+  // uint32 clientRequestId = 1;
+  void clear_clientrequestid() ;
+  ::uint32_t clientrequestid() const;
+  void set_clientrequestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_clientrequestid() const;
+  void _internal_set_clientrequestid(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_PARTY_JOIN_ACCEPT_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      1, 2, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_PARTY_JOIN_ACCEPT_PACKET& from_msg);
+    ::uint64_t joinrequestid_;
+    ::uint32_t clientrequestid_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CS_PARTY_CREATE_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.CS_PARTY_CREATE_PACKET) */ {
+ public:
+  inline CS_PARTY_CREATE_PACKET() : CS_PARTY_CREATE_PACKET(nullptr) {}
+  ~CS_PARTY_CREATE_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CS_PARTY_CREATE_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CS_PARTY_CREATE_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR CS_PARTY_CREATE_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline CS_PARTY_CREATE_PACKET(const CS_PARTY_CREATE_PACKET& from) : CS_PARTY_CREATE_PACKET(nullptr, from) {}
+  inline CS_PARTY_CREATE_PACKET(CS_PARTY_CREATE_PACKET&& from) noexcept
+      : CS_PARTY_CREATE_PACKET(nullptr, std::move(from)) {}
+  inline CS_PARTY_CREATE_PACKET& operator=(const CS_PARTY_CREATE_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CS_PARTY_CREATE_PACKET& operator=(CS_PARTY_CREATE_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CS_PARTY_CREATE_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CS_PARTY_CREATE_PACKET* internal_default_instance() {
+    return reinterpret_cast<const CS_PARTY_CREATE_PACKET*>(
+        &_CS_PARTY_CREATE_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 12;
+  friend void swap(CS_PARTY_CREATE_PACKET& a, CS_PARTY_CREATE_PACKET& b) { a.Swap(&b); }
+  inline void Swap(CS_PARTY_CREATE_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CS_PARTY_CREATE_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CS_PARTY_CREATE_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CS_PARTY_CREATE_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CS_PARTY_CREATE_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CS_PARTY_CREATE_PACKET& from) { CS_PARTY_CREATE_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CS_PARTY_CREATE_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.CS_PARTY_CREATE_PACKET"; }
+
+ protected:
+  explicit CS_PARTY_CREATE_PACKET(::google::protobuf::Arena* arena);
+  CS_PARTY_CREATE_PACKET(::google::protobuf::Arena* arena, const CS_PARTY_CREATE_PACKET& from);
+  CS_PARTY_CREATE_PACKET(::google::protobuf::Arena* arena, CS_PARTY_CREATE_PACKET&& from) noexcept
+      : CS_PARTY_CREATE_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kClientRequestIdFieldNumber = 1,
+  };
+  // uint32 clientRequestId = 1;
+  void clear_clientrequestid() ;
+  ::uint32_t clientrequestid() const;
+  void set_clientrequestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_clientrequestid() const;
+  void _internal_set_clientrequestid(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.CS_PARTY_CREATE_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const CS_PARTY_CREATE_PACKET& from_msg);
+    ::uint32_t clientrequestid_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -4616,31 +6256,31 @@ class CS_ATTACK_PACKET final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
-class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:Protocol.SC_REPLICATION_FRAME_PACKET) */ {
+class SC_PARTY_LIST_SNAPSHOT_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_PARTY_LIST_SNAPSHOT_PACKET) */ {
  public:
-  inline SC_REPLICATION_FRAME_PACKET() : SC_REPLICATION_FRAME_PACKET(nullptr) {}
-  ~SC_REPLICATION_FRAME_PACKET() PROTOBUF_FINAL;
+  inline SC_PARTY_LIST_SNAPSHOT_PACKET() : SC_PARTY_LIST_SNAPSHOT_PACKET(nullptr) {}
+  ~SC_PARTY_LIST_SNAPSHOT_PACKET() PROTOBUF_FINAL;
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(SC_REPLICATION_FRAME_PACKET* msg, std::destroying_delete_t) {
+  void operator delete(SC_PARTY_LIST_SNAPSHOT_PACKET* msg, std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_REPLICATION_FRAME_PACKET));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_PARTY_LIST_SNAPSHOT_PACKET));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR SC_REPLICATION_FRAME_PACKET(
+  explicit PROTOBUF_CONSTEXPR SC_PARTY_LIST_SNAPSHOT_PACKET(
       ::google::protobuf::internal::ConstantInitialized);
 
-  inline SC_REPLICATION_FRAME_PACKET(const SC_REPLICATION_FRAME_PACKET& from) : SC_REPLICATION_FRAME_PACKET(nullptr, from) {}
-  inline SC_REPLICATION_FRAME_PACKET(SC_REPLICATION_FRAME_PACKET&& from) noexcept
-      : SC_REPLICATION_FRAME_PACKET(nullptr, std::move(from)) {}
-  inline SC_REPLICATION_FRAME_PACKET& operator=(const SC_REPLICATION_FRAME_PACKET& from) {
+  inline SC_PARTY_LIST_SNAPSHOT_PACKET(const SC_PARTY_LIST_SNAPSHOT_PACKET& from) : SC_PARTY_LIST_SNAPSHOT_PACKET(nullptr, from) {}
+  inline SC_PARTY_LIST_SNAPSHOT_PACKET(SC_PARTY_LIST_SNAPSHOT_PACKET&& from) noexcept
+      : SC_PARTY_LIST_SNAPSHOT_PACKET(nullptr, std::move(from)) {}
+  inline SC_PARTY_LIST_SNAPSHOT_PACKET& operator=(const SC_PARTY_LIST_SNAPSHOT_PACKET& from) {
     CopyFrom(from);
     return *this;
   }
-  inline SC_REPLICATION_FRAME_PACKET& operator=(SC_REPLICATION_FRAME_PACKET&& from) noexcept {
+  inline SC_PARTY_LIST_SNAPSHOT_PACKET& operator=(SC_PARTY_LIST_SNAPSHOT_PACKET&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -4668,16 +6308,16 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
   static const ::google::protobuf::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const SC_REPLICATION_FRAME_PACKET& default_instance() {
+  static const SC_PARTY_LIST_SNAPSHOT_PACKET& default_instance() {
     return *internal_default_instance();
   }
-  static inline const SC_REPLICATION_FRAME_PACKET* internal_default_instance() {
-    return reinterpret_cast<const SC_REPLICATION_FRAME_PACKET*>(
-        &_SC_REPLICATION_FRAME_PACKET_default_instance_);
+  static inline const SC_PARTY_LIST_SNAPSHOT_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_PARTY_LIST_SNAPSHOT_PACKET*>(
+        &_SC_PARTY_LIST_SNAPSHOT_PACKET_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 20;
-  friend void swap(SC_REPLICATION_FRAME_PACKET& a, SC_REPLICATION_FRAME_PACKET& b) { a.Swap(&b); }
-  inline void Swap(SC_REPLICATION_FRAME_PACKET* other) {
+  static constexpr int kIndexInFileMessages = 27;
+  friend void swap(SC_PARTY_LIST_SNAPSHOT_PACKET& a, SC_PARTY_LIST_SNAPSHOT_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_PARTY_LIST_SNAPSHOT_PACKET* other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -4685,7 +6325,7 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(SC_REPLICATION_FRAME_PACKET* other) {
+  void UnsafeArenaSwap(SC_PARTY_LIST_SNAPSHOT_PACKET* other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -4693,13 +6333,13 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
 
   // implements Message ----------------------------------------------
 
-  SC_REPLICATION_FRAME_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<SC_REPLICATION_FRAME_PACKET>(arena);
+  SC_PARTY_LIST_SNAPSHOT_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_PARTY_LIST_SNAPSHOT_PACKET>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const SC_REPLICATION_FRAME_PACKET& from);
+  void CopyFrom(const SC_PARTY_LIST_SNAPSHOT_PACKET& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const SC_REPLICATION_FRAME_PACKET& from) { SC_REPLICATION_FRAME_PACKET::MergeImpl(*this, from); }
+  void MergeFrom(const SC_PARTY_LIST_SNAPSHOT_PACKET& from) { SC_PARTY_LIST_SNAPSHOT_PACKET::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(
@@ -4736,18 +6376,18 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
   private:
   void SharedCtor(::google::protobuf::Arena* arena);
   static void SharedDtor(MessageLite& self);
-  void InternalSwap(SC_REPLICATION_FRAME_PACKET* other);
+  void InternalSwap(SC_PARTY_LIST_SNAPSHOT_PACKET* other);
  private:
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "Protocol.SC_REPLICATION_FRAME_PACKET"; }
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_PARTY_LIST_SNAPSHOT_PACKET"; }
 
  protected:
-  explicit SC_REPLICATION_FRAME_PACKET(::google::protobuf::Arena* arena);
-  SC_REPLICATION_FRAME_PACKET(::google::protobuf::Arena* arena, const SC_REPLICATION_FRAME_PACKET& from);
-  SC_REPLICATION_FRAME_PACKET(::google::protobuf::Arena* arena, SC_REPLICATION_FRAME_PACKET&& from) noexcept
-      : SC_REPLICATION_FRAME_PACKET(arena) {
+  explicit SC_PARTY_LIST_SNAPSHOT_PACKET(::google::protobuf::Arena* arena);
+  SC_PARTY_LIST_SNAPSHOT_PACKET(::google::protobuf::Arena* arena, const SC_PARTY_LIST_SNAPSHOT_PACKET& from);
+  SC_PARTY_LIST_SNAPSHOT_PACKET(::google::protobuf::Arena* arena, SC_PARTY_LIST_SNAPSHOT_PACKET&& from) noexcept
+      : SC_PARTY_LIST_SNAPSHOT_PACKET(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
@@ -4762,107 +6402,42 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kSpawnsFieldNumber = 3,
-    kDespawnsFieldNumber = 4,
-    kMovesFieldNumber = 5,
-    kAnimsFieldNumber = 6,
-    kFrameSeqFieldNumber = 1,
-    kServerTickFieldNumber = 2,
+    kPartiesFieldNumber = 2,
+    kClientRequestIdFieldNumber = 1,
   };
-  // repeated .Protocol.SC_ADD_PACKET spawns = 3;
-  int spawns_size() const;
+  // repeated .Protocol.PartyListEntry parties = 2;
+  int parties_size() const;
   private:
-  int _internal_spawns_size() const;
+  int _internal_parties_size() const;
 
   public:
-  void clear_spawns() ;
-  ::Protocol::SC_ADD_PACKET* mutable_spawns(int index);
-  ::google::protobuf::RepeatedPtrField<::Protocol::SC_ADD_PACKET>* mutable_spawns();
+  void clear_parties() ;
+  ::Protocol::PartyListEntry* mutable_parties(int index);
+  ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>* mutable_parties();
 
   private:
-  const ::google::protobuf::RepeatedPtrField<::Protocol::SC_ADD_PACKET>& _internal_spawns() const;
-  ::google::protobuf::RepeatedPtrField<::Protocol::SC_ADD_PACKET>* _internal_mutable_spawns();
+  const ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>& _internal_parties() const;
+  ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>* _internal_mutable_parties();
   public:
-  const ::Protocol::SC_ADD_PACKET& spawns(int index) const;
-  ::Protocol::SC_ADD_PACKET* add_spawns();
-  const ::google::protobuf::RepeatedPtrField<::Protocol::SC_ADD_PACKET>& spawns() const;
-  // repeated .Protocol.SC_REMOVE_PACKET despawns = 4;
-  int despawns_size() const;
-  private:
-  int _internal_despawns_size() const;
-
-  public:
-  void clear_despawns() ;
-  ::Protocol::SC_REMOVE_PACKET* mutable_despawns(int index);
-  ::google::protobuf::RepeatedPtrField<::Protocol::SC_REMOVE_PACKET>* mutable_despawns();
+  const ::Protocol::PartyListEntry& parties(int index) const;
+  ::Protocol::PartyListEntry* add_parties();
+  const ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>& parties() const;
+  // uint32 clientRequestId = 1;
+  void clear_clientrequestid() ;
+  ::uint32_t clientrequestid() const;
+  void set_clientrequestid(::uint32_t value);
 
   private:
-  const ::google::protobuf::RepeatedPtrField<::Protocol::SC_REMOVE_PACKET>& _internal_despawns() const;
-  ::google::protobuf::RepeatedPtrField<::Protocol::SC_REMOVE_PACKET>* _internal_mutable_despawns();
-  public:
-  const ::Protocol::SC_REMOVE_PACKET& despawns(int index) const;
-  ::Protocol::SC_REMOVE_PACKET* add_despawns();
-  const ::google::protobuf::RepeatedPtrField<::Protocol::SC_REMOVE_PACKET>& despawns() const;
-  // repeated .Protocol.SC_MOVE_PACKET moves = 5;
-  int moves_size() const;
-  private:
-  int _internal_moves_size() const;
+  ::uint32_t _internal_clientrequestid() const;
+  void _internal_set_clientrequestid(::uint32_t value);
 
   public:
-  void clear_moves() ;
-  ::Protocol::SC_MOVE_PACKET* mutable_moves(int index);
-  ::google::protobuf::RepeatedPtrField<::Protocol::SC_MOVE_PACKET>* mutable_moves();
-
-  private:
-  const ::google::protobuf::RepeatedPtrField<::Protocol::SC_MOVE_PACKET>& _internal_moves() const;
-  ::google::protobuf::RepeatedPtrField<::Protocol::SC_MOVE_PACKET>* _internal_mutable_moves();
-  public:
-  const ::Protocol::SC_MOVE_PACKET& moves(int index) const;
-  ::Protocol::SC_MOVE_PACKET* add_moves();
-  const ::google::protobuf::RepeatedPtrField<::Protocol::SC_MOVE_PACKET>& moves() const;
-  // repeated .Protocol.SC_ANIMATION_TRANSITION_PACKET anims = 6;
-  int anims_size() const;
-  private:
-  int _internal_anims_size() const;
-
-  public:
-  void clear_anims() ;
-  ::Protocol::SC_ANIMATION_TRANSITION_PACKET* mutable_anims(int index);
-  ::google::protobuf::RepeatedPtrField<::Protocol::SC_ANIMATION_TRANSITION_PACKET>* mutable_anims();
-
-  private:
-  const ::google::protobuf::RepeatedPtrField<::Protocol::SC_ANIMATION_TRANSITION_PACKET>& _internal_anims() const;
-  ::google::protobuf::RepeatedPtrField<::Protocol::SC_ANIMATION_TRANSITION_PACKET>* _internal_mutable_anims();
-  public:
-  const ::Protocol::SC_ANIMATION_TRANSITION_PACKET& anims(int index) const;
-  ::Protocol::SC_ANIMATION_TRANSITION_PACKET* add_anims();
-  const ::google::protobuf::RepeatedPtrField<::Protocol::SC_ANIMATION_TRANSITION_PACKET>& anims() const;
-  // uint32 frameSeq = 1;
-  void clear_frameseq() ;
-  ::uint32_t frameseq() const;
-  void set_frameseq(::uint32_t value);
-
-  private:
-  ::uint32_t _internal_frameseq() const;
-  void _internal_set_frameseq(::uint32_t value);
-
-  public:
-  // uint32 serverTick = 2;
-  void clear_servertick() ;
-  ::uint32_t servertick() const;
-  void set_servertick(::uint32_t value);
-
-  private:
-  ::uint32_t _internal_servertick() const;
-  void _internal_set_servertick(::uint32_t value);
-
-  public:
-  // @@protoc_insertion_point(class_scope:Protocol.SC_REPLICATION_FRAME_PACKET)
+  // @@protoc_insertion_point(class_scope:Protocol.SC_PARTY_LIST_SNAPSHOT_PACKET)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      3, 6, 4,
+      1, 2, 1,
       0, 2>
       _table_;
 
@@ -4879,14 +6454,653 @@ class SC_REPLICATION_FRAME_PACKET final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena);
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
-                          const SC_REPLICATION_FRAME_PACKET& from_msg);
-    ::google::protobuf::RepeatedPtrField< ::Protocol::SC_ADD_PACKET > spawns_;
-    ::google::protobuf::RepeatedPtrField< ::Protocol::SC_REMOVE_PACKET > despawns_;
-    ::google::protobuf::RepeatedPtrField< ::Protocol::SC_MOVE_PACKET > moves_;
-    ::google::protobuf::RepeatedPtrField< ::Protocol::SC_ANIMATION_TRANSITION_PACKET > anims_;
-    ::uint32_t frameseq_;
-    ::uint32_t servertick_;
+                          const SC_PARTY_LIST_SNAPSHOT_PACKET& from_msg);
+    ::google::protobuf::RepeatedPtrField< ::Protocol::PartyListEntry > parties_;
+    ::uint32_t clientrequestid_;
     ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET) */ {
+ public:
+  inline SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET() : SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET(nullptr) {}
+  ~SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET(const SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& from) : SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET(nullptr, from) {}
+  inline SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET(SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET&& from) noexcept
+      : SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET(nullptr, std::move(from)) {}
+  inline SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& operator=(const SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& operator=(SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET*>(
+        &_SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 30;
+  friend void swap(SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& a, SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& from) { SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET"; }
+
+ protected:
+  explicit SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET(::google::protobuf::Arena* arena);
+  SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET(::google::protobuf::Arena* arena, const SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& from);
+  SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET(::google::protobuf::Arena* arena, SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET&& from) noexcept
+      : SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kRequestFieldNumber = 2,
+    kPartyIdFieldNumber = 1,
+  };
+  // .Protocol.PartyJoinRequest request = 2;
+  bool has_request() const;
+  void clear_request() ;
+  const ::Protocol::PartyJoinRequest& request() const;
+  PROTOBUF_NODISCARD ::Protocol::PartyJoinRequest* release_request();
+  ::Protocol::PartyJoinRequest* mutable_request();
+  void set_allocated_request(::Protocol::PartyJoinRequest* value);
+  void unsafe_arena_set_allocated_request(::Protocol::PartyJoinRequest* value);
+  ::Protocol::PartyJoinRequest* unsafe_arena_release_request();
+
+  private:
+  const ::Protocol::PartyJoinRequest& _internal_request() const;
+  ::Protocol::PartyJoinRequest* _internal_mutable_request();
+
+  public:
+  // uint64 partyId = 1;
+  void clear_partyid() ;
+  ::uint64_t partyid() const;
+  void set_partyid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_partyid() const;
+  void _internal_set_partyid(::uint64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      1, 2, 1,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::Protocol::PartyJoinRequest* request_;
+    ::uint64_t partyid_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_PARTY_UI_BOOTSTRAP_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET) */ {
+ public:
+  inline SC_PARTY_UI_BOOTSTRAP_PACKET() : SC_PARTY_UI_BOOTSTRAP_PACKET(nullptr) {}
+  ~SC_PARTY_UI_BOOTSTRAP_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_PARTY_UI_BOOTSTRAP_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_PARTY_UI_BOOTSTRAP_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_PARTY_UI_BOOTSTRAP_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_PARTY_UI_BOOTSTRAP_PACKET(const SC_PARTY_UI_BOOTSTRAP_PACKET& from) : SC_PARTY_UI_BOOTSTRAP_PACKET(nullptr, from) {}
+  inline SC_PARTY_UI_BOOTSTRAP_PACKET(SC_PARTY_UI_BOOTSTRAP_PACKET&& from) noexcept
+      : SC_PARTY_UI_BOOTSTRAP_PACKET(nullptr, std::move(from)) {}
+  inline SC_PARTY_UI_BOOTSTRAP_PACKET& operator=(const SC_PARTY_UI_BOOTSTRAP_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_PARTY_UI_BOOTSTRAP_PACKET& operator=(SC_PARTY_UI_BOOTSTRAP_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_PARTY_UI_BOOTSTRAP_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_PARTY_UI_BOOTSTRAP_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_PARTY_UI_BOOTSTRAP_PACKET*>(
+        &_SC_PARTY_UI_BOOTSTRAP_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 26;
+  friend void swap(SC_PARTY_UI_BOOTSTRAP_PACKET& a, SC_PARTY_UI_BOOTSTRAP_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_PARTY_UI_BOOTSTRAP_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_PARTY_UI_BOOTSTRAP_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_PARTY_UI_BOOTSTRAP_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_PARTY_UI_BOOTSTRAP_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_PARTY_UI_BOOTSTRAP_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_PARTY_UI_BOOTSTRAP_PACKET& from) { SC_PARTY_UI_BOOTSTRAP_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_PARTY_UI_BOOTSTRAP_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET"; }
+
+ protected:
+  explicit SC_PARTY_UI_BOOTSTRAP_PACKET(::google::protobuf::Arena* arena);
+  SC_PARTY_UI_BOOTSTRAP_PACKET(::google::protobuf::Arena* arena, const SC_PARTY_UI_BOOTSTRAP_PACKET& from);
+  SC_PARTY_UI_BOOTSTRAP_PACKET(::google::protobuf::Arena* arena, SC_PARTY_UI_BOOTSTRAP_PACKET&& from) noexcept
+      : SC_PARTY_UI_BOOTSTRAP_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kPartiesFieldNumber = 4,
+    kMyPartyFieldNumber = 3,
+    kClientRequestIdFieldNumber = 1,
+    kHasMyPartyFieldNumber = 2,
+  };
+  // repeated .Protocol.PartyListEntry parties = 4;
+  int parties_size() const;
+  private:
+  int _internal_parties_size() const;
+
+  public:
+  void clear_parties() ;
+  ::Protocol::PartyListEntry* mutable_parties(int index);
+  ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>* mutable_parties();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>& _internal_parties() const;
+  ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>* _internal_mutable_parties();
+  public:
+  const ::Protocol::PartyListEntry& parties(int index) const;
+  ::Protocol::PartyListEntry* add_parties();
+  const ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>& parties() const;
+  // .Protocol.PartySnapshot myParty = 3;
+  bool has_myparty() const;
+  void clear_myparty() ;
+  const ::Protocol::PartySnapshot& myparty() const;
+  PROTOBUF_NODISCARD ::Protocol::PartySnapshot* release_myparty();
+  ::Protocol::PartySnapshot* mutable_myparty();
+  void set_allocated_myparty(::Protocol::PartySnapshot* value);
+  void unsafe_arena_set_allocated_myparty(::Protocol::PartySnapshot* value);
+  ::Protocol::PartySnapshot* unsafe_arena_release_myparty();
+
+  private:
+  const ::Protocol::PartySnapshot& _internal_myparty() const;
+  ::Protocol::PartySnapshot* _internal_mutable_myparty();
+
+  public:
+  // uint32 clientRequestId = 1;
+  void clear_clientrequestid() ;
+  ::uint32_t clientrequestid() const;
+  void set_clientrequestid(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_clientrequestid() const;
+  void _internal_set_clientrequestid(::uint32_t value);
+
+  public:
+  // bool hasMyParty = 2;
+  void clear_hasmyparty() ;
+  bool hasmyparty() const;
+  void set_hasmyparty(bool value);
+
+  private:
+  bool _internal_hasmyparty() const;
+  void _internal_set_hasmyparty(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      2, 4, 2,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_PARTY_UI_BOOTSTRAP_PACKET& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::RepeatedPtrField< ::Protocol::PartyListEntry > parties_;
+    ::Protocol::PartySnapshot* myparty_;
+    ::uint32_t clientrequestid_;
+    bool hasmyparty_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_PARTY_SNAPSHOT_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_PARTY_SNAPSHOT_PACKET) */ {
+ public:
+  inline SC_PARTY_SNAPSHOT_PACKET() : SC_PARTY_SNAPSHOT_PACKET(nullptr) {}
+  ~SC_PARTY_SNAPSHOT_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_PARTY_SNAPSHOT_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_PARTY_SNAPSHOT_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_PARTY_SNAPSHOT_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_PARTY_SNAPSHOT_PACKET(const SC_PARTY_SNAPSHOT_PACKET& from) : SC_PARTY_SNAPSHOT_PACKET(nullptr, from) {}
+  inline SC_PARTY_SNAPSHOT_PACKET(SC_PARTY_SNAPSHOT_PACKET&& from) noexcept
+      : SC_PARTY_SNAPSHOT_PACKET(nullptr, std::move(from)) {}
+  inline SC_PARTY_SNAPSHOT_PACKET& operator=(const SC_PARTY_SNAPSHOT_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_PARTY_SNAPSHOT_PACKET& operator=(SC_PARTY_SNAPSHOT_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_PARTY_SNAPSHOT_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_PARTY_SNAPSHOT_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_PARTY_SNAPSHOT_PACKET*>(
+        &_SC_PARTY_SNAPSHOT_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 29;
+  friend void swap(SC_PARTY_SNAPSHOT_PACKET& a, SC_PARTY_SNAPSHOT_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_PARTY_SNAPSHOT_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_PARTY_SNAPSHOT_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_PARTY_SNAPSHOT_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_PARTY_SNAPSHOT_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_PARTY_SNAPSHOT_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_PARTY_SNAPSHOT_PACKET& from) { SC_PARTY_SNAPSHOT_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_PARTY_SNAPSHOT_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_PARTY_SNAPSHOT_PACKET"; }
+
+ protected:
+  explicit SC_PARTY_SNAPSHOT_PACKET(::google::protobuf::Arena* arena);
+  SC_PARTY_SNAPSHOT_PACKET(::google::protobuf::Arena* arena, const SC_PARTY_SNAPSHOT_PACKET& from);
+  SC_PARTY_SNAPSHOT_PACKET(::google::protobuf::Arena* arena, SC_PARTY_SNAPSHOT_PACKET&& from) noexcept
+      : SC_PARTY_SNAPSHOT_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kPartyFieldNumber = 1,
+  };
+  // .Protocol.PartySnapshot party = 1;
+  bool has_party() const;
+  void clear_party() ;
+  const ::Protocol::PartySnapshot& party() const;
+  PROTOBUF_NODISCARD ::Protocol::PartySnapshot* release_party();
+  ::Protocol::PartySnapshot* mutable_party();
+  void set_allocated_party(::Protocol::PartySnapshot* value);
+  void unsafe_arena_set_allocated_party(::Protocol::PartySnapshot* value);
+  ::Protocol::PartySnapshot* unsafe_arena_release_party();
+
+  private:
+  const ::Protocol::PartySnapshot& _internal_party() const;
+  ::Protocol::PartySnapshot* _internal_mutable_party();
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_PARTY_SNAPSHOT_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      0, 1, 1,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_PARTY_SNAPSHOT_PACKET& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::Protocol::PartySnapshot* party_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -5527,6 +7741,228 @@ inline ::uint64_t CS_WORLD_TRANSITION_READY_PACKET::_internal_transferid() const
 inline void CS_WORLD_TRANSITION_READY_PACKET::_internal_set_transferid(::uint64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.transferid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_PARTY_UI_OPENED_PACKET
+
+// uint32 clientRequestId = 1;
+inline void CS_PARTY_UI_OPENED_PACKET::clear_clientrequestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = 0u;
+}
+inline ::uint32_t CS_PARTY_UI_OPENED_PACKET::clientrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_PARTY_UI_OPENED_PACKET.clientRequestId)
+  return _internal_clientrequestid();
+}
+inline void CS_PARTY_UI_OPENED_PACKET::set_clientrequestid(::uint32_t value) {
+  _internal_set_clientrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_PARTY_UI_OPENED_PACKET.clientRequestId)
+}
+inline ::uint32_t CS_PARTY_UI_OPENED_PACKET::_internal_clientrequestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.clientrequestid_;
+}
+inline void CS_PARTY_UI_OPENED_PACKET::_internal_set_clientrequestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_PARTY_LIST_REFRESH_PACKET
+
+// uint32 clientRequestId = 1;
+inline void CS_PARTY_LIST_REFRESH_PACKET::clear_clientrequestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = 0u;
+}
+inline ::uint32_t CS_PARTY_LIST_REFRESH_PACKET::clientrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_PARTY_LIST_REFRESH_PACKET.clientRequestId)
+  return _internal_clientrequestid();
+}
+inline void CS_PARTY_LIST_REFRESH_PACKET::set_clientrequestid(::uint32_t value) {
+  _internal_set_clientrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_PARTY_LIST_REFRESH_PACKET.clientRequestId)
+}
+inline ::uint32_t CS_PARTY_LIST_REFRESH_PACKET::_internal_clientrequestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.clientrequestid_;
+}
+inline void CS_PARTY_LIST_REFRESH_PACKET::_internal_set_clientrequestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_PARTY_CREATE_PACKET
+
+// uint32 clientRequestId = 1;
+inline void CS_PARTY_CREATE_PACKET::clear_clientrequestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = 0u;
+}
+inline ::uint32_t CS_PARTY_CREATE_PACKET::clientrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_PARTY_CREATE_PACKET.clientRequestId)
+  return _internal_clientrequestid();
+}
+inline void CS_PARTY_CREATE_PACKET::set_clientrequestid(::uint32_t value) {
+  _internal_set_clientrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_PARTY_CREATE_PACKET.clientRequestId)
+}
+inline ::uint32_t CS_PARTY_CREATE_PACKET::_internal_clientrequestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.clientrequestid_;
+}
+inline void CS_PARTY_CREATE_PACKET::_internal_set_clientrequestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_PARTY_JOIN_REQUEST_PACKET
+
+// uint32 clientRequestId = 1;
+inline void CS_PARTY_JOIN_REQUEST_PACKET::clear_clientrequestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = 0u;
+}
+inline ::uint32_t CS_PARTY_JOIN_REQUEST_PACKET::clientrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_PARTY_JOIN_REQUEST_PACKET.clientRequestId)
+  return _internal_clientrequestid();
+}
+inline void CS_PARTY_JOIN_REQUEST_PACKET::set_clientrequestid(::uint32_t value) {
+  _internal_set_clientrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_PARTY_JOIN_REQUEST_PACKET.clientRequestId)
+}
+inline ::uint32_t CS_PARTY_JOIN_REQUEST_PACKET::_internal_clientrequestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.clientrequestid_;
+}
+inline void CS_PARTY_JOIN_REQUEST_PACKET::_internal_set_clientrequestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = value;
+}
+
+// uint64 partyId = 2;
+inline void CS_PARTY_JOIN_REQUEST_PACKET::clear_partyid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.partyid_ = ::uint64_t{0u};
+}
+inline ::uint64_t CS_PARTY_JOIN_REQUEST_PACKET::partyid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_PARTY_JOIN_REQUEST_PACKET.partyId)
+  return _internal_partyid();
+}
+inline void CS_PARTY_JOIN_REQUEST_PACKET::set_partyid(::uint64_t value) {
+  _internal_set_partyid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_PARTY_JOIN_REQUEST_PACKET.partyId)
+}
+inline ::uint64_t CS_PARTY_JOIN_REQUEST_PACKET::_internal_partyid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.partyid_;
+}
+inline void CS_PARTY_JOIN_REQUEST_PACKET::_internal_set_partyid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.partyid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_PARTY_JOIN_ACCEPT_PACKET
+
+// uint32 clientRequestId = 1;
+inline void CS_PARTY_JOIN_ACCEPT_PACKET::clear_clientrequestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = 0u;
+}
+inline ::uint32_t CS_PARTY_JOIN_ACCEPT_PACKET::clientrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_PARTY_JOIN_ACCEPT_PACKET.clientRequestId)
+  return _internal_clientrequestid();
+}
+inline void CS_PARTY_JOIN_ACCEPT_PACKET::set_clientrequestid(::uint32_t value) {
+  _internal_set_clientrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_PARTY_JOIN_ACCEPT_PACKET.clientRequestId)
+}
+inline ::uint32_t CS_PARTY_JOIN_ACCEPT_PACKET::_internal_clientrequestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.clientrequestid_;
+}
+inline void CS_PARTY_JOIN_ACCEPT_PACKET::_internal_set_clientrequestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = value;
+}
+
+// uint64 joinRequestId = 2;
+inline void CS_PARTY_JOIN_ACCEPT_PACKET::clear_joinrequestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.joinrequestid_ = ::uint64_t{0u};
+}
+inline ::uint64_t CS_PARTY_JOIN_ACCEPT_PACKET::joinrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_PARTY_JOIN_ACCEPT_PACKET.joinRequestId)
+  return _internal_joinrequestid();
+}
+inline void CS_PARTY_JOIN_ACCEPT_PACKET::set_joinrequestid(::uint64_t value) {
+  _internal_set_joinrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_PARTY_JOIN_ACCEPT_PACKET.joinRequestId)
+}
+inline ::uint64_t CS_PARTY_JOIN_ACCEPT_PACKET::_internal_joinrequestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.joinrequestid_;
+}
+inline void CS_PARTY_JOIN_ACCEPT_PACKET::_internal_set_joinrequestid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.joinrequestid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// CS_PARTY_JOIN_REJECT_PACKET
+
+// uint32 clientRequestId = 1;
+inline void CS_PARTY_JOIN_REJECT_PACKET::clear_clientrequestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = 0u;
+}
+inline ::uint32_t CS_PARTY_JOIN_REJECT_PACKET::clientrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_PARTY_JOIN_REJECT_PACKET.clientRequestId)
+  return _internal_clientrequestid();
+}
+inline void CS_PARTY_JOIN_REJECT_PACKET::set_clientrequestid(::uint32_t value) {
+  _internal_set_clientrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_PARTY_JOIN_REJECT_PACKET.clientRequestId)
+}
+inline ::uint32_t CS_PARTY_JOIN_REJECT_PACKET::_internal_clientrequestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.clientrequestid_;
+}
+inline void CS_PARTY_JOIN_REJECT_PACKET::_internal_set_clientrequestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = value;
+}
+
+// uint64 joinRequestId = 2;
+inline void CS_PARTY_JOIN_REJECT_PACKET::clear_joinrequestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.joinrequestid_ = ::uint64_t{0u};
+}
+inline ::uint64_t CS_PARTY_JOIN_REJECT_PACKET::joinrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.CS_PARTY_JOIN_REJECT_PACKET.joinRequestId)
+  return _internal_joinrequestid();
+}
+inline void CS_PARTY_JOIN_REJECT_PACKET::set_joinrequestid(::uint64_t value) {
+  _internal_set_joinrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.CS_PARTY_JOIN_REJECT_PACKET.joinRequestId)
+}
+inline ::uint64_t CS_PARTY_JOIN_REJECT_PACKET::_internal_joinrequestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.joinrequestid_;
+}
+inline void CS_PARTY_JOIN_REJECT_PACKET::_internal_set_joinrequestid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.joinrequestid_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -6671,246 +9107,675 @@ inline void SC_WORLD_TRANSITION_REJECTED_PACKET::_internal_set_reason(::uint32_t
 
 // -------------------------------------------------------------------
 
-// SC_REPLICATION_FRAME_PACKET
+// SC_PARTY_UI_BOOTSTRAP_PACKET
 
-// uint32 frameSeq = 1;
-inline void SC_REPLICATION_FRAME_PACKET::clear_frameseq() {
+// uint32 clientRequestId = 1;
+inline void SC_PARTY_UI_BOOTSTRAP_PACKET::clear_clientrequestid() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.frameseq_ = 0u;
+  _impl_.clientrequestid_ = 0u;
 }
-inline ::uint32_t SC_REPLICATION_FRAME_PACKET::frameseq() const {
-  // @@protoc_insertion_point(field_get:Protocol.SC_REPLICATION_FRAME_PACKET.frameSeq)
-  return _internal_frameseq();
+inline ::uint32_t SC_PARTY_UI_BOOTSTRAP_PACKET::clientrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.clientRequestId)
+  return _internal_clientrequestid();
 }
-inline void SC_REPLICATION_FRAME_PACKET::set_frameseq(::uint32_t value) {
-  _internal_set_frameseq(value);
-  // @@protoc_insertion_point(field_set:Protocol.SC_REPLICATION_FRAME_PACKET.frameSeq)
+inline void SC_PARTY_UI_BOOTSTRAP_PACKET::set_clientrequestid(::uint32_t value) {
+  _internal_set_clientrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.clientRequestId)
 }
-inline ::uint32_t SC_REPLICATION_FRAME_PACKET::_internal_frameseq() const {
+inline ::uint32_t SC_PARTY_UI_BOOTSTRAP_PACKET::_internal_clientrequestid() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.frameseq_;
+  return _impl_.clientrequestid_;
 }
-inline void SC_REPLICATION_FRAME_PACKET::_internal_set_frameseq(::uint32_t value) {
+inline void SC_PARTY_UI_BOOTSTRAP_PACKET::_internal_set_clientrequestid(::uint32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.frameseq_ = value;
+  _impl_.clientrequestid_ = value;
 }
 
-// uint32 serverTick = 2;
-inline void SC_REPLICATION_FRAME_PACKET::clear_servertick() {
+// bool hasMyParty = 2;
+inline void SC_PARTY_UI_BOOTSTRAP_PACKET::clear_hasmyparty() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.servertick_ = 0u;
+  _impl_.hasmyparty_ = false;
 }
-inline ::uint32_t SC_REPLICATION_FRAME_PACKET::servertick() const {
-  // @@protoc_insertion_point(field_get:Protocol.SC_REPLICATION_FRAME_PACKET.serverTick)
-  return _internal_servertick();
+inline bool SC_PARTY_UI_BOOTSTRAP_PACKET::hasmyparty() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.hasMyParty)
+  return _internal_hasmyparty();
 }
-inline void SC_REPLICATION_FRAME_PACKET::set_servertick(::uint32_t value) {
-  _internal_set_servertick(value);
-  // @@protoc_insertion_point(field_set:Protocol.SC_REPLICATION_FRAME_PACKET.serverTick)
+inline void SC_PARTY_UI_BOOTSTRAP_PACKET::set_hasmyparty(bool value) {
+  _internal_set_hasmyparty(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.hasMyParty)
 }
-inline ::uint32_t SC_REPLICATION_FRAME_PACKET::_internal_servertick() const {
+inline bool SC_PARTY_UI_BOOTSTRAP_PACKET::_internal_hasmyparty() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.servertick_;
+  return _impl_.hasmyparty_;
 }
-inline void SC_REPLICATION_FRAME_PACKET::_internal_set_servertick(::uint32_t value) {
+inline void SC_PARTY_UI_BOOTSTRAP_PACKET::_internal_set_hasmyparty(bool value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.servertick_ = value;
+  _impl_.hasmyparty_ = value;
 }
 
-// repeated .Protocol.SC_ADD_PACKET spawns = 3;
-inline int SC_REPLICATION_FRAME_PACKET::_internal_spawns_size() const {
-  return _internal_spawns().size();
+// .Protocol.PartySnapshot myParty = 3;
+inline bool SC_PARTY_UI_BOOTSTRAP_PACKET::has_myparty() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.myparty_ != nullptr);
+  return value;
 }
-inline int SC_REPLICATION_FRAME_PACKET::spawns_size() const {
-  return _internal_spawns_size();
+inline const ::Protocol::PartySnapshot& SC_PARTY_UI_BOOTSTRAP_PACKET::_internal_myparty() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Protocol::PartySnapshot* p = _impl_.myparty_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::PartySnapshot&>(::Protocol::_PartySnapshot_default_instance_);
 }
-inline void SC_REPLICATION_FRAME_PACKET::clear_spawns() {
+inline const ::Protocol::PartySnapshot& SC_PARTY_UI_BOOTSTRAP_PACKET::myparty() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.myParty)
+  return _internal_myparty();
+}
+inline void SC_PARTY_UI_BOOTSTRAP_PACKET::unsafe_arena_set_allocated_myparty(::Protocol::PartySnapshot* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.spawns_.Clear();
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.myparty_);
+  }
+  _impl_.myparty_ = reinterpret_cast<::Protocol::PartySnapshot*>(value);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.myParty)
 }
-inline ::Protocol::SC_ADD_PACKET* SC_REPLICATION_FRAME_PACKET::mutable_spawns(int index)
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable:Protocol.SC_REPLICATION_FRAME_PACKET.spawns)
-  return _internal_mutable_spawns()->Mutable(index);
-}
-inline ::google::protobuf::RepeatedPtrField<::Protocol::SC_ADD_PACKET>* SC_REPLICATION_FRAME_PACKET::mutable_spawns()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable_list:Protocol.SC_REPLICATION_FRAME_PACKET.spawns)
+inline ::Protocol::PartySnapshot* SC_PARTY_UI_BOOTSTRAP_PACKET::release_myparty() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _internal_mutable_spawns();
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::PartySnapshot* released = _impl_.myparty_;
+  _impl_.myparty_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
 }
-inline const ::Protocol::SC_ADD_PACKET& SC_REPLICATION_FRAME_PACKET::spawns(int index) const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:Protocol.SC_REPLICATION_FRAME_PACKET.spawns)
-  return _internal_spawns().Get(index);
-}
-inline ::Protocol::SC_ADD_PACKET* SC_REPLICATION_FRAME_PACKET::add_spawns() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline ::Protocol::PartySnapshot* SC_PARTY_UI_BOOTSTRAP_PACKET::unsafe_arena_release_myparty() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::Protocol::SC_ADD_PACKET* _add = _internal_mutable_spawns()->Add();
-  // @@protoc_insertion_point(field_add:Protocol.SC_REPLICATION_FRAME_PACKET.spawns)
+  // @@protoc_insertion_point(field_release:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.myParty)
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::PartySnapshot* temp = _impl_.myparty_;
+  _impl_.myparty_ = nullptr;
+  return temp;
+}
+inline ::Protocol::PartySnapshot* SC_PARTY_UI_BOOTSTRAP_PACKET::_internal_mutable_myparty() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.myparty_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::PartySnapshot>(GetArena());
+    _impl_.myparty_ = reinterpret_cast<::Protocol::PartySnapshot*>(p);
+  }
+  return _impl_.myparty_;
+}
+inline ::Protocol::PartySnapshot* SC_PARTY_UI_BOOTSTRAP_PACKET::mutable_myparty() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  ::Protocol::PartySnapshot* _msg = _internal_mutable_myparty();
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.myParty)
+  return _msg;
+}
+inline void SC_PARTY_UI_BOOTSTRAP_PACKET::set_allocated_myparty(::Protocol::PartySnapshot* value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.myparty_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = reinterpret_cast<::google::protobuf::MessageLite*>(value)->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+
+  _impl_.myparty_ = reinterpret_cast<::Protocol::PartySnapshot*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.myParty)
+}
+
+// repeated .Protocol.PartyListEntry parties = 4;
+inline int SC_PARTY_UI_BOOTSTRAP_PACKET::_internal_parties_size() const {
+  return _internal_parties().size();
+}
+inline int SC_PARTY_UI_BOOTSTRAP_PACKET::parties_size() const {
+  return _internal_parties_size();
+}
+inline ::Protocol::PartyListEntry* SC_PARTY_UI_BOOTSTRAP_PACKET::mutable_parties(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.parties)
+  return _internal_mutable_parties()->Mutable(index);
+}
+inline ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>* SC_PARTY_UI_BOOTSTRAP_PACKET::mutable_parties()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable_list:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.parties)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_parties();
+}
+inline const ::Protocol::PartyListEntry& SC_PARTY_UI_BOOTSTRAP_PACKET::parties(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.parties)
+  return _internal_parties().Get(index);
+}
+inline ::Protocol::PartyListEntry* SC_PARTY_UI_BOOTSTRAP_PACKET::add_parties() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::Protocol::PartyListEntry* _add = _internal_mutable_parties()->Add();
+  // @@protoc_insertion_point(field_add:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.parties)
   return _add;
 }
-inline const ::google::protobuf::RepeatedPtrField<::Protocol::SC_ADD_PACKET>& SC_REPLICATION_FRAME_PACKET::spawns() const
+inline const ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>& SC_PARTY_UI_BOOTSTRAP_PACKET::parties() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_list:Protocol.SC_REPLICATION_FRAME_PACKET.spawns)
-  return _internal_spawns();
+  // @@protoc_insertion_point(field_list:Protocol.SC_PARTY_UI_BOOTSTRAP_PACKET.parties)
+  return _internal_parties();
 }
-inline const ::google::protobuf::RepeatedPtrField<::Protocol::SC_ADD_PACKET>&
-SC_REPLICATION_FRAME_PACKET::_internal_spawns() const {
+inline const ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>&
+SC_PARTY_UI_BOOTSTRAP_PACKET::_internal_parties() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.spawns_;
+  return _impl_.parties_;
 }
-inline ::google::protobuf::RepeatedPtrField<::Protocol::SC_ADD_PACKET>*
-SC_REPLICATION_FRAME_PACKET::_internal_mutable_spawns() {
+inline ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>*
+SC_PARTY_UI_BOOTSTRAP_PACKET::_internal_mutable_parties() {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return &_impl_.spawns_;
+  return &_impl_.parties_;
 }
 
-// repeated .Protocol.SC_REMOVE_PACKET despawns = 4;
-inline int SC_REPLICATION_FRAME_PACKET::_internal_despawns_size() const {
-  return _internal_despawns().size();
-}
-inline int SC_REPLICATION_FRAME_PACKET::despawns_size() const {
-  return _internal_despawns_size();
-}
-inline void SC_REPLICATION_FRAME_PACKET::clear_despawns() {
+// -------------------------------------------------------------------
+
+// SC_PARTY_LIST_SNAPSHOT_PACKET
+
+// uint32 clientRequestId = 1;
+inline void SC_PARTY_LIST_SNAPSHOT_PACKET::clear_clientrequestid() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.despawns_.Clear();
+  _impl_.clientrequestid_ = 0u;
 }
-inline ::Protocol::SC_REMOVE_PACKET* SC_REPLICATION_FRAME_PACKET::mutable_despawns(int index)
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable:Protocol.SC_REPLICATION_FRAME_PACKET.despawns)
-  return _internal_mutable_despawns()->Mutable(index);
+inline ::uint32_t SC_PARTY_LIST_SNAPSHOT_PACKET::clientrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_LIST_SNAPSHOT_PACKET.clientRequestId)
+  return _internal_clientrequestid();
 }
-inline ::google::protobuf::RepeatedPtrField<::Protocol::SC_REMOVE_PACKET>* SC_REPLICATION_FRAME_PACKET::mutable_despawns()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable_list:Protocol.SC_REPLICATION_FRAME_PACKET.despawns)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _internal_mutable_despawns();
+inline void SC_PARTY_LIST_SNAPSHOT_PACKET::set_clientrequestid(::uint32_t value) {
+  _internal_set_clientrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_LIST_SNAPSHOT_PACKET.clientRequestId)
 }
-inline const ::Protocol::SC_REMOVE_PACKET& SC_REPLICATION_FRAME_PACKET::despawns(int index) const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:Protocol.SC_REPLICATION_FRAME_PACKET.despawns)
-  return _internal_despawns().Get(index);
-}
-inline ::Protocol::SC_REMOVE_PACKET* SC_REPLICATION_FRAME_PACKET::add_despawns() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::Protocol::SC_REMOVE_PACKET* _add = _internal_mutable_despawns()->Add();
-  // @@protoc_insertion_point(field_add:Protocol.SC_REPLICATION_FRAME_PACKET.despawns)
-  return _add;
-}
-inline const ::google::protobuf::RepeatedPtrField<::Protocol::SC_REMOVE_PACKET>& SC_REPLICATION_FRAME_PACKET::despawns() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_list:Protocol.SC_REPLICATION_FRAME_PACKET.despawns)
-  return _internal_despawns();
-}
-inline const ::google::protobuf::RepeatedPtrField<::Protocol::SC_REMOVE_PACKET>&
-SC_REPLICATION_FRAME_PACKET::_internal_despawns() const {
+inline ::uint32_t SC_PARTY_LIST_SNAPSHOT_PACKET::_internal_clientrequestid() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.despawns_;
+  return _impl_.clientrequestid_;
 }
-inline ::google::protobuf::RepeatedPtrField<::Protocol::SC_REMOVE_PACKET>*
-SC_REPLICATION_FRAME_PACKET::_internal_mutable_despawns() {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return &_impl_.despawns_;
+inline void SC_PARTY_LIST_SNAPSHOT_PACKET::_internal_set_clientrequestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = value;
 }
 
-// repeated .Protocol.SC_MOVE_PACKET moves = 5;
-inline int SC_REPLICATION_FRAME_PACKET::_internal_moves_size() const {
-  return _internal_moves().size();
+// repeated .Protocol.PartyListEntry parties = 2;
+inline int SC_PARTY_LIST_SNAPSHOT_PACKET::_internal_parties_size() const {
+  return _internal_parties().size();
 }
-inline int SC_REPLICATION_FRAME_PACKET::moves_size() const {
-  return _internal_moves_size();
+inline int SC_PARTY_LIST_SNAPSHOT_PACKET::parties_size() const {
+  return _internal_parties_size();
 }
-inline void SC_REPLICATION_FRAME_PACKET::clear_moves() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.moves_.Clear();
-}
-inline ::Protocol::SC_MOVE_PACKET* SC_REPLICATION_FRAME_PACKET::mutable_moves(int index)
+inline ::Protocol::PartyListEntry* SC_PARTY_LIST_SNAPSHOT_PACKET::mutable_parties(int index)
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable:Protocol.SC_REPLICATION_FRAME_PACKET.moves)
-  return _internal_mutable_moves()->Mutable(index);
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_PARTY_LIST_SNAPSHOT_PACKET.parties)
+  return _internal_mutable_parties()->Mutable(index);
 }
-inline ::google::protobuf::RepeatedPtrField<::Protocol::SC_MOVE_PACKET>* SC_REPLICATION_FRAME_PACKET::mutable_moves()
+inline ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>* SC_PARTY_LIST_SNAPSHOT_PACKET::mutable_parties()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable_list:Protocol.SC_REPLICATION_FRAME_PACKET.moves)
+  // @@protoc_insertion_point(field_mutable_list:Protocol.SC_PARTY_LIST_SNAPSHOT_PACKET.parties)
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _internal_mutable_moves();
+  return _internal_mutable_parties();
 }
-inline const ::Protocol::SC_MOVE_PACKET& SC_REPLICATION_FRAME_PACKET::moves(int index) const
+inline const ::Protocol::PartyListEntry& SC_PARTY_LIST_SNAPSHOT_PACKET::parties(int index) const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:Protocol.SC_REPLICATION_FRAME_PACKET.moves)
-  return _internal_moves().Get(index);
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_LIST_SNAPSHOT_PACKET.parties)
+  return _internal_parties().Get(index);
 }
-inline ::Protocol::SC_MOVE_PACKET* SC_REPLICATION_FRAME_PACKET::add_moves() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline ::Protocol::PartyListEntry* SC_PARTY_LIST_SNAPSHOT_PACKET::add_parties() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::Protocol::SC_MOVE_PACKET* _add = _internal_mutable_moves()->Add();
-  // @@protoc_insertion_point(field_add:Protocol.SC_REPLICATION_FRAME_PACKET.moves)
+  ::Protocol::PartyListEntry* _add = _internal_mutable_parties()->Add();
+  // @@protoc_insertion_point(field_add:Protocol.SC_PARTY_LIST_SNAPSHOT_PACKET.parties)
   return _add;
 }
-inline const ::google::protobuf::RepeatedPtrField<::Protocol::SC_MOVE_PACKET>& SC_REPLICATION_FRAME_PACKET::moves() const
+inline const ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>& SC_PARTY_LIST_SNAPSHOT_PACKET::parties() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_list:Protocol.SC_REPLICATION_FRAME_PACKET.moves)
-  return _internal_moves();
+  // @@protoc_insertion_point(field_list:Protocol.SC_PARTY_LIST_SNAPSHOT_PACKET.parties)
+  return _internal_parties();
 }
-inline const ::google::protobuf::RepeatedPtrField<::Protocol::SC_MOVE_PACKET>&
-SC_REPLICATION_FRAME_PACKET::_internal_moves() const {
+inline const ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>&
+SC_PARTY_LIST_SNAPSHOT_PACKET::_internal_parties() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.moves_;
+  return _impl_.parties_;
 }
-inline ::google::protobuf::RepeatedPtrField<::Protocol::SC_MOVE_PACKET>*
-SC_REPLICATION_FRAME_PACKET::_internal_mutable_moves() {
+inline ::google::protobuf::RepeatedPtrField<::Protocol::PartyListEntry>*
+SC_PARTY_LIST_SNAPSHOT_PACKET::_internal_mutable_parties() {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return &_impl_.moves_;
+  return &_impl_.parties_;
 }
 
-// repeated .Protocol.SC_ANIMATION_TRANSITION_PACKET anims = 6;
-inline int SC_REPLICATION_FRAME_PACKET::_internal_anims_size() const {
-  return _internal_anims().size();
-}
-inline int SC_REPLICATION_FRAME_PACKET::anims_size() const {
-  return _internal_anims_size();
-}
-inline void SC_REPLICATION_FRAME_PACKET::clear_anims() {
+// -------------------------------------------------------------------
+
+// SC_PARTY_COMMAND_RESULT_PACKET
+
+// uint32 clientRequestId = 1;
+inline void SC_PARTY_COMMAND_RESULT_PACKET::clear_clientrequestid() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.anims_.Clear();
+  _impl_.clientrequestid_ = 0u;
 }
-inline ::Protocol::SC_ANIMATION_TRANSITION_PACKET* SC_REPLICATION_FRAME_PACKET::mutable_anims(int index)
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable:Protocol.SC_REPLICATION_FRAME_PACKET.anims)
-  return _internal_mutable_anims()->Mutable(index);
+inline ::uint32_t SC_PARTY_COMMAND_RESULT_PACKET::clientrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_COMMAND_RESULT_PACKET.clientRequestId)
+  return _internal_clientrequestid();
 }
-inline ::google::protobuf::RepeatedPtrField<::Protocol::SC_ANIMATION_TRANSITION_PACKET>* SC_REPLICATION_FRAME_PACKET::mutable_anims()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable_list:Protocol.SC_REPLICATION_FRAME_PACKET.anims)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _internal_mutable_anims();
+inline void SC_PARTY_COMMAND_RESULT_PACKET::set_clientrequestid(::uint32_t value) {
+  _internal_set_clientrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_COMMAND_RESULT_PACKET.clientRequestId)
 }
-inline const ::Protocol::SC_ANIMATION_TRANSITION_PACKET& SC_REPLICATION_FRAME_PACKET::anims(int index) const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:Protocol.SC_REPLICATION_FRAME_PACKET.anims)
-  return _internal_anims().Get(index);
-}
-inline ::Protocol::SC_ANIMATION_TRANSITION_PACKET* SC_REPLICATION_FRAME_PACKET::add_anims() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::Protocol::SC_ANIMATION_TRANSITION_PACKET* _add = _internal_mutable_anims()->Add();
-  // @@protoc_insertion_point(field_add:Protocol.SC_REPLICATION_FRAME_PACKET.anims)
-  return _add;
-}
-inline const ::google::protobuf::RepeatedPtrField<::Protocol::SC_ANIMATION_TRANSITION_PACKET>& SC_REPLICATION_FRAME_PACKET::anims() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_list:Protocol.SC_REPLICATION_FRAME_PACKET.anims)
-  return _internal_anims();
-}
-inline const ::google::protobuf::RepeatedPtrField<::Protocol::SC_ANIMATION_TRANSITION_PACKET>&
-SC_REPLICATION_FRAME_PACKET::_internal_anims() const {
+inline ::uint32_t SC_PARTY_COMMAND_RESULT_PACKET::_internal_clientrequestid() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.anims_;
+  return _impl_.clientrequestid_;
 }
-inline ::google::protobuf::RepeatedPtrField<::Protocol::SC_ANIMATION_TRANSITION_PACKET>*
-SC_REPLICATION_FRAME_PACKET::_internal_mutable_anims() {
+inline void SC_PARTY_COMMAND_RESULT_PACKET::_internal_set_clientrequestid(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.clientrequestid_ = value;
+}
+
+// bool success = 2;
+inline void SC_PARTY_COMMAND_RESULT_PACKET::clear_success() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.success_ = false;
+}
+inline bool SC_PARTY_COMMAND_RESULT_PACKET::success() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_COMMAND_RESULT_PACKET.success)
+  return _internal_success();
+}
+inline void SC_PARTY_COMMAND_RESULT_PACKET::set_success(bool value) {
+  _internal_set_success(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_COMMAND_RESULT_PACKET.success)
+}
+inline bool SC_PARTY_COMMAND_RESULT_PACKET::_internal_success() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return &_impl_.anims_;
+  return _impl_.success_;
+}
+inline void SC_PARTY_COMMAND_RESULT_PACKET::_internal_set_success(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.success_ = value;
+}
+
+// uint32 error = 3;
+inline void SC_PARTY_COMMAND_RESULT_PACKET::clear_error() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.error_ = 0u;
+}
+inline ::uint32_t SC_PARTY_COMMAND_RESULT_PACKET::error() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_COMMAND_RESULT_PACKET.error)
+  return _internal_error();
+}
+inline void SC_PARTY_COMMAND_RESULT_PACKET::set_error(::uint32_t value) {
+  _internal_set_error(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_COMMAND_RESULT_PACKET.error)
+}
+inline ::uint32_t SC_PARTY_COMMAND_RESULT_PACKET::_internal_error() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.error_;
+}
+inline void SC_PARTY_COMMAND_RESULT_PACKET::_internal_set_error(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.error_ = value;
+}
+
+// uint64 partyId = 4;
+inline void SC_PARTY_COMMAND_RESULT_PACKET::clear_partyid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.partyid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_PARTY_COMMAND_RESULT_PACKET::partyid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_COMMAND_RESULT_PACKET.partyId)
+  return _internal_partyid();
+}
+inline void SC_PARTY_COMMAND_RESULT_PACKET::set_partyid(::uint64_t value) {
+  _internal_set_partyid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_COMMAND_RESULT_PACKET.partyId)
+}
+inline ::uint64_t SC_PARTY_COMMAND_RESULT_PACKET::_internal_partyid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.partyid_;
+}
+inline void SC_PARTY_COMMAND_RESULT_PACKET::_internal_set_partyid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.partyid_ = value;
+}
+
+// uint64 joinRequestId = 5;
+inline void SC_PARTY_COMMAND_RESULT_PACKET::clear_joinrequestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.joinrequestid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_PARTY_COMMAND_RESULT_PACKET::joinrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_COMMAND_RESULT_PACKET.joinRequestId)
+  return _internal_joinrequestid();
+}
+inline void SC_PARTY_COMMAND_RESULT_PACKET::set_joinrequestid(::uint64_t value) {
+  _internal_set_joinrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_COMMAND_RESULT_PACKET.joinRequestId)
+}
+inline ::uint64_t SC_PARTY_COMMAND_RESULT_PACKET::_internal_joinrequestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.joinrequestid_;
+}
+inline void SC_PARTY_COMMAND_RESULT_PACKET::_internal_set_joinrequestid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.joinrequestid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_PARTY_SNAPSHOT_PACKET
+
+// .Protocol.PartySnapshot party = 1;
+inline bool SC_PARTY_SNAPSHOT_PACKET::has_party() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.party_ != nullptr);
+  return value;
+}
+inline const ::Protocol::PartySnapshot& SC_PARTY_SNAPSHOT_PACKET::_internal_party() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Protocol::PartySnapshot* p = _impl_.party_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::PartySnapshot&>(::Protocol::_PartySnapshot_default_instance_);
+}
+inline const ::Protocol::PartySnapshot& SC_PARTY_SNAPSHOT_PACKET::party() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_SNAPSHOT_PACKET.party)
+  return _internal_party();
+}
+inline void SC_PARTY_SNAPSHOT_PACKET::unsafe_arena_set_allocated_party(::Protocol::PartySnapshot* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.party_);
+  }
+  _impl_.party_ = reinterpret_cast<::Protocol::PartySnapshot*>(value);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_PARTY_SNAPSHOT_PACKET.party)
+}
+inline ::Protocol::PartySnapshot* SC_PARTY_SNAPSHOT_PACKET::release_party() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::PartySnapshot* released = _impl_.party_;
+  _impl_.party_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Protocol::PartySnapshot* SC_PARTY_SNAPSHOT_PACKET::unsafe_arena_release_party() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.SC_PARTY_SNAPSHOT_PACKET.party)
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::PartySnapshot* temp = _impl_.party_;
+  _impl_.party_ = nullptr;
+  return temp;
+}
+inline ::Protocol::PartySnapshot* SC_PARTY_SNAPSHOT_PACKET::_internal_mutable_party() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.party_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::PartySnapshot>(GetArena());
+    _impl_.party_ = reinterpret_cast<::Protocol::PartySnapshot*>(p);
+  }
+  return _impl_.party_;
+}
+inline ::Protocol::PartySnapshot* SC_PARTY_SNAPSHOT_PACKET::mutable_party() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  ::Protocol::PartySnapshot* _msg = _internal_mutable_party();
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_PARTY_SNAPSHOT_PACKET.party)
+  return _msg;
+}
+inline void SC_PARTY_SNAPSHOT_PACKET::set_allocated_party(::Protocol::PartySnapshot* value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.party_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = reinterpret_cast<::google::protobuf::MessageLite*>(value)->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+
+  _impl_.party_ = reinterpret_cast<::Protocol::PartySnapshot*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_PARTY_SNAPSHOT_PACKET.party)
+}
+
+// -------------------------------------------------------------------
+
+// SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET
+
+// uint64 partyId = 1;
+inline void SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::clear_partyid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.partyid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::partyid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET.partyId)
+  return _internal_partyid();
+}
+inline void SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::set_partyid(::uint64_t value) {
+  _internal_set_partyid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET.partyId)
+}
+inline ::uint64_t SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::_internal_partyid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.partyid_;
+}
+inline void SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::_internal_set_partyid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.partyid_ = value;
+}
+
+// .Protocol.PartyJoinRequest request = 2;
+inline bool SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::has_request() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.request_ != nullptr);
+  return value;
+}
+inline const ::Protocol::PartyJoinRequest& SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::_internal_request() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::Protocol::PartyJoinRequest* p = _impl_.request_;
+  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::PartyJoinRequest&>(::Protocol::_PartyJoinRequest_default_instance_);
+}
+inline const ::Protocol::PartyJoinRequest& SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::request() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET.request)
+  return _internal_request();
+}
+inline void SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::unsafe_arena_set_allocated_request(::Protocol::PartyJoinRequest* value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.request_);
+  }
+  _impl_.request_ = reinterpret_cast<::Protocol::PartyJoinRequest*>(value);
+  if (value != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET.request)
+}
+inline ::Protocol::PartyJoinRequest* SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::release_request() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::PartyJoinRequest* released = _impl_.request_;
+  _impl_.request_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::Protocol::PartyJoinRequest* SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::unsafe_arena_release_request() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:Protocol.SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET.request)
+
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::Protocol::PartyJoinRequest* temp = _impl_.request_;
+  _impl_.request_ = nullptr;
+  return temp;
+}
+inline ::Protocol::PartyJoinRequest* SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::_internal_mutable_request() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.request_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::Protocol::PartyJoinRequest>(GetArena());
+    _impl_.request_ = reinterpret_cast<::Protocol::PartyJoinRequest*>(p);
+  }
+  return _impl_.request_;
+}
+inline ::Protocol::PartyJoinRequest* SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::mutable_request() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  ::Protocol::PartyJoinRequest* _msg = _internal_mutable_request();
+  // @@protoc_insertion_point(field_mutable:Protocol.SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET.request)
+  return _msg;
+}
+inline void SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET::set_allocated_request(::Protocol::PartyJoinRequest* value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.request_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = reinterpret_cast<::google::protobuf::MessageLite*>(value)->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+
+  _impl_.request_ = reinterpret_cast<::Protocol::PartyJoinRequest*>(value);
+  // @@protoc_insertion_point(field_set_allocated:Protocol.SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET.request)
+}
+
+// -------------------------------------------------------------------
+
+// SC_PARTY_JOIN_REQUEST_CLOSED_PACKET
+
+// uint64 partyId = 1;
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::clear_partyid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.partyid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::partyid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET.partyId)
+  return _internal_partyid();
+}
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::set_partyid(::uint64_t value) {
+  _internal_set_partyid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET.partyId)
+}
+inline ::uint64_t SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::_internal_partyid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.partyid_;
+}
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::_internal_set_partyid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.partyid_ = value;
+}
+
+// uint64 joinRequestId = 2;
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::clear_joinrequestid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.joinrequestid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::joinrequestid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET.joinRequestId)
+  return _internal_joinrequestid();
+}
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::set_joinrequestid(::uint64_t value) {
+  _internal_set_joinrequestid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET.joinRequestId)
+}
+inline ::uint64_t SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::_internal_joinrequestid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.joinrequestid_;
+}
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::_internal_set_joinrequestid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.joinrequestid_ = value;
+}
+
+// .Protocol.PartyJoinRequestCloseReason reason = 3;
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::clear_reason() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reason_ = 0;
+}
+inline ::Protocol::PartyJoinRequestCloseReason SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::reason() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET.reason)
+  return _internal_reason();
+}
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::set_reason(::Protocol::PartyJoinRequestCloseReason value) {
+  _internal_set_reason(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET.reason)
+}
+inline ::Protocol::PartyJoinRequestCloseReason SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::_internal_reason() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::Protocol::PartyJoinRequestCloseReason>(_impl_.reason_);
+}
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::_internal_set_reason(::Protocol::PartyJoinRequestCloseReason value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.reason_ = value;
+}
+
+// .Protocol.PartyJoinRequestState state = 4;
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::clear_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_ = 0;
+}
+inline ::Protocol::PartyJoinRequestState SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::state() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET.state)
+  return _internal_state();
+}
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::set_state(::Protocol::PartyJoinRequestState value) {
+  _internal_set_state(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_PARTY_JOIN_REQUEST_CLOSED_PACKET.state)
+}
+inline ::Protocol::PartyJoinRequestState SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::_internal_state() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::Protocol::PartyJoinRequestState>(_impl_.state_);
+}
+inline void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::_internal_set_state(::Protocol::PartyJoinRequestState value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_ = value;
 }
 
 #ifdef __GNUC__
@@ -6920,19 +9785,6 @@ SC_REPLICATION_FRAME_PACKET::_internal_mutable_anims() {
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace Protocol
 
-
-namespace google {
-namespace protobuf {
-
-template <>
-struct is_proto_enum<::Protocol::AttackInputType> : std::true_type {};
-template <>
-inline const EnumDescriptor* GetEnumDescriptor<::Protocol::AttackInputType>() {
-  return ::Protocol::AttackInputType_descriptor();
-}
-
-}  // namespace protobuf
-}  // namespace google
 
 // @@protoc_insertion_point(global_scope)
 

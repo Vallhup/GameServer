@@ -1,6 +1,8 @@
 syntax = "proto3";
 package Protocol;
 
+import "DTO.proto";
+
 /* ------------------------------ [ Client -> Server ]  ------------------------------ */
 
 message CS_LOGIN_PACKET
@@ -21,12 +23,6 @@ message CS_MOVE_PACKET
 	int32 inputZ = 2;
 	float yaw = 3;
 	bool isRun = 4;
-}
-
-enum AttackInputType
-{
-	ATTACK_INPUT_LIGHT = 0;
-	ATTACK_INPUT_HEAVY = 1;
 }
 
 message CS_ATTACK_PACKET
@@ -72,6 +68,39 @@ message CS_WORLD_TRANSITION_REQUEST_PACKET
 message CS_WORLD_TRANSITION_READY_PACKET
 {
 	uint64 transferId = 1;
+}
+
+message CS_PARTY_UI_OPENED_PACKET
+{
+	uint32 clientRequestId = 1;
+}
+
+message CS_PARTY_LIST_REFRESH_PACKET
+{
+	uint32 clientRequestId = 1;
+}
+
+message CS_PARTY_CREATE_PACKET
+{
+	uint32 clientRequestId = 1;
+}
+
+message CS_PARTY_JOIN_REQUEST_PACKET
+{
+	uint32 clientRequestId = 1;
+	uint64 partyId = 2;
+}
+
+message CS_PARTY_JOIN_ACCEPT_PACKET
+{
+	uint32 clientRequestId = 1;
+	uint64 joinRequestId = 2;
+}
+
+message CS_PARTY_JOIN_REJECT_PACKET
+{
+	uint32 clientRequestId = 1;
+	uint64 joinRequestId = 2;
 }
 
 /* ------------------------------ [ Server -> Client ]  ------------------------------ */
@@ -174,14 +203,44 @@ message SC_WORLD_TRANSITION_REJECTED_PACKET
 	uint32 reason = 2;
 }
 
-message SC_REPLICATION_FRAME_PACKET
+message SC_PARTY_UI_BOOTSTRAP_PACKET
 {
-	uint32 frameSeq = 1;
-	uint32 serverTick = 2;
+	uint32 clientRequestId = 1;
+	bool hasMyParty = 2;
+	PartySnapshot myParty = 3;
+	repeated PartyListEntry parties = 4;
+}
 
-	repeated SC_ADD_PACKET spawns = 3;
-	repeated SC_REMOVE_PACKET despawns = 4;
+message SC_PARTY_LIST_SNAPSHOT_PACKET
+{
+	uint32 clientRequestId = 1;
+	repeated PartyListEntry parties = 2;
+}
 
-	repeated SC_MOVE_PACKET moves = 5;
-	repeated SC_ANIMATION_TRANSITION_PACKET anims = 6;
+message SC_PARTY_COMMAND_RESULT_PACKET
+{
+	uint32 clientRequestId = 1;
+	bool success = 2;
+	uint32 error = 3;
+	uint64 partyId = 4;
+	uint64 joinRequestId = 5;
+}
+
+message SC_PARTY_SNAPSHOT_PACKET
+{
+	PartySnapshot party = 1;
+}
+
+message SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET
+{
+	uint64 partyId = 1;
+	PartyJoinRequest request = 2;
+}
+
+message SC_PARTY_JOIN_REQUEST_CLOSED_PACKET
+{
+	uint64 partyId = 1;
+	uint64 joinRequestId = 2;
+	PartyJoinRequestCloseReason reason = 3;
+	PartyJoinRequestState state = 4;
 }

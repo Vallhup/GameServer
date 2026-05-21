@@ -1,0 +1,98 @@
+syntax = "proto3";
+package Protocol;
+
+/* ----------------------------------- [ Attack ]  ----------------------------------- */
+
+enum AttackInputType
+{
+	ATTACK_INPUT_LIGHT = 0;
+	ATTACK_INPUT_HEAVY = 1;
+}
+
+/* ------------------------------------ [ Party ]  ------------------------------------ */
+
+enum PartyLifecycle
+{
+	PARTY_LIFECYCLE_FORMING				= 0;
+    PARTY_LIFECYCLE_WORLD_ENTRY_PENDING = 1;
+    PARTY_LIFECYCLE_IN_WORLD			= 2;
+    PARTY_LIFECYCLE_DISBANDED			= 3;
+}
+
+enum PartyMemberRole
+{
+	PARTY_MEMBER_ROLE_LEADER = 0;
+	PARTY_MEMBER_ROLE_MEMBER = 1;
+}
+
+enum PartyMemberPresence
+{
+	PARTY_MEMBER_PRESENCE_ONLINE  = 0;
+	PARTY_MEMBER_PRESENCE_OFFLINE = 1;
+}
+
+enum PartyJoinRequestState
+{
+	PARTY_JOIN_REQUEST_PENDING   = 0;
+    PARTY_JOIN_REQUEST_ACCEPTED	 = 1;
+    PARTY_JOIN_REQUEST_REJECTED	 = 2;
+    PARTY_JOIN_REQUEST_CANCELLED = 3;
+    PARTY_JOIN_REQUEST_EXPIRED	 = 4;
+}
+
+enum PartyJoinRequestCloseReason
+{
+	PARTY_CLOSE_NONE						 = 0;
+    PARTY_CLOSE_ACCEPTED					 = 1;
+    PARTY_CLOSE_REJECTED_BY_LEADER			 = 2;
+    PARTY_CLOSE_CANCELLED_BY_REQUESTER		 = 3;
+    PARTY_CLOSE_EXPIRED						 = 4;
+    PARTY_CLOSE_PARTY_FULL					 = 5;
+    PARTY_CLOSE_PARTY_ENTERED_WORLD			 = 6;
+    PARTY_CLOSE_REQUESTER_JOINED_OTHER_PARTY = 7;
+    PARTY_CLOSE_PARTY_DISBANDED				 = 8;
+}
+
+message PartyMember
+{
+	uint32 sessionId = 1;
+	uint64 accountId = 2;
+	uint64 netId = 3;
+	PartyMemberRole role = 4;
+	PartyMemberPresence presence = 5;
+}
+
+message PartyJoinRequest
+{
+	uint64 joinRequestId = 1;
+	uint64 partyId = 2;
+	uint32 requesterSessionId = 3;
+	uint64 requesterAccountId = 4;
+	PartyJoinRequestState state = 5;
+	PartyJoinRequestCloseReason closeReason = 6;
+	double createdAtSec = 7;
+	double expiresAtSec = 8;
+	double closedAtSec = 9;
+}
+
+message PartySnapshot
+{
+	uint64 partyId = 1;
+	PartyLifecycle lifecycle = 2;
+	uint32 leaderSessionId = 3;
+	repeated PartyMember members = 4;
+	repeated PartyJoinRequest joinRequests = 5;
+	double createdAtSec = 6;
+	bool joinable = 7;
+}
+
+message PartyListEntry
+{
+	uint64 partyId = 1;
+	uint32 leaderSessionId = 2;
+	uint32 memberCount = 3;
+	uint32 capacity = 4;
+	PartyLifecycle lifecycle = 5;
+	double createdAtSec = 6;
+	bool joinable = 7;
+}

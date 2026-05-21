@@ -9,7 +9,8 @@
 template<typename T>
 concept ProtoT = std::is_base_of_v<class google::protobuf::MessageLite, T>;
 
-struct PacketFactory {
+struct PacketFactory 
+{
 	template<ProtoT T>
 	static SendBuffer* Serialize(PacketType type, const T& data)
 	{
