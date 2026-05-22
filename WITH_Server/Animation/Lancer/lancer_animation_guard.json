@@ -6,7 +6,7 @@
   "numFrames": 300,
   "durationSec": 9.966678,
   "units": "cm",
-  "loop": false,
+  "loop": true,
   "source": "lancer_guard_baked.bone",
   "capsules": [
     {

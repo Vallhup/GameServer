@@ -6,7 +6,7 @@
   "numFrames": 59,
   "durationSec": 1.9333359,
   "units": "cm",
-  "loop": false,
+  "loop": true,
   "source": "paladin_guard_baked.bone",
   "capsules": [
     {
