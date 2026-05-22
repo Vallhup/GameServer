@@ -216,6 +216,7 @@ exit 0</Command>
     <ClCompile Include="AnimationSetFactory.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="BarUI.cpp" />
+    <ClCompile Include="BeaconLightComponent.cpp" />
     <ClCompile Include="BloodImpactComponent.cpp" />
     <ClCompile Include="BloomManager.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -316,6 +317,7 @@ exit 0</Command>
     <ClInclude Include="AnimationSetFactory.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="BarUI.h" />
+    <ClInclude Include="BeaconLightComponent.h" />
     <ClInclude Include="BloodImpactComponent.h" />
     <ClInclude Include="BloomManager.h" />
     <ClInclude Include="Camera.h" />

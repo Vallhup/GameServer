@@ -53,7 +53,9 @@ void MainCharacter::BasicAttack()
 {
 	auto& input = INPUT;
 
-	const bool currentAttack = input.GetMouseButton(MouseButton::LEFT);
+	const bool rawLeft = input.GetMouseButton(MouseButton::LEFT);
+	const bool cursorActive = camera && camera->IsCursorActive();
+	const bool currentAttack = rawLeft && !cursorActive;
 	const bool currentHeavyAttack = input.GetKeyDown('C');
 	const bool shouldSendAttack = (currentAttack && !prevAttack) || currentHeavyAttack;
 	const Protocol::AttackInputType attackType = 
@@ -89,7 +91,7 @@ void MainCharacter::BasicAttack()
 		}
 	}
 
-	prevAttack = currentAttack;
+	prevAttack = rawLeft;
 }
 
 void MainCharacter::BasicDodge()
@@ -133,7 +135,9 @@ void MainCharacter::BasicParry()
 {
 	auto& input = INPUT;
 
-	bool currentParry = input.GetMouseButton(MouseButton::RIGHT);
+	const bool rawRight = input.GetMouseButton(MouseButton::RIGHT);
+	const bool cursorActive = camera && camera->IsCursorActive();
+	const bool currentParry = rawRight && !cursorActive;
 
 	if (currentParry && !prevParry)
 	{
@@ -143,7 +147,7 @@ void MainCharacter::BasicParry()
 		}
 	}
 
-	prevParry = currentParry;
+	prevParry = rawRight;
 }
 
 void MainCharacter::BasicDrinking()
