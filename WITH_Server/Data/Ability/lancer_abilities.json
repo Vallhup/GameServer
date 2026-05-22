@@ -112,8 +112,8 @@
             "cause": "Combo",
             "toAbilityKey": "Ability.Lancer_LightAttack2",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.45,
-            "windowEndNormalized": 0.75,
+            "windowStartNormalized": 0.68,
+            "windowEndNormalized": 0.92,
             "priority": 100,
             "aiInterruptible": false
           },
@@ -121,8 +121,8 @@
             "cause": "DodgeCancel",
             "toAbilityKey": "Ability.Lancer_Dodge",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.5,
-            "windowEndNormalized": 0.8,
+            "windowStartNormalized": 0.72,
+            "windowEndNormalized": 0.94,
             "priority": 90,
             "aiInterruptible": false
           }
@@ -228,8 +228,8 @@
             "cause": "Combo",
             "toAbilityKey": "Ability.Lancer_LightAttack3",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.48,
-            "windowEndNormalized": 0.78,
+            "windowStartNormalized": 0.72,
+            "windowEndNormalized": 0.93,
             "priority": 100,
             "aiInterruptible": false
           },
@@ -237,8 +237,8 @@
             "cause": "DodgeCancel",
             "toAbilityKey": "Ability.Lancer_Dodge",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.55,
-            "windowEndNormalized": 0.85,
+            "windowStartNormalized": 0.76,
+            "windowEndNormalized": 0.95,
             "priority": 90,
             "aiInterruptible": false
           }
@@ -357,8 +357,8 @@
             "cause": "DodgeCancel",
             "toAbilityKey": "Ability.Lancer_Dodge",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.62,
-            "windowEndNormalized": 0.88,
+            "windowStartNormalized": 0.78,
+            "windowEndNormalized": 0.95,
             "priority": 90,
             "aiInterruptible": false
           }
@@ -669,7 +669,17 @@
             "aiInterruptible": false
           }
         ],
-        "cancelRules": []
+        "cancelRules": [
+          {
+            "cause": "DodgeCancel",
+            "toAbilityKey": "Ability.Lancer_Dodge",
+            "windowPolicy": "Range",
+            "windowStartNormalized": 0.92,
+            "windowEndNormalized": 1.0,
+            "priority": 90,
+            "aiInterruptible": false
+          }
+        ]
       }
     },
     {
@@ -699,13 +709,13 @@
         }
       ],
       "timeline": {
-        "durationSec": 1.5666666,
+        "durationSec": 1.13333154,
         "policy": "FixedDuration",
         "combatWindows": [
           {
             "kind": "Parry",
-            "startNormalized": 0.3,
-            "endNormalized": 1,
+            "startNormalized": 0.08,
+            "endNormalized": 0.20,
             "applyEffectKey": null,
             "appliesTo": "ParryableAttack",
             "spatialFilter": {
@@ -790,7 +800,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 3.6,
+        "durationSec": 2.39999723,
         "policy": "FixedDuration",
         "combatWindows": [],
         "movementSegments": [],

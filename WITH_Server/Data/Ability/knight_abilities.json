@@ -27,7 +27,7 @@
         }
       ],
       "timeline": {
-        "durationSec": 1.03333473,
+        "durationSec": 0.6666667,
         "policy": "FixedDuration",
         "combatWindows": [
           {
@@ -99,8 +99,8 @@
             "cause": "Combo",
             "toAbilityKey": "Ability.Knight_LightAttack2",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.6,
-            "windowEndNormalized": 0.85,
+            "windowStartNormalized": 0.75,
+            "windowEndNormalized": 0.94,
             "priority": 100,
             "aiInterruptible": false
           },
@@ -108,8 +108,8 @@
             "cause": "DodgeCancel",
             "toAbilityKey": "Ability.Knight_Dodge",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.5,
-            "windowEndNormalized": 0.8,
+            "windowStartNormalized": 0.78,
+            "windowEndNormalized": 0.95,
             "priority": 90,
             "aiInterruptible": false
           }
@@ -143,7 +143,7 @@
         }
       ],
       "timeline": {
-        "durationSec": 1.09999967,
+        "durationSec": 0.7333342,
         "policy": "FixedDuration",
         "combatWindows": [
           {
@@ -228,8 +228,8 @@
             "cause": "Combo",
             "toAbilityKey": "Ability.Knight_LightAttack3",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.60,
-            "windowEndNormalized": 0.90,
+            "windowStartNormalized": 0.76,
+            "windowEndNormalized": 0.95,
             "priority": 100,
             "aiInterruptible": false
           },
@@ -237,8 +237,8 @@
             "cause": "DodgeCancel",
             "toAbilityKey": "Ability.Knight_Dodge",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.55,
-            "windowEndNormalized": 0.85,
+            "windowStartNormalized": 0.80,
+            "windowEndNormalized": 0.95,
             "priority": 90,
             "aiInterruptible": false
           }
@@ -272,7 +272,7 @@
         }
       ],
       "timeline": {
-        "durationSec": 1.30000138,
+        "durationSec": 0.866668,
         "policy": "FixedDuration",
         "combatWindows": [
           {
@@ -357,8 +357,8 @@
             "cause": "DodgeCancel",
             "toAbilityKey": "Ability.Knight_Dodge",
             "windowPolicy": "Range",
-            "windowStartNormalized": 0.62,
-            "windowEndNormalized": 0.88,
+            "windowStartNormalized": 0.82,
+            "windowEndNormalized": 0.96,
             "priority": 90,
             "aiInterruptible": false
           }
@@ -586,7 +586,7 @@
         }
       ],
       "timeline": {
-        "durationSec": 1.53,
+        "durationSec": 1.533332,
         "policy": "FixedDuration",
         "combatWindows": [
           {
@@ -656,7 +656,17 @@
             "aiInterruptible": false
           }
         ],
-        "cancelRules": []
+        "cancelRules": [
+          {
+            "cause": "DodgeCancel",
+            "toAbilityKey": "Ability.Knight_Dodge",
+            "windowPolicy": "Range",
+            "windowStartNormalized": 0.92,
+            "windowEndNormalized": 1.0,
+            "priority": 90,
+            "aiInterruptible": false
+          }
+        ]
       }
     },
     {
@@ -686,13 +696,13 @@
         }
       ],
       "timeline": {
-        "durationSec": 1,
+        "durationSec": 0.599999368,
         "policy": "FixedDuration",
         "combatWindows": [
           {
             "kind": "Parry",
-            "startNormalized": 0.19,
-            "endNormalized": 0.38,
+            "startNormalized": 0.33,
+            "endNormalized": 0.55,
             "applyEffectKey": null,
             "appliesTo": "ParryableAttack",
             "spatialFilter": {
@@ -777,7 +787,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 4.3,
+        "durationSec": 2.23333049,
         "policy": "FixedDuration",
         "combatWindows": [],
         "movementSegments": [],
@@ -958,7 +968,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 3.16,
+        "durationSec": 3.16666555,
         "policy": "FixedDuration",
         "combatWindows": [],
         "movementSegments": [],
@@ -1005,7 +1015,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 1.63,
+        "durationSec": 1.63333571,
         "policy": "FixedDuration",
         "combatWindows": [],
         "movementSegments": [],
@@ -1052,7 +1062,7 @@
       },
       "costs": [],
       "timeline": {
-        "durationSec": 3.86,
+        "durationSec": 3.86666918,
         "policy": "FixedDuration",
         "combatWindows": [],
         "movementSegments": [],
