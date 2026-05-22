@@ -11,6 +11,7 @@ namespace WITH_ServerDataTool.Builders
 			BoneAnimationClipSource animation,
 			CapsuleTemplateDocument template,
 			IReadOnlyCollection<int> weaponBones,
+			IReadOnlyCollection<int> excludedBones,
 			IReadOnlyList<CapsuleRole> defaultRoles,
 			IReadOnlyList<CapsuleRole> weaponRoles,
 			string skeleton,
@@ -31,7 +32,9 @@ namespace WITH_ServerDataTool.Builders
 				Source = source
 			};
 
+			var excludedBoneSet = new HashSet<int>(excludedBones ?? Enumerable.Empty<int>());
 			var sortedCapsules = template.Capsules
+				.Where(entry => !excludedBoneSet.Contains(entry.Bone))
 				.OrderBy(entry => entry.Bone)
 				.ToList();
 

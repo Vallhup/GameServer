@@ -13,6 +13,7 @@
     "defaultRoles": [ "hurt", "guard", "parry" ],
     "weaponRoles": [ "hit", "guard", "parry" ],
     "weaponBones": [ 45, 53 ],
+    "excludedBones": [ 0 ],
     "extremeTrimFraction": 0.03
   },
   "clips": [

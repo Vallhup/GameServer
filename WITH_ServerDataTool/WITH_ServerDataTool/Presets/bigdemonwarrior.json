@@ -13,6 +13,7 @@
         "defaultRoles": [ "hurt" ],
         "weaponRoles": [ "hit" ],
         "weaponBones": [ 6, 28 ], // 6: 왼쪽 손 / 28: 오른쪽 손
+        "excludedBones": [],
         "extremeTrimFraction": 0
     },
     "clips": [

@@ -13,6 +13,7 @@
         "defaultRoles": [ "hurt" ],
         "weaponRoles": [ "hit" ],
         "weaponBones": [ 30, 31 ],
+        "excludedBones": [],
         "extremeTrimFraction": 0
     },
     "clips": [

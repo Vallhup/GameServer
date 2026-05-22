@@ -75,6 +75,7 @@ namespace WITH_ServerDataTool.Cli
 				animation,
 				template,
 				preset.WeaponBones,
+				preset.ExcludedBones,
 				preset.DefaultRoles,
 				preset.WeaponRoles,
 				preset.ObjectName,

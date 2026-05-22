@@ -13,6 +13,7 @@
         "defaultRoles": [ "hurt", "guard", "parry" ],
         "weaponRoles": [ "hit", "guard", "parry" ],
         "weaponBones": [ 25, 45, 53 ],
+        "excludedBones": [ ],
         "extremeTrimFraction": 0.03
     },
     "clips": [
@@ -62,7 +63,7 @@
             "name": "guard",
             "source": "lancer_guard_baked.bone",
             "output": "lancer_animation_guard.json",
-            "loop": false
+            "loop": true
         },
         {
             "name": "hit",

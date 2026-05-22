@@ -36,6 +36,7 @@ namespace WITH_ServerDataTool.Presets
 				DefaultRoles = dto.CapsuleRules.DefaultRoles.Select(ParseRole).ToList(),
 				WeaponRoles = dto.CapsuleRules.WeaponRoles.Select(ParseRole).ToList(),
 				WeaponBones = dto.CapsuleRules.WeaponBones ?? new List<int>(),
+				ExcludedBones = dto.CapsuleRules.ExcludedBones ?? new List<int>(),
 				ExtremeTrimFraction = ClampTrimFraction(dto.CapsuleRules.ExtremeTrimFraction),
 				Clips = dto.Clips ?? new List<AnimationClipPreset>()
 			};

@@ -13,6 +13,7 @@
         "defaultRoles": [ "hurt", "guard", "parry" ],
         "weaponRoles": [ "hit", "guard", "parry" ],
         "weaponBones": [ 44, 52 ],
+        "excludedBones": [],
         "extremeTrimFraction": 0.03
     },
     "clips": [
@@ -62,7 +63,7 @@
             "name": "guard",
             "source": "paladin_guard_baked.bone",
             "output": "paladin_animation_guard.json",
-            "loop": false
+            "loop": true
         },
         {
             "name": "hit",
