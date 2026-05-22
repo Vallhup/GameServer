@@ -26,8 +26,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.35,
-            "endNormalized": 0.40,
+            "startNormalized": 0.30,
+            "endNormalized": 0.44,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -125,37 +125,68 @@
         "durationSec": 3.9666667,
         "policy": "FixedDuration",
         "combatWindows": [
-          {
-            "kind": "Attack",
-            "startNormalized": 0.26,
-            "endNormalized": 0.31,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": {
-              "facingHalfAngleDeg": 76,
-              "minDistance": null,
-              "maxDistance": 3.0,
-              "verticalTolerance": 1.5,
-              "referenceFrame": "LockedActionDirection"
+            {
+                "kind": "Attack",
+                "startNormalized": 0.26,
+                "endNormalized": 0.31,
+                "applyEffectKey": null,
+                "appliesTo": "FrontPhysical",
+                "spatialFilter": {
+                    "facingHalfAngleDeg": 76,
+                    "minDistance": null,
+                    "maxDistance": 3.0,
+                    "verticalTolerance": 1.5,
+                    "referenceFrame": "LockedActionDirection"
+                },
+                "effect": {
+                    "type": "AttackHit",
+                    "attackHit": {
+                        "damageScale": 1.2,
+                        "bonusDamage": 5,
+                        "staminaDamageScale": 1.1,
+                        "bonusStaminaDamage": 4,
+                        "poiseDamageScale": 0,
+                        "bonusPoiseDamage": 0,
+                        "knockbackDistance": 0.7,
+                        "hitStopSec": 0.07,
+                        "parryable": true,
+                        "guardable": true
+                    },
+                    "parryResponse": null,
+                    "guardResponse": null
+                }
             },
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 1.45,
-                "bonusDamage": 10,
-                "staminaDamageScale": 1.1,
-                "bonusStaminaDamage": 4,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 0.7,
-                "hitStopSec": 0.07,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
+            {
+                "kind": "Attack",
+                "startNormalized": 0.59,
+                "endNormalized": 0.625,
+                "applyEffectKey": null,
+                "appliesTo": "FrontPhysical",
+                "spatialFilter": {
+                    "facingHalfAngleDeg": 76,
+                    "minDistance": null,
+                    "maxDistance": 3.0,
+                    "verticalTolerance": 1.5,
+                    "referenceFrame": "LockedActionDirection"
+                },
+                "effect": {
+                    "type": "AttackHit",
+                    "attackHit": {
+                        "damageScale": 1.2,
+                        "bonusDamage": 5,
+                        "staminaDamageScale": 1.1,
+                        "bonusStaminaDamage": 4,
+                        "poiseDamageScale": 0,
+                        "bonusPoiseDamage": 0,
+                        "knockbackDistance": 0.7,
+                        "hitStopSec": 0.07,
+                        "parryable": true,
+                        "guardable": true
+                    },
+                    "parryResponse": null,
+                    "guardResponse": null
+                }
             }
-          }
         ],
         "movementSegments": [
           {
@@ -228,8 +259,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.31,
-            "endNormalized": 0.36,
+            "startNormalized": 0.30,
+            "endNormalized": 0.40,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -329,8 +360,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.28,
-            "endNormalized": 0.33,
+            "startNormalized": 0.26,
+            "endNormalized": 0.40,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -430,8 +461,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.29,
-            "endNormalized": 0.34,
+            "startNormalized": 0.26,
+            "endNormalized": 0.40,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -531,8 +562,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.34,
-            "endNormalized": 0.42,
+            "startNormalized": 0.31,
+            "endNormalized": 0.45,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {

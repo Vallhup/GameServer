@@ -936,6 +936,12 @@
     <Filter Include="Database\Query">
       <UniqueIdentifier>{d1ec35c3-e15e-4db3-9726-ef5a67d47e29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\JSON\Character">
+      <UniqueIdentifier>{a5b113b4-eefe-4fc9-872d-99a3688343b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\JSON\AI">
+      <UniqueIdentifier>{badc492c-8c12-4bfc-a424-b2dc518b848f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Data\Ability\demon_striker_abilities.json">
@@ -964,6 +970,51 @@
     </None>
     <None Include="..\Data\Ability\demon_executioner_abilities.json">
       <Filter>Data\JSON\Ability</Filter>
+    </None>
+    <None Include="..\Data\Character\demon_executioner.json">
+      <Filter>Data\JSON\Character</Filter>
+    </None>
+    <None Include="..\Data\Character\demon_striker.json">
+      <Filter>Data\JSON\Character</Filter>
+    </None>
+    <None Include="..\Data\Character\final_boss.json">
+      <Filter>Data\JSON\Character</Filter>
+    </None>
+    <None Include="..\Data\Character\imp.json">
+      <Filter>Data\JSON\Character</Filter>
+    </None>
+    <None Include="..\Data\Character\knight.json">
+      <Filter>Data\JSON\Character</Filter>
+    </None>
+    <None Include="..\Data\Character\lancer.json">
+      <Filter>Data\JSON\Character</Filter>
+    </None>
+    <None Include="..\Data\Character\paladin.json">
+      <Filter>Data\JSON\Character</Filter>
+    </None>
+    <None Include="..\Data\Character\tank.json">
+      <Filter>Data\JSON\Character</Filter>
+    </None>
+    <None Include="..\Data\Character\bigdemonwarrior.json">
+      <Filter>Data\JSON\Character</Filter>
+    </None>
+    <None Include="..\Data\AI\final_boss.json">
+      <Filter>Data\JSON\AI</Filter>
+    </None>
+    <None Include="..\Data\AI\imp.json">
+      <Filter>Data\JSON\AI</Filter>
+    </None>
+    <None Include="..\Data\AI\tank.json">
+      <Filter>Data\JSON\AI</Filter>
+    </None>
+    <None Include="..\Data\AI\bigdemonwarrior.json">
+      <Filter>Data\JSON\AI</Filter>
+    </None>
+    <None Include="..\Data\AI\demon_executioner.json">
+      <Filter>Data\JSON\AI</Filter>
+    </None>
+    <None Include="..\Data\AI\demon_striker.json">
+      <Filter>Data\JSON\AI</Filter>
     </None>
   </ItemGroup>
 </Project>

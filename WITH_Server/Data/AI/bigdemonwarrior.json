@@ -1,160 +1,173 @@
 {
-  "key": "AI.BigDemonWarrior",
-  "aiType": "FirstBossMonster",
-  "perceptionTuning": {
-    "sightRange": 18.0,
-    "attackRange": 7.6,
-    "frontDotThreshold": 0.15,
-    "targetKeepBonus": 5.0,
-    "lastAttackerBonus": 3.0,
-    "frontBonus": 1.0,
-    "switchScoreMargin": 4.0,
-    "loseSightGraceTime": 1.5,
-    "leashRange": 24.0,
-    "hardLeashRange": 34.0,
-    "leashGaugeMax": 100.0,
-    "leashDrainPerSec": 18.0,
-    "hardLeashDrainPerSec": 55.0,
-    "leashRecoverPerSec": 30.0,
-    "returnHomeArriveRange": 1.0,
-    "returnHomeReaggroLockSec": 1.8,
-    "returnHpRegenPerSecRatio": 0.08,
-    "idleActionCooldownSec": 8.0,
-    "idleActionChancePercent": 15,
-    "assistRange": 0.0
-  },
-  "decisionTuning": {
-    "decisionInterval": 0.2,
-    "attackCooldown": 2.6,
-    "reactDuration": 0.7
-  },
-  "combatActions": [
-    {
-      "abilityKey": "Ability.BigDemonWarrior_Melee_6",
-      "weight": 20,
-      "distanceBucket": "VeryClose",
-      "aiCooldownSec": 1.0,
-      "globalCooldownSec": 2.0,
-      "patternGroup": "BigDemon_Poke",
-      "groupCooldownSec": 1.6,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.25
+    "key": "AI.BigDemonWarrior",
+    "aiType": "FirstBossMonster",
+    "perceptionTuning": {
+        "sightRange": 18,
+        "attackRange": 7.6,
+        "frontDotThreshold": 0.15,
+        "targetKeepBonus": 5,
+        "lastAttackerBonus": 3,
+        "frontBonus": 1,
+        "switchScoreMargin": 4,
+        "loseSightGraceTime": 1.5,
+        "leashRange": 24,
+        "hardLeashRange": 34,
+        "leashGaugeMax": 100,
+        "leashDrainPerSec": 18,
+        "hardLeashDrainPerSec": 55,
+        "leashRecoverPerSec": 30,
+        "returnHomeArriveRange": 1,
+        "returnHomeReaggroLockSec": 1.8,
+        "returnHpRegenPerSecRatio": 0.08,
+        "idleActionCooldownSec": 8,
+        "idleActionChancePercent": 15,
+        "assistRange": 0
     },
-    {
-      "abilityKey": "Ability.BigDemonWarrior_Melee_8",
-      "weight": 35,
-      "distanceBucket": "Close",
-      "aiCooldownSec": 1.5,
-      "globalCooldownSec": 2.3,
-      "patternGroup": "BigDemon_Poke",
-      "groupCooldownSec": 1.8,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.3
+    "decisionTuning": {
+        "decisionInterval": 0.2,
+        "attackCooldown": 2.6,
+        "reactDuration": 0.7
     },
-    {
-      "abilityKey": "Ability.BigDemonWarrior_Melee_7",
-      "weight": 25,
-      "distanceBucket": "Close",
-      "aiCooldownSec": 2.5,
-      "globalCooldownSec": 2.8,
-      "patternGroup": "BigDemon_Commit",
-      "groupCooldownSec": 4.2,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.45
-    },
-    {
-      "abilityKey": "Ability.BigDemonWarrior_Melee_3",
-      "weight": 20,
-      "distanceBucket": "Mid",
-      "aiCooldownSec": 4.0,
-      "globalCooldownSec": 3.0,
-      "patternGroup": "BigDemon_Catch",
-      "groupCooldownSec": 5.0,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.55
-    },
-    {
-      "abilityKey": "Ability.BigDemonWarrior_Melee_4",
-      "weight": 20,
-      "distanceBucket": "Far",
-      "aiCooldownSec": 6.0,
-      "globalCooldownSec": 3.4,
-      "patternGroup": "BigDemon_Catch",
-      "groupCooldownSec": 6.0,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.7
-    }
-  ],
-  "idleActions": [
-    { "abilityKey": "Ability.BigDemonWarrior_Jump", "weight": 100 }
-  ],
-  "movementProfiles": [
-    {
-      "name": "Phase1Hold",
-      "phaseMin": 1,
-      "phaseMax": 1,
-      "veryCloseDistance": 2.0,
-      "closeDistance": 5.5,
-      "midDistance": 7.1,
-      "farDistance": 12.8,
-      "preferredMinDistance": 3.0,
-      "preferredMaxDistance": 6.5,
-      "veryCloseBehavior": "Retreat",
-      "closeBehavior": "Hold",
-      "preferredBehavior": "Hold",
-      "midBehavior": "Approach",
-      "farBehavior": "RunApproach",
-      "strafeMinSec": 0.7,
-      "strafeMaxSec": 1.5,
-      "lockFacingToTarget": true
-    },
-    {
-      "name": "Phase2Strafe",
-      "phaseMin": 2,
-      "phaseMax": 255,
-      "veryCloseDistance": 2.0,
-      "closeDistance": 5.5,
-      "midDistance": 7.1,
-      "farDistance": 12.8,
-      "preferredMinDistance": 3.0,
-      "preferredMaxDistance": 6.5,
-      "veryCloseBehavior": "Retreat",
-      "closeBehavior": "Approach",
-      "preferredBehavior": "Strafe",
-      "midBehavior": "Approach",
-      "farBehavior": "RunApproach",
-      "strafeMinSec": 0.7,
-      "strafeMaxSec": 1.5,
-      "lockFacingToTarget": true
-    }
-  ],
-  "reactionRules": [
-    {
-      "event": "OnHitReceived",
-      "outcome": "ForceRetarget",
-      "retargetAttacker": true,
-      "priority": 100
-    },
-    {
-      "event": "OnParried",
-      "outcome": "EnterReact",
-      "retargetAttacker": true,
-      "priority": 200
-    },
-    {
-      "event": "OnGuardBroken",
-      "outcome": "EnterReact",
-      "retargetAttacker": true,
-      "priority": 200
-    }
-  ],
-  "phaseTransitions": [
-    {
-      "fromPhase": 1,
-      "toPhase": 2,
-      "hpRatio": 0.55,
-      "transitionAbilityKey": "Ability.BigDemonWarrior_BattleCry",
-      "transitionLockSec": 3.6
-    }
-  ]
+    "combatActions": [
+        {
+            "abilityKey": "Ability.BigDemonWarrior_Melee_6",
+            "weight": 20,
+            "distanceBucket": "VeryClose",
+            "minDistance": 0,
+            "maxDistance": 2.4,
+            "aiCooldownSec": 5.0,
+            "globalCooldownSec": 2,
+            "patternGroup": "BigDemon_Poke",
+            "groupCooldownSec": 1.6,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.25
+        },
+        {
+            "abilityKey": "Ability.BigDemonWarrior_Melee_8",
+            "weight": 30,
+            "distanceBucket": "Close",
+            "minDistance": 2,
+            "maxDistance": 5.3,
+            "aiCooldownSec": 1.5,
+            "globalCooldownSec": 2.3,
+            "patternGroup": "BigDemon_Poke",
+            "groupCooldownSec": 1.8,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.3
+        },
+        {
+            "abilityKey": "Ability.BigDemonWarrior_Melee_7",
+            "weight": 25,
+            "distanceBucket": "Close",
+            "minDistance": 3,
+            "maxDistance": 5.8,
+            "aiCooldownSec": 2.5,
+            "globalCooldownSec": 2.8,
+            "patternGroup": "BigDemon_Commit",
+            "groupCooldownSec": 4.2,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.45
+        },
+        {
+            "abilityKey": "Ability.BigDemonWarrior_Melee_3",
+            "weight": 15,
+            "distanceBucket": "Mid",
+            "minDistance": 4.8,
+            "maxDistance": 5.8,
+            "aiCooldownSec": 4,
+            "globalCooldownSec": 3,
+            "patternGroup": "BigDemon_Catch",
+            "groupCooldownSec": 5,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.55
+        },
+        {
+            "abilityKey": "Ability.BigDemonWarrior_Melee_4",
+            "weight": 35,
+            "distanceBucket": "Any",
+            "minDistance": 5.8,
+            "maxDistance": 7.6,
+            "aiCooldownSec": 6,
+            "globalCooldownSec": 3.4,
+            "patternGroup": "BigDemon_Catch",
+            "groupCooldownSec": 6,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.7
+        }
+    ],
+    "idleActions": [
+        {
+            "abilityKey": "Ability.BigDemonWarrior_Jump",
+            "weight": 100
+        }
+    ],
+    "movementProfiles": [
+        {
+            "name": "Phase1Hold",
+            "phaseMin": 1,
+            "phaseMax": 1,
+            "veryCloseDistance": 2,
+            "closeDistance": 5.5,
+            "midDistance": 7.1,
+            "farDistance": 12.8,
+            "preferredMinDistance": 3,
+            "preferredMaxDistance": 6.5,
+            "veryCloseBehavior": "Retreat",
+            "closeBehavior": "Hold",
+            "preferredBehavior": "Hold",
+            "midBehavior": "Approach",
+            "farBehavior": "RunApproach",
+            "strafeMinSec": 0.7,
+            "strafeMaxSec": 1.5,
+            "lockFacingToTarget": true
+        },
+        {
+            "name": "Phase2Strafe",
+            "phaseMin": 2,
+            "phaseMax": 255,
+            "veryCloseDistance": 2,
+            "closeDistance": 5.5,
+            "midDistance": 7.1,
+            "farDistance": 12.8,
+            "preferredMinDistance": 3,
+            "preferredMaxDistance": 6.5,
+            "veryCloseBehavior": "Retreat",
+            "closeBehavior": "Approach",
+            "preferredBehavior": "Strafe",
+            "midBehavior": "Approach",
+            "farBehavior": "RunApproach",
+            "strafeMinSec": 0.7,
+            "strafeMaxSec": 1.5,
+            "lockFacingToTarget": true
+        }
+    ],
+    "reactionRules": [
+        {
+            "event": "OnHitReceived",
+            "outcome": "ForceRetarget",
+            "retargetAttacker": true,
+            "priority": 100
+        },
+        {
+            "event": "OnParried",
+            "outcome": "EnterReact",
+            "retargetAttacker": true,
+            "priority": 200
+        },
+        {
+            "event": "OnGuardBroken",
+            "outcome": "EnterReact",
+            "retargetAttacker": true,
+            "priority": 200
+        }
+    ],
+    "phaseTransitions": [
+        {
+            "fromPhase": 1,
+            "toPhase": 2,
+            "hpRatio": 0.55,
+            "transitionAbilityKey": "Ability.BigDemonWarrior_BattleCry",
+            "transitionLockSec": 3.6
+        }
+    ]
 }

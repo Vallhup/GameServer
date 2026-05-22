@@ -48,21 +48,21 @@
       "bone": 33,
       "radius": 17.918911,
       "roles": [
-        "hit"
+        "hurt"
       ]
     },
     {
       "bone": 34,
       "radius": 14.9350424,
       "roles": [
-        "hit"
+        "hurt"
       ]
     },
     {
       "bone": 35,
       "radius": 30.9842319,
       "roles": [
-        "hurt"
+        "hit"
       ]
     },
     {
