@@ -186,6 +186,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="protos\DTO.proto" />
     <None Include="protos\Protocol.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

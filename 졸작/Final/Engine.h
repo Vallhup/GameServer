@@ -7,6 +7,7 @@ class SoundManager;
 class EffectManager;
 class UIManager;
 class IConnectionListener;
+class ClientPartyState;
 
 #include "ClientPacketRouter.h"
 #include "ClientInboundPacketQueue.h"
@@ -30,6 +31,7 @@ public:
     SoundManager* GetSoundManager() const { return soundManager.get(); }
     EffectManager* GetEffectManager() const { return effectManager.get(); }
     UIManager* GetUIManager() const { return uiManager.get(); }
+    ClientPartyState* GetPartyState() const { return partyState.get(); }
     ClientInboundPacketQueue* GetInboundQueue() const { return inboundQueue.get(); }
 
     ClientWorldTransitionController& GetWorldTransitionController() 
@@ -57,4 +59,6 @@ private:
 
     ClientPacketRouter packetRouter;
     ClientWorldTransitionController worldTransitionController;
+
+    unique_ptr<ClientPartyState> partyState;
 };

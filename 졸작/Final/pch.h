@@ -56,6 +56,7 @@ using namespace Microsoft::WRL;
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
+#include "DTO.pb.h"
 #include "Protocol.pb.h"
 #include "ProtocolLib.h"
 

@@ -23,11 +23,6 @@ void NetworkManager::Release()
 
 bool NetworkManager::SendLoginPacket(const std::string& id, const std::string& pw)
 {
-	if (_service == nullptr)
-	{
-		return false;
-	}
-
 	Protocol::CS_LOGIN_PACKET login;
 	login.set_loginid(id);
 	login.set_password(pw);
@@ -36,48 +31,22 @@ bool NetworkManager::SendLoginPacket(const std::string& id, const std::string& p
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_LOGIN_PACKET>(
 		PacketType::CS_LOGIN, login);
 
-	if (data != nullptr)
-	{
-		_service->Send(data);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return TrySendInternal(data);
 }
 
 bool NetworkManager::SendCharacterSelectPacket(CharacterId id)
 {
-	if (_service == nullptr)
-	{
-		return false;
-	}
-
 	Protocol::CS_CHARACTER_SELECT_PACKET characterSelect;
 	characterSelect.set_characterid(static_cast<uint32_t>(id));
 
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_CHARACTER_SELECT_PACKET>(
 		PacketType::CS_CHARACTER_SELECT, characterSelect);
 
-	if (data != nullptr)
-	{
-		_service->Send(data);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return TrySendInternal(data);
 }
 
 bool NetworkManager::SendMovePacket(int inputX, int inputZ, float yaw, bool isRun)
 {
-	if (_service == nullptr)
-	{
-		return false;
-	}
-
 	Protocol::CS_MOVE_PACKET move;
 	move.set_inputx(inputX);
 	move.set_inputz(inputZ);
@@ -87,24 +56,11 @@ bool NetworkManager::SendMovePacket(int inputX, int inputZ, float yaw, bool isRu
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_MOVE_PACKET>(
 		PacketType::CS_MOVE, move);
 	
-	if (data != nullptr)
-	{
-		_service->Send(data);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return TrySendInternal(data);
 }
 
 bool NetworkManager::SendAttackPacket(float dirX, float dirZ, uint32_t animId, float normTime, uint32_t instanceId, Protocol::AttackInputType type)
 {
-	if (_service == nullptr)
-	{
-		return false;
-	}
-
 	Protocol::CS_ATTACK_PACKET attack;
 	attack.set_dirx(dirX);
 	attack.set_dirz(dirZ);
@@ -116,24 +72,11 @@ bool NetworkManager::SendAttackPacket(float dirX, float dirZ, uint32_t animId, f
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_ATTACK_PACKET>(
 		PacketType::CS_ATTACK, attack);
 
-	if (data != nullptr)
-	{
-		_service->Send(data);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return TrySendInternal(data);
 }
 
 bool NetworkManager::SendDodgePacket(float dirX, float dirZ)
 {
-	if (_service == nullptr)
-	{
-		return false;
-	}
-
 	Protocol::CS_DODGE_PACKET dodge;
 	dodge.set_dirx(dirX);
 	dodge.set_dirz(dirZ);
@@ -141,48 +84,22 @@ bool NetworkManager::SendDodgePacket(float dirX, float dirZ)
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_DODGE_PACKET>(
 		PacketType::CS_DODGE, dodge);
 	
-	if (data != nullptr)
-	{
-		_service->Send(data);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return TrySendInternal(data);
 }
 
 bool NetworkManager::SendGuardPacket(bool pressed)
 {
-	if (_service == nullptr)
-	{
-		return false;
-	}
-
 	Protocol::CS_GUARD_PACKET guard;
 	guard.set_input(pressed);
 
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_GUARD_PACKET>(
 		PacketType::CS_GUARD, guard);
 	
-	if (data != nullptr)
-	{
-		_service->Send(data);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return TrySendInternal(data);
 }
 
 bool NetworkManager::SendParryPacket(float dirX, float dirZ)
 {
-	if (_service == nullptr)
-	{
-		return false;
-	}
-
 	Protocol::CS_PARRY_PACKET parry;
 	parry.set_dirx(dirX);
 	parry.set_dirz(dirZ);
@@ -190,24 +107,11 @@ bool NetworkManager::SendParryPacket(float dirX, float dirZ)
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_PARRY_PACKET>(
 		PacketType::CS_PARRY, parry);
 	
-	if (data != nullptr)
-	{
-		_service->Send(data);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return TrySendInternal(data);
 }
 
 bool NetworkManager::SendUseItemPacket(float dirX, float dirZ)
 {
-	if (_service == nullptr)
-	{
-		return false;
-	}
-
 	Protocol::CS_USE_ITEM_PACKET useItem;
 	useItem.set_dirx(dirX);
 	useItem.set_dirz(dirZ);
@@ -215,61 +119,107 @@ bool NetworkManager::SendUseItemPacket(float dirX, float dirZ)
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_USE_ITEM_PACKET>(
 		PacketType::CS_USE_ITEM, useItem);
 
-	if (data != nullptr)
-	{
-		_service->Send(data);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return TrySendInternal(data);
 }
 
 bool NetworkManager::SendWorldTransitionRequestPacket(uint32_t requestId)
 {
-	if (_service == nullptr)
-	{
-		return false;
-	}
-
 	Protocol::CS_WORLD_TRANSITION_REQUEST_PACKET transitionRequest;
 	transitionRequest.set_requestid(requestId);
 
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_WORLD_TRANSITION_REQUEST_PACKET>(
 		PacketType::CS_WORLD_TRANSITION_REQUEST, transitionRequest);
-	
-	if (data != nullptr)
-	{
-		_service->Send(data);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+
+	return TrySendInternal(data);
 }
 
 bool NetworkManager::SendWorldTransitionReadyPacket(uint64_t transferId)
 {
-	if (_service == nullptr)
-	{
-		return false;
-	}
-
 	Protocol::CS_WORLD_TRANSITION_READY_PACKET transitionReady;
 	transitionReady.set_transferid(transferId);
 
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_WORLD_TRANSITION_READY_PACKET>(
 		PacketType::CS_WORLD_TRANSITION_READY, transitionReady);
 	
-	if (data != nullptr)
+	return TrySendInternal(data);
+}
+
+bool NetworkManager::SendPartyUiOpenedPacket()
+{
+	Protocol::CS_PARTY_UI_OPENED_PACKET uiOpen;
+	uiOpen.set_clientrequestid(_nextPartyRequestId++);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_PARTY_UI_OPENED_PACKET>(
+		PacketType::CS_PARTY_UI_OPENED, uiOpen);
+
+	return TrySendInternal(data);
+}
+
+bool NetworkManager::SendPartyListRefreshPacket()
+{
+	Protocol::CS_PARTY_LIST_REFRESH_PACKET refresh;
+	refresh.set_clientrequestid(_nextPartyRequestId++);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_PARTY_LIST_REFRESH_PACKET>(
+		PacketType::CS_PARTY_LIST_REFRESH, refresh);
+
+	return TrySendInternal(data);
+}
+
+bool NetworkManager::SendPartyCreatePacket()
+{
+	Protocol::CS_PARTY_CREATE_PACKET create;
+	create.set_clientrequestid(_nextPartyRequestId++);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_PARTY_CREATE_PACKET>(
+		PacketType::CS_PARTY_CREATE, create);
+
+	return TrySendInternal(data);
+}
+
+bool NetworkManager::SendPartyJoinRequestPacket(uint64_t partyId)
+{
+	Protocol::CS_PARTY_JOIN_REQUEST_PACKET joinRequest;
+	joinRequest.set_clientrequestid(_nextPartyRequestId++);
+	joinRequest.set_partyid(partyId);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_PARTY_JOIN_REQUEST_PACKET>(
+		PacketType::CS_PARTY_JOIN_REQUEST, joinRequest);
+
+	return TrySendInternal(data);
+}
+
+bool NetworkManager::SendPartyJoinAcceptPacket(uint64_t joinRequestId)
+{
+	Protocol::CS_PARTY_JOIN_ACCEPT_PACKET joinAccept;
+	joinAccept.set_clientrequestid(_nextPartyRequestId++);
+	joinAccept.set_joinrequestid(joinRequestId);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_PARTY_JOIN_ACCEPT_PACKET>(
+		PacketType::CS_PARTY_JOIN_ACCEPT, joinAccept);
+
+	return TrySendInternal(data);
+}
+
+bool NetworkManager::SendPartyJoinRejectPacket(uint64_t joinRequestId)
+{
+	Protocol::CS_PARTY_JOIN_REJECT_PACKET joinReject;
+	joinReject.set_clientrequestid(_nextPartyRequestId++);
+	joinReject.set_joinrequestid(joinRequestId);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_PARTY_JOIN_REJECT_PACKET>(
+		PacketType::CS_PARTY_JOIN_REJECT, joinReject);
+
+	return TrySendInternal(data);
+}
+
+bool NetworkManager::TrySendInternal(SendBuffer* sendBuffer)
+{
+	if (_service && sendBuffer)
 	{
-		_service->Send(data);
+		_service->Send(sendBuffer);
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+
+	return false;
 }

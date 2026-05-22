@@ -67,5 +67,8 @@
     <None Include="protos\Protocol.proto">
       <Filter>Protocol\proto</Filter>
     </None>
+    <None Include="protos\DTO.proto">
+      <Filter>Protocol\proto</Filter>
+    </None>
   </ItemGroup>
 </Project>

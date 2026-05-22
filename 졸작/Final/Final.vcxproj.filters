@@ -88,6 +88,9 @@
     <ClCompile Include="Singleton.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\DTO.pb.cc">
+      <Filter>Network\Protocol\pb.%2a</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
       <Filter>Network\Protocol\pb.%2a</Filter>
     </ClCompile>
@@ -241,6 +244,9 @@
     <ClCompile Include="ClientInboundPacketQueue.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="ClientPartyState.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
     <ClCompile Include="ClientPacketRouter.cpp">
       <Filter>Network</Filter>
     </ClCompile>
@@ -359,6 +365,9 @@
     </ClInclude>
     <ClInclude Include="Singleton.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\DTO.pb.h">
+      <Filter>Network\Protocol\pb.%2a</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h">
       <Filter>Network\Protocol\pb.%2a</Filter>
@@ -517,6 +526,9 @@
       <Filter>Scene\Base</Filter>
     </ClInclude>
     <ClInclude Include="ClientInboundPacketQueue.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientPartyState.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="ClientPacketRouter.h">

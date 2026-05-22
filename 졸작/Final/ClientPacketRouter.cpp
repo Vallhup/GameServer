@@ -6,13 +6,11 @@
 #include "Engine.h"
 #include "NetHelper.h"
 #include "ClientWorldTransitionController.h"
+#include "ClientPartyState.h"
 
 void ClientPacketRouter::Route(const ClientInboundPacket& packet)
 {
-	// TODO: 기존 packet들은 그대로 Scene으로 보내서 처리
-	//       WorldTransition packet들은 ClientWorldTransitionController에 저장
-	const PacketType type = static_cast<PacketType>(packet.header.type);
-	switch (type) {
+	switch (static_cast<PacketType>(packet.header.type)) {
 	case PacketType::SC_WORLD_TRANSITION_BEGIN:
 	{
 		HandleWorldTransitionBegin(packet);
@@ -21,6 +19,36 @@ void ClientPacketRouter::Route(const ClientInboundPacket& packet)
 	case PacketType::SC_WORLD_TRANSITION_REJECTED:
 	{
 		HandleWorldTransitionRejected(packet);
+		break;
+	}
+	case PacketType::SC_PARTY_UI_BOOTSTRAP:
+	{
+		HandlePartyUiBootstrap(packet);
+		break;
+	}
+	case PacketType::SC_PARTY_LIST_SNAPSHOT:
+	{
+		HandlePartyListSnapshot(packet);
+		break;
+	}
+	case PacketType::SC_PARTY_COMMAND_RESULT:
+	{
+		HandlePartyCommandResult(packet);
+		break;
+	}
+	case PacketType::SC_PARTY_SNAPSHOT:
+	{
+		HandlePartySnapshot(packet);
+		break;
+	}
+	case PacketType::SC_PARTY_JOIN_REQUEST_RECEIVED:
+	{
+		HandlePartyJoinRequestReceived(packet);
+		break;
+	}
+	case PacketType::SC_PARTY_JOIN_REQUEST_CLOSED:
+	{
+		HandlePartyJoinRequestClosed(packet);
 		break;
 	}
 	default:
@@ -71,6 +99,90 @@ void ClientPacketRouter::HandleWorldTransitionRejected(const ClientInboundPacket
 			if (false == accepted)
 			{
 				OutputDebugStringA("WorldTransition Rejected ignored\n");
+			}
+		}
+	);
+}
+
+void ClientPacketRouter::HandlePartyUiBootstrap(const ClientInboundPacket& packet)
+{
+	NetHelper::DispatchPacket<Protocol::SC_PARTY_UI_BOOTSTRAP_PACKET>(
+		packet.header, packet.bytes.data(),
+		[](const auto& packet)
+		{
+			if (ClientPartyState* partyState = ENGINE.GetPartyState())
+			{
+				partyState->ApplyUIBootstrap(packet);
+			}
+		}
+	);
+}
+
+void ClientPacketRouter::HandlePartyListSnapshot(const ClientInboundPacket& packet)
+{
+	NetHelper::DispatchPacket<Protocol::SC_PARTY_LIST_SNAPSHOT_PACKET>(
+		packet.header, packet.bytes.data(),
+		[](const auto& packet)
+		{
+			if (ClientPartyState* partyState = ENGINE.GetPartyState())
+			{
+				partyState->ApplyListSnapshot(packet);
+			}
+		}
+	);
+}
+
+void ClientPacketRouter::HandlePartyCommandResult(const ClientInboundPacket& packet)
+{
+	NetHelper::DispatchPacket<Protocol::SC_PARTY_COMMAND_RESULT_PACKET>(
+		packet.header, packet.bytes.data(),
+		[](const auto& packet)
+		{
+			if (ClientPartyState* partyState = ENGINE.GetPartyState())
+			{
+				partyState->ApplyCommandResult(packet);
+			}
+		}
+	);
+}
+
+void ClientPacketRouter::HandlePartySnapshot(const ClientInboundPacket& packet)
+{
+	NetHelper::DispatchPacket<Protocol::SC_PARTY_SNAPSHOT_PACKET>(
+		packet.header, packet.bytes.data(),
+		[](const auto& packet)
+		{
+			if (ClientPartyState* partyState = ENGINE.GetPartyState())
+			{
+				partyState->ApplySnapshot(packet);
+			}
+		}
+	);
+}
+
+void ClientPacketRouter::HandlePartyJoinRequestReceived(const ClientInboundPacket& packet)
+{
+	NetHelper::DispatchPacket<Protocol::SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET>(
+		packet.header, packet.bytes.data(),
+		[](const auto& packet)
+		{
+			if (ClientPartyState* partyState = ENGINE.GetPartyState())
+			{
+				partyState->ApplyJoinRequestReceived(packet);
+			}
+		}
+	);
+}
+
+void ClientPacketRouter::HandlePartyJoinRequestClosed(const ClientInboundPacket& packet)
+{
+	NetHelper::DispatchPacket<Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET>(
+		packet.header, packet.bytes.data(),
+		[](const auto& packet)
+		{
+			if (ClientPartyState* partyState = ENGINE.GetPartyState())
+			{
+				partyState->ApplyJoinRequestClosed(packet);
 			}
 		}
 	);

@@ -170,6 +170,12 @@ exit 0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\DTO.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -215,6 +221,7 @@ exit 0</Command>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ClientConnectionListener.cpp" />
     <ClCompile Include="ClientInboundPacketQueue.cpp" />
+    <ClCompile Include="ClientPartyState.cpp" />
     <ClCompile Include="ClientPacketRouter.cpp" />
     <ClCompile Include="ClientWorldTransitionController.cpp" />
     <ClCompile Include="ClusterLightManager.cpp" />
@@ -293,6 +300,7 @@ exit 0</Command>
     <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\DTO.pb.h" />
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\Protocol.pb.h" />
     <ClInclude Include="..\Dependency\ImGui\imconfig.h" />
     <ClInclude Include="..\Dependency\ImGui\imgui.h" />
@@ -313,6 +321,7 @@ exit 0</Command>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ClientConnectionListener.h" />
     <ClInclude Include="ClientInboundPacketQueue.h" />
+    <ClInclude Include="ClientPartyState.h" />
     <ClInclude Include="ClientPacketRouter.h" />
     <ClInclude Include="ClientWorldTransitionController.h" />
     <ClInclude Include="ClusterLightManager.h" />

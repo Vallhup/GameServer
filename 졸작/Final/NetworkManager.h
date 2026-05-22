@@ -2,10 +2,11 @@
 
 #include "EntityId.h"
 #include "ClientService.h"
+#include "../../Network_Library/Include/SendBuffer.h"
 
 class NetworkManager {
 public:
-	NetworkManager() : _service(nullptr) {}
+	NetworkManager() : _service(nullptr), _nextPartyRequestId(0) {}
 
 	void Initialize(
 		uint16 threadCnt, 
@@ -27,6 +28,16 @@ public:
 	bool SendWorldTransitionRequestPacket(uint32_t requestId);
 	bool SendWorldTransitionReadyPacket(uint64_t transferId);
 
+	bool SendPartyUiOpenedPacket();
+	bool SendPartyListRefreshPacket();
+	bool SendPartyCreatePacket();
+	bool SendPartyJoinRequestPacket(uint64_t partyId);
+	bool SendPartyJoinAcceptPacket(uint64_t joinRequestId);
+	bool SendPartyJoinRejectPacket(uint64_t joinRequestId);
+
 private:
+	bool TrySendInternal(SendBuffer* sendBuffer);
+
 	std::unique_ptr<ClientService> _service;
+	uint32_t _nextPartyRequestId;
 };
