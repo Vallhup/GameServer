@@ -19,6 +19,8 @@ private:
 		float directionX{ 0.0f };
 		float directionZ{ 0.0f };
 		bool useInputDirection{ false };
+		ActorAbilityInputEvent request;
+		bool fromBufferedInput{ false };
 	};
 
 	struct TransitionDecision
@@ -27,6 +29,7 @@ private:
 		bool transition{ false };
 		bool consumeOnRequestCosts{ false };
 		bool preserveDirection{ false };
+		bool consumeAbilityInput{ false };
 		Entity target{ Entity::Null() };
 		float directionX{ 0.0f };
 		float directionZ{ 0.0f };
@@ -92,7 +95,29 @@ private:
 		Entity entity,
 		const TransitionDecision& decision);
 
+	static void UpdateAbilityInputBuffer(
+		ActorInputComp& input,
+		double deltaTimeSec);
+
+	static bool HasAbilityInputRequest(
+		const ActorAbilityInputEvent& input) noexcept;
+
+	static bool CanBufferAbilityInput(
+		const ActorAbilityInputEvent& input) noexcept;
+
+	static void BufferCurrentAbilityInput(
+		ActorInputComp& input);
+
 	static void ClearAbilityInput(ActorInputComp& input);
+
+	static void ClearAbilityInputBuffer(ActorInputComp& input);
+
+	static void ClearAllAbilityInput(ActorInputComp& input);
+
+	static void FinishAbilityInput(
+		ActorInputComp& input,
+		bool consumed,
+		bool allowBuffering);
 
 	static std::vector<RequestCandidate> BuildRequestCandidates(
 		const AbilityProfileService& profileService,
@@ -116,7 +141,8 @@ private:
 		const AbilityDef& currentAbilityDef,
 		const AbilityStateComp& abilityState,
 		CharacterId characterId,
-		const ActorInputComp& input);
+		const ActorAbilityInputEvent& input,
+		bool fromBufferedInput);
 
 	static bool ShouldUseClientAnimationTiming(
 		AbilityTransitionCause cause) noexcept;

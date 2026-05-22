@@ -15,6 +15,8 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
+	constexpr float kAbilityInputBufferDurationSec = 0.18f;
+
 	const char* TransitionCauseName(AbilityTransitionCause cause) noexcept
 	{
 		switch (cause)
@@ -117,6 +119,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 			SpawnTypeComp>())
 	{
 		ClearAbilityTimelineAdvance(advance);
+		UpdateAbilityInputBuffer(input, ctx.dtSec);
 
 		if (TryHandleBlockingState(
 			ctx,
@@ -148,7 +151,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 		if (IsAbilityActive(abilityState) && currentAbilityDef == nullptr)
 		{
 			abilityState = {};
-			ClearAbilityInput(input);
+			ClearAllAbilityInput(input);
 			continue;
 		}
 
@@ -175,7 +178,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 			{
 				mutableInterruptQueue->events.clear();
 			}
-			ClearAbilityInput(input);
+			ClearAllAbilityInput(input);
 			continue;
 		}
 
@@ -215,7 +218,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 				{
 					PrepareStartedAbilityAdvance(abilityState, advance);
 				}
-				ClearAbilityInput(input);
+				FinishAbilityInput(input, decision.consumeAbilityInput, false);
 				continue;
 			}
 
@@ -236,7 +239,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 				}
 			}
 
-			ClearAbilityInput(input);
+			FinishAbilityInput(input, false, true);
 			continue;
 		}
 
@@ -265,7 +268,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 			}
 		}
 
-		ClearAbilityInput(input);
+		FinishAbilityInput(input, decision.consumeAbilityInput, false);
 	}
 }
 
@@ -285,7 +288,7 @@ bool ResolveAbilityStateSystem::TryHandleBlockingState(
 	abilityState.abilityId = InvalidAbilityId;
 	abilityState.elapsedSec = 0.0f;
 	ResetAbilityDirection(abilityState);
-	ClearAbilityInput(input);
+	ClearAllAbilityInput(input);
 	return true;
 }
 
@@ -437,7 +440,8 @@ bool ResolveAbilityStateSystem::TryResolveCancelTransition(
 					currentAbilityDef,
 					abilityState,
 					characterId,
-					input))
+					candidate.request,
+					candidate.fromBufferedInput))
 			{
 				continue;
 			}
@@ -460,6 +464,7 @@ bool ResolveAbilityStateSystem::TryResolveCancelTransition(
 	outDecision.nextAbilityId = bestCandidate.abilityId;
 	outDecision.consumeOnRequestCosts = true;
 	outDecision.preserveDirection = true;
+	outDecision.consumeAbilityInput = true;
 	outDecision.target = bestCandidate.target;
 	outDecision.directionX = bestCandidate.directionX;
 	outDecision.directionZ = bestCandidate.directionZ;
@@ -500,6 +505,7 @@ bool ResolveAbilityStateSystem::TryResolveIdleRequestTransition(
 		outDecision.nextAbilityId = candidate.abilityId;
 		outDecision.consumeOnRequestCosts = true;
 		outDecision.preserveDirection = true;
+		outDecision.consumeAbilityInput = true;
 		outDecision.target = candidate.target;
 		outDecision.directionX = candidate.directionX;
 		outDecision.directionZ = candidate.directionZ;
@@ -649,9 +655,88 @@ void ResolveAbilityStateSystem::ConsumeOnRequestResourceCosts(
 	}
 }
 
+void ResolveAbilityStateSystem::UpdateAbilityInputBuffer(
+	ActorInputComp& input,
+	double deltaTimeSec)
+{
+	if (!input.abilityBuffer.hasEvent)
+	{
+		return;
+	}
+
+	input.abilityBuffer.remainingSec =
+		std::max(
+			0.0f,
+			input.abilityBuffer.remainingSec -
+			static_cast<float>(deltaTimeSec));
+	if (input.abilityBuffer.remainingSec <= 0.0f)
+	{
+		ClearAbilityInputBuffer(input);
+	}
+}
+
+bool ResolveAbilityStateSystem::HasAbilityInputRequest(
+	const ActorAbilityInputEvent& input) noexcept
+{
+	return
+		input.type != PlayerAbilityInputType::None ||
+		input.directAbilityId != InvalidAbilityId;
+}
+
+bool ResolveAbilityStateSystem::CanBufferAbilityInput(
+	const ActorAbilityInputEvent& input) noexcept
+{
+	return
+		input.type != PlayerAbilityInputType::None &&
+		input.directAbilityId == InvalidAbilityId;
+}
+
+void ResolveAbilityStateSystem::BufferCurrentAbilityInput(
+	ActorInputComp& input)
+{
+	if (!CanBufferAbilityInput(input.ability))
+	{
+		return;
+	}
+
+	input.abilityBuffer.event = input.ability;
+	input.abilityBuffer.remainingSec = kAbilityInputBufferDurationSec;
+	input.abilityBuffer.hasEvent = true;
+}
+
 void ResolveAbilityStateSystem::ClearAbilityInput(ActorInputComp& input)
 {
 	input.ability = {};
+}
+
+void ResolveAbilityStateSystem::ClearAbilityInputBuffer(ActorInputComp& input)
+{
+	input.abilityBuffer = {};
+}
+
+void ResolveAbilityStateSystem::ClearAllAbilityInput(ActorInputComp& input)
+{
+	ClearAbilityInput(input);
+	ClearAbilityInputBuffer(input);
+}
+
+void ResolveAbilityStateSystem::FinishAbilityInput(
+	ActorInputComp& input,
+	bool consumed,
+	bool allowBuffering)
+{
+	if (consumed)
+	{
+		ClearAllAbilityInput(input);
+		return;
+	}
+
+	if (allowBuffering)
+	{
+		BufferCurrentAbilityInput(input);
+	}
+
+	ClearAbilityInput(input);
 }
 
 std::vector<ResolveAbilityStateSystem::RequestCandidate>
@@ -662,21 +747,32 @@ ResolveAbilityStateSystem::BuildRequestCandidates(
 	bool includeHeldGuardRequest)
 {
 	std::vector<RequestCandidate> candidates;
+	const ActorAbilityInputEvent* abilityInput = &input.ability;
+	bool fromBufferedInput = false;
 
-	if (input.ability.directAbilityId != InvalidAbilityId)
+	if (!HasAbilityInputRequest(*abilityInput) &&
+		input.abilityBuffer.hasEvent)
+	{
+		abilityInput = &input.abilityBuffer.event;
+		fromBufferedInput = true;
+	}
+
+	if (abilityInput->directAbilityId != InvalidAbilityId)
 	{
 		candidates.push_back(RequestCandidate{
-			input.ability.directAbilityId,
-			input.ability.target,
-			input.ability.directionX,
-			input.ability.directionZ,
-			true
+			abilityInput->directAbilityId,
+			abilityInput->target,
+			abilityInput->directionX,
+			abilityInput->directionZ,
+			true,
+			*abilityInput,
+			fromBufferedInput
 		});
 		return candidates;
 	}
 
 	AbilityRequestSemantic semantic = AbilityRequestSemantic::None;
-	switch (input.ability.type) {
+	switch (abilityInput->type) {
 	case PlayerAbilityInputType::LightAttack:
 		semantic = AbilityRequestSemantic::LightAttack;
 		break;
@@ -741,10 +837,12 @@ ResolveAbilityStateSystem::BuildRequestCandidates(
 	{
 		candidates.push_back(RequestCandidate{
 			abilityId,
-			input.ability.target,
-			input.ability.directionX,
-			input.ability.directionZ,
-			true
+			abilityInput->target,
+			abilityInput->directionX,
+			abilityInput->directionZ,
+			true,
+			*abilityInput,
+			fromBufferedInput
 		});
 	}
 
@@ -851,7 +949,8 @@ bool ResolveAbilityStateSystem::IsCancelRuleActive(
 	const AbilityDef& currentAbilityDef,
 	const AbilityStateComp& abilityState,
 	CharacterId characterId,
-	const ActorInputComp& input)
+	const ActorAbilityInputEvent& input,
+	bool fromBufferedInput)
 {
 	if (cancelRule.windowPolicy == AbilityTransitionWindowPolicy::Always)
 	{
@@ -866,20 +965,21 @@ bool ResolveAbilityStateSystem::IsCancelRuleActive(
 	const float windowEnd = cancelRule.windowEndNormalized.value_or(1.0f);
 
 	if (ShouldUseClientAnimationTiming(cancelRule.cause) &&
-		input.ability.hasClientAnimationTiming)
+		!fromBufferedInput &&
+		input.hasClientAnimationTiming)
 	{
 		const AnimationId expectedAnimId =
 			ResolveAbilityAnimationId(characterId, abilityState.abilityId);
 		constexpr float kClientComboTimingDriftTolerance = 0.25f;
 		const float clientProgress = ClampFloat(
-			input.ability.clientNormalizedTime,
+			input.clientNormalizedTime,
 			0.0f,
 			1.0f);
 		const bool instanceMatches =
-			input.ability.clientAbilityInstanceId == abilityState.abilityInstanceId;
+			input.clientAbilityInstanceId == abilityState.abilityInstanceId;
 		const bool animMatches =
 			expectedAnimId == AnimationId::None ||
-			input.ability.clientAnimId == expectedAnimId;
+			input.clientAnimId == expectedAnimId;
 		const bool clientWindowMatches =
 			clientProgress >= windowStart && clientProgress <= windowEnd;
 		const bool driftMatches =

@@ -48,9 +48,17 @@ struct ActorAbilityInputEvent
 	bool hasClientAnimationTiming{ false };
 };
 
+struct ActorAbilityInputBufferState
+{
+	ActorAbilityInputEvent event;
+	float remainingSec{ 0.0f };
+	bool hasEvent{ false };
+};
+
 struct ActorInputComp : Component
 {
 	PlayerMoveInputState move;
 	PlayerGuardInputState guard;
 	ActorAbilityInputEvent ability;
+	ActorAbilityInputBufferState abilityBuffer;
 };
