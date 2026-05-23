@@ -16,6 +16,7 @@ struct SkeletalCombatCollider
 	Capsule capsule;
 	float radius{ 0.0f };
 	uint8_t roleMask{ 0 };
+	uint16_t boneIndex{ 0 };
 };
 
 struct SkeletalCombatColliderComp : Component
@@ -35,10 +36,18 @@ struct CombatColliderActivationComp : Component
 	bool hasInvulnerabilityWindow{ false };
 };
 
+inline constexpr uint16_t InvalidCombatColliderIndex = 0xFFFF;
+
+struct CombatHitResolvedVictim
+{
+	Entity victim{ Entity::Null() };
+	uint16_t attackWindowIndex{ InvalidCombatColliderIndex };
+};
+
 struct CombatHitDedupStateComp : Component
 {
 	uint32_t boundAbilityInstanceId{ 0 };
-	std::vector<Entity> resolvedVictims;
+	std::vector<CombatHitResolvedVictim> resolvedVictims;
 };
 
 enum class CombatReactionKind : uint8_t
@@ -56,14 +65,23 @@ enum class CombatResolveResultType : uint8_t
 	Parry
 };
 
+enum class CombatHitSourceKind : uint8_t
+{
+	SkeletalCollider = 0,
+	AreaHit,
+	Projectile
+};
+
 struct PendingCombatInteractionRecord
 {
 	Entity sourceEntity{ Entity::Null() };
+	Entity sourceProxyEntity{ Entity::Null() };
+	CombatHitSourceKind sourceKind{ CombatHitSourceKind::SkeletalCollider };
 	AbilityId sourceAbilityId{ InvalidAbilityId };
 	uint32_t sourceAbilityInstanceId{ 0 };
 	uint16_t sourceAttackWindowIndex{ 0 };
-	uint16_t sourceColliderIndex{ 0 };
-	uint16_t targetColliderIndex{ 0 };
+	uint16_t sourceColliderIndex{ InvalidCombatColliderIndex };
+	uint16_t targetColliderIndex{ InvalidCombatColliderIndex };
 	CombatResolveResultType resultType{ CombatResolveResultType::Hit };
 	AbilityAttackHitDef attackEffect{};
 	std::optional<AbilityGuardResponseDef> guardEffect;
@@ -90,12 +108,14 @@ struct PendingCombatResultComp : Component
 struct PendingCombatImpactEvent
 {
 	Entity sourceEntity{ Entity::Null() };
+	Entity sourceProxyEntity{ Entity::Null() };
 	Entity targetEntity{ Entity::Null() };
+	CombatHitSourceKind sourceKind{ CombatHitSourceKind::SkeletalCollider };
 	AbilityId sourceAbilityId{ InvalidAbilityId };
 	uint32_t sourceAbilityInstanceId{ 0 };
 	uint16_t sourceAttackWindowIndex{ 0 };
-	uint16_t sourceColliderIndex{ 0 };
-	uint16_t targetColliderIndex{ 0 };
+	uint16_t sourceColliderIndex{ InvalidCombatColliderIndex };
+	uint16_t targetColliderIndex{ InvalidCombatColliderIndex };
 	CombatResolveResultType resultType{ CombatResolveResultType::Hit };
 	XMFLOAT3 impactPoint{ 0.0f, 0.0f, 0.0f };
 	XMFLOAT3 swingDirection{ 0.0f, 0.0f, -1.0f };
@@ -104,6 +124,67 @@ struct PendingCombatImpactEvent
 struct PendingCombatImpactEventComp : Component
 {
 	std::vector<PendingCombatImpactEvent> events;
+};
+
+struct PendingAreaHitRequest
+{
+	Entity sourceEntity{ Entity::Null() };
+	Entity sourceProxyEntity{ Entity::Null() };
+	AbilityId sourceAbilityId{ InvalidAbilityId };
+	uint32_t sourceAbilityInstanceId{ 0 };
+	uint16_t sourceEventIndex{ 0 };
+	AreaHitId areaHitId{ InvalidAreaHitId };
+	std::optional<std::string> areaHitKey;
+	XMFLOAT3 origin{ 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 direction{ 0.0f, 0.0f, -1.0f };
+	float elapsedSec{ 0.0f };
+	bool spawnVolume{ false };
+};
+
+struct PendingAreaHitComp : Component
+{
+	std::vector<PendingAreaHitRequest> requests;
+};
+
+struct AreaVolumeStateComp : Component
+{
+	Entity owner{ Entity::Null() };
+	AbilityId sourceAbilityId{ InvalidAbilityId };
+	uint32_t sourceAbilityInstanceId{ 0 };
+	AreaHitId areaHitId{ InvalidAreaHitId };
+	std::optional<std::string> areaHitKey;
+	XMFLOAT3 origin{ 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 direction{ 0.0f, 0.0f, -1.0f };
+	float elapsedSec{ 0.0f };
+	float lifetimeSec{ 0.0f };
+	float tickIntervalSec{ 0.25f };
+	float nextTickSec{ 0.0f };
+};
+
+struct AreaHitDedupStateComp : Component
+{
+	uint32_t boundSourceInstanceId{ 0 };
+	std::vector<Entity> resolvedVictims;
+};
+
+struct ProjectileStateComp : Component
+{
+	ProjectileId projectileId{ InvalidProjectileId };
+	std::optional<std::string> projectileKey;
+	Entity owner{ Entity::Null() };
+	AbilityId sourceAbilityId{ InvalidAbilityId };
+	uint32_t sourceAbilityInstanceId{ 0 };
+	XMFLOAT3 previousPosition{ 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 direction{ 0.0f, 0.0f, -1.0f };
+	float speed{ 0.0f };
+	float elapsedSec{ 0.0f };
+	float travelledDistance{ 0.0f };
+	int remainingPierceCount{ 0 };
+};
+
+struct ProjectileHitDedupStateComp : Component
+{
+	std::vector<Entity> resolvedVictims;
 };
 
 struct CombatStatStateComp : Component

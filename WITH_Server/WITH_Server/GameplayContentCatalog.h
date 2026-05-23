@@ -2,6 +2,7 @@
 
 #include "AbilitySetDef.h"
 #include "AttributeDef.h"
+#include "CombatAreaProjectileDef.h"
 #include "GameplayEffectDef.h"
 #include "GameplayTagDef.h"
 
@@ -14,6 +15,8 @@ struct GameplayContentCatalogRoots
 	std::filesystem::path attributeRoot;
 	std::filesystem::path tagRoot;
 	std::filesystem::path effectRoot;
+	std::filesystem::path projectileRoot;
+	std::filesystem::path areaHitRoot;
 	std::filesystem::path abilityRoot;
 	std::filesystem::path abilitySetRoot;
 };
@@ -65,6 +68,16 @@ public:
 		return _effects;
 	}
 
+	const ProjectileDefRegistry& Projectiles() const noexcept
+	{
+		return _projectiles;
+	}
+
+	const AreaHitDefRegistry& AreaHits() const noexcept
+	{
+		return _areaHits;
+	}
+
 	const AbilityDefRegistry& Abilities() const noexcept
 	{
 		return _abilities;
@@ -79,6 +92,8 @@ public:
 	const AbilitySetDef* FindAbilitySetByKey(std::string_view key) const noexcept;
 	const AttributeDef* FindAttributeByKey(std::string_view key) const noexcept;
 	const GameplayEffectDef* FindEffectByKey(std::string_view key) const noexcept;
+	const ProjectileDef* FindProjectileByKey(std::string_view key) const noexcept;
+	const AreaHitDef* FindAreaHitByKey(std::string_view key) const noexcept;
 
 	void Clear() noexcept;
 	size_t Size() const noexcept;
@@ -93,6 +108,8 @@ private:
 	AttributeDefRegistry _attributes;
 	GameplayTagDefRegistry _tags;
 	GameplayEffectDefRegistry _effects;
+	ProjectileDefRegistry _projectiles;
+	AreaHitDefRegistry _areaHits;
 	AbilityDefRegistry _abilities;
 	AbilitySetDefinitionRegistries _abilitySets;
 };

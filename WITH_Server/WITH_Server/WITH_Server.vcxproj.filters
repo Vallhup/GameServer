@@ -89,6 +89,9 @@
     <ClCompile Include="CharacterDef.cpp">
       <Filter>Data\Definition</Filter>
     </ClCompile>
+    <ClCompile Include="CombatAreaProjectileDef.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
     <ClCompile Include="CharacterSpawnService.cpp">
       <Filter>SessionSystem\Entry</Filter>
     </ClCompile>
@@ -182,13 +185,31 @@
     <ClCompile Include="ECS\System\Phase6\MarkTransferPendingSystem.cpp">
       <Filter>ECS\System\Phase6</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\Phase6\AdvanceProjectileSystem.cpp">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase6\MaterializeAbilityGameplayEventSystem.cpp">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClCompile>
     <ClCompile Include="ECS\System\Phase6\ResolvePortalTriggerSystem.cpp">
       <Filter>ECS\System\Phase6</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase6\SpawnAreaVolumeSystem.cpp">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase6\SpawnProjectileSystem.cpp">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase7\ResolveAreaHitSystem.cpp">
+      <Filter>ECS\System\Phase7</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase7\ResolveCombatColliderActivationSystem.cpp">
       <Filter>ECS\System\Phase7</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase7\ResolveCombatHitSystem.cpp">
+      <Filter>ECS\System\Phase7</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase7\ResolveProjectileHitSystem.cpp">
       <Filter>ECS\System\Phase7</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.cpp">
@@ -421,6 +442,9 @@
     <ClInclude Include="CharacterDef.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
+    <ClInclude Include="CombatAreaProjectileDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
     <ClInclude Include="CharacterIdPolicy.h">
       <Filter>Data\Definition</Filter>
     </ClInclude>
@@ -547,13 +571,34 @@
     <ClInclude Include="ECS\System\Phase6\MarkTransferPendingSystem.h">
       <Filter>ECS\System\Phase6</Filter>
     </ClInclude>
+    <ClInclude Include="ECS\System\Phase6\AdvanceProjectileSystem.h">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase6\MaterializeAbilityGameplayEventSystem.h">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClInclude>
     <ClInclude Include="ECS\System\Phase6\ResolvePortalTriggerSystem.h">
       <Filter>ECS\System\Phase6</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase6\SpawnAreaVolumeSystem.h">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase6\SpawnProjectileSystem.h">
+      <Filter>ECS\System\Phase6</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase7\CombatHitResolutionUtil.h">
+      <Filter>ECS\System\Phase7</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase7\ResolveAreaHitSystem.h">
+      <Filter>ECS\System\Phase7</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase7\ResolveCombatColliderActivationSystem.h">
       <Filter>ECS\System\Phase7</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase7\ResolveCombatHitSystem.h">
+      <Filter>ECS\System\Phase7</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase7\ResolveProjectileHitSystem.h">
       <Filter>ECS\System\Phase7</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.h">
@@ -942,6 +987,9 @@
     <Filter Include="Data\JSON\AI">
       <UniqueIdentifier>{badc492c-8c12-4bfc-a424-b2dc518b848f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\JSON\AreaHit">
+      <UniqueIdentifier>{fbb51df1-cbe8-4dc4-98e6-c42abf5257a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Data\Ability\demon_striker_abilities.json">
@@ -970,6 +1018,9 @@
     </None>
     <None Include="..\Data\Ability\demon_executioner_abilities.json">
       <Filter>Data\JSON\Ability</Filter>
+    </None>
+    <None Include="..\Data\AreaHit\tank_area_hits.json">
+      <Filter>Data\JSON\AreaHit</Filter>
     </None>
     <None Include="..\Data\Character\demon_executioner.json">
       <Filter>Data\JSON\Character</Filter>

@@ -203,6 +203,7 @@ enum class AbilityCombatEffectType : uint8_t
 {
 	None,
 	AttackHit,
+	AreaHit,
 	ParryResponse,
 	GuardResponse
 };
@@ -252,6 +253,7 @@ struct AbilityCombatWindowDef
 	std::optional<GameplayEffectId> applyEffectId;
 	std::optional<AbilityCombatApplyTo> appliesTo;
 	std::optional<AbilityCombatSpatialFilterDef> spatialFilter;
+	std::vector<uint16_t> sourceHitBones;
 	std::optional<AbilityCombatEffectDef> effect;
 };
 
@@ -261,6 +263,8 @@ enum class AbilityEventKind : uint8_t
 	ConsumeItem,
 	ApplyGameplayEffect,
 	SpawnProjectile,
+	TriggerAreaHit,
+	SpawnAreaVolume,
 	PlayCue
 };
 
@@ -277,6 +281,10 @@ struct AbilityEventDef
 	std::optional<GameplayEffectId> effectId;
 	std::optional<GameplayTagId> cueTagId;
 	std::optional<uint16_t> payloadId;
+	std::optional<ProjectileId> projectileId;
+	std::optional<AreaHitId> areaHitId;
+	std::optional<std::string> projectileKey;
+	std::optional<std::string> areaHitKey;
 	AbilityEventTriggerCondition condition{
 		AbilityEventTriggerCondition::Always };
 };

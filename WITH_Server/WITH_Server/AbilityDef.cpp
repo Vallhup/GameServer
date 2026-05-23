@@ -7,6 +7,7 @@
 #include "DefKeyIndex.h"
 
 #include <algorithm>
+#include <limits>
 
 using json = nlohmann::json;
 
@@ -116,6 +117,7 @@ namespace
 		std::optional<std::string> applyEffectKey;
 		std::optional<AbilityCombatApplyTo> appliesTo;
 		std::optional<AbilityCombatSpatialFilterDto> spatialFilter;
+		std::vector<uint16_t> sourceHitBones;
 		std::optional<AbilityCombatEffectDto> effect;
 	};
 
@@ -143,6 +145,8 @@ namespace
 		std::optional<std::string> effectKey;
 		std::optional<std::string> cueTagKey;
 		std::optional<uint16_t> payloadId;
+		std::optional<std::string> projectileKey;
+		std::optional<std::string> areaHitKey;
 		AbilityEventTriggerCondition condition{
 			AbilityEventTriggerCondition::Always };
 	};
@@ -430,6 +434,7 @@ namespace
 	{
 		if (text == "None") { outValue = AbilityCombatEffectType::None; return true; }
 		if (text == "AttackHit") { outValue = AbilityCombatEffectType::AttackHit; return true; }
+		if (text == "AreaHit") { outValue = AbilityCombatEffectType::AreaHit; return true; }
 		if (text == "ParryResponse") { outValue = AbilityCombatEffectType::ParryResponse; return true; }
 		if (text == "GuardResponse") { outValue = AbilityCombatEffectType::GuardResponse; return true; }
 		return false;
@@ -442,6 +447,8 @@ namespace
 		if (text == "ConsumeItem") { outValue = AbilityEventKind::ConsumeItem; return true; }
 		if (text == "ApplyGameplayEffect") { outValue = AbilityEventKind::ApplyGameplayEffect; return true; }
 		if (text == "SpawnProjectile") { outValue = AbilityEventKind::SpawnProjectile; return true; }
+		if (text == "TriggerAreaHit") { outValue = AbilityEventKind::TriggerAreaHit; return true; }
+		if (text == "SpawnAreaVolume") { outValue = AbilityEventKind::SpawnAreaVolume; return true; }
 		if (text == "PlayCue") { outValue = AbilityEventKind::PlayCue; return true; }
 		if (text == "None") { outValue = AbilityEventKind::None; return true; }
 		return false;
@@ -478,6 +485,40 @@ namespace
 			}
 
 			outValues.push_back(item.get<std::string>());
+		}
+
+		return true;
+	}
+
+	bool ParseUInt16Array(
+		const json& node,
+		std::vector<uint16_t>& outValues,
+		std::string& outError)
+	{
+		if (!node.is_array())
+		{
+			outError = "Expected uint16 array.";
+			return false;
+		}
+
+		outValues.clear();
+		outValues.reserve(node.size());
+		for (const json& item : node)
+		{
+			if (!item.is_number_unsigned())
+			{
+				outError = "uint16 array entry must be an unsigned integer.";
+				return false;
+			}
+
+			const uint32_t value = item.get<uint32_t>();
+			if (value > std::numeric_limits<uint16_t>::max())
+			{
+				outError = "uint16 array entry is out of range.";
+				return false;
+			}
+
+			outValues.push_back(static_cast<uint16_t>(value));
 		}
 
 		return true;
@@ -980,6 +1021,16 @@ namespace
 			outDto.spatialFilter = std::move(spatialFilter);
 		}
 
+		if (node.contains("sourceHitBones") &&
+			!node.at("sourceHitBones").is_null() &&
+			!ParseUInt16Array(
+				node.at("sourceHitBones"),
+				outDto.sourceHitBones,
+				outError))
+		{
+			return false;
+		}
+
 		if (node.contains("effect") && !node.at("effect").is_null())
 		{
 			AbilityCombatEffectDto effect{};
@@ -1080,6 +1131,8 @@ namespace
 				outError) &&
 			ReadNullableString(node, "effectKey", outDto.effectKey, outError) &&
 			ReadNullableString(node, "cueTagKey", outDto.cueTagKey, outError) &&
+			ReadNullableString(node, "projectileKey", outDto.projectileKey, outError) &&
+			ReadNullableString(node, "areaHitKey", outDto.areaHitKey, outError) &&
 			ReadNullableNumber(node, "payloadId", outDto.payloadId, outError) &&
 			ReadTypedString(
 				node,
@@ -1455,6 +1508,7 @@ namespace
 		outDef.applyEffectId = std::nullopt;
 		outDef.appliesTo = dto.appliesTo;
 		outDef.spatialFilter = std::nullopt;
+		outDef.sourceHitBones = dto.sourceHitBones;
 		outDef.effect = std::nullopt;
 
 		if (dto.applyEffectKey.has_value())
@@ -1529,6 +1583,10 @@ namespace
 		outDef.effectId = std::nullopt;
 		outDef.cueTagId = std::nullopt;
 		outDef.payloadId = dto.payloadId;
+		outDef.projectileId = std::nullopt;
+		outDef.areaHitId = std::nullopt;
+		outDef.projectileKey = dto.projectileKey;
+		outDef.areaHitKey = dto.areaHitKey;
 		outDef.condition = dto.condition;
 
 		if (dto.effectKey.has_value())

@@ -203,7 +203,8 @@ namespace
 			outColliders.push_back(SkeletalCombatCollider{
 				ScaleCapsule(capsule, unitScale),
 				capsuleDef.radius * unitScale,
-				roleMask
+				roleMask,
+				capsuleDef.boneIndex
 			});
 		}
 	}

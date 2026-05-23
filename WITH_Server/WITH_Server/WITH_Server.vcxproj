@@ -189,6 +189,7 @@
     <ClCompile Include="CharacterDataService.cpp" />
     <ClCompile Include="CharacterDef.cpp" />
     <ClCompile Include="CharacterSpawnService.cpp" />
+    <ClCompile Include="CombatAreaProjectileDef.cpp" />
     <ClCompile Include="DBData.cpp" />
     <ClCompile Include="LoginAuth.cpp" />
     <ClCompile Include="ODBCDatabaseBackend.cpp" />
@@ -217,9 +218,15 @@
     <ClCompile Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.cpp" />
     <ClCompile Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.cpp" />
     <ClCompile Include="ECS\System\Phase6\MarkTransferPendingSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase6\AdvanceProjectileSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase6\MaterializeAbilityGameplayEventSystem.cpp" />
     <ClCompile Include="ECS\System\Phase6\ResolvePortalTriggerSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase6\SpawnAreaVolumeSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase6\SpawnProjectileSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase7\ResolveAreaHitSystem.cpp" />
     <ClCompile Include="ECS\System\Phase7\ResolveCombatColliderActivationSystem.cpp" />
     <ClCompile Include="ECS\System\Phase7\ResolveCombatHitSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase7\ResolveProjectileHitSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\CommitCombatResultSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\FinalizePostCommitStateSystem.cpp" />
@@ -302,6 +309,7 @@
     <ClInclude Include="AttributeDef.h" />
     <ClInclude Include="BodyCollisionTypes.h" />
     <ClInclude Include="CharacterDef.h" />
+    <ClInclude Include="CombatAreaProjectileDef.h" />
     <ClInclude Include="CharacterDataService.h" />
     <ClInclude Include="CharacterIdPolicy.h" />
     <ClInclude Include="CharacterSpawnService.h" />
@@ -353,9 +361,16 @@
     <ClInclude Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.h" />
     <ClInclude Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.h" />
     <ClInclude Include="ECS\System\Phase6\MarkTransferPendingSystem.h" />
+    <ClInclude Include="ECS\System\Phase6\AdvanceProjectileSystem.h" />
+    <ClInclude Include="ECS\System\Phase6\MaterializeAbilityGameplayEventSystem.h" />
     <ClInclude Include="ECS\System\Phase6\ResolvePortalTriggerSystem.h" />
+    <ClInclude Include="ECS\System\Phase6\SpawnAreaVolumeSystem.h" />
+    <ClInclude Include="ECS\System\Phase6\SpawnProjectileSystem.h" />
+    <ClInclude Include="ECS\System\Phase7\CombatHitResolutionUtil.h" />
+    <ClInclude Include="ECS\System\Phase7\ResolveAreaHitSystem.h" />
     <ClInclude Include="ECS\System\Phase7\ResolveCombatColliderActivationSystem.h" />
     <ClInclude Include="ECS\System\Phase7\ResolveCombatHitSystem.h" />
+    <ClInclude Include="ECS\System\Phase7\ResolveProjectileHitSystem.h" />
     <ClInclude Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.h" />
     <ClInclude Include="ECS\System\Phase8\CommitCombatResultSystem.h" />
     <ClInclude Include="ECS\System\Phase8\FinalizePostCommitStateSystem.h" />
@@ -454,6 +469,7 @@
     <None Include="..\Data\Ability\lancer_abilities.json" />
     <None Include="..\Data\Ability\paladin_abilities.json" />
     <None Include="..\Data\Ability\tank_abilities.json" />
+    <None Include="..\Data\AreaHit\tank_area_hits.json" />
     <None Include="..\Data\AI\bigdemonwarrior.json" />
     <None Include="..\Data\AI\demon_executioner.json" />
     <None Include="..\Data\AI\demon_striker.json" />

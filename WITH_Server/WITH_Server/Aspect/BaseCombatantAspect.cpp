@@ -24,6 +24,11 @@ void BaseCombatantAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<GameplayEffectStateComp>();
 	runtime.RegisterStorage<PendingProjectileSpawnComp>();
 	runtime.RegisterStorage<PendingAbilityPresentationEventComp>();
+	runtime.RegisterStorage<PendingAreaHitComp>();
+	runtime.RegisterStorage<ProjectileStateComp>();
+	runtime.RegisterStorage<ProjectileHitDedupStateComp>();
+	runtime.RegisterStorage<AreaVolumeStateComp>();
+	runtime.RegisterStorage<AreaHitDedupStateComp>();
 
 	// 전투 시그널 (CommitCombatResultSystem 등이 런타임에 동적 부착).
 	// Combatant feature 가 있는 캐릭터만 interrupt/버프 이벤트의 대상이 된다.
@@ -58,6 +63,8 @@ void BaseCombatantAspect::Attach(
 	runtime.DeferredAddComponent<PendingGameplayEffectRemoveComp>(entity);
 	runtime.DeferredAddComponent<PendingProjectileSpawnComp>(entity);
 	runtime.DeferredAddComponent<PendingAbilityPresentationEventComp>(entity);
+	runtime.DeferredAddComponent<PendingAreaHitComp>(entity);
+	runtime.DeferredAddComponent<AreaHitDedupStateComp>(entity);
 
 	if (def.HasFeature(CharacterFeatureFlags::EffectUser))
 	{

@@ -139,6 +139,16 @@ namespace
 			TransformHelper::Subtract(result.lhsPoint, result.rhsPoint));
 		return result;
 	}
+
+	bool IsExplicitSourceHitBone(
+		const AbilityCombatWindowDef& attackWindow,
+		uint16_t boneIndex) noexcept
+	{
+		return std::find(
+			attackWindow.sourceHitBones.begin(),
+			attackWindow.sourceHitBones.end(),
+			boneIndex) != attackWindow.sourceHitBones.end();
+	}
 }
 
 const StaticSystemMetaStorage<12> ResolveCombatHitSystem::kMetaStorage =
@@ -242,10 +252,14 @@ void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 			}
 
 			if (attackerDedup != nullptr &&
-				std::find(
+				std::find_if(
 					attackerDedup->resolvedVictims.begin(),
 					attackerDedup->resolvedVictims.end(),
-					victim) != attackerDedup->resolvedVictims.end())
+					[victim, windowIndex](const CombatHitResolvedVictim& resolved)
+					{
+						return resolved.victim == victim &&
+							resolved.attackWindowIndex == windowIndex;
+					}) != attackerDedup->resolvedVictims.end())
 			{
 				continue;
 			}
@@ -285,7 +299,9 @@ void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 			{
 				impactEvents->events.push_back(PendingCombatImpactEvent{
 					.sourceEntity = attacker,
+					.sourceProxyEntity = Entity::Null(),
 					.targetEntity = victim,
+					.sourceKind = CombatHitSourceKind::SkeletalCollider,
 					.sourceAbilityId = interaction.sourceAbilityId,
 					.sourceAbilityInstanceId =
 						interaction.sourceAbilityInstanceId,
@@ -319,7 +335,10 @@ void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 
 			if (attackerDedup != nullptr)
 			{
-				attackerDedup->resolvedVictims.push_back(victim);
+				attackerDedup->resolvedVictims.push_back(CombatHitResolvedVictim{
+					victim,
+					windowIndex
+				});
 			}
 		}
 	}
@@ -662,7 +681,11 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 	{
 		const SkeletalCombatCollider& sourceCollider =
 			attackerColliders.localColliders[sourceColliderIndex];
-		if (!HasRole(sourceCollider.roleMask, SkeletalCombatColliderRoleMask::Hit))
+		const bool explicitSourceHitBone =
+			!attackWindow.sourceHitBones.empty() &&
+			IsExplicitSourceHitBone(attackWindow, sourceCollider.boneIndex);
+		if (!explicitSourceHitBone &&
+			!HasRole(sourceCollider.roleMask, SkeletalCombatColliderRoleMask::Hit))
 		{
 			continue;
 		}
@@ -874,6 +897,8 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 
 	outRecord = PendingCombatInteractionRecord{
 		.sourceEntity = attacker,
+		.sourceProxyEntity = Entity::Null(),
+		.sourceKind = CombatHitSourceKind::SkeletalCollider,
 		.sourceAbilityId = attackerAbility.abilityId,
 		.sourceAbilityInstanceId = attackerAbility.abilityInstanceId,
 		.sourceAttackWindowIndex = attackWindowIndex,

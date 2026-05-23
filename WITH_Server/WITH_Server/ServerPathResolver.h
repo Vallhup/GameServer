@@ -10,6 +10,8 @@ public:
 	static std::filesystem::path GetDefaultAttributeDefRoot();
 	static std::filesystem::path GetDefaultGameplayTagDefRoot();
 	static std::filesystem::path GetDefaultGameplayEffectDefRoot();
+	static std::filesystem::path GetDefaultProjectileDefRoot();
+	static std::filesystem::path GetDefaultAreaHitDefRoot();
 	static std::filesystem::path GetDefaultAbilityDefRoot();
 	static std::filesystem::path GetDefaultAbilitySetDefRoot();
 	static std::filesystem::path GetDefaultCharacterDefRoot();

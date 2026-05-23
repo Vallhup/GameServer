@@ -537,6 +537,8 @@ bool ServerApp::InitializeGameplayContent()
 		.attributeRoot = ServerPathResolver::GetDefaultAttributeDefRoot(),
 		.tagRoot = ServerPathResolver::GetDefaultGameplayTagDefRoot(),
 		.effectRoot = ServerPathResolver::GetDefaultGameplayEffectDefRoot(),
+		.projectileRoot = ServerPathResolver::GetDefaultProjectileDefRoot(),
+		.areaHitRoot = ServerPathResolver::GetDefaultAreaHitDefRoot(),
 		.abilityRoot = ServerPathResolver::GetDefaultAbilityDefRoot(),
 		.abilitySetRoot = ServerPathResolver::GetDefaultAbilitySetDefRoot()
 	};

@@ -17,9 +17,15 @@
 #include "Phase5/ResolveCharacterOverlapSystem.h"
 #include "Phase5/ResolveNavMeshBodyConstraintSystem.h"
 #include "Phase6/MarkTransferPendingSystem.h"
+#include "Phase6/AdvanceProjectileSystem.h"
+#include "Phase6/MaterializeAbilityGameplayEventSystem.h"
 #include "Phase6/ResolvePortalTriggerSystem.h"
+#include "Phase6/SpawnAreaVolumeSystem.h"
+#include "Phase6/SpawnProjectileSystem.h"
 #include "Phase7/ResolveCombatColliderActivationSystem.h"
+#include "Phase7/ResolveAreaHitSystem.h"
 #include "Phase7/ResolveCombatHitSystem.h"
+#include "Phase7/ResolveProjectileHitSystem.h"
 #include "Phase8/CommitAbilityTimelineEventSystem.h"
 #include "Phase8/CommitCombatResultSystem.h"
 #include "Phase8/FinalizePostCommitStateSystem.h"
@@ -71,8 +77,14 @@ void GameplaySystemRegistrar::RegisterSystems(TargetT& target) const
 
 	target.RegisterSystem<ResolvePortalTriggerSystem>();
 	target.RegisterSystem<MarkTransferPendingSystem>();
+	target.RegisterSystem<MaterializeAbilityGameplayEventSystem>();
+	target.RegisterSystem<SpawnProjectileSystem>();
+	target.RegisterSystem<SpawnAreaVolumeSystem>();
+	target.RegisterSystem<AdvanceProjectileSystem>();
 
 	target.RegisterSystem<ResolveCombatColliderActivationSystem>();
+	target.RegisterSystem<ResolveProjectileHitSystem>();
+	target.RegisterSystem<ResolveAreaHitSystem>();
 	target.RegisterSystem<ResolveCombatHitSystem>();
 
 	target.RegisterSystem<CommitCombatResultSystem>();

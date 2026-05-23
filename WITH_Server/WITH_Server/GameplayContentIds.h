@@ -10,6 +10,8 @@ using AbilityFallbackReactionProfileId = uint16_t;
 using GameplayEffectId = uint16_t;
 using GameplayTagId = uint16_t;
 using AttributeId = uint16_t;
+using ProjectileId = uint16_t;
+using AreaHitId = uint16_t;
 
 inline constexpr AbilityId InvalidAbilityId = 0;
 inline constexpr AbilitySetId InvalidAbilitySetId = 0;
@@ -19,5 +21,7 @@ inline constexpr AbilityFallbackReactionProfileId InvalidAbilityFallbackReaction
 inline constexpr GameplayEffectId InvalidGameplayEffectId = 0;
 inline constexpr GameplayTagId InvalidGameplayTagId = 0;
 inline constexpr AttributeId InvalidAttributeId = 0;
+inline constexpr ProjectileId InvalidProjectileId = 0;
+inline constexpr AreaHitId InvalidAreaHitId = 0;
 
 using GameplayTagMask = uint64_t;

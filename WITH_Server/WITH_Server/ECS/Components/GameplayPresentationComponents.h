@@ -8,6 +8,10 @@ struct PendingProjectileSpawnRequest
 	AbilityId sourceAbilityId{ InvalidAbilityId };
 	uint32_t sourceAbilityInstanceId{ 0 };
 	std::optional<uint16_t> payloadId;
+	std::optional<ProjectileId> projectileId;
+	std::optional<std::string> projectileKey;
+	XMFLOAT3 origin{ 0.0f, 0.0f, 0.0f };
+	XMFLOAT3 direction{ 0.0f, 0.0f, -1.0f };
 };
 
 struct PendingProjectileSpawnComp : Component

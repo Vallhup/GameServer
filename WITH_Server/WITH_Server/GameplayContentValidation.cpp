@@ -391,6 +391,13 @@ bool ValidateAbilityDefs(
 				return false;
 			}
 
+			if (!window.sourceHitBones.empty() &&
+				window.kind != AbilityCombatWindowKind::Attack)
+			{
+				outError = "Ability source hit bones can only be set on attack windows.";
+				return false;
+			}
+
 			if (window.effect.has_value() &&
 				window.effect->parryResponse.has_value() &&
 				window.effect->parryResponse->grantEffectId.has_value() &&

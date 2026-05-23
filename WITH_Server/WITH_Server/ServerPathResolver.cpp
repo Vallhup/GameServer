@@ -104,6 +104,16 @@ std::filesystem::path ServerPathResolver::GetDefaultGameplayEffectDefRoot()
 	return GetDefaultDataRoot("Effect");
 }
 
+std::filesystem::path ServerPathResolver::GetDefaultProjectileDefRoot()
+{
+	return GetDefaultDataRoot("Projectile");
+}
+
+std::filesystem::path ServerPathResolver::GetDefaultAreaHitDefRoot()
+{
+	return GetDefaultDataRoot("AreaHit");
+}
+
 std::filesystem::path ServerPathResolver::GetDefaultAbilityDefRoot()
 {
 	return GetDefaultDataRoot("Ability");
