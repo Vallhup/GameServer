@@ -4,6 +4,7 @@
 
 class ImageUI;
 class TextUI;
+class UIComponent;
 
 enum class PartyView { Lobby, Created };
 
@@ -33,8 +34,16 @@ private:
 	void InitEscWindow();
 	void InitKeyGuide();
 	void InitSettingWindow();
+	void InitJoinRequestPopup();
 
 	void ShowPartyView(PartyView view);
+	void RefreshMyPartyText();
+	void RefreshPartyList();
+	void UpdateJoinRequestPopup(float deltaTime);
+	bool IsMyPartyLeader() const;
+
+	static constexpr int MAX_PARTY_CARDS = 4;     // 로비에 띄울 파티 개수 상한
+	static constexpr int MAX_PARTY_MEMBERS = 3;   // 한 파티의 멤버(정원) 상한
 
 	SceneType sceneType;
 
@@ -47,8 +56,6 @@ private:
 	shared_ptr<ImageUI> localCharHpBar;
 	shared_ptr<ImageUI> localCharStaminaBar;
 	shared_ptr<ImageUI> localCharPotion;
-
-	shared_ptr<TextUI>  tempStatusText;
 
 	shared_ptr<ImageUI> charHPBarBack;
 	shared_ptr<ImageUI> charHPBar;
@@ -63,8 +70,15 @@ private:
 	shared_ptr<ImageUI> partyCreateButton;
 	shared_ptr<ImageUI> partyJoinButton;
 	shared_ptr<ImageUI> partyMyPartyBox;
-	shared_ptr<ImageUI> partyBackButton;
+	vector<shared_ptr<ImageUI>> partyMyCards;
+	vector<shared_ptr<TextUI>>  partyMyLabels;
+	vector<shared_ptr<ImageUI>> partyListCards;
+	vector<shared_ptr<TextUI>>  partyListLabels;
+	vector<shared_ptr<TextUI>>  partyListCountLabels;
+	vector<uint64_t>            partyListCardIds;
+	uint64_t selectedPartyId = 0;
 	PartyView partyView = PartyView::Lobby;
+	uint64_t lastPartyRevision = 0;
 
 	shared_ptr<ImageUI> escWindow;
 	shared_ptr<ImageUI> escContinueButton;
@@ -75,4 +89,17 @@ private:
 
 	shared_ptr<ImageUI> settingWindow;
 	shared_ptr<ImageUI> settingBackButton;
+
+	shared_ptr<ImageUI> joinRequestWindow;
+	shared_ptr<TextUI>  joinRequestText;
+	shared_ptr<ImageUI> joinRequestOkButton;
+	shared_ptr<ImageUI> joinRequestCancelButton;
+	uint64_t            activeJoinRequestId = 0;
+
+	// 신청서 팝업 슬라이드 인(오른쪽 화면 밖 → 제자리)
+	vector<shared_ptr<UIComponent>> joinSlideWidgets;
+	vector<float>                   joinSlideBaseX;
+	float                           joinSlideDist = 0.0f;
+	float                           joinSlideElapsed = 0.0f;
+	static constexpr float          JOIN_SLIDE_DURATION = 0.25f;
 };

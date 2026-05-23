@@ -14,6 +14,9 @@ public:
 	void Release() override;
 
 protected:
+	const char* GetBGMPath() const override;
+	float GetBGMFadeInSeconds() const override;
+
 	void InitializeLogic() override;
 	void InitializeSceneMonsters() override;
 	void UpdateScene(const float deltaTime) override;

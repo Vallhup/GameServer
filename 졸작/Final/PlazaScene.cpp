@@ -29,7 +29,7 @@ void PlazaScene::Release()
 	myPlayer = nullptr;
 	gameObjects.clear();
 
-	SOUND_MANAGER->StopBGM();
+	SOUND_MANAGER->StopBGM(1.0f);
 
 	OutputDebugStringA("PlazaScene Data has been deleted!! \n----------------------------------------\n");
 }

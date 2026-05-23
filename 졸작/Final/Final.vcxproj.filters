@@ -820,8 +820,5 @@
     <Filter Include="Effect\Parry">
       <UniqueIdentifier>{4fc5174f-8d59-400a-9a27-1cc9bc3a477b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI\Party">
-      <UniqueIdentifier>{a626ce10-461d-43f3-a141-d25f9e9d3289}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
 </Project>

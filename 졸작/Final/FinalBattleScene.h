@@ -28,6 +28,8 @@ protected:
 	void UpdateScene(const float deltaTime) override;
 	void RequestSceneChange() override;
 
+	const char* GetBGMPath() const override;
+
 private:
 	float SampleHeightAt(float worldX, float worldZ) const;
 

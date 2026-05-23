@@ -14,6 +14,7 @@
 #include "EffectComponent.h"
 #include "FlameComponent.h"
 #include "Animator.h"
+#include "SoundManager.h"
 
 void FinalBattleScene::Release()
 {
@@ -24,6 +25,8 @@ void FinalBattleScene::Release()
 	activeMonsterTypes.clear();
 	myPlayer = nullptr;
 	gameObjects.clear();
+
+	SOUND_MANAGER->StopBGM(1.0f);
 
 	OutputDebugStringA("FinalBattleScene Data has been deleted!! \n----------------------------------------\n");
 }
@@ -195,6 +198,12 @@ void FinalBattleScene::RenderSceneEffects()
 void FinalBattleScene::RequestSceneChange()
 {
 }
+
+const char* FinalBattleScene::GetBGMPath() const
+{
+	return "../Assets/Music/BGM/CathedralBGM.mp3";
+}
+
 
 float FinalBattleScene::SampleHeightAt(float worldX, float worldZ) const
 {

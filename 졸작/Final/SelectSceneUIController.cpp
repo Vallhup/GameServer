@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "NetworkManager.h"
 #include "SceneManager.h"
+#include "SoundManager.h"
 
 void SelectSceneUIController::Init(UIManager* manager)
 {
@@ -118,6 +119,7 @@ void SelectSceneUIController::Update(float deltaTime)
 		{
 			if (cancelButton->IsMouseInside())
 			{
+				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 				selectWindow->ChangeState(ImageUIState::Hidden);
 				okButton->ChangeState(ImageUIState::Hidden);
 				cancelButton->ChangeState(ImageUIState::Hidden);
@@ -127,6 +129,7 @@ void SelectSceneUIController::Update(float deltaTime)
 			}
 			else if (okButton->IsMouseInside() && selectedChar >= 0)
 			{
+				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 				static constexpr CharacterId charIds[3] = { CharacterId::Knight, CharacterId::Lancer, CharacterId::Paladin };
 				NETWORK_MANAGER->SendCharacterSelectPacket(charIds[selectedChar]);
 				SCENE_MANAGER->RequestLoadingScene(SceneType::Plaza);
@@ -149,6 +152,7 @@ void SelectSceneUIController::Update(float deltaTime)
 
 		if (INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
+			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 			selectedChar = i;
 			windowOpen = true;
 			hoverOverlay->ChangeState(ImageUIState::Visible);

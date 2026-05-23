@@ -50,7 +50,7 @@ void Scene::Update(const float deltaTime)
     if (!bgmStarted)
     {
         if (const char* bgm = GetBGMPath())
-            SOUND_MANAGER->PlayBGM(bgm);
+            SOUND_MANAGER->PlayBGM(bgm, GetBGMFadeInSeconds());
         bgmStarted = true;
     }
 
@@ -397,6 +397,7 @@ void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 			if (id == INPUT.GetClientID())
 			{
 				myPlayer = player;
+				myCharacterType = charcterIter->second;
 				myPlayer->SetAsLocalPlayer(cam.get());
 				IMGUI.SetMyPlayer(myPlayer.get());
 				OutputDebugStringA("My character activated!\n");

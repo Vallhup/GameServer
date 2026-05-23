@@ -27,6 +27,8 @@ void FirstBattleScene::Release()
 	myPlayer = nullptr;
 	gameObjects.clear();
 
+	SOUND_MANAGER->StopBGM(1.0f);
+
 	OutputDebugStringA("FirstBattleScene Data has been deleted!! \n----------------------------------------\n");
 }
 
@@ -247,6 +249,11 @@ void FirstBattleScene::RequestSceneChange()
 			}
 		}
 	}
+}
+
+const char* FirstBattleScene::GetBGMPath() const
+{
+	return "../Assets/Music/BGM/VillageBGM.mp3";
 }
 
 float FirstBattleScene::SampleHeightAt(float worldX, float worldZ) const

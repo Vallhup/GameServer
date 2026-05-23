@@ -29,6 +29,7 @@ public:
 	virtual void Release() = 0;
 
 	Camera* GetCamera() const;
+	CharacterType GetMyCharacterType() const { return myCharacterType; }
 	void SetSceneManager(SceneManager* manager);
 	void HandlePacket(const PacketHeader& header, const BYTE* data);
 	void SetInstancingBatches(vector<shared_ptr<InstancingBatch>>&& batches);
@@ -45,6 +46,7 @@ protected:
 	virtual void RequestSceneChange() {}
 
 	virtual const char* GetBGMPath() const { return nullptr; }
+	virtual float GetBGMFadeInSeconds() const { return 0.0f; }
 
 	template<typename T>
 	shared_ptr<GameObject> CreateStaticMesh(const wstring& path, const T& data);
@@ -92,6 +94,7 @@ protected:
 	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
 	unordered_map<int, MonsterType> activeMonsterTypes;
 	shared_ptr<MainCharacter> myPlayer;
+	CharacterType myCharacterType = CharacterType::Knight;
 
 	bool bgmStarted = false;
 

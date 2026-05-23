@@ -22,10 +22,31 @@ void SoundManager::Update(float deltaTime)
         {
             fadeChannel->stop();
             fadeChannel = nullptr;
+
+            if (hasPendingBGM)   // 페이드아웃 완료 → 예약된 곡 페이드인 시작
+            {
+                hasPendingBGM = false;
+                StartBGM(pendingBGMPath.c_str(), pendingFadeIn);
+                pendingBGMPath.clear();
+            }
         }
         else
         {
             fadeChannel->setVolume(fadeTimer / fadeDuration);
+        }
+    }
+
+    if (bgmChannel && fadeInTimer > 0.0f)
+    {
+        fadeInTimer -= deltaTime;
+        if (fadeInTimer <= 0.0f)
+        {
+            fadeInTimer = 0.0f;
+            bgmChannel->setVolume(1.0f);
+        }
+        else
+        {
+            bgmChannel->setVolume(1.0f - fadeInTimer / fadeInDuration);
         }
     }
 
@@ -54,11 +75,25 @@ void SoundManager::Release()
     }
 }
 
-void SoundManager::PlayBGM(const char* path)
+void SoundManager::PlayBGM(const char* path, float fadeInSeconds)
 {
     if (currentBGMPath == path)
         return;
 
+    // 이전 곡이 페이드아웃 중이면 끝난 뒤 시작하도록 예약(순차 전환)
+    if (fadeChannel)
+    {
+        pendingBGMPath = path;
+        pendingFadeIn = fadeInSeconds;
+        hasPendingBGM = true;
+        return;
+    }
+
+    StartBGM(path, fadeInSeconds);
+}
+
+void SoundManager::StartBGM(const char* path, float fadeInSeconds)
+{
     if (bgmChannel)
         bgmChannel->stop();
 
@@ -66,9 +101,21 @@ void SoundManager::PlayBGM(const char* path)
 
     if (bgmCache.find(key) == bgmCache.end())
         system->createSound(path, FMOD_LOOP_NORMAL | FMOD_CREATESTREAM, nullptr, &bgmCache[key]);
-    
+
     currentBGMPath = path;
     system->playSound(bgmCache[key], bgmGroup, false, &bgmChannel);
+
+    if (fadeInSeconds > 0.0f)
+    {
+        fadeInDuration = fadeInSeconds;
+        fadeInTimer = fadeInSeconds;
+        bgmChannel->setVolume(0.0f);   // 0에서 시작해 Update에서 1까지 램프
+    }
+    else
+    {
+        fadeInTimer = 0.0f;
+        bgmChannel->setVolume(1.0f);
+    }
 }
 
 void SoundManager::StopBGM(float fadeSeconds)
