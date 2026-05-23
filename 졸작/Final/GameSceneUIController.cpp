@@ -551,7 +551,7 @@ bool GameSceneUIController::IsMyPartyLeader() const
 	const Protocol::PartySnapshot& snapshot = party->GetMyParty();
 	for (int i = 0; i < snapshot.members_size(); ++i)
 		if (snapshot.members(i).role() == Protocol::PARTY_MEMBER_ROLE_LEADER)
-			return snapshot.members(i).sessionid() == static_cast<uint64_t>(INPUT.GetClientID());
+			return snapshot.members(i).netid() == static_cast<uint64_t>(INPUT.GetClientID());
 	return false;
 }
 

@@ -3,7 +3,13 @@
 
 #include <algorithm>
 
+#include "FrameworkLog.h"
 #include "ServerPacketStager.h"
+
+namespace
+{
+	constexpr const char* kLogCategory = "Party";
+}
 
 PartyCommandPump::PartyCommandPump(
 	PartyCommandQueue& queue,
@@ -155,19 +161,44 @@ void PartyCommandPump::RequestJoin(
 	const PartyCommand& command,
 	double nowSec)
 {
+	FWLOG_INFO(
+		kLogCategory,
+		"JoinRequest received (sid=%u, partyId=%llu, clientRequestId=%u)",
+		command.actorSessionId,
+		static_cast<unsigned long long>(command.partyId),
+		command.clientRequestId);
+
 	const PartyResult result =
 		_partyService.RequestJoin(
 			command.actorSessionId,
 			command.partyId,
 			nowSec);
-	(void)ServerPacketStager::StagePartyCommandResultPacket(
+	const bool resultStaged =
+		ServerPacketStager::StagePartyCommandResultPacket(
 		_network,
 		command.actorSessionId,
 		command.clientRequestId,
 		result);
+	if (!resultStaged)
+	{
+		FWLOG_WARN(
+			kLogCategory,
+			"JoinRequest result stage failed (sid=%u, partyId=%llu, requestId=%llu, error=%u)",
+			command.actorSessionId,
+			static_cast<unsigned long long>(command.partyId),
+			static_cast<unsigned long long>(result.requestId),
+			static_cast<uint32_t>(result.error));
+	}
 
 	if (!result.Succeeded())
 	{
+		FWLOG_WARN(
+			kLogCategory,
+			"JoinRequest rejected (sid=%u, partyId=%llu, error=%u, clientRequestId=%u)",
+			command.actorSessionId,
+			static_cast<unsigned long long>(command.partyId),
+			static_cast<uint32_t>(result.error),
+			command.clientRequestId);
 		return;
 	}
 
@@ -182,14 +213,40 @@ void PartyCommandPump::RequestJoin(
 		});
 	if (requestIt == snapshot.joinRequests.end())
 	{
+		FWLOG_WARN(
+			kLogCategory,
+			"JoinRequest snapshot missing (sid=%u, partyId=%llu, requestId=%llu, leaderSid=%u)",
+			command.actorSessionId,
+			static_cast<unsigned long long>(result.partyId),
+			static_cast<unsigned long long>(result.requestId),
+			snapshot.leaderSessionId);
 		return;
 	}
 
-	(void)ServerPacketStager::StagePartyJoinRequestReceivedPacket(
+	const bool notifyStaged =
+		ServerPacketStager::StagePartyJoinRequestReceivedPacket(
 		_network,
 		snapshot.leaderSessionId,
 		result.partyId,
 		*requestIt);
+	FWLOG_INFO(
+		kLogCategory,
+		"JoinRequest accepted (sid=%u, partyId=%llu, requestId=%llu, leaderSid=%u, notifyStaged=%u)",
+		command.actorSessionId,
+		static_cast<unsigned long long>(result.partyId),
+		static_cast<unsigned long long>(result.requestId),
+		snapshot.leaderSessionId,
+		notifyStaged ? 1u : 0u);
+	if (!notifyStaged)
+	{
+		FWLOG_WARN(
+			kLogCategory,
+			"JoinRequest leader notify stage failed (sid=%u, partyId=%llu, requestId=%llu, leaderSid=%u)",
+			command.actorSessionId,
+			static_cast<unsigned long long>(result.partyId),
+			static_cast<unsigned long long>(result.requestId),
+			snapshot.leaderSessionId);
+	}
 }
 
 void PartyCommandPump::AcceptJoinRequest(

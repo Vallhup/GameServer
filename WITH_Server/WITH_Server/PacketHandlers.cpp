@@ -1513,6 +1513,12 @@ ExecCallResult HandlePartyJoinRequestPacket(NodeExecContext& ctx)
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
 
+    FWLOG_INFO(kLogCategory,
+        "CS_PARTY_JOIN_REQUEST parsed (sid=%u, partyId=%llu, clientRequestId=%u)",
+        ResolveSessionId(ctx),
+        static_cast<unsigned long long>(pkt.partyid()),
+        pkt.clientrequestid());
+
     SubmitPartyCommand(PartyCommand{
         .kind = PartyCommandKind::RequestJoin,
         .actorSessionId = ResolveSessionId(ctx),
