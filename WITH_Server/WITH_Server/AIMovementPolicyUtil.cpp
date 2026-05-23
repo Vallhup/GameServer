@@ -46,17 +46,6 @@ namespace
 		return !dtStatusFailed(status) && outRef != 0;
 	}
 
-	double DistanceSqXZ(
-		const DirectX::XMFLOAT3& lhs,
-		const DirectX::XMFLOAT3& rhs) noexcept
-	{
-		const double dx =
-			static_cast<double>(lhs.x) - static_cast<double>(rhs.x);
-		const double dz =
-			static_cast<double>(lhs.z) - static_cast<double>(rhs.z);
-		return dx * dx + dz * dz;
-	}
-
 	bool TryStoreDirectionTo(
 		AIContext& ctx,
 		const DirectX::XMFLOAT3& destination,
@@ -247,11 +236,11 @@ void AIMovementPolicyUtil::BuildDestinationIntent(
 		ctx.sysCtx ? ctx.sysCtx->dtSec : kPathRecomputeIntervalSec;
 
 	const bool destinationChanged =
-		DistanceSqXZ(ctx.movementRuntime->pathDestination, destination) >
+		TransformHelper::DistanceSq(ctx.movementRuntime->pathDestination, destination) >
 		kDestinationChangeEpsilonSq;
 	const bool cornerReached =
 		ctx.movementRuntime->hasPathCorner &&
-		DistanceSqXZ(ctx.selfTr->position, ctx.movementRuntime->nextPathCorner) <=
+		TransformHelper::DistanceSq(ctx.selfTr->position, ctx.movementRuntime->nextPathCorner) <=
 		kPathCornerArriveRangeSq;
 	const bool shouldRecompute =
 		!ctx.movementRuntime->hasPathCorner ||

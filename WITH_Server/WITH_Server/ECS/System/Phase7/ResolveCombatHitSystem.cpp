@@ -3,14 +3,13 @@
 
 #include "../../GameplayRuntimeComponents.h"
 #include "../GameplaySystemUtil.h"
+#include "../../../TransformHelper.h"
 
 using namespace GameplaySystemUtil;
 using namespace DirectX;
 
 namespace
 {
-	constexpr float kVectorEpsilonSq = 1.0e-6f;
-
 	struct SegmentClosestResult
 	{
 		float lhsT{ 0.0f };
@@ -20,38 +19,6 @@ namespace
 		float distanceSq{ 0.0f };
 	};
 
-	float Dot(const XMFLOAT3& lhs, const XMFLOAT3& rhs) noexcept
-	{
-		return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
-	}
-
-	XMFLOAT3 Add(const XMFLOAT3& lhs, const XMFLOAT3& rhs) noexcept
-	{
-		return XMFLOAT3{
-			lhs.x + rhs.x,
-			lhs.y + rhs.y,
-			lhs.z + rhs.z
-		};
-	}
-
-	XMFLOAT3 Subtract(const XMFLOAT3& lhs, const XMFLOAT3& rhs) noexcept
-	{
-		return XMFLOAT3{
-			lhs.x - rhs.x,
-			lhs.y - rhs.y,
-			lhs.z - rhs.z
-		};
-	}
-
-	XMFLOAT3 Scale(const XMFLOAT3& value, float scale) noexcept
-	{
-		return XMFLOAT3{
-			value.x * scale,
-			value.y * scale,
-			value.z * scale
-		};
-	}
-
 	XMFLOAT3 PointOnSegment(const Capsule& capsule, float t) noexcept
 	{
 		return XMFLOAT3{
@@ -59,22 +26,6 @@ namespace
 			capsule.p0.y + (capsule.p1.y - capsule.p0.y) * t,
 			capsule.p0.z + (capsule.p1.z - capsule.p0.z) * t
 		};
-	}
-
-	bool TryNormalize(XMFLOAT3& value) noexcept
-	{
-		const float lengthSq = Dot(value, value);
-		if (lengthSq <= kVectorEpsilonSq)
-		{
-			value = XMFLOAT3{ 0.0f, 0.0f, 0.0f };
-			return false;
-		}
-
-		const float invLength = 1.0f / std::sqrt(lengthSq);
-		value.x *= invLength;
-		value.y *= invLength;
-		value.z *= invLength;
-		return true;
 	}
 
 	SegmentClosestResult ComputeSegmentClosestPoints(
@@ -97,11 +48,11 @@ namespace
 			lhs.p0.z - rhs.p0.z
 		};
 
-		const float a = Dot(u, u);
-		const float b = Dot(u, v);
-		const float c = Dot(v, v);
-		const float d = Dot(u, w);
-		const float e = Dot(v, w);
+		const float a = TransformHelper::DotF(u, u);
+		const float b = TransformHelper::DotF(u, v);
+		const float c = TransformHelper::DotF(v, v);
+		const float d = TransformHelper::DotF(u, w);
+		const float e = TransformHelper::DotF(v, w);
 		const float determinant = a * c - b * b;
 		const float epsilon = 1.0e-6f;
 
@@ -183,9 +134,9 @@ namespace
 		result.rhsT = t;
 		result.lhsPoint = PointOnSegment(lhs, s);
 		result.rhsPoint = PointOnSegment(rhs, t);
-		result.distanceSq = Dot(
-			Subtract(result.lhsPoint, result.rhsPoint),
-			Subtract(result.lhsPoint, result.rhsPoint));
+		result.distanceSq = TransformHelper::DotF(
+			TransformHelper::Subtract(result.lhsPoint, result.rhsPoint),
+			TransformHelper::Subtract(result.lhsPoint, result.rhsPoint));
 		return result;
 	}
 }
@@ -381,35 +332,6 @@ bool ResolveCombatHitSystem::HasRole(
 	return (roleMask & static_cast<uint8_t>(role)) != 0;
 }
 
-XMMATRIX ResolveCombatHitSystem::BuildWorldMatrix(
-	const WorldTransformComp& transform)
-{
-	return XMMatrixAffineTransformation(
-		XMLoadFloat3(&transform.scale),
-		XMVectorZero(),
-		XMLoadFloat4(&transform.rotation),
-		XMLoadFloat3(&transform.position));
-}
-
-float ResolveCombatHitSystem::BuildRadiusScale(
-	const WorldTransformComp& transform) noexcept
-{
-	return std::max(
-		transform.scale.x,
-		std::max(transform.scale.y, transform.scale.z));
-}
-
-XMFLOAT3 ResolveCombatHitSystem::TransformPoint(
-	const XMMATRIX& worldMatrix,
-	const XMFLOAT3& point)
-{
-	XMFLOAT3 transformed{};
-	XMStoreFloat3(
-		&transformed,
-		XMVector3TransformCoord(XMLoadFloat3(&point), worldMatrix));
-	return transformed;
-}
-
 float ResolveCombatHitSystem::SegmentSegmentDistanceSq(
 	const Capsule& lhs,
 	const Capsule& rhs) noexcept
@@ -567,28 +489,11 @@ bool ResolveCombatHitSystem::BuildReferenceDirection(
 	AbilityCombatReferenceFrame referenceFrame,
 	XMFLOAT3& outDirection) noexcept
 {
-	auto normalizeXZ =
-		[](float& x, float& z) noexcept -> bool
-		{
-			const float lengthSq = x * x + z * z;
-			if (lengthSq <= 1.0e-6f)
-			{
-				x = 0.0f;
-				z = 0.0f;
-				return false;
-			}
-
-			const float invLength = 1.0f / std::sqrt(lengthSq);
-			x *= invLength;
-			z *= invLength;
-			return true;
-		};
-
 	float dirX = 0.0f;
 	float dirZ = 0.0f;
-	switch (referenceFrame)
-	{
+	switch (referenceFrame) {
 	case AbilityCombatReferenceFrame::MoveDirection:
+	{
 		if (const auto* locomotion =
 			ecs.GetComponent<LocomotionStateComp>(owner))
 		{
@@ -596,24 +501,26 @@ bool ResolveCombatHitSystem::BuildReferenceDirection(
 			dirZ = locomotion->desiredMoveDirZ;
 		}
 		break;
+	}
 	case AbilityCombatReferenceFrame::LockedActionDirection:
+	{
 		dirX = ownerAbility.directionX;
 		dirZ = ownerAbility.directionZ;
 		break;
+	}
 	case AbilityCombatReferenceFrame::OwnerFacing:
 	default:
+	{
 		break;
 	}
+	}
 
-	if (!normalizeXZ(dirX, dirZ))
+	if (!TransformHelper::NormalizeXZ(dirX, dirZ))
 	{
-		const XMVECTOR facing =
-			XMVector3TransformNormal(
-				XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f),
-				BuildWorldMatrix(ownerTransform));
+		const XMVECTOR facing = TransformHelper::Forward(ownerTransform);
 		dirX = XMVectorGetX(facing);
 		dirZ = XMVectorGetZ(facing);
-		if (!normalizeXZ(dirX, dirZ))
+		if (!TransformHelper::NormalizeXZ(dirX, dirZ))
 		{
 			return false;
 		}
@@ -665,15 +572,10 @@ bool ResolveCombatHitSystem::PassesSpatialFilter(
 
 	float toAttackerX = dx;
 	float toAttackerZ = dz;
-	const float lengthSq = toAttackerX * toAttackerX + toAttackerZ * toAttackerZ;
-	if (lengthSq <= 1.0e-6f)
+	if (!TransformHelper::NormalizeXZ(toAttackerX, toAttackerZ))
 	{
 		return false;
 	}
-
-	const float invLength = 1.0f / std::sqrt(lengthSq);
-	toAttackerX *= invLength;
-	toAttackerZ *= invLength;
 
 	XMFLOAT3 referenceDirection{};
 	if (!BuildReferenceDirection(
@@ -743,10 +645,10 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 		return false;
 	}
 
-	const XMMATRIX attackerWorldMatrix = BuildWorldMatrix(attackerTransform);
-	const XMMATRIX victimWorldMatrix = BuildWorldMatrix(victimTransform);
-	const float attackerRadiusScale = BuildRadiusScale(attackerTransform);
-	const float victimRadiusScale = BuildRadiusScale(victimTransform);
+	const XMMATRIX attackerWorldMatrix = TransformHelper::ToMatrix(attackerTransform);
+	const XMMATRIX victimWorldMatrix   = TransformHelper::ToMatrix(victimTransform);
+	const float attackerRadiusScale    = TransformHelper::MaxScaleComponent(attackerTransform);
+	const float victimRadiusScale      = TransformHelper::MaxScaleComponent(victimTransform);
 
 	int bestPriority = 0;
 	bool foundInteraction = false;
@@ -766,8 +668,8 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 		}
 
 		const Capsule worldSourceCapsule{
-			TransformPoint(attackerWorldMatrix, sourceCollider.capsule.p0),
-			TransformPoint(attackerWorldMatrix, sourceCollider.capsule.p1)
+			TransformHelper::TransformPoint(attackerWorldMatrix, sourceCollider.capsule.p0),
+			TransformHelper::TransformPoint(attackerWorldMatrix, sourceCollider.capsule.p1)
 		};
 		const float worldSourceRadius = sourceCollider.radius * attackerRadiusScale;
 
@@ -836,8 +738,8 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 			}
 
 			const Capsule worldTargetCapsule{
-				TransformPoint(victimWorldMatrix, targetCollider.capsule.p0),
-				TransformPoint(victimWorldMatrix, targetCollider.capsule.p1)
+				TransformHelper::TransformPoint(victimWorldMatrix, targetCollider.capsule.p0),
+				TransformHelper::TransformPoint(victimWorldMatrix, targetCollider.capsule.p1)
 			};
 			const float worldTargetRadius = targetCollider.radius * victimRadiusScale;
 			if (!CapsulesOverlap(
@@ -883,12 +785,12 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 	const SkeletalCombatCollider& bestTargetCollider =
 		victimColliders.localColliders[bestTargetColliderIndex];
 	const Capsule bestWorldSourceCapsule{
-		TransformPoint(attackerWorldMatrix, bestSourceCollider.capsule.p0),
-		TransformPoint(attackerWorldMatrix, bestSourceCollider.capsule.p1)
+		TransformHelper::TransformPoint(attackerWorldMatrix, bestSourceCollider.capsule.p0),
+		TransformHelper::TransformPoint(attackerWorldMatrix, bestSourceCollider.capsule.p1)
 	};
 	const Capsule bestWorldTargetCapsule{
-		TransformPoint(victimWorldMatrix, bestTargetCollider.capsule.p0),
-		TransformPoint(victimWorldMatrix, bestTargetCollider.capsule.p1)
+		TransformHelper::TransformPoint(victimWorldMatrix, bestTargetCollider.capsule.p0),
+		TransformHelper::TransformPoint(victimWorldMatrix, bestTargetCollider.capsule.p1)
 	};
 	const float bestWorldSourceRadius =
 		bestSourceCollider.radius * attackerRadiusScale;
@@ -900,13 +802,13 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 			bestWorldTargetCapsule);
 
 	XMFLOAT3 contactNormal =
-		Subtract(contact.rhsPoint, contact.lhsPoint);
-	if (!TryNormalize(contactNormal))
+		TransformHelper::Subtract(contact.rhsPoint, contact.lhsPoint);
+	if (!TransformHelper::TryNormalize(contactNormal))
 	{
-		contactNormal = Subtract(
+		contactNormal = TransformHelper::Subtract(
 			victimTransform.position,
 			attackerTransform.position);
-		if (!TryNormalize(contactNormal) &&
+		if (!TransformHelper::TryNormalize(contactNormal) &&
 			!BuildReferenceDirection(
 				ecs,
 				attacker,
@@ -920,11 +822,11 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 	}
 
 	const XMFLOAT3 sourceSurfacePoint =
-		Add(contact.lhsPoint, Scale(contactNormal, bestWorldSourceRadius));
+		TransformHelper::Add(contact.lhsPoint, TransformHelper::Scale(contactNormal, bestWorldSourceRadius));
 	const XMFLOAT3 targetSurfacePoint =
-		Subtract(contact.rhsPoint, Scale(contactNormal, bestWorldTargetRadius));
+		TransformHelper::Subtract(contact.rhsPoint, TransformHelper::Scale(contactNormal, bestWorldTargetRadius));
 	const XMFLOAT3 impactPoint =
-		Scale(Add(sourceSurfacePoint, targetSurfacePoint), 0.5f);
+		TransformHelper::Scale(TransformHelper::Add(sourceSurfacePoint, targetSurfacePoint), 0.5f);
 
 	XMFLOAT3 swingDirection{ 0.0f, 0.0f, -1.0f };
 	bool hasSwingDirection = false;
@@ -935,17 +837,17 @@ bool ResolveCombatHitSystem::TryBuildInteractionRecord(
 		const SkeletalCombatCollider& previousSourceCollider =
 			attackerColliders.previousFrameLocalColliders[bestSourceColliderIndex];
 		const Capsule previousWorldSourceCapsule{
-			TransformPoint(
+			TransformHelper::TransformPoint(
 				attackerWorldMatrix,
 				previousSourceCollider.capsule.p0),
-			TransformPoint(
+			TransformHelper::TransformPoint(
 				attackerWorldMatrix,
 				previousSourceCollider.capsule.p1)
 		};
-		swingDirection = Subtract(
+		swingDirection = TransformHelper::Subtract(
 			contact.lhsPoint,
 			PointOnSegment(previousWorldSourceCapsule, contact.lhsT));
-		hasSwingDirection = TryNormalize(swingDirection);
+		hasSwingDirection = TransformHelper::TryNormalize(swingDirection);
 	}
 	if (!hasSwingDirection &&
 		!BuildReferenceDirection(

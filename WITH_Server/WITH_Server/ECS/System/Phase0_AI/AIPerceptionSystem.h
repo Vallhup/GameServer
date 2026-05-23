@@ -38,6 +38,10 @@ private:
 	};
 
 
+	static void EnterReturnHome(
+		AIBlackboardComp& blackboard,
+		AIPerceptionComp& perception);
+
 	double ComputeScore(
 		const PerceptionCandidate& candidate,
 		const AIPerceptionTuningDef& perception,

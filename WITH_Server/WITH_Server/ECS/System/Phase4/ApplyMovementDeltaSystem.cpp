@@ -22,21 +22,6 @@ const StaticSystemMetaStorage<6> ApplyMovementDeltaSystem::kMetaStorage =
 
 void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 {
-	auto ApplyDeltaYaw =
-		[](WorldTransformComp& tr, float deltaYaw)
-		{
-			if (std::abs(deltaYaw) <= kOverlapEpsilon)
-				return;
-
-			XMVECTOR curRot = XMLoadFloat4(&tr.rotation);
-			XMVECTOR deltaRot = XMQuaternionRotationAxis(
-				XMVectorSet(0.f, 1.f, 0.f, 0.f),
-				deltaYaw);
-			XMVECTOR nextRot = XMQuaternionMultiply(deltaRot, curRot);
-			nextRot = XMQuaternionNormalize(nextRot);
-			XMStoreFloat4(&tr.rotation, nextRot);
-		};
-
 	for (auto [
 		entity,
 		transform,
@@ -66,14 +51,14 @@ void ApplyMovementDeltaSystem::Execute(SystemContext& ctx)
 			transform.position.x += abilityDelta.deltaPosition.x;
 			transform.position.y += abilityDelta.deltaPosition.y;
 			transform.position.z += abilityDelta.deltaPosition.z;
-			ApplyDeltaYaw(transform, abilityDelta.deltaYawRad);
+			TransformHelper::ApplyYawRotation(transform,abilityDelta.deltaYawRad);
 		}
 		else if (!IsAbilityActive(abilityState) && locomotionDelta.hasDelta)
 		{
 			transform.position.x += locomotionDelta.deltaPosition.x;
 			transform.position.y += locomotionDelta.deltaPosition.y;
 			transform.position.z += locomotionDelta.deltaPosition.z;
-			ApplyDeltaYaw(transform, locomotionDelta.deltaYawRad);
+			TransformHelper::ApplyYawRotation(transform,locomotionDelta.deltaYawRad);
 		}
 
 		preCollision.candidatePosition = transform.position;

@@ -10,55 +10,6 @@
 
 using namespace GameplaySystemUtil;
 
-namespace
-{
-	const std::array<AccessSpec, 6> kAIPerceptionAccesses{
-		ReadImmediate(ComponentRes<AIControlledTag>()),
-		ReadImmediate(ComponentRes<WorldTransformComp>()),
-		ReadImmediate(ComponentRes<AITypeComp>()),
-		ReadImmediate(ComponentRes<SpawnTypeComp>()),
-		WriteImmediate(ComponentRes<AIBlackboardComp>()),
-		WriteImmediate(ComponentRes<AIPerceptionComp>()),
-	};
-
-	static double ClampDouble(double value, double minValue, double maxValue) noexcept
-	{
-		return std::clamp(value, minValue, maxValue);
-	}
-
-	static double DistanceSqXZ(const XMFLOAT3& lhs, const XMFLOAT3& rhs) noexcept
-	{
-		const double dx = lhs.x - rhs.x;
-		const double dz = lhs.z - rhs.z;
-		return dx * dx + dz * dz;
-	}
-
-	static void ClearPerceptionTarget(AIPerceptionComp& perception)
-	{
-		perception.hasTarget = false;
-		perception.selectedTarget = Entity::Null();
-		perception.distanceToTarget = std::numeric_limits<double>::max();
-		perception.distanceToTargetSq = std::numeric_limits<double>::max();
-		perception.targetForwardDot = std::numeric_limits<double>::lowest();
-		perception.targetVisible = false;
-		perception.targetInSightRange = false;
-		perception.targetInAttackRange = false;
-		perception.targetInFront = false;
-	}
-
-	static void EnterReturnHome(
-		AIBlackboardComp& blackboard,
-		AIPerceptionComp& perception)
-	{
-		blackboard.currentTarget = Entity::Null();
-		blackboard.forceRetarget = false;
-		blackboard.returningHome = true;
-		blackboard.returnHomeLockoutAcc = 0.0;
-		blackboard.leashGauge = 0.0;
-		ClearPerceptionTarget(perception);
-	}
-}
-
 const StaticSystemMetaStorage<6> AIPerceptionSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<AIPerceptionSystem>(),
@@ -80,21 +31,32 @@ void AIPerceptionSystem::Execute(SystemContext& ctx)
 		AIControlledTag, WorldTransformComp, AITypeComp,
 		AIBlackboardComp, AIPerceptionComp>())
 	{
-		const AIBehaviorProfileDef* profile =
-			GameDataCatalog::Current().AIBehaviors().Find(aiType.aiProfileId);
-		const AIPerceptionTuningDef tuning =
-			profile != nullptr ? profile->perception : AIPerceptionTuningDef{};
-		const AITargetingTuningDef targeting =
-			profile != nullptr ? profile->targeting : AITargetingTuningDef{};
+		AIPerceptionTuningDef perceptionTuning{};
+		AITargetingTuningDef  targetingTuning{};
+		if (const AIBehaviorProfileDef* profile =
+			GameDataCatalog::Current().AIBehaviors().Find(aiType.aiProfileId))
+		{
+			perceptionTuning = profile->perception;
+			targetingTuning = profile->targeting;
+		}
+
 		BuildPerception(
-			entity,
-			selfTr,
-			tuning,
-			targeting,
-			blackboard,
-			perception,
-			ctx);
+			entity, selfTr, perceptionTuning, targetingTuning,
+			blackboard, perception, ctx);
 	}
+}
+
+void AIPerceptionSystem::EnterReturnHome(
+	AIBlackboardComp& blackboard, 
+	AIPerceptionComp& perception)
+{
+	blackboard.currentTarget = Entity::Null();
+	blackboard.forceRetarget = false;
+	blackboard.returningHome = true;
+	blackboard.returnHomeLockoutAcc = 0.0;
+	blackboard.leashGauge = 0.0;
+
+	perception.Clear();
 }
 
 double AIPerceptionSystem::ComputeScore(
@@ -107,7 +69,7 @@ double AIPerceptionSystem::ComputeScore(
 		return std::numeric_limits<double>::lowest();
 	}
 
-	const double sightSq = perception.sightRange * perception.sightRange;
+	const double sightSq     = perception.sightRange * perception.sightRange;
 	const double safeSightSq = std::max(0.001, sightSq);
 
 	double distanceScore = 1.0 - (candidate.distSq / safeSightSq);
@@ -116,8 +78,10 @@ double AIPerceptionSystem::ComputeScore(
 	double score{ distanceScore * 10.0 };
 	if (candidate.isCurrentTarget)
 		score += targeting.targetKeepBonus;
+
 	if (candidate.isLastAttacker)
 		score += targeting.lastAttackerBonus;
+
 	if (candidate.inFront)
 		score += targeting.frontBonus;
 
@@ -133,26 +97,26 @@ AIPerceptionSystem::PerceptionCandidate AIPerceptionSystem::EvaluateCandidate(
 	Entity other) const noexcept
 {
 	PerceptionCandidate out;
-	out.entity = other;
+	out.entity          = other;
 	out.isCurrentTarget = (blackboard.currentTarget == other);
-	out.isLastAttacker = (blackboard.lastAttacker == other);
+	out.isLastAttacker  = (blackboard.lastAttacker == other);
 
 	const double distSq = TransformHelper::DistanceSq(selfTr, otherTr);
 	out.distSq = distSq;
 
-	const double sightSq = tuning.sightRange * tuning.sightRange;
+	const double sightSq  = tuning.sightRange * tuning.sightRange;
 	const double attackSq = tuning.attackRange * tuning.attackRange;
 
-	out.inSightRange = (distSq <= sightSq);
+	out.inSightRange  = (distSq <= sightSq);
 	out.inAttackRange = (distSq <= attackSq);
 
 	const XMVECTOR selfForward = TransformHelper::Forward(selfTr);
-	const XMVECTOR toTarget = TransformHelper::Direction(selfTr, otherTr);
+	const XMVECTOR toTarget    = TransformHelper::Direction(selfTr, otherTr);
 
 	out.forwardDot = TransformHelper::Dot(selfForward, toTarget);
-	out.inFront = (out.forwardDot >= tuning.frontDotThreshold);
-	out.visible = out.inSightRange;
-	out.score = ComputeScore(out, tuning, targeting);
+	out.inFront	   = (out.forwardDot >= tuning.frontDotThreshold);
+	out.visible	   = out.inSightRange;
+	out.score      = ComputeScore(out, tuning, targeting);
 	return out;
 }
 
@@ -192,33 +156,26 @@ void AIPerceptionSystem::BuildPerception(
 	const double softLeashSq = tuning.leashRange * tuning.leashRange;
 	const double hardLeashSq = tuning.hardLeashRange * tuning.hardLeashRange;
 
-	for (const auto& [other, otherTr, __] :
+	for (const auto& [other, otherTr, _] :
 		ecs.View<WorldTransformComp, SpawnTypeComp>())
 	{
-		if (other == self)
+		if (other == self ||
+			IsSameFaction(ecs, self, other))
+		{
 			continue;
-		if (IsSameFaction(ecs, self, other))
-			continue;
+		}
 
-		const double homeDistSq =
-			DistanceSqXZ(blackboard.homePosition, otherTr.position);
-		const bool isCurrentTarget = (blackboard.currentTarget == other);
-		const bool inAggroRange = homeDistSq <= aggroSq;
-		const bool inHardLeashRange = homeDistSq <= hardLeashSq;
-		const bool canAcquire = !reaggroLocked && inAggroRange;
-		const bool canKeepCurrent = isCurrentTarget;
+		const double homeDistSq       = TransformHelper::DistanceSq(blackboard.homePosition, otherTr.position);
+		const bool   isCurrentTarget  = (blackboard.currentTarget == other);
+		const bool   inAggroRange     = homeDistSq <= aggroSq;
+		const bool   inHardLeashRange = homeDistSq <= hardLeashSq;
+		const bool   canAcquire		  = !reaggroLocked && inAggroRange;
+		const bool   canKeepCurrent   = isCurrentTarget;
 
 		if (!canAcquire && !canKeepCurrent)
 			continue;
 
-		PerceptionCandidate cand =
-			EvaluateCandidate(
-				selfTr,
-				otherTr,
-				tuning,
-				targeting,
-				blackboard,
-				other);
+		PerceptionCandidate cand = EvaluateCandidate(selfTr, otherTr, tuning, targeting, blackboard, other);
 		cand.inSightRange = inAggroRange;
 		cand.visible = isCurrentTarget ? inHardLeashRange : inAggroRange;
 		cand.score = ComputeScore(cand, tuning, targeting);
@@ -250,14 +207,12 @@ void AIPerceptionSystem::BuildPerception(
 			}
 			else if (!blackboard.returningHome)
 			{
-				blackboard.leashGauge = ClampDouble(
-					blackboard.leashGauge + tuning.leashRecoverPerSec * sysCtx.dtSec,
-					0.0,
-					tuning.leashGaugeMax);
+				const double nextLeashGauge = blackboard.leashGauge + tuning.leashRecoverPerSec * sysCtx.dtSec;
+				blackboard.leashGauge = std::clamp(nextLeashGauge, 0.0, tuning.leashGaugeMax);
 			}
 		}
 
-		ClearPerceptionTarget(perception);
+		perception.Clear();
 		return;
 	}
 
@@ -289,11 +244,11 @@ void AIPerceptionSystem::BuildPerception(
 	if (finalCand.visible)
 	{
 		blackboard.timeSinceCurrentTargetSeen = 0.0;
-		const WorldTransformComp* targetTr =
-			ecs.GetComponent<WorldTransformComp>(finalCand.entity);
-		if (targetTr != nullptr)
+		
+		if (const WorldTransformComp* targetTr =
+			ecs.GetComponent<WorldTransformComp>(finalCand.entity))
 		{
-			blackboard.lastKnownTargetPosition = targetTr->position;
+			blackboard.lastKnownTargetPosition    = targetTr->position;
 			blackboard.hasLastKnownTargetPosition = true;
 		}
 	}
@@ -302,15 +257,12 @@ void AIPerceptionSystem::BuildPerception(
 		blackboard.timeSinceCurrentTargetSeen += sysCtx.dtSec;
 	}
 
-	const WorldTransformComp* finalTargetTr =
-		ecs.GetComponent<WorldTransformComp>(finalCand.entity);
-	if (finalTargetTr != nullptr)
+	if (const WorldTransformComp* finalTargetTr = 
+		ecs.GetComponent<WorldTransformComp>(finalCand.entity))
 	{
-		const double selfHomeDistSq =
-			DistanceSqXZ(blackboard.homePosition, selfTr.position);
-		const double targetHomeDistSq =
-			DistanceSqXZ(blackboard.homePosition, finalTargetTr->position);
-		const double leashDistSq = std::max(selfHomeDistSq, targetHomeDistSq);
+		const double selfHomeDistSq   = TransformHelper::DistanceSq(blackboard.homePosition, selfTr.position);
+		const double targetHomeDistSq = TransformHelper::DistanceSq(blackboard.homePosition, finalTargetTr->position);
+		const double leashDistSq      = std::max(selfHomeDistSq, targetHomeDistSq);
 
 		if (leashDistSq > hardLeashSq)
 		{
@@ -325,11 +277,7 @@ void AIPerceptionSystem::BuildPerception(
 			blackboard.leashGauge += tuning.leashRecoverPerSec * sysCtx.dtSec;
 		}
 
-		blackboard.leashGauge = ClampDouble(
-			blackboard.leashGauge,
-			0.0,
-			tuning.leashGaugeMax);
-
+		blackboard.leashGauge = std::clamp(blackboard.leashGauge, 0.0, tuning.leashGaugeMax);
 		if (blackboard.leashGauge <= 0.0)
 		{
 			EnterReturnHome(blackboard, perception);
@@ -337,13 +285,13 @@ void AIPerceptionSystem::BuildPerception(
 		}
 	}
 
-	perception.hasTarget = true;
-	perception.selectedTarget = finalCand.entity;
-	perception.distanceToTargetSq = finalCand.distSq;
-	perception.distanceToTarget = std::sqrt(finalCand.distSq);
-	perception.targetForwardDot = finalCand.forwardDot;
-	perception.targetVisible = finalCand.visible;
-	perception.targetInSightRange = finalCand.inSightRange;
+	perception.hasTarget		   = true;
+	perception.selectedTarget	   = finalCand.entity;
+	perception.distanceToTargetSq  = finalCand.distSq;
+	perception.distanceToTarget	   = std::sqrt(finalCand.distSq);
+	perception.targetForwardDot	   = finalCand.forwardDot;
+	perception.targetVisible	   = finalCand.visible;
+	perception.targetInSightRange  = finalCand.inSightRange;
 	perception.targetInAttackRange = finalCand.inAttackRange;
-	perception.targetInFront = finalCand.inFront;
+	perception.targetInFront	   = finalCand.inFront;
 }

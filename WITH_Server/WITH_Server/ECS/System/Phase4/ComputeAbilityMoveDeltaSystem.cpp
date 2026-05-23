@@ -18,22 +18,6 @@ namespace
 		ReadImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
 	};
 
-	void DirectionFromTransform(
-		const WorldTransformComp& transform,
-		float& outDirX, 
-		float& outDirZ)
-	{
-		XMVECTOR fwd = TransformHelper::Forward(transform);
-		outDirX = XMVectorGetX(fwd);
-		outDirZ = XMVectorGetZ(fwd);
-		NormalizeXZ(outDirX, outDirZ);
-	}
-
-	bool HasDirection(float dirX, float dirZ)
-	{
-		return LengthXZ(dirX, dirZ) > kOverlapEpsilon;
-	}
-
 	bool EnteredSegmentThisFrame(
 		const AbilityTimelineAdvanceComp& advance,
 		float segmentStartSec)
@@ -63,7 +47,12 @@ namespace
 			NormalizeXZ(outDirX, outDirZ);
 			break;
 		case AbilityDirectionPolicy::FacingDirection:
-			DirectionFromTransform(transform, outDirX, outDirZ);
+			{
+			XMVECTOR fwd = TransformHelper::Forward(transform);
+			outDirX = XMVectorGetX(fwd);
+			outDirZ = XMVectorGetZ(fwd);
+			NormalizeXZ(outDirX, outDirZ);
+		}
 			break;
 		case AbilityDirectionPolicy::LockedDirection:
 			if (moveRuntime.hasLockedDirection)
@@ -77,16 +66,19 @@ namespace
 			break;
 		}
 
-		if (!HasDirection(outDirX, outDirZ) && moveRuntime.hasLockedDirection)
+		if (LengthXZ(outDirX, outDirZ) <= kOverlapEpsilon && moveRuntime.hasLockedDirection)
 		{
 			outDirX = moveRuntime.lockedDirX;
 			outDirZ = moveRuntime.lockedDirZ;
 			NormalizeXZ(outDirX, outDirZ);
 		}
 
-		if (!HasDirection(outDirX, outDirZ))
+		if (LengthXZ(outDirX, outDirZ) <= kOverlapEpsilon)
 		{
-			DirectionFromTransform(transform, outDirX, outDirZ);
+			XMVECTOR fwd = TransformHelper::Forward(transform);
+			outDirX = XMVectorGetX(fwd);
+			outDirZ = XMVectorGetZ(fwd);
+			NormalizeXZ(outDirX, outDirZ);
 		}
 	}
 
@@ -118,7 +110,7 @@ namespace
 			dirX,
 			dirZ);
 
-		if (!HasDirection(dirX, dirZ))
+		if (LengthXZ(dirX, dirZ) <= kOverlapEpsilon)
 		{
 			return;
 		}
@@ -189,7 +181,7 @@ namespace
 			moveRuntime.targetDashTargetX - moveRuntime.targetDashStartX;
 		float dirZ =
 			moveRuntime.targetDashTargetZ - moveRuntime.targetDashStartZ;
-		if (HasDirection(dirX, dirZ))
+		if (LengthXZ(dirX, dirZ) > kOverlapEpsilon)
 		{
 			NormalizeXZ(dirX, dirZ);
 			const float currYaw =
@@ -235,7 +227,7 @@ namespace
 		outSegmentDelta.x = totalX * (currAlpha - prevAlpha);
 		outSegmentDelta.z = totalZ * (currAlpha - prevAlpha);
 
-		if (HasDirection(outSegmentDelta.x, outSegmentDelta.z))
+		if (LengthXZ(outSegmentDelta.x, outSegmentDelta.z) > kOverlapEpsilon)
 		{
 			moveDelta.deltaPosition.x += outSegmentDelta.x;
 			moveDelta.deltaPosition.z += outSegmentDelta.z;
@@ -361,7 +353,7 @@ void ComputeAbilityMoveDeltaSystem::Execute(SystemContext& ctx)
 			}
 
 			if (segment.rotationMode == AbilityRotationMode::FaceMoveDirection &&
-				HasDirection(segmentDelta.x, segmentDelta.z))
+				LengthXZ(segmentDelta.x, segmentDelta.z) > kOverlapEpsilon)
 			{
 				const float currYaw =
 					TransformHelper::QuaternionToYaw(transform.rotation);

@@ -24,6 +24,11 @@ struct AIPerceptionComp : Component
 	uint32_t hostileInSightCount{ 0 };
 
 	uint64_t builtFrame{ 0 };
+
+	inline void Clear()
+	{
+		*this = {};
+	}
 };
 
 struct AIBlackboardComp : Component

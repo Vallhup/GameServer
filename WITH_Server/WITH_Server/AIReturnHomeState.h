@@ -12,4 +12,9 @@ public:
 
 	virtual void DecisionUpdate(AIContext& ctx, const double decisionDT) const override;
 	virtual void FrameUpdate(AIContext& ctx, const double dT) const override;
+
+private:
+	static bool HasArrivedHome(const AIContext& ctx) noexcept;
+	static void RecoverHp(AIContext& ctx, double dT);
+	static void ClearReturnTarget(AIContext& ctx);
 };

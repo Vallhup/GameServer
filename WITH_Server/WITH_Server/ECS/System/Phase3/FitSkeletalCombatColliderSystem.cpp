@@ -6,6 +6,7 @@
 
 #include "../../../AnimationRegistry.h"
 #include "../GameplaySystemUtil.h"
+#include "../../../TransformHelper.h"
 
 using namespace GameplaySystemUtil;
 
@@ -52,14 +53,6 @@ namespace
 			clip.skeleton == "FinalBoss";
 	}
 
-	float DistanceSq(const XMFLOAT3& lhs, const XMFLOAT3& rhs) noexcept
-	{
-		const float dx = lhs.x - rhs.x;
-		const float dy = lhs.y - rhs.y;
-		const float dz = lhs.z - rhs.z;
-		return dx * dx + dy * dy + dz * dz;
-	}
-
 	XMFLOAT3 CapsuleCenter(const Capsule& capsule) noexcept
 	{
 		return XMFLOAT3{
@@ -72,10 +65,10 @@ namespace
 	float CapsuleMotionScore(const Capsule& previous, const Capsule& current) noexcept
 	{
 		return std::max(
-			DistanceSq(previous.p0, current.p0),
+			TransformHelper::DistanceSq3D(previous.p0, current.p0),
 			std::max(
-				DistanceSq(previous.p1, current.p1),
-				DistanceSq(CapsuleCenter(previous), CapsuleCenter(current))));
+				TransformHelper::DistanceSq3D(previous.p1, current.p1),
+				TransformHelper::DistanceSq3D(CapsuleCenter(previous), CapsuleCenter(current))));
 	}
 
 	bool HasCapsuleRole(

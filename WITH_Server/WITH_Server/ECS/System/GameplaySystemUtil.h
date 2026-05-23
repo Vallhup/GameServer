@@ -13,6 +13,7 @@
 #include "../../GameplayContentCatalog.h"
 #include "WorldRuntime.h"
 #include "../GameplayRuntimeComponents.h"
+#include "../../TransformHelper.h"
 
 namespace GameplaySystemUtil
 {
@@ -26,61 +27,35 @@ namespace GameplaySystemUtil
 
 	inline float ClampFloat(float value, float minValue, float maxValue)
 	{
-		return std::max(minValue, std::min(maxValue, value));
+		return std::clamp(value, minValue, maxValue);
 	}
+
+	// 아래 수학 함수들은 TransformHelper에 정의된 구현을 사용합니다.
+	// 기존 호출자의 'using namespace GameplaySystemUtil' 호환성을 유지합니다.
 
 	inline float LengthXZ(float x, float z)
 	{
-		return std::sqrt(x * x + z * z);
+		return TransformHelper::LengthXZ(x, z);
 	}
 
 	inline void NormalizeXZ(float& x, float& z)
 	{
-		const float length = LengthXZ(x, z);
-		if (length <= kOverlapEpsilon)
-		{
-			x = 0.0f;
-			z = 0.0f;
-			return;
-		}
-
-		x /= length;
-		z /= length;
+		TransformHelper::NormalizeXZ(x, z);
 	}
 
 	inline float WrapYaw(float yawRad)
 	{
-		constexpr float twoPi = 2.0f * kPi;
-		while (yawRad > kPi)
-		{
-			yawRad -= twoPi;
-		}
-		while (yawRad < -kPi)
-		{
-			yawRad += twoPi;
-		}
-		return yawRad;
+		return TransformHelper::WrapPi(yawRad);
 	}
 
 	inline float DirToYaw(float x, float z, float fallbackYaw)
 	{
-		if (LengthXZ(x, z) <= kOverlapEpsilon)
-		{
-			return fallbackYaw;
-		}
-
-		return std::atan2(-x, -z);
+		return TransformHelper::DirToYaw(x, z, fallbackYaw);
 	}
 
 	inline float ClampYawStep(float currentYaw, float targetYaw, float maxStep)
 	{
-		const float delta = WrapYaw(targetYaw - currentYaw);
-		if (std::abs(delta) <= maxStep)
-		{
-			return targetYaw;
-		}
-
-		return WrapYaw(currentYaw + std::copysign(maxStep, delta));
+		return TransformHelper::ClampYawStep(currentYaw, targetYaw, maxStep);
 	}
 
 	inline bool IsAbilityActive(const AbilityStateComp& abilityState)

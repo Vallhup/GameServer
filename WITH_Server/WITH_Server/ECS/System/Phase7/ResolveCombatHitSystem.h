@@ -34,16 +34,6 @@ private:
 		uint8_t roleMask,
 		SkeletalCombatColliderRoleMask role) noexcept;
 
-	static DirectX::XMMATRIX BuildWorldMatrix(
-		const WorldTransformComp& transform);
-
-	static float BuildRadiusScale(
-		const WorldTransformComp& transform) noexcept;
-
-	static DirectX::XMFLOAT3 TransformPoint(
-		const DirectX::XMMATRIX& worldMatrix,
-		const DirectX::XMFLOAT3& point);
-
 	static float SegmentSegmentDistanceSq(
 		const Capsule& lhs,
 		const Capsule& rhs) noexcept;
