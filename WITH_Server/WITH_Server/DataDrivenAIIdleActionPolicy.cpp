@@ -29,27 +29,22 @@ void DataDrivenAIIdleActionPolicy::TryIssueIdleAction(AIContext& ctx) const
 	{
 		return;
 	}
-
-	std::vector<IdleActionCandidate> candidates =
-		CollectCandidates(selection);
+	
+	std::vector<IdleActionCandidate> candidates = CollectCandidates(selection);
 
 	size_t selectedActionIndex{ 0 };
-	const AIActionDef* selectedAction =
-		PickIdleAction(selection, candidates, selectedActionIndex);
-
-	if (selectedAction == nullptr)
-		return;
-
-	IssueIdleAction(selection, *selectedAction);
-	ApplyRuntimeSelection(
-		selection,
-		*selectedAction,
-		static_cast<size_t>(selection.runtimeOffset) +
-		selectedActionIndex);
+	if (const AIActionDef* selectedAction =	
+		PickIdleAction(selection, candidates, selectedActionIndex))
+	{
+		IssueIdleAction(selection, *selectedAction);
+		ApplyRuntimeSelection(
+			selection, *selectedAction,
+			static_cast<size_t>(selection.runtimeOffset) + selectedActionIndex);
+	}
 }
 bool DataDrivenAIIdleActionPolicy::CanStartIdleAction(AIContext& ctx) noexcept
 {
-    return 
+	return 
 		ctx.sysCtx				!= nullptr &&
 		ctx.behaviorProfile		!= nullptr &&
 		ctx.intent				!= nullptr &&

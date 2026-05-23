@@ -1,152 +1,10 @@
 #include "pch.h"
 #include "DataDrivenAISpecialActionPolicy.h"
 
-#include "AIBehaviorDef.h"
+#include "ECS/Components/GameplayAIComponents.h"
 #include "ECS/System/AbilityProfileService.h"
 #include "ECS/System/GameplaySystemUtil.h"
-#include "IAIState.h"
 #include "System.h"
-
-#include <algorithm>
-
-namespace
-{
-	bool IsAbilityAvailableForSelf(
-		const AIContext& ctx,
-		AbilityId abilityId) noexcept
-	{
-		if (abilityId == InvalidAbilityId || ctx.sysCtx == nullptr)
-			return false;
-
-		const SpawnTypeComp* spawnType =
-			ctx.sysCtx->ecs.GetComponent<SpawnTypeComp>(ctx.self);
-		if (spawnType == nullptr)
-			return false;
-
-		return AbilityProfileService::IsAbilityAvailable(
-			spawnType->characterId,
-			abilityId);
-	}
-
-	const AIPhaseTransitionDef* ResolvePendingTransition(
-		const AIContext& ctx,
-		const AIPhaseRuntimeComp& phase) noexcept
-	{
-		if (ctx.behaviorProfile == nullptr)
-			return nullptr;
-
-		const std::span<const AIPhaseTransitionDef> transitions =
-			ctx.behaviorProfile->phaseTransitions;
-		if (transitions.empty())
-			return nullptr;
-
-		if (phase.pendingTransitionIndex !=
-			AIPhaseRuntimeComp::kInvalidTransitionIndex)
-		{
-			const size_t index =
-				static_cast<size_t>(phase.pendingTransitionIndex);
-			if (index < transitions.size())
-				return &transitions[index];
-		}
-
-		for (const AIPhaseTransitionDef& transition : transitions)
-		{
-			if (transition.toPhase == phase.currentPhase)
-				return &transition;
-		}
-
-		return nullptr;
-	}
-
-	void ClearPendingTransition(AIPhaseRuntimeComp& phase) noexcept
-	{
-		phase.transitionRequested = false;
-		phase.pendingTransitionIndex =
-			AIPhaseRuntimeComp::kInvalidTransitionIndex;
-	}
-
-	void ApplyTransitionRuntimeEffects(
-		AIContext& ctx,
-		const AIPhaseTransitionDef& transition) noexcept
-	{
-		AIActionRuntimeComp* actionRuntime = ctx.actionRuntime;
-		if (actionRuntime == nullptr && ctx.sysCtx != nullptr)
-		{
-			actionRuntime =
-				ctx.sysCtx->ecs.GetMutableComponent<AIActionRuntimeComp>(
-					ctx.self);
-		}
-		if (actionRuntime != nullptr)
-		{
-			if (transition.clearActionCooldowns)
-			{
-				std::fill(
-					actionRuntime->actionCooldownSec.begin(),
-					actionRuntime->actionCooldownSec.end(),
-					0.0f);
-			}
-			if (transition.clearGroupCooldowns)
-			{
-				std::fill(
-					actionRuntime->groupCooldownSec.begin(),
-					actionRuntime->groupCooldownSec.end(),
-					0.0f);
-			}
-
-			actionRuntime->globalActionCooldownSec =
-				std::max(
-					actionRuntime->globalActionCooldownSec,
-					transition.transitionLockSec);
-			actionRuntime->movementLockSec =
-				std::max(
-					actionRuntime->movementLockSec,
-					transition.transitionLockSec);
-		}
-
-		AIMovementRuntimeComp* movementRuntime = ctx.movementRuntime;
-		if (movementRuntime == nullptr && ctx.sysCtx != nullptr)
-		{
-			movementRuntime =
-				ctx.sysCtx->ecs.GetMutableComponent<AIMovementRuntimeComp>(
-					ctx.self);
-		}
-		if (movementRuntime != nullptr)
-		{
-			movementRuntime->strafeTimeLeftSec = 0.0f;
-		}
-	}
-
-	bool TryFillDirectionToCurrentTarget(
-		AIContext& ctx,
-		float& outX,
-		float& outZ) noexcept
-	{
-		using namespace GameplaySystemUtil;
-
-		outX = 0.0f;
-		outZ = 0.0f;
-
-		if (ctx.sysCtx == nullptr ||
-			ctx.blackboard == nullptr ||
-			ctx.blackboard->currentTarget.IsNull() ||
-			ctx.selfTr == nullptr)
-		{
-			return false;
-		}
-
-		const WorldTransformComp* targetTr =
-			ctx.sysCtx->ecs.GetComponent<WorldTransformComp>(
-				ctx.blackboard->currentTarget);
-		if (targetTr == nullptr)
-			return false;
-
-		outX = targetTr->position.x - ctx.selfTr->position.x;
-		outZ = targetTr->position.z - ctx.selfTr->position.z;
-
-		NormalizeXZ(outX, outZ);
-		return LengthXZ(outX, outZ) > kOverlapEpsilon;
-	}
-}
 
 void DataDrivenAISpecialActionPolicy::TickRuntime(
 	AIContext& ctx,
@@ -163,53 +21,238 @@ bool DataDrivenAISpecialActionPolicy::TryIssuePreFSMAction(AIContext& ctx) const
 
 	AIPhaseRuntimeComp* phase =
 		ctx.sysCtx->ecs.GetMutableComponent<AIPhaseRuntimeComp>(ctx.self);
+
 	if (phase == nullptr || !phase->transitionRequested)
 		return false;
 
 	const AIPhaseTransitionDef* transition =
 		ResolvePendingTransition(ctx, *phase);
-	if (transition == nullptr ||
-		transition->transitionAbilityId == InvalidAbilityId)
+
+	// 1. transition / ability 유효성 검사 (실패 시 pending 정리)
 	{
-		ClearPendingTransition(*phase);
-		return false;
+		if (transition == nullptr ||
+			transition->transitionAbilityId == InvalidAbilityId)
+		{
+			ClearPendingTransition(*phase);
+			return false;
+		}
+
+		if (!IsAbilityAvailableForSelf(ctx, transition->transitionAbilityId))
+		{
+			ClearPendingTransition(*phase);
+			return false;
+		}
 	}
 
-	if (!IsAbilityAvailableForSelf(ctx, transition->transitionAbilityId))
+	// 2. ability 발동 가능 여부 검사 (실패 시 pending 유지)
 	{
-		ClearPendingTransition(*phase);
-		return false;
+		if (ctx.intent == nullptr ||
+			ctx.abilityState == nullptr ||
+			!ctx.abilityState->CanIssueAbility())
+		{
+			return false;
+		}
 	}
 
-	if (ctx.intent == nullptr ||
-		ctx.abilityState == nullptr ||
-		!ctx.abilityState->CanIssueAbility())
+	// 3. transition ability 발동
 	{
-		return false;
+		IssueTransitionAbility(ctx, *transition);
 	}
 
-	float dirX{ 0.0f };
-	float dirZ{ 0.0f };
-	TryFillDirectionToCurrentTarget(ctx, dirX, dirZ);
-
-	ctx.intent->ClearAll();
-	ctx.intent->hasLook = true;
-	ctx.intent->target =
-		ctx.blackboard != nullptr
-		? ctx.blackboard->currentTarget
-		: Entity::Null();
-	ctx.intent->hasAbility = true;
-	ctx.intent->abilityId = transition->transitionAbilityId;
-	ctx.intent->abilityDirX = dirX;
-	ctx.intent->abilityDirZ = dirZ;
-	ctx.intent->sequence++;
-
-	ApplyTransitionRuntimeEffects(ctx, *transition);
-	if (transition->forceRetarget && ctx.blackboard != nullptr)
+	// 4. runtime 상태 반영 및 retarget 처리
 	{
-		ctx.blackboard->forceRetarget = true;
+		ApplyTransitionRuntimeEffects(ctx, *transition);
+
+		if (transition->forceRetarget && ctx.blackboard != nullptr)
+		{
+			ctx.blackboard->forceRetarget = true;
+		}
 	}
 
 	ClearPendingTransition(*phase);
 	return true;
+}
+
+const AIPhaseTransitionDef*
+DataDrivenAISpecialActionPolicy::ResolvePendingTransition(
+	const AIContext& ctx,
+	const AIPhaseRuntimeComp& phase) noexcept
+{
+	if (ctx.behaviorProfile == nullptr)
+		return nullptr;
+
+	const std::span<const AIPhaseTransitionDef> transitions =
+		ctx.behaviorProfile->phaseTransitions;
+
+	if (transitions.empty())
+		return nullptr;
+
+	// 1. pending transition index 우선 사용
+	{
+		if (phase.pendingTransitionIndex !=
+			AIPhaseRuntimeComp::kInvalidTransitionIndex)
+		{
+			const size_t index =
+				static_cast<size_t>(phase.pendingTransitionIndex);
+
+			if (index < transitions.size())
+				return &transitions[index];
+		}
+	}
+
+	// 2. fallback: 현재 phase로 향하는 transition 검색
+	{
+		for (const AIPhaseTransitionDef& transition : transitions)
+		{
+			if (transition.toPhase == phase.currentPhase)
+				return &transition;
+		}
+	}
+
+	return nullptr;
+}
+
+bool DataDrivenAISpecialActionPolicy::IsAbilityAvailableForSelf(
+	const AIContext& ctx,
+	AbilityId abilityId) noexcept
+{
+	if (abilityId == InvalidAbilityId || ctx.sysCtx == nullptr)
+		return false;
+
+	const SpawnTypeComp* spawnType =
+		ctx.sysCtx->ecs.GetComponent<SpawnTypeComp>(ctx.self);
+
+	if (spawnType == nullptr)
+		return false;
+
+	return AbilityProfileService::IsAbilityAvailable(
+		spawnType->characterId,
+		abilityId);
+}
+
+void DataDrivenAISpecialActionPolicy::IssueTransitionAbility(
+	AIContext& ctx,
+	const AIPhaseTransitionDef& transition)
+{
+	using namespace GameplaySystemUtil;
+
+	float dirX{ 0.0f };
+	float dirZ{ 0.0f };
+
+	// 1. 현재 target 방향 계산
+	{
+		if (ctx.sysCtx != nullptr &&
+			ctx.blackboard != nullptr &&
+			!ctx.blackboard->currentTarget.IsNull() &&
+			ctx.selfTr != nullptr)
+		{
+			if (const WorldTransformComp* targetTr =
+				ctx.sysCtx->ecs.GetComponent<WorldTransformComp>(
+					ctx.blackboard->currentTarget))
+			{
+				const float rawX =
+					targetTr->position.x - ctx.selfTr->position.x;
+				const float rawZ =
+					targetTr->position.z - ctx.selfTr->position.z;
+
+				float normX = rawX;
+				float normZ = rawZ;
+				NormalizeXZ(normX, normZ);
+
+				if (LengthXZ(normX, normZ) > kOverlapEpsilon)
+				{
+					dirX = normX;
+					dirZ = normZ;
+				}
+			}
+		}
+	}
+
+	// 2. intent 작성
+	{
+		ctx.intent->ClearAll();
+
+		ctx.intent->hasLook		= true;
+		ctx.intent->hasAbility	= true;
+		ctx.intent->abilityId	= transition.transitionAbilityId;
+		ctx.intent->abilityDirX	= dirX;
+		ctx.intent->abilityDirZ	= dirZ;
+
+		ctx.intent->sequence++;
+
+		if (ctx.blackboard)
+		{
+			ctx.intent->target = ctx.blackboard->currentTarget;
+		}
+		else
+		{
+			ctx.intent->target = Entity::Null();
+		}
+	}
+}
+
+void DataDrivenAISpecialActionPolicy::ApplyTransitionRuntimeEffects(
+	AIContext& ctx,
+	const AIPhaseTransitionDef& transition) noexcept
+{
+	// 1. action runtime 효과 반영
+	{
+		AIActionRuntimeComp* actionRuntime = ctx.actionRuntime;
+
+		if (actionRuntime == nullptr && ctx.sysCtx != nullptr)
+		{
+			actionRuntime =
+				ctx.sysCtx->ecs.GetMutableComponent<AIActionRuntimeComp>(ctx.self);
+		}
+
+		if (actionRuntime != nullptr)
+		{
+			if (transition.clearActionCooldowns)
+			{
+				std::fill(
+					actionRuntime->actionCooldownSec.begin(),
+					actionRuntime->actionCooldownSec.end(),
+					0.0f);
+			}
+
+			if (transition.clearGroupCooldowns)
+			{
+				std::fill(
+					actionRuntime->groupCooldownSec.begin(),
+					actionRuntime->groupCooldownSec.end(),
+					0.0f);
+			}
+
+			actionRuntime->globalActionCooldownSec = std::max(
+				actionRuntime->globalActionCooldownSec,
+				transition.transitionLockSec);
+
+			actionRuntime->movementLockSec = std::max(
+				actionRuntime->movementLockSec,
+				transition.transitionLockSec);
+		}
+	}
+
+	// 2. movement runtime 초기화
+	{
+		AIMovementRuntimeComp* movementRuntime = ctx.movementRuntime;
+
+		if (movementRuntime == nullptr && ctx.sysCtx != nullptr)
+		{
+			movementRuntime =
+				ctx.sysCtx->ecs.GetMutableComponent<AIMovementRuntimeComp>(ctx.self);
+		}
+
+		if (movementRuntime != nullptr)
+		{
+			movementRuntime->strafeTimeLeftSec = 0.0f;
+		}
+	}
+}
+
+void DataDrivenAISpecialActionPolicy::ClearPendingTransition(
+	AIPhaseRuntimeComp& phase) noexcept
+{
+	phase.transitionRequested		= false;
+	phase.pendingTransitionIndex	= AIPhaseRuntimeComp::kInvalidTransitionIndex;
 }
