@@ -27,6 +27,8 @@ void SecondBattleScene::Release()
 	myPlayer = nullptr;
 	gameObjects.clear();
 
+	SOUND_MANAGER->StopBGM(1.0f);
+
 	OutputDebugStringA("SecondBattleScene Data has been deleted!! \n----------------------------------------\n");
 }
 
@@ -240,6 +242,11 @@ void SecondBattleScene::RequestSceneChange()
 			}
 		}
 	}
+}
+
+const char* SecondBattleScene::GetBGMPath() const
+{
+	return "../Assets/Music/BGM/CastleBGM.mp3";
 }
 
 float SecondBattleScene::SampleHeightAt(float worldX, float worldZ) const

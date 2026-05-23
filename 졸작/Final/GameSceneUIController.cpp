@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "SoundManager.h"
+#include "ClientPartyState.h"
 
 GameSceneUIController::GameSceneUIController(SceneType type) : sceneType(type) {}
 
@@ -25,6 +26,7 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitEscWindow();
 	InitKeyGuide();
 	InitSettingWindow();
+	InitJoinRequestPopup();
 }
 
 void GameSceneUIController::InitTargetHpBar()
@@ -111,6 +113,7 @@ void GameSceneUIController::InitPartyWindow()
 	const float partyWidth = partyHeight * (843.0f / 720.0f);
 	const float partyX = (WinSize.x - partyWidth) * 0.5f;
 	const float partyY = (WinSize.y - partyHeight) * 0.5f;
+	const float textScale = WinSize.y / 1080.0f;
 
 	partyBook = make_shared<ImageUI>(uiManager, L"PartyBook", ImageUIState::Hidden);
 	partyBook->SetPosition(partyX, partyY);
@@ -156,16 +159,64 @@ void GameSceneUIController::InitPartyWindow()
 	partyMyPartyBox->SetVertLength(listBoxHeight);
 	widgets.push_back(partyMyPartyBox);
 
-	const float backButtonHori = buttonWidth * 0.85f;
-	const float backButtonVert = buttonHeight * 1.1f;
-	const float backButtonX = partyX + (partyWidth - backButtonHori) * 0.5f;
-	const float backButtonY = buttonY - (backButtonVert - buttonHeight) * 0.5f;
-	partyBackButton = make_shared<ImageUI>(uiManager, L"PartyBack", ImageUIState::Hidden);
-	partyBackButton->SetPosition(backButtonX, backButtonY);
-	partyBackButton->SetHoriLength(backButtonHori);
-	partyBackButton->SetVertLength(backButtonVert);
-	partyBackButton->SetHoverScale(1.05f);
-	widgets.push_back(partyBackButton);
+	const float myCardWidth  = partyWidth * 0.35f;
+	const float myCardHeight = partyHeight * 0.11f;
+	const float myCardGap    = partyHeight * 0.025f;
+	const float myCardStartY = listBoxY + listBoxHeight + partyHeight * 0.04f;
+
+	partyMyCards.reserve(MAX_PARTY_MEMBERS);
+	partyMyLabels.reserve(MAX_PARTY_MEMBERS);
+	for (int i = 0; i < MAX_PARTY_MEMBERS; ++i)
+	{
+		const float cardY = myCardStartY + i * (myCardHeight + myCardGap);
+
+		auto card = make_shared<ImageUI>(uiManager, L"PartyKnight", ImageUIState::Hidden);
+		card->SetPosition(listBoxX, cardY);
+		card->SetHoriLength(myCardWidth);
+		card->SetVertLength(myCardHeight);
+		widgets.push_back(card);
+		partyMyCards.push_back(card);
+
+		auto label = make_shared<TextUI>(uiManager, L"PartyMyCardLabel", L"VerdanaBold");
+		label->SetPosition(listBoxX + myCardWidth * 0.25f, cardY + myCardHeight * 0.2f);
+		label->SetScale(0.4f * textScale);
+		widgets.push_back(label);
+		partyMyLabels.push_back(label);
+	}
+
+	const float cardWidth  = partyWidth * 0.35f;
+	const float cardHeight = partyHeight * 0.11f;
+	const float cardGap    = partyHeight * 0.025f;
+	const float cardStartY = listBoxY + listBoxHeight + partyHeight * 0.04f;
+
+	partyListCards.reserve(MAX_PARTY_CARDS);
+	partyListLabels.reserve(MAX_PARTY_CARDS);
+	partyListCountLabels.reserve(MAX_PARTY_CARDS);
+	partyListCardIds.assign(MAX_PARTY_CARDS, 0);
+	for (int i = 0; i < MAX_PARTY_CARDS; ++i)
+	{
+		const float cardY = cardStartY + i * (cardHeight + cardGap);
+
+		auto card = make_shared<ImageUI>(uiManager, L"PartyKnight", ImageUIState::Hidden);
+		card->SetPosition(listBoxX, cardY);
+		card->SetHoriLength(cardWidth);
+		card->SetVertLength(cardHeight);
+		card->SetHoverScale(1.05f);
+		widgets.push_back(card);
+		partyListCards.push_back(card);
+
+		auto label = make_shared<TextUI>(uiManager, L"PartyCardLabel", L"VerdanaBold");
+		label->SetPosition(listBoxX + cardWidth * 0.25f, cardY + cardHeight * 0.2f);
+		label->SetScale(0.4f * textScale);
+		widgets.push_back(label);
+		partyListLabels.push_back(label);
+
+		auto countLabel = make_shared<TextUI>(uiManager, L"PartyCardCount", L"VerdanaBold");
+		countLabel->SetPosition(listBoxX + cardWidth * 0.55f, cardY + cardHeight * 0.5f);
+		countLabel->SetScale(0.4f * textScale);
+		widgets.push_back(countLabel);
+		partyListCountLabels.push_back(countLabel);
+	}
 }
 
 void GameSceneUIController::ShowPartyView(PartyView view)
@@ -178,7 +229,130 @@ void GameSceneUIController::ShowPartyView(PartyView view)
 	if (partyCreateButton) partyCreateButton->ChangeState(lobby);
 	if (partyJoinButton)   partyJoinButton->ChangeState(lobby);
 	if (partyMyPartyBox)   partyMyPartyBox->ChangeState(created);
-	if (partyBackButton)   partyBackButton->ChangeState(created);
+
+	if (view == PartyView::Created)
+	{
+		RefreshMyPartyText();
+
+		for (auto& card : partyListCards)
+			if (card) card->ChangeState(ImageUIState::Hidden);
+		for (auto& label : partyListLabels)
+			if (label) label->SetText(L"");
+		for (auto& count : partyListCountLabels)
+			if (count) count->SetText(L"");
+	}
+	else
+	{
+		for (auto& card : partyMyCards)
+			if (card) card->ChangeState(ImageUIState::Hidden);
+		for (auto& label : partyMyLabels)
+			if (label) label->SetText(L"");
+		selectedPartyId = 0;
+		RefreshPartyList();
+	}
+}
+
+void GameSceneUIController::RefreshPartyList()
+{
+	if (partyListCards.empty()) return;
+
+	ClientPartyState* party = ENGINE.GetPartyState();
+
+	vector<const Protocol::PartyListEntry*> sorted;
+	if (party)
+	{
+		for (const Protocol::PartyListEntry& e : party->GetPartyList())
+		{
+			sorted.push_back(&e);
+		}
+		std::sort(sorted.begin(), sorted.end(),
+			[](const Protocol::PartyListEntry* a, const Protocol::PartyListEntry* b)
+			{
+				return a->createdatsec() < b->createdatsec();
+			});
+	}
+
+	for (int i = 0; i < MAX_PARTY_CARDS; ++i)
+	{
+		const bool hasEntry = i < static_cast<int>(sorted.size());
+
+		if (!hasEntry)
+		{
+			partyListCards[i]->ChangeState(ImageUIState::Hidden);
+			partyListLabels[i]->SetText(L"");
+			partyListCountLabels[i]->SetText(L"");
+			partyListCardIds[i] = 0;
+			continue;
+		}
+
+		const Protocol::PartyListEntry& entry = *sorted[i];
+		partyListCardIds[i] = entry.partyid();
+
+		const CharacterType leaderClass = CharacterType::Knight;
+		const wchar_t* texture =
+			(leaderClass == CharacterType::Lancer)  ? L"PartyLancer"  :
+			(leaderClass == CharacterType::Paladin) ? L"PartyPaladin" :
+			                                          L"PartyKnight";
+
+		partyListCards[i]->SetTexture(texture);
+		partyListCards[i]->ChangeState(ImageUIState::Visible);
+
+		partyListLabels[i]->SetText(L"Party #" + std::to_wstring(entry.partyid()));
+		partyListCountLabels[i]->SetText(
+			std::to_wstring(entry.membercount()) + L"/" + std::to_wstring(entry.capacity()));
+	}
+
+	if (selectedPartyId != 0 &&
+		std::find(partyListCardIds.begin(), partyListCardIds.end(), selectedPartyId) == partyListCardIds.end())
+	{
+		selectedPartyId = 0;
+	}
+}
+
+void GameSceneUIController::RefreshMyPartyText()
+{
+	if (partyMyCards.empty()) return;
+
+	ClientPartyState* party = ENGINE.GetPartyState();
+
+	vector<const Protocol::PartyMember*> ordered;
+	if (party && party->HasMyParty())
+	{
+		const Protocol::PartySnapshot& snapshot = party->GetMyParty();
+		ordered.reserve(snapshot.members_size());
+		for (int i = 0; i < snapshot.members_size(); ++i)
+			if (snapshot.members(i).role() == Protocol::PARTY_MEMBER_ROLE_LEADER)
+				ordered.push_back(&snapshot.members(i));
+		for (int i = 0; i < snapshot.members_size(); ++i)
+			if (snapshot.members(i).role() != Protocol::PARTY_MEMBER_ROLE_LEADER)
+				ordered.push_back(&snapshot.members(i));
+	}
+
+	for (int i = 0; i < MAX_PARTY_MEMBERS; ++i)
+	{
+		if (i >= static_cast<int>(ordered.size()))
+		{
+			partyMyCards[i]->ChangeState(ImageUIState::Hidden);
+			partyMyLabels[i]->SetText((i == 0 && ordered.empty()) ? L"Creating party..." : L"");
+			continue;
+		}
+
+		const Protocol::PartyMember* member = ordered[i];
+		const CharacterType memberClass = static_cast<CharacterType>(member->charactertype());
+		const wchar_t* texture =
+			(memberClass == CharacterType::Lancer)  ? L"PartyLancer"  :
+			(memberClass == CharacterType::Paladin) ? L"PartyPaladin" :
+			                                          L"PartyKnight";
+		const wchar_t* className =
+			(memberClass == CharacterType::Lancer)  ? L"Lancer"  :
+			(memberClass == CharacterType::Paladin) ? L"Paladin" :
+			                                          L"Knight";
+
+		partyMyCards[i]->SetTexture(texture);
+		partyMyCards[i]->ChangeState(ImageUIState::Visible);
+		partyMyLabels[i]->SetText(
+			L"ID: " + std::to_wstring(member->sessionid()) + L"\nClass: " + className);
+	}
 }
 
 void GameSceneUIController::InitStatWindow()
@@ -223,11 +397,6 @@ void GameSceneUIController::InitStatWindow()
 	statusArrowRight->SetVertLength(arrowSizeY);
 	statusArrowRight->SetHoverScale(1.15f);
 	widgets.push_back(statusArrowRight);
-
-	tempStatusText = make_shared<TextUI>(uiManager, L"Texture", L"VerdanaBold");
-	tempStatusText->SetPosition(0.0f, 0.0f);
-	tempStatusText->SetText(L"TempText");
-	widgets.push_back(tempStatusText);
 }
 
 void GameSceneUIController::InitMapWindow()
@@ -328,9 +497,140 @@ void GameSceneUIController::InitSettingWindow()
 	widgets.push_back(settingBackButton);
 }
 
+void GameSceneUIController::InitJoinRequestPopup()
+{
+	const float popupW = WinSize.y * 0.36f;
+	const float popupH = popupW;
+	const float margin = WinSize.x * 0.02f;
+	const float popupX = WinSize.x - popupW - margin;
+	const float popupY = (WinSize.y - popupH) * 0.5f + WinSize.y * 0.06f;
+	const float textScale = WinSize.y / 1080.0f;
+
+	joinRequestWindow = make_shared<ImageUI>(uiManager, L"EscWindow", ImageUIState::Hidden);
+	joinRequestWindow->SetPosition(popupX, popupY);
+	joinRequestWindow->SetHoriLength(popupW);
+	joinRequestWindow->SetVertLength(popupH);
+	widgets.push_back(joinRequestWindow);
+
+	joinRequestText = make_shared<TextUI>(uiManager, L"PartyJoinRequestText", L"VerdanaBold");
+	joinRequestText->SetPosition(popupX + popupW * 0.14f, popupY + popupH * 0.32f);
+	joinRequestText->SetScale(0.4f * textScale);
+	widgets.push_back(joinRequestText);
+
+	const float btnW = popupW * 0.34f;
+	const float btnH = btnW * (480.0f / 1980.0f);
+	const float btnY = popupY + popupH - btnH - popupH * 0.26f;
+
+	joinRequestOkButton = make_shared<ImageUI>(uiManager, L"OK", ImageUIState::Hidden);
+	joinRequestOkButton->SetPosition(popupX + popupW * 0.1f, btnY);
+	joinRequestOkButton->SetHoriLength(btnW);
+	joinRequestOkButton->SetVertLength(btnH);
+	joinRequestOkButton->SetHoverScale(1.05f);
+	widgets.push_back(joinRequestOkButton);
+
+	joinRequestCancelButton = make_shared<ImageUI>(uiManager, L"CANCEL", ImageUIState::Hidden);
+	joinRequestCancelButton->SetPosition(popupX + popupW - btnW - popupW * 0.1f, btnY);
+	joinRequestCancelButton->SetHoriLength(btnW);
+	joinRequestCancelButton->SetVertLength(btnH);
+	joinRequestCancelButton->SetHoverScale(1.05f);
+	widgets.push_back(joinRequestCancelButton);
+
+	joinSlideWidgets = { joinRequestWindow, joinRequestText, joinRequestOkButton, joinRequestCancelButton };
+	joinSlideBaseX.clear();
+	for (const auto& w : joinSlideWidgets)
+		joinSlideBaseX.push_back(w->GetPosX());
+	joinSlideDist = WinSize.x - popupX;   
+	joinSlideElapsed = JOIN_SLIDE_DURATION;
+}
+
+bool GameSceneUIController::IsMyPartyLeader() const
+{
+	ClientPartyState* party = ENGINE.GetPartyState();
+	if (!party || !party->HasMyParty()) return false;
+
+	const Protocol::PartySnapshot& snapshot = party->GetMyParty();
+	for (int i = 0; i < snapshot.members_size(); ++i)
+		if (snapshot.members(i).role() == Protocol::PARTY_MEMBER_ROLE_LEADER)
+			return snapshot.members(i).sessionid() == static_cast<uint64_t>(INPUT.GetClientID());
+	return false;
+}
+
+void GameSceneUIController::UpdateJoinRequestPopup(float deltaTime)
+{
+	if (!joinRequestWindow) return;
+
+	ClientPartyState* party = ENGINE.GetPartyState();
+	const bool popupOpen = joinRequestWindow->GetState() != ImageUIState::Hidden;
+
+	const Protocol::PartyJoinRequest* active = nullptr;
+	if (party && IsMyPartyLeader() && !party->GetPendingJoinRequests().empty())
+	{
+		for (const Protocol::PartyJoinRequest& req : party->GetPendingJoinRequests())
+			if (req.joinrequestid() == activeJoinRequestId) { active = &req; break; }
+		if (!active)
+			active = &party->GetPendingJoinRequests().front();
+	}
+
+	if (!active)
+	{
+		if (popupOpen)
+		{
+			joinRequestWindow->ChangeState(ImageUIState::Hidden);
+			joinRequestOkButton->ChangeState(ImageUIState::Hidden);
+			joinRequestCancelButton->ChangeState(ImageUIState::Hidden);
+			joinRequestText->SetText(L"");
+			activeJoinRequestId = 0;
+		}
+		return;
+	}
+
+	if (!popupOpen || active->joinrequestid() != activeJoinRequestId)
+	{
+		joinSlideElapsed = 0.0f;   
+		activeJoinRequestId = active->joinrequestid();
+
+		wstring text = L"Party Join Request\n";
+		text += L"ID: " + std::to_wstring(active->requestersessionid()) + L"\n";
+		text += L"Class: -";
+		joinRequestText->SetText(text);
+
+		joinRequestWindow->ChangeState(ImageUIState::Visible);
+		joinRequestOkButton->ChangeState(ImageUIState::Visible);
+		joinRequestCancelButton->ChangeState(ImageUIState::Visible);
+	}
+
+	if (joinSlideElapsed < JOIN_SLIDE_DURATION)
+	{
+		joinSlideElapsed = min(joinSlideElapsed + deltaTime, JOIN_SLIDE_DURATION);
+		const float t = joinSlideElapsed / JOIN_SLIDE_DURATION;
+		const float eased = 1.0f - (1.0f - t) * (1.0f - t);  
+		const float offset = (1.0f - eased) * joinSlideDist;
+		for (size_t i = 0; i < joinSlideWidgets.size(); ++i)
+			joinSlideWidgets[i]->SetPosition(joinSlideBaseX[i] + offset, joinSlideWidgets[i]->GetPosY());
+	}
+
+	joinRequestOkButton->SetHovered(joinRequestOkButton->IsMouseInside());
+	joinRequestCancelButton->SetHovered(joinRequestCancelButton->IsMouseInside());
+
+	if (joinRequestOkButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+	{
+		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+		if (auto* network = NETWORK_MANAGER)
+			network->SendPartyJoinAcceptPacket(activeJoinRequestId);
+	}
+	else if (joinRequestCancelButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+	{
+		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+		if (auto* network = NETWORK_MANAGER)
+			network->SendPartyJoinRejectPacket(activeJoinRequestId);
+	}
+}
+
 void GameSceneUIController::Update(float deltaTime)
 {
 	UIController::Update(deltaTime);
+
+	UpdateJoinRequestPopup(deltaTime);
 
 	auto opened = [](const shared_ptr<ImageUI>& p) {
 		return p && p->GetState() != ImageUIState::Hidden;
@@ -349,8 +649,6 @@ void GameSceneUIController::Update(float deltaTime)
 			statusRibbon->ChangeState(next);
 			statusArrowLeft->ChangeState(next);
 			statusArrowRight->ChangeState(next);
-
-			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(next == ImageUIState::Visible);
 		}
 	}
 
@@ -366,8 +664,6 @@ void GameSceneUIController::Update(float deltaTime)
 			escContinueButton->ChangeState(next);
 			escOptionsButton->ChangeState(next);
 			escExitButton->ChangeState(next);
-
-			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(next == ImageUIState::Visible);
 		}
 	}
 
@@ -384,8 +680,6 @@ void GameSceneUIController::Update(float deltaTime)
 			escContinueButton->ChangeState(ImageUIState::Hidden);
 			escOptionsButton->ChangeState(ImageUIState::Hidden);
 			escExitButton->ChangeState(ImageUIState::Hidden);
-
-			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(false);
 		}
 		if (escOptionsButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
@@ -435,15 +729,27 @@ void GameSceneUIController::Update(float deltaTime)
 				if (partyCreateButton) partyCreateButton->ChangeState(ImageUIState::Hidden);
 				if (partyJoinButton)   partyJoinButton->ChangeState(ImageUIState::Hidden);
 				if (partyMyPartyBox)   partyMyPartyBox->ChangeState(ImageUIState::Hidden);
-				if (partyBackButton)   partyBackButton->ChangeState(ImageUIState::Hidden);
+				for (auto& card : partyMyCards)
+					if (card) card->ChangeState(ImageUIState::Hidden);
+				for (auto& label : partyMyLabels)
+					if (label) label->SetText(L"");
+				for (auto& card : partyListCards)
+					if (card) card->ChangeState(ImageUIState::Hidden);
+				for (auto& label : partyListLabels)
+					if (label) label->SetText(L"");
+				for (auto& count : partyListCountLabels)
+					if (count) count->SetText(L"");
 			}
 			else
 			{
 				partyBook->ChangeState(ImageUIState::Visible);
-				ShowPartyView(PartyView::Lobby);
+				if (auto* network = NETWORK_MANAGER)
+				{
+					network->SendPartyUiOpenedPacket();
+				}
+				ClientPartyState* party = ENGINE.GetPartyState();
+				ShowPartyView(party && party->HasMyParty() ? PartyView::Created : PartyView::Lobby);
 			}
-
-			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(!selfOpen);
 		}
 	}
 
@@ -451,28 +757,73 @@ void GameSceneUIController::Update(float deltaTime)
 	{
 		if (partyView == PartyView::Lobby)
 		{
+			if (ClientPartyState* party = ENGINE.GetPartyState())
+			{
+				if (party->HasMyParty())
+				{
+					ShowPartyView(PartyView::Created);
+					return;
+				}
+
+				if (party->GetRevision() != lastPartyRevision)
+				{
+					lastPartyRevision = party->GetRevision();
+					RefreshPartyList();
+				}
+			}
+
+			for (int i = 0; i < MAX_PARTY_CARDS; ++i)
+			{
+				shared_ptr<ImageUI>& card = partyListCards[i];
+				if (!card || card->GetState() == ImageUIState::Hidden) continue;
+
+				const bool selected = (partyListCardIds[i] != 0 && partyListCardIds[i] == selectedPartyId);
+				card->SetHovered(card->IsMouseInside() || selected);
+
+				if (card->IsMouseInside() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+				{
+					SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+					selectedPartyId = partyListCardIds[i];
+				}
+			}
+
 			partyCreateButton->SetHovered(partyCreateButton->IsMouseInside());
 			partyJoinButton->SetHovered(partyJoinButton->IsMouseInside());
 
 			if (partyCreateButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 			{
 				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+				if (auto* network = NETWORK_MANAGER)
+				{
+					network->SendPartyCreatePacket();
+				}
 				ShowPartyView(PartyView::Created);
 			}
 			if (partyJoinButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 			{
 				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
-				OutputDebugStringA("[Party] Join button clicked\n");
+				if (selectedPartyId != 0)
+				{
+					if (auto* network = NETWORK_MANAGER)
+					{
+						network->SendPartyJoinRequestPacket(selectedPartyId);
+					}
+				}
+				else
+				{
+					OutputDebugStringA("[Party] Join clicked but no party selected\n");
+				}
 			}
 		}
 		else
 		{
-			partyBackButton->SetHovered(partyBackButton->IsMouseInside());
-
-			if (partyBackButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+			if (ClientPartyState* party = ENGINE.GetPartyState())
 			{
-				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
-				ShowPartyView(PartyView::Lobby);
+				if (party->GetRevision() != lastPartyRevision)
+				{
+					lastPartyRevision = party->GetRevision();
+					RefreshMyPartyText();
+				}
 			}
 		}
 	}
@@ -504,8 +855,6 @@ void GameSceneUIController::Update(float deltaTime)
 
 			mapBackImage->ChangeState(next);
 			mapImage->ChangeState(next);
-
-			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(next == ImageUIState::Visible);
 		}
 	}
 
@@ -518,9 +867,16 @@ void GameSceneUIController::Update(float deltaTime)
 			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
 
 			keyGuide->ChangeState(next);
-			SCENE_MANAGER->GetCurrentScene()->GetCamera()->SetCursor(next == ImageUIState::Visible);
 		}
 	}
+
+	const bool wantCursor =
+		opened(statusImage) || opened(escWindow)   || opened(partyBook) ||
+		opened(mapImage)    || opened(keyGuide)    || opened(settingWindow) ||
+		opened(joinRequestWindow);
+	if (Camera* camera = SCENE_MANAGER->GetCurrentScene()->GetCamera())
+		if (camera->IsCursorActive() != wantCursor)
+			camera->SetCursor(wantCursor);
 }
 
 
@@ -546,9 +902,6 @@ void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curS
 		L"aSpeed: " + to_wstring(aSpeed) + L"\n" +
 		L"Defense: " + to_wstring(defense) + L"\n" +
 		L"mSpeed: " + to_wstring(mSpeed) + L"\n";
-
-	if (tempStatusText)
-		tempStatusText->SetText(text);
 }
 
 void GameSceneUIController::ShowMapName()

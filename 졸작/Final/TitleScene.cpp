@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "TitleScene.h"
 #include "Material.h"
-
 #include "Input.h"
 #include "NetId.h"
 #include "Engine.h"
@@ -9,7 +8,7 @@
 
 void TitleScene::Release()
 {
-	SOUND_MANAGER->StopBGM(1.5f);
+	SOUND_MANAGER->StopBGM(0.5f);
 
 	OutputDebugStringA("TitleScene Data has been deleted!! \n----------------------------------------\n");
 }

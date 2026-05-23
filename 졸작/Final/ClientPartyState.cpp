@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "ClientPartyState.h"
 
-#include <algorithm>
-
 void ClientPartyState::Clear()
 {
 	hasMyParty = false;

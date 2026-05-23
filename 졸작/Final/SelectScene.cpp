@@ -6,15 +6,27 @@
 #include "Animator.h"
 #include "Engine.h"
 #include "NetworkManager.h"
-
 #include "NetId.h"
+#include "SoundManager.h"
 
 void SelectScene::Release()
 {
+	SOUND_MANAGER->StopBGM(1.0f);
+
 	gameObjects.clear();
 	bigDemonWarrior.reset();
 
 	OutputDebugStringA("SelectScene Data has been deleted!! \n----------------------------------------\n");
+}
+
+const char* SelectScene::GetBGMPath() const
+{
+	return "../Assets/Music/BGM/SelectBGM.mp3";
+}
+
+float SelectScene::GetBGMFadeInSeconds() const
+{
+	return 0.5f;
 }
 
 void SelectScene::InitializeLogic()
