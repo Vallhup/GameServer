@@ -1,0 +1,34 @@
+{
+    "areaHits": [
+        {
+            "key": "Area.Tank_JumpSlam",
+            "shape": {
+                "shapeType": "Cylinder",
+                "originPolicy": "OwnerPosition",
+                "radius": 4.2,
+                "height": 2.4,
+                "forwardOffset": 0,
+                "rightOffset": 0,
+                "verticalOffset": 0,
+                "verticalTolerance": 2.4
+            },
+            "attackHit": {
+                "damageScale": 2.1,
+                "bonusDamage": 12,
+                "staminaDamageScale": 1.45,
+                "bonusStaminaDamage": 6,
+                "poiseDamageScale": 0,
+                "bonusPoiseDamage": 0,
+                "knockbackDistance": 1.35,
+                "hitStopSec": 0.1,
+                "parryable": false,
+                "guardable": true
+            },
+            "lifetimeSec": 0,
+            "tickIntervalSec": 0,
+            "hitOncePerAbilityInstance": true,
+            "includeOwner": false,
+            "requireLineOfSight": false
+        }
+    ]
+}

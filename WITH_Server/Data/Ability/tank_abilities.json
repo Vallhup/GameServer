@@ -1,1037 +1,1146 @@
 {
-  "abilities": [
-    {
-      "key": "Ability.Tank_Melee_1",
-      "name": "Tank.Melee1",
-      "kind": "Attack",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": true,
-        "requiresGrounded": true
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 2.96666455,
-        "policy": "FixedDuration",
-        "combatWindows": [
-          {
+    "abilities": [
+        {
+            "key": "Ability.Tank_Melee_1",
+            "name": "Tank.Melee1",
             "kind": "Attack",
-            "startNormalized": 0.28,
-            "endNormalized": 0.52,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": {
-              "facingHalfAngleDeg": 78,
-              "minDistance": null,
-              "maxDistance": 2.8,
-              "verticalTolerance": 2.1,
-              "referenceFrame": "LockedActionDirection"
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": true,
+                "requiresGrounded": true
             },
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 1.45,
-                "bonusDamage": 8,
-                "staminaDamageScale": 1,
-                "bonusStaminaDamage": 3,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 0.8,
-                "hitStopSec": 0.07,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
+            "costs": [],
+            "timeline": {
+                "durationSec": 2.96666455,
+                "policy": "FixedDuration",
+                "combatWindows": [
+                    {
+                        "kind": "Attack",
+                        "startNormalized": 0.3,
+                        "endNormalized": 0.48,
+                        "sourceHitBones": [ 15 ],
+                        "applyEffectKey": null,
+                        "appliesTo": "FrontPhysical",
+                        "spatialFilter": {
+                            "facingHalfAngleDeg": 78,
+                            "minDistance": null,
+                            "maxDistance": 2.8,
+                            "verticalTolerance": 2.1,
+                            "referenceFrame": "LockedActionDirection"
+                        },
+                        "effect": {
+                            "type": "AttackHit",
+                            "attackHit": {
+                                "damageScale": 1.45,
+                                "bonusDamage": 8,
+                                "staminaDamageScale": 1,
+                                "bonusStaminaDamage": 3,
+                                "poiseDamageScale": 0,
+                                "bonusPoiseDamage": 0,
+                                "knockbackDistance": 0.8,
+                                "hitStopSec": 0.07,
+                                "parryable": true,
+                                "guardable": true
+                            },
+                            "parryResponse": null,
+                            "guardResponse": null
+                        }
+                    }
+                ],
+                "movementSegments": [
+                    {
+                        "startNormalized": 0.1,
+                        "endNormalized": 0.32,
+                        "movementMode": "ForwardFixedDistance",
+                        "moveDistance": 0.15,
+                        "rotationMode": "FaceTarget",
+                        "rotationRate": 3,
+                        "verticalMovementMode": "None",
+                        "verticalAmount": null,
+                        "directionPolicy": "TargetDirection",
+                        "directionSampleTiming": "OnSegmentStart"
+                    }
+                ],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnParried",
+                        "toAbilityKey": "Ability.Tank_Stun",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 200,
+                        "aiInterruptible": false
+                    },
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
             }
-          }
-        ],
-        "movementSegments": [
-          {
-            "startNormalized": 0.08,
-            "endNormalized": 0.24,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.35,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 3,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
         },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnParried",
-            "toAbilityKey": "Ability.Tank_Stun",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 200,
-            "aiInterruptible": false
-          },
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Melee_2",
-      "name": "Tank.Melee2",
-      "kind": "Attack",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": true,
-        "requiresGrounded": true
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 3.9666667,
-        "policy": "FixedDuration",
-        "combatWindows": [
-          {
+        {
+            "key": "Ability.Tank_Melee_2",
+            "name": "Tank.Melee2",
             "kind": "Attack",
-            "startNormalized": 0.32,
-            "endNormalized": 0.58,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": {
-              "facingHalfAngleDeg": 86,
-              "minDistance": null,
-              "maxDistance": 3.0,
-              "verticalTolerance": 2.1,
-              "referenceFrame": "LockedActionDirection"
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": true,
+                "requiresGrounded": true
             },
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 1.65,
-                "bonusDamage": 9,
-                "staminaDamageScale": 1.15,
-                "bonusStaminaDamage": 3,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 0.9,
-                "hitStopSec": 0.08,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
+            "costs": [],
+            "timeline": {
+                "durationSec": 3.9666667,
+                "policy": "FixedDuration",
+                "combatWindows": [
+                    {
+                        "kind": "Attack",
+                        "startNormalized": 0.01,
+                        "endNormalized": 1.0,
+                        "sourceHitBones": [
+                            15
+                        ],
+                        "applyEffectKey": null,
+                        "appliesTo": "FrontPhysical",
+                        "spatialFilter": {
+                            "facingHalfAngleDeg": 105,
+                            "minDistance": null,
+                            "maxDistance": 4.6,
+                            "verticalTolerance": 2.6,
+                            "referenceFrame": "LockedActionDirection"
+                        },
+                        "effect": {
+                            "type": "AttackHit",
+                            "attackHit": {
+                                "damageScale": 1.65,
+                                "bonusDamage": 9,
+                                "staminaDamageScale": 1.15,
+                                "bonusStaminaDamage": 3,
+                                "poiseDamageScale": 0,
+                                "bonusPoiseDamage": 0,
+                                "knockbackDistance": 0.9,
+                                "hitStopSec": 0.08,
+                                "parryable": true,
+                                "guardable": true
+                            },
+                            "parryResponse": null,
+                            "guardResponse": null
+                        }
+                    }
+                ],
+                "movementSegments": [
+                    {
+                        "startNormalized": 0.12,
+                        "endNormalized": 0.43,
+                        "movementMode": "ForwardFixedDistance",
+                        "moveDistance": 0.35,
+                        "rotationMode": "FaceTarget",
+                        "rotationRate": 2.8,
+                        "verticalMovementMode": "None",
+                        "verticalAmount": null,
+                        "directionPolicy": "TargetDirection",
+                        "directionSampleTiming": "OnSegmentStart"
+                    }
+                ],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnParried",
+                        "toAbilityKey": "Ability.Tank_Stun",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 200,
+                        "aiInterruptible": false
+                    },
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
             }
-          }
-        ],
-        "movementSegments": [
-          {
-            "startNormalized": 0.08,
-            "endNormalized": 0.3,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.45,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 2.8,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
         },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnParried",
-            "toAbilityKey": "Ability.Tank_Stun",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 200,
-            "aiInterruptible": false
-          },
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Melee_3",
-      "name": "Tank.Melee3",
-      "kind": "Attack",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": true,
-        "requiresGrounded": true
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 3.9666667,
-        "policy": "FixedDuration",
-        "combatWindows": [
-          {
+        {
+            "key": "Ability.Tank_Melee_3",
+            "name": "Tank.Melee3",
             "kind": "Attack",
-            "startNormalized": 0.34,
-            "endNormalized": 0.62,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": {
-              "facingHalfAngleDeg": 92,
-              "minDistance": null,
-              "maxDistance": 3.1,
-              "verticalTolerance": 2.1,
-              "referenceFrame": "LockedActionDirection"
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": true,
+                "requiresGrounded": true
             },
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 1.8,
-                "bonusDamage": 10,
-                "staminaDamageScale": 1.25,
-                "bonusStaminaDamage": 4,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 1,
-                "hitStopSec": 0.08,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
+            "costs": [],
+            "timeline": {
+                "durationSec": 3.9666667,
+                "policy": "FixedDuration",
+                "combatWindows": [
+                    {
+                        "kind": "Attack",
+                        "startNormalized": 0.14,
+                        "endNormalized": 0.42,
+                        "sourceHitBones": [
+                            6
+                        ],
+                        "applyEffectKey": null,
+                        "appliesTo": "FrontPhysical",
+                        "spatialFilter": {
+                            "facingHalfAngleDeg": 120,
+                            "minDistance": null,
+                            "maxDistance": 6.5,
+                            "verticalTolerance": 2.1,
+                            "referenceFrame": "LockedActionDirection"
+                        },
+                        "effect": {
+                            "type": "AttackHit",
+                            "attackHit": {
+                                "damageScale": 1.8,
+                                "bonusDamage": 10,
+                                "staminaDamageScale": 1.25,
+                                "bonusStaminaDamage": 4,
+                                "poiseDamageScale": 0,
+                                "bonusPoiseDamage": 0,
+                                "knockbackDistance": 1,
+                                "hitStopSec": 0.08,
+                                "parryable": true,
+                                "guardable": true
+                            },
+                            "parryResponse": null,
+                            "guardResponse": null
+                        }
+                    }
+                ],
+                "movementSegments": [
+                    {
+                        "startNormalized": 0.05,
+                        "endNormalized": 0.18,
+                        "movementMode": "ForwardFixedDistance",
+                        "moveDistance": 0.45,
+                        "rotationMode": "FaceTarget",
+                        "rotationRate": 2.7,
+                        "verticalMovementMode": "None",
+                        "verticalAmount": null,
+                        "directionPolicy": "TargetDirection",
+                        "directionSampleTiming": "OnSegmentStart"
+                    }
+                ],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnParried",
+                        "toAbilityKey": "Ability.Tank_Stun",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 200,
+                        "aiInterruptible": false
+                    },
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
             }
-          }
-        ],
-        "movementSegments": [
-          {
-            "startNormalized": 0.1,
-            "endNormalized": 0.32,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.45,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 2.7,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
         },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnParried",
-            "toAbilityKey": "Ability.Tank_Stun",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 200,
-            "aiInterruptible": false
-          },
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Melee_4",
-      "name": "Tank.Melee4",
-      "kind": "Attack",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": true,
-        "requiresGrounded": true
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 3.9666667,
-        "policy": "FixedDuration",
-        "combatWindows": [
-          {
+        {
+            "key": "Ability.Tank_Melee_4",
+            "name": "Tank.Melee4",
             "kind": "Attack",
-            "startNormalized": 0.36,
-            "endNormalized": 0.64,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": {
-              "facingHalfAngleDeg": 96,
-              "minDistance": null,
-              "maxDistance": 3.2,
-              "verticalTolerance": 2.1,
-              "referenceFrame": "LockedActionDirection"
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": true,
+                "requiresGrounded": true
             },
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 1.9,
-                "bonusDamage": 11,
-                "staminaDamageScale": 1.3,
-                "bonusStaminaDamage": 4,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 1.1,
-                "hitStopSec": 0.09,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
+            "costs": [],
+            "timeline": {
+                "durationSec": 3.9666667,
+                "policy": "FixedDuration",
+                "combatWindows": [
+                    {
+                        "kind": "Attack",
+                        "startNormalized": 0.01,
+                        "endNormalized": 1.0,
+                        "sourceHitBones": [
+                            6
+                        ],
+                        "applyEffectKey": null,
+                        "appliesTo": "FrontPhysical",
+                        "spatialFilter": {
+                            "facingHalfAngleDeg": 160,
+                            "minDistance": null,
+                            "maxDistance": 7.2,
+                            "verticalTolerance": 2.1,
+                            "referenceFrame": "LockedActionDirection"
+                        },
+                        "effect": {
+                            "type": "AttackHit",
+                            "attackHit": {
+                                "damageScale": 1.9,
+                                "bonusDamage": 11,
+                                "staminaDamageScale": 1.3,
+                                "bonusStaminaDamage": 4,
+                                "poiseDamageScale": 0,
+                                "bonusPoiseDamage": 0,
+                                "knockbackDistance": 1.1,
+                                "hitStopSec": 0.09,
+                                "parryable": true,
+                                "guardable": true
+                            },
+                            "parryResponse": null,
+                            "guardResponse": null
+                        }
+                    }
+                ],
+                "movementSegments": [],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnParried",
+                        "toAbilityKey": "Ability.Tank_Stun",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 200,
+                        "aiInterruptible": false
+                    },
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
             }
-          }
-        ],
-        "movementSegments": [
-          {
-            "startNormalized": 0.1,
-            "endNormalized": 0.34,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.5,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 2.6,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
         },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnParried",
-            "toAbilityKey": "Ability.Tank_Stun",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 200,
-            "aiInterruptible": false
-          },
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Melee_5",
-      "name": "Tank.Melee5",
-      "kind": "Attack",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": true,
-        "requiresGrounded": true
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 4.966674,
-        "policy": "FixedDuration",
-        "combatWindows": [
-          {
+        {
+            "key": "Ability.Tank_Melee_5",
+            "name": "Tank.Melee5",
             "kind": "Attack",
-            "startNormalized": 0.42,
-            "endNormalized": 0.7,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": {
-              "facingHalfAngleDeg": 104,
-              "minDistance": null,
-              "maxDistance": 3.4,
-              "verticalTolerance": 2.1,
-              "referenceFrame": "LockedActionDirection"
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": true,
+                "requiresGrounded": true
             },
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 2.35,
-                "bonusDamage": 14,
-                "staminaDamageScale": 1.6,
-                "bonusStaminaDamage": 6,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 1.35,
-                "hitStopSec": 0.11,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
+            "costs": [],
+            "timeline": {
+                "durationSec": 4.966674,
+                "policy": "FixedDuration",
+                "combatWindows": [
+                    {
+                        "kind": "Attack",
+                        "startNormalized": 0.20,
+                        "endNormalized": 0.30,
+                        "sourceHitBones": [
+                            15
+                        ],
+                        "applyEffectKey": null,
+                        "appliesTo": "FrontPhysical",
+                        "spatialFilter": {
+                            "facingHalfAngleDeg": 110,
+                            "minDistance": null,
+                            "maxDistance": 4.6,
+                            "verticalTolerance": 2.1,
+                            "referenceFrame": "LockedActionDirection"
+                        },
+                        "effect": {
+                            "type": "AttackHit",
+                            "attackHit": {
+                                "damageScale": 1.15,
+                                "bonusDamage": 7,
+                                "staminaDamageScale": 0.8,
+                                "bonusStaminaDamage": 3,
+                                "poiseDamageScale": 0,
+                                "bonusPoiseDamage": 0,
+                                "knockbackDistance": 0.75,
+                                "hitStopSec": 0.07,
+                                "parryable": true,
+                                "guardable": true
+                            },
+                            "parryResponse": null,
+                            "guardResponse": null
+                        }
+                    },
+                    {
+                        "kind": "Attack",
+                        "startNormalized": 0.27,
+                        "endNormalized": 0.36,
+                        "sourceHitBones": [
+                            15
+                        ],
+                        "applyEffectKey": null,
+                        "appliesTo": "FrontPhysical",
+                        "spatialFilter": {
+                            "facingHalfAngleDeg": 110,
+                            "minDistance": null,
+                            "maxDistance": 4.6,
+                            "verticalTolerance": 2.1,
+                            "referenceFrame": "LockedActionDirection"
+                        },
+                        "effect": {
+                            "type": "AttackHit",
+                            "attackHit": {
+                                "damageScale": 1.15,
+                                "bonusDamage": 7,
+                                "staminaDamageScale": 0.8,
+                                "bonusStaminaDamage": 3,
+                                "poiseDamageScale": 0,
+                                "bonusPoiseDamage": 0,
+                                "knockbackDistance": 0.75,
+                                "hitStopSec": 0.07,
+                                "parryable": true,
+                                "guardable": true
+                            },
+                            "parryResponse": null,
+                            "guardResponse": null
+                        }
+                    }
+                ],
+                "movementSegments": [],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnParried",
+                        "toAbilityKey": "Ability.Tank_Stun",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 200,
+                        "aiInterruptible": false
+                    },
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
             }
-          }
-        ],
-        "movementSegments": [
-          {
-            "startNormalized": 0.12,
-            "endNormalized": 0.36,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.65,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 2.2,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
         },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnParried",
-            "toAbilityKey": "Ability.Tank_Stun",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 200,
-            "aiInterruptible": false
-          },
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Melee_6",
-      "name": "Tank.Melee6",
-      "kind": "Attack",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": true,
-        "requiresGrounded": true
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 3.79999471,
-        "policy": "FixedDuration",
-        "combatWindows": [
-          {
+        {
+            "key": "Ability.Tank_Melee_6",
+            "name": "Tank.Melee6",
             "kind": "Attack",
-            "startNormalized": 0.34,
-            "endNormalized": 0.62,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": {
-              "facingHalfAngleDeg": 96,
-              "minDistance": null,
-              "maxDistance": 3.2,
-              "verticalTolerance": 2.1,
-              "referenceFrame": "LockedActionDirection"
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": true,
+                "requiresGrounded": true
             },
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 2,
-                "bonusDamage": 12,
-                "staminaDamageScale": 1.4,
-                "bonusStaminaDamage": 5,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 1.15,
-                "hitStopSec": 0.09,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
+            "costs": [],
+            "timeline": {
+                "durationSec": 3.79999471,
+                "policy": "FixedDuration",
+                "combatWindows": [
+                    {
+                        "kind": "Attack",
+                        "startNormalized": 0.36,
+                        "endNormalized": 0.62,
+                        "sourceHitBones": [
+                            15
+                        ],
+                        "applyEffectKey": null,
+                        "appliesTo": "FrontPhysical",
+                        "spatialFilter": {
+                            "facingHalfAngleDeg": 96,
+                            "minDistance": null,
+                            "maxDistance": 5.8,
+                            "verticalTolerance": 2.1,
+                            "referenceFrame": "LockedActionDirection"
+                        },
+                        "effect": {
+                            "type": "AttackHit",
+                            "attackHit": {
+                                "damageScale": 2,
+                                "bonusDamage": 12,
+                                "staminaDamageScale": 1.4,
+                                "bonusStaminaDamage": 5,
+                                "poiseDamageScale": 0,
+                                "bonusPoiseDamage": 0,
+                                "knockbackDistance": 1.15,
+                                "hitStopSec": 0.09,
+                                "parryable": true,
+                                "guardable": true
+                            },
+                            "parryResponse": null,
+                            "guardResponse": null
+                        }
+                    }
+                ],
+                "movementSegments": [
+                    {
+                        "startNormalized": 0.12,
+                        "endNormalized": 0.42,
+                        "movementMode": "ForwardFixedDistance",
+                        "moveDistance": 0.9,
+                        "rotationMode": "FaceTarget",
+                        "rotationRate": 2.5,
+                        "verticalMovementMode": "None",
+                        "verticalAmount": null,
+                        "directionPolicy": "TargetDirection",
+                        "directionSampleTiming": "OnSegmentStart"
+                    }
+                ],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnParried",
+                        "toAbilityKey": "Ability.Tank_Stun",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 200,
+                        "aiInterruptible": false
+                    },
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
             }
-          }
-        ],
-        "movementSegments": [
-          {
-            "startNormalized": 0.08,
-            "endNormalized": 0.3,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.55,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 2.5,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
         },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnParried",
-            "toAbilityKey": "Ability.Tank_Stun",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 200,
-            "aiInterruptible": false
-          },
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Melee_7",
-      "name": "Tank.Melee7",
-      "kind": "Attack",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": true,
-        "requiresGrounded": true
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 2.13333678,
-        "policy": "FixedDuration",
-        "combatWindows": [
-          {
+        {
+            "key": "Ability.Tank_Melee_7",
+            "name": "Tank.Melee7",
             "kind": "Attack",
-            "startNormalized": 0.24,
-            "endNormalized": 0.5,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": {
-              "facingHalfAngleDeg": 74,
-              "minDistance": null,
-              "maxDistance": 2.7,
-              "verticalTolerance": 2.1,
-              "referenceFrame": "LockedActionDirection"
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": true,
+                "requiresGrounded": true
             },
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 1.25,
-                "bonusDamage": 7,
-                "staminaDamageScale": 0.9,
-                "bonusStaminaDamage": 2,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 0.65,
-                "hitStopSec": 0.06,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
+            "costs": [],
+            "timeline": {
+                "durationSec": 2.13333678,
+                "policy": "FixedDuration",
+                "combatWindows": [
+                    {
+                        "kind": "Attack",
+                        "startNormalized": 0.34,
+                        "endNormalized": 0.52,
+                        "sourceHitBones": [ 6 ],
+                        "applyEffectKey": null,
+                        "appliesTo": "FrontPhysical",
+                        "spatialFilter": {
+                            "facingHalfAngleDeg": 74,
+                            "minDistance": null,
+                            "maxDistance": 2.7,
+                            "verticalTolerance": 2.1,
+                            "referenceFrame": "LockedActionDirection"
+                        },
+                        "effect": {
+                            "type": "AttackHit",
+                            "attackHit": {
+                                "damageScale": 1.25,
+                                "bonusDamage": 7,
+                                "staminaDamageScale": 0.9,
+                                "bonusStaminaDamage": 2,
+                                "poiseDamageScale": 0,
+                                "bonusPoiseDamage": 0,
+                                "knockbackDistance": 0.65,
+                                "hitStopSec": 0.06,
+                                "parryable": true,
+                                "guardable": true
+                            },
+                            "parryResponse": null,
+                            "guardResponse": null
+                        }
+                    }
+                ],
+                "movementSegments": [
+                    {
+                        "startNormalized": 0.08,
+                        "endNormalized": 0.3,
+                        "movementMode": "ForwardFixedDistance",
+                        "moveDistance": 0.05,
+                        "rotationMode": "FaceTarget",
+                        "rotationRate": 3.4,
+                        "verticalMovementMode": "None",
+                        "verticalAmount": null,
+                        "directionPolicy": "TargetDirection",
+                        "directionSampleTiming": "OnSegmentStart"
+                    }
+                ],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnParried",
+                        "toAbilityKey": "Ability.Tank_Stun",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 200,
+                        "aiInterruptible": false
+                    },
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
             }
-          }
-        ],
-        "movementSegments": [
-          {
-            "startNormalized": 0.06,
-            "endNormalized": 0.22,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.3,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 3.4,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
         },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnParried",
-            "toAbilityKey": "Ability.Tank_Stun",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 200,
-            "aiInterruptible": false
-          },
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Melee_8",
-      "name": "Tank.Melee8",
-      "kind": "Attack",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": true,
-        "requiresGrounded": true
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 3.30000329,
-        "policy": "FixedDuration",
-        "combatWindows": [
-          {
+        {
+            "key": "Ability.Tank_Melee_8",
+            "name": "Tank.Melee8",
             "kind": "Attack",
-            "startNormalized": 0.3,
-            "endNormalized": 0.58,
-            "applyEffectKey": null,
-            "appliesTo": "FrontPhysical",
-            "spatialFilter": {
-              "facingHalfAngleDeg": 88,
-              "minDistance": null,
-              "maxDistance": 3.0,
-              "verticalTolerance": 2.1,
-              "referenceFrame": "LockedActionDirection"
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": true,
+                "requiresGrounded": true
             },
-            "effect": {
-              "type": "AttackHit",
-              "attackHit": {
-                "damageScale": 1.7,
-                "bonusDamage": 10,
-                "staminaDamageScale": 1.2,
-                "bonusStaminaDamage": 4,
-                "poiseDamageScale": 0,
-                "bonusPoiseDamage": 0,
-                "knockbackDistance": 0.95,
-                "hitStopSec": 0.08,
-                "parryable": true,
-                "guardable": true
-              },
-              "parryResponse": null,
-              "guardResponse": null
+            "costs": [],
+            "timeline": {
+                "durationSec": 3.30000329,
+                "policy": "FixedDuration",
+                "combatWindows": [
+                    {
+                        "kind": "Attack",
+                        "startNormalized": 0.28,
+                        "endNormalized": 0.58,
+                        "sourceHitBones": [ 15 ],
+                        "applyEffectKey": null,
+                        "appliesTo": "FrontPhysical",
+                        "spatialFilter": {
+                            "facingHalfAngleDeg": 88,
+                            "minDistance": null,
+                            "maxDistance": 3,
+                            "verticalTolerance": 2.1,
+                            "referenceFrame": "LockedActionDirection"
+                        },
+                        "effect": {
+                            "type": "AttackHit",
+                            "attackHit": {
+                                "damageScale": 1.7,
+                                "bonusDamage": 10,
+                                "staminaDamageScale": 1.2,
+                                "bonusStaminaDamage": 4,
+                                "poiseDamageScale": 0,
+                                "bonusPoiseDamage": 0,
+                                "knockbackDistance": 0.95,
+                                "hitStopSec": 0.08,
+                                "parryable": true,
+                                "guardable": true
+                            },
+                            "parryResponse": null,
+                            "guardResponse": null
+                        }
+                    }
+                ],
+                "movementSegments": [
+                    {
+                        "startNormalized": 0.1,
+                        "endNormalized": 0.33,
+                        "movementMode": "ForwardFixedDistance",
+                        "moveDistance": 0.2,
+                        "rotationMode": "FaceTarget",
+                        "rotationRate": 2.9,
+                        "verticalMovementMode": "None",
+                        "verticalAmount": null,
+                        "directionPolicy": "TargetDirection",
+                        "directionSampleTiming": "OnSegmentStart"
+                    }
+                ],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnParried",
+                        "toAbilityKey": "Ability.Tank_Stun",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 200,
+                        "aiInterruptible": false
+                    },
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
             }
-          }
-        ],
-        "movementSegments": [
-          {
-            "startNormalized": 0.08,
-            "endNormalized": 0.28,
-            "movementMode": "ForwardFixedDistance",
-            "moveDistance": 0.45,
-            "rotationMode": "FaceTarget",
-            "rotationRate": 2.9,
-            "verticalMovementMode": "None",
-            "verticalAmount": null,
-            "directionPolicy": "TargetDirection",
-            "directionSampleTiming": "OnSegmentStart"
-          }
-        ],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
         },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnParried",
-            "toAbilityKey": "Ability.Tank_Stun",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 200,
-            "aiInterruptible": false
-          },
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Jump_1",
-      "name": "Tank.Jump1",
-      "kind": "NonCombat",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
+        {
+            "key": "Ability.Tank_Jump_1",
+            "name": "Tank.Jump1",
+            "kind": "NonCombat",
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": false,
+                "requiresGrounded": true
+            },
+            "costs": [],
+            "timeline": {
+                "durationSec": 3.9666667,
+                "policy": "FixedDuration",
+                "combatWindows": [],
+                "movementSegments": [],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
+            }
         },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
+        {
+            "key": "Ability.Tank_Jump_2",
+            "name": "Tank.Jump2",
+            "kind": "NonCombat",
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": false,
+                "requiresGrounded": true
+            },
+            "costs": [],
+            "timeline": {
+                "durationSec": 4.299994,
+                "policy": "FixedDuration",
+                "combatWindows": [],
+                "movementSegments": [],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
+            }
         },
-        "requiresTarget": false,
-        "requiresGrounded": true
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 3.9666667,
-        "policy": "FixedDuration",
-        "combatWindows": [],
-        "movementSegments": [],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
+        {
+            "key": "Ability.Tank_Jump_Area",
+            "name": "Tank.JumpArea",
+            "kind": "Attack",
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": true,
+                "requiresGrounded": true
+            },
+            "costs": [],
+            "timeline": {
+                "durationSec": 3.4,
+                "policy": "FixedDuration",
+                "combatWindows": [],
+                "movementSegments": [
+                    {
+                        "startNormalized": 0.18,
+                        "endNormalized": 0.39,
+                        "movementMode": "DashToTarget",
+                        "moveDistance": null,
+                        "rotationMode": "FaceTarget",
+                        "rotationRate": 3.8,
+                        "verticalMovementMode": "FixedOffset",
+                        "verticalAmount": 2.6,
+                        "directionPolicy": "TargetDirection",
+                        "directionSampleTiming": "OnSegmentStart"
+                    },
+                    {
+                        "startNormalized": 0.39,
+                        "endNormalized": 0.82,
+                        "movementMode": "DashToTarget",
+                        "moveDistance": null,
+                        "rotationMode": "FaceTarget",
+                        "rotationRate": 3.8,
+                        "verticalMovementMode": "FixedOffset",
+                        "verticalAmount": -5,
+                        "directionPolicy": "TargetDirection",
+                        "directionSampleTiming": "OnSegmentStart"
+                    }
+                ],
+                "events": [
+                    {
+                        "kind": "TriggerAreaHit",
+                        "timeNormalized": 0.71,
+                        "effectKey": null,
+                        "cueTagKey": null,
+                        "projectileKey": null,
+                        "areaHitKey": "Area.Tank_JumpSlam",
+                        "payloadId": null,
+                        "condition": "Always"
+                    }
+                ]
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
+            }
         },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Jump_2",
-      "name": "Tank.Jump2",
-      "kind": "NonCombat",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
+        {
+            "key": "Ability.Tank_Stun",
+            "name": "Tank.Stun",
+            "kind": "Reaction",
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": false,
+                "requiresGrounded": false
+            },
+            "costs": [],
+            "timeline": {
+                "durationSec": 2.800004,
+                "policy": "FixedDuration",
+                "combatWindows": [],
+                "movementSegments": [],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
+            }
         },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
+        {
+            "key": "Ability.Tank_Hit",
+            "name": "Tank.Hit",
+            "kind": "Reaction",
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": false,
+                "requiresGrounded": false
+            },
+            "costs": [],
+            "timeline": {
+                "durationSec": 2.800004,
+                "policy": "FixedDuration",
+                "combatWindows": [],
+                "movementSegments": [],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [
+                    {
+                        "cause": "OnAttributeZero",
+                        "toAbilityKey": "Ability.Tank_Dead",
+                        "windowPolicy": "Always",
+                        "windowStartNormalized": null,
+                        "windowEndNormalized": null,
+                        "priority": 1000,
+                        "aiInterruptible": false
+                    }
+                ],
+                "cancelRules": []
+            }
         },
-        "requiresTarget": false,
-        "requiresGrounded": true
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 4.299994,
-        "policy": "FixedDuration",
-        "combatWindows": [],
-        "movementSegments": [],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
-        },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Stun",
-      "name": "Tank.Stun",
-      "kind": "Reaction",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": false,
-        "requiresGrounded": false
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 2.800004,
-        "policy": "FixedDuration",
-        "combatWindows": [],
-        "movementSegments": [],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
-        },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Hit",
-      "name": "Tank.Hit",
-      "kind": "Reaction",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": false,
-        "requiresGrounded": false
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 2.800004,
-        "policy": "FixedDuration",
-        "combatWindows": [],
-        "movementSegments": [],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
-        },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [
-          {
-            "cause": "OnAttributeZero",
-            "toAbilityKey": "Ability.Tank_Dead",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 1000,
-            "aiInterruptible": false
-          }
-        ],
-        "cancelRules": []
-      }
-    },
-    {
-      "key": "Ability.Tank_Dead",
-      "name": "Tank.Dead",
-      "kind": "Dead",
-      "tags": [],
-      "activation": {
-        "requiredOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "blockedOwnerTags": {
-          "op": "None",
-          "tags": [],
-          "children": []
-        },
-        "requiresTarget": false,
-        "requiresGrounded": false
-      },
-      "costs": [],
-      "timeline": {
-        "durationSec": 2.6333375,
-        "policy": "FixedDuration",
-        "combatWindows": [],
-        "movementSegments": [],
-        "events": []
-      },
-      "transition": {
-        "endPolicy": {
-          "endType": "NaturalEnd",
-          "defaultNextAbilityKey": null
-        },
-        "defaultNextAbilityKey": null,
-        "interruptRules": [],
-        "cancelRules": []
-      }
-    }
-  ]
+        {
+            "key": "Ability.Tank_Dead",
+            "name": "Tank.Dead",
+            "kind": "Dead",
+            "tags": [],
+            "activation": {
+                "requiredOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "blockedOwnerTags": {
+                    "op": "None",
+                    "tags": [],
+                    "children": []
+                },
+                "requiresTarget": false,
+                "requiresGrounded": false
+            },
+            "costs": [],
+            "timeline": {
+                "durationSec": 2.6333375,
+                "policy": "FixedDuration",
+                "combatWindows": [],
+                "movementSegments": [],
+                "events": []
+            },
+            "transition": {
+                "endPolicy": {
+                    "endType": "NaturalEnd",
+                    "defaultNextAbilityKey": null
+                },
+                "defaultNextAbilityKey": null,
+                "interruptRules": [],
+                "cancelRules": []
+            }
+        }
+    ]
 }

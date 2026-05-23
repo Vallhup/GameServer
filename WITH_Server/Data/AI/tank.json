@@ -1,166 +1,210 @@
 {
-  "key": "AI.Tank",
-  "aiType": "NormalMonster",
-  "perceptionTuning": {
-    "sightRange": 13.5,
-    "attackRange": 2.8,
-    "frontDotThreshold": 0.18,
-    "targetKeepBonus": 4.5,
-    "lastAttackerBonus": 3.0,
-    "frontBonus": 1.0,
-    "switchScoreMargin": 3.5,
-    "loseSightGraceTime": 1.4,
-    "leashRange": 20.0,
-    "hardLeashRange": 28.0,
-    "leashGaugeMax": 100.0,
-    "leashDrainPerSec": 18.0,
-    "hardLeashDrainPerSec": 55.0,
-    "leashRecoverPerSec": 32.0,
-    "returnHomeArriveRange": 0.9,
-    "returnHomeReaggroLockSec": 1.5,
-    "returnHpRegenPerSecRatio": 0.08,
-    "idleActionCooldownSec": 8.0,
-    "idleActionChancePercent": 16,
-    "assistRange": 6.5
-  },
-  "decisionTuning": {
-    "decisionInterval": 0.2,
-    "attackCooldown": 2.6,
-    "reactDuration": 0.7
-  },
-  "combatActions": [
-    {
-      "abilityKey": "Ability.Tank_Melee_7",
-      "weight": 18,
-      "distanceBucket": "VeryClose",
-      "aiCooldownSec": 1.6,
-      "globalCooldownSec": 1.8,
-      "patternGroup": "Tank_Poke",
-      "groupCooldownSec": 1.4,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.25
+    "key": "AI.Tank",
+    "aiType": "NormalMonster",
+    "perceptionTuning": {
+        "sightRange": 13.5,
+        "attackRange": 10,
+        "frontDotThreshold": 0.18,
+        "targetKeepBonus": 4.5,
+        "lastAttackerBonus": 3,
+        "frontBonus": 1,
+        "switchScoreMargin": 3.5,
+        "loseSightGraceTime": 1.4,
+        "leashRange": 20,
+        "hardLeashRange": 28,
+        "leashGaugeMax": 100,
+        "leashDrainPerSec": 18,
+        "hardLeashDrainPerSec": 55,
+        "leashRecoverPerSec": 32,
+        "returnHomeArriveRange": 0.9,
+        "returnHomeReaggroLockSec": 1.5,
+        "returnHpRegenPerSecRatio": 0.08,
+        "idleActionCooldownSec": 8,
+        "idleActionChancePercent": 16,
+        "assistRange": 6.5
     },
-    {
-      "abilityKey": "Ability.Tank_Melee_1",
-      "weight": 18,
-      "distanceBucket": "Close",
-      "aiCooldownSec": 2.2,
-      "globalCooldownSec": 2.3,
-      "patternGroup": "Tank_Poke",
-      "groupCooldownSec": 1.6,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.3
+    "decisionTuning": {
+        "decisionInterval": 0.2,
+        "attackCooldown": 2.6,
+        "reactDuration": 0.7
     },
-    {
-      "abilityKey": "Ability.Tank_Melee_2",
-      "weight": 14,
-      "distanceBucket": "Close",
-      "aiCooldownSec": 3.0,
-      "globalCooldownSec": 2.8,
-      "patternGroup": "Tank_Commit",
-      "groupCooldownSec": 4.2,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.45
-    },
-    {
-      "abilityKey": "Ability.Tank_Melee_3",
-      "weight": 14,
-      "distanceBucket": "Close",
-      "aiCooldownSec": 3.0,
-      "globalCooldownSec": 2.8,
-      "patternGroup": "Tank_Commit",
-      "groupCooldownSec": 4.2,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.45
-    },
-    {
-      "abilityKey": "Ability.Tank_Melee_8",
-      "weight": 16,
-      "distanceBucket": "Close",
-      "aiCooldownSec": 3.2,
-      "globalCooldownSec": 2.8,
-      "patternGroup": "Tank_Commit",
-      "groupCooldownSec": 4.2,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.45
-    },
-    {
-      "abilityKey": "Ability.Tank_Melee_4",
-      "weight": 10,
-      "distanceBucket": "Close",
-      "aiCooldownSec": 4.0,
-      "globalCooldownSec": 3.0,
-      "patternGroup": "Tank_Commit",
-      "groupCooldownSec": 4.5,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.55
-    },
-    {
-      "abilityKey": "Ability.Tank_Melee_6",
-      "weight": 7,
-      "distanceBucket": "Close",
-      "aiCooldownSec": 4.4,
-      "globalCooldownSec": 3.2,
-      "patternGroup": "Tank_Commit",
-      "groupCooldownSec": 5.0,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.6
-    },
-    {
-      "abilityKey": "Ability.Tank_Melee_5",
-      "weight": 3,
-      "distanceBucket": "Close",
-      "aiCooldownSec": 6.5,
-      "globalCooldownSec": 3.6,
-      "patternGroup": "Tank_Commit",
-      "groupCooldownSec": 6.0,
-      "forbidImmediateRepeat": true,
-      "lockMovementSec": 0.7
-    }
-  ],
-  "idleActions": [
-    { "abilityKey": "Ability.Tank_Jump_1", "weight": 60 },
-    { "abilityKey": "Ability.Tank_Jump_2", "weight": 40 }
-  ],
-  "movementProfiles": [
-    {
-      "name": "TankDefault",
-      "phaseMin": 1,
-      "phaseMax": 255,
-      "veryCloseDistance": 1.7,
-      "closeDistance": 2.8,
-      "midDistance": 4.4,
-      "farDistance": 12.0,
-      "preferredMinDistance": 2.1,
-      "preferredMaxDistance": 3.5,
-      "veryCloseBehavior": "Hold",
-      "closeBehavior": "Hold",
-      "preferredBehavior": "Hold",
-      "midBehavior": "Approach",
-      "farBehavior": "RunApproach",
-      "strafeMinSec": 0.9,
-      "strafeMaxSec": 1.6,
-      "lockFacingToTarget": true
-    }
-  ],
-  "reactionRules": [
-    {
-      "event": "OnHitReceived",
-      "outcome": "ForceRetarget",
-      "retargetAttacker": true,
-      "priority": 100
-    },
-    {
-      "event": "OnParried",
-      "outcome": "EnterReact",
-      "retargetAttacker": true,
-      "priority": 200
-    },
-    {
-      "event": "OnGuardBroken",
-      "outcome": "EnterReact",
-      "retargetAttacker": false,
-      "priority": 200
-    }
-  ]
+    "combatActions": [
+        {
+            "abilityKey": "Ability.Tank_Melee_7",
+            "weight": 12,
+            "distanceBucket": "VeryClose",
+            "minDistance": 0,
+            "maxDistance": 1.7,
+            "aiCooldownSec": 4,
+            "globalCooldownSec": 2.7,
+            "patternGroup": "Tank_Punish",
+            "groupCooldownSec": 4,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.35,
+            "lockFacingToTarget": true
+        },
+        {
+            "abilityKey": "Ability.Tank_Melee_1",
+            "weight": 18,
+            "distanceBucket": "Close",
+            "minDistance": 1.2,
+            "maxDistance": 2.8,
+            "aiCooldownSec": 2.2,
+            "globalCooldownSec": 2.3,
+            "patternGroup": "Tank_Basic",
+            "groupCooldownSec": 1.6,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.3
+        },
+        {
+            "abilityKey": "Ability.Tank_Melee_8",
+            "weight": 16,
+            "distanceBucket": "Close",
+            "minDistance": 1.4,
+            "maxDistance": 3,
+            "aiCooldownSec": 3.2,
+            "globalCooldownSec": 2.7,
+            "patternGroup": "Tank_Basic",
+            "groupCooldownSec": 1.8,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.45
+        },
+        {
+            "abilityKey": "Ability.Tank_Melee_2",
+            "weight": 14,
+            "distanceBucket": "Mid",
+            "minDistance": 2.4,
+            "maxDistance": 4.4,
+            "aiCooldownSec": 3.6,
+            "globalCooldownSec": 2.9,
+            "patternGroup": "Tank_Mid",
+            "groupCooldownSec": 3.4,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.45,
+            "lockFacingToTarget": true
+        },
+        {
+            "abilityKey": "Ability.Tank_Melee_5",
+            "weight": 13,
+            "distanceBucket": "Mid",
+            "minDistance": 2.8,
+            "maxDistance": 4.6,
+            "aiCooldownSec": 5.5,
+            "globalCooldownSec": 3.1,
+            "patternGroup": "Tank_Mid",
+            "groupCooldownSec": 3.4,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.45,
+            "lockFacingToTarget": true
+        },
+        {
+            "abilityKey": "Ability.Tank_Melee_3",
+            "weight": 9,
+            "distanceBucket": "Far",
+            "minDistance": 4.2,
+            "maxDistance": 6.5,
+            "aiCooldownSec": 6.5,
+            "globalCooldownSec": 3.4,
+            "patternGroup": "Tank_LongArea",
+            "groupCooldownSec": 5.8,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.5,
+            "lockFacingToTarget": true
+        },
+        {
+            "abilityKey": "Ability.Tank_Melee_4",
+            "weight": 8,
+            "distanceBucket": "Far",
+            "minDistance": 4.2,
+            "maxDistance": 7.2,
+            "aiCooldownSec": 7.5,
+            "globalCooldownSec": 3.6,
+            "patternGroup": "Tank_LongArea",
+            "groupCooldownSec": 5.8,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.55,
+            "lockFacingToTarget": true
+        },
+        {
+            "abilityKey": "Ability.Tank_Melee_6",
+            "weight": 10,
+            "distanceBucket": "Any",
+            "minDistance": 4,
+            "maxDistance": 8.5,
+            "aiCooldownSec": 8.5,
+            "globalCooldownSec": 3.8,
+            "patternGroup": "Tank_Chase",
+            "groupCooldownSec": 8,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.65,
+            "lockFacingToTarget": true
+        },
+        {
+            "abilityKey": "Ability.Tank_Jump_Area",
+            "weight": 5,
+            "distanceBucket": "Any",
+            "minDistance": 3,
+            "maxDistance": 10,
+            "requiresTargetVisible": true,
+            "requiresTargetInFront": false,
+            "aiCooldownSec": 18,
+            "globalCooldownSec": 4.4,
+            "patternGroup": "Tank_Special",
+            "groupCooldownSec": 18,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 1.2,
+            "lockFacingToTarget": true
+        }
+    ],
+    "idleActions": [
+        {
+            "abilityKey": "Ability.Tank_Jump_1",
+            "weight": 60
+        },
+        {
+            "abilityKey": "Ability.Tank_Jump_2",
+            "weight": 40
+        }
+    ],
+    "movementProfiles": [
+        {
+            "name": "TankDefault",
+            "phaseMin": 1,
+            "phaseMax": 255,
+            "veryCloseDistance": 1.7,
+            "closeDistance": 2.8,
+            "midDistance": 4.4,
+            "farDistance": 12,
+            "preferredMinDistance": 0,
+            "preferredMaxDistance": 0,
+            "veryCloseBehavior": "Hold",
+            "closeBehavior": "Hold",
+            "preferredBehavior": "RunApproach",
+            "midBehavior": "RunApproach",
+            "farBehavior": "RunApproach",
+            "strafeMinSec": 0.9,
+            "strafeMaxSec": 1.6,
+            "lockFacingToTarget": true
+        }
+    ],
+    "reactionRules": [
+        {
+            "event": "OnHitReceived",
+            "outcome": "ForceRetarget",
+            "retargetAttacker": true,
+            "priority": 100
+        },
+        {
+            "event": "OnParried",
+            "outcome": "EnterReact",
+            "retargetAttacker": true,
+            "priority": 200
+        },
+        {
+            "event": "OnGuardBroken",
+            "outcome": "EnterReact",
+            "retargetAttacker": false,
+            "priority": 200
+        }
+    ]
 }
