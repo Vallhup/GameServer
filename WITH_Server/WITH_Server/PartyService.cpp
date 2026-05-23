@@ -221,6 +221,7 @@ PartyResult PartyService::AcceptJoinRequest(
 		.sessionId = requesterSessionId,
 		.accountId = _sessionQuery.FindAccountId(requesterSessionId),
 		.netId = _sessionQuery.FindControlledNetId(requesterSessionId),
+		.characterId = _sessionQuery.FindSelectedCharacterId(requesterSessionId),
 		.role = PartyMemberRole::Member,
 		.presence = PartyMemberPresence::Online,
 		.joinedAtSec = nowSec,
@@ -655,6 +656,7 @@ PartySnapshot PartyService::BuildPartySnapshot(PartyId partyId) const
 			.sessionId = member.sessionId,
 			.accountId = member.accountId,
 			.netId = member.netId,
+			.characterId = member.characterId,
 			.role = member.role,
 			.presence = member.presence,
 			.joinedAtSec = member.joinedAtSec,
@@ -702,12 +704,21 @@ void PartyService::CollectPublicPartyList(
 		outEntries.push_back(PartyListEntry{
 			.partyId = party.partyId,
 			.leaderSessionId = party.leaderSessionId,
+			.leaderCharacterId = CharacterId::None,
 			.memberCount = static_cast<uint32_t>(party.members.size()),
 			.capacity = MaxPartyMembers,
 			.lifecycle = party.lifecycle,
 			.createdAtSec = party.createdAtSec,
 			.joinable = party.members.size() < MaxPartyMembers
 		});
+		for (const PartyMember& member : party.members)
+		{
+			if (member.sessionId == party.leaderSessionId)
+			{
+				outEntries.back().leaderCharacterId = member.characterId;
+				break;
+			}
+		}
 	}
 
 	std::sort(
@@ -788,6 +799,7 @@ PartyResult PartyService::CreatePartyInternal(
 			.sessionId = sessionId,
 			.accountId = _sessionQuery.FindAccountId(sessionId),
 			.netId = _sessionQuery.FindControlledNetId(sessionId),
+			.characterId = _sessionQuery.FindSelectedCharacterId(sessionId),
 			.role = sessionId == leaderSessionId
 				? PartyMemberRole::Leader
 				: PartyMemberRole::Member,

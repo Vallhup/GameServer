@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "EntityId.h"
 #include "NetId.h"
 #include "Session.h"
 #include "WorldId.h"
@@ -105,6 +106,7 @@ struct PartyMember
 	SessionId sessionId{ 0 };
 	uint64_t accountId{ 0 };
 	NetId netId{ NetId::Invalid() };
+	CharacterId characterId{ CharacterId::None };
 	PartyMemberRole role{ PartyMemberRole::Member };
 	PartyMemberPresence presence{ PartyMemberPresence::Online };
 	double joinedAtSec{ 0.0 };
@@ -164,6 +166,7 @@ struct PartyMemberSnapshot
 	SessionId sessionId{ 0 };
 	uint64_t accountId{ 0 };
 	NetId netId{ NetId::Invalid() };
+	CharacterId characterId{ CharacterId::None };
 	PartyMemberRole role{ PartyMemberRole::Member };
 	PartyMemberPresence presence{ PartyMemberPresence::Online };
 	double joinedAtSec{ 0.0 };
@@ -200,6 +203,7 @@ struct PartyListEntry
 {
 	PartyId partyId{ 0 };
 	SessionId leaderSessionId{ 0 };
+	CharacterId leaderCharacterId{ CharacterId::None };
 	uint32_t memberCount{ 0 };
 	uint32_t capacity{ MaxPartyMembers };
 	PartyLifecycleState lifecycle{ PartyLifecycleState::Forming };

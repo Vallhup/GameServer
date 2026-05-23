@@ -916,6 +916,13 @@ uint64_t ServerApp::FindAccountId(SessionId sessionId) const
 	return flow != nullptr ? flow->accountId : 0;
 }
 
+CharacterId ServerApp::FindSelectedCharacterId(SessionId sessionId) const
+{
+	const SessionFlow* const flow =
+		_sessionSystem.Flow().FindFlow(sessionId);
+	return flow != nullptr ? flow->selectedCharacterId : CharacterId::None;
+}
+
 NetId ServerApp::FindControlledNetId(SessionId sessionId) const
 {
 	return _sessionSystem.Flow().FindControlledNetId(sessionId);

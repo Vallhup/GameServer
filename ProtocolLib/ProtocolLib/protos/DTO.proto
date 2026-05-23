@@ -58,8 +58,9 @@ message PartyMember
 	uint32 sessionId = 1;
 	uint64 accountId = 2;
 	uint64 netId = 3;
-	PartyMemberRole role = 4;
-	PartyMemberPresence presence = 5;
+	uint32 characterType = 4;
+	PartyMemberRole role = 5;
+	PartyMemberPresence presence = 6;
 }
 
 message PartyJoinRequest
@@ -90,9 +91,10 @@ message PartyListEntry
 {
 	uint64 partyId = 1;
 	uint32 leaderSessionId = 2;
-	uint32 memberCount = 3;
-	uint32 capacity = 4;
-	PartyLifecycle lifecycle = 5;
-	double createdAtSec = 6;
-	bool joinable = 7;
+	uint32 leaderCharacterType = 3;
+	uint32 memberCount = 4;
+	uint32 capacity = 5;
+	PartyLifecycle lifecycle = 6;
+	double createdAtSec = 7;
+	bool joinable = 8;
 }

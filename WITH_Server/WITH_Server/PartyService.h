@@ -13,6 +13,7 @@ public:
 
 	virtual bool IsPartyEligible(SessionId sessionId) const = 0;
 	virtual uint64_t FindAccountId(SessionId sessionId) const = 0;
+	virtual CharacterId FindSelectedCharacterId(SessionId sessionId) const = 0;
 	virtual NetId FindControlledNetId(SessionId sessionId) const = 0;
 	virtual WorldId FindCurrentWorldId(SessionId sessionId) const = 0;
 	virtual void CollectSessionsInWorld(

@@ -89,6 +89,7 @@ namespace
 		out.set_sessionid(member.sessionId);
 		out.set_accountid(member.accountId);
 		out.set_netid(member.netId.GetRaw());
+		out.set_charactertype(static_cast<uint32_t>(member.characterId));
 		out.set_role(ToProtoPartyMemberRole(member.role));
 		out.set_presence(ToProtoPartyMemberPresence(member.presence));
 	}
@@ -136,6 +137,7 @@ namespace
 	{
 		out.set_partyid(entry.partyId);
 		out.set_leadersessionid(entry.leaderSessionId);
+		out.set_leadercharactertype(static_cast<uint32_t>(entry.leaderCharacterId));
 		out.set_membercount(entry.memberCount);
 		out.set_capacity(entry.capacity);
 		out.set_lifecycle(ToProtoPartyLifecycle(entry.lifecycle));

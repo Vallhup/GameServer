@@ -30,8 +30,9 @@ inline constexpr PartyMember::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : accountid_{::uint64_t{0u}},
         sessionid_{0u},
-        role_{static_cast< ::Protocol::PartyMemberRole >(0)},
+        charactertype_{0u},
         netid_{::uint64_t{0u}},
+        role_{static_cast< ::Protocol::PartyMemberRole >(0)},
         presence_{static_cast< ::Protocol::PartyMemberPresence >(0)},
         _cached_size_{0} {}
 
@@ -59,10 +60,11 @@ inline constexpr PartyListEntry::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : partyid_{::uint64_t{0u}},
         leadersessionid_{0u},
+        leadercharactertype_{0u},
         membercount_{0u},
         capacity_{0u},
-        lifecycle_{static_cast< ::Protocol::PartyLifecycle >(0)},
         createdatsec_{0},
+        lifecycle_{static_cast< ::Protocol::PartyLifecycle >(0)},
         joinable_{false},
         _cached_size_{0} {}
 
@@ -167,6 +169,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyMember, _impl_.sessionid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyMember, _impl_.accountid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyMember, _impl_.netid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::PartyMember, _impl_.charactertype_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyMember, _impl_.role_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyMember, _impl_.presence_),
         ~0u,  // no _has_bits_
@@ -211,6 +214,7 @@ const ::uint32_t
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyListEntry, _impl_.partyid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyListEntry, _impl_.leadersessionid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::PartyListEntry, _impl_.leadercharactertype_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyListEntry, _impl_.membercount_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyListEntry, _impl_.capacity_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyListEntry, _impl_.lifecycle_),
@@ -221,9 +225,9 @@ const ::uint32_t
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, -1, -1, sizeof(::Protocol::PartyMember)},
-        {13, -1, -1, sizeof(::Protocol::PartyJoinRequest)},
-        {30, -1, -1, sizeof(::Protocol::PartySnapshot)},
-        {45, -1, -1, sizeof(::Protocol::PartyListEntry)},
+        {14, -1, -1, sizeof(::Protocol::PartyJoinRequest)},
+        {31, -1, -1, sizeof(::Protocol::PartySnapshot)},
+        {46, -1, -1, sizeof(::Protocol::PartyListEntry)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_PartyMember_default_instance_._instance,
@@ -233,58 +237,59 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 const char descriptor_table_protodef_DTO_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\tDTO.proto\022\010Protocol\"\234\001\n\013PartyMember\022\021\n"
+    "\n\tDTO.proto\022\010Protocol\"\263\001\n\013PartyMember\022\021\n"
     "\tsessionId\030\001 \001(\r\022\021\n\taccountId\030\002 \001(\004\022\r\n\005n"
-    "etId\030\003 \001(\004\022\'\n\004role\030\004 \001(\0162\031.Protocol.Part"
-    "yMemberRole\022/\n\010presence\030\005 \001(\0162\035.Protocol"
-    ".PartyMemberPresence\"\237\002\n\020PartyJoinReques"
-    "t\022\025\n\rjoinRequestId\030\001 \001(\004\022\017\n\007partyId\030\002 \001("
-    "\004\022\032\n\022requesterSessionId\030\003 \001(\r\022\032\n\022request"
-    "erAccountId\030\004 \001(\004\022.\n\005state\030\005 \001(\0162\037.Proto"
-    "col.PartyJoinRequestState\022:\n\013closeReason"
-    "\030\006 \001(\0162%.Protocol.PartyJoinRequestCloseR"
-    "eason\022\024\n\014createdAtSec\030\007 \001(\001\022\024\n\014expiresAt"
-    "Sec\030\010 \001(\001\022\023\n\013closedAtSec\030\t \001(\001\"\350\001\n\rParty"
-    "Snapshot\022\017\n\007partyId\030\001 \001(\004\022+\n\tlifecycle\030\002"
-    " \001(\0162\030.Protocol.PartyLifecycle\022\027\n\017leader"
-    "SessionId\030\003 \001(\r\022&\n\007members\030\004 \003(\0132\025.Proto"
-    "col.PartyMember\0220\n\014joinRequests\030\005 \003(\0132\032."
-    "Protocol.PartyJoinRequest\022\024\n\014createdAtSe"
-    "c\030\006 \001(\001\022\020\n\010joinable\030\007 \001(\010\"\266\001\n\016PartyListE"
-    "ntry\022\017\n\007partyId\030\001 \001(\004\022\027\n\017leaderSessionId"
-    "\030\002 \001(\r\022\023\n\013memberCount\030\003 \001(\r\022\020\n\010capacity\030"
-    "\004 \001(\r\022+\n\tlifecycle\030\005 \001(\0162\030.Protocol.Part"
-    "yLifecycle\022\024\n\014createdAtSec\030\006 \001(\001\022\020\n\010join"
-    "able\030\007 \001(\010*A\n\017AttackInputType\022\026\n\022ATTACK_"
-    "INPUT_LIGHT\020\000\022\026\n\022ATTACK_INPUT_HEAVY\020\001*\223\001"
-    "\n\016PartyLifecycle\022\033\n\027PARTY_LIFECYCLE_FORM"
-    "ING\020\000\022\'\n#PARTY_LIFECYCLE_WORLD_ENTRY_PEN"
-    "DING\020\001\022\034\n\030PARTY_LIFECYCLE_IN_WORLD\020\002\022\035\n\031"
-    "PARTY_LIFECYCLE_DISBANDED\020\003*M\n\017PartyMemb"
-    "erRole\022\034\n\030PARTY_MEMBER_ROLE_LEADER\020\000\022\034\n\030"
-    "PARTY_MEMBER_ROLE_MEMBER\020\001*Z\n\023PartyMembe"
-    "rPresence\022 \n\034PARTY_MEMBER_PRESENCE_ONLIN"
-    "E\020\000\022!\n\035PARTY_MEMBER_PRESENCE_OFFLINE\020\001*\273"
-    "\001\n\025PartyJoinRequestState\022\036\n\032PARTY_JOIN_R"
-    "EQUEST_PENDING\020\000\022\037\n\033PARTY_JOIN_REQUEST_A"
-    "CCEPTED\020\001\022\037\n\033PARTY_JOIN_REQUEST_REJECTED"
-    "\020\002\022 \n\034PARTY_JOIN_REQUEST_CANCELLED\020\003\022\036\n\032"
-    "PARTY_JOIN_REQUEST_EXPIRED\020\004*\302\002\n\033PartyJo"
-    "inRequestCloseReason\022\024\n\020PARTY_CLOSE_NONE"
-    "\020\000\022\030\n\024PARTY_CLOSE_ACCEPTED\020\001\022\"\n\036PARTY_CL"
-    "OSE_REJECTED_BY_LEADER\020\002\022&\n\"PARTY_CLOSE_"
-    "CANCELLED_BY_REQUESTER\020\003\022\027\n\023PARTY_CLOSE_"
-    "EXPIRED\020\004\022\032\n\026PARTY_CLOSE_PARTY_FULL\020\005\022#\n"
-    "\037PARTY_CLOSE_PARTY_ENTERED_WORLD\020\006\022,\n(PA"
-    "RTY_CLOSE_REQUESTER_JOINED_OTHER_PARTY\020\007"
-    "\022\037\n\033PARTY_CLOSE_PARTY_DISBANDED\020\010b\006proto"
-    "3"
+    "etId\030\003 \001(\004\022\025\n\rcharacterType\030\004 \001(\r\022\'\n\004rol"
+    "e\030\005 \001(\0162\031.Protocol.PartyMemberRole\022/\n\010pr"
+    "esence\030\006 \001(\0162\035.Protocol.PartyMemberPrese"
+    "nce\"\237\002\n\020PartyJoinRequest\022\025\n\rjoinRequestI"
+    "d\030\001 \001(\004\022\017\n\007partyId\030\002 \001(\004\022\032\n\022requesterSes"
+    "sionId\030\003 \001(\r\022\032\n\022requesterAccountId\030\004 \001(\004"
+    "\022.\n\005state\030\005 \001(\0162\037.Protocol.PartyJoinRequ"
+    "estState\022:\n\013closeReason\030\006 \001(\0162%.Protocol"
+    ".PartyJoinRequestCloseReason\022\024\n\014createdA"
+    "tSec\030\007 \001(\001\022\024\n\014expiresAtSec\030\010 \001(\001\022\023\n\013clos"
+    "edAtSec\030\t \001(\001\"\350\001\n\rPartySnapshot\022\017\n\007party"
+    "Id\030\001 \001(\004\022+\n\tlifecycle\030\002 \001(\0162\030.Protocol.P"
+    "artyLifecycle\022\027\n\017leaderSessionId\030\003 \001(\r\022&"
+    "\n\007members\030\004 \003(\0132\025.Protocol.PartyMember\0220"
+    "\n\014joinRequests\030\005 \003(\0132\032.Protocol.PartyJoi"
+    "nRequest\022\024\n\014createdAtSec\030\006 \001(\001\022\020\n\010joinab"
+    "le\030\007 \001(\010\"\323\001\n\016PartyListEntry\022\017\n\007partyId\030\001"
+    " \001(\004\022\027\n\017leaderSessionId\030\002 \001(\r\022\033\n\023leaderC"
+    "haracterType\030\003 \001(\r\022\023\n\013memberCount\030\004 \001(\r\022"
+    "\020\n\010capacity\030\005 \001(\r\022+\n\tlifecycle\030\006 \001(\0162\030.P"
+    "rotocol.PartyLifecycle\022\024\n\014createdAtSec\030\007"
+    " \001(\001\022\020\n\010joinable\030\010 \001(\010*A\n\017AttackInputTyp"
+    "e\022\026\n\022ATTACK_INPUT_LIGHT\020\000\022\026\n\022ATTACK_INPU"
+    "T_HEAVY\020\001*\223\001\n\016PartyLifecycle\022\033\n\027PARTY_LI"
+    "FECYCLE_FORMING\020\000\022\'\n#PARTY_LIFECYCLE_WOR"
+    "LD_ENTRY_PENDING\020\001\022\034\n\030PARTY_LIFECYCLE_IN"
+    "_WORLD\020\002\022\035\n\031PARTY_LIFECYCLE_DISBANDED\020\003*"
+    "M\n\017PartyMemberRole\022\034\n\030PARTY_MEMBER_ROLE_"
+    "LEADER\020\000\022\034\n\030PARTY_MEMBER_ROLE_MEMBER\020\001*Z"
+    "\n\023PartyMemberPresence\022 \n\034PARTY_MEMBER_PR"
+    "ESENCE_ONLINE\020\000\022!\n\035PARTY_MEMBER_PRESENCE"
+    "_OFFLINE\020\001*\273\001\n\025PartyJoinRequestState\022\036\n\032"
+    "PARTY_JOIN_REQUEST_PENDING\020\000\022\037\n\033PARTY_JO"
+    "IN_REQUEST_ACCEPTED\020\001\022\037\n\033PARTY_JOIN_REQU"
+    "EST_REJECTED\020\002\022 \n\034PARTY_JOIN_REQUEST_CAN"
+    "CELLED\020\003\022\036\n\032PARTY_JOIN_REQUEST_EXPIRED\020\004"
+    "*\302\002\n\033PartyJoinRequestCloseReason\022\024\n\020PART"
+    "Y_CLOSE_NONE\020\000\022\030\n\024PARTY_CLOSE_ACCEPTED\020\001"
+    "\022\"\n\036PARTY_CLOSE_REJECTED_BY_LEADER\020\002\022&\n\""
+    "PARTY_CLOSE_CANCELLED_BY_REQUESTER\020\003\022\027\n\023"
+    "PARTY_CLOSE_EXPIRED\020\004\022\032\n\026PARTY_CLOSE_PAR"
+    "TY_FULL\020\005\022#\n\037PARTY_CLOSE_PARTY_ENTERED_W"
+    "ORLD\020\006\022,\n(PARTY_CLOSE_REQUESTER_JOINED_O"
+    "THER_PARTY\020\007\022\037\n\033PARTY_CLOSE_PARTY_DISBAN"
+    "DED\020\010b\006proto3"
 };
 static ::absl::once_flag descriptor_table_DTO_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_DTO_2eproto = {
     false,
     false,
-    1801,
+    1853,
     descriptor_table_protodef_DTO_2eproto,
     "DTO.proto",
     &descriptor_table_DTO_2eproto_once,
@@ -433,15 +438,15 @@ const ::google::protobuf::internal::ClassData* PartyMember::GetClassData() const
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<3, 5, 0, 0, 2> PartyMember::_table_ = {
+const ::_pbi::TcParseTable<3, 6, 0, 0, 2> PartyMember::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    5, 56,  // max_field_number, fast_idx_mask
+    6, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967264,  // skipmap
+    4294967232,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    5,  // num_field_entries
+    6,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -461,13 +466,15 @@ const ::_pbi::TcParseTable<3, 5, 0, 0, 2> PartyMember::_table_ = {
     // uint64 netId = 3;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(PartyMember, _impl_.netid_), 63>(),
      {24, 63, 0, PROTOBUF_FIELD_OFFSET(PartyMember, _impl_.netid_)}},
-    // .Protocol.PartyMemberRole role = 4;
+    // uint32 characterType = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyMember, _impl_.charactertype_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(PartyMember, _impl_.charactertype_)}},
+    // .Protocol.PartyMemberRole role = 5;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyMember, _impl_.role_), 63>(),
-     {32, 63, 0, PROTOBUF_FIELD_OFFSET(PartyMember, _impl_.role_)}},
-    // .Protocol.PartyMemberPresence presence = 5;
+     {40, 63, 0, PROTOBUF_FIELD_OFFSET(PartyMember, _impl_.role_)}},
+    // .Protocol.PartyMemberPresence presence = 6;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyMember, _impl_.presence_), 63>(),
-     {40, 63, 0, PROTOBUF_FIELD_OFFSET(PartyMember, _impl_.presence_)}},
-    {::_pbi::TcParser::MiniParse, {}},
+     {48, 63, 0, PROTOBUF_FIELD_OFFSET(PartyMember, _impl_.presence_)}},
     {::_pbi::TcParser::MiniParse, {}},
   }}, {{
     65535, 65535
@@ -481,10 +488,13 @@ const ::_pbi::TcParseTable<3, 5, 0, 0, 2> PartyMember::_table_ = {
     // uint64 netId = 3;
     {PROTOBUF_FIELD_OFFSET(PartyMember, _impl_.netid_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
-    // .Protocol.PartyMemberRole role = 4;
+    // uint32 characterType = 4;
+    {PROTOBUF_FIELD_OFFSET(PartyMember, _impl_.charactertype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // .Protocol.PartyMemberRole role = 5;
     {PROTOBUF_FIELD_OFFSET(PartyMember, _impl_.role_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
-    // .Protocol.PartyMemberPresence presence = 5;
+    // .Protocol.PartyMemberPresence presence = 6;
     {PROTOBUF_FIELD_OFFSET(PartyMember, _impl_.presence_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
   }},
@@ -542,18 +552,25 @@ PROTOBUF_NOINLINE void PartyMember::Clear() {
                 3, this_._internal_netid(), target);
           }
 
-          // .Protocol.PartyMemberRole role = 4;
+          // uint32 characterType = 4;
+          if (this_._internal_charactertype() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                4, this_._internal_charactertype(), target);
+          }
+
+          // .Protocol.PartyMemberRole role = 5;
           if (this_._internal_role() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
-                4, this_._internal_role(), target);
+                5, this_._internal_role(), target);
           }
 
-          // .Protocol.PartyMemberPresence presence = 5;
+          // .Protocol.PartyMemberPresence presence = 6;
           if (this_._internal_presence() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
-                5, this_._internal_presence(), target);
+                6, this_._internal_presence(), target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -591,17 +608,22 @@ PROTOBUF_NOINLINE void PartyMember::Clear() {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
                   this_._internal_sessionid());
             }
-            // .Protocol.PartyMemberRole role = 4;
-            if (this_._internal_role() != 0) {
-              total_size += 1 +
-                            ::_pbi::WireFormatLite::EnumSize(this_._internal_role());
+            // uint32 characterType = 4;
+            if (this_._internal_charactertype() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_charactertype());
             }
             // uint64 netId = 3;
             if (this_._internal_netid() != 0) {
               total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
                   this_._internal_netid());
             }
-            // .Protocol.PartyMemberPresence presence = 5;
+            // .Protocol.PartyMemberRole role = 5;
+            if (this_._internal_role() != 0) {
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_role());
+            }
+            // .Protocol.PartyMemberPresence presence = 6;
             if (this_._internal_presence() != 0) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_presence());
@@ -625,11 +647,14 @@ void PartyMember::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::goo
   if (from._internal_sessionid() != 0) {
     _this->_impl_.sessionid_ = from._impl_.sessionid_;
   }
-  if (from._internal_role() != 0) {
-    _this->_impl_.role_ = from._impl_.role_;
+  if (from._internal_charactertype() != 0) {
+    _this->_impl_.charactertype_ = from._impl_.charactertype_;
   }
   if (from._internal_netid() != 0) {
     _this->_impl_.netid_ = from._impl_.netid_;
+  }
+  if (from._internal_role() != 0) {
+    _this->_impl_.role_ = from._impl_.role_;
   }
   if (from._internal_presence() != 0) {
     _this->_impl_.presence_ = from._impl_.presence_;
@@ -1537,15 +1562,15 @@ const ::google::protobuf::internal::ClassData* PartyListEntry::GetClassData() co
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<3, 7, 0, 0, 2> PartyListEntry::_table_ = {
+const ::_pbi::TcParseTable<3, 8, 0, 0, 2> PartyListEntry::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    7, 56,  // max_field_number, fast_idx_mask
+    8, 56,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294967168,  // skipmap
+    4294967040,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    7,  // num_field_entries
+    8,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -1555,28 +1580,30 @@ const ::_pbi::TcParseTable<3, 7, 0, 0, 2> PartyListEntry::_table_ = {
     ::_pbi::TcParser::GetTable<::Protocol::PartyListEntry>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    {::_pbi::TcParser::MiniParse, {}},
+    // bool joinable = 8;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(PartyListEntry, _impl_.joinable_), 63>(),
+     {64, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.joinable_)}},
     // uint64 partyId = 1;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(PartyListEntry, _impl_.partyid_), 63>(),
      {8, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.partyid_)}},
     // uint32 leaderSessionId = 2;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyListEntry, _impl_.leadersessionid_), 63>(),
      {16, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.leadersessionid_)}},
-    // uint32 memberCount = 3;
+    // uint32 leaderCharacterType = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyListEntry, _impl_.leadercharactertype_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.leadercharactertype_)}},
+    // uint32 memberCount = 4;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyListEntry, _impl_.membercount_), 63>(),
-     {24, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.membercount_)}},
-    // uint32 capacity = 4;
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.membercount_)}},
+    // uint32 capacity = 5;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyListEntry, _impl_.capacity_), 63>(),
-     {32, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.capacity_)}},
-    // .Protocol.PartyLifecycle lifecycle = 5;
+     {40, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.capacity_)}},
+    // .Protocol.PartyLifecycle lifecycle = 6;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyListEntry, _impl_.lifecycle_), 63>(),
-     {40, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.lifecycle_)}},
-    // double createdAtSec = 6;
+     {48, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.lifecycle_)}},
+    // double createdAtSec = 7;
     {::_pbi::TcParser::FastF64S1,
-     {49, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.createdatsec_)}},
-    // bool joinable = 7;
-    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(PartyListEntry, _impl_.joinable_), 63>(),
-     {56, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.joinable_)}},
+     {57, 63, 0, PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.createdatsec_)}},
   }}, {{
     65535, 65535
   }}, {{
@@ -1586,19 +1613,22 @@ const ::_pbi::TcParseTable<3, 7, 0, 0, 2> PartyListEntry::_table_ = {
     // uint32 leaderSessionId = 2;
     {PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.leadersessionid_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
-    // uint32 memberCount = 3;
+    // uint32 leaderCharacterType = 3;
+    {PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.leadercharactertype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 memberCount = 4;
     {PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.membercount_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
-    // uint32 capacity = 4;
+    // uint32 capacity = 5;
     {PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.capacity_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
-    // .Protocol.PartyLifecycle lifecycle = 5;
+    // .Protocol.PartyLifecycle lifecycle = 6;
     {PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.lifecycle_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
-    // double createdAtSec = 6;
+    // double createdAtSec = 7;
     {PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.createdatsec_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // bool joinable = 7;
+    // bool joinable = 8;
     {PROTOBUF_FIELD_OFFSET(PartyListEntry, _impl_.joinable_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kBool)},
   }},
@@ -1649,39 +1679,46 @@ PROTOBUF_NOINLINE void PartyListEntry::Clear() {
                 2, this_._internal_leadersessionid(), target);
           }
 
-          // uint32 memberCount = 3;
+          // uint32 leaderCharacterType = 3;
+          if (this_._internal_leadercharactertype() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                3, this_._internal_leadercharactertype(), target);
+          }
+
+          // uint32 memberCount = 4;
           if (this_._internal_membercount() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
-                3, this_._internal_membercount(), target);
+                4, this_._internal_membercount(), target);
           }
 
-          // uint32 capacity = 4;
+          // uint32 capacity = 5;
           if (this_._internal_capacity() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
-                4, this_._internal_capacity(), target);
+                5, this_._internal_capacity(), target);
           }
 
-          // .Protocol.PartyLifecycle lifecycle = 5;
+          // .Protocol.PartyLifecycle lifecycle = 6;
           if (this_._internal_lifecycle() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
-                5, this_._internal_lifecycle(), target);
+                6, this_._internal_lifecycle(), target);
           }
 
-          // double createdAtSec = 6;
+          // double createdAtSec = 7;
           if (::absl::bit_cast<::uint64_t>(this_._internal_createdatsec()) != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
-                6, this_._internal_createdatsec(), target);
+                7, this_._internal_createdatsec(), target);
           }
 
-          // bool joinable = 7;
+          // bool joinable = 8;
           if (this_._internal_joinable() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteBoolToArray(
-                7, this_._internal_joinable(), target);
+                8, this_._internal_joinable(), target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -1719,26 +1756,31 @@ PROTOBUF_NOINLINE void PartyListEntry::Clear() {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
                   this_._internal_leadersessionid());
             }
-            // uint32 memberCount = 3;
+            // uint32 leaderCharacterType = 3;
+            if (this_._internal_leadercharactertype() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_leadercharactertype());
+            }
+            // uint32 memberCount = 4;
             if (this_._internal_membercount() != 0) {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
                   this_._internal_membercount());
             }
-            // uint32 capacity = 4;
+            // uint32 capacity = 5;
             if (this_._internal_capacity() != 0) {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
                   this_._internal_capacity());
             }
-            // .Protocol.PartyLifecycle lifecycle = 5;
+            // double createdAtSec = 7;
+            if (::absl::bit_cast<::uint64_t>(this_._internal_createdatsec()) != 0) {
+              total_size += 9;
+            }
+            // .Protocol.PartyLifecycle lifecycle = 6;
             if (this_._internal_lifecycle() != 0) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_lifecycle());
             }
-            // double createdAtSec = 6;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_createdatsec()) != 0) {
-              total_size += 9;
-            }
-            // bool joinable = 7;
+            // bool joinable = 8;
             if (this_._internal_joinable() != 0) {
               total_size += 2;
             }
@@ -1761,17 +1803,20 @@ void PartyListEntry::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::
   if (from._internal_leadersessionid() != 0) {
     _this->_impl_.leadersessionid_ = from._impl_.leadersessionid_;
   }
+  if (from._internal_leadercharactertype() != 0) {
+    _this->_impl_.leadercharactertype_ = from._impl_.leadercharactertype_;
+  }
   if (from._internal_membercount() != 0) {
     _this->_impl_.membercount_ = from._impl_.membercount_;
   }
   if (from._internal_capacity() != 0) {
     _this->_impl_.capacity_ = from._impl_.capacity_;
   }
-  if (from._internal_lifecycle() != 0) {
-    _this->_impl_.lifecycle_ = from._impl_.lifecycle_;
-  }
   if (::absl::bit_cast<::uint64_t>(from._internal_createdatsec()) != 0) {
     _this->_impl_.createdatsec_ = from._impl_.createdatsec_;
+  }
+  if (from._internal_lifecycle() != 0) {
+    _this->_impl_.lifecycle_ = from._impl_.lifecycle_;
   }
   if (from._internal_joinable() != 0) {
     _this->_impl_.joinable_ = from._impl_.joinable_;

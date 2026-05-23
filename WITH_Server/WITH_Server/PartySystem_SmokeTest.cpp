@@ -17,6 +17,7 @@ namespace
 	struct FakeSession
 	{
 		uint64_t accountId{ 0 };
+		CharacterId characterId{ CharacterId::None };
 		NetId netId{ NetId::Invalid() };
 		WorldId worldId{ WorldId::Invalid() };
 		bool eligible{ true };
@@ -31,11 +32,13 @@ namespace
 		void Add(
 			SessionId sessionId,
 			WorldId worldId,
+			CharacterId characterId = CharacterId::Knight,
 			bool eligible = true,
 			bool canTransfer = true)
 		{
 			_sessions[sessionId] = FakeSession{
 				.accountId = 1000 + sessionId,
+				.characterId = characterId,
 				.netId = NetId::Create(sessionId, 1),
 				.worldId = worldId,
 				.eligible = eligible,
@@ -66,6 +69,12 @@ namespace
 		{
 			const auto it = _sessions.find(sessionId);
 			return it != _sessions.end() ? it->second.accountId : 0;
+		}
+
+		CharacterId FindSelectedCharacterId(SessionId sessionId) const override
+		{
+			const auto it = _sessions.find(sessionId);
+			return it != _sessions.end() ? it->second.characterId : CharacterId::None;
 		}
 
 		NetId FindControlledNetId(SessionId sessionId) const override
@@ -479,12 +488,14 @@ namespace
 		const PartySnapshot snapshot = service.BuildPartySnapshot(partyIds.front());
 		assert(snapshot.partyId == partyIds.front());
 		assert(snapshot.members.size() == 1);
+		assert(snapshot.members[0].characterId == CharacterId::Knight);
 		assert(snapshot.joinable);
 
 		std::vector<PartyListEntry> list;
 		service.CollectPublicPartyList(list);
 		assert(list.size() == PartyListSnapshotLimit);
 		assert(list[0].leaderSessionId == 111);
+		assert(list[0].leaderCharacterId == CharacterId::Knight);
 		assert(list[1].leaderSessionId == 110);
 		assert(list.back().leaderSessionId == 102);
 	}

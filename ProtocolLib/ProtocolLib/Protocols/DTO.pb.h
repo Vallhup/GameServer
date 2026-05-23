@@ -436,9 +436,10 @@ class PartyMember final : public ::google::protobuf::Message
   enum : int {
     kAccountIdFieldNumber = 2,
     kSessionIdFieldNumber = 1,
-    kRoleFieldNumber = 4,
+    kCharacterTypeFieldNumber = 4,
     kNetIdFieldNumber = 3,
-    kPresenceFieldNumber = 5,
+    kRoleFieldNumber = 5,
+    kPresenceFieldNumber = 6,
   };
   // uint64 accountId = 2;
   void clear_accountid() ;
@@ -460,14 +461,14 @@ class PartyMember final : public ::google::protobuf::Message
   void _internal_set_sessionid(::uint32_t value);
 
   public:
-  // .Protocol.PartyMemberRole role = 4;
-  void clear_role() ;
-  ::Protocol::PartyMemberRole role() const;
-  void set_role(::Protocol::PartyMemberRole value);
+  // uint32 characterType = 4;
+  void clear_charactertype() ;
+  ::uint32_t charactertype() const;
+  void set_charactertype(::uint32_t value);
 
   private:
-  ::Protocol::PartyMemberRole _internal_role() const;
-  void _internal_set_role(::Protocol::PartyMemberRole value);
+  ::uint32_t _internal_charactertype() const;
+  void _internal_set_charactertype(::uint32_t value);
 
   public:
   // uint64 netId = 3;
@@ -480,7 +481,17 @@ class PartyMember final : public ::google::protobuf::Message
   void _internal_set_netid(::uint64_t value);
 
   public:
-  // .Protocol.PartyMemberPresence presence = 5;
+  // .Protocol.PartyMemberRole role = 5;
+  void clear_role() ;
+  ::Protocol::PartyMemberRole role() const;
+  void set_role(::Protocol::PartyMemberRole value);
+
+  private:
+  ::Protocol::PartyMemberRole _internal_role() const;
+  void _internal_set_role(::Protocol::PartyMemberRole value);
+
+  public:
+  // .Protocol.PartyMemberPresence presence = 6;
   void clear_presence() ;
   ::Protocol::PartyMemberPresence presence() const;
   void set_presence(::Protocol::PartyMemberPresence value);
@@ -495,7 +506,7 @@ class PartyMember final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      3, 5, 0,
+      3, 6, 0,
       0, 2>
       _table_;
 
@@ -515,8 +526,9 @@ class PartyMember final : public ::google::protobuf::Message
                           const PartyMember& from_msg);
     ::uint64_t accountid_;
     ::uint32_t sessionid_;
-    int role_;
+    ::uint32_t charactertype_;
     ::uint64_t netid_;
+    int role_;
     int presence_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
@@ -674,11 +686,12 @@ class PartyListEntry final : public ::google::protobuf::Message
   enum : int {
     kPartyIdFieldNumber = 1,
     kLeaderSessionIdFieldNumber = 2,
-    kMemberCountFieldNumber = 3,
-    kCapacityFieldNumber = 4,
-    kLifecycleFieldNumber = 5,
-    kCreatedAtSecFieldNumber = 6,
-    kJoinableFieldNumber = 7,
+    kLeaderCharacterTypeFieldNumber = 3,
+    kMemberCountFieldNumber = 4,
+    kCapacityFieldNumber = 5,
+    kCreatedAtSecFieldNumber = 7,
+    kLifecycleFieldNumber = 6,
+    kJoinableFieldNumber = 8,
   };
   // uint64 partyId = 1;
   void clear_partyid() ;
@@ -700,7 +713,17 @@ class PartyListEntry final : public ::google::protobuf::Message
   void _internal_set_leadersessionid(::uint32_t value);
 
   public:
-  // uint32 memberCount = 3;
+  // uint32 leaderCharacterType = 3;
+  void clear_leadercharactertype() ;
+  ::uint32_t leadercharactertype() const;
+  void set_leadercharactertype(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_leadercharactertype() const;
+  void _internal_set_leadercharactertype(::uint32_t value);
+
+  public:
+  // uint32 memberCount = 4;
   void clear_membercount() ;
   ::uint32_t membercount() const;
   void set_membercount(::uint32_t value);
@@ -710,7 +733,7 @@ class PartyListEntry final : public ::google::protobuf::Message
   void _internal_set_membercount(::uint32_t value);
 
   public:
-  // uint32 capacity = 4;
+  // uint32 capacity = 5;
   void clear_capacity() ;
   ::uint32_t capacity() const;
   void set_capacity(::uint32_t value);
@@ -720,17 +743,7 @@ class PartyListEntry final : public ::google::protobuf::Message
   void _internal_set_capacity(::uint32_t value);
 
   public:
-  // .Protocol.PartyLifecycle lifecycle = 5;
-  void clear_lifecycle() ;
-  ::Protocol::PartyLifecycle lifecycle() const;
-  void set_lifecycle(::Protocol::PartyLifecycle value);
-
-  private:
-  ::Protocol::PartyLifecycle _internal_lifecycle() const;
-  void _internal_set_lifecycle(::Protocol::PartyLifecycle value);
-
-  public:
-  // double createdAtSec = 6;
+  // double createdAtSec = 7;
   void clear_createdatsec() ;
   double createdatsec() const;
   void set_createdatsec(double value);
@@ -740,7 +753,17 @@ class PartyListEntry final : public ::google::protobuf::Message
   void _internal_set_createdatsec(double value);
 
   public:
-  // bool joinable = 7;
+  // .Protocol.PartyLifecycle lifecycle = 6;
+  void clear_lifecycle() ;
+  ::Protocol::PartyLifecycle lifecycle() const;
+  void set_lifecycle(::Protocol::PartyLifecycle value);
+
+  private:
+  ::Protocol::PartyLifecycle _internal_lifecycle() const;
+  void _internal_set_lifecycle(::Protocol::PartyLifecycle value);
+
+  public:
+  // bool joinable = 8;
   void clear_joinable() ;
   bool joinable() const;
   void set_joinable(bool value);
@@ -755,7 +778,7 @@ class PartyListEntry final : public ::google::protobuf::Message
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      3, 7, 0,
+      3, 8, 0,
       0, 2>
       _table_;
 
@@ -775,10 +798,11 @@ class PartyListEntry final : public ::google::protobuf::Message
                           const PartyListEntry& from_msg);
     ::uint64_t partyid_;
     ::uint32_t leadersessionid_;
+    ::uint32_t leadercharactertype_;
     ::uint32_t membercount_;
     ::uint32_t capacity_;
-    int lifecycle_;
     double createdatsec_;
+    int lifecycle_;
     bool joinable_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
@@ -1431,7 +1455,29 @@ inline void PartyMember::_internal_set_netid(::uint64_t value) {
   _impl_.netid_ = value;
 }
 
-// .Protocol.PartyMemberRole role = 4;
+// uint32 characterType = 4;
+inline void PartyMember::clear_charactertype() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.charactertype_ = 0u;
+}
+inline ::uint32_t PartyMember::charactertype() const {
+  // @@protoc_insertion_point(field_get:Protocol.PartyMember.characterType)
+  return _internal_charactertype();
+}
+inline void PartyMember::set_charactertype(::uint32_t value) {
+  _internal_set_charactertype(value);
+  // @@protoc_insertion_point(field_set:Protocol.PartyMember.characterType)
+}
+inline ::uint32_t PartyMember::_internal_charactertype() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.charactertype_;
+}
+inline void PartyMember::_internal_set_charactertype(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.charactertype_ = value;
+}
+
+// .Protocol.PartyMemberRole role = 5;
 inline void PartyMember::clear_role() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.role_ = 0;
@@ -1453,7 +1499,7 @@ inline void PartyMember::_internal_set_role(::Protocol::PartyMemberRole value) {
   _impl_.role_ = value;
 }
 
-// .Protocol.PartyMemberPresence presence = 5;
+// .Protocol.PartyMemberPresence presence = 6;
 inline void PartyMember::clear_presence() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.presence_ = 0;
@@ -1937,7 +1983,29 @@ inline void PartyListEntry::_internal_set_leadersessionid(::uint32_t value) {
   _impl_.leadersessionid_ = value;
 }
 
-// uint32 memberCount = 3;
+// uint32 leaderCharacterType = 3;
+inline void PartyListEntry::clear_leadercharactertype() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.leadercharactertype_ = 0u;
+}
+inline ::uint32_t PartyListEntry::leadercharactertype() const {
+  // @@protoc_insertion_point(field_get:Protocol.PartyListEntry.leaderCharacterType)
+  return _internal_leadercharactertype();
+}
+inline void PartyListEntry::set_leadercharactertype(::uint32_t value) {
+  _internal_set_leadercharactertype(value);
+  // @@protoc_insertion_point(field_set:Protocol.PartyListEntry.leaderCharacterType)
+}
+inline ::uint32_t PartyListEntry::_internal_leadercharactertype() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.leadercharactertype_;
+}
+inline void PartyListEntry::_internal_set_leadercharactertype(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.leadercharactertype_ = value;
+}
+
+// uint32 memberCount = 4;
 inline void PartyListEntry::clear_membercount() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.membercount_ = 0u;
@@ -1959,7 +2027,7 @@ inline void PartyListEntry::_internal_set_membercount(::uint32_t value) {
   _impl_.membercount_ = value;
 }
 
-// uint32 capacity = 4;
+// uint32 capacity = 5;
 inline void PartyListEntry::clear_capacity() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.capacity_ = 0u;
@@ -1981,7 +2049,7 @@ inline void PartyListEntry::_internal_set_capacity(::uint32_t value) {
   _impl_.capacity_ = value;
 }
 
-// .Protocol.PartyLifecycle lifecycle = 5;
+// .Protocol.PartyLifecycle lifecycle = 6;
 inline void PartyListEntry::clear_lifecycle() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.lifecycle_ = 0;
@@ -2003,7 +2071,7 @@ inline void PartyListEntry::_internal_set_lifecycle(::Protocol::PartyLifecycle v
   _impl_.lifecycle_ = value;
 }
 
-// double createdAtSec = 6;
+// double createdAtSec = 7;
 inline void PartyListEntry::clear_createdatsec() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.createdatsec_ = 0;
@@ -2025,7 +2093,7 @@ inline void PartyListEntry::_internal_set_createdatsec(double value) {
   _impl_.createdatsec_ = value;
 }
 
-// bool joinable = 7;
+// bool joinable = 8;
 inline void PartyListEntry::clear_joinable() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.joinable_ = false;

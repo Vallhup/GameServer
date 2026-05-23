@@ -116,6 +116,7 @@ private:
 
 	bool IsPartyEligible(SessionId sessionId) const override;
 	uint64_t FindAccountId(SessionId sessionId) const override;
+	CharacterId FindSelectedCharacterId(SessionId sessionId) const override;
 	NetId FindControlledNetId(SessionId sessionId) const override;
 	WorldId FindCurrentWorldId(SessionId sessionId) const override;
 	void CollectSessionsInWorld(
