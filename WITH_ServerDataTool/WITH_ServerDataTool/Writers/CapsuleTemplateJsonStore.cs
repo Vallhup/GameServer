@@ -18,6 +18,7 @@ namespace WITH_ServerDataTool.Writers
 				Version = root.Value<int?>("version") ?? 1,
 				ObjectName = root.Value<string>("objectName") ?? string.Empty,
 				Units = root.Value<string>("units") ?? "cm",
+				BuildSignature = root.Value<string>("buildSignature") ?? string.Empty,
 				Capsules = new List<CapsuleTemplateEntry>()
 			};
 
@@ -45,6 +46,7 @@ namespace WITH_ServerDataTool.Writers
 				["version"] = document.Version,
 				["objectName"] = document.ObjectName,
 				["units"] = document.Units,
+				["buildSignature"] = document.BuildSignature ?? string.Empty,
 				["capsules"] = new JArray(
 					document.Capsules.Select(entry => new JObject
 					{

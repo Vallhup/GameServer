@@ -104,18 +104,35 @@ namespace WITH_ServerDataTool.Cli
 
 		private static void EnsureCapsuleTemplateExists(AnimationPipelinePreset preset)
 		{
-			if (File.Exists(preset.CapsuleTemplateOutputPath))
+			var store = new CapsuleTemplateJsonStore();
+			string expectedSignature = CapsuleTemplateBuilder.ComputeBuildSignature(
+				preset.MeshDirectory,
+				preset.ExtremeTrimFraction);
+
+			if (File.Exists(preset.CapsuleTemplateOutputPath) && !string.IsNullOrEmpty(expectedSignature))
 			{
-				return;
+				try
+				{
+					var cached = store.Load(preset.CapsuleTemplateOutputPath);
+					if (string.Equals(cached.BuildSignature, expectedSignature, StringComparison.Ordinal))
+					{
+						return;
+					}
+
+					Console.WriteLine("Capsule template signature mismatch - rebuilding: " + preset.CapsuleTemplateOutputPath);
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine("Failed to load cached capsule template, rebuilding (" + ex.GetType().Name + ": " + ex.Message + ")");
+				}
 			}
 
 			var builder = new CapsuleTemplateBuilder();
-			var writer = new CapsuleTemplateJsonStore();
 			CapsuleTemplateDocument template = builder.Build(
 				preset.ObjectName,
 				preset.MeshDirectory,
 				preset.ExtremeTrimFraction);
-			writer.Save(preset.CapsuleTemplateOutputPath, template);
+			store.Save(preset.CapsuleTemplateOutputPath, template);
 		}
 
 		private static AnimationClipPreset ResolveClip(AnimationPipelinePreset preset, string clipName)

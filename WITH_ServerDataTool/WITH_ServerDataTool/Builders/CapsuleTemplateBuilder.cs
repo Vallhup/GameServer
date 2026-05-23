@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
+using System.Text;
 using WITH_ServerDataTool.Models;
 using WITH_ServerDataTool.Readers;
 
@@ -87,8 +90,51 @@ namespace WITH_ServerDataTool.Builders
 			return new CapsuleTemplateDocument
 			{
 				ObjectName = objectName,
+				BuildSignature = ComputeBuildSignature(meshDirectory, extremeTrimFraction),
 				Capsules = entries
 			};
+		}
+
+		public static string ComputeBuildSignature(string meshDirectory, float extremeTrimFraction)
+		{
+			if (!Directory.Exists(meshDirectory))
+			{
+				return string.Empty;
+			}
+
+			float normalizedTrim = ClampTrimFraction(extremeTrimFraction);
+
+			var payload = new StringBuilder();
+			payload.Append("trimFraction=");
+			payload.Append(normalizedTrim.ToString("R", CultureInfo.InvariantCulture));
+			payload.Append('|');
+
+			var meshFiles = Directory.GetFiles(meshDirectory, "*.mesh")
+				.OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+				.ToList();
+
+			foreach (string meshFile in meshFiles)
+			{
+				var info = new FileInfo(meshFile);
+				payload.Append(Path.GetFileName(meshFile));
+				payload.Append(':');
+				payload.Append(info.LastWriteTimeUtc.Ticks.ToString(CultureInfo.InvariantCulture));
+				payload.Append(':');
+				payload.Append(info.Length.ToString(CultureInfo.InvariantCulture));
+				payload.Append('|');
+			}
+
+			using (var sha = SHA256.Create())
+			{
+				byte[] hash = sha.ComputeHash(Encoding.UTF8.GetBytes(payload.ToString()));
+				var hex = new StringBuilder(hash.Length * 2);
+				foreach (byte value in hash)
+				{
+					hex.Append(value.ToString("x2", CultureInfo.InvariantCulture));
+				}
+
+				return hex.ToString();
+			}
 		}
 
 		private static float ClampTrimFraction(float trimFraction)

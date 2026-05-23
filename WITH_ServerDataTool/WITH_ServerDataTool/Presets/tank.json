@@ -14,7 +14,7 @@
         "weaponRoles": [ "hit" ],
         "weaponBones": [ 6, 15 ],
         "excludedBones": [],
-        "extremeTrimFraction": 0
+        "extremeTrimFraction": 0.1
     },
     "clips": [
         {

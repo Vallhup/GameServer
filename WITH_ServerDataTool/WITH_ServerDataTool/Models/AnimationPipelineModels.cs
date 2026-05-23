@@ -32,6 +32,7 @@ namespace WITH_ServerDataTool.Models
 		public int Version { get; set; } = 1;
 		public string ObjectName { get; set; } = string.Empty;
 		public string Units { get; set; } = "cm";
+		public string BuildSignature { get; set; } = string.Empty;
 		public List<CapsuleTemplateEntry> Capsules { get; set; } = new List<CapsuleTemplateEntry>();
 	}
 
