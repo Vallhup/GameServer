@@ -10,6 +10,7 @@
 enum class PartyCommandKind : uint8_t
 {
 	UiOpened,
+	UiClosed,
 	ListRefresh,
 	CreateParty,
 	RequestJoin,

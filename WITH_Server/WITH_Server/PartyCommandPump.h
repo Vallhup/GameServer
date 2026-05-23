@@ -29,6 +29,9 @@ private:
 	void MarkMemberOffline(const PartyCommand& command, double nowSec);
 	void BeginWorldEntry(const PartyCommand& command, double nowSec);
 	void StagePartySnapshotToMembers(const PartySnapshot& snapshot);
+	void RegisterPartyListSubscriber(SessionId sessionId);
+	void RemovePartyListSubscriber(SessionId sessionId);
+	void BroadcastPartyListSnapshot();
 
 private:
 	PartyCommandQueue& _queue;
@@ -37,4 +40,5 @@ private:
 	NetworkRuntime& _network;
 	std::vector<PartyCommand> _scratch;
 	std::vector<PartyListEntry> _listScratch;
+	std::vector<SessionId> _partyListSubscribers;
 };

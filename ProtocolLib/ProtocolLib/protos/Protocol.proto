@@ -75,6 +75,11 @@ message CS_PARTY_UI_OPENED_PACKET
 	uint32 clientRequestId = 1;
 }
 
+message CS_PARTY_UI_CLOSED_PACKET
+{
+	uint32 clientRequestId = 1;
+}
+
 message CS_PARTY_LIST_REFRESH_PACKET
 {
 	uint32 clientRequestId = 1;

@@ -39,6 +39,9 @@ void PartyCommandPump::ApplyCommand(
 	case PartyCommandKind::UiOpened:
 		SendUiBootstrap(command);
 		break;
+	case PartyCommandKind::UiClosed:
+		RemovePartyListSubscriber(command.actorSessionId);
+		break;
 	case PartyCommandKind::ListRefresh:
 		SendListSnapshot(command);
 		break;
@@ -74,10 +77,13 @@ void PartyCommandPump::ApplyCommand(
 			nowSec);
 		break;
 	case PartyCommandKind::TransferFailed:
-		(void)_partyService.FailWorldEntry(
+		if (_partyService.FailWorldEntry(
 			command.partyId,
 			command.transferId,
-			nowSec);
+			nowSec).Succeeded())
+		{
+			BroadcastPartyListSnapshot();
+		}
 		break;
 	case PartyCommandKind::DbLoadCompleted:
 	case PartyCommandKind::DbPersistCompleted:
@@ -89,6 +95,8 @@ void PartyCommandPump::ApplyCommand(
 
 void PartyCommandPump::SendUiBootstrap(const PartyCommand& command)
 {
+	RegisterPartyListSubscriber(command.actorSessionId);
+
 	PartySnapshot snapshot =
 		_partyService.BuildPartySnapshotForSession(command.actorSessionId);
 	_listScratch.clear();
@@ -108,6 +116,8 @@ void PartyCommandPump::SendUiBootstrap(const PartyCommand& command)
 
 void PartyCommandPump::SendListSnapshot(const PartyCommand& command)
 {
+	RegisterPartyListSubscriber(command.actorSessionId);
+
 	_listScratch.clear();
 	_partyService.CollectPublicPartyList(_listScratch);
 	(void)ServerPacketStager::StagePartyListSnapshotPacket(
@@ -137,6 +147,7 @@ void PartyCommandPump::CreateParty(
 			_network,
 			command.actorSessionId,
 			_partyService.BuildPartySnapshot(result.partyId));
+		BroadcastPartyListSnapshot();
 	}
 }
 
@@ -225,6 +236,7 @@ void PartyCommandPump::AcceptJoinRequest(
 	}
 
 	StagePartySnapshotToMembers(snapshot);
+	BroadcastPartyListSnapshot();
 }
 
 void PartyCommandPump::RejectJoinRequest(
@@ -280,6 +292,8 @@ void PartyCommandPump::MarkMemberOffline(
 	const PartyCommand& command,
 	double nowSec)
 {
+	RemovePartyListSubscriber(command.actorSessionId);
+
 	const PartyId partyId =
 		_partyService.FindPartyBySession(command.actorSessionId);
 	const PartyResult result =
@@ -298,6 +312,8 @@ void PartyCommandPump::MarkMemberOffline(
 	{
 		StagePartySnapshotToMembers(snapshot);
 	}
+
+	BroadcastPartyListSnapshot();
 }
 
 void PartyCommandPump::BeginWorldEntry(
@@ -334,10 +350,15 @@ void PartyCommandPump::BeginWorldEntry(
 			nowSec);
 	if (transferId != 0)
 	{
-		(void)_partyService.MarkWorldEntryEnqueued(
+		const PartyResult enqueueResult =
+			_partyService.MarkWorldEntryEnqueued(
 			entry.partyId,
 			transferId,
 			nowSec);
+		if (enqueueResult.Succeeded())
+		{
+			BroadcastPartyListSnapshot();
+		}
 	}
 	else
 	{
@@ -362,4 +383,62 @@ void PartyCommandPump::StagePartySnapshotToMembers(
 		_network,
 		std::span<const SessionId>(sessionIds.data(), sessionIds.size()),
 		snapshot);
+}
+
+void PartyCommandPump::RegisterPartyListSubscriber(SessionId sessionId)
+{
+	if (sessionId == 0)
+	{
+		return;
+	}
+
+	if (std::find(
+		_partyListSubscribers.begin(),
+		_partyListSubscribers.end(),
+		sessionId) == _partyListSubscribers.end())
+	{
+		_partyListSubscribers.push_back(sessionId);
+	}
+}
+
+void PartyCommandPump::RemovePartyListSubscriber(SessionId sessionId)
+{
+	_partyListSubscribers.erase(
+		std::remove(
+			_partyListSubscribers.begin(),
+			_partyListSubscribers.end(),
+			sessionId),
+		_partyListSubscribers.end());
+}
+
+void PartyCommandPump::BroadcastPartyListSnapshot()
+{
+	if (_partyListSubscribers.empty())
+	{
+		return;
+	}
+
+	_listScratch.clear();
+	_partyService.CollectPublicPartyList(_listScratch);
+
+	for (auto it = _partyListSubscribers.begin();
+		it != _partyListSubscribers.end();)
+	{
+		const bool staged =
+			ServerPacketStager::StagePartyListSnapshotPacket(
+				_network,
+				*it,
+				0,
+				std::span<const PartyListEntry>(
+					_listScratch.data(),
+					_listScratch.size()));
+		if (!staged)
+		{
+			it = _partyListSubscribers.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
 }

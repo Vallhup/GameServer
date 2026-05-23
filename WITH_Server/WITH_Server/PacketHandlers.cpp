@@ -614,6 +614,8 @@ void RegisterServerPacketHandlers(
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_UI_OPENED,          &HandlePartyUiOpenedPacket,          "Pkt_CS_PARTY_UI_OPENED");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_PARTY_UI_CLOSED,          &HandlePartyUiClosedPacket,          "Pkt_CS_PARTY_UI_CLOSED");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_LIST_REFRESH,       &HandlePartyListRefreshPacket,       "Pkt_CS_PARTY_LIST_REFRESH");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_CREATE,             &HandlePartyCreatePacket,            "Pkt_CS_PARTY_CREATE");
@@ -1441,6 +1443,24 @@ ExecCallResult HandlePartyUiOpenedPacket(NodeExecContext& ctx)
 
     SubmitPartyCommand(PartyCommand{
         .kind = PartyCommandKind::UiOpened,
+        .actorSessionId = ResolveSessionId(ctx),
+        .clientRequestId = pkt.clientrequestid()
+    });
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandlePartyUiClosedPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    Protocol::CS_PARTY_UI_CLOSED_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    SubmitPartyCommand(PartyCommand{
+        .kind = PartyCommandKind::UiClosed,
         .actorSessionId = ResolveSessionId(ctx),
         .clientRequestId = pkt.clientrequestid()
     });

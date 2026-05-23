@@ -474,6 +474,31 @@ struct CS_PARTY_UI_OPENED_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_PARTY_UI_OPENED_PACKETDefaultTypeInternal _CS_PARTY_UI_OPENED_PACKET_default_instance_;
 
+inline constexpr CS_PARTY_UI_CLOSED_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : clientrequestid_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR CS_PARTY_UI_CLOSED_PACKET::CS_PARTY_UI_CLOSED_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct CS_PARTY_UI_CLOSED_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CS_PARTY_UI_CLOSED_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CS_PARTY_UI_CLOSED_PACKETDefaultTypeInternal() {}
+  union {
+    CS_PARTY_UI_CLOSED_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CS_PARTY_UI_CLOSED_PACKETDefaultTypeInternal _CS_PARTY_UI_CLOSED_PACKET_default_instance_;
+
 inline constexpr CS_PARTY_LIST_REFRESH_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : clientrequestid_{0u},
@@ -1020,6 +1045,15 @@ const ::uint32_t
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_PARTY_UI_OPENED_PACKET, _impl_.clientrequestid_),
         ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_PARTY_UI_CLOSED_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::CS_PARTY_UI_CLOSED_PACKET, _impl_.clientrequestid_),
+        ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::CS_PARTY_LIST_REFRESH_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -1285,27 +1319,28 @@ static const ::_pbi::MigrationSchema
         {85, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_REQUEST_PACKET)},
         {94, -1, -1, sizeof(::Protocol::CS_WORLD_TRANSITION_READY_PACKET)},
         {103, -1, -1, sizeof(::Protocol::CS_PARTY_UI_OPENED_PACKET)},
-        {112, -1, -1, sizeof(::Protocol::CS_PARTY_LIST_REFRESH_PACKET)},
-        {121, -1, -1, sizeof(::Protocol::CS_PARTY_CREATE_PACKET)},
-        {130, -1, -1, sizeof(::Protocol::CS_PARTY_JOIN_REQUEST_PACKET)},
-        {140, -1, -1, sizeof(::Protocol::CS_PARTY_JOIN_ACCEPT_PACKET)},
-        {150, -1, -1, sizeof(::Protocol::CS_PARTY_JOIN_REJECT_PACKET)},
-        {160, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
-        {169, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
-        {178, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
-        {192, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
-        {205, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
-        {214, -1, -1, sizeof(::Protocol::SC_COMBAT_IMPACT_PACKET)},
-        {231, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
-        {243, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
-        {260, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
-        {280, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
-        {290, 302, -1, sizeof(::Protocol::SC_PARTY_UI_BOOTSTRAP_PACKET)},
-        {306, -1, -1, sizeof(::Protocol::SC_PARTY_LIST_SNAPSHOT_PACKET)},
-        {316, -1, -1, sizeof(::Protocol::SC_PARTY_COMMAND_RESULT_PACKET)},
-        {329, 338, -1, sizeof(::Protocol::SC_PARTY_SNAPSHOT_PACKET)},
-        {339, 349, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET)},
-        {351, -1, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET)},
+        {112, -1, -1, sizeof(::Protocol::CS_PARTY_UI_CLOSED_PACKET)},
+        {121, -1, -1, sizeof(::Protocol::CS_PARTY_LIST_REFRESH_PACKET)},
+        {130, -1, -1, sizeof(::Protocol::CS_PARTY_CREATE_PACKET)},
+        {139, -1, -1, sizeof(::Protocol::CS_PARTY_JOIN_REQUEST_PACKET)},
+        {149, -1, -1, sizeof(::Protocol::CS_PARTY_JOIN_ACCEPT_PACKET)},
+        {159, -1, -1, sizeof(::Protocol::CS_PARTY_JOIN_REJECT_PACKET)},
+        {169, -1, -1, sizeof(::Protocol::SC_LOGIN_SUCCESS_PACKET)},
+        {178, -1, -1, sizeof(::Protocol::SC_LOGIN_FAIL_PACKET)},
+        {187, -1, -1, sizeof(::Protocol::SC_ADD_PACKET)},
+        {201, -1, -1, sizeof(::Protocol::SC_MOVE_PACKET)},
+        {214, -1, -1, sizeof(::Protocol::SC_REMOVE_PACKET)},
+        {223, -1, -1, sizeof(::Protocol::SC_COMBAT_IMPACT_PACKET)},
+        {240, -1, -1, sizeof(::Protocol::SC_ANIMATION_TRANSITION_PACKET)},
+        {252, -1, -1, sizeof(::Protocol::SC_STAT_CHANGE_PACKET)},
+        {269, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_BEGIN_PACKET)},
+        {289, -1, -1, sizeof(::Protocol::SC_WORLD_TRANSITION_REJECTED_PACKET)},
+        {299, 311, -1, sizeof(::Protocol::SC_PARTY_UI_BOOTSTRAP_PACKET)},
+        {315, -1, -1, sizeof(::Protocol::SC_PARTY_LIST_SNAPSHOT_PACKET)},
+        {325, -1, -1, sizeof(::Protocol::SC_PARTY_COMMAND_RESULT_PACKET)},
+        {338, 347, -1, sizeof(::Protocol::SC_PARTY_SNAPSHOT_PACKET)},
+        {348, 358, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET)},
+        {360, -1, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_LOGIN_PACKET_default_instance_._instance,
@@ -1319,6 +1354,7 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_WORLD_TRANSITION_REQUEST_PACKET_default_instance_._instance,
     &::Protocol::_CS_WORLD_TRANSITION_READY_PACKET_default_instance_._instance,
     &::Protocol::_CS_PARTY_UI_OPENED_PACKET_default_instance_._instance,
+    &::Protocol::_CS_PARTY_UI_CLOSED_PACKET_default_instance_._instance,
     &::Protocol::_CS_PARTY_LIST_REFRESH_PACKET_default_instance_._instance,
     &::Protocol::_CS_PARTY_CREATE_PACKET_default_instance_._instance,
     &::Protocol::_CS_PARTY_JOIN_REQUEST_PACKET_default_instance_._instance,
@@ -1362,63 +1398,65 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "ACKET\022\021\n\trequestId\030\001 \001(\r\"6\n CS_WORLD_TRA"
     "NSITION_READY_PACKET\022\022\n\ntransferId\030\001 \001(\004"
     "\"4\n\031CS_PARTY_UI_OPENED_PACKET\022\027\n\017clientR"
-    "equestId\030\001 \001(\r\"7\n\034CS_PARTY_LIST_REFRESH_"
-    "PACKET\022\027\n\017clientRequestId\030\001 \001(\r\"1\n\026CS_PA"
-    "RTY_CREATE_PACKET\022\027\n\017clientRequestId\030\001 \001"
-    "(\r\"H\n\034CS_PARTY_JOIN_REQUEST_PACKET\022\027\n\017cl"
-    "ientRequestId\030\001 \001(\r\022\017\n\007partyId\030\002 \001(\004\"M\n\033"
-    "CS_PARTY_JOIN_ACCEPT_PACKET\022\027\n\017clientReq"
-    "uestId\030\001 \001(\r\022\025\n\rjoinRequestId\030\002 \001(\004\"M\n\033C"
-    "S_PARTY_JOIN_REJECT_PACKET\022\027\n\017clientRequ"
-    "estId\030\001 \001(\r\022\025\n\rjoinRequestId\030\002 \001(\004\"(\n\027SC"
-    "_LOGIN_SUCCESS_PACKET\022\r\n\005netid\030\001 \001(\004\"&\n\024"
-    "SC_LOGIN_FAIL_PACKET\022\016\n\006reason\030\001 \001(\r\"\\\n\r"
-    "SC_ADD_PACKET\022\r\n\005netid\030\001 \001(\004\022\016\n\006typeid\030\002"
-    " \001(\r\022\t\n\001x\030\003 \001(\002\022\t\n\001y\030\004 \001(\002\022\t\n\001z\030\005 \001(\002\022\013\n"
-    "\003yaw\030\006 \001(\002\"M\n\016SC_MOVE_PACKET\022\r\n\005netid\030\001 "
-    "\001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022\t\n\001z\030\004 \001(\002\022\013\n\003"
-    "yaw\030\005 \001(\002\"!\n\020SC_REMOVE_PACKET\022\r\n\005netid\030\001"
-    " \001(\004\"\266\001\n\027SC_COMBAT_IMPACT_PACKET\022\025\n\ratta"
-    "ckerNetId\030\001 \001(\004\022\023\n\013victimNetId\030\002 \001(\004\022\022\n\n"
-    "resultType\030\003 \001(\r\022\017\n\007impactX\030\004 \001(\002\022\017\n\007imp"
-    "actY\030\005 \001(\002\022\017\n\007impactZ\030\006 \001(\002\022\014\n\004dirX\030\007 \001("
-    "\002\022\014\n\004dirY\030\010 \001(\002\022\014\n\004dirZ\030\t \001(\002\"t\n\036SC_ANIM"
-    "ATION_TRANSITION_PACKET\022\r\n\005netid\030\001 \001(\004\022\020"
-    "\n\010currAnim\030\002 \001(\005\022\031\n\021abilityInstanceId\030\003 "
-    "\001(\r\022\026\n\016normalizedTime\030\004 \001(\002\"\264\001\n\025SC_STAT_"
-    "CHANGE_PACKET\022\r\n\005netid\030\001 \001(\004\022\r\n\005curhp\030\002 "
-    "\001(\r\022\r\n\005maxhp\030\003 \001(\r\022\022\n\ncurstamina\030\004 \001(\r\022\022"
-    "\n\nmaxstamina\030\005 \001(\r\022\r\n\005power\030\006 \001(\r\022\023\n\013att"
-    "ackspeed\030\007 \001(\002\022\017\n\007defense\030\010 \001(\r\022\021\n\tmoves"
-    "peed\030\t \001(\002\"\264\002\n SC_WORLD_TRANSITION_BEGIN"
-    "_PACKET\022\022\n\ntransferId\030\001 \001(\004\022\021\n\trequestId"
-    "\030\002 \001(\r\022\030\n\020sourceWorldDefId\030\003 \001(\r\022\025\n\rsour"
-    "ceWorldId\030\004 \001(\004\022\030\n\020targetWorldDefId\030\005 \001("
-    "\r\022\025\n\rtargetWorldId\030\006 \001(\004\022\025\n\rmapResourceI"
-    "d\030\007 \001(\r\022\023\n\013playerNetId\030\010 \001(\004\022\034\n\024clearExi"
-    "stingObjects\030\t \001(\010\022\027\n\017waitClientReady\030\n "
-    "\001(\010\022\024\n\014usedFallback\030\013 \001(\010\022\016\n\006reason\030\014 \001("
-    "\r\"H\n#SC_WORLD_TRANSITION_REJECTED_PACKET"
-    "\022\021\n\trequestId\030\001 \001(\r\022\016\n\006reason\030\002 \001(\r\"\240\001\n\034"
-    "SC_PARTY_UI_BOOTSTRAP_PACKET\022\027\n\017clientRe"
-    "questId\030\001 \001(\r\022\022\n\nhasMyParty\030\002 \001(\010\022(\n\007myP"
-    "arty\030\003 \001(\0132\027.Protocol.PartySnapshot\022)\n\007p"
-    "arties\030\004 \003(\0132\030.Protocol.PartyListEntry\"c"
-    "\n\035SC_PARTY_LIST_SNAPSHOT_PACKET\022\027\n\017clien"
-    "tRequestId\030\001 \001(\r\022)\n\007parties\030\002 \003(\0132\030.Prot"
-    "ocol.PartyListEntry\"\201\001\n\036SC_PARTY_COMMAND"
-    "_RESULT_PACKET\022\027\n\017clientRequestId\030\001 \001(\r\022"
-    "\017\n\007success\030\002 \001(\010\022\r\n\005error\030\003 \001(\r\022\017\n\007party"
-    "Id\030\004 \001(\004\022\025\n\rjoinRequestId\030\005 \001(\004\"B\n\030SC_PA"
-    "RTY_SNAPSHOT_PACKET\022&\n\005party\030\001 \001(\0132\027.Pro"
-    "tocol.PartySnapshot\"e\n%SC_PARTY_JOIN_REQ"
-    "UEST_RECEIVED_PACKET\022\017\n\007partyId\030\001 \001(\004\022+\n"
-    "\007request\030\002 \001(\0132\032.Protocol.PartyJoinReque"
-    "st\"\264\001\n#SC_PARTY_JOIN_REQUEST_CLOSED_PACK"
-    "ET\022\017\n\007partyId\030\001 \001(\004\022\025\n\rjoinRequestId\030\002 \001"
-    "(\004\0225\n\006reason\030\003 \001(\0162%.Protocol.PartyJoinR"
-    "equestCloseReason\022.\n\005state\030\004 \001(\0162\037.Proto"
-    "col.PartyJoinRequestStateb\006proto3"
+    "equestId\030\001 \001(\r\"4\n\031CS_PARTY_UI_CLOSED_PAC"
+    "KET\022\027\n\017clientRequestId\030\001 \001(\r\"7\n\034CS_PARTY"
+    "_LIST_REFRESH_PACKET\022\027\n\017clientRequestId\030"
+    "\001 \001(\r\"1\n\026CS_PARTY_CREATE_PACKET\022\027\n\017clien"
+    "tRequestId\030\001 \001(\r\"H\n\034CS_PARTY_JOIN_REQUES"
+    "T_PACKET\022\027\n\017clientRequestId\030\001 \001(\r\022\017\n\007par"
+    "tyId\030\002 \001(\004\"M\n\033CS_PARTY_JOIN_ACCEPT_PACKE"
+    "T\022\027\n\017clientRequestId\030\001 \001(\r\022\025\n\rjoinReques"
+    "tId\030\002 \001(\004\"M\n\033CS_PARTY_JOIN_REJECT_PACKET"
+    "\022\027\n\017clientRequestId\030\001 \001(\r\022\025\n\rjoinRequest"
+    "Id\030\002 \001(\004\"(\n\027SC_LOGIN_SUCCESS_PACKET\022\r\n\005n"
+    "etid\030\001 \001(\004\"&\n\024SC_LOGIN_FAIL_PACKET\022\016\n\006re"
+    "ason\030\001 \001(\r\"\\\n\rSC_ADD_PACKET\022\r\n\005netid\030\001 \001"
+    "(\004\022\016\n\006typeid\030\002 \001(\r\022\t\n\001x\030\003 \001(\002\022\t\n\001y\030\004 \001(\002"
+    "\022\t\n\001z\030\005 \001(\002\022\013\n\003yaw\030\006 \001(\002\"M\n\016SC_MOVE_PACK"
+    "ET\022\r\n\005netid\030\001 \001(\004\022\t\n\001x\030\002 \001(\002\022\t\n\001y\030\003 \001(\002\022"
+    "\t\n\001z\030\004 \001(\002\022\013\n\003yaw\030\005 \001(\002\"!\n\020SC_REMOVE_PAC"
+    "KET\022\r\n\005netid\030\001 \001(\004\"\266\001\n\027SC_COMBAT_IMPACT_"
+    "PACKET\022\025\n\rattackerNetId\030\001 \001(\004\022\023\n\013victimN"
+    "etId\030\002 \001(\004\022\022\n\nresultType\030\003 \001(\r\022\017\n\007impact"
+    "X\030\004 \001(\002\022\017\n\007impactY\030\005 \001(\002\022\017\n\007impactZ\030\006 \001("
+    "\002\022\014\n\004dirX\030\007 \001(\002\022\014\n\004dirY\030\010 \001(\002\022\014\n\004dirZ\030\t "
+    "\001(\002\"t\n\036SC_ANIMATION_TRANSITION_PACKET\022\r\n"
+    "\005netid\030\001 \001(\004\022\020\n\010currAnim\030\002 \001(\005\022\031\n\021abilit"
+    "yInstanceId\030\003 \001(\r\022\026\n\016normalizedTime\030\004 \001("
+    "\002\"\264\001\n\025SC_STAT_CHANGE_PACKET\022\r\n\005netid\030\001 \001"
+    "(\004\022\r\n\005curhp\030\002 \001(\r\022\r\n\005maxhp\030\003 \001(\r\022\022\n\ncurs"
+    "tamina\030\004 \001(\r\022\022\n\nmaxstamina\030\005 \001(\r\022\r\n\005powe"
+    "r\030\006 \001(\r\022\023\n\013attackspeed\030\007 \001(\002\022\017\n\007defense\030"
+    "\010 \001(\r\022\021\n\tmovespeed\030\t \001(\002\"\264\002\n SC_WORLD_TR"
+    "ANSITION_BEGIN_PACKET\022\022\n\ntransferId\030\001 \001("
+    "\004\022\021\n\trequestId\030\002 \001(\r\022\030\n\020sourceWorldDefId"
+    "\030\003 \001(\r\022\025\n\rsourceWorldId\030\004 \001(\004\022\030\n\020targetW"
+    "orldDefId\030\005 \001(\r\022\025\n\rtargetWorldId\030\006 \001(\004\022\025"
+    "\n\rmapResourceId\030\007 \001(\r\022\023\n\013playerNetId\030\010 \001"
+    "(\004\022\034\n\024clearExistingObjects\030\t \001(\010\022\027\n\017wait"
+    "ClientReady\030\n \001(\010\022\024\n\014usedFallback\030\013 \001(\010\022"
+    "\016\n\006reason\030\014 \001(\r\"H\n#SC_WORLD_TRANSITION_R"
+    "EJECTED_PACKET\022\021\n\trequestId\030\001 \001(\r\022\016\n\006rea"
+    "son\030\002 \001(\r\"\240\001\n\034SC_PARTY_UI_BOOTSTRAP_PACK"
+    "ET\022\027\n\017clientRequestId\030\001 \001(\r\022\022\n\nhasMyPart"
+    "y\030\002 \001(\010\022(\n\007myParty\030\003 \001(\0132\027.Protocol.Part"
+    "ySnapshot\022)\n\007parties\030\004 \003(\0132\030.Protocol.Pa"
+    "rtyListEntry\"c\n\035SC_PARTY_LIST_SNAPSHOT_P"
+    "ACKET\022\027\n\017clientRequestId\030\001 \001(\r\022)\n\007partie"
+    "s\030\002 \003(\0132\030.Protocol.PartyListEntry\"\201\001\n\036SC"
+    "_PARTY_COMMAND_RESULT_PACKET\022\027\n\017clientRe"
+    "questId\030\001 \001(\r\022\017\n\007success\030\002 \001(\010\022\r\n\005error\030"
+    "\003 \001(\r\022\017\n\007partyId\030\004 \001(\004\022\025\n\rjoinRequestId\030"
+    "\005 \001(\004\"B\n\030SC_PARTY_SNAPSHOT_PACKET\022&\n\005par"
+    "ty\030\001 \001(\0132\027.Protocol.PartySnapshot\"e\n%SC_"
+    "PARTY_JOIN_REQUEST_RECEIVED_PACKET\022\017\n\007pa"
+    "rtyId\030\001 \001(\004\022+\n\007request\030\002 \001(\0132\032.Protocol."
+    "PartyJoinRequest\"\264\001\n#SC_PARTY_JOIN_REQUE"
+    "ST_CLOSED_PACKET\022\017\n\007partyId\030\001 \001(\004\022\025\n\rjoi"
+    "nRequestId\030\002 \001(\004\0225\n\006reason\030\003 \001(\0162%.Proto"
+    "col.PartyJoinRequestCloseReason\022.\n\005state"
+    "\030\004 \001(\0162\037.Protocol.PartyJoinRequestStateb"
+    "\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[1] =
     {
@@ -1428,13 +1466,13 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    3033,
+    3087,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     descriptor_table_Protocol_2eproto_deps,
     1,
-    32,
+    33,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -4085,6 +4123,213 @@ void CS_PARTY_UI_OPENED_PACKET::InternalSwap(CS_PARTY_UI_OPENED_PACKET* PROTOBUF
 }
 
 ::google::protobuf::Metadata CS_PARTY_UI_OPENED_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class CS_PARTY_UI_CLOSED_PACKET::_Internal {
+ public:
+};
+
+CS_PARTY_UI_CLOSED_PACKET::CS_PARTY_UI_CLOSED_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.CS_PARTY_UI_CLOSED_PACKET)
+}
+CS_PARTY_UI_CLOSED_PACKET::CS_PARTY_UI_CLOSED_PACKET(
+    ::google::protobuf::Arena* arena, const CS_PARTY_UI_CLOSED_PACKET& from)
+    : CS_PARTY_UI_CLOSED_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE CS_PARTY_UI_CLOSED_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void CS_PARTY_UI_CLOSED_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.clientrequestid_ = {};
+}
+CS_PARTY_UI_CLOSED_PACKET::~CS_PARTY_UI_CLOSED_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.CS_PARTY_UI_CLOSED_PACKET)
+  SharedDtor(*this);
+}
+inline void CS_PARTY_UI_CLOSED_PACKET::SharedDtor(MessageLite& self) {
+  CS_PARTY_UI_CLOSED_PACKET& this_ = static_cast<CS_PARTY_UI_CLOSED_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* CS_PARTY_UI_CLOSED_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) CS_PARTY_UI_CLOSED_PACKET(arena);
+}
+constexpr auto CS_PARTY_UI_CLOSED_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(CS_PARTY_UI_CLOSED_PACKET),
+                                            alignof(CS_PARTY_UI_CLOSED_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull CS_PARTY_UI_CLOSED_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_CS_PARTY_UI_CLOSED_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &CS_PARTY_UI_CLOSED_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<CS_PARTY_UI_CLOSED_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &CS_PARTY_UI_CLOSED_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<CS_PARTY_UI_CLOSED_PACKET>(), &CS_PARTY_UI_CLOSED_PACKET::ByteSizeLong,
+            &CS_PARTY_UI_CLOSED_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(CS_PARTY_UI_CLOSED_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &CS_PARTY_UI_CLOSED_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* CS_PARTY_UI_CLOSED_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 0, 2> CS_PARTY_UI_CLOSED_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::CS_PARTY_UI_CLOSED_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // uint32 clientRequestId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CS_PARTY_UI_CLOSED_PACKET, _impl_.clientrequestid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(CS_PARTY_UI_CLOSED_PACKET, _impl_.clientrequestid_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 clientRequestId = 1;
+    {PROTOBUF_FIELD_OFFSET(CS_PARTY_UI_CLOSED_PACKET, _impl_.clientrequestid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void CS_PARTY_UI_CLOSED_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.CS_PARTY_UI_CLOSED_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.clientrequestid_ = 0u;
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* CS_PARTY_UI_CLOSED_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const CS_PARTY_UI_CLOSED_PACKET& this_ = static_cast<const CS_PARTY_UI_CLOSED_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* CS_PARTY_UI_CLOSED_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const CS_PARTY_UI_CLOSED_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.CS_PARTY_UI_CLOSED_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint32 clientRequestId = 1;
+          if (this_._internal_clientrequestid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                1, this_._internal_clientrequestid(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.CS_PARTY_UI_CLOSED_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t CS_PARTY_UI_CLOSED_PACKET::ByteSizeLong(const MessageLite& base) {
+          const CS_PARTY_UI_CLOSED_PACKET& this_ = static_cast<const CS_PARTY_UI_CLOSED_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t CS_PARTY_UI_CLOSED_PACKET::ByteSizeLong() const {
+          const CS_PARTY_UI_CLOSED_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.CS_PARTY_UI_CLOSED_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+           {
+            // uint32 clientRequestId = 1;
+            if (this_._internal_clientrequestid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_clientrequestid());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void CS_PARTY_UI_CLOSED_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<CS_PARTY_UI_CLOSED_PACKET*>(&to_msg);
+  auto& from = static_cast<const CS_PARTY_UI_CLOSED_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.CS_PARTY_UI_CLOSED_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_clientrequestid() != 0) {
+    _this->_impl_.clientrequestid_ = from._impl_.clientrequestid_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CS_PARTY_UI_CLOSED_PACKET::CopyFrom(const CS_PARTY_UI_CLOSED_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.CS_PARTY_UI_CLOSED_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CS_PARTY_UI_CLOSED_PACKET::InternalSwap(CS_PARTY_UI_CLOSED_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+        swap(_impl_.clientrequestid_, other->_impl_.clientrequestid_);
+}
+
+::google::protobuf::Metadata CS_PARTY_UI_CLOSED_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
