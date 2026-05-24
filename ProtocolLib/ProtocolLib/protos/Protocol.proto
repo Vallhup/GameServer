@@ -5,6 +5,12 @@ import "DTO.proto";
 
 /* ------------------------------ [ Client -> Server ]  ------------------------------ */
 
+message CS_TIME_SYNC_PACKET
+{
+	uint32 probeSeq = 1;
+	uint32 echoedServerSendTimeMs = 2;
+}
+
 message CS_LOGIN_PACKET
 {
 	string loginId = 1;
@@ -109,6 +115,13 @@ message CS_PARTY_JOIN_REJECT_PACKET
 }
 
 /* ------------------------------ [ Server -> Client ]  ------------------------------ */
+
+message SC_TIME_SYNC_PACKET
+{
+	uint32 probeSeq = 1;
+	uint32 serverSendTimeMs = 2;
+	uint64 serverFrame = 3;
+}
 
 message SC_LOGIN_SUCCESS_PACKET
 {

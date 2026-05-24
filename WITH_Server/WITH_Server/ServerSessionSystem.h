@@ -10,6 +10,7 @@
 #include "DynamicTaskTypes.h"
 #include "ServerPacketStager.h"
 #include "NetworkRuntime.h"
+#include "NetworkTimingService.h"
 #include "PacketHandlerContext.h"
 #include "SessionFlowController.h"
 
@@ -52,6 +53,7 @@ public:
 		WorldId executionWorldId) noexcept;
 
 	void BeginSendStage() noexcept;
+	void StageTimeSyncPackets(uint64_t serverFrame);
 	void FlushOutbound();
 
 	bool BeginInitialWorldEntry(
@@ -94,6 +96,25 @@ private:
 		CharacterId characterId{ CharacterId::None };
 	};
 
+private:
+	static constexpr const char* kLogCategory = "SessionSystem";
+
+	static bool TryResolvePlayerEntityLocation(
+		const FrameworkRuntime& framework,
+		const SessionFlow& flow,
+		WorldId& outWorldId,
+		Entity& outEntity) noexcept;
+
+	static bool QueuePlayerEntityDespawn(
+		FrameworkRuntime& framework,
+		const SessionFlow& flow,
+		WorldId executionWorldId) noexcept;
+
+	static void ReleaseUnboundPlayerNetId(
+		FrameworkRuntime& framework,
+		NetId netId) noexcept;
+
+private:
 	Config _config;
 	FrameworkRuntime& _framework;
 	const WorldId&    _startupWorldId;
@@ -103,6 +124,7 @@ private:
 	CharacterDataService  _characterDataService;
 	CharacterSpawnService _characterSpawnService;
 	SessionFlowController _sessionFlowController;
+	NetworkTimingService  _networkTiming;
 	PacketHandlerContext  _packetHandlerCtx;
 	ODBCDatabaseBackend*  _database{ nullptr };
 	PartyCommandQueue*    _partyCommandQueue{ nullptr };

@@ -70,6 +70,13 @@ public:
 		uint32_t requestId,
 		uint32_t reason);
 
+	static bool StageTimeSyncPacketToSession(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		uint32_t probeSeq,
+		uint32_t serverSendTimeMs,
+		uint64_t serverFrame);
+
 	static bool StagePartyUiBootstrapPacket(
 		NetworkRuntime& network,
 		SessionId sessionId,

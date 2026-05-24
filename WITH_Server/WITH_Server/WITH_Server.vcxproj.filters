@@ -41,6 +41,9 @@
     <ClCompile Include="NetworkRuntime.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="NetworkTimingService.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
     <ClCompile Include="DemoPartyFormationPolicy.cpp">
       <Filter>SessionSystem\Party</Filter>
     </ClCompile>
@@ -353,6 +356,9 @@
       <Filter>App</Filter>
     </ClInclude>
     <ClInclude Include="NetworkRuntime.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkTimingService.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="DemoPartyFormationPolicy.h">

@@ -242,6 +242,7 @@
     <ClCompile Include="GameplayTagDef.cpp" />
     <ClCompile Include="GameplayDefValidator.cpp" />
     <ClCompile Include="NetworkRuntime.cpp" />
+    <ClCompile Include="NetworkTimingService.cpp" />
     <ClCompile Include="PacketHandlerContext.cpp" />
     <ClCompile Include="PacketHandlers.cpp" />
     <ClCompile Include="DemoPartyFormationPolicy.cpp" />
@@ -416,6 +417,7 @@
     <ClInclude Include="Library\Recast\RecastAlloc.h" />
     <ClInclude Include="Library\Recast\RecastAssert.h" />
     <ClInclude Include="NetworkRuntime.h" />
+    <ClInclude Include="NetworkTimingService.h" />
     <ClInclude Include="DemoPartyFormationPolicy.h" />
     <ClInclude Include="PartyCommandPump.h" />
     <ClInclude Include="PartyCommandQueue.h" />

@@ -9,6 +9,7 @@ class IWorldTransitionRequestSink;
 class ServerSessionSystem;
 class ODBCDatabaseBackend;
 class PartyCommandQueue;
+class NetworkTimingService;
 
 // DynamicTask ExecFn은 raw function pointer라 클로저로 서비스를 캡처할 수 없다.
 // 패킷 핸들러 ExecFn이 게임 서비스에 접근하기 위한 정적 서비스 로케이터.
@@ -24,6 +25,7 @@ struct PacketHandlerContext
 	ServerSessionSystem*         sessionSystem{ nullptr };
 	ODBCDatabaseBackend*         database{ nullptr };
 	PartyCommandQueue*          partyCommandQueue{ nullptr };
+	NetworkTimingService*       networkTiming{ nullptr };
 
 	static void Initialize(PacketHandlerContext& ctx) noexcept;
 	static PacketHandlerContext& Get() noexcept;

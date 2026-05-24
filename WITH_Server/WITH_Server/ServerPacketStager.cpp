@@ -448,6 +448,25 @@ bool ServerPacketStager::StageWorldTransitionRejectedPacket(
 	return staged;
 }
 
+bool ServerPacketStager::StageTimeSyncPacketToSession(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	uint32_t probeSeq,
+	uint32_t serverSendTimeMs,
+	uint64_t serverFrame)
+{
+	Protocol::SC_TIME_SYNC_PACKET packet;
+	packet.set_probeseq(probeSeq);
+	packet.set_serversendtimems(serverSendTimeMs);
+	packet.set_serverframe(serverFrame);
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_TIME_SYNC,
+		packet);
+}
+
 bool ServerPacketStager::StagePartyUiBootstrapPacket(
 	NetworkRuntime& network,
 	SessionId sessionId,

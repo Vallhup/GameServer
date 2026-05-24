@@ -689,6 +689,7 @@ void ServerApp::TickOnce(double dtSec)
 
 	_sessionSystem.BeginSendStage();
 	RunWorldFrames(dtSec);
+	_sessionSystem.StageTimeSyncPackets(_frameIndex > 0 ? _frameIndex - 1 : 0);
 
 	std::vector<SessionId> pendingTransitionSessions;
 	pendingTransitionSessions.reserve(_pendingClientTransitions.size());

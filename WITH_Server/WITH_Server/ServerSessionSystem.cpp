@@ -13,85 +13,6 @@
 #include "WorldDef.h"
 #include "WorldInstance.h"
 
-namespace
-{
-	constexpr const char* kLogCategory = "SessionSystem";
-
-	bool TryResolvePlayerEntityLocation(
-		const FrameworkRuntime& framework,
-		const SessionFlow& flow,
-		WorldId& outWorldId,
-		Entity& outEntity) noexcept
-	{
-		outWorldId = flow.currentWorldId.IsValid()
-			? flow.currentWorldId
-			: flow.playerWorldId;
-		outEntity = flow.playerEntity;
-
-		if ((outEntity.IsNull() || !outWorldId.IsValid()) &&
-			flow.controlledNetId.IsValid())
-		{
-			const NetBindingLocation binding =
-				framework.FindNetBinding(flow.controlledNetId);
-			if (binding.IsValid())
-			{
-				outWorldId = binding.worldId;
-				outEntity = binding.entity;
-			}
-		}
-
-		return outWorldId.IsValid() && !outEntity.IsNull();
-	}
-
-	bool QueuePlayerEntityDespawn(
-		FrameworkRuntime& framework,
-		const SessionFlow& flow,
-		WorldId executionWorldId) noexcept
-	{
-		WorldId worldId = WorldId::Invalid();
-		Entity entity = Entity::Null();
-		if (!TryResolvePlayerEntityLocation(framework, flow, worldId, entity))
-		{
-			return false;
-		}
-
-		if (executionWorldId.IsValid() && worldId != executionWorldId)
-		{
-			FWLOG_ERROR(
-				kLogCategory,
-				"Disconnect despawn scope mismatch (sid=%u, targetWorldId=%u, executionWorldId=%u, entity=%u.%u)",
-				flow.sessionId,
-				worldId.GetRaw(),
-				executionWorldId.GetRaw(),
-				entity.id,
-				entity.generation);
-			return false;
-		}
-
-		WorldInstance* const world = framework.FindWorld(worldId);
-		if (world == nullptr)
-		{
-			return false;
-		}
-
-		world->GetRuntime().DeferredDestroyEntityIfAlive(entity);
-		return true;
-	}
-
-	void ReleaseUnboundPlayerNetId(
-		FrameworkRuntime& framework,
-		NetId netId) noexcept
-	{
-		if (!netId.IsValid() || !framework.IsNetIdAlive(netId))
-		{
-			return;
-		}
-
-		(void)framework.UnbindNetEntity(netId);
-		framework.FreeNetId(netId);
-	}
-}
-
 ServerSessionSystem::ServerSessionSystem(
 	Config config,
 	FrameworkRuntime& framework,
@@ -123,6 +44,80 @@ ServerSessionSystem::ServerSessionSystem(
 {
 }
 
+bool ServerSessionSystem::TryResolvePlayerEntityLocation(
+	const FrameworkRuntime& framework,
+	const SessionFlow& flow,
+	WorldId& outWorldId,
+	Entity& outEntity) noexcept
+{
+	outWorldId = flow.currentWorldId.IsValid()
+		? flow.currentWorldId
+		: flow.playerWorldId;
+	outEntity = flow.playerEntity;
+
+	if ((outEntity.IsNull() || !outWorldId.IsValid()) &&
+		flow.controlledNetId.IsValid())
+	{
+		const NetBindingLocation binding =
+			framework.FindNetBinding(flow.controlledNetId);
+		if (binding.IsValid())
+		{
+			outWorldId = binding.worldId;
+			outEntity = binding.entity;
+		}
+	}
+
+	return outWorldId.IsValid() && !outEntity.IsNull();
+}
+
+bool ServerSessionSystem::QueuePlayerEntityDespawn(
+	FrameworkRuntime& framework,
+	const SessionFlow& flow,
+	WorldId executionWorldId) noexcept
+{
+	WorldId worldId = WorldId::Invalid();
+	Entity entity = Entity::Null();
+	if (!TryResolvePlayerEntityLocation(framework, flow, worldId, entity))
+	{
+		return false;
+	}
+
+	if (executionWorldId.IsValid() && worldId != executionWorldId)
+	{
+		FWLOG_ERROR(
+			kLogCategory,
+			"Disconnect despawn scope mismatch (sid=%u, targetWorldId=%u, executionWorldId=%u, entity=%u.%u)",
+			flow.sessionId,
+			worldId.GetRaw(),
+			executionWorldId.GetRaw(),
+			entity.id,
+			entity.generation);
+		return false;
+	}
+
+	WorldInstance* const world = framework.FindWorld(worldId);
+	if (world == nullptr)
+	{
+		return false;
+	}
+
+	world->GetRuntime().DeferredDestroyEntityIfAlive(entity);
+	return true;
+}
+
+void ServerSessionSystem::ReleaseUnboundPlayerNetId(
+	FrameworkRuntime& framework,
+	NetId netId) noexcept
+{
+	if (!netId.IsValid() || !framework.IsNetIdAlive(netId))
+	{
+		return;
+	}
+
+	(void)framework.UnbindNetEntity(netId);
+	framework.FreeNetId(netId);
+}
+
 bool ServerSessionSystem::Initialize()
 {
 	_packetHandlerCtx = PacketHandlerContext
@@ -135,7 +130,8 @@ bool ServerSessionSystem::Initialize()
 		.worldTransitionSink = &_worldTransitionSink,
 		.sessionSystem       = this,
 		.database            = _database,
-		.partyCommandQueue   = _partyCommandQueue
+		.partyCommandQueue   = _partyCommandQueue,
+		.networkTiming       = &_networkTiming
 	};
 	PacketHandlerContext::Initialize(_packetHandlerCtx);
 
@@ -187,6 +183,7 @@ void ServerSessionSystem::ClearSessionState() noexcept
 {
 	_characterSpawnService.Clear();
 	_sessionFlowController.Clear();
+	_networkTiming.Clear();
 	_pendingInitialEntries.clear();
 	_nextInitialEntryTransferId = 1;
 }
@@ -213,6 +210,7 @@ void ServerSessionSystem::HandleSessionDisconnected(
 
 	(void)_framework.RemovePresence(sessionId, 0.0);
 	_pendingInitialEntries.erase(sessionId);
+	_networkTiming.RemoveSession(sessionId);
 	_worldTransitionSink.OnSessionDisconnected(sessionId);
 
 	if (_sessionFlowController.FindFlow(sessionId) != nullptr)
@@ -230,6 +228,28 @@ void ServerSessionSystem::HandleSessionDisconnected(
 void ServerSessionSystem::BeginSendStage() noexcept
 {
 	_network.BeginSendStage();
+}
+
+void ServerSessionSystem::StageTimeSyncPackets(uint64_t serverFrame)
+{
+	std::vector<SessionId> sessionIds;
+	_network.GetSessionManager().FillSessionIds(sessionIds);
+
+	for (SessionId sessionId : sessionIds)
+	{
+		NetworkTimeProbe probe{};
+		if (!_networkTiming.TryBuildProbe(sessionId, serverFrame, probe))
+		{
+			continue;
+		}
+
+		(void)ServerPacketStager::StageTimeSyncPacketToSession(
+			_network,
+			sessionId,
+			probe.probeSeq,
+			probe.serverSendTimeMs,
+			probe.serverFrame);
+	}
 }
 
 void ServerSessionSystem::FlushOutbound()

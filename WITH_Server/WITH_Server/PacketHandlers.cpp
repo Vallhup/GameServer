@@ -14,6 +14,7 @@
 #include "LoginAuth.h"
 #include "RegisterAccount.h"
 #include "NetworkRuntime.h"
+#include "NetworkTimingService.h"
 #include "ODBCDatabaseBackend.h"
 #include "PacketFactory.h"
 #include "PacketHandlerContext.h"
@@ -586,6 +587,8 @@ void RegisterServerPacketHandlers(
     DynamicTaskTypeId& outDisconnectedTypeId)
 {
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_TIME_SYNC,                &HandleTimeSyncPacket,              "Pkt_CS_TIME_SYNC");
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_LOGIN,                    &HandleLoginPacket,                  "Pkt_CS_LOGIN");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_CHARACTER_SELECT,         &HandleCharacterSelectPacket,        "Pkt_CS_CHARACTER_SELECT");
@@ -1053,6 +1056,28 @@ ExecCallResult HandleRegisterAccountResult(NodeExecContext& ctx)
             controlledNetId.GetRaw());
         (void)svc.network->RequestClose(sessionId, SessionCloseReason::ProtocolError);
         return ExecCallResult::Success;
+    }
+
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleTimeSyncPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    Protocol::CS_TIME_SYNC_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    auto& svc = PacketHandlerContext::Get();
+    if (svc.networkTiming != nullptr)
+    {
+        svc.networkTiming->HandleClientEcho(
+            ResolveSessionId(ctx),
+            pkt.probeseq(),
+            pkt.echoedserversendtimems());
     }
 
     return ExecCallResult::Success;

@@ -1,8 +1,10 @@
 #pragma once
 
-#include "types.h"
+#include <cstdint>
 
-enum class PacketType : uint8 {
+enum class PacketType : uint8_t
+{
+	CS_TIME_SYNC,
 	CS_LOGIN,
 	CS_CHARACTER_SELECT,
 	CS_MOVE,
@@ -21,6 +23,7 @@ enum class PacketType : uint8 {
 	CS_PARTY_JOIN_ACCEPT,
 	CS_PARTY_JOIN_REJECT,
 
+	SC_TIME_SYNC,
 	SC_LOGIN_SUCCESS,
 	SC_LOGIN_FAIL,
 	SC_MOVE_OBJECT,

@@ -17,6 +17,7 @@ void RegisterServerPacketHandlers(
 ExecCallResult HandleLoginPacket(NodeExecContext& ctx);
 ExecCallResult HandleLoginAuthResult(NodeExecContext& ctx);
 ExecCallResult HandleRegisterAccountResult(NodeExecContext& ctx);
+ExecCallResult HandleTimeSyncPacket(NodeExecContext& ctx);
 ExecCallResult HandleCharacterSelectPacket(NodeExecContext& ctx);
 ExecCallResult HandleMovePacket(NodeExecContext& ctx);
 ExecCallResult HandleAttackPacket(NodeExecContext& ctx);
