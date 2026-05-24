@@ -32,7 +32,7 @@
         {
             "abilityKey": "Ability.Tank_Melee_7",
             "weight": 12,
-            "distanceBucket": "VeryClose",
+            "distanceBucket": "Close",
             "minDistance": 0,
             "maxDistance": 1.7,
             "aiCooldownSec": 4,
@@ -42,19 +42,6 @@
             "forbidImmediateRepeat": true,
             "lockMovementSec": 0.35,
             "lockFacingToTarget": true
-        },
-        {
-            "abilityKey": "Ability.Tank_Melee_1",
-            "weight": 18,
-            "distanceBucket": "Close",
-            "minDistance": 1.2,
-            "maxDistance": 2.8,
-            "aiCooldownSec": 2.2,
-            "globalCooldownSec": 2.3,
-            "patternGroup": "Tank_Basic",
-            "groupCooldownSec": 1.6,
-            "forbidImmediateRepeat": true,
-            "lockMovementSec": 0.3
         },
         {
             "abilityKey": "Ability.Tank_Melee_8",
@@ -68,6 +55,19 @@
             "groupCooldownSec": 1.8,
             "forbidImmediateRepeat": true,
             "lockMovementSec": 0.45
+        },
+        {
+            "abilityKey": "Ability.Tank_Melee_1",
+            "weight": 18,
+            "distanceBucket": "Mid",
+            "minDistance": 1.2,
+            "maxDistance": 2.8,
+            "aiCooldownSec": 2.2,
+            "globalCooldownSec": 2.3,
+            "patternGroup": "Tank_Basic",
+            "groupCooldownSec": 1.6,
+            "forbidImmediateRepeat": true,
+            "lockMovementSec": 0.3
         },
         {
             "abilityKey": "Ability.Tank_Melee_2",
