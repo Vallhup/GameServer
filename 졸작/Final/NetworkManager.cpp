@@ -21,6 +21,18 @@ void NetworkManager::Release()
 	}
 }
 
+bool NetworkManager::SendTimeSyncPacket(uint32_t probeSeq, uint32_t serverSendTimeMs)
+{
+	Protocol::CS_TIME_SYNC_PACKET timeSync;
+	timeSync.set_probeseq(probeSeq);
+	timeSync.set_echoedserversendtimems(serverSendTimeMs);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_TIME_SYNC_PACKET>(
+		PacketType::CS_TIME_SYNC, timeSync);
+
+	return TrySendInternal(data);
+}
+
 bool NetworkManager::SendLoginPacket(const std::string& id, const std::string& pw)
 {
 	Protocol::CS_LOGIN_PACKET login;

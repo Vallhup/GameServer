@@ -7,10 +7,16 @@
 #include "NetHelper.h"
 #include "ClientWorldTransitionController.h"
 #include "ClientPartyState.h"
+#include "NetworkManager.h"
 
 void ClientPacketRouter::Route(const ClientInboundPacket& packet)
 {
 	switch (static_cast<PacketType>(packet.header.type)) {
+	case PacketType::SC_TIME_SYNC:
+	{
+		HandleTimeSync(packet);
+		break;
+	}
 	case PacketType::SC_WORLD_TRANSITION_BEGIN:
 	{
 		HandleWorldTransitionBegin(packet);
@@ -68,6 +74,21 @@ void ClientPacketRouter::RouteToCurrentScene(const ClientInboundPacket& packet)
 			scene->HandlePacket(packet.header, packet.bytes.data());
 		}
 	}
+}
+
+void ClientPacketRouter::HandleTimeSync(const ClientInboundPacket& packet)
+{
+	NetHelper::DispatchPacket<Protocol::SC_TIME_SYNC_PACKET>(
+		packet.header, packet.bytes.data(),
+		[this](const auto& packet)
+		{
+			if (NetworkManager* nManager = NETWORK_MANAGER)
+			{
+				nManager->SendTimeSyncPacket(
+					packet.probeseq(), packet.serversendtimems());
+			}
+		}
+	);
 }
 
 void ClientPacketRouter::HandleWorldTransitionBegin(const ClientInboundPacket& packet)

@@ -8,6 +8,7 @@ public:
 
 private:
 	void RouteToCurrentScene(const ClientInboundPacket& packet);
+	void HandleTimeSync(const ClientInboundPacket& packet);
 	void HandleWorldTransitionBegin(const ClientInboundPacket& packet);
 	void HandleWorldTransitionRejected(const ClientInboundPacket& packet);
 	void HandlePartyUiBootstrap(const ClientInboundPacket& packet);

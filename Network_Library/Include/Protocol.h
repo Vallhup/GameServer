@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types.h"
+
 #pragma pack(push, 1)
 
 struct PacketHeader {

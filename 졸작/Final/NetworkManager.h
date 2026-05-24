@@ -3,6 +3,7 @@
 #include "EntityId.h"
 #include "ClientService.h"
 #include "../../Network_Library/Include/SendBuffer.h"
+#include <string>
 
 class NetworkManager {
 public:
@@ -15,6 +16,8 @@ public:
 		IConnectionListener& listener);
 
 	void Release();
+
+	bool SendTimeSyncPacket(uint32_t probeSeq, uint32_t serverSendTimeMs);
 
 	bool SendLoginPacket(const std::string& id, const std::string& pw);
 	bool SendCharacterSelectPacket(CharacterId id);
