@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "SoundManager.h"
 #include "ClientPartyState.h"
+#include "NetId.h"
 
 GameSceneUIController::GameSceneUIController(SceneType type) : sceneType(type) {}
 
@@ -27,6 +28,7 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitKeyGuide();
 	InitSettingWindow();
 	InitJoinRequestPopup();
+	InitPartyMemberHud();
 }
 
 void GameSceneUIController::InitTargetHpBar()
@@ -65,20 +67,20 @@ void GameSceneUIController::InitLocalPlayerHUD()
 {
 	localCharBarsBack = make_shared<ImageUI>(uiManager, L"LocalCharBarsBack", ImageUIState::Visible);
 	localCharBarsBack->SetPosition(WinSize.x * 0.02f, WinSize.y * 0.03f);
-	localCharBarsBack->SetHoriLength(WinSize.y * 0.512);
+	localCharBarsBack->SetHoriLength(WinSize.y * 0.512f);
 	localCharBarsBack->SetVertLength(WinSize.y * 0.1f);
 	widgets.push_back(localCharBarsBack);
 
 	localCharHpBar = make_shared<ImageUI>(uiManager, L"HpBar", ImageUIState::Visible);
 	localCharHpBar->SetPosition(WinSize.x * 0.0758f, WinSize.y * 0.0621f);
-	localCharHpBar->SetHoriLength(WinSize.y * 0.3457);
-	localCharHpBar->SetVertLength(WinSize.y * 0.0095);
+	localCharHpBar->SetHoriLength(WinSize.y * 0.3457f);
+	localCharHpBar->SetVertLength(WinSize.y * 0.0095f);
 	widgets.push_back(localCharHpBar);
 
 	localCharStaminaBar = make_shared<ImageUI>(uiManager, L"StaminaBar", ImageUIState::Visible);
 	localCharStaminaBar->SetPosition(WinSize.x * 0.0767f, WinSize.y * 0.087499f);
-	localCharStaminaBar->SetHoriLength(WinSize.y * 0.2566);
-	localCharStaminaBar->SetVertLength(WinSize.y * 0.00626);
+	localCharStaminaBar->SetHoriLength(WinSize.y * 0.2566f);
+	localCharStaminaBar->SetVertLength(WinSize.y * 0.00626f);
 	widgets.push_back(localCharStaminaBar);
 
 	localCharPotion = make_shared<ImageUI>(uiManager, L"Potion", ImageUIState::Visible);
@@ -288,7 +290,7 @@ void GameSceneUIController::RefreshPartyList()
 		const Protocol::PartyListEntry& entry = *sorted[i];
 		partyListCardIds[i] = entry.partyid();
 
-		const CharacterType leaderClass = CharacterType::Knight;
+		const CharacterType leaderClass = static_cast<CharacterType>(entry.leadercharactertype());
 		const wchar_t* texture =
 			(leaderClass == CharacterType::Lancer)  ? L"PartyLancer"  :
 			(leaderClass == CharacterType::Paladin) ? L"PartyPaladin" :
@@ -352,6 +354,158 @@ void GameSceneUIController::RefreshMyPartyText()
 		partyMyCards[i]->ChangeState(ImageUIState::Visible);
 		partyMyLabels[i]->SetText(
 			L"ID: " + std::to_wstring(member->sessionid()) + L"\nClass: " + className);
+	}
+}
+
+void GameSceneUIController::InitPartyMemberHud()
+{
+	constexpr float BACK_ASPECT        = 1562.0f / 2737.0f; // PartyMemBack h/w
+	constexpr float BARBACK_ASPECT     = 39.0f / 785.0f;    // BarBack h/w
+	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;
+	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;
+	constexpr float HPBAR_OFFSET_X     = 49.0f / 785.0f;
+	constexpr float HPBAR_OFFSET_Y     = 11.0f / 39.0f;
+
+	const float textScale = WinSize.y / 1080.0f;
+
+	constexpr float BACK_ALPHA = 0.7f;   // 배경(PartyMemBack)만 불투명도 적용 (0=투명, 1=불투명)
+
+	const float panelW = WinSize.x * 0.20f;
+	const float panelH = panelW * BACK_ASPECT;
+	const float panelX = WinSize.x - panelW - WinSize.x * 0.012f;
+	const float panelY = WinSize.y * 0.03f;
+
+	partyHudBack = make_shared<ImageUI>(uiManager, L"PartyMemBack", ImageUIState::Hidden);
+	partyHudBack->SetPosition(panelX, panelY);
+	partyHudBack->SetHoriLength(panelW);
+	partyHudBack->SetVertLength(panelH);
+	partyHudBack->SetTintAlpha(BACK_ALPHA);
+	widgets.push_back(partyHudBack);
+
+	partyHudIcons.reserve(PARTY_HUD_SLOTS);
+	partyHudNames.reserve(PARTY_HUD_SLOTS);
+	partyHudBarBacks.reserve(PARTY_HUD_SLOTS);
+	partyHudBars.reserve(PARTY_HUD_SLOTS);
+	partyHudBarFullW.assign(PARTY_HUD_SLOTS, 0.0f);
+
+	const float otherTop  = panelY + panelH * 0.48f;  // 하단(나머지 멤버) 시작
+	const float otherRowH = panelH * 0.23f;           // 멤버 1명당 행 높이
+
+	for (int i = 0; i < PARTY_HUD_SLOTS; ++i)
+	{
+		const bool isSelf = (i == 0);
+
+		float iconSize, iconX, iconY, nameX, nameY, barX, barY, barW;
+		if (isSelf)
+		{
+			iconSize = panelH * 0.27f;
+			iconX = panelX + panelW * 0.18f;
+			iconY = panelY + panelH * 0.11f;
+			nameX = panelX + panelW * 0.35f;
+			nameY = panelY + panelH * 0.13f;
+			barW  = panelW * 0.53f;
+			barX  = panelX + panelW * 0.35f;
+			barY  = panelY + panelH * 0.30f;
+		}
+		else
+		{
+			const float rowTop = otherTop + (i - 1) * otherRowH;
+			iconSize = panelH * 0.20f;
+			iconX = panelX + panelW * 0.185f;
+			iconY = rowTop + otherRowH * 0.03f;
+			nameX = panelX + panelW * 0.31f;
+			nameY = rowTop + otherRowH * 0.02f;
+			barW  = panelW * 0.51f;
+			barX  = panelX + panelW * 0.31f;
+			barY  = rowTop + otherRowH * 0.55f;
+		}
+
+		auto icon = make_shared<ImageUI>(uiManager, L"PartyMemKnight", ImageUIState::Hidden);
+		icon->SetPosition(iconX, iconY);
+		icon->SetHoriLength(iconSize);
+		icon->SetVertLength(iconSize);
+		widgets.push_back(icon);
+		partyHudIcons.push_back(icon);
+
+		auto name = make_shared<TextUI>(uiManager, L"PartyHudName", L"VerdanaBold");
+		name->SetPosition(nameX, nameY);
+		name->SetScale((isSelf ? 0.55f : 0.45f) * textScale);
+		widgets.push_back(name);
+		partyHudNames.push_back(name);
+
+		const float barH = barW * BARBACK_ASPECT;
+		auto barBack = make_shared<ImageUI>(uiManager, L"BarBack", ImageUIState::Hidden);
+		barBack->SetPosition(barX, barY);
+		barBack->SetHoriLength(barW);
+		barBack->SetVertLength(barH);
+		widgets.push_back(barBack);
+		partyHudBarBacks.push_back(barBack);
+
+		const float fillW = barW * HPBAR_WIDTH_RATIO;
+		const float fillH = barH * HPBAR_HEIGHT_RATIO;
+		auto bar = make_shared<ImageUI>(uiManager, L"HpBar2", ImageUIState::Hidden);
+		bar->SetPosition(barX + barW * HPBAR_OFFSET_X, barY + barH * HPBAR_OFFSET_Y);
+		bar->SetHoriLength(fillW);
+		bar->SetVertLength(fillH);
+		widgets.push_back(bar);
+		partyHudBars.push_back(bar);
+
+		partyHudBarFullW[i] = fillW;
+	}
+}
+
+void GameSceneUIController::RefreshPartyMemberHud()
+{
+	if (partyHudIcons.empty()) return;
+
+	ClientPartyState* party = ENGINE.GetPartyState();
+	const bool show = partyHudInParty && partyHudUserVisible;
+
+	if (partyHudBack)
+		partyHudBack->ChangeState(show ? ImageUIState::Visible : ImageUIState::Hidden);
+
+	// 표시 순서: 본인 먼저(슬롯 0), 그 다음 나머지 멤버
+	vector<const Protocol::PartyMember*> ordered;
+	if (show && party && party->HasMyParty())
+	{
+		const Protocol::PartySnapshot& snapshot = party->GetMyParty();
+		const uint32_t myId = static_cast<uint32_t>(INPUT.GetClientID());
+		for (int i = 0; i < snapshot.members_size(); ++i)
+			if (NetId{ snapshot.members(i).netid() }.GetId() == myId)
+				ordered.push_back(&snapshot.members(i));
+		for (int i = 0; i < snapshot.members_size(); ++i)
+			if (NetId{ snapshot.members(i).netid() }.GetId() != myId)
+				ordered.push_back(&snapshot.members(i));
+	}
+
+	for (int i = 0; i < PARTY_HUD_SLOTS; ++i)
+	{
+		const bool active = (i < static_cast<int>(ordered.size()));
+		if (!active)
+		{
+			partyHudIcons[i]->ChangeState(ImageUIState::Hidden);
+			partyHudNames[i]->SetText(L"");
+			partyHudBarBacks[i]->ChangeState(ImageUIState::Hidden);
+			partyHudBars[i]->ChangeState(ImageUIState::Hidden);
+			continue;
+		}
+
+		const Protocol::PartyMember* member = ordered[i];
+		const CharacterType cls = static_cast<CharacterType>(member->charactertype());
+		const wchar_t* icon =
+			(cls == CharacterType::Lancer)  ? L"PartyMemLancer"  :
+			(cls == CharacterType::Paladin) ? L"PartyMemPaladin" :
+			                                  L"PartyMemKnight";
+
+		partyHudIcons[i]->SetTexture(icon);
+		partyHudIcons[i]->ChangeState(ImageUIState::Visible);
+		partyHudNames[i]->SetText(L"ID: " + std::to_wstring(member->sessionid()));
+		partyHudBarBacks[i]->ChangeState(ImageUIState::Visible);
+
+		// 본인(슬롯 0)만 실시간 HP, 나머지는 풀바
+		const float pct = (i == 0) ? partyHudSelfHpPercent : 1.0f;
+		partyHudBars[i]->SetHoriLength(partyHudBarFullW[i] * pct);
+		partyHudBars[i]->ChangeState(ImageUIState::Visible);
 	}
 }
 
@@ -551,7 +705,7 @@ bool GameSceneUIController::IsMyPartyLeader() const
 	const Protocol::PartySnapshot& snapshot = party->GetMyParty();
 	for (int i = 0; i < snapshot.members_size(); ++i)
 		if (snapshot.members(i).role() == Protocol::PARTY_MEMBER_ROLE_LEADER)
-			return snapshot.members(i).netid() == static_cast<uint64_t>(INPUT.GetClientID());
+			return NetId{ snapshot.members(i).netid() }.GetId() == static_cast<uint32_t>(INPUT.GetClientID());
 	return false;
 }
 
@@ -870,6 +1024,33 @@ void GameSceneUIController::Update(float deltaTime)
 		}
 	}
 
+	// 우상단 파티원 HUD: L키 토글 + 파티 생성/변경 시 자동 갱신
+	if (INPUT.GetKeyDown('L'))
+	{
+		partyHudUserVisible = !partyHudUserVisible;
+		partyHudDirty = true;
+	}
+	{
+		ClientPartyState* party = ENGINE.GetPartyState();
+		const bool inParty = party && party->HasMyParty();
+		if (inParty != partyHudInParty)
+		{
+			partyHudInParty = inParty;
+			if (inParty) partyHudUserVisible = true;   // 파티 생성 순간 자동 표시
+			partyHudDirty = true;
+		}
+		else if (inParty && party->GetRevision() != partyHudRevision)
+		{
+			partyHudDirty = true;
+		}
+		if (partyHudDirty)
+		{
+			partyHudRevision = inParty ? party->GetRevision() : 0;
+			RefreshPartyMemberHud();
+			partyHudDirty = false;
+		}
+	}
+
 	const bool wantCursor =
 		opened(statusImage) || opened(escWindow)   || opened(partyBook) ||
 		opened(mapImage)    || opened(keyGuide)    || opened(settingWindow) ||
@@ -889,6 +1070,11 @@ void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curSta
 	const float maxStaminaLength = WinSize.y * 0.2566;
 	const float staminaPercent = (float)curStamina / maxStamina;
 	localCharStaminaBar->SetHoriLength(maxStaminaLength * staminaPercent);
+
+	// 파티 HUD 본인 슬롯(0) HP바 동기화
+	partyHudSelfHpPercent = (maxHp > 0) ? (float)curHp / maxHp : 0.0f;
+	if (!partyHudBars.empty() && partyHudBars[0])
+		partyHudBars[0]->SetHoriLength(partyHudBarFullW[0] * partyHudSelfHpPercent);
 }
 
 void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curStamina, int maxStamina, int power, double aSpeed, int defense, double mSpeed)

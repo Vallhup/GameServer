@@ -122,7 +122,7 @@ void Engine::Render()
 
     static bool ssaoOn = true;
 
-    if (INPUT.GetKeyDown('L'))
+    if (INPUT.GetKeyDown(VK_F6))
     {
         ssaoOn = !ssaoOn;
     }

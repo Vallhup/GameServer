@@ -95,6 +95,11 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"PartyLancer", L"../Assets/UI/Textures/PartyLancer.png", core, resourceUpload);
 	RegisterUITexture(L"PartyPaladin", L"../Assets/UI/Textures/PartyPaladin.png", core, resourceUpload);
 
+	RegisterUITexture(L"PartyMemBack", L"../Assets/UI/Textures/PartyMemBack.png", core, resourceUpload);
+	RegisterUITexture(L"PartyMemKnight", L"../Assets/UI/Textures/PartyMemKnight.png", core, resourceUpload);
+	RegisterUITexture(L"PartyMemLancer", L"../Assets/UI/Textures/PartyMemLancer.png", core, resourceUpload);
+	RegisterUITexture(L"PartyMemPaladin", L"../Assets/UI/Textures/PartyMemPaladin.png", core, resourceUpload);
+
 	RegisterUITexture(L"EscWindow", L"../Assets/UI/Textures/EscWindow.png", core, resourceUpload);
 	RegisterUITexture(L"ESCContinue", L"../Assets/UI/Textures/ESCContinue.png", core, resourceUpload);
 	RegisterUITexture(L"ESCSetting", L"../Assets/UI/Textures/ESCSetting.png", core, resourceUpload);

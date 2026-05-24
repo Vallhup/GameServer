@@ -42,8 +42,12 @@ private:
 	void UpdateJoinRequestPopup(float deltaTime);
 	bool IsMyPartyLeader() const;
 
+	void InitPartyMemberHud();
+	void RefreshPartyMemberHud();
+
 	static constexpr int MAX_PARTY_CARDS = 4;     // 로비에 띄울 파티 개수 상한
 	static constexpr int MAX_PARTY_MEMBERS = 3;   // 한 파티의 멤버(정원) 상한
+	static constexpr int PARTY_HUD_SLOTS = MAX_PARTY_MEMBERS;  // HUD 슬롯: 본인(0) + 나머지
 
 	SceneType sceneType;
 
@@ -79,6 +83,19 @@ private:
 	uint64_t selectedPartyId = 0;
 	PartyView partyView = PartyView::Lobby;
 	uint64_t lastPartyRevision = 0;
+
+	// 우상단 파티원 정보 HUD (파티 생성 시 자동 표시, L키 토글)
+	shared_ptr<ImageUI>         partyHudBack;
+	vector<shared_ptr<ImageUI>> partyHudIcons;
+	vector<shared_ptr<TextUI>>  partyHudNames;
+	vector<shared_ptr<ImageUI>> partyHudBarBacks;
+	vector<shared_ptr<ImageUI>> partyHudBars;
+	vector<float>               partyHudBarFullW;
+	bool     partyHudUserVisible = true;
+	bool     partyHudInParty = false;
+	bool     partyHudDirty = false;
+	uint64_t partyHudRevision = 0;
+	float    partyHudSelfHpPercent = 1.0f;
 
 	shared_ptr<ImageUI> escWindow;
 	shared_ptr<ImageUI> escContinueButton;
