@@ -108,14 +108,7 @@ bool NetworkTimingService::TryGetSnapshot(
 		return false;
 	}
 
-	const SessionTiming& timing = it->second;
-	outSnapshot.latestRttMs = timing.latestRttMs;
-	outSnapshot.smoothedRttMs = RoundToUInt32(timing.smoothedRttMs);
-	outSnapshot.jitterMs = RoundToUInt32(timing.rttVariationMs);
-	outSnapshot.sentProbeCount = timing.sentProbeCount;
-	outSnapshot.receivedProbeCount = timing.receivedProbeCount;
-	outSnapshot.rejectedProbeCount = timing.rejectedProbeCount;
-	outSnapshot.initialized = timing.initialized;
+	outSnapshot = ToSnapshot(sessionId, it->second);
 	return true;
 }
 
@@ -143,6 +136,24 @@ uint32_t NetworkTimingService::RoundToUInt32(double value) noexcept
 	return static_cast<uint32_t>(std::max(0.0, std::round(value)));
 }
 
+NetworkTimingSnapshot NetworkTimingService::ToSnapshot(
+	SessionId sessionId,
+	const SessionTiming& timing) noexcept
+{
+	NetworkTimingSnapshot snapshot{};
+	snapshot.sessionId = sessionId;
+	snapshot.latestRttMs = timing.latestRttMs;
+	snapshot.smoothedRttMs = RoundToUInt32(timing.smoothedRttMs);
+	snapshot.rttVarMs = RoundToUInt32(timing.rttVariationMs);
+	snapshot.estimatedOneWayMs =
+		RoundToUInt32(timing.smoothedRttMs * 0.5);
+	snapshot.sentProbeCount = timing.sentProbeCount;
+	snapshot.receivedProbeCount = timing.receivedProbeCount;
+	snapshot.rejectedProbeCount = timing.rejectedProbeCount;
+	snapshot.initialized = timing.initialized;
+	return snapshot;
+}
+
 void NetworkTimingService::UpdateRttEstimate(
 	SessionTiming& timing,
 	uint32_t sampleRttMs) noexcept
@@ -160,11 +171,9 @@ void NetworkTimingService::UpdateRttEstimate(
 	const double sample = static_cast<double>(sampleRttMs);
 	const double deviation = std::abs(timing.smoothedRttMs - sample);
 	timing.rttVariationMs =
-		((1.0 - kJitterBeta) * timing.rttVariationMs) +
-		(kJitterBeta * deviation);
+		((1.0 - kJitterBeta) * timing.rttVariationMs) + (kJitterBeta * deviation);
 	timing.smoothedRttMs =
-		((1.0 - kRttAlpha) * timing.smoothedRttMs) +
-		(kRttAlpha * sample);
+		((1.0 - kRttAlpha) * timing.smoothedRttMs) + (kRttAlpha * sample);
 }
 
 NetworkTimingService::SessionTiming::ProbeRecord*

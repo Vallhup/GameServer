@@ -64,6 +64,7 @@ namespace
     {
         Entity entity{ Entity::Null() };
         PlayerControlIdentityComp* identity{ nullptr };
+        PlayerNetworkTimingComp* networkTiming{ nullptr };
         ActorInputComp* input{ nullptr };
         WorldRuntime* runtime{ nullptr };
     };
@@ -135,6 +136,8 @@ namespace
         ECSView ecs = runtime->MakeView();
         PlayerControlIdentityComp* identity =
             ecs.GetMutableComponent<PlayerControlIdentityComp>(entity);
+        PlayerNetworkTimingComp* networkTiming =
+            ecs.GetMutableComponent<PlayerNetworkTimingComp>(entity);
         ActorInputComp* input =
             ecs.GetMutableComponent<ActorInputComp>(entity);
         if (identity == nullptr || input == nullptr)
@@ -148,8 +151,28 @@ namespace
             return false;
         }
 
+        if (networkTiming != nullptr)
+        {
+            NetworkTimingSnapshot snapshot{};
+            const PacketHandlerContext& svc = PacketHandlerContext::Get();
+            if (svc.networkTiming != nullptr &&
+                svc.networkTiming->TryGetSnapshot(sessionId, snapshot))
+            {
+                networkTiming->latestRttMs = snapshot.latestRttMs;
+                networkTiming->smoothedRttMs = snapshot.smoothedRttMs;
+                networkTiming->rttVarMs = snapshot.rttVarMs;
+                networkTiming->estimatedOneWayMs = snapshot.estimatedOneWayMs;
+                networkTiming->sentProbeCount = snapshot.sentProbeCount;
+                networkTiming->receivedProbeCount = snapshot.receivedProbeCount;
+                networkTiming->rejectedProbeCount = snapshot.rejectedProbeCount;
+                networkTiming->lastUpdatedFrame = runtime->FrameIndex();
+                networkTiming->initialized = snapshot.initialized;
+            }
+        }
+
         out.entity = entity;
         out.identity = identity;
+        out.networkTiming = networkTiming;
         out.input = input;
         out.runtime = runtime;
         return true;
@@ -539,6 +562,8 @@ namespace
             ReadImmediate(ExternalRes<IWorldNetBindingResolver>()));
         desc.accesses.push_back(
             ReadImmediate(ComponentRes<PlayerControlIdentityComp>()));
+        desc.accesses.push_back(
+            WriteImmediate(ComponentRes<PlayerNetworkTimingComp>()));
         desc.accesses.push_back(
             WriteImmediate(ComponentRes<ActorInputComp>()));
     }

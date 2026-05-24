@@ -19,6 +19,19 @@ struct PlayerControlIdentityComp : Component
 	SessionId ownerSessionId{ 0 };
 };
 
+struct PlayerNetworkTimingComp : Component
+{
+	uint32_t latestRttMs{ 0 };
+	uint32_t smoothedRttMs{ 0 };
+	uint32_t rttVarMs{ 0 };
+	uint32_t estimatedOneWayMs{ 0 };
+	uint32_t sentProbeCount{ 0 };
+	uint32_t receivedProbeCount{ 0 };
+	uint32_t rejectedProbeCount{ 0 };
+	uint64_t lastUpdatedFrame{ 0 };
+	bool initialized{ false };
+};
+
 struct PlayerMoveInputState
 {
 	float inputX{ 0.0f };

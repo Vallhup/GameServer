@@ -16,9 +16,11 @@ struct NetworkTimeProbe
 
 struct NetworkTimingSnapshot
 {
+	SessionId sessionId{ 0 };
 	uint32_t latestRttMs{ 0 };
 	uint32_t smoothedRttMs{ 0 };
-	uint32_t jitterMs{ 0 };
+	uint32_t rttVarMs{ 0 };
+	uint32_t estimatedOneWayMs{ 0 };
 	uint32_t sentProbeCount{ 0 };
 	uint32_t receivedProbeCount{ 0 };
 	uint32_t rejectedProbeCount{ 0 };
@@ -79,6 +81,9 @@ private:
 	static uint32_t NowMs() noexcept;
 	static uint32_t ElapsedMs(uint32_t nowMs, uint32_t thenMs) noexcept;
 	static uint32_t RoundToUInt32(double value) noexcept;
+	static NetworkTimingSnapshot ToSnapshot(
+		SessionId sessionId,
+		const SessionTiming& timing) noexcept;
 	static void UpdateRttEstimate(SessionTiming& timing, uint32_t sampleRttMs) noexcept;
 	static SessionTiming::ProbeRecord* FindProbeRecord(
 		SessionTiming& timing,
