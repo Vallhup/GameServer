@@ -8,77 +8,21 @@
 #include "../Phase1/ApplyPlayerCommandSystem.h"
 
 #include <cmath>
-#include <iostream>
 #include <limits>
 
 using namespace GameplaySystemUtil;
 
-namespace
-{
-	constexpr float kAbilityInputBufferDurationSec = 0.18f;
-
-	const char* TransitionCauseName(AbilityTransitionCause cause) noexcept
-	{
-		switch (cause)
-		{
-		case AbilityTransitionCause::Combo:
-			return "Combo";
-		case AbilityTransitionCause::LightAttackCancel:
-			return "LightAttackCancel";
-		case AbilityTransitionCause::HeavyAttackCancel:
-			return "HeavyAttackCancel";
-		case AbilityTransitionCause::DodgeCancel:
-			return "DodgeCancel";
-		case AbilityTransitionCause::ParryCancel:
-			return "ParryCancel";
-		case AbilityTransitionCause::ManualCancel:
-			return "ManualCancel";
-		case AbilityTransitionCause::HoldRelease:
-			return "HoldRelease";
-		case AbilityTransitionCause::OnHitReceived:
-			return "OnHitReceived";
-		case AbilityTransitionCause::OnParried:
-			return "OnParried";
-		case AbilityTransitionCause::OnAttributeZero:
-			return "OnAttributeZero";
-		default:
-			return "None";
-		}
-	}
-
-	void ApplyStaminaRecoveryDelay(
-		SystemContext& ctx,
-		Entity entity,
-		const CombatStatStateComp& stats,
-		float delaySec)
-	{
-		StaminaRecoveryStateComp* recovery =
-			ctx.ecs.GetMutableComponent<StaminaRecoveryStateComp>(entity);
-		if (recovery == nullptr)
-		{
-			return;
-		}
-
-		if (stats.currentStamina <= 0)
-		{
-			delaySec = std::max(delaySec, recovery->tuning.exhaustedRegenDelaySec);
-		}
-
-		recovery->regenLockRemainingSec =
-			std::max(recovery->regenLockRemainingSec, delaySec);
-	}
-}
-
-const StaticSystemMetaStorage<15, 0, 2> ResolveAbilityStateSystem::kMetaStorage =
+const StaticSystemMetaStorage<16, 0, 2> ResolveAbilityStateSystem::kMetaStorage =
     MakeMetaStorage(
         SysTag<ResolveAbilityStateSystem>(),
         "ResolveAbilityStateSystem",
-        std::array<AccessSpec, 15>
+        std::array<AccessSpec, 16>
         {
             WriteImmediate(ComponentRes<AbilityStateComp>()),
             ReadImmediate(ComponentRes<LocomotionStateComp>()),
             ReadImmediate(ComponentRes<WorldTransformComp>()),
             WriteImmediate(ComponentRes<ActorInputComp>()),
+            ReadImmediate(ComponentRes<PlayerNetworkCompensationComp>()),
             WriteImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
             ReadImmediate(ComponentRes<SpawnTypeComp>()),
             WriteImmediate(ComponentRes<CombatStatStateComp>()),
@@ -119,6 +63,10 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 			SpawnTypeComp>())
 	{
 		ClearAbilityTimelineAdvance(advance);
+		const PlayerNetworkCompensationComp* networkCompensation =
+			ctx.ecs.GetComponent<PlayerNetworkCompensationComp>(entity);
+		const float abilityInputBufferDurationSec =
+			ResolveAbilityInputBufferDurationSec(networkCompensation);
 		UpdateAbilityInputBuffer(input, ctx.dtSec);
 
 		if (TryHandleBlockingState(
@@ -205,6 +153,7 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 				inventory,
 				perception,
 				tags,
+				networkCompensation,
 				decision))
 			{
 				ApplyTransition(abilityState, decision);
@@ -218,7 +167,11 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 				{
 					PrepareStartedAbilityAdvance(abilityState, advance);
 				}
-				FinishAbilityInput(input, decision.consumeAbilityInput, false);
+				FinishAbilityInput(
+					input,
+					decision.consumeAbilityInput,
+					false,
+					abilityInputBufferDurationSec);
 				continue;
 			}
 
@@ -239,7 +192,11 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 				}
 			}
 
-			FinishAbilityInput(input, false, true);
+			FinishAbilityInput(
+				input,
+				false,
+				true,
+				abilityInputBufferDurationSec);
 			continue;
 		}
 
@@ -268,7 +225,11 @@ void ResolveAbilityStateSystem::Execute(SystemContext& ctx)
 			}
 		}
 
-		FinishAbilityInput(input, decision.consumeAbilityInput, false);
+		FinishAbilityInput(
+			input,
+			decision.consumeAbilityInput,
+			false,
+			abilityInputBufferDurationSec);
 	}
 }
 
@@ -404,6 +365,7 @@ bool ResolveAbilityStateSystem::TryResolveCancelTransition(
 	const ConsumableInventoryComp* inventory,
 	const AIPerceptionComp* perception,
 	const GameplayTagStateComp* tags,
+	const PlayerNetworkCompensationComp* networkCompensation,
 	TransitionDecision& outDecision)
 {
 	const std::vector<RequestCandidate> candidates =
@@ -441,7 +403,8 @@ bool ResolveAbilityStateSystem::TryResolveCancelTransition(
 					abilityState,
 					characterId,
 					candidate.request,
-					candidate.fromBufferedInput))
+					candidate.fromBufferedInput,
+					networkCompensation))
 			{
 				continue;
 			}
@@ -655,6 +618,28 @@ void ResolveAbilityStateSystem::ConsumeOnRequestResourceCosts(
 	}
 }
 
+void ResolveAbilityStateSystem::ApplyStaminaRecoveryDelay(
+	SystemContext& ctx,
+	Entity entity,
+	const CombatStatStateComp& stats,
+	float delaySec)
+{
+	StaminaRecoveryStateComp* recovery =
+		ctx.ecs.GetMutableComponent<StaminaRecoveryStateComp>(entity);
+	if (recovery == nullptr)
+	{
+		return;
+	}
+
+	if (stats.currentStamina <= 0)
+	{
+		delaySec = std::max(delaySec, recovery->tuning.exhaustedRegenDelaySec);
+	}
+
+	recovery->regenLockRemainingSec =
+		std::max(recovery->regenLockRemainingSec, delaySec);
+}
+
 void ResolveAbilityStateSystem::UpdateAbilityInputBuffer(
 	ActorInputComp& input,
 	double deltaTimeSec)
@@ -692,7 +677,8 @@ bool ResolveAbilityStateSystem::CanBufferAbilityInput(
 }
 
 void ResolveAbilityStateSystem::BufferCurrentAbilityInput(
-	ActorInputComp& input)
+	ActorInputComp& input,
+	float bufferDurationSec)
 {
 	if (!CanBufferAbilityInput(input.ability))
 	{
@@ -700,7 +686,7 @@ void ResolveAbilityStateSystem::BufferCurrentAbilityInput(
 	}
 
 	input.abilityBuffer.event = input.ability;
-	input.abilityBuffer.remainingSec = kAbilityInputBufferDurationSec;
+	input.abilityBuffer.remainingSec = bufferDurationSec;
 	input.abilityBuffer.hasEvent = true;
 }
 
@@ -723,7 +709,8 @@ void ResolveAbilityStateSystem::ClearAllAbilityInput(ActorInputComp& input)
 void ResolveAbilityStateSystem::FinishAbilityInput(
 	ActorInputComp& input,
 	bool consumed,
-	bool allowBuffering)
+	bool allowBuffering,
+	float bufferDurationSec)
 {
 	if (consumed)
 	{
@@ -733,7 +720,7 @@ void ResolveAbilityStateSystem::FinishAbilityInput(
 
 	if (allowBuffering)
 	{
-		BufferCurrentAbilityInput(input);
+		BufferCurrentAbilityInput(input, bufferDurationSec);
 	}
 
 	ClearAbilityInput(input);
@@ -950,7 +937,8 @@ bool ResolveAbilityStateSystem::IsCancelRuleActive(
 	const AbilityStateComp& abilityState,
 	CharacterId characterId,
 	const ActorAbilityInputEvent& input,
-	bool fromBufferedInput)
+	bool fromBufferedInput,
+	const PlayerNetworkCompensationComp* networkCompensation)
 {
 	if (cancelRule.windowPolicy == AbilityTransitionWindowPolicy::Always)
 	{
@@ -970,7 +958,8 @@ bool ResolveAbilityStateSystem::IsCancelRuleActive(
 	{
 		const AnimationId expectedAnimId =
 			ResolveAbilityAnimationId(characterId, abilityState.abilityId);
-		constexpr float kClientComboTimingDriftTolerance = 0.25f;
+		const float clientComboTimingDriftTolerance =
+			ResolveClientComboTimingDriftTolerance(networkCompensation);
 		const float clientProgress = ClampFloat(
 			input.clientNormalizedTime,
 			0.0f,
@@ -984,7 +973,7 @@ bool ResolveAbilityStateSystem::IsCancelRuleActive(
 			clientProgress >= windowStart && clientProgress <= windowEnd;
 		const bool driftMatches =
 			std::abs(clientProgress - serverProgress) <=
-			kClientComboTimingDriftTolerance;
+			clientComboTimingDriftTolerance;
 		const bool accepted =
 			instanceMatches &&
 			animMatches &&
@@ -1011,6 +1000,22 @@ bool ResolveAbilityStateSystem::ShouldUseClientAnimationTiming(
 		cause == AbilityTransitionCause::Combo ||
 		cause == AbilityTransitionCause::LightAttackCancel ||
 		cause == AbilityTransitionCause::HeavyAttackCancel;
+}
+
+float ResolveAbilityStateSystem::ResolveAbilityInputBufferDurationSec(
+	const PlayerNetworkCompensationComp* networkCompensation) noexcept
+{
+	return networkCompensation != nullptr
+		? networkCompensation->abilityInputBufferDurationSec
+		: kDefaultAbilityInputBufferDurationSec;
+}
+
+float ResolveAbilityStateSystem::ResolveClientComboTimingDriftTolerance(
+	const PlayerNetworkCompensationComp* networkCompensation) noexcept
+{
+	return networkCompensation != nullptr
+		? networkCompensation->attackDriftTolerance01
+		: kMaxClientComboTimingDriftTolerance;
 }
 
 bool ResolveAbilityStateSystem::IsHoldReleased(

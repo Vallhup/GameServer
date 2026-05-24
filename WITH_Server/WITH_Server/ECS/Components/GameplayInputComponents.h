@@ -32,6 +32,17 @@ struct PlayerNetworkTimingComp : Component
 	bool initialized{ false };
 };
 
+struct PlayerNetworkCompensationComp : Component
+{
+	float jitterBudgetMs{ 0.0f };
+	float abilityInputBufferDurationSec{ 0.18f };
+	float attackDriftTolerance01{ 0.25f };
+	uint32_t inputDelayFrames{ 2 };
+	uint32_t interpolationDelayFrames{ 2 };
+	uint64_t lastUpdatedFrame{ 0 };
+	bool initialized{ false };
+};
+
 struct PlayerMoveInputState
 {
 	float inputX{ 0.0f };

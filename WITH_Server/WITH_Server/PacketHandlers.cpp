@@ -6,6 +6,7 @@
 #include "DynamicTaskTypes.h"
 #include "ECS/System/Phase2/ResolveAbilityStateSystem.h"
 #include "ECS/System/Phase2/ResolveLocomotionStateSystem.h"
+#include "ECS/System/Phase2/ResolvePlayerNetworkCompensationSystem.h"
 #include "ExecutionContextTypes.h"
 #include "ExecutionCoreTypes.h"
 #include "ExecutionOps.h"
@@ -550,6 +551,7 @@ namespace
 
     void AddGameplayInputOrdering(DynamicTaskTypeDesc& desc)
     {
+        desc.runsBefore.push_back(Tag<ResolvePlayerNetworkCompensationSystem>());
         desc.runsBefore.push_back(Tag<ResolveAbilityStateSystem>());
         desc.runsBefore.push_back(Tag<ResolveLocomotionStateSystem>());
     }

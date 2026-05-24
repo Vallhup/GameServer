@@ -209,6 +209,7 @@
     <ClCompile Include="ECS\System\Phase2\AdvanceAbilityTimelineSystem.cpp" />
     <ClCompile Include="ECS\System\Phase2\ResolveAbilityStateSystem.cpp" />
     <ClCompile Include="ECS\System\Phase2\ResolveLocomotionStateSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase2\ResolvePlayerNetworkCompensationSystem.cpp" />
     <ClCompile Include="ECS\System\Phase3\FitSkeletalCombatColliderSystem.cpp" />
     <ClCompile Include="ECS\System\Phase3\ResolveAnimationPlaybackSystem.cpp" />
     <ClCompile Include="ECS\System\Phase3\SampleAnimationPoseSystem.cpp" />
@@ -353,6 +354,7 @@
     <ClInclude Include="ECS\System\Phase2\AdvanceAbilityTimelineSystem.h" />
     <ClInclude Include="ECS\System\Phase2\ResolveAbilityStateSystem.h" />
     <ClInclude Include="ECS\System\Phase2\ResolveLocomotionStateSystem.h" />
+    <ClInclude Include="ECS\System\Phase2\ResolvePlayerNetworkCompensationSystem.h" />
     <ClInclude Include="ECS\System\Phase3\FitSkeletalCombatColliderSystem.h" />
     <ClInclude Include="ECS\System\Phase3\ResolveAnimationPlaybackSystem.h" />
     <ClInclude Include="ECS\System\Phase3\SampleAnimationPoseSystem.h" />

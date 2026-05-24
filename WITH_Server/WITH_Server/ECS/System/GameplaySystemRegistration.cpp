@@ -8,6 +8,7 @@
 #include "Phase2/AdvanceAbilityTimelineSystem.h"
 #include "Phase2/ResolveAbilityStateSystem.h"
 #include "Phase2/ResolveLocomotionStateSystem.h"
+#include "Phase2/ResolvePlayerNetworkCompensationSystem.h"
 #include "Phase3/FitSkeletalCombatColliderSystem.h"
 #include "Phase3/ResolveAnimationPlaybackSystem.h"
 #include "Phase3/SampleAnimationPoseSystem.h"
@@ -60,6 +61,7 @@ void GameplaySystemRegistrar::RegisterSystems(TargetT& target) const
 
 	target.RegisterSystem<ApplyPlayerCommandSystem>();
 	target.RegisterSystem<ApplyAICommandSystem>();
+	target.RegisterSystem<ResolvePlayerNetworkCompensationSystem>();
 	target.RegisterSystem<ResolveAbilityStateSystem>();
 	target.RegisterSystem<AdvanceAbilityTimelineSystem>();
 	target.RegisterSystem<ResolveLocomotionStateSystem>();

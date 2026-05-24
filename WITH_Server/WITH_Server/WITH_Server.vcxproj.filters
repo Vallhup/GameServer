@@ -161,6 +161,9 @@
     <ClCompile Include="ECS\System\Phase2\ResolveLocomotionStateSystem.cpp">
       <Filter>ECS\System\Phase2</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\Phase2\ResolvePlayerNetworkCompensationSystem.cpp">
+      <Filter>ECS\System\Phase2</Filter>
+    </ClCompile>
     <ClCompile Include="ECS\System\Phase3\FitSkeletalCombatColliderSystem.cpp">
       <Filter>ECS\System\Phase3</Filter>
     </ClCompile>
@@ -548,6 +551,9 @@
       <Filter>ECS\System\Phase2</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase2\ResolveLocomotionStateSystem.h">
+      <Filter>ECS\System\Phase2</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase2\ResolvePlayerNetworkCompensationSystem.h">
       <Filter>ECS\System\Phase2</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase3\FitSkeletalCombatColliderSystem.h">

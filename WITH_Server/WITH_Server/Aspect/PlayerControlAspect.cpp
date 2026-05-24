@@ -14,6 +14,7 @@ void PlayerControlAspect::RegisterStorages(WorldRuntime& runtime) const
 {
 	runtime.RegisterStorage<PlayerControlIdentityComp>();
 	runtime.RegisterStorage<PlayerNetworkTimingComp>();
+	runtime.RegisterStorage<PlayerNetworkCompensationComp>();
 	runtime.RegisterStorage<ConsumableInventoryComp>();
 }
 
@@ -33,6 +34,10 @@ void PlayerControlAspect::Attach(
 	runtime.DeferredUpsertComponent<PlayerNetworkTimingComp>(
 		entity,
 		PlayerNetworkTimingComp{});
+
+	runtime.DeferredUpsertComponent<PlayerNetworkCompensationComp>(
+		entity,
+		PlayerNetworkCompensationComp{});
 
 	const HpPotionTuning potionTuning{};
 	runtime.DeferredUpsertComponent<ConsumableInventoryComp>(

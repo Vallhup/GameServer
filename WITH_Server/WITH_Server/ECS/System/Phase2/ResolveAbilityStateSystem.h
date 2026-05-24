@@ -35,7 +35,10 @@ private:
 		float directionZ{ 0.0f };
 	};
 
-    static const StaticSystemMetaStorage<15, 0, 2> kMetaStorage;
+	static const StaticSystemMetaStorage<16, 0, 2> kMetaStorage;
+
+	static constexpr float kDefaultAbilityInputBufferDurationSec = 0.18f;
+	static constexpr float kMaxClientComboTimingDriftTolerance = 0.25f;
 
 	static bool TryHandleBlockingState(
 		SystemContext& ctx,
@@ -64,6 +67,7 @@ private:
 		const ConsumableInventoryComp* inventory,
 		const AIPerceptionComp* perception,
 		const GameplayTagStateComp* tags,
+		const PlayerNetworkCompensationComp* networkCompensation,
 		TransitionDecision& outDecision);
 
 	static bool TryResolveIdleRequestTransition(
@@ -95,6 +99,12 @@ private:
 		Entity entity,
 		const TransitionDecision& decision);
 
+	static void ApplyStaminaRecoveryDelay(
+		SystemContext& ctx,
+		Entity entity,
+		const CombatStatStateComp& stats,
+		float delaySec);
+
 	static void UpdateAbilityInputBuffer(
 		ActorInputComp& input,
 		double deltaTimeSec);
@@ -106,7 +116,8 @@ private:
 		const ActorAbilityInputEvent& input) noexcept;
 
 	static void BufferCurrentAbilityInput(
-		ActorInputComp& input);
+		ActorInputComp& input,
+		float bufferDurationSec);
 
 	static void ClearAbilityInput(ActorInputComp& input);
 
@@ -117,7 +128,8 @@ private:
 	static void FinishAbilityInput(
 		ActorInputComp& input,
 		bool consumed,
-		bool allowBuffering);
+		bool allowBuffering,
+		float bufferDurationSec);
 
 	static std::vector<RequestCandidate> BuildRequestCandidates(
 		const AbilityProfileService& profileService,
@@ -142,10 +154,17 @@ private:
 		const AbilityStateComp& abilityState,
 		CharacterId characterId,
 		const ActorAbilityInputEvent& input,
-		bool fromBufferedInput);
+		bool fromBufferedInput,
+		const PlayerNetworkCompensationComp* networkCompensation);
 
 	static bool ShouldUseClientAnimationTiming(
 		AbilityTransitionCause cause) noexcept;
+
+	static float ResolveAbilityInputBufferDurationSec(
+		const PlayerNetworkCompensationComp* networkCompensation) noexcept;
+
+	static float ResolveClientComboTimingDriftTolerance(
+		const PlayerNetworkCompensationComp* networkCompensation) noexcept;
 
 	static bool IsHoldReleased(
 		const AbilityDef& abilityDef,
