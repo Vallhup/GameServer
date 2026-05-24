@@ -22,5 +22,13 @@ private:
 		AIContext& ctx,
 		const AIFSMBundle& bundle);
 
+	static bool TryIssueReactionAbility(
+		AIContext& aiCtx,
+		const ReactionDecision& reactionDecision) noexcept;
+
+	static void ApplyReactDurationOverride(
+		AIContext& aiCtx,
+		const ReactionDecision& reactionDecision) noexcept;
+
 	AIFSMRegistry _fsmRegistry;
 };

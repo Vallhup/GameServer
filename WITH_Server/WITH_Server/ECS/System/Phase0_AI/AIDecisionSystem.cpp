@@ -18,99 +18,6 @@
 
 using namespace GameplaySystemUtil;
 
-namespace
-{
-	void TickAIActionRuntime(
-		AIActionRuntimeComp& runtime,
-		double dtSec) noexcept
-	{
-		const float dt = static_cast<float>(std::max(0.0, dtSec));
-		const auto TickList =
-			[dt](std::vector<float>& values) noexcept
-			{
-				for (float& value : values)
-				{
-					value = std::max(0.0f, value - dt);
-				}
-			};
-
-		TickList(runtime.actionCooldownSec);
-		TickList(runtime.groupCooldownSec);
-		runtime.globalActionCooldownSec =
-			std::max(0.0f, runtime.globalActionCooldownSec - dt);
-		runtime.movementLockSec =
-			std::max(0.0f, runtime.movementLockSec - dt);
-	}
-
-	bool IsAbilityAvailableForSelf(
-		const AIContext& aiCtx,
-		AbilityId abilityId) noexcept
-	{
-		if (abilityId == InvalidAbilityId || aiCtx.sysCtx == nullptr)
-			return false;
-
-		const SpawnTypeComp* spawnType =
-			aiCtx.sysCtx->ecs.GetComponent<SpawnTypeComp>(aiCtx.self);
-		if (spawnType == nullptr)
-			return false;
-
-		return AbilityProfileService::IsAbilityAvailable(
-			spawnType->characterId,
-			abilityId);
-	}
-
-	bool TryIssueReactionAbility(
-		AIContext& aiCtx,
-		const ReactionDecision& reactionDecision) noexcept
-	{
-		if (reactionDecision.reactAbilityId == InvalidAbilityId ||
-			aiCtx.intent == nullptr ||
-			aiCtx.abilityState == nullptr ||
-			!aiCtx.abilityState->CanIssueAbility() ||
-			!IsAbilityAvailableForSelf(aiCtx, reactionDecision.reactAbilityId))
-		{
-			return false;
-		}
-
-		aiCtx.intent->hasAbility = true;
-		aiCtx.intent->abilityId = reactionDecision.reactAbilityId;
-		aiCtx.intent->sequence++;
-		return true;
-	}
-
-	void ApplyReactionRetarget(
-		AIContext& aiCtx,
-		const AIReactionEvent& event,
-		const ReactionDecision& reactionDecision) noexcept
-	{
-		if (!reactionDecision.retargetAttacker ||
-			aiCtx.blackboard == nullptr ||
-			event.instigator.IsNull())
-		{
-			return;
-		}
-
-		aiCtx.blackboard->lastAttacker = event.instigator;
-		aiCtx.blackboard->currentTarget = event.instigator;
-		aiCtx.blackboard->forceRetarget = true;
-	}
-
-	void ApplyReactDurationOverride(
-		AIContext& aiCtx,
-		const ReactionDecision& reactionDecision) noexcept
-	{
-		if (aiCtx.decision == nullptr)
-			return;
-
-		aiCtx.decision->reactDurationOverrideActive =
-			reactionDecision.hasReactDurationOverride;
-		aiCtx.decision->reactDurationOverrideSec =
-			reactionDecision.hasReactDurationOverride
-			? reactionDecision.reactDurationSec
-			: 0.0f;
-	}
-}
-
 const StaticSystemMetaStorage<11, 1, 1> AIDecisionSystem::kMetaStorage =
 MakeMetaStorage(
 	SysTag<AIDecisionSystem>(),
@@ -148,13 +55,25 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 			ctx.ecs.GetMutableComponent<AIActionRuntimeComp>(entity);
 		AIMovementRuntimeComp* movementRuntime =
 			ctx.ecs.GetMutableComponent<AIMovementRuntimeComp>(entity);
+
 		if (actionRuntime != nullptr)
 		{
-			TickAIActionRuntime(*actionRuntime, ctx.dtSec);
+			const float dt = static_cast<float>(std::max(0.0, ctx.dtSec));
+
+			for (float& cooldown : actionRuntime->actionCooldownSec)
+				cooldown = std::max(0.0f, cooldown - dt);
+
+			for (float& cooldown : actionRuntime->groupCooldownSec)
+				cooldown = std::max(0.0f, cooldown - dt);
+
+			actionRuntime->globalActionCooldownSec =
+				std::max(0.0f, actionRuntime->globalActionCooldownSec - dt);
+			actionRuntime->movementLockSec =
+				std::max(0.0f, actionRuntime->movementLockSec - dt);
 		}
 
-		decision.stateTime          += ctx.dtSec;
-		decision.globalDecisionAcc  += ctx.dtSec;
+		decision.stateTime         += ctx.dtSec;
+		decision.globalDecisionAcc += ctx.dtSec;
 		actionRuntime->idleActionCooldownAcc += ctx.dtSec;
 
 		AIContext aiCtx;
@@ -165,7 +84,7 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 		aiCtx.perception      = &perception;
 		aiCtx.blackboard      = &blackboard;
 		aiCtx.decision        = &decision;
-		aiCtx.intent		  = &intent;
+		aiCtx.intent          = &intent;
 		aiCtx.reaction        = &reaction;
 		aiCtx.stats           = &stats;
 		aiCtx.actionRuntime   = actionRuntime;
@@ -176,14 +95,14 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 
 		if (fsmBundle != nullptr && behaviorBundle != nullptr)
 		{
-			aiCtx.movementPolicy		= behaviorBundle->movementPolicy.get();
-			aiCtx.idleActionPolicy		= behaviorBundle->idleActionPolicy.get();
-			aiCtx.combatActionPolicy	= behaviorBundle->combatActionPolicy.get();
-			aiCtx.reactionPolicy		= behaviorBundle->reactionPolicy.get();
-			aiCtx.specialActionPolicy	= behaviorBundle->specialActionPolicy.get();
-			aiCtx.behaviorProfile		= behaviorBundle->profile;
-			aiCtx.perceptionTuning		= &behaviorBundle->profile->perception;
-			aiCtx.decisionTuning		= &behaviorBundle->profile->decision;
+			aiCtx.movementPolicy      = behaviorBundle->movementPolicy.get();
+			aiCtx.idleActionPolicy    = behaviorBundle->idleActionPolicy.get();
+			aiCtx.combatActionPolicy  = behaviorBundle->combatActionPolicy.get();
+			aiCtx.reactionPolicy      = behaviorBundle->reactionPolicy.get();
+			aiCtx.specialActionPolicy = behaviorBundle->specialActionPolicy.get();
+			aiCtx.behaviorProfile     = behaviorBundle->profile;
+			aiCtx.perceptionTuning    = &behaviorBundle->profile->perception;
+			aiCtx.decisionTuning      = &behaviorBundle->profile->decision;
 
 			if (aiCtx.specialActionPolicy != nullptr)
 			{
@@ -196,7 +115,6 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 				}
 			}
 
-
 			RunFSM(aiCtx, *fsmBundle);
 		}
 
@@ -205,7 +123,7 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 }
 
 void AIDecisionSystem::RunFSM(
-	AIContext&        ctx,
+	AIContext&         ctx,
 	const AIFSMBundle& bundle)
 {
 	const AIStateRegistry& states = bundle.stateRegistry;
@@ -241,34 +159,46 @@ void AIDecisionSystem::RunFSM(
 			const ReactionDecision reactionDecision =
 				ctx.reactionPolicy->Evaluate(*topEvent, ctx);
 
-			ApplyReactionRetarget(ctx, *topEvent, reactionDecision);
+			if (reactionDecision.retargetAttacker &&
+				ctx.blackboard != nullptr &&
+				!topEvent->instigator.IsNull())
+			{
+				ctx.blackboard->lastAttacker  = topEvent->instigator;
+				ctx.blackboard->forceRetarget = true;
+			}
 
 			switch (reactionDecision.outcome) {
 			case ReactionTacticalOutcome::EnterReact:
+			{
 				ApplyReactDurationOverride(ctx, reactionDecision);
 				ctx.decision->RequestTransition(AIStateType::React);
 				if (ApplyPendingTransition(ctx, bundle))
 					forceNextDecisionStep();
 				break;
-
+			}
 			case ReactionTacticalOutcome::ForceRetarget:
+			{
 				break;
-
+			}
 			case ReactionTacticalOutcome::IssueAbility:
+			{
 				TryIssueReactionAbility(ctx, reactionDecision);
 				break;
-
+			}
 			case ReactionTacticalOutcome::EnterReactAndIssueAbility:
+			{
 				TryIssueReactionAbility(ctx, reactionDecision);
 				ApplyReactDurationOverride(ctx, reactionDecision);
 				ctx.decision->RequestTransition(AIStateType::React);
 				if (ApplyPendingTransition(ctx, bundle))
 					forceNextDecisionStep();
 				break;
-
+			}
 			case ReactionTacticalOutcome::Ignore:
 			default:
+			{
 				break;
+			}
 			}
 		}
 	}
@@ -299,10 +229,10 @@ bool AIDecisionSystem::ApplyPendingTransition(
 	if (!ctx.decision || !ctx.decision->transitionRequested)
 		return false;
 
-	const AIStateType cur  = ctx.decision->curState;
-	const AIStateType next = ctx.decision->requestedState;
+	const AIStateType current = ctx.decision->curState;
+	const AIStateType next    = ctx.decision->requestedState;
 
-	if (cur == next)
+	if (current == next)
 	{
 		ctx.decision->transitionRequested = false;
 		return false;
@@ -310,10 +240,10 @@ bool AIDecisionSystem::ApplyPendingTransition(
 
 	const AIStateRegistry& states = bundle.stateRegistry;
 
-	if (const IAIState* curState = states.TryGetState(cur))
-		curState->Exit(ctx);
+	if (const IAIState* currentState = states.TryGetState(current))
+		currentState->Exit(ctx);
 
-	ctx.decision->prevState           = cur;
+	ctx.decision->prevState           = current;
 	ctx.decision->curState            = next;
 	ctx.decision->stateTime           = 0.0;
 	ctx.decision->transitionRequested = false;
@@ -322,4 +252,50 @@ bool AIDecisionSystem::ApplyPendingTransition(
 		nextState->Enter(ctx);
 
 	return true;
+}
+
+bool AIDecisionSystem::TryIssueReactionAbility(
+	AIContext&              aiCtx,
+	const ReactionDecision& reactionDecision) noexcept
+{
+	if (reactionDecision.reactAbilityId == InvalidAbilityId ||
+		aiCtx.intent == nullptr ||
+		aiCtx.abilityState == nullptr ||
+		!aiCtx.abilityState->CanIssueAbility())
+	{
+		return false;
+	}
+
+	const SpawnTypeComp* spawnType =
+		(aiCtx.sysCtx != nullptr)
+		? aiCtx.sysCtx->ecs.GetComponent<SpawnTypeComp>(aiCtx.self)
+		: nullptr;
+
+	if (spawnType == nullptr ||
+		!AbilityProfileService::IsAbilityAvailable(
+			spawnType->characterId,
+			reactionDecision.reactAbilityId))
+	{
+		return false;
+	}
+
+	aiCtx.intent->hasAbility = true;
+	aiCtx.intent->abilityId  = reactionDecision.reactAbilityId;
+	aiCtx.intent->sequence++;
+	return true;
+}
+
+void AIDecisionSystem::ApplyReactDurationOverride(
+	AIContext&              aiCtx,
+	const ReactionDecision& reactionDecision) noexcept
+{
+	if (aiCtx.decision == nullptr)
+		return;
+
+	aiCtx.decision->reactDurationOverrideActive =
+		reactionDecision.hasReactDurationOverride;
+	aiCtx.decision->reactDurationOverrideSec =
+		reactionDecision.hasReactDurationOverride
+		? reactionDecision.reactDurationSec
+		: 0.0f;
 }
