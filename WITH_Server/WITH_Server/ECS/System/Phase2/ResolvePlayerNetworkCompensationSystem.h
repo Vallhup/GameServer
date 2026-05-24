@@ -15,7 +15,7 @@ private:
 
 	static constexpr float kBaseAbilityInputBufferDurationSec = 0.18f;
 	static constexpr float kMaxAbilityInputBufferDurationSec = 0.25f;
-	static constexpr float kMaxRttVariationMs = 250.0f;
+	static constexpr float kMaxJitterBudgetMs = 250.0f;
 	static constexpr float kMinAttackDriftTolerance01 = 0.12f;
 	static constexpr float kMaxAttackDriftTolerance01 = 0.25f;
 	static constexpr float kReferenceAttackDurationMs = 1000.0f;

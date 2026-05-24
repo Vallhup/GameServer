@@ -73,15 +73,24 @@ float ResolvePlayerNetworkCompensationSystem::ComputeServerTickMs(
 float ResolvePlayerNetworkCompensationSystem::ComputeJitterBudgetMs(
 	const PlayerNetworkTimingComp& timing) noexcept
 {
-	if (!timing.initialized)
+	if (!timing.initialized && !timing.arrivalJitterInitialized)
 	{
 		return 0.0f;
 	}
 
+	const float rttVariationMs =
+		timing.initialized
+		? static_cast<float>(timing.rttVarMs)
+		: 0.0f;
+	const float arrivalJitterMs =
+		timing.arrivalJitterInitialized
+		? static_cast<float>(timing.arrivalJitterMs)
+		: 0.0f;
+
 	return ClampFloat(
-		static_cast<float>(timing.rttVarMs),
+		std::max(rttVariationMs, arrivalJitterMs),
 		0.0f,
-		kMaxRttVariationMs);
+		kMaxJitterBudgetMs);
 }
 
 uint32_t ResolvePlayerNetworkCompensationSystem::ComputeInputDelayFrames(
@@ -120,7 +129,7 @@ float ResolvePlayerNetworkCompensationSystem::ComputeAttackDriftTolerance01(
 	const PlayerNetworkTimingComp& timing,
 	float jitterBudgetMs) noexcept
 {
-	if (!timing.initialized)
+	if (!timing.initialized && !timing.arrivalJitterInitialized)
 	{
 		return kMaxAttackDriftTolerance01;
 	}

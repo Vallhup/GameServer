@@ -162,12 +162,17 @@ namespace
                 networkTiming->latestRttMs = snapshot.latestRttMs;
                 networkTiming->smoothedRttMs = snapshot.smoothedRttMs;
                 networkTiming->rttVarMs = snapshot.rttVarMs;
+                networkTiming->arrivalJitterMs = snapshot.arrivalJitterMs;
                 networkTiming->estimatedOneWayMs = snapshot.estimatedOneWayMs;
                 networkTiming->sentProbeCount = snapshot.sentProbeCount;
                 networkTiming->receivedProbeCount = snapshot.receivedProbeCount;
                 networkTiming->rejectedProbeCount = snapshot.rejectedProbeCount;
+                networkTiming->inputArrivalSampleCount =
+                    snapshot.inputArrivalSampleCount;
                 networkTiming->lastUpdatedFrame = runtime->FrameIndex();
                 networkTiming->initialized = snapshot.initialized;
+                networkTiming->arrivalJitterInitialized =
+                    snapshot.arrivalJitterInitialized;
             }
         }
 
@@ -1234,6 +1239,11 @@ ExecCallResult HandleMovePacket(NodeExecContext& ctx)
     Protocol::CS_MOVE_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
         return ExecCallResult::Success;
+
+    if (svc.networkTiming != nullptr)
+    {
+        svc.networkTiming->RecordPeriodicInputArrival(sessionId);
+    }
 
     PlayerInputTarget target{};
     if (!TryResolvePlayerInputTarget(ctx, sessionId, *svc.sessionFlow, target))

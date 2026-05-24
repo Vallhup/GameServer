@@ -96,6 +96,35 @@ void NetworkTimingService::HandleClientEcho(
 	++timing.receivedProbeCount;
 }
 
+void NetworkTimingService::RecordPeriodicInputArrival(
+	SessionId sessionId) noexcept
+{
+	if (sessionId == 0)
+	{
+		return;
+	}
+
+	const uint32_t nowMs = NowMs();
+	SessionTiming& timing = _sessions[sessionId];
+	if (!timing.hasPeriodicInputArrival)
+	{
+		timing.lastPeriodicInputArrivalTimeMs = nowMs;
+		timing.hasPeriodicInputArrival = true;
+		return;
+	}
+
+	const uint32_t arrivalIntervalMs =
+		ElapsedMs(nowMs, timing.lastPeriodicInputArrivalTimeMs);
+	timing.lastPeriodicInputArrivalTimeMs = nowMs;
+
+	if (arrivalIntervalMs > kMaxAcceptedInputArrivalIntervalMs)
+	{
+		return;
+	}
+
+	UpdateArrivalJitterEstimate(timing, arrivalIntervalMs);
+}
+
 bool NetworkTimingService::TryGetSnapshot(
 	SessionId sessionId,
 	NetworkTimingSnapshot& outSnapshot) const noexcept
@@ -145,12 +174,15 @@ NetworkTimingSnapshot NetworkTimingService::ToSnapshot(
 	snapshot.latestRttMs = timing.latestRttMs;
 	snapshot.smoothedRttMs = RoundToUInt32(timing.smoothedRttMs);
 	snapshot.rttVarMs = RoundToUInt32(timing.rttVariationMs);
+	snapshot.arrivalJitterMs = RoundToUInt32(timing.arrivalJitterMs);
 	snapshot.estimatedOneWayMs =
 		RoundToUInt32(timing.smoothedRttMs * 0.5);
 	snapshot.sentProbeCount = timing.sentProbeCount;
 	snapshot.receivedProbeCount = timing.receivedProbeCount;
 	snapshot.rejectedProbeCount = timing.rejectedProbeCount;
+	snapshot.inputArrivalSampleCount = timing.inputArrivalSampleCount;
 	snapshot.initialized = timing.initialized;
+	snapshot.arrivalJitterInitialized = timing.arrivalJitterInitialized;
 	return snapshot;
 }
 
@@ -174,6 +206,29 @@ void NetworkTimingService::UpdateRttEstimate(
 		((1.0 - kJitterBeta) * timing.rttVariationMs) + (kJitterBeta * deviation);
 	timing.smoothedRttMs =
 		((1.0 - kRttAlpha) * timing.smoothedRttMs) + (kRttAlpha * sample);
+}
+
+void NetworkTimingService::UpdateArrivalJitterEstimate(
+	SessionTiming& timing,
+	uint32_t arrivalIntervalMs) noexcept
+{
+	const double sample =
+		std::abs(
+			static_cast<double>(arrivalIntervalMs) -
+			static_cast<double>(kExpectedPeriodicInputIntervalMs));
+
+	if (!timing.arrivalJitterInitialized)
+	{
+		timing.arrivalJitterMs = sample;
+		timing.arrivalJitterInitialized = true;
+		++timing.inputArrivalSampleCount;
+		return;
+	}
+
+	timing.arrivalJitterMs =
+		((1.0 - kArrivalJitterAlpha) * timing.arrivalJitterMs) +
+		(kArrivalJitterAlpha * sample);
+	++timing.inputArrivalSampleCount;
 }
 
 NetworkTimingService::SessionTiming::ProbeRecord*
