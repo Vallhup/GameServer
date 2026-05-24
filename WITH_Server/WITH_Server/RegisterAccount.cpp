@@ -67,21 +67,24 @@ void RegisterAccountCommand::Execute(DBCommandContext& ctx) noexcept
 	}
 
 	RegisterAccountPayload payload{};
-	switch (resultCode)
-	{
+	switch (resultCode) {
 	case 0: // 등록 성공
+	{
 		payload.accountId = static_cast<uint64_t>(accountIdRaw);
 		break;
-
+	}
 	case 3: // UNIQUE 제약 위반 — 동시 요청으로 이미 등록된 ID
+	{
 		payload.failReason =
 			static_cast<uint32_t>(RegisterAccountFailReason::DuplicateId);
 		break;
-
+	}
 	default:
+	{
 		payload.failReason =
 			static_cast<uint32_t>(RegisterAccountFailReason::DatabaseError);
 		break;
+	}
 	}
 
 	ctx.CompleteOk(std::move(payload));

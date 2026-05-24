@@ -43,10 +43,10 @@ const IAIState* AIStateRegistry::TryGetState(AIStateType type) const
 AIBehaviorBundle::AIBehaviorBundle(const AIBehaviorProfileDef& profileDef)
 	: profile(&profileDef)
 {
-	movementPolicy = std::make_unique<DataDrivenAIMovementPolicy>();
-	idleActionPolicy = std::make_unique<DataDrivenAIIdleActionPolicy>();
-	combatActionPolicy = std::make_unique<DataDrivenAICombatActionPolicy>();
-	reactionPolicy = std::make_unique<DataDrivenAIReactionPolicy>();
+	movementPolicy		= std::make_unique<DataDrivenAIMovementPolicy>();
+	idleActionPolicy	= std::make_unique<DataDrivenAIIdleActionPolicy>();
+	combatActionPolicy	= std::make_unique<DataDrivenAICombatActionPolicy>();
+	reactionPolicy		= std::make_unique<DataDrivenAIReactionPolicy>();
 	specialActionPolicy = std::make_unique<DataDrivenAISpecialActionPolicy>();
 }
 
@@ -65,9 +65,7 @@ AIFSMRegistry::AIFSMRegistry(std::span<const AIBehaviorProfileDef> profiles)
 const AIFSMBundle* AIFSMRegistry::TryGetBundle(AIArchetype type) const
 {
 	const auto it = _bundles.find(type);
-	if (it == _bundles.end())
-		return nullptr;
-
+	if (it == _bundles.end()) return nullptr;
 	return &it->second;
 }
 
@@ -75,9 +73,7 @@ const AIBehaviorBundle* AIFSMRegistry::TryGetBehavior(
 	AIBehaviorProfileId profileId) const
 {
 	const auto it = _behaviors.find(profileId);
-	if (it == _behaviors.end())
-		return nullptr;
-
+	if (it == _behaviors.end()) return nullptr;
 	return &it->second;
 }
 
@@ -131,7 +127,6 @@ void AIFSMRegistry::Build(std::span<const AIBehaviorProfileDef> profiles)
 			continue;
 
 		_bundles.try_emplace(profile.aiType, profile.aiType);
-
 		_behaviors.try_emplace(profile.id, profile);
 	}
 }

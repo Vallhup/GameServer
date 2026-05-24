@@ -22,8 +22,6 @@ namespace
 			return 0.01f;
 		}
 
-		// TODO: If additional animation export units are introduced,
-		// normalize them here instead of assuming world-space meters.
 		return 1.0f;
 	}
 
@@ -45,7 +43,8 @@ namespace
 
 	bool ShouldFilterMonsterHitColliders(const AnimationClipDef& clip) noexcept
 	{
-		return clip.skeleton == "Imp" ||
+		return 
+			clip.skeleton == "Imp" ||
 			clip.skeleton == "DemonStriker" ||
 			clip.skeleton == "DemonExecutioner" ||
 			clip.skeleton == "BigDemonWarrior" ||

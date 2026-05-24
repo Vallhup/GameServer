@@ -65,16 +65,17 @@ void AICombatState::FrameUpdate(AIContext& ctx, const double dT) const
 
 bool AICombatState::IsAbilityAvailableForSelf(const AIContext& ctx, AbilityId abilityId) noexcept
 {
-	if (abilityId == InvalidAbilityId || ctx.sysCtx == nullptr)
+	if (abilityId == InvalidAbilityId || 
+		ctx.sysCtx == nullptr)
 	{
 		return false;
 	}
 
-	const SpawnTypeComp* spawnType = ctx.sysCtx->ecs.GetComponent<SpawnTypeComp>(ctx.self);
-	if (spawnType == nullptr)
+	if (const SpawnTypeComp* spawnType =
+		ctx.sysCtx->ecs.GetComponent<SpawnTypeComp>(ctx.self))
 	{
-		return false;
+		AbilityProfileService::IsAbilityAvailable(spawnType->characterId, abilityId);
 	}
 
-	return AbilityProfileService::IsAbilityAvailable(spawnType->characterId, abilityId);
+	return false;
 }

@@ -43,32 +43,19 @@ void AdvanceAbilityTimelineSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
-		ApplyElapsedToActiveAbility(abilityState, advance);
-		CollectTimelineEvents(*abilityDef, advance);
-	}
-}
+		abilityState.elapsedSec = advance.currElapsedSec;
 
-void AdvanceAbilityTimelineSystem::ApplyElapsedToActiveAbility(
-	AbilityStateComp& abilityState,
-	const AbilityTimelineAdvanceComp& advance)
-{
-	abilityState.elapsedSec = advance.currElapsedSec;
-}
-
-void AdvanceAbilityTimelineSystem::CollectTimelineEvents(
-	const AbilityDef& abilityDef,
-	AbilityTimelineAdvanceComp& advance)
-{
-	const float duration = std::max(0.001f, abilityDef.timeline.durationSec);
-	for (const AbilityEventDef& eventDef : abilityDef.timeline.events)
-	{
-		const float eventTimeSec = eventDef.timeNormalized * duration;
-		if (eventTimeSec < advance.prevElapsedSec ||
-			eventTimeSec >= advance.currElapsedSec)
+		const float duration = std::max(0.001f, abilityDef->timeline.durationSec);
+		for (const AbilityEventDef& eventDef : abilityDef->timeline.events)
 		{
-			continue;
-		}
+			const float eventTimeSec = eventDef.timeNormalized * duration;
+			if (eventTimeSec < advance.prevElapsedSec ||
+				eventTimeSec >= advance.currElapsedSec)
+			{
+				continue;
+			}
 
-		advance.events.push_back(eventDef);
+			advance.events.push_back(eventDef);
+		}
 	}
 }

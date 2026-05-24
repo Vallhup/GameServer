@@ -66,29 +66,33 @@ void LoginAuthCommand::Execute(DBCommandContext& ctx) noexcept
 	}
 
 	LoginAuthPayload payload{};
-	switch (resultCode)
-	{
+	switch (resultCode) {
 	case 0: // 인증 성공
+	{
 		payload.accountId = static_cast<uint64_t>(accountIdRaw);
 		break;
-
+	}
 	case 1: // 비밀번호 불일치 또는 Status 비활성
+	{
 		payload.failReason =
 			static_cast<uint32_t>(LoginAuthFailReason::AuthRejected);
 		break;
-
+	}
 	case 2: // ID 미존재 → 상위에서 회원가입 진행
+	{
 		payload.failReason =
 			static_cast<uint32_t>(LoginAuthFailReason::AccountNotFound);
-		payload.loginId           = _loginId;
+		payload.loginId = _loginId;
 		payload.loginIdNormalized = _loginIdNormalized;
-		payload.password          = _password;
+		payload.password = _password;
 		break;
-
+	}
 	default:
+	{
 		payload.failReason =
 			static_cast<uint32_t>(LoginAuthFailReason::DatabaseError);
 		break;
+	}
 	}
 
 	ctx.CompleteOk(std::move(payload));

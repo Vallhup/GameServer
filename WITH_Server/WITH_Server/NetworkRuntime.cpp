@@ -24,7 +24,8 @@ bool NetworkRuntime::Initialize()
 	if (_sink == nullptr)
 		return false;
 
-	IocpNetworkBackend::Config backendCfg{
+	IocpNetworkBackend::Config backendCfg
+	{
 		.listenPort    = _config.listenPort,
 		.maxSessions   = _config.maxSessions,
 		.maxPacketSize = _config.maxPacketSize
