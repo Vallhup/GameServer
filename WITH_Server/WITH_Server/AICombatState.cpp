@@ -74,7 +74,7 @@ bool AICombatState::IsAbilityAvailableForSelf(const AIContext& ctx, AbilityId ab
 	if (const SpawnTypeComp* spawnType =
 		ctx.sysCtx->ecs.GetComponent<SpawnTypeComp>(ctx.self))
 	{
-		AbilityProfileService::IsAbilityAvailable(spawnType->characterId, abilityId);
+		return AbilityProfileService::IsAbilityAvailable(spawnType->characterId, abilityId);
 	}
 
 	return false;
