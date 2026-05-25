@@ -17,7 +17,6 @@
 #include "UIManager.h"
 #include "GameSceneUIController.h"
 #include "EffectComponent.h"
-#include "BeaconLightComponent.h"
 
 void PlazaScene::Release()
 {
@@ -87,20 +86,6 @@ void PlazaScene::InitializeSceneEnvironments()
 	terrain = make_shared<Terrain>();
 	terrain->Initialize(*coreRef, L"PlazaMap/textures/plazaFloor", L"../Assets/FBXModel/PlazaMap/plazaTerrain.raw", 513, 1016.0f, 27.01563f, 1.0f);
 	terrain->LoadSplatmap(*coreRef, L"../Assets/FBXModel/PlazaMap/terrainAtlas.bin", L"../Assets/FBXModel/PlazaMap/textures/");
-#pragma endregion
-
-#pragma region Initialize BeaconLight
-	// 468.572021, 5.742276, 481.278717
-	// 473.936584, 5.954651, 485.085571
-	auto beacon = make_shared<GameObject>();
-	auto light = beacon->AddComponent<BeaconLightComponent>();
-	light->Initialize(coreRef->GetDevice(), 2);
-	light->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(),
-		L"../Assets/Effects/Textures/particle2.png");
-	light->SetColor({ 2.854f, 2.439f, 1.5f, 1.0f });
-	light->SetSize(2.0f);
-	light->Spawn({ 468.572021f, 7.042276f, 481.278717f });
-	AddGameObject(beacon);                         
 #pragma endregion
 }
 

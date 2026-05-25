@@ -77,9 +77,6 @@ private:
 	void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat);
 
 protected:
-	XMFLOAT4X4 mView = {};
-	XMFLOAT4X4 mProjection = {};
-
 	DX12Core* coreRef = nullptr;
 	SceneManager* sManagerRef = nullptr;
 

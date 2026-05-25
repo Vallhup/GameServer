@@ -16,6 +16,7 @@
 #include "GameSceneUIController.h"
 #include "EffectComponent.h"
 #include "FlameComponent.h"
+#include "BeaconLightComponent.h"
 
 void FirstBattleScene::Release()
 {
@@ -106,6 +107,18 @@ void FirstBattleScene::InitializeSceneEnvironments()
 	water->Initialize(*coreRef);
 	water->SetPosition(144.0472f, 46.79999f, 939.9999f);
 	water->SetScale(1500.0f, 1.0f, 2546.25f);
+#pragma endregion
+
+#pragma region Initialize BeaconLight
+	auto beacon = make_shared<GameObject>();
+	auto light = beacon->AddComponent<BeaconLightComponent>();
+	light->Initialize(coreRef->GetDevice(), 2);
+	light->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(),
+		L"../Assets/Effects/Textures/particle2.png");
+	light->SetColor({ 2.854f, 2.439f, 1.5f, 1.0f });
+	light->SetSize(2.0f);
+	light->Spawn({ 335.237946f, 77.0f, 590.663147f });
+	AddGameObject(beacon);
 #pragma endregion
 }
 
