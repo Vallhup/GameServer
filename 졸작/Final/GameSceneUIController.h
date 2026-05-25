@@ -5,8 +5,11 @@
 class ImageUI;
 class TextUI;
 class UIComponent;
+class GameObject;
 
 enum class PartyView { Lobby, Created };
+
+struct MonsterBarTarget { GameObject* obj = nullptr; float hpPercent = 1.0f; };
 
 class GameSceneUIController : public UIController
 {
@@ -22,10 +25,15 @@ public:
 		int power, double aSpeed, int defense, double mSpeed);
 	bool IsStatWindowOn() const;
 
+	void SetLocalCharacterType(CharacterType type);
+	void HandleMonsterHp(int id, GameObject* obj, int cur, int max);
+	void HandlePartyMemberHp(int id, int cur, int max);
+
 	void ShowMapName();
 
 private:
-	void InitTargetHpBar();
+	void InitMonsterHpBars();
+	void UpdateMonsterHpBars();
 	void InitLocalPlayerHUD();
 	void InitMapNameOverlay();
 	void InitPartyWindow();
@@ -45,13 +53,14 @@ private:
 	void InitPartyMemberHud();
 	void RefreshPartyMemberHud();
 
-	static constexpr int MAX_PARTY_CARDS = 4;     // 로비에 띄울 파티 개수 상한
-	static constexpr int MAX_PARTY_MEMBERS = 3;   // 한 파티의 멤버(정원) 상한
-	static constexpr int PARTY_HUD_SLOTS = MAX_PARTY_MEMBERS;  // HUD 슬롯: 본인(0) + 나머지
+	static constexpr int MAX_PARTY_CARDS = 4;     
+	static constexpr int MAX_PARTY_MEMBERS = 3;   
+	static constexpr int PARTY_HUD_SLOTS = MAX_PARTY_MEMBERS; 
 
 	SceneType sceneType;
 
 	shared_ptr<ImageUI> statusBackImage;
+	shared_ptr<ImageUI> statusCharImage;   
 	shared_ptr<ImageUI> statusImage;
 	shared_ptr<ImageUI> statusRibbon;
 	shared_ptr<ImageUI> statusArrowLeft;
@@ -61,8 +70,10 @@ private:
 	shared_ptr<ImageUI> localCharStaminaBar;
 	shared_ptr<ImageUI> localCharPotion;
 
-	shared_ptr<ImageUI> charHPBarBack;
-	shared_ptr<ImageUI> charHPBar;
+	unordered_map<int, MonsterBarTarget> monsterHpTargets;
+	vector<shared_ptr<ImageUI>> monsterBarBacks;
+	vector<shared_ptr<ImageUI>> monsterBars;
+	static constexpr int MAX_MONSTER_HP_BARS = 16;
 
 	shared_ptr<ImageUI> mapNameImage;  
 
@@ -84,13 +95,14 @@ private:
 	PartyView partyView = PartyView::Lobby;
 	uint64_t lastPartyRevision = 0;
 
-	// 우상단 파티원 정보 HUD (파티 생성 시 자동 표시, L키 토글)
 	shared_ptr<ImageUI>         partyHudBack;
 	vector<shared_ptr<ImageUI>> partyHudIcons;
 	vector<shared_ptr<TextUI>>  partyHudNames;
 	vector<shared_ptr<ImageUI>> partyHudBarBacks;
 	vector<shared_ptr<ImageUI>> partyHudBars;
 	vector<float>               partyHudBarFullW;
+	vector<int>                 partyHudSlotIds;       
+	unordered_map<int, float>   partyMemberHpPercent;  
 	bool     partyHudUserVisible = true;
 	bool     partyHudInParty = false;
 	bool     partyHudDirty = false;
@@ -113,7 +125,6 @@ private:
 	shared_ptr<ImageUI> joinRequestCancelButton;
 	uint64_t            activeJoinRequestId = 0;
 
-	// 신청서 팝업 슬라이드 인(오른쪽 화면 밖 → 제자리)
 	vector<shared_ptr<UIComponent>> joinSlideWidgets;
 	vector<float>                   joinSlideBaseX;
 	float                           joinSlideDist = 0.0f;

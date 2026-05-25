@@ -62,53 +62,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     return 0;
 }
 
-void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
-{
-    ASSERT(hInstance != nullptr);
-
-    /*WinSize.x = GetSystemMetrics(SM_CXSCREEN);
-    WinSize.y = GetSystemMetrics(SM_CYSCREEN);*/
-
-    WinSize.x = 1920;
-    WinSize.y = 1080;
-
-    RECT rc = { 0, 0, WinSize.x, WinSize.y };
-    AdjustWindowRect(&rc, WS_POPUP, FALSE);
-
-    const TCHAR* appName = _T("Final");
-
-    WNDCLASSEXW wcex = {
-        .cbSize = sizeof(WNDCLASSEX),
-        .style = CS_HREDRAW | CS_VREDRAW,
-        .lpfnWndProc = WndProc,
-        .cbClsExtra = 0,
-        .cbWndExtra = 0,
-        .hInstance = hInstance,
-        .hIcon = nullptr,
-        .hCursor = LoadCursor(nullptr, IDC_ARROW),
-        .hbrBackground = nullptr,
-        .lpszMenuName = nullptr,
-        .lpszClassName = appName,
-        .hIconSm = nullptr
-    };
-
-    if (not RegisterClassExW(&wcex)) {
-        MASSERT(false, "Regiser failed!");
-    }
-
-    /**hwnd = CreateWindow(wcex.lpszClassName, wcex.lpszClassName,
-        WS_POPUP,
-        0, 0, WinSize.x, WinSize.y,
-        nullptr, nullptr, hInstance, nullptr);*/
-
-    *hwnd = CreateWindow(wcex.lpszClassName, wcex.lpszClassName,
-        WS_POPUP,
-        0, 0, rc.right - rc.left, rc.bottom - rc.top,
-        nullptr, nullptr, hInstance, nullptr);
-
-    ShowWindow(*hwnd, nCmdShow);
-}
-
 //void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
 //{
 //    ASSERT(hInstance != nullptr);
@@ -116,14 +69,11 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
 //    /*WinSize.x = GetSystemMetrics(SM_CXSCREEN);
 //    WinSize.y = GetSystemMetrics(SM_CYSCREEN);*/
 //
-//    WinSize.x = 1280;
-//    WinSize.y = 720;
-//
-//    // 타이틀바로 드래그 이동은 가능하게 하되, 리사이즈/최대화는 막아 클라이언트 해상도를 고정한다.
-//    constexpr DWORD windowStyle = WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX);
+//    WinSize.x = 1920;
+//    WinSize.y = 1080;
 //
 //    RECT rc = { 0, 0, WinSize.x, WinSize.y };
-//    AdjustWindowRect(&rc, windowStyle, FALSE);
+//    AdjustWindowRect(&rc, WS_POPUP, FALSE);
 //
 //    const TCHAR* appName = _T("Final");
 //
@@ -152,12 +102,62 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
 //        nullptr, nullptr, hInstance, nullptr);*/
 //
 //    *hwnd = CreateWindow(wcex.lpszClassName, wcex.lpszClassName,
-//        windowStyle,
-//        CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top,
+//        WS_POPUP,
+//        0, 0, rc.right - rc.left, rc.bottom - rc.top,
 //        nullptr, nullptr, hInstance, nullptr);
 //
 //    ShowWindow(*hwnd, nCmdShow);
 //}
+
+void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
+{
+    ASSERT(hInstance != nullptr);
+
+    /*WinSize.x = GetSystemMetrics(SM_CXSCREEN);
+    WinSize.y = GetSystemMetrics(SM_CYSCREEN);*/
+
+    WinSize.x = 1280;
+    WinSize.y = 720;
+
+    // 타이틀바로 드래그 이동은 가능하게 하되, 리사이즈/최대화는 막아 클라이언트 해상도를 고정한다.
+    constexpr DWORD windowStyle = WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX);
+
+    RECT rc = { 0, 0, WinSize.x, WinSize.y };
+    AdjustWindowRect(&rc, windowStyle, FALSE);
+
+    const TCHAR* appName = _T("Final");
+
+    WNDCLASSEXW wcex = {
+        .cbSize = sizeof(WNDCLASSEX),
+        .style = CS_HREDRAW | CS_VREDRAW,
+        .lpfnWndProc = WndProc,
+        .cbClsExtra = 0,
+        .cbWndExtra = 0,
+        .hInstance = hInstance,
+        .hIcon = nullptr,
+        .hCursor = LoadCursor(nullptr, IDC_ARROW),
+        .hbrBackground = nullptr,
+        .lpszMenuName = nullptr,
+        .lpszClassName = appName,
+        .hIconSm = nullptr
+    };
+
+    if (not RegisterClassExW(&wcex)) {
+        MASSERT(false, "Regiser failed!");
+    }
+
+    /**hwnd = CreateWindow(wcex.lpszClassName, wcex.lpszClassName,
+        WS_POPUP,
+        0, 0, WinSize.x, WinSize.y,
+        nullptr, nullptr, hInstance, nullptr);*/
+
+    *hwnd = CreateWindow(wcex.lpszClassName, wcex.lpszClassName,
+        windowStyle,
+        CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top,
+        nullptr, nullptr, hInstance, nullptr);
+
+    ShowWindow(*hwnd, nCmdShow);
+}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

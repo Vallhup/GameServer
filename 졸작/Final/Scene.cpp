@@ -250,7 +250,6 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 		{ CharacterType::Paladin, { L"../Assets/FBXModel/Paladin/paladin", &AnimationSetFactory::CreatePaladinSet } },
 	};
 
-	// 클래스별 스워드 스페셜 이펙트 efk (임시 이름 — 추후 교체 예정)
 	static const unordered_map<CharacterType, const wchar_t*> swordEffectNames = {
 		{ CharacterType::Knight,  L"KnightSpecialAttack" },
 		{ CharacterType::Lancer,  L"LancerSpecialAttack" },
@@ -400,6 +399,8 @@ void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 				myCharacterType = charcterIter->second;
 				myPlayer->SetAsLocalPlayer(cam.get());
 				IMGUI.SetMyPlayer(myPlayer.get());
+				if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
+					controller->SetLocalCharacterType(myCharacterType);
 				OutputDebugStringA("My character activated!\n");
 			}
 		}
@@ -422,7 +423,16 @@ void Scene::HandleMove(const Protocol::SC_MOVE_PACKET& move)
 
 void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 {
-	OutputDebugStringA("SC_REMOVE packet received\n");
+	const NetId nid{ remove.netid() };
+	const int id = nid.GetId();
+
+	auto it = activeCharacters.find(id);
+	if (it == activeCharacters.end())
+		return;
+
+	it->second->SetId(-1);            
+	activeCharacters.erase(it);
+	activeMonsterTypes.erase(id);
 }
 
 void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
@@ -539,5 +549,21 @@ void Scene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
 					curHp, maxHp, curStamina, maxStamina,
 					power, aSpeed, defense, mSpeed);
 		}
+	}
+	else if (auto typeIt = activeMonsterTypes.find(id);
+		typeIt != activeMonsterTypes.end() &&
+		(typeIt->second == MonsterType::Imp ||
+		 typeIt->second == MonsterType::DemonStriker ||
+		 typeIt->second == MonsterType::DemonExecutioner))
+	{
+		if (auto objIt = activeCharacters.find(id); objIt != activeCharacters.end())
+			if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
+				controller->HandleMonsterHp(id, objIt->second.get(), stat.curhp(), stat.maxhp());
+	}
+	else if (activeMonsterTypes.find(id) == activeMonsterTypes.end() &&
+		activeCharacters.find(id) != activeCharacters.end())
+	{
+		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
+			controller->HandlePartyMemberHp(id, stat.curhp(), stat.maxhp());
 	}
 }

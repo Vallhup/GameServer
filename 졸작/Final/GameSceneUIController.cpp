@@ -18,7 +18,7 @@ void GameSceneUIController::Init(UIManager* manager)
 {
 	uiManager = manager;
 
-	InitTargetHpBar();
+	InitMonsterHpBars();
 	InitLocalPlayerHUD();
 	InitMapNameOverlay();
 	InitPartyWindow();
@@ -31,36 +31,20 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitPartyMemberHud();
 }
 
-void GameSceneUIController::InitTargetHpBar()
+void GameSceneUIController::InitMonsterHpBars()
 {
-	constexpr float BARBACK_ASPECT = 39.0f / 785.0f;
-	constexpr float HPBAR_WIDTH_RATIO = 692.0f / 785.0f;
-	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;
-	constexpr float HPBAR_OFFSET_X = 49.0f / 785.0f;
-	constexpr float HPBAR_OFFSET_Y = 11.0f / 39.0f;
+	monsterBarBacks.reserve(MAX_MONSTER_HP_BARS);
+	monsterBars.reserve(MAX_MONSTER_HP_BARS);
+	for (int i = 0; i < MAX_MONSTER_HP_BARS; ++i)
+	{
+		auto back = make_shared<ImageUI>(uiManager, L"BarBack", ImageUIState::Hidden);
+		widgets.push_back(back);
+		monsterBarBacks.push_back(back);
 
-	float backWidth = WinSize.x * 0.156f;
-	float backHeight = backWidth * BARBACK_ASPECT;
-
-	float backPosX = WinSize.x * 0.5f - backWidth * 0.5f;
-	float backPosY = WinSize.y * 0.5f - backHeight * 0.5f;
-
-	charHPBarBack = make_shared<ImageUI>(uiManager, L"BarBack", ImageUIState::Visible);
-	charHPBarBack->SetPosition(backPosX, backPosY);
-	charHPBarBack->SetHoriLength(backWidth);
-	charHPBarBack->SetVertLength(backHeight);
-	widgets.push_back(charHPBarBack);
-
-	float hpBarWidth = backWidth * HPBAR_WIDTH_RATIO;
-	float hpBarHeight = backHeight * HPBAR_HEIGHT_RATIO;
-	float hpBarPosX = backPosX + backWidth * HPBAR_OFFSET_X;
-	float hpBarPosY = backPosY + backHeight * HPBAR_OFFSET_Y;
-
-	charHPBar = make_shared<ImageUI>(uiManager, L"HpBar2", ImageUIState::Visible);
-	charHPBar->SetPosition(hpBarPosX, hpBarPosY);
-	charHPBar->SetHoriLength(hpBarWidth);
-	charHPBar->SetVertLength(hpBarHeight);
-	widgets.push_back(charHPBar);
+		auto bar = make_shared<ImageUI>(uiManager, L"HpBar2", ImageUIState::Hidden);
+		widgets.push_back(bar);
+		monsterBars.push_back(bar);
+	}
 }
 
 void GameSceneUIController::InitLocalPlayerHUD()
@@ -359,8 +343,8 @@ void GameSceneUIController::RefreshMyPartyText()
 
 void GameSceneUIController::InitPartyMemberHud()
 {
-	constexpr float BACK_ASPECT        = 1562.0f / 2737.0f; // PartyMemBack h/w
-	constexpr float BARBACK_ASPECT     = 39.0f / 785.0f;    // BarBack h/w
+	constexpr float BACK_ASPECT        = 1562.0f / 2737.0f; 
+	constexpr float BARBACK_ASPECT     = 39.0f / 785.0f;    
 	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;
 	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;
 	constexpr float HPBAR_OFFSET_X     = 49.0f / 785.0f;
@@ -368,7 +352,7 @@ void GameSceneUIController::InitPartyMemberHud()
 
 	const float textScale = WinSize.y / 1080.0f;
 
-	constexpr float BACK_ALPHA = 0.7f;   // 배경(PartyMemBack)만 불투명도 적용 (0=투명, 1=불투명)
+	constexpr float BACK_ALPHA = 0.7f;   
 
 	const float panelW = WinSize.x * 0.20f;
 	const float panelH = panelW * BACK_ASPECT;
@@ -387,9 +371,10 @@ void GameSceneUIController::InitPartyMemberHud()
 	partyHudBarBacks.reserve(PARTY_HUD_SLOTS);
 	partyHudBars.reserve(PARTY_HUD_SLOTS);
 	partyHudBarFullW.assign(PARTY_HUD_SLOTS, 0.0f);
+	partyHudSlotIds.assign(PARTY_HUD_SLOTS, -1);
 
-	const float otherTop  = panelY + panelH * 0.48f;  // 하단(나머지 멤버) 시작
-	const float otherRowH = panelH * 0.23f;           // 멤버 1명당 행 높이
+	const float otherTop  = panelY + panelH * 0.48f;  
+	const float otherRowH = panelH * 0.23f;           
 
 	for (int i = 0; i < PARTY_HUD_SLOTS; ++i)
 	{
@@ -464,7 +449,6 @@ void GameSceneUIController::RefreshPartyMemberHud()
 	if (partyHudBack)
 		partyHudBack->ChangeState(show ? ImageUIState::Visible : ImageUIState::Hidden);
 
-	// 표시 순서: 본인 먼저(슬롯 0), 그 다음 나머지 멤버
 	vector<const Protocol::PartyMember*> ordered;
 	if (show && party && party->HasMyParty())
 	{
@@ -483,6 +467,7 @@ void GameSceneUIController::RefreshPartyMemberHud()
 		const bool active = (i < static_cast<int>(ordered.size()));
 		if (!active)
 		{
+			partyHudSlotIds[i] = -1;
 			partyHudIcons[i]->ChangeState(ImageUIState::Hidden);
 			partyHudNames[i]->SetText(L"");
 			partyHudBarBacks[i]->ChangeState(ImageUIState::Hidden);
@@ -491,6 +476,7 @@ void GameSceneUIController::RefreshPartyMemberHud()
 		}
 
 		const Protocol::PartyMember* member = ordered[i];
+		partyHudSlotIds[i] = NetId{ member->netid() }.GetId();
 		const CharacterType cls = static_cast<CharacterType>(member->charactertype());
 		const wchar_t* icon =
 			(cls == CharacterType::Lancer)  ? L"PartyMemLancer"  :
@@ -502,11 +488,25 @@ void GameSceneUIController::RefreshPartyMemberHud()
 		partyHudNames[i]->SetText(L"ID: " + std::to_wstring(member->sessionid()));
 		partyHudBarBacks[i]->ChangeState(ImageUIState::Visible);
 
-		// 본인(슬롯 0)만 실시간 HP, 나머지는 풀바
-		const float pct = (i == 0) ? partyHudSelfHpPercent : 1.0f;
+		float pct = partyHudSelfHpPercent;
+		if (i != 0)
+		{
+			auto hpIt = partyMemberHpPercent.find(partyHudSlotIds[i]);
+			pct = (hpIt != partyMemberHpPercent.end()) ? hpIt->second : 1.0f;
+		}
 		partyHudBars[i]->SetHoriLength(partyHudBarFullW[i] * pct);
 		partyHudBars[i]->ChangeState(ImageUIState::Visible);
 	}
+}
+
+void GameSceneUIController::SetLocalCharacterType(CharacterType type)
+{
+	if (!statusCharImage) return;
+	const wchar_t* charTex =
+		(type == CharacterType::Lancer)  ? L"CharLancer"  :
+		(type == CharacterType::Paladin) ? L"CharPaladin" :
+		                                   L"CharKnight";
+	statusCharImage->SetTexture(charTex);
 }
 
 void GameSceneUIController::InitStatWindow()
@@ -516,6 +516,15 @@ void GameSceneUIController::InitStatWindow()
 	statusBackImage->SetVertLength(WinSize.y);
 	widgets.push_back(statusBackImage);
 
+	const float leftPageCenterX = WinSize.x * 0.30f;
+	const float charHeight = WinSize.y * 0.62f;
+	const float charWidth  = charHeight * 0.7f;
+	statusCharImage = make_shared<ImageUI>(uiManager, L"CharKnight", ImageUIState::Hidden);
+	statusCharImage->SetPosition(leftPageCenterX - charWidth * 0.5f, WinSize.y * 0.14f);
+	statusCharImage->SetHoriLength(charWidth);
+	statusCharImage->SetVertLength(charHeight);
+	widgets.push_back(statusCharImage);
+
 	statusImage = make_shared<ImageUI>(uiManager, L"Status", ImageUIState::Hidden);
 	statusImage->SetHoriLength(WinSize.x);
 	statusImage->SetVertLength(WinSize.y);
@@ -523,7 +532,6 @@ void GameSceneUIController::InitStatWindow()
 
 	const float ribbonWidth  = WinSize.x * 0.21f;
 	const float ribbonHeight = WinSize.y * 0.105f;
-	const float leftPageCenterX = WinSize.x * 0.30f;
 	const float ribbonX = leftPageCenterX - ribbonWidth * 0.5f;
 	const float ribbonY = WinSize.y * 0.78f;
 
@@ -785,6 +793,7 @@ void GameSceneUIController::Update(float deltaTime)
 	UIController::Update(deltaTime);
 
 	UpdateJoinRequestPopup(deltaTime);
+	UpdateMonsterHpBars();
 
 	auto opened = [](const shared_ptr<ImageUI>& p) {
 		return p && p->GetState() != ImageUIState::Hidden;
@@ -799,6 +808,7 @@ void GameSceneUIController::Update(float deltaTime)
 			ImageUIState next = selfOpen ? ImageUIState::Hidden : ImageUIState::Visible;
 
 			statusBackImage->ChangeState(next);
+			statusCharImage->ChangeState(next);
 			statusImage->ChangeState(next);
 			statusRibbon->ChangeState(next);
 			statusArrowLeft->ChangeState(next);
@@ -1024,7 +1034,6 @@ void GameSceneUIController::Update(float deltaTime)
 		}
 	}
 
-	// 우상단 파티원 HUD: L키 토글 + 파티 생성/변경 시 자동 갱신
 	if (INPUT.GetKeyDown('L'))
 	{
 		partyHudUserVisible = !partyHudUserVisible;
@@ -1036,7 +1045,7 @@ void GameSceneUIController::Update(float deltaTime)
 		if (inParty != partyHudInParty)
 		{
 			partyHudInParty = inParty;
-			if (inParty) partyHudUserVisible = true;   // 파티 생성 순간 자동 표시
+			if (inParty) partyHudUserVisible = true;   
 			partyHudDirty = true;
 		}
 		else if (inParty && party->GetRevision() != partyHudRevision)
@@ -1071,10 +1080,107 @@ void GameSceneUIController::HandleStatBarChange(int curHp, int maxHp, int curSta
 	const float staminaPercent = (float)curStamina / maxStamina;
 	localCharStaminaBar->SetHoriLength(maxStaminaLength * staminaPercent);
 
-	// 파티 HUD 본인 슬롯(0) HP바 동기화
 	partyHudSelfHpPercent = (maxHp > 0) ? (float)curHp / maxHp : 0.0f;
 	if (!partyHudBars.empty() && partyHudBars[0])
 		partyHudBars[0]->SetHoriLength(partyHudBarFullW[0] * partyHudSelfHpPercent);
+}
+
+void GameSceneUIController::HandlePartyMemberHp(int id, int cur, int max)
+{
+	const float pct = (max > 0) ? clamp(static_cast<float>(cur) / max, 0.0f, 1.0f) : 0.0f;
+	partyMemberHpPercent[id] = pct;
+
+	for (int i = 1; i < static_cast<int>(partyHudSlotIds.size()); ++i)
+		if (partyHudSlotIds[i] == id)
+			partyHudBars[i]->SetHoriLength(partyHudBarFullW[i] * pct);
+}
+
+void GameSceneUIController::HandleMonsterHp(int id, GameObject* obj, int cur, int max)
+{
+	if (!obj || max <= 0 || cur <= 0)   
+	{
+		monsterHpTargets.erase(id);
+		return;
+	}
+	monsterHpTargets[id] = { obj, clamp(static_cast<float>(cur) / max, 0.0f, 1.0f) };
+}
+
+void GameSceneUIController::UpdateMonsterHpBars()
+{
+	constexpr float BARBACK_ASPECT     = 39.0f / 785.0f;
+	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;
+	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;
+	constexpr float HPBAR_OFFSET_X     = 49.0f / 785.0f;
+	constexpr float HPBAR_OFFSET_Y     = 11.0f / 39.0f;
+	constexpr float BAR_WORLD_WIDTH    = 1.0f;  
+	constexpr float BAR_HEIGHT_SCALE   = 2.2f;  
+
+	Scene* scene = SCENE_MANAGER->GetCurrentScene();
+	Camera* camera = scene ? scene->GetCamera() : nullptr;
+
+	int used = 0;
+	if (camera)
+	{
+		const XMMATRIX viewProj = camera->GetViewMatrix() * camera->GetProjectionMatrix();
+		const XMFLOAT3 camRight = camera->GetRight();
+
+		auto project = [&](const XMFLOAT3& p, float& sx, float& sy) -> bool {
+			const XMVECTOR c = XMVector4Transform(XMVectorSetW(XMLoadFloat3(&p), 1.0f), viewProj);
+			const float w = XMVectorGetW(c);
+			if (w <= 0.0001f) return false;
+			sx = (XMVectorGetX(c) / w * 0.5f + 0.5f) * WinSize.x;
+			sy = (1.0f - (XMVectorGetY(c) / w * 0.5f + 0.5f)) * WinSize.y;
+			return true;
+		};
+
+		for (const auto& [id, target] : monsterHpTargets)
+		{
+			if (used >= MAX_MONSTER_HP_BARS) break;
+			if (!target.obj || target.obj->GetId() == -1) continue;   
+
+			auto* tf = target.obj->GetComponent<Transform>();
+			if (!tf) continue;
+
+			const XMFLOAT3& pos = tf->GetPosition();
+			const BoundingBox& box = target.obj->GetWorldBoundingBox();
+			const XMFLOAT3 head{ pos.x, box.Center.y + box.Extents.y, pos.z };
+
+			const XMFLOAT3 headRight{
+				head.x + camRight.x * BAR_WORLD_WIDTH,
+				head.y + camRight.y * BAR_WORLD_WIDTH,
+				head.z + camRight.z * BAR_WORLD_WIDTH };
+
+			float cx, cy, rx, ry;
+			if (!project(head, cx, cy)) continue;                     
+			if (!project(headRight, rx, ry)) continue;
+			if (cx < 0.0f || cx > WinSize.x || cy < 0.0f || cy > WinSize.y) continue; 
+
+			const float barW = fabsf(rx - cx);
+			const float barH = barW * BARBACK_ASPECT * BAR_HEIGHT_SCALE;
+			const float gap  = barH * 0.5f;
+
+			const float backX = cx - barW * 0.5f;
+			const float backY = cy - barH - gap;
+
+			monsterBarBacks[used]->SetPosition(backX, backY);
+			monsterBarBacks[used]->SetHoriLength(barW);
+			monsterBarBacks[used]->SetVertLength(barH);
+			monsterBarBacks[used]->ChangeState(ImageUIState::Visible);
+
+			monsterBars[used]->SetPosition(backX + barW * HPBAR_OFFSET_X, backY + barH * HPBAR_OFFSET_Y);
+			monsterBars[used]->SetHoriLength(barW * HPBAR_WIDTH_RATIO * target.hpPercent);
+			monsterBars[used]->SetVertLength(barH * HPBAR_HEIGHT_RATIO);
+			monsterBars[used]->ChangeState(ImageUIState::Visible);
+
+			++used;
+		}
+	}
+
+	for (int i = used; i < MAX_MONSTER_HP_BARS; ++i)
+	{
+		monsterBarBacks[i]->ChangeState(ImageUIState::Hidden);
+		monsterBars[i]->ChangeState(ImageUIState::Hidden);
+	}
 }
 
 void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curStamina, int maxStamina, int power, double aSpeed, int defense, double mSpeed)
