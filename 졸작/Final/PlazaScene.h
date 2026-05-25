@@ -29,7 +29,6 @@ protected:
 	void InitializeLogic() override;
 	void InitializeSceneEnvironments() override;
 	void UpdateScene(const float deltaTime) override;
-	void RequestSceneChange() override;
 
 	const char* GetBGMPath() const override;
 

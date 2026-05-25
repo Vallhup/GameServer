@@ -5,14 +5,14 @@
 
 void EffectManager::Initialize(DX12Core& core)
 {
-    manager = Effekseer::Manager::Create(8000);
+    manager = Effekseer::Manager::Create(16000);
     manager->SetCoordinateSystem(Effekseer::CoordinateSystem::LH);
 
     efDevice = EffekseerRendererDX12::CreateGraphicsDevice(core.GetDevice(), core.GetCmdQueue(), SWAP_CHAIN_BUFFER_COUNT);
 
     DXGI_FORMAT renderTargetFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
-    renderer = EffekseerRendererDX12::Create(efDevice, &renderTargetFormat, 1, DXGI_FORMAT_D32_FLOAT, false, 8000);
+    renderer = EffekseerRendererDX12::Create(efDevice, &renderTargetFormat, 1, DXGI_FORMAT_D32_FLOAT, false, 16000);
     efMemPool = EffekseerRenderer::CreateSingleFrameMemoryPool(efDevice);
     efCmdList = EffekseerRenderer::CreateCommandList(efDevice, efMemPool);
 

@@ -215,4 +215,7 @@ void Engine::ProcessWorldTransitionState()
 
     sceneManager->RequestLoadingScene(targetScene);
     transition.MarkLoadingStarted();
+
+    if (auto* fade = uiManager->GetScreenFade())
+        fade->FadeIn(0.0f);
 }

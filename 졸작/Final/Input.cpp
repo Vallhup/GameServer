@@ -12,16 +12,19 @@ void Input::Renew()
 
 bool Input::GetKey(const size_t key) const
 {
+	if (blocked) return false;
 	return mPressedKeys[key];
 }
 
 bool Input::GetKeyDown(const size_t key) const
 {
+	if (blocked) return false;
 	return mPressedKeys[key] && mChangeKeyState[key];
 }
 
 bool Input::GetAnyKeyDown() const
 {
+	if (blocked) return false;
 	if ((mPressedKeys & mChangeKeyState).any())
 		return true;
 
@@ -33,17 +36,20 @@ bool Input::GetAnyKeyDown() const
 
 bool Input::GetMouseButton(const MouseButton button) const
 {
+	if (blocked) return false;
 	return mPressedMouseButtons[static_cast<size_t>(button)];
 }
 
 bool Input::GetMouseButtonDown(const MouseButton button) const
 {
+	if (blocked) return false;
 	size_t idx = static_cast<size_t>(button);
 	return mPressedMouseButtons[idx] && mChangeMouseButtonState[idx];
 }
 
 int Input::GetMouseWheelDelta() const
 {
+	if (blocked) return 0;
 	return mMouseWheelDelta;
 }
 

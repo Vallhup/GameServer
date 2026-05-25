@@ -245,6 +245,7 @@ exit 0</Command>
     <ClCompile Include="ParryStreakComponent.cpp" />
     <ClCompile Include="RenderTargets.cpp" />
     <ClCompile Include="SceneSetting.cpp" />
+    <ClCompile Include="ScreenFade.cpp" />
     <ClCompile Include="SelectSceneUIController.cpp" />
     <ClCompile Include="ShadowMappingManager.cpp" />
     <ClCompile Include="FirstBattleScene.cpp" />
@@ -347,6 +348,7 @@ exit 0</Command>
     <ClInclude Include="ParryStreakComponent.h" />
     <ClInclude Include="RenderTargets.h" />
     <ClInclude Include="SceneSetting.h" />
+    <ClInclude Include="ScreenFade.h" />
     <ClInclude Include="SelectSceneUIController.h" />
     <ClInclude Include="ShadowMappingManager.h" />
     <ClInclude Include="FirstBattleScene.h" />

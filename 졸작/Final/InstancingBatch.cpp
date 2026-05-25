@@ -123,21 +123,18 @@ void InstancingBatch::Update(const BoundingFrustum& frustum, const XMVECTOR& cam
     constexpr float shadowRange = 90.0f;
 
     for (const auto& data : cachedData) {
-        // Frustum culling (캐싱된 bounding box 사용)
         bool isVisible = true;
         if (data.boundingBox.Extents.x > 0.0f) {
             isVisible = frustum.Intersects(data.boundingBox);
         }
 
-        // Distance culling
-        if (isVisible && data.needDistanceCull) {
+        if (isVisible && !cinematicMode && data.needDistanceCull) {
             float objDistSq = (data.position.x - camX) * (data.position.x - camX) +
                               (data.position.z - camZ) * (data.position.z - camZ);
             if (objDistSq > data.cullDistance * data.cullDistance)
                 isVisible = false;
         }
 
-        // Shadow range 체크 (플레이어 기준)
         bool isNearPlayer = (abs(data.position.x - playerX) <= shadowRange) &&
                             (abs(data.position.z - playerZ) <= shadowRange);
 

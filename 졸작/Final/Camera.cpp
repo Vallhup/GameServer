@@ -170,6 +170,15 @@ void Camera::UpdateSmoothFollow(float deltaTime)
     targetPosition = currentTargetPos;
 }
 
+void Camera::SetCinematicView(DX12Core& core, const XMFLOAT3& eye, const XMFLOAT3& lookAt)
+{
+    position = eye;
+    targetPosition = lookAt;
+    currentTargetPos = lookAt;
+    desiredTargetPos = lookAt;
+    UpdateCameraMatrices(core);
+}
+
 void Camera::UpdateCameraMatrices(DX12Core& core)
 {
     XMVECTOR eyePos = XMLoadFloat3(&position);

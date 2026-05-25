@@ -31,6 +31,8 @@ public:
 	void SetLutPreset(UINT idx, float saturation);
 
 	void SetCameraPosition(const XMFLOAT3& pos);
+
+	void SetCinematicView(DX12Core& core, const XMFLOAT3& eye, const XMFLOAT3& lookAt);
 	void SetCursor(bool in);
 	void ReleaseMouse();
 

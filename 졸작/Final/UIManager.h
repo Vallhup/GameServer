@@ -5,6 +5,7 @@
 #include <GraphicsMemory.h>
 #include "UIController.h"
 #include "SceneManager.h"
+#include "ScreenFade.h"
 
 class DX12Core;
 
@@ -37,6 +38,8 @@ public:
 	template<typename T>
 	T* GetController() { return GetController<T>(currentScene); }
 
+	ScreenFade* GetScreenFade() const { return screenFade.get(); }
+
 private:
 	void RegisterFont(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
 	void RegisterUITexture(const wstring& name, const wchar_t* path, DX12Core& core, ResourceUploadBatch& upload);
@@ -46,6 +49,7 @@ private:
 	unique_ptr<GraphicsMemory> graphicsMemory;
 	unique_ptr<DescriptorHeap> uiSrvHeap;
 	unique_ptr<SpriteBatch> spriteBatch;
+	unique_ptr<ScreenFade> screenFade;
 
 	unordered_map<wstring, UIFontData> uiFontMap;
 	unordered_map<wstring, UITextureData> uiTextureMap;
