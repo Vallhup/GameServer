@@ -192,7 +192,8 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 				controller->SetInteractPrompt(false, {});
 				cineState = BeaconCine::FadeOut;
 				cineTimer = 0.0f;
-				INPUT.SetBlocked(true);   
+				controller->HideHudForCinematic();   
+				INPUT.SetBlocked(true);
 				for (auto& batch : instancingBatches)
 					batch->SetCinematicMode(true);   
 

@@ -1446,6 +1446,28 @@ bool GameSceneUIController::ConsumeBeaconConfirmed()
 	return v;
 }
 
+void GameSceneUIController::HideHudForCinematic()
+{
+	auto hide = [](const shared_ptr<ImageUI>& w) { if (w) w->ChangeState(ImageUIState::Hidden); };
+
+	hide(localCharBarsBack);
+	hide(localCharHpBar);
+	hide(localCharStaminaBar);
+	hide(localCharPotion);
+
+	hide(statusBackImage); hide(statusCharImage); hide(statusImage);
+	hide(statusRibbon); hide(statusArrowLeft); hide(statusArrowRight);
+
+	hide(escWindow); hide(escContinueButton); hide(escOptionsButton); hide(escExitButton);
+	hide(settingWindow); hide(settingBackButton);
+	hide(keyGuide);
+
+	hide(mapBackImage); hide(mapImage);
+
+	partyHudUserVisible = false;
+	RefreshPartyMemberHud();
+}
+
 void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curStamina, int maxStamina, int power, double aSpeed, int defense, double mSpeed)
 {
 	wstring text =

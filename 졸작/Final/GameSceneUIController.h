@@ -35,6 +35,8 @@ public:
 
 	bool ConsumeBeaconConfirmed();
 
+	void HideHudForCinematic();   
+
 private:
 	void InitMonsterHpBars();
 	void UpdateMonsterHpBars();

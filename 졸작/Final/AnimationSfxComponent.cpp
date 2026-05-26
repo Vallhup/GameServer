@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "AnimationSfxComponent.h"
 #include "GameObject.h"
+#include "Transform.h"
 #include "AnimationMachine.h"
 #include "Animator.h"
 #include "Engine.h"
@@ -28,7 +29,10 @@ void AnimationSfxComponent::Update(float deltaTime)
 
 		if (inRange && !t.fired)
 		{
-			SOUND_MANAGER->PlaySFX(t.sound);
+			XMFLOAT3 pos{ 0.0f, 0.0f, 0.0f };
+			if (auto* transform = owner->GetComponent<Transform>())
+				pos = transform->GetPosition();
+			SOUND_MANAGER->PlaySFX3D(t.sound, pos);
 			t.fired = true;
 		}
 		else if (!inRange)
