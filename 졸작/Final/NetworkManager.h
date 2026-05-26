@@ -7,7 +7,7 @@
 
 class NetworkManager {
 public:
-	NetworkManager() : _service(nullptr), _nextPartyRequestId(0) {}
+	NetworkManager() : _service(nullptr), _nextPartyRequestId(1) {}
 
 	void Initialize(
 		uint16 threadCnt, 
@@ -32,6 +32,7 @@ public:
 	bool SendWorldTransitionReadyPacket(uint64_t transferId);
 
 	bool SendPartyUiOpenedPacket();
+	bool SendPartyUiClosedPacket();
 	bool SendPartyListRefreshPacket();
 	bool SendPartyCreatePacket();
 	bool SendPartyJoinRequestPacket(uint64_t partyId);

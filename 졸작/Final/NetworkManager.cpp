@@ -167,6 +167,17 @@ bool NetworkManager::SendPartyUiOpenedPacket()
 	return TrySendInternal(data);
 }
 
+bool NetworkManager::SendPartyUiClosedPacket()
+{
+	Protocol::CS_PARTY_UI_CLOSED_PACKET uiClose;
+	uiClose.set_clientrequestid(_nextPartyRequestId++);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_PARTY_UI_CLOSED_PACKET>(
+		PacketType::CS_PARTY_UI_CLOSED, uiClose);
+
+	return TrySendInternal(data);
+}
+
 bool NetworkManager::SendPartyListRefreshPacket()
 {
 	Protocol::CS_PARTY_LIST_REFRESH_PACKET refresh;

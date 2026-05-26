@@ -897,6 +897,11 @@ void GameSceneUIController::Update(float deltaTime)
 			if (selfOpen)
 			{
 				partyBook->ChangeState(ImageUIState::Hidden);
+				if (auto* network = NETWORK_MANAGER)
+				{
+					network->SendPartyUiClosedPacket();
+				}
+
 				if (partyListBox)      partyListBox->ChangeState(ImageUIState::Hidden);
 				if (partyCreateButton) partyCreateButton->ChangeState(ImageUIState::Hidden);
 				if (partyJoinButton)   partyJoinButton->ChangeState(ImageUIState::Hidden);
