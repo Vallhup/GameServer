@@ -1,11 +1,11 @@
 #pragma once
-#include "Scene.h"
+#include "BeaconCinematicScene.h"
 
 class Terrain;
 class SkyBox;
 class Water;
 
-class SecondBattleScene final : public Scene
+class SecondBattleScene final : public BeaconCinematicScene
 {
 public:
 	SecondBattleScene() = default;
@@ -28,12 +28,11 @@ protected:
 	void InitializeSceneEnvironments() override;
 	void InitializeSceneMonsters() override;
 	void UpdateScene(const float deltaTime) override;
-	void RequestSceneChange() override;
 
 	const char* GetBGMPath() const override;
 
-private:
-	float SampleHeightAt(float worldX, float worldZ) const;
+	const BeaconCinematicConfig& GetCinematicConfig() const override;
+	float SampleHeightAt(float worldX, float worldZ) const override;
 
 private:
 	shared_ptr<Terrain> terrain;

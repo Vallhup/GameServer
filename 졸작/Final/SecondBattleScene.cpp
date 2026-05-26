@@ -16,6 +16,7 @@
 #include "GameSceneUIController.h"
 #include "EffectComponent.h"
 #include "FlameComponent.h"
+#include "BeaconLightComponent.h"
 
 void SecondBattleScene::Release()
 {
@@ -27,6 +28,7 @@ void SecondBattleScene::Release()
 	myPlayer = nullptr;
 	gameObjects.clear();
 
+	INPUT.SetBlocked(false);
 	SOUND_MANAGER->StopBGM(1.0f);
 
 	OutputDebugStringA("SecondBattleScene Data has been deleted!! \n----------------------------------------\n");
@@ -66,6 +68,7 @@ void SecondBattleScene::InitializeSceneEnvironments()
 {
 	skyBox = make_shared<SkyBox>();
 	skyBox->Initialize(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"skybox2");
+	cineSkyBox = skyBox.get();
 	IMGUI.SetSkyBox(skyBox.get());
 	IMGUI.SetCamera(GetCamera());
 	coreRef->GetLightMgr()->SetSkyBox(skyBox.get());
@@ -103,6 +106,23 @@ void SecondBattleScene::InitializeSceneEnvironments()
 	XMFLOAT4 color = { 0.0f, 0.6f, 0.85f, 0.7f };
 	water->SetColor(color);
 #pragma endregion
+
+#pragma region Initialize BeaconLight
+	auto beacon = make_shared<GameObject>();
+	auto light = beacon->AddComponent<BeaconLightComponent>();
+	light->Initialize(coreRef->GetDevice(), 2);
+	light->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(),
+		L"../Assets/Effects/Textures/particle2.png");
+	light->SetColor({ 1.043f, 2.890f, 2.369f, 1.0f });   
+	light->SetSize(2.0f);
+	light->Spawn({ 338.464813f, 71.7f, 417.798187f });
+	AddGameObject(beacon);
+
+	beaconLight = light;
+#pragma endregion
+
+	EFFECT_MANAGER->PreLoad(L"CosmicMist");
+	EFFECT_MANAGER->PreLoad(L"Atmosphere");
 }
 
 void SecondBattleScene::InitializeSceneMonsters()
@@ -139,8 +159,46 @@ void SecondBattleScene::UpdateScene(const float deltaTime)
 		}
 	}
 
+	if (myPlayer && !IsCinematicActive())
+	{
+		constexpr float BEACON_CX = 338.464813f;
+		constexpr float BEACON_CZ = 417.798187f;
+		constexpr float INTERACT_RADIUS = 2.0f;
+		constexpr float UI_HEIGHT = 71.4f;
+
+		const XMFLOAT3& pos = myPlayer->GetComponent<Transform>()->GetPosition();
+		const float dx = pos.x - BEACON_CX;
+		const float dz = pos.z - BEACON_CZ;
+		const float distSq = dx * dx + dz * dz;
+
+		auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Castle);
+		if (controller)
+		{
+			if (distSq <= INTERACT_RADIUS * INTERACT_RADIUS)
+			{
+				const XMFLOAT3 anchor{ BEACON_CX, UI_HEIGHT, BEACON_CZ };
+				controller->SetInteractPrompt(true, anchor);
+			}
+			else
+			{
+				controller->SetInteractPrompt(false, {});
+			}
+
+			if (controller->ConsumeBeaconConfirmed())
+			{
+				controller->SetInteractPrompt(false, {});
+				controller->HideHudForCinematic();
+				StartBeaconCinematic();
+			}
+		}
+	}
+
+	const bool cineActive = IsCinematicActive();
+
 	for (const auto& obj : gameObjects)
 	{
+		if (cineActive && myPlayer && obj.get() == myPlayer.get())
+			continue;
 		if (!obj->IsStatic())
 			obj->Update(deltaTime);
 	}
@@ -148,7 +206,10 @@ void SecondBattleScene::UpdateScene(const float deltaTime)
 	if (water)
 		water->Update(deltaTime);
 
-	if (cam)
+	if (cineActive)
+		UpdateBeaconCinematic(deltaTime);
+
+	if (cam && !cineActive)
 		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);
 
 	BoundingFrustum frustum = cam->GetViewFrustum();
@@ -223,27 +284,6 @@ void SecondBattleScene::RenderSceneEffects()
 	}
 }
 
-void SecondBattleScene::RequestSceneChange()
-{
-	if (INPUT.GetKeyDown(VK_CAPITAL))
-	{
-		// TODO: 서버 검증 이후 LoadingScene 입장하도록 변경 예정
-		//if (sManagerRef)
-		//	sManagerRef->RequestLoadingScene(SceneType::Village);
-
-		auto& transition = ENGINE.GetWorldTransitionController();
-		const uint32_t requestId = transition.CreateRequestId();
-
-		if (transition.BeginRequest(requestId))
-		{
-			if (!NETWORK_MANAGER->SendWorldTransitionRequestPacket(requestId))
-			{
-				transition.Reset();
-			}
-		}
-	}
-}
-
 const char* SecondBattleScene::GetBGMPath() const
 {
 	return "../Assets/Music/BGM/CastleBGM.mp3";
@@ -254,4 +294,35 @@ float SecondBattleScene::SampleHeightAt(float worldX, float worldZ) const
 	if (terrain)
 		return terrain->SampleHeightAt(worldX, worldZ);
 	return 0.0f;
+}
+
+const BeaconCinematicConfig& SecondBattleScene::GetCinematicConfig() const
+{
+	static const BeaconCinematicConfig cfg{
+		.riseStart       = { 338.464813f, 71.7f, 417.798187f },
+		.riseEnd         = { 361.306274f, 101.7f, 348.179993f },  
+		.riseVerticalRatio = 0.5f,                                
+		.fadeDur         = 1.0f,
+		.riseDur         = 6.0f,
+		.growDur         = 1.5f,
+		.brightenDur     = 2.5f,
+		.showcaseHoldDur = 8.0f,
+		.beaconBaseSize  = 4.0f,
+		.beaconMaxSize   = 200.0f,
+		.camEyeXZ        = { 332.534515f, 433.084747f },
+		.camYAbove       = 40.0f,                                 
+		.camBack         = 53.0f,                                 
+		.lookTarget      = { 361.306274f, 70.199959f, 348.179993f },
+		.sunMult         = 16.0f,
+		.skySatMult      = 2.0f,
+		.skyExpMult      = 1.5f,
+		.scatterCenter   = { 350.0f, 383.0f },                    
+		.scatterSpan     = { 300.0f, 200.0f },
+		.scatterNX       = 11,
+		.scatterNZ       = 8,
+		.scatterLayerY   = 30.0f,
+		.burstEffect      = L"CosmicMist",
+		.atmosphereEffect = L"Atmosphere",
+	};
+	return cfg;
 }

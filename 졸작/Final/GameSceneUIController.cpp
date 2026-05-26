@@ -1364,7 +1364,7 @@ void GameSceneUIController::UpdateStatueWindow()
 
 void GameSceneUIController::InitBeaconWindow()
 {
-	if (sceneType != SceneType::Village) return;   
+	if (sceneType != SceneType::Village && sceneType != SceneType::Castle) return;
 
 	const float winSize = WinSize.y * 0.5f;
 	const float winX = (WinSize.x - winSize) * 0.5f;
