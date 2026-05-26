@@ -262,3 +262,20 @@ message SC_PARTY_JOIN_REQUEST_CLOSED_PACKET
 	PartyJoinRequestCloseReason reason = 3;
 	PartyJoinRequestState state = 4;
 }
+
+message SC_ITEM_COUNT_PACKET
+{
+	uint32 hpPotionCount = 1;
+}
+
+message SC_TEAM_DEATH_COUNT_PACKET
+{
+	uint32 maxDeathCount = 1;
+	uint32 deathCount = 2;
+}
+
+message SC_MONSTER_COMBAT_STATE_PACKET
+{
+	uint64 netid = 1;
+	bool inCombat = 2;
+}

@@ -6,7 +6,7 @@
 struct AnimationPlaybackStateComp;
 
 class ResolveAnimationPlaybackSystem final : public System {
-	static const StaticSystemMetaStorage<5, 0, 1> kMetaStorage;
+	static const StaticSystemMetaStorage<6, 0, 1> kMetaStorage;
 
 public:
     void Execute(SystemContext& ctx) override;

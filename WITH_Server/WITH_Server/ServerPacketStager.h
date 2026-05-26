@@ -130,6 +130,40 @@ public:
 		NetId netId,
 		const CombatStatStateComp& stats);
 
+	static bool StageAnimationPacketToSession(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		NetId netId,
+		const AnimationPlaybackStateComp& playback);
+
+	static bool StageAnimationPacketToSessions(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		NetId netId,
+		const AnimationPlaybackStateComp& playback);
+
+	static bool StageItemCountPacketToSession(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		const ConsumableInventoryComp& inventory);
+
+	static bool StageTeamDeathCountPacketToSessions(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		const PartyDeathCountState& deathCount);
+
+	static bool StageMonsterCombatStatePacketToSession(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		NetId netId,
+		bool inCombat);
+
+	static bool StageMonsterCombatStatePacketToSessions(
+		NetworkRuntime& network,
+		std::span<const SessionId> sessionIds,
+		NetId netId,
+		bool inCombat);
+
 	template<typename TPacket>
 	static bool StageReplicationPacket(
 		NetworkRuntime& network,

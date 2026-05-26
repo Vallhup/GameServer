@@ -66,6 +66,12 @@ enum class AIStateType : uint8_t
 	Count
 };
 
+inline bool IsMonsterCombatAIState(AIStateType state) noexcept
+{
+	return state != AIStateType::Idle &&
+		state != AIStateType::ReturnHome;
+}
+
 struct AIDecisionComp : Component
 {
 	AIStateType curState{ AIStateType::Idle };

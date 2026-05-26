@@ -75,6 +75,9 @@ private:
 	void HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact);
 	void HandleAnimationChange(const Protocol::SC_ANIMATION_TRANSITION_PACKET& anim);
 	void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat);
+	void HandleItemCount(const Protocol::SC_ITEM_COUNT_PACKET& itemCount);
+	void HandleTeamDeathCount(const Protocol::SC_TEAM_DEATH_COUNT_PACKET& deathCount);
+	void HandleMontserCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState);
 
 protected:
 	DX12Core* coreRef = nullptr;

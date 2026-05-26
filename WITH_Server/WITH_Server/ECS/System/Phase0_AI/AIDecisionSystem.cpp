@@ -18,11 +18,11 @@
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<11, 1, 1> AIDecisionSystem::kMetaStorage =
+const StaticSystemMetaStorage<12, 1, 1> AIDecisionSystem::kMetaStorage =
 MakeMetaStorage(
 	SysTag<AIDecisionSystem>(),
 	"AIDecisionSystem",
-	std::array<AccessSpec, 11>
+	std::array<AccessSpec, 12>
 	{
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
 		ReadImmediate(ComponentRes<AbilityStateComp>()),
@@ -35,6 +35,7 @@ MakeMetaStorage(
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
 		WriteImmediate(ComponentRes<AIActionRuntimeComp>()),
 		WriteImmediate(ComponentRes<AIMovementRuntimeComp>()),
+		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 	},
 	std::array<SystemTag, 1>{ SysTag<ApplyAICommandSystem>() },
 	std::array<SystemTag, 1>{ SysTag<AIPerceptionSystem>() }
@@ -250,6 +251,15 @@ bool AIDecisionSystem::ApplyPendingTransition(
 
 	if (const IAIState* nextState = states.TryGetState(next))
 		nextState->Enter(ctx);
+
+	if (IsMonsterCombatAIState(current) != IsMonsterCombatAIState(next))
+	{
+		if (DirtyFlagsComp* const dirty =
+			ctx.sysCtx->ecs.GetMutableComponent<DirtyFlagsComp>(ctx.self))
+		{
+			dirty->MarkDirty(WorldDirtyType::MonsterCombatState);
+		}
+	}
 
 	return true;
 }

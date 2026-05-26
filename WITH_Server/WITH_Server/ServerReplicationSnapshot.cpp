@@ -115,6 +115,18 @@ void ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 			spawnType.characterId,
 			transform);
 
+		const AnimationPlaybackStateComp* const playback =
+			view.GetComponent<AnimationPlaybackStateComp>(entity);
+		if (playback != nullptr &&
+			playback->animationId != AnimationId::None)
+		{
+			(void)ServerPacketStager::StageAnimationPacketToSession(
+				network,
+				sessionId,
+				entityNetId,
+				*playback);
+		}
+
 		const CombatStatStateComp* const stats =
 			view.GetComponent<CombatStatStateComp>(entity);
 		if (stats != nullptr)
@@ -124,6 +136,31 @@ void ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 				sessionId,
 				entityNetId,
 				*stats);
+		}
+
+		const AIDecisionComp* const decision =
+			view.GetComponent<AIDecisionComp>(entity);
+		if (decision != nullptr)
+		{
+			(void)ServerPacketStager::StageMonsterCombatStatePacketToSession(
+				network,
+				sessionId,
+				entityNetId,
+				IsMonsterCombatAIState(decision->curState));
+		}
+
+		const PlayerControlIdentityComp* const player =
+			view.GetComponent<PlayerControlIdentityComp>(entity);
+		const ConsumableInventoryComp* const inventory =
+			view.GetComponent<ConsumableInventoryComp>(entity);
+		if (player != nullptr &&
+			inventory != nullptr &&
+			player->ownerSessionId == sessionId)
+		{
+			(void)ServerPacketStager::StageItemCountPacketToSession(
+				network,
+				sessionId,
+				*inventory);
 		}
 	}
 }

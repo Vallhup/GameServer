@@ -91,19 +91,11 @@ void ServerDirtyReplicationService::BuildAndStage(
 				if (playback != nullptr &&
 					playback->animationId != AnimationId::None)
 				{
-					Protocol::SC_ANIMATION_TRANSITION_PACKET animationPacket;
-					animationPacket.set_netid(netId.GetRaw());
-					animationPacket.set_curranim(
-						static_cast<int32_t>(playback->animationId));
-					animationPacket.set_abilityinstanceid(
-						playback->boundAbilityInstanceId);
-					animationPacket.set_normalizedtime(
-						playback->normalizedTime);
-					(void)ServerPacketStager::StageReplicationPacket(
+					(void)ServerPacketStager::StageAnimationPacketToSessions(
 						network,
-						PacketType::SC_ANIMATION_CHANGE,
 						worldSessionIds,
-						animationPacket);
+						netId,
+						*playback);
 				}
 			}
 
@@ -118,6 +110,41 @@ void ServerDirtyReplicationService::BuildAndStage(
 						worldSessionIds,
 						netId,
 						*stats);
+				}
+			}
+
+			if (dirty.IsDirty(WorldDirtyType::Inventory))
+			{
+				const ConsumableInventoryComp* inventory =
+					view.GetComponent<ConsumableInventoryComp>(entity);
+				const PlayerControlIdentityComp* player =
+					view.GetComponent<PlayerControlIdentityComp>(entity);
+				if (inventory != nullptr &&
+					player != nullptr &&
+					player->ownerSessionId != 0 &&
+					std::find(
+						excludedSessionIds.begin(),
+						excludedSessionIds.end(),
+						player->ownerSessionId) == excludedSessionIds.end())
+				{
+					(void)ServerPacketStager::StageItemCountPacketToSession(
+						network,
+						player->ownerSessionId,
+						*inventory);
+				}
+			}
+
+			if (dirty.IsDirty(WorldDirtyType::MonsterCombatState))
+			{
+				const AIDecisionComp* const decision =
+					view.GetComponent<AIDecisionComp>(entity);
+				if (decision != nullptr)
+				{
+					(void)ServerPacketStager::StageMonsterCombatStatePacketToSessions(
+						network,
+						worldSessionIds,
+						netId,
+						IsMonsterCombatAIState(decision->curState));
 				}
 			}
 

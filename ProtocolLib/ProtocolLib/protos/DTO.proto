@@ -69,11 +69,12 @@ message PartyJoinRequest
 	uint64 partyId = 2;
 	uint32 requesterSessionId = 3;
 	uint64 requesterAccountId = 4;
-	PartyJoinRequestState state = 5;
-	PartyJoinRequestCloseReason closeReason = 6;
-	double createdAtSec = 7;
-	double expiresAtSec = 8;
-	double closedAtSec = 9;
+	uint32 requesterCharacterType = 5;
+	PartyJoinRequestState state = 6;
+	PartyJoinRequestCloseReason closeReason = 7;
+	double createdAtSec = 8;
+	double expiresAtSec = 9;
+	double closedAtSec = 10;
 }
 
 message PartySnapshot

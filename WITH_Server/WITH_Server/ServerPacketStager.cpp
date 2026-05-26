@@ -86,6 +86,16 @@ namespace
 		}
 	}
 
+	uint32_t ToPartyUiCharacterType(CharacterId characterId) noexcept
+	{
+		if (characterId == CharacterId::None)
+		{
+			return 0;
+		}
+
+		return static_cast<uint32_t>(characterId) - 1;
+	}
+
 	void FillPartyMember(
 		Protocol::PartyMember& out,
 		const PartyMemberSnapshot& member)
@@ -93,7 +103,7 @@ namespace
 		out.set_sessionid(member.sessionId);
 		out.set_accountid(member.accountId);
 		out.set_netid(member.netId.GetRaw());
-		out.set_charactertype(static_cast<uint32_t>(member.characterId));
+		out.set_charactertype(ToPartyUiCharacterType(member.characterId));
 		out.set_role(ToProtoPartyMemberRole(member.role));
 		out.set_presence(ToProtoPartyMemberPresence(member.presence));
 	}
@@ -106,6 +116,8 @@ namespace
 		out.set_partyid(request.partyId);
 		out.set_requestersessionid(request.requesterSessionId);
 		out.set_requesteraccountid(request.requesterAccountId);
+		out.set_requestercharactertype(
+			ToPartyUiCharacterType(request.requesterCharacterId));
 		out.set_state(ToProtoPartyJoinRequestState(request.state));
 		out.set_closereason(
 			ToProtoPartyJoinRequestCloseReason(request.closeReason));
@@ -141,7 +153,8 @@ namespace
 	{
 		out.set_partyid(entry.partyId);
 		out.set_leadersessionid(entry.leaderSessionId);
-		out.set_leadercharactertype(static_cast<uint32_t>(entry.leaderCharacterId));
+		out.set_leadercharactertype(
+			ToPartyUiCharacterType(entry.leaderCharacterId));
 		out.set_membercount(entry.memberCount);
 		out.set_capacity(entry.capacity);
 		out.set_lifecycle(ToProtoPartyLifecycle(entry.lifecycle));
@@ -425,6 +438,109 @@ bool ServerPacketStager::StageStatPacketToSessions(
 		std::span<const uint8_t>(buffer->data, buffer->size));
 	SendBufferPool::Get().Release(buffer);
 	return staged;
+}
+
+bool ServerPacketStager::StageAnimationPacketToSession(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	NetId netId,
+	const AnimationPlaybackStateComp& playback)
+{
+	Protocol::SC_ANIMATION_TRANSITION_PACKET animationPacket;
+	animationPacket.set_netid(netId.GetRaw());
+	animationPacket.set_curranim(static_cast<int32_t>(playback.animationId));
+	animationPacket.set_abilityinstanceid(playback.boundAbilityInstanceId);
+	animationPacket.set_normalizedtime(playback.normalizedTime);
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_ANIMATION_CHANGE,
+		animationPacket);
+}
+
+bool ServerPacketStager::StageAnimationPacketToSessions(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	NetId netId,
+	const AnimationPlaybackStateComp& playback)
+{
+	Protocol::SC_ANIMATION_TRANSITION_PACKET animationPacket;
+	animationPacket.set_netid(netId.GetRaw());
+	animationPacket.set_curranim(static_cast<int32_t>(playback.animationId));
+	animationPacket.set_abilityinstanceid(playback.boundAbilityInstanceId);
+	animationPacket.set_normalizedtime(playback.normalizedTime);
+
+	return StageReplicationPacket(
+		network,
+		PacketType::SC_ANIMATION_CHANGE,
+		sessionIds,
+		animationPacket);
+}
+
+bool ServerPacketStager::StageItemCountPacketToSession(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	const ConsumableInventoryComp& inventory)
+{
+	Protocol::SC_ITEM_COUNT_PACKET itemCountPacket;
+	itemCountPacket.set_hppotioncount(inventory.hpPotionCount);
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_ITEM_COUNT,
+		itemCountPacket);
+}
+
+bool ServerPacketStager::StageTeamDeathCountPacketToSessions(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	const PartyDeathCountState& deathCount)
+{
+	Protocol::SC_TEAM_DEATH_COUNT_PACKET packet;
+	packet.set_maxdeathcount(deathCount.initialCount);
+	packet.set_deathcount(deathCount.remainingCount);
+
+	return StageReplicationPacket(
+		network,
+		PacketType::SC_TEAM_DEATH_COUNT,
+		sessionIds,
+		packet);
+}
+
+bool ServerPacketStager::StageMonsterCombatStatePacketToSession(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	NetId netId,
+	bool inCombat)
+{
+	Protocol::SC_MONSTER_COMBAT_STATE_PACKET packet;
+	packet.set_netid(netId.GetRaw());
+	packet.set_incombat(inCombat);
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_MONSTER_COMBAT_STATE,
+		packet);
+}
+
+bool ServerPacketStager::StageMonsterCombatStatePacketToSessions(
+	NetworkRuntime& network,
+	std::span<const SessionId> sessionIds,
+	NetId netId,
+	bool inCombat)
+{
+	Protocol::SC_MONSTER_COMBAT_STATE_PACKET packet;
+	packet.set_netid(netId.GetRaw());
+	packet.set_incombat(inCombat);
+
+	return StageReplicationPacket(
+		network,
+		PacketType::SC_MONSTER_COMBAT_STATE,
+		sessionIds,
+		packet);
 }
 
 bool ServerPacketStager::StageWorldTransitionRejectedPacket(

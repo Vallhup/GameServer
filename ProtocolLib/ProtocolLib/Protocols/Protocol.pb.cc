@@ -115,6 +115,32 @@ struct SC_TIME_SYNC_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_TIME_SYNC_PACKETDefaultTypeInternal _SC_TIME_SYNC_PACKET_default_instance_;
 
+inline constexpr SC_TEAM_DEATH_COUNT_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : maxdeathcount_{0u},
+        deathcount_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_TEAM_DEATH_COUNT_PACKET::SC_TEAM_DEATH_COUNT_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_TEAM_DEATH_COUNT_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_TEAM_DEATH_COUNT_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_TEAM_DEATH_COUNT_PACKETDefaultTypeInternal() {}
+  union {
+    SC_TEAM_DEATH_COUNT_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_TEAM_DEATH_COUNT_PACKETDefaultTypeInternal _SC_TEAM_DEATH_COUNT_PACKET_default_instance_;
+
 inline constexpr SC_STAT_CHANGE_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : netid_{::uint64_t{0u}},
@@ -259,6 +285,32 @@ struct SC_MOVE_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_MOVE_PACKETDefaultTypeInternal _SC_MOVE_PACKET_default_instance_;
 
+inline constexpr SC_MONSTER_COMBAT_STATE_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : netid_{::uint64_t{0u}},
+        incombat_{false},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_MONSTER_COMBAT_STATE_PACKET::SC_MONSTER_COMBAT_STATE_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_MONSTER_COMBAT_STATE_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_MONSTER_COMBAT_STATE_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_MONSTER_COMBAT_STATE_PACKETDefaultTypeInternal() {}
+  union {
+    SC_MONSTER_COMBAT_STATE_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_MONSTER_COMBAT_STATE_PACKETDefaultTypeInternal _SC_MONSTER_COMBAT_STATE_PACKET_default_instance_;
+
 inline constexpr SC_LOGIN_SUCCESS_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : netid_{::uint64_t{0u}},
@@ -308,6 +360,31 @@ struct SC_LOGIN_FAIL_PACKETDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_LOGIN_FAIL_PACKETDefaultTypeInternal _SC_LOGIN_FAIL_PACKET_default_instance_;
+
+inline constexpr SC_ITEM_COUNT_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : hppotioncount_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_ITEM_COUNT_PACKET::SC_ITEM_COUNT_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_ITEM_COUNT_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_ITEM_COUNT_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_ITEM_COUNT_PACKETDefaultTypeInternal() {}
+  union {
+    SC_ITEM_COUNT_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_ITEM_COUNT_PACKETDefaultTypeInternal _SC_ITEM_COUNT_PACKET_default_instance_;
 
 inline constexpr SC_COMBAT_IMPACT_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
@@ -1378,6 +1455,35 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET, _impl_.joinrequestid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET, _impl_.reason_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET, _impl_.state_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ITEM_COUNT_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_ITEM_COUNT_PACKET, _impl_.hppotioncount_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_TEAM_DEATH_COUNT_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_TEAM_DEATH_COUNT_PACKET, _impl_.maxdeathcount_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_TEAM_DEATH_COUNT_PACKET, _impl_.deathcount_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET, _impl_.netid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET, _impl_.incombat_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -1417,6 +1523,9 @@ static const ::_pbi::MigrationSchema
         {359, 368, -1, sizeof(::Protocol::SC_PARTY_SNAPSHOT_PACKET)},
         {369, 379, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET)},
         {381, -1, -1, sizeof(::Protocol::SC_PARTY_JOIN_REQUEST_CLOSED_PACKET)},
+        {393, -1, -1, sizeof(::Protocol::SC_ITEM_COUNT_PACKET)},
+        {402, -1, -1, sizeof(::Protocol::SC_TEAM_DEATH_COUNT_PACKET)},
+        {412, -1, -1, sizeof(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_TIME_SYNC_PACKET_default_instance_._instance,
@@ -1454,6 +1563,9 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_SC_PARTY_SNAPSHOT_PACKET_default_instance_._instance,
     &::Protocol::_SC_PARTY_JOIN_REQUEST_RECEIVED_PACKET_default_instance_._instance,
     &::Protocol::_SC_PARTY_JOIN_REQUEST_CLOSED_PACKET_default_instance_._instance,
+    &::Protocol::_SC_ITEM_COUNT_PACKET_default_instance_._instance,
+    &::Protocol::_SC_TEAM_DEATH_COUNT_PACKET_default_instance_._instance,
+    &::Protocol::_SC_MONSTER_COMBAT_STATE_PACKET_default_instance_._instance,
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -1538,7 +1650,11 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "inRequestId\030\002 \001(\004\0225\n\006reason\030\003 \001(\0162%.Prot"
     "ocol.PartyJoinRequestCloseReason\022.\n\005stat"
     "e\030\004 \001(\0162\037.Protocol.PartyJoinRequestState"
-    "b\006proto3"
+    "\"-\n\024SC_ITEM_COUNT_PACKET\022\025\n\rhpPotionCoun"
+    "t\030\001 \001(\r\"G\n\032SC_TEAM_DEATH_COUNT_PACKET\022\025\n"
+    "\rmaxDeathCount\030\001 \001(\r\022\022\n\ndeathCount\030\002 \001(\r"
+    "\"A\n\036SC_MONSTER_COMBAT_STATE_PACKET\022\r\n\005ne"
+    "tid\030\001 \001(\004\022\020\n\010inCombat\030\002 \001(\010b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[1] =
     {
@@ -1548,13 +1664,13 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    3248,
+    3435,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     descriptor_table_Protocol_2eproto_deps,
     1,
-    35,
+    38,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -10833,6 +10949,694 @@ void SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::InternalSwap(SC_PARTY_JOIN_REQUEST_CLO
 }
 
 ::google::protobuf::Metadata SC_PARTY_JOIN_REQUEST_CLOSED_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_ITEM_COUNT_PACKET::_Internal {
+ public:
+};
+
+SC_ITEM_COUNT_PACKET::SC_ITEM_COUNT_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_ITEM_COUNT_PACKET)
+}
+SC_ITEM_COUNT_PACKET::SC_ITEM_COUNT_PACKET(
+    ::google::protobuf::Arena* arena, const SC_ITEM_COUNT_PACKET& from)
+    : SC_ITEM_COUNT_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_ITEM_COUNT_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_ITEM_COUNT_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.hppotioncount_ = {};
+}
+SC_ITEM_COUNT_PACKET::~SC_ITEM_COUNT_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_ITEM_COUNT_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_ITEM_COUNT_PACKET::SharedDtor(MessageLite& self) {
+  SC_ITEM_COUNT_PACKET& this_ = static_cast<SC_ITEM_COUNT_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_ITEM_COUNT_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_ITEM_COUNT_PACKET(arena);
+}
+constexpr auto SC_ITEM_COUNT_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_ITEM_COUNT_PACKET),
+                                            alignof(SC_ITEM_COUNT_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_ITEM_COUNT_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_ITEM_COUNT_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_ITEM_COUNT_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_ITEM_COUNT_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_ITEM_COUNT_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_ITEM_COUNT_PACKET>(), &SC_ITEM_COUNT_PACKET::ByteSizeLong,
+            &SC_ITEM_COUNT_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_ITEM_COUNT_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_ITEM_COUNT_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_ITEM_COUNT_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 0, 2> SC_ITEM_COUNT_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_ITEM_COUNT_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // uint32 hpPotionCount = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_ITEM_COUNT_PACKET, _impl_.hppotioncount_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_ITEM_COUNT_PACKET, _impl_.hppotioncount_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 hpPotionCount = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_ITEM_COUNT_PACKET, _impl_.hppotioncount_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_ITEM_COUNT_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_ITEM_COUNT_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.hppotioncount_ = 0u;
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_ITEM_COUNT_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_ITEM_COUNT_PACKET& this_ = static_cast<const SC_ITEM_COUNT_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_ITEM_COUNT_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_ITEM_COUNT_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_ITEM_COUNT_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint32 hpPotionCount = 1;
+          if (this_._internal_hppotioncount() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                1, this_._internal_hppotioncount(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_ITEM_COUNT_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_ITEM_COUNT_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_ITEM_COUNT_PACKET& this_ = static_cast<const SC_ITEM_COUNT_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_ITEM_COUNT_PACKET::ByteSizeLong() const {
+          const SC_ITEM_COUNT_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_ITEM_COUNT_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+           {
+            // uint32 hpPotionCount = 1;
+            if (this_._internal_hppotioncount() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_hppotioncount());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_ITEM_COUNT_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_ITEM_COUNT_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_ITEM_COUNT_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_ITEM_COUNT_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_hppotioncount() != 0) {
+    _this->_impl_.hppotioncount_ = from._impl_.hppotioncount_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_ITEM_COUNT_PACKET::CopyFrom(const SC_ITEM_COUNT_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_ITEM_COUNT_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_ITEM_COUNT_PACKET::InternalSwap(SC_ITEM_COUNT_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+        swap(_impl_.hppotioncount_, other->_impl_.hppotioncount_);
+}
+
+::google::protobuf::Metadata SC_ITEM_COUNT_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_TEAM_DEATH_COUNT_PACKET::_Internal {
+ public:
+};
+
+SC_TEAM_DEATH_COUNT_PACKET::SC_TEAM_DEATH_COUNT_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_TEAM_DEATH_COUNT_PACKET)
+}
+SC_TEAM_DEATH_COUNT_PACKET::SC_TEAM_DEATH_COUNT_PACKET(
+    ::google::protobuf::Arena* arena, const SC_TEAM_DEATH_COUNT_PACKET& from)
+    : SC_TEAM_DEATH_COUNT_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_TEAM_DEATH_COUNT_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_TEAM_DEATH_COUNT_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, maxdeathcount_),
+           0,
+           offsetof(Impl_, deathcount_) -
+               offsetof(Impl_, maxdeathcount_) +
+               sizeof(Impl_::deathcount_));
+}
+SC_TEAM_DEATH_COUNT_PACKET::~SC_TEAM_DEATH_COUNT_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_TEAM_DEATH_COUNT_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_TEAM_DEATH_COUNT_PACKET::SharedDtor(MessageLite& self) {
+  SC_TEAM_DEATH_COUNT_PACKET& this_ = static_cast<SC_TEAM_DEATH_COUNT_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_TEAM_DEATH_COUNT_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_TEAM_DEATH_COUNT_PACKET(arena);
+}
+constexpr auto SC_TEAM_DEATH_COUNT_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_TEAM_DEATH_COUNT_PACKET),
+                                            alignof(SC_TEAM_DEATH_COUNT_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_TEAM_DEATH_COUNT_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_TEAM_DEATH_COUNT_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_TEAM_DEATH_COUNT_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_TEAM_DEATH_COUNT_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_TEAM_DEATH_COUNT_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_TEAM_DEATH_COUNT_PACKET>(), &SC_TEAM_DEATH_COUNT_PACKET::ByteSizeLong,
+            &SC_TEAM_DEATH_COUNT_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_TEAM_DEATH_COUNT_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_TEAM_DEATH_COUNT_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_TEAM_DEATH_COUNT_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 0, 2> SC_TEAM_DEATH_COUNT_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_TEAM_DEATH_COUNT_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // uint32 deathCount = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_TEAM_DEATH_COUNT_PACKET, _impl_.deathcount_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_TEAM_DEATH_COUNT_PACKET, _impl_.deathcount_)}},
+    // uint32 maxDeathCount = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_TEAM_DEATH_COUNT_PACKET, _impl_.maxdeathcount_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_TEAM_DEATH_COUNT_PACKET, _impl_.maxdeathcount_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint32 maxDeathCount = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_TEAM_DEATH_COUNT_PACKET, _impl_.maxdeathcount_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 deathCount = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_TEAM_DEATH_COUNT_PACKET, _impl_.deathcount_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_TEAM_DEATH_COUNT_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_TEAM_DEATH_COUNT_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.maxdeathcount_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.deathcount_) -
+      reinterpret_cast<char*>(&_impl_.maxdeathcount_)) + sizeof(_impl_.deathcount_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_TEAM_DEATH_COUNT_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_TEAM_DEATH_COUNT_PACKET& this_ = static_cast<const SC_TEAM_DEATH_COUNT_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_TEAM_DEATH_COUNT_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_TEAM_DEATH_COUNT_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_TEAM_DEATH_COUNT_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint32 maxDeathCount = 1;
+          if (this_._internal_maxdeathcount() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                1, this_._internal_maxdeathcount(), target);
+          }
+
+          // uint32 deathCount = 2;
+          if (this_._internal_deathcount() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                2, this_._internal_deathcount(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_TEAM_DEATH_COUNT_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_TEAM_DEATH_COUNT_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_TEAM_DEATH_COUNT_PACKET& this_ = static_cast<const SC_TEAM_DEATH_COUNT_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_TEAM_DEATH_COUNT_PACKET::ByteSizeLong() const {
+          const SC_TEAM_DEATH_COUNT_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_TEAM_DEATH_COUNT_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint32 maxDeathCount = 1;
+            if (this_._internal_maxdeathcount() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_maxdeathcount());
+            }
+            // uint32 deathCount = 2;
+            if (this_._internal_deathcount() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_deathcount());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_TEAM_DEATH_COUNT_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_TEAM_DEATH_COUNT_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_TEAM_DEATH_COUNT_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_TEAM_DEATH_COUNT_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_maxdeathcount() != 0) {
+    _this->_impl_.maxdeathcount_ = from._impl_.maxdeathcount_;
+  }
+  if (from._internal_deathcount() != 0) {
+    _this->_impl_.deathcount_ = from._impl_.deathcount_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_TEAM_DEATH_COUNT_PACKET::CopyFrom(const SC_TEAM_DEATH_COUNT_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_TEAM_DEATH_COUNT_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_TEAM_DEATH_COUNT_PACKET::InternalSwap(SC_TEAM_DEATH_COUNT_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_TEAM_DEATH_COUNT_PACKET, _impl_.deathcount_)
+      + sizeof(SC_TEAM_DEATH_COUNT_PACKET::_impl_.deathcount_)
+      - PROTOBUF_FIELD_OFFSET(SC_TEAM_DEATH_COUNT_PACKET, _impl_.maxdeathcount_)>(
+          reinterpret_cast<char*>(&_impl_.maxdeathcount_),
+          reinterpret_cast<char*>(&other->_impl_.maxdeathcount_));
+}
+
+::google::protobuf::Metadata SC_TEAM_DEATH_COUNT_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_MONSTER_COMBAT_STATE_PACKET::_Internal {
+ public:
+};
+
+SC_MONSTER_COMBAT_STATE_PACKET::SC_MONSTER_COMBAT_STATE_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_MONSTER_COMBAT_STATE_PACKET)
+}
+SC_MONSTER_COMBAT_STATE_PACKET::SC_MONSTER_COMBAT_STATE_PACKET(
+    ::google::protobuf::Arena* arena, const SC_MONSTER_COMBAT_STATE_PACKET& from)
+    : SC_MONSTER_COMBAT_STATE_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_MONSTER_COMBAT_STATE_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_MONSTER_COMBAT_STATE_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, netid_),
+           0,
+           offsetof(Impl_, incombat_) -
+               offsetof(Impl_, netid_) +
+               sizeof(Impl_::incombat_));
+}
+SC_MONSTER_COMBAT_STATE_PACKET::~SC_MONSTER_COMBAT_STATE_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_MONSTER_COMBAT_STATE_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_MONSTER_COMBAT_STATE_PACKET::SharedDtor(MessageLite& self) {
+  SC_MONSTER_COMBAT_STATE_PACKET& this_ = static_cast<SC_MONSTER_COMBAT_STATE_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_MONSTER_COMBAT_STATE_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_MONSTER_COMBAT_STATE_PACKET(arena);
+}
+constexpr auto SC_MONSTER_COMBAT_STATE_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_MONSTER_COMBAT_STATE_PACKET),
+                                            alignof(SC_MONSTER_COMBAT_STATE_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_MONSTER_COMBAT_STATE_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_MONSTER_COMBAT_STATE_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_MONSTER_COMBAT_STATE_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_MONSTER_COMBAT_STATE_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_MONSTER_COMBAT_STATE_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_MONSTER_COMBAT_STATE_PACKET>(), &SC_MONSTER_COMBAT_STATE_PACKET::ByteSizeLong,
+            &SC_MONSTER_COMBAT_STATE_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_MONSTER_COMBAT_STATE_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_MONSTER_COMBAT_STATE_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_MONSTER_COMBAT_STATE_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<1, 2, 0, 0, 2> SC_MONSTER_COMBAT_STATE_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    2, 8,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967292,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    2,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_MONSTER_COMBAT_STATE_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // bool inCombat = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(SC_MONSTER_COMBAT_STATE_PACKET, _impl_.incombat_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_MONSTER_COMBAT_STATE_PACKET, _impl_.incombat_)}},
+    // uint64 netid = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_MONSTER_COMBAT_STATE_PACKET, _impl_.netid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_MONSTER_COMBAT_STATE_PACKET, _impl_.netid_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 netid = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_MONSTER_COMBAT_STATE_PACKET, _impl_.netid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // bool inCombat = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_MONSTER_COMBAT_STATE_PACKET, _impl_.incombat_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kBool)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_MONSTER_COMBAT_STATE_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_MONSTER_COMBAT_STATE_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.netid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.incombat_) -
+      reinterpret_cast<char*>(&_impl_.netid_)) + sizeof(_impl_.incombat_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_MONSTER_COMBAT_STATE_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_MONSTER_COMBAT_STATE_PACKET& this_ = static_cast<const SC_MONSTER_COMBAT_STATE_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_MONSTER_COMBAT_STATE_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_MONSTER_COMBAT_STATE_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_MONSTER_COMBAT_STATE_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 netid = 1;
+          if (this_._internal_netid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_netid(), target);
+          }
+
+          // bool inCombat = 2;
+          if (this_._internal_incombat() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteBoolToArray(
+                2, this_._internal_incombat(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_MONSTER_COMBAT_STATE_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_MONSTER_COMBAT_STATE_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_MONSTER_COMBAT_STATE_PACKET& this_ = static_cast<const SC_MONSTER_COMBAT_STATE_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_MONSTER_COMBAT_STATE_PACKET::ByteSizeLong() const {
+          const SC_MONSTER_COMBAT_STATE_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_MONSTER_COMBAT_STATE_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 netid = 1;
+            if (this_._internal_netid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_netid());
+            }
+            // bool inCombat = 2;
+            if (this_._internal_incombat() != 0) {
+              total_size += 2;
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_MONSTER_COMBAT_STATE_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_MONSTER_COMBAT_STATE_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_MONSTER_COMBAT_STATE_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_MONSTER_COMBAT_STATE_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_netid() != 0) {
+    _this->_impl_.netid_ = from._impl_.netid_;
+  }
+  if (from._internal_incombat() != 0) {
+    _this->_impl_.incombat_ = from._impl_.incombat_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_MONSTER_COMBAT_STATE_PACKET::CopyFrom(const SC_MONSTER_COMBAT_STATE_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_MONSTER_COMBAT_STATE_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_MONSTER_COMBAT_STATE_PACKET::InternalSwap(SC_MONSTER_COMBAT_STATE_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_MONSTER_COMBAT_STATE_PACKET, _impl_.incombat_)
+      + sizeof(SC_MONSTER_COMBAT_STATE_PACKET::_impl_.incombat_)
+      - PROTOBUF_FIELD_OFFSET(SC_MONSTER_COMBAT_STATE_PACKET, _impl_.netid_)>(
+          reinterpret_cast<char*>(&_impl_.netid_),
+          reinterpret_cast<char*>(&other->_impl_.netid_));
+}
+
+::google::protobuf::Metadata SC_MONSTER_COMBAT_STATE_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

@@ -25,6 +25,11 @@ namespace
 
 		const HpPotionTuning tuning{};
 		--inventory->hpPotionCount;
+		if (DirtyFlagsComp* dirty =
+			ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
+		{
+			dirty->MarkDirty(WorldDirtyType::Inventory);
+		}
 
 		const int32_t previousHp = stats->currentHp;
 		stats->currentHp = std::clamp(

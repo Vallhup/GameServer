@@ -34,7 +34,9 @@ enum class WorldDirtyType : uint8_t
 	None = 0,
 	Transform = 1 << 0,
 	Stat = 1 << 1,
-	Animation = 1 << 2
+	Animation = 1 << 2,
+	Inventory = 1 << 3,
+	MonsterCombatState = 1 << 4
 };
 
 class DirtyFlagsComp : public Component {

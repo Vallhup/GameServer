@@ -962,11 +962,12 @@ class PartyJoinRequest final : public ::google::protobuf::Message
     kPartyIdFieldNumber = 2,
     kRequesterAccountIdFieldNumber = 4,
     kRequesterSessionIdFieldNumber = 3,
-    kStateFieldNumber = 5,
-    kCreatedAtSecFieldNumber = 7,
-    kExpiresAtSecFieldNumber = 8,
-    kClosedAtSecFieldNumber = 9,
-    kCloseReasonFieldNumber = 6,
+    kRequesterCharacterTypeFieldNumber = 5,
+    kStateFieldNumber = 6,
+    kCloseReasonFieldNumber = 7,
+    kCreatedAtSecFieldNumber = 8,
+    kExpiresAtSecFieldNumber = 9,
+    kClosedAtSecFieldNumber = 10,
   };
   // uint64 joinRequestId = 1;
   void clear_joinrequestid() ;
@@ -1008,7 +1009,17 @@ class PartyJoinRequest final : public ::google::protobuf::Message
   void _internal_set_requestersessionid(::uint32_t value);
 
   public:
-  // .Protocol.PartyJoinRequestState state = 5;
+  // uint32 requesterCharacterType = 5;
+  void clear_requestercharactertype() ;
+  ::uint32_t requestercharactertype() const;
+  void set_requestercharactertype(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_requestercharactertype() const;
+  void _internal_set_requestercharactertype(::uint32_t value);
+
+  public:
+  // .Protocol.PartyJoinRequestState state = 6;
   void clear_state() ;
   ::Protocol::PartyJoinRequestState state() const;
   void set_state(::Protocol::PartyJoinRequestState value);
@@ -1018,37 +1029,7 @@ class PartyJoinRequest final : public ::google::protobuf::Message
   void _internal_set_state(::Protocol::PartyJoinRequestState value);
 
   public:
-  // double createdAtSec = 7;
-  void clear_createdatsec() ;
-  double createdatsec() const;
-  void set_createdatsec(double value);
-
-  private:
-  double _internal_createdatsec() const;
-  void _internal_set_createdatsec(double value);
-
-  public:
-  // double expiresAtSec = 8;
-  void clear_expiresatsec() ;
-  double expiresatsec() const;
-  void set_expiresatsec(double value);
-
-  private:
-  double _internal_expiresatsec() const;
-  void _internal_set_expiresatsec(double value);
-
-  public:
-  // double closedAtSec = 9;
-  void clear_closedatsec() ;
-  double closedatsec() const;
-  void set_closedatsec(double value);
-
-  private:
-  double _internal_closedatsec() const;
-  void _internal_set_closedatsec(double value);
-
-  public:
-  // .Protocol.PartyJoinRequestCloseReason closeReason = 6;
+  // .Protocol.PartyJoinRequestCloseReason closeReason = 7;
   void clear_closereason() ;
   ::Protocol::PartyJoinRequestCloseReason closereason() const;
   void set_closereason(::Protocol::PartyJoinRequestCloseReason value);
@@ -1058,12 +1039,42 @@ class PartyJoinRequest final : public ::google::protobuf::Message
   void _internal_set_closereason(::Protocol::PartyJoinRequestCloseReason value);
 
   public:
+  // double createdAtSec = 8;
+  void clear_createdatsec() ;
+  double createdatsec() const;
+  void set_createdatsec(double value);
+
+  private:
+  double _internal_createdatsec() const;
+  void _internal_set_createdatsec(double value);
+
+  public:
+  // double expiresAtSec = 9;
+  void clear_expiresatsec() ;
+  double expiresatsec() const;
+  void set_expiresatsec(double value);
+
+  private:
+  double _internal_expiresatsec() const;
+  void _internal_set_expiresatsec(double value);
+
+  public:
+  // double closedAtSec = 10;
+  void clear_closedatsec() ;
+  double closedatsec() const;
+  void set_closedatsec(double value);
+
+  private:
+  double _internal_closedatsec() const;
+  void _internal_set_closedatsec(double value);
+
+  public:
   // @@protoc_insertion_point(class_scope:Protocol.PartyJoinRequest)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      4, 9, 0,
+      4, 10, 0,
       0, 2>
       _table_;
 
@@ -1085,11 +1096,12 @@ class PartyJoinRequest final : public ::google::protobuf::Message
     ::uint64_t partyid_;
     ::uint64_t requesteraccountid_;
     ::uint32_t requestersessionid_;
+    ::uint32_t requestercharactertype_;
     int state_;
+    int closereason_;
     double createdatsec_;
     double expiresatsec_;
     double closedatsec_;
-    int closereason_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -1613,7 +1625,29 @@ inline void PartyJoinRequest::_internal_set_requesteraccountid(::uint64_t value)
   _impl_.requesteraccountid_ = value;
 }
 
-// .Protocol.PartyJoinRequestState state = 5;
+// uint32 requesterCharacterType = 5;
+inline void PartyJoinRequest::clear_requestercharactertype() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.requestercharactertype_ = 0u;
+}
+inline ::uint32_t PartyJoinRequest::requestercharactertype() const {
+  // @@protoc_insertion_point(field_get:Protocol.PartyJoinRequest.requesterCharacterType)
+  return _internal_requestercharactertype();
+}
+inline void PartyJoinRequest::set_requestercharactertype(::uint32_t value) {
+  _internal_set_requestercharactertype(value);
+  // @@protoc_insertion_point(field_set:Protocol.PartyJoinRequest.requesterCharacterType)
+}
+inline ::uint32_t PartyJoinRequest::_internal_requestercharactertype() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.requestercharactertype_;
+}
+inline void PartyJoinRequest::_internal_set_requestercharactertype(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.requestercharactertype_ = value;
+}
+
+// .Protocol.PartyJoinRequestState state = 6;
 inline void PartyJoinRequest::clear_state() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.state_ = 0;
@@ -1635,7 +1669,7 @@ inline void PartyJoinRequest::_internal_set_state(::Protocol::PartyJoinRequestSt
   _impl_.state_ = value;
 }
 
-// .Protocol.PartyJoinRequestCloseReason closeReason = 6;
+// .Protocol.PartyJoinRequestCloseReason closeReason = 7;
 inline void PartyJoinRequest::clear_closereason() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.closereason_ = 0;
@@ -1657,7 +1691,7 @@ inline void PartyJoinRequest::_internal_set_closereason(::Protocol::PartyJoinReq
   _impl_.closereason_ = value;
 }
 
-// double createdAtSec = 7;
+// double createdAtSec = 8;
 inline void PartyJoinRequest::clear_createdatsec() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.createdatsec_ = 0;
@@ -1679,7 +1713,7 @@ inline void PartyJoinRequest::_internal_set_createdatsec(double value) {
   _impl_.createdatsec_ = value;
 }
 
-// double expiresAtSec = 8;
+// double expiresAtSec = 9;
 inline void PartyJoinRequest::clear_expiresatsec() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.expiresatsec_ = 0;
@@ -1701,7 +1735,7 @@ inline void PartyJoinRequest::_internal_set_expiresatsec(double value) {
   _impl_.expiresatsec_ = value;
 }
 
-// double closedAtSec = 9;
+// double closedAtSec = 10;
 inline void PartyJoinRequest::clear_closedatsec() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.closedatsec_ = 0;

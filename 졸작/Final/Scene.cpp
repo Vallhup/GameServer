@@ -118,6 +118,21 @@ void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
 			return NetHelper::DispatchPacket<Protocol::SC_STAT_CHANGE_PACKET>(header, data,
 				[this](const auto& packet) { HandleStatChange(packet); });
 		}
+		case PacketType::SC_ITEM_COUNT:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_ITEM_COUNT_PACKET>(header, data,
+				[this](const auto& packet) { HandleItemCount(packet); });
+		}
+		case PacketType::SC_TEAM_DEATH_COUNT:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_TEAM_DEATH_COUNT_PACKET>(header, data,
+				[this](const auto& packet) { HandleTeamDeathCount(packet); });
+		}
+		case PacketType::SC_MONSTER_COMBAT_STATE:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_MONSTER_COMBAT_STATE_PACKET>(header, data,
+				[this](const auto& packet) { HandleMontserCombatState(packet); });
+		}
 	}
 }
 
@@ -566,4 +581,26 @@ void Scene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
 		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
 			controller->HandlePartyMemberHp(id, stat.curhp(), stat.maxhp());
 	}
+}
+
+void Scene::HandleItemCount(const Protocol::SC_ITEM_COUNT_PACKET& itemCount)
+{
+	// TODO: Potion 개수 UI 추가
+	uint32_t hpPotionCount = itemCount.hppotioncount();
+}
+
+void Scene::HandleTeamDeathCount(const Protocol::SC_TEAM_DEATH_COUNT_PACKET& deathCount)
+{
+	// TODO: Death Count UI 추가
+	uint32_t deathCnt = deathCount.deathcount();
+	uint32_t maxDeathCount = deathCount.maxdeathcount();
+}
+
+void Scene::HandleMontserCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState)
+{
+	// TODO: Hp UI of/off 추가
+	NetId netId{ combatState.netid() };
+	int id = netId.GetId();
+
+	bool inCombat = combatState.incombat();
 }

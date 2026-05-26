@@ -6,16 +6,17 @@
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<5, 0, 1> ResolveAnimationPlaybackSystem::kMetaStorage =
+const StaticSystemMetaStorage<6, 0, 1> ResolveAnimationPlaybackSystem::kMetaStorage =
     MakeMetaStorage(
         SysTag<ResolveAnimationPlaybackSystem>(),
         "ResolveAnimationPlaybackSystem",
-        std::array<AccessSpec, 5>
+        std::array<AccessSpec, 6>
         {
             WriteImmediate(ComponentRes<AnimationPlaybackStateComp>()),
             ReadImmediate(ComponentRes<AbilityStateComp>()),
             ReadImmediate(ComponentRes<LocomotionStateComp>()),
             ReadImmediate(ComponentRes<SpawnTypeComp>()),
+            ReadImmediate(ComponentRes<CombatStatStateComp>()),
             WriteImmediate(ComponentRes<DirtyFlagsComp>()),
         },
         std::array<SystemTag, 0>{},
@@ -28,19 +29,52 @@ void ResolveAnimationPlaybackSystem::Execute(SystemContext& ctx)
 		playbackState,
 		abilityState,
 		locomotionState,
-		spawnType] :
+		spawnType,
+		stats] :
 		ctx.ecs.View<
 			AnimationPlaybackStateComp,
 			AbilityStateComp,
 			LocomotionStateComp,
-			SpawnTypeComp>())
+			SpawnTypeComp,
+			CombatStatStateComp>())
 	{
 		const AnimationPlaybackStateComp previousState = playbackState;
 
+		const AbilityDef* activeAbilityDef =
+			IsAbilityActive(abilityState)
+			? GameplayContentCatalogSnapshot::Current()
+				.Abilities()
+				.Find(abilityState.abilityId)
+			: nullptr;
+		const bool activeAbilityIsDead =
+			activeAbilityDef != nullptr &&
+			activeAbilityDef->kind == AbilityKind::Dead;
+
+		if (!activeAbilityIsDead &&
+			stats.currentHp <= 0 &&
+			previousState.source == AnimationPlaybackSource::Ability &&
+			previousState.boundAbilityId != InvalidAbilityId)
+		{
+			const AbilityDef* previousAbilityDef =
+				GameplayContentCatalogSnapshot::Current()
+					.Abilities()
+					.Find(previousState.boundAbilityId);
+
+			if (previousAbilityDef != nullptr &&
+				previousAbilityDef->kind == AbilityKind::Dead)
+			{
+				playbackState = previousState;
+				playbackState.normalizedTime = 1.0f;
+				playbackState.playbackTimeSec =
+					previousAbilityDef->timeline.durationSec;
+				playbackState.loop = false;
+				playbackState.holdLastFrame = true;
+				continue;
+			}
+		}
+
 		if (IsAbilityActive(abilityState))
 		{
-			const AbilityDef* abilityDef =
-				GameplayContentCatalogSnapshot::Current().Abilities().Find(abilityState.abilityId);
 			playbackState.source = AnimationPlaybackSource::Ability;
 			playbackState.animationId =
 				ResolveAbilityAnimationId(
@@ -51,8 +85,8 @@ void ResolveAnimationPlaybackSystem::Execute(SystemContext& ctx)
 			playbackState.boundLocomotionMode = LocomotionMode::Idle;
 			playbackState.playbackTimeSec = abilityState.elapsedSec;
 			playbackState.normalizedTime =
-				(abilityDef != nullptr && abilityDef->timeline.durationSec > 0.0f)
-				? ClampFloat(abilityState.elapsedSec / abilityDef->timeline.durationSec, 0.0f, 1.0f)
+				(activeAbilityDef != nullptr && activeAbilityDef->timeline.durationSec > 0.0f)
+				? ClampFloat(abilityState.elapsedSec / activeAbilityDef->timeline.durationSec, 0.0f, 1.0f)
 				: 0.0f;
 			playbackState.playRate = 1.0f;
 			playbackState.loop = false;

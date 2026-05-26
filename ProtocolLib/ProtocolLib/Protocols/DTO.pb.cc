@@ -94,11 +94,12 @@ inline constexpr PartyJoinRequest::Impl_::Impl_(
         partyid_{::uint64_t{0u}},
         requesteraccountid_{::uint64_t{0u}},
         requestersessionid_{0u},
+        requestercharactertype_{0u},
         state_{static_cast< ::Protocol::PartyJoinRequestState >(0)},
+        closereason_{static_cast< ::Protocol::PartyJoinRequestCloseReason >(0)},
         createdatsec_{0},
         expiresatsec_{0},
         closedatsec_{0},
-        closereason_{static_cast< ::Protocol::PartyJoinRequestCloseReason >(0)},
         _cached_size_{0} {}
 
 template <typename>
@@ -184,6 +185,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyJoinRequest, _impl_.partyid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyJoinRequest, _impl_.requestersessionid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyJoinRequest, _impl_.requesteraccountid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::PartyJoinRequest, _impl_.requestercharactertype_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyJoinRequest, _impl_.state_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyJoinRequest, _impl_.closereason_),
         PROTOBUF_FIELD_OFFSET(::Protocol::PartyJoinRequest, _impl_.createdatsec_),
@@ -226,8 +228,8 @@ static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, -1, -1, sizeof(::Protocol::PartyMember)},
         {14, -1, -1, sizeof(::Protocol::PartyJoinRequest)},
-        {31, -1, -1, sizeof(::Protocol::PartySnapshot)},
-        {46, -1, -1, sizeof(::Protocol::PartyListEntry)},
+        {32, -1, -1, sizeof(::Protocol::PartySnapshot)},
+        {47, -1, -1, sizeof(::Protocol::PartyListEntry)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_PartyMember_default_instance_._instance,
@@ -242,54 +244,55 @@ const char descriptor_table_protodef_DTO_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIAB
     "etId\030\003 \001(\004\022\025\n\rcharacterType\030\004 \001(\r\022\'\n\004rol"
     "e\030\005 \001(\0162\031.Protocol.PartyMemberRole\022/\n\010pr"
     "esence\030\006 \001(\0162\035.Protocol.PartyMemberPrese"
-    "nce\"\237\002\n\020PartyJoinRequest\022\025\n\rjoinRequestI"
+    "nce\"\277\002\n\020PartyJoinRequest\022\025\n\rjoinRequestI"
     "d\030\001 \001(\004\022\017\n\007partyId\030\002 \001(\004\022\032\n\022requesterSes"
     "sionId\030\003 \001(\r\022\032\n\022requesterAccountId\030\004 \001(\004"
-    "\022.\n\005state\030\005 \001(\0162\037.Protocol.PartyJoinRequ"
-    "estState\022:\n\013closeReason\030\006 \001(\0162%.Protocol"
-    ".PartyJoinRequestCloseReason\022\024\n\014createdA"
-    "tSec\030\007 \001(\001\022\024\n\014expiresAtSec\030\010 \001(\001\022\023\n\013clos"
-    "edAtSec\030\t \001(\001\"\350\001\n\rPartySnapshot\022\017\n\007party"
-    "Id\030\001 \001(\004\022+\n\tlifecycle\030\002 \001(\0162\030.Protocol.P"
-    "artyLifecycle\022\027\n\017leaderSessionId\030\003 \001(\r\022&"
-    "\n\007members\030\004 \003(\0132\025.Protocol.PartyMember\0220"
-    "\n\014joinRequests\030\005 \003(\0132\032.Protocol.PartyJoi"
-    "nRequest\022\024\n\014createdAtSec\030\006 \001(\001\022\020\n\010joinab"
-    "le\030\007 \001(\010\"\323\001\n\016PartyListEntry\022\017\n\007partyId\030\001"
-    " \001(\004\022\027\n\017leaderSessionId\030\002 \001(\r\022\033\n\023leaderC"
-    "haracterType\030\003 \001(\r\022\023\n\013memberCount\030\004 \001(\r\022"
-    "\020\n\010capacity\030\005 \001(\r\022+\n\tlifecycle\030\006 \001(\0162\030.P"
-    "rotocol.PartyLifecycle\022\024\n\014createdAtSec\030\007"
-    " \001(\001\022\020\n\010joinable\030\010 \001(\010*A\n\017AttackInputTyp"
-    "e\022\026\n\022ATTACK_INPUT_LIGHT\020\000\022\026\n\022ATTACK_INPU"
-    "T_HEAVY\020\001*\223\001\n\016PartyLifecycle\022\033\n\027PARTY_LI"
-    "FECYCLE_FORMING\020\000\022\'\n#PARTY_LIFECYCLE_WOR"
-    "LD_ENTRY_PENDING\020\001\022\034\n\030PARTY_LIFECYCLE_IN"
-    "_WORLD\020\002\022\035\n\031PARTY_LIFECYCLE_DISBANDED\020\003*"
-    "M\n\017PartyMemberRole\022\034\n\030PARTY_MEMBER_ROLE_"
-    "LEADER\020\000\022\034\n\030PARTY_MEMBER_ROLE_MEMBER\020\001*Z"
-    "\n\023PartyMemberPresence\022 \n\034PARTY_MEMBER_PR"
-    "ESENCE_ONLINE\020\000\022!\n\035PARTY_MEMBER_PRESENCE"
-    "_OFFLINE\020\001*\273\001\n\025PartyJoinRequestState\022\036\n\032"
-    "PARTY_JOIN_REQUEST_PENDING\020\000\022\037\n\033PARTY_JO"
-    "IN_REQUEST_ACCEPTED\020\001\022\037\n\033PARTY_JOIN_REQU"
-    "EST_REJECTED\020\002\022 \n\034PARTY_JOIN_REQUEST_CAN"
-    "CELLED\020\003\022\036\n\032PARTY_JOIN_REQUEST_EXPIRED\020\004"
-    "*\302\002\n\033PartyJoinRequestCloseReason\022\024\n\020PART"
-    "Y_CLOSE_NONE\020\000\022\030\n\024PARTY_CLOSE_ACCEPTED\020\001"
-    "\022\"\n\036PARTY_CLOSE_REJECTED_BY_LEADER\020\002\022&\n\""
-    "PARTY_CLOSE_CANCELLED_BY_REQUESTER\020\003\022\027\n\023"
-    "PARTY_CLOSE_EXPIRED\020\004\022\032\n\026PARTY_CLOSE_PAR"
-    "TY_FULL\020\005\022#\n\037PARTY_CLOSE_PARTY_ENTERED_W"
-    "ORLD\020\006\022,\n(PARTY_CLOSE_REQUESTER_JOINED_O"
-    "THER_PARTY\020\007\022\037\n\033PARTY_CLOSE_PARTY_DISBAN"
-    "DED\020\010b\006proto3"
+    "\022\036\n\026requesterCharacterType\030\005 \001(\r\022.\n\005stat"
+    "e\030\006 \001(\0162\037.Protocol.PartyJoinRequestState"
+    "\022:\n\013closeReason\030\007 \001(\0162%.Protocol.PartyJo"
+    "inRequestCloseReason\022\024\n\014createdAtSec\030\010 \001"
+    "(\001\022\024\n\014expiresAtSec\030\t \001(\001\022\023\n\013closedAtSec\030"
+    "\n \001(\001\"\350\001\n\rPartySnapshot\022\017\n\007partyId\030\001 \001(\004"
+    "\022+\n\tlifecycle\030\002 \001(\0162\030.Protocol.PartyLife"
+    "cycle\022\027\n\017leaderSessionId\030\003 \001(\r\022&\n\007member"
+    "s\030\004 \003(\0132\025.Protocol.PartyMember\0220\n\014joinRe"
+    "quests\030\005 \003(\0132\032.Protocol.PartyJoinRequest"
+    "\022\024\n\014createdAtSec\030\006 \001(\001\022\020\n\010joinable\030\007 \001(\010"
+    "\"\323\001\n\016PartyListEntry\022\017\n\007partyId\030\001 \001(\004\022\027\n\017"
+    "leaderSessionId\030\002 \001(\r\022\033\n\023leaderCharacter"
+    "Type\030\003 \001(\r\022\023\n\013memberCount\030\004 \001(\r\022\020\n\010capac"
+    "ity\030\005 \001(\r\022+\n\tlifecycle\030\006 \001(\0162\030.Protocol."
+    "PartyLifecycle\022\024\n\014createdAtSec\030\007 \001(\001\022\020\n\010"
+    "joinable\030\010 \001(\010*A\n\017AttackInputType\022\026\n\022ATT"
+    "ACK_INPUT_LIGHT\020\000\022\026\n\022ATTACK_INPUT_HEAVY\020"
+    "\001*\223\001\n\016PartyLifecycle\022\033\n\027PARTY_LIFECYCLE_"
+    "FORMING\020\000\022\'\n#PARTY_LIFECYCLE_WORLD_ENTRY"
+    "_PENDING\020\001\022\034\n\030PARTY_LIFECYCLE_IN_WORLD\020\002"
+    "\022\035\n\031PARTY_LIFECYCLE_DISBANDED\020\003*M\n\017Party"
+    "MemberRole\022\034\n\030PARTY_MEMBER_ROLE_LEADER\020\000"
+    "\022\034\n\030PARTY_MEMBER_ROLE_MEMBER\020\001*Z\n\023PartyM"
+    "emberPresence\022 \n\034PARTY_MEMBER_PRESENCE_O"
+    "NLINE\020\000\022!\n\035PARTY_MEMBER_PRESENCE_OFFLINE"
+    "\020\001*\273\001\n\025PartyJoinRequestState\022\036\n\032PARTY_JO"
+    "IN_REQUEST_PENDING\020\000\022\037\n\033PARTY_JOIN_REQUE"
+    "ST_ACCEPTED\020\001\022\037\n\033PARTY_JOIN_REQUEST_REJE"
+    "CTED\020\002\022 \n\034PARTY_JOIN_REQUEST_CANCELLED\020\003"
+    "\022\036\n\032PARTY_JOIN_REQUEST_EXPIRED\020\004*\302\002\n\033Par"
+    "tyJoinRequestCloseReason\022\024\n\020PARTY_CLOSE_"
+    "NONE\020\000\022\030\n\024PARTY_CLOSE_ACCEPTED\020\001\022\"\n\036PART"
+    "Y_CLOSE_REJECTED_BY_LEADER\020\002\022&\n\"PARTY_CL"
+    "OSE_CANCELLED_BY_REQUESTER\020\003\022\027\n\023PARTY_CL"
+    "OSE_EXPIRED\020\004\022\032\n\026PARTY_CLOSE_PARTY_FULL\020"
+    "\005\022#\n\037PARTY_CLOSE_PARTY_ENTERED_WORLD\020\006\022,"
+    "\n(PARTY_CLOSE_REQUESTER_JOINED_OTHER_PAR"
+    "TY\020\007\022\037\n\033PARTY_CLOSE_PARTY_DISBANDED\020\010b\006p"
+    "roto3"
 };
 static ::absl::once_flag descriptor_table_DTO_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_DTO_2eproto = {
     false,
     false,
-    1853,
+    1885,
     descriptor_table_protodef_DTO_2eproto,
     "DTO.proto",
     &descriptor_table_DTO_2eproto_once,
@@ -714,9 +717,9 @@ inline void PartyJoinRequest::SharedCtor(::_pb::Arena* arena) {
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, joinrequestid_),
            0,
-           offsetof(Impl_, closereason_) -
+           offsetof(Impl_, closedatsec_) -
                offsetof(Impl_, joinrequestid_) +
-               sizeof(Impl_::closereason_));
+               sizeof(Impl_::closedatsec_));
 }
 PartyJoinRequest::~PartyJoinRequest() {
   // @@protoc_insertion_point(destructor:Protocol.PartyJoinRequest)
@@ -765,15 +768,15 @@ const ::google::protobuf::internal::ClassData* PartyJoinRequest::GetClassData() 
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<4, 9, 0, 0, 2> PartyJoinRequest::_table_ = {
+const ::_pbi::TcParseTable<4, 10, 0, 0, 2> PartyJoinRequest::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    9, 120,  // max_field_number, fast_idx_mask
+    10, 120,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294966784,  // skipmap
+    4294966272,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    9,  // num_field_entries
+    10,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -796,22 +799,24 @@ const ::_pbi::TcParseTable<4, 9, 0, 0, 2> PartyJoinRequest::_table_ = {
     // uint64 requesterAccountId = 4;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(PartyJoinRequest, _impl_.requesteraccountid_), 63>(),
      {32, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.requesteraccountid_)}},
-    // .Protocol.PartyJoinRequestState state = 5;
+    // uint32 requesterCharacterType = 5;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyJoinRequest, _impl_.requestercharactertype_), 63>(),
+     {40, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.requestercharactertype_)}},
+    // .Protocol.PartyJoinRequestState state = 6;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyJoinRequest, _impl_.state_), 63>(),
-     {40, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.state_)}},
-    // .Protocol.PartyJoinRequestCloseReason closeReason = 6;
+     {48, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.state_)}},
+    // .Protocol.PartyJoinRequestCloseReason closeReason = 7;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(PartyJoinRequest, _impl_.closereason_), 63>(),
-     {48, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.closereason_)}},
-    // double createdAtSec = 7;
+     {56, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.closereason_)}},
+    // double createdAtSec = 8;
     {::_pbi::TcParser::FastF64S1,
-     {57, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.createdatsec_)}},
-    // double expiresAtSec = 8;
+     {65, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.createdatsec_)}},
+    // double expiresAtSec = 9;
     {::_pbi::TcParser::FastF64S1,
-     {65, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.expiresatsec_)}},
-    // double closedAtSec = 9;
+     {73, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.expiresatsec_)}},
+    // double closedAtSec = 10;
     {::_pbi::TcParser::FastF64S1,
-     {73, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.closedatsec_)}},
-    {::_pbi::TcParser::MiniParse, {}},
+     {81, 63, 0, PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.closedatsec_)}},
     {::_pbi::TcParser::MiniParse, {}},
     {::_pbi::TcParser::MiniParse, {}},
     {::_pbi::TcParser::MiniParse, {}},
@@ -832,19 +837,22 @@ const ::_pbi::TcParseTable<4, 9, 0, 0, 2> PartyJoinRequest::_table_ = {
     // uint64 requesterAccountId = 4;
     {PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.requesteraccountid_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
-    // .Protocol.PartyJoinRequestState state = 5;
+    // uint32 requesterCharacterType = 5;
+    {PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.requestercharactertype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // .Protocol.PartyJoinRequestState state = 6;
     {PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.state_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
-    // .Protocol.PartyJoinRequestCloseReason closeReason = 6;
+    // .Protocol.PartyJoinRequestCloseReason closeReason = 7;
     {PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.closereason_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
-    // double createdAtSec = 7;
+    // double createdAtSec = 8;
     {PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.createdatsec_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // double expiresAtSec = 8;
+    // double expiresAtSec = 9;
     {PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.expiresatsec_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
-    // double closedAtSec = 9;
+    // double closedAtSec = 10;
     {PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.closedatsec_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
   }},
@@ -861,8 +869,8 @@ PROTOBUF_NOINLINE void PartyJoinRequest::Clear() {
   (void) cached_has_bits;
 
   ::memset(&_impl_.joinrequestid_, 0, static_cast<::size_t>(
-      reinterpret_cast<char*>(&_impl_.closereason_) -
-      reinterpret_cast<char*>(&_impl_.joinrequestid_)) + sizeof(_impl_.closereason_));
+      reinterpret_cast<char*>(&_impl_.closedatsec_) -
+      reinterpret_cast<char*>(&_impl_.joinrequestid_)) + sizeof(_impl_.closedatsec_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -909,39 +917,46 @@ PROTOBUF_NOINLINE void PartyJoinRequest::Clear() {
                 4, this_._internal_requesteraccountid(), target);
           }
 
-          // .Protocol.PartyJoinRequestState state = 5;
+          // uint32 requesterCharacterType = 5;
+          if (this_._internal_requestercharactertype() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                5, this_._internal_requestercharactertype(), target);
+          }
+
+          // .Protocol.PartyJoinRequestState state = 6;
           if (this_._internal_state() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
-                5, this_._internal_state(), target);
+                6, this_._internal_state(), target);
           }
 
-          // .Protocol.PartyJoinRequestCloseReason closeReason = 6;
+          // .Protocol.PartyJoinRequestCloseReason closeReason = 7;
           if (this_._internal_closereason() != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteEnumToArray(
-                6, this_._internal_closereason(), target);
+                7, this_._internal_closereason(), target);
           }
 
-          // double createdAtSec = 7;
+          // double createdAtSec = 8;
           if (::absl::bit_cast<::uint64_t>(this_._internal_createdatsec()) != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
-                7, this_._internal_createdatsec(), target);
+                8, this_._internal_createdatsec(), target);
           }
 
-          // double expiresAtSec = 8;
+          // double expiresAtSec = 9;
           if (::absl::bit_cast<::uint64_t>(this_._internal_expiresatsec()) != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
-                8, this_._internal_expiresatsec(), target);
+                9, this_._internal_expiresatsec(), target);
           }
 
-          // double closedAtSec = 9;
+          // double closedAtSec = 10;
           if (::absl::bit_cast<::uint64_t>(this_._internal_closedatsec()) != 0) {
             target = stream->EnsureSpace(target);
             target = ::_pbi::WireFormatLite::WriteDoubleToArray(
-                9, this_._internal_closedatsec(), target);
+                10, this_._internal_closedatsec(), target);
           }
 
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
@@ -989,27 +1004,32 @@ PROTOBUF_NOINLINE void PartyJoinRequest::Clear() {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
                   this_._internal_requestersessionid());
             }
-            // .Protocol.PartyJoinRequestState state = 5;
+            // uint32 requesterCharacterType = 5;
+            if (this_._internal_requestercharactertype() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_requestercharactertype());
+            }
+            // .Protocol.PartyJoinRequestState state = 6;
             if (this_._internal_state() != 0) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_state());
             }
-            // double createdAtSec = 7;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_createdatsec()) != 0) {
-              total_size += 9;
-            }
-            // double expiresAtSec = 8;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_expiresatsec()) != 0) {
-              total_size += 9;
-            }
-            // double closedAtSec = 9;
-            if (::absl::bit_cast<::uint64_t>(this_._internal_closedatsec()) != 0) {
-              total_size += 9;
-            }
-            // .Protocol.PartyJoinRequestCloseReason closeReason = 6;
+            // .Protocol.PartyJoinRequestCloseReason closeReason = 7;
             if (this_._internal_closereason() != 0) {
               total_size += 1 +
                             ::_pbi::WireFormatLite::EnumSize(this_._internal_closereason());
+            }
+            // double createdAtSec = 8;
+            if (::absl::bit_cast<::uint64_t>(this_._internal_createdatsec()) != 0) {
+              total_size += 9;
+            }
+            // double expiresAtSec = 9;
+            if (::absl::bit_cast<::uint64_t>(this_._internal_expiresatsec()) != 0) {
+              total_size += 9;
+            }
+            // double closedAtSec = 10;
+            if (::absl::bit_cast<::uint64_t>(this_._internal_closedatsec()) != 0) {
+              total_size += 9;
             }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -1036,8 +1056,14 @@ void PartyJoinRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const 
   if (from._internal_requestersessionid() != 0) {
     _this->_impl_.requestersessionid_ = from._impl_.requestersessionid_;
   }
+  if (from._internal_requestercharactertype() != 0) {
+    _this->_impl_.requestercharactertype_ = from._impl_.requestercharactertype_;
+  }
   if (from._internal_state() != 0) {
     _this->_impl_.state_ = from._impl_.state_;
+  }
+  if (from._internal_closereason() != 0) {
+    _this->_impl_.closereason_ = from._impl_.closereason_;
   }
   if (::absl::bit_cast<::uint64_t>(from._internal_createdatsec()) != 0) {
     _this->_impl_.createdatsec_ = from._impl_.createdatsec_;
@@ -1047,9 +1073,6 @@ void PartyJoinRequest::MergeImpl(::google::protobuf::MessageLite& to_msg, const 
   }
   if (::absl::bit_cast<::uint64_t>(from._internal_closedatsec()) != 0) {
     _this->_impl_.closedatsec_ = from._impl_.closedatsec_;
-  }
-  if (from._internal_closereason() != 0) {
-    _this->_impl_.closereason_ = from._impl_.closereason_;
   }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -1066,8 +1089,8 @@ void PartyJoinRequest::InternalSwap(PartyJoinRequest* PROTOBUF_RESTRICT other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.closereason_)
-      + sizeof(PartyJoinRequest::_impl_.closereason_)
+      PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.closedatsec_)
+      + sizeof(PartyJoinRequest::_impl_.closedatsec_)
       - PROTOBUF_FIELD_OFFSET(PartyJoinRequest, _impl_.joinrequestid_)>(
           reinterpret_cast<char*>(&_impl_.joinrequestid_),
           reinterpret_cast<char*>(&other->_impl_.joinrequestid_));
