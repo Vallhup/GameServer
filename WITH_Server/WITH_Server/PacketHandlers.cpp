@@ -619,7 +619,8 @@ void RegisterServerPacketHandlers(
     DynamicTaskTypeId& outDisconnectedTypeId)
 {
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_TIME_SYNC,                &HandleTimeSyncPacket,              "Pkt_CS_TIME_SYNC");
+        PacketType::CS_TIME_SYNC,                &HandleTimeSyncPacket,              "Pkt_CS_TIME_SYNC",
+        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_LOGIN,                    &HandleLoginPacket,                  "Pkt_CS_LOGIN");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
@@ -647,19 +648,26 @@ void RegisterServerPacketHandlers(
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_WORLD_TRANSITION_READY,   &HandleWorldTransitionReadyPacket,   "Pkt_CS_WORLD_TRANSITION_READY");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_PARTY_UI_OPENED,          &HandlePartyUiOpenedPacket,          "Pkt_CS_PARTY_UI_OPENED");
+        PacketType::CS_PARTY_UI_OPENED,          &HandlePartyUiOpenedPacket,          "Pkt_CS_PARTY_UI_OPENED",
+        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_PARTY_UI_CLOSED,          &HandlePartyUiClosedPacket,          "Pkt_CS_PARTY_UI_CLOSED");
+        PacketType::CS_PARTY_UI_CLOSED,          &HandlePartyUiClosedPacket,          "Pkt_CS_PARTY_UI_CLOSED",
+        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_PARTY_LIST_REFRESH,       &HandlePartyListRefreshPacket,       "Pkt_CS_PARTY_LIST_REFRESH");
+        PacketType::CS_PARTY_LIST_REFRESH,       &HandlePartyListRefreshPacket,       "Pkt_CS_PARTY_LIST_REFRESH",
+        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_PARTY_CREATE,             &HandlePartyCreatePacket,            "Pkt_CS_PARTY_CREATE");
+        PacketType::CS_PARTY_CREATE,             &HandlePartyCreatePacket,            "Pkt_CS_PARTY_CREATE",
+        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_PARTY_JOIN_REQUEST,       &HandlePartyJoinRequestPacket,       "Pkt_CS_PARTY_JOIN_REQUEST");
+        PacketType::CS_PARTY_JOIN_REQUEST,       &HandlePartyJoinRequestPacket,       "Pkt_CS_PARTY_JOIN_REQUEST",
+        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_PARTY_JOIN_ACCEPT,        &HandlePartyJoinAcceptPacket,        "Pkt_CS_PARTY_JOIN_ACCEPT");
+        PacketType::CS_PARTY_JOIN_ACCEPT,        &HandlePartyJoinAcceptPacket,        "Pkt_CS_PARTY_JOIN_ACCEPT",
+        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
-        PacketType::CS_PARTY_JOIN_REJECT,        &HandlePartyJoinRejectPacket,        "Pkt_CS_PARTY_JOIN_REJECT");
+        PacketType::CS_PARTY_JOIN_REJECT,        &HandlePartyJoinRejectPacket,        "Pkt_CS_PARTY_JOIN_REJECT",
+        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
 
     DynamicTaskTypeDesc loginAuthResultDesc{};
     loginAuthResultDesc.debugName = "DB_LoginAuthResult";
@@ -1099,15 +1107,27 @@ ExecCallResult HandleTimeSyncPacket(NodeExecContext& ctx)
     if (!buf)
         return ExecCallResult::Failed;
 
+    const SessionId sessionId = ResolveSessionId(ctx);
     Protocol::CS_TIME_SYNC_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_TIME_SYNC parse failed (sid=%u)",
+            sessionId);
         return ExecCallResult::Success;
+    }
+
+    FWLOG_INFO(kLogCategory,
+        "CS_TIME_SYNC parsed (sid=%u, probeSeq=%u, echoedServerSendTimeMs=%u)",
+        sessionId,
+        pkt.probeseq(),
+        pkt.echoedserversendtimems());
 
     auto& svc = PacketHandlerContext::Get();
     if (svc.networkTiming != nullptr)
     {
         svc.networkTiming->HandleClientEcho(
-            ResolveSessionId(ctx),
+            sessionId,
             pkt.probeseq(),
             pkt.echoedserversendtimems());
     }
@@ -1233,12 +1253,28 @@ ExecCallResult HandleMovePacket(NodeExecContext& ctx)
     if (svc.sessionFlow == nullptr ||
         ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow) == nullptr)
     {
+        FWLOG_INFO(kLogCategory,
+            "CS_MOVE ignored before parse: no world runtime (sid=%u)",
+            sessionId);
         return ExecCallResult::Success;
     }
 
     Protocol::CS_MOVE_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_MOVE parse failed (sid=%u)",
+            sessionId);
         return ExecCallResult::Success;
+    }
+
+    FWLOG_INFO(kLogCategory,
+        "CS_MOVE parsed (sid=%u, inputX=%d, inputZ=%d, yaw=%.3f, isRun=%u)",
+        sessionId,
+        pkt.inputx(),
+        pkt.inputz(),
+        pkt.yaw(),
+        pkt.isrun() ? 1u : 0u);
 
     if (svc.networkTiming != nullptr)
     {
@@ -1248,10 +1284,19 @@ ExecCallResult HandleMovePacket(NodeExecContext& ctx)
     PlayerInputTarget target{};
     if (!TryResolvePlayerInputTarget(ctx, sessionId, *svc.sessionFlow, target))
     {
+        FWLOG_INFO(kLogCategory,
+            "CS_MOVE ignored: input target not found (sid=%u)",
+            sessionId);
         return ExecCallResult::Success;
     }
 
     ApplyMoveInput(*target.runtime, pkt, *target.input);
+    FWLOG_INFO(kLogCategory,
+        "CS_MOVE applied (sid=%u, entity=%u.%u, frame=%llu)",
+        sessionId,
+        target.entity.id,
+        target.entity.generation,
+        static_cast<unsigned long long>(target.runtime->FrameIndex()));
     return ExecCallResult::Success;
 }
 
@@ -1499,15 +1544,30 @@ ExecCallResult HandlePartyUiOpenedPacket(NodeExecContext& ctx)
     if (!buf)
         return ExecCallResult::Failed;
 
+    const SessionId sessionId = ResolveSessionId(ctx);
     Protocol::CS_PARTY_UI_OPENED_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_PARTY_UI_OPENED parse failed (sid=%u)",
+            sessionId);
         return ExecCallResult::Success;
+    }
+
+    FWLOG_INFO(kLogCategory,
+        "CS_PARTY_UI_OPENED parsed (sid=%u, clientRequestId=%u)",
+        sessionId,
+        pkt.clientrequestid());
 
     SubmitPartyCommand(PartyCommand{
         .kind = PartyCommandKind::UiOpened,
-        .actorSessionId = ResolveSessionId(ctx),
+        .actorSessionId = sessionId,
         .clientRequestId = pkt.clientrequestid()
     });
+    FWLOG_INFO(kLogCategory,
+        "CS_PARTY_UI_OPENED submitted command (sid=%u, clientRequestId=%u)",
+        sessionId,
+        pkt.clientrequestid());
     return ExecCallResult::Success;
 }
 
@@ -1553,15 +1613,30 @@ ExecCallResult HandlePartyCreatePacket(NodeExecContext& ctx)
     if (!buf)
         return ExecCallResult::Failed;
 
+    const SessionId sessionId = ResolveSessionId(ctx);
     Protocol::CS_PARTY_CREATE_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_PARTY_CREATE parse failed (sid=%u)",
+            sessionId);
         return ExecCallResult::Success;
+    }
+
+    FWLOG_INFO(kLogCategory,
+        "CS_PARTY_CREATE parsed (sid=%u, clientRequestId=%u)",
+        sessionId,
+        pkt.clientrequestid());
 
     SubmitPartyCommand(PartyCommand{
         .kind = PartyCommandKind::CreateParty,
-        .actorSessionId = ResolveSessionId(ctx),
+        .actorSessionId = sessionId,
         .clientRequestId = pkt.clientrequestid()
     });
+    FWLOG_INFO(kLogCategory,
+        "CS_PARTY_CREATE submitted command (sid=%u, clientRequestId=%u)",
+        sessionId,
+        pkt.clientrequestid());
     return ExecCallResult::Success;
 }
 

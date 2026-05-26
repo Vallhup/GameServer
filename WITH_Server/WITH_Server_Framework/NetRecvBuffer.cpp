@@ -46,6 +46,36 @@ bool NetRecvBuffer::CommitWrite(uint32_t bytes) noexcept
 	return true;
 }
 
+uint32_t NetRecvBuffer::AvailableBytes() const noexcept
+{
+	return _writePos - _readPos;
+}
+
+bool NetRecvBuffer::TryPeekHeader(PacketHeader& outHeader) const noexcept
+{
+	outHeader = {};
+
+	constexpr uint32_t kHeaderSize = static_cast<uint32_t>(sizeof(PacketHeader));
+	if (AvailableBytes() < kHeaderSize)
+	{
+		return false;
+	}
+
+	const uint32_t readIdx = _readPos & _mask;
+	const uint32_t toEnd = (_mask + 1) - readIdx;
+	if (toEnd >= kHeaderSize)
+	{
+		std::memcpy(&outHeader, _buffer.data() + readIdx, kHeaderSize);
+		return true;
+	}
+
+	std::byte tmp[kHeaderSize];
+	std::memcpy(tmp, _buffer.data() + readIdx, toEnd);
+	std::memcpy(tmp + toEnd, _buffer.data(), kHeaderSize - toEnd);
+	std::memcpy(&outHeader, tmp, kHeaderSize);
+	return true;
+}
+
 std::span<const std::byte> NetRecvBuffer::PeekPacket() const noexcept
 {
 	const uint32_t available  = _writePos - _readPos;

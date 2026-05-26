@@ -3,7 +3,30 @@
 #include "IocpNetworkBackend.h"
 #include "Protocol.h"
 
+#include "FrameworkLog.h"
 #include "IExecutorIOSink.h"
+
+#include <cstring>
+
+namespace
+{
+	constexpr const char* kLogCategory = "IocpConnection";
+
+	bool TryReadPacketHeader(
+		const SendBuffer* buffer,
+		PacketHeader& outHeader) noexcept
+	{
+		if (buffer == nullptr ||
+			buffer->data == nullptr ||
+			buffer->size < sizeof(PacketHeader))
+		{
+			return false;
+		}
+
+		std::memcpy(&outHeader, buffer->data, sizeof(PacketHeader));
+		return true;
+	}
+}
 
 IocpConnection::IocpConnection(
 	SOCKET socket, uint32_t maxPacketSize,
@@ -60,6 +83,24 @@ bool IocpConnection::RegisterSend(SendBuffer* buffer) noexcept
 {
 	if (IsClosed()) return false;
 
+	PacketHeader header{};
+	if (TryReadPacketHeader(buffer, header))
+	{
+		FWLOG_INFO(kLogCategory,
+			"SendRegister (sid=%u, packetSize=%u, packetType=%u, bufferSize=%u)",
+			_sessionId,
+			header.size,
+			header.type,
+			buffer->size);
+	}
+	else
+	{
+		FWLOG_WARN(kLogCategory,
+			"SendRegister with invalid buffer (sid=%u, bufferSize=%u)",
+			_sessionId,
+			buffer != nullptr ? buffer->size : 0u);
+	}
+
 	_sendQueue.push(buffer);
 
 	bool expected = false;
@@ -95,6 +136,30 @@ void IocpConnection::TryFlush() noexcept
 
 	_pendingIoCount.fetch_add(1, std::memory_order_acq_rel);
 
+	uint32_t totalBytes = 0;
+	uint32_t firstPacketSize = 0;
+	uint32_t firstPacketType = 0;
+	for (const SendBuffer* owned : op->ownedBuffers)
+	{
+		totalBytes += owned != nullptr ? owned->size : 0u;
+		if (firstPacketSize == 0)
+		{
+			PacketHeader header{};
+			if (TryReadPacketHeader(owned, header))
+			{
+				firstPacketSize = header.size;
+				firstPacketType = header.type;
+			}
+		}
+	}
+	FWLOG_INFO(kLogCategory,
+		"SendFlush posting WSASend (sid=%u, bufferCount=%zu, totalBytes=%u, firstPacketSize=%u, firstPacketType=%u)",
+		_sessionId,
+		op->ownedBuffers.size(),
+		totalBytes,
+		firstPacketSize,
+		firstPacketType);
+
 	DWORD bytesSent = 0;
 	int result = ::WSASend(
 		_socket,
@@ -104,8 +169,14 @@ void IocpConnection::TryFlush() noexcept
 		&op->ov,
 		nullptr);
 
-	if (result == SOCKET_ERROR && ::WSAGetLastError() != WSA_IO_PENDING)
+	const int sendError =
+		result == SOCKET_ERROR ? ::WSAGetLastError() : 0;
+	if (result == SOCKET_ERROR && sendError != WSA_IO_PENDING)
 	{
+		FWLOG_WARN(kLogCategory,
+			"SendFlush WSASend failed (sid=%u, error=%d)",
+			_sessionId,
+			sendError);
 		_pendingIoCount.fetch_sub(1, std::memory_order_acq_rel);
 		_backend.ReleaseSendOp(op);
 		_isFlushing.store(false, std::memory_order_release);
@@ -121,8 +192,20 @@ void IocpConnection::OnRecvComplete(DWORD bytes, bool success) noexcept
 			_backend.OnConnectionIdle(this);
 	};
 
+	FWLOG_INFO(kLogCategory,
+		"RecvComplete (sid=%u, bytes=%lu, success=%u, closed=%u)",
+		_sessionId,
+		static_cast<unsigned long>(bytes),
+		success ? 1u : 0u,
+		IsClosed() ? 1u : 0u);
+
 	if (!success || bytes == 0 || !_recvBuffer.CommitWrite(bytes))
 	{
+		FWLOG_WARN(kLogCategory,
+			"RecvComplete closing session (sid=%u, bytes=%lu, success=%u)",
+			_sessionId,
+			static_cast<unsigned long>(bytes),
+			success ? 1u : 0u);
 		Close(SessionCloseReason::RemoteClosed);
 		done();
 		return;
@@ -136,8 +219,20 @@ void IocpConnection::OnRecvComplete(DWORD bytes, bool success) noexcept
 		const auto* header = reinterpret_cast<const PacketHeader*>(packet.data());
 		DynamicTaskTypeId typeId = _backend.GetDispatchTable().Lookup(header->type);
 
+		FWLOG_INFO(kLogCategory,
+			"RecvPacket peeked (sid=%u, packetSize=%u, packetType=%u, taskTypeId=%u)",
+			_sessionId,
+			header->size,
+			header->type,
+			typeId);
+
 		if (typeId == InvalidDynamicTaskTypeId)
 		{
+			FWLOG_WARN(kLogCategory,
+				"RecvPacket invalid packet type - closing (sid=%u, packetSize=%u, packetType=%u)",
+				_sessionId,
+				header->size,
+				header->type);
 			Close(SessionCloseReason::ProtocolError);
 			done();
 			return;
@@ -160,24 +255,90 @@ void IocpConnection::OnRecvComplete(DWORD bytes, bool success) noexcept
 		request.sessionId = _sessionId;
 		_backend.GetIOSink().SubmitDynamicTask(request);
 
+		FWLOG_INFO(kLogCategory,
+			"RecvPacket submitted dynamic task (sid=%u, packetType=%u, taskTypeId=%u, payloadSize=%u)",
+			_sessionId,
+			header->type,
+			typeId,
+			header->size);
+
 		_recvBuffer.ConsumePacket(header->size);
 	}
 
 	if (!IsClosed())
-		RegisterRecv();
+	{
+		PacketHeader pendingHeader{};
+		const uint32_t available = _recvBuffer.AvailableBytes();
+		if (available > 0)
+		{
+			if (_recvBuffer.TryPeekHeader(pendingHeader))
+			{
+				FWLOG_INFO(kLogCategory,
+					"RecvBuffer pending bytes after drain (sid=%u, available=%u, pendingSize=%u, pendingType=%u)",
+					_sessionId,
+					available,
+					pendingHeader.size,
+					pendingHeader.type);
+			}
+			else
+			{
+				FWLOG_INFO(kLogCategory,
+					"RecvBuffer pending partial header after drain (sid=%u, available=%u)",
+					_sessionId,
+					available);
+			}
+		}
+
+		const bool recvRegistered = RegisterRecv();
+		FWLOG_INFO(kLogCategory,
+			"Recv re-register result (sid=%u, ok=%u, closed=%u)",
+			_sessionId,
+			recvRegistered ? 1u : 0u,
+			IsClosed() ? 1u : 0u);
+	}
 
 	done();
 }
 
 void IocpConnection::OnSendComplete(SendOp* op, bool success) noexcept
 {
+	uint32_t totalBytes = 0;
+	uint32_t firstPacketSize = 0;
+	uint32_t firstPacketType = 0;
+	for (const SendBuffer* buf : op->ownedBuffers)
+	{
+		totalBytes += buf != nullptr ? buf->size : 0u;
+		if (firstPacketSize == 0)
+		{
+			PacketHeader header{};
+			if (TryReadPacketHeader(buf, header))
+			{
+				firstPacketSize = header.size;
+				firstPacketType = header.type;
+			}
+		}
+	}
+	FWLOG_INFO(kLogCategory,
+		"SendComplete (sid=%u, success=%u, bufferCount=%zu, totalBytes=%u, firstPacketSize=%u, firstPacketType=%u)",
+		_sessionId,
+		success ? 1u : 0u,
+		op->ownedBuffers.size(),
+		totalBytes,
+		firstPacketSize,
+		firstPacketType);
+
 	for (SendBuffer* buf : op->ownedBuffers)
 		SendBufferPool::Get().Release(buf);
 
 	_backend.ReleaseSendOp(op);
 
 	if (!success)
+	{
+		FWLOG_WARN(kLogCategory,
+			"SendComplete closing session (sid=%u)",
+			_sessionId);
 		Close(SessionCloseReason::RemoteClosed);
+	}
 
 	// seq_cst fence: ensures items pushed to _sendQueue before this point are visible
 	_isFlushing.store(false, std::memory_order_release);

@@ -29,6 +29,14 @@ void PartyCommandPump::Pump(double nowSec)
 
 	_scratch.clear();
 	_queue.DrainInto(_scratch);
+	if (!_scratch.empty())
+	{
+		FWLOG_INFO(
+			kLogCategory,
+			"PartyCommandPump drained commands (count=%zu, nowSec=%.3f)",
+			_scratch.size(),
+			nowSec);
+	}
 
 	for (const PartyCommand& command : _scratch)
 	{
@@ -101,6 +109,12 @@ void PartyCommandPump::ApplyCommand(
 
 void PartyCommandPump::SendUiBootstrap(const PartyCommand& command)
 {
+	FWLOG_INFO(
+		kLogCategory,
+		"SendUiBootstrap begin (sid=%u, clientRequestId=%u)",
+		command.actorSessionId,
+		command.clientRequestId);
+
 	RegisterPartyListSubscriber(command.actorSessionId);
 
 	PartySnapshot snapshot =
@@ -110,7 +124,7 @@ void PartyCommandPump::SendUiBootstrap(const PartyCommand& command)
 
 	const PartySnapshot* const myParty =
 		snapshot.partyId != 0 ? &snapshot : nullptr;
-	(void)ServerPacketStager::StagePartyUiBootstrapPacket(
+	const bool staged = ServerPacketStager::StagePartyUiBootstrapPacket(
 		_network,
 		command.actorSessionId,
 		command.clientRequestId,
@@ -118,6 +132,14 @@ void PartyCommandPump::SendUiBootstrap(const PartyCommand& command)
 		std::span<const PartyListEntry>(
 			_listScratch.data(),
 			_listScratch.size()));
+	FWLOG_INFO(
+		kLogCategory,
+		"SendUiBootstrap staged (sid=%u, clientRequestId=%u, hasMyParty=%u, partyCount=%zu, staged=%u)",
+		command.actorSessionId,
+		command.clientRequestId,
+		myParty != nullptr ? 1u : 0u,
+		_listScratch.size(),
+		staged ? 1u : 0u);
 }
 
 void PartyCommandPump::SendListSnapshot(const PartyCommand& command)

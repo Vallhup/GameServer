@@ -1,8 +1,12 @@
 #include "pch.h"
 #include "ServerPacketStager.h"
 
+#include "FrameworkLog.h"
+
 namespace
 {
+	constexpr const char* kLogCategory = "ServerPacketStager";
+
 	Protocol::PartyLifecycle ToProtoPartyLifecycle(
 		PartyLifecycleState lifecycle) noexcept
 	{
@@ -474,6 +478,14 @@ bool ServerPacketStager::StagePartyUiBootstrapPacket(
 	const PartySnapshot* myParty,
 	std::span<const PartyListEntry> parties)
 {
+	FWLOG_INFO(
+		kLogCategory,
+		"StagePartyUiBootstrap build begin (sid=%u, clientRequestId=%u, hasMyParty=%u, partyCount=%zu)",
+		sessionId,
+		clientRequestId,
+		myParty != nullptr && myParty->partyId != 0 ? 1u : 0u,
+		parties.size());
+
 	Protocol::SC_PARTY_UI_BOOTSTRAP_PACKET packet;
 	packet.set_clientrequestid(clientRequestId);
 	packet.set_hasmyparty(myParty != nullptr && myParty->partyId != 0);
@@ -487,11 +499,19 @@ bool ServerPacketStager::StagePartyUiBootstrapPacket(
 		FillPartyListEntry(*packet.add_parties(), entry);
 	}
 
-	return StageUnicastPacket(
+	const bool staged = StageUnicastPacket(
 		network,
 		sessionId,
 		PacketType::SC_PARTY_UI_BOOTSTRAP,
 		packet);
+	FWLOG_INFO(
+		kLogCategory,
+		"StagePartyUiBootstrap stage result (sid=%u, clientRequestId=%u, bodySize=%zu, staged=%u)",
+		sessionId,
+		clientRequestId,
+		packet.ByteSizeLong(),
+		staged ? 1u : 0u);
+	return staged;
 }
 
 bool ServerPacketStager::StagePartyListSnapshotPacket(

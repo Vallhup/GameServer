@@ -1,5 +1,7 @@
 #pragma once
 
+struct PacketHeader;
+
 class NetRecvBuffer {
 	static constexpr uint32_t kDefaultCapacity{ 65536 };
 
@@ -9,6 +11,8 @@ public:
 	int  PrepareWsaBufs(WSABUF bufs[2]) noexcept;
 	bool CommitWrite(uint32_t bytes) noexcept;
 
+	uint32_t AvailableBytes() const noexcept;
+	bool TryPeekHeader(PacketHeader& outHeader) const noexcept;
 	std::span<const std::byte> PeekPacket() const noexcept;
 	void ConsumePacket(uint32_t packetSize) noexcept;
 
