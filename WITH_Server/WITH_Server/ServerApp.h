@@ -75,6 +75,7 @@ public:
 		bool allowFallback = true);
 
 	TransferId RequestDebugTransferToVillage(SessionId sessionId);
+	bool RequestPlayerRespawn(SessionId sessionId);
 
 	TransferId RequestDemoWorldTransition(
 		SessionId sessionId,
@@ -113,6 +114,15 @@ private:
 		const WorldTransferEventBatch& transferEvents);
 	void ApplyPartyWorldTransferEvents(
 		const WorldTransferEventBatch& transferEvents);
+	bool ApplyPartyDeathCountEvents(
+		const FrameworkRuntime::FrameResult& frameResult);
+	bool StagePartyDeathCountSync(
+		PartyId partyId,
+		const PartyDeathCountState& deathCount);
+	bool ApplyPlayerDeathCountDecision(
+		const FrameworkRuntime::FrameResult::PlayerDeathCountEvent& deathEvent,
+		bool canRespawn,
+		uint64_t deathCountRevision);
 
 	bool IsPartyEligible(SessionId sessionId) const override;
 	uint64_t FindAccountId(SessionId sessionId) const override;

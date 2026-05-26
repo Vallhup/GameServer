@@ -112,6 +112,8 @@ PartyResult PartyService::RequestJoin(
 		.partyId = partyId,
 		.requesterSessionId = requesterSessionId,
 		.requesterAccountId = _sessionQuery.FindAccountId(requesterSessionId),
+		.requesterCharacterId =
+			_sessionQuery.FindSelectedCharacterId(requesterSessionId),
 		.state = PartyJoinRequestState::Pending,
 		.createdAtSec = nowSec,
 		.expiresAtSec = nowSec + PartyJoinRequestTimeoutSec
@@ -581,6 +583,91 @@ PartyResult PartyService::FailWorldEntry(
 	return PartyResult{ .error = PartyError::None, .partyId = partyId };
 }
 
+PartyDeathCountResult PartyService::InitializeDeathCountForRun(
+	PartyId partyId,
+	double nowSec)
+{
+	AssertOwnerThread();
+
+	PartyRecord* const party = FindParty(partyId);
+	if (party == nullptr)
+	{
+		return PartyDeathCountResult{
+			.error = PartyError::PartyNotFound,
+			.partyId = partyId
+		};
+	}
+
+	const uint32_t memberCount =
+		static_cast<uint32_t>(party->members.size());
+	const uint32_t initialCount = memberCount * DeathCountPerPartyMember;
+	const uint64_t nextRevision = party->deathCount.revision + 1;
+
+	party->deathCount = PartyDeathCountState{
+		.initialCount = initialCount,
+		.remainingCount = initialCount,
+		.revision = nextRevision,
+		.initializedAtSec = nowSec,
+		.updatedAtSec = nowSec,
+		.initialized = true,
+		.exhausted = initialCount == 0
+	};
+
+	return BuildDeathCountResult(*party);
+}
+
+PartyDeathCountResult PartyService::ConsumeDeathCount(
+	PartyId partyId,
+	SessionId deadSessionId,
+	double nowSec)
+{
+	AssertOwnerThread();
+
+	PartyRecord* const party = FindParty(partyId);
+	if (party == nullptr)
+	{
+		return PartyDeathCountResult{
+			.error = PartyError::PartyNotFound,
+			.partyId = partyId,
+			.consumedBySessionId = deadSessionId
+		};
+	}
+
+	if (!party->deathCount.initialized)
+	{
+		return BuildDeathCountResult(
+			*party,
+			PartyError::InvalidPartyState,
+			deadSessionId);
+	}
+
+	if (deadSessionId == 0 || !HasMemberSession(*party, deadSessionId))
+	{
+		return BuildDeathCountResult(
+			*party,
+			PartyError::InvalidSession,
+			deadSessionId);
+	}
+
+	bool consumed = false;
+	if (party->deathCount.remainingCount > 0)
+	{
+		--party->deathCount.remainingCount;
+		party->deathCount.updatedAtSec = nowSec;
+		++party->deathCount.revision;
+		consumed = true;
+	}
+
+	party->deathCount.exhausted =
+		party->deathCount.remainingCount == 0;
+
+	return BuildDeathCountResult(
+		*party,
+		PartyError::None,
+		deadSessionId,
+		consumed);
+}
+
 const PartyRecord* PartyService::FindParty(PartyId partyId) const noexcept
 {
 	const auto it = _parties.find(partyId);
@@ -672,6 +759,7 @@ PartySnapshot PartyService::BuildPartySnapshot(PartyId partyId) const
 			.partyId = request.partyId,
 			.requesterSessionId = request.requesterSessionId,
 			.requesterAccountId = request.requesterAccountId,
+			.requesterCharacterId = request.requesterCharacterId,
 			.state = request.state,
 			.closeReason = request.closeReason,
 			.createdAtSec = request.createdAtSec,
@@ -686,6 +774,13 @@ PartySnapshot PartyService::BuildPartySnapshot(PartyId partyId) const
 PartySnapshot PartyService::BuildPartySnapshotForSession(SessionId sessionId) const
 {
 	return BuildPartySnapshot(FindPartyBySession(sessionId));
+}
+
+PartyDeathCountState PartyService::GetDeathCountSnapshot(
+	PartyId partyId) const noexcept
+{
+	const PartyRecord* const party = FindParty(partyId);
+	return party != nullptr ? party->deathCount : PartyDeathCountState{};
 }
 
 void PartyService::CollectPublicPartyList(
@@ -895,6 +990,34 @@ std::vector<SessionId> PartyService::BuildMemberSessionSnapshot(
 	}
 	std::sort(sessionIds.begin(), sessionIds.end());
 	return sessionIds;
+}
+
+bool PartyService::HasMemberSession(
+	const PartyRecord& party,
+	SessionId sessionId) const noexcept
+{
+	return std::any_of(
+		party.members.begin(),
+		party.members.end(),
+		[sessionId](const PartyMember& member)
+		{
+			return member.sessionId == sessionId;
+		});
+}
+
+PartyDeathCountResult PartyService::BuildDeathCountResult(
+	const PartyRecord& party,
+	PartyError error,
+	SessionId consumedBySessionId,
+	bool consumed) const noexcept
+{
+	return PartyDeathCountResult{
+		.error = error,
+		.partyId = party.partyId,
+		.deathCount = party.deathCount,
+		.consumedBySessionId = consumedBySessionId,
+		.consumed = consumed
+	};
 }
 
 void PartyService::CloseJoinRequest(

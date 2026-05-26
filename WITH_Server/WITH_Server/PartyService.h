@@ -71,6 +71,15 @@ public:
 		TransferId transferId,
 		double nowSec);
 
+	PartyDeathCountResult InitializeDeathCountForRun(
+		PartyId partyId,
+		double nowSec);
+
+	PartyDeathCountResult ConsumeDeathCount(
+		PartyId partyId,
+		SessionId deadSessionId,
+		double nowSec);
+
 	const PartyRecord* FindParty(PartyId partyId) const noexcept;
 	PartyRecord* FindParty(PartyId partyId) noexcept;
 	PartyId FindPartyBySession(SessionId sessionId) const noexcept;
@@ -79,6 +88,7 @@ public:
 	SessionId FindLeaderSession(PartyId partyId) const noexcept;
 	PartySnapshot BuildPartySnapshot(PartyId partyId) const;
 	PartySnapshot BuildPartySnapshotForSession(SessionId sessionId) const;
+	PartyDeathCountState GetDeathCountSnapshot(PartyId partyId) const noexcept;
 	void CollectPublicPartyList(
 		std::vector<PartyListEntry>& outEntries,
 		size_t limit = PartyListSnapshotLimit) const;
@@ -97,6 +107,12 @@ private:
 		SessionId requesterSessionId,
 		double nowSec) const noexcept;
 	std::vector<SessionId> BuildMemberSessionSnapshot(const PartyRecord& party) const;
+	bool HasMemberSession(const PartyRecord& party, SessionId sessionId) const noexcept;
+	PartyDeathCountResult BuildDeathCountResult(
+		const PartyRecord& party,
+		PartyError error = PartyError::None,
+		SessionId consumedBySessionId = 0,
+		bool consumed = false) const noexcept;
 	void CloseJoinRequest(
 		PartyJoinRequest& request,
 		PartyJoinRequestState state,

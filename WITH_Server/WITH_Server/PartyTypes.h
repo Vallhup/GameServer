@@ -16,6 +16,7 @@ inline constexpr uint32_t MaxPartyMembers = 3;
 inline constexpr double PartyJoinRequestTimeoutSec = 60.0;
 inline constexpr double PartyRejectCooldownSec = 15.0;
 inline constexpr size_t PartyListSnapshotLimit = 10;
+inline constexpr uint32_t DeathCountPerPartyMember = 5;
 
 using PartyRequestId = uint64_t;
 
@@ -119,6 +120,7 @@ struct PartyJoinRequest
 	PartyId partyId{ 0 };
 	SessionId requesterSessionId{ 0 };
 	uint64_t requesterAccountId{ 0 };
+	CharacterId requesterCharacterId{ CharacterId::None };
 	PartyJoinRequestState state{ PartyJoinRequestState::Pending };
 	PartyJoinRequestCloseReason closeReason{ PartyJoinRequestCloseReason::None };
 	double createdAtSec{ 0.0 };
@@ -137,6 +139,17 @@ struct PartyWorldEntry
 	double completedAtSec{ 0.0 };
 };
 
+struct PartyDeathCountState
+{
+	uint32_t initialCount{ 0 };
+	uint32_t remainingCount{ 0 };
+	uint64_t revision{ 0 };
+	double initializedAtSec{ 0.0 };
+	double updatedAtSec{ 0.0 };
+	bool initialized{ false };
+	bool exhausted{ false };
+};
+
 struct PartyRecord
 {
 	PartyId partyId{ 0 };
@@ -146,6 +159,7 @@ struct PartyRecord
 	std::vector<PartyMember> members;
 	std::vector<PartyJoinRequest> joinRequests;
 	PartyWorldEntry worldEntry;
+	PartyDeathCountState deathCount;
 	double createdAtSec{ 0.0 };
 };
 
@@ -179,6 +193,7 @@ struct PartyJoinRequestSnapshot
 	PartyId partyId{ 0 };
 	SessionId requesterSessionId{ 0 };
 	uint64_t requesterAccountId{ 0 };
+	CharacterId requesterCharacterId{ CharacterId::None };
 	PartyJoinRequestState state{ PartyJoinRequestState::Pending };
 	PartyJoinRequestCloseReason closeReason{ PartyJoinRequestCloseReason::None };
 	double createdAtSec{ 0.0 };
@@ -197,6 +212,20 @@ struct PartySnapshot
 	PartyWorldEntry worldEntry;
 	double createdAtSec{ 0.0 };
 	bool joinable{ false };
+};
+
+struct PartyDeathCountResult
+{
+	PartyError error{ PartyError::None };
+	PartyId partyId{ 0 };
+	PartyDeathCountState deathCount;
+	SessionId consumedBySessionId{ 0 };
+	bool consumed{ false };
+
+	bool Succeeded() const noexcept
+	{
+		return error == PartyError::None;
+	}
 };
 
 struct PartyListEntry

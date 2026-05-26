@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <span>
 #include <thread>
 #include <unordered_map>
 #include <unordered_set>
@@ -267,7 +268,7 @@ namespace
 		FakePartySessionQuery query{};
 		query.Add(10, plaza);
 		query.Add(11, plaza);
-		query.Add(12, plaza);
+		query.Add(12, plaza, CharacterId::Lancer);
 		query.Add(13, plaza);
 
 		PartyService service{ query };
@@ -276,6 +277,17 @@ namespace
 		assert(service.RequestJoin(11, create.partyId, 1.1).Succeeded());
 		const PartyResult request12 = service.RequestJoin(12, create.partyId, 1.2);
 		assert(request12.Succeeded());
+		const PartySnapshot pendingSnapshot =
+			service.BuildPartySnapshot(create.partyId);
+		const auto request12It = std::find_if(
+			pendingSnapshot.joinRequests.begin(),
+			pendingSnapshot.joinRequests.end(),
+			[&request12](const PartyJoinRequestSnapshot& request)
+			{
+				return request.requestId == request12.requestId;
+			});
+		assert(request12It != pendingSnapshot.joinRequests.end());
+		assert(request12It->requesterCharacterId == CharacterId::Lancer);
 		const PartyResult accepted12 =
 			service.AcceptJoinRequest(10, request12.requestId, 1.3);
 		assert(accepted12.Succeeded());
@@ -499,6 +511,58 @@ namespace
 		assert(list[1].leaderSessionId == 110);
 		assert(list.back().leaderSessionId == 102);
 	}
+
+	void Test_Party_11_DeathCountInitializesAndConsumes()
+	{
+		const WorldId village = WorldId::Create(2, 77);
+		FakePartySessionQuery query{};
+		query.Add(200, village);
+		query.Add(201, village);
+		query.Add(202, village);
+
+		PartyService service{ query };
+		const SessionId members[] = { 200, 201, 202 };
+		const PartyResult create =
+			service.CreatePartyFromTrustedMembers(
+				200,
+				std::span<const SessionId>(members, 3),
+				PartyFormationSource::RestoredFromDB,
+				1.0);
+		assert(create.Succeeded());
+
+		const PartyDeathCountResult init =
+			service.InitializeDeathCountForRun(create.partyId, 2.0);
+		assert(init.Succeeded());
+		assert(init.deathCount.initialized);
+		assert(init.deathCount.initialCount == 15);
+		assert(init.deathCount.remainingCount == 15);
+		assert(init.deathCount.revision == 1);
+
+		const PartyDeathCountResult firstDeath =
+			service.ConsumeDeathCount(create.partyId, 201, 3.0);
+		assert(firstDeath.Succeeded());
+		assert(firstDeath.consumed);
+		assert(firstDeath.deathCount.remainingCount == 14);
+		assert(firstDeath.deathCount.revision == 2);
+
+		const PartyDeathCountResult invalidDeath =
+			service.ConsumeDeathCount(create.partyId, 999, 4.0);
+		assert(!invalidDeath.Succeeded());
+		assert(invalidDeath.error == PartyError::InvalidSession);
+		assert(service.GetDeathCountSnapshot(create.partyId).remainingCount == 14);
+
+		for (uint32_t i = 0; i < 14; ++i)
+		{
+			const PartyDeathCountResult result =
+				service.ConsumeDeathCount(create.partyId, 200, 5.0 + i);
+			assert(result.Succeeded());
+		}
+
+		const PartyDeathCountState finalState =
+			service.GetDeathCountSnapshot(create.partyId);
+		assert(finalState.remainingCount == 0);
+		assert(finalState.exhausted);
+	}
 }
 
 void RunPartySystemSmokeTests()
@@ -532,4 +596,7 @@ void RunPartySystemSmokeTests()
 
 	Test_Party_10_SnapshotAndPublicPartyList();
 	std::cout << "[PASS] Test_Party_10_SnapshotAndPublicPartyList\n";
+
+	Test_Party_11_DeathCountInitializesAndConsumes();
+	std::cout << "[PASS] Test_Party_11_DeathCountInitializesAndConsumes\n";
 }

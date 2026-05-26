@@ -10,6 +10,7 @@
 
 #include "FrameworkLog.h"
 
+#include "ECS/GameplayRuntimeComponents.h"
 #include "ServerDirtyReplicationService.h"
 #include "ServerFrameEventDispatcher.h"
 #include "ServerPacketStager.h"
@@ -43,6 +44,19 @@ namespace
 		default:
 			return WorldDefId::None;
 		}
+	}
+
+	bool IsDeathCountRunStartWorld(WorldDefId worldDefId) noexcept
+	{
+		return worldDefId == WorldDefId::Village;
+	}
+
+	bool IsDeathCountSharedWorld(WorldDefId worldDefId) noexcept
+	{
+		return
+			worldDefId == WorldDefId::Village ||
+			worldDefId == WorldDefId::Castle ||
+			worldDefId == WorldDefId::Final;
 	}
 }
 
@@ -217,6 +231,53 @@ TransferId ServerApp::RequestDebugWorldTransfer(
 TransferId ServerApp::RequestDebugTransferToVillage(SessionId sessionId)
 {
 	return RequestDebugWorldTransfer(sessionId, WorldDefId::Village);
+}
+
+bool ServerApp::RequestPlayerRespawn(SessionId sessionId)
+{
+	if (!IsInitialized() || sessionId == 0)
+	{
+		return false;
+	}
+
+	const WorldId worldId = _sessionSystem.Flow().FindCurrentWorldId(sessionId);
+	const NetId netId = _sessionSystem.Flow().FindControlledNetId(sessionId);
+	if (!worldId.IsValid() || !netId.IsValid())
+	{
+		return false;
+	}
+
+	WorldInstance* const world = _framework.FindWorld(worldId);
+	const WorldDef* const worldDef =
+		world != nullptr ? world->GetDef() : nullptr;
+	if (world == nullptr ||
+		worldDef == nullptr ||
+		!IsDeathCountSharedWorld(worldDef->id))
+	{
+		return false;
+	}
+
+	const NetBindingLocation binding = _framework.FindNetBinding(netId);
+	if (binding.worldId != worldId || binding.entity.IsNull())
+	{
+		return false;
+	}
+
+	ECSView view = world->GetRuntime().MakeView();
+	PlayerControlIdentityComp* const player =
+		view.GetMutableComponent<PlayerControlIdentityComp>(binding.entity);
+	PlayerDeathStateComp* const deathState =
+		view.GetMutableComponent<PlayerDeathStateComp>(binding.entity);
+	if (player == nullptr ||
+		player->ownerSessionId != sessionId ||
+		deathState == nullptr ||
+		deathState->state != PlayerDeathState::AwaitingRespawnInput)
+	{
+		return false;
+	}
+
+	deathState->respawnRequested = true;
+	return true;
 }
 
 TransferId ServerApp::RequestDemoWorldTransition(
@@ -764,6 +825,13 @@ void ServerApp::RunWorldFrames(double dtSec)
 		return;
 	}
 
+	if (!ApplyPartyDeathCountEvents(frameResult))
+	{
+		FWLOG_ERROR(kLogCategory, "Party death count event apply failed");
+		Stop();
+		return;
+	}
+
 	std::vector<SessionId> pendingTransitionSessions;
 	pendingTransitionSessions.reserve(_pendingClientTransitions.size());
 	for (const auto& [sessionId, pending] : _pendingClientTransitions)
@@ -894,13 +962,230 @@ void ServerApp::ApplyPartyWorldTransferEvents(
 	{
 		if (completed.partyId != 0)
 		{
-			(void)_partyService.CompleteWorldEntry(
+			const PartyResult completeResult =
+				_partyService.CompleteWorldEntry(
 				completed.partyId,
 				completed.transferId,
 				completed.targetWorldId,
 				_nowSec);
+			if (!completeResult.Succeeded())
+			{
+				FWLOG_WARN(kLogCategory,
+					"Party world entry complete failed (partyId=%llu, transferId=%u, targetWorldId=%u, error=%u)",
+					static_cast<unsigned long long>(completed.partyId),
+					completed.transferId,
+					completed.targetWorldId.GetRaw(),
+					static_cast<uint32_t>(completeResult.error));
+				continue;
+			}
+
+			const WorldInstance* const targetWorld =
+				_framework.FindWorld(completed.targetWorldId);
+			const WorldDef* const targetDef =
+				targetWorld != nullptr ? targetWorld->GetDef() : nullptr;
+			if (targetDef != nullptr &&
+				IsDeathCountRunStartWorld(targetDef->id))
+			{
+				const PartyDeathCountResult deathCountResult =
+					_partyService.InitializeDeathCountForRun(
+						completed.partyId,
+						_nowSec);
+				if (!deathCountResult.Succeeded())
+				{
+					FWLOG_WARN(kLogCategory,
+						"Party death count init failed (partyId=%llu, error=%u)",
+						static_cast<unsigned long long>(completed.partyId),
+						static_cast<uint32_t>(deathCountResult.error));
+				}
+				else if (!StagePartyDeathCountSync(
+					completed.partyId,
+					deathCountResult.deathCount))
+				{
+					FWLOG_WARN(kLogCategory,
+						"Party death count sync stage failed (partyId=%llu, remaining=%u, initial=%u)",
+						static_cast<unsigned long long>(completed.partyId),
+						deathCountResult.deathCount.remainingCount,
+						deathCountResult.deathCount.initialCount);
+				}
+			}
+			else if (targetDef != nullptr &&
+				IsDeathCountSharedWorld(targetDef->id))
+			{
+				const PartyDeathCountState deathCount =
+					_partyService.GetDeathCountSnapshot(completed.partyId);
+				if (deathCount.initialized &&
+					!StagePartyDeathCountSync(completed.partyId, deathCount))
+				{
+					FWLOG_WARN(kLogCategory,
+						"Party death count resync stage failed (partyId=%llu, remaining=%u, initial=%u)",
+						static_cast<unsigned long long>(completed.partyId),
+						deathCount.remainingCount,
+						deathCount.initialCount);
+				}
+			}
 		}
 	}
+}
+
+bool ServerApp::ApplyPartyDeathCountEvents(
+	const FrameworkRuntime::FrameResult& frameResult)
+{
+	for (const auto& deathEvent : frameResult.events.playerDeathCounts)
+	{
+		if (deathEvent.sessionId == 0)
+		{
+			continue;
+		}
+
+		const WorldInstance* const world =
+			_framework.FindWorld(deathEvent.worldId);
+		const WorldDef* const worldDef =
+			world != nullptr ? world->GetDef() : nullptr;
+		if (worldDef == nullptr ||
+			!IsDeathCountSharedWorld(worldDef->id))
+		{
+			continue;
+		}
+
+		const PartyId partyId =
+			_partyService.FindPartyBySession(deathEvent.sessionId);
+		if (partyId == 0)
+		{
+			(void)ApplyPlayerDeathCountDecision(deathEvent, false, 0);
+			continue;
+		}
+
+		const PartyDeathCountResult result =
+			_partyService.ConsumeDeathCount(
+				partyId,
+				deathEvent.sessionId,
+				_nowSec);
+		if (!result.Succeeded())
+		{
+			FWLOG_WARN(kLogCategory,
+				"Party death count consume failed (partyId=%llu, sid=%u, worldId=%u, error=%u)",
+				static_cast<unsigned long long>(partyId),
+				deathEvent.sessionId,
+				deathEvent.worldId.GetRaw(),
+				static_cast<uint32_t>(result.error));
+			(void)ApplyPlayerDeathCountDecision(deathEvent, false, 0);
+			continue;
+		}
+
+		if (!ApplyPlayerDeathCountDecision(
+				deathEvent,
+				result.consumed,
+				result.deathCount.revision))
+		{
+			FWLOG_WARN(kLogCategory,
+				"Player death count decision apply failed (sid=%u, worldId=%u, entity=%d, canRespawn=%u)",
+				deathEvent.sessionId,
+				deathEvent.worldId.GetRaw(),
+				deathEvent.entity.id,
+				result.consumed ? 1u : 0u);
+		}
+
+		if (!StagePartyDeathCountSync(partyId, result.deathCount))
+		{
+			FWLOG_WARN(kLogCategory,
+				"Party death count sync stage failed (partyId=%llu, sid=%u, remaining=%u, initial=%u)",
+				static_cast<unsigned long long>(partyId),
+				deathEvent.sessionId,
+				result.deathCount.remainingCount,
+				result.deathCount.initialCount);
+		}
+
+		if (result.consumed)
+		{
+			FWLOG_INFO(kLogCategory,
+				"Party death count consumed (partyId=%llu, sid=%u, remaining=%u, initial=%u, revision=%llu)",
+				static_cast<unsigned long long>(partyId),
+				deathEvent.sessionId,
+				result.deathCount.remainingCount,
+				result.deathCount.initialCount,
+				static_cast<unsigned long long>(result.deathCount.revision));
+		}
+
+		if (result.deathCount.exhausted)
+		{
+			FWLOG_INFO(kLogCategory,
+				"Party death count exhausted (partyId=%llu, sid=%u, revision=%llu)",
+				static_cast<unsigned long long>(partyId),
+				deathEvent.sessionId,
+				static_cast<unsigned long long>(result.deathCount.revision));
+		}
+	}
+
+	return true;
+}
+
+bool ServerApp::StagePartyDeathCountSync(
+	PartyId partyId,
+	const PartyDeathCountState& deathCount)
+{
+	const PartyRecord* const party = _partyService.FindParty(partyId);
+	if (party == nullptr || !deathCount.initialized)
+	{
+		return false;
+	}
+
+	std::vector<SessionId> sessionIds;
+	sessionIds.reserve(party->members.size());
+	for (const PartyMember& member : party->members)
+	{
+		if (member.sessionId == 0 ||
+			member.presence != PartyMemberPresence::Online ||
+			!IsPartyEligible(member.sessionId))
+		{
+			continue;
+		}
+
+		sessionIds.push_back(member.sessionId);
+	}
+
+	return ServerPacketStager::StageTeamDeathCountPacketToSessions(
+		_sessionSystem.Network(),
+		std::span<const SessionId>(sessionIds.data(), sessionIds.size()),
+		deathCount);
+}
+
+bool ServerApp::ApplyPlayerDeathCountDecision(
+	const FrameworkRuntime::FrameResult::PlayerDeathCountEvent& deathEvent,
+	bool canRespawn,
+	uint64_t deathCountRevision)
+{
+	if (!deathEvent.worldId.IsValid() ||
+		deathEvent.entity.IsNull() ||
+		deathEvent.sessionId == 0)
+	{
+		return false;
+	}
+
+	WorldInstance* const world = _framework.FindWorld(deathEvent.worldId);
+	if (world == nullptr)
+	{
+		return false;
+	}
+
+	ECSView view = world->GetRuntime().MakeView();
+	PlayerControlIdentityComp* const player =
+		view.GetMutableComponent<PlayerControlIdentityComp>(deathEvent.entity);
+	PlayerDeathStateComp* const deathState =
+		view.GetMutableComponent<PlayerDeathStateComp>(deathEvent.entity);
+	if (player == nullptr ||
+		player->ownerSessionId != deathEvent.sessionId ||
+		deathState == nullptr ||
+		deathState->state != PlayerDeathState::WaitingForDeathCount)
+	{
+		return false;
+	}
+
+	deathState->state = canRespawn
+		? PlayerDeathState::AwaitingRespawnInput
+		: PlayerDeathState::DeathCountExhausted;
+	deathState->deathCountRevision = deathCountRevision;
+	deathState->respawnRequested = false;
+	return true;
 }
 
 bool ServerApp::IsPartyEligible(SessionId sessionId) const

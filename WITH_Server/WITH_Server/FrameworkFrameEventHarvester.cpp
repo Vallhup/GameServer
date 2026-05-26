@@ -4,7 +4,7 @@
 #include <cmath>
 #include <unordered_set>
 
-#include "ECS/Components/GameplayCombatComponents.h"
+#include "ECS/GameplayRuntimeComponents.h"
 #include "NetIdRegistry.h"
 #include "RepComponent.h"
 #include "WorldInstance.h"
@@ -102,6 +102,28 @@ void FrameworkFrameEventHarvester::Harvest(
 			}
 
 			impactEvents.events.clear();
+		}
+
+		for (auto [entity, deathEvent, player] :
+			view.MutableView<
+				PendingPlayerDeathCountEventComp,
+				PlayerControlIdentityComp>())
+		{
+			if (!deathEvent.pending || player.ownerSessionId == 0)
+			{
+				continue;
+			}
+
+			const NetId netId = netIdRegistry.FindNetId(worldId, entity);
+			outEvents.playerDeathCounts.push_back(
+				FrameworkRuntime::FrameResult::PlayerDeathCountEvent{
+					.worldId = worldId,
+					.entity = entity,
+					.sessionId = player.ownerSessionId,
+					.netId = netId
+				});
+
+			deathEvent.pending = false;
 		}
 
 		// Transfer-imported entities keep the player's existing NetId. They must

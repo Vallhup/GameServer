@@ -16,6 +16,9 @@ void PlayerControlAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<PlayerNetworkTimingComp>();
 	runtime.RegisterStorage<PlayerNetworkCompensationComp>();
 	runtime.RegisterStorage<ConsumableInventoryComp>();
+	runtime.RegisterStorage<PlayerDeathCountConsumedTag>();
+	runtime.RegisterStorage<PendingPlayerDeathCountEventComp>();
+	runtime.RegisterStorage<PlayerDeathStateComp>();
 }
 
 void PlayerControlAspect::Attach(
@@ -45,6 +48,14 @@ void PlayerControlAspect::Attach(
 		ConsumableInventoryComp{
 			.hpPotionCount = potionTuning.defaultGrantCount
 		});
+
+	runtime.DeferredUpsertComponent<PendingPlayerDeathCountEventComp>(
+		entity,
+		PendingPlayerDeathCountEventComp{});
+
+	runtime.DeferredUpsertComponent<PlayerDeathStateComp>(
+		entity,
+		PlayerDeathStateComp{});
 }
 
 bool PlayerControlAspect::Validate(

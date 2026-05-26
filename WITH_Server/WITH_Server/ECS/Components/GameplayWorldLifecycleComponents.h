@@ -6,6 +6,30 @@ struct PendingDespawnTag : TagComponent
 {
 };
 
+struct PlayerDeathCountConsumedTag : TagComponent
+{
+};
+
+struct PendingPlayerDeathCountEventComp : Component
+{
+	bool pending{ false };
+};
+
+enum class PlayerDeathState : uint8_t
+{
+	Alive = 0,
+	WaitingForDeathCount,
+	AwaitingRespawnInput,
+	DeathCountExhausted
+};
+
+struct PlayerDeathStateComp : Component
+{
+	PlayerDeathState state{ PlayerDeathState::Alive };
+	uint64_t deathCountRevision{ 0 };
+	bool respawnRequested{ false };
+};
+
 struct PendingWorldTransferTag : TagComponent
 {
 };

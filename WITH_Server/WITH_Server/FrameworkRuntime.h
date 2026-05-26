@@ -83,17 +83,27 @@ public:
 			float dirZ{ -1.0f };
 		};
 
+		struct PlayerDeathCountEvent
+		{
+			WorldId worldId{ WorldId::Invalid() };
+			Entity entity{ Entity::Null() };
+			SessionId sessionId{ 0 };
+			NetId netId{ NetId::Invalid() };
+		};
+
 		struct FrameEvents
 		{
 			std::vector<EntitySpawnEvent> spawns;
 			std::vector<EntityDespawnEvent> despawns;
 			std::vector<CombatImpactEvent> combatImpacts;
+			std::vector<PlayerDeathCountEvent> playerDeathCounts;
 
 			void Clear() noexcept
 			{
 				spawns.clear();
 				despawns.clear();
 				combatImpacts.clear();
+				playerDeathCounts.clear();
 			}
 		};
 
