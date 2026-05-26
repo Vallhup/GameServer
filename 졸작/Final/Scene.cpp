@@ -118,6 +118,21 @@ void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
 			return NetHelper::DispatchPacket<Protocol::SC_STAT_CHANGE_PACKET>(header, data,
 				[this](const auto& packet) { HandleStatChange(packet); });
 		}
+		case PacketType::SC_ITEM_COUNT:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_ITEM_COUNT_PACKET>(header, data,
+				[this](const auto& packet) { HandleItemCount(packet); });
+		}
+		case PacketType::SC_TEAM_DEATH_COUNT:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_TEAM_DEATH_COUNT_PACKET>(header, data,
+				[this](const auto& packet) { HandleTeamDeathCount(packet); });
+		}
+		case PacketType::SC_MONSTER_COMBAT_STATE:
+		{
+			return NetHelper::DispatchPacket<Protocol::SC_MONSTER_COMBAT_STATE_PACKET>(header, data,
+				[this](const auto& packet) { HandleMontserCombatState(packet); });
+		}
 	}
 }
 
@@ -575,10 +590,49 @@ void Scene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
 			if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
 				controller->HandleMonsterHp(id, objIt->second.get(), stat.curhp(), stat.maxhp());
 	}
+	else if (auto bossIt = activeMonsterTypes.find(id);
+		bossIt != activeMonsterTypes.end() &&
+		(bossIt->second == MonsterType::Boss ||
+		 bossIt->second == MonsterType::BigDemonWarrior ||
+		 bossIt->second == MonsterType::Tank))
+	{
+		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
+			controller->HandleBossHp(stat.curhp(), stat.maxhp());
+	}
 	else if (activeMonsterTypes.find(id) == activeMonsterTypes.end() &&
 		activeCharacters.find(id) != activeCharacters.end())
 	{
 		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
 			controller->HandlePartyMemberHp(id, stat.curhp(), stat.maxhp());
 	}
+}
+
+void Scene::HandleItemCount(const Protocol::SC_ITEM_COUNT_PACKET& itemCount)
+{
+	uint32_t hpPotionCount = itemCount.hppotioncount();
+}
+
+void Scene::HandleTeamDeathCount(const Protocol::SC_TEAM_DEATH_COUNT_PACKET& deathCount)
+{
+	uint32_t deathCnt = deathCount.deathcount();
+	uint32_t maxDeathCount = deathCount.maxdeathcount();
+}
+
+void Scene::HandleMontserCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState)
+{
+	NetId netId{ combatState.netid() };
+	int id = netId.GetId();
+	bool inCombat = combatState.incombat();
+
+	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>();
+	if (!controller) return;
+
+	auto typeIt = activeMonsterTypes.find(id);
+	if (typeIt != activeMonsterTypes.end() &&
+		(typeIt->second == MonsterType::Boss ||
+		 typeIt->second == MonsterType::BigDemonWarrior ||
+		 typeIt->second == MonsterType::Tank))
+		controller->SetBossCombatState(inCombat);
+	else
+		controller->SetMonsterCombatState(id, inCombat);
 }

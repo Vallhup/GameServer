@@ -23,6 +23,7 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitInteractPrompt();
 	InitStatueWindow();
 	InitMonsterHpBars();
+	InitBossHpBar();
 	InitBeaconWindow();
 	InitLocalPlayerHUD();
 	InitMapNameOverlay();
@@ -758,7 +759,13 @@ void GameSceneUIController::UpdateJoinRequestPopup(float deltaTime)
 
 		wstring text = L"Party Join Request\n";
 		text += L"ID: " + std::to_wstring(active->requestersessionid()) + L"\n";
-		text += L"Class: -";
+		const CharacterType reqClass = static_cast<CharacterType>(active->requestercharactertype());
+		const wchar_t* className =
+			(reqClass == CharacterType::Lancer) ? L"Lancer" :
+			(reqClass == CharacterType::Paladin) ? L"Paladin" :
+													L"Knight";
+		text += L"Class: " + wstring(className) + L"\n";
+
 		joinRequestText->SetText(text);
 
 		joinRequestWindow->ChangeState(ImageUIState::Visible);
@@ -1115,7 +1122,64 @@ void GameSceneUIController::HandleMonsterHp(int id, GameObject* obj, int cur, in
 		monsterHpTargets.erase(id);
 		return;
 	}
-	monsterHpTargets[id] = { obj, clamp(static_cast<float>(cur) / max, 0.0f, 1.0f) };
+	auto& t = monsterHpTargets[id];
+	t.obj = obj;
+	t.hpPercent = clamp(static_cast<float>(cur) / max, 0.0f, 1.0f);
+}
+
+void GameSceneUIController::SetMonsterCombatState(int id, bool inCombat)
+{
+	monsterHpTargets[id].inCombat = inCombat;
+}
+
+void GameSceneUIController::InitBossHpBar()
+{
+	constexpr float BARBACK_ASPECT     = 39.0f / 785.0f;
+	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;
+	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;
+	constexpr float HPBAR_OFFSET_X     = 49.0f / 785.0f;
+	constexpr float HPBAR_OFFSET_Y     = 11.0f / 39.0f;
+
+	const float backW = WinSize.x * 0.55f;
+	const float backH = backW * BARBACK_ASPECT * 0.6f;  
+	const float backX = (WinSize.x - backW) * 0.5f;
+	const float backY = WinSize.y * 0.77f;         
+
+	bossBarBack = make_shared<ImageUI>(uiManager, L"BarBack", ImageUIState::Hidden);
+	bossBarBack->SetPosition(backX, backY);
+	bossBarBack->SetHoriLength(backW);
+	bossBarBack->SetVertLength(backH);
+	widgets.push_back(bossBarBack);
+
+	bossBarFullW = backW * HPBAR_WIDTH_RATIO;
+	bossBar = make_shared<ImageUI>(uiManager, L"HpBar2", ImageUIState::Hidden);
+	bossBar->SetPosition(backX + backW * HPBAR_OFFSET_X, backY + backH * HPBAR_OFFSET_Y);
+	bossBar->SetHoriLength(bossBarFullW);
+	bossBar->SetVertLength(backH * HPBAR_HEIGHT_RATIO);
+	widgets.push_back(bossBar);
+}
+
+void GameSceneUIController::HandleBossHp(int cur, int max)
+{
+	if (max <= 0 || cur <= 0)   
+	{
+		bossInCombat = false;
+		if (bossBarBack) bossBarBack->ChangeState(ImageUIState::Hidden);
+		if (bossBar)     bossBar->ChangeState(ImageUIState::Hidden);
+		return;
+	}
+
+	bossHpPercent = clamp(static_cast<float>(cur) / max, 0.0f, 1.0f);
+	if (bossBar)
+		bossBar->SetHoriLength(bossBarFullW * bossHpPercent);
+}
+
+void GameSceneUIController::SetBossCombatState(bool inCombat)
+{
+	bossInCombat = inCombat;
+	const ImageUIState state = inCombat ? ImageUIState::Visible : ImageUIState::Hidden;
+	if (bossBarBack) bossBarBack->ChangeState(state);
+	if (bossBar)     bossBar->ChangeState(state);
 }
 
 void GameSceneUIController::UpdateMonsterHpBars()
@@ -1149,7 +1213,8 @@ void GameSceneUIController::UpdateMonsterHpBars()
 		for (const auto& [id, target] : monsterHpTargets)
 		{
 			if (used >= MAX_MONSTER_HP_BARS) break;
-			if (!target.obj || target.obj->GetId() == -1) continue;   
+			if (!target.obj || target.obj->GetId() == -1) continue;
+			if (!target.inCombat) continue;
 
 			auto* tf = target.obj->GetComponent<Transform>();
 			if (!tf) continue;
