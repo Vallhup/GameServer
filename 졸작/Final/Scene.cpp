@@ -479,9 +479,9 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 				if (auto typeIt = activeMonsterTypes.find(vId); typeIt != activeMonsterTypes.end())
 				{
 					if (typeIt->second == MonsterType::Boss)
-						SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/CutFinalBoss.mp3");
+						SOUND_MANAGER->PlaySFX3D("../Assets/Music/SFX/CutFinalBoss.mp3", impactPos);
 					else
-						SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/CutMonster.mp3");
+						SOUND_MANAGER->PlaySFX3D("../Assets/Music/SFX/CutMonster.mp3", impactPos);
 				}
 			}
 			break;
@@ -502,7 +502,7 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 				if (auto streak = victim->GetComponent<ParryStreakComponent>())
 					streak->Spawn(impactPos);
 
-				SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/Parry.mp3");
+				SOUND_MANAGER->PlaySFX3D("../Assets/Music/SFX/Parry.mp3", impactPos);
 			}
 			break;
 		}

@@ -1,5 +1,9 @@
 #include "pch.h"
 #include "SoundManager.h"
+#include "Engine.h"
+#include "SceneManager.h"
+#include "Scene.h"
+#include "Camera.h"
 
 void SoundManager::Initialize()
 {
@@ -50,6 +54,8 @@ void SoundManager::Update(float deltaTime)
         }
     }
 
+    UpdateListener();
+
     if (system)
         system->update();
 }
@@ -66,6 +72,13 @@ void SoundManager::Release()
             pair.second->release();
     }
     sfxCache.clear();
+
+    for (auto& pair : sfx3DCache)
+    {
+        if (pair.second)
+            pair.second->release();
+    }
+    sfx3DCache.clear();
 
     if (system)
     {
@@ -177,6 +190,59 @@ void SoundManager::PlaySFX(const char* path)
     }
 
     system->playSound(sound, sfxGroup, false, nullptr);
+}
+
+void SoundManager::PlaySFX3D(const char* path, const XMFLOAT3& worldPos)
+{
+    string key(path);
+    Sound* sound = nullptr;
+
+    auto it = sfx3DCache.find(key);
+    if (it != sfx3DCache.end())
+    {
+        sound = it->second;
+    }
+    else
+    {
+        system->createSound(path, FMOD_3D | FMOD_3D_LINEARROLLOFF, nullptr, &sound);
+        if (sound)
+            sound->set3DMinMaxDistance(SFX3D_MIN_DISTANCE, SFX3D_MAX_DISTANCE);
+        sfx3DCache[key] = sound;
+    }
+
+    // 위치 없이 한 프레임 새는 걸 막기 위해 정지 상태로 재생 → 위치 지정 → 해제
+    Channel* channel = nullptr;
+    system->playSound(sound, sfxGroup, true, &channel);
+    if (channel)
+    {
+        const FMOD_VECTOR pos{ worldPos.x, worldPos.y, worldPos.z };
+        const FMOD_VECTOR vel{ 0.0f, 0.0f, 0.0f };
+        channel->set3DAttributes(&pos, &vel);
+        channel->setPaused(false);
+    }
+}
+
+void SoundManager::UpdateListener()
+{
+    if (!system)
+        return;
+
+    Scene* scene = SCENE_MANAGER->GetCurrentScene();
+    if (!scene)
+        return;
+
+    Camera* camera = scene->GetCamera();
+    if (!camera)
+        return;
+
+    const XMFLOAT3 pos = camera->GetPosition();
+    const XMFLOAT3 fwd = camera->GetForward();
+
+    const FMOD_VECTOR fpos{ pos.x, pos.y, pos.z };
+    const FMOD_VECTOR fvel{ 0.0f, 0.0f, 0.0f };
+    const FMOD_VECTOR ffwd{ fwd.x, fwd.y, fwd.z };
+    const FMOD_VECTOR fup{ 0.0f, 1.0f, 0.0f };
+    system->set3DListenerAttributes(0, &fpos, &fvel, &ffwd, &fup);
 }
 
 void SoundManager::SetSFXVolume(float volume)

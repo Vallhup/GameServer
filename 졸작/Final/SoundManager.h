@@ -20,9 +20,15 @@ public:
 
     void PreloadSFX(const char* path);
     void PlaySFX(const char* path);
+    void PlaySFX3D(const char* path, const XMFLOAT3& worldPos);
     void SetSFXVolume(float volume);
 
 private:
+    void UpdateListener();
+
+    static constexpr float SFX3D_MIN_DISTANCE = 3.0f;
+    static constexpr float SFX3D_MAX_DISTANCE = 30.0f;
+
     System* system = nullptr;
     ChannelGroup* bgmGroup = nullptr;  
     ChannelGroup* sfxGroup = nullptr;
@@ -35,12 +41,12 @@ private:
     float fadeInTimer = 0.0f;
     float fadeInDuration = 0.0f;
 
-    // 페이드아웃이 끝난 뒤 시작하도록 예약된 BGM(순차 전환)
     string pendingBGMPath;
     float  pendingFadeIn = 0.0f;
     bool   hasPendingBGM = false;
 
     unordered_map<string, Sound*> bgmCache;
     unordered_map<string, Sound*> sfxCache;
+    unordered_map<string, Sound*> sfx3DCache;
     string currentBGMPath;
 };
