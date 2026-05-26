@@ -317,10 +317,10 @@ void PlazaScene::CreateEffectSamples()
 
 	vector<EffectInfo> info = {
 		{u"Fireworks", 484.607025f, 6.f, 481.862946f},
-		{u"BloodLance", 484.607025f, 6.f, 481.862946f},
-		{u"Aura01_HDR2", 484.607025f, 6.f, 481.862946f},
-		{u"Benediction", 484.607025f, 10.f, 481.862946f},
-		{u"Atmosphere", 484.607025f, 10.f, 481.862946f},
+		{u"BloodLance", 484.607025f, 7.3f, 481.862946f},
+		{u"HolySandstorm", 484.607025f, 7.3f, 481.862946f},
+		{u"Sword_Moonlight", 484.607025f, 7.3f, 481.862946f},
+		{u"Sword_Storm", 484.607025f, 7.3f, 481.862946f},
 		{u"CandleFire5", 484.607025f, 6.f, 481.862946f},
 		{u"CandleFire5", 475.607025f, 6.f, 481.862946f},
 		{u"Dissolve", 484.607025f, 6.f, 481.862946f}
