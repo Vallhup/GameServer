@@ -360,9 +360,20 @@ void IocpConnection::Close(SessionCloseReason reason) noexcept
 {
 	bool expected = false;
 	if (!_closed.compare_exchange_strong(expected, true, std::memory_order_acq_rel))
+	{
+		FWLOG_INFO(kLogCategory,
+			"Close skipped (already closed) (sid=%u, requestedReason=%d, existingReason=%d)",
+			_sessionId,
+			static_cast<int>(reason),
+			static_cast<int>(_closeReason.load(std::memory_order_acquire)));
 		return;
+	}
 
 	_closeReason.store(reason, std::memory_order_release);
+	FWLOG_WARN(kLogCategory,
+		"Close session (sid=%u, reason=%d)",
+		_sessionId,
+		static_cast<int>(reason));
 
 	const SOCKET socket = _socket;
 	if (socket != INVALID_SOCKET)

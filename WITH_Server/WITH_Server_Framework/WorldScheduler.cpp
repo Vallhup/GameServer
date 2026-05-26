@@ -10,9 +10,15 @@
 #include "ExecutionGraphBuilder.h"
 #include "ExecutionSourceTypes.h"
 #include "ExecutionOps.h"
+#include "FrameworkLog.h"
 #include "TaskExecutor.h"
 #include "WorldExecutionModelTypes.h"
 #include "WorldInstance.h"
+
+namespace
+{
+    constexpr const char* kSchedulerLogCategory = "WorldScheduler";
+}
 #include "WorldManager.h"
 #include "WorldRegistry.h"
 #include "WorldRuntime.h"
@@ -427,6 +433,14 @@ void WorldScheduler::FreezeDynamicTaskRequests(
             {
                 if (targetKind == DynamicTaskTargetKind::SessionCurrentWorld)
                 {
+                    FWLOG_WARN(kSchedulerLogCategory,
+                        "DynamicTask DROPPED (SessionCurrentWorld scope unresolved) "
+                        "(typeId=%u, sid=%u, debugName=%s, requestedScopeId=%u, runtimeScopeCount=%zu)",
+                        req.typeId,
+                        static_cast<uint32_t>(req.sessionId),
+                        typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                        req.scopeId,
+                        runtimeByScope.size());
                     cleanupPayload(req);
                     continue;
                 }
@@ -434,15 +448,61 @@ void WorldScheduler::FreezeDynamicTaskRequests(
                 if (req.scopeId == InvalidExecScopeId ||
                     req.scopeId >= static_cast<ExecScopeId>(runtimeByScope.size()))
                 {
+                    FWLOG_WARN(kSchedulerLogCategory,
+                        "DynamicTask DROPPED (fallback ExplicitScope invalid) "
+                        "(typeId=%u, sid=%u, debugName=%s, requestedScopeId=%u, runtimeScopeCount=%zu)",
+                        req.typeId,
+                        static_cast<uint32_t>(req.sessionId),
+                        typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                        req.scopeId,
+                        runtimeByScope.size());
                     cleanupPayload(req);
                     continue;
                 }
+                FWLOG_INFO(kSchedulerLogCategory,
+                    "DynamicTask falling back to ExplicitScope "
+                    "(typeId=%u, sid=%u, debugName=%s, fallbackScopeId=%u)",
+                    req.typeId,
+                    static_cast<uint32_t>(req.sessionId),
+                    typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                    req.scopeId);
             }
             else
             {
                 req.scopeId = resolvedScopeId;
+                FWLOG_INFO(kSchedulerLogCategory,
+                    "DynamicTask resolved to session world "
+                    "(typeId=%u, sid=%u, debugName=%s, resolvedScopeId=%u)",
+                    req.typeId,
+                    static_cast<uint32_t>(req.sessionId),
+                    typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                    resolvedScopeId);
             }
             req.targetKind = DynamicTaskTargetKind::ExplicitScope;
+        }
+        else if (targetKind == DynamicTaskTargetKind::ExplicitScope)
+        {
+            if (req.scopeId == InvalidExecScopeId ||
+                req.scopeId >= static_cast<ExecScopeId>(runtimeByScope.size()))
+            {
+                FWLOG_WARN(kSchedulerLogCategory,
+                    "DynamicTask DROPPED (ExplicitScope out of range) "
+                    "(typeId=%u, sid=%u, debugName=%s, requestedScopeId=%u, runtimeScopeCount=%zu)",
+                    req.typeId,
+                    static_cast<uint32_t>(req.sessionId),
+                    typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                    req.scopeId,
+                    runtimeByScope.size());
+                cleanupPayload(req);
+                continue;
+            }
+            FWLOG_INFO(kSchedulerLogCategory,
+                "DynamicTask ExplicitScope dispatch "
+                "(typeId=%u, sid=%u, debugName=%s, scopeId=%u)",
+                req.typeId,
+                static_cast<uint32_t>(req.sessionId),
+                typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                req.scopeId);
         }
 
         resolvedRequests.push_back(std::move(req));

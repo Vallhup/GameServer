@@ -193,6 +193,12 @@ void ServerSessionSystem::HandleSessionDisconnected(
 	SessionCloseReason reason,
 	WorldId executionWorldId) noexcept
 {
+	FWLOG_WARN(kLogCategory,
+		"HandleSessionDisconnected entry (sid=%u, reason=%d, executionWorldId=%u)",
+		sessionId,
+		static_cast<int>(reason),
+		executionWorldId.GetRaw());
+
 	const SessionFlow* const existingFlow =
 		_sessionFlowController.FindFlow(sessionId);
 	const SessionFlow flowSnapshot =
@@ -235,20 +241,75 @@ void ServerSessionSystem::StageTimeSyncPackets(uint64_t serverFrame)
 	std::vector<SessionId> sessionIds;
 	_network.GetSessionManager().FillSessionIds(sessionIds);
 
+	uint32_t gatedOutCount = 0;
+	uint32_t probeSkippedCount = 0;
+	uint32_t stagedCount = 0;
+	uint32_t stageFailedCount = 0;
+
 	for (SessionId sessionId : sessionIds)
 	{
-		NetworkTimeProbe probe{};
-		if (!_networkTiming.TryBuildProbe(sessionId, serverFrame, probe))
+		// 핸드셰이크/로그인 단계의 세션, 월드 미바인딩 세션, 종료 중인 세션은
+		// time sync 대상에서 제외한다.
+		// 1) 클라가 SC_TIME_SYNC 패킷 ID를 아직 디스패치할 수 없는 시점에
+		//    프레임마다 발사되어 ProtocolError로 끊기는 사고를 막는다.
+		// 2) NetworkTimingService 내부 _sessions 맵에 미준비 세션의 엔트리가
+		//    누적되는 것을 방지한다(TryBuildProbe는 게이트 통과 세션만 emplace).
+		if (!_sessionFlowController.CanAcceptGameplay(sessionId))
 		{
+			++gatedOutCount;
+			FWLOG_INFO(kLogCategory,
+				"StageTimeSyncPackets gated (sid=%u, stateId=%d, serverFrame=%llu)",
+				sessionId,
+				static_cast<int>(_sessionFlowController.GetState(sessionId)),
+				static_cast<unsigned long long>(serverFrame));
 			continue;
 		}
 
-		(void)ServerPacketStager::StageTimeSyncPacketToSession(
+		NetworkTimeProbe probe{};
+		if (!_networkTiming.TryBuildProbe(sessionId, serverFrame, probe))
+		{
+			++probeSkippedCount;
+			continue;
+		}
+
+		const bool staged = ServerPacketStager::StageTimeSyncPacketToSession(
 			_network,
 			sessionId,
 			probe.probeSeq,
 			probe.serverSendTimeMs,
 			probe.serverFrame);
+		if (staged)
+		{
+			++stagedCount;
+			FWLOG_INFO(kLogCategory,
+				"StageTimeSyncPackets staged (sid=%u, probeSeq=%u, serverSendTimeMs=%u, serverFrame=%llu)",
+				sessionId,
+				probe.probeSeq,
+				probe.serverSendTimeMs,
+				static_cast<unsigned long long>(probe.serverFrame));
+		}
+		else
+		{
+			++stageFailedCount;
+			FWLOG_WARN(kLogCategory,
+				"StageTimeSyncPackets stage failed (sid=%u, probeSeq=%u, serverSendTimeMs=%u, serverFrame=%llu)",
+				sessionId,
+				probe.probeSeq,
+				probe.serverSendTimeMs,
+				static_cast<unsigned long long>(probe.serverFrame));
+		}
+	}
+
+	if (!sessionIds.empty())
+	{
+		FWLOG_INFO(kLogCategory,
+			"StageTimeSyncPackets summary (serverFrame=%llu, totalSessions=%zu, gatedOut=%u, probeSkipped=%u, staged=%u, stageFailed=%u)",
+			static_cast<unsigned long long>(serverFrame),
+			sessionIds.size(),
+			gatedOutCount,
+			probeSkippedCount,
+			stagedCount,
+			stageFailedCount);
 	}
 }
 

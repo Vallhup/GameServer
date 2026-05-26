@@ -48,6 +48,16 @@ void PartyCommandPump::ApplyCommand(
 	const PartyCommand& command,
 	double nowSec)
 {
+	FWLOG_INFO(
+		kLogCategory,
+		"ApplyCommand dispatch (kind=%d, sid=%u, partyId=%llu, requestId=%llu, clientRequestId=%u, nowSec=%.3f)",
+		static_cast<int>(command.kind),
+		command.actorSessionId,
+		static_cast<unsigned long long>(command.partyId),
+		static_cast<unsigned long long>(command.requestId),
+		command.clientRequestId,
+		nowSec);
+
 	switch (command.kind)
 	{
 	case PartyCommandKind::UiOpened:

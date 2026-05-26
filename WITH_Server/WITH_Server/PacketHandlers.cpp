@@ -102,12 +102,33 @@ namespace
     {
         const WorldId worldId = sessionFlow.FindCurrentWorldId(sessionId);
         if (!worldId.IsValid())
+        {
+            FWLOG_WARN(kLogCategory,
+                "ResolveWorldRuntime failed: session has no currentWorldId (sid=%u)",
+                sessionId);
             return nullptr;
+        }
 
-        if (ctx.TryGetWorldId() != worldId)
+        const WorldId ctxWorldId = ctx.TryGetWorldId();
+        if (ctxWorldId != worldId)
+        {
+            FWLOG_WARN(kLogCategory,
+                "ResolveWorldRuntime failed: ctx world mismatch (sid=%u, sessionWorldId=%u, ctxWorldId=%u)",
+                sessionId,
+                worldId.GetRaw(),
+                ctxWorldId.GetRaw());
             return nullptr;
+        }
 
-        return ctx.TryGetRuntime();
+        WorldRuntime* const runtime = ctx.TryGetRuntime();
+        if (runtime == nullptr)
+        {
+            FWLOG_WARN(kLogCategory,
+                "ResolveWorldRuntime failed: ctx.TryGetRuntime() == nullptr (sid=%u, worldId=%u)",
+                sessionId,
+                worldId.GetRaw());
+        }
+        return runtime;
     }
 
     bool TryResolvePlayerInputTarget(
@@ -124,6 +145,13 @@ namespace
         if (runtime == nullptr || ops == nullptr || !worldId.IsValid() ||
             sessionId == 0 || !netId.IsValid())
         {
+            FWLOG_WARN(kLogCategory,
+                "TryResolvePlayerInputTarget failed at ctx preamble (sid=%u, netId=%u, runtime=%p, ops=%p, worldIdValid=%u)",
+                sessionId,
+                netId.GetRaw(),
+                static_cast<const void*>(runtime),
+                static_cast<const void*>(ops),
+                worldId.IsValid() ? 1u : 0u);
             return false;
         }
 
@@ -131,6 +159,11 @@ namespace
         if (!ops->TryResolveEntity(worldId, netId, entity) ||
             entity.IsNull())
         {
+            FWLOG_WARN(kLogCategory,
+                "TryResolvePlayerInputTarget failed: TryResolveEntity (sid=%u, netId=%u, worldId=%u)",
+                sessionId,
+                netId.GetRaw(),
+                worldId.GetRaw());
             return false;
         }
 
@@ -143,12 +176,26 @@ namespace
             ecs.GetMutableComponent<ActorInputComp>(entity);
         if (identity == nullptr || input == nullptr)
         {
+            FWLOG_WARN(kLogCategory,
+                "TryResolvePlayerInputTarget failed: missing comp (sid=%u, netId=%u, entity=%u.%u, identity=%p, input=%p)",
+                sessionId,
+                netId.GetRaw(),
+                entity.id,
+                entity.generation,
+                static_cast<const void*>(identity),
+                static_cast<const void*>(input));
             return false;
         }
 
         if (identity->ownerSessionId != sessionId ||
             identity->netId != netId)
         {
+            FWLOG_WARN(kLogCategory,
+                "TryResolvePlayerInputTarget failed: identity mismatch (sid=%u, netId=%u, identity.ownerSessionId=%u, identity.netId=%u)",
+                sessionId,
+                netId.GetRaw(),
+                identity->ownerSessionId,
+                identity->netId.GetRaw());
             return false;
         }
 
@@ -607,6 +654,22 @@ namespace
             network.RegisterPacketHandler(
                 static_cast<uint16_t>(packetType),
                 typeId);
+            FWLOG_INFO(kLogCategory,
+                "RegisterPacketDynamicTask ok (packetType=%u, typeId=%u, debugName=%s, targetKind=%d, gameplayInput=%u)",
+                static_cast<uint32_t>(packetType),
+                typeId,
+                debugName != nullptr ? debugName : "(null)",
+                static_cast<int>(targetKind),
+                gameplayInput ? 1u : 0u);
+        }
+        else
+        {
+            FWLOG_ERROR(kLogCategory,
+                "RegisterPacketDynamicTask FAILED (packetType=%u, debugName=%s, targetKind=%d, gameplayInput=%u)",
+                static_cast<uint32_t>(packetType),
+                debugName != nullptr ? debugName : "(null)",
+                static_cast<int>(targetKind),
+                gameplayInput ? 1u : 0u);
         }
         return typeId;
     }
@@ -618,9 +681,13 @@ void RegisterServerPacketHandlers(
     NetworkRuntime& network,
     DynamicTaskTypeId& outDisconnectedTypeId)
 {
+    // CS_TIME_SYNC echo 처리는 NetworkTimingService(=글로벌 서비스)만 만지며
+    // ECS 컴포넌트에 접근하지 않는다. 월드 그래프에 묶을 이유가 없고, 묶이면
+    // 세션이 잠깐이라도 InGame이 아닐 때 패킷이 그대로 폐기되므로
+    // ExplicitScope로 두어 항상 글로벌 스코프에서 처리한다.
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_TIME_SYNC,                &HandleTimeSyncPacket,              "Pkt_CS_TIME_SYNC",
-        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
+        DynamicTaskTargetKind::ExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_LOGIN,                    &HandleLoginPacket,                  "Pkt_CS_LOGIN");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
@@ -647,27 +714,36 @@ void RegisterServerPacketHandlers(
         PacketType::CS_WORLD_TRANSITION_REQUEST, &HandleWorldTransitionRequestPacket, "Pkt_CS_WORLD_TRANSITION_REQUEST");
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_WORLD_TRANSITION_READY,   &HandleWorldTransitionReadyPacket,   "Pkt_CS_WORLD_TRANSITION_READY");
+    // CS_PARTY_* 핸들러는 전부 PartyCommandQueue에 명령을 enqueue 하기만 하고
+    // ECS 컴포넌트(ActorInputComp, PlayerNetworkTimingComp 등)나 월드 상태를
+    // 직접 수정하지 않는다. 따라서 다음 두 조건이 모두 충족되어야 한다:
+    //   1) gameplayInput=false: gameplay input과 동일한 access/ordering을
+    //      걸지 않는다(파티 UI 핸들러가 CS_MOVE/CS_ATTACK과 같은 컴포넌트
+    //      write 락을 들고 ResolvePlayerNetworkCompensationSystem 앞에
+    //      직렬화되는 사고를 막는다).
+    //   2) ExplicitScope: 세션이 InGame이 아니어도 파티 UI를 켜고 닫을 수
+    //      있어야 하며, 월드 그래프에 묶일 이유도 없다.
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_UI_OPENED,          &HandlePartyUiOpenedPacket,          "Pkt_CS_PARTY_UI_OPENED",
-        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
+        DynamicTaskTargetKind::ExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_UI_CLOSED,          &HandlePartyUiClosedPacket,          "Pkt_CS_PARTY_UI_CLOSED",
-        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
+        DynamicTaskTargetKind::ExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_LIST_REFRESH,       &HandlePartyListRefreshPacket,       "Pkt_CS_PARTY_LIST_REFRESH",
-        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
+        DynamicTaskTargetKind::ExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_CREATE,             &HandlePartyCreatePacket,            "Pkt_CS_PARTY_CREATE",
-        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
+        DynamicTaskTargetKind::ExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_JOIN_REQUEST,       &HandlePartyJoinRequestPacket,       "Pkt_CS_PARTY_JOIN_REQUEST",
-        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
+        DynamicTaskTargetKind::ExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_JOIN_ACCEPT,        &HandlePartyJoinAcceptPacket,        "Pkt_CS_PARTY_JOIN_ACCEPT",
-        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
+        DynamicTaskTargetKind::ExplicitScope);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_JOIN_REJECT,        &HandlePartyJoinRejectPacket,        "Pkt_CS_PARTY_JOIN_REJECT",
-        DynamicTaskTargetKind::SessionCurrentWorldOrExplicitScope);
+        DynamicTaskTargetKind::ExplicitScope);
 
     DynamicTaskTypeDesc loginAuthResultDesc{};
     loginAuthResultDesc.debugName = "DB_LoginAuthResult";
@@ -1105,9 +1181,18 @@ ExecCallResult HandleTimeSyncPacket(NodeExecContext& ctx)
 {
     auto buf = AcquirePayload(ctx);
     if (!buf)
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_TIME_SYNC entry: payload missing");
         return ExecCallResult::Failed;
+    }
 
     const SessionId sessionId = ResolveSessionId(ctx);
+    FWLOG_INFO(kLogCategory,
+        "CS_TIME_SYNC entry (sid=%u, ctxWorldId=%u)",
+        sessionId,
+        ctx.TryGetWorldId().GetRaw());
+
     Protocol::CS_TIME_SYNC_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
     {
@@ -1130,6 +1215,12 @@ ExecCallResult HandleTimeSyncPacket(NodeExecContext& ctx)
             sessionId,
             pkt.probeseq(),
             pkt.echoedserversendtimems());
+    }
+    else
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_TIME_SYNC ignored: networkTiming service is null (sid=%u)",
+            sessionId);
     }
 
     return ExecCallResult::Success;
@@ -1245,10 +1336,21 @@ ExecCallResult HandleMovePacket(NodeExecContext& ctx)
 {
     auto buf = AcquirePayload(ctx);
     if (!buf)
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_MOVE entry: payload missing");
         return ExecCallResult::Failed;
+    }
 
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
+
+    FWLOG_INFO(kLogCategory,
+        "CS_MOVE entry (sid=%u, ctxWorldId=%u, sessionFlow=%p, networkTiming=%p)",
+        sessionId,
+        ctx.TryGetWorldId().GetRaw(),
+        static_cast<const void*>(svc.sessionFlow),
+        static_cast<const void*>(svc.networkTiming));
 
     if (svc.sessionFlow == nullptr ||
         ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow) == nullptr)
@@ -1304,28 +1406,53 @@ ExecCallResult HandleAttackPacket(NodeExecContext& ctx)
 {
     auto buf = AcquirePayload(ctx);
     if (!buf)
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_ATTACK entry: payload missing");
         return ExecCallResult::Failed;
+    }
 
     auto& svc = PacketHandlerContext::Get();
     const SessionId sessionId = ResolveSessionId(ctx);
 
+    FWLOG_INFO(kLogCategory,
+        "CS_ATTACK entry (sid=%u, ctxWorldId=%u)",
+        sessionId,
+        ctx.TryGetWorldId().GetRaw());
+
     if (svc.sessionFlow == nullptr ||
         ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow) == nullptr)
     {
+        FWLOG_INFO(kLogCategory,
+            "CS_ATTACK ignored: no world runtime (sid=%u)",
+            sessionId);
         return ExecCallResult::Success;
     }
 
     Protocol::CS_ATTACK_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_ATTACK parse failed (sid=%u)",
+            sessionId);
         return ExecCallResult::Success;
+    }
 
     PlayerInputTarget target{};
     if (!TryResolvePlayerInputTarget(ctx, sessionId, *svc.sessionFlow, target))
     {
+        FWLOG_INFO(kLogCategory,
+            "CS_ATTACK ignored: input target not found (sid=%u)",
+            sessionId);
         return ExecCallResult::Success;
     }
 
     ApplyAttackInput(*target.runtime, pkt, *target.input);
+    FWLOG_INFO(kLogCategory,
+        "CS_ATTACK applied (sid=%u, entity=%u.%u)",
+        sessionId,
+        target.entity.id,
+        target.entity.generation);
     return ExecCallResult::Success;
 }
 
@@ -1542,9 +1669,18 @@ ExecCallResult HandlePartyUiOpenedPacket(NodeExecContext& ctx)
 {
     auto buf = AcquirePayload(ctx);
     if (!buf)
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_PARTY_UI_OPENED entry: payload missing");
         return ExecCallResult::Failed;
+    }
 
     const SessionId sessionId = ResolveSessionId(ctx);
+    FWLOG_INFO(kLogCategory,
+        "CS_PARTY_UI_OPENED entry (sid=%u, ctxWorldId=%u)",
+        sessionId,
+        ctx.TryGetWorldId().GetRaw());
+
     Protocol::CS_PARTY_UI_OPENED_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
     {
@@ -1575,17 +1711,36 @@ ExecCallResult HandlePartyUiClosedPacket(NodeExecContext& ctx)
 {
     auto buf = AcquirePayload(ctx);
     if (!buf)
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_PARTY_UI_CLOSED entry: payload missing");
         return ExecCallResult::Failed;
+    }
+
+    const SessionId sessionId = ResolveSessionId(ctx);
+    FWLOG_INFO(kLogCategory,
+        "CS_PARTY_UI_CLOSED entry (sid=%u, ctxWorldId=%u)",
+        sessionId,
+        ctx.TryGetWorldId().GetRaw());
 
     Protocol::CS_PARTY_UI_CLOSED_PACKET pkt{};
     if (!ParseProto(*buf, pkt))
+    {
+        FWLOG_WARN(kLogCategory,
+            "CS_PARTY_UI_CLOSED parse failed (sid=%u)",
+            sessionId);
         return ExecCallResult::Success;
+    }
 
     SubmitPartyCommand(PartyCommand{
         .kind = PartyCommandKind::UiClosed,
-        .actorSessionId = ResolveSessionId(ctx),
+        .actorSessionId = sessionId,
         .clientRequestId = pkt.clientrequestid()
     });
+    FWLOG_INFO(kLogCategory,
+        "CS_PARTY_UI_CLOSED submitted command (sid=%u, clientRequestId=%u)",
+        sessionId,
+        pkt.clientrequestid());
     return ExecCallResult::Success;
 }
 

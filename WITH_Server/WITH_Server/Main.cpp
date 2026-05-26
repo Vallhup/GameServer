@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 	RollingFileLogSink errorFileSink("Log", "error", 30);
 	LevelFilteredSink  filteredErrorSink(errorFileSink, LogLevel::Error);
 
-	FrameworkLog::Instance().SetRuntimeLevel(LogLevel::Info);
+	FrameworkLog::Instance().SetRuntimeLevel(LogLevel::Debug);
 	FrameworkLog::Instance().AddSink(&consoleSink);
 	if (fileSink.IsOpen())
 	{
