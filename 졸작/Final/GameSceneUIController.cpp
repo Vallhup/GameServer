@@ -10,6 +10,8 @@
 #include "Camera.h"
 #include "SoundManager.h"
 #include "ClientPartyState.h"
+#include "ClientWorldTransitionController.h"
+#include "NetworkManager.h"
 #include "NetId.h"
 
 GameSceneUIController::GameSceneUIController(SceneType type) : sceneType(type) {}
@@ -18,7 +20,10 @@ void GameSceneUIController::Init(UIManager* manager)
 {
 	uiManager = manager;
 
+	InitInteractPrompt();
+	InitStatueWindow();
 	InitMonsterHpBars();
+	InitBeaconWindow();
 	InitLocalPlayerHUD();
 	InitMapNameOverlay();
 	InitPartyWindow();
@@ -794,6 +799,9 @@ void GameSceneUIController::Update(float deltaTime)
 
 	UpdateJoinRequestPopup(deltaTime);
 	UpdateMonsterHpBars();
+	UpdateInteractPrompt();
+	UpdateStatueWindow();
+	UpdateBeaconWindow();
 
 	auto opened = [](const shared_ptr<ImageUI>& p) {
 		return p && p->GetState() != ImageUIState::Hidden;
@@ -1063,7 +1071,7 @@ void GameSceneUIController::Update(float deltaTime)
 	const bool wantCursor =
 		opened(statusImage) || opened(escWindow)   || opened(partyBook) ||
 		opened(mapImage)    || opened(keyGuide)    || opened(settingWindow) ||
-		opened(joinRequestWindow);
+		opened(joinRequestWindow) || opened(statueWindow) || opened(beaconWindow);
 	if (Camera* camera = SCENE_MANAGER->GetCurrentScene()->GetCamera())
 		if (camera->IsCursorActive() != wantCursor)
 			camera->SetCursor(wantCursor);
@@ -1181,6 +1189,256 @@ void GameSceneUIController::UpdateMonsterHpBars()
 		monsterBarBacks[i]->ChangeState(ImageUIState::Hidden);
 		monsterBars[i]->ChangeState(ImageUIState::Hidden);
 	}
+}
+
+void GameSceneUIController::InitInteractPrompt()
+{
+	interactCircle = make_shared<ImageUI>(uiManager, L"MagicCircle", ImageUIState::Hidden);
+	widgets.push_back(interactCircle);
+
+	interactScale = (sceneType == SceneType::Village) ? 0.7f : 1.0f;
+
+	interactKeyText = make_shared<TextUI>(uiManager, L"InteractKey", L"VerdanaBold");
+	interactKeyText->SetText(L"");
+	interactKeyText->SetScale(WinSize.y / 1080.0f * 0.85f * interactScale);
+	widgets.push_back(interactKeyText);
+
+	interactLabelText = make_shared<TextUI>(uiManager, L"InteractLabel", L"VerdanaBold");
+	interactLabelText->SetText(L"");
+	interactLabelText->SetScale(WinSize.y / 1080.0f * 0.6f * interactScale);
+	widgets.push_back(interactLabelText);
+}
+
+void GameSceneUIController::SetInteractPrompt(bool active, const XMFLOAT3& worldAnchor)
+{
+	interactActive = active;
+	interactWorldAnchor = worldAnchor;
+}
+
+void GameSceneUIController::UpdateInteractPrompt()
+{
+	if (!interactCircle) return;
+
+	const bool windowOpen =
+		(statueWindow && statueWindow->GetState() != ImageUIState::Hidden) ||
+		(beaconWindow && beaconWindow->GetState() != ImageUIState::Hidden);
+
+	if (!interactActive || windowOpen || !IsMyPartyLeader())
+	{
+		interactCircle->ChangeState(ImageUIState::Hidden);
+		interactKeyText->SetText(L"");
+		interactLabelText->SetText(L"");
+		return;
+	}
+
+	Scene* scene = SCENE_MANAGER->GetCurrentScene();
+	Camera* camera = scene ? scene->GetCamera() : nullptr;
+	if (!camera)
+	{
+		interactCircle->ChangeState(ImageUIState::Hidden);
+		interactKeyText->SetText(L"");
+		interactLabelText->SetText(L"");
+		return;
+	}
+
+	const XMMATRIX viewProj = camera->GetViewMatrix() * camera->GetProjectionMatrix();
+	const XMVECTOR c = XMVector4Transform(XMVectorSetW(XMLoadFloat3(&interactWorldAnchor), 1.0f), viewProj);
+	const float w = XMVectorGetW(c);
+	if (w <= 0.0001f)   
+	{
+		interactCircle->ChangeState(ImageUIState::Hidden);
+		interactKeyText->SetText(L"");
+		interactLabelText->SetText(L"");
+		return;
+	}
+
+	const float sx = (XMVectorGetX(c) / w * 0.5f + 0.5f) * WinSize.x;
+	const float sy = (1.0f - (XMVectorGetY(c) / w * 0.5f + 0.5f)) * WinSize.y;
+
+	const float circleSize = WinSize.y * 0.085f * interactScale;
+	interactCircle->SetPosition(sx - circleSize * 0.5f, sy - circleSize * 0.5f);
+	interactCircle->SetHoriLength(circleSize);
+	interactCircle->SetVertLength(circleSize);
+	interactCircle->ChangeState(ImageUIState::Visible);
+
+	interactKeyText->SetText(L"F");
+	interactKeyText->SetPosition(sx - circleSize * 0.21f, sy - circleSize * 0.27f);
+	interactLabelText->SetText(L"Interact");
+	interactLabelText->SetPosition(sx + circleSize * 0.62f, sy - circleSize * 0.22f);
+}
+
+void GameSceneUIController::InitStatueWindow()
+{
+	if (sceneType != SceneType::Plaza) return;   
+
+	const float winSize = WinSize.y * 0.5f;
+	const float winX = (WinSize.x - winSize) * 0.5f;
+	const float winY = (WinSize.y - winSize) * 0.5f;
+
+	statueWindow = make_shared<ImageUI>(uiManager, L"StatueInteractWindow", ImageUIState::Hidden);
+	statueWindow->SetPosition(winX, winY);
+	statueWindow->SetHoriLength(winSize);
+	statueWindow->SetVertLength(winSize);
+	widgets.push_back(statueWindow);
+
+	const float btnW = winSize * 0.30f;
+	const float btnH = btnW / 3.879f;          
+	const float btnGap = winSize * 0.06f;
+	const float btnY = winY + winSize * 0.65f;
+	const float btnLeftX = winX + (winSize - btnW * 2.0f - btnGap) * 0.5f;
+
+	statueOkButton = make_shared<ImageUI>(uiManager, L"OK", ImageUIState::Hidden);
+	statueOkButton->SetPosition(btnLeftX, btnY);
+	statueOkButton->SetHoriLength(btnW);
+	statueOkButton->SetVertLength(btnH);
+	statueOkButton->SetHoverScale(1.1f);
+	widgets.push_back(statueOkButton);
+
+	statueCancelButton = make_shared<ImageUI>(uiManager, L"CANCEL", ImageUIState::Hidden);
+	statueCancelButton->SetPosition(btnLeftX + btnW + btnGap, btnY);
+	statueCancelButton->SetHoriLength(btnW);
+	statueCancelButton->SetVertLength(btnH);
+	statueCancelButton->SetHoverScale(1.1f);
+	widgets.push_back(statueCancelButton);
+}
+
+void GameSceneUIController::UpdateStatueWindow()
+{
+	if (!statueWindow) return;
+
+	auto setWindow = [&](ImageUIState s) {
+		statueWindow->ChangeState(s);
+		statueOkButton->ChangeState(s);
+		statueCancelButton->ChangeState(s);
+	};
+
+	const bool open = statueWindow->GetState() != ImageUIState::Hidden;
+
+	if (!interactActive || !IsMyPartyLeader())
+	{
+		if (open) setWindow(ImageUIState::Hidden);
+		return;
+	}
+
+	if (!open && INPUT.GetKeyDown('F'))
+	{
+		setWindow(ImageUIState::Visible);
+		return;
+	}
+
+	if (!open) return;
+
+	statueOkButton->SetHovered(statueOkButton->IsMouseInside());
+	statueCancelButton->SetHovered(statueCancelButton->IsMouseInside());
+
+	if (statueOkButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+	{
+		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+		setWindow(ImageUIState::Hidden);
+
+		if (auto* fade = uiManager->GetScreenFade())
+		{
+			fade->SetOnFadedOut([]() {
+				auto& transition = ENGINE.GetWorldTransitionController();
+				const uint32_t requestId = transition.CreateRequestId();
+				if (transition.BeginRequest(requestId))
+				{
+					if (!NETWORK_MANAGER->SendWorldTransitionRequestPacket(requestId))
+						transition.Reset();
+				}
+			});
+			fade->FadeOut(1.0f);
+		}
+	}
+	else if (statueCancelButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+	{
+		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+		setWindow(ImageUIState::Hidden);
+	}
+}
+
+void GameSceneUIController::InitBeaconWindow()
+{
+	if (sceneType != SceneType::Village) return;   
+
+	const float winSize = WinSize.y * 0.5f;
+	const float winX = (WinSize.x - winSize) * 0.5f;
+	const float winY = (WinSize.y - winSize) * 0.5f;
+
+	beaconWindow = make_shared<ImageUI>(uiManager, L"BeaconInteractWindow", ImageUIState::Hidden);
+	beaconWindow->SetPosition(winX, winY);
+	beaconWindow->SetHoriLength(winSize);
+	beaconWindow->SetVertLength(winSize);
+	widgets.push_back(beaconWindow);
+
+	const float btnW = winSize * 0.30f;
+	const float btnH = btnW / 3.879f;
+	const float btnGap = winSize * 0.06f;
+	const float btnY = winY + winSize * 0.65f;
+	const float btnLeftX = winX + (winSize - btnW * 2.0f - btnGap) * 0.5f;
+
+	beaconOkButton = make_shared<ImageUI>(uiManager, L"OK", ImageUIState::Hidden);
+	beaconOkButton->SetPosition(btnLeftX, btnY);
+	beaconOkButton->SetHoriLength(btnW);
+	beaconOkButton->SetVertLength(btnH);
+	beaconOkButton->SetHoverScale(1.1f);
+	widgets.push_back(beaconOkButton);
+
+	beaconCancelButton = make_shared<ImageUI>(uiManager, L"CANCEL", ImageUIState::Hidden);
+	beaconCancelButton->SetPosition(btnLeftX + btnW + btnGap, btnY);
+	beaconCancelButton->SetHoriLength(btnW);
+	beaconCancelButton->SetVertLength(btnH);
+	beaconCancelButton->SetHoverScale(1.1f);
+	widgets.push_back(beaconCancelButton);
+}
+
+void GameSceneUIController::UpdateBeaconWindow()
+{
+	if (!beaconWindow) return;
+
+	auto setWindow = [&](ImageUIState s) {
+		beaconWindow->ChangeState(s);
+		beaconOkButton->ChangeState(s);
+		beaconCancelButton->ChangeState(s);
+	};
+
+	const bool open = beaconWindow->GetState() != ImageUIState::Hidden;
+
+	if (!interactActive || !IsMyPartyLeader())
+	{
+		if (open) setWindow(ImageUIState::Hidden);
+		return;
+	}
+
+	if (!open && INPUT.GetKeyDown('F'))
+	{
+		setWindow(ImageUIState::Visible);
+		return;
+	}
+
+	if (!open) return;
+
+	beaconOkButton->SetHovered(beaconOkButton->IsMouseInside());
+	beaconCancelButton->SetHovered(beaconCancelButton->IsMouseInside());
+
+	if (beaconOkButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+	{
+		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+		setWindow(ImageUIState::Hidden);
+		beaconConfirmed = true;
+	}
+	else if (beaconCancelButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+	{
+		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+		setWindow(ImageUIState::Hidden);
+	}
+}
+
+bool GameSceneUIController::ConsumeBeaconConfirmed()
+{
+	const bool v = beaconConfirmed;
+	beaconConfirmed = false;
+	return v;
 }
 
 void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curStamina, int maxStamina, int power, double aSpeed, int defense, double mSpeed)

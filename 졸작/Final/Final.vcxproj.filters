@@ -280,6 +280,9 @@
     <ClCompile Include="BeaconLightComponent.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
+    <ClCompile Include="ScreenFade.cpp">
+      <Filter>UI\UIType</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -563,6 +566,9 @@
     </ClInclude>
     <ClInclude Include="BeaconLightComponent.h">
       <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenFade.h">
+      <Filter>UI\UIType</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -107,6 +107,10 @@ void UIManager::Initialize(DX12Core& core)
 
 	RegisterUITexture(L"KeyGuide", L"../Assets/UI/Textures/KeyGuide.png", core, resourceUpload);
 
+	RegisterUITexture(L"MagicCircle", L"../Assets/UI/Textures/MagicCircle.png", core, resourceUpload);
+	RegisterUITexture(L"StatueInteractWindow", L"../Assets/UI/Textures/StatueInteractWindow.png", core, resourceUpload);
+	RegisterUITexture(L"BeaconInteractWindow", L"../Assets/UI/Textures/BeaconInteractWindow.png", core, resourceUpload);
+
 	RegisterUITexture(L"SettingWindow", L"../Assets/UI/Textures/SettingWindow.png", core, resourceUpload);
 
 	RegisterUITexture(L"DeathCount", L"../Assets/UI/Textures/DeathCount.png", core, resourceUpload);
@@ -117,14 +121,19 @@ void UIManager::Initialize(DX12Core& core)
 	auto uploadFinished = resourceUpload.End(core.GetCmdQueue());
 	uploadFinished.wait();
 
+	screenFade = make_unique<ScreenFade>();
+
 	RegisterControllers();
 }
 
 void UIManager::Update(float deltaTime)
 {
 	auto it = controllers.find(currentScene);
-	if (it != controllers.end()) 
+	if (it != controllers.end())
 		it->second->Update(deltaTime);
+
+	if (screenFade)
+		screenFade->Update(deltaTime);
 }
 
 void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp)
@@ -139,6 +148,17 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 	if (it != controllers.end())
 		it->second->Render(spriteBatch.get());
 
+	if (screenFade && screenFade->IsActive())
+	{
+		if (auto* black = GetUITexture(L"Black"))
+		{
+			XMUINT2 texSize = GetTextureSize(black->resource.Get());
+			RECT full = { 0, 0, static_cast<LONG>(vp.Width), static_cast<LONG>(vp.Height) };
+			XMVECTOR col = XMVectorSet(1.0f, 1.0f, 1.0f, screenFade->GetAlpha());
+			spriteBatch->Draw(uiSrvHeap->GetGpuHandle(black->heapIndex), texSize, full, col);
+		}
+	}
+
 	spriteBatch->End();
 	graphicsMemory->Commit(cmdQueue);
 }
@@ -148,6 +168,7 @@ void UIManager::Release()
 	controllers.clear();
 	uiTextureMap.clear();
 	uiFontMap.clear();
+	screenFade.reset();
 	spriteBatch.reset();
 	uiSrvHeap.reset();
 	graphicsMemory.reset();

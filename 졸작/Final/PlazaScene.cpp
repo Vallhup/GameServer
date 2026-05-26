@@ -155,6 +155,33 @@ void PlazaScene::UpdateScene(const float deltaTime)
 		}
 	}
 
+	if (myPlayer)
+	{
+		constexpr float STATUE_CX = 443.97f;
+		constexpr float STATUE_CZ = 489.29f;
+		constexpr float INTERACT_RADIUS = 3.06f;   // 중심 (446, 487)
+		constexpr float UI_HEIGHT = 8.5f;          
+
+		const XMFLOAT3& pos = myPlayer->GetComponent<Transform>()->GetPosition();
+		const float dx = pos.x - STATUE_CX;
+		const float dz = pos.z - STATUE_CZ;
+		const float distSq = dx * dx + dz * dz;
+
+		auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Plaza);
+		if (controller)
+		{
+			if (distSq <= INTERACT_RADIUS * INTERACT_RADIUS)
+			{
+				const XMFLOAT3 anchor{ STATUE_CX, UI_HEIGHT, STATUE_CZ };
+				controller->SetInteractPrompt(true, anchor);
+			}
+			else
+			{
+				controller->SetInteractPrompt(false, {});
+			}
+		}
+	}
+
 	for (const auto& obj : gameObjects)
 	{
 		if (!obj->IsStatic())
@@ -271,27 +298,6 @@ void PlazaScene::RenderSceneEffects()
 		}
 
 		EFFECT_MANAGER->Render(*coreRef, cam.get());
-	}
-}
-
-void PlazaScene::RequestSceneChange()
-{
-	if (INPUT.GetKeyDown(VK_CAPITAL))
-	{
-		// TODO: 서버 검증 이후 LoadingScene 입장하도록 변경 예정
-		//if (sManagerRef)
-		//	sManagerRef->RequestLoadingScene(SceneType::Village);
-
-		auto& transition = ENGINE.GetWorldTransitionController();
-		const uint32_t requestId = transition.CreateRequestId();
-
-		if (transition.BeginRequest(requestId))
-		{
-			if (!NETWORK_MANAGER->SendWorldTransitionRequestPacket(requestId))
-			{
-				transition.Reset();
-			}
-		}
 	}
 }
 

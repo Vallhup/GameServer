@@ -31,6 +31,10 @@ public:
 
 	void ShowMapName();
 
+	void SetInteractPrompt(bool active, const XMFLOAT3& worldAnchor);
+
+	bool ConsumeBeaconConfirmed();
+
 private:
 	void InitMonsterHpBars();
 	void UpdateMonsterHpBars();
@@ -43,6 +47,12 @@ private:
 	void InitKeyGuide();
 	void InitSettingWindow();
 	void InitJoinRequestPopup();
+	void InitInteractPrompt();
+	void UpdateInteractPrompt();
+	void InitStatueWindow();
+	void UpdateStatueWindow();
+	void InitBeaconWindow();
+	void UpdateBeaconWindow();
 
 	void ShowPartyView(PartyView view);
 	void RefreshMyPartyText();
@@ -115,6 +125,22 @@ private:
 	shared_ptr<ImageUI> escExitButton;
 
 	shared_ptr<ImageUI> keyGuide;
+
+	shared_ptr<ImageUI> interactCircle;
+	shared_ptr<TextUI>  interactKeyText;
+	shared_ptr<TextUI>  interactLabelText;
+	bool                interactActive = false;
+	float               interactScale = 1.0f;
+	XMFLOAT3            interactWorldAnchor{};
+
+	shared_ptr<ImageUI> statueWindow;
+	shared_ptr<ImageUI> statueOkButton;
+	shared_ptr<ImageUI> statueCancelButton;
+
+	shared_ptr<ImageUI> beaconWindow;
+	shared_ptr<ImageUI> beaconOkButton;
+	shared_ptr<ImageUI> beaconCancelButton;
+	bool                beaconConfirmed = false;
 
 	shared_ptr<ImageUI> settingWindow;
 	shared_ptr<ImageUI> settingBackButton;

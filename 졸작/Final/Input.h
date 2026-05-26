@@ -36,6 +36,9 @@ public:
 
 	int GetClientID() const { return clientID; }
 
+	void SetBlocked(bool b) { blocked = b; }
+	bool IsBlocked() const { return blocked; }
+
 private:
 	bitset<256> mPressedKeys = {};
 	bitset<256> mChangeKeyState = {};
@@ -46,4 +49,5 @@ private:
 	int mMouseWheelDelta = 0;
 
 	int clientID = -1;
+	bool blocked = false;
 };

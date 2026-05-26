@@ -28,6 +28,7 @@ void FirstBattleScene::Release()
 	myPlayer = nullptr;
 	gameObjects.clear();
 
+	INPUT.SetBlocked(false);   
 	SOUND_MANAGER->StopBGM(1.0f);
 
 	OutputDebugStringA("FirstBattleScene Data has been deleted!! \n----------------------------------------\n");
@@ -119,7 +120,12 @@ void FirstBattleScene::InitializeSceneEnvironments()
 	light->SetSize(2.0f);
 	light->Spawn({ 335.237946f, 77.0f, 590.663147f });
 	AddGameObject(beacon);
+
+	beaconLight = light;   
 #pragma endregion
+
+	EFFECT_MANAGER->PreLoad(L"Benediction");
+	EFFECT_MANAGER->PreLoad(L"Atmosphere");
 }
 
 void FirstBattleScene::InitializeSceneMonsters()
@@ -156,8 +162,55 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 		}
 	}
 
+	if (myPlayer && cineState == BeaconCine::None)
+	{
+		constexpr float BEACON_CX = 335.237946f;
+		constexpr float BEACON_CZ = 590.663147f;
+		constexpr float INTERACT_RADIUS = 2.0f;
+		constexpr float UI_HEIGHT = 76.7f;
+
+		const XMFLOAT3& pos = myPlayer->GetComponent<Transform>()->GetPosition();
+		const float dx = pos.x - BEACON_CX;
+		const float dz = pos.z - BEACON_CZ;
+		const float distSq = dx * dx + dz * dz;
+
+		auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>(SceneType::Village);
+		if (controller)
+		{
+			if (distSq <= INTERACT_RADIUS * INTERACT_RADIUS)
+			{
+				const XMFLOAT3 anchor{ BEACON_CX, UI_HEIGHT, BEACON_CZ };
+				controller->SetInteractPrompt(true, anchor);
+			}
+			else
+			{
+				controller->SetInteractPrompt(false, {});
+			}
+
+			if (controller->ConsumeBeaconConfirmed())
+			{
+				controller->SetInteractPrompt(false, {});
+				cineState = BeaconCine::FadeOut;
+				cineTimer = 0.0f;
+				INPUT.SetBlocked(true);   
+				for (auto& batch : instancingBatches)
+					batch->SetCinematicMode(true);   
+
+				for (const auto& [mid, mtype] : activeMonsterTypes)
+					if (auto it = activeCharacters.find(mid); it != activeCharacters.end())
+						it->second->SetId(-1);
+				if (auto* fade = ENGINE.GetUIManager()->GetScreenFade())
+					fade->FadeOut(CINE_FADE_DUR);
+			}
+		}
+	}
+
+	const bool cineActive = (cineState != BeaconCine::None);
+
 	for (const auto& obj : gameObjects)
 	{
+		if (cineActive && myPlayer && obj.get() == myPlayer.get())
+			continue;
 		if (!obj->IsStatic())
 			obj->Update(deltaTime);
 	}
@@ -165,7 +218,10 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 	if (water)
 		water->Update(deltaTime);
 
-	if (cam)
+	if (cineActive)
+		UpdateBeaconCinematic(deltaTime);
+
+	if (cam && !cineActive)
 		cam->Update(*coreRef, deltaTime, gameObjects, instancingBatches, myPlayer);
 
 	BoundingFrustum frustum = cam->GetViewFrustum();
@@ -274,4 +330,154 @@ float FirstBattleScene::SampleHeightAt(float worldX, float worldZ) const
 	if (terrain)
 		return terrain->SampleHeightAt(worldX, worldZ);
 	return 0.0f;
+}
+
+void FirstBattleScene::UpdateCinematicCamera(const XMFLOAT3& look)
+{
+	if (!cam) return;
+
+	float bx = CINE_CAM_EYE_X - CINE_LOOK_X;
+	float bz = CINE_CAM_EYE_Z - CINE_LOOK_Z;
+	const float bl = sqrtf(bx * bx + bz * bz);
+	if (bl > 0.0001f) { bx /= bl; bz /= bl; }
+
+	const XMFLOAT3 eye{
+		CINE_CAM_EYE_X + bx * CINE_CAM_BACK,
+		beaconCinePos.y + CINE_CAM_Y_ABOVE,
+		CINE_CAM_EYE_Z + bz * CINE_CAM_BACK };
+	cam->SetCinematicView(*coreRef, eye, look);
+}
+
+void FirstBattleScene::ScatterAtmosphere()
+{
+	constexpr float CENTER_X = 250.0f;       
+	constexpr float CENTER_Z = 600.0f;       
+	constexpr float SPAN_X   = 300.0f;       
+	constexpr float SPAN_Z   = 200.0f;       
+	constexpr int   NX = 11;                 
+	constexpr int   NZ = 8;                  
+	constexpr float LAYER_OFFSETS[] = { 30.0f };
+
+	const float startX = CENTER_X - SPAN_X * 0.5f;
+	const float startZ = CENTER_Z - SPAN_Z * 0.5f;
+	const float stepX  = SPAN_X / (NX - 1);
+	const float stepZ  = SPAN_Z / (NZ - 1);
+
+	for (int i = 0; i < NX; ++i)
+		for (int j = 0; j < NZ; ++j)
+		{
+			const float x = startX + i * stepX;
+			const float z = startZ + j * stepZ;
+			const float ground = SampleHeightAt(x, z);
+			for (float dy : LAYER_OFFSETS)
+				atmosphereHandles.push_back(EFFECT_MANAGER->Play(L"Atmosphere", { x, ground + dy, z }));
+		}
+}
+
+void FirstBattleScene::CaptureBrightenBase()
+{
+	if (!skyBox) return;
+	cineSunBase = skyBox->GetSun().intensity;
+	auto& sc = skyBox->GetConstants();
+	cineSkySatBase = sc.skySaturation;
+	cineSkyExpBase = sc.skyExposure;
+}
+
+void FirstBattleScene::ApplyBrighten(float t)
+{
+	if (!skyBox) return;
+
+	skyBox->GetSun().intensity = cineSunBase + (cineSunBase * CINE_SUN_MULT - cineSunBase) * t;
+	coreRef->GetLightMgr()->UpdateLights();
+
+	auto& sc = skyBox->GetConstants();
+	sc.skySaturation = cineSkySatBase + (cineSkySatBase * CINE_SKY_SAT_MULT - cineSkySatBase) * t;
+	sc.skyExposure = cineSkyExpBase + (cineSkyExpBase * CINE_SKY_EXP_MULT - cineSkyExpBase) * t;
+	skyBox->UpdateConstants();
+}
+
+void FirstBattleScene::UpdateBeaconCinematic(float deltaTime)
+{
+	auto* fade = ENGINE.GetUIManager()->GetScreenFade();
+	cineTimer += deltaTime;
+
+	switch (cineState)
+	{
+	case BeaconCine::FadeOut:
+		if (fade && fade->IsBlack())
+		{
+			cineState = BeaconCine::Rising;
+			cineTimer = 0.0f;
+			beaconCinePos = { 335.237946f, 77.0f, 590.663147f };
+			beaconCineSize = CINE_BEACON_BASE_SIZE;
+			if (beaconLight) { beaconLight->SetPosition(beaconCinePos); beaconLight->SetSize(beaconCineSize); }
+			UpdateCinematicCamera(beaconCinePos);   
+			fade->FadeIn(CINE_FADE_DUR);
+		}
+		break;
+
+	case BeaconCine::Rising:
+	{
+		const float t = min(cineTimer / CINE_RISE_DUR, 1.0f);
+		beaconCinePos.y = 77.0f + CINE_RISE_HEIGHT * t;     
+		if (beaconLight) beaconLight->SetPosition(beaconCinePos);
+		UpdateCinematicCamera(beaconCinePos);   
+		if (t >= 1.0f) { cineState = BeaconCine::Growing; cineTimer = 0.0f; }
+		break;
+	}
+
+	case BeaconCine::Growing:
+	{
+		const float t = min(cineTimer / CINE_GROW_DUR, 1.0f);
+		beaconCineSize = CINE_BEACON_BASE_SIZE + (CINE_BEACON_MAX_SIZE - CINE_BEACON_BASE_SIZE) * t;
+		if (beaconLight) beaconLight->SetSize(beaconCineSize);
+		UpdateCinematicCamera(beaconCinePos);   
+		if (t >= 1.0f)
+		{
+			EFFECT_MANAGER->Play(L"Benediction", beaconCinePos);
+			if (beaconLight) beaconLight->Stop();
+			ScatterAtmosphere();
+			CaptureBrightenBase();
+			cineState = BeaconCine::Showcase;
+			cineTimer = 0.0f;
+		}
+		break;
+	}
+
+	case BeaconCine::Showcase:
+	{
+		const float t = min(cineTimer / CINE_BRIGHTEN_DUR, 1.0f);
+		const XMFLOAT3 look{
+			beaconCinePos.x + (CINE_LOOK_X - beaconCinePos.x) * t,
+			beaconCinePos.y + (CINE_LOOK_Y - beaconCinePos.y) * t,
+			beaconCinePos.z + (CINE_LOOK_Z - beaconCinePos.z) * t };
+		UpdateCinematicCamera(look);
+		ApplyBrighten(t);
+		if (cineTimer >= CINE_BRIGHTEN_DUR + CINE_SHOWCASE_HOLD_DUR)
+		{
+			if (fade)
+			{
+				const auto handles = atmosphereHandles;   
+				atmosphereHandles.clear();
+				fade->SetOnFadedOut([handles]() {
+					for (int h : handles)          
+						EFFECT_MANAGER->Stop(h);
+
+					auto& tr = ENGINE.GetWorldTransitionController();
+					const uint32_t rid = tr.CreateRequestId();
+					if (tr.BeginRequest(rid))
+						if (!NETWORK_MANAGER->SendWorldTransitionRequestPacket(rid))
+							tr.Reset();
+				});
+				fade->FadeOut(CINE_FADE_DUR);
+			}
+			cineState = BeaconCine::Done;
+		}
+		break;
+	}
+
+	case BeaconCine::Done:
+	default:
+		break;
+	}
 }
