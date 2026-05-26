@@ -438,7 +438,7 @@ void WorldScheduler::FreezeDynamicTaskRequests(
                         "(typeId=%u, sid=%u, debugName=%s, requestedScopeId=%u, runtimeScopeCount=%zu)",
                         req.typeId,
                         static_cast<uint32_t>(req.sessionId),
-                        typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                        typeDesc != nullptr ? typeDesc->debugName.c_str() : "(null)",
                         req.scopeId,
                         runtimeByScope.size());
                     cleanupPayload(req);
@@ -453,7 +453,7 @@ void WorldScheduler::FreezeDynamicTaskRequests(
                         "(typeId=%u, sid=%u, debugName=%s, requestedScopeId=%u, runtimeScopeCount=%zu)",
                         req.typeId,
                         static_cast<uint32_t>(req.sessionId),
-                        typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                        typeDesc != nullptr ? typeDesc->debugName.c_str() : "(null)",
                         req.scopeId,
                         runtimeByScope.size());
                     cleanupPayload(req);
@@ -464,7 +464,7 @@ void WorldScheduler::FreezeDynamicTaskRequests(
                     "(typeId=%u, sid=%u, debugName=%s, fallbackScopeId=%u)",
                     req.typeId,
                     static_cast<uint32_t>(req.sessionId),
-                    typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                    typeDesc != nullptr ? typeDesc->debugName.c_str() : "(null)",
                     req.scopeId);
             }
             else
@@ -475,7 +475,7 @@ void WorldScheduler::FreezeDynamicTaskRequests(
                     "(typeId=%u, sid=%u, debugName=%s, resolvedScopeId=%u)",
                     req.typeId,
                     static_cast<uint32_t>(req.sessionId),
-                    typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                    typeDesc != nullptr ? typeDesc->debugName.c_str() : "(null)",
                     resolvedScopeId);
             }
             req.targetKind = DynamicTaskTargetKind::ExplicitScope;
@@ -490,7 +490,7 @@ void WorldScheduler::FreezeDynamicTaskRequests(
                     "(typeId=%u, sid=%u, debugName=%s, requestedScopeId=%u, runtimeScopeCount=%zu)",
                     req.typeId,
                     static_cast<uint32_t>(req.sessionId),
-                    typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                    typeDesc != nullptr ? typeDesc->debugName.c_str() : "(null)",
                     req.scopeId,
                     runtimeByScope.size());
                 cleanupPayload(req);
@@ -501,7 +501,7 @@ void WorldScheduler::FreezeDynamicTaskRequests(
                 "(typeId=%u, sid=%u, debugName=%s, scopeId=%u)",
                 req.typeId,
                 static_cast<uint32_t>(req.sessionId),
-                typeDesc != nullptr && typeDesc->debugName != nullptr ? typeDesc->debugName : "(null)",
+                typeDesc != nullptr ? typeDesc->debugName.c_str() : "(null)",
                 req.scopeId);
         }
 
