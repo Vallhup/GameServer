@@ -2,30 +2,104 @@
   "schemaVersion": 2,
   "objectName": "FinalBoss",
   "inputs": {
-    "meshDirectory": "../../Resource/Final_Boss/Mesh",
-    "animationDirectory": "../../Resource/Final_Boss/Animation"
+	"meshDirectory": "../../Resource/Final_Boss/Mesh",
+	"animationDirectory": "../../Resource/Final_Boss/Animation"
   },
   "outputs": {
-    "capsuleTemplatePath": "../../Output/Capsule/final_boss_capsule_template.json",
-    "animationDirectory": "../../Output/Animation/Final_Boss"
+	"capsuleTemplatePath": "../../Output/Capsule/final_boss_capsule_template.json",
+	"animationDirectory": "../../Output/Animation/Final_Boss"
   },
   "capsuleRules": {
-    "defaultRoles": [ "hurt" ],
-    "weaponRoles": [ "hit" ],
-    "weaponBones": [ 45 ],
-    "excludedBones": [],
-    "extremeTrimFraction": 0
+	"defaultRoles": [ "hurt" ],
+	"weaponRoles": [ "hit" ],
+	"weaponBones": [ 45 ],
+	"excludedBones": [],
+	"extremeTrimFraction": 0
   },
-  "clips": [
-    { "name": "dashslash", "source": "boss_animation_attack_dashslash_baked.bone", "output": "final_boss_animation_dashslash.json", "loop": false },
-    { "name": "jumpslash", "source": "boss_animation_attack_jumpslash_baked.bone", "output": "final_boss_animation_jumpslash.json", "loop": false },
-    { "name": "multislash", "source": "boss_animation_attack_multislash_baked.bone", "output": "final_boss_animation_multislash.json", "loop": false },
-    { "name": "slash", "source": "boss_animation_attack_slash_baked.bone", "output": "final_boss_animation_slash.json", "loop": false },
-    { "name": "thrust", "source": "boss_animation_attack_thrust_baked.bone", "output": "final_boss_animation_thrust.json", "loop": false },
-    { "name": "death", "source": "boss_animation_attack_death_baked.bone", "output": "final_boss_animation_death.json", "loop": false },
-    { "name": "hit", "source": "boss_animation_attack_hit_baked.bone", "output": "final_boss_animation_hit.json", "loop": false },
-    { "name": "idle", "source": "boss_animation_idle_baked.bone", "output": "final_boss_animation_idle.json", "loop": true },
-    { "name": "stun", "source": "boss_animation_stun_baked.bone", "output": "final_boss_animation_stun.json", "loop": false },
-    { "name": "walk", "source": "boss_animation_walk_baked.bone", "output": "final_boss_animation_walk.json", "loop": true },
-  ]
+	"clips": [
+		{
+			"name": "bloodlance",
+			"source": "boss_animation_attack_BloodLance_baked.bone",
+			"output": "final_boss_animation_bloodlance.json",
+			"loop": false
+		},
+		{
+			"name": "dashslash",
+			"source": "boss_animation_attack_dashslash_baked.bone",
+			"output": "final_boss_animation_dashslash.json",
+			"loop": false
+		},
+		{
+			"name": "holysandstorm",
+			"source": "boss_animation_attack_HolySandstorm_baked.bone",
+			"output": "final_boss_animation_holysandstorm.json",
+			"loop": false
+		},
+		{
+			"name": "jumpslash",
+			"source": "boss_animation_attack_jumpslash_baked.bone",
+			"output": "final_boss_animation_jumpslash.json",
+			"loop": false
+		},
+		{
+			"name": "multislash",
+			"source": "boss_animation_attack_multislash_baked.bone",
+			"output": "final_boss_animation_multislash.json",
+			"loop": false
+		},
+		{
+			"name": "slash",
+			"source": "boss_animation_attack_slash_baked.bone",
+			"output": "final_boss_animation_slash.json",
+			"loop": false
+		},
+		{
+			"name": "swordmoonlight",
+			"source": "boss_animation_attack_Sword_Moonlight_baked.bone",
+			"output": "final_boss_animation_swordmoonlight.json",
+			"loop": false
+		},
+		{
+			"name": "swordstorm",
+			"source": "boss_animation_attack_Sword_Storm_baked.bone",
+			"output": "final_boss_animation_swordstorm.json",
+			"loop": false
+		},
+		{
+			"name": "thrust",
+			"source": "boss_animation_attack_thrust_baked.bone",
+			"output": "final_boss_animation_thrust.json",
+			"loop": false
+		},
+		{
+			"name": "death",
+			"source": "boss_animation_attack_death_baked.bone",
+			"output": "final_boss_animation_death.json",
+			"loop": false
+		},
+		{
+			"name": "hit",
+			"source": "boss_animation_attack_hit_baked.bone",
+			"output": "final_boss_animation_hit.json",
+			"loop": false
+		},
+		{
+			"name": "idle",
+			"source": "boss_animation_idle_baked.bone",
+			"output": "final_boss_animation_idle.json",
+			"loop": true
+		},
+		{
+			"name": "stun",
+			"source": "boss_animation_stun_baked.bone",
+			"output": "final_boss_animation_stun.json",
+			"loop": false
+		},
+		{
+			"name": "walk",
+			"source": "boss_animation_walk_baked.bone",
+			"output": "final_boss_animation_walk.json",
+			"loop": true
+		}
+	]
 }
