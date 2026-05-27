@@ -37,6 +37,54 @@ namespace
 		return XMFLOAT3{ -direction.z, 0.0f, direction.x };
 	}
 
+	float LerpFloat(float from, float to, float alpha) noexcept
+	{
+		return from + (to - from) * alpha;
+	}
+
+	AreaScaleKeyDef ResolveScaleKey(
+		const std::vector<AreaScaleKeyDef>& scaleKeys,
+		float elapsedSec)
+	{
+		if (elapsedSec <= scaleKeys.front().timeSec)
+			return scaleKeys.front();
+
+		for (size_t i = 1; i < scaleKeys.size(); ++i)
+		{
+			const AreaScaleKeyDef& prev = scaleKeys[i - 1];
+			const AreaScaleKeyDef& next = scaleKeys[i];
+			if (elapsedSec > next.timeSec)
+				continue;
+
+			const float spanSec = next.timeSec - prev.timeSec;
+			if (spanSec <= 1.0e-5f)
+				return next;
+
+			const float alpha = std::clamp(
+				(elapsedSec - prev.timeSec) / spanSec,
+				0.0f,
+				1.0f);
+
+			return AreaScaleKeyDef{
+				.timeSec = elapsedSec,
+				.radiusScale = LerpFloat(
+					prev.radiusScale,
+					next.radiusScale,
+					alpha),
+				.lengthScale = LerpFloat(
+					prev.lengthScale,
+					next.lengthScale,
+					alpha),
+				.widthScale = LerpFloat(
+					prev.widthScale,
+					next.widthScale,
+					alpha)
+			};
+		}
+
+		return scaleKeys.back();
+	}
+
 	void ApplyScaleKeys(
 		const AreaHitDef& def,
 		float elapsedSec,
@@ -45,13 +93,8 @@ namespace
 		if (def.scaleKeys.empty())
 			return;
 
-		AreaScaleKeyDef key = def.scaleKeys.front();
-		for (const AreaScaleKeyDef& candidate : def.scaleKeys)
-		{
-			if (candidate.timeSec > elapsedSec)
-				break;
-			key = candidate;
-		}
+		const AreaScaleKeyDef key =
+			ResolveScaleKey(def.scaleKeys, elapsedSec);
 
 		shape.radius *= key.radiusScale;
 		shape.length *= key.lengthScale;

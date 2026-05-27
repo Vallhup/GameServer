@@ -52,7 +52,7 @@
         "originPolicy": "OwnerPosition",
         "radius": 4.6,
         "height": 2.8,
-        "forwardOffset": 0,
+        "forwardOffset": 1.0,
         "rightOffset": 0,
         "verticalOffset": 0,
         "verticalTolerance": 2.8
