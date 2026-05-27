@@ -30,10 +30,13 @@ public:
 	bool NeedDistanceCull() const { return needDistanceCull; }
 	float GetCullDistance() const { return cullDistance; }
 
+	void SetObstructsCamera(bool value) { obstructsCamera = value; }
+	bool ObstructsCamera() const { return obstructsCamera; }
+
 	const BoundingBox& GetLocalBoundingBox() const { return localBoundingBox; }
-	const BoundingBox& GetWorldBoundingBox() const { return worldBoundingBox; }
+	const BoundingOrientedBox& GetWorldBoundingBox() const { return worldBoundingBox; }
 	void SetLocalBoundingBox(const BoundingBox& box) { localBoundingBox = box; }
-	void SetWorldBoundingBox(const BoundingBox& box) { worldBoundingBox = box; }
+	void SetWorldBoundingBox(const BoundingOrientedBox& box) { worldBoundingBox = box; }
 
 	bool IsVisible(const BoundingFrustum& frustum, const XMVECTOR& camPos) const;
 
@@ -45,12 +48,13 @@ private:
 	unordered_map<type_index, unique_ptr<Component>> components;
 	
 	BoundingBox localBoundingBox;
-	BoundingBox worldBoundingBox;
+	BoundingOrientedBox worldBoundingBox;
 
 	ComPtr<ID3D12Resource> debugLineBuffer;
 
 	int mId;
 	bool isStatic = false;
+	bool obstructsCamera = true;
 
 	bool needDistanceCull;
 	float cullDistance;

@@ -13,6 +13,7 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
     auto cachedMesh = RESOURCE.GetCachedMesh(path);
     if (cachedMesh) {
         vertexIndexBuffer = cachedMesh->vertexIndexBuffer;
+        cachedRef = cachedMesh;
 
         materials.clear();   
         material.reset();
@@ -98,6 +99,9 @@ void Mesh::SetMesh(DX12Core& core, const wstring& path)
         RESOURCE.CacheMesh(path, vertexIndexBuffer, matIndices, subMeshes, originalMaterialData,
             mesh.hasAnimation, importer.GetAnimations(), importer.GetSkeleton(), localBox);
 
+        cachedRef = RESOURCE.GetCachedMesh(path);
+        StoreCollisionTriangles(mesh);
+
         auto endTime = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime);
         OutputDebugStringA(("CACHE MISS - SetMesh time: " + to_string(duration.count()) + "ms\n").c_str());
@@ -115,6 +119,7 @@ void Mesh::SetMesh2(DX12Core& core, const wstring& path)
     auto cachedMesh = RESOURCE.GetCachedMesh(path);
     if (cachedMesh) {
         vertexIndexBuffer = cachedMesh->vertexIndexBuffer;
+        cachedRef = cachedMesh;
 
         materials.clear();   
         material.reset();
@@ -200,6 +205,9 @@ void Mesh::SetMesh2(DX12Core& core, const wstring& path)
         RESOURCE.CacheMesh(path, vertexIndexBuffer, matIndices, subMeshes, originalMaterialData,
             mesh.hasAnimation, importer.GetAnimations(), importer.GetSkeleton(), localBox);
 
+        cachedRef = RESOURCE.GetCachedMesh(path);
+        StoreCollisionTriangles(mesh);
+
         auto endTime = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::milliseconds>(endTime - startTime);
         OutputDebugStringA(("CACHE MISS - SetMesh time: " + to_string(duration.count()) + "ms\n").c_str());
@@ -208,6 +216,32 @@ void Mesh::SetMesh2(DX12Core& core, const wstring& path)
     }
     else
         OutputDebugStringA("Cannot create FBX Mesh for rendering!\n");
+}
+
+void Mesh::StoreCollisionTriangles(const MeshData& mesh)
+{
+    if (!cachedRef || cachedRef->hasAnimation) return;   
+    if (!cachedRef->collisionPositions.empty()) return;  
+
+    cachedRef->collisionPositions.reserve(mesh.vertices.size());
+    for (const auto& v : mesh.vertices)
+        cachedRef->collisionPositions.push_back(v.pos);
+    cachedRef->collisionIndices = mesh.indices;
+}
+
+bool Mesh::HasCollisionData() const
+{
+    return cachedRef && !cachedRef->collisionIndices.empty();
+}
+
+const vector<XMFLOAT3>& Mesh::GetCollisionPositions() const
+{
+    return cachedRef->collisionPositions;
+}
+
+const vector<UINT>& Mesh::GetCollisionIndices() const
+{
+    return cachedRef->collisionIndices;
 }
 
 void Mesh::SetCollisionMesh(DX12Core& core, const wstring& path)

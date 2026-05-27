@@ -4,6 +4,9 @@
 #include "Input.h"
 #include "MainCharacter.h"
 #include "InstancingBatch.h"
+#include "Mesh.h"
+#include "Transform.h"
+#include "Terrain.h"
 #include "Timer.h"
 #include "LookUpTextures.h"
 
@@ -25,7 +28,7 @@ void Camera::Initialize(HWND hWnd)
     currentTargetPos = targetPosition;
     desiredTargetPos = targetPosition;
 
-    desiredDistance = currentDistance = 4.5f;
+    desiredDistance = currentDistance = zoomDistance = 4.5f;
 
 	yaw = 0.0f;
 	pitch = -26.57f;
@@ -48,7 +51,7 @@ void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
 {
     desiredTargetPos = { pos.x, pos.y + 2.0f, pos.z };
 
-    desiredDistance = currentDistance = 4.5f;
+    desiredDistance = currentDistance = zoomDistance = 4.5f;
     float radYaw = XMConvertToRadians(yaw);
     float radPitch = XMConvertToRadians(-pitch);
 
@@ -64,7 +67,7 @@ void Camera::InitCameraPositionFromCharacter(const XMFLOAT3& pos)
 void Camera::Update(DX12Core& core, float deltaTime, const vector<shared_ptr<GameObject>>& sceneObjects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const shared_ptr<MainCharacter>& myPlayer)
 {
     UpdateInputtoCamLogic(core, deltaTime);
-    //UpdatePosByObstruction(sceneObjects, instancingBatches, myPlayer);
+    UpdatePosByObstruction(sceneObjects, instancingBatches, myPlayer);
     UpdateSmoothFollow(deltaTime);
     UpdateCameraMatrices(core);
 }
@@ -79,9 +82,9 @@ void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
 
     const int wheel = INPUT.GetMouseWheelDelta();
     if (wheel != 0) {
-        float steps = (float)wheel / (float)WHEEL_DELTA; 
-        desiredDistance -= steps * zoomSpeedPerNotch;
-        desiredDistance = clamp(desiredDistance, minDistance, maxDistance);
+        float steps = (float)wheel / (float)WHEEL_DELTA;
+        zoomDistance -= steps * zoomSpeedPerNotch;
+        zoomDistance = clamp(zoomDistance, minDistance, maxDistance);
     }
 
     if (INPUT.GetKeyDown(VK_F3))
@@ -166,6 +169,13 @@ void Camera::UpdateSmoothFollow(float deltaTime)
     float camT = min(CAMERA_FOLLOW_SPEED * deltaTime, 1.0f);
     XMVECTOR newPos = XMVectorLerp(currentPos, targetPos, camT);
     XMStoreFloat3(&position, newPos);
+
+    if (terrain)
+    {
+        float minY = terrain->SampleHeightAt(position.x, position.z) + TERRAIN_CLEARANCE;
+        if (position.y < minY)
+            position.y = minY;
+    }
 
     targetPosition = currentTargetPos;
 }
@@ -268,10 +278,9 @@ void Camera::ChangeAngleByInput(float deltaTime)
 
 void Camera::UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneObjects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const shared_ptr<MainCharacter>& myPlayer)
 {
-    float adjustedDistance = desiredDistance;
+    float adjustedDistance = zoomDistance;
 
-    // Real-time camera position changes
-    desiredDistance = maxDistance;
+    desiredDistance = zoomDistance;
 
     if (CheckObstruction(sceneObjects, instancingBatches, desiredTargetPos, adjustedDistance, myPlayer))
         desiredDistance = adjustedDistance;
@@ -293,47 +302,13 @@ bool Camera::CheckObstruction(const vector<shared_ptr<GameObject>>& objects, con
         if (obj.get() == myPlayer.get())
             continue;
 
-        BoundingBox worldBox = obj->GetWorldBoundingBox();
-
-        if (worldBox.Extents.x <= 0.0f) continue;
-
-        float distance = 0.0f;
-        if (worldBox.Intersects(rayOrigin, rayDir, distance))
-        {
-            if (distance < 0.1f) continue;
-            if (distance >= maxDistance) continue;
-
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                foundObstruction = true;
-            }
-        }
+        TestObjectObstruction(obj, rayOrigin, rayDir, maxDistance, closestDistance, foundObstruction);
     }
 
     for (const auto& group : instancingBatches)
     {
-        const auto& batchObjects = group->GetObjects();
-
-        for (const auto& obj : batchObjects)
-        {
-            BoundingBox worldBox = obj->GetWorldBoundingBox();
-
-            if (worldBox.Extents.x <= 0.0f) continue;
-
-            float distance = 0.0f;
-            if (worldBox.Intersects(rayOrigin, rayDir, distance))
-            {
-                if (distance < 0.1f) continue;
-                if (distance >= maxDistance) continue;
-
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    foundObstruction = true;
-                }
-            }
-        }
+        for (const auto& obj : group->GetObjects())
+            TestObjectObstruction(obj, rayOrigin, rayDir, maxDistance, closestDistance, foundObstruction);
     }
 
     if (foundObstruction)
@@ -343,6 +318,73 @@ bool Camera::CheckObstruction(const vector<shared_ptr<GameObject>>& objects, con
     }
 
     return false;
+}
+
+void Camera::TestObjectObstruction(const shared_ptr<GameObject>& obj, FXMVECTOR rayOrigin, FXMVECTOR rayDir, float maxDistance, float& closestDistance, bool& foundObstruction)
+{
+    if (!obj->ObstructsCamera()) return;
+
+    const BoundingOrientedBox& worldBox = obj->GetWorldBoundingBox();
+    if (worldBox.Extents.x <= 0.0f) return;
+
+    float boxDist = 0.0f;
+    if (!worldBox.Intersects(rayOrigin, rayDir, boxDist)) return;
+    if (boxDist >= maxDistance) return;
+
+    auto* mesh = obj->GetComponent<Mesh>();
+    auto* transform = obj->GetComponent<Transform>();
+
+    if (!mesh || !mesh->HasCollisionData() || !transform)
+        return;
+
+    XMMATRIX invWorld = XMMatrixInverse(nullptr, transform->GetWorldMatrix());
+    XMVECTOR localOrigin = XMVector3TransformCoord(rayOrigin, invWorld);
+    XMVECTOR localDir = XMVector3TransformNormal(rayDir, invWorld);
+
+    float localLen = XMVectorGetX(XMVector3Length(localDir));
+    if (localLen < 1e-6f) return;
+
+    XMVECTOR localDirUnit = XMVectorScale(localDir, 1.0f / localLen);
+    float localMax = maxDistance * localLen;   
+
+    float localHit = 0.0f;
+    if (RayTriangleNearest(mesh->GetCollisionPositions(), mesh->GetCollisionIndices(),
+        localOrigin, localDirUnit, localMax, localHit))
+    {
+        float triDist = localHit / localLen;   
+        if (triDist >= 0.1f && triDist < closestDistance)
+        {
+            closestDistance = triDist;
+            foundObstruction = true;
+        }
+    }
+}
+
+bool Camera::RayTriangleNearest(const vector<XMFLOAT3>& positions, const vector<UINT>& indices, FXMVECTOR origin, FXMVECTOR dir, float maxDistance, float& outDist)
+{
+    bool hit = false;
+    float nearest = maxDistance;
+
+    for (size_t i = 0; i + 2 < indices.size(); i += 3)
+    {
+        XMVECTOR v0 = XMLoadFloat3(&positions[indices[i]]);
+        XMVECTOR v1 = XMLoadFloat3(&positions[indices[i + 1]]);
+        XMVECTOR v2 = XMLoadFloat3(&positions[indices[i + 2]]);
+
+        float t = 0.0f;
+        if (TriangleTests::Intersects(origin, dir, v0, v1, v2, t))
+        {
+            if (t > 1e-4f && t < nearest)
+            {
+                nearest = t;
+                hit = true;
+            }
+        }
+    }
+
+    if (hit)
+        outDist = nearest;
+    return hit;
 }
 
 XMFLOAT3 Camera::GetForward() const

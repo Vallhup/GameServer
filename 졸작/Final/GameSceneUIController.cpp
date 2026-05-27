@@ -1280,7 +1280,7 @@ void GameSceneUIController::UpdateMonsterHpBars()
 			if (!tf) continue;
 
 			const XMFLOAT3& pos = tf->GetPosition();
-			const BoundingBox& box = target.obj->GetWorldBoundingBox();
+			const BoundingOrientedBox& box = target.obj->GetWorldBoundingBox();
 			const XMFLOAT3 head{ pos.x, box.Center.y + box.Extents.y, pos.z };
 
 			const XMFLOAT3 headRight{

@@ -7,6 +7,7 @@ class Material;
 struct MaterialData;
 struct SubMeshInfo;
 struct MeshData;
+struct CachedMeshData;
 
 class Mesh : public Component
 {
@@ -31,10 +32,15 @@ public:
 	void SetTwoSided(bool in) { twoSided = in; }
 	bool IsTwoSided() const { return twoSided; }
 
+	bool HasCollisionData() const;
+	const vector<XMFLOAT3>& GetCollisionPositions() const;
+	const vector<UINT>& GetCollisionIndices() const;
+
 private:
 	void SetSingleMaterial(DX12Core& core, const vector<MaterialData>& mats, const wstring& texBasePath = L"../Assets/FBXModel/");
 	void SetMultiMaterials(DX12Core& core, const vector<MaterialData>& mats, const wstring& texBasePath = L"../Assets/FBXModel/");
 	void DebugMaterialInfo(const MeshData& mesh, const vector<MaterialData>& mats);
+	void StoreCollisionTriangles(const MeshData& mesh);
 
 private:
 	shared_ptr<VertexIndexBuffer> vertexIndexBuffer;
@@ -47,5 +53,7 @@ private:
 	shared_ptr<VertexIndexBuffer> collisionMeshBuffer;
 	bool showCollisionMesh = false;
 
-	bool twoSided = false;	// 양면 렌더링 여부
+	shared_ptr<CachedMeshData> cachedRef;   
+
+	bool twoSided = false;	
 };

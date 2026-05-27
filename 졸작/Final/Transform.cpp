@@ -24,10 +24,11 @@ void Transform::UpdateBoundingBox()
 	if (!GetGameObject()) return;
 
 	const BoundingBox& localBox = GetGameObject()->GetLocalBoundingBox();
-	BoundingBox worldBox;
+	BoundingOrientedBox worldBox;
+	BoundingOrientedBox::CreateFromBoundingBox(worldBox, localBox);
 
 	XMMATRIX worldMatrix = GetWorldMatrix();
-	localBox.Transform(worldBox, worldMatrix);
+	worldBox.Transform(worldBox, worldMatrix);
 
 	GetGameObject()->SetWorldBoundingBox(worldBox);
 }

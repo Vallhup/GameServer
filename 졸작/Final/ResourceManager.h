@@ -13,10 +13,13 @@ struct CachedMeshData
     vector<MaterialData> originalMaterialData;
     bool hasAnimation = false;
 
-    vector<AnimClipInfo> animationClips;    
+    vector<AnimClipInfo> animationClips;
     SkeletonData skeletonData;
 
     BoundingBox boundingBox;
+
+    vector<XMFLOAT3> collisionPositions;
+    vector<UINT> collisionIndices;
 };
 
 class ResourceManager : public Singleton<ResourceManager>

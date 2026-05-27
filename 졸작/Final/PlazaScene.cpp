@@ -86,6 +86,7 @@ void PlazaScene::InitializeSceneEnvironments()
 	terrain = make_shared<Terrain>();
 	terrain->Initialize(*coreRef, L"PlazaMap/textures/plazaFloor", L"../Assets/FBXModel/PlazaMap/plazaTerrain.raw", 513, 1016.0f, 27.01563f, 1.0f);
 	terrain->LoadSplatmap(*coreRef, L"../Assets/FBXModel/PlazaMap/terrainAtlas.bin", L"../Assets/FBXModel/PlazaMap/textures/");
+	cam->SetTerrain(terrain.get());
 #pragma endregion
 }
 
@@ -219,7 +220,7 @@ void PlazaScene::RenderSceneDeferred()
 		batch->Render(*coreRef, renderer);
 	}
 
-	/*static bool hitOn = false;
+	static bool hitOn = false;
 
 	if (INPUT.GetKeyDown('1'))
 		hitOn = !hitOn;
@@ -252,7 +253,7 @@ void PlazaScene::RenderSceneDeferred()
 					obj->RenderDebugBoundingBox(*coreRef, { 0, 1, 1, 1 });
 			}
 		}
-	}*/
+	}
 }
 
 void PlazaScene::RenderSceneForward()
