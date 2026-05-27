@@ -44,11 +44,11 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<16> CommitCombatResultSystem::kMetaStorage =
+const StaticSystemMetaStorage<17> CommitCombatResultSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<CommitCombatResultSystem>(),
 		"CommitCombatResultSystem",
-		std::array<AccessSpec, 16>
+		std::array<AccessSpec, 17>
 	{
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
@@ -56,6 +56,7 @@ const StaticSystemMetaStorage<16> CommitCombatResultSystem::kMetaStorage =
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 		WriteImmediate(ComponentRes<AIReactionEventQueueComp>()),
 		WriteImmediate(ComponentRes<AIPhaseRuntimeComp>()),
+		WriteImmediate(ComponentRes<BossGimmickStateComp>()),
 		WriteImmediate(ComponentRes<AIActionRuntimeComp>()),
 		WriteImmediate(ComponentRes<AIMovementRuntimeComp>()),
 		WriteImmediate(ComponentRes<AIBlackboardComp>()),
@@ -198,6 +199,27 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			0,
 			stats.maxPoise);
 
+		const AITypeComp* finalGimmickAIType =
+			ctx.ecs.GetComponent<AITypeComp>(entity);
+		const bool supportsFinalSafeZoneGimmick =
+			finalGimmickAIType != nullptr &&
+			finalGimmickAIType->aiType == AIArchetype::FinalBossMonster;
+		if (supportsFinalSafeZoneGimmick &&
+			previousStats.currentHp > 0 &&
+			stats.currentHp <= 0)
+		{
+			if (BossGimmickStateComp* gimmick =
+				ctx.ecs.GetMutableComponent<BossGimmickStateComp>(entity);
+				gimmick != nullptr &&
+				!gimmick->finalGimmickRequested &&
+				!gimmick->finalGimmickCompleted)
+			{
+				stats.currentHp = 1;
+				killerEntity = Entity::Null();
+				gimmick->Request(BossGimmickType::FinalSafeZone);
+			}
+		}
+
 		// 킬 버프 적재: 킬 블로우 판정 시 킬러가 EffectUser 라면 버프를 예약한다.
 		if (!killerEntity.IsNull() && stats.currentHp <= 0)
 		{
@@ -308,6 +330,16 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 					bossPhase->pendingTransitionIndex =
 						static_cast<uint16_t>(transitionIndex);
 
+					if (transition.toPhase == 2 &&
+						aiType->aiType == AIArchetype::FinalBossMonster)
+					{
+						if (BossGimmickStateComp* gimmick =
+							ctx.ecs.GetMutableComponent<BossGimmickStateComp>(entity))
+						{
+							gimmick->Request(BossGimmickType::PhaseTransitionObjects);
+						}
+					}
+
 					if (AIActionRuntimeComp* actionRuntime =
 						ctx.ecs.GetMutableComponent<AIActionRuntimeComp>(entity))
 					{
@@ -325,6 +357,7 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 								actionRuntime->groupCooldownSec.end(),
 								0.0f);
 						}
+						actionRuntime->basicActionCountSinceEffect = 0;
 						actionRuntime->globalActionCooldownSec =
 							std::max(
 								actionRuntime->globalActionCooldownSec,

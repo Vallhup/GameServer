@@ -12,6 +12,11 @@ CharacterFeatureFlags BossPhaseAspect::RequiredFeature() const noexcept
 void BossPhaseAspect::RegisterStorages(WorldRuntime& runtime) const
 {
 	runtime.RegisterStorage<AIPhaseRuntimeComp>();
+	runtime.RegisterStorage<BossGimmickStateComp>();
+	runtime.RegisterStorage<GimmickObjectComp>();
+	runtime.RegisterStorage<StaticBoxHurtColliderComp>();
+	runtime.RegisterStorage<SafeZoneComp>();
+	runtime.RegisterStorage<BossGimmickImmunityComp>();
 }
 
 void BossPhaseAspect::Attach(
@@ -28,6 +33,9 @@ void BossPhaseAspect::Attach(
 			.transitionRequested = false,
 			.pendingTransitionIndex = AIPhaseRuntimeComp::kInvalidTransitionIndex
 		});
+	runtime.DeferredUpsertComponent<BossGimmickStateComp>(
+		entity,
+		BossGimmickStateComp{});
 }
 
 bool BossPhaseAspect::Validate(

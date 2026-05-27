@@ -18,6 +18,10 @@ CombatActionSelection DataDrivenAICombatActionPolicy::SelectAction(
 
 	CombatActionSelectionContext selection = BuildSelectionContext(ctx);
 	std::vector<CombatActionCandidate> candidates = CollectCandidates(selection);
+	if (IsEffectActionDue(selection))
+	{
+		KeepDueEffectCandidatesOnly(selection, candidates);
+	}
 
 	size_t selectedActionIndex{ 0 };
 	const AIActionDef* selectedAction =
@@ -160,6 +164,9 @@ DataDrivenAICombatActionPolicy::BuildSelectionContext(
 			: InvalidAbilityId,
 		.actionSequence		= ctx.actionRuntime != nullptr
 			? ctx.actionRuntime->actionSequence
+			: 0u,
+		.basicActionCountSinceEffect = ctx.actionRuntime != nullptr
+			? ctx.actionRuntime->basicActionCountSinceEffect
 			: 0u
 	};
 }
@@ -348,6 +355,53 @@ DataDrivenAICombatActionPolicy::CollectCandidates(
 	return candidates;
 }
 
+bool DataDrivenAICombatActionPolicy::IsEffectActionDue(
+	const CombatActionSelectionContext& selection) noexcept
+{
+	if (selection.basicActionCountSinceEffect == 0)
+		return false;
+
+	for (const AIActionDef& action : selection.actions)
+	{
+		if (action.actionRole != AIActionRole::Effect ||
+			action.requiresBasicActionCount == 0 ||
+			selection.basicActionCountSinceEffect <
+				action.requiresBasicActionCount)
+		{
+			continue;
+		}
+
+		const AIActionConditionDef& condition = action.condition;
+		if (selection.phase >= condition.phaseMin &&
+			selection.phase <= condition.phaseMax)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void DataDrivenAICombatActionPolicy::KeepDueEffectCandidatesOnly(
+	const CombatActionSelectionContext& selection,
+	std::vector<CombatActionCandidate>& candidates)
+{
+	std::erase_if(
+		candidates,
+		[&selection](const CombatActionCandidate& candidate)
+		{
+			if (candidate.actionIndex >= selection.actions.size())
+				return true;
+
+			const AIActionDef& action =
+				selection.actions[candidate.actionIndex];
+			return action.actionRole != AIActionRole::Effect ||
+				action.requiresBasicActionCount == 0 ||
+				selection.basicActionCountSinceEffect <
+					action.requiresBasicActionCount;
+		});
+}
+
 const AIActionDef* DataDrivenAICombatActionPolicy::PickCombatAction(
 	const CombatActionSelectionContext& selection,
 	std::span<const CombatActionCandidate> candidates,
@@ -475,6 +529,18 @@ void DataDrivenAICombatActionPolicy::ApplyRuntimeSelection(
 	// 5. 마지막 사용 ability / sequence 갱신
 	{
 		runtime->lastUsedAbilityId = action.abilityId;
+		if (action.actionRole == AIActionRole::Basic)
+		{
+			runtime->basicActionCountSinceEffect =
+				static_cast<uint16_t>(std::min<uint32_t>(
+					static_cast<uint32_t>(
+						runtime->basicActionCountSinceEffect) + 1u,
+					std::numeric_limits<uint16_t>::max()));
+		}
+		else if (action.resetsBasicActionCount)
+		{
+			runtime->basicActionCountSinceEffect = 0;
+		}
 		++runtime->actionSequence;
 	}
 }

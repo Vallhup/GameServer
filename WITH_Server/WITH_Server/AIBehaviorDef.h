@@ -23,6 +23,12 @@ enum class AIActionDistanceBucket : uint8_t
 	Far
 };
 
+enum class AIActionRole : uint8_t
+{
+	Basic,
+	Effect
+};
+
 enum class AIMovementBehavior : uint8_t
 {
 	None,
@@ -132,6 +138,9 @@ struct AIActionDef
 	float lockMovementSec{ 0.0f };
 	bool lockFacingToTarget{ false };
 	int chancePercent{ 100 };
+	AIActionRole actionRole{ AIActionRole::Basic };
+	uint16_t requiresBasicActionCount{ 0 };
+	bool resetsBasicActionCount{ false };
 };
 
 struct AIPhaseTransitionDef

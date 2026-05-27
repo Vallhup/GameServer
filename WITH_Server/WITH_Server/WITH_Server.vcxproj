@@ -204,6 +204,7 @@
     <ClCompile Include="ECS\System\AbilityProfileService.cpp" />
     <ClCompile Include="ECS\System\Phase0_AI\AIDecisionSystem.cpp" />
     <ClCompile Include="ECS\System\Phase0_AI\AIPerceptionSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase0_AI\BossGimmickSystem.cpp" />
     <ClCompile Include="ECS\System\Phase1\ApplyAICommandSystem.cpp" />
     <ClCompile Include="ECS\System\Phase1\ApplyPlayerCommandSystem.cpp" />
     <ClCompile Include="ECS\System\Phase2\AdvanceAbilityTimelineSystem.cpp" />
@@ -228,6 +229,7 @@
     <ClCompile Include="ECS\System\Phase7\ResolveCombatColliderActivationSystem.cpp" />
     <ClCompile Include="ECS\System\Phase7\ResolveCombatHitSystem.cpp" />
     <ClCompile Include="ECS\System\Phase7\ResolveProjectileHitSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase7\ResolveStaticBoxHitSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\CommitCombatResultSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\FinalizePostCommitStateSystem.cpp" />
@@ -338,6 +340,7 @@
     <ClInclude Include="ECS\Components\GameplayAnimationComponents.h" />
     <ClInclude Include="ECS\Components\GameplayCombatComponents.h" />
     <ClInclude Include="ECS\Components\GameplayComponentPrerequisites.h" />
+    <ClInclude Include="ECS\Components\GameplayGimmickComponents.h" />
     <ClInclude Include="ECS\Components\GameplayInputComponents.h" />
     <ClInclude Include="ECS\Components\GameplayPresentationComponents.h" />
     <ClInclude Include="ECS\Components\GameplayReplicationComponents.h" />
@@ -349,6 +352,7 @@
     <ClInclude Include="ECS\System\GameplaySystemUtil.h" />
     <ClInclude Include="ECS\System\Phase0_AI\AIDecisionSystem.h" />
     <ClInclude Include="ECS\System\Phase0_AI\AIPerceptionSystem.h" />
+    <ClInclude Include="ECS\System\Phase0_AI\BossGimmickSystem.h" />
     <ClInclude Include="ECS\System\Phase1\ApplyAICommandSystem.h" />
     <ClInclude Include="ECS\System\Phase1\ApplyPlayerCommandSystem.h" />
     <ClInclude Include="ECS\System\Phase2\AdvanceAbilityTimelineSystem.h" />
@@ -374,6 +378,7 @@
     <ClInclude Include="ECS\System\Phase7\ResolveCombatColliderActivationSystem.h" />
     <ClInclude Include="ECS\System\Phase7\ResolveCombatHitSystem.h" />
     <ClInclude Include="ECS\System\Phase7\ResolveProjectileHitSystem.h" />
+    <ClInclude Include="ECS\System\Phase7\ResolveStaticBoxHitSystem.h" />
     <ClInclude Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.h" />
     <ClInclude Include="ECS\System\Phase8\CommitCombatResultSystem.h" />
     <ClInclude Include="ECS\System\Phase8\FinalizePostCommitStateSystem.h" />
@@ -473,6 +478,7 @@
     <None Include="..\Data\Ability\lancer_abilities.json" />
     <None Include="..\Data\Ability\paladin_abilities.json" />
     <None Include="..\Data\Ability\tank_abilities.json" />
+    <None Include="..\Data\AreaHit\final_boss_area_hits.json" />
     <None Include="..\Data\AreaHit\tank_area_hits.json" />
     <None Include="..\Data\AI\bigdemonwarrior.json" />
     <None Include="..\Data\AI\demon_executioner.json" />
@@ -489,6 +495,7 @@
     <None Include="..\Data\Character\lancer.json" />
     <None Include="..\Data\Character\paladin.json" />
     <None Include="..\Data\Character\tank.json" />
+    <None Include="..\Data\Projectile\final_boss_projectiles.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,138 @@
+{
+  "areaHits": [
+    {
+      "key": "Area.FinalBoss_HolySandstorm",
+      "shape": {
+        "shapeType": "Trapezoid",
+        "originPolicy": "LockedActionDirectionOffset",
+        "nearWidth": 1.6,
+        "farWidth": 20.4,
+        "depth": 22.8,
+        "forwardOffset": 0.2,
+        "rightOffset": 0,
+        "verticalOffset": 0,
+        "verticalTolerance": 2.8
+      },
+      "attackHit": {
+        "damageScale": 2.6,
+        "bonusDamage": 20,
+        "staminaDamageScale": 1.8,
+        "bonusStaminaDamage": 12,
+        "poiseDamageScale": 0,
+        "bonusPoiseDamage": 0,
+        "knockbackDistance": 1.7,
+        "hitStopSec": 0.12,
+        "parryable": false,
+        "guardable": true
+      },
+      "scaleKeys": [
+        {
+          "timeSec": 0,
+          "radiusScale": 1,
+          "lengthScale": 0.001,
+          "widthScale": 0.001
+        },
+        {
+          "timeSec": 0.583333,
+          "radiusScale": 1,
+          "lengthScale": 1,
+          "widthScale": 1
+        }
+      ],
+      "lifetimeSec": 1.983333,
+      "tickIntervalSec": 0.1,
+      "hitOncePerAbilityInstance": true,
+      "includeOwner": false,
+      "requireLineOfSight": false
+    },
+    {
+      "key": "Area.FinalBoss_BloodLance",
+      "shape": {
+        "shapeType": "Cylinder",
+        "originPolicy": "OwnerPosition",
+        "radius": 4.6,
+        "height": 2.8,
+        "forwardOffset": 0,
+        "rightOffset": 0,
+        "verticalOffset": 0,
+        "verticalTolerance": 2.8
+      },
+      "attackHit": {
+        "damageScale": 3.0,
+        "bonusDamage": 28,
+        "staminaDamageScale": 2.0,
+        "bonusStaminaDamage": 14,
+        "poiseDamageScale": 0,
+        "bonusPoiseDamage": 0,
+        "knockbackDistance": 2.0,
+        "hitStopSec": 0.14,
+        "parryable": false,
+        "guardable": true
+      },
+      "scaleKeys": [
+        {
+          "timeSec": 0,
+          "radiusScale": 0.217391,
+          "lengthScale": 1,
+          "widthScale": 1
+        },
+        {
+          "timeSec": 0.566667,
+          "radiusScale": 1,
+          "lengthScale": 1,
+          "widthScale": 1
+        }
+      ],
+      "lifetimeSec": 2.85,
+      "tickIntervalSec": 0.1,
+      "hitOncePerAbilityInstance": true,
+      "includeOwner": false,
+      "requireLineOfSight": false
+    },
+    {
+      "key": "Area.FinalBoss_SwordStorm",
+      "shape": {
+        "shapeType": "Trapezoid",
+        "originPolicy": "LockedActionDirectionOffset",
+        "nearWidth": 2.4,
+        "farWidth": 2.4,
+        "depth": 37.0,
+        "forwardOffset": 0,
+        "rightOffset": 0.6,
+        "verticalOffset": 0,
+        "verticalTolerance": 2.4
+      },
+      "attackHit": {
+        "damageScale": 2.4,
+        "bonusDamage": 18,
+        "staminaDamageScale": 1.6,
+        "bonusStaminaDamage": 10,
+        "poiseDamageScale": 0,
+        "bonusPoiseDamage": 0,
+        "knockbackDistance": 1.4,
+        "hitStopSec": 0.1,
+        "parryable": false,
+        "guardable": true
+      },
+      "scaleKeys": [
+        {
+          "timeSec": 0,
+          "radiusScale": 1,
+          "lengthScale": 0.001,
+          "widthScale": 1
+        },
+        {
+          "timeSec": 0.383333,
+          "radiusScale": 1,
+          "lengthScale": 1,
+          "widthScale": 1
+        }
+      ],
+      "lifetimeSec": 1.633333,
+      "tickIntervalSec": 0.1,
+      "hitOncePerAbilityInstance": true,
+      "includeOwner": false,
+      "requireLineOfSight": false
+    }
+  ]
+}

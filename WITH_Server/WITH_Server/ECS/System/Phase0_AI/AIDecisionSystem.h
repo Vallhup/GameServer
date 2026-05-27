@@ -6,7 +6,7 @@
 #include "../../../AIFSMRegistry.h"
 
 class AIDecisionSystem final : public System {
-	static const StaticSystemMetaStorage<12, 1, 1> kMetaStorage;
+	static const StaticSystemMetaStorage<13, 1, 2> kMetaStorage;
 	static constexpr int kMaxDecisionStepsPerFrame{ 4 };
 
 public:

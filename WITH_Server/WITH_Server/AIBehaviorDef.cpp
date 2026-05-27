@@ -315,7 +315,15 @@ namespace
 				!ReadOptionalNumber(abilityNode, "repeatWeightMultiplier", action.repeatWeightMultiplier, outError) ||
 				!ReadOptionalNumber(abilityNode, "lockMovementSec", action.lockMovementSec, outError) ||
 				!ReadOptionalBool(abilityNode, "lockFacingToTarget", action.lockFacingToTarget, outError) ||
-				!ReadOptionalNumber(abilityNode, "chancePercent", action.chancePercent, outError))
+				!ReadOptionalNumber(abilityNode, "chancePercent", action.chancePercent, outError) ||
+				!ReadOptionalEnum(
+					abilityNode,
+					"actionRole",
+					action.actionRole,
+					"AI action role",
+					outError) ||
+				!ReadOptionalNumber(abilityNode, "requiresBasicActionCount", action.requiresBasicActionCount, outError) ||
+				!ReadOptionalBool(abilityNode, "resetsBasicActionCount", action.resetsBasicActionCount, outError))
 			{
 				return false;
 			}
@@ -753,6 +761,18 @@ namespace
 					action.lockMovementSec < 0.0f)
 				{
 					outError = "AI behavior combatActions has negative cooldown or lock.";
+					return false;
+				}
+				if (action.requiresBasicActionCount > 0 &&
+					action.actionRole != AIActionRole::Effect)
+				{
+					outError = "AI behavior combatActions basic-count requirement is only valid for effect actions.";
+					return false;
+				}
+				if (action.resetsBasicActionCount &&
+					action.actionRole != AIActionRole::Effect)
+				{
+					outError = "AI behavior combatActions basic-count reset is only valid for effect actions.";
 					return false;
 				}
 			}

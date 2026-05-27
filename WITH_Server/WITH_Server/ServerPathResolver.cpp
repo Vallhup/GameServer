@@ -276,13 +276,17 @@ std::vector<std::filesystem::path> ServerPathResolver::GetBootAnimationCandidate
 		root / "Knight" / "knight_animation_walk.json",
 
 		root / "Final_Boss" / "final_boss_animation_dashslash.json",
+		root / "Final_Boss" / "final_boss_animation_bloodlance.json",
 		root / "Final_Boss" / "final_boss_animation_death.json",
 		root / "Final_Boss" / "final_boss_animation_hit.json",
+		root / "Final_Boss" / "final_boss_animation_holysandstorm.json",
 		root / "Final_Boss" / "final_boss_animation_idle.json",
 		root / "Final_Boss" / "final_boss_animation_jumpslash.json",
 		root / "Final_Boss" / "final_boss_animation_multislash.json",
 		root / "Final_Boss" / "final_boss_animation_slash.json",
 		root / "Final_Boss" / "final_boss_animation_stun.json",
+		root / "Final_Boss" / "final_boss_animation_swordmoonlight.json",
+		root / "Final_Boss" / "final_boss_animation_swordstorm.json",
 		root / "Final_Boss" / "final_boss_animation_thrust.json",
 		root / "Final_Boss" / "final_boss_animation_walk.json",
 

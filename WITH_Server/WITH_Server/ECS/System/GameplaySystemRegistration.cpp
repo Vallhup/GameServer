@@ -3,6 +3,7 @@
 
 #include "Phase0_AI/AIDecisionSystem.h"
 #include "Phase0_AI/AIPerceptionSystem.h"
+#include "Phase0_AI/BossGimmickSystem.h"
 #include "Phase1/ApplyAICommandSystem.h"
 #include "Phase1/ApplyPlayerCommandSystem.h"
 #include "Phase2/AdvanceAbilityTimelineSystem.h"
@@ -27,6 +28,7 @@
 #include "Phase7/ResolveAreaHitSystem.h"
 #include "Phase7/ResolveCombatHitSystem.h"
 #include "Phase7/ResolveProjectileHitSystem.h"
+#include "Phase7/ResolveStaticBoxHitSystem.h"
 #include "Phase8/CommitAbilityTimelineEventSystem.h"
 #include "Phase8/CommitCombatResultSystem.h"
 #include "Phase8/FinalizePostCommitStateSystem.h"
@@ -57,6 +59,7 @@ template<typename TargetT>
 void GameplaySystemRegistrar::RegisterSystems(TargetT& target) const
 {
 	target.RegisterSystem<AIPerceptionSystem>();
+	target.RegisterSystem<BossGimmickSystem>();
 	target.RegisterSystem<AIDecisionSystem>();
 
 	target.RegisterSystem<ApplyPlayerCommandSystem>();
@@ -88,6 +91,7 @@ void GameplaySystemRegistrar::RegisterSystems(TargetT& target) const
 	target.RegisterSystem<ResolveProjectileHitSystem>();
 	target.RegisterSystem<ResolveAreaHitSystem>();
 	target.RegisterSystem<ResolveCombatHitSystem>();
+	target.RegisterSystem<ResolveStaticBoxHitSystem>();
 
 	target.RegisterSystem<CommitCombatResultSystem>();
 	target.RegisterSystem<RecoverStaminaSystem>();

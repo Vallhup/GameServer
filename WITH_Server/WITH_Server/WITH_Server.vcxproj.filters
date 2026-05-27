@@ -218,6 +218,9 @@
     <ClCompile Include="ECS\System\Phase7\ResolveProjectileHitSystem.cpp">
       <Filter>ECS\System\Phase7</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\Phase7\ResolveStaticBoxHitSystem.cpp">
+      <Filter>ECS\System\Phase7</Filter>
+    </ClCompile>
     <ClCompile Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.cpp">
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
@@ -243,6 +246,9 @@
       <Filter>ECS\System\Phase0</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase0_AI\AIPerceptionSystem.cpp">
+      <Filter>ECS\System\Phase0</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase0_AI\BossGimmickSystem.cpp">
       <Filter>ECS\System\Phase0</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase1\ApplyAICommandSystem.cpp">
@@ -613,6 +619,9 @@
     <ClInclude Include="ECS\System\Phase7\ResolveProjectileHitSystem.h">
       <Filter>ECS\System\Phase7</Filter>
     </ClInclude>
+    <ClInclude Include="ECS\System\Phase7\ResolveStaticBoxHitSystem.h">
+      <Filter>ECS\System\Phase7</Filter>
+    </ClInclude>
     <ClInclude Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.h">
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
@@ -638,6 +647,9 @@
       <Filter>ECS\System\Phase0</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase0_AI\AIPerceptionSystem.h">
+      <Filter>ECS\System\Phase0</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase0_AI\BossGimmickSystem.h">
       <Filter>ECS\System\Phase0</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase1\ApplyAICommandSystem.h">
@@ -818,6 +830,9 @@
       <Filter>ECS\Component</Filter>
     </ClInclude>
     <ClInclude Include="ECS\Components\GameplayContentComponents.h">
+      <Filter>ECS\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\Components\GameplayGimmickComponents.h">
       <Filter>ECS\Component</Filter>
     </ClInclude>
     <ClInclude Include="ECS\GameplayRuntimeComponents.h">
@@ -1002,6 +1017,9 @@
     <Filter Include="Data\JSON\AreaHit">
       <UniqueIdentifier>{fbb51df1-cbe8-4dc4-98e6-c42abf5257a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\JSON\Projectile">
+      <UniqueIdentifier>{5186dccb-9c13-4f7e-bb8e-8d5564772262}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Data\Ability\demon_striker_abilities.json">
@@ -1033,6 +1051,12 @@
     </None>
     <None Include="..\Data\AreaHit\tank_area_hits.json">
       <Filter>Data\JSON\AreaHit</Filter>
+    </None>
+    <None Include="..\Data\AreaHit\final_boss_area_hits.json">
+      <Filter>Data\JSON\AreaHit</Filter>
+    </None>
+    <None Include="..\Data\Projectile\final_boss_projectiles.json">
+      <Filter>Data\JSON\Projectile</Filter>
     </None>
     <None Include="..\Data\Character\demon_executioner.json">
       <Filter>Data\JSON\Character</Filter>

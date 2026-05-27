@@ -1,0 +1,30 @@
+{
+	"projectiles": [
+		{
+			"key": "Projectile.FinalBoss_SwordMoonlight",
+			"motionType": "Linear",
+			"collisionShape": "Sphere",
+			"hitPolicy": "DestroyOnFirstHit",
+			"directionPolicy": "LockedActionDirection",
+			"speed": 14.0,
+			"maxLifetimeSec": 1.0,
+			"radius": 0.6,
+			"maxDistance": 14.0,
+			"spawnForwardOffset": 0,
+			"spawnRightOffset": 0,
+			"spawnVerticalOffset": 1.3,
+			"attackHit": {
+				"damageScale": 1.55,
+				"bonusDamage": 10,
+				"staminaDamageScale": 1.1,
+				"bonusStaminaDamage": 6,
+				"poiseDamageScale": 0,
+				"bonusPoiseDamage": 0,
+				"knockbackDistance": 0.9,
+				"hitStopSec": 0.06,
+				"parryable": false,
+				"guardable": true
+			}
+		}
+	]
+}

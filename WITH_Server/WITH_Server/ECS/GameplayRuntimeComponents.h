@@ -5,6 +5,7 @@
 #include "Components/GameplayAnimationComponents.h"
 #include "Components/GameplayCombatComponents.h"
 #include "Components/GameplayContentComponents.h"
+#include "Components/GameplayGimmickComponents.h"
 #include "Components/GameplayInputComponents.h"
 #include "Components/GameplayPresentationComponents.h"
 #include "Components/GameplayReplicationComponents.h"

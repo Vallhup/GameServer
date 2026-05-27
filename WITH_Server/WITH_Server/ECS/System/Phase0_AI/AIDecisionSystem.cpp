@@ -15,19 +15,21 @@
 
 #include "IAIReactionPolicy.h"
 #include "IAISpecialActionPolicy.h"
+#include "BossGimmickSystem.h"
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<12, 1, 1> AIDecisionSystem::kMetaStorage =
+const StaticSystemMetaStorage<13, 1, 2> AIDecisionSystem::kMetaStorage =
 MakeMetaStorage(
 	SysTag<AIDecisionSystem>(),
 	"AIDecisionSystem",
-	std::array<AccessSpec, 12>
+	std::array<AccessSpec, 13>
 	{
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
 		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<AIPerceptionComp>()),
 		ReadImmediate(ComponentRes<AITypeComp>()),
+		ReadImmediate(ComponentRes<BossGimmickStateComp>()),
 		WriteImmediate(ComponentRes<AIBlackboardComp>()),
 		WriteImmediate(ComponentRes<AIDecisionComp>()),
 		WriteImmediate(ComponentRes<AIIntentFrameComp>()),
@@ -38,7 +40,7 @@ MakeMetaStorage(
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 	},
 	std::array<SystemTag, 1>{ SysTag<ApplyAICommandSystem>() },
-	std::array<SystemTag, 1>{ SysTag<AIPerceptionSystem>() }
+	std::array<SystemTag, 2>{ SysTag<AIPerceptionSystem>(), SysTag<BossGimmickSystem>() }
 );
 
 void AIDecisionSystem::Execute(SystemContext& ctx)
@@ -56,6 +58,8 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 			ctx.ecs.GetMutableComponent<AIActionRuntimeComp>(entity);
 		AIMovementRuntimeComp* movementRuntime =
 			ctx.ecs.GetMutableComponent<AIMovementRuntimeComp>(entity);
+		const BossGimmickStateComp* bossGimmick =
+			ctx.ecs.GetComponent<BossGimmickStateComp>(entity);
 
 		if (actionRuntime != nullptr)
 		{
@@ -76,6 +80,14 @@ void AIDecisionSystem::Execute(SystemContext& ctx)
 		decision.stateTime         += ctx.dtSec;
 		decision.globalDecisionAcc += ctx.dtSec;
 		actionRuntime->idleActionCooldownAcc += ctx.dtSec;
+
+		if (bossGimmick != nullptr && bossGimmick->BlocksAI())
+		{
+			intent.ClearAll();
+			decision.globalDecisionAcc = 0.0;
+			reaction.Clear();
+			continue;
+		}
 
 		AIContext aiCtx;
 		aiCtx.self            = entity;

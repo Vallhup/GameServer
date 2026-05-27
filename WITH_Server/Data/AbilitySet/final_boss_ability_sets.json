@@ -21,6 +21,22 @@
           "level": 1
         },
         {
+          "abilityKey": "Ability.FinalBoss_HolySandstorm",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.FinalBoss_BloodLance",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.FinalBoss_SwordStorm",
+          "level": 1
+        },
+        {
+          "abilityKey": "Ability.FinalBoss_SwordMoonlight",
+          "level": 1
+        },
+        {
           "abilityKey": "Ability.FinalBoss_Stun",
           "level": 1
         },
@@ -69,6 +85,30 @@
         {
           "abilityKey": "Ability.FinalBoss_JumpSlash",
           "animationKey": "FinalBoss_JumpSlash",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.FinalBoss_HolySandstorm",
+          "animationKey": "FinalBoss_HolySandstorm",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.FinalBoss_BloodLance",
+          "animationKey": "FinalBoss_BloodLance",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.FinalBoss_SwordStorm",
+          "animationKey": "FinalBoss_SwordStorm",
+          "playRate": 1,
+          "startNormalizedTime": 0
+        },
+        {
+          "abilityKey": "Ability.FinalBoss_SwordMoonlight",
+          "animationKey": "FinalBoss_SwordMoonlight",
           "playRate": 1,
           "startNormalizedTime": 0
         },

@@ -32,6 +32,7 @@ private:
 		float		targetHpRatio{ 1.0f };
 		AbilityId	lastUsedAbilityId{ InvalidAbilityId };
 		uint32_t	actionSequence{ 0 };
+		uint16_t	basicActionCountSinceEffect{ 0 };
 	};
 
 	static bool CanSelectCombatAction(const AIContext& ctx) noexcept;
@@ -43,6 +44,13 @@ private:
 
 	static std::vector<CombatActionCandidate> CollectCandidates(
 		const CombatActionSelectionContext& selection);
+
+	static bool IsEffectActionDue(
+		const CombatActionSelectionContext& selection) noexcept;
+
+	static void KeepDueEffectCandidatesOnly(
+		const CombatActionSelectionContext& selection,
+		std::vector<CombatActionCandidate>& candidates);
 
 	static const AIActionDef* PickCombatAction(
 		const CombatActionSelectionContext& selection,

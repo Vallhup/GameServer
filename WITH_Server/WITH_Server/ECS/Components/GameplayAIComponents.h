@@ -182,6 +182,123 @@ struct AIPhaseRuntimeComp : Component
 	uint16_t pendingTransitionIndex{ kInvalidTransitionIndex };
 };
 
+enum class BossGimmickType : uint8_t
+{
+	None,
+	PhaseTransitionObjects,
+	FinalSafeZone
+};
+
+enum class BossGimmickStage : uint8_t
+{
+	None,
+	Telegraph,
+	Active,
+	Resolve,
+	Completed
+};
+
+struct BossGimmickStateComp : Component
+{
+	BossGimmickType activeType{ BossGimmickType::None };
+	BossGimmickStage stage{ BossGimmickStage::None };
+
+	float elapsedSec{ 0.0f };
+	float stageElapsedSec{ 0.0f };
+	float stageDurationSec{ 0.0f };
+
+	bool blocksAI{ false };
+	bool phaseTransitionGimmickRequested{ false };
+	bool phaseTransitionGimmickCompleted{ false };
+	bool finalGimmickRequested{ false };
+	bool finalGimmickCompleted{ false };
+
+	bool phaseTransitionObjectsSpawned{ false };
+	bool phaseTransitionInstantKillResolved{ false };
+	bool finalSafeZoneSpawned{ false };
+	bool finalSafeZoneResolved{ false };
+	std::vector<Entity> phaseTransitionObjectEntities;
+	std::vector<Entity> phaseTransitionImmunePlayers;
+	std::vector<Entity> finalSafeZoneEntities;
+
+	bool IsActive() const noexcept
+	{
+		return activeType != BossGimmickType::None &&
+			stage != BossGimmickStage::None &&
+			stage != BossGimmickStage::Completed;
+	}
+
+	bool BlocksAI() const noexcept
+	{
+		return IsActive() && blocksAI;
+	}
+
+	void Request(BossGimmickType type) noexcept
+	{
+		switch (type) {
+		case BossGimmickType::PhaseTransitionObjects:
+			phaseTransitionGimmickRequested = true;
+			break;
+		case BossGimmickType::FinalSafeZone:
+			finalGimmickRequested = true;
+			break;
+		default:
+			break;
+		}
+	}
+
+	void Begin(
+		BossGimmickType type,
+		BossGimmickStage initialStage,
+		float durationSec,
+		bool shouldBlockAI) noexcept
+	{
+		activeType = type;
+		stage = initialStage;
+		elapsedSec = 0.0f;
+		stageElapsedSec = 0.0f;
+		stageDurationSec = std::max(0.0f, durationSec);
+		blocksAI = shouldBlockAI;
+		phaseTransitionObjectsSpawned = false;
+		phaseTransitionInstantKillResolved = false;
+		finalSafeZoneSpawned = false;
+		finalSafeZoneResolved = false;
+		phaseTransitionObjectEntities.clear();
+		phaseTransitionImmunePlayers.clear();
+		finalSafeZoneEntities.clear();
+	}
+
+	void Complete() noexcept
+	{
+		switch (activeType) {
+		case BossGimmickType::PhaseTransitionObjects:
+			phaseTransitionGimmickCompleted = true;
+			phaseTransitionGimmickRequested = false;
+			break;
+		case BossGimmickType::FinalSafeZone:
+			finalGimmickCompleted = true;
+			finalGimmickRequested = false;
+			break;
+		default:
+			break;
+		}
+
+		activeType = BossGimmickType::None;
+		stage = BossGimmickStage::Completed;
+		elapsedSec = 0.0f;
+		stageElapsedSec = 0.0f;
+		stageDurationSec = 0.0f;
+		blocksAI = false;
+		phaseTransitionObjectsSpawned = false;
+		phaseTransitionInstantKillResolved = false;
+		finalSafeZoneSpawned = false;
+		finalSafeZoneResolved = false;
+		phaseTransitionObjectEntities.clear();
+		phaseTransitionImmunePlayers.clear();
+		finalSafeZoneEntities.clear();
+	}
+};
+
 struct AIActionRuntimeComp : Component
 {
 	std::vector<float> actionCooldownSec;
@@ -191,6 +308,7 @@ struct AIActionRuntimeComp : Component
 	float movementLockSec{ 0.0f };
 
 	uint32_t actionSequence{ 0 };
+	uint16_t basicActionCountSinceEffect{ 0 };
 
 	uint32_t idleActionSequence{ 0 };
 	double idleActionCooldownAcc{ 0.0 };

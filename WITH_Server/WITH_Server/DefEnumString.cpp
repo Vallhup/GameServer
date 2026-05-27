@@ -38,6 +38,13 @@ bool ParseDefString(std::string_view text, AIActionDistanceBucket& outValue) noe
 	return false;
 }
 
+bool ParseDefString(std::string_view text, AIActionRole& outValue) noexcept
+{
+	if (text == "Basic") { outValue = AIActionRole::Basic; return true; }
+	if (text == "Effect") { outValue = AIActionRole::Effect; return true; }
+	return false;
+}
+
 bool ParseDefString(std::string_view text, AIMovementBehavior& outValue) noexcept
 {
 	if (text == "None") { outValue = AIMovementBehavior::None; return true; }
@@ -130,6 +137,10 @@ bool ParseAnimationIdString(std::string_view text, AnimationId& outValue) noexce
 		{ "FinalBoss_DashSlash", AnimationId::FinalBoss_DashSlash },
 		{ "FinalBoss_JumpSlash", AnimationId::FinalBoss_JumpSlash },
 		{ "FinalBoss_MultiSlash", AnimationId::FinalBoss_MultiSlash },
+		{ "FinalBoss_BloodLance", AnimationId::FinalBoss_BloodLance },
+		{ "FinalBoss_HolySandstorm", AnimationId::FinalBoss_HolySandstorm },
+		{ "FinalBoss_SwordMoonlight", AnimationId::FinalBoss_SwordMoonlight },
+		{ "FinalBoss_SwordStorm", AnimationId::FinalBoss_SwordStorm },
 		{ "FinalBoss_Stun", AnimationId::FinalBoss_Stun },
 		{ "FinalBoss_Hit", AnimationId::FinalBoss_Hit },
 		{ "FinalBoss_Death", AnimationId::FinalBoss_Death },

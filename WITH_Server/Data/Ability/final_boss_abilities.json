@@ -453,6 +453,310 @@
       }
     },
     {
+      "key": "Ability.FinalBoss_HolySandstorm",
+      "name": "FinalBoss.HolySandstorm",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 5.03332949,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [
+          {
+            "startNormalized": 0,
+            "endNormalized": 0.331126,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 3.2,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": [
+          {
+            "kind": "SpawnAreaVolume",
+            "timeNormalized": 0.331126,
+            "effectKey": null,
+            "cueTagKey": null,
+            "projectileKey": null,
+            "areaHitKey": "Area.FinalBoss_HolySandstorm",
+            "payloadId": null,
+            "condition": "Always"
+          }
+        ]
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.FinalBoss_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.FinalBoss_BloodLance",
+      "name": "FinalBoss.BloodLance",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 8.13332,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [
+          {
+            "startNormalized": 0,
+            "endNormalized": 0.213115,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 2.6,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": [
+          {
+            "kind": "SpawnAreaVolume",
+            "timeNormalized": 0.213115,
+            "effectKey": null,
+            "cueTagKey": null,
+            "projectileKey": null,
+            "areaHitKey": "Area.FinalBoss_BloodLance",
+            "payloadId": null,
+            "condition": "Always"
+          }
+        ]
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.FinalBoss_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.FinalBoss_SwordStorm",
+      "name": "FinalBoss.SwordStorm",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 5.33333349,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [
+          {
+            "startNormalized": 0,
+            "endNormalized": 0.5,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 3.0,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": [
+          {
+            "kind": "SpawnAreaVolume",
+            "timeNormalized": 0.5,
+            "effectKey": null,
+            "cueTagKey": null,
+            "projectileKey": null,
+            "areaHitKey": "Area.FinalBoss_SwordStorm",
+            "payloadId": null,
+            "condition": "Always"
+          }
+        ]
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.FinalBoss_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
+      "key": "Ability.FinalBoss_SwordMoonlight",
+      "name": "FinalBoss.SwordMoonlight",
+      "kind": "Attack",
+      "tags": [],
+      "activation": {
+        "requiredOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "blockedOwnerTags": {
+          "op": "None",
+          "tags": [],
+          "children": []
+        },
+        "requiresTarget": true,
+        "requiresGrounded": true
+      },
+      "costs": [],
+      "timeline": {
+        "durationSec": 3.59999752,
+        "policy": "FixedDuration",
+        "combatWindows": [],
+        "movementSegments": [
+          {
+            "startNormalized": 0,
+            "endNormalized": 0.625,
+            "movementMode": "None",
+            "moveDistance": null,
+            "rotationMode": "FaceTarget",
+            "rotationRate": 3.6,
+            "verticalMovementMode": "None",
+            "verticalAmount": null,
+            "directionPolicy": "TargetDirection",
+            "directionSampleTiming": "OnSegmentStart"
+          }
+        ],
+        "events": [
+          {
+            "kind": "SpawnProjectile",
+            "timeNormalized": 0.189815,
+            "effectKey": null,
+            "cueTagKey": null,
+            "projectileKey": "Projectile.FinalBoss_SwordMoonlight",
+            "areaHitKey": null,
+            "payloadId": null,
+            "condition": "Always"
+          },
+          {
+            "kind": "SpawnProjectile",
+            "timeNormalized": 0.375,
+            "effectKey": null,
+            "cueTagKey": null,
+            "projectileKey": "Projectile.FinalBoss_SwordMoonlight",
+            "areaHitKey": null,
+            "payloadId": null,
+            "condition": "Always"
+          },
+          {
+            "kind": "SpawnProjectile",
+            "timeNormalized": 0.625,
+            "effectKey": null,
+            "cueTagKey": null,
+            "projectileKey": "Projectile.FinalBoss_SwordMoonlight",
+            "areaHitKey": null,
+            "payloadId": null,
+            "condition": "Always"
+          }
+        ]
+      },
+      "transition": {
+        "endPolicy": {
+          "endType": "NaturalEnd",
+          "defaultNextAbilityKey": null
+        },
+        "defaultNextAbilityKey": null,
+        "interruptRules": [
+          {
+            "cause": "OnAttributeZero",
+            "toAbilityKey": "Ability.FinalBoss_Dead",
+            "windowPolicy": "Always",
+            "windowStartNormalized": null,
+            "windowEndNormalized": null,
+            "priority": 1000,
+            "aiInterruptible": false
+          }
+        ],
+        "cancelRules": []
+      }
+    },
+    {
       "key": "Ability.FinalBoss_Stun",
       "name": "FinalBoss.Stun",
       "kind": "Reaction",

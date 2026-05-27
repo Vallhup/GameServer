@@ -1,89 +1,89 @@
 {
-    "id":  "BigDemonWarrior",
-    "name":  "BigDemonWarrior",
-    "profile":  {
-                    "faction":  "Enemy"
-                },
-    "stat":  {
-                 "maxHp":  900,
-                 "maxStamina":  165,
-                 "maxPoise":  260,
-                 "attackPower":  20,
-                 "defense":  16,
-                 "moveSpeed":  2.4,
-                 "attackSpeed":  1.0
-             },
-    "bodyCollision":  {
-                          "footprintRadiusXZ":  0.85,
-                          "bodyHeight":  2.7,
-                          "blocksBodyOverlap":  true,
-                          "useNavMeshConstraint":  true,
-                          "pushability":  "Dynamic",
-                          "overlapYieldWeight":  1.2,
-                          "maxOverlapCorrectionPerFrameXZ":  0.2
-                      },
-    "role":  "Boss",
-    "features":  [
-                     "Replicated",
-                     "Combatant",
-                     "AIControlled",
-                     "BossPhase"
-                 ],
-    "ai":  {
-               "aiType":  "FirstBossMonster",
-               "aiProfileKey":  "AI.BigDemonWarrior"
-           },
-    "attributes":  [
-                       {
-                           "attributeKey":  "Attribute.Hp",
-                           "baseValue":  900,
-                           "currentValue":  900
-                       },
-                       {
-                           "attributeKey":  "Attribute.MaxHp",
-                           "baseValue":  900,
-                           "currentValue":  900
-                       },
-                       {
-                           "attributeKey":  "Attribute.Stamina",
-                           "baseValue":  165,
-                           "currentValue":  165
-                       },
-                       {
-                           "attributeKey":  "Attribute.MaxStamina",
-                           "baseValue":  165,
-                           "currentValue":  165
-                       },
-                       {
-                           "attributeKey":  "Attribute.Poise",
-                           "baseValue":  260,
-                           "currentValue":  260
-                       },
-                       {
-                           "attributeKey":  "Attribute.MaxPoise",
-                           "baseValue":  260,
-                           "currentValue":  260
-                       },
-                       {
-                           "attributeKey":  "Attribute.AttackPower",
-                           "baseValue":  20,
-                           "currentValue":  20
-                       },
-                       {
-                           "attributeKey":  "Attribute.Defense",
-                           "baseValue":  16,
-                           "currentValue":  16
-                       },
-                       {
-                           "attributeKey":  "Attribute.MoveSpeed",
-                           "baseValue":  2.4,
-                           "currentValue":  2.4
-                       },
-                       {
-                           "attributeKey":  "Attribute.AttackSpeed",
-                           "baseValue":  1.0,
-                           "currentValue":  1.0
-                       }
-                   ],
-    "abilitySetKey":  "AbilitySet.BigDemonWarrior"
+	"id":  "BigDemonWarrior",
+	"name":  "BigDemonWarrior",
+	"profile":  {
+					"faction":  "Enemy"
+				},
+	"stat":  {
+				 "maxHp":  10,
+				 "maxStamina":  165,
+				 "maxPoise":  260,
+				 "attackPower":  20,
+				 "defense":  16,
+				 "moveSpeed":  2.4,
+				 "attackSpeed":  1.0
+			 },
+	"bodyCollision":  {
+						  "footprintRadiusXZ":  0.85,
+						  "bodyHeight":  2.7,
+						  "blocksBodyOverlap":  true,
+						  "useNavMeshConstraint":  true,
+						  "pushability":  "Dynamic",
+						  "overlapYieldWeight":  1.2,
+						  "maxOverlapCorrectionPerFrameXZ":  0.2
+					  },
+	"role":  "Boss",
+	"features":  [
+					 "Replicated",
+					 "Combatant",
+					 "AIControlled",
+					 "BossPhase"
+				 ],
+	"ai":  {
+			   "aiType":  "FirstBossMonster",
+			   "aiProfileKey":  "AI.BigDemonWarrior"
+		   },
+	"attributes":  [
+					   {
+						   "attributeKey":  "Attribute.Hp",
+						   "baseValue":  10,
+						   "currentValue":  10
+					   },
+					   {
+						   "attributeKey":  "Attribute.MaxHp",
+						   "baseValue":  10,
+						   "currentValue":  10
+					   },
+					   {
+						   "attributeKey":  "Attribute.Stamina",
+						   "baseValue":  165,
+						   "currentValue":  165
+					   },
+					   {
+						   "attributeKey":  "Attribute.MaxStamina",
+						   "baseValue":  165,
+						   "currentValue":  165
+					   },
+					   {
+						   "attributeKey":  "Attribute.Poise",
+						   "baseValue":  260,
+						   "currentValue":  260
+					   },
+					   {
+						   "attributeKey":  "Attribute.MaxPoise",
+						   "baseValue":  260,
+						   "currentValue":  260
+					   },
+					   {
+						   "attributeKey":  "Attribute.AttackPower",
+						   "baseValue":  20,
+						   "currentValue":  20
+					   },
+					   {
+						   "attributeKey":  "Attribute.Defense",
+						   "baseValue":  16,
+						   "currentValue":  16
+					   },
+					   {
+						   "attributeKey":  "Attribute.MoveSpeed",
+						   "baseValue":  2.4,
+						   "currentValue":  2.4
+					   },
+					   {
+						   "attributeKey":  "Attribute.AttackSpeed",
+						   "baseValue":  1.0,
+						   "currentValue":  1.0
+					   }
+				   ],
+	"abilitySetKey":  "AbilitySet.BigDemonWarrior"
 }
