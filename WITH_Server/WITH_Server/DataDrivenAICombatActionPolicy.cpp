@@ -322,6 +322,14 @@ DataDrivenAICombatActionPolicy::CollectCandidates(
 		// 8. weight 계산
 		uint32_t weight = action.weight;
 		{
+			if (action.actionRole == AIActionRole::Effect &&
+				action.requiresBasicActionCount > 0 &&
+				selection.basicActionCountSinceEffect <
+					action.requiresBasicActionCount)
+			{
+				continue;
+			}
+
 			if (weight == 0)
 				continue;
 
