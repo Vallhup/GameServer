@@ -234,6 +234,7 @@ exit 0</Command>
     <ClCompile Include="EffectManager.cpp" />
     <ClCompile Include="EffectRenderer.cpp" />
     <ClCompile Include="FinalBattleScene.cpp" />
+    <ClCompile Include="DissolveComponent.cpp" />
     <ClCompile Include="FlameComponent.cpp" />
     <ClCompile Include="FootDustComponent.cpp" />
     <ClCompile Include="FroxelManager.cpp" />
@@ -337,6 +338,7 @@ exit 0</Command>
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EffectRenderer.h" />
     <ClInclude Include="FinalBattleScene.h" />
+    <ClInclude Include="DissolveComponent.h" />
     <ClInclude Include="FlameComponent.h" />
     <ClInclude Include="FootDustComponent.h" />
     <ClInclude Include="FroxelManager.h" />

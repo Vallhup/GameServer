@@ -34,6 +34,8 @@ enum class AnimationId : uint8 {
 	FinalBoss_SwordStorm,
 	FinalBoss_Stun,
 	FinalBoss_Hit,
+	FinalBoss_0Percent,
+	FinalBoss_50Percent,
 	FinalBoss_Death,
 
 	Imp_Idle_1,

@@ -119,5 +119,17 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
         output.RT2 = float4(0, 0, 0, 1.0);
     }
     
+    if (dissolveAmount > 0.0f && dissolveNoiseIndex != 0xFFFFFFFF)
+    {
+        float n = bindlessTextures[NonUniformResourceIndex(dissolveNoiseIndex)].Sample(linearSampler, input.uv).r;
+        float edge = n - dissolveAmount;
+        clip(edge);
+
+        const float EDGE_WIDTH = 0.055f;
+        float k = saturate(1.0f - edge / EDGE_WIDTH);   
+        float3 ember = float3(1.2, 0.044, 0.044); 
+        output.RT2.rgb += ember * k;
+    }
+
     return output;
 }

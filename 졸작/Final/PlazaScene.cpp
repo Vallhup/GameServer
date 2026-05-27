@@ -106,13 +106,11 @@ void PlazaScene::UpdateScene(const float deltaTime)
 	if (effectObjects.size() > 4 && INPUT.GetKeyDown('5'))
 		effectObjects[4]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectObjects.size() > 5 && INPUT.GetKeyDown('6')) {
+	if (effectObjects.size() > 5 && INPUT.GetKeyDown('6'))
 		effectObjects[5]->GetComponent<EffectRenderer>()->PlayEffect();
-		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
-	}
 
 	if (effectObjects.size() > 6 && INPUT.GetKeyDown('7'))
-		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
+		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (myPlayer)	// Temporary Code for Player Centered Shadow Mapping
 	{
@@ -321,9 +319,8 @@ void PlazaScene::CreateEffectSamples()
 		{u"HolySandstorm", 484.607025f, 7.3f, 481.862946f},
 		{u"Sword_Moonlight", 484.607025f, 7.3f, 481.862946f},
 		{u"Sword_Storm", 484.607025f, 7.3f, 481.862946f},
-		{u"CandleFire5", 484.607025f, 6.f, 481.862946f},
-		{u"CandleFire5", 475.607025f, 6.f, 481.862946f},
-		{u"Dissolve", 484.607025f, 6.f, 481.862946f}
+		{u"PhantasmMeteor_Single", 484.607025f, 7.3f, 481.862946f},
+		{u"Fire", 484.607025f, 7.3f, 481.862946f},
 	};
 
 	for (int i = 0; i < info.size(); ++i)

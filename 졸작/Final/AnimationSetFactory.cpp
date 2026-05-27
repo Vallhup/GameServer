@@ -51,15 +51,16 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateFinalBossSet()
 	set->RegisterClip("SwordStorm", 10, AnimCategory::Action);
 	set->RegisterClip("Stun", 11, AnimCategory::Action);
 	set->RegisterClip("Hit", 12, AnimCategory::Action);
-
-	set->RegisterClip("Death", 13, AnimCategory::Die);
+	set->RegisterClip("0per", 13, AnimCategory::Action);
+	set->RegisterClip("50per", 14, AnimCategory::Action);
+	set->RegisterClip("Death", 15, AnimCategory::Die);
 
 	return set;
 }
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateImpSet()
 {
-	auto set = make_shared<AnimationSet>("Imp", 30);
+	auto set = make_shared<AnimationSet>("Imp", 32);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -97,7 +98,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateImpSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateDemonStrikerSet()
 {
-	auto set = make_shared<AnimationSet>("DemonStriker", 54);
+	auto set = make_shared<AnimationSet>("DemonStriker", 56);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -150,7 +151,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateDemonStrikerSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateDemonExecutionerSet()
 {
-	auto set = make_shared<AnimationSet>("DemonExecutioner", 90);
+	auto set = make_shared<AnimationSet>("DemonExecutioner", 92);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -195,7 +196,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateDemonExecutionerSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateBigDemonWarriorSet()
 {
-	auto set = make_shared<AnimationSet>("BigDemonWarrior", 118);
+	auto set = make_shared<AnimationSet>("BigDemonWarrior", 120);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -238,7 +239,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateBigDemonWarriorSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateTankSet()
 {
-	auto set = make_shared<AnimationSet>("Tank", 145);
+	auto set = make_shared<AnimationSet>("Tank", 147);
 
 	set->RegisterClip("Idle1", 0, AnimCategory::Base);
 	set->RegisterClip("Idle2", 1, AnimCategory::Base);
@@ -282,7 +283,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateTankSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 {
-	auto set = make_shared<AnimationSet>("Lancer", 174);
+	auto set = make_shared<AnimationSet>("Lancer", 176);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base, 0.05f);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);
@@ -309,7 +310,7 @@ shared_ptr<AnimationSet> AnimationSetFactory::CreateLancerSet()
 
 shared_ptr<AnimationSet> AnimationSetFactory::CreatePaladinSet()
 {
-	auto set = make_shared<AnimationSet>("Paladin", 190);
+	auto set = make_shared<AnimationSet>("Paladin", 192);
 
 	set->RegisterClip("Idle", 0, AnimCategory::Base, 0.05f);
 	set->RegisterClip("Walk", 1, AnimCategory::Base);

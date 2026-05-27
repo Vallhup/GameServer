@@ -21,6 +21,7 @@
 #include "ParryStreakComponent.h"
 #include "EffectManager.h"
 #include "SwordSpecialEffectComponent.h"
+#include "DissolveComponent.h"
 
 #include "NetId.h"
 #include "NetHelper.h"
@@ -55,11 +56,13 @@ void Scene::Update(const float deltaTime)
     }
 
     UpdateScene(deltaTime);
-    
+
+    UpdateDissolves();
+
     // Temporarily test in GameScene Only
     //if (cam)
     //    cam->Update(*coreRef, deltaTime, );
-    
+
     RequestSceneChange();
 }
 
@@ -220,6 +223,9 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	// 검 본 추적 스페셜 이펙트 (쌍검 캐릭터는 본 2개 — CreateCharacterPool에서 설정)
 	character->AddComponent<SwordSpecialEffectComponent>();
 
+	character->AddComponent<DissolveComponent>();
+	DissolveComponent::RegisterNoiseTexture(*coreRef);
+
 	return character;
 }
 
@@ -247,6 +253,9 @@ shared_ptr<GameObject> Scene::CreateMonsterObject(const wstring& meshPath, share
 	blood->SetGravity(0.0f);
 	blood->SetDragHalfLife(0.5f);
 	blood->SetCountPerSlot(5);
+
+	obj->AddComponent<DissolveComponent>();
+	DissolveComponent::RegisterNoiseTexture(*coreRef);
 
 	return obj;
 }
@@ -337,19 +346,26 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 	{
 		auto monster = CreateMonsterObject(desc.meshPath, desc.animFactory, desc.twoSided);
 		monster->GetComponent<Transform>()->SetInitPosition(position);
-		
+
+		if (type == MonsterType::Boss || type == MonsterType::BigDemonWarrior || type == MonsterType::Tank)
+			monster->GetComponent<DissolveComponent>()->UseBossNoise(true);
+
 		if (type == MonsterType::Boss)
 		{
 			EFFECT_MANAGER->PreLoad(L"BloodLance");
 			EFFECT_MANAGER->PreLoad(L"HolySandstorm");
 			EFFECT_MANAGER->PreLoad(L"Sword_Moonlight");
 			EFFECT_MANAGER->PreLoad(L"Sword_Storm");
+			EFFECT_MANAGER->PreLoad(L"Fire");
+			EFFECT_MANAGER->PreLoad(L"PhantasmMeteor_Single");
 
 			auto sfx = monster->AddComponent<AnimationSfxComponent>();
 			sfx->AddEffectTrigger("BloodLance", 79, 81, L"BloodLance");
 			sfx->AddEffectTrigger("HolySandstorm", 0, 2, L"HolySandstorm");
 			sfx->AddEffectTrigger("SwordMoonlight", 0, 2, L"Sword_Moonlight");
 			sfx->AddEffectTrigger("SwordStorm", 0, 2, L"Sword_Storm");
+			sfx->AddEffectTrigger("50per", 30, 32, L"Fire");
+			sfx->AddEffectTrigger("0per", 28, 30, L"PhantasmMeteor_Single");
 		}
 
 		monsterPools[type].push_back(monster);
@@ -406,6 +422,7 @@ void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 		if (auto monster = GetAvailableMonster(monsterIter->second))
 		{
 			monster->SetId(id);
+			if (auto* dis = monster->GetComponent<DissolveComponent>()) dis->Reset();
 			auto transform = monster->GetComponent<Transform>();
 			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
@@ -418,6 +435,7 @@ void Scene::HandleAdd(const Protocol::SC_ADD_PACKET& add)
 		if (auto player = GetAvailableCharacter(charcterIter->second))
 		{
 			player->SetId(id);
+			if (auto* dis = player->GetComponent<DissolveComponent>()) dis->Reset();
 			auto transform = player->GetComponent<Transform>();
 			transform->SetInitPosition(add.x(), add.y(), add.z());
 			transform->SetTargetRotation(add.yaw());
@@ -456,17 +474,11 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 	const NetId nid{ remove.netid() };
 	const int id = nid.GetId();
 
-	OutputDebugStringA(("[SC_REMOVE] recv id=" + to_string(id) + "\n").c_str());
-
 	auto it = activeCharacters.find(id);
 	if (it == activeCharacters.end())
-	{
-		OutputDebugStringA(("[SC_REMOVE] id=" + to_string(id) + " not in activeCharacters (skip)\n").c_str());
 		return;
-	}
 
-	/*it->second->SetId(-1);*/
-
+	// HP바는 즉시 제거
 	if (auto typeIt = activeMonsterTypes.find(id); typeIt != activeMonsterTypes.end())
 	{
 		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
@@ -479,10 +491,25 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 		}
 	}
 
-	/*activeCharacters.erase(it);
-	activeMonsterTypes.erase(id);*/
+	// 시신은 dissolve 시작 — 완료되면 UpdateDissolves가 SetId(-1)+맵 제거로 실제 정리
+	if (auto* dis = it->second->GetComponent<DissolveComponent>())
+		dis->Start();
+}
 
-	OutputDebugStringA(("[SC_REMOVE] removed id=" + to_string(id) + "\n").c_str());
+void Scene::UpdateDissolves()
+{
+	for (auto it = activeCharacters.begin(); it != activeCharacters.end(); )
+	{
+		auto* dis = it->second->GetComponent<DissolveComponent>();
+		if (dis && dis->IsFinished())
+		{
+			it->second->SetId(-1);
+			activeMonsterTypes.erase(it->first);
+			it = activeCharacters.erase(it);
+		}
+		else
+			++it;
+	}
 }
 
 void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)

@@ -32,7 +32,9 @@ cbuffer ObjectCB : register(b1)
     uint splatmap2Index;
     float splatUVScale;
     int splatLayerCount;
-    int3 objPadding;
+    float dissolveAmount;
+    uint dissolveNoiseIndex;
+    int objPadding;
 };
 
 cbuffer AnimationParams : register(b2)

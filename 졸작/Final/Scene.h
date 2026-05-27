@@ -79,6 +79,8 @@ private:
 	void HandleTeamDeathCount(const Protocol::SC_TEAM_DEATH_COUNT_PACKET& deathCount);
 	void HandleMontserCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState);
 
+	void UpdateDissolves();
+
 protected:
 	DX12Core* coreRef = nullptr;
 	SceneManager* sManagerRef = nullptr;
