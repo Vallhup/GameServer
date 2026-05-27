@@ -46,7 +46,16 @@ void Animator::UpdateCurrentAnimation(float deltaTime)
     const auto& animClip = mAnimations[mClipIndex];
 
     if (mUpdateTime >= animClip.duration) {
-        mUpdateTime = 0.0f;
+        if (mLoop) {
+            mUpdateTime = 0.0f;
+        }
+        else {
+            mUpdateTime = animClip.duration;
+            mFrame = animClip.frameCount;
+            mNextFrame = animClip.frameCount;
+            mFrameRatio = 0.0f;
+            return;
+        }
     }
 
     const float framerate = static_cast<float>(animClip.frameCount) / animClip.duration;
@@ -55,8 +64,8 @@ void Animator::UpdateCurrentAnimation(float deltaTime)
     mFrame = static_cast<int32_t>(frameFloat);
     mFrame = max(1, min(mFrame, animClip.frameCount));
 
-    if (mFrame == animClip.frameCount) {
-        mNextFrame = 1;
+    if (mFrame >= animClip.frameCount) {
+        mNextFrame = mLoop ? 1 : animClip.frameCount;
     }
     else {
         mNextFrame = mFrame + 1;

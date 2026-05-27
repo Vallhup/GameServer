@@ -23,9 +23,6 @@ void AnimationMachine::Update(float deltaTime)
             EndCurrentClip();
         }
     }
-
-    // Action/Die 카테고리는 애니메이션 끝나면 Base(Idle)로 복귀
-    // TODO: duration 체크 후 자동 전환 로직
 }
 
 void AnimationMachine::SetAnimationSet(shared_ptr<AnimationSet> set)
@@ -150,4 +147,5 @@ void AnimationMachine::PlayClip(const string& clipName)
     transitionStarted = false;
 
     animator->TransitionToAnimation(clip->index, clip->blendDuration);
+    animator->SetLoop(clip->category != AnimCategory::Die);
 }

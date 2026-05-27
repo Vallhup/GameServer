@@ -465,7 +465,7 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 		return;
 	}
 
-	it->second->SetId(-1);
+	/*it->second->SetId(-1);*/
 
 	if (auto typeIt = activeMonsterTypes.find(id); typeIt != activeMonsterTypes.end())
 	{
@@ -479,8 +479,8 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 		}
 	}
 
-	activeCharacters.erase(it);
-	activeMonsterTypes.erase(id);
+	/*activeCharacters.erase(it);
+	activeMonsterTypes.erase(id);*/
 
 	OutputDebugStringA(("[SC_REMOVE] removed id=" + to_string(id) + "\n").c_str());
 }
