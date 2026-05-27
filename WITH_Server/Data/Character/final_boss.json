@@ -5,7 +5,7 @@
                     "faction":  "Enemy"
                 },
     "stat":  {
-                 "maxHp":  1700,
+                 "maxHp":  170,
                  "maxStamina":  190,
                  "maxPoise":  360,
                  "attackPower":  23,
@@ -36,13 +36,13 @@
     "attributes":  [
                        {
                            "attributeKey":  "Attribute.Hp",
-                           "baseValue":  1700,
-                           "currentValue":  1700
+                           "baseValue":  170,
+                           "currentValue":  170
                        },
                        {
                            "attributeKey":  "Attribute.MaxHp",
-                           "baseValue":  1700,
-                           "currentValue":  1700
+                           "baseValue":  170,
+                           "currentValue":  170
                        },
                        {
                            "attributeKey":  "Attribute.Stamina",

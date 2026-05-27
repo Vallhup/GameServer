@@ -5,7 +5,7 @@
                     "faction":  "Player"
                 },
     "stat":  {
-                 "maxHp":  125,
+                 "maxHp":  12500,
                  "maxStamina":  125,
                  "maxPoise":  85,
                  "attackPower":  14,
@@ -34,13 +34,13 @@
     "attributes":  [
                        {
                            "attributeKey":  "Attribute.Hp",
-                           "baseValue":  125,
-                           "currentValue":  125
+                           "baseValue":  12500,
+                           "currentValue":  12500
                        },
                        {
                            "attributeKey":  "Attribute.MaxHp",
-                           "baseValue":  125,
-                           "currentValue":  125
+                           "baseValue":  12500,
+                           "currentValue":  12500
                        },
                        {
                            "attributeKey":  "Attribute.Stamina",
