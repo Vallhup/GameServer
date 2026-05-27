@@ -17,6 +17,7 @@ struct AnimEffectTrigger
 	int frameHi;
 	wstring effect;
 	bool fired = false;
+	int handle = -1;  
 };
 
 class AnimationSfxComponent : public Component

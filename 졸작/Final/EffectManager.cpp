@@ -151,3 +151,11 @@ void EffectManager::Stop(Effekseer::Handle handle)
 
     manager->StopEffect(handle);
 }
+
+bool EffectManager::Exists(Effekseer::Handle handle) const
+{
+    if (manager == nullptr)
+        return false;
+
+    return manager->Exists(handle);
+}

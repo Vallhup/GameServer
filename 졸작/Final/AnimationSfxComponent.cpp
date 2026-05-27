@@ -47,29 +47,36 @@ void AnimationSfxComponent::Update(float deltaTime)
 		}
 	}
 
+	XMFLOAT3 ownerPos{ 0.0f, 0.0f, 0.0f };
+	XMMATRIX ownerMat = XMMatrixIdentity();
+	if (auto* transform = owner->GetComponent<Transform>())
+	{
+		ownerPos = transform->GetPosition();
+		const XMFLOAT3 rot = transform->GetRotation();
+		ownerMat = XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) * XMMatrixTranslation(ownerPos.x, ownerPos.y, ownerPos.z);
+	}
+
 	for (auto& t : effectTriggers)
 	{
 		const bool inRange = animMachine->IsPlaying(t.clip) && frame >= t.frameLo && frame <= t.frameHi;
 
 		if (inRange && !t.fired)
 		{
-			XMFLOAT3 pos{ 0.0f, 0.0f, 0.0f };
-			XMFLOAT3 rot{ 0.0f, 0.0f, 0.0f };
-			if (auto* transform = owner->GetComponent<Transform>())
-			{
-				pos = transform->GetPosition();
-				rot = transform->GetRotation();
-			}
-
-			Effekseer::Handle h = EFFECT_MANAGER->Play(t.effect, pos);
-			const XMMATRIX mat = XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) * XMMatrixTranslation(pos.x, pos.y, pos.z);
-
-			EFFECT_MANAGER->SetMatrix(h, mat);
+			t.handle = EFFECT_MANAGER->Play(t.effect, ownerPos);
+			EFFECT_MANAGER->SetMatrix(t.handle, ownerMat);
 			t.fired = true;
 		}
 		else if (!inRange)
 		{
 			t.fired = false;
+		}
+
+		if (t.handle != -1)
+		{
+			if (EFFECT_MANAGER->Exists(t.handle))
+				EFFECT_MANAGER->SetMatrix(t.handle, ownerMat);
+			else
+				t.handle = -1;
 		}
 	}
 }
