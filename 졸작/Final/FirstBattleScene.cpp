@@ -227,6 +227,23 @@ void FirstBattleScene::UpdateScene(const float deltaTime)
 		batch->Update(frustum, camPosVec, playerPosVec);
 }
 
+void FirstBattleScene::RequestSceneChange()
+{
+	if (INPUT.GetKeyDown(VK_CAPITAL))
+	{
+		auto& transition = ENGINE.GetWorldTransitionController();
+		const uint32_t requestId = transition.CreateRequestId();
+
+		if (transition.BeginRequest(requestId))
+		{
+			if (!NETWORK_MANAGER->SendWorldTransitionRequestPacket(requestId))
+			{
+				transition.Reset();
+			}
+		}
+	}
+}
+
 void FirstBattleScene::RenderSceneDeferred()
 {
 	auto renderer = sManagerRef->GetSceneRenderer();
