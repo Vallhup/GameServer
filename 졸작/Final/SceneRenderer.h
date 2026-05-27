@@ -30,7 +30,8 @@ public:
 
 private:
     void SetupRenderingState(DX12Core& core, UploadBuffer* instanceBuffer = nullptr);
-    ObjectConstants MakeObjectConstants(const XMMATRIX& world, int hasTexture, int doInstancing, UINT matIndex);
+    ObjectConstants MakeObjectConstants(const XMMATRIX& world, int hasTexture, int doInstancing, UINT matIndex,
+        float dissolveAmount = 0.0f, UINT dissolveNoiseIndex = 0xFFFFFFFF);
 
 private:
     unique_ptr<UploadBuffer> objectCBPool;

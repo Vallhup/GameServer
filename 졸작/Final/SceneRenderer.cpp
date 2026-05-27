@@ -12,6 +12,7 @@
 #include "Terrain.h"
 #include "Water.h"
 #include "InstancingBatch.h"
+#include "DissolveComponent.h"
 
 void SceneRenderer::Initialize(ID3D12Device* device)
 {
@@ -75,6 +76,14 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
         auto transform = obj->GetComponent<Transform>();
         XMMATRIX world = XMMatrixTranspose(transform->GetWorldMatrix());
 
+        float dissolveAmount = 0.0f;
+        UINT dissolveNoise = 0xFFFFFFFF;
+        if (auto* dis = obj->GetComponent<DissolveComponent>(); dis && dis->IsActive())
+        {
+            dissolveAmount = dis->GetAmount();
+            dissolveNoise = dis->GetNoiseIndex();
+        }
+
         mesh->GetVertexIndexBuffer()->Bind(cmdList);
 
         if (mesh->HasMultiMaterial())
@@ -85,7 +94,7 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
 
             for (size_t i = 0; i < subMeshes.size(); ++i)
             {
-                auto objConst = MakeObjectConstants(world, 1, 0, materials[i]->GetMaterialIndex());
+                auto objConst = MakeObjectConstants(world, 1, 0, materials[i]->GetMaterialIndex(), dissolveAmount, dissolveNoise);
                 size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
                 objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
                 cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
@@ -97,7 +106,7 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
         else
         {
             UINT matIndex = mesh->GetMaterial() ? mesh->GetMaterial()->GetMaterialIndex() : 0;
-            auto objConst = MakeObjectConstants(world, 1, 0, matIndex);
+            auto objConst = MakeObjectConstants(world, 1, 0, matIndex, dissolveAmount, dissolveNoise);
             size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
             objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
             cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
@@ -196,6 +205,14 @@ void SceneRenderer::RenderShadowDynamic(DX12Core& core, const vector<shared_ptr<
         auto transform = obj->GetComponent<Transform>();
         XMMATRIX world = XMMatrixTranspose(transform->GetWorldMatrix());
 
+        float dissolveAmount = 0.0f;
+        UINT dissolveNoise = 0xFFFFFFFF;
+        if (auto* dis = obj->GetComponent<DissolveComponent>(); dis && dis->IsActive())
+        {
+            dissolveAmount = dis->GetAmount();
+            dissolveNoise = dis->GetNoiseIndex();
+        }
+
         mesh->GetVertexIndexBuffer()->Bind(cmdList);
 
         if (mesh->HasMultiMaterial())
@@ -205,7 +222,7 @@ void SceneRenderer::RenderShadowDynamic(DX12Core& core, const vector<shared_ptr<
 
             for (size_t i = 0; i < subMeshes.size(); ++i)
             {
-                auto objConst = MakeObjectConstants(world, 0, 0, materials[i]->GetMaterialIndex());
+                auto objConst = MakeObjectConstants(world, 0, 0, materials[i]->GetMaterialIndex(), dissolveAmount, dissolveNoise);
                 size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
                 objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
                 cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
@@ -217,7 +234,7 @@ void SceneRenderer::RenderShadowDynamic(DX12Core& core, const vector<shared_ptr<
         else
         {
             UINT matIndex = mesh->GetMaterial() ? mesh->GetMaterial()->GetMaterialIndex() : 0;
-            auto objConst = MakeObjectConstants(world, 0, 0, matIndex);
+            auto objConst = MakeObjectConstants(world, 0, 0, matIndex, dissolveAmount, dissolveNoise);
             size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
             objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
             cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
@@ -368,12 +385,15 @@ void SceneRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBu
     }
 }
 
-ObjectConstants SceneRenderer::MakeObjectConstants(const XMMATRIX& world, int hasTexture, int doInstancing, UINT matIndex)
+ObjectConstants SceneRenderer::MakeObjectConstants(const XMMATRIX& world, int hasTexture, int doInstancing, UINT matIndex,
+    float dissolveAmount, UINT dissolveNoiseIndex)
 {
     ObjectConstants obj = {};
     obj.world = world;
     obj.useTexture = hasTexture;
     obj.useInstancing = doInstancing;
     obj.materialIndex = matIndex;
+    obj.dissolveAmount = dissolveAmount;
+    obj.dissolveNoiseIndex = dissolveNoiseIndex;
     return obj;
 }

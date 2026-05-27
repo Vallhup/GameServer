@@ -96,6 +96,7 @@ void SecondBattleScene::InitializeSceneEnvironments()
 	terrain = make_shared<Terrain>();
 	terrain->Initialize(*coreRef, L"CastleMap/textures/CastleFloor", L"../Assets/FBXModel/CastleMap/castleTerrain.raw", 513, 650.2402f, 79.28662f, 8.0f);
 	terrain->LoadSplatmap(*coreRef, L"../Assets/FBXModel/CastleMap/terrainAtlas.bin", L"../Assets/FBXModel/CastleMap/textures/");
+	cam->SetTerrain(terrain.get());
 #pragma endregion
 
 #pragma region Initialize Water
@@ -304,7 +305,7 @@ const BeaconCinematicConfig& SecondBattleScene::GetCinematicConfig() const
 		.riseVerticalRatio = 0.5f,                                
 		.fadeDur         = 1.0f,
 		.riseDur         = 6.0f,
-		.growDur         = 1.5f,
+		.growDur         = 1.0f,
 		.brightenDur     = 2.5f,
 		.showcaseHoldDur = 8.0f,
 		.beaconBaseSize  = 4.0f,

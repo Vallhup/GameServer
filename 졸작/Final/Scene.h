@@ -79,6 +79,8 @@ private:
 	void HandleTeamDeathCount(const Protocol::SC_TEAM_DEATH_COUNT_PACKET& deathCount);
 	void HandleMontserCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState);
 
+	void UpdateDissolves();
+
 protected:
 	DX12Core* coreRef = nullptr;
 	SceneManager* sManagerRef = nullptr;
@@ -125,14 +127,18 @@ void Scene::CreateAndBatchObjects(const wstring& path, const T(&data)[N], vector
 	batch->SetTwoSided(data[0].twoSided);
 	batch->SetVertexAnim(data[0].vertexAnim);
 
-	if (path.find(L"SM_Mountain_A") != wstring::npos ||
+	const bool isMountain = path.find(L"SM_Mountain_A") != wstring::npos ||
 		path.find(L"SM_Mountain_B") != wstring::npos ||
-		path.find(L"SM_Mountain_C") != wstring::npos)
+		path.find(L"SM_Mountain_C") != wstring::npos;
+	if (isMountain)
 		batch->SetTerrainBlend(true);
 
 	for (int i = 0; i < N; ++i)
 	{
 		auto obj = CreateStaticMesh(path, data[i]);
+
+		if (isMountain)
+			obj->SetObstructsCamera(false);
 
 		if (i == 0)
 		{
@@ -157,14 +163,18 @@ void Scene::CreateAndBatchObjects(const wstring& path, const vector<T>& data, ve
 	batch->SetTwoSided(data[0].twoSided);
 	batch->SetVertexAnim(data[0].vertexAnim);
 
-	if (path.find(L"SM_Mountain_A") != wstring::npos ||
+	const bool isMountain = path.find(L"SM_Mountain_A") != wstring::npos ||
 		path.find(L"SM_Mountain_B") != wstring::npos ||
-		path.find(L"SM_Mountain_C") != wstring::npos)
+		path.find(L"SM_Mountain_C") != wstring::npos;
+	if (isMountain)
 		batch->SetTerrainBlend(true);
 
 	for (size_t i = 0; i < data.size(); ++i)
 	{
 		auto obj = CreateStaticMesh(path, data[i]);
+
+		if (isMountain)
+			obj->SetObstructsCamera(false);
 
 		if (i == 0)
 		{

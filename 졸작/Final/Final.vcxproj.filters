@@ -232,6 +232,9 @@
     <ClCompile Include="FootDustComponent.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
+    <ClCompile Include="DissolveComponent.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
     <ClCompile Include="FlameComponent.cpp">
       <Filter>Effect</Filter>
     </ClCompile>
@@ -517,6 +520,9 @@
       <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
     </ClInclude>
     <ClInclude Include="FootDustComponent.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="DissolveComponent.h">
       <Filter>Effect</Filter>
     </ClInclude>
     <ClInclude Include="FlameComponent.h">

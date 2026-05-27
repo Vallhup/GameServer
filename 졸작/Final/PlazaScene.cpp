@@ -86,6 +86,7 @@ void PlazaScene::InitializeSceneEnvironments()
 	terrain = make_shared<Terrain>();
 	terrain->Initialize(*coreRef, L"PlazaMap/textures/plazaFloor", L"../Assets/FBXModel/PlazaMap/plazaTerrain.raw", 513, 1016.0f, 27.01563f, 1.0f);
 	terrain->LoadSplatmap(*coreRef, L"../Assets/FBXModel/PlazaMap/terrainAtlas.bin", L"../Assets/FBXModel/PlazaMap/textures/");
+	cam->SetTerrain(terrain.get());
 #pragma endregion
 }
 
@@ -106,13 +107,11 @@ void PlazaScene::UpdateScene(const float deltaTime)
 	if (effectObjects.size() > 4 && INPUT.GetKeyDown('5'))
 		effectObjects[4]->GetComponent<EffectRenderer>()->PlayEffect();
 
-	if (effectObjects.size() > 5 && INPUT.GetKeyDown('6')) {
+	if (effectObjects.size() > 5 && INPUT.GetKeyDown('6'))
 		effectObjects[5]->GetComponent<EffectRenderer>()->PlayEffect();
-		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
-	}
 
 	if (effectObjects.size() > 6 && INPUT.GetKeyDown('7'))
-		effectObjects[7]->GetComponent<EffectRenderer>()->PlayEffect();
+		effectObjects[6]->GetComponent<EffectRenderer>()->PlayEffect();
 
 	if (myPlayer)	// Temporary Code for Player Centered Shadow Mapping
 	{
@@ -221,7 +220,7 @@ void PlazaScene::RenderSceneDeferred()
 		batch->Render(*coreRef, renderer);
 	}
 
-	/*static bool hitOn = false;
+	static bool hitOn = false;
 
 	if (INPUT.GetKeyDown('1'))
 		hitOn = !hitOn;
@@ -254,7 +253,7 @@ void PlazaScene::RenderSceneDeferred()
 					obj->RenderDebugBoundingBox(*coreRef, { 0, 1, 1, 1 });
 			}
 		}
-	}*/
+	}
 }
 
 void PlazaScene::RenderSceneForward()
@@ -317,13 +316,12 @@ void PlazaScene::CreateEffectSamples()
 
 	vector<EffectInfo> info = {
 		{u"Fireworks", 484.607025f, 6.f, 481.862946f},
-		{u"BloodLance", 484.607025f, 6.f, 481.862946f},
-		{u"Aura01_HDR2", 484.607025f, 6.f, 481.862946f},
-		{u"Benediction", 484.607025f, 10.f, 481.862946f},
-		{u"Atmosphere", 484.607025f, 10.f, 481.862946f},
-		{u"CandleFire5", 484.607025f, 6.f, 481.862946f},
-		{u"CandleFire5", 475.607025f, 6.f, 481.862946f},
-		{u"Dissolve", 484.607025f, 6.f, 481.862946f}
+		{u"BloodLance", 484.607025f, 7.3f, 481.862946f},
+		{u"HolySandstorm", 484.607025f, 7.3f, 481.862946f},
+		{u"Sword_Moonlight", 484.607025f, 7.3f, 481.862946f},
+		{u"Sword_Storm", 484.607025f, 7.3f, 481.862946f},
+		{u"PhantasmMeteor_Single", 484.607025f, 7.3f, 481.862946f},
+		{u"Fire", 484.607025f, 7.3f, 481.862946f},
 	};
 
 	for (int i = 0; i < info.size(); ++i)

@@ -9,7 +9,7 @@ struct CachedInstanceData
 {
 	XMMATRIX worldMatrix;
 	XMFLOAT3 position;
-	BoundingBox boundingBox;
+	BoundingOrientedBox boundingBox;
 	float cullDistance;
 	bool needDistanceCull;
 };

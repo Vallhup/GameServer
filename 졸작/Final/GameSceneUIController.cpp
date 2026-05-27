@@ -23,6 +23,7 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitInteractPrompt();
 	InitStatueWindow();
 	InitMonsterHpBars();
+	InitBossHpBar();
 	InitBeaconWindow();
 	InitLocalPlayerHUD();
 	InitMapNameOverlay();
@@ -72,11 +73,64 @@ void GameSceneUIController::InitLocalPlayerHUD()
 	localCharStaminaBar->SetVertLength(WinSize.y * 0.00626f);
 	widgets.push_back(localCharStaminaBar);
 
-	localCharPotion = make_shared<ImageUI>(uiManager, L"Potion", ImageUIState::Visible);
+	const bool showPotion = (sceneType != SceneType::Plaza);
+
+	localCharPotion = make_shared<ImageUI>(uiManager, L"Potion",
+		showPotion ? ImageUIState::Visible : ImageUIState::Hidden);
 	localCharPotion->SetPosition(WinSize.x * 0.023f, WinSize.y * 0.75f);
 	localCharPotion->SetHoriLength(WinSize.y * 0.2176f);
 	localCharPotion->SetVertLength(WinSize.y * 0.1952f);
 	widgets.push_back(localCharPotion);
+
+	localCharPotionCount = make_shared<TextUI>(uiManager, L"PotionCount", L"VerdanaBold");
+	const float potionLeft = WinSize.x * 0.023f;
+	const float potionTop = WinSize.y * 0.75f;
+	const float potionW = WinSize.y * 0.2176f;
+	const float potionH = WinSize.y * 0.1952f;
+	const float potionScale = WinSize.y / 1080.0f * 0.5f;
+	localCharPotionCount->SetScale(potionScale);
+	localCharPotionCount->SetTextColor(Colors::Orange);
+	localCharPotionCount->SetPosition(
+		potionLeft + potionW * 0.75f - 22.5f * potionScale,
+		potionTop + potionH * 0.801f - 27.0f * potionScale);
+	localCharPotionCount->SetText(showPotion ? L"0" : L"");
+	widgets.push_back(localCharPotionCount);
+
+	const float deathW = WinSize.y * 0.034f;   
+	const float deathH = WinSize.y * 0.038f;
+	const float deathLeft = WinSize.x * 0.08f;
+	const float deathTop = WinSize.y * 0.11f;
+
+	localCharDeathCount = make_shared<ImageUI>(uiManager, L"DeathCount",
+		showPotion ? ImageUIState::Visible : ImageUIState::Hidden);
+	localCharDeathCount->SetPosition(deathLeft, deathTop);
+	localCharDeathCount->SetHoriLength(deathW);
+	localCharDeathCount->SetVertLength(deathH);
+	widgets.push_back(localCharDeathCount);
+
+	localCharDeathCountText = make_shared<TextUI>(uiManager, L"DeathCountText", L"VerdanaBold");
+	const float deathScale = WinSize.y / 1080.0f * 0.6f;
+	localCharDeathCountText->SetScale(deathScale);
+	localCharDeathCountText->SetTextColor(Colors::Red);
+	localCharDeathCountText->SetPosition(
+		deathLeft + deathW * 0.85f,
+		deathTop + deathH * 0.5f - 27.0f * deathScale);
+	localCharDeathCountText->SetText(L"");
+	widgets.push_back(localCharDeathCountText);
+}
+
+void GameSceneUIController::SetPotionCount(uint32_t count)
+{
+	if (!localCharPotionCount) return;
+	if (sceneType == SceneType::Plaza) return;
+	localCharPotionCount->SetText(to_wstring(count));
+}
+
+void GameSceneUIController::SetDeathCount(uint32_t death, uint32_t max)
+{
+	if (!localCharDeathCountText) return;
+	if (sceneType == SceneType::Plaza) return;
+	localCharDeathCountText->SetText(L" x " + to_wstring(death));
 }
 
 void GameSceneUIController::InitMapNameOverlay()
@@ -758,7 +812,13 @@ void GameSceneUIController::UpdateJoinRequestPopup(float deltaTime)
 
 		wstring text = L"Party Join Request\n";
 		text += L"ID: " + std::to_wstring(active->requestersessionid()) + L"\n";
-		text += L"Class: -";
+		const CharacterType reqClass = static_cast<CharacterType>(active->requestercharactertype());
+		const wchar_t* className =
+			(reqClass == CharacterType::Lancer) ? L"Lancer" :
+			(reqClass == CharacterType::Paladin) ? L"Paladin" :
+													L"Knight";
+		text += L"Class: " + wstring(className) + L"\n";
+
 		joinRequestText->SetText(text);
 
 		joinRequestWindow->ChangeState(ImageUIState::Visible);
@@ -1110,12 +1170,76 @@ void GameSceneUIController::HandlePartyMemberHp(int id, int cur, int max)
 
 void GameSceneUIController::HandleMonsterHp(int id, GameObject* obj, int cur, int max)
 {
-	if (!obj || max <= 0 || cur <= 0)   
+	if (!obj || max <= 0)
 	{
 		monsterHpTargets.erase(id);
 		return;
 	}
-	monsterHpTargets[id] = { obj, clamp(static_cast<float>(cur) / max, 0.0f, 1.0f) };
+	// cur<=0(사망)이어도 바 유지 — SC_REMOVE 수신 시 제거됨.
+	auto& t = monsterHpTargets[id];
+	t.obj = obj;
+	t.hpPercent = clamp(static_cast<float>(cur) / max, 0.0f, 1.0f);
+}
+
+void GameSceneUIController::SetMonsterCombatState(int id, bool inCombat)
+{
+	monsterHpTargets[id].inCombat = inCombat;
+}
+
+void GameSceneUIController::RemoveMonsterBar(int id)
+{
+	monsterHpTargets.erase(id);
+}
+
+void GameSceneUIController::InitBossHpBar()
+{
+	constexpr float BARBACK_ASPECT     = 39.0f / 785.0f;
+	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;
+	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;
+	constexpr float HPBAR_OFFSET_X     = 49.0f / 785.0f;
+	constexpr float HPBAR_OFFSET_Y     = 11.0f / 39.0f;
+
+	const float backW = WinSize.x * 0.55f;
+	const float backH = backW * BARBACK_ASPECT * 0.6f;  
+	const float backX = (WinSize.x - backW) * 0.5f;
+	const float backY = WinSize.y * 0.77f;         
+
+	bossBarBack = make_shared<ImageUI>(uiManager, L"BarBack", ImageUIState::Hidden);
+	bossBarBack->SetPosition(backX, backY);
+	bossBarBack->SetHoriLength(backW);
+	bossBarBack->SetVertLength(backH);
+	widgets.push_back(bossBarBack);
+
+	bossBarFullW = backW * HPBAR_WIDTH_RATIO;
+	bossBar = make_shared<ImageUI>(uiManager, L"HpBar2", ImageUIState::Hidden);
+	bossBar->SetPosition(backX + backW * HPBAR_OFFSET_X, backY + backH * HPBAR_OFFSET_Y);
+	bossBar->SetHoriLength(bossBarFullW);
+	bossBar->SetVertLength(backH * HPBAR_HEIGHT_RATIO);
+	widgets.push_back(bossBar);
+}
+
+void GameSceneUIController::HandleBossHp(int cur, int max)
+{
+	if (max <= 0) return;   // 잘못된 데이터만 무시
+
+	bossHpPercent = clamp(static_cast<float>(cur) / max, 0.0f, 1.0f);
+	if (bossBar)
+		bossBar->SetHoriLength(bossBarFullW * bossHpPercent);
+}
+
+void GameSceneUIController::SetBossCombatState(bool inCombat)
+{
+	bossInCombat = inCombat;
+	const ImageUIState state = inCombat ? ImageUIState::Visible : ImageUIState::Hidden;
+	if (bossBarBack) bossBarBack->ChangeState(state);
+	if (bossBar)     bossBar->ChangeState(state);
+}
+
+void GameSceneUIController::RemoveBossHpBar()
+{
+	bossInCombat = false;
+	if (bossBarBack) bossBarBack->ChangeState(ImageUIState::Hidden);
+	if (bossBar)     bossBar->ChangeState(ImageUIState::Hidden);
 }
 
 void GameSceneUIController::UpdateMonsterHpBars()
@@ -1149,13 +1273,14 @@ void GameSceneUIController::UpdateMonsterHpBars()
 		for (const auto& [id, target] : monsterHpTargets)
 		{
 			if (used >= MAX_MONSTER_HP_BARS) break;
-			if (!target.obj || target.obj->GetId() == -1) continue;   
+			if (!target.obj || target.obj->GetId() == -1) continue;
+			if (!target.inCombat) continue;
 
 			auto* tf = target.obj->GetComponent<Transform>();
 			if (!tf) continue;
 
 			const XMFLOAT3& pos = tf->GetPosition();
-			const BoundingBox& box = target.obj->GetWorldBoundingBox();
+			const BoundingOrientedBox& box = target.obj->GetWorldBoundingBox();
 			const XMFLOAT3 head{ pos.x, box.Center.y + box.Extents.y, pos.z };
 
 			const XMFLOAT3 headRight{
@@ -1201,7 +1326,7 @@ void GameSceneUIController::InitInteractPrompt()
 	interactCircle = make_shared<ImageUI>(uiManager, L"MagicCircle", ImageUIState::Hidden);
 	widgets.push_back(interactCircle);
 
-	interactScale = (sceneType == SceneType::Village) ? 0.7f : 1.0f;
+	interactScale = 0.7f;   // First/Second 등 전 씬 동일 크기
 
 	interactKeyText = make_shared<TextUI>(uiManager, L"InteractKey", L"VerdanaBold");
 	interactKeyText->SetText(L"");
@@ -1454,6 +1579,9 @@ void GameSceneUIController::HideHudForCinematic()
 	hide(localCharHpBar);
 	hide(localCharStaminaBar);
 	hide(localCharPotion);
+	if (localCharPotionCount) localCharPotionCount->SetText(L"");
+	hide(localCharDeathCount);
+	if (localCharDeathCountText) localCharDeathCountText->SetText(L"");
 
 	hide(statusBackImage); hide(statusCharImage); hide(statusImage);
 	hide(statusRibbon); hide(statusArrowLeft); hide(statusArrowRight);

@@ -11,6 +11,12 @@ void PSMain(SHADOW_PS_IN input)
     {
         finalAlpha = bindlessTextures[NonUniformResourceIndex(material.alphaTexIndex)].SampleLevel(linearSampler, input.uv, 0).r;
     }
-    
+
     clip(finalAlpha - 0.01f);
+    
+    if (dissolveAmount > 0.0f && dissolveNoiseIndex != 0xFFFFFFFF)
+    {
+        float n = bindlessTextures[NonUniformResourceIndex(dissolveNoiseIndex)].SampleLevel(linearSampler, input.uv, 0).r;
+        clip(n - dissolveAmount);
+    }
 }

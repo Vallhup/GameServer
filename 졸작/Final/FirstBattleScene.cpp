@@ -96,6 +96,7 @@ void FirstBattleScene::InitializeSceneEnvironments()
 	terrain = make_shared<Terrain>();
 	terrain->Initialize(*coreRef, L"../Assets/FBXModel/VillageMap/ground", L"../Assets/FBXModel/VillageMap/villageTerrain.raw", 513, 1023.0f, 159.4766f, 2.0f);
 	terrain->LoadSplatmap(*coreRef, L"../Assets/FBXModel/VillageMap/terrainAtlas.bin", L"../Assets/FBXModel/VillageMap/textures/");
+	cam->SetTerrain(terrain.get());
 #pragma endregion
 
 #pragma region Initialize Ocean Floor
@@ -311,7 +312,7 @@ const BeaconCinematicConfig& FirstBattleScene::GetCinematicConfig() const
 		.riseVerticalRatio = 1.0f,
 		.fadeDur         = 1.0f,
 		.riseDur         = 6.0f,
-		.growDur         = 1.5f,
+		.growDur         = 1.0f,
 		.brightenDur     = 2.5f,
 		.showcaseHoldDur = 8.0f,
 		.beaconBaseSize  = 2.0f,

@@ -98,9 +98,8 @@ void GameObject::RenderDebugBoundingBox(DX12Core& core, const XMFLOAT4& color)
 
 bool GameObject::IsInFrustum(const BoundingFrustum& frustum) const
 {
-    BoundingBox worldBox = GetWorldBoundingBox();
+    BoundingOrientedBox worldBox = GetWorldBoundingBox();
 
-    // SAFETY FOR: EFFECTS / CAMERA / VIRTUAL OBJECTS
     if (worldBox.Extents.x <= 0.0f)
         return true;
 
@@ -122,6 +121,6 @@ bool GameObject::IsInRange(const XMVECTOR& camPos) const
 
 bool GameObject::IsVisible(const BoundingFrustum& frustum, const XMVECTOR& camPos) const
 {
-    if (!IsInRange(camPos)) return false;   // First check: should distance cull or not
-    return IsInFrustum(frustum);            // Second check: is in frustum?
+    if (!IsInRange(camPos)) return false;   
+    return IsInFrustum(frustum);            
 }

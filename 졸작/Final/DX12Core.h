@@ -25,7 +25,9 @@ struct ObjectConstants
 	UINT splatmap2Index = 0xFFFFFFFF;
 	float splatUVScale = 0.0f;
 	int splatLayerCount = 0;
-	int objPadding[3];
+	float dissolveAmount = 0.0f;          // 0=온전, 1=완전 분해
+	UINT dissolveNoiseIndex = 0xFFFFFFFF; // bindless 노이즈 인덱스(미사용 시 0xFFFFFFFF)
+	int objPadding;
 };
 
 struct FogConstants

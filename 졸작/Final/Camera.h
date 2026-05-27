@@ -4,6 +4,7 @@ class DX12Core;
 class GameObject;
 class MainCharacter;
 class InstancingBatch;
+class Terrain;
 
 class Camera
 {
@@ -32,6 +33,8 @@ public:
 
 	void SetCameraPosition(const XMFLOAT3& pos);
 
+	void SetTerrain(const Terrain* t) { terrain = t; }
+
 	void SetCinematicView(DX12Core& core, const XMFLOAT3& eye, const XMFLOAT3& lookAt);
 	void SetCursor(bool in);
 	void ReleaseMouse();
@@ -47,6 +50,9 @@ private:
 
 	void UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneObjects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const shared_ptr<MainCharacter>& myPlayer);
 	bool CheckObstruction(const vector<shared_ptr<GameObject>>& objects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const XMFLOAT3& targetPos, float& adjustedDistance, const shared_ptr<MainCharacter>& myPlayer);
+	
+	void TestObjectObstruction(const shared_ptr<GameObject>& obj, FXMVECTOR rayOrigin, FXMVECTOR rayDir, float maxDistance, float& closestDistance, bool& foundObstruction);
+	static bool RayTriangleNearest(const vector<XMFLOAT3>& positions, const vector<UINT>& indices, FXMVECTOR origin, FXMVECTOR dir, float maxDistance, float& outDist);
 
 	void ChangeCursorInfo(bool in);
 
@@ -71,11 +77,13 @@ private:
 	bool spacePressed = false;
 
 	static constexpr float MOUSE_SENSITIVITY = 0.1f;
-	static constexpr float CAMERA_FOLLOW_SPEED = 40.0f;		
-	static constexpr float TARGET_FOLLOW_SPEED = 4.0f;		
+	static constexpr float CAMERA_FOLLOW_SPEED = 40.0f;
+	static constexpr float TARGET_FOLLOW_SPEED = 4.0f;
+	static constexpr float TERRAIN_CLEARANCE = 0.001f;   
 
-	float desiredDistance;   
-	float currentDistance;   
+	float desiredDistance;
+	float currentDistance;
+	float zoomDistance;       
 	float minDistance = 0.5f;
 	float maxDistance = 4.5f;
 	float zoomSpeedPerNotch = 0.25f;    
@@ -91,4 +99,6 @@ private:
 	float lutBlendFactor = 1.0f;
 	float lutTransitionSpeed = 2.0f;
 	float toneSaturationFactor = 0.85f;
+
+	const Terrain* terrain = nullptr;
 };

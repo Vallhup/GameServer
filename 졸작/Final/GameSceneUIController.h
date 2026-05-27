@@ -9,7 +9,7 @@ class GameObject;
 
 enum class PartyView { Lobby, Created };
 
-struct MonsterBarTarget { GameObject* obj = nullptr; float hpPercent = 1.0f; };
+struct MonsterBarTarget { GameObject* obj = nullptr; float hpPercent = 1.0f; bool inCombat = false; };
 
 class GameSceneUIController : public UIController
 {
@@ -27,7 +27,18 @@ public:
 
 	void SetLocalCharacterType(CharacterType type);
 	void HandleMonsterHp(int id, GameObject* obj, int cur, int max);
+	void SetMonsterCombatState(int id, bool inCombat);
+	void RemoveMonsterBar(int id);
+
+	void InitBossHpBar();
+	void HandleBossHp(int cur, int max);
+	void SetBossCombatState(bool inCombat);
+	void RemoveBossHpBar();
+
 	void HandlePartyMemberHp(int id, int cur, int max);
+
+	void SetPotionCount(uint32_t count);
+	void SetDeathCount(uint32_t death, uint32_t max);
 
 	void ShowMapName();
 
@@ -81,11 +92,20 @@ private:
 	shared_ptr<ImageUI> localCharHpBar;
 	shared_ptr<ImageUI> localCharStaminaBar;
 	shared_ptr<ImageUI> localCharPotion;
+	shared_ptr<TextUI>  localCharPotionCount;
+	shared_ptr<ImageUI> localCharDeathCount;
+	shared_ptr<TextUI>  localCharDeathCountText;
 
 	unordered_map<int, MonsterBarTarget> monsterHpTargets;
 	vector<shared_ptr<ImageUI>> monsterBarBacks;
 	vector<shared_ptr<ImageUI>> monsterBars;
 	static constexpr int MAX_MONSTER_HP_BARS = 16;
+
+	shared_ptr<ImageUI> bossBarBack;
+	shared_ptr<ImageUI> bossBar;
+	float bossBarFullW = 0.0f;
+	float bossHpPercent = 1.0f;
+	bool bossInCombat = false;
 
 	shared_ptr<ImageUI> mapNameImage;  
 

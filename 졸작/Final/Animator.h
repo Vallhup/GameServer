@@ -47,6 +47,9 @@ public:
     float GetAnimationSpeed() const { return animationSpeed; }
     void SetAnimationSpeed(float speed) { animationSpeed = speed; }
 
+    void SetLoop(bool loop) { mLoop = loop; }
+    bool IsLooping() const { return mLoop; }
+
     float GetAnimationProgress() const;
     int GetCurrentFrame() const { return mFrame; }
     int GetFrameCount() const;
@@ -106,6 +109,7 @@ private:
     bool mIsBlending = false;
 
     float animationSpeed = 1.0f;
+    bool mLoop = true;
 
     //----------------------------------------
     // CPU Animation
