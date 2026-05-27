@@ -304,7 +304,7 @@ const BeaconCinematicConfig& SecondBattleScene::GetCinematicConfig() const
 		.riseVerticalRatio = 0.5f,                                
 		.fadeDur         = 1.0f,
 		.riseDur         = 6.0f,
-		.growDur         = 1.5f,
+		.growDur         = 1.0f,
 		.brightenDur     = 2.5f,
 		.showcaseHoldDur = 8.0f,
 		.beaconBaseSize  = 4.0f,

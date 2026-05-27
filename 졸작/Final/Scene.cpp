@@ -456,13 +456,33 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 	const NetId nid{ remove.netid() };
 	const int id = nid.GetId();
 
+	OutputDebugStringA(("[SC_REMOVE] recv id=" + to_string(id) + "\n").c_str());
+
 	auto it = activeCharacters.find(id);
 	if (it == activeCharacters.end())
+	{
+		OutputDebugStringA(("[SC_REMOVE] id=" + to_string(id) + " not in activeCharacters (skip)\n").c_str());
 		return;
+	}
 
-	it->second->SetId(-1);            
+	it->second->SetId(-1);
+
+	if (auto typeIt = activeMonsterTypes.find(id); typeIt != activeMonsterTypes.end())
+	{
+		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
+		{
+			const MonsterType mt = typeIt->second;
+			if (mt == MonsterType::Boss || mt == MonsterType::BigDemonWarrior || mt == MonsterType::Tank)
+				controller->RemoveBossHpBar();
+			else
+				controller->RemoveMonsterBar(id);
+		}
+	}
+
 	activeCharacters.erase(it);
 	activeMonsterTypes.erase(id);
+
+	OutputDebugStringA(("[SC_REMOVE] removed id=" + to_string(id) + "\n").c_str());
 }
 
 void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
@@ -610,12 +630,24 @@ void Scene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
 void Scene::HandleItemCount(const Protocol::SC_ITEM_COUNT_PACKET& itemCount)
 {
 	uint32_t hpPotionCount = itemCount.hppotioncount();
+
+	auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>();
+	if (!controller) return;
+
+	controller->SetPotionCount(hpPotionCount);
 }
 
 void Scene::HandleTeamDeathCount(const Protocol::SC_TEAM_DEATH_COUNT_PACKET& deathCount)
 {
 	uint32_t deathCnt = deathCount.deathcount();
 	uint32_t maxDeathCount = deathCount.maxdeathcount();
+
+	auto* ui = ENGINE.GetUIManager();
+	for (SceneType st : { SceneType::Village, SceneType::Castle, SceneType::Final })
+	{
+		if (auto* c = ui->GetController<GameSceneUIController>(st))
+			c->SetDeathCount(deathCnt, maxDeathCount);
+	}
 }
 
 void Scene::HandleMontserCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState)
