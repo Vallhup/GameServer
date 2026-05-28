@@ -77,6 +77,9 @@ cbuffer ShadowFrameCB : register(b5)
 {
     matrix lightVP[3];
     float4 cascadeSplit;
+    float shadowAmbientMin;
+    float shadowFloor;
+    float2 shadowPad;
 };
 
 cbuffer FogConstants : register(b6)

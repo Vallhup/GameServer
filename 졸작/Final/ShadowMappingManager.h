@@ -6,6 +6,9 @@ struct CascadeShadowConstants
 {
 	XMMATRIX lightVP[3];	// 3 cascade levels
 	XMFLOAT4 cascadeSplit;	// 4 cascade ranges
+	float shadowAmbientMin;	// IBL ambient 배율 하한 (shadow=0일 때), 1.0이면 중첩 없음
+	float shadowFloor;		// shadow 값 하한, 0이면 원본 그대로, 0보다 크면 그림자 옅어짐
+	XMFLOAT2 shadowPad;
 };
 
 class ShadowMappingManager
@@ -22,6 +25,10 @@ public:
 	UINT GetShadowMapSize() const { return SHADOW_MAP_SIZE; }
 	UploadBuffer* GetCsmCB() const { return csmConstantBuffer.get(); }
 	bool IsCascadeDirty(int i) const { return cascadeDirty[i]; }
+
+	// For ImGui
+	CascadeShadowConstants& GetCsmConstants() { return csmConstants; }
+	void UploadCsmConstants() { csmConstantBuffer->CopyData(&csmConstants, sizeof(CascadeShadowConstants)); }
 
 	// Static caster cache (cascade 2 전용, single slice)
 	ID3D12Resource* GetStaticCsmResource() const { return staticCsmTexture.Get(); }

@@ -8,6 +8,7 @@
 #include "MainCharacter.h"
 #include "Animator.h"
 #include "LightManager.h"
+#include "ShadowMappingManager.h"
 #include "SSAO.h"
 #include "SkyBox.h"
 #include "Camera.h"
@@ -103,6 +104,7 @@ void ImGuiManager::DrawDebugUI()
             ImGui::Checkbox("SSAO Editor", &showSsaoEditor);
             ImGui::Checkbox("Skybox Editor", &showSkyboxEditor);
             ImGui::Checkbox("Volumetric Fog Editor", &showVolumetricFogEditor);
+            ImGui::Checkbox("Shadow Editor", &showShadowEditor);
             ImGui::Checkbox("LUT Presets", &showLutPresets);
             ImGui::Checkbox("Demo Window", &showDemoWindow);
         }
@@ -246,6 +248,29 @@ void ImGuiManager::DrawDebugUI()
                 vf.lightColor = { 1.0f, 1.0f, 1.0f };
                 vf.lightIntensity = 1.0f;
                 coreRef->UpdateVolumetricFog();
+            }
+        }
+        ImGui::End();
+    }
+
+    if (showShadowEditor && coreRef)
+    {
+        ImGui::SetNextWindowPos(ImVec2(650, 140), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(280, 100), ImGuiCond_FirstUseEver);
+
+        if (ImGui::Begin("Shadow Editor", &showShadowEditor))
+        {
+            auto* sm = coreRef->GetShadowMgr();
+            if (sm)
+            {
+                auto& cs = sm->GetCsmConstants();
+                bool changed = false;
+                changed |= ImGui::SliderFloat("Ambient Min (in Shadow)", &cs.shadowAmbientMin, 0.0f, 1.0f);
+                changed |= ImGui::SliderFloat("Shadow Floor", &cs.shadowFloor, 0.0f, 1.0f);
+                if (changed)
+                {
+                    sm->UploadCsmConstants();
+                }
             }
         }
         ImGui::End();

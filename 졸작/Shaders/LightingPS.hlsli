@@ -78,6 +78,7 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
             {
                 float viewDepth = length(worldPos - cameraPosition);
                 shadow = CalculateShadow(worldPos, N, viewDepth);
+                shadow = lerp(shadowFloor, 1.0, shadow);
                 lightContribution *= shadow;
             }
         }
@@ -114,7 +115,7 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
         linearSampler
     );
 
-    iblAmbient *= lerp(0.8, 1.0, shadow);
+    iblAmbient *= lerp(shadowAmbientMin, 1.0, shadow);
     
     float3 finalColor = directLight + iblAmbient + emission;
 
