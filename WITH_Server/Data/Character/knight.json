@@ -10,7 +10,7 @@
                  "maxPoise":  115,
                  "attackPower":  12,
                  "defense":  12,
-                 "moveSpeed":  4.0,
+                 "moveSpeed":  5.784,
                  "attackSpeed":  1.0
              },
     "bodyCollision":  {
@@ -73,9 +73,9 @@
                            "currentValue":  12
                        },
                        {
-                           "attributeKey":  "Attribute.MoveSpeed",
-                           "baseValue":  4.0,
-                           "currentValue":  4.0
+                            "attributeKey": "Attribute.MoveSpeed",
+                            "baseValue": 5.784,
+                            "currentValue": 5.784
                        },
                        {
                            "attributeKey":  "Attribute.AttackSpeed",
