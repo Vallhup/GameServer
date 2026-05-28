@@ -4,7 +4,7 @@
 #include "SystemMetaStorage.h"
 
 class ComputeAbilityMoveDeltaSystem final : public System {
-	static const StaticSystemMetaStorage<5> kMetaStorage;
+	static const StaticSystemMetaStorage<6> kMetaStorage;
 
 public:
 	void Execute(SystemContext& ctx) override;

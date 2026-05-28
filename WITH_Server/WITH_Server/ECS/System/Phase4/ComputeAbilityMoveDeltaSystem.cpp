@@ -4,18 +4,22 @@
 #include "../GameplaySystemUtil.h"
 #include "../../../TransformHelper.h"
 
+#include <algorithm>
 #include <cmath>
 
 using namespace GameplaySystemUtil;
 
 namespace
 {
-	const std::array<AccessSpec, 5> kComputeAbilityMoveDeltaAccesses{
+	inline constexpr float kTargetDashContactPadding = 0.05f;
+
+	const std::array<AccessSpec, 6> kComputeAbilityMoveDeltaAccesses{
 		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
 		WriteImmediate(ComponentRes<AbilityMoveDeltaComp>()),
 		WriteImmediate(ComponentRes<AbilityMoveRuntimeComp>()),
 		ReadImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
+		ReadImmediate(ComponentRes<BodyCollisionShapeComp>()),
 	};
 
 	bool EnteredSegmentThisFrame(
@@ -141,9 +145,32 @@ namespace
 		moveDelta.hasDelta = true;
 	}
 
+	float ResolveBodyRadiusXZ(SystemContext& ctx, Entity entity) noexcept
+	{
+		const BodyCollisionShapeComp* shape =
+			ctx.ecs.GetComponent<BodyCollisionShapeComp>(entity);
+		if (shape == nullptr)
+		{
+			return kDefaultColliderRadius;
+		}
+
+		return std::max(shape->bodyRadiusXZ, 0.0f);
+	}
+
+	float ResolveTargetDashStopDistance(
+		SystemContext& ctx,
+		Entity owner,
+		Entity target) noexcept
+	{
+		return
+			ResolveBodyRadiusXZ(ctx, owner) +
+			ResolveBodyRadiusXZ(ctx, target) +
+			kTargetDashContactPadding;
+	}
+
 	bool EnsureTargetDashLock(
 		SystemContext& ctx,
-		const AbilityMovementSegmentDef& segment,
+		Entity owner,
 		const AbilityStateComp& abilityState,
 		const WorldTransformComp& transform,
 		AbilityMoveRuntimeComp& moveRuntime,
@@ -173,26 +200,43 @@ namespace
 		moveRuntime.targetDashSegmentStartSec = segmentStartSec;
 		moveRuntime.targetDashStartX = transform.position.x;
 		moveRuntime.targetDashStartZ = transform.position.z;
-		moveRuntime.targetDashTargetX = targetTransform->position.x;
-		moveRuntime.targetDashTargetZ = targetTransform->position.z;
-		moveRuntime.hasLockedTargetDash = true;
 
 		float dirX =
-			moveRuntime.targetDashTargetX - moveRuntime.targetDashStartX;
+			targetTransform->position.x - moveRuntime.targetDashStartX;
 		float dirZ =
-			moveRuntime.targetDashTargetZ - moveRuntime.targetDashStartZ;
-		if (LengthXZ(dirX, dirZ) > kOverlapEpsilon)
+			targetTransform->position.z - moveRuntime.targetDashStartZ;
+		const float targetDistance = LengthXZ(dirX, dirZ);
+		if (targetDistance > kOverlapEpsilon)
 		{
 			NormalizeXZ(dirX, dirZ);
+
+			const float stopDistance =
+				ResolveTargetDashStopDistance(
+					ctx,
+					owner,
+					abilityState.target);
+			const float dashDistance =
+				std::max(targetDistance - stopDistance, 0.0f);
+
+			moveRuntime.targetDashTargetX =
+				moveRuntime.targetDashStartX + dirX * dashDistance;
+			moveRuntime.targetDashTargetZ =
+				moveRuntime.targetDashStartZ + dirZ * dashDistance;
+			moveRuntime.hasLockedTargetDash = true;
+
 			const float currYaw =
 				TransformHelper::QuaternionToYaw(transform.rotation);
 			moveRuntime.lockedDirX = dirX;
 			moveRuntime.lockedDirZ = dirZ;
 			moveRuntime.lockedYawRad = DirToYaw(dirX, dirZ, currYaw);
 			moveRuntime.hasLockedDirection = true;
+			return true;
 		}
 
-		(void)segment;
+		moveRuntime.targetDashTargetX = moveRuntime.targetDashStartX;
+		moveRuntime.targetDashTargetZ = moveRuntime.targetDashStartZ;
+		moveRuntime.hasLockedTargetDash = true;
+
 		return true;
 	}
 
@@ -236,17 +280,18 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<5> ComputeAbilityMoveDeltaSystem::kMetaStorage =
+const StaticSystemMetaStorage<6> ComputeAbilityMoveDeltaSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<ComputeAbilityMoveDeltaSystem>(),
 		"ComputeAbilityMoveDeltaSystem",
-		std::array<AccessSpec, 5>
+		std::array<AccessSpec, 6>
 	{
 		ReadImmediate(ComponentRes<AbilityStateComp>()),
 		ReadImmediate(ComponentRes<WorldTransformComp>()),
 		WriteImmediate(ComponentRes<AbilityMoveDeltaComp>()),
 		WriteImmediate(ComponentRes<AbilityMoveRuntimeComp>()),
 		ReadImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
+		ReadImmediate(ComponentRes<BodyCollisionShapeComp>()),
 	});
 
 void ComputeAbilityMoveDeltaSystem::Execute(SystemContext& ctx)
@@ -259,7 +304,6 @@ void ComputeAbilityMoveDeltaSystem::Execute(SystemContext& ctx)
 			AbilityMoveRuntimeComp,
 			AbilityTimelineAdvanceComp>())
 	{
-		(void)entity;
 		moveDelta = {};
 
 		if (!IsAbilityActive(abilityState) ||
@@ -316,7 +360,7 @@ void ComputeAbilityMoveDeltaSystem::Execute(SystemContext& ctx)
 			{
 				if (EnsureTargetDashLock(
 					ctx,
-					segment,
+					entity,
 					abilityState,
 					transform,
 					moveRuntime,

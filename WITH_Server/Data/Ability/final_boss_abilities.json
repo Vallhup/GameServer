@@ -139,8 +139,8 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.5,
-            "endNormalized": 0.6,
+            "startNormalized": 0.3,
+            "endNormalized": 1.0,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -252,13 +252,13 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.24,
-            "endNormalized": 0.7,
+            "startNormalized": 0.3,
+            "endNormalized": 0.5,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
               "facingHalfAngleDeg": 82,
-              "minDistance": 1.8,
+              "minDistance": 0.0,
               "maxDistance": 7.2,
               "verticalTolerance": 3,
               "referenceFrame": "LockedActionDirection"
@@ -284,8 +284,8 @@
         ],
         "movementSegments": [
           {
-            "startNormalized": 0.357,
-            "endNormalized": 0.446,
+            "startNormalized": 0.2,
+            "endNormalized": 0.3,
             "movementMode": "DashToTarget",
             "moveDistance": null,
             "rotationMode": "FaceTarget",
@@ -353,13 +353,13 @@
         "combatWindows": [
           {
             "kind": "Attack",
-            "startNormalized": 0.6,
+            "startNormalized": 0.7,
             "endNormalized": 0.85,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
               "facingHalfAngleDeg": 68,
-              "minDistance": 4,
+              "minDistance": 0,
               "maxDistance": 12,
               "verticalTolerance": 3.4,
               "referenceFrame": "LockedActionDirection"
@@ -493,7 +493,7 @@
         "events": [
           {
             "kind": "SpawnAreaVolume",
-            "timeNormalized": 0.331126,
+            "timeNormalized": 0.33112612,
             "effectKey": null,
             "cueTagKey": null,
             "projectileKey": null,
@@ -562,16 +562,16 @@
           }
         ],
         "events": [
-          {
-            "kind": "SpawnAreaVolume",
-            "timeNormalized": 0.213115,
-            "effectKey": null,
-            "cueTagKey": null,
-            "projectileKey": null,
-            "areaHitKey": "Area.FinalBoss_BloodLance",
-            "payloadId": null,
-            "condition": "Always"
-          }
+            {
+                "kind": "SpawnAreaVolume",
+                "timeNormalized": 0.436475,
+                "effectKey": null,
+                "cueTagKey": null,
+                "projectileKey": null,
+                "areaHitKey": "Area.FinalBoss_BloodLance",
+                "payloadId": null,
+                "condition": "Always"
+            }
         ]
       },
       "transition": {
@@ -706,7 +706,7 @@
         "events": [
           {
             "kind": "SpawnProjectile",
-            "timeNormalized": 0.189815,
+            "timeNormalized": 0.18981495,
             "effectKey": null,
             "cueTagKey": null,
             "projectileKey": "Projectile.FinalBoss_SwordMoonlight",
@@ -716,7 +716,7 @@
           },
           {
             "kind": "SpawnProjectile",
-            "timeNormalized": 0.375,
+            "timeNormalized": 0.37500026,
             "effectKey": null,
             "cueTagKey": null,
             "projectileKey": "Projectile.FinalBoss_SwordMoonlight",
@@ -726,7 +726,7 @@
           },
           {
             "kind": "SpawnProjectile",
-            "timeNormalized": 0.625,
+            "timeNormalized": 0.62500043,
             "effectKey": null,
             "cueTagKey": null,
             "projectileKey": "Projectile.FinalBoss_SwordMoonlight",

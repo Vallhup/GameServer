@@ -29,18 +29,18 @@
         {
           "timeSec": 0,
           "radiusScale": 1,
-          "lengthScale": 0.001,
-          "widthScale": 0.001
+          "lengthScale": 0,
+          "widthScale": 0
         },
         {
-          "timeSec": 0.583333,
+          "timeSec": 0.58333333,
           "radiusScale": 1,
           "lengthScale": 1,
           "widthScale": 1
         }
       ],
-      "lifetimeSec": 1.983333,
-      "tickIntervalSec": 0.1,
+      "lifetimeSec": 1.98333333,
+      "tickIntervalSec": 0.01666667,
       "hitOncePerAbilityInstance": true,
       "includeOwner": false,
       "requireLineOfSight": false
@@ -72,19 +72,19 @@
       "scaleKeys": [
         {
           "timeSec": 0,
-          "radiusScale": 0.217391,
+          "radiusScale": 0,
           "lengthScale": 1,
           "widthScale": 1
         },
         {
-          "timeSec": 0.566667,
+          "timeSec": 0.56666667,
           "radiusScale": 1,
           "lengthScale": 1,
           "widthScale": 1
         }
       ],
       "lifetimeSec": 2.85,
-      "tickIntervalSec": 0.1,
+      "tickIntervalSec": 0.01666667,
       "hitOncePerAbilityInstance": true,
       "includeOwner": false,
       "requireLineOfSight": false
@@ -118,18 +118,18 @@
         {
           "timeSec": 0,
           "radiusScale": 1,
-          "lengthScale": 0.001,
+          "lengthScale": 0,
           "widthScale": 1
         },
         {
-          "timeSec": 0.383333,
+          "timeSec": 0.38333333,
           "radiusScale": 1,
           "lengthScale": 1,
           "widthScale": 1
         }
       ],
-      "lifetimeSec": 1.633333,
-      "tickIntervalSec": 0.1,
+      "lifetimeSec": 1.63333333,
+      "tickIntervalSec": 0.01666667,
       "hitOncePerAbilityInstance": true,
       "includeOwner": false,
       "requireLineOfSight": false
