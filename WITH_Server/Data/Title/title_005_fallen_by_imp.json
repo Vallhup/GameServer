@@ -1,0 +1,7 @@
+{
+    "titleId": 5,
+    "displayName": "임프에게 당한 자",
+    "conditionType": "DeathByMonster",
+    "characterId": "Imp",
+    "requiredCount": 1
+}

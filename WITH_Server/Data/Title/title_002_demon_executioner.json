@@ -1,0 +1,7 @@
+{
+    "titleId": 2,
+    "displayName": "악마 처형자",
+    "conditionType": "MonsterKill",
+    "characterId": "DemonStriker",
+    "requiredCount": 30
+}

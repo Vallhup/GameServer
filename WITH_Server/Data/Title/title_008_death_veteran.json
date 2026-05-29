@@ -1,0 +1,7 @@
+{
+    "titleId": 8,
+    "displayName": "죽음을 넘은 자",
+    "conditionType": "DeathByMonster",
+    "characterId": "DemonExecutioner",
+    "requiredCount": 5
+}

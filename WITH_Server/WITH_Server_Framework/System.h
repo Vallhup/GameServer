@@ -40,6 +40,9 @@ struct SystemContext
 	ECSView ecs;
 	double dtSec;
 	WorldSystemServices services;
+	// 현재 프레임에서 이 시스템이 실행 중인 월드의 스코프 ID.
+	// DB 커맨드 제출 시 DBRequestMeta.scopeId에 사용한다.
+	ExecScopeId execScopeId{ InvalidExecScopeId };
 };
 
 class System {

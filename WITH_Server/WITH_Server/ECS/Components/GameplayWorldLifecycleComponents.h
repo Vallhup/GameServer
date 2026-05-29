@@ -10,9 +10,16 @@ struct PlayerDeathCountConsumedTag : TagComponent
 {
 };
 
+struct PendingMonsterKillEventComp : Component
+{
+	CharacterId killedCharacterId{};
+	bool        pending{ false };
+};
+
 struct PendingPlayerDeathCountEventComp : Component
 {
-	bool pending{ false };
+	bool        pending{ false };
+	CharacterId killerCharacterId{};   // 몬스터에게 사망 시 세팅, 리스폰 시 초기화
 };
 
 enum class PlayerDeathState : uint8_t

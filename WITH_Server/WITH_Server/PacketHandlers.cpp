@@ -12,8 +12,12 @@
 #include "ExecutionOps.h"
 #include "FrameworkRuntime.h"
 #include "FrameworkLog.h"
+#include "CombatStatisticsCommands.h"
+#include "CombatStatisticsTaskTypeIds.h"
+#include "GameDataCatalog.h"
 #include "LoginAuth.h"
 #include "RegisterAccount.h"
+#include "TitleCommands.h"
 #include "NetworkRuntime.h"
 #include "NetworkTimingService.h"
 #include "ODBCDatabaseBackend.h"
@@ -42,6 +46,12 @@
 #include <memory>
 #include <string>
 #include <string_view>
+
+// CombatStatisticsTaskTypeIds.h 의 extern 선언에 대응하는 정의.
+// RegisterServerPacketHandlers() 에서 등록 후 채워진다.
+DynamicTaskTypeId g_incrementMonsterKillCountResultTaskTypeId{ InvalidDynamicTaskTypeId };
+DynamicTaskTypeId g_incrementDeathByMonsterCountResultTaskTypeId{ InvalidDynamicTaskTypeId };
+DynamicTaskTypeId g_unlockTitleResultTaskTypeId{ InvalidDynamicTaskTypeId };
 
 namespace
 {
@@ -773,6 +783,42 @@ void RegisterServerPacketHandlers(
     desc.dispatchFn   = &HandleDisconnectedEvent;
 
     outDisconnectedTypeId = taskRegistry.Register(desc, sourceRegistry);
+
+    // -----------------------------------------------------------------------
+    // 전투 통계 DB 완료 핸들러
+    // -----------------------------------------------------------------------
+    DynamicTaskTypeDesc incrementMonsterKillResultDesc{};
+    incrementMonsterKillResultDesc.debugName       = "DB_IncrementMonsterKillCountResult";
+    incrementMonsterKillResultDesc.defaultPhase    = ExecPhase::Simulate;
+    incrementMonsterKillResultDesc.defaultLane     = ExecLane::Serial;
+    incrementMonsterKillResultDesc.defaultTargetKind =
+        DynamicTaskTargetKind::ExplicitScope;
+    incrementMonsterKillResultDesc.dispatchFn      = &HandleIncrementMonsterKillCountResult;
+    incrementMonsterKillResultDesc.payloadCleanupFn = &ReleaseDBCompletionPayload;
+    g_incrementMonsterKillCountResultTaskTypeId =
+        taskRegistry.Register(incrementMonsterKillResultDesc, sourceRegistry);
+
+    DynamicTaskTypeDesc incrementDeathByMonsterResultDesc{};
+    incrementDeathByMonsterResultDesc.debugName       = "DB_IncrementDeathByMonsterCountResult";
+    incrementDeathByMonsterResultDesc.defaultPhase    = ExecPhase::Simulate;
+    incrementDeathByMonsterResultDesc.defaultLane     = ExecLane::Serial;
+    incrementDeathByMonsterResultDesc.defaultTargetKind =
+        DynamicTaskTargetKind::ExplicitScope;
+    incrementDeathByMonsterResultDesc.dispatchFn      = &HandleIncrementDeathByMonsterCountResult;
+    incrementDeathByMonsterResultDesc.payloadCleanupFn = &ReleaseDBCompletionPayload;
+    g_incrementDeathByMonsterCountResultTaskTypeId =
+        taskRegistry.Register(incrementDeathByMonsterResultDesc, sourceRegistry);
+
+    DynamicTaskTypeDesc unlockTitleResultDesc{};
+    unlockTitleResultDesc.debugName       = "DB_UnlockTitleResult";
+    unlockTitleResultDesc.defaultPhase    = ExecPhase::Simulate;
+    unlockTitleResultDesc.defaultLane     = ExecLane::Serial;
+    unlockTitleResultDesc.defaultTargetKind =
+        DynamicTaskTargetKind::ExplicitScope;
+    unlockTitleResultDesc.dispatchFn      = &HandleUnlockTitleResult;
+    unlockTitleResultDesc.payloadCleanupFn = &ReleaseDBCompletionPayload;
+    g_unlockTitleResultTaskTypeId =
+        taskRegistry.Register(unlockTitleResultDesc, sourceRegistry);
 }
 
 ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
@@ -1883,5 +1929,195 @@ ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx)
         sessionId,
         reason,
         ctx.TryGetWorldId());
+    return ExecCallResult::Success;
+}
+
+// ---------------------------------------------------------------------------
+// HandleIncrementMonsterKillCountResult
+//
+// SP 반환값(new_kill_count)을 바탕으로 TitleDefRegistry를 검사하여
+// 달성 조건을 충족하는 칭호마다 UnlockTitleCommand를 발행한다.
+// ---------------------------------------------------------------------------
+ExecCallResult HandleIncrementMonsterKillCountResult(NodeExecContext& ctx)
+{
+    static constexpr const char* kCategory = "CombatStat";
+
+    auto& svc = PacketHandlerContext::Get();
+    if (svc.database == nullptr)
+        return ExecCallResult::Failed;
+
+    const auto* inst =
+        ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId);
+    if (inst == nullptr || inst->payloadKey == 0)
+        return ExecCallResult::Failed;
+
+    DBCompletion completion{};
+    if (!svc.database->ResultStore().TakeCompletion(inst->payloadKey, completion))
+    {
+        FWLOG_WARN(kCategory, "IncrementMonsterKillCount completion missing");
+        return ExecCallResult::Success;
+    }
+
+    if (!completion.ok)
+    {
+        FWLOG_WARN(kCategory,
+            "IncrementMonsterKillCount failed (dbError=%u)",
+            completion.errorCode);
+        return ExecCallResult::Success;
+    }
+
+    IncrementMonsterKillCountPayload payload{};
+    if (completion.payloadKey == InvalidDBPayloadKey ||
+        !svc.database->ResultStore().TakePayload(completion.payloadKey, payload))
+    {
+        FWLOG_WARN(kCategory, "IncrementMonsterKillCount payload missing");
+        return ExecCallResult::Success;
+    }
+
+    // TitleDefRegistry 에서 MonsterKill 조건을 만족하는 칭호를 찾아 잠금 해제 커맨드 발행.
+    for (const TitleDef& titleDef :
+        GameDataCatalog::Current().Titles().GetAll())
+    {
+        if (titleDef.conditionType != TitleConditionType::MonsterKill)
+            continue;
+        if (static_cast<uint8_t>(titleDef.characterId) != payload.characterTypeId)
+            continue;
+        if (payload.newKillCount < titleDef.requiredCount)
+            continue;
+
+        DBCommandEnvelope envelope{};
+        envelope.meta.sessionId            = payload.sessionId;
+        envelope.meta.scopeId              = ctx.scopeId;
+        envelope.meta.requestFrameIndex    = ctx.frame->frameIndex;
+        envelope.meta.completionTaskTypeId = g_unlockTitleResultTaskTypeId;
+        envelope.command = std::make_unique<UnlockTitleCommand>(
+            payload.accountId,
+            titleDef.id,
+            payload.sessionId);
+
+        svc.database->Submit(std::move(envelope));
+    }
+
+    return ExecCallResult::Success;
+}
+
+// ---------------------------------------------------------------------------
+// HandleIncrementDeathByMonsterCountResult
+// ---------------------------------------------------------------------------
+ExecCallResult HandleIncrementDeathByMonsterCountResult(NodeExecContext& ctx)
+{
+    static constexpr const char* kCategory = "CombatStat";
+
+    auto& svc = PacketHandlerContext::Get();
+    if (svc.database == nullptr)
+        return ExecCallResult::Failed;
+
+    const auto* inst =
+        ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId);
+    if (inst == nullptr || inst->payloadKey == 0)
+        return ExecCallResult::Failed;
+
+    DBCompletion completion{};
+    if (!svc.database->ResultStore().TakeCompletion(inst->payloadKey, completion))
+    {
+        FWLOG_WARN(kCategory, "IncrementDeathByMonsterCount completion missing");
+        return ExecCallResult::Success;
+    }
+
+    if (!completion.ok)
+    {
+        FWLOG_WARN(kCategory,
+            "IncrementDeathByMonsterCount failed (dbError=%u)",
+            completion.errorCode);
+        return ExecCallResult::Success;
+    }
+
+    IncrementDeathByMonsterCountPayload payload{};
+    if (completion.payloadKey == InvalidDBPayloadKey ||
+        !svc.database->ResultStore().TakePayload(completion.payloadKey, payload))
+    {
+        FWLOG_WARN(kCategory, "IncrementDeathByMonsterCount payload missing");
+        return ExecCallResult::Success;
+    }
+
+    // TitleDefRegistry 에서 DeathByMonster 조건을 만족하는 칭호를 찾아 잠금 해제 커맨드 발행.
+    for (const TitleDef& titleDef :
+        GameDataCatalog::Current().Titles().GetAll())
+    {
+        if (titleDef.conditionType != TitleConditionType::DeathByMonster)
+            continue;
+        if (static_cast<uint8_t>(titleDef.characterId) != payload.characterTypeId)
+            continue;
+        if (payload.newDeathCount < titleDef.requiredCount)
+            continue;
+
+        DBCommandEnvelope envelope{};
+        envelope.meta.sessionId            = payload.sessionId;
+        envelope.meta.scopeId              = ctx.scopeId;
+        envelope.meta.requestFrameIndex    = ctx.frame->frameIndex;
+        envelope.meta.completionTaskTypeId = g_unlockTitleResultTaskTypeId;
+        envelope.command = std::make_unique<UnlockTitleCommand>(
+            payload.accountId,
+            titleDef.id,
+            payload.sessionId);
+
+        svc.database->Submit(std::move(envelope));
+    }
+
+    return ExecCallResult::Success;
+}
+
+// ---------------------------------------------------------------------------
+// HandleUnlockTitleResult
+//
+// 칭호 잠금 해제 결과를 처리한다.
+// newlyUnlocked == true 이면 최초 획득이므로 클라이언트 알림이 필요하나,
+// 알림 패킷 인프라는 추후 구현 예정이므로 현재는 로그만 기록한다.
+// ---------------------------------------------------------------------------
+ExecCallResult HandleUnlockTitleResult(NodeExecContext& ctx)
+{
+    static constexpr const char* kCategory = "CombatStat";
+
+    auto& svc = PacketHandlerContext::Get();
+    if (svc.database == nullptr)
+        return ExecCallResult::Failed;
+
+    const auto* inst =
+        ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId);
+    if (inst == nullptr || inst->payloadKey == 0)
+        return ExecCallResult::Failed;
+
+    DBCompletion completion{};
+    if (!svc.database->ResultStore().TakeCompletion(inst->payloadKey, completion))
+    {
+        FWLOG_WARN(kCategory, "UnlockTitle completion missing");
+        return ExecCallResult::Success;
+    }
+
+    if (!completion.ok)
+    {
+        FWLOG_WARN(kCategory,
+            "UnlockTitle failed (dbError=%u)",
+            completion.errorCode);
+        return ExecCallResult::Success;
+    }
+
+    UnlockTitlePayload payload{};
+    if (completion.payloadKey == InvalidDBPayloadKey ||
+        !svc.database->ResultStore().TakePayload(completion.payloadKey, payload))
+    {
+        FWLOG_WARN(kCategory, "UnlockTitle payload missing");
+        return ExecCallResult::Success;
+    }
+
+    if (payload.newlyUnlocked)
+    {
+        FWLOG_INFO(kCategory,
+            "Title newly unlocked (titleId=%u, sid=%u) — notification TODO",
+            static_cast<unsigned>(payload.titleId),
+            payload.sessionId);
+        // TODO: 클라이언트에 SC_TITLE_UNLOCKED 패킷 전송
+    }
+
     return ExecCallResult::Success;
 }

@@ -25,7 +25,8 @@ ExecCallResult AutoSystemBridge::BridgeDispatch(NodeExecContext& ctx)
         *worldRuntime,
         worldRuntime->MakeView(),
         worldRuntime->LastDtSec(),
-        serviceScope.Services()
+        serviceScope.Services(),
+        ctx.scopeId,
     };
 
     system->Execute(sysCtx);

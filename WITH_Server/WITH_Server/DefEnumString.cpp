@@ -5,6 +5,7 @@
 #include "CharacterDef.h"
 #include "AIBehaviorDef.h"
 #include "SpawnSetDef.h"
+#include "TitleDef.h"
 #include "ECS/Components/GameplayAbilityComponents.h"
 
 #include <unordered_map>
@@ -370,5 +371,12 @@ bool ParseSpawnPointIdString(std::string_view text, SpawnPointId& outValue) noex
 	if (text == "FinalMonster01") { outValue = SpawnPointIds::FinalMonster01; return true; }
 	if (text == "PvpPlayerStartA") { outValue = SpawnPointIds::PvpPlayerStartA; return true; }
 	if (text == "PvpPlayerStartB") { outValue = SpawnPointIds::PvpPlayerStartB; return true; }
+	return false;
+}
+
+bool ParseDefString(std::string_view text, TitleConditionType& outValue) noexcept
+{
+	if (text == "MonsterKill")    { outValue = TitleConditionType::MonsterKill;    return true; }
+	if (text == "DeathByMonster") { outValue = TitleConditionType::DeathByMonster; return true; }
 	return false;
 }

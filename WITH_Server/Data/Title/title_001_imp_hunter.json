@@ -1,0 +1,7 @@
+{
+    "titleId": 1,
+    "displayName": "임프 사냥꾼",
+    "conditionType": "MonsterKill",
+    "characterId": "Imp",
+    "requiredCount": 10
+}

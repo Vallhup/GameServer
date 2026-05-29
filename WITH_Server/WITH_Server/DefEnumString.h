@@ -18,6 +18,7 @@ enum class AIActionRole : uint8_t;
 enum class AIMovementBehavior : uint8_t;
 enum class AIReactionRuleEvent : uint8_t;
 enum class AIReactionRuleOutcome : uint8_t;
+enum class TitleConditionType : uint8_t;
 
 using SpawnPointId = uint16_t;
 
@@ -36,6 +37,7 @@ bool ParseDefString(std::string_view text, AIActionRole& outValue) noexcept;
 bool ParseDefString(std::string_view text, AIMovementBehavior& outValue) noexcept;
 bool ParseDefString(std::string_view text, AIReactionRuleEvent& outValue) noexcept;
 bool ParseDefString(std::string_view text, AIReactionRuleOutcome& outValue) noexcept;
+bool ParseDefString(std::string_view text, TitleConditionType& outValue) noexcept;
 
 bool ParseAnimationIdString(std::string_view text, AnimationId& outValue) noexcept;
 bool ParseSpawnPointIdString(std::string_view text, SpawnPointId& outValue) noexcept;

@@ -124,7 +124,8 @@ namespace
 		if (PendingPlayerDeathCountEventComp* const deathEvent =
 			ctx.ecs.GetMutableComponent<PendingPlayerDeathCountEventComp>(entity))
 		{
-			deathEvent->pending = false;
+			// killerCharacterId 포함 전체 초기화: 리스폰 후 이전 사망 정보가 잔류하지 않도록 한다.
+			*deathEvent = PendingPlayerDeathCountEventComp{};
 		}
 
 		deathState = PlayerDeathStateComp{};

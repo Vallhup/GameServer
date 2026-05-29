@@ -3,6 +3,7 @@
 #include "AIBehaviorDef.h"
 #include "CharacterDef.h"
 #include "SpawnSetDef.h"
+#include "TitleDef.h"
 
 #include <cstddef>
 #include <filesystem>
@@ -72,6 +73,7 @@ struct GameDataCatalogRoots
 	std::filesystem::path characterRoot;
 	std::filesystem::path aiBehaviorRoot;
 	std::filesystem::path spawnSetRoot;
+	std::filesystem::path titleRoot;
 };
 
 class AIBehaviorRepository final : public IAIBehaviorRepository {
@@ -166,6 +168,15 @@ public:
 			return result;
 		}
 
+		result = LoadTitleDefsFromJsonDirectory(
+			roots.titleRoot,
+			loaded._titles);
+		if (!result.succeeded)
+		{
+			result.error = "Title catalog load failed: " + result.error;
+			return result;
+		}
+
 		*this = std::move(loaded);
 		ResetRepositories();
 
@@ -193,11 +204,18 @@ public:
 		return _spawnSetRepository;
 	}
 
+	const IReadOnlyDefRepository<TitleDef, TitleId>&
+		Titles() const noexcept
+	{
+		return _titleRepository;
+	}
+
 	size_t Size() const noexcept
 	{
 		return _aiBehaviors.Size() +
 			_characters.Size() +
-			_spawnSets.Size();
+			_spawnSets.Size() +
+			_titles.Size();
 	}
 
 private:
@@ -212,15 +230,19 @@ private:
 		_aiBehaviorRepository.Reset(&_aiBehaviors);
 		_characterRepository.Reset(&_characters);
 		_spawnSetRepository.Reset(&_spawnSets);
+		_titleRepository.Reset(&_titles);
 	}
 
 	AIBehaviorDefinitionSet _aiBehaviors;
-	CharacterDefRegistry _characters;
-	SpawnSetDefRegistry _spawnSets;
+	CharacterDefRegistry    _characters;
+	SpawnSetDefRegistry     _spawnSets;
+	TitleDefRegistry        _titles;
 
 	AIBehaviorRepository _aiBehaviorRepository;
 	DefRegistryRepository<CharacterDefRegistry, CharacterDef, CharacterId>
 		_characterRepository;
 	DefRegistryRepository<SpawnSetDefRegistry, SpawnSetDef, SpawnSetId>
 		_spawnSetRepository;
+	DefRegistryRepository<TitleDefRegistry, TitleDef, TitleId>
+		_titleRepository;
 };

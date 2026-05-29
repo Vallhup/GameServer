@@ -1,0 +1,7 @@
+{
+    "titleId": 6,
+    "displayName": "최종 보스에게 쓰러진 자",
+    "conditionType": "DeathByMonster",
+    "characterId": "FinalBoss",
+    "requiredCount": 1
+}

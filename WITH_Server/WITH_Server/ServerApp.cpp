@@ -618,9 +618,10 @@ bool ServerApp::InitializeGameplayContent()
 
 	const GameDataCatalogRoots gameDataRoots
 	{
-		.characterRoot = ServerPathResolver::GetDefaultCharacterDefRoot(),
+		.characterRoot  = ServerPathResolver::GetDefaultCharacterDefRoot(),
 		.aiBehaviorRoot = ServerPathResolver::GetDefaultAIBehaviorDefRoot(),
-		.spawnSetRoot = ServerPathResolver::GetDefaultSpawnSetDefRoot()
+		.spawnSetRoot   = ServerPathResolver::GetDefaultSpawnSetDefRoot(),
+		.titleRoot      = ServerPathResolver::GetDefaultTitleDefRoot()
 	};
 	const DefLoadResult gameDataLoadResult =
 		_gameDataCatalog.LoadFromRoots(gameDataRoots);

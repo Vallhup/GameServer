@@ -1,0 +1,7 @@
+{
+    "titleId": 3,
+    "displayName": "탱크 파괴자",
+    "conditionType": "MonsterKill",
+    "characterId": "Tank",
+    "requiredCount": 5
+}

@@ -5,9 +5,12 @@
 
 #include "../../../AIBehaviorDef.h"
 #include "../../../CharacterDef.h"
+#include "../../../CharacterIdPolicy.h"
 #include "../../../GameDataCatalog.h"
 #include "../../../GameplayContentCatalog.h"
 #include "../GameplaySystemUtil.h"
+#include "ECS/Components/GameplayInputComponents.h"
+#include "ECS/Components/GameplayWorldLifecycleComponents.h"
 #include "RepComponent.h"
 
 using namespace GameplaySystemUtil;
@@ -44,11 +47,11 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<17> CommitCombatResultSystem::kMetaStorage =
+const StaticSystemMetaStorage<20> CommitCombatResultSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<CommitCombatResultSystem>(),
 		"CommitCombatResultSystem",
-		std::array<AccessSpec, 17>
+		std::array<AccessSpec, 20>
 	{
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
@@ -67,6 +70,9 @@ const StaticSystemMetaStorage<17> CommitCombatResultSystem::kMetaStorage =
 		WriteImmediate(ComponentRes<PendingGameplayEffectApplyComp>()),
 		ReadImmediate(ComponentRes<SpawnTypeComp>()),
 		WriteImmediate(ComponentRes<PendingKillBuffGrantComp>()),
+		ReadImmediate(ComponentRes<PlayerControlIdentityComp>()),
+		WriteImmediate(ComponentRes<PendingPlayerDeathCountEventComp>()),
+		WriteImmediate(ComponentRes<PendingMonsterKillEventComp>()),
 	});
 
 void CommitCombatResultSystem::Execute(SystemContext& ctx)
@@ -253,6 +259,42 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 								effectDef->id);
 						}
 					}
+				}
+			}
+		}
+
+		// 전투 통계 이벤트 예약: 플레이어↔몬스터 간 킬 블로우 발생 시 세팅.
+		if (!killerEntity.IsNull() && stats.currentHp <= 0)
+		{
+			const bool victimIsPlayer =
+				ctx.ecs.GetComponent<PlayerControlIdentityComp>(entity) != nullptr;
+			const bool killerIsPlayer =
+				ctx.ecs.GetComponent<PlayerControlIdentityComp>(killerEntity) != nullptr;
+
+			const SpawnTypeComp* victimSpawnType =
+				ctx.ecs.GetComponent<SpawnTypeComp>(entity);
+			const SpawnTypeComp* killerSpawnType =
+				ctx.ecs.GetComponent<SpawnTypeComp>(killerEntity);
+
+			// 플레이어가 몬스터를 처치 → 처치 카운트 이벤트 예약.
+			if (killerIsPlayer && !victimIsPlayer && victimSpawnType != nullptr)
+			{
+				if (PendingMonsterKillEventComp* killEvent =
+					ctx.ecs.GetMutableComponent<PendingMonsterKillEventComp>(killerEntity))
+				{
+					killEvent->killedCharacterId = victimSpawnType->characterId;
+					killEvent->pending           = true;
+				}
+			}
+
+			// 몬스터가 플레이어를 처치 → 사망 카운트 이벤트 예약.
+			if (victimIsPlayer && !killerIsPlayer && killerSpawnType != nullptr)
+			{
+				if (PendingPlayerDeathCountEventComp* deathEvent =
+					ctx.ecs.GetMutableComponent<PendingPlayerDeathCountEventComp>(entity))
+				{
+					deathEvent->killerCharacterId = killerSpawnType->characterId;
+					deathEvent->pending           = true;
 				}
 			}
 		}

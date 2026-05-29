@@ -17,6 +17,7 @@ public:
 	static std::filesystem::path GetDefaultCharacterDefRoot();
 	static std::filesystem::path GetDefaultAIBehaviorDefRoot();
 	static std::filesystem::path GetDefaultSpawnSetDefRoot();
+	static std::filesystem::path GetDefaultTitleDefRoot();
 	static std::filesystem::path GetDefaultAnimationOutputRoot();
 	static std::vector<std::filesystem::path> GetBootAnimationCandidates(
 		const std::filesystem::path& root);

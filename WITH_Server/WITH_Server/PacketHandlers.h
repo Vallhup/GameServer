@@ -35,3 +35,10 @@ ExecCallResult HandlePartyJoinRequestPacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyJoinAcceptPacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyJoinRejectPacket(NodeExecContext& ctx);
 ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx);
+
+// ---------------------------------------------------------------------------
+// 전투 통계 / 칭호 DB 완료 핸들러
+// ---------------------------------------------------------------------------
+ExecCallResult HandleIncrementMonsterKillCountResult(NodeExecContext& ctx);
+ExecCallResult HandleIncrementDeathByMonsterCountResult(NodeExecContext& ctx);
+ExecCallResult HandleUnlockTitleResult(NodeExecContext& ctx);

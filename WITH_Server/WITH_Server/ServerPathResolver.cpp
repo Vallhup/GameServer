@@ -202,6 +202,11 @@ std::filesystem::path ServerPathResolver::GetDefaultSpawnSetDefRoot()
 	return NormalizePath(currentDir / "WITH_Server" / "Data" / "SpawnSet");
 }
 
+std::filesystem::path ServerPathResolver::GetDefaultTitleDefRoot()
+{
+	return GetDefaultDataRoot("Title");
+}
+
 std::filesystem::path ServerPathResolver::GetDefaultAnimationOutputRoot()
 {
 	const std::filesystem::path exeDir = GetExecutableDirectory();

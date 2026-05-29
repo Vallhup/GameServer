@@ -1,0 +1,7 @@
+{
+    "titleId": 7,
+    "displayName": "거인 격퇴자",
+    "conditionType": "MonsterKill",
+    "characterId": "BigDemonWarrior",
+    "requiredCount": 10
+}

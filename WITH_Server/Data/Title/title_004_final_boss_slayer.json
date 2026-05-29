@@ -1,0 +1,7 @@
+{
+    "titleId": 4,
+    "displayName": "전설의 사냥꾼",
+    "conditionType": "MonsterKill",
+    "characterId": "FinalBoss",
+    "requiredCount": 1
+}

@@ -32,6 +32,7 @@
 #include "Phase8/CommitAbilityTimelineEventSystem.h"
 #include "Phase8/CommitCombatResultSystem.h"
 #include "Phase8/FinalizePostCommitStateSystem.h"
+#include "Phase8/RecordCombatStatisticsSystem.h"
 #include "Phase8/RecoverStaminaSystem.h"
 #include "Phase8/ResolveGameplayEffectStateSystem.h"
 #include "Phase8/ResolveDeathAndDespawnSystem.h"
@@ -98,6 +99,7 @@ void GameplaySystemRegistrar::RegisterSystems(TargetT& target) const
 	target.RegisterSystem<CommitAbilityTimelineEventSystem>();
 	target.RegisterSystem<ResolveGameplayEffectStateSystem>();
 	target.RegisterSystem<ResolveDeathAndDespawnSystem>();
+	target.RegisterSystem<RecordCombatStatisticsSystem>();
 	target.RegisterSystem<FinalizePostCommitStateSystem>();
 
 	target.RegisterSystem<CollectReplicationTodoSourceSystem>();
