@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "FrameworkLog.h"
+#include "PartyPersistGateway.h"
 #include "ServerPacketStager.h"
 
 namespace
@@ -23,8 +24,19 @@ PartyCommandPump::PartyCommandPump(
 {
 }
 
+void PartyCommandPump::SetPersistGateway(
+	PartyPersistGateway* persistGateway) noexcept
+{
+	_persistGateway = persistGateway;
+}
+
 void PartyCommandPump::Pump(double nowSec)
 {
+	if (_persistGateway != nullptr)
+	{
+		_persistGateway->Process(nowSec);
+	}
+
 	_partyService.ExpireJoinRequests(nowSec);
 
 	_scratch.clear();
@@ -94,11 +106,14 @@ void PartyCommandPump::ApplyCommand(
 			nowSec);
 		break;
 	case PartyCommandKind::TransferCompleted:
-		(void)_partyService.CompleteWorldEntry(
+		if (_partyService.CompleteWorldEntry(
 			command.partyId,
 			command.transferId,
 			command.targetWorldId,
-			nowSec);
+			nowSec).Succeeded())
+		{
+			PersistPartyState(command.partyId, nowSec);
+		}
 		break;
 	case PartyCommandKind::TransferFailed:
 		if (_partyService.FailWorldEntry(
@@ -106,11 +121,17 @@ void PartyCommandPump::ApplyCommand(
 			command.transferId,
 			nowSec).Succeeded())
 		{
+			PersistPartyState(command.partyId, nowSec);
 			BroadcastPartyListSnapshot();
 		}
 		break;
+	case PartyCommandKind::RebindRestoredMember:
+		RebindRestoredMember(command, nowSec);
+		break;
 	case PartyCommandKind::DbLoadCompleted:
 	case PartyCommandKind::DbPersistCompleted:
+		// 복구/저장 완료는 PartyPersistGateway가 main tick에서 직접 흡수하므로
+		// 여기서는 별도 처리가 필요 없다.
 		break;
 	default:
 		break;
@@ -185,6 +206,7 @@ void PartyCommandPump::CreateParty(
 			_network,
 			command.actorSessionId,
 			_partyService.BuildPartySnapshot(result.partyId));
+		PersistPartyState(result.partyId, nowSec);
 		BroadcastPartyListSnapshot();
 	}
 }
@@ -325,6 +347,7 @@ void PartyCommandPump::AcceptJoinRequest(
 	}
 
 	StagePartySnapshotToMembers(snapshot);
+	PersistPartyState(result.partyId, nowSec);
 	BroadcastPartyListSnapshot();
 }
 
@@ -402,6 +425,7 @@ void PartyCommandPump::MarkMemberOffline(
 		StagePartySnapshotToMembers(snapshot);
 	}
 
+	PersistPartyState(partyId, nowSec);
 	BroadcastPartyListSnapshot();
 }
 
@@ -446,13 +470,50 @@ void PartyCommandPump::BeginWorldEntry(
 			nowSec);
 		if (enqueueResult.Succeeded())
 		{
+			PersistPartyState(entry.partyId, nowSec);
 			BroadcastPartyListSnapshot();
 		}
 	}
 	else
 	{
 		(void)_partyService.FailWorldEntry(entry.partyId, 0, nowSec);
+		PersistPartyState(entry.partyId, nowSec);
 	}
+}
+
+void PartyCommandPump::RebindRestoredMember(
+	const PartyCommand& command,
+	double nowSec)
+{
+	const PartyResult result =
+		_partyService.RebindMemberByAccount(
+			command.correlationId,
+			command.actorSessionId,
+			nowSec);
+	if (!result.Succeeded())
+	{
+		return;
+	}
+
+	const PartySnapshot snapshot =
+		_partyService.BuildPartySnapshot(result.partyId);
+	if (snapshot.partyId != 0)
+	{
+		StagePartySnapshotToMembers(snapshot);
+	}
+
+	PersistPartyState(result.partyId, nowSec);
+	BroadcastPartyListSnapshot();
+}
+
+void PartyCommandPump::PersistPartyState(PartyId partyId, double nowSec)
+{
+	if (_persistGateway == nullptr)
+	{
+		return;
+	}
+
+	_persistGateway->PersistCurrentState(partyId, nowSec);
 }
 
 void PartyCommandPump::StagePartySnapshotToMembers(

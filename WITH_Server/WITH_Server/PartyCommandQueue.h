@@ -21,6 +21,7 @@ enum class PartyCommandKind : uint8_t
 	TransferEnqueued,
 	TransferCompleted,
 	TransferFailed,
+	RebindRestoredMember,
 	DbLoadCompleted,
 	DbPersistCompleted
 };

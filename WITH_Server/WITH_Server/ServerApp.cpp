@@ -572,12 +572,26 @@ bool ServerApp::InitializeDatabaseRuntime()
 	}
 
 	_databaseBackend = std::move(databaseBackend);
+
+	// DB가 활성화된 경우에만 파티 영속화 gateway를 붙이고 복구를 시작한다.
+	_partyDbResultQueue.Clear();
+	_partyPersistGateway = std::make_unique<PartyPersistGateway>(
+		*_databaseBackend,
+		_partyDbResultQueue,
+		_partyService);
+	_partyCommandPump.SetPersistGateway(_partyPersistGateway.get());
+	_partyPersistGateway->SubmitStartupLoad();
+
 	return true;
 }
 
 void ServerApp::ShutdownDatabaseRuntime() noexcept
 {
 	_sessionSystem.SetDatabaseBackend(nullptr);
+
+	_partyCommandPump.SetPersistGateway(nullptr);
+	_partyPersistGateway.reset();
+	_partyDbResultQueue.Clear();
 
 	if (_databaseBackend == nullptr)
 	{
@@ -956,6 +970,11 @@ void ServerApp::ApplyPartyWorldTransferEvents(
 				failed.partyId,
 				failed.transferId,
 				_nowSec);
+
+		if (_partyPersistGateway != nullptr)
+		{
+			_partyPersistGateway->PersistCurrentState(failed.partyId, _nowSec);
+		}
 		}
 	}
 
@@ -978,6 +997,11 @@ void ServerApp::ApplyPartyWorldTransferEvents(
 					completed.targetWorldId.GetRaw(),
 					static_cast<uint32_t>(completeResult.error));
 				continue;
+			}
+
+			if (_partyPersistGateway != nullptr)
+			{
+				_partyPersistGateway->PersistCurrentState(completed.partyId, _nowSec);
 			}
 
 			const WorldInstance* const targetWorld =

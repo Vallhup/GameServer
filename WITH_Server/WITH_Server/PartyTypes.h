@@ -161,6 +161,27 @@ struct PartyRecord
 	PartyWorldEntry worldEntry;
 	PartyDeathCountState deathCount;
 	double createdAtSec{ 0.0 };
+
+	// DB 영속화 ordering 용 단조 증가 버전. DB에 저장되는 상태가 바뀔 때만 올린다.
+	uint64_t version{ 0 };
+};
+
+// DB에서 복구한 멤버십 한 명. runtime SessionId/NetId/위치는 복구하지 않으며
+// account 기준으로만 복원한다.
+struct RestoredPartyMember
+{
+	uint64_t accountId{ 0 };
+	PartyMemberRole role{ PartyMemberRole::Member };
+};
+
+// DB에서 복구한 파티 하나. lifecycle 정규화와 leader 위임은 PartyService가 수행한다.
+struct RestoredParty
+{
+	PartyId partyId{ 0 };
+	uint64_t leaderAccountId{ 0 };
+	PartyLifecycleState lifecycle{ PartyLifecycleState::Forming };
+	uint64_t version{ 0 };
+	std::vector<RestoredPartyMember> members;
 };
 
 struct PartyResult
@@ -211,6 +232,7 @@ struct PartySnapshot
 	std::vector<PartyJoinRequestSnapshot> joinRequests;
 	PartyWorldEntry worldEntry;
 	double createdAtSec{ 0.0 };
+	uint64_t version{ 0 };
 	bool joinable{ false };
 };
 

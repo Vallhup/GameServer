@@ -49,6 +49,23 @@ public:
 		double nowSec);
 	void ExpireJoinRequests(double nowSec);
 
+	// --- DB 복구 경로 ---------------------------------------------------
+	// DB snapshot 하나를 메모리 파티로 복원한다. session/netId/위치는 복원하지
+	// 않으며 모든 멤버 presence는 Offline으로 시작한다. lifecycle은 정규화된다.
+	PartyResult RestorePartyFromSnapshot(
+		const RestoredParty& restored,
+		double nowSec);
+
+	// 복구가 끝난 뒤 다음 PartyId 발급값을 DB 최대 id 기준으로 끌어올린다.
+	void AdvanceNextPartyIdTo(PartyId maxRestoredPartyId) noexcept;
+
+	// 재접속한 account를 복구된 파티의 offline 멤버 슬롯에 다시 바인딩한다.
+	// 필요 시 첫 접속 멤버에게 leader를 위임한다.
+	PartyResult RebindMemberByAccount(
+		uint64_t accountId,
+		SessionId sessionId,
+		double nowSec);
+
 	PartyWorldEntryResult BeginWorldEntry(
 		SessionId leaderSessionId,
 		const WorldTargetSpec& target,

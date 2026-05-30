@@ -183,6 +183,7 @@
     <ClCompile Include="AnimationJsonLoader.cpp" />
     <ClCompile Include="AnimationRegistry.cpp" />
     <ClCompile Include="AttributeDef.cpp" />
+    <ClCompile Include="CombatStatisticsCommands.cpp" />
     <ClCompile Include="DataDrivenAIIdleActionPolicy.cpp" />
     <ClCompile Include="DBConn.cpp" />
     <ClCompile Include="CharacterIdPolicy.cpp" />
@@ -191,6 +192,7 @@
     <ClCompile Include="CharacterSpawnService.cpp" />
     <ClCompile Include="CombatAreaProjectileDef.cpp" />
     <ClCompile Include="DBData.cpp" />
+    <ClCompile Include="ECS\System\Phase8\RecordCombatStatisticsSystem.cpp" />
     <ClCompile Include="LoginAuth.cpp" />
     <ClCompile Include="ODBCDatabaseBackend.cpp" />
     <ClCompile Include="DefCompilePipeline.cpp" />
@@ -251,6 +253,8 @@
     <ClCompile Include="DemoPartyFormationPolicy.cpp" />
     <ClCompile Include="PartyCommandPump.cpp" />
     <ClCompile Include="PartyCommandQueue.cpp" />
+    <ClCompile Include="PartyDbCommands.cpp" />
+    <ClCompile Include="PartyPersistGateway.cpp" />
     <ClCompile Include="PartyService.cpp" />
     <ClCompile Include="PartySystem_SmokeTest.cpp" />
     <ClCompile Include="RegisterAccount.cpp" />
@@ -297,6 +301,8 @@
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="SpawnSetDef.cpp" />
+    <ClCompile Include="TitleCommands.cpp" />
+    <ClCompile Include="TitleDef.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ProtocolLib\ProtocolLib\Protocols\DTO.pb.h" />
@@ -317,6 +323,7 @@
     <ClInclude Include="CharacterDataService.h" />
     <ClInclude Include="CharacterIdPolicy.h" />
     <ClInclude Include="CharacterSpawnService.h" />
+    <ClInclude Include="CombatStatisticsCommands.h" />
     <ClInclude Include="DataDrivenAICombatActionPolicy.h" />
     <ClInclude Include="DataDrivenAIIdleActionPolicy.h" />
     <ClInclude Include="DataDrivenAIMovementPolicy.h" />
@@ -324,6 +331,7 @@
     <ClInclude Include="DataDrivenAISpecialActionPolicy.h" />
     <ClInclude Include="DBConn.h" />
     <ClInclude Include="DBData.h" />
+    <ClInclude Include="ECS\System\Phase8\RecordCombatStatisticsSystem.h" />
     <ClInclude Include="LoginAuth.h" />
     <ClInclude Include="ODBCDatabaseBackend.h" />
     <ClInclude Include="DefCompilePipeline.h" />
@@ -428,6 +436,9 @@
     <ClInclude Include="DemoPartyFormationPolicy.h" />
     <ClInclude Include="PartyCommandPump.h" />
     <ClInclude Include="PartyCommandQueue.h" />
+    <ClInclude Include="PartyDbCommands.h" />
+    <ClInclude Include="PartyPersistGateway.h" />
+    <ClInclude Include="PartyPersistTypes.h" />
     <ClInclude Include="PartyService.h" />
     <ClInclude Include="PartyTypes.h" />
     <ClInclude Include="AIChaseState.h" />
@@ -466,6 +477,8 @@
     <ClInclude Include="SessionManager.h" />
     <ClInclude Include="SpawnSetDef.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="TitleCommands.h" />
+    <ClInclude Include="TitleDef.h" />
     <ClInclude Include="TransformHelper.h" />
   </ItemGroup>
   <ItemGroup>

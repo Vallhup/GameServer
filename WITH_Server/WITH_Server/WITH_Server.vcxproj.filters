@@ -53,6 +53,12 @@
     <ClCompile Include="PartyCommandQueue.cpp">
       <Filter>SessionSystem\Party</Filter>
     </ClCompile>
+    <ClCompile Include="PartyDbCommands.cpp">
+      <Filter>SessionSystem\Party</Filter>
+    </ClCompile>
+    <ClCompile Include="PartyPersistGateway.cpp">
+      <Filter>SessionSystem\Party</Filter>
+    </ClCompile>
     <ClCompile Include="PartyService.cpp">
       <Filter>SessionSystem\Party</Filter>
     </ClCompile>
@@ -359,6 +365,18 @@
     <ClCompile Include="RegisterAccount.cpp">
       <Filter>Database\Query</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\Phase8\RecordCombatStatisticsSystem.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleCommands.cpp">
+      <Filter>Database\Query</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleDef.cpp">
+      <Filter>Data\Definition</Filter>
+    </ClCompile>
+    <ClCompile Include="CombatStatisticsCommands.cpp">
+      <Filter>Database\Query</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerApp.h">
@@ -377,6 +395,15 @@
       <Filter>SessionSystem\Party</Filter>
     </ClInclude>
     <ClInclude Include="PartyCommandQueue.h">
+      <Filter>SessionSystem\Party</Filter>
+    </ClInclude>
+    <ClInclude Include="PartyDbCommands.h">
+      <Filter>SessionSystem\Party</Filter>
+    </ClInclude>
+    <ClInclude Include="PartyPersistGateway.h">
+      <Filter>SessionSystem\Party</Filter>
+    </ClInclude>
+    <ClInclude Include="PartyPersistTypes.h">
       <Filter>SessionSystem\Party</Filter>
     </ClInclude>
     <ClInclude Include="PartyService.h">
@@ -863,6 +890,18 @@
       <Filter>Database\Query</Filter>
     </ClInclude>
     <ClInclude Include="RegisterAccount.h">
+      <Filter>Database\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase8\RecordCombatStatisticsSystem.h">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleCommands.h">
+      <Filter>Database\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleDef.h">
+      <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="CombatStatisticsCommands.h">
       <Filter>Database\Query</Filter>
     </ClInclude>
   </ItemGroup>

@@ -243,6 +243,8 @@ PartyResult PartyService::AcceptJoinRequest(
 			nowSec);
 	}
 
+	++party->version;
+
 	return PartyResult{
 		.error = PartyError::None,
 		.partyId = party->partyId,
@@ -366,6 +368,9 @@ PartyResult PartyService::MarkMemberPresence(
 		DisbandParty(*party, nowSec);
 	}
 
+	// presence와 leader/lifecycle 변경은 모두 DB 저장 대상이므로 버전을 올린다.
+	++party->version;
+
 	return PartyResult{ .error = PartyError::None, .partyId = partyId };
 }
 
@@ -390,6 +395,151 @@ void PartyService::ExpireJoinRequests(double nowSec)
 			}
 		}
 	}
+}
+
+PartyResult PartyService::RestorePartyFromSnapshot(
+	const RestoredParty& restored,
+	double nowSec)
+{
+	AssertOwnerThread();
+
+	if (restored.partyId == 0 ||
+		restored.members.empty() ||
+		restored.members.size() > MaxPartyMembers ||
+		_parties.contains(restored.partyId))
+	{
+		return PartyResult{
+			.error = PartyError::InvalidPartyState,
+			.partyId = restored.partyId
+		};
+	}
+
+	// 진행 중이던 World 전이/로딩 상태는 재시작 후 무효이므로 Forming으로 되돌린다.
+	// Disbanded는 애초에 복구 대상이 아니다(soft-deleted).
+	if (restored.lifecycle == PartyLifecycleState::Disbanded)
+	{
+		return PartyResult{
+			.error = PartyError::InvalidPartyState,
+			.partyId = restored.partyId
+		};
+	}
+
+	PartyRecord party{};
+	party.partyId = restored.partyId;
+	party.formationSource = PartyFormationSource::RestoredFromDB;
+	party.lifecycle = PartyLifecycleState::Forming;
+	party.leaderSessionId = 0;
+	party.createdAtSec = nowSec;
+	party.version = restored.version;
+	party.members.reserve(restored.members.size());
+
+	bool foundLeader = false;
+	for (const RestoredPartyMember& restoredMember : restored.members)
+	{
+		const bool isLeaderAccount =
+			restoredMember.accountId == restored.leaderAccountId;
+		foundLeader = foundLeader || isLeaderAccount;
+
+		party.members.push_back(PartyMember{
+			.sessionId = 0,
+			.accountId = restoredMember.accountId,
+			.netId = NetId::Invalid(),
+			.characterId = CharacterId::None,
+			.role = isLeaderAccount
+				? PartyMemberRole::Leader
+				: PartyMemberRole::Member,
+			.presence = PartyMemberPresence::Offline,
+			.joinedAtSec = nowSec,
+			.lastSeenAtSec = nowSec
+		});
+	}
+
+	if (!foundLeader)
+	{
+		return PartyResult{
+			.error = PartyError::InvalidPartyState,
+			.partyId = restored.partyId
+		};
+	}
+
+	_parties.emplace(restored.partyId, std::move(party));
+
+	return PartyResult{ .error = PartyError::None, .partyId = restored.partyId };
+}
+
+void PartyService::AdvanceNextPartyIdTo(PartyId maxRestoredPartyId) noexcept
+{
+	AssertOwnerThread();
+
+	if (maxRestoredPartyId + 1 > _nextPartyId)
+	{
+		_nextPartyId = maxRestoredPartyId + 1;
+	}
+}
+
+PartyResult PartyService::RebindMemberByAccount(
+	uint64_t accountId,
+	SessionId sessionId,
+	double nowSec)
+{
+	AssertOwnerThread();
+
+	if (accountId == 0 || sessionId == 0)
+	{
+		return PartyResult{ .error = PartyError::InvalidSession };
+	}
+
+	for (auto& [partyId, party] : _parties)
+	{
+		if (party.lifecycle == PartyLifecycleState::Disbanded)
+		{
+			continue;
+		}
+
+		const auto memberIt = std::find_if(
+			party.members.begin(),
+			party.members.end(),
+			[accountId](const PartyMember& member)
+			{
+				return member.accountId == accountId &&
+					member.sessionId == 0;
+			});
+		if (memberIt == party.members.end())
+		{
+			continue;
+		}
+
+		memberIt->sessionId = sessionId;
+		memberIt->netId = _sessionQuery.FindControlledNetId(sessionId);
+		memberIt->characterId =
+			_sessionQuery.FindSelectedCharacterId(sessionId);
+		memberIt->presence = PartyMemberPresence::Online;
+		memberIt->lastSeenAtSec = nowSec;
+		_partyBySession[sessionId] = partyId;
+
+		if (memberIt->role == PartyMemberRole::Leader)
+		{
+			// DB leader 본인이 접속: 그대로 runtime leader로 바인딩한다.
+			party.leaderSessionId = sessionId;
+		}
+		else if (party.leaderSessionId == 0)
+		{
+			// leader account가 아직 offline이면 첫 접속 멤버에게 위임한다.
+			party.leaderSessionId = sessionId;
+			for (PartyMember& member : party.members)
+			{
+				member.role = member.sessionId == sessionId
+					? PartyMemberRole::Leader
+					: PartyMemberRole::Member;
+			}
+		}
+
+		++party.version;
+
+		return PartyResult{ .error = PartyError::None, .partyId = partyId };
+	}
+
+	return PartyResult{ .error = PartyError::PartyNotFound };
 }
 
 PartyWorldEntryResult PartyService::BeginWorldEntry(
@@ -463,6 +613,7 @@ PartyWorldEntryResult PartyService::BeginWorldEntry(
 	}
 
 	party->lifecycle = PartyLifecycleState::WorldEntryPending;
+	++party->version;
 	ClosePendingRequestsForParty(
 		*party,
 		PartyJoinRequestCloseReason::ClosedByPartyEnteredWorld,
@@ -547,6 +698,7 @@ PartyResult PartyService::CompleteWorldEntry(
 	party->lifecycle = PartyLifecycleState::InWorld;
 	party->worldEntry.state = PartyWorldEntryState::Completed;
 	party->worldEntry.completedAtSec = nowSec;
+	++party->version;
 
 	return PartyResult{ .error = PartyError::None, .partyId = partyId };
 }
@@ -579,6 +731,7 @@ PartyResult PartyService::FailWorldEntry(
 	party->lifecycle = PartyLifecycleState::Forming;
 	party->worldEntry.state = PartyWorldEntryState::Failed;
 	party->worldEntry.completedAtSec = nowSec;
+	++party->version;
 
 	return PartyResult{ .error = PartyError::None, .partyId = partyId };
 }
@@ -732,6 +885,7 @@ PartySnapshot PartyService::BuildPartySnapshot(PartyId partyId) const
 	snapshot.leaderSessionId = party->leaderSessionId;
 	snapshot.worldEntry = party->worldEntry;
 	snapshot.createdAtSec = party->createdAtSec;
+	snapshot.version = party->version;
 	snapshot.joinable =
 		party->lifecycle == PartyLifecycleState::Forming &&
 		party->members.size() < MaxPartyMembers;
@@ -886,6 +1040,7 @@ PartyResult PartyService::CreatePartyInternal(
 	party.lifecycle = PartyLifecycleState::Forming;
 	party.leaderSessionId = leaderSessionId;
 	party.createdAtSec = nowSec;
+	party.version = 1;
 	party.members.reserve(uniqueMembers.size());
 
 	for (SessionId sessionId : uniqueMembers)

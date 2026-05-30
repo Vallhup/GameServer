@@ -18,6 +18,8 @@
 #include "ODBCDatabaseBackend.h"
 #include "PartyCommandPump.h"
 #include "PartyCommandQueue.h"
+#include "PartyPersistGateway.h"
+#include "PartyPersistTypes.h"
 #include "PartyService.h"
 #include "ServerSessionSystem.h"
 #include "ServerWorldBootstrap.h"
@@ -156,6 +158,8 @@ private:
 	PartyService _partyService;
 	PartyCommandQueue _partyCommandQueue;
 	PartyCommandPump _partyCommandPump;
+	PartyDbResultQueue _partyDbResultQueue;
+	std::unique_ptr<PartyPersistGateway> _partyPersistGateway;
 	DemoPartyFormationPolicy _demoPartyPolicy;
 	std::unordered_map<TransferId, std::unordered_map<SessionId, uint32_t>>
 		_worldTransitionRequestIds;

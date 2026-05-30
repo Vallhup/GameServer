@@ -1090,6 +1090,13 @@ ExecCallResult HandleLoginAuthResult(NodeExecContext& ctx)
         return ExecCallResult::Success;
     }
 
+    // DB에서 복구된 파티가 있으면 이 account를 해당 파티 멤버 슬롯에 재바인딩한다.
+    SubmitPartyCommand(PartyCommand{
+        .kind = PartyCommandKind::RebindRestoredMember,
+        .actorSessionId = sessionId,
+        .correlationId = payload.accountId
+    });
+
     return ExecCallResult::Success;
 }
 
@@ -1988,7 +1995,7 @@ ExecCallResult HandleIncrementMonsterKillCountResult(NodeExecContext& ctx)
         DBCommandEnvelope envelope{};
         envelope.meta.sessionId            = payload.sessionId;
         envelope.meta.scopeId              = ctx.scopeId;
-        envelope.meta.requestFrameIndex    = ctx.frame->frameIndex;
+        envelope.meta.requestFrameIndex    = ResolveRequestFrameIndex(ctx);
         envelope.meta.completionTaskTypeId = g_unlockTitleResultTaskTypeId;
         envelope.command = std::make_unique<UnlockTitleCommand>(
             payload.accountId,
@@ -2054,7 +2061,7 @@ ExecCallResult HandleIncrementDeathByMonsterCountResult(NodeExecContext& ctx)
         DBCommandEnvelope envelope{};
         envelope.meta.sessionId            = payload.sessionId;
         envelope.meta.scopeId              = ctx.scopeId;
-        envelope.meta.requestFrameIndex    = ctx.frame->frameIndex;
+        envelope.meta.requestFrameIndex    = ResolveRequestFrameIndex(ctx);
         envelope.meta.completionTaskTypeId = g_unlockTitleResultTaskTypeId;
         envelope.command = std::make_unique<UnlockTitleCommand>(
             payload.accountId,
