@@ -563,6 +563,63 @@ namespace
 		assert(finalState.remainingCount == 0);
 		assert(finalState.exhausted);
 	}
+
+	// 멤버가 파티에 참가한 상태에서 로그아웃(in-memory, 서버 재시작 없음)한 뒤
+	// 새 세션으로 재접속하면, 동일 account의 offline 슬롯에 다시 바인딩되어
+	// 파티가 유지되어야 한다. (회귀: Offline 전환 시 sessionId가 0으로 리셋되지
+	// 않아 RebindMemberByAccount가 슬롯을 찾지 못하던 버그)
+	void Test_Party_12_ReconnectRebindsMemberAfterLogout()
+	{
+		const WorldId plaza = WorldId::Create(1, 1);
+		FakePartySessionQuery query{};
+		query.Add(60, plaza);
+		query.Add(61, plaza);
+		query.Add(71, plaza); // 멤버 61의 재접속 세션
+
+		PartyService service{ query };
+		const PartyResult partyResult = service.CreateParty(60, 1.0);
+		assert(partyResult.Succeeded());
+		const PartyResult request61 =
+			service.RequestJoin(61, partyResult.partyId, 2.0);
+		assert(request61.Succeeded());
+		assert(service.AcceptJoinRequest(60, request61.requestId, 3.0).Succeeded());
+
+		const uint64_t account61 = query.FindAccountId(61);
+
+		// 멤버 61 로그아웃: 리더(60)는 온라인이므로 파티는 해산되면 안 된다.
+		assert(
+			service.MarkMemberPresence(
+				61,
+				PartyMemberPresence::Offline,
+				4.0).Succeeded());
+		const PartyRecord* const party = service.FindParty(partyResult.partyId);
+		assert(party != nullptr);
+		assert(party->lifecycle != PartyLifecycleState::Disbanded);
+
+		// 옛 세션 매핑은 정리되어 더 이상 조회되면 안 된다.
+		assert(service.FindPartyBySession(61) == 0);
+
+		// 새 세션(71)으로 재접속 → 동일 account 슬롯에 rebind 성공해야 한다.
+		const PartyResult rebind =
+			service.RebindMemberByAccount(account61, 71, 5.0);
+		assert(rebind.Succeeded());
+		assert(rebind.partyId == partyResult.partyId);
+		assert(service.FindPartyBySession(71) == partyResult.partyId);
+
+		const PartyRecord* const rejoined =
+			service.FindParty(partyResult.partyId);
+		assert(rejoined != nullptr);
+		const auto memberIt = std::find_if(
+			rejoined->members.begin(),
+			rejoined->members.end(),
+			[account61](const PartyMember& member)
+			{
+				return member.accountId == account61;
+			});
+		assert(memberIt != rejoined->members.end());
+		assert(memberIt->sessionId == 71);
+		assert(memberIt->presence == PartyMemberPresence::Online);
+	}
 }
 
 void RunPartySystemSmokeTests()
@@ -599,4 +656,7 @@ void RunPartySystemSmokeTests()
 
 	Test_Party_11_DeathCountInitializesAndConsumes();
 	std::cout << "[PASS] Test_Party_11_DeathCountInitializesAndConsumes\n";
+
+	Test_Party_12_ReconnectRebindsMemberAfterLogout();
+	std::cout << "[PASS] Test_Party_12_ReconnectRebindsMemberAfterLogout\n";
 }

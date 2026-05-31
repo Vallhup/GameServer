@@ -353,6 +353,22 @@ PartyResult PartyService::MarkMemberPresence(
 	{
 		memberIt->lastSeenAtSec = nowSec;
 	}
+	else
+	{
+		// Offline 전환 시 runtime 바인딩(session/net)을 해제한다.
+		// 이렇게 해야 재접속한 동일 account가 RebindMemberByAccount의 빈 슬롯
+		// 조건(accountId 일치 && sessionId == 0)에 매칭되어 파티에 다시 바인딩된다.
+		// 결과적으로 in-memory 로그아웃 멤버가 DB에서 복구된 offline 슬롯과
+		// 동일한 표현(sessionId == 0)을 갖게 되어, 서버 재시작 여부와 무관하게
+		// 재접속 복구 경로가 일관되게 동작한다.
+		memberIt->lastSeenAtSec = nowSec;
+		if (memberIt->sessionId != 0)
+		{
+			_partyBySession.erase(memberIt->sessionId);
+			memberIt->sessionId = 0;
+			memberIt->netId = NetId::Invalid();
+		}
+	}
 
 	ReassignLeaderAfterPresenceChange(*party);
 
