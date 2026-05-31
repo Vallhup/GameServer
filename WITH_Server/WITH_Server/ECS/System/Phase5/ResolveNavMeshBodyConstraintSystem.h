@@ -4,7 +4,7 @@
 #include "SystemMetaStorage.h"
 
 class ResolveNavMeshBodyConstraintSystem final : public System {
-	static const StaticSystemMetaStorage<7> kMetaStorage;
+	static const StaticSystemMetaStorage<8> kMetaStorage;
 
 public:
 	void Execute(SystemContext& ctx) override;

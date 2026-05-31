@@ -73,6 +73,9 @@ struct BodyCollisionResolveComp : Component
 	XMFLOAT3 navResolvedPosition{ 0.0f, 0.0f, 0.0f };
 	bool navMeshAdjusted{ false };
 	bool navMeshFallbackNoProvider{ false };
+	bool terrainHeightAdjusted{ false };
+	bool terrainHeightFallbackNoProvider{ false };
+	bool terrainHeightSampleFailed{ false };
 	bool rejectedByNavMesh{ false };
 	bool overlapAdjusted{ false };
 };

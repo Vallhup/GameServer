@@ -9,6 +9,7 @@
 #include "../../../GameDataCatalog.h"
 #include "../../../GameplayContentCatalog.h"
 #include "../GameplaySystemUtil.h"
+#include "BossGimmickCombatPolicy.h"
 #include "ECS/Components/GameplayInputComponents.h"
 #include "ECS/Components/GameplayWorldLifecycleComponents.h"
 #include "RepComponent.h"
@@ -106,6 +107,11 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 		std::vector<Entity> parriedAttackers;
 		Entity killerEntity = Entity::Null();
 		const CombatStatStateComp previousStats = stats;
+		const BossGimmickStateComp* bossGimmick =
+			ctx.ecs.GetComponent<BossGimmickStateComp>(entity);
+		const bool ignoreIncomingHpDamage =
+			bossGimmick != nullptr &&
+			BossGimmickCombatPolicy::ShouldIgnoreIncomingHpDamage(*bossGimmick);
 		for (const PendingCombatInteractionRecord& interaction :
 			result.receivedInteractions)
 		{
@@ -132,6 +138,11 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 
 			if (interaction.resultType == CombatResolveResultType::Hit)
 			{
+				if (ignoreIncomingHpDamage)
+				{
+					continue;
+				}
+
 				const int32_t netHpDamage = std::max(
 					0,
 					damage * 100 / std::max(1, 100 + stats.defense));
@@ -150,6 +161,11 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			}
 			else if (interaction.resultType == CombatResolveResultType::Guard)
 			{
+				if (ignoreIncomingHpDamage)
+				{
+					continue;
+				}
+
 				guardResolved = true;
 				float chipDamage = static_cast<float>(damage);
 				float staminaDamageScale = 1.0f;

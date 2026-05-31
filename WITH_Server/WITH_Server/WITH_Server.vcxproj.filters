@@ -377,6 +377,9 @@
     <ClCompile Include="CombatStatisticsCommands.cpp">
       <Filter>Database\Query</Filter>
     </ClCompile>
+    <ClCompile Include="BossGimmickCombatPolicy_SmokeTest.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerApp.h">
@@ -650,6 +653,9 @@
       <Filter>ECS\System\Phase7</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.h">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase8\BossGimmickCombatPolicy.h">
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\CommitCombatResultSystem.h">

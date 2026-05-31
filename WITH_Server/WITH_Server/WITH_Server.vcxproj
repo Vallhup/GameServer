@@ -183,6 +183,7 @@
     <ClCompile Include="AnimationJsonLoader.cpp" />
     <ClCompile Include="AnimationRegistry.cpp" />
     <ClCompile Include="AttributeDef.cpp" />
+    <ClCompile Include="BossGimmickCombatPolicy_SmokeTest.cpp" />
     <ClCompile Include="CombatStatisticsCommands.cpp" />
     <ClCompile Include="DataDrivenAIIdleActionPolicy.cpp" />
     <ClCompile Include="DBConn.cpp" />
@@ -388,6 +389,7 @@
     <ClInclude Include="ECS\System\Phase7\ResolveProjectileHitSystem.h" />
     <ClInclude Include="ECS\System\Phase7\ResolveStaticBoxHitSystem.h" />
     <ClInclude Include="ECS\System\Phase8\CommitAbilityTimelineEventSystem.h" />
+    <ClInclude Include="ECS\System\Phase8\BossGimmickCombatPolicy.h" />
     <ClInclude Include="ECS\System\Phase8\CommitCombatResultSystem.h" />
     <ClInclude Include="ECS\System\Phase8\FinalizePostCommitStateSystem.h" />
     <ClInclude Include="ECS\System\Phase8\RecoverStaminaSystem.h" />

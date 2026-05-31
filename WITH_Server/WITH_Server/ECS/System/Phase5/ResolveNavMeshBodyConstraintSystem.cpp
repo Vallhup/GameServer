@@ -13,8 +13,9 @@
 
 using namespace GameplaySystemUtil;
 
-static const std::array<AccessSpec, 7> kResolveNavMeshBodyConstraintAccesses{
+static const std::array<AccessSpec, 8> kResolveNavMeshBodyConstraintAccesses{
 	ReadImmediate(ExternalRes<INavMeshProvider>()),
+	ReadImmediate(ExternalRes<ITerrainHeightProvider>()),
 	WriteImmediate(ComponentRes<WorldTransformComp>()),
 	ReadImmediate(ComponentRes<PreCollisionTransformComp>()),
 	ReadImmediate(ComponentRes<BodyCollisionShapeComp>()),
@@ -101,13 +102,14 @@ static bool TryResolveStartPoly(
 		outStartPos);
 }
 
-const StaticSystemMetaStorage<7> ResolveNavMeshBodyConstraintSystem::kMetaStorage =
+const StaticSystemMetaStorage<8> ResolveNavMeshBodyConstraintSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<ResolveNavMeshBodyConstraintSystem>(),
 		"ResolveNavMeshBodyConstraintSystem",
-		std::array<AccessSpec, 7>
+		std::array<AccessSpec, 8>
 	{
 		ReadImmediate(ExternalRes<INavMeshProvider>()),
+		ReadImmediate(ExternalRes<ITerrainHeightProvider>()),
 		WriteImmediate(ComponentRes<WorldTransformComp>()),
 		ReadImmediate(ComponentRes<PreCollisionTransformComp>()),
 		ReadImmediate(ComponentRes<BodyCollisionShapeComp>()),
@@ -119,6 +121,7 @@ const StaticSystemMetaStorage<7> ResolveNavMeshBodyConstraintSystem::kMetaStorag
 void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 {
 	const INavMeshProvider* navProvider = ctx.services.navMeshProvider;
+	const ITerrainHeightProvider* terrainProvider = ctx.services.terrainHeightProvider;
 	const NavMeshRuntime* navMesh =
 		navProvider ? navProvider->GetNavMeshRuntime() : nullptr;
 	const NavigationProfileDef* profile =
@@ -273,10 +276,28 @@ void ResolveNavMeshBodyConstraintSystem::Execute(SystemContext& ctx)
 				continue;
 			}
 		}
-		const float navMeshFloorY = surfaceHeight + surfaceYOffset;
+		float floorY = surfaceHeight + surfaceYOffset;
+		if (terrainProvider)
+		{
+			float terrainY = 0.0f;
+			if (terrainProvider->TrySampleHeight(resultPos[0], resultPos[2], terrainY))
+			{
+				floorY = terrainY;
+				resolveState.terrainHeightAdjusted = true;
+			}
+			else
+			{
+				resolveState.terrainHeightSampleFailed = true;
+			}
+		}
+		else
+		{
+			resolveState.terrainHeightFallbackNoProvider = true;
+		}
+
 		resultPos[1] = preCollision.preserveAbilityVerticalAboveNavMesh
-			? std::max(transform.position.y, navMeshFloorY)
-			: navMeshFloorY;
+			? std::max(transform.position.y, floorY)
+			: floorY;
 
 		navAgent.currentPolyRef = static_cast<uint64_t>(resultRef);
 

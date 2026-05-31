@@ -7,6 +7,7 @@
 #include "FrameworkLog.h"
 
 void RunPartySystemSmokeTests();
+void RunBossGimmickCombatPolicySmokeTests();
 
 namespace
 {
@@ -26,6 +27,11 @@ int main(int argc, char** argv)
 	if (HasArg(argc, argv, "--party-smoke"))
 	{
 		RunPartySystemSmokeTests();
+		return 0;
+	}
+	if (HasArg(argc, argv, "--boss-gimmick-combat-policy-smoke"))
+	{
+		RunBossGimmickCombatPolicySmokeTests();
 		return 0;
 	}
 
