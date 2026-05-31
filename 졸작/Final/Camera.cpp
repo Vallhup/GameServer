@@ -84,7 +84,7 @@ void Camera::UpdateInputtoCamLogic(DX12Core& core, float deltaTime)
     if (wheel != 0) {
         float steps = (float)wheel / (float)WHEEL_DELTA;
         zoomDistance -= steps * zoomSpeedPerNotch;
-        zoomDistance = clamp(zoomDistance, minDistance, maxDistance);
+        zoomDistance = clamp(zoomDistance, minZoomDistance, maxDistance);
     }
 
     if (INPUT.GetKeyDown(VK_F3))
@@ -313,7 +313,7 @@ bool Camera::CheckObstruction(const vector<shared_ptr<GameObject>>& objects, con
 
     if (foundObstruction)
     {
-        adjustedDistance = max(closestDistance/* - 0.1f*/, minDistance);
+        adjustedDistance = max(closestDistance/* - 0.1f*/, minCollisionDistance);
         return true;
     }
 

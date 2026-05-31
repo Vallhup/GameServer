@@ -84,7 +84,8 @@ private:
 	float desiredDistance;
 	float currentDistance;
 	float zoomDistance;       
-	float minDistance = 2.0f;
+	float minZoomDistance = 3.0f;       
+	float minCollisionDistance = 1.5f;  
 	float maxDistance = 4.5f;
 	float zoomSpeedPerNotch = 0.25f;    
 	float zoomFollowSpeed = 2.5f;
