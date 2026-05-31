@@ -1193,18 +1193,18 @@ void GameSceneUIController::RemoveMonsterBar(int id)
 
 void GameSceneUIController::InitBossHpBar()
 {
-	constexpr float BARBACK_ASPECT     = 39.0f / 785.0f;
-	constexpr float HPBAR_WIDTH_RATIO  = 692.0f / 785.0f;
-	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 39.0f;
-	constexpr float HPBAR_OFFSET_X     = 49.0f / 785.0f;
-	constexpr float HPBAR_OFFSET_Y     = 11.0f / 39.0f;
+	constexpr float BOSSBACK_ASPECT    = 57.0f / 946.0f;
+	constexpr float HPBAR_WIDTH_RATIO  = 906.0f / 946.0f;
+	constexpr float HPBAR_HEIGHT_RATIO = 18.0f / 57.0f;
+	constexpr float HPBAR_OFFSET_X     = 18.0f / 946.0f;
+	constexpr float HPBAR_OFFSET_Y     = 19.0f / 57.0f;
 
 	const float backW = WinSize.x * 0.55f;
-	const float backH = backW * BARBACK_ASPECT * 0.6f;  
+	const float backH = backW * BOSSBACK_ASPECT * 0.7f;
 	const float backX = (WinSize.x - backW) * 0.5f;
-	const float backY = WinSize.y * 0.77f;         
+	const float backY = WinSize.y * 0.77f;
 
-	bossBarBack = make_shared<ImageUI>(uiManager, L"BarBack", ImageUIState::Hidden);
+	bossBarBack = make_shared<ImageUI>(uiManager, L"BossBarBack", ImageUIState::Hidden);
 	bossBarBack->SetPosition(backX, backY);
 	bossBarBack->SetHoriLength(backW);
 	bossBarBack->SetVertLength(backH);

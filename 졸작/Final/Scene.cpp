@@ -302,16 +302,40 @@ void Scene::CreateCharacterPool(CharacterType type, int count)
 			sfx->AddTrigger("Walk", 22, 24, "../Assets/Music/SFX/Foot.mp3");
 			sfx->AddTrigger("Run", 6, 8, "../Assets/Music/SFX/Foot.mp3");
 			sfx->AddTrigger("Run", 14, 16, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("AttackCombo1", 8, 10, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("AttackCombo2", 11, 13, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("AttackCombo3", 6, 8, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("AttackSpecial", 29, 31, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("Dodge", 9, 11, "../Assets/Music/SFX/Roll.mp3");
 			swordEffect->SetBoneIndices({ 45 });
 			trail->SetBoneIndices({ 45 });
 			trail->SetBladeLength(1.02f);
 			break;
 		case CharacterType::Lancer:
+			sfx->AddTrigger("Walk", 9, 11, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Walk", 25, 27, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 1, 3, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 8, 10, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("AttackCombo1", 16, 18, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("AttackCombo1", 25, 27, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("AttackCombo2", 14, 16, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("AttackCombo3", 18, 200, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("AttackSpecial", 27, 29, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("Dodge", 8, 10, "../Assets/Music/SFX/Roll.mp3");
 			swordEffect->SetBoneIndices({ 25, 45 });
 			trail->SetBoneIndices({ 25, 45 });
 			trail->SetBladeLength(0.81f);
 			break;
 		case CharacterType::Paladin:
+			sfx->AddTrigger("Walk", 10, 12, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Walk", 25, 27, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 1, 3, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("Run", 9, 11, "../Assets/Music/SFX/Foot.mp3");
+			sfx->AddTrigger("AttackCombo1", 20, 22, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("AttackCombo2", 15, 17, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("AttackCombo3", 19, 21, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("AttackSpecial", 23, 25, "../Assets/Music/SFX/SwingSword.mp3");
+			sfx->AddTrigger("Dodge", 9, 11, "../Assets/Music/SFX/Roll.mp3");
 			swordEffect->SetBoneIndices({ 44 });
 			trail->SetBoneIndices({ 44 });
 			trail->SetBladeLength(0.95f);
@@ -344,7 +368,7 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 	const auto& desc = descs.at(type);
 	for (int i = 0; i < count; ++i)
 	{
-		auto monster = CreateMonsterObject(desc.meshPath, desc.animFactory, desc.twoSided);
+		auto monster = CreateMonsterObject(desc.meshPath, desc.animFactory, desc.twoSided); 
 		monster->GetComponent<Transform>()->SetInitPosition(position);
 
 		if (type == MonsterType::Boss || type == MonsterType::BigDemonWarrior || type == MonsterType::Tank)

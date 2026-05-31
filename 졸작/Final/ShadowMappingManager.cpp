@@ -100,6 +100,9 @@ void ShadowMappingManager::SettingsForCSM()
 	csmLightDir = XMVector3Normalize(lightDir);
 
 	csmConstants.cascadeSplit = { 15.0f, 40.0f, 90.0f, 0.0f };
+	csmConstants.shadowAmbientMin = 0.8f;
+	csmConstants.shadowFloor = 0.0f;
+	csmConstants.shadowPad = { 0.0f, 0.0f };
 }
 
 void ShadowMappingManager::CreateCSMResources(ID3D12Device* device)

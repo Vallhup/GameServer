@@ -77,14 +77,14 @@ private:
 	bool spacePressed = false;
 
 	static constexpr float MOUSE_SENSITIVITY = 0.1f;
-	static constexpr float CAMERA_FOLLOW_SPEED = 40.0f;
-	static constexpr float TARGET_FOLLOW_SPEED = 4.0f;
+	static constexpr float CAMERA_FOLLOW_SPEED = 120.0f;
+	static constexpr float TARGET_FOLLOW_SPEED = 2.5f;
 	static constexpr float TERRAIN_CLEARANCE = 0.001f;   
 
 	float desiredDistance;
 	float currentDistance;
 	float zoomDistance;       
-	float minDistance = 0.5f;
+	float minDistance = 2.0f;
 	float maxDistance = 4.5f;
 	float zoomSpeedPerNotch = 0.25f;    
 	float zoomFollowSpeed = 2.5f;
