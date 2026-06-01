@@ -69,8 +69,11 @@ void DX12Core::Initialize(HWND hwnd)
 
 void DX12Core::Update()
 {
-	// CSM Update
-	shadowMgr->UpdateCascadeShadow(SCENE_MANAGER->GetCurrentScene()->GetCamera()->GetTargetPosition());
+	// Final(성당) = 실내 → 태양 CSM 대신 overhead 동적 그림자(캐릭터 기준). 그 외는 일반 캐스케이드(카메라 타겟).
+	if (SCENE_MANAGER->GetCurrentSceneType() == SceneType::Final)
+		shadowMgr->UpdateOverheadShadow(playerCurrentPos);
+	else
+		shadowMgr->UpdateCascadeShadow(SCENE_MANAGER->GetCurrentScene()->GetCamera()->GetTargetPosition());
 }
 
 void DX12Core::BeginShadowPass(int cascadeIdx)
@@ -252,6 +255,44 @@ void DX12Core::EndDynamicShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& 
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 		cascadeIdx);
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &toPsr);
+
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
+}
+
+void DX12Core::BeginOverheadShadowPass()
+{
+	// 슬라이스 0만 사용. 직전 야외 씬이 슬라이스 0을 PSR로 남겨둔 상태에서 진입.
+	D3D12_RESOURCE_BARRIER toDW = CD3DX12_RESOURCE_BARRIER::Transition(
+		shadowMgr->GetCsmResource(),
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		0);
+	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &toDW);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE shadowDSV = shadowMgr->GetCsmDSV(0);
+	deviceCtx->GetGraphicsCmdList()->OMSetRenderTargets(0, nullptr, FALSE, &shadowDSV);
+	deviceCtx->GetGraphicsCmdList()->ClearDepthStencilView(shadowDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+	UINT mapSize = shadowMgr->GetShadowMapSize();
+	D3D12_VIEWPORT vp = { 0, 0, (float)mapSize, (float)mapSize, 0.0f, 1.0f };
+	D3D12_RECT rect = { 0, 0, (LONG)mapSize, (LONG)mapSize };
+	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);
+	deviceCtx->GetGraphicsCmdList()->RSSetScissorRects(1, &rect);
+
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootSignature(GetRootSig()->Get());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRootConstantBufferView(5, shadowMgr->GetCsmCB()->GetGPUVirtualAddress());
+	deviceCtx->GetGraphicsCmdList()->SetGraphicsRoot32BitConstant(16, 0, 0);   // ShadowVS가 lightVP[0] 사용
+}
+
+void DX12Core::EndOverheadShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect)
+{
+	D3D12_RESOURCE_BARRIER toPsr = CD3DX12_RESOURCE_BARRIER::Transition(
+		shadowMgr->GetCsmResource(),
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		0);
 	deviceCtx->GetGraphicsCmdList()->ResourceBarrier(1, &toPsr);
 
 	deviceCtx->GetGraphicsCmdList()->RSSetViewports(1, &vp);

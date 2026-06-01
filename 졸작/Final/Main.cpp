@@ -5,6 +5,9 @@
 #include "imgui.h"
 #include "ImGuiManager.h"
 #include "ClientConnectionListener.h"
+#include "SceneManager.h"
+#include "Scene.h"
+#include "Camera.h"
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 static void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd);
@@ -178,7 +181,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_KEYDOWN:
         if (wParam == VK_F1 && ImGui::GetCurrentContext() != nullptr) {
-            IMGUI.SetEnabled(!IMGUI.IsEnabled());
+            const bool enabled = !IMGUI.IsEnabled();
+            IMGUI.SetEnabled(enabled);
+            if (Scene* scene = SCENE_MANAGER->GetCurrentScene())
+                if (Camera* camera = scene->GetCamera())
+                    if (camera->IsCursorActive() != enabled)
+                        camera->SetCursor(enabled);
             return 0;
         }
         [[fallthrough]];

@@ -92,6 +92,9 @@ public:
 	void CopyStaticToCsmCascade2();
 	void BeginDynamicShadowPass();
 	void EndDynamicShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
+	// 실내(Final) overhead 동적 그림자: 슬라이스 0에 단일 패스
+	void BeginOverheadShadowPass();
+	void EndOverheadShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 
 	void BeginGBufferPass();
 	void EndGBufferPass();

@@ -95,26 +95,35 @@ void Engine::Render()
     sceneManager->BeginRender();
 
     auto* shadowMgr = graphics->GetShadowMgr();
-    const int staticCascadeIdx = shadowMgr->GetStaticCacheCascadeIndex();
 
-    // Cascade 0, 1: 전 객체 그리기 (Static + Dynamic 분리 호출)
-    for (int i = 0; i < staticCascadeIdx; ++i) {
-        graphics->BeginShadowPass(i);
-        sceneManager->RenderShadowStatic();
+    if (sceneManager->GetCurrentSceneType() == SceneType::Final) {
+        // 실내(성당): 태양 CSM 패스 전체 스킵 → overhead 동적 그림자 1패스만
+        graphics->BeginOverheadShadowPass();
         sceneManager->RenderShadowDynamic();
-        graphics->EndShadowPass(viewport, scissorRect, i);
+        graphics->EndOverheadShadowPass(viewport, scissorRect);
     }
+    else {
+        const int staticCascadeIdx = shadowMgr->GetStaticCacheCascadeIndex();
 
-    // Cascade 2: static caster cache는 dirty일 때만 재생성, dynamic은 매 프레임 overlay
-    if (shadowMgr->IsCascadeDirty(staticCascadeIdx)) {
-        graphics->BeginStaticShadowPass();
-        sceneManager->RenderShadowStatic();
-        graphics->EndStaticShadowPass();
+        // Cascade 0, 1: 전 객체 그리기 (Static + Dynamic 분리 호출)
+        for (int i = 0; i < staticCascadeIdx; ++i) {
+            graphics->BeginShadowPass(i);
+            sceneManager->RenderShadowStatic();
+            sceneManager->RenderShadowDynamic();
+            graphics->EndShadowPass(viewport, scissorRect, i);
+        }
+
+        // Cascade 2: static caster cache는 dirty일 때만 재생성, dynamic은 매 프레임 overlay
+        if (shadowMgr->IsCascadeDirty(staticCascadeIdx)) {
+            graphics->BeginStaticShadowPass();
+            sceneManager->RenderShadowStatic();
+            graphics->EndStaticShadowPass();
+        }
+        graphics->CopyStaticToCsmCascade2();
+        graphics->BeginDynamicShadowPass();
+        sceneManager->RenderShadowDynamic();
+        graphics->EndDynamicShadowPass(viewport, scissorRect);
     }
-    graphics->CopyStaticToCsmCascade2();
-    graphics->BeginDynamicShadowPass();
-    sceneManager->RenderShadowDynamic();
-    graphics->EndDynamicShadowPass(viewport, scissorRect);
 
     graphics->BeginGBufferPass();
     sceneManager->RenderDeferred();  

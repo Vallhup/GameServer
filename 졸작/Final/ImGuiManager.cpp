@@ -271,6 +271,19 @@ void ImGuiManager::DrawDebugUI()
                 {
                     sm->UploadCsmConstants();
                 }
+
+                ImGui::Separator();
+                ImGui::TextUnformatted("Overhead (Indoor) Shadow");
+                // 매 프레임 UpdateOverheadShadow가 다시 읽으므로 업로드 호출 불필요
+                ImGui::Checkbox("Follow Nearest Light", &sm->GetOverheadFollowNearestLight());
+                ImGui::SliderFloat("Shadow Strength", &cs.overheadStrength, 0.0f, 1.0f);
+                ImGui::SliderFloat("Ambient Fill", &cs.overheadAmbientBoost, 1.0f, 4.0f);
+                if (sm->GetOverheadFollowNearestLight())
+                    ImGui::SliderFloat("Max Tilt (length)", &sm->GetOverheadTilt(), 0.0f, 3.0f);
+                else
+                    ImGui::SliderFloat3("Light Dir", &sm->GetOverheadLightDir().x, -1.0f, 1.0f);
+                ImGui::SliderFloat("Half Size", &sm->GetOverheadHalfSize(), 10.0f, 120.0f);
+                ImGui::SliderFloat("Height", &sm->GetOverheadHeight(), 20.0f, 200.0f);
             }
         }
         ImGui::End();

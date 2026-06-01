@@ -88,6 +88,8 @@ private:
 	shared_ptr<ImageUI> statusRibbon;
 	shared_ptr<ImageUI> statusArrowLeft;
 	shared_ptr<ImageUI> statusArrowRight;
+	shared_ptr<TextUI>  statusStatText;
+	wstring             lastStatText;
 	shared_ptr<ImageUI> localCharBarsBack;
 	shared_ptr<ImageUI> localCharHpBar;
 	shared_ptr<ImageUI> localCharStaminaBar;

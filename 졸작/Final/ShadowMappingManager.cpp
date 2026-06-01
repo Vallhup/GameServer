@@ -81,6 +81,87 @@ void ShadowMappingManager::UpdateCascadeShadow(const XMFLOAT3& center)
 
 	lastSunDir = currentSunDir;
 
+	csmConstants.overheadMode = 0.0f;   // 캐스케이드 모드: 셰이더가 cascade 샘플
+	csmConstantBuffer->CopyData(&csmConstants, sizeof(CascadeShadowConstants));
+}
+
+void ShadowMappingManager::UpdateOverheadShadow(const XMFLOAT3& center)
+{
+	// center(카메라 타겟) 바로 위에서 수직 아래로 내려보는 orthographic 프러스텀.
+	// 동적 캐스터만 슬라이스 0에 그려지고, 셰이더는 lightVP[0]만 샘플한다.
+	XMVECTOR c = XMLoadFloat3(&center);
+
+	// 성당 중심축 바닥 조명 (FinalMapLightData.txt에서 추출한 x≈0 강한 floor light 스파인).
+	// 그림자 방향만 여기서 끌어옴. 측면/벽/천장 조명은 제외 → 좌우로 튀는 현상 방지.
+	// TODO: 추후 모델러가 별도 데이터로 제공 예정. 그때 이 고정 배열을 교체.
+	static const XMFLOAT3 kCenterFloorLights[] = {
+		{ -0.117f, 8.25f, -14.93f },
+		{ -0.117f, 6.46f, -27.03f },
+		{  0.102f, 8.85f, -35.08f },
+		{  0.102f, 8.85f, -44.54f },
+		{ -0.117f, 6.90f, -51.95f },
+		{  0.015f, 8.24f, -72.63f },
+		{ -0.247f, 8.89f, -84.60f },
+		{  0.015f, 8.39f, -98.13f },
+	};
+
+	// 빛 진행 방향 = 하향(-Y) + 수평 lean. lean을 가장 가까운 중심 바닥 조명에서 끌어옴.
+	XMVECTOR dir;
+	if (overheadFollowNearestLight)
+	{
+		// 각 조명의 물리 lean(=수평거리/높이=tan 입사각)을 역제곱 거리 가중 평균으로 혼합.
+		// 단일 nearest의 전환 스냅을 없애 방향이 연속적으로 회전 → 튐 제거.
+		// 조명 바로 밑이면 lean≈0(짧음), 떨어질수록 lean↑(길어짐). overheadTilt = 최대 길이 클램프.
+		XMFLOAT2 targetLean = { overheadLightDir.x, overheadLightDir.z };  // fallback
+		float accX = 0.0f, accZ = 0.0f, wSum = 0.0f;
+		for (int i = 0; i < (int)_countof(kCenterFloorLights); ++i)
+		{
+			float dx = center.x - kCenterFloorLights[i].x;
+			float dz = center.z - kCenterFloorLights[i].z;
+			float vy = kCenterFloorLights[i].y - center.y;   // 조명이 위 → 양수
+			if (vy <= 1e-3f) continue;
+
+			float d2 = dx * dx + dz * dz;
+			float w = 1.0f / (d2 + 1.0f);   // 역제곱(eps=1: 조명 바로 위에서 발산 방지)
+			accX += (dx / vy) * w;
+			accZ += (dz / vy) * w;
+			wSum += w;
+		}
+		if (wSum > 0.0f)
+		{
+			float lx = accX / wSum;
+			float lz = accZ / wSum;
+			float leanLen = sqrtf(lx * lx + lz * lz);
+			if (leanLen > overheadTilt) { float s = overheadTilt / leanLen; lx *= s; lz *= s; }
+			targetLean = { lx, lz };
+		}
+
+		// 조명 전환 시 방향 튐 방지 — 매 프레임 부드럽게 수렴
+		const float smooth = 0.1f;
+		overheadSmoothedLean.x += (targetLean.x - overheadSmoothedLean.x) * smooth;
+		overheadSmoothedLean.y += (targetLean.y - overheadSmoothedLean.y) * smooth;
+
+		dir = XMVector3Normalize(XMVectorSet(overheadSmoothedLean.x, -1.0f, overheadSmoothedLean.y, 0.0f));
+	}
+	else
+	{
+		dir = XMVector3Normalize(XMLoadFloat3(&overheadLightDir));  // 수동 고정 방향
+	}
+
+	XMVECTOR eye = XMVectorSubtract(c, XMVectorScale(dir, overheadHeight)); // 빛이 오는 위치(center 위쪽)
+
+	// dir 기울기에 안정적인 up: 거의 수직이면 +Z, 많이 누우면 +Y 기준으로 직교 basis 구성
+	float dirY = XMVectorGetY(dir);
+	XMVECTOR upCand = (fabsf(dirY) > 0.9f) ? XMVectorSet(0, 0, 1, 0) : XMVectorSet(0, 1, 0, 0);
+	XMVECTOR right = XMVector3Normalize(XMVector3Cross(upCand, dir));
+	XMVECTOR up = XMVector3Cross(dir, right);
+
+	XMMATRIX view = XMMatrixLookAtLH(eye, c, up);
+	XMMATRIX proj = XMMatrixOrthographicLH(
+		overheadHalfSize * 2.0f, overheadHalfSize * 2.0f, 0.1f, overheadHeight * 2.0f);
+
+	csmConstants.lightVP[0] = XMMatrixTranspose(XMMatrixMultiply(view, proj));
+	csmConstants.overheadMode = 1.0f;
 	csmConstantBuffer->CopyData(&csmConstants, sizeof(CascadeShadowConstants));
 }
 
@@ -102,7 +183,10 @@ void ShadowMappingManager::SettingsForCSM()
 	csmConstants.cascadeSplit = { 15.0f, 40.0f, 90.0f, 0.0f };
 	csmConstants.shadowAmbientMin = 0.8f;
 	csmConstants.shadowFloor = 0.0f;
-	csmConstants.shadowPad = { 0.0f, 0.0f };
+	csmConstants.overheadMode = 0.0f;
+	csmConstants.overheadStrength = 0.5f;
+	csmConstants.overheadAmbientBoost = 1.5f;
+	csmConstants.shadowPad2 = { 0.0f, 0.0f, 0.0f };
 }
 
 void ShadowMappingManager::CreateCSMResources(ID3D12Device* device)

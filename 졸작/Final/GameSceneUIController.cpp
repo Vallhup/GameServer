@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "SoundManager.h"
+#include "ImGuiManager.h"
 #include "ClientPartyState.h"
 #include "ClientWorldTransitionController.h"
 #include "NetworkManager.h"
@@ -618,6 +619,14 @@ void GameSceneUIController::InitStatWindow()
 	statusArrowRight->SetVertLength(arrowSizeY);
 	statusArrowRight->SetHoverScale(1.15f);
 	widgets.push_back(statusArrowRight);
+
+	statusStatText = make_shared<TextUI>(uiManager, L"StatText", L"VerdanaBold");
+	const float statScale = WinSize.y / 1080.0f * 0.6f;
+	statusStatText->SetScale(statScale);
+	statusStatText->SetTextColor(Colors::White);
+	statusStatText->SetPosition(WinSize.x * 0.60f, WinSize.y * 0.28f);
+	statusStatText->SetText(L"");
+	widgets.push_back(statusStatText);
 }
 
 void GameSceneUIController::InitMapWindow()
@@ -881,6 +890,9 @@ void GameSceneUIController::Update(float deltaTime)
 			statusRibbon->ChangeState(next);
 			statusArrowLeft->ChangeState(next);
 			statusArrowRight->ChangeState(next);
+
+			if (statusStatText)
+				statusStatText->SetText(next == ImageUIState::Hidden ? L"" : lastStatText);
 		}
 	}
 
@@ -1134,6 +1146,7 @@ void GameSceneUIController::Update(float deltaTime)
 	}
 
 	const bool wantCursor =
+		IMGUI.IsEnabled() ||
 		opened(statusImage) || opened(escWindow)   || opened(partyBook) ||
 		opened(mapImage)    || opened(keyGuide)    || opened(settingWindow) ||
 		opened(joinRequestWindow) || opened(statueWindow) || opened(beaconWindow);
@@ -1599,14 +1612,19 @@ void GameSceneUIController::HideHudForCinematic()
 void GameSceneUIController::HandleStatImageChange(int curHp, int maxHp, int curStamina, int maxStamina, int power, double aSpeed, int defense, double mSpeed)
 {
 	wstring text =
-		L"CurHp: " + to_wstring(curHp) + L"\n" +
-		L"MaxHp: " + to_wstring(maxHp) + L"\n" +
-		L"CurStamina: " + to_wstring(curStamina) + L"\n" +
-		L"MaxStamina: " + to_wstring(maxStamina) + L"\n" +
-		L"Power: " + to_wstring(power) + L"\n" +
-		L"aSpeed: " + to_wstring(aSpeed) + L"\n" +
-		L"Defense: " + to_wstring(defense) + L"\n" +
-		L"mSpeed: " + to_wstring(mSpeed) + L"\n";
+		L"Current Hp: " + to_wstring(curHp) + L"\n" + L"\n" +
+		L"Max Hp: " + to_wstring(maxHp) + L"\n" + L"\n" +
+		L"Current Stamina: " + to_wstring(curStamina) + L"\n" + L"\n" +
+		L"Max Stamina: " + to_wstring(maxStamina) + L"\n" + L"\n" +
+		L"Power: " + to_wstring(power) + L"\n" + L"\n" +
+		L"Attack Speed: " + to_wstring(aSpeed) + L"\n" + L"\n" +
+		L"Defense: " + to_wstring(defense) + L"\n" + L"\n" +
+		L"Move Speed: " + to_wstring(mSpeed) + L"\n";
+
+	lastStatText = text;
+
+	if (statusStatText && IsStatWindowOn())
+		statusStatText->SetText(text);
 }
 
 void GameSceneUIController::ShowMapName()

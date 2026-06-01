@@ -398,7 +398,7 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			sfx->AddEffectTrigger("HolySandstorm", 0, 2, L"HolySandstorm");
 			sfx->AddEffectTrigger("SwordMoonlight", 0, 2, L"Sword_Moonlight");
 			sfx->AddEffectTrigger("SwordStorm", 0, 2, L"Sword_Storm");
-			sfx->AddEffectTrigger("50per", 30, 32, L"Fire");
+			sfx->AddEffectTrigger("50per", 46, 48, L"Fire");
 			sfx->AddEffectTrigger("0per", 28, 30, L"PhantasmMeteor_Single");
 		}
 
@@ -655,10 +655,9 @@ void Scene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
 		if (controller)
 		{
 			controller->HandleStatBarChange(curHp, maxHp, curStamina, maxStamina);
-			if (controller->IsStatWindowOn())
-				controller->HandleStatImageChange(
-					curHp, maxHp, curStamina, maxStamina,
-					power, aSpeed, defense, mSpeed);
+			controller->HandleStatImageChange(
+				curHp, maxHp, curStamina, maxStamina,
+				power, aSpeed, defense, mSpeed);
 		}
 	}
 	else if (auto typeIt = activeMonsterTypes.find(id);

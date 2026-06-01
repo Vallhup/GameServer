@@ -79,7 +79,10 @@ cbuffer ShadowFrameCB : register(b5)
     float4 cascadeSplit;
     float shadowAmbientMin;
     float shadowFloor;
-    float2 shadowPad;
+    float overheadMode;       // 1=실내 overhead 동적 그림자, 0=캐스케이드
+    float overheadStrength;   // overhead 그림자 강도 (0=없음, 1=완전 어둠)
+    float overheadAmbientBoost; // 실내 IBL ambient 배율 (대비 완화)
+    float3 shadowPad2;
 };
 
 cbuffer FogConstants : register(b6)

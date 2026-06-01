@@ -289,9 +289,17 @@ void Camera::UpdatePosByObstruction(const vector<shared_ptr<GameObject>>& sceneO
 bool Camera::CheckObstruction(const vector<shared_ptr<GameObject>>& objects, const vector<shared_ptr<InstancingBatch>>& instancingBatches, const XMFLOAT3& targetPos, float& adjustedDistance, const shared_ptr<MainCharacter>& myPlayer)
 {
     XMVECTOR rayOrigin = XMLoadFloat3(&targetPos);
-    XMVECTOR rayDir = XMLoadFloat3(&position) - rayOrigin;
-    
-    float maxDistance = XMVectorGetX(XMVector3Length(rayDir));
+
+    float radYaw = XMConvertToRadians(yaw);
+    float radPitch = XMConvertToRadians(-pitch);
+    XMFLOAT3 fullPos = {
+        targetPos.x + zoomDistance * cos(radPitch) * sin(radYaw),
+        targetPos.y + zoomDistance * sin(radPitch),
+        targetPos.z + zoomDistance * cos(radPitch) * cos(radYaw)
+    };
+
+    XMVECTOR rayDir = XMLoadFloat3(&fullPos) - rayOrigin;
+    float maxDistance = zoomDistance;
     rayDir = XMVector3Normalize(rayDir);
 
     float closestDistance = maxDistance;

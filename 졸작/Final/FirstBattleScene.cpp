@@ -133,9 +133,9 @@ void FirstBattleScene::InitializeSceneEnvironments()
 void FirstBattleScene::InitializeSceneMonsters()
 {
 	const XMFLOAT3 monsterSpawn = { 22.f, SampleHeightAt(22.f, 22.f), 22.f };
-	CreateMonsters(MonsterType::Imp, monsterSpawn, 9);
-	CreateMonsters(MonsterType::DemonStriker, monsterSpawn, 1);
-	CreateMonsters(MonsterType::DemonExecutioner, monsterSpawn, 1);
+	CreateMonsters(MonsterType::Imp, monsterSpawn, 12);
+	CreateMonsters(MonsterType::DemonStriker, monsterSpawn, 3);
+	CreateMonsters(MonsterType::DemonExecutioner, monsterSpawn, 3);
 	CreateMonsters(MonsterType::BigDemonWarrior, monsterSpawn, 1);
 }
 

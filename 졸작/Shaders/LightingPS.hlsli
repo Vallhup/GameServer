@@ -102,6 +102,19 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
         directLight += lightContribution;
     }
 
+    // 실내(성당): 태양이 꺼져 있어 위 shadow 경로가 안 도므로, overhead 그림자를
+    // point light 누적분에 직접 곱한다. ambient는 아래 공통 라인에서 같은 shadow로 처리.
+    if (overheadMode > 0.5)
+    {
+        // 위를 향한 면(바닥)에만 그림자. 캐릭터 피부/몸은 노멀이 옆이라 걸러짐.
+        float floorMask = smoothstep(0.6, 0.85, N.y);
+        float s = SampleOverheadShadow(worldPos, N);
+        // 강도로 부분 차폐. strength<1이면 빛이 0까지 안 떨어져 다른 맵처럼 옅게 유지.
+        float occ = (1.0 - s) * floorMask * overheadStrength;   // 0=밝음 .. 1=완전 그림자
+        shadow = 1.0 - occ;
+        directLight *= shadow;
+    }
+
     float ssao = ssaoTexture.Sample(linearSampler, input.uv).r;
     ssao = lerp(1.0, ssao, 0.5);
     
@@ -116,8 +129,17 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
     );
 
     iblAmbient *= lerp(shadowAmbientMin, 1.0, shadow);
-    
+
     float3 finalColor = directLight + iblAmbient + emission;
+
+    // 실내(Final): 어두운 영역에만 ambient색 fill을 더해 대비↓.
+    // darkW가 밝은 픽셀(luma 높음)에서 0이라 밝은 데는 그대로, 어두운 데만 들어올림.
+    if (overheadMode > 0.5)
+    {
+        float luma = dot(finalColor, float3(0.299, 0.587, 0.114));
+        float darkW = saturate(1.0 - luma);
+        finalColor += iblAmbient * darkW * (overheadAmbientBoost - 1.0);
+    }
 
     float4 fog = fogTexture.Sample(linearSampler, input.uv);
     finalColor = finalColor * fog.a + fog.rgb;

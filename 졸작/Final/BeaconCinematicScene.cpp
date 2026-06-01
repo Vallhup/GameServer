@@ -145,6 +145,21 @@ void BeaconCinematicScene::UpdateBeaconCinematic(float deltaTime)
 			EFFECT_MANAGER->Play(cfg.burstEffect, beaconCinePos);
 			if (beaconLight) beaconLight->Stop();
 			ScatterAtmosphere();
+
+			// burst 순간 붉게 시작한 분위기를 중립(흰색)으로 되돌림
+			if (cineSkyBox)
+			{
+				cineSkyBox->GetConstants().skyTintColor = { 1.0f, 1.0f, 1.0f };
+				cineSkyBox->UpdateConstants();
+			}
+			if (coreRef)
+			{
+				auto& vf = coreRef->GetVolumetricFogData();
+				vf.scattering = 0.8f;
+				vf.lightColor = { 1.0f, 1.0f, 1.0f };
+				coreRef->UpdateVolumetricFog();
+			}
+
 			CaptureBrightenBase();
 			cineState = BeaconCine::Showcase;
 			cineTimer = 0.0f;
