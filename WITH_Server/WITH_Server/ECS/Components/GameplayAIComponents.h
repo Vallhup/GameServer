@@ -202,6 +202,7 @@ struct BossGimmickStateComp : Component
 {
 	BossGimmickType activeType{ BossGimmickType::None };
 	BossGimmickStage stage{ BossGimmickStage::None };
+	uint32_t gimmickSeq{ 0 };
 
 	float elapsedSec{ 0.0f };
 	float stageElapsedSec{ 0.0f };
@@ -253,6 +254,7 @@ struct BossGimmickStateComp : Component
 		float durationSec,
 		bool shouldBlockAI) noexcept
 	{
+		++gimmickSeq;
 		activeType = type;
 		stage = initialStage;
 		elapsedSec = 0.0f;

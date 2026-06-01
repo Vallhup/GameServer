@@ -99,3 +99,57 @@ message PartyListEntry
 	double createdAtSec = 7;
 	bool joinable = 8;
 }
+
+/* ------------------------------- [ Boss Gimmick ]  ------------------------------- */
+
+enum BossGimmickType
+{
+	BOSS_GIMMICK_TYPE_NONE = 0;
+	BOSS_GIMMICK_TYPE_PHASE_TRANSITION_OBJECTS = 1;
+	BOSS_GIMMICK_TYPE_FINAL_SAFE_ZONE = 2;
+}
+
+// 보스 기믹 진행 단계
+//
+// NONE:
+//	- 진행 중인 기믹 없음
+//
+// TELEGRAPH:
+//	- 기믹 예고 단계
+//  - 아직 별도의 오브젝트, 생존 구역 X
+//  - 우리 프로젝트의 경우 보스 몬스터가 뭐 기모으는 연출하기로 한거 
+//    시작하는 트리거로 쓰면 될 듯
+//
+// ACTIVE:
+//  - 기믹 수행 단계
+//  - 클라이언트, 서버 동기화 된 오브젝트/구역 표시 및 상호작용 처리
+//
+// RESOLVE:
+//  - 기믹 판정 단계
+//  - 서버는 성공/실패 결과 적용
+//  - 클라이언트는 판정, 종료 연출 진행
+//
+// COMPLETED:
+//  - 기믹 완료
+//  - 잔여 기믹 연출 정리
+//
+// CANCELLED:
+//  - 기믹 중단
+//  - 정상 판정 연출 없이 기믹 연출 정리
+enum BossGimmickStage
+{
+	BOSS_GIMMICK_STAGE_NONE = 0;
+	BOSS_GIMMICK_STAGE_TELEGRAPH = 1;
+	BOSS_GIMMICK_STAGE_ACTIVE = 2;
+	BOSS_GIMMICK_STAGE_RESOLVE = 3;
+	BOSS_GIMMICK_STAGE_COMPLETED = 4;
+	BOSS_GIMMICK_STAGE_CANCELLED = 5;
+}
+
+enum BossGimmickObjectState
+{
+    BOSS_GIMMICK_OBJECT_STATE_SPAWNED = 0;
+    BOSS_GIMMICK_OBJECT_STATE_UPDATED = 1;
+    BOSS_GIMMICK_OBJECT_STATE_BROKEN = 2;
+    BOSS_GIMMICK_OBJECT_STATE_DESPAWNED = 3;
+}

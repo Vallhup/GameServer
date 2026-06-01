@@ -5,6 +5,7 @@
 #include <span>
 #include <vector>
 
+#include "BossGimmickReplicationProtocol.h"
 #include "FrameworkLog.h"
 #include "Protocol.pb.h"
 #include "SessionFlowCommands.h"
@@ -158,6 +159,83 @@ bool ServerFrameEventDispatcher::Dispatch(
 			PacketType::SC_COMBAT_IMPACT,
 			std::span<const SessionId>(worldSessionIds),
 			impactPacket);
+	}
+
+	for (const auto& gimmickStateEvent :
+		frameResult.events.bossGimmickStates)
+	{
+		if (!gimmickStateEvent.bossNetId.IsValid())
+		{
+			continue;
+		}
+
+		sessionSystem.Flow().CollectSessionsInWorld(
+			gimmickStateEvent.worldId,
+			worldSessionIds);
+		RemoveExcludedSessions(worldSessionIds, excludedSessionIds);
+
+		Protocol::SC_BOSS_GIMMICK_STATE_PACKET packet;
+		BossGimmickReplicationProtocol::FillStatePacket(
+			packet,
+			gimmickStateEvent);
+
+		(void)ServerPacketStager::StageReplicationPacket(
+			sessionSystem.Network(),
+			PacketType::SC_BOSS_GIMMICK_STATE,
+			std::span<const SessionId>(worldSessionIds),
+			packet);
+	}
+
+	for (const auto& gimmickObjectEvent :
+		frameResult.events.bossGimmickObjects)
+	{
+		if (!gimmickObjectEvent.bossNetId.IsValid() ||
+			gimmickObjectEvent.objectNetId == 0)
+		{
+			continue;
+		}
+
+		sessionSystem.Flow().CollectSessionsInWorld(
+			gimmickObjectEvent.worldId,
+			worldSessionIds);
+		RemoveExcludedSessions(worldSessionIds, excludedSessionIds);
+
+		Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET packet;
+		BossGimmickReplicationProtocol::FillObjectSyncPacket(
+			packet,
+			gimmickObjectEvent);
+
+		(void)ServerPacketStager::StageReplicationPacket(
+			sessionSystem.Network(),
+			PacketType::SC_BOSS_GIMMICK_OBJECT_SYNC,
+			std::span<const SessionId>(worldSessionIds),
+			packet);
+	}
+
+	for (const auto& gimmickZoneEvent :
+		frameResult.events.bossGimmickZones)
+	{
+		if (!gimmickZoneEvent.bossNetId.IsValid() ||
+			gimmickZoneEvent.zoneNetId == 0)
+		{
+			continue;
+		}
+
+		sessionSystem.Flow().CollectSessionsInWorld(
+			gimmickZoneEvent.worldId,
+			worldSessionIds);
+		RemoveExcludedSessions(worldSessionIds, excludedSessionIds);
+
+		Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET packet;
+		BossGimmickReplicationProtocol::FillZoneSyncPacket(
+			packet,
+			gimmickZoneEvent);
+
+		(void)ServerPacketStager::StageReplicationPacket(
+			sessionSystem.Network(),
+			PacketType::SC_BOSS_GIMMICK_ZONE_SYNC,
+			std::span<const SessionId>(worldSessionIds),
+			packet);
 	}
 
 	for (const auto& despawnEvent : frameResult.events.despawns)

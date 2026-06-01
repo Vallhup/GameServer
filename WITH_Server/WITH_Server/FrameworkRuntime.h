@@ -91,12 +91,54 @@ public:
 			NetId netId{ NetId::Invalid() };
 		};
 
+		struct BossGimmickStateEvent
+		{
+			WorldId worldId{ WorldId::Invalid() };
+			NetId bossNetId{ NetId::Invalid() };
+			uint32_t gimmickSeq{ 0 };
+			uint32_t gimmickType{ 0 };
+			uint32_t stage{ 0 };
+			float durationSec{ 0.0f };
+			float remainingSec{ 0.0f };
+		};
+
+		struct BossGimmickObjectSyncEvent
+		{
+			WorldId worldId{ WorldId::Invalid() };
+			NetId bossNetId{ NetId::Invalid() };
+			uint32_t gimmickSeq{ 0 };
+			uint64_t objectNetId{ 0 };
+			uint32_t state{ 0 };
+			float x{ 0.0f };
+			float y{ 0.0f };
+			float z{ 0.0f };
+			float radius{ 0.0f };
+			uint32_t curHp{ 0 };
+			uint32_t maxHp{ 0 };
+		};
+
+		struct BossGimmickZoneSyncEvent
+		{
+			WorldId worldId{ WorldId::Invalid() };
+			NetId bossNetId{ NetId::Invalid() };
+			uint32_t gimmickSeq{ 0 };
+			uint64_t zoneNetId{ 0 };
+			uint32_t state{ 0 };
+			float x{ 0.0f };
+			float y{ 0.0f };
+			float z{ 0.0f };
+			float radius{ 0.0f };
+		};
+
 		struct FrameEvents
 		{
 			std::vector<EntitySpawnEvent> spawns;
 			std::vector<EntityDespawnEvent> despawns;
 			std::vector<CombatImpactEvent> combatImpacts;
 			std::vector<PlayerDeathCountEvent> playerDeathCounts;
+			std::vector<BossGimmickStateEvent> bossGimmickStates;
+			std::vector<BossGimmickObjectSyncEvent> bossGimmickObjects;
+			std::vector<BossGimmickZoneSyncEvent> bossGimmickZones;
 
 			void Clear() noexcept
 			{
@@ -104,6 +146,9 @@ public:
 				despawns.clear();
 				combatImpacts.clear();
 				playerDeathCounts.clear();
+				bossGimmickStates.clear();
+				bossGimmickObjects.clear();
+				bossGimmickZones.clear();
 			}
 		};
 

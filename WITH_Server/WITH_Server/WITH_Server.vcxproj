@@ -184,6 +184,7 @@
     <ClCompile Include="AnimationRegistry.cpp" />
     <ClCompile Include="AttributeDef.cpp" />
     <ClCompile Include="BossGimmickCombatPolicy_SmokeTest.cpp" />
+    <ClCompile Include="BossGimmickReplication_SmokeTest.cpp" />
     <ClCompile Include="CombatStatisticsCommands.cpp" />
     <ClCompile Include="DataDrivenAIIdleActionPolicy.cpp" />
     <ClCompile Include="DBConn.cpp" />
@@ -318,6 +319,7 @@
     <ClInclude Include="AnimationJsonLoader.h" />
     <ClInclude Include="AnimationRegistry.h" />
     <ClInclude Include="AttributeDef.h" />
+    <ClInclude Include="BossGimmickReplicationProtocol.h" />
     <ClInclude Include="BodyCollisionTypes.h" />
     <ClInclude Include="CharacterDef.h" />
     <ClInclude Include="CombatAreaProjectileDef.h" />

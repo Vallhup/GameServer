@@ -380,6 +380,9 @@
     <ClCompile Include="BossGimmickCombatPolicy_SmokeTest.cpp">
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
+    <ClCompile Include="BossGimmickReplication_SmokeTest.cpp">
+      <Filter>ECS\System\Phase0_AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerApp.h">
@@ -504,6 +507,9 @@
     </ClInclude>
     <ClInclude Include="AttributeDef.h">
       <Filter>Data\Definition</Filter>
+    </ClInclude>
+    <ClInclude Include="BossGimmickReplicationProtocol.h">
+      <Filter>ECS\System\Phase0_AI</Filter>
     </ClInclude>
     <ClInclude Include="SpawnSetDef.h">
       <Filter>Data\Definition</Filter>

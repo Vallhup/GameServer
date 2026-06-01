@@ -153,7 +153,7 @@ struct PartySnapshotDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PartySnapshotDefaultTypeInternal _PartySnapshot_default_instance_;
 }  // namespace Protocol
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_DTO_2eproto[6];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_DTO_2eproto[9];
 static constexpr const ::_pb::ServiceDescriptor**
     file_level_service_descriptors_DTO_2eproto = nullptr;
 const ::uint32_t
@@ -285,14 +285,27 @@ const char descriptor_table_protodef_DTO_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIAB
     "OSE_EXPIRED\020\004\022\032\n\026PARTY_CLOSE_PARTY_FULL\020"
     "\005\022#\n\037PARTY_CLOSE_PARTY_ENTERED_WORLD\020\006\022,"
     "\n(PARTY_CLOSE_REQUESTER_JOINED_OTHER_PAR"
-    "TY\020\007\022\037\n\033PARTY_CLOSE_PARTY_DISBANDED\020\010b\006p"
-    "roto3"
+    "TY\020\007\022\037\n\033PARTY_CLOSE_PARTY_DISBANDED\020\010*\204\001"
+    "\n\017BossGimmickType\022\032\n\026BOSS_GIMMICK_TYPE_N"
+    "ONE\020\000\022.\n*BOSS_GIMMICK_TYPE_PHASE_TRANSIT"
+    "ION_OBJECTS\020\001\022%\n!BOSS_GIMMICK_TYPE_FINAL"
+    "_SAFE_ZONE\020\002*\324\001\n\020BossGimmickStage\022\033\n\027BOS"
+    "S_GIMMICK_STAGE_NONE\020\000\022 \n\034BOSS_GIMMICK_S"
+    "TAGE_TELEGRAPH\020\001\022\035\n\031BOSS_GIMMICK_STAGE_A"
+    "CTIVE\020\002\022\036\n\032BOSS_GIMMICK_STAGE_RESOLVE\020\003\022"
+    " \n\034BOSS_GIMMICK_STAGE_COMPLETED\020\004\022 \n\034BOS"
+    "S_GIMMICK_STAGE_CANCELLED\020\005*\265\001\n\026BossGimm"
+    "ickObjectState\022%\n!BOSS_GIMMICK_OBJECT_ST"
+    "ATE_SPAWNED\020\000\022%\n!BOSS_GIMMICK_OBJECT_STA"
+    "TE_UPDATED\020\001\022$\n BOSS_GIMMICK_OBJECT_STAT"
+    "E_BROKEN\020\002\022\'\n#BOSS_GIMMICK_OBJECT_STATE_"
+    "DESPAWNED\020\003b\006proto3"
 };
 static ::absl::once_flag descriptor_table_DTO_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_DTO_2eproto = {
     false,
     false,
-    1885,
+    2419,
     descriptor_table_protodef_DTO_2eproto,
     "DTO.proto",
     &descriptor_table_DTO_2eproto_once,
@@ -359,6 +372,33 @@ PROTOBUF_CONSTINIT const uint32_t PartyJoinRequestCloseReason_internal_data_[] =
     589824u, 0u, };
 bool PartyJoinRequestCloseReason_IsValid(int value) {
   return 0 <= value && value <= 8;
+}
+const ::google::protobuf::EnumDescriptor* BossGimmickType_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_DTO_2eproto);
+  return file_level_enum_descriptors_DTO_2eproto[6];
+}
+PROTOBUF_CONSTINIT const uint32_t BossGimmickType_internal_data_[] = {
+    196608u, 0u, };
+bool BossGimmickType_IsValid(int value) {
+  return 0 <= value && value <= 2;
+}
+const ::google::protobuf::EnumDescriptor* BossGimmickStage_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_DTO_2eproto);
+  return file_level_enum_descriptors_DTO_2eproto[7];
+}
+PROTOBUF_CONSTINIT const uint32_t BossGimmickStage_internal_data_[] = {
+    393216u, 0u, };
+bool BossGimmickStage_IsValid(int value) {
+  return 0 <= value && value <= 5;
+}
+const ::google::protobuf::EnumDescriptor* BossGimmickObjectState_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_DTO_2eproto);
+  return file_level_enum_descriptors_DTO_2eproto[8];
+}
+PROTOBUF_CONSTINIT const uint32_t BossGimmickObjectState_internal_data_[] = {
+    262144u, 0u, };
+bool BossGimmickObjectState_IsValid(int value) {
+  return 0 <= value && value <= 3;
 }
 // ===================================================================
 

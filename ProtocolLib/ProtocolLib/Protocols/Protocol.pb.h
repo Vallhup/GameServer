@@ -113,6 +113,15 @@ extern SC_ADD_PACKETDefaultTypeInternal _SC_ADD_PACKET_default_instance_;
 class SC_ANIMATION_TRANSITION_PACKET;
 struct SC_ANIMATION_TRANSITION_PACKETDefaultTypeInternal;
 extern SC_ANIMATION_TRANSITION_PACKETDefaultTypeInternal _SC_ANIMATION_TRANSITION_PACKET_default_instance_;
+class SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET;
+struct SC_BOSS_GIMMICK_OBJECT_SYNC_PACKETDefaultTypeInternal;
+extern SC_BOSS_GIMMICK_OBJECT_SYNC_PACKETDefaultTypeInternal _SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET_default_instance_;
+class SC_BOSS_GIMMICK_STATE_PACKET;
+struct SC_BOSS_GIMMICK_STATE_PACKETDefaultTypeInternal;
+extern SC_BOSS_GIMMICK_STATE_PACKETDefaultTypeInternal _SC_BOSS_GIMMICK_STATE_PACKET_default_instance_;
+class SC_BOSS_GIMMICK_ZONE_SYNC_PACKET;
+struct SC_BOSS_GIMMICK_ZONE_SYNC_PACKETDefaultTypeInternal;
+extern SC_BOSS_GIMMICK_ZONE_SYNC_PACKETDefaultTypeInternal _SC_BOSS_GIMMICK_ZONE_SYNC_PACKET_default_instance_;
 class SC_COMBAT_IMPACT_PACKET;
 struct SC_COMBAT_IMPACT_PACKETDefaultTypeInternal;
 extern SC_COMBAT_IMPACT_PACKETDefaultTypeInternal _SC_COMBAT_IMPACT_PACKET_default_instance_;
@@ -3348,6 +3357,828 @@ class SC_COMBAT_IMPACT_PACKET final : public ::google::protobuf::Message
     float dirx_;
     float diry_;
     float dirz_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_BOSS_GIMMICK_ZONE_SYNC_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET) */ {
+ public:
+  inline SC_BOSS_GIMMICK_ZONE_SYNC_PACKET() : SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(nullptr) {}
+  ~SC_BOSS_GIMMICK_ZONE_SYNC_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& from) : SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(nullptr, from) {}
+  inline SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET&& from) noexcept
+      : SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(nullptr, std::move(from)) {}
+  inline SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& operator=(const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& operator=(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET*>(
+        &_SC_BOSS_GIMMICK_ZONE_SYNC_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 40;
+  friend void swap(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& a, SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_BOSS_GIMMICK_ZONE_SYNC_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_BOSS_GIMMICK_ZONE_SYNC_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& from) { SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET"; }
+
+ protected:
+  explicit SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(::google::protobuf::Arena* arena);
+  SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(::google::protobuf::Arena* arena, const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& from);
+  SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(::google::protobuf::Arena* arena, SC_BOSS_GIMMICK_ZONE_SYNC_PACKET&& from) noexcept
+      : SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kBossNetIdFieldNumber = 1,
+    kZoneNetIdFieldNumber = 3,
+    kGimmickSeqFieldNumber = 2,
+    kStateFieldNumber = 4,
+    kXFieldNumber = 5,
+    kYFieldNumber = 6,
+    kZFieldNumber = 7,
+    kRadiusFieldNumber = 8,
+  };
+  // uint64 bossNetId = 1;
+  void clear_bossnetid() ;
+  ::uint64_t bossnetid() const;
+  void set_bossnetid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_bossnetid() const;
+  void _internal_set_bossnetid(::uint64_t value);
+
+  public:
+  // uint64 zoneNetId = 3;
+  void clear_zonenetid() ;
+  ::uint64_t zonenetid() const;
+  void set_zonenetid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_zonenetid() const;
+  void _internal_set_zonenetid(::uint64_t value);
+
+  public:
+  // uint32 gimmickSeq = 2;
+  void clear_gimmickseq() ;
+  ::uint32_t gimmickseq() const;
+  void set_gimmickseq(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_gimmickseq() const;
+  void _internal_set_gimmickseq(::uint32_t value);
+
+  public:
+  // .Protocol.BossGimmickObjectState state = 4;
+  void clear_state() ;
+  ::Protocol::BossGimmickObjectState state() const;
+  void set_state(::Protocol::BossGimmickObjectState value);
+
+  private:
+  ::Protocol::BossGimmickObjectState _internal_state() const;
+  void _internal_set_state(::Protocol::BossGimmickObjectState value);
+
+  public:
+  // float x = 5;
+  void clear_x() ;
+  float x() const;
+  void set_x(float value);
+
+  private:
+  float _internal_x() const;
+  void _internal_set_x(float value);
+
+  public:
+  // float y = 6;
+  void clear_y() ;
+  float y() const;
+  void set_y(float value);
+
+  private:
+  float _internal_y() const;
+  void _internal_set_y(float value);
+
+  public:
+  // float z = 7;
+  void clear_z() ;
+  float z() const;
+  void set_z(float value);
+
+  private:
+  float _internal_z() const;
+  void _internal_set_z(float value);
+
+  public:
+  // float radius = 8;
+  void clear_radius() ;
+  float radius() const;
+  void set_radius(float value);
+
+  private:
+  float _internal_radius() const;
+  void _internal_set_radius(float value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      3, 8, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& from_msg);
+    ::uint64_t bossnetid_;
+    ::uint64_t zonenetid_;
+    ::uint32_t gimmickseq_;
+    int state_;
+    float x_;
+    float y_;
+    float z_;
+    float radius_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_BOSS_GIMMICK_STATE_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_BOSS_GIMMICK_STATE_PACKET) */ {
+ public:
+  inline SC_BOSS_GIMMICK_STATE_PACKET() : SC_BOSS_GIMMICK_STATE_PACKET(nullptr) {}
+  ~SC_BOSS_GIMMICK_STATE_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_BOSS_GIMMICK_STATE_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_BOSS_GIMMICK_STATE_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_BOSS_GIMMICK_STATE_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_BOSS_GIMMICK_STATE_PACKET(const SC_BOSS_GIMMICK_STATE_PACKET& from) : SC_BOSS_GIMMICK_STATE_PACKET(nullptr, from) {}
+  inline SC_BOSS_GIMMICK_STATE_PACKET(SC_BOSS_GIMMICK_STATE_PACKET&& from) noexcept
+      : SC_BOSS_GIMMICK_STATE_PACKET(nullptr, std::move(from)) {}
+  inline SC_BOSS_GIMMICK_STATE_PACKET& operator=(const SC_BOSS_GIMMICK_STATE_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_BOSS_GIMMICK_STATE_PACKET& operator=(SC_BOSS_GIMMICK_STATE_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_BOSS_GIMMICK_STATE_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_BOSS_GIMMICK_STATE_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_BOSS_GIMMICK_STATE_PACKET*>(
+        &_SC_BOSS_GIMMICK_STATE_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 38;
+  friend void swap(SC_BOSS_GIMMICK_STATE_PACKET& a, SC_BOSS_GIMMICK_STATE_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_BOSS_GIMMICK_STATE_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_BOSS_GIMMICK_STATE_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_BOSS_GIMMICK_STATE_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_BOSS_GIMMICK_STATE_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_BOSS_GIMMICK_STATE_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_BOSS_GIMMICK_STATE_PACKET& from) { SC_BOSS_GIMMICK_STATE_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_BOSS_GIMMICK_STATE_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_BOSS_GIMMICK_STATE_PACKET"; }
+
+ protected:
+  explicit SC_BOSS_GIMMICK_STATE_PACKET(::google::protobuf::Arena* arena);
+  SC_BOSS_GIMMICK_STATE_PACKET(::google::protobuf::Arena* arena, const SC_BOSS_GIMMICK_STATE_PACKET& from);
+  SC_BOSS_GIMMICK_STATE_PACKET(::google::protobuf::Arena* arena, SC_BOSS_GIMMICK_STATE_PACKET&& from) noexcept
+      : SC_BOSS_GIMMICK_STATE_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kBossNetIdFieldNumber = 1,
+    kGimmickSeqFieldNumber = 2,
+    kGimmickTypeFieldNumber = 3,
+    kStageFieldNumber = 4,
+    kDurationSecFieldNumber = 5,
+    kRemainingSecFieldNumber = 6,
+  };
+  // uint64 bossNetId = 1;
+  void clear_bossnetid() ;
+  ::uint64_t bossnetid() const;
+  void set_bossnetid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_bossnetid() const;
+  void _internal_set_bossnetid(::uint64_t value);
+
+  public:
+  // uint32 gimmickSeq = 2;
+  void clear_gimmickseq() ;
+  ::uint32_t gimmickseq() const;
+  void set_gimmickseq(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_gimmickseq() const;
+  void _internal_set_gimmickseq(::uint32_t value);
+
+  public:
+  // .Protocol.BossGimmickType gimmickType = 3;
+  void clear_gimmicktype() ;
+  ::Protocol::BossGimmickType gimmicktype() const;
+  void set_gimmicktype(::Protocol::BossGimmickType value);
+
+  private:
+  ::Protocol::BossGimmickType _internal_gimmicktype() const;
+  void _internal_set_gimmicktype(::Protocol::BossGimmickType value);
+
+  public:
+  // .Protocol.BossGimmickStage stage = 4;
+  void clear_stage() ;
+  ::Protocol::BossGimmickStage stage() const;
+  void set_stage(::Protocol::BossGimmickStage value);
+
+  private:
+  ::Protocol::BossGimmickStage _internal_stage() const;
+  void _internal_set_stage(::Protocol::BossGimmickStage value);
+
+  public:
+  // float durationSec = 5;
+  void clear_durationsec() ;
+  float durationsec() const;
+  void set_durationsec(float value);
+
+  private:
+  float _internal_durationsec() const;
+  void _internal_set_durationsec(float value);
+
+  public:
+  // float remainingSec = 6;
+  void clear_remainingsec() ;
+  float remainingsec() const;
+  void set_remainingsec(float value);
+
+  private:
+  float _internal_remainingsec() const;
+  void _internal_set_remainingsec(float value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_BOSS_GIMMICK_STATE_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      3, 6, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_BOSS_GIMMICK_STATE_PACKET& from_msg);
+    ::uint64_t bossnetid_;
+    ::uint32_t gimmickseq_;
+    int gimmicktype_;
+    int stage_;
+    float durationsec_;
+    float remainingsec_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_Protocol_2eproto;
+};
+// -------------------------------------------------------------------
+
+class SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET) */ {
+ public:
+  inline SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET() : SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(nullptr) {}
+  ~SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET* msg, std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET));
+  }
+#endif
+
+  template <typename = void>
+  explicit PROTOBUF_CONSTEXPR SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(
+      ::google::protobuf::internal::ConstantInitialized);
+
+  inline SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& from) : SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(nullptr, from) {}
+  inline SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET&& from) noexcept
+      : SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(nullptr, std::move(from)) {}
+  inline SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& operator=(const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& operator=(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::google::protobuf::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::google::protobuf::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET* internal_default_instance() {
+    return reinterpret_cast<const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET*>(
+        &_SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages = 39;
+  friend void swap(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& a, SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& b) { a.Swap(&b); }
+  inline void Swap(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET* other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& from) { SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(
+      ::google::protobuf::MessageLite& to_msg,
+      const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  static ::uint8_t* _InternalSerialize(
+      const MessageLite& msg, ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream);
+
+  public:
+  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  ::size_t ByteSizeLong() const final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target,
+      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET* other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(
+      ::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET"; }
+
+ protected:
+  explicit SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(::google::protobuf::Arena* arena);
+  SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(::google::protobuf::Arena* arena, const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& from);
+  SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(::google::protobuf::Arena* arena, SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET&& from) noexcept
+      : SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
+  static void* PlacementNew_(const void*, void* mem,
+                             ::google::protobuf::Arena* arena);
+  static constexpr auto InternalNewImpl_();
+  static const ::google::protobuf::internal::ClassDataFull _class_data_;
+
+ public:
+  ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kBossNetIdFieldNumber = 1,
+    kObjectNetIdFieldNumber = 3,
+    kGimmickSeqFieldNumber = 2,
+    kStateFieldNumber = 4,
+    kXFieldNumber = 5,
+    kYFieldNumber = 6,
+    kZFieldNumber = 7,
+    kRadiusFieldNumber = 8,
+    kCurHpFieldNumber = 9,
+    kMaxHpFieldNumber = 10,
+  };
+  // uint64 bossNetId = 1;
+  void clear_bossnetid() ;
+  ::uint64_t bossnetid() const;
+  void set_bossnetid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_bossnetid() const;
+  void _internal_set_bossnetid(::uint64_t value);
+
+  public:
+  // uint64 objectNetId = 3;
+  void clear_objectnetid() ;
+  ::uint64_t objectnetid() const;
+  void set_objectnetid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_objectnetid() const;
+  void _internal_set_objectnetid(::uint64_t value);
+
+  public:
+  // uint32 gimmickSeq = 2;
+  void clear_gimmickseq() ;
+  ::uint32_t gimmickseq() const;
+  void set_gimmickseq(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_gimmickseq() const;
+  void _internal_set_gimmickseq(::uint32_t value);
+
+  public:
+  // .Protocol.BossGimmickObjectState state = 4;
+  void clear_state() ;
+  ::Protocol::BossGimmickObjectState state() const;
+  void set_state(::Protocol::BossGimmickObjectState value);
+
+  private:
+  ::Protocol::BossGimmickObjectState _internal_state() const;
+  void _internal_set_state(::Protocol::BossGimmickObjectState value);
+
+  public:
+  // float x = 5;
+  void clear_x() ;
+  float x() const;
+  void set_x(float value);
+
+  private:
+  float _internal_x() const;
+  void _internal_set_x(float value);
+
+  public:
+  // float y = 6;
+  void clear_y() ;
+  float y() const;
+  void set_y(float value);
+
+  private:
+  float _internal_y() const;
+  void _internal_set_y(float value);
+
+  public:
+  // float z = 7;
+  void clear_z() ;
+  float z() const;
+  void set_z(float value);
+
+  private:
+  float _internal_z() const;
+  void _internal_set_z(float value);
+
+  public:
+  // float radius = 8;
+  void clear_radius() ;
+  float radius() const;
+  void set_radius(float value);
+
+  private:
+  float _internal_radius() const;
+  void _internal_set_radius(float value);
+
+  public:
+  // uint32 curHp = 9;
+  void clear_curhp() ;
+  ::uint32_t curhp() const;
+  void set_curhp(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_curhp() const;
+  void _internal_set_curhp(::uint32_t value);
+
+  public:
+  // uint32 maxHp = 10;
+  void clear_maxhp() ;
+  ::uint32_t maxhp() const;
+  void set_maxhp(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_maxhp() const;
+  void _internal_set_maxhp(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
+ private:
+  class _Internal;
+  friend class ::google::protobuf::internal::TcParser;
+  static const ::google::protobuf::internal::TcParseTable<
+      4, 10, 0,
+      0, 2>
+      _table_;
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(
+        ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena);
+    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                          ::google::protobuf::Arena* arena, const Impl_& from,
+                          const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& from_msg);
+    ::uint64_t bossnetid_;
+    ::uint64_t objectnetid_;
+    ::uint32_t gimmickseq_;
+    int state_;
+    float x_;
+    float y_;
+    float z_;
+    float radius_;
+    ::uint32_t curhp_;
+    ::uint32_t maxhp_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -11260,6 +12091,546 @@ inline bool SC_MONSTER_COMBAT_STATE_PACKET::_internal_incombat() const {
 inline void SC_MONSTER_COMBAT_STATE_PACKET::_internal_set_incombat(bool value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.incombat_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_BOSS_GIMMICK_STATE_PACKET
+
+// uint64 bossNetId = 1;
+inline void SC_BOSS_GIMMICK_STATE_PACKET::clear_bossnetid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.bossnetid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_BOSS_GIMMICK_STATE_PACKET::bossnetid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.bossNetId)
+  return _internal_bossnetid();
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::set_bossnetid(::uint64_t value) {
+  _internal_set_bossnetid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.bossNetId)
+}
+inline ::uint64_t SC_BOSS_GIMMICK_STATE_PACKET::_internal_bossnetid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.bossnetid_;
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::_internal_set_bossnetid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.bossnetid_ = value;
+}
+
+// uint32 gimmickSeq = 2;
+inline void SC_BOSS_GIMMICK_STATE_PACKET::clear_gimmickseq() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.gimmickseq_ = 0u;
+}
+inline ::uint32_t SC_BOSS_GIMMICK_STATE_PACKET::gimmickseq() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.gimmickSeq)
+  return _internal_gimmickseq();
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::set_gimmickseq(::uint32_t value) {
+  _internal_set_gimmickseq(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.gimmickSeq)
+}
+inline ::uint32_t SC_BOSS_GIMMICK_STATE_PACKET::_internal_gimmickseq() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.gimmickseq_;
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::_internal_set_gimmickseq(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.gimmickseq_ = value;
+}
+
+// .Protocol.BossGimmickType gimmickType = 3;
+inline void SC_BOSS_GIMMICK_STATE_PACKET::clear_gimmicktype() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.gimmicktype_ = 0;
+}
+inline ::Protocol::BossGimmickType SC_BOSS_GIMMICK_STATE_PACKET::gimmicktype() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.gimmickType)
+  return _internal_gimmicktype();
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::set_gimmicktype(::Protocol::BossGimmickType value) {
+  _internal_set_gimmicktype(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.gimmickType)
+}
+inline ::Protocol::BossGimmickType SC_BOSS_GIMMICK_STATE_PACKET::_internal_gimmicktype() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::Protocol::BossGimmickType>(_impl_.gimmicktype_);
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::_internal_set_gimmicktype(::Protocol::BossGimmickType value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.gimmicktype_ = value;
+}
+
+// .Protocol.BossGimmickStage stage = 4;
+inline void SC_BOSS_GIMMICK_STATE_PACKET::clear_stage() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.stage_ = 0;
+}
+inline ::Protocol::BossGimmickStage SC_BOSS_GIMMICK_STATE_PACKET::stage() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.stage)
+  return _internal_stage();
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::set_stage(::Protocol::BossGimmickStage value) {
+  _internal_set_stage(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.stage)
+}
+inline ::Protocol::BossGimmickStage SC_BOSS_GIMMICK_STATE_PACKET::_internal_stage() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::Protocol::BossGimmickStage>(_impl_.stage_);
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::_internal_set_stage(::Protocol::BossGimmickStage value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.stage_ = value;
+}
+
+// float durationSec = 5;
+inline void SC_BOSS_GIMMICK_STATE_PACKET::clear_durationsec() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.durationsec_ = 0;
+}
+inline float SC_BOSS_GIMMICK_STATE_PACKET::durationsec() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.durationSec)
+  return _internal_durationsec();
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::set_durationsec(float value) {
+  _internal_set_durationsec(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.durationSec)
+}
+inline float SC_BOSS_GIMMICK_STATE_PACKET::_internal_durationsec() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.durationsec_;
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::_internal_set_durationsec(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.durationsec_ = value;
+}
+
+// float remainingSec = 6;
+inline void SC_BOSS_GIMMICK_STATE_PACKET::clear_remainingsec() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.remainingsec_ = 0;
+}
+inline float SC_BOSS_GIMMICK_STATE_PACKET::remainingsec() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.remainingSec)
+  return _internal_remainingsec();
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::set_remainingsec(float value) {
+  _internal_set_remainingsec(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_STATE_PACKET.remainingSec)
+}
+inline float SC_BOSS_GIMMICK_STATE_PACKET::_internal_remainingsec() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.remainingsec_;
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::_internal_set_remainingsec(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.remainingsec_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET
+
+// uint64 bossNetId = 1;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_bossnetid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.bossnetid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::bossnetid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.bossNetId)
+  return _internal_bossnetid();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_bossnetid(::uint64_t value) {
+  _internal_set_bossnetid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.bossNetId)
+}
+inline ::uint64_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_bossnetid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.bossnetid_;
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_bossnetid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.bossnetid_ = value;
+}
+
+// uint32 gimmickSeq = 2;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_gimmickseq() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.gimmickseq_ = 0u;
+}
+inline ::uint32_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::gimmickseq() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.gimmickSeq)
+  return _internal_gimmickseq();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_gimmickseq(::uint32_t value) {
+  _internal_set_gimmickseq(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.gimmickSeq)
+}
+inline ::uint32_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_gimmickseq() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.gimmickseq_;
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_gimmickseq(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.gimmickseq_ = value;
+}
+
+// uint64 objectNetId = 3;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_objectnetid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.objectnetid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::objectnetid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.objectNetId)
+  return _internal_objectnetid();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_objectnetid(::uint64_t value) {
+  _internal_set_objectnetid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.objectNetId)
+}
+inline ::uint64_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_objectnetid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.objectnetid_;
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_objectnetid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.objectnetid_ = value;
+}
+
+// .Protocol.BossGimmickObjectState state = 4;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_ = 0;
+}
+inline ::Protocol::BossGimmickObjectState SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::state() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.state)
+  return _internal_state();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_state(::Protocol::BossGimmickObjectState value) {
+  _internal_set_state(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.state)
+}
+inline ::Protocol::BossGimmickObjectState SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_state() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::Protocol::BossGimmickObjectState>(_impl_.state_);
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_state(::Protocol::BossGimmickObjectState value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_ = value;
+}
+
+// float x = 5;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_x() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.x_ = 0;
+}
+inline float SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::x() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.x)
+  return _internal_x();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_x(float value) {
+  _internal_set_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.x)
+}
+inline float SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_x() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.x_;
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_x(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.x_ = value;
+}
+
+// float y = 6;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_y() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.y_ = 0;
+}
+inline float SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::y() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.y)
+  return _internal_y();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_y(float value) {
+  _internal_set_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.y)
+}
+inline float SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_y() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.y_;
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_y(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.y_ = value;
+}
+
+// float z = 7;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_z() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.z_ = 0;
+}
+inline float SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::z() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.z)
+  return _internal_z();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_z(float value) {
+  _internal_set_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.z)
+}
+inline float SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_z() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.z_;
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_z(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.z_ = value;
+}
+
+// float radius = 8;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_radius() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.radius_ = 0;
+}
+inline float SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::radius() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.radius)
+  return _internal_radius();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_radius(float value) {
+  _internal_set_radius(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.radius)
+}
+inline float SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_radius() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.radius_;
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_radius(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.radius_ = value;
+}
+
+// uint32 curHp = 9;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_curhp() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.curhp_ = 0u;
+}
+inline ::uint32_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::curhp() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.curHp)
+  return _internal_curhp();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_curhp(::uint32_t value) {
+  _internal_set_curhp(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.curHp)
+}
+inline ::uint32_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_curhp() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.curhp_;
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_curhp(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.curhp_ = value;
+}
+
+// uint32 maxHp = 10;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_maxhp() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.maxhp_ = 0u;
+}
+inline ::uint32_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::maxhp() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.maxHp)
+  return _internal_maxhp();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_maxhp(::uint32_t value) {
+  _internal_set_maxhp(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.maxHp)
+}
+inline ::uint32_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_maxhp() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.maxhp_;
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_maxhp(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.maxhp_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SC_BOSS_GIMMICK_ZONE_SYNC_PACKET
+
+// uint64 bossNetId = 1;
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::clear_bossnetid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.bossnetid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::bossnetid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.bossNetId)
+  return _internal_bossnetid();
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::set_bossnetid(::uint64_t value) {
+  _internal_set_bossnetid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.bossNetId)
+}
+inline ::uint64_t SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_bossnetid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.bossnetid_;
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_set_bossnetid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.bossnetid_ = value;
+}
+
+// uint32 gimmickSeq = 2;
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::clear_gimmickseq() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.gimmickseq_ = 0u;
+}
+inline ::uint32_t SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::gimmickseq() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.gimmickSeq)
+  return _internal_gimmickseq();
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::set_gimmickseq(::uint32_t value) {
+  _internal_set_gimmickseq(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.gimmickSeq)
+}
+inline ::uint32_t SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_gimmickseq() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.gimmickseq_;
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_set_gimmickseq(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.gimmickseq_ = value;
+}
+
+// uint64 zoneNetId = 3;
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::clear_zonenetid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.zonenetid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::zonenetid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.zoneNetId)
+  return _internal_zonenetid();
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::set_zonenetid(::uint64_t value) {
+  _internal_set_zonenetid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.zoneNetId)
+}
+inline ::uint64_t SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_zonenetid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.zonenetid_;
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_set_zonenetid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.zonenetid_ = value;
+}
+
+// .Protocol.BossGimmickObjectState state = 4;
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::clear_state() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_ = 0;
+}
+inline ::Protocol::BossGimmickObjectState SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::state() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.state)
+  return _internal_state();
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::set_state(::Protocol::BossGimmickObjectState value) {
+  _internal_set_state(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.state)
+}
+inline ::Protocol::BossGimmickObjectState SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_state() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return static_cast<::Protocol::BossGimmickObjectState>(_impl_.state_);
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_set_state(::Protocol::BossGimmickObjectState value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.state_ = value;
+}
+
+// float x = 5;
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::clear_x() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.x_ = 0;
+}
+inline float SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::x() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.x)
+  return _internal_x();
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::set_x(float value) {
+  _internal_set_x(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.x)
+}
+inline float SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_x() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.x_;
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_set_x(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.x_ = value;
+}
+
+// float y = 6;
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::clear_y() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.y_ = 0;
+}
+inline float SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::y() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.y)
+  return _internal_y();
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::set_y(float value) {
+  _internal_set_y(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.y)
+}
+inline float SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_y() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.y_;
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_set_y(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.y_ = value;
+}
+
+// float z = 7;
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::clear_z() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.z_ = 0;
+}
+inline float SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::z() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.z)
+  return _internal_z();
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::set_z(float value) {
+  _internal_set_z(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.z)
+}
+inline float SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_z() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.z_;
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_set_z(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.z_ = value;
+}
+
+// float radius = 8;
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::clear_radius() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.radius_ = 0;
+}
+inline float SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::radius() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.radius)
+  return _internal_radius();
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::set_radius(float value) {
+  _internal_set_radius(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET.radius)
+}
+inline float SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_radius() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.radius_;
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_internal_set_radius(float value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.radius_ = value;
 }
 
 #ifdef __GNUC__

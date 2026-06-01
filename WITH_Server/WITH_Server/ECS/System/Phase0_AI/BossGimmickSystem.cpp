@@ -90,6 +90,116 @@ namespace
 		gimmick.stageDurationSec = std::max(0.0f, durationSec);
 	}
 
+	uint32_t ToSyncValue(BossGimmickType type) noexcept
+	{
+		return static_cast<uint32_t>(type);
+	}
+
+	uint32_t ToSyncValue(BossGimmickStage stage) noexcept
+	{
+		return static_cast<uint32_t>(stage);
+	}
+
+	uint32_t ToSyncValue(BossGimmickObjectSyncState state) noexcept
+	{
+		return static_cast<uint32_t>(state);
+	}
+
+	uint32_t ClampHp(int32_t hp) noexcept
+	{
+		return static_cast<uint32_t>(std::max(0, hp));
+	}
+
+	uint64_t ToGimmickNetId(Entity entity) noexcept
+	{
+		return entity.IsNull() ? 0ull : entity.id;
+	}
+
+	float RemainingStageSec(const BossGimmickStateComp& gimmick) noexcept
+	{
+		return std::max(
+			0.0f,
+			gimmick.stageDurationSec - gimmick.stageElapsedSec);
+	}
+
+	void EmitStateSync(
+		SystemContext& ctx,
+		Entity boss,
+		const BossGimmickStateComp& gimmick)
+	{
+		PendingBossGimmickReplicationComp* pending =
+			ctx.ecs.GetMutableComponent<PendingBossGimmickReplicationComp>(
+				boss);
+		if (pending == nullptr)
+			return;
+
+		pending->stateEvents.push_back(
+			PendingBossGimmickStateSyncEvent{
+				.boss = boss,
+				.gimmickSeq = gimmick.gimmickSeq,
+				.gimmickType = ToSyncValue(gimmick.activeType),
+				.stage = ToSyncValue(gimmick.stage),
+				.durationSec = gimmick.stageDurationSec,
+				.remainingSec = RemainingStageSec(gimmick)
+			});
+	}
+
+	void EmitObjectSync(
+		SystemContext& ctx,
+		Entity boss,
+		const BossGimmickStateComp& gimmick,
+		Entity object,
+		BossGimmickObjectSyncState state,
+		const XMFLOAT3& position,
+		float radius,
+		int32_t curHp,
+		int32_t maxHp)
+	{
+		PendingBossGimmickReplicationComp* pending =
+			ctx.ecs.GetMutableComponent<PendingBossGimmickReplicationComp>(
+				boss);
+		if (pending == nullptr)
+			return;
+
+		pending->objectEvents.push_back(
+			PendingBossGimmickObjectSyncEvent{
+				.boss = boss,
+				.gimmickSeq = gimmick.gimmickSeq,
+				.objectNetId = ToGimmickNetId(object),
+				.state = state,
+				.position = position,
+				.radius = radius,
+				.curHp = ClampHp(curHp),
+				.maxHp = ClampHp(maxHp)
+			});
+	}
+
+	void EmitZoneSync(
+		SystemContext& ctx,
+		Entity boss,
+		const BossGimmickStateComp& gimmick,
+		Entity zone,
+		BossGimmickObjectSyncState state,
+		const XMFLOAT3& position,
+		float radius)
+	{
+		PendingBossGimmickReplicationComp* pending =
+			ctx.ecs.GetMutableComponent<PendingBossGimmickReplicationComp>(
+				boss);
+		if (pending == nullptr)
+			return;
+
+		pending->zoneEvents.push_back(
+			PendingBossGimmickZoneSyncEvent{
+				.boss = boss,
+				.gimmickSeq = gimmick.gimmickSeq,
+				.zoneNetId = ToGimmickNetId(zone),
+				.state = state,
+				.position = position,
+				.radius = radius
+			});
+	}
+
 	XMFLOAT3 BuildRingPosition(
 		const XMFLOAT3& origin,
 		size_t index,
@@ -148,7 +258,9 @@ namespace
 			object,
 			GimmickObjectComp{
 				.ownerBoss = boss,
-				.assignedPlayer = assignedPlayer
+				.assignedPlayer = assignedPlayer,
+				.lastSyncedHp = static_cast<int32_t>(
+					kPhaseTransitionObjectHp)
 			});
 		ctx.runtime.DeferredAddComponent<StaticBoxHurtColliderComp>(
 			object,
@@ -188,14 +300,70 @@ namespace
 		return safeZone;
 	}
 
-	void CleanupEntities(SystemContext& ctx, const std::vector<Entity>& entities)
+	void CleanupGimmickObjects(
+		SystemContext& ctx,
+		Entity boss,
+		const BossGimmickStateComp& gimmick)
 	{
-		for (Entity entity : entities)
+		for (Entity object : gimmick.phaseTransitionObjectEntities)
 		{
-			if (!entity.IsNull() && !HasBlockingPendingState(ctx.ecs, entity))
+			if (object.IsNull() || HasBlockingPendingState(ctx.ecs, object))
+				continue;
+
+			const GimmickObjectComp* objectGimmick =
+				ctx.ecs.GetComponent<GimmickObjectComp>(object);
+			if (objectGimmick != nullptr && objectGimmick->broken)
+				continue;
+
+			const WorldTransformComp* transform =
+				ctx.ecs.GetComponent<WorldTransformComp>(object);
+			const CombatStatStateComp* stats =
+				ctx.ecs.GetComponent<CombatStatStateComp>(object);
+			if (transform != nullptr && stats != nullptr)
 			{
-				ctx.runtime.DeferredDestroyEntityIfAlive(entity);
+				EmitObjectSync(
+					ctx,
+					boss,
+					gimmick,
+					object,
+					BossGimmickObjectSyncState::Despawned,
+					transform->position,
+					kPhaseTransitionObjectHalfWidth,
+					stats->currentHp,
+					stats->maxHp);
 			}
+
+			ctx.runtime.DeferredDestroyEntityIfAlive(object);
+		}
+	}
+
+	void CleanupSafeZones(
+		SystemContext& ctx,
+		Entity boss,
+		const BossGimmickStateComp& gimmick)
+	{
+		for (Entity zone : gimmick.finalSafeZoneEntities)
+		{
+			if (zone.IsNull() || HasBlockingPendingState(ctx.ecs, zone))
+				continue;
+
+			const WorldTransformComp* transform =
+				ctx.ecs.GetComponent<WorldTransformComp>(zone);
+			const SafeZoneComp* safeZone =
+				ctx.ecs.GetComponent<SafeZoneComp>(zone);
+			if (transform != nullptr && safeZone != nullptr)
+			{
+				EmitZoneSync(
+					ctx,
+					boss,
+					gimmick,
+					zone,
+					BossGimmickObjectSyncState::Despawned,
+					transform->position,
+					safeZone->radius);
+			}
+
+			ctx.runtime.DeferredDestroyEntityIfAlive(zone);
 		}
 	}
 
@@ -227,11 +395,11 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<16> BossGimmickSystem::kMetaStorage =
+const StaticSystemMetaStorage<17> BossGimmickSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<BossGimmickSystem>(),
 		"BossGimmickSystem",
-		std::array<AccessSpec, 16>
+		std::array<AccessSpec, 17>
 	{
 		WriteImmediate(ComponentRes<BossGimmickStateComp>()),
 		WriteImmediate(ComponentRes<AIActionRuntimeComp>()),
@@ -246,6 +414,7 @@ const StaticSystemMetaStorage<16> BossGimmickSystem::kMetaStorage =
 		WriteImmediate(ComponentRes<StaticBoxHurtColliderComp>()),
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+		WriteImmediate(ComponentRes<PendingBossGimmickReplicationComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
 		WriteDeferred(CommandBufferRes()),
@@ -291,6 +460,7 @@ void BossGimmickSystem::Execute(SystemContext& ctx)
 					BossGimmickStage::Telegraph,
 					kFinalSafeZoneTelegraphSec,
 					true);
+				EmitStateSync(ctx, boss, gimmick);
 			}
 			else if (gimmick.phaseTransitionGimmickRequested &&
 				!gimmick.phaseTransitionGimmickCompleted)
@@ -300,6 +470,7 @@ void BossGimmickSystem::Execute(SystemContext& ctx)
 					BossGimmickStage::Telegraph,
 					kPhaseTransitionTelegraphSec,
 					true);
+				EmitStateSync(ctx, boss, gimmick);
 			}
 			else
 			{
@@ -345,6 +516,7 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				gimmick,
 				BossGimmickStage::Active,
 				kPhaseTransitionObjectWindowSec);
+			EmitStateSync(ctx, boss, gimmick);
 		}
 		return;
 	}
@@ -374,6 +546,16 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				if (!object.IsNull())
 				{
 					gimmick.phaseTransitionObjectEntities.push_back(object);
+					EmitObjectSync(
+						ctx,
+						boss,
+						gimmick,
+						object,
+						BossGimmickObjectSyncState::Spawned,
+						position,
+						kPhaseTransitionObjectHalfWidth,
+						static_cast<int32_t>(kPhaseTransitionObjectHp),
+						static_cast<int32_t>(kPhaseTransitionObjectHp));
 				}
 			}
 			gimmick.phaseTransitionObjectsSpawned = true;
@@ -384,6 +566,7 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 					gimmick,
 					BossGimmickStage::Resolve,
 					kPhaseTransitionResolveSec);
+				EmitStateSync(ctx, boss, gimmick);
 			}
 			return;
 		}
@@ -404,6 +587,20 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 			if (!objectGimmick->broken && objectStats->currentHp <= 0)
 			{
 				objectGimmick->broken = true;
+				const WorldTransformComp* transform =
+					ctx.ecs.GetComponent<WorldTransformComp>(object);
+				EmitObjectSync(
+					ctx,
+					boss,
+					gimmick,
+					object,
+					BossGimmickObjectSyncState::Broken,
+					transform != nullptr
+						? transform->position
+						: XMFLOAT3{ 0.0f, 0.0f, 0.0f },
+					kPhaseTransitionObjectHalfWidth,
+					0,
+					objectStats->maxHp);
 				const Entity immuneTarget =
 					!objectGimmick->lastHitBy.IsNull()
 						? objectGimmick->lastHitBy
@@ -425,6 +622,25 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				}
 				ctx.runtime.DeferredDestroyEntityIfAlive(object);
 			}
+			else if (!objectGimmick->broken &&
+				objectStats->currentHp != objectGimmick->lastSyncedHp)
+			{
+				if (const WorldTransformComp* transform =
+					ctx.ecs.GetComponent<WorldTransformComp>(object))
+				{
+					EmitObjectSync(
+						ctx,
+						boss,
+						gimmick,
+						object,
+						BossGimmickObjectSyncState::Updated,
+						transform->position,
+						kPhaseTransitionObjectHalfWidth,
+						objectStats->currentHp,
+						objectStats->maxHp);
+					objectGimmick->lastSyncedHp = objectStats->currentHp;
+				}
+			}
 
 			if (objectGimmick->broken || objectStats->currentHp <= 0)
 				++brokenCount;
@@ -437,6 +653,7 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				gimmick,
 				BossGimmickStage::Resolve,
 				kPhaseTransitionResolveSec);
+			EmitStateSync(ctx, boss, gimmick);
 		}
 		return;
 	}
@@ -463,7 +680,7 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 			}
 		}
 
-		CleanupEntities(ctx, gimmick.phaseTransitionObjectEntities);
+		CleanupGimmickObjects(ctx, boss, gimmick);
 		gimmick.phaseTransitionInstantKillResolved = true;
 	}
 
@@ -471,6 +688,7 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 		gimmick.stageElapsedSec >= gimmick.stageDurationSec)
 	{
 		SetStage(gimmick, BossGimmickStage::Completed, 0.0f);
+		EmitStateSync(ctx, boss, gimmick);
 	}
 }
 
@@ -490,6 +708,7 @@ void BossGimmickSystem::TickFinalSafeZone(
 				gimmick,
 				BossGimmickStage::Active,
 				kFinalSafeZoneActiveSec);
+			EmitStateSync(ctx, boss, gimmick);
 		}
 		return;
 	}
@@ -513,6 +732,14 @@ void BossGimmickSystem::TickFinalSafeZone(
 			if (!safeZone.IsNull())
 			{
 				gimmick.finalSafeZoneEntities.push_back(safeZone);
+				EmitZoneSync(
+					ctx,
+					boss,
+					gimmick,
+					safeZone,
+					BossGimmickObjectSyncState::Spawned,
+					position,
+					kFinalSafeZoneRadius);
 			}
 			gimmick.finalSafeZoneSpawned = true;
 		}
@@ -523,6 +750,7 @@ void BossGimmickSystem::TickFinalSafeZone(
 				gimmick,
 				BossGimmickStage::Resolve,
 				kFinalSafeZoneResolveSec);
+			EmitStateSync(ctx, boss, gimmick);
 		}
 		return;
 	}
@@ -574,7 +802,7 @@ void BossGimmickSystem::TickFinalSafeZone(
 			MarkDirtyIfPresent(ctx, boss, WorldDirtyType::Stat);
 		}
 
-		CleanupEntities(ctx, gimmick.finalSafeZoneEntities);
+		CleanupSafeZones(ctx, boss, gimmick);
 		gimmick.finalSafeZoneResolved = true;
 	}
 
@@ -582,5 +810,6 @@ void BossGimmickSystem::TickFinalSafeZone(
 		gimmick.stageElapsedSec >= gimmick.stageDurationSec)
 	{
 		SetStage(gimmick, BossGimmickStage::Completed, 0.0f);
+		EmitStateSync(ctx, boss, gimmick);
 	}
 }

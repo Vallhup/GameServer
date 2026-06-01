@@ -419,6 +419,102 @@ struct SC_COMBAT_IMPACT_PACKETDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_COMBAT_IMPACT_PACKETDefaultTypeInternal _SC_COMBAT_IMPACT_PACKET_default_instance_;
 
+inline constexpr SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : bossnetid_{::uint64_t{0u}},
+        zonenetid_{::uint64_t{0u}},
+        gimmickseq_{0u},
+        state_{static_cast< ::Protocol::BossGimmickObjectState >(0)},
+        x_{0},
+        y_{0},
+        z_{0},
+        radius_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_BOSS_GIMMICK_ZONE_SYNC_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_BOSS_GIMMICK_ZONE_SYNC_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_BOSS_GIMMICK_ZONE_SYNC_PACKETDefaultTypeInternal() {}
+  union {
+    SC_BOSS_GIMMICK_ZONE_SYNC_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_BOSS_GIMMICK_ZONE_SYNC_PACKETDefaultTypeInternal _SC_BOSS_GIMMICK_ZONE_SYNC_PACKET_default_instance_;
+
+inline constexpr SC_BOSS_GIMMICK_STATE_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : bossnetid_{::uint64_t{0u}},
+        gimmickseq_{0u},
+        gimmicktype_{static_cast< ::Protocol::BossGimmickType >(0)},
+        stage_{static_cast< ::Protocol::BossGimmickStage >(0)},
+        durationsec_{0},
+        remainingsec_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_BOSS_GIMMICK_STATE_PACKET::SC_BOSS_GIMMICK_STATE_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_BOSS_GIMMICK_STATE_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_BOSS_GIMMICK_STATE_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_BOSS_GIMMICK_STATE_PACKETDefaultTypeInternal() {}
+  union {
+    SC_BOSS_GIMMICK_STATE_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_BOSS_GIMMICK_STATE_PACKETDefaultTypeInternal _SC_BOSS_GIMMICK_STATE_PACKET_default_instance_;
+
+inline constexpr SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : bossnetid_{::uint64_t{0u}},
+        objectnetid_{::uint64_t{0u}},
+        gimmickseq_{0u},
+        state_{static_cast< ::Protocol::BossGimmickObjectState >(0)},
+        x_{0},
+        y_{0},
+        z_{0},
+        radius_{0},
+        curhp_{0u},
+        maxhp_{0u},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct SC_BOSS_GIMMICK_OBJECT_SYNC_PACKETDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR SC_BOSS_GIMMICK_OBJECT_SYNC_PACKETDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~SC_BOSS_GIMMICK_OBJECT_SYNC_PACKETDefaultTypeInternal() {}
+  union {
+    SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 SC_BOSS_GIMMICK_OBJECT_SYNC_PACKETDefaultTypeInternal _SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET_default_instance_;
+
 inline constexpr SC_ANIMATION_TRANSITION_PACKET::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : netid_{::uint64_t{0u}},
@@ -1484,6 +1580,54 @@ const ::uint32_t
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET, _impl_.netid_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET, _impl_.incombat_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET, _impl_.bossnetid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET, _impl_.gimmickseq_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET, _impl_.gimmicktype_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET, _impl_.stage_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET, _impl_.durationsec_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET, _impl_.remainingsec_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.bossnetid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.gimmickseq_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.objectnetid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.state_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.x_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.y_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.z_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.radius_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.curhp_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.maxhp_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.bossnetid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.gimmickseq_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.zonenetid_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.state_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.x_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.y_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.z_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.radius_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -1526,6 +1670,9 @@ static const ::_pbi::MigrationSchema
         {393, -1, -1, sizeof(::Protocol::SC_ITEM_COUNT_PACKET)},
         {402, -1, -1, sizeof(::Protocol::SC_TEAM_DEATH_COUNT_PACKET)},
         {412, -1, -1, sizeof(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET)},
+        {422, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET)},
+        {436, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)},
+        {454, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_TIME_SYNC_PACKET_default_instance_._instance,
@@ -1566,6 +1713,9 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_SC_ITEM_COUNT_PACKET_default_instance_._instance,
     &::Protocol::_SC_TEAM_DEATH_COUNT_PACKET_default_instance_._instance,
     &::Protocol::_SC_MONSTER_COMBAT_STATE_PACKET_default_instance_._instance,
+    &::Protocol::_SC_BOSS_GIMMICK_STATE_PACKET_default_instance_._instance,
+    &::Protocol::_SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET_default_instance_._instance,
+    &::Protocol::_SC_BOSS_GIMMICK_ZONE_SYNC_PACKET_default_instance_._instance,
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -1654,7 +1804,23 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "t\030\001 \001(\r\"G\n\032SC_TEAM_DEATH_COUNT_PACKET\022\025\n"
     "\rmaxDeathCount\030\001 \001(\r\022\022\n\ndeathCount\030\002 \001(\r"
     "\"A\n\036SC_MONSTER_COMBAT_STATE_PACKET\022\r\n\005ne"
-    "tid\030\001 \001(\004\022\020\n\010inCombat\030\002 \001(\010b\006proto3"
+    "tid\030\001 \001(\004\022\020\n\010inCombat\030\002 \001(\010\"\313\001\n\034SC_BOSS_"
+    "GIMMICK_STATE_PACKET\022\021\n\tbossNetId\030\001 \001(\004\022"
+    "\022\n\ngimmickSeq\030\002 \001(\r\022.\n\013gimmickType\030\003 \001(\016"
+    "2\031.Protocol.BossGimmickType\022)\n\005stage\030\004 \001"
+    "(\0162\032.Protocol.BossGimmickStage\022\023\n\013durati"
+    "onSec\030\005 \001(\002\022\024\n\014remainingSec\030\006 \001(\002\"\340\001\n\"SC"
+    "_BOSS_GIMMICK_OBJECT_SYNC_PACKET\022\021\n\tboss"
+    "NetId\030\001 \001(\004\022\022\n\ngimmickSeq\030\002 \001(\r\022\023\n\013objec"
+    "tNetId\030\003 \001(\004\022/\n\005state\030\004 \001(\0162 .Protocol.B"
+    "ossGimmickObjectState\022\t\n\001x\030\005 \001(\002\022\t\n\001y\030\006 "
+    "\001(\002\022\t\n\001z\030\007 \001(\002\022\016\n\006radius\030\010 \001(\002\022\r\n\005curHp\030"
+    "\t \001(\r\022\r\n\005maxHp\030\n \001(\r\"\276\001\n SC_BOSS_GIMMICK"
+    "_ZONE_SYNC_PACKET\022\021\n\tbossNetId\030\001 \001(\004\022\022\n\n"
+    "gimmickSeq\030\002 \001(\r\022\021\n\tzoneNetId\030\003 \001(\004\022/\n\005s"
+    "tate\030\004 \001(\0162 .Protocol.BossGimmickObjectS"
+    "tate\022\t\n\001x\030\005 \001(\002\022\t\n\001y\030\006 \001(\002\022\t\n\001z\030\007 \001(\002\022\016\n"
+    "\006radius\030\010 \001(\002b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[1] =
     {
@@ -1664,13 +1830,13 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    3435,
+    4061,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     descriptor_table_Protocol_2eproto_deps,
     1,
-    38,
+    41,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -11637,6 +11803,1105 @@ void SC_MONSTER_COMBAT_STATE_PACKET::InternalSwap(SC_MONSTER_COMBAT_STATE_PACKET
 }
 
 ::google::protobuf::Metadata SC_MONSTER_COMBAT_STATE_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_BOSS_GIMMICK_STATE_PACKET::_Internal {
+ public:
+};
+
+SC_BOSS_GIMMICK_STATE_PACKET::SC_BOSS_GIMMICK_STATE_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_BOSS_GIMMICK_STATE_PACKET)
+}
+SC_BOSS_GIMMICK_STATE_PACKET::SC_BOSS_GIMMICK_STATE_PACKET(
+    ::google::protobuf::Arena* arena, const SC_BOSS_GIMMICK_STATE_PACKET& from)
+    : SC_BOSS_GIMMICK_STATE_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_BOSS_GIMMICK_STATE_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_BOSS_GIMMICK_STATE_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, bossnetid_),
+           0,
+           offsetof(Impl_, remainingsec_) -
+               offsetof(Impl_, bossnetid_) +
+               sizeof(Impl_::remainingsec_));
+}
+SC_BOSS_GIMMICK_STATE_PACKET::~SC_BOSS_GIMMICK_STATE_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_BOSS_GIMMICK_STATE_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_BOSS_GIMMICK_STATE_PACKET::SharedDtor(MessageLite& self) {
+  SC_BOSS_GIMMICK_STATE_PACKET& this_ = static_cast<SC_BOSS_GIMMICK_STATE_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_BOSS_GIMMICK_STATE_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_BOSS_GIMMICK_STATE_PACKET(arena);
+}
+constexpr auto SC_BOSS_GIMMICK_STATE_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_BOSS_GIMMICK_STATE_PACKET),
+                                            alignof(SC_BOSS_GIMMICK_STATE_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_BOSS_GIMMICK_STATE_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_BOSS_GIMMICK_STATE_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_BOSS_GIMMICK_STATE_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_BOSS_GIMMICK_STATE_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_BOSS_GIMMICK_STATE_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_BOSS_GIMMICK_STATE_PACKET>(), &SC_BOSS_GIMMICK_STATE_PACKET::ByteSizeLong,
+            &SC_BOSS_GIMMICK_STATE_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_BOSS_GIMMICK_STATE_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_BOSS_GIMMICK_STATE_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 6, 0, 0, 2> SC_BOSS_GIMMICK_STATE_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    6, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967232,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    6,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_BOSS_GIMMICK_STATE_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint64 bossNetId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.bossnetid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.bossnetid_)}},
+    // uint32 gimmickSeq = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.gimmickseq_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.gimmickseq_)}},
+    // .Protocol.BossGimmickType gimmickType = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.gimmicktype_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.gimmicktype_)}},
+    // .Protocol.BossGimmickStage stage = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.stage_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.stage_)}},
+    // float durationSec = 5;
+    {::_pbi::TcParser::FastF32S1,
+     {45, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.durationsec_)}},
+    // float remainingSec = 6;
+    {::_pbi::TcParser::FastF32S1,
+     {53, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.remainingsec_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 bossNetId = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.bossnetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint32 gimmickSeq = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.gimmickseq_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // .Protocol.BossGimmickType gimmickType = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.gimmicktype_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+    // .Protocol.BossGimmickStage stage = 4;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.stage_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+    // float durationSec = 5;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.durationsec_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float remainingSec = 6;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.remainingsec_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_BOSS_GIMMICK_STATE_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_BOSS_GIMMICK_STATE_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.bossnetid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.remainingsec_) -
+      reinterpret_cast<char*>(&_impl_.bossnetid_)) + sizeof(_impl_.remainingsec_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_BOSS_GIMMICK_STATE_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_BOSS_GIMMICK_STATE_PACKET& this_ = static_cast<const SC_BOSS_GIMMICK_STATE_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_BOSS_GIMMICK_STATE_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_BOSS_GIMMICK_STATE_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_BOSS_GIMMICK_STATE_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 bossNetId = 1;
+          if (this_._internal_bossnetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_bossnetid(), target);
+          }
+
+          // uint32 gimmickSeq = 2;
+          if (this_._internal_gimmickseq() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                2, this_._internal_gimmickseq(), target);
+          }
+
+          // .Protocol.BossGimmickType gimmickType = 3;
+          if (this_._internal_gimmicktype() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteEnumToArray(
+                3, this_._internal_gimmicktype(), target);
+          }
+
+          // .Protocol.BossGimmickStage stage = 4;
+          if (this_._internal_stage() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteEnumToArray(
+                4, this_._internal_stage(), target);
+          }
+
+          // float durationSec = 5;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_durationsec()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                5, this_._internal_durationsec(), target);
+          }
+
+          // float remainingSec = 6;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_remainingsec()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                6, this_._internal_remainingsec(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_BOSS_GIMMICK_STATE_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_BOSS_GIMMICK_STATE_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_BOSS_GIMMICK_STATE_PACKET& this_ = static_cast<const SC_BOSS_GIMMICK_STATE_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_BOSS_GIMMICK_STATE_PACKET::ByteSizeLong() const {
+          const SC_BOSS_GIMMICK_STATE_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_BOSS_GIMMICK_STATE_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 bossNetId = 1;
+            if (this_._internal_bossnetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_bossnetid());
+            }
+            // uint32 gimmickSeq = 2;
+            if (this_._internal_gimmickseq() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_gimmickseq());
+            }
+            // .Protocol.BossGimmickType gimmickType = 3;
+            if (this_._internal_gimmicktype() != 0) {
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_gimmicktype());
+            }
+            // .Protocol.BossGimmickStage stage = 4;
+            if (this_._internal_stage() != 0) {
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_stage());
+            }
+            // float durationSec = 5;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_durationsec()) != 0) {
+              total_size += 5;
+            }
+            // float remainingSec = 6;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_remainingsec()) != 0) {
+              total_size += 5;
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_BOSS_GIMMICK_STATE_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_BOSS_GIMMICK_STATE_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_BOSS_GIMMICK_STATE_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_BOSS_GIMMICK_STATE_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_bossnetid() != 0) {
+    _this->_impl_.bossnetid_ = from._impl_.bossnetid_;
+  }
+  if (from._internal_gimmickseq() != 0) {
+    _this->_impl_.gimmickseq_ = from._impl_.gimmickseq_;
+  }
+  if (from._internal_gimmicktype() != 0) {
+    _this->_impl_.gimmicktype_ = from._impl_.gimmicktype_;
+  }
+  if (from._internal_stage() != 0) {
+    _this->_impl_.stage_ = from._impl_.stage_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_durationsec()) != 0) {
+    _this->_impl_.durationsec_ = from._impl_.durationsec_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_remainingsec()) != 0) {
+    _this->_impl_.remainingsec_ = from._impl_.remainingsec_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_BOSS_GIMMICK_STATE_PACKET::CopyFrom(const SC_BOSS_GIMMICK_STATE_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_BOSS_GIMMICK_STATE_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_BOSS_GIMMICK_STATE_PACKET::InternalSwap(SC_BOSS_GIMMICK_STATE_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.remainingsec_)
+      + sizeof(SC_BOSS_GIMMICK_STATE_PACKET::_impl_.remainingsec_)
+      - PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_STATE_PACKET, _impl_.bossnetid_)>(
+          reinterpret_cast<char*>(&_impl_.bossnetid_),
+          reinterpret_cast<char*>(&other->_impl_.bossnetid_));
+}
+
+::google::protobuf::Metadata SC_BOSS_GIMMICK_STATE_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_Internal {
+ public:
+};
+
+SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
+}
+SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(
+    ::google::protobuf::Arena* arena, const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& from)
+    : SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, bossnetid_),
+           0,
+           offsetof(Impl_, maxhp_) -
+               offsetof(Impl_, bossnetid_) +
+               sizeof(Impl_::maxhp_));
+}
+SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::~SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::SharedDtor(MessageLite& self) {
+  SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& this_ = static_cast<SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET(arena);
+}
+constexpr auto SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET),
+                                            alignof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET>(), &SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::ByteSizeLong,
+            &SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<4, 10, 0, 0, 2> SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    10, 120,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294966272,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    10,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // uint64 bossNetId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.bossnetid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.bossnetid_)}},
+    // uint32 gimmickSeq = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.gimmickseq_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.gimmickseq_)}},
+    // uint64 objectNetId = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.objectnetid_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.objectnetid_)}},
+    // .Protocol.BossGimmickObjectState state = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.state_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.state_)}},
+    // float x = 5;
+    {::_pbi::TcParser::FastF32S1,
+     {45, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.x_)}},
+    // float y = 6;
+    {::_pbi::TcParser::FastF32S1,
+     {53, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.y_)}},
+    // float z = 7;
+    {::_pbi::TcParser::FastF32S1,
+     {61, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.z_)}},
+    // float radius = 8;
+    {::_pbi::TcParser::FastF32S1,
+     {69, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.radius_)}},
+    // uint32 curHp = 9;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.curhp_), 63>(),
+     {72, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.curhp_)}},
+    // uint32 maxHp = 10;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.maxhp_), 63>(),
+     {80, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.maxhp_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 bossNetId = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.bossnetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint32 gimmickSeq = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.gimmickseq_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint64 objectNetId = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.objectnetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // .Protocol.BossGimmickObjectState state = 4;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.state_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+    // float x = 5;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.x_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float y = 6;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.y_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float z = 7;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.z_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float radius = 8;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.radius_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // uint32 curHp = 9;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.curhp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint32 maxHp = 10;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.maxhp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.bossnetid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.maxhp_) -
+      reinterpret_cast<char*>(&_impl_.bossnetid_)) + sizeof(_impl_.maxhp_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& this_ = static_cast<const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 bossNetId = 1;
+          if (this_._internal_bossnetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_bossnetid(), target);
+          }
+
+          // uint32 gimmickSeq = 2;
+          if (this_._internal_gimmickseq() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                2, this_._internal_gimmickseq(), target);
+          }
+
+          // uint64 objectNetId = 3;
+          if (this_._internal_objectnetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                3, this_._internal_objectnetid(), target);
+          }
+
+          // .Protocol.BossGimmickObjectState state = 4;
+          if (this_._internal_state() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteEnumToArray(
+                4, this_._internal_state(), target);
+          }
+
+          // float x = 5;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_x()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                5, this_._internal_x(), target);
+          }
+
+          // float y = 6;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_y()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                6, this_._internal_y(), target);
+          }
+
+          // float z = 7;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_z()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                7, this_._internal_z(), target);
+          }
+
+          // float radius = 8;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_radius()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                8, this_._internal_radius(), target);
+          }
+
+          // uint32 curHp = 9;
+          if (this_._internal_curhp() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                9, this_._internal_curhp(), target);
+          }
+
+          // uint32 maxHp = 10;
+          if (this_._internal_maxhp() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                10, this_._internal_maxhp(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& this_ = static_cast<const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::ByteSizeLong() const {
+          const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 bossNetId = 1;
+            if (this_._internal_bossnetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_bossnetid());
+            }
+            // uint64 objectNetId = 3;
+            if (this_._internal_objectnetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_objectnetid());
+            }
+            // uint32 gimmickSeq = 2;
+            if (this_._internal_gimmickseq() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_gimmickseq());
+            }
+            // .Protocol.BossGimmickObjectState state = 4;
+            if (this_._internal_state() != 0) {
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_state());
+            }
+            // float x = 5;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_x()) != 0) {
+              total_size += 5;
+            }
+            // float y = 6;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_y()) != 0) {
+              total_size += 5;
+            }
+            // float z = 7;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_z()) != 0) {
+              total_size += 5;
+            }
+            // float radius = 8;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_radius()) != 0) {
+              total_size += 5;
+            }
+            // uint32 curHp = 9;
+            if (this_._internal_curhp() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_curhp());
+            }
+            // uint32 maxHp = 10;
+            if (this_._internal_maxhp() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_maxhp());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_bossnetid() != 0) {
+    _this->_impl_.bossnetid_ = from._impl_.bossnetid_;
+  }
+  if (from._internal_objectnetid() != 0) {
+    _this->_impl_.objectnetid_ = from._impl_.objectnetid_;
+  }
+  if (from._internal_gimmickseq() != 0) {
+    _this->_impl_.gimmickseq_ = from._impl_.gimmickseq_;
+  }
+  if (from._internal_state() != 0) {
+    _this->_impl_.state_ = from._impl_.state_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_x()) != 0) {
+    _this->_impl_.x_ = from._impl_.x_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_y()) != 0) {
+    _this->_impl_.y_ = from._impl_.y_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_z()) != 0) {
+    _this->_impl_.z_ = from._impl_.z_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_radius()) != 0) {
+    _this->_impl_.radius_ = from._impl_.radius_;
+  }
+  if (from._internal_curhp() != 0) {
+    _this->_impl_.curhp_ = from._impl_.curhp_;
+  }
+  if (from._internal_maxhp() != 0) {
+    _this->_impl_.maxhp_ = from._impl_.maxhp_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::CopyFrom(const SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::InternalSwap(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.maxhp_)
+      + sizeof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_impl_.maxhp_)
+      - PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.bossnetid_)>(
+          reinterpret_cast<char*>(&_impl_.bossnetid_),
+          reinterpret_cast<char*>(&other->_impl_.bossnetid_));
+}
+
+::google::protobuf::Metadata SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_Internal {
+ public:
+};
+
+SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)
+}
+SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(
+    ::google::protobuf::Arena* arena, const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& from)
+    : SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char *>(&_impl_) +
+               offsetof(Impl_, bossnetid_),
+           0,
+           offsetof(Impl_, radius_) -
+               offsetof(Impl_, bossnetid_) +
+               sizeof(Impl_::radius_));
+}
+SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::~SC_BOSS_GIMMICK_ZONE_SYNC_PACKET() {
+  // @@protoc_insertion_point(destructor:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)
+  SharedDtor(*this);
+}
+inline void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::SharedDtor(MessageLite& self) {
+  SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& this_ = static_cast<SC_BOSS_GIMMICK_ZONE_SYNC_PACKET&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) SC_BOSS_GIMMICK_ZONE_SYNC_PACKET(arena);
+}
+constexpr auto SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET),
+                                            alignof(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_SC_BOSS_GIMMICK_ZONE_SYNC_PACKET_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<SC_BOSS_GIMMICK_ZONE_SYNC_PACKET>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<SC_BOSS_GIMMICK_ZONE_SYNC_PACKET>(), &SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::ByteSizeLong,
+            &SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_._cached_size_),
+        false,
+    },
+    &SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 8, 0, 0, 2> SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    8, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967040,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    8,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // float radius = 8;
+    {::_pbi::TcParser::FastF32S1,
+     {69, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.radius_)}},
+    // uint64 bossNetId = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.bossnetid_), 63>(),
+     {8, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.bossnetid_)}},
+    // uint32 gimmickSeq = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.gimmickseq_), 63>(),
+     {16, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.gimmickseq_)}},
+    // uint64 zoneNetId = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.zonenetid_), 63>(),
+     {24, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.zonenetid_)}},
+    // .Protocol.BossGimmickObjectState state = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.state_), 63>(),
+     {32, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.state_)}},
+    // float x = 5;
+    {::_pbi::TcParser::FastF32S1,
+     {45, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.x_)}},
+    // float y = 6;
+    {::_pbi::TcParser::FastF32S1,
+     {53, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.y_)}},
+    // float z = 7;
+    {::_pbi::TcParser::FastF32S1,
+     {61, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.z_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // uint64 bossNetId = 1;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.bossnetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // uint32 gimmickSeq = 2;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.gimmickseq_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint64 zoneNetId = 3;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.zonenetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
+    // .Protocol.BossGimmickObjectState state = 4;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.state_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kOpenEnum)},
+    // float x = 5;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.x_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float y = 6;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.y_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float z = 7;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.z_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    // float radius = 8;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.radius_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&_impl_.bossnetid_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.radius_) -
+      reinterpret_cast<char*>(&_impl_.bossnetid_)) + sizeof(_impl_.radius_));
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& this_ = static_cast<const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // uint64 bossNetId = 1;
+          if (this_._internal_bossnetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                1, this_._internal_bossnetid(), target);
+          }
+
+          // uint32 gimmickSeq = 2;
+          if (this_._internal_gimmickseq() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+                2, this_._internal_gimmickseq(), target);
+          }
+
+          // uint64 zoneNetId = 3;
+          if (this_._internal_zonenetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                3, this_._internal_zonenetid(), target);
+          }
+
+          // .Protocol.BossGimmickObjectState state = 4;
+          if (this_._internal_state() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteEnumToArray(
+                4, this_._internal_state(), target);
+          }
+
+          // float x = 5;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_x()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                5, this_._internal_x(), target);
+          }
+
+          // float y = 6;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_y()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                6, this_._internal_y(), target);
+          }
+
+          // float z = 7;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_z()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                7, this_._internal_z(), target);
+          }
+
+          // float radius = 8;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_radius()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                8, this_._internal_radius(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::ByteSizeLong(const MessageLite& base) {
+          const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& this_ = static_cast<const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::ByteSizeLong() const {
+          const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+          ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+           {
+            // uint64 bossNetId = 1;
+            if (this_._internal_bossnetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_bossnetid());
+            }
+            // uint64 zoneNetId = 3;
+            if (this_._internal_zonenetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_zonenetid());
+            }
+            // uint32 gimmickSeq = 2;
+            if (this_._internal_gimmickseq() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+                  this_._internal_gimmickseq());
+            }
+            // .Protocol.BossGimmickObjectState state = 4;
+            if (this_._internal_state() != 0) {
+              total_size += 1 +
+                            ::_pbi::WireFormatLite::EnumSize(this_._internal_state());
+            }
+            // float x = 5;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_x()) != 0) {
+              total_size += 5;
+            }
+            // float y = 6;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_y()) != 0) {
+              total_size += 5;
+            }
+            // float z = 7;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_z()) != 0) {
+              total_size += 5;
+            }
+            // float radius = 8;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_radius()) != 0) {
+              total_size += 5;
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<SC_BOSS_GIMMICK_ZONE_SYNC_PACKET*>(&to_msg);
+  auto& from = static_cast<const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from._internal_bossnetid() != 0) {
+    _this->_impl_.bossnetid_ = from._impl_.bossnetid_;
+  }
+  if (from._internal_zonenetid() != 0) {
+    _this->_impl_.zonenetid_ = from._impl_.zonenetid_;
+  }
+  if (from._internal_gimmickseq() != 0) {
+    _this->_impl_.gimmickseq_ = from._impl_.gimmickseq_;
+  }
+  if (from._internal_state() != 0) {
+    _this->_impl_.state_ = from._impl_.state_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_x()) != 0) {
+    _this->_impl_.x_ = from._impl_.x_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_y()) != 0) {
+    _this->_impl_.y_ = from._impl_.y_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_z()) != 0) {
+    _this->_impl_.z_ = from._impl_.z_;
+  }
+  if (::absl::bit_cast<::uint32_t>(from._internal_radius()) != 0) {
+    _this->_impl_.radius_ = from._impl_.radius_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::CopyFrom(const SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::InternalSwap(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.radius_)
+      + sizeof(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::_impl_.radius_)
+      - PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _impl_.bossnetid_)>(
+          reinterpret_cast<char*>(&_impl_.bossnetid_),
+          reinterpret_cast<char*>(&other->_impl_.bossnetid_));
+}
+
+::google::protobuf::Metadata SC_BOSS_GIMMICK_ZONE_SYNC_PACKET::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

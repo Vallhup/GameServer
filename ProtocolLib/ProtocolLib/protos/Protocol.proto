@@ -279,3 +279,54 @@ message SC_MONSTER_COMBAT_STATE_PACKET
 	uint64 netid = 1;
 	bool inCombat = 2;
 }
+
+message SC_BOSS_GIMMICK_STATE_PACKET
+{
+    uint64 bossNetId = 1;
+
+    uint32 gimmickSeq = 2;
+
+    BossGimmickType gimmickType = 3;
+    BossGimmickStage stage = 4;
+
+    float durationSec = 5;
+    float remainingSec = 6;
+}
+
+message SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET
+{
+    uint64 bossNetId = 1;
+
+    uint32 gimmickSeq = 2;
+
+    uint64 objectNetId = 3;
+    BossGimmickObjectState state = 4;
+
+    float x = 5;
+    float y = 6;
+    float z = 7;
+
+	float radius = 8;
+
+    uint32 curHp = 9;
+    uint32 maxHp = 10;
+
+	// uint64 assignedPlayerNetId = 5;
+    // uint64 brokenByPlayerNetId = 12;
+}
+
+message SC_BOSS_GIMMICK_ZONE_SYNC_PACKET
+{
+	uint64 bossNetId = 1;
+
+    uint32 gimmickSeq = 2;
+
+    uint64 zoneNetId = 3;
+    BossGimmickObjectState state = 4;
+
+    float x = 5;
+    float y = 6;
+    float z = 7;
+
+    float radius = 8;
+}

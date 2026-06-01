@@ -17,6 +17,7 @@ void BossPhaseAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<StaticBoxHurtColliderComp>();
 	runtime.RegisterStorage<SafeZoneComp>();
 	runtime.RegisterStorage<BossGimmickImmunityComp>();
+	runtime.RegisterStorage<PendingBossGimmickReplicationComp>();
 }
 
 void BossPhaseAspect::Attach(
@@ -33,9 +34,9 @@ void BossPhaseAspect::Attach(
 			.transitionRequested = false,
 			.pendingTransitionIndex = AIPhaseRuntimeComp::kInvalidTransitionIndex
 		});
-	//runtime.DeferredUpsertComponent<BossGimmickStateComp>(
-	//	entity,
-	//	BossGimmickStateComp{});
+	runtime.DeferredUpsertComponent<PendingBossGimmickReplicationComp>(
+		entity,
+		PendingBossGimmickReplicationComp{});
 }
 
 bool BossPhaseAspect::Validate(

@@ -282,6 +282,112 @@ inline bool PartyJoinRequestCloseReason_Parse(absl::string_view name, PartyJoinR
   return ::google::protobuf::internal::ParseNamedEnum<PartyJoinRequestCloseReason>(
       PartyJoinRequestCloseReason_descriptor(), name, value);
 }
+enum BossGimmickType : int {
+  BOSS_GIMMICK_TYPE_NONE = 0,
+  BOSS_GIMMICK_TYPE_PHASE_TRANSITION_OBJECTS = 1,
+  BOSS_GIMMICK_TYPE_FINAL_SAFE_ZONE = 2,
+  BossGimmickType_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  BossGimmickType_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool BossGimmickType_IsValid(int value);
+extern const uint32_t BossGimmickType_internal_data_[];
+constexpr BossGimmickType BossGimmickType_MIN = static_cast<BossGimmickType>(0);
+constexpr BossGimmickType BossGimmickType_MAX = static_cast<BossGimmickType>(2);
+constexpr int BossGimmickType_ARRAYSIZE = 2 + 1;
+const ::google::protobuf::EnumDescriptor*
+BossGimmickType_descriptor();
+template <typename T>
+const std::string& BossGimmickType_Name(T value) {
+  static_assert(std::is_same<T, BossGimmickType>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to BossGimmickType_Name().");
+  return BossGimmickType_Name(static_cast<BossGimmickType>(value));
+}
+template <>
+inline const std::string& BossGimmickType_Name(BossGimmickType value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<BossGimmickType_descriptor,
+                                                 0, 2>(
+      static_cast<int>(value));
+}
+inline bool BossGimmickType_Parse(absl::string_view name, BossGimmickType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<BossGimmickType>(
+      BossGimmickType_descriptor(), name, value);
+}
+enum BossGimmickStage : int {
+  BOSS_GIMMICK_STAGE_NONE = 0,
+  BOSS_GIMMICK_STAGE_TELEGRAPH = 1,
+  BOSS_GIMMICK_STAGE_ACTIVE = 2,
+  BOSS_GIMMICK_STAGE_RESOLVE = 3,
+  BOSS_GIMMICK_STAGE_COMPLETED = 4,
+  BOSS_GIMMICK_STAGE_CANCELLED = 5,
+  BossGimmickStage_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  BossGimmickStage_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool BossGimmickStage_IsValid(int value);
+extern const uint32_t BossGimmickStage_internal_data_[];
+constexpr BossGimmickStage BossGimmickStage_MIN = static_cast<BossGimmickStage>(0);
+constexpr BossGimmickStage BossGimmickStage_MAX = static_cast<BossGimmickStage>(5);
+constexpr int BossGimmickStage_ARRAYSIZE = 5 + 1;
+const ::google::protobuf::EnumDescriptor*
+BossGimmickStage_descriptor();
+template <typename T>
+const std::string& BossGimmickStage_Name(T value) {
+  static_assert(std::is_same<T, BossGimmickStage>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to BossGimmickStage_Name().");
+  return BossGimmickStage_Name(static_cast<BossGimmickStage>(value));
+}
+template <>
+inline const std::string& BossGimmickStage_Name(BossGimmickStage value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<BossGimmickStage_descriptor,
+                                                 0, 5>(
+      static_cast<int>(value));
+}
+inline bool BossGimmickStage_Parse(absl::string_view name, BossGimmickStage* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<BossGimmickStage>(
+      BossGimmickStage_descriptor(), name, value);
+}
+enum BossGimmickObjectState : int {
+  BOSS_GIMMICK_OBJECT_STATE_SPAWNED = 0,
+  BOSS_GIMMICK_OBJECT_STATE_UPDATED = 1,
+  BOSS_GIMMICK_OBJECT_STATE_BROKEN = 2,
+  BOSS_GIMMICK_OBJECT_STATE_DESPAWNED = 3,
+  BossGimmickObjectState_INT_MIN_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::min(),
+  BossGimmickObjectState_INT_MAX_SENTINEL_DO_NOT_USE_ =
+      std::numeric_limits<::int32_t>::max(),
+};
+
+bool BossGimmickObjectState_IsValid(int value);
+extern const uint32_t BossGimmickObjectState_internal_data_[];
+constexpr BossGimmickObjectState BossGimmickObjectState_MIN = static_cast<BossGimmickObjectState>(0);
+constexpr BossGimmickObjectState BossGimmickObjectState_MAX = static_cast<BossGimmickObjectState>(3);
+constexpr int BossGimmickObjectState_ARRAYSIZE = 3 + 1;
+const ::google::protobuf::EnumDescriptor*
+BossGimmickObjectState_descriptor();
+template <typename T>
+const std::string& BossGimmickObjectState_Name(T value) {
+  static_assert(std::is_same<T, BossGimmickObjectState>::value ||
+                    std::is_integral<T>::value,
+                "Incorrect type passed to BossGimmickObjectState_Name().");
+  return BossGimmickObjectState_Name(static_cast<BossGimmickObjectState>(value));
+}
+template <>
+inline const std::string& BossGimmickObjectState_Name(BossGimmickObjectState value) {
+  return ::google::protobuf::internal::NameOfDenseEnum<BossGimmickObjectState_descriptor,
+                                                 0, 3>(
+      static_cast<int>(value));
+}
+inline bool BossGimmickObjectState_Parse(absl::string_view name, BossGimmickObjectState* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<BossGimmickObjectState>(
+      BossGimmickObjectState_descriptor(), name, value);
+}
 
 // ===================================================================
 
@@ -2195,6 +2301,24 @@ struct is_proto_enum<::Protocol::PartyJoinRequestCloseReason> : std::true_type {
 template <>
 inline const EnumDescriptor* GetEnumDescriptor<::Protocol::PartyJoinRequestCloseReason>() {
   return ::Protocol::PartyJoinRequestCloseReason_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::BossGimmickType> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::BossGimmickType>() {
+  return ::Protocol::BossGimmickType_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::BossGimmickStage> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::BossGimmickStage>() {
+  return ::Protocol::BossGimmickStage_descriptor();
+}
+template <>
+struct is_proto_enum<::Protocol::BossGimmickObjectState> : std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor<::Protocol::BossGimmickObjectState>() {
+  return ::Protocol::BossGimmickObjectState_descriptor();
 }
 
 }  // namespace protobuf

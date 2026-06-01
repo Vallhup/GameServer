@@ -126,6 +126,92 @@ void FrameworkFrameEventHarvester::Harvest(
 			deathEvent.pending = false;
 		}
 
+		for (auto [owner, bossGimmickEvents] :
+			view.MutableView<PendingBossGimmickReplicationComp>())
+		{
+			for (const PendingBossGimmickStateSyncEvent& stateEvent :
+				bossGimmickEvents.stateEvents)
+			{
+				const Entity boss = !stateEvent.boss.IsNull()
+					? stateEvent.boss
+					: owner;
+				const NetId bossNetId =
+					netIdRegistry.FindNetId(worldId, boss);
+				if (!bossNetId.IsValid())
+				{
+					continue;
+				}
+
+				FrameworkRuntime::FrameResult::BossGimmickStateEvent frameEvent{};
+				frameEvent.worldId = worldId;
+				frameEvent.bossNetId = bossNetId;
+				frameEvent.gimmickSeq = stateEvent.gimmickSeq;
+				frameEvent.gimmickType = stateEvent.gimmickType;
+				frameEvent.stage = stateEvent.stage;
+				frameEvent.durationSec = SafeFinite(stateEvent.durationSec);
+				frameEvent.remainingSec = SafeFinite(stateEvent.remainingSec);
+				outEvents.bossGimmickStates.push_back(frameEvent);
+			}
+
+			for (const PendingBossGimmickObjectSyncEvent& objectEvent :
+				bossGimmickEvents.objectEvents)
+			{
+				const Entity boss = !objectEvent.boss.IsNull()
+					? objectEvent.boss
+					: owner;
+				const NetId bossNetId =
+					netIdRegistry.FindNetId(worldId, boss);
+				if (!bossNetId.IsValid() || objectEvent.objectNetId == 0)
+				{
+					continue;
+				}
+
+				FrameworkRuntime::FrameResult::BossGimmickObjectSyncEvent frameEvent{};
+				frameEvent.worldId = worldId;
+				frameEvent.bossNetId = bossNetId;
+				frameEvent.gimmickSeq = objectEvent.gimmickSeq;
+				frameEvent.objectNetId = objectEvent.objectNetId;
+				frameEvent.state = static_cast<uint32_t>(objectEvent.state);
+				frameEvent.x = SafeFinite(objectEvent.position.x);
+				frameEvent.y = SafeFinite(objectEvent.position.y);
+				frameEvent.z = SafeFinite(objectEvent.position.z);
+				frameEvent.radius = SafeFinite(objectEvent.radius);
+				frameEvent.curHp = objectEvent.curHp;
+				frameEvent.maxHp = objectEvent.maxHp;
+				outEvents.bossGimmickObjects.push_back(frameEvent);
+			}
+
+			for (const PendingBossGimmickZoneSyncEvent& zoneEvent :
+				bossGimmickEvents.zoneEvents)
+			{
+				const Entity boss = !zoneEvent.boss.IsNull()
+					? zoneEvent.boss
+					: owner;
+				const NetId bossNetId =
+					netIdRegistry.FindNetId(worldId, boss);
+				if (!bossNetId.IsValid() || zoneEvent.zoneNetId == 0)
+				{
+					continue;
+				}
+
+				FrameworkRuntime::FrameResult::BossGimmickZoneSyncEvent frameEvent{};
+				frameEvent.worldId = worldId;
+				frameEvent.bossNetId = bossNetId;
+				frameEvent.gimmickSeq = zoneEvent.gimmickSeq;
+				frameEvent.zoneNetId = zoneEvent.zoneNetId;
+				frameEvent.state = static_cast<uint32_t>(zoneEvent.state);
+				frameEvent.x = SafeFinite(zoneEvent.position.x);
+				frameEvent.y = SafeFinite(zoneEvent.position.y);
+				frameEvent.z = SafeFinite(zoneEvent.position.z);
+				frameEvent.radius = SafeFinite(zoneEvent.radius);
+				outEvents.bossGimmickZones.push_back(frameEvent);
+			}
+
+			bossGimmickEvents.stateEvents.clear();
+			bossGimmickEvents.objectEvents.clear();
+			bossGimmickEvents.zoneEvents.clear();
+		}
+
 		// Transfer-imported entities keep the player's existing NetId. They must
 		// not pass through the normal spawn auto-allocation path before the server
 		// transfer committer rebinds that NetId to the target entity.
