@@ -461,6 +461,20 @@ InitialWorldReadyResult ServerSessionSystem::MarkInitialWorldReady(
 		characterId,
 		transform);
 
+	if (WorldInstance* const world = _framework.FindWorld(pending.worldId))
+	{
+		ECSView view = world->GetRuntime().MakeView();
+		if (const CombatStatStateComp* const stats =
+			view.GetComponent<CombatStatStateComp>(pending.entity))
+		{
+			(void)ServerPacketStager::StageStatPacketToSession(
+				_network,
+				sessionId,
+				pending.playerNetId,
+				*stats);
+		}
+	}
+
 	ServerReplicationSnapshot::StageExistingWorldEntitiesForSession(
 		_framework,
 		_network,

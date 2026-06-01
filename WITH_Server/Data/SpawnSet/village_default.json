@@ -27,24 +27,8 @@
       "respawnDelaySec": null
     },
     {
-      "characterId": "Imp",
+      "characterId": "DemonExecutioner",
       "spawnPointId": "VillageMonster02",
-      "count": 1,
-      "type": "OnWorldStart",
-      "respawnPolicy": "None",
-      "respawnDelaySec": null
-    },
-    {
-      "characterId": "Imp",
-      "spawnPointId": "VillageMonster02A",
-      "count": 1,
-      "type": "OnWorldStart",
-      "respawnPolicy": "None",
-      "respawnDelaySec": null
-    },
-    {
-      "characterId": "Imp",
-      "spawnPointId": "VillageMonster02B",
       "count": 1,
       "type": "OnWorldStart",
       "respawnPolicy": "None",
@@ -85,6 +69,70 @@
     {
       "characterId": "Imp",
       "spawnPointId": "VillageMonster05B",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster06",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster06A",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster06B",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "DemonStriker",
+      "spawnPointId": "VillageMonster07",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster08",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "VillageMonster08A",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "DemonStriker",
+      "spawnPointId": "VillageMonster09",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "DemonExecutioner",
+      "spawnPointId": "VillageMonster10",
       "count": 1,
       "type": "OnWorldStart",
       "respawnPolicy": "None",

@@ -73,6 +73,86 @@
       "type": "OnWorldStart",
       "respawnPolicy": "None",
       "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "CastleMonster07",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "CastleMonster07A",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "CastleMonster07B",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "DemonExecutioner",
+      "spawnPointId": "CastleMonster08",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "DemonStriker",
+      "spawnPointId": "CastleMonster09",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "DemonExecutioner",
+      "spawnPointId": "CastleMonster10",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "DemonStriker",
+      "spawnPointId": "CastleMonster11",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "CastleMonster12",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "CastleMonster12A",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
+    },
+    {
+      "characterId": "Imp",
+      "spawnPointId": "CastleMonster12B",
+      "count": 1,
+      "type": "OnWorldStart",
+      "respawnPolicy": "None",
+      "respawnDelaySec": null
     }
   ]
 }
