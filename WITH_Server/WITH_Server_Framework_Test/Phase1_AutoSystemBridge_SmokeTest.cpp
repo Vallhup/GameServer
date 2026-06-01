@@ -906,6 +906,7 @@ void RunDynamicTaskSmokeTests();
 void RunAsyncIOSmokeTests();
 void RunPaperEvaluation();
 void RunTerrainHeightRuntimeSmokeTests();
+void RunWorldNavMeshConfigSmokeTests();
 
 namespace
 {
@@ -956,6 +957,10 @@ int main(int argc, char** argv)
         else if (HasArg(argc, argv, "--terrain-height-smoke"))
         {
             RunTerrainHeightRuntimeSmokeTests();
+        }
+        else if (HasArg(argc, argv, "--world-navmesh-config-smoke"))
+        {
+            RunWorldNavMeshConfigSmokeTests();
         }
         else
         {

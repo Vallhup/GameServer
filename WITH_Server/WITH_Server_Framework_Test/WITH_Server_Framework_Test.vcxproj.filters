@@ -26,6 +26,9 @@
     <ClCompile Include="TerrainHeightRuntime_SmokeTest.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="WorldNavMeshConfig_SmokeTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

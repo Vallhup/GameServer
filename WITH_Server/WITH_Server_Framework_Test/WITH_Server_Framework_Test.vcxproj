@@ -165,6 +165,7 @@
     <ClCompile Include="TaskExecutor_RaceStressTest.cpp" />
     <ClCompile Include="TaskExecutor_PerfDiagnostics.cpp" />
     <ClCompile Include="TerrainHeightRuntime_SmokeTest.cpp" />
+    <ClCompile Include="WorldNavMeshConfig_SmokeTest.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

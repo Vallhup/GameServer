@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <cmath>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -87,6 +88,36 @@ namespace
         def.heightScale = 0.5f;
         def.heightOffset = 1.0f;
         return def;
+    }
+
+    const SpawnPointDef* FindSpawnPoint(
+        const WorldDef& worldDef,
+        SpawnPointId spawnPointId)
+    {
+        for (const SpawnPointDef& spawnPoint : worldDef.map.spawnPoints)
+        {
+            if (spawnPoint.id == spawnPointId)
+                return &spawnPoint;
+        }
+
+        return nullptr;
+    }
+
+    void AssertSpawnPointPosition(
+        const WorldDef& worldDef,
+        SpawnPointId spawnPointId,
+        float expectedX,
+        float expectedY,
+        float expectedZ)
+    {
+        const SpawnPointDef* const spawnPoint =
+            FindSpawnPoint(worldDef, spawnPointId);
+        assert(spawnPoint != nullptr);
+
+        constexpr float kEpsilon = 0.0001f;
+        assert(std::fabs(spawnPoint->position.x - expectedX) < kEpsilon);
+        assert(std::fabs(spawnPoint->position.y - expectedY) < kEpsilon);
+        assert(std::fabs(spawnPoint->position.z - expectedZ) < kEpsilon);
     }
 
     WorldDef MakeWorldDef()
@@ -184,6 +215,29 @@ namespace
         assert(height == 30.0f);
     }
 
+    void Test_RotationYSamplesUnityTerrainLocalSpace()
+    {
+        TempRawFile file("TerrainHeightRuntime_rotation_y", { 10, 20, 30, 40 });
+
+        TerrainHeightRuntime runtime;
+        TerrainHeightRawDef def = MakeTestDef();
+        def.path = file.Path().string();
+        def.originX = 0.0f;
+        def.originZ = 0.0f;
+        def.cellSizeX = 1.0f;
+        def.cellSizeZ = 1.0f;
+        def.heightScale = 1.0f;
+        def.heightOffset = 0.0f;
+        def.rotationYDegrees = 90.0f;
+
+        assert(runtime.LoadFromFile(file.Path().string(), def));
+
+        float height = 0.0f;
+        assert(runtime.TrySampleHeight(1.0f, 0.0f, height));
+        assert(height == 30.0f);
+        assert(!runtime.TrySampleHeight(0.0f, 1.0f, height));
+    }
+
     void Test_RejectsInvalidByteCount()
     {
         TempRawFile file("TerrainHeightRuntime_bad_size", { 1, 2, 3 });
@@ -269,34 +323,271 @@ namespace
         assert(height == 777.0f);
     }
 
-    void Test_VillageTerrainDefMatchesMigratedClientRawFormat()
+    bool AlmostEqual(float lhs, float rhs)
+    {
+        return std::fabs(lhs - rhs) < 0.0001f;
+    }
+
+    void AssertTerrainDefMatchesRawImport(
+        const TerrainHeightRawDef& terrainDef,
+        const std::string& expectedPath,
+        float expectedOriginX,
+        float expectedOriginZ,
+        float expectedTerrainWidth,
+        float expectedTerrainLength,
+        float expectedTerrainHeight,
+        float expectedRotationYDegrees)
+    {
+        constexpr uint32_t kExpectedResolution = 2049;
+        constexpr float kExpectedPositionY = 0.0f;
+
+        assert(terrainDef.path == expectedPath);
+        assert(terrainDef.width == kExpectedResolution);
+        assert(terrainDef.height == kExpectedResolution);
+        assert(AlmostEqual(terrainDef.originX, expectedOriginX));
+        assert(AlmostEqual(terrainDef.originZ, expectedOriginZ));
+        assert(AlmostEqual(
+            terrainDef.cellSizeX,
+            expectedTerrainWidth / static_cast<float>(kExpectedResolution - 1u)));
+        assert(AlmostEqual(
+            terrainDef.cellSizeZ,
+            expectedTerrainLength / static_cast<float>(kExpectedResolution - 1u)));
+        assert(AlmostEqual(
+            terrainDef.heightScale,
+            expectedTerrainHeight / 65535.0f));
+        assert(AlmostEqual(terrainDef.heightOffset, kExpectedPositionY));
+        assert(AlmostEqual(terrainDef.rotationYDegrees, expectedRotationYDegrees));
+        assert(!terrainDef.flipZ);
+        assert(terrainDef.sampleFormat == TerrainHeightSampleFormat::UInt16LE);
+    }
+
+    void Test_WorldTerrainDefsMatchUnityRawImportSettings()
+    {
+        const WorldDef plazaDef = CreatePlazaWorldDef(1);
+        const WorldDef villageDef = CreateVillageWorldDef(1);
+        const WorldDef castleDef = CreateCastleWorldDef(1);
+        const WorldDef finalDef = CreateFinalWorldDef(1);
+
+        assert(plazaDef.map.terrainHeight.has_value());
+        assert(villageDef.map.terrainHeight.has_value());
+        assert(castleDef.map.terrainHeight.has_value());
+        assert(finalDef.map.terrainHeight.has_value());
+
+        AssertTerrainDefMatchesRawImport(
+            plazaDef.map.terrainHeight.value(),
+            "../Map/Plaza_Terrain.raw",
+            0.0f,
+            0.0f,
+            1016.0f,
+            1016.0f,
+            27.01563f,
+            0.0f);
+        AssertTerrainDefMatchesRawImport(
+            villageDef.map.terrainHeight.value(),
+            "../Map/Village_Terrain.raw",
+            0.0f,
+            0.0f,
+            1023.0f,
+            1023.0f,
+            159.4766f,
+            90.0f);
+        AssertTerrainDefMatchesRawImport(
+            castleDef.map.terrainHeight.value(),
+            "../Map/Castle_Terrain.raw",
+            0.0f,
+            0.0f,
+            650.2402f,
+            650.2402f,
+            79.28662f,
+            0.0f);
+        AssertTerrainDefMatchesRawImport(
+            finalDef.map.terrainHeight.value(),
+            "../Map/Cathedral_Terrain.raw",
+            -57.9f,
+            -102.2f,
+            120.0f,
+            120.0f,
+            600.0f,
+            0.0f);
+    }
+
+    void Test_VillageCombatSpawnPointsMatchContentLayout()
     {
         const WorldDef villageDef = CreateVillageWorldDef(1);
 
-        assert(villageDef.map.terrainHeight.has_value());
+        assert(villageDef.spawn.initialSpawnSetId == SpawnSetId::VillageDefault);
+        assert(FindSpawnPoint(villageDef, SpawnPointIds::VillageMonster02A) == nullptr);
+        assert(FindSpawnPoint(villageDef, SpawnPointIds::VillageMonster02B) == nullptr);
 
-        const TerrainHeightRawDef& terrainDef =
-            villageDef.map.terrainHeight.value();
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster01,
+            212.904114f,
+            56.205055f,
+            620.986938f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster01A,
+            214.304108f,
+            56.205055f,
+            621.786926f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster01B,
+            211.704117f,
+            56.205055f,
+            622.286926f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster02,
+            216.599396f,
+            56.203743f,
+            579.089844f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster03,
+            263.797272f,
+            58.984131f,
+            556.220764f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster04,
+            272.319183f,
+            62.978153f,
+            651.002991f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster05,
+            240.033142f,
+            57.021049f,
+            606.717407f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster05A,
+            241.433136f,
+            57.021049f,
+            607.517395f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster05B,
+            238.833145f,
+            57.021049f,
+            608.017395f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster06,
+            186.963013f,
+            56.395004f,
+            583.231812f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster06A,
+            188.363007f,
+            56.395004f,
+            584.031799f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster06B,
+            185.763016f,
+            56.395004f,
+            584.531799f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster07,
+            263.688568f,
+            62.369606f,
+            620.089600f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster08,
+            287.081970f,
+            65.820259f,
+            639.837524f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster08A,
+            288.481964f,
+            65.820259f,
+            640.637512f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster09,
+            239.990372f,
+            56.680523f,
+            540.022034f);
+        AssertSpawnPointPosition(
+            villageDef,
+            SpawnPointIds::VillageMonster10,
+            292.899323f,
+            68.393768f,
+            570.101746f);
+    }
 
-        assert(terrainDef.path == "../Map/Village_Terrain.raw");
-        assert(terrainDef.width == 2049);
-        assert(terrainDef.height == 2049);
-        assert(terrainDef.originX == 0.0f);
-        assert(terrainDef.originZ == 0.0f);
-        assert(terrainDef.cellSizeX == 1.0f);
-        assert(terrainDef.cellSizeZ == 1.0f);
-        assert(terrainDef.heightScale == 159.4766f / 65535.0f);
-        assert(terrainDef.heightOffset == 0.0f);
-        assert(!terrainDef.flipZ);
-        assert(terrainDef.sampleFormat == TerrainHeightSampleFormat::UInt16LE);
+    void Test_CastleAdditionalCombatSpawnPointsMatchContentLayout()
+    {
+        const WorldDef castleDef = CreateCastleWorldDef(1);
 
-        const float worldSizeX =
-            terrainDef.cellSizeX * static_cast<float>(terrainDef.width - 1u);
-        const float worldSizeZ =
-            terrainDef.cellSizeZ * static_cast<float>(terrainDef.height - 1u);
-
-        assert(worldSizeX == 2048.0f);
-        assert(worldSizeZ == 2048.0f);
+        assert(castleDef.spawn.initialSpawnSetId == SpawnSetId::CastleDefault);
+        AssertSpawnPointPosition(
+            castleDef,
+            SpawnPointIds::CastleMonster07,
+            353.739288f,
+            68.879623f,
+            308.454926f);
+        AssertSpawnPointPosition(
+            castleDef,
+            SpawnPointIds::CastleMonster07A,
+            355.139282f,
+            68.879623f,
+            309.254913f);
+        AssertSpawnPointPosition(
+            castleDef,
+            SpawnPointIds::CastleMonster07B,
+            352.539276f,
+            68.879623f,
+            309.754913f);
+        AssertSpawnPointPosition(
+            castleDef,
+            SpawnPointIds::CastleMonster08,
+            367.923859f,
+            68.897438f,
+            328.193909f);
+        AssertSpawnPointPosition(
+            castleDef,
+            SpawnPointIds::CastleMonster09,
+            353.965179f,
+            68.888054f,
+            333.697205f);
+        AssertSpawnPointPosition(
+            castleDef,
+            SpawnPointIds::CastleMonster10,
+            311.321808f,
+            69.173592f,
+            321.829773f);
+        AssertSpawnPointPosition(
+            castleDef,
+            SpawnPointIds::CastleMonster11,
+            344.273621f,
+            68.230255f,
+            383.559265f);
+        AssertSpawnPointPosition(
+            castleDef,
+            SpawnPointIds::CastleMonster12,
+            318.663025f,
+            67.961067f,
+            371.518890f);
+        AssertSpawnPointPosition(
+            castleDef,
+            SpawnPointIds::CastleMonster12A,
+            320.063019f,
+            67.961067f,
+            372.318878f);
+        AssertSpawnPointPosition(
+            castleDef,
+            SpawnPointIds::CastleMonster12B,
+            317.463013f,
+            67.961067f,
+            372.818878f);
     }
 }
 
@@ -308,6 +599,9 @@ void RunTerrainHeightRuntimeSmokeTests()
     Test_FlipZSamplesLogicalRowsFromOppositeSide();
     std::cout << "[PASS] Test_FlipZSamplesLogicalRowsFromOppositeSide\n";
 
+    Test_RotationYSamplesUnityTerrainLocalSpace();
+    std::cout << "[PASS] Test_RotationYSamplesUnityTerrainLocalSpace\n";
+
     Test_RejectsInvalidByteCount();
     std::cout << "[PASS] Test_RejectsInvalidByteCount\n";
 
@@ -317,8 +611,14 @@ void RunTerrainHeightRuntimeSmokeTests()
     Test_WorldRuntimeTerrainHeightProviderInjection();
     std::cout << "[PASS] Test_WorldRuntimeTerrainHeightProviderInjection\n";
 
-    Test_VillageTerrainDefMatchesMigratedClientRawFormat();
-    std::cout << "[PASS] Test_VillageTerrainDefMatchesMigratedClientRawFormat\n";
+    Test_WorldTerrainDefsMatchUnityRawImportSettings();
+    std::cout << "[PASS] Test_WorldTerrainDefsMatchUnityRawImportSettings\n";
+
+    Test_VillageCombatSpawnPointsMatchContentLayout();
+    std::cout << "[PASS] Test_VillageCombatSpawnPointsMatchContentLayout\n";
+
+    Test_CastleAdditionalCombatSpawnPointsMatchContentLayout();
+    std::cout << "[PASS] Test_CastleAdditionalCombatSpawnPointsMatchContentLayout\n";
 
     std::cout << "\nAll TerrainHeightRuntime smoke tests passed.\n";
 }
