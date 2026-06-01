@@ -133,7 +133,7 @@ enum BossGimmickType
 //  - 기믹 완료
 //  - 잔여 기믹 연출 정리
 //
-// CANCELLED:
+// CANCELLED: (버그 상황에만 발생)
 //  - 기믹 중단
 //  - 정상 판정 연출 없이 기믹 연출 정리
 enum BossGimmickStage
