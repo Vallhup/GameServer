@@ -2,21 +2,23 @@
 #include "ResolveAnimationPlaybackSystem.h"
 
 #include "../GameplaySystemUtil.h"
+#include "../Phase0_AI/BossGimmickAnimationPolicy.h"
 #include "../Phase2/ResolveAbilityStateSystem.h"
 
 using namespace GameplaySystemUtil;
 
-const StaticSystemMetaStorage<6, 0, 1> ResolveAnimationPlaybackSystem::kMetaStorage =
+const StaticSystemMetaStorage<7, 0, 1> ResolveAnimationPlaybackSystem::kMetaStorage =
     MakeMetaStorage(
         SysTag<ResolveAnimationPlaybackSystem>(),
         "ResolveAnimationPlaybackSystem",
-        std::array<AccessSpec, 6>
+        std::array<AccessSpec, 7>
         {
             WriteImmediate(ComponentRes<AnimationPlaybackStateComp>()),
             ReadImmediate(ComponentRes<AbilityStateComp>()),
             ReadImmediate(ComponentRes<LocomotionStateComp>()),
             ReadImmediate(ComponentRes<SpawnTypeComp>()),
             ReadImmediate(ComponentRes<CombatStatStateComp>()),
+            ReadImmediate(ComponentRes<BossGimmickStateComp>()),
             WriteImmediate(ComponentRes<DirtyFlagsComp>()),
         },
         std::array<SystemTag, 0>{},
@@ -69,6 +71,46 @@ void ResolveAnimationPlaybackSystem::Execute(SystemContext& ctx)
 					previousAbilityDef->timeline.durationSec;
 				playbackState.loop = false;
 				playbackState.holdLastFrame = true;
+				continue;
+			}
+		}
+
+		if (const BossGimmickStateComp* bossGimmick =
+			ctx.ecs.GetComponent<BossGimmickStateComp>(entity))
+		{
+			if (BossGimmickAnimationPolicy::ShouldUseEntryAnimation(
+					*bossGimmick))
+			{
+				const float durationSec =
+					std::max(0.0f, bossGimmick->stageDurationSec);
+				playbackState.source = AnimationPlaybackSource::Ability;
+				playbackState.animationId =
+					BossGimmickAnimationPolicy::EntryAnimationFor(
+						bossGimmick->activeType);
+				playbackState.boundAbilityInstanceId = 0;
+				playbackState.boundAbilityId = InvalidAbilityId;
+				playbackState.boundLocomotionMode = LocomotionMode::Idle;
+				playbackState.playbackTimeSec =
+					std::max(0.0f, bossGimmick->stageElapsedSec);
+				playbackState.normalizedTime =
+					durationSec > 0.0f
+					? ClampFloat(
+						bossGimmick->stageElapsedSec / durationSec,
+						0.0f,
+						1.0f)
+					: 0.0f;
+				playbackState.playRate = 1.0f;
+				playbackState.loop = false;
+				playbackState.holdLastFrame = true;
+
+				if (RequiresAnimationDirty(previousState, playbackState))
+				{
+					if (DirtyFlagsComp* dirty =
+						ctx.ecs.GetMutableComponent<DirtyFlagsComp>(entity))
+					{
+						dirty->MarkDirty(WorldDirtyType::Animation);
+					}
+				}
 				continue;
 			}
 		}

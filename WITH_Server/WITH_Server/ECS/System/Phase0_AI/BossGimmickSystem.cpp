@@ -9,7 +9,7 @@ using namespace GameplaySystemUtil;
 
 namespace
 {
-	constexpr float kPhaseTransitionTelegraphSec = 1.5f;
+	constexpr float kPhaseTransitionTelegraphSec = 13.3666725f;
 	constexpr float kPhaseTransitionObjectWindowSec = 8.0f;
 	constexpr float kPhaseTransitionResolveSec = 1.0f;
 	constexpr float kPhaseTransitionObjectHp = 60.0f;
@@ -19,7 +19,7 @@ namespace
 	constexpr float kPhaseTransitionObjectHalfWidth = 0.75f;
 	constexpr float kPhaseTransitionImmunitySec = 12.0f;
 
-	constexpr float kFinalSafeZoneTelegraphSec = 5.0f;
+	constexpr float kFinalSafeZoneTelegraphSec = 12.1000185f;
 	constexpr float kFinalSafeZoneActiveSec = 4.0f;
 	constexpr float kFinalSafeZoneResolveSec = 0.5f;
 	constexpr float kFinalSafeZoneRadius = 1.25f;
@@ -90,16 +90,6 @@ namespace
 		gimmick.stageDurationSec = std::max(0.0f, durationSec);
 	}
 
-	uint32_t ToSyncValue(BossGimmickType type) noexcept
-	{
-		return static_cast<uint32_t>(type);
-	}
-
-	uint32_t ToSyncValue(BossGimmickStage stage) noexcept
-	{
-		return static_cast<uint32_t>(stage);
-	}
-
 	uint32_t ToSyncValue(BossGimmickObjectSyncState state) noexcept
 	{
 		return static_cast<uint32_t>(state);
@@ -113,35 +103,6 @@ namespace
 	uint64_t ToGimmickNetId(Entity entity) noexcept
 	{
 		return entity.IsNull() ? 0ull : entity.id;
-	}
-
-	float RemainingStageSec(const BossGimmickStateComp& gimmick) noexcept
-	{
-		return std::max(
-			0.0f,
-			gimmick.stageDurationSec - gimmick.stageElapsedSec);
-	}
-
-	void EmitStateSync(
-		SystemContext& ctx,
-		Entity boss,
-		const BossGimmickStateComp& gimmick)
-	{
-		PendingBossGimmickReplicationComp* pending =
-			ctx.ecs.GetMutableComponent<PendingBossGimmickReplicationComp>(
-				boss);
-		if (pending == nullptr)
-			return;
-
-		pending->stateEvents.push_back(
-			PendingBossGimmickStateSyncEvent{
-				.boss = boss,
-				.gimmickSeq = gimmick.gimmickSeq,
-				.gimmickType = ToSyncValue(gimmick.activeType),
-				.stage = ToSyncValue(gimmick.stage),
-				.durationSec = gimmick.stageDurationSec,
-				.remainingSec = RemainingStageSec(gimmick)
-			});
 	}
 
 	void EmitObjectSync(
@@ -460,7 +421,6 @@ void BossGimmickSystem::Execute(SystemContext& ctx)
 					BossGimmickStage::Telegraph,
 					kFinalSafeZoneTelegraphSec,
 					true);
-				EmitStateSync(ctx, boss, gimmick);
 			}
 			else if (gimmick.phaseTransitionGimmickRequested &&
 				!gimmick.phaseTransitionGimmickCompleted)
@@ -470,7 +430,6 @@ void BossGimmickSystem::Execute(SystemContext& ctx)
 					BossGimmickStage::Telegraph,
 					kPhaseTransitionTelegraphSec,
 					true);
-				EmitStateSync(ctx, boss, gimmick);
 			}
 			else
 			{
@@ -516,7 +475,6 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				gimmick,
 				BossGimmickStage::Active,
 				kPhaseTransitionObjectWindowSec);
-			EmitStateSync(ctx, boss, gimmick);
 		}
 		return;
 	}
@@ -566,7 +524,6 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 					gimmick,
 					BossGimmickStage::Resolve,
 					kPhaseTransitionResolveSec);
-				EmitStateSync(ctx, boss, gimmick);
 			}
 			return;
 		}
@@ -653,7 +610,6 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				gimmick,
 				BossGimmickStage::Resolve,
 				kPhaseTransitionResolveSec);
-			EmitStateSync(ctx, boss, gimmick);
 		}
 		return;
 	}
@@ -688,7 +644,6 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 		gimmick.stageElapsedSec >= gimmick.stageDurationSec)
 	{
 		SetStage(gimmick, BossGimmickStage::Completed, 0.0f);
-		EmitStateSync(ctx, boss, gimmick);
 	}
 }
 
@@ -708,7 +663,6 @@ void BossGimmickSystem::TickFinalSafeZone(
 				gimmick,
 				BossGimmickStage::Active,
 				kFinalSafeZoneActiveSec);
-			EmitStateSync(ctx, boss, gimmick);
 		}
 		return;
 	}
@@ -750,7 +704,6 @@ void BossGimmickSystem::TickFinalSafeZone(
 				gimmick,
 				BossGimmickStage::Resolve,
 				kFinalSafeZoneResolveSec);
-			EmitStateSync(ctx, boss, gimmick);
 		}
 		return;
 	}
@@ -810,6 +763,5 @@ void BossGimmickSystem::TickFinalSafeZone(
 		gimmick.stageElapsedSec >= gimmick.stageDurationSec)
 	{
 		SetStage(gimmick, BossGimmickStage::Completed, 0.0f);
-		EmitStateSync(ctx, boss, gimmick);
 	}
 }

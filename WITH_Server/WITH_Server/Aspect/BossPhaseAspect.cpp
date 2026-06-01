@@ -34,6 +34,11 @@ void BossPhaseAspect::Attach(
 			.transitionRequested = false,
 			.pendingTransitionIndex = AIPhaseRuntimeComp::kInvalidTransitionIndex
 		});
+
+	runtime.DeferredUpsertComponent<BossGimmickStateComp>(
+		entity,
+		BossGimmickStateComp{});
+
 	runtime.DeferredUpsertComponent<PendingBossGimmickReplicationComp>(
 		entity,
 		PendingBossGimmickReplicationComp{});

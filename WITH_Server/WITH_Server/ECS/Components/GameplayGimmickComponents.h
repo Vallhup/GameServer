@@ -37,16 +37,6 @@ enum class BossGimmickObjectSyncState : uint32_t
 	Despawned = 3
 };
 
-struct PendingBossGimmickStateSyncEvent
-{
-	Entity boss{ Entity::Null() };
-	uint32_t gimmickSeq{ 0 };
-	uint32_t gimmickType{ 0 };
-	uint32_t stage{ 0 };
-	float durationSec{ 0.0f };
-	float remainingSec{ 0.0f };
-};
-
 struct PendingBossGimmickObjectSyncEvent
 {
 	Entity boss{ Entity::Null() };
@@ -71,7 +61,6 @@ struct PendingBossGimmickZoneSyncEvent
 
 struct PendingBossGimmickReplicationComp : Component
 {
-	std::vector<PendingBossGimmickStateSyncEvent> stateEvents;
 	std::vector<PendingBossGimmickObjectSyncEvent> objectEvents;
 	std::vector<PendingBossGimmickZoneSyncEvent> zoneEvents;
 };

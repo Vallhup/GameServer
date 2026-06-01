@@ -161,31 +161,6 @@ bool ServerFrameEventDispatcher::Dispatch(
 			impactPacket);
 	}
 
-	for (const auto& gimmickStateEvent :
-		frameResult.events.bossGimmickStates)
-	{
-		if (!gimmickStateEvent.bossNetId.IsValid())
-		{
-			continue;
-		}
-
-		sessionSystem.Flow().CollectSessionsInWorld(
-			gimmickStateEvent.worldId,
-			worldSessionIds);
-		RemoveExcludedSessions(worldSessionIds, excludedSessionIds);
-
-		Protocol::SC_BOSS_GIMMICK_STATE_PACKET packet;
-		BossGimmickReplicationProtocol::FillStatePacket(
-			packet,
-			gimmickStateEvent);
-
-		(void)ServerPacketStager::StageReplicationPacket(
-			sessionSystem.Network(),
-			PacketType::SC_BOSS_GIMMICK_STATE,
-			std::span<const SessionId>(worldSessionIds),
-			packet);
-	}
-
 	for (const auto& gimmickObjectEvent :
 		frameResult.events.bossGimmickObjects)
 	{

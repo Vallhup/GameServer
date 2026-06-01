@@ -129,30 +129,6 @@ void FrameworkFrameEventHarvester::Harvest(
 		for (auto [owner, bossGimmickEvents] :
 			view.MutableView<PendingBossGimmickReplicationComp>())
 		{
-			for (const PendingBossGimmickStateSyncEvent& stateEvent :
-				bossGimmickEvents.stateEvents)
-			{
-				const Entity boss = !stateEvent.boss.IsNull()
-					? stateEvent.boss
-					: owner;
-				const NetId bossNetId =
-					netIdRegistry.FindNetId(worldId, boss);
-				if (!bossNetId.IsValid())
-				{
-					continue;
-				}
-
-				FrameworkRuntime::FrameResult::BossGimmickStateEvent frameEvent{};
-				frameEvent.worldId = worldId;
-				frameEvent.bossNetId = bossNetId;
-				frameEvent.gimmickSeq = stateEvent.gimmickSeq;
-				frameEvent.gimmickType = stateEvent.gimmickType;
-				frameEvent.stage = stateEvent.stage;
-				frameEvent.durationSec = SafeFinite(stateEvent.durationSec);
-				frameEvent.remainingSec = SafeFinite(stateEvent.remainingSec);
-				outEvents.bossGimmickStates.push_back(frameEvent);
-			}
-
 			for (const PendingBossGimmickObjectSyncEvent& objectEvent :
 				bossGimmickEvents.objectEvents)
 			{
@@ -207,7 +183,6 @@ void FrameworkFrameEventHarvester::Harvest(
 				outEvents.bossGimmickZones.push_back(frameEvent);
 			}
 
-			bossGimmickEvents.stateEvents.clear();
 			bossGimmickEvents.objectEvents.clear();
 			bossGimmickEvents.zoneEvents.clear();
 		}

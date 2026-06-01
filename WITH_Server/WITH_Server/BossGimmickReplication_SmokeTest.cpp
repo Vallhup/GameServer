@@ -5,34 +5,10 @@
 #include <iostream>
 
 #include "BossGimmickReplicationProtocol.h"
+#include "ECS/System/Phase0_AI/BossGimmickAnimationPolicy.h"
 
 namespace
 {
-	void RunBossGimmickStatePacketFillTest()
-	{
-		FrameworkRuntime::FrameResult::BossGimmickStateEvent event{};
-		event.bossNetId = NetId{ 1001 };
-		event.gimmickSeq = 7;
-		event.gimmickType =
-			static_cast<uint32_t>(
-				Protocol::BOSS_GIMMICK_TYPE_PHASE_TRANSITION_OBJECTS);
-		event.stage =
-			static_cast<uint32_t>(Protocol::BOSS_GIMMICK_STAGE_ACTIVE);
-		event.durationSec = 8.0f;
-		event.remainingSec = 3.5f;
-
-		Protocol::SC_BOSS_GIMMICK_STATE_PACKET packet;
-		BossGimmickReplicationProtocol::FillStatePacket(packet, event);
-
-		assert(packet.bossnetid() == 1001);
-		assert(packet.gimmickseq() == 7);
-		assert(packet.gimmicktype() ==
-			Protocol::BOSS_GIMMICK_TYPE_PHASE_TRANSITION_OBJECTS);
-		assert(packet.stage() == Protocol::BOSS_GIMMICK_STAGE_ACTIVE);
-		assert(std::fabs(packet.durationsec() - 8.0f) < 0.001f);
-		assert(std::fabs(packet.remainingsec() - 3.5f) < 0.001f);
-	}
-
 	void RunBossGimmickObjectPacketFillTest()
 	{
 		FrameworkRuntime::FrameResult::BossGimmickObjectSyncEvent event{};
@@ -90,13 +66,38 @@ namespace
 		assert(std::fabs(packet.z() - 6.0f) < 0.001f);
 		assert(std::fabs(packet.radius() - 1.25f) < 0.001f);
 	}
+
+	void RunBossGimmickAnimationPolicyTest()
+	{
+		BossGimmickStateComp phaseTransition{};
+		phaseTransition.activeType = BossGimmickType::PhaseTransitionObjects;
+		phaseTransition.stage = BossGimmickStage::Telegraph;
+
+		assert(BossGimmickAnimationPolicy::ShouldUseEntryAnimation(
+			phaseTransition));
+		assert(BossGimmickAnimationPolicy::EntryAnimationFor(
+			phaseTransition.activeType) == AnimationId::FinalBoss_50Percent);
+
+		BossGimmickStateComp finalSafeZone{};
+		finalSafeZone.activeType = BossGimmickType::FinalSafeZone;
+		finalSafeZone.stage = BossGimmickStage::Telegraph;
+
+		assert(BossGimmickAnimationPolicy::ShouldUseEntryAnimation(
+			finalSafeZone));
+		assert(BossGimmickAnimationPolicy::EntryAnimationFor(
+			finalSafeZone.activeType) == AnimationId::FinalBoss_0Percent);
+
+		finalSafeZone.stage = BossGimmickStage::Active;
+		assert(!BossGimmickAnimationPolicy::ShouldUseEntryAnimation(
+			finalSafeZone));
+	}
 }
 
 void RunBossGimmickReplicationSmokeTests()
 {
-	RunBossGimmickStatePacketFillTest();
 	RunBossGimmickObjectPacketFillTest();
 	RunBossGimmickZonePacketFillTest();
+	RunBossGimmickAnimationPolicyTest();
 
 	std::cout << "[PASS] BossGimmickReplication smoke\n";
 }

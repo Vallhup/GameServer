@@ -688,6 +688,9 @@
     <ClInclude Include="ECS\System\Phase0_AI\AIPerceptionSystem.h">
       <Filter>ECS\System\Phase0</Filter>
     </ClInclude>
+    <ClInclude Include="ECS\System\Phase0_AI\BossGimmickAnimationPolicy.h">
+      <Filter>ECS\System\Phase0</Filter>
+    </ClInclude>
     <ClInclude Include="ECS\System\Phase0_AI\BossGimmickSystem.h">
       <Filter>ECS\System\Phase0</Filter>
     </ClInclude>

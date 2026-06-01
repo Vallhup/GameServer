@@ -275,6 +275,8 @@ bool AnimationJsonLoader::ResolveAnimationId(
 		{ "FinalBoss_swordstorm", AnimationId::FinalBoss_SwordStorm },
 		{ "FinalBoss_stun", AnimationId::FinalBoss_Stun },
 		{ "FinalBoss_hit", AnimationId::FinalBoss_Hit },
+		{ "FinalBoss_0percent", AnimationId::FinalBoss_0Percent },
+		{ "FinalBoss_50percent", AnimationId::FinalBoss_50Percent },
 		{ "FinalBoss_death", AnimationId::FinalBoss_Death },
 
 		{ "DemonStriker_idle_1", AnimationId::DemonStriker_Idle_1, },

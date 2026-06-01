@@ -136,11 +136,6 @@ void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
 			return NetHelper::DispatchPacket<Protocol::SC_MONSTER_COMBAT_STATE_PACKET>(header, data,
 				[this](const auto& packet) { HandleMontserCombatState(packet); });
 		}
-		case PacketType::SC_BOSS_GIMMICK_STATE:
-		{
-			return NetHelper::DispatchPacket<Protocol::SC_BOSS_GIMMICK_STATE_PACKET>(header, data,
-				[this](const auto& packet) { HandleBossGimmickState(packet); });
-		}
 		case PacketType::SC_BOSS_GIMMICK_OBJECT_SYNC:
 		{
 			return NetHelper::DispatchPacket<Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET>(header, data,
@@ -733,21 +728,6 @@ void Scene::HandleMontserCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PAC
 		controller->SetBossCombatState(inCombat);
 	else
 		controller->SetMonsterCombatState(id, inCombat);
-}
-
-void Scene::HandleBossGimmickState(const Protocol::SC_BOSS_GIMMICK_STATE_PACKET& gimmickState)
-{
-	// TODO: Boss Gimmick 연출 
-	//       (BossGimmickType, BossGimmickStage 값은 ProtocolLib의 Protocol.proto 참조)
-	const NetId bossNetId{ gimmickState.bossnetid() };
-	const int bossId = bossNetId.GetId();
-
-	const uint32_t gimmickSeq = gimmickState.gimmickseq();
-	const Protocol::BossGimmickType gimmickType = gimmickState.gimmicktype();
-	const Protocol::BossGimmickStage gimmickStage = gimmickState.stage();
-
-	const float durationSec = gimmickState.durationsec();
-	const float remainingSec = gimmickState.remainingsec();
 }
 
 void Scene::HandleBossGimmickObjectSync(const Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& gimmickObject)

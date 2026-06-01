@@ -100,6 +100,18 @@
 			"source": "boss_animation_walk_baked.bone",
 			"output": "final_boss_animation_walk.json",
 			"loop": true
+		},
+		{
+			"name": "50percent",
+			"source": "boss_animation_50Percent_baked.bone",
+			"output": "final_boss_animation_50percent.json",
+			"loop": false
+		},
+		{
+			"name": "0percent",
+			"source": "boss_animation_0Percent_baked.bone",
+			"output": "final_boss_animation_0percent.json",
+			"loop": false
 		}
 	]
 }

@@ -144,6 +144,8 @@ bool ParseAnimationIdString(std::string_view text, AnimationId& outValue) noexce
 		{ "FinalBoss_SwordStorm", AnimationId::FinalBoss_SwordStorm },
 		{ "FinalBoss_Stun", AnimationId::FinalBoss_Stun },
 		{ "FinalBoss_Hit", AnimationId::FinalBoss_Hit },
+		{ "FinalBoss_0Percent", AnimationId::FinalBoss_0Percent },
+		{ "FinalBoss_50Percent", AnimationId::FinalBoss_50Percent },
 		{ "FinalBoss_Death", AnimationId::FinalBoss_Death },
 		{ "Imp_Idle_1", AnimationId::Imp_Idle_1 },
 		{ "Imp_Melee_1", AnimationId::Imp_Melee_1 },
