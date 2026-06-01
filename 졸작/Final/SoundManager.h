@@ -24,10 +24,10 @@ public:
     void SetSFXVolume(float volume);
 
 private:
-    void UpdateListener();
+    bool GetListenerPosition(XMFLOAT3& outPos) const;
 
     static constexpr float SFX3D_MIN_DISTANCE = 3.0f;
-    static constexpr float SFX3D_MAX_DISTANCE = 30.0f;
+    static constexpr float SFX3D_MAX_DISTANCE = 20.0f;
 
     System* system = nullptr;
     ChannelGroup* bgmGroup = nullptr;  
@@ -47,6 +47,6 @@ private:
 
     unordered_map<string, Sound*> bgmCache;
     unordered_map<string, Sound*> sfxCache;
-    unordered_map<string, Sound*> sfx3DCache;
+    unordered_map<string, Sound*> positionalSfxCache;
     string currentBGMPath;
 };

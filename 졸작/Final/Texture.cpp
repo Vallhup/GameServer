@@ -9,7 +9,6 @@ void Texture::Initialize(ID3D12Device* device, ID3D12GraphicsCommandList* cmdLis
 
     const Image* img = image.GetImage(0, 0, 0);
 
-    // ����� �α� �߰�
     OutputDebugStringA(("Texture size: " + to_string(img->width) + "x" + to_string(img->height) + "\n").c_str());
     OutputDebugStringA(("Texture memory: " + to_string(img->slicePitch) + " bytes\n").c_str());
 
@@ -70,15 +69,15 @@ void Texture::InitializeDDS(ID3D12Device* device, ID3D12GraphicsCommandList* cmd
     HRESULT hr = LoadFromDDSFile(filePath.c_str(), DDS_FLAGS_NONE, nullptr, image);
     MASSERT(SUCCEEDED(hr), "Failed to load texture file");
 
-    const Image* img = image.GetImage(0, 0, 0);
+    const TexMetadata& meta = image.GetMetadata();
 
     D3D12_RESOURCE_DESC desc = {};
     desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-    desc.Width = static_cast<UINT>(img->width);
-    desc.Height = static_cast<UINT>(img->height);
+    desc.Width = static_cast<UINT>(meta.width);
+    desc.Height = static_cast<UINT>(meta.height);
     desc.DepthOrArraySize = 1;
-    desc.MipLevels = 1;
-    desc.Format = img->format;
+    desc.MipLevels = static_cast<UINT16>(meta.mipLevels);
+    desc.Format = meta.format;
     desc.SampleDesc.Count = 1;
     desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
@@ -87,19 +86,24 @@ void Texture::InitializeDDS(ID3D12Device* device, ID3D12GraphicsCommandList* cmd
         D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&texture));
     MASSERT(SUCCEEDED(hr), "Failed to create DDS texture");
 
-    UINT64 uploadSize = GetRequiredIntermediateSize(texture.Get(), 0, 1);
+    vector<D3D12_SUBRESOURCE_DATA> subresources(meta.mipLevels);
+    for (size_t mip = 0; mip < meta.mipLevels; ++mip)
+    {
+        const Image* img = image.GetImage(mip, 0, 0);
+        subresources[mip].pData = img->pixels;
+        subresources[mip].RowPitch = img->rowPitch;
+        subresources[mip].SlicePitch = img->slicePitch;
+    }
+
+    UINT64 uploadSize = GetRequiredIntermediateSize(texture.Get(), 0, (UINT)subresources.size());
     CD3DX12_HEAP_PROPERTIES uploadHeap(D3D12_HEAP_TYPE_UPLOAD);
     CD3DX12_RESOURCE_DESC bufDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadSize);
     hr = device->CreateCommittedResource(&uploadHeap, D3D12_HEAP_FLAG_NONE, &bufDesc,
         D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&uploadBuffer));
     MASSERT(SUCCEEDED(hr), "Failed to create DDS upload buffer");
 
-    D3D12_SUBRESOURCE_DATA textureData = {};
-    textureData.pData = img->pixels;
-    textureData.RowPitch = img->rowPitch;
-    textureData.SlicePitch = img->slicePitch;
-
-    UpdateSubresources(cmdList, texture.Get(), uploadBuffer.Get(), 0, 0, 1, &textureData);
+    UpdateSubresources(cmdList, texture.Get(), uploadBuffer.Get(), 0, 0,
+        (UINT)subresources.size(), subresources.data());
 
     CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
         texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);

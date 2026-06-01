@@ -29,6 +29,7 @@ public:
 	virtual void Release() = 0;
 
 	Camera* GetCamera() const;
+	MainCharacter* GetMyPlayer() const { return myPlayer.get(); }
 	CharacterType GetMyCharacterType() const { return myCharacterType; }
 	void SetSceneManager(SceneManager* manager);
 	void HandlePacket(const PacketHeader& header, const BYTE* data);
