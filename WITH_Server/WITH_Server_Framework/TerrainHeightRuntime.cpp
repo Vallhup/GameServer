@@ -18,9 +18,16 @@ namespace
 			std::isfinite(def.cellSizeZ) &&
 			def.cellSizeX > 0.0f &&
 			def.cellSizeZ > 0.0f &&
+			std::isfinite(def.rotationYDegrees) &&
 			std::isfinite(def.heightScale) &&
 			std::isfinite(def.heightOffset) &&
 			def.sampleFormat == TerrainHeightSampleFormat::UInt16LE;
+	}
+
+	float DegreesToRadians(float degrees) noexcept
+	{
+		constexpr float kPi = 3.14159265358979323846f;
+		return degrees * (kPi / 180.0f);
 	}
 
 	bool TryGetExpectedByteCount(
@@ -125,11 +132,19 @@ bool TerrainHeightRuntime::TrySampleHeight(
 	if (!IsReady() || !std::isfinite(worldX) || !std::isfinite(worldZ))
 		return false;
 
-	// Equivalent to the client formula:
-	// u = localX / worldSize, hx = u * (width - 1).
-	// Here cellSize = worldSize / (width - 1), so hx = localX / cellSize.
-	const float gridX = (worldX - _def.originX) / _def.cellSizeX;
-	const float logicalGridZ = (worldZ - _def.originZ) / _def.cellSizeZ;
+	const float deltaX = worldX - _def.originX;
+	const float deltaZ = worldZ - _def.originZ;
+	const float rotationRadians = DegreesToRadians(_def.rotationYDegrees);
+	const float cosY = std::cos(rotationRadians);
+	const float sinY = std::sin(rotationRadians);
+
+	const float localX = deltaX * cosY - deltaZ * sinY;
+	const float localZ = deltaX * sinY + deltaZ * cosY;
+
+	// Equivalent to the client formula after inverse-transforming world X/Z
+	// into Unity Terrain local space: hx = localX / cellSize.
+	const float gridX = localX / _def.cellSizeX;
+	const float logicalGridZ = localZ / _def.cellSizeZ;
 	const float gridZ = _def.flipZ
 		? static_cast<float>(_def.height - 1u) - logicalGridZ
 		: logicalGridZ;

@@ -53,6 +53,11 @@ using MapResourceId = uint16_t;
 using NavigationProfileId = uint16_t;
 using EnvironmentTagId = uint16_t;
 
+inline constexpr float kUnityNavMeshAgentRadius = 0.05f;
+inline constexpr float kUnityNavMeshAgentHeight = 1.8f;
+inline constexpr float kUnityNavMeshAgentMaxClimb = 0.4f;
+inline constexpr float kUnityNavMeshAgentMaxSlope = 45.0f;
+
 struct WorldVec3Def
 {
 	float x{ 0.0f };
@@ -81,10 +86,10 @@ struct SpawnPointDef
 struct MapNavMeshDef
 {
 	std::string navMeshBinPath;
-	float       agentRadius{ 0.35f }; // 0.6f
-	float       agentHeight{ 2.0f };
-	float       agentMaxClimb{ 0.4f }; // 0.9f
-	float       agentMaxSlope{ 45.0f };
+	float       agentRadius{ kUnityNavMeshAgentRadius };
+	float       agentHeight{ kUnityNavMeshAgentHeight };
+	float       agentMaxClimb{ kUnityNavMeshAgentMaxClimb };
+	float       agentMaxSlope{ kUnityNavMeshAgentMaxSlope };
 };
 
 enum class TerrainHeightSampleFormat
@@ -101,6 +106,7 @@ struct TerrainHeightRawDef
 	// terrain-local X/Z. cellSize is worldSize / (resolution - 1).
 	float originX{ 0.0f };
 	float originZ{ 0.0f };
+	float rotationYDegrees{ 0.0f };
 	float cellSizeX{ 1.0f };
 	float cellSizeZ{ 1.0f };
 	float heightScale{ 1.0f };
