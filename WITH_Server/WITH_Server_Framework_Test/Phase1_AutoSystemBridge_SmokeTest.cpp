@@ -905,6 +905,7 @@ void RunTaskExecutorRaceStressTest(int argc, char** argv);
 void RunDynamicTaskSmokeTests();
 void RunAsyncIOSmokeTests();
 void RunPaperEvaluation();
+void RunTerrainHeightRuntimeSmokeTests();
 
 namespace
 {
@@ -951,6 +952,10 @@ int main(int argc, char** argv)
         else if (HasArg(argc, argv, "--paper-eval"))
         {
             RunPaperEvaluation();
+        }
+        else if (HasArg(argc, argv, "--terrain-height-smoke"))
+        {
+            RunTerrainHeightRuntimeSmokeTests();
         }
         else
         {

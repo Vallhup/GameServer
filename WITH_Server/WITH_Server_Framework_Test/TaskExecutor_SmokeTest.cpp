@@ -856,13 +856,10 @@ namespace
             std::nullopt,
             std::nullopt
         };
-        def.map = {
-            0,
-            0,
-            {},
-            std::nullopt,
-            {}
-        };
+        def.map.resourceId = 0;
+        def.map.defaultPlayerSpawnPointId = SpawnPointIds::None;
+        def.map.navMesh = std::nullopt;
+        def.map.terrainHeight = std::nullopt;
         def.spawn = { SpawnSetId::None, std::nullopt };
         def.progressRule = {
             WorldClearConditionType::None,
