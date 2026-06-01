@@ -28,10 +28,21 @@ struct INavMeshProvider
 	virtual const NavigationProfileDef* GetNavigationProfile() const noexcept = 0;
 };
 
+struct ITerrainHeightProvider
+{
+	virtual ~ITerrainHeightProvider() = default;
+
+	virtual bool TrySampleHeight(
+		float worldX,
+		float worldZ,
+		float& outHeight) const noexcept = 0;
+};
+
 struct WorldSystemServices
 {
 	const IWorldNetBindingResolver* netBindingResolver{ nullptr };
 	const INavMeshProvider*         navMeshProvider{ nullptr };
+	const ITerrainHeightProvider*   terrainHeightProvider{ nullptr };
 };
 
 struct SystemContext

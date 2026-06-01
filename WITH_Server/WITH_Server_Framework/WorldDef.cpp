@@ -44,6 +44,21 @@ WorldDef CreatePlazaWorldDef(WorldExecutionModelKey executionModelKey)
 				.agentMaxClimb = 0.4f,
 				.agentMaxSlope = 45.0f
 			},
+			.terrainHeight = std::nullopt,
+			//TerrainHeightRawDef
+			//{
+			//	.path = "../Map/Village_Terrain.raw",
+			//	.width = 2049,
+			//	.height = 2049,
+			//	.originX = 0.0f,
+			//	.originZ = 0.0f,
+			//	.cellSizeX = 1.0f,
+			//	.cellSizeZ = 1.0f,
+			//	.heightScale = 159.4766f / 65535.0f,
+			//	.heightOffset = 0.0f,
+			//	.flipZ = false,
+			//	.sampleFormat = TerrainHeightSampleFormat::UInt16LE,
+			//},
 			.navigationProfile = NavigationProfileDef
 			{
 				.id = 0,
@@ -198,6 +213,20 @@ WorldDef CreateVillageWorldDef(WorldExecutionModelKey executionModelKey)
 				.agentMaxClimb = 0.4f,
 				.agentMaxSlope = 45.0f
 			},
+			//.terrainHeight = TerrainHeightRawDef
+			//{
+			//	.path = "../Map/Village_Terrain.raw",
+			//	.width = 2049,
+			//	.height = 2049,
+			//	.originX = 0.0f,
+			//	.originZ = 0.0f,
+			//	.cellSizeX = 1.0f,
+			//	.cellSizeZ = 1.0f,
+			//	.heightScale = 159.4766f / 65535.0f,
+			//	.heightOffset = 0.0f,
+			//	.flipZ = false,
+			//	.sampleFormat = TerrainHeightSampleFormat::UInt16LE,
+			//},
 			.navigationProfile = NavigationProfileDef
 			{
 				.id = 0,
@@ -344,6 +373,7 @@ WorldDef CreateCastleWorldDef(WorldExecutionModelKey executionModelKey)
 				.agentMaxClimb = 0.4f,
 				.agentMaxSlope = 45.0f
 			},
+			.terrainHeight = std::nullopt,
 			.navigationProfile = NavigationProfileDef
 			{
 				.id = 0,
@@ -436,6 +466,7 @@ WorldDef CreateFinalWorldDef(WorldExecutionModelKey executionModelKey)
 				.agentMaxClimb = 0.4f,
 				.agentMaxSlope = 45.0f
 			},
+			.terrainHeight = std::nullopt,
 			.navigationProfile = NavigationProfileDef
 			{
 				.id = 0,
@@ -513,6 +544,7 @@ WorldDef CreatePvpWorldDef(WorldExecutionModelKey executionModelKey)
 			},
 			// TODO(content): add arena-specific navmesh and team spawn groups.
 			.navMesh = std::nullopt,
+			.terrainHeight = std::nullopt,
 			.navigationProfile = std::nullopt,
 			.navigationProfileId = std::nullopt,
 			.environmentTags = {},

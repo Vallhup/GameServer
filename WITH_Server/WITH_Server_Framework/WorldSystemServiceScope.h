@@ -4,6 +4,7 @@
 #include "System.h"
 
 class WorldRuntime;
+class TerrainHeightRuntime;
 
 class WorldSystemServiceScope final
 {
@@ -45,6 +46,21 @@ private:
         const NavigationProfileDef* _profile{ nullptr };
     };
 
+    class TerrainHeightProvider final : public ITerrainHeightProvider
+    {
+    public:
+        void Bind(const TerrainHeightRuntime* runtime) noexcept;
+
+        [[nodiscard]]
+        bool TrySampleHeight(
+            float worldX,
+            float worldZ,
+            float& outHeight) const noexcept override;
+
+    private:
+        const TerrainHeightRuntime* _runtime{ nullptr };
+    };
+
     class ExecContextNetBindingResolver final : public IWorldNetBindingResolver
     {
     public:
@@ -64,10 +80,12 @@ private:
 
 private:
     void FillNavMeshProvider(WorldRuntime& runtime) noexcept;
+    void FillTerrainHeightProvider(WorldRuntime& runtime) noexcept;
     void FillNetBindingResolver(NodeExecContext& context) noexcept;
 
 private:
     WorldSystemServices _services{};
     NavMeshProvider _navMeshProvider;
+    TerrainHeightProvider _terrainHeightProvider;
     ExecContextNetBindingResolver _netBindingResolver;
 };

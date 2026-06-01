@@ -184,6 +184,7 @@ bool WorldRuntime::Initialize()
 	// NavMesh 로딩 — WorldDef.map.navMesh가 설정된 경우에만 수행
 	// 실패해도 초기화를 중단하지 않는다. 해당 월드는 fallback 경로로 동작한다.
 	_navMeshRuntime.reset();
+	_terrainHeightRuntime.reset();
 	_navProfile = nullptr;
 
 	if (_def->map.navMesh.has_value())
@@ -202,6 +203,19 @@ bool WorldRuntime::Initialize()
 	if (_navMeshRuntime && _def->map.navigationProfile.has_value())
 		_navProfile = &(*_def->map.navigationProfile);
 
+	if (_def->map.terrainHeight.has_value())
+	{
+		_terrainHeightRuntime = std::make_unique<TerrainHeightRuntime>();
+		const std::filesystem::path terrainHeightPath = ResolveRuntimeResourcePath(
+			_def->map.terrainHeight->path);
+		if (!_terrainHeightRuntime->LoadFromFile(
+			terrainHeightPath.string(),
+			*_def->map.terrainHeight))
+		{
+			_terrainHeightRuntime.reset();
+		}
+	}
+
 	return true;
 }
 
@@ -217,6 +231,9 @@ void WorldRuntime::Shutdown()
 	_lifecycleOutbox.clear();
 	_systems.Clear();
 	_ecs.Clear();
+	_navMeshRuntime.reset();
+	_terrainHeightRuntime.reset();
+	_navProfile = nullptr;
 
 	_commitState = WorldRuntimeCommitState::NotCommitted;
 	_lifecycleFlushState = WorldRuntimeLifecycleFlushState::NotFlushed;

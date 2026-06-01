@@ -86,6 +86,7 @@
       <Filter>02_World\01_Definition</Filter>
     </ClCompile>
     <ClCompile Include="NavMeshRuntime.cpp" />
+    <ClCompile Include="TerrainHeightRuntime.cpp" />
     <ClCompile Include="AutoSystemBridge.cpp">
       <Filter>03_Execution\07_Utility</Filter>
     </ClCompile>
@@ -338,6 +339,7 @@
       <Filter>02_World\02_Runtime</Filter>
     </ClInclude>
     <ClInclude Include="NavMeshRuntime.h" />
+    <ClInclude Include="TerrainHeightRuntime.h" />
     <ClInclude Include="Library\Detour\DetourMath.h">
       <Filter>00_Utility\Dependency\Detour</Filter>
     </ClInclude>

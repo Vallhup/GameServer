@@ -18,6 +18,7 @@
 #include "Entity.h"
 #include "Component.h"
 #include "NavMeshRuntime.h"
+#include "TerrainHeightRuntime.h"
 #include "WorldTransferTypes.h"
 #include "ExecutionCoreTypes.h"
 #include "DynamicTaskTypes.h"
@@ -69,6 +70,7 @@ public:
 	const IWorldTransferBinding* GetTransferBinding() const noexcept { return _transferBinding; }
 	const WorldTransferProfile* GetTransferProfile() const noexcept { return _transferProfile; }
 	const NavMeshRuntime* GetNavMeshRuntime() const noexcept { return _navMeshRuntime.get(); }
+	const TerrainHeightRuntime* GetTerrainHeightRuntime() const noexcept { return _terrainHeightRuntime.get(); }
 	const NavigationProfileDef* GetNavigationProfile() const noexcept { return _navProfile; }
 
 	WorldRuntimeLifecycleState GetLifecycleState() const noexcept { return _lifecycleState; }
@@ -373,6 +375,7 @@ private:
 
 	// NavMesh — WorldDef.map.navMesh 설정 시 Initialize()에서 로딩
 	std::unique_ptr<NavMeshRuntime>  _navMeshRuntime;
+	std::unique_ptr<TerrainHeightRuntime> _terrainHeightRuntime;
 	const NavigationProfileDef*      _navProfile{ nullptr }; // MapDef.navigationProfile 소유권 없음 (캐시)
 
 	WorldRuntimeLifecycleState _lifecycleState{ WorldRuntimeLifecycleState::Constructed };

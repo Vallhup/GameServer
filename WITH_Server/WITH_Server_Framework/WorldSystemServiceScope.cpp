@@ -3,6 +3,7 @@
 
 #include "ExecutionOps.h"
 #include "NavMeshRuntime.h"
+#include "TerrainHeightRuntime.h"
 #include "WorldRuntime.h"
 
 WorldSystemServiceScope::WorldSystemServiceScope(
@@ -11,6 +12,7 @@ WorldSystemServiceScope::WorldSystemServiceScope(
     : _services(baseServices)
 {
     FillNavMeshProvider(runtime);
+    FillTerrainHeightProvider(runtime);
 }
 
 WorldSystemServiceScope::WorldSystemServiceScope(
@@ -21,6 +23,7 @@ WorldSystemServiceScope::WorldSystemServiceScope(
 {
     FillNetBindingResolver(context);
     FillNavMeshProvider(runtime);
+    FillTerrainHeightProvider(runtime);
 }
 
 void WorldSystemServiceScope::FillNavMeshProvider(WorldRuntime& runtime) noexcept
@@ -34,6 +37,21 @@ void WorldSystemServiceScope::FillNavMeshProvider(WorldRuntime& runtime) noexcep
 
     _navMeshProvider.Bind(navMeshRuntime, runtime.GetNavigationProfile());
     _services.navMeshProvider = &_navMeshProvider;
+}
+
+void WorldSystemServiceScope::FillTerrainHeightProvider(
+    WorldRuntime& runtime) noexcept
+{
+    if (_services.terrainHeightProvider != nullptr)
+        return;
+
+    const TerrainHeightRuntime* terrainHeightRuntime =
+        runtime.GetTerrainHeightRuntime();
+    if (terrainHeightRuntime == nullptr || !terrainHeightRuntime->IsReady())
+        return;
+
+    _terrainHeightProvider.Bind(terrainHeightRuntime);
+    _services.terrainHeightProvider = &_terrainHeightProvider;
 }
 
 void WorldSystemServiceScope::FillNetBindingResolver(
@@ -64,6 +82,23 @@ const NavigationProfileDef*
 WorldSystemServiceScope::NavMeshProvider::GetNavigationProfile() const noexcept
 {
     return _profile;
+}
+
+void WorldSystemServiceScope::TerrainHeightProvider::Bind(
+    const TerrainHeightRuntime* runtime) noexcept
+{
+    _runtime = runtime;
+}
+
+bool WorldSystemServiceScope::TerrainHeightProvider::TrySampleHeight(
+    float worldX,
+    float worldZ,
+    float& outHeight) const noexcept
+{
+    if (_runtime == nullptr)
+        return false;
+
+    return _runtime->TrySampleHeight(worldX, worldZ, outHeight);
 }
 
 WorldSystemServiceScope::ExecContextNetBindingResolver::

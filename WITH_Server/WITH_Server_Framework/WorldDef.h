@@ -87,6 +87,28 @@ struct MapNavMeshDef
 	float       agentMaxSlope{ 45.0f };
 };
 
+enum class TerrainHeightSampleFormat
+{
+	UInt16LE
+};
+
+struct TerrainHeightRawDef
+{
+	std::string path;
+	uint32_t width{ 0 };
+	uint32_t height{ 0 };
+	// Matches the client terrain sampler after converting server world X/Z to
+	// terrain-local X/Z. cellSize is worldSize / (resolution - 1).
+	float originX{ 0.0f };
+	float originZ{ 0.0f };
+	float cellSizeX{ 1.0f };
+	float cellSizeZ{ 1.0f };
+	float heightScale{ 1.0f };
+	float heightOffset{ 0.0f };
+	bool flipZ{ false };
+	TerrainHeightSampleFormat sampleFormat{ TerrainHeightSampleFormat::UInt16LE };
+};
+
 // Detour 쿼리 필터 파라미터
 struct NavigationQueryFilterDef
 {
@@ -112,6 +134,7 @@ struct MapDef
 	SpawnPointId                        defaultPlayerSpawnPointId;
 	std::vector<SpawnPointDef>          spawnPoints;
 	std::optional<MapNavMeshDef>        navMesh;            // NavMesh 파일 정보 (없으면 NavMesh 미사용)
+	std::optional<TerrainHeightRawDef>  terrainHeight;
 	std::optional<NavigationProfileDef> navigationProfile;  // 쿼리 파라미터 (navMesh 설정 시 함께 지정)
 	std::optional<NavigationProfileId>  navigationProfileId; // 레거시 ID 필드 — 향후 제거 예정
 	std::vector<EnvironmentTagId>       environmentTags;
