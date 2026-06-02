@@ -111,6 +111,7 @@ void UIManager::Initialize(DX12Core& core)
 	RegisterUITexture(L"MagicCircle", L"../Assets/UI/Textures/MagicCircle.png", core, resourceUpload);
 	RegisterUITexture(L"StatueInteractWindow", L"../Assets/UI/Textures/StatueInteractWindow.png", core, resourceUpload);
 	RegisterUITexture(L"BeaconInteractWindow", L"../Assets/UI/Textures/BeaconInteractWindow.png", core, resourceUpload);
+	RegisterUITexture(L"RespawnWindow", L"../Assets/UI/Textures/RespawnWindow.png", core, resourceUpload);
 
 	RegisterUITexture(L"SettingWindow", L"../Assets/UI/Textures/SettingWindow.png", core, resourceUpload);
 

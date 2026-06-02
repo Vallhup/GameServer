@@ -46,7 +46,7 @@ public:
 
 	bool ConsumeBeaconConfirmed();
 
-	void HideHudForCinematic();   
+	void HideHudForCinematic();
 
 private:
 	void InitMonsterHpBars();
@@ -66,6 +66,11 @@ private:
 	void UpdateStatueWindow();
 	void InitBeaconWindow();
 	void UpdateBeaconWindow();
+	void InitRespawnWindow();
+	void UpdateRespawnWindow(float deltaTime);
+	void OnLocalPlayerDied();
+	void OnLocalPlayerRevived();
+	void RequestRespawn();
 
 	void ShowPartyView(PartyView view);
 	void RefreshMyPartyText();
@@ -165,6 +170,14 @@ private:
 	shared_ptr<ImageUI> beaconOkButton;
 	shared_ptr<ImageUI> beaconCancelButton;
 	bool                beaconConfirmed = false;
+
+	shared_ptr<ImageUI> respawnWindow;
+	shared_ptr<TextUI>  respawnCountText;
+	shared_ptr<ImageUI> respawnOkButton;
+	bool                respawnActive = false;
+	bool                localDeadHandled = false;   // die 마지막 프레임 도달 엣지 감지용
+	float               respawnTimer = 0.0f;
+	static constexpr float RESPAWN_SECONDS = 5.0f;   // 임시값, 서버 부활 로직 나오면 교체
 
 	shared_ptr<ImageUI> settingWindow;
 	shared_ptr<ImageUI> settingBackButton;

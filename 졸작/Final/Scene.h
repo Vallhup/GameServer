@@ -78,7 +78,7 @@ private:
 	void HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat);
 	void HandleItemCount(const Protocol::SC_ITEM_COUNT_PACKET& itemCount);
 	void HandleTeamDeathCount(const Protocol::SC_TEAM_DEATH_COUNT_PACKET& deathCount);
-	void HandleMontserCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState);
+	void HandleMonsterCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState);
 	void HandleBossGimmickObjectSync(const Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& gimmickObject);
 	void HandleBossGimmickZoneSync(const Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& gimmickZone);
 

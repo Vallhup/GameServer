@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GameSceneUIController.h"
 #include "ImageUI.h"
 #include "UIManager.h"
@@ -7,6 +7,9 @@
 #include "Engine.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "MainCharacter.h"
+#include "AnimationMachine.h"
+#include "Animator.h"
 #include "Camera.h"
 #include "SoundManager.h"
 #include "ImGuiManager.h"
@@ -26,6 +29,7 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitMonsterHpBars();
 	InitBossHpBar();
 	InitBeaconWindow();
+	InitRespawnWindow();
 	InitLocalPlayerHUD();
 	InitMapNameOverlay();
 	InitPartyWindow();
@@ -871,6 +875,7 @@ void GameSceneUIController::Update(float deltaTime)
 	UpdateInteractPrompt();
 	UpdateStatueWindow();
 	UpdateBeaconWindow();
+	UpdateRespawnWindow(deltaTime);
 
 	auto opened = [](const shared_ptr<ImageUI>& p) {
 		return p && p->GetState() != ImageUIState::Hidden;
@@ -1149,7 +1154,8 @@ void GameSceneUIController::Update(float deltaTime)
 		IMGUI.IsEnabled() ||
 		opened(statusImage) || opened(escWindow)   || opened(partyBook) ||
 		opened(mapImage)    || opened(keyGuide)    || opened(settingWindow) ||
-		opened(joinRequestWindow) || opened(statueWindow) || opened(beaconWindow);
+		opened(joinRequestWindow) || opened(statueWindow) || opened(beaconWindow) ||
+		opened(respawnWindow);
 	if (Camera* camera = SCENE_MANAGER->GetCurrentScene()->GetCamera())
 		if (camera->IsCursorActive() != wantCursor)
 			camera->SetCursor(wantCursor);
@@ -1582,6 +1588,133 @@ bool GameSceneUIController::ConsumeBeaconConfirmed()
 	const bool v = beaconConfirmed;
 	beaconConfirmed = false;
 	return v;
+}
+
+void GameSceneUIController::InitRespawnWindow()
+{
+	if (sceneType != SceneType::Village && sceneType != SceneType::Castle && sceneType != SceneType::Final)
+		return;
+
+	const float winSize = WinSize.y * 0.5f;
+	const float winX = (WinSize.x - winSize) * 0.5f;
+	const float winY = (WinSize.y - winSize) * 0.5f;
+	const float textScale = WinSize.y / 1080.0f;
+
+	respawnWindow = make_shared<ImageUI>(uiManager, L"RespawnWindow", ImageUIState::Hidden);
+	respawnWindow->SetPosition(winX, winY);
+	respawnWindow->SetHoriLength(winSize);
+	respawnWindow->SetVertLength(winSize);
+	widgets.push_back(respawnWindow);
+
+	respawnCountText = make_shared<TextUI>(uiManager, L"RespawnCount", L"MalgunGothic");
+	respawnCountText->SetPosition(winX + winSize * 0.20f, winY + winSize * 0.56f);
+	respawnCountText->SetScale(0.5f * textScale);
+	respawnCountText->SetTextColor(Colors::Red);
+	widgets.push_back(respawnCountText);
+
+	const float btnW = winSize * 0.30f;
+	const float btnH = btnW / 3.879f;
+	const float btnX = winX + (winSize - btnW) * 0.5f;
+	const float btnY = winY + winSize * 0.72f;
+
+	respawnOkButton = make_shared<ImageUI>(uiManager, L"OK", ImageUIState::Hidden);
+	respawnOkButton->SetPosition(btnX, btnY);
+	respawnOkButton->SetHoriLength(btnW);
+	respawnOkButton->SetVertLength(btnH);
+	respawnOkButton->SetHoverScale(1.1f);
+	widgets.push_back(respawnOkButton);
+}
+
+void GameSceneUIController::OnLocalPlayerDied()
+{
+	if (!respawnWindow || respawnActive) return;
+
+	respawnActive = true;
+	respawnTimer = RESPAWN_SECONDS;
+	respawnWindow->ChangeState(ImageUIState::Visible);
+	respawnOkButton->ChangeState(ImageUIState::Visible);
+}
+
+void GameSceneUIController::OnLocalPlayerRevived()
+{
+	if (!respawnWindow) return;
+
+	respawnActive = false;
+	respawnWindow->ChangeState(ImageUIState::Hidden);
+	respawnOkButton->ChangeState(ImageUIState::Hidden);
+	respawnCountText->SetText(L"");
+}
+
+void GameSceneUIController::UpdateRespawnWindow(float deltaTime)
+{
+	if (!respawnWindow) return;
+
+	// 내 캐릭터 die 애니메이션이 마지막 프레임에 고정되면 부활 UI를 띄운다.
+	// (서버 부활 패킷이 없어 클라가 애니 종료를 직접 폴링 — 서버 로직 나오면 교체)
+	if (Scene* scene = SCENE_MANAGER->GetCurrentScene())
+	{
+		if (MainCharacter* me = scene->GetMyPlayer())
+		{
+			auto* am = me->GetComponent<AnimationMachine>();
+			auto* anim = me->GetComponent<Animator>();
+			const bool dieFrozen = am && anim &&
+				am->GetCurrentCategory() == AnimCategory::Die &&
+				anim->GetAnimationProgress() >= 0.99f;
+
+			if (dieFrozen && !localDeadHandled)
+			{
+				OnLocalPlayerDied();
+				localDeadHandled = true;
+			}
+			else if (am && am->GetCurrentCategory() != AnimCategory::Die && localDeadHandled)
+			{
+				OnLocalPlayerRevived();
+				localDeadHandled = false;
+			}
+		}
+	}
+
+	if (!respawnActive) return;
+
+	respawnTimer -= deltaTime;
+	if (respawnTimer < 0.0f) respawnTimer = 0.0f;
+
+	const int sec = static_cast<int>(ceil(respawnTimer));
+	const wstring text = to_wstring(sec) + L"초 뒤에 자동으로 부활합니다";
+	respawnCountText->SetText(text);
+
+	if (auto* fd = uiManager->GetFont(L"MalgunGothic"))
+	{
+		const float winSize = WinSize.y * 0.5f;
+		const float winX = (WinSize.x - winSize) * 0.5f;
+		const float winY = (WinSize.y - winSize) * 0.5f;
+		const float scale = 0.5f * (WinSize.y / 1080.0f);
+		const float textW = XMVectorGetX(fd->font->MeasureString(text.c_str(), false)) * scale;
+		respawnCountText->SetPosition(winX + (winSize - textW) * 0.5f, winY + winSize * 0.56f);
+	}
+
+	respawnOkButton->SetHovered(respawnOkButton->IsMouseInside());
+	if (respawnOkButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+	{
+		RequestRespawn();   // 즉시 부활 요청
+		return;
+	}
+
+	if (respawnTimer <= 0.0f)
+		RequestRespawn();   // 자동 부활
+}
+
+void GameSceneUIController::RequestRespawn()
+{
+	SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+
+	respawnActive = false;
+	respawnWindow->ChangeState(ImageUIState::Hidden);
+	respawnOkButton->ChangeState(ImageUIState::Hidden);
+	respawnCountText->SetText(L"");
+
+	// TODO: 서버 부활 로직/패킷(CS_RESPAWN)이 생기면 여기서 전송.
+	//       지금은 클라 UI만 닫고, 실제 부활(위치/HP/애니 복귀)은 서버 권위로 처리 예정.
 }
 
 void GameSceneUIController::HideHudForCinematic()

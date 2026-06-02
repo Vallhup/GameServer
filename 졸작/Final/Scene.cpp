@@ -134,7 +134,7 @@ void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
 		case PacketType::SC_MONSTER_COMBAT_STATE:
 		{
 			return NetHelper::DispatchPacket<Protocol::SC_MONSTER_COMBAT_STATE_PACKET>(header, data,
-				[this](const auto& packet) { HandleMontserCombatState(packet); });
+				[this](const auto& packet) { HandleMonsterCombatState(packet); });
 		}
 		case PacketType::SC_BOSS_GIMMICK_OBJECT_SYNC:
 		{
@@ -512,7 +512,7 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 	if (it == activeCharacters.end())
 		return;
 
-	// HP바는 즉시 제거
+	// 몬스터만 HP바 제거 + dissolve 시작. 캐릭터는 dissolve 하지 않는다.
 	if (auto typeIt = activeMonsterTypes.find(id); typeIt != activeMonsterTypes.end())
 	{
 		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
@@ -523,11 +523,11 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 			else
 				controller->RemoveMonsterBar(id);
 		}
-	}
 
-	// 시신은 dissolve 시작 — 완료되면 UpdateDissolves가 SetId(-1)+맵 제거로 실제 정리
-	if (auto* dis = it->second->GetComponent<DissolveComponent>())
-		dis->Start();
+		// 시신은 dissolve 시작 — 완료되면 UpdateDissolves가 SetId(-1)+맵 제거로 실제 정리
+		if (auto* dis = it->second->GetComponent<DissolveComponent>())
+			dis->Start();
+	}
 }
 
 void Scene::UpdateDissolves()
@@ -710,7 +710,7 @@ void Scene::HandleTeamDeathCount(const Protocol::SC_TEAM_DEATH_COUNT_PACKET& dea
 	}
 }
 
-void Scene::HandleMontserCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState)
+void Scene::HandleMonsterCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PACKET& combatState)
 {
 	NetId netId{ combatState.netid() };
 	int id = netId.GetId();
