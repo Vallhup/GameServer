@@ -175,9 +175,9 @@ private:
 	shared_ptr<TextUI>  respawnCountText;
 	shared_ptr<ImageUI> respawnOkButton;
 	bool                respawnActive = false;
-	bool                localDeadHandled = false;   // die 마지막 프레임 도달 엣지 감지용
+	bool                localDeadHandled = false;   
 	float               respawnTimer = 0.0f;
-	static constexpr float RESPAWN_SECONDS = 5.0f;   // 임시값, 서버 부활 로직 나오면 교체
+	static constexpr float RESPAWN_SECONDS = 5.0f;  
 
 	shared_ptr<ImageUI> settingWindow;
 	shared_ptr<ImageUI> settingBackButton;

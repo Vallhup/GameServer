@@ -158,7 +158,7 @@ void PlazaScene::UpdateScene(const float deltaTime)
 	{
 		constexpr float STATUE_CX = 443.97f;
 		constexpr float STATUE_CZ = 489.29f;
-		constexpr float INTERACT_RADIUS = 3.06f;   // 중심 (446, 487)
+		constexpr float INTERACT_RADIUS = 3.06f;  
 		constexpr float UI_HEIGHT = 8.5f;          
 
 		const XMFLOAT3& pos = myPlayer->GetComponent<Transform>()->GetPosition();
@@ -320,7 +320,7 @@ void PlazaScene::CreateEffectSamples()
 		{u"HolySandstorm", 484.607025f, 7.3f, 481.862946f},
 		{u"Sword_Moonlight", 484.607025f, 7.3f, 481.862946f},
 		{u"Sword_Storm", 484.607025f, 7.3f, 481.862946f},
-		{u"PhantasmMeteor_Single", 484.607025f, 7.3f, 481.862946f},
+		{u"PhantasmMeteor_Single", 484.607025f, 10.3f, 481.862946f},
 		{u"Fire", 484.607025f, 7.3f, 481.862946f},
 	};
 

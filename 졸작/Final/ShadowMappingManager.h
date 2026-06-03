@@ -81,9 +81,9 @@ private:
 	// follow가 켜지면 가장 가까운 point light 방향으로 대체되고, 이 값은 fallback.
 	XMFLOAT3 overheadLightDir = { 0.22f, -1.0f, -0.22f };
 
-	bool overheadFollowNearestLight = true;        // 가장 가까운 중심 바닥 조명 기준 방향
-	float overheadTilt = 1.0f;                     // follow 시 최대 lean(=최대 그림자 길이) 클램프
-	XMFLOAT2 overheadSmoothedLean = { 0.0f, 0.0f };// 조명 전환 튐 방지용 스무딩 상태(x,z)
+	bool overheadFollowNearestLight = true;			// 가장 가까운 중심 바닥 조명 기준 방향
+	float overheadTilt = 1.0f;						// follow 시 최대 lean(=최대 그림자 길이) 클램프
+	XMFLOAT2 overheadSmoothedLean = { 0.0f, 0.0f };	// 조명 전환 튐 방지용 스무딩 상태(x,z)
 
 	// 캐스케이드별 freeze/invalidation 상태 (texel-snap 인덱스 + sun 방향 비교용)
 	XMINT2   lastSnap[CASCADE_COUNT];

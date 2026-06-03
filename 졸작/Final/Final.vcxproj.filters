@@ -28,9 +28,6 @@
     <ClCompile Include="Importer.cpp">
       <Filter>Loader</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>Component</Filter>
     </ClCompile>
@@ -288,6 +285,9 @@
     </ClCompile>
     <ClCompile Include="BeaconCinematicScene.cpp">
       <Filter>Scene\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

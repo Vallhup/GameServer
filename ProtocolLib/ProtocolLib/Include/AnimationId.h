@@ -55,6 +55,7 @@ enum class AnimationId : uint8 {
 	Imp_Walk_Forward,
 	Imp_Walk_Left,
 	Imp_Walk_Right,
+	Imp_Run,
 	Imp_Jump_1,
 	Imp_Stun,
 	Imp_React_Front,

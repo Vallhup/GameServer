@@ -1194,7 +1194,7 @@ void GameSceneUIController::HandleMonsterHp(int id, GameObject* obj, int cur, in
 		monsterHpTargets.erase(id);
 		return;
 	}
-	// cur<=0(사망)이어도 바 유지 — SC_REMOVE 수신 시 제거됨.
+
 	auto& t = monsterHpTargets[id];
 	t.obj = obj;
 	t.hpPercent = clamp(static_cast<float>(cur) / max, 0.0f, 1.0f);
@@ -1239,7 +1239,7 @@ void GameSceneUIController::InitBossHpBar()
 
 void GameSceneUIController::HandleBossHp(int cur, int max)
 {
-	if (max <= 0) return;   // 잘못된 데이터만 무시
+	if (max <= 0) return;   
 
 	bossHpPercent = clamp(static_cast<float>(cur) / max, 0.0f, 1.0f);
 	if (bossBar)
@@ -1345,7 +1345,7 @@ void GameSceneUIController::InitInteractPrompt()
 	interactCircle = make_shared<ImageUI>(uiManager, L"MagicCircle", ImageUIState::Hidden);
 	widgets.push_back(interactCircle);
 
-	interactScale = 0.7f;   // First/Second 등 전 씬 동일 크기
+	interactScale = 0.7f;   
 
 	interactKeyText = make_shared<TextUI>(uiManager, L"InteractKey", L"VerdanaBold");
 	interactKeyText->SetText(L"");
@@ -1649,8 +1649,6 @@ void GameSceneUIController::UpdateRespawnWindow(float deltaTime)
 {
 	if (!respawnWindow) return;
 
-	// 내 캐릭터 die 애니메이션이 마지막 프레임에 고정되면 부활 UI를 띄운다.
-	// (서버 부활 패킷이 없어 클라가 애니 종료를 직접 폴링 — 서버 로직 나오면 교체)
 	if (Scene* scene = SCENE_MANAGER->GetCurrentScene())
 	{
 		if (MainCharacter* me = scene->GetMyPlayer())
@@ -1696,12 +1694,12 @@ void GameSceneUIController::UpdateRespawnWindow(float deltaTime)
 	respawnOkButton->SetHovered(respawnOkButton->IsMouseInside());
 	if (respawnOkButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 	{
-		RequestRespawn();   // 즉시 부활 요청
+		RequestRespawn();  
 		return;
 	}
 
 	if (respawnTimer <= 0.0f)
-		RequestRespawn();   // 자동 부활
+		RequestRespawn();  
 }
 
 void GameSceneUIController::RequestRespawn()

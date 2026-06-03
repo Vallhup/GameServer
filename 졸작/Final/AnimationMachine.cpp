@@ -55,11 +55,14 @@ void AnimationMachine::OnServerClipConfirm(
     uint32_t newAbilityInstanceId,
     float newServerNormalizedTime)
 {
+    const bool newClip = (currentClipName != clipName);
+    const bool newInstance = (newAbilityInstanceId != 0 && newAbilityInstanceId != abilityInstanceId);
+
     serverAnimId = newServerAnimId;
     abilityInstanceId = newAbilityInstanceId;
     lastServerNormalizedTime = newServerNormalizedTime;
 
-    if (currentClipName != clipName)
+    if (newClip || newInstance)
     {
         PlayClip(clipName);
 

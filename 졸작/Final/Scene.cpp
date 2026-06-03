@@ -202,7 +202,7 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	flash->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/ParrySpark2.png");
 	flash->SetColor({ 6.0f, 1.8f, 0.15f, 0.5f });
 	flash->SetSize(1.0f);
-	flash->SetLifetime(0.10f);
+	flash->SetLifetime(0.1f);
 
 	auto spark = character->AddComponent<ParrySparkComponent>();
 	spark->Initialize(coreRef->GetDevice(), 128);
@@ -210,7 +210,7 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	spark->SetColor({ 4.0f, 0.05f, 0.02f, 3.0f });
 	spark->SetSpeed(20.0f);
 	spark->SetParticleSize(0.1f);
-	spark->SetLifetime(0.75f);
+	spark->SetLifetime(1.5f);
 
 	auto streak = character->AddComponent<ParryStreakComponent>();
 	streak->Initialize(coreRef->GetDevice(), 1);
@@ -230,7 +230,6 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	blood->SetDragHalfLife(0.5f);
 	blood->SetCountPerSlot(5);
 
-	// 검 본 추적 스페셜 이펙트 (쌍검 캐릭터는 본 2개 — CreateCharacterPool에서 설정)
 	character->AddComponent<SwordSpecialEffectComponent>();
 
 	character->AddComponent<DissolveComponent>();
@@ -512,7 +511,6 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 	if (it == activeCharacters.end())
 		return;
 
-	// 몬스터만 HP바 제거 + dissolve 시작. 캐릭터는 dissolve 하지 않는다.
 	if (auto typeIt = activeMonsterTypes.find(id); typeIt != activeMonsterTypes.end())
 	{
 		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
@@ -524,7 +522,6 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 				controller->RemoveMonsterBar(id);
 		}
 
-		// 시신은 dissolve 시작 — 완료되면 UpdateDissolves가 SetId(-1)+맵 제거로 실제 정리
 		if (auto* dis = it->second->GetComponent<DissolveComponent>())
 			dis->Start();
 	}

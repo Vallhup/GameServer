@@ -78,7 +78,7 @@ private:
 
 	static constexpr float MOUSE_SENSITIVITY = 0.1f;
 	static constexpr float CAMERA_FOLLOW_SPEED = 120.0f;
-	static constexpr float TARGET_FOLLOW_SPEED = 2.5f;
+	static constexpr float TARGET_FOLLOW_SPEED = 6.0f;
 	static constexpr float TERRAIN_CLEARANCE = 0.001f;   
 
 	float desiredDistance;
