@@ -11,6 +11,7 @@ struct FrameConstants
 	UINT prevLutIndex;
 	float lutBlendFactor;
 	float saturationFactor;
+	float screenBrightness;
 };
 
 struct ObjectConstants

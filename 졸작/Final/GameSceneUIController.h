@@ -179,8 +179,7 @@ private:
 	float               respawnTimer = 0.0f;
 	static constexpr float RESPAWN_SECONDS = 5.0f;  
 
-	shared_ptr<ImageUI> settingWindow;
-	shared_ptr<ImageUI> settingBackButton;
+	shared_ptr<ImageUI> settingWindow;  
 
 	shared_ptr<ImageUI> joinRequestWindow;
 	shared_ptr<TextUI>  joinRequestText;

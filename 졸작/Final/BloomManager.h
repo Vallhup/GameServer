@@ -25,6 +25,9 @@ public:
 	UINT GetMipWidth(UINT mipLevel) const { return mipWidths[mipLevel]; }
 	UINT GetMipHeight(UINT mipLevel) const { return mipHeights[mipLevel]; }
 
+	float GetIntensity() const { return intensity; }
+	void SetIntensity(float v) { intensity = v; }
+
 	static constexpr UINT CHAIN_LENGTH = Material::BLOOM_CHAIN_LENGTH;
 
 private:
@@ -38,4 +41,6 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE mipRTVHandles[CHAIN_LENGTH] = {};
 	UINT mipWidths[CHAIN_LENGTH] = {};
 	UINT mipHeights[CHAIN_LENGTH] = {};
+
+	float intensity = 0.1f;
 };

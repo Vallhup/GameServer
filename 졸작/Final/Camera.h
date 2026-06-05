@@ -31,6 +31,10 @@ public:
 	float GetSaturation() const { return toneSaturationFactor; }
 	void SetLutPreset(UINT idx, float saturation);
 
+	void SetMouseSensitivity(float s) { mouseSensitivity = s; }
+	void SetBrightness(float b) { screenBrightness = b; }
+	void SetSaturation(float s) { toneSaturationFactor = s; }
+
 	void SetCameraPosition(const XMFLOAT3& pos);
 
 	void SetTerrain(const Terrain* t) { terrain = t; }
@@ -76,7 +80,7 @@ private:
 
 	bool spacePressed = false;
 
-	static constexpr float MOUSE_SENSITIVITY = 0.1f;
+	float mouseSensitivity = 0.1f;       // 설정에서 조절 (기본 0.1, 0.01~2.0)
 	static constexpr float CAMERA_FOLLOW_SPEED = 120.0f;
 	static constexpr float TARGET_FOLLOW_SPEED = 6.0f;
 	static constexpr float TERRAIN_CLEARANCE = 0.001f;   
@@ -100,6 +104,7 @@ private:
 	float lutBlendFactor = 1.0f;
 	float lutTransitionSpeed = 2.0f;
 	float toneSaturationFactor = 0.85f;
+	float screenBrightness = 1.0f;       // 설정 화면 밝기 (1.0=원본)
 
 	const Terrain* terrain = nullptr;
 };

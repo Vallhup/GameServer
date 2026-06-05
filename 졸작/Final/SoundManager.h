@@ -29,6 +29,9 @@ private:
     static constexpr float SFX3D_MIN_DISTANCE = 3.0f;
     static constexpr float SFX3D_MAX_DISTANCE = 20.0f;
 
+    static constexpr float BGM_BASE_VOLUME = 0.3f;
+    static constexpr float SFX_BASE_VOLUME = 0.5f;
+
     System* system = nullptr;
     ChannelGroup* bgmGroup = nullptr;  
     ChannelGroup* sfxGroup = nullptr;

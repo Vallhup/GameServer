@@ -13,6 +13,8 @@ public:
     ID3D12Resource* GetCurrentBuffer() const;
     UINT32 GetBackBufferIndex() const;
 
+    int GetNativeRefresh() const { return nativeRefresh; }   
+
 private:
     void CreateSwapChain(IDXGIFactory7* dxgi, ID3D12CommandQueue* cmdQueue, HWND hwnd);
     void CreateRenderTargetView(ID3D12Device* device);
@@ -23,5 +25,6 @@ private:
     ComPtr<ID3D12DescriptorHeap> rtvHeap;
     D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle[SWAP_CHAIN_BUFFER_COUNT];
     UINT32 backBufferIndex = 0;
+    int nativeRefresh = 60;
 };
 

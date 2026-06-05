@@ -129,14 +129,10 @@ void Engine::Render()
     sceneManager->RenderDeferred();  
     graphics->EndGBufferPass();
 
-    static bool ssaoOn = true;
+    if (INPUT.GetKeyDown(VK_F6))   // 디버그 토글(설정 UI와 같은 플래그)
+        IMGUI.SetSsaoEnabled(!IMGUI.IsSsaoEnabled());
 
-    if (INPUT.GetKeyDown(VK_F6))
-    {
-        ssaoOn = !ssaoOn;
-    }
-    
-    if (ssaoOn)
+    if (IMGUI.IsSsaoEnabled())
     {
         graphics->SsaoPass();
         graphics->SsaoBlurPass(viewport, scissorRect);
@@ -160,8 +156,7 @@ void Engine::Render()
 
     uiManager->Render(graphics->GetGraphicsCmdList(), graphics->GetCmdQueue(), viewport);
 
-    IMGUI.DrawDebugUI();
-    IMGUI.DrawLoginUI();
+    IMGUI.Render();
     IMGUI.EndFrame(graphics->GetGraphicsCmdList());
 
     graphics->RenderEnd();

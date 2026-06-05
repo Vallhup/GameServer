@@ -68,6 +68,7 @@ void SwapChain::CreateSwapChain(IDXGIFactory7* dxgi, ID3D12CommandQueue* cmdQueu
 		to_string(bestMode.RefreshRate.Denominator) + ")\n").c_str());
 
 	TIMER.SetTargetFPS(bestRefreshRate);
+	nativeRefresh = static_cast<int>(bestRefreshRate + 0.5f);
 
 	DXGI_SWAP_CHAIN_DESC sd = {
 		.BufferDesc = {
@@ -119,7 +120,6 @@ void SwapChain::CreateRenderTargetView(ID3D12Device* device)
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHeapBegin = rtvHeap->GetCPUDescriptorHandleForHeapStart();
 
-	// SRGB 뷰로 생성하여 하드웨어 감마 보정 적용
 	D3D12_RENDER_TARGET_VIEW_DESC rtvViewDesc = {};
 	rtvViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	rtvViewDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;

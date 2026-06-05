@@ -233,6 +233,7 @@ void Camera::UpdateCameraMatrices(DX12Core& core)
     frameData.prevLutIndex = prevLutIndex;
     frameData.lutBlendFactor = lutBlendFactor;
     frameData.saturationFactor = toneSaturationFactor;
+    frameData.screenBrightness = screenBrightness;
 
     core.GetFrameCB()->CopyData(&frameData, sizeof(FrameConstants));
 }
@@ -254,7 +255,9 @@ void Camera::UpdateForwardAndRight()
 
 void Camera::ChangeAngleByInput(float deltaTime)
 {
-    POINT center = { WinSize.x / 2, WinSize.y / 2 };
+    // 실제 클라이언트 중앙 (풀스크린이면 클라가 모니터 해상도라 WinSize/2와 다름)
+    RECT cr; GetClientRect(hwnd, &cr);
+    POINT center = { (cr.right - cr.left) / 2, (cr.bottom - cr.top) / 2 };
     ClientToScreen(hwnd, &center);
 
     POINT mousePos;
@@ -264,8 +267,8 @@ void Camera::ChangeAngleByInput(float deltaTime)
     float deltaY = static_cast<float>(mousePos.y - center.y);
 
     if (abs(deltaX) > 0.1f || abs(deltaY) > 0.1f) {
-        yaw += deltaX * MOUSE_SENSITIVITY;
-        pitch -= deltaY * MOUSE_SENSITIVITY;
+        yaw += deltaX * mouseSensitivity;
+        pitch -= deltaY * mouseSensitivity;
 
         SetCursorPos(center.x, center.y);
 
@@ -476,7 +479,8 @@ void Camera::ChangeCursorInfo(bool in)
         RECT clipRect = { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
         ClipCursor(&clipRect);
 
-        POINT center = { WinSize.x / 2, WinSize.y / 2 };
+        // 실제 클라이언트 중앙 (풀스크린이면 클라가 모니터 해상도라 WinSize/2와 다름)
+        POINT center = { (clientRect.right - clientRect.left) / 2, (clientRect.bottom - clientRect.top) / 2 };
         ClientToScreen(hwnd, &center);
         SetCursorPos(center.x, center.y);
     }
