@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 	FrameworkLog::Instance().StartWorker();
 
 	ServerApp::Config config{};
-	config.database.enabled = true;
+	config.database.enabled = false;
 	config.database.connectionString =
 		L"Driver={ODBC Driver 17 for SQL Server};"
 		L"Server=localhost\\SQLEXPRESS;"
