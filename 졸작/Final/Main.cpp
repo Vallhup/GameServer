@@ -8,14 +8,20 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "Camera.h"
+#include <chrono>
+#include <thread>
+#include <timeapi.h>
+#pragma comment(lib, "winmm.lib")
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 static void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd);
+static void LimitFrameRate(int fpsCap);  
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     TIMER.Initialize();
+    timeBeginPeriod(1);   
     ClientConnectionListener listener;
 
     AllocConsole();
@@ -52,16 +58,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
             DispatchMessage(&msg);
 
             if (msg.message == WM_QUIT)
-            {            
+            {
                 game.Shutdown();
+                timeEndPeriod(1);
                 return 0;
             }
         }
 
         game.Update(deltatime);
         game.Render();
+
+        LimitFrameRate(IMGUI.GetFrameLimitFps());
     }
 
+    timeEndPeriod(1);
     return 0;
 }
 
@@ -110,6 +120,26 @@ void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
         nullptr, nullptr, hInstance, nullptr);
 
     ShowWindow(*hwnd, nCmdShow);
+}
+
+void LimitFrameRate(int fpsCap)
+{
+    static auto nextFrame = chrono::steady_clock::now();
+    if (fpsCap > 0)
+    {
+        nextFrame += chrono::duration_cast<chrono::steady_clock::duration>(
+            chrono::duration<double>(1.0 / fpsCap));
+        const auto now = chrono::steady_clock::now();
+        if (now < nextFrame)
+        {
+            const auto spinMargin = std::chrono::milliseconds(1);
+            if (nextFrame - now > spinMargin)
+                this_thread::sleep_until(nextFrame - spinMargin);    
+            while (chrono::steady_clock::now() < nextFrame) {}       
+        }
+        else nextFrame = now;   
+    }
+    else nextFrame = chrono::steady_clock::now();
 }
 
 //void InitWindow(HINSTANCE hInstance, const int nCmdShow, HWND* hwnd)
@@ -167,6 +197,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     bool imguiWantsKeyboard = false;
     bool imguiWantsMouse = false;
 
+    if (message == WM_MOUSEMOVE)
+    {
+        RECT cr; GetClientRect(hWnd, &cr);
+        const int cw = cr.right - cr.left;
+        const int ch = cr.bottom - cr.top;
+        if (cw > 0 && ch > 0 && (cw != WinSize.x || ch != WinSize.y))
+        {
+            const int sx = MulDiv(static_cast<short>(LOWORD(lParam)), WinSize.x, cw);
+            const int sy = MulDiv(static_cast<short>(HIWORD(lParam)), WinSize.y, ch);
+            lParam = MAKELPARAM(sx, sy);
+        }
+    }
+
     if (ImGui::GetCurrentContext() != nullptr)
     {
         if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
@@ -196,8 +239,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return 0;
 
     case WM_MOUSEMOVE:
-        if (!imguiWantsMouse)
-            INPUT.SetMousePosition(XMFLOAT2(static_cast<float>(LOWORD(lParam)), static_cast<float>(HIWORD(lParam))));
+        if (!imguiWantsMouse) 
+            INPUT.SetMousePosition(XMFLOAT2(static_cast<float>(static_cast<short>(LOWORD(lParam))), static_cast<float>(static_cast<short>(HIWORD(lParam)))));
         return 0;
 
     case WM_LBUTTONDOWN:

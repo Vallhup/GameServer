@@ -42,5 +42,7 @@ float4 PSMain(FULLSCREEN_VS_OUT input) : SV_Target
                 linearClampSampler, finalColor, lutBlendFactor);
     }
 
+    finalColor *= screenBrightness;
+
     return float4(finalColor, 1.0);
 }

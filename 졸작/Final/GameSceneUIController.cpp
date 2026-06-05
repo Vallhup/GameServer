@@ -32,6 +32,7 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitRespawnWindow();
 	InitLocalPlayerHUD();
 	InitMapNameOverlay();
+	InitPartyMemberHud();   
 	InitPartyWindow();
 	InitStatWindow();
 	InitMapWindow();
@@ -39,7 +40,6 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitKeyGuide();
 	InitSettingWindow();
 	InitJoinRequestPopup();
-	InitPartyMemberHud();
 }
 
 void GameSceneUIController::InitMonsterHpBars()
@@ -707,28 +707,11 @@ void GameSceneUIController::InitKeyGuide()
 
 void GameSceneUIController::InitSettingWindow()
 {
-	const float backSize = WinSize.y * 0.8f;
-	const float backX = (WinSize.x - backSize) * 0.5f;
-	const float backY = (WinSize.y - backSize) * 0.5f;
-
-	settingWindow = make_shared<ImageUI>(uiManager, L"SettingWindow", ImageUIState::Hidden);
-	settingWindow->SetPosition(backX, backY);
-	settingWindow->SetHoriLength(backSize);
-	settingWindow->SetVertLength(backSize);
+	settingWindow = make_shared<ImageUI>(uiManager, L"CharBackground", ImageUIState::Hidden);
+	settingWindow->SetPosition(0.0f, 0.0f);
+	settingWindow->SetHoriLength(WinSize.x);
+	settingWindow->SetVertLength(WinSize.y);
 	widgets.push_back(settingWindow);
-
-	const float btnW   = backSize * 0.22f;
-	const float btnH   = btnW * (1056.0f / 4096.0f);
-	const float margin = backSize * 0.045f;
-	const float btnX   = backX + backSize - btnW - margin;
-	const float btnY   = backY + margin;
-
-	settingBackButton = make_shared<ImageUI>(uiManager, L"PartyBack", ImageUIState::Hidden);
-	settingBackButton->SetPosition(btnX, btnY);
-	settingBackButton->SetHoriLength(btnW);
-	settingBackButton->SetVertLength(btnH);
-	settingBackButton->SetHoverScale(1.05f);
-	widgets.push_back(settingBackButton);
 }
 
 void GameSceneUIController::InitJoinRequestPopup()
@@ -939,7 +922,7 @@ void GameSceneUIController::Update(float deltaTime)
 			escExitButton->ChangeState(ImageUIState::Hidden);
 
 			if (settingWindow)     settingWindow->ChangeState(ImageUIState::Visible);
-			if (settingBackButton) settingBackButton->ChangeState(ImageUIState::Visible);
+			IMGUI.ShowSettingsWindow();
 		}
 		if (escExitButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
@@ -950,13 +933,11 @@ void GameSceneUIController::Update(float deltaTime)
 
 	if (settingWindow && settingWindow->GetState() != ImageUIState::Hidden)
 	{
-		settingBackButton->SetHovered(settingBackButton->IsMouseInside());
-
-		if (settingBackButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
+		if (IMGUI.ConsumeSettingsBack())
 		{
 			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 			settingWindow->ChangeState(ImageUIState::Hidden);
-			settingBackButton->ChangeState(ImageUIState::Hidden);
+			IMGUI.HideSettingsWindow();
 
 			escWindow->ChangeState(ImageUIState::Visible);
 			escContinueButton->ChangeState(ImageUIState::Visible);
@@ -1731,7 +1712,7 @@ void GameSceneUIController::HideHudForCinematic()
 	hide(statusRibbon); hide(statusArrowLeft); hide(statusArrowRight);
 
 	hide(escWindow); hide(escContinueButton); hide(escOptionsButton); hide(escExitButton);
-	hide(settingWindow); hide(settingBackButton);
+	hide(settingWindow);
 	hide(keyGuide);
 
 	hide(mapBackImage); hide(mapImage);

@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "ImGuiManager.h"
 #include "DX12Core.h"
 #include "Timer.h"
@@ -10,14 +10,18 @@
 #include "LightManager.h"
 #include "ShadowMappingManager.h"
 #include "SSAO.h"
+#include "BloomManager.h"
 #include "SkyBox.h"
 #include "Camera.h"
 #include "Engine.h"
 #include "NetworkManager.h"
+#include "SoundManager.h"
+#include "SwapChain.h"
 
 void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
 {
     coreRef = &core;
+    windowHandle = hwnd;
 
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -45,11 +49,21 @@ void ImGuiManager::Initialize(HWND hwnd, DX12Core& core)
         srvHeap->GetGPUDescriptorHandleForHeapStart()
     );
 
+    io.Fonts->AddFontFromFileTTF(
+        "../Assets/UI/Fonts/malgunbd.ttf", 20.0f, nullptr,
+        io.Fonts->GetGlyphRangesKorean());
+
+    settingsFont = io.Fonts->AddFontFromFileTTF(
+        "../Assets/UI/Fonts/malgunbd.ttf", 48.0f, nullptr,
+        io.Fonts->GetGlyphRangesKorean());
+
     unsigned char* pixels;
     int width, height;
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 
     ImGui_ImplDX12_CreateDeviceObjects();
+
+    ApplyFullscreen(fullscreen);
 
     OutputDebugStringA("ImGui initialized!\n");
 }
@@ -58,15 +72,24 @@ void ImGuiManager::BeginFrame()
 {
     ImGui_ImplDX12_NewFrame();
     ImGui_ImplWin32_NewFrame();
+
+    ImGui::GetIO().DisplaySize = ImVec2(static_cast<float>(WinSize.x), static_cast<float>(WinSize.y));
     ImGui::NewFrame();
+}
+
+void ImGuiManager::Render()
+{
+    DrawDebugUI();
+    DrawLoginUI();
+    DrawSettingsUI();
+    DrawFpsOverlay();
 }
 
 void ImGuiManager::EndFrame(ID3D12GraphicsCommandList* cmdList)
 {
     ImGui::Render();
 
-    // 아무것도 그릴게 없으면 렌더 스킵
-    if (!enabled && !showLoginWindow) return;
+    if (!enabled && !showLoginWindow && !showSettingsWindow && !showFpsCounter) return;
 
     ID3D12DescriptorHeap* heaps[] = { srvHeap.Get() };
     cmdList->SetDescriptorHeaps(1, heaps);
@@ -178,7 +201,6 @@ void ImGuiManager::DrawDebugUI()
         {
             auto* lts = coreRef->GetLightMgr()->GetLights();
 
-            // Sun (skybox) - drives Main Directional 1, Forward light, CSM direction
             if (skyBox && ImGui::CollapsingHeader("Sun (Skybox)", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 auto& sun = skyBox->GetSun();
@@ -267,6 +289,7 @@ void ImGuiManager::DrawDebugUI()
                 bool changed = false;
                 changed |= ImGui::SliderFloat("Ambient Min (in Shadow)", &cs.shadowAmbientMin, 0.0f, 1.0f);
                 changed |= ImGui::SliderFloat("Shadow Floor", &cs.shadowFloor, 0.0f, 1.0f);
+
                 if (changed)
                 {
                     sm->UploadCsmConstants();
@@ -274,14 +297,15 @@ void ImGuiManager::DrawDebugUI()
 
                 ImGui::Separator();
                 ImGui::TextUnformatted("Overhead (Indoor) Shadow");
-                // 매 프레임 UpdateOverheadShadow가 다시 읽으므로 업로드 호출 불필요
                 ImGui::Checkbox("Follow Nearest Light", &sm->GetOverheadFollowNearestLight());
                 ImGui::SliderFloat("Shadow Strength", &cs.overheadStrength, 0.0f, 1.0f);
                 ImGui::SliderFloat("Ambient Fill", &cs.overheadAmbientBoost, 1.0f, 4.0f);
+
                 if (sm->GetOverheadFollowNearestLight())
                     ImGui::SliderFloat("Max Tilt (length)", &sm->GetOverheadTilt(), 0.0f, 3.0f);
                 else
                     ImGui::SliderFloat3("Light Dir", &sm->GetOverheadLightDir().x, -1.0f, 1.0f);
+
                 ImGui::SliderFloat("Half Size", &sm->GetOverheadHalfSize(), 10.0f, 120.0f);
                 ImGui::SliderFloat("Height", &sm->GetOverheadHeight(), 20.0f, 200.0f);
             }
@@ -299,6 +323,7 @@ void ImGuiManager::DrawDebugUI()
             if (auto animator = myPlayer->GetComponent<Animator>())
             {
                 float speed = animator->GetAnimationSpeed();
+
                 if (ImGui::SliderFloat("Speed##myPlayer", &speed, 0.1f, 10.0f))
                     animator->SetAnimationSpeed(speed);
             }
@@ -326,6 +351,7 @@ void ImGuiManager::DrawDebugUI()
                 if (ImGui::CollapsingHeader(label))
                 {
                     int lutIdx = static_cast<int>(lutPresets[i].lutIndex);
+
                     if (ImGui::SliderInt("LUT Index", &lutIdx, 0, 219))
                         lutPresets[i].lutIndex = static_cast<UINT>(lutIdx);
 
@@ -344,7 +370,6 @@ void ImGuiManager::DrawDebugUI()
                         lutPresets[i].saturation = camera->GetSaturation();
                     }
                 }
-
                 ImGui::PopID();
             }
         }
@@ -368,20 +393,18 @@ void ImGuiManager::DrawLoginUI()
     ImGui::SetNextWindowPos(ImVec2(center.x - windowSize.x * 0.5f, center.y - windowSize.y * 0.5f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(windowSize, ImGuiCond_Always);
 
-    // Style
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(20, 15));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5f, 0.5f));  
 
-    // Color
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.15f, 0.95f));           // 어두운 배경
-    ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.08f, 0.08f, 0.10f, 1.0f));             // 타이틀바
-    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.15f, 0.15f, 0.20f, 1.0f));       // 타이틀바 활성
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.30f, 0.30f, 0.35f, 1.0f));             // 입력창 배경
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.22f, 0.20f, 0.25f, 1.0f));              // 버튼
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.28f, 0.34f, 1.0f));       // 버튼 호버
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.18f, 0.16f, 0.20f, 1.0f));        // 버튼 클릭
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.15f, 0.95f));           
+    ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.08f, 0.08f, 0.10f, 1.0f));             
+    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.15f, 0.15f, 0.20f, 1.0f));       
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.30f, 0.30f, 0.35f, 1.0f));             
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.22f, 0.20f, 0.25f, 1.0f));              
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.30f, 0.28f, 0.34f, 1.0f));       
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.18f, 0.16f, 0.20f, 1.0f));        
 
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse;
 
@@ -433,4 +456,640 @@ void ImGuiManager::DrawLoginUI()
     ImGui::End();
     ImGui::PopStyleColor(7);
     ImGui::PopStyleVar(4);
+}
+
+void ImGuiManager::DrawSettingsUI()
+{
+    if (!showSettingsWindow) return;
+
+    if (settingsJustOpened)
+    {
+        if (camera) 
+            saturation = clamp(camera->GetSaturation() * 100.0f, 1.0f, 200.0f);
+
+        if (coreRef && coreRef->GetShadowMgr())
+            shadowDarkness = clamp((1.0f - coreRef->GetShadowMgr()->GetCsmConstants().shadowAmbientMin) * 100.0f, 0.0f, 100.0f);
+
+        settingsJustOpened = false;
+    }
+
+    auto toU8 = [](const wchar_t* w) -> string {
+        int len = WideCharToMultiByte(CP_UTF8, 0, w, -1, nullptr, 0, nullptr, nullptr);
+        string s(len > 0 ? len - 1 : 0, '\0');
+
+        if (len > 0) 
+            WideCharToMultiByte(CP_UTF8, 0, w, -1, s.data(), len, nullptr, nullptr);
+
+        return s;
+    };
+
+    const string  title = toU8(L"환경설정");
+    const string  pageName = toU8(settingsPage == 0 ? L"시스템" : L"그래픽");
+
+    ImGuiIO& io = ImGui::GetIO();
+    const float uiScale = io.DisplaySize.y / 1080.0f; 
+
+    auto arrowBtn = [](const char* id, ImGuiDir dir) -> bool {
+        ImDrawList* dl = ImGui::GetWindowDrawList();
+        const float sz = ImGui::GetFrameHeight();
+        const ImVec2 p = ImGui::GetCursorScreenPos();
+        ImGui::InvisibleButton(id, ImVec2(sz, sz));
+
+        const bool clicked = ImGui::IsItemClicked();
+
+        const ImU32 col = ImGui::IsItemActive()  ? IM_COL32(255, 240, 200, 255)   
+                        : ImGui::IsItemHovered() ? IM_COL32(245, 226, 172, 255)   
+                                                 : IM_COL32(196, 168, 108, 255);  
+
+        const ImVec2 c = ImVec2(p.x + sz * 0.5f, p.y + sz * 0.5f);
+        const float r = sz * 0.30f;
+
+        ImVec2 tip, top, bot;
+
+        if (dir == ImGuiDir_Left) 
+        { 
+            tip = { c.x - r, c.y }; 
+            top = { c.x + r * 0.8f, c.y - r }; 
+            bot = { c.x + r * 0.8f, c.y + r }; 
+        }
+        else 
+        { 
+            tip = { c.x + r, c.y }; 
+            top = { c.x - r * 0.8f, c.y - r }; 
+            bot = { c.x - r * 0.8f, c.y + r }; 
+        }
+        dl->AddTriangleFilled(tip, top, bot, col);
+
+        return clicked;
+    };
+
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus;
+
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.92f, 0.86f, 0.70f, 1.0f));   
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));    
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.85f, 0.75f, 0.45f, 0.25f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.85f, 0.75f, 0.45f, 0.45f));
+
+    if (settingsFont) 
+        ImGui::PushFont(settingsFont);
+
+    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.06f, io.DisplaySize.y * 0.09f), ImGuiCond_Always, ImVec2(0.0f, 0.0f));
+
+    if (ImGui::Begin("##SettingsTitle", nullptr, flags | ImGuiWindowFlags_AlwaysAutoResize)) 
+    {
+        ImGui::SetWindowFontScale(1.25f * uiScale);   
+        ImGui::TextUnformatted(title.c_str());
+        ImGui::SetWindowFontScale(1.0f);
+    }
+    ImGui::End();
+
+    const string back = toU8(L"BACK");
+    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.94f, io.DisplaySize.y * 0.09f), ImGuiCond_Always, ImVec2(1.0f, 0.0f));
+
+    if (ImGui::Begin("##SettingsBack", nullptr, flags | ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::SetWindowFontScale(1.25f * uiScale);
+
+        const ImVec2 p  = ImGui::GetCursorScreenPos();
+        const ImVec2 ts = ImGui::CalcTextSize(back.c_str());
+
+        ImGui::InvisibleButton("##backHit", ts);
+
+        if (ImGui::IsItemClicked()) 
+            backRequested = true;
+
+        const ImU32 col = ImGui::IsItemActive()  ? IM_COL32(255, 240, 200, 255)
+                        : ImGui::IsItemHovered() ? IM_COL32(245, 226, 172, 255)
+                                                 : IM_COL32(196, 168, 108, 255);
+
+        ImGui::GetWindowDrawList()->AddText(p, col, back.c_str());
+        ImGui::SetWindowFontScale(1.0f);
+    }
+    ImGui::End();
+
+    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.11f), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
+    ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x * 0.35f, io.DisplaySize.y * 0.12f), ImGuiCond_Always);
+
+    if (ImGui::Begin("##SettingsNav", nullptr, flags))
+    {
+        ImGui::SetWindowFontScale(0.95f * uiScale);   
+        const float availW  = ImGui::GetContentRegionAvail().x;
+        const float arrowSz = ImGui::GetFrameHeight();
+        const float pageW   = ImGui::CalcTextSize(pageName.c_str()).x;
+        const float textH   = ImGui::GetTextLineHeight();
+        const float gap     = io.DisplaySize.x * 0.022f;
+        const float total   = arrowSz + gap + pageW + gap + arrowSz;
+        const float baseX   = ImGui::GetCursorPosX() + (availW - total) * 0.5f;
+        const float baseY   = ImGui::GetCursorPosY();
+
+        ImGui::SetCursorPos(ImVec2(baseX, baseY));
+
+        if (arrowBtn("##PrevPage", ImGuiDir_Left))
+            settingsPage = (settingsPage + 1) % 2;
+
+        ImGui::SetCursorPos(ImVec2(baseX + arrowSz + gap, baseY + (arrowSz - textH) * 0.5f));
+        ImGui::TextUnformatted(pageName.c_str());
+
+        ImGui::SetCursorPos(ImVec2(baseX + arrowSz + gap + pageW + gap, baseY));
+
+        if (arrowBtn("##NextPage", ImGuiDir_Right))
+            settingsPage = (settingsPage + 1) % 2;
+
+        ImGui::SetWindowFontScale(1.0f);
+    }
+    ImGui::End();
+
+    const float contentH = (settingsPage == 0) ? 0.74f : 0.74f;
+    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.20f), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
+    ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x * 0.60f, io.DisplaySize.y * contentH), ImGuiCond_Always);
+
+    if (ImGui::Begin("##SettingsContent", nullptr, flags))
+    {
+        const float fullW = ImGui::GetContentRegionAvail().x;
+        float colX  = fullW * 0.30f;    
+        float ctrlW = fullW * 0.46f;    
+        const float HDR   = 0.78f * uiScale;  
+        const float BODY  = 0.62f * uiScale;  
+
+        auto slider = [&](const char* id, float* v, float vmin, float vmax) -> bool {
+            ImDrawList* dl = ImGui::GetWindowDrawList();
+            const float h  = ImGui::GetFrameHeight();
+            const ImVec2 p = ImGui::GetCursorScreenPos();
+            ImGui::InvisibleButton(id, ImVec2(ctrlW, h));
+            const bool active = ImGui::IsItemActive();
+            const bool hover  = ImGui::IsItemHovered();
+            const float radius = h * 0.28f;
+            const float cy = p.y + h * 0.5f;
+            const float x0 = p.x + radius, x1 = p.x + ctrlW - radius;
+            float t = (*v - vmin) / (vmax - vmin);
+            t = t < 0 ? 0 : (t > 1 ? 1 : t);
+            bool changed = false;
+
+            if (active) {
+                float nt = (ImGui::GetIO().MousePos.x - x0) / (x1 - x0);
+                nt = nt < 0 ? 0 : (nt > 1 ? 1 : nt);
+                float nv = vmin + nt * (vmax - vmin);
+                
+                if (nv != *v) { 
+                    *v = nv; changed = true; 
+                }
+
+                t = nt;
+            }
+
+            const float hx = x0 + t * (x1 - x0);
+            const float th = h * 0.08f;
+
+            dl->AddLine(ImVec2(x0, cy), ImVec2(x1, cy), IM_COL32(74, 66, 50, 255), th);
+            dl->AddLine(ImVec2(x0, cy), ImVec2(hx, cy), IM_COL32(212, 178, 116, 255), th);
+            dl->AddCircleFilled(ImVec2(hx, cy), radius, (active || hover) ? IM_COL32(245, 226, 172, 255) : IM_COL32(222, 194, 128, 255), 24);
+
+            return changed;
+        };
+
+        auto toggle = [&](const char* id, bool* b) -> bool {
+            ImDrawList* dl = ImGui::GetWindowDrawList();
+
+            const float h = ImGui::GetFrameHeight();
+            const float w = h * 1.9f;
+
+            const ImVec2 p = ImGui::GetCursorScreenPos();
+
+            ImGui::InvisibleButton(id, ImVec2(w, h));
+
+            bool changed = false;
+
+            if (ImGui::IsItemClicked()) { 
+                *b = !*b; changed = true; 
+            }
+
+            const float r = h * 0.5f;
+            dl->AddRectFilled(p, ImVec2(p.x + w, p.y + h), *b ? IM_COL32(150, 120, 60, 255) : IM_COL32(58, 52, 42, 255), r);
+
+            float kx = *b ? (p.x + w - r) : (p.x + r);
+
+            dl->AddCircleFilled(ImVec2(kx, p.y + r), r * 0.78f, IM_COL32(238, 222, 182, 255), 24);
+
+            return changed;
+        };
+
+        auto header = [&](const wchar_t* t) {
+            ImGui::SetWindowFontScale(HDR);
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.86f, 0.74f, 0.46f, 1.0f));
+            ImGui::TextUnformatted(toU8(t).c_str());
+            ImGui::PopStyleColor();
+            ImGui::Dummy(ImVec2(0.0f, ImGui::GetFrameHeight() * 0.18f));
+            ImGui::SetWindowFontScale(BODY);
+        };
+
+        auto rowLabel = [&](const wchar_t* t) {
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted(toU8(t).c_str());
+            ImGui::SameLine(colX);
+        };
+
+        auto gap = [&]() { 
+            ImGui::Dummy(ImVec2(0.0f, ImGui::GetFrameHeight() * 0.50f)); 
+        };
+
+        if (settingsPage == 0)   
+        {
+            auto applyVol = [&]() {
+                SOUND_MANAGER->SetBGMVolume((masterVol / 100.0f) * (bgmVol / 100.0f));
+                SOUND_MANAGER->SetSFXVolume((masterVol / 100.0f) * (sfxVol / 100.0f));
+            };
+
+            header(L"사운드");
+            rowLabel(L"마스터 볼륨"); 
+
+            if (slider("##master", &masterVol, 0, 100)) 
+                applyVol();
+
+            ImGui::SameLine(); 
+            ImGui::AlignTextToFramePadding(); 
+            ImGui::Text("%.0f%%", masterVol); 
+            gap();
+
+            rowLabel(L"배경음");      
+
+            if (slider("##bgm", &bgmVol, 0, 100)) 
+                applyVol();
+
+            ImGui::SameLine(); 
+            ImGui::AlignTextToFramePadding(); 
+            ImGui::Text("%.0f%%", bgmVol); 
+            gap();
+
+            rowLabel(L"효과음");      
+
+            if (slider("##sfx", &sfxVol, 0, 100)) 
+                applyVol();
+
+            ImGui::SameLine(); 
+            ImGui::AlignTextToFramePadding(); 
+            ImGui::Text("%.0f%%", sfxVol); 
+            gap();
+
+            ImGui::Dummy(ImVec2(0.0f, ImGui::GetFrameHeight() * 0.35f));
+
+            header(L"화면");
+
+            rowLabel(L"전체화면"); 
+
+            if (toggle("##fs", &fullscreen)) 
+                ApplyFullscreen(fullscreen);
+
+            ImGui::SameLine(); 
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted(toU8(fullscreen ? L"켜짐" : L"꺼짐").c_str()); 
+            gap();
+
+            rowLabel(L"프레임 제한");
+            
+            SwapChain* sc = coreRef ? coreRef->GetSwapChainMgr() : nullptr;
+            const int native = sc ? sc->GetNativeRefresh() : 60;
+
+            int fpsDesc[8]; 
+            int n = 0;   
+
+            for (UINT iv = 1; iv <= 8; iv *= 2)
+            {
+                int fps = native / (int)iv;
+
+                if (iv > 1 && fps < 60) 
+                    break;              
+
+                fpsDesc[n++] = fps;
+            }
+
+            int  fpsOpt[8]; 
+            int nOpt = 0;  
+
+            for (int i = n - 1; i >= 0; --i) 
+                fpsOpt[nOpt++] = fpsDesc[i];
+
+            fpsOpt[nOpt++] = 0;      
+
+            if (frameLimitIdx < 0 || frameLimitIdx >= nOpt) 
+                frameLimitIdx = nOpt - 1;   
+
+            if (arrowBtn("##fpsL", ImGuiDir_Left))  
+                frameLimitIdx = (frameLimitIdx + nOpt - 1) % nOpt; 
+
+            ImGui::SameLine(); 
+            ImGui::AlignTextToFramePadding();
+
+            if (fpsOpt[frameLimitIdx] == 0) 
+                ImGui::TextUnformatted(toU8(L"무제한").c_str());
+            else                            
+                ImGui::Text("%d", fpsOpt[frameLimitIdx]);
+
+            ImGui::SameLine(); 
+
+            if (arrowBtn("##fpsR", ImGuiDir_Right)) 
+                frameLimitIdx = (frameLimitIdx + 1) % nOpt;  
+
+            frameLimitFps = fpsOpt[frameLimitIdx];   
+            gap();
+
+            rowLabel(L"FPS 표시"); 
+            toggle("##fpscnt", &showFpsCounter);
+            ImGui::SameLine(); 
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted(toU8(showFpsCounter ? L"켜짐" : L"꺼짐").c_str()); 
+            gap();
+
+            ImGui::Dummy(ImVec2(0.0f, ImGui::GetFrameHeight() * 0.35f));
+
+            header(L"입력");
+            rowLabel(L"마우스 감도");  
+
+            if (slider("##sens", &mouseSens, 0.01f, 2.0f) && camera)
+            {
+                mouseSens = roundf(mouseSens * 100.0f) / 100.0f;   
+                camera->SetMouseSensitivity(mouseSens);
+            }
+
+            ImGui::SameLine(); 
+            ImGui::AlignTextToFramePadding(); 
+            ImGui::Text("%.2f", mouseSens); 
+            gap();
+
+            ImGui::SetWindowFontScale(1.0f);
+        }
+        else
+        {
+            VolumetricFogConstants* vf = coreRef ? &coreRef->GetVolumetricFogData() : nullptr;
+            ShadowMappingManager*   sm = coreRef ? coreRef->GetShadowMgr() : nullptr;
+
+            const float colW = fullW * 0.46f;
+            const ImGuiWindowFlags childFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+
+            auto section = [&]() {
+                ImGui::Dummy(ImVec2(0.0f, ImGui::GetFrameHeight() * 0.70f));
+            };
+
+            header(L"디스플레이");
+            colX = fullW * 0.13f;
+            ctrlW = fullW * 0.58f;
+            rowLabel(L"밝기");
+
+            if (slider("##bright", &brightness, 1, 200) && camera)
+                camera->SetBrightness(brightness / 100.0f);
+
+            ImGui::SameLine();
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("%.0f%%", brightness);
+            gap();
+
+            rowLabel(L"채도");
+
+            if (slider("##sat", &saturation, 1, 200) && camera)
+                camera->SetSaturation(saturation / 100.0f);
+
+            ImGui::SameLine();
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("%.0f%%", saturation);
+            gap();
+
+            ImGui::SetWindowFontScale(1.0f);
+
+            section();
+            ImGui::Separator();
+            section();
+
+            ImGui::BeginChild("##gfxLeft", ImVec2(colW, 0.0f), false, childFlags);
+
+            const float cw = ImGui::GetContentRegionAvail().x;
+            colX = cw * 0.42f; ctrlW = cw * 0.40f;
+
+            header(L"앰비언트 오클루전");
+            rowLabel(L"SSAO");
+            toggle("##ssao", &ssaoEnabled);
+            ImGui::SameLine();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted(toU8(ssaoEnabled ? L"켜짐" : L"꺼짐").c_str());
+            gap();
+            section();
+
+            header(L"그림자");
+            rowLabel(L"어둡기");
+
+            if (slider("##shadow", &shadowDarkness, 0, 100) && sm)
+            {
+                sm->GetCsmConstants().shadowAmbientMin = 1.0f - shadowDarkness / 100.0f;
+                sm->UploadCsmConstants();
+            }
+            ImGui::SameLine();
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("%.0f%%", shadowDarkness);
+            gap();
+            section();
+
+            header(L"블룸");
+
+            BloomManager* bloomMgr = coreRef ? coreRef->GetBloomMgr() : nullptr;
+            float bloom = bloomMgr ? bloomMgr->GetIntensity() : 0.1f;
+            rowLabel(L"강도");
+
+            if (slider("##bloom", &bloom, 0.0f, 0.5f) && bloomMgr)
+                bloomMgr->SetIntensity(bloom);
+
+            ImGui::SameLine();
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("%.2f", bloom);
+            gap();
+
+            ImGui::EndChild();
+
+            ImGui::SameLine(0.0f, fullW * 0.06f);
+
+            ImGui::BeginChild("##gfxRight", ImVec2(colW, 0.0f), false, childFlags);
+
+            const float cwR = ImGui::GetContentRegionAvail().x;
+            colX = cwR * 0.42f; ctrlW = cwR * 0.40f;
+            auto vgap = [&]() {
+                ImGui::Dummy(ImVec2(0.0f, ImGui::GetFrameHeight() * 0.95f));
+            };
+
+            header(L"볼류메트릭");
+
+            if (vf)
+            {
+                rowLabel(L"안개 밀도");
+
+                if (slider("##fogden", &vf->density, 0.001f, 0.1f))
+                    coreRef->UpdateVolumetricFog();
+
+                ImGui::SameLine();
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("%.3f", vf->density);
+                vgap();
+
+                rowLabel(L"안개 산란");
+
+                if (slider("##fogsca", &vf->scattering, 0.0f, 2.0f))
+                    coreRef->UpdateVolumetricFog();
+
+                ImGui::SameLine();
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("%.2f", vf->scattering);
+                vgap();
+
+                rowLabel(L"빛무리 색");
+
+                const float sw = ImGui::GetFrameHeight();
+
+                if (ImGui::ColorButton("##fogcol", ImVec4(vf->lightColor.x, vf->lightColor.y, vf->lightColor.z, 1.0f),
+                    ImGuiColorEditFlags_NoTooltip, ImVec2(sw, sw)))
+                {
+                    fogPickX = ImGui::GetMousePos().x;
+                    fogPickY = ImGui::GetMousePos().y;
+                    ImGui::OpenPopup("##fogcolpick");
+                }
+                ImGui::SetNextWindowPos(ImVec2(fogPickX, fogPickY), ImGuiCond_Appearing);
+
+                if (ImGui::BeginPopup("##fogcolpick"))
+                {
+                    ImGui::SetWindowFontScale(BODY);
+                    ImGui::SetNextItemWidth(240.0f * uiScale);
+
+                    if (ImGui::ColorPicker3("##pick", &vf->lightColor.x,
+                        ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoLabel |
+                        ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex))
+                        coreRef->UpdateVolumetricFog();
+
+                    ImGui::SetWindowFontScale(1.0f);
+                    ImGui::EndPopup();
+                }
+
+                vgap();
+
+                rowLabel(L"빛무리 강도");
+
+                if (slider("##fogint", &vf->lightIntensity, 0.0f, 5.0f))
+                    coreRef->UpdateVolumetricFog();
+
+                ImGui::SameLine();
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("%.1f", vf->lightIntensity);
+                vgap();
+
+                rowLabel(L"레이마칭 품질");
+
+                const int stepVals[3] = { 32, 64, 128 };
+                const wchar_t* names[3] = { L"하", L"중", L"상" };
+                int lvl = (vf->maxSteps >= 128) ? 2 : (vf->maxSteps >= 64 ? 1 : 0);
+
+                if (arrowBtn("##rmL", ImGuiDir_Left))
+                    lvl = (lvl + 2) % 3;
+
+                ImGui::SameLine(); ImGui::AlignTextToFramePadding();
+                ImGui::TextUnformatted(toU8(names[lvl]).c_str());
+                ImGui::SameLine();
+
+                if (arrowBtn("##rmR", ImGuiDir_Right))
+                    lvl = (lvl + 1) % 3;
+
+                if (stepVals[lvl] != vf->maxSteps) {
+                    vf->maxSteps = stepVals[lvl];
+                    coreRef->UpdateVolumetricFog();
+                }
+            }
+
+            ImGui::EndChild();
+
+            ImGui::SetWindowFontScale(1.0f);
+        }
+    }
+    ImGui::End();
+
+    if (settingsFont) 
+        ImGui::PopFont();
+
+    ImGui::PopStyleColor(4);
+}
+
+void ImGuiManager::DrawFpsOverlay()
+{
+    if (!showFpsCounter) return;
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.99f, io.DisplaySize.y * 0.012f), ImGuiCond_Always, ImVec2(1.0f, 0.0f));
+
+    ImGuiWindowFlags f = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs |
+        ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing;
+
+    if (ImGui::Begin("##FpsOverlay", nullptr, f))
+    {
+        if (settingsFont) 
+            ImGui::PushFont(settingsFont);
+
+        ImGui::SetWindowFontScale(0.5f * (io.DisplaySize.y / 1080.0f));   
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.92f, 0.86f, 0.70f, 1.0f));
+        ImGui::Text("FPS %d", TIMER.GetFps());
+        ImGui::PopStyleColor();
+        ImGui::SetWindowFontScale(1.0f);
+
+        if (settingsFont) 
+            ImGui::PopFont();
+    }
+    ImGui::End();
+}
+
+void ImGuiManager::ApplyFullscreen(bool fs)
+{
+    if (!windowHandle) return;
+
+    HMONITOR mon = MonitorFromWindow(windowHandle, MONITOR_DEFAULTTONEAREST);
+    MONITORINFO mi = { sizeof(mi) };
+    GetMonitorInfo(mon, &mi);
+
+    if (fs)
+    {
+        SetWindowLongPtr(windowHandle, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+        SetWindowPos(windowHandle, HWND_TOP,
+            mi.rcMonitor.left, mi.rcMonitor.top,
+            mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top,
+            SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+    }
+    else
+    {
+        const DWORD style = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+        SetWindowLongPtr(windowHandle, GWL_STYLE, style);
+
+        RECT frame = { 0, 0, 0, 0 };
+        AdjustWindowRect(&frame, style, FALSE);   
+        const int frameW = (frame.right - frame.left);
+        const int frameH = (frame.bottom - frame.top);
+        const int availW = (mi.rcWork.right - mi.rcWork.left) - frameW;
+        const int availH = (mi.rcWork.bottom - mi.rcWork.top) - frameH;
+
+        float scale = 1.0f;
+
+        if (availW < 1920) 
+            scale = min(scale, availW / 1920.0f);
+
+        if (availH < 1080) 
+            scale = min(scale, availH / 1080.0f);
+
+        const int clientW = static_cast<int>(1920 * scale);
+        const int clientH = static_cast<int>(1080 * scale);
+
+        RECT rc = { 0, 0, clientW, clientH };
+
+        AdjustWindowRect(&rc, style, FALSE);
+
+        const int winW = rc.right - rc.left;
+        const int winH = rc.bottom - rc.top;
+
+        SetWindowPos(windowHandle, HWND_TOP,
+            mi.rcWork.left + ((mi.rcWork.right - mi.rcWork.left) - winW) / 2,  
+            mi.rcWork.top + ((mi.rcWork.bottom - mi.rcWork.top) - winH) / 2,
+            winW, winH, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+    }
 }

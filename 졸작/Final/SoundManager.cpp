@@ -14,8 +14,8 @@ void SoundManager::Initialize()
     system->createChannelGroup("BGM", &bgmGroup);
     system->createChannelGroup("SFX", &sfxGroup);
 
-    bgmGroup->setVolume(0.3f);
-    sfxGroup->setVolume(0.5f);
+    bgmGroup->setVolume(BGM_BASE_VOLUME);   
+    sfxGroup->setVolume(SFX_BASE_VOLUME);
 }
 
 void SoundManager::Update(float deltaTime)
@@ -28,7 +28,7 @@ void SoundManager::Update(float deltaTime)
             fadeChannel->stop();
             fadeChannel = nullptr;
 
-            if (hasPendingBGM)   // 페이드아웃 완료 → 예약된 곡 페이드인 시작
+            if (hasPendingBGM)   
             {
                 hasPendingBGM = false;
                 StartBGM(pendingBGMPath.c_str(), pendingFadeIn);
@@ -92,7 +92,6 @@ void SoundManager::PlayBGM(const char* path, float fadeInSeconds)
     if (currentBGMPath == path)
         return;
 
-    // 이전 곡이 페이드아웃 중이면 끝난 뒤 시작하도록 예약(순차 전환)
     if (fadeChannel)
     {
         pendingBGMPath = path;
@@ -154,7 +153,7 @@ void SoundManager::StopBGM(float fadeSeconds)
     currentBGMPath.clear();
 }
 
-void SoundManager::SetBGMVolume(float volume)
+void SoundManager::SetBGMVolume(float volume)   
 {
     if (bgmGroup)
         bgmGroup->setVolume(clamp(volume, 0.0f, 1.0f));
@@ -242,7 +241,7 @@ bool SoundManager::GetListenerPosition(XMFLOAT3& outPos) const
     return false;
 }
 
-void SoundManager::SetSFXVolume(float volume)
+void SoundManager::SetSFXVolume(float volume)   
 {
     if (sfxGroup)
         sfxGroup->setVolume(clamp(volume, 0.0f, 1.0f));

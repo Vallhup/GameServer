@@ -18,6 +18,7 @@ cbuffer FrameCB : register(b0)
     uint prevLutIndex;
     float lutBlendFactor;
     float saturationFactor;
+    float screenBrightness;
 };
 
 cbuffer ObjectCB : register(b1)
