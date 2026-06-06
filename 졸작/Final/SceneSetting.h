@@ -34,9 +34,15 @@ struct SceneSkyboxSettings {
     float    saturation = 1.0f;
 };
 
+struct SceneShadowSettings {
+    float shadowAmbientMin = 0.8f;  
+    float shadowFloor = 0.0f;       
+};
+
 struct SceneSettings {
     SceneLightSettings  light;
     SceneLUTSettings    lut;
     SceneFogSettings    fog;
     SceneSkyboxSettings skybox;
+    SceneShadowSettings shadow;
 };

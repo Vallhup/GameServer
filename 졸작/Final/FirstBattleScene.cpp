@@ -38,10 +38,11 @@ SceneSettings FirstBattleScene::GetSceneSettings() const
 {
 	return {
 		  .light = { .sunIntensity = 1.0f },
-		  .lut = { .lutIndex = 14, .saturation = 1.0f },
-		  .fog = { .density = 0.03f, .maxSteps = 32, .maxDistance = 110.0f,
-					  .jitterStrength = 1.0f, .groundHeight = 48.0f, .lightIntensity = 1.0f },
-		  .skybox = { .tintColor = { 1.0f, 1.0f, 1.0f }, .saturation = 1.0f },
+		  .lut = { .lutIndex = 14, .saturation = 1.5f },
+		  .fog = { .density = 0.03f, .scattering = 1.4f, .maxSteps = 128, .maxDistance = 50.0f,
+					  .jitterStrength = 1.0f, .groundHeight = 48.0f, .lightColor = { 0.7764f, 0.6313f, 0.6313f }, .lightIntensity = 1.0f},
+		  .skybox = { .tintColor = { 0.9058f, 0.7411f, 0.7411f }, .exposure = 0.6f, .saturation = 1.0f },
+		  .shadow = {.shadowAmbientMin = 1.0f, .shadowFloor = 0.0f },
 	};
 }
 
@@ -314,6 +315,11 @@ const char* FirstBattleScene::GetBGMPath() const
 	return "../Assets/Music/BGM/VillageBGM.mp3";
 }
 
+const char* FirstBattleScene::GetBossBGMPath() const
+{
+	return "../Assets/Music/BGM/VillageBossBGM.mp3";
+}
+
 float FirstBattleScene::SampleHeightAt(float worldX, float worldZ) const
 {
 	if (terrain)
@@ -338,7 +344,7 @@ const BeaconCinematicConfig& FirstBattleScene::GetCinematicConfig() const
 		.camYAbove       = 20.0f,
 		.camBack         = 30.0f,
 		.lookTarget      = { 243.137360f, 58.121223f, 606.244629f },
-		.sunMult         = 16.0f,
+		.sunMult         = 6.0f,
 		.skySatMult      = 2.0f,
 		.skyExpMult      = 1.5f,
 		.scatterCenter   = { 250.0f, 600.0f },

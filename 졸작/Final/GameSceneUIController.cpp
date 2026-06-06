@@ -421,7 +421,7 @@ void GameSceneUIController::InitPartyMemberHud()
 	const float panelW = WinSize.x * 0.20f;
 	const float panelH = panelW * BACK_ASPECT;
 	const float panelX = WinSize.x - panelW - WinSize.x * 0.012f;
-	const float panelY = WinSize.y * 0.03f;
+	const float panelY = WinSize.y * 0.05f;
 
 	partyHudBack = make_shared<ImageUI>(uiManager, L"PartyMemBack", ImageUIState::Hidden);
 	partyHudBack->SetPosition(panelX, panelY);

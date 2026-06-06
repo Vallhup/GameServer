@@ -204,6 +204,11 @@ const char* FinalBattleScene::GetBGMPath() const
 	return "../Assets/Music/BGM/CathedralBGM.mp3";
 }
 
+const char* FinalBattleScene::GetBossBGMPath() const
+{
+	return "../Assets/Music/BGM/FinalBossBGM.mp3";
+}
+
 
 float FinalBattleScene::SampleHeightAt(float worldX, float worldZ) const
 {

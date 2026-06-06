@@ -74,9 +74,12 @@ void TitleScene::InitializeLogic()
 	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/ButtonPress.mp3");
 	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/CutMonster.mp3");
 	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/CutFinalBoss.mp3");
+	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/CharacterCut.mp3");
 	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/Foot.mp3");
 	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/SwingSword.mp3");
 	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/Roll.mp3");
+	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/Guard.mp3");
+	SOUND_MANAGER->PreloadSFX("../Assets/Music/SFX/CinematicExplosion.mp3");
 
 	OutputDebugStringA("Data cached created!!\n");
 }

@@ -401,6 +401,14 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			sfx->AddEffectTrigger("0per", 28, 30, L"PhantasmMeteor_Single");
 		}
 
+		if (type == MonsterType::Tank)
+		{
+			EFFECT_MANAGER->PreLoad(L"Tank_Jump");
+
+			auto sfx = monster->AddComponent<AnimationSfxComponent>();
+			sfx->AddEffectTrigger("Jump2", 70, 72, L"Tank_Jump");
+		}
+
 		monsterPools[type].push_back(monster);
 		AddGameObject(monster);
 	}
@@ -576,11 +584,17 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 					else
 						SOUND_MANAGER->PlaySFX3D("../Assets/Music/SFX/CutMonster.mp3", impactPos);
 				}
+				else
+				{
+					SOUND_MANAGER->PlaySFX3D("../Assets/Music/SFX/CharacterCut.mp3", impactPos);
+				}
+				
 			}
 			break;
 		}
 		case 1:
 		{
+			SOUND_MANAGER->PlaySFX3D("../Assets/Music/SFX/Guard.mp3", impactPos);
 			break;
 		}
 		case 2:
@@ -721,7 +735,12 @@ void Scene::HandleMonsterCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PAC
 		(typeIt->second == MonsterType::Boss ||
 		 typeIt->second == MonsterType::BigDemonWarrior ||
 		 typeIt->second == MonsterType::Tank))
+	{
 		controller->SetBossCombatState(inCombat);
+
+		if (const char* bossBgm = GetBossBGMPath())
+			SOUND_MANAGER->PlayBGM(inCombat ? bossBgm : GetBGMPath(), 0.5f);
+	}
 	else
 		controller->SetMonsterCombatState(id, inCombat);
 }
@@ -745,6 +764,12 @@ void Scene::HandleBossGimmickObjectSync(const Protocol::SC_BOSS_GIMMICK_OBJECT_S
 
 	const uint32_t objectCurHp = gimmickObject.curhp();
 	const uint32_t objectMaxHp = gimmickObject.maxhp();
+
+	char dbg[256];
+	sprintf_s(dbg, "[GimmickObj] boss=%d seq=%u obj=%d state=%d pos=(%.2f,%.2f,%.2f) r=%.2f hp=%u/%u\n",
+		bossId, gimmickSeq, objectId, (int)objectState,
+		objectPos.x, objectPos.y, objectPos.z, objectRadius, objectCurHp, objectMaxHp);
+	OutputDebugStringA(dbg);
 }
 
 void Scene::HandleBossGimmickZoneSync(const Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& gimmickZone)

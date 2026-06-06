@@ -7,6 +7,7 @@
 #include "LightManager.h"
 #include "BeaconLightComponent.h"
 #include "Input.h"
+#include "SoundManager.h"
 
 void BeaconCinematicScene::StartBeaconCinematic()
 {
@@ -15,6 +16,8 @@ void BeaconCinematicScene::StartBeaconCinematic()
 	cineState = BeaconCine::FadeOut;
 	cineTimer = 0.0f;
 	INPUT.SetBlocked(true);
+
+	SOUND_MANAGER->StopBGM(cfg.fadeDur);
 
 	for (auto& batch : instancingBatches)
 		batch->SetCinematicMode(true);
@@ -143,10 +146,10 @@ void BeaconCinematicScene::UpdateBeaconCinematic(float deltaTime)
 		if (t >= 1.0f)
 		{
 			EFFECT_MANAGER->Play(cfg.burstEffect, beaconCinePos);
+			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/CinematicExplosion.mp3");
 			if (beaconLight) beaconLight->Stop();
 			ScatterAtmosphere();
 
-			// burst 순간 붉게 시작한 분위기를 중립(흰색)으로 되돌림
 			if (cineSkyBox)
 			{
 				cineSkyBox->GetConstants().skyTintColor = { 1.0f, 1.0f, 1.0f };

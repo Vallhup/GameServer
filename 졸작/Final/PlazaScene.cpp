@@ -37,10 +37,11 @@ SceneSettings PlazaScene::GetSceneSettings() const
 {
 	return {
 		  .light = { .sunIntensity = 1.0f },
-		  .lut = { .lutIndex = 105, .saturation = 1.0f },
-		  .fog = { .density = 0.015f, .maxSteps = 32, .maxDistance = 90.0f,
+		  .lut = { .lutIndex = 105, .saturation = 1.3f },
+		  .fog = { .density = 0.015f, .scattering = 0.8f, .maxSteps = 32, .maxDistance = 90.0f,
 					  .jitterStrength = 1.0f, .groundHeight = 5.0f, .lightIntensity = 1.5f },
 		  .skybox = { .tintColor = { 1.0f, 1.0f, 1.0f }, .saturation = 2.0f},
+		  .shadow = { .shadowAmbientMin = 1.0f, .shadowFloor = 0.0f },
 	};
 }
 

@@ -47,6 +47,7 @@ protected:
 	virtual void RequestSceneChange() {}
 
 	virtual const char* GetBGMPath() const { return nullptr; }
+	virtual const char* GetBossBGMPath() const { return nullptr; }
 	virtual float GetBGMFadeInSeconds() const { return 0.0f; }
 
 	template<typename T>
