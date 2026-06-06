@@ -1687,13 +1687,13 @@ void GameSceneUIController::RequestRespawn()
 {
 	SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
 
-	respawnActive = false;
-	respawnWindow->ChangeState(ImageUIState::Hidden);
-	respawnOkButton->ChangeState(ImageUIState::Hidden);
-	respawnCountText->SetText(L"");
-
-	// TODO: 서버 부활 로직/패킷(CS_RESPAWN)이 생기면 여기서 전송.
-	//       지금은 클라 UI만 닫고, 실제 부활(위치/HP/애니 복귀)은 서버 권위로 처리 예정.
+	if (NETWORK_MANAGER->SendRespawnRequestPacket())
+	{
+		respawnActive = false;
+		respawnWindow->ChangeState(ImageUIState::Hidden);
+		respawnOkButton->ChangeState(ImageUIState::Hidden);
+		respawnCountText->SetText(L"");
+	}
 }
 
 void GameSceneUIController::HideHudForCinematic()

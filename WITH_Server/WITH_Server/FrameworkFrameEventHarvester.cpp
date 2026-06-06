@@ -109,7 +109,10 @@ void FrameworkFrameEventHarvester::Harvest(
 				PendingPlayerDeathCountEventComp,
 				PlayerControlIdentityComp>())
 		{
-			if (!deathEvent.pending || player.ownerSessionId == 0)
+			// 부활 데스카운트 결정 신호는 decisionPending 으로 수확한다. 통계용
+			// pending 은 RecordCombatStatisticsSystem 이 같은 프레임에 먼저 소비/초기화
+			// 하므로, 여기서 pending 을 보면 이벤트가 누락되어 부활이 막힌다.
+			if (!deathEvent.decisionPending || player.ownerSessionId == 0)
 			{
 				continue;
 			}
@@ -123,7 +126,7 @@ void FrameworkFrameEventHarvester::Harvest(
 					.netId = netId
 				});
 
-			deathEvent.pending = false;
+			deathEvent.decisionPending = false;
 		}
 
 		for (auto [owner, bossGimmickEvents] :

@@ -4,7 +4,7 @@
 #include "SystemMetaStorage.h"
 
 class ResolveDeathAndDespawnSystem final : public System {
-	static const StaticSystemMetaStorage<16> kMetaStorage;
+	static const StaticSystemMetaStorage<23> kMetaStorage;
 
 public:
 	void Execute(SystemContext& ctx) override;

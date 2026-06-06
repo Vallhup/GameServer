@@ -108,6 +108,11 @@ void RecordCombatStatisticsSystem::Execute(SystemContext& ctx)
     // CommitCombatResultSystem / ResolveDeathAndDespawnSystem 이 피해자 엔티티에
     // PendingPlayerDeathCountEventComp.pending = true 와 killerCharacterId 를 세팅한다.
     // killerCharacterId == CharacterId{} 이면 비-몬스터 사망이므로 건너뛴다.
+    //
+    // 주의: 통계 소비 후 컴포넌트를 통째로 초기화하면 같은 프레임 말미의
+    // FrameworkFrameEventHarvester 가 읽어야 하는 decisionPending(부활 데스카운트
+    // 신호)까지 지워져 부활 결정이 누락된다. 따라서 통계가 소유한 pending /
+    // killerCharacterId 만 초기화하고 decisionPending 은 보존한다.
     // -----------------------------------------------------------------------
     for (auto [entity, deathEvent] :
         ctx.ecs.View<PendingPlayerDeathCountEventComp>())
@@ -118,7 +123,8 @@ void RecordCombatStatisticsSystem::Execute(SystemContext& ctx)
         // killerCharacterId 가 세팅되지 않은 경우: 비-몬스터 사망 또는 이미 소비됨.
         if (deathEvent.killerCharacterId == CharacterId{})
         {
-            deathEvent = PendingPlayerDeathCountEventComp{};
+            deathEvent.pending = false;
+            deathEvent.killerCharacterId = CharacterId{};
             continue;
         }
 
@@ -126,7 +132,8 @@ void RecordCombatStatisticsSystem::Execute(SystemContext& ctx)
             ctx.ecs.GetComponent<PlayerControlIdentityComp>(entity);
         if (identity == nullptr)
         {
-            deathEvent = PendingPlayerDeathCountEventComp{};
+            deathEvent.pending = false;
+            deathEvent.killerCharacterId = CharacterId{};
             continue;
         }
 
@@ -134,7 +141,8 @@ void RecordCombatStatisticsSystem::Execute(SystemContext& ctx)
         const SessionFlow* flow = svc.sessionFlow->FindFlow(ownerSessionId);
         if (flow == nullptr || flow->accountId == 0)
         {
-            deathEvent = PendingPlayerDeathCountEventComp{};
+            deathEvent.pending = false;
+            deathEvent.killerCharacterId = CharacterId{};
             FWLOG_WARN(kLogCategory,
                 "DeathByMonster: session flow not found, skipping DB command (sid=%u)",
                 ownerSessionId);
@@ -161,6 +169,7 @@ void RecordCombatStatisticsSystem::Execute(SystemContext& ctx)
                 flow->accountId);
         }
 
-        deathEvent = PendingPlayerDeathCountEventComp{};
+        deathEvent.pending = false;
+        deathEvent.killerCharacterId = CharacterId{};
     }
 }

@@ -34,6 +34,7 @@ ExecCallResult HandlePartyCreatePacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyJoinRequestPacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyJoinAcceptPacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyJoinRejectPacket(NodeExecContext& ctx);
+ExecCallResult HandleRespawnRequestPacket(NodeExecContext& ctx);
 ExecCallResult HandleStatUiOpenedPacket(NodeExecContext& ctx);
 ExecCallResult HandleTitleEquipRequestPacket(NodeExecContext& ctx);
 ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx);

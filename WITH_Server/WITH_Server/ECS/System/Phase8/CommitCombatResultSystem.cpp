@@ -523,7 +523,7 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 			continue;
 		}
 
-		if (stats.currentHp <= 0)
+		if (previousStats.currentHp > 0 && stats.currentHp <= 0)
 		{
 			interruptQueue->events.push_back(AbilityInterruptEvent{
 				.cause = AbilityTransitionCause::OnAttributeZero,

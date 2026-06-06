@@ -9,6 +9,7 @@
 void RunPartySystemSmokeTests();
 void RunBossGimmickCombatPolicySmokeTests();
 void RunBossGimmickReplicationSmokeTests();
+void RunRespawnSystemSmokeTests();
 
 namespace
 {
@@ -38,6 +39,11 @@ int main(int argc, char** argv)
 	if (HasArg(argc, argv, "--boss-gimmick-replication-smoke"))
 	{
 		RunBossGimmickReplicationSmokeTests();
+		return 0;
+	}
+	if (HasArg(argc, argv, "--respawn-smoke"))
+	{
+		RunRespawnSystemSmokeTests();
 		return 0;
 	}
 

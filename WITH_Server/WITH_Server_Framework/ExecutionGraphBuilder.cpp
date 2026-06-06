@@ -853,6 +853,38 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
                 succs.push_back(succ);
             }
         };
+    const auto canReach =
+        [&succLists](ExecNodeId from, ExecNodeId to)
+        {
+            if (from == to)
+                return true;
+            if (from >= succLists.size() || to >= succLists.size())
+                return false;
+
+            std::vector<uint8_t> visited(succLists.size(), 0);
+            std::vector<ExecNodeId> pending;
+            pending.push_back(from);
+            visited[from] = 1;
+
+            while (!pending.empty())
+            {
+                const ExecNodeId current = pending.back();
+                pending.pop_back();
+
+                for (const ExecNodeId succ : succLists[current])
+                {
+                    if (succ == to)
+                        return true;
+                    if (succ >= succLists.size() || visited[succ] != 0)
+                        continue;
+
+                    visited[succ] = 1;
+                    pending.push_back(succ);
+                }
+            }
+
+            return false;
+        };
 
     for (const DynamicTaskRequest& request : batch.requests)
     {
@@ -920,19 +952,18 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
         const std::span<const AccessSpec> newAccesses{
             typeDesc->accesses.data(), typeDesc->accesses.size() };
 
+        ExecNodeId previousSessionNodeId = InvalidExecNodeId;
         if (request.sessionId != 0)
         {
             const uint64_t sessionPhaseKey =
                 makeSessionPhaseKey(request.sessionId, typeDesc->defaultPhase);
             const auto prevIt =
                 lastDynamicNodeBySessionAndPhase.find(sessionPhaseKey);
-            if (prevIt != lastDynamicNodeBySessionAndPhase.end())
+            if (prevIt != lastDynamicNodeBySessionAndPhase.end() &&
+                prevIt->second < outGraph.nodes.size() &&
+                outGraph.nodes[prevIt->second].scopeId == request.scopeId)
             {
-                appendUniqueEdge(
-                    predLists[newNodeId],
-                    succLists[prevIt->second],
-                    prevIt->second,
-                    newNodeId);
+                previousSessionNodeId = prevIt->second;
             }
         }
 
@@ -973,6 +1004,34 @@ void ExecutionGraphBuilder::AppendDynamicNodes(
                     predLists[newNodeId],
                     succLists[existingId],
                     existingId,
+                    newNodeId);
+            }
+        }
+
+        if (previousSessionNodeId != InvalidExecNodeId)
+        {
+            // Heterogeneous packet tasks can occupy incompatible scheduling
+            // windows. Preserve FIFO only when it does not close a path back
+            // to the previous task through static ordering/conflict edges.
+            if (canReach(newNodeId, previousSessionNodeId))
+            {
+                const std::string message =
+                    "AppendDynamicNodes - same-session order edge skipped to avoid cycle "
+                    "(sessionId=" +
+                    std::to_string(request.sessionId) +
+                    ", previousNodeId=" +
+                    std::to_string(previousSessionNodeId) +
+                    ", newNodeId=" +
+                    std::to_string(newNodeId) +
+                    ")";
+                AddWarning(result, message.c_str());
+            }
+            else
+            {
+                appendUniqueEdge(
+                    predLists[newNodeId],
+                    succLists[previousSessionNodeId],
+                    previousSessionNodeId,
                     newNodeId);
             }
         }
@@ -1386,7 +1445,84 @@ bool ExecutionGraphBuilder::ValidateGraph(
         }
     }
 
-    // 4) serial plan range 정합성
+    // 4) 최종 그래프의 phase별 비순환성
+    //
+    // 정적 fragment는 동적 태스크 삽입 전에 검증된다. 동적 태스크가 명시적
+    // ordering과 access conflict edge를 동시에 추가하면 이후에 cycle이 생길 수
+    // 있으므로 실행 직전의 최종 그래프를 다시 검증한다.
+    constexpr ExecPhase kValidatedPhases[] = {
+        ExecPhase::Simulate,
+        ExecPhase::Commit,
+        ExecPhase::LifecycleFlush,
+        ExecPhase::Reconcile
+    };
+
+    for (const ExecPhase phase : kValidatedPhases)
+    {
+        std::vector<uint32_t> indegree(graph.nodes.size(), 0);
+        uint32_t phaseNodeCount = 0;
+
+        for (const ExecNodeRecord& node : graph.nodes)
+        {
+            if (node.phase != phase)
+                continue;
+
+            ++phaseNodeCount;
+            for (uint32_t i = 0; i < node.predCount; ++i)
+            {
+                const uint32_t edgeIndex = node.predBegin + i;
+                if (edgeIndex >= graph.edges.size())
+                    break;
+
+                const ExecNodeId predId = graph.edges[edgeIndex];
+                if (graph.IsValidNodeId(predId) &&
+                    graph.nodes[predId].phase == phase)
+                {
+                    ++indegree[node.id];
+                }
+            }
+        }
+
+        std::queue<ExecNodeId> ready;
+        for (const ExecNodeRecord& node : graph.nodes)
+        {
+            if (node.phase == phase && indegree[node.id] == 0)
+                ready.push(node.id);
+        }
+
+        uint32_t visitedCount = 0;
+        while (!ready.empty())
+        {
+            const ExecNodeId nodeId = ready.front();
+            ready.pop();
+            ++visitedCount;
+
+            const ExecNodeRecord& node = graph.nodes[nodeId];
+            for (uint32_t i = 0; i < node.succCount; ++i)
+            {
+                const uint32_t edgeIndex = node.succBegin + i;
+                if (edgeIndex >= graph.edges.size())
+                    break;
+
+                const ExecNodeId succId = graph.edges[edgeIndex];
+                if (!graph.IsValidNodeId(succId) ||
+                    graph.nodes[succId].phase != phase)
+                {
+                    continue;
+                }
+
+                if (indegree[succId] > 0 && --indegree[succId] == 0)
+                    ready.push(succId);
+            }
+        }
+
+        if (visitedCount != phaseNodeCount)
+        {
+            fail("ValidateGraph - cycle detected in final phase graph");
+        }
+    }
+
+    // 5) serial plan range 정합성
     auto validateRange =
         [&](const ExecRange& range, ExecPhase expectedPhase, const char* name)
         {
@@ -1431,7 +1567,7 @@ bool ExecutionGraphBuilder::ValidateGraph(
     validateRange(graph.lifecycleFlushPlan, ExecPhase::LifecycleFlush, "LifecycleFlush");
     validateRange(graph.reconcilePlan, ExecPhase::Reconcile, "Reconcile");
 
-    // 5) serial range 순서 / 비중첩성
+    // 6) serial range 순서 / 비중첩성
     if (policy.requireContiguousSerialPlans)
     {
         const uint32_t commitEnd = graph.commitPlan.End();
@@ -1459,7 +1595,7 @@ bool ExecutionGraphBuilder::ValidateGraph(
         }
     }
 
-    // 6) serial topo order 유효성
+    // 7) serial topo order 유효성
     if (policy.requireSerialTopoValidity)
     {
         std::vector<int32_t> serialPosition(graph.nodes.size(), -1);

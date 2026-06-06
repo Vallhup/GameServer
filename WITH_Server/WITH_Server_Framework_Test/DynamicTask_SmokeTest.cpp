@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cassert>
 #include <cstdint>
@@ -83,6 +84,15 @@ struct ExecutionGraphBuilderTestHook
         const ExecutionGraphBuildPolicy& policy)
     {
         builder.FinalizeEdgePool(outGraph, predLists, succLists, policy);
+    }
+
+    static bool ValidateGraph(
+        const ExecutionGraphBuilder& builder,
+        const FrameTaskGraph& graph,
+        const ExecutionGraphBuildPolicy& policy,
+        BuildResult& result)
+    {
+        return builder.ValidateGraph(graph, policy, result);
     }
 };
 
@@ -696,6 +706,285 @@ namespace
         assert(n2.succCount == 0);
     }
 
+    static void Test_DT_05C_FinalGraph_DetectsDynamicCycle()
+    {
+        LogTestBanner(__FUNCTION__);
+
+        static constexpr ExecTag kEarlyTag = 1001;
+        static constexpr ExecTag kLateTag = 1002;
+        static constexpr AccessSpec kWriteAccess{
+            MakeResourceId<ResourceKinds::Component, FaultProbeComp>(),
+            AccessMode::Write,
+            Visibility::Immediate
+        };
+        static constexpr std::array<AccessSpec, 1> kLateAccesses{
+            kWriteAccess
+        };
+
+        const auto buildGraph =
+            [&](bool orderBeforeLate, BuildResult& outResult)
+            {
+                ExecutionSourceRegistry sourceRegistry{};
+
+                ExecutionSourceDesc earlyDesc{};
+                earlyDesc.token = sourceRegistry.AllocateToken();
+                earlyDesc.phase = ExecPhase::Simulate;
+                earlyDesc.lane = ExecLane::Parallel;
+                earlyDesc.kind = ExecNodeKind::StaticSystem;
+                earlyDesc.tag = kEarlyTag;
+                earlyDesc.fn = &StaticSys_RecordEvent;
+                earlyDesc.debugName = "Early";
+                assert(sourceRegistry.Register(earlyDesc));
+
+                ExecutionSourceDesc lateDesc{};
+                lateDesc.token = sourceRegistry.AllocateToken();
+                lateDesc.phase = ExecPhase::Simulate;
+                lateDesc.lane = ExecLane::Parallel;
+                lateDesc.kind = ExecNodeKind::StaticSystem;
+                lateDesc.tag = kLateTag;
+                lateDesc.fn = &StaticSys_RecordEvent;
+                lateDesc.debugName = "Late";
+                lateDesc.accesses = kLateAccesses;
+                assert(sourceRegistry.Register(lateDesc));
+
+                DynamicTaskTypeRegistry typeRegistry{};
+                DynamicTaskTypeDesc dynamicDesc{};
+                dynamicDesc.debugName = "Input";
+                dynamicDesc.defaultPhase = ExecPhase::Simulate;
+                dynamicDesc.defaultLane = ExecLane::Serial;
+                dynamicDesc.dispatchFn = &DynDispatch_RecordPayload;
+                dynamicDesc.accesses = { kWriteAccess };
+                dynamicDesc.runsBefore.push_back(kEarlyTag);
+                if (orderBeforeLate)
+                    dynamicDesc.runsBefore.push_back(kLateTag);
+
+                const DynamicTaskTypeId typeId =
+                    typeRegistry.Register(std::move(dynamicDesc), sourceRegistry);
+                assert(typeId != InvalidDynamicTaskTypeId);
+
+                FrameTaskGraph graph{};
+                graph.scopeCount = 1;
+                graph.scopeToWorld = { 9004 };
+                graph.simulateNodeCount = 2;
+
+                ExecNodeRecord earlyNode{};
+                earlyNode.id = 0;
+                earlyNode.scopeId = 0;
+                earlyNode.phase = ExecPhase::Simulate;
+                earlyNode.lane = ExecLane::Parallel;
+                earlyNode.kind = ExecNodeKind::StaticSystem;
+                earlyNode.sourceToken = earlyDesc.token;
+
+                ExecNodeRecord lateNode{};
+                lateNode.id = 1;
+                lateNode.scopeId = 0;
+                lateNode.phase = ExecPhase::Simulate;
+                lateNode.lane = ExecLane::Parallel;
+                lateNode.kind = ExecNodeKind::StaticSystem;
+                lateNode.sourceToken = lateDesc.token;
+
+                graph.nodes = { earlyNode, lateNode };
+                std::vector<std::vector<ExecNodeId>> predLists{
+                    {},
+                    { 0 }
+                };
+                std::vector<std::vector<ExecNodeId>> succLists{
+                    { 1 },
+                    {}
+                };
+
+                DynamicTaskFrozenBatch batch{};
+                batch.requests.push_back({ typeId, 0, 1, 0, 1 });
+
+                DynamicTaskFrameTable frameTable{};
+                ExecutionGraphBuilder builder{};
+                ExecutionGraphBuildPolicy policy{};
+
+                ExecutionGraphBuilderTestHook::AppendDynamicNodes(
+                    builder,
+                    batch,
+                    typeRegistry,
+                    sourceRegistry,
+                    nullptr,
+                    graph,
+                    predLists,
+                    succLists,
+                    frameTable,
+                    outResult);
+                ExecutionGraphBuilderTestHook::FinalizeEdgePool(
+                    builder,
+                    graph,
+                    predLists,
+                    succLists,
+                    policy);
+
+                return ExecutionGraphBuilderTestHook::ValidateGraph(
+                    builder,
+                    graph,
+                    policy,
+                    outResult);
+            };
+
+        BuildResult cyclicResult{};
+        assert(!buildGraph(false, cyclicResult));
+        assert(cyclicResult.HasError());
+
+        BuildResult orderedResult{};
+        assert(buildGraph(true, orderedResult));
+        assert(!orderedResult.HasError());
+    }
+
+    static void Test_DT_05D_SameSession_OrderEdge_DoesNotCloseCycle()
+    {
+        LogTestBanner(__FUNCTION__);
+
+        static constexpr ExecTag kEarlyTag = 1101;
+        static constexpr ExecTag kLateTag = 1102;
+        static constexpr AccessSpec kWriteAccess{
+            MakeResourceId<ResourceKinds::Component, FaultProbeComp>(),
+            AccessMode::Write,
+            Visibility::Immediate
+        };
+        static constexpr std::array<AccessSpec, 1> kLateAccesses{
+            kWriteAccess
+        };
+
+        ExecutionSourceRegistry sourceRegistry{};
+
+        ExecutionSourceDesc earlyDesc{};
+        earlyDesc.token = sourceRegistry.AllocateToken();
+        earlyDesc.phase = ExecPhase::Simulate;
+        earlyDesc.lane = ExecLane::Parallel;
+        earlyDesc.kind = ExecNodeKind::StaticSystem;
+        earlyDesc.tag = kEarlyTag;
+        earlyDesc.fn = &StaticSys_RecordEvent;
+        earlyDesc.debugName = "Early";
+        assert(sourceRegistry.Register(earlyDesc));
+
+        ExecutionSourceDesc lateDesc{};
+        lateDesc.token = sourceRegistry.AllocateToken();
+        lateDesc.phase = ExecPhase::Simulate;
+        lateDesc.lane = ExecLane::Parallel;
+        lateDesc.kind = ExecNodeKind::StaticSystem;
+        lateDesc.tag = kLateTag;
+        lateDesc.fn = &StaticSys_RecordEvent;
+        lateDesc.debugName = "Late";
+        lateDesc.accesses = kLateAccesses;
+        assert(sourceRegistry.Register(lateDesc));
+
+        DynamicTaskTypeRegistry typeRegistry{};
+
+        DynamicTaskTypeDesc respawnDesc{};
+        respawnDesc.debugName = "Respawn";
+        respawnDesc.defaultPhase = ExecPhase::Simulate;
+        respawnDesc.defaultLane = ExecLane::Serial;
+        respawnDesc.dispatchFn = &DynDispatch_RecordPayload;
+        respawnDesc.accesses = { kWriteAccess };
+        const DynamicTaskTypeId respawnTypeId =
+            typeRegistry.Register(std::move(respawnDesc), sourceRegistry);
+        assert(respawnTypeId != InvalidDynamicTaskTypeId);
+
+        DynamicTaskTypeDesc moveDesc{};
+        moveDesc.debugName = "Move";
+        moveDesc.defaultPhase = ExecPhase::Simulate;
+        moveDesc.defaultLane = ExecLane::Serial;
+        moveDesc.dispatchFn = &DynDispatch_RecordPayload;
+        moveDesc.runsBefore.push_back(kEarlyTag);
+        const DynamicTaskTypeId moveTypeId =
+            typeRegistry.Register(std::move(moveDesc), sourceRegistry);
+        assert(moveTypeId != InvalidDynamicTaskTypeId);
+
+        FrameTaskGraph graph{};
+        graph.scopeCount = 1;
+        graph.scopeToWorld = { 9005 };
+        graph.simulateNodeCount = 2;
+
+        ExecNodeRecord earlyNode{};
+        earlyNode.id = 0;
+        earlyNode.scopeId = 0;
+        earlyNode.phase = ExecPhase::Simulate;
+        earlyNode.lane = ExecLane::Parallel;
+        earlyNode.kind = ExecNodeKind::StaticSystem;
+        earlyNode.sourceToken = earlyDesc.token;
+
+        ExecNodeRecord lateNode{};
+        lateNode.id = 1;
+        lateNode.scopeId = 0;
+        lateNode.phase = ExecPhase::Simulate;
+        lateNode.lane = ExecLane::Parallel;
+        lateNode.kind = ExecNodeKind::StaticSystem;
+        lateNode.sourceToken = lateDesc.token;
+
+        graph.nodes = { earlyNode, lateNode };
+        std::vector<std::vector<ExecNodeId>> predLists{
+            {},
+            { 0 }
+        };
+        std::vector<std::vector<ExecNodeId>> succLists{
+            { 1 },
+            {}
+        };
+
+        DynamicTaskRequest respawnRequest{};
+        respawnRequest.typeId = respawnTypeId;
+        respawnRequest.scopeId = 0;
+        respawnRequest.payloadKey = 301;
+        respawnRequest.requestFrameIndex = 1;
+        respawnRequest.sessionId = 9;
+        respawnRequest.submissionSequence = 1;
+
+        DynamicTaskRequest moveRequest{};
+        moveRequest.typeId = moveTypeId;
+        moveRequest.scopeId = 0;
+        moveRequest.payloadKey = 302;
+        moveRequest.requestFrameIndex = 1;
+        moveRequest.sessionId = 9;
+        moveRequest.submissionSequence = 2;
+
+        DynamicTaskFrozenBatch batch{};
+        batch.requests = { moveRequest, respawnRequest };
+        batch.Sort();
+
+        DynamicTaskFrameTable frameTable{};
+        BuildResult result{};
+        ExecutionGraphBuilder builder{};
+        ExecutionGraphBuildPolicy policy{};
+
+        ExecutionGraphBuilderTestHook::AppendDynamicNodes(
+            builder,
+            batch,
+            typeRegistry,
+            sourceRegistry,
+            nullptr,
+            graph,
+            predLists,
+            succLists,
+            frameTable,
+            result);
+        ExecutionGraphBuilderTestHook::FinalizeEdgePool(
+            builder,
+            graph,
+            predLists,
+            succLists,
+            policy);
+
+        assert(graph.nodes.size() == 4);
+        assert(!result.HasError());
+        assert(ExecutionGraphBuilderTestHook::ValidateGraph(
+            builder,
+            graph,
+            policy,
+            result));
+
+        // Move(3) -> Early(0) -> Late(1) -> Respawn(2). Adding the
+        // receive-order edge Respawn(2) -> Move(3) would close a cycle.
+        const ExecNodeRecord& respawnNode = graph.nodes[2];
+        for (uint32_t i = 0; i < respawnNode.succCount; ++i)
+        {
+            assert(graph.edges[respawnNode.succBegin + i] != 3);
+        }
+    }
+
     // Test_DT_06 - Executor: DynamicTask dispatch resolves frameTable payload
     static void Test_DT_06_Executor_Dispatches_DynamicTask_And_Resolves_Payload()
     {
@@ -1047,6 +1336,12 @@ void RunDynamicTaskSmokeTests()
 
     Test_DT_05B_Builder_AppendDynamic_SameSession_OrderEdge();
     std::cout << "[PASS] Test_DT_05B_Builder_AppendDynamic_SameSession_OrderEdge\n";
+
+    Test_DT_05C_FinalGraph_DetectsDynamicCycle();
+    std::cout << "[PASS] Test_DT_05C_FinalGraph_DetectsDynamicCycle\n";
+
+    Test_DT_05D_SameSession_OrderEdge_DoesNotCloseCycle();
+    std::cout << "[PASS] Test_DT_05D_SameSession_OrderEdge_DoesNotCloseCycle\n";
 
     Test_DT_06_Executor_Dispatches_DynamicTask_And_Resolves_Payload();
     std::cout << "[PASS] Test_DT_06_Executor_Dispatches_DynamicTask_And_Resolves_Payload\n";

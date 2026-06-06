@@ -2,47 +2,13 @@
 #include "ResolveDeathAndDespawnSystem.h"
 
 #include "../GameplaySystemUtil.h"
+#include "PlayerDeathStatePolicy.h"
 #include "WorldDef.h"
 
 using namespace GameplaySystemUtil;
 
 namespace
 {
-	bool TryResolveDefaultPlayerSpawnTransform(
-		const WorldDef* worldDef,
-		DirectX::XMFLOAT3& outPosition,
-		DirectX::XMFLOAT4& outRotation) noexcept
-	{
-		if (worldDef == nullptr ||
-			worldDef->map.defaultPlayerSpawnPointId == SpawnPointIds::None)
-		{
-			return false;
-		}
-
-		for (const SpawnPointDef& spawnPoint : worldDef->map.spawnPoints)
-		{
-			if (spawnPoint.id != worldDef->map.defaultPlayerSpawnPointId)
-			{
-				continue;
-			}
-
-			outPosition = DirectX::XMFLOAT3{
-				spawnPoint.position.x,
-				spawnPoint.position.y,
-				spawnPoint.position.z
-			};
-			outRotation = DirectX::XMFLOAT4{
-				spawnPoint.rotation.x,
-				spawnPoint.rotation.y,
-				spawnPoint.rotation.z,
-				spawnPoint.rotation.w
-			};
-			return true;
-		}
-
-		return false;
-	}
-
 	void MarkDirtyIfPresent(
 		SystemContext& ctx,
 		Entity entity,
@@ -73,23 +39,49 @@ namespace
 		abilityState = AbilityStateComp{};
 		abilityState.abilityInstanceId = nextAbilityInstanceId;
 
-		DirectX::XMFLOAT3 respawnPosition{};
-		DirectX::XMFLOAT4 respawnRotation{ 0.0f, 0.0f, 0.0f, 1.0f };
-		const bool hasRespawnTransform =
-			TryResolveDefaultPlayerSpawnTransform(
-				ctx.runtime.GetDef(),
-				respawnPosition,
-				respawnRotation);
-
-		if (WorldTransformComp* const transform =
-			ctx.ecs.GetMutableComponent<WorldTransformComp>(entity))
+		if (AbilityInterruptQueueComp* const interruptQueue =
+			ctx.ecs.GetMutableComponent<AbilityInterruptQueueComp>(entity))
 		{
-			if (hasRespawnTransform)
-			{
-				transform->position = respawnPosition;
-				transform->rotation = respawnRotation;
-			}
+			interruptQueue->events.clear();
+		}
 
+		if (AbilityTimelineAdvanceComp* const advance =
+			ctx.ecs.GetMutableComponent<AbilityTimelineAdvanceComp>(entity))
+		{
+			*advance = AbilityTimelineAdvanceComp{};
+		}
+
+		if (ActorInputComp* const input =
+			ctx.ecs.GetMutableComponent<ActorInputComp>(entity))
+		{
+			*input = ActorInputComp{};
+		}
+
+		if (LocomotionStateComp* const locomotion =
+			ctx.ecs.GetMutableComponent<LocomotionStateComp>(entity))
+		{
+			const float facingYawRad = locomotion->facingYawRad;
+			*locomotion = LocomotionStateComp{};
+			locomotion->facingYawRad = facingYawRad;
+			locomotion->desiredFacingYawRad = facingYawRad;
+		}
+
+		if (StaminaRecoveryStateComp* const recovery =
+			ctx.ecs.GetMutableComponent<StaminaRecoveryStateComp>(entity))
+		{
+			recovery->regenLockRemainingSec = 0.0f;
+			recovery->regenRemainder = 0.0f;
+		}
+
+		if (ConsumableInventoryComp* const inventory =
+			ctx.ecs.GetMutableComponent<ConsumableInventoryComp>(entity))
+		{
+			inventory->hpPotionCount = HpPotionTuning{}.defaultGrantCount;
+		}
+
+		if (const WorldTransformComp* const transform =
+			ctx.ecs.GetComponent<WorldTransformComp>(entity))
+		{
 			if (PreCollisionTransformComp* const preCollision =
 				ctx.ecs.GetMutableComponent<PreCollisionTransformComp>(entity))
 			{
@@ -119,6 +111,18 @@ namespace
 			ctx.ecs.GetMutableComponent<AnimationPlaybackStateComp>(entity))
 		{
 			*playback = AnimationPlaybackStateComp{};
+			if (const SpawnTypeComp* const spawnType =
+				ctx.ecs.GetComponent<SpawnTypeComp>(entity))
+			{
+				playback->source = AnimationPlaybackSource::Locomotion;
+				playback->animationId = ResolveLocomotionAnimationId(
+					spawnType->characterId,
+					LocomotionMode::Idle);
+				playback->boundLocomotionMode = LocomotionMode::Idle;
+				playback->playRate = 1.0f;
+				playback->loop = false;
+				playback->holdLastFrame = true;
+			}
 		}
 
 		if (PendingPlayerDeathCountEventComp* const deathEvent =
@@ -133,6 +137,7 @@ namespace
 		MarkDirtyIfPresent(ctx, entity, WorldDirtyType::Stat);
 		MarkDirtyIfPresent(ctx, entity, WorldDirtyType::Transform);
 		MarkDirtyIfPresent(ctx, entity, WorldDirtyType::Animation);
+		MarkDirtyIfPresent(ctx, entity, WorldDirtyType::Inventory);
 
 		if (ctx.ecs.HasComponent<PlayerDeathCountConsumedTag>(entity))
 		{
@@ -150,14 +155,15 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<16> ResolveDeathAndDespawnSystem::kMetaStorage =
+const StaticSystemMetaStorage<23> ResolveDeathAndDespawnSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<ResolveDeathAndDespawnSystem>(),
 		"ResolveDeathAndDespawnSystem",
-		std::array<AccessSpec, 16>
+		std::array<AccessSpec, 23>
 	{
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
 		WriteImmediate(ComponentRes<AbilityStateComp>()),
+		WriteImmediate(ComponentRes<AbilityInterruptQueueComp>()),
 		ReadImmediate(ComponentRes<PlayerControlIdentityComp>()),
 		ReadImmediate(ComponentRes<PlayerDeathCountConsumedTag>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
@@ -165,33 +171,47 @@ const StaticSystemMetaStorage<16> ResolveDeathAndDespawnSystem::kMetaStorage =
 		ReadImmediate(ComponentRes<PendingWorldTransferComp>()),
 		WriteImmediate(ComponentRes<PendingPlayerDeathCountEventComp>()),
 		WriteImmediate(ComponentRes<PlayerDeathStateComp>()),
-		WriteImmediate(ComponentRes<WorldTransformComp>()),
+		ReadImmediate(ComponentRes<WorldTransformComp>()),
 		WriteImmediate(ComponentRes<AnimationPlaybackStateComp>()),
 		WriteImmediate(ComponentRes<LocomotionMoveDeltaComp>()),
 		WriteImmediate(ComponentRes<AbilityMoveDeltaComp>()),
 		WriteImmediate(ComponentRes<PreCollisionTransformComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
+		WriteImmediate(ComponentRes<ConsumableInventoryComp>()),
+		WriteImmediate(ComponentRes<ActorInputComp>()),
+		WriteImmediate(ComponentRes<LocomotionStateComp>()),
+		WriteImmediate(ComponentRes<AbilityTimelineAdvanceComp>()),
+		WriteImmediate(ComponentRes<StaminaRecoveryStateComp>()),
+		ReadImmediate(ComponentRes<SpawnTypeComp>()),
 		WriteDeferred(CommandBufferRes()),
 	});
 
 void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 {
+	const WorldDef* const worldDef = ctx.runtime.GetDef();
+	const bool supportsPlayerRespawn =
+		worldDef != nullptr &&
+		PlayerDeathStatePolicy::IsRespawnWorld(worldDef->id);
+
 	for (auto [entity, stats, abilityState] :
 		ctx.ecs.MutableView<CombatStatStateComp, AbilityStateComp>())
 	{
 		if (stats.currentHp > 0)
 		{
-			if (PlayerDeathStateComp* const deathState =
-				ctx.ecs.GetMutableComponent<PlayerDeathStateComp>(entity);
-				deathState != nullptr &&
-				deathState->state != PlayerDeathState::Alive)
+			if (supportsPlayerRespawn)
 			{
-				*deathState = PlayerDeathStateComp{};
-			}
-			if (ctx.ecs.HasComponent<PlayerDeathCountConsumedTag>(entity))
-			{
-				ctx.runtime.DeferredRemoveComponent<PlayerDeathCountConsumedTag>(
-					entity);
+				if (PlayerDeathStateComp* const deathState =
+					ctx.ecs.GetMutableComponent<PlayerDeathStateComp>(entity);
+					deathState != nullptr &&
+					deathState->state != PlayerDeathState::Alive)
+				{
+					*deathState = PlayerDeathStateComp{};
+				}
+				if (ctx.ecs.HasComponent<PlayerDeathCountConsumedTag>(entity))
+				{
+					ctx.runtime.DeferredRemoveComponent<
+						PlayerDeathCountConsumedTag>(entity);
+				}
 			}
 			continue;
 		}
@@ -200,7 +220,8 @@ void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 			ctx.ecs.GetComponent<PlayerControlIdentityComp>(entity);
 		PlayerDeathStateComp* const deathState =
 			ctx.ecs.GetMutableComponent<PlayerDeathStateComp>(entity);
-		if (player != nullptr &&
+		if (supportsPlayerRespawn &&
+			player != nullptr &&
 			player->ownerSessionId != 0 &&
 			deathState != nullptr &&
 			deathState->state == PlayerDeathState::Alive &&
@@ -213,13 +234,16 @@ void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 					entity))
 			{
 				deathEvent->pending = true;
+				deathEvent->decisionPending = true;
 			}
 			else
 			{
 				ctx.runtime.DeferredUpsertComponent<
 					PendingPlayerDeathCountEventComp>(
 					entity,
-					PendingPlayerDeathCountEventComp{ .pending = true });
+					PendingPlayerDeathCountEventComp{
+						.pending = true,
+						.decisionPending = true });
 			}
 
 			ctx.runtime.DeferredAddComponent<PlayerDeathCountConsumedTag>(
@@ -236,7 +260,8 @@ void ResolveDeathAndDespawnSystem::Execute(SystemContext& ctx)
 			abilityDef->kind == AbilityKind::Dead &&
 			abilityState.elapsedSec >= abilityDef->timeline.durationSec;
 
-		if (deadAbilityFinished &&
+		if (supportsPlayerRespawn &&
+			deadAbilityFinished &&
 			player != nullptr &&
 			player->ownerSessionId != 0)
 		{

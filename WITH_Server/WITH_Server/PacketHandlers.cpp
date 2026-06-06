@@ -7,6 +7,8 @@
 #include "ECS/System/Phase2/ResolveAbilityStateSystem.h"
 #include "ECS/System/Phase2/ResolveLocomotionStateSystem.h"
 #include "ECS/System/Phase2/ResolvePlayerNetworkCompensationSystem.h"
+#include "ECS/System/Phase8/PlayerDeathStatePolicy.h"
+#include "ECS/System/Phase8/ResolveDeathAndDespawnSystem.h"
 #include "ExecutionContextTypes.h"
 #include "ExecutionCoreTypes.h"
 #include "ExecutionOps.h"
@@ -18,6 +20,7 @@
 #include "LoginAuth.h"
 #include "RegisterAccount.h"
 #include "TitleCommands.h"
+#include "WorldDef.h"
 #include "NetworkRuntime.h"
 #include "NetworkTimingService.h"
 #include "ODBCDatabaseBackend.h"
@@ -623,6 +626,7 @@ namespace
         desc.runsBefore.push_back(Tag<ResolvePlayerNetworkCompensationSystem>());
         desc.runsBefore.push_back(Tag<ResolveAbilityStateSystem>());
         desc.runsBefore.push_back(Tag<ResolveLocomotionStateSystem>());
+        desc.runsBefore.push_back(Tag<ResolveDeathAndDespawnSystem>());
     }
 
     void AddGameplayInputAccesses(DynamicTaskTypeDesc& desc)
@@ -639,6 +643,25 @@ namespace
             WriteImmediate(ComponentRes<ActorInputComp>()));
     }
 
+    void AddRespawnRequestOrdering(DynamicTaskTypeDesc& desc)
+    {
+        desc.runsBefore.push_back(Tag<ResolveDeathAndDespawnSystem>());
+    }
+
+    void AddRespawnRequestAccesses(DynamicTaskTypeDesc& desc)
+    {
+        desc.accesses.push_back(
+            ReadImmediate(ExternalRes<SessionFlowController>()));
+        desc.accesses.push_back(
+            ReadImmediate(ExternalRes<IWorldNetBindingResolver>()));
+        desc.accesses.push_back(
+            ReadImmediate(ComponentRes<PlayerControlIdentityComp>()));
+        desc.accesses.push_back(
+            ReadImmediate(ComponentRes<CombatStatStateComp>()));
+        desc.accesses.push_back(
+            WriteImmediate(ComponentRes<PlayerDeathStateComp>()));
+    }
+
     DynamicTaskTypeId RegisterPacketDynamicTask(
         DynamicTaskTypeRegistry& taskRegistry,
         ExecutionSourceRegistry& sourceRegistry,
@@ -647,7 +670,8 @@ namespace
         ExecFn dispatchFn,
         const char* debugName,
         DynamicTaskTargetKind targetKind = DynamicTaskTargetKind::ExplicitScope,
-        bool gameplayInput = false)
+        bool gameplayInput = false,
+        bool respawnRequest = false)
     {
         DynamicTaskTypeDesc desc{};
         desc.tag               = InvalidExecTag;
@@ -663,6 +687,11 @@ namespace
             AddGameplayInputOrdering(desc);
             AddGameplayInputAccesses(desc);
         }
+        if (respawnRequest)
+        {
+            AddRespawnRequestOrdering(desc);
+            AddRespawnRequestAccesses(desc);
+        }
 
         const DynamicTaskTypeId typeId =
             taskRegistry.Register(desc, sourceRegistry);
@@ -672,21 +701,23 @@ namespace
                 static_cast<uint16_t>(packetType),
                 typeId);
             FWLOG_INFO(kLogCategory,
-                "RegisterPacketDynamicTask ok (packetType=%u, typeId=%u, debugName=%s, targetKind=%d, gameplayInput=%u)",
+                "RegisterPacketDynamicTask ok (packetType=%u, typeId=%u, debugName=%s, targetKind=%d, gameplayInput=%u, respawnRequest=%u)",
                 static_cast<uint32_t>(packetType),
                 typeId,
                 debugName != nullptr ? debugName : "(null)",
                 static_cast<int>(targetKind),
-                gameplayInput ? 1u : 0u);
+                gameplayInput ? 1u : 0u,
+                respawnRequest ? 1u : 0u);
         }
         else
         {
             FWLOG_ERROR(kLogCategory,
-                "RegisterPacketDynamicTask FAILED (packetType=%u, debugName=%s, targetKind=%d, gameplayInput=%u)",
+                "RegisterPacketDynamicTask FAILED (packetType=%u, debugName=%s, targetKind=%d, gameplayInput=%u, respawnRequest=%u)",
                 static_cast<uint32_t>(packetType),
                 debugName != nullptr ? debugName : "(null)",
                 static_cast<int>(targetKind),
-                gameplayInput ? 1u : 0u);
+                gameplayInput ? 1u : 0u,
+                respawnRequest ? 1u : 0u);
         }
         return typeId;
     }
@@ -761,6 +792,9 @@ void RegisterServerPacketHandlers(
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_JOIN_REJECT,        &HandlePartyJoinRejectPacket,        "Pkt_CS_PARTY_JOIN_REJECT",
         DynamicTaskTargetKind::ExplicitScope);
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_RESPAWN_REQUEST,           &HandleRespawnRequestPacket,         "Pkt_CS_RESPAWN_REQUEST",
+        DynamicTaskTargetKind::SessionCurrentWorld, false, true);
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_STAT_UI_OPENED,            &HandleStatUiOpenedPacket,           "Pkt_CS_STAT_UI_OPENED",
         DynamicTaskTargetKind::ExplicitScope);
@@ -1949,6 +1983,106 @@ ExecCallResult HandlePartyJoinRejectPacket(NodeExecContext& ctx)
         .requestId = static_cast<PartyRequestId>(pkt.joinrequestid()),
         .clientRequestId = pkt.clientrequestid()
     });
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleRespawnRequestPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+    {
+        FWLOG_WARN(kLogCategory, "CS_RESPAWN_REQUEST entry: payload missing");
+        return ExecCallResult::Failed;
+    }
+
+    Protocol::CS_RESPAWN_REQUEST_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+    {
+        FWLOG_WARN(kLogCategory, "CS_RESPAWN_REQUEST parse failed");
+        return ExecCallResult::Success;
+    }
+
+    auto& svc = PacketHandlerContext::Get();
+    const SessionId sessionId = ResolveSessionId(ctx);
+    if (svc.sessionFlow == nullptr ||
+        ResolveWorldRuntime(ctx, sessionId, *svc.sessionFlow) == nullptr)
+    {
+        FWLOG_INFO(kLogCategory,
+            "CS_RESPAWN_REQUEST ignored: no world runtime (sid=%u, requestId=%u)",
+            sessionId,
+            pkt.clientrequestid());
+        return ExecCallResult::Success;
+    }
+
+    const NetId netId = svc.sessionFlow->FindControlledNetId(sessionId);
+    WorldRuntime* const runtime = ctx.TryGetRuntime();
+    ExecutionOps* const ops = ctx.TryGetOps();
+    const WorldId worldId = ctx.TryGetWorldId();
+    Entity entity = Entity::Null();
+    if (runtime == nullptr ||
+        ops == nullptr ||
+        !netId.IsValid() ||
+        !ops->TryResolveEntity(worldId, netId, entity) ||
+        entity.IsNull())
+    {
+        FWLOG_INFO(kLogCategory,
+            "CS_RESPAWN_REQUEST ignored: player target missing (sid=%u, requestId=%u)",
+            sessionId,
+            pkt.clientrequestid());
+        return ExecCallResult::Success;
+    }
+
+    const WorldDef* const worldDef = runtime->GetDef();
+    if (worldDef == nullptr ||
+        !PlayerDeathStatePolicy::IsRespawnWorld(worldDef->id))
+    {
+        FWLOG_INFO(kLogCategory,
+            "CS_RESPAWN_REQUEST ignored: unsupported world (sid=%u, requestId=%u, worldDefId=%u)",
+            sessionId,
+            pkt.clientrequestid(),
+            worldDef != nullptr
+                ? static_cast<uint32_t>(worldDef->id)
+                : static_cast<uint32_t>(WorldDefId::None));
+        return ExecCallResult::Success;
+    }
+
+    ECSView ecs = runtime->MakeView();
+    const PlayerControlIdentityComp* const player =
+        ecs.GetComponent<PlayerControlIdentityComp>(entity);
+    const CombatStatStateComp* const stats =
+        ecs.GetComponent<CombatStatStateComp>(entity);
+    PlayerDeathStateComp* const deathState =
+        ecs.GetMutableComponent<PlayerDeathStateComp>(entity);
+    if (player == nullptr ||
+        player->ownerSessionId != sessionId ||
+        player->netId != netId ||
+        stats == nullptr ||
+        stats->currentHp > 0 ||
+        deathState == nullptr ||
+        !PlayerDeathStatePolicy::CanLatchRespawnRequest(*deathState))
+    {
+        FWLOG_INFO(kLogCategory,
+            "CS_RESPAWN_REQUEST rejected (sid=%u, requestId=%u, hp=%d, deathState=%u, ownerSid=%u, playerNetId=%u, controlledNetId=%u)",
+            sessionId,
+            pkt.clientrequestid(),
+            stats != nullptr ? stats->currentHp : -1,
+            deathState != nullptr
+                ? static_cast<uint32_t>(deathState->state)
+                : std::numeric_limits<uint32_t>::max(),
+            player != nullptr ? player->ownerSessionId : 0,
+            player != nullptr ? player->netId.GetRaw() : 0,
+            netId.GetRaw());
+        return ExecCallResult::Success;
+    }
+
+    deathState->respawnRequested = true;
+    FWLOG_INFO(kLogCategory,
+        "CS_RESPAWN_REQUEST accepted (sid=%u, requestId=%u, entity=%u.%u, deathState=%u)",
+        sessionId,
+        pkt.clientrequestid(),
+        entity.id,
+        entity.generation,
+        static_cast<uint32_t>(deathState->state));
     return ExecCallResult::Success;
 }
 

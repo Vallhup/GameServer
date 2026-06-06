@@ -365,6 +365,9 @@
     <ClCompile Include="RegisterAccount.cpp">
       <Filter>Database\Query</Filter>
     </ClCompile>
+    <ClCompile Include="RespawnSystem_SmokeTest.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
     <ClCompile Include="ECS\System\Phase8\RecordCombatStatisticsSystem.cpp">
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
@@ -674,6 +677,9 @@
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\ResolveGameplayEffectStateSystem.h">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase8\PlayerDeathStatePolicy.h">
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h">

@@ -21,6 +21,7 @@
 #include "CharacterDef.h"
 #include "GameDataCatalog.h"
 #include "GameplayDefValidator.h"
+#include "ECS/System/Phase8/PlayerDeathStatePolicy.h"
 #include "SpawnSetDef.h"
 #include "WorldInstanceRecord.h"
 
@@ -53,10 +54,7 @@ namespace
 
 	bool IsDeathCountSharedWorld(WorldDefId worldDefId) noexcept
 	{
-		return
-			worldDefId == WorldDefId::Village ||
-			worldDefId == WorldDefId::Castle ||
-			worldDefId == WorldDefId::Final;
+		return PlayerDeathStatePolicy::IsRespawnWorld(worldDefId);
 	}
 }
 
@@ -266,12 +264,16 @@ bool ServerApp::RequestPlayerRespawn(SessionId sessionId)
 	ECSView view = world->GetRuntime().MakeView();
 	PlayerControlIdentityComp* const player =
 		view.GetMutableComponent<PlayerControlIdentityComp>(binding.entity);
+	const CombatStatStateComp* const stats =
+		view.GetComponent<CombatStatStateComp>(binding.entity);
 	PlayerDeathStateComp* const deathState =
 		view.GetMutableComponent<PlayerDeathStateComp>(binding.entity);
 	if (player == nullptr ||
 		player->ownerSessionId != sessionId ||
+		stats == nullptr ||
+		stats->currentHp > 0 ||
 		deathState == nullptr ||
-		deathState->state != PlayerDeathState::AwaitingRespawnInput)
+		!PlayerDeathStatePolicy::CanLatchRespawnRequest(*deathState))
 	{
 		return false;
 	}
@@ -1187,7 +1189,11 @@ bool ServerApp::ApplyPlayerDeathCountDecision(
 	}
 
 	WorldInstance* const world = _framework.FindWorld(deathEvent.worldId);
-	if (world == nullptr)
+	const WorldDef* const worldDef =
+		world != nullptr ? world->GetDef() : nullptr;
+	if (world == nullptr ||
+		worldDef == nullptr ||
+		!IsDeathCountSharedWorld(worldDef->id))
 	{
 		return false;
 	}
@@ -1205,12 +1211,10 @@ bool ServerApp::ApplyPlayerDeathCountDecision(
 		return false;
 	}
 
-	deathState->state = canRespawn
-		? PlayerDeathState::AwaitingRespawnInput
-		: PlayerDeathState::DeathCountExhausted;
-	deathState->deathCountRevision = deathCountRevision;
-	deathState->respawnRequested = false;
-	return true;
+	return PlayerDeathStatePolicy::ApplyDeathCountDecision(
+		*deathState,
+		canRespawn,
+		deathCountRevision);
 }
 
 bool ServerApp::IsPartyEligible(SessionId sessionId) const

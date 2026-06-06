@@ -260,6 +260,7 @@
     <ClCompile Include="PartyService.cpp" />
     <ClCompile Include="PartySystem_SmokeTest.cpp" />
     <ClCompile Include="RegisterAccount.cpp" />
+    <ClCompile Include="RespawnSystem_SmokeTest.cpp" />
     <ClCompile Include="SessionFlowContext.cpp" />
     <ClCompile Include="SessionFlowController.cpp" />
     <ClCompile Include="SessionFlowTransitionTable.cpp" />
@@ -397,6 +398,7 @@
     <ClInclude Include="ECS\System\Phase8\FinalizePostCommitStateSystem.h" />
     <ClInclude Include="ECS\System\Phase8\RecoverStaminaSystem.h" />
     <ClInclude Include="ECS\System\Phase8\ResolveGameplayEffectStateSystem.h" />
+    <ClInclude Include="ECS\System\Phase8\PlayerDeathStatePolicy.h" />
     <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h" />
     <ClInclude Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.h" />
     <ClInclude Include="ECS\Components\GameplayContentComponents.h" />
