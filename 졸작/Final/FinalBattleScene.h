@@ -29,6 +29,7 @@ protected:
 	void RequestSceneChange() override;
 
 	const char* GetBGMPath() const override;
+	const char* GetBossBGMPath() const override;
 
 private:
 	float SampleHeightAt(float worldX, float worldZ) const;

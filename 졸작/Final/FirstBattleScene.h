@@ -31,6 +31,7 @@ protected:
 	void RequestSceneChange() override;
 
 	const char* GetBGMPath() const override;
+	const char* GetBossBGMPath() const override;
 
 	const BeaconCinematicConfig& GetCinematicConfig() const override;
 	float SampleHeightAt(float worldX, float worldZ) const override;

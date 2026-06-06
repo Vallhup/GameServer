@@ -21,6 +21,7 @@ public:
     void PreloadSFX(const char* path);
     void PlaySFX(const char* path);
     void PlaySFX3D(const char* path, const XMFLOAT3& worldPos);
+    void StopAllSFX();
     void SetSFXVolume(float volume);
 
 private:

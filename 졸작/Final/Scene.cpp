@@ -576,11 +576,17 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 					else
 						SOUND_MANAGER->PlaySFX3D("../Assets/Music/SFX/CutMonster.mp3", impactPos);
 				}
+				else
+				{
+					SOUND_MANAGER->PlaySFX3D("../Assets/Music/SFX/CharacterCut.mp3", impactPos);
+				}
+				
 			}
 			break;
 		}
 		case 1:
 		{
+			SOUND_MANAGER->PlaySFX3D("../Assets/Music/SFX/Guard.mp3", impactPos);
 			break;
 		}
 		case 2:
@@ -721,7 +727,12 @@ void Scene::HandleMonsterCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PAC
 		(typeIt->second == MonsterType::Boss ||
 		 typeIt->second == MonsterType::BigDemonWarrior ||
 		 typeIt->second == MonsterType::Tank))
+	{
 		controller->SetBossCombatState(inCombat);
+
+		if (const char* bossBgm = GetBossBGMPath())
+			SOUND_MANAGER->PlayBGM(inCombat ? bossBgm : GetBGMPath(), 0.5f);
+	}
 	else
 		controller->SetMonsterCombatState(id, inCombat);
 }

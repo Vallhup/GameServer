@@ -307,6 +307,11 @@ const char* SecondBattleScene::GetBGMPath() const
 	return "../Assets/Music/BGM/CastleBGM.mp3";
 }
 
+const char* SecondBattleScene::GetBossBGMPath() const
+{
+	return "../Assets/Music/BGM/CastleBossBGM.mp3";
+}
+
 float SecondBattleScene::SampleHeightAt(float worldX, float worldZ) const
 {
 	if (terrain)

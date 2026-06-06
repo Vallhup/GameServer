@@ -16,6 +16,8 @@
 #include "SkyBox.h"
 #include "Camera.h"
 #include "ImGuiManager.h"
+#include "ShadowMappingManager.h"
+#include "SoundManager.h"
 
 SceneManager::~SceneManager()
 {
@@ -171,8 +173,8 @@ void SceneManager::ProcessPendingSceneChange(DX12Core& core)
 
     if (mCurrentScene)
     {
-        // 씬 소유 객체(MainCharacter / SkyBox / Camera)가 Reset()에서 release되므로
-        // ImGui 가 들고 있던 raw pointer 캐시를 먼저 끊어야 dangling 접근을 막음.
+        SOUND_MANAGER->StopAllSFX();
+
         IMGUI.SetMyPlayer(nullptr);
         IMGUI.SetSkyBox(nullptr);
         IMGUI.SetCamera(nullptr);
@@ -267,5 +269,12 @@ void SceneManager::ApplySceneSettings(DX12Core& core)
         sc.skyExposure = s.skybox.exposure;
         sc.skySaturation = s.skybox.saturation;
         sky->UpdateConstants();
+    }
+
+    if (auto* sm = core.GetShadowMgr()) {
+        auto& cs = sm->GetCsmConstants();
+        cs.shadowAmbientMin = s.shadow.shadowAmbientMin;
+        cs.shadowFloor = s.shadow.shadowFloor;
+        sm->UploadCsmConstants();
     }
 }

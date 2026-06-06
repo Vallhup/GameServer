@@ -106,7 +106,20 @@ void SoundManager::PlayBGM(const char* path, float fadeInSeconds)
 void SoundManager::StartBGM(const char* path, float fadeInSeconds)
 {
     if (bgmChannel)
-        bgmChannel->stop();
+    {
+        if (fadeInSeconds > 0.0f)
+        {
+            if (fadeChannel)
+                fadeChannel->stop();
+            fadeChannel = bgmChannel;
+            fadeDuration = fadeInSeconds;
+            fadeTimer = fadeInSeconds;
+        }
+        else
+        {
+            bgmChannel->stop();
+        }
+    }
 
     string key(path);
 
@@ -241,7 +254,13 @@ bool SoundManager::GetListenerPosition(XMFLOAT3& outPos) const
     return false;
 }
 
-void SoundManager::SetSFXVolume(float volume)   
+void SoundManager::StopAllSFX()
+{
+    if (sfxGroup)
+        sfxGroup->stop();
+}
+
+void SoundManager::SetSFXVolume(float volume)
 {
     if (sfxGroup)
         sfxGroup->setVolume(clamp(volume, 0.0f, 1.0f));
