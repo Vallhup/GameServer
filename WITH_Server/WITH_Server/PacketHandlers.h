@@ -34,6 +34,8 @@ ExecCallResult HandlePartyCreatePacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyJoinRequestPacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyJoinAcceptPacket(NodeExecContext& ctx);
 ExecCallResult HandlePartyJoinRejectPacket(NodeExecContext& ctx);
+ExecCallResult HandleStatUiOpenedPacket(NodeExecContext& ctx);
+ExecCallResult HandleTitleEquipRequestPacket(NodeExecContext& ctx);
 ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx);
 
 // ---------------------------------------------------------------------------
@@ -42,3 +44,5 @@ ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx);
 ExecCallResult HandleIncrementMonsterKillCountResult(NodeExecContext& ctx);
 ExecCallResult HandleIncrementDeathByMonsterCountResult(NodeExecContext& ctx);
 ExecCallResult HandleUnlockTitleResult(NodeExecContext& ctx);
+ExecCallResult HandleGetAccountTitlesResult(NodeExecContext& ctx);
+ExecCallResult HandleSetEquippedTitleResult(NodeExecContext& ctx);

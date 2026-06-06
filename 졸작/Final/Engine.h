@@ -8,6 +8,7 @@ class EffectManager;
 class UIManager;
 class IConnectionListener;
 class ClientPartyState;
+class ClientTitleState;
 
 #include "ClientPacketRouter.h"
 #include "ClientInboundPacketQueue.h"
@@ -32,6 +33,7 @@ public:
     EffectManager* GetEffectManager() const { return effectManager.get(); }
     UIManager* GetUIManager() const { return uiManager.get(); }
     ClientPartyState* GetPartyState() const { return partyState.get(); }
+    ClientTitleState* GetTitleState() const { return titleState.get(); }
     ClientInboundPacketQueue* GetInboundQueue() const { return inboundQueue.get(); }
 
     ClientWorldTransitionController& GetWorldTransitionController() 
@@ -61,4 +63,5 @@ private:
     ClientWorldTransitionController worldTransitionController;
 
     unique_ptr<ClientPartyState> partyState;
+    unique_ptr<ClientTitleState> titleState;
 };

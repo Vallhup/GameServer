@@ -413,6 +413,30 @@ bool DBStatement::Fetch()
 	return true;
 }
 
+bool DBStatement::MoreResults()
+{
+	_lastError.Clear();
+
+	if (_stmt == SQL_NULL_HSTMT)
+	{
+		_lastError.records.push_back(
+			DBDiagRecord{ L"", 0, L"Statement is not prepared." });
+		return false;
+	}
+
+	const SQLRETURN rc = SQLMoreResults(_stmt);
+	if (rc == SQL_NO_DATA)
+		return false;
+
+	if (!IsSuccess(rc))
+	{
+		CaptureDiag(SQL_HANDLE_STMT, _stmt);
+		return false;
+	}
+
+	return true;
+}
+
 void DBStatement::Reset() noexcept
 {
 	if (_stmt != SQL_NULL_HSTMT)

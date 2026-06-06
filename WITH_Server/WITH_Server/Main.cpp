@@ -66,14 +66,10 @@ int main(int argc, char** argv)
 	FrameworkLog::Instance().StartWorker();
 
 	ServerApp::Config config{};
-	config.database.enabled = false;
-	config.database.connectionString =
-		L"Driver={ODBC Driver 17 for SQL Server};"
-		L"Server=localhost\\SQLEXPRESS;"
-		L"Database=WITH_Server_DB;"
-		L"Trusted_Connection=yes;"
-		L"Encrypt=yes;"
-		L"TrustServerCertificate=yes;";
+	config.database.enabled = true;
+	config.database.dsn = L"WITH_Server_DB";
+	config.database.user = L"sa";
+	config.database.password = L"sdong8426A";
 
 	ServerApp app(config);
 	app.Run();

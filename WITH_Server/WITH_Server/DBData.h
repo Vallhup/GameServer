@@ -38,6 +38,7 @@ struct DBRequestMeta
 	DBRequestId requestId{ InvalidDBRequestId };
 
 	uint32_t sessionId{ 0 };
+	uint32_t clientRequestId{ 0 };
 	ExecScopeId scopeId{ InvalidExecScopeId };
 	uint64_t requestFrameIndex{ 0 };
 
@@ -50,6 +51,7 @@ struct DBCompletion
 	DBCommandTypeId debugCommandTypeId{ InvalidDBCommandTypeId };
 
 	uint32_t sessionId{ 0 };
+	uint32_t clientRequestId{ 0 };
 	ExecScopeId scopeId{ InvalidExecScopeId };
 	uint64_t requestFrameIndex{ 0 };
 

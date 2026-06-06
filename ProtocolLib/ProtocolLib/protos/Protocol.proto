@@ -114,6 +114,22 @@ message CS_PARTY_JOIN_REJECT_PACKET
 	uint64 joinRequestId = 2;
 }
 
+message CS_RESPAWN_REQUEST_PACKET
+{
+	uint32 clientRequestId = 1;
+}
+
+message CS_STAT_UI_OPENED_PACKET
+{
+	uint32 clientRequestId = 1;
+}
+
+message CS_TITLE_EQUIP_REQUEST_PACKET
+{
+	uint32 clientRequestId = 1;
+	uint32 titleId = 2;
+}
+
 /* ------------------------------ [ Server -> Client ]  ------------------------------ */
 
 message SC_TIME_SYNC_PACKET
@@ -329,4 +345,19 @@ message SC_BOSS_GIMMICK_ZONE_SYNC_PACKET
     float z = 7;
 
     float radius = 8;
+}
+
+message SC_STAT_UI_BOOTSTRAP_PACKET
+{
+	uint32 clientRequestId = 1;
+	repeated uint32 ownedTitleIds = 2;
+	uint32 equippedTitleId = 3;
+}
+
+message SC_TITLE_EQUIP_RESULT_PACKET
+{
+	uint32 clientRequestId = 1;
+	bool success = 2;
+	uint32 equippedTitleId = 3;
+	uint32 reason = 4;
 }

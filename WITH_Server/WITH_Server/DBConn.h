@@ -138,6 +138,11 @@ public:
 	[[nodiscard]]
 	bool Fetch();
 
+	// Advances to the next result set. Returns false for SQL_NO_DATA or error.
+	// Use LastErrorInfo().Empty() to distinguish SQL_NO_DATA from an error.
+	[[nodiscard]]
+	bool MoreResults();
+
 	void Reset() noexcept;
 	void CloseCursor() noexcept;
 

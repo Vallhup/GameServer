@@ -17,4 +17,6 @@ private:
 	void HandlePartySnapshot(const ClientInboundPacket& packet);
 	void HandlePartyJoinRequestReceived(const ClientInboundPacket& packet);
 	void HandlePartyJoinRequestClosed(const ClientInboundPacket& packet);
+	void HandleStatUiBootstrap(const ClientInboundPacket& packet);
+	void HandleTitleEquipResult(const ClientInboundPacket& packet);
 };

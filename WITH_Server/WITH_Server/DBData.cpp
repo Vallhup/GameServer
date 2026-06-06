@@ -133,6 +133,7 @@ DBCompletion DBCommandContext::MakeBaseCompletion() const noexcept
 	completion.requestId = _meta.requestId;
 	completion.debugCommandTypeId = _debugCommandTypeId;
 	completion.sessionId = _meta.sessionId;
+	completion.clientRequestId = _meta.clientRequestId;
 	completion.scopeId = _meta.scopeId;
 	completion.requestFrameIndex = _meta.requestFrameIndex;
 	completion.completionTaskTypeId = _meta.completionTaskTypeId;

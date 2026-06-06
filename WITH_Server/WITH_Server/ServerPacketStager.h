@@ -9,6 +9,7 @@
 #include "PartyTypes.h"
 #include "Protocol.pb.h"
 #include "Session.h"
+#include "TitleDef.h"
 #include "ECS/GameplayRuntimeComponents.h"
 #include "TransformHelper.h"
 
@@ -129,6 +130,21 @@ public:
 		std::span<const SessionId> sessionIds,
 		NetId netId,
 		const CombatStatStateComp& stats);
+
+	static bool StageStatUiBootstrapPacket(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		uint32_t clientRequestId,
+		std::span<const TitleId> ownedTitleIds,
+		TitleId equippedTitleId);
+
+	static bool StageTitleEquipResultPacket(
+		NetworkRuntime& network,
+		SessionId sessionId,
+		uint32_t clientRequestId,
+		bool success,
+		TitleId equippedTitleId,
+		uint32_t reason);
 
 	static bool StageAnimationPacketToSession(
 		NetworkRuntime& network,

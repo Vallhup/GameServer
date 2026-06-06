@@ -65,9 +65,16 @@ namespace
     constexpr uint32_t kLoginFailReasonDatabaseUnavailable = 5;
     constexpr uint32_t kLoginFailReasonDatabaseError = 6;
     constexpr uint32_t kLoginFailReasonTimeout = 7;
+    constexpr uint32_t kTitleEquipReasonSuccess = 0;
+    constexpr uint32_t kTitleEquipReasonInvalidTitle = 3;
+    constexpr uint32_t kTitleEquipReasonDatabaseError = 4;
 
     DynamicTaskTypeId g_loginAuthResultTaskTypeId{ InvalidDynamicTaskTypeId };
     DynamicTaskTypeId g_registerAccountResultTaskTypeId{ InvalidDynamicTaskTypeId };
+    DynamicTaskTypeId g_getAccountTitlesResultTaskTypeId{
+        InvalidDynamicTaskTypeId };
+    DynamicTaskTypeId g_setEquippedTitleResultTaskTypeId{
+        InvalidDynamicTaskTypeId };
 
     const char* SessionFlowResultCodeName(SessionFlowResultCode code) noexcept;
 
@@ -754,6 +761,12 @@ void RegisterServerPacketHandlers(
     RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
         PacketType::CS_PARTY_JOIN_REJECT,        &HandlePartyJoinRejectPacket,        "Pkt_CS_PARTY_JOIN_REJECT",
         DynamicTaskTargetKind::ExplicitScope);
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_STAT_UI_OPENED,            &HandleStatUiOpenedPacket,           "Pkt_CS_STAT_UI_OPENED",
+        DynamicTaskTargetKind::ExplicitScope);
+    RegisterPacketDynamicTask(taskRegistry, sourceRegistry, network,
+        PacketType::CS_TITLE_EQUIP_REQUEST,       &HandleTitleEquipRequestPacket,      "Pkt_CS_TITLE_EQUIP_REQUEST",
+        DynamicTaskTargetKind::ExplicitScope);
 
     DynamicTaskTypeDesc loginAuthResultDesc{};
     loginAuthResultDesc.debugName = "DB_LoginAuthResult";
@@ -819,6 +832,34 @@ void RegisterServerPacketHandlers(
     unlockTitleResultDesc.payloadCleanupFn = &ReleaseDBCompletionPayload;
     g_unlockTitleResultTaskTypeId =
         taskRegistry.Register(unlockTitleResultDesc, sourceRegistry);
+
+    DynamicTaskTypeDesc getAccountTitlesResultDesc{};
+    getAccountTitlesResultDesc.debugName =
+        "DB_GetAccountTitlesResult";
+    getAccountTitlesResultDesc.defaultPhase = ExecPhase::Simulate;
+    getAccountTitlesResultDesc.defaultLane = ExecLane::Serial;
+    getAccountTitlesResultDesc.defaultTargetKind =
+        DynamicTaskTargetKind::ExplicitScope;
+    getAccountTitlesResultDesc.dispatchFn =
+        &HandleGetAccountTitlesResult;
+    getAccountTitlesResultDesc.payloadCleanupFn =
+        &ReleaseDBCompletionPayload;
+    g_getAccountTitlesResultTaskTypeId =
+        taskRegistry.Register(getAccountTitlesResultDesc, sourceRegistry);
+
+    DynamicTaskTypeDesc setEquippedTitleResultDesc{};
+    setEquippedTitleResultDesc.debugName =
+        "DB_SetEquippedTitleResult";
+    setEquippedTitleResultDesc.defaultPhase = ExecPhase::Simulate;
+    setEquippedTitleResultDesc.defaultLane = ExecLane::Serial;
+    setEquippedTitleResultDesc.defaultTargetKind =
+        DynamicTaskTargetKind::ExplicitScope;
+    setEquippedTitleResultDesc.dispatchFn =
+        &HandleSetEquippedTitleResult;
+    setEquippedTitleResultDesc.payloadCleanupFn =
+        &ReleaseDBCompletionPayload;
+    g_setEquippedTitleResultTaskTypeId =
+        taskRegistry.Register(setEquippedTitleResultDesc, sourceRegistry);
 }
 
 ExecCallResult HandleLoginPacket(NodeExecContext& ctx)
@@ -1911,6 +1952,129 @@ ExecCallResult HandlePartyJoinRejectPacket(NodeExecContext& ctx)
     return ExecCallResult::Success;
 }
 
+ExecCallResult HandleStatUiOpenedPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    Protocol::CS_STAT_UI_OPENED_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    auto& svc = PacketHandlerContext::Get();
+    const SessionId sessionId = ResolveSessionId(ctx);
+    const SessionFlow* const flow =
+        svc.sessionFlow != nullptr
+        ? svc.sessionFlow->FindFlow(sessionId)
+        : nullptr;
+
+    if (svc.database == nullptr ||
+        flow == nullptr ||
+        flow->accountId == 0)
+    {
+        if (svc.network != nullptr)
+        {
+            (void)ServerPacketStager::StageStatUiBootstrapPacket(
+                *svc.network,
+                sessionId,
+                pkt.clientrequestid(),
+                {},
+                InvalidTitleId);
+        }
+        return ExecCallResult::Success;
+    }
+
+    DBCommandEnvelope envelope{};
+    envelope.meta.sessionId = sessionId;
+    envelope.meta.clientRequestId = pkt.clientrequestid();
+    envelope.meta.scopeId = ctx.scopeId;
+    envelope.meta.requestFrameIndex = ResolveRequestFrameIndex(ctx);
+    envelope.meta.completionTaskTypeId =
+        g_getAccountTitlesResultTaskTypeId;
+    envelope.command = std::make_unique<GetAccountTitlesCommand>(
+        flow->accountId,
+        sessionId,
+        pkt.clientrequestid());
+    (void)svc.database->Submit(std::move(envelope));
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleTitleEquipRequestPacket(NodeExecContext& ctx)
+{
+    auto buf = AcquirePayload(ctx);
+    if (!buf)
+        return ExecCallResult::Failed;
+
+    Protocol::CS_TITLE_EQUIP_REQUEST_PACKET pkt{};
+    if (!ParseProto(*buf, pkt))
+        return ExecCallResult::Success;
+
+    auto& svc = PacketHandlerContext::Get();
+    const SessionId sessionId = ResolveSessionId(ctx);
+    const uint32_t titleIdRaw = pkt.titleid();
+    const bool titleIdInRange =
+        titleIdRaw <= static_cast<uint32_t>(
+            std::numeric_limits<int16_t>::max());
+    const TitleId titleId = titleIdInRange
+        ? static_cast<TitleId>(titleIdRaw)
+        : InvalidTitleId;
+    const bool titleIsDefined =
+        titleId == InvalidTitleId ||
+        GameDataCatalog::Current().Titles().Find(titleId) != nullptr;
+
+    if (!titleIdInRange || !titleIsDefined)
+    {
+        if (svc.network != nullptr)
+        {
+            (void)ServerPacketStager::StageTitleEquipResultPacket(
+                *svc.network,
+                sessionId,
+                pkt.clientrequestid(),
+                false,
+                InvalidTitleId,
+                kTitleEquipReasonInvalidTitle);
+        }
+        return ExecCallResult::Success;
+    }
+
+    const SessionFlow* const flow =
+        svc.sessionFlow != nullptr
+        ? svc.sessionFlow->FindFlow(sessionId)
+        : nullptr;
+    if (svc.database == nullptr ||
+        flow == nullptr ||
+        flow->accountId == 0)
+    {
+        if (svc.network != nullptr)
+        {
+            (void)ServerPacketStager::StageTitleEquipResultPacket(
+                *svc.network,
+                sessionId,
+                pkt.clientrequestid(),
+                false,
+                InvalidTitleId,
+                kTitleEquipReasonDatabaseError);
+        }
+        return ExecCallResult::Success;
+    }
+
+    DBCommandEnvelope envelope{};
+    envelope.meta.sessionId = sessionId;
+    envelope.meta.clientRequestId = pkt.clientrequestid();
+    envelope.meta.scopeId = ctx.scopeId;
+    envelope.meta.requestFrameIndex = ResolveRequestFrameIndex(ctx);
+    envelope.meta.completionTaskTypeId =
+        g_setEquippedTitleResultTaskTypeId;
+    envelope.command = std::make_unique<SetEquippedTitleCommand>(
+        flow->accountId,
+        titleId,
+        sessionId,
+        pkt.clientrequestid());
+    (void)svc.database->Submit(std::move(envelope));
+    return ExecCallResult::Success;
+}
+
 ExecCallResult HandleDisconnectedEvent(NodeExecContext& ctx)
 {
     auto& svc = PacketHandlerContext::Get();
@@ -2002,7 +2166,7 @@ ExecCallResult HandleIncrementMonsterKillCountResult(NodeExecContext& ctx)
             titleDef.id,
             payload.sessionId);
 
-        svc.database->Submit(std::move(envelope));
+        (void)svc.database->Submit(std::move(envelope));
     }
 
     return ExecCallResult::Success;
@@ -2068,7 +2232,7 @@ ExecCallResult HandleIncrementDeathByMonsterCountResult(NodeExecContext& ctx)
             titleDef.id,
             payload.sessionId);
 
-        svc.database->Submit(std::move(envelope));
+        (void)svc.database->Submit(std::move(envelope));
     }
 
     return ExecCallResult::Success;
@@ -2126,5 +2290,183 @@ ExecCallResult HandleUnlockTitleResult(NodeExecContext& ctx)
         // TODO: 클라이언트에 SC_TITLE_UNLOCKED 패킷 전송
     }
 
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleGetAccountTitlesResult(NodeExecContext& ctx)
+{
+    static constexpr const char* kCategory = "Title";
+
+    auto& svc = PacketHandlerContext::Get();
+    if (svc.database == nullptr)
+        return ExecCallResult::Failed;
+
+    const auto* inst =
+        ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId);
+    if (inst == nullptr || inst->payloadKey == 0)
+        return ExecCallResult::Failed;
+
+    DBCompletion completion{};
+    if (!svc.database->ResultStore().TakeCompletion(
+        inst->payloadKey,
+        completion))
+    {
+        FWLOG_WARN(kCategory, "GetAccountTitles completion missing");
+        return ExecCallResult::Success;
+    }
+
+    if (!completion.ok)
+    {
+        FWLOG_WARN(kCategory,
+            "GetAccountTitles failed (sid=%u, dbError=%u)",
+            completion.sessionId,
+            completion.errorCode);
+        if (svc.network != nullptr)
+        {
+            (void)ServerPacketStager::StageStatUiBootstrapPacket(
+                *svc.network,
+                completion.sessionId,
+                completion.clientRequestId,
+                {},
+                InvalidTitleId);
+        }
+        return ExecCallResult::Success;
+    }
+
+    GetAccountTitlesPayload payload{};
+    if (completion.payloadKey == InvalidDBPayloadKey ||
+        !svc.database->ResultStore().TakePayload(
+            completion.payloadKey,
+            payload))
+    {
+        FWLOG_WARN(kCategory, "GetAccountTitles payload missing");
+        return ExecCallResult::Success;
+    }
+
+    const SessionFlow* const flow =
+        svc.sessionFlow != nullptr
+        ? svc.sessionFlow->FindFlow(completion.sessionId)
+        : nullptr;
+    if (flow == nullptr || flow->accountId != payload.accountId)
+    {
+        FWLOG_WARN(kCategory,
+            "GetAccountTitles stale completion dropped (sid=%u)",
+            completion.sessionId);
+        return ExecCallResult::Success;
+    }
+
+    std::vector<TitleId> validTitleIds;
+    validTitleIds.reserve(payload.ownedTitleIds.size());
+    for (const TitleId titleId : payload.ownedTitleIds)
+    {
+        if (titleId != InvalidTitleId &&
+            GameDataCatalog::Current().Titles().Find(titleId) != nullptr)
+        {
+            validTitleIds.push_back(titleId);
+        }
+    }
+
+    std::sort(validTitleIds.begin(), validTitleIds.end());
+    validTitleIds.erase(
+        std::unique(validTitleIds.begin(), validTitleIds.end()),
+        validTitleIds.end());
+
+    const bool equippedIsOwned =
+        payload.equippedTitleId == InvalidTitleId ||
+        std::binary_search(
+            validTitleIds.begin(),
+            validTitleIds.end(),
+            payload.equippedTitleId);
+    const TitleId equippedTitleId = equippedIsOwned
+        ? payload.equippedTitleId
+        : InvalidTitleId;
+
+    if (svc.network != nullptr)
+    {
+        (void)ServerPacketStager::StageStatUiBootstrapPacket(
+            *svc.network,
+            completion.sessionId,
+            completion.clientRequestId,
+            validTitleIds,
+            equippedTitleId);
+    }
+    return ExecCallResult::Success;
+}
+
+ExecCallResult HandleSetEquippedTitleResult(NodeExecContext& ctx)
+{
+    static constexpr const char* kCategory = "Title";
+
+    auto& svc = PacketHandlerContext::Get();
+    if (svc.database == nullptr)
+        return ExecCallResult::Failed;
+
+    const auto* inst =
+        ctx.frame->dynamicTaskFrameTable->FindByNodeId(ctx.nodeId);
+    if (inst == nullptr || inst->payloadKey == 0)
+        return ExecCallResult::Failed;
+
+    DBCompletion completion{};
+    if (!svc.database->ResultStore().TakeCompletion(
+        inst->payloadKey,
+        completion))
+    {
+        FWLOG_WARN(kCategory, "SetEquippedTitle completion missing");
+        return ExecCallResult::Success;
+    }
+
+    if (!completion.ok)
+    {
+        FWLOG_WARN(kCategory,
+            "SetEquippedTitle failed (sid=%u, dbError=%u)",
+            completion.sessionId,
+            completion.errorCode);
+        if (svc.network != nullptr)
+        {
+            (void)ServerPacketStager::StageTitleEquipResultPacket(
+                *svc.network,
+                completion.sessionId,
+                completion.clientRequestId,
+                false,
+                InvalidTitleId,
+                kTitleEquipReasonDatabaseError);
+        }
+        return ExecCallResult::Success;
+    }
+
+    SetEquippedTitlePayload payload{};
+    if (completion.payloadKey == InvalidDBPayloadKey ||
+        !svc.database->ResultStore().TakePayload(
+            completion.payloadKey,
+            payload))
+    {
+        FWLOG_WARN(kCategory, "SetEquippedTitle payload missing");
+        return ExecCallResult::Success;
+    }
+
+    const SessionFlow* const flow =
+        svc.sessionFlow != nullptr
+        ? svc.sessionFlow->FindFlow(completion.sessionId)
+        : nullptr;
+    if (flow == nullptr || flow->accountId != payload.accountId)
+    {
+        FWLOG_WARN(kCategory,
+            "SetEquippedTitle stale completion dropped (sid=%u)",
+            completion.sessionId);
+        return ExecCallResult::Success;
+    }
+
+    const bool success =
+        payload.resultCode == kTitleEquipReasonSuccess;
+    if (svc.network != nullptr)
+    {
+        (void)ServerPacketStager::StageTitleEquipResultPacket(
+            *svc.network,
+            completion.sessionId,
+            completion.clientRequestId,
+            success,
+            payload.equippedTitleId,
+            payload.resultCode);
+    }
     return ExecCallResult::Success;
 }

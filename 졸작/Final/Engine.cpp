@@ -23,6 +23,7 @@
 #include "LookUpTextures.h"
 #include "BloomManager.h"
 #include "ClientPartyState.h"
+#include "ClientTitleState.h"
 
 Engine& Engine::Get()
 {
@@ -52,6 +53,7 @@ void Engine::Initialize(HWND hwnd, string_view ip, uint16 port, IConnectionListe
     networkManager->Initialize(1, ip, port, listener);
 
     partyState = make_unique<ClientPartyState>();
+    titleState = make_unique<ClientTitleState>();
 
     sceneManager = make_unique<SceneManager>();
     sceneManager->Initialize(mHwnd, *graphics);
@@ -187,6 +189,7 @@ void Engine::Shutdown()
     soundManager->Release();
     effectManager->Release();
     partyState.reset();
+    titleState.reset();
 }
 
 void Engine::ShowFps()

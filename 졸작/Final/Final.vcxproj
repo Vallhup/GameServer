@@ -224,6 +224,7 @@ exit 0</Command>
     <ClCompile Include="ClientConnectionListener.cpp" />
     <ClCompile Include="ClientInboundPacketQueue.cpp" />
     <ClCompile Include="ClientPartyState.cpp" />
+    <ClCompile Include="ClientTitleState.cpp" />
     <ClCompile Include="ClientPacketRouter.cpp" />
     <ClCompile Include="ClientWorldTransitionController.cpp" />
     <ClCompile Include="ClusterLightManager.cpp" />
@@ -328,6 +329,7 @@ exit 0</Command>
     <ClInclude Include="ClientConnectionListener.h" />
     <ClInclude Include="ClientInboundPacketQueue.h" />
     <ClInclude Include="ClientPartyState.h" />
+    <ClInclude Include="ClientTitleState.h" />
     <ClInclude Include="ClientPacketRouter.h" />
     <ClInclude Include="ClientWorldTransitionController.h" />
     <ClInclude Include="ClusterLightManager.h" />

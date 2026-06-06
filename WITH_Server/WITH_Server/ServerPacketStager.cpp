@@ -440,6 +440,51 @@ bool ServerPacketStager::StageStatPacketToSessions(
 	return staged;
 }
 
+bool ServerPacketStager::StageStatUiBootstrapPacket(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	uint32_t clientRequestId,
+	std::span<const TitleId> ownedTitleIds,
+	TitleId equippedTitleId)
+{
+	Protocol::SC_STAT_UI_BOOTSTRAP_PACKET packet;
+	packet.set_clientrequestid(clientRequestId);
+	for (const TitleId titleId : ownedTitleIds)
+	{
+		packet.add_ownedtitleids(static_cast<uint32_t>(titleId));
+	}
+	packet.set_equippedtitleid(
+		static_cast<uint32_t>(equippedTitleId));
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_STAT_UI_BOOTSTRAP,
+		packet);
+}
+
+bool ServerPacketStager::StageTitleEquipResultPacket(
+	NetworkRuntime& network,
+	SessionId sessionId,
+	uint32_t clientRequestId,
+	bool success,
+	TitleId equippedTitleId,
+	uint32_t reason)
+{
+	Protocol::SC_TITLE_EQUIP_RESULT_PACKET packet;
+	packet.set_clientrequestid(clientRequestId);
+	packet.set_success(success);
+	packet.set_equippedtitleid(
+		static_cast<uint32_t>(equippedTitleId));
+	packet.set_reason(reason);
+
+	return StageUnicastPacket(
+		network,
+		sessionId,
+		PacketType::SC_TITLE_EQUIP_RESULT,
+		packet);
+}
+
 bool ServerPacketStager::StageAnimationPacketToSession(
 	NetworkRuntime& network,
 	SessionId sessionId,

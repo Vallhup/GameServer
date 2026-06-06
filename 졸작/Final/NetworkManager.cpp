@@ -236,6 +236,42 @@ bool NetworkManager::SendPartyJoinRejectPacket(uint64_t joinRequestId)
 	return TrySendInternal(data);
 }
 
+bool NetworkManager::SendRespawnRequestPacket()
+{
+	Protocol::CS_RESPAWN_REQUEST_PACKET respawn;
+	respawn.set_clientrequestid(_nextRespawnRequestId++);
+
+	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_RESPAWN_REQUEST_PACKET>(
+		PacketType::CS_RESPAWN_REQUEST, respawn);
+
+	return TrySendInternal(data);
+}
+
+bool NetworkManager::SendStatUiOpenedPacket()
+{
+	Protocol::CS_STAT_UI_OPENED_PACKET packet;
+	packet.set_clientrequestid(_nextTitleRequestId++);
+
+	SendBuffer* data =
+		PacketFactory::Serialize<Protocol::CS_STAT_UI_OPENED_PACKET>(
+			PacketType::CS_STAT_UI_OPENED,
+			packet);
+	return TrySendInternal(data);
+}
+
+bool NetworkManager::SendTitleEquipRequestPacket(uint32_t titleId)
+{
+	Protocol::CS_TITLE_EQUIP_REQUEST_PACKET packet;
+	packet.set_clientrequestid(_nextTitleRequestId++);
+	packet.set_titleid(titleId);
+
+	SendBuffer* data =
+		PacketFactory::Serialize<Protocol::CS_TITLE_EQUIP_REQUEST_PACKET>(
+			PacketType::CS_TITLE_EQUIP_REQUEST,
+			packet);
+	return TrySendInternal(data);
+}
+
 bool NetworkManager::TrySendInternal(SendBuffer* sendBuffer)
 {
 	if (_service && sendBuffer)

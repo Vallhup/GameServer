@@ -288,6 +288,7 @@ void ODBCDatabaseBackend::PushRejectedCompletion(
 	DBCompletion completion{};
 	completion.requestId = command.meta.requestId;
 	completion.sessionId = command.meta.sessionId;
+	completion.clientRequestId = command.meta.clientRequestId;
 	completion.scopeId = command.meta.scopeId;
 	completion.requestFrameIndex = command.meta.requestFrameIndex;
 	completion.completionTaskTypeId = command.meta.completionTaskTypeId;

@@ -7,6 +7,7 @@
 #include "NetHelper.h"
 #include "ClientWorldTransitionController.h"
 #include "ClientPartyState.h"
+#include "ClientTitleState.h"
 #include "NetworkManager.h"
 
 void ClientPacketRouter::Route(const ClientInboundPacket& packet)
@@ -55,6 +56,16 @@ void ClientPacketRouter::Route(const ClientInboundPacket& packet)
 	case PacketType::SC_PARTY_JOIN_REQUEST_CLOSED:
 	{
 		HandlePartyJoinRequestClosed(packet);
+		break;
+	}
+	case PacketType::SC_STAT_UI_BOOTSTRAP:
+	{
+		HandleStatUiBootstrap(packet);
+		break;
+	}
+	case PacketType::SC_TITLE_EQUIP_RESULT:
+	{
+		HandleTitleEquipResult(packet);
 		break;
 	}
 	default:
@@ -207,4 +218,34 @@ void ClientPacketRouter::HandlePartyJoinRequestClosed(const ClientInboundPacket&
 			}
 		}
 	);
+}
+
+void ClientPacketRouter::HandleStatUiBootstrap(
+	const ClientInboundPacket& packet)
+{
+	NetHelper::DispatchPacket<Protocol::SC_STAT_UI_BOOTSTRAP_PACKET>(
+		packet.header,
+		packet.bytes.data(),
+		[](const auto& message)
+		{
+			if (ClientTitleState* titleState = ENGINE.GetTitleState())
+			{
+				titleState->ApplyBootstrap(message);
+			}
+		});
+}
+
+void ClientPacketRouter::HandleTitleEquipResult(
+	const ClientInboundPacket& packet)
+{
+	NetHelper::DispatchPacket<Protocol::SC_TITLE_EQUIP_RESULT_PACKET>(
+		packet.header,
+		packet.bytes.data(),
+		[](const auto& message)
+		{
+			if (ClientTitleState* titleState = ENGINE.GetTitleState())
+			{
+				titleState->ApplyEquipResult(message);
+			}
+		});
 }

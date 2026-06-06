@@ -7,7 +7,13 @@
 
 class NetworkManager {
 public:
-	NetworkManager() : _service(nullptr), _nextPartyRequestId(1) {}
+	NetworkManager()
+		: _service(nullptr)
+		, _nextPartyRequestId(1)
+		, _nextRespawnRequestId(1)
+		, _nextTitleRequestId(1)
+	{
+	}
 
 	void Initialize(
 		uint16 threadCnt, 
@@ -39,9 +45,15 @@ public:
 	bool SendPartyJoinAcceptPacket(uint64_t joinRequestId);
 	bool SendPartyJoinRejectPacket(uint64_t joinRequestId);
 
+	bool SendRespawnRequestPacket();
+	bool SendStatUiOpenedPacket();
+	bool SendTitleEquipRequestPacket(uint32_t titleId);
+
 private:
 	bool TrySendInternal(SendBuffer* sendBuffer);
 
 	std::unique_ptr<ClientService> _service;
 	uint32_t _nextPartyRequestId;
+	uint32_t _nextRespawnRequestId;
+	uint32_t _nextTitleRequestId;
 };

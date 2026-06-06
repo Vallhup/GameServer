@@ -247,6 +247,9 @@
     <ClCompile Include="ClientPartyState.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="ClientTitleState.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
     <ClCompile Include="ClientPacketRouter.cpp">
       <Filter>Network</Filter>
     </ClCompile>
@@ -544,6 +547,9 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="ClientPartyState.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientTitleState.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="ClientPacketRouter.h">
