@@ -4,14 +4,12 @@
 #include <random>
 
 #include "../GameplaySystemUtil.h"
+#include "BossGimmickAnimationPolicy.h"
 
 using namespace GameplaySystemUtil;
 
 namespace
 {
-	constexpr float kPhaseTransitionTelegraphSec = 13.3666725f;
-	constexpr float kPhaseTransitionObjectWindowSec = 8.0f;
-	constexpr float kPhaseTransitionResolveSec = 1.0f;
 	constexpr float kPhaseTransitionObjectHp = 60.0f;
 	constexpr float kPhaseTransitionObjectRadius = 5.5f;
 	constexpr float kPhaseTransitionObjectRadiusJitter = 2.0f;
@@ -19,9 +17,6 @@ namespace
 	constexpr float kPhaseTransitionObjectHalfWidth = 0.75f;
 	constexpr float kPhaseTransitionImmunitySec = 12.0f;
 
-	constexpr float kFinalSafeZoneTelegraphSec = 12.1000185f;
-	constexpr float kFinalSafeZoneActiveSec = 4.0f;
-	constexpr float kFinalSafeZoneResolveSec = 0.5f;
 	constexpr float kFinalSafeZoneRadius = 1.25f;
 	constexpr float kFinalSafeZoneDistance = 5.5f;
 	constexpr float kFinalSafeZoneDistanceJitter = 1.5f;
@@ -256,7 +251,8 @@ namespace
 			SafeZoneComp{
 				.ownerBoss = boss,
 				.radius = kFinalSafeZoneRadius,
-				.remainingSec = kFinalSafeZoneActiveSec
+				.remainingSec =
+					BossGimmickAnimationPolicy::kEntryAnimationDurationSec
 			});
 		return safeZone;
 	}
@@ -397,7 +393,7 @@ void BossGimmickSystem::Execute(SystemContext& ctx)
 	for (auto [entity, safeZone] : ctx.ecs.View<SafeZoneComp>())
 	{
 		safeZone.remainingSec -= dtSec;
-		if (safeZone.remainingSec <= -kFinalSafeZoneResolveSec)
+		if (safeZone.remainingSec <= 0.0f)
 		{
 			ctx.runtime.DeferredDestroyEntityIfAlive(entity);
 		}
@@ -419,7 +415,8 @@ void BossGimmickSystem::Execute(SystemContext& ctx)
 				gimmick.Begin(
 					BossGimmickType::FinalSafeZone,
 					BossGimmickStage::Telegraph,
-					kFinalSafeZoneTelegraphSec,
+					BossGimmickAnimationPolicy::EntryAnimationDurationFor(
+						BossGimmickType::FinalSafeZone),
 					true);
 			}
 			else if (gimmick.phaseTransitionGimmickRequested &&
@@ -428,7 +425,8 @@ void BossGimmickSystem::Execute(SystemContext& ctx)
 				gimmick.Begin(
 					BossGimmickType::PhaseTransitionObjects,
 					BossGimmickStage::Telegraph,
-					kPhaseTransitionTelegraphSec,
+					BossGimmickAnimationPolicy::EntryAnimationDurationFor(
+						BossGimmickType::PhaseTransitionObjects),
 					true);
 			}
 			else
@@ -467,24 +465,12 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 {
 	(void)dtSec;
 
-	if (gimmick.stage == BossGimmickStage::Telegraph)
-	{
-		if (gimmick.stageElapsedSec >= gimmick.stageDurationSec)
-		{
-			SetStage(
-				gimmick,
-				BossGimmickStage::Active,
-				kPhaseTransitionObjectWindowSec);
-		}
-		return;
-	}
-
 	const WorldTransformComp* bossTransform =
 		ctx.ecs.GetComponent<WorldTransformComp>(boss);
 	if (bossTransform == nullptr)
 		return;
 
-	if (gimmick.stage == BossGimmickStage::Active)
+	if (gimmick.stage == BossGimmickStage::Telegraph)
 	{
 		if (!gimmick.phaseTransitionObjectsSpawned)
 		{
@@ -520,15 +506,10 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 
 			if (players.empty())
 			{
-				SetStage(
-					gimmick,
-					BossGimmickStage::Resolve,
-					kPhaseTransitionResolveSec);
+				gimmick.phaseTransitionInstantKillResolved = true;
 			}
-			return;
 		}
 
-		size_t brokenCount = 0;
 		for (Entity object : gimmick.phaseTransitionObjectEntities)
 		{
 			GimmickObjectComp* objectGimmick =
@@ -537,7 +518,6 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				ctx.ecs.GetMutableComponent<CombatStatStateComp>(object);
 			if (objectGimmick == nullptr || objectStats == nullptr)
 			{
-				++brokenCount;
 				continue;
 			}
 
@@ -599,19 +579,14 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				}
 			}
 
-			if (objectGimmick->broken || objectStats->currentHp <= 0)
-				++brokenCount;
 		}
 
-		if (brokenCount >= gimmick.phaseTransitionObjectEntities.size() ||
-			gimmick.stageElapsedSec >= gimmick.stageDurationSec)
+		if (gimmick.stageElapsedSec < gimmick.stageDurationSec)
 		{
-			SetStage(
-				gimmick,
-				BossGimmickStage::Resolve,
-				kPhaseTransitionResolveSec);
+			return;
 		}
-		return;
+
+		SetStage(gimmick, BossGimmickStage::Resolve, 0.0f);
 	}
 
 	if (gimmick.stage == BossGimmickStage::Resolve &&
@@ -619,6 +594,13 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 	{
 		for (const AlivePlayerEntry& player : CollectAlivePlayers(ctx))
 		{
+			if (ContainsEntity(
+					gimmick.phaseTransitionImmunePlayers,
+					player.entity))
+			{
+				continue;
+			}
+
 			const BossGimmickImmunityComp* immunity =
 				ctx.ecs.GetComponent<BossGimmickImmunityComp>(player.entity);
 			if (immunity != nullptr &&
@@ -640,8 +622,7 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 		gimmick.phaseTransitionInstantKillResolved = true;
 	}
 
-	if (gimmick.stage == BossGimmickStage::Resolve &&
-		gimmick.stageElapsedSec >= gimmick.stageDurationSec)
+	if (gimmick.stage == BossGimmickStage::Resolve)
 	{
 		SetStage(gimmick, BossGimmickStage::Completed, 0.0f);
 	}
@@ -655,24 +636,12 @@ void BossGimmickSystem::TickFinalSafeZone(
 {
 	(void)dtSec;
 
-	if (gimmick.stage == BossGimmickStage::Telegraph)
-	{
-		if (gimmick.stageElapsedSec >= gimmick.stageDurationSec)
-		{
-			SetStage(
-				gimmick,
-				BossGimmickStage::Active,
-				kFinalSafeZoneActiveSec);
-		}
-		return;
-	}
-
 	const WorldTransformComp* bossTransform =
 		ctx.ecs.GetComponent<WorldTransformComp>(boss);
 	if (bossTransform == nullptr)
 		return;
 
-	if (gimmick.stage == BossGimmickStage::Active)
+	if (gimmick.stage == BossGimmickStage::Telegraph)
 	{
 		if (!gimmick.finalSafeZoneSpawned)
 		{
@@ -698,14 +667,12 @@ void BossGimmickSystem::TickFinalSafeZone(
 			gimmick.finalSafeZoneSpawned = true;
 		}
 
-		if (gimmick.stageElapsedSec >= gimmick.stageDurationSec)
+		if (gimmick.stageElapsedSec < gimmick.stageDurationSec)
 		{
-			SetStage(
-				gimmick,
-				BossGimmickStage::Resolve,
-				kFinalSafeZoneResolveSec);
+			return;
 		}
-		return;
+
+		SetStage(gimmick, BossGimmickStage::Resolve, 0.0f);
 	}
 
 	if (gimmick.stage == BossGimmickStage::Resolve &&
@@ -759,8 +726,7 @@ void BossGimmickSystem::TickFinalSafeZone(
 		gimmick.finalSafeZoneResolved = true;
 	}
 
-	if (gimmick.stage == BossGimmickStage::Resolve &&
-		gimmick.stageElapsedSec >= gimmick.stageDurationSec)
+	if (gimmick.stage == BossGimmickStage::Resolve)
 	{
 		SetStage(gimmick, BossGimmickStage::Completed, 0.0f);
 	}

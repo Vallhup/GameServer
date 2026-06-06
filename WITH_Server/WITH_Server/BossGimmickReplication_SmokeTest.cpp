@@ -77,6 +77,9 @@ namespace
 			phaseTransition));
 		assert(BossGimmickAnimationPolicy::EntryAnimationFor(
 			phaseTransition.activeType) == AnimationId::FinalBoss_50Percent);
+		assert(std::fabs(
+			BossGimmickAnimationPolicy::EntryAnimationDurationFor(
+				phaseTransition.activeType) - 10.0f) < 0.001f);
 
 		BossGimmickStateComp finalSafeZone{};
 		finalSafeZone.activeType = BossGimmickType::FinalSafeZone;
@@ -86,6 +89,9 @@ namespace
 			finalSafeZone));
 		assert(BossGimmickAnimationPolicy::EntryAnimationFor(
 			finalSafeZone.activeType) == AnimationId::FinalBoss_0Percent);
+		assert(std::fabs(
+			BossGimmickAnimationPolicy::EntryAnimationDurationFor(
+				finalSafeZone.activeType) - 10.0f) < 0.001f);
 
 		finalSafeZone.stage = BossGimmickStage::Active;
 		assert(!BossGimmickAnimationPolicy::ShouldUseEntryAnimation(

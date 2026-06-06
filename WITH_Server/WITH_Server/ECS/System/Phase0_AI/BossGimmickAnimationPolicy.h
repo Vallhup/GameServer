@@ -4,6 +4,8 @@
 
 namespace BossGimmickAnimationPolicy
 {
+	inline constexpr float kEntryAnimationDurationSec = 10.0f;
+
 	inline AnimationId EntryAnimationFor(BossGimmickType type) noexcept
 	{
 		switch (type) {
@@ -14,6 +16,13 @@ namespace BossGimmickAnimationPolicy
 		default:
 			return AnimationId::None;
 		}
+	}
+
+	inline float EntryAnimationDurationFor(BossGimmickType type) noexcept
+	{
+		return EntryAnimationFor(type) != AnimationId::None
+			? kEntryAnimationDurationSec
+			: 0.0f;
 	}
 
 	inline bool ShouldUseEntryAnimation(
