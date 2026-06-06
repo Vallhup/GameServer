@@ -53,6 +53,16 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
     for (const auto& obj : objects)
     {
         if (obj->GetId() == -1) continue;
+
+        if (auto dm = obj->GetComponent<Mesh>(); dm && dm->IsUnlit() && (GetAsyncKeyState('G') & 0x8000))
+        {
+            bool vis = !cam || obj->IsVisible(frustum, camPosVec);
+            char d[160];
+            sprintf_s(d, "[GimmickRender] id=%d visible=%d hasVIB=%d\n",
+                obj->GetId(), vis ? 1 : 0, dm->GetVertexIndexBuffer() ? 1 : 0);
+            OutputDebugStringA(d);
+        }
+
         if (cam && !obj->IsVisible(frustum, camPosVec)) continue;
 
         auto mesh = obj->GetComponent<Mesh>();
@@ -106,7 +116,8 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
         else
         {
             UINT matIndex = mesh->GetMaterial() ? mesh->GetMaterial()->GetMaterialIndex() : 0;
-            auto objConst = MakeObjectConstants(world, 1, 0, matIndex, dissolveAmount, dissolveNoise);
+            int hasTexture = mesh->IsUnlit() ? 0 : 1;	// unlit=정점 컬러 단색
+            auto objConst = MakeObjectConstants(world, hasTexture, 0, matIndex, dissolveAmount, dissolveNoise);
             size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
             objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
             cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);

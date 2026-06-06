@@ -22,6 +22,7 @@
 #include "EffectManager.h"
 #include "SwordSpecialEffectComponent.h"
 #include "DissolveComponent.h"
+#include "GimmickDiamond.h"
 
 #include "NetId.h"
 #include "NetHelper.h"
@@ -56,6 +57,9 @@ void Scene::Update(const float deltaTime)
     }
 
     UpdateScene(deltaTime);
+
+    for (auto& [id, diamond] : activeGimmicks)
+        diamond->Update(deltaTime);
 
     UpdateDissolves();
 
@@ -419,6 +423,26 @@ void Scene::AddGameObject(shared_ptr<GameObject> obj)
 	gameObjects.push_back(obj);
 }
 
+void Scene::CreateGimmickPool(int count)
+{
+	for (int i = 0; i < count; ++i)
+	{
+		auto diamond = make_shared<GimmickDiamond>();
+		diamond->SetId(-1);	
+		diamond->Init(*coreRef, XMFLOAT4{ 0.25f, 0.85f, 0.95f, 1.0f });	
+		gimmickPool.push_back(diamond);
+		AddGameObject(diamond);
+	}
+}
+
+shared_ptr<GimmickDiamond> Scene::GetAvailableGimmick()
+{
+	for (auto& diamond : gimmickPool)
+		if (diamond->GetId() == -1)
+			return diamond;
+	return nullptr;
+}
+
 void Scene::HandleLoginSuccess(const Protocol::SC_LOGIN_SUCCESS_PACKET& success)
 {
 	NetId nid{ success.netid() };
@@ -747,29 +771,22 @@ void Scene::HandleMonsterCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PAC
 
 void Scene::HandleBossGimmickObjectSync(const Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& gimmickObject)
 {
-	// TODO: 50% 기믹 파괴 오브젝트 동기화
-	//       별도의 Add, Remove Packet 없이 해당 패킷으로 모두 동기화 함
-	const NetId bossNetId{ gimmickObject.bossnetid() };
-	const int bossId = bossNetId.GetId();
+	// 별도 Add/Remove 없이 이 패킷 하나로 갱신. (FinalScene에서만 수신)
+	// 메시는 씬 초기화 때 풀로 미리 생성됨 → 여기선 꺼내서 위치만 세팅.
+	const int objectId = NetId{ gimmickObject.objectnetid() }.GetId();
 
-	const uint32_t gimmickSeq = gimmickObject.gimmickseq();
+	if (auto it = activeGimmicks.find(objectId); it != activeGimmicks.end())
+	{
+		it->second->SyncFrom(gimmickObject);
+		return;
+	}
 
-	const NetId objectNetId{ gimmickObject.objectnetid() };
-	const int objectId = objectNetId.GetId();
+	auto diamond = GetAvailableGimmick();
+	if (!diamond) return;	// 풀 고갈(플레이어 수 초과)
 
-	const Protocol::BossGimmickObjectState objectState = gimmickObject.state();
-
-	const XMFLOAT3 objectPos{ gimmickObject.x(), gimmickObject.y(), gimmickObject.z() };
-	const float objectRadius = gimmickObject.radius();
-
-	const uint32_t objectCurHp = gimmickObject.curhp();
-	const uint32_t objectMaxHp = gimmickObject.maxhp();
-
-	char dbg[256];
-	sprintf_s(dbg, "[GimmickObj] boss=%d seq=%u obj=%d state=%d pos=(%.2f,%.2f,%.2f) r=%.2f hp=%u/%u\n",
-		bossId, gimmickSeq, objectId, (int)objectState,
-		objectPos.x, objectPos.y, objectPos.z, objectRadius, objectCurHp, objectMaxHp);
-	OutputDebugStringA(dbg);
+	diamond->SetId(objectId);
+	diamond->SyncFrom(gimmickObject);
+	activeGimmicks[objectId] = diamond;
 }
 
 void Scene::HandleBossGimmickZoneSync(const Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& gimmickZone)

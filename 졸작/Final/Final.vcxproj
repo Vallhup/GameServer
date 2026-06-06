@@ -239,6 +239,7 @@ exit 0</Command>
     <ClCompile Include="FlameComponent.cpp" />
     <ClCompile Include="FootDustComponent.cpp" />
     <ClCompile Include="FroxelManager.cpp" />
+    <ClCompile Include="GimmickDiamond.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LoadingSceneUIController.cpp" />
@@ -344,6 +345,7 @@ exit 0</Command>
     <ClInclude Include="FlameComponent.h" />
     <ClInclude Include="FootDustComponent.h" />
     <ClInclude Include="FroxelManager.h" />
+    <ClInclude Include="GimmickDiamond.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LoadingSceneUIController.h" />

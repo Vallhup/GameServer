@@ -3,7 +3,6 @@
 #include "PBR.hlsli"
 #include "Fog.hlsli"
 
-// D3D12 standard projection (LH, NDC z 0~1) 의 ndcZ → viewZ 역산
 float LinearizeDepth(float ndcZ, float zNear, float zFar)
 {
     return (zFar * zNear) / (zFar - ndcZ * (zFar - zNear));
@@ -34,6 +33,14 @@ float4 PSMain(LIGHTING_PS_IN input) : SV_Target
 
     float3 emission = rt2.rgb;
     float ao = rt2.a;
+    
+    if (ao > 1.5f)
+    {
+        float3 unlitColor = emission;
+        float4 unlitFog = fogTexture.Sample(linearSampler, input.uv);
+        unlitColor = unlitColor * unlitFog.a + unlitFog.rgb;
+        return float4(unlitColor, 1.0);
+    }
 
     float3 N = worldNormal;
     float3 V = normalize(cameraPosition - worldPos);

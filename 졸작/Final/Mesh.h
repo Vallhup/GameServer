@@ -15,7 +15,11 @@ public:
 	void SetMesh(DX12Core& core, const wstring& path);
 	void SetMesh2(DX12Core& core, const wstring& path);
 	void SetCollisionMesh(DX12Core& core, const wstring& path);
+	void SetProceduralMesh(DX12Core& core, const vector<Vertex>& vertices, const vector<UINT>& indices);
 	void ReleaseUploadBuffers();
+
+	void SetUnlit(bool in) { unlit = in; }
+	bool IsUnlit() const { return unlit; }
 
 	VertexIndexBuffer* GetVertexIndexBuffer() const { return vertexIndexBuffer.get(); }
 	const vector<SubMeshInfo>& GetSubMeshes() const { return subMeshes; }
@@ -52,6 +56,8 @@ private:
 
 	shared_ptr<VertexIndexBuffer> collisionMeshBuffer;
 	bool showCollisionMesh = false;
+
+	bool unlit = false;
 
 	shared_ptr<CachedMeshData> cachedRef;   
 

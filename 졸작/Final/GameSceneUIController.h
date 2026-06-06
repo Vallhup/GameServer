@@ -55,6 +55,7 @@ private:
 	void InitMapNameOverlay();
 	void InitPartyWindow();
 	void InitStatWindow();
+	void RefreshTitleRibbon();
 	void InitMapWindow();
 	void InitEscWindow();
 	void InitKeyGuide();
@@ -94,6 +95,8 @@ private:
 	shared_ptr<ImageUI> statusArrowLeft;
 	shared_ptr<ImageUI> statusArrowRight;
 	shared_ptr<TextUI>  statusStatText;
+	shared_ptr<TextUI>  statusTitleText;
+	uint64_t            lastTitleRevision = 0;
 	wstring             lastStatText;
 	shared_ptr<ImageUI> localCharBarsBack;
 	shared_ptr<ImageUI> localCharHpBar;
