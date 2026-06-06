@@ -75,6 +75,33 @@ namespace
 		}
 	}
 
+	void ApplyGimmickLethalFailure(
+		SystemContext& ctx,
+		Entity victim,
+		Entity instigator)
+	{
+		CombatStatStateComp* const stats =
+			ctx.ecs.GetMutableComponent<CombatStatStateComp>(victim);
+		if (stats == nullptr || stats->currentHp <= 0)
+		{
+			return;
+		}
+
+		stats->currentHp = 0;
+		MarkDirtyIfPresent(ctx, victim, WorldDirtyType::Stat);
+
+		if (AbilityInterruptQueueComp* const interruptQueue =
+			ctx.ecs.GetMutableComponent<AbilityInterruptQueueComp>(victim))
+		{
+			interruptQueue->events.push_back(AbilityInterruptEvent{
+				.cause = AbilityTransitionCause::OnAttributeZero,
+				.instigator = instigator,
+				.frameIndex = ctx.runtime.FrameIndex(),
+				.priority = 1000
+			});
+		}
+	}
+
 	void SetStage(
 		BossGimmickStateComp& gimmick,
 		BossGimmickStage stage,
@@ -352,11 +379,11 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<17> BossGimmickSystem::kMetaStorage =
+const StaticSystemMetaStorage<18> BossGimmickSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<BossGimmickSystem>(),
 		"BossGimmickSystem",
-		std::array<AccessSpec, 17>
+		std::array<AccessSpec, 18>
 	{
 		WriteImmediate(ComponentRes<BossGimmickStateComp>()),
 		WriteImmediate(ComponentRes<AIActionRuntimeComp>()),
@@ -372,6 +399,7 @@ const StaticSystemMetaStorage<17> BossGimmickSystem::kMetaStorage =
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<DirtyFlagsComp>()),
 		WriteImmediate(ComponentRes<PendingBossGimmickReplicationComp>()),
+		WriteImmediate(ComponentRes<AbilityInterruptQueueComp>()),
 		ReadImmediate(ComponentRes<PendingDespawnTag>()),
 		ReadImmediate(ComponentRes<PendingWorldTransferTag>()),
 		WriteDeferred(CommandBufferRes()),
@@ -610,12 +638,7 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				continue;
 			}
 
-			if (CombatStatStateComp* stats =
-				ctx.ecs.GetMutableComponent<CombatStatStateComp>(player.entity))
-			{
-				stats->currentHp = 0;
-				MarkDirtyIfPresent(ctx, player.entity, WorldDirtyType::Stat);
-			}
+			ApplyGimmickLethalFailure(ctx, player.entity, boss);
 		}
 
 		CleanupGimmickObjects(ctx, boss, gimmick);
@@ -702,25 +725,11 @@ void BossGimmickSystem::TickFinalSafeZone(
 
 			if (!insideSafeZone)
 			{
-				if (CombatStatStateComp* stats =
-					ctx.ecs.GetMutableComponent<CombatStatStateComp>(
-						player.entity))
-				{
-					stats->currentHp = 0;
-					MarkDirtyIfPresent(
-						ctx,
-						player.entity,
-						WorldDirtyType::Stat);
-				}
+				ApplyGimmickLethalFailure(ctx, player.entity, boss);
 			}
 		}
 
-		if (CombatStatStateComp* bossStats =
-			ctx.ecs.GetMutableComponent<CombatStatStateComp>(boss))
-		{
-			bossStats->currentHp = 0;
-			MarkDirtyIfPresent(ctx, boss, WorldDirtyType::Stat);
-		}
+		ApplyGimmickLethalFailure(ctx, boss, Entity::Null());
 
 		CleanupSafeZones(ctx, boss, gimmick);
 		gimmick.finalSafeZoneResolved = true;
