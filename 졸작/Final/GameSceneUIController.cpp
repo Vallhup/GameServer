@@ -14,6 +14,7 @@
 #include "SoundManager.h"
 #include "ImGuiManager.h"
 #include "ClientPartyState.h"
+#include "ClientTitleState.h"
 #include "ClientWorldTransitionController.h"
 #include "NetworkManager.h"
 #include "NetId.h"
@@ -631,6 +632,40 @@ void GameSceneUIController::InitStatWindow()
 	statusStatText->SetPosition(WinSize.x * 0.60f, WinSize.y * 0.28f);
 	statusStatText->SetText(L"");
 	widgets.push_back(statusStatText);
+
+	statusTitleText = make_shared<TextUI>(uiManager, L"StatusTitleText", L"MalgunGothic");
+	const float titleScale = WinSize.y / 1080.0f * 0.5f;
+	statusTitleText->SetScale(titleScale);
+	statusTitleText->SetTextColor(Colors::White);
+	statusTitleText->SetPosition(ribbonX + ribbonWidth * 0.5f, ribbonY + ribbonHeight * 0.5f);
+	statusTitleText->SetText(L"");
+	widgets.push_back(statusTitleText);
+}
+
+void GameSceneUIController::RefreshTitleRibbon()
+{
+	if (!statusTitleText) return;
+
+	uint32_t titleId = 0;
+	if (ClientTitleState* titleState = ENGINE.GetTitleState())
+		titleId = titleState->GetSelectedTitleId();
+
+	const wstring name = ClientTitleState::GetDisplayName(titleId);
+	statusTitleText->SetText(name);
+
+	const float ribbonWidth  = WinSize.x * 0.21f;
+	const float ribbonHeight = WinSize.y * 0.105f;
+	const float ribbonX = WinSize.x * 0.30f - ribbonWidth * 0.5f;
+	const float ribbonY = WinSize.y * 0.78f;
+	const float titleScale = WinSize.y / 1080.0f * 0.5f;
+
+	float textW = 0.0f;
+	if (auto* fd = uiManager->GetFont(L"MalgunGothic"))
+		textW = XMVectorGetX(fd->font->MeasureString(name.c_str(), false)) * titleScale;
+
+	statusTitleText->SetPosition(
+		ribbonX + (ribbonWidth - textW) * 0.5f,
+		ribbonY + ribbonHeight * 0.5f - 27.0f * titleScale);
 }
 
 void GameSceneUIController::InitMapWindow()
@@ -881,6 +916,17 @@ void GameSceneUIController::Update(float deltaTime)
 
 			if (statusStatText)
 				statusStatText->SetText(next == ImageUIState::Hidden ? L"" : lastStatText);
+
+			if (next == ImageUIState::Hidden)
+			{
+				statusTitleText->SetText(L"");
+			}
+			else
+			{
+				NETWORK_MANAGER->SendStatUiOpenedPacket();
+				lastTitleRevision = 0;
+				RefreshTitleRibbon();
+			}
 		}
 	}
 
@@ -1071,12 +1117,21 @@ void GameSceneUIController::Update(float deltaTime)
 		if (statusArrowLeft->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
 			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
-			OutputDebugStringA("[Stat] Left arrow clicked\n");
+			if (ClientTitleState* titleState = ENGINE.GetTitleState())
+				titleState->SelectPrevious();
 		}
 		if (statusArrowRight->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT))
 		{
 			SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
-			OutputDebugStringA("[Stat] Right arrow clicked\n");
+			if (ClientTitleState* titleState = ENGINE.GetTitleState())
+				titleState->SelectNext();
+		}
+
+		if (ClientTitleState* titleState = ENGINE.GetTitleState();
+			titleState && titleState->GetRevision() != lastTitleRevision)
+		{
+			lastTitleRevision = titleState->GetRevision();
+			RefreshTitleRibbon();
 		}
 	}
 

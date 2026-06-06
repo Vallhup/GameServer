@@ -93,6 +93,8 @@ void FinalBattleScene::InitializeSceneMonsters()
 {
 	const XMFLOAT3 monsterSpawn = { 22.f, SampleHeightAt(22.f, 22.f), 22.f };
 	CreateMonsters(MonsterType::Boss, monsterSpawn, 1);
+
+	CreateGimmickPool(MAX_CHARACTER_COUNT);	
 }
 
 void FinalBattleScene::UpdateScene(const float deltaTime)

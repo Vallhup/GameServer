@@ -11,6 +11,7 @@ class SceneManager;
 enum class SceneType;
 class MainCharacter;
 class AnimationSet;
+class GimmickDiamond;
 
 enum class CharacterType { Knight, Lancer, Paladin };
 enum class MonsterType { Boss, Imp, DemonStriker, DemonExecutioner, BigDemonWarrior, Tank };
@@ -60,10 +61,12 @@ protected:
 
 	void CreateCharacterPool(CharacterType type, int count = MAX_CHARACTER_COUNT);
 	void CreateMonsters(MonsterType type, const XMFLOAT3& position, int count = 1);
+	void CreateGimmickPool(int count);	
 
 private:
 	shared_ptr<MainCharacter> GetAvailableCharacter(CharacterType type) const;
 	shared_ptr<GameObject> GetAvailableMonster(MonsterType type) const;
+	shared_ptr<GimmickDiamond> GetAvailableGimmick();
 
 	shared_ptr<MainCharacter> CreateCharacterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)());
 	shared_ptr<GameObject> CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)(), bool twoSided = true);
@@ -99,6 +102,9 @@ protected:
 
 	unordered_map<int, shared_ptr<GameObject>> activeCharacters;
 	unordered_map<int, MonsterType> activeMonsterTypes;
+
+	vector<shared_ptr<GimmickDiamond>> gimmickPool;
+	unordered_map<int, shared_ptr<GimmickDiamond>> activeGimmicks;
 	shared_ptr<MainCharacter> myPlayer;
 	CharacterType myCharacterType = CharacterType::Knight;
 

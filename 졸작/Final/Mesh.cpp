@@ -218,6 +218,21 @@ void Mesh::SetMesh2(DX12Core& core, const wstring& path)
         OutputDebugStringA("Cannot create FBX Mesh for rendering!\n");
 }
 
+void Mesh::SetProceduralMesh(DX12Core& core, const vector<Vertex>& vertices, const vector<UINT>& indices)
+{
+    vertexIndexBuffer = make_shared<VertexIndexBuffer>();
+    vertexIndexBuffer->Initialize(
+        core.GetDevice(),
+        core.GetActiveCmdList(),
+        vertices,
+        indices
+    );
+
+    BoundingBox localBox;
+    BoundingBox::CreateFromPoints(localBox, vertices.size(), &vertices[0].pos, sizeof(Vertex));
+    GetGameObject()->SetLocalBoundingBox(localBox);
+}
+
 void Mesh::StoreCollisionTriangles(const MeshData& mesh)
 {
     if (!cachedRef || cachedRef->hasAnimation) return;   
