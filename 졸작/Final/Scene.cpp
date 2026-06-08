@@ -787,6 +787,10 @@ void Scene::HandleBossGimmickObjectSync(const Protocol::SC_BOSS_GIMMICK_OBJECT_S
 	diamond->SetId(objectId);
 	diamond->SyncFrom(gimmickObject);
 	activeGimmicks[objectId] = diamond;
+
+	// TODO: Hp UI 동기화
+	gimmickObject.curhp();
+	gimmickObject.maxhp();
 }
 
 void Scene::HandleBossGimmickZoneSync(const Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& gimmickZone)

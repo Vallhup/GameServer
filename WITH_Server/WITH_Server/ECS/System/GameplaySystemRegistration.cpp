@@ -17,6 +17,7 @@
 #include "Phase4/ComputeAbilityMoveDeltaSystem.h"
 #include "Phase4/ComputeLocomotionMoveDeltaSystem.h"
 #include "Phase5/ResolveCharacterOverlapSystem.h"
+#include "Phase5/ResolveGimmickObjectOverlapSystem.h"
 #include "Phase5/ResolveNavMeshBodyConstraintSystem.h"
 #include "Phase6/MarkTransferPendingSystem.h"
 #include "Phase6/AdvanceProjectileSystem.h"
@@ -36,6 +37,7 @@
 #include "Phase8/RecoverStaminaSystem.h"
 #include "Phase8/ResolveGameplayEffectStateSystem.h"
 #include "Phase8/ResolveDeathAndDespawnSystem.h"
+#include "Phase8/SyncGimmickObjectHpSystem.h"
 #include "Phase9/CollectReplicationTodoSourceSystem.h"
 #include "SystemManager.h"
 #include "WorldRuntime.h"
@@ -79,6 +81,7 @@ void GameplaySystemRegistrar::RegisterSystems(TargetT& target) const
 	target.RegisterSystem<ApplyMovementDeltaSystem>();
 
 	target.RegisterSystem<ResolveCharacterOverlapSystem>();
+	target.RegisterSystem<ResolveGimmickObjectOverlapSystem>();
 	target.RegisterSystem<ResolveNavMeshBodyConstraintSystem>();
 
 	target.RegisterSystem<ResolvePortalTriggerSystem>();
@@ -95,6 +98,7 @@ void GameplaySystemRegistrar::RegisterSystems(TargetT& target) const
 	target.RegisterSystem<ResolveStaticBoxHitSystem>();
 
 	target.RegisterSystem<CommitCombatResultSystem>();
+	target.RegisterSystem<SyncGimmickObjectHpSystem>();
 	target.RegisterSystem<RecoverStaminaSystem>();
 	target.RegisterSystem<CommitAbilityTimelineEventSystem>();
 	target.RegisterSystem<ResolveGameplayEffectStateSystem>();

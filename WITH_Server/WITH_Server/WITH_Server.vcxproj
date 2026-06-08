@@ -222,6 +222,7 @@
     <ClCompile Include="ECS\System\Phase4\ComputeAbilityMoveDeltaSystem.cpp" />
     <ClCompile Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.cpp" />
     <ClCompile Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase5\ResolveGimmickObjectOverlapSystem.cpp" />
     <ClCompile Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.cpp" />
     <ClCompile Include="ECS\System\Phase6\MarkTransferPendingSystem.cpp" />
     <ClCompile Include="ECS\System\Phase6\AdvanceProjectileSystem.cpp" />
@@ -240,6 +241,7 @@
     <ClCompile Include="ECS\System\Phase8\RecoverStaminaSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\ResolveGameplayEffectStateSystem.cpp" />
     <ClCompile Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.cpp" />
+    <ClCompile Include="ECS\System\Phase8\SyncGimmickObjectHpSystem.cpp" />
     <ClCompile Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.cpp" />
     <ClCompile Include="FrameworkFrameEventHarvester.cpp" />
     <ClCompile Include="FrameworkRuntime.cpp" />
@@ -379,6 +381,7 @@
     <ClInclude Include="ECS\System\Phase4\ComputeAbilityMoveDeltaSystem.h" />
     <ClInclude Include="ECS\System\Phase4\ComputeLocomotionMoveDeltaSystem.h" />
     <ClInclude Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.h" />
+    <ClInclude Include="ECS\System\Phase5\ResolveGimmickObjectOverlapSystem.h" />
     <ClInclude Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.h" />
     <ClInclude Include="ECS\System\Phase6\MarkTransferPendingSystem.h" />
     <ClInclude Include="ECS\System\Phase6\AdvanceProjectileSystem.h" />
@@ -400,6 +403,7 @@
     <ClInclude Include="ECS\System\Phase8\ResolveGameplayEffectStateSystem.h" />
     <ClInclude Include="ECS\System\Phase8\PlayerDeathStatePolicy.h" />
     <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h" />
+    <ClInclude Include="ECS\System\Phase8\SyncGimmickObjectHpSystem.h" />
     <ClInclude Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.h" />
     <ClInclude Include="ECS\Components\GameplayContentComponents.h" />
     <ClInclude Include="FrameworkFrameEventHarvester.h" />

@@ -191,6 +191,9 @@
     <ClCompile Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.cpp">
       <Filter>ECS\System\Phase5</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\System\Phase5\ResolveGimmickObjectOverlapSystem.cpp">
+      <Filter>ECS\System\Phase5</Filter>
+    </ClCompile>
     <ClCompile Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.cpp">
       <Filter>ECS\System\Phase5</Filter>
     </ClCompile>
@@ -243,6 +246,9 @@
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.cpp">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClCompile>
+    <ClCompile Include="ECS\System\Phase8\SyncGimmickObjectHpSystem.cpp">
       <Filter>ECS\System\Phase8</Filter>
     </ClCompile>
     <ClCompile Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.cpp">
@@ -622,6 +628,9 @@
     <ClInclude Include="ECS\System\Phase5\ResolveCharacterOverlapSystem.h">
       <Filter>ECS\System\Phase5</Filter>
     </ClInclude>
+    <ClInclude Include="ECS\System\Phase5\ResolveGimmickObjectOverlapSystem.h">
+      <Filter>ECS\System\Phase5</Filter>
+    </ClInclude>
     <ClInclude Include="ECS\System\Phase5\ResolveNavMeshBodyConstraintSystem.h">
       <Filter>ECS\System\Phase5</Filter>
     </ClInclude>
@@ -683,6 +692,9 @@
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase8\ResolveDeathAndDespawnSystem.h">
+      <Filter>ECS\System\Phase8</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\System\Phase8\SyncGimmickObjectHpSystem.h">
       <Filter>ECS\System\Phase8</Filter>
     </ClInclude>
     <ClInclude Include="ECS\System\Phase9\CollectReplicationTodoSourceSystem.h">

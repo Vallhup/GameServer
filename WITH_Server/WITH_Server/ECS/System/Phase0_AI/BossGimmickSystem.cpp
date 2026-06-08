@@ -15,6 +15,7 @@ namespace
 	constexpr float kPhaseTransitionObjectRadiusJitter = 2.0f;
 	constexpr float kPhaseTransitionObjectHeight = 2.0f;
 	constexpr float kPhaseTransitionObjectHalfWidth = 0.75f;
+	constexpr float kPhaseTransitionObjectVerticalOffset = 0.8f;
 	constexpr float kPhaseTransitionImmunitySec = 12.0f;
 
 	constexpr float kFinalSafeZoneRadius = 1.25f;
@@ -506,9 +507,10 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				CollectAlivePlayers(ctx);
 			for (size_t i = 0; i < players.size(); ++i)
 			{
-				const XMFLOAT3 position = 
+				XMFLOAT3 position =
 					BuildRingPosition(bossTransform->position, i, players.size(),
 						kPhaseTransitionObjectRadius, kPhaseTransitionObjectRadiusJitter);
+				position.y += kPhaseTransitionObjectVerticalOffset;
 
 				const Entity object = SpawnGimmickObject(
 					ctx,
