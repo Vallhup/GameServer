@@ -371,6 +371,23 @@ namespace GameplaySystemUtil
 		return lhsDef->profile.faction == rhsDef->profile.faction;
 	}
 
+	inline bool AllowsSameFactionCombat(const WorldRuntime& runtime) noexcept
+	{
+		const WorldDef* const worldDef = runtime.GetDef();
+		return worldDef != nullptr && worldDef->id == WorldDefId::Pvp;
+	}
+
+	inline bool ShouldBlockSameFactionCombat(
+		const WorldRuntime& runtime,
+		const ECSView& ecs,
+		Entity lhs,
+		Entity rhs)
+	{
+		return
+			!AllowsSameFactionCombat(runtime) &&
+			IsSameFaction(ecs, lhs, rhs);
+	}
+
 	inline void ClearAbilityTimelineAdvance(AbilityTimelineAdvanceComp& advance)
 	{
 		advance.abilityId = InvalidAbilityId;

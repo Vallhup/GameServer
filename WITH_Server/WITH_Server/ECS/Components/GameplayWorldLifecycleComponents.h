@@ -16,6 +16,11 @@ struct PendingMonsterKillEventComp : Component
 	bool        pending{ false };
 };
 
+struct PendingFinalBossDefeatedEventComp : Component
+{
+	bool pending{ false };
+};
+
 struct PendingPlayerDeathCountEventComp : Component
 {
 	// 사망 통계(DB) 소비용 1회성 플래그. RecordCombatStatisticsSystem 이 소비/초기화한다.

@@ -6,6 +6,7 @@
 #include <memory>
 #include <span>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "FrameworkRuntime.h"
@@ -83,6 +84,11 @@ public:
 		SessionId sessionId,
 		uint32_t requestId) override;
 
+	bool SubmitFinalClearPvpChoice(
+		SessionId sessionId,
+		uint64_t voteId,
+		bool choosePvp);
+
 	bool MarkClientWorldTransitionReady(
 		SessionId sessionId,
 		TransferId transferId) override;
@@ -97,6 +103,24 @@ private:
 		WorldId targetWorldId{ WorldId::Invalid() };
 		NetId playerNetId{ NetId::Invalid() };
 		uint32_t mapResourceId{ 0 };
+	};
+
+	struct FinalClearChoiceVote
+	{
+		uint64_t voteId{ 0 };
+		PartyId partyId{ 0 };
+		WorldId sourceWorldId{ WorldId::Invalid() };
+		std::unordered_set<SessionId> eligibleSessions;
+		std::unordered_map<SessionId, bool> choices;
+		double deadlineSec{ 0.0 };
+	};
+
+	struct ActivePvpRound
+	{
+		PartyId partyId{ 0 };
+		WorldId worldId{ WorldId::Invalid() };
+		double startedAtSec{ 0.0 };
+		bool ending{ false };
 	};
 
 private:
@@ -118,6 +142,13 @@ private:
 		const WorldTransferEventBatch& transferEvents);
 	bool ApplyPartyDeathCountEvents(
 		const FrameworkRuntime::FrameResult& frameResult);
+	bool ApplyFinalBossDefeatedEvents(
+		const FrameworkRuntime::FrameResult& frameResult);
+	void TickFinalClearChoiceVotes();
+	bool StartFinalClearChoiceVote(WorldId sourceWorldId);
+	bool ResolveFinalClearChoiceVote(uint64_t voteId, WorldDefId targetWorldDefId);
+	bool RequestPartyWorldTransfer(PartyId partyId, WorldDefId targetWorldDefId);
+	bool ProcessPvpRoundEndConditions();
 	bool StagePartyDeathCountSync(
 		PartyId partyId,
 		const PartyDeathCountState& deathCount);
@@ -164,6 +195,10 @@ private:
 	std::unordered_map<TransferId, std::unordered_map<SessionId, uint32_t>>
 		_worldTransitionRequestIds;
 	std::unordered_map<SessionId, PendingClientTransition> _pendingClientTransitions;
+	std::unordered_map<uint64_t, FinalClearChoiceVote> _finalClearChoiceVotes;
+	std::unordered_map<uint64_t, uint64_t> _finalClearChoiceVoteByWorld;
+	std::unordered_map<uint64_t, ActivePvpRound> _activePvpRounds;
+	uint64_t _nextFinalClearChoiceVoteId{ 1 };
 
 	uint64_t _tickCount{ 0 };
 	uint64_t _frameIndex{ 0 };

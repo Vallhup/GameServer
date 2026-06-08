@@ -129,6 +129,25 @@ void FrameworkFrameEventHarvester::Harvest(
 			deathEvent.decisionPending = false;
 		}
 
+		for (auto [entity, finalBossDefeated] :
+			view.MutableView<PendingFinalBossDefeatedEventComp>())
+		{
+			if (!finalBossDefeated.pending)
+			{
+				continue;
+			}
+
+			const NetId bossNetId = netIdRegistry.FindNetId(worldId, entity);
+			outEvents.finalBossDefeats.push_back(
+				FrameworkRuntime::FrameResult::FinalBossDefeatedEvent{
+					.worldId = worldId,
+					.bossEntity = entity,
+					.bossNetId = bossNetId
+				});
+
+			finalBossDefeated.pending = false;
+		}
+
 		for (auto [owner, bossGimmickEvents] :
 			view.MutableView<PendingBossGimmickReplicationComp>())
 		{

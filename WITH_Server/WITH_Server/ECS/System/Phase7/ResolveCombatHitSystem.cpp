@@ -245,7 +245,11 @@ void ResolveCombatHitSystem::Execute(SystemContext& ctx)
 		{
 			if (victim == attacker ||
 				HasBlockingPendingState(ctx.ecs, victim) ||
-				IsSameFaction(ctx.ecs, attacker, victim) ||
+				ShouldBlockSameFactionCombat(
+					ctx.runtime,
+					ctx.ecs,
+					attacker,
+					victim) ||
 				victimActivation.hasInvulnerabilityWindow)
 			{
 				continue;

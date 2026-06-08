@@ -287,7 +287,11 @@ namespace
 		{
 			if ((!def.includeOwner && victim == source) ||
 				HasBlockingPendingState(ctx.ecs, victim) ||
-				IsSameFaction(ctx.ecs, source, victim) ||
+				ShouldBlockSameFactionCombat(
+					ctx.runtime,
+					ctx.ecs,
+					source,
+					victim) ||
 				victimActivation.hasInvulnerabilityWindow ||
 				(def.hitOncePerAbilityInstance && IsDeduped(dedup, victim)))
 			{

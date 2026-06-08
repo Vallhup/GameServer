@@ -91,6 +91,13 @@ public:
 			NetId netId{ NetId::Invalid() };
 		};
 
+		struct FinalBossDefeatedEvent
+		{
+			WorldId worldId{ WorldId::Invalid() };
+			Entity bossEntity{ Entity::Null() };
+			NetId bossNetId{ NetId::Invalid() };
+		};
+
 		struct BossGimmickObjectSyncEvent
 		{
 			WorldId worldId{ WorldId::Invalid() };
@@ -125,6 +132,7 @@ public:
 			std::vector<EntityDespawnEvent> despawns;
 			std::vector<CombatImpactEvent> combatImpacts;
 			std::vector<PlayerDeathCountEvent> playerDeathCounts;
+			std::vector<FinalBossDefeatedEvent> finalBossDefeats;
 			std::vector<BossGimmickObjectSyncEvent> bossGimmickObjects;
 			std::vector<BossGimmickZoneSyncEvent> bossGimmickZones;
 
@@ -134,6 +142,7 @@ public:
 				despawns.clear();
 				combatImpacts.clear();
 				playerDeathCounts.clear();
+				finalBossDefeats.clear();
 				bossGimmickObjects.clear();
 				bossGimmickZones.clear();
 			}

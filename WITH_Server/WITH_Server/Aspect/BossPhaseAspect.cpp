@@ -18,6 +18,7 @@ void BossPhaseAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<SafeZoneComp>();
 	runtime.RegisterStorage<BossGimmickImmunityComp>();
 	runtime.RegisterStorage<PendingBossGimmickReplicationComp>();
+	runtime.RegisterStorage<PendingFinalBossDefeatedEventComp>();
 }
 
 void BossPhaseAspect::Attach(
@@ -42,6 +43,10 @@ void BossPhaseAspect::Attach(
 	runtime.DeferredUpsertComponent<PendingBossGimmickReplicationComp>(
 		entity,
 		PendingBossGimmickReplicationComp{});
+
+	runtime.DeferredUpsertComponent<PendingFinalBossDefeatedEventComp>(
+		entity,
+		PendingFinalBossDefeatedEventComp{});
 }
 
 bool BossPhaseAspect::Validate(

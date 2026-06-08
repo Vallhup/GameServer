@@ -17,6 +17,7 @@ void PlayerControlAspect::RegisterStorages(WorldRuntime& runtime) const
 	runtime.RegisterStorage<PlayerNetworkCompensationComp>();
 	runtime.RegisterStorage<ConsumableInventoryComp>();
 	runtime.RegisterStorage<PlayerDeathCountConsumedTag>();
+	runtime.RegisterStorage<PendingMonsterKillEventComp>();
 	runtime.RegisterStorage<PendingPlayerDeathCountEventComp>();
 	runtime.RegisterStorage<PlayerDeathStateComp>();
 }
@@ -52,6 +53,10 @@ void PlayerControlAspect::Attach(
 	runtime.DeferredUpsertComponent<PendingPlayerDeathCountEventComp>(
 		entity,
 		PendingPlayerDeathCountEventComp{});
+
+	runtime.DeferredUpsertComponent<PendingMonsterKillEventComp>(
+		entity,
+		PendingMonsterKillEventComp{});
 
 	runtime.DeferredUpsertComponent<PlayerDeathStateComp>(
 		entity,

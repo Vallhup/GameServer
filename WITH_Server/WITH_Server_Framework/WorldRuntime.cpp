@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "WorldRuntime.h"
 
+#include <algorithm>
 #include <array>
 #include <filesystem>
 #include <unordered_set>
@@ -604,35 +605,65 @@ bool WorldRuntime::ImportTransferContext(
 
 	outImportedEntities.reserve(sessionIds.size());
 
-	bool hasSpawnTransformOverride = false;
-	DirectX::XMFLOAT3 spawnPositionOverride{ 0.0f, 0.0f, 0.0f };
-	DirectX::XMFLOAT4 spawnRotationOverride{ 0.0f, 0.0f, 0.0f, 1.0f };
-	if (_def != nullptr &&
-		_def->map.defaultPlayerSpawnPointId != SpawnPointIds::None)
-	{
-		for (const SpawnPointDef& spawnPoint : _def->map.spawnPoints)
+	auto ResolveTransferSpawnOverride =
+		[this](
+			size_t transferIndex,
+			DirectX::XMFLOAT3& outPosition,
+			DirectX::XMFLOAT4& outRotation) noexcept
 		{
-			if (spawnPoint.id == _def->map.defaultPlayerSpawnPointId)
+			if (_def == nullptr)
 			{
-				hasSpawnTransformOverride = true;
-				spawnPositionOverride = DirectX::XMFLOAT3{
+				return false;
+			}
+
+			SpawnPointId spawnPointId = _def->map.defaultPlayerSpawnPointId;
+			if (_def->id == WorldDefId::Pvp)
+			{
+				const SpawnPointId pvpSpawnPoints[] = {
+					SpawnPointIds::PvpPlayerStartA,
+					SpawnPointIds::PvpPlayerStartB,
+					SpawnPointIds::PvpPlayerStartC
+				};
+				constexpr size_t pvpSpawnPointCount = 3;
+				spawnPointId =
+					pvpSpawnPoints[
+						std::min(
+							transferIndex,
+							pvpSpawnPointCount - 1)];
+			}
+
+			if (spawnPointId == SpawnPointIds::None)
+			{
+				return false;
+			}
+
+			for (const SpawnPointDef& spawnPoint : _def->map.spawnPoints)
+			{
+				if (spawnPoint.id != spawnPointId)
+				{
+					continue;
+				}
+
+				outPosition = DirectX::XMFLOAT3{
 					spawnPoint.position.x,
 					spawnPoint.position.y,
 					spawnPoint.position.z
 				};
-				spawnRotationOverride = DirectX::XMFLOAT4{
+				outRotation = DirectX::XMFLOAT4{
 					spawnPoint.rotation.x,
 					spawnPoint.rotation.y,
 					spawnPoint.rotation.z,
 					spawnPoint.rotation.w
 				};
-				break;
+				return true;
 			}
-		}
-	}
 
-	for (const TransferEntitySnapshot& entitySnapshot : entities)
+			return false;
+		};
+
+	for (size_t importIndex = 0; importIndex < entities.size(); ++importIndex)
 	{
+		const TransferEntitySnapshot& entitySnapshot = entities[importIndex];
 		const uint32_t sessionId = entitySnapshot.sessionId;
 		Entity targetEntity = ReserveEntity();
 		if (targetEntity.IsNull() || IsFaulted())
@@ -654,6 +685,14 @@ bool WorldRuntime::ImportTransferContext(
 					"ImportTransferContext encountered an unknown transfer serializer type.");
 				return false;
 			}
+
+			DirectX::XMFLOAT3 spawnPositionOverride{ 0.0f, 0.0f, 0.0f };
+			DirectX::XMFLOAT4 spawnRotationOverride{ 0.0f, 0.0f, 0.0f, 1.0f };
+			const bool hasSpawnTransformOverride =
+				ResolveTransferSpawnOverride(
+					importIndex,
+					spawnPositionOverride,
+					spawnRotationOverride);
 
 			const WorldTransferImportContext importContext{
 				.targetRuntime = *this,

@@ -10,6 +10,7 @@
 #include "ECS/GameplayRuntimeComponents.h"
 #include "GameDataCatalog.h"
 #include "IWorldTransferSerializer.h"
+#include "WorldDef.h"
 #include "WorldRuntime.h"
 
 namespace
@@ -112,7 +113,19 @@ namespace
 			params.sessionId = context.sessionId;
 			if (payload.hasCombatStats)
 			{
-				params.combatStatsOverride = payload.combatStats;
+				CombatStatInitialState combatStats = payload.combatStats;
+				const WorldDef* const targetDef = context.targetRuntime.GetDef();
+				if (targetDef != nullptr &&
+					(targetDef->id == WorldDefId::Plaza ||
+						targetDef->id == WorldDefId::Pvp))
+				{
+					combatStats.currentHp = combatStats.maxHp > 0
+						? combatStats.maxHp
+						: 1;
+					combatStats.currentStamina = combatStats.maxStamina;
+					combatStats.currentPoise = combatStats.maxPoise;
+				}
+				params.combatStatsOverride = combatStats;
 			}
 
 			GetGlobalCharacterAspectRegistry().Assemble(

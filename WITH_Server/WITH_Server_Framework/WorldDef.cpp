@@ -651,26 +651,64 @@ WorldDef CreatePvpWorldDef(WorldExecutionModelKey executionModelKey)
 		},
 
 		.map = MapDef{
-			.resourceId = 5,
+			.resourceId = 4,
 			.defaultPlayerSpawnPointId = SpawnPointIds::PvpPlayerStartA,
 			.spawnPoints = {
 				SpawnPointDef{
 					.id = SpawnPointIds::PvpPlayerStartA,
 					.name = "Pvp.PlayerStart.A",
-					.position = WorldVec3Def{ -5.0f, 5.0f, 0.0f },
+					.position = WorldVec3Def{ -8.0f, 5.0f, -42.0f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 				SpawnPointDef{
 					.id = SpawnPointIds::PvpPlayerStartB,
 					.name = "Pvp.PlayerStart.B",
-					.position = WorldVec3Def{ 5.0f, 5.0f, 0.0f },
+					.position = WorldVec3Def{ 8.0f, 5.0f, -42.0f },
+					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
+				},
+				SpawnPointDef{
+					.id = SpawnPointIds::PvpPlayerStartC,
+					.name = "Pvp.PlayerStart.C",
+					.position = WorldVec3Def{ 0.0f, 5.0f, -30.0f },
 					.rotation = WorldQuatDef{ 0.0f, 0.0f, 0.0f, 1.0f },
 				},
 			},
-			// TODO(content): add arena-specific navmesh and team spawn groups.
-			.navMesh = std::nullopt,
-			.terrainHeight = std::nullopt,
-			.navigationProfile = std::nullopt,
+			.navMesh = MapNavMeshDef
+			{
+				.navMeshBinPath = "../Map/Cathedral_NavMesh_v3.bin",
+				.agentRadius = kUnityNavMeshAgentRadius,
+				.agentHeight = kUnityNavMeshAgentHeight,
+				.agentMaxClimb = kUnityNavMeshAgentMaxClimb,
+				.agentMaxSlope = kUnityNavMeshAgentMaxSlope
+			},
+			.terrainHeight = TerrainHeightRawDef
+			{
+				.path = "../Map/Cathedral_Terrain.raw",
+				.width = 2049,
+				.height = 2049,
+				.originX = -57.9f,
+				.originZ = -102.2f,
+				.rotationYDegrees = 0.0f,
+				.cellSizeX = 120.0f / 2048.0f,
+				.cellSizeZ = 120.0f / 2048.0f,
+				.heightScale = 600.0f / 65535.0f,
+				.heightOffset = 0.0f,
+				.flipZ = false,
+				.sampleFormat = TerrainHeightSampleFormat::UInt16LE,
+			},
+			.navigationProfile = NavigationProfileDef
+			{
+				.id = 0,
+				.nearestPolyExtentXZ = 2.0f,
+				.nearestPolyExtentY = 4.0f,
+				.navMeshSurfaceYOffset = 0.0f,
+				.queryFilter = NavigationQueryFilterDef
+				{
+					.walkableAreaCost = 1.0f,
+					.includeFlags = 0xFFFF,
+					.excludeFlags = 0
+				}
+			},
 			.navigationProfileId = std::nullopt,
 			.environmentTags = {},
 		},

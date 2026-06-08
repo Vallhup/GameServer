@@ -29,6 +29,7 @@ namespace
 {
 	constexpr const char* kLogCategory = "ServerApp";
 	constexpr uint32_t kWorldTransitionReasonDebug = 1;
+	constexpr double kFinalClearChoiceTimeoutSec = 15.0;
 
 	WorldDefId ResolveDemoNextWorld(WorldDefId currentWorldDefId) noexcept
 	{
@@ -384,6 +385,42 @@ TransferId ServerApp::RequestDemoWorldTransition(
 	}
 
 	return transferId;
+}
+
+bool ServerApp::SubmitFinalClearPvpChoice(
+	SessionId sessionId,
+	uint64_t voteId,
+	bool choosePvp)
+{
+	if (sessionId == 0 || voteId == 0)
+	{
+		return false;
+	}
+
+	const auto voteIt = _finalClearChoiceVotes.find(voteId);
+	if (voteIt == _finalClearChoiceVotes.end())
+	{
+		return false;
+	}
+
+	FinalClearChoiceVote& vote = voteIt->second;
+	if (!vote.eligibleSessions.contains(sessionId))
+	{
+		return false;
+	}
+
+	vote.choices[sessionId] = choosePvp;
+	if (choosePvp)
+	{
+		return ResolveFinalClearChoiceVote(voteId, WorldDefId::Pvp);
+	}
+
+	if (vote.choices.size() >= vote.eligibleSessions.size())
+	{
+		return ResolveFinalClearChoiceVote(voteId, WorldDefId::Plaza);
+	}
+
+	return true;
 }
 
 bool ServerApp::MarkClientWorldTransitionReady(
@@ -849,6 +886,22 @@ void ServerApp::RunWorldFrames(double dtSec)
 		return;
 	}
 
+	if (!ApplyFinalBossDefeatedEvents(frameResult))
+	{
+		FWLOG_ERROR(kLogCategory, "Final boss defeated event apply failed");
+		Stop();
+		return;
+	}
+
+	TickFinalClearChoiceVotes();
+
+	if (!ProcessPvpRoundEndConditions())
+	{
+		FWLOG_ERROR(kLogCategory, "PvP round end processing failed");
+		Stop();
+		return;
+	}
+
 	std::vector<SessionId> pendingTransitionSessions;
 	pendingTransitionSessions.reserve(_pendingClientTransitions.size());
 	for (const auto& [sessionId, pending] : _pendingClientTransitions)
@@ -1010,6 +1063,26 @@ void ServerApp::ApplyPartyWorldTransferEvents(
 				_framework.FindWorld(completed.targetWorldId);
 			const WorldDef* const targetDef =
 				targetWorld != nullptr ? targetWorld->GetDef() : nullptr;
+			const WorldInstance* const sourceWorld =
+				_framework.FindWorld(completed.sourceWorldId);
+			const WorldDef* const sourceDef =
+				sourceWorld != nullptr ? sourceWorld->GetDef() : nullptr;
+			if (sourceDef != nullptr && sourceDef->id == WorldDefId::Pvp)
+			{
+				_activePvpRounds.erase(completed.sourceWorldId.GetRaw());
+			}
+			if (targetDef != nullptr &&
+				targetDef->id == WorldDefId::Pvp &&
+				completed.partyId != 0)
+			{
+				_activePvpRounds[completed.targetWorldId.GetRaw()] =
+					ActivePvpRound{
+						.partyId = completed.partyId,
+						.worldId = completed.targetWorldId,
+						.startedAtSec = _nowSec,
+						.ending = false
+					};
+			}
 			if (targetDef != nullptr &&
 				IsDeathCountRunStartWorld(targetDef->id))
 			{
@@ -1140,6 +1213,262 @@ bool ServerApp::ApplyPartyDeathCountEvents(
 				static_cast<unsigned long long>(partyId),
 				deathEvent.sessionId,
 				static_cast<unsigned long long>(result.deathCount.revision));
+		}
+	}
+
+	return true;
+}
+
+bool ServerApp::ApplyFinalBossDefeatedEvents(
+	const FrameworkRuntime::FrameResult& frameResult)
+{
+	for (const auto& event : frameResult.events.finalBossDefeats)
+	{
+		if (!event.worldId.IsValid())
+		{
+			continue;
+		}
+
+		const WorldInstance* const world =
+			_framework.FindWorld(event.worldId);
+		const WorldDef* const worldDef =
+			world != nullptr ? world->GetDef() : nullptr;
+		if (worldDef == nullptr || worldDef->id != WorldDefId::Final)
+		{
+			continue;
+		}
+
+		if (!StartFinalClearChoiceVote(event.worldId))
+		{
+			FWLOG_WARN(kLogCategory,
+				"Final clear choice start failed (worldId=%u, bossNetId=%u)",
+				event.worldId.GetRaw(),
+				event.bossNetId.GetRaw());
+		}
+	}
+
+	return true;
+}
+
+void ServerApp::TickFinalClearChoiceVotes()
+{
+	std::vector<uint64_t> expiredVoteIds;
+	for (const auto& [voteId, vote] : _finalClearChoiceVotes)
+	{
+		if (_nowSec >= vote.deadlineSec)
+		{
+			expiredVoteIds.push_back(voteId);
+		}
+	}
+
+	for (uint64_t voteId : expiredVoteIds)
+	{
+		(void)ResolveFinalClearChoiceVote(voteId, WorldDefId::Plaza);
+	}
+}
+
+bool ServerApp::StartFinalClearChoiceVote(WorldId sourceWorldId)
+{
+	if (!sourceWorldId.IsValid())
+	{
+		return false;
+	}
+
+	if (_finalClearChoiceVoteByWorld.contains(sourceWorldId.GetRaw()))
+	{
+		return true;
+	}
+
+	std::vector<SessionId> worldSessionIds;
+	_sessionSystem.Flow().CollectSessionsInWorld(sourceWorldId, worldSessionIds);
+	if (worldSessionIds.empty())
+	{
+		return true;
+	}
+
+	const PartyId partyId =
+		_partyService.FindPartyBySession(worldSessionIds.front());
+	const PartyRecord* const party = _partyService.FindParty(partyId);
+	if (party == nullptr)
+	{
+		return true;
+	}
+
+	if (party->members.size() < 2)
+	{
+		return RequestPartyWorldTransfer(partyId, WorldDefId::Plaza);
+	}
+
+	FinalClearChoiceVote vote{};
+	vote.voteId = _nextFinalClearChoiceVoteId++;
+	vote.partyId = partyId;
+	vote.sourceWorldId = sourceWorldId;
+	vote.deadlineSec = _nowSec + kFinalClearChoiceTimeoutSec;
+
+	for (const PartyMember& member : party->members)
+	{
+		if (member.sessionId == 0 ||
+			member.presence != PartyMemberPresence::Online ||
+			_sessionSystem.Flow().FindCurrentWorldId(member.sessionId) !=
+				sourceWorldId ||
+			!CanBeginWorldTransfer(member.sessionId))
+		{
+			continue;
+		}
+
+		vote.eligibleSessions.insert(member.sessionId);
+	}
+
+	if (vote.eligibleSessions.size() < 2)
+	{
+		return RequestPartyWorldTransfer(partyId, WorldDefId::Plaza);
+	}
+
+	_finalClearChoiceVoteByWorld[sourceWorldId.GetRaw()] = vote.voteId;
+	_finalClearChoiceVotes.emplace(vote.voteId, std::move(vote));
+	return true;
+}
+
+bool ServerApp::ResolveFinalClearChoiceVote(
+	uint64_t voteId,
+	WorldDefId targetWorldDefId)
+{
+	const auto voteIt = _finalClearChoiceVotes.find(voteId);
+	if (voteIt == _finalClearChoiceVotes.end())
+	{
+		return false;
+	}
+
+	const PartyId partyId = voteIt->second.partyId;
+	const WorldId sourceWorldId = voteIt->second.sourceWorldId;
+	_finalClearChoiceVoteByWorld.erase(sourceWorldId.GetRaw());
+	_finalClearChoiceVotes.erase(voteIt);
+
+	return RequestPartyWorldTransfer(partyId, targetWorldDefId);
+}
+
+bool ServerApp::RequestPartyWorldTransfer(
+	PartyId partyId,
+	WorldDefId targetWorldDefId)
+{
+	if (partyId == 0 || targetWorldDefId == WorldDefId::None)
+	{
+		return false;
+	}
+
+	const SessionId leaderSessionId =
+		_partyService.FindLeaderSession(partyId);
+	if (leaderSessionId == 0)
+	{
+		return false;
+	}
+
+	WorldTargetSpec target{};
+	target.targetWorldDefId = targetWorldDefId;
+	target.instanceKey =
+		targetWorldDefId == WorldDefId::Pvp
+		? static_cast<uint64_t>(partyId)
+		: 0;
+
+	PartyWorldEntryResult entryResult =
+		_partyService.BeginWorldEntry(
+			leaderSessionId,
+			target,
+			_nowSec,
+			true);
+	if (!entryResult.Succeeded())
+	{
+		FWLOG_WARN(kLogCategory,
+			"Party world transfer begin failed (partyId=%llu, target=%u, error=%u)",
+			static_cast<unsigned long long>(partyId),
+			static_cast<uint32_t>(targetWorldDefId),
+			static_cast<uint32_t>(entryResult.error));
+		return false;
+	}
+
+	const TransferId transferId = _framework.RequestWorldTransfer(
+		std::span<const SessionId>(
+			entryResult.request.sessionIds.data(),
+			entryResult.request.sessionIds.size()),
+		entryResult.request.sourceWorldId,
+		targetWorldDefId,
+		target.instanceKey,
+		partyId,
+		true,
+		_nowSec);
+	if (transferId == 0)
+	{
+		(void)_partyService.FailWorldEntry(partyId, 0, _nowSec);
+		return false;
+	}
+
+	(void)_partyService.MarkWorldEntryEnqueued(
+		partyId,
+		transferId,
+		_nowSec);
+	return true;
+}
+
+bool ServerApp::ProcessPvpRoundEndConditions()
+{
+	for (auto& [worldIdRaw, round] : _activePvpRounds)
+	{
+		(void)worldIdRaw;
+		if (round.ending)
+		{
+			continue;
+		}
+
+		WorldInstance* const world = _framework.FindWorld(round.worldId);
+		const WorldDef* const worldDef =
+			world != nullptr ? world->GetDef() : nullptr;
+		if (world == nullptr || worldDef == nullptr)
+		{
+			round.ending = true;
+			continue;
+		}
+
+		if (worldDef->id != WorldDefId::Pvp)
+		{
+			round.ending = true;
+			continue;
+		}
+
+		ECSView view = world->GetRuntime().MakeView();
+		uint32_t playerCount = 0;
+		uint32_t aliveCount = 0;
+		for (auto [entity, player, stats] :
+			view.View<
+				PlayerControlIdentityComp,
+				CombatStatStateComp>())
+		{
+			if (player.ownerSessionId == 0 ||
+				view.HasComponent<PendingWorldTransferTag>(entity) ||
+				view.HasComponent<PendingDespawnTag>(entity))
+			{
+				continue;
+			}
+
+			++playerCount;
+			if (stats.currentHp > 0)
+			{
+				++aliveCount;
+			}
+		}
+
+		if (playerCount > 0 && aliveCount <= 1)
+		{
+			round.ending = true;
+			if (!RequestPartyWorldTransfer(round.partyId, WorldDefId::Plaza))
+			{
+				FWLOG_WARN(kLogCategory,
+					"PvP round end transfer failed (partyId=%llu, worldId=%u, alive=%u, players=%u)",
+					static_cast<unsigned long long>(round.partyId),
+					round.worldId.GetRaw(),
+					aliveCount,
+					playerCount);
+				return false;
+			}
 		}
 	}
 

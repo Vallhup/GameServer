@@ -48,11 +48,11 @@ namespace
 	}
 }
 
-const StaticSystemMetaStorage<20> CommitCombatResultSystem::kMetaStorage =
+const StaticSystemMetaStorage<21> CommitCombatResultSystem::kMetaStorage =
 	MakeMetaStorage(
 		SysTag<CommitCombatResultSystem>(),
 		"CommitCombatResultSystem",
-		std::array<AccessSpec, 20>
+		std::array<AccessSpec, 21>
 	{
 		WriteImmediate(ComponentRes<PendingCombatResultComp>()),
 		WriteImmediate(ComponentRes<CombatStatStateComp>()),
@@ -74,6 +74,7 @@ const StaticSystemMetaStorage<20> CommitCombatResultSystem::kMetaStorage =
 		ReadImmediate(ComponentRes<PlayerControlIdentityComp>()),
 		WriteImmediate(ComponentRes<PendingPlayerDeathCountEventComp>()),
 		WriteImmediate(ComponentRes<PendingMonsterKillEventComp>()),
+		WriteImmediate(ComponentRes<PendingFinalBossDefeatedEventComp>()),
 	});
 
 void CommitCombatResultSystem::Execute(SystemContext& ctx)
@@ -239,6 +240,18 @@ void CommitCombatResultSystem::Execute(SystemContext& ctx)
 				stats.currentHp = 1;
 				killerEntity = Entity::Null();
 				gimmick->Request(BossGimmickType::FinalSafeZone);
+			}
+		}
+
+		if (supportsFinalSafeZoneGimmick &&
+			previousStats.currentHp > 0 &&
+			stats.currentHp <= 0)
+		{
+			if (PendingFinalBossDefeatedEventComp* const finalBossDefeated =
+				ctx.ecs.GetMutableComponent<PendingFinalBossDefeatedEventComp>(
+					entity))
+			{
+				finalBossDefeated->pending = true;
 			}
 		}
 

@@ -391,6 +391,7 @@ bool ParseSpawnPointIdString(std::string_view text, SpawnPointId& outValue) noex
 	if (text == "FinalMonster01") { outValue = SpawnPointIds::FinalMonster01; return true; }
 	if (text == "PvpPlayerStartA") { outValue = SpawnPointIds::PvpPlayerStartA; return true; }
 	if (text == "PvpPlayerStartB") { outValue = SpawnPointIds::PvpPlayerStartB; return true; }
+	if (text == "PvpPlayerStartC") { outValue = SpawnPointIds::PvpPlayerStartC; return true; }
 	return false;
 }
 

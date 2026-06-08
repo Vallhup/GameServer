@@ -80,6 +80,7 @@ namespace SpawnPointIds
 
 	inline constexpr SpawnPointId PvpPlayerStartA = 500;
 	inline constexpr SpawnPointId PvpPlayerStartB = 501;
+	inline constexpr SpawnPointId PvpPlayerStartC = 502;
 }
 
 using WorldTransferProfileId = uint16_t;

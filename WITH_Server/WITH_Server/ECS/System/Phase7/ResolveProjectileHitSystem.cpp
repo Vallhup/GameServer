@@ -130,7 +130,11 @@ void ResolveProjectileHitSystem::Execute(SystemContext& ctx)
 			if (victim == projectile->owner ||
 				victim == projectileEntity ||
 				HasBlockingPendingState(ctx.ecs, victim) ||
-				IsSameFaction(ctx.ecs, projectile->owner, victim) ||
+				ShouldBlockSameFactionCombat(
+					ctx.runtime,
+					ctx.ecs,
+					projectile->owner,
+					victim) ||
 				victimActivation.hasInvulnerabilityWindow ||
 				IsDeduped(*dedup, victim))
 			{
