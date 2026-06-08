@@ -42,8 +42,8 @@
               "attackHit": {
                 "damageScale": 0.9,
                 "bonusDamage": 4,
-                "staminaDamageScale": 0.6,
-                "bonusStaminaDamage": 2,
+                "staminaDamageScale": 0.9,
+                "bonusStaminaDamage": 3,
                 "poiseDamageScale": 0,
                 "bonusPoiseDamage": 0,
                 "knockbackDistance": 0.35,
@@ -143,8 +143,8 @@
               "attackHit": {
                 "damageScale": 1.1,
                 "bonusDamage": 6,
-                "staminaDamageScale": 0.8,
-                "bonusStaminaDamage": 3,
+                "staminaDamageScale": 1.2,
+                "bonusStaminaDamage": 4.5,
                 "poiseDamageScale": 0,
                 "bonusPoiseDamage": 0,
                 "knockbackDistance": 0.45,
@@ -244,8 +244,8 @@
               "attackHit": {
                 "damageScale": 1,
                 "bonusDamage": 5,
-                "staminaDamageScale": 0.7,
-                "bonusStaminaDamage": 2,
+                "staminaDamageScale": 1.05,
+                "bonusStaminaDamage": 3,
                 "poiseDamageScale": 0,
                 "bonusPoiseDamage": 0,
                 "knockbackDistance": 0.4,
@@ -345,8 +345,8 @@
               "attackHit": {
                 "damageScale": 1.25,
                 "bonusDamage": 8,
-                "staminaDamageScale": 1,
-                "bonusStaminaDamage": 3,
+                "staminaDamageScale": 1.5,
+                "bonusStaminaDamage": 4.5,
                 "poiseDamageScale": 0,
                 "bonusPoiseDamage": 0,
                 "knockbackDistance": 0.6,

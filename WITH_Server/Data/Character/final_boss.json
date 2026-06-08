@@ -5,12 +5,12 @@
                     "faction":  "Enemy"
                 },
     "stat":  {
-                 "maxHp":  170,
+                 "maxHp":  1700,
                  "maxStamina":  190,
                  "maxPoise":  360,
                  "attackPower":  23,
                  "defense":  20,
-                 "moveSpeed":  3.0,
+                 "moveSpeed":  7.0,
                  "attackSpeed":  1.0
              },
     "bodyCollision":  {
@@ -36,13 +36,13 @@
     "attributes":  [
                        {
                            "attributeKey":  "Attribute.Hp",
-                           "baseValue":  170,
-                           "currentValue":  170
+                           "baseValue":  1700,
+                           "currentValue":  1700
                        },
                        {
                            "attributeKey":  "Attribute.MaxHp",
-                           "baseValue":  170,
-                           "currentValue":  170
+                           "baseValue":  1700,
+                           "currentValue":  1700
                        },
                        {
                            "attributeKey":  "Attribute.Stamina",
@@ -76,8 +76,8 @@
                        },
                        {
                            "attributeKey":  "Attribute.MoveSpeed",
-                           "baseValue":  3.0,
-                           "currentValue":  3.0
+                           "baseValue":  7.0,
+                           "currentValue":  7.0
                        },
                        {
                            "attributeKey":  "Attribute.AttackSpeed",

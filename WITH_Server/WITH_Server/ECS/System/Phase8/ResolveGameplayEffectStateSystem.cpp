@@ -180,7 +180,16 @@ namespace
 		}
 		else if (key == "Attribute.MaxHp")
 		{
+			const int32_t previousMaxHp = stats.maxHp;
 			applyInt(stats.maxHp);
+			stats.maxHp = std::max(0, stats.maxHp);
+
+			const int32_t maxHpDelta = stats.maxHp - previousMaxHp;
+			if (maxHpDelta > 0)
+			{
+				stats.currentHp += maxHpDelta;
+			}
+			stats.currentHp = std::clamp(stats.currentHp, 0, stats.maxHp);
 		}
 		else if (key == "Attribute.Stamina")
 		{

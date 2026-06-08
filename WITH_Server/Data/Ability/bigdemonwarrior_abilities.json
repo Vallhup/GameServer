@@ -42,8 +42,8 @@
               "attackHit": {
                 "damageScale": 1.5,
                 "bonusDamage": 9,
-                "staminaDamageScale": 1.1,
-                "bonusStaminaDamage": 3,
+                "staminaDamageScale": 1.5,
+                "bonusStaminaDamage": 5,
                 "poiseDamageScale": 0,
                 "bonusPoiseDamage": 0,
                 "knockbackDistance": 0.8,
@@ -143,8 +143,8 @@
               "attackHit": {
                 "damageScale": 1.7,
                 "bonusDamage": 11,
-                "staminaDamageScale": 1.25,
-                "bonusStaminaDamage": 4,
+                "staminaDamageScale": 1.75,
+                "bonusStaminaDamage": 8,
                 "poiseDamageScale": 0,
                 "bonusPoiseDamage": 0,
                 "knockbackDistance": 0.95,
@@ -244,8 +244,8 @@
                     "attackHit": {
                         "damageScale": 1.6,
                         "bonusDamage": 10,
-                        "staminaDamageScale": 1.15,
-                        "bonusStaminaDamage": 3,
+                        "staminaDamageScale": 1.45,
+                        "bonusStaminaDamage": 6,
                         "poiseDamageScale": 0,
                         "bonusPoiseDamage": 0,
                         "knockbackDistance": 0.85,
@@ -275,8 +275,8 @@
                     "attackHit": {
                         "damageScale": 1.6,
                         "bonusDamage": 10,
-                        "staminaDamageScale": 1.15,
-                        "bonusStaminaDamage": 3,
+                        "staminaDamageScale": 1.45,
+                        "bonusStaminaDamage": 6,
                         "poiseDamageScale": 0,
                         "bonusPoiseDamage": 0,
                         "knockbackDistance": 0.85,
@@ -373,7 +373,7 @@
           {
             "kind": "Attack",
             "startNormalized": 0.25,
-            "endNormalized": 0.61,
+            "endNormalized": 0.40,
             "applyEffectKey": null,
             "appliesTo": "FrontPhysical",
             "spatialFilter": {
@@ -388,8 +388,8 @@
               "attackHit": {
                 "damageScale": 1.95,
                 "bonusDamage": 13,
-                "staminaDamageScale": 1.4,
-                "bonusStaminaDamage": 5,
+                "staminaDamageScale": 1.7,
+                "bonusStaminaDamage": 10,
                 "poiseDamageScale": 0,
                 "bonusPoiseDamage": 0,
                 "knockbackDistance": 1.1,
@@ -417,7 +417,7 @@
           },
             {
                 "startNormalized": 0.25,
-                "endNormalized": 0.41,
+                "endNormalized": 0.35,
                 "movementMode": "DashToTarget",
                 "moveDistance": null,
                 "rotationMode": "None",
@@ -501,8 +501,8 @@
               "attackHit": {
                 "damageScale": 1.85,
                 "bonusDamage": 12,
-                "staminaDamageScale": 1.35,
-                "bonusStaminaDamage": 4,
+                "staminaDamageScale": 1.7,
+                "bonusStaminaDamage": 8,
                 "poiseDamageScale": 0,
                 "bonusPoiseDamage": 0,
                 "knockbackDistance": 1,
@@ -602,8 +602,8 @@
                     "attackHit": {
                         "damageScale": 1.2,
                         "bonusDamage": 7,
-                        "staminaDamageScale": 0.9,
-                        "bonusStaminaDamage": 2,
+                        "staminaDamageScale": 1.2,
+                        "bonusStaminaDamage": 4,
                         "poiseDamageScale": 0,
                         "bonusPoiseDamage": 0,
                         "knockbackDistance": 0.65,
@@ -703,8 +703,8 @@
               "attackHit": {
                 "damageScale": 2.05,
                 "bonusDamage": 14,
-                "staminaDamageScale": 1.5,
-                "bonusStaminaDamage": 5,
+                "staminaDamageScale": 1.8,
+                "bonusStaminaDamage": 8,
                 "poiseDamageScale": 0,
                 "bonusPoiseDamage": 0,
                 "knockbackDistance": 1.2,
@@ -816,8 +816,8 @@
               "attackHit": {
                 "damageScale": 1.75,
                 "bonusDamage": 11,
-                "staminaDamageScale": 1.3,
-                "bonusStaminaDamage": 4,
+                "staminaDamageScale": 1.6,
+                "bonusStaminaDamage": 8,
                 "poiseDamageScale": 0,
                 "bonusPoiseDamage": 0,
                 "knockbackDistance": 0.9,

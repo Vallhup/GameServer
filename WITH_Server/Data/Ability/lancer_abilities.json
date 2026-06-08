@@ -542,15 +542,6 @@
         "defaultNextAbilityKey": null,
         "interruptRules": [
           {
-            "cause": "OnHitReceived",
-            "toAbilityKey": "Ability.Lancer_Hit",
-            "windowPolicy": "Always",
-            "windowStartNormalized": null,
-            "windowEndNormalized": null,
-            "priority": 100,
-            "aiInterruptible": false
-          },
-          {
             "cause": "OnParried",
             "toAbilityKey": "Ability.Lancer_Stun",
             "windowPolicy": "Always",

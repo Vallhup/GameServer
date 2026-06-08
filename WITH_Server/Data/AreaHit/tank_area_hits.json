@@ -5,7 +5,7 @@
             "shape": {
                 "shapeType": "Cylinder",
                 "originPolicy": "OwnerPosition",
-                "radius": 4.2,
+                "radius": 10.0,
                 "height": 2.4,
                 "forwardOffset": 0,
                 "rightOffset": 0,

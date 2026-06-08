@@ -5,12 +5,12 @@
     "faction": "Enemy"
   },
   "stat": {
-    "maxHp": 10,
+    "maxHp": 1000,
     "maxStamina": 135,
     "maxPoise": 210,
     "attackPower": 15,
     "defense": 18,
-    "moveSpeed": 2.5,
+    "moveSpeed": 5.8,
     "attackSpeed": 1.0
   },
   "bodyCollision": {
@@ -33,16 +33,56 @@
     "aiProfileKey": "AI.Tank"
   },
   "attributes": [
-    { "attributeKey": "Attribute.Hp", "baseValue": 10, "currentValue": 10 },
-    { "attributeKey": "Attribute.MaxHp", "baseValue": 10, "currentValue": 10 },
-    { "attributeKey": "Attribute.Stamina", "baseValue": 135, "currentValue": 135 },
-    { "attributeKey": "Attribute.MaxStamina", "baseValue": 135, "currentValue": 135 },
-    { "attributeKey": "Attribute.Poise", "baseValue": 210, "currentValue": 210 },
-    { "attributeKey": "Attribute.MaxPoise", "baseValue": 210, "currentValue": 210 },
-    { "attributeKey": "Attribute.AttackPower", "baseValue": 15, "currentValue": 15 },
-    { "attributeKey": "Attribute.Defense", "baseValue": 18, "currentValue": 18 },
-    { "attributeKey": "Attribute.MoveSpeed", "baseValue": 2.5, "currentValue": 2.5 },
-    { "attributeKey": "Attribute.AttackSpeed", "baseValue": 1.0, "currentValue": 1.0 }
+    {
+      "attributeKey": "Attribute.Hp",
+      "baseValue": 1000,
+      "currentValue": 1000
+    },
+    {
+      "attributeKey": "Attribute.MaxHp",
+      "baseValue": 1000,
+      "currentValue": 1000
+    },
+    {
+      "attributeKey": "Attribute.Stamina",
+      "baseValue": 135,
+      "currentValue": 135
+    },
+    {
+      "attributeKey": "Attribute.MaxStamina",
+      "baseValue": 135,
+      "currentValue": 135
+    },
+    {
+      "attributeKey": "Attribute.Poise",
+      "baseValue": 210,
+      "currentValue": 210
+    },
+    {
+      "attributeKey": "Attribute.MaxPoise",
+      "baseValue": 210,
+      "currentValue": 210
+    },
+    {
+      "attributeKey": "Attribute.AttackPower",
+      "baseValue": 15,
+      "currentValue": 15
+    },
+    {
+      "attributeKey": "Attribute.Defense",
+      "baseValue": 18,
+      "currentValue": 18
+    },
+    {
+      "attributeKey": "Attribute.MoveSpeed",
+      "baseValue": 5.8,
+      "currentValue": 5.8
+    },
+    {
+      "attributeKey": "Attribute.AttackSpeed",
+      "baseValue": 1.0,
+      "currentValue": 1.0
+    }
   ],
   "abilitySetKey": "AbilitySet.Tank"
 }
