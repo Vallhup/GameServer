@@ -17,6 +17,7 @@ namespace
 	constexpr float kPhaseTransitionObjectHalfWidth = 0.75f;
 	constexpr float kPhaseTransitionObjectVerticalOffset = 0.8f;
 	constexpr float kPhaseTransitionImmunitySec = 12.0f;
+	constexpr float kGimmickFailureHpRestoreRatio = 0.2f;
 
 	constexpr float kFinalSafeZoneRadius = 1.25f;
 	constexpr float kFinalSafeZoneDistance = 5.5f;
@@ -27,6 +28,13 @@ namespace
 	{
 		Entity entity{ Entity::Null() };
 		XMFLOAT3 position{ 0.0f, 0.0f, 0.0f };
+	};
+
+	struct PartyPlayerEntry
+	{
+		Entity entity{ Entity::Null() };
+		XMFLOAT3 position{ 0.0f, 0.0f, 0.0f };
+		bool alive{ false };
 	};
 
 	float RandomRange(float minValue, float maxValue)
@@ -50,6 +58,31 @@ namespace
 				!HasBlockingPendingState(ctx.ecs, entity))
 			{
 				players.push_back(AlivePlayerEntry{ entity, transform.position });
+			}
+		}
+		std::sort(players.begin(), players.end(), [](const auto& lhs, const auto& rhs) {
+			return lhs.entity.id < rhs.entity.id;
+		});
+		return players;
+	}
+
+	std::vector<PartyPlayerEntry> CollectPartyPlayers(SystemContext& ctx)
+	{
+		std::vector<PartyPlayerEntry> players;
+		for (auto [entity, player, transform, stats] :
+			ctx.ecs.View<
+				PlayerControlIdentityComp,
+				WorldTransformComp,
+				CombatStatStateComp>())
+		{
+			if (player.ownerSessionId != 0 &&
+				!HasBlockingPendingState(ctx.ecs, entity))
+			{
+				players.push_back(PartyPlayerEntry{
+					entity,
+					transform.position,
+					stats.currentHp > 0
+				});
 			}
 		}
 		std::sort(players.begin(), players.end(), [](const auto& lhs, const auto& rhs) {
@@ -101,6 +134,80 @@ namespace
 				.priority = 1000
 			});
 		}
+	}
+
+	void RestoreBossHpForGimmickRetry(SystemContext& ctx, Entity boss)
+	{
+		CombatStatStateComp* const stats =
+			ctx.ecs.GetMutableComponent<CombatStatStateComp>(boss);
+		if (stats == nullptr || stats->maxHp <= 0)
+		{
+			return;
+		}
+
+		const int32_t previousHp = stats->currentHp;
+		const int32_t restoreAmount = std::max(
+			1,
+			static_cast<int32_t>(std::lround(
+				static_cast<float>(stats->maxHp) *
+				kGimmickFailureHpRestoreRatio)));
+		stats->currentHp = std::clamp(
+			stats->currentHp + restoreAmount,
+			1,
+			stats->maxHp);
+
+		if (previousHp != stats->currentHp)
+		{
+			MarkDirtyIfPresent(ctx, boss, WorldDirtyType::Stat);
+		}
+	}
+
+	void ResetActiveGimmickForRetry(
+		BossGimmickStateComp& gimmick,
+		BossGimmickType type)
+	{
+		switch (type) {
+		case BossGimmickType::PhaseTransitionObjects:
+			gimmick.phaseTransitionGimmickRequested = false;
+			gimmick.phaseTransitionGimmickCompleted = false;
+			break;
+		case BossGimmickType::FinalSafeZone:
+			gimmick.finalGimmickRequested = false;
+			gimmick.finalGimmickCompleted = false;
+			break;
+		default:
+			break;
+		}
+
+		gimmick.activeType = BossGimmickType::None;
+		gimmick.stage = BossGimmickStage::Completed;
+		gimmick.elapsedSec = 0.0f;
+		gimmick.stageElapsedSec = 0.0f;
+		gimmick.stageDurationSec = 0.0f;
+		gimmick.blocksAI = false;
+		gimmick.phaseTransitionObjectsSpawned = false;
+		gimmick.phaseTransitionInstantKillResolved = false;
+		gimmick.finalSafeZoneSpawned = false;
+		gimmick.finalSafeZoneResolved = false;
+		gimmick.phaseTransitionObjectEntities.clear();
+		gimmick.phaseTransitionImmunePlayers.clear();
+		gimmick.finalSafeZoneEntities.clear();
+	}
+
+	void ResetPhaseTransitionForRetry(SystemContext& ctx, Entity boss)
+	{
+		AIPhaseRuntimeComp* const phase =
+			ctx.ecs.GetMutableComponent<AIPhaseRuntimeComp>(boss);
+		if (phase == nullptr)
+		{
+			return;
+		}
+
+		phase->currentPhase = 1;
+		phase->crossedThresholdMask &= ~1u;
+		phase->transitionRequested = false;
+		phase->pendingTransitionIndex =
+			AIPhaseRuntimeComp::kInvalidTransitionIndex;
 	}
 
 	void SetStage(
@@ -430,7 +537,8 @@ void BossGimmickSystem::Execute(SystemContext& ctx)
 
 	for (auto [boss, gimmick] : ctx.ecs.View<BossGimmickStateComp>())
 	{
-		if (gimmick.stage == BossGimmickStage::Completed)
+		if (gimmick.stage == BossGimmickStage::Completed &&
+			gimmick.activeType != BossGimmickType::None)
 		{
 			gimmick.Complete();
 			continue;
@@ -622,8 +730,15 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 	if (gimmick.stage == BossGimmickStage::Resolve &&
 		!gimmick.phaseTransitionInstantKillResolved)
 	{
-		for (const AlivePlayerEntry& player : CollectAlivePlayers(ctx))
+		bool gimmickFailed = false;
+		for (const PartyPlayerEntry& player : CollectPartyPlayers(ctx))
 		{
+			if (!player.alive)
+			{
+				gimmickFailed = true;
+				continue;
+			}
+
 			if (ContainsEntity(
 					gimmick.phaseTransitionImmunePlayers,
 					player.entity))
@@ -641,10 +756,21 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 			}
 
 			ApplyGimmickLethalFailure(ctx, player.entity, boss);
+			gimmickFailed = true;
 		}
 
 		CleanupGimmickObjects(ctx, boss, gimmick);
 		gimmick.phaseTransitionInstantKillResolved = true;
+
+		if (gimmickFailed)
+		{
+			RestoreBossHpForGimmickRetry(ctx, boss);
+			ResetPhaseTransitionForRetry(ctx, boss);
+			ResetActiveGimmickForRetry(
+				gimmick,
+				BossGimmickType::PhaseTransitionObjects);
+			return;
+		}
 	}
 
 	if (gimmick.stage == BossGimmickStage::Resolve)
@@ -712,8 +838,21 @@ void BossGimmickSystem::TickFinalSafeZone(
 		const SafeZoneComp* safeZone =
 			ctx.ecs.GetComponent<SafeZoneComp>(safeZoneEntity);
 
-		for (const AlivePlayerEntry& player : CollectAlivePlayers(ctx))
+		bool allPlayersAliveAndInsideSafeZone = true;
+		const std::vector<PartyPlayerEntry> players = CollectPartyPlayers(ctx);
+		if (players.empty())
 		{
+			allPlayersAliveAndInsideSafeZone = false;
+		}
+
+		for (const PartyPlayerEntry& player : players)
+		{
+			if (!player.alive)
+			{
+				allPlayersAliveAndInsideSafeZone = false;
+				continue;
+			}
+
 			bool insideSafeZone = false;
 			if (safeZoneTransform != nullptr && safeZone != nullptr)
 			{
@@ -727,14 +866,30 @@ void BossGimmickSystem::TickFinalSafeZone(
 
 			if (!insideSafeZone)
 			{
+				allPlayersAliveAndInsideSafeZone = false;
 				ApplyGimmickLethalFailure(ctx, player.entity, boss);
 			}
 		}
 
-		ApplyGimmickLethalFailure(ctx, boss, Entity::Null());
+		if (allPlayersAliveAndInsideSafeZone)
+		{
+			ApplyGimmickLethalFailure(ctx, boss, Entity::Null());
+		}
+		else
+		{
+			RestoreBossHpForGimmickRetry(ctx, boss);
+		}
 
 		CleanupSafeZones(ctx, boss, gimmick);
 		gimmick.finalSafeZoneResolved = true;
+
+		if (!allPlayersAliveAndInsideSafeZone)
+		{
+			ResetActiveGimmickForRetry(
+				gimmick,
+				BossGimmickType::FinalSafeZone);
+			return;
+		}
 	}
 
 	if (gimmick.stage == BossGimmickStage::Resolve)
