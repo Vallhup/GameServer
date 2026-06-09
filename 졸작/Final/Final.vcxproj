@@ -302,6 +302,7 @@ exit 0</Command>
     <ClCompile Include="UIComponent.cpp" />
     <ClCompile Include="UIController.cpp" />
     <ClCompile Include="UIManager.cpp" />
+    <ClCompile Include="VideoPlayer.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
     <ClCompile Include="Water.cpp" />
   </ItemGroup>
@@ -403,6 +404,7 @@ exit 0</Command>
     <ClInclude Include="UIComponent.h" />
     <ClInclude Include="UIController.h" />
     <ClInclude Include="UIManager.h" />
+    <ClInclude Include="VideoPlayer.h" />
     <ClInclude Include="VertexIndexBuffer.h" />
     <ClInclude Include="Water.h" />
   </ItemGroup>

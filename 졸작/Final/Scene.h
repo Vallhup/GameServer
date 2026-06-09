@@ -107,6 +107,7 @@ protected:
 
 	vector<shared_ptr<GimmickDiamond>> gimmickPool;
 	unordered_map<int, shared_ptr<GimmickDiamond>> activeGimmicks;
+	unordered_map<int, int> activeZoneBarriers;	
 	shared_ptr<MainCharacter> myPlayer;
 	CharacterType myCharacterType = CharacterType::Knight;
 
