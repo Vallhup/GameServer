@@ -15,7 +15,7 @@ namespace
 	constexpr float kPhaseTransitionObjectRadiusJitter = 2.0f;
 	constexpr float kPhaseTransitionObjectHeight = 2.0f;
 	constexpr float kPhaseTransitionObjectHalfWidth = 0.75f;
-	constexpr float kPhaseTransitionObjectVerticalOffset = 0.8f;
+	constexpr float kPhaseTransitionObjectVerticalOffset = 1.6f;
 	constexpr float kPhaseTransitionImmunitySec = 13.4f;
 	constexpr float kGimmickFailureHpRestoreRatio = 0.2f;
 
