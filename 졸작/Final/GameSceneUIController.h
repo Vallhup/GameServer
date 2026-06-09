@@ -48,6 +48,9 @@ public:
 
 	void HideHudForCinematic();
 
+	void ShowHeroChoice(uint64_t voteId);	
+	void HideHeroChoice();					
+
 private:
 	void InitMonsterHpBars();
 	void UpdateMonsterHpBars();
@@ -67,6 +70,8 @@ private:
 	void UpdateStatueWindow();
 	void InitBeaconWindow();
 	void UpdateBeaconWindow();
+	void InitHeroChoiceWindow();
+	void UpdateHeroChoiceWindow();
 	void InitRespawnWindow();
 	void UpdateRespawnWindow(float deltaTime);
 	void OnLocalPlayerDied();
@@ -182,7 +187,12 @@ private:
 	float               respawnTimer = 0.0f;
 	static constexpr float RESPAWN_SECONDS = 5.0f;  
 
-	shared_ptr<ImageUI> settingWindow;  
+	shared_ptr<ImageUI> heroChoiceWindow;
+	shared_ptr<ImageUI> heroMeButton;
+	shared_ptr<ImageUI> heroWeButton;
+	uint64_t            heroChoiceVoteId = 0;
+
+	shared_ptr<ImageUI> settingWindow;
 
 	shared_ptr<ImageUI> joinRequestWindow;
 	shared_ptr<TextUI>  joinRequestText;

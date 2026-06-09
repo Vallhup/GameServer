@@ -49,7 +49,7 @@ public:
 	bool SendStatUiOpenedPacket();
 	bool SendTitleEquipRequestPacket(uint32_t titleId);
 
-	bool SendFinalClearChoiceSubmit(bool choosePvp);
+	bool SendFinalClearChoiceSubmit(uint64_t voteId, bool choosePvp);
 
 private:
 	bool TrySendInternal(SendBuffer* sendBuffer);

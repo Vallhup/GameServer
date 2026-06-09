@@ -270,10 +270,10 @@ bool NetworkManager::SendTitleEquipRequestPacket(uint32_t titleId)
 	return TrySendInternal(data);
 }
 
-bool NetworkManager::SendFinalClearChoiceSubmit(bool choosePvp)
+bool NetworkManager::SendFinalClearChoiceSubmit(uint64_t voteId, bool choosePvp)
 {
 	Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET packet;
-	packet.set_voteid(_nextVoteId++);
+	packet.set_voteid(voteId);
 	packet.set_choosepvp(choosePvp);
 
 	SendBuffer* data = PacketFactory::Serialize<Protocol::CS_FINAL_CLEAR_CHOICE_SUBMIT_PACKET>(

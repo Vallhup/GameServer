@@ -17,7 +17,6 @@ struct AnimEffectTrigger
 	int frameHi;
 	wstring effect;
 	bool fired = false;
-	bool suppressed = false;	
 	int handle = -1;
 };
 
@@ -29,7 +28,7 @@ public:
 	void AddTrigger(const string& clip, int frameLo, int frameHi, const char* sound);
 	void AddEffectTrigger(const string& clip, int frameLo, int frameHi, const wstring& effect);
 
-	void StopEffectByClip(const string& clip);
+	bool IsEffectAlive(const string& clip) const;	
 
 private:
 	vector<SfxTrigger> triggers;

@@ -30,6 +30,7 @@ void GameSceneUIController::Init(UIManager* manager)
 	InitMonsterHpBars();
 	InitBossHpBar();
 	InitBeaconWindow();
+	InitHeroChoiceWindow();
 	InitRespawnWindow();
 	InitLocalPlayerHUD();
 	InitMapNameOverlay();
@@ -596,7 +597,7 @@ void GameSceneUIController::InitStatWindow()
 	widgets.push_back(statusImage);
 
 	const float ribbonWidth  = WinSize.x * 0.21f;
-	const float ribbonHeight = WinSize.y * 0.105f;
+	const float ribbonHeight = ribbonWidth / 2.65f;	
 	const float ribbonX = leftPageCenterX - ribbonWidth * 0.5f;
 	const float ribbonY = WinSize.y * 0.78f;
 
@@ -634,7 +635,7 @@ void GameSceneUIController::InitStatWindow()
 	widgets.push_back(statusStatText);
 
 	statusTitleText = make_shared<TextUI>(uiManager, L"StatusTitleText", L"MalgunGothic");
-	const float titleScale = WinSize.y / 1080.0f * 0.5f;
+	const float titleScale = WinSize.y / 1080.0f * 0.4f;	
 	statusTitleText->SetScale(titleScale);
 	statusTitleText->SetTextColor(Colors::White);
 	statusTitleText->SetPosition(ribbonX + ribbonWidth * 0.5f, ribbonY + ribbonHeight * 0.5f);
@@ -654,10 +655,10 @@ void GameSceneUIController::RefreshTitleRibbon()
 	statusTitleText->SetText(name);
 
 	const float ribbonWidth  = WinSize.x * 0.21f;
-	const float ribbonHeight = WinSize.y * 0.105f;
+	const float ribbonHeight = ribbonWidth / 2.65f;	
 	const float ribbonX = WinSize.x * 0.30f - ribbonWidth * 0.5f;
 	const float ribbonY = WinSize.y * 0.78f;
-	const float titleScale = WinSize.y / 1080.0f * 0.5f;
+	const float titleScale = WinSize.y / 1080.0f * 0.4f;	
 
 	float textW = 0.0f;
 	if (auto* fd = uiManager->GetFont(L"MalgunGothic"))
@@ -893,6 +894,7 @@ void GameSceneUIController::Update(float deltaTime)
 	UpdateInteractPrompt();
 	UpdateStatueWindow();
 	UpdateBeaconWindow();
+	UpdateHeroChoiceWindow();
 	UpdateRespawnWindow(deltaTime);
 
 	auto opened = [](const shared_ptr<ImageUI>& p) {
@@ -1191,7 +1193,7 @@ void GameSceneUIController::Update(float deltaTime)
 		opened(statusImage) || opened(escWindow)   || opened(partyBook) ||
 		opened(mapImage)    || opened(keyGuide)    || opened(settingWindow) ||
 		opened(joinRequestWindow) || opened(statueWindow) || opened(beaconWindow) ||
-		opened(respawnWindow);
+		opened(respawnWindow) || opened(heroChoiceWindow);
 	if (Camera* camera = SCENE_MANAGER->GetCurrentScene()->GetCamera())
 		if (camera->IsCursorActive() != wantCursor)
 			camera->SetCursor(wantCursor);
@@ -1624,6 +1626,79 @@ bool GameSceneUIController::ConsumeBeaconConfirmed()
 	const bool v = beaconConfirmed;
 	beaconConfirmed = false;
 	return v;
+}
+
+void GameSceneUIController::InitHeroChoiceWindow()
+{
+	if (sceneType != SceneType::Final) return;
+
+	const float winW = WinSize.x * 0.5f;
+	const float winH = winW / 2.6f;
+	const float winX = (WinSize.x - winW) * 0.5f;
+	const float winY = (WinSize.y - winH) * 0.5f;
+
+	heroChoiceWindow = make_shared<ImageUI>(uiManager, L"WITH", ImageUIState::Hidden);
+	heroChoiceWindow->SetPosition(winX, winY);
+	heroChoiceWindow->SetHoriLength(winW);
+	heroChoiceWindow->SetVertLength(winH);
+	widgets.push_back(heroChoiceWindow);
+
+	const float btnW = winW * 0.18f;
+	const float btnH = btnW / 3.0f;
+	const float btnY = winY + winH * 0.78f;
+
+	heroMeButton = make_shared<ImageUI>(uiManager, L"ME", ImageUIState::Hidden);
+	heroMeButton->SetPosition(winX + winW * 0.28f - btnW * 0.5f, btnY);
+	heroMeButton->SetHoriLength(btnW);
+	heroMeButton->SetVertLength(btnH);
+	heroMeButton->SetHoverScale(1.1f);
+	widgets.push_back(heroMeButton);
+
+	heroWeButton = make_shared<ImageUI>(uiManager, L"WE", ImageUIState::Hidden);
+	heroWeButton->SetPosition(winX + winW * 0.72f - btnW * 0.5f, btnY);
+	heroWeButton->SetHoriLength(btnW);
+	heroWeButton->SetVertLength(btnH);
+	heroWeButton->SetHoverScale(1.1f);
+	widgets.push_back(heroWeButton);
+}
+
+void GameSceneUIController::UpdateHeroChoiceWindow()
+{
+	if (!heroChoiceWindow) return;
+	if (heroChoiceWindow->GetState() == ImageUIState::Hidden) return;
+
+	heroMeButton->SetHovered(heroMeButton->IsMouseInside());
+	heroWeButton->SetHovered(heroWeButton->IsMouseInside());
+
+	const bool meClick = heroMeButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT);
+	const bool weClick = heroWeButton->IsHovered() && INPUT.GetMouseButtonDown(MouseButton::LEFT);
+
+	if (meClick || weClick)
+	{
+		SOUND_MANAGER->PlaySFX("../Assets/Music/SFX/ButtonPress.mp3");
+		if (auto* network = NETWORK_MANAGER)
+			network->SendFinalClearChoiceSubmit(heroChoiceVoteId, meClick);	
+		HideHeroChoice();
+	}
+}
+
+void GameSceneUIController::ShowHeroChoice(uint64_t voteId)
+{
+	if (!heroChoiceWindow) return;
+
+	heroChoiceVoteId = voteId;
+	heroChoiceWindow->ChangeState(ImageUIState::Visible);
+	heroMeButton->ChangeState(ImageUIState::Visible);
+	heroWeButton->ChangeState(ImageUIState::Visible);
+}
+
+void GameSceneUIController::HideHeroChoice()
+{
+	if (!heroChoiceWindow) return;
+
+	heroChoiceWindow->ChangeState(ImageUIState::Hidden);
+	heroMeButton->ChangeState(ImageUIState::Hidden);
+	heroWeButton->ChangeState(ImageUIState::Hidden);
 }
 
 void GameSceneUIController::InitRespawnWindow()

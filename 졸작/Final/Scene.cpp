@@ -64,6 +64,8 @@ void Scene::Update(const float deltaTime)
 	for (auto& [id, diamond] : activeGimmicks)
 		diamond->Update(deltaTime);
 
+	UpdateBreakerShields();
+
 	UpdateDissolves();
 
 	// Temporarily test in GameScene Only
@@ -410,6 +412,7 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			EFFECT_MANAGER->PreLoad(L"PhantasmMeteor_Single");
 			EFFECT_MANAGER->PreLoad(L"Barrior02_HDR");
 			EFFECT_MANAGER->PreLoad(L"Barrior01");
+			EFFECT_MANAGER->PreLoad(L"Barrior03");
 			EFFECT_MANAGER->PreLoad(L"0per_Bomb");
 
 			auto sfx = monster->AddComponent<AnimationSfxComponent>();
@@ -576,6 +579,34 @@ void Scene::HandleRemove(const Protocol::SC_REMOVE_PACKET& remove)
 
 		if (auto* dis = it->second->GetComponent<DissolveComponent>())
 			dis->Start();
+	}
+}
+
+void Scene::UpdateBreakerShields()
+{
+	if (activeBreakerShields.empty()) return;
+
+	bool fireAlive = false;
+	if (auto it = activeCharacters.find(shieldGateBossId); it != activeCharacters.end())
+		if (auto* sfx = it->second->GetComponent<AnimationSfxComponent>())
+			fireAlive = sfx->IsEffectAlive("50per");
+
+	for (auto it = activeBreakerShields.begin(); it != activeBreakerShields.end(); )
+	{
+		const int breakerId = it->first;
+		const int handle = it->second;
+
+		if (!fireAlive || !EFFECT_MANAGER->Exists(handle))
+		{
+			EFFECT_MANAGER->Stop(handle);
+			it = activeBreakerShields.erase(it);
+			continue;
+		}
+
+		if (auto cit = activeCharacters.find(breakerId); cit != activeCharacters.end())
+			EFFECT_MANAGER->SetLocation(handle, cit->second->GetComponent<Transform>()->GetPosition());
+
+		++it;
 	}
 }
 
@@ -826,10 +857,14 @@ void Scene::HandleBossGimmickObjectSync(const Protocol::SC_BOSS_GIMMICK_OBJECT_S
 
 	if (gimmickObject.state() == Protocol::BOSS_GIMMICK_OBJECT_STATE_BROKEN)
 	{
-		const int bossId = NetId{ gimmickObject.bossnetid() }.GetId();
-		if (auto bit = activeCharacters.find(bossId); bit != activeCharacters.end())
-			if (auto* sfx = bit->second->GetComponent<AnimationSfxComponent>())
-				sfx->StopEffectByClip("50per");
+		shieldGateBossId = NetId{ gimmickObject.bossnetid() }.GetId();
+		const int breakerId = NetId{ gimmickObject.brokenbyplayernetid() }.GetId();
+		if (auto bit = activeCharacters.find(breakerId); bit != activeCharacters.end())
+			if (activeBreakerShields.find(breakerId) == activeBreakerShields.end())
+			{
+				const XMFLOAT3& pos = bit->second->GetComponent<Transform>()->GetPosition();
+				activeBreakerShields[breakerId] = EFFECT_MANAGER->Play(L"Barrior03", pos);
+			}
 	}
 
 	if (auto it = activeGimmicks.find(objectId); it != activeGimmicks.end())
@@ -907,6 +942,9 @@ void Scene::HandleFinalClearChoiceBegin(const Protocol::SC_FINAL_CLEAR_CHOICE_BE
 	const uint64_t partyId = choiceBegin.partyid();
 	const uint64_t sourceWorldId = choiceBegin.sourceworldid();
 	const uint32_t eligibleCount = choiceBegin.eligiblecount();
+
+	if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
+		controller->ShowHeroChoice(voteId);
 }
 
 void Scene::HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET& choiceResult)
@@ -921,4 +959,7 @@ void Scene::HandleFinalClearChoiceResult(const Protocol::SC_FINAL_CLEAR_CHOICE_R
 
 	// 이거는 말 그대로 선택 이유인데, 아마 UI에는 쓸 일 없을 듯
 	const Protocol::FinalClearChoiceReason reason = choiceResult.reason();
+
+	if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
+		controller->HideHeroChoice();
 }
