@@ -176,6 +176,20 @@ void FrameworkFrameEventHarvester::Harvest(
 				frameEvent.radius = SafeFinite(objectEvent.radius);
 				frameEvent.curHp = objectEvent.curHp;
 				frameEvent.maxHp = objectEvent.maxHp;
+
+				// 파괴자 플레이어 엔티티를 NetId로 해석한다. 오브젝트 자체는
+				// ToGimmickNetId 로 별도 ID를 쓰지만, 파괴자는 일반 플레이어라
+				// netIdRegistry 에 등록돼 있다.
+				if (!objectEvent.brokenByPlayer.IsNull())
+				{
+					const NetId brokenByNetId =
+						netIdRegistry.FindNetId(
+							worldId,
+							objectEvent.brokenByPlayer);
+					frameEvent.brokenByPlayerNetId =
+						brokenByNetId.IsValid() ? brokenByNetId.GetRaw() : 0;
+				}
+
 				outEvents.bossGimmickObjects.push_back(frameEvent);
 			}
 

@@ -36,6 +36,7 @@ namespace BossGimmickReplicationProtocol
 		packet.set_radius(event.radius);
 		packet.set_curhp(event.curHp);
 		packet.set_maxhp(event.maxHp);
+		packet.set_brokenbyplayernetid(event.brokenByPlayerNetId);
 	}
 
 	inline void FillZoneSyncPacket(

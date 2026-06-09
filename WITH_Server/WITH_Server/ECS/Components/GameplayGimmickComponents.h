@@ -47,6 +47,9 @@ struct PendingBossGimmickObjectSyncEvent
 	float radius{ 0.0f };
 	uint32_t curHp{ 0 };
 	uint32_t maxHp{ 0 };
+	// Broken 상태일 때 오브젝트를 파괴한 플레이어 엔티티(없으면 Null).
+	// 하베스터가 NetId로 해석해 SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET에 싣는다.
+	Entity brokenByPlayer{ Entity::Null() };
 };
 
 struct PendingBossGimmickZoneSyncEvent

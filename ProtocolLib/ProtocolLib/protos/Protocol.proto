@@ -334,7 +334,7 @@ message SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET
     uint32 maxHp = 10;
 
 	// uint64 assignedPlayerNetId = 5;
-    // uint64 brokenByPlayerNetId = 12;
+    uint64 brokenByPlayerNetId = 11;
 }
 
 message SC_BOSS_GIMMICK_ZONE_SYNC_PACKET

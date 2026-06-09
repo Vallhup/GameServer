@@ -16,10 +16,10 @@ namespace
 	constexpr float kPhaseTransitionObjectHeight = 2.0f;
 	constexpr float kPhaseTransitionObjectHalfWidth = 0.75f;
 	constexpr float kPhaseTransitionObjectVerticalOffset = 0.8f;
-	constexpr float kPhaseTransitionImmunitySec = 12.0f;
+	constexpr float kPhaseTransitionImmunitySec = 13.4f;
 	constexpr float kGimmickFailureHpRestoreRatio = 0.2f;
 
-	constexpr float kFinalSafeZoneRadius = 1.25f;
+	constexpr float kFinalSafeZoneRadius = 1.5f;
 	constexpr float kFinalSafeZoneDistance = 5.5f;
 	constexpr float kFinalSafeZoneDistanceJitter = 1.5f;
 	constexpr float kBossLockRefreshSec = 0.25f;
@@ -251,7 +251,8 @@ namespace
 		const XMFLOAT3& position,
 		float radius,
 		int32_t curHp,
-		int32_t maxHp)
+		int32_t maxHp,
+		Entity brokenByPlayer = Entity::Null())
 	{
 		PendingBossGimmickReplicationComp* pending =
 			ctx.ecs.GetMutableComponent<PendingBossGimmickReplicationComp>(
@@ -268,7 +269,8 @@ namespace
 				.position = position,
 				.radius = radius,
 				.curHp = ClampHp(curHp),
-				.maxHp = ClampHp(maxHp)
+				.maxHp = ClampHp(maxHp),
+				.brokenByPlayer = brokenByPlayer
 			});
 	}
 
@@ -672,6 +674,11 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 				objectGimmick->broken = true;
 				const WorldTransformComp* transform =
 					ctx.ecs.GetComponent<WorldTransformComp>(object);
+				// 마지막 타격자 우선, 없으면 배정된 플레이어를 파괴자로 본다.
+				const Entity immuneTarget =
+					!objectGimmick->lastHitBy.IsNull()
+						? objectGimmick->lastHitBy
+						: objectGimmick->assignedPlayer;
 				EmitObjectSync(
 					ctx,
 					boss,
@@ -683,11 +690,8 @@ void BossGimmickSystem::TickPhaseTransitionObjects(
 						: XMFLOAT3{ 0.0f, 0.0f, 0.0f },
 					kPhaseTransitionObjectHalfWidth,
 					0,
-					objectStats->maxHp);
-				const Entity immuneTarget =
-					!objectGimmick->lastHitBy.IsNull()
-						? objectGimmick->lastHitBy
-						: objectGimmick->assignedPlayer;
+					objectStats->maxHp,
+					immuneTarget);
 				if (!immuneTarget.IsNull())
 				{
 					ctx.runtime.DeferredUpsertComponent<BossGimmickImmunityComp>(

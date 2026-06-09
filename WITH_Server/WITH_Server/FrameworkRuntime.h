@@ -111,6 +111,7 @@ public:
 			float radius{ 0.0f };
 			uint32_t curHp{ 0 };
 			uint32_t maxHp{ 0 };
+			uint64_t brokenByPlayerNetId{ 0 };
 		};
 
 		struct BossGimmickZoneSyncEvent

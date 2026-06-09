@@ -606,6 +606,7 @@ inline constexpr SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::Impl_::Impl_(
         radius_{0},
         curhp_{0u},
         maxhp_{0u},
+        brokenbyplayernetid_{::uint64_t{0u}},
         _cached_size_{0} {}
 
 template <typename>
@@ -1865,6 +1866,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.radius_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.curhp_),
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.maxhp_),
+        PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.brokenbyplayernetid_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -1977,11 +1979,11 @@ static const ::_pbi::MigrationSchema
         {450, -1, -1, sizeof(::Protocol::SC_MONSTER_COMBAT_STATE_PACKET)},
         {460, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_STATE_PACKET)},
         {474, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)},
-        {492, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)},
-        {508, -1, -1, sizeof(::Protocol::SC_STAT_UI_BOOTSTRAP_PACKET)},
-        {519, -1, -1, sizeof(::Protocol::SC_TITLE_EQUIP_RESULT_PACKET)},
-        {531, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)},
-        {543, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)},
+        {493, -1, -1, sizeof(::Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET)},
+        {509, -1, -1, sizeof(::Protocol::SC_STAT_UI_BOOTSTRAP_PACKET)},
+        {520, -1, -1, sizeof(::Protocol::SC_TITLE_EQUIP_RESULT_PACKET)},
+        {532, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET)},
+        {544, -1, -1, sizeof(::Protocol::SC_FINAL_CLEAR_CHOICE_RESULT_PACKET)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_CS_TIME_SYNC_PACKET_default_instance_._instance,
@@ -2133,31 +2135,32 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "immickType\030\003 \001(\0162\031.Protocol.BossGimmickT"
     "ype\022)\n\005stage\030\004 \001(\0162\032.Protocol.BossGimmic"
     "kStage\022\023\n\013durationSec\030\005 \001(\002\022\024\n\014remaining"
-    "Sec\030\006 \001(\002\"\340\001\n\"SC_BOSS_GIMMICK_OBJECT_SYN"
+    "Sec\030\006 \001(\002\"\375\001\n\"SC_BOSS_GIMMICK_OBJECT_SYN"
     "C_PACKET\022\021\n\tbossNetId\030\001 \001(\004\022\022\n\ngimmickSe"
     "q\030\002 \001(\r\022\023\n\013objectNetId\030\003 \001(\004\022/\n\005state\030\004 "
     "\001(\0162 .Protocol.BossGimmickObjectState\022\t\n"
     "\001x\030\005 \001(\002\022\t\n\001y\030\006 \001(\002\022\t\n\001z\030\007 \001(\002\022\016\n\006radius"
-    "\030\010 \001(\002\022\r\n\005curHp\030\t \001(\r\022\r\n\005maxHp\030\n \001(\r\"\276\001\n"
-    " SC_BOSS_GIMMICK_ZONE_SYNC_PACKET\022\021\n\tbos"
-    "sNetId\030\001 \001(\004\022\022\n\ngimmickSeq\030\002 \001(\r\022\021\n\tzone"
-    "NetId\030\003 \001(\004\022/\n\005state\030\004 \001(\0162 .Protocol.Bo"
-    "ssGimmickObjectState\022\t\n\001x\030\005 \001(\002\022\t\n\001y\030\006 \001"
-    "(\002\022\t\n\001z\030\007 \001(\002\022\016\n\006radius\030\010 \001(\002\"f\n\033SC_STAT"
-    "_UI_BOOTSTRAP_PACKET\022\027\n\017clientRequestId\030"
-    "\001 \001(\r\022\025\n\rownedTitleIds\030\002 \003(\r\022\027\n\017equipped"
-    "TitleId\030\003 \001(\r\"q\n\034SC_TITLE_EQUIP_RESULT_P"
-    "ACKET\022\027\n\017clientRequestId\030\001 \001(\r\022\017\n\007succes"
-    "s\030\002 \001(\010\022\027\n\017equippedTitleId\030\003 \001(\r\022\016\n\006reas"
-    "on\030\004 \001(\r\"s\n\"SC_FINAL_CLEAR_CHOICE_BEGIN_"
-    "PACKET\022\016\n\006voteId\030\001 \001(\004\022\017\n\007partyId\030\002 \001(\004\022"
-    "\025\n\rsourceWorldId\030\003 \001(\004\022\025\n\religibleCount\030"
-    "\004 \001(\r\"\316\001\n#SC_FINAL_CLEAR_CHOICE_RESULT_P"
-    "ACKET\022\016\n\006voteId\030\001 \001(\004\0222\n\007outcome\030\002 \001(\0162!"
-    ".Protocol.FinalClearChoiceOutcome\0220\n\006rea"
-    "son\030\003 \001(\0162 .Protocol.FinalClearChoiceRea"
-    "son\022\030\n\020targetWorldDefId\030\004 \001(\r\022\027\n\017pvpChoo"
-    "serNetId\030\005 \001(\004b\006proto3"
+    "\030\010 \001(\002\022\r\n\005curHp\030\t \001(\r\022\r\n\005maxHp\030\n \001(\r\022\033\n\023"
+    "brokenByPlayerNetId\030\013 \001(\004\"\276\001\n SC_BOSS_GI"
+    "MMICK_ZONE_SYNC_PACKET\022\021\n\tbossNetId\030\001 \001("
+    "\004\022\022\n\ngimmickSeq\030\002 \001(\r\022\021\n\tzoneNetId\030\003 \001(\004"
+    "\022/\n\005state\030\004 \001(\0162 .Protocol.BossGimmickOb"
+    "jectState\022\t\n\001x\030\005 \001(\002\022\t\n\001y\030\006 \001(\002\022\t\n\001z\030\007 \001"
+    "(\002\022\016\n\006radius\030\010 \001(\002\"f\n\033SC_STAT_UI_BOOTSTR"
+    "AP_PACKET\022\027\n\017clientRequestId\030\001 \001(\r\022\025\n\row"
+    "nedTitleIds\030\002 \003(\r\022\027\n\017equippedTitleId\030\003 \001"
+    "(\r\"q\n\034SC_TITLE_EQUIP_RESULT_PACKET\022\027\n\017cl"
+    "ientRequestId\030\001 \001(\r\022\017\n\007success\030\002 \001(\010\022\027\n\017"
+    "equippedTitleId\030\003 \001(\r\022\016\n\006reason\030\004 \001(\r\"s\n"
+    "\"SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET\022\016\n\006v"
+    "oteId\030\001 \001(\004\022\017\n\007partyId\030\002 \001(\004\022\025\n\rsourceWo"
+    "rldId\030\003 \001(\004\022\025\n\religibleCount\030\004 \001(\r\"\316\001\n#S"
+    "C_FINAL_CLEAR_CHOICE_RESULT_PACKET\022\016\n\006vo"
+    "teId\030\001 \001(\004\0222\n\007outcome\030\002 \001(\0162!.Protocol.F"
+    "inalClearChoiceOutcome\0220\n\006reason\030\003 \001(\0162 "
+    ".Protocol.FinalClearChoiceReason\022\030\n\020targ"
+    "etWorldDefId\030\004 \001(\r\022\027\n\017pvpChooserNetId\030\005 "
+    "\001(\004b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[1] =
     {
@@ -2167,7 +2170,7 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    4862,
+    4891,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
@@ -13392,9 +13395,9 @@ inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::SharedCtor(::_pb::Arena* arena) 
   ::memset(reinterpret_cast<char *>(&_impl_) +
                offsetof(Impl_, bossnetid_),
            0,
-           offsetof(Impl_, maxhp_) -
+           offsetof(Impl_, brokenbyplayernetid_) -
                offsetof(Impl_, bossnetid_) +
-               sizeof(Impl_::maxhp_));
+               sizeof(Impl_::brokenbyplayernetid_));
 }
 SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::~SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET() {
   // @@protoc_insertion_point(destructor:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
@@ -13443,15 +13446,15 @@ const ::google::protobuf::internal::ClassData* SC_BOSS_GIMMICK_OBJECT_SYNC_PACKE
   return _class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<4, 10, 0, 0, 2> SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_table_ = {
+const ::_pbi::TcParseTable<4, 11, 0, 0, 2> SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_table_ = {
   {
     0,  // no _has_bits_
     0, // no _extensions_
-    10, 120,  // max_field_number, fast_idx_mask
+    11, 120,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
-    4294966272,  // skipmap
+    4294965248,  // skipmap
     offsetof(decltype(_table_), field_entries),
-    10,  // num_field_entries
+    11,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
     _class_data_.base(),
@@ -13492,7 +13495,9 @@ const ::_pbi::TcParseTable<4, 10, 0, 0, 2> SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_
     // uint32 maxHp = 10;
     {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.maxhp_), 63>(),
      {80, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.maxhp_)}},
-    {::_pbi::TcParser::MiniParse, {}},
+    // uint64 brokenByPlayerNetId = 11;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.brokenbyplayernetid_), 63>(),
+     {88, 63, 0, PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.brokenbyplayernetid_)}},
     {::_pbi::TcParser::MiniParse, {}},
     {::_pbi::TcParser::MiniParse, {}},
     {::_pbi::TcParser::MiniParse, {}},
@@ -13530,6 +13535,9 @@ const ::_pbi::TcParseTable<4, 10, 0, 0, 2> SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_
     // uint32 maxHp = 10;
     {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.maxhp_), 0, 0,
     (0 | ::_fl::kFcSingular | ::_fl::kUInt32)},
+    // uint64 brokenByPlayerNetId = 11;
+    {PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.brokenbyplayernetid_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUInt64)},
   }},
   // no aux_entries
   {{
@@ -13544,8 +13552,8 @@ PROTOBUF_NOINLINE void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::Clear() {
   (void) cached_has_bits;
 
   ::memset(&_impl_.bossnetid_, 0, static_cast<::size_t>(
-      reinterpret_cast<char*>(&_impl_.maxhp_) -
-      reinterpret_cast<char*>(&_impl_.bossnetid_)) + sizeof(_impl_.maxhp_));
+      reinterpret_cast<char*>(&_impl_.brokenbyplayernetid_) -
+      reinterpret_cast<char*>(&_impl_.bossnetid_)) + sizeof(_impl_.brokenbyplayernetid_));
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
@@ -13634,6 +13642,13 @@ PROTOBUF_NOINLINE void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::Clear() {
                 10, this_._internal_maxhp(), target);
           }
 
+          // uint64 brokenByPlayerNetId = 11;
+          if (this_._internal_brokenbyplayernetid() != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+                11, this_._internal_brokenbyplayernetid(), target);
+          }
+
           if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
             target =
                 ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -13705,6 +13720,11 @@ PROTOBUF_NOINLINE void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::Clear() {
               total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
                   this_._internal_maxhp());
             }
+            // uint64 brokenByPlayerNetId = 11;
+            if (this_._internal_brokenbyplayernetid() != 0) {
+              total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+                  this_._internal_brokenbyplayernetid());
+            }
           }
           return this_.MaybeComputeUnknownFieldsSize(total_size,
                                                      &this_._impl_._cached_size_);
@@ -13748,6 +13768,9 @@ void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::MergeImpl(::google::protobuf::MessageLi
   if (from._internal_maxhp() != 0) {
     _this->_impl_.maxhp_ = from._impl_.maxhp_;
   }
+  if (from._internal_brokenbyplayernetid() != 0) {
+    _this->_impl_.brokenbyplayernetid_ = from._impl_.brokenbyplayernetid_;
+  }
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -13763,8 +13786,8 @@ void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::InternalSwap(SC_BOSS_GIMMICK_OBJECT_SYN
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.maxhp_)
-      + sizeof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_impl_.maxhp_)
+      PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.brokenbyplayernetid_)
+      + sizeof(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_impl_.brokenbyplayernetid_)
       - PROTOBUF_FIELD_OFFSET(SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET, _impl_.bossnetid_)>(
           reinterpret_cast<char*>(&_impl_.bossnetid_),
           reinterpret_cast<char*>(&other->_impl_.bossnetid_));

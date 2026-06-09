@@ -4982,6 +4982,7 @@ class SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET final : public ::google::protobuf::Mess
     kRadiusFieldNumber = 8,
     kCurHpFieldNumber = 9,
     kMaxHpFieldNumber = 10,
+    kBrokenByPlayerNetIdFieldNumber = 11,
   };
   // uint64 bossNetId = 1;
   void clear_bossnetid() ;
@@ -5083,12 +5084,22 @@ class SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET final : public ::google::protobuf::Mess
   void _internal_set_maxhp(::uint32_t value);
 
   public:
+  // uint64 brokenByPlayerNetId = 11;
+  void clear_brokenbyplayernetid() ;
+  ::uint64_t brokenbyplayernetid() const;
+  void set_brokenbyplayernetid(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_brokenbyplayernetid() const;
+  void _internal_set_brokenbyplayernetid(::uint64_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
-      4, 10, 0,
+      4, 11, 0,
       0, 2>
       _table_;
 
@@ -5116,6 +5127,7 @@ class SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET final : public ::google::protobuf::Mess
     float radius_;
     ::uint32_t curhp_;
     ::uint32_t maxhp_;
+    ::uint64_t brokenbyplayernetid_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -14320,6 +14332,28 @@ inline ::uint32_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_maxhp() const {
 inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_maxhp(::uint32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.maxhp_ = value;
+}
+
+// uint64 brokenByPlayerNetId = 11;
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::clear_brokenbyplayernetid() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.brokenbyplayernetid_ = ::uint64_t{0u};
+}
+inline ::uint64_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::brokenbyplayernetid() const {
+  // @@protoc_insertion_point(field_get:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.brokenByPlayerNetId)
+  return _internal_brokenbyplayernetid();
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::set_brokenbyplayernetid(::uint64_t value) {
+  _internal_set_brokenbyplayernetid(value);
+  // @@protoc_insertion_point(field_set:Protocol.SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET.brokenByPlayerNetId)
+}
+inline ::uint64_t SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_brokenbyplayernetid() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.brokenbyplayernetid_;
+}
+inline void SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET::_internal_set_brokenbyplayernetid(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.brokenbyplayernetid_ = value;
 }
 
 // -------------------------------------------------------------------
