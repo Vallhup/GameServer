@@ -69,6 +69,31 @@ bool LightManager::LoadFromFile(const wstring& path, int startSlot)
 	return true;
 }
 
+vector<XMFLOAT3> LightManager::LoadCandlePositions(const wstring& path)
+{
+	ifstream file(path.c_str());
+	if (!file.is_open())
+		return {};
+
+	vector<XMFLOAT3> positions;
+
+	string line;
+	while (getline(file, line))
+	{
+		if (line.empty())
+			continue;
+
+		istringstream iss(line);
+		float px, py, pz;
+		if (!(iss >> px >> py >> pz))
+			continue;
+
+		positions.push_back({ px, py, pz });
+	}
+
+	return positions;
+}
+
 void LightManager::LoadSceneLights(const wstring& pointLightFile, bool enableDirectional)
 {
 	useDirectional = enableDirectional;

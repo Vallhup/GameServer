@@ -116,7 +116,8 @@ GBUFFER_PS_OUT PSMain(GBUFFER_PS_IN input, bool isFrontFace : SV_IsFrontFace) : 
     {
         output.RT0 = float4(0, 0, 0, 0);
         output.RT1 = float4(normalize(input.normal), 1.0);
-        output.RT2 = float4(input.color.rgb * 1.0, 2.0);
+        float bf = lerp(1.0f, brightness, input.color.a);
+        output.RT2 = float4(input.color.rgb * bf, 2.0);
     }
     
     if (dissolveAmount > 0.0f && dissolveNoiseIndex != 0xFFFFFFFF)

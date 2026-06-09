@@ -4,15 +4,22 @@
 #include <DirectXHelpers.h>
 #include "Engine.h"
 #include "DX12Core.h"
+#include "VideoPlayer.h"
 #include "StartSceneUIController.h"
 #include "SelectSceneUIController.h"
 #include "GameSceneUIController.h"
 #include "LoadingSceneUIController.h"
+#include "SoundManager.h"
 
 UINT UIManager::nextIndex = 0;
 
+UIManager::UIManager() = default;
+UIManager::~UIManager() = default;
+
 void UIManager::Initialize(DX12Core& core)
 {
+	coreRef = &core;
+
 	graphicsMemory = make_unique<GraphicsMemory>(core.GetDevice());
 
 	uiSrvHeap = make_unique<DescriptorHeap>(core.GetDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, MAX_RESOURCE_COUNT);
@@ -138,11 +145,36 @@ void UIManager::Update(float deltaTime)
 
 void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp)
 {
+	if (videoPlaying && video)
+	{
+		video->Update(cmdList);   
+		if (video->IsEnded())
+			videoPlaying = false; 
+	}
+
 	ID3D12DescriptorHeap* heaps[] = { uiSrvHeap->Heap() };
 	cmdList->SetDescriptorHeaps(1, heaps);
 
 	spriteBatch->SetViewport(vp);
 	spriteBatch->Begin(cmdList);
+
+	if (videoPlaying && video)
+	{
+		RECT full = { 0, 0, static_cast<LONG>(vp.Width), static_cast<LONG>(vp.Height) };
+		if (video->IsReady())
+		{
+			XMUINT2 texSize{ video->Width(), video->Height() };
+			spriteBatch->Draw(uiSrvHeap->GetGpuHandle(videoHeapIndex), texSize, full);
+		}
+		else if (auto* black = GetUITexture(L"Black"))   
+		{
+			XMUINT2 texSize = GetTextureSize(black->resource.Get());
+			spriteBatch->Draw(uiSrvHeap->GetGpuHandle(black->heapIndex), texSize, full);
+		}
+		spriteBatch->End();
+		graphicsMemory->Commit(cmdQueue);
+		return;
+	}
 
 	auto it = controllers.find(currentScene);
 	if (it != controllers.end())
@@ -163,8 +195,30 @@ void UIManager::Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* c
 	graphicsMemory->Commit(cmdQueue);
 }
 
+void UIManager::PlayVideo(const wstring& path)
+{
+	if (videoPlaying || !coreRef) return;
+	if (nextIndex >= MAX_RESOURCE_COUNT - 1) return;
+
+	videoHeapIndex = nextIndex++;
+	video = make_unique<VideoPlayer>();
+	if (video->Open(coreRef->GetDevice(),
+		uiSrvHeap->GetCpuHandle(videoHeapIndex), path))
+	{
+		videoPlaying = true;
+		SOUND_MANAGER->StopBGM(0.0f);   
+	}
+	else
+	{
+		video.reset();
+	}
+}
+
 void UIManager::Release()
 {
+	if (video) { video->Close(); video.reset(); }
+	videoPlaying = false;
+
 	controllers.clear();
 	uiTextureMap.clear();
 	uiFontMap.clear();

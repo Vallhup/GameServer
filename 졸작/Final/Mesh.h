@@ -21,6 +21,9 @@ public:
 	void SetUnlit(bool in) { unlit = in; }
 	bool IsUnlit() const { return unlit; }
 
+	void SetBrightness(float in) { brightness = in; }
+	float GetBrightness() const { return brightness; }
+
 	VertexIndexBuffer* GetVertexIndexBuffer() const { return vertexIndexBuffer.get(); }
 	const vector<SubMeshInfo>& GetSubMeshes() const { return subMeshes; }
 	Material* GetMaterial() const { return material.get(); }
@@ -58,6 +61,7 @@ private:
 	bool showCollisionMesh = false;
 
 	bool unlit = false;
+	float brightness = 1.0f;
 
 	shared_ptr<CachedMeshData> cachedRef;   
 

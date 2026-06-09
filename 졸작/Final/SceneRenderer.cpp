@@ -116,8 +116,8 @@ void SceneRenderer::RenderDeferred(DX12Core& core, const vector<shared_ptr<GameO
         else
         {
             UINT matIndex = mesh->GetMaterial() ? mesh->GetMaterial()->GetMaterialIndex() : 0;
-            int hasTexture = mesh->IsUnlit() ? 0 : 1;	// unlit=정점 컬러 단색
-            auto objConst = MakeObjectConstants(world, hasTexture, 0, matIndex, dissolveAmount, dissolveNoise);
+            int hasTexture = mesh->IsUnlit() ? 0 : 1;	
+            auto objConst = MakeObjectConstants(world, hasTexture, 0, matIndex, dissolveAmount, dissolveNoise, mesh->GetBrightness());
             size_t offset = cbIndex * CONSTANT_BUFFER_ALIGNMENT;
             objectCBPool->CopyData(&objConst, sizeof(ObjectConstants), offset);
             cmdList->SetGraphicsRootConstantBufferView(1, objectCBPool->GetGPUVirtualAddress() + offset);
@@ -397,7 +397,7 @@ void SceneRenderer::SetupRenderingState(DX12Core& core, UploadBuffer* instanceBu
 }
 
 ObjectConstants SceneRenderer::MakeObjectConstants(const XMMATRIX& world, int hasTexture, int doInstancing, UINT matIndex,
-    float dissolveAmount, UINT dissolveNoiseIndex)
+    float dissolveAmount, UINT dissolveNoiseIndex, float brightness)
 {
     ObjectConstants obj = {};
     obj.world = world;
@@ -406,5 +406,6 @@ ObjectConstants SceneRenderer::MakeObjectConstants(const XMMATRIX& world, int ha
     obj.materialIndex = matIndex;
     obj.dissolveAmount = dissolveAmount;
     obj.dissolveNoiseIndex = dissolveNoiseIndex;
+    obj.brightness = brightness;
     return obj;
 }

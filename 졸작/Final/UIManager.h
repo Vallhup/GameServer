@@ -8,6 +8,7 @@
 #include "ScreenFade.h"
 
 class DX12Core;
+class VideoPlayer;
 
 struct UIFontData {
 	UINT heapIndex;
@@ -22,10 +23,17 @@ struct UITextureData {
 class UIManager
 {
 public:
+	UIManager();
+	~UIManager();
+
 	void Initialize(DX12Core& core);
 	void Update(float deltaTime);
 	void Render(ID3D12GraphicsCommandList* cmdList, ID3D12CommandQueue* cmdQueue, const D3D12_VIEWPORT& vp);
 	void Release();
+
+	// 풀스크린 시네마틱 영상(mp4) 재생. 끝나면 자동 종료.
+	void PlayVideo(const wstring& path);
+	bool IsVideoPlaying() const { return videoPlaying; }
 
 	void SetCurrentScene(SceneType scene) { currentScene = scene; }
 	UITextureData* GetUITexture(const wstring& name);
@@ -55,6 +63,11 @@ private:
 	unordered_map<wstring, UITextureData> uiTextureMap;
 
 	unordered_map<SceneType, unique_ptr<UIController>> controllers;
+
+	DX12Core* coreRef = nullptr;
+	unique_ptr<VideoPlayer> video;
+	UINT videoHeapIndex = 0;
+	bool videoPlaying = false;
 
 	SceneType currentScene;
 

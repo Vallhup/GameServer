@@ -31,56 +31,59 @@
 
 void Scene::Initialize(HWND hWnd, DX12Core& core)
 {
-    coreRef = &core;
+	coreRef = &core;
 
-    if (cam)
-        cam.reset();
+	if (cam)
+		cam.reset();
 
-    cam = make_unique<Camera>();
-    cam->Initialize(hWnd);
+	cam = make_unique<Camera>();
+	cam->Initialize(hWnd);
 
-    InitializeLogic();
+	InitializeLogic();
 
-    coreRef->FlushCommandQueue();
-    coreRef->ResetCommandQueue();
+	coreRef->FlushCommandQueue();
+	coreRef->ResetCommandQueue();
 
-    Material::ReleaseUploadBuffers();
+	Material::ReleaseUploadBuffers();
 }
 
 void Scene::Update(const float deltaTime)
 {
-    if (!bgmStarted)
-    {
-        if (const char* bgm = GetBGMPath())
-            SOUND_MANAGER->PlayBGM(bgm, GetBGMFadeInSeconds());
-        bgmStarted = true;
-    }
+	if (UI_MANAGER->IsVideoPlaying())
+		return;
 
-    UpdateScene(deltaTime);
+	if (!bgmStarted)
+	{
+		if (const char* bgm = GetBGMPath())
+			SOUND_MANAGER->PlayBGM(bgm, GetBGMFadeInSeconds());
+		bgmStarted = true;
+	}
 
-    for (auto& [id, diamond] : activeGimmicks)
-        diamond->Update(deltaTime);
+	UpdateScene(deltaTime);
 
-    UpdateDissolves();
+	for (auto& [id, diamond] : activeGimmicks)
+		diamond->Update(deltaTime);
 
-    // Temporarily test in GameScene Only
-    //if (cam)
-    //    cam->Update(*coreRef, deltaTime, );
+	UpdateDissolves();
 
-    RequestSceneChange();
+	// Temporarily test in GameScene Only
+	//if (cam)
+	//    cam->Update(*coreRef, deltaTime, );
+
+	RequestSceneChange();
 }
 
 Camera* Scene::GetCamera() const
 {
-    return cam.get();
+	return cam.get();
 }
 
 void Scene::SetSceneManager(SceneManager* manager)
 {
-    sManagerRef = manager;
+	sManagerRef = manager;
 }
 
-void Scene::HandlePacket(const PacketHeader & header, const BYTE * data)
+void Scene::HandlePacket(const PacketHeader& header, const BYTE* data)
 {
 	PacketType type = static_cast<PacketType>(header.type);
 
@@ -252,7 +255,7 @@ shared_ptr<MainCharacter> Scene::CreateCharacterObject(const wstring& meshPath, 
 	return character;
 }
 
-shared_ptr<GameObject> Scene::CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet> (*animFactory)(), bool twoSided)
+shared_ptr<GameObject> Scene::CreateMonsterObject(const wstring& meshPath, shared_ptr<AnimationSet>(*animFactory)(), bool twoSided)
 {
 	auto obj = make_shared<GameObject>();
 	obj->SetId(-1);
@@ -391,7 +394,7 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 	const auto& desc = descs.at(type);
 	for (int i = 0; i < count; ++i)
 	{
-		auto monster = CreateMonsterObject(desc.meshPath, desc.animFactory, desc.twoSided); 
+		auto monster = CreateMonsterObject(desc.meshPath, desc.animFactory, desc.twoSided);
 		monster->GetComponent<Transform>()->SetInitPosition(position);
 
 		if (type == MonsterType::Boss || type == MonsterType::BigDemonWarrior || type == MonsterType::Tank)
@@ -405,6 +408,9 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			EFFECT_MANAGER->PreLoad(L"Sword_Storm");
 			EFFECT_MANAGER->PreLoad(L"Fire");
 			EFFECT_MANAGER->PreLoad(L"PhantasmMeteor_Single");
+			EFFECT_MANAGER->PreLoad(L"Barrior02_HDR");
+			EFFECT_MANAGER->PreLoad(L"Barrior01");
+			EFFECT_MANAGER->PreLoad(L"0per_Bomb");
 
 			auto sfx = monster->AddComponent<AnimationSfxComponent>();
 			sfx->AddEffectTrigger("BloodLance", 79, 81, L"BloodLance");
@@ -413,6 +419,8 @@ void Scene::CreateMonsters(MonsterType type, const XMFLOAT3& position, int count
 			sfx->AddEffectTrigger("SwordStorm", 0, 2, L"Sword_Storm");
 			sfx->AddEffectTrigger("50per", 46, 48, L"Fire");
 			sfx->AddEffectTrigger("0per", 28, 30, L"PhantasmMeteor_Single");
+			sfx->AddEffectTrigger("0per", 0, 2, L"Barrior02_HDR");
+			sfx->AddEffectTrigger("0per", 330, 332, L"0per_Bomb");
 		}
 
 		if (type == MonsterType::Tank)
@@ -438,11 +446,13 @@ void Scene::CreateGimmickPool(int count)
 	for (int i = 0; i < count; ++i)
 	{
 		auto diamond = make_shared<GimmickDiamond>();
-		diamond->SetId(-1);	
-		diamond->Init(*coreRef, XMFLOAT4{ 0.25f, 0.85f, 0.95f, 1.0f });	
+		diamond->SetId(-1);
+		diamond->Init(*coreRef, XMFLOAT4{ 0.25f, 0.85f, 0.95f, 1.0f });
+		diamond->AddComponent<DissolveComponent>();
 		gimmickPool.push_back(diamond);
 		AddGameObject(diamond);
 	}
+	DissolveComponent::RegisterNoiseTexture(*coreRef);
 }
 
 shared_ptr<GimmickDiamond> Scene::GetAvailableGimmick()
@@ -583,6 +593,17 @@ void Scene::UpdateDissolves()
 		else
 			++it;
 	}
+
+	for (auto it = activeGimmicks.begin(); it != activeGimmicks.end(); )
+	{
+		if (it->second->ShouldRemove())
+		{
+			it->second->SetId(-1);
+			it = activeGimmicks.erase(it);
+		}
+		else
+			++it;
+	}
 }
 
 void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
@@ -622,7 +643,7 @@ void Scene::HandleCombatImpact(const Protocol::SC_COMBAT_IMPACT_PACKET& impact)
 				{
 					SOUND_MANAGER->PlaySFX3D("../Assets/Music/SFX/CharacterCut.mp3", impactPos);
 				}
-				
+
 			}
 			break;
 		}
@@ -708,8 +729,8 @@ void Scene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
 	else if (auto typeIt = activeMonsterTypes.find(id);
 		typeIt != activeMonsterTypes.end() &&
 		(typeIt->second == MonsterType::Imp ||
-		 typeIt->second == MonsterType::DemonStriker ||
-		 typeIt->second == MonsterType::DemonExecutioner))
+			typeIt->second == MonsterType::DemonStriker ||
+			typeIt->second == MonsterType::DemonExecutioner))
 	{
 		if (auto objIt = activeCharacters.find(id); objIt != activeCharacters.end())
 			if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
@@ -718,8 +739,8 @@ void Scene::HandleStatChange(const Protocol::SC_STAT_CHANGE_PACKET& stat)
 	else if (auto bossIt = activeMonsterTypes.find(id);
 		bossIt != activeMonsterTypes.end() &&
 		(bossIt->second == MonsterType::Boss ||
-		 bossIt->second == MonsterType::BigDemonWarrior ||
-		 bossIt->second == MonsterType::Tank))
+			bossIt->second == MonsterType::BigDemonWarrior ||
+			bossIt->second == MonsterType::Tank))
 	{
 		if (auto controller = ENGINE.GetUIManager()->GetController<GameSceneUIController>())
 			controller->HandleBossHp(stat.curhp(), stat.maxhp());
@@ -767,8 +788,8 @@ void Scene::HandleMonsterCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PAC
 	auto typeIt = activeMonsterTypes.find(id);
 	if (typeIt != activeMonsterTypes.end() &&
 		(typeIt->second == MonsterType::Boss ||
-		 typeIt->second == MonsterType::BigDemonWarrior ||
-		 typeIt->second == MonsterType::Tank))
+			typeIt->second == MonsterType::BigDemonWarrior ||
+			typeIt->second == MonsterType::Tank))
 	{
 		controller->SetBossCombatState(inCombat);
 
@@ -781,9 +802,35 @@ void Scene::HandleMonsterCombatState(const Protocol::SC_MONSTER_COMBAT_STATE_PAC
 
 void Scene::HandleBossGimmickObjectSync(const Protocol::SC_BOSS_GIMMICK_OBJECT_SYNC_PACKET& gimmickObject)
 {
-	// 별도 Add/Remove 없이 이 패킷 하나로 갱신. (FinalScene에서만 수신)
-	// 메시는 씬 초기화 때 풀로 미리 생성됨 → 여기선 꺼내서 위치만 세팅.
+	{
+		const char* stateStr = "?";
+		switch (gimmickObject.state())
+		{
+		case Protocol::BOSS_GIMMICK_OBJECT_STATE_SPAWNED:   stateStr = "SPAWNED";   break;
+		case Protocol::BOSS_GIMMICK_OBJECT_STATE_UPDATED:   stateStr = "UPDATED";   break;
+		case Protocol::BOSS_GIMMICK_OBJECT_STATE_BROKEN:    stateStr = "BROKEN";    break;
+		case Protocol::BOSS_GIMMICK_OBJECT_STATE_DESPAWNED: stateStr = "DESPAWNED"; break;
+		}
+		char buf[256];
+		sprintf_s(buf,
+			"[GimmickObjSync] boss=%d obj=%d seq=%u state=%s pos=(%.1f, %.1f, %.1f) r=%.2f hp=%u/%u\n",
+			NetId{ gimmickObject.bossnetid() }.GetId(),
+			NetId{ gimmickObject.objectnetid() }.GetId(),
+			gimmickObject.gimmickseq(), stateStr,
+			gimmickObject.x(), gimmickObject.y(), gimmickObject.z(),
+			gimmickObject.radius(), gimmickObject.curhp(), gimmickObject.maxhp());
+		OutputDebugStringA(buf);
+	}
+
 	const int objectId = NetId{ gimmickObject.objectnetid() }.GetId();
+
+	if (gimmickObject.state() == Protocol::BOSS_GIMMICK_OBJECT_STATE_BROKEN)
+	{
+		const int bossId = NetId{ gimmickObject.bossnetid() }.GetId();
+		if (auto bit = activeCharacters.find(bossId); bit != activeCharacters.end())
+			if (auto* sfx = bit->second->GetComponent<AnimationSfxComponent>())
+				sfx->StopEffectByClip("50per");
+	}
 
 	if (auto it = activeGimmicks.find(objectId); it != activeGimmicks.end())
 	{
@@ -791,16 +838,14 @@ void Scene::HandleBossGimmickObjectSync(const Protocol::SC_BOSS_GIMMICK_OBJECT_S
 		return;
 	}
 
+	if (gimmickObject.state() != Protocol::BOSS_GIMMICK_OBJECT_STATE_SPAWNED) return;
+
 	auto diamond = GetAvailableGimmick();
-	if (!diamond) return;	// 풀 고갈(플레이어 수 초과)
+	if (!diamond) return;
 
 	diamond->SetId(objectId);
 	diamond->SyncFrom(gimmickObject);
 	activeGimmicks[objectId] = diamond;
-
-	// TODO: Hp UI 동기화
-	gimmickObject.curhp();
-	gimmickObject.maxhp();
 }
 
 void Scene::HandleBossGimmickZoneSync(const Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_PACKET& gimmickZone)
@@ -819,6 +864,38 @@ void Scene::HandleBossGimmickZoneSync(const Protocol::SC_BOSS_GIMMICK_ZONE_SYNC_
 
 	const XMFLOAT3 objectPos{ gimmickZone.x(), gimmickZone.y(), gimmickZone.z() };
 	const float objectRadius = gimmickZone.radius();
+
+	{
+		const char* stateStr = "?";
+		switch (objectState)
+		{
+		case Protocol::BOSS_GIMMICK_OBJECT_STATE_SPAWNED:   stateStr = "SPAWNED";   break;
+		case Protocol::BOSS_GIMMICK_OBJECT_STATE_UPDATED:   stateStr = "UPDATED";   break;
+		case Protocol::BOSS_GIMMICK_OBJECT_STATE_BROKEN:    stateStr = "BROKEN";    break;
+		case Protocol::BOSS_GIMMICK_OBJECT_STATE_DESPAWNED: stateStr = "DESPAWNED"; break;
+		}
+		char buf[256];
+		sprintf_s(buf,
+			"[GimmickZoneSync] boss=%d zone=%d seq=%u state=%s pos=(%.1f, %.1f, %.1f) r=%.2f\n",
+			bossId, zoneId, gimmickSeq, stateStr,
+			objectPos.x, objectPos.y, objectPos.z, objectRadius);
+		OutputDebugStringA(buf);
+	}
+
+	if (objectState == Protocol::BOSS_GIMMICK_OBJECT_STATE_SPAWNED)
+	{
+		if (activeZoneBarriers.find(zoneId) == activeZoneBarriers.end())
+			activeZoneBarriers[zoneId] = EFFECT_MANAGER->Play(L"Barrior01", objectPos);
+	}
+	else if (objectState == Protocol::BOSS_GIMMICK_OBJECT_STATE_DESPAWNED ||
+		objectState == Protocol::BOSS_GIMMICK_OBJECT_STATE_BROKEN)
+	{
+		if (auto it = activeZoneBarriers.find(zoneId); it != activeZoneBarriers.end())
+		{
+			EFFECT_MANAGER->Stop(it->second);
+			activeZoneBarriers.erase(it);
+		}
+	}
 }
 
 void Scene::HandleFinalClearChoiceBegin(const Protocol::SC_FINAL_CLEAR_CHOICE_BEGIN_PACKET& choiceBegin)
@@ -826,8 +903,8 @@ void Scene::HandleFinalClearChoiceBegin(const Protocol::SC_FINAL_CLEAR_CHOICE_BE
 	// Final Boss 처치 후 UI 띄우기 위해 보내는 패킷
 	// 아마 Id 3개는 딱히 필요 없을 거 같고, 
 	// eligibleCount는 혹시 진행도 같은 거 표시할 때 쓸 수 있을 듯
-	const uint64_t voteId		 = choiceBegin.voteid();
-	const uint64_t partyId		 = choiceBegin.partyid();
+	const uint64_t voteId = choiceBegin.voteid();
+	const uint64_t partyId = choiceBegin.partyid();
 	const uint64_t sourceWorldId = choiceBegin.sourceworldid();
 	const uint32_t eligibleCount = choiceBegin.eligiblecount();
 }

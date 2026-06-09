@@ -39,9 +39,10 @@ SceneSettings SecondBattleScene::GetSceneSettings() const
 	return {
 		  .light = { .sunIntensity = 0.2f },
 		  .lut = { .lutIndex = 14, .saturation = 1.0f },
-		  .fog = { .density = 0.02f, .maxSteps = 32, .maxDistance = 90.0f,
-					  .jitterStrength = 1.0f, .groundHeight = 66.0f, .lightIntensity = 0.8f },
-		  .skybox = { .tintColor = { 1.0f, 1.0f, 1.0f }, .exposure = 0.6f, .saturation = 1.0f },
+		  .fog = { .density = 0.005f, .scattering = 1.35f, .absorption = 0.2f, .maxSteps = 128, .maxDistance = 60.0f,
+					  .jitterStrength = 1.0f, .groundHeight = 66.0f, .lightColor = { 0.5960f, 0.5333f, 0.8431f }, .lightIntensity = 1.2f},
+		  .skybox = { .tintColor = { 0.5960f, 0.5803f, 0.8235f }, .exposure = 0.6f, .saturation = 1.0f },
+		  .shadow = { .shadowAmbientMin = 0.9f, .shadowFloor = 0.0f },
 	};
 }
 
@@ -78,17 +79,15 @@ void SecondBattleScene::InitializeSceneEnvironments()
 
 #pragma region Intialize Candles
 	auto* lm = coreRef->GetLightMgr();
-	const LightData* lights = lm->GetLights();
-	int lcount = lm->GetDeferredLightData().lightCount;
-
+	vector<XMFLOAT3> positions = lm->LoadCandlePositions(L"../Assets/FBXModel/CastleMap/CastleCandles.txt");
 	auto flameObject = make_shared<GameObject>();
 	flameObject->SetId(-1);
 	auto flame = flameObject->AddComponent<FlameComponent>();
-	flame->Initialize(coreRef->GetDevice(), 154);
+	flame->Initialize(coreRef->GetDevice(), positions.size());
 	flame->SetTexture(coreRef->GetDevice(), coreRef->GetGraphicsCmdList(), L"../Assets/Effects/Textures/T_candleflame.png");
 	flame->SetParticleSize(0.35f);
-	for (int i = 1; i < lcount; ++i)
-		flame->Spawn(lights[i].position);
+	for (size_t i = 0; i < positions.size(); ++i)
+		flame->Spawn(positions[i]);
 	AddGameObject(flameObject);
 #pragma endregion
 

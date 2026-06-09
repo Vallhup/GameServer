@@ -27,6 +27,7 @@ public:
 	void LoadSceneLights(const wstring& pointLightFile, bool enableDirectional);
 
 	bool LoadFromFile(const wstring& path, int startSlot = 1);
+	static vector<XMFLOAT3> LoadCandlePositions(const wstring& path);
 	void SetSkyBox(SkyBox* sky) { skyBox = sky; }
 	SkyBox* GetSkyBox() const { return skyBox; }
 

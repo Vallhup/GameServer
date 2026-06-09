@@ -35,7 +35,7 @@ cbuffer ObjectCB : register(b1)
     int splatLayerCount;
     float dissolveAmount;
     uint dissolveNoiseIndex;
-    int objPadding;
+    float brightness;
 };
 
 cbuffer AnimationParams : register(b2)

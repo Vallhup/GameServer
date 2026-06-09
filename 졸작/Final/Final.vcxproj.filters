@@ -127,6 +127,9 @@
     <ClCompile Include="UIManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="VideoPlayer.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
     <ClCompile Include="StartSceneUIController.cpp">
       <Filter>UI\Controller</Filter>
     </ClCompile>
@@ -165,9 +168,6 @@
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Scene\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="SecondBattleScene.cpp">
-      <Filter>Scene\5. Castle</Filter>
     </ClCompile>
     <ClCompile Include="SelectSceneUIController.cpp">
       <Filter>UI\Controller</Filter>
@@ -291,6 +291,12 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="GimmickDiamond.cpp">
+      <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
+    </ClCompile>
+    <ClCompile Include="SecondBattleScene.cpp">
+      <Filter>Scene\5. Castle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -421,6 +427,9 @@
       <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="UIManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoPlayer.h">
       <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="StartSceneUIController.h">
@@ -587,6 +596,9 @@
     </ClInclude>
     <ClInclude Include="BeaconCinematicScene.h">
       <Filter>Scene\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="GimmickDiamond.h">
+      <Filter>Scene\6. Final %28Boss &amp; PVP%29</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

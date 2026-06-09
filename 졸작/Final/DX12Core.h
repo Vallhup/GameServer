@@ -28,7 +28,7 @@ struct ObjectConstants
 	int splatLayerCount = 0;
 	float dissolveAmount = 0.0f;          // 0=온전, 1=완전 분해
 	UINT dissolveNoiseIndex = 0xFFFFFFFF; // bindless 노이즈 인덱스(미사용 시 0xFFFFFFFF)
-	int objPadding;
+	float brightness = 1.0f;              // unlit 정점색에 곱하는 밝기(1=원색)
 };
 
 struct FogConstants
@@ -93,7 +93,6 @@ public:
 	void CopyStaticToCsmCascade2();
 	void BeginDynamicShadowPass();
 	void EndDynamicShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
-	// 실내(Final) overhead 동적 그림자: 슬라이스 0에 단일 패스
 	void BeginOverheadShadowPass();
 	void EndOverheadShadowPass(const D3D12_VIEWPORT& vp, const D3D12_RECT& rect);
 
